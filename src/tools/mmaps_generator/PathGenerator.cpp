@@ -1,7 +1,7 @@
-/**
+/*
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "MMapCommon.h"
+#include "PathCommon.h"
 #include "MapBuilder.h"
+#include "Timer.h"
 
 using namespace MMAP;
 
@@ -26,14 +27,14 @@ bool checkDirectories(bool debugOutput)
 {
     std::vector<std::string> dirFiles;
 
-    if (getDirContents(dirFiles, "maps") == LISTFILE_DIRECTORY_NOT_FOUND || !dirFiles.size())
+    if (getDirContents(dirFiles, "maps") == LISTFILE_DIRECTORY_NOT_FOUND || dirFiles.empty())
     {
         printf("'maps' directory is empty or does not exist\n");
         return false;
     }
 
     dirFiles.clear();
-    if (getDirContents(dirFiles, "vmaps", "*.vmtree") == LISTFILE_DIRECTORY_NOT_FOUND || !dirFiles.size())
+    if (getDirContents(dirFiles, "vmaps", "*.vmtree") == LISTFILE_DIRECTORY_NOT_FOUND || dirFiles.empty())
     {
         printf("'vmaps' directory is empty or does not exist\n");
         return false;
@@ -59,40 +60,21 @@ bool checkDirectories(bool debugOutput)
     return true;
 }
 
-void printUsage()
-{
-    printf("Generator command line args\n\n");
-    printf("-? : This help\n");
-    printf("[#] : Build only the map specified by #.\n");
-    printf("--maxAngle [#] : Max walkable inclination angle\n");
-    printf("--tile [#,#] : Build the specified tile\n");
-    printf("--skipLiquid [true|false] : liquid data for maps\n");
-    printf("--skipContinents [true|false] : skip continents\n");
-    printf("--skipJunkMaps [true|false] : junk maps include some unused\n");
-    printf("--skipBattlegrounds [true|false] : does not include PVP arenas\n");
-    printf("--debugOutput [true|false] : create debugging files for use with RecastDemo\n");
-    printf("--bigBaseUnit [true|false] : Generate tile/map using bigger basic unit.\n");
-    printf("--silent : Make script friendly. No wait for user input, error, completion.\n");
-    printf("--offMeshInput [file.*] : Path to file containing off mesh connections data.\n\n");
-    printf("Exemple:\nmovemapgen (generate all mmap with default arg\n"
-        "movemapgen 0 (generate map 0)\n"
-        "movemapgen --tile 34,46 (builds only tile 34,46 of map 0)\n\n");
-    printf("Please read readme file for more information and exemples.\n");
-}
-
 bool handleArgs(int argc, char** argv,
-                int& mapnum,
-                int& tileX,
-                int& tileY,
-                float& maxAngle,
-                bool& skipLiquid,
-                bool& skipContinents,
-                bool& skipJunkMaps,
-                bool& skipBattlegrounds,
-                bool& debugOutput,
-                bool& silent,
-                bool& bigBaseUnit,
-                char*& offMeshInputPath)
+               int &mapnum,
+               int &tileX,
+               int &tileY,
+               float &maxAngle,
+               bool &skipLiquid,
+               bool &skipContinents,
+               bool &skipJunkMaps,
+               bool &skipBattlegrounds,
+               bool &debugOutput,
+               bool &silent,
+               bool &bigBaseUnit,
+               char* &offMeshInputPath,
+               char* &file,
+               int& threads)
 {
     char* param = NULL;
     for (int i = 1; i < argc; ++i)
@@ -108,6 +90,21 @@ bool handleArgs(int argc, char** argv,
                 maxAngle = maxangle;
             else
                 printf("invalid option for '--maxAngle', using default\n");
+        }
+        else if (strcmp(argv[i], "--threads") == 0)
+        {
+            param = argv[++i];
+            if (!param)
+                return false;
+            threads = atoi(param);
+            printf("Using %i threads to extract mmaps\n", threads);
+        }
+        else if (strcmp(argv[i], "--file") == 0)
+        {
+            param = argv[++i];
+            if (!param)
+                return false;
+            file = param;
         }
         else if (strcmp(argv[i], "--tile") == 0)
         {
@@ -221,11 +218,6 @@ bool handleArgs(int argc, char** argv,
 
             offMeshInputPath = param;
         }
-        else if (strcmp(argv[i], "-?") == 0)
-        {
-            printUsage();
-            exit(1);
-        }
         else
         {
             int map = atoi(argv[i]);
@@ -245,14 +237,14 @@ bool handleArgs(int argc, char** argv,
 int finish(const char* message, int returnValue)
 {
     printf("%s", message);
-    getchar();
+    getchar(); // Wait for user input
     return returnValue;
 }
 
 int main(int argc, char** argv)
 {
-    int mapnum = -1;
-    float maxAngle = 60.0f;
+    int threads = 3, mapnum = -1;
+    float maxAngle = 70.0f;
     int tileX = -1, tileY = -1;
     bool skipLiquid = false,
          skipContinents = false,
@@ -262,14 +254,15 @@ int main(int argc, char** argv)
          silent = false,
          bigBaseUnit = false;
     char* offMeshInputPath = NULL;
+    char* file = NULL;
 
     bool validParam = handleArgs(argc, argv, mapnum,
                                  tileX, tileY, maxAngle,
                                  skipLiquid, skipContinents, skipJunkMaps, skipBattlegrounds,
-                                 debugOutput, silent, bigBaseUnit, offMeshInputPath);
+                                 debugOutput, silent, bigBaseUnit, offMeshInputPath, file, threads);
 
     if (!validParam)
-        return silent ? -1 : finish("You have specified invalid parameters (use -? for more help)", -1);
+        return silent ? -1 : finish("You have specified invalid parameters", -1);
 
     if (mapnum == -1 && debugOutput)
     {
@@ -284,17 +277,22 @@ int main(int argc, char** argv)
     }
 
     if (!checkDirectories(debugOutput))
-        return silent ? -3 : finish("Press any key to close...", -3);
+        return silent ? -3 : finish("Press ENTER to close...", -3);
 
     MapBuilder builder(maxAngle, skipLiquid, skipContinents, skipJunkMaps,
                        skipBattlegrounds, debugOutput, bigBaseUnit, offMeshInputPath);
 
-    if (tileX > -1 && tileY > -1 && mapnum >= 0)
+    uint32 start = getMSTime();
+    if (file)
+        builder.buildMeshFromFile(file);
+    else if (tileX > -1 && tileY > -1 && mapnum >= 0)
         builder.buildSingleTile(mapnum, tileX, tileY);
     else if (mapnum >= 0)
         builder.buildMap(uint32(mapnum));
     else
-        builder.buildAllMaps();
+        builder.buildAllMaps(threads);
 
-    return silent ? 1 : finish("Movemap build is complete!", 1);
+    if (!silent)
+        printf("Finished. MMAPS were built in %u ms!\n", GetMSTimeDiffToNow(start));
+    return 0;
 }

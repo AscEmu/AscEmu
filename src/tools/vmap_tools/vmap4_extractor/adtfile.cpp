@@ -1,10 +1,12 @@
 /*
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
  *
- * This program is free software; you can redistribute it and/or modify
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,8 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "vmapexport.h"
@@ -26,16 +27,16 @@
 #define snprintf _snprintf
 #endif
 
-const char * GetPlainName(const char * FileName)
+char const* GetPlainName(char const* FileName)
 {
     const char * szTemp;
 
-    if ((szTemp = strrchr(FileName, '\\')) != NULL)
+    if((szTemp = strrchr(FileName, '\\')) != NULL)
         FileName = szTemp + 1;
     return FileName;
 }
 
-char * GetPlainName(char * FileName)
+char* GetPlainName(char* FileName)
 {
     char * szTemp;
 
@@ -44,24 +45,21 @@ char * GetPlainName(char * FileName)
     return FileName;
 }
 
-void fixnamen(char *name, size_t len)
+void fixnamen(char* name, size_t len)
 {
-    for (size_t i=0; i<len-3; i++)
+    for (size_t i = 0; i < len-3; i++)
     {
-        if (i>0 && name[i]>='A' && name[i]<='Z' && isalpha(name[i-1]))
-        {
+        if (i > 0 && name[i] >= 'A' && name[i] <= 'Z' && isalpha(name[i-1]))
             name[i] |= 0x20;
-        } else if ((i==0 || !isalpha(name[i-1])) && name[i]>='a' && name[i]<='z')
-        {
+        else if ((i == 0 || !isalpha(name[i-1])) && name[i]>='a' && name[i]<='z')
             name[i] &= ~0x20;
-        }
     }
     //extension in lowercase
-    for(size_t i=len-3; i<len; i++)
+    for (size_t i = len - 3; i < len; i++)
         name[i] |= 0x20;
 }
 
-void fixname2(char *name, size_t len)
+void fixname2(char* name, size_t len)
 {
     for (size_t i=0; i<len-3; i++)
     {
@@ -70,15 +68,14 @@ void fixname2(char *name, size_t len)
     }
 }
 
-char * GetExtension(char * FileName)
+char* GetExtension(char* FileName)
 {
-    char * szTemp;
-    if ((szTemp = strrchr(FileName, '.')) != NULL)
+    if (char* szTemp = strrchr(FileName, '.'))
         return szTemp;
     return NULL;
 }
 
-ADTFile::ADTFile(char* filename): ADT(filename)
+ADTFile::ADTFile(char* filename): ADT(filename), nWMO(0), nMDX(0), WmoInstansName(NULL), ModelInstansName(NULL)
 {
     Adtfilename.append(filename);
 }
@@ -90,20 +87,15 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
 
     uint32 size;
 
-    std::string xMap;
-    std::string yMap;
+    string xMap;
+    string yMap;
 
     Adtfilename.erase(Adtfilename.find(".adt"),4);
-    std::string TempMapNumber;
+    string TempMapNumber;
     TempMapNumber = Adtfilename.substr(Adtfilename.length()-6,6);
     xMap = TempMapNumber.substr(TempMapNumber.find("_")+1,(TempMapNumber.find_last_of("_")-1) - (TempMapNumber.find("_")));
     yMap = TempMapNumber.substr(TempMapNumber.find_last_of("_")+1,(TempMapNumber.length()) - (TempMapNumber.find_last_of("_")));
     Adtfilename.erase((Adtfilename.length()-xMap.length()-yMap.length()-2), (xMap.length()+yMap.length()+2));
-    std::string AdtMapNumber = xMap + ' ' + yMap + ' ' + GetPlainName((char*)Adtfilename.c_str());
-    //printf("Processing map %s...\n", AdtMapNumber.c_str());
-    //printf("MapNumber = %s\n", TempMapNumber.c_str());
-    //printf("xMap = %s\n", xMap.c_str());
-    //printf("yMap = %s\n", yMap.c_str());
 
     std::string dirname = std::string(szWorkDirWmo) + "/dir_bin";
     FILE *dirfile;
@@ -138,7 +130,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
                 ADT.read(buf, size);
                 char *p=buf;
                 int t=0;
-                ModelInstansName = new std::string[size];
+                ModelInstansName = new string[size];
                 while (p<buf+size)
                 {
                     fixnamen(p,strlen(p));
@@ -147,10 +139,10 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
 
                     ModelInstansName[t++] = s;
 
-                    std::string path(p);
+                    string path(p);
                     ExtractSingleModel(path);
-                    
-                    p = p + strlen(p) + 1;
+
+                    p = p+strlen(p)+1;
                 }
                 delete[] buf;
             }
@@ -159,18 +151,17 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
         {
             if (size)
             {
-                char *buf = new char[size];
+                char* buf = new char[size];
                 ADT.read(buf, size);
-                char *p=buf;
+                char* p=buf;
                 int q = 0;
                 WmoInstansName = new std::string[size];
                 while (p<buf+size)
                 {
-                    std::string path(p);
-                    char* s=GetPlainName(p);
-                    fixnamen(s,strlen(s));
-                    fixname2(s,strlen(s));
-                    p=p+strlen(p)+1;
+                    char* s = GetPlainName(p);
+                    fixnamen(s, strlen(s));
+                    fixname2(s, strlen(s));
+                    p += strlen(p) + 1;
                     WmoInstansName[q++] = s;
                 }
                 delete[] buf;
@@ -189,6 +180,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
                     ModelInstance inst(ADT,ModelInstansName[id].c_str(), map_num, tileX, tileY, dirfile);
                 }
                 delete[] ModelInstansName;
+                ModelInstansName = NULL;
             }
         }
         else if (!strcmp(fourcc,"MODF"))
@@ -203,6 +195,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
                     WMOInstance inst(ADT,WmoInstansName[id].c_str(), map_num, tileX, tileY, dirfile);
                 }
                 delete[] WmoInstansName;
+                WmoInstansName = NULL;
             }
         }
         //======================

@@ -1,7 +1,26 @@
+/*
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef LOAD_LIB_H
 #define LOAD_LIB_H
 
-#ifdef WIN32
+#ifdef _WIN32
 typedef __int64            int64;
 typedef __int32            int32;
 typedef __int16            int16;
@@ -28,6 +47,14 @@ typedef uint8_t            uint8;
 #endif
 
 #define FILE_FORMAT_VERSION    18
+
+#pragma pack(push, 1)
+
+union u_map_fcc
+{
+    char   fcc_txt[4];
+    uint32 fcc;
+};
 
 //
 // File version chunk
@@ -56,4 +83,7 @@ public:
     bool loadFile(char *filename, bool log = true);
     virtual void free();
 };
+
+#pragma pack(pop)
+
 #endif

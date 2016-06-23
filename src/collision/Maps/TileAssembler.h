@@ -41,19 +41,20 @@ namespace VMAP
         private:
             G3D::Matrix3 iRotation;
         public:
+            ModelPosition(): iScale(0.0f) { }
             G3D::Vector3 iPos;
             G3D::Vector3 iDir;
             float iScale;
             void init()
             {
-                iRotation = G3D::Matrix3::fromEulerAnglesZYX(G3D::pi()*iDir.y/180.f, G3D::pi()*iDir.x/180.f, G3D::pi()*iDir.z/180.f);
+                iRotation = G3D::Matrix3::fromEulerAnglesZYX(G3D::pif()*iDir.y/180.f, G3D::pif()*iDir.x/180.f, G3D::pif()*iDir.z/180.f);
             }
             G3D::Vector3 transform(const G3D::Vector3& pIn) const;
             void moveToBasePos(const G3D::Vector3& pBasePos) { iPos -= pBasePos; }
     };
 
-    typedef std::map<G3D::uint32, ModelSpawn> UniqueEntryMap;
-    typedef std::multimap<G3D::uint32, G3D::uint32> TileMap;
+    typedef std::map<uint32, ModelSpawn> UniqueEntryMap;
+    typedef std::multimap<uint32, uint32> TileMap;
 
     struct MapSpawns
     {
@@ -61,29 +62,30 @@ namespace VMAP
         TileMap TileEntries;
     };
 
-    typedef std::map<G3D::uint32, MapSpawns*> MapData;
+    typedef std::map<uint32, MapSpawns*> MapData;
     //===============================================
 
     struct GroupModel_Raw
     {
-        G3D::uint32 mogpflags;
-        G3D::uint32 GroupWMOID;
+        uint32 mogpflags;
+        uint32 GroupWMOID;
 
         G3D::AABox bounds;
-        G3D::uint32 liquidflags;
+        uint32 liquidflags;
         std::vector<MeshTriangle> triangles;
         std::vector<G3D::Vector3> vertexArray;
-        class WmoLiquid *liquid;
+        class WmoLiquid* liquid;
 
-        GroupModel_Raw() : liquid(0) {}
+        GroupModel_Raw() : mogpflags(0), GroupWMOID(0), liquidflags(0),
+            liquid(NULL) { }
         ~GroupModel_Raw();
 
-        bool Read(FILE * f);
+        bool Read(FILE* f);
     };
 
     struct WorldModel_Raw
     {
-        G3D::uint32 RootWMOID;
+        uint32 RootWMOID;
         std::vector<GroupModel_Raw> groupsArray;
 
         bool Read(const char * path);

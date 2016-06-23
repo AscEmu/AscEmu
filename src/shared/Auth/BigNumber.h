@@ -42,8 +42,7 @@ class BigNumber
 
         void SetRand(int numbits);
 
-        BigNumber operator=(const BigNumber & bn);
-//      BigNumber operator=(Sha1Hash &hash);
+        BigNumber& operator=(const BigNumber & bn);
 
         BigNumber operator+=(const BigNumber & bn);
         BigNumber operator+(const BigNumber & bn)

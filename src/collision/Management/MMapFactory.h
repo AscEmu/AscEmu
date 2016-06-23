@@ -1,7 +1,7 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,30 +17,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WDTFILE_H
-#define WDTFILE_H
+#ifndef _MMAP_FACTORY_H
+#define _MMAP_FACTORY_H
 
-#include "mpq_libmpq04.h"
-#include "wmo.h"
-#include <string>
-#include "stdlib.h"
+#include "Common.h"
+#include "MMapManager.h"
+#include "DetourAlloc.h"
+#include "DetourNavMesh.h"
+#include "DetourNavMeshQuery.h"
+#include <unordered_map>
 
-class ADTFile;
-
-class WDTFile
+namespace MMAP
 {
-private:
-    MPQFile WDT;
-    string filename;
-public:
-    WDTFile(char* file_name, char* file_name1);
-    ~WDTFile(void);
-    bool init(char* map_id, unsigned int mapID);
+    enum MMAP_LOAD_RESULT
+    {
+        MMAP_LOAD_RESULT_ERROR,
+        MMAP_LOAD_RESULT_OK,
+        MMAP_LOAD_RESULT_IGNORED
+    };
 
-    string* gWmoInstansName;
-    int gnWMO;
+    // static class
+    // holds all mmap global data
+    // access point to MMapManager singleton
+    class MMapFactory
+    {
+        public:
+            static MMapManager* createOrGetMMapManager();
+            static void clear();
+            static bool IsPathfindingEnabled(uint32 mapId);
+    };
+}
 
-    ADTFile* GetMap(int x, int z);
-};
+#endif
 
-#endif  //WDTFILE_H

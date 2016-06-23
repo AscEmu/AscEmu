@@ -25,7 +25,6 @@
 #include <set>
 #include <iomanip>
 #include <sstream>
-#include <iomanip>
 
 using G3D::Vector3;
 using G3D::AABox;
@@ -39,15 +38,15 @@ template<> struct BoundsTrait<VMAP::ModelSpawn*>
 
 namespace VMAP
 {
-    bool readChunk(FILE* rf, char *dest, const char *compare, G3D::uint32 len)
+    bool readChunk(FILE* rf, char *dest, const char *compare, uint32 len)
     {
         if (fread(dest, sizeof(char), len, rf) != len) return false;
         return memcmp(dest, compare, len) == 0;
     }
 
-    G3D::Vector3 ModelPosition::transform(const G3D::Vector3& pIn) const
+    Vector3 ModelPosition::transform(const Vector3& pIn) const
     {
-        G3D::Vector3 out = pIn * iScale;
+        Vector3 out = pIn * iScale;
         out = iRotation * out;
         return(out);
     }
@@ -55,11 +54,8 @@ namespace VMAP
     //=================================================================
 
     TileAssembler::TileAssembler(const std::string& pSrcDirName, const std::string& pDestDirName)
+        : iDestDir(pDestDirName), iSrcDir(pSrcDirName), iFilterMethod(NULL), iCurrentUniqueNameId(0)
     {
-        iCurrentUniqueNameId = 0;
-        iFilterMethod = NULL;
-        iSrcDir = pSrcDirName;
-        iDestDir = pDestDirName;
         //mkdir(iDestDir);
         //init();
     }
@@ -92,7 +88,7 @@ namespace VMAP
                 }
                 else if (entry->second.flags & MOD_WORLDSPAWN) // WMO maps and terrain maps use different origin, so we need to adapt :/
                 {
-                    // TODO: remove extractor hack and uncomment below line:
+                    /// @todo remove extractor hack and uncomment below line:
                     //entry->second.iPos += Vector3(533.33333f*32, 533.33333f*32, 0.f);
                     entry->second.iBound = entry->second.iBound + Vector3(533.33333f*32, 533.33333f*32, 0.f);
                 }
@@ -102,12 +98,21 @@ namespace VMAP
 
             printf("Creating map tree for map %u...\n", map_iter->first);
             BIH pTree;
-            pTree.build(mapSpawns, BoundsTrait<ModelSpawn*>::getBounds);
+
+            try
+            {
+                pTree.build(mapSpawns, BoundsTrait<ModelSpawn*>::getBounds);
+            }
+            catch (std::exception& e)
+            {
+                printf("Exception ""%s"" when calling pTree.build", e.what());
+                return false;
+            }
 
             // ===> possibly move this code to StaticMapTree class
-            std::map<G3D::uint32, G3D::uint32> modelNodeIdx;
-            for (G3D::uint32 i=0; i<mapSpawns.size(); ++i)
-                modelNodeIdx.insert(pair<G3D::uint32, G3D::uint32>(mapSpawns[i]->ID, i));
+            std::map<uint32, uint32> modelNodeIdx;
+            for (uint32 i=0; i<mapSpawns.size(); ++i)
+                modelNodeIdx.insert(pair<uint32, uint32>(mapSpawns[i]->ID, i));
 
             // write map tree file
             std::stringstream mapfilename;
@@ -122,7 +127,7 @@ namespace VMAP
 
             //general info
             if (success && fwrite(VMAP_MAGIC, 1, 8, mapfile) != 8) success = false;
-            G3D::uint32 globalTileID = StaticMapTree::packTileID(65, 65);
+            uint32 globalTileID = StaticMapTree::packTileID(65, 65);
             pair<TileMap::iterator, TileMap::iterator> globalRange = map_iter->second->TileEntries.equal_range(globalTileID);
             char isTiled = globalRange.first == globalRange.second; // only maps without terrain (tiles) have global WMO
             if (success && fwrite(&isTiled, sizeof(char), 1, mapfile) != 1) success = false;
@@ -149,30 +154,32 @@ namespace VMAP
                 const ModelSpawn &spawn = map_iter->second->UniqueEntries[tile->second];
                 if (spawn.flags & MOD_WORLDSPAWN) // WDT spawn, saved as tile 65/65 currently...
                     continue;
-                G3D::uint32 nSpawns = tileEntries.count(tile->first);
+                uint32 nSpawns = tileEntries.count(tile->first);
                 std::stringstream tilefilename;
                 tilefilename.fill('0');
                 tilefilename << iDestDir << '/' << std::setw(3) << map_iter->first << '_';
-                G3D::uint32 x, y;
+                uint32 x, y;
                 StaticMapTree::unpackTileID(tile->first, x, y);
                 tilefilename << std::setw(2) << x << '_' << std::setw(2) << y << ".vmtile";
-                FILE* tilefile = fopen(tilefilename.str().c_str(), "wb");
-                // file header
-                if (success && fwrite(VMAP_MAGIC, 1, 8, tilefile) != 8) success = false;
-                // write number of tile spawns
-                if (success && fwrite(&nSpawns, sizeof(G3D::uint32), 1, tilefile) != 1) success = false;
-                // write tile spawns
-                for (G3D::uint32 s=0; s<nSpawns; ++s)
+                if (FILE* tilefile = fopen(tilefilename.str().c_str(), "wb"))
                 {
-                    if (s)
-                        ++tile;
-                    const ModelSpawn &spawn2 = map_iter->second->UniqueEntries[tile->second];
-                    success = success && ModelSpawn::writeToFile(tilefile, spawn2);
-                    // MapTree nodes to update when loading tile:
-                    std::map<G3D::uint32, G3D::uint32>::iterator nIdx = modelNodeIdx.find(spawn2.ID);
-                    if (success && fwrite(&nIdx->second, sizeof(G3D::uint32), 1, tilefile) != 1) success = false;
+                    // file header
+                    if (success && fwrite(VMAP_MAGIC, 1, 8, tilefile) != 8) success = false;
+                    // write number of tile spawns
+                    if (success && fwrite(&nSpawns, sizeof(uint32), 1, tilefile) != 1) success = false;
+                    // write tile spawns
+                    for (uint32 s=0; s<nSpawns; ++s)
+                    {
+                        if (s)
+                            ++tile;
+                        const ModelSpawn &spawn2 = map_iter->second->UniqueEntries[tile->second];
+                        success = success && ModelSpawn::writeToFile(tilefile, spawn2);
+                        // MapTree nodes to update when loading tile:
+                        std::map<uint32, uint32>::iterator nIdx = modelNodeIdx.find(spawn2.ID);
+                        if (success && fwrite(&nIdx->second, sizeof(uint32), 1, tilefile) != 1) success = false;
+                    }
+                    fclose(tilefile);
                 }
-                fclose(tilefile);
             }
             // break; //test, extract only first map; TODO: remvoe this line
         }
@@ -210,18 +217,18 @@ namespace VMAP
             return false;
         }
         printf("Read coordinate mapping...\n");
-        G3D::uint32 mapID, tileX, tileY, check=0;
+        uint32 mapID, tileX, tileY, check=0;
         G3D::Vector3 v1, v2;
         ModelSpawn spawn;
         while (!feof(dirf))
         {
             check = 0;
             // read mapID, tileX, tileY, Flags, adtID, ID, Pos, Rot, Scale, Bound_lo, Bound_hi, name
-            check += fread(&mapID, sizeof(G3D::uint32), 1, dirf);
+            check += fread(&mapID, sizeof(uint32), 1, dirf);
             if (check == 0) // EoF...
                 break;
-            check += fread(&tileX, sizeof(G3D::uint32), 1, dirf);
-            check += fread(&tileY, sizeof(G3D::uint32), 1, dirf);
+            check += fread(&tileX, sizeof(uint32), 1, dirf);
+            check += fread(&tileY, sizeof(uint32), 1, dirf);
             if (!ModelSpawn::readFromFile(dirf, spawn))
                 break;
 
@@ -229,12 +236,12 @@ namespace VMAP
             MapData::iterator map_iter = mapData.find(mapID);
             if (map_iter == mapData.end())
             {
-                printf("spawning Map %d\n", mapID);
+                printf("spawning Map %u\n", mapID);
                 mapData[mapID] = current = new MapSpawns();
             }
             else current = (*map_iter).second;
-            current->UniqueEntries.insert(pair<G3D::uint32, ModelSpawn>(spawn.ID, spawn));
-            current->TileEntries.insert(pair<G3D::uint32, G3D::uint32>(StaticMapTree::packTileID(tileX, tileY), spawn.ID));
+            current->UniqueEntries.insert(pair<uint32, ModelSpawn>(spawn.ID, spawn));
+            current->TileEntries.insert(pair<uint32, uint32>(StaticMapTree::packTileID(tileX, tileY), spawn.ID));
         }
         bool success = (ferror(dirf) == 0);
         fclose(dirf);
@@ -256,14 +263,14 @@ namespace VMAP
         if (!raw_model.Read(modelFilename.c_str()))
             return false;
 
-        G3D::uint32 groups = raw_model.groupsArray.size();
+        uint32 groups = raw_model.groupsArray.size();
         if (groups != 1)
             printf("Warning: '%s' does not seem to be a M2 model!\n", modelFilename.c_str());
-            
+
         AABox modelBound;
         bool boundEmpty=true;
 
-        for (G3D::uint32 g=0; g<groups; ++g) // should be only one for M2 files...
+        for (uint32 g=0; g<groups; ++g) // should be only one for M2 files...
         {
             std::vector<Vector3>& vertices = raw_model.groupsArray[g].vertexArray;
 
@@ -273,8 +280,8 @@ namespace VMAP
                 continue;
             }
 
-            G3D::uint32 nvectors = vertices.size();
-            for (G3D::uint32 i = 0; i < nvectors; ++i)
+            uint32 nvectors = vertices.size();
+            for (uint32 i = 0; i < nvectors; ++i)
             {
                 Vector3 v = modelPosition.transform(vertices[i]);
 
@@ -309,16 +316,16 @@ namespace VMAP
         WorldModel_Raw raw_model;
         if (!raw_model.Read(filename.c_str()))
             return false;
-            
+
         // write WorldModel
         WorldModel model;
         model.setRootWmoID(raw_model.RootWMOID);
-        if (raw_model.groupsArray.size())
+        if (!raw_model.groupsArray.empty())
         {
             std::vector<GroupModel> groupsArray;
 
-            G3D::uint32 groups = raw_model.groupsArray.size();
-            for (G3D::uint32 g = 0; g < groups; ++g)
+            uint32 groups = raw_model.groupsArray.size();
+            for (uint32 g = 0; g < groups; ++g)
             {
                 GroupModel_Raw& raw_group = raw_model.groupsArray[g];
                 groupsArray.push_back(GroupModel(raw_group.mogpflags, raw_group.GroupWMOID, raw_group.bounds ));
@@ -328,33 +335,38 @@ namespace VMAP
 
             model.setGroupModels(groupsArray);
         }
-        
+
         success = model.writeFile(iDestDir + "/" + pModelFilename + ".vmo");
         //std::cout << "readRawFile2: '" << pModelFilename << "' tris: " << nElements << " nodes: " << nNodes << std::endl;
         return success;
     }
-    
+
     void TileAssembler::exportGameobjectModels()
     {
-        FILE* model_list = fopen((iSrcDir + "/" + GAMEOBJECT_MODELS).c_str(), "rb");
-        FILE* model_list_copy = fopen((iDestDir + "/" + GAMEOBJECT_MODELS).c_str(), "wb");
-        if (!model_list || !model_list_copy)
+        FILE* model_list = fopen((iSrcDir + "/" + "temp_gameobject_models").c_str(), "rb");
+        if (!model_list)
             return;
 
-        G3D::uint32 name_length, displayId;
+        FILE* model_list_copy = fopen((iDestDir + "/" + GAMEOBJECT_MODELS).c_str(), "wb");
+        if (!model_list_copy)
+        {
+            fclose(model_list);
+            return;
+        }
+
+        uint32 name_length, displayId;
         char buff[500];
         while (!feof(model_list))
         {
-            fread(&displayId,sizeof(G3D::uint32),1,model_list);
-            fread(&name_length,sizeof(G3D::uint32),1,model_list);
-
-            if (name_length >= sizeof(buff))
+            if (fread(&displayId, sizeof(uint32), 1, model_list) != 1
+                || fread(&name_length, sizeof(uint32), 1, model_list) != 1
+                || name_length >= sizeof(buff)
+                || fread(&buff, sizeof(char), name_length, model_list) != name_length)
             {
                 std::cout << "\nFile 'temp_gameobject_models' seems to be corrupted" << std::endl;
                 break;
             }
 
-            fread(&buff,sizeof(char),name_length,model_list);
             std::string model_name(buff, name_length);
 
             WorldModel_Raw raw_model;
@@ -364,12 +376,12 @@ namespace VMAP
             spawnedModelFiles.insert(model_name);
             AABox bounds;
             bool boundEmpty = true;
-            for (G3D::uint32 g = 0; g < raw_model.groupsArray.size(); ++g)
+            for (uint32 g = 0; g < raw_model.groupsArray.size(); ++g)
             {
                 std::vector<Vector3>& vertices = raw_model.groupsArray[g].vertexArray;
 
-                G3D::uint32 nvectors = vertices.size();
-                for (G3D::uint32 i = 0; i < nvectors; ++i)
+                uint32 nvectors = vertices.size();
+                for (uint32 i = 0; i < nvectors; ++i)
                 {
                     Vector3& v = vertices[i];
                     if (boundEmpty)
@@ -379,11 +391,23 @@ namespace VMAP
                 }
             }
 
-            fwrite(&displayId,sizeof(G3D::uint32),1,model_list_copy);
-            fwrite(&name_length,sizeof(G3D::uint32),1,model_list_copy);
-            fwrite(&buff,sizeof(char),name_length,model_list_copy);
-            fwrite(&bounds.low(),sizeof(Vector3),1,model_list_copy);
-            fwrite(&bounds.high(),sizeof(Vector3),1,model_list_copy);
+            if (bounds.isEmpty())
+            {
+                std::cout << "\nModel " << std::string(buff, name_length) << " has empty bounding box" << std::endl;
+                continue;
+            }
+
+            if (!bounds.isFinite())
+            {
+                std::cout << "\nModel " << std::string(buff, name_length) << " has invalid bounding box" << std::endl;
+                continue;
+            }
+
+            fwrite(&displayId, sizeof(uint32), 1, model_list_copy);
+            fwrite(&name_length, sizeof(uint32), 1, model_list_copy);
+            fwrite(&buff, sizeof(char), name_length, model_list_copy);
+            fwrite(&bounds.low(), sizeof(Vector3), 1, model_list_copy);
+            fwrite(&bounds.high(), sizeof(Vector3), 1, model_list_copy);
         }
 
         fclose(model_list);
@@ -404,43 +428,43 @@ namespace VMAP
         int blocksize;
         int readOperation = 0;
 
-        READ_OR_RETURN(&mogpflags, sizeof(G3D::uint32));
-        READ_OR_RETURN(&GroupWMOID, sizeof(G3D::uint32));
+        READ_OR_RETURN(&mogpflags, sizeof(uint32));
+        READ_OR_RETURN(&GroupWMOID, sizeof(uint32));
 
-            
+
         Vector3 vec1, vec2;
         READ_OR_RETURN(&vec1, sizeof(Vector3));
 
         READ_OR_RETURN(&vec2, sizeof(Vector3));
         bounds.set(vec1, vec2);
-        
-        READ_OR_RETURN(&liquidflags, sizeof(G3D::uint32));
+
+        READ_OR_RETURN(&liquidflags, sizeof(uint32));
 
         // will this ever be used? what is it good for anyway??
-        G3D::uint32 branches;
+        uint32 branches;
         READ_OR_RETURN(&blockId, 4);
         CMP_OR_RETURN(blockId, "GRP ");
         READ_OR_RETURN(&blocksize, sizeof(int));
-        READ_OR_RETURN(&branches, sizeof(G3D::uint32));
-        for (G3D::uint32 b=0; b<branches; ++b)
+        READ_OR_RETURN(&branches, sizeof(uint32));
+        for (uint32 b=0; b<branches; ++b)
         {
-            G3D::uint32 indexes;
+            uint32 indexes;
             // indexes for each branch (not used jet)
-            READ_OR_RETURN(&indexes, sizeof(G3D::uint32));
+            READ_OR_RETURN(&indexes, sizeof(uint32));
         }
 
         // ---- indexes
         READ_OR_RETURN(&blockId, 4);
         CMP_OR_RETURN(blockId, "INDX");
         READ_OR_RETURN(&blocksize, sizeof(int));
-        G3D::uint32 nindexes;
-        READ_OR_RETURN(&nindexes, sizeof(G3D::uint32));
+        uint32 nindexes;
+        READ_OR_RETURN(&nindexes, sizeof(uint32));
         if (nindexes >0)
         {
-            G3D::uint16 *indexarray = new G3D::uint16[nindexes];
-            READ_OR_RETURN_WITH_DELETE(indexarray, nindexes*sizeof(G3D::uint16));
+            uint16 *indexarray = new uint16[nindexes];
+            READ_OR_RETURN_WITH_DELETE(indexarray, nindexes*sizeof(uint16));
             triangles.reserve(nindexes / 3);
-            for (G3D::uint32 i=0; i<nindexes; i+=3)
+            for (uint32 i=0; i<nindexes; i+=3)
                 triangles.push_back(MeshTriangle(indexarray[i], indexarray[i+1], indexarray[i+2]));
 
             delete[] indexarray;
@@ -450,15 +474,15 @@ namespace VMAP
         READ_OR_RETURN(&blockId, 4);
         CMP_OR_RETURN(blockId, "VERT");
         READ_OR_RETURN(&blocksize, sizeof(int));
-        G3D::uint32 nvectors;
-        READ_OR_RETURN(&nvectors, sizeof(G3D::uint32));
+        uint32 nvectors;
+        READ_OR_RETURN(&nvectors, sizeof(uint32));
 
         if (nvectors >0)
         {
             float *vectorarray = new float[nvectors*3];
             READ_OR_RETURN_WITH_DELETE(vectorarray, nvectors*sizeof(float)*3);
-            for (G3D::uint32 i=0; i<nvectors; ++i)
-                vertexArray.push_back(G3D::Vector3(vectorarray + 3*i) );
+            for (uint32 i=0; i<nvectors; ++i)
+                vertexArray.push_back( Vector3(vectorarray + 3*i) );
 
             delete[] vectorarray;
         }
@@ -472,12 +496,12 @@ namespace VMAP
             READ_OR_RETURN(&blocksize, sizeof(int));
             READ_OR_RETURN(&hlq, sizeof(WMOLiquidHeader));
             liquid = new WmoLiquid(hlq.xtiles, hlq.ytiles, Vector3(hlq.pos_x, hlq.pos_y, hlq.pos_z), hlq.type);
-            G3D::uint32 size = hlq.xverts*hlq.yverts;
+            uint32 size = hlq.xverts*hlq.yverts;
             READ_OR_RETURN(liquid->GetHeightStorage(), size*sizeof(float));
             size = hlq.xtiles*hlq.ytiles;
             READ_OR_RETURN(liquid->GetFlagsStorage(), size);
         }
-     
+
         return true;
     }
 
@@ -486,7 +510,7 @@ namespace VMAP
     {
         delete liquid;
     }
-    
+
     bool WorldModel_Raw::Read(const char * path)
     {
         FILE* rf = fopen(path, "rb");
@@ -495,27 +519,29 @@ namespace VMAP
             printf("ERROR: Can't open raw model file: %s\n", path);
             return false;
         }
-        
-        char ident[8];
+
+        char ident[9];
+        ident[8] = '\0';
         int readOperation = 0;
 
         READ_OR_RETURN(&ident, 8);
         CMP_OR_RETURN(ident, RAW_VMAP_MAGIC);
 
         // we have to read one int. This is needed during the export and we have to skip it here
-        G3D::uint32 tempNVectors;
+        uint32 tempNVectors;
         READ_OR_RETURN(&tempNVectors, sizeof(tempNVectors));
 
-        G3D::uint32 groups;
-        READ_OR_RETURN(&groups, sizeof(G3D::uint32));
-        READ_OR_RETURN(&RootWMOID, sizeof(G3D::uint32));
+        uint32 groups;
+        READ_OR_RETURN(&groups, sizeof(uint32));
+        READ_OR_RETURN(&RootWMOID, sizeof(uint32));
 
         groupsArray.resize(groups);
         bool succeed = true;
-        for (G3D::uint32 g = 0; g < groups && succeed; ++g)
+        for (uint32 g = 0; g < groups && succeed; ++g)
             succeed = groupsArray[g].Read(rf);
 
-        fclose(rf);
+        if (succeed) /// rf will be freed inside Read if the function had any errors.
+            fclose(rf);
         return succeed;
     }
 

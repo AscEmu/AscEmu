@@ -1,3 +1,22 @@
+/*
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "model.h"
 #include "dbcfile.h"
 #include "adtfile.h"
@@ -8,14 +27,14 @@
 
 bool ExtractSingleModel(std::string& fname)
 {
-    char * name = GetPlainName((char*)fname.c_str());
-    char * ext = GetExtension(name);
+    char* name = GetPlainName((char*)fname.c_str());
+    char* ext = GetExtension(name);
 
     // < 3.1.0 ADT MMDX section store filename.mdx filenames for corresponded .m2 file
     if (!strcmp(ext, ".mdx"))
     {
         // replace .mdx -> .m2
-        fname.erase(fname.length() - 2, 2);
+        fname.erase(fname.length()-2,2);
         fname.append("2");
     }
     // >= 3.1.0 ADT MMDX section store filename.m2 filenames for corresponded .m2 file
@@ -39,7 +58,7 @@ void ExtractGameobjectModels()
 {
     printf("Extracting GameObject models...");
     DBCFile dbc("DBFilesClient\\GameObjectDisplayInfo.dbc");
-    if (!dbc.open())
+    if(!dbc.open())
     {
         printf("Fatal error: Invalid GameObjectDisplayInfo.dbc file format!\n");
         exit(1);
@@ -49,7 +68,13 @@ void ExtractGameobjectModels()
     basepath += "/";
     std::string path;
 
-    FILE * model_list = fopen((basepath + "temp_gameobject_models").c_str(), "wb");
+    std::string modelListPath = basepath + "temp_gameobject_models";
+    FILE* model_list = fopen(modelListPath.c_str(), "wb");
+    if (!model_list)
+    {
+        printf("Fatal error: Could not open file %s\n", modelListPath.c_str());
+        return;
+    }
 
     for (DBCFile::Iterator it = dbc.begin(); it != dbc.end(); ++it)
     {
@@ -59,10 +84,10 @@ void ExtractGameobjectModels()
             continue;
 
         fixnamen((char*)path.c_str(), path.size());
-        char * name = GetPlainName((char*)path.c_str());
+        char* name = GetPlainName((char*)path.c_str());
         fixname2(name, strlen(name));
 
-        char * ch_ext = GetExtension(name);
+        char* ch_ext = GetExtension(name);
         if (!ch_ext)
             continue;
 

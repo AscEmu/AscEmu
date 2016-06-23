@@ -1,7 +1,7 @@
-/**
+/*
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,8 @@
 #ifndef _INTERMEDIATE_VALUES_H
 #define _INTERMEDIATE_VALUES_H
 
-#include "MMapCommon.h"
+#include "PathCommon.h"
 #include "TerrainBuilder.h"
-
 #include "Recast.h"
 #include "DetourNavMesh.h"
 
@@ -37,8 +36,8 @@ namespace MMAP
         rcPolyMesh* polyMesh;
         rcPolyMeshDetail* polyMeshDetail;
 
-        IntermediateValues() :  compactHeightfield(NULL), heightfield(NULL),
-            contours(NULL), polyMesh(NULL), polyMeshDetail(NULL) {}
+        IntermediateValues() :  heightfield(NULL), compactHeightfield(NULL),
+                                contours(NULL), polyMesh(NULL), polyMeshDetail(NULL) {}
         ~IntermediateValues();
 
         void writeIV(uint32 mapID, uint32 tileX, uint32 tileY);
@@ -49,7 +48,7 @@ namespace MMAP
         void debugWrite(FILE* file, const rcPolyMesh* mesh);
         void debugWrite(FILE* file, const rcPolyMeshDetail* mesh);
 
-        void generateObjFile(uint32 mapID, uint32 tileX, uint32 tileY, MeshData& meshData);
+        void generateObjFile(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData);
     };
 }
 #endif

@@ -4,10 +4,11 @@
 project(vmap4_assembler CXX)
 
 set(sources
-   vmap_assembler.cpp
+   VMapAssembler.cpp
 )
 
 include_directories(
+   ${CMAKE_SOURCE_DIR}/src/shared
    ${CMAKE_SOURCE_DIR}/src/collision
    ${CMAKE_SOURCE_DIR}/src/collision/Management
    ${CMAKE_SOURCE_DIR}/src/collision/Maps

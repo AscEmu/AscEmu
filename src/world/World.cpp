@@ -396,7 +396,7 @@ bool BasicTaskExecutor::run()
 }
 
 void ApplyNormalFixes();
-extern void LoadGameObjectModelList();
+extern void LoadGameObjectModelList(std::string const& dataPath);
 
 bool World::SetInitialWorldSettings()
 {
@@ -434,7 +434,7 @@ bool World::SetInitialWorldSettings()
     ApplyNormalFixes();
 
     Log.Success("GameObjectModel", "Loading GameObject models...");
-    LoadGameObjectModelList();
+    LoadGameObjectModelList(sWorld.vMapPath);
 
     new SpellFactoryMgr;
 

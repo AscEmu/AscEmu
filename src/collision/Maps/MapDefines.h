@@ -1,7 +1,7 @@
-/**
+/*
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,25 +17,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MOVE_MAP_SHARED_DEFINES_H
-#define _MOVE_MAP_SHARED_DEFINES_H
+#ifndef _MAPDEFINES_H
+#define _MAPDEFINES_H
 
-#include "Define.h"
+#include "Common.h"
 #include "DetourNavMesh.h"
 
-#define MMAP_MAGIC 0x4d4d4150   // 'MMAP'
+const uint32 MMAP_MAGIC = 0x4d4d4150; // 'MMAP'
 #define MMAP_VERSION 5
 
 struct MmapTileHeader
 {
-    uint32_t mmapMagic;
-    uint32_t dtVersion;
-    uint32_t mmapVersion;
-    uint32_t size;
+    uint32 mmapMagic;
+    uint32 dtVersion;
+    uint32 mmapVersion;
+    uint32 size;
     bool usesLiquids : 1;
 
     MmapTileHeader() : mmapMagic(MMAP_MAGIC), dtVersion(DT_NAVMESH_VERSION),
-        mmapVersion(MMAP_VERSION), size(0), usesLiquids(true) {}
+        mmapVersion(MMAP_VERSION), size(0), usesLiquids(true) { }
 };
 
 enum NavTerrain
@@ -49,7 +49,7 @@ enum NavTerrain
     NAV_UNUSED2 = 0x20,
     NAV_UNUSED3 = 0x40,
     NAV_UNUSED4 = 0x80
-                  // we only have 8 bits
+    // we only have 8 bits
 };
 
-#endif  // _MOVE_MAP_SHARED_DEFINES_H
+#endif

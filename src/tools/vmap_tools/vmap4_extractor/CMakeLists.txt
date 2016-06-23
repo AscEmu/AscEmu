@@ -2,26 +2,10 @@
 
 # set up project name
 project(vmap4_extractor CXX)
+file(GLOB source *.cpp *.h)
 
-set(sources
-   adtfile.cpp
-   dbcfile.cpp
-   gameobject_extract.cpp
-   model.cpp
-   vmapexport.cpp
-   wdtfile.cpp
-   wmo.cpp
-   )
-
-set(headers
-   adtfile.h
-   dbcfile.h
-   model.h
-   modelheaders.h
-   vec3d.h
-   vmapexport.h
-   wdtfile.h
-   wmo.h
+set(source
+   ${source}
 )
 
 if(UNIX AND NOT IS_64BIT)
@@ -30,14 +14,15 @@ endif()
 
 include_directories(
    ${CMAKE_SOURCE_DIR}/dep/loadlib
+   ${CMAKE_SOURCE_DIR}/dep/dbcfile 
    ${CMAKE_SOURCE_DIR}/dep/libmpq/libmpq
    ${CMAKE_CURRENT_SOURCE_DIR}
    ${BZIP2_INCLUDE_DIRS}
    ${ZLIB_INCLUDE_DIRS}
 )
 
-add_executable(${PROJECT_NAME} ${sources} ${headers})
-target_link_libraries(${PROJECT_NAME} loadlib ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES})
+add_executable(${PROJECT_NAME} ${source})
+target_link_libraries(${PROJECT_NAME} dbcfile loadlib ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})
 
 unset(sources)

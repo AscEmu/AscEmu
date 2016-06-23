@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #ifndef _GAMEOBJECT_MODEL_H
 #define _GAMEOBJECT_MODEL_H
 
@@ -25,8 +25,8 @@
 #include <G3D/AABox.h>
 #include <G3D/Ray.h>
 
-#include "DBC\DBCStructures.hpp"
-
+#include "Common.h"
+#include <memory>
 
 namespace VMAP
 {
@@ -34,21 +34,23 @@ namespace VMAP
 }
 
 class GameObject;
+struct GameObjectDisplayInfoEntry;
+
+class GameObjectModelOwnerBase
+{
+public:
+    virtual bool IsSpawned() const { return false; }
+    virtual uint32 GetDisplayId() const { return 0; }
+    virtual uint32 GetPhaseMask() const { return 0; }
+    virtual G3D::Vector3 GetPosition() const { return G3D::Vector3::zero(); }
+    virtual float GetOrientation() const { return 0.0f; }
+    virtual float GetScale() const { return 1.0f; }
+    virtual void DebugVisualizeCorner(G3D::Vector3 const& /*corner*/) const { }
+};
 
 class GameObjectModel /*, public Intersectable*/
 {
-    G3D::uint32 phasemask;
-    G3D::AABox iBound;
-    G3D::Matrix3 iInvRot;
-    G3D::Vector3 iPos;
-    //G3D::Vector3 iRot;
-    float iInvScale;
-    float iScale;
-    VMAP::WorldModel* iModel;
-
-    GameObjectModel() : phasemask(0), iModel(NULL) {}
-    bool initialize(GameObject& go, const DBC::Structures::GameObjectDisplayInfoEntry& info);
-
+    GameObjectModel() : phasemask(0), iInvScale(0), iScale(0), iModel(NULL) { }
 public:
     std::string name;
 
@@ -58,13 +60,29 @@ public:
 
     const G3D::Vector3& getPosition() const { return iPos;}
 
-    /**	Enables\disables collision. */
+    /**    Enables\disables collision. */
     void disable() { phasemask = 0;}
-    void enable(G3D::uint32 ph_mask) { phasemask = ph_mask;}
+    void enable(uint32 ph_mask) { phasemask = ph_mask;}
 
-    bool intersectRay(const G3D::Ray& Ray, float& MaxDist, bool StopAtFirstHit, G3D::uint32 ph_mask) const;
+    bool isEnabled() const {return phasemask != 0;}
 
-    static GameObjectModel* Create(GameObject& go);
+    bool intersectRay(const G3D::Ray& Ray, float& MaxDist, bool StopAtFirstHit, uint32 ph_mask) const;
+
+    static GameObjectModel* Create(std::unique_ptr<GameObjectModelOwnerBase> modelOwner, std::string const& dataPath);
+
+    bool UpdatePosition();
+
+private:
+    bool initialize(std::unique_ptr<GameObjectModelOwnerBase> modelOwner, std::string const& dataPath);
+
+    uint32 phasemask;
+    G3D::AABox iBound;
+    G3D::Matrix3 iInvRot;
+    G3D::Vector3 iPos;
+    float iInvScale;
+    float iScale;
+    VMAP::WorldModel* iModel;
+    std::unique_ptr<GameObjectModelOwnerBase> owner;
 };
 
 #endif // _GAMEOBJECT_MODEL_H

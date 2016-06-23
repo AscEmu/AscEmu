@@ -21,7 +21,7 @@
 #define _IVMAPMANAGER_H
 
 #include <string>
-#include <G3D/g3dmath.h>
+#include "Common.h"
 
 //===========================================================
 
@@ -36,7 +36,7 @@ namespace VMAP
     {
         VMAP_LOAD_RESULT_ERROR,
         VMAP_LOAD_RESULT_OK,
-        VMAP_LOAD_RESULT_IGNORED,
+        VMAP_LOAD_RESULT_IGNORED
     };
 
     #define VMAP_INVALID_HEIGHT       -100000.0f            // for check
@@ -50,9 +50,9 @@ namespace VMAP
             bool iEnableHeightCalc;
 
         public:
-            IVMapManager() : iEnableLineOfSightCalc(true), iEnableHeightCalc(true) {}
+            IVMapManager() : iEnableLineOfSightCalc(true), iEnableHeightCalc(true) { }
 
-            virtual ~IVMapManager(void) {}
+            virtual ~IVMapManager(void) { }
 
             virtual int loadMap(const char* pBasePath, unsigned int pMapId, int x, int y) = 0;
 
@@ -93,8 +93,8 @@ namespace VMAP
             Query world model area info.
             \param z gets adjusted to the ground height for which this are info is valid
             */
-            virtual bool getAreaInfo(unsigned int pMapId, float x, float y, float &z, G3D::uint32 &flags, G3D::int32 &adtId, G3D::int32 &rootId, G3D::int32 &groupId) const=0;
-            virtual bool GetLiquidLevel(G3D::uint32 pMapId, float x, float y, float z, G3D::uint8 ReqLiquidType, float &level, float &floor, G3D::uint32 &type) const=0;
+            virtual bool getAreaInfo(unsigned int pMapId, float x, float y, float &z, uint32 &flags, int32 &adtId, int32 &rootId, int32 &groupId) const=0;
+            virtual bool GetLiquidLevel(uint32 pMapId, float x, float y, float z, uint8 ReqLiquidType, float &level, float &floor, uint32 &type) const=0;
     };
 
 }

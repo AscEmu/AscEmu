@@ -1,3 +1,22 @@
+/*
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef ADT_H
 #define ADT_H
 
@@ -21,6 +40,8 @@ enum LiquidType
 #define ADT_CELLS_PER_GRID    16
 #define ADT_CELL_SIZE         8
 #define ADT_GRID_SIZE         (ADT_CELLS_PER_GRID*ADT_CELL_SIZE)
+
+#pragma pack(push, 1)
 
 //
 // Adt file height map chunk
@@ -47,9 +68,7 @@ class adt_MCLQ
         uint32 fcc;
         char   fcc_txt[4];
     };
-
 public:
-
     uint32 size;
     float height1;
     float height2;
@@ -78,9 +97,7 @@ class adt_MCNK
         uint32 fcc;
         char   fcc_txt[4];
     };
-
 public:
-
     uint32 size;
     uint32 flags;
     uint32 ix;
@@ -97,8 +114,7 @@ public:
     uint32 sizeMCSH;
     uint32 areaid;
     uint32 nMapObjRefs;
-    uint16 holes;           // locations where models pierce the heightmap
-    uint16 pad;
+    uint32 holes;
     uint16 s[2];
     uint32 data1;
     uint32 data2;
@@ -140,7 +156,6 @@ class adt_MCIN
         uint32 fcc;
         char   fcc_txt[4];
     };
-
 public:
     uint32 size;
     struct adt_CELLS{
@@ -243,7 +258,7 @@ public:
         if (h->offsData2a)
             return *((uint64 *)((uint8*)this + 8 + h->offsData2a));
         else
-            return 0xFFFFFFFFFFFFFFFFLL;
+            return 0xFFFFFFFFFFFFFFFFuLL;
     }
 
 };
@@ -257,16 +272,15 @@ class adt_MHDR
         uint32 fcc;
         char   fcc_txt[4];
     };
-
 public:
     uint32 size;
 
     uint32 pad;
     uint32 offsMCIN;           // MCIN
-    uint32 offsTex;	           // MTEX
-    uint32 offsModels;	       // MMDX
-    uint32 offsModelsIds;	   // MMID
-    uint32 offsMapObejcts;	   // MWMO
+    uint32 offsTex;               // MTEX
+    uint32 offsModels;           // MMDX
+    uint32 offsModelsIds;       // MMID
+    uint32 offsMapObejcts;       // MWMO
     uint32 offsMapObejctsIds;  // MWID
     uint32 offsDoodsDef;       // MDDF
     uint32 offsObjectsDef;     // MODF
@@ -293,6 +307,6 @@ public:
     adt_MHDR *a_grid;
 };
 
-bool isHole(int holes, int i, int j);
+#pragma pack(pop)
 
 #endif

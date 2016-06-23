@@ -1,7 +1,7 @@
-/**
+/*
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,20 +41,20 @@ namespace MMAP
         std::string name("meshes/%03u%02i%02i.");
 
 #define DEBUG_WRITE(fileExtension,data) \
-        do { \
-            sprintf(fileName, (name + fileExtension).c_str(), mapID, tileY, tileX); \
-            FILE* file = fopen(fileName, "wb"); \
-            if (!file) \
-            { \
-                char message[1024]; \
-                sprintf(message, "%sFailed to open %s for writing!\n",  tileString, fileName); \
-                perror(message); \
-            } \
+    do { \
+    sprintf(fileName, (name + fileExtension).c_str(), mapID, tileY, tileX); \
+    FILE* file = fopen(fileName, "wb"); \
+    if (!file) \
+        { \
+        char message[1024]; \
+        sprintf(message, "%sFailed to open %s for writing!\n",  tileString, fileName); \
+        perror(message); \
+        } \
             else \
-                debugWrite(file, data); \
-            if(file) fclose(file); \
+            debugWrite(file, data); \
+            if (file) fclose(file); \
             printf("%sWriting debug output...                       \r", tileString); \
-        } while (false)
+    } while (false)
 
         if (heightfield)
             DEBUG_WRITE("hf", heightfield);
@@ -85,7 +85,7 @@ namespace MMAP
         for (int y = 0; y < mesh->height; ++y)
             for (int x = 0; x < mesh->width; ++x)
             {
-                rcSpan* span = mesh->spans[x + y * mesh->width];
+                rcSpan* span = mesh->spans[x+y*mesh->width];
 
                 // first, count the number of spans
                 int spanCount = 0;
@@ -99,7 +99,7 @@ namespace MMAP
                 fwrite(&spanCount, sizeof(int), 1, file);
 
                 // write the spans
-                span = mesh->spans[x + y * mesh->width];
+                span = mesh->spans[x+y*mesh->width];
                 while (span)
                 {
                     fwrite(span, sizeof(rcSpan), 1, file);
@@ -138,7 +138,7 @@ namespace MMAP
         fwrite(&tmp, sizeof(tmp), 1, file);
 
         if (chf->cells)
-            fwrite(chf->cells, sizeof(rcCompactCell), chf->width * chf->height, file);
+            fwrite(chf->cells, sizeof(rcCompactCell), chf->width*chf->height, file);
         if (chf->spans)
             fwrite(chf->spans, sizeof(rcCompactSpan), chf->spanCount, file);
         if (chf->dist)
@@ -162,9 +162,9 @@ namespace MMAP
             fwrite(&cs->conts[i].area, sizeof(unsigned char), 1, file);
             fwrite(&cs->conts[i].reg, sizeof(unsigned short), 1, file);
             fwrite(&cs->conts[i].nverts, sizeof(int), 1, file);
-            fwrite(cs->conts[i].verts, sizeof(int), cs->conts[i].nverts * 4, file);
+            fwrite(cs->conts[i].verts, sizeof(int), cs->conts[i].nverts*4, file);
             fwrite(&cs->conts[i].nrverts, sizeof(int), 1, file);
-            fwrite(cs->conts[i].rverts, sizeof(int), cs->conts[i].nrverts * 4, file);
+            fwrite(cs->conts[i].rverts, sizeof(int), cs->conts[i].nrverts*4, file);
         }
     }
 
@@ -179,9 +179,9 @@ namespace MMAP
         fwrite(mesh->bmin, sizeof(float), 3, file);
         fwrite(mesh->bmax, sizeof(float), 3, file);
         fwrite(&(mesh->nverts), sizeof(int), 1, file);
-        fwrite(mesh->verts, sizeof(unsigned short), mesh->nverts * 3, file);
+        fwrite(mesh->verts, sizeof(unsigned short), mesh->nverts*3, file);
         fwrite(&(mesh->npolys), sizeof(int), 1, file);
-        fwrite(mesh->polys, sizeof(unsigned short), mesh->npolys * mesh->nvp * 2, file);
+        fwrite(mesh->polys, sizeof(unsigned short), mesh->npolys*mesh->nvp*2, file);
         fwrite(mesh->flags, sizeof(unsigned short), mesh->npolys, file);
         fwrite(mesh->areas, sizeof(unsigned char), mesh->npolys, file);
         fwrite(mesh->regs, sizeof(unsigned short), mesh->npolys, file);
@@ -193,14 +193,14 @@ namespace MMAP
             return;
 
         fwrite(&(mesh->nverts), sizeof(int), 1, file);
-        fwrite(mesh->verts, sizeof(float), mesh->nverts * 3, file);
+        fwrite(mesh->verts, sizeof(float), mesh->nverts*3, file);
         fwrite(&(mesh->ntris), sizeof(int), 1, file);
-        fwrite(mesh->tris, sizeof(char), mesh->ntris * 4, file);
+        fwrite(mesh->tris, sizeof(char), mesh->ntris*4, file);
         fwrite(&(mesh->nmeshes), sizeof(int), 1, file);
-        fwrite(mesh->meshes, sizeof(int), mesh->nmeshes * 4, file);
+        fwrite(mesh->meshes, sizeof(int), mesh->nmeshes*4, file);
     }
 
-    void IntermediateValues::generateObjFile(uint32 mapID, uint32 tileX, uint32 tileY, MeshData& meshData)
+    void IntermediateValues::generateObjFile(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData)
     {
         char objFileName[255];
         sprintf(objFileName, "meshes/map%03u%02u%02u.obj", mapID, tileY, tileX);
@@ -228,10 +228,10 @@ namespace MMAP
         int triCount = allTris.size() / 3;
 
         for (int i = 0; i < allVerts.size() / 3; i++)
-            fprintf(objFile, "v %f %f %f\n", verts[i * 3], verts[i * 3 + 1], verts[i * 3 + 2]);
+            fprintf(objFile, "v %f %f %f\n", verts[i*3], verts[i*3 + 1], verts[i*3 + 2]);
 
         for (int i = 0; i < allTris.size() / 3; i++)
-            fprintf(objFile, "f %i %i %i\n", tris[i * 3] + 1, tris[i * 3 + 1] + 1, tris[i * 3 + 2] + 1);
+            fprintf(objFile, "f %i %i %i\n", tris[i*3] + 1, tris[i*3 + 1] + 1, tris[i*3 + 2] + 1);
 
         fclose(objFile);
 
@@ -266,11 +266,11 @@ namespace MMAP
         }
 
         fwrite(&vertCount, sizeof(int), 1, objFile);
-        fwrite(verts, sizeof(float), vertCount * 3, objFile);
+        fwrite(verts, sizeof(float), vertCount*3, objFile);
         fflush(objFile);
 
         fwrite(&triCount, sizeof(int), 1, objFile);
-        fwrite(tris, sizeof(int), triCount * 3, objFile);
+        fwrite(tris, sizeof(int), triCount*3, objFile);
         fflush(objFile);
 
         fclose(objFile);

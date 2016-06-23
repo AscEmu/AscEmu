@@ -1,7 +1,7 @@
-/**
+/*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -10,31 +10,43 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef _MMAP_COMMON_H
 #define _MMAP_COMMON_H
 
-// stop warning spam from ACE includes
-#ifdef WIN32
-#  pragma warning( disable : 4996 )
-#endif
-
 #include <string>
 #include <vector>
-#include <cerrno>
 
-#include "Define.h"
+#include "Common.h"
 
-#ifndef WIN32
-#include <stddef.h>
-#include <dirent.h>
+#ifndef _WIN32
+    #include <stddef.h>
+    #include <dirent.h>
 #endif
+
+#ifdef __linux__
+    #include <errno.h>
+#endif
+
+enum NavTerrain
+{
+    NAV_EMPTY   = 0x00,
+    NAV_GROUND  = 0x01,
+    NAV_MAGMA   = 0x02,
+    NAV_SLIME   = 0x04,
+    NAV_WATER   = 0x08,
+    NAV_UNUSED1 = 0x10,
+    NAV_UNUSED2 = 0x20,
+    NAV_UNUSED3 = 0x40,
+    NAV_UNUSED4 = 0x80
+    // we only have 8 bits
+};
 
 namespace MMAP
 {
@@ -48,10 +60,10 @@ namespace MMAP
         {
             if (*filter == '*')
             {
-                if (*++filter == '\0')  // wildcard at end of filter means all remaing chars match
+                if (*++filter == '\0')   // wildcard at end of filter means all remaing chars match
                     return true;
 
-                while (true)
+                for (;;)
                 {
                     if (*filter == *str)
                         break;
@@ -76,9 +88,9 @@ namespace MMAP
         LISTFILE_OK = 1
     };
 
-    inline ListFilesResult getDirContents(std::vector<std::string>& fileList, std::string dirpath = ".", std::string filter = "*", bool includeSubDirs = false)
+    inline ListFilesResult getDirContents(std::vector<std::string> &fileList, std::string dirpath = ".", std::string filter = "*")
     {
-#ifdef WIN32
+    #ifdef WIN32
         HANDLE hFind;
         WIN32_FIND_DATA findFileInfo;
         std::string directory;
@@ -89,20 +101,19 @@ namespace MMAP
 
         if (hFind == INVALID_HANDLE_VALUE)
             return LISTFILE_DIRECTORY_NOT_FOUND;
-
         do
         {
-            if (includeSubDirs || (findFileInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
+            if ((findFileInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
                 fileList.push_back(std::string(findFileInfo.cFileName));
         }
         while (FindNextFile(hFind, &findFileInfo));
 
         FindClose(hFind);
 
-#else
-        const char* p = dirpath.c_str();
-        DIR* dirp = opendir(p);
-        struct dirent* dp;
+    #else
+        const char *p = dirpath.c_str();
+        DIR * dirp = opendir(p);
+        struct dirent * dp;
 
         while (dirp)
         {
@@ -120,7 +131,7 @@ namespace MMAP
             closedir(dirp);
         else
             return LISTFILE_DIRECTORY_NOT_FOUND;
-#endif
+    #endif
 
         return LISTFILE_OK;
     }

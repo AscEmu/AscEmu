@@ -1,38 +1,49 @@
+/*
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include "wdt.h"
 
+u_map_fcc MWMOMagic = { {'O', 'M', 'W', 'M'} };
+u_map_fcc MPHDMagic = { {'D', 'H', 'P', 'M'} };
+u_map_fcc MAINMagic = { {'N', 'I', 'A', 'M'} };
+
 bool wdt_MWMO::prepareLoadedData()
 {
-    if( ( fcc_txt[ 3 ] != 'M' ) ||
-		( fcc_txt[ 2 ] != 'W' ) ||
-		( fcc_txt[ 1 ] != 'M' ) ||
-		( fcc_txt[ 0 ] != 'O' ) )
-		return false;
-
+    if (fcc != MWMOMagic.fcc)
+        return false;
     return true;
 }
 
 bool wdt_MPHD::prepareLoadedData()
 {
-    if( ( fcc_txt[ 3 ] != 'M' ) ||
-		( fcc_txt[ 2 ] != 'P' ) ||
-		( fcc_txt[ 1 ] != 'H' ) ||
-		( fcc_txt[ 0 ] != 'D' ) )
-		return false;
-	
-	return true;
+    if (fcc != MPHDMagic.fcc)
+        return false;
+    return true;
 }
 
 bool wdt_MAIN::prepareLoadedData()
 {
-    if( ( fcc_txt[ 3 ] != 'M' ) ||
-		( fcc_txt[ 2 ] != 'A' ) ||
-		( fcc_txt[ 1 ] != 'I' ) ||
-		( fcc_txt[ 0 ] != 'N' ) )
-		return false;
-	
-	return true;
+    if (fcc != MAINMagic.fcc)
+        return false;
+    return true;
 }
 
 WDT_file::WDT_file()

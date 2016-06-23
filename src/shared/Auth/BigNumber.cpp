@@ -77,7 +77,7 @@ void BigNumber::SetRand(int numbits)
 }
 
 
-BigNumber BigNumber::operator=(const BigNumber & bn)
+BigNumber& BigNumber::operator=(const BigNumber & bn)
 {
     BN_copy(_bn, bn._bn);
     return *this;

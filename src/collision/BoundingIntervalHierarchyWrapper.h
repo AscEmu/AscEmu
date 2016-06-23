@@ -34,19 +34,26 @@ class BIHWrap
     {
         const T* const* objects;
         RayCallback& _callback;
+        uint32 objects_size;
 
-        MDLCallback(RayCallback& callback, const T* const* objects_array ) : _callback(callback), objects(objects_array){}
+        MDLCallback(RayCallback& callback, const T* const* objects_array, uint32 objects_size ) : objects(objects_array), _callback(callback), objects_size(objects_size) { }
 
-        bool operator() (const Ray& ray, G3D::uint32 Idx, float& MaxDist, bool /*stopAtFirst*/)
+        /// Intersect ray
+        bool operator() (const G3D::Ray& ray, uint32 idx, float& maxDist, bool /*stopAtFirst*/)
         {
-            if (const T* obj = objects[Idx])
-                return _callback(ray, *obj, MaxDist/*, stopAtFirst*/);
+            if (idx >= objects_size)
+                return false;
+            if (const T* obj = objects[idx])
+                return _callback(ray, *obj, maxDist/*, stopAtFirst*/);
             return false;
         }
 
-        void operator() (const Vector3& p, G3D::uint32 Idx)
+        /// Intersect point
+        void operator() (const G3D::Vector3& p, uint32 idx)
         {
-            if (const T* obj = objects[Idx])
+            if (idx >= objects_size)
+                return;
+            if (const T* obj = objects[idx])
                 _callback(p, *obj);
         }
     };
@@ -55,12 +62,12 @@ class BIHWrap
 
     BIH m_tree;
     ObjArray m_objects;
-    G3D::Table<const T*, G3D::uint32> m_obj2Idx;
+    G3D::Table<const T*, uint32> m_obj2Idx;
     G3D::Set<const T*> m_objects_to_push;
     int unbalanced_times;
 
 public:
-    BIHWrap() : unbalanced_times(0) {}
+    BIHWrap() : unbalanced_times(0) { }
 
     void insert(const T& obj)
     {
@@ -71,7 +78,7 @@ public:
     void remove(const T& obj)
     {
         ++unbalanced_times;
-        G3D::uint32 Idx = 0;
+        uint32 Idx = 0;
         const T * temp;
         if (m_obj2Idx.getRemove(&obj, temp, Idx))
             m_objects[Idx] = NULL;
@@ -88,21 +95,24 @@ public:
         m_objects.fastClear();
         m_obj2Idx.getKeys(m_objects);
         m_objects_to_push.getMembers(m_objects);
+        //assert that m_obj2Idx has all the keys
 
         m_tree.build(m_objects, BoundsFunc::getBounds2);
     }
 
     template<typename RayCallback>
-    void intersectRay(const Ray& ray, RayCallback& intersectCallback, float& maxDist) const
+    void intersectRay(const G3D::Ray& ray, RayCallback& intersectCallback, float& maxDist)
     {
-        MDLCallback<RayCallback> temp_cb(intersectCallback, m_objects.getCArray());
+        balance();
+        MDLCallback<RayCallback> temp_cb(intersectCallback, m_objects.getCArray(), m_objects.size());
         m_tree.intersectRay(ray, temp_cb, maxDist, true);
     }
 
     template<typename IsectCallback>
-    void intersectPoint(const Vector3& point, IsectCallback& intersectCallback) const
+    void intersectPoint(const G3D::Vector3& point, IsectCallback& intersectCallback)
     {
-        MDLCallback<IsectCallback> callback(intersectCallback, m_objects.getCArray());
+        balance();
+        MDLCallback<IsectCallback> callback(intersectCallback, m_objects.getCArray(), m_objects.size());
         m_tree.intersectPoint(point, callback);
     }
 };
