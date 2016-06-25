@@ -212,8 +212,6 @@ class TerrainHolder
     uint32 GetAreaFlag(float x, float y);
 
     bool GetLiquidInfo(float x, float y, float z, float& liquidlevel, uint32& liquidtype);
-
-    bool InLineOfSight(float x, float y, float z, float x2, float y2, float z2);
 };
 
 #endif

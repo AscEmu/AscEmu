@@ -1035,9 +1035,11 @@ const ::DBC::Structures::AreaTableEntry* MapMgr::GetArea(float x, float y, float
         return MapManagement::AreaManagement::AreaStorage::GetAreaByMapId(_mapId);
 }
 
-bool MapMgr::InLineOfSight(float x, float y, float z, float x2, float y2, float z2)
+bool MapMgr::isInLineOfSight(float x, float y, float z, float x2, float y2, float z2)
 {
-    return _terrain->InLineOfSight(x, y, z, x2, y2, z2);
+    VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
+
+    return vmgr->isInLineOfSight(GetMapId(), x, y, z, x2, y2, z2);
 }
 
 uint32 MapMgr::GetMapId()

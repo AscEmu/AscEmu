@@ -188,7 +188,7 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 
         const ::DBC::Structures::AreaTableEntry* GetArea(float x, float y, float z);
 
-        bool InLineOfSight(float x, float y, float z, float x2, float y2, float z2);
+        bool isInLineOfSight(float x, float y, float z, float x2, float y2, float z2);
 
         uint32 GetMapId();
 

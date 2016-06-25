@@ -190,13 +190,6 @@ bool TerrainHolder::GetLiquidInfo(float x, float y, float z, float& liquidlevel,
     return true;
 }
 
-bool TerrainHolder::InLineOfSight(float x, float y, float z, float x2, float y2, float z2)
-{
-    VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
-
-    return vmgr->isInLineOfSight(m_mapid, x, y, z, x2, y2, z2);
-}
-
 TerrainTile::~TerrainTile()
 {
     m_parent->m_tiles[m_tx][m_ty] = NULL;

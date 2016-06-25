@@ -1296,7 +1296,7 @@ Unit* AIInterface::FindTarget()
         {
             if (sWorld.Collision)
             {
-                if (m_Unit->GetMapMgr()->InLineOfSight(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2, pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ() + 2))
+                if (m_Unit->GetMapMgr()->isInLineOfSight(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2, pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ() + 2))
                 {
                     distance = dist;
                     target = pUnit;
@@ -1345,7 +1345,7 @@ Unit* AIInterface::FindTarget()
             {
                 if (sWorld.Collision)
                 {
-                    if (m_Unit->GetMapMgr()->InLineOfSight(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2, pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ() + 2))
+                    if (m_Unit->GetMapMgr()->isInLineOfSight(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2, pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ() + 2))
                     {
                         distance = dist;
                         target = pUnit;
