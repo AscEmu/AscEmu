@@ -84,21 +84,6 @@ class CCollideInterface
         NavMeshData* GetNavMesh(uint32 mapId);
         void LoadNavMeshTile(uint32 mapId, uint32 tileX, uint32 tileY);
 
-#ifdef COLLISION_DEBUG
-        bool CheckLOS(uint32 mapId, float x1, float y1, float z1, float x2, float y2, float z2);
-        bool GetFirstPoint(uint32 mapId, float x1, float y1, float z1, float x2, float y2, float z2, float & outx, float & outy, float & outz, float distmod);
-        bool IsIndoor(uint32 mapId, float x, float y, float z);
-        bool IsOutdoor(uint32 mapId, float x, float y, float z);
-
-        float GetHeight(uint32 mapId, float x, float y, float z);
-        bool CheckLOS(uint32 mapId, LocationVector & pos1, LocationVector & pos2);
-        bool GetFirstPoint(uint32 mapId, LocationVector & pos1, LocationVector & pos2, LocationVector & outvec, float distmod);
-        bool IsIndoor(uint32 mapId, LocationVector & pos);
-        bool IsOutdoor(uint32 mapId, LocationVector & pos);
-        float GetHeight(uint32 mapId, LocationVector & pos);
-
-#else
-
         inline bool CheckLOS(uint32 mapId, float x1, float y1, float z1, float x2, float y2, float z2)
         {
             VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
@@ -178,9 +163,6 @@ class CCollideInterface
         {
             return GetHeight(mapId, pos.x, pos.y, pos.z);
         }
-
-#endif
-
 };
 
 SERVER_DECL extern CCollideInterface CollideInterface;
