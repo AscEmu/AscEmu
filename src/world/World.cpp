@@ -196,6 +196,7 @@ World::World()
     Pathfinding = false;
 
     gamemaster_announceKick = true;
+    show_all_vendor_items = false;
 }
 
 void CleanupRandomNumberGenerators();
@@ -1455,6 +1456,8 @@ void World::Rehash(bool load)
     gamemaster_listOnlyActiveGMs = Config.OptionalConfig.GetBoolDefault("GameMaster", "ListOnlyActiveGMs", false);
     gamemaster_hidePermissions = Config.OptionalConfig.GetBoolDefault("GameMaster", "HidePermissions", false);
     gamemaster_announceKick = Config.OptionalConfig.GetBoolDefault("GameMaster", "AnnounceKick", true);
+
+    show_all_vendor_items = Config.OptionalConfig.GetBoolDefault("Optional", "ShowAllVendorItems", false);
 
     m_levelCap = Config.OptionalConfig.GetIntDefault("Optional", "LevelCap", PLAYER_LEVEL_CAP);
     m_genLevelCap = Config.OptionalConfig.GetIntDefault("Optional", "GenLevelCap", PLAYER_LEVEL_CAP);

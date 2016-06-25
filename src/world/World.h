@@ -583,6 +583,8 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         bool gamemaster_disableachievements;
         bool gamemaster_announceKick;
 
+        bool show_all_vendor_items;
+
         //Arena Settings
         int Arena_Season;
         int Arena_Progress;

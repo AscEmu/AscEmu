@@ -1460,7 +1460,7 @@ void WorldSession::SendInventoryList(Creature* unit)
         {
             if ((curItem = sMySQLStore.GetItemProto(itr->itemid)) != 0)
             {
-                if (!_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM)) // looking up everything for active gms
+                if (!_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) && !sWorld.show_all_vendor_items) // looking up everything for active gms
                 {
                     if (curItem->AllowableClass && !(_player->getClassMask() & curItem->AllowableClass))
                         continue;
