@@ -707,6 +707,7 @@ void CommandTableStorage::Init()
         { "cancelshutdown",     'z', &ChatHandler::HandleServerCancelShutdownCommand,   "Cancels a Server Restart/Shutdown.",               nullptr, 0, 0, 0 },
         { "restart",            'z', &ChatHandler::HandleServerRestartCommand,          "Initiates server restart in <x> seconds.",         nullptr, 0, 0, 0 },
         { "reloadtable",        'm', nullptr,                                           "",                                 reloadTableCommandTable, 0, 0, 0 },
+        { "reloadscript",       'm', &ChatHandler::HandleServerReloadScriptsCommand,    "",                                                 nullptr, 0, 0, 0 },
         { nullptr,              '0', nullptr,                                           "",                                                 nullptr, 0, 0, 0 }
     };
     dupe_command_table(serverCommandTable, _serverCommandTable);

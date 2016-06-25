@@ -417,6 +417,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleServerShutdownCommand(const char* args, WorldSession* m_session);
         bool HandleServerCancelShutdownCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleServerRestartCommand(const char* args, WorldSession* m_session);
+        bool HandleServerReloadScriptsCommand(const char* /*args*/, WorldSession* m_session);
 
         //Server reload commands
         bool HandleReloadGameobjectsCommand(const char* /*args*/, WorldSession* m_session);

@@ -412,3 +412,11 @@ bool ChatHandler::HandleReloadZoneguardsCommand(const char* /*args*/, WorldSessi
     GreenSystemMessage(m_session, "WorldDB 'zoneguards' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
+
+//.server reloadscripts
+bool ChatHandler::HandleServerReloadScriptsCommand(const char* /*args*/, WorldSession* m_session)
+{
+    sScriptMgr.ReloadScriptEngines();
+    GreenSystemMessage(m_session, "Scripts reloaded!");
+    return true;
+}
