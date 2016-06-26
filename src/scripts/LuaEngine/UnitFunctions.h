@@ -923,7 +923,7 @@ class LuaUnit
         int count = luaL_checkinteger(L, 2);
 
         auto player = static_cast<Player*>(ptr);
-        ItemPrototype const* item_proto = sMySQLStore.GetItemProto(id);
+        ItemProperties const* item_proto = sMySQLStore.GetItemProperties(id);
         if (item_proto == nullptr)
             return 0;
 
@@ -4157,7 +4157,7 @@ class LuaUnit
                 if (pItem->IsContainer())
                 {
                     pContainer = static_cast< Container* >(pItem);
-                    for (j = 0; j < pContainer->GetProto()->ContainerSlots; ++j)
+                    for (j = 0; j < pContainer->GetItemProperties()->ContainerSlots; ++j)
                     {
                         pItem = pContainer->GetItem(j);
                         if (pItem != NULL)
@@ -4168,7 +4168,7 @@ class LuaUnit
                 }
                 else
                 {
-                    if (pItem->GetProto()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && pItem->GetDurability() <= 0)
+                    if (pItem->GetItemProperties()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && pItem->GetDurability() <= 0)
                     {
                         pItem->SetDurabilityToMax();
                         plr->ApplyItemMods(pItem, i, true);

@@ -38,7 +38,7 @@ enum LOOTTYPE
     NUM_LOOT_TYPES
 };
 
-struct ItemPrototype;
+struct ItemProperties;
 class MapMgr;
 class Player;
 
@@ -73,7 +73,7 @@ typedef std::vector<std::pair<DBC::Structures::ItemRandomSuffixEntry const*, flo
 
 struct _LootItem
 {
-    ItemPrototype const* itemproto;
+    ItemProperties const* itemproto;
     uint32 displayid;
 };
 
@@ -237,8 +237,8 @@ class SERVER_DECL LootMgr : public Singleton <LootMgr>
 
         std::map<uint32, std::set<uint32>> quest_loot_go;
 
-        DBC::Structures::ItemRandomPropertiesEntry const* GetRandomProperties(ItemPrototype const* proto);
-        DBC::Structures::ItemRandomSuffixEntry const* GetRandomSuffix(ItemPrototype const* proto);
+        DBC::Structures::ItemRandomPropertiesEntry const* GetRandomProperties(ItemProperties const* proto);
+        DBC::Structures::ItemRandomSuffixEntry const* GetRandomSuffix(ItemProperties const* proto);
 
         bool is_loading;
 

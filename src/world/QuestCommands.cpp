@@ -363,7 +363,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             {
                 if (qst->reward_item[i])
                 {
-                    ItemPrototype const* proto = sMySQLStore.GetItemProto(qst->reward_item[i]);
+                    ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_item[i]);
                     if (!proto)
                     {
                         LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
@@ -402,7 +402,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             // Choice Rewards -- Defaulting to choice 0 for ".quest complete" command
             if (qst->reward_choiceitem[reward_slot])
             {
-                ItemPrototype const* proto = sMySQLStore.GetItemProto(qst->reward_choiceitem[reward_slot]);
+                ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_choiceitem[reward_slot]);
                 if (!proto)
                 {
                     LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
@@ -529,7 +529,7 @@ bool ChatHandler::HandleQuestItemCommand(const char* args, WorldSession* m_sessi
             uint32 id = fields[0].GetUInt32();
             std::string itemid = MyConvertIntToString(id);
             std::string itemcnt = MyConvertIntToString(fields[1].GetUInt32());
-            auto tmpItem = sMySQLStore.GetItemProto(id);
+            auto tmpItem = sMySQLStore.GetItemProperties(id);
             if (tmpItem != nullptr)
             {
                 recout = "|cff00ccff";
@@ -634,7 +634,7 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
         delete objectResult2;
 
         std::string itemName2 = "N/A";
-        ItemPrototype const* itemResult2 = sMySQLStore.GetItemProto(atol(itemId2.c_str()));
+        ItemProperties const* itemResult2 = sMySQLStore.GetItemProperties(atol(itemId2.c_str()));
         if (itemResult2)
         {
             itemName2 = itemResult2->Name;
@@ -1212,7 +1212,7 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
         delete objectResult2;
 
         std::string itemName2 = "N/A";
-        ItemPrototype const* itemResult2 = sMySQLStore.GetItemProto(atol(itemId2.c_str()));
+        ItemProperties const* itemResult2 = sMySQLStore.GetItemProperties(atol(itemId2.c_str()));
         if (itemResult2)
         {
             itemName2 = itemResult2->Name;
@@ -1475,10 +1475,10 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
     QuestProperties const* q = sMySQLStore.GetQuestProperties(qu_id);
     if (q)
     {
-        for (uint32 r = 0; r < q->count_reward_item; r++)
+        for (uint32 r = 0; r < q->count_reward_item; ++r)
         {
             uint32 itemid = q->reward_item[r];
-            ItemPrototype const* itemProto = sMySQLStore.GetItemProto(itemid);
+            ItemProperties const* itemProto = sMySQLStore.GetItemProperties(itemid);
             if (!itemProto)
             {
                 recout << "Unknown item id %lu" << itemid;
@@ -1496,7 +1496,7 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
         for (uint32 r = 0; r < q->count_reward_choiceitem; ++r)
         {
             uint32 itemid = q->reward_choiceitem[r];
-            ItemPrototype const* itemProto = sMySQLStore.GetItemProto(itemid);
+            ItemProperties const* itemProto = sMySQLStore.GetItemProperties(itemid);
             if (!itemProto)
             {
                 recout << "Unknown item id %lu" << itemid;

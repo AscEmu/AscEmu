@@ -2754,13 +2754,13 @@ bool Player::canCast(SpellEntry* m_spellInfo)
     {
         if (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND))
         {
-            if ((int32)this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)->GetProto()->Class == m_spellInfo->EquippedItemClass)
+            if ((int32)this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)->GetItemProperties()->Class == m_spellInfo->EquippedItemClass)
             {
                 if (m_spellInfo->EquippedItemSubClass != 0)
                 {
                     if (m_spellInfo->EquippedItemSubClass != 173555 && m_spellInfo->EquippedItemSubClass != 96 && m_spellInfo->EquippedItemSubClass != 262156)
                     {
-                        if (pow(2.0, (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)->GetProto()->SubClass) != m_spellInfo->EquippedItemSubClass))
+                        if (pow(2.0, (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND)->GetItemProperties()->SubClass) != m_spellInfo->EquippedItemSubClass))
                             return false;
                     }
                 }
@@ -2771,13 +2771,13 @@ bool Player::canCast(SpellEntry* m_spellInfo)
 
         if (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED))
         {
-            if ((int32)this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->GetProto()->Class == m_spellInfo->EquippedItemClass)
+            if ((int32)this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->GetItemProperties()->Class == m_spellInfo->EquippedItemClass)
             {
                 if (m_spellInfo->EquippedItemSubClass != 0)
                 {
                     if (m_spellInfo->EquippedItemSubClass != 173555 && m_spellInfo->EquippedItemSubClass != 96 && m_spellInfo->EquippedItemSubClass != 262156)
                     {
-                        if (pow(2.0, (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->GetProto()->SubClass) != m_spellInfo->EquippedItemSubClass))                            return false;
+                        if (pow(2.0, (this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)->GetItemProperties()->SubClass) != m_spellInfo->EquippedItemSubClass))                            return false;
                     }
                 }
             }
@@ -3576,7 +3576,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
                 if (ei && ei->Enchantment)
                 {
-                    ItemPrototype const* ip = sMySQLStore.GetItemProto(ei->Enchantment->GemEntry);
+                    ItemProperties const* ip = sMySQLStore.GetItemProperties(ei->Enchantment->GemEntry);
 
                     if (ip && ip->Flags & ITEM_FLAG_UNIQUE_EQUIP &&
                         itemi->IsEquipped(ip->ItemId))
@@ -4016,7 +4016,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         return;
 
     ARCEMU_ASSERT(item != NULL);
-    ItemPrototype const* proto = item->GetProto();
+    ItemProperties const* proto = item->GetItemProperties();
 
     //fast check to skip mod applying if the item doesnt meat the requirements.
     if (!item->IsContainer() && item->GetDurability() == 0 && item->GetDurabilityMax() && justdrokedown == false)
@@ -4202,7 +4202,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         /* Not going to put a check here since unless you put a random id/flag in the tables these should never return NULL */
 
         /* Calculating the stats correct for our level and applying them */
-        for (i = 0; scaling_stat_distribution->stat[i] != -1; i++)
+        for (i = 0; scaling_stat_distribution->stat[i] != -1; ++i)
         {
             StatType = scaling_stat_distribution->stat[i];
             StatMod = scaling_stat_distribution->statmodifier[i];
@@ -4276,7 +4276,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     else
     {
         // Stats
-        for (uint8 i = 0; i < proto->itemstatscount; i++)
+        for (uint8 i = 0; i < proto->itemstatscount; ++i)
         {
             int32 val = proto->Stats[i].Value;
             /*
@@ -4332,16 +4332,16 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         item->ApplyEnchantmentBonuses();
 
         SpellEntry* spells;
-        for (uint8 k = 0; k < 5; k++)
+        for (uint8 k = 0; k < 5; ++k)
         {
-            if (item->GetProto()->Spells[k].Id == 0)
+            if (item->GetItemProperties()->Spells[k].Id == 0)
                 continue;//this isn't needed since the check below handles this case but it's a lot faster performance-wise.
 
-            spells = dbcSpell.LookupEntryForced(item->GetProto()->Spells[k].Id);
-            if (spells == NULL)
+            spells = dbcSpell.LookupEntryForced(item->GetItemProperties()->Spells[k].Id);
+            if (spells == nullptr)
                 continue;
 
-            if (item->GetProto()->Spells[k].Trigger == ON_EQUIP)
+            if (item->GetItemProperties()->Spells[k].Trigger == ON_EQUIP)
             {
                 if (spells->RequiredShapeShift)
                 {
@@ -4356,7 +4356,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
                 spell->prepare(&targets);
 
             }
-            else if (item->GetProto()->Spells[k].Trigger == CHANCE_ON_HIT)
+            else if (item->GetItemProperties()->Spells[k].Trigger == CHANCE_ON_HIT)
             {
                 this->AddProcTriggerSpell(spells, NULL, this->GetGUID(), 5, PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
             }
@@ -4366,19 +4366,19 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     {
         // Remove all enchantment bonuses
         item->RemoveEnchantmentBonuses();
-        for (uint8 k = 0; k < 5; k++)
+        for (uint8 k = 0; k < 5; ++k)
         {
-            if (item->GetProto()->Spells[k].Trigger == ON_EQUIP)
+            if (item->GetItemProperties()->Spells[k].Trigger == ON_EQUIP)
             {
-                SpellEntry* spells = dbcSpell.LookupEntry(item->GetProto()->Spells[k].Id);
+                SpellEntry* spells = dbcSpell.LookupEntry(item->GetItemProperties()->Spells[k].Id);
                 if (spells->RequiredShapeShift)
                     RemoveShapeShiftSpell(spells->Id);
                 else
-                    RemoveAura(item->GetProto()->Spells[k].Id);
+                    RemoveAura(item->GetItemProperties()->Spells[k].Id);
             }
-            else if (item->GetProto()->Spells[k].Trigger == CHANCE_ON_HIT)
+            else if (item->GetItemProperties()->Spells[k].Trigger == CHANCE_ON_HIT)
             {
-                this->RemoveProcTriggerSpell(item->GetProto()->Spells[k].Id);
+                this->RemoveProcTriggerSpell(item->GetItemProperties()->Spells[k].Id);
             }
         }
     }
@@ -4838,12 +4838,12 @@ void Player::CreateCorpse()
     uint16 iIventoryType = 0;
     uint32 _cfi = 0;
     Item* pItem;
-    for (uint8 i = 0; i < EQUIPMENT_SLOT_END; i++)
+    for (uint8 i = 0; i < EQUIPMENT_SLOT_END; ++i)
     {
         if ((pItem = GetItemInterface()->GetInventoryItem(i)) != 0)
         {
-            iDisplayID = pItem->GetProto()->DisplayInfoID;
-            iIventoryType = (uint16)pItem->GetProto()->InventoryType;
+            iDisplayID = pItem->GetItemProperties()->DisplayInfoID;
+            iIventoryType = (uint16)pItem->GetItemProperties()->InventoryType;
 
             _cfi = (uint16(iDisplayID)) | (iIventoryType) << 24;
             pCorpse->SetUInt32Value(CORPSE_FIELD_ITEM + i, _cfi);
@@ -5270,7 +5270,7 @@ void Player::UpdateChances()
 
     // Block
     Item* it = this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-    if (it != NULL && it->GetProto()->InventoryType == INVTYPE_SHIELD)
+    if (it != nullptr && it->GetItemProperties()->InventoryType == INVTYPE_SHIELD)
     {
         tmp = GetBlockChance();
         tmp += defence_contribution;
@@ -5283,7 +5283,7 @@ void Player::UpdateChances()
 
     // Parry (can only parry with something in main hand)
     it = this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-    if (it != NULL)
+    if (it != nullptr)
     {
         tmp = GetParryChance();
         tmp += defence_contribution;
@@ -5314,11 +5314,11 @@ void Player::UpdateChances()
 
         for (; itr != tocritchance.end(); ++itr)
         {
-            if (itr->second.wclass == (uint32)-1 || (tItemMelee != NULL && (1 << tItemMelee->GetProto()->SubClass & itr->second.subclass)))
+            if (itr->second.wclass == (uint32)-1 || (tItemMelee != NULL && (1 << tItemMelee->GetItemProperties()->SubClass & itr->second.subclass)))
             {
                 melee_bonus += itr->second.value;
             }
-            if (itr->second.wclass == (uint32)-1 || (tItemRanged != NULL && (1 << tItemRanged->GetProto()->SubClass & itr->second.subclass)))
+            if (itr->second.wclass == (uint32)-1 || (tItemRanged != NULL && (1 << tItemRanged->GetItemProperties()->SubClass & itr->second.subclass)))
             {
                 ranged_bonus += itr->second.value;
             }
@@ -5379,24 +5379,24 @@ void Player::UpdateAttackSpeed()
     else if (!disarmed)  // Regular
     {
         weap = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-        if (weap != NULL)
-            speed = weap->GetProto()->Delay;
+        if (weap != nullptr)
+            speed = weap->GetItemProperties()->Delay;
     }
     SetBaseAttackTime(MELEE,
                       (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PLAYER_RATING_MODIFIER_MELEE_HASTE) / 100.0f))));
 
     weap = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-    if (weap != NULL && weap->GetProto()->Class == ITEM_CLASS_WEAPON)
+    if (weap != nullptr && weap->GetItemProperties()->Class == ITEM_CLASS_WEAPON)
     {
-        speed = weap->GetProto()->Delay;
+        speed = weap->GetItemProperties()->Delay;
         SetBaseAttackTime(OFFHAND,
                           (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PLAYER_RATING_MODIFIER_MELEE_HASTE) / 100.0f))));
     }
 
     weap = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-    if (weap != NULL)
+    if (weap != nullptr)
     {
-        speed = weap->GetProto()->Delay;
+        speed = weap->GetItemProperties()->Delay;
         SetBaseAttackTime(RANGED,
                           (uint32)((float)speed / (m_attack_speed[MOD_RANGED] * (1.0f + CalcRating(PLAYER_RATING_MODIFIER_RANGED_HASTE) / 100.0f))));
     }
@@ -5503,7 +5503,7 @@ void Player::UpdateStats()
 
     LevelInfo* lvlinfo = objmgr.GetLevelInfo(this->getRace(), this->getClass(), lev);
 
-    if (lvlinfo != NULL)
+    if (lvlinfo != nullptr)
     {
         hpdelta = lvlinfo->Stat[2] * 10;
         manadelta = lvlinfo->Stat[3] * 15;
@@ -5511,7 +5511,7 @@ void Player::UpdateStats()
 
     lvlinfo = objmgr.GetLevelInfo(this->getRace(), this->getClass(), 1);
 
-    if (lvlinfo != NULL)
+    if (lvlinfo != nullptr)
     {
         hpdelta -= lvlinfo->Stat[2] * 10;
         manadelta -= lvlinfo->Stat[3] * 15;
@@ -5637,12 +5637,12 @@ void Player::UpdateStats()
 
     // Shield Block
     Item* shield = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-    if (shield != NULL && shield->GetProto()->InventoryType == INVTYPE_SHIELD)
+    if (shield != nullptr && shield->GetItemProperties()->InventoryType == INVTYPE_SHIELD)
     {
         float block_multiplier = (100.0f + m_modblockabsorbvalue) / 100.0f;
         if (block_multiplier < 1.0f)block_multiplier = 1.0f;
 
-        int32 blockable_damage = float2int32((shield->GetProto()->Block + m_modblockvaluefromspells + GetUInt32Value(PLAYER_RATING_MODIFIER_BLOCK) + (str / 2.0f) - 1.0f) * block_multiplier);
+        int32 blockable_damage = float2int32((shield->GetItemProperties()->Block + m_modblockvaluefromspells + GetUInt32Value(PLAYER_RATING_MODIFIER_BLOCK) + (str / 2.0f) - 1.0f) * block_multiplier);
         SetUInt32Value(PLAYER_SHIELD_BLOCK, blockable_damage);
     }
     else
@@ -6100,7 +6100,7 @@ bool Player::HasQuestForItem(uint32 itemid)
 
             // Check the item_quest_association table for an entry related to this item
             QuestAssociationList* tempList = QuestMgr::getSingleton().GetQuestAssociationListForItemId(itemid);
-            if (tempList != NULL)
+            if (tempList != nullptr)
             {
                 QuestAssociationList::iterator it;
                 for (it = tempList->begin(); it != tempList->end(); ++it)
@@ -6165,7 +6165,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 
     // Check ammo
     auto item = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-    auto item_proto = sMySQLStore.GetItemProto(GetAmmoId());
+    auto item_proto = sMySQLStore.GetItemProperties(GetAmmoId());
     if (item == nullptr || disarmed)           //Disarmed means disarmed, we shouldn't be able to cast Auto Shot while disarmed
         return SPELL_FAILED_NO_AMMO;        //In proper language means "Requires Ranged Weapon to be equipped"
 
@@ -6176,7 +6176,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
             return SPELL_FAILED_LOWLEVEL;
 
         // Check ammo type
-        auto item_proto_ammo = sMySQLStore.GetItemProto(item->GetEntry());
+        auto item_proto_ammo = sMySQLStore.GetItemProperties(item->GetEntry());
         if (item_proto && item_proto_ammo && item_proto->SubClass != item_proto_ammo->AmmoType)
             return SPELL_FAILED_NEED_AMMO;
     }
@@ -6229,7 +6229,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     }
 
     // Check ammo count
-    if (!m_requiresNoAmmo && item_proto && item->GetProto()->SubClass != ITEM_SUBCLASS_WEAPON_WAND)
+    if (!m_requiresNoAmmo && item_proto && item->GetItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_WAND)
     {
         uint32 ammocount = GetItemInterface()->GetItemCount(item_proto->ItemId);
         if (ammocount == 0)
@@ -6250,7 +6250,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 
     if (spellid == SPELL_RANGED_THROW)
     {
-        if (GetItemInterface()->GetItemCount(item->GetProto()->ItemId) == 0)
+        if (GetItemInterface()->GetItemCount(item->GetItemProperties()->ItemId) == 0)
             fail = SPELL_FAILED_NO_AMMO;
     }
 
@@ -6305,7 +6305,7 @@ void Player::EventRepeatSpell()
         return;
 
     Unit* target = GetMapMgr()->GetUnit(m_curSelection);
-    if (target == NULL)
+    if (target == nullptr)
     {
         m_AutoShotAttackTimer = 0; //avoid flooding client with error messages
         m_onAutoShot = false;
@@ -6537,12 +6537,12 @@ void Player::ResetDualWield2H()
 
     Item* mainhand = GetItemInterface()->GetInventoryItem(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_MAINHAND);
     Item* offhand = GetItemInterface()->GetInventoryItem(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND);
-    if (offhand && (offhand->GetProto()->InventoryType == INVTYPE_2HWEAPON ||
-        (mainhand && mainhand->GetProto()->InventoryType == INVTYPE_2HWEAPON)))
+    if (offhand && (offhand->GetItemProperties()->InventoryType == INVTYPE_2HWEAPON ||
+        (mainhand && mainhand->GetItemProperties()->InventoryType == INVTYPE_2HWEAPON)))
     {
         // we need to de-equip this
         offhand = GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND, false);
-        SlotResult result = GetItemInterface()->FindFreeInventorySlot(offhand->GetProto());
+        SlotResult result = GetItemInterface()->FindFreeInventorySlot(offhand->GetItemProperties());
         if (!result.Result)
         {
             // no free slots for this item, try to send it by mail
@@ -7277,7 +7277,7 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
 void Player::AddItemsToWorld()
 {
     Item* pItem;
-    for (uint8 i = 0; i < CURRENCYTOKEN_SLOT_END; i++)
+    for (uint8 i = 0; i < CURRENCYTOKEN_SLOT_END; ++i)
     {
         pItem = GetItemInterface()->GetInventoryItem(i);
         if (pItem != NULL)
@@ -7296,7 +7296,7 @@ void Player::AddItemsToWorld()
 
             if (pItem->IsContainer() && GetItemInterface()->IsBagSlot(i))
             {
-                for (uint32 e = 0; e < pItem->GetProto()->ContainerSlots; e++)
+                for (uint32 e = 0; e < pItem->GetItemProperties()->ContainerSlots; ++e)
                 {
                     Item* item = (static_cast< Container* >(pItem))->GetItem(static_cast<int16>(e));
                     if (item)
@@ -7317,7 +7317,7 @@ void Player::AddItemsToWorld()
 void Player::RemoveItemsFromWorld()
 {
     Item* pItem;
-    for (uint8 i = 0; i < CURRENCYTOKEN_SLOT_END; i++)
+    for (uint8 i = 0; i < CURRENCYTOKEN_SLOT_END; ++i)
     {
         pItem = m_ItemInterface->GetInventoryItem((int8)i);
         if (pItem)
@@ -7333,7 +7333,7 @@ void Player::RemoveItemsFromWorld()
 
             if (pItem->IsContainer() && GetItemInterface()->IsBagSlot(static_cast<int16>(i)))
             {
-                for (uint32 e = 0; e < pItem->GetProto()->ContainerSlots; e++)
+                for (uint32 e = 0; e < pItem->GetItemProperties()->ContainerSlots; e++)
                 {
                     Item* item = (static_cast< Container* >(pItem))->GetItem(static_cast<int16>(e));
                     if (item && item->IsInWorld())
@@ -8089,7 +8089,7 @@ void Player::SendTradeUpdate()
         if (pItem != 0)
         {
             count++;
-            ItemPrototype const* pProto = pItem->GetProto();
+            ItemProperties const* pProto = pItem->GetItemProperties();
             ARCEMU_ASSERT(pProto != NULL);
 
             data << uint8(Index);
@@ -9791,7 +9791,7 @@ void Player::CalcDamage()
     if (!disarmed)
     {
         if (it)
-            speed = it->GetProto()->Delay;
+            speed = it->GetItemProperties()->Delay;
     }
 
     float bonus = ap_bonus * speed;
@@ -9800,7 +9800,7 @@ void Player::CalcDamage()
     for (i = damagedone.begin(); i != damagedone.end(); ++i)
     {
         if ((i->second.wclass == (uint32)-1) || //any weapon
-            (it && ((1 << it->GetProto()->SubClass) & i->second.subclass)))
+            (it && ((1 << it->GetItemProperties()->SubClass) & i->second.subclass)))
             tmp += i->second.value;
     }
 
@@ -9817,7 +9817,7 @@ void Player::CalcDamage()
     {
         if (static_cast< Player* >(this)->m_wratings.size())
         {
-            std::map<uint32, uint32>::iterator itr = m_wratings.find(it->GetProto()->SubClass);
+            std::map<uint32, uint32>::iterator itr = m_wratings.find(it->GetItemProperties()->SubClass);
             if (itr != m_wratings.end())
                 cr = itr->second;
         }
@@ -9832,7 +9832,7 @@ void Player::CalcDamage()
     {
         if (!disarmed)
         {
-            speed = it->GetProto()->Delay;
+            speed = it->GetItemProperties()->Delay;
         }
         else speed = 2000;
 
@@ -9842,7 +9842,7 @@ void Player::CalcDamage()
         for (; i != damagedone.end(); ++i)
         {
             if ((i->second.wclass == (uint32)-1) || //any weapon
-                (((1 << it->GetProto()->SubClass) & i->second.subclass))
+                (((1 << it->GetItemProperties()->SubClass) & i->second.subclass))
                 )
                 tmp += i->second.value;
         }
@@ -9855,7 +9855,7 @@ void Player::CalcDamage()
         SetMaxOffhandDamage(r > 0 ? r : 0);
         if (m_wratings.size())
         {
-            std::map<uint32, uint32>::iterator itr = m_wratings.find(it->GetProto()->SubClass);
+            std::map<uint32, uint32>::iterator itr = m_wratings.find(it->GetItemProperties()->SubClass);
             if (itr != m_wratings.end())
                 cr = itr->second;
         }
@@ -9872,25 +9872,25 @@ void Player::CalcDamage()
         for (; i != damagedone.end(); ++i)
         {
             if ((i->second.wclass == (uint32)-1) || //any weapon
-                (((1 << it->GetProto()->SubClass) & i->second.subclass)))
+                (((1 << it->GetItemProperties()->SubClass) & i->second.subclass)))
             {
                 tmp += i->second.value;
             }
         }
 
-        if (it->GetProto()->SubClass != 19)//wands do not have bonuses from RAP & ammo
+        if (it->GetItemProperties()->SubClass != 19)//wands do not have bonuses from RAP & ammo
         {
             //                ap_bonus = (GetRangedAttackPower()+(int32)GetRangedAttackPowerMods())/14000.0;
             //modified by Zack : please try to use premade functions if possible to avoid forgetting stuff
             ap_bonus = GetRAP() / 14000.0f;
-            bonus = ap_bonus * it->GetProto()->Delay;
+            bonus = ap_bonus * it->GetItemProperties()->Delay;
 
             if (GetAmmoId() && !m_requiresNoAmmo)
             {
-                ItemPrototype const* xproto = sMySQLStore.GetItemProto(GetAmmoId());
+                ItemProperties const* xproto = sMySQLStore.GetItemProperties(GetAmmoId());
                 if (xproto)
                 {
-                    bonus += ((xproto->Damage[0].Min + xproto->Damage[0].Max) * it->GetProto()->Delay) / 2000.0f;
+                    bonus += ((xproto->Damage[0].Min + xproto->Damage[0].Max) * it->GetItemProperties()->Delay) / 2000.0f;
                 }
             }
         }
@@ -9907,7 +9907,7 @@ void Player::CalcDamage()
 
         if (m_wratings.size())
         {
-            std::map<uint32, uint32>::iterator itr = m_wratings.find(it->GetProto()->SubClass);
+            std::map<uint32, uint32>::iterator itr = m_wratings.find(it->GetItemProperties()->SubClass);
             if (itr != m_wratings.end())
                 cr = itr->second;
         }
@@ -9947,7 +9947,7 @@ uint32 Player::GetMainMeleeDamage(uint32 AP_owerride)
     if (!disarmed)
     {
         if (it)
-            speed = it->GetProto()->Delay;
+            speed = it->GetItemProperties()->Delay;
     }
     r = ap_bonus * speed;
     return float2int32(r);
@@ -10980,8 +10980,8 @@ void Player::UpdatePotionCooldown()
     if (m_lastPotionId == 0 || CombatStatus.IsInCombat())
         return;
 
-    ItemPrototype const* proto = sMySQLStore.GetItemProto(m_lastPotionId);
-    if (proto != NULL)
+    ItemProperties const* proto = sMySQLStore.GetItemProperties(m_lastPotionId);
+    if (proto != nullptr)
     {
         for (uint8 i = 0; i < 5; ++i)
         {
@@ -11006,7 +11006,7 @@ bool Player::HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoint
     {
         SpellEntry *sp = dbcSpell.LookupEntry(*itr);
 
-        for (uint8 i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; ++i)
         {
             if (sp->Effect[i] == SPELL_EFFECT_APPLY_AURA)
             {
@@ -11087,7 +11087,7 @@ void Player::Cooldown_Add(SpellEntry* pSpell, Item* pItemCaster)
         SM_FIValue(SM_FCooldownTime, &cool_time, pSpell->SpellGroupType);
         SM_PIValue(SM_PCooldownTime, &cool_time, pSpell->SpellGroupType);
 
-        AddCategoryCooldown(category_id, spell_category_recovery_time + mstime, spell_id, pItemCaster ? pItemCaster->GetProto()->ItemId : 0);
+        AddCategoryCooldown(category_id, spell_category_recovery_time + mstime, spell_id, pItemCaster ? pItemCaster->GetItemProperties()->ItemId : 0);
     }
 
     uint32 spell_recovery_t = pSpell->RecoveryTime;
@@ -11096,7 +11096,7 @@ void Player::Cooldown_Add(SpellEntry* pSpell, Item* pItemCaster)
         SM_FIValue(SM_FCooldownTime, &cool_time, pSpell->SpellGroupType);
         SM_PIValue(SM_PCooldownTime, &cool_time, pSpell->SpellGroupType);
 
-        _Cooldown_Add(COOLDOWN_TYPE_SPELL, spell_id, spell_recovery_t + mstime, spell_id, pItemCaster ? pItemCaster->GetProto()->ItemId : 0);
+        _Cooldown_Add(COOLDOWN_TYPE_SPELL, spell_id, spell_recovery_t + mstime, spell_id, pItemCaster ? pItemCaster->GetItemProperties()->ItemId : 0);
     }
 }
 
@@ -11168,7 +11168,7 @@ bool Player::Cooldown_CanCast(SpellEntry* pSpell)
     return true;
 }
 
-void Player::Cooldown_AddItem(ItemPrototype const* pProto, uint32 x)
+void Player::Cooldown_AddItem(ItemProperties const* pProto, uint32 x)
 {
     if (pProto->Spells[x].CategoryCooldown <= 0 && pProto->Spells[x].Cooldown <= 0)
         return;
@@ -11190,7 +11190,7 @@ void Player::Cooldown_AddItem(ItemPrototype const* pProto, uint32 x)
         _Cooldown_Add(COOLDOWN_TYPE_SPELL, item_spell_id, cooldown_time + mstime, item_spell_id, pProto->ItemId);
 }
 
-bool Player::Cooldown_CanCast(ItemPrototype const* pProto, uint32 x)
+bool Player::Cooldown_CanCast(ItemProperties const* pProto, uint32 x)
 {
     PlayerCooldownMap::iterator itr;
     ItemSpell const* isp = &pProto->Spells[x];
@@ -11797,7 +11797,7 @@ void Player::RemoveTempEnchantsOnArena()
             if (it->IsContainer())
             {
                 Container* bag = static_cast< Container* >(it);
-                for (uint32 ci = 0; ci < bag->GetProto()->ContainerSlots; ++ci)
+                for (uint32 ci = 0; ci < bag->GetItemProperties()->ContainerSlots; ++ci)
                 {
                     it = bag->GetItem(static_cast<int16>(ci));
                     if (it != NULL)
@@ -12104,9 +12104,9 @@ void Player::CalcExpertise()
                 uint32 reqskillOH = 0;
 
                 if (item_mainhand)
-                    reqskillMH = entry->EquippedItemSubClass & (((uint32)1) << item_mainhand->GetProto()->SubClass);
+                    reqskillMH = entry->EquippedItemSubClass & (((uint32)1) << item_mainhand->GetItemProperties()->SubClass);
                 if (item_offhand)
-                    reqskillOH = entry->EquippedItemSubClass & (((uint32)1) << item_offhand->GetProto()->SubClass);
+                    reqskillOH = entry->EquippedItemSubClass & (((uint32)1) << item_offhand->GetItemProperties()->SubClass);
 
                 if (reqskillMH != 0 || reqskillOH != 0)
                     modifier = +val;
@@ -13303,14 +13303,14 @@ void Player::Phase(uint8 command, uint32 newphase)
 uint32 Player::GetBlockDamageReduction()
 {
     Item* it = this->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-    if (it == NULL || it->GetProto()->InventoryType != INVTYPE_SHIELD)
+    if (it == nullptr || it->GetItemProperties()->InventoryType != INVTYPE_SHIELD)
         return 0;
 
     float block_multiplier = (100.0f + this->m_modblockabsorbvalue) / 100.0f;
     if (block_multiplier < 1.0f)
         block_multiplier = 1.0f;
 
-    return float2int32((it->GetProto()->Block + this->m_modblockvaluefromspells + this->GetUInt32Value(PLAYER_RATING_MODIFIER_BLOCK) + this->GetStat(STAT_STRENGTH) / 2.0f - 1.0f) * block_multiplier);
+    return float2int32((it->GetItemProperties()->Block + this->m_modblockvaluefromspells + this->GetUInt32Value(PLAYER_RATING_MODIFIER_BLOCK) + this->GetStat(STAT_STRENGTH) / 2.0f - 1.0f) * block_multiplier);
 }
 
 void Player::ApplyFeralAttackPower(bool apply, Item* item)
@@ -13323,9 +13323,9 @@ void Player::ApplyFeralAttackPower(bool apply, Item* item)
 
     if (it != NULL)
     {
-        float delay = (float)it->GetProto()->Delay / 1000.0f;
+        float delay = (float)it->GetItemProperties()->Delay / 1000.0f;
         delay = std::max(1.0f, delay);
-        float dps = ((it->GetProto()->Damage[0].Min + it->GetProto()->Damage[0].Max) / 2) / delay;
+        float dps = ((it->GetItemProperties()->Damage[0].Min + it->GetItemProperties()->Damage[0].Max) / 2) / delay;
         if (dps > 54.8f)
             FeralAP = (dps - 54.8f) * 14;
     }

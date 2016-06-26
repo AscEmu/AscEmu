@@ -446,9 +446,9 @@ class SERVER_DECL Player : public Unit
         void SetLastPotion(uint32 itemid) { m_lastPotionId = itemid; }
         void Cooldown_AddStart(SpellEntry* pSpell);
         void Cooldown_Add(SpellEntry* pSpell, Item* pItemCaster);
-        void Cooldown_AddItem(ItemPrototype const* pProto, uint32 x);
+        void Cooldown_AddItem(ItemProperties const* pProto, uint32 x);
         bool Cooldown_CanCast(SpellEntry* pSpell);
-        bool Cooldown_CanCast(ItemPrototype const* pProto, uint32 x);
+        bool Cooldown_CanCast(ItemProperties const* pProto, uint32 x);
         void UpdatePotionCooldown();
         bool HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoints);
 

@@ -307,8 +307,7 @@ bool ChatHandler::HandleReloadGraveyardsCommand(const char* /*args*/, WorldSessi
 bool ChatHandler::HandleReloadItemsCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadItemsTable();
-
+    sMySQLStore.LoadItemPropertiesTable();
     GreenSystemMessage(m_session, "WorldDB table 'items' reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

@@ -1722,7 +1722,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         {
             if (qReward->reward_item[i])
             {
-                ItemPrototype const* proto = sMySQLStore.GetItemProto(qReward->reward_item[i]);
+                ItemProperties const* proto = sMySQLStore.GetItemProperties(qReward->reward_item[i]);
                 if (!proto)
                 {
                     Log.Error("LfgMgr", "Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
@@ -1813,7 +1813,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         {
             if (qReward->reward_item[i])
             {
-                ItemPrototype const* proto = sMySQLStore.GetItemProto(qReward->reward_item[i]);
+                ItemProperties const* proto = sMySQLStore.GetItemProperties(qReward->reward_item[i]);
                 if (!proto)
                 {
                     Log.Error("LfgMgr", "Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);

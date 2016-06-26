@@ -723,9 +723,9 @@ Aura::Aura(SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool
     else
         p_target = NULL;
 
-    if (i_caster != NULL)
+    if (i_caster != nullptr)
     {
-        m_castedItemId = i_caster->GetProto()->ItemId;
+        m_castedItemId = i_caster->GetItemProperties()->ItemId;
         itemCasterGUID = i_caster->GetGUID();
     }
     else
@@ -1699,7 +1699,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
             case 8818:
             case 11289:
             case 11290:
-                if (c != NULL)
+                if (c != nullptr)
                     c->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_START_ATTACK);  // remove stealth
                 break;
                 //mage talent ignite
@@ -1710,11 +1710,11 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
                 SpellEntry* parentsp = dbcSpell.LookupEntryForced(pSpellId);
                 if (!parentsp)
                     return;
-                if (c != NULL && c->IsPlayer())
+                if (c != nullptr && c->IsPlayer())
                 {
                     dmg = float2int32(static_cast< Player* >(c)->m_casted_amount[SCHOOL_FIRE] * parentsp->EffectBasePoints[0] / 100.0f);
                 }
-                else if (c != NULL)
+                else if (c != nullptr)
                 {
                     if (!dmg)
                         return;
@@ -1723,7 +1723,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
 
                     //this is so not good, maybe parent spell has more then dmg effect and we use it to calc our new dmg :(
                     dmg = 0;
-                    for (uint8 i = 0; i < 3; i++)
+                    for (uint8 i = 0; i < 3; ++i)
                     {
                         //dmg += parentsp->EffectBasePoints[i]*m_spellProto->EffectBasePoints[0];
                         dmg += spell->CalculateEffect(i, m_target) * parentsp->EffectBasePoints[0] / 100;
@@ -1734,7 +1734,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
             }
         };
         //this is warrior : Deep Wounds
-        if (c != NULL && c->IsPlayer() && pSpellId)
+        if (c != nullptr && c->IsPlayer() && pSpellId)
         {
             uint32 multiplyer = 0;
             if (pSpellId == 12834)
@@ -1751,9 +1751,9 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
                 if (it)
                 {
                     dmg = 0;
-                    for (uint8 i = 0; i < MAX_ITEM_PROTO_DAMAGES; i++)
-                        if (it->GetProto()->Damage[i].Type == SCHOOL_NORMAL)
-                            dmg += int32((it->GetProto()->Damage[i].Min + it->GetProto()->Damage[i].Max) / 2);
+                    for (uint8 i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
+                        if (it->GetItemProperties()->Damage[i].Type == SCHOOL_NORMAL)
+                            dmg += int32((it->GetItemProperties()->Damage[i].Min + it->GetItemProperties()->Damage[i].Max) / 2);
                     dmg = multiplyer * dmg / 100;
                 }
             }
@@ -1761,7 +1761,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
         uint32* gr = GetSpellProto()->SpellGroupType;
         if (gr)
         {
-            if (c != NULL)
+            if (c != nullptr)
             {
                 SM_FIValue(c->SM_FDOT, (int32*)&dmg, gr);
                 SM_PIValue(c->SM_PDOT, (int32*)&dmg, gr);
@@ -5643,12 +5643,12 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
                         return;
 
 
-                ItemPrototype const* proto = sMySQLStore.GetItemProto(itemid);
+                ItemProperties const* proto = sMySQLStore.GetItemProperties(itemid);
                 if (pCaster->GetItemInterface()->CalculateFreeSlots(proto) > 0)
                 {
                     Item* item = objmgr.CreateItem(itemid, pCaster);
-                    if (!item) return;
-
+                    if (!item)
+                        return;
 
                     item->SetCreatorGUID(pCaster->GetGUID());
                     if (!pCaster->GetItemInterface()->AddItemToFreeSlot(item))
@@ -8885,7 +8885,7 @@ void AbsorbAura::SpellAuraSchoolAbsorb(bool apply)
     int32 val = CalcAbsorbAmount();
 
     Unit* caster = GetUnitCaster();
-    if (caster != NULL)
+    if (caster != nullptr)
     {
         SM_FIValue(caster->SM_FMiscEffect, &val, GetSpellProto()->SpellGroupType);
         SM_PIValue(caster->SM_PMiscEffect, &val, GetSpellProto()->SpellGroupType);
@@ -8939,7 +8939,7 @@ uint32 AbsorbAura::AbsorbDamage(uint32 School, uint32* dmg)
 
 void Aura::SpellAuraConvertRune(bool apply)
 {
-    if (p_target == NULL || !p_target->IsDeathKnight())
+    if (p_target == nullptr || !p_target->IsDeathKnight())
         return;
 
     DeathKnight* dk = static_cast<DeathKnight*>(p_target);
@@ -8984,7 +8984,7 @@ void Aura::SpellAuraMirrorImage(bool apply)
 
 void Aura::SpellAuraMirrorImage2(bool apply)
 {
-    if (m_target == NULL)
+    if (m_target == nullptr)
         return;
 
     if (apply && m_target->IsSummon() && (m_target->GetCreatedByGUID() == GetCasterGUID()))
@@ -8996,12 +8996,12 @@ void Aura::SpellAuraMirrorImage2(bool apply)
             Item* item;
 
             item = p->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-            if (item != NULL)
-                m_target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, item->GetProto()->ItemId);
+            if (item != nullptr)
+                m_target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, item->GetItemProperties()->ItemId);
 
             item = p->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-            if (item != NULL)
-                m_target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, item->GetProto()->ItemId);
+            if (item != nullptr)
+                m_target->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, item->GetItemProperties()->ItemId);
         }
         else
         {

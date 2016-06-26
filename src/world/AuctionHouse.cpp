@@ -586,7 +586,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
 
     AuctionHouse* ah = pCreature->auctionHouse;
 
-    uint32 item_worth = pItem->GetProto()->SellPrice * pItem->GetStackCount();
+    uint32 item_worth = pItem->GetItemProperties()->SellPrice * pItem->GetStackCount();
     uint32 item_deposit = (uint32)(item_worth * ah->deposit_percent) * (uint32)(etime / 240.0f); // deposit is per 4 hours
 
     if (!_player->HasGold(item_deposit))   // player cannot afford deposit
@@ -688,11 +688,11 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
 
     auctionLock.AcquireReadLock();
     std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
-    ItemPrototype const* proto;
+    ItemProperties const* proto;
     for (; itr != auctions.end(); ++itr)
     {
         if (itr->second->Deleted) continue;
-        proto = itr->second->pItem->GetProto();
+        proto = itr->second->pItem->GetItemProperties();
 
         // Check the auction for parameters
 

@@ -180,8 +180,9 @@ namespace luaItem
 
     int GetEntryId(lua_State* L, Item* ptr)
     {
-        if (!ptr) return 0;
-        ItemPrototype const* proto = ptr->GetProto();
+        if (!ptr)
+            return 0;
+        ItemProperties const* proto = ptr->GetItemProperties();
         lua_pushnumber(L, proto->ItemId);
         return 1;
     }
@@ -190,7 +191,8 @@ namespace luaItem
     {
         if (!ptr)
             return 0;
-        ItemPrototype const* proto = ptr->GetProto();
+
+        ItemProperties const* proto = ptr->GetItemProperties();
         lua_pushstring(L, proto->Name.c_str());
         return 1;
     }
@@ -200,7 +202,8 @@ namespace luaItem
         uint32 index = luaL_checkinteger(L, 1);
         if (!ptr || index >= 5)
             return 0;
-        ItemPrototype const* proto = ptr->GetProto();
+
+        ItemProperties const* proto = ptr->GetItemProperties();
         lua_pushnumber(L, proto->Spells[index].Id);
         return 1;
     }
@@ -210,7 +213,8 @@ namespace luaItem
         uint32 index = luaL_checkinteger(L, 1);
         if (!ptr || index >= 5)
             return 0;
-        ItemPrototype const* proto = ptr->GetProto();
+
+        ItemProperties const* proto = ptr->GetItemProperties();
         lua_pushnumber(L, proto->Spells[index].Trigger);
         /*
             USE				= 0,
@@ -270,25 +274,25 @@ namespace luaItem
 
     int GetItemLevel(lua_State* L, Item* ptr)
     {
-        lua_pushnumber(L, ptr->GetProto()->ItemLevel);
+        lua_pushnumber(L, ptr->GetItemProperties()->ItemLevel);
         return 1;
     }
 
     int GetRequiredLevel(lua_State* L, Item* ptr)
     {
-        lua_pushnumber(L, ptr->GetProto()->RequiredLevel);
+        lua_pushnumber(L, ptr->GetItemProperties()->RequiredLevel);
         return 1;
     }
 
     int GetBuyPrice(lua_State* L, Item* ptr)
     {
-        lua_pushnumber(L, ptr->GetProto()->BuyPrice);
+        lua_pushnumber(L, ptr->GetItemProperties()->BuyPrice);
         return 1;
     }
 
     int GetSellPrice(lua_State* L, Item* ptr)
     {
-        lua_pushnumber(L, ptr->GetProto()->SellPrice);
+        lua_pushnumber(L, ptr->GetItemProperties()->SellPrice);
         return 1;
     }
 

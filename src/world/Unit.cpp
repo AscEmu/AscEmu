@@ -1109,15 +1109,15 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
             Item* mh = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
             Item* of = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
 
-            if (mh != NULL && of != NULL)
+            if (mh != nullptr && of != nullptr)
             {
-                uint32 mhs = mh->GetProto()->Delay;
-                uint32 ohs = of->GetProto()->Delay;
+                uint32 mhs = mh->GetItemProperties()->Delay;
+                uint32 ohs = of->GetItemProperties()->Delay;
                 proc_Chance = float2int32((mhs + ohs) * 0.001f * ppm / 0.6f);
             }
-            else if (mh != NULL)
+            else if (mh != nullptr)
             {
-                uint32 mhs = mh->GetProto()->Delay;
+                uint32 mhs = mh->GetItemProperties()->Delay;
                 proc_Chance = float2int32(mhs * 0.001f * ppm / 0.6f);
             }
             else
@@ -1156,7 +1156,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
         int dmg_overwrite[3] = { 0, 0, 0 };
 
         // SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE
-        for (uint8 i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; ++i)
         {
             if (ospinfo->EffectApplyAuraName[i] == SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE)
             {
@@ -1296,10 +1296,10 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     uint32 reqskillOH = 0;
 
                     if (item_mainhand != nullptr)
-                        reqskillMH = GetSkillByProto(item_mainhand->GetProto()->Class, item_mainhand->GetProto()->SubClass);
+                        reqskillMH = GetSkillByProto(item_mainhand->GetItemProperties()->Class, item_mainhand->GetItemProperties()->SubClass);
 
                     if (item_offhand != nullptr)
-                        reqskillOH = GetSkillByProto(item_offhand->GetProto()->Class, item_offhand->GetProto()->SubClass);
+                        reqskillOH = GetSkillByProto(item_offhand->GetItemProperties()->Class, item_offhand->GetItemProperties()->SubClass);
 
                     if (reqskillMH != SKILL_SWORDS && reqskillMH != SKILL_2H_SWORDS && reqskillOH != SKILL_SWORDS && reqskillOH != SKILL_2H_SWORDS)
                         continue;
@@ -1312,7 +1312,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                     if (item)
                     {
                         //class 2 means weapons ;)
-                        if (item->GetProto()->Class != 2)
+                        if (item->GetItemProperties()->Class != 2)
                             continue;
                     }
                     else continue; //no weapon no joy
@@ -1353,12 +1353,11 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                 case 12964:
                 {
                     //let's recalc chance to cast since we have a full 100 all time on this one
-                    Item* it;
-                    it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                    if (it == NULL)
+                    Item* it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+                    if (it == nullptr)
                         continue; //no weapon no joy
                     //float chance=float(it->GetProto()->Delay)*float(talentlevel)/600.0f;
-                    uint32 chance = it->GetProto()->Delay * talentlevel / 300; //zack this had a very low proc rate. Kinda like a wasted talent
+                    uint32 chance = it->GetItemProperties()->Delay * talentlevel / 300; //zack this had a very low proc rate. Kinda like a wasted talent
                     uint32 myroll = RandomUInt(100);
                     if (myroll > chance)
                         continue;
@@ -1970,7 +1969,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellEntry* CastingSpell, boo
                         continue;
                     //this needs offhand weapon
                     Item* it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-                    if (it == NULL || it->GetProto()->InventoryType != INVTYPE_WEAPON)
+                    if (it == nullptr || it->GetItemProperties()->InventoryType != INVTYPE_WEAPON)
                         continue;
                 }
                 break;
@@ -2914,7 +2913,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
             self_skill = float2int32(pr->CalcRating(PLAYER_RATING_MODIFIER_MELEE_MAIN_HAND_SKILL));
         }
         if (it)
-            SubClassSkill = GetSkillByProto(it->GetProto()->Class, it->GetProto()->SubClass);
+            SubClassSkill = GetSkillByProto(it->GetItemProperties()->Class, it->GetItemProperties()->SubClass);
         else
             SubClassSkill = SKILL_UNARMED;
 
@@ -3129,7 +3128,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
 
             // Is an offhand equipped and is it a shield?
             Item* it2 = plr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-            if (it2 != NULL && it2->GetProto()->InventoryType == INVTYPE_SHIELD)
+            if (it2 != nullptr && it2->GetItemProperties()->InventoryType == INVTYPE_SHIELD)
             {
                 block = plr->GetBlockChance();
             }
@@ -3187,8 +3186,8 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
                 self_skill = float2int32(pr->CalcRating(PLAYER_RATING_MODIFIER_MELEE_MAIN_HAND_SKILL));
                 if (it)
                 {
-                    dmg.school_type = it->GetProto()->Damage[0].Type;
-                    if (it->GetProto()->SubClass == ITEM_SUBCLASS_WEAPON_MACE)
+                    dmg.school_type = it->GetItemProperties()->Damage[0].Type;
+                    if (it->GetItemProperties()->SubClass == ITEM_SUBCLASS_WEAPON_MACE)
                         ArmorPctReduce += m_ignoreArmorPctMaceSpec;
                 }
                 break;
@@ -3198,8 +3197,8 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
                 hit_status |= HITSTATUS_DUALWIELD;//animation
                 if (it)
                 {
-                    dmg.school_type = it->GetProto()->Damage[0].Type;
-                    if (it->GetProto()->SubClass == ITEM_SUBCLASS_WEAPON_MACE)
+                    dmg.school_type = it->GetItemProperties()->Damage[0].Type;
+                    if (it->GetItemProperties()->SubClass == ITEM_SUBCLASS_WEAPON_MACE)
                         ArmorPctReduce += m_ignoreArmorPctMaceSpec;
                 }
                 break;
@@ -3207,13 +3206,13 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
                 it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 self_skill = float2int32(pr->CalcRating(PLAYER_RATING_MODIFIER_RANGED_SKILL));
                 if (it)
-                    dmg.school_type = it->GetProto()->Damage[0].Type;
+                    dmg.school_type = it->GetItemProperties()->Damage[0].Type;
                 break;
         }
 
         if (it)
         {
-            SubClassSkill = GetSkillByProto(it->GetProto()->Class, it->GetProto()->SubClass);
+            SubClassSkill = GetSkillByProto(it->GetItemProperties()->Class, it->GetItemProperties()->SubClass);
             if (SubClassSkill == SKILL_FIST_WEAPONS)
                 SubClassSkill = SKILL_UNARMED;
         }
@@ -3379,7 +3378,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
     {
         it = static_cast<Player*>(this)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
 
-        if (!ability && it != NULL && (it->GetProto()->InventoryType == INVTYPE_WEAPON || it->GetProto()->InventoryType == INVTYPE_WEAPONOFFHAND))
+        if (!ability && it != nullptr && (it->GetItemProperties()->InventoryType == INVTYPE_WEAPON || it->GetItemProperties()->InventoryType == INVTYPE_WEAPONOFFHAND))
         {
             // offhand weapon can either be a 1 hander weapon or an offhander weapon
             hitmodifier -= 24.0f;   //dualwield miss chance
@@ -3653,17 +3652,17 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
                     case 4:
                     {
                         Item* shield = static_cast<Player*>(pVictim)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-                        if (shield != NULL)
+                        if (shield != nullptr)
                         {
                             targetEvent = 2;
                             pVictim->Emote(EMOTE_ONESHOT_PARRYSHIELD);// Animation
 
-                            if (shield->GetProto()->InventoryType == INVTYPE_SHIELD)
+                            if (shield->GetItemProperties()->InventoryType == INVTYPE_SHIELD)
                             {
                                 float block_multiplier = (100.0f + static_cast<Player*>(pVictim)->m_modblockabsorbvalue) / 100.0f;
                                 if (block_multiplier < 1.0f)block_multiplier = 1.0f;
 
-                                blocked_damage = float2int32((shield->GetProto()->Block + ((static_cast<Player*>(pVictim)->m_modblockvaluefromspells + pVictim->GetUInt32Value(PLAYER_RATING_MODIFIER_BLOCK))) + ((pVictim->GetStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
+                                blocked_damage = float2int32((shield->GetItemProperties()->Block + ((static_cast<Player*>(pVictim)->m_modblockvaluefromspells + pVictim->GetUInt32Value(PLAYER_RATING_MODIFIER_BLOCK))) + ((pVictim->GetStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
 
                                 if (Rand(m_BlockModPct))
                                     blocked_damage *= 2;
@@ -4068,7 +4067,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
 
         // Weapon speed (normal)
         Item* weapon = (static_cast<Player*>(this)->GetItemInterface())->GetInventoryItem(INVENTORY_SLOT_NOT_SET, (weapon_damage_type == OFFHAND ? EQUIPMENT_SLOT_OFFHAND : EQUIPMENT_SLOT_MAINHAND));
-        if (weapon == NULL)
+        if (weapon == nullptr)
         {
             if (weapon_damage_type == OFFHAND)
                 s = GetUInt32Value(UNIT_FIELD_BASEATTACKTIME + 1) / 1000.0f;
@@ -4078,8 +4077,8 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
         else
         {
             uint32 entry = weapon->GetEntry();
-            ItemPrototype const* pProto = sMySQLStore.GetItemProto(entry);
-            if (pProto != NULL)
+            ItemProperties const* pProto = sMySQLStore.GetItemProperties(entry);
+            if (pProto != nullptr)
             {
                 s = pProto->Delay / 1000.0f;
             }

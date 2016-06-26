@@ -343,7 +343,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
                 do
                 {
                     slot = res->Fetch()[0].GetInt8();
-                    ItemPrototype const* proto = sMySQLStore.GetItemProto(res->Fetch()[1].GetUInt32());
+                    ItemProperties const* proto = sMySQLStore.GetItemProperties(res->Fetch()[1].GetUInt32());
                     if (proto)
                     {
                         items[slot].displayid = proto->DisplayInfoID;

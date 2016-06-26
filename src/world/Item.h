@@ -161,8 +161,8 @@ class SERVER_DECL Item : public Object
         virtual ~Item();
         void Create(uint32 itemid, Player* owner);
 
-        ItemPrototype const* GetProto() const { return m_itemProto; }
-        void SetProto(ItemPrototype const* pr) { m_itemProto = pr; }
+        ItemProperties const* GetItemProperties() const { return m_itemProperties; }
+        void SetItemProperties(ItemProperties const* pr) { m_itemProperties = pr; }
 
         Player* GetOwner() const { return m_owner; }
         void SetOwner(Player* owner);
@@ -231,7 +231,7 @@ class SERVER_DECL Item : public Object
         void SetRandomSuffix(uint32 id)
         {
             int32 r_id = -(int32(id));
-            uint32 v = Item::GenerateRandomSuffixFactor(m_itemProto);
+            uint32 v = Item::GenerateRandomSuffixFactor(m_itemProperties);
             SetItemRandomPropertyId((uint32)r_id);
             SetItemRandomSuffixFactor(v);
             random_suffix = id;
@@ -279,8 +279,8 @@ class SERVER_DECL Item : public Object
         //////////////////////////////////////////////////////////////////////////////////////////
         uint32 GetChargesLeft() const
         {
-            for (uint32 x = 0; x < 5; x++)
-                if ((m_itemProto->Spells[x].Id != 0) && (m_itemProto->Spells[x].Trigger == USE))
+            for (uint32 x = 0; x < 5; ++x)
+                if ((m_itemProperties->Spells[x].Id != 0) && (m_itemProperties->Spells[x].Trigger == USE))
                     return GetCharges(x);
 
             return 0;
@@ -298,9 +298,9 @@ class SERVER_DECL Item : public Object
         //////////////////////////////////////////////////////////////////////////////////////////
         void SetChargesLeft(uint32 charges)
         {
-            for (uint32 x = 0; x < 5; x++)
+            for (uint32 x = 0; x < 5; ++x)
             {
-                if ((m_itemProto->Spells[x].Id != 0) && (m_itemProto->Spells[x].Trigger == USE))
+                if ((m_itemProperties->Spells[x].Id != 0) && (m_itemProperties->Spells[x].Trigger == USE))
                 {
                     SetCharges(x, charges);
                     break;
@@ -368,7 +368,7 @@ class SERVER_DECL Item : public Object
         /// gets the itemlink for a message to the player
         std::string GetItemLink(uint32 language);
 
-        bool IsAmmoBag() { return (m_itemProto->Class == ITEM_CLASS_QUIVER); }
+        bool IsAmmoBag() { return (m_itemProperties->Class == ITEM_CLASS_QUIVER); }
 
         uint32 CountGemsWithLimitId(uint32 Limit);
 
@@ -381,7 +381,7 @@ class SERVER_DECL Item : public Object
         EnchantmentInstance* GetEnchantment(uint32 slot);
         bool IsGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment);
 
-        static uint32 GenerateRandomSuffixFactor(ItemPrototype const* m_itemProto);
+        static uint32 GenerateRandomSuffixFactor(ItemProperties const* m_itemProto);
 
         bool HasEnchantments() { return (Enchantments.size() > 0) ? true : false; }
 
@@ -409,7 +409,7 @@ class SERVER_DECL Item : public Object
 
     protected:
 
-        ItemPrototype const* m_itemProto;
+        ItemProperties const* m_itemProperties;
         EnchantmentMap Enchantments;
         uint32 _fields[ITEM_END];   /// this mem is wasted in case of container... but this will be fixed in future
         Player* m_owner;            /// let's not bother the manager with unneeded requests
@@ -425,14 +425,14 @@ class SERVER_DECL Item : public Object
 
 uint32 GetSkillByProto(uint32, uint32);
 
-uint32 GetSellPriceForItem(ItemPrototype const* proto, uint32 count);
-uint32 GetBuyPriceForItem(ItemPrototype const* proto, uint32 count, Player* plr, Creature* vendor);
+uint32 GetSellPriceForItem(ItemProperties const* proto, uint32 count);
+uint32 GetBuyPriceForItem(ItemProperties const* proto, uint32 count, Player* plr, Creature* vendor);
 
 uint32 GetSellPriceForItem(uint32 itemid, uint32 count);
 uint32 GetBuyPriceForItem(uint32 itemid, uint32 count, Player* plr, Creature* vendor);
 
-std::string GetItemLinkByProto(ItemPrototype const* iProto, uint32 language);
+std::string GetItemLinkByProto(ItemProperties const* iProto, uint32 language);
 
-int32 GetStatScalingStatValueColumn(ItemPrototype const* proto, uint32 type);
+int32 GetStatScalingStatValueColumn(ItemProperties const* proto, uint32 type);
 
 #endif // _WOWSERVER_ITEM_H

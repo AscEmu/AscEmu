@@ -392,7 +392,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     }
 
     //Find free slot
-    SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(item->GetProto());
+    SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(item->GetItemProperties());
     if (result.Result == 0) //End of slots
     {
         data << uint32(MAIL_ERR_BAG_FULL);
@@ -553,7 +553,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
     data << message_id;
     data << uint32(MAIL_RES_MADE_PERMANENT);
 
-    ItemPrototype const* proto = sMySQLStore.GetItemProto(8383);
+    ItemProperties const* proto = sMySQLStore.GetItemProperties(8383);
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
     if (message == 0 || !proto)
     {

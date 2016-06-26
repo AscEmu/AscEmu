@@ -1837,25 +1837,25 @@ void Spell::finish(bool successful)
     if (i_caster && i_caster->GetOwner() && cancastresult == SPELL_CANCAST_OK && !GetSpellFailed())
     {
         uint8 x;
-        for (x = 0; x < MAX_ITEM_PROTO_SPELLS; x++)
+        for (x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
         {
-            if (i_caster->GetProto()->Spells[x].Trigger == USE)
+            if (i_caster->GetItemProperties()->Spells[x].Trigger == USE)
             {
-                if (i_caster->GetProto()->Spells[x].Id)
+                if (i_caster->GetItemProperties()->Spells[x].Id)
                     break;
             }
         }
         // cooldown starts after leaving combat
-        if (i_caster->GetProto()->Class == ITEM_CLASS_CONSUMABLE && i_caster->GetProto()->SubClass == 1)
+        if (i_caster->GetItemProperties()->Class == ITEM_CLASS_CONSUMABLE && i_caster->GetItemProperties()->SubClass == 1)
         {
-            i_caster->GetOwner()->SetLastPotion(i_caster->GetProto()->ItemId);
+            i_caster->GetOwner()->SetLastPotion(i_caster->GetItemProperties()->ItemId);
             if (!i_caster->GetOwner()->CombatStatus.IsInCombat())
                 i_caster->GetOwner()->UpdatePotionCooldown();
         }
         else
         {
             if (x < MAX_ITEM_PROTO_SPELLS)
-                i_caster->GetOwner()->Cooldown_AddItem(i_caster->GetProto(), x);
+                i_caster->GetOwner()->Cooldown_AddItem(i_caster->GetItemProperties(), x);
         }
     }
 
@@ -2064,7 +2064,7 @@ void Spell::SendSpellStart()
 
     if (GetType() == SPELL_DMG_TYPE_RANGED)
     {
-        ItemPrototype const* ip = NULL;
+        ItemProperties const* ip = nullptr;
         if (GetProto()->Id == SPELL_RANGED_THROW)   // throw
         {
             if (p_caster != NULL)
@@ -2072,7 +2072,7 @@ void Spell::SendSpellStart()
                 auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 if (item != nullptr)
                 {
-                    ip = item->GetProto();
+                    ip = item->GetItemProperties();
                     /* Throwing Weapon Patch by Supalosa
                     p_caster->GetItemInterface()->RemoveItemAmt(it->GetEntry(),1);
                     (Supalosa: Instead of removing one from the stack, remove one from durability)
@@ -2089,19 +2089,19 @@ void Spell::SendSpellStart()
                 }
                 else
                 {
-                    ip = sMySQLStore.GetItemProto(2512);	/*rough arrow*/
+                    ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
                 }
             }
         }
         else if (hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS))
         {
-            if (p_caster != NULL)
-                ip = sMySQLStore.GetItemProto(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+            if (p_caster != nullptr)
+                ip = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
             else
-                ip = sMySQLStore.GetItemProto(2512);	/*rough arrow*/
+                ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
         }
 
-        if (ip != NULL)
+        if (ip != nullptr)
             data << ip->DisplayInfoID << ip->InventoryType;
     }
 
@@ -2212,26 +2212,26 @@ void Spell::SendSpellGo()
     // er why handle it being null inside if if you can't get into if if its null
     if (GetType() == SPELL_DMG_TYPE_RANGED)
     {
-        ItemPrototype const* ip = NULL;
+        ItemProperties const* ip = nullptr;
         if (GetProto()->Id == SPELL_RANGED_THROW)
         {
             if (p_caster != NULL)
             {
                 Item* it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-                if (it != NULL)
-                    ip = it->GetProto();
+                if (it != nullptr)
+                    ip = it->GetItemProperties();
             }
             else
-                ip = sMySQLStore.GetItemProto(2512);	/*rough arrow*/
+                ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
         }
         else
         {
-            if (p_caster != NULL)
-                ip = sMySQLStore.GetItemProto(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+            if (p_caster != nullptr)
+                ip = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
             else // HACK FIX
-                ip = sMySQLStore.GetItemProto(2512);	/*rough arrow*/
+                ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
         }
-        if (ip != NULL)
+        if (ip != nullptr)
         {
             data << ip->DisplayInfoID;
             data << ip->InventoryType;
@@ -2584,11 +2584,11 @@ bool Spell::HasPower()
     }
 
     //hackfix for shiv's energy cost
-    if (p_caster != NULL && m_spellInfo->custom_NameHash == SPELL_HASH_SHIV)
+    if (p_caster != nullptr && m_spellInfo->custom_NameHash == SPELL_HASH_SHIV)
     {
         Item* it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-        if (it != NULL)
-            cost += (uint32)(10 * (it->GetProto()->Delay / 1000.0f));
+        if (it != nullptr)
+            cost += (uint32)(10 * (it->GetItemProperties()->Delay / 1000.0f));
     }
 
     //apply modifiers
@@ -2738,11 +2738,11 @@ bool Spell::TakePower()
     }
 
     //hackfix for shiv's energy cost
-    if (p_caster != NULL && m_spellInfo->custom_NameHash == SPELL_HASH_SHIV)
+    if (p_caster != nullptr && m_spellInfo->custom_NameHash == SPELL_HASH_SHIV)
     {
         Item* it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-        if (it != NULL)
-            cost += it->GetProto()->Delay / 100;//10 * it->GetProto()->Delay / 1000;
+        if (it != nullptr)
+            cost += it->GetItemProperties()->Delay / 100;//10 * it->GetProto()->Delay / 1000;
     }
 
     //apply modifiers
@@ -3434,7 +3434,7 @@ uint8 Spell::CanCast(bool tolerate)
                 case FORM_FLIGHT:
                 {
                     // check if item is allowed (only special items allowed in flight forms)
-                    if (i_caster && !(i_caster->GetProto()->Flags & ITEM_FLAG_SHAPESHIFT_OK))
+                    if (i_caster && !(i_caster->GetItemProperties()->Flags & ITEM_FLAG_SHAPESHIFT_OK))
                         return SPELL_FAILED_NO_ITEMS_WHILE_SHAPESHIFTED;
 
                     break;
@@ -3462,8 +3462,8 @@ uint8 Spell::CanCast(bool tolerate)
                 default:
                 {
                     // check if item is allowed (only special & equipped items allowed in other forms)
-                    if (i_caster && !(i_caster->GetProto()->Flags & ITEM_FLAG_SHAPESHIFT_OK))
-                        if (i_caster->GetProto()->InventoryType == INVTYPE_NON_EQUIP)
+                    if (i_caster && !(i_caster->GetItemProperties()->Flags & ITEM_FLAG_SHAPESHIFT_OK))
+                        if (i_caster->GetItemProperties()->InventoryType == INVTYPE_NON_EQUIP)
                             return SPELL_FAILED_NO_ITEMS_WHILE_SHAPESHIFTED;
                 }
             }
@@ -3515,12 +3515,12 @@ uint8 Spell::CanCast(bool tolerate)
          */
         if (i_caster)
         {
-            if (i_caster->GetProto()->ZoneNameID && i_caster->GetProto()->ZoneNameID != i_caster->GetZoneId())
+            if (i_caster->GetItemProperties()->ZoneNameID && i_caster->GetItemProperties()->ZoneNameID != i_caster->GetZoneId())
                 return SPELL_FAILED_NOT_HERE;
-            if (i_caster->GetProto()->MapID && i_caster->GetProto()->MapID != i_caster->GetMapId())
+            if (i_caster->GetItemProperties()->MapID && i_caster->GetItemProperties()->MapID != i_caster->GetMapId())
                 return SPELL_FAILED_NOT_HERE;
 
-            if (i_caster->GetProto()->Spells[0].Charges != 0)
+            if (i_caster->GetItemProperties()->Spells[0].Charges != 0)
             {
                 // check if the item has the required charges
                 if (i_caster->GetCharges(0) == 0)
@@ -3534,9 +3534,9 @@ uint8 Spell::CanCast(bool tolerate)
         if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExE(FLAGS6_REAGENT_REMOVAL)))
         {
             // Skip this with enchanting scrolls
-            if (!i_caster || i_caster->GetProto()->Flags != 268435520)
+            if (!i_caster || i_caster->GetItemProperties()->Flags != 268435520)
             {
-                for (i = 0; i < 8; i++)
+                for (i = 0; i < 8; ++i)
                 {
                     if (GetProto()->Reagent[i] == 0 || GetProto()->ReagentCount[i] == 0)
                         continue;
@@ -3550,7 +3550,7 @@ uint8 Spell::CanCast(bool tolerate)
         /**
          *	check if we have the required tools, totems, etc
          */
-        for (i = 0; i < 2; i++)
+        for (i = 0; i < 2; ++i)
         {
             if (GetProto()->Totem[i] != 0)
             {
@@ -3690,7 +3690,7 @@ uint8 Spell::CanCast(bool tolerate)
         if (!i_target || (i_target->GetDurability() == 0 && i_target->GetDurabilityMax() != 0))
             return SPELL_FAILED_BAD_TARGETS;
 
-        ItemPrototype const* proto = i_target->GetProto();
+        ItemProperties const* proto = i_target->GetItemProperties();
 
         // check to make sure the targeted item is acceptable
         switch (GetProto()->Effect[0])
@@ -3775,7 +3775,7 @@ uint8 Spell::CanCast(bool tolerate)
                     GetProto()->baseLevel && (GetProto()->baseLevel > proto->ItemLevel))
                     return int8(SPELL_FAILED_BAD_TARGETS); // maybe there is different err code
 
-                if (i_caster && i_caster->GetProto()->Flags == 2097216)
+                if (i_caster && i_caster->GetItemProperties()->Flags == 2097216)
                     break;
 
                 // If the spell is castable on our own items only then we can't cast it on someone else's
@@ -4725,8 +4725,8 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                     it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                     if (it)
                     {
-                        float weapondmg = RandomFloat(1) * (it->GetProto()->Damage[0].Max - it->GetProto()->Damage[0].Min) + it->GetProto()->Damage[0].Min;
-                        value += float2int32(GetProto()->EffectBasePoints[0] + weapondmg / (it->GetProto()->Delay / 1000.0f) * 2.8f);
+                        float weapondmg = RandomFloat(1) * (it->GetItemProperties()->Damage[0].Max - it->GetItemProperties()->Damage[0].Min) + it->GetItemProperties()->Damage[0].Min;
+                        value += float2int32(GetProto()->EffectBasePoints[0] + weapondmg / (it->GetItemProperties()->Delay / 1000.0f) * 2.8f);
                     }
                 }
                 if (target && target->IsDazed())
@@ -4743,10 +4743,10 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                 it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 if (it)
                 {
-                    if (it->GetProto()->Class == 2)
+                    if (it->GetItemProperties()->Class == 2)
                     {
-                        float avgwepdmg = (it->GetProto()->Damage[0].Min + it->GetProto()->Damage[0].Max) * 0.5f;
-                        float wepspd = (it->GetProto()->Delay * 0.001f);
+                        float avgwepdmg = (it->GetItemProperties()->Damage[0].Min + it->GetItemProperties()->Damage[0].Max) * 0.5f;
+                        float wepspd = (it->GetItemProperties()->Delay * 0.001f);
                         int32 dmg = float2int32((avgwepdmg)+p_caster->GetAP() / 14 * wepspd);
 
                         if (target && target->GetHealthPct() > 75)
@@ -4767,7 +4767,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
                 auto mainHand = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 if (mainHand != nullptr)
                 {
-                    float avgWeaponDmg = (mainHand->GetProto()->Damage[0].Max + mainHand->GetProto()->Damage[0].Min) / 2;
+                    float avgWeaponDmg = (mainHand->GetItemProperties()->Damage[0].Max + mainHand->GetItemProperties()->Damage[0].Min) / 2;
                     value += float2int32((GetProto()->EffectBasePoints[0] + 1) + avgWeaponDmg);
                 }
             }
@@ -4873,12 +4873,12 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
         }
         case SPELL_HASH_FAN_OF_KNIVES:  // rogue - fan of knives
         {
-            if (p_caster != NULL)
+            if (p_caster != nullptr)
             {
                 Item* mit = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                if (mit != NULL)
+                if (mit != nullptr)
                 {
-                    if (mit->GetProto()->Class == 2 && mit->GetProto()->SubClass == 15)   // daggers
+                    if (mit->GetItemProperties()->Class == 2 && mit->GetItemProperties()->SubClass == 15)   // daggers
                         value = 105;
                 }
             }
@@ -4900,7 +4900,7 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
             {
                 Item* mit = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                 if (mit != NULL)
-                    value = (p_caster->GetAP() * 22 + p_caster->GetPosDamageDoneMod(SCHOOL_HOLY) * 44) * mit->GetProto()->Delay / 1000000;
+                    value = (p_caster->GetAP() * 22 + p_caster->GetPosDamageDoneMod(SCHOOL_HOLY) * 44) * mit->GetItemProperties()->Delay / 1000000;
             }
             break;
         }

@@ -605,7 +605,7 @@ struct ItemStat
 #define MAX_ITEM_PROTO_SPELLS  5
 #define MAX_ITEM_PROTO_STATS  10
 
-struct ItemPrototype
+struct ItemProperties
 {
     uint32 ItemId;
     uint32 Class;

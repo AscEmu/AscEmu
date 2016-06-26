@@ -111,9 +111,9 @@ class SERVER_DECL ItemInterface
         uint32 RemoveItemAmt_ProtectPointer(uint32 id, uint32 amt, Item** pointer);
         uint32 RemoveItemAmtByGuid(uint64 guid, uint32 amt);
         void RemoveAllConjured();
-        void BuyItem(ItemPrototype const* item, uint32 total_amount, Creature* pVendor);
+        void BuyItem(ItemProperties const* item, uint32 total_amount, Creature* pVendor);
 
-        uint32 CalculateFreeSlots(ItemPrototype const* proto);
+        uint32 CalculateFreeSlots(ItemProperties const* proto);
         void ReduceItemDurability();
 
         uint8 LastSearchItemBagSlot() { return result.ContainerSlot; }
@@ -121,8 +121,8 @@ class SERVER_DECL ItemInterface
         SlotResult* LastSearchResult() { return &result; }
 
         //Searching functions
-        SlotResult FindFreeInventorySlot(ItemPrototype const* proto);
-        SlotResult FindFreeBankSlot(ItemPrototype const* proto);
+        SlotResult FindFreeInventorySlot(ItemProperties const* proto);
+        SlotResult FindFreeBankSlot(ItemProperties const* proto);
         SlotResult FindAmmoBag();
         int8 FindFreeBackPackSlot();
         uint8 FindFreeBackPackSlotMax();
@@ -131,10 +131,10 @@ class SERVER_DECL ItemInterface
         int8 FindSpecialBag(Item* item);
 
 
-        int8 CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemPrototype const* item, bool ignore_combat = false, bool skip_2h_check = false);
+        int8 CanEquipItemInSlot(int8 DstInvSlot, int8 slot, ItemProperties const* item, bool ignore_combat = false, bool skip_2h_check = false);
         int8 CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, bool ignore_combat = false, bool skip_2h_check = false);
-        int8 CanReceiveItem(ItemPrototype const* item, uint32 amount);
-        int8 CanAffordItem(ItemPrototype const* item, uint32 amount, Creature* pVendor);
+        int8 CanReceiveItem(ItemProperties const* item, uint32 amount);
+        int8 CanAffordItem(ItemProperties const* item, uint32 amount, Creature* pVendor);
         int8 GetItemSlotByType(uint32 type);
         Item* GetItemByGUID(uint64 itemGuid);
 

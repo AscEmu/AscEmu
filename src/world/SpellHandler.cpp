@@ -45,13 +45,15 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     recvPacket >> glyphIndex;
     recvPacket >> unk;
 
-    Item* tmpItem = NULL;
+    Item* tmpItem = nullptr;
     tmpItem = p_User->GetItemInterface()->GetInventoryItem(tmp1, slot);
     if (!tmpItem)
         tmpItem = p_User->GetItemInterface()->GetInventoryItem(slot);
+
     if (!tmpItem)
         return;
-    ItemPrototype const* itemProto = tmpItem->GetProto();
+
+    ItemProperties const* itemProto = tmpItem->GetItemProperties();
 
     // only some consumable items can be used in arenas
     if ((itemProto->Class == ITEM_CLASS_CONSUMABLE) &&
@@ -378,8 +380,9 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
             Item* weapon = GetPlayer()->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
             if (!weapon)
                 return;
+
             uint32 spellid;
-            switch (weapon->GetProto()->SubClass)
+            switch (weapon->GetItemProperties()->SubClass)
             {
                 case 2:			 // bows
                 case 3:			 // guns

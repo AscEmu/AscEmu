@@ -671,7 +671,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
         if (!_player->HasGold(costs[arena_type]))
             return;            // error message needed here
 
-        ItemPrototype const* ip = sMySQLStore.GetItemProto(item_ids[arena_type]);
+        ItemProperties const* ip = sMySQLStore.GetItemProperties(item_ids[arena_type]);
         ARCEMU_ASSERT(ip != NULL);
         SlotResult res = _player->GetItemInterface()->FindFreeInventorySlot(ip);
         if (res.Result == 0)
@@ -745,7 +745,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             return;
         }
 
-        ItemPrototype const* ip = sMySQLStore.GetItemProto(ITEM_ENTRY_GUILD_CHARTER);
+        ItemProperties const* ip = sMySQLStore.GetItemProperties(ITEM_ENTRY_GUILD_CHARTER);
         ARCEMU_ASSERT(ip != NULL);
         SlotResult res = _player->GetItemInterface()->FindFreeInventorySlot(ip);
         if (res.Result == 0)
@@ -754,7 +754,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             return;
         }
 
-        error = _player->GetItemInterface()->CanReceiveItem(sMySQLStore.GetItemProto(ITEM_ENTRY_GUILD_CHARTER), 1);
+        error = _player->GetItemInterface()->CanReceiveItem(sMySQLStore.GetItemProperties(ITEM_ENTRY_GUILD_CHARTER), 1);
         if (error)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
@@ -1543,7 +1543,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
                 return;
             }
 
-            SlotResult sr = _player->GetItemInterface()->FindFreeInventorySlot(pDestItem->GetProto());
+            SlotResult sr = _player->GetItemInterface()->FindFreeInventorySlot(pDestItem->GetItemProperties());
             if (!sr.Result)
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_BAG_FULL);
@@ -1592,7 +1592,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
         if (pSourceItem != NULL)
         {
             // make sure its not a soulbound item
-            if (pSourceItem->IsSoulbound() || pSourceItem->GetProto()->Class == ITEM_CLASS_QUEST)
+            if (pSourceItem->IsSoulbound() || pSourceItem->GetItemProperties()->Class == ITEM_CLASS_QUEST)
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_CANT_DROP_SOULBOUND);
                 return;

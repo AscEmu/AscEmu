@@ -425,7 +425,7 @@ bool ChatHandler::HandleCharAddItemCommand(const char* args, WorldSession* m_ses
     if (player_target == nullptr)
         return true;
 
-    auto item_proto = sMySQLStore.GetItemProto(itemid);
+    auto item_proto = sMySQLStore.GetItemProperties(itemid);
     if (item_proto != nullptr)
     {
         numadded -= player_target->GetItemInterface()->GetItemCount(itemid);
@@ -484,10 +484,10 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
 
     uint32 itemset_items_count = 0;
 
-    MySQLDataStore::ItemPrototypeContainer const* its = sMySQLStore.GetItemPrototypeStore();
-    for (MySQLDataStore::ItemPrototypeContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
+    MySQLDataStore::ItemPropertiesContainer const* its = sMySQLStore.GetItemPropertiesStore();
+    for (MySQLDataStore::ItemPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        ItemPrototype const* it = sMySQLStore.GetItemProto(itr->second.ItemId);
+        ItemProperties const* it = sMySQLStore.GetItemProperties(itr->second.ItemId);
         if (it == nullptr)
             continue;
 
@@ -788,7 +788,7 @@ bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* args, WorldSessi
             if (player_item->IsContainer())
             {
                 auto item_container = static_cast<Container*>(player_item);
-                for (uint32 j = 0; j < item_container->GetProto()->ContainerSlots; ++j)
+                for (uint32 j = 0; j < item_container->GetItemProperties()->ContainerSlots; ++j)
                 {
                     player_item = item_container->GetItem(static_cast<uint16>(j));
                     if (player_item != nullptr)
@@ -800,7 +800,7 @@ bool ChatHandler::HandleCharSetItemsRepairedCommand(const char* args, WorldSessi
             }
             else
             {
-                if (player_item->GetProto()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && player_item->GetDurability() <= 0)
+                if (player_item->GetItemProperties()->MaxDurability > 0 && i < INVENTORY_SLOT_BAG_END && player_item->GetDurability() <= 0)
                 {
                     player_item->SetDurabilityToMax();
                     player_item->m_isDirty = true;
@@ -1346,7 +1346,7 @@ bool ChatHandler::HandleCharListItemsCommand(const char* /*args*/, WorldSession*
         if (!(*itr))
             return false;
         itemcount++;
-        SendItemLinkToPlayer((*itr)->GetProto(), m_session, true, player_target, m_session->language);
+        SendItemLinkToPlayer((*itr)->GetItemProperties(), m_session, true, player_target, m_session->language);
     }
     itr.EndSearch();
 

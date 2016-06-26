@@ -438,11 +438,12 @@ bool ChatHandler::HandleIncreaseWeaponSkill(const char* args, WorldSession* m_se
     if (!pr) pr = m_session->GetPlayer();
     if (!pr) return false;
     Item* it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-    ItemPrototype const* proto = NULL;
+
+    ItemProperties const* proto = nullptr;
     if (!it)
         it = pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
     if (it)
-        proto = it->GetProto();
+        proto = it->GetItemProperties();
     if (proto)
     {
         switch (proto->SubClass)
@@ -1179,8 +1180,7 @@ bool ChatHandler::HandleRemoveItemCommand(const char* args, WorldSession* m_sess
         ++loop_count;
     }
 
-    ItemPrototype const* iProto = sMySQLStore.GetItemProto(item_id);
-
+    ItemProperties const* iProto = sMySQLStore.GetItemProperties(item_id);
     if (iProto)
     {
         sGMLog.writefromsession(m_session, "used remove item %s (id: %u) count %u from %s", iProto->Name.c_str(), item_id, ocount, plr->GetName());
@@ -1217,7 +1217,7 @@ void ChatHandler::SendHighlightedName(WorldSession* m_session, const char* prefi
     SystemMessage(m_session, message);
 }
 
-void ChatHandler::SendItemLinkToPlayer(ItemPrototype const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32 language)
+void ChatHandler::SendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32 language)
 {
     if (!iProto || !pSession)
         return;

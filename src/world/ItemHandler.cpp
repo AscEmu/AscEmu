@@ -75,8 +75,8 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
         return;
     auto i2 = _player->GetItemInterface()->GetInventoryItem(DstInvSlot, DstSlot);
 
-    uint32 itemMaxStack1 = (i1->GetOwner()->ItemStackCheat) ? 0x7fffffff : i1->GetProto()->MaxCount;
-    uint32 itemMaxStack2 = (i2) ? ((i2->GetOwner()->ItemStackCheat) ? 0x7fffffff : i2->GetProto()->MaxCount) : 0;
+    uint32 itemMaxStack1 = (i1->GetOwner()->ItemStackCheat) ? 0x7fffffff : i1->GetItemProperties()->MaxCount;
+    uint32 itemMaxStack2 = (i2) ? ((i2->GetOwner()->ItemStackCheat) ? 0x7fffffff : i2->GetItemProperties()->MaxCount) : 0;
     if ((i1 && i1->wrapped_item_id) || (i2 && i2->wrapped_item_id) || (c > itemMaxStack1))
     {
         GetPlayer()->GetItemInterface()->BuildInventoryChangeError(i1, i2, INV_ERR_ITEM_CANT_STACK);
@@ -141,7 +141,7 @@ void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
                 else
                 {
                     // Find a free slot
-                    SlotResult res = _player->GetItemInterface()->FindFreeInventorySlot(i2->GetProto());
+                    SlotResult res = _player->GetItemInterface()->FindFreeInventorySlot(i2->GetItemProperties());
                     if (res.Result)
                     {
                         DstSlot = res.Slot;
@@ -269,7 +269,7 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recv_data)
 
                 if (error == INV_ERR_YOU_MUST_REACH_LEVEL_N)
                 {
-                    data << dstitem->GetProto()->RequiredLevel;
+                    data << dstitem->GetItemProperties()->RequiredLevel;
                 }
 
                 SendPacket(&data);
@@ -310,7 +310,7 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recv_data)
         //dst is bag inventory
         if (dstslot < INVENTORY_SLOT_BAG_END)
         {
-            if (srcitem->GetProto()->Bonding == ITEM_BIND_ON_EQUIP)
+            if (srcitem->GetItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
                 srcitem->SoulBind();
         }
     }
@@ -325,30 +325,30 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recv_data)
 #ifdef ENABLE_ACHIEVEMENTS
     if (dstitem && srcslot < INVENTORY_SLOT_BAG_END)
     {
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, dstitem->GetProto()->ItemId, 0, 0);
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, dstitem->GetItemProperties()->ItemId, 0, 0);
         if (srcslot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement
         {
             // Achievement ID:556 description Equip an epic item in every slot with a minimum item level of 213.
             // "213" value not found in achievement or criteria entries, have to hard-code it here? :(
             // Achievement ID:557 description Equip a superior item in every slot with a minimum item level of 187.
             // "187" value not found in achievement or criteria entries, have to hard-code it here? :(
-            if ((dstitem->GetProto()->Quality == ITEM_QUALITY_RARE_BLUE && dstitem->GetProto()->ItemLevel >= 187) ||
-                (dstitem->GetProto()->Quality == ITEM_QUALITY_EPIC_PURPLE && dstitem->GetProto()->ItemLevel >= 213))
-                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, srcslot, dstitem->GetProto()->Quality, 0);
+            if ((dstitem->GetItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && dstitem->GetItemProperties()->ItemLevel >= 187) ||
+                (dstitem->GetItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && dstitem->GetItemProperties()->ItemLevel >= 213))
+                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, srcslot, dstitem->GetItemProperties()->Quality, 0);
         }
     }
     if (srcitem && dstslot < INVENTORY_SLOT_BAG_END)
     {
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, srcitem->GetProto()->ItemId, 0, 0);
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, srcitem->GetItemProperties()->ItemId, 0, 0);
         if (dstslot < INVENTORY_SLOT_BAG_START) // check Superior/Epic achievement
         {
             // Achievement ID:556 description Equip an epic item in every slot with a minimum item level of 213.
             // "213" value not found in achievement or criteria entries, have to hard-code it here? :(
             // Achievement ID:557 description Equip a superior item in every slot with a minimum item level of 187.
             // "187" value not found in achievement or criteria entries, have to hard-code it here? :(
-            if ((srcitem->GetProto()->Quality == ITEM_QUALITY_RARE_BLUE && srcitem->GetProto()->ItemLevel >= 187) ||
-                (srcitem->GetProto()->Quality == ITEM_QUALITY_EPIC_PURPLE && srcitem->GetProto()->ItemLevel >= 213))
-                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, dstslot, srcitem->GetProto()->Quality, 0);
+            if ((srcitem->GetItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && srcitem->GetItemProperties()->ItemLevel >= 187) ||
+                (srcitem->GetItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && srcitem->GetItemProperties()->ItemLevel >= 213))
+                _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, dstslot, srcitem->GetItemProperties()->Quality, 0);
         }
     }
 #endif
@@ -382,13 +382,13 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recv_data)
             }
         }
 
-        if (it->GetProto()->HasFlag(ITEM_FLAG_INDESTRUCTIBLE))
+        if (it->GetItemProperties()->HasFlag(ITEM_FLAG_INDESTRUCTIBLE))
         {
             _player->GetItemInterface()->BuildInventoryChangeError(it, NULL, INV_ERR_CANT_DROP_SOULBOUND);
             return;
         }
 
-        if (it->GetProto()->ItemId == ITEM_ENTRY_GUILD_CHARTER)
+        if (it->GetItemProperties()->ItemId == ITEM_ENTRY_GUILD_CHARTER)
         {
             Charter* gc = _player->m_charters[CHARTER_TYPE_GUILD];
             if (gc)
@@ -397,7 +397,7 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recv_data)
             _player->m_charters[CHARTER_TYPE_GUILD] = NULL;
         }
 
-        if (it->GetProto()->ItemId == ARENA_TEAM_CHARTER_2v2)
+        if (it->GetItemProperties()->ItemId == ARENA_TEAM_CHARTER_2v2)
         {
             Charter* gc = _player->m_charters[CHARTER_TYPE_ARENA_2V2];
             if (gc)
@@ -406,7 +406,7 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recv_data)
             _player->m_charters[CHARTER_TYPE_ARENA_2V2] = NULL;
         }
 
-        if (it->GetProto()->ItemId == ARENA_TEAM_CHARTER_5v5)
+        if (it->GetItemProperties()->ItemId == ARENA_TEAM_CHARTER_5v5)
         {
             Charter* gc = _player->m_charters[CHARTER_TYPE_ARENA_5V5];
             if (gc)
@@ -415,7 +415,7 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recv_data)
             _player->m_charters[CHARTER_TYPE_ARENA_5V5] = NULL;
         }
 
-        if (it->GetProto()->ItemId == ARENA_TEAM_CHARTER_3v3)
+        if (it->GetItemProperties()->ItemId == ARENA_TEAM_CHARTER_3v3)
         {
             Charter* gc = _player->m_charters[CHARTER_TYPE_ARENA_3V3];
             if (gc)
@@ -424,19 +424,6 @@ void WorldSession::HandleDestroyItemOpcode(WorldPacket& recv_data)
             _player->m_charters[CHARTER_TYPE_ARENA_3V3] = NULL;
         }
 
-        /* Changed in 3.3.3 or 3.3.5
-        uint32 mail_id = it->GetTextId();
-        if (mail_id)
-        sMailSystem.RemoveMessageIfDeleted(mail_id, _player);
-        */
-
-
-
-        /*bool result =  _player->GetItemInterface()->SafeFullRemoveItemFromSlot(SrcInvSlot,SrcSlot);
-        if (!result)
-        {
-        LOG_DETAIL("ITEM: Destroy, SrcInv Slot: %u Src slot: %u Failed", (uint32)SrcInvSlot, (uint32)SrcSlot);
-        }*/
         Item* pItem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInvSlot, SrcSlot, false);
         if (!pItem)
             return;
@@ -476,7 +463,7 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recv_data)
         return;
     }
 
-    int8 Slot = _player->GetItemInterface()->GetItemSlotByType(eitem->GetProto()->InventoryType);
+    int8 Slot = _player->GetItemInterface()->GetItemSlotByType(eitem->GetItemProperties()->InventoryType);
     if (Slot == ITEM_NO_SLOT_AVAILABLE)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(eitem, NULL, INV_ERR_ITEM_CANT_BE_EQUIPPED);
@@ -487,36 +474,36 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recv_data)
     if ((Slot == EQUIPMENT_SLOT_MAINHAND || Slot == EQUIPMENT_SLOT_OFFHAND) && !_player->DualWield2H)
     {
         Item* mainhandweapon = _player->GetItemInterface()->GetInventoryItem(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_MAINHAND);
-        if (mainhandweapon != NULL && mainhandweapon->GetProto()->InventoryType == INVTYPE_2HWEAPON)
+        if (mainhandweapon != NULL && mainhandweapon->GetItemProperties()->InventoryType == INVTYPE_2HWEAPON)
         {
-            if (Slot == EQUIPMENT_SLOT_OFFHAND && (eitem->GetProto()->InventoryType == INVTYPE_WEAPON || eitem->GetProto()->InventoryType == INVTYPE_2HWEAPON))
+            if (Slot == EQUIPMENT_SLOT_OFFHAND && (eitem->GetItemProperties()->InventoryType == INVTYPE_WEAPON || eitem->GetItemProperties()->InventoryType == INVTYPE_2HWEAPON))
             {
                 Slot = EQUIPMENT_SLOT_MAINHAND;
             }
         }
         else
         {
-            if (Slot == EQUIPMENT_SLOT_OFFHAND && eitem->GetProto()->InventoryType == INVTYPE_2HWEAPON)
+            if (Slot == EQUIPMENT_SLOT_OFFHAND && eitem->GetItemProperties()->InventoryType == INVTYPE_2HWEAPON)
             {
                 Slot = EQUIPMENT_SLOT_MAINHAND;
             }
         }
 
-        error = _player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, Slot, eitem->GetProto(), true, true);
+        error = _player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, Slot, eitem->GetItemProperties(), true, true);
         if (error)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(eitem, NULL, error);
             return;
         }
 
-        if (eitem->GetProto()->InventoryType == INVTYPE_2HWEAPON)
+        if (eitem->GetItemProperties()->InventoryType == INVTYPE_2HWEAPON)
         {
             // see if we have a weapon equipped in the offhand, if so we need to remove it
             Item* offhandweapon = _player->GetItemInterface()->GetInventoryItem(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_OFFHAND);
             if (offhandweapon != NULL)
             {
                 // we need to de-equip this
-                SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(offhandweapon->GetProto());
+                SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(offhandweapon->GetItemProperties());
                 if (!result.Result)
                 {
                     // no free slots for this item
@@ -539,10 +526,10 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recv_data)
         {
             // can't equip a non-two-handed weapon with a two-handed weapon
             mainhandweapon = _player->GetItemInterface()->GetInventoryItem(INVENTORY_SLOT_NOT_SET, EQUIPMENT_SLOT_MAINHAND);
-            if (mainhandweapon != NULL && mainhandweapon->GetProto()->InventoryType == INVTYPE_2HWEAPON)
+            if (mainhandweapon != NULL && mainhandweapon->GetItemProperties()->InventoryType == INVTYPE_2HWEAPON)
             {
                 // we need to de-equip this
-                SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(mainhandweapon->GetProto());
+                SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(mainhandweapon->GetItemProperties());
                 if (!result.Result)
                 {
                     // no free slots for this item
@@ -564,7 +551,7 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recv_data)
     }
     else
     {
-        error = _player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, Slot, eitem->GetProto(), false, false);
+        error = _player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, Slot, eitem->GetItemProperties(), false, false);
         if (error)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(eitem, NULL, error);
@@ -574,7 +561,7 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recv_data)
 
     if (Slot <= INVENTORY_SLOT_BAG_END)
     {
-        error = _player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, Slot, eitem->GetProto(), false, false);
+        error = _player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, Slot, eitem->GetItemProperties(), false, false);
         if (error)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(eitem, NULL, error);
@@ -619,17 +606,17 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recv_data)
 
     if (eitem != NULL)
     {
-        if (eitem->GetProto()->Bonding == ITEM_BIND_ON_EQUIP)
+        if (eitem->GetItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
             eitem->SoulBind();
 #ifdef ENABLE_ACHIEVEMENTS
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, eitem->GetProto()->ItemId, 0, 0);
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, eitem->GetItemProperties()->ItemId, 0, 0);
         // Achievement ID:556 description Equip an epic item in every slot with a minimum item level of 213.
         // "213" value not found in achievement or criteria entries, have to hard-code it here? :(
         // Achievement ID:557 description Equip a superior item in every slot with a minimum item level of 187.
         // "187" value not found in achievement or criteria entries, have to hard-code it here? :(
-        if ((eitem->GetProto()->Quality == ITEM_QUALITY_RARE_BLUE && eitem->GetProto()->ItemLevel >= 187) ||
-            (eitem->GetProto()->Quality == ITEM_QUALITY_EPIC_PURPLE && eitem->GetProto()->ItemLevel >= 213))
-            _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, Slot, eitem->GetProto()->Quality, 0);
+        if ((eitem->GetItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && eitem->GetItemProperties()->ItemLevel >= 187) ||
+            (eitem->GetItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && eitem->GetItemProperties()->ItemLevel >= 213))
+            _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, Slot, eitem->GetItemProperties()->Quality, 0);
 #endif
     }
     //Recalculate Expertise (for Weapon specs)
@@ -656,7 +643,7 @@ void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
     if (item == NULL)
         return;
 
-    int8    slotType = _player->GetItemInterface()->GetItemSlotByType(item->GetProto()->InventoryType);
+    int8    slotType = _player->GetItemInterface()->GetItemSlotByType(item->GetItemProperties()->InventoryType);
     bool    hasDualWield2H = false;
 
     LOG_DEBUG("ITEM: AutoEquipItemSlot, ItemGUID: %u, SrcSlot: %i, DestSlot: %i, SlotType: %i", itemguid, srcSlot, destSlot, slotType);
@@ -680,7 +667,7 @@ void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
     // Handle destination slot checking.
     if (destSlot == slotType || hasDualWield2H)
     {
-        uint32 invType = item->GetProto()->InventoryType;
+        uint32 invType = item->GetItemProperties()->InventoryType;
         if (invType == INVTYPE_WEAPON || invType == INVTYPE_WEAPONMAINHAND ||
             invType == INVTYPE_WEAPONOFFHAND || invType == INVTYPE_2HWEAPON)
         {
@@ -690,7 +677,7 @@ void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
             if (mainHand != NULL && offHand != NULL && !_player->DualWield2H)
             {
                 // No DualWield2H like Titan's grip. Unequip offhand.
-                SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(offHand->GetProto());
+                SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(offHand->GetItemProperties());
                 if (!result.Result)
                 {
                     // No free slots for this item.
@@ -735,7 +722,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recv_data)
     uint32 itemid;
     recv_data >> itemid;
 
-    ItemPrototype const* itemProto = sMySQLStore.GetItemProto(itemid);
+    ItemProperties const* itemProto = sMySQLStore.GetItemProperties(itemid);
     if (!itemProto)
     {
         LOG_ERROR("WORLD: Unknown item id 0x%.8X", itemid);
@@ -875,7 +862,7 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recv_data)
 
         add = _player->GetItemInterface()->FindItemLessMax(itemid, amount, false);
 
-        uint32 FreeSlots = _player->GetItemInterface()->CalculateFreeSlots(it->GetProto());
+        uint32 FreeSlots = _player->GetItemInterface()->CalculateFreeSlots(it->GetItemProperties());
         if ((FreeSlots == 0) && (!add))
         {
             _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
@@ -894,7 +881,7 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recv_data)
             return;
         }
         // Check for item uniqueness
-        if ((error = _player->GetItemInterface()->CanReceiveItem(it->GetProto(), amount)) != 0)
+        if ((error = _player->GetItemInterface()->CanReceiveItem(it->GetItemProperties(), amount)) != 0)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
             return;
@@ -974,7 +961,7 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recv_data)
         return; //our player doesn't have this item
     }
 
-    ItemPrototype const* it = item->GetProto();
+    ItemProperties const* it = item->GetItemProperties();
 
     if (item->IsContainer() && static_cast< Container* >(item)->HasItems())
     {
@@ -1089,9 +1076,8 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag &
         return;
     }
 
-    ItemPrototype const* it = sMySQLStore.GetItemProto(itemid);
-
-    if (it == NULL)
+    ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
+    if (it == nullptr)
         return;
 
     uint32 itemMaxStack = (_player->ItemStackCheat) ? 0x7fffffff : it->MaxCount;
@@ -1122,7 +1108,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag &
                 return;
             bagslot = (int8)_player->GetItemInterface()->GetBagSlotByGuid(bagguid);
 
-            if (bagslot == INVENTORY_SLOT_NOT_SET || ((uint32)slot > c->GetProto()->ContainerSlots))
+            if (bagslot == INVENTORY_SLOT_NOT_SET || ((uint32)slot > c->GetItemProperties()->ContainerSlots))
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
                 return;
@@ -1174,7 +1160,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag &
     if (oldItem != NULL)
     {
         // try to add to the existing items stack
-        if (oldItem->GetProto() != it)
+        if (oldItem->GetItemProperties() != it)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
             return;
@@ -1285,7 +1271,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)   // right-click 
         return;
     }
 
-    ItemPrototype const* it = sMySQLStore.GetItemProto(itemid);
+    ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
     if (!it)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
@@ -1451,14 +1437,14 @@ void WorldSession::SendInventoryList(Creature* unit)
     data << unit->GetGUID();
     data << uint8(0);   // placeholder for item count
 
-    ItemPrototype const* curItem = NULL;
+    ItemProperties const* curItem = NULL;
     uint32 counter = 0;
 
     for (std::vector<CreatureItem>::iterator itr = unit->GetSellItemBegin(); itr != unit->GetSellItemEnd(); ++itr)
     {
         if (itr->itemid && (itr->max_amount == 0 || (itr->max_amount > 0 && itr->available_amount > 0)))
         {
-            if ((curItem = sMySQLStore.GetItemProto(itr->itemid)) != 0)
+            if ((curItem = sMySQLStore.GetItemProperties(itr->itemid)) != 0)
             {
                 if (!_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) && !sWorld.show_all_vendor_items) // looking up everything for active gms
                 {
@@ -1643,7 +1629,7 @@ void WorldSession::HandleReadItemOpcode(WorldPacket& recvPacket)
     {
         // Check if it has pagetext
 
-        if (item->GetProto()->PageId)
+        if (item->GetItemProperties()->PageId)
         {
             WorldPacket data(SMSG_READ_ITEM_OK, 4);
             data << item->GetGUID();
@@ -1711,7 +1697,7 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
                 if (pItem->IsContainer())
                 {
                     pContainer = static_cast< Container* >(pItem);
-                    for (j = 0; j < pContainer->GetProto()->ContainerSlots; ++j)
+                    for (j = 0; j < pContainer->GetItemProperties()->ContainerSlots; ++j)
                     {
                         pItem = pContainer->GetItem(static_cast<int16>(j));
                         if (pItem != NULL)
@@ -1830,7 +1816,7 @@ void WorldSession::HandleAutoBankItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    slotresult = _player->GetItemInterface()->FindFreeBankSlot(eitem->GetProto());
+    slotresult = _player->GetItemInterface()->FindFreeBankSlot(eitem->GetItemProperties());
 
     if (!slotresult.Result)
     {
@@ -1875,7 +1861,7 @@ void WorldSession::HandleAutoStoreBankItemOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    SlotResult slotresult = _player->GetItemInterface()->FindFreeInventorySlot(eitem->GetProto());
+    SlotResult slotresult = _player->GetItemInterface()->FindFreeInventorySlot(eitem->GetItemProperties());
 
     if (!slotresult.Result)
     {
@@ -1924,14 +1910,14 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
     if (!TargetItem)
         return;
 
-    ItemPrototype const* TargetProto = TargetItem->GetProto();
+    ItemProperties const* TargetProto = TargetItem->GetItemProperties();
     int slot = itemi->GetInventorySlotByGuid(itemguid);
 
     bool apply = (slot >= 0 && slot < 19);
     uint32 FilledSlots = 0;
 
     //cheat -> tried to socket same gem multiple times
-    for (uint8 i = 0; i < 3; i++)
+    for (uint8 i = 0; i < 3; ++i)
         recvPacket >> gemguid[i];
 
     if ((gemguid[0] && (gemguid[0] == gemguid[1] || gemguid[0] == gemguid[2])) || (gemguid[1] && (gemguid[1] == gemguid[2])))
@@ -1940,14 +1926,14 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
     }
 
     bool ColorMatch = true;
-    for (uint32 i = 0; i < TargetItem->GetSocketsCount(); i++)
+    for (uint32 i = 0; i < TargetItem->GetSocketsCount(); ++i)
     {
         EnchantmentInstance* EI = TargetItem->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + i);
         if (EI)
         {
             FilledSlots++;
-            ItemPrototype const* ip = sMySQLStore.GetItemProto(EI->Enchantment->GemEntry);
-            if (!ip)
+            ItemProperties const* ip = sMySQLStore.GetItemProperties(EI->Enchantment->GemEntry);
+            if (ip == nullptr)
                 gem_properties = nullptr;
             else
                 gem_properties = sGemPropertiesStore.LookupEntry(ip->GemProperties);
@@ -1959,7 +1945,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
         if (gemguid[i])  //add or replace gem
         {
             Item* it = NULL;
-            ItemPrototype const* ip = NULL;
+            ItemProperties const* ip = nullptr;
 
             // tried to put gem in socket where no socket exists (take care about prismatic sockets)
             if (!TargetProto->Sockets[i].SocketColor)
@@ -1982,7 +1968,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
                 if (!it)
                     continue;
 
-                ip = it->GetProto();
+                ip = it->GetItemProperties();
                 if (ip->Flags & ITEM_FLAG_UNIQUE_EQUIP && itemi->IsEquipped(ip->ItemId))
                 {
                     itemi->BuildInventoryChangeError(it, TargetItem, INV_ERR_CANT_CARRY_MORE_OF_THIS);
@@ -2012,7 +1998,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
             if (!it)
                 return; //someone sending hacked packets to crash server
 
-            gem_properties = sGemPropertiesStore.LookupEntry(it->GetProto()->GemProperties);
+            gem_properties = sGemPropertiesStore.LookupEntry(it->GetItemProperties()->GemProperties);
             it->DeleteMe();
 
             if (!gem_properties)
@@ -2034,7 +2020,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
             spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(gem_properties->EnchantmentID);
             if (spell_item_enchant != nullptr)
             {
-                if (TargetItem->GetProto()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+                if (TargetItem->GetItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
                     TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, 2 + i);
             }
 
@@ -2042,17 +2028,17 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
     }
 
     //Add color match bonus
-    if (TargetItem->GetProto()->SocketBonus)
+    if (TargetItem->GetItemProperties()->SocketBonus)
     {
         if (ColorMatch && (FilledSlots == TargetItem->GetSocketsCount()))
         {
-            if (TargetItem->HasEnchantment(TargetItem->GetProto()->SocketBonus) > 0)
+            if (TargetItem->HasEnchantment(TargetItem->GetItemProperties()->SocketBonus) > 0)
                 return;
 
-            spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(TargetItem->GetProto()->SocketBonus);
+            spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(TargetItem->GetItemProperties()->SocketBonus);
             if (spell_item_enchant != nullptr)
             {
-                if (TargetItem->GetProto()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+                if (TargetItem->GetItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
                 {
                     uint32 Slot = TargetItem->FindFreeEnchantSlot(spell_item_enchant, 0);
                     TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, Slot);
@@ -2091,7 +2077,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
     if (!src || !dst)
         return;
 
-    if (src == dst || !(src->GetProto()->Class == 0 && src->GetProto()->SubClass == 8))
+    if (src == dst || !(src->GetItemProperties()->Class == 0 && src->GetItemProperties()->SubClass == 8))
     {
         _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_WRAPPED_CANT_BE_WRAPPED);
         return;
@@ -2103,7 +2089,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
         return;
     }
 
-    uint32 dstItemMaxStack = (dst->GetOwner()->ItemStackCheat) ? 0x7fffffff : dst->GetProto()->MaxCount;
+    uint32 dstItemMaxStack = (dst->GetOwner()->ItemStackCheat) ? 0x7fffffff : dst->GetItemProperties()->MaxCount;
     if (dstItemMaxStack > 1)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_STACKABLE_CANT_BE_WRAPPED);
@@ -2122,7 +2108,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (dst->GetProto()->Unique)
+    if (dst->GetItemProperties()->Unique)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_UNIQUE_CANT_BE_WRAPPED);
         return;
@@ -2180,7 +2166,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
             break;
     }
 
-    dst->SetProto(src->GetProto());
+    dst->SetItemProperties(src->GetItemProperties());
 
     if (src->GetStackCount() <= 1)
     {
@@ -2244,7 +2230,7 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
     std::pair<time_t, uint32> RefundEntry;
     DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = NULL;
-    ItemPrototype const* item_proto = nullptr;
+    ItemProperties const* item_proto = nullptr;
 
     recvPacket >> GUID;
 
@@ -2270,7 +2256,7 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
             if (item_extended_cost != NULL)
             {
-                item_proto = item->GetProto();
+                item_proto = item->GetItemProperties();
 
                 ////////////////////////////////// We remove the refunded item and refund the cost //////////////////////////////////
 

@@ -35,10 +35,10 @@ class TwinBladesOfAzzinothSpellProc : public SpellProc
             * According to comments on wowhead, this proc has ~0.75ppm (procs-per-minute). */
         Item* mh = static_cast<Player*>(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
         Item* of = static_cast<Player*>(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-        if (mh != NULL && of != NULL)
+        if (mh != nullptr && of != nullptr)
         {
-            uint32 mhs = mh->GetProto()->Delay;
-            uint32 ohs = of->GetProto()->Delay;
+            uint32 mhs = mh->GetItemProperties()->Delay;
+            uint32 ohs = of->GetItemProperties()->Delay;
             mProcChance = mhs * ohs / (800 * (mhs + ohs));     // 0.75 ppm
         }
     }

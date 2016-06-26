@@ -11,7 +11,7 @@ SERVER_DECL std::set<std::string> CreatureSpawnsTables;
 SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
 SERVER_DECL std::set<std::string> GameObjectPropertiesTables;
 SERVER_DECL std::set<std::string> CreaturePropertiesTables;
-SERVER_DECL std::set<std::string> ItemsTables;
+SERVER_DECL std::set<std::string> ItemPropertiesTables;
 SERVER_DECL std::set<std::string> QuestPropertiesTables;
 
 MySQLDataStore::MySQLDataStore() {}
@@ -24,7 +24,7 @@ void MySQLDataStore::LoadAdditionalTableConfig()
     GameObjectSpawnsTables.insert(std::string("gameobject_spawns"));
     GameObjectPropertiesTables.insert(std::string("gameobject_properties"));
     CreaturePropertiesTables.insert(std::string("creature_properties"));
-    ItemsTables.insert(std::string("item_properties"));
+    ItemPropertiesTables.insert(std::string("item_properties"));
     QuestPropertiesTables.insert(std::string("quest_properties"));
 
     // get config
@@ -57,7 +57,7 @@ void MySQLDataStore::LoadAdditionalTableConfig()
             CreaturePropertiesTables.insert(std::string(additional_table));
 
         if (!stricmp(target_table, "item_properties"))
-            ItemsTables.insert(std::string(additional_table));
+            ItemPropertiesTables.insert(std::string(additional_table));
 
         if (!stricmp(target_table, "quest_properties"))
             QuestPropertiesTables.insert(std::string(additional_table));
@@ -110,7 +110,7 @@ ItemPage const* MySQLDataStore::GetItemPage(uint32 entry)
     return nullptr;
 }
 
-void MySQLDataStore::LoadItemsTable()
+void MySQLDataStore::LoadItemPropertiesTable()
 {
     uint32 start_time = getMSTime();
 
@@ -118,7 +118,7 @@ void MySQLDataStore::LoadItemsTable()
     uint32 basic_field_count = 0;
 
     std::set<std::string>::iterator tableiterator;
-    for (tableiterator = ItemsTables.begin(); tableiterator != ItemsTables.end(); ++tableiterator)
+    for (tableiterator = ItemPropertiesTables.begin(); tableiterator != ItemPropertiesTables.end(); ++tableiterator)
     {
         std::string table_name = *tableiterator;
         QueryResult* item_result = WorldDatabase.Query("SELECT * FROM %s", table_name.c_str());
@@ -171,7 +171,7 @@ void MySQLDataStore::LoadItemsTable()
         }
         else
         {
-            row_count = _itemPrototypeStore.size();
+            row_count = _itemPropertiesStore.size();
         }
 
         if (basic_field_count != item_result->GetFieldCount())
@@ -182,7 +182,7 @@ void MySQLDataStore::LoadItemsTable()
 
         Log.Notice("MySQLDataLoads", "Table `%s` has %u columns", table_name.c_str(), item_result->GetFieldCount());
 
-        _itemPrototypeStore.rehash(row_count + item_result->GetRowCount());
+        _itemPropertiesStore.rehash(row_count + item_result->GetRowCount());
 
         do
         {
@@ -190,76 +190,76 @@ void MySQLDataStore::LoadItemsTable()
 
             uint32 entry = fields[0].GetUInt32();
 
-            ItemPrototype& itemProto = _itemPrototypeStore[entry];
+            ItemProperties& itemProperties = _itemPropertiesStore[entry];
 
-            itemProto.ItemId = entry;
-            itemProto.Class = fields[1].GetUInt32();
-            itemProto.SubClass = fields[2].GetUInt32();
-            itemProto.unknown_bc = fields[3].GetUInt32();
-            itemProto.Name = fields[4].GetString();
-            itemProto.DisplayInfoID = fields[5].GetUInt32();
-            itemProto.Quality = fields[6].GetUInt32();
-            itemProto.Flags = fields[7].GetUInt32();
-            itemProto.Flags2 = fields[8].GetUInt32();
-            itemProto.BuyPrice = fields[9].GetUInt32();
-            itemProto.SellPrice = fields[10].GetUInt32();
+            itemProperties.ItemId = entry;
+            itemProperties.Class = fields[1].GetUInt32();
+            itemProperties.SubClass = fields[2].GetUInt32();
+            itemProperties.unknown_bc = fields[3].GetUInt32();
+            itemProperties.Name = fields[4].GetString();
+            itemProperties.DisplayInfoID = fields[5].GetUInt32();
+            itemProperties.Quality = fields[6].GetUInt32();
+            itemProperties.Flags = fields[7].GetUInt32();
+            itemProperties.Flags2 = fields[8].GetUInt32();
+            itemProperties.BuyPrice = fields[9].GetUInt32();
+            itemProperties.SellPrice = fields[10].GetUInt32();
 
-            itemProto.InventoryType = fields[11].GetUInt32();
-            itemProto.AllowableClass = fields[12].GetUInt32();
-            itemProto.AllowableRace = fields[13].GetUInt32();
-            itemProto.ItemLevel = fields[14].GetUInt32();
-            itemProto.RequiredLevel = fields[15].GetUInt32();
-            itemProto.RequiredSkill = fields[16].GetUInt32();
-            itemProto.RequiredSkillRank = fields[17].GetUInt32();
-            itemProto.RequiredSkillSubRank = fields[18].GetUInt32();
-            itemProto.RequiredPlayerRank1 = fields[19].GetUInt32();
-            itemProto.RequiredPlayerRank2 = fields[20].GetUInt32();
-            itemProto.RequiredFaction = fields[21].GetUInt32();
-            itemProto.RequiredFactionStanding = fields[22].GetUInt32();
-            itemProto.Unique = fields[23].GetUInt32();
-            itemProto.MaxCount = fields[24].GetUInt32();
-            itemProto.ContainerSlots = fields[25].GetUInt32();
-            itemProto.itemstatscount = fields[26].GetUInt32();
+            itemProperties.InventoryType = fields[11].GetUInt32();
+            itemProperties.AllowableClass = fields[12].GetUInt32();
+            itemProperties.AllowableRace = fields[13].GetUInt32();
+            itemProperties.ItemLevel = fields[14].GetUInt32();
+            itemProperties.RequiredLevel = fields[15].GetUInt32();
+            itemProperties.RequiredSkill = fields[16].GetUInt32();
+            itemProperties.RequiredSkillRank = fields[17].GetUInt32();
+            itemProperties.RequiredSkillSubRank = fields[18].GetUInt32();
+            itemProperties.RequiredPlayerRank1 = fields[19].GetUInt32();
+            itemProperties.RequiredPlayerRank2 = fields[20].GetUInt32();
+            itemProperties.RequiredFaction = fields[21].GetUInt32();
+            itemProperties.RequiredFactionStanding = fields[22].GetUInt32();
+            itemProperties.Unique = fields[23].GetUInt32();
+            itemProperties.MaxCount = fields[24].GetUInt32();
+            itemProperties.ContainerSlots = fields[25].GetUInt32();
+            itemProperties.itemstatscount = fields[26].GetUInt32();
 
-            for (uint8 i = 0; i < itemProto.itemstatscount; ++i)
+            for (uint8 i = 0; i < itemProperties.itemstatscount; ++i)
             {
-                itemProto.Stats[i].Type = fields[27 + i * 2].GetUInt32();
-                itemProto.Stats[i].Value = fields[28 + i * 2].GetUInt32();
+                itemProperties.Stats[i].Type = fields[27 + i * 2].GetUInt32();
+                itemProperties.Stats[i].Value = fields[28 + i * 2].GetUInt32();
             }
 
-            itemProto.ScalingStatsEntry = fields[47].GetUInt32();
-            itemProto.ScalingStatsFlag = fields[48].GetUInt32();
+            itemProperties.ScalingStatsEntry = fields[47].GetUInt32();
+            itemProperties.ScalingStatsFlag = fields[48].GetUInt32();
 
             for (uint8 i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
             {
-                itemProto.Damage[i].Min = fields[49 + i * 3].GetFloat();
-                itemProto.Damage[i].Max = fields[50 + i * 3].GetFloat();
-                itemProto.Damage[i].Type = fields[51 + i * 3].GetUInt32();
+                itemProperties.Damage[i].Min = fields[49 + i * 3].GetFloat();
+                itemProperties.Damage[i].Max = fields[50 + i * 3].GetFloat();
+                itemProperties.Damage[i].Type = fields[51 + i * 3].GetUInt32();
             }
 
-            itemProto.Armor = fields[55].GetUInt32();
-            itemProto.HolyRes = fields[56].GetUInt32();
-            itemProto.FireRes = fields[57].GetUInt32();
-            itemProto.NatureRes = fields[58].GetUInt32();
-            itemProto.FrostRes = fields[59].GetUInt32();
-            itemProto.ShadowRes = fields[60].GetUInt32();
-            itemProto.ArcaneRes = fields[61].GetUInt32();
-            itemProto.Delay = fields[62].GetUInt32();
-            itemProto.AmmoType = fields[63].GetUInt32();
-            itemProto.Range = fields[64].GetFloat();
+            itemProperties.Armor = fields[55].GetUInt32();
+            itemProperties.HolyRes = fields[56].GetUInt32();
+            itemProperties.FireRes = fields[57].GetUInt32();
+            itemProperties.NatureRes = fields[58].GetUInt32();
+            itemProperties.FrostRes = fields[59].GetUInt32();
+            itemProperties.ShadowRes = fields[60].GetUInt32();
+            itemProperties.ArcaneRes = fields[61].GetUInt32();
+            itemProperties.Delay = fields[62].GetUInt32();
+            itemProperties.AmmoType = fields[63].GetUInt32();
+            itemProperties.Range = fields[64].GetFloat();
 
             for (uint8 i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
             {
-                itemProto.Spells[i].Id = fields[65 + i * 6].GetUInt32();
-                itemProto.Spells[i].Trigger = fields[66 + i * 6].GetUInt32();
-                itemProto.Spells[i].Charges = fields[67 + i * 6].GetInt32();
-                itemProto.Spells[i].Cooldown = fields[68 + i * 6].GetInt32();
-                itemProto.Spells[i].Category = fields[69 + i * 6].GetUInt32();
-                itemProto.Spells[i].CategoryCooldown = fields[70 + i * 6].GetInt32();
+                itemProperties.Spells[i].Id = fields[65 + i * 6].GetUInt32();
+                itemProperties.Spells[i].Trigger = fields[66 + i * 6].GetUInt32();
+                itemProperties.Spells[i].Charges = fields[67 + i * 6].GetInt32();
+                itemProperties.Spells[i].Cooldown = fields[68 + i * 6].GetInt32();
+                itemProperties.Spells[i].Category = fields[69 + i * 6].GetUInt32();
+                itemProperties.Spells[i].CategoryCooldown = fields[70 + i * 6].GetInt32();
             }
 
-            itemProto.Bonding = fields[95].GetUInt32();
-            itemProto.Description = fields[96].GetString();
+            itemProperties.Bonding = fields[95].GetUInt32();
+            itemProperties.Description = fields[96].GetString();
             uint32 page_id = fields[97].GetUInt32();
             if (page_id != 0)
             {
@@ -267,56 +267,56 @@ void MySQLDataStore::LoadItemsTable()
                 if (item_page == nullptr)
                 {
                     Log.Error("MySQLDataLoads", "Table `%s` entry: %u includes invalid pageId %u! pageId is set to 0.", table_name.c_str(), entry, page_id);
-                    itemProto.PageId = 0;
+                    itemProperties.PageId = 0;
                 }
                 else
                 {
-                    itemProto.PageId = page_id;
+                    itemProperties.PageId = page_id;
                 }
             }
             else
             {
-                itemProto.PageId = page_id;
+                itemProperties.PageId = page_id;
             }
 
-            itemProto.PageLanguage = fields[98].GetUInt32();
-            itemProto.PageMaterial = fields[99].GetUInt32();
-            itemProto.QuestId = fields[100].GetUInt32();
-            itemProto.LockId = fields[101].GetUInt32();
-            itemProto.LockMaterial = fields[102].GetUInt32();
-            itemProto.SheathID = fields[103].GetUInt32();
-            itemProto.RandomPropId = fields[104].GetUInt32();
-            itemProto.RandomSuffixId = fields[105].GetUInt32();
-            itemProto.Block = fields[106].GetUInt32();
-            itemProto.ItemSet = fields[107].GetInt32();
-            itemProto.MaxDurability = fields[108].GetUInt32();
-            itemProto.ZoneNameID = fields[109].GetUInt32();
-            itemProto.MapID = fields[110].GetUInt32();
-            itemProto.BagFamily = fields[111].GetUInt32();
-            itemProto.TotemCategory = fields[112].GetUInt32();
+            itemProperties.PageLanguage = fields[98].GetUInt32();
+            itemProperties.PageMaterial = fields[99].GetUInt32();
+            itemProperties.QuestId = fields[100].GetUInt32();
+            itemProperties.LockId = fields[101].GetUInt32();
+            itemProperties.LockMaterial = fields[102].GetUInt32();
+            itemProperties.SheathID = fields[103].GetUInt32();
+            itemProperties.RandomPropId = fields[104].GetUInt32();
+            itemProperties.RandomSuffixId = fields[105].GetUInt32();
+            itemProperties.Block = fields[106].GetUInt32();
+            itemProperties.ItemSet = fields[107].GetInt32();
+            itemProperties.MaxDurability = fields[108].GetUInt32();
+            itemProperties.ZoneNameID = fields[109].GetUInt32();
+            itemProperties.MapID = fields[110].GetUInt32();
+            itemProperties.BagFamily = fields[111].GetUInt32();
+            itemProperties.TotemCategory = fields[112].GetUInt32();
 
             for (uint8 i = 0; i < MAX_ITEM_PROTO_SOCKETS; ++i)
             {
-                itemProto.Sockets[i].SocketColor = uint32(fields[113 + i * 2].GetUInt8());
-                itemProto.Sockets[i].Unk = fields[114 + i * 2].GetUInt32();
+                itemProperties.Sockets[i].SocketColor = uint32(fields[113 + i * 2].GetUInt8());
+                itemProperties.Sockets[i].Unk = fields[114 + i * 2].GetUInt32();
             }
 
-            itemProto.SocketBonus = fields[119].GetUInt32();
-            itemProto.GemProperties = fields[120].GetUInt32();
-            itemProto.DisenchantReqSkill = fields[121].GetInt32();
-            itemProto.ArmorDamageModifier = fields[122].GetUInt32();
-            itemProto.ExistingDuration = fields[123].GetUInt32();
-            itemProto.ItemLimitCategory = fields[124].GetUInt32();
-            itemProto.HolidayId = fields[125].GetUInt32();
-            itemProto.FoodType = fields[126].GetUInt32();
+            itemProperties.SocketBonus = fields[119].GetUInt32();
+            itemProperties.GemProperties = fields[120].GetUInt32();
+            itemProperties.DisenchantReqSkill = fields[121].GetInt32();
+            itemProperties.ArmorDamageModifier = fields[122].GetUInt32();
+            itemProperties.ExistingDuration = fields[123].GetUInt32();
+            itemProperties.ItemLimitCategory = fields[124].GetUInt32();
+            itemProperties.HolidayId = fields[125].GetUInt32();
+            itemProperties.FoodType = fields[126].GetUInt32();
 
             //lowercase
-            std::string lower_case_name = itemProto.Name;
+            std::string lower_case_name = itemProperties.Name;
             std::transform(lower_case_name.begin(), lower_case_name.end(), lower_case_name.begin(), ::tolower);
-            itemProto.lowercase_name = lower_case_name;
+            itemProperties.lowercase_name = lower_case_name;
 
             //forced pet entries (hacky stuff ->spells)
-            switch (itemProto.ItemId)
+            switch (itemProperties.ItemId)
             {
                 case 28071: //Grimoire of Anguish (Rank 1)
                 case 28072: //Grimoire of Anguish (Rank 2)
@@ -330,7 +330,7 @@ void MySQLDataStore::LoadItemsTable()
                 case 23730: //Grimoire of Intercept (Rank 2)
                 case 23731: //Grimoire of Intercept (Rank 3)
                             // Felguard
-                    itemProto.ForcedPetId = 17252;
+                    itemProperties.ForcedPetId = 17252;
                     break;
 
                 case 16321: //Grimoire of Blood Pact (Rank 1)
@@ -354,7 +354,7 @@ void MySQLDataStore::LoadItemsTable()
                 case 22179: //Grimoire of Firebolt (Rank 8)
                 case 16331: //Grimoire of Phase Shift
                             // Imp
-                    itemProto.ForcedPetId = 416;
+                    itemProperties.ForcedPetId = 416;
                     break;
 
                 case 16357: //Grimoire of Consume Shadows (Rank 1)
@@ -384,7 +384,7 @@ void MySQLDataStore::LoadItemsTable()
                 case 16350: //Grimoire of Torment (Rank 6)
                 case 22182: //Grimoire of Torment (Rank 7)
                             // Voidwalker
-                    itemProto.ForcedPetId = 1860;
+                    itemProperties.ForcedPetId = 1860;
                     break;
 
                 case 16368: //Grimoire of Lash of Pain (Rank 2)
@@ -401,7 +401,7 @@ void MySQLDataStore::LoadItemsTable()
                 case 16378: //Grimoire of Soothing Kiss (Rank 4)
                 case 22187: //Grimoire of Soothing Kiss (Rank 5)
                             // Succubus
-                    itemProto.ForcedPetId = 1863;
+                    itemProperties.ForcedPetId = 1863;
                     break;
 
                 case 16381: //Grimoire of Devour Magic (Rank 2)
@@ -418,7 +418,7 @@ void MySQLDataStore::LoadItemsTable()
                 case 16387: //Grimoire of Tainted Blood (Rank 4)
                 case 22190: //Grimoire of Tainted Blood (Rank 5)
                             //Felhunter
-                    itemProto.ForcedPetId = 417;
+                    itemProperties.ForcedPetId = 417;
                     break;
 
                 case 21283:
@@ -428,11 +428,11 @@ void MySQLDataStore::LoadItemsTable()
                 case 21281:
                 case 22891:
                     // Player
-                    itemProto.ForcedPetId = 0;
+                    itemProperties.ForcedPetId = 0;
                     break;
 
                 default:
-                    itemProto.ForcedPetId = -1;
+                    itemProperties.ForcedPetId = -1;
                     break;
             }
 
@@ -448,10 +448,10 @@ void MySQLDataStore::LoadItemsTable()
     Log.Success("MySQLDataLoads", "Loaded %u item_properties in %u ms!", item_count, getMSTime() - start_time);
 }
 
-ItemPrototype const* MySQLDataStore::GetItemProto(uint32 entry)
+ItemProperties const* MySQLDataStore::GetItemProperties(uint32 entry)
 {
-    ItemPrototypeContainer::const_iterator itr = _itemPrototypeStore.find(entry);
-    if (itr != _itemPrototypeStore.end())
+    ItemPropertiesContainer::const_iterator itr = _itemPropertiesStore.find(entry);
+    if (itr != _itemPropertiesStore.end())
         return &(itr->second);
 
     return nullptr;
@@ -797,7 +797,7 @@ void MySQLDataStore::LoadGameObjectPropertiesTable()
                 uint32 quest_item_entry = fields[32 + i].GetUInt32();
                 if (quest_item_entry != 0)
                 {
-                    auto quest_item_proto = GetItemProto(quest_item_entry);
+                    auto quest_item_proto = GetItemProperties(quest_item_entry);
                     if (quest_item_proto == nullptr)
                     {
                         Log.Error("MySQLDataLoads", "Table `%s` questitem%u : %u is not a valid item! Default set to 0 for entry: %u.", table_name.c_str(), i, quest_item_entry, entry);

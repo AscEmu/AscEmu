@@ -12,7 +12,7 @@ extern SERVER_DECL std::set<std::string> CreatureSpawnsTables;
 extern SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
 extern SERVER_DECL std::set<std::string> GameObjectPropertiesTables;
 extern SERVER_DECL std::set<std::string> CreaturePropertiesTables;
-extern SERVER_DECL std::set<std::string> ItemsTables;
+extern SERVER_DECL std::set<std::string> ItemPropertiesTables;
 extern SERVER_DECL std::set<std::string> QuestPropertiesTables;
 
 class SERVER_DECL MySQLDataStore : public Singleton < MySQLDataStore >
@@ -24,7 +24,7 @@ public:
 
     //maps
     typedef std::unordered_map<uint32, ItemPage> ItemPageContainer;
-    typedef std::unordered_map<uint32, ItemPrototype> ItemPrototypeContainer;
+    typedef std::unordered_map<uint32, ItemProperties> ItemPropertiesContainer;
     typedef std::unordered_map<uint32, CreatureProperties> CreaturePropertiesContainer;
     typedef std::unordered_map<uint32, GameObjectProperties> GameObjectPropertiesContainer;
     typedef std::unordered_map<uint32, QuestProperties> QuestPropertiesContainer;
@@ -51,8 +51,8 @@ public:
     //helper
     ItemPage const* GetItemPage(uint32 entry);
     ItemPageContainer const* GetItemPagesStore() { return &_itemPagesStore; }
-    ItemPrototype const* GetItemProto(uint32 entry);
-    ItemPrototypeContainer const* GetItemPrototypeStore() { return &_itemPrototypeStore; }
+    ItemProperties const* GetItemProperties(uint32 entry);
+    ItemPropertiesContainer const* GetItemPropertiesStore() { return &_itemPropertiesStore; }
 
     CreatureProperties const* GetCreatureProperties(uint32 entry);
     CreaturePropertiesContainer const* GetCreaturePropertiesStore() { return &_creaturePropertiesStore; }
@@ -119,7 +119,7 @@ public:
 
     //Loads
     void LoadItemPagesTable();
-    void LoadItemsTable();
+    void LoadItemPropertiesTable();
 
     void LoadCreaturePropertiesTable();
 
@@ -150,7 +150,7 @@ public:
 
 
     ItemPageContainer _itemPagesStore;
-    ItemPrototypeContainer _itemPrototypeStore;
+    ItemPropertiesContainer _itemPropertiesStore;
     CreaturePropertiesContainer _creaturePropertiesStore;
     GameObjectPropertiesContainer _gameobjectPropertiesStore;
     QuestPropertiesContainer _questPropertiesStore;

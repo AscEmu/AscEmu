@@ -1584,7 +1584,7 @@ void ObjectMgr::LoadSpellEffectsOverride()
 
 Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
 {
-    ItemPrototype const* proto = sMySQLStore.GetItemProto(entry);
+    ItemProperties const* proto = sMySQLStore.GetItemProperties(entry);
     if (proto ==nullptr)
         return nullptr;
 
@@ -1619,7 +1619,7 @@ Item* ObjectMgr::LoadItem(uint32 lowguid)
 
     if (result)
     {
-        ItemPrototype const* pProto = sMySQLStore.GetItemProto(result->Fetch()[2].GetUInt32());
+        ItemProperties const* pProto = sMySQLStore.GetItemProperties(result->Fetch()[2].GetUInt32());
         if (!pProto)
             return nullptr;
 

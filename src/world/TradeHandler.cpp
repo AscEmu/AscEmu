@@ -273,7 +273,7 @@ void WorldSession::HandleSetTradeItem(WorldPacket& recv_data)
     if (SourceSlot >= INVENTORY_SLOT_BAG_START && SourceSlot < INVENTORY_SLOT_BAG_END)
     {
         auto item = _player->GetItemInterface()->GetInventoryItem(SourceBag);   //nullptr if it's the backpack or the item is equipped
-        if (item == nullptr || SourceSlot >= item->GetProto()->ContainerSlots)  //Required as there are bags with SourceSlot > INVENTORY_SLOT_BAG_START
+        if (item == nullptr || SourceSlot >= item->GetItemProperties()->ContainerSlots)  //Required as there are bags with SourceSlot > INVENTORY_SLOT_BAG_START
         {
             //More duping woohoo
             sCheatLog.writefromsession(this, "tried to cheat trade a soulbound item");
@@ -379,7 +379,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
             pItem = _player->mTradeItems[Index];
             if (pItem)
             {
-                if ((pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->GetProto()->Bonding == ITEM_BIND_ON_PICKUP))
+                if ((pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->GetItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
                 {
                     ItemCount = 0;
                     TargetItemCount = 0;
@@ -391,7 +391,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
             pItem = pTarget->mTradeItems[Index];
             if (pItem)
             {
-                if ((pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->GetProto()->Bonding == ITEM_BIND_ON_PICKUP))
+                if ((pItem->IsContainer() && static_cast< Container* >(pItem)->HasItems()) || (pItem->GetItemProperties()->Bonding == ITEM_BIND_ON_PICKUP))
                 {
                     ItemCount = 0;
                     TargetItemCount = 0;
@@ -422,8 +422,8 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
                 Guid = _player->mTradeItems[Index] ? _player->mTradeItems[Index]->GetGUID() : 0;
                 if (Guid != 0)
                 {
-                    if (_player->mTradeItems[Index]->GetProto()->Bonding == ITEM_BIND_ON_PICKUP ||
-                        _player->mTradeItems[Index]->GetProto()->Bonding >= ITEM_BIND_QUEST)
+                    if (_player->mTradeItems[Index]->GetItemProperties()->Bonding == ITEM_BIND_ON_PICKUP ||
+                        _player->mTradeItems[Index]->GetItemProperties()->Bonding >= ITEM_BIND_QUEST)
                     {
                         _player->mTradeItems[Index] = NULL;
                     }
@@ -431,7 +431,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
                     {
                         if (GetPermissionCount() > 0)
                         {
-                            sGMLog.writefromsession(this, "traded item %s to %s", _player->mTradeItems[Index]->GetProto()->Name.c_str(), pTarget->GetName());
+                            sGMLog.writefromsession(this, "traded item %s to %s", _player->mTradeItems[Index]->GetItemProperties()->Name.c_str(), pTarget->GetName());
                         }
                         // See CID53355 Unused value (overwritten before it can be used
                         //pItem = _player->m_ItemInterface->SafeRemoveAndRetreiveItemByGuid(Guid, true);
@@ -441,8 +441,8 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
                 Guid = pTarget->mTradeItems[Index] ? pTarget->mTradeItems[Index]->GetGUID() : 0;
                 if (Guid != 0)
                 {
-                    if (pTarget->mTradeItems[Index]->GetProto()->Bonding == ITEM_BIND_ON_PICKUP ||
-                        pTarget->mTradeItems[Index]->GetProto()->Bonding >= ITEM_BIND_QUEST)
+                    if (pTarget->mTradeItems[Index]->GetItemProperties()->Bonding == ITEM_BIND_ON_PICKUP ||
+                        pTarget->mTradeItems[Index]->GetItemProperties()->Bonding >= ITEM_BIND_QUEST)
                     {
                         pTarget->mTradeItems[Index] = NULL;
                     }

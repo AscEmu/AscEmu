@@ -170,7 +170,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
         else
             return;
 
-        ItemPrototype const* itemProto = quest_giver->GetProto();
+        ItemProperties const* itemProto = quest_giver->GetItemProperties();
 
         if (itemProto->Bonding != ITEM_BIND_ON_USE || quest_giver->IsSoulbound())     // SoulBind item will be used after SoulBind()
         {
@@ -264,7 +264,7 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
 
     if (qPtr->srcitem && qPtr->srcitem != qPtr->receive_items[0])
     {
-        ItemPrototype const* itemProto = sMySQLStore.GetItemProto(qPtr->srcitem);
+        ItemProperties const* itemProto = sMySQLStore.GetItemProperties(qPtr->srcitem);
         if (itemProto != NULL)
             if (itemProto->QuestId != qPtr->id)
                 _player->GetItemInterface()->RemoveItemAmt(qPtr->srcitem, qPtr->srcitemcount ? qPtr->srcitemcount : 1);
@@ -274,7 +274,7 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
     {
         if (qPtr->required_item[i] != 0)
         {
-            ItemPrototype const* itemProto = sMySQLStore.GetItemProto(qPtr->required_item[i]);
+            ItemProperties const* itemProto = sMySQLStore.GetItemProperties(qPtr->required_item[i]);
             if (itemProto != NULL && itemProto->Class == ITEM_CLASS_QUEST)
                 GetPlayer()->GetItemInterface()->RemoveItemAmt(qPtr->required_item[i], qPtr->required_itemcount[i]);
         }

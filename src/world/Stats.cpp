@@ -591,8 +591,8 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
     float max_damage = pAttacker->GetFloatValue(offset + 1);
     if (it)
     {
-        min_damage -= it->GetProto()->Damage[0].Min;
-        max_damage -= it->GetProto()->Damage[0].Max;
+        min_damage -= it->GetItemProperties()->Damage[0].Min;
+        max_damage -= it->GetItemProperties()->Damage[0].Max;
     }
 
     float ap = 0;
@@ -623,7 +623,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
             {
                 it = static_cast< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 if (it)
-                    wspeed = (float)it->GetProto()->Delay;
+                    wspeed = (float)it->GetItemProperties()->Delay;
                 else
                     wspeed = 2000;
             }
@@ -688,7 +688,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
                 it = static_cast< Player* >(pAttacker)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
 
                 if (it)
-                    wspeed = (float)it->GetProto()->Delay;
+                    wspeed = (float)it->GetItemProperties()->Delay;
                 else
                     wspeed = 2000;
             }
@@ -709,10 +709,12 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
 
                 if (it)
                 {
-                    if (it->GetProto()->Class == 2) //weapon
+                    if (it->GetItemProperties()->Class == 2) //weapon
                     {
-                        if (it->GetProto()->InventoryType == INVTYPE_2HWEAPON) wspeed = 3300;
-                        else if (it->GetProto()->SubClass == 15) wspeed = 1700;
+                        if (it->GetItemProperties()->InventoryType == INVTYPE_2HWEAPON)
+                            wspeed = 3300;
+                        else if (it->GetItemProperties()->SubClass == 15)
+                            wspeed = 1700;
                         else wspeed = 2400;
                     }
                 }

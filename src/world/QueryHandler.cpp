@@ -328,7 +328,7 @@ void WorldSession::HandleItemNameQueryOpcode(WorldPacket& recv_data)
 
     std::string Name = ("Unknown Item");
 
-    ItemPrototype const* proto = sMySQLStore.GetItemProto(itemid);
+    ItemProperties const* proto = sMySQLStore.GetItemProperties(itemid);
     if (proto != nullptr)
     {
         LocalizedItem* li = (language > 0) ? sLocalizationMgr.GetLocalizedItem(itemid, language) : NULL;

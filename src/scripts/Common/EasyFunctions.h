@@ -225,8 +225,8 @@ class SCRIPT_DECL EasyFunctions
             Item* ItemStack = pPlayer->GetItemInterface()->FindItemLessMax(pEntry, pCount, false);
             if (ItemStack == NULL)
             {
-                ItemPrototype const* ItemProto = sMySQLStore.GetItemProto(pEntry);
-                if (ItemProto == NULL)
+                ItemProperties const* ItemProto = sMySQLStore.GetItemProperties(pEntry);
+                if (ItemProto == nullptr)
                     return false;
 
                 SlotResult Result = pPlayer->GetItemInterface()->FindFreeInventorySlot(ItemProto);

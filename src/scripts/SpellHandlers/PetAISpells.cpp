@@ -191,15 +191,15 @@ class DancingRuneWeaponAI : public CreatureAIScript
                     {
                         for (uint8 s = 0; s < 5; s++)
                         {
-                            if (item->GetProto()->Spells[s].Id == 0)
+                            if (item->GetItemProperties()->Spells[s].Id == 0)
                                 continue;
 
-                            if (item->GetProto()->Spells[s].Trigger == CHANCE_ON_HIT)
-                                procSpell[s] = item->GetProto()->Spells[s].Id;
+                            if (item->GetItemProperties()->Spells[s].Trigger == CHANCE_ON_HIT)
+                                procSpell[s] = item->GetItemProperties()->Spells[s].Id;
                         }
 
                         s->SetEquippedItem(MELEE, item->GetEntry());
-                        s->SetBaseAttackTime(MELEE, item->GetProto()->Delay);
+                        s->SetBaseAttackTime(MELEE, item->GetItemProperties()->Delay);
                     }
 
                     pOwner->SetPower(POWER_TYPE_RUNIC_POWER, 0);

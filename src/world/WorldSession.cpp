@@ -1266,7 +1266,7 @@ void WorldSession::SendRefundInfo(uint64 GUID)
         if (item_extended_cost == nullptr)
             return;
 
-        ItemPrototype const* proto = item->GetProto();
+        ItemProperties const* proto = item->GetItemProperties();
 
         item->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE);
         // ////////////////////////////////////////////////////////////////////////////////////////
@@ -1517,8 +1517,7 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
         {
             // we have no item equipped in the slot, so let's equip
             AddItemResult additemresult;
-            int8 EquipError = _player->GetItemInterface()->CanEquipItemInSlot(dstbag, dstslot, item->GetProto(), false, false);
-
+            int8 EquipError = _player->GetItemInterface()->CanEquipItemInSlot(dstbag, dstslot, item->GetItemProperties(), false, false);
             if (EquipError == INV_ERR_OK)
             {
                 dstslotitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcBagID, SrcSlotID, false);
@@ -1721,9 +1720,8 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
         for (uint8 i = 0; i < 11; ++i)
         {
             Item* item = pcaster->GetItemInterface()->GetInventoryItem(static_cast <int16> (imageitemslots[i]));
-
-            if (item != NULL)
-                data << uint32(item->GetProto()->DisplayInfoID);
+            if (item != nullptr)
+                data << uint32(item->GetItemProperties()->DisplayInfoID);
             else
                 data << uint32(0);
         }

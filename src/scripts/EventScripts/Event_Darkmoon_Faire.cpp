@@ -681,7 +681,7 @@ class Sayge_Gossip : public GossipScript
                     // Cast the fortune into the player's inventory - Not working?
                     pCreature->CastSpell(plr, 23765, true);
                     // TEMP fix for spell not adding item to  player's inventory.
-                    auto proto = sMySQLStore.GetItemProto(19422);
+                    auto proto = sMySQLStore.GetItemProperties(19422);
                     if (proto == nullptr)
                         return;
 

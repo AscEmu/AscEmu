@@ -45,7 +45,7 @@ Container::Container(uint32 high, uint32 low) : Item()
 
 Container::~Container()
 {
-    for (uint32 i = 0; i < m_itemProto->ContainerSlots; i++)
+    for (uint32 i = 0; i < m_itemProperties->ContainerSlots; ++i)
     {
         if (m_Slot[i] && m_Slot[i]->GetOwner() == m_owner)
         {
@@ -59,9 +59,9 @@ Container::~Container()
 void Container::LoadFromDB(Field* fields)
 {
     uint32 itemid = fields[2].GetUInt32();
-    m_itemProto = sMySQLStore.GetItemProto(itemid);
+    m_itemProperties = sMySQLStore.GetItemProperties(itemid);
 
-    ARCEMU_ASSERT(m_itemProto != NULL);
+    ARCEMU_ASSERT(m_itemProperties != nullptr);
     SetEntry(itemid);
 
 
@@ -71,21 +71,21 @@ void Container::LoadFromDB(Field* fields)
     SetUInt32Value(ITEM_FIELD_FLAGS, fields[8].GetUInt32());
     SetItemRandomPropertyId(fields[9].GetUInt32());
 
-    SetDurabilityMax(m_itemProto->MaxDurability);
+    SetDurabilityMax(m_itemProperties->MaxDurability);
     SetDurability(fields[12].GetUInt32());
 
 
-    SetNumSlots(m_itemProto->ContainerSlots);
+    SetNumSlots(m_itemProperties->ContainerSlots);
 
-    m_Slot = new Item*[m_itemProto->ContainerSlots];
-    memset(m_Slot, 0, sizeof(Item*) * (m_itemProto->ContainerSlots));
+    m_Slot = new Item*[m_itemProperties->ContainerSlots];
+    memset(m_Slot, 0, sizeof(Item*) * (m_itemProperties->ContainerSlots));
 
 }
 
 void Container::Create(uint32 itemid, Player* owner)
 {
-    m_itemProto = sMySQLStore.GetItemProto(itemid);
-    ARCEMU_ASSERT(m_itemProto != NULL);
+    m_itemProperties = sMySQLStore.GetItemProperties(itemid);
+    ARCEMU_ASSERT(m_itemProperties != nullptr);
 
     SetEntry(itemid);
 
@@ -96,10 +96,10 @@ void Container::Create(uint32 itemid, Player* owner)
         SetContainerGUID(owner->GetGUID());
     }
     SetStackCount(1);
-    SetNumSlots(m_itemProto->ContainerSlots);
+    SetNumSlots(m_itemProperties->ContainerSlots);
 
-    m_Slot = new Item*[m_itemProto->ContainerSlots];
-    memset(m_Slot, 0, sizeof(Item*) * (m_itemProto->ContainerSlots));
+    m_Slot = new Item*[m_itemProperties->ContainerSlots];
+    memset(m_Slot, 0, sizeof(Item*) * (m_itemProperties->ContainerSlots));
 
     m_owner = owner;
 }
@@ -107,7 +107,7 @@ void Container::Create(uint32 itemid, Player* owner)
 int8 Container::FindFreeSlot()
 {
     int8 TotalSlots = static_cast<int8>(GetNumSlots());
-    for (int8 i = 0; i < TotalSlots; i++)
+    for (int8 i = 0; i < TotalSlots; ++i)
     {
         if (!m_Slot[i])
         {
@@ -133,7 +133,7 @@ bool Container::HasItems()
 
 bool Container::AddItem(int16 slot, Item* item)
 {
-    if (slot < 0 || (uint32)slot >= GetProto()->ContainerSlots)
+    if (slot < 0 || (uint32)slot >= GetItemProperties()->ContainerSlots)
         return false;
 
     //ARCEMU_ASSERT(  m_Slot[slot] == NULL);
@@ -153,9 +153,9 @@ bool Container::AddItem(int16 slot, Item* item)
     item->SetContainerGUID(GetGUID());
     item->SetOwner(m_owner);
 
-    if (item->GetProto()->Bonding == ITEM_BIND_ON_PICKUP)
+    if (item->GetItemProperties()->Bonding == ITEM_BIND_ON_PICKUP)
     {
-        if (item->GetProto()->Flags & ITEM_FLAG_ACCOUNTBOUND) // don't "Soulbind" account-bound items
+        if (item->GetItemProperties()->Flags & ITEM_FLAG_ACCOUNTBOUND) // don't "Soulbind" account-bound items
             item->AccountBind();
         else
             item->SoulBind();
@@ -174,7 +174,7 @@ bool Container::AddItem(int16 slot, Item* item)
         m_owner->PushCreationData(&buf, count);
     }
 #ifdef ENABLE_ACHIEVEMENTS
-    m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item->GetProto()->ItemId, item->GetStackCount(), 0);
+    m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, item->GetItemProperties()->ItemId, item->GetStackCount(), 0);
 #endif
     return true;
 }
@@ -182,13 +182,13 @@ bool Container::AddItem(int16 slot, Item* item)
 void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
 {
     Item* temp;
-    if (SrcSlot < 0 || SrcSlot >= (int8)m_itemProto->ContainerSlots)
+    if (SrcSlot < 0 || SrcSlot >= (int8)m_itemProperties->ContainerSlots)
         return;
 
-    if (DstSlot < 0 || DstSlot >= (int8)m_itemProto->ContainerSlots)
+    if (DstSlot < 0 || DstSlot >= (int8)m_itemProperties->ContainerSlots)
         return;
 
-    uint32 destMaxCount = (m_owner->ItemStackCheat) ? 0x7fffffff : ((m_Slot[DstSlot]) ? m_Slot[DstSlot]->GetProto()->MaxCount : 0);
+    uint32 destMaxCount = (m_owner->ItemStackCheat) ? 0x7fffffff : ((m_Slot[DstSlot]) ? m_Slot[DstSlot]->GetItemProperties()->MaxCount : 0);
     if (m_Slot[DstSlot] && m_Slot[SrcSlot] && m_Slot[DstSlot]->GetEntry() == m_Slot[SrcSlot]->GetEntry() && m_Slot[SrcSlot]->wrapped_item_id == 0 && m_Slot[DstSlot]->wrapped_item_id == 0 && destMaxCount > 1)
     {
         uint32 total = m_Slot[SrcSlot]->GetStackCount() + m_Slot[DstSlot]->GetStackCount();
@@ -242,7 +242,7 @@ void Container::SwapItems(int8 SrcSlot, int8 DstSlot)
 
 Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy)
 {
-    if (slot < 0 || (uint32)slot >= GetProto()->ContainerSlots)
+    if (slot < 0 || (uint32)slot >= GetItemProperties()->ContainerSlots)
         return NULL;
 
     Item* pItem = m_Slot[slot];
@@ -276,7 +276,7 @@ Item* Container::SafeRemoveAndRetreiveItemFromSlot(int16 slot, bool destroy)
 
 bool Container::SafeFullRemoveItemFromSlot(int16 slot)
 {
-    if (slot < 0 || (uint32)slot >= GetProto()->ContainerSlots)
+    if (slot < 0 || (uint32)slot >= GetItemProperties()->ContainerSlots)
         return false;
 
     Item* pItem = m_Slot[slot];
@@ -300,7 +300,7 @@ bool Container::SafeFullRemoveItemFromSlot(int16 slot)
 bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
 {
     uint32 slot;
-    for (slot = 0; slot < GetProto()->ContainerSlots; slot++)
+    for (slot = 0; slot < GetItemProperties()->ContainerSlots; slot++)
     {
         if (!m_Slot[slot])
         {
@@ -322,7 +322,7 @@ bool Container::AddItemToFreeSlot(Item* pItem, uint32* r_slot)
             if (r_slot)
                 *r_slot = slot;
 #ifdef ENABLE_ACHIEVEMENTS
-            m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, pItem->GetProto()->ItemId, pItem->GetStackCount(), 0);
+            m_owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM, pItem->GetItemProperties()->ItemId, pItem->GetStackCount(), 0);
 #endif
             return true;
         }
@@ -334,9 +334,9 @@ void Container::SaveBagToDB(int8 slot, bool first, QueryBuffer* buf)
 {
     SaveToDB(INVENTORY_SLOT_NOT_SET, slot, first, buf);
 
-    for (uint32 i = 0; i < m_itemProto->ContainerSlots; i++)
+    for (uint32 i = 0; i < m_itemProperties->ContainerSlots; ++i)
     {
-        if (m_Slot[i] && !((m_Slot[i]->GetProto()->Flags) & 2))
+        if (m_Slot[i] && !((m_Slot[i]->GetItemProperties()->Flags) & 2))
         {
             m_Slot[i]->SaveToDB(slot, static_cast<int8>(i), first, buf);
         }

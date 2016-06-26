@@ -175,7 +175,7 @@ class Blacksmithing_Plans_Use : public GameObjectAIScript
         Blacksmithing_Plans_Use(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
         static GameObjectAIScript* Create(GameObject* GO) { return new Blacksmithing_Plans_Use(GO); }
 
-        void OnLootTaken(Player* pLooter, ItemPrototype const* pItemInfo)
+        void OnLootTaken(Player* pLooter, ItemProperties const* pItemInfo)
         {
             float SSX = pLooter->GetPositionX();
             float SSY = pLooter->GetPositionY();
@@ -183,7 +183,7 @@ class Blacksmithing_Plans_Use : public GameObjectAIScript
             float SSO = pLooter->GetOrientation();
 
             Creature* NewCreature = pLooter->GetMapMgr()->GetInterface()->SpawnCreature(11120, SSX, SSY, SSZ, SSO, true, false, 0, 0);
-            if(NewCreature != NULL)
+            if (NewCreature != nullptr)
                 NewCreature->Despawn(600000, 0);
         }
 };
@@ -496,7 +496,7 @@ class DustySpellbooks : public GameObjectAIScript
         DustySpellbooks(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
         static GameObjectAIScript* Create(GameObject* GO) { return new DustySpellbooks(GO); }
 
-        void OnLootTaken(Player* pLooter, ItemPrototype const* pItemInfo)
+        void OnLootTaken(Player* pLooter, ItemProperties const* pItemInfo)
         {
             QuestLogEntry* en = pLooter->GetQuestLogForEntry(422);
             if(!en)
@@ -508,7 +508,7 @@ class DustySpellbooks : public GameObjectAIScript
             float SSO = pLooter->GetOrientation();
 
             Creature* NewCreature = pLooter->GetMapMgr()->GetInterface()->SpawnCreature(1770, SSX, SSY, SSZ, SSO, true, false, 0, 0);
-            if(NewCreature != NULL)
+            if (NewCreature != nullptr)
                 NewCreature->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, "The Sons of Arugal will rise against all who challenge the power of the Moonrage!");
         }
 };

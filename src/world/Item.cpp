@@ -21,9 +21,10 @@
 
 #include "StdAfx.h"
 
-Item::Item()//this is called when constructing as container
+Item::Item()
 {
-    m_itemProto = NULL;
+    m_itemProperties = nullptr;
+
     m_owner = NULL;
     loot = NULL;
     locked = false;
@@ -60,7 +61,9 @@ void Item::Init(uint32 high, uint32 low)
     SetUInt32Value(OBJECT_FIELD_TYPE, TYPE_ITEM | TYPE_OBJECT);
     SetScale(1);   //always 1
     SetScale(1);   //always 1
-    m_itemProto = NULL;
+
+    m_itemProperties = nullptr;
+
     m_owner = NULL;
     loot = NULL;
     locked = false;
@@ -126,21 +129,21 @@ void Item::Create(uint32 itemid, Player* owner)
 
     SetStackCount(1);
 
-    m_itemProto = sMySQLStore.GetItemProto(itemid);
+    m_itemProperties = sMySQLStore.GetItemProperties(itemid);
 
-    ARCEMU_ASSERT(m_itemProto != NULL);
+    ARCEMU_ASSERT(m_itemProperties != nullptr);
 
-    SetCharges(0, m_itemProto->Spells[0].Charges);
-    SetCharges(1, m_itemProto->Spells[1].Charges);
-    SetCharges(2, m_itemProto->Spells[2].Charges);
-    SetCharges(3, m_itemProto->Spells[3].Charges);
-    SetCharges(4, m_itemProto->Spells[4].Charges);
-    SetDurability(m_itemProto->MaxDurability);
-    SetDurabilityMax(m_itemProto->MaxDurability);
+    SetCharges(0, m_itemProperties->Spells[0].Charges);
+    SetCharges(1, m_itemProperties->Spells[1].Charges);
+    SetCharges(2, m_itemProperties->Spells[2].Charges);
+    SetCharges(3, m_itemProperties->Spells[3].Charges);
+    SetCharges(4, m_itemProperties->Spells[4].Charges);
+    SetDurability(m_itemProperties->MaxDurability);
+    SetDurabilityMax(m_itemProperties->MaxDurability);
 
 
     m_owner = owner;
-    if (m_itemProto->LockId > 1)
+    if (m_itemProperties->LockId > 1)
         locked = true;
     else
         locked = false;
@@ -152,11 +155,11 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     uint32 random_prop, random_suffix;
     uint32 count;
 
-    m_itemProto = sMySQLStore.GetItemProto(itemid);
+    m_itemProperties = sMySQLStore.GetItemProperties(itemid);
 
-    ARCEMU_ASSERT(m_itemProto != NULL);
+    ARCEMU_ASSERT(m_itemProperties != nullptr);
 
-    if (m_itemProto->LockId > 1)
+    if (m_itemProperties->LockId > 1)
         locked = true;
     else
         locked = false;
@@ -169,8 +172,8 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     SetCreatorGUID(fields[5].GetUInt32());
 
     count = fields[6].GetUInt32();
-    if (count > m_itemProto->MaxCount && (m_owner && !m_owner->ItemStackCheat))
-        count = m_itemProto->MaxCount;
+    if (count > m_itemProperties->MaxCount && (m_owner && !m_owner->ItemStackCheat))
+        count = m_itemProperties->MaxCount;
     SetStackCount(count);
 
     SetChargesLeft(fields[7].GetUInt32());
@@ -190,7 +193,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
 
     //SetTextId(fields[11].GetUInt32());
 
-    SetDurabilityMax(m_itemProto->MaxDurability);
+    SetDurabilityMax(m_itemProperties->MaxDurability);
     SetDurability(fields[12].GetUInt32());
 
     if (light)
@@ -210,7 +213,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
             auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
             if (spell_item_enchant == nullptr)
                 continue;
-            if (spell_item_enchant->Id == enchant_id && m_itemProto->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+            if (spell_item_enchant->Id == enchant_id && m_itemProperties->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
             {
                 AddEnchantment(spell_item_enchant, time_left, (time_left == 0), false, false, enchslot);
             }
@@ -448,10 +451,10 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* 
 
 void Item::DeleteFromDB()
 {
-    if (m_itemProto->ContainerSlots > 0 && IsContainer())
+    if (m_itemProperties->ContainerSlots > 0 && IsContainer())
     {
         /* deleting a container */
-        for (uint32 i = 0; i < m_itemProto->ContainerSlots; ++i)
+        for (uint32 i = 0; i < m_itemProperties->ContainerSlots; ++i)
         {
             if (static_cast< Container* >(this)->GetItem(static_cast<int16>(i)) != NULL)
             {
@@ -548,14 +551,14 @@ const ItemProf* GetProficiencyBySkill(uint32 skill)
     }
 }
 
-uint32 GetSellPriceForItem(ItemPrototype const* proto, uint32 count)
+uint32 GetSellPriceForItem(ItemProperties const* proto, uint32 count)
 {
     int32 cost;
     cost = proto->SellPrice * ((count < 1) ? 1 : count);
     return cost;
 }
 
-uint32 GetBuyPriceForItem(ItemPrototype const* proto, uint32 count, Player* plr, Creature* vendor)
+uint32 GetBuyPriceForItem(ItemProperties const* proto, uint32 count, Player* plr, Creature* vendor)
 {
     int32 cost = proto->BuyPrice;
 
@@ -570,7 +573,7 @@ uint32 GetBuyPriceForItem(ItemPrototype const* proto, uint32 count, Player* plr,
 
 uint32 GetSellPriceForItem(uint32 itemid, uint32 count)
 {
-    if (ItemPrototype const* proto = sMySQLStore.GetItemProto(itemid))
+    if (ItemProperties const* proto = sMySQLStore.GetItemProperties(itemid))
         return GetSellPriceForItem(proto, count);
     else
         return 1;
@@ -578,7 +581,7 @@ uint32 GetSellPriceForItem(uint32 itemid, uint32 count)
 
 uint32 GetBuyPriceForItem(uint32 itemid, uint32 count, Player* plr, Creature* vendor)
 {
-    if (ItemPrototype const* proto = sMySQLStore.GetItemProto(itemid))
+    if (ItemProperties const* proto = sMySQLStore.GetItemProperties(itemid))
         return GetBuyPriceForItem(proto, count, plr, vendor);
     else
         return 1;
@@ -831,7 +834,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                         if (RandomSuffixAmount)
                             val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, GetItemRandomSuffixFactor());
 
-                        int32 value = GetProto()->Delay * val / 1000;
+                        int32 value = GetItemProperties()->Delay * val / 1000;
                         m_owner->ModPosDamageDoneMod(SCHOOL_NORMAL, value);
                     }
                     else
@@ -840,7 +843,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                         if (RandomSuffixAmount)
                             val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, GetItemRandomSuffixFactor());
 
-                        int32 value = -(int32)(GetProto()->Delay * val / 1000);
+                        int32 value = -(int32)(GetItemProperties()->Delay * val / 1000);
                         m_owner->ModPosDamageDoneMod(SCHOOL_NORMAL, value);
                     }
                     m_owner->CalcDamage();
@@ -908,7 +911,7 @@ void Item::EventRemoveEnchantment(uint32 Slot)
 int32 Item::FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment, uint32 random_type)
 {
     uint32 GemSlotsReserve = GetSocketsCount();
-    if (GetProto()->SocketBonus)
+    if (GetItemProperties()->SocketBonus)
         GemSlotsReserve++;
 
     if (random_type == RANDOMPROPERTY)        // random prop
@@ -1044,7 +1047,7 @@ void Item::RemoveSocketBonusEnchant()
 
     for (itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
     {
-        if (itr->second.Enchantment->Id == GetProto()->SocketBonus)
+        if (itr->second.Enchantment->Id == GetItemProperties()->SocketBonus)
         {
             RemoveEnchantment(itr->first);
             return;
@@ -1063,7 +1066,7 @@ EnchantmentInstance* Item::GetEnchantment(uint32 slot)
 
 bool Item::IsGemRelated(DBC::Structures::SpellItemEnchantmentEntry const* Enchantment)
 {
-    if (GetProto()->SocketBonus == Enchantment->Id)
+    if (GetItemProperties()->SocketBonus == Enchantment->Id)
         return true;
 
     return(Enchantment->GemEntry != 0);
@@ -1075,8 +1078,8 @@ uint32 Item::GetSocketsCount()
         return 0;
 
     uint32 c = 0;
-    for (uint32 x = 0; x < 3; x++)
-        if (GetProto()->Sockets[x].SocketColor)
+    for (uint32 x = 0; x < 3; ++x)
+        if (GetItemProperties()->Sockets[x].SocketColor)
             c++;
     //prismatic socket
     if (GetEnchantment(PRISMATIC_ENCHANTMENT_SLOT) != NULL)
@@ -1084,7 +1087,7 @@ uint32 Item::GetSocketsCount()
     return c;
 }
 
-uint32 Item::GenerateRandomSuffixFactor(ItemPrototype const* m_itemProto)
+uint32 Item::GenerateRandomSuffixFactor(ItemProperties const* m_itemProto)
 {
     double value;
 
@@ -1099,10 +1102,10 @@ uint32 Item::GenerateRandomSuffixFactor(ItemPrototype const* m_itemProto)
 
 std::string Item::GetItemLink(uint32 language = 0)
 {
-    return GetItemLinkByProto(GetProto(), language);
+    return GetItemLinkByProto(GetItemProperties(), language);
 }
 
-std::string GetItemLinkByProto(ItemPrototype const* iProto, uint32 language = 0)
+std::string GetItemLinkByProto(ItemProperties const* iProto, uint32 language = 0)
 {
     const char* ItemLink;
     char buffer[256];
@@ -1152,7 +1155,7 @@ std::string GetItemLinkByProto(ItemPrototype const* iProto, uint32 language = 0)
     return ItemLink;
 }
 
-int32 GetStatScalingStatValueColumn(ItemPrototype const* proto, uint32 type)
+int32 GetStatScalingStatValueColumn(ItemProperties const* proto, uint32 type)
 {
     switch (type)
     {
@@ -1221,7 +1224,7 @@ uint32 Item::CountGemsWithLimitId(uint32 LimitId)
             && ei->Enchantment->GemEntry //huh ? Gem without entry ?
            )
         {
-            ItemPrototype const* ip = sMySQLStore.GetItemProto(ei->Enchantment->GemEntry);
+            ItemProperties const* ip = sMySQLStore.GetItemProperties(ei->Enchantment->GemEntry);
             if (ip && ip->ItemLimitCategory == LimitId)
                 result++;
         }
@@ -1264,7 +1267,7 @@ void Item::SendDurationUpdate()
 // charged items that can be purchased with an alternate currency are not eligible. "
 bool Item::IsEligibleForRefund()
 {
-    ItemPrototype const* proto = this->GetProto();
+    ItemProperties const* proto = this->GetItemProperties();
 
     if (!(proto->Flags & ITEM_FLAG_REFUNDABLE))
         return false;
@@ -1298,21 +1301,21 @@ void Item::RemoveFromRefundableMap()
 
 uint32 Item::RepairItemCost()
 {
-    auto durability_costs = sDurabilityCostsStore.LookupEntry(m_itemProto->ItemLevel);
+    auto durability_costs = sDurabilityCostsStore.LookupEntry(m_itemProperties->ItemLevel);
     if (durability_costs == nullptr)
     {
         LOG_ERROR("Repair: Unknown item level (%u)", durability_costs);
         return 0;
     }
 
-    auto durability_quality = sDurabilityQualityStore.LookupEntry((m_itemProto->Quality + 1) * 2);
+    auto durability_quality = sDurabilityQualityStore.LookupEntry((m_itemProperties->Quality + 1) * 2);
     if (durability_quality == nullptr)
     {
         LOG_ERROR("Repair: Unknown item quality (%u)", durability_quality);
         return 0;
     }
 
-    uint32 dmodifier = durability_costs->modifier[m_itemProto->Class == ITEM_CLASS_WEAPON ? m_itemProto->SubClass : m_itemProto->SubClass + 21];
+    uint32 dmodifier = durability_costs->modifier[m_itemProperties->Class == ITEM_CLASS_WEAPON ? m_itemProperties->SubClass : m_itemProperties->SubClass + 21];
     uint32 cost = long2int32((GetDurabilityMax() - GetDurability()) * dmodifier * double(durability_quality->quality_modifier));
     return cost;
 }
@@ -1341,4 +1344,3 @@ bool Item::RepairItem(Player* pPlayer, bool guildmoney, int32* pCost)   //pCost 
     m_isDirty = true;
     return true;
 }
-

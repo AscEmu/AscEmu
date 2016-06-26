@@ -82,7 +82,7 @@ class FrostBrandAttackSpellProc : public SpellProc
             return;
         }
 
-        mProcChance = static_cast< Item* >(obj)->GetProto()->Delay * 9 / 600;
+        mProcChance = static_cast< Item* >(obj)->GetItemProperties()->Delay * 9 / 600;
     }
 };
 
@@ -131,12 +131,12 @@ class FlametongueWeaponSpellProc : public SpellProc
         uint32 wp_speed;
         Item* item = static_cast< Item* >(obj);
         EnchantmentInstance* enchant = item->GetEnchantment(TEMP_ENCHANTMENT_SLOT);
-        if (enchant != NULL)
+        if (enchant != nullptr)
         {
             SpellEntry* sp = dbcSpell.LookupEntryForced(enchant->Enchantment->spell[0]);
-            if (sp != NULL && sp->custom_NameHash == SPELL_HASH_FLAMETONGUE_WEAPON__PASSIVE_)
+            if (sp != nullptr && sp->custom_NameHash == SPELL_HASH_FLAMETONGUE_WEAPON__PASSIVE_)
             {
-                wp_speed = item->GetProto()->Delay;
+                wp_speed = item->GetItemProperties()->Delay;
                 damage = (sp->EffectBasePoints[0] + 1) * wp_speed / 100000;
             }
         }
@@ -202,7 +202,7 @@ class PoisonSpellProc : public SpellProc
 
         mItemGUID = static_cast<Item*>(obj)->GetGUID();
         if (mProcPerMinute)
-            mProcChance = static_cast<Item*>(obj)->GetProto()->Delay * mProcPerMinute / 600;
+            mProcChance = static_cast<Item*>(obj)->GetItemProperties()->Delay * mProcPerMinute / 600;
     }
 
     bool CanDelete(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0)//in this case misc is the item guid.
@@ -620,7 +620,7 @@ class SealOfCommandSpellProc : public SpellProc
 
         auto item = static_cast<Player*>(mTarget)->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
         if (item != nullptr)
-            weapspeed = item->GetProto()->Delay;
+            weapspeed = item->GetItemProperties()->Delay;
 
         mProcChance = 7 * weapspeed / 600;
         if (mProcChance >= 50)

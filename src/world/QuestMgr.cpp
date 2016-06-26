@@ -217,7 +217,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
     }
     else if (quest_giver->IsItem())
     {
-        if (static_cast< Item* >(quest_giver)->GetProto()->QuestId)
+        if (static_cast< Item* >(quest_giver)->GetItemProperties()->QuestId)
             bValid = true;
     }
     //This will be handled at quest share so nothing important as status
@@ -235,7 +235,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
 
     if (quest_giver->IsItem())
     {
-        QuestProperties const* pQuest = sMySQLStore.GetQuestProperties(static_cast< Item* >(quest_giver)->GetProto()->QuestId);
+        QuestProperties const* pQuest = sMySQLStore.GetQuestProperties(static_cast< Item* >(quest_giver)->GetItemProperties()->QuestId);
         if (pQuest)
         {
             QuestRelation qr;
@@ -321,7 +321,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr)
 {
     LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : NULL;
-    ItemPrototype const* it;
+    ItemProperties const* it;
 
     data->SetOpcode(SMSG_QUESTGIVER_OFFER_REWARD);
     *data << uint64(qst_giver->GetGUID());
@@ -360,7 +360,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
             {
                 *data << qst->reward_choiceitem[i];
                 *data << qst->reward_choiceitemcount[i];
-                it = sMySQLStore.GetItemProto(qst->reward_choiceitem[i]);
+                it = sMySQLStore.GetItemProperties(qst->reward_choiceitem[i]);
                 *data << (it ? it->DisplayInfoID : uint32(0));
             }
         }
@@ -375,7 +375,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
             {
                 *data << qst->reward_item[i];
                 *data << qst->reward_itemcount[i];
-                it = sMySQLStore.GetItemProto(qst->reward_item[i]);
+                it = sMySQLStore.GetItemProperties(qst->reward_item[i]);
                 *data << (it ? it->DisplayInfoID : uint32(0));
             }
         }
@@ -435,7 +435,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     *data << qst->suggestedplayers;			// "Suggested players"
     *data << uint8(0);						// MANGOS: IsFinished? value is sent back to server in quest accept packet
 
-    ItemPrototype const* ip;
+    ItemProperties const* ip;
 
     *data << qst->count_reward_choiceitem;
     for (uint8 i = 0; i < 6; ++i)
@@ -445,7 +445,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 
         *data << qst->reward_choiceitem[i];
         *data << qst->reward_choiceitemcount[i];
-        ip = sMySQLStore.GetItemProto(qst->reward_choiceitem[i]);
+        ip = sMySQLStore.GetItemProperties(qst->reward_choiceitem[i]);
         *data << (ip ? ip->DisplayInfoID : uint32(0));
 
     }
@@ -458,7 +458,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 
         *data << qst->reward_item[i];
         *data << qst->reward_itemcount[i];
-        ip = sMySQLStore.GetItemProto(qst->reward_item[i]);
+        ip = sMySQLStore.GetItemProperties(qst->reward_item[i]);
         *data << (ip ? ip->DisplayInfoID : uint32(0));
     }
 
@@ -491,7 +491,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 status, uint32 language)
 {
     LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : NULL;
-    ItemPrototype const* it;
+    ItemProperties const* it;
     data->SetOpcode(SMSG_QUESTGIVER_REQUEST_ITEMS);
 
     *data << qst_giver->GetGUID();
@@ -530,7 +530,7 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
         {
             *data << qst->required_item[i];
             *data << qst->required_itemcount[i];
-            it = sMySQLStore.GetItemProto(qst->required_item[i]);
+            it = sMySQLStore.GetItemProperties(qst->required_item[i]);
             *data << (it ? it->DisplayInfoID : uint32(0));
         }
         else
@@ -1134,7 +1134,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         {
             if (qst->reward_item[i])
             {
-                ItemPrototype const* proto = sMySQLStore.GetItemProto(qst->reward_item[i]);
+                ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_item[i]);
                 if (!proto)
                 {
                     LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
@@ -1172,7 +1172,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         // Choice Rewards
         if (qst->reward_choiceitem[reward_slot])
         {
-            ItemPrototype const* proto = sMySQLStore.GetItemProto(qst->reward_choiceitem[reward_slot]);
+            ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_choiceitem[reward_slot]);
             if (!proto)
             {
                 LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
@@ -1247,7 +1247,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         {
             if (qst->reward_item[i])
             {
-                ItemPrototype const* proto = sMySQLStore.GetItemProto(qst->reward_item[i]);
+                ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_item[i]);
                 if (!proto)
                 {
                     LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
@@ -1285,7 +1285,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         // Choice Rewards
         if (qst->reward_choiceitem[reward_slot])
         {
-            ItemPrototype const* proto = sMySQLStore.GetItemProto(qst->reward_choiceitem[reward_slot]);
+            ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_choiceitem[reward_slot]);
             if (!proto)
             {
                 LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
@@ -1922,7 +1922,7 @@ bool QuestMgr::CanStoreReward(Player* plyr, QuestProperties const* qst, uint32 r
         if (qst->reward_item[i])
         {
             slotsrequired++;
-            ItemPrototype const* proto = sMySQLStore.GetItemProto(qst->reward_item[i]);
+            ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_item[i]);
             if (!proto)
                 LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
             else if (plyr->GetItemInterface()->CanReceiveItem(proto, qst->reward_itemcount[i]))
@@ -1934,7 +1934,7 @@ bool QuestMgr::CanStoreReward(Player* plyr, QuestProperties const* qst, uint32 r
     if (qst->reward_choiceitem[reward_slot])
     {
         slotsrequired++;
-        ItemPrototype const* proto = sMySQLStore.GetItemProto(qst->reward_choiceitem[reward_slot]);
+        ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_choiceitem[reward_slot]);
         if (!proto)
             LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
         else if (plyr->GetItemInterface()->CanReceiveItem(proto, qst->reward_choiceitemcount[reward_slot]))

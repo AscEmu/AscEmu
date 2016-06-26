@@ -361,7 +361,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         if (iter->has_looted.end() != itr)
             continue;
 
-        ItemPrototype const* itemProto = iter->item.itemproto;
+        ItemProperties const* itemProto = iter->item.itemproto;
         if (!itemProto)
             continue;
 
@@ -405,7 +405,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
                 uint32 finishedCount = 0;
 
                 //check if its a questline.
-                for (uint32 i = 0; i < pQuest->count_requiredquests; i++)
+                for (uint32 i = 0; i < pQuest->count_requiredquests; ++i)
                 {
                     if (pQuest->required_quests[i])
                     {

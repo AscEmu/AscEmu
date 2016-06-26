@@ -107,25 +107,29 @@ void LootMgr::LoadLoot()
     is_loading = false;
 }
 
-DBC::Structures::ItemRandomPropertiesEntry const* LootMgr::GetRandomProperties(ItemPrototype const* proto)
+DBC::Structures::ItemRandomPropertiesEntry const* LootMgr::GetRandomProperties(ItemProperties const* proto)
 {
     std::map<uint32, RandomPropertyVector>::iterator itr;
     if (proto->RandomPropId == 0)
-        return NULL;
+        return nullptr;
+
     itr = _randomprops.find(proto->RandomPropId);
     if (itr == _randomprops.end())
-        return NULL;
+        return nullptr;
+
     return RandomChoiceVector<DBC::Structures::ItemRandomPropertiesEntry const>(itr->second);
 }
 
-DBC::Structures::ItemRandomSuffixEntry const* LootMgr::GetRandomSuffix(ItemPrototype const* proto)
+DBC::Structures::ItemRandomSuffixEntry const* LootMgr::GetRandomSuffix(ItemProperties const* proto)
 {
     std::map<uint32, RandomSuffixVector>::iterator itr;
     if (proto->RandomSuffixId == 0)
-        return NULL;
+        return nullptr;
+
     itr = _randomsuffix.find(proto->RandomSuffixId);
     if (itr == _randomsuffix.end())
-        return NULL;
+        return nullptr;
+
     return RandomChoiceVector<DBC::Structures::ItemRandomSuffixEntry const>(itr->second);
 }
 
@@ -277,7 +281,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
             {
                 //Omit items that are not in db to prevent future bugs
                 itemid = itr2->itemid;
-                ItemPrototype const* proto = sMySQLStore.GetItemProto(itemid);
+                ItemProperties const* proto = sMySQLStore.GetItemProperties(itemid);
                 if (!proto)
                 {
                     list.items[ind].item.itemproto = NULL;
@@ -344,7 +348,7 @@ void LootMgr::PushLoot(StoreLootList* list, Loot* loot, uint32 type)
             // drop chance cannot be larger than 100% or smaller than 0%
             if (chance <= 0.0f || chance > 100.0f)
                 continue;
-            ItemPrototype const* itemproto = list->items[x].item.itemproto;
+            ItemProperties const* itemproto = list->items[x].item.itemproto;
             if (Rand(chance * sWorld.getRate(RATE_DROP0 + itemproto->Quality))) //|| itemproto->Class == ITEM_CLASS_QUEST)
             {
                 if (list->items[x].mincount == list->items[x].maxcount)
@@ -421,7 +425,8 @@ void LootMgr::AddLoot(Loot* loot, uint32 itemid, uint32 mincount, uint32 maxcoun
 {
     uint32 i;
     uint32 count;
-    ItemPrototype const* itemproto = sMySQLStore.GetItemProto(itemid);
+
+    ItemProperties const* itemproto = sMySQLStore.GetItemProperties(itemid);
     if (itemproto) // this check is needed until loot DB is fixed
     {
         if (mincount == maxcount)
@@ -760,7 +765,7 @@ void LootRoll::Finalize()
     else
         _player->GetSession()->SendPacket(&data);
 
-    ItemPrototype const* it = sMySQLStore.GetItemProto(itemid);
+    ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
     int8 error;
     if ((error = _player->GetItemInterface()->CanReceiveItem(it, 1)) != 0)
     {
@@ -780,7 +785,7 @@ void LootRoll::Finalize()
         LOG_DEBUG("AutoLootItem MISC");
 
         Item* item = objmgr.CreateItem(itemid, _player);
-        if (item == NULL)
+        if (item == nullptr)
             return;
         item->SetStackCount(amt);
 

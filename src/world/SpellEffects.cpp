@@ -699,15 +699,15 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             break;
             case SPELL_HASH_SHIELD_SLAM:    // Shield Slam - damage is increased by block value
             {
-                if (p_caster != NULL)
+                if (p_caster != nullptr)
                 {
                     Item* it = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-                    if (it && it->GetProto()->InventoryType == INVTYPE_SHIELD)
+                    if (it && it->GetItemProperties()->InventoryType == INVTYPE_SHIELD)
                     {
                         float block_multiplier = (100.0f + p_caster->m_modblockabsorbvalue) / 100.0f;
                         if (block_multiplier < 1.0f)block_multiplier = 1.0f;
 
-                        int32 blockable_damage = float2int32((it->GetProto()->Block + p_caster->m_modblockvaluefromspells + p_caster->GetUInt32Value(PLAYER_RATING_MODIFIER_BLOCK) + ((p_caster->GetStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
+                        int32 blockable_damage = float2int32((it->GetItemProperties()->Block + p_caster->m_modblockvaluefromspells + p_caster->GetUInt32Value(PLAYER_RATING_MODIFIER_BLOCK) + ((p_caster->GetStat(STAT_STRENGTH) / 2.0f) - 1.0f)) * block_multiplier);
 
                         /*
                             3.2.0:
@@ -798,7 +798,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 if (p_caster != NULL)
                 {
                     Item* it = static_cast<Item*>(p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND));
-                    if (it && it->GetProto() && it->GetProto()->InventoryType == INVTYPE_SHIELD)
+                    if (it && it->GetItemProperties() && it->GetItemProperties()->InventoryType == INVTYPE_SHIELD)
                         dmg = p_caster->GetUInt32Value(PLAYER_SHIELD_BLOCK);
                 }
             }break;
@@ -825,7 +825,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             }break;
             case 57755:
             {
-                if (p_caster != NULL)
+                if (p_caster != nullptr)
                     dmg = (p_caster->GetAP() * 0.5);
             }break;
             case 64382:
@@ -847,7 +847,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             case 47449:
             case 47450:
             {
-                if (p_caster != NULL)
+                if (p_caster != nullptr)
                 {
                     if (unitTarget->IsDazed())
                         for (uint32 i = UNIT_FIELD_AURASTATE; i < AURASTATE_FLAG_REJUVENATE; i)
@@ -879,19 +879,19 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             case 47519:
             case 47520:
             {
-                if (p_caster != NULL)
+                if (p_caster != nullptr)
                 {
                     auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                     if (item != nullptr)
                     {
                         if (p_caster->HasAura(12329))
-                            dmg = (((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.4;
+                            dmg = (((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.4;
                         else if (p_caster->HasAura(12950))
-                            dmg = (((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.8;
+                            dmg = (((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.8;
                         else if (p_caster->HasAura(20496))
-                            dmg = (((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 1.2;
+                            dmg = (((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 1.2;
                         else
-                            dmg = ((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
+                            dmg = ((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
                     }
                 }
             }break;
@@ -905,11 +905,11 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             case 47474:
             case 47475:
             {
-                if (p_caster != NULL)
+                if (p_caster != nullptr)
                 {
                     auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                     if (item != nullptr)
-                        dmg = ((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
+                        dmg = ((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
                 }
             }break;
             case 6343:
@@ -928,7 +928,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 
             case 20252:
             {
-                if (p_caster != NULL)
+                if (p_caster != nullptr)
                     dmg = p_caster->GetAP() * 0.12;
             }break;
             case 31898:
@@ -941,7 +941,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             case 20268:
             case 53726:
             {
-                if (p_caster != NULL)
+                if (p_caster != nullptr)
                 {
                     if (p_caster->HasAura(34258))
                         p_caster->CastSpell(static_cast<Unit*>(p_caster), 34260, true);
@@ -954,22 +954,22 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             case 53600:
             case 61411:
             {
-                if (p_caster != NULL)
+                if (p_caster != nullptr)
                 {
                     Item* it = static_cast<Item*>(p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND));
-                    if (it && it->GetProto() && it->GetProto()->InventoryType == INVTYPE_SHIELD)
+                    if (it && it->GetItemProperties() && it->GetItemProperties()->InventoryType == INVTYPE_SHIELD)
                         dmg = float2int32(1.3f * p_caster->GetUInt32Value(PLAYER_SHIELD_BLOCK));
                 }
             }break;
             case 25742:
             {
-                if (p_caster != NULL)
+                if (p_caster != nullptr)
                     dmg = p_caster->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME) / 1000 * ((0.022 * (p_caster->GetAP()) + (0.044 * (p_caster->GetDamageDoneMod(1))))) + m_spellInfo->EffectBasePoints[i];
             }break;
             case 9799:
             case 25988:
             {
-                if (p_caster != NULL)
+                if (p_caster != nullptr)
                 {
                     if (dmg > (p_caster->GetUInt32Value(UNIT_FIELD_MAXHEALTH) / 2))
                         dmg = (p_caster->GetUInt32Value(UNIT_FIELD_MAXHEALTH) / 2);
@@ -987,11 +987,9 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             case 49044:
             case 49045:
             {
-                if (p_caster != NULL)
+                if (p_caster != nullptr)
                 {
                     dmg = (p_caster->GetRAP() * 0.15) + m_spellInfo->EffectBasePoints[i];
-
-
                 }
             }break;
             case 19434:
@@ -1004,21 +1002,21 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             case 49049:
             case 49050:
             {
-                if (p_caster != NULL)
+                if (p_caster != nullptr)
                 {
                     auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                     if (item != nullptr)
-                        dmg = ((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
+                        dmg = ((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
 
                 }
             }break;
             case 53209:
             {
-                if (p_caster != NULL)
+                if (p_caster != nullptr)
                 {
                     auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                     if (item != nullptr)
-                        dmg = ((item->GetProto()->Damage[0].Min + item->GetProto()->Damage[0].Max) * 0.2f) * 1.25;
+                        dmg = ((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) * 1.25;
                 }
             }break;
             case 56641:
@@ -1029,7 +1027,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 if (p_caster != NULL)
                 {
                     Item* pItem = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-                    ItemPrototype const* pItemProto = sMySQLStore.GetItemProto(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+                    ItemProperties const* pItemProto = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
                     uint32 stundmg;
                     float bowdmg;
                     float ammodmg;
@@ -1038,7 +1036,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                     else
                         stundmg = p_caster->GetRAP() / 10 + m_spellInfo->EffectBasePoints[i];
                     if (pItem)
-                        bowdmg = (pItem->GetProto()->Damage[0].Min + pItem->GetProto()->Damage[0].Max) * 0.2f;
+                        bowdmg = (pItem->GetItemProperties()->Damage[0].Min + pItem->GetItemProperties()->Damage[0].Max) * 0.2f;
                     else
                         bowdmg = 0;
                     if (pItemProto)
@@ -1883,7 +1881,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
 {
     uint32 spellid = m_spellInfo->Id;
 
-    if (playerTarget == NULL)
+    if (playerTarget == nullptr)
     {
         LOG_ERROR("Spell %u (%s) has a create item effect but no player target!", spellid, m_spellInfo->Name);
         return;
@@ -1901,8 +1899,8 @@ void Spell::SpellEffectCreateItem(uint32 i)
         return;
     }
 
-    ItemPrototype const* m_itemProto = sMySQLStore.GetItemProto(itemid);
-    if (m_itemProto == NULL)
+    ItemProperties const* m_itemProto = sMySQLStore.GetItemProperties(itemid);
+    if (m_itemProto == nullptr)
     {
         LOG_ERROR("Spell %u (%s) has a create item effect but the itemid is invalid!", spellid, m_spellInfo->Name);
         return;
@@ -2841,11 +2839,11 @@ void Spell::SpellEffectWeaponDmgPerc(uint32 i) // Weapon Percent damage
         if (GetProto()->custom_NameHash == SPELL_HASH_FAN_OF_KNIVES && p_caster != NULL)   // rogue - fan of knives
         {
             Item* oit = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-            if (oit != NULL)
+            if (oit != nullptr)
             {
                 if (oit->GetDurability() != 0)
                 {
-                    if (oit->GetProto()->Class == 2 && oit->GetProto()->SubClass == 15)   // daggers
+                    if (oit->GetItemProperties()->Class == 2 && oit->GetItemProperties()->SubClass == 15)   // daggers
                         damage = 105; //causing 105% weapon damage with daggers
                     else
                         damage = GetProto()->EffectBasePoints[i] + 1;// and 70% weapon damage with all other weapons.
@@ -2932,11 +2930,11 @@ void Spell::SpellEffectOpenLock(uint32 i)
                 if (!itemTarget->locked)
                     return;
 
-                auto lock = sLockStore.LookupEntry(itemTarget->GetProto()->LockId);
+                auto lock = sLockStore.LookupEntry(itemTarget->GetItemProperties()->LockId);
                 if (!lock)
                     return;
 
-                for (uint8 j = 0; j < LOCK_NUM_CASES; j++)
+                for (uint8 j = 0; j < LOCK_NUM_CASES; ++j)
                 {
                     if (lock->locktype[j] == 2 && lock->minlockskill[j] && lockskill >= lock->minlockskill[j])
                     {
@@ -2958,7 +2956,7 @@ void Spell::SpellEffectOpenLock(uint32 i)
                 if (lock == 0)
                     return;
 
-                for (uint8 j = 0; j < LOCK_NUM_CASES; j++)
+                for (uint8 j = 0; j < LOCK_NUM_CASES; ++j)
                 {
                     if (lock->locktype[j] == 2 && lock->minlockskill[j] && lockskill >= lock->minlockskill[j])
                     {
@@ -3192,9 +3190,9 @@ void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
         uint32 spellid = 0;
         for (uint8 j = 0; j < 5; ++j)
         {
-            if (i_caster->GetProto()->Spells[j].Trigger == LEARNING && i_caster->GetProto()->Spells[j].Id != 0)
+            if (i_caster->GetItemProperties()->Spells[j].Trigger == LEARNING && i_caster->GetItemProperties()->Spells[j].Id != 0)
             {
-                spellid = i_caster->GetProto()->Spells[j].Id;
+                spellid = i_caster->GetItemProperties()->Spells[j].Id;
                 break;
             }
         }
@@ -3678,15 +3676,15 @@ void Spell::SpellEffectEnchantItem(uint32 i) // Enchant Item Permanent
         itemTarget->GetEntry() == 43145))
     {
         uint32 itemid = GetProto()->EffectItemType[i];
-        ItemPrototype const* it = sMySQLStore.GetItemProto(itemid);
-        if (it == NULL)
+        ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
+        if (it == nullptr)
         {
             p_caster->GetSession()->SystemMessage("Item is missing, report this to devs. Entry: %u", itemid);
             return;
         }
 
         Item* pItem = objmgr.CreateItem(itemid, p_caster);
-        if (pItem == NULL)
+        if (pItem == nullptr)
             return;
 
         p_caster->GetItemInterface()->RemoveItemAmt(itemTarget->GetEntry(), 1);
@@ -3756,7 +3754,7 @@ void Spell::SpellEffectEnchantItemTemporary(uint32 i)  // Enchant Item Temporary
 
     auto skill_line_ability = objmgr.GetSpellSkill(GetProto()->Id);
     if (skill_line_ability != nullptr)
-        DetermineSkillUp(skill_line_ability->skilline, itemTarget->GetProto()->ItemLevel);
+        DetermineSkillUp(skill_line_ability->skilline, itemTarget->GetItemProperties()->ItemLevel);
 }
 
 void Spell::SpellEffectTameCreature(uint32 i)
@@ -3902,10 +3900,10 @@ void Spell::SpellEffectWeapondamage(uint32 i)   // Weapon damage +
 
 void Spell::SpellEffectOpenLockItem(uint32 i)
 {
-    if (p_caster == NULL || i_caster == NULL)
+    if (p_caster == nullptr || i_caster == nullptr)
         return;
 
-    p_caster->HandleSpellLoot(i_caster->GetProto()->ItemId);
+    p_caster->HandleSpellLoot(i_caster->GetItemProperties()->ItemId);
 }
 
 void Spell::SpellEffectProficiency(uint32 i)
@@ -4654,7 +4652,7 @@ void Spell::SpellEffectFeedPet(uint32 i)  // Feed Pet
 
     /** Cast feed pet effect
     - effect is item level and pet level dependent, aura ticks are 35, 17, 8 (*1000) happiness*/
-    int8 deltaLvl = static_cast<int8>(pPet->getLevel() - itemTarget->GetProto()->ItemLevel);
+    int8 deltaLvl = static_cast<int8>(pPet->getLevel() - itemTarget->GetItemProperties()->ItemLevel);
     damage /= 1000; //damage of Feed pet spell is 35000
     if (deltaLvl > 10) damage = damage >> 1;//divide by 2
     if (deltaLvl > 20) damage = damage >> 1;
@@ -5712,7 +5710,7 @@ void Spell::SpellEffectDurabilityDamage(uint32 i)
                 if (pItem->IsContainer())
                 {
                     pContainer = static_cast< Container* >(pItem);
-                    for (j = 0; j < pContainer->GetProto()->ContainerSlots; ++j)
+                    for (j = 0; j < pContainer->GetItemProperties()->ContainerSlots; ++j)
                     {
                         pItem = pContainer->GetItem(static_cast<uint16>(j));
                         if (pItem != NULL)
@@ -5797,18 +5795,18 @@ void Spell::SpellEffectDurabilityDamagePCT(uint32 i)
     // Possibly its mean -1 all player equipped items and -2 all items
     if (slot < 0)
     {
-        for (k = 0; k < MAX_INVENTORY_SLOT; k++)
+        for (k = 0; k < MAX_INVENTORY_SLOT; ++k)
         {
             pItem = p_caster->GetItemInterface()->GetInventoryItem(static_cast<uint16>(k));
-            if (pItem != NULL)
+            if (pItem != nullptr)
             {
                 if (pItem->IsContainer())
                 {
                     pContainer = static_cast< Container* >(pItem);
-                    for (j = 0; j < pContainer->GetProto()->ContainerSlots; ++j)
+                    for (j = 0; j < pContainer->GetItemProperties()->ContainerSlots; ++j)
                     {
                         pItem = pContainer->GetItem(static_cast<uint16>(j));
-                        if (pItem != NULL)
+                        if (pItem != nullptr)
                         {
                             uint32 maxdur = pItem->GetDurabilityMax();
                             uint32 olddur = pItem->GetDurability();

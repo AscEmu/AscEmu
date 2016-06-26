@@ -178,7 +178,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                         case AREA_TRIGGER_FAILURE_NO_ATTUNE_I:
                         {
                             MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid);
-                            ItemPrototype const* pItem = sMySQLStore.GetItemProto(pMi->required_item);
+                            ItemProperties const* pItem = sMySQLStore.GetItemProperties(pMi->required_item);
                             if (pItem)
                                 snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(35), pItem->Name.c_str());
                             else
@@ -214,7 +214,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                         case AREA_TRIGGER_FAILURE_NO_KEY:
                         {
                             MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid);
-                            ItemPrototype const* pItem = sMySQLStore.GetItemProto(pMi->heroic_key_1);
+                            ItemProperties const* pItem = sMySQLStore.GetItemProperties(pMi->heroic_key_1);
                             if (pItem)
                                 snprintf(msg, 200, "You must have the item, `%s` to pass through here.", pItem->Name.c_str());
                             else

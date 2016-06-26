@@ -354,10 +354,10 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
 
     uint32 count = 0;
 
-    MySQLDataStore::ItemPrototypeContainer const* its = sMySQLStore.GetItemPrototypeStore();
-    for (MySQLDataStore::ItemPrototypeContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
+    MySQLDataStore::ItemPropertiesContainer const* its = sMySQLStore.GetItemPropertiesStore();
+    for (MySQLDataStore::ItemPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        ItemPrototype const* it = sMySQLStore.GetItemProto(itr->second.ItemId);
+        ItemProperties const* it = sMySQLStore.GetItemProperties(itr->second.ItemId);
         if (it == nullptr)
             continue;
 
