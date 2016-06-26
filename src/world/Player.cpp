@@ -3672,7 +3672,7 @@ void Player::RolloverHonor()
 void Player::_LoadQuestLogEntry(QueryResult* result)
 {
     QuestLogEntry* entry;
-    Quest const* quest;
+    QuestProperties const* quest;
     Field* fields;
     uint32 questid;
     uint32 baseindex;
@@ -3695,7 +3695,7 @@ void Player::_LoadQuestLogEntry(QueryResult* result)
         {
             fields = result->Fetch();
             questid = fields[1].GetUInt32();
-            quest = sMySQLStore.GetQuest(questid);
+            quest = sMySQLStore.GetQuestProperties(questid);
             slot = fields[2].GetUInt32();
             ARCEMU_ASSERT(slot != -1);
 
@@ -6091,7 +6091,7 @@ void Player::LoadTaxiMask(const char* data)
 
 bool Player::HasQuestForItem(uint32 itemid)
 {
-    Quest const* qst;
+    QuestProperties const* qst;
     for (uint8 i = 0; i < 25; ++i)
     {
         if (m_questlog[i] != NULL)
@@ -6484,11 +6484,11 @@ void Player::EventDeActivateGameObject(GameObject* obj)
 
 void Player::EventTimedQuestExpire(uint32 questid)
 {
-    QuestLogEntry *qle = this->GetQuestLogForEntry(questid);
-    if (qle == NULL)
+    QuestLogEntry* qle = this->GetQuestLogForEntry(questid);
+    if (qle == nullptr)
         return;
 
-    Quest const* qst = qle->GetQuest();
+    QuestProperties const* qst = qle->GetQuest();
 
     sQuestMgr.SendQuestUpdateFailedTimer(qst, this);
     CALL_QUESTSCRIPT_EVENT(qle, OnQuestCancel)(this);
@@ -6711,7 +6711,7 @@ void Player::UpdateNearbyGameObjects()
             bool activate_quest_object = false;
             GameObject* go = static_cast<GameObject*>(obj);
             QuestLogEntry* qle = NULL;
-            auto gameobject_info = go->GetInfo();
+            auto gameobject_info = go->GetGameObjectProperties();
 
             bool deactivate = false;
             if (gameobject_info && (gameobject_info->goMap.size() || gameobject_info->itemMap.size()))
@@ -13360,7 +13360,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     bool bValid = false;
     bool hasquest = true;
     bool bSkipLevelCheck = false;
-    Quest const* qst = NULL;
+    QuestProperties const* qst = NULL;
     Object* qst_giver = NULL;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
 
@@ -13375,7 +13375,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         if (quest_giver->isQuestGiver())
         {
             bValid = true;
-            qst = sMySQLStore.GetQuest(quest_id);
+            qst = sMySQLStore.GetQuestProperties(quest_id);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
@@ -13387,7 +13387,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             return;
 
         bValid = true;
-        qst = sMySQLStore.GetQuest(quest_id);
+        qst = sMySQLStore.GetQuestProperties(quest_id);
     }
     else if (guidtype == HIGHGUID_TYPE_ITEM)
     {
@@ -13398,7 +13398,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             return;
         bValid = true;
         bSkipLevelCheck = true;
-        qst = sMySQLStore.GetQuest(quest_id);
+        qst = sMySQLStore.GetQuestProperties(quest_id);
     }
     else if (guidtype == HIGHGUID_TYPE_PLAYER)
     {
@@ -13408,7 +13408,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         else
             return;
         bValid = true;
-        qst = sMySQLStore.GetQuest(quest_id);
+        qst = sMySQLStore.GetQuestProperties(quest_id);
     }
 
     if (!qst_giver)
@@ -13542,7 +13542,7 @@ bool Player::LoadReputations(QueryResult *result)
     int32 basestanding = 0;
     int32 standing = 0;
 
-    Field *field = NULL;
+    Field* field = NULL;
 
     do{
         Field *field = result->Fetch();

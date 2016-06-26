@@ -23,15 +23,15 @@
 
 GameObject* CObjectFactory::CreateGameObject(uint32 Id, uint32 LowGUID)
 {
-    GameObjectInfo const* gameobject_info = sMySQLStore.GetGameObjectInfo(Id);
-    if (gameobject_info == nullptr)
+    GameObjectProperties const* gameobject_properties = sMySQLStore.GetGameObjectProperties(Id);
+    if (gameobject_properties == nullptr)
         return nullptr;
 
     GameObject* gameobject = nullptr;
 
     uint64 GUID = uint64((uint64(HIGHGUID_TYPE_GAMEOBJECT) << 32) | LowGUID);
 
-    switch (gameobject_info->type)
+    switch (gameobject_properties->type)
     {
 
         case GAMEOBJECT_TYPE_DOOR:
@@ -87,7 +87,7 @@ GameObject* CObjectFactory::CreateGameObject(uint32 Id, uint32 LowGUID)
             break;
     }
 
-    gameobject->SetInfo(gameobject_info);
+    gameobject->SetGameObjectProperties(gameobject_properties);
 
     return gameobject;
 }

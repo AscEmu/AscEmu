@@ -46,7 +46,7 @@ QuestLogEntry::~QuestLogEntry()
     
 }
 
-void QuestLogEntry::Init(Quest const* quest, Player* plr, uint32 slot)
+void QuestLogEntry::Init(QuestProperties const* quest, Player* plr, uint32 slot)
 {
     ARCEMU_ASSERT(quest != nullptr);
     ARCEMU_ASSERT(plr != nullptr);

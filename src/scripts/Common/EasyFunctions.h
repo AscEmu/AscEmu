@@ -174,7 +174,7 @@ class SCRIPT_DECL EasyFunctions
             if (plr == NULL)
                 return NULL;
 
-            auto gameobject_info = sMySQLStore.GetGameObjectInfo(entry_id);
+            auto gameobject_info = sMySQLStore.GetGameObjectProperties(entry_id);
             if (gameobject_info == nullptr)
                 return nullptr;
 

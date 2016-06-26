@@ -84,7 +84,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     if (itemProto->QuestId)
     {
         // Item Starter
-        Quest const* qst = sMySQLStore.GetQuest(itemProto->QuestId);
+        QuestProperties const* qst = sMySQLStore.GetQuestProperties(itemProto->QuestId);
         if (!qst)
             return;
 

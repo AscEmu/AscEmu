@@ -56,7 +56,7 @@ class SpeedCheatDetector;
 struct GuildMember;
 
 class QueryBuffer;
-struct Quest;
+struct QuestProperties;
 struct SpellShapeshiftForm;
 class CBattleground;
 class Instance;
@@ -641,7 +641,7 @@ class SERVER_DECL Player : public Unit
 
         bool GetQuestRewardStatus(uint32 quest_id);
         bool HasQuestForItem(uint32 itemid);
-        bool CanFinishQuest(Quest* qst);
+        bool CanFinishQuest(QuestProperties* qst);
         bool HasQuestSpell(uint32 spellid);
         void RemoveQuestSpell(uint32 spellid);
         bool HasQuestMob(uint32 entry);

@@ -38,7 +38,7 @@ uint32 GetQuestIDFromLink(const char* questlink)
     return atol(ptr + 8);       // quest id is just past "|Hquest:" (8 bytes)
 }
 
-std::string RemoveQuestFromPlayer(Player* plr, Quest const* qst)
+std::string RemoveQuestFromPlayer(Player* plr, QuestProperties const* qst)
 {
     std::string recout = "|cff00ff00";
 
@@ -94,7 +94,7 @@ bool ChatHandler::HandleQuestStatusCommand(const char* args, WorldSession* m_ses
     }
     std::string recout = "|cff00ff00";
 
-    Quest const* qst = sMySQLStore.GetQuest(quest_id);
+    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
     if (qst)
     {
         if (plr->HasFinishedQuest(quest_id))
@@ -139,7 +139,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
     }
     std::string recout = "|cff00ff00";
 
-    Quest const* qst = sMySQLStore.GetQuest(quest_id);
+    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
     if (qst)
     {
         if (plr->HasFinishedQuest(quest_id))
@@ -266,7 +266,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
     }
     std::string recout = "|cff00ff00";
 
-    Quest const* qst = sMySQLStore.GetQuest(quest_id);
+    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
     if (qst)
     {
         if (plr->HasFinishedQuest(quest_id))
@@ -718,7 +718,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
 
     uint32 count = 0;
     uint32 quest_id = 0;
-    Quest const* qst;
+    QuestProperties const* qst;
     Field* fields;
 
     if (quest_giver != 0)
@@ -737,7 +737,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
             fields = creatureResult->Fetch();
             quest_id = fields[0].GetUInt32();
 
-            qst = sMySQLStore.GetQuest(quest_id);
+            qst = sMySQLStore.GetQuestProperties(quest_id);
             if (qst == NULL)
                 continue;
 
@@ -806,9 +806,9 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
         if (quest_id == 0)
             return false;
     }
-    Quest const* qst = sMySQLStore.GetQuest(quest_id);
 
-    if (qst == NULL)
+    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    if (qst == nullptr)
     {
         SystemMessage(m_session, "Invalid quest selected, unable to add quest to the specified NPC.");
         return false;
@@ -891,9 +891,9 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
         if (quest_id == 0)
             return false;
     }
-    Quest const* qst = sMySQLStore.GetQuest(quest_id);
 
-    if (qst == NULL)
+    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    if (qst == nullptr)
     {
         SystemMessage(m_session, "Invalid quest selected, unable to add quest to the specified NPC.");
         return false;
@@ -989,9 +989,9 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
         if (quest_id == 0)
             return false;
     }
-    Quest const* qst = sMySQLStore.GetQuest(quest_id);
 
-    if (qst == NULL)
+    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    if (qst == nullptr)
     {
         SystemMessage(m_session, "Invalid Quest selected.");
         return false;
@@ -1073,9 +1073,9 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
         if (quest_id == 0)
             return false;
     }
-    Quest const* qst = sMySQLStore.GetQuest(quest_id);
 
-    if (qst == NULL)
+    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    if (qst == nullptr)
     {
         SystemMessage(m_session, "Invalid Quest selected.");
         return false;
@@ -1443,8 +1443,8 @@ bool ChatHandler::HandleQuestRemoveCommand(const char* args, WorldSession* m_ses
         if (quest_id == 0)
             return false;
     }
-    Quest const* qst = sMySQLStore.GetQuest(quest_id);
 
+    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
     if (qst)
     {
         recout = RemoveQuestFromPlayer(plr, qst);
@@ -1471,7 +1471,8 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
         if (qu_id == 0)
             return false;
     }
-    Quest const* q = sMySQLStore.GetQuest(qu_id);
+
+    QuestProperties const* q = sMySQLStore.GetQuestProperties(qu_id);
     if (q)
     {
         for (uint32 r = 0; r < q->count_reward_item; r++)
@@ -1492,7 +1493,7 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
                     recout << "[x" << q->reward_itemcount[r] << "]\n";
             }
         }
-        for (uint32 r = 0; r < q->count_reward_choiceitem; r++)
+        for (uint32 r = 0; r < q->count_reward_choiceitem; ++r)
         {
             uint32 itemid = q->reward_choiceitem[r];
             ItemPrototype const* itemProto = sMySQLStore.GetItemProto(itemid);

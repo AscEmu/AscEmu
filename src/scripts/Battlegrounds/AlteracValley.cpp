@@ -1144,11 +1144,11 @@ void AlteracValley::AVNode::Spawn()
             // change entry, but to do this change guid
             if (m_flag->GetEntry() != g->id[m_state] || !m_flag->IsInWorld())
             {
-                auto gameobject_info = sMySQLStore.GetGameObjectInfo(g->id[m_state]);
+                auto gameobject_info = sMySQLStore.GetGameObjectProperties(g->id[m_state]);
                 m_flag->RemoveFromWorld(false);
                 m_flag->SetEntry(g->id[m_state]);
                 m_flag->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
-                m_flag->SetInfo(gameobject_info);
+                m_flag->SetGameObjectProperties(gameobject_info);
                 m_flag->SetDisplayId(gameobject_info->display_id);
                 m_flag->SetType(static_cast<uint8>(gameobject_info->type));
                 m_flag->SetFaction(g_gameObjectFactions[m_state]);
@@ -1190,11 +1190,11 @@ void AlteracValley::AVNode::Spawn()
             // change entry, but to do this change guid
             if (m_aura->GetEntry() != g->id[m_state] || !m_aura->IsInWorld())
             {
-                auto gameobject_info = sMySQLStore.GetGameObjectInfo(g->id[m_state]);
+                auto gameobject_info = sMySQLStore.GetGameObjectProperties(g->id[m_state]);
                 m_aura->RemoveFromWorld(false);
                 m_aura->SetEntry(g->id[m_state]);
                 m_aura->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
-                m_aura->SetInfo(gameobject_info);
+                m_aura->SetGameObjectProperties(gameobject_info);
                 m_aura->SetDisplayId(gameobject_info->display_id);
                 m_aura->SetType(static_cast<uint8>(gameobject_info->type));
                 m_aura->SetFaction(g_gameObjectFactions[m_state]);
@@ -1241,11 +1241,11 @@ void AlteracValley::AVNode::Spawn()
             // change entry, but to do this change guid
             if (m_glow->GetEntry() != g->id[m_state] || !m_glow->IsInWorld())
             {
-                auto gameobject_info = sMySQLStore.GetGameObjectInfo(g->id[m_state]);
+                auto gameobject_info = sMySQLStore.GetGameObjectProperties(g->id[m_state]);
                 m_glow->RemoveFromWorld(false);
                 m_glow->SetEntry(g->id[m_state]);
                 m_glow->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
-                m_glow->SetInfo(gameobject_info);
+                m_glow->SetGameObjectProperties(gameobject_info);
                 m_glow->SetDisplayId(gameobject_info->display_id);
                 m_glow->SetType(static_cast<uint8>(gameobject_info->type));
                 m_glow->SetFaction(g_gameObjectFactions[m_state]);

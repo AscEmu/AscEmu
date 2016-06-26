@@ -402,15 +402,15 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
 
     GreenSystemMessage(m_session, "Starting search of object `%s`...", x.c_str());
     uint32 t = getMSTime();
-    GameObjectInfo const* gameobject_info;
+    GameObjectProperties const* gameobject_info;
     uint32 count = 0;
     std::string y;
     std::string recout;
 
-    MySQLDataStore::GameObjectNamesContainer const* its = sMySQLStore.GetGameObjectNamesStore();
-    for (MySQLDataStore::GameObjectNamesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
+    MySQLDataStore::GameObjectPropertiesContainer const* its = sMySQLStore.GetGameObjectPropertiesStore();
+    for (MySQLDataStore::GameObjectPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        gameobject_info = sMySQLStore.GetGameObjectInfo(itr->second.entry);
+        gameobject_info = sMySQLStore.GetGameObjectProperties(itr->second.entry);
         y = std::string(gameobject_info->name);
         arcemu_TOLOWER(y);
         if (FindXinYString(x, y))
@@ -466,10 +466,10 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
     std::string recout;
     uint32 count = 0;
 
-    MySQLDataStore::QuestContainer const* its = sMySQLStore.GetQuestStore();
-    for (MySQLDataStore::QuestContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
+    MySQLDataStore::QuestPropertiesContainer const* its = sMySQLStore.GetQuestPropertiesStore();
+    for (MySQLDataStore::QuestPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        Quest const* quest = sMySQLStore.GetQuest(itr->second.id);
+        QuestProperties const* quest = sMySQLStore.GetQuestProperties(itr->second.id);
         if (quest == nullptr)
             continue;
 

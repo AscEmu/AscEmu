@@ -598,7 +598,7 @@ class LuaUnit
         bool save = luaL_optinteger(L, 9, 0) ? true : false;
         if (entry_id)
         {
-            GameObjectInfo const* info = sMySQLStore.GetGameObjectInfo(entry_id);
+            GameObjectProperties const* info = sMySQLStore.GetGameObjectProperties(entry_id);
             if (info == nullptr)
             {
                 LOG_ERROR("Lua script tried to spawn a gameobject that doesn't exist ( %u ). Aborting.", entry_id);
@@ -1626,7 +1626,8 @@ class LuaUnit
         TEST_PLAYER_RET()
             int quest_id = luaL_checkinteger(L, 1);
         Player* plr = static_cast<Player*>(ptr);
-        Quest const* qst = sMySQLStore.GetQuest(quest_id);
+
+        QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
         if (qst)
         {
             if (plr->HasFinishedQuest(quest_id))
@@ -1664,7 +1665,7 @@ class LuaUnit
             int quest_id = luaL_checkinteger(L, 1);
         Player* plr = static_cast<Player*>(ptr);
 
-        Quest const* qst = sMySQLStore.GetQuest(quest_id);
+        QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
         if (qst)
         {
             if (plr->HasFinishedQuest(quest_id))
@@ -2168,8 +2169,7 @@ class LuaUnit
         if (!quest_id)
             return 0;
 
-        Quest const* qst = sMySQLStore.GetQuest(quest_id);
-
+        QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
         if (!qst)
             return 0;
 
@@ -2211,8 +2211,8 @@ class LuaUnit
             unit->SetUInt32Value(UNIT_NPC_FLAGS, unit->GetUInt32Value(UNIT_NPC_FLAGS) + UNIT_NPC_FLAG_QUESTGIVER);
         if (!quest_id)
             return 0;
-        Quest const* qst = sMySQLStore.GetQuest(quest_id);
 
+        QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
         if (!qst)
             return 0;
 
@@ -4365,7 +4365,7 @@ class LuaUnit
         TEST_UNIT()
             Creature* ctr = static_cast<Creature*>(ptr);
         uint32 questid = CHECK_ULONG(L, 1);
-        Quest const* qst = sMySQLStore.GetQuest(questid);
+        QuestProperties const* qst = sMySQLStore.GetQuestProperties(questid);
         if (ctr->HasQuest(qst->id, qst->type))
             lua_pushboolean(L, 1);
         else

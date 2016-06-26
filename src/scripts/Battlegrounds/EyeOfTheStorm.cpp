@@ -321,7 +321,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32 id)
         uint32 x = (uint32)bonusid;
         if (EOTSm_buffs[x] && EOTSm_buffs[x]->IsInWorld())
         {
-            spellid = EOTSm_buffs[x]->GetInfo()->raw.parameter_3;
+            spellid = EOTSm_buffs[x]->GetGameObjectProperties()->raw.parameter_3;
             SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
             if (sp)
             {
@@ -545,12 +545,12 @@ void EyeOfTheStorm::EventResetFlag()
 
 void EyeOfTheStorm::OnCreate()
 {
-    GameObjectInfo const* gameobject_info;
+    GameObjectProperties const* gameobject_info;
 
     // create gameobjects
     for (uint8 i = 0; i < EOTS_TOWER_COUNT; ++i)
     {
-        gameobject_info = sMySQLStore.GetGameObjectInfo(EOTSTowerIds[i]);
+        gameobject_info = sMySQLStore.GetGameObjectProperties(EOTSTowerIds[i]);
         if (gameobject_info == nullptr)
         {
             Log.LargeErrorMessage("EOTS is being created and you are missing gameobjects. Terminating.", NULL);
@@ -562,7 +562,7 @@ void EyeOfTheStorm::OnCreate()
         m_CPStatusGO[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSTCLocations[i][0], EOTSTCLocations[i][1], EOTSTCLocations[i][2], 0);
         m_CPStatusGO[i]->PushToWorld(m_mapMgr);
 
-        gameobject_info = sMySQLStore.GetGameObjectInfo(EOTS_BANNER_NEUTRAL);
+        gameobject_info = sMySQLStore.GetGameObjectProperties(EOTS_BANNER_NEUTRAL);
         if (gameobject_info == nullptr)
         {
             Log.LargeErrorMessage("EOTS is being created and you are missing gameobjects. Terminating.", NULL);
@@ -886,7 +886,7 @@ void EyeOfTheStorm::HookOnHK(Player* plr)
 void EyeOfTheStorm::SpawnBuff(uint32 x)
 {
     uint32 chosen_buffid = EOTSbuffentrys[RandomUInt(2)];
-    GameObjectInfo const* goi = sMySQLStore.GetGameObjectInfo(chosen_buffid);
+    GameObjectProperties const* goi = sMySQLStore.GetGameObjectProperties(chosen_buffid);
     if (goi == nullptr)
         return;
 
@@ -910,7 +910,7 @@ void EyeOfTheStorm::SpawnBuff(uint32 x)
         {
             EOTSm_buffs[x]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
             EOTSm_buffs[x]->SetEntry(chosen_buffid);
-            EOTSm_buffs[x]->SetInfo(goi);
+            EOTSm_buffs[x]->SetGameObjectProperties(goi);
         }
 
         EOTSm_buffs[x]->PushToWorld(m_mapMgr);

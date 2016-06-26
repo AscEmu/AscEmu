@@ -177,7 +177,7 @@ void Spell::AddScriptedOrSpellFocusTargets(uint32 i, uint32 TargetType, float r,
 
         GameObject* go = static_cast<GameObject*>(o);
 
-        if (go->GetInfo()->raw.parameter_0 == m_spellInfo->RequiresSpellFocus)
+        if (go->GetGameObjectProperties()->raw.parameter_0 == m_spellInfo->RequiresSpellFocus)
         {
 
             if (!m_caster->isInRange(go, r))

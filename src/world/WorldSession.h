@@ -805,7 +805,7 @@ class SERVER_DECL WorldSession
         void SendLfgUpdateSearch(bool update);
         void SendLfgJoinResult(const LfgJoinResultData& joinData);
         void SendLfgQueueStatus(uint32 dungeon, int32 waitTime, int32 avgWaitTime, int32 waitTimeTanks, int32 waitTimeHealer, int32 waitTimeDps, uint32 queuedTime, uint8 tanks, uint8 healers, uint8 dps);
-        void SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 DungeonEntry, uint8 done, const LfgReward* reward, Quest const* qReward);
+        void SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 DungeonEntry, uint8 done, const LfgReward* reward, QuestProperties const* qReward);
         void SendLfgBootPlayer(const LfgPlayerBoot* pBoot);
         void SendLfgUpdateProposal(uint32 proposalId, const LfgProposal *pProp);
         void SendLfgDisabled();
@@ -869,7 +869,7 @@ class SERVER_DECL WorldSession
         void SystemMessage(const char* format, ...);
 
         uint32 language;
-        WorldPacket* BuildQuestQueryResponse(Quest const* qst);
+        WorldPacket* BuildQuestQueryResponse(QuestProperties const* qst);
         uint32 m_muted;
 
         void SendClientCacheVersion(uint32 version);

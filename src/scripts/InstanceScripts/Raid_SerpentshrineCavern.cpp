@@ -2997,7 +2997,7 @@ class SerpentshrineCavern : public MoonInstanceScript
 
         void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
         {
-            if (pGameObject->GetInfo()->entry != 184568)
+            if (pGameObject->GetGameObjectProperties()->entry != 184568)
                 return;
 
             GameObject* pBridgePart = NULL;

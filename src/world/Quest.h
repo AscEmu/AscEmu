@@ -27,7 +27,7 @@
 
 class QuestScript;
 #pragma pack(push,1)
-struct Quest
+struct QuestProperties
 {
 	uint32 id;
 	uint32 zone_id;

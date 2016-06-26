@@ -30,17 +30,17 @@
 #include <unordered_map>
 #include <list>
 
-struct Quest;
+struct QuestProperties;
 
 struct QuestRelation
 {
-    Quest const* qst;
+    QuestProperties const* qst;
     uint8 type;
 };
 
 struct QuestAssociation
 {
-    Quest const* qst;
+    QuestProperties const* qst;
     uint8 item_count;
 };
 
@@ -94,26 +94,26 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
 
         ~QuestMgr();
 
-        uint32 PlayerMeetsReqs(Player* plr, Quest const* qst, bool skiplevelcheck);
+        uint32 PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool skiplevelcheck);
 
         uint32 CalcStatus(Object* quest_giver, Player* plr);
         uint32 CalcQuestStatus(Object* quest_giver, Player* plr, QuestRelation* qst);
-        uint32 CalcQuestStatus(Object* quest_giver, Player* plr, Quest const* qst, uint8 type, bool skiplevelcheck);
+        uint32 CalcQuestStatus(Object* quest_giver, Player* plr, QuestProperties const* qst, uint8 type, bool skiplevelcheck);
         uint32 CalcQuestStatus(Player* plr, uint32 qst);
         uint32 ActiveQuestsCount(Object* quest_giver, Player* plr);
 
         //Packet Forging...
-        void BuildOfferReward(WorldPacket* data, Quest const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr);
-        void BuildQuestDetails(WorldPacket* data, Quest const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr);
-        void BuildRequestItems(WorldPacket* data, Quest const* qst, Object* qst_giver, uint32 status, uint32 language);
-        void BuildQuestComplete(Player*, Quest const* qst);
+        void BuildOfferReward(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr);
+        void BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr);
+        void BuildRequestItems(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 status, uint32 language);
+        void BuildQuestComplete(Player*, QuestProperties const* qst);
         void BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32 language);
         bool OnActivateQuestGiver(Object* qst_giver, Player* plr);
-        bool isRepeatableQuestFinished(Player* plr, Quest const* qst);
+        bool isRepeatableQuestFinished(Player* plr, QuestProperties const* qst);
 
         void SendQuestUpdateAddKill(Player* plr, uint32 questid, uint32 entry, uint32 count, uint32 tcount, uint64 guid);
         void BuildQuestUpdateAddItem(WorldPacket* data, uint32 itemid, uint32 count);
-        void BuildQuestUpdateComplete(WorldPacket* data, Quest const* qst);
+        void BuildQuestUpdateComplete(WorldPacket* data, QuestProperties const* qst);
         void BuildQuestFailed(WorldPacket* data, uint32 questid);
         void BuildQuestPOIResponse(WorldPacket & data, uint32 questid);
         void SendPushToPartyResponse(Player* plr, Player* pTarget, uint8 response);
@@ -127,18 +127,18 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         void OnPlayerExploreArea(Player* plr, uint32 AreaID);
         void AreaExplored(Player* plr, uint32 QuestID);// scriptdev2
 
-        void OnQuestAccepted(Player* plr, Quest const* qst, Object* qst_giver);
-        void OnQuestFinished(Player* plr, Quest const* qst, Object* qst_giver, uint32 reward_slot);
+        void OnQuestAccepted(Player* plr, QuestProperties const* qst, Object* qst_giver);
+        void OnQuestFinished(Player* plr, QuestProperties const* qst, Object* qst_giver, uint32 reward_slot);
 
-        void GiveQuestRewardReputation(Player* plr, Quest const* qst, Object* qst_giver);
+        void GiveQuestRewardReputation(Player* plr, QuestProperties const* qst, Object* qst_giver);
 
-        uint32 GenerateQuestXP(Player* plr, Quest const* qst);
-        uint32 GenerateRewardMoney(Player* plr, Quest const* qst);
+        uint32 GenerateQuestXP(Player* plr, QuestProperties const* qst);
+        uint32 GenerateRewardMoney(Player* plr, QuestProperties const* qst);
 
         void SendQuestInvalid(INVALID_REASON reason, Player* plyr);
-        void SendQuestFailed(FAILED_REASON failed, Quest const* qst, Player* plyr);
-        void SendQuestUpdateFailed(Quest const* pQuest, Player* plyr);
-        void SendQuestUpdateFailedTimer(Quest const* pQuest, Player* plyr);
+        void SendQuestFailed(FAILED_REASON failed, QuestProperties const* qst, Player* plyr);
+        void SendQuestUpdateFailed(QuestProperties const* pQuest, Player* plyr);
+        void SendQuestUpdateFailedTimer(QuestProperties const* pQuest, Player* plyr);
         void SendQuestLogFull(Player* plyr);
 
         void LoadNPCQuests(Creature* qst_giver);
@@ -149,12 +149,12 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         QuestAssociationList* GetQuestAssociationListForItemId(uint32 itemId);
         uint32 GetGameObjectLootQuest(uint32 GO_Entry);
         void SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry);
-        inline bool IsQuestRepeatable(Quest const* qst) { return (qst->is_repeatable == 1 ? true : false); }
-        inline bool IsQuestDaily(Quest const* qst) { return (qst->is_repeatable == 2 ? true : false); }
+        inline bool IsQuestRepeatable(QuestProperties const* qst) { return (qst->is_repeatable == 1 ? true : false); }
+        inline bool IsQuestDaily(QuestProperties const* qst) { return (qst->is_repeatable == 2 ? true : false); }
 
-        bool CanStoreReward(Player* plyr, Quest const* qst, uint32 reward_slot);
+        bool CanStoreReward(Player* plyr, QuestProperties const* qst, uint32 reward_slot);
 
-        inline int32 QuestHasMob(Quest const* qst, uint32 mob)
+        inline int32 QuestHasMob(QuestProperties const* qst, uint32 mob)
         {
             for (uint8 i = 0; i < 4; ++i)
                 if (qst->required_mob[i] == (int32)mob)
@@ -162,7 +162,7 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
             return -1;
         }
 
-        inline int32 GetOffsetForMob(Quest const* qst, uint32 mob)
+        inline int32 GetOffsetForMob(QuestProperties const* qst, uint32 mob)
         {
             for (uint8 i = 0; i < 4; ++i)
                 if (qst->required_mob[i] == (int32)mob)
@@ -171,7 +171,7 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
             return -1;
         }
 
-        inline int32 GetOffsetForItem(Quest const* qst, uint32 itm)
+        inline int32 GetOffsetForItem(QuestProperties const* qst, uint32 itm)
         {
             for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
                 if (qst->required_item[i] == itm)
@@ -206,11 +206,11 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
 
         std::unordered_map<uint32, uint32> m_ObjectLootQuestList;
 
-        template <class T> void _AddQuest(uint32 entryid, Quest const* qst, uint8 type);
+        template <class T> void _AddQuest(uint32 entryid, QuestProperties const* qst, uint8 type);
 
         template <class T> std::unordered_map<uint32, std::list<QuestRelation*>* >& _GetList();
 
-        void AddItemQuestAssociation(uint32 itemId, Quest const* qst, uint8 item_count);
+        void AddItemQuestAssociation(uint32 itemId, QuestProperties const* qst, uint8 item_count);
 
         // Quest Loading
         void _RemoveChar(char* c, std::string* str);

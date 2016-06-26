@@ -10,10 +10,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 extern SERVER_DECL std::set<std::string> CreatureSpawnsTables;
 extern SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
-extern SERVER_DECL std::set<std::string> GameObjectNamesTables;
+extern SERVER_DECL std::set<std::string> GameObjectPropertiesTables;
 extern SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 extern SERVER_DECL std::set<std::string> ItemsTables;
-extern SERVER_DECL std::set<std::string> QuestsTables;
+extern SERVER_DECL std::set<std::string> QuestPropertiesTables;
 
 class SERVER_DECL MySQLDataStore : public Singleton < MySQLDataStore >
 {
@@ -26,8 +26,8 @@ public:
     typedef std::unordered_map<uint32, ItemPage> ItemPageContainer;
     typedef std::unordered_map<uint32, ItemPrototype> ItemPrototypeContainer;
     typedef std::unordered_map<uint32, CreatureProperties> CreaturePropertiesContainer;
-    typedef std::unordered_map<uint32, GameObjectInfo> GameObjectNamesContainer;
-    typedef std::unordered_map<uint32, Quest> QuestContainer;
+    typedef std::unordered_map<uint32, GameObjectProperties> GameObjectPropertiesContainer;
+    typedef std::unordered_map<uint32, QuestProperties> QuestPropertiesContainer;
 
     typedef std::unordered_map<uint32, DisplayBounding> DisplayBoundingBoxesContainer;
     typedef std::unordered_map<uint32, VendorRestrictionEntry> VendorRestrictionContainer;
@@ -57,11 +57,11 @@ public:
     CreatureProperties const* GetCreatureProperties(uint32 entry);
     CreaturePropertiesContainer const* GetCreaturePropertiesStore() { return &_creaturePropertiesStore; }
 
-    GameObjectInfo const* GetGameObjectInfo(uint32 entry);
-    GameObjectNamesContainer const* GetGameObjectNamesStore() { return &_gameobjectNamesStore; }
+    GameObjectProperties const* GetGameObjectProperties(uint32 entry);
+    GameObjectPropertiesContainer const* GetGameObjectPropertiesStore() { return &_gameobjectPropertiesStore; }
 
-    Quest const* GetQuest(uint32 entry);
-    QuestContainer const* GetQuestStore() { return &_questStore; }
+    QuestProperties const* GetQuestProperties(uint32 entry);
+    QuestPropertiesContainer const* GetQuestPropertiesStore() { return &_questPropertiesStore; }
 
     DisplayBounding const* GetDisplayBounding(uint32 entry);
     DisplayBoundingBoxesContainer const* GetDisplayBoundingBoxesStore() { return &_displayBoundingBoxesStore; }
@@ -123,9 +123,9 @@ public:
 
     void LoadCreaturePropertiesTable();
 
-    void LoadGameObjectNamesTable();
+    void LoadGameObjectPropertiesTable();
 
-    void LoadQuestsTable();
+    void LoadQuestPropertiesTable();
     void LoadGameObjectQuestItemBindingTable();
     void LoadGameObjectQuestPickupBindingTable();
 
@@ -152,8 +152,8 @@ public:
     ItemPageContainer _itemPagesStore;
     ItemPrototypeContainer _itemPrototypeStore;
     CreaturePropertiesContainer _creaturePropertiesStore;
-    GameObjectNamesContainer _gameobjectNamesStore;
-    QuestContainer _questStore;
+    GameObjectPropertiesContainer _gameobjectPropertiesStore;
+    QuestPropertiesContainer _questPropertiesStore;
 
     DisplayBoundingBoxesContainer _displayBoundingBoxesStore;
     VendorRestrictionContainer _vendorRestrictionsStore;

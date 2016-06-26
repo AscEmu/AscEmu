@@ -9,10 +9,10 @@ initialiseSingleton(MySQLDataStore);
 
 SERVER_DECL std::set<std::string> CreatureSpawnsTables;
 SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
-SERVER_DECL std::set<std::string> GameObjectNamesTables;
+SERVER_DECL std::set<std::string> GameObjectPropertiesTables;
 SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 SERVER_DECL std::set<std::string> ItemsTables;
-SERVER_DECL std::set<std::string> QuestsTables;
+SERVER_DECL std::set<std::string> QuestPropertiesTables;
 
 MySQLDataStore::MySQLDataStore() {}
 MySQLDataStore::~MySQLDataStore() {}
@@ -22,10 +22,10 @@ void MySQLDataStore::LoadAdditionalTableConfig()
     // init basic tables
     CreatureSpawnsTables.insert(std::string("creature_spawns"));
     GameObjectSpawnsTables.insert(std::string("gameobject_spawns"));
-    GameObjectNamesTables.insert(std::string("gameobject_properties"));
+    GameObjectPropertiesTables.insert(std::string("gameobject_properties"));
     CreaturePropertiesTables.insert(std::string("creature_properties"));
     ItemsTables.insert(std::string("item_properties"));
-    QuestsTables.insert(std::string("quest_properties"));
+    QuestPropertiesTables.insert(std::string("quest_properties"));
 
     // get config
     std::string strData = Config.MainConfig.GetStringDefault("Startup", "LoadAdditionalTables", "");
@@ -51,7 +51,7 @@ void MySQLDataStore::LoadAdditionalTableConfig()
             GameObjectSpawnsTables.insert(std::string(additional_table));
 
         if (!stricmp(target_table, "gameobject_properties"))
-            GameObjectNamesTables.insert(std::string(additional_table));
+            GameObjectPropertiesTables.insert(std::string(additional_table));
 
         if (!stricmp(target_table, "creature_properties"))
             CreaturePropertiesTables.insert(std::string(additional_table));
@@ -60,7 +60,7 @@ void MySQLDataStore::LoadAdditionalTableConfig()
             ItemsTables.insert(std::string(additional_table));
 
         if (!stricmp(target_table, "quest_properties"))
-            QuestsTables.insert(std::string(additional_table));
+            QuestPropertiesTables.insert(std::string(additional_table));
     }
 }
 
@@ -701,18 +701,18 @@ CreatureProperties const* MySQLDataStore::GetCreatureProperties(uint32 entry)
     return nullptr;
 }
 
-void MySQLDataStore::LoadGameObjectNamesTable()
+void MySQLDataStore::LoadGameObjectPropertiesTable()
 {
     uint32 start_time = getMSTime();
-    uint32 gameobject_names_count = 0;
+    uint32 gameobject_properties_count = 0;
     uint32 basic_field_count = 0;
 
     std::set<std::string>::iterator tableiterator;
-    for (tableiterator = GameObjectNamesTables.begin(); tableiterator != GameObjectNamesTables.end(); ++tableiterator)
+    for (tableiterator = GameObjectPropertiesTables.begin(); tableiterator != GameObjectPropertiesTables.end(); ++tableiterator)
     {
         std::string table_name = *tableiterator;
         //                                                                  0       1        2        3         4              5          6          7            8             9
-        QueryResult* gameobject_names_result = WorldDatabase.Query("SELECT entry, type, display_id, name, category_name, cast_bar_text, UnkStr, parameter_0, parameter_1, parameter_2, "
+        QueryResult* gameobject_properties_result = WorldDatabase.Query("SELECT entry, type, display_id, name, category_name, cast_bar_text, UnkStr, parameter_0, parameter_1, parameter_2, "
         //                                                                10           11          12           13           14            15           16           17           18
                                                                     "parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9, parameter_10, parameter_11, "
         //                                                                19            20            21            22           23            24            25            26
@@ -722,7 +722,7 @@ void MySQLDataStore::LoadGameObjectNamesTable()
         //                                                                36          37 
                                                                     "QuestItem5, QuestItem6 FROM %s", table_name.c_str());
 
-        if (gameobject_names_result == nullptr)
+        if (gameobject_properties_result == nullptr)
         {
             Log.Notice("MySQLDataLoads", "Table `%s` is empty!", table_name.c_str());
             return;
@@ -731,66 +731,66 @@ void MySQLDataStore::LoadGameObjectNamesTable()
         uint32 row_count = 0;
         if (table_name.compare("gameobject_properties") == 0)
         {
-            basic_field_count = gameobject_names_result->GetFieldCount();
+            basic_field_count = gameobject_properties_result->GetFieldCount();
         }
         else
         {
-            row_count = _gameobjectNamesStore.size();
+            row_count = _gameobjectPropertiesStore.size();
         }
 
-        if (basic_field_count != gameobject_names_result->GetFieldCount())
+        if (basic_field_count != gameobject_properties_result->GetFieldCount())
         {
-            Log.Error("MySQLDataLoads", "Additional gameobject_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), gameobject_names_result->GetFieldCount());
-            delete gameobject_names_result;
+            Log.Error("MySQLDataLoads", "Additional gameobject_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), gameobject_properties_result->GetFieldCount());
+            delete gameobject_properties_result;
             continue;
         }
 
-        Log.Notice("MySQLDataLoads", "Table `%s` has %u columns", table_name.c_str(), gameobject_names_result->GetFieldCount());
+        Log.Notice("MySQLDataLoads", "Table `%s` has %u columns", table_name.c_str(), gameobject_properties_result->GetFieldCount());
 
-        _gameobjectNamesStore.rehash(row_count + gameobject_names_result->GetRowCount());
+        _gameobjectPropertiesStore.rehash(row_count + gameobject_properties_result->GetRowCount());
 
         do
         {
-            Field* fields = gameobject_names_result->Fetch();
+            Field* fields = gameobject_properties_result->Fetch();
 
             uint32 entry = fields[0].GetUInt32();
 
-            GameObjectInfo& gameobjecInfo = _gameobjectNamesStore[entry];
+            GameObjectProperties& gameobjecProperties = _gameobjectPropertiesStore[entry];
 
-            gameobjecInfo.entry = entry;
-            gameobjecInfo.type = fields[1].GetUInt32();
-            gameobjecInfo.display_id = fields[2].GetUInt32();
-            gameobjecInfo.name = fields[3].GetString();
-            gameobjecInfo.category_name = fields[4].GetString();
-            gameobjecInfo.cast_bar_text = fields[5].GetString();
-            gameobjecInfo.Unkstr = fields[6].GetString();
+            gameobjecProperties.entry = entry;
+            gameobjecProperties.type = fields[1].GetUInt32();
+            gameobjecProperties.display_id = fields[2].GetUInt32();
+            gameobjecProperties.name = fields[3].GetString();
+            gameobjecProperties.category_name = fields[4].GetString();
+            gameobjecProperties.cast_bar_text = fields[5].GetString();
+            gameobjecProperties.Unkstr = fields[6].GetString();
 
-            gameobjecInfo.raw.parameter_0 = fields[7].GetUInt32();
-            gameobjecInfo.raw.parameter_1 = fields[8].GetUInt32();
-            gameobjecInfo.raw.parameter_2 = fields[9].GetUInt32();
-            gameobjecInfo.raw.parameter_3 = fields[10].GetUInt32();
-            gameobjecInfo.raw.parameter_4 = fields[11].GetUInt32();
-            gameobjecInfo.raw.parameter_5 = fields[12].GetUInt32();
-            gameobjecInfo.raw.parameter_6 = fields[13].GetUInt32();
-            gameobjecInfo.raw.parameter_7 = fields[14].GetUInt32();
-            gameobjecInfo.raw.parameter_8 = fields[15].GetUInt32();
-            gameobjecInfo.raw.parameter_9 = fields[16].GetUInt32();
-            gameobjecInfo.raw.parameter_10 = fields[17].GetUInt32();
-            gameobjecInfo.raw.parameter_11 = fields[18].GetUInt32();
-            gameobjecInfo.raw.parameter_12 = fields[19].GetUInt32();
-            gameobjecInfo.raw.parameter_13 = fields[20].GetUInt32();
-            gameobjecInfo.raw.parameter_14 = fields[21].GetUInt32();
-            gameobjecInfo.raw.parameter_15 = fields[22].GetUInt32();
-            gameobjecInfo.raw.parameter_16 = fields[23].GetUInt32();
-            gameobjecInfo.raw.parameter_17 = fields[24].GetUInt32();
-            gameobjecInfo.raw.parameter_18 = fields[25].GetUInt32();
-            gameobjecInfo.raw.parameter_19 = fields[26].GetUInt32();
-            gameobjecInfo.raw.parameter_20 = fields[27].GetUInt32();
-            gameobjecInfo.raw.parameter_21 = fields[28].GetUInt32();
-            gameobjecInfo.raw.parameter_22 = fields[29].GetUInt32();
-            gameobjecInfo.raw.parameter_23 = fields[30].GetUInt32();
+            gameobjecProperties.raw.parameter_0 = fields[7].GetUInt32();
+            gameobjecProperties.raw.parameter_1 = fields[8].GetUInt32();
+            gameobjecProperties.raw.parameter_2 = fields[9].GetUInt32();
+            gameobjecProperties.raw.parameter_3 = fields[10].GetUInt32();
+            gameobjecProperties.raw.parameter_4 = fields[11].GetUInt32();
+            gameobjecProperties.raw.parameter_5 = fields[12].GetUInt32();
+            gameobjecProperties.raw.parameter_6 = fields[13].GetUInt32();
+            gameobjecProperties.raw.parameter_7 = fields[14].GetUInt32();
+            gameobjecProperties.raw.parameter_8 = fields[15].GetUInt32();
+            gameobjecProperties.raw.parameter_9 = fields[16].GetUInt32();
+            gameobjecProperties.raw.parameter_10 = fields[17].GetUInt32();
+            gameobjecProperties.raw.parameter_11 = fields[18].GetUInt32();
+            gameobjecProperties.raw.parameter_12 = fields[19].GetUInt32();
+            gameobjecProperties.raw.parameter_13 = fields[20].GetUInt32();
+            gameobjecProperties.raw.parameter_14 = fields[21].GetUInt32();
+            gameobjecProperties.raw.parameter_15 = fields[22].GetUInt32();
+            gameobjecProperties.raw.parameter_16 = fields[23].GetUInt32();
+            gameobjecProperties.raw.parameter_17 = fields[24].GetUInt32();
+            gameobjecProperties.raw.parameter_18 = fields[25].GetUInt32();
+            gameobjecProperties.raw.parameter_19 = fields[26].GetUInt32();
+            gameobjecProperties.raw.parameter_20 = fields[27].GetUInt32();
+            gameobjecProperties.raw.parameter_21 = fields[28].GetUInt32();
+            gameobjecProperties.raw.parameter_22 = fields[29].GetUInt32();
+            gameobjecProperties.raw.parameter_23 = fields[30].GetUInt32();
 
-            gameobjecInfo.size = fields[31].GetFloat();
+            gameobjecProperties.size = fields[31].GetFloat();
 
             for (uint8 i = 0; i < 6; ++i)
             {
@@ -801,43 +801,43 @@ void MySQLDataStore::LoadGameObjectNamesTable()
                     if (quest_item_proto == nullptr)
                     {
                         Log.Error("MySQLDataLoads", "Table `%s` questitem%u : %u is not a valid item! Default set to 0 for entry: %u.", table_name.c_str(), i, quest_item_entry, entry);
-                        gameobjecInfo.QuestItems[i] = 0;
+                        gameobjecProperties.QuestItems[i] = 0;
                     }
                     else
                     {
-                        gameobjecInfo.QuestItems[i] = quest_item_entry;
+                        gameobjecProperties.QuestItems[i] = quest_item_entry;
                     }
                 }
             }
 
 
-            ++gameobject_names_count;
-        } while (gameobject_names_result->NextRow());
+            ++gameobject_properties_count;
+        } while (gameobject_properties_result->NextRow());
 
-        delete gameobject_names_result;
+        delete gameobject_properties_result;
     }
 
-    Log.Success("MySQLDataLoads", "Loaded %u gameobject data in %u ms!", gameobject_names_count, getMSTime() - start_time);
+    Log.Success("MySQLDataLoads", "Loaded %u gameobject data in %u ms!", gameobject_properties_count, getMSTime() - start_time);
 }
 
-GameObjectInfo const* MySQLDataStore::GetGameObjectInfo(uint32 entry)
+GameObjectProperties const* MySQLDataStore::GetGameObjectProperties(uint32 entry)
 {
-    GameObjectNamesContainer::const_iterator itr = _gameobjectNamesStore.find(entry);
-    if (itr != _gameobjectNamesStore.end())
+    GameObjectPropertiesContainer::const_iterator itr = _gameobjectPropertiesStore.find(entry);
+    if (itr != _gameobjectPropertiesStore.end())
         return &(itr->second);
 
     return nullptr;
 }
 
 //quests
-void MySQLDataStore::LoadQuestsTable()
+void MySQLDataStore::LoadQuestPropertiesTable()
 {
     uint32 start_time = getMSTime();
     uint32 quest_count = 0;
     uint32 basic_field_count = 0;
 
     std::set<std::string>::iterator tableiterator;
-    for (tableiterator = QuestsTables.begin(); tableiterator != QuestsTables.end(); ++tableiterator)
+    for (tableiterator = QuestPropertiesTables.begin(); tableiterator != QuestPropertiesTables.end(); ++tableiterator)
     {
         std::string table_name = *tableiterator;
         //                                                        0       1     2      3       4          5        6          7              8                 9
@@ -892,7 +892,7 @@ void MySQLDataStore::LoadQuestsTable()
         }
         else
         {
-            row_count = _questStore.size();
+            row_count = _questPropertiesStore.size();
         }
 
         if (basic_field_count != quest_result->GetFieldCount())
@@ -904,7 +904,7 @@ void MySQLDataStore::LoadQuestsTable()
 
         Log.Notice("MySQLDataLoads", "Table `%s` has %u columns", table_name.c_str(), quest_result->GetFieldCount());
 
-        _questStore.rehash(row_count + quest_result->GetRowCount());
+        _questPropertiesStore.rehash(row_count + quest_result->GetRowCount());
 
         do
         {
@@ -912,7 +912,7 @@ void MySQLDataStore::LoadQuestsTable()
 
             uint32 entry = fields[0].GetUInt32();
 
-            Quest& questInfo = _questStore[entry];
+            QuestProperties& questInfo = _questPropertiesStore[entry];
 
             questInfo.id = entry;
             questInfo.zone_id = fields[1].GetUInt32();
@@ -1058,10 +1058,10 @@ void MySQLDataStore::LoadQuestsTable()
     Log.Success("MySQLDataLoads", "Loaded %u quest_properties data in %u ms!", quest_count, getMSTime() - start_time);
 }
 
-Quest const* MySQLDataStore::GetQuest(uint32 entry)
+QuestProperties const* MySQLDataStore::GetQuestProperties(uint32 entry)
 {
-    QuestContainer::const_iterator itr = _questStore.find(entry);
-    if (itr != _questStore.end())
+    QuestPropertiesContainer::const_iterator itr = _questPropertiesStore.find(entry);
+    if (itr != _questPropertiesStore.end())
         return &(itr->second);
 
     return nullptr;
@@ -1083,23 +1083,23 @@ void MySQLDataStore::LoadGameObjectQuestItemBindingTable()
             Field* fields = gameobject_quest_item_result->Fetch();
             uint32 entry = fields[0].GetUInt32();
 
-            GameObjectInfo const* gameobject_info = sMySQLStore.GetGameObjectInfo(entry);
-            if (gameobject_info == nullptr)
+            GameObjectProperties const* gameobject_properties = sMySQLStore.GetGameObjectProperties(entry);
+            if (gameobject_properties == nullptr)
             {
-                Log.Error("MySQLDataLoads", "Table `gameobject_quest_item_binding` includes data for invalid entry: %u. Skipped!", entry);
+                Log.Error("MySQLDataLoads", "Table `gameobject_quest_item_binding` includes data for invalid gameobject_properties entry: %u. Skipped!", entry);
                 continue;
             }
 
             uint32 quest_entry = fields[1].GetUInt32();
-            Quest const* quest = sMySQLStore.GetQuest(quest_entry);
+            QuestProperties const* quest = sMySQLStore.GetQuestProperties(quest_entry);
             if (quest == nullptr)
             {
-                Log.Error("MySQLDataLoads", "Table `gameobject_quest_item_binding` includes data for invalid quest : %u. Skipped!", quest_entry);
+                Log.Error("MySQLDataLoads", "Table `gameobject_quest_item_binding` includes data for invalid quest_properties : %u. Skipped!", quest_entry);
                 continue;
             }
             else
             {
-                const_cast<GameObjectInfo*>(gameobject_info)->itemMap[quest].insert(std::make_pair(fields[2].GetUInt32(), fields[3].GetUInt32()));
+                const_cast<GameObjectProperties*>(gameobject_properties)->itemMap[quest].insert(std::make_pair(fields[2].GetUInt32(), fields[3].GetUInt32()));
             }
 
             ++gameobject_quest_item_count;
@@ -1127,24 +1127,24 @@ void MySQLDataStore::LoadGameObjectQuestPickupBindingTable()
             Field* fields = gameobject_quest_pickup_result->Fetch();
             uint32 entry = fields[0].GetUInt32();
 
-            GameObjectInfo const* gameobject_info = sMySQLStore.GetGameObjectInfo(entry);
-            if (gameobject_info == nullptr)
+            GameObjectProperties const* gameobject_properties = sMySQLStore.GetGameObjectProperties(entry);
+            if (gameobject_properties == nullptr)
             {
-                Log.Error("MySQLDataLoads", "Table `gameobject_quest_pickup_binding` includes data for invalid entry: %u. Skipped!", entry);
+                Log.Error("MySQLDataLoads", "Table `gameobject_quest_pickup_binding` includes data for invalid gameobject_properties entry: %u. Skipped!", entry);
                 continue;
             }
 
             uint32 quest_entry = fields[1].GetUInt32();
-            Quest const* quest = sMySQLStore.GetQuest(quest_entry);
+            QuestProperties const* quest = sMySQLStore.GetQuestProperties(quest_entry);
             if (quest == nullptr)
             {
-                Log.Error("MySQLDataLoads", "Table `gameobject_quest_pickup_binding` includes data for invalid quest : %u. Skipped!", quest_entry);
+                Log.Error("MySQLDataLoads", "Table `gameobject_quest_pickup_binding` includes data for invalid quest_properties : %u. Skipped!", quest_entry);
                 continue;
             }
             else
             {
                 uint32 required_count = fields[2].GetUInt32();
-                const_cast<GameObjectInfo*>(gameobject_info)->goMap.insert(std::make_pair(quest, required_count));
+                const_cast<GameObjectProperties*>(gameobject_properties)->goMap.insert(std::make_pair(quest, required_count));
             }
                 
 

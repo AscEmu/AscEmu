@@ -519,10 +519,10 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                 //check for locktypes
 
                 bool despawn = false;
-                if (pGO->GetInfo()->chest.consumable == 1)
+                if (pGO->GetGameObjectProperties()->chest.consumable == 1)
                     despawn = true;
 
-                auto pLock = sLockStore.LookupEntry(pGO->GetInfo()->chest.lock_id);
+                auto pLock = sLockStore.LookupEntry(pGO->GetGameObjectProperties()->chest.lock_id);
                 if (pLock != nullptr)
                 {
                     for (uint32 i = 0; i < LOCK_NUM_CASES; i++)
@@ -1566,14 +1566,14 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
     GameObject* obj = _player->GetMapMgr()->GetGameObject((uint32)guid);
     if (!obj)
         return;
-    auto gameobject_info = obj->GetInfo();
+    auto gameobject_info = obj->GetGameObjectProperties();
     if (!gameobject_info)
         return;
 
     Player* plyr = GetPlayer();
 
     //Event Scripts
-    objmgr.CheckforScripts(plyr, obj->GetInfo()->raw.parameter_9);
+    objmgr.CheckforScripts(plyr, obj->GetGameObjectProperties()->raw.parameter_9);
 
     CALL_GO_SCRIPT_EVENT(obj, OnActivate)(_player);
     CALL_INSTANCE_SCRIPT_EVENT(_player->GetMapMgr(), OnGameObjectActivate)(obj, _player);
@@ -1654,16 +1654,16 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 {
                     school = static_cast<GameObject_FishingHole*>(go);
 
-                    if (!fn->isInRange(school, static_cast<float>(school->GetInfo()->fishinghole.radius)))
+                    if (!fn->isInRange(school, static_cast<float>(school->GetGameObjectProperties()->fishinghole.radius)))
                         school = nullptr;
                 }
 
                 if (school != nullptr)
                 {
                     if (school->GetMapMgr() != NULL)
-                        lootmgr.FillGOLoot(&school->loot, school->GetInfo()->raw.parameter_1, school->GetMapMgr()->iInstanceMode);
+                        lootmgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, school->GetMapMgr()->iInstanceMode);
                     else
-                        lootmgr.FillGOLoot(&school->loot, school->GetInfo()->raw.parameter_1, 0);
+                        lootmgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, 0);
 
                     plyr->SendLoot(school->GetGUID(), LOOT_FISHING, school->GetMapId());
                     fn->EndFishing(false);
@@ -1739,7 +1739,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         break;
         case GAMEOBJECT_TYPE_SPELLCASTER:
         {
-            if (obj->GetInfo()->spell_caster.party_only != 0)
+            if (obj->GetGameObjectProperties()->spell_caster.party_only != 0)
             {
                 if (obj->m_summoner != NULL && obj->m_summoner->IsPlayer())
                 {

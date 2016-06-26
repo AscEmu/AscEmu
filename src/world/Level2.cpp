@@ -487,7 +487,7 @@ bool ChatHandler::HandleGOSelect(const char* args, WorldSession* m_session)
     m_session->GetPlayer()->m_GM_SelectedGO = GObj->GetGUID();
 
     GreenSystemMessage(m_session, "Selected GameObject [ %s ] which is %.3f meters away from you.",
-        sMySQLStore.GetGameObjectInfo(GObj->GetEntry())->name.c_str(), m_session->GetPlayer()->CalcDistance(GObj));
+        sMySQLStore.GetGameObjectProperties(GObj->GetEntry())->name.c_str(), m_session->GetPlayer()->CalcDistance(GObj));
 
     return true;
 }
@@ -529,7 +529,7 @@ bool ChatHandler::HandleGODelete(const char* args, WorldSession* m_session)
             GObj->m_spawn = NULL;
         }
     }
-    sGMLog.writefromsession(m_session, "deleted game object entry %u on map %u at X:%f Y:%f Z:%f Name %s", GObj->GetEntry(), GObj->GetMapId(), GObj->GetPositionX(), GObj->GetPositionY(), GObj->GetPositionZ(), sMySQLStore.GetGameObjectInfo(GObj->GetEntry())->name.c_str());
+    sGMLog.writefromsession(m_session, "deleted game object entry %u on map %u at X:%f Y:%f Z:%f Name %s", GObj->GetEntry(), GObj->GetMapId(), GObj->GetPositionX(), GObj->GetPositionY(), GObj->GetPositionZ(), sMySQLStore.GetGameObjectProperties(GObj->GetEntry())->name.c_str());
     GObj->Despawn(0, 0); // We do not need to delete the object because GameObject::Despawn with no time => ExpireAndDelete() => _Expire() => delete GObj;
 
     m_session->GetPlayer()->m_GM_SelectedGO = 0;
@@ -539,7 +539,7 @@ bool ChatHandler::HandleGODelete(const char* args, WorldSession* m_session)
 
 bool ChatHandler::HandleGOInfo(const char* args, WorldSession* m_session)
 {
-    GameObjectInfo const* gameobject_info = nullptr;
+    GameObjectProperties const* gameobject_info = nullptr;
     auto gameobject = m_session->GetPlayer()->GetSelectedGo();
     if (!gameobject)
     {
@@ -653,7 +653,7 @@ bool ChatHandler::HandleGOInfo(const char* args, WorldSession* m_session)
 
     SystemMessage(m_session, "%s Distance:%s%f", MSG_COLOR_GREEN, MSG_COLOR_LIGHTBLUE, gameobject->CalcDistance(m_session->GetPlayer()));
 
-    gameobject_info = sMySQLStore.GetGameObjectInfo(gameobject->GetEntry());
+    gameobject_info = sMySQLStore.GetGameObjectProperties(gameobject->GetEntry());
     if (!gameobject_info)
     {
         RedSystemMessage(m_session, "This GameObject doesn't have template, you won't be able to get some information nor to spawn a GO with this entry.");
@@ -700,7 +700,7 @@ bool ChatHandler::HandleGOEnable(const char* args, WorldSession* m_session)
         GObj->Activate();
         BlueSystemMessage(m_session, "Gameobject activated.");
     }
-    sGMLog.writefromsession(m_session, "activated/deactivated gameobject %s, entry %u", sMySQLStore.GetGameObjectInfo(GObj->GetEntry())->name.c_str(), GObj->GetEntry());
+    sGMLog.writefromsession(m_session, "activated/deactivated gameobject %s, entry %u", sMySQLStore.GetGameObjectProperties(GObj->GetEntry())->name.c_str(), GObj->GetEntry());
     return true;
 }
 

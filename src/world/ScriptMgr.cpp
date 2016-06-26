@@ -331,13 +331,13 @@ void ScriptMgr::register_go_gossip_script(uint32 entry, GossipScript* gs)
 
 void ScriptMgr::register_quest_script(uint32 entry, QuestScript* qs)
 {
-    Quest const* q = sMySQLStore.GetQuest(entry);
-    if (q != NULL)
+    QuestProperties const* q = sMySQLStore.GetQuestProperties(entry);
+    if (q != nullptr)
     {
         if (q->pQuestScript != NULL)
             LOG_ERROR("ScriptMgr is trying to register a script for Quest ID: %u even if there's already one for that Quest. Remove one of those scripts.", entry);
 
-        const_cast<Quest*>(q)->pQuestScript = qs;
+        const_cast<QuestProperties*>(q)->pQuestScript = qs;
     }
 
     _questscripts.insert(qs);
@@ -645,7 +645,7 @@ bool ScriptMgr::has_hook(ServerHookEvents evt, void* ptr) const
 
 bool ScriptMgr::has_quest_script(uint32 entry) const
 {
-    Quest const* q = sMySQLStore.GetQuest(entry);
+    QuestProperties const* q = sMySQLStore.GetQuestProperties(entry);
     return (q == NULL || q->pQuestScript != NULL);
 }
 
@@ -909,7 +909,7 @@ void HookInterface::OnLogout(Player* pPlayer)
         ((tOnLogout)*itr)(pPlayer);
 }
 
-void HookInterface::OnQuestAccept(Player* pPlayer, Quest const* pQuest, Object* pQuestGiver)
+void HookInterface::OnQuestAccept(Player* pPlayer, QuestProperties const* pQuest, Object* pQuestGiver)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT];
     for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
@@ -957,14 +957,14 @@ void HookInterface::OnFullLogin(Player* pPlayer)
         ((tOnEnterWorld)*itr)(pPlayer);
 }
 
-void HookInterface::OnQuestCancelled(Player* pPlayer, Quest const* pQuest)
+void HookInterface::OnQuestCancelled(Player* pPlayer, QuestProperties const* pQuest)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_QUEST_CANCELLED];
     for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)
         ((tOnQuestCancel)*itr)(pPlayer, pQuest);
 }
 
-void HookInterface::OnQuestFinished(Player* pPlayer, Quest const* pQuest, Object* pQuestGiver)
+void HookInterface::OnQuestFinished(Player* pPlayer, QuestProperties const* pQuest, Object* pQuestGiver)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_QUEST_FINISHED];
     for (ServerHookList::iterator itr = hookList.begin(); itr != hookList.end(); ++itr)

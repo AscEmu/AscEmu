@@ -242,8 +242,8 @@ bool ChatHandler::HandleServerRestartCommand(const char* args, WorldSession* m_s
 bool ChatHandler::HandleReloadGameobjectsCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadGameObjectNamesTable();
-    GreenSystemMessage(m_session, "WorldDB table 'gameobject_names' reloaded in %u ms", getMSTime() - start_time);
+    sMySQLStore.LoadGameObjectPropertiesTable();
+    GreenSystemMessage(m_session, "WorldDB gameobjects tables reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
 
@@ -362,8 +362,8 @@ bool ChatHandler::HandleReloadPointsOfInterestCommand(const char* /*args*/, Worl
 bool ChatHandler::HandleReloadQuestsCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadQuestsTable();
-    GreenSystemMessage(m_session, "WorldDB 'quests' table reloaded in %u ms", getMSTime() - start_time);
+    sMySQLStore.LoadQuestPropertiesTable();
+    GreenSystemMessage(m_session, "WorldDB 'quest_properties' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
 

@@ -189,9 +189,9 @@ class LuaGameObject
         static int GetName(lua_State* L, GameObject* ptr)
         {
             TEST_GO()
-            if (!ptr->GetInfo())
+            if (!ptr->GetGameObjectProperties())
                 return 0;
-            lua_pushstring(L, ptr->GetInfo()->name.c_str());
+            lua_pushstring(L, ptr->GetGameObjectProperties()->name.c_str());
             return 1;
         }
 
@@ -1241,7 +1241,7 @@ class LuaGameObject
         {
             TEST_GO();
 
-            if (ptr->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+            if (ptr->GetGameObjectProperties()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
                 return 0;
 
             if (lua_gettop(L) != 3)
@@ -1261,7 +1261,7 @@ class LuaGameObject
         {
             TEST_GO();
 
-            if (ptr->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+            if (ptr->GetGameObjectProperties()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
                 return 0;
 
             GameObject_Destructible* dt = static_cast<GameObject_Destructible*>(ptr);
@@ -1274,7 +1274,7 @@ class LuaGameObject
         {
             TEST_GO();
 
-            if (ptr->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+            if (ptr->GetGameObjectProperties()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
                 return 0;
 
             GameObject_Destructible* dt = static_cast<GameObject_Destructible*>(ptr);
@@ -1288,7 +1288,7 @@ class LuaGameObject
         {
             TEST_GO();
 
-            if (ptr->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+            if (ptr->GetGameObjectProperties()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
                 return 0;
 
             GameObject_Destructible* dt = static_cast<GameObject_Destructible*>(ptr);

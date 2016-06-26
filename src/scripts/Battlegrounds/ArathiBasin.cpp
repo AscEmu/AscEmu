@@ -155,7 +155,7 @@ static uint32 resourcesToGainBR = 160;
 void ArathiBasin::SpawnBuff(uint32 x)
 {
     uint32 chosen_buffid = buffentries[RandomUInt(2)];
-    auto gameobject_info = sMySQLStore.GetGameObjectInfo(chosen_buffid);
+    auto gameobject_info = sMySQLStore.GetGameObjectProperties(chosen_buffid);
     if (gameobject_info == nullptr)
         return;
 
@@ -181,7 +181,7 @@ void ArathiBasin::SpawnBuff(uint32 x)
         {
             m_buffs[x]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
             m_buffs[x]->SetEntry(chosen_buffid);
-            m_buffs[x]->SetInfo(gameobject_info);
+            m_buffs[x]->SetGameObjectProperties(gameobject_info);
         }
 
         m_buffs[x]->PushToWorld(m_mapMgr);
@@ -190,11 +190,11 @@ void ArathiBasin::SpawnBuff(uint32 x)
 
 void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
 {
-    auto gameobject_info = sMySQLStore.GetGameObjectInfo(ControlPointGoIds[Id][Type]);
+    auto gameobject_info = sMySQLStore.GetGameObjectProperties(ControlPointGoIds[Id][Type]);
     if (gameobject_info == nullptr)
         return;
 
-    auto gi_aura = gameobject_info->raw.parameter_3 ? sMySQLStore.GetGameObjectInfo(gameobject_info->raw.parameter_3) : nullptr;
+    auto gi_aura = gameobject_info->raw.parameter_3 ? sMySQLStore.GetGameObjectProperties(gameobject_info->raw.parameter_3) : nullptr;
 
     if (m_controlPoints[Id] == nullptr)
     {
@@ -256,7 +256,7 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
                 break;
         }
 
-        m_controlPoints[Id]->SetInfo(gameobject_info);
+        m_controlPoints[Id]->SetGameObjectProperties(gameobject_info);
         m_controlPoints[Id]->PushToWorld(m_mapMgr);
     }
 
@@ -290,7 +290,7 @@ void ArathiBasin::SpawnControlPoint(uint32 Id, uint32 Type)
         m_controlPointAuras[Id]->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
         m_controlPointAuras[Id]->SetEntry(gi_aura->entry);
         m_controlPointAuras[Id]->SetDisplayId(gi_aura->display_id);
-        m_controlPointAuras[Id]->SetInfo(gi_aura);
+        m_controlPointAuras[Id]->SetGameObjectProperties(gi_aura);
         m_controlPointAuras[Id]->PushToWorld(m_mapMgr);
     }
 }
@@ -638,7 +638,7 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
         if (m_buffs[buffslot] && m_buffs[buffslot]->IsInWorld())
         {
             // apply the spell
-            auto spellid = m_buffs[buffslot]->GetInfo()->raw.parameter_3;
+            auto spellid = m_buffs[buffslot]->GetGameObjectProperties()->raw.parameter_3;
             m_buffs[buffslot]->RemoveFromWorld(false);
 
             // respawn it in buffrespawntime

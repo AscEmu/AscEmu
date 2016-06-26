@@ -42,7 +42,7 @@ GameObject::GameObject(uint64 guid)
     invisibilityFlag = INVIS_FLAG_NORMAL;
     m_summoner = NULL;
     charges = -1;
-    pInfo = NULL;
+    gameobject_properties = nullptr;
     myScript = NULL;
     m_spawn = 0;
     m_deleted = false;
@@ -85,8 +85,8 @@ GameObject::~GameObject()
 
 bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0, float r1, float r2, float r3, uint32 overrides)
 {
-    pInfo = sMySQLStore.GetGameObjectInfo(entry);
-    if (pInfo == nullptr)
+    gameobject_properties = sMySQLStore.GetGameObjectProperties(entry);
+    if (gameobject_properties == nullptr)
     {
         LOG_ERROR("Something tried to create a GameObject with invalid entry %u", entry);
         return false;
@@ -108,8 +108,8 @@ bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, f
     UpdateRotation();
     SetAnimProgress(0);
     SetState(1);
-    SetDisplayId(pInfo->display_id);
-    SetType(static_cast<uint8>(pInfo->type));
+    SetDisplayId(gameobject_properties->display_id);
+    SetType(static_cast<uint8>(gameobject_properties->type));
     InitAI();
 
     return true;
@@ -379,7 +379,7 @@ void GameObject::RemoveFromWorld(bool free_guid)
 uint32 GameObject::GetGOReqSkill()
 {
     // Here we check the SpellFocus table against the dbcs
-    auto lock = sLockStore.LookupEntry(GetInfo()->raw.parameter_0);
+    auto lock = sLockStore.LookupEntry(GetGameObjectProperties()->raw.parameter_0);
     if (!lock)
         return 0;
 
@@ -469,7 +469,7 @@ void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
     SpellEntry* sp = dbcSpell.LookupEntryForced(SpellID);
     if (sp == nullptr)
     {
-        sLog.outError("GameObject %u tried to cast a non-existing Spell %u.", pInfo->entry, SpellID);
+        sLog.outError("GameObject %u tried to cast a non-existing Spell %u.", gameobject_properties->entry, SpellID);
         return;
     }
 
@@ -488,7 +488,7 @@ void GameObject_Door::InitAI()
 {
     GameObject::InitAI();
 
-    if (pInfo->door.start_open != 0)
+    if (gameobject_properties->door.start_open != 0)
         SetState(GO_STATE_OPEN);
     else
         SetState(GO_STATE_CLOSED);
@@ -497,8 +497,8 @@ void GameObject_Door::InitAI()
 void GameObject_Door::Open()
 {
     SetState(GO_STATE_OPEN);
-    if (pInfo->door.auto_close_time != 0)
-        sEventMgr.AddEvent(this, &GameObject_Door::Close, 0, pInfo->door.auto_close_time, 1, 0);
+    if (gameobject_properties->door.auto_close_time != 0)
+        sEventMgr.AddEvent(this, &GameObject_Door::Close, 0, gameobject_properties->door.auto_close_time, 1, 0);
 }
 
 void GameObject_Door::Close()
@@ -534,12 +534,12 @@ void GameObject_Button::InitAI()
 {
     GameObject::InitAI();
 
-    if (pInfo->button.start_open != 0)
+    if (gameobject_properties->button.start_open != 0)
         SetState(GO_STATE_OPEN);
 
-    if (pInfo->button.linked_trap_id != 0)
+    if (gameobject_properties->button.linked_trap_id != 0)
     {
-        GameObjectInfo const* gameobject_info = sMySQLStore.GetGameObjectInfo(pInfo->button.linked_trap_id);
+        GameObjectProperties const* gameobject_info = sMySQLStore.GetGameObjectProperties(gameobject_properties->button.linked_trap_id);
 
         if (gameobject_info != nullptr)
         {
@@ -552,8 +552,8 @@ void GameObject_Button::InitAI()
 void GameObject_Button::Open()
 {
     SetState(GO_STATE_OPEN);
-    if (pInfo->button.auto_close_time != 0)
-        sEventMgr.AddEvent(this, &GameObject_Button::Close, EVENT_GAMEOBJECT_CLOSE, pInfo->button.auto_close_time, 1, 0);
+    if (gameobject_properties->button.auto_close_time != 0)
+        sEventMgr.AddEvent(this, &GameObject_Button::Close, EVENT_GAMEOBJECT_CLOSE, gameobject_properties->button.auto_close_time, 1, 0);
 }
 
 void GameObject_Button::Close()
@@ -608,7 +608,7 @@ void GameObject_QuestGiver::DeleteQuest(QuestRelation* Q)
     }
 }
 
-Quest const* GameObject_QuestGiver::FindQuest(uint32 quest_id, uint8 quest_relation)
+QuestProperties const* GameObject_QuestGiver::FindQuest(uint32 quest_id, uint8 quest_relation)
 {
     for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
     {
@@ -651,9 +651,9 @@ void GameObject_Chest::InitAI()
 {
     GameObject::InitAI();
 
-    if (pInfo->chest.linked_trap_id != 0)
+    if (gameobject_properties->chest.linked_trap_id != 0)
     {
-        GameObjectInfo const* gameobject_info = sMySQLStore.GetGameObjectInfo(pInfo->chest.linked_trap_id);
+        GameObjectProperties const* gameobject_info = sMySQLStore.GetGameObjectProperties(gameobject_properties->chest.linked_trap_id);
 
         if (gameobject_info != nullptr)
         {
@@ -721,7 +721,7 @@ void GameObject_Trap::InitAI()
 {
     ///\brief prevent traps from casting periodic spells. This can be removed until proper event handling.
     // e.g. BootyBay
-    switch (pInfo->entry)
+    switch (gameobject_properties->entry)
     {
         case 171941:
         case 175791:
@@ -732,20 +732,20 @@ void GameObject_Trap::InitAI()
             return;
     }
 
-    spell = dbcSpell.LookupEntryForced(pInfo->trap.spell_id);
-    charges = pInfo->trap.charges;
+    spell = dbcSpell.LookupEntryForced(gameobject_properties->trap.spell_id);
+    charges = gameobject_properties->trap.charges;
 
-    if (pInfo->trap.stealthed != 0)
+    if (gameobject_properties->trap.stealthed != 0)
     {
         invisible = true;
         invisibilityFlag = INVIS_FLAG_TRAP;
     }
 
-    cooldown = pInfo->trap.cooldown * 1000;
+    cooldown = gameobject_properties->trap.cooldown * 1000;
     if (cooldown < 1000)
         cooldown = 1000;
 
-    maxdistance = sqrt(float(pInfo->trap.radius));
+    maxdistance = sqrt(float(gameobject_properties->trap.radius));
     if (maxdistance == 0.0f)
         maxdistance = 1.0f;
 
@@ -816,7 +816,7 @@ void GameObject_Trap::Update(unsigned long time_passed)
                 if (charges != 0)
                     charges--;
 
-                if (m_summonedGo && pInfo->trap.charges != 0 && charges == 0)
+                if (m_summonedGo && gameobject_properties->trap.charges != 0 && charges == 0)
                 {
                     ExpireAndDelete();
                     return;
@@ -847,20 +847,20 @@ void GameObject_SpellFocus::OnPushToWorld()
 
 void GameObject_SpellFocus::SpawnLinkedTrap()
 {
-    uint32 trapid = pInfo->spell_focus.linked_trap_id;
+    uint32 trapid = gameobject_properties->spell_focus.linked_trap_id;
     if (trapid == 0)
         return;
 
     GameObject* go = m_mapMgr->CreateGameObject(trapid);
     if (go == nullptr)
     {
-        sLog.outError("Failed to create linked trap for GameObject %u ( %s ).", pInfo->entry, pInfo->name.c_str());
+        sLog.outError("Failed to create linked trap for GameObject %u ( %s ).", gameobject_properties->entry, gameobject_properties->name.c_str());
         return;
     }
 
     if (!go->CreateFromProto(trapid, m_mapId, m_position.x, m_position.y, m_position.z, m_position.o))
     {
-        sLog.outError("Failed CreateFromProto for linked trap of GameObject %u ( %s ).", pInfo->entry, pInfo->name.c_str());
+        sLog.outError("Failed CreateFromProto for linked trap of GameObject %u ( %s ).", gameobject_properties->entry, gameobject_properties->name.c_str());
         return;
     }
 
@@ -883,9 +883,9 @@ void GameObject_Goober::InitAI()
 {
     GameObject::InitAI();
 
-    if (pInfo->goober.linked_trap_id != 0)
+    if (gameobject_properties->goober.linked_trap_id != 0)
     {
-        GameObjectInfo const* gameobject_info = sMySQLStore.GetGameObjectInfo(pInfo->goober.linked_trap_id);
+        GameObjectProperties const* gameobject_info = sMySQLStore.GetGameObjectProperties(gameobject_properties->goober.linked_trap_id);
         if (gameobject_info != nullptr)
         {
             if (gameobject_info->trap.spell_id != 0)
@@ -897,8 +897,8 @@ void GameObject_Goober::InitAI()
 void GameObject_Goober::Open()
 {
     SetState(GO_STATE_OPEN);
-    if (pInfo->goober.auto_close_time != 0)
-        sEventMgr.AddEvent(this, &GameObject_Goober::Close, EVENT_GAMEOBJECT_CLOSE, pInfo->goober.auto_close_time, 1, 0);
+    if (gameobject_properties->goober.auto_close_time != 0)
+        sEventMgr.AddEvent(this, &GameObject_Goober::Close, EVENT_GAMEOBJECT_CLOSE, gameobject_properties->goober.auto_close_time, 1, 0);
 }
 
 void GameObject_Goober::Close()
@@ -1010,7 +1010,7 @@ GameObject_Ritual::~GameObject_Ritual()
 
 void GameObject_Ritual::InitAI()
 {
-    Ritual = new CRitual(pInfo->summoning_ritual.req_participants);
+    Ritual = new CRitual(gameobject_properties->summoning_ritual.req_participants);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1025,11 +1025,11 @@ GameObject_SpellCaster::~GameObject_SpellCaster()
 
 void GameObject_SpellCaster::InitAI()
 {
-    charges = pInfo->spell_caster.charges;
+    charges = gameobject_properties->spell_caster.charges;
 
-    spell = dbcSpell.LookupEntry(pInfo->spell_caster.spell_id);
+    spell = dbcSpell.LookupEntry(gameobject_properties->spell_caster.spell_id);
     if (spell == nullptr)
-        sLog.outError("GameObject %u ( %s ) has a nonexistant spellID in the database.", pInfo->entry, pInfo->name.c_str());
+        sLog.outError("GameObject %u ( %s ) has a nonexistant spellID in the database.", gameobject_properties->entry, gameobject_properties->name.c_str());
 }
 
 void GameObject_SpellCaster::Use(uint64 GUID)
@@ -1077,7 +1077,7 @@ void GameObject_FishingHole::CatchFish()
 void GameObject_FishingHole::CalcFishRemaining(bool force)
 {
     if (force || (usage_remaining == 0))
-        usage_remaining = pInfo->fishinghole.min_success_opens + RandomUInt(pInfo->fishinghole.max_success_opens - pInfo->fishinghole.min_success_opens) - 1;
+        usage_remaining = gameobject_properties->fishinghole.min_success_opens + RandomUInt(gameobject_properties->fishinghole.max_success_opens - gameobject_properties->fishinghole.min_success_opens) - 1;
 }
 
 bool GameObject_FishingHole::HasLoot()
@@ -1123,7 +1123,7 @@ void GameObject_Destructible::Damage(uint32 damage, uint64 AttackerGUID, uint64 
 
         SetFlags(GO_FLAG_DESTROYED);
         SetFlags(GetFlags() & ~GO_FLAG_DAMAGED);
-        SetDisplayId(pInfo->destructible_building.destroyed_display_id);   // destroyed display id
+        SetDisplayId(gameobject_properties->destructible_building.destroyed_display_id);   // destroyed display id
 
         CALL_GO_SCRIPT_EVENT(this, OnDestroyed)();
 
@@ -1138,10 +1138,10 @@ void GameObject_Destructible::Damage(uint32 damage, uint64 AttackerGUID, uint64 
             // Intact  ->  Damaged
 
             // Are we below the intact-damaged transition treshold?
-            if (hitpoints <= (maxhitpoints - pInfo->destructible_building.intact_num_hits))
+            if (hitpoints <= (maxhitpoints - gameobject_properties->destructible_building.intact_num_hits))
             {
                 SetFlags(GO_FLAG_DAMAGED);
-                SetDisplayId(pInfo->destructible_building.damaged_display_id); // damaged display id
+                SetDisplayId(gameobject_properties->destructible_building.damaged_display_id); // damaged display id
             }
         }
         else
@@ -1150,7 +1150,7 @@ void GameObject_Destructible::Damage(uint32 damage, uint64 AttackerGUID, uint64 
             {
                 SetFlags(GetFlags() & ~GO_FLAG_DAMAGED);
                 SetFlags(GO_FLAG_DESTROYED);
-                SetDisplayId(pInfo->destructible_building.destroyed_display_id);
+                SetDisplayId(gameobject_properties->destructible_building.destroyed_display_id);
             }
         }
 
@@ -1177,8 +1177,8 @@ void GameObject_Destructible::SendDamagePacket(uint32 damage, uint64 AttackerGUI
 void GameObject_Destructible::Rebuild()
 {
     SetFlags(GetFlags() & uint32(~(GO_FLAG_DAMAGED | GO_FLAG_DESTROYED)));
-    SetDisplayId(pInfo->display_id);
-    maxhitpoints = pInfo->destructible_building.intact_num_hits + pInfo->destructible_building.damaged_num_hits;
+    SetDisplayId(gameobject_properties->display_id);
+    maxhitpoints = gameobject_properties->destructible_building.intact_num_hits + gameobject_properties->destructible_building.damaged_num_hits;
     hitpoints = maxhitpoints;
 }
 

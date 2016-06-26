@@ -1257,7 +1257,7 @@ void LuaHookOnLogout(Player* pPlayer)
     RELEASE_LOCK
 }
 
-void LuaHookOnQuestAccept(Player* pPlayer, Quest* pQuest, Object* pQuestGiver)
+void LuaHookOnQuestAccept(Player* pPlayer, QuestProperties* pQuest, Object* pQuestGiver)
 {
     GET_LOCK
     for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT].end(); ++itr)
@@ -1389,7 +1389,7 @@ void LuaHookOnCharacterCreate(Player* pPlayer)
     RELEASE_LOCK
 }
 
-void LuaHookOnQuestCancelled(Player* pPlayer, Quest* pQuest)
+void LuaHookOnQuestCancelled(Player* pPlayer, QuestProperties* pQuest)
 {
     GET_LOCK
     for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_CANCELLED].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_CANCELLED].end(); ++itr)
@@ -1403,7 +1403,7 @@ void LuaHookOnQuestCancelled(Player* pPlayer, Quest* pQuest)
     RELEASE_LOCK
 }
 
-void LuaHookOnQuestFinished(Player* pPlayer, Quest* pQuest, Object* pQuestGiver)
+void LuaHookOnQuestFinished(Player* pPlayer, QuestProperties* pQuest, Object* pQuestGiver)
 {
     GET_LOCK
     for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_FINISHED].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_FINISHED].end(); ++itr)
@@ -2589,7 +2589,7 @@ GameObjectAIScript* CreateLuaGameObjectScript(GameObject* src)
     LuaGameObjectScript* script = nullptr;
     if (src != nullptr)
     {
-        uint32 id = src->GetInfo()->entry;
+        uint32 id = src->GetGameObjectProperties()->entry;
         LuaObjectBinding* pBinding = nullptr;
         pBinding = sLuaMgr.getGameObjectBinding(id);
         if (pBinding != nullptr)

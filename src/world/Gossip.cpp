@@ -103,12 +103,12 @@ void Gossip::Menu::RemoveItem(uint32 id)
     }
 }
 
-void Gossip::Menu::AddQuest(Quest const* quest, uint8 icon)
+void Gossip::Menu::AddQuest(QuestProperties const* quest, uint8 icon)
 {
     this->questlist_.insert(std::make_pair(quest, icon));
 }
 
-void Gossip::Menu::RemoveQuest(Quest const* quest)
+void Gossip::Menu::RemoveQuest(QuestProperties const* quest)
 {
     Gossip::QuestList::iterator itr = questlist_.find(quest);
     if (itr != questlist_.end())

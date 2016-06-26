@@ -23,7 +23,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///Packet Building
-WorldPacket* WorldSession::BuildQuestQueryResponse(Quest const* qst)
+WorldPacket* WorldSession::BuildQuestQueryResponse(QuestProperties const* qst)
 {
     // 2048 bytes should be more than enough. The fields cost ~200 bytes.
     // better to allocate more at startup than have to realloc the buffer later on.
@@ -149,7 +149,7 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(Quest const* qst)
 }
 
 
-uint32 Quest::GetRewardItemCount() const
+uint32 QuestProperties::GetRewardItemCount() const
 {
     uint32 count = 0;
     for (uint8 i = 0; i < 4; ++i)

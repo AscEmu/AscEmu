@@ -507,7 +507,7 @@ void Creature::DeleteQuest(QuestRelation* Q)
     }
 }
 
-Quest const* Creature::FindQuest(uint32 quest_id, uint8 quest_relation)
+QuestProperties const* Creature::FindQuest(uint32 quest_id, uint8 quest_relation)
 {
     std::list<QuestRelation*>::iterator it;
     for (it = m_quests->begin(); it != m_quests->end(); ++it)
@@ -519,7 +519,7 @@ Quest const* Creature::FindQuest(uint32 quest_id, uint8 quest_relation)
             return ptr->qst;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 uint16 Creature::GetQuestRelation(uint32 quest_id)

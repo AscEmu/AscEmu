@@ -51,9 +51,8 @@ bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
 
 Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry, uint32 period)
 {
-    auto gameobject_info = sMySQLStore.GetGameObjectInfo(goEntry);
-
-    if (!gameobject_info)
+    auto gameobject_info = sMySQLStore.GetGameObjectProperties(goEntry);
+    if (gameobject_info == nullptr)
     {
         Log.Error("Transport Handler", "Transport ID:%u, will not be loaded, gameobject_properties missing", goEntry);
         return NULL;
@@ -133,9 +132,8 @@ void ObjectMgr::LoadTransports()
             std::string name = fields[1].GetString();
             uint32 period = fields[2].GetUInt32();
 
-            auto gameobject_info = sMySQLStore.GetGameObjectInfo(entry);
-
-            if (!gameobject_info)
+            auto gameobject_info = sMySQLStore.GetGameObjectProperties(entry);
+            if (gameobject_info == nullptr)
             {
                 Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_properties missing", entry, name.c_str());
                 continue;
@@ -280,7 +278,7 @@ void Transporter::OnPushToWorld()
 
 bool Transporter::Create(uint32 entry, int32 Time)
 {
-    auto gameobject_info = sMySQLStore.GetGameObjectInfo(entry);
+    auto gameobject_info = sMySQLStore.GetGameObjectProperties(entry);
     if (gameobject_info == nullptr)
     {
         Log.Error("Transporter::Create", "Failed to create Transporter with go entry %u. Invalid gameobject!", entry);
@@ -591,7 +589,7 @@ bool Transporter::AddPassenger(Player* passenger)
     ARCEMU_ASSERT(passenger != nullptr);
 
     m_passengers.insert(passenger->GetLowGUID());
-    Log.Debug("Transporter", "Player %s boarded transport %u.", passenger->GetName(), this->GetInfo()->entry);
+    Log.Debug("Transporter", "Player %s boarded transport %u.", passenger->GetName(), this->GetGameObjectProperties()->entry);
 
     if (!passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {
@@ -606,7 +604,7 @@ bool Transporter::RemovePassenger(Player* passenger)
     ARCEMU_ASSERT(passenger != nullptr);
 
     m_passengers.erase(passenger->GetLowGUID());
-    Log.Debug("Transporter", "Player %s removed from transport %u.", passenger->GetName(), this->GetInfo()->entry);
+    Log.Debug("Transporter", "Player %s removed from transport %u.", passenger->GetName(), this->GetGameObjectProperties()->entry);
 
     if (passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {
@@ -659,7 +657,7 @@ void Transporter::Update()
         }
         if (mCurrentWaypoint->second.delayed)
         {
-            switch (GetInfo()->display_id)
+            switch (GetGameObjectProperties()->display_id)
             {
             case 3015:
             case 7087:
@@ -678,7 +676,7 @@ void Transporter::Update()
             }
             break;
             }
-            TransportGossip(GetInfo()->display_id);
+            TransportGossip(GetGameObjectProperties()->display_id);
         }
     }
 }

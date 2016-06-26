@@ -520,7 +520,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
     if (Id >= IOC_NUM_CONTROL_POINTS)
         return;
 
-    auto gameobject_info = sMySQLStore.GetGameObjectInfo(ControlPointGoIds[Id][Type]);
+    auto gameobject_info = sMySQLStore.GetGameObjectProperties(ControlPointGoIds[Id][Type]);
     if (gameobject_info == nullptr)
         return;
 
@@ -529,7 +529,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
     if (controlpoint[Id].worldstate != 0)
         SetWorldState(controlpoint[Id].worldstate, 0);
 
-    auto gi_aura = gameobject_info->raw.parameter_3 ? sMySQLStore.GetGameObjectInfo(gameobject_info->raw.parameter_3) : nullptr;
+    auto gi_aura = gameobject_info->raw.parameter_3 ? sMySQLStore.GetGameObjectProperties(gameobject_info->raw.parameter_3) : nullptr;
 
     if (controlpoint[Id].banner == nullptr)
     {
@@ -589,7 +589,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
                 break;
         }
 
-        controlpoint[Id].banner->SetInfo(gameobject_info);
+        controlpoint[Id].banner->SetGameObjectProperties(gameobject_info);
         controlpoint[Id].banner->PushToWorld(m_mapMgr);
     }
 
@@ -649,7 +649,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
         controlpoint[Id].aura->SetNewGuid(m_mapMgr->GenerateGameobjectGuid());
         controlpoint[Id].aura->SetEntry(gi_aura->entry);
         controlpoint[Id].aura->SetDisplayId(gi_aura->display_id);
-        controlpoint[Id].aura->SetInfo(gi_aura);
+        controlpoint[Id].aura->SetGameObjectProperties(gi_aura);
         controlpoint[Id].aura->PushToWorld(m_mapMgr);
     }
 }

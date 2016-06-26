@@ -28,7 +28,7 @@ bool ChatHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSession* m
         return true;
     }
 
-    auto gameobject_info = sMySQLStore.GetGameObjectInfo(transporter->GetEntry());
+    auto gameobject_info = sMySQLStore.GetGameObjectProperties(transporter->GetEntry());
     if (gameobject_info != nullptr)
     {
         SystemMessage(m_session, "Entry: %u", gameobject_info->entry);
@@ -52,7 +52,7 @@ bool ChatHandler::HandleModPeriodCommand(const char* args, WorldSession* m_sessi
 
         Transporter* transport = objmgr.GetTransportOrThrow(Arcemu::Util::GUID_LOPART(m_session->GetPlayerOrThrow()->obj_movement_info.transporter_info.guid));
         transport->SetPeriod(time);
-        BlueSystemMessage(m_session, "Period of %s set to %u.", transport->GetInfo()->name.c_str(), time);
+        BlueSystemMessage(m_session, "Period of %s set to %u.", transport->GetGameObjectProperties()->name.c_str(), time);
     }
     catch (AscEmu::Exception::AscemuException e)
     {
@@ -94,7 +94,7 @@ bool ChatHandler::HandleStartTransport(const char* /*args*/, WorldSession* m_ses
             transport->SetUInt32Value(GAMEOBJECT_DYNAMIC, 0x10830010); // Seen in sniffs
             transport->SetFloatValue(GAMEOBJECT_PARENTROTATION + 3, 1.0f);
             std::set<uint32> mapsUsed;
-            GameObjectInfo const* goinfo = transport->GetInfo();
+            GameObjectProperties const* goinfo = transport->GetGameObjectProperties();
 
             transport->GenerateWaypoints(goinfo->raw.parameter_0);
         }

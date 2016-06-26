@@ -81,9 +81,10 @@ namespace luaGlobalFunctions
             }
             else if (spawntype == 2)  //GO
             {
-                auto gameobject_info = sMySQLStore.GetGameObjectInfo(entry);
+                auto gameobject_info = sMySQLStore.GetGameObjectProperties(entry);
                 if (gameobject_info == nullptr)
                     return 0;
+
                 MapMgr* mapMgr = sInstanceMgr.GetMapMgr(map);
                 if (!mapMgr)
                     return 0;

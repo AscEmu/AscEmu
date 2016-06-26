@@ -1745,7 +1745,7 @@ Summon* MapMgr::CreateSummon(uint32 entry, SummonType type)
 // Spawns the object too, without which you can not interact with the object
 GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, float z, float o, float scale)
 {
-    auto gameobject_info = sMySQLStore.GetGameObjectInfo(entryID);
+    auto gameobject_info = sMySQLStore.GetGameObjectProperties(entryID);
     if (gameobject_info == nullptr)
     {
         LOG_DEBUG("Error looking up entry in CreateAndSpawnGameObject");

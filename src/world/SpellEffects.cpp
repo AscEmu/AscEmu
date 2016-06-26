@@ -2950,7 +2950,7 @@ void Spell::SpellEffectOpenLock(uint32 i)
             }
             else if (gameObjTarget)
             {
-                auto gameobject_info = gameObjTarget->GetInfo();
+                auto gameobject_info = gameObjTarget->GetGameObjectProperties();
                 if (gameObjTarget->GetState() == 0)
                     return;
 
@@ -2972,9 +2972,9 @@ void Spell::SpellEffectOpenLock(uint32 i)
                             if (pLGO->loot.items.size() == 0)
                             {
                                 if (gameObjTarget->GetMapMgr() != NULL)
-                                    lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                                    lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
                                 else
-                                    lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
+                                    lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
 
                                 DetermineSkillUp(SKILL_LOCKPICKING, v / 5);     //to prevent free skill up
                             }
@@ -3008,9 +3008,9 @@ void Spell::SpellEffectOpenLock(uint32 i)
                     if (pLGO->loot.items.size() == 0)
                     {
                         if (gameObjTarget->GetMapMgr() != NULL)
-                            lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                            lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
                         else
-                            lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
+                            lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
                     }
                     else
                     {
@@ -3044,9 +3044,9 @@ void Spell::SpellEffectOpenLock(uint32 i)
                 if (pLGO->loot.items.size() == 0)
                 {
                     if (gameObjTarget->GetMapMgr() != NULL)
-                        lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                        lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
                     else
-                        lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
+                        lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
                 }
             }
             else
@@ -3067,7 +3067,7 @@ void Spell::SpellEffectOpenLock(uint32 i)
                 if (p_caster->m_bg->HookSlowLockOpen(gameObjTarget, p_caster, this))
                     return;
 
-            uint32 spellid = !gameObjTarget->GetInfo()->raw.parameter_10 ? 23932 : gameObjTarget->GetInfo()->raw.parameter_10;
+            uint32 spellid = !gameObjTarget->GetGameObjectProperties()->raw.parameter_10 ? 23932 : gameObjTarget->GetGameObjectProperties()->raw.parameter_10;
             SpellEntry* en = dbcSpell.LookupEntry(spellid);
             Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, en, true, NULL);
             SpellCastTargets tgt;
@@ -3120,9 +3120,9 @@ void Spell::SpellEffectOpenLock(uint32 i)
                 if (pLGO->loot.items.size() == 0)
                 {
                     if (gameObjTarget->GetMapMgr() != NULL)
-                        lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
+                        lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, gameObjTarget->GetMapMgr()->iInstanceMode);
                     else
-                        lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetInfo()->raw.parameter_1, 0);
+                        lootmgr.FillGOLoot(&pLGO->loot, gameObjTarget->GetGameObjectProperties()->raw.parameter_1, 0);
                 }
             }
             loottype = LOOT_CORPSE;
@@ -3577,7 +3577,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
 
     uint32 entry = GetProto()->EffectMiscValue[i];
 
-    GameObjectInfo const* info = sMySQLStore.GetGameObjectInfo(entry);
+    GameObjectProperties const* info = sMySQLStore.GetGameObjectProperties(entry);
     if (info == nullptr)
     {
         sLog.outError("Spell %u ( %s ) Effect %u tried to summon a GameObject with ID %u. GameObject is not in the database.", m_spellInfo->Id, m_spellInfo->Name, i, entry);
@@ -4409,7 +4409,7 @@ void Spell::SpellEffectBuildingDamage(uint32 i)
         return;
     }
 
-    if (gameObjTarget->GetInfo()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
+    if (gameObjTarget->GetGameObjectProperties()->type != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
         return;
 
     if (u_caster == NULL)

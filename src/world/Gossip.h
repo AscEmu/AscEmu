@@ -25,7 +25,7 @@
 #include "StackBuffer.h"
 #include <map>
 
-struct Quest;
+struct QuestProperties;
 class Creature;
 class Item;
 class Player;
@@ -317,7 +317,7 @@ namespace Arcemu
         };
 
         typedef std::vector<Gossip::Item> ItemList;
-        typedef std::map<Quest const*, uint8> QuestList;
+        typedef std::map<QuestProperties const*, uint8> QuestList;
 
         class SERVER_DECL Menu
         {
@@ -357,14 +357,14 @@ namespace Arcemu
                 /// \param Quest * - the quest
                 /// \param uint8 - the icon
                 //////////////////////////////////////////////////////////////////////////////////////////
-                void AddQuest(Quest const*, uint8);
+                void AddQuest(QuestProperties const*, uint8);
 
                 //////////////////////////////////////////////////////////////////////////////////////////
                 /// Removes a quest.
                 /// \param Quest * - quest to remove.
                 /// \returns  void
                 //////////////////////////////////////////////////////////////////////////////////////////
-                void RemoveQuest(Quest const*);
+                void RemoveQuest(QuestProperties const*);
 
                 //////////////////////////////////////////////////////////////////////////////////////////
                 /// Fills the packet with the menu data.

@@ -3579,7 +3579,7 @@ uint8 Spell::CanCast(bool tolerate)
                 if (!(p_caster->GetPhase() & (*itr)->GetPhase()))    //We can't see this, can't be the focus, skip further checks
                     continue;
 
-                auto gameobject_info = static_cast<GameObject*>(*itr)->GetInfo();
+                auto gameobject_info = static_cast<GameObject*>(*itr)->GetGameObjectProperties();
                 if (!gameobject_info)
                 {
                     LOG_DEBUG("Warning: could not find info about game object %u", (*itr)->GetEntry());
