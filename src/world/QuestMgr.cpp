@@ -788,11 +788,11 @@ void QuestMgr::OnPlayerKill(Player* plr, Creature* victim, bool IsGroupKill)
     // Extra credit (yay we wont have to script this anymore) - Shauren
     for (uint8 i = 0; i < 2; ++i)
     {
-        uint32 extracredit = victim->GetCreatureInfo()->killcredit[i];
+        uint32 extracredit = victim->GetCreatureProperties()->killcredit[i];
 
         if (extracredit != 0)
         {
-            if (sMySQLStore.GetCreatureInfo(extracredit))
+            if (sMySQLStore.GetCreatureProperties(extracredit))
                 _OnPlayerKill(plr, extracredit, IsGroupKill);
         }
     }
@@ -2057,7 +2057,7 @@ void QuestMgr::LoadExtraQuestStuff()
                 }
                 else
                 {
-                    CreatureInfo const* c_info = sMySQLStore.GetCreatureInfo(qst->required_mob[i]);
+                    CreatureProperties const* c_info = sMySQLStore.GetCreatureProperties(qst->required_mob[i]);
                     if (c_info)
                         const_cast<Quest*>(qst)->required_mobtype[i] = QUEST_MOB_TYPE_CREATURE;
                     else

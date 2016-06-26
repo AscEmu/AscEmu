@@ -141,7 +141,7 @@ class SERVER_DECL Pet : public Creature
 
         void LoadFromDB(Player* owner, PlayerPet* pi);
         /// returns false if an error occurred. The caller MUST delete us.
-        bool CreateAsSummon(uint32 entry, CreatureInfo const* ci, Creature* created_from_creature, Player* owner, SpellEntry* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec = NULL, bool dismiss_old_pet = true);
+        bool CreateAsSummon(uint32 entry, CreatureProperties const* properties_, Creature* created_from_creature, Player* owner, SpellEntry* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec = NULL, bool dismiss_old_pet = true);
 
         void Update(unsigned long time_passed);
         void OnPushToWorld();

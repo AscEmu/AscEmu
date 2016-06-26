@@ -587,7 +587,7 @@ bool ExtractGas(uint32 i, Spell* s)
         item = 22578; //-water
 
     s->p_caster->GetItemInterface()->AddItemById(item, count, 0);
-    creature->Despawn(3500, creature->GetProto()->RespawnTime);
+    creature->Despawn(3500, creature->GetCreatureProperties()->RespawnTime);
 
     return true;
 }

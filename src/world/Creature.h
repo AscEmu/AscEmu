@@ -26,7 +26,6 @@
 #include "Map.h"
 #include "Unit.h"
 
-class CreatureTemplate;
 class GossipScript;
 
 SERVER_DECL bool Rand(float chance);
@@ -66,7 +65,7 @@ class SERVER_DECL Creature : public Unit
         void RemoveVehicleComponent();
 
         bool Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info);
-        void Load(CreatureProto const* proto_, float x, float y, float z, float o = 0);
+        void Load(CreatureProperties const* c_properties, float x, float y, float z, float o = 0);
 
         void AddToWorld();
         void AddToWorld(MapMgr* pMapMgr);
@@ -91,8 +90,6 @@ class SERVER_DECL Creature : public Unit
         {
             DeleteMe();
         }
-
-        CreatureProto const* GetProto();
 
         bool IsPvPFlagged();
         void SetPvPFlag();
@@ -224,7 +221,6 @@ class SERVER_DECL Creature : public Unit
 
         // Serialization
         void SaveToDB();
-        void LoadAIAgents(CreatureTemplate* t);
         void DeleteFromDB();
 
         void OnJustDied();
@@ -275,11 +271,8 @@ class SERVER_DECL Creature : public Unit
 
         void CallScriptUpdate();
 
-        CreatureInfo const* GetCreatureInfo();
-
-        void SetCreatureInfo(CreatureInfo const* ci);
-
-        void SetCreatureProto(CreatureProto const* cp);
+        CreatureProperties const* GetCreatureProperties();
+        void SetCreatureProperties(CreatureProperties const* creature_properties);
 
         Trainer* GetTrainer();
         void RegenerateFocus();
@@ -370,8 +363,7 @@ class SERVER_DECL Creature : public Unit
         uint32 _fields[UNIT_END];
         uint32 m_healthfromspell;
 
-        CreatureInfo const* creature_info;
-        CreatureProto const* proto;
+        CreatureProperties const* creature_properties;
 
     private:
 

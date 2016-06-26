@@ -32,7 +32,7 @@ class WildSummon : public Summon
         WildSummon(uint64 GUID);
         ~WildSummon();
 
-        void Load(CreatureProto const* proto, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot);
+        void Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot);
 
         void OnPushToWorld();
 

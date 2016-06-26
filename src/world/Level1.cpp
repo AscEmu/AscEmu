@@ -624,9 +624,9 @@ bool ChatHandler::HandleVehicleAddPassengerCommand(const char *args, WorldSessio
         RedSystemMessage(session, "That vehicle has no more empty seats.");
         return false;
     }
-    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(creature_entry);
-    CreatureProto const* cp = sMySQLStore.GetCreatureProto(creature_entry);
-    if ((ci == NULL) || (cp == NULL))
+
+    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(creature_entry);
+    if (cp == nullptr)
     {
         RedSystemMessage(session, "Creature %u doesn't exist in the database", creature_entry);
         return false;

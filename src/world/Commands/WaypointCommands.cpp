@@ -83,7 +83,7 @@ bool ChatHandler::HandleWayPointAddCommand(const char* args, WorldSession* m_ses
     if (ai->addWayPointUnsafe(waypoint))
     {
         ai->saveWayPoints();
-        SystemMessage(m_session, "Waypoint %u added to Creature %s.", waypoint->id, creature_target->GetCreatureInfo()->Name.c_str());
+        SystemMessage(m_session, "Waypoint %u added to Creature %s.", waypoint->id, creature_target->GetCreatureProperties()->Name.c_str());
     }
     else
     {
@@ -171,7 +171,7 @@ bool ChatHandler::HandleWayPointAddFlyCommand(const char* args, WorldSession* m_
     if (ai->addWayPointUnsafe(waypoint))
     {
         ai->saveWayPoints();
-        SystemMessage(m_session, "Fly waypoint %u added to Creature %s.", waypoint->id, creature_target->GetCreatureInfo()->Name.c_str());
+        SystemMessage(m_session, "Fly waypoint %u added to Creature %s.", waypoint->id, creature_target->GetCreatureProperties()->Name.c_str());
     }
     else
     {

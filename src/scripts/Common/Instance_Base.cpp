@@ -93,7 +93,7 @@ Creature* MoonInstanceScript::SpawnCreature(uint32 pEntry, float pX, float pY, f
 
 Creature* MoonInstanceScript::PushCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFaction)
 {
-    CreatureProto const* cp = sMySQLStore.GetCreatureProto(pEntry);
+    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(pEntry);
     Creature* c = mInstance->CreateCreature(pEntry);
 
     Arcemu::Util::ArcemuAssert(c != NULL);

@@ -423,7 +423,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
         {
             if (!(*itr)->IsCreature())
                 continue;
-            CreatureInfo const* inf = static_cast<Creature*>(*itr)->GetCreatureInfo();
+            CreatureProperties const* inf = static_cast<Creature*>(*itr)->GetCreatureProperties();
             if (!(1 << (inf->Type - 1) & GetProto()->TargetCreatureType))
                 continue;
         }
@@ -499,7 +499,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
         {
             if (!(*itr)->IsCreature())
                 continue;
-            CreatureInfo const* inf = static_cast<Creature*>(*itr)->GetCreatureInfo();
+            CreatureProperties const* inf = static_cast<Creature*>(*itr)->GetCreatureProperties();
             if (!(1 << (inf->Type - 1) & GetProto()->TargetCreatureType))
                 continue;
         }
@@ -561,7 +561,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
         {
             if (!(*itr)->IsCreature())
                 continue;
-            CreatureInfo const* inf = static_cast<Creature*>(*itr)->GetCreatureInfo();
+            CreatureProperties const* inf = static_cast<Creature*>(*itr)->GetCreatureProperties();
             if (!(1 << (inf->Type - 1) & GetProto()->TargetCreatureType))
                 continue;
         }
@@ -630,7 +630,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
         {
             if (!(*itr)->IsCreature())
                 continue;
-            CreatureInfo const* inf = static_cast<Creature*>(*itr)->GetCreatureInfo();
+            CreatureProperties const* inf = static_cast<Creature*>(*itr)->GetCreatureProperties();
             if (!(1 << (inf->Type - 1) & GetProto()->TargetCreatureType))
                 continue;
         }
@@ -683,7 +683,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
         {
             if (!(*itr)->IsCreature())
                 continue;
-            CreatureInfo const* inf = static_cast<Creature*>(*itr)->GetCreatureInfo();
+            CreatureProperties const* inf = static_cast<Creature*>(*itr)->GetCreatureProperties();
             if (!(1 << (inf->Type - 1) & GetProto()->TargetCreatureType))
                 continue;
         }
@@ -3207,7 +3207,7 @@ uint8 Spell::CanCast(bool tolerate)
             if (target->IsCreature())
             {
                 Creature* cp = static_cast<Creature*>(target);
-                uint32 type = cp->GetCreatureInfo()->Type;
+                uint32 type = cp->GetCreatureProperties()->Type;
                 uint32 targettype = GetProto()->TargetCreatureType;
 
                 if (!CanAttackCreatureType(targettype, type))
@@ -4045,7 +4045,7 @@ uint8 Spell::CanCast(bool tolerate)
                         else if (target->IsCreature())
                         {
                             Creature* c = static_cast<Creature*>(target);
-                            if (c->GetCreatureInfo()->Rank > ELITE_ELITE)
+                            if (c->GetCreatureProperties()->Rank > ELITE_ELITE)
                                 return SPELL_FAILED_HIGHLEVEL;
                         }
                     }
@@ -4095,7 +4095,7 @@ uint8 Spell::CanCast(bool tolerate)
                         result = PETTAME_DEAD;
                     else if (tame->IsPet())
                         result = PETTAME_CREATUREALREADYOWNED;
-                    else if (tame->GetCreatureInfo()->Type != UNIT_TYPE_BEAST || !tame->GetCreatureInfo()->Family || !(tame->GetCreatureInfo()->Flags1 & CREATURE_FLAG1_TAMEABLE))
+                    else if (tame->GetCreatureProperties()->Type != UNIT_TYPE_BEAST || !tame->GetCreatureProperties()->Family || !(tame->GetCreatureProperties()->Flags1 & CREATURE_FLAG1_TAMEABLE))
                         result = PETTAME_NOTTAMEABLE;
                     else if (!p_caster->isAlive() || p_caster->getClass() != HUNTER)
                         result = PETTAME_UNITSCANTTAME;
@@ -4109,7 +4109,7 @@ uint8 Spell::CanCast(bool tolerate)
                         result = PETTAME_CANTCONTROLEXOTIC;
                     else
                     {
-                        auto cf = sCreatureFamilyStore.LookupEntry(tame->GetCreatureInfo()->Family);
+                        auto cf = sCreatureFamilyStore.LookupEntry(tame->GetCreatureProperties()->Family);
                         if (cf && !cf->tameable)
                             result = PETTAME_NOTTAMEABLE;
                     }

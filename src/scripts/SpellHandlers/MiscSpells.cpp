@@ -84,7 +84,7 @@ bool Cannibalize(uint32 i, Spell* s)
         {
             if (static_cast< Creature* >((*itr))->getDeathState() == CORPSE)
             {
-                CreatureInfo const* cn = static_cast< Creature* >((*itr))->GetCreatureInfo();
+                CreatureProperties const* cn = static_cast< Creature* >((*itr))->GetCreatureProperties();
                 if (cn->Type == UNIT_TYPE_HUMANOID || cn->Type == UNIT_TYPE_UNDEAD)
                 {
                     if (s->p_caster->GetDistance2dSq((*itr)) < rad)

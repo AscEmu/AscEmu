@@ -32,7 +32,7 @@ class GuardianSummon : public Summon
         GuardianSummon(uint64 GUID);
         ~GuardianSummon();
 
-        void Load(CreatureProto const* proto, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot);
+        void Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot);
         void OnPushToWorld();
         void OnPreRemoveFromWorld();
 };

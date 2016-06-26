@@ -140,7 +140,7 @@ class ZerekethAI : public MoonScriptBossAI
                 {
                     creature = static_cast<Creature*>(obj);
 
-                    if (creature->GetCreatureInfo()->Id == 21101 && creature->isAlive())
+                    if (creature->GetCreatureProperties()->Id == 21101 && creature->isAlive())
                     {
                         creature->Despawn(0, 0);
                     }

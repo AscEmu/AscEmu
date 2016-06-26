@@ -113,9 +113,8 @@ GameObject* MapScriptInterface::SpawnGameObject(GameobjectSpawn* gs, bool AddToW
 
 Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, bool tmplate, uint32 Misc1, uint32 Misc2, uint32 phase)
 {
-    CreatureProto const* proto = sMySQLStore.GetCreatureProto(Entry);
-    CreatureInfo const* info = sMySQLStore.GetCreatureInfo(Entry);
-    if (proto == NULL || info == NULL)
+    CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(Entry);
+    if (creature_properties == nullptr)
     {
         return 0;
     }
@@ -123,7 +122,7 @@ Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, fl
     CreatureSpawn* sp = new CreatureSpawn;
     sp->entry = Entry;
     uint32 DisplayID = 0;
-    uint8 Gender = info->GenerateModelId(&DisplayID);
+    uint8 Gender = creature_properties->GenerateModelId(&DisplayID);
     sp->displayid = DisplayID;
     sp->form = 0;
     sp->id = 0;
@@ -134,7 +133,7 @@ Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, fl
     sp->o = cO;
     sp->emote_state = 0;
     sp->flags = 0;
-    sp->factionid = proto->Faction;
+    sp->factionid = creature_properties->Faction;
     sp->bytes0 = 0;
     sp->bytes1 = 0;
     sp->bytes2 = 0;
@@ -166,14 +165,13 @@ Creature* MapScriptInterface::SpawnCreature(CreatureSpawn* sp, bool AddToWorld)
     if (!sp)
         return NULL;
 
-    CreatureProto const* proto = sMySQLStore.GetCreatureProto(sp->entry);
-    CreatureInfo const* info = sMySQLStore.GetCreatureInfo(sp->entry);
-    if (proto == NULL || info == NULL)
+    CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(sp->entry);
+    if (creature_properties == nullptr)
     {
         return 0;
     }
 
-    uint8 Gender = info->GenerateModelId(&sp->displayid);
+    uint8 Gender = creature_properties->GenerateModelId(&sp->displayid);
     Creature* p = this->mapMgr.CreateCreature(sp->entry);
     ARCEMU_ASSERT(p != NULL);
     p->Load(sp, (uint32)NULL, NULL);

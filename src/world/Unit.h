@@ -74,7 +74,6 @@ class GameObject;
 class Pet;
 class Group;
 
-struct CreatureInfo;
 struct FactionDBC;
 
 typedef std::unordered_map<uint32, uint64> UniqueAuraTargetMap;

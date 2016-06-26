@@ -1011,14 +1011,18 @@ AlteracValley::AVNode::AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint3
     {
         // then we are probably a tower.
         const AVSpawnLocation* spi = g_initalGuardLocations[nodeid];
-        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(m_template->m_initialSpawnId);
-        CreatureProto const* cp = sMySQLStore.GetCreatureProto(m_template->m_initialSpawnId);
+        CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(m_template->m_initialSpawnId);
+        if (cp == nullptr)
+        {
+            Log.Debug("AlteracValley", "Invalid creature entry %u!", m_template->m_initialSpawnId);
+            return;
+        }
         Creature* sp;
-        Log.Debug("AlteracValley", "spawning guards at bunker %s of %s (%u)", m_template->m_name, ci->Name.c_str(), ci->Id);
+        Log.Debug("AlteracValley", "spawning guards at bunker %s of %s (%u)", m_template->m_name, cp->Name.c_str(), cp->Id);
 
         while (spi->x != 0.0f)
         {
-            sp = m_bg->GetMapMgr()->CreateCreature(ci->Id);
+            sp = m_bg->GetMapMgr()->CreateCreature(cp->Id);
             sp->Load(cp, spi->x, spi->y, spi->z, spi->o);
             sp->PushToWorld(m_bg->GetMapMgr());
             ++spi;

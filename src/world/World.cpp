@@ -446,8 +446,7 @@ bool World::SetInitialWorldSettings()
 
     sMySQLStore.LoadItemPagesTable();
     sMySQLStore.LoadItemsTable();
-    sMySQLStore.LoadCreatureNamesTable();
-    sMySQLStore.LoadCreatureProtoTable();
+    sMySQLStore.LoadCreaturePropertiesTable();
     sMySQLStore.LoadGameObjectNamesTable();
     sMySQLStore.LoadQuestsTable();
     sMySQLStore.LoadGameObjectQuestItemBindingTable();

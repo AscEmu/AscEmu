@@ -354,7 +354,7 @@ void AIInterface::_UpdateTargets()
 {
     if (m_Unit->IsPlayer() || (m_AIType != AITYPE_PET && disable_targeting))
         return;
-    if (static_cast<Creature*>(m_Unit)->GetCreatureInfo()->Type == UNIT_TYPE_CRITTER && static_cast<Creature*>(m_Unit)->GetType() != CREATURE_TYPE_GUARDIAN)
+    if (static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Type == UNIT_TYPE_CRITTER && static_cast<Creature*>(m_Unit)->GetType() != CREATURE_TYPE_GUARDIAN)
         return;
 
     if (m_Unit->GetMapMgr() == NULL)
@@ -878,7 +878,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                             break;
                         }
                         default:
-                            LOG_ERROR("AI Agents: Targettype of AI agent spell %u for creature %u not set", spellInfo->Id, static_cast< Creature* >(m_Unit)->GetCreatureInfo()->Id);
+                            LOG_ERROR("AI Agents: Targettype of AI agent spell %u for creature %u not set", spellInfo->Id, static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Id);
                     }
                     // CastSpell(m_Unit, spellInfo, targets);
                     if (m_nextSpell && m_nextSpell->cooldown)
@@ -933,8 +933,8 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                 std::string msg = "%s attempts to run away in fear!";
                 data << uint8(CHAT_MSG_CHANNEL);
                 data << uint32(LANG_UNIVERSAL);
-                data << uint32(static_cast< Creature* >(m_Unit)->GetCreatureInfo()->Name.size());
-                data << static_cast< Creature* >(m_Unit)->GetCreatureInfo()->Name;
+                data << uint32(static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Name.size());
+                data << static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Name;
                 data << uint64(0);
                 data << uint32(msg.size() + 1);
                 data << msg;
@@ -1493,9 +1493,9 @@ bool AIInterface::FindFriends(float dist)
         }
     }
 
-    uint32 family = static_cast<Creature*>(m_Unit)->GetCreatureInfo()->Type;
+    uint32 family = static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Type;
 
-    CreatureProto const* pt = static_cast< Creature* >(m_Unit)->GetProto();
+    CreatureProperties const* pt = static_cast< Creature* >(m_Unit)->GetCreatureProperties();
 
     uint32 summonguard = 0;
 
@@ -1524,8 +1524,8 @@ bool AIInterface::FindFriends(float dist)
         if (team == 1) guardid = zoneSpawn->HordeEntry;
         if (!guardid) return result;
 
-        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(guardid);
-        if (!ci)
+        CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(guardid);
+        if (!cp)
             return result;
 
         float x = m_Unit->GetPositionX() + ((RandomFloat(150.f) + 100.f) / 1000.0f);
@@ -1534,10 +1534,6 @@ bool AIInterface::FindFriends(float dist)
 
         if (fabs(z - m_Unit->GetPositionZ()) > 10.0f)
             z = m_Unit->GetPositionZ();
-
-
-        CreatureProto const* cp = sMySQLStore.GetCreatureProto(guardid);
-        if (!cp) return result;
 
         uint8 spawned = 0;
 
@@ -1634,9 +1630,9 @@ float AIInterface::_CalcAggroRange(Unit* target)
     }
 
     // Multiply by elite value
-    if (m_Unit->IsCreature() && static_cast<Creature*>(m_Unit)->GetCreatureInfo()->Rank > 0)
+    if (m_Unit->IsCreature() && static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Rank > 0)
     {
-        AggroRange *= (static_cast<Creature*>(m_Unit)->GetCreatureInfo()->Rank) * 1.50f;
+        AggroRange *= (static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Rank) * 1.50f;
     }
 
     // Cap Aggro range at 40.0f
@@ -2053,8 +2049,7 @@ bool AIInterface::showWayPoints(Player* pPlayer, bool Backwards)
             //Create
             Creature* pWayPoint = new Creature((uint64)HIGHGUID_TYPE_WAYPOINT << 32 | wp->id);
             pWayPoint->CreateWayPoint(wp->id, pPlayer->GetMapId(), wp->x, wp->y, wp->z, 0);
-            pWayPoint->SetCreatureInfo(c->GetCreatureInfo());
-            pWayPoint->SetCreatureProto(c->GetProto());
+            pWayPoint->SetCreatureProperties(c->GetCreatureProperties());
             pWayPoint->SetEntry(1);
             pWayPoint->SetScale(0.5f);
             if (Backwards)
@@ -3962,7 +3957,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
 
 
     // dismount if mounted
-    if (m_Unit->IsCreature() && !(static_cast<Creature*>(m_Unit)->GetCreatureInfo()->Flags1 & CREATURE_FLAG1_FIGHT_MOUNTED))
+    if (m_Unit->IsCreature() && !(static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Flags1 & CREATURE_FLAG1_FIGHT_MOUNTED))
         m_Unit->SetMount(0);
 
     if (m_AIState != STATE_ATTACKING)
@@ -3973,7 +3968,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
     {
         if (m_Unit->IsCreature())
         {
-            if (static_cast< Creature* >(m_Unit)->GetCreatureInfo()->Rank == 3)
+            if (static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Rank == 3)
             {
                 m_Unit->GetMapMgr()->AddCombatInProgress(m_Unit->GetGUID());
             }
@@ -4140,7 +4135,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
     {
         if (m_Unit->IsCreature())
         {
-            if (static_cast< Creature* >(m_Unit)->GetCreatureInfo()->Rank == 3)
+            if (static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Rank == 3)
             {
                 m_Unit->GetMapMgr()->RemoveCombatInProgress(m_Unit->GetGUID());
             }
@@ -4351,7 +4346,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 misc1)
 
         if (IS_PERSISTENT_INSTANCE(pInstance) && bossInfoMap != NULL)
         {
-            uint32 npcGuid = pCreature->GetProto()->Id;
+            uint32 npcGuid = pCreature->GetCreatureProperties()->Id;
             InstanceBossInfoMap::const_iterator bossInfo = bossInfoMap->find(npcGuid);
             if (bossInfo != bossInfoMap->end())
             {
@@ -4388,7 +4383,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 misc1)
     {
         if (m_Unit->IsCreature())
         {
-            if (static_cast< Creature* >(m_Unit)->GetCreatureInfo()->Rank == 3)
+            if (static_cast< Creature* >(m_Unit)->GetCreatureProperties()->Rank == 3)
             {
                 m_Unit->GetMapMgr()->RemoveCombatInProgress(m_Unit->GetGUID());
             }
@@ -4640,11 +4635,11 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
     if (GetDifficultyType() != 0)
     {
         uint32 creature_difficulty_entry = objmgr.GetCreatureDifficulty(entry, GetDifficultyType());
-        auto proto_difficulty = sMySQLStore.GetCreatureProto(creature_difficulty_entry);
+        auto properties_difficulty = sMySQLStore.GetCreatureProperties(creature_difficulty_entry);
         Creature* creature = static_cast<Creature*>(m_Unit);
-        if (proto_difficulty != nullptr)
+        if (properties_difficulty != nullptr)
         {
-            if (!proto_difficulty->isTrainingDummy && !m_Unit->IsVehicle())
+            if (!properties_difficulty->isTrainingDummy && !m_Unit->IsVehicle())
             {
                 m_Unit->GetAIInterface()->SetAllowedToEnterCombat(true);
             }
@@ -4654,59 +4649,59 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
                 m_Unit->GetAIInterface()->SetAIType(AITYPE_PASSIVE);
             }
 
-            m_walkSpeed = m_Unit->m_base_walkSpeed = proto_difficulty->walk_speed;
-            m_runSpeed = m_Unit->m_base_runSpeed = proto_difficulty->run_speed;
-            m_flySpeed = proto_difficulty->fly_speed;
+            m_walkSpeed = m_Unit->m_base_walkSpeed = properties_difficulty->walk_speed;
+            m_runSpeed = m_Unit->m_base_runSpeed = properties_difficulty->run_speed;
+            m_flySpeed = properties_difficulty->fly_speed;
             
-            m_Unit->SetScale(proto_difficulty->Scale);
+            m_Unit->SetScale(properties_difficulty->Scale);
 
-            uint32 health = proto_difficulty->MinHealth + RandomUInt(proto_difficulty->MaxHealth - proto_difficulty->MinHealth);
+            uint32 health = properties_difficulty->MinHealth + RandomUInt(properties_difficulty->MaxHealth - properties_difficulty->MinHealth);
 
             m_Unit->SetHealth(health);
             m_Unit->SetMaxHealth(health);
             m_Unit->SetBaseHealth(health);
 
-            m_Unit->SetMaxPower(POWER_TYPE_MANA, proto_difficulty->Mana);
-            m_Unit->SetBaseMana(proto_difficulty->Mana);
-            m_Unit->SetPower(POWER_TYPE_MANA, proto_difficulty->Mana);
+            m_Unit->SetMaxPower(POWER_TYPE_MANA, properties_difficulty->Mana);
+            m_Unit->SetBaseMana(properties_difficulty->Mana);
+            m_Unit->SetPower(POWER_TYPE_MANA, properties_difficulty->Mana);
 
-            m_Unit->setLevel(proto_difficulty->MinLevel + (RandomUInt(proto_difficulty->MaxLevel - proto_difficulty->MinLevel)));
+            m_Unit->setLevel(properties_difficulty->MinLevel + (RandomUInt(properties_difficulty->MaxLevel - properties_difficulty->MinLevel)));
 
             for (uint8 i = 0; i < 7; ++i)
-                m_Unit->SetResistance(i, proto_difficulty->Resistances[i]);
+                m_Unit->SetResistance(i, properties_difficulty->Resistances[i]);
 
-            m_Unit->SetBaseAttackTime(MELEE, proto_difficulty->AttackTime);
+            m_Unit->SetBaseAttackTime(MELEE, properties_difficulty->AttackTime);
 
-            m_Unit->SetMinDamage(proto_difficulty->MinDamage);
-            m_Unit->SetMaxDamage(proto_difficulty->MaxDamage);
+            m_Unit->SetMinDamage(properties_difficulty->MinDamage);
+            m_Unit->SetMaxDamage(properties_difficulty->MaxDamage);
 
-            m_Unit->SetBaseAttackTime(RANGED, proto_difficulty->RangedAttackTime);
-            m_Unit->SetMinRangedDamage(proto_difficulty->RangedMinDamage);
-            m_Unit->SetMaxRangedDamage(proto_difficulty->RangedMaxDamage);
+            m_Unit->SetBaseAttackTime(RANGED, properties_difficulty->RangedAttackTime);
+            m_Unit->SetMinRangedDamage(properties_difficulty->RangedMinDamage);
+            m_Unit->SetMaxRangedDamage(properties_difficulty->RangedMaxDamage);
 
 
-            m_Unit->SetFaction(proto_difficulty->Faction);
+            m_Unit->SetFaction(properties_difficulty->Faction);
 
             if (!(m_Unit->m_factionDBC->RepListId == -1 && m_Unit->m_faction->HostileMask == 0 && m_Unit->m_faction->FriendlyMask == 0))
             {
                 m_Unit->GetAIInterface()->m_canCallForHelp = true;
             }
 
-            if (proto_difficulty->CanRanged == 1)
+            if (properties_difficulty->CanRanged == 1)
                 m_Unit->GetAIInterface()->m_canRangedAttack = true;
             else
                 m_Unit->m_aiInterface->m_canRangedAttack = false;
 
-            m_Unit->SetBoundingRadius(proto_difficulty->BoundingRadius);
+            m_Unit->SetBoundingRadius(properties_difficulty->BoundingRadius);
 
-            m_Unit->SetCombatReach(proto_difficulty->CombatReach);
+            m_Unit->SetCombatReach(properties_difficulty->CombatReach);
 
-            m_Unit->SetUInt32Value(UNIT_NPC_FLAGS, proto_difficulty->NPCFLags);
+            m_Unit->SetUInt32Value(UNIT_NPC_FLAGS, properties_difficulty->NPCFLags);
 
             // resistances
-            for (uint32 j = 0; j < 7; j++)
+            for (uint8 j = 0; j < 7; ++j)
                 m_Unit->BaseResistance[j] = m_Unit->GetResistance(j);
-            for (uint32 j = 0; j < 5; j++)
+            for (uint8 j = 0; j < 5; ++j)
                 m_Unit->BaseStats[j] = m_Unit->GetStat(j);
 
             m_Unit->BaseDamage[0] = m_Unit->GetMinDamage();
@@ -4716,15 +4711,15 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_Unit->BaseRangedDamage[0] = m_Unit->GetMinRangedDamage();
             m_Unit->BaseRangedDamage[1] = m_Unit->GetMaxRangedDamage();
 
-            creature->BaseAttackType = proto_difficulty->AttackType;
+            creature->BaseAttackType = properties_difficulty->AttackType;
 
             //guard
-            if (proto_difficulty->guardtype == GUARDTYPE_CITY)
+            if (properties_difficulty->guardtype == GUARDTYPE_CITY)
                 m_Unit->m_aiInterface->m_isGuard = true;
             else
                 m_Unit->m_aiInterface->m_isGuard = false;
 
-            if (proto_difficulty->guardtype == GUARDTYPE_NEUTRAL)
+            if (properties_difficulty->guardtype == GUARDTYPE_NEUTRAL)
                 m_Unit->m_aiInterface->m_isNeutralGuard = true;
             else
                 m_Unit->m_aiInterface->m_isNeutralGuard = false;
@@ -4732,7 +4727,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_Unit->m_aiInterface->UpdateSpeeds(); // use speed from creature_proto_difficulty.
 
             //invisibility
-            m_Unit->m_invisFlag = static_cast<uint8>(proto_difficulty->invisibility_type);
+            m_Unit->m_invisFlag = static_cast<uint8>(properties_difficulty->invisibility_type);
             if (m_Unit->m_invisFlag > 0)
                 m_Unit->m_invisible = true;
             else
@@ -4740,12 +4735,12 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 
             if (m_Unit->IsVehicle())
             {
-                m_Unit->AddVehicleComponent(proto_difficulty->Id, proto_difficulty->vehicleid);
+                m_Unit->AddVehicleComponent(properties_difficulty->Id, properties_difficulty->vehicleid);
                 m_Unit->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
                 m_Unit->setAItoUse(false);
             }
 
-            if (proto_difficulty->rooted)
+            if (properties_difficulty->rooted)
                 m_Unit->Root();
         }
     }

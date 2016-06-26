@@ -1369,7 +1369,7 @@ inline bool TargetTypeCheck(Object* obj, uint32 ReqCreatureTypeMask)
 
     if (obj->IsCreature())
     {
-        CreatureInfo const* inf = static_cast< Creature* >(obj)->GetCreatureInfo();
+        CreatureProperties const* inf = static_cast< Creature* >(obj)->GetCreatureProperties();
         if (!(1 << (inf->Type - 1) & ReqCreatureTypeMask))
             return false;
     }
@@ -1984,12 +1984,12 @@ class SERVER_DECL Spell : public EventableObject
 
         virtual void SpellEffectSummon(uint32 i);
         void SpellEffectSummonWild(uint32 i);
-        void SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v);
-        void SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v);
-        void SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v);
-        void SpellEffectSummonPossessed(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v);
-        void SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v);
-        void SpellEffectSummonVehicle(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v);
+        void SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
+        void SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
+        void SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
+        void SpellEffectSummonPossessed(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
+        void SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
+        void SpellEffectSummonVehicle(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v);
         void SpellEffectLeap(uint32 i);
         void SpellEffectEnergize(uint32 i);
         void SpellEffectWeaponDmgPerc(uint32 i);

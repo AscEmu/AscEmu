@@ -81,13 +81,13 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     if (pVictim->GetCreatedByGUID() != 0)
         return 0;
 
-    CreatureInfo const* victimI = static_cast<Creature*>(pVictim)->GetCreatureInfo();
-
+    CreatureProperties const* victimI = static_cast<Creature*>(pVictim)->GetCreatureProperties();
     if (victimI == nullptr)
         return 0;
 
     if (victimI->Type == UNIT_TYPE_CRITTER)
         return 0;
+
     uint32 VictimLvl = pVictim->getLevel();
     uint32 AttackerLvl = pAttacker->getLevel();
 
@@ -607,7 +607,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
 
         if (!pVictim->IsPlayer())
         {
-            uint32 creatType = static_cast<Creature*>(pVictim)->GetCreatureInfo()->Type;
+            uint32 creatType = static_cast<Creature*>(pVictim)->GetCreatureProperties()->Type;
             ap += (float)pAttacker->CreatureRangedAttackPowerMod[creatType];
 
             if (pAttacker->IsPlayer())
@@ -671,7 +671,7 @@ uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type
 
         if (!pVictim->IsPlayer())
         {
-            uint32 creatType = static_cast<Creature*>(pVictim)->GetCreatureInfo()->Type;
+            uint32 creatType = static_cast<Creature*>(pVictim)->GetCreatureProperties()->Type;
             ap += (float)pAttacker->CreatureAttackPowerMod[creatType];
 
             if (pAttacker->IsPlayer())

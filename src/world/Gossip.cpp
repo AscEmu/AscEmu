@@ -309,7 +309,7 @@ void Arcemu::Gossip::Vendor::OnHello(Object* pObject, Player* Plr)
     if (sMySQLStore.GetNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
-    VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(creature->GetProto()->Id);
+    VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(creature->GetCreatureProperties()->Id);
 
     Gossip::Menu menu(creature->GetGUID(), Text, Plr->GetSession()->language);
 
@@ -337,7 +337,7 @@ void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
     if (sMySQLStore.GetNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
-    std::string name = trainer->GetCreatureInfo()->Name;
+    std::string name = trainer->GetCreatureProperties()->Name;
     std::string::size_type pos = name.find(" ");      // only take first name
 
     if (pos != std::string::npos)
@@ -357,7 +357,7 @@ void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
 
             if (trainer->isVendor())
             {
-                VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(trainer->GetProto()->Id);
+                VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(trainer->GetCreatureProperties()->Id);
                 if (Plr->CanBuyAt(vendor))
                     menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 2);
             }
@@ -425,7 +425,7 @@ void Arcemu::Gossip::InnKeeper::OnHello(Object* pObject, Player* Plr)
     //inn keepers can sell stuff
     if (innkeeper->isVendor())
     {
-        VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(innkeeper->GetProto()->Id);
+        VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(innkeeper->GetCreatureProperties()->Id);
         if (Plr->CanBuyAt(vendor))
             menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 2);
     }
@@ -505,7 +505,7 @@ void Arcemu::Gossip::TabardDesigner::OnHello(Object* pObject, Player* Plr)
 
     if (chartergiver->isVendor())
     {
-        VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(chartergiver->GetProto()->Id);
+        VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(chartergiver->GetCreatureProperties()->Id);
         if (Plr->CanBuyAt(vendor))
             menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 3);
     }
@@ -600,7 +600,7 @@ void Arcemu::Gossip::ClassTrainer::OnHello(Object* pObject, Player* Plr)
         {
             menu.setTextID(traininfo->Can_Train_Gossip_TextId);
             std::string itemname = Plr->GetSession()->LocalizedGossipOption(ISEEK);
-            std::string name = trainer->GetCreatureInfo()->Name;
+            std::string name = trainer->GetCreatureProperties()->Name;
 
             std::string::size_type pos = name.find(" ");      // only take first name
 

@@ -27,9 +27,9 @@ PossessedSummon::PossessedSummon(uint64 GUID) : Summon(GUID)
 PossessedSummon::~PossessedSummon()
 {}
 
-void PossessedSummon::Load(CreatureProto const* proto, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
+void PossessedSummon::Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
 {
-    Summon::Load(proto, owner, position, spellid, summonslot);
+    Summon::Load(properties_, owner, position, spellid, summonslot);
 
     setLevel(owner->getLevel());
     setAItoUse(false);

@@ -259,10 +259,10 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
 
     uint32 count = 0;
 
-    MySQLDataStore::CreatureInfoContainer const* its = sMySQLStore.GetCreatureNamesStore();
-    for (MySQLDataStore::CreatureInfoContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
+    MySQLDataStore::CreaturePropertiesContainer const* its = sMySQLStore.GetCreaturePropertiesStore();
+    for (MySQLDataStore::CreaturePropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        CreatureInfo const* it = sMySQLStore.GetCreatureInfo(itr->second.Id);
+        CreatureProperties const* it = sMySQLStore.GetCreatureProperties(itr->second.Id);
         if (it == nullptr)
             continue;
 

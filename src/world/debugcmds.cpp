@@ -820,9 +820,8 @@ bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_s
     if (!count || !npcid)
         return false;
 
-    CreatureProto const* cp = sMySQLStore.GetCreatureProto(npcid);
-    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(npcid);
-    if (cp == NULL || ci == NULL)
+    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(npcid);
+    if (cp == nullptr)
         return false;
 
     MapMgr* m = m_session->GetPlayer()->GetMapMgr();

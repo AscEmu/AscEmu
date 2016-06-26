@@ -91,13 +91,13 @@ void WorldSession::SendBattlegroundList(Creature* pCreature, uint32 mapid)
     uint32 t = BATTLEGROUND_WARSONG_GULCH;
     if (mapid == 0)
     {
-        if (pCreature->GetCreatureInfo()->SubName.compare("Arena") != 0)
+        if (pCreature->GetCreatureProperties()->SubName.compare("Arena") != 0)
         {
             t = BATTLEGROUND_ARENA_2V2;
         }
         else
         {
-            BGMaster const* battlemaster = sMySQLStore.GetBattleMaster(pCreature->GetProto()->Id);
+            BGMaster const* battlemaster = sMySQLStore.GetBattleMaster(pCreature->GetCreatureProperties()->Id);
             if (battlemaster != NULL)
                 t = battlemaster->bg;
         }

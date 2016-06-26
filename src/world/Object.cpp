@@ -385,11 +385,11 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
                 flags2 |= MOVEFLAG_NO_COLLISION;        //0x400 Zack : Teribus the Cursed had flag 400 instead of 800 and he is flying all the time
             if (uThis->GetAIInterface()->onGameobject)
                 flags2 |= MOVEFLAG_ROOTED;
-            if (uThis->GetProto()->extra_a9_flags)
+            if (uThis->GetCreatureProperties()->extra_a9_flags)
             {
                 //do not send shit we can't honor
 #define UNKNOWN_FLAGS2 (0x00002000 | 0x04000000 | 0x08000000)
-                uint32 inherit = uThis->GetProto()->extra_a9_flags & UNKNOWN_FLAGS2;
+                uint32 inherit = uThis->GetCreatureProperties()->extra_a9_flags & UNKNOWN_FLAGS2;
                 flags2 |= inherit;
             }
         }
@@ -544,7 +544,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         uint32 vehicleid = 0;
 
         if (IsCreature())
-            vehicleid = static_cast< Creature* >(this)->GetProto()->vehicleid;
+            vehicleid = static_cast< Creature* >(this)->GetCreatureProperties()->vehicleid;
         else
             if (IsPlayer())
                 vehicleid = static_cast< Player* >(this)->mountvehicleid;

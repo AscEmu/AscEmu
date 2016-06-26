@@ -815,12 +815,10 @@ class MalganisAI : public CreatureAIScript
                         if (entry == 31126 || entry == 31127 || entry == 28167 || entry == 28169)
                         {
                             citizen = _unit->GetMapMgr()->CreatureStorage[i];
-                            CreatureProto const* cp = sMySQLStore.GetCreatureProto(27737);//risen zombie
-                            CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(27737);
-                            Creature* c = NULL;
-                            if (cp && ci)
+                            CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(27737);//risen zombie
+                            if (cp)
                             {
-                                c = _unit->GetMapMgr()->CreateCreature(27737);
+                                Creature* c = _unit->GetMapMgr()->CreateCreature(27737);
                                 if (c)
                                 {
                                     //position is guessed
@@ -1181,10 +1179,9 @@ class ArthasAI : public CreatureAIScript
                 {
                     //we need that tricky animation here
                     //spawn Mal'Ganis
-                    CreatureProto const* cp = sMySQLStore.GetCreatureProto(26533);
-                    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(26533);
-                    Creature* c = NULL;
-                    if (cp && ci)
+                    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(26533);
+                    Creature* c = nullptr;
+                    if (cp)
                     {
                         c = _unit->GetMapMgr()->CreateCreature(26533);
                         if (c)

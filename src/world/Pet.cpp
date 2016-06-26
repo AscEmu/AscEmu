@@ -120,9 +120,9 @@ void Pet::SetNameForEntry(uint32 entry)
     }
 }
 
-bool Pet::CreateAsSummon(uint32 entry, CreatureInfo const* ci, Creature* created_from_creature, Player* owner, SpellEntry* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec, bool dismiss_old_pet)
+bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* created_from_creature, Player* owner, SpellEntry* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec, bool dismiss_old_pet)
 {
-    if (ci == NULL || owner == NULL)
+    if (ci == nullptr || owner == nullptr)
     {
         return false;//the caller will delete us.
     }
@@ -136,7 +136,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureInfo const* ci, Creature* created
     m_OwnerGuid = m_Owner->GetGUID();
     m_phase = m_Owner->GetPhase();
     m_PetNumber = m_Owner->GeneratePetNumber();
-    creature_info = ci;
+    creature_properties = ci;
     myFamily = sCreatureFamilyStore.LookupEntry(ci->Family);
 
     float x, y, z;
@@ -181,7 +181,7 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureInfo const* ci, Creature* created
 
     if (created_from_creature == NULL)
     {
-        m_name.assign(creature_info->Name);
+        m_name.assign(creature_properties->Name);
 
         if (created_by_spell != NULL)
         {
@@ -443,7 +443,7 @@ void Pet::SendTalentsToOwner()
     size_t pos = data.wpos();
     data << uint8(0);                   // Amount of known talents (will be filled later)
 
-    DBC::Structures::CreatureFamilyEntry const* cfe = sCreatureFamilyStore.LookupEntry(GetCreatureInfo()->Family);
+    DBC::Structures::CreatureFamilyEntry const* cfe = sCreatureFamilyStore.LookupEntry(GetCreatureProperties()->Family);
     if (!cfe || static_cast<int32>(cfe->talenttree) < 0)
         return;
 
@@ -587,12 +587,11 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     m_OwnerGuid = m_Owner->GetGUID();
     m_phase = m_Owner->GetPhase();
     mPi = pi;
-    creature_info = sMySQLStore.GetCreatureInfo(mPi->entry);
-    if (creature_info == nullptr)
+    creature_properties = sMySQLStore.GetCreatureProperties(mPi->entry);
+    if (creature_properties == nullptr)
         return;
 
-    proto = sMySQLStore.GetCreatureProto(mPi->entry);
-    myFamily = sCreatureFamilyStore.LookupEntry(creature_info->Family);
+    myFamily = sCreatureFamilyStore.LookupEntry(creature_properties->Family);
 
     Create(owner->GetMapId(), owner->GetPositionX() + 2, owner->GetPositionY() + 2, owner->GetPositionZ(), owner->GetOrientation());
 
@@ -662,8 +661,8 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     }
     else
     {
-        SetBoundingRadius(proto->BoundingRadius);
-        SetCombatReach(proto->CombatReach);
+        SetBoundingRadius(creature_properties->BoundingRadius);
+        SetCombatReach(creature_properties->CombatReach);
         SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE | UNIT_FLAG_COMBAT);      // why combat ??
         SetPower(POWER_TYPE_HAPPINESS, PET_HAPPINESS_UPDATE_VALUE >> 1);                    //happiness
         SetMaxPower(POWER_TYPE_HAPPINESS, 1000000);
@@ -686,8 +685,8 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
 
     setLevel(mPi->level);
 
-    SetDisplayId(creature_info->Male_DisplayID);
-    SetNativeDisplayId(creature_info->Male_DisplayID);
+    SetDisplayId(creature_properties->Male_DisplayID);
+    SetNativeDisplayId(creature_properties->Male_DisplayID);
 
     EventModelChange();
 
@@ -736,8 +735,9 @@ void Pet::InitializeMe(bool first)
     GetAIInterface()->SetUnitToFollow(m_Owner);
     GetAIInterface()->SetFollowDistance(3.0f);
 
-    SetCreatureInfo(sMySQLStore.GetCreatureInfo(GetEntry()));
-    proto = sMySQLStore.GetCreatureProto(GetEntry());
+    creature_properties = sMySQLStore.GetCreatureProperties(GetEntry());
+    if (creature_properties == nullptr)
+        return;
 
     m_Owner->AddSummon(this);
     m_Owner->SetSummonedUnitGUID(GetGUID());
@@ -745,9 +745,7 @@ void Pet::InitializeMe(bool first)
     SetUInt32Value(UNIT_FIELD_PETNUMBER, GetUIdFromGUID());
     SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, (uint32)UNIXTIME);
 
-    auto creature_info = GetCreatureInfo();
-    if (creature_info != nullptr)
-        myFamily = sCreatureFamilyStore.LookupEntry(creature_info->Family);
+    myFamily = sCreatureFamilyStore.LookupEntry(creature_properties->Family);
 
     SetPetDiet();
     _setFaction();
@@ -1026,11 +1024,11 @@ void Pet::UpdateSpellList(bool showLearnSpells)
     uint32 s = 0;       // SkillLine 1
     uint32 s2 = 0;      // SkillLine 2
 
-    if (proto->spelldataid != 0)
+    if (creature_properties->spelldataid != 0)
     {
-        auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(proto->spelldataid);
+        auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(creature_properties->spelldataid);
 
-        for (uint8 i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; ++i)
         {
             if (creature_spell_data == nullptr)
                 continue;
@@ -1046,9 +1044,9 @@ void Pet::UpdateSpellList(bool showLearnSpells)
         }
     }
 
-    for (uint8 i = 0; i < 4; i++)
+    for (uint8 i = 0; i < 4; ++i)
     {
-        uint32 spellid = proto->AISpells[i];
+        uint32 spellid = creature_properties->AISpells[i];
         if (spellid != 0)
         {
             SpellEntry* sp = dbcSpell.LookupEntry(spellid);
@@ -1057,7 +1055,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
         }
     }
 
-    if (GetCreatureInfo()->Family == 0 && Summon)
+    if (GetCreatureProperties()->Family == 0 && Summon)
     {
         std::map<uint32, std::set<uint32> >::iterator it1;
         std::set<uint32>::iterator it2;
@@ -1075,7 +1073,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
     else
     {
         // Get Creature family from DB (table creature_names, field family), load the skill line from CreatureFamily.dbc for use with SkillLineAbiliby.dbc entry
-        DBC::Structures::CreatureFamilyEntry const* f = sCreatureFamilyStore.LookupEntry(GetCreatureInfo()->Family);
+        DBC::Structures::CreatureFamilyEntry const* f = sCreatureFamilyStore.LookupEntry(GetCreatureProperties()->Family);
         if (f)
         {
             s = f->skilline;
@@ -1424,7 +1422,7 @@ void Pet::ApplySummonLevelAbilities()
 
     if (stat_index < 0)
     {
-        LOG_ERROR("PETSTAT: No stat index found for entry %u, `%s`! Using 5 as a default.", GetEntry(), GetCreatureInfo()->Name.c_str());
+        LOG_ERROR("PETSTAT: No stat index found for entry %u, `%s`! Using 5 as a default.", GetEntry(), GetCreatureProperties()->Name.c_str());
         stat_index = 5;
     }
 
@@ -1516,7 +1514,7 @@ void Pet::ApplySummonLevelAbilities()
 
 void Pet::ApplyPetLevelAbilities()
 {
-    uint32 pet_family = GetCreatureInfo()->Family;
+    uint32 pet_family = GetCreatureProperties()->Family;
     uint32 level = getLevel();
     if (level > PLAYER_LEVEL_CAP)
         level = PLAYER_LEVEL_CAP;

@@ -28,7 +28,7 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
 
     uint32 attackerscount = creature->GetAIInterface()->getAITargetsCount();
 
-    BlueSystemMessage(m_session, "Showing creature moveinfo for %s", creature->GetCreatureInfo()->Name.c_str());
+    BlueSystemMessage(m_session, "Showing creature moveinfo for %s", creature->GetCreatureProperties()->Name.c_str());
     SystemMessage(m_session, "=== Facing ===");
     SystemMessage(m_session, "Creature is in front: %u", creature_in_front);
     SystemMessage(m_session, "In front of the creature: %u", in_front_of_creature);

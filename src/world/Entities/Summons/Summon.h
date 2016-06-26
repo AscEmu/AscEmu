@@ -49,7 +49,7 @@ class Summon : public Creature
         //  None
         //
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        virtual void Load(CreatureProto const* proto, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot);
+        virtual void Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot);
         void OnPushToWorld();
         void OnPreRemoveFromWorld();
         bool SummonedToSlot()

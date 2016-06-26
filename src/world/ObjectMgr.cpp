@@ -990,7 +990,7 @@ void ObjectMgr::LoadAchievementRewards()
         //check mail data before item for report including wrong item case
         if (reward.sender)
         {
-            if (!sMySQLStore.GetCreatureInfo(reward.sender))
+            if (!sMySQLStore.GetCreatureProperties(reward.sender))
             {
                 sLog.Error("ObjectMgr", "achievement_reward %u has invalid creature entry %u as sender, mail reward skipped.", entry, reward.sender);
                 reward.sender = 0;
@@ -3109,7 +3109,7 @@ void ObjectMgr::LoadInstanceReputationModifiers()
 bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim)
 {
     uint32 team = pPlayer->GetTeam();
-    bool is_boss;
+
     if (!pVictim->IsCreature())
         return false;
 
@@ -3117,8 +3117,8 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim
     if (itr == m_reputation_instance.end())
         return false;
 
-    is_boss = false;//TO< Creature* >(pVictim)->GetCreatureInfo() ? ((Creature*)pVictim)->GetCreatureInfo()->Rank : 0;
-    if (static_cast< Creature* >(pVictim)->GetProto()->isBoss)
+    bool is_boss = false;
+    if (static_cast< Creature* >(pVictim)->GetCreatureProperties()->isBoss)
         is_boss = true;
 
     // Apply the bonuses as normal.
@@ -4095,16 +4095,16 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
             {
                 Field* fields = result->Fetch();
                 uint32 entry = fields[0].GetUInt32();
-                CreatureProto const* creature_proto = sMySQLStore.GetCreatureProto(entry);
-                if (creature_proto == nullptr)
+                CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(entry);
+                if (creature_properties == nullptr)
                 {
                     Log.Error("ObjectStorage", "Invalid creature_entry %u in table creature_initial_equip!", entry);
                     continue;
                 }
 
-                const_cast<CreatureProto*>(creature_proto)->itemslot_1 = fields[1].GetUInt32();
-                const_cast<CreatureProto*>(creature_proto)->itemslot_2 = fields[2].GetUInt32();
-                const_cast<CreatureProto*>(creature_proto)->itemslot_3 = fields[3].GetUInt32();
+                const_cast<CreatureProperties*>(creature_properties)->itemslot_1 = fields[1].GetUInt32();
+                const_cast<CreatureProperties*>(creature_properties)->itemslot_2 = fields[2].GetUInt32();
+                const_cast<CreatureProperties*>(creature_properties)->itemslot_3 = fields[3].GetUInt32();
 
             } while (result->NextRow());
 
@@ -4116,7 +4116,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
     if (Config.MainConfig.GetBoolDefault("Server", "LoadAIAgents", true))
     {
         QueryResult* result = WorldDatabase.Query("SELECT * FROM ai_agents");
-        CreatureProto const* cn;
+        CreatureProperties const* cn;
 
         if (result != NULL)
         {
@@ -4128,7 +4128,7 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
             {
                 Field* fields = result->Fetch();
                 entry = fields[0].GetUInt32();
-                cn = sMySQLStore.GetCreatureProto(entry);
+                cn = sMySQLStore.GetCreatureProperties(entry);
                 spe = dbcSpell.LookupEntryForced(fields[6].GetUInt32());
                 if (spe == NULL)
                 {
@@ -4221,37 +4221,37 @@ void ObjectMgr::LoadExtraCreatureProtoStuff()
 
                 if (sp->agent == AGENT_RANGED)
                 {
-                    const_cast<CreatureProto*>(cn)->m_canRangedAttack = true;
+                    const_cast<CreatureProperties*>(cn)->m_canRangedAttack = true;
                     delete sp;
                     sp = NULL;
                 }
                 else if (sp->agent == AGENT_FLEE)
                 {
-                    const_cast<CreatureProto*>(cn)->m_canFlee = true;
+                    const_cast<CreatureProperties*>(cn)->m_canFlee = true;
                     if (sp->floatMisc1)
-                        const_cast<CreatureProto*>(cn)->m_canFlee = (sp->floatMisc1 > 0.0f ? true : false);
+                        const_cast<CreatureProperties*>(cn)->m_canFlee = (sp->floatMisc1 > 0.0f ? true : false);
                     else
-                        const_cast<CreatureProto*>(cn)->m_fleeHealth = 0.2f;
+                        const_cast<CreatureProperties*>(cn)->m_fleeHealth = 0.2f;
 
                     if (sp->Misc2)
-                        const_cast<CreatureProto*>(cn)->m_fleeDuration = sp->Misc2;
+                        const_cast<CreatureProperties*>(cn)->m_fleeDuration = sp->Misc2;
                     else
-                        const_cast<CreatureProto*>(cn)->m_fleeDuration = 10000;
+                        const_cast<CreatureProperties*>(cn)->m_fleeDuration = 10000;
 
                     delete sp;
                     sp = NULL;
                 }
                 else if (sp->agent == AGENT_CALLFORHELP)
                 {
-                    const_cast<CreatureProto*>(cn)->m_canCallForHelp = true;
+                    const_cast<CreatureProperties*>(cn)->m_canCallForHelp = true;
                     if (sp->floatMisc1)
-                        const_cast<CreatureProto*>(cn)->m_callForHelpHealth = 0.2f;
+                        const_cast<CreatureProperties*>(cn)->m_callForHelpHealth = 0.2f;
                     delete sp;
                     sp = NULL;
                 }
                 else
                 {
-                    const_cast<CreatureProto*>(cn)->spells.push_back(sp);
+                    const_cast<CreatureProperties*>(cn)->spells.push_back(sp);
                 }
 
             } while (result->NextRow());

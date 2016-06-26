@@ -29,11 +29,11 @@ Summon::Summon(uint64 GUID) : Creature(GUID)
 Summon::~Summon()
 {}
 
-void Summon::Load(CreatureProto const* proto, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
+void Summon::Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
 {
-    ARCEMU_ASSERT(owner != NULL);
+    ARCEMU_ASSERT(owner != nullptr);
 
-    Creature::Load(proto, position.x, position.y, position.z, position.o);
+    Creature::Load(properties_, position.x, position.y, position.z, position.o);
 
     SetFaction(owner->GetFaction());
     Phase(PHASE_SET, owner->GetPhase());

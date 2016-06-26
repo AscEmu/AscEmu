@@ -2872,7 +2872,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
         if (pVictim->IsCreature())
         {
             Creature* c = static_cast<Creature*>(pVictim);
-            if (c->GetCreatureInfo()->Rank == ELITE_WORLDBOSS)
+            if (c->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
             {
                 victim_skill = std::max(victim_skill, ((int32)this->getLevel() + 3) * 5);       //used max to avoid situation when lowlvl hits boss.
             }
@@ -2941,7 +2941,7 @@ uint32 Unit::GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, Spel
         if (IsCreature())
         {
             Creature* c = static_cast<Creature*>(this);
-            if (c->GetCreatureInfo()->Rank == ELITE_WORLDBOSS)
+            if (c->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
                 self_skill = std::max(self_skill, ((int32)pVictim->getLevel() + 3) * 5);        //used max to avoid situation when lowlvl hits boss.
         }
     }
@@ -3166,7 +3166,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
         victim_skill = pVictim->getLevel() * 5;
         if (pVictim->IsCreature())
         {
-            if (c->GetCreatureInfo()->Rank == ELITE_WORLDBOSS)
+            if (c->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
             {
                 victim_skill = std::max(victim_skill, ((int32)getLevel() + 3) * 5);     //used max to avoid situation when lowlvl hits boss.
             }
@@ -3241,7 +3241,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
         if (IsCreature())
         {
             Creature* c = static_cast<Creature*>(this);
-            if (c->GetCreatureInfo()->Rank == ELITE_WORLDBOSS)
+            if (c->GetCreatureProperties()->Rank == ELITE_WORLDBOSS)
                 self_skill = std::max(self_skill, ((int32)pVictim->getLevel() + 3) * 5);    //used max to avoid situation when lowlvl hits boss.
         }
         crit = 5.0f;        //will be modified later
@@ -3714,7 +3714,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
                                 dmg.full_damage += dmg.full_damage * static_cast<Player*>(this)->m_modphyscritdmgPCT / 100;
                             }
                             if (!pVictim->IsPlayer())
-                                dmg.full_damage += float2int32(dmg.full_damage * static_cast<Player*>(this)->IncreaseCricticalByTypePCT[static_cast<Creature*>(pVictim)->GetCreatureInfo()->Type]);
+                                dmg.full_damage += float2int32(dmg.full_damage * static_cast<Player*>(this)->IncreaseCricticalByTypePCT[static_cast<Creature*>(pVictim)->GetCreatureProperties()->Type]);
                             //sLog.outString("DEBUG: After IncreaseCricticalByTypePCT: %u" , dmg.full_damage);
                         }
 
@@ -3735,7 +3735,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability,
                             //sLog.outString("DEBUG: After Resilience check: %u" , dmg.full_damage);
                         }
 
-                        if (pVictim->IsCreature() && static_cast<Creature*>(pVictim)->GetCreatureInfo()->Rank != ELITE_WORLDBOSS)
+                        if (pVictim->IsCreature() && static_cast<Creature*>(pVictim)->GetCreatureProperties()->Rank != ELITE_WORLDBOSS)
                             pVictim->Emote(EMOTE_ONESHOT_WOUNDCRITICAL);
 
                         vproc |= PROC_ON_CRIT_HIT_VICTIM;
@@ -5154,7 +5154,7 @@ int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellEntry* spellInfo, int32 base_dm
     //////////////////////////////////////////////////////////////////////////////////////////
     //by victim type
     if (!pVictim->IsPlayer() && caster->IsPlayer())
-        plus_damage += static_cast<float>(static_cast<Player*>(caster)->IncreaseDamageByType[static_cast<Creature*>(pVictim)->GetCreatureInfo()->Type]);
+        plus_damage += static_cast<float>(static_cast<Player*>(caster)->IncreaseDamageByType[static_cast<Creature*>(pVictim)->GetCreatureProperties()->Type]);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     //Spell Damage Bonus Modifications
@@ -5257,10 +5257,8 @@ void Unit::Emote(EmoteType emote)
 void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, const char* msg)
 {
     size_t UnitNameLength = 0, MessageLength = 0;
-    CreatureInfo const* ci;
-
-    ci = sMySQLStore.GetCreatureInfo(entry);
-    if (!ci)
+    CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(entry);
+    if (ci == nullptr)
         return;
 
     UnitNameLength = ci->Name.size();
@@ -7850,7 +7848,7 @@ bool Unit::isLootable()
 {
     if (IsTagged() && !IsPet() && !(IsPlayer() && !IsInBg()) && (GetCreatedByGUID() == 0) && !IsVehicle())
     {
-        if (IsCreature() && !lootmgr.HasLootForCreature(GetEntry()) && (sMySQLStore.GetCreatureProto(GetEntry())->money == 0))  // Since it is inworld we can safely assume there is a proto cached with this Id!
+        if (IsCreature() && !lootmgr.HasLootForCreature(GetEntry()) && (sMySQLStore.GetCreatureProperties(GetEntry())->money == 0))  // Since it is inworld we can safely assume there is a proto cached with this Id!
             return false;
 
         return true;
@@ -8179,7 +8177,7 @@ float Unit::GetCriticalDamageBonusForSpell(Object* victim, SpellEntry* spell, fl
         amount -= amount * dmg_reduction_pct;
     }
 
-    if (victim->IsCreature() && static_cast<Creature*>(victim)->GetCreatureInfo()->Rank != ELITE_WORLDBOSS)
+    if (victim->IsCreature() && static_cast<Creature*>(victim)->GetCreatureProperties()->Rank != ELITE_WORLDBOSS)
         static_cast<Creature*>(victim)->Emote(EMOTE_ONESHOT_WOUNDCRITICAL);
 
     return amount;

@@ -219,7 +219,7 @@ class LuaUnit
         switch (ptr->GetTypeId())
         {
             case TYPEID_UNIT:
-                lua_pushstring(L, static_cast<Creature*>(ptr)->GetCreatureInfo() ? static_cast<Creature*>(ptr)->GetCreatureInfo()->Name.c_str() : "Unknown");
+                lua_pushstring(L, static_cast<Creature*>(ptr)->GetCreatureProperties() ? static_cast<Creature*>(ptr)->GetCreatureProperties()->Name.c_str() : "Unknown");
                 break;
 
             case TYPEID_PLAYER:
@@ -557,16 +557,14 @@ class LuaUnit
             lua_pushnil(L);
             return 1;
         }
-        CreatureProto const* p = sMySQLStore.GetCreatureProto(entry);
-        CreatureInfo const* i = sMySQLStore.GetCreatureInfo(entry);
-
-        if (p == NULL || i == NULL)
+        CreatureProperties const* p = sMySQLStore.GetCreatureProperties(entry);
+        if (p == nullptr)
         {
             lua_pushnil(L);
             return 1;
         }
         Creature* pCreature = ptr->GetMapMgr()->CreateCreature(entry);
-        if (pCreature == NULL)
+        if (pCreature == nullptr)
         {
             lua_pushnil(L);
             return 1;
@@ -731,9 +729,9 @@ class LuaUnit
             }
             else
             {
-                if (static_cast<Creature*>(ptr)->GetProto())
+                if (static_cast<Creature*>(ptr)->GetCreatureProperties())
                 {
-                    RET_INT(static_cast<Creature*>(ptr)->GetProto()->Faction);
+                    RET_INT(static_cast<Creature*>(ptr)->GetCreatureProperties()->Faction);
                 }
                 else
                 {
@@ -855,7 +853,7 @@ class LuaUnit
             pCreature->m_custom_waypoint_map->push_back(wp);
         else
         {
-            sLog.outDetail("WayPoint created by a Lua script for Creature ID %u wasn't added due to an error occurred in CreateWaypoint()", pCreature->GetCreatureInfo()->Id);
+            sLog.outDetail("WayPoint created by a Lua script for Creature ID %u wasn't added due to an error occurred in CreateWaypoint()", pCreature->GetCreatureProperties()->Id);
             delete wp;
         }
         return 0;
@@ -3017,8 +3015,8 @@ class LuaUnit
         if ((ptr == NULL) || (entry == 0) || (lvl == 0))
             return 0;
 
-        CreatureProto const* cp = sMySQLStore.GetCreatureProto(entry);
-        if (cp == NULL)
+        CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(entry);
+        if (cp == nullptr)
             return 0;
 
         LocationVector v(ptr->GetPosition());
@@ -4484,12 +4482,12 @@ class LuaUnit
         if (guidtype == HIGHGUID_TYPE_UNIT)
         {
             Unit* pUnit = plr->GetMapMgr()->GetUnit(guid);
-            CreatureProto const* proto = static_cast<Creature*>(pUnit)->GetProto();
+            CreatureProperties const* creature_properties = static_cast<Creature*>(pUnit)->GetCreatureProperties();
             switch (loot_type)
             {
                 default:
                     lootmgr.FillCreatureLoot(&pUnit->loot, pUnit->GetEntry(), pUnit->GetMapMgr() ? (pUnit->GetMapMgr()->iInstanceMode ? true : false) : false);
-                    pUnit->loot.gold = proto ? proto->money : 0;
+                    pUnit->loot.gold = creature_properties ? creature_properties->money : 0;
                     loot_type2 = 1;
                     break;
                 case 2:
@@ -6041,15 +6039,11 @@ class LuaUnit
         if ((ptr->GetCurrentVehicle() != NULL) && (!ptr->IsPlayer() || !ptr->IsVehicle()))
             return 0;
 
-        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(creature_entry);
-        if (ci == NULL)
+        CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(creature_entry);
+        if (cp == nullptr)
             return 0;
 
-        CreatureProto const* cp = sMySQLStore.GetCreatureProto(creature_entry);
-        if (cp == NULL)
-            return 0;
-
-        Player *p = NULL;
+        Player* p = nullptr;
         if (ptr->IsPlayer())
             p = static_cast<Player*>(ptr);
 
@@ -6058,7 +6052,7 @@ class LuaUnit
 
         LocationVector v(ptr->GetPosition());
 
-        Creature *c = ptr->GetMapMgr()->CreateCreature(cp->Id);
+        Creature* c = ptr->GetMapMgr()->CreateCreature(cp->Id);
         c->Load(cp, v.x, v.y, v.z, v.o);
         c->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
         c->PushToWorld(ptr->GetMapMgr());
@@ -6117,15 +6111,13 @@ class LuaUnit
 
         uint32 creature_entry = luaL_checkinteger(L, 1);
 
-        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(creature_entry);
-        CreatureProto const* cp = sMySQLStore.GetCreatureProto(creature_entry);
-
-        if ((ci == NULL) || (cp == NULL))
+        CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(creature_entry);
+        if (cp == nullptr)
             return 0;
 
-        Unit *u = v->GetOwner();
+        Unit* u = v->GetOwner();
 
-        Creature *c = u->GetMapMgr()->CreateCreature(creature_entry);
+        Creature* c = u->GetMapMgr()->CreateCreature(creature_entry);
         c->Load(cp, u->GetPositionX(), u->GetPositionY(), u->GetPositionZ(), u->GetOrientation());
         c->PushToWorld(u->GetMapMgr());
         c->EnterVehicle(u->GetGUID(), 1);

@@ -754,7 +754,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                     dmg += float2int32((0.15f * sph) + (0.15f * ap));
                     if (unitTarget && unitTarget->IsCreature())
                     {
-                        uint32 type = static_cast<Creature*>(unitTarget)->GetCreatureInfo()->Type;
+                        uint32 type = static_cast<Creature*>(unitTarget)->GetCreatureProperties()->Type;
                         if (type == UNIT_TYPE_UNDEAD || type == UNIT_TYPE_DEMON)
                             force_crit = true;
                     }
@@ -1273,7 +1273,7 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
             */
 
             //Spells with Mechanic also add other ugly auras, but if the main aura is the effect --> immune to whole spell
-            if (c->GetProto()->modImmunities)
+            if (c->GetCreatureProperties()->modImmunities)
             {
                 bool immune = false;
                 if (m_spellInfo->MechanicsType)
@@ -1281,51 +1281,51 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
                     switch (m_spellInfo->MechanicsType)
                     {
                         case MECHANIC_CHARMED:
-                            if (c->GetProto()->modImmunities & 1)
+                            if (c->GetCreatureProperties()->modImmunities & 1)
                                 immune = true;
                             break;
                         case MECHANIC_DISORIENTED:
-                            if (c->GetProto()->modImmunities & 2)
+                            if (c->GetCreatureProperties()->modImmunities & 2)
                                 immune = true;
                             break;
                         case MECHANIC_FLEEING:
-                            if (c->GetProto()->modImmunities & 4)
+                            if (c->GetCreatureProperties()->modImmunities & 4)
                                 immune = true;
                             break;
                         case MECHANIC_ROOTED:
-                            if (c->GetProto()->modImmunities & 8)
+                            if (c->GetCreatureProperties()->modImmunities & 8)
                                 immune = true;
                             break;
                         case MECHANIC_SILENCED:
-                            if (c->GetProto()->modImmunities & 16)
+                            if (c->GetCreatureProperties()->modImmunities & 16)
                                 immune = true;
                             break;
                         case MECHANIC_STUNNED:
-                            if (c->GetProto()->modImmunities & 32)
+                            if (c->GetCreatureProperties()->modImmunities & 32)
                                 immune = true;
                             break;
                         case MECHANIC_POLYMORPHED:
-                            if (c->GetProto()->modImmunities & 64)
+                            if (c->GetCreatureProperties()->modImmunities & 64)
                                 immune = true;
                             break;
                         case MECHANIC_BANISHED:
-                            if (c->GetProto()->modImmunities & 128)
+                            if (c->GetCreatureProperties()->modImmunities & 128)
                                 immune = true;
                             break;
                         case MECHANIC_SAPPED:
-                            if (c->GetProto()->modImmunities & 256)
+                            if (c->GetCreatureProperties()->modImmunities & 256)
                                 immune = true;
                             break;
                         case MECHANIC_FROZEN:
-                            if (c->GetProto()->modImmunities & 512)
+                            if (c->GetCreatureProperties()->modImmunities & 512)
                                 immune = true;
                             break;
                         case MECHANIC_ENSNARED:
-                            if (c->GetProto()->modImmunities & 1024)
+                            if (c->GetCreatureProperties()->modImmunities & 1024)
                                 immune = true;
                             break;
                         case MECHANIC_ASLEEP:
-                            if (c->GetProto()->modImmunities & 2048)
+                            if (c->GetCreatureProperties()->modImmunities & 2048)
                                 immune = true;
                             break;
                     }
@@ -1336,43 +1336,43 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
                     switch (m_spellInfo->EffectApplyAuraName[i])
                     {
                         case SPELL_AURA_MOD_CONFUSE:
-                            if (c->GetProto()->modImmunities & 2)
+                            if (c->GetCreatureProperties()->modImmunities & 2)
                                 immune = true;
                             break;
                         case SPELL_AURA_MOD_FEAR:
-                            if (c->GetProto()->modImmunities & 4)
+                            if (c->GetCreatureProperties()->modImmunities & 4)
                                 immune = true;
                             break;
                         case SPELL_AURA_MOD_TAUNT:
-                            if (c->GetProto()->modImmunities & 4096)
+                            if (c->GetCreatureProperties()->modImmunities & 4096)
                                 immune = true;
                             break;
                         case SPELL_AURA_MOD_STUN:
-                            if (c->GetProto()->modImmunities & 32)
+                            if (c->GetCreatureProperties()->modImmunities & 32)
                                 immune = true;
                             break;
                         case SPELL_AURA_MOD_SILENCE:
-                            if ((c->GetProto()->modImmunities & 32768) || (c->GetProto()->modImmunities & 16))
+                            if ((c->GetCreatureProperties()->modImmunities & 32768) || (c->GetCreatureProperties()->modImmunities & 16))
                                 immune = true;
                             break;
                         case SPELL_AURA_MOD_DECREASE_SPEED:
-                            if (c->GetProto()->modImmunities & 8192)
+                            if (c->GetCreatureProperties()->modImmunities & 8192)
                                 immune = true;
                             break;
                         case SPELL_AURA_INCREASE_CASTING_TIME_PCT:
-                            if (c->GetProto()->modImmunities & 16384)
+                            if (c->GetCreatureProperties()->modImmunities & 16384)
                                 immune = true;
                             break;
                         case SPELL_AURA_MOD_LANGUAGE: //hacky way to prefer that the COT icon is set to mob
-                            if (c->GetProto()->modImmunities & 16384)
+                            if (c->GetCreatureProperties()->modImmunities & 16384)
                                 immune = true;
                             break;
                         case SPELL_AURA_MOD_HEALING_DONE_PERCENT:
-                            if (c->GetProto()->modImmunities & 65536)
+                            if (c->GetCreatureProperties()->modImmunities & 65536)
                                 immune = true;
                             break;
                         case SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE:
-                            if (c->GetProto()->modImmunities & 131072)
+                            if (c->GetCreatureProperties()->modImmunities & 131072)
                                 immune = true;
                             break;
                     }
@@ -2354,10 +2354,9 @@ void Spell::SpellEffectSummon(uint32 i)
 
     uint32 entry = m_spellInfo->EffectMiscValue[i];
 
-    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(entry);
-    CreatureProto const* cp = sMySQLStore.GetCreatureProto(entry);
+    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(entry);
 
-    if ((ci == NULL) || (cp == NULL))
+    if (cp == nullptr)
     {
         LOG_ERROR("Spell %u (%s) tried to summon creature %u without database data", m_spellInfo->Id, m_spellInfo->Name, entry);
         return;
@@ -2463,9 +2462,8 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
         return;
 
     uint32 cr_entry = GetProto()->EffectMiscValue[i];
-    CreatureProto const* proto = sMySQLStore.GetCreatureProto(cr_entry);
-    CreatureInfo const* info = sMySQLStore.GetCreatureInfo(cr_entry);
-    if (!proto || !info)
+    CreatureProperties const* properties = sMySQLStore.GetCreatureProperties(cr_entry);
+    if (properties == nullptr)
     {
         sLog.outError("Warning : Missing summon creature template %u used by spell %u!", cr_entry, GetProto()->Id);
         return;
@@ -2492,10 +2490,10 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
 
         ASSERT(p != NULL);
 
-        p->Load(proto, tempx, tempy, z);
+        p->Load(properties, tempx, tempy, z);
         p->SetZoneId(m_caster->GetZoneId());
 
-        if (p->GetProto()->Faction == 35)
+        if (p->GetCreatureProperties()->Faction == 35)
         {
             p->SetSummonedByGUID(m_caster->GetGUID());
             p->SetCreatedByGUID(m_caster->GetGUID());
@@ -2507,7 +2505,7 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
         }
         else
         {
-            p->SetFaction(proto->Faction);
+            p->SetFaction(properties->Faction);
         }
         p->PushToWorld(m_caster->GetMapMgr());
         //make sure they will be desummoned (roxor)
@@ -2515,7 +2513,7 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
     }
 }
 
-void Spell::SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v)
+void Spell::SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
 
     if (g_caster != NULL)
@@ -2536,11 +2534,11 @@ void Spell::SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertie
         v.x += x;
         v.y += y;
 
-        Summon* s = u_caster->GetMapMgr()->CreateSummon(proto->Id, SUMMONTYPE_GUARDIAN);
+        Summon* s = u_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_GUARDIAN);
         if (s == NULL)
             return;
 
-        s->Load(proto, u_caster, v, m_spellInfo->Id, spe->Slot - 1);
+        s->Load(properties_, u_caster, v, m_spellInfo->Id, spe->Slot - 1);
         s->GetAIInterface()->SetUnitToFollowAngle(followangle);
         s->PushToWorld(u_caster->GetMapMgr());
 
@@ -2561,7 +2559,7 @@ void Spell::SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertie
     }
 }
 
-void Spell::SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v)
+void Spell::SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
     if (p_caster == NULL)
         return;
@@ -2578,7 +2576,7 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPrope
         count = damage;
 
     // We know for sure that this will suceed because we checked in Spell::SpellEffectSummon
-    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(proto->Id);
+    CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(properties_->Id);
 
     float angle_for_each_spawn = -M_PI_FLOAT * 2 / damage;
 
@@ -2592,9 +2590,9 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPrope
         v.x += x;
         v.y += y;
 
-        Pet* pet = objmgr.CreatePet(proto->Id);
+        Pet* pet = objmgr.CreatePet(properties_->Id);
 
-        if (!pet->CreateAsSummon(proto->Id, ci, NULL, p_caster, m_spellInfo, 1, GetDuration(), &v, false))
+        if (!pet->CreateAsSummon(properties_->Id, ci, NULL, p_caster, m_spellInfo, 1, GetDuration(), &v, false))
         {
             pet->DeleteMe();
             pet = NULL;
@@ -2605,7 +2603,7 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPrope
     }
 }
 
-void Spell::SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v)
+void Spell::SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
     if (u_caster == NULL)
         return;
@@ -2620,10 +2618,10 @@ void Spell::SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEn
     if (fabs(landdiff) <= 15)
         v.z = landh;
 
-    Summon* s = u_caster->GetMapMgr()->CreateSummon(proto->Id, SUMMONTYPE_TOTEM);
+    Summon* s = u_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_TOTEM);
     if (s == NULL)
         return;
-    s->Load(proto, u_caster, v, m_spellInfo->Id, spe->Slot - 1);
+    s->Load(properties_, u_caster, v, m_spellInfo->Id, spe->Slot - 1);
     s->SetMaxHealth(damage);
     s->SetHealth(damage);
     s->PushToWorld(u_caster->GetMapMgr());
@@ -2638,7 +2636,7 @@ void Spell::SpellEffectSummonTotem(uint32 i, DBC::Structures::SummonPropertiesEn
         sEventMgr.AddEvent(static_cast< Object* >(s), &Object::Delete, EVENT_SUMMON_EXPIRE, 60 * 60 * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
-void Spell::SpellEffectSummonPossessed(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v)
+void Spell::SpellEffectSummonPossessed(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
     if (p_caster == NULL)
         return;
@@ -2646,21 +2644,21 @@ void Spell::SpellEffectSummonPossessed(uint32 i, DBC::Structures::SummonProperti
     p_caster->DismissActivePets();
     p_caster->RemoveFieldSummon();
 
-    Summon* s = p_caster->GetMapMgr()->CreateSummon(proto->Id, SUMMONTYPE_POSSESSED);
+    Summon* s = p_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_POSSESSED);
     if (s == NULL)
         return;
 
     v.x += (3 * cos(M_PI_FLOAT / 2 + v.o));
     v.y += (3 * cos(M_PI_FLOAT / 2 + v.o));
 
-    s->Load(proto, p_caster, v, m_spellInfo->Id, spe->Slot - 1);
+    s->Load(properties_, p_caster, v, m_spellInfo->Id, spe->Slot - 1);
     s->SetCreatedBySpell(m_spellInfo->Id);
     s->PushToWorld(p_caster->GetMapMgr());
 
     p_caster->Possess(s, 1000);
 }
 
-void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector & v)
+void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector & v)
 {
     if (u_caster == NULL)
         return;
@@ -2673,39 +2671,39 @@ void Spell::SpellEffectSummonCompanion(uint32 i, DBC::Structures::SummonProperti
 
         auto creature = static_cast< Creature* >(critter);
 
-        uint32 currententry = creature->GetCreatureInfo()->Id;
+        uint32 currententry = creature->GetCreatureProperties()->Id;
 
         creature->RemoveFromWorld(false, true);
         u_caster->SetSummonedCritterGUID(0);
 
         // Before WOTLK when you casted the companion summon spell the second time it removed the companion
         // Customized servers or old databases could still use this method
-        if (proto->Id == currententry)
+        if (properties_->Id == currententry)
             return;
     }
 
-    auto summon = u_caster->GetMapMgr()->CreateSummon(proto->Id, SUMMONTYPE_COMPANION);
+    auto summon = u_caster->GetMapMgr()->CreateSummon(properties_->Id, SUMMONTYPE_COMPANION);
     if (summon == nullptr)
         return;
 
-    summon->Load(proto, u_caster, v, m_spellInfo->Id, spe->Slot - 1);
+    summon->Load(properties_, u_caster, v, m_spellInfo->Id, spe->Slot - 1);
     summon->SetCreatedBySpell(m_spellInfo->Id);
     summon->GetAIInterface()->SetFollowDistance(GetRadius(i));
     summon->PushToWorld(u_caster->GetMapMgr());
     u_caster->SetSummonedCritterGUID(summon->GetGUID());
 }
 
-void Spell::SpellEffectSummonVehicle(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProto const* proto, LocationVector& v)
+void Spell::SpellEffectSummonVehicle(uint32 i, DBC::Structures::SummonPropertiesEntry const* spe, CreatureProperties const* properties_, LocationVector& v)
 {
     if (u_caster == NULL)
         return;
 
     // If it has no vehicle id, then we can't really do anything with it as a vehicle :/
-    if ((proto->vehicleid == 0) && (p_caster == nullptr))
+    if ((properties_->vehicleid == 0) && (p_caster == nullptr))
         return;
 
-    Creature* c = u_caster->GetMapMgr()->CreateCreature(proto->Id);
-    c->Load(proto, v.x, v.y, v.z, v.o);
+    Creature* c = u_caster->GetMapMgr()->CreateCreature(properties_->Id);
+    c->Load(properties_, v.x, v.y, v.z, v.o);
     c->Phase(PHASE_SET, u_caster->GetPhase());
     c->SetCreatedBySpell(m_spellInfo->Id);
     c->SetCreatedByGUID(u_caster->GetGUID());
@@ -3770,12 +3768,12 @@ void Spell::SpellEffectTameCreature(uint32 i)
     // Remove target
     tame->GetAIInterface()->HandleEvent(EVENT_LEAVECOMBAT, p_caster, 0);
     Pet* pPet = objmgr.CreatePet(tame->GetEntry());
-    if (!pPet->CreateAsSummon(tame->GetEntry(), tame->GetCreatureInfo(), tame, p_caster, NULL, 2, 0))
+    if (!pPet->CreateAsSummon(tame->GetEntry(), tame->GetCreatureProperties(), tame, p_caster, NULL, 2, 0))
     {
         pPet->DeleteMe();//CreateAsSummon() returns false if an error occurred.
         pPet = NULL;
     }
-    tame->Despawn(0, tame->GetProto()->RespawnTime);
+    tame->Despawn(0, tame->GetCreatureProperties()->RespawnTime);
 }
 
 void Spell::SpellEffectSummonPet(uint32 i) //summon - pet
@@ -3826,7 +3824,7 @@ void Spell::SpellEffectSummonPet(uint32 i) //summon - pet
     if (old)
         old->Dismiss();
 
-    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(GetProto()->EffectMiscValue[i]);
+    CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(GetProto()->EffectMiscValue[i]);
     if (ci)
     {
         if (p_caster->getClass() == WARLOCK)
@@ -4077,7 +4075,7 @@ void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
         {
             unitTarget->GetAIInterface()->AttackReaction(u_caster, 1, m_spellInfo->Id);
             Creature* c = static_cast< Creature* >(unitTarget);
-            if (c->GetProto()->modImmunities & 32768)
+            if (c->GetCreatureProperties()->modImmunities & 32768)
                 return;
         }
     }
@@ -4145,7 +4143,7 @@ void Spell::SpellEffectPickpocket(uint32 i) // pickpocket
         return;
 
     Creature* target = static_cast< Creature* >(unitTarget);
-    if (target->IsPickPocketed() || (target->GetCreatureInfo()->Type != UNIT_TYPE_HUMANOID))
+    if (target->IsPickPocketed() || (target->GetCreatureProperties()->Type != UNIT_TYPE_HUMANOID))
     {
         SendCastResult(SPELL_FAILED_TARGET_NO_POCKETS);
         return;
@@ -4153,7 +4151,7 @@ void Spell::SpellEffectPickpocket(uint32 i) // pickpocket
 
     lootmgr.FillPickpocketingLoot(&static_cast< Creature* >(unitTarget)->loot, unitTarget->GetEntry());
 
-    uint32 _rank = static_cast< Creature* >(unitTarget)->GetCreatureInfo()->Rank;
+    uint32 _rank = static_cast< Creature* >(unitTarget)->GetCreatureProperties()->Rank;
     unitTarget->loot.gold = float2int32((_rank + 1) * unitTarget->getLevel() * (RandomUInt(5) + 1) * sWorld.getRate(RATE_MONEY));
 
     p_caster->SendLoot(unitTarget->GetGUID(), LOOT_PICKPOCKETING, unitTarget->GetMapId());
@@ -4230,7 +4228,7 @@ void Spell::SpellEffectUseGlyph(uint32 i)
 
 void Spell::SpellEffectHealMechanical(uint32 i)
 {
-    if (!unitTarget || !unitTarget->IsCreature() || static_cast< Creature* >(unitTarget)->GetCreatureInfo()->Type != UNIT_TYPE_MECHANICAL)
+    if (!unitTarget || !unitTarget->IsCreature() || static_cast< Creature* >(unitTarget)->GetCreatureProperties()->Type != UNIT_TYPE_MECHANICAL)
         return;
 
     Heal(damage);
@@ -4532,7 +4530,7 @@ void Spell::SpellEffectSkinning(uint32 i)
         cr->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
         cr->Skinned = true;
 
-        if (cr->GetCreatureInfo()->Rank > 0)
+        if (cr->GetCreatureProperties()->Rank > 0)
             DetermineSkillUp(skill, sk < lvl * 5 ? sk / 5 : lvl, 2);
         else
             DetermineSkillUp(skill, sk < lvl * 5 ? sk / 5 : lvl, 1);
@@ -5196,17 +5194,21 @@ void Spell::SpellEffectStartTaxi(uint32 i)
 
     if (playerTarget->IsTeamHorde())
     {
-        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(taxinode->horde_mount);
-        if (!ci) return;
+        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
+        if (!ci)
+            return;
         modelid = ci->Male_DisplayID;
-        if (!modelid) return;
+        if (!modelid)
+            return;
     }
     else
     {
-        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(taxinode->alliance_mount);
-        if (!ci) return;
+        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
+        if (!ci)
+            return;
         modelid = ci->Male_DisplayID;
-        if (!modelid) return;
+        if (!modelid)
+            return;
     }
 
     playerTarget->TaxiStart(taxipath, modelid, 0);
@@ -5425,8 +5427,8 @@ void Spell::SpellEffectForgetSpecialization(uint32 i)
 
 void Spell::SpellEffectKillCredit(uint32 i)
 {
-    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(GetProto()->EffectMiscValue[i]);
-    if (playerTarget != NULL && ci != NULL)
+    CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(GetProto()->EffectMiscValue[i]);
+    if (playerTarget != NULL && ci != nullptr)
         sQuestMgr._OnPlayerKill(playerTarget, GetProto()->EffectMiscValue[i], false);
 }
 
@@ -5481,7 +5483,8 @@ void Spell::SpellEffectCreatePet(uint32 i)
 
     if (playerTarget->GetSummon())
         playerTarget->GetSummon()->Remove(true, true);
-    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(GetProto()->EffectMiscValue[i]);
+
+    CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(GetProto()->EffectMiscValue[i]);
     if (ci)
     {
         Pet* pPet = objmgr.CreatePet(GetProto()->EffectMiscValue[i]);

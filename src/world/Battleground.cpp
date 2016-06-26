@@ -403,7 +403,7 @@ GameObject* CBattleground::SpawnGameObject(uint32 entry, LocationVector &v, uint
 
 Creature* CBattleground::SpawnCreature(uint32 entry, float x, float y, float z, float o, uint32 faction)
 {
-    CreatureProto const* cp = sMySQLStore.GetCreatureProto(entry);
+    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(entry);
     Creature* c = m_mapMgr->CreateCreature(entry);
 
     Arcemu::Util::ArcemuAssert(c != nullptr);
@@ -841,7 +841,7 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
     if (horde > 1)
         horde = 1;
 
-    CreatureInfo const* pInfo = sMySQLStore.GetCreatureInfo(13116 + horde);
+    CreatureProperties const* pInfo = sMySQLStore.GetCreatureProperties(13116 + horde);
     if (pInfo == nullptr)
     {
         return nullptr;
@@ -892,8 +892,7 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
 
     pCreature->DisableAI();
 
-    pCreature->SetCreatureInfo(pInfo);
-    pCreature->SetCreatureProto(sMySQLStore.GetCreatureProto(pInfo->Id));
+    pCreature->SetCreatureProperties(sMySQLStore.GetCreatureProperties(pInfo->Id));
 
     pCreature->PushToWorld(m_mapMgr);
     return pCreature;

@@ -174,7 +174,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
 
         void OnLoad()
         {
-            _unit->SetDisplayId(_unit->GetCreatureInfo()->Female_DisplayID);
+            _unit->SetDisplayId(_unit->GetCreatureProperties()->Female_DisplayID);
             _unit->SetBaseAttackTime(MELEE, 2000);
 
             if (_unit->IsSummon())

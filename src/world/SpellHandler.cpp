@@ -285,7 +285,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
             {
                 Creature* c = static_cast< Creature* >(target_unit);
 
-                sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetProto()->Id, c->GetCreatureInfo()->Name.c_str());
+                sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetCreatureProperties()->Id, c->GetCreatureProperties()->Name.c_str());
                 LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
                 return;
             }
@@ -310,7 +310,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
         {
             Creature* c = static_cast< Creature* >(target_unit);
 
-            sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetProto()->Id, c->GetCreatureInfo()->Name.c_str());
+            sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetCreatureProperties()->Id, c->GetCreatureProperties()->Name.c_str());
             LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
             return;
         }
@@ -606,9 +606,9 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
             {
                 Creature* c = static_cast< Creature* >(nc);
 
-                if (c->GetProto()->spelldataid != 0)
+                if (c->GetCreatureProperties()->spelldataid != 0)
                 {
-                    auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(c->GetProto()->spelldataid);
+                    auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(c->GetCreatureProperties()->spelldataid);
 
                     if (creature_spell_data != nullptr)
                     {
@@ -623,9 +623,9 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
                     }
                 }
 
-                for (uint8 i = 0; i < 4; i++)
+                for (uint8 i = 0; i < 4; ++i)
                 {
-                    if (c->GetProto()->AISpells[i] == spellid)
+                    if (c->GetCreatureProperties()->AISpells[i] == spellid)
                     {
                         check = true;
                         break;

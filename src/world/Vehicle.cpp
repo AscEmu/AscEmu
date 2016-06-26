@@ -573,12 +573,8 @@ void Vehicle::InstallAccessories()
         if (seats[accessory->seat]->HasPassenger())
             EjectPassengerFromSeat(accessory->seat);
 
-        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(accessory->accessory_entry);
-        if (ci == NULL)
-            continue;
-
-        CreatureProto const* cp = sMySQLStore.GetCreatureProto(accessory->accessory_entry);
-        if (cp == NULL)
+        CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(accessory->accessory_entry);
+        if (cp == nullptr)
             continue;
 
         Creature* c = owner->GetMapMgr()->CreateCreature(accessory->accessory_entry);

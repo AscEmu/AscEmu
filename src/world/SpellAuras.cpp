@@ -4486,7 +4486,7 @@ void Aura::SpellAuraTransform(bool apply)
         return;
 
     uint32 displayId = 0;
-    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(mod->m_miscValue);
+    CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(mod->m_miscValue);
 
     if (ci)
         displayId = ci->Male_DisplayID;
@@ -5265,15 +5265,14 @@ void Aura::SpellAuraMounted(bool apply)
 
         m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
 
-        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(mod->m_miscValue);
-        if (!ci) return;
+        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(mod->m_miscValue);
+        if (ci == nullptr)
+            return;
 
         uint32 displayId = ci->Male_DisplayID;
-        if (!displayId) return;
-
-        CreatureProto const* cp = sMySQLStore.GetCreatureProto(mod->m_miscValue);
-        if (cp == NULL)
+        if (!displayId)
             return;
+
         p_target->m_MountSpellId = m_spellProto->Id;
         p_target->flying_aura = 0;
         m_target->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, displayId);
@@ -5284,11 +5283,11 @@ void Aura::SpellAuraMounted(bool apply)
 
         p_target->DismissActivePets();
 
-        p_target->mountvehicleid = cp->vehicleid;
+        p_target->mountvehicleid = ci->vehicleid;
 
         if (p_target->mountvehicleid != 0)
         {
-            p_target->AddVehicleComponent(cp->Id, cp->vehicleid);
+            p_target->AddVehicleComponent(ci->Id, ci->vehicleid);
 
             WorldPacket data(SMSG_PLAYER_VEHICLE_DATA, 12);
             data << p_target->GetNewGUID();
@@ -5624,7 +5623,7 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
     {
         if (m_target->IsUnit())
         {
-            if (m_target->IsCreature() && static_cast<Creature*>(m_target)->GetCreatureInfo()->Type == UNIT_TYPE_CRITTER)
+            if (m_target->IsCreature() && static_cast<Creature*>(m_target)->GetCreatureProperties()->Type == UNIT_TYPE_CRITTER)
                 return;
 
             if (m_target->IsDead())

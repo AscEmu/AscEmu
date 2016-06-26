@@ -11,8 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 extern SERVER_DECL std::set<std::string> CreatureSpawnsTables;
 extern SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
 extern SERVER_DECL std::set<std::string> GameObjectNamesTables;
-extern SERVER_DECL std::set<std::string> CreatureNamesTables;
-extern SERVER_DECL std::set<std::string> CreatureProtoTables;
+extern SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 extern SERVER_DECL std::set<std::string> ItemsTables;
 extern SERVER_DECL std::set<std::string> QuestsTables;
 
@@ -26,8 +25,7 @@ public:
     //maps
     typedef std::unordered_map<uint32, ItemPage> ItemPageContainer;
     typedef std::unordered_map<uint32, ItemPrototype> ItemPrototypeContainer;
-    typedef std::unordered_map<uint32, CreatureInfo> CreatureInfoContainer;
-    typedef std::unordered_map<uint32, CreatureProto> CreatureProtoContainer;
+    typedef std::unordered_map<uint32, CreatureProperties> CreaturePropertiesContainer;
     typedef std::unordered_map<uint32, GameObjectInfo> GameObjectNamesContainer;
     typedef std::unordered_map<uint32, Quest> QuestContainer;
 
@@ -56,10 +54,8 @@ public:
     ItemPrototype const* GetItemProto(uint32 entry);
     ItemPrototypeContainer const* GetItemPrototypeStore() { return &_itemPrototypeStore; }
 
-    CreatureInfo const* GetCreatureInfo(uint32 entry);
-    CreatureInfoContainer const* GetCreatureNamesStore() { return &_creatureNamesStore; }
-    CreatureProto const* GetCreatureProto(uint32 entry);
-    CreatureProtoContainer const* GetCreatureProtoStore() { return &_creatureProtoStore; }
+    CreatureProperties const* GetCreatureProperties(uint32 entry);
+    CreaturePropertiesContainer const* GetCreaturePropertiesStore() { return &_creaturePropertiesStore; }
 
     GameObjectInfo const* GetGameObjectInfo(uint32 entry);
     GameObjectNamesContainer const* GetGameObjectNamesStore() { return &_gameobjectNamesStore; }
@@ -125,8 +121,7 @@ public:
     void LoadItemPagesTable();
     void LoadItemsTable();
 
-    void LoadCreatureNamesTable();
-    void LoadCreatureProtoTable();
+    void LoadCreaturePropertiesTable();
 
     void LoadGameObjectNamesTable();
 
@@ -156,8 +151,7 @@ public:
 
     ItemPageContainer _itemPagesStore;
     ItemPrototypeContainer _itemPrototypeStore;
-    CreatureInfoContainer _creatureNamesStore;
-    CreatureProtoContainer _creatureProtoStore;
+    CreaturePropertiesContainer _creaturePropertiesStore;
     GameObjectNamesContainer _gameobjectNamesStore;
     QuestContainer _questStore;
 

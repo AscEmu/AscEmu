@@ -579,7 +579,7 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
         delete objectResult1;
 
         std::string creatureName1 = "N/A";
-        CreatureInfo const* creatureResult1 = sMySQLStore.GetCreatureInfo(atol(creatureId1.c_str()));
+        CreatureProperties const* creatureResult1 = sMySQLStore.GetCreatureProperties(atol(creatureId1.c_str()));
         if (creatureResult1)
         {
             creatureName1 = creatureResult1->Name;
@@ -853,7 +853,7 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "added starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureInfo()->Name.c_str());
+    sGMLog.writefromsession(m_session, "added starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
 
     delete qstrel;
     return true;
@@ -938,7 +938,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "added finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureInfo()->Name.c_str());
+    sGMLog.writefromsession(m_session, "added finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
 
     delete qstrel;
     return true;
@@ -1035,7 +1035,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "deleted starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureInfo()->Name.c_str());
+    sGMLog.writefromsession(m_session, "deleted starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
 
     delete qstrel;
     return true;
@@ -1120,7 +1120,7 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "deleted finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureInfo()->Name.c_str());
+    sGMLog.writefromsession(m_session, "deleted finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
 
     delete qstrel;
     return true;
@@ -1157,7 +1157,7 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
         delete objectResult1;
 
         std::string creatureName1 = "N/A";
-        CreatureInfo const* creatureResult1 = sMySQLStore.GetCreatureInfo(atol(creatureId1.c_str()));
+        CreatureProperties const* creatureResult1 = sMySQLStore.GetCreatureProperties(atol(creatureId1.c_str()));
 
         if (creatureResult1)
         {
@@ -1284,8 +1284,7 @@ bool ChatHandler::HandleQuestStarterSpawnCommand(const char* args, WorldSession*
     delete objectResult;
 
     std::string starterName = "N/A";
-    CreatureInfo const* creatureResult = sMySQLStore.GetCreatureInfo(atol(starterId.c_str()));
-
+    CreatureProperties const* creatureResult = sMySQLStore.GetCreatureProperties(atol(starterId.c_str()));
     if (creatureResult)
     {
         starterName = creatureResult->Name;
@@ -1356,8 +1355,7 @@ bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession
     delete objectResult;
 
     std::string finisherName = "N/A";
-    CreatureInfo const* creatureResult = sMySQLStore.GetCreatureInfo(atol(finisherId.c_str()));
-
+    CreatureProperties const* creatureResult = sMySQLStore.GetCreatureProperties(atol(finisherId.c_str()));
     if (creatureResult)
     {
         finisherName = creatureResult->Name;

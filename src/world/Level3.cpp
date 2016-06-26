@@ -573,10 +573,8 @@ bool ChatHandler::HandleCreatePetCommand(const char* args, WorldSession* m_sessi
     if (entry == 0)
         return false;
 
-    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(entry);
-    CreatureProto const* cp = sMySQLStore.GetCreatureProto(entry);
-
-    if ((ci == NULL) || (cp == NULL))
+    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(entry);
+    if (cp == nullptr)
         return false;
 
     Player* p = m_session->GetPlayer();
@@ -592,7 +590,7 @@ bool ChatHandler::HandleCreatePetCommand(const char* args, WorldSession* m_sessi
 
     Pet* pet = objmgr.CreatePet(entry);
 
-    if (!pet->CreateAsSummon(entry, ci, NULL, p, NULL, 1, 0, &v, true))
+    if (!pet->CreateAsSummon(entry, cp, NULL, p, NULL, 1, 0, &v, true))
     {
         pet->DeleteMe();
         return true;
@@ -602,103 +600,6 @@ bool ChatHandler::HandleCreatePetCommand(const char* args, WorldSession* m_sessi
 
     return true;
 }
-
-
-#ifdef USE_SPECIFIC_AIAGENTS
-//this is custom stuff !
-bool ChatHandler::HandlePetSpawnAIBot(const char* args, WorldSession* m_session)
-{
-    if (!*args)
-        return false;
-
-    if (!m_session->GetPlayer())
-        return false; //wtf ?
-
-    uint32 botprice = m_session->GetPlayer()->getLevel() * 10000; //1 gold per level ?
-
-    if (!m_session->GetPlayer()->HasGold(botprice))
-    {
-        GreenSystemMessage(m_session, "You need a total of %u coins to afford a bot", botprice);
-        return false;
-    }
-
-    uint8 botType = (uint8)atof((char*)args);
-
-    if (botType != 0)
-    {
-        RedSystemMessage(m_session, "Incorrect value. Accepting value 0 only = healbot :)");
-        return true;
-    }
-
-    uint32 Entry;
-    char name[50];
-    uint8 race = m_session->GetPlayer()->getRace();
-
-    if (race == RACE_HUMAN || race == RACE_DWARF || race == RACE_NIGHTELF || race == RACE_GNOME || race == RACE_DRAENEI)
-    {
-        Entry = 1826;
-        strcpy(name, "|cffff6060A_HealBot");
-    }
-    else
-    {
-        Entry = 5473;
-        strcpy(name, "|cffff6060H_HealBot");
-    }
-
-    CreatureProto* pTemplate = CreatureProtoStorage.LookupEntry(Entry);
-    CreatureInfo const* pCreatureInfo = sMySQLStore.GetCreatureInfo(Entry);
-    if (!pTemplate || !pCreatureInfo)
-    {
-        RedSystemMessage(m_session, "Invalid creature spawn template: %u", Entry);
-        return true;
-    }
-    Player* plr = m_session->GetPlayer();
-    Creature* newguard = plr->create_guardian(Entry, 2 * 60 * 1000, float(-M_PI * 2), plr->getLevel());
-    AiAgentHealSupport* new_interface = new AiAgentHealSupport;
-    new_interface->Init(newguard, AITYPE_PET, MOVEMENTTYPE_NONE, plr);
-    newguard->ReplaceAIInterface((AIInterface*) new_interface);
-
-    /*    Pet *old_tame = plr->GetSummon();
-        if (old_tame != NULL)
-        {
-        old_tame->Dismiss(true);
-        }
-
-        // create a pet from this creature
-        Pet * pPet = objmgr.CreatePet(Entry);
-        pPet->SetInstanceID(plr->GetInstanceID());
-        pPet->SetMapId(plr->GetMapId());
-
-        pPet->SetFloatValue (OBJECT_FIELD_SCALE_X, pTemplate->Scale / 2); //we do not wish to block visually other players
-        AiAgentHealSupport *new_interface = new AiAgentHealSupport;
-        pPet->ReplaceAIInterface((AIInterface *) new_interface);
-        //    new_interface->Init(pPet,AITYPE_PET,MOVEMENTTYPE_NONE,plr); // i think this will get called automatically for pet
-
-        pPet->CreateAsSummon(Entry, pCreatureInfo, pCreature, plr, NULL, 0x2, 0);
-
-        pPet->Rename(name);
-
-        //healer bot should not have any specific actions
-        pPet->SetActionBarSlot(0,PET_SPELL_FOLLOW);
-        pPet->SetActionBarSlot(1,PET_SPELL_STAY);
-        pPet->SetActionBarSlot(2,0);
-        pPet->SetActionBarSlot(3,0);
-        pPet->SetActionBarSlot(4,0);
-        pPet->SetActionBarSlot(5,0);
-        pPet->SetActionBarSlot(6,0);
-        pPet->SetActionBarSlot(7,0);
-        pPet->SetActionBarSlot(8,0);
-        pPet->SetActionBarSlot(9,0);
-        pPet->SendSpellsToOwner();
-
-        // remove the temp creature
-        delete sp;
-        delete pCreature;*/
-
-    sGMLog.writefromsession(m_session, "used create an AI bot");
-    return true;
-}
-#endif
 
 bool ChatHandler::HandleAddPetSpellCommand(const char* args, WorldSession* m_session)
 {
@@ -1774,7 +1675,7 @@ bool ChatHandler::HandleFixScaleCommand(const char* args, WorldSession* m_sessio
     }
 
     pCreature->SetScale(sc);
-    const_cast<CreatureProto*>(pCreature->GetProto())->Scale = sc;
+    const_cast<CreatureProperties*>(pCreature->GetCreatureProperties())->Scale = sc;
     WorldDatabase.Execute("UPDATE creature_proto SET scale = '%f' WHERE entry = %u", sc, pCreature->GetEntry());
     return true;
 }

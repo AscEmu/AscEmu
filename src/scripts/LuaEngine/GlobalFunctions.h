@@ -55,13 +55,14 @@ namespace luaGlobalFunctions
         {
             if (spawntype == 1)  //Unit
             {
-                CreatureProto const* p = sMySQLStore.GetCreatureProto(entry);
-                CreatureInfo const* i = sMySQLStore.GetCreatureInfo(entry);
-                if (p == NULL || i == NULL)
+                CreatureProperties const* p = sMySQLStore.GetCreatureProperties(entry);
+                if (p == nullptr)
                     return 0;
+
                 MapMgr* mapMgr = sInstanceMgr.GetMapMgr(map);
                 if (!mapMgr)
                     return 0;
+
                 int32 instanceid = luaL_optinteger(L, 13, mapMgr->GetInstanceID());
                 Creature* pCreature = mapMgr->CreateCreature(entry);
                 pCreature->Load(p, x, y, z, o);

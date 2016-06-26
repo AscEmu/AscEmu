@@ -306,16 +306,14 @@ class LuaGameObject
                 lua_pushnil(L);
                 return 1;
             }
-            CreatureProto const* p = sMySQLStore.GetCreatureProto(entry);
-            CreatureInfo const* i = sMySQLStore.GetCreatureInfo(entry);
-
-            if (p == NULL || i == NULL)
+            CreatureProperties const* p = sMySQLStore.GetCreatureProperties(entry);
+            if (p == nullptr)
             {
                 lua_pushnil(L);
                 return 1;
             }
             Creature* pCreature = ptr->GetMapMgr()->CreateCreature(entry);
-            if (pCreature == NULL)
+            if (pCreature == nullptr)
             {
                 lua_pushnil(L);
                 return 1;

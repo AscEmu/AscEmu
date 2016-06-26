@@ -78,7 +78,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
     WorldPacket data(SMSG_CREATURE_QUERY_RESPONSE, 250); //VLack: thanks Aspire, this was 146 before
     uint32 entry;
     uint64 guid;
-    CreatureInfo const* ci;
+    CreatureProperties const* ci;
 
     recv_data >> entry;
     recv_data >> guid;
@@ -99,7 +99,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
     }
     else
     {
-        ci = sMySQLStore.GetCreatureInfo(entry);
+        ci = sMySQLStore.GetCreatureProperties(entry);
         if (ci == NULL)
             return;
 

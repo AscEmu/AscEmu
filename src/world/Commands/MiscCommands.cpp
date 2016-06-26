@@ -131,8 +131,8 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
                     Spell* spell = sSpellFactoryMgr.NewSpell(m_session->GetPlayer(), kill_spell, true, 0);
                     spell->prepare(&targets);
 
-                    GreenSystemMessage(m_session, "Killed Creature %s.", creature->GetCreatureInfo()->Name.c_str());
-                    sGMLog.writefromsession(m_session, "used kill command on Creature %u [%s], spawn ID: %u", creature->GetEntry(), creature->GetCreatureInfo()->Name.c_str(), creature->spawnid);
+                    GreenSystemMessage(m_session, "Killed Creature %s.", creature->GetCreatureProperties()->Name.c_str());
+                    sGMLog.writefromsession(m_session, "used kill command on Creature %u [%s], spawn ID: %u", creature->GetEntry(), creature->GetCreatureProperties()->Name.c_str(), creature->spawnid);
                     break;
                 }
                 case TYPEID_PLAYER:
@@ -254,8 +254,8 @@ bool ChatHandler::HandleRootCommand(const char* /*args*/, WorldSession* m_sessio
     }
     else
     {
-        BlueSystemMessage(m_session, "Rooting Creature %s.", static_cast<Creature*>(unit)->GetCreatureInfo()->Name.c_str());
-        sGMLog.writefromsession(m_session, "rooted creature %s", static_cast<Creature*>(unit)->GetCreatureInfo()->Name.c_str());
+        BlueSystemMessage(m_session, "Rooting Creature %s.", static_cast<Creature*>(unit)->GetCreatureProperties()->Name.c_str());
+        sGMLog.writefromsession(m_session, "rooted creature %s", static_cast<Creature*>(unit)->GetCreatureProperties()->Name.c_str());
     }
 
     return true;
@@ -278,8 +278,8 @@ bool ChatHandler::HandleUnrootCommand(const char* /*args*/, WorldSession* m_sess
     }
     else
     {
-        BlueSystemMessage(m_session, "Unrooting Creature %s.", static_cast<Creature*>(unit)->GetCreatureInfo()->Name.c_str());
-        sGMLog.writefromsession(m_session, "unrooted creature %s", static_cast<Creature*>(unit)->GetCreatureInfo()->Name.c_str());
+        BlueSystemMessage(m_session, "Unrooting Creature %s.", static_cast<Creature*>(unit)->GetCreatureProperties()->Name.c_str());
+        sGMLog.writefromsession(m_session, "unrooted creature %s", static_cast<Creature*>(unit)->GetCreatureProperties()->Name.c_str());
     }
 
     return true;

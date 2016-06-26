@@ -725,9 +725,8 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
 {
     MapMgr* map = GetMapMgr();
 
-    CreatureInfo const* inf = sMySQLStore.GetCreatureInfo(entry);
-    CreatureProto const* proto = sMySQLStore.GetCreatureProto(entry);
-    if (inf == nullptr || proto == nullptr || map == nullptr)
+    CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(entry);
+    if (creature_properties == nullptr || map == nullptr)
         return 0;
 
     float transporter_x = obj_movement_info.transporter_info.position.x + x;
@@ -736,7 +735,7 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
 
     Creature* pCreature = map->CreateCreature(entry);
     pCreature->Create(map->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
-    pCreature->Load(proto, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
+    pCreature->Load(creature_properties, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->AddToWorld(map);
     pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);
     pCreature->obj_movement_info.transporter_info.position.x = x;
@@ -754,8 +753,8 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
     if (anim)
         pCreature->SetUInt32Value(UNIT_NPC_EMOTESTATE, anim);
 
-    if (proto->NPCFLags)
-        pCreature->SetUInt32Value(UNIT_NPC_FLAGS, proto->NPCFLags);
+    if (creature_properties->NPCFLags)
+        pCreature->SetUInt32Value(UNIT_NPC_FLAGS, creature_properties->NPCFLags);
 
     m_creatureSetMutex.Acquire();
     m_NPCPassengerSet.insert(pCreature);
@@ -775,9 +774,8 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
 {
     MapMgr* map = GetMapMgr();
 
-    CreatureInfo const* inf = sMySQLStore.GetCreatureInfo(entry);
-    CreatureProto const* proto = sMySQLStore.GetCreatureProto(entry);
-    if (inf == nullptr || proto == nullptr || map == nullptr)
+    CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(entry);
+    if (creature_properties == nullptr || map == nullptr)
         return nullptr;
 
     float transporter_x = obj_movement_info.transporter_info.position.x + x;
@@ -786,7 +784,7 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
 
     Creature* pCreature = map->CreateCreature(entry);
     pCreature->Create(map->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
-    pCreature->Load(proto, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
+    pCreature->Load(creature_properties, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->AddToWorld(map);
     pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);
     pCreature->obj_movement_info.transporter_info.position.x = x;

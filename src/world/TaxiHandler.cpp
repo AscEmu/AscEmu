@@ -194,30 +194,30 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     uint32 modelid = 0;
     if (_player->IsTeamHorde())
     {
-        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(taxinode->horde_mount);
+        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
 
-        if (ci == NULL)
-            ci = sMySQLStore.GetCreatureInfo(taxinode->alliance_mount);
+        if (ci == nullptr)
+            ci = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
 
-        if (ci == NULL)
-            ci = sMySQLStore.GetCreatureInfo(541); // Riding Gryphon, in case neither of the above work
+        if (ci == nullptr)
+            ci = sMySQLStore.GetCreatureProperties(541); // Riding Gryphon, in case neither of the above work
 
-        if (ci != NULL)
+        if (ci != nullptr)
             modelid = ci->Male_DisplayID;
         else
             modelid = 6852; // Riding Gryphon modelid, in case it wasn't in the db;
     }
     else
     {
-        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(taxinode->alliance_mount);
+        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
 
-        if (ci == NULL)
-            ci = sMySQLStore.GetCreatureInfo(taxinode->horde_mount);
+        if (ci == nullptr)
+            ci = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
 
-        if (ci == NULL)
-            ci = sMySQLStore.GetCreatureInfo(541); // Riding Gryphon, in case neither of the above work
+        if (ci == nullptr)
+            ci = sMySQLStore.GetCreatureProperties(541); // Riding Gryphon, in case neither of the above work
 
-        if (ci != NULL)
+        if (ci != nullptr)
             modelid = ci->Male_DisplayID;
         else
             modelid = 6852; // Riding Gryphon modelid, in case it wasn't in the db
@@ -343,17 +343,21 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     uint32 modelid = 0;
     if (_player->IsTeamHorde())
     {
-        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(taxinode->horde_mount);
-        if (!ci) return;
+        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
+        if (!ci)
+            return;
         modelid = ci->Male_DisplayID;
-        if (!modelid) return;
+        if (!modelid)
+            return;
     }
     else
     {
-        CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(taxinode->alliance_mount);
-        if (!ci) return;
+        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
+        if (!ci)
+            return;
         modelid = ci->Male_DisplayID;
-        if (!modelid) return;
+        if (!modelid)
+            return;
     }
 
     //GetPlayer()->setDismountCost(newmoney);

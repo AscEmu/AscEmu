@@ -27,11 +27,11 @@ TotemSummon::TotemSummon(uint64 GUID) : Summon(GUID)
 TotemSummon::~TotemSummon()
 {}
 
-void TotemSummon::Load(CreatureProto const* proto, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
+void TotemSummon::Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
 {
-    Summon::Load(proto, owner, position, spellid, summonslot);
+    Summon::Load(properties_, owner, position, spellid, summonslot);
 
-    TotemDisplayIdEntry const* totemdisplay = sMySQLStore.GetTotemDisplayId(creature_info->Male_DisplayID);
+    TotemDisplayIdEntry const* totemdisplay = sMySQLStore.GetTotemDisplayId(creature_properties->Male_DisplayID);
     uint32 displayID = 0;
 
     if (totemdisplay != NULL)
@@ -53,7 +53,7 @@ void TotemSummon::Load(CreatureProto const* proto, Unit* owner, LocationVector &
     }
 
     if (displayID == 0)
-        displayID = creature_info->Male_DisplayID;
+        displayID = creature_properties->Male_DisplayID;
 
     // Set up the creature.
     SetMaxPower(POWER_TYPE_FOCUS, owner->getLevel() * 30);
@@ -68,7 +68,7 @@ void TotemSummon::Load(CreatureProto const* proto, Unit* owner, LocationVector &
     SetBoundingRadius(1.0f);
     SetCombatReach(1.0f);
     SetDisplayId(displayID);
-    SetNativeDisplayId(creature_info->Male_DisplayID);
+    SetNativeDisplayId(creature_properties->Male_DisplayID);
     SetCastSpeedMod(1.0f);
     SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
 
@@ -110,11 +110,11 @@ void TotemSummon::SetupSpells()
         return;
 
     SpellEntry* creatorspell = dbcSpell.LookupEntry(GetCreatedBySpell());
-    SpellEntry* TotemSpell = dbcSpell.LookupEntry(proto->AISpells[0]);
+    SpellEntry* TotemSpell = dbcSpell.LookupEntry(creature_properties->AISpells[0]);
 
     if (TotemSpell == NULL)
     {
-        LOG_DEBUG("Totem %u does not have any spells to cast", creature_info->Id);
+        LOG_DEBUG("Totem %u does not have any spells to cast", creature_properties->Id);
         return;
     }
 

@@ -492,10 +492,8 @@ bool MasterDemonologist5(uint32 i, Spell* s)
 
 bool SummonSuccubusQuest(uint32 i, Spell* s)
 {
-
-    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(5677);
-    CreatureProto const* cp = sMySQLStore.GetCreatureProto(5677);
-    if(!ci || !cp)
+    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(5677);
+    if (cp == nullptr)
         return false;
 
     Creature* pCreature = s->p_caster->GetMapMgr()->CreateCreature(cp->Id);
@@ -512,10 +510,8 @@ bool SummonVoidWalkerQuest(uint32 i, Spell* s)
 {
     Player* p_caster = s->p_caster;
 
-    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(5676);
-    CreatureProto const* cp = sMySQLStore.GetCreatureProto(5676);
-
-    if(!ci || !cp)
+    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(5676);
+    if (cp == nullptr)
         return false;
 
     Creature* pCreature = p_caster->GetMapMgr()->CreateCreature(cp->Id);
@@ -532,9 +528,8 @@ bool SummonFelHunterQuest(uint32 i, Spell* s)
 {
     Player* p_caster = s->p_caster;
 
-    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(6268);
-    CreatureProto const* cp = sMySQLStore.GetCreatureProto(6268);
-    if(!ci || !cp)
+    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(6268);
+    if (cp == nullptr)
         return false;
 
     Creature* pCreature = p_caster->GetMapMgr()->CreateCreature(cp->Id);

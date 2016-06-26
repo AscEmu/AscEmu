@@ -181,12 +181,10 @@ class TrollgoreAI : public CreatureAIScript
                 //spawn invaders ;)
                 for (uint8 i = 0; i < INVADERS_PER_INVASION; i++)
                 {
-                    CreatureProto const* cp = sMySQLStore.GetCreatureProto(CN_DRAKKARI_INVADER);
-                    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(CN_DRAKKARI_INVADER);
-                    Creature* c = NULL;
-                    if (cp && ci)
+                    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(CN_DRAKKARI_INVADER);
+                    if (cp != nullptr)
                     {
-                        c = _unit->GetMapMgr()->CreateCreature(CN_DRAKKARI_INVADER);
+                        Creature* c = _unit->GetMapMgr()->CreateCreature(CN_DRAKKARI_INVADER);
                         if (c)
                         {
                             //position is guessed
@@ -498,12 +496,10 @@ class NovosTheSummonerAI : public CreatureAIScript
             if (type)
             {
                 mob_entry = 26627;
-                CreatureProto const* cp = sMySQLStore.GetCreatureProto(mob_entry);
-                CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(mob_entry);
-                Creature* c = NULL;
-                if (cp && ci)
+                CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(mob_entry);
+                if (cp != nullptr)
                 {
-                    c = _unit->GetMapMgr()->CreateCreature(mob_entry);
+                    Creature* c = _unit->GetMapMgr()->CreateCreature(mob_entry);
                     if (c)
                     {
                         //position is guessed
@@ -532,12 +528,10 @@ class NovosTheSummonerAI : public CreatureAIScript
                         uint32 mobs[2] = { 27598, 27600 };
                         mob_entry = mobs[RandomUInt(1)];
                     }
-                    CreatureProto const* cp = sMySQLStore.GetCreatureProto(mob_entry);
-                    CreatureInfo const* ci = sMySQLStore.GetCreatureInfo(mob_entry);
-                    Creature* c = NULL;
-                    if (cp && ci)
+                    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(mob_entry);
+                    if (cp != nullptr)
                     {
-                        c = _unit->GetMapMgr()->CreateCreature(mob_entry);
+                        Creature* c = _unit->GetMapMgr()->CreateCreature(mob_entry);
                         if (c)
                         {
                             //position is guessed

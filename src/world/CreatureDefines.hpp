@@ -94,9 +94,14 @@ enum MONSTER_SAY_EVENTS
 
 
 #pragma pack(push,1)
-struct CreatureInfo
+struct CreatureProperties
 {
     uint32 Id;
+    uint32 killcredit[2];
+    uint32 Male_DisplayID;
+    uint32 Female_DisplayID;
+    uint32 Male_DisplayID2;
+    uint32 Female_DisplayID2;
     std::string Name;
     std::string SubName;
     std::string info_str;
@@ -105,45 +110,9 @@ struct CreatureInfo
     uint32 Family;
     uint32 Rank;
     uint32 Encounter;
-    uint32 killcredit[2];
-    uint32 Male_DisplayID;
-    uint32 Female_DisplayID;
-    uint32 Male_DisplayID2;
-    uint32 Female_DisplayID2;
     float unkfloat1;
     float unkfloat2;
     uint8  Leader;
-    uint32 QuestItems[6];
-    uint32 waypointid;
-
-    std::string lowercase_name;
-    NpcMonsterSay* MonsterSay[NUM_MONSTER_SAY_EVENTS];
-
-    uint8 GenerateModelId(uint32* des) const
-    {
-        uint32 models[] = { Male_DisplayID, Male_DisplayID2, Female_DisplayID, Female_DisplayID2 };
-        if (!models[0] && !models[1] && !models[2] && !models[3])
-        {
-            // All models are invalid.
-            Log.Notice("CreatureSpawn", "All model IDs are invalid for creature %u", Id);
-            return 0;
-        }
-
-        while (true)
-        {
-            uint32 res = RandomUInt(3);
-            if (models[res])
-            {
-                *des = models[res];
-                return res < 2 ? 0 : 1;
-            }
-        }
-    }
-};
-
-struct CreatureProto
-{
-    uint32 Id;
     uint32 MinLevel;
     uint32 MaxLevel;
     uint32 Faction;
@@ -181,6 +150,32 @@ struct CreatureProto
     uint32 spelldataid;
     uint32 vehicleid;
     bool rooted;
+    uint32 QuestItems[6];
+    uint32 waypointid;
+
+    std::string lowercase_name;
+    NpcMonsterSay* MonsterSay[NUM_MONSTER_SAY_EVENTS];
+
+    uint8 GenerateModelId(uint32* des) const
+    {
+        uint32 models[] = { Male_DisplayID, Male_DisplayID2, Female_DisplayID, Female_DisplayID2 };
+        if (!models[0] && !models[1] && !models[2] && !models[3])
+        {
+            // All models are invalid.
+            Log.Notice("CreatureSpawn", "All model IDs are invalid for creature %u", Id);
+            return 0;
+        }
+
+        while (true)
+        {
+            uint32 res = RandomUInt(3);
+            if (models[res])
+            {
+                *des = models[res];
+                return res < 2 ? 0 : 1;
+            }
+        }
+    }
 
     //itemslots
     uint32 itemslot_1;
