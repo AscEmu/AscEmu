@@ -193,17 +193,18 @@ void LocalizationMgr::Reload(bool first)
     QueryResult* result;
     std::set<std::string> languages;
     std::map<std::string, std::string> bound_languages;
-    GetDistinctLanguages(languages, "creature_names_localized");
-    GetDistinctLanguages(languages, "gameobject_names_localized");
-    GetDistinctLanguages(languages, "items_localized");
-    GetDistinctLanguages(languages, "quests_localized");
-    GetDistinctLanguages(languages, "npc_text_localized");
-    GetDistinctLanguages(languages, "itempages_localized");
-    GetDistinctLanguages(languages, "gossip_menu_option_localized");
-    GetDistinctLanguages(languages, "worldstring_tables_localized");
-    GetDistinctLanguages(languages, "worldbroadcast_localized");
-    GetDistinctLanguages(languages, "worldmap_info_localized");
-    GetDistinctLanguages(languages, "npc_monstersay_localized");
+    GetDistinctLanguages(languages, "locales_creature");
+    GetDistinctLanguages(languages, "locales_gameobject");
+    GetDistinctLanguages(languages, "locales_item");
+    GetDistinctLanguages(languages, "locales_quest");
+    GetDistinctLanguages(languages, "locales_npc_text");
+    GetDistinctLanguages(languages, "locales_npc_script_text");
+    GetDistinctLanguages(languages, "locales_item_pages");
+    GetDistinctLanguages(languages, "locales_gossip_menu_option");
+    GetDistinctLanguages(languages, "locales_worldstring_table");
+    GetDistinctLanguages(languages, "locales_worldbroadcast");
+    GetDistinctLanguages(languages, "locales_worldmap_info");
+    GetDistinctLanguages(languages, "locales_npc_monstersay");
 
     /// Read Language Bindings From Config
     std::string ls = Config.MainConfig.GetStringDefault("Localization", "LocaleBindings", "");
@@ -282,7 +283,7 @@ void LocalizationMgr::Reload(bool first)
         Field* f;
         uint32 lid;
 
-        result = WorldDatabase.Query("SELECT * FROM creature_names_localized");
+        result = WorldDatabase.Query("SELECT * FROM locales_creature");
         if (result)
         {
             do
@@ -313,7 +314,7 @@ void LocalizationMgr::Reload(bool first)
         Field* f;
         uint32 lid;
 
-        result = WorldDatabase.Query("SELECT * FROM gameobject_names_localized");
+        result = WorldDatabase.Query("SELECT * FROM locales_gameobject");
         if (result)
         {
             do
@@ -343,7 +344,7 @@ void LocalizationMgr::Reload(bool first)
         Field* f;
         uint32 lid;
 
-        result = WorldDatabase.Query("SELECT * FROM items_localized");
+        result = WorldDatabase.Query("SELECT * FROM locales_item");
         if (result)
         {
             do
@@ -379,7 +380,7 @@ void LocalizationMgr::Reload(bool first)
         Field* f;
         uint32 lid;
 
-        result = WorldDatabase.Query("SELECT * FROM quests_localized");
+        result = WorldDatabase.Query("SELECT * FROM locales_quest");
         if (result)
         {
             do
@@ -420,7 +421,7 @@ void LocalizationMgr::Reload(bool first)
         uint32 lid;
         uint32 counter;
 
-        result = WorldDatabase.Query("SELECT * FROM npc_text_localized");
+        result = WorldDatabase.Query("SELECT * FROM locales_npc_text");
         if (result)
         {
             do
@@ -455,7 +456,7 @@ void LocalizationMgr::Reload(bool first)
         Field* f;
         uint32 lid;
 
-        result = WorldDatabase.Query("SELECT * FROM itempages_localized");
+        result = WorldDatabase.Query("SELECT * FROM locales_item_pages");
         if (result)
         {
             do
@@ -485,7 +486,7 @@ void LocalizationMgr::Reload(bool first)
         Field* f;
         uint32 lid;
 
-        result = WorldDatabase.Query("SELECT * FROM npc_script_text_localized");
+        result = WorldDatabase.Query("SELECT * FROM locales_npc_script_text");
         if (result)
         {
             do
@@ -515,7 +516,7 @@ void LocalizationMgr::Reload(bool first)
         Field* f;
         uint32 lid;
 
-        result = WorldDatabase.Query("SELECT * FROM gossip_menu_option_localized");
+        result = WorldDatabase.Query("SELECT * FROM locales_gossip_menu_option");
         if (result)
         {
             do
@@ -545,7 +546,7 @@ void LocalizationMgr::Reload(bool first)
         Field* f;
         uint32 lid;
 
-        result = WorldDatabase.Query("SELECT * FROM worldstring_tables_localized");
+        result = WorldDatabase.Query("SELECT * FROM locales_worldstring_table");
         if (result)
         {
             do
@@ -575,7 +576,7 @@ void LocalizationMgr::Reload(bool first)
         Field* f;
         uint32 lid;
 
-        result = WorldDatabase.Query("SELECT * FROM worldbroadcast_localized");
+        result = WorldDatabase.Query("SELECT * FROM locales_worldbroadcast");
         if (result)
         {
             do
@@ -605,7 +606,7 @@ void LocalizationMgr::Reload(bool first)
         Field* f;
         uint32 lid;
 
-        result = WorldDatabase.Query("SELECT * FROM worldmap_info_localized");
+        result = WorldDatabase.Query("SELECT * FROM locales_worldmap_info");
         if (result)
         {
             do
@@ -635,8 +636,8 @@ void LocalizationMgr::Reload(bool first)
         Field* f;
         uint32 lid;
 
-        sLog.outString("Loading npc_monstersay_localized rows...");
-        result = WorldDatabase.Query("SELECT * FROM npc_monstersay_localized");
+        sLog.outString("Loading locales_npc_monstersay rows...");
+        result = WorldDatabase.Query("SELECT * FROM locales_npc_monstersay");
         if (result)
         {
             do

@@ -3935,9 +3935,9 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
 
 void ObjectMgr::LoadItemsetLink()
 {
-    Log.Notice("ObjectMgr", "Loading linked itemsets...");
+    Log.Notice("ObjectMgr", "Loading linked itemsetbonus...");
 
-    QueryResult* result = WorldDatabase.Query("SELECT itemset, itemset_bonus FROM items_linked_itemsets;");
+    QueryResult* result = WorldDatabase.Query("SELECT itemset, itemset_bonus FROM itemset_linked_itemsetbonus;");
 
     if (result != nullptr)
     {
@@ -3959,11 +3959,11 @@ void ObjectMgr::LoadItemsetLink()
         } while (result->NextRow());
         delete result;
 
-        Log.Success("ObjectMgr", "Loaded %u linked itemsets...", count);
+        Log.Success("ObjectMgr", "Loaded %u linked itemsetsbonus...", count);
     }
     else
     {
-        Log.Error("ObjectMgr", "Failed to load from items_linked_itemsets.");
+        Log.Error("ObjectMgr", "Failed to load from itemset_linked_itemsetbonus.");
     }
 }
 

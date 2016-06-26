@@ -20,8 +20,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>SLunar Festival</b>\n
-/// event_names entry: 7 \n
-/// event_names holiday: 327 \n
+/// event_properties entry: 7 \n
+/// event_properties holiday: 327 \n
 ///\todo SLunar Festival \n
 
 /// The Elder

@@ -20,8 +20,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Brewfest</b>\n
-/// event_names entry: 24 \n
-/// event_names holiday: 372 \n
+/// event_properties entry: 24 \n
+/// event_properties holiday: 372 \n
 
 /// Boss Coren Direbrew
 enum eGossipTexts

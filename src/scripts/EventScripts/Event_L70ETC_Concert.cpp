@@ -21,13 +21,13 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>At: Worlds End Tavern</b>\n
-/// event_names entry: NA \n
-/// event_names holiday: NA \n
+/// event_properties entry: NA \n
+/// event_properties holiday: NA \n
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>L70ETC Concert</b>\n
-/// event_names entry: 32 \n
-/// event_names holiday: 0 \n
+/// event_properties entry: 32 \n
+/// event_properties holiday: 0 \n
 /// Original: ArcScript/Moon++ \n
 
 /// L80etc band members

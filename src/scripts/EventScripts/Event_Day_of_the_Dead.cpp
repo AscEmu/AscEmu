@@ -20,8 +20,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Day of the Dead</b>\n
-/// event_names entry: 51 \n
-/// event_names holiday: 409 \n
+/// event_properties entry: 51 \n
+/// event_properties holiday: 409 \n
 
 /// Catrina
 #define SPELL_HONOR_THE_DEAD 65386

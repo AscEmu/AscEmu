@@ -20,8 +20,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Love is in the Air</b>\n
-/// event_names entry: 8
-/// event_names holiday: 423
+/// event_properties entry: 8
+/// event_properties holiday: 423
 ///\todo BossScript for Humme, Baxter and Frye \n
 
 /// Hummel (36296)

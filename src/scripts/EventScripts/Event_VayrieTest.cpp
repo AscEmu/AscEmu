@@ -21,8 +21,8 @@
 ///////////////////////////////////////////////////////
 // Vayrie's Test Event
 // Test event script for purpose of testing event mgr
-// event_names entry: 65
-// event_names holiday: 327
+// event_properties entry: 65
+// event_properties holiday: 327
 
 class VayrieTest : public EventScript
 {

@@ -687,7 +687,7 @@ void CommandTableStorage::Init()
         { "player_xp_for_level",'z', &ChatHandler::HandleReloadPlayerXpForLevelCommand,     "Reload player_xp_for_level table",             nullptr, 0, 0, 0 },
         { "points_of_interest", 'z', &ChatHandler::HandleReloadPointsOfInterestCommand,     "Reload points_of_interest table",              nullptr, 0, 0, 0 },
         { "quests",             'z', &ChatHandler::HandleReloadQuestsCommand,               "Reload quests table",                          nullptr, 0, 0, 0 },
-        { "teleport_coords",    'z', &ChatHandler::HandleReloadTeleportCoordsCommand,       "Reload teleport_coords table",                 nullptr, 0, 0, 0 },
+        { "spell_teleport_coords", 'z', &ChatHandler::HandleReloadTeleportCoordsCommand,       "Reload teleport_coords table",                 nullptr, 0, 0, 0 },
         { "worldbroadcast",     'z', &ChatHandler::HandleReloadWorldbroadcastCommand,       "Reload worldbroadcast table",                  nullptr, 0, 0, 0 },
         { "worldmap_info",      'z', &ChatHandler::HandleReloadWorldmapInfoCommand,         "Reload worldmap_info table",                   nullptr, 0, 0, 0 },
         { "worldstring_tables", 'z', &ChatHandler::HandleReloadWorldstringTablesCommand,    "Reload worldstring_tables table",              nullptr, 0, 0, 0 },

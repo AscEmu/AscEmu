@@ -20,8 +20,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Leaders at Jin'Alai</b>\n
-/// event_names entry: NA \n
-/// event_names holiday: NA \n
+/// event_properties entry: NA \n
+/// event_properties holiday: NA \n
 /// Quest id: 12622 \n
 /// Kutube'sa entry: 28494 \n
 /// Gawanil entry: 28495 \n

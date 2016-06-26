@@ -20,8 +20,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Harvest Festival</b>\n
-/// event_names entry: 11 \n
-/// event_names holiday: 321 \n
+/// event_properties entry: 11 \n
+/// event_properties holiday: 321 \n
 ///
 /// Alliance: https://www.youtube.com/watch?v=-dqRaYB89Zc \n
 /// quest_id 8149 \n

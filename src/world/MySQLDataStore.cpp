@@ -23,11 +23,11 @@ void MySQLDataStore::LoadAdditionalTableConfig()
     // init basic tables
     CreatureSpawnsTables.insert(std::string("creature_spawns"));
     GameObjectSpawnsTables.insert(std::string("gameobject_spawns"));
-    GameObjectNamesTables.insert(std::string("gameobject_names"));
+    GameObjectNamesTables.insert(std::string("gameobject_properties"));
     CreatureNamesTables.insert(std::string("creature_names"));
     CreatureProtoTables.insert(std::string("creature_proto"));
-    ItemsTables.insert(std::string("items"));
-    QuestsTables.insert(std::string("quests"));
+    ItemsTables.insert(std::string("item_properties"));
+    QuestsTables.insert(std::string("quest_properties"));
 
     // get config
     std::string strData = Config.MainConfig.GetStringDefault("Startup", "LoadAdditionalTables", "");
@@ -52,7 +52,7 @@ void MySQLDataStore::LoadAdditionalTableConfig()
         if (!stricmp(target_table, "gameobject_spawns"))
             GameObjectSpawnsTables.insert(std::string(additional_table));
 
-        if (!stricmp(target_table, "gameobject_names"))
+        if (!stricmp(target_table, "gameobject_properties"))
             GameObjectNamesTables.insert(std::string(additional_table));
 
         if (!stricmp(target_table, "creature_names"))
@@ -61,10 +61,10 @@ void MySQLDataStore::LoadAdditionalTableConfig()
         if (!stricmp(target_table, "creature_proto"))
             CreatureProtoTables.insert(std::string(additional_table));
 
-        if (!stricmp(target_table, "items"))
+        if (!stricmp(target_table, "item_properties"))
             ItemsTables.insert(std::string(additional_table));
 
-        if (!stricmp(target_table, "quests"))
+        if (!stricmp(target_table, "quest_properties"))
             QuestsTables.insert(std::string(additional_table));
     }
 }
@@ -73,14 +73,14 @@ void MySQLDataStore::LoadItemPagesTable()
 {
     uint32 start_time = getMSTime();
 
-    QueryResult* itempages_result = WorldDatabase.Query("SELECT entry, text, next_page FROM itempages");
+    QueryResult* itempages_result = WorldDatabase.Query("SELECT entry, text, next_page FROM item_pages");
     if (itempages_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `itempages` is empty!");
+        Log.Notice("MySQLDataLoads", "Table `item_pages` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `itempages` has %u columns", itempages_result->GetFieldCount());
+    Log.Notice("MySQLDataLoads", "Table `item_pages` has %u columns", itempages_result->GetFieldCount());
 
     _itemPagesStore.rehash(itempages_result->GetRowCount());
 
@@ -103,7 +103,7 @@ void MySQLDataStore::LoadItemPagesTable()
 
     delete itempages_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u pages from `itempages` table in %u ms!", itempages_count, getMSTime() - start_time);
+    Log.Success("MySQLDataLoads", "Loaded %u pages from `item_pages` table in %u ms!", itempages_count, getMSTime() - start_time);
 }
 
 ItemPage const* MySQLDataStore::GetItemPage(uint32 entry)
@@ -161,7 +161,7 @@ void MySQLDataStore::LoadItemsTable()
         //                                                   113           114         115          116          117           118         119          120
                                                        "socket_color_1, unk201_3, socket_color_2, unk201_5, socket_color_3, unk201_7, socket_bonus, GemProperties, "
         //                                                      121                122                 123                 124             125        126
-                                                       "ReqDisenchantSkill, ArmorDamageModifier, existingduration, ItemLimitCategoryId, HolidayId, food_type FROM items");*/
+                                                       "ReqDisenchantSkill, ArmorDamageModifier, existingduration, ItemLimitCategoryId, HolidayId, food_type FROM item_properties");*/
 
         if (item_result == nullptr)
         {
@@ -170,7 +170,7 @@ void MySQLDataStore::LoadItemsTable()
         }
 
         uint32 row_count = 0;
-        if (table_name.compare("items") == 0)
+        if (table_name.compare("item_properties") == 0)
         {
             basic_field_count = item_result->GetFieldCount();
         }
@@ -181,7 +181,7 @@ void MySQLDataStore::LoadItemsTable()
 
         if (basic_field_count != item_result->GetFieldCount())
         {
-            Log.Error("MySQLDataLoads", "Additional items table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), item_result->GetFieldCount(), basic_field_count);
+            Log.Error("MySQLDataLoads", "Additional item_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), item_result->GetFieldCount(), basic_field_count);
             continue;
         }
 
@@ -450,7 +450,7 @@ void MySQLDataStore::LoadItemsTable()
         delete item_result;
     }
 
-    Log.Success("MySQLDataLoads", "Loaded %u items in %u ms!", item_count, getMSTime() - start_time);
+    Log.Success("MySQLDataLoads", "Loaded %u item_properties in %u ms!", item_count, getMSTime() - start_time);
 }
 
 ItemPrototype const* MySQLDataStore::GetItemProto(uint32 entry)
@@ -824,7 +824,7 @@ void MySQLDataStore::LoadGameObjectNamesTable()
         }
 
         uint32 row_count = 0;
-        if (table_name.compare("gameobject_names") == 0)
+        if (table_name.compare("gameobject_properties") == 0)
         {
             basic_field_count = gameobject_names_result->GetFieldCount();
         }
@@ -835,7 +835,7 @@ void MySQLDataStore::LoadGameObjectNamesTable()
 
         if (basic_field_count != gameobject_names_result->GetFieldCount())
         {
-            Log.Error("MySQLDataLoads", "Additional gameobject_names table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), gameobject_names_result->GetFieldCount());
+            Log.Error("MySQLDataLoads", "Additional gameobject_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), gameobject_names_result->GetFieldCount());
             delete gameobject_names_result;
             continue;
         }
@@ -981,7 +981,7 @@ void MySQLDataStore::LoadQuestsTable()
         }
 
         uint32 row_count = 0;
-        if (table_name.compare("quests") == 0)
+        if (table_name.compare("quest_properties") == 0)
         {
             basic_field_count = quest_result->GetFieldCount();
         }
@@ -992,7 +992,7 @@ void MySQLDataStore::LoadQuestsTable()
 
         if (basic_field_count != quest_result->GetFieldCount())
         {
-            Log.Error("MySQLDataLoads", "Additional quests table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), quest_result->GetFieldCount());
+            Log.Error("MySQLDataLoads", "Additional quest_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), quest_result->GetFieldCount());
             delete quest_result;
             continue;
         }
@@ -1150,7 +1150,7 @@ void MySQLDataStore::LoadQuestsTable()
         delete quest_result;
     }
 
-    Log.Success("MySQLDataLoads", "Loaded %u quest data in %u ms!", quest_count, getMSTime() - start_time);
+    Log.Success("MySQLDataLoads", "Loaded %u quest_properties data in %u ms!", quest_count, getMSTime() - start_time);
 }
 
 Quest const* MySQLDataStore::GetQuest(uint32 entry)
@@ -1654,14 +1654,14 @@ void MySQLDataStore::LoadTeleportCoordsTable()
     uint32 start_time = getMSTime();
 
     //                                                                0     1         2           3           4
-    QueryResult* teleport_coords_result = WorldDatabase.Query("SELECT id, mapId, position_x, position_y, position_z FROM teleport_coords");
+    QueryResult* teleport_coords_result = WorldDatabase.Query("SELECT id, mapId, position_x, position_y, position_z FROM spell_teleport_coords");
     if (teleport_coords_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `teleport_coords` is empty!");
+        Log.Notice("MySQLDataLoads", "Table `spell_teleport_coords` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `teleport_coords` has %u columns", teleport_coords_result->GetFieldCount());
+    Log.Notice("MySQLDataLoads", "Table `spell_teleport_coords` has %u columns", teleport_coords_result->GetFieldCount());
 
     _teleportCoordsStore.rehash(teleport_coords_result->GetRowCount());
 
@@ -1685,7 +1685,7 @@ void MySQLDataStore::LoadTeleportCoordsTable()
 
     delete teleport_coords_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `teleport_coords` table in %u ms!", teleport_coords_count, getMSTime() - start_time);
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `spell_teleport_coords` table in %u ms!", teleport_coords_count, getMSTime() - start_time);
 }
 
 TeleportCoords const* MySQLDataStore::GetTeleportCoord(uint32 entry)

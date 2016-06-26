@@ -20,16 +20,16 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Edge of Madness, Gri'lek</b>\n
-/// event_names entry: 27 \n
-/// event_names holiday: 0 \n
+/// event_properties entry: 27 \n
+/// event_properties holiday: 0 \n
 /// npc_id: 15082 \n
 /// What the hell... https://www.youtube.com/watch?v=-kQMJ2M30PA \n
 ///\todo Monsterscript for Grilek
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Edge of Madness, Hazza'rah</b>\n
-/// event_names entry: 28 \n
-/// event_names holiday: 0 \n
+/// event_properties entry: 28 \n
+/// event_properties holiday: 0 \n
 ///
 /// Hazza'rah entry: 15083 \n
 /// Skill "Archaeology (794) 255 required to summon the boss! \n
@@ -50,8 +50,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Edge of Madness, Renataki</b>\n
-/// event_names entry: 29 \n
-/// event_names holiday: 0 \n
+/// event_properties entry: 29 \n
+/// event_properties holiday: 0 \n
 /// npc_id: 15084 \n
 ///\todo Monsterscript for Rentaki
 
@@ -61,8 +61,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Edge of Madness, Wushoolay</b>\n
-/// event_names entry: 30 \n
-/// event_names holiday: 0 \n
+/// event_properties entry: 30 \n
+/// event_properties holiday: 0 \n
 /// npc_id: 15085 \n
 /// First you must find four Artifacts to interact with them (Archeologie) with an Gossip MenuItem \n
 /// #define GOSSIP_MENU_ITEM "Examine the object." 

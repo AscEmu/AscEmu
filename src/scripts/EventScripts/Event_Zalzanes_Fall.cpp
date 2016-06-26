@@ -20,8 +20,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Zalazane's Fall</b>\n
-/// event_names entry: 61 \n
-/// event_names holiday: NA \n
+/// event_properties entry: 61 \n
+/// event_properties holiday: NA \n
 ///\todo Zalazane's Fall \n
 
 void SetupZalazanesFall(ScriptMgr* mgr)

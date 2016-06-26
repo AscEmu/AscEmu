@@ -55,13 +55,13 @@ Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry
 
     if (!gameobject_info)
     {
-        Log.Error("Transport Handler", "Transport ID:%u, will not be loaded, gameobject_names missing", goEntry);
+        Log.Error("Transport Handler", "Transport ID:%u, will not be loaded, gameobject_properties missing", goEntry);
         return NULL;
     }
 
     if (gameobject_info->type != GAMEOBJECT_TYPE_MO_TRANSPORT)
     {
-        Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_names type wrong", goEntry, gameobject_info->name.c_str());
+        Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_properties type wrong", goEntry, gameobject_info->name.c_str());
         return NULL;
     }
 
@@ -137,13 +137,13 @@ void ObjectMgr::LoadTransports()
 
             if (!gameobject_info)
             {
-                Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_names missing", entry, name.c_str());
+                Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_properties missing", entry, name.c_str());
                 continue;
             }
 
             if (gameobject_info->type != GAMEOBJECT_TYPE_MO_TRANSPORT)
             {
-                Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_names type wrong", entry, name.c_str());
+                Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_properties type wrong", entry, name.c_str());
                 continue;
             }
 

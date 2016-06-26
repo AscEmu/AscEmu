@@ -22,7 +22,7 @@
 ///////////////////////////////////////////////////////
 // Nights
 // Hande the nights
-// event_names entry: 25
+// event_properties entry: 25
 
 class HandleNights : public EventScript
 {

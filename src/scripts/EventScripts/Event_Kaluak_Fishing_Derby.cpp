@@ -20,13 +20,13 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Kalu'ak Fishing Derby Fishing Pools</b>\n
-/// event_names entry: 64 \n
-/// event_names holiday: 0 v
+/// event_properties entry: 64 \n
+/// event_properties holiday: 0 v
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Kalu'ak Fishing Derby Turn-ins</b>\n
-/// event_names entry: 63 \n
-/// event_names holiday: 424 \n
+/// event_properties entry: 63 \n
+/// event_properties holiday: 424 \n
 /// Elder Clearwater entry: 38294 \n
 /// Need Backtip Shark entry: 50289 to finish \n
 /// If you are the first person who finishes the quest 24803 during the event, Elder Clearwater yells winning text. \n

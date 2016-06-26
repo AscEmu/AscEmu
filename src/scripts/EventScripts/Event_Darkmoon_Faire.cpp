@@ -22,21 +22,21 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Darkmoon Faire (Elwynn Forest)</b>\n
-// event_names entry: 4 \n
-// event_names holiday: 374 \n
+// event_properties entry: 4 \n
+// event_properties holiday: 374 \n
 ///\todo Check all Darkmoon Faire events
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Darkmoon Faire (Mulgore)</b>\n
-// event_names entry: 5 \n
-// event_names holiday: 375 \n
+// event_properties entry: 5 \n
+// event_properties holiday: 375 \n
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Darkmoon Faire (Terokkar Forest)</b>\n
-// event_names entry: 3 \n
-// event_names holiday: 376 \n
+// event_properties entry: 3 \n
+// event_properties holiday: 376 \n
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

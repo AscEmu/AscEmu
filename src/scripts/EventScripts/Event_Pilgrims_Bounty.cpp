@@ -20,8 +20,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Pilgrim's Bounty</b>\n
-/// event_names entry: 26 \n
-/// event_names holiday: 404 \n
+/// event_properties entry: 26 \n
+/// event_properties holiday: 404 \n
 ///\todo Pilgrim's Bounty \n
 
 void SetupPilgrimsBounty(ScriptMgr* mgr)

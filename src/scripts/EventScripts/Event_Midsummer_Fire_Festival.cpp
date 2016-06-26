@@ -20,8 +20,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Midsummer Fire Festival</b>\n
-/// event_names entry: 1 \n
-/// event_names holiday: 341 \n
+/// event_properties entry: 1 \n
+/// event_properties holiday: 341 \n
 ///\todo Midsummer Fire Festival \n
 
 /// Boss Ahune

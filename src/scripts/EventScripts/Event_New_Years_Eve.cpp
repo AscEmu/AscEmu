@@ -20,8 +20,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>New Year's Eve</b>\n
-/// event_names entry: 6 \n
-/// event_names holiday: NA \n
+/// event_properties entry: 6 \n
+/// event_properties holiday: NA \n
 ///\todo New Years's Eve \n
 
 void SetupNewYearsEve(ScriptMgr* mgr)

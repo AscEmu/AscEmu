@@ -20,8 +20,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Operation Gnomeregan</b>\n
-/// event_names entry: NA \n
-/// event_names holiday: NA \n
+/// event_properties entry: NA \n
+/// event_properties holiday: NA \n
 ///\todo Operation Gnomeregan \n
 
 void SetupOperationGnomeregan(ScriptMgr* mgr)

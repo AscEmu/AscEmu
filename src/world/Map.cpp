@@ -356,7 +356,7 @@ void Map::LoadSpawns(bool reload)
                     auto gameobject_info = sMySQLStore.GetGameObjectInfo(gameobject_entry);
                     if (gameobject_info == nullptr)
                     {
-                        Log.Error("Map::LoadSpawns", "Gameobject spawn ID: %u has invalid entry: %u which is not in gameobject_names table! Skipped loading.", go_spawn->id, gameobject_entry);
+                        Log.Error("Map::LoadSpawns", "Gameobject spawn ID: %u has invalid entry: %u which is not in gameobject_properties table! Skipped loading.", go_spawn->id, gameobject_entry);
                         delete go_spawn;
                         continue;
                     }

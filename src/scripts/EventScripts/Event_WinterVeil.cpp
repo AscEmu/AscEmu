@@ -20,8 +20,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Winter Veil</b>\n
-/// event_names entry: 2 \n
-/// event_names holiday: 141 \n
+/// event_properties entry: 2 \n
+/// event_properties holiday: 141 \n
 ///\todo Check Winter Veil \n
 
 class PX238WinterWondervolt : public GameObjectAIScript
@@ -133,8 +133,8 @@ void WinterVeilEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Winter Veil: Gifts</b>\n
-/// event_names entry: 52 \n
-/// event_names holiday: NA \n
+/// event_properties entry: 52 \n
+/// event_properties holiday: NA \n
 ///\todo Check if gifts need a extra script \n
 
 void SetupWinterVeil(ScriptMgr* mgr)

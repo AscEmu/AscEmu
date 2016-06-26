@@ -22,7 +22,7 @@
  ///\brief This script will add support for an SQL table called gameobject_teleports.
  /// This table can be used to teleport players when they use a game object such
  /// as a door or portal. Any object used in this table should exist in the
- /// gameobject_names table, and be of type 10. Custom portal can use the generic
+ /// gameobject_properties table, and be of type 10. Custom portal can use the generic
  /// display id of 6831. Portals also have the Sound2 field set to '1'.
 //////////////////////////////////////////////////////////////////////////////////////////
 
