@@ -407,11 +407,9 @@ class SERVER_DECL GameObject : public Object
         void SaveToFile(std::stringstream & name);
         void DeleteFromDB();
 
-        void SetRotation(float rad);
-        uint64 GetRotation() const { return m_rotation; }
-
-        void UpdateRotation();
-        void UpdateRotationFields(float rotation2 = 0.0f, float rotation3 = 0.0f);
+        // z_rot, y_rot, x_rot - rotation angles around z, y and x axes
+        void SetRotationAngles(float z_rot, float y_rot, float x_rot);
+        int64 GetRotation() const { return m_rotation; }
 
         void SetSummoned(Unit* mob)
         {
@@ -469,6 +467,8 @@ class SERVER_DECL GameObject : public Object
 
         void SetDisplayId(uint32 id) { SetUInt32Value(GAMEOBJECT_DISPLAYID, id); }
         uint32 GetDisplayId() { return GetUInt32Value(GAMEOBJECT_DISPLAYID); }
+
+        void SetRotationQuat(float qx, float qy, float qz, float qw);
 
         void SetParentRotation(uint8 rot, float value) { SetFloatValue(GAMEOBJECT_PARENTROTATION + rot, value); }
         float GetParentRotation(uint8 rot) { return GetFloatValue(GAMEOBJECT_PARENTROTATION + rot); }

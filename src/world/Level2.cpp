@@ -486,6 +486,10 @@ bool ChatHandler::HandleGOSelect(const char* args, WorldSession* m_session)
 
     m_session->GetPlayer()->m_GM_SelectedGO = GObj->GetGUID();
 
+    //reset last rotation values on selecting a new go.
+    m_session->GetPlayer()->go_last_x_rotation = 0.0f;
+    m_session->GetPlayer()->go_last_y_rotation = 0.0f;
+
     GreenSystemMessage(m_session, "Selected GameObject [ %s ] which is %.3f meters away from you.",
         sMySQLStore.GetGameObjectProperties(GObj->GetEntry())->name.c_str(), m_session->GetPlayer()->CalcDistance(GObj));
 

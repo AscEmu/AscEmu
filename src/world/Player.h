@@ -2034,6 +2034,10 @@ class SERVER_DECL Player : public Unit
         void SetClientControl(Unit* target, uint8 allowMove);
 
         void SetMover(Unit* target);
+
+        // command
+        float go_last_x_rotation;
+        float go_last_y_rotation;
 };
 
 class SkillIterator

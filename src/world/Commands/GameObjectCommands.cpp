@@ -180,6 +180,56 @@ bool ChatHandler::HandleGOOpenCommand(const char* /*args*/, WorldSession* m_sess
     return true;
 }
 
+//.gobject rotate
+bool ChatHandler::HandleGORotate(const char* args, WorldSession* m_session)
+{
+    char Axis;
+    float deg;
+    if (sscanf(args, "%c %f", &Axis, &deg) < 1)
+        return false;
+
+    GameObject* go = m_session->GetPlayer()->GetSelectedGo();
+    if (!go)
+    {
+        RedSystemMessage(m_session, "No selected GameObject...");
+        return true;
+    }
+
+    float rotation_x = m_session->GetPlayer()->go_last_x_rotation;
+    float rotation_y = m_session->GetPlayer()->go_last_y_rotation;
+    float orientation = go->GetOrientation();
+
+    switch (tolower(Axis))
+    {
+        case 'x':
+            go->SetRotationAngles(orientation, rotation_y, deg);
+            m_session->GetPlayer()->go_last_x_rotation = deg;
+            break;
+        case 'y':
+            go->SetRotationAngles(orientation, deg, rotation_x);
+            m_session->GetPlayer()->go_last_y_rotation = deg;
+            break;
+        case 'o':
+            go->SetOrientation(m_session->GetPlayer()->GetOrientation());
+            go->SetRotationAngles(go->GetOrientation(), rotation_y, rotation_x);
+            break;
+        default:
+            RedSystemMessage(m_session, "Invalid Axis, Please use x, y, or o.");
+            return true;
+    }
+
+    GreenSystemMessage(m_session, "Gameobject rotated");
+
+    uint32 NewGuid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
+    go->RemoveFromWorld(true);
+    go->SetNewGuid(NewGuid);
+    go->PushToWorld(m_session->GetPlayer()->GetMapMgr());
+    go->SaveToDB();
+
+    m_session->GetPlayer()->m_GM_SelectedGO = NewGuid;
+    return true;
+}
+
 //.gobject spawn
 bool ChatHandler::HandleGOSpawn(const char* args, WorldSession* m_session)
 {

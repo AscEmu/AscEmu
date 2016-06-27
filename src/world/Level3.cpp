@@ -1250,53 +1250,6 @@ void ChatHandler::SendItemLinkToPlayer(ItemProperties const* iProto, WorldSessio
     }
 }
 
-bool ChatHandler::HandleGORotate(const char* args, WorldSession* m_session)
-{
-    char Axis;
-    float deg;
-    if (sscanf(args, "%c %f", &Axis, &deg) < 1) return false;
-    GameObject* go = m_session->GetPlayer()->GetSelectedGo();
-    if (!go)
-    {
-        RedSystemMessage(m_session, "No selected GameObject...");
-        return true;
-    }
-
-    // float rad = deg * (float(M_PI) / 180.0f);
-
-    switch (tolower(Axis))
-    {
-        case 'x':
-            //        go->ModFloatValue(GAMEOBJECT_ROTATION, rad);
-            break;
-        case 'y':
-            //        go->ModFloatValue(GAMEOBJECT_ROTATION_01, rad);
-            break;
-        case 'o':
-            if (m_session->GetPlayer())
-            {
-                float ori = m_session->GetPlayer()->GetOrientation();
-                go->SetParentRotation(2, sinf(ori / 2));
-                go->SetParentRotation(3, cosf(ori / 2));
-                go->SetOrientation(ori);
-                go->UpdateRotation();
-            }
-            break;
-        default:
-            RedSystemMessage(m_session, "Invalid Axis, Please use x, y, or o.");
-            return true;
-    }
-
-    uint32 NewGuid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
-    go->RemoveFromWorld(true);
-    go->SetNewGuid(NewGuid);
-    go->PushToWorld(m_session->GetPlayer()->GetMapMgr());
-    go->SaveToDB();
-    //lets reselect the object that can be really annoying...
-    m_session->GetPlayer()->m_GM_SelectedGO = NewGuid;
-    return true;
-}
-
 struct spell_thingo
 {
     uint32 type;

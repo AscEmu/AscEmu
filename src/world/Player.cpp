@@ -528,6 +528,10 @@ Player::Player(uint32 guid)
     m_roles = 0;
     GroupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
     m_FirstLogin = false;
+
+    // command
+    go_last_x_rotation = 0.0f;
+    go_last_y_rotation = 0.0f;
 }
 
 void Player::OnLogin()
