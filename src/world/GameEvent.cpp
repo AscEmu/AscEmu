@@ -10,11 +10,17 @@ void GameEvent::CreateNPCs()
     for (auto npc : npc_data)
     {
         auto mapmgr = sInstanceMgr.GetMapMgr(npc.map_id);
-        if (mapmgr == NULL)
+        if (mapmgr == nullptr)
             continue;
 
         Creature* c = mapmgr->CreateCreature(npc.entry);
         CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(npc.entry);
+        if (cp == nullptr)
+        {
+            Log.Error("GameEvent", "CreateNPCs: try to create invalid creature %u!", npc.entry);
+            continue;
+        }
+
         c->Load(cp, npc.position_x, npc.position_y, npc.position_z, npc.orientation);
         if (npc.waypoint_group != 0)
         {

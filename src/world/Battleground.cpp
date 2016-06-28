@@ -404,6 +404,12 @@ GameObject* CBattleground::SpawnGameObject(uint32 entry, LocationVector &v, uint
 Creature* CBattleground::SpawnCreature(uint32 entry, float x, float y, float z, float o, uint32 faction)
 {
     CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(entry);
+    if (cp == nullptr)
+    {
+        Log.Error("MoonInstanceScript", "PushCreature: tried to push a invalid creature with entry %u!", entry);
+        return nullptr;
+    }
+
     Creature* c = m_mapMgr->CreateCreature(entry);
 
     Arcemu::Util::ArcemuAssert(c != nullptr);

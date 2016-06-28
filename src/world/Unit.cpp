@@ -7847,7 +7847,8 @@ bool Unit::isLootable()
 {
     if (IsTagged() && !IsPet() && !(IsPlayer() && !IsInBg()) && (GetCreatedByGUID() == 0) && !IsVehicle())
     {
-        if (IsCreature() && !lootmgr.HasLootForCreature(GetEntry()) && (sMySQLStore.GetCreatureProperties(GetEntry())->money == 0))  // Since it is inworld we can safely assume there is a proto cached with this Id!
+        auto creature_prop = sMySQLStore.GetCreatureProperties(GetEntry());
+        if (IsCreature() && !lootmgr.HasLootForCreature(GetEntry()) && creature_prop != nullptr && (creature_prop->money == 0))  // Since it is inworld we can safely assume there is a proto cached with this Id!
             return false;
 
         return true;

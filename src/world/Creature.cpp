@@ -1682,6 +1682,7 @@ void Creature::OnPushToWorld()
     {
         LOG_ERROR("Something tried to push to world a Creature with ID %u with invalid creature_properties!", GetEntry());
         ARCEMU_ASSERT(false);
+        return;
     }
     else
     {

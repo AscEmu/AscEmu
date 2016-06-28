@@ -94,6 +94,12 @@ Creature* MoonInstanceScript::SpawnCreature(uint32 pEntry, float pX, float pY, f
 Creature* MoonInstanceScript::PushCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFaction)
 {
     CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(pEntry);
+    if (cp == nullptr)
+    {
+        Log.Error("MoonInstanceScript", "PushCreature: tried to push a invalid creature with entry %u!", pEntry);
+        return nullptr;
+    }
+
     Creature* c = mInstance->CreateCreature(pEntry);
 
     Arcemu::Util::ArcemuAssert(c != NULL);
