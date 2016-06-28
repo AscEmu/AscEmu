@@ -1680,13 +1680,8 @@ void Creature::OnPushToWorld()
 {
     if (creature_properties == nullptr)
     {
-        LOG_ERROR("Something tried to push to world a Creature with ID %u with invalid creature_properties!", GetEntry());
-        ARCEMU_ASSERT(false);
+        Log.Error("Creature", "OnPushToWorld : Something tried to push Creature with entry %u with invalid creature_properties!", GetEntry());
         return;
-    }
-    else
-    {
-        SetCreatureProperties(sMySQLStore.GetCreatureProperties(GetEntry()));
     }
 
     std::set<uint32>::iterator itr = creature_properties->start_auras.begin();
