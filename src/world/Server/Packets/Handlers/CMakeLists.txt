@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
-set(PATH_PREFIX Packets/Handlers)
+set(PATH_PREFIX Server/Packets/Handlers)
 
 set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/AreaTrigger.cpp
@@ -37,5 +37,5 @@ set(SRC_PACKET_HANDLER_FILES
    #${PATH_PREFIX}/VoiceChatHandler.cpp //Not used!
 )
 
-source_group(Packets\\Handlers FILES ${SRC_PACKET_HANDLER_FILES})
+source_group(Server\\Packets\\Handlers FILES ${SRC_PACKET_HANDLER_FILES})
 unset(PATH_PREFIX)

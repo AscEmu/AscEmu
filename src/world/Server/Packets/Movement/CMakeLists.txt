@@ -1,6 +1,6 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
 
-set(PATH_PREFIX Packets/Movement)
+set(PATH_PREFIX Server/Packets/Movement)
 
 set(SRC_PACKET_MOVEMENT_FILES
    ${PATH_PREFIX}/CreatureMovement.cpp
@@ -8,5 +8,5 @@ set(SRC_PACKET_MOVEMENT_FILES
    ${PATH_PREFIX}/SmsgMonsterMove.hpp
 )
 
-source_group(Packets\\Movement FILES ${SRC_PACKET_MOVEMENT_FILES})
+source_group(Server\\Packets\\Movement FILES ${SRC_PACKET_MOVEMENT_FILES})
 unset(PATH_PREFIX)

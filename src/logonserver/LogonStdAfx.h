@@ -41,7 +41,7 @@
 #include "../shared/Auth/Sha1.h"
 #include "../shared/Auth/WowCrypt.h"
 
-#include "../world/Packets/Opcodes.h"
+#include "../world/Server/Packets/Opcodes.h"
 #include "LogonConf.h"
 #include "AccountCache.h"
 #include "PeriodicFunctionCall_Thread.h"
