@@ -5,6 +5,7 @@ project(world CXX)
 
 include(Chat/CMakeLists.txt)
 include(Chat/Commands/CMakeLists.txt)
+include(LogonCommClient/CMakeLists.txt)
 include(Map/CMakeLists.txt)
 include(Map/Area/CMakeLists.txt)
 include(Packets/CMakeLists.txt)
@@ -16,6 +17,7 @@ include(Storage/DBC/CMakeLists.txt)
 set(sources
    ${SRC_CHAT_FILES}
    ${SRC_COMMAND_FILES}
+   ${SRC_LOGON_COMMUNICATION_CLIENT_FILES}
    ${SRC_MAP_FILES}
    ${SRC_MAP_AREA_FILES}
    ${SRC_PACKET_FILES}
@@ -50,7 +52,6 @@ set(sources
 	Entities/Summons/PossessedSummon.cpp
 	Entities/Summons/TotemSummon.cpp
 	Entities/Summons/WildSummon.cpp
-	DuelHandler.cpp 
 	DynamicObject.cpp 
 	EquipmentSetMgr.cpp
 	EventableObject.cpp 
@@ -70,8 +71,6 @@ set(sources
 	LfgMgr.cpp 
 	LootMgr.cpp 
 	LocalizationMgr.cpp 
-	LogonCommClient.cpp 
-	LogonCommHandler.cpp 
     MailMgr.cpp
    Main.cpp
    Movement/MovementCommon.cpp
@@ -183,8 +182,6 @@ set(headers
     LfgPlayerData.h
 	LfgMgr.h
 	LocalizationMgr.h
-	LogonCommClient.h
-	LogonCommHandler.h
 	LootMgr.h
 	MailMgr.h
 	MainServerDefines.h

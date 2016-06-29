@@ -11,6 +11,7 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/CharacterHandler.cpp 
    ${PATH_PREFIX}/ChatHandler.cpp
    ${PATH_PREFIX}/CombatHandler.cpp
+   ${PATH_PREFIX}/DuelHandler.cpp
    ${PATH_PREFIX}/GroupHandler.cpp
    ${PATH_PREFIX}/GMTicket
    ${PATH_PREFIX}/GuildHandler.cpp
