@@ -23,7 +23,7 @@
 
 #include "CreatureDefines.hpp"
 #include "UnitDefines.hpp"
-#include "Map.h"
+#include "Map/Map.h"
 #include "Unit.h"
 
 class GossipScript;

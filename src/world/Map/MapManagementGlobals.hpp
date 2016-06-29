@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _MAP_MANAGEMENT_MAP_MANAGEMENT_GLOBALS_H
 #define _MAP_MANAGEMENT_MAP_MANAGEMENT_GLOBALS_H
 
-#include "AreaManagement/AreaManagementGlobals.hpp"
+#include "Map/Area/AreaManagementGlobals.hpp"
 
 namespace MapManagement
 {

@@ -5,19 +5,25 @@ project(world CXX)
 
 include(Chat/CMakeLists.txt)
 include(Chat/Commands/CMakeLists.txt)
+include(Map/CMakeLists.txt)
+include(Map/Area/CMakeLists.txt)
 include(Packets/CMakeLists.txt)
 include(Packets/Handlers/CMakeLists.txt)
 include(Packets/Movement/CMakeLists.txt)
 include(Storage/CMakeLists.txt)
 include(Storage/DBC/CMakeLists.txt)
+
 set(sources
    ${SRC_CHAT_FILES}
    ${SRC_COMMAND_FILES}
+   ${SRC_MAP_FILES}
+   ${SRC_MAP_AREA_FILES}
    ${SRC_PACKET_FILES}
    ${SRC_PACKET_HANDLER_FILES}
    ${SRC_PACKET_MOVEMENT_FILES}
    ${SRC_STORAGE_FILES}
    ${SRC_STORAGE_DBC_FILES}
+   
    AchievementMgr.cpp 
    CollideInterface.cpp 
 	DayWatcherThread.cpp 
@@ -27,7 +33,6 @@ set(sources
 	AddonMgr.cpp 
 	AIInterface.cpp 
 	AIEvents.cpp
-	AreaTrigger.cpp 
 	Arenas.cpp 
 	AuctionHouse.cpp 
 	AuctionMgr.cpp 
@@ -69,11 +74,6 @@ set(sources
 	LogonCommHandler.cpp 
     MailMgr.cpp
    Main.cpp
-    MapManagement/AreaManagement/AreaStorage.cpp
-	MapCell.cpp 
-	Map.cpp 
-	MapScriptInterface.cpp 
-	MapMgr.cpp 
    Movement/MovementCommon.cpp
    Movement/Spline/MovementSpline.cpp
    Movement/Spline/SplineFlags.cpp
@@ -134,7 +134,6 @@ set(headers
 	AddonMgr.h
 	AIInterface.h
 	AIEvents.h
-	AreaTrigger.h
 	Arenas.h
 	ArenaTeam.h
 	AuctionHouse.h
@@ -189,14 +188,6 @@ set(headers
 	LootMgr.h
 	MailMgr.h
 	MainServerDefines.h
-    MapManagement/MapManagementGlobals.hpp
-    MapManagement/AreaManagement/AreaStorage.hpp
-    MapManagement/AreaManagement/AreaManagementGlobals.hpp
-	Map.h
-	MapCell.h
-	MapMgr.h
-    MapMgrDefines.hpp
-	MapScriptInterface.h
 	Master.h
    Movement/MovementCommon.hpp
    Movement/UnitMovementManager.hpp

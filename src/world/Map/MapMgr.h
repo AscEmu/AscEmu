@@ -21,7 +21,7 @@
 #ifndef _MAPMGR_H
 #define _MAPMGR_H
 
-#include "MapManagement/MapManagementGlobals.hpp"
+#include "Map/MapManagementGlobals.hpp"
 #include "CellHandler.h"
 #include "WorldStatesHandler.h"
 #include "MapMgrDefines.hpp"

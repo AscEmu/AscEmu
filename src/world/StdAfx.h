@@ -125,7 +125,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "AddonMgr.h"
 #include "AIEvents.h"
 #include "AIInterface.h"
-#include "AreaTrigger.h"
+#include "Packets/Handlers/AreaTrigger.h"
 #include "CalendarMgr.h"
 #include "BattlegroundMgr.h"
 #include "Battleground.h"
@@ -158,8 +158,8 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "LfgGroupData.h"
 #include "LfgPlayerData.h"
 #include "MailMgr.h"
-#include "Map.h"
-#include "MapCell.h"
+#include "Map/Map.h"
+#include "Map/MapCell.h"
 #include "TerrainMgr.h"
 #include "Packets/Handlers/MiscHandler.h"
 #include "Packets/Handlers/NPCHandler.h"
@@ -168,8 +168,8 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "WorldSession.h"
 #include "WorldStatesHandler.h"
 #include "WorldStrings.h"
-#include "MapMgr.h"
-#include "MapScriptInterface.h"
+#include "Map/MapMgr.h"
+#include "Map/MapScriptInterface.h"
 #include "Player.h"
 #include "Faction.h"
 #include "Skill.h"
@@ -211,6 +211,6 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 
 #include "Player/PlayerClasses.hpp"
 
-#include "MapManagement/MapManagementGlobals.hpp"
+#include "Map/MapManagementGlobals.hpp"
 
 #endif  // __STDAFX_H

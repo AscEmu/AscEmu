@@ -23,7 +23,7 @@
 
 #include "CRitual.h"
 #include "QuestMgr.h"
-#include "Map.h"
+#include "Map/Map.h"
 
 enum GameObject_State
 {
