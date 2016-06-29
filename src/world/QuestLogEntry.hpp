@@ -25,7 +25,7 @@
 #include "CommonDefines.hpp"
 #include "EventableObject.h"
 #include "Quest.h"
-#include "Player.h"
+#include "Units/Players/Player.h"
 #include "ScriptMgr.h"
 
 class SERVER_DECL QuestLogEntry : public EventableObject

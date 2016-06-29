@@ -26,7 +26,7 @@
 #include "WorldStatesHandler.h"
 #include "MapMgrDefines.hpp"
 #include "CThreads.h"
-#include "Entities/Summons/SummonDefines.hpp"
+#include "Units/Summons/SummonDefines.hpp"
 #include "CObjectFactory.h"
 
 namespace Arcemu

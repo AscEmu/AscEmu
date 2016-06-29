@@ -22,9 +22,9 @@
 #define _WOWSERVER_CREATURE_H
 
 #include "CreatureDefines.hpp"
-#include "UnitDefines.hpp"
+#include "Units/UnitDefines.hpp"
 #include "Map/Map.h"
-#include "Unit.h"
+#include "Units/Unit.h"
 
 class GossipScript;
 

@@ -19,7 +19,7 @@
  */
 
 #include "StdAfx.h"
-#include "Unit.h"
+#include "Units/Unit.h"
 #include "Storage/DBC/DBCStores.h"
 #include "QuestLogEntry.hpp"
 #include "EventableObject.h"

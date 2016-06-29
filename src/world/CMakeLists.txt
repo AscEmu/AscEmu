@@ -20,6 +20,10 @@ include(Spell/CMakeLists.txt)
 include(Spell/Customization/CMakeLists.txt)
 include(Storage/CMakeLists.txt)
 include(Storage/DBC/CMakeLists.txt)
+include(Units/CMakeLists.txt)
+include(Units/Creatures/CMakeLists.txt)
+include(Units/Players/CMakeLists.txt)
+include(Units/Summons/CMakeLists.txt)
 
 set(sources
    ${SRC_CHAT_FILES}
@@ -39,6 +43,10 @@ set(sources
    ${SRC_SPELL_CUSTOM_FILES}
    ${SRC_STORAGE_FILES}
    ${SRC_STORAGE_DBC_FILES}
+   ${SRC_UNITS_FILES}
+   ${SRC_UNITS_CREATURES_FILES}
+   ${SRC_UNITS_PLAYERS_FILES}
+   ${SRC_UNITS_SUMMONS_FILES}
    
    AchievementMgr.cpp 
    CollideInterface.cpp 
@@ -58,14 +66,6 @@ set(sources
 	Channel.cpp 
     CObjectFactory.cpp
 	Container.cpp 
-	Corpse.cpp 
-	Creature.cpp 
-	Entities/Summons/Summon.cpp
-	Entities/Summons/CompanionSummon.cpp
-	Entities/Summons/GuardianSummon.cpp
-	Entities/Summons/PossessedSummon.cpp
-	Entities/Summons/TotemSummon.cpp
-	Entities/Summons/WildSummon.cpp
 	DynamicObject.cpp 
 	EquipmentSetMgr.cpp
 	EventableObject.cpp 
@@ -88,8 +88,6 @@ set(sources
     MailMgr.cpp
 	Object.cpp 
 	ObjectMgr.cpp 
-	Pet.cpp 
-	Player.cpp
 	PlayerCache.cpp
 	PlayerPacketWrapper.cpp
 	Quest.cpp 
@@ -98,12 +96,9 @@ set(sources
 	ScriptMgr.cpp 
 	SpeedDetector.cpp
 	StdAfx.cpp
-	SummonHandler.cpp
 	Stats.cpp 
 	TaxiMgr.cpp 
-	TransporterHandler.cpp 
-	Unit.cpp 
-	Vehicle.cpp 
+	TransporterHandler.cpp  
 	WeatherMgr.cpp 
 	WorldStatesHandler.cpp
 	WordFilter.cpp 
@@ -132,12 +127,7 @@ set(headers
     CObjectFactory.h
 	CollideInterface.h
 	CommonScheduleThread.h
-	Entities/Summons/CompanionSummon.h
-    Entities/Summons/SummonDefines.hpp
 	Container.h
-	Corpse.h
-	Creature.h
-    CreatureDefines.hpp
 	DatabaseCleaner.h
 	DayWatcherThread.h
 	Definitions.h
@@ -153,7 +143,6 @@ set(headers
     Gossip/GossipDefines.hpp
 	Gossip.h
 	Group.h
-	Entities/Summons/GuardianSummon.h
 	Guild.h
 	Item.h
 	ItemInterface.h
@@ -168,12 +157,7 @@ set(headers
 	MailMgr.h
 	Object.h
 	ObjectMgr.h
-	Pet.h
-	Player.h
-   Player/PlayerClasses.hpp
-    PlayerDefines.hpp
 	PlayerCache.h
-	Entities/Summons/PossessedSummon.h
 	Quest.h
     QuestDefines.hpp
     QuestLogEntry.hpp
@@ -186,19 +170,12 @@ set(headers
 	SpeedDetector.h
 	Stats.h
 	StdAfx.h
-	Entities/Summons/Summon.h
-	SummonHandler.h
 	TaxiMgr.h
-	Entities/Summons/TotemSummon.h
     Transports/TransportSpawn.hpp
 	TransporterHandler.h
-	Unit.h
-    UnitDefines.hpp
 	UpdateFields.h
 	UpdateMask.h
-	Vehicle.h
 	WeatherMgr.h
-	Entities/Summons/WildSummon.h
 	WordFilter.h
 	WorldStatesHandler.h
 	WorldStates.h

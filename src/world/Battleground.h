@@ -21,7 +21,7 @@
 #ifndef _BATTLEGROUND_H
 #define _BATTLEGROUND_H
 
-#include "PlayerDefines.hpp"
+#include "Units/Players/PlayerDefines.hpp"
 #include <mutex>
 #include <atomic>
 

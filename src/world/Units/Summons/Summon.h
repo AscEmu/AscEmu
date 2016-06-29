@@ -22,7 +22,7 @@
 #define SUMMON_HPP_
 
 #include "SummonDefines.hpp"
-#include "Creature.h"
+#include "Units/Creatures/Creature.h"
 
 /////////////////////////////////////////////////////////////////////////
 /// Base class for Summoned creatures

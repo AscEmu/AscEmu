@@ -22,7 +22,7 @@
 #define _AIEVENTS_H
 
 #include "CommonTypes.hpp"
-#include "Unit.h"
+#include "Units/Unit.h"
 
 class AIInterface;
 typedef void(AIInterface::*pAIEvent)(Unit* punit, uint32 misc1);

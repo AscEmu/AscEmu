@@ -26,7 +26,7 @@
 #include "Server/Packets/Opcodes.h"
 #include "Quest.h"
 #include "FastQueue.h"
-#include "Unit.h"
+#include "Units/Unit.h"
 #include <stddef.h>
 
 class Player;

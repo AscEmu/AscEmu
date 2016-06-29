@@ -22,12 +22,12 @@
 #define _OBJECTMGR_H
 
 #include "Chat/Chat.h"
-#include "Corpse.h"
-#include "Player.h"
+#include "Units/Creatures/Corpse.h"
+#include "Units/Players/Player.h"
 #include "Guild.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/DBC/DBCStores.h"
-#include "CreatureDefines.hpp"
+#include "Units/Creatures/CreatureDefines.hpp"
 #include "TransporterHandler.h"
 #include "GameObject.h"
 #include "Spell/Spell.h"

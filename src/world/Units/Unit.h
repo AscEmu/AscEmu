@@ -31,7 +31,7 @@ class AIInterface;
 class DynamicObject;
 class Object;
 
-#include "SummonHandler.h"
+#include "Units/Summons/SummonHandler.h"
 
 class Vehicle;
 

@@ -22,7 +22,7 @@
 #include "Item.h"
 #include "Container.h"
 #include "ItemPrototype.h"
-#include "Player.h"
+#include "Units/Players/Player.h"
 
 
 ItemInterface::ItemInterface(Player* pPlayer) : m_EquipmentSets(pPlayer->GetLowGUID())

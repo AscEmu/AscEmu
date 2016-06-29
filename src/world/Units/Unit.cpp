@@ -19,9 +19,9 @@
  */
 
 #include "StdAfx.h"
-#include "SummonHandler.h"
+#include "Units/Summons/SummonHandler.h"
 #include "LootMgr.h"
-#include "Vehicle.h"
+#include "Units/Creatures/Vehicle.h"
 #include "EventableObject.h"
 
 
