@@ -33,7 +33,7 @@
 
 #include "WoWGuid.h"
 #include "../shared/LocationVector.h"
-#include "DBC/DBCStructures.hpp"
+#include "Storage/DBC/DBCStructures.hpp"
 #include "../shared/StackBuffer.h"
 
 struct SpellEntry;

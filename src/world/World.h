@@ -24,7 +24,7 @@
 #include "EventableObject.h"
 #include "IUpdatable.h"
 #include "Definitions.h"
-#include "DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.h"
 #include "AreaTrigger.h"
 #include "WorldSession.h"
 #include <set>

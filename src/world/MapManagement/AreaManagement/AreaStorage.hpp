@@ -7,8 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 #define _MAP_MANAGEMENT_AREA_MANAGEMENT_AREA_STORAGE_H
 
 #include "Common.h"
-#include "DBC/DBCStorage.hpp"
-#include "DBC/DBCStructures.hpp"
+#include "Storage/DBC/DBCStorage.hpp"
+#include "Storage/DBC/DBCStructures.hpp"
 
 namespace MapManagement
 {

@@ -21,7 +21,7 @@
 #ifndef _VEHICLE_H
 #define _VEHICLE_H
 
-#include "DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.h"
 #include <array>
 
 ///\todo vehicle movementflags? Why didn't we use the normal movementflags and handle vehicles like normal units/creatures?

@@ -5,13 +5,13 @@ project(world CXX)
 
 include(Chat/CMakeLists.txt)
 include(Chat/Commands/CMakeLists.txt)
+include(Storage/CMakeLists.txt)
+include(Storage/DBC/CMakeLists.txt)
 set(sources
    ${SRC_CHAT_FILES}
    ${SRC_COMMAND_FILES}
-   DBC/DBCStores.cpp
-   DBC/DBCLoader.cpp
-   DBC/DBCRecord.cpp
-   DBC/DBCSQL.cpp
+   ${SRC_STORAGE_FILES}
+   ${SRC_STORAGE_DBC_FILES}
    AchievementMgr.cpp 
    CollideInterface.cpp 
 	DayWatcherThread.cpp 
@@ -92,7 +92,6 @@ set(sources
    Movement/Spline/MovementSpline.cpp
    Movement/Spline/SplineFlags.cpp
    Movement/UnitMovementManager.cpp
-   MySQLDataStore.cpp
    Packets/Movement/CreatureMovement.cpp
    Packets/ManagedPacket.cpp
 	MovementHandler.cpp 
@@ -189,13 +188,6 @@ set(headers
     CreatureDefines.hpp
 	DatabaseCleaner.h
 	DayWatcherThread.h
-    DBC/DBCGlobals.hpp
-    DBC/DBCLoader.hpp
-    DBC/DBCRecord.hpp
-    DBC/DBCSQL.hpp
-    DBC/DBCStorage.hpp
-	DBC/DBCStores.h
-    DBC/DBCStructures.hpp
 	Definitions.h
 	DynamicObject.h
 	EquipmentSetMgr.h
@@ -241,7 +233,6 @@ set(headers
    Movement/Spline/MovementSpline.hpp
    Movement/Spline/MovementSplineDefines.hpp
    Movement/Spline/SplineFlags.hpp
-   MySQLDataStore.hpp
    Packets/Movement/CreatureMovement.hpp
    Packets/Movement/SmsgMonsterMove.hpp
    Packets/ManagedPacket.hpp

@@ -20,7 +20,7 @@
 
 #include "StdAfx.h"
 #include "Unit.h"
-#include "DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.h"
 #include "QuestLogEntry.hpp"
 #include "EventableObject.h"
 #include "IUpdatable.h"

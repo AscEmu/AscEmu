@@ -23,7 +23,7 @@
 
 #include "EventableObject.h"
 #include "Singleton.h"
-#include "DBC/DBCStructures.hpp"
+#include "Storage/DBC/DBCStructures.hpp"
 
 #include <map>
 #include <vector>

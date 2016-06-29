@@ -57,7 +57,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 //#include <zlib.h>
 
 #include "Database/DatabaseEnv.h"   // shared
-#include "DBC/DBCStores.h"
+#include "Storage/DBC/DBCStores.h"
 
 #include "Network/Network.h"    // shared
 
@@ -197,7 +197,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "LogonCommHandler.h"
 #include "MainServerDefines.h"
 #include "WorldRunnable.h"
-#include "MySQLDataStore.hpp"
+#include "Storage/MySQLDataStore.hpp"
 #include "DatabaseCleaner.h"
 #include "DayWatcherThread.h"
 #include "CommonScheduleThread.h"

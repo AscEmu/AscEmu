@@ -21,8 +21,8 @@
 
 
 #include "CommonTypes.hpp"
-#include "DBC/DBCStores.h"
-#include "DBC/DBCStructures.hpp"
+#include "Storage/DBC/DBCStores.h"
+#include "Storage/DBC/DBCStructures.hpp"
 #include "UnitDefines.hpp"
 
 #include <ctime>

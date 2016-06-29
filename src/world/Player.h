@@ -30,7 +30,7 @@
 #include "ItemPrototype.h"
 #include "AchievementMgr.h"
 #include "Unit.h"
-#include "DBC/DBCStructures.hpp"
+#include "Storage/DBC/DBCStructures.hpp"
 
 //#define TRACK_IMMUNITY_BUG 1
 
