@@ -185,7 +185,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "EquipmentSetMgr.h"
 #include "ItemInterface.h"
 #include "Stats.h"
-#include "WorldCreator.h"
+#include "Map/WorldCreator.h"
 #include "ObjectMgr.h"
 #include "CThreads.h"
 #include "ScriptMgr.h"

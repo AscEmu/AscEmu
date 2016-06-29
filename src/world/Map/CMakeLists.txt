@@ -17,6 +17,9 @@ set(SRC_MAP_FILES
    ${PATH_PREFIX}/MapScriptInterface.h
    ${PATH_PREFIX}/TerrainMgr.cpp
    ${PATH_PREFIX}/TerrainMgr.h
+   ${PATH_PREFIX}/WorldCreator.cpp
+   ${PATH_PREFIX}/WorldCreator.h
+   ${PATH_PREFIX}/WorldCreatorDefines.hpp
 )
 
 source_group(Map FILES ${SRC_MAP_FILES})

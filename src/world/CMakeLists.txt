@@ -108,7 +108,6 @@ set(sources
 	Vehicle.cpp 
 	WeatherMgr.cpp 
 	World.cpp 
-	WorldCreator.cpp 
 	WorldSession.cpp 
 	WorldSocket.cpp 
 	WorldStatesHandler.cpp
@@ -229,8 +228,6 @@ set(headers
 	Entities/Summons/WildSummon.h
 	WordFilter.h
 	World.h
-	WorldCreator.h
-    WorldCreatorDefines.hpp
 	WorldRunnable.h
 	WorldSession.h
 	WorldSocket.h
