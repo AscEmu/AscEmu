@@ -103,7 +103,6 @@ set(sources
 	HackFixes.cpp 
 	Stats.cpp 
 	TaxiMgr.cpp 
-	TerrainMgr.cpp 
 	TransporterHandler.cpp 
 	Unit.cpp 
 	Vehicle.cpp 
@@ -141,8 +140,6 @@ set(headers
 	Battleground.h
 	BattlegroundMgr.h
     CalendarMgr.h
-	CellHandler.h
-    CellHandlerDefines.hpp
 	Channel.h
 	ChannelMgr.h
     CObjectFactory.h
@@ -220,7 +217,6 @@ set(headers
 	Entities/Summons/Summon.h
 	SummonHandler.h
 	TaxiMgr.h
-	TerrainMgr.h
 	Entities/Summons/TotemSummon.h
     Transports/TransportSpawn.hpp
 	TransporterHandler.h
