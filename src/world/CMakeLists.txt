@@ -8,6 +8,8 @@ include(Chat/Commands/CMakeLists.txt)
 include(Management/CMakeLists.txt)
 include(Map/CMakeLists.txt)
 include(Map/Area/CMakeLists.txt)
+include(Movement/CMakeLists.txt)
+include(Movement/Spline/CMakeLists.txt)
 include(Server/CMakeLists.txt)
 include(Server/Console/CMakeLists.txt)
 include(Server/LogonCommClient/CMakeLists.txt)
@@ -25,6 +27,8 @@ set(sources
    ${SRC_MANAGEMENT_FILES}
    ${SRC_MAP_FILES}
    ${SRC_MAP_AREA_FILES}
+   ${SRC_MOVEMENT_FILES}
+   ${SRC_MOVEMENT_SPLINE_FILES}
    ${SRC_PACKET_FILES}
    ${SRC_PACKET_HANDLER_FILES}
    ${SRC_PACKET_MOVEMENT_FILES}
@@ -82,10 +86,6 @@ set(sources
 	LootMgr.cpp 
 	LocalizationMgr.cpp 
     MailMgr.cpp
-   Movement/MovementCommon.cpp
-   Movement/Spline/MovementSpline.cpp
-   Movement/Spline/SplineFlags.cpp
-   Movement/UnitMovementManager.cpp
 	Object.cpp 
 	ObjectMgr.cpp 
 	Pet.cpp 
@@ -166,11 +166,6 @@ set(headers
 	LocalizationMgr.h
 	LootMgr.h
 	MailMgr.h
-   Movement/MovementCommon.hpp
-   Movement/UnitMovementManager.hpp
-   Movement/Spline/MovementSpline.hpp
-   Movement/Spline/MovementSplineDefines.hpp
-   Movement/Spline/SplineFlags.hpp
 	Object.h
 	ObjectMgr.h
 	Pet.h
