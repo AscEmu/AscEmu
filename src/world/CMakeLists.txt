@@ -11,6 +11,7 @@ include(Packets/CMakeLists.txt)
 include(Packets/Handlers/CMakeLists.txt)
 include(Packets/Movement/CMakeLists.txt)
 include(Server/CMakeLists.txt)
+include(Server/Console/CMakeLists.txt)
 include(Server/LogonCommClient/CMakeLists.txt)
 include(Storage/CMakeLists.txt)
 include(Storage/DBC/CMakeLists.txt)
@@ -24,6 +25,7 @@ set(sources
    ${SRC_PACKET_HANDLER_FILES}
    ${SRC_PACKET_MOVEMENT_FILES}
    ${SRC_SERVER_FILES}
+   ${SRC_SERVER_CONSOLE_FILES}
    ${SRC_LOGON_COMMUNICATION_CLIENT_FILES}
    ${SRC_STORAGE_FILES}
    ${SRC_STORAGE_DBC_FILES}
@@ -114,9 +116,6 @@ set(sources
 	WorldRunnable.cpp 
 	WordFilter.cpp 
 	Master.cpp 
-	CConsole.cpp 
-	ConsoleCommands.cpp 
-	ConsoleListener.cpp 
 	WUtil.cpp 
 	SpellProc.cpp
    SpellProc_ClassScripts.cpp
@@ -139,11 +138,9 @@ set(headers
 	ArenaTeam.h
 	AuctionHouse.h
 	AuctionMgr.h
-	BaseConsole.h
 	Battleground.h
 	BattlegroundMgr.h
     CalendarMgr.h
-	CConsole.h
 	CellHandler.h
     CellHandlerDefines.hpp
 	Channel.h
@@ -153,7 +150,6 @@ set(headers
 	CommonScheduleThread.h
 	Entities/Summons/CompanionSummon.h
     Entities/Summons/SummonDefines.hpp
-	ConsoleCommands.h
 	Container.h
 	Corpse.h
 	Creature.h

@@ -204,8 +204,8 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "LocalizationMgr.h"
 #include "CollideInterface.h"
 #include "Master.h"
-#include "BaseConsole.h"
-#include "CConsole.h"
+#include "Server/Console/BaseConsole.h"
+#include "Server/Console/CConsole.h"
 #include "SpeedDetector.h"
 #include "WorldStates.h"
 
