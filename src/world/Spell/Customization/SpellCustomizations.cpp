@@ -18,7 +18,7 @@
 
 
 #include "StdAfx.h"
-#include "SpellManagement/SpellCustomizations.hpp"
+#include "Spell/Customization/SpellCustomizations.hpp"
 
 initialiseSingleton(SpellCustomizations);
 

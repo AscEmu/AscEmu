@@ -30,7 +30,7 @@
 #include "CreatureDefines.hpp"
 #include "TransporterHandler.h"
 #include "GameObject.h"
-#include "Spell.h"
+#include "Spell/Spell.h"
 
 #include <string>
 

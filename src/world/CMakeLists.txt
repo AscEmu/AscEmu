@@ -5,6 +5,7 @@ project(world CXX)
 
 include(Chat/CMakeLists.txt)
 include(Chat/Commands/CMakeLists.txt)
+include(Management/CMakeLists.txt)
 include(Map/CMakeLists.txt)
 include(Map/Area/CMakeLists.txt)
 include(Server/CMakeLists.txt)
@@ -13,12 +14,15 @@ include(Server/LogonCommClient/CMakeLists.txt)
 include(Server/Packets/CMakeLists.txt)
 include(Server/Packets/Handlers/CMakeLists.txt)
 include(Server/Packets/Movement/CMakeLists.txt)
+include(Spell/CMakeLists.txt)
+include(Spell/Customization/CMakeLists.txt)
 include(Storage/CMakeLists.txt)
 include(Storage/DBC/CMakeLists.txt)
 
 set(sources
    ${SRC_CHAT_FILES}
    ${SRC_COMMAND_FILES}
+   ${SRC_MANAGEMENT_FILES}
    ${SRC_MAP_FILES}
    ${SRC_MAP_AREA_FILES}
    ${SRC_PACKET_FILES}
@@ -27,6 +31,8 @@ set(sources
    ${SRC_SERVER_FILES}
    ${SRC_SERVER_CONSOLE_FILES}
    ${SRC_LOGON_COMMUNICATION_CLIENT_FILES}
+   ${SRC_SPELL_FILES}
+   ${SRC_SPELL_CUSTOM_FILES}
    ${SRC_STORAGE_FILES}
    ${SRC_STORAGE_DBC_FILES}
    
@@ -91,15 +97,8 @@ set(sources
 	QuestMgr.cpp 
 	ScriptMgr.cpp 
 	SpeedDetector.cpp
-   SpellManagement/SpellCustomizations.cpp
-	SpellAuras.cpp 
-	SpellTarget.cpp 
-	Spell.cpp 
 	StdAfx.cpp
 	SummonHandler.cpp
-	SpellEffects.cpp 
-	SpellHandler.cpp 
-	HackFixes.cpp 
 	Stats.cpp 
 	TaxiMgr.cpp 
 	TransporterHandler.cpp 
@@ -109,11 +108,6 @@ set(sources
 	WorldStatesHandler.cpp
 	WordFilter.cpp 
 	WUtil.cpp 
-	SpellProc.cpp
-   SpellProc_ClassScripts.cpp
-	SpellProc_Items.cpp
-	SpellMgr.cpp
-   Spell_ClassScripts.cpp
 	DeathKnight.cpp
 )
 
@@ -195,14 +189,6 @@ set(headers
 	Skill.h
 	SkillNameMgr.h
 	SpeedDetector.h
-   SpellManagement/SpellCustomizations.hpp
-	Spell.h
-	SpellAuras.h
-	SpellFailure.h
-	SpellMgr.h
-	SpellNameHashes.h
-	SpellProc.h
-	SpellTarget.h
 	Stats.h
 	StdAfx.h
 	Entities/Summons/Summon.h
