@@ -3,22 +3,11 @@
 # set up our project name
 project(world CXX)
 
+include(Chat/CMakeLists.txt)
+include(Chat/Commands/CMakeLists.txt)
 set(sources
-   Commands/AccountCommands.cpp
-   Commands/ArenaCommands.cpp
-   Commands/CharacterCommands.cpp
-   Commands/CheatCommands.cpp
-   Commands/DebugCommands.cpp
-   Commands/GameEventMgrCommands.cpp
-   Commands/GameMasterCommands.cpp
-   Commands/GameObjectCommands.cpp
-   Commands/LookupCommands.cpp
-   Commands/MiscCommands.cpp
-   Commands/NpcCommands.cpp
-   Commands/ServerCommands.cpp
-   Commands/TransporterCommands.cpp
-   Commands/TicketCommands.cpp
-   Commands/WaypointCommands.cpp
+   ${SRC_CHAT_FILES}
+   ${SRC_COMMAND_FILES}
    DBC/DBCStores.cpp
    DBC/DBCLoader.cpp
    DBC/DBCRecord.cpp
@@ -37,7 +26,6 @@ set(sources
 	AuctionHouse.cpp 
 	AuctionMgr.cpp 
 	Battleground.cpp
-	BattlegroundCommands.cpp 
 	BattlegroundHandler.cpp 
 	BattlegroundMgr.cpp 
     CalendarHandler.cpp
@@ -45,7 +33,6 @@ set(sources
 	Channel.cpp 
 	ChannelHandler.cpp 
 	CharacterHandler.cpp 
-	Chat.cpp 
 	ChatHandler.cpp
     CObjectFactory.cpp
 	CombatHandler.cpp 
@@ -58,7 +45,6 @@ set(sources
 	Entities/Summons/PossessedSummon.cpp
 	Entities/Summons/TotemSummon.cpp
 	Entities/Summons/WildSummon.cpp
-	debugcmds.cpp 
 	DuelHandler.cpp 
 	DynamicObject.cpp 
 	EquipmentSetMgr.cpp
@@ -124,9 +110,7 @@ set(sources
 	QuestHandler.cpp 
     QuestLogEntry.cpp
 	QuestMgr.cpp 
-	QuestCommands.cpp 
 	RaidHandler.cpp 
-	RecallCommands.cpp 
 	ReputationHandler.cpp 
 	ScriptMgr.cpp 
 	SocialHandler.cpp 
@@ -193,7 +177,6 @@ set(headers
     CellHandlerDefines.hpp
 	Channel.h
 	ChannelMgr.h
-	Chat.h
     CObjectFactory.h
 	CollideInterface.h
 	CommonScheduleThread.h

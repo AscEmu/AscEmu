@@ -130,7 +130,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "BattlegroundMgr.h"
 #include "Battleground.h"
 #include "CellHandler.h"
-#include "Chat.h"
+#include "Chat/Chat.h"
 #include "Corpse.h"
 #include "Quest.h"
 #include "QuestMgr.h"
