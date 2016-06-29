@@ -21,7 +21,7 @@
 #ifndef _LOGONCOMMHANDLER_H
 #define _LOGONCOMMHANDLER_H
 #include "CommonTypes.hpp"
-#include "WorldSocket.h"
+#include "Server/WorldSocket.h"
 #include <string>
 #include <map>
 #include <set>

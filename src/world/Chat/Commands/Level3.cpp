@@ -21,7 +21,7 @@
 
 #include "StdAfx.h"
 #include "ObjectMgr.h"
-#include "Master.h"
+#include "Server/Master.h"
 
 void ParseBanArgs(char* args, char** BanDuration, char** BanReason)
 {

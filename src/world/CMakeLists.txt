@@ -76,7 +76,6 @@ set(sources
 	LootMgr.cpp 
 	LocalizationMgr.cpp 
     MailMgr.cpp
-   Main.cpp
    Movement/MovementCommon.cpp
    Movement/Spline/MovementSpline.cpp
    Movement/Spline/SplineFlags.cpp
@@ -107,13 +106,8 @@ set(sources
 	Unit.cpp 
 	Vehicle.cpp 
 	WeatherMgr.cpp 
-	World.cpp 
-	WorldSession.cpp 
-	WorldSocket.cpp 
 	WorldStatesHandler.cpp
-	WorldRunnable.cpp 
 	WordFilter.cpp 
-	Master.cpp 
 	WUtil.cpp 
 	SpellProc.cpp
    SpellProc_ClassScripts.cpp
@@ -178,8 +172,6 @@ set(headers
 	LocalizationMgr.h
 	LootMgr.h
 	MailMgr.h
-	MainServerDefines.h
-	Master.h
    Movement/MovementCommon.hpp
    Movement/UnitMovementManager.hpp
    Movement/Spline/MovementSpline.hpp
@@ -227,10 +219,6 @@ set(headers
 	WeatherMgr.h
 	Entities/Summons/WildSummon.h
 	WordFilter.h
-	World.h
-	WorldRunnable.h
-	WorldSession.h
-	WorldSocket.h
 	WorldStatesHandler.h
 	WorldStates.h
     WorldStrings.h

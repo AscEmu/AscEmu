@@ -24,7 +24,7 @@
 #include "LogonCommHandler.h"
 #include "WorldPacket.h"
 #include "Database/Database.h"
-#include "MainServerDefines.h"
+#include "Server/MainServerDefines.h"
 #include <set>
 #include <map>
 

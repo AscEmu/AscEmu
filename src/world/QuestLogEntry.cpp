@@ -19,8 +19,8 @@
 #include "StdAfx.h"
 #include <Log.h>
 #include "QuestLogEntry.hpp"
-#include "WorldSession.h"
-#include "MainServerDefines.h"
+#include "Server/WorldSession.h"
+#include "Server/MainServerDefines.h"
 #include "Database/Database.h"
 #include "ItemInterface.h"
 #include "QuestMgr.h"
