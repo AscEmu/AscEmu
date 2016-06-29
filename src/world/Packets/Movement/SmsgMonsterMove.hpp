@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define _PACKET_SMSG_MONSTER_MOVE_HPP
 
 #include "StdAfx.h"
-#include "Opcodes.h"
+#include "Packets/Opcodes.h"
 
 namespace Packets
 {

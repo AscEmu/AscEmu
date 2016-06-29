@@ -21,7 +21,7 @@
 
 #include "StdAfx.h"
 #include "QuestLogEntry.hpp"
-#include "Opcodes.h"
+#include "Packets/Opcodes.h"
 
 
 UpdateMask Player::m_visibleUpdateMask;

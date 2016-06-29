@@ -5,11 +5,17 @@ project(world CXX)
 
 include(Chat/CMakeLists.txt)
 include(Chat/Commands/CMakeLists.txt)
+include(Packets/CMakeLists.txt)
+include(Packets/Handlers/CMakeLists.txt)
+include(Packets/Movement/CMakeLists.txt)
 include(Storage/CMakeLists.txt)
 include(Storage/DBC/CMakeLists.txt)
 set(sources
    ${SRC_CHAT_FILES}
    ${SRC_COMMAND_FILES}
+   ${SRC_PACKET_FILES}
+   ${SRC_PACKET_HANDLER_FILES}
+   ${SRC_PACKET_MOVEMENT_FILES}
    ${SRC_STORAGE_FILES}
    ${SRC_STORAGE_DBC_FILES}
    AchievementMgr.cpp 
@@ -26,16 +32,10 @@ set(sources
 	AuctionHouse.cpp 
 	AuctionMgr.cpp 
 	Battleground.cpp
-	BattlegroundHandler.cpp 
 	BattlegroundMgr.cpp 
-    CalendarHandler.cpp
     CalendarMgr.cpp
 	Channel.cpp 
-	ChannelHandler.cpp 
-	CharacterHandler.cpp 
-	ChatHandler.cpp
     CObjectFactory.cpp
-	CombatHandler.cpp 
 	Container.cpp 
 	Corpse.cpp 
 	Creature.cpp 
@@ -54,32 +54,19 @@ set(sources
     GameEvent.cpp
     GameEventMgr.cpp
 	GameObject.cpp 
-	GMTicket.cpp 
-	GMTicketCommands.cpp
 	CRitual.cpp
 	Gossip.cpp
 	Group.cpp 
-	GroupHandler.cpp 
 	Guild.cpp 
-	GuildHandler.cpp 
-	HonorHandler.cpp 
-	InstanceCommands.cpp 
 	Item.cpp 
-	ItemHandler.cpp 
 	ItemInterface.cpp 
-	Level0.cpp 
-	Level1.cpp 
-	Level2.cpp 
-	Level3.cpp 
     LfgGroupData.cpp
     LfgPlayerData.cpp
-	LfgHandler.cpp 
 	LfgMgr.cpp 
 	LootMgr.cpp 
 	LocalizationMgr.cpp 
 	LogonCommClient.cpp 
 	LogonCommHandler.cpp 
-	MailHandler.cpp
     MailMgr.cpp
    Main.cpp
     MapManagement/AreaManagement/AreaStorage.cpp
@@ -87,32 +74,20 @@ set(sources
 	Map.cpp 
 	MapScriptInterface.cpp 
 	MapMgr.cpp 
-	MiscHandler.cpp
    Movement/MovementCommon.cpp
    Movement/Spline/MovementSpline.cpp
    Movement/Spline/SplineFlags.cpp
    Movement/UnitMovementManager.cpp
-   Packets/Movement/CreatureMovement.cpp
-   Packets/ManagedPacket.cpp
-	MovementHandler.cpp 
-	NPCHandler.cpp 
 	Object.cpp 
 	ObjectMgr.cpp 
-	Opcodes.cpp 
 	Pet.cpp 
-	PetHandler.cpp 
 	Player.cpp
 	PlayerCache.cpp
 	PlayerPacketWrapper.cpp
-	QueryHandler.cpp 
 	Quest.cpp 
-	QuestHandler.cpp 
     QuestLogEntry.cpp
 	QuestMgr.cpp 
-	RaidHandler.cpp 
-	ReputationHandler.cpp 
 	ScriptMgr.cpp 
-	SocialHandler.cpp 
 	SpeedDetector.cpp
    SpellManagement/SpellCustomizations.cpp
 	SpellAuras.cpp 
@@ -124,14 +99,11 @@ set(sources
 	SpellHandler.cpp 
 	HackFixes.cpp 
 	Stats.cpp 
-	TaxiHandler.cpp 
 	TaxiMgr.cpp 
 	TerrainMgr.cpp 
-	TradeHandler.cpp 
 	TransporterHandler.cpp 
 	Unit.cpp 
 	Vehicle.cpp 
-	VehicleHandler.cpp
 	WeatherMgr.cpp 
 	World.cpp 
 	WorldCreator.cpp 
@@ -203,7 +175,6 @@ set(headers
 	Group.h
 	Entities/Summons/GuardianSummon.h
 	Guild.h
-	HonorHandler.h
 	Item.h
 	ItemInterface.h
 	ItemPrototype.h
@@ -227,19 +198,13 @@ set(headers
     MapMgrDefines.hpp
 	MapScriptInterface.h
 	Master.h
-	MiscHandler.h
    Movement/MovementCommon.hpp
    Movement/UnitMovementManager.hpp
    Movement/Spline/MovementSpline.hpp
    Movement/Spline/MovementSplineDefines.hpp
    Movement/Spline/SplineFlags.hpp
-   Packets/Movement/CreatureMovement.hpp
-   Packets/Movement/SmsgMonsterMove.hpp
-   Packets/ManagedPacket.hpp
-	NPCHandler.h
 	Object.h
 	ObjectMgr.h
-	Opcodes.h
 	Pet.h
 	Player.h
    Player/PlayerClasses.hpp
