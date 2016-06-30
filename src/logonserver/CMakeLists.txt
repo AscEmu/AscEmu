@@ -3,29 +3,28 @@
 # set up our project name
 project(logon CXX)
 
+include(Auth/CMakeLists.txt)
+include(Console/CMakeLists.txt)
 include(LogonCommServer/CMakeLists.txt)
+include(Server/CMakeLists.txt)
+
+set(SRC_LOGON_PROJECT
+   ${CMAKE_CURRENT_SOURCE_DIR}/LogonStdAfx.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/LogonStdAfx.h
+)
+
+if(WIN32)
+   set(SRC_LOGON_PROJECT ${SRC_LOGON_PROJECT} ${CMAKE_CURRENT_SOURCE_DIR}/resources.rc)
+endif()
+
+source_group(logon FILES ${SRC_LOGON_PROJECT})
 
 set(sources
+   ${SRC_AUTH_FILES}
+   ${SRC_CONSOLE_FILES}
    ${SRC_LOGON_COMM_SERVER_FILES}
-   AccountCache.cpp
-   AuthSocket.cpp
-   AutoPatcher.cpp
-   LogonConsole.cpp
-   LogonStdAfx.cpp
-   Main.cpp
-   Master.cpp
-   )
-
-set(headers
-	AccountCache.h
-	AuthSocket.h
-	AuthStructs.h
-	AutoPatcher.h
-	LogonConsole.h
-	LogonStdAfx.h
-    Master.hpp
-    LogonServerDefines.hpp
-	PeriodicFunctionCall_Thread.h
+   ${SRC_SERVER_FILES}
+   ${SRC_LOGON_PROJECT}
 )
 
 include_directories(
@@ -40,11 +39,7 @@ include_directories(
 
 link_directories(${EXTRA_LIBS_PATH} ${DEPENDENCY_LIBS})
 
-if(WIN32)
-    set(sources ${sources} resources.rc)
-endif()
-
-add_executable(${PROJECT_NAME} ${sources} ${headers})
+add_executable(${PROJECT_NAME} ${sources})
 
 if(USE_PCH AND PCHSupport_FOUND)
     ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} LogonStdAfx.h ${CMAKE_CURRENT_SOURCE_DIR}/LogonStdAfx.cpp)

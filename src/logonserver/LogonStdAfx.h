@@ -43,15 +43,15 @@
 
 #include "../world/Server/Packets/Opcodes.h"
 #include "LogonConf.h"
-#include "AccountCache.h"
-#include "PeriodicFunctionCall_Thread.h"
-#include "AutoPatcher.h"
-#include "AuthSocket.h"
-#include "AuthStructs.h"
+#include "Auth/AccountCache.h"
+#include "Server/PeriodicFunctionCall_Thread.h"
+#include "Auth/AutoPatcher.h"
+#include "Auth/AuthSocket.h"
+#include "Auth/AuthStructs.h"
 #include "LogonCommServer/LogonCommServer.h"
-#include "LogonConsole.h"
+#include "Console/LogonConsole.h"
 #include "WorldPacket.h"
-#include "Master.hpp"
+#include "Server/Master.hpp"
 
 // database decl
 extern Database* sLogonSQL;
