@@ -3,6 +3,10 @@
 set(PATH_PREFIX Units/Creatures)
 
 set(SRC_UNITS_CREATURES_FILES
+   ${PATH_PREFIX}/AIEvents.cpp
+   ${PATH_PREFIX}/AIEvents.h
+   ${PATH_PREFIX}/AIInterface.cpp 
+   ${PATH_PREFIX}/AIInterface.h
    ${PATH_PREFIX}/Corpse.cpp
    ${PATH_PREFIX}/Corpse.h
    ${PATH_PREFIX}/Creature.cpp

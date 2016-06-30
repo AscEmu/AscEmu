@@ -55,8 +55,6 @@ set(sources
 	ArenaTeam.cpp 
 	DatabaseCleaner.cpp 
 	AddonMgr.cpp 
-	AIInterface.cpp 
-	AIEvents.cpp
 	Arenas.cpp 
 	AuctionHouse.cpp 
 	AuctionMgr.cpp 
@@ -113,8 +111,6 @@ endif()
 set(headers
 	AchievementMgr.h
 	AddonMgr.h
-	AIInterface.h
-	AIEvents.h
 	Arenas.h
 	ArenaTeam.h
 	AuctionHouse.h
