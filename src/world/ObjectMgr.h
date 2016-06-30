@@ -24,11 +24,11 @@
 #include "Chat/Chat.h"
 #include "Units/Creatures/Corpse.h"
 #include "Units/Players/Player.h"
-#include "Guild.h"
+#include "Management/Guild.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/DBC/DBCStores.h"
 #include "Units/Creatures/CreatureDefines.hpp"
-#include "TransporterHandler.h"
+#include "Management/TransporterHandler.h"
 #include "Objects/GameObject.h"
 #include "Spell/Spell.h"
 

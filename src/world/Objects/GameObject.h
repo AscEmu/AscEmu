@@ -21,7 +21,7 @@
 #ifndef _GAMEOBJECT_H
 #define _GAMEOBJECT_H
 
-#include "CRitual.h"
+#include "Management/CRitual.h"
 #include "QuestMgr.h"
 #include "Map/Map.h"
 

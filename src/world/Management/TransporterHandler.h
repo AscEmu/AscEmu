@@ -22,7 +22,7 @@
 #ifndef __TRANSPORTERHANDLER_H
 #define __TRANSPORTERHANDLER_H
 
-#include "Transports/TransportSpawn.hpp"
+#include "Management/TransportSpawn.hpp"
 
 class TransportPath
 {

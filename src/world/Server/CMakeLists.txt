@@ -3,6 +3,12 @@
 set(PATH_PREFIX Server)
 
 set(SRC_SERVER_FILES
+   ${PATH_PREFIX}/CommonScheduleThread.cpp
+   ${PATH_PREFIX}/CommonScheduleThread.h
+   ${PATH_PREFIX}/EventableObject.cpp
+   ${PATH_PREFIX}/EventableObject.h
+   ${PATH_PREFIX}/EventMgr.cpp
+   ${PATH_PREFIX}/EventMgr.h
    ${PATH_PREFIX}/Main.cpp
    ${PATH_PREFIX}/MainServerDefines.h
    ${PATH_PREFIX}/Master.cpp

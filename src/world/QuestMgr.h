@@ -24,7 +24,7 @@
 #include "QuestDefines.hpp"
 #include "CommonTypes.hpp"
 #include "QuestLogEntry.hpp"
-#include "Gossip.h"
+#include "Management/Gossip.h"
 
 #include <vector>
 #include <unordered_map>

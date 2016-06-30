@@ -24,7 +24,7 @@
 #include "TLSObject.h"
 #include "CellHandler.h"
 #include "CThreads.h"
-#include "WorldStatesHandler.h"
+#include "Management/WorldStatesHandler.h"
 #include "CrashHandler.h"
 #include "Units/Summons/Summon.h"
 #include "Units/Unit.h"

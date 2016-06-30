@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../world/Gossip.h"
+#include "Management/Gossip.h"
 #include "Setup.h"
 
 enum UnorderedEntry

@@ -20,9 +20,9 @@
 
 #include "StdAfx.h"
 #include "Units/Summons/SummonHandler.h"
-#include "LootMgr.h"
+#include "Management/LootMgr.h"
 #include "Units/Creatures/Vehicle.h"
-#include "EventableObject.h"
+#include "Server/EventableObject.h"
 
 
 static float AttackToRageConversionTable[PLAYER_LEVEL_CAP + 1] =

@@ -50,39 +50,7 @@ set(sources
    ${SRC_UNITS_PLAYERS_FILES}
    ${SRC_UNITS_SUMMONS_FILES}
    
-   AchievementMgr.cpp 
-   CollideInterface.cpp 
-	DayWatcherThread.cpp 
-	CommonScheduleThread.cpp 
-	ArenaTeam.cpp 
-	DatabaseCleaner.cpp 
-	AddonMgr.cpp 
-	Arenas.cpp 
-	AuctionHouse.cpp 
-	AuctionMgr.cpp 
-	Battleground.cpp
-	BattlegroundMgr.cpp 
-    CalendarMgr.cpp
-	Channel.cpp 
-	Container.cpp 
-	EquipmentSetMgr.cpp
-	EventableObject.cpp 
-	EventMgr.cpp 
 	Faction.cpp
-    GameEvent.cpp
-    GameEventMgr.cpp
-	CRitual.cpp
-	Gossip.cpp
-	Group.cpp 
-	Guild.cpp 
-	Item.cpp 
-	ItemInterface.cpp 
-    LfgGroupData.cpp
-    LfgPlayerData.cpp
-	LfgMgr.cpp 
-	LootMgr.cpp 
-	LocalizationMgr.cpp 
-    MailMgr.cpp
 	ObjectMgr.cpp 
 	PlayerCache.cpp
 	PlayerPacketWrapper.cpp
@@ -93,11 +61,7 @@ set(sources
 	SpeedDetector.cpp
 	StdAfx.cpp
 	Stats.cpp 
-	TaxiMgr.cpp 
-	TransporterHandler.cpp  
 	WeatherMgr.cpp 
-	WorldStatesHandler.cpp
-	WordFilter.cpp 
 	WUtil.cpp 
 	DeathKnight.cpp
 )
@@ -107,45 +71,9 @@ if(WIN32)
 endif()
 
 set(headers
-	AchievementMgr.h
-	AddonMgr.h
-	Arenas.h
-	ArenaTeam.h
-	AuctionHouse.h
-	AuctionMgr.h
-	Battleground.h
-	BattlegroundMgr.h
-    CalendarMgr.h
-	Channel.h
-	ChannelMgr.h
-	CollideInterface.h
-	CommonScheduleThread.h
-	Container.h
-	DatabaseCleaner.h
-	DayWatcherThread.h
 	Definitions.h
-	EquipmentSetMgr.h
-	EventableObject.h
-	EventMgr.h
 	Faction.h
-    GameEvent.h
-    GameEventMgr.h
-	CRitual.h
-    Gossip/GossipDefines.hpp
-	Gossip.h
-	Group.h
-	Guild.h
-	Item.h
-	ItemInterface.h
-	ItemPrototype.h
 	IUpdatable.h
-    Lfg.h
-    LfgGroupData.h
-    LfgPlayerData.h
-	LfgMgr.h
-	LocalizationMgr.h
-	LootMgr.h
-	MailMgr.h
 	ObjectMgr.h
 	PlayerCache.h
 	Quest.h
@@ -160,15 +88,9 @@ set(headers
 	SpeedDetector.h
 	Stats.h
 	StdAfx.h
-	TaxiMgr.h
-    Transports/TransportSpawn.hpp
-	TransporterHandler.h
 	UpdateFields.h
 	UpdateMask.h
 	WeatherMgr.h
-	WordFilter.h
-	WorldStatesHandler.h
-	WorldStates.h
     WorldStrings.h
 	WUtil.h
 )

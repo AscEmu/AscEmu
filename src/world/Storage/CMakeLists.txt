@@ -3,6 +3,10 @@
 set(PATH_PREFIX Storage)
 
 set(SRC_STORAGE_FILES
+   ${PATH_PREFIX}/DatabaseCleaner.cpp
+   ${PATH_PREFIX}/DatabaseCleaner.h
+   ${PATH_PREFIX}/DayWatcherThread.cpp
+   ${PATH_PREFIX}/DayWatcherThread.h
    ${PATH_PREFIX}/MySQLDataStore.cpp
    ${PATH_PREFIX}/MySQLDataStore.hpp
 )

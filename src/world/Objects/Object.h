@@ -25,7 +25,7 @@
 #include "UpdateFields.h"
 #include "UpdateMask.h"
 #include "CommonTypes.hpp"
-#include "EventableObject.h"
+#include "Server/EventableObject.h"
 #include "IUpdatable.h"
 
 #include <set>

@@ -24,7 +24,7 @@
 
 #include "Units/Unit.h"
 #include "UpdateMask.h"
-#include "ItemInterface.h"
+#include "Management/ItemInterface.h"
 
 enum Stats
 {

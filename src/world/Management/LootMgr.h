@@ -21,7 +21,7 @@
 #ifndef _LOOTMGR_H
 #define _LOOTMGR_H
 
-#include "EventableObject.h"
+#include "Server/EventableObject.h"
 #include "Singleton.h"
 #include "Storage/DBC/DBCStructures.hpp"
 

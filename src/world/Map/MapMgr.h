@@ -23,7 +23,7 @@
 
 #include "Map/MapManagementGlobals.hpp"
 #include "CellHandler.h"
-#include "WorldStatesHandler.h"
+#include "Management/WorldStatesHandler.h"
 #include "MapMgrDefines.hpp"
 #include "CThreads.h"
 #include "Units/Summons/SummonDefines.hpp"

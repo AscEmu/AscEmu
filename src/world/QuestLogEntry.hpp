@@ -23,7 +23,7 @@
 
 #include <Database/Field.h>
 #include "CommonDefines.hpp"
-#include "EventableObject.h"
+#include "Server/EventableObject.h"
 #include "Quest.h"
 #include "Units/Players/Player.h"
 #include "ScriptMgr.h"

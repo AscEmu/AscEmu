@@ -24,7 +24,7 @@
 #include "StdAfx.h"
 #include "UnitDefines.hpp"
 
-#include "LootMgr.h"
+#include "Management/LootMgr.h"
 
 class SpellProc;
 class AIInterface;
