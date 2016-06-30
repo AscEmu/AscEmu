@@ -24,7 +24,7 @@
 
 #include <WorldPacket.h>
 #include "Threading/Queue.h"
-#include "Object.h"
+#include "Objects/Object.h"
 
 enum FourByteFields
 {

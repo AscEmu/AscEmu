@@ -10,6 +10,7 @@ include(Map/CMakeLists.txt)
 include(Map/Area/CMakeLists.txt)
 include(Movement/CMakeLists.txt)
 include(Movement/Spline/CMakeLists.txt)
+include(Objects/CMakeLists.txt)
 include(Server/CMakeLists.txt)
 include(Server/Console/CMakeLists.txt)
 include(Server/LogonCommClient/CMakeLists.txt)
@@ -33,6 +34,7 @@ set(sources
    ${SRC_MAP_AREA_FILES}
    ${SRC_MOVEMENT_FILES}
    ${SRC_MOVEMENT_SPLINE_FILES}
+   ${SRC_OBJECTS_FILES}
    ${SRC_PACKET_FILES}
    ${SRC_PACKET_HANDLER_FILES}
    ${SRC_PACKET_MOVEMENT_FILES}
@@ -62,16 +64,13 @@ set(sources
 	BattlegroundMgr.cpp 
     CalendarMgr.cpp
 	Channel.cpp 
-    CObjectFactory.cpp
 	Container.cpp 
-	DynamicObject.cpp 
 	EquipmentSetMgr.cpp
 	EventableObject.cpp 
 	EventMgr.cpp 
 	Faction.cpp
     GameEvent.cpp
     GameEventMgr.cpp
-	GameObject.cpp 
 	CRitual.cpp
 	Gossip.cpp
 	Group.cpp 
@@ -84,7 +83,6 @@ set(sources
 	LootMgr.cpp 
 	LocalizationMgr.cpp 
     MailMgr.cpp
-	Object.cpp 
 	ObjectMgr.cpp 
 	PlayerCache.cpp
 	PlayerPacketWrapper.cpp
@@ -120,21 +118,18 @@ set(headers
     CalendarMgr.h
 	Channel.h
 	ChannelMgr.h
-    CObjectFactory.h
 	CollideInterface.h
 	CommonScheduleThread.h
 	Container.h
 	DatabaseCleaner.h
 	DayWatcherThread.h
 	Definitions.h
-	DynamicObject.h
 	EquipmentSetMgr.h
 	EventableObject.h
 	EventMgr.h
 	Faction.h
     GameEvent.h
     GameEventMgr.h
-	GameObject.h
 	CRitual.h
     Gossip/GossipDefines.hpp
 	Gossip.h
@@ -151,7 +146,6 @@ set(headers
 	LocalizationMgr.h
 	LootMgr.h
 	MailMgr.h
-	Object.h
 	ObjectMgr.h
 	PlayerCache.h
 	Quest.h

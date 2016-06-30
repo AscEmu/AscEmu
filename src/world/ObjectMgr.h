@@ -29,7 +29,7 @@
 #include "Storage/DBC/DBCStores.h"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "TransporterHandler.h"
-#include "GameObject.h"
+#include "Objects/GameObject.h"
 #include "Spell/Spell.h"
 
 #include <string>

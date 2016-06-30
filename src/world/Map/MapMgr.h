@@ -27,7 +27,7 @@
 #include "MapMgrDefines.hpp"
 #include "CThreads.h"
 #include "Units/Summons/SummonDefines.hpp"
-#include "CObjectFactory.h"
+#include "Objects/CObjectFactory.h"
 
 namespace Arcemu
 {

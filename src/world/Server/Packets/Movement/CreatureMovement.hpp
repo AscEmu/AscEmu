@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define _PACKET_CREATURE_MOVEMENT_HPP
 
 #include "StdAfx.h"
-#include "Object.h"
+#include "Objects/Object.h"
 #include "Units/Unit.h"
 
 namespace Packets
