@@ -3,11 +3,13 @@
 # set up our project name
 project(logon CXX)
 
+include(LogonCommServer/CMakeLists.txt)
+
 set(sources
+   ${SRC_LOGON_COMM_SERVER_FILES}
    AccountCache.cpp
    AuthSocket.cpp
    AutoPatcher.cpp
-   LogonCommServer.cpp
    LogonConsole.cpp
    LogonStdAfx.cpp
    Main.cpp
@@ -19,13 +21,11 @@ set(headers
 	AuthSocket.h
 	AuthStructs.h
 	AutoPatcher.h
-	LogonCommServer.h
 	LogonConsole.h
 	LogonStdAfx.h
     Master.hpp
     LogonServerDefines.hpp
 	PeriodicFunctionCall_Thread.h
-    Opcodes/LogonRealmOpcodes.hpp
 )
 
 include_directories(

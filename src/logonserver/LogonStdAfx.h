@@ -48,7 +48,7 @@
 #include "AutoPatcher.h"
 #include "AuthSocket.h"
 #include "AuthStructs.h"
-#include "LogonCommServer.h"
+#include "LogonCommServer/LogonCommServer.h"
 #include "LogonConsole.h"
 #include "WorldPacket.h"
 #include "Master.hpp"

@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Opcodes/LogonRealmOpcodes.hpp"
+#include "LogonCommServer/LogonRealmOpcodes.hpp"
 #include "LogonStdAfx.h"
 
 #pragma pack(push, 1)
