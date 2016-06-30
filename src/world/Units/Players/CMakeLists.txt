@@ -3,6 +3,7 @@
 set(PATH_PREFIX Units/Players)
 
 set(SRC_UNITS_PLAYERS_FILES
+   ${PATH_PREFIX}/DeathKnight.cpp
    ${PATH_PREFIX}/Player.cpp
    ${PATH_PREFIX}/Player.h
    ${PATH_PREFIX}/PlayerClasses.hpp

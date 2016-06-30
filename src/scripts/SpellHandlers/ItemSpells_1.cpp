@@ -16,7 +16,7 @@
  */
 
 #include "Setup.h"
-#include <QuestLogEntry.hpp>
+#include <Management/QuestLogEntry.hpp>
 
 /*
     How to add a new item spell to the dummy spell handler:

@@ -18,7 +18,7 @@
  */
 
 #include "Setup.h"
-#include <QuestLogEntry.hpp>
+#include <Management/QuestLogEntry.hpp>
 
 class CassaCrimsonwing_Gossip : public Arcemu::Gossip::Script
 {

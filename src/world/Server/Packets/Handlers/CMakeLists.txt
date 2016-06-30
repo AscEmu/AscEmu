@@ -13,7 +13,7 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/CombatHandler.cpp
    ${PATH_PREFIX}/DuelHandler.cpp
    ${PATH_PREFIX}/GroupHandler.cpp
-   ${PATH_PREFIX}/GMTicket
+   ${PATH_PREFIX}/GMTicket.cpp
    ${PATH_PREFIX}/GuildHandler.cpp
    ${PATH_PREFIX}/HonorHandler.cpp
    ${PATH_PREFIX}/HonorHandler.h
@@ -26,6 +26,9 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/NPCHandler.h
    ${PATH_PREFIX}/MovementHandler.cpp
    ${PATH_PREFIX}/PetHandler.cpp
+   ${PATH_PREFIX}/PlayerCache.cpp
+   ${PATH_PREFIX}/PlayerCache.h
+   ${PATH_PREFIX}/PlayerPacketWrapper.cpp
    ${PATH_PREFIX}/QueryHandler.cpp
    ${PATH_PREFIX}/QuestHandler.cpp
    ${PATH_PREFIX}/RaidHandler.cpp

@@ -20,7 +20,7 @@
 
 #include "Setup.h"
 #define SKIP_ALLOCATOR_SHARING 1
-#include <ScriptSetup.h>
+#include <Server/Script/ScriptSetup.h>
 
 extern "C" SCRIPT_DECL uint32 _exp_get_script_type()
 {

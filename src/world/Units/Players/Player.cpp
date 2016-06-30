@@ -20,7 +20,7 @@
  */
 
 #include "StdAfx.h"
-#include "QuestLogEntry.hpp"
+#include "Management/QuestLogEntry.hpp"
 #include "Server/Packets/Opcodes.h"
 
 

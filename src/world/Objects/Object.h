@@ -22,11 +22,11 @@
 #define _OBJECT_H
 
 #include "StdAfx.h"
-#include "UpdateFields.h"
-#include "UpdateMask.h"
+#include "Server/UpdateFields.h"
+#include "Server/UpdateMask.h"
 #include "CommonTypes.hpp"
 #include "Server/EventableObject.h"
-#include "IUpdatable.h"
+#include "Server/IUpdatable.h"
 
 #include <set>
 #include <map>

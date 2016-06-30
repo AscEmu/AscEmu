@@ -17,6 +17,7 @@ set(SRC_MAP_FILES
    ${PATH_PREFIX}/MapMgrDefines.hpp
    ${PATH_PREFIX}/MapScriptInterface.cpp
    ${PATH_PREFIX}/MapScriptInterface.h
+   ${PATH_PREFIX}/RecastIncludes.hpp
    ${PATH_PREFIX}/TerrainMgr.cpp
    ${PATH_PREFIX}/TerrainMgr.h
    ${PATH_PREFIX}/WorldCreator.cpp

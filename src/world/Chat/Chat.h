@@ -21,7 +21,7 @@
 #ifndef _WOWSERVER_CHAT_H
 #define _WOWSERVER_CHAT_H
 
-#include "SkillNameMgr.h"
+#include "Management/SkillNameMgr.h"
 
 class ChatHandler;
 class WorldSession;

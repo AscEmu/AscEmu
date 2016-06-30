@@ -22,7 +22,7 @@
 #define _GAMEOBJECT_H
 
 #include "Management/CRitual.h"
-#include "QuestMgr.h"
+#include "Management/QuestMgr.h"
 #include "Map/Map.h"
 
 enum GameObject_State

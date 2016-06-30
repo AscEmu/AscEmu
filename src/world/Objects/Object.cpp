@@ -21,9 +21,9 @@
 #include "StdAfx.h"
 #include "Units/Unit.h"
 #include "Storage/DBC/DBCStores.h"
-#include "QuestLogEntry.hpp"
+#include "Management/QuestLogEntry.hpp"
 #include "Server/EventableObject.h"
-#include "IUpdatable.h"
+#include "Server/IUpdatable.h"
 
 Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
 {

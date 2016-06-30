@@ -32,7 +32,7 @@
 
 #define CREATE_GAMEOBJECT_SCRIPT(cl) &cl::Create
 #define CREATE_CREATURESCRIPT(cl) &cl::Create
-#include <QuestLogEntry.hpp>
+#include <Management/QuestLogEntry.hpp>
 
 class SCRIPT_DECL EasyFunctions
 {

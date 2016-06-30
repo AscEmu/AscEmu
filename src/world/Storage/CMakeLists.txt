@@ -9,6 +9,7 @@ set(SRC_STORAGE_FILES
    ${PATH_PREFIX}/DayWatcherThread.h
    ${PATH_PREFIX}/MySQLDataStore.cpp
    ${PATH_PREFIX}/MySQLDataStore.hpp
+   ${PATH_PREFIX}/WorldStrings.h
 )
 
 source_group(Storage FILES ${SRC_STORAGE_FILES})

@@ -20,8 +20,8 @@
  */
 
 #include "StdAfx.h"
-#include "QuestMgr.h"
-#include "Quest.h"
+#include "Management/QuestMgr.h"
+#include "Management/Quest.h"
 
 
 Creature::Creature(uint64 guid)

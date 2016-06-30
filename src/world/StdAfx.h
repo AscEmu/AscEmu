@@ -27,13 +27,13 @@
 #include "CommonDefines.hpp"  // shared
 
 #define DEBUG_LOG(...) sLog.Debug("DEBUG_LOG", __VA_ARGS__)
-#include "Definitions.h"
+#include "Server/Definitions.h"
 
 #include <vector>
 #include <fstream>
 #include <array>
 
-#include "RecastIncludes.hpp"
+#include "Map/RecastIncludes.hpp"
 
 // Shared headers
 #include "Common.h"
@@ -87,10 +87,10 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "Server/Packets/Movement/CreatureMovement.hpp"
 #include "Server/Packets/Movement/SmsgMonsterMove.hpp"
 
-#include "IUpdatable.h"
-#include "WUtil.h"
-#include "UpdateFields.h"
-#include "UpdateMask.h"
+#include "Server/IUpdatable.h"
+#include "Server/WUtil.h"
+#include "Server/UpdateFields.h"
+#include "Server/UpdateMask.h"
 #include "Server/Packets/Opcodes.h"
 #include "AuthCodes.h"
 #include "CallBack.h"   // shared
@@ -132,8 +132,8 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "Map/CellHandler.h"
 #include "Chat/Chat.h"
 #include "Units/Creatures/Corpse.h"
-#include "Quest.h"
-#include "QuestMgr.h"
+#include "Management/Quest.h"
+#include "Management/QuestMgr.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 #include "Units/Summons/CompanionSummon.h"
@@ -167,28 +167,28 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "Server/WorldSocket.h"
 #include "Server/WorldSession.h"
 #include "Management/WorldStatesHandler.h"
-#include "WorldStrings.h"
+#include "Storage/WorldStrings.h"
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
 #include "Units/Players/Player.h"
-#include "Faction.h"
-#include "Skill.h"
-#include "SkillNameMgr.h"
+#include "Objects/Faction.h"
+#include "Management/Skill.h"
+#include "Management/SkillNameMgr.h"
 #include "Spell/SpellNameHashes.h"
 #include "Spell/Spell.h"
 #include "Spell/SpellMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Management/TaxiMgr.h"
 #include "Management/TransporterHandler.h"
-#include "WeatherMgr.h"
+#include "Management/WeatherMgr.h"
 #include "Server/World.h"
 #include "Management/EquipmentSetMgr.h"
 #include "Management/ItemInterface.h"
-#include "Stats.h"
+#include "Units/Stats.h"
 #include "Map/WorldCreator.h"
-#include "ObjectMgr.h"
+#include "Objects/ObjectMgr.h"
 #include "CThreads.h"
-#include "ScriptMgr.h"
+#include "Server/Script/ScriptMgr.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
 #include "Management/ArenaTeam.h"
@@ -206,7 +206,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "Server/Master.h"
 #include "Server/Console/BaseConsole.h"
 #include "Server/Console/CConsole.h"
-#include "SpeedDetector.h"
+#include "Server/Warden/SpeedDetector.h"
 #include "Management/WorldStates.h"
 
 #include "Units/Players/PlayerClasses.hpp"

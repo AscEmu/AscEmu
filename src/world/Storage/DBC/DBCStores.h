@@ -21,7 +21,7 @@
 #define _DBC_STORES_H
 
 #include "DBCGlobals.hpp"
-#include "Definitions.h"
+#include "Server/Definitions.h"
 
 class Player;
 

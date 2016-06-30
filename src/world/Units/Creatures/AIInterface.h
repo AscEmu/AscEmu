@@ -21,8 +21,8 @@
 #ifndef WOWSERVER_AIINTERFACE_H
 #define WOWSERVER_AIINTERFACE_H
 
-#include "RecastIncludes.hpp"
-#include "IUpdatable.h"
+#include "Map/RecastIncludes.hpp"
+#include "Server/IUpdatable.h"
 
 #include <G3D/Vector3.h>
 

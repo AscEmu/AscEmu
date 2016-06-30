@@ -24,9 +24,9 @@
 #include <Database/Field.h>
 #include "CommonDefines.hpp"
 #include "Server/EventableObject.h"
-#include "Quest.h"
+#include "Management/Quest.h"
 #include "Units/Players/Player.h"
-#include "ScriptMgr.h"
+#include "Server/Script/ScriptMgr.h"
 
 class SERVER_DECL QuestLogEntry : public EventableObject
 {

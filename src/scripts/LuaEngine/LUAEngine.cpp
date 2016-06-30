@@ -25,7 +25,7 @@
 #endif
 
 #include "LUAEngine.h"
-#include <ScriptSetup.h>
+#include <Server/Script/ScriptSetup.h>
 
 #ifdef WIN32
 #pragma warning(disable:4129)
@@ -35,7 +35,7 @@
 #ifndef _WIN32
 #include <dirent.h>
 #endif
-#include <QuestLogEntry.hpp>
+#include <Management/QuestLogEntry.hpp>
 
 ScriptMgr* m_scriptMgr = NULL;
 LuaEngine g_luaMgr;

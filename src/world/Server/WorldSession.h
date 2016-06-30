@@ -24,7 +24,7 @@
 
 #include <Threading/Mutex.h>
 #include "Server/Packets/Opcodes.h"
-#include "Quest.h"
+#include "Management/Quest.h"
 #include "FastQueue.h"
 #include "Units/Unit.h"
 #include <stddef.h>

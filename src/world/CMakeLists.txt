@@ -17,6 +17,8 @@ include(Server/LogonCommClient/CMakeLists.txt)
 include(Server/Packets/CMakeLists.txt)
 include(Server/Packets/Handlers/CMakeLists.txt)
 include(Server/Packets/Movement/CMakeLists.txt)
+include(Server/Script/CMakeLists.txt)
+include(Server/Warden/CMakeLists.txt)
 include(Spell/CMakeLists.txt)
 include(Spell/Customization/CMakeLists.txt)
 include(Storage/CMakeLists.txt)
@@ -25,6 +27,17 @@ include(Units/CMakeLists.txt)
 include(Units/Creatures/CMakeLists.txt)
 include(Units/Players/CMakeLists.txt)
 include(Units/Summons/CMakeLists.txt)
+
+set(SRC_WORLD_PROJECT
+   ${CMAKE_CURRENT_SOURCE_DIR}/StdAfx.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/StdAfx.h
+)
+
+if(WIN32)
+   set(SRC_WORLD_PROJECT ${SRC_WORLD_PROJECT} ${CMAKE_CURRENT_SOURCE_DIR}/resources.rc)
+endif()
+
+source_group(world FILES ${SRC_WORLD_PROJECT})
 
 set(sources
    ${SRC_CHAT_FILES}
@@ -40,6 +53,8 @@ set(sources
    ${SRC_PACKET_MOVEMENT_FILES}
    ${SRC_SERVER_FILES}
    ${SRC_SERVER_CONSOLE_FILES}
+   ${SRC_SERVER_SCRIPT_FILES}
+   ${SRC_SERVER_WARDEN_FILES}
    ${SRC_LOGON_COMMUNICATION_CLIENT_FILES}
    ${SRC_SPELL_FILES}
    ${SRC_SPELL_CUSTOM_FILES}
@@ -49,50 +64,7 @@ set(sources
    ${SRC_UNITS_CREATURES_FILES}
    ${SRC_UNITS_PLAYERS_FILES}
    ${SRC_UNITS_SUMMONS_FILES}
-   
-	Faction.cpp
-	ObjectMgr.cpp 
-	PlayerCache.cpp
-	PlayerPacketWrapper.cpp
-	Quest.cpp 
-    QuestLogEntry.cpp
-	QuestMgr.cpp 
-	ScriptMgr.cpp 
-	SpeedDetector.cpp
-	StdAfx.cpp
-	Stats.cpp 
-	WeatherMgr.cpp 
-	WUtil.cpp 
-	DeathKnight.cpp
-)
-
-if(WIN32)
-   set(sources ${sources} resources.rc)
-endif()
-
-set(headers
-	Definitions.h
-	Faction.h
-	IUpdatable.h
-	ObjectMgr.h
-	PlayerCache.h
-	Quest.h
-    QuestDefines.hpp
-    QuestLogEntry.hpp
-	QuestMgr.h
-    RecastIncludes.hpp
-	ScriptMgr.h
-	ScriptSetup.h
-	Skill.h
-	SkillNameMgr.h
-	SpeedDetector.h
-	Stats.h
-	StdAfx.h
-	UpdateFields.h
-	UpdateMask.h
-	WeatherMgr.h
-    WorldStrings.h
-	WUtil.h
+   ${SRC_WORLD_PROJECT}
 )
 
 include_directories(
@@ -110,7 +82,7 @@ include_directories(
    ${ZLIB_INCLUDE_DIRS}
 )
 
-add_executable(${PROJECT_NAME} ${sources} ${headers})
+add_executable(${PROJECT_NAME} ${sources})
 
 if(USE_PCH AND PCHSupport_FOUND)
     ADD_NATIVE_PRECOMPILED_HEADER(${PROJECT_NAME} StdAfx.h ${CMAKE_CURRENT_SOURCE_DIR}/StdAfx.cpp)

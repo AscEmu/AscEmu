@@ -59,10 +59,21 @@ set(SRC_MANAGEMENT_FILES
    ${PATH_PREFIX}/LootMgr.h
    ${PATH_PREFIX}/MailMgr.cpp
    ${PATH_PREFIX}/MailMgr.h
+   ${PATH_PREFIX}/Quest.cpp
+   ${PATH_PREFIX}/Quest.h
+   ${PATH_PREFIX}/QuestDefines.hpp
+   ${PATH_PREFIX}/QuestLogEntry.cpp
+   ${PATH_PREFIX}/QuestLogEntry.hpp
+   ${PATH_PREFIX}/QuestMgr.cpp
+   ${PATH_PREFIX}/QuestMgr.h
+   ${PATH_PREFIX}/Skill.h
+   ${PATH_PREFIX}/SkillNameMgr.h
    ${PATH_PREFIX}/TaxiMgr.cpp
    ${PATH_PREFIX}/TaxiMgr.h
    ${PATH_PREFIX}/TransporterHandler.cpp
    ${PATH_PREFIX}/TransporterHandler.h
+   ${PATH_PREFIX}/WeatherMgr.cpp
+   ${PATH_PREFIX}/WeatherMgr.h
    ${PATH_PREFIX}/WordFilter.cpp
    ${PATH_PREFIX}/WordFilter.h
    ${PATH_PREFIX}/WorldStates.h

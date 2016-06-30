@@ -22,7 +22,7 @@
 
 #define SKIP_ALLOCATOR_SHARING 1
 
-#include <ScriptSetup.h>
+#include <Server/Script/ScriptSetup.h>
 
 #include "AlteracValley.h"
 #include "ArathiBasin.h"

@@ -21,10 +21,10 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 
-#include "PlayerDefines.hpp"
-#include "PlayerCache.h"
-#include "Definitions.h"
-#include "QuestDefines.hpp"
+#include "Units/Players/PlayerDefines.hpp"
+#include "Server/Packets/Handlers/PlayerCache.h"
+#include "Server/Definitions.h"
+#include "Management/QuestDefines.hpp"
 #include "Management/BattlegroundMgr.h"
 #include "Management/MailMgr.h"
 #include "Management/ItemPrototype.h"
