@@ -37,13 +37,6 @@ const float playerNormalFlightSpeed = 7.0f;
 
 #define PLAYER_HONORLESS_TARGET_SPELL 2479
 
-/* action button defines */
-#define PLAYER_ACTION_BUTTON_COUNT 136
-#define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(ActionButton)
-
-#define MAX_SPEC_COUNT 2
-#define GLYPHS_COUNT 6
-
 #define PLAYER_LEVEL_CAP 80
 #define PLAYER_ARENA_MIN_LEVEL 70
 
@@ -593,5 +586,12 @@ enum PlayerCheats
     PLAYER_CHEAT_TRIGGERPASS    = 0x080,
     PLAYER_CHEAT_TAXI           = 0x100,
 };
+
+// action button defines
+#define PLAYER_ACTION_BUTTON_COUNT 144
+#define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(ActionButton)
+
+#define MAX_SPEC_COUNT 2
+#define GLYPHS_COUNT 6
 
 #endif // _PLAYER_DEFINES_H

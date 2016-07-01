@@ -3256,14 +3256,16 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             if (!end)
                 break;
             *end = 0;
-            m_specs[s].mActions[Counter].Misc = (uint8)atol(start);
+            m_specs[s].mActions[Counter].Type = (uint8)atol(start);
             start = end + 1;
             end = strchr(start, ',');
             if (!end)
                 break;
             *end = 0;
-            m_specs[s].mActions[Counter++].Type = (uint8)atol(start);
+            m_specs[s].mActions[Counter].Misc = (uint8)atol(start);
             start = end + 1;
+
+            Counter++;
         }
     }
 
@@ -5071,8 +5073,8 @@ void Player::setAction(uint8 button, uint16 action, uint8 type, uint8 misc)
         return;
 
     m_specs[m_talentActiveSpec].mActions[button].Action = action;
-    m_specs[m_talentActiveSpec].mActions[button].Type = type;
     m_specs[m_talentActiveSpec].mActions[button].Misc = misc;
+    m_specs[m_talentActiveSpec].mActions[button].Type = type;
 }
 
 // Groupcheck
