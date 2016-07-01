@@ -56,7 +56,6 @@ class DayWatcherThread : public CThread
 
         bool run();
         void terminate();
-        void maintenence();
         void dupe_tm_pointer(tm* returnvalue, tm* mypointer);
         void load_settings();
         void update_settings();

@@ -102,12 +102,6 @@ enum AIType
     AITYPE_PASSIVE
 };
 
-/*struct AI_Target
-{
-    Unit* target;
-    int32 threat;
-};*/
-
 enum AI_Agent
 {
     AGENT_NULL,
@@ -178,7 +172,6 @@ enum CreatureState
 
 
 struct SpellEntry;
-//enum MOD_TYPES;
 
 const uint32 AISPELL_ANY_DIFFICULTY = 4;
 
@@ -189,8 +182,6 @@ struct AI_Spell
     uint32 instance_mode;
     uint16 agent;
     uint32 procChance;
-    //int32 procCount;
-    //uint32 procCountDB;
     SpellEntry* spell;
     uint8 spellType;
     uint8 spelltargetType;
@@ -416,16 +407,6 @@ class SERVER_DECL AIInterface : public IUpdatable
         void setNextTarget(Unit* nextTarget);
         void setNextTarget(uint64 nextTarget);
         void resetNextTarget();
-
-        /*inline void ResetProcCounts()
-        {
-            AI_Spell* sp;
-            for (list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
-                    {
-                        sp = *itr;
-                        sp->procCount =sp->procCountDB;
-                    }
-        }*/
 
         uint64 m_formationLinkTarget;
         float m_formationFollowDistance;

@@ -3683,18 +3683,6 @@ class LuaUnit
         return 0;
     }
 
-    /*int IsPlayerAtWar(lua_State * L, Unit * ptr)
-    {
-    TEST_PLAYER_RET()
-    uint32 faction = luaL_checkinteger(L,1);
-    if (ptr && faction)
-    if( ((Player*)ptr)->IsAtWar(faction))
-    lua_pushboolean(L,1);
-    else
-    lua_pushboolean(L,0);
-    return 1;
-    }*/
-
     static int SetPlayerStanding(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()

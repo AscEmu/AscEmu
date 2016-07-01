@@ -223,7 +223,6 @@ class SERVER_DECL Creature : public Unit
         void SaveToDB();
         void DeleteFromDB();
 
-        void OnJustDied();
         void OnRemoveCorpse();
         void OnRespawn(MapMgr* m);
 
@@ -244,7 +243,6 @@ class SERVER_DECL Creature : public Unit
         void EnslaveExpire();
 
         // Pet
-        void UpdatePet();
         uint32 GetEnslaveCount();
 
         void SetEnslaveCount(uint32 count);
@@ -342,10 +340,6 @@ class SERVER_DECL Creature : public Unit
         CreatureAIScript* _myScriptClass;
         bool m_limbostate;
         Trainer* mTrainer;
-
-        void _LoadGoods();
-        void _LoadGoods(std::list<CreatureItem*>* lst);
-        void _LoadMovement();
 
         /// Vendor data
         std::vector<CreatureItem>* m_SellItems;

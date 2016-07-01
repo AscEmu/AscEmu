@@ -334,7 +334,6 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         virtual uint32 BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
         uint32 BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, Player* target);
         uint32 BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask);
-        uint32 BuildOutOfRangeUpdateBlock(ByteBuffer* buf);
 
         WorldPacket* BuildFieldUpdatePacket(uint32 index, uint32 value);
         void BuildFieldUpdatePacket(Player* Target, uint32 Index, uint32 Value);

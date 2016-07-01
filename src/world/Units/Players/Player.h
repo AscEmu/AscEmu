@@ -406,8 +406,6 @@ class SERVER_DECL Player : public Unit
         LfgMatch* m_lfgMatch;
         uint32 m_lfgInviterGuid;
 
-        void EventTimeoutLfgInviter();
-
         // Summon and Appear Blocking
         void DisableSummon(bool disable) { disableSummon = disable; }
         bool IsSummonDisabled() { return disableSummon; }
@@ -544,8 +542,7 @@ class SERVER_DECL Player : public Unit
         void SetAFKReason(std::string reason) { m_cache->SetStringValue(CACHE_AFK_DND_REASON, reason); };
         const char* GetName() { return m_name.c_str(); }
         std::string* GetNameString() { return &m_name; }
-        void Die();
-        //void KilledMonster(uint32 entry, const uint64 &guid);
+
         void GiveXP(uint32 xp, const uint64 & guid, bool allowbonus);       /// to stop rest xp being given
         void ModifyBonuses(uint32 type, int32 val, bool apply);
         void CalcExpertise();
@@ -641,7 +638,6 @@ class SERVER_DECL Player : public Unit
 
         bool GetQuestRewardStatus(uint32 quest_id);
         bool HasQuestForItem(uint32 itemid);
-        bool CanFinishQuest(QuestProperties* qst);
         bool HasQuestSpell(uint32 spellid);
         void RemoveQuestSpell(uint32 spellid);
         bool HasQuestMob(uint32 entry);
@@ -784,7 +780,7 @@ class SERVER_DECL Player : public Unit
         int32 GetBaseStanding(uint32 Faction);
         void SetStanding(uint32 Faction, int32 Value);
         void SetAtWar(uint32 Faction, bool Set);
-        bool IsAtWar(uint32 Faction);
+
         Standing GetStandingRank(uint32 Faction);
         bool IsHostileBasedOnReputation(DBC::Structures::FactionEntry const* dbc);
         void UpdateInrangeSetsBasedOnReputation();
@@ -957,13 +953,10 @@ class SERVER_DECL Player : public Unit
 
         void SendDelayedPacket(WorldPacket* data, bool bDeleteOnSend);
         float offhand_dmg_mod;
-        int GetSpellDamageMod(uint32 id);
-        int32 GetSpellManaMod(uint32 id);
 
         // Talents
         // These functions build a specific type of A9 packet
         uint32 BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target);
-        void DestroyForPlayer(Player* target) const;
         void SetTalentHearthOfWildPCT(int value) { hearth_of_wild_pct = value; }
         void EventTalentHearthOfWildChange(bool apply);
 
@@ -989,7 +982,6 @@ class SERVER_DECL Player : public Unit
         bool LoadSkills(QueryResult* result);
         bool SaveSkills(bool NewCharacter, QueryBuffer* buf);
 
-        void LoadNamesFromDB(uint32 guid);
         bool m_FirstLogin;
 
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -1051,7 +1043,6 @@ class SERVER_DECL Player : public Unit
         //Note:ModSkillLine -> value+=amt;ModSkillMax -->value=amt; --weird
         float GetSkillUpChance(uint32 id);
 
-        // std::list<struct skilllines>getSkillLines() { return m_skilllines; }
         float SpellHasteRatingBonus;
         void ModAttackSpeed(int32 mod, ModType type);
         void UpdateAttackSpeed();
@@ -1113,8 +1104,7 @@ class SERVER_DECL Player : public Unit
         //Tutorials
         uint32 GetTutorialInt(uint32 intId);
         void SetTutorialInt(uint32 intId, uint32 value);
-        //Base stats calculations
-        //void CalcBaseStats();
+
         // Rest
         uint32 SubtractRestXP(uint32 amount);
         void AddCalculatedRestXP(uint32 seconds);
@@ -1190,7 +1180,6 @@ class SERVER_DECL Player : public Unit
         void SetHasWonRbgToday(bool value);
 
         void EventRepeatSpell();
-        void EventCastRepeatedSpell(uint32 spellid, Unit* target);
         int32 CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot);
         uint32 m_AutoShotDuration;
         uint32 m_AutoShotAttackTimer;
@@ -1221,9 +1210,6 @@ class SERVER_DECL Player : public Unit
         uint32 m_modphyscritdmgPCT;
         uint32 m_RootedCritChanceBonus;         /// Class Script Override: Shatter
         uint32 m_IncreaseDmgSnaredSlowed;
-        //uint32 FieryPaybackModHP35;           // for Fiery Payback
-
-        void ApplyStatByAttrMod(uint8 dstType, uint8 dstIdx, uint8 srcType, uint8 srcIdx);
 
         uint32 m_ModInterrMRegenPCT;
         int32 m_ModInterrMRegen;
@@ -1664,7 +1650,6 @@ class SERVER_DECL Player : public Unit
         uint32 login_flags;
         uint8 iInstanceType;
         void SetName(std::string & name) { m_name = name; }
-        // spell to (delay, last time)
 
         FactionReputation* reputationByListId[128];
 
@@ -1682,8 +1667,6 @@ class SERVER_DECL Player : public Unit
         void SendAreaTriggerMessage(const char* message, ...);
 
         // Trade Target
-        //Player* getTradeTarget() {return mTradeTarget;};
-
         Player* GetTradeTarget();
 
         Item* getTradeItem(uint32 slot) {return mTradeItems[slot];};
@@ -1773,12 +1756,10 @@ class SERVER_DECL Player : public Unit
 
         void _LoadTutorials(QueryResult* result);
         void _SaveTutorials(QueryBuffer* buf);
-        void _SaveInventory(bool firstsave);
         void _SaveQuestLogEntry(QueryBuffer* buf);
         void _LoadQuestLogEntry(QueryResult* result);
 
         void _LoadPet(QueryResult* result);
-        void _LoadPetNo();
         void _LoadPetSpells(QueryResult* result);
         void _SavePet(QueryBuffer* buf);
         void _SavePetSpells(QueryBuffer* buf);
