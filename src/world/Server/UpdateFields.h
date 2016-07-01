@@ -436,16 +436,4 @@ enum ECorpseFields
 #define LOWGUID                                   OBJECT_FIELD_GUID
 #define HIGHGUID                                  (OBJECT_FIELD_GUID + 1)
 
-#define UNIT_FIELD_STRENGTH                       UNIT_FIELD_STAT0
-#define UNIT_FIELD_AGILITY                        UNIT_FIELD_STAT1
-#define UNIT_FIELD_STAMINA                        UNIT_FIELD_STAT2
-#define UNIT_FIELD_INTELLECT                      UNIT_FIELD_STAT3
-#define UNIT_FIELD_SPIRIT                         UNIT_FIELD_STAT4
-//VLack: Don't forget to fix up these when generating this file from a new client!!!
-//#define PLAYER_VISIBLE_ITEM_LENGTH                (PLAYER_VISIBLE_ITEM_2_ENTRYID - PLAYER_VISIBLE_ITEM_1_ENTRYID)
-#define PLAYER_VISIBLE_ITEM_LENGTH                2
-#define GAMEOBJECT_PARENTROTATION_01              OBJECT_END + 0x0005 // Size: 4, Type: FLOAT, Flags: PUBLIC
-#define GAMEOBJECT_PARENTROTATION_02              OBJECT_END + 0x0006 // Size: 4, Type: FLOAT, Flags: PUBLIC
-#define GAMEOBJECT_PARENTROTATION_03              OBJECT_END + 0x0007 // Size: 4, Type: FLOAT, Flags: PUBLIC
-
 #endif  //_UPDATEFIELDS_H

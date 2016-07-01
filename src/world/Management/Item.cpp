@@ -721,7 +721,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
     }
 
     // Apply the visual on the player.
-    uint32 ItemSlot = m_owner->GetItemInterface()->GetInventorySlotByGuid(GetGUID()) * PLAYER_VISIBLE_ITEM_LENGTH;   //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
+    uint32 ItemSlot = m_owner->GetItemInterface()->GetInventorySlotByGuid(GetGUID()) * 2;   //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
     uint32 VisibleBase = PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + ItemSlot;
     if (VisibleBase <= PLAYER_VISIBLE_ITEM_19_ENCHANTMENT)
         m_owner->SetUInt32Value(VisibleBase, Apply ? Entry->Id : 0);   //On 3.1 we can't add a Slot to the base now, as we no longer have multiple fields for storing them. This in some cases will try to write for example 3 visuals into one place, but now every item has only one field for this, and as we can't choose which visual to have, we'll accept the last one.

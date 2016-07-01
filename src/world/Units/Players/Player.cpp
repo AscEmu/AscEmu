@@ -2351,7 +2351,7 @@ void Player::InitVisibleUpdateBits()
     // Players visible items are not inventory stuff
     for (uint16 i = 0; i < EQUIPMENT_SLOT_END; ++i)
     {
-        uint32 offset = i * PLAYER_VISIBLE_ITEM_LENGTH; //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
+        uint32 offset = i * 2; //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
 
         // item entry
         Player::m_visibleUpdateMask.SetBit(PLAYER_VISIBLE_ITEM_1_ENTRYID + offset);
@@ -7110,7 +7110,7 @@ void Player::RegenerateHealth(bool inCombat)
     auto HPRegenBase = sGtRegenHPPerSptStore.LookupEntry(getLevel() - 1 + (getClass() - 1) * 100);
     auto HPRegen = sGtOCTRegenHPStore.LookupEntry(getLevel() - 1 + (getClass() - 1) * 100);
 
-    uint32 basespirit = m_uint32Values[UNIT_FIELD_SPIRIT];
+    uint32 basespirit = m_uint32Values[UNIT_FIELD_STAT4];
     uint32 extraspirit = 0;
 
     if (basespirit > 50)

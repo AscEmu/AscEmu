@@ -183,12 +183,6 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     updateMask.SetCount(m_valuesCount);
     _SetCreateBits(&updateMask, target);
 
-    /*if (IsGameObject() && (static_cast< GameObject* >(this)->GetOverrides() & GAMEOBJECT_OVERRIDE_PARENTROT))
-    {
-        updateMask.SetBit(GAMEOBJECT_PARENTROTATION_02);
-        updateMask.SetBit(GAMEOBJECT_PARENTROTATION_03);
-    }*/
-
     // this will cache automatically if needed
     _BuildValuesUpdate(data, &updateMask, target);
 

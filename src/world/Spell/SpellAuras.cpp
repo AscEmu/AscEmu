@@ -8136,7 +8136,7 @@ void Aura::SpellAuraSpellHealingStatPCT(bool apply)
         for (uint32 x = 1; x < 7; x++)
         m_target->HealDoneMod[x] += mod->realamount;*/
 
-        mod->realamount = ((m_target->GetUInt32Value(UNIT_FIELD_SPIRIT) * mod->m_amount) / 100);
+        mod->realamount = ((m_target->GetUInt32Value(UNIT_FIELD_STAT4) * mod->m_amount) / 100);
 
         static_cast<Player*>(m_target)->ModifyBonuses(CRITICAL_STRIKE_RATING, mod->realamount, true);
         static_cast<Player*>(m_target)->UpdateChances();

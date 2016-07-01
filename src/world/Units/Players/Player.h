@@ -928,7 +928,7 @@ class SERVER_DECL Player : public Unit
         bool HasItemCount(uint32 item, uint32 count, bool inBankAlso = false) const;
         /// item interface variables
         ItemInterface* m_ItemInterface;
-        int32 GetVisibleBase(int16 slot) { return (PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * PLAYER_VISIBLE_ITEM_LENGTH)); }
+        int32 GetVisibleBase(int16 slot) { return (PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2)); }
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Loot

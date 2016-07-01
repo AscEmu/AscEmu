@@ -377,7 +377,7 @@ Item* ItemInterface::SafeRemoveAndRetreiveItemFromSlot(int8 ContainerSlot, int16
             {
                 m_pOwner->ApplyItemMods(pItem, slot, false);
                 int VisibleBase = GetOwner()->GetVisibleBase(slot);
-                for (int i = VisibleBase; i < VisibleBase + PLAYER_VISIBLE_ITEM_LENGTH; ++i)
+                for (int i = VisibleBase; i < VisibleBase + 2; ++i)
                 {
                     m_pOwner->SetUInt32Value(i, 0);
                 }
@@ -544,7 +544,7 @@ bool ItemInterface::SafeFullRemoveItemFromSlot(int8 ContainerSlot, int16 slot)
             {
                 m_pOwner->ApplyItemMods(pItem, slot, false);
                 int VisibleBase = GetOwner()->GetVisibleBase(slot);
-                for (int i = VisibleBase; i < VisibleBase + PLAYER_VISIBLE_ITEM_LENGTH; ++i)
+                for (int i = VisibleBase; i < VisibleBase + 2; ++i)
                 {
                     m_pOwner->SetUInt32Value(i, 0);
                 }
@@ -3092,7 +3092,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             // Bags aren't considered "visible".
             if (srcslot < EQUIPMENT_SLOT_END)
             {
-                int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (srcslot * PLAYER_VISIBLE_ITEM_LENGTH);
+                int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (srcslot * 2);
                 m_pOwner->SetUInt32Value(VisibleBase, m_pItems[(int)srcslot]->GetEntry());
                 m_pOwner->SetUInt32Value(VisibleBase + 1, m_pItems[(int)srcslot]->GetEnchantmentId(0));
             }
@@ -3106,7 +3106,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             // Bags aren't considered "visible".
             if (srcslot < EQUIPMENT_SLOT_END)
             {
-                int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (srcslot * PLAYER_VISIBLE_ITEM_LENGTH);
+                int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (srcslot * 2);
                 m_pOwner->SetUInt32Value(VisibleBase, 0);
                 m_pOwner->SetUInt32Value(VisibleBase + 1, 0);
                 /*                m_pOwner->SetUInt32Value(VisibleBase + 2, 0);
@@ -3127,7 +3127,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             // Bags aren't considered "visible".
             if (dstslot < EQUIPMENT_SLOT_END)
             {
-                int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (dstslot * PLAYER_VISIBLE_ITEM_LENGTH);
+                int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (dstslot * 2);
                 m_pOwner->SetUInt32Value(VisibleBase, m_pItems[(int)dstslot]->GetEntry());
                 m_pOwner->SetUInt32Value(VisibleBase + 1, m_pItems[(int)dstslot]->GetEnchantmentId(0));
             }
@@ -3143,7 +3143,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
             // bags aren't considered visible
             if (dstslot < EQUIPMENT_SLOT_END)
             {
-                int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (dstslot * PLAYER_VISIBLE_ITEM_LENGTH);
+                int VisibleBase = PLAYER_VISIBLE_ITEM_1_ENTRYID + (dstslot * 2);
                 m_pOwner->SetUInt32Value(VisibleBase, 0);
                 m_pOwner->SetUInt32Value(VisibleBase + 1, 0);
                 /*                m_pOwner->SetUInt32Value(VisibleBase + 2, 0);
