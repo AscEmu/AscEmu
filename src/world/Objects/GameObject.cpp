@@ -845,7 +845,7 @@ void GameObject_SpellFocus::SpawnLinkedTrap()
     GameObject* go = m_mapMgr->CreateGameObject(trapid);
     if (go == nullptr)
     {
-        sLog.outError("Failed to create linked trap for GameObject %u ( %s ).", gameobject_properties->entry, gameobject_properties->name.c_str());
+        sLog.outError("Failed to create linked trap (entry: %u) for GameObject %u ( %s ). Missing GOProperties!", trapid, gameobject_properties->entry, gameobject_properties->name.c_str());
         return;
     }
 
