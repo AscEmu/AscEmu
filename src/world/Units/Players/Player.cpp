@@ -2607,8 +2607,8 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         for (uint8 i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
         {
             ss << uint32(m_specs[s].mActions[i].Action) << ","
-                << uint32(m_specs[s].mActions[i].Misc) << ","
-                << uint32(m_specs[s].mActions[i].Type) << ",";
+                << uint32(m_specs[s].mActions[i].Type) << ","
+                << uint32(m_specs[s].mActions[i].Misc) << ",";
         }
         ss << "','";
     }
