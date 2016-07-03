@@ -218,7 +218,7 @@ bool ChatHandler::HandleGORotate(const char* args, WorldSession* m_session)
             return true;
     }
 
-    GreenSystemMessage(m_session, "Gameobject rotated");
+    GreenSystemMessage(m_session, "Gameobject spawn id: %u rotated", go->m_spawn->id);
 
     uint32 NewGuid = m_session->GetPlayer()->GetMapMgr()->GenerateGameobjectGuid();
     go->RemoveFromWorld(true);
