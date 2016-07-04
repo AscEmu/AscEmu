@@ -20,7 +20,13 @@
  */
 
 #include "StdAfx.h"
+#include "MMapManager.h"
+#include "MMapFactory.h"
 
+#define MAX_MAP 800
+
+Mutex m_cellloadLock;
+uint32 m_celltilesLoaded[MAX_MAP][64][64];
 
 extern bool bServerShutdown;
 
@@ -72,6 +78,10 @@ void MapCell::RemoveObject(Object* obj)
 
 void MapCell::SetActivity(bool state)
 {
+    uint32 mapId = _mapmgr->GetMapId();
+    uint32 tileX = _x / 8;
+    uint32 tileY = _y / 8;
+
     if (!_active && state)
     {
         // Move all objects to active set.
@@ -86,7 +96,16 @@ void MapCell::SetActivity(bool state)
 
         if (sWorld.Collision)
         {
-            CollideInterface.ActivateTile(_mapmgr->GetMapId(), _x / 8, _y / 8);
+            VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+            MMAP::MMapManager* mmgr = MMAP::MMapFactory::createOrGetMMapManager();
+            m_cellloadLock.Acquire();
+            if (m_celltilesLoaded[mapId][tileX][tileY] == 0)
+            {
+                mgr->loadMap(sWorld.vMapPath.c_str(), mapId, tileX, tileY);
+                mmgr->loadMap(sWorld.mMapPath.c_str(), mapId, tileX, tileY);
+            }
+            ++m_celltilesLoaded[mapId][tileX][tileY];
+            m_cellloadLock.Release();
         }
     }
     else if (_active && !state)
@@ -103,7 +122,16 @@ void MapCell::SetActivity(bool state)
 
         if (sWorld.Collision)
         {
-            CollideInterface.DeactivateTile(_mapmgr->GetMapId(), _x / 8, _y / 8);
+            VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+            MMAP::MMapManager* mmgr = MMAP::MMapFactory::createOrGetMMapManager();
+            m_cellloadLock.Acquire();
+            if (!(--m_celltilesLoaded[mapId][tileX][tileY]))
+            {
+                mgr->unloadMap(mapId, tileX, tileY);
+                mmgr->unloadMap(mapId, tileX, tileY);
+            }
+
+            m_cellloadLock.Release();
         }
     }
 

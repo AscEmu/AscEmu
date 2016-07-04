@@ -19,6 +19,8 @@
  */
 
 #include "StdAfx.h"
+#include "MMapManager.h"
+#include "MMapFactory.h"
 
 #ifndef UNIX
 #include <cmath>
@@ -3665,9 +3667,11 @@ void AIInterface::AddSpline(float x, float y, float z)
 bool AIInterface::CreatePath(float x, float y, float z, bool onlytest /*= false*/)
 {
     //make sure current spline is updated
-
-    NavMeshData* nav = CollideInterface.GetNavMesh(m_Unit->GetMapId());
-
+    MMAP::MMapManager* mmap = MMAP::MMapFactory::createOrGetMMapManager();
+    dtNavMesh* nav = const_cast<dtNavMesh*>(mmap->GetNavMesh(m_Unit->GetMapId()));
+    dtNavMeshQuery* nav_query = const_cast<dtNavMeshQuery*>(mmap->GetNavMeshQuery(m_Unit->GetMapId(), m_Unit->GetInstanceID()));
+    //NavMeshData* nav = CollideInterface.GetNavMesh(m_Unit->GetMapId());
+    
     if (nav == NULL)
         return false;
 
@@ -3680,9 +3684,10 @@ bool AIInterface::CreatePath(float x, float y, float z, bool onlytest /*= false*
     filter.setIncludeFlags(NAV_GROUND | NAV_WATER | NAV_SLIME | NAV_MAGMA);
 
     dtPolyRef startref, endref;
-    if (dtStatusFailed(nav->query->findNearestPoly(start, extents, &filter, &startref, closest_point)))
+
+    if (dtStatusFailed(nav_query->findNearestPoly(start, extents, &filter, &startref, closest_point)))
         return false;
-    if (dtStatusFailed(nav->query->findNearestPoly(end, extents, &filter, &endref, closest_point)))
+    if (dtStatusFailed(nav_query->findNearestPoly(end, extents, &filter, &endref, closest_point)))
         return false;
 
 
@@ -3692,7 +3697,7 @@ bool AIInterface::CreatePath(float x, float y, float z, bool onlytest /*= false*
     dtPolyRef path[256];
     int pathcount;
 
-    if (dtStatusFailed(nav->query->findPath(startref, endref, start, end, &filter, path, &pathcount, 256)))
+    if (dtStatusFailed(nav_query->findPath(startref, endref, start, end, &filter, path, &pathcount, 256)))
         return false;
 
     if (pathcount == 0 || path[pathcount - 1] != endref)
@@ -3702,7 +3707,7 @@ bool AIInterface::CreatePath(float x, float y, float z, bool onlytest /*= false*
     int32 pointcount;
     bool usedoffmesh;
 
-    if (dtStatusFailed(findSmoothPath(start, end, path, pathcount, points, &pointcount, usedoffmesh, MAX_PATH_LENGTH, nav->mesh, nav->query, filter)))
+    if (dtStatusFailed(findSmoothPath(start, end, path, pathcount, points, &pointcount, usedoffmesh, MAX_PATH_LENGTH, nav, nav_query, filter)))
         return false;
 
     //add to spline

@@ -75,11 +75,8 @@ class CCollideInterface
 
         void ActivateMap(uint32 mapid);
         void DeactiveMap(uint32 mapid);
-        void ActivateTile(uint32 mapId, uint32 tileX, uint32 tileY);
-        void DeactivateTile(uint32 mapId, uint32 tileX, uint32 tileY);
 
         NavMeshData* GetNavMesh(uint32 mapId);
-        void LoadNavMeshTile(uint32 mapId, uint32 tileX, uint32 tileY);
 
         inline bool CheckLOS(uint32 mapId, float x1, float y1, float z1, float x2, float y2, float z2)
         {
