@@ -69,9 +69,6 @@ class CCollideInterface
 {
     public:
 
-        void Init();
-        void DeInit();
-
         /// Key: mapid
         FastMutex m_navmaplock;
         std::map<uint32, NavMeshData*> m_navdata;

@@ -27,11 +27,6 @@ CCollideInterface CollideInterface;
 Mutex m_loadLock;
 uint32 m_tilesLoaded[MAX_MAP][64][64];
 
-void CCollideInterface::Init()
-{
-    Log.Notice("CollideInterface", "Init");
-    //CollisionMgr = ((IVMapManager*)collision_init());
-}
 
 void CCollideInterface::ActivateTile(uint32 mapId, uint32 tileX, uint32 tileY)
 {
@@ -73,12 +68,6 @@ void CCollideInterface::DeactivateTile(uint32 mapId, uint32 tileX, uint32 tileY)
     }
 
     m_loadLock.Release();
-}
-
-void CCollideInterface::DeInit()
-{
-    Log.Notice("CollideInterface", "DeInit");
-    //collision_shutdown();
 }
 
 void CCollideInterface::ActivateMap(uint32 mapid)

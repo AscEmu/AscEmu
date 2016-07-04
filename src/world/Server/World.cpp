@@ -547,11 +547,6 @@ bool World::SetInitialWorldSettings()
 
     Log.Success("World", "Database loaded in %ums.", getMSTime() - start_time);
 
-    if (Collision)
-    {
-        CollideInterface.Init();
-    }
-
     // calling this puts all maps into our task list.
     sInstanceMgr.Load(&tl);
 
