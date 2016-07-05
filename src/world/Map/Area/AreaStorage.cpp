@@ -200,7 +200,7 @@ namespace MapManagement
             ::DBC::Structures::AreaTableEntry const* at_entry = nullptr;
             if (have_area_info)
             {
-                auto wmo_triple = AreaStorage::GetWMOTriple(root_id, adt_id, group_id);
+                auto wmo_triple = AreaStorage::GetWMOTriple(group_id, root_id, adt_id);
                 if (wmo_triple)
                 {
                     at_entry = AreaStorage::GetAreaById(wmo_triple->area_id);

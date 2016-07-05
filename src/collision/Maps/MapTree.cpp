@@ -104,11 +104,9 @@ namespace VMAP
         if (intersectionCallBack.aInfo.result)
         {
             flags = intersectionCallBack.aInfo.flags;
-            // These are labeled incorrectly
-            // TODO: Relabel these
-            groupId = intersectionCallBack.aInfo.adtId;
-            adtId = intersectionCallBack.aInfo.rootId;
-            rootId = intersectionCallBack.aInfo.groupId;
+            adtId = intersectionCallBack.aInfo.adtId;
+            rootId = intersectionCallBack.aInfo.rootId;
+            groupId = intersectionCallBack.aInfo.groupId;
             pos.z = intersectionCallBack.aInfo.ground_Z;
             return true;
         }
