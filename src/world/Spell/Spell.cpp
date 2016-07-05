@@ -3295,12 +3295,12 @@ uint8 Spell::CanCast(bool tolerate)
         {
             if (GetProto()->MechanicsType == MECHANIC_MOUNTED)
             {
-                if (CollideInterface.IsIndoor(p_caster->GetMapId(), p_caster->GetPositionNC()))
+                if (!CollideInterface.IsOutdoor(p_caster->GetMapId(), p_caster->GetPositionNC().x, p_caster->GetPositionNC().y, p_caster->GetPositionNC().z))
                     return SPELL_FAILED_NO_MOUNTS_ALLOWED;
             }
             else if (hasAttribute(ATTRIBUTES_ONLY_OUTDOORS))
             {
-                if (!CollideInterface.IsOutdoor(p_caster->GetMapId(), p_caster->GetPositionNC()))
+                if (!CollideInterface.IsOutdoor(p_caster->GetMapId(), p_caster->GetPositionNC().x, p_caster->GetPositionNC().y, p_caster->GetPositionNC().z))
                     return SPELL_FAILED_ONLY_OUTDOORS;
             }
         }

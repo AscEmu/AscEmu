@@ -1526,7 +1526,7 @@ bool ChatHandler::HandleCollisionTestIndoor(const char* args, WorldSession* m_se
     {
         Player* plr = m_session->GetPlayer();
         const LocationVector & loc = plr->GetPosition();
-        bool res = CollideInterface.IsIndoor(plr->GetMapId(), loc.x, loc.y, loc.z + 2.0f);
+        bool res = !CollideInterface.IsOutdoor(plr->GetMapId(), loc.x, loc.y, loc.z + 2.0f);
         SystemMessage(m_session, "Result was: %s.", res ? "indoors" : "outside");
         return true;
     }
@@ -1603,7 +1603,7 @@ bool ChatHandler::HandleCollisionGetHeight(const char* args, WorldSession* m_ses
         float z2 = CollideInterface.GetHeight(plr->GetMapId(), posX, posY, posZ + 5.0f);
         float z3 = CollideInterface.GetHeight(plr->GetMapId(), posX, posY, posZ);
         float z4 = plr->GetMapMgr()->GetADTLandHeight(plr->GetPositionX(), plr->GetPositionY());
-        bool fp = CollideInterface.GetFirstPoint(plr->GetMapId(), src, dest, dest, -1.5f);
+        bool fp = CollideInterface.GetFirstPoint(plr->GetMapId(), src.x, src.y, src.z, dest.x, dest.y, dest.z, dest.x, dest.y, dest.z, -1.5f);
 
         SystemMessage(m_session, "Results were: %f(offset2.0f) | %f(offset5.0f) | %f(org) | landheight:%f | target radius5 FP:%d", z, z2, z3, z4, fp);
         return true;

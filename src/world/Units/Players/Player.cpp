@@ -1124,7 +1124,7 @@ void Player::Update(unsigned long time_passed)
     {
         if (mstime >= m_indoorCheckTimer)
         {
-            if (CollideInterface.IsIndoor(m_mapId, m_position))
+            if (!CollideInterface.IsOutdoor(m_mapId, m_position.x, m_position.y, m_position.z))
             {
                 // this is duplicated check, but some mount auras comes w/o this flag set, maybe due to spellfixes.cpp line:663
                 Dismount();
@@ -1541,7 +1541,8 @@ void Player::_EventExploration()
 
     if (rest_on)
     {
-        if (!m_isResting) ApplyPlayerRestState(true);
+        if (!m_isResting)
+            ApplyPlayerRestState(true);
     }
     else
     {
@@ -1550,7 +1551,7 @@ void Player::_EventExploration()
             if (sWorld.Collision)
             {
                 const LocationVector & loc = GetPosition();
-                if (!CollideInterface.IsIndoor(GetMapId(), loc.x, loc.y, loc.z + 2.0f))
+                if (CollideInterface.IsOutdoor(GetMapId(), loc.x, loc.y, loc.z + 2.0f))
                     ApplyPlayerRestState(false);
             }
             else

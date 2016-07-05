@@ -51,11 +51,6 @@ class CCollideInterface
             return mgr->getObjectHitPos(mapId, x1, y1, z1, x2, y2, z2, outx, outy, outz, distmod);
         }
 
-        inline bool IsIndoor(uint32 mapId, float x, float y, float z)
-        {
-            return !IsOutdoor(mapId, x, y, z);
-        }
-
         inline bool IsOutdoor(uint32 mapId, float x, float y, float z)
         {
             VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
@@ -99,25 +94,6 @@ class CCollideInterface
             return CheckLOS(mapId, pos1.x, pos1.y, pos1.z + 2, pos2.x, pos2.y, pos2.z + 2);
         }
 
-        inline bool GetFirstPoint(uint32 mapId, LocationVector & pos1, LocationVector & pos2, LocationVector & outvec, float distmod)
-        {
-            return GetFirstPoint(mapId, pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z, outvec.x, outvec.y, outvec.z, distmod);
-        }
-
-        inline bool IsIndoor(uint32 mapId, LocationVector & pos)
-        {
-            return !IsOutdoor(mapId, pos);
-        }
-
-        inline bool IsOutdoor(uint32 mapId, LocationVector & pos)
-        {
-            return IsOutdoor(mapId, pos.x, pos.y, pos.z);
-        }
-
-        inline float GetHeight(uint32 mapId, LocationVector & pos)
-        {
-            return GetHeight(mapId, pos.x, pos.y, pos.z);
-        }
 };
 
 SERVER_DECL extern CCollideInterface CollideInterface;
