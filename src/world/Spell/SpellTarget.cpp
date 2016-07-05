@@ -477,7 +477,10 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
                 }*/
             }
 
-            if (!CollideInterface.CheckLOS(m_caster->GetMapId(), x, y, z + 2, obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ() + 2))
+            VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+            bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), x, y, z + 2.0f, obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ() + 2.0f);
+
+            if (!isInLOS)
                 return false;
         }
     }
@@ -619,6 +622,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
         if (TargetType & SPELL_TARGET_AREA_RANDOM)
         {
             //we always use radius(0) for some reason
+            bool isInLOS = false;
             uint8 attempts = 0;
             do
             {
@@ -633,8 +637,11 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                 t->m_destY = m_caster->GetPositionY() + (sinf(ang) * r);
                 t->m_destZ = m_caster->GetMapMgr()->GetLandHeight(t->m_destX, t->m_destY, m_caster->GetPositionZ() + 2.0f);
                 t->m_targetMask = TARGET_FLAG_DEST_LOCATION;
+
+                VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+                isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), t->m_destX, t->m_destY, t->m_destZ);
             }
-            while (sWorld.Collision && !CollideInterface.CheckLOS(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), t->m_destX, t->m_destY, t->m_destZ));
+            while (sWorld.Collision && !isInLOS);
             result = true;
         }
         else if (TargetType & SPELL_TARGET_AREA)  //targetted aoe

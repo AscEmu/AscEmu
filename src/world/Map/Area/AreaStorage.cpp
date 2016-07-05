@@ -110,39 +110,52 @@ namespace MapManagement
             area_id = area ? area->id : 0;
             zone_id = area ? ((area->zone != 0) ? area->zone : area->id) : 0;
         }
-        /*
-        bool AreaStorage::IsOutdoorWMO(uint32 mogp_flags, int32 adt_id, int32 root_id, int32 group_id, WMOAreaTableEntry const* wmo_entry, ::DBC::Structures::AreaTableEntry const* at_entry)
+
+        bool AreaStorage::IsOutdoor(uint32 mapId, float x, float y, float z)
+        {
+            VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+
+            uint32 mogpFlags;
+            int32 adtId, rootId, groupId;
+
+            if (!mgr->getAreaInfo(mapId, x, y, z, mogpFlags, adtId, rootId, groupId))
+                return true;
+
+            DBC::Structures::AreaTableEntry const* atEntry = nullptr;
+            DBC::Structures::WMOAreaTableEntry const* wmoEntry = sWorld.GetWMOAreaData(rootId, adtId, groupId);
+
+            if (wmoEntry)
+            {
+                Log.Map("CCollideInterface::IsOutdoor", "Got WMOAreaTableEntry! flag %u, areaid %u", wmoEntry->flags, wmoEntry->areaId);
+                atEntry = sAreaStore.LookupEntry(wmoEntry->areaId);
+            }
+
+            return IsOutdoorWMO(mogpFlags, adtId, rootId, groupId, wmoEntry, atEntry);
+        }
+
+        bool AreaStorage::IsOutdoorWMO(uint32 mogpFlags, int32 /*adtId*/, int32 /*rootId*/, int32 /*groupId*/, DBC::Structures::WMOAreaTableEntry const* wmoEntry, DBC::Structures::AreaTableEntry const* atEntry)
         {
             bool outdoor = true;
 
-            if (wmo_entry && at_entry)
+            if (wmoEntry && atEntry)
             {
-                if (at_entry->flags & 0x04000000) // AREA_FLAG_OUTSIDE
-                {
+                if (atEntry->flags & AREA_FLAG_OUTSIDE)
                     return true;
-                }
-                if (at_entry->flags & 0x02000000) // AREA_FLAG_INSIDE
-                {
+                if (atEntry->flags & AREA_FLAG_INSIDE)
                     return false;
-                }
             }
 
-            outdoor = (mogp_flags & 0x8) != 0;
+            outdoor = (mogpFlags & 0x8) != 0;
 
-            if (wmo_entry)
+            if (wmoEntry)
             {
-                if (wmo_entry->flags & 0x4)
-                {
+                if (wmoEntry->flags & 4)
                     return true;
-                }
-                if (wmo_entry->flags & 0x2)
-                {
+                if (wmoEntry->flags & 2)
                     outdoor = false;
-                }
             }
-
             return outdoor;
-        }*/
+        }
 
         uint32 AreaStorage::GetIdByFlag(uint32 area_flag)
         {

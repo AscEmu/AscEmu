@@ -507,7 +507,10 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
         {
             if (sWorld.Collision)
             {
-                if (m_caster->GetMapId() == (*itr)->GetMapId() && !CollideInterface.CheckLOS(m_caster->GetMapId(), m_caster->GetPositionNC(), (*itr)->GetPositionNC()))
+                VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+                bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ());
+
+                if (m_caster->GetMapId() == (*itr)->GetMapId() && !isInLOS)
                     continue;
             }
 
@@ -570,7 +573,10 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
         {
             if (sWorld.Collision)
             {
-                if (m_caster->GetMapId() == (*itr)->GetMapId() && !CollideInterface.CheckLOS(m_caster->GetMapId(), m_caster->GetPositionNC(), (*itr)->GetPositionNC()))
+                VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+                bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ());
+
+                if (m_caster->GetMapId() == (*itr)->GetMapId() && !isInLOS)
                     continue;
             }
 
@@ -3295,12 +3301,12 @@ uint8 Spell::CanCast(bool tolerate)
         {
             if (GetProto()->MechanicsType == MECHANIC_MOUNTED)
             {
-                if (!CollideInterface.IsOutdoor(p_caster->GetMapId(), p_caster->GetPositionNC().x, p_caster->GetPositionNC().y, p_caster->GetPositionNC().z))
+                if (!MapManagement::AreaManagement::AreaStorage::IsOutdoor(p_caster->GetMapId(), p_caster->GetPositionNC().x, p_caster->GetPositionNC().y, p_caster->GetPositionNC().z))
                     return SPELL_FAILED_NO_MOUNTS_ALLOWED;
             }
             else if (hasAttribute(ATTRIBUTES_ONLY_OUTDOORS))
             {
-                if (!CollideInterface.IsOutdoor(p_caster->GetMapId(), p_caster->GetPositionNC().x, p_caster->GetPositionNC().y, p_caster->GetPositionNC().z))
+                if (!MapManagement::AreaManagement::AreaStorage::IsOutdoor(p_caster->GetMapId(), p_caster->GetPositionNC().x, p_caster->GetPositionNC().y, p_caster->GetPositionNC().z))
                     return SPELL_FAILED_ONLY_OUTDOORS;
             }
         }
@@ -6205,8 +6211,10 @@ void Spell::HandleTargetNoObject()
     //clamp Z
     newz = m_caster->GetMapMgr()->GetLandHeight(newx, newy, newz);
 
+    VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+    bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ() + 2.0f, newx, newy, newz + 2.0f);
     //if not in line of sight, or too far away we summon inside caster
-    if (fabs(newz - m_caster->GetPositionZ()) > 10 || !CollideInterface.CheckLOS(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ() + 2, newx, newy, newz + 2))
+    if (fabs(newz - m_caster->GetPositionZ()) > 10 || !isInLOS)
     {
         newx = m_caster->GetPositionX();
         newy = m_caster->GetPositionY();

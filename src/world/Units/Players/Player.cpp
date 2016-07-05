@@ -1124,7 +1124,7 @@ void Player::Update(unsigned long time_passed)
     {
         if (mstime >= m_indoorCheckTimer)
         {
-            if (!CollideInterface.IsOutdoor(m_mapId, m_position.x, m_position.y, m_position.z))
+            if (!MapManagement::AreaManagement::AreaStorage::IsOutdoor(m_mapId, m_position.x, m_position.y, m_position.z))
             {
                 // this is duplicated check, but some mount auras comes w/o this flag set, maybe due to spellfixes.cpp line:663
                 Dismount();
@@ -1551,7 +1551,7 @@ void Player::_EventExploration()
             if (sWorld.Collision)
             {
                 const LocationVector & loc = GetPosition();
-                if (CollideInterface.IsOutdoor(GetMapId(), loc.x, loc.y, loc.z + 2.0f))
+                if (MapManagement::AreaManagement::AreaStorage::IsOutdoor(GetMapId(), loc.x, loc.y, loc.z + 2.0f))
                     ApplyPlayerRestState(false);
             }
             else
@@ -6199,7 +6199,9 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     // Check if in line of sight (need collision detection).
     if (sWorld.Collision)
     {
-        if (GetMapId() == target->GetMapId() && !CollideInterface.CheckLOS(GetMapId(), GetPositionNC(), target->GetPositionNC()))
+        VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+        bool isInLOS = mgr->isInLineOfSight(GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ());
+        if (GetMapId() == target->GetMapId() && !isInLOS)
             return SPELL_FAILED_LINE_OF_SIGHT;
     }
 
@@ -6247,8 +6249,13 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     if (spellid != SPELL_RANGED_WAND)  //no min limit for wands
         if (minrange > dist)
             fail = SPELL_FAILED_TOO_CLOSE;
-    if (sWorld.Collision && GetMapId() == target->GetMapId() && !CollideInterface.CheckLOS(GetMapId(), GetPositionNC(), target->GetPositionNC()))
+
+    VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+    bool isInLOS = mgr->isInLineOfSight(GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ());
+
+    if (sWorld.Collision && GetMapId() == target->GetMapId() && !isInLOS)
         fail = SPELL_FAILED_LINE_OF_SIGHT;
+
     if (dist > maxr)
     {
         //    sLog.outString("Auto shot failed: out of range (Maxr: %f, Dist: %f)" , maxr , dist);

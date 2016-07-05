@@ -1307,7 +1307,8 @@ bool Object::IsWithinLOS(LocationVector location)
 
     if (sWorld.Collision)
     {
-        return CollideInterface.CheckLOS(GetMapId(), location2.x, location2.y, location2.z + 2.0f, location.x, location.y, location.z + 2.0f);
+        VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+        return mgr->isInLineOfSight(GetMapId(), location2.x, location2.y, location2.z + 2.0f, location.x, location.y, location.z + 2.0f);
     }
     else
     {
@@ -2471,7 +2472,10 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
     {
         float testx, testy, testz;
 
-        if (CollideInterface.GetFirstPoint(GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ() + 2, outx, outy, outz + 2, testx, testy, testz, -0.5f))
+        VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+        bool isHittingObject = mgr->getObjectHitPos(GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ() + 2, outx, outy, outz + 2, testx, testy, testz, -0.5f);
+
+        if (isHittingObject)
         {
             //hit something
             outx = testx;

@@ -5,8 +5,6 @@ set(PATH_PREFIX Map)
 set(SRC_MAP_FILES
    ${PATH_PREFIX}/CellHandler.h
    ${PATH_PREFIX}/CellHandlerDefines.hpp
-   ${PATH_PREFIX}/CollideInterface.cpp
-   ${PATH_PREFIX}/CollideInterface.h
    ${PATH_PREFIX}/Map.cpp
    ${PATH_PREFIX}/Map.h
    ${PATH_PREFIX}/MapCell.cpp

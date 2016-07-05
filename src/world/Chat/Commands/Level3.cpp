@@ -1526,7 +1526,7 @@ bool ChatHandler::HandleCollisionTestIndoor(const char* args, WorldSession* m_se
     {
         Player* plr = m_session->GetPlayer();
         const LocationVector & loc = plr->GetPosition();
-        bool res = !CollideInterface.IsOutdoor(plr->GetMapId(), loc.x, loc.y, loc.z + 2.0f);
+        bool res = !MapManagement::AreaManagement::AreaStorage::IsOutdoor(plr->GetMapId(), loc.x, loc.y, loc.z + 2.0f);
         SystemMessage(m_session, "Result was: %s.", res ? "indoors" : "outside");
         return true;
     }
@@ -1555,11 +1555,12 @@ bool ChatHandler::HandleCollisionTestLOS(const char* args, WorldSession* m_sessi
             return true;
         }
 
+        VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
         const LocationVector & loc2 = pObj->GetPosition();
         const LocationVector & loc1 = m_session->GetPlayer()->GetPosition();
-        bool res = CollideInterface.CheckLOS(pObj->GetMapId(), loc1.x, loc1.y, loc1.z, loc2.x, loc2.y, loc2.z);
-        bool res2 = CollideInterface.CheckLOS(pObj->GetMapId(), loc1.x, loc1.y, loc1.z + 2.0f, loc2.x, loc2.y, loc2.z + 2.0f);
-        bool res3 = CollideInterface.CheckLOS(pObj->GetMapId(), loc1.x, loc1.y, loc1.z + 5.0f, loc2.x, loc2.y, loc2.z + 5.0f);
+        bool res = mgr->isInLineOfSight(pObj->GetMapId(), loc1.x, loc1.y, loc1.z, loc2.x, loc2.y, loc2.z);
+        bool res2 = mgr->isInLineOfSight(pObj->GetMapId(), loc1.x, loc1.y, loc1.z + 2.0f, loc2.x, loc2.y, loc2.z + 2.0f);
+        bool res3 = mgr->isInLineOfSight(pObj->GetMapId(), loc1.x, loc1.y, loc1.z + 5.0f, loc2.x, loc2.y, loc2.z + 5.0f);
         SystemMessage(m_session, "Result was: %s %s %s.", res ? "in LOS" : "not in LOS", res2 ? "in LOS" : "not in LOS", res3 ? "in LOS" : "not in LOS");
         return true;
     }
@@ -1598,12 +1599,12 @@ bool ChatHandler::HandleCollisionGetHeight(const char* args, WorldSession* m_ses
         LocationVector dest(posX + (radius * (cosf(ori))), posY + (radius * (sinf(ori))), posZ);
         //LocationVector destest(posX+(radius*(cosf(ori))),posY+(radius*(sinf(ori))),posZ);
 
-
-        float z = CollideInterface.GetHeight(plr->GetMapId(), posX, posY, posZ + 2.0f);
-        float z2 = CollideInterface.GetHeight(plr->GetMapId(), posX, posY, posZ + 5.0f);
-        float z3 = CollideInterface.GetHeight(plr->GetMapId(), posX, posY, posZ);
+        VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+        float z = mgr->getHeight(plr->GetMapId(), posX, posY, posZ + 2.0f, 10000.0f);
+        float z2 = mgr->getHeight(plr->GetMapId(), posX, posY, posZ + 5.0f, 10000.0f);
+        float z3 = mgr->getHeight(plr->GetMapId(), posX, posY, posZ, 10000.0f);
         float z4 = plr->GetMapMgr()->GetADTLandHeight(plr->GetPositionX(), plr->GetPositionY());
-        bool fp = CollideInterface.GetFirstPoint(plr->GetMapId(), src.x, src.y, src.z, dest.x, dest.y, dest.z, dest.x, dest.y, dest.z, -1.5f);
+        bool fp = mgr->getObjectHitPos(plr->GetMapId(), src.x, src.y, src.z, dest.x, dest.y, dest.z, dest.x, dest.y, dest.z, -1.5f);
 
         SystemMessage(m_session, "Results were: %f(offset2.0f) | %f(offset5.0f) | %f(org) | landheight:%f | target radius5 FP:%d", z, z2, z3, z4, fp);
         return true;

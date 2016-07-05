@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Common.h"
 #include "Storage/DBC/DBCStorage.hpp"
 #include "Storage/DBC/DBCStructures.hpp"
+#include "Server/World.h"
 
 namespace MapManagement
 {
@@ -66,8 +67,9 @@ namespace MapManagement
                 static void GetZoneAndIdByFlag(uint32& zone_id, uint32& area_id, uint16 area_flag, uint32 map_id);
 
                 /* Misc */
-                /* This was removed due to compile issues on Linux - will be redone when code is better structured */
-                /*static bool IsOutdoorWMO(uint32 mogp_flags, int32 adt_id, int32 root_id, int32 group_id, WMOAreaTableEntry const* wmo_entry, ::DBC::Structures::AreaTableEntry const* at_entry);*/
+                static bool IsOutdoor(uint32 mapId, float x, float y, float z);
+                static bool IsOutdoorWMO(uint32 mogpFlags, int32 /*adtId*/, int32 /*rootId*/, int32 /*groupId*/, DBC::Structures::WMOAreaTableEntry const* wmoEntry, DBC::Structures::AreaTableEntry const* atEntry);
+                
                 static const uint16 GetFlagByPosition(uint16 area_flag_without_adt_id, bool have_area_info, uint32 mogp_flags, int32 adt_id, int32 root_id, int32 group_id, uint32 map_id, float x, float y, float z, bool* _out_is_outdoors = nullptr);
         };
     } // </ AreaManagementNamespace>

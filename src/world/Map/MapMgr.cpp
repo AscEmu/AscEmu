@@ -1894,8 +1894,9 @@ float MapMgr::GetFirstZWithCPZ(float x, float y, float z)
     float posZ = NO_WMO_HEIGHT;
     for (int i = Z_SEARCH_RANGE; i >= -Z_SEARCH_RANGE; i--)
     {
+        VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
         //if (i== 0 && !IsUnderground(x,y,z)) return GetBaseMap()->GetLandHeight(x, y);
-        posZ = CollideInterface.GetHeight(GetMapId(), x, y, z + (float)i);
+        posZ = mgr->getHeight(GetMapId(), x, y, z + (float)i, 10000.0f);
         if (posZ != NO_WMO_HEIGHT)
             break;
     }
@@ -2025,3 +2026,5 @@ void MapMgr::onWorldStateUpdate(uint32 zone, uint32 field, uint32 value)
 
     SendPacketToPlayersInZone(zone, &data);
 }
+
+

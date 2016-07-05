@@ -838,7 +838,8 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 
                 if (sWorld.Collision)
                 {
-                    los = CollideInterface.CheckLOS(m_Unit->GetMapId(), m_Unit->GetPositionNC(), getNextTarget()->GetPositionNC());
+                    VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+                    los = mgr->isInLineOfSight(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ(), getNextTarget()->GetPositionX(), getNextTarget()->GetPositionY(), getNextTarget()->GetPositionZ());
                 }
                 if (los
                     && ((distance <= m_nextSpell->maxrange + m_Unit->GetModelHalfSize()
@@ -1250,7 +1251,9 @@ Unit* AIInterface::FindTarget()
             {
                 if (sWorld.Collision)
                 {
-                    if (CollideInterface.CheckLOS(m_Unit->GetMapId(), m_Unit->GetPositionNC(), tmpPlr->GetPositionNC()))
+                    VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+                    bool los = mgr->isInLineOfSight(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ(), tmpPlr->GetPositionX(), tmpPlr->GetPositionY(), tmpPlr->GetPositionZ());
+                    if (los)
                     {
                         distance = dist;
                         target = static_cast<Unit*>(tmpPlr);
@@ -2491,24 +2494,26 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 
             if (sWorld.Collision)
             {
-                Fz = CollideInterface.GetHeight(m_Unit->GetMapId(), Fx, Fy, m_Unit->GetPositionZ() + 2.0f);
+                VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+                Fz = mgr->getHeight(m_Unit->GetMapId(), Fx, Fy, m_Unit->GetPositionZ() + 2.0f, 10000.0f);
                 if (Fz == NO_WMO_HEIGHT)
+                {
                     Fz = m_Unit->GetMapMgr()->GetADTLandHeight(Fx, Fy);
+                }
                 else
                 {
-                    if (CollideInterface.GetFirstPoint(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2.0f,
-                        Fx, Fy, Fz + 2.0f, Fx, Fy, Fz, -1.0f))
-                    {
-                        //Fz = CollideInterface.GetHeight(m_Unit->GetMapId(), Fx, Fy, m_Unit->GetPositionZ() + 2.0f);
-                    }
+                    bool isHittingObject = mgr->getObjectHitPos(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2.0f,
+                        Fx, Fy, Fz + 2.0f, Fx, Fy, Fz, -1.0f);
                 }
+
+                bool los = mgr->isInLineOfSight(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2.0f, Fx, Fy, Fz);
 
                 if (fabs(m_Unit->GetPositionZ() - Fz) > 10.0f ||
                     (wl != 0.0f && Fz < wl))        // in water
                 {
                     m_FearTimer = getMSTime() + 500;
                 }
-                else if (CollideInterface.CheckLOS(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2.0f, Fx, Fy, Fz))
+                else if (los)
                 {
                     MoveTo(Fx, Fy, Fz, Fo);
                     m_FearTimer = m_totalMoveTime + getMSTime() + 400;
@@ -2546,7 +2551,8 @@ void AIInterface::_UpdateMovement(uint32 p_time)
         float wanderY = m_Unit->GetPositionY() + wanderD * sinf(wanderO);
         float wanderZ = m_Unit->GetMapMgr()->GetLandHeight(wanderX, wanderY, m_Unit->GetPositionZ() + 2);
 
-        CollideInterface.GetFirstPoint(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2, wanderX, wanderY, wanderZ, wanderX, wanderY, wanderZ, -1);
+        VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+        bool isHittingObject = mgr->getObjectHitPos(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2, wanderX, wanderY, wanderZ, wanderX, wanderY, wanderZ, -1);
         MoveTo(wanderX, wanderY, wanderZ, wanderO);
         m_WanderTimer = getMSTime() + m_totalMoveTime + 300; // time till next move (+ pause)
     }

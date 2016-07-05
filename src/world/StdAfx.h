@@ -202,7 +202,6 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "Storage/DayWatcherThread.h"
 #include "Server/CommonScheduleThread.h"
 #include "Management/LocalizationMgr.h"
-#include "Map/CollideInterface.h"
 #include "Server/Master.h"
 #include "Server/Console/BaseConsole.h"
 #include "Server/Console/CConsole.h"
