@@ -123,7 +123,7 @@ namespace MapManagement
                 return true;
 
             DBC::Structures::AreaTableEntry const* atEntry = nullptr;
-            DBC::Structures::WMOAreaTableEntry const* wmoEntry = sWorld.GetWMOAreaData(rootId, adtId, groupId);
+            DBC::Structures::WMOAreaTableEntry const* wmoEntry = GetWMOAreaTableEntryByTriple(rootId, adtId, groupId);
 
             if (wmoEntry)
             {

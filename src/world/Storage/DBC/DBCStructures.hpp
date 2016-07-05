@@ -41,6 +41,21 @@ enum AreaFlags
     AREA_FLAG_NO_FLY_ZONE        = 0x20000000                 // Marks zones where you cannot fly
 };
 
+struct WMOAreaTableTripple
+{
+    WMOAreaTableTripple(int32 r, int32 a, int32 g) : groupId(g), rootId(r), adtId(a)
+    { }
+
+    bool operator <(const WMOAreaTableTripple & b) const
+    {
+        return memcmp(this, &b, sizeof(WMOAreaTableTripple)) < 0;
+    }
+
+    int32 groupId;
+    int32 rootId;
+    int32 adtId;
+};
+
 namespace DBC
 {
     namespace Structures

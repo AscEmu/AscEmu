@@ -279,22 +279,6 @@ class TaskExecutor : public ThreadBase
         bool run();
 };
 
-struct WMOAreaTableTripple
-{
-    WMOAreaTableTripple(int32 r, int32 a, int32 g) : groupId(g), rootId(r), adtId(a)
-    { }
-
-    bool operator <(const WMOAreaTableTripple & b) const
-    {
-        return memcmp(this, &b, sizeof(WMOAreaTableTripple)) < 0;
-    }
-
-    // ordered by entropy; that way memcmp will have a minimal medium runtime
-    int32 groupId;
-    int32 rootId;
-    int32 adtId;
-};
-
 class WorldSocket;
 
 // Slow for remove in middle, oh well, wont get done much.
@@ -488,29 +472,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         };
         std::vector<NameGenData> _namegendata[3];
         void LoadNameGenData();
-
-        void LoadWMOAreaData()
-        {
-            for (uint32 i = 0; i < sWMOAreaTableStore.GetNumRows(); ++i)
-            {
-                auto wmo_area_table = sWMOAreaTableStore.LookupEntry(i);
-                if (wmo_area_table == nullptr)
-                    continue;
-                WMOAreaTableTripple tmp(wmo_area_table->rootId, wmo_area_table->adtId, wmo_area_table->groupId);
-
-                m_WMOAreaTableTripples.insert(std::make_pair(tmp, wmo_area_table));
-            }
-        }
-
-        DBC::Structures::WMOAreaTableEntry const* GetWMOAreaData(int32 rootid, int32 adtid, int32 groupid)
-        {
-            WMOAreaTableTripple tmp(rootid, adtid, groupid);
-            std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*>::iterator itr = m_WMOAreaTableTripples.find(tmp);
-
-            if (itr != m_WMOAreaTableTripples.end())
-                return itr->second;
-            return NULL;
-        }
 
         std::string GenerateName(uint32 type = 0);
 
@@ -739,7 +700,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         uint8 m_InstantLogout;
         uint32 m_MinDualSpecLevel;
         uint32 m_MinTalentResetLevel;
-        std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*> m_WMOAreaTableTripples;
 
         //CorpseDecaySettings
         uint32 m_DecayNormal;
