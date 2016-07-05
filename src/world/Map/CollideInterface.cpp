@@ -27,24 +27,4 @@ CCollideInterface CollideInterface;
 Mutex m_loadLock;
 uint32 m_tilesLoaded[MAX_MAP][64][64];
 
-NavMeshData* CCollideInterface::GetNavMesh(uint32 mapId)
-{
-    if (sWorld.Pathfinding)
-    {
-        //Log.Debug("CCollideInterface::GetNavMesh", "Loading NavMeshData for map %u", mapId);
-        NavMeshData* retval = NULL;
-        m_navmaplock.Acquire();
-        std::map<uint32, NavMeshData*>::iterator itr = m_navdata.find(mapId);
-
-        if (itr != m_navdata.end())
-            retval = itr->second;
-
-        m_navmaplock.Release();
-        return retval;
-    }
-    else
-    {
-        return NULL;
-    }
-}
 

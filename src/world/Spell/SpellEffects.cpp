@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Management/QuestLogEntry.hpp"
+#include "MMapFactory.h"
 
 pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
 {
@@ -2715,25 +2716,28 @@ void Spell::SpellEffectSummonVehicle(uint32 i, DBC::Structures::SummonProperties
 
 void Spell::SpellEffectLeap(uint32 i) // Leap
 {
-    if (unitTarget == NULL)
+    if (unitTarget == nullptr)
         return;
     float radius = GetRadius(i);
     unitTarget->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN);
 
-    NavMeshData* nav = CollideInterface.GetNavMesh(m_caster->GetMapId());
+    MMAP::MMapManager* mmap = MMAP::MMapFactory::createOrGetMMapManager();
+    dtNavMesh* nav = const_cast<dtNavMesh*>(mmap->GetNavMesh(m_caster->GetMapId()));
+    dtNavMeshQuery* nav_query = const_cast<dtNavMeshQuery*>(mmap->GetNavMeshQuery(m_caster->GetMapId(), m_caster->GetInstanceID()));
+    //NavMeshData* nav = CollideInterface.GetNavMesh(m_caster->GetMapId());
 
-    if (nav != NULL)
+    if (nav != nullptr)
     {
         float destx, desty, destz;
         unitTarget->GetPoint(unitTarget->GetOrientation(), radius, destx, desty, destz);
-        if (playerTarget != NULL)
+        if (playerTarget != nullptr)
             playerTarget->SafeTeleport(playerTarget->GetMapId(), playerTarget->GetInstanceID(), LocationVector(destx, desty, destz, playerTarget->GetOrientation()));
-        else if (unitTarget != NULL)
+        else if (unitTarget != nullptr)
             unitTarget->GetAIInterface()->MoveTeleport(destx, desty, destz, unitTarget->GetOrientation());
     }
     else
     {
-        if (playerTarget == NULL)  //let client handle this for players
+        if (playerTarget == nullptr)  //let client handle this for players
             return;
 
         WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);

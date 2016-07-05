@@ -24,6 +24,7 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Server/EventableObject.h"
 #include "Server/IUpdatable.h"
+#include "MMapFactory.h"
 
 Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
 {
@@ -2415,9 +2416,12 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
     GetMapMgr()->GetLiquidInfo(outx, outy, GetPositionZ() + 2, waterz, watertype);
     outz = std::max(waterz, outz);
 
-    NavMeshData* nav = CollideInterface.GetNavMesh(GetMapId());
+    MMAP::MMapManager* mmap = MMAP::MMapFactory::createOrGetMMapManager();
+    dtNavMesh* nav = const_cast<dtNavMesh*>(mmap->GetNavMesh(GetMapId()));
+    dtNavMeshQuery* nav_query = const_cast<dtNavMeshQuery*>(mmap->GetNavMeshQuery(GetMapId(), GetInstanceID()));
+    //NavMeshData* nav = CollideInterface.GetNavMesh(GetMapId());
 
-    if (nav != NULL)
+    if (nav != nullptr)
     {
         //if we can path there, go for it
         if (!IsUnit() || !sloppypath || !static_cast<Unit*>(this)->GetAIInterface()->CanCreatePath(outx, outy, outz))
@@ -2430,7 +2434,7 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
             filter.setIncludeFlags(NAV_GROUND | NAV_WATER | NAV_SLIME | NAV_MAGMA);
 
             dtPolyRef startref;
-            nav->query->findNearestPoly(start, extents, &filter, &startref, NULL);
+            nav_query->findNearestPoly(start, extents, &filter, &startref, NULL);
 
             float point;
             float hitNormal[3];
@@ -2438,7 +2442,7 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
             int numvisited;
             dtPolyRef visited[MAX_PATH_LENGTH];
 
-            dtStatus rayresult = nav->query->raycast(startref, start, end, &filter, &point, hitNormal, visited, &numvisited, MAX_PATH_LENGTH);
+            dtStatus rayresult = nav_query->raycast(startref, start, end, &filter, &point, hitNormal, visited, &numvisited, MAX_PATH_LENGTH);
 
             if (point <= 1.0f)
             {
@@ -2453,7 +2457,7 @@ bool Object::GetPoint(float angle, float rad, float & outx, float & outy, float 
                     result[0] = start[0] + ((end[0] - start[0]) * point);
                     result[1] = start[1] + ((end[1] - start[1]) * point);
                     result[2] = start[2] + ((end[2] - start[2]) * point);
-                    nav->query->getPolyHeight(visited[numvisited - 1], result, &result[1]);
+                    nav_query->getPolyHeight(visited[numvisited - 1], result, &result[1]);
                 }
 
                 //copy end back to function floats

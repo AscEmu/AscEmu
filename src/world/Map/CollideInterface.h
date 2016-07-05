@@ -34,46 +34,10 @@
 #define COLLISION_IMPORT
 #endif
 
-class NavMeshData;
-class NavMeshTile
-{
-    public:
-
-        Arcemu::Threading::AtomicCounter refs;
-        dtTileRef dtref;
-};
-
-class NavMeshData
-{
-    public:
-
-        dtNavMesh* mesh;
-        dtNavMeshQuery* query;
-
-        Arcemu::Threading::AtomicCounter refs;
-
-        FastMutex tilelock;
-        std::map<uint32, dtTileRef> tilerefs; /// key by tile, x | y <<  16
-
-        ~NavMeshData()
-        {
-            dtFreeNavMesh(mesh);
-            dtFreeNavMeshQuery(query);
-        }
-
-        void AddRef() { ++refs; }
-        bool DecRef() { if ((--refs) == 0) { delete this; return true; } return false; }
-};
 
 class CCollideInterface
 {
     public:
-
-        /// Key: mapid
-        FastMutex m_navmaplock;
-        std::map<uint32, NavMeshData*> m_navdata;
-
-        NavMeshData* GetNavMesh(uint32 mapId);
 
         inline bool CheckLOS(uint32 mapId, float x1, float y1, float z1, float x2, float y2, float z2)
         {
