@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Common.h"
 #include "Storage/DBC/DBCStorage.hpp"
 #include "Storage/DBC/DBCStructures.hpp"
-#include "Server/World.h"
 
 namespace MapManagement
 {
