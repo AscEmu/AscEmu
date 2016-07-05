@@ -28,6 +28,7 @@
 #include "CrashHandler.h"
 #include "Units/Summons/Summon.h"
 #include "Units/Unit.h"
+#include "MMapFactory.h"
 
 
 Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
@@ -42,7 +43,6 @@ extern bool bServerShutdown;
 MapMgr::MapMgr(Map* map, uint32 mapId, uint32 instanceid) : CellHandler<MapCell>(map), _mapId(mapId), eventHolder(instanceid), worldstateshandler(mapId)
 {
     _terrain = new TerrainHolder(mapId);
-    CollideInterface.ActivateMap(mapId);
     _shutdown = false;
     m_instanceID = instanceid;
     pMapInfo = sMySQLStore.GetWorldMapInfo(mapId);
@@ -98,7 +98,6 @@ MapMgr::MapMgr(Map* map, uint32 mapId, uint32 instanceid) : CellHandler<MapCell>
 
 MapMgr::~MapMgr()
 {
-    CollideInterface.DeactiveMap(_mapId);
     _shutdown = true;
     sEventMgr.RemoveEvents(this);
     if (ScriptInterface != NULL)
@@ -176,6 +175,8 @@ MapMgr::~MapMgr()
     {
         m_battleground = NULL;
     }
+
+    MMAP::MMapFactory::createOrGetMMapManager()->unloadMapInstance(GetMapId(), m_instanceID);
 
     Log.Notice("MapMgr", "Instance %u shut down. (%s)", m_instanceID, GetBaseMap()->GetName());
 }

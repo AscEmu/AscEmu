@@ -73,9 +73,6 @@ class CCollideInterface
         FastMutex m_navmaplock;
         std::map<uint32, NavMeshData*> m_navdata;
 
-        void ActivateMap(uint32 mapid);
-        void DeactiveMap(uint32 mapid);
-
         NavMeshData* GetNavMesh(uint32 mapId);
 
         inline bool CheckLOS(uint32 mapId, float x1, float y1, float z1, float x2, float y2, float z2)
