@@ -19,13 +19,6 @@ namespace MapManagement
 
         // Temporary 
         typedef std::map<uint32, uint32> MapEntryPair;
-        struct WMOTriple
-        {
-            int32 group_id;
-            int32 root_id;
-            int32 adt_id;
-            uint32 area_id;
-        };
 
         class AreaStorage
         {
@@ -33,7 +26,6 @@ namespace MapManagement
 
                 static DBC::DBCStorage<DBC::Structures::AreaTableEntry>* m_storage;
                 static MapEntryPair m_map_storage;
-                static std::vector<WMOTriple*> m_wmo_triple_collection;
                 static AreaFlagByAreaID m_area_flag_by_id_collection;
                 static AreaFlagByMapID m_area_flag_by_map_id_collection;
 
@@ -43,8 +35,6 @@ namespace MapManagement
                 static MapEntryPair* GetMapCollection();
 
                 static DBC::DBCStorage<DBC::Structures::AreaTableEntry>* GetStorage();
-                static void AddWMOTripleEntry(int32 group_id, int32 root_id, int32 adt_id, uint32 area_id);
-                static WMOTriple* GetWMOTriple(int32 group_id, int32 root_id, int32 adt_id);
 
                 /* Get Area */
                 //static DBC::Structures::AreaTableEntry const* GetAreaByPosition(uint32 map_id, float x, float y, float z);
@@ -52,7 +42,6 @@ namespace MapManagement
                 static DBC::Structures::AreaTableEntry const* GetAreaById(uint32 area_id);
                 static DBC::Structures::AreaTableEntry const* GetAreaByFlag(uint32 area_flag);
                 static DBC::Structures::AreaTableEntry const* GetAreaByMapId(uint32 map_id);
-                //static DBC::Structures::AreaTableEntry const* GetAreaById(uint32 area_id);
 
                 /* Get Flag */
                 static int32 GetFlagById(uint32 area_id);

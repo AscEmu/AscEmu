@@ -12,7 +12,6 @@ namespace MapManagement
     {
         DBC::DBCStorage<DBC::Structures::AreaTableEntry>* AreaStorage::m_storage;
         MapEntryPair AreaStorage::m_map_storage;
-        std::vector<WMOTriple*> AreaStorage::m_wmo_triple_collection;
         AreaFlagByAreaID AreaStorage::m_area_flag_by_id_collection;
         AreaFlagByMapID AreaStorage::m_area_flag_by_map_id_collection;
 
@@ -38,16 +37,6 @@ namespace MapManagement
                 }
             }
 
-        }
-
-        void AreaStorage::AddWMOTripleEntry(int32 group_id, int32 root_id, int32 adt_id, uint32 area_id)
-        {
-            auto triple = new WMOTriple();
-            triple->group_id = group_id;
-            triple->root_id = root_id;
-            triple->adt_id = adt_id;
-            triple->area_id = area_id;
-            m_wmo_triple_collection.push_back(triple);
         }
 
         DBC::DBCStorage<DBC::Structures::AreaTableEntry>* AreaStorage::GetStorage()
@@ -176,34 +165,15 @@ namespace MapManagement
                 return 0;
         }
 
-        WMOTriple* AreaStorage::GetWMOTriple(int32 group_id, int32 root_id, int32 adt_id)
-        {
-            for (auto triple : m_wmo_triple_collection)
-            {
-                if (triple->group_id == group_id)
-                {
-                    if (triple->root_id == root_id)
-                    {
-                        if (triple->adt_id == adt_id)
-                        {
-                            return triple;
-                        }
-                    }
-                }
-            }
-
-            return nullptr;
-        }
-
         const uint16 AreaStorage::GetFlagByPosition(uint16 area_flag_without_adt_id, bool have_area_info, uint32 mogp_flags, int32 adt_id, int32 root_id, int32 group_id, uint32 map_id, float x, float y, float z, bool* _out_is_outdoors)
         {
             ::DBC::Structures::AreaTableEntry const* at_entry = nullptr;
             if (have_area_info)
             {
-                auto wmo_triple = AreaStorage::GetWMOTriple(group_id, root_id, adt_id);
+                auto wmo_triple = GetWMOAreaTableEntryByTriple(root_id, adt_id, group_id);
                 if (wmo_triple)
                 {
-                    at_entry = AreaStorage::GetAreaById(wmo_triple->area_id);
+                    at_entry = AreaStorage::GetAreaById(wmo_triple->areaId);
                 }
             }
 

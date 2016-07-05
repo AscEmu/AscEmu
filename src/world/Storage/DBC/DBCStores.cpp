@@ -327,7 +327,6 @@ bool LoadDBCs()
         if (auto entry = sWMOAreaTableStore.LookupEntry(i))
         {
             sWMOAreaInfoByTripple.insert(WMOAreaInfoByTripple::value_type(WMOAreaTableTripple(entry->rootId, entry->adtId, entry->groupId), entry));
-            MapManagement::AreaManagement::AreaStorage::AddWMOTripleEntry(entry->groupId, entry->rootId, entry->adtId, entry->areaId);
         }
     }
     return true;
@@ -337,6 +336,6 @@ DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 roo
 {
     auto iter = sWMOAreaInfoByTripple.find(WMOAreaTableTripple(root_id, adt_id, group_id));
     if (iter == sWMOAreaInfoByTripple.end())
-        return 0;
+        return nullptr;
     return iter->second;
 }
