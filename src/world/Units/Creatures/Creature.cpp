@@ -297,7 +297,7 @@ void Creature::generateLoot()
 
     if (GetAIInterface()->GetDifficultyType() != 0)
     {
-        uint32 creature_difficulty_entry = objmgr.GetCreatureDifficulty(GetEntry(), GetAIInterface()->GetDifficultyType());
+        uint32 creature_difficulty_entry = sMySQLStore.GetCreatureDifficulty(GetEntry(), GetAIInterface()->GetDifficultyType());
         auto properties_difficulty = sMySQLStore.GetCreatureProperties(creature_difficulty_entry);
         if (properties_difficulty != nullptr)
         {

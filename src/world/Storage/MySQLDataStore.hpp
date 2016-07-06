@@ -29,6 +29,7 @@ public:
     typedef std::unordered_map<uint32, GameObjectProperties> GameObjectPropertiesContainer;
     typedef std::unordered_map<uint32, QuestProperties> QuestPropertiesContainer;
 
+    typedef std::unordered_map<uint32, CreatureDifficulty> CreatureDifficultyContainer;
     typedef std::unordered_map<uint32, DisplayBounding> DisplayBoundingBoxesContainer;
     typedef std::unordered_map<uint32, VendorRestrictionEntry> VendorRestrictionContainer;
     typedef std::unordered_map<uint32, AreaTrigger> AreaTriggerContainer;
@@ -62,6 +63,9 @@ public:
 
     QuestProperties const* GetQuestProperties(uint32 entry);
     QuestPropertiesContainer const* GetQuestPropertiesStore() { return &_questPropertiesStore; }
+
+    uint32 GetCreatureDifficulty(uint32 entry, uint8 difficulty_type);
+    CreatureDifficultyContainer const* GetCreatureDifficultyStore() { return &_creatureDifficultyStore; }
 
     DisplayBounding const* GetDisplayBounding(uint32 entry);
     DisplayBoundingBoxesContainer const* GetDisplayBoundingBoxesStore() { return &_displayBoundingBoxesStore; }
@@ -129,6 +133,7 @@ public:
     void LoadGameObjectQuestItemBindingTable();
     void LoadGameObjectQuestPickupBindingTable();
 
+    void LoadCreatureDifficultyTable();
     void LoadDisplayBoundingBoxesTable();
     void LoadVendorRestrictionsTable();
     void LoadAreaTriggersTable();
@@ -155,6 +160,7 @@ public:
     GameObjectPropertiesContainer _gameobjectPropertiesStore;
     QuestPropertiesContainer _questPropertiesStore;
 
+    CreatureDifficultyContainer _creatureDifficultyStore;
     DisplayBoundingBoxesContainer _displayBoundingBoxesStore;
     VendorRestrictionContainer _vendorRestrictionsStore;
     AreaTriggerContainer _areaTriggersStore;

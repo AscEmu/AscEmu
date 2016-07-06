@@ -452,6 +452,7 @@ bool World::SetInitialWorldSettings()
     sMySQLStore.LoadGameObjectQuestItemBindingTable();
     sMySQLStore.LoadGameObjectQuestPickupBindingTable();
 
+    sMySQLStore.LoadCreatureDifficultyTable();
     sMySQLStore.LoadDisplayBoundingBoxesTable();
     sMySQLStore.LoadVendorRestrictionsTable();
     sMySQLStore.LoadAreaTriggersTable();
@@ -511,7 +512,6 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
     MAKE_TASK(ObjectMgr, LoadAreaTrigger);
     MAKE_TASK(ObjectMgr, LoadItemsetLink);
-    MAKE_TASK(ObjectMgr, LoadCreatureDifficulty);
 
 
 #ifdef ENABLE_ACHIEVEMENTS

@@ -262,12 +262,6 @@ ObjectMgr::~ObjectMgr()
 
     Log.Notice("ObjectMgr", "Clearing up defined item sets...");
     mDefinedItemSets.clear();
-
-    Log.Notice("ObjectMgr", "Clearing up creature difficulty data...");
-    for (std::map<uint32, CreatureDifficulty*>::iterator itr = m_creatureDifficulty.begin(); itr != m_creatureDifficulty.end(); ++itr)
-        delete itr->second;
-
-    m_creatureDifficulty.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -3985,82 +3979,6 @@ uint32 ObjectMgr::GetGroupedSetBonus(int32 itemset)
         return 0;
     else
         return itr->second;
-}
-
-void ObjectMgr::LoadCreatureDifficulty()
-{
-    Log.Notice("ObjectMgr", "Loading creature_difficulty...");
-
-    const char* loadCreatureDifficulty = "SELECT * FROM creature_difficulty";
-    bool success = false;
-
-    QueryResult* result = WorldDatabase.Query(&success, loadCreatureDifficulty);
-    if (!success)
-    {
-        Log.Error("ObjectMgr", "Query failed: %s", loadCreatureDifficulty);
-        return;
-    }
-
-    if (result)
-    {
-        uint32 count = 0;
-        do
-        {
-            Field* row = result->Fetch();
-            CreatureDifficulty* creature_difficulty = new CreatureDifficulty;
-            uint32 entry = row[0].GetUInt32();
-            creature_difficulty->Id = entry;
-            creature_difficulty->difficulty_entry_1 = row[1].GetUInt32();
-            creature_difficulty->difficulty_entry_2 = row[2].GetUInt32();
-            creature_difficulty->difficulty_entry_3 = row[3].GetUInt32();
-       
-
-            Log.Debug("ObjectMgr", "loaded creature difficulty for creature %u", entry);
-
-            m_creatureDifficulty.insert(CreatureDifficultyMap::value_type(entry, creature_difficulty));
-
-            ++count;
-
-        } while (result->NextRow());
-        delete result;
-
-        Log.Success("ObjectMgr", "Loaded  %u creature difficulties", count);
-    }
-    else
-    {
-        Log.Error("ObjectMgr", "Failed to load from creature_difficulty.");
-    }
-}
-
-uint32 ObjectMgr::GetCreatureDifficulty(uint32 creature_entry, uint8 difficulty_type)
-{
-    for (auto itr = m_creatureDifficulty.begin(); itr != m_creatureDifficulty.end(); ++itr)
-    {
-        switch (difficulty_type)
-        {
-            case 1:
-            {
-                if (itr->first == creature_entry && itr->second->difficulty_entry_1 != 0)
-                    return itr->second->difficulty_entry_1;
-            }
-            break;
-            case 2:
-            {
-                if (itr->first == creature_entry && itr->second->difficulty_entry_2 != 0)
-                    return itr->second->difficulty_entry_2;
-            }
-            break;
-            case 3:
-            {
-                if (itr->first == creature_entry && itr->second->difficulty_entry_3 != 0)
-                    return itr->second->difficulty_entry_3;
-            }
-            break;
-            default:
-                return 0;
-        }
-    }
-    return 0;
 }
 
 void ObjectMgr::LoadProfessionDiscoveries()

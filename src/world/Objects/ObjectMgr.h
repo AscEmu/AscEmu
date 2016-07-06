@@ -519,7 +519,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::multimap <uint32, uint32>                              BCEntryStorage;
         typedef std::map<uint32, TransporterSet>                            TransporterMap;
         typedef std::map<uint32, SpellTargetConstraint*>                  SpellTargetConstraintMap;
-        typedef std::map<uint32, CreatureDifficulty*>               CreatureDifficultyMap;
 
         // object holders
         GmTicketList GM_TicketList;
@@ -833,9 +832,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         void LoadItemsetLink();
 
-        void LoadCreatureDifficulty();
-        uint32 GetCreatureDifficulty(uint32 creature_entry, uint8 difficulty_type);
-
     private:
 
         EventScriptMaps mEventScriptMaps;
@@ -912,7 +908,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         PetDefaultSpellMap mDefaultPetSpells;
         PetSpellCooldownMap mPetSpellCooldowns;
         SpellTargetConstraintMap m_spelltargetconstraints;
-        CreatureDifficultyMap m_creatureDifficulty;
 #ifdef ENABLE_ACHIEVEMENTS
         AchievementCriteriaEntryList m_AchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
 #endif

@@ -4645,7 +4645,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 {
     if (GetDifficultyType() != 0)
     {
-        uint32 creature_difficulty_entry = objmgr.GetCreatureDifficulty(entry, GetDifficultyType());
+        uint32 creature_difficulty_entry = sMySQLStore.GetCreatureDifficulty(entry, GetDifficultyType());
         auto properties_difficulty = sMySQLStore.GetCreatureProperties(creature_difficulty_entry);
         Creature* creature = static_cast<Creature*>(m_Unit);
         if (properties_difficulty != nullptr)

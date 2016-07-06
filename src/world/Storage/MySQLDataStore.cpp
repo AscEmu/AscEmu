@@ -1157,6 +1157,78 @@ void MySQLDataStore::LoadGameObjectQuestPickupBindingTable()
     Log.Success("MySQLDataLoads", "Loaded %u data from `gameobject_quest_pickup_binding` table in %u ms!", gameobject_quest_pickup_count, getMSTime() - start_time);
 }
 
+void MySQLDataStore::LoadCreatureDifficultyTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                         0          1            2             3 
+    QueryResult* creature_difficulty_result = WorldDatabase.Query("SELECT entry, difficulty_1, difficulty_2, difficulty_3 FROM creature_difficulty");
+
+    if (creature_difficulty_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `creature_difficulty` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `creature_difficulty` has %u columns", creature_difficulty_result->GetFieldCount());
+
+    _creatureDifficultyStore.rehash(creature_difficulty_result->GetRowCount());
+
+    uint32 creature_difficulty_count = 0;
+    do
+    {
+        Field* fields = creature_difficulty_result->Fetch();
+
+        uint32 entry = fields[0].GetUInt32();
+
+        CreatureDifficulty& creatureDifficulty = _creatureDifficultyStore[entry];
+
+        creatureDifficulty.Id = entry;
+
+        creatureDifficulty.difficulty_entry_1 = fields[1].GetUInt32();
+        creatureDifficulty.difficulty_entry_2 = fields[2].GetUInt32();
+        creatureDifficulty.difficulty_entry_3 = fields[3].GetUInt32();
+
+
+        ++creature_difficulty_count;
+    } while (creature_difficulty_result->NextRow());
+
+    delete creature_difficulty_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u creature difficulties info from `creature_difficulty` table in %u ms!", creature_difficulty_count, getMSTime() - start_time);
+}
+
+uint32 MySQLDataStore::GetCreatureDifficulty(uint32 entry, uint8 difficulty_type)
+{
+    for (auto itr = _creatureDifficultyStore.begin(); itr != _creatureDifficultyStore.end(); ++itr)
+    {
+        switch (difficulty_type)
+        {
+            case 1:
+            {
+                if (itr->first == entry && itr->second.difficulty_entry_1 != 0)
+                    return itr->second.difficulty_entry_1;
+            }
+            break;
+            case 2:
+            {
+                if (itr->first == entry && itr->second.difficulty_entry_2 != 0)
+                    return itr->second.difficulty_entry_2;
+            }
+            break;
+            case 3:
+            {
+                if (itr->first == entry && itr->second.difficulty_entry_3 != 0)
+                    return itr->second.difficulty_entry_3;
+            }
+            break;
+            default:
+                return 0;
+        }
+    }
+    return 0;
+}
+
 void MySQLDataStore::LoadDisplayBoundingBoxesTable()
 {
     uint32 start_time = getMSTime();
