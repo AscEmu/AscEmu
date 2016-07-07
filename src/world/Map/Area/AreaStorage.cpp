@@ -116,7 +116,7 @@ namespace MapManagement
 
             if (wmoEntry)
             {
-                Log.Map("CCollideInterface::IsOutdoor", "Got WMOAreaTableEntry! flag %u, areaid %u", wmoEntry->flags, wmoEntry->areaId);
+                Log.Map("AreaStorage::IsOutdoor", "Got WMOAreaTableEntry! flag %u, areaid %u", wmoEntry->flags, wmoEntry->areaId);
                 atEntry = sAreaStore.LookupEntry(wmoEntry->areaId);
             }
 
