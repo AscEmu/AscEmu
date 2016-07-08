@@ -157,7 +157,8 @@ public:
     void LoadWorldBroadcastTable();
     void LoadPointOfInterestTable();
 
-    void LoadItemSetLinkedSetBonus();
+    void LoadItemSetLinkedSetBonusTable();
+    void LoadCreatureInitialEquipmentTable();
 
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;

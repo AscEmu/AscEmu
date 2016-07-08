@@ -2112,7 +2112,7 @@ PointOfInterest const* MySQLDataStore::GetPointOfInterest(uint32 entry)
     return nullptr;
 }
 
-void MySQLDataStore::LoadItemSetLinkedSetBonus()
+void MySQLDataStore::LoadItemSetLinkedSetBonusTable()
 {
     uint32 start_time = getMSTime();
 
@@ -2156,4 +2156,43 @@ uint32 MySQLDataStore::GetItemSetLinkedBonus(int32 itemset)
         return 0;
     else
         return itr->second.itemset_bonus;
+}
+
+void MySQLDataStore::LoadCreatureInitialEquipmentTable()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                        0              1           2          3
+    QueryResult* initial_equipment_result = WorldDatabase.Query("SELECT creature_entry, itemslot_1, itemslot_2, itemslot_3 FROM creature_initial_equip;");
+    if (initial_equipment_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `creature_initial_equip` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `creature_initial_equip` has %u columns", initial_equipment_result->GetFieldCount());
+
+    uint32 initial_equipment_count = 0;
+    do
+    {
+        Field* fields = initial_equipment_result->Fetch();
+        uint32 entry = fields[0].GetUInt32();
+        CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(entry);
+        if (creature_properties == nullptr)
+        {
+            Log.Error("MySQLDataLoads", "Invalid creature_entry %u in table creature_initial_equip!", entry);
+            continue;
+        }
+
+        const_cast<CreatureProperties*>(creature_properties)->itemslot_1 = fields[1].GetUInt32();
+        const_cast<CreatureProperties*>(creature_properties)->itemslot_2 = fields[2].GetUInt32();
+        const_cast<CreatureProperties*>(creature_properties)->itemslot_3 = fields[3].GetUInt32();
+
+        ++initial_equipment_count;
+
+    } while (initial_equipment_result->NextRow());
+
+    delete initial_equipment_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `creature_initial_equip` table in %u ms!", initial_equipment_count, getMSTime() - start_time);
 }

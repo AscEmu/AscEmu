@@ -3943,36 +3943,8 @@ void ObjectMgr::LoadProfessionDiscoveries()
     }
 }
 
-void ObjectMgr::LoadExtraCreatureProtoStuff()
+void ObjectMgr::LoadCreatureAIAgents()
 {
-    // Load creature_initiale_equip
-    Log.Notice("ObjectStorage", "Loading creature_initial_equip...");
-    {
-        QueryResult* result = WorldDatabase.Query("SELECT creature_entry, itemslot_1, itemslot_2, itemslot_3 FROM creature_initial_equip;");
-
-        if (result)
-        {
-            do
-            {
-                Field* fields = result->Fetch();
-                uint32 entry = fields[0].GetUInt32();
-                CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(entry);
-                if (creature_properties == nullptr)
-                {
-                    Log.Error("ObjectStorage", "Invalid creature_entry %u in table creature_initial_equip!", entry);
-                    continue;
-                }
-
-                const_cast<CreatureProperties*>(creature_properties)->itemslot_1 = fields[1].GetUInt32();
-                const_cast<CreatureProperties*>(creature_properties)->itemslot_2 = fields[2].GetUInt32();
-                const_cast<CreatureProperties*>(creature_properties)->itemslot_3 = fields[3].GetUInt32();
-
-            } while (result->NextRow());
-
-            delete result;
-        }
-    }
-
     // Load AI Agents
     if (Config.MainConfig.GetBoolDefault("Server", "LoadAIAgents", true))
     {

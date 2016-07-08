@@ -701,7 +701,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void LoadTrainers();
         Trainer* GetTrainer(uint32 Entry);
 
-        void LoadExtraCreatureProtoStuff();
+        void LoadCreatureAIAgents();
 
         void LoadProfessionDiscoveries();
 

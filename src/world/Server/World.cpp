@@ -471,7 +471,8 @@ bool World::SetInitialWorldSettings()
     sMySQLStore.LoadWorldStringsTable();
     sMySQLStore.LoadWorldBroadcastTable();
     sMySQLStore.LoadPointOfInterestTable();
-    sMySQLStore.LoadItemSetLinkedSetBonus();
+    sMySQLStore.LoadItemSetLinkedSetBonusTable();
+    sMySQLStore.LoadCreatureInitialEquipmentTable();
 
 #define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr)))
     // Fill the task list with jobs to do.
@@ -505,7 +506,7 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadReputationModifiers);
     MAKE_TASK(ObjectMgr, LoadMonsterSay);
     MAKE_TASK(ObjectMgr, LoadGroups);
-    MAKE_TASK(ObjectMgr, LoadExtraCreatureProtoStuff);
+    MAKE_TASK(ObjectMgr, LoadCreatureAIAgents);
     MAKE_TASK(ObjectMgr, LoadArenaTeams);
     MAKE_TASK(ObjectMgr, LoadProfessionDiscoveries);
     MAKE_TASK(ObjectMgr, StoreBroadCastGroupKey);
