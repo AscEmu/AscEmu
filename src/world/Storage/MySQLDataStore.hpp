@@ -48,6 +48,8 @@ public:
     typedef std::unordered_map<uint32, WorldBroadCast> WorldBroadCastContainer;
     typedef std::unordered_map<uint32, PointOfInterest> PointOfInterestContainer;
 
+    typedef std::unordered_map<int32, ItemSetLinkedItemSetBonus> ItemSetDefinedSetBonusContainer;
+
 
     //helper
     ItemPage const* GetItemPage(uint32 entry);
@@ -118,6 +120,8 @@ public:
     PointOfInterest const* GetPointOfInterest(uint32 entry);
     PointOfInterestContainer const* GetPointOfInterestStore() { return &_pointOfInterestStore; }
 
+    uint32 GetItemSetLinkedBonus(int32 itemset);
+
     //Config
     void LoadAdditionalTableConfig();
 
@@ -153,6 +157,7 @@ public:
     void LoadWorldBroadcastTable();
     void LoadPointOfInterestTable();
 
+    void LoadItemSetLinkedSetBonus();
 
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
@@ -179,6 +184,8 @@ public:
     WorldStringContainer _worldStringsStore;
     WorldBroadCastContainer _worldBroadcastStore;
     PointOfInterestContainer _pointOfInterestStore;
+
+    ItemSetDefinedSetBonusContainer _definedItemSetBonusStore;
 
 };
 

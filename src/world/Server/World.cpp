@@ -471,6 +471,7 @@ bool World::SetInitialWorldSettings()
     sMySQLStore.LoadWorldStringsTable();
     sMySQLStore.LoadWorldBroadcastTable();
     sMySQLStore.LoadPointOfInterestTable();
+    sMySQLStore.LoadItemSetLinkedSetBonus();
 
 #define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr)))
     // Fill the task list with jobs to do.
@@ -511,7 +512,6 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadVehicleAccessories);
     MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
     MAKE_TASK(ObjectMgr, LoadAreaTrigger);
-    MAKE_TASK(ObjectMgr, LoadItemsetLink);
 
 
 #ifdef ENABLE_ACHIEVEMENTS

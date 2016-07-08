@@ -4043,9 +4043,9 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     // you will get the highest sets bonus
     if (proto_setid < 0)
     {
-        if (objmgr.HasGroupedSetBonus(proto_setid))
+        if (sMySQLStore.GetItemSetLinkedBonus(proto_setid) != 0)
         {
-            setid = objmgr.GetGroupedSetBonus(proto_setid);
+            setid = sMySQLStore.GetItemSetLinkedBonus(proto_setid);
         }
     }
     else

@@ -259,9 +259,6 @@ ObjectMgr::~ObjectMgr()
     Log.Notice("ObjectMgr", "Clearing up event scripts...");
     mEventScriptMaps.clear();
     mSpellEffectMaps.clear();
-
-    Log.Notice("ObjectMgr", "Clearing up defined item sets...");
-    mDefinedItemSets.clear();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -3925,60 +3922,6 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
             objmgr.CheckforScripts(plr, itr->second.nextevent);
         }
     }
-}
-
-void ObjectMgr::LoadItemsetLink()
-{
-    Log.Notice("ObjectMgr", "Loading linked itemsetbonus...");
-
-    QueryResult* result = WorldDatabase.Query("SELECT itemset, itemset_bonus FROM itemset_linked_itemsetbonus;");
-
-    if (result != nullptr)
-    {
-        uint32 count = 0;
-        do
-        {
-            Field* row = result->Fetch();
-            ItemsLinkedItemSet* entry = new ItemsLinkedItemSet();
-            int32 itemset_entry = 0;
-
-            itemset_entry = row[0].GetInt32();
-            entry->itemset_bonus = row[1].GetUInt32();
-            //Log.Notice("ObjectMgr", "loaded linked itemset %u for itemset %i", entry->itemset_bonus, itemset_entry);
-
-            mDefinedItemSets.insert(std::make_pair(itemset_entry, entry->itemset_bonus));
-            delete entry;
-            ++count;
-
-        } while (result->NextRow());
-        delete result;
-
-        Log.Success("ObjectMgr", "Loaded %u linked itemsetsbonus...", count);
-    }
-    else
-    {
-        Log.Error("ObjectMgr", "Failed to load from itemset_linked_itemsetbonus.");
-    }
-}
-
-bool ObjectMgr::HasGroupedSetBonus(int32 itemset)
-{
-    std::map<int32, uint32>::iterator itr = mDefinedItemSets.find(itemset);
-
-    if (itr == mDefinedItemSets.end())
-        return false;
-    else
-        return true;
-
-}
-uint32 ObjectMgr::GetGroupedSetBonus(int32 itemset)
-{
-    std::map<int32, uint32>::iterator itr = mDefinedItemSets.find(itemset);
-
-    if (itr == mDefinedItemSets.end())
-        return 0;
-    else
-        return itr->second;
 }
 
 void ObjectMgr::LoadProfessionDiscoveries()

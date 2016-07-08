@@ -2111,3 +2111,49 @@ PointOfInterest const* MySQLDataStore::GetPointOfInterest(uint32 entry)
 
     return nullptr;
 }
+
+void MySQLDataStore::LoadItemSetLinkedSetBonus()
+{
+    uint32 start_time = getMSTime();
+
+    //                                                                    0            1
+    QueryResult* linked_set_bonus_result = WorldDatabase.Query("SELECT itemset, itemset_bonus FROM itemset_linked_itemsetbonus");
+    if (linked_set_bonus_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `itemset_linked_itemsetbonus` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `itemset_linked_itemsetbonus` has %u columns", linked_set_bonus_result->GetFieldCount());
+
+    _definedItemSetBonusStore.rehash(linked_set_bonus_result->GetRowCount());
+
+    uint32 linked_set_bonus_count = 0;
+    do
+    {
+        Field* fields = linked_set_bonus_result->Fetch();
+
+        int32 entry = fields[0].GetInt32();
+
+        ItemSetLinkedItemSetBonus& itemSetLinkedItemSetBonus = _definedItemSetBonusStore[entry];
+
+        itemSetLinkedItemSetBonus.itemset = entry;
+        itemSetLinkedItemSetBonus.itemset_bonus  = fields[1].GetUInt32();
+
+        ++linked_set_bonus_count;
+
+    } while (linked_set_bonus_result->NextRow());
+
+    delete linked_set_bonus_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `itemset_linked_itemsetbonus` table in %u ms!", linked_set_bonus_count, getMSTime() - start_time);
+}
+
+uint32 MySQLDataStore::GetItemSetLinkedBonus(int32 itemset)
+{
+    auto itr = _definedItemSetBonusStore.find(itemset);
+    if (itr == _definedItemSetBonusStore.end())
+        return 0;
+    else
+        return itr->second.itemset_bonus;
+}

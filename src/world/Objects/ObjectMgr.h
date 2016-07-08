@@ -512,7 +512,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         // Map typedef's
         typedef std::map<uint32, LevelInfo*>                                LevelMap;
         typedef std::map<std::pair<uint32, uint32>, LevelMap*>                  LevelInfoMap;
-        typedef std::map<int32, uint32>               ItemSetDefinedContentMap;
         typedef std::map<uint32, uint32>                                    NpcToGossipTextMap;
         typedef std::map<uint32, std::set<SpellEntry*> >                    PetDefaultSpellMap;
         typedef std::map<uint32, uint32>                                    PetSpellCooldownMap;
@@ -563,9 +562,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
             m_groups.erase(group->GetID());
             m_groupLock.ReleaseWriteLock();
         }
-
-        bool HasGroupedSetBonus(int32 itemset);
-        uint32 GetGroupedSetBonus(int32 itemset);
 
         void GroupVoiceReconnected();
 
@@ -830,8 +826,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void LoadWorldStateTemplates();
         std::multimap< uint32, WorldState >* GetWorldStatesForMap(uint32 map) const;
 
-        void LoadItemsetLink();
-
     private:
 
         EventScriptMaps mEventScriptMaps;
@@ -900,8 +894,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         /// Corpse Collector
         CorpseCollectorMap mCorpseCollector;
-
-        ItemSetDefinedContentMap mDefinedItemSets;
 
         TrainerMap mTrainers;
         LevelInfoMap mLevelInfo;

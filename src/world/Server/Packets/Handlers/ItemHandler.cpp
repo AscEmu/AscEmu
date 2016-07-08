@@ -813,7 +813,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recv_data)
     data << itemProto->RandomPropId;
     data << itemProto->RandomSuffixId;
     data << itemProto->Block;
-    data << objmgr.GetGroupedSetBonus(itemProto->ItemSet);
+    data << sMySQLStore.GetItemSetLinkedBonus(itemProto->ItemSet);
     data << itemProto->MaxDurability;
     data << itemProto->ZoneNameID;
     data << itemProto->MapID;

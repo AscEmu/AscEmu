@@ -697,7 +697,7 @@ struct ItemProperties
     }
 };
 
-struct ItemsLinkedItemSet
+struct ItemSetLinkedItemSetBonus
 {
     int32 itemset;
     uint32 itemset_bonus;
