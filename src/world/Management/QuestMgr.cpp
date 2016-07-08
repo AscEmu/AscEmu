@@ -1691,18 +1691,14 @@ void QuestMgr::SendQuestLogFull(Player* plyr)
 uint32 QuestMgr::GetGameObjectLootQuest(uint32 GO_Entry)
 {
     std::unordered_map<uint32, uint32>::iterator itr = m_ObjectLootQuestList.find(GO_Entry);
-    if (itr == m_ObjectLootQuestList.end()) return 0;
+    if (itr == m_ObjectLootQuestList.end())
+        return 0;
 
     return itr->second;
 }
 
 void QuestMgr::SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry)
 {
-    if (m_ObjectLootQuestList.find(GO_Entry) != m_ObjectLootQuestList.end())
-    {
-        //LOG_ERROR("WARNING: Gameobject %d has more than 1 quest item allocated in it's loot template!", GO_Entry);
-    }
-
     uint32 QuestID = 0;
     MySQLDataStore::QuestPropertiesContainer const* its = sMySQLStore.GetQuestPropertiesStore();
     for (MySQLDataStore::QuestPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
@@ -1723,7 +1719,7 @@ void QuestMgr::SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry)
     }
 
     if (QuestID == 0)
-        Log.Error("QuestMgr","No corresponding quest was found for gameobject %u quest item %d", GO_Entry, Item_Entry);
+        Log.Error("QuestMgr","No corresponding quest was found for loot_gameobjects entryid %u quest item %d", GO_Entry, Item_Entry);
 }
 
 void QuestMgr::BuildQuestFailed(WorldPacket* data, uint32 questid)
