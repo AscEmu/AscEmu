@@ -409,35 +409,10 @@ typedef std::list<AchievementCriteriaEntry const*>                    Achievemen
 #endif
 
 #ifndef WIN32
-#define arcemu_USE_MAP_PLAYER_INDEX
-#ifdef arcemu_USE_MAP_PLAYER_INDEX
-
-/// you can use the string map (slower)
 typedef std::map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
-
-
-#else            /// or
-
-/// gcc has no default hash for string type,
-/// so we have to make an explicit hash template here
-template<>
-struct __gnu_cxx::hash<std::string>
-{
-    size_t operator()(std::string & tbh) const
-    {
-        /// simple crc32 hash for now, we may need to change this later however
-        return size_t(crc32((const unsigned char*)tbh.c_str(), tbh.length()));
-    }
-}
-
-typedef std::unordered_map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
-
-#endif
 #else
-
 /// vc++ has the type for a string hash already, so we don't need to do anything special
 typedef std::unordered_map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
-
 #endif
 
 
