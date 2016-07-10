@@ -3,6 +3,9 @@
  This file is released under the MIT license. See README-MIT for more information.
  */
 
+#include "CommonTypes.hpp"
+#include <string>
+
 #ifndef _GOSSIP_DEFINES_HPP
 #define _GOSSIP_DEFINES_HPP
 
