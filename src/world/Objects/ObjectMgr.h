@@ -346,7 +346,6 @@ class SERVER_DECL GossipMenu
         void AddMenuItem(uint8 Icon, const char* Message, uint32 dtSender, uint32 dtAction, const char* BoxMessage, uint32 BoxMoney, bool Coded = false);
         void BuildPacket(WorldPacket & Packet);
         void SendTo(Player* Plr);
-        void SendGossipMenu(uint32 TitleTextId, uint64 npcGUID);
         GossipMenuItem GetItem(uint32 Id);
         inline void SetTextID(uint32 TID) { TextId = TID; }
 
@@ -495,16 +494,13 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::set<Transporter*>                                      TransporterSet;
 
         // HashMap typedef's
-        typedef std::unordered_map<uint64, Item*>                       ItemMap;
         typedef std::unordered_map<uint32, CorpseData*>                 CorpseCollectorMap;
-        typedef std::unordered_map<uint32, PlayerInfo*>                 PlayerNameMap;
         typedef std::unordered_map<uint32, PlayerCreateInfo*>           PlayerCreateInfoMap;
         typedef std::unordered_map<uint32, Guild*>                      GuildMap;
         typedef std::unordered_map<uint32, DBC::Structures::SkillLineAbilityEntry const*>             SLMap;
         typedef std::unordered_map<uint32, std::vector<CreatureItem>*>  VendorMap;
         typedef std::unordered_map<uint32, Transporter*>                TransportMap;
         typedef std::unordered_map<uint32, Trainer*>                    TrainerMap;
-        typedef std::unordered_map<uint32, std::vector<TrainerSpell*> > TrainerSpellMap;
         typedef std::unordered_map<uint32, ReputationModifier*>         ReputationModMap;
         typedef std::unordered_map<uint32, Corpse*>                     CorpseMap;
         typedef std::unordered_map<uint32, PlayerCache*>                PlayerCacheMap;
@@ -563,8 +559,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
             m_groupLock.ReleaseWriteLock();
         }
 
-        void GroupVoiceReconnected();
-
         void LoadGroups();
 
         // player names
@@ -586,7 +580,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         //Corpse Stuff
         Corpse* GetCorpseByOwner(uint32 ownerguid);
         void CorpseCollectorUnload();
-        void DespawnCorpse(uint64 Guid);
         void CorpseAddEventDespawn(Corpse* pCorpse);
         void DelinkPlayerCorpses(Player* pOwner);
         Corpse* CreateCorpse();
@@ -646,7 +639,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void LoadAchievementRewards();
 #endif
         void LoadAreaTrigger();
-        void LoadQuests();
         void LoadPlayersInfo();
         void LoadPlayerCreateInfo();
         void LoadGuilds();
@@ -655,8 +647,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void LoadGMTickets();
         void SaveGMTicket(GM_Ticket* ticket, QueryBuffer* buf);
         void LoadInstanceBossInfos();
-        void LoadAuctions();
-        void LoadAuctionItems();
         void LoadSpellSkills();
         void LoadVendors();
         void ReloadVendors();
