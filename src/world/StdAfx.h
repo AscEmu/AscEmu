@@ -105,6 +105,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "Units/Creatures/Vehicle.h"
 #include "Units/Unit.h"
 #include "Management/Gossip.h"
+#include "Management/GossipMenu.hpp"
 
 #ifdef ENABLE_ACHIEVEMENTS
 #include "Management/AchievementMgr.h"

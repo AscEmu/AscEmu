@@ -29,6 +29,7 @@
 #include "Storage/DBC/DBCStores.h"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Management/TransporterHandler.h"
+#include "Management/GossipDefines.hpp"
 #include "Objects/GameObject.h"
 #include "Spell/Spell.h"
 
@@ -165,19 +166,6 @@ struct SpellReplacement
 };
 
 class Group;
-
-struct GossipMenuItem
-{
-    uint32 Id;
-    uint32 IntId;
-    uint8 Icon;
-    uint8 Extra;
-    std::string Text;
-    uint32 m_gSender;
-    uint32 m_gAction;
-    std::string m_gBoxMessage;
-    uint32 m_gBoxMoney;
-};
 
 struct PointOfInterest
 {
@@ -335,26 +323,6 @@ typedef std::multimap<uint32, SimpleEventScript> EventScriptMaps;
 typedef std::multimap<uint32, SimpleEventScript const*> SpellEffectMaps;
 typedef std::pair<EventScriptMaps::const_iterator, EventScriptMaps::const_iterator> EventScriptBounds;
 typedef std::pair<SpellEffectMaps::const_iterator, SpellEffectMaps::const_iterator> SpellEffectMapBounds;
-
-class SERVER_DECL GossipMenu
-{
-    public:
-
-        GossipMenu(uint64 Creature_Guid, uint32 Text_Id);
-        void AddItem(GossipMenuItem* GossipItem);
-        void AddItem(uint8 Icon, const char* Text, int32 Id = -1, int8 Extra = 0);
-        void AddMenuItem(uint8 Icon, const char* Message, uint32 dtSender, uint32 dtAction, const char* BoxMessage, uint32 BoxMoney, bool Coded = false);
-        void BuildPacket(WorldPacket & Packet);
-        void SendTo(Player* Plr);
-        GossipMenuItem GetItem(uint32 Id);
-        inline void SetTextID(uint32 TID) { TextId = TID; }
-
-    protected:
-
-        uint32 TextId;
-        uint64 CreatureGuid;
-        std::vector<GossipMenuItem> Menu;
-};
 
 
 class Charter
