@@ -20,7 +20,7 @@
 #define _LFGMGR_H
 
 #include "StdAfx.h"
-#include "Lfg.h"
+#include "LFG.h"
 
 
 #define MAX_DUNGEONS 294+1          // check max entry's +1 on lfgdungeons.dbc

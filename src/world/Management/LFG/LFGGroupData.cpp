@@ -17,8 +17,8 @@
  */
 
 #include "Common.h"
-#include "Lfg.h"
-#include "LfgGroupData.h"
+#include "LFG.h"
+#include "LFGGroupData.h"
 
 
 LfgGroupData::LfgGroupData() :

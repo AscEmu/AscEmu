@@ -19,7 +19,7 @@
 #ifndef _LFGGROUPDATA_H
 #define _LFGGROUPDATA_H
 
-#include "Lfg.h"
+#include "LFG.h"
 
 enum LfgGroupEnum
 {
