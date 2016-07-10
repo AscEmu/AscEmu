@@ -22,7 +22,7 @@
 #ifndef SCRIPTMGR_H
 #define SCRIPTMGR_H
 
-#include "Management/Gossip.h"
+#include "Management/Gossip/Gossip.h"
 #include "Management/GameEventMgr.h"
 
 #include <mutex>

@@ -6,6 +6,9 @@ project(world CXX)
 include(Chat/CMakeLists.txt)
 include(Chat/Commands/CMakeLists.txt)
 include(Management/CMakeLists.txt)
+include(Management/Battleground/CMakeLists.txt)
+include(Management/Gossip/CMakeLists.txt)
+include(Management/LFG/CMakeLists.txt)
 include(Map/CMakeLists.txt)
 include(Map/Area/CMakeLists.txt)
 include(Movement/CMakeLists.txt)
@@ -43,6 +46,9 @@ set(sources
    ${SRC_CHAT_FILES}
    ${SRC_COMMAND_FILES}
    ${SRC_MANAGEMENT_FILES}
+   ${SRC_MANAGEMENT_BATTLEGROUND_FILES}
+   ${SRC_MANAGEMENT_GOSSIP_FILES}
+   ${SRC_MANAGEMENT_LFG_FILES}
    ${SRC_MAP_FILES}
    ${SRC_MAP_AREA_FILES}
    ${SRC_MOVEMENT_FILES}

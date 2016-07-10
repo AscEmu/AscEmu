@@ -20,7 +20,7 @@
 #ifndef _GOSSIP_H
 #define _GOSSIP_H
 
-#include "Management/GossipDefines.hpp"
+#include "Management/Gossip/GossipDefines.hpp"
 #include "WorldPacket.h"
 #include "StackBuffer.h"
 #include <map>

@@ -15,10 +15,6 @@ set(SRC_MANAGEMENT_FILES
    ${PATH_PREFIX}/AuctionHouse.h
    ${PATH_PREFIX}/AuctionMgr.cpp
    ${PATH_PREFIX}/AuctionMgr.h
-   ${PATH_PREFIX}/Battleground.cpp
-   ${PATH_PREFIX}/Battleground.h
-   ${PATH_PREFIX}/BattlegroundMgr.cpp
-   ${PATH_PREFIX}/BattlegroundMgr.h
    ${PATH_PREFIX}/CalendarMgr.cpp
    ${PATH_PREFIX}/CalendarMgr.h
    ${PATH_PREFIX}/Channel.cpp
@@ -34,11 +30,6 @@ set(SRC_MANAGEMENT_FILES
    ${PATH_PREFIX}/GameEvent.h
    ${PATH_PREFIX}/GameEventMgr.cpp
    ${PATH_PREFIX}/GameEventMgr.h
-   ${PATH_PREFIX}/Gossip.cpp
-   ${PATH_PREFIX}/Gossip.h
-   ${PATH_PREFIX}/GossipDefines.hpp
-   ${PATH_PREFIX}/GossipMenu.cpp
-   ${PATH_PREFIX}/GossipMenu.hpp
    ${PATH_PREFIX}/Group.cpp
    ${PATH_PREFIX}/Group.h
    ${PATH_PREFIX}/Guild.cpp
@@ -48,13 +39,6 @@ set(SRC_MANAGEMENT_FILES
    ${PATH_PREFIX}/ItemInterface.cpp
    ${PATH_PREFIX}/ItemInterface.h
    ${PATH_PREFIX}/ItemPrototype.h
-   ${PATH_PREFIX}/Lfg.h
-   ${PATH_PREFIX}/LfgGroupData.cpp
-   ${PATH_PREFIX}/LfgGroupData.h
-   ${PATH_PREFIX}/LfgMgr.cpp
-   ${PATH_PREFIX}/LfgMgr.h
-   ${PATH_PREFIX}/LfgPlayerData.cpp
-   ${PATH_PREFIX}/LfgPlayerData.h
    ${PATH_PREFIX}/LocalizationMgr.cpp
    ${PATH_PREFIX}/LocalizationMgr.h
    ${PATH_PREFIX}/LootMgr.cpp

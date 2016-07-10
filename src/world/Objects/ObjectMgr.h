@@ -29,7 +29,7 @@
 #include "Storage/DBC/DBCStores.h"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Management/TransporterHandler.h"
-#include "Management/GossipDefines.hpp"
+#include "Management/Gossip/GossipDefines.hpp"
 #include "Objects/GameObject.h"
 #include "Spell/Spell.h"
 

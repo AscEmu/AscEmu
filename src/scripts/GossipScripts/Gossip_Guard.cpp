@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Management/Gossip.h"
+#include "Management/Gossip/Gossip.h"
 #include "Setup.h"
 
 
