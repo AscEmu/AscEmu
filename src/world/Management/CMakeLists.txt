@@ -37,6 +37,8 @@ set(SRC_MANAGEMENT_FILES
    ${PATH_PREFIX}/Gossip.cpp
    ${PATH_PREFIX}/Gossip.h
    ${PATH_PREFIX}/GossipDefines.hpp
+   ${PATH_PREFIX}/GossipMenu.cpp
+   ${PATH_PREFIX}/GossipMenu.hpp
    ${PATH_PREFIX}/Group.cpp
    ${PATH_PREFIX}/Group.h
    ${PATH_PREFIX}/Guild.cpp
