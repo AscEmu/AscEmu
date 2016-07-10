@@ -102,14 +102,6 @@ void Corpse::DeleteFromDB()
     CharacterDatabase.Execute(sql);
 }
 
-void CorpseData::DeleteFromDB()
-{
-    char sql[256];
-
-    snprintf(sql, 256, "DELETE FROM corpses WHERE guid=%u", (unsigned int)LowGuid);
-    CharacterDatabase.Execute(sql);
-}
-
 void Corpse::Despawn()
 {
     if (this->IsInWorld())

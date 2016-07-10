@@ -494,7 +494,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::set<Transporter*>                                      TransporterSet;
 
         // HashMap typedef's
-        typedef std::unordered_map<uint32, CorpseData*>                 CorpseCollectorMap;
         typedef std::unordered_map<uint32, PlayerCreateInfo*>           PlayerCreateInfoMap;
         typedef std::unordered_map<uint32, Guild*>                      GuildMap;
         typedef std::unordered_map<uint32, DBC::Structures::SkillLineAbilityEntry const*>             SLMap;
@@ -881,9 +880,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         NpcToGossipTextMap mNpcToGossipText;
 
         SLMap mSpellSkills;
-
-        /// Corpse Collector
-        CorpseCollectorMap mCorpseCollector;
 
         TrainerMap mTrainers;
         LevelInfoMap mLevelInfo;

@@ -27,18 +27,6 @@ enum CORPSE_STATE
     CORPSE_STATE_BONES  = 1
 };
 
-struct CorpseData
-{
-    uint32 LowGuid;
-    uint32 mapid;
-    uint64 owner;
-    uint32 instancemapid;
-    float x;
-    float y;
-    float z;
-    void DeleteFromDB();
-};
-
 #define CORPSE_RECLAIM_TIME 30
 #define CORPSE_RECLAIM_TIME_MS CORPSE_RECLAIM_TIME * 1000
 #define CORPSE_MINIMUM_RECLAIM_RADIUS 39
