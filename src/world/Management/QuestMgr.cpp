@@ -471,7 +471,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     *data << qst->rewardtitleid;				// Title reward (ID)
     *data << qst->rewardtalents;				// Talent reward
     *data << qst->bonusarenapoints;				// Arena Points reward
-    *data << uint32(0);							// new 3.3.0
+    *data << GenerateQuestXP(plr, qst);         // new 3.3.0
     for (uint8 i = 0; i < 5; ++i)
         *data << uint32(0);
     for (uint8 i = 0; i < 5; ++i)
