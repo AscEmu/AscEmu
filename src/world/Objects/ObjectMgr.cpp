@@ -62,12 +62,6 @@ ObjectMgr::~ObjectMgr()
         delete i->second;
     }
 
-    Log.Notice("ObjectMgr", "Deleting Spell Override...");
-    for (OverrideIdMap::iterator i = mOverrideIdMap.begin(); i != mOverrideIdMap.end(); ++i)
-    {
-        delete i->second;
-    }
-
     Log.Notice("ObjectMgr", "Deleting Trainers...");
     for (TrainerMap::iterator i = mTrainers.begin(); i != mTrainers.end(); ++i)
     {
@@ -2081,54 +2075,6 @@ uint32 ObjectMgr::GetPetSpellCooldown(uint32 SpellId)
         return sp->RecoveryTime;
     else
         return sp->CategoryRecoveryTime;
-}
-
-void ObjectMgr::LoadSpellOverride()
-{
-    //    int i = 0;
-    std::stringstream query;
-    QueryResult* result = WorldDatabase.Query("SELECT DISTINCT overrideId FROM spelloverride");
-
-    if (!result)
-    {
-        return;
-    }
-
-    //    int num = 0;
-    //    uint32 total =(uint32) result->GetRowCount();
-    SpellEntry* sp;
-    uint32 spellid;
-
-    do
-    {
-        Field* fields = result->Fetch();
-        query.rdbuf()->str("");
-        query << "SELECT spellId FROM spelloverride WHERE overrideId = ";
-        query << fields[0].GetUInt32();
-        QueryResult* resultIn = WorldDatabase.Query(query.str().c_str());
-        std::list<SpellEntry*>* list = new std::list < SpellEntry* > ;
-        if (resultIn)
-        {
-            do
-            {
-                Field* fieldsIn = resultIn->Fetch();
-                spellid = fieldsIn[0].GetUInt32();
-                sp = dbcSpell.LookupEntryForced(spellid);
-                if (!spellid || !sp)
-                    continue;
-                list->push_back(sp);
-            }
-            while (resultIn->NextRow());
-            delete resultIn;
-        }
-        if (list->size() == 0)
-            delete list;
-        else
-            mOverrideIdMap.insert(OverrideIdMap::value_type(fields[0].GetUInt32(), list));
-    }
-    while (result->NextRow());
-    delete result;
-    Log.Success("ObjectMgr", "%u spell overrides loaded.", mOverrideIdMap.size());
 }
 
 void ObjectMgr::SetVendorList(uint32 Entry, std::vector<CreatureItem>* list_)

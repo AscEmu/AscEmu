@@ -480,6 +480,8 @@ bool World::SetInitialWorldSettings()
     sMySQLStore.LoadPlayerCreateInfoItemsTable();
     sMySQLStore.LoadPlayerXpToLevelTable();
 
+    sMySQLStore.LoadSpellOverride();
+
 
 #define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr)))
     // Fill the task list with jobs to do.
@@ -500,7 +502,6 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadCreatureTimedEmotes);
     MAKE_TASK(ObjectMgr, LoadTrainers);
     MAKE_TASK(ObjectMgr, LoadSpellSkills);
-    MAKE_TASK(ObjectMgr, LoadSpellOverride);
     MAKE_TASK(ObjectMgr, LoadVendors);
     MAKE_TASK(ObjectMgr, LoadAIThreatToSpellId);
     MAKE_TASK(ObjectMgr, LoadSpellEffectsOverride);

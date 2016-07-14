@@ -400,7 +400,6 @@ class Charter
         inline bool IsFull() { return (SignatureCount == Slots); }
 };
 
-typedef std::map<uint32, std::list<SpellEntry*>* >                  OverrideIdMap;
 typedef std::unordered_map<uint32, Player*>                     PlayerStorageMap;
 typedef std::list<GM_Ticket*>                                       GmTicketList;
 typedef std::map<uint32, InstanceBossInfo*>                         InstanceBossInfoMap;
@@ -459,7 +458,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         // object holders
         GmTicketList GM_TicketList;
-        OverrideIdMap mOverrideIdMap;
         InstanceBossInfoMap* m_InstanceBossInfoMap[NUM_MAPS];
         PlayerCacheMap m_playerCache;
         FastMutex m_playerCacheLock;
@@ -646,7 +644,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         uint32 GetPetSpellCooldown(uint32 SpellId);
         void LoadPetSpellCooldowns();
         Movement::WayPointMap* GetWayPointMap(uint32 spawnid);
-        void LoadSpellOverride();
+
 
         void ResetDailies();
 

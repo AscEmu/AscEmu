@@ -53,6 +53,8 @@ public:
     typedef std::unordered_map<uint32, PlayerCreateInfo> PlayerCreateInfoContainer;
     typedef std::vector<uint32> PlayerXPperLevel;
 
+    typedef std::map<uint32, std::list<SpellEntry*>*> SpellOverrideIdMap;
+
 
     //helper
     ItemPage const* GetItemPage(uint32 entry);
@@ -174,6 +176,8 @@ public:
     void LoadPlayerCreateInfoBarsTable(uint32 player_info_index);
     void LoadPlayerXpToLevelTable();
 
+    void LoadSpellOverride();
+
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
     CreaturePropertiesContainer _creaturePropertiesStore;
@@ -204,6 +208,8 @@ public:
 
     PlayerCreateInfoContainer _playerCreateInfoStore;
     PlayerXPperLevel _playerXPperLevelStore;
+
+    SpellOverrideIdMap _spellOverrideIdStore;
 
 };
 

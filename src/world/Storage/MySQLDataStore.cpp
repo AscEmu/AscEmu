@@ -2502,3 +2502,51 @@ uint32 MySQLDataStore::GetPlayerXPForLevel(uint32 level)
 
     return 0;
 }
+
+void MySQLDataStore::LoadSpellOverride()
+{
+    QueryResult* spelloverride_result = WorldDatabase.Query("SELECT DISTINCT overrideId FROM spelloverride");
+    if (spelloverride_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `spelloverride` is empty!");
+        return;
+    }
+
+    do
+    {
+        Field* fields = spelloverride_result->Fetch();
+        uint32 distinct_override_id = fields[0].GetUInt32();
+
+        QueryResult* spellid_for_overrideid_result = WorldDatabase.Query("SELECT spellId FROM spelloverride WHERE overrideId = %u", distinct_override_id);
+        std::list<SpellEntry*>* list = new std::list < SpellEntry* >;
+        if (spellid_for_overrideid_result != nullptr)
+        {
+            do
+            {
+                Field* fieldsIn = spellid_for_overrideid_result->Fetch();
+                uint32 spellid = fieldsIn[0].GetUInt32();
+                SpellEntry* spell = dbcSpell.LookupEntryForced(spellid);
+                if (spell == nullptr)
+                {
+                    Log.Error("MySQLDataStore", "Table `spelloverride` includes invalid spellId %u for overrideId %u! <skipped>", spellid, distinct_override_id);
+                    continue;
+                }
+
+                list->push_back(spell);
+
+            } while (spellid_for_overrideid_result->NextRow());
+
+            delete spellid_for_overrideid_result;
+        }
+
+        if (list->size() == 0)
+            delete list;
+        else
+            _spellOverrideIdStore.insert(SpellOverrideIdMap::value_type(distinct_override_id, list));
+
+    } while (spelloverride_result->NextRow());
+
+    delete spelloverride_result;
+
+    Log.Success("ObjectMgr", "%u spell overrides loaded.", _spellOverrideIdStore.size());
+}

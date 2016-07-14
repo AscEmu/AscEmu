@@ -6340,8 +6340,8 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
         {
             if (apply)
             {
-                OverrideIdMap::iterator itermap = objmgr.mOverrideIdMap.find(mod->m_miscValue);
-                if (itermap == objmgr.mOverrideIdMap.end())
+                MySQLDataStore::SpellOverrideIdMap::iterator itermap = sMySQLStore._spellOverrideIdStore.find(mod->m_miscValue);
+                if (itermap == sMySQLStore._spellOverrideIdStore.end())
                 {
                     LOG_ERROR("Unable to find override with overrideid: %u", mod->m_miscValue);
                     break;
@@ -6392,7 +6392,7 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
             }
             else
             {
-                OverrideIdMap::iterator itermap = objmgr.mOverrideIdMap.find(mod->m_miscValue);
+                MySQLDataStore::SpellOverrideIdMap::iterator itermap = sMySQLStore._spellOverrideIdStore.find(mod->m_miscValue);
                 SpellOverrideMap::iterator itr = plr->mSpellOverrideMap.begin(), itr2;
                 while (itr != plr->mSpellOverrideMap.end())
                 {
