@@ -193,15 +193,15 @@ bool ChatHandler::HandleStartCommand(const char* args, WorldSession* m_session)
         race = "his";
     }
     // find the first matching one
-    PlayerCreateInfo* info = NULL;
+    PlayerCreateInfo const* info = nullptr;
     for (uint8 i = 1; i <= 11; i++)
     {
-        info = objmgr.GetPlayerCreateInfo((raceid ? raceid : i), (classid ? classid : i));
-        if (info != NULL)
+        info = sMySQLStore.GetPlayerCreateInfo((raceid ? raceid : i), (classid ? classid : i));
+        if (info != nullptr)
             break;
     }
 
-    if (info == NULL)
+    if (info == nullptr)
     {
         RedSystemMessage(m_session, "Internal error: Could not find create info for race %u and class %u.", raceid, classid);
         return false;

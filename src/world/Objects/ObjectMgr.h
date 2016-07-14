@@ -436,7 +436,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::unordered_map<uint32, Group*>                      GroupMap;
 
         // HashMap typedef's
-        typedef std::unordered_map<uint32, PlayerCreateInfo*>           PlayerCreateInfoMap;
         typedef std::unordered_map<uint32, Guild*>                      GuildMap;
         typedef std::unordered_map<uint32, DBC::Structures::SkillLineAbilityEntry const*>             SLMap;
         typedef std::unordered_map<uint32, std::vector<CreatureItem>*>  VendorMap;
@@ -510,7 +509,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         PlayerInfo* GetPlayerInfoByName(const char* name);
         void RenamePlayerInfo(PlayerInfo* pn, const char* oldname, const char* newname);
         void DeletePlayerInfo(uint32 guid);
-        PlayerCreateInfo* GetPlayerCreateInfo(uint8 race, uint8 class_) const;
 
         // Guild
         void AddGuild(Guild* pGuild);
@@ -810,9 +808,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         // Group List
         RWLock m_groupLock;
         GroupMap m_groups;
-
-        /// Map of all starting infos needed for player creation
-        PlayerCreateInfoMap mPlayerCreateInfo;
 
         /// DK: Map of all Guild's
         GuildMap mGuild;

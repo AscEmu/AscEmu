@@ -780,8 +780,8 @@ bool Player::Create(WorldPacket& data)
     data >> facialHair;
     data >> outfitId;
 
-    info = objmgr.GetPlayerCreateInfo(race, class_);
-    if (!info)
+    info = sMySQLStore.GetPlayerCreateInfo(race, class_);
+    if (info == nullptr)
     {
         // info not found... disconnect
         //sCheatLog.writefromsession(m_session, "tried to create invalid player with race %u and class %u", race, class_);
@@ -948,7 +948,7 @@ bool Player::Create(WorldPacket& data)
     m_FirstLogin = true;
 
 
-    for (std::list<CreateInfo_SkillStruct>::iterator ss = info->skills.begin(); ss != info->skills.end(); ++ss)
+    for (std::list<CreateInfo_SkillStruct>::const_iterator ss = info->skills.begin(); ss != info->skills.end(); ++ss)
     {
         auto skill_line = sSkillLineStore.LookupEntry(ss->skillid);
         if (skill_line == nullptr)
@@ -965,12 +965,12 @@ bool Player::Create(WorldPacket& data)
     _InitialReputation();
 
     // Add actionbars
-    for (std::list<CreateInfo_ActionBarStruct>::iterator itr = info->actionbars.begin(); itr != info->actionbars.end(); ++itr)
+    for (std::list<CreateInfo_ActionBarStruct>::const_iterator itr = info->actionbars.begin(); itr != info->actionbars.end(); ++itr)
     {
         setAction(static_cast<uint8>(itr->button), static_cast<uint16>(itr->action), static_cast<uint8>(itr->type), static_cast<uint8>(itr->misc));
     }
 
-    for (std::list<CreateInfo_ItemStruct>::iterator is = info->items.begin(); is != info->items.end(); ++is)
+    for (std::list<CreateInfo_ItemStruct>::const_iterator is = info->items.begin(); is != info->items.end(); ++is)
     {
         if ((*is).protoid != 0)
         {
@@ -2932,8 +2932,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     SetPowerType(static_cast<uint8>(myClass->power_type));
 
     // obtain player create info
-    info = objmgr.GetPlayerCreateInfo(getRace(), getClass());
-    if (!info)
+    info = sMySQLStore.GetPlayerCreateInfo(getRace(), getClass());
+    if (info == nullptr)
     {
         LOG_ERROR("player guid %u has no playerCreateInfo!", (unsigned int)GetLowGUID());
         RemovePendingPlayer();
@@ -3000,7 +3000,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     if (m_skills.empty())
     {
         /* no skills - reset to defaults */
-        for (std::list<CreateInfo_SkillStruct>::iterator ss = info->skills.begin(); ss != info->skills.end(); ++ss)
+        for (std::list<CreateInfo_SkillStruct>::const_iterator ss = info->skills.begin(); ss != info->skills.end(); ++ss)
         {
             if (ss->skillid && ss->currentval && ss->maxval && !::GetSpellForLanguage(ss->skillid))
                 _AddSkillLine(ss->skillid, ss->currentval, ss->maxval);
@@ -6518,7 +6518,7 @@ void Player::AreaExploredOrEventHappens(uint32 questId)
 
 void Player::Reset_Spells()
 {
-    PlayerCreateInfo* info = objmgr.GetPlayerCreateInfo(getRace(), getClass());
+    PlayerCreateInfo const* info = sMySQLStore.GetPlayerCreateInfo(getRace(), getClass());
     ARCEMU_ASSERT(info != NULL);
 
     std::list<uint32> spelllist;
@@ -10546,7 +10546,7 @@ void Player::_AddLanguages(bool All)
     }
     else
     {
-        for (std::list<CreateInfo_SkillStruct>::iterator itr = info->skills.begin(); itr != info->skills.end(); ++itr)
+        for (std::list<CreateInfo_SkillStruct>::const_iterator itr = info->skills.begin(); itr != info->skills.end(); ++itr)
         {
             auto skill_line = sSkillLineStore.LookupEntry(itr->skillid);
             if (skill_line != nullptr)
@@ -12087,8 +12087,8 @@ void Player::SendTriggerMovie(uint32 movieID)
 uint32 Player::GetInitialFactionId()
 {
 
-    PlayerCreateInfo* pci = objmgr.GetPlayerCreateInfo(getRace(), getClass());
-    if (pci)
+    PlayerCreateInfo const* pci = sMySQLStore.GetPlayerCreateInfo(getRace(), getClass());
+    if (pci != nullptr)
         return pci->factiontemplate;
     else
         return 35;

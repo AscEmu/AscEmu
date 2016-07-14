@@ -918,10 +918,11 @@ bool ChatHandler::HandleResetSkillsCommand(const char* args, WorldSession* m_ses
     plr->_RemoveAllSkills();
 
     // Load skills from create info.
-    PlayerCreateInfo* info = objmgr.GetPlayerCreateInfo(plr->getRace(), plr->getClass());
-    if (!info) return true;
+    PlayerCreateInfo const* info = sMySQLStore.GetPlayerCreateInfo(plr->getRace(), plr->getClass());
+    if (info == nullptr)
+        return true;
 
-    for (std::list<CreateInfo_SkillStruct>::iterator ss = info->skills.begin(); ss != info->skills.end(); ++ss)
+    for (std::list<CreateInfo_SkillStruct>::const_iterator ss = info->skills.begin(); ss != info->skills.end(); ++ss)
     {
         auto skill_line = sSkillLineStore.LookupEntry(ss->skillid);
         if (skill_line == nullptr)

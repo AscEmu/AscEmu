@@ -474,6 +474,12 @@ bool World::SetInitialWorldSettings()
     sMySQLStore.LoadItemSetLinkedSetBonusTable();
     sMySQLStore.LoadCreatureInitialEquipmentTable();
 
+    sMySQLStore.LoadPlayerCreateInfoTable();
+    sMySQLStore.LoadPlayerCreateInfoSkillsTable();
+    sMySQLStore.LoadPlayerCreateInfoSpellsTable();
+    sMySQLStore.LoadPlayerCreateInfoItemsTable();
+
+
 #define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr)))
     // Fill the task list with jobs to do.
     TaskList tl;

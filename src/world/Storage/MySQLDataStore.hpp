@@ -50,6 +50,8 @@ public:
 
     typedef std::unordered_map<int32, ItemSetLinkedItemSetBonus> ItemSetDefinedSetBonusContainer;
 
+    typedef std::unordered_map<uint32, PlayerCreateInfo> PlayerCreateInfoContainer;
+
 
     //helper
     ItemPage const* GetItemPage(uint32 entry);
@@ -122,6 +124,8 @@ public:
 
     uint32 GetItemSetLinkedBonus(int32 itemset);
 
+    PlayerCreateInfo const* GetPlayerCreateInfo(uint8 player_race, uint8 player_class);
+
     //Config
     void LoadAdditionalTableConfig();
 
@@ -160,6 +164,13 @@ public:
     void LoadItemSetLinkedSetBonusTable();
     void LoadCreatureInitialEquipmentTable();
 
+    //player create info
+    void LoadPlayerCreateInfoTable();
+    void LoadPlayerCreateInfoSkillsTable();
+    void LoadPlayerCreateInfoSpellsTable();
+    void LoadPlayerCreateInfoItemsTable();
+    void LoadPlayerCreateInfoBarsTable(uint32 player_info_index);
+
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
     CreaturePropertiesContainer _creaturePropertiesStore;
@@ -187,6 +198,8 @@ public:
     PointOfInterestContainer _pointOfInterestStore;
 
     ItemSetDefinedSetBonusContainer _definedItemSetBonusStore;
+
+    PlayerCreateInfoContainer _playerCreateInfoStore;
 
 };
 

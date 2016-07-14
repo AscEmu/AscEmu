@@ -1782,7 +1782,7 @@ class SERVER_DECL Player : public Unit
         /////////////////////////////////////////////////////////////////////////////////////////
         // Player Class systems, info and misc things
         /////////////////////////////////////////////////////////////////////////////////////////
-        PlayerCreateInfo* info;
+        PlayerCreateInfo const* info;
         uint32 m_AttackMsgTimer;        /// "too far away" and "wrong facing" timer
         bool m_attacking;
         std::string m_name;             /// max 21 character name
