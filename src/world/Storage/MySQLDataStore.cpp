@@ -2449,3 +2449,56 @@ PlayerCreateInfo const* MySQLDataStore::GetPlayerCreateInfo(uint8 player_race, u
     }
     return nullptr;
 }
+
+
+void MySQLDataStore::LoadPlayerXpToLevelTable()
+{
+    uint32 start_time = getMSTime();
+
+    _playerXPperLevelStore.clear();
+    _playerXPperLevelStore.resize(sWorld.m_levelCap);
+
+    for (uint8 level = 0; level < sWorld.m_levelCap; ++level)
+        _playerXPperLevelStore[level] = 0;
+
+    QueryResult* player_xp_to_level_result = WorldDatabase.Query("SELECT player_lvl, next_lvl_req_xp FROM player_xp_for_level");
+    if (player_xp_to_level_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `player_xp_for_level` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `playercreateinfo_bars` has %u columns", player_xp_to_level_result->GetFieldCount());
+
+    uint32 player_xp_to_level_count = 0;
+    do
+    {
+        Field* fields = player_xp_to_level_result->Fetch();
+        uint32 current_level = fields[0].GetUInt8();
+        uint32 current_xp = fields[1].GetUInt32();
+
+        if (current_level >= sWorld.m_levelCap)
+        {
+            Log.Error("MySQLDataStore", "Table `player_xp_for_level` includes invalid xp definitions for level %u which is higher than the defined levelcap in your config file! <skipped>", current_level);
+            continue;
+        }
+
+        _playerXPperLevelStore[current_level] = current_xp;
+
+        ++player_xp_to_level_count;
+
+    } while (player_xp_to_level_result->NextRow());
+
+    delete player_xp_to_level_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `player_xp_for_level` table in %u ms!", player_xp_to_level_count, getMSTime() - start_time);
+
+}
+
+uint32 MySQLDataStore::GetPlayerXPForLevel(uint32 level)
+{
+    if (level < _playerXPperLevelStore.size())
+        return _playerXPperLevelStore[level];
+
+    return 0;
+}

@@ -478,6 +478,7 @@ bool World::SetInitialWorldSettings()
     sMySQLStore.LoadPlayerCreateInfoSkillsTable();
     sMySQLStore.LoadPlayerCreateInfoSpellsTable();
     sMySQLStore.LoadPlayerCreateInfoItemsTable();
+    sMySQLStore.LoadPlayerXpToLevelTable();
 
 
 #define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr)))

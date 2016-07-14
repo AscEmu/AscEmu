@@ -8481,7 +8481,7 @@ void Unit::setLevel(uint32 level)
 {
     SetUInt32Value(UNIT_FIELD_LEVEL, level);
     if (IsPlayer())
-        static_cast< Player* >(this)->SetNextLevelXp(objmgr.GetXPToLevel(level));
+        static_cast< Player* >(this)->SetNextLevelXp(sMySQLStore.GetPlayerXPForLevel(level));
 }
 
 void Unit::UpdateAuraForGroup(uint8 slot)

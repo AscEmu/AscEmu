@@ -1015,7 +1015,7 @@ uint32 Pet::GetNextLevelXP(uint32 level)
 {
     // Pets need only 5% of xp to level up compared to players
     uint32 nextLvlXP = 0;
-    nextLvlXP = objmgr.GetXPToLevel(level);
+    nextLvlXP = sMySQLStore.GetPlayerXPForLevel(level);
     return nextLvlXP / 20;
 }
 

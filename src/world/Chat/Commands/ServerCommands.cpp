@@ -343,7 +343,7 @@ bool ChatHandler::HandleReloadNpcTextCommand(const char* /*args*/, WorldSession*
 bool ChatHandler::HandleReloadPlayerXpForLevelCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    objmgr.LoadXpToLevelTable();
+    sMySQLStore.LoadPlayerXpToLevelTable();
     GreenSystemMessage(m_session, "WorldDB 'player_xp_for_level' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

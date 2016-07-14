@@ -51,6 +51,7 @@ public:
     typedef std::unordered_map<int32, ItemSetLinkedItemSetBonus> ItemSetDefinedSetBonusContainer;
 
     typedef std::unordered_map<uint32, PlayerCreateInfo> PlayerCreateInfoContainer;
+    typedef std::vector<uint32> PlayerXPperLevel;
 
 
     //helper
@@ -125,6 +126,7 @@ public:
     uint32 GetItemSetLinkedBonus(int32 itemset);
 
     PlayerCreateInfo const* GetPlayerCreateInfo(uint8 player_race, uint8 player_class);
+    uint32 GetPlayerXPForLevel(uint32 level);
 
     //Config
     void LoadAdditionalTableConfig();
@@ -170,6 +172,7 @@ public:
     void LoadPlayerCreateInfoSpellsTable();
     void LoadPlayerCreateInfoItemsTable();
     void LoadPlayerCreateInfoBarsTable(uint32 player_info_index);
+    void LoadPlayerXpToLevelTable();
 
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
@@ -200,6 +203,7 @@ public:
     ItemSetDefinedSetBonusContainer _definedItemSetBonusStore;
 
     PlayerCreateInfoContainer _playerCreateInfoStore;
+    PlayerXPperLevel _playerXPperLevelStore;
 
 };
 

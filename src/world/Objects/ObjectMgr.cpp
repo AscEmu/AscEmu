@@ -538,7 +538,6 @@ void ObjectMgr::LoadCompletedAchievements()
 
 void ObjectMgr::LoadPlayerCreateInfo()
 {
-    LoadXpToLevelTable();
     GenerateLevelUpInfo();
 }
 
@@ -1979,40 +1978,6 @@ void ObjectMgr::GenerateLevelUpInfo()
         }
     }
     Log.Notice("ObjectMgr", "%u level up information generated.", mLevelInfo.size());
-}
-
-void ObjectMgr::LoadXpToLevelTable()
-{
-    _playerXPperLevel.clear(); //For reloading
-    _playerXPperLevel.resize(sWorld.m_levelCap);
-
-    for (uint8 level = 0; level < sWorld.m_levelCap; ++level)
-        _playerXPperLevel[level] = 0;
-
-    QueryResult* result = WorldDatabase.Query("SELECT player_lvl, next_lvl_req_xp FROM player_xp_for_level");
-    if (result)
-    {
-        do
-        {
-            Field* fields = result->Fetch();
-            uint32 current_level = fields[0].GetUInt8();
-            uint32 current_xp = fields[1].GetUInt32();
-
-            if (current_level >= sWorld.m_levelCap)
-                continue;
-
-            _playerXPperLevel[current_level] = current_xp;
-        }
-        while (result->NextRow());
-        delete result;
-    }
-}
-
-uint32 ObjectMgr::GetXPToLevel(uint32 level)
-{
-    if (level < _playerXPperLevel.size())
-        return _playerXPperLevel[level];
-    return 0;
 }
 
 LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)

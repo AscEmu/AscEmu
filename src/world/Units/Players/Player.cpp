@@ -1641,7 +1641,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
         li = objmgr.GetLevelInfo(getRace(), getClass(), level);
         if (li == NULL) return;
         newxp -= nextlevelxp;
-        nextlevelxp = objmgr.GetXPToLevel(level);
+        nextlevelxp = sMySQLStore.GetPlayerXPForLevel(level);
         levelup = true;
 
         if (level > 9)
