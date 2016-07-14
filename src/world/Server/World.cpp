@@ -491,7 +491,7 @@ bool World::SetInitialWorldSettings()
     // storage stuff has to be loaded first
     tl.wait();
 
-    MAKE_TASK(ObjectMgr, LoadPlayerCreateInfo);
+    MAKE_TASK(ObjectMgr, GenerateLevelUpInfo);
     MAKE_TASK(ObjectMgr, LoadPlayersInfo);
     tl.wait();
 

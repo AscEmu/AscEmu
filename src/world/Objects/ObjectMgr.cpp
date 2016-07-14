@@ -536,10 +536,6 @@ void ObjectMgr::LoadCompletedAchievements()
 }
 #endif
 
-void ObjectMgr::LoadPlayerCreateInfo()
-{
-    GenerateLevelUpInfo();
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // DK:LoadGuilds()
@@ -2264,44 +2260,6 @@ Pet* ObjectMgr::CreatePet(uint32 entry)
     guid = ++m_hiPetGuid;
     return new Pet(Arcemu::Util::MAKE_PET_GUID(entry, guid));
 }
-
-// This is a cataclysm feature
-/*void ObjectMgr::CreateCharCreationPet(uint32 entry, uint32 ownerGUID)
-{
-	string name;
-	if (entry == 3122)
-		name = "Raptor";
-	else
-		name = "Wolf";
-
-	std::stringstream ss;
-
-	ss.rdbuf()->str("");
-
-	ss << "INSERT INTO playerpets VALUES('"
-		<< ownerGUID << "','"
-		<< 1 << "','"
-		<< name << "','"
-		<< entry << "','"
-		<< 0 << "','"
-		<< 11 << "','"
-		<< 1 << "','"
-		<< "117440514 0,117440513 0,117440512 0,0 49408,0 49408,0 49408,0 49408,100663298 0,100663297 0,100663296 0," << "','"
-		<< 500 << "','"
-		<< 0 << "','"
-		<< 0 << "','"
-		<< 883 << "','"
-		<< 1 << "','"
-		<< 1 << "','"
-		<< 1 << "','"
-		<< 100 << "','"
-		<< 310 << "','"
-		<< 8308733 << "','"
-		<< 1 << "','"
-		<< 1 << "')";
-
-	CharacterDatabase.Execute(ss.str().c_str());
-}*/
 
 Player* ObjectMgr::CreatePlayer(uint8 _class)
 {

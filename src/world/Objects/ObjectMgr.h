@@ -549,8 +549,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void SetVendorList(uint32 Entry, std::vector<CreatureItem>* list_);
 
         Pet* CreatePet(uint32 entry);
-        // This is a cataclysm feature
-        //void ObjectMgr::CreateCharCreationPet(uint32 entry, uint32 ownerGUID);
 
         uint32 GenerateArenaTeamId();
 
@@ -581,7 +579,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 #endif
         void LoadAreaTrigger();
         void LoadPlayersInfo();
-        void LoadPlayerCreateInfo();
+
         void LoadGuilds();
         Corpse* LoadCorpse(uint32 guid);
         void LoadCorpses(MapMgr* mgr);
