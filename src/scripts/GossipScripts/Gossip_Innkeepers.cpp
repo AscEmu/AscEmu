@@ -40,7 +40,7 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
         return;
 
     uint32 TextID = 820;
-    uint32 Text = objmgr.GetGossipTextForNpc(pCreature->GetEntry());
+    uint32 Text = sMySQLStore.GetGossipTextIdForNpc(pCreature->GetEntry());
     if (Text != 0)
     {
         NpcText const* text = sMySQLStore.GetNpcText(Text);

@@ -480,7 +480,9 @@ bool World::SetInitialWorldSettings()
     sMySQLStore.LoadPlayerCreateInfoItemsTable();
     sMySQLStore.LoadPlayerXpToLevelTable();
 
-    sMySQLStore.LoadSpellOverride();
+    sMySQLStore.LoadSpellOverrideTable();
+
+    sMySQLStore.LoadNpcGossipTextIdTable();
 
 
 #define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr)))

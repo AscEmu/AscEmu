@@ -446,7 +446,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         // Map typedef's
         typedef std::map<uint32, LevelInfo*>                            LevelMap;
         typedef std::map<std::pair<uint32, uint32>, LevelMap*>          LevelInfoMap;
-        typedef std::map<uint32, uint32>                                NpcToGossipTextMap;
+        
         typedef std::map<uint32, std::set<SpellEntry*> >                PetDefaultSpellMap;
         typedef std::map<uint32, uint32>                                PetSpellCooldownMap;
         typedef std::multimap <uint32, uint32>                          BCEntryStorage;
@@ -525,8 +525,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void AddCorpse(Corpse*);
         void RemoveCorpse(Corpse*);
         Corpse* GetCorpse(uint32 corpseguid);
-
-        uint32 GetGossipTextForNpc(uint32 ID);
 
         // Gm Tickets
         void AddGMTicket(GM_Ticket* ticket, bool startup = false);
@@ -622,8 +620,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         TransporterSet m_Transporters;
         TransporterMap m_TransportersByMap;
         TransporterMap m_TransportersByInstanceIdMap;
-
-        void ProcessGameobjectQuests();
 
         void LoadTrainers();
         Trainer* GetTrainer(uint32 Entry);
@@ -809,9 +805,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         /// Map of all vendor goods
         VendorMap mVendors;
-
-        /// Maps for Gossip stuff
-        NpcToGossipTextMap mNpcToGossipText;
 
         SLMap mSpellSkills;
 

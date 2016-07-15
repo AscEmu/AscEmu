@@ -1021,25 +1021,6 @@ uint32 ObjectMgr::GenerateLowGuid(uint32 guidhigh)
     return ret;
 }
 
-void ObjectMgr::ProcessGameobjectQuests()
-{
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM npc_gossip_textid");
-    if (result)
-    {
-        do
-        {
-            uint32 entry = result->Fetch()[0].GetUInt32();
-            uint32 text = result->Fetch()[1].GetUInt32();
-
-            mNpcToGossipText[entry] = text;
-
-        }
-        while (result->NextRow());
-        delete result;
-    }
-    Log.Success("ObjectMgr", "%u NPC Gossip TextIds loaded.", mNpcToGossipText.size());
-}
-
 Player* ObjectMgr::GetPlayer(const char* name, bool caseSensitive)
 {
     Player* rv = NULL;
@@ -1566,11 +1547,6 @@ void ObjectMgr::CreateGossipMenuForPlayer(GossipMenu** Location, uint64 Guid, ui
 
     Plr->CurrentGossipMenu = Menu;
     *Location = Menu;
-}
-
-uint32 ObjectMgr::GetGossipTextForNpc(uint32 ID)
-{
-    return mNpcToGossipText[ID];
 }
 
 void ObjectMgr::LoadTrainers()

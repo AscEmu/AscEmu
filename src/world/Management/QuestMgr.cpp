@@ -2155,7 +2155,7 @@ void QuestMgr::LoadExtraQuestStuff()
         while (pResult->NextRow());
         delete pResult;
     }
-    objmgr.ProcessGameobjectQuests();
+    //objmgr.ProcessGameobjectQuests();
 
     //load item quest associations
     uint32 item;

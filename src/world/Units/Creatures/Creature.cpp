@@ -1934,7 +1934,7 @@ void Creature::SetGuardWaypoints()
 
 uint32 Creature::GetNpcTextId()
 {
-    return objmgr.GetGossipTextForNpc(this->GetEntry());
+    return sMySQLStore.GetGossipTextIdForNpc(this->GetEntry());
 }
 
 float Creature::GetBaseParry()

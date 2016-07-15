@@ -2503,7 +2503,7 @@ uint32 MySQLDataStore::GetPlayerXPForLevel(uint32 level)
     return 0;
 }
 
-void MySQLDataStore::LoadSpellOverride()
+void MySQLDataStore::LoadSpellOverrideTable()
 {
     QueryResult* spelloverride_result = WorldDatabase.Query("SELECT DISTINCT overrideId FROM spelloverride");
     if (spelloverride_result == nullptr)
@@ -2549,4 +2549,47 @@ void MySQLDataStore::LoadSpellOverride()
     delete spelloverride_result;
 
     Log.Success("ObjectMgr", "%u spell overrides loaded.", _spellOverrideIdStore.size());
+}
+
+void MySQLDataStore::LoadNpcGossipTextIdTable()
+{
+    uint32 start_time = getMSTime();
+    //                                                    0         1
+    QueryResult* npc_gossip_textid_result = WorldDatabase.Query("SELECT creatureid, textid FROM npc_gossip_textid");
+    if (npc_gossip_textid_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `npc_gossip_textid` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `npc_gossip_textid` has %u columns", npc_gossip_textid_result->GetFieldCount());
+    
+    uint32 npc_gossip_textid_count = 0;
+    do
+    {
+        Field* fields = npc_gossip_textid_result->Fetch();
+        uint32 entry = fields[0].GetUInt32();
+        auto creature_properties = sMySQLStore.GetCreatureProperties(entry);
+        if (creature_properties == nullptr)
+        {
+            Log.Error("MySQLDataStore", "Table `npc_gossip_textid` includes invalid creatureid %u! <skipped>", entry);
+            continue;
+        }
+
+        uint32 text = fields[1].GetUInt32();
+
+        _npcGossipTextIdStore[entry] = text;
+
+        ++npc_gossip_textid_count;
+
+    } while (npc_gossip_textid_result->NextRow());
+
+    delete npc_gossip_textid_result;
+    
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `npc_gossip_textid` table in %u ms!", npc_gossip_textid_count, getMSTime() - start_time);
+}
+
+uint32 MySQLDataStore::GetGossipTextIdForNpc(uint32 entry)
+{
+    return _npcGossipTextIdStore[entry];
 }

@@ -55,6 +55,8 @@ public:
 
     typedef std::map<uint32, std::list<SpellEntry*>*> SpellOverrideIdMap;
 
+    typedef std::map<uint32, uint32> NpcGossipTextIdMap;
+
 
     //helper
     ItemPage const* GetItemPage(uint32 entry);
@@ -130,6 +132,8 @@ public:
     PlayerCreateInfo const* GetPlayerCreateInfo(uint8 player_race, uint8 player_class);
     uint32 GetPlayerXPForLevel(uint32 level);
 
+    uint32 GetGossipTextIdForNpc(uint32 entry);
+
     //Config
     void LoadAdditionalTableConfig();
 
@@ -176,7 +180,9 @@ public:
     void LoadPlayerCreateInfoBarsTable(uint32 player_info_index);
     void LoadPlayerXpToLevelTable();
 
-    void LoadSpellOverride();
+    void LoadSpellOverrideTable();
+
+    void LoadNpcGossipTextIdTable();
 
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
@@ -210,6 +216,8 @@ public:
     PlayerXPperLevel _playerXPperLevelStore;
 
     SpellOverrideIdMap _spellOverrideIdStore;
+
+    NpcGossipTextIdMap _npcGossipTextIdStore;
 
 };
 
