@@ -360,9 +360,9 @@ ArenaTeamMember* ArenaTeam::GetMemberByGuid(uint32 guid)
 void WorldSession::HandleArenaTeamRosterOpcode(WorldPacket& recv_data)
 {
     uint32 teamId;
-    ArenaTeam* team;
     recv_data >> teamId;
-    team = objmgr.GetArenaTeamById(teamId);
+
+    ArenaTeam* team = objmgr.GetArenaTeamById(teamId);
     if (team)
     {
         //slot = TeamCountToId[team->m_type];
@@ -374,12 +374,11 @@ void WorldSession::HandleArenaTeamRosterOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleArenaTeamQueryOpcode(WorldPacket& recv_data)
 {
-    ArenaTeam* team;
     uint32 team_id;
     recv_data >> team_id;
 
-    team = objmgr.GetArenaTeamById(team_id);
-    if (team != NULL)
+    ArenaTeam* team = objmgr.GetArenaTeamById(team_id);
+    if (team != nullptr)
     {
         WorldPacket data(1000);
         team->Query(data);
@@ -401,7 +400,7 @@ void WorldSession::HandleArenaTeamAddMemberOpcode(WorldPacket& recv_data)
     recv_data >> player_name;
 
     ArenaTeam* pTeam = objmgr.GetArenaTeamById(teamId);
-    if (!pTeam)
+    if (pTeam == nullptr)
         return;
 
     if (!pTeam->HasMember(GetPlayer()->GetLowGUID()))
@@ -411,7 +410,7 @@ void WorldSession::HandleArenaTeamAddMemberOpcode(WorldPacket& recv_data)
     }
 
     Player* plr = objmgr.GetPlayer(player_name.c_str(), false);
-    if (plr == NULL)
+    if (plr == nullptr)
     {
         SystemMessage("Player `%s` is non-existent or not online.", player_name.c_str());
         return;
@@ -457,22 +456,20 @@ void WorldSession::HandleArenaTeamRemoveMemberOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    ArenaTeam* team;
-    uint8 slot;
     uint32 teamId;
     std::string name;
-    PlayerInfo* inf;
+
     recv_data >> teamId;
     recv_data >> name;
 
-    team = objmgr.GetArenaTeamById(teamId);
-    if (!team)
+    ArenaTeam* team = objmgr.GetArenaTeamById(teamId);
+    if (team == nullptr)
     {
         GetPlayer()->SoftDisconnect();
         return;
     }
 
-    slot = static_cast<uint8>(team->m_type);
+    uint8 slot = static_cast<uint8>(team->m_type);
 
     if ((team = _player->m_arenaTeams[slot]) == NULL)
     {
@@ -486,7 +483,8 @@ void WorldSession::HandleArenaTeamRemoveMemberOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if ((inf = objmgr.GetPlayerInfoByName(name.c_str())) == NULL)
+    PlayerInfo* inf = objmgr.GetPlayerInfoByName(name.c_str());
+    if (inf == nullptr)
     {
         SystemMessage("That player cannot be found.");
         return;
@@ -514,17 +512,14 @@ void WorldSession::HandleArenaTeamInviteAcceptOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    ArenaTeam* team;
-
     if (_player->m_arenateaminviteguid == 0)
     {
         SystemMessage("You have not been invited into another arena team.");
         return;
     }
 
-    team = objmgr.GetArenaTeamById(_player->m_arenateaminviteguid);
-    _player->m_arenateaminviteguid = 0;
-    if (team == 0)
+    ArenaTeam* team = objmgr.GetArenaTeamById(_player->m_arenateaminviteguid);
+    if (team == nullptr)
     {
         SystemMessage("That arena team no longer exists.");
         return;
@@ -561,20 +556,18 @@ void WorldSession::HandleArenaTeamInviteDenyOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    ArenaTeam* team;
     if (_player->m_arenateaminviteguid == 0)
     {
         SystemMessage("You were not invited.");
         return;
     }
 
-    team = objmgr.GetArenaTeamById(_player->m_arenateaminviteguid);
-    _player->m_arenateaminviteguid = 0;
-    if (team == NULL)
+    ArenaTeam* team = objmgr.GetArenaTeamById(_player->m_arenateaminviteguid);
+    if (team == nullptr)
         return;
 
     Player* plr = objmgr.GetPlayer(team->m_leader);
-    if (plr != NULL)
+    if (plr != nullptr)
         plr->GetSession()->SystemMessage("%s denied your arena team invitation for %s.", _player->GetName(), team->m_name.c_str());
 }
 
@@ -582,13 +575,11 @@ void WorldSession::HandleArenaTeamLeaveOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    ArenaTeam* team;
     uint32 teamId;
     recv_data >> teamId;
 
-    team = objmgr.GetArenaTeamById(teamId);
-
-    if (!team)
+    ArenaTeam* team = objmgr.GetArenaTeamById(teamId);
+    if (team == nullptr)
     {
         GetPlayer()->SoftDisconnect();
         return;
@@ -628,12 +619,11 @@ void WorldSession::HandleArenaTeamDisbandOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    ArenaTeam* team;
     uint32 teamId;
     recv_data >> teamId;
 
-    team = objmgr.GetArenaTeamById(teamId);
-    if (!team)
+    ArenaTeam* team = objmgr.GetArenaTeamById(teamId);
+    if (team == nullptr)
     {
         GetPlayer()->SoftDisconnect();
         return;
@@ -659,21 +649,18 @@ void WorldSession::HandleArenaTeamPromoteOpcode(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
 
     uint32 teamId;
-    uint8 slot;
     std::string name;
-    ArenaTeam* team;
-    PlayerInfo* inf;
     recv_data >> teamId;
     recv_data >> name;
 
-    team = objmgr.GetArenaTeamById(teamId);
-    if (!team)
+    ArenaTeam* team = objmgr.GetArenaTeamById(teamId);
+    if (team == nullptr)
     {
         GetPlayer()->SoftDisconnect();
         return;
     }
 
-    slot = static_cast<uint8>(team->m_type);
+    uint8 slot = static_cast<uint8>(team->m_type);
 
     if (slot >= NUM_ARENA_TEAM_TYPES)
         return;
@@ -690,7 +677,8 @@ void WorldSession::HandleArenaTeamPromoteOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if ((inf = objmgr.GetPlayerInfoByName(name.c_str())) == NULL)
+    PlayerInfo* inf = objmgr.GetPlayerInfoByName(name.c_str());
+    if (inf == nullptr)
     {
         SystemMessage("That player cannot be found.");
         return;

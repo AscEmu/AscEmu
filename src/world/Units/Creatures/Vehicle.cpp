@@ -560,7 +560,7 @@ void Vehicle::InstallAccessories()
         return;
 
     std::vector< VehicleAccessoryEntry* >* v = objmgr.GetVehicleAccessories(creature_entry);
-    if (v == NULL)
+    if (v == nullptr)
         return;
 
     for (std::vector< VehicleAccessoryEntry* >::iterator itr = v->begin(); itr != v->end(); ++itr)

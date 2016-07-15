@@ -387,7 +387,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
 
     uint32 team = GetTeam();
     ReputationModifier* modifier = objmgr.GetReputationModifier(pUnit->GetEntry(), pUnit->m_factionDBC->ID);
-    if (modifier != 0)
+    if (modifier != nullptr)
     {
         // Apply this data.
         for (std::vector<ReputationMod>::iterator itr = modifier->mods.begin(); itr != modifier->mods.end(); ++itr)

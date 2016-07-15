@@ -11397,12 +11397,12 @@ void Player::Social_AddFriend(const char* name, const char* note)
     PlayerInfo* info = objmgr.GetPlayerInfoByName(name);
     PlayerCache* cache = objmgr.GetPlayerCache(name, false);
 
-    if (info == NULL || (cache != NULL && cache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM)))
+    if (info == nullptr || (cache != nullptr && cache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM)))
     {
         data << uint8(FRIEND_NOT_FOUND);
         m_session->SendPacket(&data);
 
-        if (cache != NULL)
+        if (cache != nullptr)
             cache->DecRef();
         return;
     }
@@ -11413,18 +11413,18 @@ void Player::Social_AddFriend(const char* name, const char* note)
         data << uint8(FRIEND_ENEMY);
         data << uint64(info->guid);
         m_session->SendPacket(&data);
-        if (cache != NULL)
+        if (cache != nullptr)
             cache->DecRef();
         return;
     }
 
     // are we ourselves?
-    if (cache != NULL && cache->GetUInt32Value(CACHE_PLAYER_LOWGUID) == GetLowGUID())
+    if (cache != nullptr && cache->GetUInt32Value(CACHE_PLAYER_LOWGUID) == GetLowGUID())
     {
         data << uint8(FRIEND_SELF);
         data << GetGUID();
         m_session->SendPacket(&data);
-        if (cache != NULL)
+        if (cache != nullptr)
             cache->DecRef();
         return;
     }
@@ -11434,12 +11434,12 @@ void Player::Social_AddFriend(const char* name, const char* note)
         data << uint8(FRIEND_ALREADY);
         data << uint64(info->guid);
         m_session->SendPacket(&data);
-        if (cache != NULL)
+        if (cache != nullptr)
             cache->DecRef();
         return;
     }
 
-    if (cache != NULL)   //hes online if he has a cache
+    if (cache != nullptr)   //hes online if he has a cache
     {
         data << uint8(FRIEND_ADDED_ONLINE);
         data << uint64(cache->GetUInt32Value(CACHE_PLAYER_LOWGUID));
@@ -11470,7 +11470,7 @@ void Player::Social_AddFriend(const char* name, const char* note)
     CharacterDatabase.Execute("INSERT INTO social_friends VALUES(%u, %u, \'%s\')",
                               GetLowGUID(), info->guid, note ? CharacterDatabase.EscapeString(std::string(note)).c_str() : "");
 
-    if (cache != NULL)
+    if (cache != nullptr)
         cache->DecRef();
 }
 
@@ -11501,7 +11501,7 @@ void Player::Social_RemoveFriend(uint32 guid)
     data << uint64(guid);
 
     PlayerCache* cache = objmgr.GetPlayerCache((uint32)guid);
-    if (cache != NULL)
+    if (cache != nullptr)
     {
         cache->RemoveValue64(CACHE_SOCIAL_HASFRIENDLIST, GetLowGUID());
         cache->DecRef();
@@ -11611,8 +11611,6 @@ void Player::Social_TellFriendsOnline()
     if (m_cache->GetSize64(CACHE_SOCIAL_HASFRIENDLIST) == 0)
         return;
 
-    PlayerCache* cache;
-
     WorldPacket data(SMSG_FRIEND_STATUS, 22);
     data << uint8(FRIEND_ONLINE);
     data << GetGUID();
@@ -11624,8 +11622,8 @@ void Player::Social_TellFriendsOnline()
     m_cache->AcquireLock64(CACHE_SOCIAL_HASFRIENDLIST);
     for (PlayerCacheMap::iterator itr = m_cache->Begin64(CACHE_SOCIAL_HASFRIENDLIST); itr != m_cache->End64(CACHE_SOCIAL_HASFRIENDLIST); ++itr)
     {
-        cache = objmgr.GetPlayerCache(uint32(itr->first));
-        if (cache != NULL)
+        PlayerCache* cache = objmgr.GetPlayerCache(uint32(itr->first));
+        if (cache != nullptr)
         {
             cache->SendPacket(data);
             cache->DecRef();
@@ -11644,12 +11642,11 @@ void Player::Social_TellFriendsOffline()
     data << GetGUID();
     data << uint8(0);
 
-    PlayerCache* cache;
     m_cache->AcquireLock64(CACHE_SOCIAL_HASFRIENDLIST);
     for (PlayerCacheMap::iterator itr = m_cache->Begin64(CACHE_SOCIAL_HASFRIENDLIST); itr != m_cache->End64(CACHE_SOCIAL_HASFRIENDLIST); ++itr)
     {
-        cache = objmgr.GetPlayerCache(uint32(itr->first));
-        if (cache != NULL)
+        PlayerCache* cache = objmgr.GetPlayerCache(uint32(itr->first));
+        if (cache != nullptr)
         {
             cache->SendPacket(data);
             cache->DecRef();
@@ -11661,13 +11658,10 @@ void Player::Social_TellFriendsOffline()
 void Player::Social_SendFriendList(uint32 flag)
 {
     WorldPacket data(SMSG_CONTACT_LIST, 500);
-    Player* plr;
-    PlayerCache* cache;
-
-
     data << flag;
     data << uint32(m_cache->GetSize64(CACHE_SOCIAL_FRIENDLIST) + m_cache->GetSize64(CACHE_SOCIAL_IGNORELIST));
     m_cache->AcquireLock64(CACHE_SOCIAL_FRIENDLIST);
+
     for (PlayerCacheMap::iterator itr = m_cache->Begin64(CACHE_SOCIAL_FRIENDLIST); itr != m_cache->End64(CACHE_SOCIAL_FRIENDLIST); ++itr)
     {
         // guid
@@ -11689,9 +11683,9 @@ void Player::Social_SendFriendList(uint32 flag)
             data << uint8(0);
 
         // online/offline flag
-        plr = objmgr.GetPlayer((uint32)itr->first);
-        cache = objmgr.GetPlayerCache((uint32)itr->first);
-        if (plr != NULL)
+        Player* plr = objmgr.GetPlayer((uint32)itr->first);
+        PlayerCache* cache = objmgr.GetPlayerCache((uint32)itr->first);
+        if (plr != nullptr)
         {
             data << uint8(1);
             data << plr->GetZoneId();
@@ -11701,7 +11695,7 @@ void Player::Social_SendFriendList(uint32 flag)
         else
             data << uint8(0);
 
-        if (cache != NULL)
+        if (cache != nullptr)
             cache->DecRef();
     }
     m_cache->ReleaseLock64(CACHE_SOCIAL_FRIENDLIST);

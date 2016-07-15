@@ -348,21 +348,19 @@ void WorldSession::HandleInspectArenaStatsOpcode(WorldPacket& recv_data)
     recv_data >> guid;
 
     Player* player = _player->GetMapMgr()->GetPlayer((uint32)guid);
-    if (player == NULL)
+    if (player == nullptr)
     {
         LOG_ERROR("HandleInspectHonorStatsOpcode : guid was null");
         return;
     }
 
-    uint32 id;
-
     for (uint8 i = 0; i < 3; i++)
     {
-        id = player->GetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (i * 7));
+        uint32 id = player->GetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (i * 7));
         if (id > 0)
         {
             ArenaTeam* team = objmgr.GetArenaTeamById(id);
-            if (team != NULL)
+            if (team != nullptr)
             {
                 WorldPacket data(MSG_INSPECT_ARENA_TEAMS, 8 + 1 + 4 * 5);
                 data << player->GetGUID();

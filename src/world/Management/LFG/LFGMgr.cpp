@@ -1608,7 +1608,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
             if (!mapid)
             {
                 AreaTrigger const* at = objmgr.GetMapEntranceTrigger(dungeon->map);
-                if (!at)
+                if (at == nullptr)
                 {
                     Log.Debug("LFGMgr", "TeleportPlayer: Failed to teleport %u: No areatrigger found for map: %u difficulty: %u", player->GetGUID(), dungeon->map, dungeon->difficulty);
                     error = LFG_TELEPORTERROR_INVALID_LOCATION;

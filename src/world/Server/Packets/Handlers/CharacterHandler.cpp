@@ -618,7 +618,7 @@ uint8 WorldSession::DeleteCharacter(uint32 guid)
         for (uint8 i = 0; i < NUM_CHARTER_TYPES; ++i)
         {
             Charter* c = objmgr.GetCharterByGuid(guid, (CharterTypes)i);
-            if (c != NULL)
+            if (c != nullptr)
                 c->RemoveSignature((uint32)guid);
         }
 

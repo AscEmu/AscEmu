@@ -380,7 +380,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             }
 
             PlayerCache* playercache = objmgr.GetPlayerCache(to.c_str(), false);
-            if (playercache == NULL)
+            if (playercache == nullptr)
             {
                 data = new WorldPacket(SMSG_CHAT_PLAYER_NOT_FOUND, to.length() + 1);
                 *data << to;

@@ -2409,35 +2409,20 @@ void Charter::RemoveSignature(uint32 PlayerGuid)
 
 void Charter::Destroy()
 {
-    if (Slots == 0)            // ugly hack because of f*cked memory
-        return;
-
-    //meh remove from objmgr
     objmgr.RemoveCharter(this);
-    // Kill the players with this (in db/offline)
-    CharacterDatabase.Execute("DELETE FROM charters WHERE charterId = %u", CharterId);
-    Player* p;
-#ifdef WIN32
-    __try
-    {
-#endif
-        for (uint32 i = 0; i < Slots; ++i)
-        {
-            if (!Signatures[i])
-                continue;
-            p = objmgr.GetPlayer(Signatures[i]);
-            if (p != NULL)
-                p->m_charters[CharterType] = 0;
-        }
-#ifdef WIN32
-    }
-    __except (EXCEPTION_EXECUTE_HANDLER)
-    {
-        return;
-    }
-#endif
 
-    // click, click, boom!
+    CharacterDatabase.Execute("DELETE FROM charters WHERE charterId = %u", CharterId);
+
+    for (uint32 i = 0; i < Slots; ++i)
+    {
+        if (!Signatures[i])
+            continue;
+
+        Player* p = objmgr.GetPlayer(Signatures[i]);
+        if (p != nullptr)
+            p->m_charters[CharterType] = 0;
+    }
+
     delete this;
 }
 
@@ -2482,7 +2467,7 @@ Charter* ObjectMgr::GetCharterByItemGuid(uint64 guid)
         }
     }
     m_charterLock.ReleaseReadLock();
-    return NULL;
+    return nullptr;
 }
 
 Charter* ObjectMgr::GetCharterByGuid(uint64 playerguid, CharterTypes type)
@@ -2507,31 +2492,30 @@ Charter* ObjectMgr::GetCharterByGuid(uint64 playerguid, CharterTypes type)
         }
     }
     m_charterLock.ReleaseReadLock();
-    return NULL;
+    return nullptr;
 }
 
 Charter* ObjectMgr::GetCharterByName(std::string & charter_name, CharterTypes Type)
 {
-    Charter* rv = nullptr;
     m_charterLock.AcquireReadLock();
     std::unordered_map<uint32, Charter*>::iterator itr = m_charters[Type].begin();
     for (; itr != m_charters[Type].end(); ++itr)
     {
         if (itr->second->GuildName == charter_name)
         {
-            rv = itr->second;
-            break;
+            return itr->second;
         }
     }
 
     m_charterLock.ReleaseReadLock();
-    return rv;
+    return nullptr;
 }
 
 void ObjectMgr::RemoveCharter(Charter* c)
 {
-    if (c == NULL)
+    if (c == nullptr)
         return;
+
     if (c->CharterType >= NUM_CHARTER_TYPES)
     {
         Log.Notice("ObjectMgr", "Charter %u cannot be destroyed as type %u is not a sane type value.", c->CharterId, c->CharterType);
@@ -2595,13 +2579,14 @@ ReputationModifier* ObjectMgr::GetReputationModifier(uint32 entry_id, uint32 fac
         return itr->second;
 
     // no data. fallback to default -5 value.
-    return 0;
+    return nullptr;
 }
 
 void ObjectMgr::LoadMonsterSay()
 {
     QueryResult* result = WorldDatabase.Query("SELECT * FROM npc_monstersay");
-    if (!result) return;
+    if (!result)
+        return;
 
     do
     {
@@ -2703,6 +2688,7 @@ void ObjectMgr::LoadInstanceReputationModifiers()
     }
     while (result->NextRow());
     delete result;
+
     Log.Success("ObjectMgr", "%u instance reputation modifiers loaded.", m_reputation_instance.size());
 }
 
@@ -2760,8 +2746,9 @@ void ObjectMgr::LoadDisabledSpells()
         do
         {
             m_disabled_spells.insert(result->Fetch()[0].GetUInt32());
-        }
-        while (result->NextRow());
+
+        } while (result->NextRow());
+
         delete result;
     }
 
@@ -2843,7 +2830,7 @@ ArenaTeam* ObjectMgr::GetArenaTeamById(uint32 id)
     m_arenaTeamLock.Acquire();
     itr = m_arenaTeams.find(id);
     m_arenaTeamLock.Release();
-    return (itr == m_arenaTeams.end()) ? NULL : itr->second;
+    return (itr == m_arenaTeams.end()) ? nullptr : itr->second;
 }
 
 ArenaTeam* ObjectMgr::GetArenaTeamByName(std::string & name, uint32 Type)
@@ -2858,7 +2845,7 @@ ArenaTeam* ObjectMgr::GetArenaTeamByName(std::string & name, uint32 Type)
         }
     }
     m_arenaTeamLock.Release();
-    return NULL;
+    return nullptr;
 }
 
 void ObjectMgr::RemoveArenaTeam(ArenaTeam* team)
@@ -2996,16 +2983,14 @@ void ObjectMgr::LoadSpellTargetConstraints()
 
     // Let's try to be idiot proof :/
     QueryResult* result = WorldDatabase.Query("SELECT * FROM spelltargetconstraints WHERE SpellID > 0 ORDER BY SpellID");
-
-    if (result != NULL)
+    if (result != nullptr)
     {
         uint32 oldspellid = 0;
         SpellTargetConstraint* stc = nullptr;
-        Field* fields = nullptr;
 
         do
         {
-            fields = result->Fetch();
+            Field* fields = result->Fetch();
 
             if (fields != NULL)
             {
@@ -3034,8 +3019,7 @@ void ObjectMgr::LoadSpellTargetConstraints()
 
                 oldspellid = spellid;
             }
-        }
-        while (result->NextRow());
+        } while (result->NextRow());
     }
 
     delete result;
@@ -3050,7 +3034,7 @@ SpellTargetConstraint* ObjectMgr::GetSpellTargetConstraintForSpell(uint32 spelli
     if (itr != m_spelltargetconstraints.end())
         return itr->second;
     else
-        return NULL;
+        return nullptr;
 }
 
 uint32 ObjectMgr::GenerateArenaTeamId()
@@ -3104,7 +3088,10 @@ void ObjectMgr::AddPlayerCache(uint32 guid, PlayerCache* cache)
         itr->second = cache;
     }
     else
+    {
         m_playerCache.insert(std::make_pair(guid, cache));
+    }
+
     m_playerCacheLock.Release();
 }
 
@@ -3117,6 +3104,7 @@ void ObjectMgr::RemovePlayerCache(uint32 guid)
         itr->second->DecRef();
         m_playerCache.erase(itr);
     }
+
     m_playerCacheLock.Release();
 }
 
@@ -3132,12 +3120,13 @@ PlayerCache* ObjectMgr::GetPlayerCache(uint32 guid)
         return ret;
     }
     m_playerCacheLock.Release();
-    return NULL;
+
+    return nullptr;
 }
 
 PlayerCache* ObjectMgr::GetPlayerCache(const char* name, bool caseSensitive /*= true*/)
 {
-    PlayerCache* ret = NULL;
+    PlayerCache* ret = nullptr;
     m_playerCacheLock.Acquire();
     PlayerCacheMap::iterator itr;
 
@@ -3179,14 +3168,13 @@ PlayerCache* ObjectMgr::GetPlayerCache(const char* name, bool caseSensitive /*= 
 
 void ObjectMgr::LoadVehicleAccessories()
 {
-    QueryResult *result = WorldDatabase.Query("SELECT creature_entry, accessory_entry, seat FROM vehicle_accessories;");
-
-    if (result != NULL)
+    QueryResult* result = WorldDatabase.Query("SELECT creature_entry, accessory_entry, seat FROM vehicle_accessories;");
+    if (result != nullptr)
     {
         do
         {
-            Field *row = result->Fetch();
-            VehicleAccessoryEntry *entry = new VehicleAccessoryEntry();
+            Field* row = result->Fetch();
+            VehicleAccessoryEntry* entry = new VehicleAccessoryEntry();
             uint32 creature_entry = row[0].GetUInt32();
             entry->accessory_entry = row[1].GetUInt32();
             entry->seat = row[2].GetUInt32();
@@ -3204,8 +3192,8 @@ void ObjectMgr::LoadVehicleAccessories()
                 vehicle_accessories.insert(std::make_pair(creature_entry, v));
             }
 
-        }
-        while (result->NextRow());
+        } while (result->NextRow());
+
         delete result;
     }
 }
@@ -3215,38 +3203,35 @@ std::vector< VehicleAccessoryEntry* >* ObjectMgr::GetVehicleAccessories(uint32 c
     std::map< uint32, std::vector< VehicleAccessoryEntry* >* >::iterator itr = vehicle_accessories.find(creature_entry);
 
     if (itr == vehicle_accessories.end())
-        return NULL;
+        return nullptr;
     else
         return itr->second;
 }
 
 void ObjectMgr::LoadWorldStateTemplates()
 {
-    QueryResult *result = WorldDatabase.QueryNA("SELECT DISTINCT map FROM worldstate_templates ORDER BY map;");
-
-    if (result == NULL)
+    QueryResult* result = WorldDatabase.QueryNA("SELECT DISTINCT map FROM worldstate_templates ORDER BY map;");
+    if (result == nullptr)
         return;
 
     do
     {
-        Field *row = result->Fetch();
+        Field* row = result->Fetch();
         uint32 mapid = row[0].GetUInt32();
 
         worldstate_templates.insert(std::make_pair(mapid, new std::multimap< uint32, WorldState >()));
 
-    }
-    while (result->NextRow());
+    } while (result->NextRow());
 
     delete result;
 
     result = WorldDatabase.QueryNA("SELECT map, zone, field, value FROM worldstate_templates;");
-
-    if (result == NULL)
+    if (result == nullptr)
         return;
 
     do
     {
-        Field *row = result->Fetch();
+        Field* row = result->Fetch();
         WorldState ws;
 
         uint32 mapid = row[0].GetUInt32();
@@ -3254,24 +3239,23 @@ void ObjectMgr::LoadWorldStateTemplates()
         ws.field = row[2].GetUInt32();
         ws.value = row[3].GetUInt32();
 
-        std::map< uint32, std::multimap< uint32, WorldState >* >::iterator itr
-            = worldstate_templates.find(mapid);
-
+        std::map< uint32, std::multimap< uint32, WorldState >* >::iterator itr = worldstate_templates.find(mapid);
         if (itr == worldstate_templates.end())
             continue;
 
         itr->second->insert(std::make_pair(zone, ws));
 
-    }
-    while (result->NextRow());
+    } while (result->NextRow());
+
     delete result;
 }
 
-std::multimap< uint32, WorldState >* ObjectMgr::GetWorldStatesForMap(uint32 map) const{
+std::multimap< uint32, WorldState >* ObjectMgr::GetWorldStatesForMap(uint32 map) const
+{
     std::map< uint32, std::multimap< uint32, WorldState >* >::const_iterator itr = worldstate_templates.find(map);
 
     if (itr == worldstate_templates.end())
-        return NULL;
+        return nullptr;
     else
         return itr->second;
 }
@@ -3287,7 +3271,7 @@ AreaTrigger const* ObjectMgr::GetMapEntranceTrigger(uint32 Map) const
                 return &itr->second;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 void ObjectMgr::LoadAreaTrigger()
@@ -3302,7 +3286,6 @@ void ObjectMgr::LoadAreaTrigger()
     }
 
     uint32 count = 0;
-
     do
     {
         Field* fields = result->Fetch();
@@ -3321,14 +3304,14 @@ void ObjectMgr::LoadAreaTrigger()
         at.z = fields[7].GetFloat();
         at.o = fields[8].GetFloat();
 
-        auto const* area_trigger_entry = sAreaTriggerStore.LookupEntry(Trigger_ID);
+        auto area_trigger_entry = sAreaTriggerStore.LookupEntry(Trigger_ID);
         if (!area_trigger_entry)
         {
             Log.Notice("AreaTrigger", "Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", Trigger_ID);
             continue;
         }
 
-        auto const* map_entry = sMapStore.LookupEntry(at.Mapid);
+        auto map_entry = sMapStore.LookupEntry(at.Mapid);
         if (!map_entry)
         {
             Log.Notice("AreaTrigger", "Area trigger (ID:%u) target map (ID: %u) does not exist in `Map.dbc`.", Trigger_ID, at.Mapid);
@@ -3343,8 +3326,9 @@ void ObjectMgr::LoadAreaTrigger()
 
         _areaTriggerStore[Trigger_ID] = at;
         ++count;
-    }
-    while (result->NextRow());
+
+    } while (result->NextRow());
+
     delete result;
 
     Log.Success("AreaTrigger", "Loaded %u area trigger teleport definitions", count);
@@ -3403,7 +3387,9 @@ void ObjectMgr::LoadEventScripts()
 
 
         ++count;
+
     } while (result->NextRow());
+
     delete result;
 
     Log.Success("ObjectMgr", "Loaded event_scripts for %u events...", count);
@@ -3460,7 +3446,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
             case static_cast<uint8>(ScriptCommands::SCRIPT_COMMAND_RESPAWN_GAMEOBJECT):
             {
                 Object* target = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
-                if (target == NULL)
+                if (target == nullptr)
                     return;
 
                 static_cast<GameObject*>(target)->Despawn(1000, itr->second.data_2);
@@ -3471,7 +3457,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
             case static_cast<uint8>(ScriptCommands::SCRIPT_COMMAND_KILL_CREDIT):
             {
                 QuestLogEntry* pQuest = plr->GetQuestLogForEntry(itr->second.data_2);
-                if (pQuest != NULL)
+                if (pQuest != nullptr)
                 {
                     if (pQuest->GetMobCount(itr->second.data_5) < pQuest->GetQuest()->required_mobcount[itr->second.data_5])
                     {
@@ -3494,7 +3480,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                 if ((itr->second.x || itr->second.y || itr->second.z) == 0)
                 {
                     Object* target = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), itr->second.data_1);
-                    if (target == NULL)
+                    if (target == nullptr)
                         return;
 
                     if (static_cast<GameObject*>(target)->GetState() != GO_STATE_OPEN)
@@ -3509,7 +3495,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                 else
                 {
                     Object* target = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(itr->second.x, itr->second.y, itr->second.z, itr->second.data_1);
-                    if (target == NULL)
+                    if (target == nullptr)
                         return;
 
                     if (static_cast<GameObject*>(target)->GetState() != GO_STATE_OPEN)
@@ -3536,7 +3522,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
 void ObjectMgr::LoadProfessionDiscoveries()
 {
     QueryResult* result = WorldDatabase.Query("SELECT * from professiondiscoveries");
-    if (result != NULL)
+    if (result != nullptr)
     {
         do
         {
@@ -3558,29 +3544,25 @@ void ObjectMgr::LoadCreatureAIAgents()
     if (Config.MainConfig.GetBoolDefault("Server", "LoadAIAgents", true))
     {
         QueryResult* result = WorldDatabase.Query("SELECT * FROM ai_agents");
-        CreatureProperties const* cn;
-
-        if (result != NULL)
+        if (result != nullptr)
         {
-            AI_Spell* sp;
-            SpellEntry* spe;
-            uint32 entry;
-
             do
             {
                 Field* fields = result->Fetch();
-                entry = fields[0].GetUInt32();
-                cn = sMySQLStore.GetCreatureProperties(entry);
-                spe = dbcSpell.LookupEntryForced(fields[6].GetUInt32());
-                if (spe == NULL)
+                uint32 entry = fields[0].GetUInt32();
+                CreatureProperties const* cn = sMySQLStore.GetCreatureProperties(entry);
+                SpellEntry* spe = dbcSpell.LookupEntryForced(fields[6].GetUInt32());
+
+                if (spe == nullptr)
                 {
                     Log.Error("AIAgent", "For %u has nonexistent spell %u.", fields[0].GetUInt32(), fields[6].GetUInt32());
                     continue;
                 }
+
                 if (!cn)
                     continue;
 
-                sp = new AI_Spell;
+                AI_Spell* sp = new AI_Spell;
                 sp->entryId = fields[0].GetUInt32();
                 sp->instance_mode = fields[1].GetUInt32();
                 sp->agent = fields[2].GetUInt16();
@@ -3592,7 +3574,8 @@ void ObjectMgr::LoadCreatureAIAgents()
                 int32  targettype = fields[8].GetInt32();
                 if (targettype == -1)
                     sp->spelltargetType = static_cast<uint8>(GetAiTargetType(spe));
-                else sp->spelltargetType = static_cast<uint8>(targettype);
+                else
+                    sp->spelltargetType = static_cast<uint8>(targettype);
 
                 sp->cooldown = fields[9].GetInt32();
                 sp->floatMisc1 = fields[10].GetFloat();
@@ -3606,7 +3589,7 @@ void ObjectMgr::LoadCreatureAIAgents()
                     {
                         LOG_DEBUG("SpellId %u in ai_agent for %u is invalid.", (unsigned int)fields[6].GetUInt32(), (unsigned int)sp->entryId);
                         delete sp;
-                        sp = NULL;
+                        sp = nullptr;
                         continue;
                     }
 
@@ -3615,7 +3598,7 @@ void ObjectMgr::LoadCreatureAIAgents()
                     {
                         LOG_DEBUG("Teaching spell %u in ai_agent for %u", (unsigned int)fields[6].GetUInt32(), (unsigned int)sp->entryId);
                         delete sp;
-                        sp = NULL;
+                        sp = nullptr;
                         continue;
                     }
 
@@ -3639,33 +3622,13 @@ void ObjectMgr::LoadCreatureAIAgents()
                             sp->cooldown = 2000; //huge value that should not loop while adding some timestamp to it
                         else sp->cooldown = cooldown;
                     }
-
-                    /*
-                    //now apply the moron filter
-                    if (sp->procChance== 0)
-                    {
-                    //printf("SpellId %u in ai_agent for %u is invalid.\n", (unsigned int)fields[5].GetUInt32(), (unsigned int)sp->entryId);
-                    delete sp;
-                    sp = NULL;
-                    continue;
-                    }
-                    if (sp->spellType== 0)
-                    {
-                    //right now only these 2 are used
-                    if (IsBeneficSpell(sp->spell))
-                    sp->spellType==STYPE_HEAL;
-                    else sp->spellType==STYPE_BUFF;
-                    }
-                    if (sp->spelltargetType== 0)
-                    sp->spelltargetType = RecommandAISpellTargetType(sp->spell);
-                    */
                 }
 
                 if (sp->agent == AGENT_RANGED)
                 {
                     const_cast<CreatureProperties*>(cn)->m_canRangedAttack = true;
                     delete sp;
-                    sp = NULL;
+                    sp = nullptr;
                 }
                 else if (sp->agent == AGENT_FLEE)
                 {
@@ -3681,15 +3644,16 @@ void ObjectMgr::LoadCreatureAIAgents()
                         const_cast<CreatureProperties*>(cn)->m_fleeDuration = 10000;
 
                     delete sp;
-                    sp = NULL;
+                    sp = nullptr;
                 }
                 else if (sp->agent == AGENT_CALLFORHELP)
                 {
                     const_cast<CreatureProperties*>(cn)->m_canCallForHelp = true;
                     if (sp->floatMisc1)
                         const_cast<CreatureProperties*>(cn)->m_callForHelpHealth = 0.2f;
+
                     delete sp;
-                    sp = NULL;
+                    sp = nullptr;
                 }
                 else
                 {
@@ -3713,15 +3677,15 @@ void ObjectMgr::StoreBroadCastGroupKey()
 
     std::vector<std::string> keyGroup;
     QueryResult* result = WorldDatabase.Query("SELECT DISTINCT percent FROM `worldbroadcast` ORDER BY percent DESC");
-    if (result != NULL)
+    if (result != nullptr)
     {
         do
         {
             Field* f = result->Fetch();
             keyGroup.push_back(std::string(f[0].GetString()));
         } while (result->NextRow());
+
         delete result;
-        result = NULL;
     }
 
     if (keyGroup.empty())
@@ -3738,18 +3702,17 @@ void ObjectMgr::StoreBroadCastGroupKey()
     for (std::vector<std::string>::iterator itr = keyGroup.begin(); itr != keyGroup.end(); ++itr)
     {
         std::string curKey = (*itr);
-        char szSQL[512];
-        memset(szSQL, 0, sizeof(szSQL));
-        sprintf(szSQL, "SELECT entry,percent FROM `worldbroadcast` WHERE percent='%s' ", curKey.c_str());
-        result = WorldDatabase.Query(szSQL);
-        if (result != NULL)
+        QueryResult* percentResult = WorldDatabase.Query("SELECT entry,percent FROM `worldbroadcast` WHERE percent='%s' ", curKey.c_str());
+        if (percentResult != nullptr)
         {
             do
             {
                 Field* f = result->Fetch();
                 m_BCEntryStorage.insert(std::pair<uint32, uint32>(uint32(atoi(curKey.c_str())), f[0].GetUInt32()));
+
             } while (result->NextRow());
-            delete result;
+
+            delete percentResult;
         }
     }
 }

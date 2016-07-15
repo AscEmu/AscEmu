@@ -640,7 +640,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
         }
 
         ArenaTeam* t = objmgr.GetArenaTeamByName(name, arena_type);
-        if (t != NULL)
+        if (t != nullptr)
         {
             sChatHandler.SystemMessage(this, _player->GetSession()->LocalizedWorldSrv(72));
             return;
@@ -733,7 +733,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
 
         Guild* g = objmgr.GetGuildByGuildName(name);
         Charter* c = objmgr.GetCharterByName(name, CHARTER_TYPE_GUILD);
-        if (g != 0 || c != 0)
+        if (g != nullptr || c != nullptr)
         {
             SendNotification(_player->GetSession()->LocalizedWorldSrv(74));
             return;
@@ -746,7 +746,9 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
         }
 
         ItemProperties const* ip = sMySQLStore.GetItemProperties(ITEM_ENTRY_GUILD_CHARTER);
-        ARCEMU_ASSERT(ip != NULL);
+        if (ip == nullptr)
+            return;
+
         SlotResult res = _player->GetItemInterface()->FindFreeInventorySlot(ip);
         if (res.Result == 0)
         {
@@ -823,12 +825,11 @@ void SendShowSignatures(Charter* c, uint64 i, Player* p)
 
 void WorldSession::HandleCharterShowSignatures(WorldPacket& recv_data)
 {
-    Charter* pCharter;
     uint64 item_guid;
     recv_data >> item_guid;
-    pCharter = objmgr.GetCharterByItemGuid(item_guid);
 
-    if (pCharter)
+    Charter* pCharter = objmgr.GetCharterByItemGuid(item_guid);
+    if (pCharter != nullptr)
         SendShowSignatures(pCharter, item_guid, _player);
 }
 
@@ -836,45 +837,13 @@ void WorldSession::HandleCharterQuery(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-        /*
-        {SERVER} Packet: (0x01C7) SMSG_PETITION_QUERY_RESPONSE PacketSize = 77
-        |------------------------------------------------|----------------|
-        |00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|
-        |------------------------------------------------|----------------|
-        |20 08 00 00 28 32 01 00 00 00 00 00 53 74 6F 72 | ...(2......Stor|
-        |6D 62 72 69 6E 67 65 72 73 00 00 09 00 00 00 09 |mbringers.......|
-        |00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 |................|
-        |00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 |................|
-        |00 00 00 00 00 00 00 00 00 00 00 00 00          |.............   |
-        -------------------------------------------------------------------
-
-        uint32 charter_id
-        uint64 leader_guid
-        string guild_name
-        uint8  0            <-- maybe subname? or some shit.. who knows
-        uint32 9
-        uint32 9
-        uint32[9] signatures
-        uint8  0
-        uint8  0
-        */
-        //this is wrong there are 42 bytes after 9 9, 4*9+2=38 not 42,
-        //moreover it can't signature, blizz uses always fullguid so it must be uin64
-        //moreover this does not show people who signed this, for this purpose there is another opcde
     uint32 charter_id;
     uint64 item_guid;
     recv_data >> charter_id;
     recv_data >> item_guid;
-    /*Charter * c = objmgr.GetCharter(charter_id,CHARTER_TYPE_GUILD);
-    if (c == 0)
-    c = objmgr.GetCharter(charter_id, CHARTER_TYPE_ARENA_2V2);
-    if (c == 0)
-    c = objmgr.GetCharter(charter_id, CHARTER_TYPE_ARENA_3V3);
-    if (c == 0)
-    c = objmgr.GetCharter(charter_id, CHARTER_TYPE_ARENA_5V5);*/
 
     Charter* c = objmgr.GetCharterByItemGuid(item_guid);
-    if (c == 0)
+    if (c == nullptr)
         return;
 
     WorldPacket data(SMSG_PETITION_QUERY_RESPONSE, 100);
@@ -887,13 +856,6 @@ void WorldSession::HandleCharterQuery(WorldPacket& recv_data)
     }
     else
     {
-        /*uint32 v = c->CharterType;
-        if (c->CharterType == CHARTER_TYPE_ARENA_3V3)
-        v=2;
-        else if (c->CharterType == CHARTER_TYPE_ARENA_5V5)
-        v=4;
-
-        data << v << v;*/
         data << uint32(c->Slots) << uint32(c->Slots);
     }
 
@@ -940,22 +902,20 @@ void WorldSession::HandleCharterOffer(WorldPacket& recv_data)
     uint32 shit;
     uint64 item_guid;
     uint64 target_guid;
-    Charter* pCharter;
 
     recv_data >> shit;
     recv_data >> item_guid;
     recv_data >> target_guid;
 
     Player* pTarget = _player->GetMapMgr()->GetPlayer((uint32)target_guid);
-    pCharter = objmgr.GetCharterByItemGuid(item_guid);
-
-    if (!pCharter)
+    Charter* pCharter = objmgr.GetCharterByItemGuid(item_guid);
+    if (pCharter != nullptr)
     {
         SendNotification(_player->GetSession()->LocalizedWorldSrv(76));
         return;
     }
 
-    if (pTarget == 0 || pTarget->GetTeam() != _player->GetTeam() || (pTarget == _player && !sWorld.interfaction_guild))
+    if (pTarget == nullptr || pTarget->GetTeam() != _player->GetTeam() || (pTarget == _player && !sWorld.interfaction_guild))
     {
         SendNotification(_player->GetSession()->LocalizedWorldSrv(77));
         return;
@@ -978,7 +938,7 @@ void WorldSession::HandleCharterSign(WorldPacket& recv_data)
     recv_data >> item_guid;
 
     Charter* c = objmgr.GetCharterByItemGuid(item_guid);
-    if (c == NULL)
+    if (c == nullptr)
         return;
 
     for (uint32 i = 0; i < c->SignatureCount; ++i)
@@ -999,7 +959,7 @@ void WorldSession::HandleCharterSign(WorldPacket& recv_data)
     _player->SaveToDB(false);
 
     Player* l = _player->GetMapMgr()->GetPlayer(c->GetLeader());
-    if (l == 0)
+    if (l == nullptr)
         return;
 
     WorldPacket data(SMSG_PETITION_SIGN_RESULTS, 100);
@@ -1018,7 +978,7 @@ void WorldSession::HandleCharterDecline(WorldPacket& recv_data)
     recv_data >> item_guid;
 
     Charter* c = objmgr.GetCharterByItemGuid(item_guid);
-    if (!c)
+    if (c == nullptr)
         return;
 
     Player* owner = objmgr.GetPlayer(c->GetLeader());
@@ -1036,13 +996,15 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
 
     uint64 mooguid;
     recv_data >> mooguid;
+
     Charter* pCharter = objmgr.GetCharterByItemGuid(mooguid);
-    if (!pCharter) return;
+    if (pCharter == nullptr)
+        return;
 
     if (pCharter->CharterType == CHARTER_TYPE_GUILD)
     {
         Charter* gc = _player->m_charters[CHARTER_TYPE_GUILD];
-        if (gc == 0)
+        if (gc == nullptr)
             return;
         if (gc->SignatureCount < 9 && Config.MainConfig.GetBoolDefault("Server", "RequireAllSignatures", false))
         {
@@ -1156,7 +1118,7 @@ void WorldSession::HandleCharterRename(WorldPacket& recv_data)
     recv_data >> name;
 
     Charter* pCharter = objmgr.GetCharterByItemGuid(guid);
-    if (pCharter == 0)
+    if (pCharter == nullptr)
         return;
 
     Guild* g = objmgr.GetGuildByGuildName(name);
