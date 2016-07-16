@@ -1042,7 +1042,7 @@ float MapMgr::GetLiquidHeight(float x, float y)
     if (tile == nullptr)
         return TERRAIN_INVALID_HEIGHT;
 
-    float rv = tile->m_map.GetLiquidHeight(x, y);
+    float rv = tile->m_map.GetTileLiquidHeight(x, y);
     tile->DecRef();
 
     return rv;
@@ -1054,7 +1054,7 @@ uint8 MapMgr::GetLiquidType(float x, float y)
     if (tile == nullptr)
         return 0;
 
-    uint8 rv = tile->m_map.GetLiquidType(x, y);
+    uint8 rv = tile->m_map.GetTileLiquidType(x, y);
     tile->DecRef();
 
     return rv;

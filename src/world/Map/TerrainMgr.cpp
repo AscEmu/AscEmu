@@ -43,7 +43,7 @@ uint16 TerrainHolder::GetAreaFlagWithoutAdtId(float x, float y)
     auto tile = this->GetTile(x, y);
     if (tile)
     {
-        return tile->m_map.GetArea(x, y);
+        return tile->m_map.GetTileArea(x, y);
     }
 
     return 0;
@@ -119,7 +119,7 @@ uint32 TerrainHolder::GetAreaFlag(float x, float y)
         // No generated map for this area (usually instances)
         return 0;
     }
-    uint32 rv = tile->m_map.GetArea(x, y);
+    uint32 rv = tile->m_map.GetTileArea(x, y);
     tile->DecRef();
     return rv;
 }
@@ -506,7 +506,7 @@ void TileMap::LoadAreaData(FILE* f, TileMapHeader & header)
     }
 }
 
-float TileMap::GetLiquidHeight(float x, float y)
+float TileMap::GetTileLiquidHeight(float x, float y)
 {
     if (m_liquidMap == NULL)
         return m_liquidLevel;
@@ -526,7 +526,7 @@ float TileMap::GetLiquidHeight(float x, float y)
     return m_liquidMap[cx_int * m_liquidWidth + cy_int];
 }
 
-uint8 TileMap::GetLiquidType(float x, float y)
+uint8 TileMap::GetTileLiquidType(float x, float y)
 {
     if (m_liquidType == NULL)
         return (uint8)m_defaultLiquidType;
@@ -538,7 +538,7 @@ uint8 TileMap::GetLiquidType(float x, float y)
     return m_liquidType[lx * 16 + ly];
 }
 
-uint32 TileMap::GetArea(float x, float y)
+uint32 TileMap::GetTileArea(float x, float y)
 {
     if (m_areaMap == NULL)
         return m_area;

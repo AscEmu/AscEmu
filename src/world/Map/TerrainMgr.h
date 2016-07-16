@@ -137,10 +137,10 @@ class TileMap
         float GetHeightS(float x, float y, int x_int, int y_int);
         float GetHeightF(float x, float y, int x_int, int y_int);
 
-        float GetLiquidHeight(float x, float y);
-        uint8 GetLiquidType(float x, float y);
+        float GetTileLiquidHeight(float x, float y);
+        uint8 GetTileLiquidType(float x, float y);
 
-        uint32 GetArea(float x, float y);
+        uint32 GetTileArea(float x, float y);
 };
 
 class TerrainTile
