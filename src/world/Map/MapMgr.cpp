@@ -933,15 +933,12 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
     uint32 startY = y > radius ? y - radius : 0;
     uint32 posX, posY;
 
-    MapCell* objCell;
-
     for (posX = startX; posX <= endX; posX++)
     {
         for (posY = startY; posY <= endY; posY++)
         {
-            objCell = GetCell(posX, posY);
-
-            if (!objCell)
+            MapCell* objCell = GetCell(posX, posY);
+            if (objCell == nullptr)
             {
                 if (_CellActive(posX, posY))
                 {
@@ -950,7 +947,7 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
 
                     Log.Map("MapMgr::UpdateCellActivity", "Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, this->_mapId, m_instanceID);
                     objCell->SetActivity(true);
-                    _map->CellGoneActive(posX, posY);
+
                     _terrain->LoadTile((int32)posX / 8, (int32)posY / 8);
 
                     ARCEMU_ASSERT(!objCell->IsLoaded());
@@ -958,7 +955,8 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
                     Log.Map("MapMgr::UpdateCellActivity", "Loading objects for Cell [%u][%u] on map %u (instance %u)...", posX, posY, this->_mapId, m_instanceID);
 
                     sp = _map->GetSpawnsList(posX, posY);
-                    if (sp) objCell->LoadObjects(sp);
+                    if (sp)
+                        objCell->LoadObjects(sp);
                 }
             }
             else
@@ -966,26 +964,25 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
                 //Cell is now active
                 if (_CellActive(posX, posY) && !objCell->IsActive())
                 {
-                    LOG_DETAIL("Cell [%u,%u] on map %u (instance %u) is now active.",
-                               posX, posY, this->_mapId, m_instanceID);
-                    _map->CellGoneActive(posX, posY);
+                    LOG_DETAIL("Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, this->_mapId, m_instanceID);
+
                     _terrain->LoadTile((int32)posX / 8, (int32)posY / 8);
                     objCell->SetActivity(true);
 
                     if (!objCell->IsLoaded())
                     {
-                        LOG_DETAIL("Loading objects for Cell [%u][%u] on map %u (instance %u)...",
-                                   posX, posY, this->_mapId, m_instanceID);
+                        LOG_DETAIL("Loading objects for Cell [%u][%u] on map %u (instance %u)...", posX, posY, this->_mapId, m_instanceID);
                         sp = _map->GetSpawnsList(posX, posY);
-                        if (sp) objCell->LoadObjects(sp);
+                        if (sp)
+                            objCell->LoadObjects(sp);
                     }
                 }
                 //Cell is no longer active
                 else if (!_CellActive(posX, posY) && objCell->IsActive())
                 {
                     LOG_DETAIL("Cell [%u,%u] on map %u (instance %u) is now idle.", posX, posY, _mapId, m_instanceID);
-                    _map->CellGoneIdle(posX, posY);
                     objCell->SetActivity(false);
+
                     _terrain->UnloadTile((int32)posX / 8, (int32)posY / 8);
                 }
             }

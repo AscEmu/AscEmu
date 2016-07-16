@@ -132,10 +132,6 @@ class SERVER_DECL Map
         uint32 CreatureSpawnCount;
         uint32 GameObjectSpawnCount;
 
-        void CellGoneActive(uint32 x, uint32 y);
-
-        void CellGoneIdle(uint32 x, uint32 y);
-
     private:
 
         MapInfo const* _mapInfo;
