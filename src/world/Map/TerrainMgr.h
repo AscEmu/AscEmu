@@ -201,13 +201,7 @@ class TerrainHolder
     void UnloadTile(int32 tx, int32 ty);
 
     //test
-    float GetLiquidHeight(float x, float y);
-
-    uint8 GetLiquidType(float x, float y);
-
     uint32 GetAreaFlag(float x, float y);
-
-    bool GetLiquidInfo(float x, float y, float z, float& liquidlevel, uint32& liquidtype);
 };
 
 #endif

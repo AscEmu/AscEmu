@@ -115,29 +115,6 @@ void TerrainHolder::UnloadTile(int32 tx, int32 ty)
     }
 }
 
-
-float TerrainHolder::GetLiquidHeight(float x, float y)
-{
-    TerrainTile* tile = GetTile(x, y);
-
-    if (tile == NULL)
-        return TERRAIN_INVALID_HEIGHT;
-    float rv = tile->m_map.GetLiquidHeight(x, y);
-    tile->DecRef();
-    return rv;
-}
-
-uint8 TerrainHolder::GetLiquidType(float x, float y)
-{
-    TerrainTile* tile = GetTile(x, y);
-
-    if (tile == NULL)
-        return 0;
-    uint8 rv = tile->m_map.GetLiquidType(x, y);
-    tile->DecRef();
-    return rv;
-}
-
 uint32 TerrainHolder::GetAreaFlag(float x, float y)
 {
     TerrainTile* tile = GetTile(x, y);
@@ -150,22 +127,6 @@ uint32 TerrainHolder::GetAreaFlag(float x, float y)
     uint32 rv = tile->m_map.GetArea(x, y);
     tile->DecRef();
     return rv;
-}
-
-bool TerrainHolder::GetLiquidInfo(float x, float y, float z, float& liquidlevel, uint32& liquidtype)
-{
-    VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
-
-    float flr;
-    if (vmgr->GetLiquidLevel(m_mapid, x, y, z, 0xFF, liquidlevel, flr, liquidtype))
-        return true;
-
-    liquidlevel = GetLiquidHeight(x, y);
-    liquidtype = GetLiquidType(x, y);
-
-    if (liquidtype == 0)
-        return false;
-    return true;
 }
 
 TerrainTile::~TerrainTile()

@@ -1022,17 +1022,42 @@ bool MapMgr::IsUnderground(float x, float y, float z)
 
 bool MapMgr::GetLiquidInfo(float x, float y, float z, float& liquidlevel, uint32& liquidtype)
 {
-    return _terrain->GetLiquidInfo(x, y, z, liquidlevel, liquidtype);
+    VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
+
+    float flr;
+    if (vmgr->GetLiquidLevel(_mapId, x, y, z, 0xFF, liquidlevel, flr, liquidtype))
+        return true;
+
+    liquidlevel = GetLiquidHeight(x, y);
+    liquidtype = GetLiquidType(x, y);
+
+    if (liquidtype == 0)
+        return false;
+    return true;
 }
 
 float MapMgr::GetLiquidHeight(float x, float y)
 {
-    return _terrain->GetLiquidHeight(x, y);
+    TerrainTile* tile = _terrain->GetTile(x, y);
+    if (tile == nullptr)
+        return TERRAIN_INVALID_HEIGHT;
+
+    float rv = tile->m_map.GetLiquidHeight(x, y);
+    tile->DecRef();
+
+    return rv;
 }
 
 uint8 MapMgr::GetLiquidType(float x, float y)
 {
-    return _terrain->GetLiquidType(x, y);
+    TerrainTile* tile = _terrain->GetTile(x, y);
+    if (tile == nullptr)
+        return 0;
+
+    uint8 rv = tile->m_map.GetLiquidType(x, y);
+    tile->DecRef();
+
+    return rv;
 }
 
 const ::DBC::Structures::AreaTableEntry* MapMgr::GetArea(float x, float y, float z)
