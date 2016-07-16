@@ -21,7 +21,9 @@ void MySQLDataStore::LoadAdditionalTableConfig()
 {
     // init basic tables
     CreatureSpawnsTables.insert(std::string("creature_spawns"));
+    CreatureSpawnsTables.insert(std::string("creature_staticspawns"));
     GameObjectSpawnsTables.insert(std::string("gameobject_spawns"));
+    GameObjectSpawnsTables.insert(std::string("gameobject_staticspawns"));
     GameObjectPropertiesTables.insert(std::string("gameobject_properties"));
     CreaturePropertiesTables.insert(std::string("creature_properties"));
     ItemPropertiesTables.insert(std::string("item_properties"));
