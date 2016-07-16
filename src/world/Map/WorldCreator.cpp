@@ -645,7 +645,7 @@ MapMgr* InstanceMgr::_CreateInstance(uint32 mapid, uint32 instanceid)
     ARCEMU_ASSERT(inf != nullptr && inf->type == INSTANCE_NULL);
     ARCEMU_ASSERT(mapid < NUM_MAPS && m_maps[mapid] != NULL);
 
-    Log.Notice("InstanceMgr", "Creating continent %s.", m_maps[mapid]->GetName());
+    Log.Notice("InstanceMgr", "Creating continent %s.", m_maps[mapid]->GetMapName().c_str());
 
     MapMgr* newMap = new MapMgr(m_maps[mapid], mapid, instanceid);
 
@@ -663,7 +663,7 @@ MapMgr* InstanceMgr::_CreateInstance(Instance* in)
     if (m_maps[in->m_mapId] == 0)
         return NULL;
 
-    Log.Notice("InstanceMgr", "Creating saved instance %u (%s)", in->m_instanceId, m_maps[in->m_mapId]->GetName());
+    Log.Notice("InstanceMgr", "Creating saved instance %u (%s)", in->m_instanceId, m_maps[in->m_mapId]->GetMapName().c_str());
     ARCEMU_ASSERT(in->m_mapMgr == NULL);
 
     // we don't have to check for world map info here, since the instance wouldn't have been saved if it didn't have any.

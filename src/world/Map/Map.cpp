@@ -75,14 +75,9 @@ Map::~Map()
         delete *i;
 }
 
-std::string Map::GetNameString()
+std::string Map::GetMapName()
 {
     return name;
-}
-
-const char* Map::GetName()
-{
-    return name.c_str();
 }
 
 const DBC::Structures::MapEntry* Map::GetDBCEntry()

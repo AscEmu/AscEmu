@@ -118,9 +118,7 @@ class SERVER_DECL Map
         Map(uint32 mapid, MapInfo const* inf);
         ~Map();
 
-        inline std::string GetNameString();
-
-        const char* GetName();
+        std::string GetMapName();
 
         inline const DBC::Structures::MapEntry* GetDBCEntry();
 

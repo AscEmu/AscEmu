@@ -178,7 +178,7 @@ MapMgr::~MapMgr()
 
     MMAP::MMapFactory::createOrGetMMapManager()->unloadMapInstance(GetMapId(), m_instanceID);
 
-    Log.Notice("MapMgr", "Instance %u shut down. (%s)", m_instanceID, GetBaseMap()->GetName());
+    Log.Notice("MapMgr", "Instance %u shut down. (%s)", m_instanceID, GetBaseMap()->GetMapName().c_str());
 }
 
 void MapMgr::PushObject(Object* obj)
@@ -526,7 +526,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         if (!InactiveMoveTime && !forced_expire && GetMapInfo()->type != INSTANCE_NULL)
         {
             InactiveMoveTime = UNIXTIME + (MAPMGR_INACTIVE_MOVE_TIME * 60);
-            Log.Debug("MapMgr", "Instance %u is now idle. (%s)", m_instanceID, GetBaseMap()->GetName());
+            Log.Debug("MapMgr", "Instance %u is now idle. (%s)", m_instanceID, GetBaseMap()->GetMapName().c_str());
         }
     }
 }
