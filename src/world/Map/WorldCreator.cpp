@@ -530,31 +530,25 @@ MapMgr* InstanceMgr::GetMapMgr(uint32 mapId)
 
 MapMgr* InstanceMgr::GetInstance(Object* obj)
 {
-    Player* plr;
-    Instance* in;
-    InstanceMap::iterator itr;
-    InstanceMap* instancemap;
     MapInfo const* inf = sMySQLStore.GetWorldMapInfo(obj->GetMapId());
-
-    // we can *never* teleport to maps without a mapinfo.
     if (inf == nullptr || obj->GetMapId() >= NUM_MAPS)
-        return NULL;
+        return nullptr;
 
     if (obj->IsPlayer())
     {
         // players can join instances based on their groups/solo status.
-        plr = static_cast< Player* >(obj);
+        Player* plr = static_cast< Player* >(obj);
 
         // single-instance maps never go into the instance set.
         if (inf->type == INSTANCE_NULL)
             return m_singleMaps[obj->GetMapId()];
 
         m_mapLock.Acquire();
-        instancemap = m_instances[obj->GetMapId()];
-        if (instancemap != NULL)
+        InstanceMap* instancemap = m_instances[obj->GetMapId()];
+        if (instancemap != nullptr)
         {
             // check our saved instance id. see if its valid, and if we can join before trying to find one.
-            itr = instancemap->find(obj->GetInstanceID());
+            InstanceMap::iterator itr = instancemap->find(obj->GetInstanceID());
             if (itr != instancemap->end())
             {
                 if (itr->second->m_mapMgr == NULL)
@@ -571,7 +565,7 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
             // iterate over our instances, and see if any of them are owned/joinable by him.
             for (itr = instancemap->begin(); itr != instancemap->end();)
             {
-                in = itr->second;
+                Instance* in = itr->second;
                 ++itr;
 
                 uint32 difficulty;
@@ -611,7 +605,7 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
         // if we're here, it means there are no instances on that map, or none of the instances on that map are joinable
         // by this player.
         m_mapLock.Release();
-        return NULL;
+        return nullptr;
     }
     else
     {
@@ -620,10 +614,10 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
             return m_singleMaps[obj->GetMapId()];
 
         m_mapLock.Acquire();
-        instancemap = m_instances[obj->GetMapId()];
+        InstanceMap* instancemap = m_instances[obj->GetMapId()];
         if (instancemap)
         {
-            itr = instancemap->find(obj->GetInstanceID());
+            InstanceMap::iterator itr = instancemap->find(obj->GetInstanceID());
             if (itr != instancemap->end())
             {
                 // we never create instances just for units.
@@ -634,7 +628,7 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
 
         // instance is non-existent (shouldn't really happen for units...)
         m_mapLock.Release();
-        return NULL;
+        return nullptr;
     }
 }
 

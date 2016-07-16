@@ -120,8 +120,6 @@ class SERVER_DECL Map
 
         std::string GetMapName();
 
-        inline const DBC::Structures::MapEntry* GetDBCEntry();
-
         CellSpawns* GetSpawnsList(uint32 cellx, uint32 celly);
 
         CellSpawns* GetSpawnsListAndCreate(uint32 cellx, uint32 celly);
@@ -135,8 +133,6 @@ class SERVER_DECL Map
         MapInfo const* _mapInfo;
         uint32 _mapId;
         std::string name;
-
-        const DBC::Structures::MapEntry* me;
 
         CellSpawns** spawns[_sizeX];
 

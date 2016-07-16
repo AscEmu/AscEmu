@@ -19,7 +19,6 @@
  *
  */
 
-#include "Storage/DBC/DBCStores.h"
 #include "StdAfx.h"
 
 
@@ -36,7 +35,6 @@ Map::Map(uint32 mapid, MapInfo const* inf)
     LoadSpawns(false);
 
     // get our name
-    me = sMapStore.LookupEntry(_mapId);
     if (_mapInfo)
         name = _mapInfo->name;
     else
@@ -78,11 +76,6 @@ Map::~Map()
 std::string Map::GetMapName()
 {
     return name;
-}
-
-const DBC::Structures::MapEntry* Map::GetDBCEntry()
-{
-    return me;
 }
 
 CellSpawns* Map::GetSpawnsList(uint32 cellx, uint32 celly)
