@@ -54,6 +54,11 @@ TerrainTile* TerrainHolder::GetTile(float x, float y)
     int32 tx = (int32)(32 - (x / TERRAIN_TILE_SIZE));
     int32 ty = (int32)(32 - (y / TERRAIN_TILE_SIZE));
 
+    return GetTile(tx, ty);
+}
+
+TerrainTile* TerrainHolder::GetTile(int32 tx, int32 ty)
+{
     m_lock[tx][ty].Acquire();
 
     TerrainTile* terrain_tile = m_tiles[tx][ty];
@@ -69,7 +74,11 @@ void TerrainHolder::LoadTile(float x, float y)
 {
     int32 tx = (int32)(32 - (x / TERRAIN_TILE_SIZE));
     int32 ty = (int32)(32 - (y / TERRAIN_TILE_SIZE));
+    LoadTile(tx, ty);
+}
 
+void TerrainHolder::LoadTile(int32 tx, int32 ty)
+{
     m_lock[tx][ty].Acquire();
 
     ++m_tilerefs[tx][ty];
@@ -86,7 +95,11 @@ void TerrainHolder::UnloadTile(float x, float y)
 {
     int32 tx = (int32)(32 - (x / TERRAIN_TILE_SIZE));
     int32 ty = (int32)(32 - (y / TERRAIN_TILE_SIZE));
+    UnloadTile(tx, ty);
+}
 
+void TerrainHolder::UnloadTile(int32 tx, int32 ty)
+{
     m_lock[tx][ty].Acquire();
 
     if (m_tiles[tx][ty] == nullptr)

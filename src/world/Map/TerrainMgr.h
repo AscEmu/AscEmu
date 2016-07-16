@@ -191,8 +191,13 @@ class TerrainHolder
         uint16 GetAreaFlagWithoutAdtId(float x, float y);
 
         TerrainTile* GetTile(float x, float y);
+        TerrainTile* GetTile(int32 tx, int32 ty);
+
         void LoadTile(float x, float y);
+        void LoadTile(int32 tx, int32 ty);
+
         void UnloadTile(float x, float y);
+        void UnloadTile(int32 tx, int32 ty);
 
         //test
         uint32 GetAreaFlag(float x, float y);
