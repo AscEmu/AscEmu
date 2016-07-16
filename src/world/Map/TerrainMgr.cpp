@@ -126,18 +126,6 @@ float TerrainHolder::GetADTLandHeight(float x, float y)
     return rv;
 }
 
-float TerrainHolder::GetLandHeight(float x, float y, float z)
-{
-    float adtheight = GetADTLandHeight(x, y);
-
-    VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
-    float vmapheight = vmgr->getHeight(m_mapid, x, y, z + 0.5f, 10000.0f);
-
-    if (adtheight > z && vmapheight > -1000)
-        return vmapheight; //underground
-    return std::max(vmapheight, adtheight);
-}
-
 float TerrainHolder::GetLiquidHeight(float x, float y)
 {
     TerrainTile* tile = GetTile(x, y);

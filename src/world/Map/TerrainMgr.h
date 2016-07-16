@@ -203,8 +203,6 @@ class TerrainHolder
     //test
     float GetADTLandHeight(float x, float y);
 
-    float GetLandHeight(float x, float y, float z);
-
     float GetLiquidHeight(float x, float y);
 
     uint8 GetLiquidType(float x, float y);

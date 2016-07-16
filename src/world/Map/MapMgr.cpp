@@ -992,7 +992,15 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
 
 float MapMgr::GetLandHeight(float x, float y, float z)
 {
-    return _terrain->GetLandHeight(x, y, z);
+    float adtheight = GetADTLandHeight(x, y);
+
+    VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
+    float vmapheight = vmgr->getHeight(_mapId, x, y, z + 0.5f, 10000.0f);
+
+    if (adtheight > z && vmapheight > -1000)
+        return vmapheight; //underground
+
+    return std::max(vmapheight, adtheight);
 }
 
 float MapMgr::GetADTLandHeight(float x, float y)
