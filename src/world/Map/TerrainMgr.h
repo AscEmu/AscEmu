@@ -123,12 +123,10 @@ class TileMap
         uint8 m_liquidWidth;
         uint16 m_defaultLiquidType;
 
-    TileMap();
+        TileMap();
+        ~TileMap();
 
-    ~TileMap();
-
-
-    void Load(char* filename);
+        void Load(char* filename);
 
         void LoadLiquidData(FILE* f, TileMapHeader & header);
         void LoadHeightData(FILE* f, TileMapHeader & header);
@@ -148,6 +146,7 @@ class TileMap
 class TerrainTile
 {
     public:
+
         Arcemu::Threading::AtomicCounter m_refs;
 
         TerrainHolder* m_parent;
@@ -160,6 +159,7 @@ class TerrainTile
 
         TerrainTile(TerrainHolder* parent, uint32 mapid, int32 x, int32 y);
         ~TerrainTile();
+
         void AddRef() { ++m_refs; }
         void DecRef() { if (--m_refs == 0) delete this; }
 
@@ -176,6 +176,7 @@ class TerrainTile
 class TerrainHolder
 {
     public:
+
         // This should be in AreaStorage.cpp
         const bool GetAreaInfo(float x, float y, float z, uint32 &mogp_flags, int32 &adt_id, int32 &root_id, int32 &group_id);
 
@@ -184,24 +185,17 @@ class TerrainHolder
         FastMutex m_lock[TERRAIN_NUM_TILES][TERRAIN_NUM_TILES];
         Arcemu::Threading::AtomicCounter m_tilerefs[TERRAIN_NUM_TILES][TERRAIN_NUM_TILES];
 
-    TerrainHolder(uint32 mapid);
+        TerrainHolder(uint32 mapid);
+        ~TerrainHolder();
 
-    ~TerrainHolder();
+        uint16 GetAreaFlagWithoutAdtId(float x, float y);
 
-    uint16 GetAreaFlagWithoutAdtId(float x, float y);
         TerrainTile* GetTile(float x, float y);
-    TerrainTile* GetTile(int32 tx, int32 ty);
+        void LoadTile(float x, float y);
+        void UnloadTile(float x, float y);
 
-    void LoadTile(float x, float y);
-
-    void LoadTile(int32 tx, int32 ty);
-
-    void UnloadTile(float x, float y);
-
-    void UnloadTile(int32 tx, int32 ty);
-
-    //test
-    uint32 GetAreaFlag(float x, float y);
+        //test
+        uint32 GetAreaFlag(float x, float y);
 };
 
 #endif

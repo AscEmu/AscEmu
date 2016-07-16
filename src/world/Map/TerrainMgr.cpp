@@ -54,37 +54,31 @@ TerrainTile* TerrainHolder::GetTile(float x, float y)
     int32 tx = (int32)(32 - (x / TERRAIN_TILE_SIZE));
     int32 ty = (int32)(32 - (y / TERRAIN_TILE_SIZE));
 
-    return GetTile(tx, ty);
-}
-
-TerrainTile* TerrainHolder::GetTile(int32 tx, int32 ty)
-{
-    TerrainTile* rv = NULL;
     m_lock[tx][ty].Acquire();
-    rv = m_tiles[tx][ty];
-    if (rv != NULL)
-        rv->AddRef();
+
+    TerrainTile* terrain_tile = m_tiles[tx][ty];
+    if (terrain_tile != nullptr)
+        terrain_tile->AddRef();
+
     m_lock[tx][ty].Release();
 
-    return rv;
+    return terrain_tile;
 }
 
 void TerrainHolder::LoadTile(float x, float y)
 {
     int32 tx = (int32)(32 - (x / TERRAIN_TILE_SIZE));
     int32 ty = (int32)(32 - (y / TERRAIN_TILE_SIZE));
-    LoadTile(tx, ty);
-}
 
-void TerrainHolder::LoadTile(int32 tx, int32 ty)
-{
     m_lock[tx][ty].Acquire();
+
     ++m_tilerefs[tx][ty];
-    if (m_tiles[tx][ty] == NULL)
+    if (m_tiles[tx][ty] == nullptr)
     {
         m_tiles[tx][ty] = new TerrainTile(this, m_mapid, tx, ty);
         m_tiles[tx][ty]->Load();
     }
+
     m_lock[tx][ty].Release();
 }
 
@@ -93,24 +87,26 @@ void TerrainHolder::UnloadTile(float x, float y)
     int32 tx = (int32)(32 - (x / TERRAIN_TILE_SIZE));
     int32 ty = (int32)(32 - (y / TERRAIN_TILE_SIZE));
     UnloadTile(tx, ty);
-}
 
-void TerrainHolder::UnloadTile(int32 tx, int32 ty)
-{
     m_lock[tx][ty].Acquire();
-    if (m_tiles[tx][ty] == NULL)
+
+    if (m_tiles[tx][ty] == nullptr)
     {
         m_lock[tx][ty].Release();
         return;
     }
+
     m_lock[tx][ty].Release();
 
     if (--m_tilerefs[tx][ty] == 0)
     {
         m_lock[tx][ty].Acquire();
-        if (m_tiles[tx][ty] != NULL)
+
+        if (m_tiles[tx][ty] != nullptr)
             m_tiles[tx][ty]->DecRef();
-        m_tiles[tx][ty] = NULL;
+
+        m_tiles[tx][ty] = nullptr;
+
         m_lock[tx][ty].Release();
     }
 }
@@ -118,8 +114,7 @@ void TerrainHolder::UnloadTile(int32 tx, int32 ty)
 uint32 TerrainHolder::GetAreaFlag(float x, float y)
 {
     TerrainTile* tile = GetTile(x, y);
-
-    if (tile == NULL)
+    if (tile == nullptr)
     {
         // No generated map for this area (usually instances)
         return 0;
