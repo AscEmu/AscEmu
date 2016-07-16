@@ -169,11 +169,8 @@ void Map::LoadSpawns(bool reload)
                         delete cspawn;
                         continue;
                     }
-                    else
-                    {
-                        cspawn->entry = creature_entry;
-                    }
 
+                    cspawn->entry = creature_entry;
                     cspawn->x = fields[3].GetFloat();
                     cspawn->y = fields[4].GetFloat();
                     cspawn->z = fields[5].GetFloat();
@@ -189,6 +186,7 @@ void Map::LoadSpawns(bool reload)
 
                     if (!spawns[cellx][celly])
                         spawns[cellx][celly] = new CellSpawns;
+
                     cspawn->movetype = fields[7].GetUInt8();
                     cspawn->displayid = fields[8].GetUInt32();
                     cspawn->factionid = fields[9].GetUInt32();
@@ -223,6 +221,7 @@ void Map::LoadSpawns(bool reload)
                         spawns[cellx][celly]->CreatureSpawns.push_back(cspawn);
                         ++CreatureSpawnCount;
                     }
+
                 } while (creature_spawn_result->NextRow());
             }
 
@@ -258,10 +257,8 @@ void Map::LoadSpawns(bool reload)
                         delete go_spawn;
                         continue;
                     }
-                    else
-                    {
-                        go_spawn->entry = gameobject_entry;
-                    }
+
+                    go_spawn->entry = gameobject_entry;
                     go_spawn->map = fields[2].GetUInt32();
                     go_spawn->position_x = fields[3].GetFloat();
                     go_spawn->position_y = fields[4].GetFloat();
@@ -304,6 +301,7 @@ void Map::LoadSpawns(bool reload)
                         spawns[cellx][celly]->GameobjectSpawns.push_back(go_spawn);
                         ++GameObjectSpawnCount;
                     }
+
                 } while (gobject_spawn_result->NextRow());
             }
 
