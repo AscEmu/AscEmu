@@ -67,7 +67,7 @@ MapMgr::MapMgr(Map* map, uint32 mapId, uint32 instanceid) : CellHandler<MapCell>
     forced_expire = false;
     InactiveMoveTime = 0;
     mLoopCounter = 0;
-    pInstance = NULL;
+    pInstance = nullptr;
     thread_kill_only = false;
     thread_running = false;
 
@@ -252,14 +252,12 @@ void MapMgr::PushObject(Object* obj)
     uint32 endY = (y <= _sizeY) ? y + cellNumber : (_sizeY - cellNumber);
     uint32 startX = x > 0 ? x - cellNumber : 0;
     uint32 startY = y > 0 ? y - cellNumber : 0;
-    uint32 posX, posY;
-    MapCell* cell;
 
-    for (posX = startX; posX <= endX; posX++)
+    for (uint32 posX = startX; posX <= endX; posX++)
     {
-        for (posY = startY; posY <= endY; posY++)
+        for (uint32 posY = startY; posY <= endY; posY++)
         {
-            cell = GetCell(posX, posY);
+            MapCell* cell = GetCell(posX, posY);
             if (cell)
             {
                 UpdateInRangeSet(obj, plObj, cell, &buf);
@@ -340,7 +338,8 @@ void MapMgr::PushObject(Object* obj)
             /*VLack: It seems if we use the same buffer then it is a BAD idea to try and push created data one by one, add them at once!
                    If you try to add them one by one, then as the buffer already contains data, they'll end up repeating some object.
                    Like 6 object updates for Deeprun Tram, but the built package will contain these entries: 2AFD0, 2AFD0, 2AFD1, 2AFD0, 2AFD1, 2AFD2*/
-            if (globalcount > 0) plObj->PushCreationData(buf, globalcount);
+            if (globalcount > 0)
+                plObj->PushCreationData(buf, globalcount);
         }
     }
 
@@ -520,7 +519,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
 
     if (!HasPlayers())
     {
-        if (this->pInstance != NULL && this->pInstance->m_persistent)
+        if (this->pInstance != nullptr && this->pInstance->m_persistent)
             this->pInstance->m_creatorGroup = 0;
 
         if (!InactiveMoveTime && !forced_expire && GetMapInfo()->type != INSTANCE_NULL)
@@ -652,8 +651,6 @@ void MapMgr::ChangeObjectLocation(Object* obj)
     uint32 endY = cellY + cellNumber;
     uint32 startX = cellX > 0 ? cellX - cellNumber : 0;
     uint32 startY = cellY > 0 ? cellY - cellNumber : 0;
-    uint32 posX, posY;
-    MapCell* cell;
 
     //If the object announcing it's position is a special one, then it should do so in a much wider area - like the distance between the two transport towers in Orgrimmar, or more. - By: VLack
     if (obj->IsGameObject() && (static_cast< GameObject* >(obj)->GetOverrides() & GAMEOBJECT_ONMOVEWIDE) || plObj && plObj->camControle)
@@ -664,11 +661,11 @@ void MapMgr::ChangeObjectLocation(Object* obj)
         startY = cellY > 5 ? cellY - 6 : 0;
     }
 
-    for (posX = startX; posX <= endX; ++posX)
+    for (uint32 posX = startX; posX <= endX; ++posX)
     {
-        for (posY = startY; posY <= endY; ++posY)
+        for (uint32 posY = startY; posY <= endY; ++posY)
         {
-            cell = GetCell(posX, posY);
+            MapCell* cell = GetCell(posX, posY);
             if (cell)
                 UpdateInRangeSet(obj, plObj, cell, &buf);
         }
@@ -710,22 +707,20 @@ void MapMgr::UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuf
     if (cell == nullptr)
         return;
 
-    Object* curObj;
     Player* plObj2;
     int count;
-    float fRange;
     bool cansee, isvisible;
 
     ObjectSet::iterator iter = cell->Begin();
     while (iter != cell->End())
     {
-        curObj = *iter;
+        Object* curObj = *iter;
         ++iter;
 
         if (curObj == nullptr)
             continue;
 
-        fRange = GetUpdateDistance(curObj, obj, plObj);
+        float fRange = GetUpdateDistance(curObj, obj, plObj);
 
         if (curObj != obj && (curObj->GetDistance2dSq(obj) <= fRange || fRange == 0.0f))
         {
@@ -833,10 +828,6 @@ void MapMgr::_UpdateObjects()
     if (!_updates.size() && !_processQueue.size())
         return;
 
-    Object* pObj;
-    Player* pOwner;
-
-    Player* lplr;
     ByteBuffer update(2500);
     uint32 count = 0;
 
@@ -844,14 +835,14 @@ void MapMgr::_UpdateObjects()
 
     for (UpdateQueue::iterator iter = _updates.begin(); iter != _updates.end(); ++iter)
     {
-        pObj = *iter;
+        Object* pObj = *iter;
         if (pObj == nullptr)
             continue;
 
         if (pObj->IsItem() || pObj->IsContainer())
         {
             // our update is only sent to the owner here.
-            pOwner = static_cast<Item*>(pObj)->GetOwner();
+            Player* pOwner = static_cast<Item*>(pObj)->GetOwner();
             if (pOwner != nullptr)
             {
                 count = static_cast<Item*>(pObj)->BuildValuesUpdateBlockForPlayer(&update, pOwner);
@@ -889,7 +880,7 @@ void MapMgr::_UpdateObjects()
                 {
                     for (std::set<Object*>::iterator itr = pObj->GetInRangePlayerSetBegin(); itr != pObj->GetInRangePlayerSetEnd(); ++itr)
                     {
-                        lplr = static_cast<Player*>(*itr);
+                        Player* lplr = static_cast<Player*>(*itr);
 
                         // Make sure that the target player can see us.
                         if (lplr->IsVisible(pObj->GetGUID()))
@@ -907,14 +898,14 @@ void MapMgr::_UpdateObjects()
     // generate pending a9packets and send to clients.
     for (PUpdateQueue::iterator it = _processQueue.begin(); it != _processQueue.end();)
     {
-        Player* plyr = *it;
+        Player* player = *it;
 
         PUpdateQueue::iterator it2 = it;
         ++it;
 
         _processQueue.erase(it2);
-        if (plyr->GetMapMgr() == this)
-            plyr->ProcessPendingUpdates();
+        if (player->GetMapMgr() == this)
+            player->ProcessPendingUpdates();
     }
 }
 
@@ -931,11 +922,10 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
     uint32 endY = (y + radius) <= _sizeY ? y + radius : (_sizeY - 1);
     uint32 startX = x > radius ? x - radius : 0;
     uint32 startY = y > radius ? y - radius : 0;
-    uint32 posX, posY;
 
-    for (posX = startX; posX <= endX; posX++)
+    for (uint32 posX = startX; posX <= endX; posX++)
     {
-        for (posY = startY; posY <= endY; posY++)
+        for (uint32 posY = startY; posY <= endY; posY++)
         {
             MapCell* objCell = GetCell(posX, posY);
             if (objCell == nullptr)
@@ -1033,6 +1023,7 @@ bool MapMgr::GetLiquidInfo(float x, float y, float z, float& liquidlevel, uint32
 
     if (liquidtype == 0)
         return false;
+
     return true;
 }
 
@@ -1063,10 +1054,14 @@ uint8 MapMgr::GetLiquidType(float x, float y)
 const ::DBC::Structures::AreaTableEntry* MapMgr::GetArea(float x, float y, float z)
 {
     uint32 mogp_flags;
-    int32 adt_id, root_id, group_id;
+    int32 adt_id;
+    int32 root_id;
+    int32 group_id;
+
     bool have_area_info = _terrain->GetAreaInfo(x, y, z, mogp_flags, adt_id, root_id, group_id);
     auto area_flag_without_adt_id = _terrain->GetAreaFlagWithoutAdtId(x, y);
     auto area_flag = MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(area_flag_without_adt_id, have_area_info, mogp_flags, adt_id, root_id, group_id, _mapId, x, y, z, nullptr);
+    
     if (area_flag)
         return MapManagement::AreaManagement::AreaStorage::GetAreaByFlag(area_flag);
     else
@@ -1093,14 +1088,12 @@ bool MapMgr::_CellActive(uint32 x, uint32 y)
     uint32 endY = ((y + cellNumber) <= _sizeY) ? y + cellNumber : (_sizeY - cellNumber);
     uint32 startX = x > 0 ? x - cellNumber : 0;
     uint32 startY = y > 0 ? y - cellNumber : 0;
-    uint32 posX, posY;
 
-    for (posX = startX; posX <= endX; posX++)
+    for (uint32 posX = startX; posX <= endX; posX++)
     {
-        for (posY = startY; posY <= endY; posY++)
+        for (uint32 posY = startY; posY <= endY; posY++)
         {
             MapCell* objCell = GetCell(posX, posY);
-
             if (objCell != nullptr)
             {
                 if (objCell->HasPlayers() || m_forcedcells.find(objCell) != m_forcedcells.end())
@@ -1161,11 +1154,10 @@ void MapMgr::ChangeFarsightLocation(Player* plr, DynamicObject* farsight)
         uint32 endY = (cellY <= _sizeY) ? cellY + cellNumber : (_sizeY - cellNumber);
         uint32 startX = cellX > 0 ? cellX - cellNumber : 0;
         uint32 startY = cellY > 0 ? cellY - cellNumber : 0;
-        uint32 posX, posY;
 
-        for (posX = startX; posX <= endX; ++posX)
+        for (uint32 posX = startX; posX <= endX; ++posX)
         {
-            for (posY = startY; posY <= endY; ++posY)
+            for (uint32 posY = startY; posY <= endY; ++posY)
             {
                 MapCell* cell = GetCell(posX, posY);
                 if (cell != nullptr)
@@ -1212,13 +1204,13 @@ bool MapMgr::Do()
     thread_running = true;
     ThreadState.SetVal(THREADSTATE_BUSY);
     SetThreadName("Map mgr - M%u|I%u", this->_mapId, this->m_instanceID);
-    ObjectSet::iterator i;
+
     uint32 last_exec = getMSTime();
 
     // Create Instance script
     LoadInstanceScript();
 
-    /* create static objects */
+    // create static objects
     for (GameobjectSpawnList::iterator itr = _map->staticSpawns.GameobjectSpawns.begin(); itr != _map->staticSpawns.GameobjectSpawns.end(); ++itr)
     {
         GameObject* obj = CreateGameObject((*itr)->entry);
@@ -1236,7 +1228,7 @@ bool MapMgr::Do()
         PushStaticObject(obj);
     }
 
-    /* load corpses */
+    // load corpses
     objmgr.LoadCorpses(this);
     worldstateshandler.InitWorldStates(objmgr.GetWorldStatesForMap(_mapId));
     worldstateshandler.setObserver(this);
@@ -1256,7 +1248,7 @@ bool MapMgr::Do()
 
         if (m_objectinsertpool.size())
         {
-            for (i = m_objectinsertpool.begin(); i != m_objectinsertpool.end(); ++i)
+            for (ObjectSet::iterator i = m_objectinsertpool.begin(); i != m_objectinsertpool.end(); ++i)
             {
                 Object* o = *i;
 
@@ -1294,23 +1286,25 @@ bool MapMgr::Do()
         sInstanceMgr.DeleteBattlegroundInstance(GetMapId(), GetInstanceID());
     }
 
-    if (pInstance)
+    if (pInstance != nullptr)
     {
         // check for a non-raid instance, these expire after 10 minutes.
         if (GetMapInfo()->type == INSTANCE_NONRAID || pInstance->m_isBattleground)
         {
-            pInstance->m_mapMgr = NULL;
+            pInstance->m_mapMgr = nullptr;
             sInstanceMgr._DeleteInstance(pInstance, true);
-            pInstance = NULL;
+            pInstance = nullptr;
         }
         else
         {
             // just null out the pointer
-            pInstance->m_mapMgr = NULL;
+            pInstance->m_mapMgr = nullptr;
         }
     }
     else if (GetMapInfo()->type == INSTANCE_NULL)
+    {
         sInstanceMgr.m_singleMaps[GetMapId()] = NULL;
+    }
 
     thread_running = false;
     if (thread_kill_only)
@@ -1326,15 +1320,13 @@ bool MapMgr::Do()
 void MapMgr::BeginInstanceExpireCountdown()
 {
     WorldPacket data(SMSG_RAID_GROUP_ONLY, 8);
-    PlayerStorageMap::iterator itr;
-
     // so players getting removed don't overwrite us
     forced_expire = true;
 
     // send our sexy packet
     data << uint32(60000);
     data << uint32(1);
-    for (itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
+    for (PlayerStorageMap::iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
     {
         if (!itr->second->raidgrouponlysent)
             itr->second->GetSession()->SendPacket(&data);
@@ -1346,13 +1338,13 @@ void MapMgr::BeginInstanceExpireCountdown()
 
 void MapMgr::InstanceShutdown()
 {
-    pInstance = NULL;
+    pInstance = nullptr;
     SetThreadState(THREADSTATE_TERMINATE);
 }
 
 void MapMgr::KillThread()
 {
-    pInstance = NULL;
+    pInstance = nullptr;
     thread_kill_only = true;
     SetThreadState(THREADSTATE_TERMINATE);
     while(thread_running)
@@ -1434,21 +1426,16 @@ void MapMgr::_PerformObjectDuties()
 
     // Update creatures.
     {
-        creature_iterator = activeCreatures.begin();
-        Creature* ptr;
-        Pet* ptr2;
-
-        for (; creature_iterator != activeCreatures.end();)
+        for (creature_iterator = activeCreatures.begin(); creature_iterator != activeCreatures.end();)
         {
-            ptr = *creature_iterator;
+            Creature* ptr = *creature_iterator;
             ++creature_iterator;
             ptr->Update(difftime);
         }
 
-        pet_iterator = m_PetStorage.begin();
-        for (; pet_iterator != m_PetStorage.end();)
+        for (pet_iterator = m_PetStorage.begin(); pet_iterator != m_PetStorage.end();)
         {
-            ptr2 = pet_iterator->second;
+            Pet* ptr2 = pet_iterator->second;
             ++pet_iterator;
             ptr2->Update(difftime);
         }
@@ -1456,11 +1443,9 @@ void MapMgr::_PerformObjectDuties()
 
     // Update players.
     {
-        PlayerStorageMap::iterator itr = m_PlayerStorage.begin();
-        Player* ptr;
-        for (; itr != m_PlayerStorage.end();)
+        for (PlayerStorageMap::iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
         {
-            ptr = itr->second;
+            Player* ptr = itr->second;
             ++itr;
             ptr->Update(difftime);
         }
@@ -1612,7 +1597,7 @@ void MapMgr::EventRespawnCreature(Creature* c, uint16 x, uint16 y)
     ObjectSet::iterator itr = cell->_respawnObjects.find(c);
     if (itr != cell->_respawnObjects.end())
     {
-        c->m_respawnCell = NULL;
+        c->m_respawnCell = nullptr;
         cell->_respawnObjects.erase(itr);
         c->OnRespawn(this);
     }
@@ -1627,7 +1612,7 @@ void MapMgr::EventRespawnGameObject(GameObject* o, uint16 x, uint16 y)
     ObjectSet::iterator itr = cell->_respawnObjects.find(o);
     if (itr != cell->_respawnObjects.end())
     {
-        o->m_respawnCell = NULL;
+        o->m_respawnCell = nullptr;
         cell->_respawnObjects.erase(itr);
         o->Spawn(this);
     }
@@ -1642,12 +1627,10 @@ void MapMgr::SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint
     uint32 startX = cellX > cell_radius ? cellX - cell_radius : 0;
     uint32 startY = cellY > cell_radius ? cellY - cell_radius : 0;
 
-    uint32 posX, posY;
-
     MapCell::ObjectSet::iterator iter, iend;
-    for (posX = startX; posX <= endX; ++posX)
+    for (uint32 posX = startX; posX <= endX; ++posX)
     {
-        for (posY = startY; posY <= endY; ++posY)
+        for (uint32 posY = startY; posY <= endY; ++posY)
         {
             MapCell* cell = GetCell(posX, posY);
             if (cell && cell->HasPlayers())
@@ -1746,6 +1729,7 @@ Creature* MapMgr::GetCreature(uint32 guid)
 {
     if (guid > m_CreatureHighGuid)
         return nullptr;
+
     return CreatureStorage[guid];
 }
 
@@ -1840,7 +1824,8 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
 GameObject* MapMgr::GetGameObject(uint32 guid)
 {
     if (guid > m_GOHighGuid)
-        return 0;
+        return nullptr;
+
     return GOStorage[guid];
 }
 
@@ -1867,10 +1852,10 @@ GameObject* MapMgr::CreateGameObject(uint32 entry)
         GUID = m_GOHighGuid;
     }
 
-    GameObject* gameobject = nullptr;
-    gameobject = ObjectFactory.CreateGameObject(entry, GUID);
+    GameObject* gameobject = ObjectFactory.CreateGameObject(entry, GUID);
+    if (gameobject == nullptr)
+        return nullptr;
     
-
     return gameobject;
 }
 
@@ -1948,7 +1933,6 @@ GameObject* MapMgr::FindNearestGoWithType(Object* o, uint32 type)
     for (std::set<Object*>::iterator itr = o->GetInRangeSetBegin(); itr != o->GetInRangeSetEnd(); ++itr)
     {
         Object* iro = *itr;
-
         if (!iro->IsGameObject())
             continue;
 
@@ -1986,8 +1970,7 @@ void MapMgr::SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Me
     data << uint32(strlen(msgbuf) + 1);
     data << msgbuf;
 
-    PlayerStorageMap::iterator itr = m_PlayerStorage.begin();
-    for (; itr != m_PlayerStorage.end();)
+    for (PlayerStorageMap::iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
     {
         Player* plr = itr->second;
         ++itr;
@@ -1999,18 +1982,18 @@ void MapMgr::SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Me
     }
 }
 
-void MapMgr::SendPacketToAllPlayers(WorldPacket *packet) const
+void MapMgr::SendPacketToAllPlayers(WorldPacket* packet) const
 {
     for (PlayerStorageMap::const_iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
     {
         Player* p = itr->second;
 
-        if (p->GetSession() != NULL)
+        if (p->GetSession() != nullptr)
             p->GetSession()->SendPacket(packet);
     }
 }
 
-void MapMgr::SendPacketToPlayersInZone(uint32 zone, WorldPacket *packet) const
+void MapMgr::SendPacketToPlayersInZone(uint32 zone, WorldPacket* packet) const
 {
     for (PlayerStorageMap::const_iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
     {
@@ -2063,5 +2046,3 @@ void MapMgr::onWorldStateUpdate(uint32 zone, uint32 field, uint32 value)
 
     SendPacketToPlayersInZone(zone, &data);
 }
-
-

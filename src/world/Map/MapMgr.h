@@ -226,8 +226,8 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		void EventRespawnGameObject(GameObject* o, uint16 x, uint16 y);
 		void SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint32 cell_radius, uint32 langpos, int32 lang, WorldSession* originator);
 		void SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Message, ...);
-		void SendPacketToAllPlayers(WorldPacket *packet) const;
-		void SendPacketToPlayersInZone(uint32 zone, WorldPacket *packet) const;
+		void SendPacketToAllPlayers(WorldPacket* packet) const;
+		void SendPacketToPlayersInZone(uint32 zone, WorldPacket* packet) const;
 
 		Instance* pInstance;
 		void BeginInstanceExpireCountdown();

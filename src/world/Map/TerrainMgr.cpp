@@ -86,7 +86,6 @@ void TerrainHolder::UnloadTile(float x, float y)
 {
     int32 tx = (int32)(32 - (x / TERRAIN_TILE_SIZE));
     int32 ty = (int32)(32 - (y / TERRAIN_TILE_SIZE));
-    UnloadTile(tx, ty);
 
     m_lock[tx][ty].Acquire();
 
