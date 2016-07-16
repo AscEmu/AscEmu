@@ -1005,7 +1005,14 @@ float MapMgr::GetLandHeight(float x, float y, float z)
 
 float MapMgr::GetADTLandHeight(float x, float y)
 {
-    return _terrain->GetADTLandHeight(x, y);
+    TerrainTile* tile = _terrain->GetTile(x, y);
+    if (tile == nullptr)
+        return TERRAIN_INVALID_HEIGHT;
+
+    float rv = tile->m_map.GetHeight(x, y);
+    tile->DecRef();
+
+    return rv;
 }
 
 bool MapMgr::IsUnderground(float x, float y, float z)

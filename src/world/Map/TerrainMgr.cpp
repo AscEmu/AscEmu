@@ -115,16 +115,6 @@ void TerrainHolder::UnloadTile(int32 tx, int32 ty)
     }
 }
 
-float TerrainHolder::GetADTLandHeight(float x, float y)
-{
-    TerrainTile* tile = GetTile(x, y);
-
-    if (tile == NULL)
-        return TERRAIN_INVALID_HEIGHT;
-    float rv = tile->m_map.GetHeight(x, y);
-    tile->DecRef();
-    return rv;
-}
 
 float TerrainHolder::GetLiquidHeight(float x, float y)
 {

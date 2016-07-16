@@ -201,8 +201,6 @@ class TerrainHolder
     void UnloadTile(int32 tx, int32 ty);
 
     //test
-    float GetADTLandHeight(float x, float y);
-
     float GetLiquidHeight(float x, float y);
 
     uint8 GetLiquidType(float x, float y);
