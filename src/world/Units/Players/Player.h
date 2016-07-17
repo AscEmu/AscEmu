@@ -1367,13 +1367,16 @@ class SERVER_DECL Player : public Unit
         {
             if (mapId >= NUM_MAPS || difficulty >= NUM_INSTANCE_MODES || m_playerInfo == NULL)
                 return 0;
+
             m_playerInfo->savedInstanceIdsLock.Acquire();
             PlayerInstanceMap::iterator itr = m_playerInfo->savedInstanceIds[difficulty].find(mapId);
+
             if (itr == m_playerInfo->savedInstanceIds[difficulty].end())
             {
                 m_playerInfo->savedInstanceIdsLock.Release();
                 return 0;
             }
+
             m_playerInfo->savedInstanceIdsLock.Release();
             return (*itr).second;
         }
@@ -1382,7 +1385,6 @@ class SERVER_DECL Player : public Unit
         //Use this method carefully..
         void SetPersistentInstanceId(uint32 mapId, uint8 difficulty, uint32 instanceId);
 
-        void SendAchievmentStatus(uint32 criteriaid, uint32 new_value, uint32 at_stamp);
         void SendTriggerMovie(uint32 movieID);
 
         // DualWield2H (ex: Titan's grip)
@@ -1878,13 +1880,6 @@ class SERVER_DECL Player : public Unit
 
     public:
 
-#ifdef ENABLE_COMPRESSED_MOVEMENT
-        void EventDumpCompressedMovement();
-        void AppendMovementData(uint32 op, uint32 sz, const uint8* data);
-        Mutex m_movementBufferLock;
-        ByteBuffer m_movementBuffer;
-#endif
-
         void addDeletedSpell(uint32 id) { mDeletedSpells.insert(id); }
 
         std::map<uint32, uint32> m_forcedReactions;
@@ -2074,26 +2069,5 @@ class SkillIterator
         bool End() { return (m_itr == m_endItr) ? true : false; }
 
 };
-
-#ifdef ENABLE_COMPRESSED_MOVEMENT
-
-class CMovementCompressorThread : public ThreadBase
-{
-        bool running;
-        Mutex m_listLock;
-        set<Player*> m_players;
-    public:
-        CMovementCompressorThread() { running = true; }
-
-        void AddPlayer(Player* pPlayer);
-        void RemovePlayer(Player* pPlayer);
-
-        void OnShutdown() { running = false; }
-        bool run();
-};
-
-extern CMovementCompressorThread* MovementCompressor;
-
-#endif
 
 #endif // _PLAYER_H

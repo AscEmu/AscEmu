@@ -611,11 +611,6 @@ bool World::SetInitialWorldSettings()
 
     ThreadPool.ExecuteTask(new CharacterLoaderThread());
 
-#ifdef ENABLE_COMPRESSED_MOVEMENT
-    MovementCompressor = new CMovementCompressorThread();
-    ThreadPool.ExecuteTask(MovementCompressor);
-#endif
-
     // Preload and compile talent and talent tab data to speed up talent inspect
     // Zyres: It looks like missplaced and should be moved right after dbc loading
 #define MAX_TALENT_CLASS 12

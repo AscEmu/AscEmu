@@ -98,6 +98,15 @@ Drop Mine - 39685, 25024
 Nitrous Boost - 27746
 
 
+#define CANNON 24933            //39692, 34154
+#define MORTAR 25003            //33861 -- Triggers Explosion, 39695 --- Summons Mortar
+#define NITROUS 27746           //Needs Scripting
+#define FLAMETHROWER 39693      //25027
+#define MACHINEGUN 25026
+#define DROPMINE 25024
+#define SHIELD 27759
+
+static uint32 TonkSpecials[4] = { FLAMETHROWER, MACHINEGUN, DROPMINE, SHIELD };
 
 /// Tonk Control Consoles
 class TonkControlConsole : public GameObjectAIScript
