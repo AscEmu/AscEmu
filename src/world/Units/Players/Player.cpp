@@ -448,9 +448,6 @@ Player::Player(uint32 guid)
     m_changingMaps = true;
     m_outStealthDamageBonusPct = m_outStealthDamageBonusPeriod = m_outStealthDamageBonusTimer = 0;
     m_flyhackCheckTimer = 0;
-#ifdef TRACK_IMMUNITY_BUG
-    m_immunityTime = 0;
-#endif
 
     m_skills.clear();
     m_wratings.clear();
@@ -1132,33 +1129,6 @@ void Player::Update(unsigned long time_passed)
         if (m_drunkTimer > 10000)
             HandleSobering();
     }
-
-#ifdef TRACK_IMMUNITY_BUG
-    bool immune = false;
-    for (uint8 i = 0; i < 7; i++)
-        if (SchoolImmunityList[i]) immune = true;
-
-    if (immune)
-    {
-        if (m_immunityTime == 0)
-        {
-            m_immunityTime = mstime;
-        }
-
-        if ((mstime - m_immunityTime) > 15000)
-        {
-            LOG_DETAIL("plr guid=%d has been immune for > 15sec: %u %u %u %u %u %u %u, resetting states", GetLowGUID(),
-                       SchoolImmunityList[0], SchoolImmunityList[1], SchoolImmunityList[2], SchoolImmunityList[3],
-                       SchoolImmunityList[4], SchoolImmunityList[5], SchoolImmunityList[6]);
-            for (uint8 i = 0; i < 7; i++)
-                if (SchoolImmunityList[i]) SchoolImmunityList[i] = 0;
-        }
-    }
-    else
-    {
-        m_immunityTime = 0;
-    }
-#endif
 
     WorldPacket* pending_packet = m_cache->m_pendingPackets.pop();
     while (pending_packet != NULL)
