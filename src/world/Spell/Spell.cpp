@@ -3325,7 +3325,7 @@ uint8 Spell::CanCast(bool tolerate)
             return SPELL_FAILED_ONLY_BATTLEGROUNDS;
 
         // only in outland check
-        if (p_caster->GetMapId() != 530 && hasAttributeExD(SP_ATTR_EX_D_ONLY_IN_OUTLANDS))
+        if (p_caster->GetMapId() != 530 && p_caster->GetMapId() != 571 && hasAttributeExD(SP_ATTR_EX_D_ONLY_IN_OUTLANDS))
             return SPELL_FAILED_INCORRECT_AREA;
         /**
          *	Cooldowns check
