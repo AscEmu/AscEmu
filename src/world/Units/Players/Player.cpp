@@ -1547,18 +1547,7 @@ void Player::_EventExploration()
     else
     {
         if (m_isResting)
-        {
-            if (sWorld.Collision)
-            {
-                const LocationVector & loc = GetPosition();
-                if (MapManagement::AreaManagement::AreaStorage::IsOutdoor(GetMapId(), loc.x, loc.y, loc.z + 2.0f))
-                    ApplyPlayerRestState(false);
-            }
-            else
-            {
-                ApplyPlayerRestState(false);
-            }
-        }
+            ApplyPlayerRestState(false);
     }
 
     if (!(currFields & val) && !GetTaxiState() && !obj_movement_info.transporter_info.guid) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
