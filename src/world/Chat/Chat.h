@@ -345,6 +345,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 
         //go* commands
         bool HandleGoTriggerCommand(const char* args, WorldSession* m_session);
+        bool HandleGoStartLocationCommand(const char* args, WorldSession* m_session);
         bool HandleGoCreatureSpawnCommand(const char* args, WorldSession* m_session);
         bool HandleGoGameObjectSpawnCommand(const char* args, WorldSession* m_session);
 
@@ -546,7 +547,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleHelpCommand(const char* args, WorldSession* m_session);
         bool HandleCommandsCommand(const char* args, WorldSession* m_session);
 
-        bool HandleStartCommand(const char* args, WorldSession* m_session);
         bool HandleDismountCommand(const char* args, WorldSession* m_session);
         bool HandleRatingsCommand(const char* args, WorldSession* m_session);
         bool HandleSimpleDistanceCommand(const char* args, WorldSession* m_session);

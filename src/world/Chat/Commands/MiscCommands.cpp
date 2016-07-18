@@ -63,6 +63,75 @@ bool ChatHandler::HandleGoGameObjectSpawnCommand(const char* args, WorldSession*
     return true;
 }
 
+//.gostartlocation
+bool ChatHandler::HandleGoStartLocationCommand(const char* args, WorldSession* m_session)
+{
+    auto player_target = GetSelectedPlayer(m_session, true, true);
+    if (player_target == nullptr)
+        return true;
+
+    std::string race;
+    uint8 raceid = 0;
+    uint8 classid = 0;
+
+    if (strlen(args) > 0)
+    {
+        race = args;
+        if (race == "human")
+            raceid = 1;
+        else if (race == "orc")
+            raceid = 2;
+        else if (race == "dwarf")
+            raceid = 3;
+        else if (race == "nightelf")
+            raceid = 4;
+        else if (race == "undead")
+            raceid = 5;
+        else if (race == "tauren")
+            raceid = 6;
+        else if (race == "gnome")
+            raceid = 7;
+        else if (race == "troll")
+            raceid = 8;
+        else if (race == "bloodelf")
+            raceid = 10;
+        else if (race == "draenei")
+            raceid = 11;
+        else if (race == "deathknight")
+            classid = 6;
+        else
+        {
+            RedSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, tauren, undead, bloodelf, deathknight");
+            return true;
+        }
+    }
+    else
+    {
+        raceid = player_target->getRace();
+        classid = player_target->getClass();
+        race = "own";
+    }
+
+    PlayerCreateInfo const* player_info = nullptr;
+    for (uint8 i = 1; i <= 11; ++i)
+    {
+        player_info = sMySQLStore.GetPlayerCreateInfo((raceid ? raceid : i), (classid ? classid : i));
+        if (player_info != nullptr)
+            break;
+    }
+
+    if (player_info == nullptr)
+    {
+        RedSystemMessage(m_session, "Internal error: Could not find create info for race %u and class %u.", raceid, classid);
+        return false;
+    }
+
+    GreenSystemMessage(m_session, "Teleporting %s to %s starting location.", player_target->GetName(), race.c_str());
+
+    player_target->SafeTeleport(player_info->mapId, 0, LocationVector(player_info->positionX, player_info->positionY, player_info->positionZ));
+    return true;
+}
+
 //.gotrig
 bool ChatHandler::HandleGoTriggerCommand(const char* args, WorldSession* m_session)
 {
