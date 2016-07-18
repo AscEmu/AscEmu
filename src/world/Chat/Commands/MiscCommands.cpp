@@ -40,7 +40,7 @@ bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
 }
 
 //.dismount
-bool ChatHandler::HandleDismountCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleDismountCommand(const char* /*args*/, WorldSession* m_session)
 {
     Unit* unit_target = GetSelectedUnit(m_session, true);
     if (unit_target == nullptr)

@@ -51,22 +51,6 @@ bool ChatHandler::HandleRangeCheckCommand(const char* args, WorldSession* m_sess
     return true;
 }
 
-bool ChatHandler::HandleRatingsCommand(const char* args, WorldSession* m_session)
-{
-    m_session->SystemMessage("Ratings!!!");
-    Player* m_plyr = GetSelectedPlayer(m_session, false, true);
-
-    if (m_plyr == NULL)
-        return false;
-
-    for (uint8 i = 0; i < 24; i++)
-    {
-        m_plyr->ModUnsigned32Value(PLAYER_FIELD_COMBAT_RATING_1 + i, i);
-    }
-    m_plyr->UpdateStats();
-    return true;
-}
-
 float CalculateDistance(float x1, float y1, float z1, float x2, float y2, float z2)
 {
     float dx = x1 - x2;

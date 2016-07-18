@@ -71,3 +71,4 @@ bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_
 
     return true;
 }
+

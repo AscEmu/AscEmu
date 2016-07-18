@@ -463,10 +463,13 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleUnrootCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleRootCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleAutoSaveChangesCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleDismountCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleMountCommand(const char* args, WorldSession* m_session);
         //.kick
         bool HandleKickByNameCommand(const char* args, WorldSession* m_session);
         bool HandleKKickBySessionCommand(const char* args, WorldSession* m_session);
         bool HandleKickByIPCommand(const char* args, WorldSession* m_session);
+
 
         //Waypoint
         bool HandleWayPointAddCommand(const char* args, WorldSession* m_session);
@@ -485,6 +488,11 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleWayPointShowCommand(const char* args, WorldSession* m_session);
         bool HandleWayPointSkinCommand(const char* args, WorldSession* m_session);
         bool HandleWayPointWaitCommand(const char* args, WorldSession* m_session);
+
+        //Chat.cpp
+        bool HandleHelpCommand(const char* args, WorldSession* m_session);
+        bool HandleCommandsCommand(const char* args, WorldSession* m_session);
+
         
         //////////////////////////////////////////////////////////////////////////////////////////
         // Everything under this line is untested/not rewritten.
@@ -544,11 +552,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAchievementCriteriaCommand(const char* args, WorldSession* m_session);
         bool HandleAchievementResetCommand(const char* args, WorldSession* m_session);
 #endif
-        bool HandleHelpCommand(const char* args, WorldSession* m_session);
-        bool HandleCommandsCommand(const char* args, WorldSession* m_session);
-
-        bool HandleDismountCommand(const char* args, WorldSession* m_session);
-        bool HandleRatingsCommand(const char* args, WorldSession* m_session);
         bool HandleSimpleDistanceCommand(const char* args, WorldSession* m_session);
         
         bool CmdSetValueField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args);
@@ -563,7 +566,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGetDeathState(const char* args, WorldSession* m_session);
         bool HandleCollisionTestLOS(const char* args, WorldSession* m_session);
         bool HandleCollisionGetHeight(const char* args, WorldSession* m_session);
-        bool HandleMountCommand(const char* args, WorldSession* m_session);
 
         bool HandleSendItemPushResult(const char* args, WorldSession* m_session);
         
