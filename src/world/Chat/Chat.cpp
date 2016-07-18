@@ -1753,3 +1753,124 @@ std::string ChatHandler::MyConvertFloatToString(const float arg)
     out << arg;
     return out.str();
 }
+
+bool ChatHandler::ShowHelpForCommand(WorldSession* m_session, ChatCommand* table, const char* cmd)
+{
+    for (uint32 i = 0; table[i].Name != NULL; i++)
+    {
+        if (!hasStringAbbr(table[i].Name, cmd))
+            continue;
+
+        if (m_session->CanUseCommand(table[i].CommandGroup))
+            continue;
+
+        if (table[i].ChildCommands != NULL)
+        {
+            cmd = strtok(NULL, " ");
+            if (cmd && ShowHelpForCommand(m_session, table[i].ChildCommands, cmd))
+                return true;
+        }
+
+        if (table[i].Help == "")
+        {
+            SystemMessage(m_session, "There is no help for that command");
+            return true;
+        }
+
+        SendMultilineMessage(m_session, table[i].Help.c_str());
+
+        return true;
+    }
+
+    return false;
+}
+
+bool ChatHandler::HandleHelpCommand(const char* args, WorldSession* m_session)
+{
+    //    ChatCommand *table = getCommandTable();
+    WorldPacket data;
+
+    if (!*args)
+        return false;
+
+    char* cmd = strtok((char*)args, " ");
+    if (!cmd)
+        return false;
+
+    if (!ShowHelpForCommand(m_session, CommandTableStorage::getSingleton().Get(), cmd))
+    {
+        RedSystemMessage(m_session, "Sorry, no help was found for this command, or that command does not exist.");
+    }
+
+    return true;
+}
+
+bool ChatHandler::HandleCommandsCommand(const char* args, WorldSession* m_session)
+{
+    ChatCommand* table = CommandTableStorage::getSingleton().Get();
+    WorldPacket data;
+
+    std::string output;
+    uint32 count = 0;
+
+    output = "Available commands: \n\n";
+
+    for (uint32 i = 0; table[i].Name != NULL; i++)
+    {
+        if (*args && !hasStringAbbr(table[i].Name, (char*)args))
+            continue;
+
+        if (table[i].CommandGroup != '0' && !m_session->CanUseCommand(table[i].CommandGroup))
+            continue;
+
+        switch (table[i].CommandGroup)
+        {
+            case 'z':
+            {
+                output += "|cffff6060";
+                output += table[i].Name;
+                output += "|r, ";
+            }
+            break;
+            case 'm':
+            {
+                output += "|cff00ffff";
+                output += table[i].Name;
+                output += ", ";
+            }
+            break;
+            case 'c':
+            {
+                output += "|cff00ff00";
+                output += table[i].Name;
+                output += "|r, ";
+            }
+            break;
+            default:
+            {
+                output += "|cff00ccff";
+                output += table[i].Name;
+                output += "|r, ";
+            }
+            break;
+        }
+
+        count++;
+        if (count == 5)  // 5 per line
+        {
+            output += "\n";
+            count = 0;
+        }
+    }
+    if (count)
+        output += "\n";
+
+
+    //FillSystemMessageData(&data, table[i].Name);
+    //m_session->SendPacket(&data);
+    //}
+
+    SendMultilineMessage(m_session, output.c_str());
+
+    return true;
+}
