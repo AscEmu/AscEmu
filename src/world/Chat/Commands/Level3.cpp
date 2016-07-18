@@ -66,21 +66,6 @@ int32 GetSpellIDFromLink(const char* spelllink)
     return atol(ptr + 8);       // spell id is just past "|Hspell:" (8 bytes)
 }
 
-bool ChatHandler::HandleWorldPortCommand(const char* args, WorldSession* m_session)
-{
-    float x, y, z, o = 0;
-    uint32 mapid;
-    if (sscanf(args, "%u %f %f %f %f", (unsigned int*)&mapid, &x, &y, &z, &o) < 4)
-        return false;
-
-    if (x >= _maxX || x <= _minX || y <= _minY || y >= _maxY)
-        return false;
-
-    LocationVector vec(x, y, z, o);
-    m_session->GetPlayer()->SafeTeleport(mapid, 0, vec);
-    return true;
-}
-
 bool ChatHandler::HandleLearnCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)

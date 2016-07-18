@@ -37,64 +37,6 @@ bool ChatHandler::HandleResetReputationCommand(const char* args, WorldSession* m
     return true;
 }
 
-bool ChatHandler::HandleInvincibleCommand(const char* args, WorldSession* m_session)
-{
-    Player* chr = GetSelectedPlayer(m_session, true, true);
-    char msg[100];
-    if (chr)
-    {
-        chr->bInvincible = !chr->bInvincible;
-        snprintf(msg, 100, "Invincibility is now %s", chr->bInvincible ? "ON. You may have to leave and re-enter this zone for changes to take effect." : "OFF. Exit and re-enter this zone for this change to take effect.");
-    }
-    else
-    {
-        snprintf(msg, 100, "Select a player or yourself first.");
-    }
-    if (chr != m_session->GetPlayer() && chr)
-        sGMLog.writefromsession(m_session, "toggled invincibility on %s", chr->GetName());
-    SystemMessage(m_session, msg);
-    return true;
-}
-
-bool ChatHandler::HandleInvisibleCommand(const char* args, WorldSession* m_session)
-{
-    char msg[256];
-    Player* pChar = m_session->GetPlayer();
-
-    snprintf(msg, 256, "Invisibility and Invincibility are now ");
-    if (pChar->m_isGmInvisible)
-    {
-        pChar->m_isGmInvisible = false;
-        pChar->m_invisible = false;
-        pChar->bInvincible = false;
-        pChar->Social_TellFriendsOnline();
-        if (pChar->m_bg)
-        {
-            pChar->m_bg->RemoveInvisGM();
-        }
-        snprintf(msg, 256, "%s OFF.", msg);
-    }
-    else
-    {
-        pChar->m_isGmInvisible = true;
-        pChar->m_invisible = true;
-        pChar->bInvincible = true;
-        pChar->Social_TellFriendsOffline();
-        if (pChar->m_bg)
-        {
-            pChar->m_bg->AddInvisGM();
-        }
-        snprintf(msg, 256, "%s ON.", msg);
-    }
-
-    pChar->UpdateVisibility();
-
-    snprintf(msg, 256, "%s You may have to leave and re-enter this zone for changes to take effect.", msg);
-
-    GreenSystemMessage(m_session, (const char*)msg);
-    return true;
-}
-
 bool ChatHandler::CreateGuildCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)

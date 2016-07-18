@@ -465,6 +465,10 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAutoSaveChangesCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleDismountCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleMountCommand(const char* args, WorldSession* m_session);
+        bool HandleWorldPortCommand(const char* args, WorldSession* m_session);
+        bool HandleGPSCommand(const char* args, WorldSession* m_session);
+        bool HandleInvincibleCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleInvisibleCommand(const char* /*args*/, WorldSession* m_session);
         //.kick
         bool HandleKickByNameCommand(const char* args, WorldSession* m_session);
         bool HandleKKickBySessionCommand(const char* args, WorldSession* m_session);
@@ -544,8 +548,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleStartBGCommand(const char* args, WorldSession* m_session);
         bool HandlePauseBGCommand(const char* args, WorldSession* m_session);
         bool HandleBGInfoCommnad(const char* args, WorldSession* m_session);
-        bool HandleInvincibleCommand(const char* args, WorldSession* m_session);
-        bool HandleInvisibleCommand(const char* args, WorldSession* m_session);
 
 #ifdef ENABLE_ACHIEVEMENTS
         bool HandleAchievementCompleteCommand(const char* args, WorldSession* m_session);
@@ -560,7 +562,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAppearCommand(const char* args, WorldSession* m_session);
         bool HandleAnnounceCommand(const char* args, WorldSession* m_session);
         bool HandleWAnnounceCommand(const char* args, WorldSession* m_session);
-        bool HandleGPSCommand(const char* args, WorldSession* m_session);
         
         bool HandleCollisionTestIndoor(const char* args, WorldSession* m_session);
         bool HandleGetDeathState(const char* args, WorldSession* m_session);
@@ -637,7 +638,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         
         bool HandleGOExport(const char* args, WorldSession* m_session);
 
-        bool HandleWorldPortCommand(const char* args, WorldSession* m_session);
         bool HandleLearnCommand(const char* args, WorldSession* m_session);
         
         bool HandleGMTicketListCommand(const char* args, WorldSession* m_session);

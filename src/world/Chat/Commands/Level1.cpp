@@ -111,66 +111,6 @@ bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession* m_sessi
     return true;
 }
 
-bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
-{
-    Object* obj;
-    uint64 guid = m_session->GetPlayer()->GetSelection();
-    if (guid != 0)
-    {
-        if ((obj = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid)) == 0)
-        {
-            SystemMessage(m_session, "You should select a character or a creature.");
-            return true;
-        }
-    }
-    else
-        obj = m_session->GetPlayer();
-
-    char buf[400];
-    auto at = obj->GetArea();
-    if (!at)
-    {
-        snprintf((char*)buf, 400, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f|r",
-                 (unsigned int)obj->GetMapId(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
-        SystemMessage(m_session, buf);
-        return true;
-    }
-    auto out_map_id = obj->GetMapId();
-    auto out_zone_id = at->zone; // uint32 at_old->ZoneId
-    auto out_area_id = at->id; // uint32 at_old->AreaId
-    auto out_phase = obj->GetPhase();
-    auto out_x = obj->GetPositionX();
-    auto out_y = obj->GetPositionY();
-    auto out_z = obj->GetPositionZ();
-    auto out_o = obj->GetOrientation();
-    auto out_area_name = at->area_name[0]; // enUS, hardcoded until locale is implemented properly
-    snprintf((char*)buf, 400, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffZone: |cff00ff00%u |cffffffffArea: |cff00ff00%u |cffffffffPhase: |cff00ff00%u |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f |cffffffffArea Name: |cff00ff00%s |r",
-             out_map_id, out_zone_id, out_area_id, out_phase, out_x, out_y, out_z, out_o, out_area_name);
-    SystemMessage(m_session, buf);
-    if (obj->obj_movement_info.IsOnTransport())
-    {
-        SystemMessage(m_session, "Position on Transport:");
-        SystemMessage(m_session, "  tX: %f  tY: %f  tZ: %f  tO: %f", obj->GetTransPositionX(), obj->GetTransPositionY(), obj->GetTransPositionZ(), obj->GetTransPositionO());
-    }
-
-    // ".gps 1" will save gps info to file logs/gps.log - This probably isn't very multithread safe so don't have many gms spamming it!
-    if (args != NULL && *args == '1')
-    {
-        FILE* gpslog = fopen(FormatOutputString("logs", "gps", false).c_str(), "at");
-        if (gpslog)
-        {
-            fprintf(gpslog, "%d, %u, %u, %f, %f, %f, %f, \'%s\'", out_map_id, out_zone_id, out_area_id, out_x, out_y, out_z, out_o, out_area_name);
-            // ".gps 1 comment" will save comment after the gps data
-            if (*(args + 1) == ' ')
-                fprintf(gpslog, ",%s\n", args + 2);
-            else
-                fprintf(gpslog, "\n");
-            fclose(gpslog);
-        }
-    }
-    return true;
-}
-
 bool ChatHandler::HandleSummonCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
