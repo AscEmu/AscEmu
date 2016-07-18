@@ -943,8 +943,6 @@ void CommandTableStorage::Init()
         { "gogameobject",       'v', &ChatHandler::HandleGoGameObjectSpawnCommand,      "Teleports you to the gameobject with <spawn_id>.",         nullptr, 0, 0, 0 },
         { "gostartlocation",    'm', &ChatHandler::HandleGoStartLocationCommand,        "Teleports you to a starting location",                     nullptr, 0, 0, 0 },
         { "gotrig",             'v', &ChatHandler::HandleGoTriggerCommand,              "Teleports you to the areatrigger with <id>.",              nullptr, 0, 0, 0 },
-        //npc
-        { "fixscale",        'm', &ChatHandler::HandleFixScaleCommand,                      "",                                                                                                                                        NULL,                     0, 0, 0 },
         { "achieve",         '0', NULL,                                                     "",                                                                                                                                        achievementCommandTable,  0, 0, 0 },
         { "vehicle",         'm', NULL,                                                     "",                                                                                                                                        vehicleCommandTable,      0, 0, 0 },
         { "transport",       'm', NULL,                                                     "",                                                                                                                                        transportCommandTable,    0, 0, 0 },

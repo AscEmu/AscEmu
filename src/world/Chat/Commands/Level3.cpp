@@ -1616,21 +1616,3 @@ bool ChatHandler::HandleCollisionGetHeight(const char* args, WorldSession* m_ses
         return true;
     }
 }
-
-bool ChatHandler::HandleFixScaleCommand(const char* args, WorldSession* m_session)
-{
-    Creature* pCreature = GetSelectedCreature(m_session, true);
-    if (pCreature == NULL)
-        return true;
-
-    float sc = (float)atof(args);
-    if (sc < 0.1f)
-    {
-        return false;
-    }
-
-    pCreature->SetScale(sc);
-    const_cast<CreatureProperties*>(pCreature->GetCreatureProperties())->Scale = sc;
-    WorldDatabase.Execute("UPDATE creature_proto SET scale = '%f' WHERE entry = %u", sc, pCreature->GetEntry());
-    return true;
-}

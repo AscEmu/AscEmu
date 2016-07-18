@@ -546,7 +546,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleBGInfoCommnad(const char* args, WorldSession* m_session);
         bool HandleInvincibleCommand(const char* args, WorldSession* m_session);
         bool HandleInvisibleCommand(const char* args, WorldSession* m_session);
-        bool HandleFixScaleCommand(const char* args, WorldSession* m_session);
+
 #ifdef ENABLE_ACHIEVEMENTS
         bool HandleAchievementCompleteCommand(const char* args, WorldSession* m_session);
         bool HandleAchievementCriteriaCommand(const char* args, WorldSession* m_session);
