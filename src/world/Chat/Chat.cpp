@@ -906,10 +906,8 @@ void CommandTableStorage::Init()
         { "summon",          'v', &ChatHandler::HandleSummonCommand,                        "Summons x to your position.",                                                                                                              NULL,                     0, 0, 0 },
         { "kill",            'r', &ChatHandler::HandleKillCommand,                          ".kill - Kills selected unit .kill <playername> kills player with <playername>",                                                                                                            NULL,                     0, 0, 0 },
         { "revive",          'r', &ChatHandler::HandleReviveCommand,                        ".revive - revives you or a selected target .revive <player_name> revives player with <playername>",                                                                                                                            NULL,                     0, 0, 0 },
-        //misc player/creature
-        { "mount",           'm', &ChatHandler::HandleMountCommand,                         "Mounts into modelid x.",                                                                                                                  NULL,                     0, 0, 0 },
-        //misc player/creature
-        { "dismount",        'h', &ChatHandler::HandleDismountCommand,                      "Dismounts.",                                                                                                                              NULL,                     0, 0, 0 },
+        { "mount",              'm', &ChatHandler::HandleMountCommand,                  "Mounts targeted unit with modelid x.",                     nullptr, 0, 0, 0 },
+        { "dismount",           'h', &ChatHandler::HandleDismountCommand,               "Dismounts targeted unit.",                                 nullptr, 0, 0, 0 },
         { "gps",             '0', &ChatHandler::HandleGPSCommand,                           "Shows Position",                                                                                                                          NULL,                     0, 0, 0 },
         //teleport
         { "worldport",       'v', &ChatHandler::HandleWorldPortCommand,                     "Teleports you to a location with mapid x y z",                                                                                                                                        NULL,                     0, 0, 0 },

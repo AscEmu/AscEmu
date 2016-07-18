@@ -5,6 +5,62 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 
+//.mount
+bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
+{
+    Unit* unit_target = GetSelectedUnit(m_session, true);
+    if (unit_target == nullptr)
+        return true;
+
+    if (!args)
+    {
+        RedSystemMessage(m_session, "No model specified!");
+        return true;
+    }
+
+    uint32 modelid = atol(args);
+    if (!modelid)
+    {
+        RedSystemMessage(m_session, "No model specified!");
+        return true;
+    }
+
+    if (unit_target->GetMount() != 0)
+    {
+        RedSystemMessage(m_session, "Target is already mounted.");
+        return true;
+    }
+
+    unit_target->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, modelid);
+
+    BlueSystemMessage(m_session, "Now mounted with model %d.", modelid);
+    sGMLog.writefromsession(m_session, "used mount command to model %u", modelid);
+
+    return true;
+}
+
+//.dismount
+bool ChatHandler::HandleDismountCommand(const char* args, WorldSession* m_session)
+{
+    Unit* unit_target = GetSelectedUnit(m_session, true);
+    if (unit_target == nullptr)
+        return true;
+
+    if (unit_target->GetMount() == 0)
+    {
+        RedSystemMessage(m_session, "Target is not mounted.");
+        return true;
+    }
+
+    if (unit_target->IsPlayer())
+        static_cast<Player*>(unit_target)->Dismount();
+
+    unit_target->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+
+    BlueSystemMessage(m_session, "Target is now unmounted.");
+    return true;
+}
+
 //.gocreature
 bool ChatHandler::HandleGoCreatureSpawnCommand(const char* args, WorldSession* m_session)
 {

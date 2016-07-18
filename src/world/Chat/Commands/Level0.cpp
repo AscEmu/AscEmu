@@ -145,43 +145,6 @@ bool ChatHandler::HandleCommandsCommand(const char* args, WorldSession* m_sessio
     return true;
 }
 
-bool ChatHandler::HandleDismountCommand(const char* args, WorldSession* m_session)
-{
-    Unit* m_target = NULL;
-
-    Player* p_target = GetSelectedPlayer(m_session, false, true);
-
-    if (p_target)
-        m_target = p_target;
-    else
-    {
-        Creature* m_crt = GetSelectedCreature(m_session, false);
-        if (m_crt)
-            m_target = m_crt;
-    }
-
-    if (!m_target)
-    {
-        RedSystemMessage(m_session, "No target found.");
-        return true;
-    }
-
-    if (m_target->GetMount() == 0)
-    {
-        RedSystemMessage(m_session, "Target is not mounted.");
-        return true;
-    }
-
-    if (p_target != NULL)
-        p_target->Dismount();
-
-    m_target->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
-    //m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
-
-    BlueSystemMessage(m_session, "Now unmounted.");
-    return true;
-}
-
 bool ChatHandler::HandleRangeCheckCommand(const char* args, WorldSession* m_session)
 {
     WorldPacket data;

@@ -708,51 +708,6 @@ bool ChatHandler::HandleGOEnable(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
-{
-    if (!args)
-    {
-        RedSystemMessage(m_session, "No model specified");
-        return true;
-    }
-    uint32 modelid = atol(args);
-    if (!modelid)
-    {
-        RedSystemMessage(m_session, "No model specified");
-        return true;
-    }
-
-    Unit* m_target = NULL;
-    Player* m_plyr = GetSelectedPlayer(m_session, false, true);
-    if (m_plyr)
-        m_target = m_plyr;
-    else
-    {
-        Creature* m_crt = GetSelectedCreature(m_session, false);
-        if (m_crt)
-            m_target = m_crt;
-    }
-
-    if (!m_target)
-    {
-        RedSystemMessage(m_session, "No target found.");
-        return true;
-    }
-
-    if (m_target->GetMount() != 0)
-    {
-        RedSystemMessage(m_session, "Target is already mounted.");
-        return true;
-    }
-
-    m_target->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, modelid);
-    //m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
-
-    BlueSystemMessage(m_session, "Now mounted with model %d.", modelid);
-    sGMLog.writefromsession(m_session, "used mount command to model %u", modelid);
-    return true;
-}
-
 bool ChatHandler::HandleGOExport(const char* args, WorldSession* m_session)
 {
     /*if (!m_session->GetPlayer()->m_GM_SelectedGO)
