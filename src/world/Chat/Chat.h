@@ -326,6 +326,13 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         // Debug
         bool HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session);
         bool HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session);
+        bool HandleSendCastFailed(const char* args, WorldSession* m_session);
+        // old debugcmds.cpp
+        bool HandlePlayMovie(const char* args, WorldSession* m_session);
+        bool HandleAuraUpdateAdd(const char* args, WorldSession* m_session);
+        bool HandleAuraUpdateRemove(const char* args, WorldSession* m_session);
+        bool HandleRangeCheckCommand(const char* args, WorldSession* m_session);
+        bool HandleSimpleDistanceCommand(const char* args, WorldSession* m_session);
 
         // GameEventMgr
         bool HandleEventListEvents(const char* args, WorldSession* m_session);
@@ -526,11 +533,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleDebugDumpCoordsCommmand(const char* args, WorldSession* m_session);
         bool HandleSendpacket(const char* args, WorldSession* m_session);
         bool HandleSQLQueryCommand(const char* args, WorldSession* m_session);
-        bool HandleRangeCheckCommand(const char* args, WorldSession* m_session);
-        bool HandleSendFailed(const char* args, WorldSession* m_session);
-        bool HandlePlayMovie(const char* args, WorldSession* m_session);
-        bool HandleAuraUpdateAdd(const char* args, WorldSession* m_session);
-        bool HandleAuraUpdateRemove(const char* args, WorldSession* m_session);
+        
         bool HandleDebugSpawnWarCommand(const char* args, WorldSession* m_session);
         bool HandleUpdateWorldStateCommand(const char* args, WorldSession* session);
         bool HandleInitWorldStatesCommand(const char* args, WorldSession* session);
@@ -554,7 +557,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAchievementCriteriaCommand(const char* args, WorldSession* m_session);
         bool HandleAchievementResetCommand(const char* args, WorldSession* m_session);
 #endif
-        bool HandleSimpleDistanceCommand(const char* args, WorldSession* m_session);
         
         bool CmdSetValueField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args);
         bool CmdSetFloatField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args);

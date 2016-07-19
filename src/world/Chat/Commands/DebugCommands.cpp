@@ -72,3 +72,37 @@ bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_
     return true;
 }
 
+//.playmovie
+bool ChatHandler::HandlePlayMovie(const char* args, WorldSession* m_session)
+{
+    Player* selected_player = GetSelectedPlayer(m_session, true, true);
+    if (selected_player == nullptr)
+        return true;
+
+    uint32 movie = atol(args);
+
+    selected_player->SendTriggerMovie(movie);
+
+    if (selected_player != m_session->GetPlayer())
+        GreenSystemMessage(selected_player->GetSession(), "Movie started for player %s", selected_player->GetName());
+
+    return true;
+}
+
+//.sendfail
+bool ChatHandler::HandleSendCastFailed(const char* args, WorldSession* m_session)
+{
+    Player* selected_player = GetSelectedPlayer(m_session, true, true);
+    if (selected_player == nullptr)
+        return true;
+
+    uint32 fail = atol(args);
+    if (SPELL_CANCAST_OK < fail)
+    {
+        RedSystemMessage(m_session, "Argument %u is out of range!", fail);
+        return false;
+    }
+    selected_player->SendCastResult(1, (uint8)fail, 0, 0);
+
+    return true;
+}

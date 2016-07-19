@@ -929,3 +929,115 @@ bool ChatHandler::HandleClearWorldStatesCommand(const char* args, WorldSession* 
 
     return true;
 }
+
+bool ChatHandler::HandleAuraUpdateRemove(const char* args, WorldSession* m_session)
+{
+    if (!args)
+        return false;
+
+    char* pArgs = strtok((char*)args, " ");
+    if (!pArgs)
+        return false;
+    uint8 VisualSlot = (uint8)atoi(pArgs);
+    Player* Pl = m_session->GetPlayer();
+    Aura* AuraPtr = Pl->FindAura(Pl->m_auravisuals[VisualSlot]);
+    if (!AuraPtr)
+    {
+        SystemMessage(m_session, "No auraid found in slot %u", VisualSlot);
+        return true;
+    }
+    SystemMessage(m_session, "SMSG_AURA_UPDATE (remove): VisualSlot %u - SpellID 0", VisualSlot);
+    AuraPtr->Remove();
+    return true;
+}
+
+bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
+{
+    if (!args)
+        return false;
+
+    uint32 SpellID = 0;
+    int Flags = 0;
+    int StackCount = 0;
+    if (sscanf(args, "%u 0x%X %i", &SpellID, &Flags, &StackCount) != 3 && sscanf(args, "%u %u %i", &SpellID, &Flags, &StackCount) != 3)
+        return false;
+
+    Player* Pl = m_session->GetPlayer();
+    if (Aura* AuraPtr = Pl->FindAura(SpellID))
+    {
+        uint8 VisualSlot = AuraPtr->m_visualSlot;
+        Pl->SendAuraUpdate(AuraPtr->m_auraSlot, false);
+        SystemMessage(m_session, "SMSG_AURA_UPDATE (update): VisualSlot %u - SpellID %u - Flags %i (0x%04X) - StackCount %i", VisualSlot, SpellID, Flags, Flags, StackCount);
+    }
+    else
+    {
+        SpellEntry* Sp = dbcSpell.LookupEntryForced(SpellID);
+        if (!Sp)
+        {
+            SystemMessage(m_session, "SpellID %u is invalid.", SpellID);
+            return true;
+        }
+        Spell* SpellPtr = sSpellFactoryMgr.NewSpell(Pl, Sp, false, NULL);
+        AuraPtr = sSpellFactoryMgr.NewAura(Sp, SpellPtr->GetDuration(), Pl, Pl);
+        SystemMessage(m_session, "SMSG_AURA_UPDATE (add): VisualSlot %u - SpellID %u - Flags %i (0x%04X) - StackCount %i", AuraPtr->m_visualSlot, SpellID, Flags, Flags, StackCount);
+        Pl->AddAura(AuraPtr);       // Serves purpose to just add the aura to our auraslots
+
+        delete SpellPtr;
+    }
+    return true;
+}
+
+float CalculateDistance(float x1, float y1, float z1, float x2, float y2, float z2)
+{
+    float dx = x1 - x2;
+    float dy = y1 - y2;
+    float dz = z1 - z2;
+    return sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+bool ChatHandler::HandleSimpleDistanceCommand(const char* args, WorldSession* m_session)
+{
+    float toX, toY, toZ;
+    if (sscanf(args, "%f %f %f", &toX, &toY, &toZ) != 3)
+        return false;
+
+    if (toX >= _maxX || toX <= _minX || toY <= _minY || toY >= _maxY)
+        return false;
+
+    float distance = CalculateDistance(
+        m_session->GetPlayer()->GetPositionX(),
+        m_session->GetPlayer()->GetPositionY(),
+        m_session->GetPlayer()->GetPositionZ(),
+        toX, toY, toZ);
+
+    m_session->SystemMessage("Your distance to location (%f, %f, %f) is %0.2f meters.", toX, toY, toZ, distance);
+
+    return true;
+}
+
+bool ChatHandler::HandleRangeCheckCommand(const char* args, WorldSession* m_session)
+{
+    WorldPacket data;
+    uint64 guid = m_session->GetPlayer()->GetSelection();
+    m_session->SystemMessage("=== RANGE CHECK ===");
+    if (guid == 0)
+    {
+        m_session->SystemMessage("No selection.");
+        return true;
+    }
+
+    Unit* unit = m_session->GetPlayer()->GetMapMgr()->GetUnit(guid);
+    if (!unit)
+    {
+        m_session->SystemMessage("Invalid selection.");
+        return true;
+    }
+    float DistSq = unit->GetDistanceSq(m_session->GetPlayer());
+    m_session->SystemMessage("GetDistanceSq  :   %u", float2int32(DistSq));
+    LocationVector locvec(m_session->GetPlayer()->GetPositionX(), m_session->GetPlayer()->GetPositionY(), m_session->GetPlayer()->GetPositionZ());
+    float DistReal = unit->CalcDistance(locvec);
+    m_session->SystemMessage("CalcDistance   :   %u", float2int32(DistReal));
+    float Dist2DSq = unit->GetDistance2dSq(m_session->GetPlayer());
+    m_session->SystemMessage("GetDistance2dSq:   %u", float2int32(Dist2DSq));
+    return true;
+}

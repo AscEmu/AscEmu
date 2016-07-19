@@ -398,20 +398,22 @@ void CommandTableStorage::Init()
         { "dumpcoords",          'd', &ChatHandler::HandleDebugDumpCoordsCommmand, "",                                                                                                                  NULL, 0, 0, 0 },
         { "sendpacket",          'd', &ChatHandler::HandleSendpacket,              "<opcode ID>, <data>",                                                                                               NULL, 0, 0, 0 },
         { "sqlquery",            'd', &ChatHandler::HandleSQLQueryCommand,         "<sql query>",                                                                                                       NULL, 0, 0, 0 },
-        { "rangecheck",          'd', &ChatHandler::HandleRangeCheckCommand,       "Checks the 'yard' range and internal range between the player and the target.",                                     NULL, 0, 0, 0 },
+        { "rangecheck",          'd', &ChatHandler::HandleRangeCheckCommand,       "Checks the 'yard' range and internal range between the player and the target.", nullptr, 0, 0, 0 },
         { "testlos",             'd', &ChatHandler::HandleCollisionTestLOS,        "tests los",                                                                                                         NULL, 0, 0, 0 },
         { "testindoor",          'd', &ChatHandler::HandleCollisionTestIndoor,     "tests indoor",                                                                                                      NULL, 0, 0, 0 },
         { "getheight",           'd', &ChatHandler::HandleCollisionGetHeight,      "Gets height",                                                                                                       NULL, 0, 0, 0 },
         { "deathstate",          'd', &ChatHandler::HandleGetDeathState,           "returns current deathstate for target",                                                                             NULL, 0, 0, 0 },
-        { "sendfailed",             'd', &ChatHandler::HandleSendFailed,      "",                                                                                                                  NULL, 0, 0, 0 },
-        { "playmovie",             'd', &ChatHandler::HandlePlayMovie,               "Triggers a movie for a player",                                    NULL, 0, 0, 0 },
-        { "auraupdate",             'd', &ChatHandler::HandleAuraUpdateAdd,               "<SpellID> <Flags> <StackCount> (caster guid = player target)",                                    NULL, 0, 0, 0 },
-        { "auraremove",             'd', &ChatHandler::HandleAuraUpdateRemove,               "<VisualSlot>",                                    NULL, 0, 0, 0 },
+        { "sendfailed",         'd', &ChatHandler::HandleSendCastFailed,                "Sends failed cast result <x>",                                             nullptr, 0, 0, 0 },
+        { "playmovie",          'd', &ChatHandler::HandlePlayMovie,                     "Triggers a movie for selected player",                                     nullptr, 0, 0, 0 },
+        { "auraupdate",         'd', &ChatHandler::HandleAuraUpdateAdd,                 "<SpellID> <Flags> <StackCount>",                                           nullptr, 0, 0, 0 },
+        { "auraremove",         'd', &ChatHandler::HandleAuraUpdateRemove,              "Remove Auras in visual slot",                                              nullptr, 0, 0, 0 },
         { "spawnwar",             'd', &ChatHandler::HandleDebugSpawnWarCommand,       "Spawns desired amount of npcs to fight with eachother",                                                                NULL, 0, 0, 0 },
         { "updateworldstate",    'd', &ChatHandler::HandleUpdateWorldStateCommand, "Sets the specified worldstate field to the specified value",                                                        NULL, 0, 0, 0 },
         { "initworldstates",     'd', &ChatHandler::HandleInitWorldStatesCommand,  "(re)initializes the worldstates.",                                                                                  NULL, 0, 0, 0 },
         { "clearworldstates",    'd', &ChatHandler::HandleClearWorldStatesCommand, "Clears the worldstates",                                                                                            NULL, 0, 0, 0 },
         { "pvpcredit",         'm', &ChatHandler::HandleDebugPVPCreditCommand,      "Sends PVP credit packet, with specified rank and points", NULL, 0, 0, 0 },
+        { "calcdist",           'd', &ChatHandler::HandleSimpleDistanceCommand,         "Displays distance between your position and x y z",                        nullptr, 0, 0, 0 },
+
         { NULL,                  '0', NULL,                                        "",                                                                                                                  NULL, 0, 0, 0 }
     };
     dupe_command_table(debugCommandTable, _debugCommandTable);
@@ -896,8 +898,6 @@ void CommandTableStorage::Init()
         { "help",            '0', &ChatHandler::HandleHelpCommand,                          "Shows help for command",                                                                                                                  NULL,                     0, 0, 0 },
         { "autosavechanges",  '1', &ChatHandler::HandleAutoSaveChangesCommand,              "Toggles activated/deactivated auto execute commands to save to the corresponding db table.",                                                                                                                  NULL,                     0, 0, 0 },
         { "event",              '0', nullptr, "", eventCommandTable, 0, 0, 0 },
-        //debug
-        { "calcdist",        '0', &ChatHandler::HandleSimpleDistanceCommand,                "Display the distance between your current position and the specified point x y z",                                                           NULL,                     0, 0, 0 },
         { "announce",        'u', &ChatHandler::HandleAnnounceCommand,                      "Sends a normal chat message broadcast to all players.",                                                                                                                        NULL,                     0, 0, 0 },
         { "wannounce",       'u', &ChatHandler::HandleWAnnounceCommand,                     "Sends a widescreen raid style announcement to all players.",                                                                                                             NULL,                     0, 0, 0 },
         // teleport
