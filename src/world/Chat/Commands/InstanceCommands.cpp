@@ -21,38 +21,126 @@
 
 #include "StdAfx.h"
 
-bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession* m_session)
+//.instance create
+bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_session)
 {
-    bool is_name_set = false;
-    Player* player;
+    Player* plr = GetSelectedPlayer(m_session, true, true);
+    if (plr == nullptr)
+        return true;
 
-    if (*args)
-        is_name_set = true;
+    float x, y, z;
+    uint32 mapid;
 
-    if (is_name_set)
+    if (sscanf(args, "%u %f %f %f", (unsigned int*)&mapid, &x, &y, &z) != 4)
+        return false;
+
+    // Create Map Manager
+    MapMgr* mgr = sInstanceMgr.CreateInstance(INSTANCE_NONRAID, mapid);
+    if (mgr == nullptr)
     {
-        player = objmgr.GetPlayer(args, false);
-        if (player == nullptr)
-        {
-            RedSystemMessage(m_session, "Player %s is not online or does not exist!", args);
-            return true;
-        }
+        sLog.Error("CreateInstanceGMCommand", "CreateInstance() call failed for map %u", mapid);
+        return false;
     }
-    else
-    {
-        player = GetSelectedPlayer(m_session, true);
-        if (player == nullptr)
-            return true;
-    }
+    Log.Notice("CreateInstanceGMCommand", "GM created instance for map %u", mapid);
 
-    SystemMessage(m_session, "Trying to reset all instances of player %s...", player->GetName());
-    sInstanceMgr.ResetSavedInstances(player);
-    SystemMessage(m_session, "...done");
+    LocationVector vec(x, y, z);
+    m_session->GetPlayer()->SafeTeleport(mgr, vec);
 
-    sGMLog.writefromsession(m_session, "used reset all instances command on %s,", player->GetName());
     return true;
 }
 
+//.instance exit
+bool ChatHandler::HandleExitInstanceCommand(const char* /*args*/, WorldSession* m_session)
+{
+    BlueSystemMessage(m_session, "Attempting to exit from instance...");
+
+    bool result = m_session->GetPlayer()->ExitInstance();
+    if (!result)
+        RedSystemMessage(m_session, "Entry points not found.");
+    else
+        GreenSystemMessage(m_session, "Removal successful.");
+
+    return true;
+}
+
+//.instance info
+bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m_session)
+{
+    Player* plr = m_session->GetPlayer();
+    if (plr == nullptr)
+        return false;
+
+    bool userInput = true;
+    uint32 instanceId = (args ? atoi(args) : 0);
+    if (instanceId == 0)
+    {
+        userInput = false;
+        instanceId = plr->GetInstanceID();
+        if (instanceId == 0)
+            return false;
+    }
+
+    Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, instanceId);
+    if (instance == nullptr)
+    {
+        if (userInput)
+        {
+            RedSystemMessage(m_session, "Instance with id %u not found.", instanceId);
+            return true;
+        }
+        return false;
+    }
+
+    std::stringstream ss;
+    ss << "Instance ID: " << MSG_COLOR_CYAN << instance->m_instanceId << "|r (" << MSG_COLOR_CYAN;
+    if (instance->m_mapInfo == nullptr)
+        ss << instance->m_mapId;
+    else
+        ss << instance->m_mapInfo->name;
+    ss << "|r)\n";
+    ss << "Persistent: " << MSG_COLOR_CYAN << (instance->m_persistent ? "Yes" : "No") << "|r\n";
+    if (instance->m_mapInfo != nullptr)
+    {
+        ss << "Type: " << MSG_COLOR_CYAN << GetMapTypeString(static_cast<uint8>(instance->m_mapInfo->type)) << "|r";
+
+        if (instance->m_mapInfo->type == INSTANCE_MULTIMODE)
+        {
+            ss << " (" << MSG_COLOR_CYAN << GetDifficultyString(instance->m_difficulty) << "|r)";
+        }
+
+        if (instance->m_mapInfo->type == INSTANCE_RAID)
+        {
+            ss << " (" << MSG_COLOR_CYAN << GetRaidDifficultyString(instance->m_difficulty) << "|r)";
+        }
+
+        ss << "\n";
+    }
+    ss << "Created: " << MSG_COLOR_CYAN << ConvertTimeStampToDataTime((uint32)instance->m_creation) << "|r\n";
+    if (instance->m_expiration != 0)
+        ss << "Expires: " << MSG_COLOR_CYAN << ConvertTimeStampToDataTime((uint32)instance->m_expiration) << "|r\n";
+
+    if (instance->m_mapMgr == NULL)
+    {
+        ss << "Status: " << MSG_COLOR_LIGHTRED << "Shut Down|r\n";
+    }
+    else if (!instance->m_mapMgr->HasPlayers())
+    {
+        ss << "Status: " << MSG_COLOR_LIGHTRED << "Idle|r";
+        if (instance->m_mapMgr->InactiveMoveTime && instance->m_mapMgr->GetMapInfo()->type != INSTANCE_NULL)
+            ss << " (" << MSG_COLOR_CYAN << "Shutdown in " << MSG_COLOR_LIGHTRED << (((long)instance->m_mapMgr->InactiveMoveTime - UNIXTIME) / 60) << MSG_COLOR_CYAN << " minutes|r)";
+        ss << "\n";
+    }
+    else
+    {
+        ss << "Status: " << MSG_COLOR_GREEN << "In use|r (" << MSG_COLOR_GREEN << (uint32)instance->m_mapMgr->GetPlayerCount() << MSG_COLOR_CYAN << " players inside|r)\n";
+
+    }
+    SendMultilineMessage(m_session, ss.str().c_str());
+
+    return true;
+}
+
+//.instance reset
 bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_session)
 {
 
@@ -92,7 +180,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
     }
 
     Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, instanceId);
-    if (instance == NULL)
+    if (instance == nullptr)
     {
         RedSystemMessage(m_session, "There's no instance with id %u.", instanceId);
         return true;
@@ -134,7 +222,7 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
     if (instance->m_creatorGroup)
     {
         Group* group = plr->GetGroup();
-        if (group == NULL || instance->m_creatorGroup != group->GetID())
+        if (group == nullptr || instance->m_creatorGroup != group->GetID())
         {
             RedSystemMessage(m_session, "Player %s is not a member of the group assigned to the non-persistent instance with id %u.", plr->GetName(), instanceId);
             return true;
@@ -158,6 +246,40 @@ bool ChatHandler::HandleResetInstanceCommand(const char* args, WorldSession* m_s
     return true;
 }
 
+//.instance resetall
+bool ChatHandler::HandleResetAllInstancesCommand(const char* args, WorldSession* m_session)
+{
+    bool is_name_set = false;
+    Player* player;
+
+    if (*args)
+        is_name_set = true;
+
+    if (is_name_set)
+    {
+        player = objmgr.GetPlayer(args, false);
+        if (player == nullptr)
+        {
+            RedSystemMessage(m_session, "Player %s is not online or does not exist!", args);
+            return true;
+        }
+    }
+    else
+    {
+        player = GetSelectedPlayer(m_session, true);
+        if (player == nullptr)
+            return true;
+    }
+
+    SystemMessage(m_session, "Trying to reset all instances of player %s...", player->GetName());
+    sInstanceMgr.ResetSavedInstances(player);
+    SystemMessage(m_session, "...done");
+
+    sGMLog.writefromsession(m_session, "used reset all instances command on %s,", player->GetName());
+    return true;
+}
+
+//.instance shutdown
 bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* m_session)
 {
     uint32 instanceId = (args ? atoi(args) : 0);
@@ -165,13 +287,13 @@ bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* 
         return false;
 
     Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, instanceId);
-    if (instance == NULL)
+    if (instance == nullptr)
     {
         RedSystemMessage(m_session, "There's no instance with id %u.", instanceId);
         return true;
     }
 
-    if (instance->m_mapMgr == NULL)
+    if (instance->m_mapMgr == nullptr)
     {
         RedSystemMessage(m_session, "Instance with id %u already shut down.", instanceId);
         return true;
@@ -181,7 +303,7 @@ bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* 
 
     sInstanceMgr.SafeDeleteInstance(instance->m_mapMgr);
 
-    instance = NULL;
+    instance = nullptr;
 
     SystemMessage(m_session, "...done");
 
@@ -189,126 +311,3 @@ bool ChatHandler::HandleShutdownInstanceCommand(const char* args, WorldSession* 
 
     return true;
 }
-
-bool ChatHandler::HandleGetInstanceInfoCommand(const char* args, WorldSession* m_session)
-{
-    Player* plr = m_session->GetPlayer();
-    if (plr == NULL)
-        return false;
-
-    bool userInput = true;
-    uint32 instanceId = (args ? atoi(args) : 0);
-    if (instanceId == 0)
-    {
-        userInput = false;
-        instanceId = plr->GetInstanceID();
-        if (instanceId == 0)
-            return false;
-    }
-
-    Instance* instance = sInstanceMgr.GetInstanceByIds(NUM_MAPS, instanceId);
-    if (instance == NULL)
-    {
-        if (userInput)
-        {
-            RedSystemMessage(m_session, "Instance with id %u not found.", instanceId);
-            return true;
-        }
-        return false;
-    }
-
-    std::stringstream ss;
-    ss << "Instance ID: " << MSG_COLOR_CYAN << instance->m_instanceId << "|r (" << MSG_COLOR_CYAN;
-    if (instance->m_mapInfo == NULL)
-        ss << instance->m_mapId;
-    else
-        ss << instance->m_mapInfo->name;
-    ss << "|r)\n";
-    ss << "Persistent: " << MSG_COLOR_CYAN << (instance->m_persistent ? "Yes" : "No") << "|r\n";
-    if (instance->m_mapInfo != NULL)
-    {
-        ss << "Type: " << MSG_COLOR_CYAN << GetMapTypeString(static_cast<uint8>(instance->m_mapInfo->type)) << "|r";
-
-        if (instance->m_mapInfo->type == INSTANCE_MULTIMODE)
-        {
-            ss << " (" << MSG_COLOR_CYAN << GetDifficultyString(instance->m_difficulty) << "|r)";
-        }
-
-        if (instance->m_mapInfo->type == INSTANCE_RAID)
-        {
-            ss << " (" << MSG_COLOR_CYAN << GetRaidDifficultyString(instance->m_difficulty) << "|r)";
-        }
-
-        ss << "\n";
-    }
-    ss << "Created: " << MSG_COLOR_CYAN << ConvertTimeStampToDataTime((uint32)instance->m_creation) << "|r\n";
-    if (instance->m_expiration != 0)
-        ss << "Expires: " << MSG_COLOR_CYAN << ConvertTimeStampToDataTime((uint32)instance->m_expiration) << "|r\n";
-
-    if (instance->m_mapMgr == NULL)
-    {
-        ss << "Status: " << MSG_COLOR_LIGHTRED << "Shut Down|r\n";
-    }
-    else if (!instance->m_mapMgr->HasPlayers())
-    {
-        ss << "Status: " << MSG_COLOR_LIGHTRED << "Idle|r";
-        if (instance->m_mapMgr->InactiveMoveTime && instance->m_mapMgr->GetMapInfo()->type != INSTANCE_NULL)
-            ss << " (" << MSG_COLOR_CYAN << "Shutdown in " << MSG_COLOR_LIGHTRED << (((long)instance->m_mapMgr->InactiveMoveTime - UNIXTIME) / 60) << MSG_COLOR_CYAN << " minutes|r)";
-        ss << "\n";
-    }
-    else
-    {
-        ss << "Status: " << MSG_COLOR_GREEN << "In use|r (" << MSG_COLOR_GREEN << (uint32)instance->m_mapMgr->GetPlayerCount() << MSG_COLOR_CYAN << " players inside|r)\n";
-
-    }
-    SendMultilineMessage(m_session, ss.str().c_str());
-
-    return true;
-}
-
-bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_session)
-{
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    float x, y, z;
-    uint32 mapid;
-    if (sscanf(args, "%u %f %f %f", (unsigned int*)&mapid, &x, &y, &z) != 4)
-        return false;
-
-    if (!plr)
-    {
-        plr = m_session->GetPlayer();
-        SystemMessage(m_session, "Auto-targeting self.");
-    }
-    if (!plr) return false;
-
-    /* Create Map Manager */
-    MapMgr* mgr = sInstanceMgr.CreateInstance(INSTANCE_NONRAID, mapid);
-    if (mgr == NULL)
-    {
-        sLog.Error("CreateInstanceGMCommand", "CreateInstance() call failed for map %u", mapid);
-        return false;      // Shouldn't happen
-    }
-    Log.Notice("CreateInstanceGMCommand", "GM created instance for map %u", mapid);
-
-    LocationVector vec(x, y, z);
-    m_session->GetPlayer()->SafeTeleport(mgr, vec);
-    return true;
-
-}
-
-bool ChatHandler::HandleExitInstanceCommand(const char* args, WorldSession* m_session)
-{
-    BlueSystemMessage(m_session, "Attempting to exit from instance...");
-    bool result = m_session->GetPlayer()->ExitInstance();
-    if (!result)
-    {
-        RedSystemMessage(m_session, "Entry points not found.");
-        return true;
-    }
-    else
-    {
-        GreenSystemMessage(m_session, "Removal successful.");
-        return true;
-    }
-}
-

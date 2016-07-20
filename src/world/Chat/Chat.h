@@ -261,6 +261,13 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAccountMuteCommand(const char* args, WorldSession* m_session);
         bool HandleAccountUnmuteCommand(const char* args, WorldSession* m_session);
 
+        // Achievement
+#ifdef ENABLE_ACHIEVEMENTS
+        bool HandleAchievementCompleteCommand(const char* args, WorldSession* m_session);
+        bool HandleAchievementCriteriaCommand(const char* args, WorldSession* m_session);
+        bool HandleAchievementResetCommand(const char* args, WorldSession* m_session);
+#endif
+
         // Arena commands
         uint8 GetArenaTeamInternalType(uint32 type, WorldSession* m_session);
         bool HandleArenaCreateTeam(const char* args, WorldSession* m_session);
@@ -371,6 +378,14 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGOSetAnimProgressCommand(const char* args, WorldSession* m_session);
         bool HandleGOSetOverridesCommand(const char* args, WorldSession* m_session);
 
+        // Instance
+        bool HandleCreateInstanceCommand(const char* args, WorldSession* m_session);
+        bool HandleExitInstanceCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleResetAllInstancesCommand(const char* args, WorldSession* m_session);
+        bool HandleResetInstanceCommand(const char* args, WorldSession* m_session);
+        bool HandleShutdownInstanceCommand(const char* args, WorldSession* m_session);
+        bool HandleGetInstanceInfoCommand(const char* args, WorldSession* m_session);
+
         // Lookups
 #ifdef ENABLE_ACHIEVEMENTS
         bool HandleLookupAchievementCommand(const char* args, WorldSession* m_session);
@@ -476,11 +491,26 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGPSCommand(const char* args, WorldSession* m_session);
         bool HandleInvincibleCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleInvisibleCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleSummonCommand(const char* args, WorldSession* m_session);
+        bool HandleBlockSummonCommand(const char* args, WorldSession* m_session);
+        bool HandleAppearCommand(const char* args, WorldSession* m_session);
+        bool HandleBlockAppearCommand(const char* args, WorldSession* m_session);
+        bool HandleAnnounceCommand(const char* args, WorldSession* m_session);
+        bool HandleWAnnounceCommand(const char* args, WorldSession* m_session);
+        bool HandlePlayerInfo(const char* args, WorldSession* m_session);
+        bool HandleIPUnBanCommand(const char* args, WorldSession* m_session);
+        bool HandleUnBanCharacterCommand(const char* args, WorldSession* m_session);
         //.kick
         bool HandleKickByNameCommand(const char* args, WorldSession* m_session);
         bool HandleKKickBySessionCommand(const char* args, WorldSession* m_session);
         bool HandleKickByIPCommand(const char* args, WorldSession* m_session);
 
+        //Vehicle
+        bool HandleVehicleEjectPassengerCommand(const char* args, WorldSession* session);
+        bool HandleVehicleEjectAllPassengersCommand(const char* /*args*/, WorldSession* session);
+        bool HandleVehicleInstallAccessoriesCommand(const char* /*args*/, WorldSession* session);
+        bool HandleVehicleRemoveAccessoriesCommand(const char* /*args*/, WorldSession* session);
+        bool HandleVehicleAddPassengerCommand(const char* args, WorldSession* session);
 
         //Waypoint
         bool HandleWayPointAddCommand(const char* args, WorldSession* m_session);
@@ -551,19 +581,9 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleStartBGCommand(const char* args, WorldSession* m_session);
         bool HandlePauseBGCommand(const char* args, WorldSession* m_session);
         bool HandleBGInfoCommnad(const char* args, WorldSession* m_session);
-
-#ifdef ENABLE_ACHIEVEMENTS
-        bool HandleAchievementCompleteCommand(const char* args, WorldSession* m_session);
-        bool HandleAchievementCriteriaCommand(const char* args, WorldSession* m_session);
-        bool HandleAchievementResetCommand(const char* args, WorldSession* m_session);
-#endif
         
         bool CmdSetValueField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args);
         bool CmdSetFloatField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args);
-        bool HandleSummonCommand(const char* args, WorldSession* m_session);
-        bool HandleAppearCommand(const char* args, WorldSession* m_session);
-        bool HandleAnnounceCommand(const char* args, WorldSession* m_session);
-        bool HandleWAnnounceCommand(const char* args, WorldSession* m_session);
         
         bool HandleCollisionTestIndoor(const char* args, WorldSession* m_session);
         bool HandleGetDeathState(const char* args, WorldSession* m_session);
@@ -575,7 +595,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleModifyValueCommand(const char* args, WorldSession* m_session);
         bool HandleModifyBitCommand(const char* args, WorldSession* m_session);
         bool HandleBattlegroundExitCommand(const char* args, WorldSession* m_session);
-        bool HandleExitInstanceCommand(const char* args, WorldSession* m_session);
         
         bool HandleRecallListCommand(const char* args, WorldSession* m_session);
         bool HandleRecallGoCommand(const char* args, WorldSession* m_session);
@@ -584,7 +603,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleRecallPortPlayerCommand(const char* args, WorldSession* m_session);
         bool HandleRecallPortUsCommand(const char* args, WorldSession* m_session);
         bool HandleIPBanCommand(const char* args, WorldSession* m_session);
-        bool HandleIPUnBanCommand(const char* args, WorldSession* m_session);
+        
         bool HandleRemoveItemCommand(const char* args, WorldSession* m_session);
         
         bool HandleCreatePetCommand(const char* args, WorldSession* m_session);
@@ -617,15 +636,9 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleQuestFinisherSpawnCommand(const char* args, WorldSession* m_session);
         bool HandleQuestStartCommand(const char* args, WorldSession* m_session);
         bool HandleQuestStatusCommand(const char* args, WorldSession* m_session);
-        bool HandleCreateInstanceCommand(const char* args, WorldSession* m_session);
-        bool HandleResetAllInstancesCommand(const char* args, WorldSession* m_session);
-        bool HandleResetInstanceCommand(const char* args, WorldSession* m_session);
-        bool HandleShutdownInstanceCommand(const char* args, WorldSession* m_session);
         
-        bool HandleGetInstanceInfoCommand(const char* args, WorldSession* m_session);
         bool HandleBanCharacterCommand(const char* args, WorldSession* m_session);
         bool HandleBanAllCommand(const char* args, WorldSession* m_session);
-        bool HandleUnBanCharacterCommand(const char* args, WorldSession* m_session);
         bool HandleSetBGScoreCommand(const char* args, WorldSession* m_session);
         bool HandleInitializeAllQueuedBattlegroundsCommand(const char* args, WorldSession* m_session);
         bool HandleGetBattlegroundQueueCommand(const char* args, WorldSession* m_session);
@@ -672,12 +685,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleResetSkillsCommand(const char* args, WorldSession* m_session);
         bool HandleGetSkillLevelCommand(const char* args, WorldSession* m_session);
         
-        bool HandlePlayerInfo(const char* args, WorldSession* m_session);
-        bool HandleVehicleEjectPassengerCommand(const char* args, WorldSession* session);
-        bool HandleVehicleEjectAllPassengersCommand(const char* args, WorldSession* session);
-        bool HandleVehicleInstallAccessoriesCommand(const char* args, WorldSession* session);
-        bool HandleVehicleRemoveAccessoriesCommand(const char* args, WorldSession* session);
-        bool HandleVehicleAddPassengerCommand(const char* args, WorldSession* session);
         bool HandleAIAgentDebugBegin(const char* args, WorldSession* m_session);
         bool HandleAIAgentDebugContinue(const char* args, WorldSession* m_session);
         bool HandleAIAgentDebugSkip(const char* args, WorldSession* m_session);

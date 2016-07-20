@@ -4,6 +4,7 @@ set(PATH_PREFIX Chat/Commands)
 
 set(SRC_COMMAND_FILES
    ${PATH_PREFIX}/AccountCommands.cpp
+   ${PATH_PREFIX}/AchievementCommands.cpp
    ${PATH_PREFIX}/ArenaCommands.cpp
    ${PATH_PREFIX}/BattlegroundCommands.cpp
    ${PATH_PREFIX}/CharacterCommands.cpp
@@ -26,6 +27,7 @@ set(SRC_COMMAND_FILES
    ${PATH_PREFIX}/ServerCommands.cpp
    ${PATH_PREFIX}/TransporterCommands.cpp
    ${PATH_PREFIX}/TicketCommands.cpp
+   ${PATH_PREFIX}/VehicleCommands.cpp
    ${PATH_PREFIX}/WaypointCommands.cpp
 )
 
