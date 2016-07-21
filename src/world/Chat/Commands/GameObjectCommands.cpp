@@ -53,6 +53,34 @@ bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)
     return true;
 }
 
+//.gobject enable
+bool ChatHandler::HandleGOEnableCommand(const char* /*args*/, WorldSession* m_session)
+{
+    GameObject* gameobject = m_session->GetPlayer()->GetSelectedGo();
+    if (gameobject == nullptr)
+    {
+        RedSystemMessage(m_session, "No selected GameObject...");
+        return true;
+    }
+
+    if (gameobject->IsActive())
+    {
+        // Deactivate
+        gameobject->Deactivate();
+        BlueSystemMessage(m_session, "Gameobject deactivated.");
+    }
+    else
+    {
+        // /Activate
+        gameobject->Activate();
+        BlueSystemMessage(m_session, "Gameobject activated.");
+    }
+
+    sGMLog.writefromsession(m_session, "activated/deactivated gameobject %s, entry %u", sMySQLStore.GetGameObjectProperties(gameobject->GetEntry())->name.c_str(), gameobject->GetEntry());
+
+    return true;
+}
+
 //.gobject export
 bool ChatHandler::HandleGOExportCommand(const char* args, WorldSession* m_session)
 {
@@ -208,7 +236,7 @@ bool ChatHandler::HandleGOOpenCommand(const char* /*args*/, WorldSession* m_sess
 }
 
 //.gobject rotate
-bool ChatHandler::HandleGORotate(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleGORotateCommand(const char* args, WorldSession* m_session)
 {
     char Axis;
     float deg;

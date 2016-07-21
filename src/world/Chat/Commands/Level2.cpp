@@ -610,26 +610,3 @@ bool ChatHandler::HandleGOInfo(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleGOEnable(const char* args, WorldSession* m_session)
-{
-    GameObject* GObj = m_session->GetPlayer()->GetSelectedGo();
-    if (!GObj)
-    {
-        RedSystemMessage(m_session, "No selected GameObject...");
-        return true;
-    }
-    if (GObj->IsActive())
-    {
-        // Deactivate
-        GObj->Deactivate();
-        BlueSystemMessage(m_session, "Gameobject deactivated.");
-    }
-    else
-    {
-        // /Activate
-        GObj->Activate();
-        BlueSystemMessage(m_session, "Gameobject activated.");
-    }
-    sGMLog.writefromsession(m_session, "activated/deactivated gameobject %s, entry %u", sMySQLStore.GetGameObjectProperties(GObj->GetEntry())->name.c_str(), GObj->GetEntry());
-    return true;
-}
