@@ -16,7 +16,6 @@ set(SRC_COMMAND_FILES
    ${PATH_PREFIX}/GameObjectCommands.cpp
    ${PATH_PREFIX}/GMTicketCommands.cpp
    ${PATH_PREFIX}/InstanceCommands.cpp
-   ${PATH_PREFIX}/Level1.cpp
    ${PATH_PREFIX}/Level2.cpp
    ${PATH_PREFIX}/Level3.cpp
    ${PATH_PREFIX}/LookupCommands.cpp
