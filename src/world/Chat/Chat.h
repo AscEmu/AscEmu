@@ -617,9 +617,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleRenamePetCommand(const char* args, WorldSession* m_session);
         bool HandleDismissPetCommand(const char* args, WorldSession* m_session);
         bool HandlePetLevelCommand(const char* args, WorldSession* m_session);
-#ifdef USE_SPECIFIC_AIAGENTS
-        bool HandlePetSpawnAIBot(const char* args, WorldSession* m_session);
-#endif
+
         bool HandleAdvanceAllSkillsCommand(const char* args, WorldSession* m_session);
         bool HandleQuestAddBothCommand(const char* args, WorldSession* m_session);
         bool HandleQuestAddFinishCommand(const char* args, WorldSession* m_session);
