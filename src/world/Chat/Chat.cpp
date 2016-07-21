@@ -779,19 +779,19 @@ void CommandTableStorage::Init()
         { "levelup",            'm', &ChatHandler::HandleCharLevelUpCommand,            "Player target will be levelup x levels",           nullptr, 0, 0, 0 },
         { "removeauras",        'm', &ChatHandler::HandleCharRemoveAurasCommand,        "Removes all auras from target",                    nullptr, 0, 0, 0 },
         { "removesickness",     'm', &ChatHandler::HandleCharRemoveSickessCommand,      "Removes ressurrection sickness from target",       nullptr, 0, 0, 0 },
-        { "learn",               'm', &ChatHandler::HandleLearnCommand,            "Learns spell",                                                      NULL, 0, 0, 0 },
+        { "learn",              'm', &ChatHandler::HandleLearnCommand,                  "Learns spell",                                     nullptr, 0, 0, 0 },
         { "unlearn",            'm', &ChatHandler::HandleCharUnlearnCommand,            "Unlearns spell",                                   nullptr, 0, 0, 0 },
         { "learnskill",         'm', &ChatHandler::HandleCharLearnSkillCommand,         "Learns skill id skillid opt: min max.",            nullptr, 0, 0, 0 },
         { "advanceskill",       'm', &ChatHandler::HandleCharAdvanceSkillCommand,       "Advances skill line x y times.",                   nullptr, 0, 0, 0 },
         { "removeskill",        'm', &ChatHandler::HandleCharRemoveSkillCommand,        "Removes skill.",                                   nullptr, 0, 0, 0 },
-        { "increaseweaponskill", 'm', &ChatHandler::HandleIncreaseWeaponSkill,     "Increase equipped weapon skill x times (defaults to 1).",    NULL, 0, 0, 0 },
-        { "resetreputation",     'n', &ChatHandler::HandleResetReputationCommand,  "Resets reputation to start levels.",             NULL, 0, 0, 0 },
-        { "resetspells",         'n', &ChatHandler::HandleResetSpellsCommand,      "Resets all spells to starting spells of targeted player. DANGEROUS.",   NULL, 0, 0, 0 },
-        { "resettalents",        'n', &ChatHandler::HandleResetTalentsCommand,     "Resets all talents of targeted player to that of their current level. DANGEROUS.",  NULL, 0, 0, 0 },
-        { "resetskills",         'n', &ChatHandler::HandleResetSkillsCommand,      "Resets all skills.",                                         NULL, 0, 0, 0 },
-        { "removeitem",          'm', &ChatHandler::HandleRemoveItemCommand,       "Removes item x count y.",                                   NULL, 0, 0, 0 },
-        { "advanceallskills",    'm', &ChatHandler::HandleAdvanceAllSkillsCommand, "Advances all skills <x> points.",                           NULL, 0, 0, 0 },
-        { nullptr,              '0', nullptr,                                        "",                                                    nullptr, 0, 0, 0 }
+        { "increaseweaponskill",'m', &ChatHandler::HandleCharIncreaseWeaponSkill,       "Increase equipped weapon skill x times.",          nullptr, 0, 0, 0 },
+        { "resetreputation",    'n', &ChatHandler::HandleCharResetReputationCommand,    "Resets reputation to start levels.",               nullptr, 0, 0, 0 },
+        { "resetspells",        'n', &ChatHandler::HandleCharResetSpellsCommand,        "Resets all spells of selected player.",            nullptr, 0, 0, 0 },
+        { "resettalents",       'n', &ChatHandler::HandleCharResetTalentsCommand,       "Resets all talents of selected player.",           nullptr, 0, 0, 0 },
+        { "resetskills",        'n', &ChatHandler::HandleCharResetSkillsCommand,        "Resets all skills.",                               nullptr, 0, 0, 0 },
+        { "removeitem",         'm', &ChatHandler::HandleCharRemoveItemCommand,         "Removes item x count y.",                          nullptr, 0, 0, 0 },
+        { "advanceallskills",   'm', &ChatHandler::HandleAdvanceAllSkillsCommand,       "Advances all skills <x> points.",                  nullptr, 0, 0, 0 },
+        { nullptr,              '0', nullptr,                                           "",                                                 nullptr, 0, 0, 0 }
     };
     dupe_command_table(characterCommandTable, _characterCommandTable);
 

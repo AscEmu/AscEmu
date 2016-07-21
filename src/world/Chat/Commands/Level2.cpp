@@ -21,22 +21,6 @@
 
 #include "StdAfx.h"
 
-
-bool ChatHandler::HandleResetReputationCommand(const char* args, WorldSession* m_session)
-{
-    Player* plr = GetSelectedPlayer(m_session, true, true);
-    if (!plr)
-    {
-        SystemMessage(m_session, "Select a player or yourself first.");
-        return true;
-    }
-
-    plr->_InitialReputation();
-    SystemMessage(m_session, "Done. Relog for changes to take effect.");
-    sGMLog.writefromsession(m_session, "used reset reputation for %s", plr->GetName());
-    return true;
-}
-
 bool ChatHandler::CreateGuildCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)

@@ -702,6 +702,325 @@ bool ChatHandler::HandleCharAddGoldCommand(const char* args, WorldSession* m_ses
     return true;
 }
 
+//.character resetskills
+bool ChatHandler::HandleCharResetSkillsCommand(const char* /*args*/, WorldSession* m_session)
+{
+    Player* selected_player = GetSelectedPlayer(m_session, true, true);
+    if (selected_player != nullptr)
+        return true;
+
+    selected_player->_RemoveAllSkills();
+
+    PlayerCreateInfo const* player_info = sMySQLStore.GetPlayerCreateInfo(selected_player->getRace(), selected_player->getClass());
+    if (player_info == nullptr)
+        return true;
+
+    for (std::list<CreateInfo_SkillStruct>::const_iterator ss = player_info->skills.begin(); ss != player_info->skills.end(); ++ss)
+    {
+        auto skill_line = sSkillLineStore.LookupEntry(ss->skillid);
+        if (skill_line == nullptr)
+            continue;
+
+        if (skill_line->type != SKILL_TYPE_LANGUAGE && ss->skillid && ss->currentval && ss->maxval)
+            selected_player->_AddSkillLine(ss->skillid, ss->currentval, ss->maxval);
+    }
+
+    selected_player->UpdateStats();
+    selected_player->UpdateChances();
+    selected_player->_UpdateMaxSkillCounts();
+    selected_player->_AddLanguages(false);
+
+    if (selected_player != m_session->GetPlayer())
+    {
+        SystemMessage(m_session, "Reset skills of %s.", selected_player->GetName());
+        BlueSystemMessage(selected_player->GetSession(), "%s reset all your skills.", m_session->GetPlayer()->GetName());
+        sGMLog.writefromsession(m_session, "reset skills of %s", selected_player->GetName());
+    }
+    else
+    {
+        BlueSystemMessage(m_session, "Your skills are reset to default.");
+    }
+
+    return true;
+}
+
+//.character removeitem
+bool ChatHandler::HandleCharRemoveItemCommand(const char* args, WorldSession* m_session)
+{
+    uint32 item_id;
+    int32 count, ocount;
+
+    int argc = sscanf(args, "%u %u", (unsigned int*)&item_id, (unsigned int*)&count);
+    if (argc == 1)
+        count = 1;
+    else if (argc != 2 || !count)
+        return false;
+
+    ocount = count;
+    Player* selected_player = GetSelectedPlayer(m_session, true, true);
+    if (selected_player != nullptr)
+        return true;
+
+    int32 loop_count = 0;
+    int32 start_count = selected_player->GetItemInterface()->GetItemCount(item_id, true);
+    int32 start_count2 = start_count;
+    if (count > start_count)
+        count = start_count;
+
+    while (start_count >= count && (count > 0) && loop_count < 20)
+    {
+        selected_player->GetItemInterface()->RemoveItemAmt(item_id, count);
+        start_count2 = selected_player->GetItemInterface()->GetItemCount(item_id, true);
+        count -= (start_count - start_count2);
+        start_count = start_count2;
+        ++loop_count;
+    }
+
+    ItemProperties const* item_properties = sMySQLStore.GetItemProperties(item_id);
+    if (item_properties != nullptr)
+    {
+        if (selected_player != m_session->GetPlayer())
+        {
+            sGMLog.writefromsession(m_session, "used remove item %s (id: %u) count %u from %s", item_properties->Name.c_str(), item_id, ocount, selected_player->GetName());
+            BlueSystemMessage(m_session, "Removing %u copies of item %s (id: %u) from %s's inventory.", ocount, GetItemLinkByProto(item_properties, m_session->language).c_str(), item_id, selected_player->GetName());
+            BlueSystemMessage(selected_player->GetSession(), "%s removed %u copies of item %s from your inventory.", m_session->GetPlayer()->GetName(), ocount, GetItemLinkByProto(item_properties, selected_player->GetSession()->language).c_str());
+        }
+        else
+        {
+            BlueSystemMessage(m_session, "Removing %u copies of item %s (id: %u) from your inventory.", ocount, GetItemLinkByProto(item_properties, m_session->language).c_str(), item_id);
+        }
+    }
+    else
+    {
+        RedSystemMessage(m_session, "Cannot remove non valid item id: %u .", item_id);
+    }
+
+    return true;
+}
+
+//.character resettalents
+bool ChatHandler::HandleCharResetTalentsCommand(const char* /*args*/, WorldSession* m_session)
+{
+    Player* selected_player = GetSelectedPlayer(m_session, true, true);
+    if (selected_player == nullptr)
+        return true;
+
+    selected_player->Reset_Talents();
+
+    if (selected_player != m_session->GetPlayer())
+    {
+        SystemMessage(m_session, "Reset talents of %s.", selected_player->GetName());
+        BlueSystemMessage(selected_player->GetSession(), "%s reset all your talents.", m_session->GetPlayer()->GetName());
+        sGMLog.writefromsession(m_session, "reset talents of %s", selected_player->GetName());
+    }
+    else
+    {
+        BlueSystemMessage(m_session, "All your talents are reset.");
+    }
+
+    return true;
+}
+
+//.character advanceallskills
+bool ChatHandler::HandleAdvanceAllSkillsCommand(const char* args, WorldSession* m_session)
+{
+    uint32 amt = args ? atol(args) : 0;
+    if (!amt)
+    {
+        RedSystemMessage(m_session, "An amount to increment is required.");
+        return true;
+    }
+
+    Player* selected_player = GetSelectedPlayer(m_session, false, true);
+    if (selected_player != nullptr)
+        return true;
+
+    selected_player->_AdvanceAllSkills(amt);
+
+    if (selected_player != m_session->GetPlayer())
+    {
+        GreenSystemMessage(selected_player->GetSession(), "%s advanced all your skill lines by %u points.", m_session->GetPlayer()->GetName(),  amt);
+        sGMLog.writefromsession(m_session, "advanced all skills by %u on %s", amt, selected_player->GetName());
+    }
+    else
+    {
+        GreenSystemMessage(m_session, "Advanced all your skill lines by %u points.", amt);
+    }
+
+    return true;
+}
+
+//.character increaseweaponskill
+bool ChatHandler::HandleCharIncreaseWeaponSkill(const char* args, WorldSession* m_session)
+{
+    char* pMin = strtok((char*)args, " ");
+    uint32 cnt = 0;
+    if (!pMin)
+        cnt = 1;
+    else
+        cnt = atol(pMin);
+
+    Player* selected_player = GetSelectedPlayer(m_session, true, true);
+    if (selected_player != nullptr)
+        return true;
+
+    uint32 SubClassSkill = 0;
+
+    Item* item = selected_player->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
+    ItemProperties const* proto = nullptr;
+    if (item == nullptr)
+        item = selected_player->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
+
+    if (item != nullptr)
+        proto = item->GetItemProperties();
+
+    if (proto)
+    {
+        switch (proto->SubClass)
+        {
+            // Weapons
+            case 0:    // 1 handed axes
+                SubClassSkill = SKILL_AXES;
+                break;
+            case 1:    // 2 handed axes
+                SubClassSkill = SKILL_2H_AXES;
+                break;
+            case 2:    // bows
+                SubClassSkill = SKILL_BOWS;
+                break;
+            case 3:    // guns
+                SubClassSkill = SKILL_GUNS;
+                break;
+            case 4:    // 1 handed mace
+                SubClassSkill = SKILL_MACES;
+                break;
+            case 5:    // 2 handed mace
+                SubClassSkill = SKILL_2H_MACES;
+                break;
+            case 6:    // polearms
+                SubClassSkill = SKILL_POLEARMS;
+                break;
+            case 7: // 1 handed sword
+                SubClassSkill = SKILL_SWORDS;
+                break;
+            case 8: // 2 handed sword
+                SubClassSkill = SKILL_2H_SWORDS;
+                break;
+            case 9: // obsolete
+                SubClassSkill = 136;
+                break;
+            case 10: //1 handed exotic
+                SubClassSkill = 136;
+                break;
+            case 11: // 2 handed exotic
+                SubClassSkill = 0;
+                break;
+            case 12: // fist
+                SubClassSkill = SKILL_FIST_WEAPONS;
+                break;
+            case 13: // misc
+                SubClassSkill = 0;
+                break;
+            case 15: // daggers
+                SubClassSkill = SKILL_DAGGERS;
+                break;
+            case 16: // thrown
+                SubClassSkill = SKILL_THROWN;
+                break;
+            case 18: // crossbows
+                SubClassSkill = SKILL_CROSSBOWS;
+                break;
+            case 19: // wands
+                SubClassSkill = SKILL_WANDS;
+                break;
+            case 20: // fishing
+                SubClassSkill = SKILL_FISHING;
+                break;
+        }
+    }
+    else
+    {
+        SubClassSkill = 162;
+    }
+
+    if (!SubClassSkill)
+    {
+        RedSystemMessage(m_session, "Can't find skill ID!");
+        return false;
+    }
+
+    uint32 skill = SubClassSkill;
+
+    if (selected_player != m_session->GetPlayer())
+    {
+        BlueSystemMessage(selected_player->GetSession(), "%s modified your skill line %d. Advancing %d times.", m_session->GetPlayer()->GetName(), skill, cnt);
+        BlueSystemMessage(m_session, "Modifying skill line %d. Advancing %d times for %s.", skill, cnt, selected_player->GetName());
+        sGMLog.writefromsession(m_session, "increased weapon skill (%u) of %s by %u", skill, selected_player->GetName(), cnt);
+    }
+    else
+    {
+        BlueSystemMessage(m_session, "Modifying skill line %d. Advancing %d times.", skill, cnt);
+    }
+
+    if (!selected_player->_HasSkillLine(skill))
+    {
+        SystemMessage(m_session, "Does not have skill line %u, adding.", skill);
+        selected_player->_AddSkillLine(skill, 1, 450);
+    }
+    else
+    {
+        selected_player->_AdvanceSkillLine(skill, cnt);
+    }
+
+    return true;
+}
+
+//.character resetreputation
+bool ChatHandler::HandleCharResetReputationCommand(const char* /*args*/, WorldSession* m_session)
+{
+    Player* selected_player = GetSelectedPlayer(m_session, true, true);
+    if (selected_player == nullptr)
+        return true;
+
+    selected_player->_InitialReputation();
+
+    if (selected_player != m_session->GetPlayer())
+    {
+        SystemMessage(selected_player->GetSession(), "%s resets your reputation. Relog for changes to take effect.", m_session->GetPlayer()->GetName());
+        sGMLog.writefromsession(m_session, "used reset reputation for %s", selected_player->GetName());
+        SystemMessage(m_session, "Reputation reset for %s", selected_player->GetName());
+    }
+    else
+    {
+        SystemMessage(m_session, "Done. Relog for changes to take effect.");
+    }
+
+    return true;
+}
+
+//.character resetspells
+bool ChatHandler::HandleCharResetSpellsCommand(const char* args, WorldSession* m_session)
+{
+    Player* selected_player = GetSelectedPlayer(m_session, true, true);
+    if (selected_player == nullptr)
+        return true;
+
+    selected_player->Reset_Spells();
+
+    if (selected_player != m_session->GetPlayer())
+    {
+        SystemMessage(m_session, "Reset spells of %s to level 1.", selected_player->GetName());
+        BlueSystemMessage(selected_player->GetSession(), "%s reset all your spells to starting values.", m_session->GetPlayer()->GetName());
+        sGMLog.writefromsession(m_session, "reset spells of %s", selected_player->GetName());
+    }
+    else
+    {
+        BlueSystemMessage(m_session, "Your spells are reset.");
+    }
+
+    return true;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // .character set commands
 //.character set allexplored
