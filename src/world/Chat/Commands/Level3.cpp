@@ -24,20 +24,6 @@
 #include "Server/Master.h"
 
 
-int32 GetSpellIDFromLink(const char* spelllink)
-{
-    if (spelllink == NULL)
-        return 0;
-
-    const char* ptr = strstr(spelllink, "|Hspell:");
-    if (ptr == NULL)
-    {
-        return 0;
-    }
-
-    return atol(ptr + 8);       // spell id is just past "|Hspell:" (8 bytes)
-}
-
 bool ChatHandler::HandleLearnCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)

@@ -500,7 +500,7 @@ void CommandTableStorage::Init()
         { "damage",             'o', &ChatHandler::HandleGODamageCommand,               "Damages the GO for the specified hitpoints",       nullptr, 0, 0, 0 },
         { "delete",             'o', &ChatHandler::HandleGODelete,                      "Deletes selected GameObject",                      nullptr, 0, 0, 0 },
         { "enable",             'o', &ChatHandler::HandleGOEnable,                      "Enables the selected GO for use.",                 nullptr, 0, 0, 0 },
-        { "export",             'o', &ChatHandler::HandleGOExport,                      "Exports the current GO selected",                  nullptr, 0, 0, 0 },
+        { "export",             'o', &ChatHandler::HandleGOExportCommand,               "Exports the selected GO to .sql file",             nullptr, 0, 0, 0 },
         { "info",               'o', &ChatHandler::HandleGOInfo,                        "Gives you information about selected GO",          nullptr, 0, 0, 0 },
         { "movehere",           'g', &ChatHandler::HandleGOMoveHereCommand,             "Moves gameobject to your position",                nullptr, 0, 0, 0 },
         { "open",               'o', &ChatHandler::HandleGOOpenCommand,                 "Toggles open/close (state) of selected GO.",       nullptr, 0, 0, 0 },
@@ -1912,4 +1912,18 @@ bool ChatHandler::HandleGetSkillLevelCommand(const char* args, WorldSession* m_s
     uint32 max = plr->_GetSkillLineMax(skill);
     BlueSystemMessage(m_session, "Player's %s skill has level: %u maxlevel: %u. (+ %u bonus)", SkillName, nobonus, max, bonus);
     return true;
+}
+
+int32 GetSpellIDFromLink(const char* spelllink)
+{
+    if (spelllink == NULL)
+        return 0;
+
+    const char* ptr = strstr(spelllink, "|Hspell:");
+    if (ptr == NULL)
+    {
+        return 0;
+    }
+
+    return atol(ptr + 8);       // spell id is just past "|Hspell:" (8 bytes)
 }

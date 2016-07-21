@@ -53,6 +53,33 @@ bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)
     return true;
 }
 
+//.gobject export
+bool ChatHandler::HandleGOExportCommand(const char* args, WorldSession* m_session)
+{
+    if (!m_session->GetPlayer()->m_GM_SelectedGO)
+        return false;
+
+    GameObject* gameobject = m_session->GetPlayer()->GetMapMgrGameObject(m_session->GetPlayer()->m_GM_SelectedGO);
+    if (gameobject == nullptr)
+        return false;
+
+    std::stringstream name;
+    if (*args)
+    {
+        name << "GO_" << args << ".sql";
+    }
+    else
+    {
+        name << "GO_" << gameobject->GetEntry() << ".sql";
+    }
+
+    gameobject->SaveToFile(name);
+
+    BlueSystemMessage(m_session, "Go saved to: %s", name.str().c_str());
+
+    return true;
+}
+
 //.gobject rebuild
 bool ChatHandler::HandleGORebuildCommand(const char* /*args*/, WorldSession* session)
 {

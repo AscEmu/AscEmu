@@ -247,7 +247,7 @@ void GameObject::SaveToFile(std::stringstream & name)
         << GetParentRotation(1) << ","
         << GetParentRotation(2) << ","
         << GetParentRotation(3) << ","
-        << GetState() << ","
+        << uint32(GetState()) << ","
         << GetFlags() << ","
         << GetFaction() << ","
         << GetScale() << ","
