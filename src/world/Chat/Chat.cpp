@@ -798,36 +798,35 @@ void CommandTableStorage::Init()
     static ChatCommand lookupCommandTable[] =
     {
 #ifdef ENABLE_ACHIEVEMENTS
-        { "achievement", 'l', &ChatHandler::HandleLookupAchievementCommand,  "Looks up achievement string x.",                              nullptr, 0, 0, 0 },
+        { "achievement",    'l', &ChatHandler::HandleLookupAchievementCommand,  "Looks up achievement string x.",                                   nullptr, 0, 0, 0 },
 #endif
-        { "creature",       'l', &ChatHandler::HandleLookupCreatureCommand,         "Looks up item string x.",                              nullptr, 0, 0, 0 },
-        { "faction",        'l', &ChatHandler::HandleLookupFactionCommand,          "Looks up faction string x.",                           nullptr, 0, 0, 0 },
-        { "item",           'l', &ChatHandler::HandleLookupItemCommand,             "Looks up item string x.",                              nullptr, 0, 0, 0 },
-        { "object",         'l', &ChatHandler::HandleLookupObjectCommand,           "Looks up gameobject string x.",                        nullptr, 0, 0 , 0},
-        { "quest",          'l', &ChatHandler::HandleLookupQuestCommand,            "Looks up quest string x.",                             nullptr, 0, 0, 0 },
-        { "spell",          'l', &ChatHandler::HandleLookupSpellCommand,            "Looks up spell string x.",                             nullptr, 0, 0, 0 },
-        { "skill",          'l', &ChatHandler::HandleLookupSkillCommand,            "Looks up skill string x.",                             nullptr, 0, 0, 0 },
-        { nullptr,          '0', nullptr,                                           "",                                                     nullptr, 0, 0, 0 }
+        { "creature",       'l', &ChatHandler::HandleLookupCreatureCommand,     "Looks up item string x.",                                          nullptr, 0, 0, 0 },
+        { "faction",        'l', &ChatHandler::HandleLookupFactionCommand,      "Looks up faction string x.",                                       nullptr, 0, 0, 0 },
+        { "item",           'l', &ChatHandler::HandleLookupItemCommand,         "Looks up item string x.",                                          nullptr, 0, 0, 0 },
+        { "object",         'l', &ChatHandler::HandleLookupObjectCommand,       "Looks up gameobject string x.",                                    nullptr, 0, 0 , 0},
+        { "quest",          'l', &ChatHandler::HandleLookupQuestCommand,        "Looks up quest string x.",                                         nullptr, 0, 0, 0 },
+        { "spell",          'l', &ChatHandler::HandleLookupSpellCommand,        "Looks up spell string x.",                                         nullptr, 0, 0, 0 },
+        { "skill",          'l', &ChatHandler::HandleLookupSkillCommand,        "Looks up skill string x.",                                         nullptr, 0, 0, 0 },
+        { nullptr,          '0', nullptr,                                       "",                                                                 nullptr, 0, 0, 0 }
     };
     dupe_command_table(lookupCommandTable, _lookupCommandTable);
 
     static ChatCommand adminCommandTable[] =
     {
-        { "castall",               'z', &ChatHandler::HandleCastAllCommand,         "Makes all players online cast spell <x>.",                      NULL, 0, 0, 0 },
-        { "dispelall",             'z', &ChatHandler::HandleDispelAllCommand,       "Dispels all negative (or positive w/ 1) auras on all players.", NULL, 0, 0, 0 },
-        { "renameallinvalidchars", 'z', &ChatHandler::HandleRenameAllCharacter,     "Renames all invalid character names",                           NULL, 0, 0, 0 },
-        { "masssummon",            'z', &ChatHandler::HandleMassSummonCommand,      "Summons all online players to your location,add the a/A parameter for alliance or h/H for horde.",  NULL, 0, 0, 0 },
-        { "playall",               'z', &ChatHandler::HandleGlobalPlaySoundCommand, "Plays a sound to everyone on the realm.",                       NULL, 0, 0, 0 },
-        { NULL,                    '0', NULL,                                       "",                                                              NULL, 0, 0, 0 }
+        { "castall",        'z', &ChatHandler::HandleAdminCastAllCommand,       "Makes all players online cast spell <x>.",                         nullptr, 0, 0, 0 },
+        { "dispelall",      'z', &ChatHandler::HandleAdminDispelAllCommand,     "Dispels all negative (or positive w/ 1) auras on all players.",    nullptr, 0, 0, 0 },
+        { "masssummon",     'z', &ChatHandler::HandleAdminMassSummonCommand,    "Summons all online players to you, use a/h for alliance/horde.",   nullptr, 0, 0, 0 },
+        { "playall",        'z', &ChatHandler::HandleAdminPlayGlobalSoundCommand, "Plays a sound to everyone on the realm.",                        nullptr, 0, 0, 0 },
+        { nullptr,          '0', nullptr,                                       "",                                                                 nullptr, 0, 0, 0 }
     };
     dupe_command_table(adminCommandTable, _adminCommandTable);
 
     static ChatCommand kickCommandTable[] =
     {
-        { "player",                 'f', &ChatHandler::HandleKickByNameCommand,     "Disconnects the player with name <s>.",                        nullptr, 0, 0, 0 },
-        { "account",                'f', &ChatHandler::HandleKKickBySessionCommand, "Disconnects the session with account name <s>.",               nullptr, 0, 0, 0 },
-        { "ip",                     'f', &ChatHandler::HandleKickByIPCommand,       "Disconnects the session with the ip <s>.",                     nullptr, 0, 0, 0 },
-        { nullptr,                  '0', nullptr,                                   "",                                                             nullptr, 0, 0, 0 }
+        { "player",         'f', &ChatHandler::HandleKickByNameCommand,         "Disconnects the player with name <s>.",                            nullptr, 0, 0, 0 },
+        { "account",        'f', &ChatHandler::HandleKKickBySessionCommand,     "Disconnects the session with account name <s>.",                   nullptr, 0, 0, 0 },
+        { "ip",             'f', &ChatHandler::HandleKickByIPCommand,           "Disconnects the session with the ip <s>.",                         nullptr, 0, 0, 0 },
+        { nullptr,          '0', nullptr,                                       "",                                                                 nullptr, 0, 0, 0 }
     };
     dupe_command_table(kickCommandTable, _kickCommandTable);
 
@@ -862,10 +861,10 @@ void CommandTableStorage::Init()
 
     static ChatCommand arenaCommandTable[] =
     {
-        { "createteam",      'e', &ChatHandler::HandleArenaCreateTeam,              "Creates arena team with <type> <name>",                        nullptr, 0, 0, 0 },
-        { "setteamleader",   'e', &ChatHandler::HandleArenaSetTeamLeader,           "Sets the arena team leader for <type>",                        nullptr, 0, 0, 0 },
-        { "resetallratings", 'z', &ChatHandler::HandleArenaTeamResetAllRatings,     "Resets all arena teams to their default rating",               nullptr, 0, 0, 0 },
-        { nullptr,           '0', nullptr,                                          "",                                                             nullptr, 0, 0, 0 }
+        { "createteam",      'e', &ChatHandler::HandleArenaCreateTeam,          "Creates arena team with <type> <name>",                            nullptr, 0, 0, 0 },
+        { "setteamleader",   'e', &ChatHandler::HandleArenaSetTeamLeader,       "Sets the arena team leader for <type>",                            nullptr, 0, 0, 0 },
+        { "resetallratings", 'z', &ChatHandler::HandleArenaTeamResetAllRatings, "Resets all arena teams to their default rating",                   nullptr, 0, 0, 0 },
+        { nullptr,           '0', nullptr,                                      "",                                                                 nullptr, 0, 0, 0 }
     };
     dupe_command_table(arenaCommandTable, _arenaCommandTable);
 

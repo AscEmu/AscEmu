@@ -5,6 +5,7 @@ set(PATH_PREFIX Chat/Commands)
 set(SRC_COMMAND_FILES
    ${PATH_PREFIX}/AccountCommands.cpp
    ${PATH_PREFIX}/AchievementCommands.cpp
+   ${PATH_PREFIX}/AdminCommands.cpp
    ${PATH_PREFIX}/ArenaCommands.cpp
    ${PATH_PREFIX}/BattlegroundCommands.cpp
    ${PATH_PREFIX}/CharacterCommands.cpp

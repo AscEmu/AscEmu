@@ -268,6 +268,12 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAchievementResetCommand(const char* args, WorldSession* m_session);
 #endif
 
+        // Admin commands
+        bool HandleAdminCastAllCommand(const char* args, WorldSession* m_session);
+        bool HandleAdminDispelAllCommand(const char* args, WorldSession* m_session);
+        bool HandleAdminMassSummonCommand(const char* args, WorldSession* m_session);
+        bool HandleAdminPlayGlobalSoundCommand(const char* args, WorldSession* m_session);
+
         // Arena commands
         uint8 GetArenaTeamInternalType(uint32 type, WorldSession* m_session);
         bool HandleArenaCreateTeam(const char* args, WorldSession* m_session);
@@ -539,11 +545,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         // Everything under this line is untested/not rewritten.
         //\todo Rewrite these commands and move them to a proper file.
         //Unsorted
-        bool HandleCastAllCommand(const char* args, WorldSession* m_session);
-        bool HandleDispelAllCommand(const char* args, WorldSession* m_session);
-        bool HandleMassSummonCommand(const char* args, WorldSession* m_session);
-        bool HandleRenameAllCharacter(const char* args, WorldSession* m_session);
-        bool HandleGlobalPlaySoundCommand(const char* args, WorldSession* m_session);
         bool HandleDebugDumpMovementCommand(const char* args, WorldSession* session);
         bool HandleDebugInFrontCommand(const char* args, WorldSession* m_session);
         bool HandleShowReactionCommand(const char* args, WorldSession* m_session);

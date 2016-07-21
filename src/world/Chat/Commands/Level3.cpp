@@ -612,108 +612,6 @@ bool ChatHandler::HandleAdvanceAllSkillsCommand(const char* args, WorldSession* 
     return true;
 }
 
-bool ChatHandler::HandleMassSummonCommand(const char* args, WorldSession* m_session)
-{
-    PlayerStorageMap::const_iterator itr;
-    objmgr._playerslock.AcquireReadLock();
-    Player* summoner = m_session->GetPlayer();
-    Player* plr;
-    int faction = -1;
-    char Buffer[170];
-    if (*args == 'a' || *args == 'A')
-    {
-        faction = 0;
-        snprintf(Buffer, 170, "%s%s Has requested a mass summon of all Alliance players. Do not feel obliged to accept the summon, as it is most likely for an event or a test of sorts", MSG_COLOR_GOLD, m_session->GetPlayer()->GetName());
-
-    }
-    else if (*args == 'h' || *args == 'H')
-    {
-        faction = 1;
-        snprintf(Buffer, 170, "%s%s Has requested a mass summon of all Horde players. Do not feel obliged to accept the summon, as it is most likely for an event or a test of sorts", MSG_COLOR_GOLD, m_session->GetPlayer()->GetName());
-    }
-    else  snprintf(Buffer, 170, "%s%s Has requested a mass summon of all players. Do not feel obliged to accept the summon, as it is most likely for an event or a test of sorts", MSG_COLOR_GOLD, m_session->GetPlayer()->GetName());
-
-    uint32 c = 0;
-
-    for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
-    {
-        plr = itr->second;
-        if (plr->GetSession() && plr->IsInWorld())
-        {
-            //plr->SafeTeleport(summoner->GetMapId(), summoner->GetInstanceID(), summoner->GetPosition());
-            /* let's do this the blizz way */
-            if (faction > -1 && plr->GetTeam() == static_cast<uint32>(faction))
-            {
-                plr->SummonRequest(summoner->GetLowGUID(), summoner->GetZoneId(), summoner->GetMapId(), summoner->GetInstanceID(), summoner->GetPosition());
-                ++c;
-            }
-            else if (faction == -1)
-            {
-                plr->SummonRequest(summoner->GetLowGUID(), summoner->GetZoneId(), summoner->GetMapId(), summoner->GetInstanceID(), summoner->GetPosition());
-                ++c;
-            }
-
-        }
-    }
-    sGMLog.writefromsession(m_session, "requested a mass summon of %u players.", c);
-    objmgr._playerslock.ReleaseReadLock();
-    return true;
-}
-
-bool ChatHandler::HandleCastAllCommand(const char* args, WorldSession* m_session)
-{
-    if (!args || strlen(args) < 2)
-    {
-        RedSystemMessage(m_session, "No spellid specified.");
-        return true;
-    }
-    Player* plr;
-    uint32 spellid = atol(args);
-    SpellEntry* info = dbcSpell.LookupEntryForced(spellid);
-    if (!info)
-    {
-        RedSystemMessage(m_session, "Invalid spell specified.");
-        return true;
-    }
-
-    // this makes sure no moron casts a learn spell on everybody and wrecks the server
-    for (uint8 i = 0; i < 3; i++)
-    {
-        if (info->Effect[i] == SPELL_EFFECT_LEARN_SPELL)  //SPELL_EFFECT_LEARN_SPELL - 36
-        {
-            sGMLog.writefromsession(m_session, "used wrong / learnall castall command, spellid %u", spellid);
-            RedSystemMessage(m_session, "Learn spell specified.");
-            return true;
-        }
-    }
-
-    sGMLog.writefromsession(m_session, "used castall command, spellid %u", spellid);
-
-    PlayerStorageMap::const_iterator itr;
-    objmgr._playerslock.AcquireReadLock();
-    for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
-    {
-        plr = itr->second;
-        if (plr->GetSession() && plr->IsInWorld())
-        {
-            if (plr->GetMapMgr() != m_session->GetPlayer()->GetMapMgr())
-            {
-                sEventMgr.AddEvent(static_cast< Unit* >(plr), &Unit::EventCastSpell, static_cast< Unit* >(plr), info, EVENT_PLAYER_CHECKFORCHEATS, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-            }
-            else
-            {
-                Spell* sp = sSpellFactoryMgr.NewSpell(plr, info, true, 0);
-                SpellCastTargets targets(plr->GetGUID());
-                sp->prepare(&targets);
-            }
-        }
-    }
-    objmgr._playerslock.ReleaseReadLock();
-
-    BlueSystemMessage(m_session, "Casted spell %u on all players!", spellid);
-    return true;
-}
-
 bool ChatHandler::HandleResetSkillsCommand(const char* args, WorldSession* m_session)
 {
     Player* plr = GetSelectedPlayer(m_session, true, true);
@@ -745,24 +643,6 @@ bool ChatHandler::HandleResetSkillsCommand(const char* args, WorldSession* m_ses
     sGMLog.writefromsession(m_session, "reset skills of %s to default", plr->GetName());
     return true;
 }
-
-bool ChatHandler::HandleGlobalPlaySoundCommand(const char* args, WorldSession* m_session)
-{
-    if (*args == '\0')
-        return false;
-
-    uint32 sound = atoi(args);
-    if (sound == 0)
-        return false;
-
-    sWorld.PlaySoundToAll(sound);
-    BlueSystemMessage(m_session, "Broadcasted sound %u to server.", sound);
-    sGMLog.writefromsession(m_session, "used play all command soundid %u", sound);
-
-    return true;
-}
-
-
 
 bool ChatHandler::HandleRemoveItemCommand(const char* args, WorldSession* m_session)
 {
@@ -1097,40 +977,6 @@ bool ChatHandler::HandleGuildMembersCommand(const char* args, WorldSession* m_se
         BlueSystemMessage(m_session, "%s (Rank: %s)", member->pPlayer->name, member->pRank->szRankName);
     }
     plr->GetGuild()->Unlock();
-    return true;
-}
-
-bool ChatHandler::HandleDispelAllCommand(const char* args, WorldSession* m_session)
-{
-    uint32 pos = 0;
-    if (*args)
-        pos = atoi(args);
-
-    Player* plr;
-
-    sGMLog.writefromsession(m_session, "used dispelall command, pos %u", pos);
-
-    PlayerStorageMap::const_iterator itr;
-    objmgr._playerslock.AcquireReadLock();
-    for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
-    {
-        plr = itr->second;
-        if (plr->GetSession() && plr->IsInWorld())
-        {
-            if (plr->GetMapMgr() != m_session->GetPlayer()->GetMapMgr())
-            {
-                sEventMgr.AddEvent(static_cast< Unit* >(plr), &Unit::DispelAll, pos ? true : false, EVENT_PLAYER_CHECKFORCHEATS, 100, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-            }
-            else
-            {
-                plr->DispelAll(pos ? true : false);
-            }
-        }
-    }
-    sGMLog.writefromsession(m_session, "used mass dispel");
-    objmgr._playerslock.ReleaseReadLock();
-
-    BlueSystemMessage(m_session, "Dispel action done.");
     return true;
 }
 
