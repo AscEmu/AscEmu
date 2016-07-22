@@ -498,36 +498,36 @@ void CommandTableStorage::Init()
     static ChatCommand GameObjectCommandTable[] =
     {
         { "damage",             'o', &ChatHandler::HandleGODamageCommand,               "Damages the GO for the specified hitpoints",       nullptr, 0, 0, 0 },
-        { "delete",             'o', &ChatHandler::HandleGODelete,                      "Deletes selected GameObject",                      nullptr, 0, 0, 0 },
+        { "delete",             'o', &ChatHandler::HandleGODeleteCommand,               "Deletes selected GameObject",                      nullptr, 0, 0, 0 },
         { "enable",             'o', &ChatHandler::HandleGOEnableCommand,               "Enables the selected GO for use.",                 nullptr, 0, 0, 0 },
         { "export",             'o', &ChatHandler::HandleGOExportCommand,               "Exports the selected GO to .sql file",             nullptr, 0, 0, 0 },
-        { "info",               'o', &ChatHandler::HandleGOInfo,                        "Gives you information about selected GO",          nullptr, 0, 0, 0 },
+        { "info",               'o', &ChatHandler::HandleGOInfoCommand,                 "Gives you information about selected GO",          nullptr, 0, 0, 0 },
         { "movehere",           'g', &ChatHandler::HandleGOMoveHereCommand,             "Moves gameobject to your position",                nullptr, 0, 0, 0 },
         { "open",               'o', &ChatHandler::HandleGOOpenCommand,                 "Toggles open/close (state) of selected GO.",       nullptr, 0, 0, 0 },
         { "rebuild",            'o', &ChatHandler::HandleGORebuildCommand,              "Rebuilds the GO.",                                 nullptr, 0, 0, 0 },
         { "rotate",             'g', &ChatHandler::HandleGORotateCommand,               "Rotates the object. <Axis> x,y, Default o.",       nullptr, 0, 0, 0 },
-        { "select",             'o', &ChatHandler::HandleGOSelect,                      "Selects the nearest GameObject to you",            nullptr, 0, 0, 0 },
+        { "select",             'o', &ChatHandler::HandleGOSelectCommand,               "Selects the nearest GameObject to you",            nullptr, 0, 0, 0 },
         { "selectguid",         'o', &ChatHandler::HandleGOSelectGuidCommand,           "Selects GO with <guid>",                           nullptr, 0, 0, 0 },
         { "set",                'o', nullptr,                                           "",                               GameObjectSetCommandTable, 0, 0, 0 },
-        { "spawn",              'o', &ChatHandler::HandleGOSpawn,                       "Spawns a GameObject by ID",                        nullptr, 0, 0, 0 },
+        { "spawn",              'o', &ChatHandler::HandleGOSpawnCommand,                "Spawns a GameObject by ID",                        nullptr, 0, 0, 0 },
         { nullptr,              '0', nullptr,                                           "",                                                 nullptr, 0, 0, 0 }
     };
     dupe_command_table(GameObjectCommandTable, _GameObjectCommandTable);
 
     static ChatCommand BattlegroundCommandTable[] =
     {
-        { "setbgscore",         'e', &ChatHandler::HandleSetBGScoreCommand,             "Sets bg score <Teamid> <Score>.",                  nullptr, 0, 0, 0 },
-        { "startbg",            'e', &ChatHandler::HandleStartBGCommand,                "Starts current battleground match.",               nullptr, 0, 0, 0 },
-        { "pausebg",            'e', &ChatHandler::HandlePauseBGCommand,                "Pauses current battleground match.",               nullptr, 0, 0, 0 },
-        { "bginfo",             'e', &ChatHandler::HandleBGInfoCommnad,                 "Displays information about current bg.",           nullptr, 0, 0, 0 },
-        { "battleground",       'e', &ChatHandler::HandleBattlegroundCommand,           "Shows BG Menu",                                    nullptr, 0, 0, 0 },
-        { "setworldstate",      'e', &ChatHandler::HandleSetWorldStateCommand,          "<var> <val> - Var can be in hex. WS Value.",       nullptr, 0, 0, 0 },
-        { "setworldstates",     'e', &ChatHandler::HandleSetWorldStatesCommand,         "<var> <val> - Var can be in hex. WS Value.",       nullptr, 0, 0, 0 },
-        { "playsound",          'e', &ChatHandler::HandlePlaySoundCommand,              "<val>. Val can be in hex.",                        nullptr, 0, 0, 0 },
-        { "setbfstatus",        'e', &ChatHandler::HandleSetBattlefieldStatusCommand,   ".setbfstatus - NYI.",                              nullptr, 0, 0, 0 },
-        { "leave",              'e', &ChatHandler::HandleBattlegroundExitCommand,       "Leaves the current battleground.",                 nullptr, 0, 0, 0 },
-        { "getqueue",           'z', &ChatHandler::HandleGetBattlegroundQueueCommand,   "Gets common battleground queue information.",      nullptr, 0, 0, 0 },
-        { "forcestart",         'z', &ChatHandler::HandleInitializeAllQueuedBattlegroundsCommand, "Forces init of all bgs with in queue.",  nullptr, 0, 0, 0 },
+        { "forceinitqueue",     'z', &ChatHandler::HandleBGForceInitQueueCommand,       "Forces init of all bgs with in queue.",            nullptr, 0, 0, 0 },
+        { "getqueue",           'z', &ChatHandler::HandleBGGetQueueCommand,             "Gets common battleground queue information.",      nullptr, 0, 0, 0 },
+        { "info",               'e', &ChatHandler::HandleBGInfoCommand,                 "Displays information about current bg.",           nullptr, 0, 0, 0 },
+        { "leave",              'e', &ChatHandler::HandleBGLeaveCommand,                "Leaves the current battleground.",                 nullptr, 0, 0, 0 },
+        { "menu",               'e', &ChatHandler::HandleBGMenuCommand,                 "Shows BG Menu for selected player by type <x>",    nullptr, 0, 0, 0 },
+        { "pause",              'e', &ChatHandler::HandleBGPauseCommand,                "Pauses current battleground match.",               nullptr, 0, 0, 0 },
+        { "playsound",          'e', &ChatHandler::HandleBGPlaySoundCommand,            "Plays sound to all players in bg <sound_id>",      nullptr, 0, 0, 0 },
+        { "sendstatus",         'e', &ChatHandler::HandleBGSendStatusCommand,           "Sends status of bg by type <x>",                   nullptr, 0, 0, 0 },
+        { "setscore",           'e', &ChatHandler::HandleBGSetScoreCommand,             "Sets bg score <Teamid> <Score>.",                  nullptr, 0, 0, 0 },
+        { "setworldstate",      'e', &ChatHandler::HandleBGSetWorldStateCommand,        "Sets singe worldsate value.",                      nullptr, 0, 0, 0 },
+        { "setworldstates",     'e', &ChatHandler::HandleBGSetWorldStatesCommand,       "Sets multipe worldstate values for start/end id",  nullptr, 0, 0, 0 },
+        { "start",              'e', &ChatHandler::HandleBGStartCommand,                "Starts current battleground match.",               nullptr, 0, 0, 0 },
         { nullptr,              '0', nullptr,                                           "",                                                 nullptr, 0, 0, 0 }
     };
     dupe_command_table(BattlegroundCommandTable, _BattlegroundCommandTable);

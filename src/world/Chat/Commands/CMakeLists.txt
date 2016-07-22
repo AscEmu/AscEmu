@@ -7,7 +7,7 @@ set(SRC_COMMAND_FILES
    ${PATH_PREFIX}/AchievementCommands.cpp
    ${PATH_PREFIX}/AdminCommands.cpp
    ${PATH_PREFIX}/ArenaCommands.cpp
-   ${PATH_PREFIX}/BattlegroundCommands.cpp
+   ${PATH_PREFIX}/BGCommands.cpp
    ${PATH_PREFIX}/CharacterCommands.cpp
    ${PATH_PREFIX}/CheatCommands.cpp
    ${PATH_PREFIX}/debugcmds.cpp

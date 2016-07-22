@@ -280,6 +280,20 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleArenaSetTeamLeader(const char* args, WorldSession* m_session);
         bool HandleArenaTeamResetAllRatings(const char* /*args*/, WorldSession* /*m_session*/);
 
+        // Battleground commands
+        bool HandleBGForceInitQueueCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleBGGetQueueCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleBGInfoCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleBGLeaveCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleBGMenuCommand(const char* args, WorldSession* m_session);
+        bool HandleBGPauseCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleBGPlaySoundCommand(const char* args, WorldSession* m_session);
+        bool HandleBGStartCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleBGSendStatusCommand(const char* args, WorldSession* m_session);
+        bool HandleBGSetScoreCommand(const char* args, WorldSession* m_session);
+        bool HandleBGSetWorldStateCommand(const char* args, WorldSession* m_session);
+        bool HandleBGSetWorldStatesCommand(const char* args, WorldSession* m_session);
+
         // Cheat
         bool HandleCheatListCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleCheatTaxiCommand(const char* /*args*/, WorldSession* m_session);
@@ -376,15 +390,19 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGoGameObjectSpawnCommand(const char* args, WorldSession* m_session);
 
         //GameObjectCommands
-        bool HandleGOSelectGuidCommand(const char* args, WorldSession* m_session);
         bool HandleGODamageCommand(const char* args, WorldSession* session);
+        bool HandleGODeleteCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleGOEnableCommand(const char*  /*args*/, WorldSession* m_session);
         bool HandleGOExportCommand(const char* args, WorldSession* m_session);
+        bool HandleGOInfoCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleGORotateCommand(const char* args, WorldSession* m_session);
         bool HandleGORebuildCommand(const char* /*args*/, WorldSession* session);
+        bool HandleGOSelectGuidCommand(const char* args, WorldSession* m_session);
+        bool HandleGOSelectCommand(const char* args, WorldSession* m_session);
         bool HandleGOMoveHereCommand(const char* args, WorldSession* m_session);
         bool HandleGOOpenCommand(const char* /*args*/, WorldSession* m_session);
-
+        bool HandleGOSpawnCommand(const char* args, WorldSession* m_session);
+        //GameObject set commands
         bool HandleGOSetStateCommand(const char* args, WorldSession* m_session);
         bool HandleGOSetFlagsCommand(const char* args, WorldSession* m_session);
         bool HandleGOSetFactionCommand(const char* args, WorldSession* m_session);
@@ -588,9 +606,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         
         bool HandleItemCommand(const char* args, WorldSession* m_session);
         bool HandleItemRemoveCommand(const char* args, WorldSession* m_session);
-        bool HandleStartBGCommand(const char* args, WorldSession* m_session);
-        bool HandlePauseBGCommand(const char* args, WorldSession* m_session);
-        bool HandleBGInfoCommnad(const char* args, WorldSession* m_session);
         
         bool CmdSetValueField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args);
         bool CmdSetFloatField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args);
@@ -604,7 +619,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         
         bool HandleModifyValueCommand(const char* args, WorldSession* m_session);
         bool HandleModifyBitCommand(const char* args, WorldSession* m_session);
-        bool HandleBattlegroundExitCommand(const char* args, WorldSession* m_session);
+        
         
         bool HandleRecallListCommand(const char* args, WorldSession* m_session);
         bool HandleRecallGoCommand(const char* args, WorldSession* m_session);
@@ -645,16 +660,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         
         bool HandleBanCharacterCommand(const char* args, WorldSession* m_session);
         bool HandleBanAllCommand(const char* args, WorldSession* m_session);
-        bool HandleSetBGScoreCommand(const char* args, WorldSession* m_session);
-        bool HandleInitializeAllQueuedBattlegroundsCommand(const char* args, WorldSession* m_session);
-        bool HandleGetBattlegroundQueueCommand(const char* args, WorldSession* m_session);
-        bool HandleGOSelect(const char* args, WorldSession* m_session);
-        bool HandleGODelete(const char* args, WorldSession* m_session);
-        bool HandleGOSpawn(const char* args, WorldSession* m_session);
         
-        bool HandleGOInfo(const char* args, WorldSession* m_session);        
-        
-
         bool HandleLearnCommand(const char* args, WorldSession* m_session);
         
         bool HandleGMTicketListCommand(const char* args, WorldSession* m_session);
@@ -673,12 +679,6 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleCastSpellCommand(const char* args, WorldSession* m_session);
         bool HandleCastSpellNECommand(const char* args, WorldSession* m_session);
         bool HandleCastSelfCommand(const char* args, WorldSession* m_session);
-
-        bool HandleBattlegroundCommand(const char* args, WorldSession* m_session);
-        bool HandleSetWorldStateCommand(const char* args, WorldSession* m_session);
-        bool HandleSetWorldStatesCommand(const char* args, WorldSession* m_session);
-        bool HandlePlaySoundCommand(const char* args, WorldSession* m_session);
-        bool HandleSetBattlefieldStatusCommand(const char* args, WorldSession* m_session);
 
         bool HandleGetSkillLevelCommand(const char* args, WorldSession* m_session);
         
