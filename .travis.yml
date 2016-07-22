@@ -77,3 +77,8 @@ script:
     make -j 2;
     fi
 
+after_script:
+  - cat /home/travis/build/AscEmu/AscEmu/ascemu_build/cov-int/build-log.txt
+  - echo "===================================================================================================="
+  - cat /home/travis/build/AscEmu/AscEmu/ascemu_build/cov-int/scm_log.txt
+
