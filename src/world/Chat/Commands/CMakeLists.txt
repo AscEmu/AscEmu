@@ -18,7 +18,6 @@ set(SRC_COMMAND_FILES
    ${PATH_PREFIX}/GMTicketCommands.cpp
    ${PATH_PREFIX}/GuildCommands.cpp
    ${PATH_PREFIX}/InstanceCommands.cpp
-   ${PATH_PREFIX}/Level3.cpp
    ${PATH_PREFIX}/LookupCommands.cpp
    ${PATH_PREFIX}/MiscCommands.cpp
    ${PATH_PREFIX}/NpcCommands.cpp

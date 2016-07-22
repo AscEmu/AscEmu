@@ -737,7 +737,7 @@ void CommandTableStorage::Init()
         { "levelup",            'm', &ChatHandler::HandleCharLevelUpCommand,            "Player target will be levelup x levels",           nullptr, 0, 0, 0 },
         { "removeauras",        'm', &ChatHandler::HandleCharRemoveAurasCommand,        "Removes all auras from target",                    nullptr, 0, 0, 0 },
         { "removesickness",     'm', &ChatHandler::HandleCharRemoveSickessCommand,      "Removes ressurrection sickness from target",       nullptr, 0, 0, 0 },
-        { "learn",              'm', &ChatHandler::HandleLearnCommand,                  "Learns spell",                                     nullptr, 0, 0, 0 },
+        { "learn",              'm', &ChatHandler::HandleCharLearnCommand,              "Learns spell <x> or all available spells by race", nullptr, 0, 0, 0 },
         { "unlearn",            'm', &ChatHandler::HandleCharUnlearnCommand,            "Unlearns spell",                                   nullptr, 0, 0, 0 },
         { "learnskill",         'm', &ChatHandler::HandleCharLearnSkillCommand,         "Learns skill id skillid opt: min max.",            nullptr, 0, 0, 0 },
         { "advanceskill",       'm', &ChatHandler::HandleCharAdvanceSkillCommand,       "Advances skill line x y times.",                   nullptr, 0, 0, 0 },

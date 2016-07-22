@@ -130,7 +130,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleCharRemoveSickessCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleAdvanceAllSkillsCommand(const char* args, WorldSession* m_session);
         //\todo Rewrite this commands
-        bool HandleLearnCommand(const char* args, WorldSession* m_session);
+        bool HandleCharLearnCommand(const char* args, WorldSession* m_session);
 
         //Character add commands
         bool HandleCharAddCopperCommand(const char* args, WorldSession* m_session);
