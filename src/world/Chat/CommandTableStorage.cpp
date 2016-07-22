@@ -581,12 +581,12 @@ void CommandTableStorage::Init()
 
     static ChatCommand petCommandTable[] =
     {
-        { "createpet",  'm', &ChatHandler::HandleCreatePetCommand,      "Creates a pet with <entry>.",                                      nullptr, 0, 0, 0 },
-        { "dismiss",    'm', &ChatHandler::HandleDismissPetCommand,     "Dismisses selected pet.",                                          nullptr, 0, 0, 0 },
-        { "renamepet",  'm', &ChatHandler::HandleRenamePetCommand,      "Renames a pet to <name>.",                                         nullptr, 0, 0, 0 },
-        { "addspell",   'm', &ChatHandler::HandleAddPetSpellCommand,    "Teaches pet <spell>.",                                             nullptr, 0, 0, 0 },
-        { "removespell",'m', &ChatHandler::HandleRemovePetSpellCommand, "Removes pet spell <spell>.",                                       nullptr, 0, 0, 0 },
-        { "setlevel",   'm', &ChatHandler::HandlePetLevelCommand,       "Sets pet level to <level>.",                                       nullptr, 0, 0, 0 },
+        { "create",     'm', &ChatHandler::HandlePetCreateCommand,      "Creates a pet with <entry>.",                                      nullptr, 0, 0, 0 },
+        { "dismiss",    'm', &ChatHandler::HandlePetDismissCommand,     "Dismisses a pet by for selected player or selected pet.",          nullptr, 0, 0, 0 },
+        { "rename",     'm', &ChatHandler::HandlePetRenameCommand,      "Renames a pet to <name>.",                                         nullptr, 0, 0, 0 },
+        { "addspell",   'm', &ChatHandler::HandlePetAddSpellCommand,    "Teaches pet <spell>.",                                             nullptr, 0, 0, 0 },
+        { "removespell",'m', &ChatHandler::HandlePetRemoveSpellCommand, "Removes pet spell <spell>.",                                       nullptr, 0, 0, 0 },
+        { "setlevel",   'm', &ChatHandler::HandlePetSetLevelCommand,    "Sets pet level to <level>.",                                       nullptr, 0, 0, 0 },
         { nullptr,      '0', nullptr,                                   "",                                                                 nullptr, 0, 0, 0 }
     };
     dupe_command_table(petCommandTable, _petCommandTable);

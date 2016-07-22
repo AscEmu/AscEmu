@@ -417,14 +417,13 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleKKickBySessionCommand(const char* args, WorldSession* m_session);
         bool HandleKickByIPCommand(const char* args, WorldSession* m_session);
 
-        //old - currently in Level3.cpp Pet Commands
-        //\todo Rewrite these commands
-        bool HandleCreatePetCommand(const char* args, WorldSession* m_session);
-        bool HandleAddPetSpellCommand(const char* args, WorldSession* m_session);
-        bool HandleRemovePetSpellCommand(const char* args, WorldSession* m_session);
-        bool HandleRenamePetCommand(const char* args, WorldSession* m_session);
-        bool HandleDismissPetCommand(const char* args, WorldSession* m_session);
-        bool HandlePetLevelCommand(const char* args, WorldSession* m_session);
+        //Pet Commands
+        bool HandlePetCreateCommand(const char* args, WorldSession* m_session);
+        bool HandlePetDismissCommand(const char* args, WorldSession* m_session);
+        bool HandlePetRenameCommand(const char* args, WorldSession* m_session);
+        bool HandlePetAddSpellCommand(const char* args, WorldSession* m_session);
+        bool HandlePetRemoveSpellCommand(const char* args, WorldSession* m_session);
+        bool HandlePetSetLevelCommand(const char* args, WorldSession* m_session);
 
         //old QuestCommands.cpp
         //\todo Rewrite these commands
