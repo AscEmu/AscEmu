@@ -764,6 +764,123 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
     return true;
 }
 
+//.npc vendoradditem
+bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* m_session)
+{
+    char* pitem = strtok((char*)args, " ");
+    if (!pitem)
+        return false;
+
+    uint64 guid = m_session->GetPlayer()->GetSelection();
+    if (guid == 0)
+    {
+        SystemMessage(m_session, "No selection.");
+        return true;
+    }
+
+    Creature* selected_creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    if (selected_creature == nullptr)
+    {
+        SystemMessage(m_session, "You should select a creature.");
+        return true;
+    }
+
+    uint32 item = atoi(pitem);
+    int amount = -1;
+
+    char* pamount = strtok(NULL, " ");
+    if (pamount)
+        amount = atoi(pamount);
+
+    if (amount == -1)
+    {
+        SystemMessage(m_session, "You need to specify an amount.");
+        return true;
+    }
+
+    uint32 costid = 0;
+    char* pcostid = strtok(NULL, " ");
+    if (pcostid)
+        costid = atoi(pcostid);
+
+    auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : NULL;
+    if (costid > 0 && sItemExtendedCostStore.LookupEntry(costid) == NULL)
+    {
+        SystemMessage(m_session, "You've entered invalid extended cost id.");
+        return true;
+    }
+
+    ItemProperties const* tmpItem = sMySQLStore.GetItemProperties(item);
+    if (tmpItem)
+    {
+        WorldDatabase.Execute("INSERT INTO vendors VALUES (%u, %u, %u, 0, 0, %u", selected_creature->GetEntry(), item, amount, costid);
+
+        selected_creature->AddVendorItem(item, amount, item_extended_cost);
+
+        if (costid > 0)
+            BlueSystemMessage(m_session, "Item %u (%s) added to vendorlist with extended cost %u.", item, tmpItem->Name.c_str(), costid);
+        else
+            BlueSystemMessage(m_session, "Item %u (%s) added to vendorlist.", item, tmpItem->Name.c_str());
+    }
+    else
+    {
+        RedSystemMessage(m_session, "Item %u not found in database", item);
+    }
+
+    sGMLog.writefromsession(m_session, "added item %u to vendor %u", item, selected_creature->GetEntry());
+
+    return true;
+}
+
+//.npc vendorremoveitem
+bool ChatHandler::HandleNpcVendorRemoveItemCommand(const char* args, WorldSession* m_session)
+{
+    char* iguid = strtok((char*)args, " ");
+    if (!iguid)
+        return false;
+
+    uint64 guid = m_session->GetPlayer()->GetSelection();
+    if (guid == 0)
+    {
+        SystemMessage(m_session, "No selection.");
+        return true;
+    }
+
+    Creature* selected_creature = m_session->GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    if (selected_creature == nullptr)
+    {
+        SystemMessage(m_session, "You should select a creature.");
+        return true;
+    }
+
+    uint32 itemguid = atoi(iguid);
+    int slot = selected_creature->GetSlotByItemId(itemguid);
+    if (slot != -1)
+    {
+        uint32 creatureId = selected_creature->GetEntry();
+
+        WorldDatabase.Execute("DELETE FROM vendors WHERE entry = %u AND item = %u", creatureId, itemguid);
+
+        selected_creature->RemoveVendorItem(itemguid);
+        ItemProperties const* tmpItem = sMySQLStore.GetItemProperties(itemguid);
+        if (tmpItem)
+        {
+            BlueSystemMessage(m_session, "Item %u (%s) deleted from list.", itemguid, tmpItem->Name.c_str());
+        }
+        else
+        {
+            BlueSystemMessage(m_session, "Item %u deleted from list.", itemguid);
+        }
+        sGMLog.writefromsession(m_session, "removed item %u from vendor %u", itemguid, creatureId);
+    }
+    else
+    {
+        RedSystemMessage(m_session, "Item %u not found in vendorlist.", itemguid);
+    }
+
+    return true;
+}
+
 //.npc unpossess
 bool ChatHandler::HandleUnPossessCommand(const char* /*args*/, WorldSession* m_session)
 {

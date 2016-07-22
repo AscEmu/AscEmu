@@ -1041,3 +1041,368 @@ bool ChatHandler::HandleRangeCheckCommand(const char* args, WorldSession* m_sess
     m_session->SystemMessage("GetDistance2dSq:   %u", float2int32(Dist2DSq));
     return true;
 }
+
+bool ChatHandler::HandleCollisionTestIndoor(const char* args, WorldSession* m_session)
+{
+    if (sWorld.Collision)
+    {
+        Player* plr = m_session->GetPlayer();
+        const LocationVector & loc = plr->GetPosition();
+        bool res = !MapManagement::AreaManagement::AreaStorage::IsOutdoor(plr->GetMapId(), loc.x, loc.y, loc.z + 2.0f);
+        SystemMessage(m_session, "Result was: %s.", res ? "indoors" : "outside");
+        return true;
+    }
+    else
+    {
+        SystemMessage(m_session, "Collision is not enabled.");
+        return true;
+    }
+}
+
+bool ChatHandler::HandleCollisionTestLOS(const char* args, WorldSession* m_session)
+{
+    if (sWorld.Collision)
+    {
+        Object* pObj = NULL;
+        Creature* pCreature = GetSelectedCreature(m_session, false);
+        Player* pPlayer = GetSelectedPlayer(m_session, true, true);
+        if (pCreature)
+            pObj = pCreature;
+        else if (pPlayer)
+            pObj = pPlayer;
+
+        if (pObj == NULL)
+        {
+            SystemMessage(m_session, "Invalid target.");
+            return true;
+        }
+
+        VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+        const LocationVector & loc2 = pObj->GetPosition();
+        const LocationVector & loc1 = m_session->GetPlayer()->GetPosition();
+        bool res = mgr->isInLineOfSight(pObj->GetMapId(), loc1.x, loc1.y, loc1.z, loc2.x, loc2.y, loc2.z);
+        bool res2 = mgr->isInLineOfSight(pObj->GetMapId(), loc1.x, loc1.y, loc1.z + 2.0f, loc2.x, loc2.y, loc2.z + 2.0f);
+        bool res3 = mgr->isInLineOfSight(pObj->GetMapId(), loc1.x, loc1.y, loc1.z + 5.0f, loc2.x, loc2.y, loc2.z + 5.0f);
+        SystemMessage(m_session, "Result was: %s %s %s.", res ? "in LOS" : "not in LOS", res2 ? "in LOS" : "not in LOS", res3 ? "in LOS" : "not in LOS");
+        return true;
+    }
+    else
+    {
+        SystemMessage(m_session, "Collision is not enabled.");
+        return true;
+    }
+}
+
+bool ChatHandler::HandleCollisionGetHeight(const char* args, WorldSession* m_session)
+{
+    if (sWorld.Collision)
+    {
+        Player* plr = m_session->GetPlayer();
+        float radius = 5.0f;
+
+        float posX = plr->GetPositionX();
+        float posY = plr->GetPositionY();
+        float posZ = plr->GetPositionZ();
+        float ori = plr->GetOrientation();
+
+        LocationVector src(posX, posY, posZ);
+
+        LocationVector dest(posX + (radius * (cosf(ori))), posY + (radius * (sinf(ori))), posZ);
+        //LocationVector destest(posX+(radius*(cosf(ori))),posY+(radius*(sinf(ori))),posZ);
+
+        VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
+        float z = mgr->getHeight(plr->GetMapId(), posX, posY, posZ + 2.0f, 10000.0f);
+        float z2 = mgr->getHeight(plr->GetMapId(), posX, posY, posZ + 5.0f, 10000.0f);
+        float z3 = mgr->getHeight(plr->GetMapId(), posX, posY, posZ, 10000.0f);
+        float z4 = plr->GetMapMgr()->GetADTLandHeight(plr->GetPositionX(), plr->GetPositionY());
+        bool fp = mgr->getObjectHitPos(plr->GetMapId(), src.x, src.y, src.z, dest.x, dest.y, dest.z, dest.x, dest.y, dest.z, -1.5f);
+
+        SystemMessage(m_session, "Results were: %f(offset2.0f) | %f(offset5.0f) | %f(org) | landheight:%f | target radius5 FP:%d", z, z2, z3, z4, fp);
+        return true;
+    }
+    else
+    {
+        SystemMessage(m_session, "Collision is not enabled.");
+        return true;
+    }
+}
+
+bool ChatHandler::HandleGetDeathState(const char* args, WorldSession* m_session)
+{
+    Player* SelectedPlayer = GetSelectedPlayer(m_session, true, true);
+    if (!SelectedPlayer)
+        return true;
+
+    SystemMessage(m_session, "Death State: %d", SelectedPlayer->getDeathState());
+    return true;
+}
+
+struct spell_thingo
+{
+    uint32 type;
+    uint32 target;
+};
+
+std::list<SpellEntry*> aiagent_spells;
+std::map<uint32, spell_thingo> aiagent_extra;
+
+SpellCastTargets SetTargets(SpellEntry* sp, uint32 type, uint32 targettype, Unit* dst, Creature* src)
+{
+    SpellCastTargets targets;
+    targets.m_unitTarget = 0;
+    targets.m_itemTarget = 0;
+    targets.m_srcX = 0;
+    targets.m_srcY = 0;
+    targets.m_srcZ = 0;
+    targets.m_destX = 0;
+    targets.m_destY = 0;
+    targets.m_destZ = 0;
+
+    if (targettype == TTYPE_SINGLETARGET)
+    {
+        targets.m_targetMask = TARGET_FLAG_UNIT;
+        targets.m_unitTarget = dst->GetGUID();
+    }
+    else if (targettype == TTYPE_SOURCE)
+    {
+        targets.m_targetMask = TARGET_FLAG_SOURCE_LOCATION;
+        targets.m_srcX = src->GetPositionX();
+        targets.m_srcY = src->GetPositionY();
+        targets.m_srcZ = src->GetPositionZ();
+    }
+    else if (targettype == TTYPE_DESTINATION)
+    {
+        targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
+        targets.m_destX = dst->GetPositionX();
+        targets.m_destY = dst->GetPositionY();
+        targets.m_destZ = dst->GetPositionZ();
+    }
+
+    return targets;
+};
+
+bool ChatHandler::HandleAIAgentDebugSkip(const char* args, WorldSession* m_session)
+{
+    uint32 count = atoi(args);
+    if (!count) return false;
+
+    for (uint32 i = 0; i < count; ++i)
+    {
+        if (!aiagent_spells.size())
+            break;
+
+        aiagent_spells.erase(aiagent_spells.begin());
+    }
+    BlueSystemMessage(m_session, "Erased %u spells.", count);
+    return true;
+}
+
+bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_session)
+{
+    uint32 count = atoi(args);
+    if (!count)
+        return false;
+
+    Creature* pCreature = GetSelectedCreature(m_session, true);
+    if (!pCreature)
+        return true;
+
+    Player* pPlayer = m_session->GetPlayer();
+
+    for (uint32 i = 0; i < count; ++i)
+    {
+        if (!aiagent_spells.size())
+            break;
+
+        SpellEntry* sp = *aiagent_spells.begin();
+        aiagent_spells.erase(aiagent_spells.begin());
+        BlueSystemMessage(m_session, "Casting %u, " MSG_COLOR_SUBWHITE "%u remaining.", sp->Id, aiagent_spells.size());
+
+        std::map<uint32, spell_thingo>::iterator it = aiagent_extra.find(sp->Id);
+        ARCEMU_ASSERT(it != aiagent_extra.end());
+
+        SpellCastTargets targets;
+        if (it->second.type == STYPE_BUFF)
+            targets = SetTargets(sp, it->second.type, it->second.type, pCreature, pCreature);
+        else
+            targets = SetTargets(sp, it->second.type, it->second.type, pPlayer, pCreature);
+
+        pCreature->GetAIInterface()->CastSpell(pCreature, sp, targets);
+    }
+
+    if (!aiagent_spells.size())
+        RedSystemMessage(m_session, "Finished.");
+    /*else
+    BlueSystemMessage(m_session, "Got %u remaining.", aiagent_spells.size());*/
+    return true;
+}
+
+bool ChatHandler::HandleAIAgentDebugBegin(const char* args, WorldSession* m_session)
+{
+    QueryResult* result = WorldDatabase.Query("SELECT DISTINCT spell FROM ai_agents");
+    if (!result) return false;
+
+    do
+    {
+        SpellEntry* se = dbcSpell.LookupEntryForced(result->Fetch()[0].GetUInt32());
+        if (se)
+            aiagent_spells.push_back(se);
+    } while (result->NextRow());
+    delete result;
+
+    for (std::list<SpellEntry*>::iterator itr = aiagent_spells.begin(); itr != aiagent_spells.end(); ++itr)
+    {
+        result = WorldDatabase.Query("SELECT * FROM ai_agents WHERE spell = %u", (*itr)->Id);
+        ARCEMU_ASSERT(result != NULL);
+        spell_thingo t;
+        t.type = result->Fetch()[6].GetUInt32();
+        t.target = result->Fetch()[7].GetUInt32();
+        delete result;
+        aiagent_extra[(*itr)->Id] = t;
+    }
+
+    GreenSystemMessage(m_session, "Loaded %u spells for testing.", aiagent_spells.size());
+    return true;
+}
+
+bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_session)
+{
+    Unit* caster = m_session->GetPlayer();
+    Unit* target = GetSelectedPlayer(m_session, true, true);
+    if (!target)
+        target = GetSelectedCreature(m_session, false);
+    if (!target)
+    {
+        RedSystemMessage(m_session, "Must select a char or creature.");
+        return false;
+    }
+
+    uint32 spellid = atol(args);
+    SpellEntry* spellentry = dbcSpell.LookupEntryForced(spellid);
+    if (!spellentry)
+    {
+        RedSystemMessage(m_session, "Invalid spell id!");
+        return false;
+    }
+
+    Spell* sp = sSpellFactoryMgr.NewSpell(caster, spellentry, false, NULL);
+
+    BlueSystemMessage(m_session, "Casting spell %d on target.", spellid);
+    SpellCastTargets targets;
+    targets.m_unitTarget = target->GetGUID();
+    sp->prepare(&targets);
+
+    switch (target->GetTypeId())
+    {
+        case TYPEID_PLAYER:
+            if (caster != target)
+                sGMLog.writefromsession(m_session, "cast spell %d on PLAYER %s", spellid, static_cast< Player* >(target)->GetName());
+            break;
+        case TYPEID_UNIT:
+            sGMLog.writefromsession(m_session, "cast spell %d on CREATURE %u [%s], sqlid %u", spellid, static_cast< Creature* >(target)->GetEntry(), static_cast< Creature* >(target)->GetCreatureProperties()->Name.c_str(), static_cast< Creature* >(target)->GetSQL_id());
+            break;
+    }
+
+    return true;
+}
+
+bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_session)
+{
+    Unit* caster = m_session->GetPlayer();
+    Unit* target = GetSelectedPlayer(m_session, true, true);
+    if (!target)
+        target = GetSelectedCreature(m_session, false);
+    if (!target)
+    {
+        RedSystemMessage(m_session, "Must select a char or creature.");
+        return false;
+    }
+
+    uint32 spellId = atol(args);
+    SpellEntry* spellentry = dbcSpell.LookupEntryForced(spellId);
+    if (!spellentry)
+    {
+        RedSystemMessage(m_session, "Invalid spell id!");
+        return false;
+    }
+    BlueSystemMessage(m_session, "Casting spell %d on target.", spellId);
+
+    WorldPacket data;
+
+    data.Initialize(SMSG_SPELL_START);
+    data << caster->GetNewGUID();
+    data << caster->GetNewGUID();
+    data << spellId;
+    data << uint8(0);
+    data << uint16(0);
+    data << uint32(0);
+    data << uint16(2);
+    data << target->GetGUID();
+    //        WPARCEMU_ASSERT(  data.size() == 36);
+    m_session->SendPacket(&data);
+
+    data.Initialize(SMSG_SPELL_GO);
+    data << caster->GetNewGUID();
+    data << caster->GetNewGUID();
+    data << spellId;
+    data << uint8(0) << uint8(1) << uint8(1);
+    data << target->GetGUID();
+    data << uint8(0);
+    data << uint16(2);
+    data << target->GetGUID();
+    //        WPARCEMU_ASSERT(  data.size() == 42);
+    m_session->SendPacket(&data);
+
+    switch (target->GetTypeId())
+    {
+        case TYPEID_PLAYER:
+            if (caster != target)
+                sGMLog.writefromsession(m_session, "cast spell %d on PLAYER %s", spellId, static_cast< Player* >(target)->GetName());
+            break;
+        case TYPEID_UNIT:
+            sGMLog.writefromsession(m_session, "cast spell %d on CREATURE %u [%s], sqlid %u", spellId, static_cast< Creature* >(target)->GetEntry(), static_cast< Creature* >(target)->GetCreatureProperties()->Name.c_str(), static_cast< Creature* >(target)->GetSQL_id());
+            break;
+    }
+
+    return true;
+}
+
+bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_session)
+{
+    Unit* target = GetSelectedPlayer(m_session, true, true);
+    if (!target)
+        target = GetSelectedCreature(m_session, false);
+    if (!target)
+    {
+        RedSystemMessage(m_session, "Must select a char or creature.");
+        return false;
+    }
+
+    uint32 spellid = atol(args);
+    SpellEntry* spellentry = dbcSpell.LookupEntryForced(spellid);
+    if (!spellentry)
+    {
+        RedSystemMessage(m_session, "Invalid spell id!");
+        return false;
+    }
+
+    Spell* sp = sSpellFactoryMgr.NewSpell(target, spellentry, false, NULL);
+
+    BlueSystemMessage(m_session, "Target is casting spell %d on himself.", spellid);
+    SpellCastTargets targets;
+    targets.m_unitTarget = target->GetGUID();
+    sp->prepare(&targets);
+
+    switch (target->GetTypeId())
+    {
+        case TYPEID_PLAYER:
+            if (m_session->GetPlayer() != target)
+                sGMLog.writefromsession(m_session, "used castself with spell %d on PLAYER %s", spellid, static_cast< Player* >(target)->GetName());
+            break;
+        case TYPEID_UNIT:
+            sGMLog.writefromsession(m_session, "used castself with spell %d on CREATURE %u [%s], sqlid %u", spellid, static_cast< Creature* >(target)->GetEntry(), static_cast< Creature* >(target)->GetCreatureProperties()->Name.c_str(), static_cast< Creature* >(target)->GetSQL_id());
+            break;
+    }
+
+    return true;
+}

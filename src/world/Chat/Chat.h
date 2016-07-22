@@ -366,6 +366,16 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAuraUpdateRemove(const char* args, WorldSession* m_session);
         bool HandleRangeCheckCommand(const char* args, WorldSession* m_session);
         bool HandleSimpleDistanceCommand(const char* args, WorldSession* m_session);
+        bool HandleCollisionTestIndoor(const char* args, WorldSession* m_session);
+        bool HandleCollisionTestLOS(const char* args, WorldSession* m_session);
+        bool HandleCollisionGetHeight(const char* args, WorldSession* m_session);
+        bool HandleGetDeathState(const char* args, WorldSession* m_session);
+        bool HandleAIAgentDebugSkip(const char* args, WorldSession* m_session);
+        bool HandleAIAgentDebugContinue(const char* args, WorldSession* m_session);
+        bool HandleAIAgentDebugBegin(const char* args, WorldSession* m_session);
+        bool HandleCastSpellCommand(const char* args, WorldSession* m_session);
+        bool HandleCastSpellNECommand(const char* args, WorldSession* m_session);
+        bool HandleCastSelfCommand(const char* args, WorldSession* m_session);
 
         // GameEventMgr
         bool HandleEventListEvents(const char* args, WorldSession* m_session);
@@ -411,6 +421,14 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGOSetAnimProgressCommand(const char* args, WorldSession* m_session);
         bool HandleGOSetOverridesCommand(const char* args, WorldSession* m_session);
 
+        //Guild Command
+        bool HandleGuildCreateCommand(const char* args, WorldSession* m_session);
+        bool HandleGuildDisbandCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleGuildJoinCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleGuildListMembersCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleRenameGuildCommand(const char* args, WorldSession* m_session);
+        bool HandleGuildRemovePlayerCommand(const char* /*args*/, WorldSession* m_session);
+
         // Instance
         bool HandleCreateInstanceCommand(const char* args, WorldSession* m_session);
         bool HandleExitInstanceCommand(const char* /*args*/, WorldSession* m_session);
@@ -448,6 +466,8 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleNpcSpawnCommand(const char* args, WorldSession* m_session);
         bool HandleNpcYellCommand(const char* args, WorldSession* m_session);
+        bool HandleNpcVendorAddItemCommand(const char* args, WorldSession* m_session);
+        bool HandleNpcVendorRemoveItemCommand(const char* args, WorldSession* m_session);
         //Zyres: not only for selected creature... players too!
         bool HandlePossessCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleUnPossessCommand(const char* /*args*/, WorldSession* m_session);
@@ -597,23 +617,8 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleInitWorldStatesCommand(const char* args, WorldSession* session);
         bool HandleClearWorldStatesCommand(const char* args, WorldSession* session);
         
-        bool HandleGuildJoinCommand(const char* args, WorldSession* m_session);
-        bool HandleGuildMembersCommand(const char* args, WorldSession* m_session);
-        bool CreateGuildCommand(const char* args, WorldSession* m_session);
-        bool HandleRenameGuildCommand(const char* args, WorldSession* m_session);
-        bool HandleGuildRemovePlayerCommand(const char* args, WorldSession* m_session);
-        bool HandleGuildDisbandCommand(const char* args, WorldSession* m_session);
-        
-        bool HandleItemCommand(const char* args, WorldSession* m_session);
-        bool HandleItemRemoveCommand(const char* args, WorldSession* m_session);
-        
         bool CmdSetValueField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args);
         bool CmdSetFloatField(WorldSession* m_session, uint32 field, uint32 fieldmax, const char* fieldname, const char* args);
-        
-        bool HandleCollisionTestIndoor(const char* args, WorldSession* m_session);
-        bool HandleGetDeathState(const char* args, WorldSession* m_session);
-        bool HandleCollisionTestLOS(const char* args, WorldSession* m_session);
-        bool HandleCollisionGetHeight(const char* args, WorldSession* m_session);
 
         bool HandleSendItemPushResult(const char* args, WorldSession* m_session);
         
@@ -676,15 +681,11 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGMTicketToggleTicketSystemStatusCommand(const char* args, WorldSession* m_session);
         bool HandleAddSkillCommand(const char* args, WorldSession* m_session);
         
-        bool HandleCastSpellCommand(const char* args, WorldSession* m_session);
-        bool HandleCastSpellNECommand(const char* args, WorldSession* m_session);
-        bool HandleCastSelfCommand(const char* args, WorldSession* m_session);
+        
+        
+    
 
         bool HandleGetSkillLevelCommand(const char* args, WorldSession* m_session);
-        
-        bool HandleAIAgentDebugBegin(const char* args, WorldSession* m_session);
-        bool HandleAIAgentDebugContinue(const char* args, WorldSession* m_session);
-        bool HandleAIAgentDebugSkip(const char* args, WorldSession* m_session);
 
 };
 

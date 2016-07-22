@@ -472,12 +472,12 @@ void CommandTableStorage::Init()
 
     static ChatCommand GuildCommandTable[] =
     {
-        { "join",               'm', &ChatHandler::HandleGuildJoinCommand,              "Force joins a guild",                              nullptr, 0, 0, 0 },
-        { "create",             'm', &ChatHandler::CreateGuildCommand,                  "Creates a guild.",                                 nullptr, 0, 0, 0 },
-        { "rename",             'm', &ChatHandler::HandleRenameGuildCommand,            "Renames a guild.",                                 nullptr, 0, 0, 0 },
-        { "members",            'm', &ChatHandler::HandleGuildMembersCommand,           "Lists guildmembers and their ranks.",              nullptr, 0, 0, 0 },
-        { "removeplayer",       'm', &ChatHandler::HandleGuildRemovePlayerCommand,      "Removes a player from a guild.",                   nullptr, 0, 0, 0 },
+        { "create",             'm', &ChatHandler::HandleGuildCreateCommand,            "Creates a guild.",                                 nullptr, 0, 0, 0 },
         { "disband",            'm', &ChatHandler::HandleGuildDisbandCommand,           "Disbands the guild of your target.",               nullptr, 0, 0, 0 },
+        { "join",               'm', &ChatHandler::HandleGuildJoinCommand,              "Force selected player to join a guild by name",    nullptr, 0, 0, 0 },
+        { "listmembers",        'm', &ChatHandler::HandleGuildListMembersCommand,       "Lists guildmembers with ranks by guild name.",     nullptr, 0, 0, 0 },
+        { "rename",             'm', &ChatHandler::HandleRenameGuildCommand,            "Renames a guild.",                                 nullptr, 0, 0, 0 },
+        { "removeplayer",       'm', &ChatHandler::HandleGuildRemovePlayerCommand,      "Removes a player from a guild.",                   nullptr, 0, 0, 0 },
         { nullptr,              '0', nullptr,                                           "",                                                 nullptr, 0, 0, 0 }
     };
     dupe_command_table(GuildCommandTable, _GuildCommandTable);
@@ -568,8 +568,8 @@ void CommandTableStorage::Init()
         { "select",             'n', &ChatHandler::HandleNpcSelectCommand,              "Slects npc closest",                               nullptr, 0, 0, 0 },
         { "set",                '0', nullptr,                                           "",                                      NPCSetCommandTable, 0, 0, 0 },
         { "spawn",              'n', &ChatHandler::HandleNpcSpawnCommand,               "Spawns npc of entry <id>",                         nullptr, 0, 0, 0 },
-        { "vendoradditem",      'n', &ChatHandler::HandleItemCommand,                   "Adds item to vendor",                              nullptr, 0, 0, 0 },
-        { "vendorremoveitem",   'n', &ChatHandler::HandleItemRemoveCommand,             "Removes item from vendor.",                        nullptr, 0, 0, 0 },
+        { "vendoradditem",      'n', &ChatHandler::HandleNpcVendorAddItemCommand,       "Adds item to vendor",                              nullptr, 0, 0, 0 },
+        { "vendorremoveitem",   'n', &ChatHandler::HandleNpcVendorRemoveItemCommand,    "Removes item from vendor.",                        nullptr, 0, 0, 0 },
         { "yell",               'n', &ChatHandler::HandleNpcYellCommand,                "Makes selected npc yell <text>.",                  nullptr, 0, 0, 0 },
         { nullptr,              '0', nullptr,                                           "",                                                 nullptr, 0, 0, 0 }
     };
@@ -1926,4 +1926,62 @@ int32 GetSpellIDFromLink(const char* spelllink)
     }
 
     return atol(ptr + 8);       // spell id is just past "|Hspell:" (8 bytes)
+}
+
+void ChatHandler::SendItemLinkToPlayer(ItemProperties const* iProto, WorldSession* pSession, bool ItemCount, Player* owner, uint32 language)
+{
+    if (!iProto || !pSession)
+        return;
+    if (ItemCount && owner == NULL)
+        return;
+
+    if (ItemCount)
+    {
+        int8 count = static_cast<int8>(owner->GetItemInterface()->GetItemCount(iProto->ItemId, true));
+        //int8 slot = owner->GetItemInterface()->GetInventorySlotById(iProto->ItemId); //DISABLED due to being a retarded concept
+        if (iProto->ContainerSlots > 0)
+        {
+            SystemMessage(pSession, "Item %u %s Count %u ContainerSlots %u", iProto->ItemId, GetItemLinkByProto(iProto, language).c_str(), count, iProto->ContainerSlots);
+        }
+        else
+        {
+            SystemMessage(pSession, "Item %u %s Count %u", iProto->ItemId, GetItemLinkByProto(iProto, language).c_str(), count);
+        }
+    }
+    else
+    {
+        if (iProto->ContainerSlots > 0)
+        {
+            SystemMessage(pSession, "Item %u %s ContainerSlots %u", iProto->ItemId, GetItemLinkByProto(iProto, language).c_str(), iProto->ContainerSlots);
+        }
+        else
+        {
+            SystemMessage(pSession, "Item %u %s", iProto->ItemId, GetItemLinkByProto(iProto, language).c_str());
+        }
+    }
+}
+
+void ChatHandler::SendHighlightedName(WorldSession* m_session, const char* prefix, const char* full_name, std::string & lowercase_name, std::string & highlight, uint32 id)
+{
+    char message[1024];
+    char start[50];
+    start[0] = 0;
+    message[0] = 0;
+
+    snprintf(start, 50, "%s %u: %s", prefix, (unsigned int)id, MSG_COLOR_WHITE);
+
+    auto highlight_length = highlight.length();
+    std::string fullname = std::string(full_name);
+    size_t offset = (size_t)lowercase_name.find(highlight);
+    auto remaining = fullname.size() - offset - highlight_length;
+
+    strcat(message, start);
+    strncat(message, fullname.c_str(), offset);
+    strcat(message, MSG_COLOR_LIGHTRED);
+    strncat(message, (fullname.c_str() + offset), highlight_length);
+    strcat(message, MSG_COLOR_WHITE);
+    if (remaining > 0)
+        strncat(message, (fullname.c_str() + offset + highlight_length), remaining);
+
+    SystemMessage(m_session, message);
 }
