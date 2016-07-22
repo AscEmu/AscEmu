@@ -21,7 +21,7 @@
 #ifndef _OBJECTMGR_H
 #define _OBJECTMGR_H
 
-#include "Chat/Chat.h"
+#include "Chat/ChatHandler.hpp"
 #include "Units/Creatures/Corpse.h"
 #include "Units/Players/Player.h"
 #include "Management/Guild.h"

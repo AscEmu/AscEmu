@@ -175,46 +175,6 @@ bool ChatHandler::HandleLearnCommand(const char* args, WorldSession* m_session)
     return true;
 }
 
-//.char add skill? not used at the moment
-bool ChatHandler::HandleAddSkillCommand(const char* args, WorldSession* m_session)
-{
-    char buf[256];
-    Player* target = objmgr.GetPlayer((uint32)m_session->GetPlayer()->GetSelection());
-
-    if (!target)
-    {
-        SystemMessage(m_session, "Select A Player first.");
-        return true;
-    }
-
-    uint32 skillline;
-    uint16 cur, max;
-
-    char* pSkillline = strtok((char*)args, " ");
-    if (!pSkillline)
-        return false;
-
-    char* pCurrent = strtok(NULL, " ");
-    if (!pCurrent)
-        return false;
-
-    char* pMax = strtok(NULL, " ");
-    if (!pMax)
-        return false;
-
-    skillline = (uint32)atol(pSkillline);
-    cur = (uint16)atol(pCurrent);
-    max = (uint16)atol(pMax);
-
-    target->_AddSkillLine(skillline, cur, max);
-
-    snprintf(buf, 256, "SkillLine: %u CurrentValue %u Max Value %u Added.", (unsigned int)skillline, (unsigned int)cur, (unsigned int)max);
-    sGMLog.writefromsession(m_session, "added skill line %u (%u/%u) to %s", skillline, cur, max, target->GetName());
-    SystemMessage(m_session, buf);
-
-    return true;
-}
-
 //.pet stuff
 bool ChatHandler::HandleCreatePetCommand(const char* args, WorldSession* m_session)
 {

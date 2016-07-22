@@ -1277,6 +1277,7 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
     return true;
 }
 
+//.ban all
 bool ChatHandler::HandleBanAllCommand(const char* args, WorldSession* m_session)
 {
     if (!*args)
