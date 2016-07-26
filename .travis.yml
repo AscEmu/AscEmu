@@ -3,20 +3,9 @@ language: cpp
 
 os:
   - linux
- # - osx
 
 compiler:
   - gcc
- # - clang
-
-# Do not send any notifications...
-#notifications:
-#   email: false
-
-#branches:
-#  only:
-#    - master
-#    - coverity_scan
 
 git:
   depth: 1
@@ -24,20 +13,11 @@ git:
 env:
   global:
     - secure: "Zk3bAxnp4OHPMMZYOSoM2chuMZXomp7BFcT54/Ag6C8RCqtpqQ+E6yHRp861xdWSVo9uZ/uGmD1pwPiIUK8Vs80+OwhFVvtor2MGXyQKX1oFYBg0mo5Z3Xzy+OPa3e0YBbe6SSqdUzDE1hIa7OrU8GWciIMobWQS7XIBbWg3TFU="
-# Don't use Clang for Coverity Scan.
-#matrix:
-#  exlude:
-#    - compiler: clang
-#      env: TRAVIS_BRANCH=coverity_fix_and_test
 
 before_install:
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then
     export CC=gcc-5 CXX=g++-5;
     fi
-#  - if [[ $TRAVIS_OS_NAME == "osx" ]]; then
-#    brew update;
-#    brew install mysql openssl pcre lbzip2;
-#    fi
 
 install:
   - mkdir ascemu_build
@@ -60,11 +40,11 @@ addons:
     - g++-5
   coverity_scan:
     project:
-      name: "AscEmu/AscEmu"
-      description: "3.3.5 World of Warcraft game server"
+      name: AscEmu/AscEmu
+      description: MMORPG Framework
     notification_email: autokaori@gmail.com
-    build_command_prepend: "cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=0 && make clean"
-    build_command:   "make -j 2" # use limited workers to avoid running out of memory
+    build_command_prepend: cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=0 && make clean
+    build_command: make -j2
     branch_pattern: coverity_scan
 
 before_script:
@@ -74,7 +54,7 @@ before_script:
 
 script:
   - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then 
-    make -j 2;
+    make -j2;
     fi
 
 after_script:
