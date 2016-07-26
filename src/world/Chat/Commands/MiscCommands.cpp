@@ -851,7 +851,6 @@ bool ChatHandler::HandleBlockAppearCommand(const char* args, WorldSession* m_ses
             m_session->GetPlayer()->DisableAppear(true);
             GreenSystemMessage(m_session, "Appear blocking is now enabled");
         }
-        return true;
     }
     else if (!stricmp(args, "off"))
     {
@@ -864,8 +863,9 @@ bool ChatHandler::HandleBlockAppearCommand(const char* args, WorldSession* m_ses
         {
             BlueSystemMessage(m_session, "Appear blocking is already disabled");
         }
-        return true;
     }
+
+    return true;
 }
 
 //.summon
@@ -949,7 +949,6 @@ bool ChatHandler::HandleBlockSummonCommand(const char* args, WorldSession* m_ses
             m_session->GetPlayer()->DisableSummon(true);
             GreenSystemMessage(m_session, "Summon blocking is now enabled");
         }
-        return true;
     }
     else if (!stricmp(args, "off"))
     {
@@ -962,8 +961,9 @@ bool ChatHandler::HandleBlockSummonCommand(const char* args, WorldSession* m_ses
         {
             BlueSystemMessage(m_session, "Summon blocking is already disabled");
         }
-        return true;
     }
+
+    return true;
 }
 
 //.playerinfo

@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 bool ChatHandler::HandlePetCreateCommand(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
-    if (selected_player != nullptr)
+    if (selected_player == nullptr)
         return true;
 
     if (!*args)
@@ -106,7 +106,7 @@ bool ChatHandler::HandlePetDismissCommand(const char* args, WorldSession* m_sess
 bool ChatHandler::HandlePetRenameCommand(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
-    if (selected_player != nullptr)
+    if (selected_player == nullptr)
         return true;
 
     Pet* selected_pet = selected_player->GetSummon();
@@ -142,7 +142,7 @@ bool ChatHandler::HandlePetRenameCommand(const char* args, WorldSession* m_sessi
 bool ChatHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
-    if (selected_player != nullptr)
+    if (selected_player == nullptr)
         return true;
 
     if (selected_player->GetSummon() == nullptr)
@@ -177,7 +177,7 @@ bool ChatHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_ses
 bool ChatHandler::HandlePetRemoveSpellCommand(const char* args, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
-    if (selected_player != nullptr)
+    if (selected_player == nullptr)
         return true;
 
     if (selected_player->GetSummon() == nullptr)
@@ -233,19 +233,13 @@ bool ChatHandler::HandlePetSetLevelCommand(const char* args, WorldSession* m_ses
     else
     {
         Creature* selected_creature = GetSelectedCreature(m_session, false);
-        if (selected_creature)
+        if (selected_creature == nullptr)
             return false;
 
         if (!selected_creature->IsPet())
             return false;
 
         selected_pet = static_cast< Pet* >(selected_creature);
-
-        if (selected_pet == nullptr)
-        {
-            RedSystemMessage(m_session, "No player or pet selected.");
-            return true;
-        }
 
         selected_player = selected_pet->GetPetOwner();
     }

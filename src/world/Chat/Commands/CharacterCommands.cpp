@@ -878,7 +878,7 @@ bool ChatHandler::HandleCharAddGoldCommand(const char* args, WorldSession* m_ses
 bool ChatHandler::HandleCharResetSkillsCommand(const char* /*args*/, WorldSession* m_session)
 {
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
-    if (selected_player != nullptr)
+    if (selected_player == nullptr)
         return true;
 
     selected_player->_RemoveAllSkills();
@@ -930,7 +930,7 @@ bool ChatHandler::HandleCharRemoveItemCommand(const char* args, WorldSession* m_
 
     ocount = count;
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
-    if (selected_player != nullptr)
+    if (selected_player == nullptr)
         return true;
 
     int32 loop_count = 0;
@@ -1004,7 +1004,7 @@ bool ChatHandler::HandleAdvanceAllSkillsCommand(const char* args, WorldSession* 
     }
 
     Player* selected_player = GetSelectedPlayer(m_session, false, true);
-    if (selected_player != nullptr)
+    if (selected_player == nullptr)
         return true;
 
     selected_player->_AdvanceAllSkills(amt);
@@ -1033,7 +1033,7 @@ bool ChatHandler::HandleCharIncreaseWeaponSkill(const char* args, WorldSession* 
         cnt = atol(pMin);
 
     Player* selected_player = GetSelectedPlayer(m_session, true, true);
-    if (selected_player != nullptr)
+    if (selected_player == nullptr)
         return true;
 
     uint32 SubClassSkill = 0;
