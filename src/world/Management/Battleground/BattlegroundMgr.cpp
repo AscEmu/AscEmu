@@ -883,9 +883,9 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
 
 void CBattlegroundManager::RemovePlayerFromQueues(Player* plr)
 {
-    m_queueLock.Acquire();
-
     ARCEMU_ASSERT(plr->m_bgQueueType < BATTLEGROUND_NUM_TYPES);
+
+    m_queueLock.Acquire();
 
     sEventMgr.RemoveEvents(plr, EVENT_BATTLEGROUND_QUEUE_UPDATE);
 
@@ -907,7 +907,7 @@ void CBattlegroundManager::RemovePlayerFromQueues(Player* plr)
 
     plr->m_bgIsQueued = false;
     plr->m_bgTeam = plr->GetTeam();
-    plr->m_pendingBattleground = NULL;
+    plr->m_pendingBattleground = nullptr;
     SendBattlefieldStatus(plr, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
     m_queueLock.Release();
 
