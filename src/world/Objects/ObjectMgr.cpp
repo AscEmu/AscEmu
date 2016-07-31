@@ -3710,7 +3710,7 @@ void ObjectMgr::StoreBroadCastGroupKey()
                 Field* f = percentResult->Fetch();
                 m_BCEntryStorage.insert(std::pair<uint32, uint32>(uint32(atoi(curKey.c_str())), f[0].GetUInt32()));
 
-            } while (result->NextRow());
+            } while (percentResult->NextRow());
 
             delete percentResult;
         }
