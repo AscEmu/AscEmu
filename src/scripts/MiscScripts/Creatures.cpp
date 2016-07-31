@@ -424,6 +424,19 @@ class GuardRoberts : public CreatureAIScript
         }
 };
 
+class SotaAntiPersonnalCannon : public CreatureAIScript
+{
+    public:
+        ADD_CREATURE_FACTORY_FUNCTION(SotaAntiPersonnalCannon);
+        SotaAntiPersonnalCannon(Creature* pCreature) : CreatureAIScript(pCreature)
+        { }
+
+        void OnLoad()
+        {
+            GetUnit()->Root();
+        }
+};
+
 void SetupMiscCreatures(ScriptMgr* mgr)
 {
     mgr->register_creature_script(11120, &CrimsonHammersmith::Create);
@@ -483,4 +496,6 @@ void SetupMiscCreatures(ScriptMgr* mgr)
     mgr->register_creature_script(12423, &GuardRoberts::Create);
 
     mgr->register_creature_script(2675, &ExplosiveSheep::Create);
+
+    mgr->register_creature_script(27894, &SotaAntiPersonnalCannon::Create);
 }
