@@ -2495,6 +2495,8 @@ void MySQLDataStore::LoadPlayerXpToLevelTable()
 
     Log.Success("MySQLDataLoads", "Loaded %u rows from `player_xp_for_level` table in %u ms!", player_xp_to_level_count, getMSTime() - start_time);
 
+    if (player_xp_to_level_count < sWorld.m_levelCap)
+        Log.Error("MySQLDataStore", "Table `player_xp_for_level` includes definitions for %u level, but your defined level cap is %u!", player_xp_to_level_count, sWorld.m_levelCap);
 }
 
 uint32 MySQLDataStore::GetPlayerXPForLevel(uint32 level)

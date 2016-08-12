@@ -37,7 +37,7 @@ const float playerNormalFlightSpeed = 7.0f;
 
 #define PLAYER_HONORLESS_TARGET_SPELL 2479
 
-#define PLAYER_LEVEL_CAP 80
+#define DBC_PLAYER_LEVEL_CAP 80
 #define PLAYER_ARENA_MIN_LEVEL 70
 
 #define PLAYER_EXPLORED_ZONES_LENGTH 128

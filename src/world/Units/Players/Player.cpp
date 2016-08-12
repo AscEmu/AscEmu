@@ -5088,9 +5088,6 @@ float Player::GetDodgeChance()
     if (level > sWorld.m_genLevelCap)
         level = sWorld.m_genLevelCap;
 
-    if (level > PLAYER_LEVEL_CAP)
-        level = PLAYER_LEVEL_CAP;
-
     // Base dodge + dodge from agility
 
     auto baseCrit = sGtChanceToMeleeCritBaseStore.LookupEntry(pClass - 1);
@@ -5148,7 +5145,7 @@ float Player::GetParryChance()
 void Player::UpdateChances()
 {
     uint32 pClass = (uint32)getClass();
-    uint32 pLevel = (getLevel() > PLAYER_LEVEL_CAP) ? PLAYER_LEVEL_CAP : getLevel();
+    uint32 pLevel = (getLevel() > DBC_PLAYER_LEVEL_CAP) ? DBC_PLAYER_LEVEL_CAP : getLevel();
 
     float tmp = 0;
     float defence_contribution = 0;
@@ -5190,7 +5187,10 @@ void Player::UpdateChances()
 
     // Critical
     auto baseCrit = sGtChanceToMeleeCritBaseStore.LookupEntry(pClass - 1);
+
     auto CritPerAgi = sGtChanceToMeleeCritStore.LookupEntry(pLevel - 1 + (pClass - 1) * 100);
+    if (CritPerAgi == nullptr)
+        CritPerAgi = sGtChanceToMeleeCritStore.LookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (pClass - 1) * 100);
 
     tmp = 100 * (baseCrit->val + GetStat(STAT_AGILITY) * CritPerAgi->val);
 
@@ -5226,7 +5226,10 @@ void Player::UpdateChances()
     SetFloatValue(PLAYER_RANGED_CRIT_PERCENTAGE, std::min(rcr, 95.0f));
 
     auto SpellCritBase = sGtChanceToSpellCritBaseStore.LookupEntry(pClass - 1);
+
     auto SpellCritPerInt = sGtChanceToSpellCritStore.LookupEntry(pLevel - 1 + (pClass - 1) * 100);
+    if (SpellCritPerInt == nullptr)
+        SpellCritPerInt = sGtChanceToSpellCritStore.LookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (pClass - 1) * 100);
 
     spellcritperc = 100 * (SpellCritBase->val + GetStat(STAT_INTELLECT) * SpellCritPerInt->val) +
         this->GetSpellCritFromSpell() +
@@ -6996,7 +6999,12 @@ void Player::RegenerateHealth(bool inCombat)
         return;
 
     auto HPRegenBase = sGtRegenHPPerSptStore.LookupEntry(getLevel() - 1 + (getClass() - 1) * 100);
+    if (HPRegenBase == nullptr)
+        HPRegenBase = sGtRegenHPPerSptStore.LookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (getClass() - 1) * 100);
+
     auto HPRegen = sGtOCTRegenHPStore.LookupEntry(getLevel() - 1 + (getClass() - 1) * 100);
+    if (HPRegen == nullptr)
+        HPRegen = sGtOCTRegenHPStore.LookupEntry(DBC_PLAYER_LEVEL_CAP - 1 + (getClass() - 1) * 100);
 
     uint32 basespirit = m_uint32Values[UNIT_FIELD_STAT4];
     uint32 extraspirit = 0;
@@ -9960,7 +9968,7 @@ void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
         return;
 
     // force to be within limits
-#if PLAYER_LEVEL_CAP==80
+#if DBC_PLAYER_LEVEL_CAP==80
     Curr_sk = (Curr_sk > 450 ? 450 : (Curr_sk < 1 ? 1 : Curr_sk));
     Max_sk = (Max_sk > 450 ? 450 : Max_sk);
 #else
@@ -10209,7 +10217,7 @@ void Player::_UpdateMaxSkillCounts()
         }
 
         // force to be within limits
-#if PLAYER_LEVEL_CAP==80
+#if DBC_PLAYER_LEVEL_CAP==80
         if (new_max > 450)
             new_max = 450;
 #else
@@ -10377,7 +10385,7 @@ void Player::_AdvanceAllSkills(uint32 count)
 void Player::_ModifySkillMaximum(uint32 SkillLine, uint32 NewMax)
 {
     // force to be within limits
-#if PLAYER_LEVEL_CAP==80
+#if DBC_PLAYER_LEVEL_CAP==80
     NewMax = (NewMax > 450 ? 450 : NewMax);
 #else
     NewMax = (NewMax > 375 ? 375 : NewMax);

@@ -24,8 +24,7 @@
 
 uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
 {
-    //    const uint32 grayLevel[sWorld.LevelCap+1] = {0,0,0,0,0,0,0,1,2,3,4,5,6,7,8,9,10,11,12,13,13,14,15,16,17,18,19,20,21,22,22,23,24,25,26,27,28,29,30,31,31,32,33,34,35,35,36,37,38,39,39,40,41,42,43,43,44,45,46,47,47,48,49,50,51,51,52,53,54,55,55};
-    const uint32 grayLevel[PLAYER_LEVEL_CAP + 1] = { 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 31, 32, 33, 34, 35, 35, 36, 37, 38, 39, 39, 40, 41, 42, 43, 43, 44, 45, 46, 47, 47, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56,
+    const uint32 grayLevel[DBC_PLAYER_LEVEL_CAP + 1] = { 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 31, 32, 33, 34, 35, 35, 36, 37, 38, 39, 39, 40, 41, 42, 43, 43, 44, 45, 46, 47, 47, 48, 49, 50, 51, 51, 52, 53, 54, 55, 56,
 #if PLAYER_LEVEL_CAP==80        // WOTLK Playerlevelcap is 80, why define it?
         57, 58, 59, 60, 61, 62, 63, 64, 65, 65
 #endif
@@ -61,9 +60,9 @@ uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
                 }
                 else
                 {
-                    if (AttackerLvl > PLAYER_LEVEL_CAP)
+                    if (AttackerLvl > DBC_PLAYER_LEVEL_CAP)
                         return 1;//gm
-                    if (AttackerLvl < PLAYER_LEVEL_CAP && VictimLvl <= grayLevel[AttackerLvl])
+                    if (AttackerLvl < DBC_PLAYER_LEVEL_CAP && VictimLvl <= grayLevel[AttackerLvl])
                         return 0;
                     else
                         return 1;
@@ -101,28 +100,12 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     else if ((int32)VictimLvl - (int32)AttackerLvl > 10)   //not wowwikilike but more balanced
         return 0;
 
-    // Partha: this screws things up for pets and groups
-    // No need for it here - it does this later in Player::GiveXP
-    /*
-    uint32 max_level = 70;
-    if (pAttacker->IsPlayer())
-    max_level = pAttacker->GetUInt32Value(PLAYER_FIELD_MAX_LEVEL);
-    else if (pAttacker->IsPet())
-    max_level = TO< Pet* >(pAttacker)->GetPetOwner()->GetUInt32Value(PLAYER_FIELD_MAX_LEVEL);
-
-    if (pAttacker->getLevel() >= max_level)
-    return 0;
-    */
-
-
-    /*if (VictimLvl+7>AttackerLvl)
-    VictimLvl = AttackerLvl + 7;*/
 
     float zd = 5;
     float g = 5;
 
     // get zero diff
-    if (AttackerLvl >= PLAYER_LEVEL_CAP)
+    if (AttackerLvl >= DBC_PLAYER_LEVEL_CAP)
     {
         g = 15;
         zd = 19;
@@ -242,77 +225,6 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
         }
     }
     return (uint32)xp;
-    /*const float ZD[PLAYER_LEVEL_CAP+1] = {1,5,5,5,5,5,5,5,6,6,7,7,8,8,8,9,9,9,9,9,11,11,11,11,11,11,11,11,11,11,12,12,12,12,12,12,12,12,12,12,13,13,13,13,13,14,14,14,14,14,15,15,15,15,15,16,16,16,16,16,17,17,17,17,17,17,17,17,17,17,17};
-    float temp = 0;
-    float tempcap = 0;
-    float xp = 0;
-
-    if (VictimLvl >= AttackerLvl)
-    {
-    temp = ((AttackerLvl * 5) + 45) * (1 + 0.05 * (VictimLvl - AttackerLvl));
-    tempcap = ((AttackerLvl * 5) + 45) * 1.2;
-    if (temp > tempcap)
-    {
-    if (tempcap < 0)
-    tempcap = 0;
-    else
-    tempcap *= sWorld.getRate(RATE_XP);
-
-    xp = tempcap;
-    }
-    else
-    {
-    if (temp < 0)
-    temp = 0;
-    else
-    temp *= sWorld.getRate(RATE_XP);
-
-    xp = temp;
-    }
-    }
-    else
-    {
-    if (getConColor(AttackerLvl, VictimLvl) == 0)
-    {
-    return (uint32)0;
-    }
-    else
-    {
-    if (AttackerLvl < PLAYER_LEVEL_CAP)
-    temp = (((AttackerLvl * 5) + 45) * (1 - (AttackerLvl - VictimLvl)/ZD[AttackerLvl]));
-    else
-    temp = (((AttackerLvl * 5) + 45) * (1 - (AttackerLvl - VictimLvl)/17));
-    if (temp < 0)
-    temp = 0;
-    else
-    temp *= sWorld.getRate(RATE_XP);
-
-    xp = temp;
-    }
-    }
-
-    if (victimI)
-    {
-    switch(victimI->Rank)
-    {
-    case 0: // normal mob
-    break;
-    case 1: // elite
-    xp *= 1.5f;
-    break;
-    case 2: // rare elite
-    xp *= 3.0f;
-    break;
-    case 3: // world boss
-    xp *= 10.0f;
-    break;
-    default:    // rare or higher
-    xp *= 7.0f;
-    break;
-    }
-    }
-
-    return (uint32)(xp);*/
 }
 
 uint32 CalculateStat(uint16 level, double a3, double a2, double a1, double a0)

@@ -1735,7 +1735,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                 continue;   // Class not valid for this race.
 
             // Generate each level's information
-            uint32 MaxLevel = sWorld.m_genLevelCap + 1;
+            uint32 MaxLevel = sWorld.m_levelCap + 1;
             LevelInfo* lvl = 0, lastlvl;
             lastlvl.HP = PCI->health;
             lastlvl.Mana = PCI->mana;
@@ -1956,17 +1956,22 @@ LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)
         {
             // We got a match.
             // Let's check that our level is valid first.
-            if (Level > sWorld.m_genLevelCap)   // too far.
-                Level = sWorld.m_genLevelCap;
+            if (Level > sWorld.m_levelCap)
+                Level = sWorld.m_levelCap;
 
             // Pull the level information from the second map.
             LevelMap::iterator it2 = itr->second->find(Level);
-            ARCEMU_ASSERT(it2 != itr->second->end());
+            if (it2 == itr->second->end())
+            {
+                Log.Error("ObjectMgr::GetLevelInfo", "No level information found for level %u!", Level);
+                return nullptr;
+            }
 
             return it2->second;
         }
     }
-    return NULL;
+
+    return nullptr;
 }
 
 void ObjectMgr::LoadDefaultPetSpells()

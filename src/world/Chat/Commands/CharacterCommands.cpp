@@ -137,8 +137,8 @@ bool ChatHandler::HandleCharLevelUpCommand(const char* args, WorldSession* m_ses
 
     levels += player_target->getLevel();
 
-    if (levels > PLAYER_LEVEL_CAP)
-        levels = PLAYER_LEVEL_CAP;
+    if (levels > sWorld.m_levelCap)
+        levels = sWorld.m_levelCap;
 
     auto level_info = objmgr.GetLevelInfo(player_target->getRace(), player_target->getClass(), levels);
     if (level_info == nullptr)
@@ -1337,7 +1337,7 @@ bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_se
     auto level_info = objmgr.GetLevelInfo(player_target->getRace(), player_target->getClass(), new_level);
     if (level_info == nullptr)
     {
-        RedSystemMessage(m_session, "Level information not found!");
+        RedSystemMessage(m_session, "Level information not found in table playercreateinfo!");
         return true;
     }
 
