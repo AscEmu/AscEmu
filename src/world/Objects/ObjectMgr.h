@@ -167,6 +167,18 @@ struct SpellReplacement
 
 class Group;
 
+struct PetAbilities
+{
+    uint32 level;
+    uint32 health;
+    uint32 armor;
+    uint32 strength;
+    uint32 agility;
+    uint32 stamina;
+    uint32 intellect;
+    uint32 spirit;
+};
+
 struct PointOfInterest
 {
     uint32 entry;

@@ -483,6 +483,7 @@ bool World::SetInitialWorldSettings()
     sMySQLStore.LoadSpellOverrideTable();
 
     sMySQLStore.LoadNpcGossipTextIdTable();
+    sMySQLStore.LoadPetLevelAbilitiesTable();
 
 
 #define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr)))

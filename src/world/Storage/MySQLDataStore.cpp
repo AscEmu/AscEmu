@@ -2597,3 +2597,57 @@ uint32 MySQLDataStore::GetGossipTextIdForNpc(uint32 entry)
 {
     return _npcGossipTextIdStore[entry];
 }
+
+void MySQLDataStore::LoadPetLevelAbilitiesTable()
+{
+    uint32 start_time = getMSTime();
+    //                                                                      0       1      2        3        4        5         6         7
+    QueryResult* pet_level_abilities_result = WorldDatabase.Query("SELECT level, health, armor, strength, agility, stamina, intellect, spirit FROM pet_level_abilities");
+    if (pet_level_abilities_result == nullptr)
+    {
+        Log.Notice("MySQLDataLoads", "Table `pet_level_abilities` is empty!");
+        return;
+    }
+
+    Log.Notice("MySQLDataLoads", "Table `pet_level_abilities` has %u columns", pet_level_abilities_result->GetFieldCount());
+
+    _petAbilitiesStore.rehash(pet_level_abilities_result->GetRowCount());
+
+    uint32 pet_level_abilities_count = 0;
+    do
+    {
+        Field* fields = pet_level_abilities_result->Fetch();
+
+        uint32 entry = fields[0].GetInt32();
+
+        PetAbilities& petAbilities = _petAbilitiesStore[entry];
+
+        petAbilities.level = entry;
+        petAbilities.health = fields[1].GetUInt32();
+        petAbilities.armor = fields[2].GetUInt32();
+        petAbilities.strength = fields[3].GetUInt32();
+        petAbilities.agility = fields[4].GetUInt32();
+        petAbilities.stamina = fields[5].GetUInt32();
+        petAbilities.intellect = fields[6].GetUInt32();
+        petAbilities.spirit = fields[7].GetUInt32();
+
+        ++pet_level_abilities_count;
+
+    } while (pet_level_abilities_result->NextRow());
+
+    delete pet_level_abilities_result;
+
+    Log.Success("MySQLDataLoads", "Loaded %u rows from `pet_level_abilities` table in %u ms!", pet_level_abilities_count, getMSTime() - start_time);
+
+    if (pet_level_abilities_count < sWorld.m_levelCap)
+        Log.Error("MySQLDataStore", "Table `pet_level_abilities` includes definitions for %u level, but your defined level cap is %u!", pet_level_abilities_count, sWorld.m_levelCap);
+}
+
+PetAbilities const* MySQLDataStore::GetPetLevelAbilities(uint32 level)
+{
+    PetAbilitiesContainer::const_iterator itr = _petAbilitiesStore.find(level);
+    if (itr != _petAbilitiesStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}

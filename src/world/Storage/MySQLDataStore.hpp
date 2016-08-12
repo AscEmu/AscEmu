@@ -57,6 +57,7 @@ public:
 
     typedef std::map<uint32, uint32> NpcGossipTextIdMap;
 
+    typedef std::unordered_map<uint32, PetAbilities> PetAbilitiesContainer;
 
     //helper
     ItemPage const* GetItemPage(uint32 entry);
@@ -134,6 +135,9 @@ public:
 
     uint32 GetGossipTextIdForNpc(uint32 entry);
 
+    PetAbilities const* GetPetLevelAbilities(uint32 level);
+    PetAbilitiesContainer const* GetPetAbilitiesStore() { return &_petAbilitiesStore; }
+
     //Config
     void LoadAdditionalTableConfig();
 
@@ -183,6 +187,7 @@ public:
     void LoadSpellOverrideTable();
 
     void LoadNpcGossipTextIdTable();
+    void LoadPetLevelAbilitiesTable();
 
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
@@ -218,6 +223,8 @@ public:
     SpellOverrideIdMap _spellOverrideIdStore;
 
     NpcGossipTextIdMap _npcGossipTextIdStore;
+
+    PetAbilitiesContainer _petAbilitiesStore;
 
 };
 
