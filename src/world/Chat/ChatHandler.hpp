@@ -363,6 +363,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleReloadItempagesCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleReloadNpcScriptTextCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleReloadNpcTextCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleReloadPetLevelAbilitiesCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleReloadPlayerXpForLevelCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleReloadPointsOfInterestCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleReloadQuestsCommand(const char* /*args*/, WorldSession* m_session);

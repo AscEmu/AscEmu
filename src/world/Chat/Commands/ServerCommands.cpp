@@ -339,6 +339,15 @@ bool ChatHandler::HandleReloadNpcTextCommand(const char* /*args*/, WorldSession*
     return true;
 }
 
+//.server reload pet_level_abilities
+bool ChatHandler::HandleReloadPetLevelAbilitiesCommand(const char* /*args*/, WorldSession* m_session)
+{
+    uint32 start_time = getMSTime();
+    sMySQLStore.LoadPetLevelAbilitiesTable();
+    GreenSystemMessage(m_session, "WorldDB 'pet_level_abilities' table reloaded in %u ms", getMSTime() - start_time);
+    return true;
+}
+
 //.server reload player_xp_for_level
 bool ChatHandler::HandleReloadPlayerXpForLevelCommand(const char* /*args*/, WorldSession* m_session)
 {

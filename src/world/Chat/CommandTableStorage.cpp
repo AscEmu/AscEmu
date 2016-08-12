@@ -642,6 +642,7 @@ void CommandTableStorage::Init()
         { "itempages",          'z', &ChatHandler::HandleReloadItempagesCommand,            "Reload itempages table",                       nullptr, 0, 0, 0 },
         { "npc_script_text",    'z', &ChatHandler::HandleReloadNpcScriptTextCommand,        "Reload npc_script_text table",                 nullptr, 0, 0, 0 },
         { "npc_text",           'z', &ChatHandler::HandleReloadNpcTextCommand,              "Reload npc_text table",                        nullptr, 0, 0, 0 },
+        { "pet_level_abilities",'z', &ChatHandler::HandleReloadPetLevelAbilitiesCommand,    "Reload pet_level_abilities table",             nullptr, 0, 0, 0 },
         { "player_xp_for_level",'z', &ChatHandler::HandleReloadPlayerXpForLevelCommand,     "Reload player_xp_for_level table",             nullptr, 0, 0, 0 },
         { "points_of_interest", 'z', &ChatHandler::HandleReloadPointsOfInterestCommand,     "Reload points_of_interest table",              nullptr, 0, 0, 0 },
         { "quests",             'z', &ChatHandler::HandleReloadQuestsCommand,               "Reload quests table",                          nullptr, 0, 0, 0 },
