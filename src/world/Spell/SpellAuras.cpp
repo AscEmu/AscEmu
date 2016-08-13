@@ -1847,7 +1847,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
                 float summaryPCTmod = 1.0f;
                 if (p_target != NULL)   //resilience
                 {
-                    float dmg_reduction_pct = p_target->CalcRating(PLAYER_RATING_MODIFIER_MELEE_CRIT_RESILIENCE) / 100.0f;
+                    float dmg_reduction_pct = p_target->CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_CRIT_RESILIENCE) / 100.0f;
                     if (dmg_reduction_pct > 1.0f)
                         dmg_reduction_pct = 1.0f;
                     summaryPCTmod -= dmg_reduction_pct;

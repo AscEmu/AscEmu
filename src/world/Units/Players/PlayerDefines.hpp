@@ -547,31 +547,41 @@ enum DuelWinner
 const time_t attackTimeoutInterval = 5000;
 const time_t forcedResurrectInterval = 360000;  // 1000*60*6= 6 minutes
 
-#define PLAYER_RATING_MODIFIER_RANGED_SKILL                     PLAYER_FIELD_COMBAT_RATING_1
-#define PLAYER_RATING_MODIFIER_DEFENCE                          PLAYER_FIELD_COMBAT_RATING_1+1
-#define PLAYER_RATING_MODIFIER_DODGE                            PLAYER_FIELD_COMBAT_RATING_1+2
-#define PLAYER_RATING_MODIFIER_PARRY                            PLAYER_FIELD_COMBAT_RATING_1+3
-#define PLAYER_RATING_MODIFIER_BLOCK                            PLAYER_FIELD_COMBAT_RATING_1+4
-#define PLAYER_RATING_MODIFIER_MELEE_HIT                        PLAYER_FIELD_COMBAT_RATING_1+5
-#define PLAYER_RATING_MODIFIER_RANGED_HIT                       PLAYER_FIELD_COMBAT_RATING_1+6
-#define PLAYER_RATING_MODIFIER_SPELL_HIT                        PLAYER_FIELD_COMBAT_RATING_1+7
-#define PLAYER_RATING_MODIFIER_MELEE_CRIT                       PLAYER_FIELD_COMBAT_RATING_1+8
-#define PLAYER_RATING_MODIFIER_RANGED_CRIT                      PLAYER_FIELD_COMBAT_RATING_1+9
-#define PLAYER_RATING_MODIFIER_SPELL_CRIT                       PLAYER_FIELD_COMBAT_RATING_1+10
-#define PLAYER_RATING_MODIFIER_MELEE_HIT_AVOIDANCE              PLAYER_FIELD_COMBAT_RATING_1+11     // Not 100% sure but the numbers line up
-#define PLAYER_RATING_MODIFIER_RANGED_HIT_AVOIDANCE             PLAYER_FIELD_COMBAT_RATING_1+12     // GUESSED
-#define PLAYER_RATING_MODIFIER_SPELL_HIT_AVOIDANCE              PLAYER_FIELD_COMBAT_RATING_1+13     // GUESSED
-#define PLAYER_RATING_MODIFIER_MELEE_CRIT_RESILIENCE            PLAYER_FIELD_COMBAT_RATING_1+14
-#define PLAYER_RATING_MODIFIER_RANGED_CRIT_RESILIENCE           PLAYER_FIELD_COMBAT_RATING_1+15
-#define PLAYER_RATING_MODIFIER_SPELL_CRIT_RESILIENCE            PLAYER_FIELD_COMBAT_RATING_1+16
-#define PLAYER_RATING_MODIFIER_MELEE_HASTE                      PLAYER_FIELD_COMBAT_RATING_1+17
-#define PLAYER_RATING_MODIFIER_RANGED_HASTE                     PLAYER_FIELD_COMBAT_RATING_1+18
-#define PLAYER_RATING_MODIFIER_SPELL_HASTE                      PLAYER_FIELD_COMBAT_RATING_1+19
-#define PLAYER_RATING_MODIFIER_MELEE_MAIN_HAND_SKILL            PLAYER_FIELD_COMBAT_RATING_1+20
-#define PLAYER_RATING_MODIFIER_MELEE_OFF_HAND_SKILL             PLAYER_FIELD_COMBAT_RATING_1+21
-#define PLAYER_RATING_MODIFIER_MELEE_RANGED_SKILL               PLAYER_FIELD_COMBAT_RATING_1+22
-#define PLAYER_RATING_MODIFIER_EXPERTISE                        PLAYER_FIELD_COMBAT_RATING_1+23
-#define PLAYER_RATING_MODIFIER_ARMOR_PENETRATION_RATING         PLAYER_FIELD_COMBAT_RATING_1+24
+enum PlayerCombatRating
+{
+    PCR_RANGED_SKILL                = 0,
+    PCR_DEFENCE                     = 1,
+    PCR_DODGE                       = 2,
+    PCR_PARRY                       = 3,
+    PCR_BLOCK                       = 4,
+    PCR_MELEE_HIT                   = 5,
+    PCR_RANGED_HIT                  = 6,
+    PCR_SPELL_HIT                   = 7,
+    PCR_MELEE_CRIT                  = 8,
+    PCR_RANGED_CRIT                 = 9,
+    PCR_SPELL_CRIT                  = 10,
+    PCR_MELEE_HIT_AVOIDANCE         = 11,   // Not 100% sure but the numbers line up
+    PCR_RANGED_HIT_AVOIDANCE        = 12,   // GUESSED
+    PCR_SPELL_HIT_AVOIDANCE         = 13,   // GUESSED
+    PCR_MELEE_CRIT_RESILIENCE       = 14,
+    PCR_RANGED_CRIT_RESILIENCE      = 15,
+    PCR_SPELL_CRIT_RESILIENCE       = 16,
+    PCR_MELEE_HASTE                 = 17,
+    PCR_RANGED_HASTE                = 18,
+    PCR_SPELL_HASTE                 = 19,
+    PCR_MELEE_MAIN_HAND_SKILL       = 20,
+    PCR_MELEE_OFF_HAND_SKILL        = 21,
+    PCR_MELEE_RANGED_SKILL          = 22,   // Not used
+    PCR_EXPERTISE                   = 23,
+    PCR_ARMOR_PENETRATION_RATING    = 24,
+    PCR_UNK1                        = 25,   //\todo investigate
+    PCR_UNK2                        = 26,   //\todo investigate
+    PCR_UNK3                        = 27,   //\todo investigate
+    PCR_UNK4                        = 28,   //\todo investigate
+    PCR_UNK5                        = 29,   //\todo investigate
+    PCR_UNK6                        = 30,   //\todo investigate
+    PCR_UNK7                        = 31    //\todo investigate
+};
 
 enum PlayerCheats
 {

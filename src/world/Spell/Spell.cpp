@@ -871,7 +871,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     //rating bonus
     if (p_caster != NULL)
     {
-        resistchance -= p_caster->CalcRating(PLAYER_RATING_MODIFIER_SPELL_HIT);
+        resistchance -= p_caster->CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_HIT);
         resistchance -= p_caster->GetHitFromSpell();
     }
 
