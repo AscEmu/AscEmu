@@ -464,7 +464,7 @@ void Item::DeleteFromDB()
         }
     }
 
-    CharacterDatabase.Execute("DELETE FROM playeritems WHERE guid = %u", m_uint32Values[LOWGUID]);
+    CharacterDatabase.Execute("DELETE FROM playeritems WHERE guid = %u", m_uint32Values[OBJECT_FIELD_GUID]);
 }
 
 void Item::DeleteMe()

@@ -574,13 +574,7 @@ enum PlayerCombatRating
     PCR_MELEE_RANGED_SKILL          = 22,   // Not used
     PCR_EXPERTISE                   = 23,
     PCR_ARMOR_PENETRATION_RATING    = 24,
-    PCR_UNK1                        = 25,   //\todo investigate
-    PCR_UNK2                        = 26,   //\todo investigate
-    PCR_UNK3                        = 27,   //\todo investigate
-    PCR_UNK4                        = 28,   //\todo investigate
-    PCR_UNK5                        = 29,   //\todo investigate
-    PCR_UNK6                        = 30,   //\todo investigate
-    PCR_UNK7                        = 31    //\todo investigate
+    MAX_PCR                         = 25
 };
 
 enum PlayerCheats

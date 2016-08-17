@@ -433,7 +433,4 @@ enum ECorpseFields
     CORPSE_END                                = OBJECT_END + 0x001E
 };
 
-#define LOWGUID                                   OBJECT_FIELD_GUID
-#define HIGHGUID                                  (OBJECT_FIELD_GUID + 1)
-
 #endif  //_UPDATEFIELDS_H

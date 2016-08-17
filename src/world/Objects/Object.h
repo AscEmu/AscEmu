@@ -299,10 +299,10 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         /// Guid always comes first
         const uint64 & GetGUID() const { return GetUInt64Value(OBJECT_FIELD_GUID); }
         void SetGUID(uint64 GUID) { SetUInt64Value(OBJECT_FIELD_GUID, GUID); }
-        const uint32 GetLowGUID() const { return m_uint32Values[LOWGUID]; }
-        uint32 GetHighGUID() { return m_uint32Values[HIGHGUID]; }
-        void SetLowGUID(uint32 val) { m_uint32Values[LOWGUID] = val; }
-        void SetHighGUID(uint32 val) { m_uint32Values[HIGHGUID] = val; }
+        const uint32 GetLowGUID() const { return m_uint32Values[OBJECT_FIELD_GUID]; }
+        uint32 GetHighGUID() { return m_uint32Values[OBJECT_FIELD_GUID + 1]; }
+        void SetLowGUID(uint32 val) { m_uint32Values[OBJECT_FIELD_GUID] = val; }
+        void SetHighGUID(uint32 val) { m_uint32Values[OBJECT_FIELD_GUID + 1] = val; }
 
         const WoWGuid & GetNewGUID() const { return m_wowGuid; }
         uint32 GetEntry() { return m_uint32Values[OBJECT_FIELD_ENTRY]; }
@@ -311,8 +311,8 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         float GetScale() { return m_floatValues[OBJECT_FIELD_SCALE_X]; }
         void SetScale(float scale) { SetFloatValue(OBJECT_FIELD_SCALE_X, scale); };
 
-        const uint32 GetTypeFromGUID() const { return (m_uint32Values[HIGHGUID] & HIGHGUID_TYPE_MASK); }
-        const uint32 GetUIdFromGUID() const { return (m_uint32Values[LOWGUID] & LOWGUID_ENTRY_MASK); }
+        const uint32 GetTypeFromGUID() const { return (m_uint32Values[OBJECT_FIELD_GUID + 1] & HIGHGUID_TYPE_MASK); }
+        const uint32 GetUIdFromGUID() const { return (m_uint32Values[OBJECT_FIELD_GUID] & LOWGUID_ENTRY_MASK); }
 
         // type
         const uint8 & GetTypeId() const { return m_objectTypeId; }
