@@ -26,7 +26,7 @@
 
 
 /* echo send/received packets to console */
-//#define ECHO_PACKET_LOG_TO_CONSOLE 1
+#define ECHO_PACKET_LOG_TO_CONSOLE 1
 
 #pragma pack(push, 1)
 struct ClientPktHeader
@@ -70,8 +70,6 @@ WorldSocket::WorldSocket(SOCKET fd)
     _latency(0),
     mQueued(false),
     m_nagleEanbled(false),
-    mClientSeed(0),
-    mClientBuild(0),
     m_fullAccountName(NULL)
 {
 
@@ -318,6 +316,7 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
     // Set the authentication packet
     pAuthenticationPacket = recvPacket;
 }
+
 void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 requestid)
 {
     if (requestid != mRequestID)
@@ -365,6 +364,9 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 
     //checking if player is already connected
     //disconnect current player and login this one(blizzlike)
+    if (recvData.rpos() != recvData.wpos())
+        recvData.read((uint8*)lang.data(), 4);
+
     WorldSession* session = sWorld.FindSession(AccountID);
     if (session)
     {
@@ -420,6 +422,9 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     pSession->SetAccountFlags(AccountFlags);
     pSession->m_lastPing = (uint32)UNIXTIME;
     pSession->language = sLocalizationMgr.GetLanguageId(lang);
+
+    if (recvData.rpos() != recvData.wpos())
+        recvData >> pSession->m_muted;
 
     for (i = 0; i < 8; ++i)
         pSession->SetAccountData(i, NULL, true, 0);
@@ -494,7 +499,11 @@ void WorldSocket::Authenticate()
     if (mSession == NULL)
         return;
 
-    WorldPacket data(SMSG_AUTH_RESPONSE, 17);   // 17 + 4 if in queue                                  // BillingTimeRemaining
+    WorldPacket data(SMSG_AUTH_RESPONSE, 17);   // 17 + 4 if in queue
+    data.writeBit(false);
+    data.writeBit(true);
+
+    data << uint32(0);                          // BillingTimeRemaining
     data << uint8(3);                           // 0 - normal, 1 - TBC, 2 - WOTLK, 3 - CATA; must be set in database manually for each account
     data << uint32(0);
     data << uint8(3);                           // Unknown, these two show the same
@@ -502,8 +511,10 @@ void WorldSocket::Authenticate()
     data << uint8(0);                           // BillingPlanFlags
     data << uint8(0x0C);                        // 0x0C = 12 (AUTH_OK)
  
+    SendPacket(&data);
+
     WorldPacket cdata(SMSG_CLIENTCACHE_VERSION, 4);
-    cdata << uint32(sWorld.CacheVersion);
+    cdata << uint32(15595);
     SendPacket(&cdata);
  
     //sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket, static_cast< uint32 >(pAuthenticationPacket->rpos()), mSession);
@@ -515,16 +526,18 @@ void WorldSocket::Authenticate()
     sWorld.AddSession(mSession);
     sWorld.AddGlobalSession(mSession);
 
-    mSession->SendClientCacheVersion(sWorld.CacheVersion);
-
     if (mSession->HasGMPermissions())
         sWorld.gmList.insert(mSession);
-
 }
 
 void WorldSocket::UpdateQueuePosition(uint32 Position)
 {
-    WorldPacket QueuePacket(SMSG_AUTH_RESPONSE, 21);    // 17 + 4 if queued
+    WorldPacket QueuePacket(SMSG_AUTH_RESPONSE, 21); // 17 + 4 if queued
+
+    QueuePacket.writeBit(true);                         // has queue
+    QueuePacket.writeBit(false);                        // unk queue-related
+    QueuePacket.writeBit(true);                         // has account data
+
     QueuePacket << uint32(0);                           // Unknown - 4.3.2
     QueuePacket << uint8(3);                            // 0 - normal, 1 - TBC, 2 - WotLK, 3 - CT. must be set in database manually for each account
     QueuePacket << uint32(0);                           // BillingTimeRemaining
@@ -667,8 +680,8 @@ void WorldSocket::OnRead()
 
 void WorldSocket::HandleWoWConnection(WorldPacket* recvPacket)
 {
-    std::string msgFromClient;
-    *recvPacket >> msgFromClient;
+    std::string ClientToServerMsg;
+    *recvPacket >> ClientToServerMsg;
 
     OnConnectTwo();
 }

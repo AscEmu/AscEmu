@@ -2248,7 +2248,7 @@ void Object::AddInRangeObject(Object* pObj)
     m_objectsInRange.insert(pObj);
 }
 
-void Object::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool self)
+void Object::OutPacketToSet(uint32 Opcode, uint16 Len, const void* Data, bool self)
 {
     if (!IsInWorld())
         return;

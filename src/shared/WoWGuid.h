@@ -29,6 +29,54 @@
 #define BitCount4(x) ( BitCount2(x) + BitCount2((x)>>2) )
 #define BitCount8(x) ( BitCount4(x) + BitCount4((x)>>4) )
 
+struct ObjectGuid
+{
+    public:
+
+        ObjectGuid() { _data.u64 = 0LL; }
+        ObjectGuid(uint64 guid) { _data.u64 = guid; }
+        ObjectGuid(ObjectGuid const& other) { _data.u64 = other._data.u64; }
+
+        uint8& operator[](uint32 index)
+        {
+            ASSERT(index < sizeof(uint64));
+
+            return _data.byte[index];
+        }
+
+        uint8 const& operator[](uint32 index) const
+        {
+            ASSERT(index < sizeof(uint64));
+
+            return _data.byte[index];
+        }
+
+        operator uint64()
+        {
+            return _data.u64;
+        }
+
+        ObjectGuid& operator=(uint64 guid)
+        {
+            _data.u64 = guid;
+            return *this;
+        }
+
+        ObjectGuid& operator=(ObjectGuid const& other)
+        {
+            _data.u64 = other._data.u64;
+            return *this;
+        }
+
+    private:
+
+        union
+        {
+            uint64 u64;
+            uint8 byte[8];
+        } _data;
+};
+
 class SERVER_DECL WoWGuid
 {
     public:

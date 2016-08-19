@@ -2784,13 +2784,19 @@ void WorldSession::HandleRealmSplitOpcode(WorldPacket& recv_data)
 
     WorldPacket data(SMSG_REALM_SPLIT, 4 + 4 + split_date.size() + 1);
     data << unk;
-    data << uint32(0);   // realm split state
+    data << uint32(0x00000000);   // realm split state
     // split states:
     // 0x0 realm normal
     // 0x1 realm split
     // 0x2 realm split pending
     data << split_date;
     SendPacket(&data);
+}
+
+void WorldSession::HandleReadyForAccountDataTimesOpcode(WorldPacket & recv_data) // 4.3.4 (cmangos)
+{
+    // empty opcode
+    SendAccountDataTimes(GLOBAL_CACHE_MASK);
 }
 
 void WorldSession::HandleTimeSyncResp(WorldPacket& recv_data)

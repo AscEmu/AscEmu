@@ -155,61 +155,97 @@ void CapitalizeString(std::string& arg)
 
 void WorldSession::CharacterEnumProc(QueryResult* result)
 {
-    struct player_item
-    {
-        uint32 displayid;
-        uint8 invtype;
-        uint32 enchantment; // added in 2.4
-    };
+    LOG_DEBUG("CharacterEnumProc");
+    WorldPacket data(SMSG_CHAR_ENUM, 270);
 
-    uint32 start_time = getMSTime();
+    ByteBuffer buffer;
 
-    player_item items[23];
-    int8 slot;
-
-    QueryResult* res;
-    CreatureProperties const* info = nullptr;
-    uint8 race;
-    has_dk = false;
-    _side = -1; // side should be set on every enumeration for safety
-
-    uint32 numchar;
-
-    if (result)
-        numchar = result->GetRowCount();
-    else
-        numchar = 0;
-
-    // should be more than enough.. 200 bytes per char..
-    WorldPacket data(SMSG_CHAR_ENUM, 1 + numchar * 200);
-
-    // parse m_characters and build a mighty packet of
-    // characters to send to the client.
-    data << uint8(numchar);
+    data.writeBits(0, 23);
+    data.writeBit(1);
+    data.writeBits(result ? result->GetRowCount() : 0, 17);
 
     if (result)
     {
-        uint64 guid;
-        uint8 Class;
-        uint32 bytes2;
-        uint32 flags;
-        uint32 banned;
-        Field* fields;
-        uint32 petLevel = 0;
+        LOG_DEBUG("CharacterEnumProc - result = ok!");
         do
         {
+            struct player_item
+            {
+                uint32 displayid;
+                uint8 invtype;
+                uint32 enchantment; // added in 2.4
+            };
+
+            player_item items[INVENTORY_SLOT_BAG_END];
+            int8 slot;
+            int8 containerslot;
+            uint32 i;
+            ItemProperties const* proto;
+            QueryResult* res;
+            CreatureProperties const* petInfo = nullptr;
+            uint32 num = 0;
+            uint32 MaxAvailCharLevel = 0;
+            Field* fields;
+            _side = -1;
+            has_dk = false;
+
             fields = result->Fetch();
 
-            guid = fields[0].GetUInt64();
-            bytes2 = fields[6].GetUInt32();
-            Class = fields[3].GetUInt8();
-            flags = fields[17].GetUInt32();
-            race = fields[2].GetUInt8();
+            ObjectGuid guid = MAKE_NEW_GUID(fields[0].GetUInt32(), 0, 0x000);
+
+            uint8 level = fields[1].GetUInt8();
+            uint8 race = fields[2].GetUInt8();
+            uint8 Class = fields[3].GetUInt8();
+            uint8 gender = fields[4].GetUInt8();
+
+            uint8 skin = uint8(fields[5].GetUInt32() & 0xFF);
+            uint8 face = uint8((fields[5].GetUInt32() >> 8) & 0xFF);
+            uint8 hairStyle = uint8((fields[5].GetUInt32() >> 16) & 0xFF);
+            uint8 hairColor = uint8((fields[5].GetUInt32() >> 24) & 0xFF);
+            uint8 facialHair = uint8(fields[6].GetUInt32() & 0xFF);
+
+            std::string name = fields[7].GetString();
+            float x = fields[8].GetFloat();
+            float y = fields[9].GetFloat();
+            float z = fields[10].GetFloat();
+            uint32 mapId = uint32(fields[11].GetUInt16());
+            uint32 zone = fields[12].GetUInt32();  // zoneId
+            uint32 banned = fields[13].GetUInt32();
+
+            uint32 playerFlags = fields[14].GetUInt32();
+
+            uint32 atLoginFlags = fields[17].GetUInt32();
+            uint32 GuildId = fields[18].GetUInt32();
+            ObjectGuid guildGuid = MAKE_NEW_GUID(GuildId, 0, GuildId ? uint32(0x1FF) : 0);
+
+            //  0     1      2     3       4       5     6      7
+            //guid, level, race, class, gender, bytes, bytes2, name,
+            //    8         9          10        11     12     13
+            //positionX, positionY, positionZ, mapId, zoneId, banned,
+            //     14        15           16            17               18
+            //restState, deathstate, login_flags, player_flags, guild_data.guildid
+
+            uint32 charFlags = 0;
+
+            //if (banned && (banned < 10 || banned >(uint32)UNIXTIME))
+            //    charFlags |= CHARACTER_FLAG_LOCKED_BY_BILLING;
+
+            //if (fields[15].GetUInt32() != 0) // deathstate
+            //    charFlags |= CHARACTER_FLAG_GHOST;
+
+            //if (atLoginFlags & PLAYER_FLAG_NOHELM)
+            //    charFlags |= CHARACTER_FLAG_HIDE_HELM;
+
+            //if (atLoginFlags & PLAYER_FLAG_NOCLOAK)
+            //    charFlags |= CHARACTER_FLAG_HIDE_CLOAK;
+
+            //if (fields[16].GetUInt32() != 0) // forced_rename_pending
+            //    charFlags |= CHARACTER_FLAG_RENAME;
 
             if (_side < 0)
             {
                 // work out the side
-                static uint8 sides[RACE_DRAENEI + 1] = {0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0};
+                static uint8 sides[RACE_DRAENEI + 2] = { 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0 };
                 _side = sides[race];
             }
 
@@ -219,129 +255,151 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             has_level_55_char = has_level_55_char || (fields[1].GetUInt8() >= 55);
             has_dk = has_dk || (Class == 6);
 
-            /* build character enum, w0000t :p */
-            data << uint64(guid);                           //guid
-            data << fields[7].GetString();                  //name
-            data << uint8(race);                            //race
-            data << uint8(Class);                           //class
-            data << uint8(fields[4].GetUInt8());            //gender
-            data << uint32(fields[5].GetUInt32());          //PLAYER_BYTES
-            data << uint8(bytes2 & 0xFF);                   //facial hair
-            data << uint8(fields[1].GetUInt8());            //Level
-            data << uint32(fields[12].GetUInt32());         //zoneid
-            data << uint32(fields[11].GetUInt32());         //Mapid
-            data << float(fields[8].GetFloat());            //X
-            data << float(fields[9].GetFloat());            //Y
-            data << float(fields[10].GetFloat());           //Z
-            data << uint32(fields[18].GetUInt32());         //GuildID
+            data.writeBit(guid[3]);
+            data.writeBit(guildGuid[1]);
+            data.writeBit(guildGuid[7]);
+            data.writeBit(guildGuid[2]);
+            data.writeBits(uint32(name.length()), 7);
+            data.writeBit(guid[4]);
+            data.writeBit(guid[7]);
+            data.writeBit(guildGuid[3]);
+            data.writeBit(guid[5]);
+            data.writeBit(guildGuid[6]);
+            data.writeBit(guid[1]);
+            data.writeBit(guildGuid[5]);
+            data.writeBit(guildGuid[4]);
+            data.writeBit(atLoginFlags & 0x20); // 0x20 = AT_LOGIN_FIRST
+            data.writeBit(guid[0]);
+            data.writeBit(guid[2]);
+            data.writeBit(guid[6]);
+            data.writeBit(guildGuid[0]);
 
-            banned = fields[13].GetUInt32();
-            uint32 char_flags = 0;
-
-            if (banned && (banned < 10 || banned > (uint32)UNIXTIME))
-                char_flags |= PLAYER_FLAG_IS_BANNED;
-            if (fields[15].GetUInt32() != 0)
-                char_flags |= PLAYER_FLAG_IS_DEAD;
-            if (flags & PLAYER_FLAG_NOHELM)
-                char_flags |= PLAYER_FLAG_NOHELM;
-            if (flags & PLAYER_FLAG_NOCLOAK)
-                char_flags |= PLAYER_FLAG_NOCLOAK;
-            if (fields[16].GetUInt32() == 1)
-                char_flags |= PLAYER_FLAGS_RENAME_FIRST;
-
-            data << uint32(char_flags);
-
-            switch (fields[16].GetUInt32())
-            {
-                case LOGIN_CUSTOMIZE_LOOKS:
-                    data << uint32(CHAR_CUSTOMIZE_FLAG_CUSTOMIZE);  //Character recustomization flag
-                    break;
-                case LOGIN_CUSTOMIZE_RACE:
-                    data << uint32(CHAR_CUSTOMIZE_FLAG_RACE);       //Character recustomization + race flag
-                    break;
-                case LOGIN_CUSTOMIZE_FACTION:
-                    data << uint32(CHAR_CUSTOMIZE_FLAG_FACTION); //Character recustomization + race + faction flag
-                    break;
-                default:
-                     data << uint32(CHAR_CUSTOMIZE_FLAG_NONE);       //Character recustomization no flag set
-            }
-
-            data << uint8(0);                //Unknown 3.2.0
+            uint32 petDisplayId;
+            uint32 petLevel;
+            uint32 petFamily;
 
             if (Class == WARLOCK || Class == HUNTER)
             {
-                res = CharacterDatabase.Query("SELECT entry, level FROM playerpets WHERE ownerguid = %u AND MOD(active, 10) = 1 AND alive = TRUE;", Arcemu::Util::GUID_LOPART(guid));
+                res = CharacterDatabase.Query("SELECT entry, level FROM playerpets WHERE ownerguid = %u AND MOD( active, 10 ) = 1 AND alive = TRUE;", Arcemu::Util::GUID_LOPART(guid));
 
                 if (res)
                 {
                     petLevel = res->Fetch()[1].GetUInt32();
-                    info = sMySQLStore.GetCreatureProperties(res->Fetch()[0].GetUInt32());
+                    petInfo = sMySQLStore.GetCreatureProperties(res->Fetch()[0].GetUInt32());
                     delete res;
                 }
                 else
-                    info = nullptr;
+                    petInfo = NULL;
             }
             else
-                info = nullptr;
+                petInfo = NULL;
 
-            if (info != nullptr)
+            if (petInfo)
             {
-                data << uint32(info->Male_DisplayID);
-                data << uint32(petLevel);
-                data << uint32(info->Family);
+                petDisplayId = uint32(petInfo->Male_DisplayID);
+                petFamily = uint32(petInfo->Family);
             }
             else
             {
-                data << uint32(0);
-                data << uint32(0);
-                data << uint32(0);
+                petDisplayId = 0;
+                petLevel = 0;
+                petFamily = 0;
             }
 
-            res = CharacterDatabase.Query("SELECT slot, entry, enchantments FROM playeritems WHERE ownerguid=%u AND containerslot = '-1' AND slot BETWEEN '0' AND '22'", Arcemu::Util::GUID_LOPART(guid));
+            buffer << uint8(Class);
 
-            memset(items, 0, sizeof(player_item) * 23);
+            res = CharacterDatabase.Query("SELECT containerslot, slot, entry, enchantments FROM playeritems WHERE ownerguid=%u and containerslot=-1 and slot < 23", Arcemu::Util::GUID_LOPART(guid));
+
+            memset(items, 0, sizeof(items));
             uint32 enchantid;
-
+            DBC::Structures::SpellItemEnchantmentEntry const* enc;
             if (res)
             {
                 do
                 {
-                    slot = res->Fetch()[0].GetInt8();
-                    ItemProperties const* proto = sMySQLStore.GetItemProperties(res->Fetch()[1].GetUInt32());
-                    if (proto)
+                    containerslot = res->Fetch()[0].GetInt8();
+                    slot = res->Fetch()[1].GetInt8();
+                    if (containerslot == -1 && slot < INVENTORY_SLOT_BAG_END && slot >= EQUIPMENT_SLOT_START)
                     {
-                        items[slot].displayid = proto->DisplayInfoID;
-                        items[slot].invtype = static_cast<uint8>(proto->InventoryType);
-
-                        // weapon glows
-                        if (slot == EQUIPMENT_SLOT_MAINHAND || slot == EQUIPMENT_SLOT_OFFHAND)
+                        proto = sMySQLStore.GetItemProperties(res->Fetch()[2].GetUInt32());
+                        if (proto)
                         {
-                            // get enchant visual ID
-                            const char* enchant_field = res->Fetch()[2].GetString();
-                            if (sscanf(enchant_field , "%u,0,0;" , (unsigned int*)&enchantid) == 1 && enchantid > 0)
+                            if (!(slot == EQUIPMENT_SLOT_HEAD && (playerFlags & (uint32)PLAYER_FLAG_NOHELM) != 0) &&
+                                !(slot == EQUIPMENT_SLOT_BACK && (playerFlags & (uint32)PLAYER_FLAG_NOCLOAK) != 0))
                             {
-                                auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchantid);
-                                if (spell_item_enchant != nullptr)
-                                    items[slot].enchantment = spell_item_enchant->visual;
+                                items[slot].displayid = proto->DisplayInfoID;
+                                items[slot].invtype = proto->InventoryType;
+                                // weapon glows
+                                if (slot == EQUIPMENT_SLOT_MAINHAND || slot == EQUIPMENT_SLOT_OFFHAND)
+                                {
+                                    // get enchant visual ID
+                                    const char * enchant_field = res->Fetch()[3].GetString();
+                                    if (sscanf(enchant_field, "%u,0,0;", (unsigned int *)&enchantid) == 1 && enchantid > 0)
+                                    {
+                                        enc = sSpellItemEnchantmentStore.LookupEntry(enchantid);
+                                        if (enc != NULL)
+                                            items[slot].enchantment = enc->visual;
+                                        else
+                                            items[slot].enchantment = 0;;
+                                    }
+                                }
                             }
                         }
                     }
-                }
-                while(res->NextRow());
+                } while (res->NextRow());
                 delete res;
+                res = NULL;
             }
 
-            for (uint8 i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
+            for (i = 0; i < INVENTORY_SLOT_BAG_END; ++i) // 23 * 5 bytes
             {
-                data << uint32(items[i].displayid);
-                data << uint8(items[i].invtype);
-                data << uint32(items[i].enchantment);
+                buffer << uint8(items[i].invtype);
+                buffer << uint32(items[i].displayid);
+                buffer << uint32(items[i].enchantment);
             }
-        }
-        while(result->NextRow());
+
+            buffer << uint32(petFamily);
+            buffer.WriteByteSeq(guildGuid[2]);
+            buffer << uint8(0); // slot
+            buffer << uint8(hairStyle);
+            buffer.WriteByteSeq(guildGuid[3]);
+            buffer << uint32(petDisplayId);
+            buffer << uint32(charFlags);
+            buffer << uint8(hairColor);
+            buffer.WriteByteSeq(guid[4]);
+            buffer << uint32(mapId);
+            buffer.WriteByteSeq(guildGuid[5]);
+            buffer << float(z);
+            buffer.WriteByteSeq(guildGuid[6]);
+            buffer << uint32(petLevel);
+            buffer.WriteByteSeq(guid[3]);
+            buffer << float(y);
+            buffer << uint32(0x00000000); // TODO: implement customization flags
+            buffer << uint8(facialHair);
+            buffer.WriteByteSeq(guid[7]);
+            buffer << uint8(gender);
+            buffer.append(name.c_str(), name.length());
+            buffer << uint8(face);
+            buffer.WriteByteSeq(guid[0]);
+            buffer.WriteByteSeq(guid[2]);
+            buffer.WriteByteSeq(guildGuid[1]);
+            buffer.WriteByteSeq(guildGuid[7]);
+            buffer << float(x);
+            buffer << uint8(skin);
+            buffer << uint8(race);
+            buffer << uint8(level);
+            buffer.WriteByteSeq(guid[6]);
+            buffer.WriteByteSeq(guildGuid[4]);
+            buffer.WriteByteSeq(guildGuid[0]);
+            buffer.WriteByteSeq(guid[5]);
+            buffer.WriteByteSeq(guid[1]);
+            buffer << uint32(zone);
+        } while (result->NextRow());
+
+        data.flushBits();
+        data.append(buffer);
     }
 
-    Log.Debug("Character Enum", "Built in %u ms.", getMSTime() - start_time);
     SendPacket(&data);
 }
 
@@ -707,12 +765,30 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)
 {
-    CHECK_PACKET_SIZE(recv_data, 8);
-    uint64 playerGuid = 0;
-
     LOG_DEBUG("WORLD: Recvd Player Logon Message");
 
-    recv_data >> playerGuid; // this is the GUID selected by the player
+    uint8 playerGuid[8];
+ 
+    playerGuid[2] = recv_data.readBit();
+    playerGuid[3] = recv_data.readBit();
+    playerGuid[0] = recv_data.readBit();
+    playerGuid[6] = recv_data.readBit();
+    playerGuid[4] = recv_data.readBit();
+    playerGuid[5] = recv_data.readBit();
+    playerGuid[1] = recv_data.readBit();
+    playerGuid[7] = recv_data.readBit();
+ 
+    recv_data.ReadByteSeq(playerGuid[2]);
+    recv_data.ReadByteSeq(playerGuid[7]);
+    recv_data.ReadByteSeq(playerGuid[0]);
+    recv_data.ReadByteSeq(playerGuid[3]);
+    recv_data.ReadByteSeq(playerGuid[5]);
+    recv_data.ReadByteSeq(playerGuid[6]);
+    recv_data.ReadByteSeq(playerGuid[1]);
+    recv_data.ReadByteSeq(playerGuid[4]);
+ 
+    uint64 pGuid = *(uint64*)playerGuid;
+
     if (objmgr.GetPlayer((uint32)playerGuid) != NULL || m_loggingInPlayer || _player)
     {
         // A character with that name already exists 0x3E
@@ -722,7 +798,7 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)
     }
 
     AsyncQuery* q = new AsyncQuery(new SQLClassCallbackP0<WorldSession>(this, &WorldSession::LoadPlayerFromDBProc));
-    q->AddQuery("SELECT guid,class FROM characters WHERE guid = %u AND login_flags = %u", playerGuid, (uint32)LOGIN_NO_FLAG); // 0
+    q->AddQuery("SELECT guid,class FROM characters WHERE guid = %u AND forced_rename_pending = 0", Arcemu::Util::GUID_LOPART(pGuid)); // 0
     CharacterDatabase.QueueAsyncQuery(q);
 }
 
@@ -1216,4 +1292,14 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     data << uint8(facialHair);
     data << uint8(race);
     SendPacket(&data);
+}
+
+void WorldSession::HandleLoadScreenOpcode(WorldPacket & recv_data)
+{
+    // empty opcode
+    // printf("LOAD SCREEN OPCODE\n");
+    uint32 mapId;
+
+    recv_data >> mapId;
+    recv_data.readBit();
 }

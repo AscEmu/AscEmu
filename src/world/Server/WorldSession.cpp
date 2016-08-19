@@ -27,35 +27,29 @@
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
 WorldSession::WorldSession(uint32 id, std::string Name, WorldSocket* sock) :
-    m_loggingInPlayer(NULL),
-    m_currMsTime(getMSTime()),
-    bDeleted(false),
-    m_moveDelayTime(0),
-    m_clientTimeDelay(0),
-    m_bIsWLevelSet(false),
-    _player(NULL),
-    _socket(sock),
-    _accountId(id),
-    _accountName(Name),
-    has_level_55_char(false),
-    _side(-1),
-    _logoutTime(0),
-    permissions(NULL),
-    permissioncount(0),
-    _loggingOut(false),
-    LoggingOut(false),
-    instanceId(0),
-    _updatecount(0),
-    floodLines(0),
-    floodTime(UNIXTIME),
-    language(0),
-    m_lastPing(0),
-    m_wLevel(0),
-    _accountFlags(0),
-    has_dk(false),
-    _latency(0),
-    client_build(0),
-    m_muted(0)
+m_loggingInPlayer(NULL),
+m_currMsTime(getMSTime()),
+bDeleted(false),
+m_moveDelayTime(0),
+m_clientTimeDelay(0),
+m_bIsWLevelSet(false),
+_player(NULL),
+_socket(sock),
+_accountId(id),
+_accountName(Name),
+has_level_55_char(false),
+_side(-1),
+_logoutTime(0),
+permissions(NULL),
+permissioncount(0),
+_loggingOut(false),
+LoggingOut(false),
+instanceId(0),
+_updatecount(0),
+floodLines(0),
+floodTime(UNIXTIME),
+language(0),
+m_muted(0)
 {
     memset(movement_packet, 0, sizeof(movement_packet));
 
@@ -151,7 +145,7 @@ uint8 WorldSession::Update(uint32 InstanceID)
         else
         {
             Handler = &WorldPacketHandlers[packet->GetOpcode()];
-            if (Handler->status == STATUS_LOGGEDIN && !_player && Handler->handler != 0)
+            if (Handler->status == STATUS_LOGGEDIN && !_player && Handler->handler != 0 && packet->GetOpcode() != 1282)
             {
                 LOG_DETAIL("[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)", LookupName(packet->GetOpcode(), g_worldOpcodeNames), packet->GetOpcode());
             }
@@ -540,6 +534,7 @@ void WorldSession::InitPacketHandlerTable()
         WorldPacketHandlers[i].status = STATUS_LOGGEDIN;
         WorldPacketHandlers[i].handler = 0;
     }
+
     // Login
     WorldPacketHandlers[CMSG_CHAR_ENUM].handler = &WorldSession::HandleCharEnumOpcode;
     WorldPacketHandlers[CMSG_CHAR_ENUM].status = STATUS_AUTHED;
@@ -568,6 +563,13 @@ void WorldSession::InitPacketHandlerTable()
 
     WorldPacketHandlers[CMSG_REALM_SPLIT].handler = &WorldSession::HandleRealmSplitOpcode;
     WorldPacketHandlers[CMSG_REALM_SPLIT].status = STATUS_AUTHED;
+
+    // 4.3.4 login
+    WorldPacketHandlers[CMSG_LOAD_SCREEN].handler = &WorldSession::HandleLoadScreenOpcode;
+    WorldPacketHandlers[CMSG_LOAD_SCREEN].status = STATUS_AUTHED;
+
+    WorldPacketHandlers[CMSG_READY_FOR_ACCOUNT_DATA_TIMES].handler = &WorldSession::HandleReadyForAccountDataTimesOpcode;
+    WorldPacketHandlers[CMSG_READY_FOR_ACCOUNT_DATA_TIMES].status = STATUS_AUTHED;
 
     // Queries
     WorldPacketHandlers[MSG_CORPSE_QUERY].handler = &WorldSession::HandleCorpseQueryOpcode;
@@ -958,8 +960,8 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_GMTICKETSYSTEM_TOGGLE].handler = &WorldSession::HandleGMTicketToggleSystemStatusOpcode;
 
     // Lag report
-    WorldPacketHandlers[CMSG_GM_REPORT_LAG].handler = &WorldSession::HandleReportLag;
-    WorldPacketHandlers[CMSG_GM_REPORT_LAG].status = STATUS_LOGGEDIN;
+    //WorldPacketHandlers[CMSG_GM_REPORT_LAG].handler = &WorldSession::HandleReportLag;
+    //WorldPacketHandlers[CMSG_GM_REPORT_LAG].status = STATUS_LOGGEDIN;
 
     WorldPacketHandlers[CMSG_GMSURVEY_SUBMIT].handler = &WorldSession::HandleGMSurveySubmitOpcode;
     WorldPacketHandlers[CMSG_GMSURVEY_SUBMIT].status = STATUS_LOGGEDIN;
@@ -1787,15 +1789,8 @@ void WorldSession::SendClientCacheVersion(uint32 version)
     SendPacket(&data);
 }
 
-void WorldSession::SendPacket(WorldPacket* packet)
-{
-    if (!_socket)
-        return;
-
-    //if (packet->GetOpcode() >= NUM_MSG_TYPES && packet->GetOpcode() != MSG_WOW_CONNECTION)
-    //    return;
-
-    if (_socket->IsConnected())
+void WorldSession::SendPacket(WorldPacket* packet) {
+    if (_socket && _socket->IsConnected())
         _socket->SendPacket(packet);
 }
 

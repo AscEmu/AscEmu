@@ -395,7 +395,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /* Update player movement state                                         */
     /************************************************************************/
 
-    uint16 opcode = recv_data.GetOpcode();
+    uint32 opcode = recv_data.GetOpcode();
     switch (opcode)
     {
         case MSG_MOVE_START_FORWARD:

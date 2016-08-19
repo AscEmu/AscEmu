@@ -125,11 +125,11 @@ void AuthSocket::HandleChallenge()
         case 12340:
         case 15595:
         {
-            Log.Debug("HandleChallenge", "Client with valid build %u connected", client_build);
+            Log.Debug("HandleChallenge", "Client with valid build %u connected", (uint32)client_build);
         }break;
         default:
         {
-            Log.Debug("HandleChallenge", "Client %s has unsupported game version. Clientbuild: %u", GetRemoteIP().c_str(), client_build);
+            Log.Debug("HandleChallenge", "Client %s has unsupported game version. Clientbuild: %u", GetRemoteIP().c_str(), (uint32)client_build);
             SendChallengeError(CE_WRONG_BUILD_NUMBER);
         }break;
     }
