@@ -687,8 +687,6 @@ enum Opcodes
     CMSG_ITEM_NAME_QUERY                            = 0x2C4,    // implemented
     SMSG_ITEM_NAME_QUERY_RESPONSE                   = 0x2C5,    // implemented
     SMSG_PET_ACTION_FEEDBACK                        = 0x2C6,    // implemented
-    CMSG_CHAR_RENAME                                = 0x2C7,    // implemented
-    SMSG_CHAR_RENAME                                = 0x2C8,    // implemented
     CMSG_MOVE_SPLINE_DONE                           = 0x2C9,    // implemented
     CMSG_MOVE_FALL_RESET                            = 0x2CA,    ///\todo implement
     SMSG_UPDATE_LAST_INSTANCE_CREATED               = 0x2CB,    ///\todo implement
@@ -1286,12 +1284,17 @@ enum Opcodes
         SMSG_CLIENTCACHE_VERSION = 0x2734,
 
         CMSG_CHAR_CREATE = 0x4A36,
-        CMSG_CHAR_ENUM = 0x0502,
-        CMSG_CHAR_DELETE = 0x6425,
-
         SMSG_CHAR_CREATE = 0x2D05,
+
+        CMSG_CHAR_ENUM = 0x0502,
         SMSG_CHAR_ENUM = 0x10B0,
+
+        CMSG_CHAR_DELETE = 0x6425,
         SMSG_CHAR_DELETE = 0x0304,
+
+        CMSG_CHAR_RENAME = 0x2327,
+        SMSG_CHAR_RENAME = 0x2024,
+        
         CMSG_CHAR_CUSTOMIZE = 0x2C34,
         SMSG_CHAR_CUSTOMIZE = 0x4F16,
 

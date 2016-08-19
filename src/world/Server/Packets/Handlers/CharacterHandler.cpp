@@ -710,19 +710,18 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
     recv_data >> guid;
     recv_data >> name;
 
-    PlayerInfo* pi = objmgr.GetPlayerInfo((uint32)guid);
-    if (pi == 0) return;
+    PlayerInfo* player_info = objmgr.GetPlayerInfo((uint32)guid);
+    if (player_info == nullptr)
+        return;
 
     QueryResult* result = CharacterDatabase.Query("SELECT login_flags FROM characters WHERE guid = %u AND acct = %u", (uint32)guid, _accountId);
-    if (result == 0)
+    if (result == nullptr)
     {
-        delete result;
         return;
     }
     delete result;
 
     // Check name for rule violation.
-
     LoginErrorCode err = VerifyName(name.c_str(), name.length());
     if (err != E_CHAR_NAME_SUCCESS)
     {
@@ -759,13 +758,13 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
 
     // correct capitalization
     CapitalizeString(name);
-    objmgr.RenamePlayerInfo(pi, pi->name, name.c_str());
+    objmgr.RenamePlayerInfo(player_info, player_info->name, name.c_str());
 
-    sPlrLog.writefromsession(this, "a rename was pending. renamed character %s (GUID: %u) to %s.", pi->name, pi->guid, name.c_str());
+    sPlrLog.writefromsession(this, "a rename was pending. renamed character %s (GUID: %u) to %s.", player_info->name, player_info->guid, name.c_str());
 
     // If we're here, the name is okay.
-    free(pi->name);
-    pi->name = strdup(name.c_str());
+    free(player_info->name);
+    player_info->name = strdup(name.c_str());
     CharacterDatabase.WaitExecute("UPDATE characters SET name = '%s' WHERE guid = %u", name.c_str(), (uint32)guid);
     CharacterDatabase.WaitExecute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32)LOGIN_NO_FLAG, (uint32)guid);
 
