@@ -123,6 +123,7 @@ void AuthSocket::HandleChallenge()
     {
         case 8606:
         case 12340:
+        case 15595:
         {
             Log.Debug("HandleChallenge", "Client with valid build %u connected", client_build);
         }break;

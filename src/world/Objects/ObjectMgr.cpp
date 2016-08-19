@@ -1494,7 +1494,7 @@ AchievementCriteriaEntryList const & ObjectMgr::GetAchievementCriteriaByType(Ach
     return m_AchievementCriteriasByType[type];
 }
 
-void ObjectMgr::LoadAchievementCriteriaList()
+/*void ObjectMgr::LoadAchievementCriteriaList()
 {
     for (uint32 rowId = 0; rowId < sAchievementCriteriaStore.GetNumRows(); ++rowId)
     {
@@ -1504,7 +1504,7 @@ void ObjectMgr::LoadAchievementCriteriaList()
 
         m_AchievementCriteriasByType[criteria->requiredType].push_back(criteria);
     }
-}
+}*/
 #endif
 
 void ObjectMgr::CorpseAddEventDespawn(Corpse* pCorpse)

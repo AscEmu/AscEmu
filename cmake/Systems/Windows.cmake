@@ -6,7 +6,7 @@ set(LIBS_DIR ${CMAKE_INSTALL_PREFIX}/bin)
 # set default install prefix if it wasn't setted up
 add_definitions(-DWIN32)
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX "C:/AscEmu" CACHE PATH "Install path prefix" FORCE)
+    set(CMAKE_INSTALL_PREFIX "C:/AscEmu_Cata" CACHE PATH "Install path prefix" FORCE)
 endif()
 
 # set source paths for libraries

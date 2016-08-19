@@ -750,7 +750,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         AreaTrigger const* GetMapEntranceTrigger(uint32 Map) const;
 
 #ifdef ENABLE_ACHIEVEMENTS
-        void LoadAchievementCriteriaList();
+        //void LoadAchievementCriteriaList();
         AchievementCriteriaEntryList const & GetAchievementCriteriaByType(AchievementCriteriaTypes type);
         std::set<uint32> allCompletedAchievements;
 #endif

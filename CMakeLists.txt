@@ -1,5 +1,5 @@
 # Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
-project(Ascemu)
+project(Ascemu_Cata)
 cmake_minimum_required(VERSION 2.8)
 
 # set runtime binary where all compiled (before install) binary will compiled in

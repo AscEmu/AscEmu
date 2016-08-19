@@ -581,8 +581,8 @@ bool World::SetInitialWorldSettings()
 
     //Start the Achievement system :D
 #ifdef ENABLE_ACHIEVEMENTS
-    Log.Success("World", "Starting Achievement System..");
-    objmgr.LoadAchievementCriteriaList();
+    //Log.Success("World", "Starting Achievement System..");
+    //objmgr.LoadAchievementCriteriaList();
 #endif
     // start mail system
     MailSystem::getSingleton().StartMailSystem();
