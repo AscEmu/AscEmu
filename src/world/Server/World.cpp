@@ -409,6 +409,8 @@ bool World::SetInitialWorldSettings()
     // Start
     uint32 start_time = getMSTime();
 
+    LoadDB2Stores();
+
     Log.Success("World", "Loading DBC files...");
     if (!LoadDBCs())
     {

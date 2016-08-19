@@ -176,7 +176,7 @@ class WorldLog : public Singleton<WorldLog>
         WorldLog();
         ~WorldLog();
 
-        void LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 direction, uint32 accountid = 0);
+        void LogPacket(uint32 len, uint32 opcode, const uint8* data, uint8 direction, uint32 accountid = 0);
         void Enable();
         void Disable();
 

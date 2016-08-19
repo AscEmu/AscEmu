@@ -1787,8 +1787,15 @@ void WorldSession::SendClientCacheVersion(uint32 version)
     SendPacket(&data);
 }
 
-void WorldSession::SendPacket(WorldPacket* packet) {
-    if (_socket && _socket->IsConnected())
+void WorldSession::SendPacket(WorldPacket* packet)
+{
+    if (!_socket)
+        return;
+
+    //if (packet->GetOpcode() >= NUM_MSG_TYPES && packet->GetOpcode() != MSG_WOW_CONNECTION)
+    //    return;
+
+    if (_socket->IsConnected())
         _socket->SendPacket(packet);
 }
 

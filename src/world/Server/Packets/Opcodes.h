@@ -85,7 +85,7 @@ enum Opcodes
     CMSG_CHAR_DELETE                                = 0x038,    // implemented
     SMSG_AUTH_SRP6_RESPONSE                         = 0x039,    ///\todo not used in client, really?
     SMSG_CHAR_CREATE                                = 0x03A,    // implemented
-    SMSG_CHAR_ENUM                                  = 0x03B,    // implemented
+    //SMSG_CHAR_ENUM                                  = 0x03B,    // implemented
     SMSG_CHAR_DELETE                                = 0x03C,    // implemented
     CMSG_PLAYER_LOGIN                               = 0x03D,    // implemented
     SMSG_NEW_WORLD                                  = 0x03E,    // implemented
@@ -518,9 +518,6 @@ enum Opcodes
     MSG_GM_SUMMON                                   = 0x1E9,    // GM client only
     SMSG_ITEM_TIME_UPDATE                           = 0x1EA,    ///\todo implement
     SMSG_ITEM_ENCHANT_TIME_UPDATE                   = 0x1EB,    // implemented
-    SMSG_AUTH_CHALLENGE                             = 0x1EC,    // implemented
-    CMSG_AUTH_SESSION                               = 0x1ED,    // implemented
-    SMSG_AUTH_RESPONSE                              = 0x1EE,    // implemented
     MSG_GM_SHOWLABEL                                = 0x1EF,    // GM client only
     CMSG_PET_CAST_SPELL                             = 0x1F0,    // implemented
     MSG_SAVE_GUILD_EMBLEM                           = 0x1F1,    // implemented
@@ -1221,7 +1218,6 @@ enum Opcodes
     CMSG_PLAYER_VEHICLE_ENTER                       = 0x4A8,    ///\todo investigate, cmsg uint64
     CMSG_EJECT_PASSENGER                            = 0x4A9,    ///\todo investigate, cmsg uint64
     SMSG_PET_GUIDS                                  = 0x4AA,    ///\todo implement
-    SMSG_CLIENTCACHE_VERSION                        = 0x4AB,    ///\todo implement
     UMSG_UNKNOWN_1196                               = 0x4AC,    ///\todo investigate, CMSG_CHANGE_GDF_ARENA_RATING
     UMSG_UNKNOWN_1197                               = 0x4AD,    ///\todo investigate, CMSG_SET_ARENA_TEAM_RATING_BY_INDEX
     UMSG_UNKNOWN_1198                               = 0x4AE,    ///\todo investigate, CMSG_SET_ARENA_TEAM_WEEKLY_GAMES
@@ -1337,7 +1333,14 @@ enum Opcodes
     SMSG_COMMENTATOR_SKIRMISH_QUEUE_RESULT1         = 0x51C,    ///\todo implement
     SMSG_COMMENTATOR_SKIRMISH_QUEUE_RESULT2         = 0x51D,    ///\todo implement
     SMSG_MULTIPLE_MOVES                             = 0x51E,    ///\todo implement uncompressed version of SMSG_COMPRESSED_MOVES
-    NUM_MSG_TYPES                                   = 0x51F     // End of Opcodes
+    MSG_WOW_CONNECTION = 0x4F57,
+    SMSG_AUTH_CHALLENGE = 0x4542,
+    SMSG_CHAR_ENUM = 0x10B0,
+        CMSG_AUTH_SESSION = 0x0449,
+        SMSG_AUTH_RESPONSE = 0x5DB6,
+        SMSG_CLIENTCACHE_VERSION = 0x2734,
+
+        NUM_MSG_TYPES = 0xFFFF
 };
 
 struct OpcodeTableEntry
