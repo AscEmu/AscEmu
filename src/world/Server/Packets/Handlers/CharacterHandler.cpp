@@ -225,22 +225,19 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             //     14        15           16            17               18
             //restState, deathstate, login_flags, player_flags, guild_data.guildid
 
-            uint32 charFlags = 0;
+            banned = fields[13].GetUInt32();
+            uint32 char_flags = 0;
 
-            //if (banned && (banned < 10 || banned >(uint32)UNIXTIME))
-            //    charFlags |= CHARACTER_FLAG_LOCKED_BY_BILLING;
-
-            //if (fields[15].GetUInt32() != 0) // deathstate
-            //    charFlags |= CHARACTER_FLAG_GHOST;
-
-            //if (atLoginFlags & PLAYER_FLAG_NOHELM)
-            //    charFlags |= CHARACTER_FLAG_HIDE_HELM;
-
-            //if (atLoginFlags & PLAYER_FLAG_NOCLOAK)
-            //    charFlags |= CHARACTER_FLAG_HIDE_CLOAK;
-
-            //if (fields[16].GetUInt32() != 0) // forced_rename_pending
-            //    charFlags |= CHARACTER_FLAG_RENAME;
+            if (banned && (banned < 10 || banned >(uint32)UNIXTIME))
+                char_flags |= PLAYER_FLAG_IS_BANNED;
+            if (fields[15].GetUInt32() != 0)
+                char_flags |= PLAYER_FLAG_IS_DEAD;
+            if (atLoginFlags & PLAYER_FLAG_NOHELM)
+                char_flags |= PLAYER_FLAG_NOHELM;
+            if (atLoginFlags & PLAYER_FLAG_NOCLOAK)
+                char_flags |= PLAYER_FLAG_NOCLOAK;
+            if (fields[16].GetUInt32() == 1)
+                char_flags |= PLAYER_FLAGS_RENAME_FIRST;
 
             if (_side < 0)
             {
@@ -364,7 +361,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             buffer << uint8(hairStyle);
             buffer.WriteByteSeq(guildGuid[3]);
             buffer << uint32(petDisplayId);
-            buffer << uint32(charFlags);
+            buffer << uint32(char_flags);
             buffer << uint8(hairColor);
             buffer.WriteByteSeq(guid[4]);
             buffer << uint32(mapId);
@@ -374,7 +371,22 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             buffer << uint32(petLevel);
             buffer.WriteByteSeq(guid[3]);
             buffer << float(y);
-            buffer << uint32(0x00000000); // TODO: implement customization flags
+
+            switch (fields[16].GetUInt32())
+            {
+                case LOGIN_CUSTOMIZE_LOOKS:
+                    buffer << uint32(CHAR_CUSTOMIZE_FLAG_CUSTOMIZE);    //Character recustomization flag
+                    break;
+                case LOGIN_CUSTOMIZE_RACE:
+                    buffer << uint32(CHAR_CUSTOMIZE_FLAG_RACE);         //Character recustomization + race flag
+                    break;
+                case LOGIN_CUSTOMIZE_FACTION:
+                    buffer << uint32(CHAR_CUSTOMIZE_FLAG_FACTION);      //Character recustomization + race + faction flag
+                    break;
+                default:
+                    buffer << uint32(CHAR_CUSTOMIZE_FLAG_NONE);         //Character recustomization no flag set
+            }
+
             buffer << uint8(facialHair);
             buffer.WriteByteSeq(guid[7]);
             buffer << uint8(gender);

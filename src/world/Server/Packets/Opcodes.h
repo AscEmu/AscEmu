@@ -1110,8 +1110,6 @@ enum Opcodes
     CMSG_SET_CRITERIA_CHEAT                         = 0x470,    // GM client only
     SMSG_GROUP_SWAP_FAILED                          = 0x471,    ///\todo implement
     CMSG_UNITANIMTIER_CHEAT                         = 0x472,    // GM client only
-    CMSG_CHAR_CUSTOMIZE                             = 0x473,    ///\todo implement
-    SMSG_CHAR_CUSTOMIZE                             = 0x474,    ///\todo implement
     SMSG_PET_RENAMEABLE                             = 0x475,    ///\todo implement
     CMSG_REQUEST_VEHICLE_EXIT                       = 0x476,    ///\todo implement
     CMSG_REQUEST_VEHICLE_PREV_SEAT                  = 0x477,    ///\todo implement
@@ -1294,6 +1292,8 @@ enum Opcodes
         SMSG_CHAR_CREATE = 0x2D05,
         SMSG_CHAR_ENUM = 0x10B0,
         SMSG_CHAR_DELETE = 0x0304,
+        CMSG_CHAR_CUSTOMIZE = 0x2C34,
+        SMSG_CHAR_CUSTOMIZE = 0x4F16,
 
         CMSG_PLAYER_LOGIN = 0x05B1,
         SMSG_NEW_WORLD = 0x79B1,
