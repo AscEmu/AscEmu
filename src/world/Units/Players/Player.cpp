@@ -1824,7 +1824,7 @@ void Player::ActivateSpec(uint8 spec)
 
         addSpell(talent_info->RankID[itr->second]);
     }
-    SetUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
+    //SetUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
     smsg_TalentsInfo(false);
 }
 
@@ -2228,8 +2228,8 @@ void Player::InitVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER3);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER4);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER5);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER6);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER7);
+    //Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER6);
+    //Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER7);
 
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXHEALTH);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER1);
@@ -2237,8 +2237,8 @@ void Player::InitVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER3);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER4);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER5);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER6);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER7);
+    //Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER6);
+    //Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER7);
 
     Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID);
     Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID + 1);
@@ -2276,7 +2276,7 @@ void Player::InitVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_TEAM);
     Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_ARBITER);
     Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_ARBITER + 1);
-    Player::m_visibleUpdateMask.SetBit(PLAYER_GUILDID);
+    //Player::m_visibleUpdateMask.SetBit(PLAYER_GUILDID);
     Player::m_visibleUpdateMask.SetBit(PLAYER_GUILDRANK);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BASE_MANA);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BYTES_2);
@@ -2392,10 +2392,10 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         << GetUInt64Value(PLAYER__FIELD_KNOWN_TITLES2) << ","
         << m_uint32Values[PLAYER_FIELD_COINAGE] << ",";
 
-    if ((getClass() == MAGE) || (getClass() == PRIEST) || (getClass() == WARLOCK))
+    //if ((getClass() == MAGE) || (getClass() == PRIEST) || (getClass() == WARLOCK))
         ss << (uint32)0 << ","; // make sure ammo slot is 0 for these classes, otherwise it can mess up wand shoot
-    else
-        ss << m_uint32Values[PLAYER_AMMO_ID] << ",";
+    //else
+    //    ss << m_uint32Values[PLAYER_AMMO_ID] << ",";
     ss << GetPrimaryProfessionPoints() << ",";
 
     ss << load_health << ","
@@ -2965,8 +2965,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES1, get_next_field.GetUInt64());
     SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES2, get_next_field.GetUInt64());
     m_uint32Values[PLAYER_FIELD_COINAGE] = get_next_field.GetUInt32();
-    m_uint32Values[PLAYER_AMMO_ID] = get_next_field.GetUInt32();
-    m_uint32Values[PLAYER_CHARACTER_POINTS2] = get_next_field.GetUInt32();
+    //\todo danko
+    /*m_uint32Values[PLAYER_AMMO_ID] = */get_next_field.GetUInt32();
+    /*m_uint32Values[PLAYER_CHARACTER_POINTS2] = */get_next_field.GetUInt32();
     load_health = get_next_field.GetUInt32();
     load_mana = get_next_field.GetUInt32();
     SetHealth(load_health);
@@ -3352,7 +3353,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
         m_specs[SPEC_PRIMARY].SetTP(tp1);
         m_specs[SPEC_SECONDARY].SetTP(tp2);
-        SetUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
+        //SetUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
     }
 
     m_phase = get_next_field.GetUInt32(); //Load the player's last phase
@@ -6059,21 +6060,22 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 
     // Check ammo
     auto item = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-    auto item_proto = sMySQLStore.GetItemProperties(GetAmmoId());
+    //auto item_proto = sMySQLStore.GetItemProperties(GetAmmoId());
     if (item == nullptr || disarmed)           //Disarmed means disarmed, we shouldn't be able to cast Auto Shot while disarmed
         return SPELL_FAILED_NO_AMMO;        //In proper language means "Requires Ranged Weapon to be equipped"
 
-    if (!m_requiresNoAmmo)                  //Thori'dal, Wild Quiver, but it still requires to have a weapon equipped
-    {
-        // Check ammo level
-        if (item_proto && getLevel() < item_proto->RequiredLevel)
-            return SPELL_FAILED_LOWLEVEL;
+    //\tofo danko
+    //if (!m_requiresNoAmmo)                  //Thori'dal, Wild Quiver, but it still requires to have a weapon equipped
+    //{
+    //    // Check ammo level
+    //    if (item_proto && getLevel() < item_proto->RequiredLevel)
+    //        return SPELL_FAILED_LOWLEVEL;
 
-        // Check ammo type
-        auto item_proto_ammo = sMySQLStore.GetItemProperties(item->GetEntry());
-        if (item_proto && item_proto_ammo && item_proto->SubClass != item_proto_ammo->AmmoType)
-            return SPELL_FAILED_NEED_AMMO;
-    }
+    //    // Check ammo type
+    //    auto item_proto_ammo = sMySQLStore.GetItemProperties(item->GetEntry());
+    //    if (item_proto && item_proto_ammo && item_proto->SubClass != item_proto_ammo->AmmoType)
+    //        return SPELL_FAILED_NEED_AMMO;
+    //}
 
     // Player has clicked off target. Fail spell.
     if (m_curSelection != m_AutoShotTarget)
@@ -6124,13 +6126,13 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
         fail = SPELL_FAILED_UNIT_NOT_INFRONT;
     }
 
-    // Check ammo count
-    if (!m_requiresNoAmmo && item_proto && item->GetItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_WAND)
+    // Check ammo count \todo danko
+    /*if (!m_requiresNoAmmo && item_proto && item->GetItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_WAND)
     {
         uint32 ammocount = GetItemInterface()->GetItemCount(item_proto->ItemId);
         if (ammocount == 0)
             fail = SPELL_FAILED_NO_AMMO;
-    }
+    }*/
 
     // Check for too close
     if (spellid != SPELL_RANGED_WAND)  //no min limit for wands
@@ -8527,13 +8529,7 @@ void Player::SetGuildId(uint32 guildId)
 {
     if (IsInWorld())
     {
-        const uint32 field = PLAYER_GUILDID;
-        sEventMgr.AddEvent(static_cast<Object*>(this), &Object::SetUInt32Value, field, guildId, EVENT_PLAYER_SEND_PACKET, 1,
-                           1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-    }
-    else
-    {
-        SetUInt32Value(PLAYER_GUILDID, guildId);
+        m_playerInfo->guild->SetGuildId(guildId);
     }
 }
 
@@ -8855,32 +8851,32 @@ void Player::PvPToggle()
  *  \param honorPoints Number of honor points to add to the player
  *  \param sendUpdate True if UpdateHonor should be called after applying change
  *  \todo Remove map check (func does not work on map 559, 562, 572) */
-void Player::AddHonor(uint32 honorPoints, bool sendUpdate)
-{
-    this->HandleProc(PROC_ON_GAIN_EXPIERIENCE, this, NULL);
-    this->m_procCounter = 0;
-
-    if (this->GetMapId() == 559 || this->GetMapId() == 562 || this->GetMapId() == 572)
-        return;
-
-    this->m_honorPoints += honorPoints;
-    this->m_honorToday += honorPoints;
-    if (this->m_honorPoints > sWorld.m_limits.honorpoints)
-        this->m_honorPoints = sWorld.m_limits.honorpoints;
-
-    if (sendUpdate)
-        this->UpdateHonor();
-}
+//void Player::AddHonor(uint32 honorPoints, bool sendUpdate)
+//{
+//    this->HandleProc(PROC_ON_GAIN_EXPIERIENCE, this, NULL);
+//    this->m_procCounter = 0;
+//
+//    if (this->GetMapId() == 559 || this->GetMapId() == 562 || this->GetMapId() == 572)
+//        return;
+//
+//    this->m_honorPoints += honorPoints;
+//    this->m_honorToday += honorPoints;
+//    if (this->m_honorPoints > sWorld.m_limits.honorpoints)
+//        this->m_honorPoints = sWorld.m_limits.honorpoints;
+//
+//    if (sendUpdate)
+//        this->UpdateHonor();
+//}
 
 /*! Updates the honor related fields and sends updated values to the player
  *  \todo Validate whether this function is unsafe to call while not in world */
 void Player::UpdateHonor()
 {
     this->SetUInt32Value(PLAYER_FIELD_KILLS, uint16(this->m_killsToday) | (this->m_killsYesterday << 16));
-    this->SetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, this->m_honorToday);
-    this->SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, this->m_honorYesterday);
+    //this->SetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, this->m_honorToday);
+    //this->SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, this->m_honorYesterday);
     this->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS, this->m_killsLifetime);
-    this->SetHonorCurrency(this->m_honorPoints);
+    //this->SetHonorCurrency(this->m_honorPoints);
 
     this->UpdateKnownCurrencies(43308, true); //Honor Points
 }
@@ -8888,24 +8884,24 @@ void Player::UpdateHonor()
 /*! Increments the player's arena points
 *  \param arenaPoints Number of arena points to add to the player
 *  \param sendUpdate True if UpdateArenaPoints should be called after applying change */
-void Player::AddArenaPoints(uint32 arenaPoints, bool sendUpdate)
-{
-    this->m_arenaPoints += arenaPoints;
-    if (this->m_arenaPoints > sWorld.m_limits.arenapoints)
-        this->m_arenaPoints = sWorld.m_limits.arenapoints;
-
-    if (sendUpdate)
-        this->UpdateArenaPoints();
-}
+//void Player::AddArenaPoints(uint32 arenaPoints, bool sendUpdate)
+//{
+//    this->m_arenaPoints += arenaPoints;
+//    if (this->m_arenaPoints > sWorld.m_limits.arenapoints)
+//        this->m_arenaPoints = sWorld.m_limits.arenapoints;
+//
+//    if (sendUpdate)
+//        this->UpdateArenaPoints();
+//}
 
 /*! Updates the arena point related fields and sends updated values to the player
 *  \todo Validate whether this function is unsafe to call while not in world */
-void Player::UpdateArenaPoints()
-{
-    this->SetArenaCurrency(this->m_arenaPoints);
-
-    this->UpdateKnownCurrencies(43307, true);
-}
+//void Player::UpdateArenaPoints()
+//{
+//    this->SetArenaCurrency(this->m_arenaPoints);
+//
+//    this->UpdateKnownCurrencies(43307, true);
+//}
 
 void Player::ResetPvPTimer()
 {
@@ -9690,14 +9686,14 @@ void Player::CalcDamage()
             ap_bonus = GetRAP() / 14000.0f;
             bonus = ap_bonus * it->GetItemProperties()->Delay;
 
-            if (GetAmmoId() && !m_requiresNoAmmo)
+            /*if (GetAmmoId() && !m_requiresNoAmmo)
             {
                 ItemProperties const* xproto = sMySQLStore.GetItemProperties(GetAmmoId());
                 if (xproto)
                 {
                     bonus += ((xproto->Damage[0].Min + xproto->Damage[0].Max) * it->GetItemProperties()->Delay) / 2000.0f;
                 }
-            }
+            }*/
         }
         else bonus = 0;
 
@@ -10022,7 +10018,7 @@ void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
 
 void Player::_UpdateSkillFields()
 {
-    uint32 f = PLAYER_SKILL_INFO_1_1;
+    uint32 f = PLAYER_SKILL_LINEID_0;
     /* Set the valid skills */
     for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end();)
     {
@@ -10033,7 +10029,7 @@ void Player::_UpdateSkillFields()
             continue;
         }
 
-        ARCEMU_ASSERT(f <= PLAYER_CHARACTER_POINTS1);
+        ARCEMU_ASSERT(f <= PLAYER_CHARACTER_POINTS);
         if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
         {
             SetUInt32Value(f++, itr->first | 0x10000);
@@ -10055,7 +10051,7 @@ void Player::_UpdateSkillFields()
     }
 
     /* Null out the rest of the fields */
-    for (; f < PLAYER_CHARACTER_POINTS1; ++f)
+    for (; f < PLAYER_CHARACTER_POINTS; ++f)
     {
         if (m_uint32Values[f] != 0)
             SetUInt32Value(f, 0);
@@ -10413,7 +10409,7 @@ void Player::_ModifySkillMaximum(uint32 SkillLine, uint32 NewMax)
 void Player::UpdatePvPCurrencies()
 {
     this->UpdateHonor();
-    this->UpdateArenaPoints();
+    //this->UpdateArenaPoints();
 }
 
 /*! Fills parameters with reward for winning a random battleground 
@@ -10451,8 +10447,9 @@ void Player::ApplyRandomBattlegroundReward(bool wonBattleground)
 {
     uint32 honorPoints, arenaPoints;
     this->FillRandomBattlegroundReward(wonBattleground, honorPoints, arenaPoints);
-    this->AddHonor(honorPoints, false);
-    this->AddArenaPoints(arenaPoints, false);
+    //\todo danko
+    /*this->AddHonor(honorPoints, false);
+    this->AddArenaPoints(arenaPoints, false);*/
     this->UpdatePvPCurrencies();
 }
 
@@ -11563,7 +11560,8 @@ void Player::CalcExpertise()
 
 void Player::UpdateKnownCurrencies(uint32 itemId, bool apply)
 {
-    if (auto const* currency_type_entry = sCurrencyTypesStore.LookupEntry(itemId))
+    //\todo danko
+    /*if (auto const* currency_type_entry = sCurrencyTypesStore.LookupEntry(itemId))
     {
         if (apply)
         {
@@ -11577,7 +11575,7 @@ void Player::UpdateKnownCurrencies(uint32 itemId, bool apply)
             uint64 newval = oldval & ~(1LL << (currency_type_entry->bit_index - 1));
             SetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES, newval);
         }
-    }
+    }*/
 }
 
 void Player::RemoveItemByGuid(uint64 GUID)

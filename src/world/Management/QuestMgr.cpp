@@ -558,59 +558,60 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
 
 void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
 {
-    uint32 xp;
-    uint32 currtalentpoints = plr->GetCurrentTalentPoints();
-    uint32 rewardtalents = qst->rewardtalents;
-    uint32 playerlevel = plr->getLevel();
+    //\todo danko
+ //   uint32 xp;
+ //   uint32 currtalentpoints = plr->GetCurrentTalentPoints();
+ //   uint32 rewardtalents = qst->rewardtalents;
+ //   uint32 playerlevel = plr->getLevel();
 
-    if (playerlevel >= plr->GetMaxLevel())
-    {
-        xp = 0;
-    }
-    else
-    {
-        xp = float2int32(GenerateQuestXP(plr, qst) * sWorld.getRate(RATE_QUESTXP));
-        plr->GiveXP(xp, 0, false);
-    }
+ //   if (playerlevel >= plr->GetMaxLevel())
+ //   {
+ //       xp = 0;
+ //   }
+ //   else
+ //   {
+ //       xp = float2int32(GenerateQuestXP(plr, qst) * sWorld.getRate(RATE_QUESTXP));
+ //       plr->GiveXP(xp, 0, false);
+ //   }
 
-    if (currtalentpoints <= (playerlevel - 9 - rewardtalents))
-        plr->AddTalentPointsToAllSpec(rewardtalents);
+ //   if (currtalentpoints <= (playerlevel - 9 - rewardtalents))
+ //       plr->AddTalentPointsToAllSpec(rewardtalents);
 
-    // Reward title
-    if (qst->rewardtitleid > 0)
-        plr->SetKnownTitle(static_cast<RankTitles>(qst->rewardtitleid), true);
+ //   // Reward title
+ //   if (qst->rewardtitleid > 0)
+ //       plr->SetKnownTitle(static_cast<RankTitles>(qst->rewardtitleid), true);
 
-	// Some spells applied at quest reward
-	SpellAreaForQuestMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaForQuestMapBounds(qst->id, false);
-	if (saBounds.first != saBounds.second)
-	{
-		for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
-		{
-			if (itr->second->autocast && itr->second->IsFitToRequirements(plr, plr->GetZoneId(), plr->GetAreaID()))
-				if (!plr->HasAura(itr->second->spellId))
-					plr->CastSpell(plr, itr->second->spellId, true);
-		}
-	}
+	//// Some spells applied at quest reward
+	//SpellAreaForQuestMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaForQuestMapBounds(qst->id, false);
+	//if (saBounds.first != saBounds.second)
+	//{
+	//	for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
+	//	{
+	//		if (itr->second->autocast && itr->second->IsFitToRequirements(plr, plr->GetZoneId(), plr->GetAreaID()))
+	//			if (!plr->HasAura(itr->second->spellId))
+	//				plr->CastSpell(plr, itr->second->spellId, true);
+	//	}
+	//}
 
-    WorldPacket data(SMSG_QUESTGIVER_QUEST_COMPLETE, 72);
+ //   WorldPacket data(SMSG_QUESTGIVER_QUEST_COMPLETE, 72);
 
-    data << uint32(qst->id);
-    data << uint32(xp);
-    data << uint32(GenerateRewardMoney(plr, qst));
-    data << uint32(qst->bonushonor * 10);
-    data << uint32(rewardtalents);
-    data << uint32(qst->bonusarenapoints);
-    data << uint32(qst->count_reward_item);   //Reward item count
+ //   data << uint32(qst->id);
+ //   data << uint32(xp);
+ //   data << uint32(GenerateRewardMoney(plr, qst));
+ //   data << uint32(qst->bonushonor * 10);
+ //   data << uint32(rewardtalents);
+ //   data << uint32(qst->bonusarenapoints);
+ //   data << uint32(qst->count_reward_item);   //Reward item count
 
-    for (uint8 i = 0; i < 4; ++i)
-    {
-        if (qst->reward_item[i])
-        {
-            data << uint32(qst->reward_item[i]);
-            data << uint32(qst->reward_itemcount[i]);
-        }
-    }
-    plr->SendPacket(&data);
+ //   for (uint8 i = 0; i < 4; ++i)
+ //   {
+ //       if (qst->reward_item[i])
+ //       {
+ //           data << uint32(qst->reward_item[i]);
+ //           data << uint32(qst->reward_itemcount[i]);
+ //       }
+ //   }
+ //   plr->SendPacket(&data);
 }
 
 void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32 language)
@@ -1379,10 +1380,11 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
 
         //Add to finished quests
         plr->AddToFinishedQuests(qst->id);
-        if (qst->bonusarenapoints != 0)
+        //\todo danko
+        /*if (qst->bonusarenapoints != 0)
         {
             plr->AddArenaPoints(qst->bonusarenapoints, true);
-        }
+        }*/
 
 #ifdef ENABLE_ACHIEVEMENTS
         plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);

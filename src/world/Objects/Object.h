@@ -22,7 +22,7 @@
 #define _OBJECT_H
 
 #include "StdAfx.h"
-#include "Server/UpdateFields.h"
+#include "Server/UpdateFields.hpp"
 #include "Server/UpdateMask.h"
 #include "CommonTypes.hpp"
 #include "Server/EventableObject.h"

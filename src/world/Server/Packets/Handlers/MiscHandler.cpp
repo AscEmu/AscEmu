@@ -1415,7 +1415,7 @@ void WorldSession::HandleAmmoSetOpcode(WorldPacket& recv_data)
         if (GetPlayer()->getLevel() < xproto->RequiredLevel)
         {
             GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_ITEM_RANK_NOT_ENOUGH);
-            _player->SetAmmoId(0);
+            //_player->SetAmmoId(0);
             _player->CalcDamage();
             return;
         }
@@ -1425,7 +1425,7 @@ void WorldSession::HandleAmmoSetOpcode(WorldPacket& recv_data)
         if (!GetPlayer()->_HasSkillLine(xproto->RequiredSkill))
         {
             GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_ITEM_RANK_NOT_ENOUGH);
-            _player->SetAmmoId(0);
+            //_player->SetAmmoId(0);
             _player->CalcDamage();
             return;
         }
@@ -1435,7 +1435,7 @@ void WorldSession::HandleAmmoSetOpcode(WorldPacket& recv_data)
             if (_player->_GetSkillLineCurrent(xproto->RequiredSkill, false) < xproto->RequiredSkillRank)
             {
                 GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_ITEM_RANK_NOT_ENOUGH);
-                _player->SetAmmoId(0);
+                //_player->SetAmmoId(0);
                 _player->CalcDamage();
                 return;
             }
@@ -1451,11 +1451,11 @@ void WorldSession::HandleAmmoSetOpcode(WorldPacket& recv_data)
         case PALADIN:
         case DEATHKNIGHT:
             _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_YOU_CAN_NEVER_USE_THAT_ITEM); // good error message?
-            _player->SetAmmoId(0);
+            //_player->SetAmmoId(0);
             _player->CalcDamage();
             return;
         default:
-            _player->SetAmmoId(ammoId);
+            //_player->SetAmmoId(ammoId);
             _player->CalcDamage();
             break;
     }

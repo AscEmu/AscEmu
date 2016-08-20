@@ -306,16 +306,17 @@ void DayWatcherThread::update_arena()
 
             if (orig_arenapoints != arenapoints)
             {
-                plr = objmgr.GetPlayer(guid);
-                if (plr)
-                {
-                    plr->AddArenaPoints(arenapoints, false);
+                //\todo danko
+                //plr = objmgr.GetPlayer(guid);
+                //if (plr)
+                //{
+                //    plr->AddArenaPoints(arenapoints, false);
 
-                    // update visible fields (must be done through an event because of no uint lock
-                    sEventMgr.AddEvent(plr, &Player::UpdateArenaPoints, EVENT_PLAYER_UPDATE, 100, 1, 0);
+                //    // update visible fields (must be done through an event because of no uint lock
+                //    sEventMgr.AddEvent(plr, &Player::UpdateArenaPoints, EVENT_PLAYER_UPDATE, 100, 1, 0);
 
-                    sChatHandler.SystemMessage(plr->GetSession(), "Your arena points have been updated! Check your PvP tab!");
-                }
+                //    sChatHandler.SystemMessage(plr->GetSession(), "Your arena points have been updated! Check your PvP tab!");
+                //}
 
                 // update in sql
                 CharacterDatabase.Execute("UPDATE characters SET arenaPoints = %u WHERE guid = %u", arenapoints, guid);

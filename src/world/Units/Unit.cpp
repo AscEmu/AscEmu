@@ -2719,7 +2719,7 @@ void Unit::RegeneratePower(bool isinterrupted)
             }
             break;
 
-            case POWER_TYPE_RUNIC_POWER:
+            /*case POWER_TYPE_RUNIC_POWER:
             {
                 if (!CombatStatus.IsInCombat())
                 {
@@ -2727,7 +2727,7 @@ void Unit::RegeneratePower(bool isinterrupted)
                     SetPower(POWER_TYPE_RUNIC_POWER, cur - 20);
                 }
             }
-            break;
+            break;*/
         }
 
         /*
@@ -8553,8 +8553,8 @@ void Unit::HandleUpdateFieldChange(uint32 Index)
         case UNIT_FIELD_POWER3:
         case UNIT_FIELD_POWER4:
         case UNIT_FIELD_POWER5:
-        case UNIT_FIELD_POWER6:
-        case UNIT_FIELD_POWER7:
+        //case UNIT_FIELD_POWER6:
+        //case UNIT_FIELD_POWER7:
             Flags = pet ? GROUP_UPDATE_FLAG_PET_CUR_POWER : GROUP_UPDATE_FLAG_CUR_POWER;
             break;
 
@@ -8563,8 +8563,8 @@ void Unit::HandleUpdateFieldChange(uint32 Index)
         case UNIT_FIELD_MAXPOWER3:
         case UNIT_FIELD_MAXPOWER4:
         case UNIT_FIELD_MAXPOWER5:
-        case UNIT_FIELD_MAXPOWER6:
-        case UNIT_FIELD_MAXPOWER7:
+        //case UNIT_FIELD_MAXPOWER6:
+        //case UNIT_FIELD_MAXPOWER7:
             Flags = pet ? GROUP_UPDATE_FLAG_PET_CUR_POWER : GROUP_UPDATE_FLAG_MAX_POWER;
             break;
 

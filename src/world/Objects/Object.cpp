@@ -256,10 +256,15 @@ void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32 Index, uint32 Value)
 
 uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
 {
+    uint32 valuesCount = m_valuesCount;
+    if (GetTypeId() == TYPEID_PLAYER && target != this)
+        valuesCount = PLAYER_FIELD_INV_SLOT_HEAD;
+
     UpdateMask updateMask;
-    updateMask.SetCount(m_valuesCount);
+    updateMask.SetCount(valuesCount);
     _SetUpdateBits(&updateMask, target);
-    for (uint32 x = 0; x < m_valuesCount; ++x)
+
+    for (uint32 x = 0; x < valuesCount; ++x)
     {
         if (updateMask.GetBit(x))
         {
@@ -720,7 +725,11 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
     *data << (uint8)bc;
     data->append(updateMask->GetMask(), bc * 4);
 
-    for (uint32 index = 0; index < values_count; index++)
+    uint32 valuesCount = values_count;
+    if (GetTypeId() == TYPEID_PLAYER && target != this)
+        valuesCount = PLAYER_FIELD_INV_SLOT_HEAD;
+
+    for (uint32 index = 0; index < valuesCount; index++)
     {
         if (updateMask->GetBit(index))
         {
@@ -856,8 +865,11 @@ void Object::_SetUpdateBits(UpdateMask* updateMask, Player* target) const
 
 void Object::_SetCreateBits(UpdateMask* updateMask, Player* target) const
 {
+    uint32 valuesCount = m_valuesCount;
+    if (GetTypeId() == TYPEID_PLAYER && target != this)
+        valuesCount = PLAYER_FIELD_INV_SLOT_HEAD;
 
-    for (uint32 i = 0; i < m_valuesCount; ++i)
+    for (uint32 i = 0; i < valuesCount; ++i)
         if (m_uint32Values[i] != 0)
             updateMask->SetBit(i);
 }
@@ -1047,7 +1059,7 @@ void Object::SetUInt32Value(const uint32 index, const uint32 value)
             case UNIT_FIELD_POWER1:
             case UNIT_FIELD_POWER2:
             case UNIT_FIELD_POWER4:
-            case UNIT_FIELD_POWER7:
+            //case UNIT_FIELD_POWER7:
                 static_cast< Unit* >(this)->SendPowerUpdate(true);
                 break;
             default:
@@ -1062,7 +1074,7 @@ void Object::SetUInt32Value(const uint32 index, const uint32 value)
             case UNIT_FIELD_POWER2:
             case UNIT_FIELD_POWER3:
             case UNIT_FIELD_POWER4:
-            case UNIT_FIELD_POWER7:
+            //case UNIT_FIELD_POWER7:
                 static_cast<Creature*>(this)->SendPowerUpdate(false);
                 break;
             default:
@@ -1106,7 +1118,7 @@ void Object::ModUnsigned32Value(uint32 index, int32 mod)
             case UNIT_FIELD_POWER1:
             case UNIT_FIELD_POWER2:
             case UNIT_FIELD_POWER4:
-            case UNIT_FIELD_POWER7:
+            //case UNIT_FIELD_POWER7:
                 static_cast< Unit* >(this)->SendPowerUpdate(true);
                 break;
             default:
@@ -1121,7 +1133,7 @@ void Object::ModUnsigned32Value(uint32 index, int32 mod)
             case UNIT_FIELD_POWER2:
             case UNIT_FIELD_POWER3:
             case UNIT_FIELD_POWER4:
-            case UNIT_FIELD_POWER7:
+            //case UNIT_FIELD_POWER7:
                 static_cast<Creature*>(this)->SendPowerUpdate(false);
                 break;
             default:

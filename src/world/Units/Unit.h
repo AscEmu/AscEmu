@@ -1038,9 +1038,9 @@ class SERVER_DECL Unit : public Object
         void SetAttackPower(uint32 amt) { SetUInt32Value(UNIT_FIELD_ATTACK_POWER, amt); }
         uint32 GetAttackPower() { return GetUInt32Value(UNIT_FIELD_ATTACK_POWER); }
 
-        void SetAttackPowerMods(uint32 amt) { SetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt); }
-        uint32 GetAttackPowerMods() { return GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS); }
-        void ModAttackPowerMods(uint32 amt) { ModUnsigned32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt); }
+        void SetAttackPowerMods(uint32 amt) { SetUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS, amt); }
+        uint32 GetAttackPowerMods() { return GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS); }
+        void ModAttackPowerMods(uint32 amt) { ModUnsigned32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS, amt); }
 
         void SetAttackPowerMultiplier(float amt) { SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER, amt); }
         float GetAttackPowerMultiplier() { return GetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER); }
@@ -1051,9 +1051,9 @@ class SERVER_DECL Unit : public Object
         void SetRangedAttackPower(uint32 amt) { SetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER, amt); }
         uint32 GetRangedAttackPower() { return GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER); }
 
-        void SetRangedAttackPowerMods(uint32 amt) { SetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt); }
-        uint32 GetRangedAttackPowerMods() { return GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS); }
-        void ModRangedAttackPowerMods(uint32 amt) { ModUnsigned32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt); }
+        void SetRangedAttackPowerMods(uint32 amt) { SetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS, amt); }
+        uint32 GetRangedAttackPowerMods() { return GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS); }
+        void ModRangedAttackPowerMods(uint32 amt) { ModUnsigned32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS, amt); }
 
         void SetRangedAttackPowerMultiplier(float amt) { SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, amt); }
         float GetRangedAttackPowerMultiplier() { return GetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER); }

@@ -809,7 +809,7 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)
     }
 
     AsyncQuery* q = new AsyncQuery(new SQLClassCallbackP0<WorldSession>(this, &WorldSession::LoadPlayerFromDBProc));
-    q->AddQuery("SELECT guid,class FROM characters WHERE guid = %u AND forced_rename_pending = 0", Arcemu::Util::GUID_LOPART(pGuid)); // 0
+    q->AddQuery("SELECT guid,class FROM characters WHERE guid = %u AND login_flags = %u", Arcemu::Util::GUID_LOPART(pGuid), (uint32)LOGIN_NO_FLAG); // 0
     CharacterDatabase.QueueAsyncQuery(q);
 }
 
@@ -982,19 +982,27 @@ void WorldSession::FullLogin(Player* plr)
     //
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-    StackWorldPacket<20> datab(SMSG_FEATURE_SYSTEM_STATUS);
-
-
-    datab.Initialize(SMSG_FEATURE_SYSTEM_STATUS);
-
-    datab << uint8(2);
-    datab << uint8(0);
+    WorldPacket datab(SMSG_FEATURE_SYSTEM_STATUS, 34);
+    datab << uint8(2);          // status
+    datab << uint32(1);         // Scrolls of Ressurection?
+    datab << uint32(1);
+    datab << uint32(2);
+    datab << uint32(0);
+    datab.writeBit(true);
+    datab.writeBit(true);
+    datab.writeBit(false);
+    datab.writeBit(true);
+    datab.writeBit(false);
+    datab.writeBit(false);      // enable(1)/disable(0) voice chat interface in client
+    datab << uint32(1);
+    datab << uint32(0);
+    datab << uint32(10);
+    datab << uint32(60);
 
     SendPacket(&datab);
 
-    WorldPacket dataldm(SMSG_LEARNED_DANCE_MOVES, 4 + 4);
 
+    WorldPacket dataldm(SMSG_LEARNED_DANCE_MOVES, 4 + 4);
     dataldm << uint32(0);
     dataldm << uint32(0);
 

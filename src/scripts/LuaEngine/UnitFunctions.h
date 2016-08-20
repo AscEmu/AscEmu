@@ -3712,7 +3712,7 @@ class LuaUnit
         TEST_PLAYER()
             Player* plr = static_cast<Player*>(ptr);
         uint32 honor = CHECK_ULONG(L, 1);
-        plr->AddHonor(honor, true);
+        //plr->AddHonor(honor, true);
         return 0;
     }
 
@@ -4886,7 +4886,7 @@ class LuaUnit
         Player* plr = static_cast<Player*>(ptr);
         if (pnts > 0)
         {
-            plr->AddArenaPoints(pnts, true);
+            //plr->AddArenaPoints(pnts, true);
         }
         return 0;
     }
@@ -4905,7 +4905,7 @@ class LuaUnit
         {
             plr->m_arenaPoints = 0;
         }
-        plr->UpdateArenaPoints();
+        //plr->UpdateArenaPoints();
         return 0;
     }
 
@@ -5478,8 +5478,8 @@ class LuaUnit
         uint32 points = luaL_checkinteger(L, 2);
         static_cast<Player*>(ptr)->m_specs[spec].SetTP(points);
 
-        if (spec == static_cast<Player*>(ptr)->m_talentActiveSpec)
-            static_cast<Player*>(ptr)->SetUInt32Value(PLAYER_CHARACTER_POINTS1, points);
+        /*if (spec == static_cast<Player*>(ptr)->m_talentActiveSpec)
+            static_cast<Player*>(ptr)->SetUInt32Value(PLAYER_CHARACTER_POINTS1, points);*/
 
         static_cast<Player*>(ptr)->smsg_TalentsInfo(false);
         return 0;

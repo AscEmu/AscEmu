@@ -1020,7 +1020,8 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                         dmg = ((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) * 1.25;
                 }
             }break;
-            case 56641:
+            //\todo danko
+            /*case 56641:
             case 34120:
             case 49051:
             case 49052:
@@ -1047,7 +1048,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 
                     dmg = float2int32(ammodmg + bowdmg) + stundmg;
                 }
-            }break;
+            }break;*/
             case 64422: // Sonic Screech, Auriaya encounter
             case 64688:
             {

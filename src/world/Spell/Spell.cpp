@@ -2099,13 +2099,14 @@ void Spell::SendSpellStart()
                 }
             }
         }
-        else if (hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS))
-        {
-            if (p_caster != nullptr)
-                ip = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
-            else
-                ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
-        }
+        //\todo danko
+        //else if (hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS))
+        //{
+        //    if (p_caster != nullptr)
+        //        ip = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+        //    else
+        //        ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
+        //}
 
         if (ip != nullptr)
             data << ip->DisplayInfoID << ip->InventoryType;
@@ -2230,13 +2231,14 @@ void Spell::SendSpellGo()
             else
                 ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
         }
-        else
-        {
-            if (p_caster != nullptr)
-                ip = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
-            else // HACK FIX
-                ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
-        }
+        //\todo danko
+        //else
+        //{
+        //    if (p_caster != nullptr)
+        //        ip = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+        //    else // HACK FIX
+        //        ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
+        //}
         if (ip != nullptr)
         {
             data << ip->DisplayInfoID;
@@ -2518,9 +2520,9 @@ bool Spell::HasPower()
         case POWER_TYPE_HAPPINESS:
         {	powerField = UNIT_FIELD_POWER5;						}
         break;
-        case POWER_TYPE_RUNIC_POWER:
+        /*case POWER_TYPE_RUNIC_POWER:
         {	powerField = UNIT_FIELD_POWER7;						}
-        break;
+        break;*/
         case POWER_TYPE_RUNES:
         {
             if (GetProto()->RuneCostID && p_caster)
@@ -2665,9 +2667,9 @@ bool Spell::TakePower()
         case POWER_TYPE_HAPPINESS:
         {	powerField = UNIT_FIELD_POWER5;						}
         break;
-        case POWER_TYPE_RUNIC_POWER:
+        /*case POWER_TYPE_RUNIC_POWER:
         {	powerField = UNIT_FIELD_POWER7;						}
-        break;
+        break;*/
         case POWER_TYPE_RUNES:
         {
             if (GetProto()->RuneCostID && p_caster)
@@ -4529,11 +4531,12 @@ void Spell::RemoveItems()
     // Ammo Removal
     if (p_caster != nullptr)
     {
-        if (hasAttributeExB(ATTRIBUTESEXB_REQ_RANGED_WEAPON) || hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS))
+        //\todo danko
+        /*if (hasAttributeExB(ATTRIBUTESEXB_REQ_RANGED_WEAPON) || hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS))
         {
             if (!p_caster->m_requiresNoAmmo)
                 p_caster->GetItemInterface()->RemoveItemAmt_ProtectPointer(p_caster->GetUInt32Value(PLAYER_AMMO_ID), 1, &i_caster);
-        }
+        }*/
 
         // Reagent Removal
         if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExD(FLAGS6_REAGENT_REMOVAL)))

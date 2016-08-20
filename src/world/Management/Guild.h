@@ -412,7 +412,8 @@ class SERVER_DECL Guild
         // Getters :P
         inline const char* GetGuildName() const { return m_guildName; }
         inline const uint32 GetGuildLeader() const { return m_guildLeader; }
-        inline const uint32 GetGuildId() const { return m_guildId; }
+        const uint32 GetGuildId() const { return m_guildId; }
+        void SetGuildId(uint32 guildId) { m_guildId = guildId; }
         inline const uint8  GetBankTabCount() const { return (uint8) m_bankTabs.size(); }
         inline const uint64 GetBankBalance() const { return m_bankBalance; }
         inline const size_t GetNumMembers() const { return m_members.size(); }

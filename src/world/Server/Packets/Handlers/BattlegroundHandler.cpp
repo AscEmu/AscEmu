@@ -327,7 +327,8 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recv_data)
 
     Player* player = _player->GetMapMgr()->GetPlayer((uint32)guid);
 
-    WorldPacket data(MSG_INSPECT_HONOR_STATS, 13);
+    //\todo danko
+    /*WorldPacket data(MSG_INSPECT_HONOR_STATS, 13);
 
     data << player->GetGUID();
     data << uint8(player->GetHonorCurrency());
@@ -336,7 +337,7 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recv_data)
     data << player->GetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION);
     data << player->GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS);
 
-    SendPacket(&data);
+    SendPacket(&data);*/
 }
 
 void WorldSession::HandleInspectArenaStatsOpcode(WorldPacket& recv_data)
