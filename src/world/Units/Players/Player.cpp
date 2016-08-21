@@ -667,6 +667,14 @@ uint32 GetSpellForLanguage(uint32 SkillID)
         case SKILL_LANG_DRAENEI:
             return 29932;
             break;
+
+        case SKILL_LANG_GOBLIN:
+            return 69269;
+            break;
+
+        case SKILL_LANG_GILNEAN:
+            return 69270;
+            break;
     }
 
     return 0;
@@ -692,25 +700,28 @@ void Player::CharChange_Looks(uint64 GUID, uint8 gender, uint8 skin, uint8 face,
 //Begining of code for phase two of character customization (Race/Faction) Change.
 void Player::CharChange_Language(uint64 GUID, uint8 race)
 {
-    CharacterDatabase.Execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN ('%u', '%u', '%u', '%u', '%u','%u', '%u', '%u', '%u', '%u');", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH), GetSpellForLanguage(SKILL_LANG_TAURAHE), GetSpellForLanguage(SKILL_LANG_TROLL), GetSpellForLanguage(SKILL_LANG_GUTTERSPEAK), GetSpellForLanguage(SKILL_LANG_THALASSIAN), GetSpellForLanguage(SKILL_LANG_COMMON), GetSpellForLanguage(SKILL_LANG_DARNASSIAN), GetSpellForLanguage(SKILL_LANG_DRAENEI), GetSpellForLanguage(SKILL_LANG_DWARVEN), GetSpellForLanguage(SKILL_LANG_GNOMISH));
+    CharacterDatabase.Execute("DELETE FROM `playerspells` WHERE GUID = '%u' AND SpellID IN ('%u', '%u', '%u', '%u', '%u','%u', '%u', '%u', '%u', '%u');", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH), GetSpellForLanguage(SKILL_LANG_TAURAHE), GetSpellForLanguage(SKILL_LANG_TROLL), GetSpellForLanguage(SKILL_LANG_GUTTERSPEAK), GetSpellForLanguage(SKILL_LANG_THALASSIAN), GetSpellForLanguage(SKILL_LANG_COMMON), GetSpellForLanguage(SKILL_LANG_DARNASSIAN), GetSpellForLanguage(SKILL_LANG_DRAENEI), GetSpellForLanguage(SKILL_LANG_DWARVEN), GetSpellForLanguage(SKILL_LANG_GNOMISH), GetSpellForLanguage(SKILL_LANG_GILNEAN), GetSpellForLanguage(SKILL_LANG_GOBLIN));
     switch (race)
     {
         case RACE_DWARF:
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_COMMON));
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_DWARVEN));
             break;
-        case RACE_DRAENEI:
+        case RACE_NIGHTELF:
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_COMMON));
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_DRAENEI));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_DARNASSIAN));
             break;
         case RACE_GNOME:
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_COMMON));
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_GNOMISH));
             break;
-        case RACE_NIGHTELF:
+        case RACE_DRAENEI:
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_COMMON));
-            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_DARNASSIAN));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_DRAENEI));
             break;
+        case RACE_WORGEN:
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_COMMON));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_GILNEAN));
         case RACE_UNDEAD:
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH));
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_GUTTERSPEAK));
@@ -722,6 +733,10 @@ void Player::CharChange_Language(uint64 GUID, uint8 race)
         case RACE_TROLL:
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH));
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_TROLL));
+            break;
+        case RACE_GOBLIN:
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH));
+            CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_GOBLIN));
             break;
         case RACE_BLOODELF:
             CharacterDatabase.Execute("INSERT INTO `playerspells` (GUID, SpellID) VALUES ('%u', '%u')", (uint32)GUID, GetSpellForLanguage(SKILL_LANG_ORCISH));
@@ -872,12 +887,13 @@ bool Player::Create(WorldPacket& data)
     setGender(gender);
     SetPowerType(powertype);
 
-    SetUInt32Value(UNIT_FIELD_BYTES_2, (U_FIELD_BYTES_FLAG_PVP << 8));
+    SetByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
+    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+    SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
 
     if (class_ == WARRIOR)
         SetShapeShift(FORM_BATTLESTANCE);
 
-    SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
     SetStat(STAT_STRENGTH, info->strength);
     SetStat(STAT_AGILITY, info->ability);
     SetStat(STAT_STAMINA, info->stamina);
@@ -899,12 +915,24 @@ bool Player::Create(WorldPacket& data)
     //SetMinDamage(info->mindmg);
     //SetMaxDamage(info->maxdmg);
     SetAttackPower(info->attackpower);
-    SetUInt32Value(PLAYER_BYTES, ((skin) | (face << 8) | (hairStyle << 16) | (hairColor << 24)));
-    //PLAYER_BYTES_2                               GM ON/OFF     BANKBAGSLOTS   RESTEDSTATE
-    SetUInt32Value(PLAYER_BYTES_2, (facialHair /*| (0xEE << 8)*/ | (0x02 << 24)));//no bank slot by default!
+    // Set Byte Values
+    SetByte(PLAYER_BYTES, 0, skin);
+    SetByte(PLAYER_BYTES, 1, face);
+    SetByte(PLAYER_BYTES, 2, hairStyle);
+    SetByte(PLAYER_BYTES, 3, hairColor);
 
-    //PLAYER_BYTES_3                           DRUNKENSTATE                 PVPRANK
-    SetUInt32Value(PLAYER_BYTES_3, ((gender) | (0x00 << 8) | (0x00 << 16) | (GetPVPRank() << 24)));
+    //Set Byte2 Values
+    SetByte(PLAYER_BYTES_2, 0, facialHair);
+    //SetByte(PLAYER_BYTES_2, 1, 0);  // unknown
+    //SetByte(PLAYER_BYTES_2, 2, 0);  // unknown
+    SetByte(PLAYER_BYTES_2, 3, RESTSTATE_NORMAL);
+
+    //Set Byte3 Values
+    SetByte(PLAYER_BYTES_3, 0, gender);
+    SetByte(PLAYER_BYTES_3, 1, 0);  // drunkenstate?
+    SetByte(PLAYER_BYTES_3, 2, 0);  // unknown
+    SetByte(PLAYER_BYTES_3, 3, GetPVPRank());  // pvp rank
+
     SetNextLevelXp(400);
     SetUInt32Value(PLAYER_FIELD_BYTES, 0x08);
     SetCastSpeedMod(1.0f);
@@ -1693,7 +1721,7 @@ void Player::smsg_InitialSpells()
         }
 
         data << uint32(itr2->first);                        // spell id
-        data << uint16(itr2->second.ItemId);                // item id
+        data << uint32(itr2->second.ItemId);                // item id
         data << uint16(0);                                  // spell category
         data << uint32(itr2->second.ExpireTime - mstime);   // cooldown remaining in ms (for spell)
         data << uint32(0);                                  // cooldown remaining in ms (for category)
@@ -2110,7 +2138,7 @@ void Player::addSpell(uint32 spell_id)
     {
         WorldPacket data(SMSG_LEARNED_SPELL, 6);
         data << uint32(spell_id);
-        data << uint16(0);
+        data << uint32(0);
         m_session->SendPacket(&data);
     }
 
@@ -4945,9 +4973,7 @@ void Player::CleanupChannels()
 
 void Player::SendInitialActions()
 {
-    WorldPacket data(SMSG_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1);
-
-    data << uint8(0);         // VLack: 3.1, some bool - 0 or 1. seems to work both ways
+    WorldPacket data(SMSG_ACTION_BUTTONS, (PLAYER_ACTION_BUTTON_COUNT * 4) + 1);
 
     for (uint8 i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
     {
@@ -4955,6 +4981,8 @@ void Player::SendInitialActions()
         data << m_specs[m_talentActiveSpec].mActions[i].Misc; // 3.3.5 Misc have to be sent before Type (buttons with value over 0xFFFF)
         data << m_specs[m_talentActiveSpec].mActions[i].Type;
     }
+
+    data << uint8(1);
     m_session->SendPacket(&data);
 }
 
@@ -7502,6 +7530,10 @@ void Player::ProcessPendingUpdates()
     //build out of range updates if creation updates are queued
     if (bCreationBuffer.size() || mOutOfRangeIdCount)
     {
+        //get map id
+        *(uint16*)&update_buffer[c] = (uint16)GetMapId();
+        c += 2;
+
         *(uint32*)&update_buffer[c] = ((mOutOfRangeIds.size() > 0) ? (mCreationCount + 1) : mCreationCount);
         c += 4;
 
@@ -7530,7 +7562,7 @@ void Player::ProcessPendingUpdates()
 
         // compress update packet
         // while we said 350 before, I'm gonna make it 500 :D
-        if (c < (size_t)sWorld.compression_threshold || !CompressAndSendUpdateBuffer((uint32)c, update_buffer))
+        //if (c < (size_t)sWorld.compression_threshold || !CompressAndSendUpdateBuffer((uint32)c, update_buffer))
         {
             // send uncompressed packet -> because we failed
             m_session->OutPacket(SMSG_UPDATE_OBJECT, (uint16)c, update_buffer);
@@ -7540,6 +7572,10 @@ void Player::ProcessPendingUpdates()
     if (bUpdateBuffer.size())
     {
         c = 0;
+
+        //get map id
+        *(uint16*)&update_buffer[c] = (uint16)GetMapId();
+        c += 2;
 
         *(uint32*)&update_buffer[c] = ((mOutOfRangeIds.size() > 0) ? (mUpdateCount + 1) : mUpdateCount);
         c += 4;
@@ -7554,7 +7590,7 @@ void Player::ProcessPendingUpdates()
 
         // compress update packet
         // while we said 350 before, I'm gonna make it 500 :D
-        if (c < (size_t)sWorld.compression_threshold || !CompressAndSendUpdateBuffer((uint32)c, update_buffer))
+        //if (c < (size_t)sWorld.compression_threshold || !CompressAndSendUpdateBuffer((uint32)c, update_buffer))
         {
             // send uncompressed packet -> because we failed
             m_session->OutPacket(SMSG_UPDATE_OBJECT, (uint16)c, update_buffer);
@@ -7641,7 +7677,7 @@ bool Player::CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer
     *(uint32*)&buffer[0] = size;
 
     // send it
-    m_session->OutPacket(SMSG_COMPRESSED_UPDATE_OBJECT, (uint16)stream.total_out + 4, buffer);
+    m_session->OutPacket(SMSG_UPDATE_OBJECT, (uint16)stream.total_out + 4, buffer);
 
     // cleanup memory
     delete[] buffer;
@@ -9919,6 +9955,10 @@ void Player::SetNoseLevel()
             if (getGender()) m_noseLevel = 1.06f;
             else m_noseLevel = 1.04f;
             break;
+        case RACE_GOBLIN:
+            if (getGender()) m_noseLevel = 1.06f;
+            else m_noseLevel = 1.04f;
+            break;
         case RACE_TROLL:
             if (getGender()) m_noseLevel = 2.02f;
             else m_noseLevel = 1.93f;
@@ -9930,6 +9970,10 @@ void Player::SetNoseLevel()
         case RACE_DRAENEI:
             if (getGender()) m_noseLevel = 2.09f;
             else m_noseLevel = 2.36f;
+            break;
+        case RACE_WORGEN:
+            if (getGender()) m_noseLevel = 1.72f;
+            else m_noseLevel = 1.78f;
             break;
     }
 }
@@ -9964,12 +10008,12 @@ void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
         return;
 
     // force to be within limits
-#if DBC_PLAYER_LEVEL_CAP==80
+#if DBC_PLAYER_LEVEL_CAP==85
+    Curr_sk = (Curr_sk > 525 ? 525 : (Curr_sk < 1 ? 1 : Curr_sk));
+    Max_sk = (Max_sk > 525 ? 525 : Max_sk);
+#else
     Curr_sk = (Curr_sk > 450 ? 450 : (Curr_sk < 1 ? 1 : Curr_sk));
     Max_sk = (Max_sk > 450 ? 450 : Max_sk);
-#else
-    Curr_sk = (Curr_sk > 375 ? 375 : (Curr_sk < 1 ? 1 : Curr_sk));
-    Max_sk = (Max_sk > 375 ? 375 : Max_sk);
 #endif
     ItemProf* prof;
     SkillMap::iterator itr = m_skills.find(SkillLine);
@@ -10018,7 +10062,8 @@ void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
 
 void Player::_UpdateSkillFields()
 {
-    uint32 f = PLAYER_SKILL_LINEID_0;
+    uint32 f = PLAYER_SKILL_LINEID_0;     // field
+
     /* Set the valid skills */
     for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end();)
     {
@@ -10033,6 +10078,13 @@ void Player::_UpdateSkillFields()
         if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
         {
             SetUInt32Value(f++, itr->first | 0x10000);
+#ifdef ENABLE_ACHIEVEMENTS
+            m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
+#endif
+        }
+        else if (itr->second.Skill->type == SKILL_TYPE_SECONDARY)
+        {
+            SetUInt32Value(f++, itr->first | 0x40000);
 #ifdef ENABLE_ACHIEVEMENTS
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
 #endif
@@ -10204,8 +10256,8 @@ void Player::_UpdateMaxSkillCounts()
         else if (itr->second.Skill->type == SKILL_TYPE_PROFESSION || itr->second.Skill->type == SKILL_TYPE_SECONDARY)
         {
             new_max = itr->second.MaximumValue;
-            if (new_max >= 450)
-                new_max = 450;
+            if (new_max >= 525)
+                new_max = 525;
         }
         else
         {
@@ -10213,12 +10265,12 @@ void Player::_UpdateMaxSkillCounts()
         }
 
         // force to be within limits
-#if DBC_PLAYER_LEVEL_CAP==80
+#if DBC_PLAYER_LEVEL_CAP==85
+        if (new_max > 525)
+            new_max = 525;
+#else
         if (new_max > 450)
             new_max = 450;
-#else
-        if (new_max > 375)
-            new_max = 375;
 #endif
         if (new_max < 1)
             new_max = 1;
@@ -10306,7 +10358,7 @@ void Player::_AddLanguages(bool All)
 
     uint32 spell_id;
     static uint32 skills[] = { SKILL_LANG_COMMON, SKILL_LANG_ORCISH, SKILL_LANG_DWARVEN, SKILL_LANG_DARNASSIAN, SKILL_LANG_TAURAHE, SKILL_LANG_THALASSIAN,
-        SKILL_LANG_TROLL, SKILL_LANG_GUTTERSPEAK, SKILL_LANG_DRAENEI, 0
+        SKILL_LANG_TROLL, SKILL_LANG_GUTTERSPEAK, SKILL_LANG_DRAENEI, SKILL_LANG_GOBLIN, SKILL_LANG_GILNEAN, 0
     };
 
     if (All)
@@ -10381,10 +10433,10 @@ void Player::_AdvanceAllSkills(uint32 count)
 void Player::_ModifySkillMaximum(uint32 SkillLine, uint32 NewMax)
 {
     // force to be within limits
-#if DBC_PLAYER_LEVEL_CAP==80
-    NewMax = (NewMax > 450 ? 450 : NewMax);
+#if DBC_PLAYER_LEVEL_CAP==85
+    NewMax = (NewMax > 525 ? 525 : NewMax);
 #else
-    NewMax = (NewMax > 375 ? 375 : NewMax);
+    NewMax = (NewMax > 450 ? 450 : NewMax);
 #endif
 
     SkillMap::iterator itr = m_skills.find(SkillLine);

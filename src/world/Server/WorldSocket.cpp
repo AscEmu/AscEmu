@@ -699,8 +699,16 @@ void WorldSocket::SendAuthResponseError(uint8 code)
 void WorldLog::LogPacket(uint32 len, uint32 opcode, const uint8* data, uint8 direction, uint32 accountid)
 {
 #ifdef ECHO_PACKET_LOG_TO_CONSOLE
-    sLog.outString("[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
-        LookupName(opcode, g_worldOpcodeNames), opcode, len);
+    switch (opcode)
+    {
+        //stop spaming opcodes here
+        case SMSG_MONSTER_MOVE:
+            break;
+        default:
+            sLog.outString("[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
+                LookupName(opcode, g_worldOpcodeNames), opcode, len);
+    }
+
 #endif
 
     if (bEnabled)

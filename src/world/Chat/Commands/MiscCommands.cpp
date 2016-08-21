@@ -149,15 +149,19 @@ bool ChatHandler::HandleGoStartLocationCommand(const char* args, WorldSession* m
             raceid = 7;
         else if (race == "troll")
             raceid = 8;
+        else if (race == "goblin")
+            raceid = 9;
         else if (race == "bloodelf")
             raceid = 10;
         else if (race == "draenei")
             raceid = 11;
         else if (race == "deathknight")
             classid = 6;
+        else if (race == "worgen")
+            raceid = 22;
         else
         {
-            RedSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, tauren, undead, bloodelf, deathknight");
+            RedSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, goblin, tauren, undead, bloodelf, worgen, deathknight");
             return true;
         }
     }
@@ -997,8 +1001,8 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
 
     static const char* classes[12] =
     { "None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "None", "Druid" };
-    static const char* races[12] =
-    { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "None", "Blood Elf", "Draenei" };
+    static const char* races[23] =
+    { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "Goblin", "Blood Elf", "Draenei", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "Worgen" };
 
     char playedLevel[64];
     char playedTotal[64];

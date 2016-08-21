@@ -101,10 +101,10 @@ void LfgMgr::LoadRewards()
             continue;
         }
 
-        if (!maxLevel || maxLevel > 80)
+        if (!maxLevel || maxLevel > 85)
         {
             Log.Debug("LFGMgr", "Level %u specified for dungeon %u in table `lfg_dungeon_rewards` can never be reached!", maxLevel, dungeonId);
-            maxLevel = 80;
+            maxLevel = 85;
         }
 
         if (firstQuestId && !sMySQLStore.GetQuestProperties(firstQuestId))

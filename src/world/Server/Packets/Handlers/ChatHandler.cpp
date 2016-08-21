@@ -68,16 +68,66 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    CHECK_PACKET_SIZE(recv_data, 9);
-    WorldPacket* data = NULL;
+    WorldPacket* data = nullptr;
 
     uint32 type;
     int32 lang;
 
     const char* pMisc = NULL;
     const char* pMsg = NULL;
-    recv_data >> type;
-    recv_data >> lang;
+    switch (recv_data.GetOpcode())
+    {
+        case CMSG_MESSAGECHAT_SAY:
+            type = CHAT_MSG_SAY;
+            break;
+        case CMSG_MESSAGECHAT_YELL:
+            type = CHAT_MSG_YELL;
+            break;
+        case CMSG_MESSAGECHAT_CHANNEL:
+            type = CHAT_MSG_CHANNEL;
+            break;
+        case CMSG_MESSAGECHAT_WHISPER:
+            type = CHAT_MSG_WHISPER;
+            break;
+        case CMSG_MESSAGECHAT_GUILD:
+            type = CHAT_MSG_GUILD;
+            break;
+        case CMSG_MESSAGECHAT_OFFICER:
+            type = CHAT_MSG_OFFICER;
+            break;
+        case CMSG_MESSAGECHAT_AFK:
+            type = CHAT_MSG_AFK;
+            break;
+        case CMSG_MESSAGECHAT_DND:
+            type = CHAT_MSG_DND;
+            break;
+        case CMSG_MESSAGECHAT_EMOTE:
+            type = CHAT_MSG_EMOTE;
+            break;
+        case CMSG_MESSAGECHAT_PARTY:
+            type = CHAT_MSG_PARTY;
+            break;
+        case CMSG_MESSAGECHAT_RAID:
+            type = CHAT_MSG_RAID;
+            break;
+        case CMSG_MESSAGECHAT_BATTLEGROUND:
+            type = CHAT_MSG_BATTLEGROUND;
+            break;
+        case CMSG_MESSAGECHAT_RAID_WARNING:
+            type = CHAT_MSG_RAID_WARNING;
+            break;
+        default:
+            sLog.outError("HandleMessagechatOpcode : Unknown chat opcode (0x%X)", recv_data.GetOpcode());
+            recv_data.clear();
+            return;
+    }
+
+    if (type != CHAT_MSG_EMOTE && type != CHAT_MSG_AFK && type != CHAT_MSG_DND)
+        recv_data >> lang;
+    else
+        lang = LANG_UNIVERSAL;
+
+    Log.Debug("ChatHandler", "player mod language %u and lang is %u \n", GetPlayer()->m_modlanguage, lang);
 
     if (lang >= NUM_LANGUAGES)
         return;
@@ -114,6 +164,15 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         case CHAT_MSG_YELL:
         case CHAT_MSG_WHISPER:
         case CHAT_MSG_CHANNEL:
+        case CHAT_MSG_PARTY:
+        case CHAT_MSG_PARTY_LEADER:
+        case CHAT_MSG_BATTLEGROUND:
+        case CHAT_MSG_BATTLEGROUND_LEADER:
+        case CHAT_MSG_RAID:
+        case CHAT_MSG_RAID_WARNING:
+        case CHAT_MSG_RAID_LEADER:
+        case CHAT_MSG_GUILD:
+        case CHAT_MSG_OFFICER:
         {
             if (m_muted && m_muted >= (uint32)UNIXTIME)
             {
@@ -131,39 +190,27 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
     switch (type)
     {
         case CHAT_MSG_SAY:
-        case CHAT_MSG_EMOTE:
         case CHAT_MSG_PARTY:
         case CHAT_MSG_PARTY_LEADER:
+        case CHAT_MSG_BATTLEGROUND_LEADER:
+        case CHAT_MSG_GUILD:
+        case CHAT_MSG_OFFICER:
         case CHAT_MSG_RAID:
         case CHAT_MSG_RAID_LEADER:
         case CHAT_MSG_RAID_WARNING:
-        case CHAT_MSG_GUILD:
-        case CHAT_MSG_OFFICER:
-        case CHAT_MSG_YELL:
-            recv_data >> msg;
-            pMsg = msg.c_str();
-            //g_chatFilter->ParseEscapeCodes((char*)pMsg,true);
-            pMisc = 0;
-            break;
-        case CHAT_MSG_WHISPER:
-            recv_data >> to >> msg;
-            pMsg = msg.c_str();
-            pMisc = to.c_str();
-            break;
-        case CHAT_MSG_CHANNEL:
-            recv_data >> channel;
-            recv_data >> msg;
-            pMsg = msg.c_str();
-            pMisc = channel.c_str();
-            break;
+        case CHAT_MSG_BATTLEGROUND:
         case CHAT_MSG_AFK:
         case CHAT_MSG_DND:
+            msg = recv_data.ReadString(recv_data.readBits(9));
             break;
-        case CHAT_MSG_BATTLEGROUND:
-        case CHAT_MSG_BATTLEGROUND_LEADER:
-            recv_data >> msg;
-            pMsg = msg.c_str();
-            break;
+        case CHAT_MSG_WHISPER:
+        {
+            uint32 toLength, msgLength;
+            toLength = recv_data.readBits(10);
+            msgLength = recv_data.readBits(9);
+            to = recv_data.ReadString(toLength);
+            msg = recv_data.ReadString(msgLength);
+        }
         default:
             LOG_ERROR("CHAT: unknown msg type %u, lang: %u", type, lang);
     }

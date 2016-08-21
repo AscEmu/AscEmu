@@ -155,9 +155,9 @@ enum PlayerSkills
     SKILL_PET_RAVAGER             = 767,
     SKILL_PET_SERPENT             = 768,
     SKILL_INTERNAL                = 769,
-    SKILL_BLOOD                   = 770,
-    SKILL_FROST2                  = 771,
-    SKILL_UNHOLY                  = 772,
+    SKILL_DK_BLOOD                = 770,
+    SKILL_DK_FROST                = 771,
+    SKILL_DK_UNHOLY               = 772,
     SKILL_INSCRIPTION             = 773,
     SKILL_PET_MOTH                = 775,
     SKILL_RUNEFORGING             = 776,
@@ -171,7 +171,12 @@ enum PlayerSkills
     SKILL_PET_WASP                = 785,
     SKILL_PET_EXOTIC_RHINO        = 786,
     SKILL_PET_EXOTIC_CORE_HOUND   = 787,
-    SKILL_PET_EXOTIC_SPIRIT_BEAST = 788
+    SKILL_PET_EXOTIC_SPIRIT_BEAST = 788,
+    SKILL_RACIAL_WORGEN           = 789,
+    SKILL_RACIAL_GOLBLIN          = 790,
+    SKILL_LANG_GILNEAN            = 791,
+    SKILL_LANG_GOBLIN             = 792,
+    SKILL_ARCHAEOLOGY             = 794
 };
 
 enum SkillTypes

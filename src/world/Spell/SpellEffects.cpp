@@ -3430,7 +3430,7 @@ void Spell::SpellEffectLanguage(uint32 i)
     if (!playerTarget || !GetProto()->EffectMiscValue[i])
         return;
 
-    uint32 skills[15][2] =
+    uint32 skills[17][2] =
     {
         { 0, 0 },
         { SKILL_LANG_ORCISH, 669 },
@@ -3447,6 +3447,8 @@ void Spell::SpellEffectLanguage(uint32 i)
         { SKILL_LANG_TROLL, 7341 },
         { SKILL_LANG_GUTTERSPEAK, 17737 },
         { SKILL_LANG_DRAENEI, 29932 },
+        { SKILL_LANG_GOBLIN, 69269 },
+        { SKILL_LANG_GILNEAN, 69270 },
     };
 
     if (skills[GetProto()->EffectMiscValue[i]][0])

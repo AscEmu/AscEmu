@@ -297,22 +297,17 @@ static MovementFlagName MoveFlagsToNames[] =
     { MOVEFLAG_TRANSPORT, "MOVEFLAG_TRANSPORT" },
     { MOVEFLAG_NO_COLLISION, "MOVEFLAG_NO_COLLISION" },
     { MOVEFLAG_ROOTED, "MOVEFLAG_ROOTED" },
-    { MOVEFLAG_REDIRECTED, "MOVEFLAG_REDIRECTED" },
     { MOVEFLAG_FALLING, "MOVEFLAG_FALLING" },
     { MOVEFLAG_FALLING_FAR, "MOVEFLAG_FALLING_FAR" },
     { MOVEFLAG_FREE_FALLING, "MOVEFLAG_FREE_FALLING" },
     { MOVEFLAG_TB_PENDING_STOP, "MOVEFLAG_TB_PENDING_STOP" },
     { MOVEFLAG_TB_PENDING_UNSTRAFE, "MOVEFLAG_TB_PENDING_UNSTRAFE" },
-    { MOVEFLAG_TB_PENDING_FALL, "MOVEFLAG_TB_PENDING_FALL" },
     { MOVEFLAG_TB_PENDING_FORWARD, "MOVEFLAG_TB_PENDING_FORWARD" },
     { MOVEFLAG_TB_PENDING_BACKWARD, "MOVEFLAG_TB_PENDING_BACKWARD" },
     { MOVEFLAG_SWIMMING, "MOVEFLAG_SWIMMING" },
-    { MOVEFLAG_FLYING_PITCH_UP, "MOVEFLAG_FLYING_PITCH_UP" },
     { MOVEFLAG_CAN_FLY, "MOVEFLAG_CAN_FLY" },
     { MOVEFLAG_AIR_SUSPENSION, "MOVEFLAG_AIR_SUSPENSION" },
     { MOVEFLAG_AIR_SWIMMING, "MOVEFLAG_AIR_SWIMMING" },
-    { MOVEFLAG_SPLINE_MOVER, "MOVEFLAG_SPLINE_MOVER" },
-    { MOVEFLAG_SPLINE_ENABLED, "MOVEFLAG_SPLINE_ENABLED" },
     { MOVEFLAG_WATER_WALK, "MOVEFLAG_WATER_WALK" },
     { MOVEFLAG_FEATHER_FALL, "MOVEFLAG_FEATHER_FALL" },
     { MOVEFLAG_LEVITATE, "MOVEFLAG_LEVITATE" }
@@ -354,7 +349,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Clear standing state to stand.				                        */
     /************************************************************************/
-    if (recv_data.GetOpcode() == MSG_MOVE_START_FORWARD)
+    if (recv_data.GetOpcode() == CMSG_MOVE_START_FORWARD)
         _player->SetStandState(STANDSTATE_STAND);
 
     /************************************************************************/
@@ -380,15 +375,15 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         return;
 
     /* Anti Multi-Jump Check */
-    if (recv_data.GetOpcode() == MSG_MOVE_JUMP && _player->jumping == true && !GetPermissionCount())
+    if (recv_data.GetOpcode() == CMSG_MOVE_JUMP && _player->jumping == true && !GetPermissionCount())
     {
         sCheatLog.writefromsession(this, "Detected jump hacking");
         Disconnect();
         return;
     }
-    if (recv_data.GetOpcode() == MSG_MOVE_FALL_LAND || movement_info.flags & MOVEFLAG_SWIMMING)
+    if (recv_data.GetOpcode() == CMSG_MOVE_FALL_LAND || movement_info.flags & MOVEFLAG_SWIMMING)
         _player->jumping = false;
-    if (!_player->jumping && (recv_data.GetOpcode() == MSG_MOVE_JUMP || movement_info.flags & MOVEFLAG_FALLING))
+    if (!_player->jumping && (recv_data.GetOpcode() == CMSG_MOVE_JUMP || movement_info.flags & MOVEFLAG_FALLING))
         _player->jumping = true;
 
     /************************************************************************/
@@ -398,24 +393,24 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     uint32 opcode = recv_data.GetOpcode();
     switch (opcode)
     {
-        case MSG_MOVE_START_FORWARD:
-        case MSG_MOVE_START_BACKWARD:
+        case CMSG_MOVE_START_FORWARD:
+        case CMSG_MOVE_START_BACKWARD:
             _player->moving = true;
             break;
         case MSG_MOVE_START_STRAFE_LEFT:
         case MSG_MOVE_START_STRAFE_RIGHT:
             _player->strafing = true;
             break;
-        case MSG_MOVE_JUMP:
+        case CMSG_MOVE_JUMP:
             _player->jumping = true;
             break;
-        case MSG_MOVE_STOP:
+        case CMSG_MOVE_STOP:
             _player->moving = false;
             break;
-        case MSG_MOVE_STOP_STRAFE:
+        case CMSG_MOVE_STOP_STRAFE:
             _player->strafing = false;
             break;
-        case MSG_MOVE_FALL_LAND:
+        case CMSG_MOVE_FALL_LAND:
             _player->jumping = false;
             break;
 
@@ -557,7 +552,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Hack Detection by Classic	                                        */
     /************************************************************************/
-    if (!movement_info.transporter_info.guid && recv_data.GetOpcode() != MSG_MOVE_JUMP && !_player->FlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
+    if (!movement_info.transporter_info.guid && recv_data.GetOpcode() != CMSG_MOVE_JUMP && !_player->FlyCheat && !_player->flying_aura && !(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING) && movement_info.position.z > _player->GetPositionZ() && movement_info.position.x == _player->GetPositionX() && movement_info.position.y == _player->GetPositionY())
     {
         WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << _player->GetNewGUID();
@@ -585,7 +580,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     }
     else
     {
-        if (recv_data.GetOpcode() == MSG_MOVE_FALL_LAND)
+        if (recv_data.GetOpcode() == CMSG_MOVE_FALL_LAND)
         {
             // player has finished falling
             //if z_axisposition contains no data then set to current position
@@ -711,8 +706,9 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         flags |= AURA_INTERRUPT_ON_ENTER_WATER;
     if ((movement_info.flags & MOVEFLAG_TURNING_MASK) || _player->isTurning)
         flags |= AURA_INTERRUPT_ON_TURNING;
-    if (movement_info.flags & MOVEFLAG_REDIRECTED)
-        flags |= AURA_INTERRUPT_ON_JUMP;
+    //\todo danko
+    /*if (movement_info.flags & MOVEFLAG_REDIRECTED)
+        flags |= AURA_INTERRUPT_ON_JUMP;*/
 
     _player->RemoveAurasByInterruptFlag(flags);
 
@@ -928,7 +924,7 @@ void MovementInfo::init(WorldPacket& data)
     {
         data >> pitch;
     }
-    if (flags & MOVEFLAG_REDIRECTED)
+    /*if (flags & MOVEFLAG_REDIRECTED)
     {
         data >> redirectVelocity;
         data >> redirectSin;
@@ -938,7 +934,7 @@ void MovementInfo::init(WorldPacket& data)
     if (flags & MOVEFLAG_SPLINE_MOVER)
     {
         data >> spline_elevation;
-    }
+    }*/
 }
 
 void MovementInfo::write(WorldPacket& data)
@@ -973,8 +969,8 @@ void MovementInfo::write(WorldPacket& data)
         data << redirectCos;
         data << redirect2DSpeed;
     }
-    if (flags & MOVEFLAG_SPLINE_MOVER)
+    /*if (flags & MOVEFLAG_SPLINE_MOVER)
     {
         data << spline_elevation;
-    }
+    }*/
 }

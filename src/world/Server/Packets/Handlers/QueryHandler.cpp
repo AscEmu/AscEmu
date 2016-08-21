@@ -75,7 +75,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
 
     CHECK_PACKET_SIZE(recv_data, 12);
 
-    WorldPacket data(SMSG_CREATURE_QUERY_RESPONSE, 250); //VLack: thanks Aspire, this was 146 before
+    WorldPacket data(SMSG_CREATURE_QUERY_RESPONSE, sizeof(CreatureProperties) + 250 * 4);
     uint32 entry;
     uint64 guid;
     CreatureProperties const* ci;
@@ -109,43 +109,38 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         {
             LOG_DETAIL("WORLD: CMSG_CREATURE_QUERY '%s'", ci->Name.c_str());
             data << entry;
-            data << ci->Name;       // name of the creature
-            data << uint8(0);       // name2, always seems to be empty
-            data << uint8(0);       // name3, always seems to be empty
-            data << uint8(0);       // name4, always seems to be empty
-            data << ci->SubName;    // this is the title/guild of the creature
+            data << ci->Name;
+            data << ci->SubName;
         }
         else
         {
             LOG_DETAIL("WORLD: CMSG_CREATURE_QUERY '%s' (localized to %s)", ci->Name.c_str(), lcn->Name);
             data << entry;
             data << lcn->Name;
-            data << uint8(0);
-            data << uint8(0);
-            data << uint8(0);
             data << lcn->SubName;
         }
-        data << ci->info_str;       // this is a string in 2.3.0 Example: stormwind guard has : "Direction"
-        data << ci->Flags1;         // flags like skinnable
-        data << ci->Type;           // humanoid, beast, etc
-        data << ci->Family;         // petfamily
-        data << ci->Rank;           // normal, elite, etc
-        data << ci->killcredit[0];  // quest kill credit 1
-        data << ci->killcredit[1];  // quest kill credit 2
-        data << ci->Male_DisplayID;
-        data << ci->Female_DisplayID;
-        data << ci->Male_DisplayID2;
-        data << ci->Female_DisplayID2;
-        data << ci->unkfloat1;
-        data << ci->unkfloat2;
-        data << ci->Leader;         // faction leader
-
-        // these are the 6 seperate quest items a creature can drop
-        for (uint8 i = 0; i < 6; ++i)
-        {
-            data << uint32(ci->QuestItems[i]);
-        }
-        data << ci->waypointid;
+        data << ci->info_str;
+        data << uint32(ci->Flags1);
+        data << uint32(0);
+        data << uint32(ci->Type);
+        data << uint32(ci->Family);
+        data << uint32(ci->Rank);
+        data << uint32(ci->killcredit[0]);
+        data << uint32(ci->killcredit[1]);
+        data << uint32(ci->Male_DisplayID);
+        data << uint32(ci->Female_DisplayID);
+        data << uint32(ci->Male_DisplayID2);
+        data << uint32(ci->Female_DisplayID2);
+        data << float(ci->unkfloat1);
+        data << float(ci->unkfloat2);
+        data << uint8(ci->Leader);
+        data << uint32(ci->QuestItems[0]);
+        data << uint32(ci->QuestItems[1]);
+        data << uint32(ci->QuestItems[2]);
+        data << uint32(ci->QuestItems[3]);
+        data << uint32(ci->QuestItems[4]);
+        data << uint32(ci->QuestItems[5]);
+        data << uint32(0);
     }
 
     SendPacket(&data);
@@ -159,7 +154,7 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
 
     CHECK_PACKET_SIZE(recv_data, 12);
-    WorldPacket data(SMSG_GAMEOBJECT_QUERY_RESPONSE, 900);
+    WorldPacket data(SMSG_GAMEOBJECT_QUERY_RESPONSE, sizeof(GameObjectProperties) + 250 * 6);
 
     uint32 entryID;
     uint64 guid;
@@ -215,6 +210,15 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
     data << gameobject_info->raw.parameter_21;
     data << gameobject_info->raw.parameter_22;
     data << gameobject_info->raw.parameter_23;
+    data << uint32(0);
+    data << uint32(0);
+    data << uint32(0);
+    data << uint32(0);
+    data << uint32(0);
+    data << uint32(0);
+    data << uint32(0);
+    data << uint32(0);
+
     data << float(gameobject_info->size);       // scaling of the GO
 
     // questitems that the go can contain
@@ -222,6 +226,8 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
     {
         data << uint32(gameobject_info->QuestItems[i]);
     }
+
+    data << uint32(0);
 
     SendPacket(&data);
 }

@@ -553,61 +553,34 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
 
 void Player::SendInitialLogonPackets()
 {
-    // Initial Packets... they seem to be re-sent on port.
-    //m_session->OutPacket(SMSG_SET_REST_START_OBSOLETE, 4, &m_timeLogoff); // Seem to be unused by client
+    WorldPacket datao(SMSG_BINDPOINTUPDATE, 5 * 4);
+    datao << float(m_bind_pos_x);
+    datao << float(m_bind_pos_y);
+    datao << float(m_bind_pos_z);
+    datao << uint32(m_bind_mapid);
+    datao << uint32(m_bind_zoneid);
+    m_session->SendPacket(&datao);
 
-    StackWorldPacket<32> data(SMSG_BINDPOINTUPDATE);
-
-    data << float(m_bind_pos_x);
-    data << float(m_bind_pos_y);
-    data << float(m_bind_pos_z);
-    data << uint32(m_bind_mapid);
-    data << uint32(m_bind_zoneid);
-
-    m_session->SendPacket(&data);
-
-    //Proficiencies
     SendSetProficiency(4, armor_proficiency);
     SendSetProficiency(2, weapon_proficiency);
 
-    //Tutorial Flags
-    data.Initialize(SMSG_TUTORIAL_FLAGS);
-
-    for (uint8 i = 0; i < 8; i++)
-        data << uint32(m_Tutorials[i]);
-
-    m_session->SendPacket(&data);
-
-    smsg_TalentsInfo(false);
     smsg_InitialSpells();
 
-    data.Initialize(SMSG_SEND_UNLEARN_SPELLS);
-    data << uint32(0); // count, for (count) uint32;
-    GetSession()->SendPacket(&data);
+    WorldPacket datat(SMSG_SEND_UNLEARN_SPELLS, 4);
+    datat << uint32(0);
+    GetSession()->SendPacket(&datat);
 
     SendInitialActions();
     smsg_InitialFactions();
 
-    data.Initialize(SMSG_LOGIN_SETTIMESPEED);
+    WorldPacket datatt(SMSG_LOGIN_SETTIMESPEED, 4 + 4 + 4);
+    datatt << uint32(Arcemu::Util::MAKE_GAME_TIME());
+    datatt << float(0.0166666669777748f);
+    datatt << uint32(0);
+    m_session->SendPacket(&datatt);
 
-    data << uint32(Arcemu::Util::MAKE_GAME_TIME());
-    data << float(0.0166666669777748f);    // Normal Game Speed
-    data << uint32(0);   // 3.1.2
-
-    m_session->SendPacket(&data);
-
-    // cebernic for speedhack bug
     m_lastRunSpeed = 0;
     UpdateSpeed();
-
-    WorldPacket ArenaSettings(SMSG_UPDATE_WORLD_STATE, 16);
-
-    ArenaSettings << uint32(0xC77);
-    ArenaSettings << uint32(sWorld.Arena_Progress);
-    ArenaSettings << uint32(0xF3D);
-    ArenaSettings << uint32(sWorld.Arena_Season);
-
-    m_session->SendPacket(&ArenaSettings);
 
     LOG_DETAIL("WORLD: Sent initial logon packets for %s.", GetName());
 }

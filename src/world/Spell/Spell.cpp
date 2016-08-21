@@ -5397,6 +5397,9 @@ void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multipli
                 case 450:
                 {	spellid = 55503; }
                 break;// Rank 6
+                case 525:
+                {    spellid = 74497; }
+                break;// Rank 7
             }
         }
 
@@ -5423,6 +5426,9 @@ void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multipli
                 case 450:
                 {	spellid = 53040; }
                 break;// Rank 6
+                case 525:
+                {    spellid = 74496; }
+                break;// Rank 7
             }
         }
 
@@ -5450,6 +5456,9 @@ void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multipli
                 case 450:
                 {	spellid = 53666; }
                 break;// Rank 6
+                case 525:
+                {    spellid = 74495; }
+                break;// Rank 7
             }
         }
 

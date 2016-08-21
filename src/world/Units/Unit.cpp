@@ -6160,7 +6160,8 @@ bool Unit::IsPoisoned()
 
 void Unit::SendFullAuraUpdate()
 {
-    WorldPacket data(SMSG_AURA_UPDATE_ALL, 200);
+    //\todo danko
+    WorldPacket data(SMSG_AURA_UPDATE_ALL);
 
     data << WoWGuid(GetNewGUID());
 
@@ -6208,10 +6209,11 @@ void Unit::SendFullAuraUpdate()
 
 void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
 {
+    //\todo danko
     Aura* aur = m_auras[AuraSlot];
     ARCEMU_ASSERT(aur != NULL);
 
-    WorldPacket data(SMSG_AURA_UPDATE, 30);
+    WorldPacket data(SMSG_AURA_UPDATE);
 
     if (remove)
     {
@@ -8405,7 +8407,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
         *data << GetTransTime();
         *data << GetTransSeat();
 
-        if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
+        if (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING)
             *data << uint32(GetMovementInfo()->transporter_info.time2);
     }
 
@@ -8417,17 +8419,17 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
     *data << (uint32)GetMovementInfo()->fall_time;
 
     // 0x00001000
-    if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
-    {
-        *data << (float)GetMovementInfo()->redirectVelocity;
-        *data << (float)GetMovementInfo()->redirectSin;
-        *data << (float)GetMovementInfo()->redirectCos;
-        *data << (float)GetMovementInfo()->redirect2DSpeed;
-    }
+    //if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
+    //{
+    //    *data << (float)GetMovementInfo()->redirectVelocity;
+    //    *data << (float)GetMovementInfo()->redirectSin;
+    //    *data << (float)GetMovementInfo()->redirectCos;
+    //    *data << (float)GetMovementInfo()->redirect2DSpeed;
+    //}
 
-    // 0x04000000
-    if (GetUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
-        *data << (float)GetMovementInfo()->spline_elevation;
+    //// 0x04000000
+    //if (GetUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
+    //    *data << (float)GetMovementInfo()->spline_elevation;
 }
 
 
@@ -8458,7 +8460,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
         *data << GetTransTime();
         *data << GetTransSeat();
 
-        if (GetExtraUnitMovementFlags() & MOVEFLAG2_INTERPOLATED_MOVE)
+        if (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING)
             *data << uint32(GetMovementInfo()->transporter_info.time2);
     }
 
@@ -8470,17 +8472,17 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
     *data << (uint32)GetMovementInfo()->fall_time;
 
     // 0x00001000
-    if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
-    {
-        *data << (float)GetMovementInfo()->redirectVelocity;
-        *data << (float)GetMovementInfo()->redirectSin;
-        *data << (float)GetMovementInfo()->redirectCos;
-        *data << (float)GetMovementInfo()->redirect2DSpeed;
-    }
+    //if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
+    //{
+    //    *data << (float)GetMovementInfo()->redirectVelocity;
+    //    *data << (float)GetMovementInfo()->redirectSin;
+    //    *data << (float)GetMovementInfo()->redirectCos;
+    //    *data << (float)GetMovementInfo()->redirect2DSpeed;
+    //}
 
-    // 0x04000000
-    if (GetUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
-        *data << (float)GetMovementInfo()->spline_elevation;
+    //// 0x04000000
+    //if (GetUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
+    //    *data << (float)GetMovementInfo()->spline_elevation;
 }
 
 void Unit::setLevel(uint32 level)

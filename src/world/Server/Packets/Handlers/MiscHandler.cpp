@@ -2193,7 +2193,7 @@ void WorldSession::HandleSetActionBarTogglesOpcode(WorldPacket & recvPacket)
 
     uint8 cActionBarId;
     recvPacket >> cActionBarId;
-    LOG_DEBUG("Received CMSG_SET_ACTIONBAR_TOGGLES for actionbar id %d.", cActionBarId);
+    //LOG_DEBUG("Received CMSG_SET_ACTIONBAR_TOGGLES for actionbar id %d.", cActionBarId);
 
     GetPlayer()->SetByte(PLAYER_FIELD_BYTES, 2, cActionBarId);
 }
@@ -2793,13 +2793,20 @@ void WorldSession::HandleRealmSplitOpcode(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandleReadyForAccountDataTimesOpcode(WorldPacket & recv_data) // 4.3.4 (cmangos)
+void WorldSession::HandleReadyForAccountDataTimesOpcode(WorldPacket& recv_data)
 {
-    // empty opcode
     SendAccountDataTimes(GLOBAL_CACHE_MASK);
 }
 
-void WorldSession::HandleTimeSyncResp(WorldPacket& recv_data)
+void WorldSession::HandleUITimeRequestOpcode(WorldPacket& recv_data)
 {
-    Log.Debug("HandleTimeSyncResp", "Not handled");
+    WorldPacket data(SMSG_UI_TIME, 4);
+    data << uint32(time(NULL));
+    SendPacket(&data);
+}
+
+void WorldSession::HandleTimeSyncRespOpcode(WorldPacket& recv_data)
+{
+    uint32 counter, clientTicks;
+    recv_data >> counter >> clientTicks;
 }

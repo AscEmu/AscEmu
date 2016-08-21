@@ -131,7 +131,8 @@ enum AccountFlags
     ACCOUNT_FLAG_NO_AUTOJOIN    = 0x2,
     //ACCOUNT_FLAG_XTEND_INFO   = 0x4,
     ACCOUNT_FLAG_XPACK_01       = 0x8,
-    ACCOUNT_FLAG_XPACK_02       = 0x10
+    ACCOUNT_FLAG_XPACK_02       = 0x10,
+    ACCOUNT_FLAG_XPACK_03       = 0x20,
 };
 
 #pragma pack(push,1)

@@ -539,7 +539,7 @@ uint16 Vehicle::GetMoveFlags2() const{
     uint16 flags2 = 0;
 
     if (vehicle_info->flags & VEHICLE_FLAG_NO_STRAFE)
-        flags2 |= MOVEFLAG2_NO_STRAFING;
+        flags2 |= MOVEFLAG2_NO_STRAFE;
 
     if (vehicle_info->flags & VEHICLE_FLAG_NO_JUMPING)
         flags2 |= MOVEFLAG2_NO_JUMPING;

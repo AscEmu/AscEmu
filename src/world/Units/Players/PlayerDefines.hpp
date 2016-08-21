@@ -37,7 +37,7 @@ const float playerNormalFlightSpeed = 7.0f;
 
 #define PLAYER_HONORLESS_TARGET_SPELL 2479
 
-#define DBC_PLAYER_LEVEL_CAP 80
+#define DBC_PLAYER_LEVEL_CAP 85
 #define PLAYER_ARENA_MIN_LEVEL 70
 
 #define PLAYER_EXPLORED_ZONES_LENGTH 128
@@ -78,8 +78,10 @@ enum Races
     RACE_TAUREN     = 6,
     RACE_GNOME      = 7,
     RACE_TROLL      = 8,
+    RACE_GOBLIN     = 9,
     RACE_BLOODELF   = 10,
-    RACE_DRAENEI    = 11
+    RACE_DRAENEI    = 11,
+    RACE_WORGEN     = 22
 };
 
 enum PlayerStatus
@@ -417,64 +419,22 @@ enum DrunkenState
     DRUNKEN_SMASHED  = 3
 };
 
-/**
-    TalentTree table
 
-    mage - arcane - 81
-    mage - fire - 41
-    mage - frost - 61
-
-    rogue - assassination - 182
-    rogue - combat - 181
-    rogue - subelty - 183
-
-    warlock - affliction - 302
-    warlock - demonology - 303
-    warlock - destruction - 301
-
-    warrior - arms - 161
-    warrior - fury - 163
-    warrior - protection - 164
-
-    shaman - elemental - 261
-    shaman - enchantment - 263
-    shaman - restoration - 262
-
-    paladin - holy - 382
-    paladin - protection - 383
-    paladin - retribution - 381
-
-    death knight - blood - 398
-    death knight - frost - 399
-    death knight - unholy - 400
-
-    priest - discipline - 201
-    priest - holy - 202
-    priest - shadow - 203
-
-    hunter - beast - 361
-    hunter - marksmanship - 363
-    hunter - survival - 362
-
-    druid - balance - 283
-    druid - feral combat - 281
-    druid - restoration - 282
-*/
-
+//TalentTree table
 static const uint32 TalentTreesPerClass[DRUID + 1][3] =
 {
-        { 0, 0, 0 },        // NONE
-        { 161, 163, 164 },  // WARRIOR
-        { 382, 383, 381 },  // PALADIN
-        { 361, 363, 362 },  // HUNTER
-        { 182, 181, 183 },  // ROGUE
-        { 201, 202, 203 },  // PRIEST
-        { 398, 399, 400 },  // DEATH KNIGHT
-        { 261, 263, 262 },  // SHAMAN
-        { 81, 41, 61 },     // MAGE
-        { 302, 303, 301 },  // WARLOCK
-        { 0, 0, 0 },        // NONE
-        { 283, 281, 282 },  // DRUID
+    { 0, 0, 0 },        // NONE
+    { 746, 815, 845 },  // WARRIOR      - arms - fury - protection -
+    { 831, 839, 855 },  // PALADIN      - holy - protection - retribution -
+    { 811, 807, 809 },  // HUNTER       - beast - marksmanship - survival -
+    { 182, 181, 183 },  // ROGUE        - assassination - combat - subelty -
+    { 760, 813, 795 },  // PRIEST       - discipline - holy - shadow -
+    { 398, 399, 400 },  // DEATH KNIGHT - blood - frost - unholy -
+    { 261, 263, 262 },  // SHAMAN       - elemental - enchantment - restoration -
+    { 799, 851, 823 },  // MAGE         - arcane - fire - frost -
+    { 871, 867, 865 },  // WARLOCK      - affliction - demonology - destruction -
+    { 0, 0, 0 },        // NONE
+    { 752, 750, 748 },  // DRUID        - balance - feral/combat - restoration -
 };
 
 
@@ -593,9 +553,9 @@ enum PlayerCheats
 
 // action button defines
 #define PLAYER_ACTION_BUTTON_COUNT 144
-#define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(ActionButton)
+#define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(uint32)
 
 #define MAX_SPEC_COUNT 2
-#define GLYPHS_COUNT 6
+#define GLYPHS_COUNT 9
 
 #endif // _PLAYER_DEFINES_H

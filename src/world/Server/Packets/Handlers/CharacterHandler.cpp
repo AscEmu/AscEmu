@@ -242,7 +242,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             if (_side < 0)
             {
                 // work out the side
-                static uint8 sides[RACE_DRAENEI + 2] = { 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0 };
+                static uint8 sides[RACE_WORGEN + 1] = { 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
                 _side = sides[race];
             }
 
@@ -982,30 +982,32 @@ void WorldSession::FullLogin(Player* plr)
     //
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    WorldPacket datab(SMSG_FEATURE_SYSTEM_STATUS, 34);
-    datab << uint8(2);          // status
-    datab << uint32(1);         // Scrolls of Ressurection?
+    WorldPacket datab(SMSG_FEATURE_SYSTEM_STATUS);
+    bool feature_bit4 = true;
+    datab.Initialize(SMSG_FEATURE_SYSTEM_STATUS, 7);
+    datab << uint8(2);
+    datab << uint32(1);
     datab << uint32(1);
     datab << uint32(2);
     datab << uint32(0);
-    datab.writeBit(true);
-    datab.writeBit(true);
-    datab.writeBit(false);
-    datab.writeBit(true);
-    datab.writeBit(false);
-    datab.writeBit(false);      // enable(1)/disable(0) voice chat interface in client
-    datab << uint32(1);
-    datab << uint32(0);
-    datab << uint32(10);
-    datab << uint32(60);
-
+    datab.writeBit(1);
+    datab.writeBit(1);
+    datab.writeBit(0);
+    datab.writeBit(feature_bit4);
+    datab.writeBit(0);
+    datab.writeBit(0);
+    datab.flushBits();
+    if (feature_bit4)
+    {
+        datab << uint32(1);
+        datab << uint32(0);
+        datab << uint32(10);
+        datab << uint32(60);
+    }
     SendPacket(&datab);
 
-
     WorldPacket dataldm(SMSG_LEARNED_DANCE_MOVES, 4 + 4);
-    dataldm << uint32(0);
-    dataldm << uint32(0);
-
+    dataldm << uint64(0);
     SendPacket(&dataldm);
 
     plr->UpdateAttackSpeed();
@@ -1072,11 +1074,11 @@ void WorldSession::FullLogin(Player* plr)
 
                 StackWorldPacket<20> dataw(SMSG_NEW_WORLD);
 
-                dataw << pTrans->GetMapId();
                 dataw << c_tposx;
-                dataw << c_tposy;
-                dataw << c_tposz;
                 dataw << plr->GetOrientation();
+                dataw << c_tposz;
+                dataw << pTrans->GetMapId();
+                dataw << c_tposy;
 
                 SendPacket(&dataw);
 
@@ -1128,8 +1130,9 @@ void WorldSession::FullLogin(Player* plr)
     plr->SendDungeonDifficulty();
     plr->SendRaidDifficulty();
 
-    plr->SendEquipmentSetList();
+    //plr->SendEquipmentSetList();
 
+    //\todo danko
 #ifndef GM_TICKET_MY_MASTER_COMPATIBLE
     GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(_player->GetGUID());
     if (ticket != NULL)
@@ -1313,10 +1316,8 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandleLoadScreenOpcode(WorldPacket & recv_data)
+void WorldSession::HandleLoadScreenOpcode(WorldPacket& recv_data)
 {
-    // empty opcode
-    // printf("LOAD SCREEN OPCODE\n");
     uint32 mapId;
 
     recv_data >> mapId;

@@ -2067,6 +2067,7 @@ void World::PollCharacterInsertQueue(DatabaseConnection* con)
                 case RACE_DWARF:
                 case RACE_NIGHTELF:
                 case RACE_DRAENEI:
+                case RACE_WORGEN:
                     inf->team = 0;
                     break;
 
