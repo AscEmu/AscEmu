@@ -625,41 +625,6 @@ enum SpellAttributesExJ
 #define MAX_RAID_DIFFICULTY        4
 #define MAX_DIFFICULTY             4
 
-struct ClassFamilyMask
-{
-    uint64 Flags;
-    uint32 Flags2;
-
-    ClassFamilyMask() : Flags(0), Flags2(0) {}
-    explicit ClassFamilyMask(uint64 familyFlags, uint32 familyFlags2 = 0) : Flags(familyFlags), Flags2(familyFlags2) {}
-
-    bool Empty() const { return Flags == 0 && Flags2 == 0; }
-    bool operator! () const { return Empty(); }
-    operator void const* () const { return Empty() ? nullptr : this; }// for allow normal use in if(mask)
-
-    bool IsFitToFamilyMask(uint64 familyFlags, uint32 familyFlags2 = 0) const
-    {
-        return (Flags & familyFlags) || (Flags2 & familyFlags2);
-    }
-
-    bool IsFitToFamilyMask(ClassFamilyMask const& mask) const
-    {
-        return (Flags & mask.Flags) || (Flags2 & mask.Flags2);
-    }
-
-    uint64 operator& (uint64 mask) const                     // possible will removed at finish convertion code use IsFitToFamilyMask
-    {
-        return Flags & mask;
-    }
-
-    ClassFamilyMask& operator|= (ClassFamilyMask const& mask)
-    {
-        Flags |= mask.Flags;
-        Flags2 |= mask.Flags2;
-        return *this;
-    }
-};
-
 namespace DBC
 {
     namespace Structures
@@ -1454,6 +1419,41 @@ namespace DBC
             uint32    Mechanic;                                     // 4        m_mechanic
             uint32    PreventionType;                               // 5        m_preventionType
             uint32    StartRecoveryCategory;                        // 6        m_startRecoveryCategory
+        };
+
+        struct ClassFamilyMask
+        {
+            uint64 Flags;
+            uint32 Flags2;
+
+            ClassFamilyMask() : Flags(0), Flags2(0) {}
+            explicit ClassFamilyMask(uint64 familyFlags, uint32 familyFlags2 = 0) : Flags(familyFlags), Flags2(familyFlags2) {}
+
+            bool Empty() const { return Flags == 0 && Flags2 == 0; }
+            bool operator! () const { return Empty(); }
+            operator void const* () const { return Empty() ? nullptr : this; }// for allow normal use in if(mask)
+
+            bool IsFitToFamilyMask(uint64 familyFlags, uint32 familyFlags2 = 0) const
+            {
+                return (Flags & familyFlags) || (Flags2 & familyFlags2);
+            }
+
+            bool IsFitToFamilyMask(ClassFamilyMask const& mask) const
+            {
+                return (Flags & mask.Flags) || (Flags2 & mask.Flags2);
+            }
+
+            uint64 operator& (uint64 mask) const                     // possible will removed at finish convertion code use IsFitToFamilyMask
+            {
+                return Flags & mask;
+            }
+
+            ClassFamilyMask& operator|= (ClassFamilyMask const& mask)
+            {
+                Flags |= mask.Flags;
+                Flags2 |= mask.Flags2;
+                return *this;
+            }
         };
 
         // SpellClassOptions.dbc
