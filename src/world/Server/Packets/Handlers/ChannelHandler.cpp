@@ -32,10 +32,11 @@ void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
     uint16 crap;        // crap = some sort of channel type?
     Channel* chn;
 
-    recvPacket >> dbc_id >> crap;
-    recvPacket >> channelname;
+    recvPacket >> dbc_id;
+    recvPacket.read_skip<uint8>();
+    recvPacket.read_skip<uint8>();
     recvPacket >> pass;
-
+    recvPacket >> channelname;
 
     if (sWorld.GmClientChannel.size() && !stricmp(sWorld.GmClientChannel.c_str(), channelname.c_str()) && !GetPermissionCount())
         return;

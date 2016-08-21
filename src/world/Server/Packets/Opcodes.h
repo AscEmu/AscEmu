@@ -87,8 +87,6 @@ enum Opcodes
     SMSG_GAMESPEED_SET                              = 0x047,    ///\todo implement
     CMSG_SERVERTIME                                 = 0x048,    // not used in client
     SMSG_SERVERTIME                                 = 0x049,    ///\todo implement
-    CMSG_NAME_QUERY                                 = 0x050,    // implemented
-    SMSG_NAME_QUERY_RESPONSE                        = 0x051,    // implemented
     CMSG_PET_NAME_QUERY                             = 0x052,    // implemented
     SMSG_PET_NAME_QUERY_RESPONSE                    = 0x053,    // implemented
     CMSG_GUILD_QUERY                                = 0x054,    // implemented
@@ -1195,8 +1193,8 @@ This file is released under the MIT license. See README-MIT for more information
         CMSG_LOGOUT_REQUEST = 0x0A25,
         SMSG_LOGOUT_RESPONSE = 0x0524,
         SMSG_LOGOUT_COMPLETE = 0x2137,
-        CMSG_LOGOUT_CANCEL = 0x04E,
-        SMSG_LOGOUT_CANCEL_ACK = 0x04F,
+        CMSG_LOGOUT_CANCEL = 0x2324,
+        SMSG_LOGOUT_CANCEL_ACK = 0x6514,
 
         CMSG_CREATURE_QUERY = 0x2706,
         SMSG_CREATURE_QUERY_RESPONSE = 0x6024,
@@ -1405,6 +1403,8 @@ This file is released under the MIT license. See README-MIT for more information
                 CMSG_REQUEST_CEMETERY_LIST = 0x720A,
                 CMSG_REORDER_CHARACTERS = 0x0593,
 
+                CMSG_NAME_QUERY = 0x2224,
+                SMSG_NAME_QUERY_RESPONSE = 0x6E04,
 
         NUM_MSG_TYPES = 0xFFFF
 };
