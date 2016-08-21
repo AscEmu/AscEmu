@@ -25,7 +25,7 @@ typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*>
 
 #ifdef ENABLE_ACHIEVEMENTS
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementEntry> sAchievementStore(DBC::Structures::achievement_format);
-SERVER_DECL DBC::DBCStorage<AchievementCriteriaEntry> sAchievementCriteriaStore(DBC::Structures::achievement_criteria_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementCriteriaEntry> sAchievementCriteriaStore(DBC::Structures::achievement_criteria_format);
 #endif
 
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaGroupEntry> sAreaGroupStore(DBC::Structures::area_group_format);
