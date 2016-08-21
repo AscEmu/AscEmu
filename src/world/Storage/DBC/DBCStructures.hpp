@@ -56,6 +56,610 @@ struct WMOAreaTableTripple
     int32 adtId;
 };
 
+enum Powers
+{
+    POWER_MANA                          = 0,
+    POWER_RAGE                          = 1,
+    POWER_FOCUS                         = 2,
+    POWER_ENERGY                        = 3,
+    //POWER_HAPPINESS                     = 4,  unused 4.x.x
+    POWER_RUNE                          = 5,
+    POWER_RUNIC_POWER                   = 6,
+    POWER_SOUL_SHARDS                   = 7,
+    POWER_ECLIPSE                       = 8,
+    POWER_HOLY_POWER                    = 9,
+    POWER_ALTERNATIVE                   = 10,
+    MAX_POWERS                          = 11,
+    POWER_HEALTH                        = 0xFFFFFFFE    // (-2 as signed value)
+};
+
+enum Targets
+{
+    TARGET_NONE                        = 0,
+    TARGET_SELF_ONE                     = 1,
+    TARGET_RANDOM_ENEMY_CHAIN_IN_AREA  = 2,                 // only one spell has that, but regardless, it's a target type after all
+    TARGET_RANDOM_FRIEND_CHAIN_IN_AREA = 3,
+    TARGET_RANDOM_UNIT_CHAIN_IN_AREA   = 4,                 // some plague spells that are infectious - maybe targets not-infected friends inrange
+    TARGET_PET                         = 5,
+    TARGET_CHAIN_DAMAGE                = 6,
+    TARGET_AREAEFFECT_INSTANT          = 7,                 // targets around provided destination point
+    TARGET_AREAEFFECT_CUSTOM           = 8,
+    TARGET_INNKEEPER_COORDINATES       = 9,                 // uses in teleport to innkeeper spells
+    TARGET_11                          = 11,                // used by spell 4 'Word of Recall Other'
+    TARGET_ALL_ENEMY_IN_AREA           = 15,
+    TARGET_ALL_ENEMY_IN_AREA_INSTANT   = 16,
+    TARGET_TABLE_X_Y_Z_COORDINATES     = 17,                // uses in teleport spells and some other
+    TARGET_EFFECT_SELECT               = 18,                // highly depends on the spell effect
+    TARGET_ALL_PARTY_AROUND_CASTER     = 20,
+    TARGET_SINGLE_FRIEND               = 21,
+    TARGET_CASTER_COORDINATES          = 22,                // used only in TargetA, target selection dependent from TargetB
+    TARGET_GAMEOBJECT                  = 23,
+    TARGET_IN_FRONT_OF_CASTER          = 24,
+    TARGET_DUELVSPLAYER                = 25,
+    TARGET_GAMEOBJECT_ITEM             = 26,
+    TARGET_MASTER                      = 27,
+    TARGET_ALL_ENEMY_IN_AREA_CHANNELED = 28,
+    TARGET_29                          = 29,
+    TARGET_ALL_FRIENDLY_UNITS_AROUND_CASTER = 30,           // select friendly for caster object faction (in different original caster faction) in TargetB used only with TARGET_ALL_AROUND_CASTER and in self casting range in TargetA
+    TARGET_ALL_FRIENDLY_UNITS_IN_AREA  = 31,
+    TARGET_MINION                      = 32,
+    TARGET_ALL_PARTY                   = 33,
+    TARGET_ALL_PARTY_AROUND_CASTER_2   = 34,                // used in Tranquility
+    TARGET_SINGLE_PARTY                = 35,
+    TARGET_ALL_HOSTILE_UNITS_AROUND_CASTER = 36,
+    TARGET_AREAEFFECT_PARTY            = 37,
+    TARGET_SCRIPT                      = 38,
+    TARGET_SELF_FISHING                = 39,
+    TARGET_FOCUS_OR_SCRIPTED_GAMEOBJECT = 40,
+    TARGET_TOTEM_EARTH                 = 41,
+    TARGET_TOTEM_WATER                 = 42,
+    TARGET_TOTEM_AIR                   = 43,
+    TARGET_TOTEM_FIRE                  = 44,
+    TARGET_CHAIN_HEAL                  = 45,
+    TARGET_SCRIPT_COORDINATES          = 46,
+    TARGET_DYNAMIC_OBJECT_FRONT        = 47,
+    TARGET_DYNAMIC_OBJECT_BEHIND       = 48,
+    TARGET_DYNAMIC_OBJECT_LEFT_SIDE    = 49,
+    TARGET_DYNAMIC_OBJECT_RIGHT_SIDE   = 50,
+    TARGET_AREAEFFECT_GO_AROUND_SOURCE = 51,
+    TARGET_AREAEFFECT_GO_AROUND_DEST   = 52,                // gameobject around destination, select by spell_script_target
+    TARGET_CURRENT_ENEMY_COORDINATES   = 53,                // set unit coordinates as dest, only 16 target B imlemented
+    TARGET_LARGE_FRONTAL_CONE          = 54,
+    TARGET_ALL_RAID_AROUND_CASTER      = 56,
+    TARGET_SINGLE_FRIEND_2             = 57,
+    TARGET_58                          = 58,
+    TARGET_FRIENDLY_FRONTAL_CONE       = 59,
+    TARGET_NARROW_FRONTAL_CONE         = 60,
+    TARGET_AREAEFFECT_PARTY_AND_CLASS  = 61,
+    TARGET_DUELVSPLAYER_COORDINATES    = 63,
+    TARGET_INFRONT_OF_VICTIM           = 64,
+    TARGET_BEHIND_VICTIM               = 65,                // used in teleport behind spells, caster/target dependent from spell effect
+    TARGET_RIGHT_FROM_VICTIM           = 66,
+    TARGET_LEFT_FROM_VICTIM            = 67,
+    TARGET_68                          = 68,
+    TARGET_69                          = 69,
+    TARGET_70                          = 70,
+    TARGET_RANDOM_NEARBY_LOC           = 72,                // used in teleport onto nearby locations
+    TARGET_RANDOM_CIRCUMFERENCE_POINT  = 73,
+    TARGET_74                          = 74,
+    TARGET_75                          = 75,
+    TARGET_DYNAMIC_OBJECT_COORDINATES  = 76,
+    TARGET_SINGLE_ENEMY                = 77,
+    TARGET_POINT_AT_NORTH              = 78,                // 78-85 possible _COORDINATES at radius with pi/4 step around target in unknown order, N?
+    TARGET_POINT_AT_SOUTH              = 79,                // S?
+    TARGET_POINT_AT_EAST               = 80,                // 80/81 must be symmetric from line caster->target, E (base at 82/83, 84/85 order) ?
+    TARGET_POINT_AT_WEST               = 81,                // 80/81 must be symmetric from line caster->target, W (base at 82/83, 84/85 order) ?
+    TARGET_POINT_AT_NE                 = 82,                // from spell desc: "(NE)"
+    TARGET_POINT_AT_NW                 = 83,                // from spell desc: "(NW)"
+    TARGET_POINT_AT_SE                 = 84,                // from spell desc: "(SE)"
+    TARGET_POINT_AT_SW                 = 85,                // from spell desc: "(SW)"
+    TARGET_RANDOM_NEARBY_DEST          = 86,                // "Test Nearby Dest Random" - random around selected destination
+    TARGET_SELF2                       = 87,
+    TARGET_88                          = 88,                // Smoke Flare(s) and Hurricane
+    TARGET_DIRECTLY_FORWARD            = 89,
+    TARGET_NONCOMBAT_PET               = 90,
+    TARGET_91                          = 91,
+    TARGET_SUMMONER                    = 92,
+    TARGET_CONTROLLED_VEHICLE          = 94,
+    TARGET_VEHICLE_DRIVER              = 95,
+    TARGET_VEHICLE_PASSENGER_0         = 96,
+    TARGET_VEHICLE_PASSENGER_1         = 97,
+    TARGET_VEHICLE_PASSENGER_2         = 98,
+    TARGET_VEHICLE_PASSENGER_3         = 99,
+    TARGET_VEHICLE_PASSENGER_4         = 100,
+    TARGET_VEHICLE_PASSENGER_5         = 101,
+    TARGET_VEHICLE_PASSENGER_6         = 102,
+    TARGET_VEHICLE_PASSENGER_7         = 103,
+    TARGET_IN_FRONT_OF_CASTER_30       = 104,
+    TARGET_105                         = 105,
+    TARGET_106                         = 106,
+    TARGET_107                         = 107,               // possible TARGET_WMO(GO?)_IN_FRONT_OF_CASTER(_30 ?) TODO: Verify the angle!
+    TARGET_GO_IN_FRONT_OF_CASTER_90    = 108,
+    TARGET_109                         = 109,               // spell 89008
+    TARGET_NARROW_FRONTAL_CONE_2       = 110,
+    TARGET_111                         = 111,               // not used
+    TARGET_112                         = 112,               // spell 89549
+    TARGET_113                         = 113,               // not used
+    TARGET_114                         = 114,               // not used
+    TARGET_115                         = 115,               // not used
+    TARGET_116                         = 116,               // not used
+    TARGET_117                         = 117,               // test spell 83658
+    TARGET_118                         = 118,               // test spell 79579
+    TARGET_119                         = 119,               // mass ressurection 83968
+    TARGET_120                         = 120,
+    TARGET_121                         = 121,               // spell 95750
+    TARGET_122                         = 122,               // spell 100661
+    TARGET_123                         = 123,
+    TARGET_124                         = 124,
+    TARGET_125                         = 125,
+    TARGET_126                         = 126,
+    TARGET_127                         = 127,
+};
+
+enum SpellEffectIndex
+{
+    EFFECT_INDEX_0 = 0,
+    EFFECT_INDEX_1 = 1,
+    EFFECT_INDEX_2 = 2
+};
+
+enum SpellFamily
+{
+    SPELLFAMILY_GENERIC     = 0,
+    SPELLFAMILY_UNK1        = 1,    // events, holidays
+    // 2 - unused
+    SPELLFAMILY_MAGE        = 3,
+    SPELLFAMILY_WARRIOR     = 4,
+    SPELLFAMILY_WARLOCK     = 5,
+    SPELLFAMILY_PRIEST      = 6,
+    SPELLFAMILY_DRUID       = 7,
+    SPELLFAMILY_ROGUE       = 8,
+    SPELLFAMILY_HUNTER      = 9,
+    SPELLFAMILY_PALADIN     = 10,
+    SPELLFAMILY_SHAMAN      = 11,
+    SPELLFAMILY_UNK2        = 12,   // 2 spells (silence resistance)
+    SPELLFAMILY_POTION      = 13,
+    // 14 - unused
+    SPELLFAMILY_DEATHKNIGHT = 15,
+    // 16 - unused
+    SPELLFAMILY_PET         = 17
+};
+
+enum SpellAttributes
+{
+    SPELL_ATTR_UNK0                            = 0x00000001,// 0
+    SPELL_ATTR_RANGED                          = 0x00000002,// 1 All ranged abilites have this flag
+    SPELL_ATTR_ON_NEXT_SWING_1                 = 0x00000004,// 2 on next swing
+    SPELL_ATTR_UNK3                            = 0x00000008,// 3 not set in 3.0.3
+    SPELL_ATTR_UNK4                            = 0x00000010,// 4 isAbility
+    SPELL_ATTR_TRADESPELL                      = 0x00000020,// 5 trade spells, will be added by client to a sublist of profession spell
+    SPELL_ATTR_PASSIVE                         = 0x00000040,// 6 Passive spell
+    SPELL_ATTR_UNK7                            = 0x00000080,// 7 can't be linked in chat?
+    SPELL_ATTR_UNK8                            = 0x00000100,// 8 hide created item in tooltip (for effect=24)
+    SPELL_ATTR_UNK9                            = 0x00000200,// 9
+    SPELL_ATTR_ON_NEXT_SWING_2                 = 0x00000400,// 10 on next swing 2
+    SPELL_ATTR_UNK11                           = 0x00000800,// 11
+    SPELL_ATTR_DAYTIME_ONLY                    = 0x00001000,// 12 only useable at daytime, not set in 2.4.2
+    SPELL_ATTR_NIGHT_ONLY                      = 0x00002000,// 13 only useable at night, not set in 2.4.2
+    SPELL_ATTR_INDOORS_ONLY                    = 0x00004000,// 14 only useable indoors, not set in 2.4.2
+    SPELL_ATTR_OUTDOORS_ONLY                   = 0x00008000,// 15 Only useable outdoors.
+    SPELL_ATTR_NOT_SHAPESHIFT                  = 0x00010000,// 16 Not while shapeshifted
+    SPELL_ATTR_ONLY_STEALTHED                  = 0x00020000,// 17 Must be in stealth
+    SPELL_ATTR_UNK18                           = 0x00040000,// 18
+    SPELL_ATTR_LEVEL_DAMAGE_CALCULATION        = 0x00080000,// 19 spelldamage depends on caster level
+    SPELL_ATTR_STOP_ATTACK_TARGET              = 0x00100000,// 20 Stop attack after use this spell (and not begin attack if use)
+    SPELL_ATTR_IMPOSSIBLE_DODGE_PARRY_BLOCK    = 0x00200000,// 21 Cannot be dodged/parried/blocked
+    SPELL_ATTR_SET_TRACKING_TARGET             = 0x00400000,// 22 SetTrackingTarget
+    SPELL_ATTR_UNK23                           = 0x00800000,// 23 castable while dead?
+    SPELL_ATTR_CASTABLE_WHILE_MOUNTED          = 0x01000000,// 24 castable while mounted
+    SPELL_ATTR_DISABLED_WHILE_ACTIVE           = 0x02000000,// 25 Activate and start cooldown after aura fade or remove summoned creature or go
+    SPELL_ATTR_NEGATIVE                        = 0x04000000,// 26 Almost all negative spell have it
+    SPELL_ATTR_CASTABLE_WHILE_SITTING          = 0x08000000,// 27 castable while sitting
+    SPELL_ATTR_CANT_USED_IN_COMBAT             = 0x10000000,// 28 Cannot be used in combat
+    SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY   = 0x20000000,// 29 unaffected by invulnerability (hmm possible not...)
+    SPELL_ATTR_UNK30                           = 0x40000000,// 30 breakable by damage?
+    SPELL_ATTR_CANT_CANCEL                     = 0x80000000,// 31 positive aura can't be canceled
+};
+
+enum SpellAttributesEx
+{
+    SPELL_ATTR_EX_UNK0                         = 0x00000001,// 0
+    SPELL_ATTR_EX_DRAIN_ALL_POWER              = 0x00000002,// 1 use all power (Only paladin Lay of Hands and Bunyanize)
+    SPELL_ATTR_EX_CHANNELED_1                  = 0x00000004,// 2 channeled 1
+    SPELL_ATTR_EX_CANT_REFLECTED               = 0x00000008,// 3 used for detect can or not spell reflected
+    SPELL_ATTR_EX_UNK4                         = 0x00000010,// 4
+    SPELL_ATTR_EX_NOT_BREAK_STEALTH            = 0x00000020,// 5 Not break stealth
+    SPELL_ATTR_EX_CHANNELED_2                  = 0x00000040,// 6 channeled 2
+    SPELL_ATTR_EX_UNK7                         = 0x00000080,// 7
+    SPELL_ATTR_EX_NOT_IN_COMBAT_TARGET         = 0x00000100,// 8 Spell req target not to be in combat state
+    SPELL_ATTR_EX_UNK9                         = 0x00000200,// 9
+    SPELL_ATTR_EX_NO_THREAT                    = 0x00000400,// 10 no generates threat on cast 100%
+    SPELL_ATTR_EX_UNK11                        = 0x00000800,// 11
+    SPELL_ATTR_EX_UNK12                        = 0x00001000,// 12
+    SPELL_ATTR_EX_FARSIGHT                     = 0x00002000,// 13 related to farsight
+    SPELL_ATTR_EX_UNK14                        = 0x00004000,// 14
+    SPELL_ATTR_EX_DISPEL_AURAS_ON_IMMUNITY     = 0x00008000,// 15 remove auras on immunity
+    SPELL_ATTR_EX_UNAFFECTED_BY_SCHOOL_IMMUNE  = 0x00010000,// 16 unaffected by school immunity
+    SPELL_ATTR_EX_UNK17                        = 0x00020000,// 17 for auras SPELL_AURA_TRACK_CREATURES, SPELL_AURA_TRACK_RESOURCES and SPELL_AURA_TRACK_STEALTHED select non-stacking tracking spells
+    SPELL_ATTR_EX_UNK18                        = 0x00040000,// 18
+    SPELL_ATTR_EX_CANT_TARGET_SELF             = 0x00080000,// 19 spells with area effect or friendly targets that exclude the caster
+    SPELL_ATTR_EX_REQ_TARGET_COMBO_POINTS      = 0x00100000,// 20 Req combo points on target
+    SPELL_ATTR_EX_UNK21                        = 0x00200000,// 21
+    SPELL_ATTR_EX_REQ_COMBO_POINTS             = 0x00400000,// 22 Use combo points
+    SPELL_ATTR_EX_UNK23                        = 0x00800000,// 23
+    SPELL_ATTR_EX_UNK24                        = 0x01000000,// 24 Req fishing pole??
+    SPELL_ATTR_EX_UNK25                        = 0x02000000,// 25
+    SPELL_ATTR_EX_UNK26                        = 0x04000000,// 26
+    SPELL_ATTR_EX_UNK27                        = 0x08000000,// 27
+    SPELL_ATTR_EX_UNK28                        = 0x10000000,// 28
+    SPELL_ATTR_EX_UNK29                        = 0x20000000,// 29
+    SPELL_ATTR_EX_UNK30                        = 0x40000000,// 30 overpower
+    SPELL_ATTR_EX_UNK31                        = 0x80000000,// 31
+};
+
+enum SpellAttributesExB
+{
+    SPELL_ATTR_EX2_UNK0                        = 0x00000001,// 0
+    SPELL_ATTR_EX2_UNK1                        = 0x00000002,// 1
+    SPELL_ATTR_EX2_IGNORE_LOS                  = 0x00000004,// 2 do not need LOS (e.g. 18220 since 3.3.3) // changed meaning from ? used for detect can or not spell reflected
+    SPELL_ATTR_EX2_UNK3                        = 0x00000008,// 3 auto targeting? (e.g. fishing skill enhancement items since 3.3.3)
+    SPELL_ATTR_EX2_UNK4                        = 0x00000010,// 4
+    SPELL_ATTR_EX2_AUTOREPEAT_FLAG             = 0x00000020,// 5
+    SPELL_ATTR_EX2_UNK6                        = 0x00000040,// 6 only usable on tabbed by yourself
+    SPELL_ATTR_EX2_UNK7                        = 0x00000080,// 7
+    SPELL_ATTR_EX2_UNK8                        = 0x00000100,// 8 not set in 3.0.3
+    SPELL_ATTR_EX2_UNK9                        = 0x00000200,// 9
+    SPELL_ATTR_EX2_UNK10                       = 0x00000400,// 10
+    SPELL_ATTR_EX2_HEALTH_FUNNEL               = 0x00000800,// 11
+    SPELL_ATTR_EX2_UNK12                       = 0x00001000,// 12
+    SPELL_ATTR_EX2_UNK13                       = 0x00002000,// 13
+    SPELL_ATTR_EX2_UNK14                       = 0x00004000,// 14
+    SPELL_ATTR_EX2_UNK15                       = 0x00008000,// 15 not set in 3.0.3
+    SPELL_ATTR_EX2_UNK16                       = 0x00010000,// 16
+    SPELL_ATTR_EX2_UNK17                       = 0x00020000,// 17 suspend weapon timer instead of resetting it, (?Hunters Shot and Stings only have this flag?)
+    SPELL_ATTR_EX2_UNK18                       = 0x00040000,// 18 Only Revive pet - possible req dead pet
+    SPELL_ATTR_EX2_NOT_NEED_SHAPESHIFT         = 0x00080000,// 19 does not necessarly need shapeshift
+    SPELL_ATTR_EX2_UNK20                       = 0x00100000,// 20
+    SPELL_ATTR_EX2_DAMAGE_REDUCED_SHIELD       = 0x00200000,// 21 for ice blocks, pala immunity buffs, priest absorb shields, but used also for other spells -> not sure!
+    SPELL_ATTR_EX2_UNK22                       = 0x00400000,// 22
+    SPELL_ATTR_EX2_UNK23                       = 0x00800000,// 23 Only mage Arcane Concentration have this flag
+    SPELL_ATTR_EX2_UNK24                       = 0x01000000,// 24
+    SPELL_ATTR_EX2_UNK25                       = 0x02000000,// 25
+    SPELL_ATTR_EX2_UNK26                       = 0x04000000,// 26 unaffected by school immunity
+    SPELL_ATTR_EX2_UNK27                       = 0x08000000,// 27
+    SPELL_ATTR_EX2_UNK28                       = 0x10000000,// 28 no breaks stealth if it fails??
+    SPELL_ATTR_EX2_CANT_CRIT                   = 0x20000000,// 29 Spell can't crit
+    SPELL_ATTR_EX2_UNK30                       = 0x40000000,// 30
+    SPELL_ATTR_EX2_FOOD_BUFF                   = 0x80000000,// 31 Food or Drink Buff (like Well Fed)
+};
+
+enum SpellAttributesExC
+{
+    SPELL_ATTR_EX3_UNK0                        = 0x00000001,// 0
+    SPELL_ATTR_EX3_UNK1                        = 0x00000002,// 1
+    SPELL_ATTR_EX3_UNK2                        = 0x00000004,// 2
+    SPELL_ATTR_EX3_UNK3                        = 0x00000008,// 3
+    SPELL_ATTR_EX3_UNK4                        = 0x00000010,// 4 Druid Rebirth only this spell have this flag
+    SPELL_ATTR_EX3_UNK5                        = 0x00000020,// 5
+    SPELL_ATTR_EX3_UNK6                        = 0x00000040,// 6
+    SPELL_ATTR_EX3_UNK7                        = 0x00000080,// 7 create a separate (de)buff stack for each caster
+    SPELL_ATTR_EX3_TARGET_ONLY_PLAYER          = 0x00000100,// 8 Can target only player
+    SPELL_ATTR_EX3_UNK9                        = 0x00000200,// 9
+    SPELL_ATTR_EX3_MAIN_HAND                   = 0x00000400,// 10 Main hand weapon required
+    SPELL_ATTR_EX3_BATTLEGROUND                = 0x00000800,// 11 Can casted only on battleground
+    SPELL_ATTR_EX3_CAST_ON_DEAD                = 0x00001000,// 12 target is a dead player (not every spell has this flag)
+    SPELL_ATTR_EX3_UNK13                       = 0x00002000,// 13
+    SPELL_ATTR_EX3_UNK14                       = 0x00004000,// 14 "Honorless Target" only this spells have this flag
+    SPELL_ATTR_EX3_UNK15                       = 0x00008000,// 15 Auto Shoot, Shoot, Throw,  - this is autoshot flag
+    SPELL_ATTR_EX3_UNK16                       = 0x00010000,// 16 no triggers effects that trigger on casting a spell??
+    SPELL_ATTR_EX3_NO_INITIAL_AGGRO            = 0x00020000,// 17 Causes no aggro if not missed
+    SPELL_ATTR_EX3_CANT_MISS                   = 0x00040000,// 18 Spell should always hit its target
+    SPELL_ATTR_EX3_UNK19                       = 0x00080000,// 19
+    SPELL_ATTR_EX3_DEATH_PERSISTENT            = 0x00100000,// 20 Death persistent spells
+    SPELL_ATTR_EX3_UNK21                       = 0x00200000,// 21
+    SPELL_ATTR_EX3_REQ_WAND                    = 0x00400000,// 22 Req wand
+    SPELL_ATTR_EX3_UNK23                       = 0x00800000,// 23
+    SPELL_ATTR_EX3_REQ_OFFHAND                 = 0x01000000,// 24 Req offhand weapon
+    SPELL_ATTR_EX3_UNK25                       = 0x02000000,// 25 no cause spell pushback ?
+    SPELL_ATTR_EX3_UNK26                       = 0x04000000,// 26
+    SPELL_ATTR_EX3_UNK27                       = 0x08000000,// 27
+    SPELL_ATTR_EX3_UNK28                       = 0x10000000,// 28 always cast ok ? (requires more research)
+    SPELL_ATTR_EX3_UNK29                       = 0x20000000,// 29
+    SPELL_ATTR_EX3_UNK30                       = 0x40000000,// 30
+    SPELL_ATTR_EX3_UNK31                       = 0x80000000,// 31
+};
+
+enum SpellAttributesExD
+{
+    SPELL_ATTR_EX4_UNK0                        = 0x00000001,// 0
+    SPELL_ATTR_EX4_UNK1                        = 0x00000002,// 1 proc on finishing move?
+    SPELL_ATTR_EX4_UNK2                        = 0x00000004,// 2
+    SPELL_ATTR_EX4_UNK3                        = 0x00000008,// 3
+    SPELL_ATTR_EX4_UNK4                        = 0x00000010,// 4 This will no longer cause guards to attack on use??
+    SPELL_ATTR_EX4_UNK5                        = 0x00000020,// 5
+    SPELL_ATTR_EX4_NOT_STEALABLE               = 0x00000040,// 6 although such auras might be dispellable, they cannot be stolen
+    SPELL_ATTR_EX4_CAN_CAST_WHILE_CASTING      = 0x00000080,// 7 In theory, can use this spell while another is channeled/cast/autocast
+    SPELL_ATTR_EX4_STACK_DOT_MODIFIER          = 0x00000100,// 8 no effect on non DoTs?
+    SPELL_ATTR_EX4_UNK9                        = 0x00000200,// 9
+    SPELL_ATTR_EX4_SPELL_VS_EXTEND_COST        = 0x00000400,// 10 Rogue Shiv have this flag
+    SPELL_ATTR_EX4_UNK11                       = 0x00000800,// 11
+    SPELL_ATTR_EX4_UNK12                       = 0x00001000,// 12
+    SPELL_ATTR_EX4_UNK13                       = 0x00002000,// 13
+    SPELL_ATTR_EX4_UNK14                       = 0x00004000,// 14
+    SPELL_ATTR_EX4_UNK15                       = 0x00008000,// 15
+    SPELL_ATTR_EX4_NOT_USABLE_IN_ARENA         = 0x00010000,// 16 not usable in arena
+    SPELL_ATTR_EX4_USABLE_IN_ARENA             = 0x00020000,// 17 usable in arena
+    SPELL_ATTR_EX4_UNK18                       = 0x00040000,// 18
+    SPELL_ATTR_EX4_UNK19                       = 0x00080000,// 19
+    SPELL_ATTR_EX4_UNK20                       = 0x00100000,// 20 do not give "more powerful spell" error message
+    SPELL_ATTR_EX4_UNK21                       = 0x00200000,// 21
+    SPELL_ATTR_EX4_UNK22                       = 0x00400000,// 22
+    SPELL_ATTR_EX4_UNK23                       = 0x00800000,// 23
+    SPELL_ATTR_EX4_UNK24                       = 0x01000000,// 24
+    SPELL_ATTR_EX4_UNK25                       = 0x02000000,// 25 pet scaling auras
+    SPELL_ATTR_EX4_CAST_ONLY_IN_OUTLAND        = 0x04000000,// 26 Can only be used in Outland.
+    SPELL_ATTR_EX4_UNK27                       = 0x08000000,// 27
+    SPELL_ATTR_EX4_UNK28                       = 0x10000000,// 28
+    SPELL_ATTR_EX4_UNK29                       = 0x20000000,// 29
+    SPELL_ATTR_EX4_UNK30                       = 0x40000000,// 30
+    SPELL_ATTR_EX4_UNK31                       = 0x80000000,// 31
+};
+
+enum SpellAttributesExE
+{
+    SPELL_ATTR_EX5_CAN_CHANNEL_WHEN_MOVING     = 0x00000001,// 0 don't interrupt channeling spells when moving
+    SPELL_ATTR_EX5_NO_REAGENT_WHILE_PREP       = 0x00000002,// 1 not need reagents if UNIT_FLAG_PREPARATION
+    SPELL_ATTR_EX5_UNK2                        = 0x00000004,// 2 removed at enter arena (e.g. 31850 since 3.3.3)
+    SPELL_ATTR_EX5_USABLE_WHILE_STUNNED        = 0x00000008,// 3 usable while stunned
+    SPELL_ATTR_EX5_UNK4                        = 0x00000010,// 4
+    SPELL_ATTR_EX5_SINGLE_TARGET_SPELL         = 0x00000020,// 5 Only one target can be apply at a time
+    SPELL_ATTR_EX5_UNK6                        = 0x00000040,// 6
+    SPELL_ATTR_EX5_UNK7                        = 0x00000080,// 7
+    SPELL_ATTR_EX5_UNK8                        = 0x00000100,// 8
+    SPELL_ATTR_EX5_START_PERIODIC_AT_APPLY     = 0x00000200,// 9  begin periodic tick at aura apply
+    SPELL_ATTR_EX5_HIDE_DURATION               = 0x00000400,// 10
+    SPELL_ATTR_EX5_UNK11                       = 0x00000800,// 11
+    SPELL_ATTR_EX5_UNK12                       = 0x00001000,// 12
+    SPELL_ATTR_EX5_UNK13                       = 0x00002000,// 13 haste affects duration (e.g. 8050 since 3.3.3)
+    SPELL_ATTR_EX5_UNK14                       = 0x00004000,// 14
+    SPELL_ATTR_EX5_UNK15                       = 0x00008000,// 15
+    SPELL_ATTR_EX5_UNK16                       = 0x00010000,// 16
+    SPELL_ATTR_EX5_USABLE_WHILE_FEARED         = 0x00020000,// 17 usable while feared
+    SPELL_ATTR_EX5_USABLE_WHILE_CONFUSED       = 0x00040000,// 18 usable while confused
+    SPELL_ATTR_EX5_UNK19                       = 0x00080000,// 19
+    SPELL_ATTR_EX5_UNK20                       = 0x00100000,// 20
+    SPELL_ATTR_EX5_UNK21                       = 0x00200000,// 21
+    SPELL_ATTR_EX5_UNK22                       = 0x00400000,// 22
+    SPELL_ATTR_EX5_UNK23                       = 0x00800000,// 23
+    SPELL_ATTR_EX5_UNK24                       = 0x01000000,// 24
+    SPELL_ATTR_EX5_UNK25                       = 0x02000000,// 25
+    SPELL_ATTR_EX5_UNK26                       = 0x04000000,// 26
+    SPELL_ATTR_EX5_UNK27                       = 0x08000000,// 27
+    SPELL_ATTR_EX5_UNK28                       = 0x10000000,// 28
+    SPELL_ATTR_EX5_UNK29                       = 0x20000000,// 29
+    SPELL_ATTR_EX5_UNK30                       = 0x40000000,// 30
+    SPELL_ATTR_EX5_UNK31                       = 0x80000000,// 31 Forces all nearby enemies to focus attacks caster
+};
+
+enum SpellAttributesExF
+{
+    SPELL_ATTR_EX6_UNK0                        = 0x00000001,// 0 Only Move spell have this flag
+    SPELL_ATTR_EX6_ONLY_IN_ARENA               = 0x00000002,// 1 only usable in arena, not used in 3.2.0a and early
+    SPELL_ATTR_EX6_UNK2                        = 0x00000004,// 2
+    SPELL_ATTR_EX6_UNK3                        = 0x00000008,// 3
+    SPELL_ATTR_EX6_UNK4                        = 0x00000010,// 4
+    SPELL_ATTR_EX6_UNK5                        = 0x00000020,// 5
+    SPELL_ATTR_EX6_UNK6                        = 0x00000040,// 6
+    SPELL_ATTR_EX6_UNK7                        = 0x00000080,// 7
+    SPELL_ATTR_EX6_IGNORE_CC_TARGETS           = 0x00000100,// 8 ignores target with cc effects
+    SPELL_ATTR_EX6_UNK9                        = 0x00000200,// 9
+    SPELL_ATTR_EX6_UNK10                       = 0x00000400,// 10
+    SPELL_ATTR_EX6_NOT_IN_RAID_INSTANCE        = 0x00000800,// 11 not usable in raid instance
+    SPELL_ATTR_EX6_UNK12                       = 0x00001000,// 12 for auras SPELL_AURA_TRACK_CREATURES, SPELL_AURA_TRACK_RESOURCES and SPELL_AURA_TRACK_STEALTHED select non-stacking tracking spells
+    SPELL_ATTR_EX6_UNK13                       = 0x00002000,// 13
+    SPELL_ATTR_EX6_UNK14                       = 0x00004000,// 14
+    SPELL_ATTR_EX6_UNK15                       = 0x00008000,// 15 not set in 3.0.3
+    SPELL_ATTR_EX6_UNK16                       = 0x00010000,// 16
+    SPELL_ATTR_EX6_UNK17                       = 0x00020000,// 17
+    SPELL_ATTR_EX6_UNK18                       = 0x00040000,// 18
+    SPELL_ATTR_EX6_UNK19                       = 0x00080000,// 19
+    SPELL_ATTR_EX6_UNK20                       = 0x00100000,// 20
+    SPELL_ATTR_EX6_UNK21                       = 0x00200000,// 21
+    SPELL_ATTR_EX6_UNK22                       = 0x00400000,// 22
+    SPELL_ATTR_EX6_UNK23                       = 0x00800000,// 23 not set in 3.0.3
+    SPELL_ATTR_EX6_UNK24                       = 0x01000000,// 24 not set in 3.0.3
+    SPELL_ATTR_EX6_UNK25                       = 0x02000000,// 25 not set in 3.0.3
+    SPELL_ATTR_EX6_UNK26                       = 0x04000000,// 26 not set in 3.0.3
+    SPELL_ATTR_EX6_UNK27                       = 0x08000000,// 27 not set in 3.0.3
+    SPELL_ATTR_EX6_UNK28                       = 0x10000000,// 28 not set in 3.0.3
+    SPELL_ATTR_EX6_NO_DMG_MODS                 = 0x20000000,// 29 do not apply damage mods (usually in cases where it has already been applied)
+    SPELL_ATTR_EX6_UNK30                       = 0x40000000,// 30 not set in 3.0.3
+    SPELL_ATTR_EX6_UNK31                       = 0x80000000,// 31 not set in 3.0.3
+};
+
+enum SpellAttributesExG
+{
+    SPELL_ATTR_EX7_UNK0                        = 0x00000001,// 0
+    SPELL_ATTR_EX7_UNK1                        = 0x00000002,// 1
+    SPELL_ATTR_EX7_PALADIN_AURA                = 0x00000004,// 2
+    SPELL_ATTR_EX7_UNK3                        = 0x00000008,// 3
+    SPELL_ATTR_EX7_UNK4                        = 0x00000010,// 4
+    SPELL_ATTR_EX7_TOTEM_SPELL                 = 0x00000020,// 5  shaman summon totem spells
+    SPELL_ATTR_EX7_UNK6                        = 0x00000040,// 6
+    SPELL_ATTR_EX7_UNK7                        = 0x00000080,// 7
+    SPELL_ATTR_EX7_UNK8                        = 0x00000100,// 8
+    SPELL_ATTR_EX7_UNK9                        = 0x00000200,// 9
+    SPELL_ATTR_EX7_UNK10                       = 0x00000400,// 10
+    SPELL_ATTR_EX7_UNK11                       = 0x00000800,// 11
+    SPELL_ATTR_EX7_UNK12                       = 0x00001000,// 12
+    SPELL_ATTR_EX7_UNK13                       = 0x00002000,// 13
+    SPELL_ATTR_EX7_UNK14                       = 0x00004000,// 14
+    SPELL_ATTR_EX7_UNK15                       = 0x00008000,// 15
+    SPELL_ATTR_EX7_UNK16                       = 0x00010000,// 16
+    SPELL_ATTR_EX7_UNK17                       = 0x00020000,// 17
+    SPELL_ATTR_EX7_UNK18                       = 0x00040000,// 18
+    SPELL_ATTR_EX7_UNK19                       = 0x00080000,// 19
+    SPELL_ATTR_EX7_UNK20                       = 0x00100000,// 20
+    SPELL_ATTR_EX7_UNK21                       = 0x00200000,// 21
+    SPELL_ATTR_EX7_UNK22                       = 0x00400000,// 22
+    SPELL_ATTR_EX7_UNK23                       = 0x00800000,// 23
+    SPELL_ATTR_EX7_UNK24                       = 0x01000000,// 24
+    SPELL_ATTR_EX7_UNK25                       = 0x02000000,// 25
+    SPELL_ATTR_EX7_UNK26                       = 0x04000000,// 26
+    SPELL_ATTR_EX7_UNK27                       = 0x08000000,// 27
+    SPELL_ATTR_EX7_UNK28                       = 0x10000000,// 28
+    SPELL_ATTR_EX7_UNK29                       = 0x20000000,// 29
+    SPELL_ATTR_EX7_UNK30                       = 0x40000000,// 30
+    SPELL_ATTR_EX7_UNK31                       = 0x80000000,// 31
+};
+
+enum SpellAttributesExH
+{
+    SPELL_ATTR_EX8_UNK0                        = 0x00000001,// 0
+    SPELL_ATTR_EX8_UNK1                        = 0x00000002,// 1 Single spell Summon Fire (94655)
+    SPELL_ATTR_EX8_UNK2                        = 0x00000004,// 2 Luck of the Draw and Whirling Blades
+    SPELL_ATTR_EX8_UNK3                        = 0x00000008,// 3
+    SPELL_ATTR_EX8_UNK4                        = 0x00000010,// 4
+    SPELL_ATTR_EX8_UNK5                        = 0x00000020,// 5
+    SPELL_ATTR_EX8_UNK6                        = 0x00000040,// 6 Rune Strike, [DND] Falling, Altered Form
+    SPELL_ATTR_EX8_UNK7                        = 0x00000080,// 7
+    SPELL_ATTR_EX8_UNK8                        = 0x00000100,// 8 some raid-wide buffs
+    SPELL_ATTR_EX8_UNK9                        = 0x00000200,// 9 some dot/hot spells
+    SPELL_ATTR_EX8_UNK10                       = 0x00000400,// 10 some transformation spells
+    SPELL_ATTR_EX8_UNK11                       = 0x00000800,// 11 Phase 2 Intro Aura (80224)
+    SPELL_ATTR_EX8_AURA_SENDS_AMOUNT           = 0x00001000,// 12
+    SPELL_ATTR_EX8_UNK13                       = 0x00002000,// 13
+    SPELL_ATTR_EX8_UNK14                       = 0x00004000,// 14 Focus Magic, Honor Among Thieves, Turn the Tables
+    SPELL_ATTR_EX8_UNK15                       = 0x00008000,// 15 River Boat (76203)
+    SPELL_ATTR_EX8_UNK16                       = 0x00010000,// 16
+    SPELL_ATTR_EX8_UNK17                       = 0x00020000,// 17
+    SPELL_ATTR_EX8_UNK18                       = 0x00040000,// 18 Dark Simulacrum, Soul Swap
+    SPELL_ATTR_EX8_IGNORE_TARGET_FOR_COMBO_POINTS = 0x00080000,// 19 Slice and Dice, Savage Roar, Recuperate
+    SPELL_ATTR_EX8_ARMOR_SPECIALIZATION        = 0x00100000,// 20
+    SPELL_ATTR_EX8_UNK21                       = 0x00200000,// 21 some spells that summon smth
+    SPELL_ATTR_EX8_UNK22                       = 0x00400000,// 22 some health-affecting spells
+    SPELL_ATTR_EX8_UNK23                       = 0x00800000,// 23 spells that show revive player and show messagebox
+    SPELL_ATTR_EX8_UNK24                       = 0x01000000,// 24 some healing spells
+    SPELL_ATTR_EX8_UNK25                       = 0x02000000,// 25 mostly druid and mostly feral spells
+    SPELL_ATTR_EX8_RAID_MARKER                 = 0x04000000,// 26 probably spell doesn't need to be learned to cast. Raid markers + Juggle Torch (Catch)
+    SPELL_ATTR_EX8_UNK27                       = 0x08000000,// 27
+    SPELL_ATTR_EX8_GUILD_PERKS                 = 0x10000000,// 28
+    SPELL_ATTR_EX8_MASTERY                     = 0x20000000,// 29
+    SPELL_ATTR_EX8_UNK30                       = 0x40000000,// 30
+    SPELL_ATTR_EX8_UNK31                       = 0x80000000,// 31
+};
+
+enum SpellAttributesExI
+{
+    SPELL_ATTR_EX9_UNK0                        = 0x00000001,// 0
+    SPELL_ATTR_EX9_UNK1                        = 0x00000002,// 1
+    SPELL_ATTR_EX9_UNK2                        = 0x00000004,// 2 some sort of invisibility
+    SPELL_ATTR_EX9_UNK3                        = 0x00000008,// 3
+    SPELL_ATTR_EX9_UNK4                        = 0x00000010,// 4
+    SPELL_ATTR_EX9_UNK5                        = 0x00000020,// 5 some totem spells
+    SPELL_ATTR_EX9_UNK6                        = 0x00000040,// 6
+    SPELL_ATTR_EX9_UNK7                        = 0x00000080,// 7
+    SPELL_ATTR_EX9_UNK8                        = 0x00000100,// 8 Aimed Shot (19434) and Aimed Shot! (82928)
+    SPELL_ATTR_EX9_UNK9                        = 0x00000200,// 9
+    SPELL_ATTR_EX9_UNK10                       = 0x00000400,// 10 Ice Storm 88239
+    SPELL_ATTR_EX9_UNK11                       = 0x00000800,// 11
+    SPELL_ATTR_EX9_UNK12                       = 0x00001000,// 12 Feral Charge 49376
+    SPELL_ATTR_EX9_UNK13                       = 0x00002000,// 13 Slam 1464, used in cast time calculation
+    SPELL_ATTR_EX9_UNK14                       = 0x00004000,// 14
+    SPELL_ATTR_EX9_UNK15                       = 0x00008000,// 15 not used
+    SPELL_ATTR_EX9_UNK16                       = 0x00010000,// 16 Aimed Shot 19434, Steady Shot 56641, Cobra Shot 77767
+    SPELL_ATTR_EX9_UNK17                       = 0x00020000,// 17 not used
+    SPELL_ATTR_EX9_UNK18                       = 0x00040000,// 18
+    SPELL_ATTR_EX9_UNK19                       = 0x00080000,// 19
+    SPELL_ATTR_EX9_UNK20                       = 0x00100000,// 20
+    SPELL_ATTR_EX9_UNK21                       = 0x00200000,// 21
+    SPELL_ATTR_EX9_UNK22                       = 0x00400000,// 22
+    SPELL_ATTR_EX9_UNK23                       = 0x00800000,// 23 Asira Dismount 103720
+    SPELL_ATTR_EX9_UNK24                       = 0x01000000,// 24 not used
+    SPELL_ATTR_EX9_UNK25                       = 0x02000000,// 25 not used
+    SPELL_ATTR_EX9_UNK26                       = 0x04000000,// 26 Item - Mage T12 4P Bonus 99064
+    SPELL_ATTR_EX9_UNK27                       = 0x08000000,// 27 20707 Soulstone Resurrection, Quest Invis 9 102370
+    SPELL_ATTR_EX9_UNK28                       = 0x10000000,// 28 Decimate, Unholy Frenzy, Spirit Link: all aoe reduce health
+    SPELL_ATTR_EX9_UNK29                       = 0x20000000,// 29 passive raid-wide auras
+    SPELL_ATTR_EX9_UNK30                       = 0x40000000,// 30
+    SPELL_ATTR_EX9_UNK31                       = 0x80000000,// 31 In Chains 88791
+};
+
+enum SpellAttributesExJ
+{
+    SPELL_ATTR_EX10_UNK0                       = 0x00000001,// 0 Deep Wounds, Ignite, Blood Plague, Frost Fever, Ebon Plague, Scarlet Fever, Brittle Bones, Asira Dismount
+    SPELL_ATTR_EX10_UNK1                       = 0x00000002,// 1 Combustion, Hemorrhage
+    SPELL_ATTR_EX10_UNK2                       = 0x00000004,// 2 Throw Spear, Unholy Shot, Crack Shot!, Throw Knife, Ice Arrow
+    SPELL_ATTR_EX10_UNK3                       = 0x00000008,// 3 Spirit Bond, Fel Armor
+    SPELL_ATTR_EX10_UNK4                       = 0x00000010,// 4 Water Spout 58873
+    SPELL_ATTR_EX10_UNK5                       = 0x00000020,// 5 Immolate, Concussive Stomp
+    SPELL_ATTR_EX10_UNK6                       = 0x00000040,// 6 Teleport Player, Teleport Player to NEXUS LEGENDARY
+    SPELL_ATTR_EX10_UNK7                       = 0x00000080,// 7
+    SPELL_ATTR_EX10_UNK8                       = 0x00000100,// 8 Shadowflame, Furious Swipe
+    SPELL_ATTR_EX10_UNK9                       = 0x00000200,// 9 relocation spells
+    SPELL_ATTR_EX10_UNK10                      = 0x00000400,// 10 Omar's Seal of Approval, Spellweaving
+    SPELL_ATTR_EX10_UNK11                      = 0x00000800,// 11 Herb Gathering, Mining
+    SPELL_ATTR_EX10_UNK12                      = 0x00001000,// 12 not used
+    SPELL_ATTR_EX10_UNK13                      = 0x00002000,// 13 not used
+    SPELL_ATTR_EX10_UNK14                      = 0x00004000,// 14 not used
+    SPELL_ATTR_EX10_UNK15                      = 0x00008000,// 15 not used
+    SPELL_ATTR_EX10_UNK16                      = 0x00010000,// 16 not used
+    SPELL_ATTR_EX10_UNK17                      = 0x00020000,// 17 not used
+    SPELL_ATTR_EX10_UNK18                      = 0x00040000,// 18 not used
+    SPELL_ATTR_EX10_UNK19                      = 0x00080000,// 19 not used
+    SPELL_ATTR_EX10_UNK20                      = 0x00100000,// 20 not used
+    SPELL_ATTR_EX10_UNK21                      = 0x00200000,// 21 not used
+    SPELL_ATTR_EX10_UNK22                      = 0x00400000,// 22 not used
+    SPELL_ATTR_EX10_UNK23                      = 0x00800000,// 23 not used
+    SPELL_ATTR_EX10_UNK24                      = 0x01000000,// 24 not used
+    SPELL_ATTR_EX10_UNK25                      = 0x02000000,// 25 not used
+    SPELL_ATTR_EX10_UNK26                      = 0x04000000,// 26 not used
+    SPELL_ATTR_EX10_UNK27                      = 0x08000000,// 27 not used
+    SPELL_ATTR_EX10_UNK28                      = 0x10000000,// 28 not used
+    SPELL_ATTR_EX10_UNK29                      = 0x20000000,// 29 not used
+    SPELL_ATTR_EX10_UNK30                      = 0x40000000,// 30 not used
+    SPELL_ATTR_EX10_UNK31                      = 0x80000000,// 31 not used
+};
+
+#define MAX_DUNGEON_DIFFICULTY     2
+#define MAX_RAID_DIFFICULTY        4
+#define MAX_DIFFICULTY             4
+
+struct ClassFamilyMask
+{
+    uint64 Flags;
+    uint32 Flags2;
+
+    ClassFamilyMask() : Flags(0), Flags2(0) {}
+    explicit ClassFamilyMask(uint64 familyFlags, uint32 familyFlags2 = 0) : Flags(familyFlags), Flags2(familyFlags2) {}
+
+    bool Empty() const { return Flags == 0 && Flags2 == 0; }
+    bool operator! () const { return Empty(); }
+    operator void const* () const { return Empty() ? nullptr : this; }// for allow normal use in if(mask)
+
+    bool IsFitToFamilyMask(uint64 familyFlags, uint32 familyFlags2 = 0) const
+    {
+        return (Flags & familyFlags) || (Flags2 & familyFlags2);
+    }
+
+    bool IsFitToFamilyMask(ClassFamilyMask const& mask) const
+    {
+        return (Flags & mask.Flags) || (Flags2 & mask.Flags2);
+    }
+
+    uint64 operator& (uint64 mask) const                     // possible will removed at finish convertion code use IsFitToFamilyMask
+    {
+        return Flags & mask;
+    }
+
+    ClassFamilyMask& operator|= (ClassFamilyMask const& mask)
+    {
+        Flags |= mask.Flags;
+        Flags2 |= mask.Flags2;
+        return *this;
+    }
+};
+
 namespace DBC
 {
     namespace Structures
@@ -150,13 +754,13 @@ namespace DBC
             char const skill_line_format[] = "nisxixi";
             char const skill_line_ability_format[] = "niiiixxiiiiiix";
             //char const sound_entries_format[] = "nissssssssssssssssssssssxxxxxxxxxxx"; new
-            //char const spell_aura_optionsEntry_format[] = "diiii"; new
-            //char const spell_aura_restrictions_entry_format[] = "diiiiiiii"; new
+            char const spell_aura_options_format[] = "diiii";
+            char const spell_aura_restrictions_format[] = "diiiiiiii";
             char const spell_cast_times_format[] = "niii";
-            //char const spell_casting_requirements_entry_format[] = "dixxixi"; new
-            //char const spell_categories_entry_format[] = "diiiiii"; new
-            //char const spell_class_options_entry_format[] = "dxiiiix"; new
-            //char const spell_cooldowns_entry_format[] = "diii"; new
+            char const spell_casting_requirements_format[] = "dixxixi";
+            char const spell_categories_format[] = "diiiiii";
+            char const spell_class_options_format[] = "dxiiiix";
+            char const spell_cooldowns_format[] = "diii";
             char const spell_difficulty_format[] = "niiii";
             char const spell_duration_format[] = "niii";
             char const spell_entry_format[] = "niiiiiiiiiiiiiiifiiiissssiixxixiiiiiiixiiiiiiiix";
@@ -166,18 +770,18 @@ namespace DBC
             char const spell_range_format[] = "nffffixx";
             char const spell_rune_cost_format[] = "niiii";
             char const spell_shapeshift_form_format[] = "nxxiixiiixxiiiiiiiixx";
-            //char const spell_effect_entry_format[] = "difiiiffiiiiiifiifiiiiiiiix"; new
-            //char const spell_equipped_items_entry_format[] = "diii"; new
+            char const spell_effect_format[] = "difiiiffiiiiiifiifiiiiiiiix";
+            char const spell_equipped_items_format[] = "diii";
             //char const spell_focus_object_format[] = "nx"; new
-            //char const spell_interrupts_entry_format[] = "dixixi"; new
+            char const spell_interrupts_format[] = "dixixi";
             //char const spell_item_enchantment_condition_format[] = "nbbbbbxxxxxbbbbbbbbbbiiiiixxxxx"; new
-            //char const spell_levels_entry_format[] = "diii"; new
-            //char const spell_power_entry_format[] = "diiiiixf"; new
-            //char const spell_reagents_entry_format[] = "diiiiiiiiiiiiiiii"; new
-            //char const spell_scaling_entry_format[] = "diiiiffffffffffi"; new
-            //char const spell_shapeshift_entry_format[] = "dixixx"; new
-            //char const spell_target_restrictions_entry_format[] = "dfiiii"; new
-            //char const spell_totems_entry_format[] = "diiii"; new
+            char const spell_levels_format[] = "diii";
+            char const spell_power_format[] = "diiiiixf";
+            char const spell_reagents_format[] = "diiiiiiiiiiiiiiii";
+            char const spell_scaling_format[] = "diiiiffffffffffi";
+            char const spell_shapeshift_format[] = "dixixx";
+            char const spell_target_restrictions_format[] = "dfiiii";
+            char const spell_totems_format[] = "diiii";
             //char const stable_slot_prices_format[] = "ni"; NA
             char const summon_properties_format[] = "niiiii";
             char const talent_format[] = "niiiiiiiiixxixxxxxx";
@@ -791,6 +1395,47 @@ namespace DBC
         //    uint32 Price;           // 1
         //};
 
+#define MAX_SPELL_REAGENTS 8
+#define MAX_SPELL_TOTEMS 2
+#define MAX_SPELL_TOTEM_CATEGORIES 2
+
+        // SpellAuraOptions.dbc
+        struct SpellAuraOptionsEntry
+        {
+            //uint32    Id;                                         // 0       m_ID
+            uint32    StackAmount;                                  // 1       m_cumulativeAura
+            uint32    procChance;                                   // 2       m_procChance
+            uint32    procCharges;                                  // 3       m_procCharges
+            uint32    procFlags;                                    // 4       m_procTypeMask
+        };
+
+        // SpellAuraRestrictions.dbc
+        struct SpellAuraRestrictionsEntry
+        {
+            //uint32    Id;                                         // 0        m_ID
+            uint32    CasterAuraState;                              // 1        m_casterAuraState
+            uint32    TargetAuraState;                              // 2        m_targetAuraState
+            uint32    CasterAuraStateNot;                           // 3        m_excludeCasterAuraState
+            uint32    TargetAuraStateNot;                           // 4        m_excludeTargetAuraState
+            uint32    casterAuraSpell;                              // 5        m_casterAuraSpell
+            uint32    targetAuraSpell;                              // 6        m_targetAuraSpell
+            uint32    excludeCasterAuraSpell;                       // 7        m_excludeCasterAuraSpell
+            uint32    excludeTargetAuraSpell;                       // 8        m_excludeTargetAuraSpell
+        };
+
+        // SpellCastingRequirements.dbc
+        struct SpellCastingRequirementsEntry
+        {
+            //uint32    Id;                                         // 0        m_ID
+            uint32    FacingCasterFlags;                            // 1        m_facingCasterFlags
+            //uint32    MinFactionId;                               // 2        m_minFactionID not used
+            //uint32    MinReputation;                              // 3        m_minReputation not used
+            int32     AreaGroupId;                                  // 4        m_requiredAreaGroupId
+            //uint32    RequiredAuraVision;                         // 5        m_requiredAuraVision not used
+            uint32    RequiresSpellFocus;                           // 6        m_requiresSpellFocus
+        };
+
+        // SpellCastTimes.dbc
         struct SpellCastTimesEntry  //cata
         {
             uint32 ID;              // 0
@@ -799,12 +1444,71 @@ namespace DBC
             int32 MinCastTime;      // 3
         };
 
-        struct SpellDifficultyEntry //cata
+        // SpellCategories.dbc
+        struct SpellCategoriesEntry
         {
-            uint32 ID;              // 0
-            int32 SpellId[4];       // 1-4 (instance modes)
+            //uint32    Id;                                         // 0        m_ID
+            uint32    Category;                                     // 1        m_category
+            uint32    DmgClass;                                     // 2        m_defenseType
+            uint32    Dispel;                                       // 3        m_dispelType
+            uint32    Mechanic;                                     // 4        m_mechanic
+            uint32    PreventionType;                               // 5        m_preventionType
+            uint32    StartRecoveryCategory;                        // 6        m_startRecoveryCategory
         };
 
+        // SpellClassOptions.dbc
+        struct SpellClassOptionsEntry
+        {
+            //uint32    Id;                                         // 0        m_ID
+            //uint32    modalNextSpell;                             // 1        m_modalNextSpell not used
+            ClassFamilyMask SpellFamilyFlags;                       // 2-4      m_spellClassMask NOTE: size is 12 bytes!!!
+            uint32    SpellFamilyName;                              // 5        m_spellClassSet
+                                                                    //char*   Description;                                  // 6 4.0.0
+                                                                    // helpers
+
+            bool IsFitToFamilyMask(uint64 familyFlags, uint32 familyFlags2 = 0) const
+            {
+                return SpellFamilyFlags.IsFitToFamilyMask(familyFlags, familyFlags2);
+            }
+
+            bool IsFitToFamily(SpellFamily family, uint64 familyFlags, uint32 familyFlags2 = 0) const
+            {
+                return SpellFamily(SpellFamilyName) == family && IsFitToFamilyMask(familyFlags, familyFlags2);
+            }
+
+            bool IsFitToFamilyMask(ClassFamilyMask const& mask) const
+            {
+                return SpellFamilyFlags.IsFitToFamilyMask(mask);
+            }
+
+            bool IsFitToFamily(SpellFamily family, ClassFamilyMask const& mask) const
+            {
+                return SpellFamily(SpellFamilyName) == family && IsFitToFamilyMask(mask);
+            }
+
+        private:
+            // catch wrong uses
+            template<typename T>
+            bool IsFitToFamilyMask(SpellFamily family, T t) const;
+        };
+
+        // SpellCooldowns.dbc
+        struct SpellCooldownsEntry
+        {
+            //uint32    Id;                                         // 0        m_ID
+            uint32    CategoryRecoveryTime;                         // 1        m_categoryRecoveryTime
+            uint32    RecoveryTime;                                 // 2        m_recoveryTime
+            uint32    StartRecoveryTime;                            // 3        m_startRecoveryTime
+        };
+
+        // SpellDifficulty.dbc
+        struct SpellDifficultyEntry //cata
+        {
+            uint32 ID;                          // 0
+            int32 SpellId[MAX_DIFFICULTY];      // 1-4 (instance modes)
+        };
+
+        // SpellDuration.dbc
         struct SpellDurationEntry   //cata
         {
             uint32 ID;              // 0
@@ -813,24 +1517,231 @@ namespace DBC
             uint32 Duration3;       // 3
         };
 
-        #define MAX_SPELL_EFFECTS 3
-        #define MAX_EFFECT_MASK 7
-        #define MAX_SPELL_REAGENTS 8
+        // SpellEffect.dbc
+        struct SpellEffectEntry
+        {
+            //uint32    Id;                                         // 0        m_ID
+            uint32    Effect;                                       // 1        m_effect
+            float     EffectMultipleValue;                          // 2        m_effectAmplitude
+            uint32    EffectApplyAuraName;                          // 3        m_effectAura
+            uint32    EffectAmplitude;                              // 4        m_effectAuraPeriod
+            int32     EffectBasePoints;                             // 5        m_effectBasePoints (don't must be used in spell/auras explicitly, must be used cached Spell::m_currentBasePoints)
+            float     EffectBonusMultiplier;                        // 6        m_effectBonus
+            float     EffectDamageMultiplier;                       // 7        m_effectChainAmplitude
+            uint32    EffectChainTarget;                            // 8        m_effectChainTargets
+            int32     EffectDieSides;                               // 9        m_effectDieSides
+            uint32    EffectItemType;                               // 10       m_effectItemType
+            uint32    EffectMechanic;                               // 11       m_effectMechanic
+            int32     EffectMiscValue;                              // 12       m_effectMiscValue
+            int32     EffectMiscValueB;                             // 13       m_effectMiscValueB
+            float     EffectPointsPerComboPoint;                    // 14       m_effectPointsPerCombo
+            uint32    EffectRadiusIndex;                            // 15       m_effectRadiusIndex - spellradius.dbc
+            uint32    EffectRadiusMaxIndex;                         // 16       4.0.0
+            float     EffectRealPointsPerLevel;                     // 17       m_effectRealPointsPerLevel
+            ClassFamilyMask EffectSpellClassMask;                   // 18 19 20 m_effectSpellClassMask
+            uint32    EffectTriggerSpell;                           // 21       m_effectTriggerSpell
+            uint32    EffectImplicitTargetA;                        // 22       m_implicitTargetA
+            uint32    EffectImplicitTargetB;                        // 23       m_implicitTargetB
+            uint32    EffectSpellId;                                // 24       m_spellId - spell.dbc
+            uint32    EffectIndex;                                  // 25       m_spellEffectIdx
+            //uint32 unk;                                           // 26       4.2.0 only 0 or 1
 
-        struct SpellEntry
+            // helpers
+            int32 CalculateSimpleValue() const { return EffectBasePoints; }
+
+            uint32 GetRadiusIndex() const
+            {
+                if (EffectRadiusIndex != 0)
+                    return EffectRadiusIndex;
+
+                return EffectRadiusMaxIndex;
+            }
+        };
+
+        // SpellEquippedItems.dbc
+        struct SpellEquippedItemsEntry
+        {
+            //uint32    Id;                                         // 0        m_ID
+            int32     EquippedItemClass;                            // 1        m_equippedItemClass (value)
+            int32     EquippedItemInventoryTypeMask;                // 2        m_equippedItemInvTypes (mask)
+            int32     EquippedItemSubClassMask;                     // 3        m_equippedItemSubclass (mask)
+        };
+
+        // SpellFocusObject.dbc
+        struct SpellFocusObjectEntry
+        {
+            uint32    ID;                                           // 0        m_ID
+                                                                    //char*     Name;                                       // 1        m_name_lang
+        };
+
+        // SpellInterrupts.dbc
+        struct SpellInterruptsEntry
+        {
+            //uint32    Id;                                         // 0        m_ID
+            uint32    AuraInterruptFlags;                           // 1        m_auraInterruptFlags
+                                                                    //uint32                                                // 2        4.0.0
+            uint32    ChannelInterruptFlags;                        // 3        m_channelInterruptFlags
+                                                                    //uint32                                                // 4        4.0.0
+            uint32    InterruptFlags;                               // 5        m_interruptFlags
+        };
+
+        // SpellItemEnchantment.dbc
+        struct SpellItemEnchantmentEntry    //cata
+        {
+            uint32 Id;                  // 0
+            //uint32 charges;           // 1
+            uint32 type[3];             // 2-4
+            uint32 min[3];              // 5-7 for combat, in practice min==max
+            //uint32 max[3];            // 8-10
+            uint32 spell[3];            // 11-13
+            char* Name;                 // 14-29
+            //uint32 NameFlags;         // 30
+            uint32 visual;              // 31 aura
+            uint32 EnchantGroups;       // 32 slot
+            uint32 GemEntry;            // 33
+            uint32 ench_condition;      // 34
+            uint32 req_skill;           // 35
+            uint32 req_skill_value;     // 36
+            uint32 req_level;           // 37
+        };
+
+        // SpellItemEnchantmentCondition.dbc
+        struct SpellItemEnchantmentConditionEntry
+        {
+            uint32  ID;                                             // 0        m_ID
+            uint8   Color[5];                                       // 1-5      m_lt_operandType[5]
+                                                                    //uint32  LT_Operand[5];                                // 6-10     m_lt_operand[5]
+            uint8   Comparator[5];                                  // 11-15    m_operator[5]
+            uint8   CompareColor[5];                                // 15-20    m_rt_operandType[5]
+            uint32  Value[5];                                       // 21-25    m_rt_operand[5]
+                                                                    //uint8   Logic[5]                                      // 25-30    m_logic[5]
+        };
+
+        // SpellLevels.dbc
+        struct SpellLevelsEntry
+        {
+            //uint32    Id;                                         // 0        m_ID
+            uint32    baseLevel;                                    // 1        m_baseLevel
+            uint32    maxLevel;                                     // 2        m_maxLevel
+            uint32    spellLevel;                                   // 3        m_spellLevel
+        };
+
+        // SpellPower.dbc
+        struct SpellPowerEntry
+        {
+            //uint32    Id;                                         // 0 - m_ID
+            uint32    manaCost;                                     // 1 - m_manaCost
+            uint32    manaCostPerlevel;                             // 2 - m_manaCostPerLevel
+            uint32    ManaCostPercentage;                           // 3 - m_manaCostPct
+            uint32    manaPerSecond;                                // 4 - m_manaPerSecond
+            uint32    manaPerSecondPerLevel;                        // 5   m_manaPerSecondPerLevel
+                                                                    //uint32  PowerDisplayId;                               // 6 - m_powerDisplayID - id from PowerDisplay.dbc, new in 3.1
+            float     ManaCostPercentageFloat;                      // 7   4.3.0
+        };
+
+        // SpellRadius.dbc
+        struct SpellRadiusEntry //cata
+        {
+            uint32 ID;                  // 0
+            float radius_min;           // 1 Radius
+            float radius_per_level;     // 2
+            float radius_max;           // 3 Radius2
+        };
+
+        // SpellRange.dbc
+        struct SpellRangeEntry  //cata
+        {
+            uint32 ID;                  // 0
+            float minRange;             // 1
+            float minRangeFriendly;     // 2
+            float maxRange;             // 3
+            float maxRangeFriendly;     // 4
+            uint32 range_type;          // 5
+            //char* name1[16]           // 6-21
+            //uint32 name1_falgs;       // 22
+            //char* name2[16]           // 23-38
+            //uint32 name2_falgs;       // 39
+        };
+
+        // SpellReagents.dbc
+        struct SpellReagentsEntry
+        {
+            //uint32    Id;                                         // 0        m_ID
+            int32     Reagent[MAX_SPELL_REAGENTS];                  // 54-61    m_reagent
+            uint32    ReagentCount[MAX_SPELL_REAGENTS];             // 62-69    m_reagentCount
+        };
+
+        // SpellRuneCost.dbc
+        struct SpellRuneCostEntry   //cata
+        {
+            uint32 ID;              // 0
+            uint32 bloodRuneCost;   // 1
+            uint32 frostRuneCost;   // 2
+            uint32 unholyRuneCost;  // 3
+            uint32 runePowerGain;   // 4
+        };
+
+        // SpellScaling.dbc
+        struct SpellScalingEntry
+        {
+            //uint32    Id;                                         // 0        m_ID
+            uint32    castTimeMin;                                  // 1
+            uint32    castTimeMax;                                  // 2
+            uint32    castScalingMaxLevel;                          // 3
+            uint32    playerClass;                                  // 4        (index * 100) + charLevel => gtSpellScaling.dbc
+            float     coeff1[3];                                    // 5-7
+            float     coeff2[3];                                    // 8-10
+            float     coeff3[3];                                    // 11-13
+            float     coefBase;                                     // 14       some coefficient, mostly 1.0f
+            uint32    coefLevelBase;                                // 15       some level
+
+            bool IsScalableEffect(SpellEffectIndex i) const { return coeff1[i] != 0.0f; };
+        };
+
+        // SpellShapeshift.dbc
+        struct SpellShapeshiftEntry
+        {
+            //uint32    Id;                                         // 0        m_ID
+            uint32    StancesNot;                                   // 1        m_shapeshiftMask
+                                                                    // uint32 unk_320_2;                                    // 2        3.2.0
+            uint32    Stances;                                      // 3        m_shapeshiftExclude
+                                                                    // uint32 unk_320_3;                                    // 4        3.2.0
+                                                                    // uint32    StanceBarOrder;                            // 5        m_stanceBarOrder not used
+        };
+
+        // SpellTargetRestrictions.dbc
+        struct SpellTargetRestrictionsEntry
+        {
+            //uint32    Id;                                         // 0        m_ID
+            float     MaxTargetRadius;                              // 1 - m_maxTargetRadius
+            uint32    MaxAffectedTargets;                           // 1 - m_maxTargets
+            uint32    MaxTargetLevel;                               // 2 - m_maxTargetLevel
+            uint32    TargetCreatureType;                           // 3 - m_targetCreatureType
+            uint32    Targets;                                      // 4 - m_targets
+        };
+
+        // SpellTotems.dbc
+        struct SpellTotemsEntry
+        {
+            //uint32    Id;                                         // 0        m_ID
+            uint32    TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];    // 1 2      m_requiredTotemCategoryID
+            uint32    Totem[MAX_SPELL_TOTEMS];                      // 3 4      m_totem
+        };
+
+        struct SERVER_DECL SpellEntry
         {
             uint32 Id;                                          // 0
-            uint32 Category;                                    // 1
-            uint32 Dispel;                                      // 2
-            uint32 Mechanic;                                    // 3
-            uint32 Attributes;                                  // 4
-            uint32 AttributesEx;                                // 5
-            uint32 AttributesExB;                               // 6
-            uint32 AttributesExC;                               // 7
-            uint32 AttributesExD;                               // 8
-            uint32 AttributesExE;                               // 9
-            uint32 AttributesExF;                               // 10
-            uint32 AttributesExG;                               // 11
+            uint32 Attributes;                                  // 1
+            uint32 AttributesEx;                                // 2
+            uint32 AttributesExB;                               // 3
+            uint32 AttributesExC;                               // 4
+            uint32 AttributesExD;                               // 5
+            uint32 AttributesExE;                               // 6
+            uint32 AttributesExF;                               // 7
+            uint32 AttributesExG;                               // 8
+            uint32 AttributesExH;                               // 9
+            uint32 AttributesExI;                               // 10
+            uint32 AttributesExJ;                               // 11
             uint32 CastingTimeIndex;                            // 12
             uint32 DurationIndex;                               // 13
             uint32 powerType;                                   // 14
@@ -866,56 +1777,113 @@ namespace DBC
             uint32 SpellTargetRestrictionsId;                   // 45 SpellTargetRestrictions.dbc
             uint32 SpellTotemsId;                               // 46 SpellTotems.dbc
             //uint32 ResearchProject;                           // 47 ResearchProject.dbc
-        };
 
-        struct SpellItemEnchantmentEntry    //cata
-        {
-            uint32 Id;                  // 0
-            //uint32 charges;           // 1
-            uint32 type[3];             // 2-4
-            uint32 min[3];               // 5-7 for combat, in practice min==max
-            //uint32 max[3];               // 8-10
-            uint32 spell[3];            // 11-13
-            char* Name;                 // 14-29
-            //uint32 NameFlags;         // 30
-            uint32 visual;              // 31 aura
-            uint32 EnchantGroups;       // 32 slot
-            uint32 GemEntry;            // 33
-            uint32 ench_condition;      // 34
-            uint32 req_skill;           // 35
-            uint32 req_skill_value;     // 36
-            uint32 req_level;           // 37
-        };
+            // helpers
+            int32 CalculateSimpleValue(SpellEffectIndex eff) const;
+            ClassFamilyMask const& GetEffectSpellClassMask(SpellEffectIndex eff) const;
 
-        struct SpellRadiusEntry //cata
-        {
-            uint32 ID;                  // 0
-            float radius_min;           // 1 Radius
-            float radius_per_level;     // 2
-            float radius_max;           // 3 Radius2
-        };
+            // struct access functions
+            SpellAuraOptionsEntry const* GetSpellAuraOptions() const;
+            SpellAuraRestrictionsEntry const* GetSpellAuraRestrictions() const;
+            SpellCastingRequirementsEntry const* GetSpellCastingRequirements() const;
+            SpellCategoriesEntry const* GetSpellCategories() const;
+            SpellClassOptionsEntry const* GetSpellClassOptions() const;
+            SpellCooldownsEntry const* GetSpellCooldowns() const;
+            SpellEffectEntry const* GetSpellEffect(SpellEffectIndex eff) const;
+            SpellEquippedItemsEntry const* GetSpellEquippedItems() const;
+            SpellInterruptsEntry const* GetSpellInterrupts() const;
+            SpellLevelsEntry const* GetSpellLevels() const;
+            SpellPowerEntry const* GetSpellPower() const;
+            SpellReagentsEntry const* GetSpellReagents() const;
+            SpellScalingEntry const* GetSpellScaling() const;
+            SpellShapeshiftEntry const* GetSpellShapeshift() const;
+            SpellTargetRestrictionsEntry const* GetSpellTargetRestrictions() const;
+            SpellTotemsEntry const* GetSpellTotems() const;
 
-        struct SpellRangeEntry  //cata
-        {
-            uint32 ID;                  // 0
-            float minRange;             // 1
-            float minRangeFriendly;     // 2
-            float maxRange;             // 3
-            float maxRangeFriendly;     // 4
-            uint32 range_type;          // 5
-            //char* name1[16]           // 6-21
-            //uint32 name1_falgs;       // 22
-            //char* name2[16]           // 23-38
-            //uint32 name2_falgs;       // 39
-        };
+            // single fields
+            uint32 GetManaCost() const;
+            uint32 GetPreventionType() const;
+            uint32 GetCategory() const;
+            uint32 GetStartRecoveryTime() const;
+            uint32 GetMechanic() const;
+            uint32 GetRecoveryTime() const;
+            uint32 GetCategoryRecoveryTime() const;
+            uint32 GetStartRecoveryCategory() const;
+            uint32 GetSpellLevel() const;
+            int32 GetEquippedItemClass() const;
+            SpellFamily GetSpellFamilyName() const;
+            uint32 GetDmgClass() const;
+            uint32 GetDispel() const;
+            uint32 GetMaxAffectedTargets() const;
+            uint32 GetStackAmount() const;
+            uint32 GetManaCostPercentage() const;
+            uint32 GetProcCharges() const;
+            uint32 GetProcChance() const;
+            uint32 GetMaxLevel() const;
+            uint32 GetTargetAuraState() const;
+            uint32 GetManaPerSecond() const;
+            uint32 GetRequiresSpellFocus() const;
+            uint32 GetSpellEffectIdByIndex(SpellEffectIndex index) const;
+            uint32 GetAuraInterruptFlags() const;
+            uint32 GetEffectImplicitTargetAByIndex(SpellEffectIndex index) const;
+            int32 GetAreaGroupId() const;
+            uint32 GetFacingCasterFlags() const;
+            uint32 GetBaseLevel() const;
+            uint32 GetInterruptFlags() const;
+            uint32 GetTargetCreatureType() const;
+            int32 GetEffectMiscValue(SpellEffectIndex index) const;
+            uint32 GetStances() const;
+            uint32 GetStancesNot() const;
+            uint32 GetProcFlags() const;
+            uint32 GetChannelInterruptFlags() const;
+            uint32 GetManaCostPerLevel() const;
+            uint32 GetCasterAuraState() const;
+            uint32 GetTargets() const;
+            uint32 GetEffectApplyAuraNameByIndex(SpellEffectIndex index) const;
 
-        struct SpellRuneCostEntry   //cata
-        {
-            uint32 ID;              // 0
-            uint32 bloodRuneCost;   // 1
-            uint32 frostRuneCost;   // 2
-            uint32 unholyRuneCost;  // 3
-            uint32 runePowerGain;   // 4
+            bool IsFitToFamilyMask(uint64 familyFlags, uint32 familyFlags2 = 0) const
+            {
+                SpellClassOptionsEntry const* classOpt = GetSpellClassOptions();
+                return classOpt && classOpt->IsFitToFamilyMask(familyFlags, familyFlags2);
+            }
+
+            bool IsFitToFamily(SpellFamily family, uint64 familyFlags, uint32 familyFlags2 = 0) const
+            {
+                SpellClassOptionsEntry const* classOpt = GetSpellClassOptions();
+                return classOpt && classOpt->IsFitToFamily(family, familyFlags, familyFlags2);
+            }
+
+            bool IsFitToFamilyMask(ClassFamilyMask const& mask) const
+            {
+                SpellClassOptionsEntry const* classOpt = GetSpellClassOptions();
+                return classOpt && classOpt->IsFitToFamilyMask(mask);
+            }
+
+            bool IsFitToFamily(SpellFamily family, ClassFamilyMask const& mask) const
+            {
+                SpellClassOptionsEntry const* classOpt = GetSpellClassOptions();
+                return classOpt && classOpt->IsFitToFamily(family, mask);
+            }
+
+            inline bool HasAttribute(SpellAttributes attribute) const { return (Attributes & attribute) != 0; }
+            inline bool HasAttribute(SpellAttributesEx attribute) const { return (AttributesEx & attribute) != 0; }
+            inline bool HasAttribute(SpellAttributesExB attribute) const { return (AttributesExB & attribute) != 0; }
+            inline bool HasAttribute(SpellAttributesExC attribute) const { return (AttributesExC & attribute) != 0; }
+            inline bool HasAttribute(SpellAttributesExD attribute) const { return (AttributesExD & attribute) != 0; }
+            inline bool HasAttribute(SpellAttributesExE attribute) const { return (AttributesExE & attribute) != 0; }
+            inline bool HasAttribute(SpellAttributesExF attribute) const { return (AttributesExF & attribute) != 0; }
+            inline bool HasAttribute(SpellAttributesExG attribute) const { return (AttributesExG & attribute) != 0; }
+            inline bool HasAttribute(SpellAttributesExH attribute) const { return (AttributesExH & attribute) != 0; }
+            inline bool HasAttribute(SpellAttributesExI attribute) const { return (AttributesExI & attribute) != 0; }
+            inline bool HasAttribute(SpellAttributesExJ attribute) const { return (AttributesExJ & attribute) != 0; }
+
+        private:
+            // prevent creating custom entries (copy data from original in fact)
+            SpellEntry(SpellEntry const&);                      // DON'T must have implementation
+
+                                                                // catch wrong uses
+            template<typename T>
+            bool IsFitToFamilyMask(SpellFamily family, T t) const;
         };
 
         struct SpellShapeshiftFormEntry //cata
@@ -1172,6 +2140,20 @@ namespace DBC
         };
 
         #pragma pack(pop)
+
+        typedef std::set<uint32> SpellCategorySet;
+        typedef std::map<uint32, SpellCategorySet> SpellCategoryStore;
+        struct SpellEffect
+        {
+            SpellEffect()
+            {
+                effects[0] = NULL;
+                effects[1] = NULL;
+                effects[2] = NULL;
+            }
+            SpellEffectEntry const* effects[3];
+        };
+        typedef std::map<uint32, SpellEffect> SpellEffectMap;
     }
 }
 

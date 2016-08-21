@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "DBCLoader.hpp"
 #include "DBCStructures.hpp"
 #include "Log.h"
+#include "Server/WUtil.h"
 
 namespace DBC
 {
@@ -80,7 +81,7 @@ namespace DBC
       std::string const& dbc_filename,std::string const* custom_format = NULL, std::string const* custom_index_name = NULL)
     {
         auto tsize = sizeof(T);
-        ASSERT(DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()) == sizeof(T) || LoadDBC_assert_print(DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()), sizeof(T), dbc_filename));
+        ARCEMU_ASSERT(DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()) == sizeof(T) || LoadDBC_assert_print(DBC::DBCLoader::GetFormatRecordSize(storage.GetFormat()), sizeof(T), dbc_filename));
 
         ++g_dbc_file_count;
         std::string dbc_file_path = dbc_path + dbc_filename;
