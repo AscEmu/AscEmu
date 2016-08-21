@@ -129,7 +129,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 
     SpellCastTargets targets(recvPacket, _player->GetGUID());
 
-    SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellId);
+    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellId);
     if (spellInfo == NULL)
     {
         LOG_ERROR("WORLD: unknown spell id %i", spellId);
@@ -321,7 +321,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     {
         cast_spell_id = sp->SpellID;
 
-        SpellEntry* spellInfo = dbcSpell.LookupEntryForced(cast_spell_id);
+        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(cast_spell_id);
         if (spellInfo == nullptr)
             return;
 
@@ -340,7 +340,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 
     recvPacket >> cn >> spellId >> unk;
     // check for spell id
-    SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellId);
+    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellId);
 
     if (!spellInfo)
     {
@@ -413,7 +413,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
                     LOG_DEBUG("Cancelling auto-shot cast because targets.m_unitTarget is null!");
                     return;
                 }
-                SpellEntry* sp = dbcSpell.LookupEntry(spellid);
+                OLD_SpellEntry* sp = dbcSpell.LookupEntry(spellid);
 
                 _player->m_AutoShotSpell = sp;
                 _player->m_AutoShotDuration = duration;
@@ -486,7 +486,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
         _player->m_currentSpell->cancel();
     else
     {
-        SpellEntry* info = dbcSpell.LookupEntryForced(spellId);
+        OLD_SpellEntry* info = dbcSpell.LookupEntryForced(spellId);
         if (info == nullptr)
             return;
 
@@ -547,7 +547,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
     recvPacket >> spellid;
     recvPacket >> castflags;
 
-    SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
+    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
     if (sp == NULL)
         return;
     // Summoned Elemental's Freeze
@@ -682,7 +682,7 @@ void WorldSession::HandleUpdateProjectilePosition(WorldPacket& recv_data)
 
     Log.Debug("HandleUpdateProjectilePosition", "Recieved spell: %u, count: %i, position: x(%f) y(%f) z(%f)", spellId, castCount, x, y, z);
 
-    SpellEntry* spell = CheckAndReturnSpellEntry(spellId);
+    OLD_SpellEntry* spell = CheckAndReturnSpellEntry(spellId);
     if (!spell || spell->ai_target_type == TARGET_FLAG_DEST_LOCATION)
         return;
 

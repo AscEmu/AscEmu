@@ -375,7 +375,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
     if (!*args)
         return false;
 
-    SpellEntry* spell_entry = nullptr;
+    OLD_SpellEntry* spell_entry = nullptr;
 
     if (stricmp(args, "all") == 0)
     {

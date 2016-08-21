@@ -37,16 +37,16 @@ class SpellCustomizations : public Singleton <SpellCustomizations>
         void LoadSpellCustomCoefFlags();
         void LoadSpellProcs();
 
-        void SetEffectAmplitude(SpellEntry* spell_entry);
-        void SetAuraFactoryFunc(SpellEntry* spell_entry);
+        void SetEffectAmplitude(OLD_SpellEntry* spell_entry);
+        void SetAuraFactoryFunc(OLD_SpellEntry* spell_entry);
 
-        void SetMeleeSpellBool(SpellEntry* spell_entry);
-        void SetRangedSpellBool(SpellEntry* spell_entry);
+        void SetMeleeSpellBool(OLD_SpellEntry* spell_entry);
+        void SetRangedSpellBool(OLD_SpellEntry* spell_entry);
 
-        void SetMissingCIsFlags(SpellEntry* spell_entry);
-        void SetCustomFlags(SpellEntry* spell_entry);
-        void SetOnShapeshiftChange(SpellEntry* spell_entry);
-        void SetAlwaysApply(SpellEntry* spell_entry);
+        void SetMissingCIsFlags(OLD_SpellEntry* spell_entry);
+        void SetCustomFlags(OLD_SpellEntry* spell_entry);
+        void SetOnShapeshiftChange(OLD_SpellEntry* spell_entry);
+        void SetAlwaysApply(OLD_SpellEntry* spell_entry);
 };
 
 #define sSpellCustomizations SpellCustomizations::getSingleton()

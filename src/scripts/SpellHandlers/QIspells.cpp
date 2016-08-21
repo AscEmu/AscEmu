@@ -1397,7 +1397,7 @@ bool HunterTamingQuest(uint32 i, Aura* a, bool apply)
     {
         uint32 TamingSpellid = a->GetSpellProto()->EffectMiscValue[1];
 
-        SpellEntry* triggerspell = dbcSpell.LookupEntryForced(TamingSpellid);
+        OLD_SpellEntry* triggerspell = dbcSpell.LookupEntryForced(TamingSpellid);
         if (triggerspell == NULL)
         {
             sLog.outError("An Aura with spellid %u is calling HunterTamingQuest() with an invalid TamingSpellid: %u", a->GetSpellId(), TamingSpellid);

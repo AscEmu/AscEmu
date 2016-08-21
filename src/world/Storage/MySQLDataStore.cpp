@@ -606,8 +606,8 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
                 creatureProperties.AISpells[i] = fields[52 + i].GetUInt32();
                 if (creatureProperties.AISpells[i] != 0)
                 {
-                    SpellEntry* sp = dbcSpell.LookupEntryForced(creatureProperties.AISpells[i]);
-                    if (sp == nullptr)
+                    DBC::Structures::SpellEntry const* spell = sSpellStore.LookupEntry(creatureProperties.AISpells[i]);
+                    if (spell == nullptr)
                     {
                         uint8 spell_number = i;
                         Log.Error("MySQLDataStore", "spell %u in table %s column spell%u for creature entry: %u is not a valid spell!", creatureProperties.AISpells[i], table_name.c_str(), spell_number + 1, entry);
@@ -615,10 +615,10 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
                     }
                     else
                     {
-                        if ((sp->Attributes & ATTRIBUTES_PASSIVE) == 0)
-                            creatureProperties.castable_spells.push_back(sp->Id);
+                        if ((spell->Attributes & ATTRIBUTES_PASSIVE) == 0)
+                            creatureProperties.castable_spells.push_back(spell->Id);
                         else
-                            creatureProperties.start_auras.insert(sp->Id);
+                            creatureProperties.start_auras.insert(spell->Id);
                     }
                 }
             }
@@ -641,14 +641,14 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
                     if (creature_spell_data->Spells[i] == 0)
                         continue;
 
-                    SpellEntry* sp = dbcSpell.LookupEntryForced(creature_spell_data->Spells[i]);
-                    if (sp == nullptr)
+                    DBC::Structures::SpellEntry const* spell = sSpellStore.LookupEntry(creature_spell_data->Spells[i]);
+                    if (spell == nullptr)
                         continue;
 
-                    if ((sp->Attributes & ATTRIBUTES_PASSIVE) == 0)
-                        creatureProperties.castable_spells.push_back(sp->Id);
+                    if ((spell->Attributes & ATTRIBUTES_PASSIVE) == 0)
+                        creatureProperties.castable_spells.push_back(spell->Id);
                     else
-                        creatureProperties.start_auras.insert(sp->Id);
+                        creatureProperties.start_auras.insert(spell->Id);
                 }
             }
 
@@ -2522,14 +2522,14 @@ void MySQLDataStore::LoadSpellOverrideTable()
         uint32 distinct_override_id = fields[0].GetUInt32();
 
         QueryResult* spellid_for_overrideid_result = WorldDatabase.Query("SELECT spellId FROM spelloverride WHERE overrideId = %u", distinct_override_id);
-        std::list<SpellEntry*>* list = new std::list < SpellEntry* >;
+        std::list<OLD_SpellEntry*>* list = new std::list < OLD_SpellEntry* >;
         if (spellid_for_overrideid_result != nullptr)
         {
             do
             {
                 Field* fieldsIn = spellid_for_overrideid_result->Fetch();
                 uint32 spellid = fieldsIn[0].GetUInt32();
-                SpellEntry* spell = dbcSpell.LookupEntryForced(spellid);
+                OLD_SpellEntry* spell = dbcSpell.LookupEntryForced(spellid);
                 if (spell == nullptr)
                 {
                     Log.Error("MySQLDataStore", "Table `spelloverride` includes invalid spellId %u for overrideId %u! <skipped>", spellid, distinct_override_id);

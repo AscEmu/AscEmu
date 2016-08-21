@@ -482,7 +482,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
             }
             if (DemonicSacEffectSpellId)
             {
-                SpellEntry* se = dbcSpell.LookupEntryForced(DemonicSacEffectSpellId);
+                OLD_SpellEntry* se = dbcSpell.LookupEntryForced(DemonicSacEffectSpellId);
                 if (se && u_caster)
                     u_caster->CastSpell(u_caster, se, true);
             }
@@ -497,7 +497,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
 
             //TO< Pet* >(u_caster)->Dismiss(true);
 
-            SpellEntry* se = dbcSpell.LookupEntry(5);
+            OLD_SpellEntry* se = dbcSpell.LookupEntry(5);
             if (static_cast< Pet* >(u_caster)->GetPetOwner() == NULL)
                 return;
 
@@ -514,7 +514,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
 
             //TO< Pet* >(unitTarget)->Dismiss(true);
 
-            SpellEntry* se = dbcSpell.LookupEntry(5);
+            OLD_SpellEntry* se = dbcSpell.LookupEntry(5);
 
             SpellCastTargets targets(unitTarget->GetGUID());
             Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, se, true, 0);
@@ -1606,7 +1606,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
                 if (unitTarget && unitTarget->IsPlayer() && pSpellId && unitTarget->GetHealthPct() < 30)
                 {
                     //check for that 10 second cooldown
-                    SpellEntry* spellInfo = dbcSpell.LookupEntryForced(pSpellId);
+                    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(pSpellId);
                     if (spellInfo)
                     {
                         //heal value is received by the level of current active talent :s
@@ -1725,7 +1725,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
 
                     if (new_dmg > 0)
                     {
-                        SpellEntry* spellInfo = dbcSpell.LookupEntry(18562);
+                        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(18562);
                         Spell* spell = sSpellFactoryMgr.NewSpell(unitTarget, spellInfo, true, NULL);
                         spell->SetUnitTarget(unitTarget);
                         spell->Heal((int32)new_dmg);
@@ -2060,7 +2060,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
 
             if ((learn_spell != 0) && (p_caster->getLevel() > 60) && !p_caster->HasSpell(learn_spell) && Rand(cast_chance))
             {
-                SpellEntry* dspellproto = dbcSpell.LookupEntryForced(learn_spell);
+                OLD_SpellEntry* dspellproto = dbcSpell.LookupEntryForced(learn_spell);
 
                 if (dspellproto != NULL)
                 {
@@ -2093,7 +2093,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
             // if something was discovered teach player that recipe and broadcast message
             if (discovered_recipe != 0)
             {
-                SpellEntry* se = dbcSpell.LookupEntryForced(discovered_recipe);
+                OLD_SpellEntry* se = dbcSpell.LookupEntryForced(discovered_recipe);
 
                 if (se != NULL)
                 {
@@ -2766,7 +2766,7 @@ void Spell::SpellEffectEnergize(uint32 i) // Energize
         case 31786: // Paladin - Spiritual Attunement
             if (ProcedOnSpell)
             {
-                SpellEntry* motherspell = dbcSpell.LookupEntryForced(pSpellId);
+                OLD_SpellEntry* motherspell = dbcSpell.LookupEntryForced(pSpellId);
                 if (motherspell)
                 {
                     //heal amount from procspell (we only proceed on a heal spell)
@@ -2872,7 +2872,7 @@ void Spell::SpellEffectTriggerMissile(uint32 i) // Trigger Missile
         return;
     }
 
-    SpellEntry* spInfo = dbcSpell.LookupEntryForced(spellid);
+    OLD_SpellEntry* spInfo = dbcSpell.LookupEntryForced(spellid);
     if (spInfo == NULL)
     {
         LOG_ERROR("Spell %u (%s) has a trigger missle effect (%u) but has an invalid trigger spell ID. Spell needs fixing.", m_spellInfo->Id, m_spellInfo->Name, i);
@@ -3071,7 +3071,7 @@ void Spell::SpellEffectOpenLock(uint32 i)
                     return;
 
             uint32 spellid = !gameObjTarget->GetGameObjectProperties()->raw.parameter_10 ? 23932 : gameObjTarget->GetGameObjectProperties()->raw.parameter_10;
-            SpellEntry* en = dbcSpell.LookupEntry(spellid);
+            OLD_SpellEntry* en = dbcSpell.LookupEntry(spellid);
             Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, en, true, NULL);
             SpellCastTargets tgt;
             tgt.m_unitTarget = gameObjTarget->GetGUID();
@@ -3226,7 +3226,7 @@ void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
             playerTarget->addSpell(32605);
 
         //smth is wrong here, first we add this spell to player then we may cast it on player...
-        SpellEntry* spellinfo = dbcSpell.LookupEntry(spellToLearn);
+        OLD_SpellEntry* spellinfo = dbcSpell.LookupEntry(spellToLearn);
         //remove specializations
         switch (spellinfo->Id)
         {
@@ -3342,7 +3342,7 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
     }
 
     Aura* aur;
-    SpellEntry* aursp;
+    OLD_SpellEntry* aursp;
     std::list< uint32 > dispelledSpells;
     bool finish = false;
 
@@ -3385,7 +3385,7 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
                 {
                     if (aursp->custom_NameHash == SPELL_HASH_UNSTABLE_AFFLICTION)
                     {
-                        SpellEntry* spellInfo = dbcSpell.LookupEntry(31117);
+                        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(31117);
                         Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, NULL);
                         spell->forced_basepoints[0] = (aursp->EffectBasePoints[0] + 1) * 9;   //damage effect
                         spell->ProcedOnSpell = GetProto();
@@ -4023,7 +4023,7 @@ void Spell::SpellEffectClearQuest(uint32 i)
 
 void Spell::SpellEffectTriggerSpell(uint32 i) // Trigger Spell
 {
-    SpellEntry* entry = dbcSpell.LookupEntryForced(GetProto()->EffectTriggerSpell[i]);
+    OLD_SpellEntry* entry = dbcSpell.LookupEntryForced(GetProto()->EffectTriggerSpell[i]);
     if (entry == NULL)
         return;
 
@@ -4665,7 +4665,7 @@ void Spell::SpellEffectFeedPet(uint32 i)  // Feed Pet
     if (deltaLvl > 20) damage = damage >> 1;
     damage *= 1000;
 
-    SpellEntry* spellInfo = dbcSpell.LookupEntry(GetProto()->EffectTriggerSpell[i]);
+    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(GetProto()->EffectTriggerSpell[i]);
     Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, spellInfo, true, NULL);
     sp->forced_basepoints[0] = damage;
     SpellCastTargets tgt;
@@ -4845,7 +4845,7 @@ void Spell::SpellEffectDestroyAllTotems(uint32 i)
     for (std::vector< uint32 >::iterator itr = spellids.begin(); itr != spellids.end(); ++itr)
     {
         uint32 spellid = *itr;
-        SpellEntry* sp = dbcSpell.LookupEntry(spellid);
+        OLD_SpellEntry* sp = dbcSpell.LookupEntry(spellid);
 
         if (sp != NULL)
         {
@@ -5033,7 +5033,7 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
     {
         //count the number of sunder armors on target
         uint32 sunder_count = 0;
-        SpellEntry* spellInfo = dbcSpell.LookupEntry(7386);
+        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(7386);
         for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
             if (unitTarget->m_auras[x] && unitTarget->m_auras[x]->GetSpellProto()->custom_NameHash == SPELL_HASH_SUNDER_ARMOR)
             {
@@ -5284,7 +5284,7 @@ void Spell::SpellEffectSpellSteal(uint32 i)
         return;
 
     Aura* aur;
-    SpellEntry* aursp;
+    OLD_SpellEntry* aursp;
     std::list< uint32 > stealedSpells;
 
     for (uint32 x = start; x < end; x++)
@@ -5457,7 +5457,7 @@ void Spell::SpellEffectTriggerSpellWithValue(uint32 i)
 {
     if (!unitTarget) return;
 
-    SpellEntry* TriggeredSpell = dbcSpell.LookupEntryForced(GetProto()->EffectTriggerSpell[i]);
+    OLD_SpellEntry* TriggeredSpell = dbcSpell.LookupEntryForced(GetProto()->EffectTriggerSpell[i]);
     if (TriggeredSpell == NULL)
         return;
 

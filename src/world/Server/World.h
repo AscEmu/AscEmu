@@ -691,7 +691,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         std::string GmClientChannel;
         bool m_reqGmForCommands;
         bool m_lfgForNonLfg;
-        std::list<SpellEntry*> dummyspells;
+        std::list<OLD_SpellEntry*> dummyspells;
         uint32 m_levelCap;
         uint32 m_genLevelCap;
         bool m_limitedNames;

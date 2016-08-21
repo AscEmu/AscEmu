@@ -1935,19 +1935,19 @@ class ShadeofAranAI : public CreatureAIScript
         uint32 m_time_conjure;
         uint32 FlameWreathTimer;
         uint64 FlameWreathTarget[3];
-        SpellEntry* info_flame_wreath;
-        SpellEntry* info_aexplosion;
-        SpellEntry* info_blizzard;
-        SpellEntry* info_magnetic_pull;
-        SpellEntry* info_blink_center;
-        SpellEntry* info_massslow;
-        SpellEntry* info_mass_polymorph;
-        SpellEntry* info_conjure;
-        SpellEntry* info_drink;
-        SpellEntry* info_pyroblast;
-        SpellEntry* info_summon_elemental_1;
-        SpellEntry* info_summon_elemental_2;
-        SpellEntry* info_summon_elemental_3;
+        OLD_SpellEntry* info_flame_wreath;
+        OLD_SpellEntry* info_aexplosion;
+        OLD_SpellEntry* info_blizzard;
+        OLD_SpellEntry* info_magnetic_pull;
+        OLD_SpellEntry* info_blink_center;
+        OLD_SpellEntry* info_massslow;
+        OLD_SpellEntry* info_mass_polymorph;
+        OLD_SpellEntry* info_conjure;
+        OLD_SpellEntry* info_drink;
+        OLD_SpellEntry* info_pyroblast;
+        OLD_SpellEntry* info_summon_elemental_1;
+        OLD_SpellEntry* info_summon_elemental_2;
+        OLD_SpellEntry* info_summon_elemental_3;
 };
 
 class WaterEleAI : public CreatureAIScript

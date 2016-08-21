@@ -192,12 +192,12 @@ struct PointOfInterest
     std::string icon_name;
 };
 
-struct SpellEntry;
+struct OLD_SpellEntry;
 struct TrainerSpell
 {
-    SpellEntry* pCastSpell;
-    SpellEntry* pLearnSpell;
-    SpellEntry* pCastRealSpell;
+    OLD_SpellEntry* pCastSpell;
+    OLD_SpellEntry* pLearnSpell;
+    OLD_SpellEntry* pCastRealSpell;
     uint32 DeleteSpell;
     uint32 RequiredSpell;
     uint32 RequiredSkillLine;
@@ -461,7 +461,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::map<uint32, LevelInfo*>                            LevelMap;
         typedef std::map<std::pair<uint32, uint32>, LevelMap*>          LevelInfoMap;
         
-        typedef std::map<uint32, std::set<SpellEntry*> >                PetDefaultSpellMap;
+        typedef std::map<uint32, std::set<OLD_SpellEntry*> >                PetDefaultSpellMap;
         typedef std::map<uint32, uint32>                                PetSpellCooldownMap;
         typedef std::multimap <uint32, uint32>                          BCEntryStorage;
         typedef std::map<uint32, SpellTargetConstraint*>                SpellTargetConstraintMap;
@@ -552,7 +552,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         GM_Ticket* GetGMTicketByPlayer(uint64 playerGuid);
 
         DBC::Structures::SkillLineAbilityEntry const* GetSpellSkill(uint32 id);
-        SpellEntry* GetNextSpellRank(SpellEntry* sp, uint32 level);
+        OLD_SpellEntry* GetNextSpellRank(OLD_SpellEntry* sp, uint32 level);
 
         //Vendors
         std::vector<CreatureItem> *GetVendorList(uint32 entry);
@@ -650,7 +650,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void GenerateLevelUpInfo();
 
         void LoadDefaultPetSpells();
-        std::set<SpellEntry*>* GetDefaultPetSpells(uint32 Entry);
+        std::set<OLD_SpellEntry*>* GetDefaultPetSpells(uint32 Entry);
         uint32 GetPetSpellCooldown(uint32 SpellId);
         void LoadPetSpellCooldowns();
         Movement::WayPointMap* GetWayPointMap(uint32 spawnid);

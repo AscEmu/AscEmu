@@ -24,8 +24,8 @@
 void CreateDummySpell(uint32 id)
 {
     const char* name = "Dummy Trigger";
-    SpellEntry* sp = new SpellEntry;
-    memset(sp, 0, sizeof(SpellEntry));
+    OLD_SpellEntry* sp = new OLD_SpellEntry;
+    memset(sp, 0, sizeof(OLD_SpellEntry));
     sp->Id = id;
     sp->Attributes = 384;
     sp->AttributesEx = 268435456;
@@ -43,7 +43,7 @@ void CreateDummySpell(uint32 id)
     sWorld.dummyspells.push_back(sp);
 }
 
-void Modify_EffectBasePoints(SpellEntry* sp)
+void Modify_EffectBasePoints(OLD_SpellEntry* sp)
 {
     if (sp == nullptr)
     {
@@ -82,7 +82,7 @@ void Modify_EffectBasePoints(SpellEntry* sp)
         sp->EffectBasePoints[0] = 40;
 }
 
-void Set_missing_spellLevel(SpellEntry* sp)
+void Set_missing_spellLevel(OLD_SpellEntry* sp)
 {
     if (sp == nullptr)
     {
@@ -416,7 +416,7 @@ void Set_missing_spellLevel(SpellEntry* sp)
 
             if (teachspell)
             {
-                SpellEntry* spellInfo;
+                OLD_SpellEntry* spellInfo;
                 spellInfo = CheckAndReturnSpellEntry(teachspell);
                 spellInfo->spellLevel = new_level;
                 sp->spellLevel = new_level;
@@ -425,7 +425,7 @@ void Set_missing_spellLevel(SpellEntry* sp)
     }
 }
 
-void Modify_AuraInterruptFlags(SpellEntry* sp)
+void Modify_AuraInterruptFlags(OLD_SpellEntry* sp)
 {
     if (sp == nullptr)
     {
@@ -447,7 +447,7 @@ void Modify_AuraInterruptFlags(SpellEntry* sp)
     }
 }
 
-void Modify_RecoveryTime(SpellEntry* sp)
+void Modify_RecoveryTime(OLD_SpellEntry* sp)
 {
     if (sp == nullptr)
     {
@@ -629,7 +629,10 @@ void ApplyNormalFixes()
     Log.Success("World", "Processing %u spells...", dbcSpell.GetNumRows());
 
     //checking if the DBCs have been extracted from an english client, based on namehash of spell 4, the first with a different name in non-english DBCs
-    SpellEntry* sp = dbcSpell.LookupEntry(4);
+    OLD_SpellEntry* sp = dbcSpell.LookupEntry(4);
+    if (sp == nullptr)
+        return;
+
     if (crc32((const unsigned char*)sp->Name, (unsigned int)strlen(sp->Name)) != SPELL_HASH_WORD_OF_RECALL_OTHER)
     {
         Log.LargeErrorMessage("You are using DBCs extracted from an unsupported client.", "ArcEmu supports only enUS and enGB!!!", NULL);
@@ -1503,7 +1506,7 @@ void ApplyNormalFixes()
     {
         // get spellentry
         sp = dbcSpell.LookupRow(x);
-        SpellEntry* spz;
+        OLD_SpellEntry* spz;
 
         //Case SPELL_AURA_PERIODIC_TRIGGER_SPELL
         for (uint8 i = 0; i < 3; i++)
@@ -2524,8 +2527,8 @@ void ApplyNormalFixes()
 
     ////////////////////////////////////////////////////////////
     // Shamanistic Rage
-    SpellEntry*  parentsp = CheckAndReturnSpellEntry(30823);
-    SpellEntry* triggersp = CheckAndReturnSpellEntry(30824);
+    OLD_SpellEntry*  parentsp = CheckAndReturnSpellEntry(30823);
+    OLD_SpellEntry* triggersp = CheckAndReturnSpellEntry(30824);
     if (parentsp != NULL && triggersp != NULL)
         triggersp->EffectBasePoints[0] = parentsp->EffectBasePoints[0];
 
@@ -4572,10 +4575,10 @@ void ApplyNormalFixes()
     {
         const uint32 ritOfSummId = 62330;
         CreateDummySpell(ritOfSummId);
-        SpellEntry * ritOfSumm = dbcSpell.LookupEntryForced(ritOfSummId);
+        OLD_SpellEntry * ritOfSumm = dbcSpell.LookupEntryForced(ritOfSummId);
         if (ritOfSumm != NULL)
         {
-            memcpy(ritOfSumm, sp, sizeof(SpellEntry));
+            memcpy(ritOfSumm, sp, sizeof(OLD_SpellEntry));
             ritOfSumm->Id = ritOfSummId;
         }
     }

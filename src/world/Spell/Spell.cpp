@@ -178,7 +178,7 @@ void SpellCastTargets::write(WorldPacket & data)
         data << m_strTarget.c_str();
 }
 
-Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
+Spell::Spell(Object* Caster, OLD_SpellEntry* info, bool triggered, Aura* aur)
 {
     ARCEMU_ASSERT(Caster != NULL && info != NULL);
 
@@ -197,7 +197,7 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
 
     if ((info->SpellDifficultyID != 0) && (Caster->GetTypeId() != TYPEID_PLAYER) && (Caster->GetMapMgr() != NULL) && (Caster->GetMapMgr()->pInstance != NULL))
     {
-        SpellEntry* SpellDiffEntry = sSpellFactoryMgr.GetSpellEntryByDifficulty(info->SpellDifficultyID, Caster->GetMapMgr()->iInstanceMode);
+        OLD_SpellEntry* SpellDiffEntry = sSpellFactoryMgr.GetSpellEntryByDifficulty(info->SpellDifficultyID, Caster->GetMapMgr()->iInstanceMode);
         if (SpellDiffEntry != NULL)
             m_spellInfo = SpellDiffEntry;
         else
@@ -3006,7 +3006,7 @@ void Spell::HandleAddAura(uint64 guid)
         p_caster->GetShapeShift() == FORM_DIREBEAR) &&
         p_caster->HasAurasWithNameHash(SPELL_HASH_KING_OF_THE_JUNGLE))
     {
-        SpellEntry* spellInfo = dbcSpell.LookupEntryForced(51185);
+        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(51185);
         if (!spellInfo)
         {
             delete aur;
@@ -3049,7 +3049,7 @@ void Spell::HandleAddAura(uint64 guid)
 
     if (spellid && Target)
     {
-        SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellid);
+        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellid);
         if (!spellInfo)
         {
             delete aur;
@@ -4035,7 +4035,7 @@ uint8 Spell::CanCast(bool tolerate)
                         return SPELL_FAILED_NO_PET;
 
                     // other checks
-                    SpellEntry* trig = dbcSpell.LookupEntryForced(GetProto()->EffectTriggerSpell[0]);
+                    OLD_SpellEntry* trig = dbcSpell.LookupEntryForced(GetProto()->EffectTriggerSpell[0]);
                     if (trig == NULL)
                         return SPELL_FAILED_SPELL_UNAVAILABLE;
 
@@ -4445,7 +4445,7 @@ uint8 Spell::CanCast(bool tolerate)
 
         if (u_caster->GetChannelSpellTargetGUID() != 0)
         {
-            SpellEntry* t_spellInfo = (u_caster->GetCurrentSpell() ? u_caster->GetCurrentSpell()->GetProto() : NULL);
+            OLD_SpellEntry* t_spellInfo = (u_caster->GetCurrentSpell() ? u_caster->GetCurrentSpell()->GetProto() : NULL);
 
             if (!t_spellInfo || !m_triggeredSpell)
                 return SPELL_FAILED_SPELL_IN_PROGRESS;
@@ -5541,7 +5541,7 @@ void Spell::SafeAddModeratedTarget(uint64 guid, uint16 type)
 
 bool Spell::Reflect(Unit* refunit)
 {
-    SpellEntry* refspell = NULL;
+    OLD_SpellEntry* refspell = NULL;
     bool canreflect = false;
 
     if (m_reflectedParent != NULL || refunit == NULL || m_caster == refunit)
@@ -5606,7 +5606,7 @@ bool Spell::Reflect(Unit* refunit)
     return true;
 }
 
-void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellEntry* spell)
+void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, OLD_SpellEntry* spell)
 {
     uint32 status = spell->custom_DiminishStatus;
     uint32 Grp = status & 0xFFFF;   // other bytes are if apply to pvp
@@ -5651,7 +5651,7 @@ void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellEntry* spe
     ++Target->m_diminishCount[Grp];
 }
 
-void UnapplyDiminishingReturnTimer(Unit* Target, SpellEntry* spell)
+void UnapplyDiminishingReturnTimer(Unit* Target, OLD_SpellEntry* spell)
 {
     uint32 status = spell->custom_DiminishStatus;
     uint32 Grp = status & 0xFFFF;   // other bytes are if apply to pvp
@@ -5830,7 +5830,7 @@ uint32 GetDiminishingGroup(uint32 NameHash)
     return ret;
 }
 
-uint32 GetSpellDuration(SpellEntry* sp, Unit* caster /*= NULL*/)
+uint32 GetSpellDuration(OLD_SpellEntry* sp, Unit* caster /*= NULL*/)
 {
     auto spell_duration = sSpellDurationStore.LookupEntry(sp->DurationIndex);
     if (spell_duration == nullptr)
@@ -5878,7 +5878,7 @@ void Spell::SendCastSuccess(const uint64 & guid)
     plr->GetSession()->OutPacket(uint32(SMSG_CLEAR_EXTRA_AURA_INFO_OBSOLETE), static_cast<uint16>(c), buffer);
 }
 
-uint8 Spell::GetErrorAtShapeshiftedCast(SpellEntry* spellInfo, uint32 form)
+uint8 Spell::GetErrorAtShapeshiftedCast(OLD_SpellEntry* spellInfo, uint32 form)
 {
     uint32 stanceMask = (form ? DecimalToMask(form) : 0);
 
@@ -6240,13 +6240,13 @@ void Spell::HandleTargetNoObject()
 }
 
 //Logs if the spell doesn't exist, using Debug loglevel.
-SpellEntry* CheckAndReturnSpellEntry(uint32 spellid)
+OLD_SpellEntry* CheckAndReturnSpellEntry(uint32 spellid)
 {
     //Logging that spellid 0 or -1 don't exist is not needed.
     if (spellid == 0 || spellid == uint32(-1))
         return NULL;
 
-    SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
+    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
     if (sp == NULL)
         LOG_DEBUG("Something tried to access nonexistent spell %u", spellid);
 
@@ -6254,7 +6254,7 @@ SpellEntry* CheckAndReturnSpellEntry(uint32 spellid)
 }
 
 
-bool IsDamagingSpell(SpellEntry* sp)
+bool IsDamagingSpell(OLD_SpellEntry* sp)
 {
 
     if (sp->HasEffect(SPELL_EFFECT_SCHOOL_DAMAGE) ||

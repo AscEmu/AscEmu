@@ -477,7 +477,7 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
 
         if (aur == NULL)        // If the player already have the aura, just extend it.
         {
-            SpellEntry* spellInfo = dbcSpell.LookupEntry(15007);    //resurrection sickness
+            OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(15007);    //resurrection sickness
             SpellCastTargets targets;
             targets.m_unitTarget = GetPlayer()->GetGUID();
             Spell* sp = sSpellFactoryMgr.NewSpell(_player, spellInfo, true, NULL);

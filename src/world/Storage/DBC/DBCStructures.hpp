@@ -83,7 +83,7 @@ namespace DBC
             //char const creature_display_info_extra_format[]="nixxxxxxxxxxxxxxxxxxx"; new
             char const creature_family_format[] = "nfifiiiiixsx";
             //char const creature_model_data_format[] = "nxxxxxxxxxxxxxxffxxxxxxxxxxxxxx"; new
-            char const creature_spell_data_format[] = "niiiixxxx";
+            char const creature_spell_data_format[] = "niiiiiiii";  //niiiixxxx
             //char const creature_type_format[]="nxx"; new
             char const currency_types_format[] = "nisxxxxiiix";
             //char const destructible_model_data_format[] = "nixxxixxxxixxxxixxxxixxx"; new
@@ -108,8 +108,8 @@ namespace DBC
             //char const gt_oct_base_mp_by_class_format[] = "df"; new
             //char const gt_oct_class_combat_rating_scalar_format[] = "df"; new
             //char const gt_oct_hp_per_stamina_format[] = "df"; new
-            char const gt_oct_regen_hp_format[] = "xf";
-            //char const gt_oct_regen_mp_format[] = "f"; NA
+            //char const gt_oct_regen_hp_format[] = "xf";
+            char const gt_oct_regen_mp_format[] = "f";
             char const gt_regen_hp_per_spt_format[] = "xf";
             char const gt_regen_mp_per_spt_format[] = "xf";
             //char const gt_spell_scaling_format[] = "df"; new
@@ -126,16 +126,16 @@ namespace DBC
             char const item_random_suffix_format[] = "nsxiiiiiiiiii";
             char const item_set_format[] = "dsxxxxxxxxxxxxxxxxxiiiiiiiiiiiiiiiiii";
             char const item_limit_category_format[] = "nxii";
-            //char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx"; NA
+            char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
             char const liquid_type_entry_format[] = "nxxixixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
             char const lock_format[] = "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx";
-            char const mail_template_format[] = "nxs";
+            char const mail_template_format[] = "nss";  //nxs
             char const map_format[] = "nsiiiisissififfiiiii";
             //char const map_difficulty_entry_format[] = "niisiis"; new
             //char const mount_capability_format[] = "niiiiiii"; new
             //char const mount_type_format[] = "niiiiiiiiiiiiiiiiiiiiiiii"; new
             //char const movie_entry_format[] = "nxxx"; new
-            //char const name_gen_format[] = "nsii"; NA
+            char const name_gen_format[] = "nsii";
             //char const num_talents_at_level_format[] = "df"; new
             //char const override_spell_data_format[] = "niiiiiiiiiixx"; new
             //char const phase_format[] = "nii"; new
@@ -159,7 +159,7 @@ namespace DBC
             //char const spell_cooldowns_entry_format[] = "diii"; new
             char const spell_difficulty_format[] = "niiii";
             char const spell_duration_format[] = "niii";
-            char const spell_entry_format[] = "niiiiiiiiiiiiiiifiiiissxxiixxixiiiiiiixiiiiiiiix";
+            char const spell_entry_format[] = "niiiiiiiiiiiiiiifiiiissssiixxixiiiiiiixiiiiiiiix";
             char const spell_item_enchantment_format[] = "nxiiiiiixxxiiisiiiiiiix";
             //char const skill_race_class_info_format[] = "diiiiixxx"; new
             char const spell_radius_format[] = "nfff";
@@ -198,35 +198,32 @@ namespace DBC
         }
 
         #pragma pack(push, 1)
-        struct AchievementEntry
+        struct AchievementEntry     //cata
         {
             uint32 ID;                      // 0
             int32 factionFlag;              // 1 -1=all, 0=horde, 1=alliance
             int32 mapID;                    // 2 -1=none
-            //uint32 unknown1;              // 3
-            char* name[16];                 // 4-19
-            //uint32 name_flags;            // 20
-            char* description[16];          // 21-36
-            //uint32 desc_flags;            // 37
-            uint32 categoryId;              // 38
-            uint32 points;                  // 39 reward points
-            //uint32 orderInCategory;       // 40
-            uint32 flags;                   // 41
-            //uint32 unknown2;              // 42
-            char* rewardName[16];           // 43-58 title/item reward name
-            //uint32 rewardName_flags;      // 59
-            uint32 count;                   // 60
-            uint32 refAchievement;          // 61
+            uint32 parentAchievement;       // 3
+            char* name;                     // 4
+            char* description;              // 5
+            uint32 categoryId;              // 6
+            uint32 points;                  // 7 reward points
+            uint32 orderInCategory;         // 8
+            uint32 flags;                   // 9
+            uint32 icon;                    // 10
+            char* rewardName;               // 11 title/item reward name
+            uint32 count;                   // 12
+            uint32 refAchievement;          // 13
         };
 
-        struct AreaGroupEntry
+        struct AreaGroupEntry       //cata
         {
             uint32 AreaGroupId;             // 0
             uint32 AreaId[6];               // 1-6
             uint32 next_group;              // 7
         };
 
-        struct AreaTableEntry
+        struct AreaTableEntry               //cata
         {
             uint32 id;                      // 0
             uint32 map_id;                  // 1
@@ -235,19 +232,29 @@ namespace DBC
             uint32 flags;                   // 4, unknown value but 312 for all cities
                                             // 5-9 unused
             int32 area_level;               // 10
-            char* area_name[16];            // 11-26
-                                            // 27, string flags, unused
-            uint32 team;                    // 28
-            uint32 liquid_type_override[4]; // 29-32 liquid override by type
+            char* area_name;                // 11
+            uint32 team;                    // 12
+            uint32 liquid_type_override[4]; // 13-16 liquid override by type
+                                            // 17
+                                            // 18
+                                            // 19
+            //uint32 unk20;                 // 20
+            //uint32 unk21;                 // 21
+            //uint32 unk22;                 // 22
+            //uint32 unk23;                 // 23
+            //uint32 unk24;                 // 24
         };
 
-        struct AreaTriggerEntry
+        struct AreaTriggerEntry     //cata
         {
             uint32 id;              // 0
             uint32 mapid;           // 1
             float x;                // 2
             float y;                // 3
             float z;                // 4
+            //uint32                // 5
+            //uint32                // 6
+            //uint32                // 7
             float o;                // 5 radius?
             float box_x;            // 6 extent x edge
             float box_y;            // 7 extent y edge
@@ -255,81 +262,98 @@ namespace DBC
             float box_o;            // 9 extent rotation by about z axis
         };
 
-        struct AuctionHouseEntry
+        //\todo danko
+        //struct ArmorLocationEntry   
+        //{
+        //    uint32 InventoryType;   // 0
+        //    float Value[5];         // 1-5 multiplier for armor types (cloth...plate, no armor?)
+        //};
+
+        struct AuctionHouseEntry    //cata
         {
             uint32 id;              // 0
             uint32 faction;         // 1
             uint32 fee;             // 2
             uint32 tax;             // 3
-            //char* name[16];       // 4-19
-            //uint32 name_flags;    // 20
+            //char* name;           // 4
         };
 
-        struct BankBagSlotPrices
+        struct BankBagSlotPrices    //cata
         {
             uint32 Id;              // 0
             uint32 Price;           // 1
         };
 
-        struct BarberShopStyleEntry
+        struct BarberShopStyleEntry //cata
         {
             uint32 id;              // 0
             uint32 type;            // 1 value 0 -> hair, value 2 -> facialhair
-            //char* name;           // 2 string hairstyle name
-            //char* name[15];       // 3-17 name of hair style
-            //uint32 name_flags;    // 18
-            //uint32 unk_name[16];  // 19-34, all empty
-            //uint32 unk_flags;     // 35
-            //float unk3;           // 36 values 1 and 0,75
-            uint32 race;            // 37 race
-            uint32 gender;          // 38 0 male, 1 female
-            uint32 hair_id;         // 39 Hair ID
+            //char* name;           // 2
+            //uint32 unk_name;      // 3
+            //float CostMultiplier; // 4
+            uint32 race;            // 5
+            uint32 gender;          // 6 0 male, 1 female
+            uint32 hair_id;         // 7 Hair ID
         };
 
-        struct CharTitlesEntry
+        #define OUTFIT_ITEMS 24
+
+        //\todo danko
+        //struct CharStartOutfitEntry
+        //{
+        //    //uint32 Id;                                // 0
+        //    uint32 RaceClassGender;                     // 1
+        //    int32 ItemId[OUTFIT_ITEMS];                 // 2-25
+        //    //int32 ItemDisplayId[OUTFIT_ITEMS];        // 26-29
+        //    //int32 ItemInventorySlot[OUTFIT_ITEMS];    // 50-73
+        //    //uint32 Unknown1;                          // 74
+        //    //uint32 Unknown2;                          // 75
+        //    //uint32 Unknown3;                          // 76
+        //    //uint32 Unknown4;                          // 77
+        //    //uint32 Unknown5;                          // 78
+        //};
+
+        struct CharTitlesEntry  //cata
         {
             uint32 ID;                      // 0, title ids
             //uint32 unk1;                  // 1 flags?
-            char* name_male[16];            // 2-17
-            //uint32 name_flag;             // 18 string flag, unused
-            char* name_female[16];          // 19-34
-            //const char* name2_flag;       // 35 string flag, unused
-            uint32 bit_index;               // 36 used in PLAYER_CHOSEN_TITLE and 1<<index in PLAYER__FIELD_KNOWN_TITLES
+            char* name;                     // 2
+            //char* name2;                  // 3
+            uint32 bit_index;               // 4 used in PLAYER_CHOSEN_TITLE and 1<<index in PLAYER__FIELD_KNOWN_TITLES
+            //uint32 unk                    // 5
         };
 
-        struct ChatChannelsEntry
+        struct ChatChannelsEntry            //cata
         {
             uint32 id;                      // 0
             uint32 flags;                   // 1
-            char* name_pattern[16];         // 3-18
-            //uint32 name_pattern_flags;    // 19
-            //char* channel_name[16];       // 20-35
-            //uint32 channel_name_flags;    // 36
+            //uint32 faction                // 2
+            char* name_pattern;             // 3
+            //char* channel_name;           // 4
         };
 
         struct ChrClassesEntry
         {
             uint32 class_id;                // 0
-            //uint32 unk1;                  // 1
-            uint32 power_type;              // 2
-            //uint32 unk2[2];               // 3-4
-            char* name[16];                 // 5-20
-            //uint32 nameflags;             // 21
-            //char* name_female[16];        // 22-36
-            //uint32 name_female_flags;     // 37
-            //char* name_neutral[16];       // 38-53
-            //uint32 name_neutral_flags;    // 54
-            //uint32 unk3;                  // 55
-            uint32 spellfamily;             // 56
-            //uint32 unk4;                  // 57
-            uint32 cinematic_sequence;      // 58 CinematicSequences.dbc
-            uint32 expansion;               // 59
+            uint32 power_type;              // 1
+            //uint32 unk2;                  // 2
+            char* name;                     // 3
+            //char* name_female;            // 4
+            //char* name_neutral;           // 5
+            //char* name_capitalized        // 6
+            uint32 spellfamily;             // 7
+            //uint32 unk4;                  // 8
+            uint32 cinematic_sequence;      // 9 CinematicSequences.dbc
+            uint32 expansion;               // 10
+            uint32 apPerStr;                // 11
+            uint32 apPerAgi;                // 12
+            uint32 rapPerAgi;               // 13
         };
 
-        struct ChrRacesEntry
+        struct ChrRacesEntry        //cata
         {
             uint32 race_id;                 // 0
-            uint32 flags;                   // 1
+            //uint32 flags;                 // 1
             uint32 faction_id;              // 2
             //uint32 unk1;                  // 3
             uint32 model_male;              // 4
@@ -339,17 +363,26 @@ namespace DBC
             //uint32 unk3[4];               // 8-11
             uint32 cinematic_id;            // 12 CinematicSequences.dbc
             //uint32 unk4                   // 13
-            char* name[16];                 // 14-29
-            //uint32 name_flags             // 30
-            //char* name_female[16];        // 31-46
-            //uint32 name_female_flags      // 47
-            //char* name_neutral[16];       // 48-63
-            //uint32 name_neutral_flags     // 64 string flags, unused
-            //uint32 unk5[3]                // 65-67 unused
-            uint32 expansion;               // 68
+            char* name;                     // 14
+            //char* name_female;            // 15
+            //char* name_neutral;           // 16
+            //uint32 unk5[2]                // 17-18
+                                            // 19
+            uint32 expansion;               // 20
+            //uint32                        // 21
+            //uint32                        // 22
+            //uint32                        // 23
         };
 
-        struct CreatureFamilyEntry
+        //\todo danko
+        //struct ChrPowerTypesEntry
+        //{
+        //    uint32 entry;                   // 0
+        //    uint32 classId;                 // 1
+        //    uint32 power;                   // 2
+        //};
+
+        struct CreatureFamilyEntry          //cata
         {
             uint32 ID;                      // 0
             float minsize;                  // 1
@@ -361,64 +394,63 @@ namespace DBC
             uint32 petdietflags;            // 7
             uint32 talenttree;              // 8 (-1 = none, 0 = ferocity(410), 1 = tenacity(409), 2 = cunning(411))
             //uint32 unk;                   // 9 some index 0 - 63
-            char* name[16];                 // 10-25
-            //uint32 nameflags;             // 26
-            //uint32 iconFile;              // 27
+            char* name;                     // 10
+            //uint32 nameflags;             // 11
         };
 
-        struct CreatureSpellDataEntry
+        struct CreatureSpellDataEntry   //cata
         {
             uint32 id;                      // 0
-            uint32 Spells[3];               // 1-3
-            uint32 PHSpell;                 // 4
-            uint32 Cooldowns[3];            // 5-7
-            uint32 PH;                      // 8
+            uint32 Spells[3];
+            uint32 PHSpell;
+            uint32 Cooldowns[3];
+            uint32 PH;
         };
 
-        struct CurrencyTypesEntry
+        //\todo danko
+        //struct CreatureTypeEntry
+        //{
+        //    uint32 ID;                      // 0
+        //    //char* Name;                   // 1
+        //    //uint32 no_expirience;         // 2
+        //};
+
+        struct CurrencyTypesEntry       //cata
         {
-            //uint32 ID;            // 0 not used
-            uint32 item_id;         // 1 used as index
-            //uint32 Category;      // 2 may be category
-            uint32 bit_index;       // 3 bit index in PLAYER_FIELD_KNOWN_CURRENCIES (1 << (index-1))
+            uint32 item_id;         // 0
+            uint32 Category;        // 1
+            char* name;             // 2
+            //char* unk             // 3
+            //char* unk2            // 4
+            //uint32 unk5;          // 5
+            //uint32 unk6;          // 6
+            uint32 TotalCap;        // 7
+            uint32 WeekCap;         // 8
+            uint32 Flags;           // 9
+            //char* description;    // 10
         };
 
-        struct DurabilityCostsEntry
+        struct DurabilityCostsEntry //cata
         {
             uint32 itemlevel;       // 0
             uint32 modifier[29];    // 1-29
         };
 
-        struct DurabilityQualityEntry
+        struct DurabilityQualityEntry   //cata
         {
             uint32 id;              // 0
             float quality_modifier; // 1
         };
 
-        struct EmotesTextEntry
+        struct EmotesTextEntry  //cata
         {
             uint32 Id;              // 0
             //uint32 name;          // 1
             uint32 textid;          // 2
-            uint32 textid2;         // 3
-            uint32 textid3;         // 4
-            uint32 textid4;         // 5
-            //uint32 unk1;          // 6
-            uint32 textid5;         // 7
-            //uint32 unk2;          // 8
-            uint32 textid6;         // 9
-            //uint32 unk3;          // 10
-            //uint32 unk4;          // 11
-            //uint32 unk5;          // 12
-            //uint32 unk6;          // 13
-            //uint32 unk7;          // 14
-            //uint32 unk8;          // 15
-            //uint32 unk9;          // 16
-            //uint32 unk10;         // 17
-            //uint32 unk11;         // 18
+            //uint32 unk1;          // 4
         };
 
-        struct FactionEntry
+        struct FactionEntry //cata
         {
             uint32 ID;                      // 0
             int32 RepListId;                // 1
@@ -431,13 +463,12 @@ namespace DBC
             float spillover_rate_out;       // 20
             uint32 spillover_max_in;        // 21
             //uint32 unk1;                  // 22
-            char* Name[16];                 // 23-38
-            //uint32 name_flags;            // 39
-            //uint32 Description[16];       // 40-55
-            //uint32 description_flags;     // 56
+            char* Name;                     // 23
+            //uint32 Description;           // 24
+            //uint32 description_flags;     // 25
         };
 
-        struct FactionTemplateEntry
+        struct FactionTemplateEntry //cata
         {
             uint32 ID;                      // 0
             uint32 Faction;                 // 1
@@ -449,7 +480,7 @@ namespace DBC
             uint32 FriendlyFactions[4];     // 10-13
         };
 
-        struct GameObjectDisplayInfoEntry
+        struct GameObjectDisplayInfoEntry   //cata
         {
             uint32 Displayid;               // 0
             char* filename;                 // 1
@@ -461,9 +492,11 @@ namespace DBC
             float maxY;                     // 16
             float maxZ;                     // 17
             //uint32 transport;             // 18
+            //uint32 unk;                   // 19
+            //uint32 unk;                   // 20
         };
 
-        struct GemPropertiesEntry
+        struct GemPropertiesEntry       //cata
         {
             uint32 Entry;                   // 0
             uint32 EnchantmentID;           // 1
@@ -472,7 +505,7 @@ namespace DBC
             uint32 SocketMask;              // 4
         };
 
-        struct GlyphPropertiesEntry
+        struct GlyphPropertiesEntry     //cata
         {
             uint32 Entry;                   // 0
             uint32 SpellID;                 // 1
@@ -480,60 +513,61 @@ namespace DBC
             uint32 unk;                     // 3 glyph_icon spell.dbc
         };
 
-        struct GlyphSlotEntry
+        struct GlyphSlotEntry   //cata
         {
             uint32 Id;              // 0
             uint32 Type;            // 1
             uint32 Slot;            // 2
         };
 
-        struct GtBarberShopCostBaseEntry
+        struct GtBarberShopCostBaseEntry    //cata
         {
             float cost;             // 0 cost base
         };
 
-        struct GtChanceToMeleeCritEntry
+        struct GtChanceToMeleeCritEntry     //cata
         {
             float val;              // 0
         };
 
-        struct GtChanceToMeleeCritBaseEntry
+        struct GtChanceToMeleeCritBaseEntry //cata
         {
             float val;              // 0
         };
 
-        struct GtChanceToSpellCritEntry
+        struct GtChanceToSpellCritEntry //cata
         {
             float val;              // 0
         };
 
-        struct GtChanceToSpellCritBaseEntry
+        struct GtChanceToSpellCritBaseEntry //cata
         {
             float val;              // 0
         };
 
-        struct GtCombatRatingsEntry
+        struct GtCombatRatingsEntry //cata
         {
             float val;              // 0
         };
 
-        struct GtOCTRegenHPEntry
-        {
-            float ratio;            // 0
-        };
-
-        //\todo danko - unused anyway!
-        //struct GtOCTRegenMPEntry
+        //\todo danko
+        //struct GtOCTRegenHPEntry
         //{
         //    float ratio;            // 0
         //};
 
-        struct GtRegenHPPerSptEntry
+        struct GtOCTRegenMPEntry    //cata
         {
-            float ratio;            // 0 regen base
+            float ratio;            // 0
         };
 
-        struct GtRegenMPPerSptEntry
+        //\todo danko
+        //struct GtRegenHPPerSptEntry
+        //{
+        //    float ratio;            // 0 regen base
+        //};
+
+        struct GtRegenMPPerSptEntry //cata
         {
             float ratio;            // 0 regen base
         };
@@ -542,93 +576,83 @@ namespace DBC
 #define MAX_HOLIDAY_DATES 26
 #define MAX_HOLIDAY_FLAGS 10
 
-        struct HolidaysEntry
+        struct HolidaysEntry    //cata
         {
             uint32 Id;                                  // 0
-            uint32 Duration[MAX_HOLIDAY_DURATIONS];     // 1-10
-            uint32 Date[MAX_HOLIDAY_DATES];             // 11-36
-            uint32 Region;                              // 37
-            uint32 Looping;                             // 38
-            uint32 CalendarFlags[MAX_HOLIDAY_FLAGS];    // 39-48
-            //uint32 holidayNameId;                     // 49 HolidayNames.dbc
-            //uint32 holidayDescriptionId;              // 50 HolidayDescriptions.dbc
-            char* TextureFilename;                      // 51
-            uint32 Priority;                            // 52
-            uint32 CalendarFilterType;                  // 53
-            //uint32 flags;                             // 54
+            //uint32 Duration[MAX_HOLIDAY_DURATIONS];     // 1-10
+            //uint32 Date[MAX_HOLIDAY_DATES];             // 11-36
+            //uint32 Region;                              // 37
+            //uint32 Looping;                             // 38
+            //uint32 CalendarFlags[MAX_HOLIDAY_FLAGS];    // 39-48
+            ////uint32 holidayNameId;                     // 49 HolidayNames.dbc
+            ////uint32 holidayDescriptionId;              // 50 HolidayDescriptions.dbc
+            //char* TextureFilename;                      // 51
+            //uint32 Priority;                            // 52
+            //uint32 CalendarFilterType;                  // 53
+            ////uint32 flags;                             // 54
         };
 
-        struct ItemLimitCategoryEntry
+        struct ItemLimitCategoryEntry   //cata
         {
             uint32 Id;                      // 0
-            //char* name[16];               // 1-16 name langs
-            //uint32 name_flags             // 17
-            uint32 maxAmount;               // 18
-            uint32 equippedFlag;            // 19 - equipped (bool?)
+            //char* name;                   // 1
+            uint32 maxAmount;               // 2
+            uint32 equippedFlag;            // 3
         };
 
-        struct ItemRandomPropertiesEntry
+        struct ItemRandomPropertiesEntry    //cata
         {
             uint32 ID;                      // 0
-            //uint32 name1;                 // 1
-            uint32 spells[3];               // 2-4
-            //uint32 unk1;                  // 5
-            //uint32 unk2;                  // 6
-            char* name_suffix[16];          // 7-22
-            //uint32 name_suffix_flags;     // 23
+            //char* name1;                  // 1
+            uint32 spells[5];               // 2-6 enchant_id
+            char* name_suffix;              // 7
         };
 
-        struct ItemRandomSuffixEntry
+        struct ItemRandomSuffixEntry    //cata
         {
             uint32 id;                      // 0
-            char* name_suffix[16];          // 1-16
-            //uint32 name_suffix_flags;     // 17
-            //uint32 unk1;                  // 18
-            uint32 enchantments[3];         // 19-21
-            //uint32 unk2[2];               // 22-23
-            uint32 prefixes[3];             // 24-26
-            //uint32[2];                    // 27-28
+            char* name_suffix;              // 1
+            //uint32 name_suffix_flags;     // 2
+            uint32 enchantments[5];         // 3-7
+            uint32 prefixes[5];             // 8-12
         };
 
-        struct ItemSetEntry
+        struct ItemSetEntry //cata
         {
-            uint32 id;                      // 1
-            char* name[16];                 // 1-16 name (lang)
-            //uint32 localeflag;            // 17 constant
-            uint32 itemid[10];              // 18-27 item set items
-            //uint32 unk[7];                // 28-34 all 0
-            uint32 SpellID[8];              // 35-42
-            uint32 itemscount[8];           // 43-50
-            uint32 RequiredSkillID;         // 51
-            uint32 RequiredSkillAmt;        // 52
+            //uint32 id;                    // 0
+            char* name;                     // 1
+            //uint32 itemid[17];            // 2-18
+            uint32 SpellID[8];              // 19-26
+            uint32 itemscount[8];           // 27-34
+            uint32 RequiredSkillID;         // 35
+            uint32 RequiredSkillAmt;        // 36
         };
 
-        //\todo danko
-        //struct LFGDungeonEntry
-        //{
-        //    uint32 ID;              // 0
-        //    char* name[16];         // 1-17 Name lang
-        //    uint32 minlevel;        // 18
-        //    uint32 maxlevel;        // 19
-        //    uint32 reclevel;        // 20
-        //    uint32 recminlevel;     // 21
-        //    uint32 recmaxlevel;     // 22
-        //    int32 map;              // 23
-        //    uint32 difficulty;      // 24
-        //    uint32 flags;           // 25
-        //    uint32 type;            // 26
-        //    //uint32  unk;          // 27
-        //    //char* iconname;       // 28
-        //    uint32 expansion;       // 29
-        //    //uint32 unk4;          // 30
-        //    uint32 grouptype;       // 31
-        //    //char* desc[16];       // 32-47 Description
+        struct LFGDungeonEntry
+        {
+            uint32 ID;              // 0
+            char* name[16];         // 1-17 Name lang
+            uint32 minlevel;        // 18
+            uint32 maxlevel;        // 19
+            uint32 reclevel;        // 20
+            uint32 recminlevel;     // 21
+            uint32 recmaxlevel;     // 22
+            int32 map;              // 23
+            uint32 difficulty;      // 24
+            uint32 flags;           // 25
+            uint32 type;            // 26
+            //uint32  unk;          // 27
+            //char* iconname;       // 28
+            uint32 expansion;       // 29
+            //uint32 unk4;          // 30
+            uint32 grouptype;       // 31
+            //char* desc[16];       // 32-47 Description
 
-        //    // Helpers
-        //    uint32 Entry() const { return ID + (type << 24); }
-        //};
+            // Helpers
+            uint32 Entry() const { return ID + (type << 24); }
+        };
 
-        struct LiquidTypeEntry
+        struct LiquidTypeEntry  //cata
         {
             uint32 Id;                  // 0
             //char* Name;               // 1
@@ -653,7 +677,7 @@ namespace DBC
 
 #define LOCK_NUM_CASES 8
 
-        struct LockEntry
+        struct LockEntry    //cata
         {
             uint32 Id;                              // 0
             uint32 locktype[LOCK_NUM_CASES];        // 1-8 If this is 1, then the next lockmisc is an item ID, if it's 2, then it's an iRef to LockTypes.dbc.
@@ -662,90 +686,87 @@ namespace DBC
             //uint32 action[LOCK_NUM_CASES];        // 25-32 Something to do with direction / opening / closing.
         };
 
-        struct MailTemplateEntry
+        struct MailTemplateEntry    //cata
         {
             uint32 ID;              // 0
             char* subject;          // 1
-            //float unused1[15]     // 2-16
-            //uint32 flags1         // 17 name flags, unused
-            char* content;          // 18
-            //float unused2[15]     // 19-34
-            //uint32 flags2         // 35 name flags, unused
+            char* content;          // 2
         };
 
-        struct MapEntry
+        struct MapEntry //cata
         {
             uint32 id;                      // 0
-            //char* name_internal;          // 1
+            char* name_internal;            // 1
             uint32 map_type;                // 2
             uint32 map_flags;               // 3
-            //uint32 is_pvp_zone;           // 4 -0 false -1 true
-            char* map_name[16];             // 5-20
-            //uint32 name_flags;            // 21
-            uint32 linked_zone;             // 22 common zone for instance and continent map
-            //char* horde_intro[16];        // 23-38 horde text for PvP Zones
-            //uint32 hordeIntro_flags;      // 39
-            //char* alliance_intro[16];     // 40-55 alliance text for PvP Zones
-            //uint32 allianceIntro_flags;   // 56
-            uint32 multimap_id;             // 57
-            //uint32 battlefield_map_icon;  // 58
-            int32 parent_map;               // 59 map_id of parent map
-            float start_x;                  // 60 enter x coordinate (if exist single entry)
-            float start_y;                  // 61 enter y coordinate (if exist single entry)
-            //uint32 dayTime;               // 62 
-            uint32 addon;                   // 63 0-original maps, 1-tbc addon, 2-wotlk addon
-            uint32 unk_time;                // 64
-            uint32 max_players;             // 65
+            uint32 unk4;                    // 4
+            uint32 is_pvp_zone;             // 5
+            char* map_name;                 // 6
+            uint32 linked_zone;             // 7 common zone for instance and continent map
+            char* horde_intro;              // 8 horde text for PvP Zones
+            char* alliance_intro;           // 9 alliance text for PvP Zones
+            uint32 multimap_id;             // 10
+            float battlefield_map_icon;     // 11
+            int32 parent_map;               // 12 ghost map_id of parent map
+            float start_x;                  // 13 ghost enter x coordinate (if exist single entry)
+            float start_y;                  // 14 ghost enter y coordinate (if exist single entry)
+            uint32 dayTime_override;        // 15
+            uint32 addon;                   // 16 0-original maps, 1-tbc addon, 2-wotlk addon
+            uint32 unk_time;                // 17
+            uint32 max_players;             // 18
+            uint32 next_phase_map;          // 19
         };
 
-        //\todo danko
-        //struct NameGenEntry
-        //{
-        //    uint32 ID;              // 0
-        //    char* Name;             // 1
-        //    uint32 unk1;            // 2
-        //    uint32 type;            // 3
-        //};
+        struct NameGenEntry
+        {
+            uint32 ID;              // 0
+            char* Name;             // 1
+            uint32 unk1;            // 2
+            uint32 type;            // 3
+        };
 
-        struct QuestXP
+        struct QuestXP  //cata
         {
             uint32 questLevel;     // 0
             uint32 xpIndex[10];    // 1-10
         };
 
-        struct ScalingStatDistributionEntry
+        struct ScalingStatDistributionEntry //cata
         {
             uint32 id;                  // 0
             int32 stat[10];             // 1-10
             uint32 statmodifier[10];    // 11-20
-            uint32 maxlevel;            // 21
+            //uint32 unk;               // 21
+            uint32 maxlevel;            // 22
         };
 
-        struct ScalingStatValuesEntry
+        struct ScalingStatValuesEntry   //cata
         {
             uint32 id;                  // 0
             uint32 level;               // 1
-            uint32 multiplier[16];      // 2-17 ///\todo split this
-            uint32 unk1;                // 18
-            uint32 amor_mod[5];         // 19-23
+            uint32 multiplier[20];      // 
+            //\todo danko Rewrite GetStatScalingStatValueColumn!
+            //uint32 dpsMod[6];           // 2-7
+            //uint32 spellBonus;          // 8
+            //uint32 scalingstatmultipl[5]; // 9-13
+            //uint32 amor_mod[4];         // 14-17
+            //uint32 amor_mod2[4];        // 18-21
+            ////uint32 junk[24];          // 22-45
+            ////uint32 unk2;              // 46
         };
 
-        struct SkillLineEntry
+        struct SkillLineEntry   //cata
         {
             uint32 id;                  // 0
             uint32 type;                // 1
-            //uint32 skillCostsID;      // 2
-            char* Name[16];             // 3-18
-            //uint32 NameFlags;         // 19
-            //char* Description[16];    // 20-35
-            //uint32 DescriptionFlags;  // 36
-            uint32 spell_icon;          // 37
-            //char* add_name[16];       // 38-53
-            //uint32 add_name_flags;    // 54
-            uint32 linkable;            // 55
+            char* Name;                 // 2
+            //char* Description;        // 3
+            uint32 spell_icon;          // 4
+            //char* add_name;           // 5
+            uint32 linkable;            // 6
         };
 
-        struct SkillLineAbilityEntry
+        struct SkillLineAbilityEntry    //cata
         {
             uint32 Id;                      // 0
             uint32 skilline;                // 1 skill id
@@ -759,8 +780,8 @@ namespace DBC
             uint32 acquireMethod;           // 9 auto learn
             uint32 grey;                    // 10 max
             uint32 green;                   // 11 min
-            //uint32 abandonable;           // 12
-            //uint32 reqTP;                 // 13
+            uint32 characterPoints;         // 12
+            //uint32 unk;                   // 13
         };
 
         //\todo danko
@@ -770,21 +791,21 @@ namespace DBC
         //    uint32 Price;           // 1
         //};
 
-        struct SpellCastTimesEntry
+        struct SpellCastTimesEntry  //cata
         {
             uint32 ID;              // 0
             uint32 CastTime;        // 1
-            //uint32 unk1;          // 2
-            //uint32 unk2;          // 3
+            float CastTimePerLevel; // 2
+            int32 MinCastTime;      // 3
         };
 
-        struct SpellDifficultyEntry
+        struct SpellDifficultyEntry //cata
         {
             uint32 ID;              // 0
             int32 SpellId[4];       // 1-4 (instance modes)
         };
 
-        struct SpellDurationEntry
+        struct SpellDurationEntry   //cata
         {
             uint32 ID;              // 0
             uint32 Duration1;       // 1
@@ -796,7 +817,7 @@ namespace DBC
         #define MAX_EFFECT_MASK 7
         #define MAX_SPELL_REAGENTS 8
 
-        struct SpellEntry_New
+        struct SpellEntry
         {
             uint32 Id;                                          // 0
             uint32 Category;                                    // 1
@@ -810,112 +831,52 @@ namespace DBC
             uint32 AttributesExE;                               // 9
             uint32 AttributesExF;                               // 10
             uint32 AttributesExG;                               // 11
-            uint32 Stances[2];                                  // 12
-            uint32 StancesNot[2];                               // 14
-            uint32 Targets;                                     // 16
-            uint32 TargetCreatureType;                          // 17
-            uint32 RequiresSpellFocus;                          // 18
-            uint32 FacingCasterFlags;                           // 19
-            uint32 CasterAuraState;                             // 20
-            uint32 TargetAuraState;                             // 21
-            uint32 CasterAuraStateNot;                          // 22
-            uint32 TargetAuraStateNot;                          // 23
-            uint32 casterAuraSpell;                             // 24
-            uint32 targetAuraSpell;                             // 25
-            uint32 excludeCasterAuraSpell;                      // 26
-            uint32 excludeTargetAuraSpell;                      // 27
-            uint32 CastingTimeIndex;                            // 28
-            uint32 RecoveryTime;                                // 29
-            uint32 CategoryRecoveryTime;                        // 30
-            uint32 InterruptFlags;                              // 31
-            uint32 AuraInterruptFlags;                          // 32
-            uint32 ChannelInterruptFlags;                       // 33
-            uint32 procFlags;                                   // 34
-            uint32 procChance;                                  // 35
-            uint32 procCharges;                                 // 36
-            uint32 maxLevel;                                    // 37
-            uint32 baseLevel;                                   // 38
-            uint32 spellLevel;                                  // 39
-            uint32 DurationIndex;                               // 40
-            uint32 powerType;                                   // 41
-            uint32 manaCost;                                    // 42
-            uint32 manaCostPerlevel;                            // 43
-            uint32 manaPerSecond;                               // 44
-            uint32 manaPerSecondPerLevel;                       // 45
-            uint32 rangeIndex;                                  // 46
-            float speed;                                        // 47
-            //uint32 modalNextSpell;                            // 48
-            uint32 StackAmount;                                 // 49
-            uint32 Totem[2];                                    // 50-51
-            int32 Reagent[MAX_SPELL_REAGENTS];                  // 52-59
-            uint32 ReagentCount[MAX_SPELL_REAGENTS];            // 60-67
-            int32 EquippedItemClass;                            // 68
-            int32 EquippedItemSubClassMask;                     // 69
-            int32 EquippedItemInventoryTypeMask;                // 70
-            uint32 Effect[MAX_SPELL_EFFECTS];                   // 71-73
-            int32 EffectDieSides[MAX_SPELL_EFFECTS];            // 74-76
-            float EffectRealPointsPerLevel[MAX_SPELL_EFFECTS];  // 77-79
-            int32 EffectBasePoints[MAX_SPELL_EFFECTS];          // 80-82
-            uint32 EffectMechanic[MAX_SPELL_EFFECTS];           // 83-85
-            uint32 EffectImplicitTargetA[MAX_SPELL_EFFECTS];    // 86-88
-            uint32 EffectImplicitTargetB[MAX_SPELL_EFFECTS];    // 89-91
-            uint32 EffectRadiusIndex[MAX_SPELL_EFFECTS];        // 92-94 spellradius.dbc
-            uint32 EffectApplyAuraName[MAX_SPELL_EFFECTS];      // 95-97
-            uint32 EffectAmplitude[MAX_SPELL_EFFECTS];          // 98-100
-            float EffectValueMultiplier[MAX_SPELL_EFFECTS];     // 101-103
-            uint32 EffectChainTarget[MAX_SPELL_EFFECTS];        // 104-106
-            uint32 EffectItemType[MAX_SPELL_EFFECTS];           // 107-109
-            int32 EffectMiscValue[MAX_SPELL_EFFECTS];           // 110-112
-            int32 EffectMiscValueB[MAX_SPELL_EFFECTS];          // 113-115
-            uint32 EffectTriggerSpell[MAX_SPELL_EFFECTS];       // 116-118
-            float EffectPointsPerComboPoint[MAX_SPELL_EFFECTS]; // 119-121
-            flag96 EffectSpellClassMask[MAX_SPELL_EFFECTS];     // 122-130
-            uint32 SpellVisual[2];                              // 131-132
-            uint32 SpellIconID;                                 // 133
-            uint32 activeIconID;                                // 134
-            //uint32 spellPriority;                             // 135
-            char* SpellName[16];                                // 136-151
-            //uint32 SpellNameFlag;                             // 152
-            char* Rank[16];                                     // 153-168
-            //uint32 RankFlags;                                 // 169
-            //char* Description[16];                            // 170-185
-            //uint32 DescriptionFlags;                          // 186
-            //char* ToolTip[16];                                // 187-202
-            //uint32 ToolTipFlags;                              // 203
-            uint32 ManaCostPercentage;                          // 204
-            uint32 StartRecoveryCategory;                       // 205
-            uint32 StartRecoveryTime;                           // 206
-            uint32 MaxTargetLevel;                              // 207  
-            uint32 SpellFamilyName;                             // 208
-            flag96 SpellFamilyFlags;                            // 209-211
-            uint32 MaxAffectedTargets;                          // 212
-            uint32 DmgClass;                                    // 213
-            uint32 PreventionType;                              // 214
-            //uint32 StanceBarOrder;                            // 215
-            float EffectDamageMultiplier[MAX_SPELL_EFFECTS];    // 216-218
-            //uint32 MinFactionId;                              // 219
-            //uint32 MinReputation;                             // 220
-            //uint32 RequiredAuraVision;                        // 221
-            uint32 TotemCategory[2];                            // 222-223
-            int32 AreaGroupId;                                  // 224
-            uint32 SchoolMask;                                  // 225
-            uint32 runeCostID;                                  // 226
-            //uint32 spellMissileID;                            // 227
-            //uint32 PowerDisplayId;                            // 228
-            float EffectBonusMultiplier[MAX_SPELL_EFFECTS];     // 229-231
-            //uint32 spellDescriptionVariableID;                // 232
-            //uint32 SpellDifficultyId;                         // 233
+            uint32 CastingTimeIndex;                            // 12
+            uint32 DurationIndex;                               // 13
+            uint32 powerType;                                   // 14
+            uint32 rangeIndex;                                  // 15
+            float speed;                                        // 16
+            uint32 SpellVisual[2];                              // 17-18
+            uint32 spellIconID;                                 // 19
+            uint32 activeIconID;                                // 20
+            char* Name;                                         // 21
+            char* Rank;                                         // 22
+            char* Description;                                  // 23
+            char* BuffDescription;                              // 24
+            uint32 School;                                      // 25
+            uint32 RuneCostID;                                  // 26
+            //uint32 spellMissileID;                            // 27
+            //uint32 spellDescriptionVariableID;                // 28
+            uint32 SpellDifficultyId;                           // 29
+            //float unk_1;                                      // 30
+            uint32 SpellScalingId;                              // 31 SpellScaling.dbc
+            uint32 SpellAuraOptionsId;                          // 32 SpellAuraOptions.dbc
+            uint32 SpellAuraRestrictionsId;                     // 33 SpellAuraRestrictions.dbc
+            uint32 SpellCastingRequirementsId;                  // 34 SpellCastingRequirements.dbc
+            uint32 SpellCategoriesId;                           // 35 SpellCategories.dbc
+            uint32 SpellClassOptionsId;                         // 36 SpellClassOptions.dbc
+            uint32 SpellCooldownsId;                            // 37 SpellCooldowns.dbc
+            //uint32 unk_2;                                     // 38 all zeros...
+            uint32 SpellEquippedItemsId;                        // 39 SpellEquippedItems.dbc
+            uint32 SpellInterruptsId;                           // 40 SpellInterrupts.dbc
+            uint32 SpellLevelsId;                               // 41 SpellLevels.dbc
+            uint32 SpellPowerId;                                // 42 SpellPower.dbc
+            uint32 SpellReagentsId;                             // 43 SpellReagents.dbc
+            uint32 SpellShapeshiftId;                           // 44 SpellShapeshift.dbc
+            uint32 SpellTargetRestrictionsId;                   // 45 SpellTargetRestrictions.dbc
+            uint32 SpellTotemsId;                               // 46 SpellTotems.dbc
+            //uint32 ResearchProject;                           // 47 ResearchProject.dbc
         };
 
-        struct SpellItemEnchantmentEntry
+        struct SpellItemEnchantmentEntry    //cata
         {
             uint32 Id;                  // 0
             //uint32 charges;           // 1
             uint32 type[3];             // 2-4
-            int32 min[3];               // 5-7 for combat, in practice min==max
-            int32 max[3];               // 8-10
+            uint32 min[3];               // 5-7 for combat, in practice min==max
+            //uint32 max[3];               // 8-10
             uint32 spell[3];            // 11-13
-            char* Name[16];             // 14-29
+            char* Name;                 // 14-29
             //uint32 NameFlags;         // 30
             uint32 visual;              // 31 aura
             uint32 EnchantGroups;       // 32 slot
@@ -926,7 +887,7 @@ namespace DBC
             uint32 req_level;           // 37
         };
 
-        struct SpellRadiusEntry
+        struct SpellRadiusEntry //cata
         {
             uint32 ID;                  // 0
             float radius_min;           // 1 Radius
@@ -934,7 +895,7 @@ namespace DBC
             float radius_max;           // 3 Radius2
         };
 
-        struct SpellRangeEntry
+        struct SpellRangeEntry  //cata
         {
             uint32 ID;                  // 0
             float minRange;             // 1
@@ -948,7 +909,7 @@ namespace DBC
             //uint32 name2_falgs;       // 39
         };
 
-        struct SpellRuneCostEntry
+        struct SpellRuneCostEntry   //cata
         {
             uint32 ID;              // 0
             uint32 bloodRuneCost;   // 1
@@ -957,7 +918,7 @@ namespace DBC
             uint32 runePowerGain;   // 4
         };
 
-        struct SpellShapeshiftFormEntry
+        struct SpellShapeshiftFormEntry //cata
         {
             uint32 id;                  // 0
             //uint32 button_pos;        // 1
@@ -974,7 +935,7 @@ namespace DBC
             uint32 spells[8];           // 27-34
         };
 
-        struct SummonPropertiesEntry
+        struct SummonPropertiesEntry    //cata
         {
             uint32 ID;                  // 0
             uint32 ControlType;         // 1
@@ -984,7 +945,7 @@ namespace DBC
             uint32 Flags;               // 5
         };
 
-        struct TalentEntry
+        struct TalentEntry  //cata
         {
             uint32 TalentID;            // 0
             uint32 TalentTree;          // 1
@@ -1001,33 +962,33 @@ namespace DBC
             //uint32 unk5;              // 21
         };
 
-        struct TalentTabEntry
+        struct TalentTabEntry   //cata
         {
             uint32 TalentTabID;         // 0
-            //char* Name[16];           // 1-16
-            //uint32 name_flags;        // 17
-            //uint32 unk4;              // 18
-            //uint32 unk5;              // 19
-            uint32 ClassMask;           // 20
-            uint32 PetTalentMask;       // 21
-            uint32 TabPage;             // 22
-            //char* InternalName;       // 23
+            //char* Name;               // 1
+            //uint32 unk5;              // 2
+            uint32 ClassMask;           // 3
+            uint32 PetTalentMask;       // 4
+            uint32 TabPage;             // 5
+            //char* InternalName;       // 6
+            //char* description;        // 7
+            uint32 rolesMask;           // 8
+            uint32 masterySpells[2];   // 9-10
         };
 
-        struct TaxiNodesEntry
+        struct TaxiNodesEntry   //cata
         {
             uint32 id;                  // 0
             uint32 mapid;               // 1
             float x;                    // 2
             float y;                    // 3
             float z;                    // 4
-            char* name[16];             // 5-21
-            //uint32 nameflags;         // 22
-            uint32 horde_mount;         // 23
-            uint32 alliance_mount;      // 24
+            char* name;                 // 5
+            uint32 horde_mount;         // 6
+            uint32 alliance_mount;      // 7
         };
 
-        struct TaxiPathEntry
+        struct TaxiPathEntry    //cata
         {
             uint32 id;                  // 0
             uint32 from;                // 1
@@ -1035,9 +996,9 @@ namespace DBC
             uint32 price;               // 3
         };
 
-        struct TaxiPathNodeEntry
+        struct TaxiPathNodeEntry    //cata
         {
-            uint32 id;                  // 0
+            //uint32 id;                // 0
             uint32 path;                // 1
             uint32 seq;                 // 2 nodeIndex
             uint32 mapid;               // 3
@@ -1052,7 +1013,7 @@ namespace DBC
 
         #define MAX_VEHICLE_SEATS 8
 
-        struct VehicleEntry
+        struct VehicleEntry //cata
         {
             uint32 ID;                                          // 0
             uint32 flags;                                       // 1
@@ -1106,7 +1067,7 @@ namespace DBC
             VEHICLE_SEAT_FLAG_B_USABLE_FORCED_3          = 0x00000100,
         };
 
-        struct VehicleSeatEntry
+        struct VehicleSeatEntry //cata
         {
             uint32 ID;                                          // 0
             uint32 flags;                                       // 1
@@ -1180,7 +1141,7 @@ namespace DBC
             }
         };
 
-        struct WMOAreaTableEntry
+        struct WMOAreaTableEntry    //cata
         {
             uint32 id;              // 0
             int32 rootId;           // 1
@@ -1197,7 +1158,7 @@ namespace DBC
             //uint32 nameflags;     // 27
         };
 
-        struct WorldMapOverlayEntry
+        struct WorldMapOverlayEntry //cata
         {
             uint32 ID;              // 0
             //uint32 worldMapID;    // 1

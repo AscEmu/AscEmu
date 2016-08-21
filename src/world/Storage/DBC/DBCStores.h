@@ -432,13 +432,13 @@ struct AchievementCriteriaEntry
             uint32 additionalRequirement2_value;           // 8 additional requirement 1 value
         } raw;
     };
-    char* name[16];                 // 9-24
-                                    //uint32 name_flags;            // 25
-    uint32 completionFlag;          // 26
-    uint32 groupFlag;               // 27
-    uint32 unk1;                    // 28
-    uint32 timeLimit;               // 29 time limit in seconds
-    uint32 index;                   // 30
+    //uint32 unk                    // 9
+    char* name;                     // 10
+    uint32 completionFlag;          // 11
+    uint32 groupFlag;               // 12 timed criteria
+    uint32 unk1;                    // 13 timed criteria misc id
+    uint32 timeLimit;               // 14 time limit in seconds
+    uint32 index;                   // 15 order
 };
 
 #endif
@@ -446,7 +446,7 @@ struct AchievementCriteriaEntry
 #define MAX_SPELL_EFFECTS 3
 
 // Struct for the entry in Spell.dbc
-struct SpellEntry
+struct OLD_SpellEntry
 {
     uint32 Id;                                                // 0
     uint32 Category;                                          // 1
@@ -698,7 +698,7 @@ struct SpellEntry
         return 0;
     }
 
-    SpellEntry()
+    OLD_SpellEntry()
     {
         Id = 0;
         Category = 0;
@@ -1211,9 +1211,9 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphPropertiesEntry> sGlyph
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphSlotEntry> sGlyphSlotStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemSetEntry> sItemSetStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LockEntry> sLockStore;
-extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellEntry_New> sSpellStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellEntry> sSpellStore;
 ///\todo remove the old spell loader
-extern SERVER_DECL DBCStorage<SpellEntry> dbcSpell;
+extern SERVER_DECL DBCStorage<OLD_SpellEntry> dbcSpell;
 
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDifficultyEntry> sSpellDifficultyStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDurationStore;
@@ -1256,10 +1256,10 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtChanceToMeleeCritEntry> sG
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtChanceToMeleeCritBaseEntry> sGtChanceToMeleeCritBaseStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtChanceToSpellCritEntry> sGtChanceToSpellCritStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtChanceToSpellCritBaseEntry> sGtChanceToSpellCritBaseStore;
-//extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenMPEntry> sGtOCTRegenMPStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenMPEntry> sGtOCTRegenMPStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenMPPerSptEntry> sGtRegenMPPerSptStore;
-extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore;
-extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore;
+//extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore;
+//extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTriggerEntry> sAreaTriggerStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ScalingStatDistributionEntry> sScalingStatDistributionStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ScalingStatValuesEntry> sScalingStatValuesStore;
@@ -1268,8 +1268,8 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::QuestXP> sQuestXPStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MailTemplateEntry> sMailTemplateStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::WMOAreaTableEntry> sWMOAreaTableStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SummonPropertiesEntry> sSummonPropertiesStore;
-//extern SERVER_DECL DBC::DBCStorage<DBC::Structures::NameGenEntry> sNameGenStore;
-//extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LFGDungeonEntry> sLFGDungeonStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::NameGenEntry> sNameGenStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LFGDungeonEntry> sLFGDungeonStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LiquidTypeEntry> sLiquidTypeStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleEntry> sVehicleStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSeatStore;

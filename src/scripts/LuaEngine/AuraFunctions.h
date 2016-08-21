@@ -140,7 +140,7 @@ namespace LuaAura
         int valindex = 2;
         if (subindex)
             valindex++;
-        SpellEntry* proto = aura->m_spellProto;
+        OLD_SpellEntry* proto = aura->m_spellProto;
         LuaSpellEntry l = GetLuaSpellEntryByName(var);
         if (!l.name)
             RET_BOOL(false);
@@ -175,7 +175,7 @@ namespace LuaAura
             lua_pushnil(L);
             return 1;
         }
-        SpellEntry* proto = aura->m_spellProto;
+        OLD_SpellEntry* proto = aura->m_spellProto;
         LuaSpellEntry l = GetLuaSpellEntryByName(var);
         if (!l.name)
             RET_NIL();

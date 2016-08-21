@@ -952,8 +952,8 @@ class LeotherasAI : public CreatureAIScript
         bool mInWhirlwind;
         bool IsMorphing;
         uint32 Phase;
-        SpellEntry* info_whirlwind;
-        SpellEntry* info_chaos_blast;
+        OLD_SpellEntry* info_whirlwind;
+        OLD_SpellEntry* info_chaos_blast;
         uint32 FinalPhaseSubphase;
         uint32 FinalPhaseTimer;
 };
@@ -1182,7 +1182,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
         }
 
     protected:
-        SpellEntry* info_chaos_blast;
+        OLD_SpellEntry* info_chaos_blast;
 };
 
 
@@ -1304,7 +1304,7 @@ class KarathressAI : public CreatureAIScript
         uint32 AdvisorsLeft;
 
     private:
-        SpellEntry* info_cataclysmic_bolt;
+        OLD_SpellEntry* info_cataclysmic_bolt;
         uint32 CataclysmicBoltTimer;
         uint32 EnrageTimer;
         uint32 BlessingOfTidesCounter;
@@ -2256,8 +2256,8 @@ class VashjAI : public CreatureAIScript
         uint32 CoilfangEliteTimer;
         uint32 SporebatTimer;
         uint32 ForkedLightningTimer;
-        SpellEntry* info_multishot;
-        SpellEntry* info_shot;
+        OLD_SpellEntry* info_multishot;
+        OLD_SpellEntry* info_shot;
 };
 
 class TaintedElementalAI : public CreatureAIScript

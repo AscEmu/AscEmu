@@ -266,7 +266,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
                 if (dpsCycle > 11)
                     dpsCycle = 0;
 
-                SpellEntry* MyNextSpell = dbcSpell.LookupEntryForced(dpsSpell);
+                OLD_SpellEntry* MyNextSpell = dbcSpell.LookupEntryForced(dpsSpell);
                 if (MyNextSpell != NULL)
                     _unit->CastSpell(curtarget, MyNextSpell, true);
 
@@ -279,7 +279,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
             {
                 if (procSpell[p] != 0)
                 {
-                    SpellEntry* mProc = dbcSpell.LookupEntryForced(procSpell[p]);
+                    OLD_SpellEntry* mProc = dbcSpell.LookupEntryForced(procSpell[p]);
                     if (!mProc)
                         return;
                     int x = RandomUInt(99);

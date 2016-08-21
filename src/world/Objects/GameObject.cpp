@@ -442,7 +442,7 @@ void GameObject::SetRotationAngles(float z_rot, float y_rot, float x_rot)
     SetRotationQuat(quat.x, quat.y, quat.z, quat.w);
 }
 
-void GameObject::CastSpell(uint64 TargetGUID, SpellEntry* sp)
+void GameObject::CastSpell(uint64 TargetGUID, OLD_SpellEntry* sp)
 {
     Spell* s = new Spell(this, sp, true, NULL);
 
@@ -457,7 +457,7 @@ void GameObject::CastSpell(uint64 TargetGUID, SpellEntry* sp)
 
 void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
 {
-    SpellEntry* sp = dbcSpell.LookupEntryForced(SpellID);
+    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(SpellID);
     if (sp == nullptr)
     {
         sLog.outError("GameObject %u tried to cast a non-existing Spell %u.", gameobject_properties->entry, SpellID);

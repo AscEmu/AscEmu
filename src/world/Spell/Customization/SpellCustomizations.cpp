@@ -73,7 +73,7 @@ void SpellCustomizations::LoadSpellRanks()
             uint32 spell_id = result->Fetch()[0].GetUInt32();
             uint32 pRank = result->Fetch()[1].GetUInt32();
 
-            SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
+            OLD_SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
             if (spell_entry != nullptr)
             {
                 spell_entry->custom_RankNumber = pRank;
@@ -114,7 +114,7 @@ void SpellCustomizations::LoadSpellCustomAssign()
             bool self_cast_only = result->Fetch()[3].GetBool();
             uint32 c_is_flag = result->Fetch()[4].GetUInt32();
 
-            SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
+            OLD_SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
             if (spell_entry != nullptr)
             {
                 spell_entry->custom_BGR_one_buff_on_target = on_target;
@@ -155,7 +155,7 @@ void SpellCustomizations::LoadSpellCustomCoefFlags()
             uint32 spell_id = result->Fetch()[0].GetUInt32();
             uint32 coef_flags = result->Fetch()[1].GetUInt32();
 
-            SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
+            OLD_SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
             if (spell_entry != nullptr)
             {
                 spell_entry->custom_spell_coef_flags = coef_flags;
@@ -255,7 +255,7 @@ void SpellCustomizations::LoadSpellProcs()
 }
 
 ///Fix if it is a periodic trigger with amplitude = 0, to avoid division by zero
-void SpellCustomizations::SetEffectAmplitude(SpellEntry* spell_entry)
+void SpellCustomizations::SetEffectAmplitude(OLD_SpellEntry* spell_entry)
 {
     for (uint8 y = 0; y < 3; y++)
     {
@@ -275,7 +275,7 @@ void SpellCustomizations::SetEffectAmplitude(SpellEntry* spell_entry)
     }
 }
 
-void SpellCustomizations::SetAuraFactoryFunc(SpellEntry* spell_entry)
+void SpellCustomizations::SetAuraFactoryFunc(OLD_SpellEntry* spell_entry)
 {
     bool spell_aura_factory_functions_loaded = false;
 
@@ -302,7 +302,7 @@ void SpellCustomizations::SetAuraFactoryFunc(SpellEntry* spell_entry)
     }
 }
 
-void SpellCustomizations::SetMeleeSpellBool(SpellEntry* spell_entry)
+void SpellCustomizations::SetMeleeSpellBool(OLD_SpellEntry* spell_entry)
 {
     for (uint8 z = 0; z < 3; z++)
     {
@@ -332,7 +332,7 @@ void SpellCustomizations::SetMeleeSpellBool(SpellEntry* spell_entry)
     }
 }
 
-void SpellCustomizations::SetRangedSpellBool(SpellEntry* spell_entry)
+void SpellCustomizations::SetRangedSpellBool(OLD_SpellEntry* spell_entry)
 {
     for (uint8 z = 0; z < 3; z++)
     {
@@ -348,7 +348,7 @@ void SpellCustomizations::SetRangedSpellBool(SpellEntry* spell_entry)
     }
 }
 
-void SpellCustomizations::SetMissingCIsFlags(SpellEntry* spell_entry)
+void SpellCustomizations::SetMissingCIsFlags(OLD_SpellEntry* spell_entry)
 {
     // Zyres: Special cases, not handled in spell_custom_assign!
     if (IsDamagingSpell(spell_entry))
@@ -361,7 +361,7 @@ void SpellCustomizations::SetMissingCIsFlags(SpellEntry* spell_entry)
         spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
 }
 
-void SpellCustomizations::SetCustomFlags(SpellEntry* spell_entry)
+void SpellCustomizations::SetCustomFlags(OLD_SpellEntry* spell_entry)
 {
     // Currently only set for 781 Disengage
     if (spell_entry->Id != 781)
@@ -374,7 +374,7 @@ void SpellCustomizations::SetCustomFlags(SpellEntry* spell_entry)
     }
 }
 
-void SpellCustomizations::SetOnShapeshiftChange(SpellEntry* spell_entry)
+void SpellCustomizations::SetOnShapeshiftChange(OLD_SpellEntry* spell_entry)
 {
     // Currently only for spell Track Humanoids
     if (spell_entry->Id != 5225 && spell_entry->Id != 19883)
@@ -387,7 +387,7 @@ void SpellCustomizations::SetOnShapeshiftChange(SpellEntry* spell_entry)
     }
 }
 
-void SpellCustomizations::SetAlwaysApply(SpellEntry* spell_entry)
+void SpellCustomizations::SetAlwaysApply(OLD_SpellEntry* spell_entry)
 {
     switch (spell_entry->Id)
     {
