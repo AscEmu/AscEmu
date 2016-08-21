@@ -27,6 +27,8 @@
 #include "Management/Guild.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/DBC/DBCStores.h"
+#include "Storage/DB2/DB2Stores.hpp"
+#include "Storage/DB2/DB2Structures.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Management/TransporterHandler.h"
 #include "Management/Gossip/GossipDefines.hpp"

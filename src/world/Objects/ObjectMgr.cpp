@@ -1257,7 +1257,7 @@ void ObjectMgr::LoadVendors()
             Log.Notice("ObjectMgr", "Invalid format in vendors (%u/6) columns, loading anyway because we have enough data", result->GetFieldCount());
         }
 
-        DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = NULL;
+        DB2::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
         do
         {
             Field* fields = result->Fetch();

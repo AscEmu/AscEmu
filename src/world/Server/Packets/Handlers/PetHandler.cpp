@@ -380,11 +380,12 @@ void WorldSession::HandleBuyStableSlot(WorldPacket& recv_data)
 
     int32 stable_cost = 0;
 
-    auto stable_slot_prices = sStableSlotPricesStore.LookupEntry(_player->GetStableSlotCount() + 1);
+    //\todo danko
+    /*auto stable_slot_prices = sStableSlotPricesStore.LookupEntry(_player->GetStableSlotCount() + 1);
     if (stable_slot_prices != nullptr)
         stable_cost = stable_slot_prices->Price;
     else
-        stable_cost = 99999999;
+        stable_cost = 99999999;*/
 
 
     WorldPacket data(SMSG_STABLE_RESULT, 1);

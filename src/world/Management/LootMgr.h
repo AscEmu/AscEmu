@@ -24,6 +24,7 @@
 #include "Server/EventableObject.h"
 #include "Singleton.h"
 #include "Storage/DBC/DBCStructures.hpp"
+#include "Storage/DB2/DB2Structures.hpp"
 
 #include <map>
 #include <vector>

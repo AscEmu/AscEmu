@@ -31,7 +31,7 @@ m_NumWaitTimeAvg(0), m_NumWaitTimeTank(0), m_NumWaitTimeHealer(0), m_NumWaitTime
         if (m_update)
         {
             // Initialize dungeon cache
-            for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
+            /*for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
             {
                 DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(i);
                 if (dungeon && dungeon->type != LFG_TYPE_ZONE)
@@ -40,7 +40,7 @@ m_NumWaitTimeAvg(0), m_NumWaitTimeTank(0), m_NumWaitTimeHealer(0), m_NumWaitTime
                         m_CachedDungeonMap[dungeon->grouptype].insert(dungeon->ID);
                     m_CachedDungeonMap[0].insert(dungeon->ID);
                 }
-            }
+            }*/
         }
 }
 
@@ -95,11 +95,11 @@ void LfgMgr::LoadRewards()
         uint32 otherMoneyVar = fields[6].GetUInt32();
         uint32 otherXPVar = fields[7].GetUInt32();
 
-        if (!sLFGDungeonStore.LookupEntry(dungeonId))
+        /*if (!sLFGDungeonStore.LookupEntry(dungeonId))
         {
             Log.Debug("LFGMgr", "Dungeon %u specified in table `lfg_dungeon_rewards` does not exist!", dungeonId);
             continue;
-        }
+        }*/
 
         if (!maxLevel || maxLevel > 85)
         {
@@ -119,7 +119,7 @@ void LfgMgr::LoadRewards()
             otherQuestId = 0;
         }
 
-		DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId);
+		//DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId);
 
         m_RewardMap.insert(LfgRewardMap::value_type(dungeonId, new LfgReward(maxLevel, firstQuestId, firstMoneyVar, firstXPVar, otherQuestId, otherMoneyVar, otherXPVar)));
         ++count;
@@ -340,26 +340,26 @@ void LfgMgr::InitializeLockedDungeons(Player* player)
     LfgDungeonSet dungeons = GetDungeonsByRandom(0);
     LfgLockMap lock;
 
-    for (LfgDungeonSet::const_iterator it = dungeons.begin(); it != dungeons.end(); ++it)
-    {
-        DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(*it);
-        if (!dungeon) // should never happen - We provide a list from dbcLFGDungeon
-            continue;
+    //for (LfgDungeonSet::const_iterator it = dungeons.begin(); it != dungeons.end(); ++it)
+    //{
+    //    DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(*it);
+    //    if (!dungeon) // should never happen - We provide a list from dbcLFGDungeon
+    //        continue;
 
-        LfgLockStatusType locktype = LFG_LOCKSTATUS_OK;
-        if (dungeon->expansion > expansion)
-            locktype = LFG_LOCKSTATUS_INSUFFICIENT_EXPANSION;
-        else if (dungeon->minlevel > level)
-            locktype = LFG_LOCKSTATUS_TOO_LOW_LEVEL;
-        else if (dungeon->maxlevel < level)
-            locktype = LFG_LOCKSTATUS_TOO_HIGH_LEVEL;
+    //    LfgLockStatusType locktype = LFG_LOCKSTATUS_OK;
+    //    if (dungeon->expansion > expansion)
+    //        locktype = LFG_LOCKSTATUS_INSUFFICIENT_EXPANSION;
+    //    else if (dungeon->minlevel > level)
+    //        locktype = LFG_LOCKSTATUS_TOO_LOW_LEVEL;
+    //    else if (dungeon->maxlevel < level)
+    //        locktype = LFG_LOCKSTATUS_TOO_HIGH_LEVEL;
 
-        // \todo check for needed items/quests ...
+    //    // \todo check for needed items/quests ...
 
-        if (locktype != LFG_LOCKSTATUS_OK)
-            lock[dungeon->Entry()] = locktype;
-    }
-    SetLockedDungeons(guid, lock);
+    //    if (locktype != LFG_LOCKSTATUS_OK)
+    //        lock[dungeon->Entry()] = locktype;
+    //}
+    //SetLockedDungeons(guid, lock);
 }
 
 void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDungeons, const std::string& comment)
@@ -1260,8 +1260,8 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
                 grp->m_disbandOnNoMembers = false;
                 grp->ExpandToLFG();
 
-                DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(pProposal->dungeonId);
-                SetDungeon(grp->GetGUID(), dungeon->Entry());
+                /*DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(pProposal->dungeonId);
+                SetDungeon(grp->GetGUID(), dungeon->Entry());*/
 
                 uint32 low_gguid = grp->GetID();
                 uint64 gguid = grp->GetGUID();
@@ -1312,14 +1312,14 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
             SetState(pguid, LFG_STATE_DUNGEON);
         }
 
-        DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(pProposal->dungeonId);
+        /*DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(pProposal->dungeonId);*/
         //Set Dungeon difficult incomplete :D
 
         if (grp == nullptr) // something went definitely wrong if we end up here... I'm sure it is just bad code design.
             return;
 
         uint64 gguid = grp->GetGUID();
-        SetDungeon(gguid, dungeon->ID);
+        /*SetDungeon(gguid, dungeon->ID);*/
         SetState(gguid, LFG_STATE_DUNGEON);
         //Maybe Save these :D
 
@@ -1574,63 +1574,63 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
         error = LFG_TELEPORTERROR_PLAYER_DEAD;
     else
     {
-        uint64 gguid = grp->GetGUID();
-        DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(GetDungeon(gguid));
+        //uint64 gguid = grp->GetGUID();
+        //DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(GetDungeon(gguid));
 
-        if (!dungeon)
-            error = LFG_TELEPORTERROR_INVALID_LOCATION;
-        else if (player->GetMapId() != uint32(dungeon->map))  // Do not teleport players in dungeon to the entrance
-        {
-            uint32 mapid = 0;
-            float x = 0;
-            float y = 0;
-            float z = 0;
-            float orientation = 0;
+        //if (!dungeon)
+        //    error = LFG_TELEPORTERROR_INVALID_LOCATION;
+        //else if (player->GetMapId() != uint32(dungeon->map))  // Do not teleport players in dungeon to the entrance
+        //{
+        //    uint32 mapid = 0;
+        //    float x = 0;
+        //    float y = 0;
+        //    float z = 0;
+        //    float orientation = 0;
 
-            if (!fromOpcode)
-            {
-                // Select a player inside to be teleported to
-                GroupMembersSet::iterator itx;
-                for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
-                {
-                    Player* plrg = (*itx)->m_loggedInPlayer;
-                    if (plrg && plrg != player && plrg->GetMapId() == uint32(dungeon->map))
-                    {
-                        mapid = plrg->GetMapId();
-                        x = plrg->GetPositionX();
-                        y = plrg->GetPositionY();
-                        z = plrg->GetPositionZ();
-                        orientation = plrg->GetOrientation();
-                    }
-                }
-            }
+        //    if (!fromOpcode)
+        //    {
+        //        // Select a player inside to be teleported to
+        //        GroupMembersSet::iterator itx;
+        //        for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+        //        {
+        //            Player* plrg = (*itx)->m_loggedInPlayer;
+        //            if (plrg && plrg != player && plrg->GetMapId() == uint32(dungeon->map))
+        //            {
+        //                mapid = plrg->GetMapId();
+        //                x = plrg->GetPositionX();
+        //                y = plrg->GetPositionY();
+        //                z = plrg->GetPositionZ();
+        //                orientation = plrg->GetOrientation();
+        //            }
+        //        }
+        //    }
 
-            if (!mapid)
-            {
-                AreaTrigger const* at = objmgr.GetMapEntranceTrigger(dungeon->map);
-                if (at == nullptr)
-                {
-                    Log.Debug("LFGMgr", "TeleportPlayer: Failed to teleport %u: No areatrigger found for map: %u difficulty: %u", player->GetGUID(), dungeon->map, dungeon->difficulty);
-                    error = LFG_TELEPORTERROR_INVALID_LOCATION;
-                }
-                else
-                {
-                    mapid = at->Mapid;
-                    x = at->x;
-                    y = at->y;
-                    z = at->z;
-                    orientation = at->o;
-                }
-            }
+        //    if (!mapid)
+        //    {
+        //        AreaTrigger const* at = objmgr.GetMapEntranceTrigger(dungeon->map);
+        //        if (at == nullptr)
+        //        {
+        //            Log.Debug("LFGMgr", "TeleportPlayer: Failed to teleport %u: No areatrigger found for map: %u difficulty: %u", player->GetGUID(), dungeon->map, dungeon->difficulty);
+        //            error = LFG_TELEPORTERROR_INVALID_LOCATION;
+        //        }
+        //        else
+        //        {
+        //            mapid = at->Mapid;
+        //            x = at->x;
+        //            y = at->y;
+        //            z = at->z;
+        //            orientation = at->o;
+        //        }
+        //    }
 
-            if (error == LFG_TELEPORTERROR_OK)
-            {
-                player->SetBattlegroundEntryPoint();
-                player->Dismount();
-                if (!player->SafeTeleport(mapid, 0, x, y, z, orientation))
-                    error = LFG_TELEPORTERROR_INVALID_LOCATION;
-            }
-        }
+        //    if (error == LFG_TELEPORTERROR_OK)
+        //    {
+        //        player->SetBattlegroundEntryPoint();
+        //        player->Dismount();
+        //        if (!player->SafeTeleport(mapid, 0, x, y, z, orientation))
+        //            error = LFG_TELEPORTERROR_INVALID_LOCATION;
+        //    }
+        //}
     }
 
     if (error != LFG_TELEPORTERROR_OK)
@@ -1639,248 +1639,249 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
 
 void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
 {
-    Group* group = player->GetGroup();
-    if (!group || !group->isLFGGroup())
-    {
-        Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u is not in a group or not a LFGGroup. Ignoring", player->GetGUID());
-        return;
-    }
+    //Group* group = player->GetGroup();
+    //if (!group || !group->isLFGGroup())
+    //{
+    //    Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u is not in a group or not a LFGGroup. Ignoring", player->GetGUID());
+    //    return;
+    //}
 
-    uint64 guid = player->GetGUID();
-    uint64 gguid = player->GetGroup()->GetGUID();
-    uint32 gDungeonId = GetDungeon(gguid, true);
-    if (gDungeonId != dungeonId)
-    {
-        Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u Finished dungeon %u but group queued for %u. Ignoring", guid, dungeonId, gDungeonId);
-        return;
-    }
+    //uint64 guid = player->GetGUID();
+    //uint64 gguid = player->GetGroup()->GetGUID();
+    //uint32 gDungeonId = GetDungeon(gguid, true);
+    //if (gDungeonId != dungeonId)
+    //{
+    //    Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u Finished dungeon %u but group queued for %u. Ignoring", guid, dungeonId, gDungeonId);
+    //    return;
+    //}
 
-    if (GetState(guid) == LFG_STATE_FINISHED_DUNGEON)
-    {
-        Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u Already rewarded player. Ignoring", guid);
-        return;
-    }
+    //if (GetState(guid) == LFG_STATE_FINISHED_DUNGEON)
+    //{
+    //    Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u Already rewarded player. Ignoring", guid);
+    //    return;
+    //}
 
-    // Mark dungeon as finished
-    SetState(gguid, LFG_STATE_FINISHED_DUNGEON);
+    //// Mark dungeon as finished
+    //SetState(gguid, LFG_STATE_FINISHED_DUNGEON);
 
-    // Clear player related lfg stuff
-    uint32 rDungeonId = (*GetSelectedDungeons(guid).begin());
-    ClearState(guid);
-    SetState(guid, LFG_STATE_FINISHED_DUNGEON);
+    //// Clear player related lfg stuff
+    //uint32 rDungeonId = (*GetSelectedDungeons(guid).begin());
+    //ClearState(guid);
+    //SetState(guid, LFG_STATE_FINISHED_DUNGEON);
 
-    
+    //
     // Give rewards only if its a random or seasonal dungeon
-    DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(rDungeonId);
-    if (!dungeon || (dungeon->type != LFG_TYPE_RANDOM /*add seasonal checks*/))
-    {
-        Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u dungeon %u is not random nor seasonal", guid, rDungeonId);
-        return;
-    }
+//    DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(rDungeonId);
+//    if (!dungeon || (dungeon->type != LFG_TYPE_RANDOM /*add seasonal checks*/))
+//    {
+//        Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u dungeon %u is not random nor seasonal", guid, rDungeonId);
+//        return;
+//    }
+//
+//    // Update achievements
+//    if (dungeon->difficulty == 1) // Heroic
+//        player->GetAchievementMgr().UpdateAchievementCriteria(player, 13029, 1); // Done LFG Dungeon with random Players
+//
+//    LfgReward const* reward = GetRandomDungeonReward(rDungeonId, player->getLevel());
+//    if (!reward)
+//        return;
+//
+//    uint8 index = 0;
+//    QuestProperties const* qReward = sMySQLStore.GetQuestProperties(reward->reward[index].questId);
+//    if (!qReward)
+//        return;
+//
+//    // if we can take the quest, means that we haven't done this kind of "run", IE: First Heroic Random of Day.
+//    if (!player->HasFinishedDaily(qReward->id) || !player->HasFinishedQuest(qReward->id))
+//    {
+//        sQuestMgr.BuildQuestComplete(player, qReward);
+//        player->AddToFinishedQuests(qReward->id);
+//
+//        // Reputation reward
+//        for (uint8 z = 0; z < 6; z++)
+//        {
+//            if (qReward->reward_repfaction[z])
+//            {
+//                int32 amt = 0;
+//                uint32 fact = qReward->reward_repfaction[z];
+//                if (qReward->reward_repvalue[z])
+//                {
+//                    amt = qReward->reward_repvalue[z];
+//                }
+//                if (qReward->reward_replimit && (player->GetStanding(fact) >= (int32)qReward->reward_replimit))
+//                {
+//                    continue;
+//                }
+//                amt = float2int32(amt * sWorld.getRate(RATE_QUESTREPUTATION));
+//                player->ModStanding(fact, amt);
+//            }
+//        }
+//        // Static Item reward
+//        for (uint8 i = 0; i < 4; ++i)
+//        {
+//            if (qReward->reward_item[i])
+//            {
+//                ItemProperties const* proto = sMySQLStore.GetItemProperties(qReward->reward_item[i]);
+//                if (!proto)
+//                {
+//                    Log.Error("LfgMgr", "Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
+//                }
+//                else
+//                {
+//                    auto item_add = player->GetItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
+//                    if (!item_add)
+//                    {
+//                        auto slotresult = player->GetItemInterface()->FindFreeInventorySlot(proto);
+//                        if (!slotresult.Result)
+//                        {
+//                            player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+//                        }
+//                        else
+//                        {
+//                            auto item = objmgr.CreateItem(qReward->reward_item[i], player);
+//                            if (item)
+//                            {
+//                                item->SetStackCount(uint32(qReward->reward_itemcount[i]));
+//                                if (!player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
+//                                {
+//                                    item->DeleteMe();
+//                                }
+//                            }
+//                        }
+//                    }
+//                    else
+//                    {
+//                        item_add->SetStackCount(item_add->GetStackCount() + qReward->reward_itemcount[i]);
+//                        item_add->m_isDirty = true;
+//                    }
+//                }
+//            }
+//        }
+//
+//        // if daily then append to finished dailies
+//        if (qReward->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY)
+//            player->PushToFinishedDailies(qReward->id);
+//
+//#ifdef ENABLE_ACHIEVEMENTS
+//        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
+//        if (qReward->reward_money > 0)
+//        {
+//            // Money reward
+//            // Check they don't have more than the max gold
+//            if (sWorld.GoldCapEnabled && (player->GetGold() + qReward->reward_money) <= sWorld.GoldLimit)
+//            {
+//                player->ModGold(qReward->reward_money);
+//            }
+//            player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->reward_money, 0, 0);
+//        }
+//        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->zone_id, 0, 0);
+//        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->id, 0, 0);
+//#endif
+//    }
+//    else
+//    {
+//        index = 1;
+//        qReward = sMySQLStore.GetQuestProperties(reward->reward[index].questId);
+//        if (!qReward)
+//            return;
+//
+//        sQuestMgr.BuildQuestComplete(player, qReward);
+//        player->AddToFinishedQuests(qReward->id);
+//
+//        // Reputation reward
+//        for (uint8 z = 0; z < 6; z++)
+//        {
+//            if (qReward->reward_repfaction[z])
+//            {
+//                int32 amt = 0;
+//                uint32 fact = qReward->reward_repfaction[z];
+//                if (qReward->reward_repvalue[z])
+//                {
+//                    amt = qReward->reward_repvalue[z];
+//                }
+//                if (qReward->reward_replimit && (player->GetStanding(fact) >= (int32)qReward->reward_replimit))
+//                {
+//                    continue;
+//                }
+//                amt = float2int32(amt * sWorld.getRate(RATE_QUESTREPUTATION));
+//                player->ModStanding(fact, amt);
+//            }
+//        }
+//        // Static Item reward
+//        for (uint8 i = 0; i < 4; ++i)
+//        {
+//            if (qReward->reward_item[i])
+//            {
+//                ItemProperties const* proto = sMySQLStore.GetItemProperties(qReward->reward_item[i]);
+//                if (!proto)
+//                {
+//                    Log.Error("LfgMgr", "Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
+//                }
+//                else
+//                {
+//                    auto item_add = player->GetItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
+//                    if (!item_add)
+//                    {
+//                        auto slotresult = player->GetItemInterface()->FindFreeInventorySlot(proto);
+//                        if (!slotresult.Result)
+//                        {
+//                            player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+//                        }
+//                        else
+//                        {
+//                            auto item = objmgr.CreateItem(qReward->reward_item[i], player);
+//                            if (item)
+//                            {
+//                                item->SetStackCount(uint32(qReward->reward_itemcount[i]));
+//                                if (!player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
+//                                {
+//                                    item->DeleteMe();
+//                                }
+//                            }
+//                        }
+//                    }
+//                    else
+//                    {
+//                        item_add->SetStackCount(item_add->GetStackCount() + qReward->reward_itemcount[i]);
+//                        item_add->m_isDirty = true;
+//                    }
+//                }
+//            }
+//        }
+//
+//        // if daily then append to finished dailies
+//        if (qReward->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY)
+//            player->PushToFinishedDailies(qReward->id);
+//
+//#ifdef ENABLE_ACHIEVEMENTS
+//        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
+//        if (qReward->reward_money > 0)
+//        {
+//            // Money reward
+//            // Check they don't have more than the max gold
+//            if (sWorld.GoldCapEnabled && (player->GetGold() + qReward->reward_money) <= sWorld.GoldLimit)
+//            {
+//                player->ModGold(qReward->reward_money);
+//            }
+//            player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->reward_money, 0, 0);
+//        }
+//        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->zone_id, 0, 0);
+//        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->id, 0, 0);
+//#endif
+//    }
 
-    // Update achievements
-    if (dungeon->difficulty == 1) // Heroic
-        player->GetAchievementMgr().UpdateAchievementCriteria(player, 13029, 1); // Done LFG Dungeon with random Players
-
-    LfgReward const* reward = GetRandomDungeonReward(rDungeonId, player->getLevel());
-    if (!reward)
-        return;
-
-    uint8 index = 0;
-    QuestProperties const* qReward = sMySQLStore.GetQuestProperties(reward->reward[index].questId);
-    if (!qReward)
-        return;
-
-    // if we can take the quest, means that we haven't done this kind of "run", IE: First Heroic Random of Day.
-    if (!player->HasFinishedDaily(qReward->id) || !player->HasFinishedQuest(qReward->id))
-    {
-        sQuestMgr.BuildQuestComplete(player, qReward);
-        player->AddToFinishedQuests(qReward->id);
-
-        // Reputation reward
-        for (uint8 z = 0; z < 6; z++)
-        {
-            if (qReward->reward_repfaction[z])
-            {
-                int32 amt = 0;
-                uint32 fact = qReward->reward_repfaction[z];
-                if (qReward->reward_repvalue[z])
-                {
-                    amt = qReward->reward_repvalue[z];
-                }
-                if (qReward->reward_replimit && (player->GetStanding(fact) >= (int32)qReward->reward_replimit))
-                {
-                    continue;
-                }
-                amt = float2int32(amt * sWorld.getRate(RATE_QUESTREPUTATION));
-                player->ModStanding(fact, amt);
-            }
-        }
-        // Static Item reward
-        for (uint8 i = 0; i < 4; ++i)
-        {
-            if (qReward->reward_item[i])
-            {
-                ItemProperties const* proto = sMySQLStore.GetItemProperties(qReward->reward_item[i]);
-                if (!proto)
-                {
-                    Log.Error("LfgMgr", "Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
-                }
-                else
-                {
-                    auto item_add = player->GetItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
-                    if (!item_add)
-                    {
-                        auto slotresult = player->GetItemInterface()->FindFreeInventorySlot(proto);
-                        if (!slotresult.Result)
-                        {
-                            player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
-                        }
-                        else
-                        {
-                            auto item = objmgr.CreateItem(qReward->reward_item[i], player);
-                            if (item)
-                            {
-                                item->SetStackCount(uint32(qReward->reward_itemcount[i]));
-                                if (!player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
-                                {
-                                    item->DeleteMe();
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        item_add->SetStackCount(item_add->GetStackCount() + qReward->reward_itemcount[i]);
-                        item_add->m_isDirty = true;
-                    }
-                }
-            }
-        }
-
-        // if daily then append to finished dailies
-        if (qReward->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY)
-            player->PushToFinishedDailies(qReward->id);
-
-#ifdef ENABLE_ACHIEVEMENTS
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
-        if (qReward->reward_money > 0)
-        {
-            // Money reward
-            // Check they don't have more than the max gold
-            if (sWorld.GoldCapEnabled && (player->GetGold() + qReward->reward_money) <= sWorld.GoldLimit)
-            {
-                player->ModGold(qReward->reward_money);
-            }
-            player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->reward_money, 0, 0);
-        }
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->zone_id, 0, 0);
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->id, 0, 0);
-#endif
-    }
-    else
-    {
-        index = 1;
-        qReward = sMySQLStore.GetQuestProperties(reward->reward[index].questId);
-        if (!qReward)
-            return;
-
-        sQuestMgr.BuildQuestComplete(player, qReward);
-        player->AddToFinishedQuests(qReward->id);
-
-        // Reputation reward
-        for (uint8 z = 0; z < 6; z++)
-        {
-            if (qReward->reward_repfaction[z])
-            {
-                int32 amt = 0;
-                uint32 fact = qReward->reward_repfaction[z];
-                if (qReward->reward_repvalue[z])
-                {
-                    amt = qReward->reward_repvalue[z];
-                }
-                if (qReward->reward_replimit && (player->GetStanding(fact) >= (int32)qReward->reward_replimit))
-                {
-                    continue;
-                }
-                amt = float2int32(amt * sWorld.getRate(RATE_QUESTREPUTATION));
-                player->ModStanding(fact, amt);
-            }
-        }
-        // Static Item reward
-        for (uint8 i = 0; i < 4; ++i)
-        {
-            if (qReward->reward_item[i])
-            {
-                ItemProperties const* proto = sMySQLStore.GetItemProperties(qReward->reward_item[i]);
-                if (!proto)
-                {
-                    Log.Error("LfgMgr", "Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
-                }
-                else
-                {
-                    auto item_add = player->GetItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
-                    if (!item_add)
-                    {
-                        auto slotresult = player->GetItemInterface()->FindFreeInventorySlot(proto);
-                        if (!slotresult.Result)
-                        {
-                            player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
-                        }
-                        else
-                        {
-                            auto item = objmgr.CreateItem(qReward->reward_item[i], player);
-                            if (item)
-                            {
-                                item->SetStackCount(uint32(qReward->reward_itemcount[i]));
-                                if (!player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
-                                {
-                                    item->DeleteMe();
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        item_add->SetStackCount(item_add->GetStackCount() + qReward->reward_itemcount[i]);
-                        item_add->m_isDirty = true;
-                    }
-                }
-            }
-        }
-
-        // if daily then append to finished dailies
-        if (qReward->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY)
-            player->PushToFinishedDailies(qReward->id);
-
-#ifdef ENABLE_ACHIEVEMENTS
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
-        if (qReward->reward_money > 0)
-        {
-            // Money reward
-            // Check they don't have more than the max gold
-            if (sWorld.GoldCapEnabled && (player->GetGold() + qReward->reward_money) <= sWorld.GoldLimit)
-            {
-                player->ModGold(qReward->reward_money);
-            }
-            player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->reward_money, 0, 0);
-        }
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->zone_id, 0, 0);
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->id, 0, 0);
-#endif
-    }
-
-    // Give rewards
-    //Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u done dungeon %u, %s previously done.", player->GetGUID(), GetDungeon(gguid), index > 0 ? " " : " not");
-    Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u done dungeon %u, previously done.", player->GetGUID(), GetDungeon(gguid));
-    player->GetSession()->SendLfgPlayerReward(dungeon->Entry(), GetDungeon(gguid, false), index, reward, qReward);
+    //// Give rewards
+    ////Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u done dungeon %u, %s previously done.", player->GetGUID(), GetDungeon(gguid), index > 0 ? " " : " not");
+    //Log.Debug("LfgMgr", "LfgMgr::RewardDungeonDoneFor: %u done dungeon %u, previously done.", player->GetGUID(), GetDungeon(gguid));
+    //player->GetSession()->SendLfgPlayerReward(dungeon->Entry(), GetDungeon(gguid, false), index, reward, qReward);
 }
 
 const LfgDungeonSet& LfgMgr::GetDungeonsByRandom(uint32 randomdungeon)
 {
-    DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(randomdungeon);
+   /* DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(randomdungeon);
     uint32 groupType = dungeon ? dungeon->grouptype : 0;
-    return m_CachedDungeonMap[groupType];
+    return m_CachedDungeonMap[groupType];*/
+    return m_CachedDungeonMap[0];
 }
 
 LfgReward const* LfgMgr::GetRandomDungeonReward(uint32 dungeon, uint8 level)
@@ -1901,11 +1902,12 @@ LfgReward const* LfgMgr::GetRandomDungeonReward(uint32 dungeon, uint8 level)
 
 LfgType LfgMgr::GetDungeonType(uint32 dungeonId)
 {
-    DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId);
+    /*DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId);
     if (!dungeon)
         return LFG_TYPE_NONE;
 
-    return LfgType(dungeon->type);
+    return LfgType(dungeon->type);*/
+    return LfgType(0);
 }
 
 std::string LfgMgr::ConcatenateGuids(LfgGuidList check)

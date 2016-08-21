@@ -178,14 +178,14 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
     LfgDungeonSet randomDungeons;
     uint8 level = GetPlayer()->getLevel();
     uint8 expansion = GetPlayer()->GetSession()->GetFlags();
-
-	for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
+    //\todo danko
+	/*for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
     {
         DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(i);
         if (dungeon && dungeon->type == LFG_TYPE_RANDOM && dungeon->expansion <= expansion && dungeon->minlevel <= level && level <= dungeon->maxlevel)
             randomDungeons.insert(dungeon->Entry());
  
-    }
+    }*/
 
     // Get player locked Dungeons
     LfgLockMap lock = sLfgMgr.GetLockedDungeons(guid);
@@ -435,14 +435,15 @@ void WorldSession::SendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
     data << uint32(pRoleCheck->state);                     // Check result
     data << uint8(pRoleCheck->state == LFG_ROLECHECK_INITIALITING);
     data << uint8(dungeons.size());                        // Number of dungeons
-    if (!dungeons.empty())
-    {
-        for (LfgDungeonSet::iterator it = dungeons.begin(); it != dungeons.end(); ++it)
-        {
-            DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(*it);
-            data << uint32(dungeon ? dungeon->Entry() : 0); // Dungeon
-        }
-    }
+    //\todo danko
+    //if (!dungeons.empty())
+    //{
+    //    for (LfgDungeonSet::iterator it = dungeons.begin(); it != dungeons.end(); ++it)
+    //    {
+    //        DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(*it);
+    //        data << uint32(dungeon ? dungeon->Entry() : 0); // Dungeon
+    //    }
+    //}
 
     data << uint8(pRoleCheck->roles.size());               // Players in group
     if (!pRoleCheck->roles.empty())
@@ -603,28 +604,29 @@ void WorldSession::SendLfgUpdateProposal(uint32 proposalId, const LfgProposal* p
             dungeonId = (*playerDungeons.begin());
     }
 
-    if (DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId))
-    {
-        dungeonId = dungeon->Entry();
+    //\todo danko
+    //if (DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId))
+    //{
+    //    dungeonId = dungeon->Entry();
 
-        // Select a player inside to be get completed encounters from
-        if (grp)
-        {
-            GroupMembersSet::iterator itx;
-            for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
-            {
-                Player* groupMember = (*itx)->m_loggedInPlayer;
-                if (groupMember && groupMember->GetMapId() == uint32(dungeon->map))
-                {
-                    /* fiiiix
-                    if (InstanceScript* instance = groupMember->GetInstanceScript())
-                    completedEncounters = instance->GetCompletedEncounterMask();
-                    */
-                    break;
-                }
-            }
-        }
-    }
+    //    // Select a player inside to be get completed encounters from
+    //    if (grp)
+    //    {
+    //        GroupMembersSet::iterator itx;
+    //        for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+    //        {
+    //            Player* groupMember = (*itx)->m_loggedInPlayer;
+    //            if (groupMember && groupMember->GetMapId() == uint32(dungeon->map))
+    //            {
+    //                /* fiiiix
+    //                if (InstanceScript* instance = groupMember->GetInstanceScript())
+    //                completedEncounters = instance->GetCompletedEncounterMask();
+    //                */
+    //                break;
+    //            }
+    //        }
+    //    }
+    //}
 
     data << uint32(dungeonId);                             // Dungeon
     data << uint8(pProp->state);                           // Result state

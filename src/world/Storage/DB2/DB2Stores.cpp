@@ -14,9 +14,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <map>
 
-DB2Storage <ItemEntry2>                    sItemStore2(DB2::Structures::Item_format);
-DB2Storage <ItemCurrencyCostEntry2>        sItemCurrencyCostStore2(DB2::Structures::ItemCurrencyCost_format);
-DB2Storage <ItemExtendedCostEntry2>        sItemExtendedCostStore2(DB2::Structures::ItemExtendedCostEntry_format);
+SERVER_DECL DB2Storage <DB2::Structures::ItemEntry>                    sItemStore(DB2::Structures::item_entry_format);
+SERVER_DECL DB2Storage <DB2::Structures::ItemCurrencyCostEntry>        sItemCurrencyCostStore(DB2::Structures::item_currency_cost_format);
+SERVER_DECL DB2Storage <DB2::Structures::ItemExtendedCostEntry>        sItemExtendedCostStore(DB2::Structures::item_extended_cost_format);
 
 typedef std::list<std::string> StoreProblemList1;
 uint32 DB2_Count = 0;
@@ -88,9 +88,9 @@ void LoadDB2Stores()
 
     LocalDB2Data availableDb2Locales(DBC::LocaleConstant(0));//defaultLocaleNameStr->locale));
 
-    LoadDB2(availableDb2Locales, bad_db2_files, sItemStore2, db2Path, "Item.db2");
-    LoadDB2(availableDb2Locales, bad_db2_files, sItemCurrencyCostStore2, db2Path, "ItemCurrencyCost.db2");
-    LoadDB2(availableDb2Locales, bad_db2_files, sItemExtendedCostStore2, db2Path, "ItemExtendedCost.db2");
+    LoadDB2(availableDb2Locales, bad_db2_files, sItemStore, db2Path, "Item.db2");
+    LoadDB2(availableDb2Locales, bad_db2_files, sItemCurrencyCostStore, db2Path, "ItemCurrencyCost.db2");
+    LoadDB2(availableDb2Locales, bad_db2_files, sItemExtendedCostStore, db2Path, "ItemExtendedCost.db2");
 
     // error checks
     if (bad_db2_files.size() >= DB2_Count)
@@ -109,7 +109,7 @@ void LoadDB2Stores()
     }
 
     // Check loaded DBC files proper version
-    if (!sItemStore2.LookupEntry(83086) || !sItemExtendedCostStore2.LookupEntry(3872))
+    if (!sItemStore.LookupEntry(83086) || !sItemExtendedCostStore.LookupEntry(3872))
     {
         Log.Error("LoadDB2Stores", "Please extract correct db2 files from build 15595");
         exit(1);

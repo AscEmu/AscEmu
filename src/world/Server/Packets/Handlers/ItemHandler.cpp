@@ -2268,7 +2268,7 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
     uint32 error = 1;
 
     std::pair<time_t, uint32> RefundEntry;
-    DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = NULL;
+    DB2::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
     ItemProperties const* item_proto = nullptr;
 
     recvPacket >> GUID;

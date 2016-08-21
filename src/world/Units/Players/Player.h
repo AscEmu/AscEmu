@@ -31,6 +31,8 @@
 #include "Management/AchievementMgr.h"
 #include "Units//Unit.h"
 #include "Storage/DBC/DBCStructures.hpp"
+#include "Storage/DB2/DB2Stores.hpp"
+#include "Storage/DB2/DB2Structures.hpp"
 #include "Management/Guild.h"
 
 

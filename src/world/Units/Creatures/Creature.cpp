@@ -1120,7 +1120,7 @@ Trainer* Creature::GetTrainer()
     return mTrainer;
 }
 
-void Creature::AddVendorItem(uint32 itemid, uint32 amount, DBC::Structures::ItemExtendedCostEntry const* ec)
+void Creature::AddVendorItem(uint32 itemid, uint32 amount, DB2::Structures::ItemExtendedCostEntry const* ec)
 {
     CreatureItem ci;
     ci.amount = amount;
@@ -2184,7 +2184,7 @@ void Creature::GetSellItemByItemId(uint32 itemid, CreatureItem& ci)
     ci.itemid = 0;
 }
 
-DBC::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByItemId(uint32 itemid)
+DB2::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByItemId(uint32 itemid)
 {
     for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
         {

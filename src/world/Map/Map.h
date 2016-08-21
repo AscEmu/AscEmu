@@ -24,6 +24,7 @@
 #include "TerrainMgr.h"
 #include "CellHandlerDefines.hpp"
 #include "Storage/DBC/DBCStructures.hpp"
+#include "Storage/DB2/DB2Structures.hpp"
 
 class MapMgr;
 struct MapInfo;

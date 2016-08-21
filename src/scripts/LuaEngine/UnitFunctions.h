@@ -4553,7 +4553,7 @@ class LuaUnit
         uint32 itemid = (uint32)luaL_checknumber(L, 1);
         uint32 amount = (uint32)luaL_checknumber(L, 2);
         uint32 costid = (uint32)luaL_checknumber(L, 3);
-        auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : NULL;
+        DB2::Structures::ItemExtendedCostEntry const* item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : NULL;
         if (itemid && amount)
             ctr->AddVendorItem(itemid, amount, item_extended_cost);
         return 0;

@@ -62,78 +62,139 @@ namespace DBC
     {
         namespace
         {
-            char const achievement_format[] = "niixssssssssssssssssxssssssssssssssssxiixixssssssssssssssssxii";
-            char const achievement_criteria_format[] = "niiiiiiiissssssssssssssssxiiiii";
+            char const achievement_format[] = "niiissiiiiisii";
+            char const achievement_criteria_format[] = "niiiiiiiixsiiiiixxxxxxx";
             char const area_group_format[] = "niiiiiii";
-            char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixxx";
-            char const area_trigger_entry_format[] = "niffffffff";
-            char const auction_house_format[] = "niiixxxxxxxxxxxxxxxxx";
+            char const area_table_entry_format[] = "iiinixxxxxisiiiiixxxxxxxxx";
+            char const area_trigger_entry_format[] = "nifffxxxfffff";
+            //char const armor_location_format[] = "nfffff"; new
+            char const auction_house_format[] = "niiix";
             char const bank_bag_slot_prices_format[] = "ni";
-            char const barber_shop_style_entry_format[] = "nixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiii";
-            char const char_titles_format[] = "nxssssssssssssssssxssssssssssssssssxi";
-            char const chat_channels_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
-            char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixii";
-            char const chr_races_format[] = "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
-            char const creature_family_format[] = "nfifiiiiixssssssssssssssssxx";
-            char const creature_spell_data_format[] = "niiiiiiii";
-            char const currency_types_format[] = "xnxi";
+            char const barber_shop_style_entry_format[] = "nixxxiii";
+            //char const battlemaster_list_format[]="niiiiiiiiixsiiiiiiii"; new
+            //char const char_start_outfit_format[]="diiiiiiiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; new
+            char const char_titles_format[] = "nxsxix";
+            char const chat_channels_format[] = "iixsx";
+            char const chr_classes_format[] = "nixsxxxixiiiii";
+            char const chr_races_format[] = "nxixiixixxxxixsxxxxxixxx";
+            //char const chr_classes_xpower_types_format[]="nii"; new
+            //char const cinematic_sequences_format[]="nxxxxxxxxx"; new
+            //char const creature_display_info_format[]="nixifxxxxxxxxxxxx"; new
+            //char const creature_display_info_extra_format[]="nixxxxxxxxxxxxxxxxxxx"; new
+            char const creature_family_format[] = "nfifiiiiixsx";
+            //char const creature_model_data_format[] = "nxxxxxxxxxxxxxxffxxxxxxxxxxxxxx"; new
+            char const creature_spell_data_format[] = "niiiixxxx";
+            //char const creature_type_format[]="nxx"; new
+            char const currency_types_format[] = "nisxxxxiiix";
+            //char const destructible_model_data_format[] = "nixxxixxxxixxxxixxxxixxx"; new
+            //char const dungeon_encounter_format[]="niiiisxx"; new
             char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
             char const durability_quality_format[] = "nf";
-            char const emotes_text_format[] = "nxiiiixixixxxxxxxxx";
-            char const faction_format[] = "niiiiiiiiiiiiiiiiiiffixssssssssssssssssxxxxxxxxxxxxxxxxxx";
+            //char const emotes_format[] = "nxxiiixx"; new
+            char const emotes_text_format[] = "nxixxxxxxxxxxxxxxxx";
+            char const faction_format[] = "niiiiiiiiiiiiiiiiiiffixsxx";
             char const faction_template_format[] = "niiiiiiiiiiiii";
-            char const game_object_display_info_format[] = "nsxxxxxxxxxxffffffx";
-            char const gem_properties_format[] = "nixxi";
+            char const game_object_display_info_format[] = "nsxxxxxxxxxxffffffxxx";
+            char const gem_properties_format[] = "nixxix";
             char const glyph_properties_format[] = "niii";
             char const glyph_slot_format[] = "nii";
-            char const gt_barber_shop_cost_format[] = "f";
-            char const gt_chance_to_melee_crit_format[] = "f";
-            char const gt_chance_to_melee_crit_base_format[] = "f";
-            char const gt_chance_to_spell_crit_format[] = "f";
-            char const gt_chance_to_spell_crit_base_format[] = "f";
-            char const gt_combat_ratings_format[] = "f";
-            char const gt_oct_regen_hp_format[] = "f";
-            char const gt_oct_regen_mp_format[] = "f";
-            char const gt_regen_hp_per_spt_format[] = "f";
-            char const gt_regen_mp_per_spt_format[] = "f";
-            char const holidays_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixxsiix";
-            char const item_entry_format[] = "niiiiiii";
-            char const item_extended_cost_format[] = "niiiiiiiiiiiiiix";
-            char const item_limit_category_format[] = "nxxxxxxxxxxxxxxxxxii";
-            char const item_random_properties_format[] = "nxiiixxssssssssssssssssx";
-            char const item_random_suffix_format[] = "nssssssssssssssssxxiiixxiiixx";
-            char const item_set_format[] = "nssssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii";
-            char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
+            char const gt_barber_shop_cost_format[] = "xf";
+            char const gt_chance_to_melee_crit_format[] = "xf";
+            char const gt_chance_to_melee_crit_base_format[] = "xf";
+            char const gt_chance_to_spell_crit_format[] = "xf";
+            char const gt_chance_to_spell_crit_base_format[] = "xf";
+            char const gt_combat_ratings_format[] = "xf";
+            //char const gt_oct_base_hp_by_class_format[] = "df"; new
+            //char const gt_oct_base_mp_by_class_format[] = "df"; new
+            //char const gt_oct_class_combat_rating_scalar_format[] = "df"; new
+            //char const gt_oct_hp_per_stamina_format[] = "df"; new
+            char const gt_oct_regen_hp_format[] = "xf";
+            //char const gt_oct_regen_mp_format[] = "f"; NA
+            char const gt_regen_hp_per_spt_format[] = "xf";
+            char const gt_regen_mp_per_spt_format[] = "xf";
+            //char const gt_spell_scaling_format[] = "df"; new
+            char const holidays_format[] = "nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+            //char const item_armor_quality_format[] = "nfffffffi"; new
+            //char const item_armor_shield_format[] = "nifffffff"; new
+            //char const item_armor_total_format[] = "niffff"; new
+            //char const item_bag_family_format[] = "nx"; new
+            //char const item_class_format[] = "nixxxs"; new
+            //char const item_damage_format[] = "nfffffffi"; new
+            //char const item_entry_format[] = "niiiiiii"; db2
+            //char const item_extended_cost_format[] = "niiiiiiiiiiiiiix"; db2
+            char const item_random_properties_format[] = "nxiiiiis";
+            char const item_random_suffix_format[] = "nsxiiiiiiiiii";
+            char const item_set_format[] = "dsxxxxxxxxxxxxxxxxxiiiiiiiiiiiiiiiiii";
+            char const item_limit_category_format[] = "nxii";
+            //char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx"; NA
             char const liquid_type_entry_format[] = "nxxixixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
             char const lock_format[] = "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx";
-            char const mail_template_format[] = "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx";
-            char const map_format[] = "nxiixssssssssssssssssxixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixiffxiii";
-            char const name_gen_format[] = "nsii";
+            char const mail_template_format[] = "nxs";
+            char const map_format[] = "nsiiiisissififfiiiii";
+            //char const map_difficulty_entry_format[] = "niisiis"; new
+            //char const mount_capability_format[] = "niiiiiii"; new
+            //char const mount_type_format[] = "niiiiiiiiiiiiiiiiiiiiiiii"; new
+            //char const movie_entry_format[] = "nxxx"; new
+            //char const name_gen_format[] = "nsii"; NA
+            //char const num_talents_at_level_format[] = "df"; new
+            //char const override_spell_data_format[] = "niiiiiiiiiixx"; new
+            //char const phase_format[] = "nii"; new
+            //char const power_display_format[] = "nixxxx"; new
+            //char const pvp_difficulty_format[] = "diiiii"; new
+            //char const quest_faction_reward_format[] = "niiiiiiiiii"; new
+            //char const quest_sort_entry_format[] = "nx"; new
             char const quest_xp_format[] = "niiiiiiiiii";
-            char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiii";
-            char const scaling_stat_values_format[] = "iniiiiiiiiiiiiiiiiiiiiii";
-            char const skill_line_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxxixxxxxxxxxxxxxxxxxi";
-            char const skill_line_ability_format[] = "niiiixxiiiiixx";
-            char const stable_slot_prices_format[] = "ni";
-            char const spell_cast_times_format[] = "nixx";
+            //char const random_properties_points_format[] = "niiiiiiiiiiiiiii"; new
+            char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiixi";
+            char const scaling_stat_values_format[] = "iniiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxx";
+            char const skill_line_format[] = "nisxixi";
+            char const skill_line_ability_format[] = "niiiixxiiiiiix";
+            //char const sound_entries_format[] = "nissssssssssssssssssssssxxxxxxxxxxx"; new
+            //char const spell_aura_optionsEntry_format[] = "diiii"; new
+            //char const spell_aura_restrictions_entry_format[] = "diiiiiiii"; new
+            char const spell_cast_times_format[] = "niii";
+            //char const spell_casting_requirements_entry_format[] = "dixxixi"; new
+            //char const spell_categories_entry_format[] = "diiiiii"; new
+            //char const spell_class_options_entry_format[] = "dxiiiix"; new
+            //char const spell_cooldowns_entry_format[] = "diii"; new
             char const spell_difficulty_format[] = "niiii";
             char const spell_duration_format[] = "niii";
-            char const spell_entry_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifxiiiiiiiiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiiiiifffiiiiiiiiiiiiixssssssssssssssssxssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiiiiiiiiiiixfffxxxiiiiixxfffxx";
-            char const spell_item_enchantment_format[] = "nxiiiiiiiiiiiissssssssssssssssxiiiiiii";
+            char const spell_entry_format[] = "niiiiiiiiiiiiiiifiiiissxxiixxixiiiiiiixiiiiiiiix";
+            char const spell_item_enchantment_format[] = "nxiiiiiixxxiiisiiiiiiix";
+            //char const skill_race_class_info_format[] = "diiiiixxx"; new
             char const spell_radius_format[] = "nfff";
-            char const spell_range_format[] = "nffffixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+            char const spell_range_format[] = "nffffixx";
             char const spell_rune_cost_format[] = "niiii";
-            char const spell_shapeshift_form_format[] = "nxxxxxxxxxxxxxxxxxxiixiiixxiiiiiiii";
+            char const spell_shapeshift_form_format[] = "nxxiixiiixxiiiiiiiixx";
+            //char const spell_effect_entry_format[] = "difiiiffiiiiiifiifiiiiiiiix"; new
+            //char const spell_equipped_items_entry_format[] = "diii"; new
+            //char const spell_focus_object_format[] = "nx"; new
+            //char const spell_interrupts_entry_format[] = "dixixi"; new
+            //char const spell_item_enchantment_condition_format[] = "nbbbbbxxxxxbbbbbbbbbbiiiiixxxxx"; new
+            //char const spell_levels_entry_format[] = "diii"; new
+            //char const spell_power_entry_format[] = "diiiiixf"; new
+            //char const spell_reagents_entry_format[] = "diiiiiiiiiiiiiiii"; new
+            //char const spell_scaling_entry_format[] = "diiiiffffffffffi"; new
+            //char const spell_shapeshift_entry_format[] = "dixixx"; new
+            //char const spell_target_restrictions_entry_format[] = "dfiiii"; new
+            //char const spell_totems_entry_format[] = "diiii"; new
+            //char const stable_slot_prices_format[] = "ni"; NA
             char const summon_properties_format[] = "niiiii";
-            char const talent_format[] = "niiiiiiiixxxxixxixxxxxx";
-            char const talent_tab_format[] = "nxxxxxxxxxxxxxxxxxxxiiix";
-            char const taxi_nodes_format[] = "nifffssssssssssssssssxii";
+            char const talent_format[] = "niiiiiiiiixxixxxxxx";
+            char const talent_tab_format[] = "nxxiiixxiii";
+            //char const talent_tree_primary_spells_format[] = "diix"; new
+            char const taxi_nodes_format[] = "nifffsiixxx";
             char const taxi_path_format[] = "niii";
-            char const taxi_path_node_format[] = "niiifffiiii";
+            char const taxi_path_node_format[] = "diiifffiiii";
+            //char const totem_category_entry_format[] = "nxii"; new
+            //char const transport_animation_entry_format[] = "diixxxx"; new
             char const vehicle_format[] = "niffffiiiiiiiifffffffffffffffssssfifiixx";
-            char const vehicle_seat_format[] = "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxx";
-            char const wmo_area_table_format[] = "niiixxxxxiixxxxxxxxxxxxxxxxx";
-            char const world_map_overlay_format[] = "nxiiiixxxxxxxxxxx";
+            char const vehicle_seat_format[] = "niiffffffffffiiiiiifffffffiiifffiiiiiiiffiiiiixxxxxxxxxxxxxxxxxxxx";
+            char const wmo_area_table_format[] = "niiixxxxxiixxxx";
+            //char const world_map_area_entry_format[] = "xinxffffixxxxx"; new
+            char const world_map_overlay_format[] = "nxiiiixxxxxxxxx";
+            //char const world_pvp_area_enrty_format[] = "niiiiii"; new
+            //char const world_safe_locs_entry_format[] = "nifffx"; new
         }
 
         #pragma pack(push, 1)
@@ -461,10 +522,11 @@ namespace DBC
             float ratio;            // 0
         };
 
-        struct GtOCTRegenMPEntry
-        {
-            float ratio;            // 0
-        };
+        //\todo danko - unused anyway!
+        //struct GtOCTRegenMPEntry
+        //{
+        //    float ratio;            // 0
+        //};
 
         struct GtRegenHPPerSptEntry
         {
@@ -494,30 +556,6 @@ namespace DBC
             uint32 Priority;                            // 52
             uint32 CalendarFilterType;                  // 53
             //uint32 flags;                             // 54
-        };
-
-        struct ItemEntry
-        {
-            uint32 ID;                      // 0
-            uint32 Class;                   // 1
-            uint32 SubClass;                // 2 some items have strange subclasses
-            int32 SoundOverrideSubclass;    // 3
-            int32 Material;                 // 4
-            uint32 DisplayId;               // 5
-            uint32 InventoryType;           // 6
-            uint32 Sheath;                  // 7
-        };
-
-        struct ItemExtendedCostEntry
-        {
-            uint32 costid;                  // 0
-            uint32 honor_points;            // 1
-            uint32 arena_points;            // 2
-            uint32 arena_slot;              // 3
-            uint32 item[5];                 // 4-8
-            uint32 count[5];                // 9-13
-            uint32 personalrating;          // 14
-            //uint32 unk;                   // 15
         };
 
         struct ItemLimitCategoryEntry
@@ -565,29 +603,30 @@ namespace DBC
             uint32 RequiredSkillAmt;        // 52
         };
 
-        struct LFGDungeonEntry
-        {
-            uint32 ID;              // 0
-            char* name[16];         // 1-17 Name lang
-            uint32 minlevel;        // 18
-            uint32 maxlevel;        // 19
-            uint32 reclevel;        // 20
-            uint32 recminlevel;     // 21
-            uint32 recmaxlevel;     // 22
-            int32 map;              // 23
-            uint32 difficulty;      // 24
-            uint32 flags;           // 25
-            uint32 type;            // 26
-            //uint32  unk;          // 27
-            //char* iconname;       // 28
-            uint32 expansion;       // 29
-            //uint32 unk4;          // 30
-            uint32 grouptype;       // 31
-            //char* desc[16];       // 32-47 Description
+        //\todo danko
+        //struct LFGDungeonEntry
+        //{
+        //    uint32 ID;              // 0
+        //    char* name[16];         // 1-17 Name lang
+        //    uint32 minlevel;        // 18
+        //    uint32 maxlevel;        // 19
+        //    uint32 reclevel;        // 20
+        //    uint32 recminlevel;     // 21
+        //    uint32 recmaxlevel;     // 22
+        //    int32 map;              // 23
+        //    uint32 difficulty;      // 24
+        //    uint32 flags;           // 25
+        //    uint32 type;            // 26
+        //    //uint32  unk;          // 27
+        //    //char* iconname;       // 28
+        //    uint32 expansion;       // 29
+        //    //uint32 unk4;          // 30
+        //    uint32 grouptype;       // 31
+        //    //char* desc[16];       // 32-47 Description
 
-            // Helpers
-            uint32 Entry() const { return ID + (type << 24); }
-        };
+        //    // Helpers
+        //    uint32 Entry() const { return ID + (type << 24); }
+        //};
 
         struct LiquidTypeEntry
         {
@@ -659,13 +698,14 @@ namespace DBC
             uint32 max_players;             // 65
         };
 
-        struct NameGenEntry
-        {
-            uint32 ID;              // 0
-            char* Name;             // 1
-            uint32 unk1;            // 2
-            uint32 type;            // 3
-        };
+        //\todo danko
+        //struct NameGenEntry
+        //{
+        //    uint32 ID;              // 0
+        //    char* Name;             // 1
+        //    uint32 unk1;            // 2
+        //    uint32 type;            // 3
+        //};
 
         struct QuestXP
         {
@@ -723,11 +763,12 @@ namespace DBC
             //uint32 reqTP;                 // 13
         };
 
-        struct StableSlotPrices
-        {
-            uint32 Id;              // 0
-            uint32 Price;           // 1
-        };
+        //\todo danko
+        //struct StableSlotPrices
+        //{
+        //    uint32 Id;              // 0
+        //    uint32 Price;           // 1
+        //};
 
         struct SpellCastTimesEntry
         {

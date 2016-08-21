@@ -1638,7 +1638,8 @@ void World::Rehash(bool load)
 
 void World::LoadNameGenData()
 {
-    for (uint32 i = 0; i < sNameGenStore.GetNumRows(); ++i)
+    //\todo danko
+    /*for (uint32 i = 0; i < sNameGenStore.GetNumRows(); ++i)
     {
         auto const name_gen_entry = sNameGenStore.LookupEntry(i);
         if (name_gen_entry == nullptr)
@@ -1649,7 +1650,7 @@ void World::LoadNameGenData()
         data.name = std::string(name_gen_entry->Name);
         data.type = name_gen_entry->type;
         _namegendata[data.type].push_back(data);
-    }
+    }*/
 }
 
 void World::CharacterEnumProc(QueryResultVector & results, uint32 AccountId)

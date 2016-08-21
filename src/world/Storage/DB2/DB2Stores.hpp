@@ -12,12 +12,12 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include <list>
 
-extern DB2Storage <ItemEntry2>                    sItemStore2;
-extern DB2Storage <ItemCurrencyCostEntry2>        sItemCurrencyCostStore2;
-extern DB2Storage <ItemExtendedCostEntry2>        sItemExtendedCostStore2;
+extern SERVER_DECL DB2Storage<DB2::Structures::ItemEntry>                    sItemStore;
+extern SERVER_DECL DB2Storage<DB2::Structures::ItemCurrencyCostEntry>        sItemCurrencyCostStore;
+extern SERVER_DECL DB2Storage<DB2::Structures::ItemExtendedCostEntry>        sItemExtendedCostStore;
 
 void LoadDB2Stores();
 
-DB2Storage <ItemEntry2> const* GetItemDisplayStore();
+DB2Storage <DB2::Structures::ItemEntry> const* GetItemDisplayStore();
 
 #endif  //_DB2STORES_HPP
