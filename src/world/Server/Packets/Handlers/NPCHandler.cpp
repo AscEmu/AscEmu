@@ -388,7 +388,7 @@ void WorldSession::HandleGossipHelloOpcode(WorldPacket& recv_data)
     uint64 guid;
 
     recv_data >> guid;
-    Creature* qst_giver = _player->GetMapMgr()->GetCreature(Arcemu::Util::Get_Entry(guid));
+    Creature* qst_giver = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
 
     if (qst_giver != NULL)
     {
