@@ -713,676 +713,676 @@ void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
     }
 }
 
-void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 4);
-
-    uint32 itemid;
-    recv_data >> itemid;
-
-    ItemProperties const* itemProto = sMySQLStore.GetItemProperties(itemid);
-    if (!itemProto)
-    {
-        LOG_ERROR("WORLD: Unknown item id 0x%.8X", itemid);
-        return;
-    }
-
-    std::string Name = itemProto->Name;
-    std::string Description = itemProto->Description;
-
-    LocalizedItem* li = (language > 0) ? sLocalizationMgr.GetLocalizedItem(itemid, language) : NULL;
-    if (li)
-        Name = li->Name;
-
-    WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 800);
-    data << itemProto->ItemId;
-    data << itemProto->Class;
-    data << itemProto->SubClass;
-    data << itemProto->unknown_bc;
-    data << Name;
-    data << uint8(0);           // name 2?
-    data << uint8(0);           // name 3?
-    data << uint8(0);           // name 4?
-    data << itemProto->DisplayInfoID;
-    data << itemProto->Quality;
-    data << itemProto->Flags;
-    data << itemProto->Flags2;
-    data << itemProto->BuyPrice;
-    data << itemProto->SellPrice;
-    data << itemProto->InventoryType;
-    data << itemProto->AllowableClass;
-    data << itemProto->AllowableRace;
-    data << itemProto->ItemLevel;
-    data << itemProto->RequiredLevel;
-    data << itemProto->RequiredSkill;
-    data << itemProto->RequiredSkillRank;
-    data << itemProto->RequiredSkillSubRank;
-    data << itemProto->RequiredPlayerRank1;
-    data << itemProto->RequiredPlayerRank2;
-    data << itemProto->RequiredFaction;
-    data << itemProto->RequiredFactionStanding;
-    data << itemProto->Unique;
-    data << itemProto->MaxCount;
-    data << itemProto->ContainerSlots;
-    data << itemProto->itemstatscount;
-    for (uint8 i = 0; i < itemProto->itemstatscount; i++)
-    {
-        data << itemProto->Stats[i].Type;
-        data << itemProto->Stats[i].Value;
-    }
-    data << itemProto->ScalingStatsEntry;
-    data << itemProto->ScalingStatsFlag;
-    for (uint8 i = 0; i < 2; i++)           // originally this went up to 5, now only to 2
-    {
-        data << itemProto->Damage[i].Min;
-        data << itemProto->Damage[i].Max;
-        data << itemProto->Damage[i].Type;
-    }
-    data << itemProto->Armor;
-    data << itemProto->HolyRes;
-    data << itemProto->FireRes;
-    data << itemProto->NatureRes;
-    data << itemProto->FrostRes;
-    data << itemProto->ShadowRes;
-    data << itemProto->ArcaneRes;
-    data << itemProto->Delay;
-    data << itemProto->AmmoType;
-    data << itemProto->Range;
-    for (uint8 i = 0; i < 5; i++)
-    {
-        data << itemProto->Spells[i].Id;
-        data << itemProto->Spells[i].Trigger;
-        data << itemProto->Spells[i].Charges;
-        data << itemProto->Spells[i].Cooldown;
-        data << itemProto->Spells[i].Category;
-        data << itemProto->Spells[i].CategoryCooldown;
-    }
-    data << itemProto->Bonding;
-    
-    data << Description;
-
-    data << itemProto->PageId;
-    data << itemProto->PageLanguage;
-    data << itemProto->PageMaterial;
-    data << itemProto->QuestId;
-    data << itemProto->LockId;
-    data << itemProto->LockMaterial;
-    data << itemProto->SheathID;
-    data << itemProto->RandomPropId;
-    data << itemProto->RandomSuffixId;
-    data << itemProto->Block;
-    data << sMySQLStore.GetItemSetLinkedBonus(itemProto->ItemSet);
-    data << itemProto->MaxDurability;
-    data << itemProto->ZoneNameID;
-    data << itemProto->MapID;
-    data << itemProto->BagFamily;
-    data << itemProto->TotemCategory;
-    data << itemProto->Sockets[0].SocketColor;
-    data << itemProto->Sockets[0].Unk;
-    data << itemProto->Sockets[1].SocketColor;
-    data << itemProto->Sockets[1].Unk;
-    data << itemProto->Sockets[2].SocketColor;
-    data << itemProto->Sockets[2].Unk;
-    data << itemProto->SocketBonus;
-    data << itemProto->GemProperties;
-    data << itemProto->DisenchantReqSkill;
-    data << itemProto->ArmorDamageModifier;
-    data << itemProto->ExistingDuration;                    // 2.4.2 Item duration in seconds
-    data << itemProto->ItemLimitCategory;
-    data << itemProto->HolidayId;                           // HolidayNames.dbc
-    SendPacket(&data);
-
-}
-
-void WorldSession::HandleBuyBackOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 8);
-    uint64 guid;
-    int32 stuff;
-    Item* add;
-    AddItemResult result;
-    uint8 error;
-
-    LOG_DETAIL("WORLD: Received CMSG_BUYBACK_ITEM");
-
-    recv_data >> guid;
-    recv_data >> stuff;
-    stuff -= 74;
-
-    Item* it = _player->GetItemInterface()->GetBuyBack(stuff);
-    if (it)
-    {
-        // Find free slot and break if inv full
-        uint32 amount = it->GetStackCount();
-        uint32 itemid = it->GetEntry();
-
-        add = _player->GetItemInterface()->FindItemLessMax(itemid, amount, false);
-
-        uint32 FreeSlots = _player->GetItemInterface()->CalculateFreeSlots(it->GetItemProperties());
-        if ((FreeSlots == 0) && (!add))
-        {
-            _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
-            return;
-        }
-
-        // Check for gold
-        int32 cost = _player->GetUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + stuff);
-        if (!_player->HasGold(cost))
-        {
-            WorldPacket data(SMSG_BUY_FAILED, 12);
-            data << uint64(guid);
-            data << uint32(itemid);
-            data << uint8(2); //not enough money
-            SendPacket(&data);
-            return;
-        }
-        // Check for item uniqueness
-        if ((error = _player->GetItemInterface()->CanReceiveItem(it->GetItemProperties(), amount)) != 0)
-        {
-            _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
-            return;
-        }
-        _player->ModGold(-cost);
-        _player->GetItemInterface()->RemoveBuyBackItem(stuff);
-
-        if (!add)
-        {
-            it->m_isDirty = true;            // save the item again on logout
-            result = _player->GetItemInterface()->AddItemToFreeSlot(it);
-            if (!result)
-            {
-                LOG_ERROR("HandleBuyBack: Error while adding item to free slot");
-                it->DeleteMe();
-            }
-        }
-        else
-        {
-            add->SetStackCount(add->GetStackCount() + amount);
-            add->m_isDirty = true;
-
-            // delete the item
-            it->DeleteFromDB();
-            it->DeleteMe();
-        }
-
-        WorldPacket data(16);
-        data.Initialize(SMSG_BUY_ITEM);
-        data << uint64(guid);
-        data << getMSTime(); //VLack: seen is Aspire code
-        data << uint32(itemid);
-        data << uint32(amount);
-        SendPacket(&data);
-    }
-}
-
-void WorldSession::HandleSellItemOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-        CHECK_PACKET_SIZE(recv_data, 17);
-    LOG_DETAIL("WORLD: Received CMSG_SELL_ITEM");
-
-    uint64 vendorguid = 0, itemguid = 0;
-    int8 amount = 0;
-    //uint8 slot = INVENTORY_NO_SLOT_AVAILABLE;
-    //uint8 bagslot = INVENTORY_NO_SLOT_AVAILABLE;
-    //int check = 0;
-
-    recv_data >> vendorguid;
-    recv_data >> itemguid;
-    recv_data >> amount;
-
-    if (_player->IsCasting())
-        _player->InterruptSpell();
-
-    // Check if item exists
-    if (!itemguid)
-    {
-        SendSellItem(vendorguid, itemguid, 1);
-        return;
-    }
-
-    Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(vendorguid));
-    // Check if Vendor exists
-    if (unit == NULL)
-    {
-        SendSellItem(vendorguid, itemguid, 3);
-        return;
-    }
-
-    Item* item = _player->GetItemInterface()->GetItemByGUID(itemguid);
-    if (!item)
-    {
-        SendSellItem(vendorguid, itemguid, 1);
-        return; //our player doesn't have this item
-    }
-
-    ItemProperties const* it = item->GetItemProperties();
-
-    if (item->IsContainer() && static_cast< Container* >(item)->HasItems())
-    {
-        SendSellItem(vendorguid, itemguid, 6);
-        return;
-    }
-
-    // Check if item can be sold
-    if (it->SellPrice == 0 || item->wrapped_item_id != 0)
-    {
-        SendSellItem(vendorguid, itemguid, 2);
-        return;
-    }
-
-    uint32 stackcount = item->GetStackCount();
-    uint32 quantity = 0;
-
-    if (amount != 0)
-    {
-        quantity = amount;
-    }
-    else
-    {
-        quantity = stackcount; //allitems
-    }
-
-    if (quantity > stackcount) quantity = stackcount; //make sure we don't over do it
-
-    uint32 price = GetSellPriceForItem(it, quantity);
-
-    // Check they don't have more than the max gold
-    if (sWorld.GoldCapEnabled)
-    {
-        if ((_player->GetGold() + price) > sWorld.GoldLimit)
-        {
-            _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
-            return;
-        }
-    }
-
-    _player->ModGold(price);
-
-    if (quantity < stackcount)
-    {
-        item->SetStackCount(stackcount - quantity);
-        item->m_isDirty = true;
-    }
-    else
-    {
-        //removing the item from the char's inventory
-        item = _player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(itemguid, false); //again to remove item from slot
-        if (item)
-        {
-            _player->GetItemInterface()->AddBuyBackItem(item, (it->SellPrice) * quantity);
-            item->DeleteFromDB();
-        }
-    }
-
-    WorldPacket data(SMSG_SELL_ITEM, 12);
-    data << vendorguid;
-    data << itemguid;
-    data << uint8(0);
-    SendPacket(&data);
-
-    LOG_DETAIL("WORLD: Sent SMSG_SELL_ITEM");
-}
-
-void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag & drop
-{
-    CHECK_INWORLD_RETURN
-    CHECK_PACKET_SIZE(recv_data, 22);
-
-    LOG_DETAIL("WORLD: Received CMSG_BUY_ITEM_IN_SLOT");
-
-    uint64 srcguid;
-    uint64 bagguid;
-    uint32 itemid;
-    int8 slot;
-    uint8 amount = 0;
-    uint8 error;
-    int8 bagslot = INVENTORY_SLOT_NOT_SET;
-    int32 vendorslot; //VLack: 3.1.2
-
-    recv_data >> srcguid;
-    recv_data >> itemid;
-    recv_data >> vendorslot; //VLack: 3.1.2 This is the slot's number on the vendor's panel, starts from 1
-    recv_data >> bagguid;
-    recv_data >> slot; //VLack: 3.1.2 the target slot the player selected - backpack 23-38, other bags 0-15 (Or how big is the biggest bag? 0-127?)
-    recv_data >> amount;
-
-    if (amount < 1)
-        amount = 1;
-
-    if (_player->IsCasting())
-        _player->InterruptSpell();
-
-    Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(srcguid));
-    if (unit == NULL || !unit->HasItems())
-        return;
-
-    Container* c = NULL;
-
-    CreatureItem ci;
-    unit->GetSellItemByItemId(itemid, ci);
-
-    if (ci.itemid == 0)
-        return;
-
-    if (ci.max_amount > 0 && ci.available_amount < amount)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_IS_CURRENTLY_SOLD_OUT);
-        return;
-    }
-
-    ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
-    if (it == nullptr)
-        return;
-
-    uint32 itemMaxStack = (_player->ItemStackCheat) ? 0x7fffffff : it->MaxCount;
-    if (itemMaxStack > 0 && ci.amount * amount > itemMaxStack)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_CANT_CARRY_MORE_OF_THIS);
-        return;
-    }
-
-    uint32 count_per_stack = ci.amount * amount;
-
-    // if slot is different than -1, check for validation, else continue for auto storing.
-    if (slot != INVENTORY_SLOT_NOT_SET)
-    {
-        if (!(bagguid >> 32))//buy to backpack
-        {
-            if (slot > INVENTORY_SLOT_ITEM_END || slot < INVENTORY_SLOT_ITEM_START)
-            {
-                //hackers!
-                _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
-                return;
-            }
-        }
-        else
-        {
-            c = static_cast< Container* >(_player->GetItemInterface()->GetItemByGUID(bagguid));
-            if (!c)
-                return;
-            bagslot = (int8)_player->GetItemInterface()->GetBagSlotByGuid(bagguid);
-
-            if (bagslot == INVENTORY_SLOT_NOT_SET || ((uint32)slot > c->GetItemProperties()->ContainerSlots))
-            {
-                _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
-                return;
-            }
-        }
-    }
-    else
-    {
-        if ((bagguid >> 32))
-        {
-            c = static_cast< Container* >(_player->GetItemInterface()->GetItemByGUID(bagguid));
-            if (!c)
-            {
-                _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_NOT_FOUND);
-                return;//non empty
-            }
-
-            bagslot = (int8)_player->GetItemInterface()->GetBagSlotByGuid(bagguid);
-            slot = c->FindFreeSlot();
-        }
-        else
-            slot = _player->GetItemInterface()->FindFreeBackPackSlot();
-    }
-
-    if ((error = _player->GetItemInterface()->CanReceiveItem(it, amount)) != 0)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
-        return;
-    }
-
-    if ((error = _player->GetItemInterface()->CanAffordItem(it, amount, unit)) != 0)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
-        return;
-    }
-
-    if (slot == INVENTORY_SLOT_NOT_SET)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_BAG_FULL);
-        return;
-    }
-
-    // ok our z and slot are set.
-    Item* oldItem = NULL;
-    Item* pItem = NULL;
-    if (slot != INVENTORY_SLOT_NOT_SET)
-        oldItem = _player->GetItemInterface()->GetInventoryItem(bagslot, slot);
-
-    if (oldItem != NULL)
-    {
-        // try to add to the existing items stack
-        if (oldItem->GetItemProperties() != it)
-        {
-            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
-            return;
-        }
-
-        if ((oldItem->GetStackCount() + count_per_stack) > itemMaxStack)
-        {
-            //            LOG_DEBUG("SUPADBG can't carry #2");
-            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_CANT_CARRY_MORE_OF_THIS);
-            return;
-        }
-
-        oldItem->ModStackCount(count_per_stack);
-        oldItem->m_isDirty = true;
-        pItem = oldItem;
-    }
-    else
-    {
-        // create new item
-        /*if (slot == INVENTORY_SLOT_NOT_SET) This cannot be true CID 52838
-            slot = c->FindFreeSlot();*/
-
-        if (slot == ITEM_NO_SLOT_AVAILABLE)
-        {
-            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_BAG_FULL);
-            return;
-        }
-
-        pItem = objmgr.CreateItem(it->ItemId, _player);
-        if (pItem)
-        {
-            pItem->SetStackCount(count_per_stack);
-            pItem->m_isDirty = true;
-            //            LOG_DEBUG("SUPADBG bagslot=%u, slot=%u" , bagslot, slot);
-            if (!_player->GetItemInterface()->SafeAddItem(pItem, bagslot, slot))
-            {
-                pItem->DeleteMe();
-                return;
-            }
-        }
-        else
-            return;
-    }
-
-    _player->SendItemPushResult(false, true, false, (pItem == oldItem) ? false : true, bagslot, slot, amount * ci.amount, pItem->GetEntry(), pItem->GetItemRandomSuffixFactor(), pItem->GetItemRandomPropertyId(), pItem->GetStackCount());
-
-    WorldPacket data(SMSG_BUY_ITEM, 22);
-    data << uint64(srcguid);
-    data << getMSTime();
-    data << uint32(itemid);
-    data << uint32(amount);
-
-    SendPacket(&data);
-
-    LOG_DETAIL("WORLD: Sent SMSG_BUY_ITEM");
-
-    _player->GetItemInterface()->BuyItem(it, amount, unit);
-    if (ci.max_amount)
-    {
-        unit->ModAvItemAmount(ci.itemid, ci.amount * amount);
-
-        // there is probably a proper opcode for this. - burlex
-        SendInventoryList(unit);
-    }
-}
-
-void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)   // right-click on item
-{
-    CHECK_INWORLD_RETURN;
-    CHECK_PACKET_SIZE(recv_data, 14);
-    LOG_DETAIL("WORLD: Received CMSG_BUY_ITEM");
-
-    uint64 srcguid = 0;
-    uint32 itemid = 0;
-    int32 slot = 0;
-    uint8 amount = 0;
-    uint8 error = 0;
-    SlotResult slotresult;
-    AddItemResult result;
-
-    recv_data >> srcguid;
-    recv_data >> itemid;
-    recv_data >> slot;
-    recv_data >> amount;
-
-    auto creature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(srcguid));
-    if (creature == nullptr || !creature->HasItems())
-        return;
-
-    auto item_extended_cost = creature->GetItemExtendedCostByItemId(itemid);
-
-    if (amount < 1)
-        amount = 1;
-
-    CreatureItem creature_item;
-    creature->GetSellItemByItemId(itemid, creature_item);
-
-    if (creature_item.itemid == 0)
-    {
-        // vendor does not sell this item.. bitch about cheaters?
-        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
-        return;
-    }
-
-    if (creature_item.max_amount > 0 && creature_item.available_amount < amount)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_IS_CURRENTLY_SOLD_OUT);
-        return;
-    }
-
-    ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
-    if (!it)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
-        return;
-    }
-
-    uint32 itemMaxStack = (_player->ItemStackCheat) ? 0x7fffffff : it->MaxCount;
-    if (itemMaxStack > 0 && amount * creature_item.amount > itemMaxStack)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_CANT_STACK);
-        return;
-    }
-
-    if ((error = _player->GetItemInterface()->CanReceiveItem(it, amount * creature_item.amount)) != 0)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
-        return;
-    }
-
-    if ((error = _player->GetItemInterface()->CanAffordItem(it, amount, creature)) != 0)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
-        return;
-    }
-
-    // Find free slot and break if inv full
-    auto add_item = _player->GetItemInterface()->FindItemLessMax(itemid, amount * creature_item.amount, false);
-    if (!add_item)
-    {
-        slotresult = _player->GetItemInterface()->FindFreeInventorySlot(it);
-    }
-    if (!slotresult.Result && !add_item)
-    {
-        //Player doesn't have a free slot in his/her bag(s)
-        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
-        return;
-    }
-
-    if (!add_item)
-    {
-        Item* item = objmgr.CreateItem(creature_item.itemid, _player);
-        if (!item)
-        {
-            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
-            return;
-        }
-
-        item->m_isDirty = true;
-        item->SetStackCount(amount * creature_item.amount);
-
-        if (slotresult.ContainerSlot == ITEM_NO_SLOT_AVAILABLE)
-        {
-            result = _player->GetItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, slotresult.Slot);
-            if (!result)
-            {
-                item->DeleteMe();
-            }
-            else
-            {
-                if (item->IsEligibleForRefund() && item_extended_cost != nullptr)
-                {
-                    item->GetOwner()->GetItemInterface()->AddRefundable(item->GetGUID(), item_extended_cost->costid);
-                }
-                _player->SendItemPushResult(false, true, false, true, static_cast<uint8>(INVENTORY_SLOT_NOT_SET), slotresult.Result, amount * creature_item.amount, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
-            }
-        }
-        else
-        {
-            if (Item* bag = _player->GetItemInterface()->GetInventoryItem(slotresult.ContainerSlot))
-            {
-                if (!static_cast<Container*>(bag)->AddItem(slotresult.Slot, item))
-                {
-                    item->DeleteMe();
-                }
-                else
-                {
-                    if (item->IsEligibleForRefund() && item_extended_cost != nullptr)
-                    {
-                        item->GetOwner()->GetItemInterface()->AddRefundable(item->GetGUID(), item_extended_cost->costid);
-                    }
-                    _player->SendItemPushResult(false, true, false, true, slotresult.ContainerSlot, slotresult.Result, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
-                }
-            }
-        }
-    }
-    else
-    {
-        add_item->ModStackCount(amount * creature_item.amount);
-        add_item->m_isDirty = true;
-        _player->SendItemPushResult(false, true, false, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add_item->GetGUID()), 1, amount * creature_item.amount, add_item->GetEntry(), add_item->GetItemRandomSuffixFactor(), add_item->GetItemRandomPropertyId(), add_item->GetStackCount());
-    }
-
-    _player->GetItemInterface()->BuyItem(it, amount, creature);
-
-    WorldPacket data(45);
-    data.Initialize(SMSG_BUY_ITEM);
-    data << uint64(srcguid);
-    data << getMSTime();
-    data << uint32(itemid);
-    data << uint32(amount * creature_item.amount);
-
-    SendPacket(&data);
-
-    if (creature_item.max_amount)
-    {
-        creature->ModAvItemAmount(creature_item.itemid, creature_item.amount * amount);
-
-        // there is probably a proper opcode for this. - burlex
-        SendInventoryList(creature);
-    }
-}
+//void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recv_data, 4);
+//
+//    uint32 itemid;
+//    recv_data >> itemid;
+//
+//    ItemProperties const* itemProto = sMySQLStore.GetItemProperties(itemid);
+//    if (!itemProto)
+//    {
+//        LOG_ERROR("WORLD: Unknown item id 0x%.8X", itemid);
+//        return;
+//    }
+//
+//    std::string Name = itemProto->Name;
+//    std::string Description = itemProto->Description;
+//
+//    LocalizedItem* li = (language > 0) ? sLocalizationMgr.GetLocalizedItem(itemid, language) : NULL;
+//    if (li)
+//        Name = li->Name;
+//
+//    WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 800);
+//    data << itemProto->ItemId;
+//    data << itemProto->Class;
+//    data << itemProto->SubClass;
+//    data << itemProto->unknown_bc;
+//    data << Name;
+//    data << uint8(0);           // name 2?
+//    data << uint8(0);           // name 3?
+//    data << uint8(0);           // name 4?
+//    data << itemProto->DisplayInfoID;
+//    data << itemProto->Quality;
+//    data << itemProto->Flags;
+//    data << itemProto->Flags2;
+//    data << itemProto->BuyPrice;
+//    data << itemProto->SellPrice;
+//    data << itemProto->InventoryType;
+//    data << itemProto->AllowableClass;
+//    data << itemProto->AllowableRace;
+//    data << itemProto->ItemLevel;
+//    data << itemProto->RequiredLevel;
+//    data << itemProto->RequiredSkill;
+//    data << itemProto->RequiredSkillRank;
+//    data << itemProto->RequiredSkillSubRank;
+//    data << itemProto->RequiredPlayerRank1;
+//    data << itemProto->RequiredPlayerRank2;
+//    data << itemProto->RequiredFaction;
+//    data << itemProto->RequiredFactionStanding;
+//    data << itemProto->Unique;
+//    data << itemProto->MaxCount;
+//    data << itemProto->ContainerSlots;
+//    data << itemProto->itemstatscount;
+//    for (uint8 i = 0; i < itemProto->itemstatscount; i++)
+//    {
+//        data << itemProto->Stats[i].Type;
+//        data << itemProto->Stats[i].Value;
+//    }
+//    data << itemProto->ScalingStatsEntry;
+//    data << itemProto->ScalingStatsFlag;
+//    for (uint8 i = 0; i < 2; i++)           // originally this went up to 5, now only to 2
+//    {
+//        data << itemProto->Damage[i].Min;
+//        data << itemProto->Damage[i].Max;
+//        data << itemProto->Damage[i].Type;
+//    }
+//    data << itemProto->Armor;
+//    data << itemProto->HolyRes;
+//    data << itemProto->FireRes;
+//    data << itemProto->NatureRes;
+//    data << itemProto->FrostRes;
+//    data << itemProto->ShadowRes;
+//    data << itemProto->ArcaneRes;
+//    data << itemProto->Delay;
+//    data << itemProto->AmmoType;
+//    data << itemProto->Range;
+//    for (uint8 i = 0; i < 5; i++)
+//    {
+//        data << itemProto->Spells[i].Id;
+//        data << itemProto->Spells[i].Trigger;
+//        data << itemProto->Spells[i].Charges;
+//        data << itemProto->Spells[i].Cooldown;
+//        data << itemProto->Spells[i].Category;
+//        data << itemProto->Spells[i].CategoryCooldown;
+//    }
+//    data << itemProto->Bonding;
+//    
+//    data << Description;
+//
+//    data << itemProto->PageId;
+//    data << itemProto->PageLanguage;
+//    data << itemProto->PageMaterial;
+//    data << itemProto->QuestId;
+//    data << itemProto->LockId;
+//    data << itemProto->LockMaterial;
+//    data << itemProto->SheathID;
+//    data << itemProto->RandomPropId;
+//    data << itemProto->RandomSuffixId;
+//    data << itemProto->Block;
+//    data << sMySQLStore.GetItemSetLinkedBonus(itemProto->ItemSet);
+//    data << itemProto->MaxDurability;
+//    data << itemProto->ZoneNameID;
+//    data << itemProto->MapID;
+//    data << itemProto->BagFamily;
+//    data << itemProto->TotemCategory;
+//    data << itemProto->Sockets[0].SocketColor;
+//    data << itemProto->Sockets[0].Unk;
+//    data << itemProto->Sockets[1].SocketColor;
+//    data << itemProto->Sockets[1].Unk;
+//    data << itemProto->Sockets[2].SocketColor;
+//    data << itemProto->Sockets[2].Unk;
+//    data << itemProto->SocketBonus;
+//    data << itemProto->GemProperties;
+//    data << itemProto->DisenchantReqSkill;
+//    data << itemProto->ArmorDamageModifier;
+//    data << itemProto->ExistingDuration;                    // 2.4.2 Item duration in seconds
+//    data << itemProto->ItemLimitCategory;
+//    data << itemProto->HolidayId;                           // HolidayNames.dbc
+//    SendPacket(&data);
+//
+//}
+
+//void WorldSession::HandleBuyBackOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recv_data, 8);
+//    uint64 guid;
+//    int32 stuff;
+//    Item* add;
+//    AddItemResult result;
+//    uint8 error;
+//
+//    LOG_DETAIL("WORLD: Received CMSG_BUYBACK_ITEM");
+//
+//    recv_data >> guid;
+//    recv_data >> stuff;
+//    stuff -= 74;
+//
+//    Item* it = _player->GetItemInterface()->GetBuyBack(stuff);
+//    if (it)
+//    {
+//        // Find free slot and break if inv full
+//        uint32 amount = it->GetStackCount();
+//        uint32 itemid = it->GetEntry();
+//
+//        add = _player->GetItemInterface()->FindItemLessMax(itemid, amount, false);
+//
+//        uint32 FreeSlots = _player->GetItemInterface()->CalculateFreeSlots(it->GetItemProperties());
+//        if ((FreeSlots == 0) && (!add))
+//        {
+//            _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
+//            return;
+//        }
+//
+//        // Check for gold
+//        int32 cost = _player->GetUInt32Value(PLAYER_FIELD_BUYBACK_PRICE_1 + stuff);
+//        if (!_player->HasGold(cost))
+//        {
+//            WorldPacket data(SMSG_BUY_FAILED, 12);
+//            data << uint64(guid);
+//            data << uint32(itemid);
+//            data << uint8(2); //not enough money
+//            SendPacket(&data);
+//            return;
+//        }
+//        // Check for item uniqueness
+//        if ((error = _player->GetItemInterface()->CanReceiveItem(it->GetItemProperties(), amount)) != 0)
+//        {
+//            _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
+//            return;
+//        }
+//        _player->ModGold(-cost);
+//        _player->GetItemInterface()->RemoveBuyBackItem(stuff);
+//
+//        if (!add)
+//        {
+//            it->m_isDirty = true;            // save the item again on logout
+//            result = _player->GetItemInterface()->AddItemToFreeSlot(it);
+//            if (!result)
+//            {
+//                LOG_ERROR("HandleBuyBack: Error while adding item to free slot");
+//                it->DeleteMe();
+//            }
+//        }
+//        else
+//        {
+//            add->SetStackCount(add->GetStackCount() + amount);
+//            add->m_isDirty = true;
+//
+//            // delete the item
+//            it->DeleteFromDB();
+//            it->DeleteMe();
+//        }
+//
+//        WorldPacket data(16);
+//        data.Initialize(SMSG_BUY_ITEM);
+//        data << uint64(guid);
+//        data << getMSTime(); //VLack: seen is Aspire code
+//        data << uint32(itemid);
+//        data << uint32(amount);
+//        SendPacket(&data);
+//    }
+//}
+
+//void WorldSession::HandleSellItemOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//        CHECK_PACKET_SIZE(recv_data, 17);
+//    LOG_DETAIL("WORLD: Received CMSG_SELL_ITEM");
+//
+//    uint64 vendorguid = 0, itemguid = 0;
+//    int8 amount = 0;
+//    //uint8 slot = INVENTORY_NO_SLOT_AVAILABLE;
+//    //uint8 bagslot = INVENTORY_NO_SLOT_AVAILABLE;
+//    //int check = 0;
+//
+//    recv_data >> vendorguid;
+//    recv_data >> itemguid;
+//    recv_data >> amount;
+//
+//    if (_player->IsCasting())
+//        _player->InterruptSpell();
+//
+//    // Check if item exists
+//    if (!itemguid)
+//    {
+//        SendSellItem(vendorguid, itemguid, 1);
+//        return;
+//    }
+//
+//    Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(vendorguid));
+//    // Check if Vendor exists
+//    if (unit == NULL)
+//    {
+//        SendSellItem(vendorguid, itemguid, 3);
+//        return;
+//    }
+//
+//    Item* item = _player->GetItemInterface()->GetItemByGUID(itemguid);
+//    if (!item)
+//    {
+//        SendSellItem(vendorguid, itemguid, 1);
+//        return; //our player doesn't have this item
+//    }
+//
+//    ItemProperties const* it = item->GetItemProperties();
+//
+//    if (item->IsContainer() && static_cast< Container* >(item)->HasItems())
+//    {
+//        SendSellItem(vendorguid, itemguid, 6);
+//        return;
+//    }
+//
+//    // Check if item can be sold
+//    if (it->SellPrice == 0 || item->wrapped_item_id != 0)
+//    {
+//        SendSellItem(vendorguid, itemguid, 2);
+//        return;
+//    }
+//
+//    uint32 stackcount = item->GetStackCount();
+//    uint32 quantity = 0;
+//
+//    if (amount != 0)
+//    {
+//        quantity = amount;
+//    }
+//    else
+//    {
+//        quantity = stackcount; //allitems
+//    }
+//
+//    if (quantity > stackcount) quantity = stackcount; //make sure we don't over do it
+//
+//    uint32 price = GetSellPriceForItem(it, quantity);
+//
+//    // Check they don't have more than the max gold
+//    if (sWorld.GoldCapEnabled)
+//    {
+//        if ((_player->GetGold() + price) > sWorld.GoldLimit)
+//        {
+//            _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
+//            return;
+//        }
+//    }
+//
+//    _player->ModGold(price);
+//
+//    if (quantity < stackcount)
+//    {
+//        item->SetStackCount(stackcount - quantity);
+//        item->m_isDirty = true;
+//    }
+//    else
+//    {
+//        //removing the item from the char's inventory
+//        item = _player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(itemguid, false); //again to remove item from slot
+//        if (item)
+//        {
+//            _player->GetItemInterface()->AddBuyBackItem(item, (it->SellPrice) * quantity);
+//            item->DeleteFromDB();
+//        }
+//    }
+//
+//    WorldPacket data(SMSG_SELL_ITEM, 12);
+//    data << vendorguid;
+//    data << itemguid;
+//    data << uint8(0);
+//    SendPacket(&data);
+//
+//    LOG_DETAIL("WORLD: Sent SMSG_SELL_ITEM");
+//}
+
+//void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag & drop
+//{
+//    CHECK_INWORLD_RETURN
+//    CHECK_PACKET_SIZE(recv_data, 22);
+//
+//    LOG_DETAIL("WORLD: Received CMSG_BUY_ITEM_IN_SLOT");
+//
+//    uint64 srcguid;
+//    uint64 bagguid;
+//    uint32 itemid;
+//    int8 slot;
+//    uint8 amount = 0;
+//    uint8 error;
+//    int8 bagslot = INVENTORY_SLOT_NOT_SET;
+//    int32 vendorslot; //VLack: 3.1.2
+//
+//    recv_data >> srcguid;
+//    recv_data >> itemid;
+//    recv_data >> vendorslot; //VLack: 3.1.2 This is the slot's number on the vendor's panel, starts from 1
+//    recv_data >> bagguid;
+//    recv_data >> slot; //VLack: 3.1.2 the target slot the player selected - backpack 23-38, other bags 0-15 (Or how big is the biggest bag? 0-127?)
+//    recv_data >> amount;
+//
+//    if (amount < 1)
+//        amount = 1;
+//
+//    if (_player->IsCasting())
+//        _player->InterruptSpell();
+//
+//    Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(srcguid));
+//    if (unit == NULL || !unit->HasItems())
+//        return;
+//
+//    Container* c = NULL;
+//
+//    CreatureItem ci;
+//    unit->GetSellItemByItemId(itemid, ci);
+//
+//    if (ci.itemid == 0)
+//        return;
+//
+//    if (ci.max_amount > 0 && ci.available_amount < amount)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_IS_CURRENTLY_SOLD_OUT);
+//        return;
+//    }
+//
+//    ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
+//    if (it == nullptr)
+//        return;
+//
+//    uint32 itemMaxStack = (_player->ItemStackCheat) ? 0x7fffffff : it->MaxCount;
+//    if (itemMaxStack > 0 && ci.amount * amount > itemMaxStack)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_CANT_CARRY_MORE_OF_THIS);
+//        return;
+//    }
+//
+//    uint32 count_per_stack = ci.amount * amount;
+//
+//    // if slot is different than -1, check for validation, else continue for auto storing.
+//    if (slot != INVENTORY_SLOT_NOT_SET)
+//    {
+//        if (!(bagguid >> 32))//buy to backpack
+//        {
+//            if (slot > INVENTORY_SLOT_ITEM_END || slot < INVENTORY_SLOT_ITEM_START)
+//            {
+//                //hackers!
+//                _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
+//                return;
+//            }
+//        }
+//        else
+//        {
+//            c = static_cast< Container* >(_player->GetItemInterface()->GetItemByGUID(bagguid));
+//            if (!c)
+//                return;
+//            bagslot = (int8)_player->GetItemInterface()->GetBagSlotByGuid(bagguid);
+//
+//            if (bagslot == INVENTORY_SLOT_NOT_SET || ((uint32)slot > c->GetItemProperties()->ContainerSlots))
+//            {
+//                _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
+//                return;
+//            }
+//        }
+//    }
+//    else
+//    {
+//        if ((bagguid >> 32))
+//        {
+//            c = static_cast< Container* >(_player->GetItemInterface()->GetItemByGUID(bagguid));
+//            if (!c)
+//            {
+//                _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_NOT_FOUND);
+//                return;//non empty
+//            }
+//
+//            bagslot = (int8)_player->GetItemInterface()->GetBagSlotByGuid(bagguid);
+//            slot = c->FindFreeSlot();
+//        }
+//        else
+//            slot = _player->GetItemInterface()->FindFreeBackPackSlot();
+//    }
+//
+//    if ((error = _player->GetItemInterface()->CanReceiveItem(it, amount)) != 0)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
+//        return;
+//    }
+//
+//    if ((error = _player->GetItemInterface()->CanAffordItem(it, amount, unit)) != 0)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
+//        return;
+//    }
+//
+//    if (slot == INVENTORY_SLOT_NOT_SET)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_BAG_FULL);
+//        return;
+//    }
+//
+//    // ok our z and slot are set.
+//    Item* oldItem = NULL;
+//    Item* pItem = NULL;
+//    if (slot != INVENTORY_SLOT_NOT_SET)
+//        oldItem = _player->GetItemInterface()->GetInventoryItem(bagslot, slot);
+//
+//    if (oldItem != NULL)
+//    {
+//        // try to add to the existing items stack
+//        if (oldItem->GetItemProperties() != it)
+//        {
+//            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
+//            return;
+//        }
+//
+//        if ((oldItem->GetStackCount() + count_per_stack) > itemMaxStack)
+//        {
+//            //            LOG_DEBUG("SUPADBG can't carry #2");
+//            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_CANT_CARRY_MORE_OF_THIS);
+//            return;
+//        }
+//
+//        oldItem->ModStackCount(count_per_stack);
+//        oldItem->m_isDirty = true;
+//        pItem = oldItem;
+//    }
+//    else
+//    {
+//        // create new item
+//        /*if (slot == INVENTORY_SLOT_NOT_SET) This cannot be true CID 52838
+//            slot = c->FindFreeSlot();*/
+//
+//        if (slot == ITEM_NO_SLOT_AVAILABLE)
+//        {
+//            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_BAG_FULL);
+//            return;
+//        }
+//
+//        pItem = objmgr.CreateItem(it->ItemId, _player);
+//        if (pItem)
+//        {
+//            pItem->SetStackCount(count_per_stack);
+//            pItem->m_isDirty = true;
+//            //            LOG_DEBUG("SUPADBG bagslot=%u, slot=%u" , bagslot, slot);
+//            if (!_player->GetItemInterface()->SafeAddItem(pItem, bagslot, slot))
+//            {
+//                pItem->DeleteMe();
+//                return;
+//            }
+//        }
+//        else
+//            return;
+//    }
+//
+//    _player->SendItemPushResult(false, true, false, (pItem == oldItem) ? false : true, bagslot, slot, amount * ci.amount, pItem->GetEntry(), pItem->GetItemRandomSuffixFactor(), pItem->GetItemRandomPropertyId(), pItem->GetStackCount());
+//
+//    WorldPacket data(SMSG_BUY_ITEM, 22);
+//    data << uint64(srcguid);
+//    data << getMSTime();
+//    data << uint32(itemid);
+//    data << uint32(amount);
+//
+//    SendPacket(&data);
+//
+//    LOG_DETAIL("WORLD: Sent SMSG_BUY_ITEM");
+//
+//    _player->GetItemInterface()->BuyItem(it, amount, unit);
+//    if (ci.max_amount)
+//    {
+//        unit->ModAvItemAmount(ci.itemid, ci.amount * amount);
+//
+//        // there is probably a proper opcode for this. - burlex
+//        SendInventoryList(unit);
+//    }
+//}
+
+//void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)   // right-click on item
+//{
+//    CHECK_INWORLD_RETURN;
+//    CHECK_PACKET_SIZE(recv_data, 14);
+//    LOG_DETAIL("WORLD: Received CMSG_BUY_ITEM");
+//
+//    uint64 srcguid = 0;
+//    uint32 itemid = 0;
+//    int32 slot = 0;
+//    uint8 amount = 0;
+//    uint8 error = 0;
+//    SlotResult slotresult;
+//    AddItemResult result;
+//
+//    recv_data >> srcguid;
+//    recv_data >> itemid;
+//    recv_data >> slot;
+//    recv_data >> amount;
+//
+//    auto creature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(srcguid));
+//    if (creature == nullptr || !creature->HasItems())
+//        return;
+//
+//    auto item_extended_cost = creature->GetItemExtendedCostByItemId(itemid);
+//
+//    if (amount < 1)
+//        amount = 1;
+//
+//    CreatureItem creature_item;
+//    creature->GetSellItemByItemId(itemid, creature_item);
+//
+//    if (creature_item.itemid == 0)
+//    {
+//        // vendor does not sell this item.. bitch about cheaters?
+//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
+//        return;
+//    }
+//
+//    if (creature_item.max_amount > 0 && creature_item.available_amount < amount)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_IS_CURRENTLY_SOLD_OUT);
+//        return;
+//    }
+//
+//    ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
+//    if (!it)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
+//        return;
+//    }
+//
+//    uint32 itemMaxStack = (_player->ItemStackCheat) ? 0x7fffffff : it->MaxCount;
+//    if (itemMaxStack > 0 && amount * creature_item.amount > itemMaxStack)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_CANT_STACK);
+//        return;
+//    }
+//
+//    if ((error = _player->GetItemInterface()->CanReceiveItem(it, amount * creature_item.amount)) != 0)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
+//        return;
+//    }
+//
+//    if ((error = _player->GetItemInterface()->CanAffordItem(it, amount, creature)) != 0)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
+//        return;
+//    }
+//
+//    // Find free slot and break if inv full
+//    auto add_item = _player->GetItemInterface()->FindItemLessMax(itemid, amount * creature_item.amount, false);
+//    if (!add_item)
+//    {
+//        slotresult = _player->GetItemInterface()->FindFreeInventorySlot(it);
+//    }
+//    if (!slotresult.Result && !add_item)
+//    {
+//        //Player doesn't have a free slot in his/her bag(s)
+//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
+//        return;
+//    }
+//
+//    if (!add_item)
+//    {
+//        Item* item = objmgr.CreateItem(creature_item.itemid, _player);
+//        if (!item)
+//        {
+//            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
+//            return;
+//        }
+//
+//        item->m_isDirty = true;
+//        item->SetStackCount(amount * creature_item.amount);
+//
+//        if (slotresult.ContainerSlot == ITEM_NO_SLOT_AVAILABLE)
+//        {
+//            result = _player->GetItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, slotresult.Slot);
+//            if (!result)
+//            {
+//                item->DeleteMe();
+//            }
+//            else
+//            {
+//                if (item->IsEligibleForRefund() && item_extended_cost != nullptr)
+//                {
+//                    item->GetOwner()->GetItemInterface()->AddRefundable(item->GetGUID(), item_extended_cost->costid);
+//                }
+//                _player->SendItemPushResult(false, true, false, true, static_cast<uint8>(INVENTORY_SLOT_NOT_SET), slotresult.Result, amount * creature_item.amount, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+//            }
+//        }
+//        else
+//        {
+//            if (Item* bag = _player->GetItemInterface()->GetInventoryItem(slotresult.ContainerSlot))
+//            {
+//                if (!static_cast<Container*>(bag)->AddItem(slotresult.Slot, item))
+//                {
+//                    item->DeleteMe();
+//                }
+//                else
+//                {
+//                    if (item->IsEligibleForRefund() && item_extended_cost != nullptr)
+//                    {
+//                        item->GetOwner()->GetItemInterface()->AddRefundable(item->GetGUID(), item_extended_cost->costid);
+//                    }
+//                    _player->SendItemPushResult(false, true, false, true, slotresult.ContainerSlot, slotresult.Result, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+//                }
+//            }
+//        }
+//    }
+//    else
+//    {
+//        add_item->ModStackCount(amount * creature_item.amount);
+//        add_item->m_isDirty = true;
+//        _player->SendItemPushResult(false, true, false, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add_item->GetGUID()), 1, amount * creature_item.amount, add_item->GetEntry(), add_item->GetItemRandomSuffixFactor(), add_item->GetItemRandomPropertyId(), add_item->GetStackCount());
+//    }
+//
+//    _player->GetItemInterface()->BuyItem(it, amount, creature);
+//
+//    WorldPacket data(45);
+//    data.Initialize(SMSG_BUY_ITEM);
+//    data << uint64(srcguid);
+//    data << getMSTime();
+//    data << uint32(itemid);
+//    data << uint32(amount * creature_item.amount);
+//
+//    SendPacket(&data);
+//
+//    if (creature_item.max_amount)
+//    {
+//        creature->ModAvItemAmount(creature_item.itemid, creature_item.amount * amount);
+//
+//        // there is probably a proper opcode for this. - burlex
+//        SendInventoryList(creature);
+//    }
+//}
 
 void WorldSession::HandleListInventoryOpcode(WorldPacket& recv_data)
 {
@@ -1686,659 +1686,659 @@ void WorldSession::HandleReadItemOpcode(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recvPacket, 17);//8+8+1
-
-    uint64 npcguid;
-    uint64 itemguid;
-    Item* pItem;
-    Container* pContainer;
-    uint32 j, i;
-    bool guildmoney;
-
-    recvPacket >> npcguid >> itemguid >> guildmoney;
-
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(npcguid));
-    if (pCreature == NULL)
-        return;
-
-    if (!pCreature->isArmorer())
-        return;
-
-    //this is a blizzlike check
-    if (_player->GetDistanceSq(pCreature) > 100)
-        return; //avoid talking to anyone by guid hacking. Like repair items anytime in raid ? Low chance hack
-
-    if (guildmoney)
-    {
-        if (_player->IsInGuild())
-        {
-            if (!(_player->GetGuildRankS()->iRights & GR_RIGHT_GUILD_BANK_REPAIR))
-            {
-                return; //we have not permissions to do that
-            }
-        }
-        else
-            return;//can't repair with guild money if player is not in guild.
-    }
-
-    if (!itemguid)
-    {
-        int32 totalcost = 0;
-        for (i = 0; i < MAX_INVENTORY_SLOT; i++)
-        {
-            pItem = _player->GetItemInterface()->GetInventoryItem(static_cast<int16>(i));
-            if (pItem != NULL)
-            {
-                if (pItem->IsContainer())
-                {
-                    pContainer = static_cast< Container* >(pItem);
-                    for (j = 0; j < pContainer->GetItemProperties()->ContainerSlots; ++j)
-                    {
-                        pItem = pContainer->GetItem(static_cast<int16>(j));
-                        if (pItem != NULL)
-                            pItem->RepairItem(_player, guildmoney, &totalcost);
-                    }
-                }
-                else
-                {
-                    if (i < INVENTORY_SLOT_BAG_END)
-                    {
-                        if (pItem->GetDurability() == 0 && pItem->RepairItem(_player, guildmoney, &totalcost))
-                            _player->ApplyItemMods(pItem, static_cast<int16>(i), true);
-                        else
-                            pItem->RepairItem(_player, guildmoney, &totalcost);
-                    }
-                }
-            }
-        }
-        if (totalcost > 0)  //we already checked if it's in guild in RepairItem()
-            _player->GetGuild()->LogGuildBankActionMoney(GUILD_BANK_LOG_EVENT_REPAIR, _player->GetLowGUID(), totalcost);
-    }
-    else
-    {
-        Item* item = _player->GetItemInterface()->GetItemByGUID(itemguid);
-        if (item)
-        {
-            SlotResult* searchres = _player->GetItemInterface()->LastSearchResult(); //this never gets null since we get a pointer to the inteface internal var
-            uint32 dDurability = item->GetDurabilityMax() - item->GetDurability();
-
-            if (dDurability)
-            {
-                uint32 cDurability = item->GetDurability();
-                //only apply item mods if they are on char equipped
-                if (item->RepairItem(_player) && cDurability == 0 && searchres->ContainerSlot == static_cast<int8>(INVALID_BACKPACK_SLOT) && searchres->Slot < static_cast<int8>(INVENTORY_SLOT_BAG_END))
-                    _player->ApplyItemMods(item, searchres->Slot, true);
-            }
-        }
-    }
-    LOG_DEBUG("Received CMSG_REPAIR_ITEM %d", itemguid);
-}
-
-void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recvPacket, 8);
-
-    uint64 guid;
-    recvPacket >> guid;
-    Creature* Banker = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-
-    if (Banker == NULL || !Banker->isBanker())
-    {
-        WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
-        data << uint32(2); // E_ERR_BANKSLOT_NOTBANKER
-        SendPacket(&data);
-        return;
-    }
-
-    uint32 bytes, slots;
-    int32 price;
-
-    LOG_DEBUG("WORLD: CMSG_BUY_bytes_SLOT");
-
-    bytes = GetPlayer()->GetUInt32Value(PLAYER_BYTES_2);
-    slots = (uint8)(bytes >> 16);
-
-    LOG_DETAIL("PLAYER: Buy bytes bag slot, slot number = %d", slots);
-    auto bank_bag_slot_prices = sBankBagSlotPricesStore.LookupEntry(slots + 1);
-    if (bank_bag_slot_prices == nullptr)
-    {
-        WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
-        data << uint32(0); // E_ERR_BANKSLOT_FAILED_TOO_MANY
-        SendPacket(&data);
-        return;
-    }
-
-    price = bank_bag_slot_prices->Price;
-    if (_player->HasGold(price))
-    {
-        _player->SetUInt32Value(PLAYER_BYTES_2, (bytes & 0xff00ffff) | ((slots + 1) << 16));
-        _player->ModGold(-price);
-#ifdef ENABLE_ACHIEVEMENTS
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT, 1, 0, 0);
-#endif
-    }
-    else
-    {
-        WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
-        data << uint32(1); // E_ERR_BANKSLOT_INSUFFICIENT_FUNDS
-        SendPacket(&data);
-    }
-}
-
-void WorldSession::HandleAutoBankItemOpcode(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recvPacket, 2);
-    LOG_DEBUG("WORLD: CMSG_AUTO_BANK_ITEM");
-
-    //WorldPacket data;
-
-    SlotResult slotresult;
-    int8 SrcInvSlot, SrcSlot;//, error= 0;
-
-    recvPacket >> SrcInvSlot >> SrcSlot;
-
-    LOG_DETAIL("ITEM: Auto Bank, Inventory slot: %u Source Slot: %u", (uint32)SrcInvSlot, (uint32)SrcSlot);
-
-    Item* eitem = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot, SrcSlot);
-
-    if (!eitem)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(eitem, NULL, INV_ERR_ITEM_NOT_FOUND);
-        return;
-    }
-
-    slotresult = _player->GetItemInterface()->FindFreeBankSlot(eitem->GetItemProperties());
-
-    if (!slotresult.Result)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(eitem, NULL, INV_ERR_BANK_FULL);
-        return;
-    }
-    else
-    {
-        eitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInvSlot, SrcSlot, false);
-        if (eitem == NULL)
-            return;
-
-        if (!_player->GetItemInterface()->SafeAddItem(eitem, slotresult.ContainerSlot, slotresult.Slot))
-        {
-            LOG_DEBUG("[ERROR]AutoBankItem: Error while adding item to bank bag!");
-            if (!_player->GetItemInterface()->SafeAddItem(eitem, SrcInvSlot, SrcSlot))
-                eitem->DeleteMe();
-        }
-    }
-}
-
-void WorldSession::HandleAutoStoreBankItemOpcode(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recvPacket, 2);
-    LOG_DEBUG("WORLD: CMSG_AUTOSTORE_BANK_ITEM");
-
-    //WorldPacket data;
-
-    int8 SrcInvSlot, SrcSlot;//, error= 0, slot=-1, specialbagslot=-1;
-
-    recvPacket >> SrcInvSlot >> SrcSlot;
-
-    LOG_DETAIL("ITEM: AutoStore Bank Item, Inventory slot: %u Source Slot: %u", (uint32)SrcInvSlot, (uint32)SrcSlot);
-
-    Item* eitem = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot, SrcSlot);
-
-    if (!eitem)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(eitem, NULL, INV_ERR_ITEM_NOT_FOUND);
-        return;
-    }
-
-    SlotResult slotresult = _player->GetItemInterface()->FindFreeInventorySlot(eitem->GetItemProperties());
-
-    if (!slotresult.Result)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(eitem, NULL, INV_ERR_INVENTORY_FULL);
-        return;
-    }
-    else
-    {
-        eitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInvSlot, SrcSlot, false);
-        if (eitem == NULL)
-            return;
-        if (!_player->GetItemInterface()->AddItemToFreeSlot(eitem))
-        {
-            LOG_DEBUG("[ERROR]AutoStoreBankItem: Error while adding item from one of the bank bags to the player bag!");
-            if (!_player->GetItemInterface()->SafeAddItem(eitem, SrcInvSlot, SrcSlot))
-                eitem->DeleteMe();
-        }
-    }
-}
-
-void WorldSession::HandleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    uint32 inventory_slot;
-    recvPacket >> inventory_slot;
-
-    Item* item = _player->GetItemInterface()->GetInventoryItem(static_cast<int16>(inventory_slot));
-    if (!item) return;
-
-    item->RemoveAllEnchantments(true);
-}
-
-void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    uint64 itemguid;
-    uint64 gemguid[3];
-    ItemInterface* itemi = _player->GetItemInterface();
-    DBC::Structures::GemPropertiesEntry const* gem_properties;
-    DBC::Structures::SpellItemEnchantmentEntry const* spell_item_enchant;
-    recvPacket >> itemguid;
-
-    Item* TargetItem = itemi->GetItemByGUID(itemguid);
-    if (!TargetItem)
-        return;
-
-    ItemProperties const* TargetProto = TargetItem->GetItemProperties();
-    int slot = itemi->GetInventorySlotByGuid(itemguid);
-
-    bool apply = (slot >= 0 && slot < 19);
-    uint32 FilledSlots = 0;
-
-    //cheat -> tried to socket same gem multiple times
-    for (uint8 i = 0; i < 3; ++i)
-        recvPacket >> gemguid[i];
-
-    if ((gemguid[0] && (gemguid[0] == gemguid[1] || gemguid[0] == gemguid[2])) || (gemguid[1] && (gemguid[1] == gemguid[2])))
-    {
-        return;
-    }
-
-    bool ColorMatch = true;
-    for (uint32 i = 0; i < TargetItem->GetSocketsCount(); ++i)
-    {
-        EnchantmentInstance* EI = TargetItem->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + i);
-        if (EI)
-        {
-            FilledSlots++;
-            ItemProperties const* ip = sMySQLStore.GetItemProperties(EI->Enchantment->GemEntry);
-            if (ip == nullptr)
-                gem_properties = nullptr;
-            else
-                gem_properties = sGemPropertiesStore.LookupEntry(ip->GemProperties);
-
-            if (gem_properties && !(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
-                ColorMatch = false;
-        }
-
-        if (gemguid[i])  //add or replace gem
-        {
-            Item* it = NULL;
-            ItemProperties const* ip = nullptr;
-
-            // tried to put gem in socket where no socket exists (take care about prismatic sockets)
-            if (!TargetProto->Sockets[i].SocketColor)
-            {
-                // no prismatic socket
-                if (!TargetItem->GetEnchantment(PRISMATIC_ENCHANTMENT_SLOT))
-                    return;
-
-                // not first not-colored (not normally used) socket
-                if (i != 0 && !TargetProto->Sockets[i - 1].SocketColor && (i + 1 >= 3 || TargetProto->Sockets[i + 1].SocketColor))
-                    return;
-
-                // ok, this is first not colored socket for item with prismatic socket
-            }
-
-
-            if (apply)
-            {
-                it = itemi->GetItemByGUID(gemguid[i]);
-                if (!it)
-                    continue;
-
-                ip = it->GetItemProperties();
-                if (ip->Flags & ITEM_FLAG_UNIQUE_EQUIP && itemi->IsEquipped(ip->ItemId))
-                {
-                    itemi->BuildInventoryChangeError(it, TargetItem, INV_ERR_CANT_CARRY_MORE_OF_THIS);
-                    continue;
-                }
-                // Skill requirement
-                if (ip->RequiredSkill)
-                {
-                    if (ip->RequiredSkillRank > _player->_GetSkillLineCurrent(ip->RequiredSkill, true))
-                    {
-                        itemi->BuildInventoryChangeError(it, TargetItem, INV_ERR_SKILL_ISNT_HIGH_ENOUGH);
-                        continue;
-                    }
-                }
-                if (ip->ItemLimitCategory)
-                {
-                    auto item_limit_category = sItemLimitCategoryStore.LookupEntry(ip->ItemLimitCategory);
-                    if (item_limit_category != nullptr && itemi->GetEquippedCountByItemLimit(ip->ItemLimitCategory) >= item_limit_category->maxAmount)
-                    {
-                        itemi->BuildInventoryChangeError(it, TargetItem, INV_ERR_ITEM_MAX_COUNT_EQUIPPED_SOCKETED);
-                        continue;
-                    }
-                }
-            }
-
-            it = itemi->SafeRemoveAndRetreiveItemByGuid(gemguid[i], true);
-            if (!it)
-                return; //someone sending hacked packets to crash server
-
-            gem_properties = sGemPropertiesStore.LookupEntry(it->GetItemProperties()->GemProperties);
-            it->DeleteMe();
-
-            if (!gem_properties)
-                continue;
-
-            if (!(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
-                ColorMatch = false;
-
-            if (!gem_properties->EnchantmentID)//this is ok in few cases
-                continue;
-            //Meta gems only go in meta sockets.
-            if (TargetProto->Sockets[i].SocketColor != GEM_META_SOCKET && gem_properties->SocketMask == GEM_META_SOCKET)
-                continue;
-            if (EI)//replace gem
-                TargetItem->RemoveEnchantment(2 + i); //remove previous
-            else//add gem
-                FilledSlots++;
-
-            spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(gem_properties->EnchantmentID);
-            if (spell_item_enchant != nullptr)
-            {
-                if (TargetItem->GetItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
-                    TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, 2 + i);
-            }
-
-        }
-    }
-
-    //Add color match bonus
-    if (TargetItem->GetItemProperties()->SocketBonus)
-    {
-        if (ColorMatch && (FilledSlots == TargetItem->GetSocketsCount()))
-        {
-            if (TargetItem->HasEnchantment(TargetItem->GetItemProperties()->SocketBonus) > 0)
-                return;
-
-            spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(TargetItem->GetItemProperties()->SocketBonus);
-            if (spell_item_enchant != nullptr)
-            {
-                if (TargetItem->GetItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
-                {
-                    uint32 Slot = TargetItem->FindFreeEnchantSlot(spell_item_enchant, 0);
-                    TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, Slot);
-                }
-            }
-        }
-        else  //remove
-        {
-            TargetItem->RemoveSocketBonusEnchant();
-        }
-    }
-
-    TargetItem->m_isDirty = true;
-}
-
-void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    int8 sourceitem_bagslot;
-    int8 sourceitem_slot;
-    int8 destitem_bagslot;
-    int8 destitem_slot;
-    uint32 source_entry;
-    uint32 itemid;
-    Item* src, *dst;
-
-    recv_data >> sourceitem_bagslot;
-    recv_data >> sourceitem_slot;
-    recv_data >> destitem_bagslot;
-    recv_data >> destitem_slot;
-
-    src = _player->GetItemInterface()->GetInventoryItem(sourceitem_bagslot, sourceitem_slot);
-    dst = _player->GetItemInterface()->GetInventoryItem(destitem_bagslot, destitem_slot);
-
-    if (!src || !dst)
-        return;
-
-    if (src == dst || !(src->GetItemProperties()->Class == 0 && src->GetItemProperties()->SubClass == 8))
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_WRAPPED_CANT_BE_WRAPPED);
-        return;
-    }
-
-    if (dst->GetStackCount() > 1)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_STACKABLE_CANT_BE_WRAPPED);
-        return;
-    }
-
-    uint32 dstItemMaxStack = (dst->GetOwner()->ItemStackCheat) ? 0x7fffffff : dst->GetItemProperties()->MaxCount;
-    if (dstItemMaxStack > 1)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_STACKABLE_CANT_BE_WRAPPED);
-        return;
-    }
-
-    if (dst->IsSoulbound())
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_BOUND_CANT_BE_WRAPPED);
-        return;
-    }
-
-    if (dst->wrapped_item_id || src->wrapped_item_id)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_WRAPPED_CANT_BE_WRAPPED);
-        return;
-    }
-
-    if (dst->GetItemProperties()->Unique)
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_UNIQUE_CANT_BE_WRAPPED);
-        return;
-    }
-
-    if (dst->IsContainer())
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_BAGS_CANT_BE_WRAPPED);
-        return;
-    }
-
-    if (dst->HasEnchantments())
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_ITEM_LOCKED);
-        return;
-    }
-    if (destitem_bagslot == -1 && (destitem_slot >= int8(EQUIPMENT_SLOT_START) && destitem_slot <= int8(INVENTORY_SLOT_BAG_END)))
-    {
-        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_EQUIPPED_CANT_BE_WRAPPED);
-        return;
-    }
-
-    // all checks passed ok
-    source_entry = src->GetEntry();
-    itemid = source_entry;
-    switch (source_entry)
-    {
-        case 5042:
-            itemid = 5043;
-            break;
-
-        case 5048:
-            itemid = 5044;
-            break;
-
-        case 17303:
-            itemid = 17302;
-            break;
-
-        case 17304:
-            itemid = 17305;
-            break;
-
-        case 17307:
-            itemid = 17308;
-            break;
-
-        case 21830:
-            itemid = 21831;
-            break;
-
-        default:
-            _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_WRAPPED_CANT_BE_WRAPPED);
-            return;
-            break;
-    }
-
-    dst->SetItemProperties(src->GetItemProperties());
-
-    if (src->GetStackCount() <= 1)
-    {
-        // destroy the source item
-        _player->GetItemInterface()->SafeFullRemoveItemByGuid(src->GetGUID());
-    }
-    else
-    {
-        // reduce stack count by one
-        src->ModStackCount(-1);
-        src->m_isDirty = true;
-    }
-
-    // change the dest item's entry
-    dst->wrapped_item_id = dst->GetEntry();
-    dst->SetEntry(itemid);
-
-    // set the giftwrapper fields
-    dst->SetGiftCreatorGUID(_player->GetGUID());
-    dst->SetDurability(0);
-    dst->SetDurabilityMax(0);
-    dst->Wrap();
-
-    // save it
-    dst->m_isDirty = true;
-    dst->SaveToDB(destitem_bagslot, destitem_slot, false, NULL);
-}
-
-void WorldSession::HandleItemRefundInfoOpcode(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    LOG_DEBUG("Recieved CMSG_ITEMREFUNDINFO.");
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    //  As of 3.2.0a the client sends this packet to request refund info on an item
-    //
-    //    {CLIENT} Packet: (0x04B3) UNKNOWN PacketSize = 8 TimeStamp = 265984125
-    //    E6 EE 09 18 02 00 00 42
-    //
-    //
-    //
-    //  Structure:
-    //  uint64 GUID
-    //////////////////////////////////////////////////////////////////////////////////////////
-
-    uint64 GUID;
-    recvPacket >> GUID;
-
-    this->SendRefundInfo(GUID);
-
-}
-
-void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-    LOG_DEBUG("Recieved CMSG_ITEMREFUNDREQUEST.");
-
-    uint64 GUID;
-    uint32 error = 1;
-
-    std::pair<time_t, uint32> RefundEntry;
-    DB2::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
-    ItemProperties const* item_proto = nullptr;
-
-    recvPacket >> GUID;
-
-    auto item = _player->GetItemInterface()->GetItemByGUID(GUID);
-
-    if (item != nullptr)
-    {
-        if (item->IsEligibleForRefund())
-        {
-            RefundEntry.first = 0;
-            RefundEntry.second = 0;
-
-            RefundEntry = _player->GetItemInterface()->LookupRefundable(GUID);
-
-            // If the item is refundable we look up the extendedcost
-            if (RefundEntry.first != 0 && RefundEntry.second != 0)
-            {
-                uint32* played = _player->GetPlayedtime();
-
-                if (played[1] < (RefundEntry.first + 60 * 60 * 2))
-                    item_extended_cost = sItemExtendedCostStore.LookupEntry(RefundEntry.second);
-            }
-
-            if (item_extended_cost != NULL)
-            {
-                item_proto = item->GetItemProperties();
-
-                ////////////////////////////////// We remove the refunded item and refund the cost //////////////////////////////////
-
-                for (uint8 i = 0; i < 5; ++i)
-                {
-                    _player->GetItemInterface()->AddItemById(item_extended_cost->item[i], item_extended_cost->count[i], 0);
-                }
-
-                _player->GetItemInterface()->AddItemById(43308, item_extended_cost->honor_points, 0);
-                _player->GetItemInterface()->AddItemById(43307, item_extended_cost->arena_points, 0);
-                _player->ModGold(item_proto->BuyPrice);
-
-                _player->GetItemInterface()->RemoveItemAmtByGuid(GUID, 1);
-
-                _player->GetItemInterface()->RemoveRefundable(GUID);
-
-                // we were successful!
-                error = 0;
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            }
-        }
-    }
-
-    WorldPacket packet(SMSG_ITEMREFUNDREQUEST, 60);
-    packet << uint64(GUID);
-    packet << uint32(error);
-
-    if (error == 0)
-    {
-        packet << uint32(item_proto->BuyPrice);
-        packet << uint32(item_extended_cost->honor_points);
-        packet << uint32(item_extended_cost->arena_points);
-
-        for (uint8 i = 0; i < 5; ++i)
-        {
-            packet << uint32(item_extended_cost->item[i]);
-            packet << uint32(item_extended_cost->count[i]);
-        }
-
-    }
-
-    SendPacket(&packet);
-
-    LOG_DEBUG("Sent SMSG_ITEMREFUNDREQUEST.");
-}
+//void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recvPacket, 17);//8+8+1
+//
+//    uint64 npcguid;
+//    uint64 itemguid;
+//    Item* pItem;
+//    Container* pContainer;
+//    uint32 j, i;
+//    bool guildmoney;
+//
+//    recvPacket >> npcguid >> itemguid >> guildmoney;
+//
+//    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(npcguid));
+//    if (pCreature == NULL)
+//        return;
+//
+//    if (!pCreature->isArmorer())
+//        return;
+//
+//    //this is a blizzlike check
+//    if (_player->GetDistanceSq(pCreature) > 100)
+//        return; //avoid talking to anyone by guid hacking. Like repair items anytime in raid ? Low chance hack
+//
+//    if (guildmoney)
+//    {
+//        if (_player->IsInGuild())
+//        {
+//            if (!(_player->GetGuildRankS()->iRights & GR_RIGHT_GUILD_BANK_REPAIR))
+//            {
+//                return; //we have not permissions to do that
+//            }
+//        }
+//        else
+//            return;//can't repair with guild money if player is not in guild.
+//    }
+//
+//    if (!itemguid)
+//    {
+//        int32 totalcost = 0;
+//        for (i = 0; i < MAX_INVENTORY_SLOT; i++)
+//        {
+//            pItem = _player->GetItemInterface()->GetInventoryItem(static_cast<int16>(i));
+//            if (pItem != NULL)
+//            {
+//                if (pItem->IsContainer())
+//                {
+//                    pContainer = static_cast< Container* >(pItem);
+//                    for (j = 0; j < pContainer->GetItemProperties()->ContainerSlots; ++j)
+//                    {
+//                        pItem = pContainer->GetItem(static_cast<int16>(j));
+//                        if (pItem != NULL)
+//                            pItem->RepairItem(_player, guildmoney, &totalcost);
+//                    }
+//                }
+//                else
+//                {
+//                    if (i < INVENTORY_SLOT_BAG_END)
+//                    {
+//                        if (pItem->GetDurability() == 0 && pItem->RepairItem(_player, guildmoney, &totalcost))
+//                            _player->ApplyItemMods(pItem, static_cast<int16>(i), true);
+//                        else
+//                            pItem->RepairItem(_player, guildmoney, &totalcost);
+//                    }
+//                }
+//            }
+//        }
+//        if (totalcost > 0)  //we already checked if it's in guild in RepairItem()
+//            _player->GetGuild()->LogGuildBankActionMoney(GUILD_BANK_LOG_EVENT_REPAIR, _player->GetLowGUID(), totalcost);
+//    }
+//    else
+//    {
+//        Item* item = _player->GetItemInterface()->GetItemByGUID(itemguid);
+//        if (item)
+//        {
+//            SlotResult* searchres = _player->GetItemInterface()->LastSearchResult(); //this never gets null since we get a pointer to the inteface internal var
+//            uint32 dDurability = item->GetDurabilityMax() - item->GetDurability();
+//
+//            if (dDurability)
+//            {
+//                uint32 cDurability = item->GetDurability();
+//                //only apply item mods if they are on char equipped
+//                if (item->RepairItem(_player) && cDurability == 0 && searchres->ContainerSlot == static_cast<int8>(INVALID_BACKPACK_SLOT) && searchres->Slot < static_cast<int8>(INVENTORY_SLOT_BAG_END))
+//                    _player->ApplyItemMods(item, searchres->Slot, true);
+//            }
+//        }
+//    }
+//    LOG_DEBUG("Received CMSG_REPAIR_ITEM %d", itemguid);
+//}
+
+//void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recvPacket, 8);
+//
+//    uint64 guid;
+//    recvPacket >> guid;
+//    Creature* Banker = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+//
+//    if (Banker == NULL || !Banker->isBanker())
+//    {
+//        WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
+//        data << uint32(2); // E_ERR_BANKSLOT_NOTBANKER
+//        SendPacket(&data);
+//        return;
+//    }
+//
+//    uint32 bytes, slots;
+//    int32 price;
+//
+//    LOG_DEBUG("WORLD: CMSG_BUY_bytes_SLOT");
+//
+//    bytes = GetPlayer()->GetUInt32Value(PLAYER_BYTES_2);
+//    slots = (uint8)(bytes >> 16);
+//
+//    LOG_DETAIL("PLAYER: Buy bytes bag slot, slot number = %d", slots);
+//    auto bank_bag_slot_prices = sBankBagSlotPricesStore.LookupEntry(slots + 1);
+//    if (bank_bag_slot_prices == nullptr)
+//    {
+//        WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
+//        data << uint32(0); // E_ERR_BANKSLOT_FAILED_TOO_MANY
+//        SendPacket(&data);
+//        return;
+//    }
+//
+//    price = bank_bag_slot_prices->Price;
+//    if (_player->HasGold(price))
+//    {
+//        _player->SetUInt32Value(PLAYER_BYTES_2, (bytes & 0xff00ffff) | ((slots + 1) << 16));
+//        _player->ModGold(-price);
+//#ifdef ENABLE_ACHIEVEMENTS
+//        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT, 1, 0, 0);
+//#endif
+//    }
+//    else
+//    {
+//        WorldPacket data(SMSG_BUY_BANK_SLOT_RESULT, 4);
+//        data << uint32(1); // E_ERR_BANKSLOT_INSUFFICIENT_FUNDS
+//        SendPacket(&data);
+//    }
+//}
+
+//void WorldSession::HandleAutoBankItemOpcode(WorldPacket& recvPacket)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recvPacket, 2);
+//    LOG_DEBUG("WORLD: CMSG_AUTO_BANK_ITEM");
+//
+//    //WorldPacket data;
+//
+//    SlotResult slotresult;
+//    int8 SrcInvSlot, SrcSlot;//, error= 0;
+//
+//    recvPacket >> SrcInvSlot >> SrcSlot;
+//
+//    LOG_DETAIL("ITEM: Auto Bank, Inventory slot: %u Source Slot: %u", (uint32)SrcInvSlot, (uint32)SrcSlot);
+//
+//    Item* eitem = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot, SrcSlot);
+//
+//    if (!eitem)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(eitem, NULL, INV_ERR_ITEM_NOT_FOUND);
+//        return;
+//    }
+//
+//    slotresult = _player->GetItemInterface()->FindFreeBankSlot(eitem->GetItemProperties());
+//
+//    if (!slotresult.Result)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(eitem, NULL, INV_ERR_BANK_FULL);
+//        return;
+//    }
+//    else
+//    {
+//        eitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInvSlot, SrcSlot, false);
+//        if (eitem == NULL)
+//            return;
+//
+//        if (!_player->GetItemInterface()->SafeAddItem(eitem, slotresult.ContainerSlot, slotresult.Slot))
+//        {
+//            LOG_DEBUG("[ERROR]AutoBankItem: Error while adding item to bank bag!");
+//            if (!_player->GetItemInterface()->SafeAddItem(eitem, SrcInvSlot, SrcSlot))
+//                eitem->DeleteMe();
+//        }
+//    }
+//}
+
+//void WorldSession::HandleAutoStoreBankItemOpcode(WorldPacket& recvPacket)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recvPacket, 2);
+//    LOG_DEBUG("WORLD: CMSG_AUTOSTORE_BANK_ITEM");
+//
+//    //WorldPacket data;
+//
+//    int8 SrcInvSlot, SrcSlot;//, error= 0, slot=-1, specialbagslot=-1;
+//
+//    recvPacket >> SrcInvSlot >> SrcSlot;
+//
+//    LOG_DETAIL("ITEM: AutoStore Bank Item, Inventory slot: %u Source Slot: %u", (uint32)SrcInvSlot, (uint32)SrcSlot);
+//
+//    Item* eitem = _player->GetItemInterface()->GetInventoryItem(SrcInvSlot, SrcSlot);
+//
+//    if (!eitem)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(eitem, NULL, INV_ERR_ITEM_NOT_FOUND);
+//        return;
+//    }
+//
+//    SlotResult slotresult = _player->GetItemInterface()->FindFreeInventorySlot(eitem->GetItemProperties());
+//
+//    if (!slotresult.Result)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(eitem, NULL, INV_ERR_INVENTORY_FULL);
+//        return;
+//    }
+//    else
+//    {
+//        eitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInvSlot, SrcSlot, false);
+//        if (eitem == NULL)
+//            return;
+//        if (!_player->GetItemInterface()->AddItemToFreeSlot(eitem))
+//        {
+//            LOG_DEBUG("[ERROR]AutoStoreBankItem: Error while adding item from one of the bank bags to the player bag!");
+//            if (!_player->GetItemInterface()->SafeAddItem(eitem, SrcInvSlot, SrcSlot))
+//                eitem->DeleteMe();
+//        }
+//    }
+//}
+
+//void WorldSession::HandleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    uint32 inventory_slot;
+//    recvPacket >> inventory_slot;
+//
+//    Item* item = _player->GetItemInterface()->GetInventoryItem(static_cast<int16>(inventory_slot));
+//    if (!item) return;
+//
+//    item->RemoveAllEnchantments(true);
+//}
+
+//void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    uint64 itemguid;
+//    uint64 gemguid[3];
+//    ItemInterface* itemi = _player->GetItemInterface();
+//    DBC::Structures::GemPropertiesEntry const* gem_properties;
+//    DBC::Structures::SpellItemEnchantmentEntry const* spell_item_enchant;
+//    recvPacket >> itemguid;
+//
+//    Item* TargetItem = itemi->GetItemByGUID(itemguid);
+//    if (!TargetItem)
+//        return;
+//
+//    ItemProperties const* TargetProto = TargetItem->GetItemProperties();
+//    int slot = itemi->GetInventorySlotByGuid(itemguid);
+//
+//    bool apply = (slot >= 0 && slot < 19);
+//    uint32 FilledSlots = 0;
+//
+//    //cheat -> tried to socket same gem multiple times
+//    for (uint8 i = 0; i < 3; ++i)
+//        recvPacket >> gemguid[i];
+//
+//    if ((gemguid[0] && (gemguid[0] == gemguid[1] || gemguid[0] == gemguid[2])) || (gemguid[1] && (gemguid[1] == gemguid[2])))
+//    {
+//        return;
+//    }
+//
+//    bool ColorMatch = true;
+//    for (uint32 i = 0; i < TargetItem->GetSocketsCount(); ++i)
+//    {
+//        EnchantmentInstance* EI = TargetItem->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + i);
+//        if (EI)
+//        {
+//            FilledSlots++;
+//            ItemProperties const* ip = sMySQLStore.GetItemProperties(EI->Enchantment->GemEntry);
+//            if (ip == nullptr)
+//                gem_properties = nullptr;
+//            else
+//                gem_properties = sGemPropertiesStore.LookupEntry(ip->GemProperties);
+//
+//            if (gem_properties && !(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
+//                ColorMatch = false;
+//        }
+//
+//        if (gemguid[i])  //add or replace gem
+//        {
+//            Item* it = NULL;
+//            ItemProperties const* ip = nullptr;
+//
+//            // tried to put gem in socket where no socket exists (take care about prismatic sockets)
+//            if (!TargetProto->Sockets[i].SocketColor)
+//            {
+//                // no prismatic socket
+//                if (!TargetItem->GetEnchantment(PRISMATIC_ENCHANTMENT_SLOT))
+//                    return;
+//
+//                // not first not-colored (not normally used) socket
+//                if (i != 0 && !TargetProto->Sockets[i - 1].SocketColor && (i + 1 >= 3 || TargetProto->Sockets[i + 1].SocketColor))
+//                    return;
+//
+//                // ok, this is first not colored socket for item with prismatic socket
+//            }
+//
+//
+//            if (apply)
+//            {
+//                it = itemi->GetItemByGUID(gemguid[i]);
+//                if (!it)
+//                    continue;
+//
+//                ip = it->GetItemProperties();
+//                if (ip->Flags & ITEM_FLAG_UNIQUE_EQUIP && itemi->IsEquipped(ip->ItemId))
+//                {
+//                    itemi->BuildInventoryChangeError(it, TargetItem, INV_ERR_CANT_CARRY_MORE_OF_THIS);
+//                    continue;
+//                }
+//                // Skill requirement
+//                if (ip->RequiredSkill)
+//                {
+//                    if (ip->RequiredSkillRank > _player->_GetSkillLineCurrent(ip->RequiredSkill, true))
+//                    {
+//                        itemi->BuildInventoryChangeError(it, TargetItem, INV_ERR_SKILL_ISNT_HIGH_ENOUGH);
+//                        continue;
+//                    }
+//                }
+//                if (ip->ItemLimitCategory)
+//                {
+//                    auto item_limit_category = sItemLimitCategoryStore.LookupEntry(ip->ItemLimitCategory);
+//                    if (item_limit_category != nullptr && itemi->GetEquippedCountByItemLimit(ip->ItemLimitCategory) >= item_limit_category->maxAmount)
+//                    {
+//                        itemi->BuildInventoryChangeError(it, TargetItem, INV_ERR_ITEM_MAX_COUNT_EQUIPPED_SOCKETED);
+//                        continue;
+//                    }
+//                }
+//            }
+//
+//            it = itemi->SafeRemoveAndRetreiveItemByGuid(gemguid[i], true);
+//            if (!it)
+//                return; //someone sending hacked packets to crash server
+//
+//            gem_properties = sGemPropertiesStore.LookupEntry(it->GetItemProperties()->GemProperties);
+//            it->DeleteMe();
+//
+//            if (!gem_properties)
+//                continue;
+//
+//            if (!(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
+//                ColorMatch = false;
+//
+//            if (!gem_properties->EnchantmentID)//this is ok in few cases
+//                continue;
+//            //Meta gems only go in meta sockets.
+//            if (TargetProto->Sockets[i].SocketColor != GEM_META_SOCKET && gem_properties->SocketMask == GEM_META_SOCKET)
+//                continue;
+//            if (EI)//replace gem
+//                TargetItem->RemoveEnchantment(2 + i); //remove previous
+//            else//add gem
+//                FilledSlots++;
+//
+//            spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(gem_properties->EnchantmentID);
+//            if (spell_item_enchant != nullptr)
+//            {
+//                if (TargetItem->GetItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+//                    TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, 2 + i);
+//            }
+//
+//        }
+//    }
+//
+//    //Add color match bonus
+//    if (TargetItem->GetItemProperties()->SocketBonus)
+//    {
+//        if (ColorMatch && (FilledSlots == TargetItem->GetSocketsCount()))
+//        {
+//            if (TargetItem->HasEnchantment(TargetItem->GetItemProperties()->SocketBonus) > 0)
+//                return;
+//
+//            spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(TargetItem->GetItemProperties()->SocketBonus);
+//            if (spell_item_enchant != nullptr)
+//            {
+//                if (TargetItem->GetItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+//                {
+//                    uint32 Slot = TargetItem->FindFreeEnchantSlot(spell_item_enchant, 0);
+//                    TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, Slot);
+//                }
+//            }
+//        }
+//        else  //remove
+//        {
+//            TargetItem->RemoveSocketBonusEnchant();
+//        }
+//    }
+//
+//    TargetItem->m_isDirty = true;
+//}
+
+//void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    int8 sourceitem_bagslot;
+//    int8 sourceitem_slot;
+//    int8 destitem_bagslot;
+//    int8 destitem_slot;
+//    uint32 source_entry;
+//    uint32 itemid;
+//    Item* src, *dst;
+//
+//    recv_data >> sourceitem_bagslot;
+//    recv_data >> sourceitem_slot;
+//    recv_data >> destitem_bagslot;
+//    recv_data >> destitem_slot;
+//
+//    src = _player->GetItemInterface()->GetInventoryItem(sourceitem_bagslot, sourceitem_slot);
+//    dst = _player->GetItemInterface()->GetInventoryItem(destitem_bagslot, destitem_slot);
+//
+//    if (!src || !dst)
+//        return;
+//
+//    if (src == dst || !(src->GetItemProperties()->Class == 0 && src->GetItemProperties()->SubClass == 8))
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_WRAPPED_CANT_BE_WRAPPED);
+//        return;
+//    }
+//
+//    if (dst->GetStackCount() > 1)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_STACKABLE_CANT_BE_WRAPPED);
+//        return;
+//    }
+//
+//    uint32 dstItemMaxStack = (dst->GetOwner()->ItemStackCheat) ? 0x7fffffff : dst->GetItemProperties()->MaxCount;
+//    if (dstItemMaxStack > 1)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_STACKABLE_CANT_BE_WRAPPED);
+//        return;
+//    }
+//
+//    if (dst->IsSoulbound())
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_BOUND_CANT_BE_WRAPPED);
+//        return;
+//    }
+//
+//    if (dst->wrapped_item_id || src->wrapped_item_id)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_WRAPPED_CANT_BE_WRAPPED);
+//        return;
+//    }
+//
+//    if (dst->GetItemProperties()->Unique)
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_UNIQUE_CANT_BE_WRAPPED);
+//        return;
+//    }
+//
+//    if (dst->IsContainer())
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_BAGS_CANT_BE_WRAPPED);
+//        return;
+//    }
+//
+//    if (dst->HasEnchantments())
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_ITEM_LOCKED);
+//        return;
+//    }
+//    if (destitem_bagslot == -1 && (destitem_slot >= int8(EQUIPMENT_SLOT_START) && destitem_slot <= int8(INVENTORY_SLOT_BAG_END)))
+//    {
+//        _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_EQUIPPED_CANT_BE_WRAPPED);
+//        return;
+//    }
+//
+//    // all checks passed ok
+//    source_entry = src->GetEntry();
+//    itemid = source_entry;
+//    switch (source_entry)
+//    {
+//        case 5042:
+//            itemid = 5043;
+//            break;
+//
+//        case 5048:
+//            itemid = 5044;
+//            break;
+//
+//        case 17303:
+//            itemid = 17302;
+//            break;
+//
+//        case 17304:
+//            itemid = 17305;
+//            break;
+//
+//        case 17307:
+//            itemid = 17308;
+//            break;
+//
+//        case 21830:
+//            itemid = 21831;
+//            break;
+//
+//        default:
+//            _player->GetItemInterface()->BuildInventoryChangeError(src, dst, INV_ERR_WRAPPED_CANT_BE_WRAPPED);
+//            return;
+//            break;
+//    }
+//
+//    dst->SetItemProperties(src->GetItemProperties());
+//
+//    if (src->GetStackCount() <= 1)
+//    {
+//        // destroy the source item
+//        _player->GetItemInterface()->SafeFullRemoveItemByGuid(src->GetGUID());
+//    }
+//    else
+//    {
+//        // reduce stack count by one
+//        src->ModStackCount(-1);
+//        src->m_isDirty = true;
+//    }
+//
+//    // change the dest item's entry
+//    dst->wrapped_item_id = dst->GetEntry();
+//    dst->SetEntry(itemid);
+//
+//    // set the giftwrapper fields
+//    dst->SetGiftCreatorGUID(_player->GetGUID());
+//    dst->SetDurability(0);
+//    dst->SetDurabilityMax(0);
+//    dst->Wrap();
+//
+//    // save it
+//    dst->m_isDirty = true;
+//    dst->SaveToDB(destitem_bagslot, destitem_slot, false, NULL);
+//}
+
+//void WorldSession::HandleItemRefundInfoOpcode(WorldPacket& recvPacket)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    LOG_DEBUG("Recieved CMSG_ITEMREFUNDINFO.");
+//
+//    //////////////////////////////////////////////////////////////////////////////////////////
+//    //  As of 3.2.0a the client sends this packet to request refund info on an item
+//    //
+//    //    {CLIENT} Packet: (0x04B3) UNKNOWN PacketSize = 8 TimeStamp = 265984125
+//    //    E6 EE 09 18 02 00 00 42
+//    //
+//    //
+//    //
+//    //  Structure:
+//    //  uint64 GUID
+//    //////////////////////////////////////////////////////////////////////////////////////////
+//
+//    uint64 GUID;
+//    recvPacket >> GUID;
+//
+//    this->SendRefundInfo(GUID);
+//
+//}
+
+//void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
+//{
+//    CHECK_INWORLD_RETURN
+//    LOG_DEBUG("Recieved CMSG_ITEMREFUNDREQUEST.");
+//
+//    uint64 GUID;
+//    uint32 error = 1;
+//
+//    std::pair<time_t, uint32> RefundEntry;
+//    DB2::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
+//    ItemProperties const* item_proto = nullptr;
+//
+//    recvPacket >> GUID;
+//
+//    auto item = _player->GetItemInterface()->GetItemByGUID(GUID);
+//
+//    if (item != nullptr)
+//    {
+//        if (item->IsEligibleForRefund())
+//        {
+//            RefundEntry.first = 0;
+//            RefundEntry.second = 0;
+//
+//            RefundEntry = _player->GetItemInterface()->LookupRefundable(GUID);
+//
+//            // If the item is refundable we look up the extendedcost
+//            if (RefundEntry.first != 0 && RefundEntry.second != 0)
+//            {
+//                uint32* played = _player->GetPlayedtime();
+//
+//                if (played[1] < (RefundEntry.first + 60 * 60 * 2))
+//                    item_extended_cost = sItemExtendedCostStore.LookupEntry(RefundEntry.second);
+//            }
+//
+//            if (item_extended_cost != NULL)
+//            {
+//                item_proto = item->GetItemProperties();
+//
+//                ////////////////////////////////// We remove the refunded item and refund the cost //////////////////////////////////
+//
+//                for (uint8 i = 0; i < 5; ++i)
+//                {
+//                    _player->GetItemInterface()->AddItemById(item_extended_cost->item[i], item_extended_cost->count[i], 0);
+//                }
+//
+//                _player->GetItemInterface()->AddItemById(43308, item_extended_cost->honor_points, 0);
+//                _player->GetItemInterface()->AddItemById(43307, item_extended_cost->arena_points, 0);
+//                _player->ModGold(item_proto->BuyPrice);
+//
+//                _player->GetItemInterface()->RemoveItemAmtByGuid(GUID, 1);
+//
+//                _player->GetItemInterface()->RemoveRefundable(GUID);
+//
+//                // we were successful!
+//                error = 0;
+//                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//            }
+//        }
+//    }
+//
+//    WorldPacket packet(SMSG_ITEMREFUNDREQUEST, 60);
+//    packet << uint64(GUID);
+//    packet << uint32(error);
+//
+//    if (error == 0)
+//    {
+//        packet << uint32(item_proto->BuyPrice);
+//        packet << uint32(item_extended_cost->honor_points);
+//        packet << uint32(item_extended_cost->arena_points);
+//
+//        for (uint8 i = 0; i < 5; ++i)
+//        {
+//            packet << uint32(item_extended_cost->item[i]);
+//            packet << uint32(item_extended_cost->count[i]);
+//        }
+//
+//    }
+//
+//    SendPacket(&packet);
+//
+//    LOG_DEBUG("Sent SMSG_ITEMREFUNDREQUEST.");
+//}
 

@@ -301,33 +301,33 @@ void WorldSession::HandleChannelModerate(WorldPacket& recvPacket)
         chn->Moderate(_player);
 }
 
-void WorldSession::HandleChannelRosterQuery(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
+//void WorldSession::HandleChannelRosterQuery(WorldPacket& recvPacket)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    std::string channelname;
+//    Channel* chn;
+//    recvPacket >> channelname;
+//
+//    chn = channelmgr.GetChannel(channelname.c_str(), _player);
+//    if (chn)
+//        chn->List(_player);
+//}
 
-    std::string channelname;
-    Channel* chn;
-    recvPacket >> channelname;
-
-    chn = channelmgr.GetChannel(channelname.c_str(), _player);
-    if (chn)
-        chn->List(_player);
-}
-
-void WorldSession::HandleChannelNumMembersQuery(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    std::string channel_name;
-    WorldPacket data(SMSG_CHANNEL_MEMBER_COUNT, recvPacket.size() + 4);
-    Channel* chn;
-    recvPacket >> channel_name;
-    chn = channelmgr.GetChannel(channel_name.c_str(), _player);
-    if (chn)
-    {
-        data << channel_name;
-        data << uint8(chn->m_flags);
-        data << uint32(chn->GetNumMembers());
-        SendPacket(&data);
-    }
-}
+//void WorldSession::HandleChannelNumMembersQuery(WorldPacket& recvPacket)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    std::string channel_name;
+//    WorldPacket data(SMSG_CHANNEL_MEMBER_COUNT, recvPacket.size() + 4);
+//    Channel* chn;
+//    recvPacket >> channel_name;
+//    chn = channelmgr.GetChannel(channel_name.c_str(), _player);
+//    if (chn)
+//    {
+//        data << channel_name;
+//        data << uint8(chn->m_flags);
+//        data << uint32(chn->GetNumMembers());
+//        SendPacket(&data);
+//    }
+//}

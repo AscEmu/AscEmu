@@ -56,15 +56,15 @@ void WorldSession::HandleNameQueryOpcode(WorldPacket& recv_data)
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles CMSG_QUERY_TIME:
 //////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleQueryTimeOpcode(WorldPacket& recv_data)
-{
-
-    WorldPacket data(SMSG_QUERY_TIME_RESPONSE, 4 + 4);
-    data << (uint32)UNIXTIME;
-    data << (uint32)0; //VLack: 3.1; thanks Stewart for reminding me to have the correct structure even if it seems the old one still works.
-    SendPacket(&data);
-
-}
+//void WorldSession::HandleQueryTimeOpcode(WorldPacket& recv_data)
+//{
+//
+//    WorldPacket data(SMSG_QUERY_TIME_RESPONSE, 4 + 4);
+//    data << (uint32)UNIXTIME;
+//    data << (uint32)0; //VLack: 3.1; thanks Stewart for reminding me to have the correct structure even if it seems the old one still works.
+//    SendPacket(&data);
+//
+//}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles CMSG_CREATURE_QUERY:
@@ -235,171 +235,171 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles MSG_CORPSE_QUERY:
 //////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleCorpseQueryOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
+//void WorldSession::HandleCorpseQueryOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    LOG_DETAIL("WORLD: Received MSG_CORPSE_QUERY");
+//
+//    Corpse* pCorpse;
+//    WorldPacket data(MSG_CORPSE_QUERY, 25);
+//    MapInfo const* pMapinfo;
+//
+//    pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
+//    if (pCorpse)
+//    {
+//        pMapinfo = sMySQLStore.GetWorldMapInfo(pCorpse->GetMapId());
+//        if (pMapinfo)
+//        {
+//            if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
+//            {
+//                data << uint8(0x01);            //show ?
+//                data << pCorpse->GetMapId();    // mapid (that tombstones shown on)
+//                data << pCorpse->GetPositionX();
+//                data << pCorpse->GetPositionY();
+//                data << pCorpse->GetPositionZ();
+//                data << pCorpse->GetMapId();    //instance mapid (needs to be same as mapid to be able to recover corpse)
+//                data << uint32(0);
+//                SendPacket(&data);
+//            }
+//            else
+//            {
+//                data << uint8(0x01);            //show ?
+//                data << pMapinfo->repopmapid;   // mapid (that tombstones shown on)
+//                data << pMapinfo->repopx;
+//                data << pMapinfo->repopy;
+//                data << pMapinfo->repopz;
+//                data << pCorpse->GetMapId();    //instance mapid (needs to be same as mapid to be able to recover corpse)
+//                data << uint32(0);
+//                SendPacket(&data);
+//            }
+//        }
+//        else
+//        {
+//            data << uint8(0x01);                //show ?
+//            data << pCorpse->GetMapId();        // mapid (that tombstones shown on)
+//            data << pCorpse->GetPositionX();
+//            data << pCorpse->GetPositionY();
+//            data << pCorpse->GetPositionZ();
+//            data << pCorpse->GetMapId();        //instance mapid (needs to be same as mapid to be able to recover corpse)
+//            data << uint32(0);
+//            SendPacket(&data);
+//        }
+//    }
+//}
 
-    LOG_DETAIL("WORLD: Received MSG_CORPSE_QUERY");
-
-    Corpse* pCorpse;
-    WorldPacket data(MSG_CORPSE_QUERY, 25);
-    MapInfo const* pMapinfo;
-
-    pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
-    if (pCorpse)
-    {
-        pMapinfo = sMySQLStore.GetWorldMapInfo(pCorpse->GetMapId());
-        if (pMapinfo)
-        {
-            if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
-            {
-                data << uint8(0x01);            //show ?
-                data << pCorpse->GetMapId();    // mapid (that tombstones shown on)
-                data << pCorpse->GetPositionX();
-                data << pCorpse->GetPositionY();
-                data << pCorpse->GetPositionZ();
-                data << pCorpse->GetMapId();    //instance mapid (needs to be same as mapid to be able to recover corpse)
-                data << uint32(0);
-                SendPacket(&data);
-            }
-            else
-            {
-                data << uint8(0x01);            //show ?
-                data << pMapinfo->repopmapid;   // mapid (that tombstones shown on)
-                data << pMapinfo->repopx;
-                data << pMapinfo->repopy;
-                data << pMapinfo->repopz;
-                data << pCorpse->GetMapId();    //instance mapid (needs to be same as mapid to be able to recover corpse)
-                data << uint32(0);
-                SendPacket(&data);
-            }
-        }
-        else
-        {
-            data << uint8(0x01);                //show ?
-            data << pCorpse->GetMapId();        // mapid (that tombstones shown on)
-            data << pCorpse->GetPositionX();
-            data << pCorpse->GetPositionY();
-            data << pCorpse->GetPositionZ();
-            data << pCorpse->GetMapId();        //instance mapid (needs to be same as mapid to be able to recover corpse)
-            data << uint32(0);
-            SendPacket(&data);
-        }
-    }
-}
-
-void WorldSession::HandlePageTextQueryOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 4);
-    uint32 pageid = 0;
-    recv_data >> pageid;
-
-    while (pageid)
-    {
-        ItemPage const* page = sMySQLStore.GetItemPage(pageid);
-        if (!page)
-            return;
-
-        LocalizedItemPage* lpi = (language > 0) ? sLocalizationMgr.GetLocalizedItemPage(pageid, language) : NULL;
-        WorldPacket data(SMSG_PAGE_TEXT_QUERY_RESPONSE, 1000);
-        data << pageid;
-        if (lpi)
-            data << lpi->Text;
-        else
-            data << page->text;
-
-        data << page->next_page;
-        pageid = page->next_page;
-        SendPacket(&data);
-    }
-}
+//void WorldSession::HandlePageTextQueryOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recv_data, 4);
+//    uint32 pageid = 0;
+//    recv_data >> pageid;
+//
+//    while (pageid)
+//    {
+//        ItemPage const* page = sMySQLStore.GetItemPage(pageid);
+//        if (!page)
+//            return;
+//
+//        LocalizedItemPage* lpi = (language > 0) ? sLocalizationMgr.GetLocalizedItemPage(pageid, language) : NULL;
+//        WorldPacket data(SMSG_PAGE_TEXT_QUERY_RESPONSE, 1000);
+//        data << pageid;
+//        if (lpi)
+//            data << lpi->Text;
+//        else
+//            data << page->text;
+//
+//        data << page->next_page;
+//        pageid = page->next_page;
+//        SendPacket(&data);
+//    }
+//}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles CMSG_ITEM_NAME_QUERY:
 //////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleItemNameQueryOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-    CHECK_PACKET_SIZE(recv_data, 4);
+//void WorldSession::HandleItemNameQueryOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//    CHECK_PACKET_SIZE(recv_data, 4);
+//
+//    uint32 itemid;
+//
+//    recv_data >> itemid;
+//    recv_data.read_skip<uint64>();
+//
+//    WorldPacket reply(SMSG_ITEM_NAME_QUERY_RESPONSE, 100);
+//    reply << itemid;
+//
+//    std::string Name = ("Unknown Item");
+//
+//    ItemProperties const* proto = sMySQLStore.GetItemProperties(itemid);
+//    if (proto != nullptr)
+//    {
+//        LocalizedItem* li = (language > 0) ? sLocalizationMgr.GetLocalizedItem(itemid, language) : NULL;
+//        if (li)
+//            Name = li->Name;
+//        else
+//            Name = proto->Name;
+//
+//        reply << Name;
+//        reply << proto->InventoryType;
+//    }
+//    else
+//    {
+//        reply << Name;
+//    }
+//
+//
+//    SendPacket(&reply);
+//}
 
-    uint32 itemid;
+//void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN;
+//
+//    WorldPacket data(SMSG_QUESTGIVER_STATUS_MULTIPLE, 1000);
+//    Object::InRangeSet::iterator itr;
+//    Creature* pCreature;
+//    uint32 count = 0;
+//    data << count;
+//
+//    // 32 count
+//    // <foreach count>
+//    //    64 guid
+//    //    8 status
+//
+//    for (itr = _player->m_objectsInRange.begin(); itr != _player->m_objectsInRange.end(); ++itr)
+//    {
+//        if (!(*itr)->IsCreature())
+//            continue;
+//
+//        pCreature = static_cast<Creature*>(*itr);
+//
+//        if (pCreature->isQuestGiver())
+//        {
+//            data << pCreature->GetGUID();
+//            data << uint8(sQuestMgr.CalcStatus(pCreature, _player));
+//            ++count;
+//        }
+//    }
+//
+//    *(uint32*)(data.contents()) = count;
+//    SendPacket(&data);
+//}
 
-    recv_data >> itemid;
-    recv_data.read_skip<uint64>();
-
-    WorldPacket reply(SMSG_ITEM_NAME_QUERY_RESPONSE, 100);
-    reply << itemid;
-
-    std::string Name = ("Unknown Item");
-
-    ItemProperties const* proto = sMySQLStore.GetItemProperties(itemid);
-    if (proto != nullptr)
-    {
-        LocalizedItem* li = (language > 0) ? sLocalizationMgr.GetLocalizedItem(itemid, language) : NULL;
-        if (li)
-            Name = li->Name;
-        else
-            Name = proto->Name;
-
-        reply << Name;
-        reply << proto->InventoryType;
-    }
-    else
-    {
-        reply << Name;
-    }
-
-
-    SendPacket(&reply);
-}
-
-void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN;
-
-    WorldPacket data(SMSG_QUESTGIVER_STATUS_MULTIPLE, 1000);
-    Object::InRangeSet::iterator itr;
-    Creature* pCreature;
-    uint32 count = 0;
-    data << count;
-
-    // 32 count
-    // <foreach count>
-    //    64 guid
-    //    8 status
-
-    for (itr = _player->m_objectsInRange.begin(); itr != _player->m_objectsInRange.end(); ++itr)
-    {
-        if (!(*itr)->IsCreature())
-            continue;
-
-        pCreature = static_cast<Creature*>(*itr);
-
-        if (pCreature->isQuestGiver())
-        {
-            data << pCreature->GetGUID();
-            data << uint8(sQuestMgr.CalcStatus(pCreature, _player));
-            ++count;
-        }
-    }
-
-    *(uint32*)(data.contents()) = count;
-    SendPacket(&data);
-}
-
-void WorldSession::HandleAchievmentQueryOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN;
-
-    uint64 guid = recv_data.unpackGUID();               // Get the inspectee's GUID
-    Player* pTarget = objmgr.GetPlayer((uint32)guid);
-    if (!pTarget)
-    {
-        return;
-    }
-#ifdef ENABLE_ACHIEVEMENTS
-    pTarget->GetAchievementMgr().SendAllAchievementData(GetPlayer());
-#endif
-}
+//void WorldSession::HandleAchievmentQueryOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN;
+//
+//    uint64 guid = recv_data.unpackGUID();               // Get the inspectee's GUID
+//    Player* pTarget = objmgr.GetPlayer((uint32)guid);
+//    if (!pTarget)
+//    {
+//        return;
+//    }
+//#ifdef ENABLE_ACHIEVEMENTS
+//    pTarget->GetAchievementMgr().SendAllAchievementData(GetPlayer());
+//#endif
+//}

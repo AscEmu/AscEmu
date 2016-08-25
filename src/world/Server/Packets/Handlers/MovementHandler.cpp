@@ -70,91 +70,91 @@ uint32 mTimeStamp()
 
 #endif
 
-void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& recv_data)
-{
-    GetPlayer()->SetPlayerStatus(NONE);
-    if (_player->IsInWorld())
-    {
-        // get outta here
-        return;
-    }
-    LOG_DEBUG("WORLD: got MSG_MOVE_WORLDPORT_ACK.");
+//void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& recv_data)
+//{
+//    GetPlayer()->SetPlayerStatus(NONE);
+//    if (_player->IsInWorld())
+//    {
+//        // get outta here
+//        return;
+//    }
+//    LOG_DEBUG("WORLD: got MSG_MOVE_WORLDPORT_ACK.");
+//
+//    if (_player->GetTransport() && _player->GetMapId() != _player->GetTransport()->GetMapId())
+//    {
+//        /* wow, our pc must really suck. */
+//        Transporter* pTrans = _player->GetTransport();
+//
+//        float c_tposx = pTrans->GetPositionX() + _player->GetTransPositionX();
+//        float c_tposy = pTrans->GetPositionY() + _player->GetTransPositionY();
+//        float c_tposz = pTrans->GetPositionZ() + _player->GetTransPositionZ();
+//
+//
+//        _player->SetMapId(pTrans->GetMapId());
+//        _player->SetPosition(c_tposx, c_tposy, c_tposz, _player->GetOrientation());
+//
+//        WorldPacket dataw(SMSG_NEW_WORLD, 20);
+//
+//        dataw << pTrans->GetMapId();
+//        dataw << c_tposx;
+//        dataw << c_tposy;
+//        dataw << c_tposz;
+//        dataw << _player->GetOrientation();
+//
+//        SendPacket(&dataw);
+//    }
+//    else
+//    {
+//        _player->m_TeleportState = 2;
+//        _player->AddToWorld();
+//    }
+//}
 
-    if (_player->GetTransport() && _player->GetMapId() != _player->GetTransport()->GetMapId())
-    {
-        /* wow, our pc must really suck. */
-        Transporter* pTrans = _player->GetTransport();
-
-        float c_tposx = pTrans->GetPositionX() + _player->GetTransPositionX();
-        float c_tposy = pTrans->GetPositionY() + _player->GetTransPositionY();
-        float c_tposz = pTrans->GetPositionZ() + _player->GetTransPositionZ();
-
-
-        _player->SetMapId(pTrans->GetMapId());
-        _player->SetPosition(c_tposx, c_tposy, c_tposz, _player->GetOrientation());
-
-        WorldPacket dataw(SMSG_NEW_WORLD, 20);
-
-        dataw << pTrans->GetMapId();
-        dataw << c_tposx;
-        dataw << c_tposy;
-        dataw << c_tposz;
-        dataw << _player->GetOrientation();
-
-        SendPacket(&dataw);
-    }
-    else
-    {
-        _player->m_TeleportState = 2;
-        _player->AddToWorld();
-    }
-}
-
-void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recv_data)
-{
-    WoWGuid guid;
-    recv_data >> guid;
-
-    uint32 flags;
-    uint32 time;
-    recv_data >> flags;
-    recv_data >> time;
-
-    if (m_MoverWoWGuid.GetOldGuid() == _player->GetGUID())
-    {
-        if (sWorld.antihack_teleport && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && _player->GetPlayerStatus() != TRANSFER_PENDING)
-        {
-            /* we're obviously cheating */
-            sCheatLog.writefromsession(this, "Used teleport hack, disconnecting.");
-            Disconnect();
-            return;
-        }
-
-        if (sWorld.antihack_teleport && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && _player->m_position.Distance2DSq(_player->m_sentTeleportPosition) > 625.0f)	/* 25.0f*25.0f */
-        {
-            /* cheating.... :(*/
-            sCheatLog.writefromsession(this, "Used teleport hack {2}, disconnecting.");
-            Disconnect();
-            return;
-        }
-
-        LOG_DEBUG("WORLD: got MSG_MOVE_TELEPORT_ACK.");
-        GetPlayer()->SetPlayerStatus(NONE);
-        _player->SpeedCheatReset();
-
-        std::list<Pet*> summons = _player->GetSummons();
-        for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-        {
-            // move pet too
-            (*itr)->SetPosition((GetPlayer()->GetPositionX() + 2), (GetPlayer()->GetPositionY() + 2), GetPlayer()->GetPositionZ(), M_PI_FLOAT);
-        }
-        if (_player->m_sentTeleportPosition.x != 999999.0f)
-        {
-            _player->m_position = _player->m_sentTeleportPosition;
-            _player->m_sentTeleportPosition.ChangeCoords(999999.0f, 999999.0f, 999999.0f);
-        }
-    }
-}
+//void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recv_data)
+//{
+//    WoWGuid guid;
+//    recv_data >> guid;
+//
+//    uint32 flags;
+//    uint32 time;
+//    recv_data >> flags;
+//    recv_data >> time;
+//
+//    if (m_MoverWoWGuid.GetOldGuid() == _player->GetGUID())
+//    {
+//        if (sWorld.antihack_teleport && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && _player->GetPlayerStatus() != TRANSFER_PENDING)
+//        {
+//            /* we're obviously cheating */
+//            sCheatLog.writefromsession(this, "Used teleport hack, disconnecting.");
+//            Disconnect();
+//            return;
+//        }
+//
+//        if (sWorld.antihack_teleport && !(HasGMPermissions() && sWorld.no_antihack_on_gm) && _player->m_position.Distance2DSq(_player->m_sentTeleportPosition) > 625.0f)	/* 25.0f*25.0f */
+//        {
+//            /* cheating.... :(*/
+//            sCheatLog.writefromsession(this, "Used teleport hack {2}, disconnecting.");
+//            Disconnect();
+//            return;
+//        }
+//
+//        LOG_DEBUG("WORLD: got MSG_MOVE_TELEPORT_ACK.");
+//        GetPlayer()->SetPlayerStatus(NONE);
+//        _player->SpeedCheatReset();
+//
+//        std::list<Pet*> summons = _player->GetSummons();
+//        for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+//        {
+//            // move pet too
+//            (*itr)->SetPosition((GetPlayer()->GetPositionX() + 2), (GetPlayer()->GetPositionY() + 2), GetPlayer()->GetPositionZ(), M_PI_FLOAT);
+//        }
+//        if (_player->m_sentTeleportPosition.x != 999999.0f)
+//        {
+//            _player->m_position = _player->m_sentTeleportPosition;
+//            _player->m_sentTeleportPosition.ChangeCoords(999999.0f, 999999.0f, 999999.0f);
+//        }
+//    }
+//}
 
 void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSession* pSession)
 {
@@ -760,27 +760,27 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 void WorldSession::HandleMoveTimeSkippedOpcode(WorldPacket& recv_data)
 {}
 
-void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    WoWGuid guid;
-    recv_data >> guid;
-
-    if (guid == m_MoverWoWGuid)
-        return;
-
-    movement_info.init(recv_data);
-
-    if ((guid != uint64(0)) && (guid == _player->GetCharmedUnitGUID()))
-        m_MoverWoWGuid = guid;
-    else
-        m_MoverWoWGuid.Init(_player->GetGUID());
-
-    // set up to the movement packet
-    movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
-    memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
-}
+//void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    WoWGuid guid;
+//    recv_data >> guid;
+//
+//    if (guid == m_MoverWoWGuid)
+//        return;
+//
+//    movement_info.init(recv_data);
+//
+//    if ((guid != uint64(0)) && (guid == _player->GetCharmedUnitGUID()))
+//        m_MoverWoWGuid = guid;
+//    else
+//        m_MoverWoWGuid.Init(_player->GetGUID());
+//
+//    // set up to the movement packet
+//    movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
+//    memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
+//}
 
 
 void WorldSession::HandleSetActiveMoverOpcode(WorldPacket& recv_data)
@@ -812,91 +812,91 @@ void WorldSession::HandleSetActiveMoverOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleMoveSplineCompleteOpcode(WorldPacket& recvPacket)
-{}
+//void WorldSession::HandleMoveSplineCompleteOpcode(WorldPacket& recvPacket)
+//{}
 
-void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& recvdata)
-{
-    CHECK_INWORLD_RETURN
+//void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& recvdata)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    WorldPacket data(SMSG_MOUNTSPECIAL_ANIM, 8);
+//    data << _player->GetGUID();
+//    _player->SendMessageToSet(&data, true);
+//}
 
-    WorldPacket data(SMSG_MOUNTSPECIAL_ANIM, 8);
-    data << _player->GetGUID();
-    _player->SendMessageToSet(&data, true);
-}
+//void WorldSession::HandleWorldportOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    uint32 time;
+//    uint32 mapid;
+//    float target_position_x;
+//    float target_position_y;
+//    float target_position_z;
+//    float target_position_o;
+//
+//    recv_data >> time;
+//    recv_data >> mapid;
+//    recv_data >> target_position_x;
+//    recv_data >> target_position_y;
+//    recv_data >> target_position_z;
+//    recv_data >> target_position_o;
+//
+//    if (!HasGMPermissions())
+//    {
+//        SendNotification("You do not have permission to use this function.");
+//        return;
+//    }
+//
+//    LocationVector vec(target_position_x, target_position_y, target_position_z, target_position_o);
+//    _player->SafeTeleport(mapid, 0, vec);
+//}
 
-void WorldSession::HandleWorldportOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
+//void WorldSession::HandleTeleportToUnitOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    uint8 unk;
+//    Unit* target;
+//    recv_data >> unk;
+//
+//    if (!HasGMPermissions())
+//    {
+//        SendNotification("You do not have permission to use this function.");
+//        return;
+//    }
+//
+//    if ((target = _player->GetMapMgr()->GetUnit(_player->GetSelection())) == NULL)
+//        return;
+//
+//    _player->SafeTeleport(_player->GetMapId(), _player->GetInstanceID(), target->GetPosition());
+//}
 
-    uint32 time;
-    uint32 mapid;
-    float target_position_x;
-    float target_position_y;
-    float target_position_z;
-    float target_position_o;
-
-    recv_data >> time;
-    recv_data >> mapid;
-    recv_data >> target_position_x;
-    recv_data >> target_position_y;
-    recv_data >> target_position_z;
-    recv_data >> target_position_o;
-
-    if (!HasGMPermissions())
-    {
-        SendNotification("You do not have permission to use this function.");
-        return;
-    }
-
-    LocationVector vec(target_position_x, target_position_y, target_position_z, target_position_o);
-    _player->SafeTeleport(mapid, 0, vec);
-}
-
-void WorldSession::HandleTeleportToUnitOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint8 unk;
-    Unit* target;
-    recv_data >> unk;
-
-    if (!HasGMPermissions())
-    {
-        SendNotification("You do not have permission to use this function.");
-        return;
-    }
-
-    if ((target = _player->GetMapMgr()->GetUnit(_player->GetSelection())) == NULL)
-        return;
-
-    _player->SafeTeleport(_player->GetMapId(), _player->GetInstanceID(), target->GetPosition());
-}
-
-void WorldSession::HandleTeleportCheatOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    float target_position_x;
-    float target_position_y;
-    float target_position_z;
-    float target_position_o;
-
-    LocationVector vec;
-
-    if (!HasGMPermissions())
-    {
-        SendNotification("You do not have permission to use this function.");
-        return;
-    }
-
-    recv_data >> target_position_x;
-    recv_data >> target_position_y;
-    recv_data >> target_position_z;
-    recv_data >> target_position_o;
-
-    vec.ChangeCoords(target_position_x, target_position_y, target_position_z, target_position_o);
-    _player->SafeTeleport(_player->GetMapId(), _player->GetInstanceID(), vec);
-}
+//void WorldSession::HandleTeleportCheatOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    float target_position_x;
+//    float target_position_y;
+//    float target_position_z;
+//    float target_position_o;
+//
+//    LocationVector vec;
+//
+//    if (!HasGMPermissions())
+//    {
+//        SendNotification("You do not have permission to use this function.");
+//        return;
+//    }
+//
+//    recv_data >> target_position_x;
+//    recv_data >> target_position_y;
+//    recv_data >> target_position_z;
+//    recv_data >> target_position_o;
+//
+//    vec.ChangeCoords(target_position_x, target_position_y, target_position_z, target_position_o);
+//    _player->SafeTeleport(_player->GetMapId(), _player->GetInstanceID(), vec);
+//}
 
 void MovementInfo::init(WorldPacket& data)
 {

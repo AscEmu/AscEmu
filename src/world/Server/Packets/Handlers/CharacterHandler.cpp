@@ -1190,121 +1190,121 @@ void WorldSession::FullLogin(Player* plr)
 }
 
 /// \todo port player to a main city of his new faction
-void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
-{
-    uint64 guid;
-    std::string newname;
-    uint8 gender;
-    uint8 skin;
-    uint8 face;
-    uint8 hairStyle;
-    uint8 hairColor;
-    uint8 facialHair;
-    uint8 race;
-
-    recv_data >> guid;
-    recv_data >> newname;
-    recv_data >> gender;
-    recv_data >> skin;
-    recv_data >> hairColor;
-    recv_data >> hairStyle;
-    recv_data >> facialHair;
-    recv_data >> face;
-    recv_data >> race;
-
-    uint8 _class = 0;
-    PlayerInfo* info = objmgr.GetPlayerInfo(guid);
-
-    if (info)
-        _class = info->cl;
-    else
-    {
-        WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-        data << uint8(E_CHAR_CREATE_ERROR);
-        SendPacket(&data);
-        return;
-    }
-
-    uint32 used_loginFlag = ((recv_data.GetOpcode() == CMSG_CHAR_RACE_CHANGE) ? LOGIN_CUSTOMIZE_RACE : LOGIN_CUSTOMIZE_FACTION);
-    uint32 newflags = 0;
-
-    QueryResult* query = CharacterDatabase.Query("SELECT login_flags FROM characters WHERE guid = %u", guid);
-    if (query)
-    {
-        uint16 lflag = query->Fetch()[0].GetUInt16();
-        if (!(lflag & used_loginFlag))
-        {
-            WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-            data << uint8(E_CHAR_CREATE_ERROR);
-            SendPacket(&data);
-            return;
-        }
-        newflags = lflag - used_loginFlag;
-    }
-    delete query;
-    if (!sMySQLStore.GetPlayerCreateInfo(race, info->cl))
-    {
-        WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-        data << uint8(E_CHAR_CREATE_ERROR);
-        SendPacket(&data);
-        return;
-    }
-
-    LoginErrorCode res = VerifyName(newname.c_str(), newname.length());
-    if (res != E_CHAR_NAME_SUCCESS)
-    {
-        WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-        data << uint8(res);
-        SendPacket(&data);
-        return;
-    }
-
-    if (!HasGMPermissions())
-    {
-        QueryResult * result = CharacterDatabase.Query("SELECT COUNT(*) FROM `banned_names` WHERE name = '%s'", CharacterDatabase.EscapeString(newname).c_str());
-        if (result)
-        {
-            if (result->Fetch()[0].GetUInt32() > 0)
-            {
-                WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-                data << uint8(E_CHAR_NAME_RESERVED);
-                SendPacket(&data);
-                return;
-            }
-            delete result;
-        }
-    }
-
-    PlayerInfo* newinfo = objmgr.GetPlayerInfoByName(newname.c_str());
-    if (newinfo != NULL && newinfo->guid != guid)
-    {
-        WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
-        data << uint8(E_CHAR_CREATE_NAME_IN_USE);
-        SendPacket(&data);
-        return;
-    }
-
-    Player::CharChange_Looks(guid, gender, skin, face, hairStyle, hairColor, facialHair);
-    //Player::CharChange_Language(guid, race);
-
-    CapitalizeString(newname);
-    objmgr.RenamePlayerInfo(info, info->name, newname.c_str());
-    CharacterDatabase.Execute("UPDATE `characters` set name = '%s', login_flags = %u, race = %u WHERE guid = '%u'", newname.c_str(), newflags, (uint32)race, (uint32)guid);
-
-    //CharacterDatabase.WaitExecute("UPDATE `characters` SET login_flags = %u WHERE guid = '%u'", (uint32)LOGIN_NO_FLAG, (uint32)guid);
-    WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1 + 8 + (newname.size() + 1) + 1 + 1 + 1 + 1 + 1 + 1 + 1);
-    data << uint8(0);
-    data << uint64(guid);
-    data << newname;
-    data << uint8(gender);
-    data << uint8(skin);
-    data << uint8(face);
-    data << uint8(hairStyle);
-    data << uint8(hairColor);
-    data << uint8(facialHair);
-    data << uint8(race);
-    SendPacket(&data);
-}
+//void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
+//{
+//    uint64 guid;
+//    std::string newname;
+//    uint8 gender;
+//    uint8 skin;
+//    uint8 face;
+//    uint8 hairStyle;
+//    uint8 hairColor;
+//    uint8 facialHair;
+//    uint8 race;
+//
+//    recv_data >> guid;
+//    recv_data >> newname;
+//    recv_data >> gender;
+//    recv_data >> skin;
+//    recv_data >> hairColor;
+//    recv_data >> hairStyle;
+//    recv_data >> facialHair;
+//    recv_data >> face;
+//    recv_data >> race;
+//
+//    uint8 _class = 0;
+//    PlayerInfo* info = objmgr.GetPlayerInfo(guid);
+//
+//    if (info)
+//        _class = info->cl;
+//    else
+//    {
+//        WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
+//        data << uint8(E_CHAR_CREATE_ERROR);
+//        SendPacket(&data);
+//        return;
+//    }
+//
+//    uint32 used_loginFlag = ((recv_data.GetOpcode() == CMSG_CHAR_RACE_CHANGE) ? LOGIN_CUSTOMIZE_RACE : LOGIN_CUSTOMIZE_FACTION);
+//    uint32 newflags = 0;
+//
+//    QueryResult* query = CharacterDatabase.Query("SELECT login_flags FROM characters WHERE guid = %u", guid);
+//    if (query)
+//    {
+//        uint16 lflag = query->Fetch()[0].GetUInt16();
+//        if (!(lflag & used_loginFlag))
+//        {
+//            WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
+//            data << uint8(E_CHAR_CREATE_ERROR);
+//            SendPacket(&data);
+//            return;
+//        }
+//        newflags = lflag - used_loginFlag;
+//    }
+//    delete query;
+//    if (!sMySQLStore.GetPlayerCreateInfo(race, info->cl))
+//    {
+//        WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
+//        data << uint8(E_CHAR_CREATE_ERROR);
+//        SendPacket(&data);
+//        return;
+//    }
+//
+//    LoginErrorCode res = VerifyName(newname.c_str(), newname.length());
+//    if (res != E_CHAR_NAME_SUCCESS)
+//    {
+//        WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
+//        data << uint8(res);
+//        SendPacket(&data);
+//        return;
+//    }
+//
+//    if (!HasGMPermissions())
+//    {
+//        QueryResult * result = CharacterDatabase.Query("SELECT COUNT(*) FROM `banned_names` WHERE name = '%s'", CharacterDatabase.EscapeString(newname).c_str());
+//        if (result)
+//        {
+//            if (result->Fetch()[0].GetUInt32() > 0)
+//            {
+//                WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
+//                data << uint8(E_CHAR_NAME_RESERVED);
+//                SendPacket(&data);
+//                return;
+//            }
+//            delete result;
+//        }
+//    }
+//
+//    PlayerInfo* newinfo = objmgr.GetPlayerInfoByName(newname.c_str());
+//    if (newinfo != NULL && newinfo->guid != guid)
+//    {
+//        WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
+//        data << uint8(E_CHAR_CREATE_NAME_IN_USE);
+//        SendPacket(&data);
+//        return;
+//    }
+//
+//    Player::CharChange_Looks(guid, gender, skin, face, hairStyle, hairColor, facialHair);
+//    //Player::CharChange_Language(guid, race);
+//
+//    CapitalizeString(newname);
+//    objmgr.RenamePlayerInfo(info, info->name, newname.c_str());
+//    CharacterDatabase.Execute("UPDATE `characters` set name = '%s', login_flags = %u, race = %u WHERE guid = '%u'", newname.c_str(), newflags, (uint32)race, (uint32)guid);
+//
+//    //CharacterDatabase.WaitExecute("UPDATE `characters` SET login_flags = %u WHERE guid = '%u'", (uint32)LOGIN_NO_FLAG, (uint32)guid);
+//    WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1 + 8 + (newname.size() + 1) + 1 + 1 + 1 + 1 + 1 + 1 + 1);
+//    data << uint8(0);
+//    data << uint64(guid);
+//    data << newname;
+//    data << uint8(gender);
+//    data << uint8(skin);
+//    data << uint8(face);
+//    data << uint8(hairStyle);
+//    data << uint8(hairColor);
+//    data << uint8(facialHair);
+//    data << uint8(race);
+//    SendPacket(&data);
+//}
 
 void WorldSession::HandleLoadScreenOpcode(WorldPacket& recv_data)
 {

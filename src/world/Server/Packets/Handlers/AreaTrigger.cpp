@@ -20,15 +20,15 @@
 
 #include "StdAfx.h"
 
-void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 4);
-    uint32 id;
-    recv_data >> id;
-    _HandleAreaTriggerOpcode(id);
-}
+//void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recv_data, 4);
+//    uint32 id;
+//    recv_data >> id;
+//    _HandleAreaTriggerOpcode(id);
+//}
 
 enum AreaTriggerFailures
 {
@@ -115,155 +115,155 @@ uint32 CheckTriggerPrerequisites(AreaTrigger const* pAreaTrigger, WorldSession* 
     return AREA_TRIGGER_FAILURE_OK;
 }
 
-void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
-{
-    LOG_DEBUG("AreaTrigger: %u", id);
-
-    if (!_player->IsInWorld())
-        return;
-
-    // Search quest log, find any exploration quests
-    sQuestMgr.OnPlayerExploreArea(GetPlayer(), id);
-
-    auto area_trigger_entry = sAreaTriggerStore.LookupEntry(id);
-    if (area_trigger_entry == nullptr)
-    {
-        LOG_DEBUG("Missing AreaTrigger: %u", id);
-        return;
-    }
-
-    Player* pPlayer = GetPlayer();
-    sHookInterface.OnAreaTrigger(pPlayer, id);
-    CALL_INSTANCE_SCRIPT_EVENT(pPlayer->GetMapMgr(), OnAreaTrigger)(GetPlayer(), id);
-
-#ifdef GM_Z_DEBUG_DIRECTLY
-    if (_player->GetSession() && _player->GetSession()->CanUseCommand('z'))
-        sChatHandler.BlueSystemMessage(this, "[%sSystem%s] |rEntered areatrigger: %s%u. (%s)", MSG_COLOR_WHITE, MSG_COLOR_LIGHTBLUE, MSG_COLOR_SUBWHITE, id, pAreaTrigger ? pAreaTrigger->Name : "Unknown name");
-#endif
-
-    // if in BG handle is triggers
-    if (_player->m_bg)
-    {
-        _player->m_bg->HookOnAreaTrigger(_player, id);
-        return;
-    }
-
-    AreaTrigger const* pAreaTrigger = sMySQLStore.GetAreaTrigger(id);
-    if (pAreaTrigger == nullptr)
-        return;
-
-    switch (pAreaTrigger->Type)
-    {
-        case ATTYPE_INSTANCE:
-        {
-            //only ports if player is out of pendings
-            if (GetPlayer()->GetPlayerStatus() == TRANSFER_PENDING)
-                break;
-            if (sWorld.instance_CheckTriggerPrerequisites)
-            {
-                uint32 reason = CheckTriggerPrerequisites(pAreaTrigger, this, _player, sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid));
-                if (reason != AREA_TRIGGER_FAILURE_OK)
-                {
-                    const char* pReason = GetPlayer()->GetSession()->LocalizedWorldSrv(AreaTriggerFailureMessages[reason]);
-                    char msg[200];
-                    WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 50);
-                    data << uint32(0);
-
-                    switch (reason)
-                    {
-                        case AREA_TRIGGER_FAILURE_LEVEL:
-                            snprintf(msg, 200, pReason, pAreaTrigger->required_level);
-                            data << msg;
-                            break;
-                        case AREA_TRIGGER_FAILURE_NO_ATTUNE_I:
-                        {
-                            MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid);
-                            ItemProperties const* pItem = sMySQLStore.GetItemProperties(pMi->required_item);
-                            if (pItem)
-                                snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(35), pItem->Name.c_str());
-                            else
-                                snprintf(msg, 200, "%s", GetPlayer()->GetSession()->LocalizedWorldSrv(36));
-
-                            data << msg;
-                        }
-                        break;
-                        case AREA_TRIGGER_FAILURE_NO_ATTUNE_QA:
-                        {
-                            MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid);
-                            QuestProperties const* pQuest = sMySQLStore.GetQuestProperties(pMi->required_quest_A);
-                            if (pQuest)
-                                snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(35), pQuest->title.c_str());
-                            else
-                                snprintf(msg, 200, "%s", GetPlayer()->GetSession()->LocalizedWorldSrv(36));
-
-                            data << msg;
-                        }
-                        break;
-                        case AREA_TRIGGER_FAILURE_NO_ATTUNE_QH:
-                        {
-                            MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid);
-                            QuestProperties const* pQuest = sMySQLStore.GetQuestProperties(pMi->required_quest_H);
-                            if (pQuest)
-                                snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(35), pQuest->title.c_str());
-                            else
-                                snprintf(msg, 200, "%s", GetPlayer()->GetSession()->LocalizedWorldSrv(36));
-
-                            data << msg;
-                        }
-                        break;
-                        case AREA_TRIGGER_FAILURE_NO_KEY:
-                        {
-                            MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid);
-                            ItemProperties const* pItem = sMySQLStore.GetItemProperties(pMi->heroic_key_1);
-                            if (pItem)
-                                snprintf(msg, 200, "You must have the item, `%s` to pass through here.", pItem->Name.c_str());
-                            else
-                                snprintf(msg, 200, "You must have the item, UNKNOWN to pass through here.");
-
-                            data << msg;
-                        }
-                        break;
-                        case AREA_TRIGGER_FAILURE_LEVEL_HEROIC:
-                        {
-                            MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid);
-                            snprintf(msg, 200, pReason, pMi->minlevel_heroic);
-                            data << msg;
-                        }
-                        break;
-                        default:
-                            data << pReason;
-                            break;
-                    }
-
-                    data << uint8(0);
-                    SendPacket(&data);
-                    return;
-                }
-            }
-            GetPlayer()->SaveEntryPoint(pAreaTrigger->Mapid);
-            GetPlayer()->SafeTeleport(pAreaTrigger->Mapid, 0, LocationVector(pAreaTrigger->x, pAreaTrigger->y, pAreaTrigger->z, pAreaTrigger->o));
-        }
-        break;
-        case ATTYPE_QUESTTRIGGER:
-        {
-
-        } break;
-        case ATTYPE_INN:
-        {
-            // Inn
-            if (!GetPlayer()->m_isResting) GetPlayer()->ApplyPlayerRestState(true);
-        }
-        break;
-        case ATTYPE_TELEPORT:
-        {
-            if (GetPlayer()->GetPlayerStatus() != TRANSFER_PENDING) //only ports if player is out of pendings
-            {
-                GetPlayer()->SaveEntryPoint(pAreaTrigger->Mapid);
-                GetPlayer()->SafeTeleport(pAreaTrigger->Mapid, 0, LocationVector(pAreaTrigger->x, pAreaTrigger->y, pAreaTrigger->z, pAreaTrigger->o));
-            }
-        }
-        break;
-        default:
-            break;
-    }
-}
+//void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
+//{
+//    LOG_DEBUG("AreaTrigger: %u", id);
+//
+//    if (!_player->IsInWorld())
+//        return;
+//
+//    // Search quest log, find any exploration quests
+//    sQuestMgr.OnPlayerExploreArea(GetPlayer(), id);
+//
+//    auto area_trigger_entry = sAreaTriggerStore.LookupEntry(id);
+//    if (area_trigger_entry == nullptr)
+//    {
+//        LOG_DEBUG("Missing AreaTrigger: %u", id);
+//        return;
+//    }
+//
+//    Player* pPlayer = GetPlayer();
+//    sHookInterface.OnAreaTrigger(pPlayer, id);
+//    CALL_INSTANCE_SCRIPT_EVENT(pPlayer->GetMapMgr(), OnAreaTrigger)(GetPlayer(), id);
+//
+//#ifdef GM_Z_DEBUG_DIRECTLY
+//    if (_player->GetSession() && _player->GetSession()->CanUseCommand('z'))
+//        sChatHandler.BlueSystemMessage(this, "[%sSystem%s] |rEntered areatrigger: %s%u. (%s)", MSG_COLOR_WHITE, MSG_COLOR_LIGHTBLUE, MSG_COLOR_SUBWHITE, id, pAreaTrigger ? pAreaTrigger->Name : "Unknown name");
+//#endif
+//
+//    // if in BG handle is triggers
+//    if (_player->m_bg)
+//    {
+//        _player->m_bg->HookOnAreaTrigger(_player, id);
+//        return;
+//    }
+//
+//    AreaTrigger const* pAreaTrigger = sMySQLStore.GetAreaTrigger(id);
+//    if (pAreaTrigger == nullptr)
+//        return;
+//
+//    switch (pAreaTrigger->Type)
+//    {
+//        case ATTYPE_INSTANCE:
+//        {
+//            //only ports if player is out of pendings
+//            if (GetPlayer()->GetPlayerStatus() == TRANSFER_PENDING)
+//                break;
+//            if (sWorld.instance_CheckTriggerPrerequisites)
+//            {
+//                uint32 reason = CheckTriggerPrerequisites(pAreaTrigger, this, _player, sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid));
+//                if (reason != AREA_TRIGGER_FAILURE_OK)
+//                {
+//                    const char* pReason = GetPlayer()->GetSession()->LocalizedWorldSrv(AreaTriggerFailureMessages[reason]);
+//                    char msg[200];
+//                    WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 50);
+//                    data << uint32(0);
+//
+//                    switch (reason)
+//                    {
+//                        case AREA_TRIGGER_FAILURE_LEVEL:
+//                            snprintf(msg, 200, pReason, pAreaTrigger->required_level);
+//                            data << msg;
+//                            break;
+//                        case AREA_TRIGGER_FAILURE_NO_ATTUNE_I:
+//                        {
+//                            MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid);
+//                            ItemProperties const* pItem = sMySQLStore.GetItemProperties(pMi->required_item);
+//                            if (pItem)
+//                                snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(35), pItem->Name.c_str());
+//                            else
+//                                snprintf(msg, 200, "%s", GetPlayer()->GetSession()->LocalizedWorldSrv(36));
+//
+//                            data << msg;
+//                        }
+//                        break;
+//                        case AREA_TRIGGER_FAILURE_NO_ATTUNE_QA:
+//                        {
+//                            MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid);
+//                            QuestProperties const* pQuest = sMySQLStore.GetQuestProperties(pMi->required_quest_A);
+//                            if (pQuest)
+//                                snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(35), pQuest->title.c_str());
+//                            else
+//                                snprintf(msg, 200, "%s", GetPlayer()->GetSession()->LocalizedWorldSrv(36));
+//
+//                            data << msg;
+//                        }
+//                        break;
+//                        case AREA_TRIGGER_FAILURE_NO_ATTUNE_QH:
+//                        {
+//                            MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid);
+//                            QuestProperties const* pQuest = sMySQLStore.GetQuestProperties(pMi->required_quest_H);
+//                            if (pQuest)
+//                                snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(35), pQuest->title.c_str());
+//                            else
+//                                snprintf(msg, 200, "%s", GetPlayer()->GetSession()->LocalizedWorldSrv(36));
+//
+//                            data << msg;
+//                        }
+//                        break;
+//                        case AREA_TRIGGER_FAILURE_NO_KEY:
+//                        {
+//                            MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid);
+//                            ItemProperties const* pItem = sMySQLStore.GetItemProperties(pMi->heroic_key_1);
+//                            if (pItem)
+//                                snprintf(msg, 200, "You must have the item, `%s` to pass through here.", pItem->Name.c_str());
+//                            else
+//                                snprintf(msg, 200, "You must have the item, UNKNOWN to pass through here.");
+//
+//                            data << msg;
+//                        }
+//                        break;
+//                        case AREA_TRIGGER_FAILURE_LEVEL_HEROIC:
+//                        {
+//                            MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid);
+//                            snprintf(msg, 200, pReason, pMi->minlevel_heroic);
+//                            data << msg;
+//                        }
+//                        break;
+//                        default:
+//                            data << pReason;
+//                            break;
+//                    }
+//
+//                    data << uint8(0);
+//                    SendPacket(&data);
+//                    return;
+//                }
+//            }
+//            GetPlayer()->SaveEntryPoint(pAreaTrigger->Mapid);
+//            GetPlayer()->SafeTeleport(pAreaTrigger->Mapid, 0, LocationVector(pAreaTrigger->x, pAreaTrigger->y, pAreaTrigger->z, pAreaTrigger->o));
+//        }
+//        break;
+//        case ATTYPE_QUESTTRIGGER:
+//        {
+//
+//        } break;
+//        case ATTYPE_INN:
+//        {
+//            // Inn
+//            if (!GetPlayer()->m_isResting) GetPlayer()->ApplyPlayerRestState(true);
+//        }
+//        break;
+//        case ATTYPE_TELEPORT:
+//        {
+//            if (GetPlayer()->GetPlayerStatus() != TRANSFER_PENDING) //only ports if player is out of pendings
+//            {
+//                GetPlayer()->SaveEntryPoint(pAreaTrigger->Mapid);
+//                GetPlayer()->SafeTeleport(pAreaTrigger->Mapid, 0, LocationVector(pAreaTrigger->x, pAreaTrigger->y, pAreaTrigger->z, pAreaTrigger->o));
+//            }
+//        }
+//        break;
+//        default:
+//            break;
+//    }
+//}

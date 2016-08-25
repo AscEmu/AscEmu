@@ -689,10 +689,10 @@ void WorldSession::InitPacketHandlerTable()
     //// Player Interaction
     //WorldPacketHandlers[CMSG_GAMEOBJ_USE].handler = &WorldSession::HandleGameObjectUse;
     //WorldPacketHandlers[CMSG_PLAYED_TIME].handler = &WorldSession::HandlePlayedTimeOpcode;
-    WorldPacketHandlers[CMSG_SETSHEATHED].handler = &WorldSession::HandleSetSheathedOpcode;
+    //WorldPacketHandlers[CMSG_SETSHEATHED].handler = &WorldSession::HandleSetSheathedOpcode;
     //WorldPacketHandlers[CMSG_EMOTE].handler = &WorldSession::HandleEmoteOpcode;
     //WorldPacketHandlers[CMSG_TEXT_EMOTE].handler = &WorldSession::HandleTextEmoteOpcode;
-    WorldPacketHandlers[CMSG_INSPECT].handler = &WorldSession::HandleInspectOpcode;
+    //WorldPacketHandlers[CMSG_INSPECT].handler = &WorldSession::HandleInspectOpcode;
     //WorldPacketHandlers[SMSG_BARBER_SHOP_RESULT].handler = &WorldSession::HandleBarberShopResult;
     WorldPacketHandlers[CMSG_MESSAGECHAT_SAY].handler = &WorldSession::HandleMessagechatOpcode;
     WorldPacketHandlers[CMSG_MESSAGECHAT_YELL].handler = &WorldSession::HandleMessagechatOpcode;
@@ -825,8 +825,8 @@ void WorldSession::InitPacketHandlerTable()
     //WorldPacketHandlers[CMSG_UPDATE_PROJECTILE_POSITION].handler = &WorldSession::HandleUpdateProjectilePosition;
 
     //// Combat / Duel
-    WorldPacketHandlers[CMSG_ATTACKSWING].handler = &WorldSession::HandleAttackSwingOpcode;
-    WorldPacketHandlers[CMSG_ATTACKSTOP].handler = &WorldSession::HandleAttackStopOpcode;
+    //WorldPacketHandlers[CMSG_ATTACKSWING].handler = &WorldSession::HandleAttackSwingOpcode;
+    //WorldPacketHandlers[CMSG_ATTACKSTOP].handler = &WorldSession::HandleAttackStopOpcode;
     //WorldPacketHandlers[CMSG_DUEL_ACCEPTED].handler = &WorldSession::HandleDuelAccepted;
     //WorldPacketHandlers[CMSG_DUEL_CANCELLED].handler = &WorldSession::HandleDuelCancelled;
 
@@ -843,16 +843,16 @@ void WorldSession::InitPacketHandlerTable()
     //WorldPacketHandlers[CMSG_SET_TRADE_GOLD].handler = &WorldSession::HandleSetTradeGold;
 
     //// Quest System
-    WorldPacketHandlers[CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY].handler = &WorldSession::HandleInrangeQuestgiverQuery;
-    WorldPacketHandlers[CMSG_QUESTGIVER_STATUS_QUERY].handler = &WorldSession::HandleQuestgiverStatusQueryOpcode;
-    WorldPacketHandlers[CMSG_QUESTGIVER_HELLO].handler = &WorldSession::HandleQuestgiverHelloOpcode;
-    WorldPacketHandlers[CMSG_QUESTGIVER_ACCEPT_QUEST].handler = &WorldSession::HandleQuestgiverAcceptQuestOpcode;
-    WorldPacketHandlers[CMSG_QUESTGIVER_CANCEL].handler = &WorldSession::HandleQuestgiverCancelOpcode;
-    WorldPacketHandlers[CMSG_QUESTGIVER_CHOOSE_REWARD].handler = &WorldSession::HandleQuestgiverChooseRewardOpcode;
-    WorldPacketHandlers[CMSG_QUESTGIVER_REQUEST_REWARD].handler = &WorldSession::HandleQuestgiverRequestRewardOpcode;
+    //WorldPacketHandlers[CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY].handler = &WorldSession::HandleInrangeQuestgiverQuery;
+    //WorldPacketHandlers[CMSG_QUESTGIVER_STATUS_QUERY].handler = &WorldSession::HandleQuestgiverStatusQueryOpcode;
+    //WorldPacketHandlers[CMSG_QUESTGIVER_HELLO].handler = &WorldSession::HandleQuestgiverHelloOpcode;
+    //WorldPacketHandlers[CMSG_QUESTGIVER_ACCEPT_QUEST].handler = &WorldSession::HandleQuestgiverAcceptQuestOpcode;
+    //WorldPacketHandlers[CMSG_QUESTGIVER_CANCEL].handler = &WorldSession::HandleQuestgiverCancelOpcode;
+    //WorldPacketHandlers[CMSG_QUESTGIVER_CHOOSE_REWARD].handler = &WorldSession::HandleQuestgiverChooseRewardOpcode;
+    //WorldPacketHandlers[CMSG_QUESTGIVER_REQUEST_REWARD].handler = &WorldSession::HandleQuestgiverRequestRewardOpcode;
     //WorldPacketHandlers[CMSG_QUEST_QUERY].handler = &WorldSession::HandleQuestQueryOpcode;
-    WorldPacketHandlers[CMSG_QUESTGIVER_QUERY_QUEST].handler = &WorldSession::HandleQuestGiverQueryQuestOpcode;
-    WorldPacketHandlers[CMSG_QUESTGIVER_COMPLETE_QUEST].handler = &WorldSession::HandleQuestgiverCompleteQuestOpcode;
+    //WorldPacketHandlers[CMSG_QUESTGIVER_QUERY_QUEST].handler = &WorldSession::HandleQuestGiverQueryQuestOpcode;
+    //WorldPacketHandlers[CMSG_QUESTGIVER_COMPLETE_QUEST].handler = &WorldSession::HandleQuestgiverCompleteQuestOpcode;
     //WorldPacketHandlers[CMSG_QUESTLOG_REMOVE_QUEST].handler = &WorldSession::HandleQuestlogRemoveQuestOpcode;
     //WorldPacketHandlers[CMSG_RECLAIM_CORPSE].handler = &WorldSession::HandleCorpseReclaimOpcode;
     //WorldPacketHandlers[CMSG_RESURRECT_RESPONSE].handler = &WorldSession::HandleResurrectResponseOpcode;
@@ -878,7 +878,7 @@ void WorldSession::InitPacketHandlerTable()
     //WorldPacketHandlers[CMSG_MAIL_MARK_AS_READ].handler = &WorldSession::HandleMarkAsRead;
     //WorldPacketHandlers[CMSG_MAIL_RETURN_TO_SENDER].handler = &WorldSession::HandleReturnToSender;
     //WorldPacketHandlers[CMSG_MAIL_DELETE].handler = &WorldSession::HandleMailDelete;
-    WorldPacketHandlers[MSG_QUERY_NEXT_MAIL_TIME].handler = &WorldSession::HandleMailTime;
+    //WorldPacketHandlers[MSG_QUERY_NEXT_MAIL_TIME].handler = &WorldSession::HandleMailTime;
     //WorldPacketHandlers[CMSG_MAIL_CREATE_TEXT_ITEM].handler = &WorldSession::HandleMailCreateTextItem;
 
     //// Guild Query (called when not logged in sometimes)
@@ -964,8 +964,8 @@ void WorldSession::InitPacketHandlerTable()
     //WorldPacketHandlers[MSG_BATTLEGROUND_PLAYER_POSITIONS].handler = &WorldSession::HandleBattlegroundPlayerPositionsOpcode;
     //WorldPacketHandlers[MSG_PVP_LOG_DATA].handler = &WorldSession::HandlePVPLogDataOpcode;
     //WorldPacketHandlers[MSG_INSPECT_HONOR_STATS].handler = &WorldSession::HandleInspectHonorStatsOpcode;
-    WorldPacketHandlers[CMSG_SET_ACTIONBAR_TOGGLES].handler = &WorldSession::HandleSetActionBarTogglesOpcode;
-    WorldPacketHandlers[CMSG_MOVE_SPLINE_DONE].handler = &WorldSession::HandleMoveSplineCompleteOpcode;
+    //WorldPacketHandlers[CMSG_SET_ACTIONBAR_TOGGLES].handler = &WorldSession::HandleSetActionBarTogglesOpcode;
+    //WorldPacketHandlers[CMSG_MOVE_SPLINE_DONE].handler = &WorldSession::HandleMoveSplineCompleteOpcode;
     //WorldPacketHandlers[CMSG_BATTLEFIELD_MGR_ENTRY_INVITE_RESPONSE].handler = &WorldSession::HandleBgInviteResponse;
 
     //// GM Ticket System
@@ -992,7 +992,7 @@ void WorldSession::InitPacketHandlerTable()
     //WorldPacketHandlers[MSG_SET_RAID_DIFFICULTY].handler = &WorldSession::HandleRaidDifficultyOpcode;
 
     //// Misc
-    WorldPacketHandlers[CMSG_OPEN_ITEM].handler = &WorldSession::HandleOpenItemOpcode;
+    //WorldPacketHandlers[CMSG_OPEN_ITEM].handler = &WorldSession::HandleOpenItemOpcode;
     //WorldPacketHandlers[CMSG_COMPLETE_CINEMATIC].handler = &WorldSession::HandleCompleteCinematic;
     //WorldPacketHandlers[CMSG_NEXT_CINEMATIC_CAMERA].handler = &WorldSession::HandleNextCinematic;
     //WorldPacketHandlers[CMSG_MOUNTSPECIAL_ANIM].handler = &WorldSession::HandleMountSpecialAnimOpcode;
@@ -1038,7 +1038,7 @@ void WorldSession::InitPacketHandlerTable()
     //WorldPacketHandlers[CMSG_EJECT_PASSENGER].handler = &WorldSession::HandleRemoveVehiclePassenger;
 
     //// Unsorted
-    WorldPacketHandlers[CMSG_TIME_SYNC_RESP].handler = &WorldSession::HandleTimeSyncRespOpcode;       //MiscHandler.cpp
+    //WorldPacketHandlers[CMSG_TIME_SYNC_RESP].handler = &WorldSession::HandleTimeSyncRespOpcode;       //MiscHandler.cpp
 
     //WorldPacketHandlers[CMSG_OPT_OUT_OF_LOOT].handler = &WorldSession::HandleSetAutoLootPassOpcode;
     //WorldPacketHandlers[CMSG_REMOVE_GLYPH].handler = &WorldSession::HandleRemoveGlyph;
@@ -1087,7 +1087,7 @@ void WorldSession::InitPacketHandlerTable()
 
     ////Misc - Unhandled
     //WorldPacketHandlers[CMSG_FAR_SIGHT].handler = &WorldSession::Unhandled;
-    WorldPacketHandlers[CMSG_LFG_GET_STATUS].handler = &WorldSession::Unhandled;
+    //WorldPacketHandlers[CMSG_LFG_GET_STATUS].handler = &WorldSession::Unhandled;
     //WorldPacketHandlers[CMSG_VOICE_SESSION_ENABLE].handler = &WorldSession::Unhandled;
     //WorldPacketHandlers[CMSG_SET_ACTIVE_VOICE_CHANNEL].handler = &WorldSession::Unhandled;
 
@@ -1366,99 +1366,99 @@ void WorldSession::SendAccountDataTimes(uint32 mask)
     SendPacket(&data);
 }
 
-void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-    
-    uint32 talent_id;
-    uint32 requested_rank;
-    uint32 unk;
+//void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//    
+//    uint32 talent_id;
+//    uint32 requested_rank;
+//    uint32 unk;
+//
+//    recv_data >> talent_id;
+//    recv_data >> requested_rank;
+//    recv_data >> unk;
+//
+//    _player->LearnTalent(talent_id, requested_rank);
+//}
 
-    recv_data >> talent_id;
-    recv_data >> requested_rank;
-    recv_data >> unk;
+//void WorldSession::HandleUnlearnTalents(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//        uint32 price = GetPlayer()->CalcTalentResetCost(GetPlayer()->GetTalentResetTimes());
+//    if (!GetPlayer()->HasGold(price))
+//        return;
+//
+//    GetPlayer()->SetTalentResetTimes(GetPlayer()->GetTalentResetTimes() + 1);
+//    GetPlayer()->ModGold(-(int32)price);
+//    GetPlayer()->Reset_Talents();
+//}
 
-    _player->LearnTalent(talent_id, requested_rank);
-}
+//void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//    
+//    uint32 skill_line_id;
+//    uint32 points_remaining = _player->GetPrimaryProfessionPoints();
+//    recv_data >> skill_line_id;
+//
+//    // Remove any spells within that line that the player has
+//    _player->RemoveSpellsFromLine(skill_line_id);
+//
+//    // Finally, remove the skill line.
+//    _player->_RemoveSkillLine(skill_line_id);
+//
+//    // added by Zack : This is probably wrong or already made elsewhere :
+//    // restore skill learnability
+//    if (points_remaining == _player->GetPrimaryProfessionPoints())
+//    {
+//        // we unlearned a skill so we enable a new one to be learned
+//        auto skill_line = sSkillLineStore.LookupEntry(skill_line_id);
+//        if (!skill_line)
+//            return;
+//
+//        if (skill_line->type == SKILL_TYPE_PROFESSION && points_remaining < 2)
+//            _player->SetPrimaryProfessionPoints(points_remaining + 1);
+//    }
+//}
 
-void WorldSession::HandleUnlearnTalents(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-        uint32 price = GetPlayer()->CalcTalentResetCost(GetPlayer()->GetTalentResetTimes());
-    if (!GetPlayer()->HasGold(price))
-        return;
-
-    GetPlayer()->SetTalentResetTimes(GetPlayer()->GetTalentResetTimes() + 1);
-    GetPlayer()->ModGold(-(int32)price);
-    GetPlayer()->Reset_Talents();
-}
-
-void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-    
-    uint32 skill_line_id;
-    uint32 points_remaining = _player->GetPrimaryProfessionPoints();
-    recv_data >> skill_line_id;
-
-    // Remove any spells within that line that the player has
-    _player->RemoveSpellsFromLine(skill_line_id);
-
-    // Finally, remove the skill line.
-    _player->_RemoveSkillLine(skill_line_id);
-
-    // added by Zack : This is probably wrong or already made elsewhere :
-    // restore skill learnability
-    if (points_remaining == _player->GetPrimaryProfessionPoints())
-    {
-        // we unlearned a skill so we enable a new one to be learned
-        auto skill_line = sSkillLineStore.LookupEntry(skill_line_id);
-        if (!skill_line)
-            return;
-
-        if (skill_line->type == SKILL_TYPE_PROFESSION && points_remaining < 2)
-            _player->SetPrimaryProfessionPoints(points_remaining + 1);
-    }
-}
-
-void WorldSession::HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN uint32 talentcount;
-    uint32 talentid;
-    uint32 rank;
-
-    LOG_DEBUG("Recieved packet CMSG_LEARN_TALENTS_MULTIPLE.");
-
-    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // 0x04C1 CMSG_LEARN_TALENTS_MULTIPLE
-    // As of 3.2.2.10550 the client sends this packet when clicking "learn" on
-    // the talent interface (in preview talents mode)
-    // This packet tells the server which talents to learn
-    //
-    // Structure:
-    //
-    // struct talentdata{
-    // uint32 talentid; - unique numeric identifier of the talent (index of
-    // talent.dbc)
-    // uint32 talentrank; - rank of the talent
-    // };
-    //
-    // uint32 talentcount; - number of talentid-rank pairs in the packet
-    // talentdata[ talentcount ];
-    //
-    //
-    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    recvPacket >> talentcount;
-
-    for (uint32 i = 0; i < talentcount; ++i)
-    {
-        recvPacket >> talentid;
-        recvPacket >> rank;
-
-        _player->LearnTalent(talentid, rank, true);
-    }
-}
+//void WorldSession::HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
+//{
+//    CHECK_INWORLD_RETURN uint32 talentcount;
+//    uint32 talentid;
+//    uint32 rank;
+//
+//    LOG_DEBUG("Recieved packet CMSG_LEARN_TALENTS_MULTIPLE.");
+//
+//    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//    // 0x04C1 CMSG_LEARN_TALENTS_MULTIPLE
+//    // As of 3.2.2.10550 the client sends this packet when clicking "learn" on
+//    // the talent interface (in preview talents mode)
+//    // This packet tells the server which talents to learn
+//    //
+//    // Structure:
+//    //
+//    // struct talentdata{
+//    // uint32 talentid; - unique numeric identifier of the talent (index of
+//    // talent.dbc)
+//    // uint32 talentrank; - rank of the talent
+//    // };
+//    //
+//    // uint32 talentcount; - number of talentid-rank pairs in the packet
+//    // talentdata[ talentcount ];
+//    //
+//    //
+//    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//    recvPacket >> talentcount;
+//
+//    for (uint32 i = 0; i < talentcount; ++i)
+//    {
+//        recvPacket >> talentid;
+//        recvPacket >> rank;
+//
+//        _player->LearnTalent(talentid, rank, true);
+//    }
+//}
 
 void WorldSession::SendMOTD()
 {
@@ -1489,312 +1489,312 @@ void WorldSession::SendMOTD()
         SendPacket(&data);
 }
 
-void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
-{
-    CHECK_INWORLD_RETURN LOG_DEBUG("Received CMSG_EQUIPMENT_SET_USE");
+//void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
+//{
+//    CHECK_INWORLD_RETURN LOG_DEBUG("Received CMSG_EQUIPMENT_SET_USE");
+//
+//    WoWGuid GUID;
+//    int8 SrcBagID;
+//    uint8 SrcSlotID;
+//    uint8 result = 0;
+//
+//    for (int8 i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+//    {
+//        uint64 ItemGUID = 0;
+//
+//        GUID.Clear();
+//
+//        data >> GUID;
+//        data >> SrcBagID;
+//        data >> SrcSlotID;
+//
+//        ItemGUID = GUID.GetOldGuid();
+//
+//        // Let's see if we even have this item
+//        auto item = _player->GetItemInterface()->GetItemByGUID(ItemGUID);
+//        if (item == nullptr)
+//        {
+//            // Nope we don't probably WPE hack :/
+//            result = 1;
+//            continue;
+//        }
+//
+//        int8 dstslot = i;
+//        int8 dstbag = static_cast<int8>(INVALID_BACKPACK_SLOT);
+//
+//        // This is the best case, we already have the item equipped
+//        if ((SrcBagID == dstbag) && (SrcSlotID == dstslot))
+//            continue;
+//
+//        // Let's see if we have an item in the destination slot
+//        auto dstslotitem = _player->GetItemInterface()->GetInventoryItem(dstslot);
+//
+//        if (dstslotitem == nullptr)
+//        {
+//            // we have no item equipped in the slot, so let's equip
+//            AddItemResult additemresult;
+//            int8 EquipError = _player->GetItemInterface()->CanEquipItemInSlot(dstbag, dstslot, item->GetItemProperties(), false, false);
+//            if (EquipError == INV_ERR_OK)
+//            {
+//                dstslotitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcBagID, SrcSlotID, false);
+//                additemresult = _player->GetItemInterface()->SafeAddItem(item, dstbag, dstslot);
+//
+//                if (additemresult != ADD_ITEM_RESULT_OK)
+//                {
+//                    // We failed for w/e reason, so let's revert
+//                    auto check = _player->GetItemInterface()->SafeAddItem(item, SrcBagID, SrcSlotID);
+//                    if (!check)
+//                    {
+//                        LOG_ERROR("HandleEquipmentSetUse", "Error while adding item %u to player %s twice", item->GetEntry(), _player->GetNameString());
+//                        result = 0;
+//                    }
+//                    else
+//                        result = 1;
+//                }
+//            }
+//            else
+//            {
+//                result = 1;
+//            }
+//
+//        }
+//        else
+//        {
+//            // There is something equipped so we need to swap
+//            if (!_player->GetItemInterface()->SwapItems(INVALID_BACKPACK_SLOT, dstslot, SrcBagID, SrcSlotID))
+//                result = 1;
+//        }
+//
+//    }
+//
+//    _player->SendEquipmentSetUseResult(result);
+//}
 
-    WoWGuid GUID;
-    int8 SrcBagID;
-    uint8 SrcSlotID;
-    uint8 result = 0;
+//void WorldSession::HandleEquipmentSetSave(WorldPacket& data)
+//{
+//    CHECK_INWORLD_RETURN LOG_DEBUG("Received CMSG_EQUIPMENT_SET_SAVE");
+//
+//    WoWGuid GUID;
+//    uint32 setGUID;
+//
+//    data >> GUID;
+//
+//    setGUID = Arcemu::Util::GUID_LOPART(GUID.GetOldGuid());
+//
+//    if (setGUID == 0)
+//        setGUID = objmgr.GenerateEquipmentSetID();
+//
+//    Arcemu::EquipmentSet* set = new Arcemu::EquipmentSet();
+//
+//    set->SetGUID = setGUID;
+//
+//    data >> set->SetID;
+//    data >> set->SetName;
+//    data >> set->IconName;
+//
+//    for (uint32 i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+//    {
+//        GUID.Clear();
+//        data >> GUID;
+//        set->ItemGUID[i] = Arcemu::Util::GUID_LOPART(GUID.GetOldGuid());
+//    }
+//
+//    bool success;
+//    success = _player->GetItemInterface()->m_EquipmentSets.AddEquipmentSet(set->SetGUID, set);
+//
+//    if (success)
+//    {
+//        LOG_DEBUG("Player %u successfully stored equipment set %u at slot %u ", _player->GetLowGUID(), set->SetGUID, set->SetID);
+//        _player->SendEquipmentSetSaved(set->SetID, set->SetGUID);
+//    }
+//    else
+//    {
+//        LOG_DEBUG("Player %u couldn't store equipment set %u at slot %u ", _player->GetLowGUID(), set->SetGUID, set->SetID);
+//    }
+//}
 
-    for (int8 i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
-    {
-        uint64 ItemGUID = 0;
+//void WorldSession::HandleEquipmentSetDelete(WorldPacket& data)
+//{
+//    CHECK_INWORLD_RETURN LOG_DEBUG("Received CMSG_EQUIPMENT_SET_DELETE");
+//
+//    WoWGuid setGUID;
+//    bool success;
+//
+//    data >> setGUID;
+//
+//    uint32 GUID = Arcemu::Util::GUID_LOPART(setGUID.GetOldGuid());
+//
+//    success = _player->GetItemInterface()->m_EquipmentSets.DeleteEquipmentSet(GUID);
+//
+//    if (success)
+//    {
+//        LOG_DEBUG("Equipmentset with GUID %u was successfully deleted.", GUID);
+//    }
+//    else
+//    {
+//        LOG_DEBUG("Equipmentset with GUID %u couldn't be deleted.", GUID);
+//    }
+//
+//}
 
-        GUID.Clear();
+//void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN LOG_DEBUG("Received CMSG_QUEST_POI_QUERY");
+//
+//    uint32 count = 0;
+//    recv_data >> count;
+//
+//    if (count > MAX_QUEST_LOG_SIZE)
+//    {
+//        LOG_DEBUG
+//            ("Client sent Quest POI query for more than MAX_QUEST_LOG_SIZE quests.");
+//
+//        count = MAX_QUEST_LOG_SIZE;
+//    }
+//
+//    WorldPacket data(SMSG_QUEST_POI_QUERY_RESPONSE, 4 + (4 + 4) * count);
+//
+//    data << uint32(count);
+//
+//    for (uint32 i = 0; i < count; i++)
+//    {
+//        uint32 questId;
+//        recv_data >> questId;
+//
+//        sQuestMgr.BuildQuestPOIResponse(data, questId);
+//    }
+//
+//    SendPacket(&data);
+//
+//    LOG_DEBUG("Sent SMSG_QUEST_POI_QUERY_RESPONSE");
+//}
 
-        data >> GUID;
-        data >> SrcBagID;
-        data >> SrcSlotID;
-
-        ItemGUID = GUID.GetOldGuid();
-
-        // Let's see if we even have this item
-        auto item = _player->GetItemInterface()->GetItemByGUID(ItemGUID);
-        if (item == nullptr)
-        {
-            // Nope we don't probably WPE hack :/
-            result = 1;
-            continue;
-        }
-
-        int8 dstslot = i;
-        int8 dstbag = static_cast<int8>(INVALID_BACKPACK_SLOT);
-
-        // This is the best case, we already have the item equipped
-        if ((SrcBagID == dstbag) && (SrcSlotID == dstslot))
-            continue;
-
-        // Let's see if we have an item in the destination slot
-        auto dstslotitem = _player->GetItemInterface()->GetInventoryItem(dstslot);
-
-        if (dstslotitem == nullptr)
-        {
-            // we have no item equipped in the slot, so let's equip
-            AddItemResult additemresult;
-            int8 EquipError = _player->GetItemInterface()->CanEquipItemInSlot(dstbag, dstslot, item->GetItemProperties(), false, false);
-            if (EquipError == INV_ERR_OK)
-            {
-                dstslotitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcBagID, SrcSlotID, false);
-                additemresult = _player->GetItemInterface()->SafeAddItem(item, dstbag, dstslot);
-
-                if (additemresult != ADD_ITEM_RESULT_OK)
-                {
-                    // We failed for w/e reason, so let's revert
-                    auto check = _player->GetItemInterface()->SafeAddItem(item, SrcBagID, SrcSlotID);
-                    if (!check)
-                    {
-                        LOG_ERROR("HandleEquipmentSetUse", "Error while adding item %u to player %s twice", item->GetEntry(), _player->GetNameString());
-                        result = 0;
-                    }
-                    else
-                        result = 1;
-                }
-            }
-            else
-            {
-                result = 1;
-            }
-
-        }
-        else
-        {
-            // There is something equipped so we need to swap
-            if (!_player->GetItemInterface()->SwapItems(INVALID_BACKPACK_SLOT, dstslot, SrcBagID, SrcSlotID))
-                result = 1;
-        }
-
-    }
-
-    _player->SendEquipmentSetUseResult(result);
-}
-
-void WorldSession::HandleEquipmentSetSave(WorldPacket& data)
-{
-    CHECK_INWORLD_RETURN LOG_DEBUG("Received CMSG_EQUIPMENT_SET_SAVE");
-
-    WoWGuid GUID;
-    uint32 setGUID;
-
-    data >> GUID;
-
-    setGUID = Arcemu::Util::GUID_LOPART(GUID.GetOldGuid());
-
-    if (setGUID == 0)
-        setGUID = objmgr.GenerateEquipmentSetID();
-
-    Arcemu::EquipmentSet* set = new Arcemu::EquipmentSet();
-
-    set->SetGUID = setGUID;
-
-    data >> set->SetID;
-    data >> set->SetName;
-    data >> set->IconName;
-
-    for (uint32 i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
-    {
-        GUID.Clear();
-        data >> GUID;
-        set->ItemGUID[i] = Arcemu::Util::GUID_LOPART(GUID.GetOldGuid());
-    }
-
-    bool success;
-    success = _player->GetItemInterface()->m_EquipmentSets.AddEquipmentSet(set->SetGUID, set);
-
-    if (success)
-    {
-        LOG_DEBUG("Player %u successfully stored equipment set %u at slot %u ", _player->GetLowGUID(), set->SetGUID, set->SetID);
-        _player->SendEquipmentSetSaved(set->SetID, set->SetGUID);
-    }
-    else
-    {
-        LOG_DEBUG("Player %u couldn't store equipment set %u at slot %u ", _player->GetLowGUID(), set->SetGUID, set->SetID);
-    }
-}
-
-void WorldSession::HandleEquipmentSetDelete(WorldPacket& data)
-{
-    CHECK_INWORLD_RETURN LOG_DEBUG("Received CMSG_EQUIPMENT_SET_DELETE");
-
-    WoWGuid setGUID;
-    bool success;
-
-    data >> setGUID;
-
-    uint32 GUID = Arcemu::Util::GUID_LOPART(setGUID.GetOldGuid());
-
-    success = _player->GetItemInterface()->m_EquipmentSets.DeleteEquipmentSet(GUID);
-
-    if (success)
-    {
-        LOG_DEBUG("Equipmentset with GUID %u was successfully deleted.", GUID);
-    }
-    else
-    {
-        LOG_DEBUG("Equipmentset with GUID %u couldn't be deleted.", GUID);
-    }
-
-}
-
-void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN LOG_DEBUG("Received CMSG_QUEST_POI_QUERY");
-
-    uint32 count = 0;
-    recv_data >> count;
-
-    if (count > MAX_QUEST_LOG_SIZE)
-    {
-        LOG_DEBUG
-            ("Client sent Quest POI query for more than MAX_QUEST_LOG_SIZE quests.");
-
-        count = MAX_QUEST_LOG_SIZE;
-    }
-
-    WorldPacket data(SMSG_QUEST_POI_QUERY_RESPONSE, 4 + (4 + 4) * count);
-
-    data << uint32(count);
-
-    for (uint32 i = 0; i < count; i++)
-    {
-        uint32 questId;
-        recv_data >> questId;
-
-        sQuestMgr.BuildQuestPOIResponse(data, questId);
-    }
-
-    SendPacket(&data);
-
-    LOG_DEBUG("Sent SMSG_QUEST_POI_QUERY_RESPONSE");
-}
-
-void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
-{
-    if (!_player->IsInWorld())
-        return;
-
-    LOG_DEBUG("Received CMG_GET_MIRRORIMAGE_DATA");
-
-    uint64 GUID;
-
-    recv_data >> GUID;
-
-    Unit* Image = _player->GetMapMgr()->GetUnit(GUID);
-    if (Image == NULL)
-        return;					// ups no unit found with that GUID on the map. Spoofed packet?
-
-    if (Image->GetCreatedByGUID() == 0)
-        return;
-
-    uint64 CasterGUID = Image->GetCreatedByGUID();
-    Unit* Caster = _player->GetMapMgr()->GetUnit(CasterGUID);
-
-    if (Caster == NULL)
-        return;					// apperantly this mirror image mirrors nothing, poor lonely soul :(Maybe it's the Caster's ghost called Casper
-
-    WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
-
-    data << uint64(GUID);
-    data << uint32(Caster->GetDisplayId());
-    data << uint8(Caster->getRace());
-
-    if (Caster->IsPlayer())
-    {
-        Player* pcaster = static_cast <Player*>(Caster);
-
-        data << uint8(pcaster->getGender());
-        data << uint8(pcaster->getClass());
-
-        // facial features, like big nose, piercings, bonehead, etc
-        data << uint8(pcaster->GetByte(PLAYER_BYTES, 0));	// skin color
-        data << uint8(pcaster->GetByte(PLAYER_BYTES, 1));	// face
-        data << uint8(pcaster->GetByte(PLAYER_BYTES, 2));	// hair style
-        data << uint8(pcaster->GetByte(PLAYER_BYTES, 3));	// hair color
-        data << uint8(pcaster->GetByte(PLAYER_BYTES_2, 0));	// facial hair
-
-        if (pcaster->IsInGuild())
-            data << uint32(pcaster->GetGuildId());
-        else
-            data << uint32(0);
-
-        static const uint32 imageitemslots[] =
-        {
-            EQUIPMENT_SLOT_HEAD,
-            EQUIPMENT_SLOT_SHOULDERS,
-            EQUIPMENT_SLOT_BODY,
-            EQUIPMENT_SLOT_CHEST,
-            EQUIPMENT_SLOT_WAIST,
-            EQUIPMENT_SLOT_LEGS,
-            EQUIPMENT_SLOT_FEET,
-            EQUIPMENT_SLOT_WRISTS,
-            EQUIPMENT_SLOT_HANDS,
-            EQUIPMENT_SLOT_BACK,
-            EQUIPMENT_SLOT_TABARD
-        };
-
-        for (uint8 i = 0; i < 11; ++i)
-        {
-            Item* item = pcaster->GetItemInterface()->GetInventoryItem(static_cast <int16> (imageitemslots[i]));
-            if (item != nullptr)
-                data << uint32(item->GetItemProperties()->DisplayInfoID);
-            else
-                data << uint32(0);
-        }
-    }
-    else // do not send player data for creatures
-    {
-        data << uint8(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-        data << uint32(0);
-    }
-
-    SendPacket(&data);
-
-    LOG_DEBUG("Sent: SMSG_MIRRORIMAGE_DATA");
-}
+//void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
+//{
+//    if (!_player->IsInWorld())
+//        return;
+//
+//    LOG_DEBUG("Received CMG_GET_MIRRORIMAGE_DATA");
+//
+//    uint64 GUID;
+//
+//    recv_data >> GUID;
+//
+//    Unit* Image = _player->GetMapMgr()->GetUnit(GUID);
+//    if (Image == NULL)
+//        return;					// ups no unit found with that GUID on the map. Spoofed packet?
+//
+//    if (Image->GetCreatedByGUID() == 0)
+//        return;
+//
+//    uint64 CasterGUID = Image->GetCreatedByGUID();
+//    Unit* Caster = _player->GetMapMgr()->GetUnit(CasterGUID);
+//
+//    if (Caster == NULL)
+//        return;					// apperantly this mirror image mirrors nothing, poor lonely soul :(Maybe it's the Caster's ghost called Casper
+//
+//    WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
+//
+//    data << uint64(GUID);
+//    data << uint32(Caster->GetDisplayId());
+//    data << uint8(Caster->getRace());
+//
+//    if (Caster->IsPlayer())
+//    {
+//        Player* pcaster = static_cast <Player*>(Caster);
+//
+//        data << uint8(pcaster->getGender());
+//        data << uint8(pcaster->getClass());
+//
+//        // facial features, like big nose, piercings, bonehead, etc
+//        data << uint8(pcaster->GetByte(PLAYER_BYTES, 0));	// skin color
+//        data << uint8(pcaster->GetByte(PLAYER_BYTES, 1));	// face
+//        data << uint8(pcaster->GetByte(PLAYER_BYTES, 2));	// hair style
+//        data << uint8(pcaster->GetByte(PLAYER_BYTES, 3));	// hair color
+//        data << uint8(pcaster->GetByte(PLAYER_BYTES_2, 0));	// facial hair
+//
+//        if (pcaster->IsInGuild())
+//            data << uint32(pcaster->GetGuildId());
+//        else
+//            data << uint32(0);
+//
+//        static const uint32 imageitemslots[] =
+//        {
+//            EQUIPMENT_SLOT_HEAD,
+//            EQUIPMENT_SLOT_SHOULDERS,
+//            EQUIPMENT_SLOT_BODY,
+//            EQUIPMENT_SLOT_CHEST,
+//            EQUIPMENT_SLOT_WAIST,
+//            EQUIPMENT_SLOT_LEGS,
+//            EQUIPMENT_SLOT_FEET,
+//            EQUIPMENT_SLOT_WRISTS,
+//            EQUIPMENT_SLOT_HANDS,
+//            EQUIPMENT_SLOT_BACK,
+//            EQUIPMENT_SLOT_TABARD
+//        };
+//
+//        for (uint8 i = 0; i < 11; ++i)
+//        {
+//            Item* item = pcaster->GetItemInterface()->GetInventoryItem(static_cast <int16> (imageitemslots[i]));
+//            if (item != nullptr)
+//                data << uint32(item->GetItemProperties()->DisplayInfoID);
+//            else
+//                data << uint32(0);
+//        }
+//    }
+//    else // do not send player data for creatures
+//    {
+//        data << uint8(0);
+//        data << uint32(0);
+//        data << uint32(0);
+//        data << uint32(0);
+//        data << uint32(0);
+//        data << uint32(0);
+//        data << uint32(0);
+//        data << uint32(0);
+//        data << uint32(0);
+//        data << uint32(0);
+//        data << uint32(0);
+//        data << uint32(0);
+//        data << uint32(0);
+//        data << uint32(0);
+//    }
+//
+//    SendPacket(&data);
+//
+//    LOG_DEBUG("Sent: SMSG_MIRRORIMAGE_DATA");
+//}
 
 void WorldSession::Unhandled(WorldPacket& recv_data)
 {}
 
-void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
-{
-    uint64 GUID;
-
-    recv_data >> GUID;
-
-    if (_player->GetSummonedCritterGUID() == 0)
-    {
-        LOG_ERROR("Player %u sent dismiss companion packet, but player has no companion", _player->GetLowGUID());
-        return;
-    }
-
-    if (_player->GetSummonedCritterGUID() != GUID)
-    {
-        LOG_ERROR("Player %u sent dismiss companion packet, but it doesn't match player's companion", _player->GetLowGUID());
-        return;
-    }
-
-    Unit* companion = _player->GetMapMgr()->GetUnit(GUID);
-
-    if (companion != NULL)
-    {
-        companion->Delete();
-    }
-
-    _player->SetSummonedCritterGUID(0);
-}
+//void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
+//{
+//    uint64 GUID;
+//
+//    recv_data >> GUID;
+//
+//    if (_player->GetSummonedCritterGUID() == 0)
+//    {
+//        LOG_ERROR("Player %u sent dismiss companion packet, but player has no companion", _player->GetLowGUID());
+//        return;
+//    }
+//
+//    if (_player->GetSummonedCritterGUID() != GUID)
+//    {
+//        LOG_ERROR("Player %u sent dismiss companion packet, but it doesn't match player's companion", _player->GetLowGUID());
+//        return;
+//    }
+//
+//    Unit* companion = _player->GetMapMgr()->GetUnit(GUID);
+//
+//    if (companion != NULL)
+//    {
+//        companion->Delete();
+//    }
+//
+//    _player->SetSummonedCritterGUID(0);
+//}
 
 void WorldSession::SendClientCacheVersion(uint32 version)
 {

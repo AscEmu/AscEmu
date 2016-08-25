@@ -21,18 +21,18 @@
 
 #include "StdAfx.h"
 
-void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 4);
-    uint32 ChosenRank;
-    recv_data >> ChosenRank;
-    if (ChosenRank == 0xFFFFFFFF)
-        _player->SetChosenTitle(0);
-    else if (_player->HasTitle(static_cast<RankTitles>(ChosenRank)))
-        _player->SetChosenTitle(ChosenRank);
-}
+//void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recv_data, 4);
+//    uint32 ChosenRank;
+//    recv_data >> ChosenRank;
+//    if (ChosenRank == 0xFFFFFFFF)
+//        _player->SetChosenTitle(0);
+//    else if (_player->HasTitle(static_cast<RankTitles>(ChosenRank)))
+//        _player->SetChosenTitle(ChosenRank);
+//}
 
 void HonorHandler::AddHonorPointsToPlayer(Player* pPlayer, uint32 uAmount)
 {

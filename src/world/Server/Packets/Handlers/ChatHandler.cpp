@@ -600,198 +600,198 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
     }
 }
 
-void WorldSession::HandleEmoteOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
+//void WorldSession::HandleEmoteOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recv_data, 4);
+//
+//    if (!_player->isAlive())
+//        return;
+//
+//    uint32 emote;
+//    recv_data >> emote;
+//    _player->Emote((EmoteType)emote);
+//#ifdef ENABLE_ACHIEVEMENTS
+//    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, emote, 0, 0);
+//#endif
+//    uint64 guid = _player->GetGUID();
+//    sQuestMgr.OnPlayerEmote(_player, emote, guid);
+//}
 
-    CHECK_PACKET_SIZE(recv_data, 4);
-
-    if (!_player->isAlive())
-        return;
-
-    uint32 emote;
-    recv_data >> emote;
-    _player->Emote((EmoteType)emote);
-#ifdef ENABLE_ACHIEVEMENTS
-    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, emote, 0, 0);
-#endif
-    uint64 guid = _player->GetGUID();
-    sQuestMgr.OnPlayerEmote(_player, emote, guid);
-}
-
-void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 16);
-    if (!_player->isAlive())
-        return;
-
-    uint64 guid;
-    uint32 text_emote;
-    uint32 unk;
-    uint32 namelen = 1;
-    const char* name = " ";
-
-    recv_data >> text_emote;
-    recv_data >> unk;
-    recv_data >> guid;
-    if (m_muted && m_muted >= (uint32)UNIXTIME)
-    {
-        SystemMessage("Your voice is currently muted by a moderator.");
-        return;
-    }
-
-    if (!GetPermissionCount() && sWorld.flood_lines)
-    {
-        /* flood detection, wheeee! */
-        if (UNIXTIME >= floodTime)
-        {
-            floodLines = 0;
-            floodTime = UNIXTIME + sWorld.flood_seconds;
-        }
-
-        if ((++floodLines) > sWorld.flood_lines)
-        {
-            return;
-        }
-    }
-    Unit* pUnit = _player->GetMapMgr()->GetUnit(guid);
-    if (pUnit)
-    {
-        if (pUnit->IsPlayer())
-        {
-            name = static_cast< Player* >(pUnit)->GetName();
-            namelen = (uint32)strlen(name) + 1;
-        }
-        else if (pUnit->IsPet())
-        {
-            name = static_cast< Pet* >(pUnit)->GetName().c_str();
-            namelen = (uint32)strlen(name) + 1;
-        }
-        else
-        {
-            Creature* p = static_cast< Creature* >(pUnit);
-            name = p->GetCreatureProperties()->Name.c_str();
-            namelen = (uint32)strlen(name) + 1;
-        }
-    }
-
-    auto emote_text_entry = sEmotesTextStore.LookupEntry(text_emote);
-    if (emote_text_entry)
-    {
-        WorldPacket data(SMSG_EMOTE, 28 + namelen);
-
-        sHookInterface.OnEmote(_player, (EmoteType)emote_text_entry->textid, pUnit);
-        if (pUnit)
-            CALL_SCRIPT_EVENT(pUnit, OnEmote)(_player, (EmoteType)emote_text_entry->textid);
-
-        switch (emote_text_entry->textid)
-        {
-            case EMOTE_STATE_SLEEP:
-            case EMOTE_STATE_SIT:
-            case EMOTE_STATE_KNEEL:
-            case EMOTE_STATE_DANCE:
-            {
-                _player->SetEmoteState(emote_text_entry->textid);
-            }
-            break;
-        }
-
-        data << uint32(emote_text_entry->textid);
-        data << uint64(GetPlayer()->GetGUID());
-        GetPlayer()->SendMessageToSet(&data, true); //If player receives his own emote, his animation stops.
-
-        data.Initialize(SMSG_TEXT_EMOTE);
-        data << uint64(GetPlayer()->GetGUID());
-        data << uint32(text_emote);
-        data << unk;
-        data << uint32(namelen);
-        if (namelen > 1)
-            data.append(name, namelen);
-        else
-            data << uint8(0x00);
-
-        GetPlayer()->SendMessageToSet(&data, true);
-#ifdef ENABLE_ACHIEVEMENTS
-        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, text_emote, 0, 0);
-#endif
-        sQuestMgr.OnPlayerEmote(_player, text_emote, guid);
-    }
-}
+//void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recv_data, 16);
+//    if (!_player->isAlive())
+//        return;
+//
+//    uint64 guid;
+//    uint32 text_emote;
+//    uint32 unk;
+//    uint32 namelen = 1;
+//    const char* name = " ";
+//
+//    recv_data >> text_emote;
+//    recv_data >> unk;
+//    recv_data >> guid;
+//    if (m_muted && m_muted >= (uint32)UNIXTIME)
+//    {
+//        SystemMessage("Your voice is currently muted by a moderator.");
+//        return;
+//    }
+//
+//    if (!GetPermissionCount() && sWorld.flood_lines)
+//    {
+//        /* flood detection, wheeee! */
+//        if (UNIXTIME >= floodTime)
+//        {
+//            floodLines = 0;
+//            floodTime = UNIXTIME + sWorld.flood_seconds;
+//        }
+//
+//        if ((++floodLines) > sWorld.flood_lines)
+//        {
+//            return;
+//        }
+//    }
+//    Unit* pUnit = _player->GetMapMgr()->GetUnit(guid);
+//    if (pUnit)
+//    {
+//        if (pUnit->IsPlayer())
+//        {
+//            name = static_cast< Player* >(pUnit)->GetName();
+//            namelen = (uint32)strlen(name) + 1;
+//        }
+//        else if (pUnit->IsPet())
+//        {
+//            name = static_cast< Pet* >(pUnit)->GetName().c_str();
+//            namelen = (uint32)strlen(name) + 1;
+//        }
+//        else
+//        {
+//            Creature* p = static_cast< Creature* >(pUnit);
+//            name = p->GetCreatureProperties()->Name.c_str();
+//            namelen = (uint32)strlen(name) + 1;
+//        }
+//    }
+//
+//    auto emote_text_entry = sEmotesTextStore.LookupEntry(text_emote);
+//    if (emote_text_entry)
+//    {
+//        WorldPacket data(SMSG_EMOTE, 28 + namelen);
+//
+//        sHookInterface.OnEmote(_player, (EmoteType)emote_text_entry->textid, pUnit);
+//        if (pUnit)
+//            CALL_SCRIPT_EVENT(pUnit, OnEmote)(_player, (EmoteType)emote_text_entry->textid);
+//
+//        switch (emote_text_entry->textid)
+//        {
+//            case EMOTE_STATE_SLEEP:
+//            case EMOTE_STATE_SIT:
+//            case EMOTE_STATE_KNEEL:
+//            case EMOTE_STATE_DANCE:
+//            {
+//                _player->SetEmoteState(emote_text_entry->textid);
+//            }
+//            break;
+//        }
+//
+//        data << uint32(emote_text_entry->textid);
+//        data << uint64(GetPlayer()->GetGUID());
+//        GetPlayer()->SendMessageToSet(&data, true); //If player receives his own emote, his animation stops.
+//
+//        data.Initialize(SMSG_TEXT_EMOTE);
+//        data << uint64(GetPlayer()->GetGUID());
+//        data << uint32(text_emote);
+//        data << unk;
+//        data << uint32(namelen);
+//        if (namelen > 1)
+//            data.append(name, namelen);
+//        else
+//            data << uint8(0x00);
+//
+//        GetPlayer()->SendMessageToSet(&data, true);
+//#ifdef ENABLE_ACHIEVEMENTS
+//        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, text_emote, 0, 0);
+//#endif
+//        sQuestMgr.OnPlayerEmote(_player, text_emote, guid);
+//    }
+//}
 
 
 ///\todo remove these unk unk unk nighrmare!
-void WorldSession::HandleReportSpamOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 1 + 8);
-    LOG_DEBUG("WORLD: CMSG_REPORT_SPAM");
-
-    uint8 spam_type;                                        // 0 - mail, 1 - chat
-    uint64 spammer_guid;
-    uint32 unk1 = 0;
-    uint32 unk2 = 0;
-    uint32 unk3 = 0;
-    uint32 unk4 = 0;
-
-    std::string description = "";
-    recv_data >> spam_type;                                 // unk 0x01 const, may be spam type (mail/chat)
-    recv_data >> spammer_guid;                              // player guid
-    switch (spam_type)
-    {
-        case 0:
-            CHECK_PACKET_SIZE(recv_data, recv_data.rpos() + 4 + 4 + 4);
-            recv_data >> unk1;                              // const 0
-            recv_data >> unk2;                              // probably mail id
-            recv_data >> unk3;                              // const 0
-            break;
-        case 1:
-            CHECK_PACKET_SIZE(recv_data, recv_data.rpos() + 4 + 4 + 4 + 4 + 1);
-            recv_data >> unk1;                              // probably language
-            recv_data >> unk2;                              // message type?
-            recv_data >> unk3;                              // probably channel id
-            recv_data >> unk4;                              // unk random value
-            recv_data >> description;                       // spam description string (messagetype, channel name, player name, message)
-            break;
-    }
-    // NOTE: all chat messages from this spammer automatically ignored by spam reporter until logout in case chat spam.
-    // if it's mail spam - ALL mails from this spammer automatically removed by client
-
-    // Complaint Received message
-    WorldPacket data(SMSG_COMPLAIN_RESULT, 1);
-    data << uint8(0);
-    SendPacket(&data);
-
-    LOG_DEBUG("REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", spam_type, Arcemu::Util::GUID_LOPART(spammer_guid), unk1, unk2, unk3, unk4, description.c_str());
-}
-
-void WorldSession::HandleChatIgnoredOpcode(WorldPacket & recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recvPacket, 8 + 1);
-
-    uint64 iguid;
-    uint8 unk;
-
-    recvPacket >> iguid;
-    recvPacket >> unk; // probably related to spam reporting
-
-    Player* player = objmgr.GetPlayer(uint32(iguid));
-    if (!player || !player->GetSession())
-        return;
-
-    WorldPacket* data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, _player->GetName(), _player->GetGUID());
-    player->GetSession()->SendPacket(data);
-    delete data;
-}
-
-void WorldSession::HandleChatChannelWatchOpcode(WorldPacket& recvPacket)
-{
-    std::string channelName;
-    recvPacket >> channelName;
-
-    Log.Debug("HandleChatChannelWatchOpcode", "Unhandled... Player %s watch channel: %s", _player->GetName(), channelName.c_str());
-}
+//void WorldSession::HandleReportSpamOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recv_data, 1 + 8);
+//    LOG_DEBUG("WORLD: CMSG_REPORT_SPAM");
+//
+//    uint8 spam_type;                                        // 0 - mail, 1 - chat
+//    uint64 spammer_guid;
+//    uint32 unk1 = 0;
+//    uint32 unk2 = 0;
+//    uint32 unk3 = 0;
+//    uint32 unk4 = 0;
+//
+//    std::string description = "";
+//    recv_data >> spam_type;                                 // unk 0x01 const, may be spam type (mail/chat)
+//    recv_data >> spammer_guid;                              // player guid
+//    switch (spam_type)
+//    {
+//        case 0:
+//            CHECK_PACKET_SIZE(recv_data, recv_data.rpos() + 4 + 4 + 4);
+//            recv_data >> unk1;                              // const 0
+//            recv_data >> unk2;                              // probably mail id
+//            recv_data >> unk3;                              // const 0
+//            break;
+//        case 1:
+//            CHECK_PACKET_SIZE(recv_data, recv_data.rpos() + 4 + 4 + 4 + 4 + 1);
+//            recv_data >> unk1;                              // probably language
+//            recv_data >> unk2;                              // message type?
+//            recv_data >> unk3;                              // probably channel id
+//            recv_data >> unk4;                              // unk random value
+//            recv_data >> description;                       // spam description string (messagetype, channel name, player name, message)
+//            break;
+//    }
+//    // NOTE: all chat messages from this spammer automatically ignored by spam reporter until logout in case chat spam.
+//    // if it's mail spam - ALL mails from this spammer automatically removed by client
+//
+//    // Complaint Received message
+//    WorldPacket data(SMSG_COMPLAIN_RESULT, 1);
+//    data << uint8(0);
+//    SendPacket(&data);
+//
+//    LOG_DEBUG("REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", spam_type, Arcemu::Util::GUID_LOPART(spammer_guid), unk1, unk2, unk3, unk4, description.c_str());
+//}
+//
+//void WorldSession::HandleChatIgnoredOpcode(WorldPacket & recvPacket)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recvPacket, 8 + 1);
+//
+//    uint64 iguid;
+//    uint8 unk;
+//
+//    recvPacket >> iguid;
+//    recvPacket >> unk; // probably related to spam reporting
+//
+//    Player* player = objmgr.GetPlayer(uint32(iguid));
+//    if (!player || !player->GetSession())
+//        return;
+//
+//    WorldPacket* data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, _player->GetName(), _player->GetGUID());
+//    player->GetSession()->SendPacket(data);
+//    delete data;
+//}
+//
+//void WorldSession::HandleChatChannelWatchOpcode(WorldPacket& recvPacket)
+//{
+//    std::string channelName;
+//    recvPacket >> channelName;
+//
+//    Log.Debug("HandleChatChannelWatchOpcode", "Unhandled... Player %s watch channel: %s", _player->GetName(), channelName.c_str());
+//}
