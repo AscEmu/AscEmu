@@ -32,6 +32,7 @@
 #include <map>
 
 #include "WoWGuid.h"
+#include "NewWoWGuid.hpp"
 #include "../shared/LocationVector.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/DB2/DB2Structures.hpp"
@@ -62,23 +63,6 @@ class EventableObject;
 
 enum HIGHGUID_TYPE
 {
-    HIGHGUID_TYPE_PLAYER            = 0x00000000,
-    HIGHGUID_TYPE_CORPSE            = 0x00000F50,
-    HIGHGUID_TYPE_ITEM              = 0x00000470,
-    HIGHGUID_TYPE_CONTAINER         = 0x00000470,
-    HIGHGUID_TYPE_DYNAMICOBJECT     = 0x00000F10,
-    HIGHGUID_TYPE_WAYPOINT          = 0x10000000,
-    HIGHGUID_TYPE_TRANSPORTER       = 0x00000F12,
-    HIGHGUID_TYPE_GAMEOBJECT        = 0x00000F11,
-    HIGHGUID_TYPE_UNIT              = 0x00000F13,
-    HIGHGUID_TYPE_PET               = 0x00000F14,
-    HIGHGUID_TYPE_VEHICLE           = 0x00000F15,
-    HIGHGUID_TYPE_GROUP             = 0x000001F5,
-    HIGHGUID_TYPE_GUILD             = 0x00001FF7,
-    HIGHGUID_TYPE_MO_TRANSPORT      = 0x000001FC,
-    HIGHGUID_TYPE_BATTLEGROUND      = 0x000001F1,
-    HIGHGUID_TYPE_AREATRIGGER       = 0x0000F102,
-//===============================================
     HIGHGUID_TYPE_MASK				= 0xFFF00000,
     LOWGUID_ENTRY_MASK				= 0x00FFFFFF,
 };
@@ -105,20 +89,6 @@ enum TYPE
     TYPE_CORPSE		    = 128,
     TYPE_AIGROUP		= 256,
     TYPE_AREATRIGGER	= 512
-};
-
-enum TYPEID
-{
-    TYPEID_OBJECT		    = 0,
-    TYPEID_ITEM		        = 1,
-    TYPEID_CONTAINER	    = 2,
-    TYPEID_UNIT		        = 3,
-    TYPEID_PLAYER		    = 4,
-    TYPEID_GAMEOBJECT	    = 5,
-    TYPEID_DYNAMICOBJECT    = 6,
-    TYPEID_CORPSE		    = 7,
-    TYPEID_AIGROUP	        = 8,
-    TYPEID_AREATRIGGER      = 9
 };
 
 enum OBJECT_UPDATE_TYPE

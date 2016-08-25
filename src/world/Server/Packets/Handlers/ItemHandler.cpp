@@ -1423,114 +1423,114 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket& recv_data)
 void WorldSession::SendInventoryList(Creature* unit)
 {
 
-    if (!unit->HasItems())
-    {
-        sChatHandler.BlueSystemMessage(_player->GetSession(), "No sell template found. Report this to database's devs: %d (%s)", unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
-        LOG_ERROR("'%s' discovered that a creature with entry %u (%s) has no sell template.", GetPlayer()->GetName(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
-        GetPlayer()->Gossip_Complete(); // cebernic: don't get a hang for the NPC
-        return;
-    }
+    //if (!unit->HasItems())
+    //{
+    //    sChatHandler.BlueSystemMessage(_player->GetSession(), "No sell template found. Report this to database's devs: %d (%s)", unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
+    //    LOG_ERROR("'%s' discovered that a creature with entry %u (%s) has no sell template.", GetPlayer()->GetName(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
+    //    GetPlayer()->Gossip_Complete(); // cebernic: don't get a hang for the NPC
+    //    return;
+    //}
 
-    uint32 counter = 0;
+    //uint32 counter = 0;
 
-    WorldPacket data(((unit->GetSellItemCount()) + 12));       // allocate
+    //WorldPacket data(((unit->GetSellItemCount()) + 12));       // allocate
 
-    ByteBuffer itemsData(32 * unit->GetSellItemCount());
-    std::vector<bool> enablers;
-    enablers.reserve(2 * unit->GetSellItemCount());
+    //ByteBuffer itemsData(32 * unit->GetSellItemCount());
+    //std::vector<bool> enablers;
+    //enablers.reserve(2 * unit->GetSellItemCount());
 
-    ItemProperties const* curItem = nullptr;
+    //ItemProperties const* curItem = nullptr;
 
-    for (std::vector<CreatureItem>::iterator itr = unit->GetSellItemBegin(); itr != unit->GetSellItemEnd(); ++itr)
-    {
-        if (itr->itemid && (itr->max_amount == 0 || (itr->max_amount > 0 && itr->available_amount > 0)))
-        {
-            if ((curItem = sMySQLStore.GetItemProperties(itr->itemid)) != 0)
-            {
-                if (!_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) && !sWorld.show_all_vendor_items) // looking up everything for active gms
-                {
-                    if (curItem->AllowableClass && !(_player->getClassMask() & curItem->AllowableClass))
-                        continue;
+    //for (std::vector<CreatureItem>::iterator itr = unit->GetSellItemBegin(); itr != unit->GetSellItemEnd(); ++itr)
+    //{
+    //    if (itr->itemid && (itr->max_amount == 0 || (itr->max_amount > 0 && itr->available_amount > 0)))
+    //    {
+    //        if ((curItem = sMySQLStore.GetItemProperties(itr->itemid)) != 0)
+    //        {
+    //            if (!_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) && !sWorld.show_all_vendor_items) // looking up everything for active gms
+    //            {
+    //                if (curItem->AllowableClass && !(_player->getClassMask() & curItem->AllowableClass))
+    //                    continue;
 
-                    if (curItem->AllowableRace && !(_player->getRaceMask() & curItem->AllowableRace))
-                        continue;
+    //                if (curItem->AllowableRace && !(_player->getRaceMask() & curItem->AllowableRace))
+    //                    continue;
 
-                    if (curItem->HasFlag2(ITEM_FLAG2_HORDE_ONLY) && !GetPlayer()->IsTeamHorde())
-                        continue;
+    //                if (curItem->HasFlag2(ITEM_FLAG2_HORDE_ONLY) && !GetPlayer()->IsTeamHorde())
+    //                    continue;
 
-                    if (curItem->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && !GetPlayer()->IsTeamAlliance())
-                        continue;
+    //                if (curItem->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && !GetPlayer()->IsTeamAlliance())
+    //                    continue;
 
-                    int8 Slot = _player->GetItemInterface()->GetItemSlotByType(curItem->InventoryType);
-                    if (_player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, Slot, curItem, true, true))
-                        continue;
-                }
-                
-                uint32 av_am = (itr->max_amount > 0) ? itr->available_amount : 0xFFFFFFFF;
-                uint32 price = 0;
-                if ((itr->extended_cost == NULL) || curItem->HasFlag2(ITEM_FLAG2_EXT_COST_REQUIRES_GOLD))
-                    price = GetBuyPriceForItem(curItem, 1, _player, unit);
+    //                int8 Slot = _player->GetItemInterface()->GetItemSlotByType(curItem->InventoryType);
+    //                if (_player->GetItemInterface()->CanEquipItemInSlot(INVENTORY_SLOT_NOT_SET, Slot, curItem, true, true))
+    //                    continue;
+    //            }
+    //            
+    //            uint32 av_am = (itr->max_amount > 0) ? itr->available_amount : 0xFFFFFFFF;
+    //            uint32 price = 0;
+    //            if ((itr->extended_cost == NULL) || curItem->HasFlag2(ITEM_FLAG2_EXT_COST_REQUIRES_GOLD))
+    //                price = GetBuyPriceForItem(curItem, 1, _player, unit);
 
-                itemsData << uint32(counter + 1);        // client expects counting to start at 1
-                itemsData << uint32(curItem->MaxDurability);
+    //            itemsData << uint32(counter + 1);        // client expects counting to start at 1
+    //            itemsData << uint32(curItem->MaxDurability);
 
-                if (itr->extended_cost != 0)
-                {
-                    enablers.push_back(0);
-                    itemsData << uint32(itr->extended_cost->costid);
-                }
-                else
-                    enablers.push_back(1);
-                enablers.push_back(1);                 // unk bit
+    //            if (itr->extended_cost != 0)
+    //            {
+    //                enablers.push_back(0);
+    //                itemsData << uint32(itr->extended_cost->costid);
+    //            }
+    //            else
+    //                enablers.push_back(1);
+    //            enablers.push_back(1);                 // unk bit
 
-                itemsData << uint32(curItem->ItemId);
-                itemsData << uint32(1);     // 1 is items, 2 is currency
-                itemsData << uint32(price);
-                itemsData << uint32(curItem->DisplayInfoID);
-                itemsData << int32(av_am);
-                itemsData << uint32(itr->amount);
+    //            itemsData << uint32(curItem->ItemId);
+    //            itemsData << uint32(1);     // 1 is items, 2 is currency
+    //            itemsData << uint32(price);
+    //            itemsData << uint32(curItem->DisplayInfoID);
+    //            itemsData << int32(av_am);
+    //            itemsData << uint32(itr->amount);
 
-                ++counter;
-                if (counter >= creatureMaxInventoryItems) break;  // cebernic: in 2.4.3, client can't take more than 15 pages,it making crash for us:(
-            }
-        }
-    }
+    //            ++counter;
+    //            if (counter >= creatureMaxInventoryItems) break;  // cebernic: in 2.4.3, client can't take more than 15 pages,it making crash for us:(
+    //        }
+    //    }
+    //}
 
-    ObjectGuid guid = unit->GetGUID();
+    //ObjectGuid guid = unit->GetGUID();
 
-    data.SetOpcode(SMSG_LIST_INVENTORY);
-    data.writeBit(guid[1]);
-    data.writeBit(guid[0]);
+    //data.SetOpcode(SMSG_LIST_INVENTORY);
+    //data.writeBit(guid[1]);
+    //data.writeBit(guid[0]);
 
-    data.writeBits(counter, 21); // item count
+    //data.writeBits(counter, 21); // item count
 
-    data.writeBit(guid[3]);
-    data.writeBit(guid[6]);
-    data.writeBit(guid[5]);
-    data.writeBit(guid[2]);
-    data.writeBit(guid[7]);
+    //data.writeBit(guid[3]);
+    //data.writeBit(guid[6]);
+    //data.writeBit(guid[5]);
+    //data.writeBit(guid[2]);
+    //data.writeBit(guid[7]);
 
-    for (std::vector<bool>::const_iterator itr = enablers.begin(); itr != enablers.end(); ++itr)
-        data.writeBit(*itr);
+    //for (std::vector<bool>::const_iterator itr = enablers.begin(); itr != enablers.end(); ++itr)
+    //    data.writeBit(*itr);
 
-    data.writeBit(guid[4]);
+    //data.writeBit(guid[4]);
 
-    data.flushBits();
-    data.append(itemsData);
+    //data.flushBits();
+    //data.append(itemsData);
 
-    data.WriteByteSeq(guid[5]);
-    data.WriteByteSeq(guid[4]);
-    data.WriteByteSeq(guid[1]);
-    data.WriteByteSeq(guid[0]);
-    data.WriteByteSeq(guid[6]);
+    //data.WriteByteSeq(guid[5]);
+    //data.WriteByteSeq(guid[4]);
+    //data.WriteByteSeq(guid[1]);
+    //data.WriteByteSeq(guid[0]);
+    //data.WriteByteSeq(guid[6]);
 
-    data << uint8(counter == 0); // unk byte, item count 0: 1, item count != 0: 0 or some "random" value below 300
+    //data << uint8(counter == 0); // unk byte, item count 0: 1, item count != 0: 0 or some "random" value below 300
 
-    data.WriteByteSeq(guid[2]);
-    data.WriteByteSeq(guid[3]);
-    data.WriteByteSeq(guid[7]);
+    //data.WriteByteSeq(guid[2]);
+    //data.WriteByteSeq(guid[3]);
+    //data.WriteByteSeq(guid[7]);
 
-    SendPacket(&data);
+    //SendPacket(&data);
 
     LOG_DETAIL("WORLD: Sent SMSG_LIST_INVENTORY");
 }

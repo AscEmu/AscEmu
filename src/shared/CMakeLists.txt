@@ -37,6 +37,8 @@ set(sources
     Database/CreateInterface.cpp
     Network/CircularBuffer.cpp
     Network/Socket.cpp
+	NewByteBuffer.cpp
+	NewWoWGuid.cpp
 )
 
 set(headers
@@ -121,6 +123,9 @@ set(headers
 	Threading/Threading.h
 	Threading/ThreadPool.h
 	Threading/ThreadStarter.h
+	NewByteBuffer.hpp
+	NewWoWGuid.hpp
+	NewWorldPacket.hpp	
 )
 
 if(WIN32)

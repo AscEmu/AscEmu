@@ -1733,6 +1733,17 @@ Creature* MapMgr::GetCreature(uint32 guid)
     return CreatureStorage[guid];
 }
 
+Creature* MapMgr::GetCreature(NewWoWGuid guid)
+{
+    if (guid > m_CreatureHighGuid)
+    {
+        Log.Error("MapMgr::GetCreature", "No creature with guid " SIZEFMTD " found!", guid);
+        return nullptr;
+    }
+
+    return CreatureStorage[guid];
+}
+
 Summon* MapMgr::CreateSummon(uint32 entry, SummonType type)
 {
     uint64 guid = GenerateCreatureGUID(entry);
