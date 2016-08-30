@@ -644,13 +644,18 @@ void ApplyNormalFixes()
     for (uint32 x = 0; x < cnt; x++)
     {
         // Read every SpellEntry row
-        sp = dbcSpell.LookupRow(x);
+        sp = dbcSpell.LookupEntry(x);
+        if (sp == nullptr)
+            continue;
 
         uint32 namehash = 0;
 
-
         // hash the name
         //!!!!!!! representing all strings on 32 bits is dangerous. There is a chance to get same hash for a lot of strings ;)
+
+        if (!sp->Name)
+            continue;
+
         namehash = crc32((const unsigned char*)sp->Name, (unsigned int)strlen(sp->Name));
         sp->custom_NameHash = namehash; //need these set before we start processing spells
 

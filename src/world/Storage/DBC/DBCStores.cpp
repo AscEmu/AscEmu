@@ -125,117 +125,8 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::LiquidTypeEntry> sLiquidTypeStore(D
 SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleEntry> sVehicleStore(DBC::Structures::vehicle_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSeatStore(DBC::Structures::vehicle_seat_format);
 
-///\todo remove the old spell loader
-const char* spellentryFormat =
-"u" // Id
-"u" // Category
-"u" // DispelType
-"u" // MechanicsType
-"u" // Attributes
-"u" // AttributesEx
-"u" // AttributesExB
-"u" // AttributesExC
-"u" // AttributesExD
-"u" // AttributesExE
-"u" // AttributesExF
-"u" // AttributesExG
-"u" // RequiredShapeShift
-"x" // unk 3.2.0
-"u" // ShapeshiftExclude
-"x" // unk 3.2.0
-"u" // Targets
-"u" // TargetCreatureType
-"u" // RequiresSpellFocus
-"u" // FacingCasterFlags
-"u" // CasterAuraState
-"u" // TargetAuraState
-"u" // ExcludeCasterAuraState
-"u" // ExcludeTargetAuraState
-"u" // casterAuraSpell
-"u" // targetAuraSpell
-"u" // ExcludeCasterAuraState
-"u" // ExcludeTargetAuraState
-"u" // CastingTimeIndex
-"u" // RecoveryTime
-"u" // CategoryRecoveryTime
-"u" // InterruptFlags
-"u" // AuraInterruptFlags
-"u" // ChannelInterruptFlags
-"u" // procFlags
-"u" // procChance
-"u" // procCharges
-"u" // maxLevel
-"u" // baseLevel
-"u" // spellLevel
-"u" // DurationIndex
-"u" // powerType
-"u" // manaCost
-"u" // manaCostPerlevel
-"u" // manaPerSecond
-"u" // manaPerSecondPerLevel
-"u" // rangeIndex
-"f" // speed
-"u" // modalNextSpell
-"u" // maxstack
-"uu" // Totem[2]
-"uuuuuuuu" // Reagent[8]
-"uuuuuuuu" // ReagentCount[8]
-"u" // EquippedItemClass
-"u" // EquippedItemSubClass
-"u" // RequiredItemFlags
-"uuu" // Effect[3]
-"uuu" // EffectDieSides[3]
-"uuu" // EffectRealPointsPerLevel[3]
-"uuu" // EffectBasePoints[3]
-"uuu" // EffectMechanic[3]
-"uuu" // EffectImplicitTargetA[3]
-"uuu" // EffectImplicitTargetB[3]
-"uuu" // EffectRadiusIndex[3]
-"uuu" // EffectApplyAuraName[3]
-"uuu" // EffectAmplitude[3]
-"uuu" // Effectunknown[3]
-"uuu" // EffectChainTarget[3]
-"uuu" // EffectSpellGroupRelation[3]
-"uuu" // EffectMiscValue[3]
-"uuu" // EffectMiscValueB[3]
-"uuu" // EffectTriggerSpell[3]
-"uuu" // EffectPointsPerComboPoint[3]
-"uuu" // EffectUnk0[3]
-"uuu" // EffectUnk1[3]
-"uuu" // EffectUnk2[3]
-"u" // SpellVisual
-"u" // field114
-"u" // spellIconID
-"u" // activeIconID
-"u" // spellPriority
-"lxxxxxxxxxxxxxxxx" // Name
-"lxxxxxxxxxxxxxxxx" // Rank
-"lxxxxxxxxxxxxxxxx" // Description
-"lxxxxxxxxxxxxxxxx" // BuffDescription
-"u" // ManaCostPercentage
-"u" // unkflags
-"u" // StartRecoveryTime
-"u" // StartRecoveryCategory
-"u" // MaxTargetLevel
-"u" // SpellFamilyName
-"uu" // SpellGroupType
-"u" // MaxTargets
-"u" // Spell_Dmg_Type
-"u" // PreventionType
-"u" // StanceBarOrder
-"fff" // dmg_multiplier[3]
-"u" // MinFactionID
-"u" // MinReputation
-"u" // RequiredAuraVision
-"uu" // TotemCategory[2]
-"i" // RequiresAreaId
-"u" // School
-"ux"
-"x" //Added in 3.1
-"xxx" // unk 3.2.0, float!
-"x" // unk 3.2.0
-"i"
-;
+
+const char* spellentryFormat = "niiiiiiiiiiiiiiifiiiissssiixxixiiiiiiixiiiiiiiix";
 
 template<class T>
 bool loader_stub(const char* filename, const char* format, bool ind, T & l, bool loadstrs)
@@ -273,9 +164,7 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSkillLineStore, dbc_path, "SkillLine.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellStore, dbc_path, "Spell.dbc");
 
-    ///\todo remove the old spell loader
-    LOAD_DBC("DBC/oldSpell.dbc", spellentryFormat, true, dbcSpell, true);
-
+    LOAD_DBC("DBC/Spell.dbc", spellentryFormat, true, dbcSpell, true);
     //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemExtendedCostStore, dbc_path, "ItemExtendedCost.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentStore, dbc_path, "Talent.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentTabStore, dbc_path, "TalentTab.dbc");
@@ -314,6 +203,132 @@ bool LoadDBCs()
                     sSpellCategoryStore[cat].insert(i);
         }
     }
+
+    for (uint32 i = 1; i < sSpellStore.GetNumRows(); ++i)
+    {
+        if (DBC::Structures::SpellEntry const* spell = sSpellStore.LookupEntry(i))
+        {
+            uint32 entry = spell->Id;
+            OLD_SpellEntry* old_spell_entry = dbcSpell.LookupEntry(i);;
+            memset(old_spell_entry, 0, sizeof(OLD_SpellEntry));
+
+            old_spell_entry->Id = spell->Id;
+            old_spell_entry->Category = spell->GetCategory();
+            old_spell_entry->DispelType = spell->GetDispel();
+            old_spell_entry->MechanicsType = spell->GetMechanic();
+            old_spell_entry->Attributes = spell->Attributes;
+            old_spell_entry->AttributesEx = spell->AttributesEx;
+            old_spell_entry->AttributesExB = spell->AttributesExB;
+            old_spell_entry->AttributesExC = spell->AttributesExC;
+            old_spell_entry->AttributesExD = spell->AttributesExD;
+            old_spell_entry->AttributesExE = spell->AttributesExE;
+            old_spell_entry->AttributesExF = spell->AttributesExF;
+            old_spell_entry->AttributesExG = spell->AttributesExG;
+            old_spell_entry->RequiredShapeShift = spell->GetStances();
+            old_spell_entry->ShapeshiftExclude = spell->GetStancesNot();
+            old_spell_entry->Targets = spell->GetTargets();
+            old_spell_entry->TargetCreatureType = spell->GetSpellTargetRestrictions() ? spell->GetSpellTargetRestrictions()->TargetCreatureType : 0;
+            old_spell_entry->RequiresSpellFocus = spell->GetRequiresSpellFocus();
+            old_spell_entry->FacingCasterFlags = spell->GetSpellCastingRequirements() ? spell->GetSpellCastingRequirements()->RequiresSpellFocus : 0;
+            old_spell_entry->CasterAuraState = spell->GetCasterAuraState();
+            old_spell_entry->TargetAuraState = spell->GetTargetAuraState();
+            old_spell_entry->CasterAuraStateNot = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->CasterAuraStateNot : 0;
+            old_spell_entry->TargetAuraStateNot = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->TargetAuraStateNot : 0;
+            old_spell_entry->casterAuraSpell = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->casterAuraSpell : 0;
+            old_spell_entry->targetAuraSpell = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->targetAuraSpell : 0;
+            old_spell_entry->casterAuraSpellNot = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->excludeCasterAuraSpell : 0;
+            old_spell_entry->targetAuraSpellNot = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->excludeTargetAuraSpell : 0;
+            old_spell_entry->SpellVisual = spell->SpellVisual[0];
+            old_spell_entry->field114 = spell->SpellVisual[1];
+            old_spell_entry->spellIconID = spell->spellIconID;
+            old_spell_entry->activeIconID = spell->activeIconID;
+            old_spell_entry->Name = spell->Name ? spell->Name : "NoName";
+            old_spell_entry->Rank = spell->Rank ? spell->Rank : "NoRank";
+            old_spell_entry->Description = spell->Description ? spell->Description : "NoDescription";
+            old_spell_entry->BuffDescription = spell->BuffDescription ? spell->BuffDescription : "NoBuffDescription";
+            old_spell_entry->ManaCostPercentage = spell->GetManaCostPercentage();
+            old_spell_entry->StartRecoveryCategory = spell->GetStartRecoveryCategory();
+            old_spell_entry->StartRecoveryTime = spell->GetStartRecoveryTime();
+            old_spell_entry->Spell_Dmg_Type = spell->GetDmgClass();
+            old_spell_entry->RequiresAreaId = spell->GetAreaGroupId();
+            old_spell_entry->School = spell->School;
+            old_spell_entry->SpellDifficultyID = spell->SpellDifficultyId;
+            old_spell_entry->procFlags = spell->GetProcFlags();
+            old_spell_entry->procChance = spell->GetProcChance();
+            old_spell_entry->procCharges = spell->GetProcCharges();
+            old_spell_entry->MaxTargetLevel = spell->GetSpellTargetRestrictions() ? spell->GetSpellTargetRestrictions()->MaxTargetLevel : 0;
+            old_spell_entry->MaxTargets = spell->GetSpellTargetRestrictions() ? spell->GetSpellTargetRestrictions()->MaxAffectedTargets : 0;
+            old_spell_entry->RecoveryTime = spell->GetRecoveryTime();
+            old_spell_entry->CategoryRecoveryTime = spell->GetCategoryRecoveryTime();
+            old_spell_entry->SpellFamilyName = spell->GetSpellFamilyName();
+            old_spell_entry->maxLevel = spell->GetMaxLevel();
+            old_spell_entry->baseLevel = spell->GetBaseLevel();
+            old_spell_entry->spellLevel = spell->GetSpellLevel();
+            old_spell_entry->manaCost = spell->GetManaCost();
+            old_spell_entry->manaCostPerlevel = spell->GetManaCostPercentage();
+            old_spell_entry->manaPerSecond = spell->GetManaPerSecond();
+            old_spell_entry->manaPerSecondPerLevel = spell->GetManaCostPerLevel();
+            old_spell_entry->EquippedItemClass = spell->GetSpellEquippedItems() ? spell->GetSpellEquippedItems()->EquippedItemClass : 0;
+            old_spell_entry->EquippedItemSubClass = spell->GetSpellEquippedItems() ? spell->GetSpellEquippedItems()->EquippedItemSubClassMask : 0;
+            old_spell_entry->RequiredItemFlags = spell->GetSpellEquippedItems() ? spell->GetSpellEquippedItems()->EquippedItemInventoryTypeMask : 0;
+            old_spell_entry->PreventionType = spell->GetSpellCategories() ? spell->GetSpellCategories()->PreventionType : 0;
+            old_spell_entry->InterruptFlags = spell->GetSpellInterrupts() ? spell->GetSpellInterrupts()->InterruptFlags : 0;
+            old_spell_entry->AuraInterruptFlags = spell->GetSpellInterrupts() ? spell->GetSpellInterrupts()->AuraInterruptFlags : 0;
+            old_spell_entry->ChannelInterruptFlags = spell->GetSpellInterrupts() ? spell->GetSpellInterrupts()->ChannelInterruptFlags : 0;
+            old_spell_entry->DurationIndex = spell->DurationIndex;
+
+            old_spell_entry->spellPriority = 0;
+            old_spell_entry->StanceBarOrder =  0;
+            old_spell_entry->MinFactionID = 0;
+            old_spell_entry->MinReputation = 0;
+            old_spell_entry->RequiredAuraVision = 0;
+            old_spell_entry->RuneCostID = 0;
+            old_spell_entry->custom_DiminishStatus = 0;            
+            old_spell_entry->CastingTimeIndex = 0;
+            old_spell_entry->powerType = 0;
+            old_spell_entry->rangeIndex = 0;
+            old_spell_entry->speed = 0;
+            old_spell_entry->modalNextSpell = 0;
+            old_spell_entry->maxstack = 0;
+            
+            //custom setup
+            old_spell_entry->CustomFlags = 0;
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+                old_spell_entry->EffectCustomFlag[i] = spell->GetSpellEffectIdByIndex(SpellEffectIndex(i));
+
+            old_spell_entry->SpellFactoryFunc = NULL;
+            old_spell_entry->AuraFactoryFunc = NULL;
+
+            old_spell_entry->custom_proc_interval = 0;
+            old_spell_entry->custom_BGR_one_buff_on_target = 0;
+            old_spell_entry->custom_BGR_one_buff_from_caster_on_self = 0;
+            old_spell_entry->custom_c_is_flags = 0;
+            old_spell_entry->custom_RankNumber = 0;
+            old_spell_entry->custom_NameHash = 0;
+            old_spell_entry->custom_ThreatForSpell = 0;
+            old_spell_entry->custom_ThreatForSpellCoef = 0;
+            old_spell_entry->custom_spell_coef_flags = 0;
+            old_spell_entry->custom_base_range_or_radius_sqr = 0;
+            old_spell_entry->cone_width = 0;
+            old_spell_entry->casttime_coef = 0;
+            old_spell_entry->fixed_dddhcoef = 0;
+            old_spell_entry->fixed_hotdotcoef = 0;
+            old_spell_entry->Dspell_coef_override = 0;
+            old_spell_entry->OTspell_coef_override = 0;
+            old_spell_entry->ai_target_type = 0;
+            old_spell_entry->custom_self_cast_only = false;
+            old_spell_entry->custom_apply_on_shapeshift_change = false;
+            old_spell_entry->custom_always_apply = false;
+            old_spell_entry->custom_is_melee_spell = false;
+            old_spell_entry->custom_is_ranged_spell = false;
+            old_spell_entry->custom_SchoolMask = 0;
+        }
+    }
+
+    Log.Debug("SpellSystem", "Size of dbcSpell is %u", dbcSpell.GetNumRows());
+    OLD_SpellEntry* test_spell = dbcSpell.LookupEntry(4);
+    Log.Debug("SpellSystem", "TestSpell 4 `%s` set!", test_spell->Name);
 
     for (uint32 i = 1; i < sSpellEffectStore.GetNumRows(); ++i)
     {

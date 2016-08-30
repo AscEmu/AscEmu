@@ -9090,8 +9090,8 @@ void Player::CompleteLoading()
         SpawnActivePet();
 
     // useless logon spell
-    Spell* logonspell = sSpellFactoryMgr.NewSpell(this, dbcSpell.LookupEntry(836), false, NULL);
-    logonspell->prepare(&targets);
+    /*Spell* logonspell = sSpellFactoryMgr.NewSpell(this, dbcSpell.LookupEntry(836), false, NULL);
+    logonspell->prepare(&targets);*/
 
     if (IsBanned())
     {

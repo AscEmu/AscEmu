@@ -542,7 +542,7 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
     char itoabuf[12];
     for (uint32 index = 0; index < dbcSpell.GetNumRows(); ++index)
     {
-        OLD_SpellEntry* spell = dbcSpell.LookupRow(index);
+        OLD_SpellEntry* spell = dbcSpell.LookupEntry(index);
         std::string y = std::string(spell->Name);
         arcemu_TOLOWER(y);
         if (FindXinYString(x, y))

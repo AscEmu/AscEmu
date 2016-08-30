@@ -48,7 +48,7 @@ struct OLD_SpellEntry
     uint32 AttributesExD;                                     // 8
     uint32 AttributesExE;                                     // 9
     uint32 AttributesExF;                                     // 10
-    uint32 AttributesExG;                                     // 11 
+    uint32 AttributesExG;                                     // 11  8
     uint32 RequiredShapeShift;                                // 12
   //uint32 Unknown;                                           // 13 (12-13 Stances[2])
     uint32 ShapeshiftExclude;                                 // 14 

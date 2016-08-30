@@ -396,7 +396,7 @@ bool BasicTaskExecutor::run()
     return true;
 }
 
-//void ApplyNormalFixes();
+void ApplyNormalFixes();
 extern void LoadGameObjectModelList(std::string const& dataPath);
 
 bool World::SetInitialWorldSettings()
@@ -429,12 +429,12 @@ bool World::SetInitialWorldSettings()
     new CalendarMgr;
     new WorldLog;
     new ChatHandler;
-    //new SpellCustomizations;
+    new SpellCustomizations;
     new SpellProcMgr;
 
-    //sSpellCustomizations.StartSpellCustomization();
+    sSpellCustomizations.StartSpellCustomization();
 
-    //ApplyNormalFixes();
+    ApplyNormalFixes();
 
     Log.Success("GameObjectModel", "Loading GameObject models...");
     LoadGameObjectModelList(sWorld.vMapPath);
@@ -468,7 +468,7 @@ bool World::SetInitialWorldSettings()
     sMySQLStore.LoadZoneGuardsTable();
     sMySQLStore.LoadBattleMastersTable();
     sMySQLStore.LoadTotemDisplayIdsTable();
-    //sMySQLStore.LoadSpellClickSpellsTable();
+    sMySQLStore.LoadSpellClickSpellsTable();
 
     sMySQLStore.LoadWorldStringsTable();
     sMySQLStore.LoadWorldBroadcastTable();
@@ -482,7 +482,7 @@ bool World::SetInitialWorldSettings()
     sMySQLStore.LoadPlayerCreateInfoItemsTable();
     sMySQLStore.LoadPlayerXpToLevelTable();
 
-    //sMySQLStore.LoadSpellOverrideTable();
+    sMySQLStore.LoadSpellOverrideTable();
 
     sMySQLStore.LoadNpcGossipTextIdTable();
     sMySQLStore.LoadPetLevelAbilitiesTable();
@@ -505,12 +505,12 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadInstanceBossInfos);
     MAKE_TASK(ObjectMgr, LoadCreatureWaypoints);
     MAKE_TASK(ObjectMgr, LoadCreatureTimedEmotes);
-    //MAKE_TASK(ObjectMgr, LoadTrainers);
+    MAKE_TASK(ObjectMgr, LoadTrainers);
     MAKE_TASK(ObjectMgr, LoadSpellSkills);
     MAKE_TASK(ObjectMgr, LoadVendors);
-    //MAKE_TASK(ObjectMgr, LoadAIThreatToSpellId);
-    //MAKE_TASK(ObjectMgr, LoadSpellEffectsOverride);
-    //MAKE_TASK(ObjectMgr, LoadSpellTargetConstraints);
+    MAKE_TASK(ObjectMgr, LoadAIThreatToSpellId);
+    MAKE_TASK(ObjectMgr, LoadSpellEffectsOverride);
+    MAKE_TASK(ObjectMgr, LoadSpellTargetConstraints);
     MAKE_TASK(ObjectMgr, LoadDefaultPetSpells);
     MAKE_TASK(ObjectMgr, LoadPetSpellCooldowns);
     MAKE_TASK(ObjectMgr, LoadGuildCharters);
@@ -519,7 +519,7 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadReputationModifiers);
     MAKE_TASK(ObjectMgr, LoadMonsterSay);
     MAKE_TASK(ObjectMgr, LoadGroups);
-    //MAKE_TASK(ObjectMgr, LoadCreatureAIAgents);
+    MAKE_TASK(ObjectMgr, LoadCreatureAIAgents);
     MAKE_TASK(ObjectMgr, LoadArenaTeams);
     MAKE_TASK(ObjectMgr, LoadProfessionDiscoveries);
     MAKE_TASK(ObjectMgr, StoreBroadCastGroupKey);
