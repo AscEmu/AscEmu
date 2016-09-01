@@ -369,7 +369,6 @@ class SERVER_DECL WorldSession
         //void HandleAmmoSetOpcode(WorldPacket& recvPacket);
         //void HandleGameObjectUse(WorldPacket& recvPacket);
         //void HandleBarberShopResult(WorldPacket& recvPacket);
-        //void HandleJoinChannelOpcode(WorldPacket& recvPacket);
         //void HandleLeaveChannelOpcode(WorldPacket& recvPacket);
         //void HandlePlayedTimeOpcode(WorldPacket& recv_data);
         //void HandleSetSheathedOpcode(WorldPacket& recv_data);
@@ -572,7 +571,7 @@ class SERVER_DECL WorldSession
         //void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
 
         /// Channel Opcodes (ChannelHandler.cpp)
-        void HandleChannelJoin(WorldPacket& recvPacket);
+        void HandleJoinChannelOpcode(WorldPacket& recvPacket);
         void HandleChannelLeave(WorldPacket& recvPacket);
         void HandleChannelList(WorldPacket& recvPacket);
         void HandleChannelPassword(WorldPacket& recvPacket);

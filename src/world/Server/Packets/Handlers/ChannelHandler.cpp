@@ -22,7 +22,7 @@
 
 initialiseSingleton(ChannelMgr);
 
-void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
+void WorldSession::HandleJoinChannelOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
