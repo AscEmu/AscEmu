@@ -19,9 +19,7 @@ add_subdirectory(recastnavigation)
 add_subdirectory(g3dlite)
 
 if(BUILD_TOOLS)
-    add_subdirectory(libmpq)
-    add_subdirectory(dbcfile)
-    add_subdirectory(loadlib)
+    add_subdirectory(StormLib)
 endif()
 
 # add lualib if we need it for LuaEngine

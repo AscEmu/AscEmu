@@ -19,18 +19,19 @@
 
 #ifndef WDT_H
 #define WDT_H
-
 #include "loadlib.h"
 
-//**************************************************************************************
-// WDT file class and structures
-//**************************************************************************************
+ //**************************************************************************************
+ // WDT file class and structures
+ //**************************************************************************************
 #define WDT_MAP_SIZE 64
 
 #pragma pack(push, 1)
 
-class wdt_MWMO{
-    union{
+class wdt_MWMO
+{
+    union
+    {
         uint32 fcc;
         char   fcc_txt[4];
     };
@@ -39,8 +40,10 @@ public:
     bool prepareLoadedData();
 };
 
-class wdt_MPHD{
-    union{
+class wdt_MPHD
+{
+    union
+    {
         uint32 fcc;
         char   fcc_txt[4];
     };
@@ -58,23 +61,27 @@ public:
     bool   prepareLoadedData();
 };
 
-class wdt_MAIN{
-    union{
+class wdt_MAIN
+{
+    union
+    {
         uint32 fcc;
         char   fcc_txt[4];
     };
 public:
     uint32 size;
 
-    struct adtData{
-        uint32 exist;
+    struct adtData
+    {
+        uint32 flag;
         uint32 data1;
     } adt_list[64][64];
 
     bool   prepareLoadedData();
 };
 
-class WDT_file : public FileLoader{
+class WDT_file : public FileLoader
+{
 public:
     bool   prepareLoadedData();
 
@@ -89,4 +96,4 @@ public:
 
 #pragma pack(pop)
 
-#endif
+#endif  //WDT_H

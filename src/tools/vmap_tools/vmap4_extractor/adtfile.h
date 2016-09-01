@@ -17,10 +17,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ADT_FILE_H
-#define ADT_FILE_H
+#ifndef ADT_H
+#define ADT_H
 
-#include "mpq_libmpq04.h"
+#include "mpqfile.h"
 #include "wmo.h"
 #include "model.h"
 
@@ -111,22 +111,34 @@ struct MapChunkHeader
 class ADTFile
 {
 private:
+    //size_t mcnk_offsets[256], mcnk_sizes[256];
     MPQFile ADT;
+    //mcell Mcell;
     std::string Adtfilename;
 public:
     ADTFile(char* filename);
     ~ADTFile();
     int nWMO;
     int nMDX;
-    std::string* WmoInstansName;
-    std::string* ModelInstansName;
+    std::string* WmoInstanceNames;
+    std::string* ModelInstanceNames;
     bool init(uint32 map_num, uint32 tileX, uint32 tileY);
+    //void LoadMapChunks();
+
+    //uint32 wmo_count;
+/*
+    const mcell& Getmcell() const
+    {
+        return Mcell;
+    }
+*/
 };
 
-const char* GetPlainName(const char* FileName);
+char const* GetPlainName(char const* FileName);
 char* GetPlainName(char* FileName);
 char* GetExtension(char* FileName);
-void fixnamen(char *name, size_t len);
-void fixname2(char *name, size_t len);
+void FixNameCase(char* name, size_t len);
+void FixNameSpaces(char* name, size_t len);
+//void fixMapNamen(char *name, size_t len);
 
-#endif  //ADT_FILE_H
+#endif  //ADT_H

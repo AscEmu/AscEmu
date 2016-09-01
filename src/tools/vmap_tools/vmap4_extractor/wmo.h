@@ -19,14 +19,13 @@
 
 #ifndef WMO_H
 #define WMO_H
-
 #define TILESIZE (533.33333f)
 #define CHUNKSIZE ((TILESIZE) / 16.0f)
 
 #include <string>
 #include <set>
 #include "vec3d.h"
-#include "loadlib.h"
+#include "mpqfile.h"
 
 // MOPY flags
 #define WMO_MATERIAL_NOCAMCOLLIDE    0x01
@@ -41,7 +40,7 @@ class WMOInstance;
 class WMOManager;
 class MPQFile;
 
-// for whatever reason a certain company just can't stick to one coordinate system
+/* for whatever reason a certain company just can't stick to one coordinate system... */
 static inline Vec3D fixCoords(const Vec3D &v){ return Vec3D(v.z, v.x, v.y); }
 
 class WMORoot
@@ -109,7 +108,7 @@ public:
     int mopy_size, moba_size;
     int LiquEx_size;
     unsigned int nVertices; // number when loaded
-    int nTriangles;         // number when loaded
+    int nTriangles; // number when loaded
     uint32 liquflags;
 
     WMOGroup(std::string const& filename);
