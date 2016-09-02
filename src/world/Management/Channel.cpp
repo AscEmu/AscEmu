@@ -53,6 +53,7 @@ bool Channel::HasMember(Player* pPlayer)
 
 Channel::Channel(const char* name, uint32 team, uint32 type_id)
 {
+    DBC::Structures::ChatChannelsEntry const* pDBC;
     m_flags = 0;
     m_announce = true;
     m_muted = false;
@@ -62,26 +63,27 @@ Channel::Channel(const char* name, uint32 team, uint32 type_id)
     m_id = type_id;
     m_minimumLevel = 1;
 
-    auto chat_channels = sChatChannelsStore.LookupEntry(type_id);
-    if (chat_channels != nullptr)
+    pDBC = sChatChannelsStore.LookupEntry(type_id);
+    if (pDBC != NULL)
     {
         m_general = true;
         m_announce = false;
 
-        m_flags |= CHANNEL_FLAGS_GENERAL;       // old 0x10;            // general flag
-        // flags (0x01 = custom?, 0x04 = trade?, 0x20 = city?, 0x40 = lfg?, , 0x80 = voice?,
+        m_flags |= CHANNEL_FLAG_GENERAL;
 
-        if (chat_channels->flags & CHANNEL_DBC_TRADE)
-            m_flags |= CHANNEL_FLAGS_TRADE;     // old 0x08;        // trade
+        if (pDBC->flags & CHANNEL_DBC_FLAG_TRADE)
+            m_flags |= CHANNEL_FLAG_TRADE;
 
-        if (chat_channels->flags & CHANNEL_DBC_CITY_ONLY_2)
-            m_flags |= CHANNEL_FLAGS_CITY;      // old 0x20;        // city flag
+        if (pDBC->flags & CHANNEL_DBC_CITY_ONLY_2)
+            m_flags |= CHANNEL_FLAG_CITY;
 
-        if (chat_channels->flags & CHANNEL_DBC_LFG)
-            m_flags |= CHANNEL_FLAGS_LFG;       // old 0x40;        // lfg flag
+        if (pDBC->flags & CHANNEL_DBC_FLAG_LFG)
+            m_flags |= CHANNEL_FLAG_LFG;
+        else
+            m_flags |= CHANNEL_FLAG_NOT_LFG;
     }
     else
-        m_flags = CHANNEL_FLAGS_CUSTOM;         // old 0x01;
+        m_flags = CHANNEL_FLAG_CUSTOM;
 
     for (std::vector<std::string>::iterator itr = m_minimumChannel.begin(); itr != m_minimumChannel.end(); ++itr)
     {
@@ -99,10 +101,10 @@ void Channel::AttemptJoin(Player* plr, const char* password)
 {
     Guard mGuard(m_lock);
     WorldPacket data(SMSG_CHANNEL_NOTIFY, 100);
-    uint32 flags = CHANNEL_MEMBER_FLAG_NONE;
+    uint32 flags = CHANNEL_FLAG_NONE;
 
     if (!m_general && plr->GetSession()->CanUseCommand('c'))
-        flags |= CHANNEL_MEMBER_FLAG_MODERATOR;
+        flags |= CHANNEL_FLAG_MODERATOR;
 
     if (!m_password.empty() && strcmp(m_password.c_str(), password) != 0)
     {
@@ -129,7 +131,7 @@ void Channel::AttemptJoin(Player* plr, const char* password)
     }
 
     if (m_members.empty() && !m_general)
-        flags |= CHANNEL_MEMBER_FLAG_OWNER;
+        flags |= CHANNEL_FLAG_CUSTOM;
 
     plr->JoinedChannel(this);
     m_members.insert(std::make_pair(plr, flags));
@@ -143,7 +145,7 @@ void Channel::AttemptJoin(Player* plr, const char* password)
     }
 
     data.clear();
-    if (m_flags & CHANNEL_FLAGS_LFG && !plr->GetSession()->HasFlag(ACCOUNT_FLAG_NO_AUTOJOIN))
+    if (m_flags & 0x40 && !plr->GetSession()->HasFlag(ACCOUNT_FLAG_NO_AUTOJOIN))
     {
         data << uint8(CHANNEL_NOTIFY_FLAG_YOUJOINED);
         data << m_name;
@@ -183,7 +185,7 @@ void Channel::Part(Player* plr, bool send_packet)
 
     plr->LeftChannel(this);
 
-    if (flags & CHANNEL_MEMBER_FLAG_OWNER)
+    if (flags & CHANNEL_FLAG_CUSTOM)
     {
         // we need to find a new owner
         SetOwner(NULL, NULL);
@@ -238,7 +240,7 @@ void Channel::SetOwner(Player* oldpl, Player* plr)
             return;
         }
 
-        if (!(itr->second & CHANNEL_MEMBER_FLAG_OWNER))
+        if (!(itr->second & CHANNEL_FLAG_CUSTOM))
         {
             data << uint8(CHANNEL_NOTIFY_FLAG_NOT_OWNER);
             data << m_name;
@@ -251,11 +253,11 @@ void Channel::SetOwner(Player* oldpl, Player* plr)
     {
         for (MemberMap::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
         {
-            if (itr->second & CHANNEL_MEMBER_FLAG_OWNER)
+            if (itr->second & CHANNEL_FLAG_CUSTOM)
             {
                 // remove the old owner
                 oldflags2 = itr->second;
-                itr->second &= ~CHANNEL_MEMBER_FLAG_OWNER;
+                itr->second &= ~CHANNEL_FLAG_CUSTOM;
                 data << uint8(CHANNEL_NOTIFY_FLAG_MODE_CHG);
                 data << m_name;
                 data << itr->first->GetGUID();
@@ -269,7 +271,7 @@ void Channel::SetOwner(Player* oldpl, Player* plr)
                 {
                     pOwner = itr->first;
                     oldflags = itr->second;
-                    itr->second |= CHANNEL_MEMBER_FLAG_OWNER;
+                    itr->second |= CHANNEL_FLAG_CUSTOM;
                 }
             }
         }
@@ -278,11 +280,11 @@ void Channel::SetOwner(Player* oldpl, Player* plr)
     {
         for (MemberMap::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
         {
-            if (itr->second & CHANNEL_MEMBER_FLAG_OWNER)
+            if (itr->second & CHANNEL_FLAG_CUSTOM)
             {
                 // remove the old owner
                 oldflags2 = itr->second;
-                itr->second &= ~CHANNEL_MEMBER_FLAG_OWNER;
+                itr->second &= ~CHANNEL_FLAG_CUSTOM;
                 data << uint8(CHANNEL_NOTIFY_FLAG_MODE_CHG);
                 data << m_name;
                 data << itr->first->GetGUID();
@@ -296,7 +298,7 @@ void Channel::SetOwner(Player* oldpl, Player* plr)
                 {
                     pOwner = itr->first;
                     oldflags = itr->second;
-                    itr->second |= CHANNEL_MEMBER_FLAG_OWNER;
+                    itr->second |= CHANNEL_FLAG_CUSTOM;
                 }
             }
         }
@@ -317,7 +319,7 @@ void Channel::SetOwner(Player* oldpl, Player* plr)
     data << m_name;
     data << pOwner->GetGUID();
     data << uint8(oldflags);
-    data << uint8(oldflags | CHANNEL_MEMBER_FLAG_OWNER);
+    data << uint8(oldflags | CHANNEL_FLAG_CUSTOM);
     SendToAll(&data);
 }
 
@@ -362,7 +364,7 @@ void Channel::Moderate(Player* plr)
         return;
     }
 
-    if (!(itr->second & CHANNEL_MEMBER_FLAG_OWNER || itr->second & CHANNEL_MEMBER_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('c'))
+    if (!(itr->second & CHANNEL_FLAG_CUSTOM || itr->second & CHANNEL_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('c'))
     {
         data << uint8(CHANNEL_NOTIFY_FLAG_NOTMOD);
         data << m_name;
@@ -392,7 +394,7 @@ void Channel::Say(Player* plr, const char* message, Player* for_gm_client, bool 
             return;
         }
 
-        if (itr->second & CHANNEL_MEMBER_FLAG_MUTED)
+        if (itr->second & CHANNEL_FLAG_NOT_LFG)
         {
             data << uint8(CHANNEL_NOTIFY_FLAG_YOUCANTSPEAK);
             data << m_name;
@@ -400,7 +402,7 @@ void Channel::Say(Player* plr, const char* message, Player* for_gm_client, bool 
             return;
         }
 
-        if (m_muted && !(itr->second & CHANNEL_MEMBER_FLAG_VOICED) && !(itr->second & CHANNEL_MEMBER_FLAG_MODERATOR) && !(itr->second & CHANNEL_MEMBER_FLAG_OWNER))
+        if (m_muted && !(itr->second & CHANNEL_FLAG_TRADE) && !(itr->second & CHANNEL_FLAG_MODERATOR) && !(itr->second & CHANNEL_FLAG_CUSTOM))
         {
             data << uint8(CHANNEL_NOTIFY_FLAG_YOUCANTSPEAK);
             data << m_name;
@@ -474,7 +476,7 @@ void Channel::Kick(Player* plr, Player* die_player, bool ban)
         return;
     }
 
-    if (!(me_itr->second & CHANNEL_MEMBER_FLAG_OWNER || me_itr->second & CHANNEL_MEMBER_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(me_itr->second & CHANNEL_FLAG_CUSTOM || me_itr->second & CHANNEL_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
     {
         data << uint8(CHANNEL_NOTIFY_FLAG_NOTMOD);
         data << m_name;
@@ -499,7 +501,7 @@ void Channel::Kick(Player* plr, Player* die_player, bool ban)
 
     m_members.erase(itr);
 
-    if (flags & CHANNEL_MEMBER_FLAG_OWNER)
+    if (flags & CHANNEL_FLAG_CUSTOM)
         SetOwner(NULL, NULL);
 
     if (ban)
@@ -527,7 +529,7 @@ void Channel::Unban(Player* plr, PlayerInfo* bplr)
         return;
     }
 
-    if (!(itr->second & CHANNEL_MEMBER_FLAG_OWNER || itr->second & CHANNEL_MEMBER_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & CHANNEL_FLAG_CUSTOM || itr->second & CHANNEL_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
     {
         data << uint8(CHANNEL_NOTIFY_FLAG_NOTMOD);
         data << m_name;
@@ -575,7 +577,7 @@ void Channel::Voice(Player* plr, Player* v_player)
         return;
     }
 
-    if (!(itr->second & CHANNEL_MEMBER_FLAG_OWNER || itr->second & CHANNEL_MEMBER_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & CHANNEL_FLAG_CUSTOM || itr->second & CHANNEL_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
     {
         data << uint8(CHANNEL_NOTIFY_FLAG_NOTMOD);
         data << m_name;
@@ -584,7 +586,7 @@ void Channel::Voice(Player* plr, Player* v_player)
     }
 
     uint32 oldflags = itr2->second;
-    itr2->second |= CHANNEL_MEMBER_FLAG_VOICED;
+    itr2->second |= CHANNEL_FLAG_TRADE;
     data << uint8(CHANNEL_NOTIFY_FLAG_MODE_CHG);
     data << m_name;
     data << v_player->GetGUID();
@@ -616,7 +618,7 @@ void Channel::Devoice(Player* plr, Player* v_player)
         return;
     }
 
-    if (!(itr->second & CHANNEL_MEMBER_FLAG_OWNER || itr->second & CHANNEL_MEMBER_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & CHANNEL_FLAG_CUSTOM || itr->second & CHANNEL_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
     {
         data << uint8(CHANNEL_NOTIFY_FLAG_NOTMOD);
         data << m_name;
@@ -625,7 +627,7 @@ void Channel::Devoice(Player* plr, Player* v_player)
     }
 
     uint32 oldflags = itr2->second;
-    itr2->second &= ~CHANNEL_MEMBER_FLAG_VOICED;
+    itr2->second &= ~CHANNEL_FLAG_TRADE;
     data << uint8(CHANNEL_NOTIFY_FLAG_MODE_CHG);
     data << m_name;
     data << v_player->GetGUID();
@@ -657,7 +659,7 @@ void Channel::Mute(Player* plr, Player* die_player)
         return;
     }
 
-    if (!(itr->second & CHANNEL_MEMBER_FLAG_OWNER || itr->second & CHANNEL_MEMBER_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & CHANNEL_FLAG_CUSTOM || itr->second & CHANNEL_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
     {
         data << uint8(CHANNEL_NOTIFY_FLAG_NOTMOD);
         data << m_name;
@@ -666,7 +668,7 @@ void Channel::Mute(Player* plr, Player* die_player)
     }
 
     uint32 oldflags = itr2->second;
-    itr2->second |= CHANNEL_MEMBER_FLAG_MUTED;
+    itr2->second |= CHANNEL_FLAG_NOT_LFG;
     data << uint8(CHANNEL_NOTIFY_FLAG_MODE_CHG);
     data << m_name;
     data << die_player->GetGUID();
@@ -698,7 +700,7 @@ void Channel::Unmute(Player* plr, Player* die_player)
         return;
     }
 
-    if (!(itr->second & CHANNEL_MEMBER_FLAG_OWNER || itr->second & CHANNEL_MEMBER_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & CHANNEL_FLAG_CUSTOM || itr->second & CHANNEL_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
     {
         data << uint8(CHANNEL_NOTIFY_FLAG_NOTMOD);
         data << m_name;
@@ -707,7 +709,7 @@ void Channel::Unmute(Player* plr, Player* die_player)
     }
 
     uint32 oldflags = itr2->second;
-    itr2->second &= ~CHANNEL_MEMBER_FLAG_MUTED;
+    itr2->second &= ~CHANNEL_FLAG_NOT_LFG;
     data << uint8(CHANNEL_NOTIFY_FLAG_MODE_CHG);
     data << m_name;
     data << die_player->GetGUID();
@@ -739,7 +741,7 @@ void Channel::GiveModerator(Player* plr, Player* new_player)
         return;
     }
 
-    if (!(itr->second & CHANNEL_MEMBER_FLAG_OWNER || itr->second & CHANNEL_MEMBER_FLAG_MODERATOR))
+    if (!(itr->second & CHANNEL_FLAG_CUSTOM || itr->second & CHANNEL_FLAG_MODERATOR))
     {
         data << uint8(CHANNEL_NOTIFY_FLAG_NOTMOD);
         data << m_name;
@@ -748,7 +750,7 @@ void Channel::GiveModerator(Player* plr, Player* new_player)
     }
 
     uint32 oldflags = itr2->second;
-    itr2->second |= CHANNEL_MEMBER_FLAG_MODERATOR;
+    itr2->second |= CHANNEL_FLAG_MODERATOR;
     data << uint8(CHANNEL_NOTIFY_FLAG_MODE_CHG);
     data << m_name;
     data << new_player->GetGUID();
@@ -780,7 +782,7 @@ void Channel::TakeModerator(Player* plr, Player* new_player)
         return;
     }
 
-    if (!(itr->second & CHANNEL_MEMBER_FLAG_OWNER || itr->second & CHANNEL_MEMBER_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & CHANNEL_FLAG_CUSTOM || itr->second & CHANNEL_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
     {
         data << uint8(CHANNEL_NOTIFY_FLAG_NOTMOD);
         data << m_name;
@@ -789,7 +791,7 @@ void Channel::TakeModerator(Player* plr, Player* new_player)
     }
 
     uint32 oldflags = itr2->second;
-    itr2->second &= ~CHANNEL_MEMBER_FLAG_MODERATOR;
+    itr2->second &= ~CHANNEL_FLAG_MODERATOR;
     data << uint8(CHANNEL_NOTIFY_FLAG_MODE_CHG);
     data << m_name;
     data << new_player->GetGUID();
@@ -811,7 +813,7 @@ void Channel::Announce(Player* plr)
         return;
     }
 
-    if (!(itr->second & CHANNEL_MEMBER_FLAG_OWNER || itr->second & CHANNEL_MEMBER_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & CHANNEL_FLAG_CUSTOM || itr->second & CHANNEL_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
     {
         data << uint8(CHANNEL_NOTIFY_FLAG_NOTMOD);
         data << m_name;
@@ -839,7 +841,7 @@ void Channel::Password(Player* plr, const char* pass)
         return;
     }
 
-    if (!(itr->second & CHANNEL_MEMBER_FLAG_OWNER || itr->second & CHANNEL_MEMBER_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
+    if (!(itr->second & CHANNEL_FLAG_CUSTOM || itr->second & CHANNEL_FLAG_MODERATOR) && !plr->GetSession()->CanUseCommand('a'))
     {
         data << uint8(CHANNEL_NOTIFY_FLAG_NOTMOD);
         data << m_name;
@@ -877,17 +879,17 @@ void Channel::List(Player* plr)
     {
         data << itr->first->GetGUID();
         flags = 0;
-        if (!(itr->second & CHANNEL_MEMBER_FLAG_MUTED))
-            flags |= CHANNEL_MEMBER_FLAG_VOICED;
+        if (!(itr->second & CHANNEL_FLAG_NOT_LFG))
+            flags |= 0x04;        // voice flag
 
-        if (itr->second & CHANNEL_MEMBER_FLAG_OWNER)
-            flags |= CHANNEL_MEMBER_FLAG_OWNER;
+        if (itr->second & CHANNEL_FLAG_CUSTOM)
+            flags |= 0x01;        // owner flag
 
-        if (itr->second & CHANNEL_MEMBER_FLAG_MODERATOR)
-            flags |= CHANNEL_MEMBER_FLAG_MODERATOR;
+        if (itr->second & CHANNEL_FLAG_MODERATOR)
+            flags |= 0x02;        // moderator flag
 
         if (!m_general)
-            flags |= CHANNEL_MEMBER_FLAG_CUSTOM;
+            flags |= 0x10;
 
         data << flags;
     }
@@ -910,7 +912,7 @@ void Channel::GetOwner(Player* plr)
 
     for (itr = m_members.begin(); itr != m_members.end(); ++itr)
     {
-        if (itr->second & CHANNEL_MEMBER_FLAG_OWNER)
+        if (itr->second & CHANNEL_FLAG_CUSTOM)
         {
             data << uint8(CHANNEL_NOTIFY_FLAG_WHO_OWNER);
             data << m_name;

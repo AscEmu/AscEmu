@@ -1325,53 +1325,53 @@ void WorldSession::HandleStandStateChangeOpcode(WorldPacket& recv_data)
 //    SendPacket(&data);
 //}
 
-//void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    LOG_DEBUG("WORLD: Received CMSG_SET_ACTION_BUTTON");
-//
-//    uint8 button;
-//    uint8 misc;
-//    uint8 type;
-//    uint16 action;
-//
-//    recv_data >> button;
-//    recv_data >> action;
-//    recv_data >> misc;
-//    recv_data >> type;
-//
-//    LOG_DEBUG("BUTTON: %u ACTION: %u TYPE: %u MISC: %u", button, action, type, misc);
-//
-//    if (action == 0)
-//    {
-//        LOG_DEBUG("MISC: Remove action from button %u", button);
-//        //remove the action button from the db
-//        GetPlayer()->setAction(button, 0, 0, 0);
-//    }
-//    else
-//    {
-//        if (button >= PLAYER_ACTION_BUTTON_COUNT)
-//            return;
-//
-//        if (type == 64 || type == 65)
-//        {
-//            LOG_DEBUG("MISC: Added Macro %u into button %u", action, button);
-//            GetPlayer()->setAction(button, action, type, misc);
-//        }
-//        else if (type == 128)
-//        {
-//            LOG_DEBUG("MISC: Added Item %u into button %u", action, button);
-//            GetPlayer()->setAction(button, action, type, misc);
-//        }
-//        else if (type == 0)
-//        {
-//            LOG_DEBUG("MISC: Added Spell %u into button %u", action, button);
-//            GetPlayer()->setAction(button, action, type, misc);
-//        }
-//    }
-//
-//}
+void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    LOG_DEBUG("WORLD: Received CMSG_SET_ACTION_BUTTON");
+
+    uint8 button;
+    uint8 misc;
+    uint8 type;
+    uint16 action;
+
+    recv_data >> button;
+    recv_data >> action;
+    recv_data >> misc;
+    recv_data >> type;
+
+    LOG_DEBUG("BUTTON: %u ACTION: %u TYPE: %u MISC: %u", button, action, type, misc);
+
+    if (action == 0)
+    {
+        LOG_DEBUG("MISC: Remove action from button %u", button);
+        //remove the action button from the db
+        GetPlayer()->setAction(button, 0, 0, 0);
+    }
+    else
+    {
+        if (button >= PLAYER_ACTION_BUTTON_COUNT)
+            return;
+
+        if (type == 64 || type == 65)
+        {
+            LOG_DEBUG("MISC: Added Macro %u into button %u", action, button);
+            GetPlayer()->setAction(button, action, type, misc);
+        }
+        else if (type == 128)
+        {
+            LOG_DEBUG("MISC: Added Item %u into button %u", action, button);
+            GetPlayer()->setAction(button, action, type, misc);
+        }
+        else if (type == 0)
+        {
+            LOG_DEBUG("MISC: Added Spell %u into button %u", action, button);
+            GetPlayer()->setAction(button, action, type, misc);
+        }
+    }
+
+}
 
 //void WorldSession::HandleSetWatchedFactionIndexOpcode(WorldPacket & recvPacket)
 //{
@@ -2583,21 +2583,21 @@ void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)
 //    _player->SendLoot(pItem->GetGUID(), LOOT_DISENCHANTING, _player->GetMapId());
 //}
 
-//void WorldSession::HandleCompleteCinematic(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    // when a Cinematic is started the player is going to sit down, when its finished its standing up.
-//    _player->SetStandState(STANDSTATE_STAND);
-//    _player->camControle = false;
-//}
+void WorldSession::HandleCompleteCinematic(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
 
-//void WorldSession::HandleNextCinematic(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//    _player->camControle = true;
-//    _player->SetPosition(_player->GetPositionX()+0.01,_player->GetPositionY()+0.01, _player->GetPositionZ()+0.01, _player->GetOrientation());
-//}
+    // when a Cinematic is started the player is going to sit down, when its finished its standing up.
+    _player->SetStandState(STANDSTATE_STAND);
+    _player->camControle = false;
+}
+
+void WorldSession::HandleNextCinematic(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+    _player->camControle = true;
+    _player->SetPosition(_player->GetPositionX()+0.01,_player->GetPositionY()+0.01, _player->GetPositionZ()+0.01, _player->GetOrientation());
+}
 
 //void WorldSession::HandleResetInstanceOpcode(WorldPacket& recv_data)
 //{

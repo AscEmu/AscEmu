@@ -918,7 +918,7 @@ bool ChatHandler::HandleClearWorldStatesCommand(const char* args, WorldSession* 
 
     BlueSystemMessage(session, "Clearing worldstates for zone %u", zone);
 
-    WorldPacket data(SMSG_INIT_WORLD_STATES, 16);
+    WorldPacket data(SMSG_INIT_WORLD_STATES, (4 + 4 + 4 + 2 + 8 * 8));
 
     data << uint32(p->GetMapId());
     data << uint32(p->GetZoneId());

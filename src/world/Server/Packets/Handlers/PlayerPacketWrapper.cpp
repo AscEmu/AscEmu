@@ -735,8 +735,8 @@ void Player::SendTotemCreated(uint8 slot, uint64 GUID, uint32 duration, uint32 s
 
 void Player::SendInitialWorldstates()
 {
-    WorldPacket data(SMSG_INIT_WORLD_STATES, 100);
+    /*WorldPacket data(SMSG_INIT_WORLD_STATES, (4 + 4 + 4 + 2 + 8 * 8));
 
     m_mapMgr->GetWorldStatesHandler().BuildInitWorldStatesForZone(m_zoneId, m_AreaID, data);
-    m_session->SendPacket(&data);
+    m_session->SendPacket(&data);*/
 }

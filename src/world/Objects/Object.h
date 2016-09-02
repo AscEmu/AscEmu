@@ -94,25 +94,9 @@ enum TYPE
 enum OBJECT_UPDATE_TYPE
 {
     UPDATETYPE_VALUES = 0,
-    // 8 bytes - GUID
-    // Goto Update Block
-    UPDATETYPE_MOVEMENT = 1,
-    // 8 bytes - GUID
-    // Goto Position Update
-    UPDATETYPE_CREATE_OBJECT = 2,
-    // 8 bytes - GUID
-    // 1 byte - Object Type (*)
-    // Goto Position Update
-    // Goto Update Block
-    UPDATETYPE_CREATE_YOURSELF = 3,         /// Looks like 3 & 4 do the same thing
-    // 4 bytes - Count
-    // Loop Count Times:
-    // 8 bytes - GUID
-    UPDATETYPE_OUT_OF_RANGE_OBJECTS = 4     /// this is correct, not sure about 3
-    // 4 bytes - Count
-    // Loop Count Times:
-    // 8 bytes - GUID
-
+    UPDATETYPE_CREATE_OBJECT = 1,
+    UPDATETYPE_CREATE_OBJECT2 = 2,
+    UPDATETYPE_OUT_OF_RANGE_OBJECTS = 3
 };
 
 enum PHASECOMMANDS

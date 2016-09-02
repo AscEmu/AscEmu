@@ -302,7 +302,7 @@ class SERVER_DECL WorldSession
         //void HandleAreaTriggerOpcode(WorldPacket& recvPacket);
         //void HandleUpdateAccountData(WorldPacket& recvPacket);
         //void HandleRequestAccountData(WorldPacket& recvPacket);
-        //void HandleSetActionButtonOpcode(WorldPacket& recvPacket);
+        void HandleSetActionButtonOpcode(WorldPacket& recvPacket);
         //void HandleSetAtWarOpcode(WorldPacket& recvPacket);
         //void HandleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket);
         //void HandleTogglePVPOpcode(WorldPacket& recvPacket);
@@ -312,8 +312,8 @@ class SERVER_DECL WorldSession
         //void HandleLeaveChannelOpcode(WorldPacket& recvPacket);
         void HandlePlayedTimeOpcode(WorldPacket& recv_data);
         //void HandleSetSheathedOpcode(WorldPacket& recv_data);
-        //void HandleCompleteCinematic(WorldPacket& recv_data);
-        //void HandleNextCinematic(WorldPacket& recv_data);
+        void HandleCompleteCinematic(WorldPacket& recv_data);
+        void HandleNextCinematic(WorldPacket& recv_data);
         void HandleInspectOpcode(WorldPacket& recv_data);
         //void HandleGameobjReportUseOpCode(WorldPacket& recv_data);  // CMSG_GAMEOBJ_REPORT_USE
 

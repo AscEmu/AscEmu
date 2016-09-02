@@ -143,8 +143,6 @@ enum Opcodes
     CMSG_AREATRIGGER                                = 0x0B4,    // implemented
     CMSG_TRIGGER_CINEMATIC_CHEAT                    = 0x0F8,    // GM client only
     CMSG_OPENING_CINEMATIC                          = 0x0F9,    ///\todo implement
-    CMSG_NEXT_CINEMATIC_CAMERA                      = 0x0FB,    ///\todo implement
-    CMSG_COMPLETE_CINEMATIC                         = 0x0FC,    // implemented
     SMSG_TUTORIAL_FLAGS                             = 0x0FD,    // implemented
     CMSG_TUTORIAL_FLAG                              = 0x0FE,    // implemented
     CMSG_TUTORIAL_CLEAR                             = 0x0FF,    // implemented
@@ -169,7 +167,6 @@ enum Opcodes
     CMSG_SET_FACTION_ATWAR                          = 0x125,    // implemented
     CMSG_SET_FACTION_CHEAT                          = 0x126,    // not used in client
     SMSG_SET_PROFICIENCY                            = 0x127,    // implemented
-    CMSG_SET_ACTION_BUTTON                          = 0x128,    // implemented
     SMSG_ACTION_BUTTONS                             = 0x129,    // implemented
     SMSG_CAST_FAILED                                = 0x130,    // implemented
     SMSG_COOLDOWN_EVENT                             = 0x135,    // implemented
@@ -481,7 +478,6 @@ enum Opcodes
     SMSG_BATTLEGROUND_PLAYER_JOINED                 = 0x2EC,    // implemented
     SMSG_BATTLEGROUND_PLAYER_LEFT                   = 0x2ED,    // implemented
     CMSG_BATTLEMASTER_JOIN                          = 0x2EE,    // implemented
-    SMSG_ADDON_INFO                                 = 0x2EF,    // implemented
     CMSG_PET_UNLEARN                                = 0x2F0,    // implemented
     SMSG_PET_UNLEARN_CONFIRM                        = 0x2F1,    // implemented
     SMSG_PARTY_MEMBER_STATS_FULL                    = 0x2F2,    // implemented
@@ -912,7 +908,6 @@ enum Opcodes
     SMSG_BATTLEFIELD_MGR_ENTERED                    = 0x4E0,    ///\todo Not implemented, uint32,uint8,uint8
     SMSG_BATTLEFIELD_MGR_QUEUE_INVITE               = 0x4E1,    ///\todo Not implemented, uint32
     CMSG_BATTLEFIELD_MGR_QUEUE_INVITE_RESPONSE      = 0x4E2,    ///\todo Not implemented
-    CMSG_BATTLEFIELD_MGR_QUEUE_REQUEST              = 0x4E3,    ///\todo Not implemented
     SMSG_BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE     = 0x4E4,    ///\todo Not implemented, uint32,uint8
     SMSG_BATTLEFIELD_MGR_EJECT_PENDING              = 0x4E5,    ///\todo Not implemented, uint32
     SMSG_BATTLEFIELD_MGR_EJECTED                    = 0x4E6,    ///\todo Not implemented, uint32,uint32,uint8
@@ -1415,6 +1410,11 @@ This file is released under the MIT license. See README-MIT for more information
         SMSG_TRIGGER_CINEMATIC = 0x6C27,
         MSG_SET_DUNGEON_DIFFICULTY = 0x4925,
         MSG_SET_RAID_DIFFICULTY = 0x0614,
+        SMSG_ADDON_INFO = 0x2C14,
+        CMSG_SET_ACTION_BUTTON = 0x6F06,
+        CMSG_NEXT_CINEMATIC_CAMERA = 0x2014,
+        CMSG_COMPLETE_CINEMATIC = 0x2116,
+        CMSG_BATTLEFIELD_MGR_QUEUE_REQUEST = 0x710C,
 
     NUM_MSG_TYPES = 0xFFFF
 };
