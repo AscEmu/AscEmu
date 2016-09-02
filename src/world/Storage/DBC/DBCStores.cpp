@@ -276,20 +276,20 @@ bool LoadDBCs()
             old_spell_entry->AuraInterruptFlags = spell->GetSpellInterrupts() ? spell->GetSpellInterrupts()->AuraInterruptFlags : 0;
             old_spell_entry->ChannelInterruptFlags = spell->GetSpellInterrupts() ? spell->GetSpellInterrupts()->ChannelInterruptFlags : 0;
             old_spell_entry->DurationIndex = spell->DurationIndex;
+            old_spell_entry->maxstack = spell->GetSpellAuraOptions() ? spell->GetSpellAuraOptions()->StackAmount : 0;
+            old_spell_entry->CastingTimeIndex = spell->CastingTimeIndex;
+            old_spell_entry->powerType = spell->powerType;
+            old_spell_entry->rangeIndex = spell->rangeIndex;
+            old_spell_entry->speed = spell->speed;
+            old_spell_entry->RuneCostID = spell->RuneCostID;
 
             old_spell_entry->spellPriority = 0;
             old_spell_entry->StanceBarOrder =  0;
             old_spell_entry->MinFactionID = 0;
             old_spell_entry->MinReputation = 0;
             old_spell_entry->RequiredAuraVision = 0;
-            old_spell_entry->RuneCostID = 0;
             old_spell_entry->custom_DiminishStatus = 0;            
-            old_spell_entry->CastingTimeIndex = 0;
-            old_spell_entry->powerType = 0;
-            old_spell_entry->rangeIndex = 0;
-            old_spell_entry->speed = 0;
             old_spell_entry->modalNextSpell = 0;
-            old_spell_entry->maxstack = 0;
             
             //custom setup
             old_spell_entry->CustomFlags = 0;
