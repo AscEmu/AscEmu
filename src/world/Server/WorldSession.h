@@ -310,7 +310,7 @@ class SERVER_DECL WorldSession
         //void HandleGameObjectUse(WorldPacket& recvPacket);
         //void HandleBarberShopResult(WorldPacket& recvPacket);
         //void HandleLeaveChannelOpcode(WorldPacket& recvPacket);
-        //void HandlePlayedTimeOpcode(WorldPacket& recv_data);
+        void HandlePlayedTimeOpcode(WorldPacket& recv_data);
         //void HandleSetSheathedOpcode(WorldPacket& recv_data);
         //void HandleCompleteCinematic(WorldPacket& recv_data);
         //void HandleNextCinematic(WorldPacket& recv_data);
@@ -332,7 +332,7 @@ class SERVER_DECL WorldSession
 
         /// Opcodes implemented in QueryHandler.cpp:
         void HandleNameQueryOpcode(WorldPacket& recvPacket);
-        //void HandleQueryTimeOpcode(WorldPacket& recvPacket);
+        void HandleQueryTimeOpcode(WorldPacket& recvPacket);
         void HandleCreatureQueryOpcode(WorldPacket& recvPacket);
         void HandleGameObjectQueryOpcode(WorldPacket& recvPacket);
         //void HandleItemNameQueryOpcode(WorldPacket& recv_data);
@@ -420,7 +420,7 @@ class SERVER_DECL WorldSession
         //void HandleReturnToSender(WorldPacket& recv_data);
         //void HandleMailDelete(WorldPacket& recv_data);
         //void HandleItemTextQuery(WorldPacket& recv_data);
-        //void HandleMailTime(WorldPacket& recv_data);
+        void HandleMailTime(WorldPacket& recv_data);
         //void HandleMailCreateTextItem(WorldPacket& recv_data);
 
         /// Item opcodes (ItemHandler.cpp)
@@ -494,7 +494,7 @@ class SERVER_DECL WorldSession
         //void HandleRemoveVehiclePassenger(WorldPacket& recv_data);
         //void HandleLeaveVehicle(WorldPacket& recv_data);
         //void HandleEnterVehicle(WorldPacket& recv_data);
-        //void HandleSetActionBarTogglesOpcode(WorldPacket& recvPacket);
+        void HandleSetActionBarTogglesOpcode(WorldPacket& recvPacket);
         //void HandleMoveSplineCompleteOpcode(WorldPacket& recvPacket);
 
         /// Chat opcodes (Chat.cpp)

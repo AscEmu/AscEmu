@@ -56,15 +56,15 @@ void WorldSession::HandleNameQueryOpcode(WorldPacket& recv_data)
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles CMSG_QUERY_TIME:
 //////////////////////////////////////////////////////////////////////////////////////////
-//void WorldSession::HandleQueryTimeOpcode(WorldPacket& recv_data)
-//{
-//
-//    WorldPacket data(SMSG_QUERY_TIME_RESPONSE, 4 + 4);
-//    data << (uint32)UNIXTIME;
-//    data << (uint32)0; //VLack: 3.1; thanks Stewart for reminding me to have the correct structure even if it seems the old one still works.
-//    SendPacket(&data);
-//
-//}
+void WorldSession::HandleQueryTimeOpcode(WorldPacket& recv_data)
+{
+
+    WorldPacket data(SMSG_QUERY_TIME_RESPONSE, 4 + 4);
+    data << (uint32)UNIXTIME;
+    data << (uint32)0; //VLack: 3.1; thanks Stewart for reminding me to have the correct structure even if it seems the old one still works.
+    SendPacket(&data);
+
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles CMSG_CREATURE_QUERY:

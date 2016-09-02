@@ -143,7 +143,6 @@ enum Opcodes
     CMSG_AREATRIGGER                                = 0x0B4,    // implemented
     CMSG_TRIGGER_CINEMATIC_CHEAT                    = 0x0F8,    // GM client only
     CMSG_OPENING_CINEMATIC                          = 0x0F9,    ///\todo implement
-    SMSG_TRIGGER_CINEMATIC                          = 0x0FA,    // implemented
     CMSG_NEXT_CINEMATIC_CAMERA                      = 0x0FB,    ///\todo implement
     CMSG_COMPLETE_CINEMATIC                         = 0x0FC,    // implemented
     SMSG_TUTORIAL_FLAGS                             = 0x0FD,    // implemented
@@ -538,7 +537,6 @@ enum Opcodes
     SMSG_GHOSTEE_GONE                               = 0x326,    // GM client only or not implemented
     CMSG_GM_UPDATE_TICKET_STATUS                    = 0x327,    // GM client only or not implemented
     SMSG_GM_TICKET_STATUS_UPDATE                    = 0x328,    // implemented
-    MSG_SET_DUNGEON_DIFFICULTY                      = 0x329,    // implemented
     CMSG_GMSURVEY_SUBMIT                            = 0x32A,    // implemented
     SMSG_UPDATE_INSTANCE_OWNERSHIP                  = 0x32B,    // implemented
     CMSG_IGNORE_KNOCKBACK_CHEAT                     = 0x32C,    // GM client only
@@ -785,7 +783,6 @@ enum Opcodes
     SMSG_DANCE_QUERY_RESPONSE                       = 0x452,    ///\todo investigate, well .. its in dev anyway..
     SMSG_INVALIDATE_DANCE                           = 0x453,    ///\todo implement, well .. its in dev anyway..
     CMSG_DELETE_DANCE                               = 0x454,    // development client only
-    SMSG_LEARNED_DANCE_MOVES                        = 0x455,    ///\todo investigate, well .. its in dev anyway..
     CMSG_LEARN_DANCE_MOVE                           = 0x456,    // development client only
     CMSG_UNLEARN_DANCE_MOVE                         = 0x457,    // development client only
     CMSG_SET_RUNE_COUNT                             = 0x458,    // not used in client
@@ -923,7 +920,6 @@ enum Opcodes
     SMSG_BATTLEFIELD_MGR_STATE_CHANGE               = 0x4E8,    ///\todo Not implemented, uint32,uint32
     CMSG_BATTLEFIELD_MANAGER_ADVANCE_STATE          = 0x4E9,    ///\todo Not implemented
     CMSG_BATTLEFIELD_MANAGER_SET_NEXT_TRANS_TIME    = 0x4EA,    ///\todo Not implemented
-    MSG_SET_RAID_DIFFICULTY                         = 0x4EB,    // implemented
     CMSG_TOGGLE_XP_GAIN                             = 0x4EC,    ///\todo Not implemented
     SMSG_TOGGLE_XP_GAIN                             = 0x4ED,    ///\todo Not implemented, enable/disableXPgainconsolemessage
     SMSG_GMRESPONSE_DB_ERROR                        = 0x4EE,    ///\todo Not implemented, empty
@@ -1415,6 +1411,10 @@ This file is released under the MIT license. See README-MIT for more information
         CMSG_TEXT_EMOTE = 0x2E24,
         SMSG_TEXT_EMOTE = 0x0B05,
         CMSG_OBJECT_UPDATE_FAILED = 0x3808,
+        SMSG_LEARNED_DANCE_MOVES = 0x0E05,
+        SMSG_TRIGGER_CINEMATIC = 0x6C27,
+        MSG_SET_DUNGEON_DIFFICULTY = 0x4925,
+        MSG_SET_RAID_DIFFICULTY = 0x0614,
 
     NUM_MSG_TYPES = 0xFFFF
 };

@@ -641,14 +641,14 @@ void Mailbox::FillTimePacket(WorldPacket& data)
 
 }
 
-//void WorldSession::HandleMailTime(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    WorldPacket data(MSG_QUERY_NEXT_MAIL_TIME, 100);
-//    _player->m_mailBox.FillTimePacket(data);
-//    SendPacket(&data);
-//}
+void WorldSession::HandleMailTime(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    WorldPacket data(MSG_QUERY_NEXT_MAIL_TIME, 100);
+    _player->m_mailBox.FillTimePacket(data);
+    SendPacket(&data);
+}
 
 //void WorldSession::HandleGetMail(WorldPacket& recv_data)
 //{

@@ -1986,61 +1986,61 @@ void WorldSession::HandleStandStateChangeOpcode(WorldPacket& recv_data)
 //    _player->SetByte(UNIT_FIELD_BYTES_2, 0, (uint8)active);
 //}
 
-//void WorldSession::HandlePlayedTimeOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint32 playedt = (uint32)UNIXTIME - _player->m_playedtime[2];
-//    uint8 displayinui = 0;
-//
-//    ///////////////////////////////////////////////////////////////////////////////////////////
-//    // As of 3.2.0a this is what the client sends to poll the /played time
-//    //
-//    // {CLIENT} Packet: (0x01CC) CMSG_PLAYED_TIME PacketSize = 1 TimeStamp = 691943484
-//    // 01
-//    //
-//    // Structure:
-//    // uint8 displayonui   -  1 when it should be printed on the screen, 0 when it shouldn't
-//    //
-//    //////////////////////////////////////////////////////////////////////////////////////////
-//
-//    recv_data >> displayinui;
-//
-//    LOG_DEBUG("Recieved CMSG_PLAYED_TIME.");
-//    LOG_DEBUG("displayinui: %lu", displayinui);
-//
-//    if (playedt)
-//    {
-//        _player->m_playedtime[0] += playedt;
-//        _player->m_playedtime[1] += playedt;
-//        _player->m_playedtime[2] += playedt;
-//    }
-//
-//    //////////////////////////////////////////////////////////////////////////////////////////////////
-//    //
-//    // As of 3.2.0a the server sends this as a response to the client /played time packet
-//    //
-//    //  {SERVER} Packet: (0x01CD) SMSG_PLAYED_TIME PacketSize = 9 TimeStamp = 691944000
-//    //  FE 0C 00 00 FE 0C 00 00 01
-//    //
-//    //
-//    // Structure:
-//    //
-//    // uint32 playedtotal      -   total time played in seconds
-//    // uint32 playedlevel      -   time played on this level in seconds
-//    // uint32 displayinui      -   1 when it should be printed on the screen, 0 when it shouldn't
-//    //
-//    //////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//    WorldPacket data(SMSG_PLAYED_TIME, 9); //VLack: again, an Aspire trick, with an uint8(0) -- I hate packet structure changes...
-//    data << uint32(_player->m_playedtime[1]);
-//    data << uint32(_player->m_playedtime[0]);
-//    data << uint8(displayinui);
-//    SendPacket(&data);
-//
-//    LOG_DEBUG("Sent SMSG_PLAYED_TIME.");
-//    LOG_DEBUG(" total: %lu level: %lu", _player->m_playedtime[1], _player->m_playedtime[0]);
-//}
+void WorldSession::HandlePlayedTimeOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    uint32 playedt = (uint32)UNIXTIME - _player->m_playedtime[2];
+    uint8 displayinui = 0;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    // As of 3.2.0a this is what the client sends to poll the /played time
+    //
+    // {CLIENT} Packet: (0x01CC) CMSG_PLAYED_TIME PacketSize = 1 TimeStamp = 691943484
+    // 01
+    //
+    // Structure:
+    // uint8 displayonui   -  1 when it should be printed on the screen, 0 when it shouldn't
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    recv_data >> displayinui;
+
+    LOG_DEBUG("Recieved CMSG_PLAYED_TIME.");
+    LOG_DEBUG("displayinui: %lu", displayinui);
+
+    if (playedt)
+    {
+        _player->m_playedtime[0] += playedt;
+        _player->m_playedtime[1] += playedt;
+        _player->m_playedtime[2] += playedt;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // As of 3.2.0a the server sends this as a response to the client /played time packet
+    //
+    //  {SERVER} Packet: (0x01CD) SMSG_PLAYED_TIME PacketSize = 9 TimeStamp = 691944000
+    //  FE 0C 00 00 FE 0C 00 00 01
+    //
+    //
+    // Structure:
+    //
+    // uint32 playedtotal      -   total time played in seconds
+    // uint32 playedlevel      -   time played on this level in seconds
+    // uint32 displayinui      -   1 when it should be printed on the screen, 0 when it shouldn't
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+
+    WorldPacket data(SMSG_PLAYED_TIME, 9); //VLack: again, an Aspire trick, with an uint8(0) -- I hate packet structure changes...
+    data << uint32(_player->m_playedtime[1]);
+    data << uint32(_player->m_playedtime[0]);
+    data << uint8(displayinui);
+    SendPacket(&data);
+
+    LOG_DEBUG("Sent SMSG_PLAYED_TIME.");
+    LOG_DEBUG(" total: %lu level: %lu", _player->m_playedtime[1], _player->m_playedtime[0]);
+}
 
 void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
 {
@@ -2187,16 +2187,16 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-//void WorldSession::HandleSetActionBarTogglesOpcode(WorldPacket & recvPacket)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint8 cActionBarId;
-//    recvPacket >> cActionBarId;
-//    //LOG_DEBUG("Received CMSG_SET_ACTIONBAR_TOGGLES for actionbar id %d.", cActionBarId);
-//
-//    GetPlayer()->SetByte(PLAYER_FIELD_BYTES, 2, cActionBarId);
-//}
+void WorldSession::HandleSetActionBarTogglesOpcode(WorldPacket & recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    uint8 cActionBarId;
+    recvPacket >> cActionBarId;
+    LOG_DEBUG("Received CMSG_SET_ACTIONBAR_TOGGLES for actionbar id %d.", cActionBarId);
+
+    GetPlayer()->SetByte(PLAYER_FIELD_BYTES, 2, cActionBarId);
+}
 
 // Handlers for acknowledgement opcodes (removes some 'unknown opcode' flood from the logs)
 void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)

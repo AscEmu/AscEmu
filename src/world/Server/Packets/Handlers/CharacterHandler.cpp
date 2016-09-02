@@ -972,28 +972,23 @@ void WorldSession::FullLogin(Player* plr)
     //
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    WorldPacket datab(SMSG_FEATURE_SYSTEM_STATUS);
-    bool feature_bit4 = true;
-    datab.Initialize(SMSG_FEATURE_SYSTEM_STATUS, 7);
+    WorldPacket datab(SMSG_FEATURE_SYSTEM_STATUS, 7);
     datab << uint8(2);
     datab << uint32(1);
     datab << uint32(1);
     datab << uint32(2);
     datab << uint32(0);
-    datab.writeBit(1);
-    datab.writeBit(1);
-    datab.writeBit(0);
-    datab.writeBit(feature_bit4);
-    datab.writeBit(0);
-    datab.writeBit(0);
+    datab.writeBit(true);
+    datab.writeBit(true);
+    datab.writeBit(false);
+    datab.writeBit(true);
+    datab.writeBit(false);
+    datab.writeBit(false);
     datab.flushBits();
-    if (feature_bit4)
-    {
-        datab << uint32(1);
-        datab << uint32(0);
-        datab << uint32(10);
-        datab << uint32(60);
-    }
+    datab << uint32(1);
+    datab << uint32(0);
+    datab << uint32(10);
+    datab << uint32(60);
     SendPacket(&datab);
 
     WorldPacket dataldm(SMSG_LEARNED_DANCE_MOVES, 4 + 4);
