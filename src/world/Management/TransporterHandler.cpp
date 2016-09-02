@@ -227,7 +227,7 @@ void ObjectMgr::LoadTransports()
 
 Transporter::Transporter(uint64 guid) : GameObject(guid), currenttguid(0)
 {
-    m_updateFlag = (UPDATEFLAG_TRANSPORT | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
+    m_updateFlag = UPDATEFLAG_TRANSPORT | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION;
 
     m_pathTime = 0;
     m_timer = 0;
@@ -572,13 +572,13 @@ void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, flo
         {
             passenger->RepopAtGraveyard(passenger->GetPositionX(), passenger->GetPositionY(), passenger->GetPositionZ(), passenger->GetMapId());
         }
-        else
+        /*else
         {
             if (!passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
             {
                 passenger->AddUnitMovementFlag(MOVEFLAG_TRANSPORT);
             }
-        }
+        }*/
     }
 
     this->RespawnCreaturePassengers();
@@ -591,10 +591,10 @@ bool Transporter::AddPassenger(Player* passenger)
     m_passengers.insert(passenger->GetLowGUID());
     Log.Debug("Transporter", "Player %s boarded transport %u.", passenger->GetName(), this->GetGameObjectProperties()->entry);
 
-    if (!passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+    /*if (!passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {
         passenger->AddUnitMovementFlag(MOVEFLAG_TRANSPORT);
-    }
+    }*/
 
     return true;
 }
@@ -606,10 +606,10 @@ bool Transporter::RemovePassenger(Player* passenger)
     m_passengers.erase(passenger->GetLowGUID());
     Log.Debug("Transporter", "Player %s removed from transport %u.", passenger->GetName(), this->GetGameObjectProperties()->entry);
 
-    if (passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+    /*if (passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {
         passenger->RemoveUnitMovementFlag(MOVEFLAG_TRANSPORT);
-    }
+    }*/
 
     return true;
 }
@@ -735,7 +735,7 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
     pCreature->Create(map->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->Load(creature_properties, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->AddToWorld(map);
-    pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);
+    //pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);
     pCreature->obj_movement_info.transporter_info.position.x = x;
     pCreature->obj_movement_info.transporter_info.position.y = y;
     pCreature->obj_movement_info.transporter_info.position.z = z;
@@ -784,7 +784,7 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
     pCreature->Create(map->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->Load(creature_properties, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
     pCreature->AddToWorld(map);
-    pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);
+    //pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);
     pCreature->obj_movement_info.transporter_info.position.x = x;
     pCreature->obj_movement_info.transporter_info.position.y = y;
     pCreature->obj_movement_info.transporter_info.position.z = z;

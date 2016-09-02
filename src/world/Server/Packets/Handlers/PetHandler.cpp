@@ -526,32 +526,33 @@
 //    pPet->SendTalentsToOwner();
 //}
 
-//void WorldSession::HandlePetSpellAutocast(WorldPacket& recvPacket)
-//{
-//    // handles toggle autocast from spellbook
-//    CHECK_INWORLD_RETURN
-//
-//    uint64 guid;
-//    uint16 spellid;
-//    uint16 unk;
-//    uint8  state;
-//    recvPacket >> guid >> spellid >> unk >> state;
-//
-//    OLD_SpellEntry* spe = dbcSpell.LookupEntryForced(spellid);
-//    if (spe == NULL)
-//        return;
-//
-//    std::list<Pet*> summons = _player->GetSummons();
-//    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-//    {
-//        // do we have the spell? if not don't set it (exploit fix)
-//        PetSpellMap::iterator itr2 = (*itr)->GetSpells()->find(spe);
-//        if (itr2 == (*itr)->GetSpells()->end())
-//            continue;
-//
-//        (*itr)->SetSpellState(spellid, state > 0 ? AUTOCAST_SPELL_STATE : DEFAULT_SPELL_STATE);
-//    }
-//}
+void WorldSession::HandlePetSpellAutocast(WorldPacket& recvPacket)
+{
+    // handles toggle autocast from spellbook
+    CHECK_INWORLD_RETURN
+
+    uint64 guid;
+    uint16 spellid;
+    uint16 unk;
+    uint8  state;
+    recvPacket >> guid >> spellid >> unk >> state;
+
+    OLD_SpellEntry* spe = dbcSpell.LookupEntryForced(spellid);
+    if (spe == NULL)
+        return;
+
+    std::list<Pet*> summons = _player->GetSummons();
+    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    {
+        // do we have the spell? if not don't set it (exploit fix)
+        PetSpellMap::iterator itr2 = (*itr)->GetSpells()->find(spe);
+        if (itr2 == (*itr)->GetSpells()->end())
+            continue;
+
+        (*itr)->SetSpellState(spellid, state > 0 ? AUTOCAST_SPELL_STATE : DEFAULT_SPELL_STATE);
+    }
+}
+
 //void WorldSession::HandlePetCancelAura(WorldPacket& recvPacket)
 //{
 //    CHECK_INWORLD_RETURN

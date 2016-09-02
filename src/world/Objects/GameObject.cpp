@@ -27,7 +27,7 @@ GameObject::GameObject(uint64 guid)
     m_objectType |= TYPE_GAMEOBJECT;
     m_objectTypeId = TYPEID_GAMEOBJECT;
 
-    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION | UPDATEFLAG_ROTATION);
+    m_updateFlag = UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION;
 
     m_valuesCount = GAMEOBJECT_END;
     m_uint32Values = _fields;

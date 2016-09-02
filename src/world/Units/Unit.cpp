@@ -137,7 +137,7 @@ Unit::Unit() : m_movementManager()
     m_objectType |= TYPE_UNIT;
     m_objectTypeId = TYPEID_UNIT;
 
-    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_LIVING | UPDATEFLAG_HAS_POSITION);
+    m_updateFlag = UPDATEFLAG_LIVING;
 
     //DK:modifiers
     PctRegenModifier = 0;
@@ -8386,37 +8386,37 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
     *data << GetOrientation();
 
     // 0x00000200
-    if (HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
-    {
-        if (IsPlayer())
-        {
-            auto plr = static_cast<Player*>(this);
-            if (plr->obj_movement_info.IsOnTransport())
-            {
-                obj_movement_info.transporter_info.guid = plr->obj_movement_info.transporter_info.guid;
-            }
-        }
-        if (Unit* u = GetVehicleBase())
-            obj_movement_info.transporter_info.guid = u->GetGUID();
-        *data << obj_movement_info.transporter_info.guid;
-        *data << obj_movement_info.transporter_info.guid;
-        *data << GetTransPositionX();
-        *data << GetTransPositionY();
-        *data << GetTransPositionZ();
-        *data << GetTransPositionO();
-        *data << GetTransTime();
-        *data << GetTransSeat();
+    //if (HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+    //{
+    //    if (IsPlayer())
+    //    {
+    //        auto plr = static_cast<Player*>(this);
+    //        if (plr->obj_movement_info.IsOnTransport())
+    //        {
+    //            obj_movement_info.transporter_info.guid = plr->obj_movement_info.transporter_info.guid;
+    //        }
+    //    }
+    //    if (Unit* u = GetVehicleBase())
+    //        obj_movement_info.transporter_info.guid = u->GetGUID();
+    //    *data << obj_movement_info.transporter_info.guid;
+    //    *data << obj_movement_info.transporter_info.guid;
+    //    *data << GetTransPositionX();
+    //    *data << GetTransPositionY();
+    //    *data << GetTransPositionZ();
+    //    *data << GetTransPositionO();
+    //    *data << GetTransTime();
+    //    *data << GetTransSeat();
 
-        if (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING)
-            *data << uint32(GetMovementInfo()->transporter_info.time2);
-    }
+    //    if (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING)
+    //        *data << uint32(GetMovementInfo()->transporter_info.time2);
+    //}
 
-    // 0x02200000
-    if ((GetUnitMovementFlags() & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING))
-        || (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
-        *data << (float)GetMovementInfo()->pitch;
+    //// 0x02200000
+    //if ((GetUnitMovementFlags() & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING))
+    //    || (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
+    //    *data << (float)GetMovementInfo()->pitch;
 
-    *data << (uint32)GetMovementInfo()->fall_time;
+    //*data << (uint32)GetMovementInfo()->fall_time;
 
     // 0x00001000
     //if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
@@ -8444,32 +8444,32 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
     *data << o;
 
     // 0x00000200
-    if (HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
-    {
-        // Code left commented for reference
-        // TODO: Research whether vehicle transport guid is being updated correctly or not (and if not, update it elsewhere and remove this)
-        /*if (IsPlayer() && static_cast<Player*>(this)->m_transport)
-            obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_transport->GetGUID();
-        if (Unit* u = GetVehicleBase())
-            obj_movement_info.transporter_info.guid = u->GetGUID();*/
-        *data << obj_movement_info.transporter_info.guid;
-        *data << GetTransPositionX();
-        *data << GetTransPositionY();
-        *data << GetTransPositionZ();
-        *data << GetTransPositionO();
-        *data << GetTransTime();
-        *data << GetTransSeat();
+    //if (HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+    //{
+    //    // Code left commented for reference
+    //    // TODO: Research whether vehicle transport guid is being updated correctly or not (and if not, update it elsewhere and remove this)
+    //    /*if (IsPlayer() && static_cast<Player*>(this)->m_transport)
+    //        obj_movement_info.transporter_info.guid = static_cast<Player*>(this)->m_transport->GetGUID();
+    //    if (Unit* u = GetVehicleBase())
+    //        obj_movement_info.transporter_info.guid = u->GetGUID();*/
+    //    *data << obj_movement_info.transporter_info.guid;
+    //    *data << GetTransPositionX();
+    //    *data << GetTransPositionY();
+    //    *data << GetTransPositionZ();
+    //    *data << GetTransPositionO();
+    //    *data << GetTransTime();
+    //    *data << GetTransSeat();
 
-        if (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING)
-            *data << uint32(GetMovementInfo()->transporter_info.time2);
-    }
+    //    if (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING)
+    //        *data << uint32(GetMovementInfo()->transporter_info.time2);
+    //}
 
-    // 0x02200000
-    if ((GetUnitMovementFlags() & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING))
-        || (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
-        *data << (float)GetMovementInfo()->pitch;
+    //// 0x02200000
+    //if ((GetUnitMovementFlags() & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING))
+    //    || (GetExtraUnitMovementFlags() & MOVEFLAG2_ALLOW_PITCHING))
+    //    *data << (float)GetMovementInfo()->pitch;
 
-    *data << (uint32)GetMovementInfo()->fall_time;
+    //*data << (uint32)GetMovementInfo()->fall_time;
 
     // 0x00001000
     //if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)

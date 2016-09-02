@@ -73,44 +73,52 @@ struct LfgRoleCheck;
 
 enum MovementFlags
 {
-    MOVEFLAG_MOVE_STOP                  = 0x00000000,
-    MOVEFLAG_MOVE_FORWARD               = 0x00000001,
-    MOVEFLAG_MOVE_BACKWARD              = 0x00000002,
-    MOVEFLAG_STRAFE_LEFT                = 0x00000004,
-    MOVEFLAG_STRAFE_RIGHT               = 0x00000008,
-    MOVEFLAG_TURN_LEFT                  = 0x00000010,
-    MOVEFLAG_TURN_RIGHT                 = 0x00000020,
-    MOVEFLAG_PITCH_DOWN                 = 0x00000080,
-    MOVEFLAG_PITCH_UP                   = 0x00000040,
-    MOVEFLAG_WALK                       = 0x00000100,
-    MOVEFLAG_TRANSPORT                  = 0x00000200,
-    MOVEFLAG_NO_COLLISION               = 0x20000000,
-    MOVEFLAG_ROOTED                     = 0x00000400,
-    MOVEFLAG_FALLING                    = 0x00000800,
-    MOVEFLAG_FALLING_FAR                = 0x00001000,
-    MOVEFLAG_FREE_FALLING               = 0x08000000,
-    MOVEFLAG_TB_PENDING_STOP            = 0x00002000,
-    MOVEFLAG_TB_PENDING_UNSTRAFE        = 0x00004000,
-    MOVEFLAG_TB_PENDING_FORWARD         = 0x00008000,
-    MOVEFLAG_TB_PENDING_BACKWARD        = 0x00010000,
-    MOVEFLAG_SWIMMING                   = 0x00100000,
-    MOVEFLAG_CAN_FLY                    = 0x00800000,
-    MOVEFLAG_AIR_SUSPENSION             = 0x1000000,
-    MOVEFLAG_AIR_SWIMMING               = 0x01000000,
-    MOVEFLAG_SPLINE_ELEVATION           = 0x02000000,
-    MOVEFLAG_WATER_WALK                 = 0x04000000,
-    MOVEFLAG_FEATHER_FALL               = 0x08000000,
-    MOVEFLAG_LEVITATE                   = 0x10000000,
-    MOVEFLAG_LOCAL                      = 0x20000000,
-    MOVEFLAG_MOVING_MASK                = 0x03,
-    MOVEFLAG_STRAFING_MASK              = 0x0C,
-    MOVEFLAG_TURNING_MASK               = 0x30, 
-    MOVEFLAG_FALLING_MASK               = 0x6000,
-    MOVEFLAG_MOTION_MASK                = 0xE00F,
-    MOVEFLAG_PENDING_MASK               = 0x7F0000,
-    MOVEFLAG_PENDING_STRAFE_MASK        = 0x600000,
-    MOVEFLAG_PENDING_MOVE_MASK          = 0x180000,
-    MOVEFLAG_FULL_FALLING_MASK          = 0xE000
+    MOVEFLAG_NONE = 0x00000000,   //old MOVEFLAG_MOVE_STOP
+    MOVEFLAG_FORWARD = 0x00000001,   //old MOVEFLAG_MOVE_FORWARD
+    MOVEFLAG_BACKWARD = 0x00000002,   //old MOVEFLAG_MOVE_BACKWARD
+    MOVEFLAG_STRAFE_LEFT = 0x00000004,   //old MOVEFLAG_STRAFE_LEFT
+    MOVEFLAG_STRAFE_RIGHT = 0x00000008,   //old MOVEFLAG_STRAFE_RIGHT
+    MOVEFLAG_LEFT = 0x00000010,   //old MOVEFLAG_TURN_LEFT
+    MOVEFLAG_RIGHT = 0x00000020,   //old MOVEFLAG_TURN_RIGHT
+    MOVEFLAG_PITCH_UP = 0x00000040,   //old MOVEFLAG_PITCH_UP
+    MOVEFLAG_PITCH_DOWN = 0x00000080,   //old MOVEFLAG_PITCH_DOWN
+    MOVEFLAG_WALKING = 0x00000100,   //old MOVEFLAG_WALK 
+    MOVEFLAG_DISABLE_GRAVITY = 0x00000200,   //old MOVEFLAG_TRANSPORT
+    MOVEFLAG_ROOT = 0x00000400,   //old MOVEFLAG_ROOTED
+    MOVEFLAG_FALLING = 0x00000800,   //old MOVEFLAG_FALLING
+    MOVEFLAG_FALLING_FAR = 0x00001000,   //old MOVEFLAG_FALLING_FAR
+    MOVEFLAG_PENDING_STOP = 0x00002000,   //old MOVEFLAG_TB_PENDING_STOP
+    MOVEFLAG_PENDING_STRAFE_STOP = 0x00004000,   //old MOVEFLAG_TB_PENDING_UNSTRAFE
+    MOVEFLAG_PENDING_FORWARD = 0x00008000,   //old MOVEFLAG_TB_PENDING_FORWARD
+    MOVEFLAG_PENDING_BACKWARD = 0x00010000,   //old MOVEFLAG_TB_PENDING_BACKWARD
+    MOVEFLAG_PENDING_STRAFE_LEFT = 0x00020000,
+    MOVEFLAG_PENDING_STRAFE_RIGHT = 0x00040000,
+    MOVEFLAG_PENDING_ROOT = 0x00080000,
+    MOVEFLAG_SWIMMING = 0x00100000,   //old MOVEFLAG_SWIMMING
+    MOVEFLAG_ASCENDING = 0x00200000,
+    MOVEFLAG_DESCENDING = 0x00400000,
+    MOVEFLAG_CAN_FLY = 0x00800000,   //old MOVEFLAG_CAN_FLY
+    MOVEFLAG_FLYING = 0x01000000,   //old MOVEFLAG_AIR_SUSPENSION //old MOVEFLAG_AIR_SWIMMING
+    MOVEFLAG_SPLINE_ELEVATION = 0x02000000,   //old MOVEFLAG_SPLINE_ELEVATION
+    MOVEFLAG_WATERWALKING = 0x04000000,   //old MOVEFLAG_WATER_WALK
+    MOVEFLAG_FALLING_SLOW = 0x08000000,   //old MOVEFLAG_FEATHER_FALL //old MOVEFLAG_FREE_FALLING //old MOVEFLAG_SPLINE_ENABLED
+    MOVEFLAG_HOVER = 0x10000000,   //old MOVEFLAG_LEVITATE
+    MOVEFLAG_NO_COLLISION = 0x20000000,   //old MOVEFLAG_NO_COLLISION //old MOVEFLAG_LOCAL
+
+    // Masks
+    MOVEFLAG_MASK_MOVING =
+    MOVEFLAG_FORWARD | MOVEFLAG_BACKWARD | MOVEFLAG_STRAFE_LEFT | MOVEFLAG_STRAFE_RIGHT |
+    MOVEFLAG_PITCH_UP | MOVEFLAG_PITCH_DOWN | MOVEFLAG_FALLING | MOVEFLAG_FALLING_FAR | MOVEFLAG_ASCENDING | MOVEFLAG_DESCENDING |
+    MOVEFLAG_SPLINE_ELEVATION,
+
+    MOVEFLAG_MASK_TURNING = MOVEFLAG_LEFT | MOVEFLAG_RIGHT,
+
+    MOVEFLAG_FALLING_MASK = 0x6000,
+    MOVEFLAG_MOTION_MASK = 0xE00F,
+    MOVEFLAG_PENDING_MASK = 0x7F0000,
+    MOVEFLAG_PENDING_STRAFE_MASK = 0x600000,
+    MOVEFLAG_PENDING_MOVE_MASK = 0x180000,
+    MOVEFLAG_FULL_FALLING_MASK = 0xE000
 };
 
 enum MovementFlags2
@@ -139,22 +147,22 @@ struct OpcodeHandler
 
 enum ObjectUpdateFlags
 {
-    UPDATEFLAG_NONE             = 0x0000,
-    UPDATEFLAG_SELF             = 0x0001,
-    UPDATEFLAG_TRANSPORT        = 0x0002,
-    UPDATEFLAG_HAS_TARGET       = 0x0004,
-    UPDATEFLAG_LOWGUID          = 0x0008,
-    UPDATEFLAG_HIGHGUID         = 0x0010,
-    UPDATEFLAG_LIVING           = 0x0020,
-    UPDATEFLAG_HAS_POSITION     = 0x0040,
-    UPDATEFLAG_VEHICLE          = 0x0080,
-    UPDATEFLAG_POSITION         = 0x0100,
-    UPDATEFLAG_ROTATION         = 0x0200,
-    UPDATEFLAG_UNK1             = 0x0400,
-    UPDATEFLAG_ANIM_KITS        = 0x0800,
-    UPDATEFLAG_TRANSPORT_ARR    = 0x1000,
-    UPDATEFLAG_ENABLE_PORTALS   = 0x2000,
-    UPDATEFLAG_UNK2             = 0x4000
+    UPDATEFLAG_NONE                 = 0x0000,
+    UPDATEFLAG_SELF                 = 0x0001,
+    UPDATEFLAG_TRANSPORT            = 0x0002,
+    UPDATEFLAG_HAS_ATTACKING_TARGET = 0x0004,
+    UPDATEFLAG_UNK                  = 0x0008,
+    UPDATEFLAG_LOW                  = 0x0010,
+    UPDATEFLAG_LIVING               = 0x0020,
+    UPDATEFLAG_HAS_POSITION         = 0x0040,
+    UPDATEFLAG_VEHICLE              = 0x0080,
+    UPDATEFLAG_POSITION             = 0x0100,
+    UPDATEFLAG_ROTATION             = 0x0200,
+    UPDATEFLAG_UNK1                 = 0x0400,
+    UPDATEFLAG_ANIM_KITS            = 0x0800,
+    UPDATEFLAG_TRANSPORT_ARR        = 0x1000,
+    UPDATEFLAG_ENABLE_PORTALS       = 0x2000,
+    UPDATEFLAG_UNK2                 = 0x4000,
 };
 
 enum SessionStatus
@@ -518,12 +526,12 @@ class SERVER_DECL WorldSession
         /// Spell opcodes (SpellHandler.cpp)
         void HandleUseItemOpcode(WorldPacket& recvPacket);
         void HandleCastSpellOpcode(WorldPacket& recvPacket);
-        //void HandleSpellClick(WorldPacket& recvPacket);
+        void HandleSpellClick(WorldPacket& recvPacket);
         //void HandleCancelCastOpcode(WorldPacket& recvPacket);
         //void HandleCancelAuraOpcode(WorldPacket& recvPacket);
-        //void HandleCancelChannellingOpcode(WorldPacket& recvPacket);
-        //void HandleCancelAutoRepeatSpellOpcode(WorldPacket& recv_data);
-        //void HandlePetCastSpell(WorldPacket& recvPacket);
+        void HandleCancelChannellingOpcode(WorldPacket& recvPacket);
+        void HandleCancelAutoRepeatSpellOpcode(WorldPacket& recv_data);
+        void HandlePetCastSpell(WorldPacket& recvPacket);
         //void HandleCancelTotem(WorldPacket& recv_data);
         //void HandleUpdateProjectilePosition(WorldPacket& recv_data);
 
@@ -563,7 +571,7 @@ class SERVER_DECL WorldSession
         //void HandleTextEmoteOpcode(WorldPacket& recvPacket);
         //void HandleReportSpamOpcode(WorldPacket& recvPacket);
         //void HandleChatIgnoredOpcode(WorldPacket& recvPacket);
-        //void HandleChatChannelWatchOpcode(WorldPacket& recvPacket);
+        void HandleChatChannelWatchOpcode(WorldPacket& recvPacket);
 
         /// Corpse opcodes (Corpse.cpp)
         //void HandleCorpseReclaimOpcode(WorldPacket& recvPacket);
@@ -587,8 +595,8 @@ class SERVER_DECL WorldSession
         void HandleChannelUnban(WorldPacket& recvPacket);
         void HandleChannelAnnounce(WorldPacket& recvPacket);
         void HandleChannelModerate(WorldPacket& recvPacket);
-        //void HandleChannelNumMembersQuery(WorldPacket& recvPacket);
-        //void HandleChannelRosterQuery(WorldPacket& recvPacket);
+        void HandleChannelNumMembersQuery(WorldPacket& recvPacket);
+        void HandleChannelRosterQuery(WorldPacket& recvPacket);
 
         // Duel
         //void HandleDuelAccepted(WorldPacket& recv_data);
@@ -662,7 +670,7 @@ class SERVER_DECL WorldSession
         //void HandlePetRename(WorldPacket& recv_data);
         //void HandlePetAbandon(WorldPacket& recv_data);
         //void HandlePetUnlearn(WorldPacket& recv_data);
-        //void HandlePetSpellAutocast(WorldPacket& recv_data);
+        void HandlePetSpellAutocast(WorldPacket& recv_data);
         //void HandlePetCancelAura(WorldPacket& recv_data);
         //void HandlePetLearnTalent(WorldPacket& recv_data);
         //void HandleDismissCritter(WorldPacket& recv_data);

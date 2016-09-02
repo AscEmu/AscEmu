@@ -787,11 +787,11 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 //    player->GetSession()->SendPacket(data);
 //    delete data;
 //}
-//
-//void WorldSession::HandleChatChannelWatchOpcode(WorldPacket& recvPacket)
-//{
-//    std::string channelName;
-//    recvPacket >> channelName;
-//
-//    Log.Debug("HandleChatChannelWatchOpcode", "Unhandled... Player %s watch channel: %s", _player->GetName(), channelName.c_str());
-//}
+
+void WorldSession::HandleChatChannelWatchOpcode(WorldPacket& recvPacket)
+{
+    std::string channelName;
+    recvPacket >> channelName;
+
+    Log.Debug("HandleChatChannelWatchOpcode", "Unhandled... Player %s watch channel: %s", _player->GetName(), channelName.c_str());
+}

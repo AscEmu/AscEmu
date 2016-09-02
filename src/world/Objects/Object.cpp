@@ -199,7 +199,7 @@ uint32 Object::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     if (IsUnit())
     {
         if (static_cast< Unit* >(this)->GetTargetGUID())
-            updateflags |= UPDATEFLAG_HAS_TARGET; // UPDATEFLAG_HAS_ATTACKING_TARGET
+            updateflags |= UPDATEFLAG_HAS_ATTACKING_TARGET; // UPDATEFLAG_HAS_ATTACKING_TARGET
     }
 
     // we shouldn't be here, under any circumstances, unless we have a wowguid..
@@ -369,7 +369,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
     bool hasTransport = obj_movement_info.transporter_info.guid;
     bool isSplineEnabled = false; // spline not supported
                                   //bool hasPitch = (flags2 & (0x00100000) || (moveflags2 & 0x0010));
-    bool hasPitch = (flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING); // (hasPitch == swimming) flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING)
+    bool hasPitch = (flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING); // (hasPitch == swimming) flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING)
     bool haveFallData = flags2 & MOVEFLAG2_INTERP_TURNING;
     bool hasFallDirection = flags & MOVEFLAG_FALLING;
     bool hasElevation = false; //flags & 0x02000000; // MOVEFLAG_SPLINE_ELEVATION, I think flags(1); 2: spline not supported/enabled
@@ -379,7 +379,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
     data->writeBit(false);
     data->writeBit(flags & UPDATEFLAG_ROTATION);
     data->writeBit(flags & UPDATEFLAG_ANIM_KITS);
-    data->writeBit(flags & UPDATEFLAG_HAS_TARGET);
+    data->writeBit(flags & UPDATEFLAG_HAS_ATTACKING_TARGET);
     data->writeBit(flags & UPDATEFLAG_SELF);
     data->writeBit(flags & UPDATEFLAG_VEHICLE);
     data->writeBit(flags & UPDATEFLAG_LIVING);
@@ -416,7 +416,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
             flags2 |= MOVEFLAG_TRANSPORT; //0x200*/
 
         // Zyres: If a unit has this flag, add it to the update packet, otherwise not.
-        if (pThis && pThis->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+        /*if (pThis && hasTransport)
             flags2 |= MOVEFLAG_TRANSPORT;
         else if (uThis && uThis->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
             flags2 |= MOVEFLAG_TRANSPORT;
@@ -424,7 +424,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         if ((pThis != NULL) && pThis->isRooted())
             flags2 |= MOVEFLAG_ROOTED;
         else if ((uThis != NULL) && uThis->isRooted())
-            flags2 |= MOVEFLAG_ROOTED;
+            flags2 |= MOVEFLAG_ROOTED;*/
 
         data->writeBit(!flags2); // movement flags
         data->writeBit(hasOrientation); // hasO or !hasO?
@@ -447,11 +447,11 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         data->writeBit(!hasElevation);
         data->writeBit(plrGuid[5]);
         //data->writeBit(transporter_info.guid); // hasTransport | do we need pThis->?
-        data->writeBit(flags2 & MOVEFLAG_TRANSPORT); // MOVEFLAG_TRANSPORT
+        data->writeBit(hasTransport); // MOVEFLAG_TRANSPORT
         data->writeBit(0);  // true or false?
 
                             //if (hasTransport)
-        if (flags2 & MOVEFLAG_TRANSPORT) // MOVEFLAG_TRANSPORT
+        if (hasTransport) // MOVEFLAG_TRANSPORT
                                          //if(transporter_info.guid)
         {
             uint8 transGuid[8];
@@ -508,7 +508,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         data->writeBit(transGuid[7]);
     }
 
-    if (flags & UPDATEFLAG_HAS_TARGET) // UPDATEFLAG_HAS_ATTACKING_TARGET / UPDATEFLAG_HAS_TARGET
+    if (flags & UPDATEFLAG_HAS_ATTACKING_TARGET) // UPDATEFLAG_HAS_ATTACKING_TARGET / UPDATEFLAG_HAS_TARGET
     {
         if (IsUnit())
         {
@@ -577,7 +577,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         data->WriteByteSeq(plrGuid[5]); // byte seq?
 
                                         //if (hasTransport)
-        if (flags2 & MOVEFLAG_TRANSPORT) // MOVEFLAG_TRANSPORT
+        if (hasTransport) // MOVEFLAG_TRANSPORT
                                          //if(transporter_info.guid)
         {
             uint8 transGuid[8];
@@ -718,7 +718,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         *data << (float)m_position.z;
     }
 
-    if (flags & UPDATEFLAG_HAS_TARGET) // UPDATEFLAG_HAS_TARGET
+    if (flags & UPDATEFLAG_HAS_ATTACKING_TARGET) // UPDATEFLAG_HAS_TARGET
     {
         if (IsUnit())
         {

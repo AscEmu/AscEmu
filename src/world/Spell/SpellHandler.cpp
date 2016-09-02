@@ -246,90 +246,90 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 
 }
 
-//void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//        LOG_DETAIL("WORLD: got CMSG_SPELLCLICK packet, data length = %i", recvPacket.size());
-//
-//    if (_player->getDeathState() == CORPSE)
-//        return;
-//
-//    uint64 target_guid; // this will store the guid of the object we are going to use it's spell. There must be a dbc that indicates what spells a unit has
-//
-//    recvPacket >> target_guid;
-//
-//    //we have only 1 example atm for entry : 28605
-//    Unit* target_unit = _player->GetMapMgr()->GetUnit(target_guid);
-//
-//    if (!target_unit)
-//        return;
-//
-//    if (!_player->isInRange(target_unit, MAX_INTERACTION_RANGE))
-//        return;
-//
-//    if (target_unit->IsVehicle())
-//    {
-//        if (target_unit->GetVehicleComponent() != NULL)
-//            target_unit->GetVehicleComponent()->AddPassenger(_player);
-//        return;
-//    }
-//
-//    uint32 creature_id = target_unit->GetEntry();
-//    uint32 cast_spell_id = 0;
-//
-//    if (!_player->HasAurasWithNameHash(SPELL_HASH_LIGHTWELL_RENEW) && target_unit->RemoveAura(59907))
-//    {
-//        SpellClickSpell const* sp = sMySQLStore.GetSpellClickSpell(creature_id);
-//        if (sp == nullptr)
-//        {
-//            if (target_unit->IsCreature())
-//            {
-//                Creature* c = static_cast< Creature* >(target_unit);
-//
-//                sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetCreatureProperties()->Id, c->GetCreatureProperties()->Name.c_str());
-//                LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
-//                return;
-//            }
-//        }
-//        else
-//        {
-//            cast_spell_id = sp->SpellID;
-//            target_unit->CastSpell(_player, cast_spell_id, true);
-//        }
-//
-//
-//        if (!target_unit->HasAura(59907))
-//            static_cast<Creature*>(target_unit)->Despawn(0, 0); //IsCreature() check is not needed, refer to r2387 and r3230
-//
-//        return;
-//    }
-//
-//    SpellClickSpell const* sp = sMySQLStore.GetSpellClickSpell(creature_id);
-//    if (sp == nullptr)
-//    {
-//        if (target_unit->IsCreature())
-//        {
-//            Creature* c = static_cast< Creature* >(target_unit);
-//
-//            sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetCreatureProperties()->Id, c->GetCreatureProperties()->Name.c_str());
-//            LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
-//            return;
-//        }
-//    }
-//    else
-//    {
-//        cast_spell_id = sp->SpellID;
-//
-//        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(cast_spell_id);
-//        if (spellInfo == nullptr)
-//            return;
-//
-//        Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, NULL);
-//        SpellCastTargets targets(target_guid);
-//        spell->prepare(&targets);
-//    }
-//}
+void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+        LOG_DETAIL("WORLD: got CMSG_SPELLCLICK packet, data length = %i", recvPacket.size());
+
+    if (_player->getDeathState() == CORPSE)
+        return;
+
+    uint64 target_guid; // this will store the guid of the object we are going to use it's spell. There must be a dbc that indicates what spells a unit has
+
+    recvPacket >> target_guid;
+
+    //we have only 1 example atm for entry : 28605
+    Unit* target_unit = _player->GetMapMgr()->GetUnit(target_guid);
+
+    if (!target_unit)
+        return;
+
+    if (!_player->isInRange(target_unit, MAX_INTERACTION_RANGE))
+        return;
+
+    if (target_unit->IsVehicle())
+    {
+        if (target_unit->GetVehicleComponent() != NULL)
+            target_unit->GetVehicleComponent()->AddPassenger(_player);
+        return;
+    }
+
+    uint32 creature_id = target_unit->GetEntry();
+    uint32 cast_spell_id = 0;
+
+    if (!_player->HasAurasWithNameHash(SPELL_HASH_LIGHTWELL_RENEW) && target_unit->RemoveAura(59907))
+    {
+        SpellClickSpell const* sp = sMySQLStore.GetSpellClickSpell(creature_id);
+        if (sp == nullptr)
+        {
+            if (target_unit->IsCreature())
+            {
+                Creature* c = static_cast< Creature* >(target_unit);
+
+                sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetCreatureProperties()->Id, c->GetCreatureProperties()->Name.c_str());
+                LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
+                return;
+            }
+        }
+        else
+        {
+            cast_spell_id = sp->SpellID;
+            target_unit->CastSpell(_player, cast_spell_id, true);
+        }
+
+
+        if (!target_unit->HasAura(59907))
+            static_cast<Creature*>(target_unit)->Despawn(0, 0); //IsCreature() check is not needed, refer to r2387 and r3230
+
+        return;
+    }
+
+    SpellClickSpell const* sp = sMySQLStore.GetSpellClickSpell(creature_id);
+    if (sp == nullptr)
+    {
+        if (target_unit->IsCreature())
+        {
+            Creature* c = static_cast< Creature* >(target_unit);
+
+            sChatHandler.BlueSystemMessage(this, "NPC Id %u (%s) has no spellclick spell associated with it.", c->GetCreatureProperties()->Id, c->GetCreatureProperties()->Name.c_str());
+            LOG_ERROR("Spellclick packet received for creature %u but there is no spell associated with it.", creature_id);
+            return;
+        }
+    }
+    else
+    {
+        cast_spell_id = sp->SpellID;
+
+        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(cast_spell_id);
+        if (spellInfo == nullptr)
+            return;
+
+        Spell* spell = sSpellFactoryMgr.NewSpell(_player, spellInfo, false, NULL);
+        SpellCastTargets targets(target_guid);
+        spell->prepare(&targets);
+    }
+}
 
 void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 {
@@ -506,147 +506,147 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 //    }
 //}
 
-//void WorldSession::HandleCancelChannellingOpcode(WorldPacket& recvPacket)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint32 spellId;
-//    recvPacket >> spellId;
-//
-//    Player* plyr = GetPlayer();
-//    if (!plyr)
-//        return;
-//    if (plyr->m_currentSpell)
-//    {
-//        plyr->m_currentSpell->cancel();
-//    }
-//}
+void WorldSession::HandleCancelChannellingOpcode(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
 
-//void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//        //sLog.outString("Received CMSG_CANCEL_AUTO_REPEAT_SPELL message.");
-//        //on original we automatically enter combat when creature got close to us
-//        //	GetPlayer()->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
-//        GetPlayer()->m_onAutoShot = false;
-//}
+    uint32 spellId;
+    recvPacket >> spellId;
 
-//void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint64 guid = 0;
-//    uint8  castCount = 0;
-//    uint32 spellid = 0;
-//    uint8  castflags = 0;
-//    uint32 targetmask = 0;
-//
-//    recvPacket >> guid;
-//    recvPacket >> castCount;
-//    recvPacket >> spellid;
-//    recvPacket >> castflags;
-//
-//    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
-//    if (sp == NULL)
-//        return;
-//    // Summoned Elemental's Freeze
-//    if (spellid == 33395)
-//    {
-//        if (!_player->GetSummon())
-//            return;
-//    }
-//    else if (guid != _player->m_CurrentCharm)
-//    {
-//        if (_player->GetCharmedUnitGUID() != guid)
-//            return;
-//    }
-//
-//    SpellCastTargets targets;
-//    targets.read(recvPacket, guid);
-//
-//    float missilepitch = 0.0f;
-//    float missilespeed = 0;
-//    uint32 traveltime = 0;
-//
-//    if (castflags & 2)
-//    {
-//        recvPacket >> missilepitch;
-//        recvPacket >> missilespeed;
-//
-//        float dx = targets.m_destX - targets.m_srcX;
-//        float dy = targets.m_destY - targets.m_srcY;
-//
-//        if ((missilepitch != M_PI / 4) && (missilepitch != -M_PI / 4)) //lets not divide by 0 lul
-//            traveltime = (sqrtf(dx * dx + dy * dy) / (cosf(missilepitch) * missilespeed)) * 1000;
-//    }
-//
-//    if (spellid == 33395)	// Summoned Water Elemental's freeze
-//    {
-//        Spell* pSpell = sSpellFactoryMgr.NewSpell(_player->GetSummon(), sp, false, 0);
-//        pSpell->prepare(&targets);
-//    }
-//    else			// trinket?
-//    {
-//        uint64 charmguid = _player->m_CurrentCharm;
-//        if (charmguid == 0)
-//            charmguid = _player->GetCharmedUnitGUID();
-//
-//        Unit* nc = _player->GetMapMgr()->GetUnit(charmguid);
-//        if (nc)
-//        {
-//            bool check = false;
-//            for (std::list<AI_Spell*>::iterator itr = nc->GetAIInterface()->m_spells.begin(); itr != nc->GetAIInterface()->m_spells.end(); ++itr)//.......meh. this is a crappy way of doing this, I bet.
-//            {
-//                if ((*itr)->spell->Id == spellid)
-//                {
-//                    check = true;
-//                    break;
-//                }
-//            }
-//
-//            if (nc->IsCreature())
-//            {
-//                Creature* c = static_cast< Creature* >(nc);
-//
-//                if (c->GetCreatureProperties()->spelldataid != 0)
-//                {
-//                    auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(c->GetCreatureProperties()->spelldataid);
-//
-//                    if (creature_spell_data != nullptr)
-//                    {
-//                        for (uint8 i = 0; i < 3; i++)
-//                        {
-//                            if (creature_spell_data->Spells[i] == spellid)
-//                            {
-//                                check = true;
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                for (uint8 i = 0; i < 4; ++i)
-//                {
-//                    if (c->GetCreatureProperties()->AISpells[i] == spellid)
-//                    {
-//                        check = true;
-//                        break;
-//                    }
-//                }
-//            }
-//
-//            if (!check)
-//                return;
-//
-//            Spell* pSpell = sSpellFactoryMgr.NewSpell(nc, sp, false, 0);
-//            pSpell->m_missilePitch = missilepitch;
-//            pSpell->m_missileTravelTime = traveltime;
-//
-//            pSpell->prepare(&targets);
-//        }
-//    }
-//}
+    Player* plyr = GetPlayer();
+    if (!plyr)
+        return;
+    if (plyr->m_currentSpell)
+    {
+        plyr->m_currentSpell->cancel();
+    }
+}
+
+void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+        //sLog.outString("Received CMSG_CANCEL_AUTO_REPEAT_SPELL message.");
+        //on original we automatically enter combat when creature got close to us
+        //	GetPlayer()->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
+        GetPlayer()->m_onAutoShot = false;
+}
+
+void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    uint64 guid = 0;
+    uint8  castCount = 0;
+    uint32 spellid = 0;
+    uint8  castflags = 0;
+    uint32 targetmask = 0;
+
+    recvPacket >> guid;
+    recvPacket >> castCount;
+    recvPacket >> spellid;
+    recvPacket >> castflags;
+
+    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
+    if (sp == NULL)
+        return;
+    // Summoned Elemental's Freeze
+    if (spellid == 33395)
+    {
+        if (!_player->GetSummon())
+            return;
+    }
+    else if (guid != _player->m_CurrentCharm)
+    {
+        if (_player->GetCharmedUnitGUID() != guid)
+            return;
+    }
+
+    SpellCastTargets targets;
+    targets.read(recvPacket, guid);
+
+    float missilepitch = 0.0f;
+    float missilespeed = 0;
+    uint32 traveltime = 0;
+
+    if (castflags & 2)
+    {
+        recvPacket >> missilepitch;
+        recvPacket >> missilespeed;
+
+        float dx = targets.m_destX - targets.m_srcX;
+        float dy = targets.m_destY - targets.m_srcY;
+
+        if ((missilepitch != M_PI / 4) && (missilepitch != -M_PI / 4)) //lets not divide by 0 lul
+            traveltime = (sqrtf(dx * dx + dy * dy) / (cosf(missilepitch) * missilespeed)) * 1000;
+    }
+
+    if (spellid == 33395)	// Summoned Water Elemental's freeze
+    {
+        Spell* pSpell = sSpellFactoryMgr.NewSpell(_player->GetSummon(), sp, false, 0);
+        pSpell->prepare(&targets);
+    }
+    else			// trinket?
+    {
+        uint64 charmguid = _player->m_CurrentCharm;
+        if (charmguid == 0)
+            charmguid = _player->GetCharmedUnitGUID();
+
+        Unit* nc = _player->GetMapMgr()->GetUnit(charmguid);
+        if (nc)
+        {
+            bool check = false;
+            for (std::list<AI_Spell*>::iterator itr = nc->GetAIInterface()->m_spells.begin(); itr != nc->GetAIInterface()->m_spells.end(); ++itr)//.......meh. this is a crappy way of doing this, I bet.
+            {
+                if ((*itr)->spell->Id == spellid)
+                {
+                    check = true;
+                    break;
+                }
+            }
+
+            if (nc->IsCreature())
+            {
+                Creature* c = static_cast< Creature* >(nc);
+
+                if (c->GetCreatureProperties()->spelldataid != 0)
+                {
+                    auto creature_spell_data = sCreatureSpellDataStore.LookupEntry(c->GetCreatureProperties()->spelldataid);
+
+                    if (creature_spell_data != nullptr)
+                    {
+                        for (uint8 i = 0; i < 3; i++)
+                        {
+                            if (creature_spell_data->Spells[i] == spellid)
+                            {
+                                check = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                for (uint8 i = 0; i < 4; ++i)
+                {
+                    if (c->GetCreatureProperties()->AISpells[i] == spellid)
+                    {
+                        check = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!check)
+                return;
+
+            Spell* pSpell = sSpellFactoryMgr.NewSpell(nc, sp, false, 0);
+            pSpell->m_missilePitch = missilepitch;
+            pSpell->m_missileTravelTime = traveltime;
+
+            pSpell->prepare(&targets);
+        }
+    }
+}
 
 //void WorldSession::HandleCancelTotem(WorldPacket& recv_data)
 //{

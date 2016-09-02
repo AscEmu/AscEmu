@@ -210,7 +210,7 @@ void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSessio
     }
 
     // player is not swimming and is not stationary and is flagged as in the water
-    if (!(movement_info.flags & MOVEFLAG_SWIMMING) && (movement_info.flags != MOVEFLAG_MOVE_STOP) && (_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
+    if (!(movement_info.flags & MOVEFLAG_SWIMMING) && (movement_info.flags != MOVEFLAG_NONE) && (_player->m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
     {
         // player is above water level
         if ((movement_info.position.z + _player->m_noseLevel) > pSession->m_wLevel)
@@ -284,33 +284,15 @@ struct MovementFlagName
 
 static MovementFlagName MoveFlagsToNames[] =
 {
-    { MOVEFLAG_MOVE_STOP, "MOVEFLAG_MOVE_STOP" },
-    { MOVEFLAG_MOVE_FORWARD, "MOVEFLAG_MOVE_FORWARD" },
-    { MOVEFLAG_MOVE_BACKWARD, "MOVEFLAG_MOVE_BACKWARD" },
     { MOVEFLAG_STRAFE_LEFT, "MOVEFLAG_STRAFE_LEFT" },
     { MOVEFLAG_STRAFE_RIGHT, "MOVEFLAG_STRAFE_RIGHT" },
-    { MOVEFLAG_TURN_LEFT, "MOVEFLAG_TURN_LEFT" },
-    { MOVEFLAG_TURN_RIGHT, "MOVEFLAG_TURN_RIGHT" },
     { MOVEFLAG_PITCH_DOWN, "MOVEFLAG_PITCH_DOWN" },
     { MOVEFLAG_PITCH_UP, "MOVEFLAG_PITCH_UP" },
-    { MOVEFLAG_WALK, "MOVEFLAG_WALK" },
-    { MOVEFLAG_TRANSPORT, "MOVEFLAG_TRANSPORT" },
     { MOVEFLAG_NO_COLLISION, "MOVEFLAG_NO_COLLISION" },
-    { MOVEFLAG_ROOTED, "MOVEFLAG_ROOTED" },
     { MOVEFLAG_FALLING, "MOVEFLAG_FALLING" },
     { MOVEFLAG_FALLING_FAR, "MOVEFLAG_FALLING_FAR" },
-    { MOVEFLAG_FREE_FALLING, "MOVEFLAG_FREE_FALLING" },
-    { MOVEFLAG_TB_PENDING_STOP, "MOVEFLAG_TB_PENDING_STOP" },
-    { MOVEFLAG_TB_PENDING_UNSTRAFE, "MOVEFLAG_TB_PENDING_UNSTRAFE" },
-    { MOVEFLAG_TB_PENDING_FORWARD, "MOVEFLAG_TB_PENDING_FORWARD" },
-    { MOVEFLAG_TB_PENDING_BACKWARD, "MOVEFLAG_TB_PENDING_BACKWARD" },
     { MOVEFLAG_SWIMMING, "MOVEFLAG_SWIMMING" },
     { MOVEFLAG_CAN_FLY, "MOVEFLAG_CAN_FLY" },
-    { MOVEFLAG_AIR_SUSPENSION, "MOVEFLAG_AIR_SUSPENSION" },
-    { MOVEFLAG_AIR_SWIMMING, "MOVEFLAG_AIR_SWIMMING" },
-    { MOVEFLAG_WATER_WALK, "MOVEFLAG_WATER_WALK" },
-    { MOVEFLAG_FEATHER_FALL, "MOVEFLAG_FEATHER_FALL" },
-    { MOVEFLAG_LEVITATE, "MOVEFLAG_LEVITATE" }
     //{ MOVEFLAG_LOCAL, "MOVEFLAG_LOCAL" }
 };
 
@@ -560,7 +542,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         SendPacket(&data);
     }
 
-    if ((movement_info.flags & MOVEFLAG_AIR_SWIMMING) && !(movement_info.flags & MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->FlyCheat))
+    if ((movement_info.flags & MOVEFLAG_FLYING) && !(movement_info.flags & MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->FlyCheat))
     {
         WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << _player->GetNewGUID();
@@ -704,7 +686,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         flags |= AURA_INTERRUPT_ON_LEAVE_WATER;
     if (movement_info.flags & MOVEFLAG_SWIMMING)
         flags |= AURA_INTERRUPT_ON_ENTER_WATER;
-    if ((movement_info.flags & MOVEFLAG_TURNING_MASK) || _player->isTurning)
+    if ((movement_info.flags & MOVEFLAG_MASK_TURNING) || _player->isTurning)
         flags |= AURA_INTERRUPT_ON_TURNING;
     //\todo danko
     /*if (movement_info.flags & MOVEFLAG_REDIRECTED)
@@ -910,7 +892,7 @@ void MovementInfo::init(WorldPacket& data)
     data >> position.z;
     data >> position.o;
 
-    if (flags & MOVEFLAG_TRANSPORT)
+    /*if (flags & MOVEFLAG_TRANSPORT)
     {
         data >> transporter_info.transGuid;
         data >> transporter_info.position.x;
@@ -923,7 +905,7 @@ void MovementInfo::init(WorldPacket& data)
     if (flags & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING) || flags2 & MOVEFLAG2_NO_JUMPING)
     {
         data >> pitch;
-    }
+    }*/
     /*if (flags & MOVEFLAG_REDIRECTED)
     {
         data >> redirectVelocity;
@@ -948,7 +930,7 @@ void MovementInfo::write(WorldPacket& data)
     data << position.z;
     data << position.o;
 
-    if (flags & MOVEFLAG_TRANSPORT)
+    /*if (flags & MOVEFLAG_TRANSPORT)
     {
         data << transporter_info.transGuid;
         data << transporter_info.position.x;
@@ -957,7 +939,7 @@ void MovementInfo::write(WorldPacket& data)
         data << transporter_info.position.o;
         data << transporter_info.time;
         data << transporter_info.time2;
-    }
+    }*/
     if (flags & MOVEFLAG_SWIMMING)
     {
         data << pitch;
