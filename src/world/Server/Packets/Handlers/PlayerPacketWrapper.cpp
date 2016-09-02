@@ -564,6 +564,11 @@ void Player::SendInitialLogonPackets()
     SendSetProficiency(4, armor_proficiency);
     SendSetProficiency(2, weapon_proficiency);
 
+    WorldPacket data(SMSG_TUTORIAL_FLAGS, 4 * 8);
+    for (int i = 0; i < 8; i++)
+        data << uint32(m_Tutorials[i]);
+    m_session->SendPacket(&data);
+
     smsg_InitialSpells();
 
     WorldPacket datat(SMSG_SEND_UNLEARN_SPELLS, 4);

@@ -7870,10 +7870,10 @@ void Player::ZoneUpdate(uint32 ZoneId)
             Channel* chn;
             chn = (*itr);
             // Check if this is a custom channel (i.e. global)
-            if (!((*itr)->m_flags & 0x10))
+            if (!((*itr)->m_flags & CHANNEL_FLAGS_CUSTOM))
                 continue;
 
-            if (chn->m_flags & 0x40)   // LookingForGroup - constant among all zones
+            if (chn->m_flags & CHANNEL_FLAGS_LFG)   // LookingForGroup - constant among all zones
                 continue;
 
             char updatedName[95];

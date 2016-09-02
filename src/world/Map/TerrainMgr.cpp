@@ -404,9 +404,9 @@ void TileMap::Load(char* filename)
         return;
     }
 
-    if (header.buildMagic != 12340)  //wow version
+    if (header.buildMagic != 15595)  //wow version
     {
-        sLog.Error("TerrainMgr", "%s: from incorrect client (you: %u us: %u)", filename, header.buildMagic, 12340);
+        sLog.Error("TerrainMgr", "%s: from incorrect client (you: %u us: %u)", filename, header.buildMagic, 15595);
         fclose(f);
         return;
     }
