@@ -161,13 +161,10 @@ enum Opcodes
     CMSG_SET_TRADE_GOLD                             = 0x11F,    // implemented
     SMSG_TRADE_STATUS                               = 0x120,    // implemented
     SMSG_TRADE_STATUS_EXTENDED                      = 0x121,    // implemented
-    SMSG_INITIALIZE_FACTIONS                        = 0x122,    // implemented
     SMSG_SET_FACTION_VISIBLE                        = 0x123,    // implemented
     SMSG_SET_FACTION_STANDING                       = 0x124,    // implemented
     CMSG_SET_FACTION_ATWAR                          = 0x125,    // implemented
     CMSG_SET_FACTION_CHEAT                          = 0x126,    // not used in client
-    SMSG_SET_PROFICIENCY                            = 0x127,    // implemented
-    SMSG_ACTION_BUTTONS                             = 0x129,    // implemented
     SMSG_CAST_FAILED                                = 0x130,    // implemented
     SMSG_COOLDOWN_EVENT                             = 0x135,    // implemented
     CMSG_CANCEL_AURA                                = 0x136,    // implemented
@@ -1415,6 +1412,9 @@ This file is released under the MIT license. See README-MIT for more information
         CMSG_NEXT_CINEMATIC_CAMERA = 0x2014,
         CMSG_COMPLETE_CINEMATIC = 0x2116,
         CMSG_BATTLEFIELD_MGR_QUEUE_REQUEST = 0x710C,
+        SMSG_SET_PROFICIENCY = 0x6207,
+        SMSG_ACTION_BUTTONS = 0x38B5,
+        SMSG_INITIALIZE_FACTIONS = 0x4634,
 
     NUM_MSG_TYPES = 0xFFFF
 };

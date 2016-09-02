@@ -1762,8 +1762,8 @@ void Player::smsg_InitialSpells()
 
     GetSession()->SendPacket(&data);
 
-    uint32 v = 0;
-    GetSession()->OutPacket(0x041d, 4, &v);
+    /*uint32 v = 0;
+    GetSession()->OutPacket(0x041d, 4, &v);*/
     //Log::getSingleton().outDetail("CHARACTER: Sent Initial Spells");
 }
 

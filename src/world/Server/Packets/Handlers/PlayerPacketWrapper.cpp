@@ -569,6 +569,8 @@ void Player::SendInitialLogonPackets()
         data << uint32(m_Tutorials[i]);
     m_session->SendPacket(&data);
 
+    smsg_TalentsInfo(false);
+
     smsg_InitialSpells();
 
     WorldPacket datat(SMSG_SEND_UNLEARN_SPELLS, 4);
