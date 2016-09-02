@@ -5399,16 +5399,16 @@ class LuaUnit
         {
             lua_newtable(L);
             lua_pushstring(L, "x");
-            lua_pushnumber(L, movement_info->position.x);
+            lua_pushnumber(L, movement_info->GetPos()->x);
             lua_rawset(L, -3);
             lua_pushstring(L, "y");
-            lua_pushnumber(L, movement_info->position.y);
+            lua_pushnumber(L, movement_info->GetPos()->y);
             lua_rawset(L, -3);
             lua_pushstring(L, "z");
-            lua_pushnumber(L, movement_info->position.z);
+            lua_pushnumber(L, movement_info->GetPos()->z);
             lua_rawset(L, -3);
             lua_pushstring(L, "o");
-            lua_pushnumber(L, movement_info->position.o);
+            lua_pushnumber(L, movement_info->GetPos()->o);
             lua_rawset(L, -3);
         }
         else
@@ -5421,7 +5421,7 @@ class LuaUnit
         TEST_PLAYER()
             MovementInfo* move_info = static_cast<Player*>(ptr)->GetSession()->GetMovementInfo();
         if (move_info != NULL)
-            lua_pushnumber(L, move_info->flags);
+            lua_pushnumber(L, move_info->GetMovementFlags());
         else
             RET_NIL()
             return 1;

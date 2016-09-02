@@ -1522,7 +1522,7 @@ void Player::_EventExploration()
             ApplyPlayerRestState(false);
     }
 
-    if (!(currFields & val) && !GetTaxiState() && !obj_movement_info.transporter_info.guid) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
+    if (!(currFields & val) && !GetTaxiState() /*&& !obj_movement_info.transporter_info.guid*/) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
     {
         SetUInt32Value(offset, (uint32)(currFields | val));
 
@@ -2553,7 +2553,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     else
     {
         ss << "," << transport->GetEntry();
-        ss << ",'" << GetTransPositionX() << "','" << GetTransPositionY() << "','" << GetTransPositionZ() << "','" << GetTransPositionO() << "'";
+        ss << ",'" << movement_info.GetTransportPos()->x << "','" << movement_info.GetTransportPos()->y << "','" << movement_info.GetTransportPos()->z << "','" << movement_info.GetTransportPos()->o << "'";
     }
     ss << ",'";
 
@@ -3181,17 +3181,19 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         field_index++;
     }
 
-    obj_movement_info.transporter_info.guid = get_next_field.GetUInt32();
-    if (obj_movement_info.transporter_info.guid)
-    {
-        Transporter* t = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
-        obj_movement_info.transporter_info.guid = t ? t->GetGUID() : 0;
-    }
+    WoWGuid transGuid = WoWGuid(get_next_field.GetUInt64());
+    float position_x = get_next_field.GetFloat();
+    float position_y = get_next_field.GetFloat();
+    float position_z = get_next_field.GetFloat();
+    float position_o = get_next_field.GetFloat();
 
-    obj_movement_info.transporter_info.position.x = get_next_field.GetFloat();
-    obj_movement_info.transporter_info.position.y = get_next_field.GetFloat();
-    obj_movement_info.transporter_info.position.z = get_next_field.GetFloat();
-    obj_movement_info.transporter_info.position.o = get_next_field.GetFloat();
+    if (transGuid)
+    {
+        Transporter* t = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(transGuid));
+        transGuid = t ? t->GetGUID() : 0;
+
+        movement_info.SetTransportData(transGuid, position_x, position_y, position_z, position_o, 0, 0);
+    }
 
     LoadSpells(results[13].result);
 
@@ -3710,9 +3712,9 @@ void Player::AddToWorld()
     auto transport = this->GetTransport();
     if (transport)
     {
-        this->SetPosition(transport->GetPositionX() + GetTransPositionX(),
-            transport->GetPositionY() + GetTransPositionY(),
-            transport->GetPositionZ() + GetTransPositionZ(),
+        this->SetPosition(transport->GetPositionX() + movement_info.GetTransportPos()->x,
+            transport->GetPositionY() + movement_info.GetTransportPos()->y,
+            transport->GetPositionZ() + movement_info.GetTransportPos()->z,
             GetOrientation(), false);
     }
 
@@ -3745,9 +3747,9 @@ void Player::AddToWorld(MapMgr* pMapMgr)
     if (transport != nullptr)
     {
         auto t_loc = transport->GetPosition();
-        this->SetPosition(t_loc.x + this->GetTransPositionX(),
-            t_loc.y + this->GetTransPositionY(),
-            t_loc.z + this->GetTransPositionZ(),
+        this->SetPosition(t_loc.x + this->movement_info.GetTransportPos()->x,
+            t_loc.y + this->movement_info.GetTransportPos()->y,
+            t_loc.z + this->movement_info.GetTransportPos()->z,
             this->GetOrientation(), false);
     }
 
@@ -4545,16 +4547,16 @@ void Player::RepopRequestedPlayer()
         return;
     }
 
-    auto transport = this->GetTransport();
-    if (transport != nullptr)
-    {
-        transport->RemovePassenger(this);
-        this->obj_movement_info.transporter_info.guid = 0;
+    //auto transport = this->GetTransport();
+    //if (transport != nullptr)
+    //{
+    //    transport->RemovePassenger(this);
+    //    this->obj_movement_info.transporter_info.guid = 0;
 
-        //ResurrectPlayer();
-        RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
-        return;
-    }
+    //    //ResurrectPlayer();
+    //    RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
+    //    return;
+    //}
 
     MapInfo const* pMapinfo = NULL;
 
@@ -8445,7 +8447,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
         SetSpeeds(RUN, m_runSpeed);
     }
-    if (obj_movement_info.transporter_info.guid)
+    /*if (obj_movement_info.transporter_info.guid)
     {
         Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
         if (pTrans)
@@ -8453,7 +8455,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
             pTrans->RemovePassenger(this);
             obj_movement_info.transporter_info.guid = 0;
         }
-    }
+    }*/
 
     bool instance = false;
     MapInfo const* mi = sMySQLStore.GetWorldMapInfo(MapID);

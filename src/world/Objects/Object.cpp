@@ -366,7 +366,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
     *data << uint16(flags);*/
 
-    bool hasTransport = obj_movement_info.transporter_info.guid;
+    bool hasTransport = false;
     bool isSplineEnabled = false; // spline not supported
                                   //bool hasPitch = (flags2 & (0x00100000) || (moveflags2 & 0x0010));
     bool hasPitch = (flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING); // (hasPitch == swimming) flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING)
@@ -430,8 +430,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         data->writeBit(hasOrientation); // hasO or !hasO?
 
                                         // get the player's guid into a uint8 array (8 * 8 = 64)
-        uint8 plrGuid[8];
-        *(uint64*)plrGuid = GetGUID();
+        ObjectGuid plrGuid = GetGUID();
 
         data->writeBit(plrGuid[7]);
         data->writeBit(plrGuid[3]);
@@ -451,23 +450,22 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         data->writeBit(0);  // true or false?
 
                             //if (hasTransport)
-        if (hasTransport) // MOVEFLAG_TRANSPORT
-                                         //if(transporter_info.guid)
-        {
-            uint8 transGuid[8];
-            *(uint64*)transGuid = obj_movement_info.transporter_info.guid;
+        //if (hasTransport) // MOVEFLAG_TRANSPORT
+        //                                 //if(transporter_info.guid)
+        //{
+        //    ObjectGuid transGuid = transporter_info.guid;
 
-            data->writeBit(transGuid[1]);
-            data->writeBit(0);                                  // Has transport time 2 = false
-            data->writeBit(transGuid[4]);
-            data->writeBit(transGuid[0]);
-            data->writeBit(transGuid[6]);
-            data->writeBit(0);                                  // Has transport time 3 = false
-            data->writeBit(transGuid[7]);
-            data->writeBit(transGuid[5]);
-            data->writeBit(transGuid[3]);
-            data->writeBit(transGuid[2]);
-        }
+        //    data->writeBit(transGuid[1]);
+        //    data->writeBit(0);                                  // Has transport time 2 = false
+        //    data->writeBit(transGuid[4]);
+        //    data->writeBit(transGuid[0]);
+        //    data->writeBit(transGuid[6]);
+        //    data->writeBit(0);                                  // Has transport time 3 = false
+        //    data->writeBit(transGuid[7]);
+        //    data->writeBit(transGuid[5]);
+        //    data->writeBit(transGuid[3]);
+        //    data->writeBit(transGuid[2]);
+        //}
 
         data->writeBit(plrGuid[4]);
 
@@ -491,22 +489,22 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
     } // flags & UPDATEFLAG_LIVING __END__
 
-    if (flags & UPDATEFLAG_POSITION) // UPDATEFLAG_HAS_GO_POSITION
-    {
-        uint8 transGuid[8];
-        *(uint64*)transGuid = obj_movement_info.transporter_info.guid;
+    //if (flags & UPDATEFLAG_POSITION) // UPDATEFLAG_HAS_GO_POSITION
+    //{
+    //    uint8 transGuid[8];
+    //    *(uint64*)transGuid = obj_movement_info.transporter_info.guid;
 
-        data->writeBit(transGuid[5]);
-        data->writeBit(0); // Has GO transport time 3 - false
-        data->writeBit(transGuid[0]);
-        data->writeBit(transGuid[3]);
-        data->writeBit(transGuid[6]);
-        data->writeBit(transGuid[1]);
-        data->writeBit(transGuid[4]);
-        data->writeBit(transGuid[2]);
-        data->writeBit(0); // Has GO transport time 2 - false
-        data->writeBit(transGuid[7]);
-    }
+    //    data->writeBit(transGuid[5]);
+    //    data->writeBit(0); // Has GO transport time 3 - false
+    //    data->writeBit(transGuid[0]);
+    //    data->writeBit(transGuid[3]);
+    //    data->writeBit(transGuid[6]);
+    //    data->writeBit(transGuid[1]);
+    //    data->writeBit(transGuid[4]);
+    //    data->writeBit(transGuid[2]);
+    //    data->writeBit(0); // Has GO transport time 2 - false
+    //    data->writeBit(transGuid[7]);
+    //}
 
     if (flags & UPDATEFLAG_HAS_ATTACKING_TARGET) // UPDATEFLAG_HAS_ATTACKING_TARGET / UPDATEFLAG_HAS_TARGET
     {
@@ -577,31 +575,31 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         data->WriteByteSeq(plrGuid[5]); // byte seq?
 
                                         //if (hasTransport)
-        if (hasTransport) // MOVEFLAG_TRANSPORT
-                                         //if(transporter_info.guid)
-        {
-            uint8 transGuid[8];
-            *(uint64*)transGuid = obj_movement_info.transporter_info.guid;
+        //if (hasTransport) // MOVEFLAG_TRANSPORT
+        //                                 //if(transporter_info.guid)
+        //{
+        //    uint8 transGuid[8];
+        //    *(uint64*)transGuid = obj_movement_info.transporter_info.guid;
 
-            data->WriteByteSeq(transGuid[5]);
-            data->WriteByteSeq(transGuid[7]);
-            *data << (uint32)0; // transport time
-            *data << obj_movement_info.transporter_info.position.o;
-            //*data << (uint32)0;
-            // if (hasTransportTime2) *data << (uint32)0;
-            *data << obj_movement_info.transporter_info.position.y;
-            *data << obj_movement_info.transporter_info.position.x;
-            data->WriteByteSeq(transGuid[3]);
-            *data << obj_movement_info.transporter_info.position.z;
-            data->WriteByteSeq(transGuid[0]);
-            //*data << (uint32)0;
-            // if (hasTransportTime3) *data << (uint32)0;
-            *data << obj_movement_info.transporter_info.seat;
-            data->WriteByteSeq(transGuid[1]);
-            data->WriteByteSeq(transGuid[6]);
-            data->WriteByteSeq(transGuid[2]);
-            data->WriteByteSeq(transGuid[4]);
-        }
+        //    data->WriteByteSeq(transGuid[5]);
+        //    data->WriteByteSeq(transGuid[7]);
+        //    *data << (uint32)0; // transport time
+        //    *data << obj_movement_info.transporter_info.position.o;
+        //    //*data << (uint32)0;
+        //    // if (hasTransportTime2) *data << (uint32)0;
+        //    *data << obj_movement_info.transporter_info.position.y;
+        //    *data << obj_movement_info.transporter_info.position.x;
+        //    data->WriteByteSeq(transGuid[3]);
+        //    *data << obj_movement_info.transporter_info.position.z;
+        //    data->WriteByteSeq(transGuid[0]);
+        //    //*data << (uint32)0;
+        //    // if (hasTransportTime3) *data << (uint32)0;
+        //    *data << obj_movement_info.transporter_info.seat;
+        //    data->WriteByteSeq(transGuid[1]);
+        //    data->WriteByteSeq(transGuid[6]);
+        //    data->WriteByteSeq(transGuid[2]);
+        //    data->WriteByteSeq(transGuid[4]);
+        //}
 
         *data << m_position.x;
         *data << float(7); // pitch rate - is this right?
@@ -636,7 +634,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
             *data << m_runSpeed;	// run speed
 
         if (hasPitch) // this ok? // and this check here?
-            *data << moveinfo->pitch;
+            *data << moveinfo->GetPitch();
 
         *data << m_backFlySpeed;
 
@@ -656,32 +654,32 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         *data << uint32(vehicleid);
     }
 
-    if (flags & UPDATEFLAG_POSITION)
-    {
-        uint8 transGuid[8];
-        *(uint64*)transGuid = obj_movement_info.transporter_info.guid;
+    //if (flags & UPDATEFLAG_POSITION)
+    //{
+    //    uint8 transGuid[8];
+    //    *(uint64*)transGuid = obj_movement_info.transporter_info.guid;
 
-        data->WriteByteSeq(transGuid[0]);
-        data->WriteByteSeq(transGuid[5]);
-        // if has transport time 3
-        //*data << uint32(0);
-        //*data << uint32(0);
-        data->WriteByteSeq(transGuid[3]);
-        *data << float(obj_movement_info.transporter_info.position.x);
-        data->WriteByteSeq(transGuid[4]);
-        data->WriteByteSeq(transGuid[6]);
-        data->WriteByteSeq(transGuid[1]);
-        *data << (uint32)0; // transporter time.. do we have this?
-        *data << float(obj_movement_info.transporter_info.position.y);
-        data->WriteByteSeq(transGuid[2]);
-        data->WriteByteSeq(transGuid[7]);
-        *data << float(obj_movement_info.transporter_info.position.z);
-        *data << int8(obj_movement_info.transporter_info.seat);
-        *data << float(obj_movement_info.transporter_info.position.o);
-        // if has transport time 2
-        //*data << uint32(0);
-        //*data << uint32(0);
-    }
+    //    data->WriteByteSeq(transGuid[0]);
+    //    data->WriteByteSeq(transGuid[5]);
+    //    // if has transport time 3
+    //    //*data << uint32(0);
+    //    //*data << uint32(0);
+    //    data->WriteByteSeq(transGuid[3]);
+    //    *data << float(obj_movement_info.transporter_info.position.x);
+    //    data->WriteByteSeq(transGuid[4]);
+    //    data->WriteByteSeq(transGuid[6]);
+    //    data->WriteByteSeq(transGuid[1]);
+    //    *data << (uint32)0; // transporter time.. do we have this?
+    //    *data << float(obj_movement_info.transporter_info.position.y);
+    //    data->WriteByteSeq(transGuid[2]);
+    //    data->WriteByteSeq(transGuid[7]);
+    //    *data << float(obj_movement_info.transporter_info.position.z);
+    //    *data << int8(obj_movement_info.transporter_info.seat);
+    //    *data << float(obj_movement_info.transporter_info.position.o);
+    //    // if has transport time 2
+    //    //*data << uint32(0);
+    //    //*data << uint32(0);
+    //}
 
     if (flags & UPDATEFLAG_ROTATION)
     {
@@ -2593,7 +2591,7 @@ uint32 Object::GetTeam()
 
 Transporter* Object::GetTransport() const
 {
-    return objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
+    return nullptr; /*objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));*/
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -130,76 +130,6 @@ typedef struct
 	uint32 resisted_damage;
 } dealdamage;
 
-struct MovementInfo
-{
-    WoWGuid object_guid;
-    uint32 flags;
-    uint16 flags2;
-    LocationVector position;
-    uint32 time;
-
-    //pitch
-    //-1.55=looking down, 0=looking forward, +1.55=looking up
-    float pitch;
-
-    //jumping related
-    float redirectVelocity;
-    float redirectSin;      //on slip 8 is zero, on jump some other number
-    float redirectCos;
-    float redirect2DSpeed;  //9,10 changes if you are not on foot
-
-    uint32 fall_time;       //fall_time in ms
-
-    float spline_elevation;
-
-    struct TransporterInfo
-    {
-        Transporter* m_transporter;
-        WoWGuid transGuid;
-        uint64 guid;        // switch to WoWGuid
-        LocationVector position;
-        uint32 time;
-        uint32 time2;
-        uint8 seat;
-
-        void Clear()
-        {
-            m_transporter = nullptr;
-            transGuid = 0;
-            guid = 0;
-            position.ChangeCoords(0.0f, 0.0f, 0.0f, 0.0f);
-            time = 0;
-            time2 = 0;
-            seat = 0;
-        }
-    }transporter_info;
-
-    MovementInfo()
-    {
-        object_guid = 0;
-        flags = 0;
-        flags2 = 0;
-        position.ChangeCoords(0.0f, 0.0f, 0.0f, 0.0f);
-
-        time = 0;
-
-        pitch = 0.0f;
-
-        redirectVelocity = 0.0f;
-        redirectSin = 0.0f;
-        redirectCos = 0.0f;
-        redirect2DSpeed = 0.0f;
-
-        fall_time = 0;
-        spline_elevation = 0;
-
-        transporter_info.Clear();
-    }
-
-    void init(WorldPacket& data);
-    void write(WorldPacket& data);
-    bool IsOnTransport() const { return this->transporter_info.guid != 0; };
-};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// class Object:Base object for every item, unit, player, corpse, container, etc
@@ -335,14 +265,6 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         const LocationVector & GetPosition() { return m_position; }
         LocationVector & GetPositionNC() { return m_position; }
         LocationVector* GetPositionV() { return &m_position; }
-
-        // TransporterInfo
-        float GetTransPositionX() const { return obj_movement_info.transporter_info.position.x; }
-        float GetTransPositionY() const { return obj_movement_info.transporter_info.position.y; }
-        float GetTransPositionZ() const { return obj_movement_info.transporter_info.position.z; }
-        float GetTransPositionO() const { return obj_movement_info.transporter_info.position.o; }
-        uint32 GetTransTime() const { return obj_movement_info.transporter_info.time; }
-        uint8 GetTransSeat() const { return obj_movement_info.transporter_info.seat; }
 
         /// Distance Calculation
         float CalcDistance(Object* Ob);
@@ -669,7 +591,6 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         float m_base_runSpeed;
         float m_base_walkSpeed;
 
-        MovementInfo obj_movement_info;
         Transporter* GetTransport() const;
 
         uint32 m_phase;         /// This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.

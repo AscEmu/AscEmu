@@ -78,6 +78,242 @@ struct FactionDBC;
 
 typedef std::unordered_map<uint32, uint64> UniqueAuraTargetMap;
 
+enum MovementFlags
+{
+    MOVEFLAG_NONE = 0x00000000,   //old MOVEFLAG_MOVE_STOP
+    MOVEFLAG_FORWARD = 0x00000001,   //old MOVEFLAG_MOVE_FORWARD
+    MOVEFLAG_BACKWARD = 0x00000002,   //old MOVEFLAG_MOVE_BACKWARD
+    MOVEFLAG_STRAFE_LEFT = 0x00000004,   //old MOVEFLAG_STRAFE_LEFT
+    MOVEFLAG_STRAFE_RIGHT = 0x00000008,   //old MOVEFLAG_STRAFE_RIGHT
+    MOVEFLAG_LEFT = 0x00000010,   //old MOVEFLAG_TURN_LEFT
+    MOVEFLAG_RIGHT = 0x00000020,   //old MOVEFLAG_TURN_RIGHT
+    MOVEFLAG_PITCH_UP = 0x00000040,   //old MOVEFLAG_PITCH_UP
+    MOVEFLAG_PITCH_DOWN = 0x00000080,   //old MOVEFLAG_PITCH_DOWN
+    MOVEFLAG_WALKING = 0x00000100,   //old MOVEFLAG_WALK 
+    MOVEFLAG_DISABLE_GRAVITY = 0x00000200,   //old MOVEFLAG_TRANSPORT
+    MOVEFLAG_ROOT = 0x00000400,   //old MOVEFLAG_ROOTED
+    MOVEFLAG_FALLING = 0x00000800,   //old MOVEFLAG_FALLING
+    MOVEFLAG_FALLING_FAR = 0x00001000,   //old MOVEFLAG_FALLING_FAR
+    MOVEFLAG_PENDING_STOP = 0x00002000,   //old MOVEFLAG_TB_PENDING_STOP
+    MOVEFLAG_PENDING_STRAFE_STOP = 0x00004000,   //old MOVEFLAG_TB_PENDING_UNSTRAFE
+    MOVEFLAG_PENDING_FORWARD = 0x00008000,   //old MOVEFLAG_TB_PENDING_FORWARD
+    MOVEFLAG_PENDING_BACKWARD = 0x00010000,   //old MOVEFLAG_TB_PENDING_BACKWARD
+    MOVEFLAG_PENDING_STRAFE_LEFT = 0x00020000,
+    MOVEFLAG_PENDING_STRAFE_RIGHT = 0x00040000,
+    MOVEFLAG_PENDING_ROOT = 0x00080000,
+    MOVEFLAG_SWIMMING = 0x00100000,   //old MOVEFLAG_SWIMMING
+    MOVEFLAG_ASCENDING = 0x00200000,
+    MOVEFLAG_DESCENDING = 0x00400000,
+    MOVEFLAG_CAN_FLY = 0x00800000,   //old MOVEFLAG_CAN_FLY
+    MOVEFLAG_FLYING = 0x01000000,   //old MOVEFLAG_AIR_SUSPENSION //old MOVEFLAG_AIR_SWIMMING
+    MOVEFLAG_SPLINE_ELEVATION = 0x02000000,   //old MOVEFLAG_SPLINE_ELEVATION
+    MOVEFLAG_WATERWALKING = 0x04000000,   //old MOVEFLAG_WATER_WALK
+    MOVEFLAG_FALLING_SLOW = 0x08000000,   //old MOVEFLAG_FEATHER_FALL //old MOVEFLAG_FREE_FALLING //old MOVEFLAG_SPLINE_ENABLED
+    MOVEFLAG_HOVER = 0x10000000,   //old MOVEFLAG_LEVITATE
+    MOVEFLAG_NO_COLLISION = 0x20000000,   //old MOVEFLAG_NO_COLLISION //old MOVEFLAG_LOCAL
+
+                                          // Masks
+                                          MOVEFLAG_MASK_MOVING =
+                                          MOVEFLAG_FORWARD | MOVEFLAG_BACKWARD | MOVEFLAG_STRAFE_LEFT | MOVEFLAG_STRAFE_RIGHT |
+    MOVEFLAG_PITCH_UP | MOVEFLAG_PITCH_DOWN | MOVEFLAG_FALLING | MOVEFLAG_FALLING_FAR | MOVEFLAG_ASCENDING | MOVEFLAG_DESCENDING |
+    MOVEFLAG_SPLINE_ELEVATION,
+
+    MOVEFLAG_MASK_TURNING = MOVEFLAG_LEFT | MOVEFLAG_RIGHT,
+
+    MOVEFLAG_FALLING_MASK = 0x6000,
+    MOVEFLAG_MOTION_MASK = 0xE00F,
+    MOVEFLAG_PENDING_MASK = 0x7F0000,
+    MOVEFLAG_PENDING_STRAFE_MASK = 0x600000,
+    MOVEFLAG_PENDING_MOVE_MASK = 0x180000,
+    MOVEFLAG_FULL_FALLING_MASK = 0xE000
+};
+
+enum MovementFlags2
+{
+    MOVEFLAG2_NONE = 0x0000,
+    MOVEFLAG2_NO_STRAFE = 0x0001,
+    MOVEFLAG2_NO_JUMPING = 0x0002,
+    MOVEFLAG2_FULLSPEED_TURNING = 0x0004,
+    MOVEFLAG2_FULLSPEED_PITCHING = 0x0008,
+    MOVEFLAG2_ALLOW_PITCHING = 0x0010,
+    MOVEFLAG2_UNK4 = 0x0020,
+    MOVEFLAG2_UNK5 = 0x0040,
+    MOVEFLAG2_UNK6 = 0x0080,
+    MOVEFLAG2_UNK7 = 0x0100,
+    MOVEFLAG2_INTERP_MOVEMENT = 0x0200,
+    MOVEFLAG2_INTERP_TURNING = 0x0400,
+    MOVEFLAG2_INTERP_PITCHING = 0x0800,
+    MOVEFLAG2_INTERP_MASK = MOVEFLAG2_INTERP_MOVEMENT | MOVEFLAG2_INTERP_TURNING | MOVEFLAG2_INTERP_PITCHING
+};
+
+struct Position
+{
+    Position() : x(0.0f), y(0.0f), z(0.0f), o(0.0f) {}
+    Position(float _x, float _y, float _z, float _o) : x(_x), y(_y), z(_z), o(_o) {}
+    float x, y, z, o;
+};
+
+class MovementInfo
+{
+public:
+    MovementInfo() : moveFlags(0), moveFlags2(0), time(0),
+        t_time(0), t_seat(-1), t_time2(0), s_pitch(0.0f), fallTime(0), splineElevation(0.0f) {}
+
+    // Read/Write methods
+    void Read(ByteBuffer& data, uint16 opcode);
+    void Write(ByteBuffer& data, uint16 opcode) const;
+
+    // Movement flags manipulations
+    void AddMovementFlag(MovementFlags f) {
+        moveFlags |= f;
+    }
+    void RemoveMovementFlag(MovementFlags f) {
+        moveFlags &= ~f;
+    }
+    bool HasMovementFlag2(MovementFlags2 f) const {
+        return moveFlags2 & f;
+    }
+    void SetMovementFlags(MovementFlags f) {
+        moveFlags = f;
+    }
+    MovementFlags2 GetMovementFlags2() const {
+        return MovementFlags2(moveFlags2);
+    }
+    MovementFlags GetMovementFlags() const {
+        return MovementFlags(moveFlags);
+    }
+    bool HasMovementFlag(MovementFlags f) const {
+        return moveFlags & f;
+    }
+
+    // Position manipulations
+    Position const* GetPos() const {
+        return &pos;
+    }
+    void SetTransportData(WoWGuid guid, float x, float y, float z, float o, uint32 time, int8 seat)
+    {
+        t_guid = guid;
+        t_pos.x = x;
+        t_pos.y = y;
+        t_pos.z = z;
+        t_pos.o = o;
+        t_time = time;
+        t_seat = seat;
+    }
+    void ClearTransportData()
+    {
+        t_guid = NULL;
+        t_pos.x = 0.0f;
+        t_pos.y = 0.0f;
+        t_pos.z = 0.0f;
+        t_pos.o = 0.0f;
+        t_time = 0;
+        t_seat = -1;
+    }
+    WoWGuid const& GetGuid() const {
+        return guid;
+    }
+    WoWGuid const& GetTransportGuid() const {
+        return t_guid;
+    }
+    Position const* GetTransportPos() const {
+        return &t_pos;
+    }
+    int8 GetTransportSeat() const {
+        return t_seat;
+    }
+    uint32 GetTransportTime() const {
+        return t_time;
+    }
+    uint32 GetTransportTime2() const {
+        return t_time2;
+    }
+    uint32 GetFallTime() const {
+        return fallTime;
+    }
+    void ChangeOrientation(float o) {
+        pos.o = o;
+    }
+    void ChangePosition(float x, float y, float z, float o) {
+        pos.x = x; pos.y = y; pos.z = z; pos.o = o;
+    }
+    void UpdateTime(uint32 _time) {
+        time = _time;
+    }
+
+    struct JumpInfo
+    {
+        JumpInfo() : velocity(0.f), sinAngle(0.f), cosAngle(0.f), xyspeed(0.f) {}
+        float   velocity, sinAngle, cosAngle, xyspeed;
+    };
+
+    // used only for SMSG_PLAYER_MOVE currently
+    struct StatusInfo
+    {
+        StatusInfo() : hasFallData(false), hasFallDirection(false), hasOrientation(false),
+            hasPitch(false), hasSpline(false), hasSplineElevation(false),
+            hasTimeStamp(false), hasTransportTime2(false), hasTransportTime3(false) { }
+        bool hasFallData : 1;
+        bool hasFallDirection : 1;
+        bool hasOrientation : 1;
+        bool hasPitch : 1;
+        bool hasSpline : 1;
+        bool hasSplineElevation : 1;
+        bool hasTimeStamp : 1;
+        bool hasTransportTime2 : 1;
+        bool hasTransportTime3 : 1;
+    };
+
+    JumpInfo const& GetJumpInfo() const {
+        return jump;
+    }
+    StatusInfo const& GetStatusInfo() const {
+        return si;
+    }
+    float GetSplineElevation() const {
+        return splineElevation;
+    }
+    float GetPitch() const {
+        return s_pitch;
+    }
+
+private:
+    // common
+    WoWGuid guid;
+    uint32   moveFlags;                                 // see enum MovementFlags
+    uint16   moveFlags2;                                // see enum MovementFlags2
+    uint32   time;
+    Position pos;
+    // transport
+    WoWGuid t_guid;
+    Position t_pos;
+    uint32   t_time;
+    int8     t_seat;
+    uint32   t_time2;
+    // swimming and flying
+    float    s_pitch;
+    // last fall time
+    uint32   fallTime;
+    // jumping
+    JumpInfo jump;
+    // spline
+    float    splineElevation;
+    // status info
+    StatusInfo si;
+};
+
+inline WorldPacket& operator<< (WorldPacket& buf, MovementInfo const& mi)
+{
+    mi.Write(buf, buf.GetOpcode());
+    return buf;
+}
+
+inline WorldPacket& operator >> (WorldPacket& buf, MovementInfo& mi)
+{
+    mi.Read(buf, buf.GetOpcode());
+    return buf;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Checks for conditions specified in subclasses on Auras. When calling operator()
 /// it tells if the conditions are met.
@@ -1228,15 +1464,15 @@ class SERVER_DECL Unit : public Object
 
         MovementInfo* GetMovementInfo() { return &movement_info; }
 
-        uint32 GetUnitMovementFlags() const { return movement_info.flags; }   //checked
-        void SetUnitMovementFlags(uint32 f) { movement_info.flags = f; }
-        void AddUnitMovementFlag(uint32 f) { movement_info.flags |= f; }
-        void RemoveUnitMovementFlag(uint32 f) { movement_info.flags &= ~f; }
-        bool HasUnitMovementFlag(uint32 f) const { return (movement_info.flags & f) != 0; }
+        //uint32 GetUnitMovementFlags() const { return movement_info.flags; }   //checked
+        //void SetUnitMovementFlags(uint32 f) { movement_info.flags = f; }
+        //void AddUnitMovementFlag(uint32 f) { movement_info.flags |= f; }
+        //void RemoveUnitMovementFlag(uint32 f) { movement_info.flags &= ~f; }
+        //bool HasUnitMovementFlag(uint32 f) const { return (movement_info.flags & f) != 0; }
 
-        uint16 GetExtraUnitMovementFlags() const { return movement_info.flags2; }
-        void AddExtraUnitMovementFlag(uint16 f2) { movement_info.flags2 |= f2; }
-        bool HasExtraUnitMovementFlag(uint16 f2) const { return (movement_info.flags2 & f2) != 0; }
+        //uint16 GetExtraUnitMovementFlags() const { return movement_info.flags2; }
+        //void AddExtraUnitMovementFlag(uint16 f2) { movement_info.flags2 |= f2; }
+        //bool HasExtraUnitMovementFlag(uint16 f2) const { return (movement_info.flags2 & f2) != 0; }
 
         MovementInfo movement_info;
 };

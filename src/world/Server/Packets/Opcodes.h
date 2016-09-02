@@ -559,7 +559,6 @@ enum Opcodes
     SMSG_RAID_INSTANCE_INFO                         = 0x2CC,    // implemented
     CMSG_MOVE_FEATHER_FALL_ACK                      = 0x2CF,    // implemented
     CMSG_MOVE_WATER_WALK_ACK                        = 0x2D0,    // implemented
-    CMSG_MOVE_NOT_ACTIVE_MOVER                      = 0x2D1,    // implemented
     SMSG_PLAY_SOUND                                 = 0x2D2,    // implemented
     CMSG_BATTLEFIELD_PORT                           = 0x2D5,    // implemented
     MSG_INSPECT_HONOR_STATS                         = 0x2D6,    // implemented
@@ -1412,6 +1411,7 @@ This file is released under the MIT license. See README-MIT for more information
     CMSG_NAME_QUERY = 0x2224,
     SMSG_NAME_QUERY_RESPONSE = 0x6E04,
     SMSG_INIT_WORLD_STATES = 0x4C15,
+    CMSG_MOVE_NOT_ACTIVE_MOVER = 0x7A1A,
 
     NUM_MSG_TYPES = 0xFFFF
 };

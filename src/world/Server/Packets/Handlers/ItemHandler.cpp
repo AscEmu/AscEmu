@@ -1401,9 +1401,9 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket& recv_data)
     VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(unit->GetCreatureProperties()->Id);
 
     //this is a blizzlike check
-    if (!_player->obj_movement_info.IsOnTransport())
-        if (_player->GetDistanceSq(unit) > 100)
-            return; //avoid talking to anyone by guid hacking. Like sell farmed items anytime ? Low chance hack
+    //if (!_player->obj_movement_info.IsOnTransport())
+    //    if (_player->GetDistanceSq(unit) > 100)
+    //        return; //avoid talking to anyone by guid hacking. Like sell farmed items anytime ? Low chance hack
 
     if (unit->GetAIInterface())
         unit->GetAIInterface()->StopMovement(180000);
