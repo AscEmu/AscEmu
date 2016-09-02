@@ -460,16 +460,16 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     }
 }
 
-//void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint32 spellId;
-//    recvPacket >> spellId;
-//
-//    if (GetPlayer()->m_currentSpell)
-//        GetPlayer()->m_currentSpell->cancel();
-//}
+void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    uint32 spellId;
+    recvPacket >> spellId;
+
+    if (GetPlayer()->m_currentSpell)
+        GetPlayer()->m_currentSpell->cancel();
+}
 
 //void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
 //{

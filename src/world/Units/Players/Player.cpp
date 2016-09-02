@@ -10360,8 +10360,19 @@ void Player::_AddLanguages(bool All)
     PlayerSkill sk;
 
     uint32 spell_id;
-    static uint32 skills[] = { SKILL_LANG_COMMON, SKILL_LANG_ORCISH, SKILL_LANG_DWARVEN, SKILL_LANG_DARNASSIAN, SKILL_LANG_TAURAHE, SKILL_LANG_THALASSIAN,
-        SKILL_LANG_TROLL, SKILL_LANG_GUTTERSPEAK, SKILL_LANG_DRAENEI, SKILL_LANG_GOBLIN, SKILL_LANG_GILNEAN, 0
+    static uint32 skills[] =
+    { SKILL_LANG_COMMON, 
+        SKILL_LANG_ORCISH, 
+        SKILL_LANG_DWARVEN, 
+        SKILL_LANG_DARNASSIAN, 
+        SKILL_LANG_TAURAHE, 
+        SKILL_LANG_THALASSIAN,
+        SKILL_LANG_TROLL, 
+        SKILL_LANG_GUTTERSPEAK, 
+        SKILL_LANG_DRAENEI, 
+        SKILL_LANG_GOBLIN, 
+        SKILL_LANG_GILNEAN, 
+        0
     };
 
     if (All)
@@ -13708,4 +13719,186 @@ void Player::RemoteRevive()
 void Player::SetMover(Unit* target)
 {
     GetSession()->m_MoverWoWGuid.Init(target->GetGUID());
+}
+
+void Player::HandleFall(MovementInfo const& movementInfo)
+{
+        // player has finished falling
+        //if z_axisposition contains no data then set to current position
+        if (!z_axisposition)
+            z_axisposition = movement_info.GetPos()->z;
+
+        // calculate distance fallen
+        uint32 falldistance = float2int32(z_axisposition - movement_info.GetPos()->z);
+        if (z_axisposition <= movement_info.GetPos()->z)
+            falldistance = 1;
+        /*Safe Fall*/
+        if ((int)falldistance > m_safeFall)
+            falldistance -= m_safeFall;
+        else
+            falldistance = 1;
+
+        //checks that player has fallen more than 12 units, otherwise no damage will be dealt
+        //falltime check is also needed here, otherwise sudden changes in Z axis position, such as using !recall, may result in death
+        if (isAlive() && !bInvincible && (falldistance > 12) && !m_noFallDamage &&
+            ((!GodModeCheat && (UNIXTIME >= m_fallDisabledUntil))))
+        {
+            // 1.7% damage for each unit fallen on Z axis over 13
+            uint32 health_loss = static_cast<uint32>(GetHealth() * (falldistance - 12) * 0.017f);
+
+            if (health_loss >= GetHealth())
+                health_loss = GetHealth();
+#ifdef ENABLE_ACHIEVEMENTS
+            else if ((falldistance >= 65))
+            {
+                // Rather than Updating achievement progress every time fall damage is taken, all criteria currently have 65 yard requirement...
+                // Achievement 964: Fall 65 yards without dying.
+                // Achievement 1260: Fall 65 yards without dying while completely smashed during the Brewfest Holiday.
+                GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING, falldistance, Player::GetDrunkenstateByValue(GetDrunkValue()), 0);
+            }
+#endif
+
+            SendEnvironmentalDamageLog(GetGUID(), DAMAGE_FALL, health_loss);
+            DealDamage(this, health_loss, 0, 0, 0);
+
+            //_player->RemoveStealth(); // cebernic : why again? lost stealth by AURA_INTERRUPT_ON_ANY_DAMAGE_TAKEN already.
+        }
+        z_axisposition = 0.0f;
+}
+
+bool Player::IsPlayerJumping(MovementInfo const& minfo, uint16 opcode)
+{
+    if (opcode == CMSG_MOVE_FALL_LAND || minfo.GetMovementFlags() & MOVEFLAG_SWIMMING)
+    {
+        jumping = false;
+        return false;
+    }
+    if (!jumping && (opcode == CMSG_MOVE_JUMP || minfo.GetMovementFlags() & MOVEFLAG_FALLING))
+    {
+        jumping = true;
+        return true;
+    }
+}
+
+void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSession)
+{
+
+    // no water breathing is required
+    if (!sWorld.BreathingEnabled || FlyCheat || m_bUnlimitedBreath || !isAlive() || GodModeCheat)
+    {
+        // player is flagged as in water
+        if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING)
+            m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;
+
+        // player is flagged as under water
+        if (m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
+        {
+            m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
+            WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
+            data << uint32(TIMER_BREATH);
+            data << m_UnderwaterTime;
+            data << m_UnderwaterMaxTime;
+            data << int32(-1);
+            data << uint32(0);
+
+            pSession->SendPacket(&data);
+        }
+
+        // player is above water level
+        if (pSession->m_bIsWLevelSet)
+        {
+            if ((movement_info.GetPos()->z + m_noseLevel) > pSession->m_wLevel)
+            {
+                RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
+
+                // unset swim session water level
+                pSession->m_bIsWLevelSet = false;
+            }
+        }
+
+        return;
+    }
+
+    //player is swimming and not flagged as in the water
+    if (movement_info.GetMovementFlags() & MOVEFLAG_SWIMMING && !(m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
+    {
+        RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ENTER_WATER);
+
+        // get water level only if it was not set before
+        if (!pSession->m_bIsWLevelSet)
+        {
+            // water level is somewhere below the nose of the character when entering water
+            pSession->m_wLevel = movement_info.GetPos()->z + m_noseLevel * 0.95f;
+            pSession->m_bIsWLevelSet = true;
+        }
+
+        m_UnderwaterState |= UNDERWATERSTATE_SWIMMING;
+    }
+
+    // player is not swimming and is not stationary and is flagged as in the water
+    if (!(movement_info.GetMovementFlags() & MOVEFLAG_SWIMMING) && (movement_info.GetMovementFlags() != MOVEFLAG_NONE) && (m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
+    {
+        // player is above water level
+        if ((movement_info.GetPos()->z + m_noseLevel) > pSession->m_wLevel)
+        {
+            RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
+
+            // unset swim session water level
+            pSession->m_bIsWLevelSet = false;
+
+            m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;
+        }
+    }
+
+    // player is flagged as in the water and is not flagged as under the water
+    if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING && !(m_UnderwaterState & UNDERWATERSTATE_UNDERWATER))
+    {
+        //the player is in the water and has gone under water, requires breath bar.
+        if ((movement_info.GetPos()->z + m_noseLevel) < pSession->m_wLevel)
+        {
+            m_UnderwaterState |= UNDERWATERSTATE_UNDERWATER;
+            WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
+            data << uint32(TIMER_BREATH);
+            data << m_UnderwaterTime;
+            data << m_UnderwaterMaxTime;
+            data << int32(-1);
+            data << uint32(0);
+
+            pSession->SendPacket(&data);
+        }
+    }
+
+    // player is flagged as in the water and is flagged as under the water
+    if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING && m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
+    {
+        //the player is in the water but their face is above water, no breath bar needed.
+        if ((movement_info.GetPos()->z + m_noseLevel) > pSession->m_wLevel)
+        {
+            m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
+            WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
+            data << uint32(TIMER_BREATH);
+            data << m_UnderwaterTime;
+            data << m_UnderwaterMaxTime;
+            data << int32(10);
+            data << uint32(0);
+            pSession->SendPacket(&data);
+        }
+    }
+
+    // player is flagged as not in the water and is flagged as under the water
+    if (!(m_UnderwaterState & UNDERWATERSTATE_SWIMMING) && m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
+    {
+        //the player is out of the water, no breath bar needed.
+        if ((movement_info.GetPos()->z + m_noseLevel) > pSession->m_wLevel)
+        {
+            m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
+            WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
+            data << uint32(TIMER_BREATH);
+            data << m_UnderwaterTime;
+            data << m_UnderwaterMaxTime;
+            data << int32(10);
+            data << uint32(0);
+            pSession->SendPacket(&data);
+        }
+    }
 }

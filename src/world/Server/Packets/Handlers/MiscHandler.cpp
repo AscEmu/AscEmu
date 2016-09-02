@@ -1020,23 +1020,23 @@ void WorldSession::HandleLogoutCancelOpcode(WorldPacket& recv_data)
     LOG_DEBUG("WORLD: sent SMSG_LOGOUT_CANCEL_ACK Message");
 }
 
-//void WorldSession::HandleZoneUpdateOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint32 newZone;
-//
-//    recv_data >> newZone;
-//
-//    if (GetPlayer()->GetZoneId() == newZone)
-//        return;
-//
-//    sWeatherMgr.SendWeather(GetPlayer());
-//    _player->ZoneUpdate(newZone);
-//
-//    //clear buyback
-//    _player->GetItemInterface()->EmptyBuyBack();
-//}
+void WorldSession::HandleZoneUpdateOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    uint32 newZone;
+
+    recv_data >> newZone;
+
+    if (GetPlayer()->GetZoneId() == newZone)
+        return;
+
+    sWeatherMgr.SendWeather(GetPlayer());
+    _player->ZoneUpdate(newZone);
+
+    //clear buyback
+    _player->GetItemInterface()->EmptyBuyBack();
+}
 
 void WorldSession::HandleSetSelectionOpcode(WorldPacket& recv_data)
 {
@@ -2042,150 +2042,150 @@ void WorldSession::HandleStandStateChangeOpcode(WorldPacket& recv_data)
 //    LOG_DEBUG(" total: %lu level: %lu", _player->m_playedtime[1], _player->m_playedtime[0]);
 //}
 
-//void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_PACKET_SIZE(recv_data, 8);
-//    CHECK_INWORLD_RETURN;
-//
-//    uint64 guid;
-//    ByteBuffer m_Packed_GUID;
-//    recv_data >> guid;
-//    Player* player = _player->GetMapMgr()->GetPlayer((uint32)guid);
-//
-//    if (player == NULL)
-//    {
-//        LOG_ERROR("HandleInspectOpcode: guid was null");
-//        return;
-//    }
-//
-//    _player->SetTargetGUID(guid);
-//    _player->SetSelection(guid);
-//
-//    if (_player->m_comboPoints)
-//        _player->UpdateComboPoints();
-//
-//    WorldPacket data(SMSG_INSPECT_TALENT, 1000);
-//    m_Packed_GUID.appendPackGUID(player->GetGUID());
-//    data.append(m_Packed_GUID);
-//
-//    //data.appendPackGUID(guid);
-//    //data.appendPackGUID(player->GetGUID());
-//    //data << player->GetNewGUID();
-//#ifdef SAVE_BANDWIDTH
-//    PlayerSpec *currSpec = &player->m_specs[player->m_talentActiveSpec];
-//    data << uint32(currSpec->GetTP());
-//    data << uint8(1) << uint8(0);
-//    data << uint8(currSpec->talents.size()); //fake value, will be overwritten at the end
-//    for (std::map<uint32, uint8>::iterator itr = currSpec->talents.begin(); itr != currSpec->talents.end(); itr++)
-//        data << itr->first << itr->second;
-//    data << uint8(0); // Send Glyph info
-//#else
-//    data << uint32(player->m_specs[player->m_talentActiveSpec].GetTP());
-//    data << uint8(player->m_talentSpecsCount);
-//    data << uint8(player->m_talentActiveSpec);
-//    for (uint8 s = 0; s < player->m_talentSpecsCount; s++)
-//    {
-//        PlayerSpec spec = player->m_specs[s];
-//
-//        int32 talent_max_rank;
-//        uint32 talent_tab_id;
-//
-//        uint8 talent_count = 0;
-//        size_t pos = data.wpos();
-//        data << uint8(talent_count); //fake value, will be overwritten at the end
-//
-//        for (uint8 i = 0; i < 3; ++i)
-//        {
-//            talent_tab_id = sWorld.InspectTalentTabPages[player->getClass()][i];
-//
-//            for (uint32 j = 0; j < sTalentStore.GetNumRows(); ++j)
-//            {
-//                auto talent_info = sTalentStore.LookupEntry(j);
-//                if (talent_info == nullptr)
-//                    continue;
-//
-//                if (talent_info->TalentTree != talent_tab_id)
-//                    continue;
-//
-//                talent_max_rank = -1;
-//                for (int32 k = 4; k > -1; --k)
-//                {
-//                    //LOG_DEBUG("HandleInspectOpcode: k(%i) RankID(%i) HasSpell(%i) TalentTree(%i) Tab(%i)", k, talent_info->RankID[k - 1], player->HasSpell(talent_info->RankID[k - 1]), talent_info->TalentTree, talent_tab_id);
-//                    if (talent_info->RankID[k] != 0 && player->HasSpell(talent_info->RankID[k]))
-//                    {
-//                        talent_max_rank = k;
-//                        break;
-//                    }
-//                }
-//
-//                //LOG_DEBUG("HandleInspectOpcode: RankID(%i) talent_max_rank(%i)", talent_info->RankID[talent_max_rank-1], talent_max_rank);
-//
-//                if (talent_max_rank < 0)
-//                    continue;
-//
-//                data << uint32(talent_info->TalentID);
-//                data << uint8(talent_max_rank);
-//
-//                ++talent_count;
-//
-//                //LOG_DEBUG("HandleInspectOpcode: talent(%i) talent_max_rank(%i) rank_id(%i) talent_index(%i) talent_tab_pos(%i) rank_index(%i) rank_slot(%i) rank_offset(%i) mask(%i)", talent_info->TalentID, talent_max_rank, talent_info->RankID[talent_max_rank-1], talent_index, talent_tab_pos, rank_index, rank_slot, rank_offset , mask);
-//            }
-//        }
-//
-//        data.put<uint8>(pos, talent_count);
-//
-//        // Send Glyph info
-//        data << uint8(GLYPHS_COUNT);
-//        for (uint8 i = 0; i < GLYPHS_COUNT; i++)
-//            data << uint16(spec.glyphs[i]);
-//
-//    }
-//#endif
-//
-//    // ----[ Build the item list with their enchantments ]----
-//    uint32 slot_mask = 0;
-//    size_t slot_mask_pos = data.wpos();
-//    data << uint32(slot_mask);   // VLack: 3.1, this is a mask field, if we send 0 we can skip implementing this for now; here should come the player's enchantments from its items (the ones you would see on the character sheet).
-//
-//    ItemInterface* iif = player->GetItemInterface();
-//
-//    for (uint32 i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)   // Ideally this goes from 0 to 18 (EQUIPMENT_SLOT_END is 19 at the moment)
-//    {
-//        Item* item = iif->GetInventoryItem(static_cast<uint16>(i));
-//
-//        if (!item)
-//            continue;
-//
-//        slot_mask |= (1 << i);
-//
-//        data << uint32(item->GetEntry());
-//
-//        uint16 enchant_mask = 0;
-//        size_t enchant_mask_pos = data.wpos();
-//
-//        data << uint16(enchant_mask);
-//
-//        for (uint32 Slot = 0; Slot < MAX_ENCHANTMENT_SLOT; ++Slot) // In UpdateFields.h we have ITEM_FIELD_ENCHANTMENT_1_1 to ITEM_FIELD_ENCHANTMENT_12_1, iterate on them...
-//        {
-//            uint32 enchantId = item->GetEnchantmentId(Slot);   // This calculation has to be in sync with Item.cpp line ~614, at the moment it is:    uint32 EnchantBase = Slot * 3 + ITEM_FIELD_ENCHANTMENT_1_1;
-//
-//            if (!enchantId)
-//                continue;
-//
-//            enchant_mask |= (1 << Slot);
-//            data << uint16(enchantId);
-//        }
-//
-//        data.put<uint16>(enchant_mask_pos, enchant_mask);
-//
-//        data << uint16(0);   // UNKNOWN
-//        FastGUIDPack(data, item->GetCreatorGUID());  // Usually 0 will do, but if your friend created that item for you, then it is nice to display it when you get inspected.
-//        data << uint32(0);   // UNKNOWN
-//    }
-//    data.put<uint32>(slot_mask_pos, slot_mask);
-//
-//    SendPacket(&data);
-//}
+void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
+{
+    CHECK_PACKET_SIZE(recv_data, 8);
+    CHECK_INWORLD_RETURN;
+
+    uint64 guid;
+    ByteBuffer m_Packed_GUID;
+    recv_data >> guid;
+    Player* player = _player->GetMapMgr()->GetPlayer((uint32)guid);
+
+    if (player == NULL)
+    {
+        LOG_ERROR("HandleInspectOpcode: guid was null");
+        return;
+    }
+
+    _player->SetTargetGUID(guid);
+    _player->SetSelection(guid);
+
+    if (_player->m_comboPoints)
+        _player->UpdateComboPoints();
+
+    WorldPacket data(SMSG_INSPECT_TALENT, 1000);
+    m_Packed_GUID.appendPackGUID(player->GetGUID());
+    data.append(m_Packed_GUID);
+
+    //data.appendPackGUID(guid);
+    //data.appendPackGUID(player->GetGUID());
+    //data << player->GetNewGUID();
+#ifdef SAVE_BANDWIDTH
+    PlayerSpec *currSpec = &player->m_specs[player->m_talentActiveSpec];
+    data << uint32(currSpec->GetTP());
+    data << uint8(1) << uint8(0);
+    data << uint8(currSpec->talents.size()); //fake value, will be overwritten at the end
+    for (std::map<uint32, uint8>::iterator itr = currSpec->talents.begin(); itr != currSpec->talents.end(); itr++)
+        data << itr->first << itr->second;
+    data << uint8(0); // Send Glyph info
+#else
+    data << uint32(player->m_specs[player->m_talentActiveSpec].GetTP());
+    data << uint8(player->m_talentSpecsCount);
+    data << uint8(player->m_talentActiveSpec);
+    for (uint8 s = 0; s < player->m_talentSpecsCount; s++)
+    {
+        PlayerSpec spec = player->m_specs[s];
+
+        int32 talent_max_rank;
+        uint32 talent_tab_id;
+
+        uint8 talent_count = 0;
+        size_t pos = data.wpos();
+        data << uint8(talent_count); //fake value, will be overwritten at the end
+
+        for (uint8 i = 0; i < 3; ++i)
+        {
+            talent_tab_id = sWorld.InspectTalentTabPages[player->getClass()][i];
+
+            for (uint32 j = 0; j < sTalentStore.GetNumRows(); ++j)
+            {
+                auto talent_info = sTalentStore.LookupEntry(j);
+                if (talent_info == nullptr)
+                    continue;
+
+                if (talent_info->TalentTree != talent_tab_id)
+                    continue;
+
+                talent_max_rank = -1;
+                for (int32 k = 4; k > -1; --k)
+                {
+                    //LOG_DEBUG("HandleInspectOpcode: k(%i) RankID(%i) HasSpell(%i) TalentTree(%i) Tab(%i)", k, talent_info->RankID[k - 1], player->HasSpell(talent_info->RankID[k - 1]), talent_info->TalentTree, talent_tab_id);
+                    if (talent_info->RankID[k] != 0 && player->HasSpell(talent_info->RankID[k]))
+                    {
+                        talent_max_rank = k;
+                        break;
+                    }
+                }
+
+                //LOG_DEBUG("HandleInspectOpcode: RankID(%i) talent_max_rank(%i)", talent_info->RankID[talent_max_rank-1], talent_max_rank);
+
+                if (talent_max_rank < 0)
+                    continue;
+
+                data << uint32(talent_info->TalentID);
+                data << uint8(talent_max_rank);
+
+                ++talent_count;
+
+                //LOG_DEBUG("HandleInspectOpcode: talent(%i) talent_max_rank(%i) rank_id(%i) talent_index(%i) talent_tab_pos(%i) rank_index(%i) rank_slot(%i) rank_offset(%i) mask(%i)", talent_info->TalentID, talent_max_rank, talent_info->RankID[talent_max_rank-1], talent_index, talent_tab_pos, rank_index, rank_slot, rank_offset , mask);
+            }
+        }
+
+        data.put<uint8>(pos, talent_count);
+
+        // Send Glyph info
+        data << uint8(GLYPHS_COUNT);
+        for (uint8 i = 0; i < GLYPHS_COUNT; i++)
+            data << uint16(spec.glyphs[i]);
+
+    }
+#endif
+
+    // ----[ Build the item list with their enchantments ]----
+    uint32 slot_mask = 0;
+    size_t slot_mask_pos = data.wpos();
+    data << uint32(slot_mask);   // VLack: 3.1, this is a mask field, if we send 0 we can skip implementing this for now; here should come the player's enchantments from its items (the ones you would see on the character sheet).
+
+    ItemInterface* iif = player->GetItemInterface();
+
+    for (uint32 i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)   // Ideally this goes from 0 to 18 (EQUIPMENT_SLOT_END is 19 at the moment)
+    {
+        Item* item = iif->GetInventoryItem(static_cast<uint16>(i));
+
+        if (!item)
+            continue;
+
+        slot_mask |= (1 << i);
+
+        data << uint32(item->GetEntry());
+
+        uint16 enchant_mask = 0;
+        size_t enchant_mask_pos = data.wpos();
+
+        data << uint16(enchant_mask);
+
+        for (uint32 Slot = 0; Slot < MAX_ENCHANTMENT_SLOT; ++Slot) // In UpdateFields.h we have ITEM_FIELD_ENCHANTMENT_1_1 to ITEM_FIELD_ENCHANTMENT_12_1, iterate on them...
+        {
+            uint32 enchantId = item->GetEnchantmentId(Slot);   // This calculation has to be in sync with Item.cpp line ~614, at the moment it is:    uint32 EnchantBase = Slot * 3 + ITEM_FIELD_ENCHANTMENT_1_1;
+
+            if (!enchantId)
+                continue;
+
+            enchant_mask |= (1 << Slot);
+            data << uint16(enchantId);
+        }
+
+        data.put<uint16>(enchant_mask_pos, enchant_mask);
+
+        data << uint16(0);   // UNKNOWN
+        FastGUIDPack(data, item->GetCreatorGUID());  // Usually 0 will do, but if your friend created that item for you, then it is nice to display it when you get inspected.
+        data << uint32(0);   // UNKNOWN
+    }
+    data.put<uint32>(slot_mask_pos, slot_mask);
+
+    SendPacket(&data);
+}
 
 //void WorldSession::HandleSetActionBarTogglesOpcode(WorldPacket & recvPacket)
 //{
@@ -2199,21 +2199,21 @@ void WorldSession::HandleStandStateChangeOpcode(WorldPacket& recv_data)
 //}
 
 // Handlers for acknowledgement opcodes (removes some 'unknown opcode' flood from the logs)
-//void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    switch (recv_data.GetOpcode())
-//    {
-//        case CMSG_MOVE_WATER_WALK_ACK:
-//            _player->m_waterwalk = _player->m_setwaterwalk;
-//            break;
-//
-//        /*case CMSG_MOVE_SET_CAN_FLY_ACK:
-//            _player->FlyCheat = _player->m_setflycheat;
-//            break;*/
-//    }
-//}
+void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    switch (recv_data.GetOpcode())
+    {
+        case CMSG_MOVE_WATER_WALK_ACK:
+            _player->m_waterwalk = _player->m_setwaterwalk;
+            break;
+
+        /*case CMSG_MOVE_SET_CAN_FLY_ACK:
+            _player->FlyCheat = _player->m_setflycheat;
+            break;*/
+    }
+}
 
 //void WorldSession::HandleSelfResurrectOpcode(WorldPacket& recv_data)
 //{
@@ -2798,15 +2798,48 @@ void WorldSession::HandleReadyForAccountDataTimesOpcode(WorldPacket& recv_data)
     SendAccountDataTimes(GLOBAL_CACHE_MASK);
 }
 
-//void WorldSession::HandleUITimeRequestOpcode(WorldPacket& recv_data)
-//{
-//    WorldPacket data(SMSG_UI_TIME, 4);
-//    data << uint32(time(NULL));
-//    SendPacket(&data);
-//}
+void WorldSession::HandleUITimeRequestOpcode(WorldPacket& recv_data)
+{
+    WorldPacket data(SMSG_UI_TIME, 4);
+    data << uint32(time(NULL));
+    SendPacket(&data);
+}
 
-//void WorldSession::HandleTimeSyncRespOpcode(WorldPacket& recv_data)
-//{
-//    uint32 counter, clientTicks;
-//    recv_data >> counter >> clientTicks;
-//}
+void WorldSession::HandleTimeSyncRespOpcode(WorldPacket& recv_data)
+{
+    uint32 counter, clientTicks;
+    recv_data >> counter >> clientTicks;
+}
+
+void WorldSession::HandleObjectUpdateFailedOpcode(WorldPacket& recv_data)
+{
+    uint8 guid[8];
+    guid[6] = recv_data.readBit();
+    guid[7] = recv_data.readBit();
+    guid[4] = recv_data.readBit();
+    guid[0] = recv_data.readBit();
+    guid[1] = recv_data.readBit();
+    guid[5] = recv_data.readBit();
+    guid[3] = recv_data.readBit();
+    guid[2] = recv_data.readBit();
+
+    recv_data.ReadByteSeq(guid[6]);
+    recv_data.ReadByteSeq(guid[7]);
+    recv_data.ReadByteSeq(guid[2]);
+    recv_data.ReadByteSeq(guid[3]);
+    recv_data.ReadByteSeq(guid[1]);
+    recv_data.ReadByteSeq(guid[4]);
+    recv_data.ReadByteSeq(guid[0]);
+    recv_data.ReadByteSeq(guid[5]);
+
+    uint64 playerguid = *(uint64*)guid;
+    Log.Error("HandleObjectUpdateFailedOpcode", "Object update failed for playerguid %u", Arcemu::Util::GUID_LOPART(playerguid));
+
+    // logout
+    if (_player->GetGUID() == playerguid)
+    {
+        LogoutPlayer(true);
+        return;
+    }
+
+}

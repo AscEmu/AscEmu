@@ -461,40 +461,40 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles CMSG_SPIRIT_HEALER_ACTIVATE:
 //////////////////////////////////////////////////////////////////////////////////////////
-//void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//        if (!_player->IsDead())
-//            return;
-//
-//    GetPlayer()->DeathDurabilityLoss(0.25);
-//    GetPlayer()->ResurrectPlayer();
-//
-//    if (_player->getLevel() > 10)
-//    {
-//        Aura* aur = GetPlayer()->FindAura(15007);
-//
-//        if (aur == NULL)        // If the player already have the aura, just extend it.
-//        {
-//            OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(15007);    //resurrection sickness
-//            SpellCastTargets targets;
-//            targets.m_unitTarget = GetPlayer()->GetGUID();
-//            Spell* sp = sSpellFactoryMgr.NewSpell(_player, spellInfo, true, NULL);
-//            sp->prepare(&targets);
-//        }
-//
-//        //calc new duration
-//        int32 duration = 600000;        //10mins
-//
-//        if (_player->getLevel() < 20)
-//            duration = (_player->getLevel() - 10) * 60000;
-//
-//        _player->SetAurDuration(15007, duration);                   //cebernic: change this to setaurduration() to be refreshed.
-//    }
-//
-//    GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);
-//}
+void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+        if (!_player->IsDead())
+            return;
+
+    GetPlayer()->DeathDurabilityLoss(0.25);
+    GetPlayer()->ResurrectPlayer();
+
+    if (_player->getLevel() > 10)
+    {
+        Aura* aur = GetPlayer()->FindAura(15007);
+
+        if (aur == NULL)        // If the player already have the aura, just extend it.
+        {
+            OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(15007);    //resurrection sickness
+            SpellCastTargets targets;
+            targets.m_unitTarget = GetPlayer()->GetGUID();
+            Spell* sp = sSpellFactoryMgr.NewSpell(_player, spellInfo, true, NULL);
+            sp->prepare(&targets);
+        }
+
+        //calc new duration
+        int32 duration = 600000;        //10mins
+
+        if (_player->getLevel() < 20)
+            duration = (_player->getLevel() - 10) * 60000;
+
+        _player->SetAurDuration(15007, duration);                   //cebernic: change this to setaurduration() to be refreshed.
+    }
+
+    GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles CMSG_NPC_TEXT_QUERY:

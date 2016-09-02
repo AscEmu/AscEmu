@@ -22,14 +22,14 @@
 #include "StdAfx.h"
 
 
-//void WorldSession::HandleFriendListOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint32 flag;
-//    recv_data >> flag;
-//    _player->Social_SendFriendList(flag);
-//}
+void WorldSession::HandleFriendListOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    uint32 flag;
+    recv_data >> flag;
+    _player->Social_SendFriendList(flag);
+}
 
 //void WorldSession::HandleAddFriendOpcode(WorldPacket& recv_data)
 //{

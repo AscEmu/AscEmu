@@ -1021,6 +1021,9 @@ class SERVER_DECL Player : public Unit
         void SetMovement(uint8 pType, uint32 flag);
         void SetSpeeds(uint8 type, float speed);
         float GetPlayerSpeed() { return m_runSpeed; }
+        void HandleFall(MovementInfo const& movementInfo);
+        bool IsPlayerJumping(MovementInfo const& minfo, uint16 opcode);
+        void HandleBreathing(MovementInfo & movement_info, WorldSession* pSession);
         uint8 m_currentMovement;
         bool m_isMoving;            /// moving + strafing + jumping
         bool moving;

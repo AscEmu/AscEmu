@@ -270,6 +270,7 @@ class SERVER_DECL WorldSession
         void HandleCharCreateOpcode(WorldPacket& recvPacket);
         void HandlePlayerLoginOpcode(WorldPacket& recvPacket);
         void HandleRealmSplitOpcode(WorldPacket& recvPacket);
+        void HandleObjectUpdateFailedOpcode(WorldPacket& recv_data);
         //void HandleTimeSyncResp(WorldPacket& recv_data);
 
         /// Authentification and misc opcodes (MiscHandler.cpp):
@@ -287,12 +288,12 @@ class SERVER_DECL WorldSession
         void HandleLogoutRequestOpcode(WorldPacket& recvPacket);
         //void HandlePlayerLogoutOpcode(WorldPacket& recvPacket);
         void HandleLogoutCancelOpcode(WorldPacket& recvPacket);
-        //void HandleZoneUpdateOpcode(WorldPacket& recvPacket);
+        void HandleZoneUpdateOpcode(WorldPacket& recvPacket);
         //void HandleSetTargetOpcode(WorldPacket& recvPacket);
         void HandleSetSelectionOpcode(WorldPacket& recvPacket);
         void HandleStandStateChangeOpcode(WorldPacket& recvPacket);
         //void HandleDismountOpcode(WorldPacket& recvPacket);
-        //void HandleFriendListOpcode(WorldPacket& recvPacket);
+        void HandleFriendListOpcode(WorldPacket& recvPacket);
         //void HandleAddFriendOpcode(WorldPacket& recvPacket);
         //void HandleDelFriendOpcode(WorldPacket& recvPacket);
         //void HandleAddIgnoreOpcode(WorldPacket& recvPacket);
@@ -313,7 +314,7 @@ class SERVER_DECL WorldSession
         //void HandleSetSheathedOpcode(WorldPacket& recv_data);
         //void HandleCompleteCinematic(WorldPacket& recv_data);
         //void HandleNextCinematic(WorldPacket& recv_data);
-        //void HandleInspectOpcode(WorldPacket& recv_data);
+        void HandleInspectOpcode(WorldPacket& recv_data);
         //void HandleGameobjReportUseOpCode(WorldPacket& recv_data);  // CMSG_GAMEOBJ_REPORT_USE
 
         /// Gm Ticket System in GMTicket.cpp:
@@ -396,7 +397,7 @@ class SERVER_DECL WorldSession
         //void HandleCharterShowListOpcode(WorldPacket& recvPacket);
         void HandleGossipHelloOpcode(WorldPacket& recvPacket);
         void HandleGossipSelectOptionOpcode(WorldPacket& recvPacket);
-        //void HandleSpiritHealerActivateOpcode(WorldPacket& recvPacket);
+        void HandleSpiritHealerActivateOpcode(WorldPacket& recvPacket);
         //void HandleNpcTextQueryOpcode(WorldPacket& recvPacket);
         //void HandleBinderActivateOpcode(WorldPacket& recvPacket);
 
@@ -429,9 +430,9 @@ class SERVER_DECL WorldSession
         void HandleAutoEquipItemOpcode(WorldPacket& recvPacket);
         void HandleAutoEquipItemSlotOpcode(WorldPacket& recvPacket);
         //void HandleItemQuerySingleOpcode(WorldPacket& recvPacket);
-        //void HandleSellItemOpcode(WorldPacket& recvPacket);
-        //void HandleBuyItemInSlotOpcode(WorldPacket& recvPacket);
-        //void HandleBuyItemOpcode(WorldPacket& recvPacket);
+        void HandleSellItemOpcode(WorldPacket& recvPacket);
+        void HandleBuyItemInSlotOpcode(WorldPacket& recvPacket);
+        void HandleBuyItemOpcode(WorldPacket& recvPacket);
         void HandleListInventoryOpcode(WorldPacket& recvPacket);
         void HandleAutoStoreBagItemOpcode(WorldPacket& recvPacket);
         //void HandleBuyBackOpcode(WorldPacket& recvPacket);
@@ -458,7 +459,7 @@ class SERVER_DECL WorldSession
         void HandleUseItemOpcode(WorldPacket& recvPacket);
         void HandleCastSpellOpcode(WorldPacket& recvPacket);
         void HandleSpellClick(WorldPacket& recvPacket);
-        //void HandleCancelCastOpcode(WorldPacket& recvPacket);
+        void HandleCancelCastOpcode(WorldPacket& recvPacket);
         //void HandleCancelAuraOpcode(WorldPacket& recvPacket);
         void HandleCancelChannellingOpcode(WorldPacket& recvPacket);
         void HandleCancelAutoRepeatSpellOpcode(WorldPacket& recv_data);
@@ -468,7 +469,7 @@ class SERVER_DECL WorldSession
 
         /// Skill opcodes (SkillHandler.spp)
         //void HandleSkillLevelUpOpcode(WorldPacket& recvPacket);
-        //void HandleLearnTalentOpcode(WorldPacket& recvPacket);
+        void HandleLearnTalentOpcode(WorldPacket& recvPacket);
         //void HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket);
         //void HandleUnlearnTalents(WorldPacket& recv_data);
 
@@ -482,8 +483,8 @@ class SERVER_DECL WorldSession
         //void HandleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket);
         //void HandleQuestQueryOpcode(WorldPacket& recvPacket);
         //void HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket);
-        //void HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket);
-        //void HandlePushQuestToPartyOpcode(WorldPacket& recvPacket);
+        void HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket);
+        void HandlePushQuestToPartyOpcode(WorldPacket& recvPacket);
         //void HandleQuestPushResult(WorldPacket& recvPacket);
         //void HandleQuestPOIQueryOpcode(WorldPacket& recv_data);
     
@@ -498,8 +499,8 @@ class SERVER_DECL WorldSession
 
         /// Chat opcodes (Chat.cpp)
         void HandleMessagechatOpcode(WorldPacket& recvPacket);
-        //void HandleEmoteOpcode(WorldPacket& recvPacket);
-        //void HandleTextEmoteOpcode(WorldPacket& recvPacket);
+        void HandleEmoteOpcode(WorldPacket& recvPacket);
+        void HandleTextEmoteOpcode(WorldPacket& recvPacket);
         //void HandleReportSpamOpcode(WorldPacket& recvPacket);
         //void HandleChatIgnoredOpcode(WorldPacket& recvPacket);
         void HandleChatChannelWatchOpcode(WorldPacket& recvPacket);
@@ -631,7 +632,7 @@ class SERVER_DECL WorldSession
         //void HandleTutorialReset(WorldPacket& recv_data);
 
         // Acknowledgements
-        //void HandleAcknowledgementOpcodes(WorldPacket& recv_data);
+        void HandleAcknowledgementOpcodes(WorldPacket& recv_data);
         //void HandleMountSpecialAnimOpcode(WorldPacket& recv_data);
 
         //void HandleSelfResurrectOpcode(WorldPacket& recv_data);
@@ -714,8 +715,8 @@ class SERVER_DECL WorldSession
         // 4.3.4
         void HandleReadyForAccountDataTimesOpcode(WorldPacket& recv_data);
         void HandleLoadScreenOpcode(WorldPacket& recv_data);
-        //void HandleUITimeRequestOpcode(WorldPacket& recv_data); // empty opcode
-        //void HandleTimeSyncRespOpcode(WorldPacket& recv_data);
+        void HandleUITimeRequestOpcode(WorldPacket& recv_data); // empty opcode
+        void HandleTimeSyncRespOpcode(WorldPacket& recv_data);
 
         void Unhandled(WorldPacket& recv_data);
 

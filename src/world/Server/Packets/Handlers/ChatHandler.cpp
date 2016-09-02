@@ -600,125 +600,125 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
     }
 }
 
-//void WorldSession::HandleEmoteOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    CHECK_PACKET_SIZE(recv_data, 4);
-//
-//    if (!_player->isAlive())
-//        return;
-//
-//    uint32 emote;
-//    recv_data >> emote;
-//    _player->Emote((EmoteType)emote);
-//#ifdef ENABLE_ACHIEVEMENTS
-//    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, emote, 0, 0);
-//#endif
-//    uint64 guid = _player->GetGUID();
-//    sQuestMgr.OnPlayerEmote(_player, emote, guid);
-//}
+void WorldSession::HandleEmoteOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
 
-//void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    CHECK_PACKET_SIZE(recv_data, 16);
-//    if (!_player->isAlive())
-//        return;
-//
-//    uint64 guid;
-//    uint32 text_emote;
-//    uint32 unk;
-//    uint32 namelen = 1;
-//    const char* name = " ";
-//
-//    recv_data >> text_emote;
-//    recv_data >> unk;
-//    recv_data >> guid;
-//    if (m_muted && m_muted >= (uint32)UNIXTIME)
-//    {
-//        SystemMessage("Your voice is currently muted by a moderator.");
-//        return;
-//    }
-//
-//    if (!GetPermissionCount() && sWorld.flood_lines)
-//    {
-//        /* flood detection, wheeee! */
-//        if (UNIXTIME >= floodTime)
-//        {
-//            floodLines = 0;
-//            floodTime = UNIXTIME + sWorld.flood_seconds;
-//        }
-//
-//        if ((++floodLines) > sWorld.flood_lines)
-//        {
-//            return;
-//        }
-//    }
-//    Unit* pUnit = _player->GetMapMgr()->GetUnit(guid);
-//    if (pUnit)
-//    {
-//        if (pUnit->IsPlayer())
-//        {
-//            name = static_cast< Player* >(pUnit)->GetName();
-//            namelen = (uint32)strlen(name) + 1;
-//        }
-//        else if (pUnit->IsPet())
-//        {
-//            name = static_cast< Pet* >(pUnit)->GetName().c_str();
-//            namelen = (uint32)strlen(name) + 1;
-//        }
-//        else
-//        {
-//            Creature* p = static_cast< Creature* >(pUnit);
-//            name = p->GetCreatureProperties()->Name.c_str();
-//            namelen = (uint32)strlen(name) + 1;
-//        }
-//    }
-//
-//    auto emote_text_entry = sEmotesTextStore.LookupEntry(text_emote);
-//    if (emote_text_entry)
-//    {
-//        WorldPacket data(SMSG_EMOTE, 28 + namelen);
-//
-//        sHookInterface.OnEmote(_player, (EmoteType)emote_text_entry->textid, pUnit);
-//        if (pUnit)
-//            CALL_SCRIPT_EVENT(pUnit, OnEmote)(_player, (EmoteType)emote_text_entry->textid);
-//
-//        switch (emote_text_entry->textid)
-//        {
-//            case EMOTE_STATE_SLEEP:
-//            case EMOTE_STATE_SIT:
-//            case EMOTE_STATE_KNEEL:
-//            case EMOTE_STATE_DANCE:
-//            {
-//                _player->SetEmoteState(emote_text_entry->textid);
-//            }
-//            break;
-//        }
-//
-//        data << uint32(emote_text_entry->textid);
-//        data << uint64(GetPlayer()->GetGUID());
-//        GetPlayer()->SendMessageToSet(&data, true); //If player receives his own emote, his animation stops.
-//
-//        data.Initialize(SMSG_TEXT_EMOTE);
-//        data << uint64(GetPlayer()->GetGUID());
-//        data << uint32(text_emote);
-//        data << unk;
-//        data << uint32(namelen);
-//        if (namelen > 1)
-//            data.append(name, namelen);
-//        else
-//            data << uint8(0x00);
-//
-//        GetPlayer()->SendMessageToSet(&data, true);
-//#ifdef ENABLE_ACHIEVEMENTS
-//        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, text_emote, 0, 0);
-//#endif
-//        sQuestMgr.OnPlayerEmote(_player, text_emote, guid);
-//    }
-//}
+    CHECK_PACKET_SIZE(recv_data, 4);
+
+    if (!_player->isAlive())
+        return;
+
+    uint32 emote;
+    recv_data >> emote;
+    _player->Emote((EmoteType)emote);
+#ifdef ENABLE_ACHIEVEMENTS
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, emote, 0, 0);
+#endif
+    uint64 guid = _player->GetGUID();
+    sQuestMgr.OnPlayerEmote(_player, emote, guid);
+}
+
+void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    CHECK_PACKET_SIZE(recv_data, 16);
+    if (!_player->isAlive())
+        return;
+
+    uint64 guid;
+    uint32 text_emote;
+    uint32 unk;
+    uint32 namelen = 1;
+    const char* name = " ";
+
+    recv_data >> text_emote;
+    recv_data >> unk;
+    recv_data >> guid;
+    if (m_muted && m_muted >= (uint32)UNIXTIME)
+    {
+        SystemMessage("Your voice is currently muted by a moderator.");
+        return;
+    }
+
+    if (!GetPermissionCount() && sWorld.flood_lines)
+    {
+        /* flood detection, wheeee! */
+        if (UNIXTIME >= floodTime)
+        {
+            floodLines = 0;
+            floodTime = UNIXTIME + sWorld.flood_seconds;
+        }
+
+        if ((++floodLines) > sWorld.flood_lines)
+        {
+            return;
+        }
+    }
+    Unit* pUnit = _player->GetMapMgr()->GetUnit(guid);
+    if (pUnit)
+    {
+        if (pUnit->IsPlayer())
+        {
+            name = static_cast< Player* >(pUnit)->GetName();
+            namelen = (uint32)strlen(name) + 1;
+        }
+        else if (pUnit->IsPet())
+        {
+            name = static_cast< Pet* >(pUnit)->GetName().c_str();
+            namelen = (uint32)strlen(name) + 1;
+        }
+        else
+        {
+            Creature* p = static_cast< Creature* >(pUnit);
+            name = p->GetCreatureProperties()->Name.c_str();
+            namelen = (uint32)strlen(name) + 1;
+        }
+    }
+
+    auto emote_text_entry = sEmotesTextStore.LookupEntry(text_emote);
+    if (emote_text_entry)
+    {
+        WorldPacket data(SMSG_EMOTE, 28 + namelen);
+
+        sHookInterface.OnEmote(_player, (EmoteType)emote_text_entry->textid, pUnit);
+        if (pUnit)
+            CALL_SCRIPT_EVENT(pUnit, OnEmote)(_player, (EmoteType)emote_text_entry->textid);
+
+        switch (emote_text_entry->textid)
+        {
+            case EMOTE_STATE_SLEEP:
+            case EMOTE_STATE_SIT:
+            case EMOTE_STATE_KNEEL:
+            case EMOTE_STATE_DANCE:
+            {
+                _player->SetEmoteState(emote_text_entry->textid);
+            }
+            break;
+        }
+
+        data << uint32(emote_text_entry->textid);
+        data << uint64(GetPlayer()->GetGUID());
+        GetPlayer()->SendMessageToSet(&data, true); //If player receives his own emote, his animation stops.
+
+        data.Initialize(SMSG_TEXT_EMOTE);
+        data << uint64(GetPlayer()->GetGUID());
+        data << uint32(text_emote);
+        data << unk;
+        data << uint32(namelen);
+        if (namelen > 1)
+            data.append(name, namelen);
+        else
+            data << uint8(0x00);
+
+        GetPlayer()->SendMessageToSet(&data, true);
+#ifdef ENABLE_ACHIEVEMENTS
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, text_emote, 0, 0);
+#endif
+        sQuestMgr.OnPlayerEmote(_player, text_emote, guid);
+    }
+}
 
 
 ///\todo remove these unk unk unk nighrmare!

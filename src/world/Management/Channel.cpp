@@ -74,7 +74,7 @@ Channel::Channel(const char* name, uint32 team, uint32 type_id)
         if (chat_channels->flags & CHANNEL_DBC_TRADE)
             m_flags |= CHANNEL_FLAGS_TRADE;     // old 0x08;        // trade
 
-        if (chat_channels->flags & CHANNEL_DBC_CITY_ONLY_1 || chat_channels->flags & CHANNEL_DBC_CITY_ONLY_2)
+        if (chat_channels->flags & CHANNEL_DBC_CITY_ONLY_2)
             m_flags |= CHANNEL_FLAGS_CITY;      // old 0x20;        // city flag
 
         if (chat_channels->flags & CHANNEL_DBC_LFG)

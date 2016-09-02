@@ -236,54 +236,54 @@ initialiseSingleton(QuestMgr);
 //    LOG_DEBUG("WORLD: Sent SMSG_GOSSIP_COMPLETE");
 //}
 
-//void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint8 quest_slot;
-//    recvPacket >> quest_slot;
-//    if (quest_slot >= 25)
-//        return;
-//
-//    QuestLogEntry* qEntry = GetPlayer()->GetQuestLogInSlot(quest_slot);
-//    if (!qEntry)
-//    {
-//        LOG_DEBUG("WORLD: No quest in slot %d.", quest_slot);
-//        return;
-//    }
-//    QuestProperties const* qPtr = qEntry->GetQuest();
-//    CALL_QUESTSCRIPT_EVENT(qEntry, OnQuestCancel)(GetPlayer());
-//    qEntry->Finish();
-//
-//    // Remove all items given by the questgiver at the beginning
-//    for (uint8 i = 0; i < 4; ++i)
-//    {
-//        if (qPtr->receive_items[i])
-//            GetPlayer()->GetItemInterface()->RemoveItemAmt(qPtr->receive_items[i], 1);
-//    }
-//
-//    if (qPtr->srcitem && qPtr->srcitem != qPtr->receive_items[0])
-//    {
-//        ItemProperties const* itemProto = sMySQLStore.GetItemProperties(qPtr->srcitem);
-//        if (itemProto != NULL)
-//            if (itemProto->QuestId != qPtr->id)
-//                _player->GetItemInterface()->RemoveItemAmt(qPtr->srcitem, qPtr->srcitemcount ? qPtr->srcitemcount : 1);
-//    }
-//    //remove all quest items (but not trade goods) collected and required only by this quest
-//    for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
-//    {
-//        if (qPtr->required_item[i] != 0)
-//        {
-//            ItemProperties const* itemProto = sMySQLStore.GetItemProperties(qPtr->required_item[i]);
-//            if (itemProto != NULL && itemProto->Class == ITEM_CLASS_QUEST)
-//                GetPlayer()->GetItemInterface()->RemoveItemAmt(qPtr->required_item[i], qPtr->required_itemcount[i]);
-//        }
-//    }
-//
-//    GetPlayer()->UpdateNearbyGameObjects();
-//
-//    sHookInterface.OnQuestCancelled(_player, qPtr);
-//}
+void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    uint8 quest_slot;
+    recvPacket >> quest_slot;
+    if (quest_slot >= 25)
+        return;
+
+    QuestLogEntry* qEntry = GetPlayer()->GetQuestLogInSlot(quest_slot);
+    if (!qEntry)
+    {
+        LOG_DEBUG("WORLD: No quest in slot %d.", quest_slot);
+        return;
+    }
+    QuestProperties const* qPtr = qEntry->GetQuest();
+    CALL_QUESTSCRIPT_EVENT(qEntry, OnQuestCancel)(GetPlayer());
+    qEntry->Finish();
+
+    // Remove all items given by the questgiver at the beginning
+    for (uint8 i = 0; i < 4; ++i)
+    {
+        if (qPtr->receive_items[i])
+            GetPlayer()->GetItemInterface()->RemoveItemAmt(qPtr->receive_items[i], 1);
+    }
+
+    if (qPtr->srcitem && qPtr->srcitem != qPtr->receive_items[0])
+    {
+        ItemProperties const* itemProto = sMySQLStore.GetItemProperties(qPtr->srcitem);
+        if (itemProto != NULL)
+            if (itemProto->QuestId != qPtr->id)
+                _player->GetItemInterface()->RemoveItemAmt(qPtr->srcitem, qPtr->srcitemcount ? qPtr->srcitemcount : 1);
+    }
+    //remove all quest items (but not trade goods) collected and required only by this quest
+    for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
+    {
+        if (qPtr->required_item[i] != 0)
+        {
+            ItemProperties const* itemProto = sMySQLStore.GetItemProperties(qPtr->required_item[i]);
+            if (itemProto != NULL && itemProto->Class == ITEM_CLASS_QUEST)
+                GetPlayer()->GetItemInterface()->RemoveItemAmt(qPtr->required_item[i], qPtr->required_itemcount[i]);
+        }
+    }
+
+    GetPlayer()->UpdateNearbyGameObjects();
+
+    sHookInterface.OnQuestCancelled(_player, qPtr);
+}
 
 //void WorldSession::HandleQuestQueryOpcode(WorldPacket& recv_data)
 //{
@@ -572,93 +572,93 @@ initialiseSingleton(QuestMgr);
 //    }
 //}
 
-//void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint32 questid;
-//    recv_data >> questid;
-//
-//    QuestProperties const* pQuest = sMySQLStore.GetQuestProperties(questid);
-//    if (pQuest)
-//    {
-//        Group* pGroup = _player->GetGroup();
-//        if (pGroup)
-//        {
-//            uint32 pguid = _player->GetLowGUID();
-//            SubGroup* sgr = _player->GetGroup() ?
-//                _player->GetGroup()->GetSubGroup(_player->GetSubGroup()) : 0;
-//
-//            if (sgr)
-//            {
-//                _player->GetGroup()->Lock();
-//                GroupMembersSet::iterator itr;
-//                for (itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
-//                {
-//                    Player* pPlayer = (*itr)->m_loggedInPlayer;
-//                    if (pPlayer && pPlayer->GetGUID() != pguid)
-//                    {
-//                        WorldPacket data(MSG_QUEST_PUSH_RESULT, 9);
-//                        data << uint64(pPlayer->GetGUID());
-//                        data << uint8(QUEST_SHARE_MSG_SHARING_QUEST);
-//                        _player->GetSession()->SendPacket(&data);
-//
-//                        uint8 response = QUEST_SHARE_MSG_SHARING_QUEST;
-//                        uint32 status = sQuestMgr.PlayerMeetsReqs(pPlayer, pQuest, false);
-//
-//                        // Checks if the player has the quest
-//                        if (pPlayer->HasQuest(questid))
-//                        {
-//                            response = QUEST_SHARE_MSG_HAVE_QUEST;
-//                        }
-//                        // Checks if the player has finished the quest
-//                        else if (pPlayer->HasFinishedQuest(questid))
-//                        {
-//                            response = QUEST_SHARE_MSG_FINISH_QUEST;
-//                        }
-//                        // Checks if the player is able to take the quest
-//                        else if (status != QMGR_QUEST_AVAILABLE && status != QMGR_QUEST_CHAT)
-//                        {
-//                            response = QUEST_SHARE_MSG_CANT_TAKE_QUEST;
-//                        }
-//                        // Checks if the player has room in his/her questlog
-//                        else if (pPlayer->GetOpenQuestSlot() == -1)
-//                        {
-//                            response = QUEST_SHARE_MSG_LOG_FULL;
-//                        }
-//                        // Checks if the player is dueling
-//                        else if (pPlayer->DuelingWith)   // || pPlayer->GetQuestSharer()) //VLack: A possible lock up can occur if we don't zero out questsharer, because sometimes the client does not send the reply packet.. This of course eliminates the check on it, so it is possible to spam group members with quest sharing, but hey, they are YOUR FRIENDS, and better than not being able to receive quest sharing requests at all!
-//                        {
-//                            response = QUEST_SHARE_MSG_BUSY;
-//                        }
-//
-//                        //VLack: The quest giver player has to be visible for pPlayer, or else the client will show a non-functional "complete quest" panel instead of the "accept quest" one!
-//                        //We could either push a full player create for pPlayer that would cause problems later (because they are still out of range and this would have to be handled somehow),
-//                        //or create a fake bad response, as we no longer have an out of range response. I'll go with the latter option and send that the other player is busy...
-//                        //Also, pPlayer's client can send a busy response automatically even if the players see each other, but they are still too far away.
-//                        //But sometimes nothing happens on pPlayer's client (near the end of mutual visibility line), no quest window and no busy response either. This has to be solved later, maybe a distance check here...
-//                        if (response == QUEST_SHARE_MSG_SHARING_QUEST && !pPlayer->IsVisible(_player->GetGUID()))
-//                        {
-//                            response = QUEST_SHARE_MSG_BUSY;
-//                        }
-//
-//                        if (response != QUEST_SHARE_MSG_SHARING_QUEST)
-//                        {
-//                            sQuestMgr.SendPushToPartyResponse(_player, pPlayer, response);
-//                            continue;
-//                        }
-//
-//                        data.clear();
-//                        sQuestMgr.BuildQuestDetails(&data, pQuest, _player, 1, pPlayer->GetSession()->language, pPlayer);
-//                        pPlayer->SetQuestSharer(pguid); //VLack: better to set this _before_ sending out the packet, so no race conditions can happen on heavily loaded servers.
-//                        pPlayer->GetSession()->SendPacket(&data);
-//                    }
-//                }
-//                _player->GetGroup()->Unlock();
-//            }
-//        }
-//    }
-//}
+void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    uint32 questid;
+    recv_data >> questid;
+
+    QuestProperties const* pQuest = sMySQLStore.GetQuestProperties(questid);
+    if (pQuest)
+    {
+        Group* pGroup = _player->GetGroup();
+        if (pGroup)
+        {
+            uint32 pguid = _player->GetLowGUID();
+            SubGroup* sgr = _player->GetGroup() ?
+                _player->GetGroup()->GetSubGroup(_player->GetSubGroup()) : 0;
+
+            if (sgr)
+            {
+                _player->GetGroup()->Lock();
+                GroupMembersSet::iterator itr;
+                for (itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
+                {
+                    Player* pPlayer = (*itr)->m_loggedInPlayer;
+                    if (pPlayer && pPlayer->GetGUID() != pguid)
+                    {
+                        WorldPacket data(MSG_QUEST_PUSH_RESULT, 9);
+                        data << uint64(pPlayer->GetGUID());
+                        data << uint8(QUEST_SHARE_MSG_SHARING_QUEST);
+                        _player->GetSession()->SendPacket(&data);
+
+                        uint8 response = QUEST_SHARE_MSG_SHARING_QUEST;
+                        uint32 status = sQuestMgr.PlayerMeetsReqs(pPlayer, pQuest, false);
+
+                        // Checks if the player has the quest
+                        if (pPlayer->HasQuest(questid))
+                        {
+                            response = QUEST_SHARE_MSG_HAVE_QUEST;
+                        }
+                        // Checks if the player has finished the quest
+                        else if (pPlayer->HasFinishedQuest(questid))
+                        {
+                            response = QUEST_SHARE_MSG_FINISH_QUEST;
+                        }
+                        // Checks if the player is able to take the quest
+                        else if (status != QMGR_QUEST_AVAILABLE && status != QMGR_QUEST_CHAT)
+                        {
+                            response = QUEST_SHARE_MSG_CANT_TAKE_QUEST;
+                        }
+                        // Checks if the player has room in his/her questlog
+                        else if (pPlayer->GetOpenQuestSlot() == -1)
+                        {
+                            response = QUEST_SHARE_MSG_LOG_FULL;
+                        }
+                        // Checks if the player is dueling
+                        else if (pPlayer->DuelingWith)   // || pPlayer->GetQuestSharer()) //VLack: A possible lock up can occur if we don't zero out questsharer, because sometimes the client does not send the reply packet.. This of course eliminates the check on it, so it is possible to spam group members with quest sharing, but hey, they are YOUR FRIENDS, and better than not being able to receive quest sharing requests at all!
+                        {
+                            response = QUEST_SHARE_MSG_BUSY;
+                        }
+
+                        //VLack: The quest giver player has to be visible for pPlayer, or else the client will show a non-functional "complete quest" panel instead of the "accept quest" one!
+                        //We could either push a full player create for pPlayer that would cause problems later (because they are still out of range and this would have to be handled somehow),
+                        //or create a fake bad response, as we no longer have an out of range response. I'll go with the latter option and send that the other player is busy...
+                        //Also, pPlayer's client can send a busy response automatically even if the players see each other, but they are still too far away.
+                        //But sometimes nothing happens on pPlayer's client (near the end of mutual visibility line), no quest window and no busy response either. This has to be solved later, maybe a distance check here...
+                        if (response == QUEST_SHARE_MSG_SHARING_QUEST && !pPlayer->IsVisible(_player->GetGUID()))
+                        {
+                            response = QUEST_SHARE_MSG_BUSY;
+                        }
+
+                        if (response != QUEST_SHARE_MSG_SHARING_QUEST)
+                        {
+                            sQuestMgr.SendPushToPartyResponse(_player, pPlayer, response);
+                            continue;
+                        }
+
+                        data.clear();
+                        sQuestMgr.BuildQuestDetails(&data, pQuest, _player, 1, pPlayer->GetSession()->language, pPlayer);
+                        pPlayer->SetQuestSharer(pguid); //VLack: better to set this _before_ sending out the packet, so no race conditions can happen on heavily loaded servers.
+                        pPlayer->GetSession()->SendPacket(&data);
+                    }
+                }
+                _player->GetGroup()->Unlock();
+            }
+        }
+    }
+}
 
 //void WorldSession::HandleQuestPushResult(WorldPacket& recvPacket)
 //{

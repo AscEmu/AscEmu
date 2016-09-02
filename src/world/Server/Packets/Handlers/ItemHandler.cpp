@@ -919,470 +919,470 @@ void WorldSession::HandleAutoEquipItemSlotOpcode(WorldPacket & recvData)
 //    }
 //}
 
-//void WorldSession::HandleSellItemOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//        CHECK_PACKET_SIZE(recv_data, 17);
-//    LOG_DETAIL("WORLD: Received CMSG_SELL_ITEM");
-//
-//    uint64 vendorguid = 0, itemguid = 0;
-//    int8 amount = 0;
-//    //uint8 slot = INVENTORY_NO_SLOT_AVAILABLE;
-//    //uint8 bagslot = INVENTORY_NO_SLOT_AVAILABLE;
-//    //int check = 0;
-//
-//    recv_data >> vendorguid;
-//    recv_data >> itemguid;
-//    recv_data >> amount;
-//
-//    if (_player->IsCasting())
-//        _player->InterruptSpell();
-//
-//    // Check if item exists
-//    if (!itemguid)
-//    {
-//        SendSellItem(vendorguid, itemguid, 1);
-//        return;
-//    }
-//
-//    Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(vendorguid));
-//    // Check if Vendor exists
-//    if (unit == NULL)
-//    {
-//        SendSellItem(vendorguid, itemguid, 3);
-//        return;
-//    }
-//
-//    Item* item = _player->GetItemInterface()->GetItemByGUID(itemguid);
-//    if (!item)
-//    {
-//        SendSellItem(vendorguid, itemguid, 1);
-//        return; //our player doesn't have this item
-//    }
-//
-//    ItemProperties const* it = item->GetItemProperties();
-//
-//    if (item->IsContainer() && static_cast< Container* >(item)->HasItems())
-//    {
-//        SendSellItem(vendorguid, itemguid, 6);
-//        return;
-//    }
-//
-//    // Check if item can be sold
-//    if (it->SellPrice == 0 || item->wrapped_item_id != 0)
-//    {
-//        SendSellItem(vendorguid, itemguid, 2);
-//        return;
-//    }
-//
-//    uint32 stackcount = item->GetStackCount();
-//    uint32 quantity = 0;
-//
-//    if (amount != 0)
-//    {
-//        quantity = amount;
-//    }
-//    else
-//    {
-//        quantity = stackcount; //allitems
-//    }
-//
-//    if (quantity > stackcount) quantity = stackcount; //make sure we don't over do it
-//
-//    uint32 price = GetSellPriceForItem(it, quantity);
-//
-//    // Check they don't have more than the max gold
-//    if (sWorld.GoldCapEnabled)
-//    {
-//        if ((_player->GetGold() + price) > sWorld.GoldLimit)
-//        {
-//            _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
-//            return;
-//        }
-//    }
-//
-//    _player->ModGold(price);
-//
-//    if (quantity < stackcount)
-//    {
-//        item->SetStackCount(stackcount - quantity);
-//        item->m_isDirty = true;
-//    }
-//    else
-//    {
-//        //removing the item from the char's inventory
-//        item = _player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(itemguid, false); //again to remove item from slot
-//        if (item)
-//        {
-//            _player->GetItemInterface()->AddBuyBackItem(item, (it->SellPrice) * quantity);
-//            item->DeleteFromDB();
-//        }
-//    }
-//
-//    WorldPacket data(SMSG_SELL_ITEM, 12);
-//    data << vendorguid;
-//    data << itemguid;
-//    data << uint8(0);
-//    SendPacket(&data);
-//
-//    LOG_DETAIL("WORLD: Sent SMSG_SELL_ITEM");
-//}
+void WorldSession::HandleSellItemOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
 
-//void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag & drop
-//{
-//    CHECK_INWORLD_RETURN
-//    CHECK_PACKET_SIZE(recv_data, 22);
-//
-//    LOG_DETAIL("WORLD: Received CMSG_BUY_ITEM_IN_SLOT");
-//
-//    uint64 srcguid;
-//    uint64 bagguid;
-//    uint32 itemid;
-//    int8 slot;
-//    uint8 amount = 0;
-//    uint8 error;
-//    int8 bagslot = INVENTORY_SLOT_NOT_SET;
-//    int32 vendorslot; //VLack: 3.1.2
-//
-//    recv_data >> srcguid;
-//    recv_data >> itemid;
-//    recv_data >> vendorslot; //VLack: 3.1.2 This is the slot's number on the vendor's panel, starts from 1
-//    recv_data >> bagguid;
-//    recv_data >> slot; //VLack: 3.1.2 the target slot the player selected - backpack 23-38, other bags 0-15 (Or how big is the biggest bag? 0-127?)
-//    recv_data >> amount;
-//
-//    if (amount < 1)
-//        amount = 1;
-//
-//    if (_player->IsCasting())
-//        _player->InterruptSpell();
-//
-//    Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(srcguid));
-//    if (unit == NULL || !unit->HasItems())
-//        return;
-//
-//    Container* c = NULL;
-//
-//    CreatureItem ci;
-//    unit->GetSellItemByItemId(itemid, ci);
-//
-//    if (ci.itemid == 0)
-//        return;
-//
-//    if (ci.max_amount > 0 && ci.available_amount < amount)
-//    {
-//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_IS_CURRENTLY_SOLD_OUT);
-//        return;
-//    }
-//
-//    ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
-//    if (it == nullptr)
-//        return;
-//
-//    uint32 itemMaxStack = (_player->ItemStackCheat) ? 0x7fffffff : it->MaxCount;
-//    if (itemMaxStack > 0 && ci.amount * amount > itemMaxStack)
-//    {
-//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_CANT_CARRY_MORE_OF_THIS);
-//        return;
-//    }
-//
-//    uint32 count_per_stack = ci.amount * amount;
-//
-//    // if slot is different than -1, check for validation, else continue for auto storing.
-//    if (slot != INVENTORY_SLOT_NOT_SET)
-//    {
-//        if (!(bagguid >> 32))//buy to backpack
-//        {
-//            if (slot > INVENTORY_SLOT_ITEM_END || slot < INVENTORY_SLOT_ITEM_START)
-//            {
-//                //hackers!
-//                _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
-//                return;
-//            }
-//        }
-//        else
-//        {
-//            c = static_cast< Container* >(_player->GetItemInterface()->GetItemByGUID(bagguid));
-//            if (!c)
-//                return;
-//            bagslot = (int8)_player->GetItemInterface()->GetBagSlotByGuid(bagguid);
-//
-//            if (bagslot == INVENTORY_SLOT_NOT_SET || ((uint32)slot > c->GetItemProperties()->ContainerSlots))
-//            {
-//                _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
-//                return;
-//            }
-//        }
-//    }
-//    else
-//    {
-//        if ((bagguid >> 32))
-//        {
-//            c = static_cast< Container* >(_player->GetItemInterface()->GetItemByGUID(bagguid));
-//            if (!c)
-//            {
-//                _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_NOT_FOUND);
-//                return;//non empty
-//            }
-//
-//            bagslot = (int8)_player->GetItemInterface()->GetBagSlotByGuid(bagguid);
-//            slot = c->FindFreeSlot();
-//        }
-//        else
-//            slot = _player->GetItemInterface()->FindFreeBackPackSlot();
-//    }
-//
-//    if ((error = _player->GetItemInterface()->CanReceiveItem(it, amount)) != 0)
-//    {
-//        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
-//        return;
-//    }
-//
-//    if ((error = _player->GetItemInterface()->CanAffordItem(it, amount, unit)) != 0)
-//    {
-//        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
-//        return;
-//    }
-//
-//    if (slot == INVENTORY_SLOT_NOT_SET)
-//    {
-//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_BAG_FULL);
-//        return;
-//    }
-//
-//    // ok our z and slot are set.
-//    Item* oldItem = NULL;
-//    Item* pItem = NULL;
-//    if (slot != INVENTORY_SLOT_NOT_SET)
-//        oldItem = _player->GetItemInterface()->GetInventoryItem(bagslot, slot);
-//
-//    if (oldItem != NULL)
-//    {
-//        // try to add to the existing items stack
-//        if (oldItem->GetItemProperties() != it)
-//        {
-//            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
-//            return;
-//        }
-//
-//        if ((oldItem->GetStackCount() + count_per_stack) > itemMaxStack)
-//        {
-//            //            LOG_DEBUG("SUPADBG can't carry #2");
-//            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_CANT_CARRY_MORE_OF_THIS);
-//            return;
-//        }
-//
-//        oldItem->ModStackCount(count_per_stack);
-//        oldItem->m_isDirty = true;
-//        pItem = oldItem;
-//    }
-//    else
-//    {
-//        // create new item
-//        /*if (slot == INVENTORY_SLOT_NOT_SET) This cannot be true CID 52838
-//            slot = c->FindFreeSlot();*/
-//
-//        if (slot == ITEM_NO_SLOT_AVAILABLE)
-//        {
-//            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_BAG_FULL);
-//            return;
-//        }
-//
-//        pItem = objmgr.CreateItem(it->ItemId, _player);
-//        if (pItem)
-//        {
-//            pItem->SetStackCount(count_per_stack);
-//            pItem->m_isDirty = true;
-//            //            LOG_DEBUG("SUPADBG bagslot=%u, slot=%u" , bagslot, slot);
-//            if (!_player->GetItemInterface()->SafeAddItem(pItem, bagslot, slot))
-//            {
-//                pItem->DeleteMe();
-//                return;
-//            }
-//        }
-//        else
-//            return;
-//    }
-//
-//    _player->SendItemPushResult(false, true, false, (pItem == oldItem) ? false : true, bagslot, slot, amount * ci.amount, pItem->GetEntry(), pItem->GetItemRandomSuffixFactor(), pItem->GetItemRandomPropertyId(), pItem->GetStackCount());
-//
-//    WorldPacket data(SMSG_BUY_ITEM, 22);
-//    data << uint64(srcguid);
-//    data << getMSTime();
-//    data << uint32(itemid);
-//    data << uint32(amount);
-//
-//    SendPacket(&data);
-//
-//    LOG_DETAIL("WORLD: Sent SMSG_BUY_ITEM");
-//
-//    _player->GetItemInterface()->BuyItem(it, amount, unit);
-//    if (ci.max_amount)
-//    {
-//        unit->ModAvItemAmount(ci.itemid, ci.amount * amount);
-//
-//        // there is probably a proper opcode for this. - burlex
-//        SendInventoryList(unit);
-//    }
-//}
+        CHECK_PACKET_SIZE(recv_data, 17);
+    LOG_DETAIL("WORLD: Received CMSG_SELL_ITEM");
 
-//void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)   // right-click on item
-//{
-//    CHECK_INWORLD_RETURN;
-//    CHECK_PACKET_SIZE(recv_data, 14);
-//    LOG_DETAIL("WORLD: Received CMSG_BUY_ITEM");
-//
-//    uint64 srcguid = 0;
-//    uint32 itemid = 0;
-//    int32 slot = 0;
-//    uint8 amount = 0;
-//    uint8 error = 0;
-//    SlotResult slotresult;
-//    AddItemResult result;
-//
-//    recv_data >> srcguid;
-//    recv_data >> itemid;
-//    recv_data >> slot;
-//    recv_data >> amount;
-//
-//    auto creature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(srcguid));
-//    if (creature == nullptr || !creature->HasItems())
-//        return;
-//
-//    auto item_extended_cost = creature->GetItemExtendedCostByItemId(itemid);
-//
-//    if (amount < 1)
-//        amount = 1;
-//
-//    CreatureItem creature_item;
-//    creature->GetSellItemByItemId(itemid, creature_item);
-//
-//    if (creature_item.itemid == 0)
-//    {
-//        // vendor does not sell this item.. bitch about cheaters?
-//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
-//        return;
-//    }
-//
-//    if (creature_item.max_amount > 0 && creature_item.available_amount < amount)
-//    {
-//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_IS_CURRENTLY_SOLD_OUT);
-//        return;
-//    }
-//
-//    ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
-//    if (!it)
-//    {
-//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
-//        return;
-//    }
-//
-//    uint32 itemMaxStack = (_player->ItemStackCheat) ? 0x7fffffff : it->MaxCount;
-//    if (itemMaxStack > 0 && amount * creature_item.amount > itemMaxStack)
-//    {
-//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_CANT_STACK);
-//        return;
-//    }
-//
-//    if ((error = _player->GetItemInterface()->CanReceiveItem(it, amount * creature_item.amount)) != 0)
-//    {
-//        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
-//        return;
-//    }
-//
-//    if ((error = _player->GetItemInterface()->CanAffordItem(it, amount, creature)) != 0)
-//    {
-//        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
-//        return;
-//    }
-//
-//    // Find free slot and break if inv full
-//    auto add_item = _player->GetItemInterface()->FindItemLessMax(itemid, amount * creature_item.amount, false);
-//    if (!add_item)
-//    {
-//        slotresult = _player->GetItemInterface()->FindFreeInventorySlot(it);
-//    }
-//    if (!slotresult.Result && !add_item)
-//    {
-//        //Player doesn't have a free slot in his/her bag(s)
-//        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
-//        return;
-//    }
-//
-//    if (!add_item)
-//    {
-//        Item* item = objmgr.CreateItem(creature_item.itemid, _player);
-//        if (!item)
-//        {
-//            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
-//            return;
-//        }
-//
-//        item->m_isDirty = true;
-//        item->SetStackCount(amount * creature_item.amount);
-//
-//        if (slotresult.ContainerSlot == ITEM_NO_SLOT_AVAILABLE)
-//        {
-//            result = _player->GetItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, slotresult.Slot);
-//            if (!result)
-//            {
-//                item->DeleteMe();
-//            }
-//            else
-//            {
-//                if (item->IsEligibleForRefund() && item_extended_cost != nullptr)
-//                {
-//                    item->GetOwner()->GetItemInterface()->AddRefundable(item->GetGUID(), item_extended_cost->costid);
-//                }
-//                _player->SendItemPushResult(false, true, false, true, static_cast<uint8>(INVENTORY_SLOT_NOT_SET), slotresult.Result, amount * creature_item.amount, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
-//            }
-//        }
-//        else
-//        {
-//            if (Item* bag = _player->GetItemInterface()->GetInventoryItem(slotresult.ContainerSlot))
-//            {
-//                if (!static_cast<Container*>(bag)->AddItem(slotresult.Slot, item))
-//                {
-//                    item->DeleteMe();
-//                }
-//                else
-//                {
-//                    if (item->IsEligibleForRefund() && item_extended_cost != nullptr)
-//                    {
-//                        item->GetOwner()->GetItemInterface()->AddRefundable(item->GetGUID(), item_extended_cost->costid);
-//                    }
-//                    _player->SendItemPushResult(false, true, false, true, slotresult.ContainerSlot, slotresult.Result, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
-//                }
-//            }
-//        }
-//    }
-//    else
-//    {
-//        add_item->ModStackCount(amount * creature_item.amount);
-//        add_item->m_isDirty = true;
-//        _player->SendItemPushResult(false, true, false, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add_item->GetGUID()), 1, amount * creature_item.amount, add_item->GetEntry(), add_item->GetItemRandomSuffixFactor(), add_item->GetItemRandomPropertyId(), add_item->GetStackCount());
-//    }
-//
-//    _player->GetItemInterface()->BuyItem(it, amount, creature);
-//
-//    WorldPacket data(45);
-//    data.Initialize(SMSG_BUY_ITEM);
-//    data << uint64(srcguid);
-//    data << getMSTime();
-//    data << uint32(itemid);
-//    data << uint32(amount * creature_item.amount);
-//
-//    SendPacket(&data);
-//
-//    if (creature_item.max_amount)
-//    {
-//        creature->ModAvItemAmount(creature_item.itemid, creature_item.amount * amount);
-//
-//        // there is probably a proper opcode for this. - burlex
-//        SendInventoryList(creature);
-//    }
-//}
+    uint64 vendorguid = 0, itemguid = 0;
+    int8 amount = 0;
+    //uint8 slot = INVENTORY_NO_SLOT_AVAILABLE;
+    //uint8 bagslot = INVENTORY_NO_SLOT_AVAILABLE;
+    //int check = 0;
+
+    recv_data >> vendorguid;
+    recv_data >> itemguid;
+    recv_data >> amount;
+
+    if (_player->IsCasting())
+        _player->InterruptSpell();
+
+    // Check if item exists
+    if (!itemguid)
+    {
+        SendSellItem(vendorguid, itemguid, 1);
+        return;
+    }
+
+    Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(vendorguid));
+    // Check if Vendor exists
+    if (unit == NULL)
+    {
+        SendSellItem(vendorguid, itemguid, 3);
+        return;
+    }
+
+    Item* item = _player->GetItemInterface()->GetItemByGUID(itemguid);
+    if (!item)
+    {
+        SendSellItem(vendorguid, itemguid, 1);
+        return; //our player doesn't have this item
+    }
+
+    ItemProperties const* it = item->GetItemProperties();
+
+    if (item->IsContainer() && static_cast< Container* >(item)->HasItems())
+    {
+        SendSellItem(vendorguid, itemguid, 6);
+        return;
+    }
+
+    // Check if item can be sold
+    if (it->SellPrice == 0 || item->wrapped_item_id != 0)
+    {
+        SendSellItem(vendorguid, itemguid, 2);
+        return;
+    }
+
+    uint32 stackcount = item->GetStackCount();
+    uint32 quantity = 0;
+
+    if (amount != 0)
+    {
+        quantity = amount;
+    }
+    else
+    {
+        quantity = stackcount; //allitems
+    }
+
+    if (quantity > stackcount) quantity = stackcount; //make sure we don't over do it
+
+    uint32 price = GetSellPriceForItem(it, quantity);
+
+    // Check they don't have more than the max gold
+    if (sWorld.GoldCapEnabled)
+    {
+        if ((_player->GetGold() + price) > sWorld.GoldLimit)
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
+            return;
+        }
+    }
+
+    _player->ModGold(price);
+
+    if (quantity < stackcount)
+    {
+        item->SetStackCount(stackcount - quantity);
+        item->m_isDirty = true;
+    }
+    else
+    {
+        //removing the item from the char's inventory
+        item = _player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(itemguid, false); //again to remove item from slot
+        if (item)
+        {
+            _player->GetItemInterface()->AddBuyBackItem(item, (it->SellPrice) * quantity);
+            item->DeleteFromDB();
+        }
+    }
+
+    WorldPacket data(SMSG_SELL_ITEM, 12);
+    data << vendorguid;
+    data << itemguid;
+    data << uint8(0);
+    SendPacket(&data);
+
+    LOG_DETAIL("WORLD: Sent SMSG_SELL_ITEM");
+}
+
+void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag & drop
+{
+    CHECK_INWORLD_RETURN
+    CHECK_PACKET_SIZE(recv_data, 22);
+
+    LOG_DETAIL("WORLD: Received CMSG_BUY_ITEM_IN_SLOT");
+
+    uint64 srcguid;
+    uint64 bagguid;
+    uint32 itemid;
+    int8 slot;
+    uint8 amount = 0;
+    uint8 error;
+    int8 bagslot = INVENTORY_SLOT_NOT_SET;
+    int32 vendorslot; //VLack: 3.1.2
+
+    recv_data >> srcguid;
+    recv_data >> itemid;
+    recv_data >> vendorslot; //VLack: 3.1.2 This is the slot's number on the vendor's panel, starts from 1
+    recv_data >> bagguid;
+    recv_data >> slot; //VLack: 3.1.2 the target slot the player selected - backpack 23-38, other bags 0-15 (Or how big is the biggest bag? 0-127?)
+    recv_data >> amount;
+
+    if (amount < 1)
+        amount = 1;
+
+    if (_player->IsCasting())
+        _player->InterruptSpell();
+
+    Creature* unit = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(srcguid));
+    if (unit == NULL || !unit->HasItems())
+        return;
+
+    Container* c = NULL;
+
+    CreatureItem ci;
+    unit->GetSellItemByItemId(itemid, ci);
+
+    if (ci.itemid == 0)
+        return;
+
+    if (ci.max_amount > 0 && ci.available_amount < amount)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_IS_CURRENTLY_SOLD_OUT);
+        return;
+    }
+
+    ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
+    if (it == nullptr)
+        return;
+
+    uint32 itemMaxStack = (_player->ItemStackCheat) ? 0x7fffffff : it->MaxCount;
+    if (itemMaxStack > 0 && ci.amount * amount > itemMaxStack)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_CANT_CARRY_MORE_OF_THIS);
+        return;
+    }
+
+    uint32 count_per_stack = ci.amount * amount;
+
+    // if slot is different than -1, check for validation, else continue for auto storing.
+    if (slot != INVENTORY_SLOT_NOT_SET)
+    {
+        if (!(bagguid >> 32))//buy to backpack
+        {
+            if (slot > INVENTORY_SLOT_ITEM_END || slot < INVENTORY_SLOT_ITEM_START)
+            {
+                //hackers!
+                _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
+                return;
+            }
+        }
+        else
+        {
+            c = static_cast< Container* >(_player->GetItemInterface()->GetItemByGUID(bagguid));
+            if (!c)
+                return;
+            bagslot = (int8)_player->GetItemInterface()->GetBagSlotByGuid(bagguid);
+
+            if (bagslot == INVENTORY_SLOT_NOT_SET || ((uint32)slot > c->GetItemProperties()->ContainerSlots))
+            {
+                _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
+                return;
+            }
+        }
+    }
+    else
+    {
+        if ((bagguid >> 32))
+        {
+            c = static_cast< Container* >(_player->GetItemInterface()->GetItemByGUID(bagguid));
+            if (!c)
+            {
+                _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_NOT_FOUND);
+                return;//non empty
+            }
+
+            bagslot = (int8)_player->GetItemInterface()->GetBagSlotByGuid(bagguid);
+            slot = c->FindFreeSlot();
+        }
+        else
+            slot = _player->GetItemInterface()->FindFreeBackPackSlot();
+    }
+
+    if ((error = _player->GetItemInterface()->CanReceiveItem(it, amount)) != 0)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
+        return;
+    }
+
+    if ((error = _player->GetItemInterface()->CanAffordItem(it, amount, unit)) != 0)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
+        return;
+    }
+
+    if (slot == INVENTORY_SLOT_NOT_SET)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_BAG_FULL);
+        return;
+    }
+
+    // ok our z and slot are set.
+    Item* oldItem = NULL;
+    Item* pItem = NULL;
+    if (slot != INVENTORY_SLOT_NOT_SET)
+        oldItem = _player->GetItemInterface()->GetInventoryItem(bagslot, slot);
+
+    if (oldItem != NULL)
+    {
+        // try to add to the existing items stack
+        if (oldItem->GetItemProperties() != it)
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_DOESNT_GO_TO_SLOT);
+            return;
+        }
+
+        if ((oldItem->GetStackCount() + count_per_stack) > itemMaxStack)
+        {
+            //            LOG_DEBUG("SUPADBG can't carry #2");
+            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_CANT_CARRY_MORE_OF_THIS);
+            return;
+        }
+
+        oldItem->ModStackCount(count_per_stack);
+        oldItem->m_isDirty = true;
+        pItem = oldItem;
+    }
+    else
+    {
+        // create new item
+        /*if (slot == INVENTORY_SLOT_NOT_SET) This cannot be true CID 52838
+            slot = c->FindFreeSlot();*/
+
+        if (slot == ITEM_NO_SLOT_AVAILABLE)
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_BAG_FULL);
+            return;
+        }
+
+        pItem = objmgr.CreateItem(it->ItemId, _player);
+        if (pItem)
+        {
+            pItem->SetStackCount(count_per_stack);
+            pItem->m_isDirty = true;
+            //            LOG_DEBUG("SUPADBG bagslot=%u, slot=%u" , bagslot, slot);
+            if (!_player->GetItemInterface()->SafeAddItem(pItem, bagslot, slot))
+            {
+                pItem->DeleteMe();
+                return;
+            }
+        }
+        else
+            return;
+    }
+
+    _player->SendItemPushResult(false, true, false, (pItem == oldItem) ? false : true, bagslot, slot, amount * ci.amount, pItem->GetEntry(), pItem->GetItemRandomSuffixFactor(), pItem->GetItemRandomPropertyId(), pItem->GetStackCount());
+
+    WorldPacket data(SMSG_BUY_ITEM, 22);
+    data << uint64(srcguid);
+    data << getMSTime();
+    data << uint32(itemid);
+    data << uint32(amount);
+
+    SendPacket(&data);
+
+    LOG_DETAIL("WORLD: Sent SMSG_BUY_ITEM");
+
+    _player->GetItemInterface()->BuyItem(it, amount, unit);
+    if (ci.max_amount)
+    {
+        unit->ModAvItemAmount(ci.itemid, ci.amount * amount);
+
+        // there is probably a proper opcode for this. - burlex
+        SendInventoryList(unit);
+    }
+}
+
+void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)   // right-click on item
+{
+    CHECK_INWORLD_RETURN;
+    CHECK_PACKET_SIZE(recv_data, 14);
+    LOG_DETAIL("WORLD: Received CMSG_BUY_ITEM");
+
+    uint64 srcguid = 0;
+    uint32 itemid = 0;
+    int32 slot = 0;
+    uint8 amount = 0;
+    uint8 error = 0;
+    SlotResult slotresult;
+    AddItemResult result;
+
+    recv_data >> srcguid;
+    recv_data >> itemid;
+    recv_data >> slot;
+    recv_data >> amount;
+
+    auto creature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(srcguid));
+    if (creature == nullptr || !creature->HasItems())
+        return;
+
+    auto item_extended_cost = creature->GetItemExtendedCostByItemId(itemid);
+
+    if (amount < 1)
+        amount = 1;
+
+    CreatureItem creature_item;
+    creature->GetSellItemByItemId(itemid, creature_item);
+
+    if (creature_item.itemid == 0)
+    {
+        // vendor does not sell this item.. bitch about cheaters?
+        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
+        return;
+    }
+
+    if (creature_item.max_amount > 0 && creature_item.available_amount < amount)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_IS_CURRENTLY_SOLD_OUT);
+        return;
+    }
+
+    ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
+    if (!it)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
+        return;
+    }
+
+    uint32 itemMaxStack = (_player->ItemStackCheat) ? 0x7fffffff : it->MaxCount;
+    if (itemMaxStack > 0 && amount * creature_item.amount > itemMaxStack)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_ITEM_CANT_STACK);
+        return;
+    }
+
+    if ((error = _player->GetItemInterface()->CanReceiveItem(it, amount * creature_item.amount)) != 0)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
+        return;
+    }
+
+    if ((error = _player->GetItemInterface()->CanAffordItem(it, amount, creature)) != 0)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
+        return;
+    }
+
+    // Find free slot and break if inv full
+    auto add_item = _player->GetItemInterface()->FindItemLessMax(itemid, amount * creature_item.amount, false);
+    if (!add_item)
+    {
+        slotresult = _player->GetItemInterface()->FindFreeInventorySlot(it);
+    }
+    if (!slotresult.Result && !add_item)
+    {
+        //Player doesn't have a free slot in his/her bag(s)
+        _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_INVENTORY_FULL);
+        return;
+    }
+
+    if (!add_item)
+    {
+        Item* item = objmgr.CreateItem(creature_item.itemid, _player);
+        if (!item)
+        {
+            _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
+            return;
+        }
+
+        item->m_isDirty = true;
+        item->SetStackCount(amount * creature_item.amount);
+
+        if (slotresult.ContainerSlot == ITEM_NO_SLOT_AVAILABLE)
+        {
+            result = _player->GetItemInterface()->SafeAddItem(item, INVENTORY_SLOT_NOT_SET, slotresult.Slot);
+            if (!result)
+            {
+                item->DeleteMe();
+            }
+            else
+            {
+                if (item->IsEligibleForRefund() && item_extended_cost != nullptr)
+                {
+                    item->GetOwner()->GetItemInterface()->AddRefundable(item->GetGUID(), item_extended_cost->costid);
+                }
+                _player->SendItemPushResult(false, true, false, true, static_cast<uint8>(INVENTORY_SLOT_NOT_SET), slotresult.Result, amount * creature_item.amount, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+            }
+        }
+        else
+        {
+            if (Item* bag = _player->GetItemInterface()->GetInventoryItem(slotresult.ContainerSlot))
+            {
+                if (!static_cast<Container*>(bag)->AddItem(slotresult.Slot, item))
+                {
+                    item->DeleteMe();
+                }
+                else
+                {
+                    if (item->IsEligibleForRefund() && item_extended_cost != nullptr)
+                    {
+                        item->GetOwner()->GetItemInterface()->AddRefundable(item->GetGUID(), item_extended_cost->costid);
+                    }
+                    _player->SendItemPushResult(false, true, false, true, slotresult.ContainerSlot, slotresult.Result, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+                }
+            }
+        }
+    }
+    else
+    {
+        add_item->ModStackCount(amount * creature_item.amount);
+        add_item->m_isDirty = true;
+        _player->SendItemPushResult(false, true, false, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add_item->GetGUID()), 1, amount * creature_item.amount, add_item->GetEntry(), add_item->GetItemRandomSuffixFactor(), add_item->GetItemRandomPropertyId(), add_item->GetStackCount());
+    }
+
+    _player->GetItemInterface()->BuyItem(it, amount, creature);
+
+    WorldPacket data(45);
+    data.Initialize(SMSG_BUY_ITEM);
+    data << uint64(srcguid);
+    data << getMSTime();
+    data << uint32(itemid);
+    data << uint32(amount * creature_item.amount);
+
+    SendPacket(&data);
+
+    if (creature_item.max_amount)
+    {
+        creature->ModAvItemAmount(creature_item.itemid, creature_item.amount * amount);
+
+        // there is probably a proper opcode for this. - burlex
+        SendInventoryList(creature);
+    }
+}
 
 void WorldSession::HandleListInventoryOpcode(WorldPacket& recv_data)
 {
