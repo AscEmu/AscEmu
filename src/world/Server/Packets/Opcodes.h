@@ -1421,6 +1421,7 @@ enum Opcodes
     CMSG_AREA_SPIRIT_HEALER_QUERY                       = 0x4907,
     CMSG_AREA_SPIRIT_HEALER_QUEUE                       = 0x4815,
     SMSG_AREA_SPIRIT_HEALER_TIME                        = 0x0734,
+    MSG_MOVE_UPDATE_TELEPORT                            = 0x50B2,
 
     //Unknown packet send by client to server
     CMSG_UNREGISTER_ALL_ADDON_PREFIXES                  = 0x3D54,   // unknown?

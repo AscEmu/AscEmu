@@ -884,6 +884,11 @@ void WorldSession::FullLogin(Player* plr)
     Log.Debug("WorldSession", "Fully loading player %u", plr->GetLowGUID());
 
     SetPlayer(plr);
+
+    //New Movement Sysem
+    MoverGuid = plr->GetGUID();
+    //old
+
     m_MoverWoWGuid.Init(plr->GetGUID());
 
     MapMgr* mgr = sInstanceMgr.GetInstance(plr);
@@ -917,10 +922,6 @@ void WorldSession::FullLogin(Player* plr)
             plr->m_mapId = plr->GetBindMapId();
         }
     }
-
-    // copy to movement array
-    movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
-    memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
 
     // world preload
     uint32 VMapId;

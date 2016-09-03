@@ -707,6 +707,19 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         LocationVector m_lastMapUpdatePosition;
         LocationVector m_spawnLocation;
 
+        static float NormalizeOrientation(float o)
+        {
+            // fmod only supports positive numbers. Thus we have
+            // to emulate negative numbers
+            if (o < 0)
+            {
+                float mod = o *-1;
+                mod = fmod(mod, 2.0f * static_cast<float>(M_PI));
+                mod = -mod + 2.0f * static_cast<float>(M_PI);
+                return mod;
+            }
+            return fmod(o, 2.0f * static_cast<float>(M_PI));
+        }
         /// Object properties.
         union
         {

@@ -180,9 +180,9 @@ static const uint32 nmovementflags = sizeof(MoveFlagsToNames) / sizeof(MovementF
 void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 {
     uint16 opcode = recv_data.GetOpcode();
-    Unit* mover = _player;
+    Player* mover = _player;
 
-    if (m_MoverWoWGuid != mover->GetGUID())                    // there must always be a mover
+    if (MoverGuid != mover->GetGUID())
         return;
 
     if (_player->GetCharmedByGUID() || !_player->IsInWorld() || _player->GetPlayerStatus() == TRANSFER_PENDING || _player->GetTaxiState())
@@ -197,7 +197,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         _player->SetStandState(STANDSTATE_STAND);
     //extract packet
     MovementInfo movementInfo;
-    recv_data >> movementInfo;
+    GetPlayer()->ReadMovementInfo(recv_data, &movementInfo);
 
     /************************************************************************/
     /* Anti-Teleport                                                        */
@@ -205,10 +205,10 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 
     if (!(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->GetCharmedUnitGUID())
     {
-        if (sWorld.antihack_teleport && _player->m_position.Distance2DSq(movement_info.GetPos()->x, movement_info.GetPos()->y) > 3025.0f
-            && _player->m_runSpeed < 50.0f && !_player->movement_info.GetTransportGuid())
+        if (sWorld.antihack_teleport && _player->m_position.Distance2DSq(movement_info.pos.m_positionX, movement_info.pos.m_positionY) > 3025.0f
+            && _player->m_runSpeed < 50.0f && !_player->movement_info.t_guid)
         {
-            sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->m_runSpeed, sqrt(_player->m_position.Distance2DSq(movement_info.GetPos()->x, movement_info.GetPos()->y)));
+            sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->m_runSpeed, sqrt(_player->m_position.Distance2DSq(movement_info.pos.m_positionX, movement_info.pos.m_positionY)));
             Disconnect();
             return;
         }
@@ -223,19 +223,19 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Make sure the co-ordinates are valid.                                */
     /************************************************************************/
-    if (!((movement_info.GetPos()->y >= _minY) && (movement_info.GetPos()->y <= _maxY)) || !((movement_info.GetPos()->x >= _minX) && (movement_info.GetPos()->x <= _maxX)))
+    if (!((movement_info.pos.m_positionX >= _minY) && (movement_info.pos.m_positionY <= _maxY)) || !((movement_info.pos.m_positionX >= _minX) && (movement_info.pos.m_positionX <= _maxX)))
     {
         Disconnect();
         return;
     }
 
     //update the detector
-    if (sWorld.antihack_speed && !_player->GetTaxiState() && _player->movement_info.GetTransportGuid() == 0 && !_player->GetSession()->GetPermissionCount())
+    if (sWorld.antihack_speed && !_player->GetTaxiState() && _player->movement_info.t_guid == 0 && !_player->GetSession()->GetPermissionCount())
     {
         // simplified: just take the fastest speed. less chance of fuckups too
         float speed = (_player->flying_aura) ? _player->m_flySpeed : (_player->m_swimSpeed > _player->m_runSpeed) ? _player->m_swimSpeed : _player->m_runSpeed;
 
-        _player->SDetector->AddSample(movement_info.GetPos()->x, movement_info.GetPos()->y, getMSTime(), speed);
+        _player->SDetector->AddSample(movement_info.pos.m_positionX, movement_info.pos.m_positionY, getMSTime(), speed);
 
         if (_player->SDetector->IsCheatDetected())
             _player->SDetector->ReportCheater(_player);
@@ -249,14 +249,14 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Fall damage generation                                               */
     /************************************************************************/
-    if (opcode == CMSG_MOVE_FALL_LAND && _player )
+    if (opcode == CMSG_MOVE_FALL_LAND && _player)
         _player->HandleFall(movementInfo);
     else
     {
         //whilst player is not falling, continuously update Z axis position.
         //once player lands this will be used to determine how far he fell.
         if (!(movement_info.GetMovementFlags() & MOVEFLAG_FALLING))
-            mover->z_axisposition = movement_info.GetPos()->z;
+            mover->z_axisposition = movement_info.pos.m_positionZ;
     }
 
     /************************************************************************/
@@ -268,14 +268,18 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Update our Positiin                                                  */
     /************************************************************************/
-    if (m_MoverWoWGuid.GetOldGuid() == _player->GetGUID())
+    if (MoverGuid == _player->GetGUID())
     {
-        _player->SetPosition(movementInfo.GetPos()->x, movementInfo.GetPos()->y, movementInfo.GetPos()->z, movementInfo.GetPos()->o);
+        _player->SetPosition(movementInfo.pos.m_positionX, movementInfo.pos.m_positionY, movementInfo.pos.m_positionZ, movementInfo.pos.m_orientation);
     }
 
+    movementInfo.time = getMSTime() + _latency + MOVEMENT_PACKET_TIME_DELAY;
+    movementInfo.guid = mover->GetGUID();
+    mover->movement_info = movementInfo;
+
     WorldPacket data(SMSG_PLAYER_MOVE, recv_data.size());
-    data << movementInfo;
-    mover->SendMessageToSet(&data, _player);
+    _player->WriteMovementInfo(data);
+    mover->SendMessageToSet(&data, false);
 
 //    CHECK_INWORLD_RETURN
 //
@@ -722,22 +726,18 @@ void WorldSession::HandleMoveTimeSkippedOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recv_data)
 {
-    WoWGuid guid;
+    /*WoWGuid guid;
     recv_data >> guid;
 
     if (guid == m_MoverWoWGuid)
         return;
 
-    /*movement_info.init(recv_data);*/
+    /*movement_info.init(recv_data);
 
     if ((guid != uint64(0)) && (guid == _player->GetCharmedUnitGUID()))
         m_MoverWoWGuid = guid;
     else
-        m_MoverWoWGuid.Init(_player->GetGUID());
-
-    // set up to the movement packet
-    movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
-    memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
+        m_MoverWoWGuid.Init(_player->GetGUID());*/
 }
 
 
@@ -765,25 +765,16 @@ void WorldSession::HandleSetActiveMoverOpcode(WorldPacket& recv_data)
 
     uint64 guid = *(uint64*)playerGuid;
 
-    if (guid != m_MoverWoWGuid.GetOldGuid())
+    if (!(_player->m_CurrentCharm == guid) && !(_player->GetGUID() == guid))
     {
-        // make sure the guid is valid and we aren't cheating
-        if (!(_player->m_CurrentCharm == guid) && !(_player->GetGUID() == guid))
-        {
-            if (_player->GetCurrentVehicle()->GetOwner()->GetGUID() != guid)
-                return;
-        }
-
-        // generate wowguid
-        if (guid != 0)
-            m_MoverWoWGuid.Init(guid);
-        else
-            m_MoverWoWGuid.Init(_player->GetGUID());
-
-        // set up to the movement packet
-        movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
-        memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
+        if (_player->GetCurrentVehicle()->GetOwner()->GetGUID() != guid)
+            return;
     }
+
+    if (guid != 0)
+        MoverGuid = guid;
+    else
+        MoverGuid = _player->GetGUID();
 }
 
 //void WorldSession::HandleMoveSplineCompleteOpcode(WorldPacket& recvPacket)

@@ -763,7 +763,6 @@ class SERVER_DECL WorldSession
 
         // Preallocated buffers for movement handlers
         MovementInfo movement_info;
-        uint8 movement_packet[90];
 
         uint32 _accountId;
         uint32 _accountFlags;
@@ -776,6 +775,8 @@ class SERVER_DECL WorldSession
         int8 _side;
 
         WoWGuid m_MoverWoWGuid;
+        //New Movement System
+        uint64 MoverGuid;
 
         uint32 _logoutTime; // time we received a logout request -- wait 20 seconds, and quit
 

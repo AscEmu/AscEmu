@@ -51,8 +51,6 @@ floodTime(UNIXTIME),
 language(0),
 m_muted(0)
 {
-    memset(movement_packet, 0, sizeof(movement_packet));
-
     //movement_info.redirectVelocity = 0;
 
     for (uint8 x = 0; x < 8; x++)

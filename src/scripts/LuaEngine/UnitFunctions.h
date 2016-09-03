@@ -5399,16 +5399,16 @@ class LuaUnit
         {
             lua_newtable(L);
             lua_pushstring(L, "x");
-            lua_pushnumber(L, movement_info->GetPos()->x);
+            lua_pushnumber(L, movement_info->pos.m_positionX);
             lua_rawset(L, -3);
             lua_pushstring(L, "y");
-            lua_pushnumber(L, movement_info->GetPos()->y);
+            lua_pushnumber(L, movement_info->pos.m_positionY);
             lua_rawset(L, -3);
             lua_pushstring(L, "z");
-            lua_pushnumber(L, movement_info->GetPos()->z);
+            lua_pushnumber(L, movement_info->pos.m_positionZ);
             lua_rawset(L, -3);
             lua_pushstring(L, "o");
-            lua_pushnumber(L, movement_info->GetPos()->o);
+            lua_pushnumber(L, movement_info->pos.m_orientation);
             lua_rawset(L, -3);
         }
         else
