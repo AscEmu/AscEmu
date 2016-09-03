@@ -26,21 +26,21 @@ extern bool bLogChat;
 
 static const uint32 LanguageSkills[NUM_LANGUAGES] =
 {
-    0,                // UNIVERSAL        0x00
-    109,            // ORCISH            0x01
-    113,            // DARNASSIAN        0x02
+    0,              // UNIVERSAL          0x00
+    109,            // ORCISH             0x01
+    113,            // DARNASSIAN         0x02
     115,            // TAURAHE            0x03
     0,                // -                0x04
     0,                // -                0x05
-    111,            // DWARVISH            0x06
-    98,                // COMMON            0x07
-    139,            // DEMON TONGUE        0x08
-    140,            // TITAN            0x09
-    137,            // THALSSIAN        0x0A
-    138,            // DRACONIC            0x0B
-    0,                // KALIMAG            0x0C
+    111,            // DWARVISH           0x06
+    98,             // COMMON             0x07
+    139,            // DEMON TONGUE       0x08
+    140,            // TITAN              0x09
+    137,            // THALSSIAN          0x0A
+    138,            // DRACONIC           0x0B
+    0,              // KALIMAG            0x0C
     313,            // GNOMISH            0x0D
-    315,            // TROLL            0x0E
+    315,            // TROLL              0x0E
     0,                // -                0x0F
     0,                // -                0x10
     0,                // -                0x11
@@ -59,9 +59,14 @@ static const uint32 LanguageSkills[NUM_LANGUAGES] =
     0,                // -                0x1E
     0,                // -                0x1F
     0,                // -                0x20
-    673,            // -                0x21
+    673,            // GUTTERSPEAK        0x21
     0,                // -                0x22
-    759,            // -                0x23
+    759,            // DRAENEI            0x23
+    0,              // ZOMBIE             0x24
+    0,              // GNOMISH_BINAR      0x25
+    0,              // GOBLIN_BINARY      0x26
+    791,            // WORGEN             0x27
+    792,            // GOBLIN             0x28
 };
 
 void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
@@ -766,27 +771,47 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
 //
 //    LOG_DEBUG("REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", spam_type, Arcemu::Util::GUID_LOPART(spammer_guid), unk1, unk2, unk3, unk4, description.c_str());
 //}
-//
-//void WorldSession::HandleChatIgnoredOpcode(WorldPacket & recvPacket)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    CHECK_PACKET_SIZE(recvPacket, 8 + 1);
-//
-//    uint64 iguid;
-//    uint8 unk;
-//
-//    recvPacket >> iguid;
-//    recvPacket >> unk; // probably related to spam reporting
-//
-//    Player* player = objmgr.GetPlayer(uint32(iguid));
-//    if (!player || !player->GetSession())
-//        return;
-//
-//    WorldPacket* data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, _player->GetName(), _player->GetGUID());
-//    player->GetSession()->SendPacket(data);
-//    delete data;
-//}
+
+void WorldSession::HandleChatIgnoredOpcode(WorldPacket & recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    CHECK_PACKET_SIZE(recvPacket, 8 + 1);
+
+    uint8 unk;
+
+    recvPacket >> unk;
+
+    uint8 playerGuid[8];
+
+    playerGuid[5] = recvPacket.readBit();
+    playerGuid[2] = recvPacket.readBit();
+    playerGuid[6] = recvPacket.readBit();
+    playerGuid[4] = recvPacket.readBit();
+    playerGuid[7] = recvPacket.readBit();
+    playerGuid[0] = recvPacket.readBit();
+    playerGuid[1] = recvPacket.readBit();
+    playerGuid[3] = recvPacket.readBit();
+
+    recvPacket.ReadByteSeq(playerGuid[0]);
+    recvPacket.ReadByteSeq(playerGuid[6]);
+    recvPacket.ReadByteSeq(playerGuid[5]);
+    recvPacket.ReadByteSeq(playerGuid[1]);
+    recvPacket.ReadByteSeq(playerGuid[4]);
+    recvPacket.ReadByteSeq(playerGuid[3]);
+    recvPacket.ReadByteSeq(playerGuid[7]);
+    recvPacket.ReadByteSeq(playerGuid[2]);
+
+    uint64 iguid = *(uint64*)playerGuid;
+
+    Player* player = objmgr.GetPlayer(uint32(iguid));
+    if (!player || !player->GetSession())
+        return;
+
+    WorldPacket* data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, _player->GetName(), _player->GetGUID());
+    player->GetSession()->SendPacket(data);
+    delete data;
+}
 
 void WorldSession::HandleChatChannelWatchOpcode(WorldPacket& recvPacket)
 {

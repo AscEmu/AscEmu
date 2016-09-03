@@ -144,9 +144,6 @@ enum Opcodes
     CMSG_TRIGGER_CINEMATIC_CHEAT                    = 0x0F8,    // GM client only
     CMSG_OPENING_CINEMATIC                          = 0x0F9,    ///\todo implement
     SMSG_TUTORIAL_FLAGS                             = 0x0FD,    // implemented
-    CMSG_TUTORIAL_FLAG                              = 0x0FE,    // implemented
-    CMSG_TUTORIAL_CLEAR                             = 0x0FF,    // implemented
-    CMSG_TUTORIAL_RESET                             = 0x100,    // implemented
     OBSOLETE_DROP_ITEM                              = 0x110,    // not used in client
     SMSG_OPEN_CONTAINER                             = 0x113,    ///\todo implement
     CMSG_INITIATE_TRADE                             = 0x116,    // implemented
@@ -186,7 +183,6 @@ enum Opcodes
     SMSG_BINDZONEREPLY                              = 0x157,    // handled by client, but unused. Oo
     SMSG_PLAYERBOUND                                = 0x158,    // implemented
     SMSG_CLIENT_CONTROL_UPDATE                      = 0x159,    // implemented
-    CMSG_REPOP_REQUEST                              = 0x15A,    // implemented
     SMSG_RESURRECT_REQUEST                          = 0x15B,    // implemented
     CMSG_RESURRECT_RESPONSE                         = 0x15C,    // implemented
     SMSG_ITEM_PUSH_RESULT                           = 0x166,    // implemented
@@ -254,7 +250,6 @@ enum Opcodes
     SMSG_AURACASTLOG_OBSOLETE                       = 0x1D1,    // OBSOLETE
     CMSG_RECLAIM_CORPSE                             = 0x1D2,    // implemented
     CMSG_WRAP_ITEM                                  = 0x1D3,    // implemented
-    SMSG_LEVELUP_INFO                               = 0x1D4,    // implemented
     MSG_MINIMAP_PING                                = 0x1D5,    // implemented
     SMSG_RESISTLOG                                  = 0x1D6,    // not used in client
     SMSG_ENCHANTMENTLOG                             = 0x1D7,    // implemented
@@ -922,8 +917,6 @@ enum Opcodes
     CMSG_GMRESPONSE_CREATE_TICKET                   = 0x4F3,    ///\todo Not implemented
     CMSG_SERVERINFO                                 = 0x4F4,    ///\todo Not implemented
     SMSG_SERVERINFO                                 = 0x4F5,    ///\todo Not implemented
-    CMSG_WORLD_STATE_UI_TIMER_UPDATE                = 0x4F6,    // implemented
-    SMSG_WORLD_STATE_UI_TIMER_UPDATE                = 0x4F7,    // implemented
     CMSG_CHAR_RACE_CHANGE                           = 0x4F8,    // implemented
     MSG_VIEW_PHASE_SHIFT                            = 0x4F9,    ///\todo implement
     SMSG_TALENTS_INVOLUNTARILY_RESET                = 0x4FA,    ///\todo implement uint8
@@ -993,7 +986,6 @@ This file is released under the MIT license. See README-MIT for more information
         SMSG_MOVE_UPDATE_KNOCK_BACK = 0x3DB2,
         SMSG_PLAYER_MOVE = 0x79A2,
         SMSG_POWER_UPDATE = 0x4A07,
-        SMSG_POWERGAINLOG_OBSOLETE = 0x20E, // old neds new opcode
         SMSG_ADD_RUNE_POWER = 0x6915,
         SMSG_INITIAL_SPELLS = 0x0104,
         SMSG_SUPERCEDED_SPELL = 0x35B0,
@@ -1016,7 +1008,7 @@ This file is released under the MIT license. See README-MIT for more information
         SMSG_SPELLLOGEXECUTE = 0x0626,
         SMSG_SPELLDAMAGESHIELD = 0x2927,
         SMSG_SPELLNONMELEEDAMAGELOG = 0x4315,
-        SMSG_SPELLOGDAMAGE_IMMUNE = 0x4507, // check this
+        SMSG_SPELLOGDAMAGE_IMMUNE = 0x4507,
         SMSG_SET_FLAT_SPELL_MODIFIER = 0x2834,
         SMSG_SET_PCT_SPELL_MODIFIER = 0x0224,
         CMSG_CANCEL_AUTO_REPEAT_SPELL = 0x6C35,
@@ -1096,7 +1088,7 @@ This file is released under the MIT license. See README-MIT for more information
     CMSG_PING = 0x444D,
     SMSG_PONG = 0x4D42,
 
-    SMSG_PLAY_SPELL_VISUAL = 0x10B1,
+    SMSG_PLAY_SPELL_VISUAL = 0x55A5,
     CMSG_ZONEUPDATE = 0x4F37,
 
     SMSG_ACCOUNT_DATA_TIMES = 0x4B05,
@@ -1415,6 +1407,13 @@ This file is released under the MIT license. See README-MIT for more information
         SMSG_SET_PROFICIENCY = 0x6207,
         SMSG_ACTION_BUTTONS = 0x38B5,
         SMSG_INITIALIZE_FACTIONS = 0x4634,
+        SMSG_LEVELUP_INFO = 0x0435,
+        CMSG_WORLD_STATE_UI_TIMER_UPDATE = 0x4605,
+        SMSG_WORLD_STATE_UI_TIMER_UPDATE = 0x4A14,
+        CMSG_TUTORIAL_FLAG = 0x6C26,
+        CMSG_TUTORIAL_CLEAR = 0x6515,
+        CMSG_TUTORIAL_RESET = 0x2726,
+        CMSG_REPOP_REQUEST = 0x6235,
 
     NUM_MSG_TYPES = 0xFFFF
 };

@@ -22,24 +22,24 @@
 #include "StdAfx.h"
 
 
-//void WorldSession::HandleRepopRequestOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    LOG_DEBUG("WORLD: Recvd CMSG_REPOP_REQUEST Message");
-//    if (_player->getDeathState() != JUST_DIED)
-//        return;
-//    if (_player->obj_movement_info.IsOnTransport())
-//    {
-//        auto transport = _player->GetTransport();
-//        if (transport != nullptr)
-//        {
-//            transport->RemovePassenger(_player);
-//        }
-//    }
-//
-//    GetPlayer()->RepopRequestedPlayer();
-//}
+void WorldSession::HandleRepopRequestOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    LOG_DEBUG("WORLD: Recvd CMSG_REPOP_REQUEST Message");
+    if (_player->getDeathState() != JUST_DIED)
+        return;
+    /*if (_player->obj_movement_info.IsOnTransport())
+    {
+        auto transport = _player->GetTransport();
+        if (transport != nullptr)
+        {
+            transport->RemovePassenger(_player);
+        }
+    }*/
+
+    GetPlayer()->RepopRequestedPlayer();
+}
 
 void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 {
@@ -1938,53 +1938,53 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //    }
 //}
 
-//void WorldSession::HandleTutorialFlag(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint32 iFlag;
-//    recv_data >> iFlag;
-//
-//    uint32 wInt = (iFlag / 32);
-//    uint32 rInt = (iFlag % 32);
-//
-//    if (wInt >= 7)
-//    {
-//        Disconnect();
-//        return;
-//    }
-//
-//    uint32 tutflag = GetPlayer()->GetTutorialInt(wInt);
-//    tutflag |= (1 << rInt);
-//    GetPlayer()->SetTutorialInt(wInt, tutflag);
-//
-//    LOG_DEBUG("Received Tutorial Flag Set {%u}.", iFlag);
-//}
+void WorldSession::HandleTutorialFlag(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
 
-//void WorldSession::HandleTutorialClear(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    for (uint32 iI = 0; iI < 8; iI++)
-//        GetPlayer()->SetTutorialInt(iI, 0xFFFFFFFF);
-//}
+    uint32 iFlag;
+    recv_data >> iFlag;
 
-//void WorldSession::HandleTutorialReset(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    for (uint32 iI = 0; iI < 8; iI++)
-//        GetPlayer()->SetTutorialInt(iI, 0x00000000);
-//}
+    uint32 wInt = (iFlag / 32);
+    uint32 rInt = (iFlag % 32);
 
-//void WorldSession::HandleSetSheathedOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint32 active;
-//    recv_data >> active;
-//    _player->SetByte(UNIT_FIELD_BYTES_2, 0, (uint8)active);
-//}
+    if (wInt >= 7)
+    {
+        Disconnect();
+        return;
+    }
+
+    uint32 tutflag = GetPlayer()->GetTutorialInt(wInt);
+    tutflag |= (1 << rInt);
+    GetPlayer()->SetTutorialInt(wInt, tutflag);
+
+    LOG_DEBUG("Received Tutorial Flag Set {%u}.", iFlag);
+}
+
+void WorldSession::HandleTutorialClear(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    for (uint32 iI = 0; iI < 8; iI++)
+        GetPlayer()->SetTutorialInt(iI, 0xFFFFFFFF);
+}
+
+void WorldSession::HandleTutorialReset(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    for (uint32 iI = 0; iI < 8; iI++)
+        GetPlayer()->SetTutorialInt(iI, 0x00000000);
+}
+
+void WorldSession::HandleSetSheathedOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    uint32 active;
+    recv_data >> active;
+    _player->SetByte(UNIT_FIELD_BYTES_2, 0, (uint8)active);
+}
 
 void WorldSession::HandlePlayedTimeOpcode(WorldPacket& recv_data)
 {
@@ -2752,14 +2752,14 @@ void WorldSession::HandleNextCinematic(WorldPacket& recv_data)
 //    return;
 //}
 
-//void WorldSession::HandleWorldStateUITimerUpdate(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    WorldPacket data(SMSG_WORLD_STATE_UI_TIMER_UPDATE, 4);
-//    data << (uint32)UNIXTIME;
-//    SendPacket(&data);
-//}
+void WorldSession::HandleWorldStateUITimerUpdate(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    WorldPacket data(SMSG_WORLD_STATE_UI_TIMER_UPDATE, 4);
+    data << (uint32)UNIXTIME;
+    SendPacket(&data);
+}
 
 //void WorldSession::HandleSetTaxiBenchmarkOpcode(WorldPacket& recv_data)
 //{

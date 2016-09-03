@@ -2239,46 +2239,46 @@ void Player::_SetUpdateBits(UpdateMask* updateMask, Player* target) const
 void Player::InitVisibleUpdateBits()
 {
     Player::m_visibleUpdateMask.SetCount(PLAYER_END);
-    Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_GUID);
+
+    Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_GUID + 0);
+    Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_GUID + 1);
     Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_TYPE);
     Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_ENTRY);
+    Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_DATA + 0);
+    Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_DATA + 1);
     Player::m_visibleUpdateMask.SetBit(OBJECT_FIELD_SCALE_X);
-
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_SUMMON);
+    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_CHARM + 0);
+    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_CHARM + 1);
+    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_SUMMON + 0);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_SUMMON + 1);
-
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_TARGET);
+    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_CHARMEDBY + 0);
+    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_CHARMEDBY + 1);
+    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_TARGET + 0);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_TARGET + 1);
-
+    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_CHANNEL_OBJECT + 0);
+    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_CHANNEL_OBJECT + 1);
+    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BYTES_0);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_HEALTH);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER1);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER2);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER3);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER4);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER5);
-    //Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER6);
-    //Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER7);
-
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXHEALTH);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER1);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER2);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER3);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER4);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER5);
-    //Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER6);
-    //Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER7);
-
-    Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID);
-    Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID + 1);
-    Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID + 2);
-
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_LEVEL);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_FACTIONTEMPLATE);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BYTES_0);
+    Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID + 0);
+    Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID + 1);
+    Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID + 2);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_FLAGS);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_FLAGS_2);
-
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BASEATTACKTIME);
+    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_AURASTATE);
+    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BASEATTACKTIME + 0);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BASEATTACKTIME + 1);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BOUNDINGRADIUS);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_COMBATREACH);
@@ -2286,34 +2286,33 @@ void Player::InitVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_NATIVEDISPLAYID);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MOUNTDISPLAYID);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BYTES_1);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MOUNTDISPLAYID);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_PETNUMBER);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_PET_NAME_TIMESTAMP);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_CHANNEL_OBJECT);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_CHANNEL_OBJECT + 1);
-    Player::m_visibleUpdateMask.SetBit(UNIT_CHANNEL_SPELL);
     Player::m_visibleUpdateMask.SetBit(UNIT_DYNAMIC_FLAGS);
+    Player::m_visibleUpdateMask.SetBit(UNIT_CHANNEL_SPELL);
+    Player::m_visibleUpdateMask.SetBit(UNIT_MOD_CAST_SPEED);
     Player::m_visibleUpdateMask.SetBit(UNIT_NPC_FLAGS);
+    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BASE_MANA);
+    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BYTES_2);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_HOVERHEIGHT);
 
+    Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_ARBITER + 0);
+    Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_ARBITER + 1);
     Player::m_visibleUpdateMask.SetBit(PLAYER_FLAGS);
+    //Player::m_visibleUpdateMask.SetBit(PLAYER_GUILDID);
+    Player::m_visibleUpdateMask.SetBit(PLAYER_GUILDRANK);
+    Player::m_visibleUpdateMask.SetBit(PLAYER_GUILDLEVEL);
     Player::m_visibleUpdateMask.SetBit(PLAYER_BYTES);
     Player::m_visibleUpdateMask.SetBit(PLAYER_BYTES_2);
     Player::m_visibleUpdateMask.SetBit(PLAYER_BYTES_3);
-    Player::m_visibleUpdateMask.SetBit(PLAYER_GUILD_TIMESTAMP);
     Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_TEAM);
-    Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_ARBITER);
-    Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_ARBITER + 1);
-    //Player::m_visibleUpdateMask.SetBit(PLAYER_GUILDID);
-    Player::m_visibleUpdateMask.SetBit(PLAYER_GUILDRANK);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BASE_MANA);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BYTES_2);
-    Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_AURASTATE);
+    Player::m_visibleUpdateMask.SetBit(PLAYER_GUILD_TIMESTAMP);
+    Player::m_visibleUpdateMask.SetBit(UNIT_NPC_FLAGS);
 
     // Players visible items are not inventory stuff
     for (uint16 i = 0; i < EQUIPMENT_SLOT_END; ++i)
     {
-        uint32 offset = i * 2; //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
+        uint32 offset = i * 2; 
 
         // item entry
         Player::m_visibleUpdateMask.SetBit(PLAYER_VISIBLE_ITEM_1_ENTRYID + offset);
@@ -2545,16 +2544,16 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     {
         ss << "0, 0, 0";
     }
-    auto transport = this->GetTransport();
-    if (!transport)
+    /*auto transport = this->GetTransport();
+    if (!transport)*/
     {
         ss << "," << 0 << ",'0','0','0','0'";
     }
-    else
+    /*else
     {
         ss << "," << transport->GetEntry();
         ss << ",'" << movement_info.GetTransportPos()->x << "','" << movement_info.GetTransportPos()->y << "','" << movement_info.GetTransportPos()->z << "','" << movement_info.GetTransportPos()->o << "'";
-    }
+    }*/
     ss << ",'";
 
     SaveSpells(bNewCharacter, buf);
@@ -3709,14 +3708,14 @@ void Player::SetQuestLogSlot(QuestLogEntry* entry, uint32 slot)
 
 void Player::AddToWorld()
 {
-    auto transport = this->GetTransport();
+    /*auto transport = this->GetTransport();
     if (transport)
     {
         this->SetPosition(transport->GetPositionX() + movement_info.GetTransportPos()->x,
             transport->GetPositionY() + movement_info.GetTransportPos()->y,
             transport->GetPositionZ() + movement_info.GetTransportPos()->z,
             GetOrientation(), false);
-    }
+    }*/
 
     // If we join an invalid instance and get booted out, this will prevent our stats from doubling :P
     if (IsInWorld())
@@ -3743,7 +3742,7 @@ void Player::AddToWorld()
 void Player::AddToWorld(MapMgr* pMapMgr)
 {
     // check transporter
-    auto transport = this->GetTransport();
+    /*auto transport = this->GetTransport();
     if (transport != nullptr)
     {
         auto t_loc = transport->GetPosition();
@@ -3751,7 +3750,7 @@ void Player::AddToWorld(MapMgr* pMapMgr)
             t_loc.y + this->movement_info.GetTransportPos()->y,
             t_loc.z + this->movement_info.GetTransportPos()->z,
             this->GetOrientation(), false);
-    }
+    }*/
 
     // If we join an invalid instance and get booted out, this will prevent our stats from doubling :P
     if (IsInWorld())

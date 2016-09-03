@@ -114,6 +114,27 @@ typedef struct
 	uint32 resisted_damage;
 } dealdamage;
 
+struct TransporterInfo
+{
+    uint64 guid;
+    float x;
+    float y;
+    float z;
+    float o;
+    uint32 flags;
+    uint8 seat;
+
+    TransporterInfo()
+    {
+        guid = 0;
+        x = 0.0f;
+        y = 0.0f;
+        z = 0.0f;
+        o = 0.0f;
+        flags = 0;
+        seat = 0;
+    }
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// class Object:Base object for every item, unit, player, corpse, container, etc
@@ -299,6 +320,13 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
             uint64* p = reinterpret_cast<uint64*>(&m_uint32Values[index]);
 
             return *p;
+        }
+
+        uint16 GetUInt16Value(uint16 index, uint8 offset) const
+        {
+            ARCEMU_ASSERT(index < m_valuesCount);
+            ARCEMU_ASSERT(offset < 2);
+            return *(((uint16*)&m_uint32Values[index]) + offset);
         }
 
         /// Get float property
@@ -569,13 +597,14 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         float m_swimSpeed;
         float m_backSwimSpeed;
         float m_turnRate;
+        float m_pitchRate;
         float m_flySpeed;
         float m_backFlySpeed;
 
         float m_base_runSpeed;
         float m_base_walkSpeed;
 
-        Transporter* GetTransport() const;
+        TransporterInfo transporter_info;
 
         uint32 m_phase;         /// This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 

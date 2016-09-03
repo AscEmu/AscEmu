@@ -304,42 +304,38 @@ void WorldSession::HandleReadyForAccountDataTimes(WorldPacket& /*recvData*/)
 //    if (bgtype != 0)
 //        BattlegroundManager.HandleArenaJoin(this, bgtype, as_group, rated_match);
 //}
-//
-//void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_PACKET_SIZE(recv_data, 8);
-//    CHECK_INWORLD_RETURN;
-//
-//    uint64 guid;
-//    recv_data >> guid;
-//
-//    if (_player->GetMapMgr() == NULL)
-//    {
-//        LOG_ERROR("HandleInspectHonorStatsOpcode : _player map mgr was null");
-//        return;
-//    }
-//
-//    if (_player->GetMapMgr()->GetPlayer((uint32)guid) == NULL)
-//    {
-//        LOG_ERROR("HandleInspectHonorStatsOpcode : guid was null");
-//        return;
-//    }
-//
-//    Player* player = _player->GetMapMgr()->GetPlayer((uint32)guid);
-//
-//    //\todo danko
-//    /*WorldPacket data(MSG_INSPECT_HONOR_STATS, 13);
-//
-//    data << player->GetGUID();
-//    data << uint8(player->GetHonorCurrency());
-//    data << player->GetUInt32Value(PLAYER_FIELD_KILLS);
-//    data << player->GetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION);
-//    data << player->GetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION);
-//    data << player->GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS);
-//
-//    SendPacket(&data);*/
-//}
-//
+
+void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recv_data)
+{
+    CHECK_PACKET_SIZE(recv_data, 8);
+    CHECK_INWORLD_RETURN;
+
+    uint64 guid;
+    recv_data >> guid;
+
+    if (_player->GetMapMgr() == NULL)
+    {
+        LOG_ERROR("HandleInspectHonorStatsOpcode : _player map mgr was null");
+        return;
+    }
+
+    if (_player->GetMapMgr()->GetPlayer((uint32)guid) == NULL)
+    {
+        LOG_ERROR("HandleInspectHonorStatsOpcode : guid was null");
+        return;
+    }
+
+    //\todo danko
+    Player* player = _player->GetMapMgr()->GetPlayer((uint32)guid);
+
+    WorldPacket data(MSG_INSPECT_HONOR_STATS, 13);
+    //data << uint8(0);
+    data << player->GetUInt32Value(PLAYER_FIELD_KILLS);      // yesterday kills
+    //data << uint16(player->GetUInt16Value(PLAYER_FIELD_KILLS, 0));      // today kills
+    data << player->GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS);
+    SendPacket(&data);
+}
+
 //void WorldSession::HandleInspectArenaStatsOpcode(WorldPacket& recv_data)
 //{
 //    CHECK_PACKET_SIZE(recv_data, 8);

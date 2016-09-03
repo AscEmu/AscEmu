@@ -274,9 +274,7 @@ class SERVER_DECL WorldSession
         //void HandleTimeSyncResp(WorldPacket& recv_data);
 
         /// Authentification and misc opcodes (MiscHandler.cpp):
-        void HandlePingOpcode(WorldPacket& recvPacket);
-        void HandleAuthSessionOpcode(WorldPacket& recvPacket);
-        //void HandleRepopRequestOpcode(WorldPacket& recvPacket);
+        void HandleRepopRequestOpcode(WorldPacket& recvPacket);
         void HandleAutostoreLootItemOpcode(WorldPacket& recvPacket);
         //void HandleLootMoneyOpcode(WorldPacket& recvPacket);
         //void HandleLootOpcode(WorldPacket& recvPacket);
@@ -311,7 +309,7 @@ class SERVER_DECL WorldSession
         //void HandleBarberShopResult(WorldPacket& recvPacket);
         //void HandleLeaveChannelOpcode(WorldPacket& recvPacket);
         void HandlePlayedTimeOpcode(WorldPacket& recv_data);
-        //void HandleSetSheathedOpcode(WorldPacket& recv_data);
+        void HandleSetSheathedOpcode(WorldPacket& recv_data);
         void HandleCompleteCinematic(WorldPacket& recv_data);
         void HandleNextCinematic(WorldPacket& recv_data);
         void HandleInspectOpcode(WorldPacket& recv_data);
@@ -453,7 +451,7 @@ class SERVER_DECL WorldSession
 
         /// Combat opcodes (CombatHandler.cpp)
         //void HandleAttackSwingOpcode(WorldPacket& recvPacket);
-        //void HandleAttackStopOpcode(WorldPacket& recvPacket);
+        void HandleAttackStopOpcode(WorldPacket& recvPacket);
 
         /// Spell opcodes (SpellHandler.cpp)
         void HandleUseItemOpcode(WorldPacket& recvPacket);
@@ -502,7 +500,7 @@ class SERVER_DECL WorldSession
         void HandleEmoteOpcode(WorldPacket& recvPacket);
         void HandleTextEmoteOpcode(WorldPacket& recvPacket);
         //void HandleReportSpamOpcode(WorldPacket& recvPacket);
-        //void HandleChatIgnoredOpcode(WorldPacket& recvPacket);
+        void HandleChatIgnoredOpcode(WorldPacket& recvPacket);
         void HandleChatChannelWatchOpcode(WorldPacket& recvPacket);
 
         /// Corpse opcodes (Corpse.cpp)
@@ -617,7 +615,7 @@ class SERVER_DECL WorldSession
         //void HandleBattlegroundPlayerPositionsOpcode(WorldPacket& recv_data);
         //void HandleArenaJoinOpcode(WorldPacket& recv_data);
         //void HandleBattleMasterJoinOpcode(WorldPacket& recv_data);
-        //void HandleInspectHonorStatsOpcode(WorldPacket& recv_data);
+        void HandleInspectHonorStatsOpcode(WorldPacket& recv_data);
         //void HandlePVPLogDataOpcode(WorldPacket& recv_data);
         void HandleBattlefieldListOpcode(WorldPacket& recv_data);
         ///\todo unknown packet
@@ -627,9 +625,9 @@ class SERVER_DECL WorldSession
         //void SetNpcFlagsForTalkToQuest(const uint64& guid, const uint64& targetGuid);
 
         // Tutorials
-        //void HandleTutorialFlag(WorldPacket& recv_data);
-        //void HandleTutorialClear(WorldPacket& recv_data);
-        //void HandleTutorialReset(WorldPacket& recv_data);
+        void HandleTutorialFlag(WorldPacket& recv_data);
+        void HandleTutorialClear(WorldPacket& recv_data);
+        void HandleTutorialReset(WorldPacket& recv_data);
 
         // Acknowledgements
         void HandleAcknowledgementOpcodes(WorldPacket& recv_data);
@@ -687,7 +685,7 @@ class SERVER_DECL WorldSession
 
 
         // Misc
-        //void HandleWorldStateUITimerUpdate(WorldPacket& recv_data);
+        void HandleWorldStateUITimerUpdate(WorldPacket& recv_data);
         //void HandleSetTaxiBenchmarkOpcode(WorldPacket& recv_data);
         //void HandleMirrorImageOpcode(WorldPacket& recv_data);
         //void HandleSetFriendNote(WorldPacket& recv_data);
