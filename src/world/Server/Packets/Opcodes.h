@@ -319,9 +319,6 @@ enum Opcodes
     CMSG_BATTLEMASTER_HELLO                         = 0x2D7,
     MSG_PVP_LOG_DATA                                = 0x2E0,
     CMSG_LEAVE_BATTLEFIELD                          = 0x2E1,
-    CMSG_AREA_SPIRIT_HEALER_QUERY                   = 0x2E2,
-    CMSG_AREA_SPIRIT_HEALER_QUEUE                   = 0x2E3,
-    SMSG_AREA_SPIRIT_HEALER_TIME                    = 0x2E4,
     SMSG_WARDEN_DATA                                = 0x2E6,
     CMSG_WARDEN_DATA                                = 0x2E7,
     SMSG_GROUP_JOINED_BATTLEGROUND                  = 0x2E8,
@@ -1403,6 +1400,9 @@ enum Opcodes
 
     // Server
     SMSG_SERVER_BUCK_DATA                               = 0x141E,
+    CMSG_AREA_SPIRIT_HEALER_QUERY                       = 0x4907,
+    CMSG_AREA_SPIRIT_HEALER_QUEUE                       = 0x4815,
+    SMSG_AREA_SPIRIT_HEALER_TIME                        = 0x0734,
 
     //Unknown packet send by client to server
     CMSG_UNREGISTER_ALL_ADDON_PREFIXES                  = 0x3D54,   // unknown?

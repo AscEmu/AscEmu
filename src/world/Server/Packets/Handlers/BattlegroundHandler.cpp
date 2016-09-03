@@ -144,49 +144,49 @@ void WorldSession::HandleReadyForAccountDataTimes(WorldPacket& /*recvData*/)
     SendAccountDataTimes(GLOBAL_CACHE_MASK);
 }
 
-//void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//        if (!_player->m_bg)
-//            return;
-//
-//    uint64 guid;
-//    recv_data >> guid;
-//
-//    Creature* psg = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-//    if (psg == NULL)
-//        return;
-//
-//    uint32 restime = _player->m_bg->GetLastResurrect() + 30;
-//    if ((uint32)UNIXTIME > restime)
-//        restime = 1000;
-//    else
-//        restime = (restime - (uint32)UNIXTIME) * 1000;
-//
-//    WorldPacket data(SMSG_AREA_SPIRIT_HEALER_TIME, 12);
-//    data << guid;
-//    data << restime;
-//    SendPacket(&data);
-//}
-//
-//void WorldSession::HandleAreaSpiritHealerQueueOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//        if (!_player->m_bg)
-//            return;
-//
-//    uint64 guid;
-//    recv_data >> guid;
-//    Creature* psg = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-//    if (psg == NULL)
-//        return;
-//
-//    _player->m_bg->QueuePlayerForResurrect(_player, psg);
-//    _player->CastSpell(_player, 2584, true);
-//}
-//
+void WorldSession::HandleAreaSpiritHealerQueryOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+        if (!_player->m_bg)
+            return;
+
+    uint64 guid;
+    recv_data >> guid;
+
+    Creature* psg = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    if (psg == NULL)
+        return;
+
+    uint32 restime = _player->m_bg->GetLastResurrect() + 30;
+    if ((uint32)UNIXTIME > restime)
+        restime = 1000;
+    else
+        restime = (restime - (uint32)UNIXTIME) * 1000;
+
+    WorldPacket data(SMSG_AREA_SPIRIT_HEALER_TIME, 12);
+    data << guid;
+    data << restime;
+    SendPacket(&data);
+}
+
+void WorldSession::HandleAreaSpiritHealerQueueOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+        if (!_player->m_bg)
+            return;
+
+    uint64 guid;
+    recv_data >> guid;
+    Creature* psg = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    if (psg == NULL)
+        return;
+
+    _player->m_bg->QueuePlayerForResurrect(_player, psg);
+    _player->CastSpell(_player, 2584, true);
+}
+
 //void WorldSession::HandleBattlegroundPlayerPositionsOpcode(WorldPacket& recv_data)
 //{
 //    CHECK_INWORLD_RETURN

@@ -479,7 +479,7 @@ class SERVER_DECL WorldSession
         //void HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket);
         //void HandleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket);
         //void HandleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket);
-        //void HandleQuestQueryOpcode(WorldPacket& recvPacket);
+        void HandleQuestQueryOpcode(WorldPacket& recvPacket);
         //void HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket);
         void HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket);
         void HandlePushQuestToPartyOpcode(WorldPacket& recvPacket);
@@ -610,8 +610,8 @@ class SERVER_DECL WorldSession
         void HandleBattlefieldStatusOpcode(WorldPacket& recv_data);
         //void HandleBattleMasterHelloOpcode(WorldPacket& recv_data);
         //void HandleLeaveBattlefieldOpcode(WorldPacket& recv_data);
-        //void HandleAreaSpiritHealerQueryOpcode(WorldPacket& recv_data);
-        //void HandleAreaSpiritHealerQueueOpcode(WorldPacket& recv_data);
+        void HandleAreaSpiritHealerQueryOpcode(WorldPacket& recv_data);
+        void HandleAreaSpiritHealerQueueOpcode(WorldPacket& recv_data);
         //void HandleBattlegroundPlayerPositionsOpcode(WorldPacket& recv_data);
         //void HandleArenaJoinOpcode(WorldPacket& recv_data);
         //void HandleBattleMasterJoinOpcode(WorldPacket& recv_data);

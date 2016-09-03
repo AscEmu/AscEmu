@@ -285,24 +285,24 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
     sHookInterface.OnQuestCancelled(_player, qPtr);
 }
 
-//void WorldSession::HandleQuestQueryOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint32 quest_id;
-//    recv_data >> quest_id;
-//
-//    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
-//    if (!qst)
-//    {
-//        LOG_DEBUG("WORLD: Invalid quest ID.");
-//        return;
-//    }
-//
-//    WorldPacket* pkt = BuildQuestQueryResponse(qst);
-//    SendPacket(pkt);
-//    delete pkt;
-//}
+void WorldSession::HandleQuestQueryOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    uint32 quest_id;
+    recv_data >> quest_id;
+
+    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    if (!qst)
+    {
+        LOG_DEBUG("WORLD: Invalid quest ID.");
+        return;
+    }
+
+    WorldPacket* pkt = BuildQuestQueryResponse(qst);
+    SendPacket(pkt);
+    delete pkt;
+}
 
 //void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
 //{

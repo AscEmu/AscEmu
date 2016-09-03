@@ -104,21 +104,11 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
             return;
 
         LocalizedCreatureName* lcn = (language > 0) ? sLocalizationMgr.GetLocalizedCreatureName(entry, language) : NULL;
-
-        if (lcn == NULL)
-        {
-            LOG_DETAIL("WORLD: CMSG_CREATURE_QUERY '%s'", ci->Name.c_str());
-            data << entry;
-            data << ci->Name;
-            data << ci->SubName;
-        }
-        else
-        {
-            LOG_DETAIL("WORLD: CMSG_CREATURE_QUERY '%s' (localized to %s)", ci->Name.c_str(), lcn->Name);
-            data << entry;
-            data << lcn->Name;
-            data << lcn->SubName;
-        }
+        data << entry;
+        data << (lcn ? ci->Name : ci->Name);
+        for (uint8 i = 0; i < 7; ++i)
+            data << uint8(0);
+        data << (lcn ? lcn->SubName : ci->SubName);
         data << ci->info_str;
         data << uint32(ci->Flags1);
         data << uint32(0);
@@ -134,12 +124,9 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         data << float(ci->unkfloat1);
         data << float(ci->unkfloat2);
         data << uint8(ci->Leader);
-        data << uint32(ci->QuestItems[0]);
-        data << uint32(ci->QuestItems[1]);
-        data << uint32(ci->QuestItems[2]);
-        data << uint32(ci->QuestItems[3]);
-        data << uint32(ci->QuestItems[4]);
-        data << uint32(ci->QuestItems[5]);
+        for (uint32 i = 0; i < 6; ++i)
+            data << uint32(ci->QuestItems[i]);
+        data << uint32(0);      //movementtype
         data << uint32(0);
     }
 
