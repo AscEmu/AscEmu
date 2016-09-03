@@ -587,7 +587,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     auto out_y = obj->GetPositionY();
     auto out_z = obj->GetPositionZ();
     auto out_o = obj->GetOrientation();
-    auto out_area_name = at->area_name[0]; // enUS, hardcoded until locale is implemented properly
+    auto out_area_name = at->area_name; // enUS, hardcoded until locale is implemented properly
 
     snprintf((char*)buf, 400, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffZone: |cff00ff00%u |cffffffffArea: |cff00ff00%u |cffffffffPhase: |cff00ff00%u |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f |cffffffffArea Name: |cff00ff00%s |r",
         out_map_id, out_zone_id, out_area_id, out_phase, out_x, out_y, out_z, out_o, out_area_name);
