@@ -6303,54 +6303,495 @@ void Unit::EnableFlight()
 {
     z_axisposition = 0.0f;
 
-    if (!IsPlayer() || static_cast<Player*>(this)->m_changingMaps)
-    {
-        WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
-        data << GetNewGUID();
-        data << uint32(2);
-        SendMessageToSet(&data, true);
-    }
-    else
-    {
-        WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
-        data << GetNewGUID();
-        data << uint32(2);
-        SendMessageToSet(&data, true);
+    WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
+    ObjectGuid guid = GetGUID();
+    data.WriteByteMask(guid[1]);
+    data.WriteByteMask(guid[6]);
+    data.WriteByteMask(guid[5]);
+    data.WriteByteMask(guid[0]);
+    data.WriteByteMask(guid[7]);
+    data.WriteByteMask(guid[4]);
+    data.WriteByteMask(guid[2]);
+    data.WriteByteMask(guid[3]);
+    data.WriteByteSeq(guid[6]);
+    data.WriteByteSeq(guid[3]);
+    data << uint32(2);              // unk
+    data.WriteByteSeq(guid[2]);
+    data.WriteByteSeq(guid[1]);
+    data.WriteByteSeq(guid[4]);
+    data.WriteByteSeq(guid[7]);
+    data.WriteByteSeq(guid[0]);
+    data.WriteByteSeq(guid[5]);
 
-        /* Zyres: Why?
-        WorldPacket* data = new WorldPacket(SMSG_MOVE_SET_CAN_FLY, 13);
-        *data << GetNewGUID();
-        *data << uint32(2);
-        SendMessageToSet(data, false);
-        static_cast<Player*>(this)->delayedPackets.add(data);*/
-    }
+    SendMessageToSet(&data, true);
 }
 
 void Unit::DisableFlight()
 {
     z_axisposition = 0.0f;
+    
+    WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
+    ObjectGuid guid = GetGUID();
+    data.WriteByteMask(guid[1]);
+    data.WriteByteMask(guid[4]);
+    data.WriteByteMask(guid[2]);
+    data.WriteByteMask(guid[5]);
+    data.WriteByteMask(guid[0]);
+    data.WriteByteMask(guid[3]);
+    data.WriteByteMask(guid[6]);
+    data.WriteByteMask(guid[7]);
+    data.WriteByteSeq(guid[4]);
+    data.WriteByteSeq(guid[6]);
+    data << uint32(5);              // unk
+    data.WriteByteSeq(guid[1]);
+    data.WriteByteSeq(guid[0]);
+    data.WriteByteSeq(guid[2]);
+    data.WriteByteSeq(guid[3]);
+    data.WriteByteSeq(guid[5]);
+    data.WriteByteSeq(guid[7]);
 
-    if (!IsPlayer() || static_cast<Player*>(this)->m_changingMaps)
+    SendMessageToSet(&data, true);
+}
+
+void Unit::SetSpeeds(uint8 type, float speed, bool forced /* = false*/)
+{
+    if (speed < 0)
+        speed = 0.0f;
+
+    m_walkSpeed = speed / 2;
+    m_runSpeed = speed;
+    m_swimSpeed = speed;
+    m_flySpeed = speed * 2;
+
+    WorldPacket data;
+    ObjectGuid guid = GetGUID();
+
+    if (!forced)
     {
-        WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
-        data << GetNewGUID();
-        data << uint32(5);
+        switch (type)
+        {
+            case WALK:
+            {
+                data.Initialize(SMSG_MOVE_SET_WALK_SPEED, 1 + 8 + 4 + 4);
+                data.WriteByteMask(guid[0]);
+                data.WriteByteMask(guid[4]);
+                data.WriteByteMask(guid[5]);
+                data.WriteByteMask(guid[2]);
+                data.WriteByteMask(guid[3]);
+                data.WriteByteMask(guid[1]);
+                data.WriteByteMask(guid[6]);
+                data.WriteByteMask(guid[7]);
+                data.WriteByteSeq(guid[6]);
+                data.WriteByteSeq(guid[1]);
+                data.WriteByteSeq(guid[5]);
+                data << float(m_walkSpeed); //move this to a function!
+                data.WriteByteSeq(guid[2]);
+                data << uint32(0);
+                data.WriteByteSeq(guid[4]);
+                data.WriteByteSeq(guid[0]);
+                data.WriteByteSeq(guid[7]);
+                data.WriteByteSeq(guid[3]);
+                break;
+            }
+            case RUN:
+            {
+                data.Initialize(SMSG_MOVE_SET_RUN_SPEED, 1 + 8 + 4 + 4);
+                data.WriteByteMask(guid[6]);
+                data.WriteByteMask(guid[1]);
+                data.WriteByteMask(guid[5]);
+                data.WriteByteMask(guid[2]);
+                data.WriteByteMask(guid[7]);
+                data.WriteByteMask(guid[0]);
+                data.WriteByteMask(guid[3]);
+                data.WriteByteMask(guid[4]);
+                data.WriteByteSeq(guid[5]);
+                data.WriteByteSeq(guid[3]);
+                data.WriteByteSeq(guid[1]);
+                data.WriteByteSeq(guid[4]);
+                data << uint32(0);
+                data << float(m_runSpeed); //move this to a function!
+                data.WriteByteSeq(guid[6]);
+                data.WriteByteSeq(guid[0]);
+                data.WriteByteSeq(guid[7]);
+                data.WriteByteSeq(guid[2]);
+                break;
+            }
+            case RUNBACK:
+            {
+                data.Initialize(SMSG_MOVE_SET_RUN_BACK_SPEED, 1 + 8 + 4 + 4);
+                data.WriteByteMask(guid[0]);
+                data.WriteByteMask(guid[6]);
+                data.WriteByteMask(guid[2]);
+                data.WriteByteMask(guid[1]);
+                data.WriteByteMask(guid[3]);
+                data.WriteByteMask(guid[5]);
+                data.WriteByteMask(guid[4]);
+                data.WriteByteMask(guid[7]);
+                data.WriteByteSeq(guid[5]);
+                data << uint32(0);
+                data << float(speed / 2);           //move this to a function! No variable!
+                data.WriteByteSeq(guid[0]);
+                data.WriteByteSeq(guid[4]);
+                data.WriteByteSeq(guid[7]);
+                data.WriteByteSeq(guid[3]);
+                data.WriteByteSeq(guid[1]);
+                data.WriteByteSeq(guid[2]);
+                data.WriteByteSeq(guid[6]);
+                break;
+            }
+            case SWIM:
+            {
+                data.Initialize(SMSG_MOVE_SET_SWIM_SPEED, 1 + 8 + 4 + 4);
+                data.WriteByteMask(guid[5]);
+                data.WriteByteMask(guid[4]);
+                data.WriteByteMask(guid[7]);
+                data.WriteByteMask(guid[3]);
+                data.WriteByteMask(guid[2]);
+                data.WriteByteMask(guid[0]);
+                data.WriteByteMask(guid[1]);
+                data.WriteByteMask(guid[6]);
+                data.WriteByteSeq(guid[0]);
+                data << uint32(0);
+                data.WriteByteSeq(guid[6]);
+                data.WriteByteSeq(guid[3]);
+                data.WriteByteSeq(guid[5]);
+                data.WriteByteSeq(guid[2]);
+                data << float(m_swimSpeed); //move this to a function!
+                data.WriteByteSeq(guid[1]);
+                data.WriteByteSeq(guid[7]);
+                data.WriteByteSeq(guid[4]);
+                break;
+            }
+            case SWIMBACK:
+            {
+                data.Initialize(SMSG_MOVE_SET_SWIM_BACK_SPEED, 1 + 8 + 4 + 4);
+                data.WriteByteMask(guid[4]);
+                data.WriteByteMask(guid[2]);
+                data.WriteByteMask(guid[3]);
+                data.WriteByteMask(guid[6]);
+                data.WriteByteMask(guid[5]);
+                data.WriteByteMask(guid[1]);
+                data.WriteByteMask(guid[0]);
+                data.WriteByteMask(guid[7]);
+                data << uint32(0);
+                data.WriteByteSeq(guid[0]);
+                data.WriteByteSeq(guid[3]);
+                data.WriteByteSeq(guid[4]);
+                data.WriteByteSeq(guid[6]);
+                data.WriteByteSeq(guid[5]);
+                data.WriteByteSeq(guid[1]);
+                data << float(m_backSwimSpeed); //move this to a function!
+                data.WriteByteSeq(guid[0]);
+                data.WriteByteSeq(guid[7]);
+                break;
+            }
+            //case TURN_RATE:
+            //{
+            //    data.Initialize(SMSG_MOVE_SET_TURN_RATE, 1 + 8 + 4 + 4);
+            //    data.WriteByteMask(guid[7]);
+            //    data.WriteByteMask(guid[2]);
+            //    data.WriteByteMask(guid[1]);
+            //    data.WriteByteMask(guid[0]);
+            //    data.WriteByteMask(guid[4]);
+            //    data.WriteByteMask(guid[5]);
+            //    data.WriteByteMask(guid[6]);
+            //    data.WriteByteMask(guid[3]);
+            //    data.WriteByteSeq(guid[5]);
+            //    data.WriteByteSeq(guid[7]);
+            //    data.WriteByteSeq(guid[2]);
+            //    data << float(m_turnRate);  //move this to a function!
+            //    data.WriteByteSeq(guid[3]);
+            //    data.WriteByteSeq(guid[1]);
+            //    data.WriteByteSeq(guid[0]);
+            //    data << uint32(0);
+            //    data.WriteByteSeq(guid[6]);
+            //    data.WriteByteSeq(guid[4]);
+            //    break;
+            //}
+            case FLY:
+            {
+                data.Initialize(SMSG_MOVE_SET_FLIGHT_SPEED, 1 + 8 + 4 + 4);
+                data.WriteByteMask(guid[0]);
+                data.WriteByteMask(guid[5]);
+                data.WriteByteMask(guid[1]);
+                data.WriteByteMask(guid[6]);
+                data.WriteByteMask(guid[3]);
+                data.WriteByteMask(guid[2]);
+                data.WriteByteMask(guid[7]);
+                data.WriteByteMask(guid[4]);
+                data.WriteByteSeq(guid[0]);
+                data.WriteByteSeq(guid[1]);
+                data.WriteByteSeq(guid[7]);
+                data.WriteByteSeq(guid[5]);
+                data << float(m_flySpeed);  //move this to a function!
+                data << uint32(0);
+                data.WriteByteSeq(guid[2]);
+                data.WriteByteSeq(guid[6]);
+                data.WriteByteSeq(guid[3]);
+                data.WriteByteSeq(guid[4]);
+                break;
+            }
+            //case FLYBACK:
+            //{
+            //    data.Initialize(SMSG_MOVE_SET_FLIGHT_BACK_SPEED, 1 + 8 + 4 + 4);
+            //    data.WriteByteMask(guid[1]);
+            //    data.WriteByteMask(guid[2]);
+            //    data.WriteByteMask(guid[6]);
+            //    data.WriteByteMask(guid[4]);
+            //    data.WriteByteMask(guid[7]);
+            //    data.WriteByteMask(guid[3]);
+            //    data.WriteByteMask(guid[0]);
+            //    data.WriteByteMask(guid[4]);
+            //    data.WriteByteSeq(guid[3]);
+            //    data << uint32(0);
+            //    data.WriteByteSeq(guid[6]);
+            //    data << float(m_backFlySpeed); //move this to a function!
+            //    data.WriteByteSeq(guid[1]);
+            //    data.WriteByteSeq(guid[2]);
+            //    data.WriteByteSeq(guid[4]);
+            //    data.WriteByteSeq(guid[0]);
+            //    data.WriteByteSeq(guid[5]);
+            //    data.WriteByteSeq(guid[7]);
+            //    break;
+            //}
+            //case PITCH_RATE:
+            //{
+            //    data.Initialize(SMSG_MOVE_SET_PITCH_RATE, 1 + 8 + 4 + 4);
+            //    data.WriteByteMask(guid[1]);
+            //    data.WriteByteMask(guid[2]);
+            //    data.WriteByteMask(guid[6]);
+            //    data.WriteByteMask(guid[7]);
+            //    data.WriteByteMask(guid[0]);
+            //    data.WriteByteMask(guid[3]);
+            //    data.WriteByteMask(guid[5]);
+            //    data.WriteByteMask(guid[4]);
+            //    data << float(m_pitchRate);  //move this to a function!
+            //    data.WriteByteSeq(guid[6]);
+            //    data.WriteByteSeq(guid[4]);
+            //    data.WriteByteSeq(guid[0]);
+            //    data << uint32(0);
+            //    data.WriteByteSeq(guid[1]);
+            //    data.WriteByteSeq(guid[2]);
+            //    data.WriteByteSeq(guid[7]);
+            //    data.WriteByteSeq(guid[3]);
+            //    data.WriteByteSeq(guid[5]);
+            //    break;
+            //}
+            default:
+                Log.Error("Unit::SetSpeeds", "Unknown type %u, data not sent to client.", uint32(type));
+                return;
+        }
+
         SendMessageToSet(&data, true);
     }
     else
     {
-        WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
-        data << GetNewGUID();
-        data << uint32(5);
-        SendMessageToSet(&data, true);
-
-        /*Zyres: Why?
-        WorldPacket* data = new WorldPacket(SMSG_MOVE_UNSET_CAN_FLY, 13);
-        *data << GetNewGUID();
-        *data << uint32(5);
-        SendMessageToSet(data, false);
-        static_cast<Player*>(this)->delayedPackets.add(data);*/
+        switch (type)
+        {
+            case WALK:
+            {
+                data.Initialize(SMSG_SPLINE_MOVE_SET_WALK_SPEED, 1 + 8 + 4);
+                data.WriteByteMask(guid[0]);
+                data.WriteByteMask(guid[6]);
+                data.WriteByteMask(guid[7]);
+                data.WriteByteMask(guid[3]);
+                data.WriteByteMask(guid[5]);
+                data.WriteByteMask(guid[1]);
+                data.WriteByteMask(guid[2]);
+                data.WriteByteMask(guid[4]);
+                data.WriteByteSeq(guid[0]);
+                data.WriteByteSeq(guid[4]);
+                data.WriteByteSeq(guid[7]);
+                data.WriteByteSeq(guid[1]);
+                data.WriteByteSeq(guid[5]);
+                data.WriteByteSeq(guid[3]);
+                data << float(m_walkSpeed);
+                data.WriteByteSeq(guid[6]);
+                data.WriteByteSeq(guid[2]);
+                break;
+            }
+            case RUN:
+            {
+                data.Initialize(SMSG_SPLINE_MOVE_SET_RUN_SPEED, 1 + 8 + 4);
+                data.WriteByteMask(guid[4]);
+                data.WriteByteMask(guid[0]);
+                data.WriteByteMask(guid[5]);
+                data.WriteByteMask(guid[7]);
+                data.WriteByteMask(guid[6]);
+                data.WriteByteMask(guid[3]);
+                data.WriteByteMask(guid[1]);
+                data.WriteByteMask(guid[2]);
+                data.WriteByteSeq(guid[0]);
+                data.WriteByteSeq(guid[7]);
+                data.WriteByteSeq(guid[6]);
+                data.WriteByteSeq(guid[5]);
+                data.WriteByteSeq(guid[3]);
+                data.WriteByteSeq(guid[4]);
+                data << float(m_runSpeed);
+                data.WriteByteSeq(guid[2]);
+                data.WriteByteSeq(guid[1]);
+                break;
+            }
+            case RUNBACK:
+            {
+                data.Initialize(SMSG_SPLINE_MOVE_SET_RUN_BACK_SPEED, 1 + 8 + 4);
+                data.WriteByteMask(guid[1]);
+                data.WriteByteMask(guid[2]);
+                data.WriteByteMask(guid[6]);
+                data.WriteByteMask(guid[0]);
+                data.WriteByteMask(guid[3]);
+                data.WriteByteMask(guid[7]);
+                data.WriteByteMask(guid[5]);
+                data.WriteByteMask(guid[4]);
+                data.WriteByteSeq(guid[1]);
+                data << float(speed / 2);
+                data.WriteByteSeq(guid[2]);
+                data.WriteByteSeq(guid[4]);
+                data.WriteByteSeq(guid[0]);
+                data.WriteByteSeq(guid[3]);
+                data.WriteByteSeq(guid[6]);
+                data.WriteByteSeq(guid[5]);
+                data.WriteByteSeq(guid[7]);
+                break;
+            }
+            case SWIM:
+            {
+                data.Initialize(SMSG_SPLINE_MOVE_SET_SWIM_SPEED, 1 + 8 + 4);
+                data.WriteByteMask(guid[4]);
+                data.WriteByteMask(guid[2]);
+                data.WriteByteMask(guid[5]);
+                data.WriteByteMask(guid[0]);
+                data.WriteByteMask(guid[7]);
+                data.WriteByteMask(guid[6]);
+                data.WriteByteMask(guid[3]);
+                data.WriteByteMask(guid[1]);
+                data.WriteByteSeq(guid[5]);
+                data.WriteByteSeq(guid[6]);
+                data.WriteByteSeq(guid[1]);
+                data.WriteByteSeq(guid[0]);
+                data.WriteByteSeq(guid[2]);
+                data.WriteByteSeq(guid[4]);
+                data << float(m_swimSpeed);
+                data.WriteByteSeq(guid[7]);
+                data.WriteByteSeq(guid[3]);
+                break;
+            }
+            case SWIMBACK:
+            {
+                data.Initialize(SMSG_SPLINE_MOVE_SET_SWIM_BACK_SPEED, 1 + 8 + 4);
+                data.WriteByteMask(guid[0]);
+                data.WriteByteMask(guid[1]);
+                data.WriteByteMask(guid[3]);
+                data.WriteByteMask(guid[6]);
+                data.WriteByteMask(guid[4]);
+                data.WriteByteMask(guid[5]);
+                data.WriteByteMask(guid[7]);
+                data.WriteByteMask(guid[2]);
+                data.WriteByteSeq(guid[5]);
+                data.WriteByteSeq(guid[3]);
+                data.WriteByteSeq(guid[1]);
+                data.WriteByteSeq(guid[0]);
+                data.WriteByteSeq(guid[7]);
+                data.WriteByteSeq(guid[6]);
+                data << float(m_backSwimSpeed);
+                data.WriteByteSeq(guid[4]);
+                data.WriteByteSeq(guid[2]);
+                break;
+            }
+            /*case TURN_RATE:
+            {
+                data.Initialize(SMSG_SPLINE_MOVE_SET_TURN_RATE, 1 + 8 + 4);
+                data.WriteByteMask(guid[2]);
+                data.WriteByteMask(guid[4]);
+                data.WriteByteMask(guid[6]);
+                data.WriteByteMask(guid[1]);
+                data.WriteByteMask(guid[3]);
+                data.WriteByteMask(guid[5]);
+                data.WriteByteMask(guid[7]);
+                data.WriteByteMask(guid[0]);
+                data << float(m_turnRate);
+                data.WriteByteSeq(guid[1]);
+                data.WriteByteSeq(guid[5]);
+                data.WriteByteSeq(guid[3]);
+                data.WriteByteSeq(guid[2]);
+                data.WriteByteSeq(guid[7]);
+                data.WriteByteSeq(guid[4]);
+                data.WriteByteSeq(guid[6]);
+                data.WriteByteSeq(guid[0]);
+                break;
+            }*/
+            case FLY:
+            {
+                data.Initialize(SMSG_SPLINE_MOVE_SET_FLIGHT_SPEED, 1 + 8 + 4);
+                data.WriteByteMask(guid[7]);
+                data.WriteByteMask(guid[4]);
+                data.WriteByteMask(guid[0]);
+                data.WriteByteMask(guid[1]);
+                data.WriteByteMask(guid[3]);
+                data.WriteByteMask(guid[6]);
+                data.WriteByteMask(guid[5]);
+                data.WriteByteMask(guid[2]);
+                data.WriteByteSeq(guid[0]);
+                data.WriteByteSeq(guid[5]);
+                data.WriteByteSeq(guid[4]);
+                data.WriteByteSeq(guid[7]);
+                data.WriteByteSeq(guid[3]);
+                data.WriteByteSeq(guid[2]);
+                data.WriteByteSeq(guid[1]);
+                data.WriteByteSeq(guid[6]);
+                data << float(m_flySpeed);
+                break;
+            }
+            /*case FLYBACK:
+            {
+                data.Initialize(SMSG_SPLINE_MOVE_SET_FLIGHT_BACK_SPEED, 1 + 8 + 4);
+                data.WriteByteMask(guid[2]);
+                data.WriteByteMask(guid[1]);
+                data.WriteByteMask(guid[6]);
+                data.WriteByteMask(guid[5]);
+                data.WriteByteMask(guid[0]);
+                data.WriteByteMask(guid[3]);
+                data.WriteByteMask(guid[4]);
+                data.WriteByteMask(guid[7]);
+                data.WriteByteSeq(guid[5]);
+                data << float(m_backFlySpeed);
+                data.WriteByteSeq(guid[6]);
+                data.WriteByteSeq(guid[1]);
+                data.WriteByteSeq(guid[0]);
+                data.WriteByteSeq(guid[2]);
+                data.WriteByteSeq(guid[3]);
+                data.WriteByteSeq(guid[7]);
+                data.WriteByteSeq(guid[4]);
+                break;
+            }*/
+            /*case PITCH_RATE:
+            {
+                data.Initialize(SMSG_SPLINE_MOVE_SET_PITCH_RATE, 1 + 8 + 4);
+                data.WriteByteMask(guid[3]);
+                data.WriteByteMask(guid[5]);
+                data.WriteByteMask(guid[6]);
+                data.WriteByteMask(guid[1]);
+                data.WriteByteMask(guid[0]);
+                data.WriteByteMask(guid[4]);
+                data.WriteByteMask(guid[7]);
+                data.WriteByteMask(guid[2]);
+                data.WriteByteSeq(guid[1]);
+                data.WriteByteSeq(guid[5]);
+                data.WriteByteSeq(guid[7]);
+                data.WriteByteSeq(guid[0]);
+                data.WriteByteSeq(guid[6]);
+                data.WriteByteSeq(guid[3]);
+                data.WriteByteSeq(guid[2]);
+                data << float(m_pitchRate));
+                data.WriteByteSeq(guid[4]);
+                break;
+            }*/
+            default:
+                Log.Error("Unit::SetSpeeds", "Unknown type %u, data not sent to client.", uint32(type));
+                return;
+        }
     }
+
 }
 
 bool Unit::IsDazed()

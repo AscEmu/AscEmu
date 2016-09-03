@@ -599,8 +599,6 @@ enum Opcodes
     CMSG_UNLEARN_DANCE_MOVE                         = 0x457,
     CMSG_SET_RUNE_COUNT                             = 0x458,
     CMSG_SET_RUNE_COOLDOWN                          = 0x459,
-    MSG_MOVE_SET_PITCH_RATE_CHEAT                   = 0x45A,
-    MSG_MOVE_SET_PITCH_RATE                         = 0x45B,
     SMSG_FORCE_PITCH_RATE_CHANGE                    = 0x45C,
     CMSG_FORCE_PITCH_RATE_CHANGE_ACK                = 0x45D,
     SMSG_SPLINE_SET_PITCH_RATE                      = 0x45E,
@@ -1065,6 +1063,15 @@ enum Opcodes
     MSG_MOVE_SET_RUN_SPEED                              = 0x3DB5,
     MSG_MOVE_SET_WALK_SPEED                             = 0x1DA4,
     MSG_MOVE_SET_SWIM_SPEED                             = 0x15A7,
+    SMSG_SPLINE_MOVE_SET_FLIGHT_BACK_SPEED              = 0x38B3,
+    SMSG_SPLINE_MOVE_SET_FLIGHT_SPEED                   = 0x39A0,
+    SMSG_SPLINE_MOVE_SET_PITCH_RATE                     = 0x14B0,
+    SMSG_SPLINE_MOVE_SET_RUN_BACK_SPEED                 = 0x3DB3,
+    SMSG_SPLINE_MOVE_SET_RUN_SPEED                      = 0x51B7,
+    SMSG_SPLINE_MOVE_SET_SWIM_SPEED                     = 0x39A4,
+    SMSG_SPLINE_MOVE_SET_SWIM_BACK_SPEED                = 0x59A1,
+    SMSG_SPLINE_MOVE_SET_TURN_RATE                      = 0x78B5,
+    SMSG_SPLINE_MOVE_SET_WALK_SPEED                     = 0x34A5,
 
     // LFG Check packet sending in LfgHandler.cpp
     SMSG_LFG_PLAYER_INFO                                = 0x1370,   // not updated
@@ -1376,19 +1383,30 @@ enum Opcodes
     CMSG_MOVE_STOP_SWIM_CHEAT                           = 0x12DA,
     MSG_MOVE_TELEPORT_CHEAT                             = 0x10C7,
     MSG_MOVE_SET_RUN_SPEED_CHEAT                        = 0x10CD,
+    SMSG_MOVE_SET_RUN_SPEED                             = 0x3DB5,
     MSG_MOVE_SET_RUN_BACK_SPEED_CHEAT                   = 0x10CF,
+    SMSG_MOVE_SET_RUN_BACK_SPEED                        = 0x71B1,
     MSG_MOVE_SET_WALK_SPEED_CHEAT                       = 0x10D1,
+    SMSG_MOVE_SET_WALK_SPEED                            = 0x1DA4,
     MSG_MOVE_SET_SWIM_SPEED_CHEAT                       = 0x10D3,
+    SMSG_MOVE_SET_SWIM_SPEED                            = 0x15A7,
     MSG_MOVE_SET_SWIM_BACK_SPEED_CHEAT                  = 0x10D5,
+    SMSG_MOVE_SET_SWIM_BACK_SPEED                       = 0x5CA6,
     MSG_MOVE_SET_ALL_SPEED_CHEAT                        = 0x10D7,
     MSG_MOVE_SET_TURN_RATE_CHEAT                        = 0x10D8,
+    SMSG_MOVE_SET_TURN_RATE                             = 0x30A5,
     MSG_MOVE_TOGGLE_COLLISION_CHEAT                     = 0x10DA,
 
     MSG_MOVE_START_SWIM_CHEAT                           = 0x1342,
     MSG_MOVE_STOP_SWIM_CHEAT                            = 0x1343,
 
     MSG_MOVE_SET_FLIGHT_SPEED_CHEAT                     = 0x137E,
+    SMSG_MOVE_SET_FLIGHT_SPEED                          = 0x71A6,
     MSG_MOVE_SET_FLIGHT_BACK_SPEED_CHEAT                = 0x1380,
+    SMSG_MOVE_SET_FLIGHT_BACK_SPEED                     = 0x30A2,
+
+    MSG_MOVE_SET_PITCH_RATE_CHEAT                       = 0x145B,
+    SMSG_MOVE_SET_PITCH_RATE                            = 0x75B0,
 
     //Achievements
     SMSG_RESPOND_INSPECT_ACHIEVEMENTS                   = 0x015B0,

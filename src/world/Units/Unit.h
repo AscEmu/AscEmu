@@ -1032,7 +1032,8 @@ class SERVER_DECL Unit : public Object
         bool GetSpeedDecrease();
         int32 m_mountedspeedModifier;
         int32 m_flyspeedModifier;
-        virtual void SetSpeeds(uint8 type, float speed){}
+        //virtual void SetSpeeds(uint8 type, float speed){}
+        void SetSpeeds(uint8 type, float speed, bool forced = false);
         void UpdateSpeed();
 
         void EnableFlight();
