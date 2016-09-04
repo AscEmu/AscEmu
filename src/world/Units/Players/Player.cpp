@@ -11797,7 +11797,6 @@ void Player::RemoveSanctuaryFlag()
 
 void Player::SendExploreXP(uint32 areaid, uint32 xp)
 {
-
     WorldPacket data(SMSG_EXPLORATION_EXPERIENCE, 8);
     data << uint32(areaid);
     data << uint32(xp);

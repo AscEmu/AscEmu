@@ -196,7 +196,6 @@ enum Opcodes
     MSG_SAVE_GUILD_EMBLEM                           = 0x1F1,
     SMSG_PARTYKILLLOG                               = 0x1F5,
     SMSG_PLAY_SPELL_IMPACT                          = 0x1F7,
-    SMSG_EXPLORATION_EXPERIENCE                     = 0x1F8,
     SMSG_ENVIRONMENTALDAMAGELOG                     = 0x1FC,
     CMSG_RWHOIS_OBSOLETE                            = 0x1FD,
     SMSG_RWHOIS                                     = 0x1FE,
@@ -1422,6 +1421,7 @@ enum Opcodes
     CMSG_AREA_SPIRIT_HEALER_QUEUE                       = 0x4815,
     SMSG_AREA_SPIRIT_HEALER_TIME                        = 0x0734,
     MSG_MOVE_UPDATE_TELEPORT                            = 0x50B2,
+    SMSG_EXPLORATION_EXPERIENCE                         = 0x6716,
 
     //Unknown packet send by client to server
     CMSG_UNREGISTER_ALL_ADDON_PREFIXES                  = 0x3D54,   // unknown?
