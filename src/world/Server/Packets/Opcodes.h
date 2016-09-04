@@ -214,7 +214,6 @@ enum Opcodes
     CMSG_SKILL_BUY_RANK                             = 0x220,
     CMSG_XP_CHEAT                                   = 0x221,
     CMSG_CHARACTER_POINT_CHEAT                      = 0x223,
-    SMSG_GOSSIP_POI                                 = 0x224,
     CMSG_CHAT_IGNORED                               = 0x225,
     CMSG_SERVER_COMMAND                             = 0x227,
     CMSG_GUILD_RANK                                 = 0x231,
@@ -506,7 +505,6 @@ enum Opcodes
     SMSG_VOICE_CHAT_STATUS                          = 0x3E3,
     CMSG_REPORT_PVP_AFK                             = 0x3E4,
     CMSG_REPORT_PVP_AFK_RESULT                      = 0x3E5,
-    CMSG_GUILD_BANKER_ACTIVATE                      = 0x3E6,
     CMSG_GUILD_BANK_QUERY_TAB                       = 0x3E7,
     SMSG_GUILD_BANK_LIST                            = 0x3E8,
     CMSG_GUILD_BANK_SWAP_ITEMS                      = 0x3E9,
@@ -1105,6 +1103,9 @@ enum Opcodes
     SMSG_PETITION_QUERY_RESPONSE                        = 0x4B37,
     MSG_PETITION_RENAME                                 = 0x4005,
 
+    //Guild
+    CMSG_GUILD_BANKER_ACTIVATE                          = 0x2E37,
+
     // Instances/Raid/Battlegrounds
     CMSG_REQUEST_RAID_INFO                              = 0x2F26,
     CMSG_BATTLEFIELD_LIST                               = 0x3814,   // not updated
@@ -1201,6 +1202,7 @@ enum Opcodes
     SMSG_GOSSIP_MESSAGE                                 = 0x2035,
     SMSG_GOSSIP_COMPLETE                                = 0x0806,
     CMSG_LIST_INVENTORY                                 = 0x2806,
+    SMSG_GOSSIP_POI                                     = 0x4316,
     SMSG_LIST_INVENTORY                                 = 0x7CB0,
     CMSG_QUESTGIVER_STATUS_QUERY                        = 0x4407,
     SMSG_QUESTGIVER_STATUS                              = 0x2115,

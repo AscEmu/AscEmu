@@ -313,7 +313,7 @@ class SERVER_DECL WorldSession
         void HandleCompleteCinematic(WorldPacket& recv_data);
         void HandleNextCinematic(WorldPacket& recv_data);
         void HandleInspectOpcode(WorldPacket& recv_data);
-        //void HandleGameobjReportUseOpCode(WorldPacket& recv_data);  // CMSG_GAMEOBJ_REPORT_USE
+        void HandleGameobjReportUseOpCode(WorldPacket& recv_data);
 
         /// Gm Ticket System in GMTicket.cpp:
         //void HandleGMTicketCreateOpcode(WorldPacket& recvPacket);
@@ -579,7 +579,7 @@ class SERVER_DECL WorldSession
         //void HandleGuildBankViewLog(WorldPacket& recv_data);
         //void HandleGuildBankQueryText(WorldPacket& recv_data);
         //void HandleSetGuildBankText(WorldPacket& recv_data);
-        //void HandleGuildBankOpenVault(WorldPacket& recv_data);
+        void HandleGuildBankOpenVault(WorldPacket& recv_data);
         //void HandleGuildBankBuyTab(WorldPacket& recv_data);
         //void HandleGuildBankDepositMoney(WorldPacket& recv_data);
         //void HandleGuildBankWithdrawMoney(WorldPacket& recv_data);

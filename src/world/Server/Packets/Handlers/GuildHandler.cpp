@@ -1660,28 +1660,28 @@ void SendShowSignatures(Charter* c, uint64 i, Player* p)
 //        pGuild->SendGuildBank(this, pTab, dest_bankslot);
 //    }
 //}
-//
-//void WorldSession::HandleGuildBankOpenVault(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    GameObject* pObj;
-//    uint64 guid;
-//
-//    if (!_player->IsInWorld() || _player->m_playerInfo->guild == NULL)
-//    {
-//        Guild::SendGuildCommandResult(this, GUILD_CREATE_S, "", GUILD_PLAYER_NOT_IN_GUILD);
-//        return;
-//    }
-//
-//    recv_data >> guid;
-//    pObj = _player->GetMapMgr()->GetGameObject((uint32)guid);
-//    if (pObj == NULL)
-//        return;
-//
-//    _player->m_playerInfo->guild->SendGuildBankInfo(this);
-//}
-//
+
+void WorldSession::HandleGuildBankOpenVault(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    GameObject* pObj;
+    uint64 guid;
+
+    if (!_player->IsInWorld() || _player->m_playerInfo->guild == NULL)
+    {
+        Guild::SendGuildCommandResult(this, GUILD_CREATE_S, "", GUILD_PLAYER_NOT_IN_GUILD);
+        return;
+    }
+
+    recv_data >> guid;
+    pObj = _player->GetMapMgr()->GetGameObject((uint32)guid);
+    if (pObj == NULL)
+        return;
+
+    _player->m_playerInfo->guild->SendGuildBankInfo(this);
+}
+
 //void WorldSession::HandleGuildBankViewTab(WorldPacket& recv_data)
 //{
 //    CHECK_INWORLD_RETURN

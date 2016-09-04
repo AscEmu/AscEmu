@@ -2737,20 +2737,20 @@ void WorldSession::HandleNextCinematic(WorldPacket& recv_data)
 //    _player->smsg_TalentsInfo(false);
 //}
 
-//void WorldSession::HandleGameobjReportUseOpCode(WorldPacket& recv_data)    // CMSG_GAMEOBJ_REPORT_USE
-//{
-//    CHECK_INWORLD_RETURN;
-//    uint64 guid;
-//    recv_data >> guid;
-//    GameObject* gameobj = _player->GetMapMgr()->GetGameObject((uint32)guid);
-//    if (gameobj == NULL)
-//        return;
-//    sQuestMgr.OnGameObjectActivate(_player, gameobj);
-//#ifdef ENABLE_ACHIEVEMENTS
-//    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT, gameobj->GetEntry(), 0, 0);
-//#endif
-//    return;
-//}
+void WorldSession::HandleGameobjReportUseOpCode(WorldPacket& recv_data)    // CMSG_GAMEOBJ_REPORT_USE
+{
+    CHECK_INWORLD_RETURN;
+    uint64 guid;
+    recv_data >> guid;
+    GameObject* gameobj = _player->GetMapMgr()->GetGameObject((uint32)guid);
+    if (gameobj == NULL)
+        return;
+    sQuestMgr.OnGameObjectActivate(_player, gameobj);
+#ifdef ENABLE_ACHIEVEMENTS
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT, gameobj->GetEntry(), 0, 0);
+#endif
+    return;
+}
 
 void WorldSession::HandleWorldStateUITimerUpdate(WorldPacket& recv_data)
 {
