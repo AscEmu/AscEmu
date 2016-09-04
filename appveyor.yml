@@ -29,4 +29,4 @@ build_script:
   - cmd: mkdir ascemu_build
   - cmd: cd ascemu_build
   - cmd: cmake ../ -G "%VS_VER%" -DBUILD_WITH_WARNINGS=1 -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1
-  - cmd: msbuild Ascemu.sln
+  - cmd: msbuild Ascemu_Cata.sln
