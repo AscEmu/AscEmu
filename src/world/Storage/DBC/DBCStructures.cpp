@@ -239,7 +239,7 @@ uint32 DBC::Structures::SpellEntry::GetRequiresSpellFocus() const
 uint32 DBC::Structures::SpellEntry::GetSpellEffectIdByIndex(SpellEffectIndex index) const
 {
     SpellEffectEntry const* effect = GetSpellEffect(index);
-    return effect ? effect->Effect : SPELL_EFFECT_NULL;
+    return effect ? effect->Effect : 0; // SPELL_EFFECT_NULL;
 }
 
 uint32 DBC::Structures::SpellEntry::GetAuraInterruptFlags() const
