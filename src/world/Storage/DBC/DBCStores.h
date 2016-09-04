@@ -122,7 +122,7 @@ struct OLD_SpellEntry
     const char* Rank;                                         // 153
   //char* RankAlt[15];                                        // 154 - 168 (153-168 Rank[16])
   //uint32 RankFlags;                                         // 169 not used
-    char* Description;                                        // 170  comment this out
+    const char* Description;                                  // 170  comment this out
   //char* DescriptionAlt[15];                                 // 171 - 185 (170-185 Description[16])
   //uint32 DescriptionFlags;                                  // 186 not used
     const char* BuffDescription;                              // 187  comment this out
