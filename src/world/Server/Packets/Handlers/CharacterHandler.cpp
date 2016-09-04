@@ -778,7 +778,7 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)
 {
     LOG_DEBUG("WORLD: Recvd Player Logon Message");
 
-    uint8 playerGuid[8];
+    ObjectGuid playerGuid;
  
     playerGuid[2] = recv_data.readBit();
     playerGuid[3] = recv_data.readBit();
@@ -798,7 +798,7 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)
     recv_data.ReadByteSeq(playerGuid[1]);
     recv_data.ReadByteSeq(playerGuid[4]);
  
-    uint64 pGuid = *(uint64*)playerGuid;
+    uint64 pGuid = playerGuid;
 
     if (objmgr.GetPlayer((uint32)playerGuid) != NULL || m_loggingInPlayer || _player)
     {
