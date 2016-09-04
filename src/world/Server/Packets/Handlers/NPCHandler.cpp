@@ -499,85 +499,85 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles CMSG_NPC_TEXT_QUERY:
 //////////////////////////////////////////////////////////////////////////////////////////
-//void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    WorldPacket data;
-//    uint32 textID;
-//    uint64 targetGuid;
-//
-//    recv_data >> textID;
-//    LOG_DETAIL("WORLD: CMSG_NPC_TEXT_QUERY ID '%u'", textID);
-//
-//    recv_data >> targetGuid;
-//    GetPlayer()->SetTargetGUID(targetGuid);
-//
-//    NpcText const* pGossip = sMySQLStore.GetNpcText(textID);
-//    LocalizedNpcText* lnc = (language > 0) ? sLocalizationMgr.GetLocalizedNpcText(textID, language) : NULL;
-//
-//    data.Initialize(SMSG_NPC_TEXT_UPDATE);
-//    data << textID;
-//
-//    if (pGossip)
-//    {
-//        for (uint8 i = 0; i < 8; i++)
-//        {
-//            data << float(pGossip->Texts[i].Prob);
-//
-//            if (lnc)
-//            {
-//                if (strlen(lnc->Texts[i][0]) == 0)
-//                    data << lnc->Texts[i][1];
-//                else
-//                    data << lnc->Texts[i][0];
-//
-//                if (strlen(lnc->Texts[i][1]) == 0)
-//                    data << lnc->Texts[i][0];
-//                else
-//                    data << lnc->Texts[i][1];
-//            }
-//            else
-//            {
-//                if (pGossip->Texts[i].Text[0].size() == 0)
-//                    data << pGossip->Texts[i].Text[1];
-//                else
-//                    data << pGossip->Texts[i].Text[0];
-//
-//                if (pGossip->Texts[i].Text[1].size() == 0)
-//                    data << pGossip->Texts[i].Text[0];
-//                else
-//                    data << pGossip->Texts[i].Text[1];
-//            }
-//            data << pGossip->Texts[i].Lang;
-//
-//            for (uint8 e = 0; e < GOSSIP_EMOTE_COUNT; e++)
-//            {
-//                data << uint32(pGossip->Texts[i].Emotes[e].Delay);
-//                data << uint32(pGossip->Texts[i].Emotes[e].Emote);
-//            }
-//        }
-//    }
-//    else
-//    {
-//        for (uint8 i = 0; i < 8; i++)
-//        {
-//            data << float(1.0f);            // Prob
-//            data << _player->GetSession()->LocalizedWorldSrv(70);
-//            data << _player->GetSession()->LocalizedWorldSrv(70);
-//            data << uint32(0x00);           // Language
-//
-//            for (uint8 e = 0; e < GOSSIP_EMOTE_COUNT; e++)
-//            {
-//                data << uint32(0x00);       // Emote delay
-//                data << uint32(0x00);       // Emote
-//            }
-//        }
-//    }
-//
-//    SendPacket(&data);
-//    return;
-//}
+void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    WorldPacket data;
+    uint32 textID;
+    uint64 targetGuid;
+
+    recv_data >> textID;
+    LOG_DETAIL("WORLD: CMSG_NPC_TEXT_QUERY ID '%u'", textID);
+
+    recv_data >> targetGuid;
+    GetPlayer()->SetTargetGUID(targetGuid);
+
+    NpcText const* pGossip = sMySQLStore.GetNpcText(textID);
+    LocalizedNpcText* lnc = (language > 0) ? sLocalizationMgr.GetLocalizedNpcText(textID, language) : NULL;
+
+    data.Initialize(SMSG_NPC_TEXT_UPDATE);
+    data << textID;
+
+    if (pGossip)
+    {
+        for (uint8 i = 0; i < 8; i++)
+        {
+            data << float(pGossip->Texts[i].Prob);
+
+            if (lnc)
+            {
+                if (strlen(lnc->Texts[i][0]) == 0)
+                    data << lnc->Texts[i][1];
+                else
+                    data << lnc->Texts[i][0];
+
+                if (strlen(lnc->Texts[i][1]) == 0)
+                    data << lnc->Texts[i][0];
+                else
+                    data << lnc->Texts[i][1];
+            }
+            else
+            {
+                if (pGossip->Texts[i].Text[0].size() == 0)
+                    data << pGossip->Texts[i].Text[1];
+                else
+                    data << pGossip->Texts[i].Text[0];
+
+                if (pGossip->Texts[i].Text[1].size() == 0)
+                    data << pGossip->Texts[i].Text[0];
+                else
+                    data << pGossip->Texts[i].Text[1];
+            }
+            data << pGossip->Texts[i].Lang;
+
+            for (uint8 e = 0; e < GOSSIP_EMOTE_COUNT; e++)
+            {
+                data << uint32(pGossip->Texts[i].Emotes[e].Delay);
+                data << uint32(pGossip->Texts[i].Emotes[e].Emote);
+            }
+        }
+    }
+    else
+    {
+        for (uint8 i = 0; i < 8; i++)
+        {
+            data << float(1.0f);            // Prob
+            data << _player->GetSession()->LocalizedWorldSrv(70);
+            data << _player->GetSession()->LocalizedWorldSrv(70);
+            data << uint32(0x00);           // Language
+
+            for (uint8 e = 0; e < GOSSIP_EMOTE_COUNT; e++)
+            {
+                data << uint32(0x00);       // Emote delay
+                data << uint32(0x00);       // Emote
+            }
+        }
+    }
+
+    SendPacket(&data);
+    return;
+}
 
 //void WorldSession::HandleBinderActivateOpcode(WorldPacket& recv_data)
 //{
