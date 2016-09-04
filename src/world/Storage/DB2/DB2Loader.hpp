@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _DB2_LOADER_HPP
 #define _DB2_LOADER_HPP
 
-#include "Platform/Define.h"
 #include "../shared/ByteConverter.hpp"
 #include "Common.h"
 #include <cassert>

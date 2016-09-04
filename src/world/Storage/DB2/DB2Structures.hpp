@@ -7,7 +7,6 @@ This file is released under the MIT license. See README-MIT for more information
 #define _DB2STRUCTURE_HPP
 
 #include "Common.h"
-#include "Platform/Define.h"
 
 #include <map>
 #include <set>
