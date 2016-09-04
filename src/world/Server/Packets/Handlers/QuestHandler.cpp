@@ -25,60 +25,60 @@
 
 initialiseSingleton(QuestMgr);
 
-//void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    if (_player->IsInBg())
-//        return;         //Added in 3.0.2, quests can be shared anywhere besides a BG
-//
-//    uint64 guid;
-//    WorldPacket data(SMSG_QUESTGIVER_STATUS, 12);
-//    Object* qst_giver = NULL;
-//
-//    recv_data >> guid;
-//    uint32 guidtype = GET_TYPE_FROM_GUID(guid);
-//    if (guidtype == HIGHGUID_TYPE_UNIT)
-//    {
-//        Creature* quest_giver = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-//        if (quest_giver)
-//            qst_giver = quest_giver;
-//        else
-//            return;
-//
-//        if (!quest_giver->isQuestGiver())
-//        {
-//            LOG_DEBUG("WORLD: Creature is not a questgiver.");
-//            return;
-//        }
-//    }
-//    else if (guidtype == HIGHGUID_TYPE_ITEM)
-//    {
-//        Item* quest_giver = GetPlayer()->GetItemInterface()->GetItemByGUID(guid);
-//        if (quest_giver)
-//            qst_giver = quest_giver;
-//        else
-//            return;
-//    }
-//    else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
-//    {
-//        GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
-//        if (quest_giver)
-//            qst_giver = quest_giver;
-//        else
-//            return;
-//    }
-//
-//    if (!qst_giver)
-//    {
-//        LOG_DEBUG("WORLD: Invalid questgiver GUID " I64FMT ".", guid);
-//        return;
-//    }
-//
-//    data << guid;
-//    data << sQuestMgr.CalcStatus(qst_giver, GetPlayer());
-//    SendPacket(&data);
-//}
+void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    if (_player->IsInBg())
+        return;         //Added in 3.0.2, quests can be shared anywhere besides a BG
+
+    uint64 guid;
+    WorldPacket data(SMSG_QUESTGIVER_STATUS, 12);
+    Object* qst_giver = NULL;
+
+    recv_data >> guid;
+    uint32 guidtype = GET_TYPE_FROM_GUID(guid);
+    if (guidtype == HIGHGUID_TYPE_UNIT)
+    {
+        Creature* quest_giver = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+        if (quest_giver)
+            qst_giver = quest_giver;
+        else
+            return;
+
+        if (!quest_giver->isQuestGiver())
+        {
+            LOG_DEBUG("WORLD: Creature is not a questgiver.");
+            return;
+        }
+    }
+    else if (guidtype == HIGHGUID_TYPE_ITEM)
+    {
+        Item* quest_giver = GetPlayer()->GetItemInterface()->GetItemByGUID(guid);
+        if (quest_giver)
+            qst_giver = quest_giver;
+        else
+            return;
+    }
+    else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
+    {
+        GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
+        if (quest_giver)
+            qst_giver = quest_giver;
+        else
+            return;
+    }
+
+    if (!qst_giver)
+    {
+        LOG_DEBUG("WORLD: Invalid questgiver GUID " I64FMT ".", guid);
+        return;
+    }
+
+    data << guid;
+    data << sQuestMgr.CalcStatus(qst_giver, GetPlayer());
+    SendPacket(&data);
+}
 
 //void WorldSession::HandleQuestgiverHelloOpcode(WorldPacket& recv_data)
 //{

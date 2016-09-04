@@ -472,7 +472,7 @@ class SERVER_DECL WorldSession
         //void HandleUnlearnTalents(WorldPacket& recv_data);
 
         /// Quest opcodes (QuestHandler.cpp)
-        //void HandleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket);
+        void HandleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket);
         //void HandleQuestgiverHelloOpcode(WorldPacket& recvPacket);
         //void HandleQuestgiverAcceptQuestOpcode(WorldPacket& recvPacket);
         //void HandleQuestgiverCancelOpcode(WorldPacket& recvPacket);
@@ -689,7 +689,7 @@ class SERVER_DECL WorldSession
         //void HandleSetTaxiBenchmarkOpcode(WorldPacket& recv_data);
         //void HandleMirrorImageOpcode(WorldPacket& recv_data);
         //void HandleSetFriendNote(WorldPacket& recv_data);
-        //void HandleInrangeQuestgiverQuery(WorldPacket& recv_data);
+        void HandleInrangeQuestgiverQuery(WorldPacket& recv_data);
         //void HandleRemoveGlyph(WorldPacket& recv_data);
         //void HandleSetFactionInactiveOpcode(WorldPacket& recv_data);
 

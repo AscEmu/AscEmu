@@ -1202,8 +1202,8 @@ enum Opcodes
     SMSG_GOSSIP_COMPLETE                                = 0x0806,
     CMSG_LIST_INVENTORY                                 = 0x2806,
     SMSG_LIST_INVENTORY                                 = 0x7CB0,
-    CMSG_QUESTGIVER_STATUS_QUERY                        = 0x4407,   // unchecked
-    SMSG_QUESTGIVER_STATUS                              = 0x2115,   // unchecked
+    CMSG_QUESTGIVER_STATUS_QUERY                        = 0x4407,
+    SMSG_QUESTGIVER_STATUS                              = 0x2115,
     CMSG_QUESTGIVER_HELLO                               = 0x0D17,   // unchecked
     SMSG_QUESTGIVER_QUEST_LIST                          = 0x0134,   // unchecked
     CMSG_QUESTGIVER_QUERY_QUEST                         = 0x2F14,   // unchecked
@@ -1219,8 +1219,8 @@ enum Opcodes
     CMSG_QUESTGIVER_CANCEL                              = 0x1191,   // unchecked
     SMSG_QUESTGIVER_QUEST_COMPLETE                      = 0x55A4,   // unchecked
     SMSG_QUESTGIVER_QUEST_FAILED                        = 0x4236,   // unchecked
-    CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY               = 0x6305,   // unchecked
-    SMSG_QUESTGIVER_STATUS_MULTIPLE                     = 0x4F25,   // unchecked
+    CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY               = 0x6305,
+    SMSG_QUESTGIVER_STATUS_MULTIPLE                     = 0x4F25,
     CMSG_NPC_TEXT_QUERY                                 = 0x4E24,
     SMSG_NPC_TEXT_UPDATE                                = 0x4436,
     SMSG_NPC_WONT_TALK                                  = 0x1182,

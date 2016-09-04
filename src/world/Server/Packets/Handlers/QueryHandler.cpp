@@ -342,39 +342,39 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
 //    SendPacket(&reply);
 //}
 
-//void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN;
-//
-//    WorldPacket data(SMSG_QUESTGIVER_STATUS_MULTIPLE, 1000);
-//    Object::InRangeSet::iterator itr;
-//    Creature* pCreature;
-//    uint32 count = 0;
-//    data << count;
-//
-//    // 32 count
-//    // <foreach count>
-//    //    64 guid
-//    //    8 status
-//
-//    for (itr = _player->m_objectsInRange.begin(); itr != _player->m_objectsInRange.end(); ++itr)
-//    {
-//        if (!(*itr)->IsCreature())
-//            continue;
-//
-//        pCreature = static_cast<Creature*>(*itr);
-//
-//        if (pCreature->isQuestGiver())
-//        {
-//            data << pCreature->GetGUID();
-//            data << uint8(sQuestMgr.CalcStatus(pCreature, _player));
-//            ++count;
-//        }
-//    }
-//
-//    *(uint32*)(data.contents()) = count;
-//    SendPacket(&data);
-//}
+void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN;
+
+    WorldPacket data(SMSG_QUESTGIVER_STATUS_MULTIPLE, 1000);
+    Object::InRangeSet::iterator itr;
+    Creature* pCreature;
+    uint32 count = 0;
+    data << count;
+
+    // 32 count
+    // <foreach count>
+    //    64 guid
+    //    8 status
+
+    for (itr = _player->m_objectsInRange.begin(); itr != _player->m_objectsInRange.end(); ++itr)
+    {
+        if (!(*itr)->IsCreature())
+            continue;
+
+        pCreature = static_cast<Creature*>(*itr);
+
+        if (pCreature->isQuestGiver())
+        {
+            data << pCreature->GetGUID();
+            data << uint8(sQuestMgr.CalcStatus(pCreature, _player));
+            ++count;
+        }
+    }
+
+    *(uint32*)(data.contents()) = count;
+    SendPacket(&data);
+}
 
 //void WorldSession::HandleAchievmentQueryOpcode(WorldPacket& recv_data)
 //{
