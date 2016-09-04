@@ -264,7 +264,7 @@ void ReadLiquidTypeTableDBC()
     printf("Read LiquidType.dbc file...");
 
     DBCFile dbc(LocaleMpq, "DBFilesClient\\LiquidType.dbc");
-    if (!dbc.open())
+    if(!dbc.open())
     {
         printf("Fatal error: Invalid LiquidType.dbc file format!\n");
         exit(1);
@@ -340,13 +340,13 @@ bool ExtractSingleWmo(std::string& fname)
     bool file_ok = true;
     std::cout << "Extracting " << fname << std::endl;
     WMORoot froot(fname);
-    if (!froot.open())
+    if(!froot.open())
     {
         printf("Couldn't open RootWmo!!!\n");
         return true;
     }
     FILE *output = fopen(szLocalFile,"wb");
-    if (!output)
+    if(!output)
     {
         printf("couldn't open %s for writing!\n", szLocalFile);
         return false;
@@ -359,7 +359,7 @@ bool ExtractSingleWmo(std::string& fname)
         for (uint32 i = 0; i < froot.nGroups; ++i)
         {
             char temp[1024];
-            strncpy(temp, fname.c_str(), 1024);
+            strcpy(temp, fname.c_str());
             temp[fname.length()-4] = 0;
             char groupFileName[1024];
             sprintf(groupFileName, "%s_%03u.wmo", temp, i);
@@ -367,7 +367,7 @@ bool ExtractSingleWmo(std::string& fname)
 
             std::string s = groupFileName;
             WMOGroup fgroup(s);
-            if (!fgroup.open())
+            if(!fgroup.open())
             {
                 printf("Could not open all Group file for: %s\n", plain_name);
                 file_ok = false;
@@ -398,7 +398,7 @@ void ParsMapFiles()
         sprintf(id,"%03u",map_ids[i].id);
         sprintf(fn,"World\\Maps\\%s\\%s.wdt", map_ids[i].name, map_ids[i].name);
         WDTFile WDT(fn,map_ids[i].name);
-        if (WDT.init(id, map_ids[i].id))
+        if(WDT.init(id, map_ids[i].id))
         {
             printf("Processing Map %u\n[", map_ids[i].id);
             for (int x=0; x<64; ++x)
@@ -437,18 +437,16 @@ bool processArgv(int argc, char ** argv, const char *versionString)
 
     for(int i = 1; i < argc; ++i)
     {
-        if (strcmp("-s",argv[i]) == 0)
+        if(strcmp("-s",argv[i]) == 0)
         {
             preciseVectorData = false;
         }
-        else if (strcmp("-d",argv[i]) == 0)
+        else if(strcmp("-d",argv[i]) == 0)
         {
-            if ((i+1)<argc)
+            if((i+1)<argc)
             {
                 hasInputPathParam = true;
-                strncpy(input_path, argv[i + 1], sizeof(input_path));
-                input_path[sizeof(input_path) - 1] = '\0';
-
+                strcpy(input_path, argv[i+1]);
                 if (input_path[strlen(input_path) - 1] != '\\' && input_path[strlen(input_path) - 1] != '/')
                     strcat(input_path, "/");
                 ++i;
@@ -458,15 +456,15 @@ bool processArgv(int argc, char ** argv, const char *versionString)
                 result = false;
             }
         }
-        else if (strcmp("-?",argv[1]) == 0)
+        else if(strcmp("-?",argv[1]) == 0)
         {
             result = false;
         }
-        else if (strcmp("-l",argv[i]) == 0)
+        else if(strcmp("-l",argv[i]) == 0)
         {
             preciseVectorData = true;
         }
-        else if (strcmp("-b",argv[i]) == 0)
+        else if(strcmp("-b",argv[i]) == 0)
         {
             if (i + 1 < argc)                            // all ok
                 CONF_TargetBuild = atoi(argv[i++ + 1]);
@@ -478,7 +476,7 @@ bool processArgv(int argc, char ** argv, const char *versionString)
         }
     }
 
-    if (!result)
+    if(!result)
     {
         printf("Extract %s.\n",versionString);
         printf("%s [-?][-s][-l][-d <path>]\n", argv[0]);
@@ -489,7 +487,7 @@ bool processArgv(int argc, char ** argv, const char *versionString)
         printf("   -? : This message.\n");
     }
 
-    if (!hasInputPathParam)
+    if(!hasInputPathParam)
         getGamePath();
 
     return result;
@@ -576,22 +574,11 @@ int main(int argc, char ** argv)
         map_ids=new map_id[map_count];
         for (unsigned int x=0;x<map_count;++x)
         {
-            map_ids[x].id = dbc->getRecord(x).getUInt(0);
-
-            const char* map_name = dbc->getRecord(x).getString(1);
-            size_t max_map_name_length = sizeof(map_ids[x].name);
-            if (strlen(map_name) >= max_map_name_length)
-            {
-                delete dbc;
-                delete[] map_ids;
-                printf("FATAL ERROR: Map name too long.\n");
-                return 1;
-            }
-
-            strncpy(map_ids[x].name, map_name, max_map_name_length);
-            map_ids[x].name[max_map_name_length - 1] = '\0';
-            printf("Map - %s\n", map_ids[x].name);
+            map_ids[x].id=dbc->getRecord (x).getUInt(0);
+            strcpy(map_ids[x].name,dbc->getRecord(x).getString(1));
+            printf("Map - %s\n",map_ids[x].name);
         }
+
 
         delete dbc;
         ParsMapFiles();

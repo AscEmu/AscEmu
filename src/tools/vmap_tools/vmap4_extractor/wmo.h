@@ -27,7 +27,7 @@
 #include "vec3d.h"
 #include "mpqfile.h"
 
-// MOPY flags
+ // MOPY flags
 #define WMO_MATERIAL_NOCAMCOLLIDE    0x01
 #define WMO_MATERIAL_DETAIL          0x02
 #define WMO_MATERIAL_NO_COLLISION    0x04
@@ -41,7 +41,9 @@ class WMOManager;
 class MPQFile;
 
 /* for whatever reason a certain company just can't stick to one coordinate system... */
-static inline Vec3D fixCoords(const Vec3D &v){ return Vec3D(v.z, v.x, v.y); }
+static inline Vec3D fixCoords(const Vec3D &v) {
+    return Vec3D(v.z, v.x, v.y);
+}
 
 class WMORoot
 {
@@ -131,7 +133,7 @@ public:
     Vec3D pos2, pos3, rot;
     uint32 indx, id, d2, d3;
 
-    WMOInstance(MPQFile&f , char const* WmoInstName, uint32 mapID, uint32 tileX, uint32 tileY, FILE* pDirfile);
+    WMOInstance(MPQFile&f, char const* WmoInstName, uint32 mapID, uint32 tileX, uint32 tileY, FILE* pDirfile);
 
     static void reset();
 };

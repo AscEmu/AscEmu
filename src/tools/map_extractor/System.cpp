@@ -22,7 +22,6 @@
 #include <stdio.h>
 #include <deque>
 #include <list>
-#include <vector>
 #include <cstdlib>
 #include <cstring>
 
@@ -67,9 +66,11 @@ typedef struct
 } map_id;
 
 map_id *map_ids;
+uint16 *areas;
 uint16 *LiqType;
 char output_path[128] = ".";
 char input_path[128] = ".";
+uint32 maxAreaId = 0;
 
 // **************************************************
 // Extractor options
@@ -77,12 +78,11 @@ char input_path[128] = ".";
 enum Extract
 {
     EXTRACT_MAP = 1,
-    EXTRACT_DBC = 2,
-    EXTRACT_CAMERA = 4
+    EXTRACT_DBC = 2
 };
 
 // Select data for extract
-int   CONF_extract = EXTRACT_MAP | EXTRACT_DBC | EXTRACT_CAMERA;
+int   CONF_extract = EXTRACT_MAP | EXTRACT_DBC;
 
 // This option allow limit minimum height to some value (Allow save some memory)
 bool  CONF_allow_height_limit = true;
@@ -172,7 +172,7 @@ void Usage(char const* prg)
         "%s -[var] [value]\n"\
         "-i set input path\n"\
         "-o set output path\n"\
-        "-e extract only MAP(1)/DBC(2)/Camera(4) - standard: all(7)\n"\
+        "-e extract only MAP(1)/DBC(2) - standard: both(3)\n"\
         "-f height stored as int (less map size but lost some accuracy) 1 by default\n"\
         "-b target build (default %u)\n"\
         "Example: %s -f 0 -i \"c:\\games\\game\"", prg, CONF_TargetBuild, prg);
@@ -185,7 +185,7 @@ void HandleArgs(int argc, char* arg[])
     {
         // i - input path
         // o - output path
-        // e - extract only MAP(1)/DBC(2)/Camera(4) - standard: all(7)
+        // e - extract only MAP(1)/DBC(2) - standard both(3)
         // f - use float to int conversion
         // h - limit minimum height
         // b - target client build
@@ -216,7 +216,7 @@ void HandleArgs(int argc, char* arg[])
                 if (c + 1 < argc)                            // all ok
                 {
                     CONF_extract = atoi(arg[c++ + 1]);
-                    if (!(CONF_extract > 0 && CONF_extract < 8))
+                    if (!(CONF_extract > 0 && CONF_extract < 4))
                         Usage(arg[0]);
                 }
                 else
@@ -311,6 +311,34 @@ uint32 ReadMapDBC()
     return map_count;
 }
 
+void ReadAreaTableDBC()
+{
+    printf("Read AreaTable.dbc file...");
+    HANDLE dbcFile;
+    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\AreaTable.dbc", SFILE_OPEN_PATCHED_FILE, &dbcFile))
+    {
+        printf("Fatal error: Cannot find AreaTable.dbc in archive!\n");
+        exit(1);
+    }
+
+    DBCFile dbc(dbcFile);
+    if (!dbc.open())
+    {
+        printf("Fatal error: Invalid AreaTable.dbc file format!\n");
+        exit(1);
+    }
+
+    size_t area_count = dbc.getRecordCount();
+    maxAreaId = dbc.getMaxId();
+    areas = new uint16[maxAreaId + 1];
+
+    for (uint32 x = 0; x < area_count; ++x)
+        areas[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
+
+    SFileCloseFile(dbcFile);
+    printf("Done! (%u areas loaded)\n", uint32(area_count));
+}
+
 void ReadLiquidTypeTableDBC()
 {
     printf("Read LiquidType.dbc file...");
@@ -346,7 +374,7 @@ void ReadLiquidTypeTableDBC()
 
 // Map file format data
 static char const* MAP_MAGIC = "MAPS";
-static char const* MAP_VERSION_MAGIC = "v1.6";
+static char const* MAP_VERSION_MAGIC = "v1.3";
 static char const* MAP_AREA_MAGIC = "AREA";
 static char const* MAP_HEIGHT_MAGIC = "MHGT";
 static char const* MAP_LIQUID_MAGIC = "MLIQ";
@@ -422,7 +450,7 @@ float selectUInt16StepStore(float maxDiff)
     return 65535 / maxDiff;
 }
 // Temporary grid data store
-uint16 area_ids[ADT_CELLS_PER_GRID][ADT_CELLS_PER_GRID];
+uint16 area_flags[ADT_CELLS_PER_GRID][ADT_CELLS_PER_GRID];
 
 float V8[ADT_GRID_SIZE][ADT_GRID_SIZE];
 float V9[ADT_GRID_SIZE + 1][ADT_GRID_SIZE + 1];
@@ -455,20 +483,36 @@ bool ConvertADT(char *filename, char *filename2, int /*cell_y*/, int /*cell_x*/,
 
     // Get area flags data
     for (int i = 0; i < ADT_CELLS_PER_GRID; ++i)
+    {
         for (int j = 0; j < ADT_CELLS_PER_GRID; ++j)
-            area_ids[i][j] = adt.cells[i][j]->areaid;
+        {
+            adt_MCNK* cell = adt.cells[i][j];
+            uint32 areaid = cell->areaid;
+            if (areaid && areaid <= maxAreaId)
+            {
+                if (areas[areaid] != 0xFFFF)
+                {
+                    area_flags[i][j] = areas[areaid];
+                    continue;
+                }
 
+                printf("File: %s\nCan't find area flag for areaid %u [%d, %d].\n", filename, areaid, cell->ix, cell->iy);
+            }
+
+            area_flags[i][j] = 0xffff;
+        }
+    }
 
     //============================================
     // Try pack area data
     //============================================
     bool fullAreaData = false;
-    uint32 areaId = area_ids[0][0];
-    for (int y = 0; y < ADT_CELLS_PER_GRID; ++y)
+    uint32 areaflag = area_flags[0][0];
+    for (int y = 0; y<ADT_CELLS_PER_GRID; y++)
     {
-        for (int x = 0; x < ADT_CELLS_PER_GRID; ++x)
+        for (int x = 0; x<ADT_CELLS_PER_GRID; x++)
         {
-            if (area_ids[y][x] != areaId)
+            if (area_flags[y][x] != areaflag)
             {
                 fullAreaData = true;
                 break;
@@ -485,12 +529,12 @@ bool ConvertADT(char *filename, char *filename2, int /*cell_y*/, int /*cell_x*/,
     if (fullAreaData)
     {
         areaHeader.gridArea = 0;
-        map.areaMapSize += sizeof(area_ids);
+        map.areaMapSize += sizeof(area_flags);
     }
     else
     {
         areaHeader.flags |= MAP_AREA_NO_AREA;
-        areaHeader.gridArea = static_cast<uint16>(areaId);
+        areaHeader.gridArea = (uint16)areaflag;
     }
 
     //
@@ -920,8 +964,8 @@ bool ConvertADT(char *filename, char *filename2, int /*cell_y*/, int /*cell_x*/,
     fwrite(&map, sizeof(map), 1, output);
     // Store area data
     fwrite(&areaHeader, sizeof(areaHeader), 1, output);
-    if (!(areaHeader.flags & MAP_AREA_NO_AREA))
-        fwrite(area_ids, sizeof(area_ids), 1, output);
+    if (!(areaHeader.flags&MAP_AREA_NO_AREA))
+        fwrite(area_flags, sizeof(area_flags), 1, output);
 
     // Store height data
     fwrite(&heightHeader, sizeof(heightHeader), 1, output);
@@ -980,6 +1024,7 @@ void ExtractMapsFromMpq(uint32 build)
 
     uint32 map_count = ReadMapDBC();
 
+    ReadAreaTableDBC();
     ReadLiquidTypeTableDBC();
 
     std::string path = output_path;
@@ -1014,6 +1059,7 @@ void ExtractMapsFromMpq(uint32 build)
     }
 
     printf("\n");
+    delete[] areas;
     delete[] map_ids;
 }
 
@@ -1131,73 +1177,6 @@ void ExtractDB2Files(int l, bool basicLocale)
     }
 
     printf("Extracted %u DB2 files\n\n", count);
-}
-
-void ExtractCameraFiles(int locale, bool basicLocale)
-{
-    printf("Extracting camera files...\n");
-    HANDLE dbcFile;
-    if (!SFileOpenFileEx(LocaleMpq, "DBFilesClient\\CinematicCamera.dbc", SFILE_OPEN_PATCHED_FILE, &dbcFile))
-    {
-        printf("Fatal error: Cannot find Map.dbc in archive!\n");
-        exit(1);
-    }
-
-    DBCFile camdbc(dbcFile);
-
-    if (!camdbc.open())
-    {
-        printf("Unable to open CinematicCamera.dbc. Camera extract aborted.\n");
-        return;
-    }
-
-    // get camera file list from DBC
-    std::vector<std::string> camerafiles;
-    size_t cam_count = camdbc.getRecordCount();
-
-    for (size_t i = 0; i < cam_count; ++i)
-    {
-        std::string camFile(camdbc.getRecord(i).getString(1));
-        size_t loc = camFile.find(".mdx");
-        if (loc != std::string::npos)
-            camFile.replace(loc, 4, ".m2");
-        camerafiles.push_back(std::string(camFile));
-    }
-    SFileCloseFile(dbcFile);
-
-    std::string path = output_path;
-    path += "/Cameras/";
-    CreateDir(path);
-    if (!basicLocale)
-    {
-        path += Locales[locale];
-        path += "/";
-        CreateDir(path);
-    }
-
-    // extract M2s
-    uint32 count = 0;
-    for (std::string thisFile : camerafiles)
-    {
-        std::string filename = path;
-        HANDLE dbcFile = NULL;
-        filename += (thisFile.c_str() + strlen("Cameras\\"));
-
-        if (FileExists(filename.c_str()))
-            continue;
-
-        if (!SFileOpenFileEx(WorldMpq, thisFile.c_str(), SFILE_OPEN_PATCHED_FILE, &dbcFile))
-        {
-            printf("Unable to open file %s in the archive\n", thisFile.c_str());
-            continue;
-        }
-
-        if (ExtractFile(dbcFile, filename.c_str()))
-            ++count;
-
-        SFileCloseFile(dbcFile);
-    }
-    printf("Extracted %u camera files\n", count);
 }
 
 bool LoadLocaleMPQFile(int locale)
@@ -1380,22 +1359,6 @@ int main(int argc, char * arg[])
     {
         printf("No locales detected\n");
         return 0;
-    }
-
-    if (CONF_extract & EXTRACT_CAMERA)
-    {
-        printf("Using locale: %s\n", Locales[FirstLocale]);
-
-        // Open MPQs
-        LoadLocaleMPQFile(FirstLocale);
-        LoadCommonMPQFiles(build);
-
-        // Extract cameras
-        ExtractCameraFiles(FirstLocale, true);
-
-        // Close MPQs
-        SFileCloseArchive(WorldMpq);
-        SFileCloseArchive(LocaleMpq);
     }
 
     if (CONF_extract & EXTRACT_MAP)

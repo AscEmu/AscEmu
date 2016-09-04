@@ -83,7 +83,7 @@ bool DBCFile::open()
 
 DBCFile::~DBCFile()
 {
-    delete [] _data;
+    delete[] _data;
     if (_file != NULL)
         SFileCloseFile(_file);
 }
@@ -99,7 +99,7 @@ size_t DBCFile::getMaxId()
     assert(_data);
 
     size_t maxId = 0;
-    for(size_t i = 0; i < getRecordCount(); ++i)
+    for (size_t i = 0; i < getRecordCount(); ++i)
         if (maxId < getRecord(i).getUInt(0))
             maxId = getRecord(i).getUInt(0);
 
@@ -117,4 +117,3 @@ DBCFile::Iterator DBCFile::end()
     assert(_data);
     return Iterator(*this, _stringTable);
 }
-

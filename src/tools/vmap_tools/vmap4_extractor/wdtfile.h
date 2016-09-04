@@ -21,25 +21,26 @@
 #define WDTFILE_H
 
 #include "mpqfile.h"
+#include "wmo.h"
 #include <string>
+#include "stdlib.h"
 
 class ADTFile;
 
 class WDTFile
 {
+private:
+    MPQFile WDT;
+    string filename;
 public:
     WDTFile(char* file_name, char* file_name1);
     ~WDTFile(void);
-
     bool init(char* map_id, unsigned int mapID);
-    ADTFile* GetMap(int x, int z);
 
-    std::string* gWmoInstansName;
+    string* gWmoInstansName;
     int gnWMO;
 
-private:
-    MPQFile WDT;
-    std::string filename;
+    ADTFile* GetMap(int x, int z);
 };
 
 #endif  //WDTFILE_H
