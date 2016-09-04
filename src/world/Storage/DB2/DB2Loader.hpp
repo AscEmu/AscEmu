@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "../shared/ByteConverter.hpp"
 #include "Common.h"
+#include "../DBC/DBCGlobals.hpp"
 #include <cassert>
 
 namespace DB2
