@@ -1,5 +1,5 @@
 ﻿# ![logo](http://ascemu.org/style/img/logo.png)
-﻿
+
 3.3.5 | 4.3.4
 :------------: | :------------:
 [![Travis Status](https://travis-ci.org/AscEmu/AscEmu.svg?branch=master)](https://travis-ci.org/AscEmu/AscEmu) | [![Travis Status](https://travis-ci.org/AscEmu/AscEmu.svg?branch=4.3.4)](https://travis-ci.org/AscEmu/AscEmu)
