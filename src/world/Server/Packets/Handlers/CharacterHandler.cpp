@@ -156,13 +156,13 @@ void CapitalizeString(std::string& arg)
 void WorldSession::CharacterEnumProc(QueryResult* result)
 {
     LOG_DEBUG("CharacterEnumProc");
-    NewWorldPacket data(SMSG_CHAR_ENUM, 270);
+    WorldPacket data(SMSG_CHAR_ENUM, 270);
 
-    NewByteBuffer buffer;
+    ByteBuffer buffer;
 
-    data.WriteBits(0, 23);
-    data.WriteBit(1);
-    data.WriteBits(result ? result->GetRowCount() : 0, 17);
+    data.writeBits(0, 23);
+    data.writeBit(1);
+    data.writeBits(result ? result->GetRowCount() : 0, 17);
 
     if (result)
     {
@@ -191,7 +191,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
             fields = result->Fetch();
 
-            NewWoWGuid guid = NewWoWGuid(HIGHGUID_TYPE_PLAYER, fields[0].GetUInt32());
+            ObjectGuid guid = MAKE_NEW_GUID(fields[0].GetUInt32(), 0, 0x000);
 
             uint8 level = fields[1].GetUInt8();
             uint8 race = fields[2].GetUInt8();
@@ -216,7 +216,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
             uint32 atLoginFlags = fields[17].GetUInt32();
             uint32 GuildId = fields[18].GetUInt32();
-            NewWoWGuid guildGuid = NewWoWGuid(HIGHGUID_TYPE_GUILD, fields[18].GetUInt32());
+            ObjectGuid guildGuid = MAKE_NEW_GUID(GuildId, 0, GuildId ? uint32(0x1FF) : 0);
 
             //  0     1      2     3       4       5     6      7
             //guid, level, race, class, gender, bytes, bytes2, name,
@@ -252,18 +252,24 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             has_level_55_char = has_level_55_char || (fields[1].GetUInt8() >= 55);
             has_dk = has_dk || (Class == 6);
 
-            data.WriteGuidMask<3>(guid);
-            data.WriteGuidMask<1, 7, 2>(guildGuid);
-            data.WriteBits(name.length(), 7);
-            data.WriteGuidMask<4, 7>(guid);
-            data.WriteGuidMask<3>(guildGuid);
-            data.WriteGuidMask<5>(guid);
-            data.WriteGuidMask<6>(guildGuid);
-            data.WriteGuidMask<1>(guid);
-            data.WriteGuidMask<5, 4>(guildGuid);
-            data.WriteBit(atLoginFlags & 0x20);
-            data.WriteGuidMask<0, 2, 6>(guid);
-            data.WriteGuidMask<0>(guildGuid);
+            data.writeBit(guid[3]);
+            data.writeBit(guildGuid[1]);
+            data.writeBit(guildGuid[7]);
+            data.writeBit(guildGuid[2]);
+            data.writeBits(uint32(name.length()), 7);
+            data.writeBit(guid[4]);
+            data.writeBit(guid[7]);
+            data.writeBit(guildGuid[3]);
+            data.writeBit(guid[5]);
+            data.writeBit(guildGuid[6]);
+            data.writeBit(guid[1]);
+            data.writeBit(guildGuid[5]);
+            data.writeBit(guildGuid[4]);
+            data.writeBit(atLoginFlags & 0x20);
+            data.writeBit(guid[0]);
+            data.writeBit(guid[2]);
+            data.writeBit(guid[6]);
+            data.writeBit(guildGuid[0]);
 
             uint32 petDisplayId;
             uint32 petLevel;
@@ -350,20 +356,20 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             }
 
             buffer << uint32(petFamily);
-            buffer.WriteGuidBytes<2>(guildGuid);
+            buffer.WriteByteSeq(guildGuid[2]);
             buffer << uint8(0); // char order id
             buffer << uint8(hairStyle);
-            buffer.WriteGuidBytes<3>(guildGuid);
+            buffer.WriteByteSeq(guildGuid[3]);
             buffer << uint32(petDisplayId);
             buffer << uint32(char_flags);
             buffer << uint8(hairColor);
-            buffer.WriteGuidBytes<4>(guid);
+            buffer.WriteByteSeq(guid[4]);
             buffer << uint32(mapId);
-            buffer.WriteGuidBytes<5>(guildGuid);
+            buffer.WriteByteSeq(guildGuid[5]);
             buffer << float(z);
-            buffer.WriteGuidBytes<6>(guildGuid);
+            buffer.WriteByteSeq(guildGuid[6]);
             buffer << uint32(petLevel);
-            buffer.WriteGuidBytes<3>(guid);
+            buffer.WriteByteSeq(guid[3]);
             buffer << float(y);
 
             switch (fields[16].GetUInt32())
@@ -382,23 +388,27 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             }
 
             buffer << uint8(facialHair);
-            buffer.WriteGuidBytes<7>(guid);
+            buffer.WriteByteSeq(guid[7]);
             buffer << uint8(gender);
             buffer.append(name.c_str(), name.length());
             buffer << uint8(face);
-            buffer.WriteGuidBytes<0, 2>(guid);
-            buffer.WriteGuidBytes<1, 7>(guildGuid);
+            buffer.WriteByteSeq(guid[0]);
+            buffer.WriteByteSeq(guid[2]);
+            buffer.WriteByteSeq(guildGuid[1]);
+            buffer.WriteByteSeq(guildGuid[7]);
             buffer << float(x);
             buffer << uint8(skin);
             buffer << uint8(race);
             buffer << uint8(level);
-            buffer.WriteGuidBytes<6>(guid);
-            buffer.WriteGuidBytes<4, 0>(guildGuid);
-            buffer.WriteGuidBytes<5, 1>(guid);
+            buffer.WriteByteSeq(guid[6]);
+            buffer.WriteByteSeq(guildGuid[4]);
+            buffer.WriteByteSeq(guildGuid[0]);
+            buffer.WriteByteSeq(guid[5]);
+            buffer.WriteByteSeq(guid[1]);
             buffer << uint32(zone);
         } while (result->NextRow());
 
-        data.FlushBits();
+        data.flushBits();
         data.append(buffer);
     }
 

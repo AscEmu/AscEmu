@@ -32,7 +32,6 @@
 #include <map>
 
 #include "WoWGuid.h"
-#include "NewWoWGuid.hpp"
 #include "../shared/LocationVector.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/DB2/DB2Structures.hpp"
@@ -61,8 +60,26 @@ class UpdateMask;
 class EventableObject;
 
 
-enum HIGHGUID_TYPE
+enum HighGuidType
 {
+    HIGHGUID_TYPE_PLAYER            = 0x00000000,
+    HIGHGUID_TYPE_CORPSE            = 0x30000000,
+    HIGHGUID_TYPE_ITEM              = 0x40000000,
+    HIGHGUID_TYPE_CONTAINER         = 0x50000000,
+    HIGHGUID_TYPE_DYNAMICOBJECT     = 0x60000000,
+    HIGHGUID_TYPE_WAYPOINT          = 0x10000000,
+    HIGHGUID_TYPE_TRANSPORTER       = 0xF1200000,
+    HIGHGUID_TYPE_GAMEOBJECT        = 0xF1100000,
+    HIGHGUID_TYPE_UNIT              = 0xF1300000,
+    HIGHGUID_TYPE_PET               = 0xF1400000,
+    HIGHGUID_TYPE_VEHICLE           = 0xF1500000,
+    HIGHGUID_TYPE_GROUP             = 0x1F500000,
+    HIGHGUID_TYPE_GUILD             = 0x1FF70000,
+    HIGHGUID_TYPE_MO_TRANSPORT      = 0x1FC00000,
+    HIGHGUID_TYPE_BATTLEGROUND      = 0x1F100000,
+    HIGHGUID_TYPE_AREATRIGGER       = 0xF1020000,
+    HIGHGUID_TYPE_INSTANCE          = 0x1F400000,
+    ////////////////////////////////////////////
     HIGHGUID_TYPE_MASK				= 0xFFF00000,
     LOWGUID_ENTRY_MASK				= 0x00FFFFFF,
 };
@@ -74,6 +91,41 @@ enum HIGHGUID_TYPE
 #define IS_PLAYER_GUID(Guid) (Arcemu::Util::GUID_HIPART((Guid)) == HIGHGUID_TYPE_PLAYER && Guid != 0)
 
 #define MAX_INTERACTION_RANGE 5.0f
+
+enum TypeId
+{
+    TYPEID_OBJECT           = 0,
+    TYPEID_ITEM             = 1,
+    TYPEID_CONTAINER        = 2,
+    TYPEID_UNIT             = 3,
+    TYPEID_PLAYER           = 4,
+    TYPEID_GAMEOBJECT       = 5,
+    TYPEID_DYNAMICOBJECT    = 6,
+    TYPEID_CORPSE           = 7,
+    TYPEID_AIGROUP          = 8,
+    TYPEID_AREATRIGGER      = 9,
+    MAX_TYPE_ID
+};
+
+enum TypeMask
+{
+    TYPEMASK_OBJECT         = 0x0001,
+    TYPEMASK_ITEM           = 0x0002,
+    TYPEMASK_CONTAINER      = 0x0004,
+    TYPEMASK_UNIT           = 0x0008,
+    TYPEMASK_PLAYER         = 0x0010,
+    TYPEMASK_GAMEOBJECT     = 0x0020,
+    TYPEMASK_DYNAMICOBJECT  = 0x0040,
+    TYPEMASK_CORPSE         = 0x0080,
+    TYPEMASK_AIGROUP        = 0x0100,
+    TYPEMASK_AREATRIGGER    = 0x0200,
+
+    TYPEMASK_CREATURE_GO                = TYPEMASK_UNIT | TYPEMASK_GAMEOBJECT,
+    TYPEMASK_CREATURE_GO_ITEM           = TYPEMASK_UNIT | TYPEMASK_GAMEOBJECT | TYPEMASK_ITEM,
+    TYPEMASK_CREATURE_GO_PLAYER_ITEM    = TYPEMASK_UNIT | TYPEMASK_GAMEOBJECT | TYPEMASK_ITEM | TYPEMASK_PLAYER,
+
+    TYPEMASK_WORLDOBJECT                = TYPEMASK_UNIT | TYPEMASK_PLAYER | TYPEMASK_GAMEOBJECT | TYPEMASK_DYNAMICOBJECT | TYPEMASK_CORPSE
+};
 
 ///\todo fix that type mess
 

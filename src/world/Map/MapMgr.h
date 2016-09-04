@@ -112,7 +112,6 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
         Creature* CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO);
 
         Creature* GetCreature(uint32 guid);
-        Creature* GetCreature(NewWoWGuid guid);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////

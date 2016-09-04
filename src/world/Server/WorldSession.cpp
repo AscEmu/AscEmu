@@ -1812,11 +1812,6 @@ void WorldSession::SendPacket(StackBufferBase* packet) {
         _socket->SendPacket(packet);
 }
 
-void WorldSession::SendPacket(NewWorldPacket* packet) {
-    if (_socket && _socket->IsConnected())
-        _socket->SendPacket(packet);
-}
-
 void WorldSession::OutPacket(uint16 opcode) {
     if (_socket && _socket->IsConnected())
         _socket->OutPacket(opcode, 0, NULL);
