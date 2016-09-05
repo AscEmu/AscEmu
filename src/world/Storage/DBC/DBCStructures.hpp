@@ -711,7 +711,7 @@ namespace DBC
             //char const power_display_format[] = "nixxxx"; new
             //char const pvp_difficulty_format[] = "diiiii"; new
             //char const quest_faction_reward_format[] = "niiiiiiiiii"; new
-            //char const quest_sort_entry_format[] = "nx"; new
+            char const quest_sort_entry_format[] = "nx";
             char const quest_xp_format[] = "niiiiiiiiii";
             //char const random_properties_points_format[] = "niiiiiiiiiiiiiii"; new
             char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiixi";
@@ -1704,6 +1704,12 @@ namespace DBC
             char* Name;             // 1
             uint32 unk1;            // 2
             uint32 type;            // 3
+        };
+
+        struct QuestSortEntry
+        {
+            uint32 id;              // 0
+            //char* name;           // 1
         };
 
         struct QuestXP  //cata
