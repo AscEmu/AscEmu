@@ -83,7 +83,7 @@ void Vehicle::Load(Unit* owner, uint32 creature_entry, uint32 vehicleid)
 
     switch (vehicle_info->powerType)
     {
-        case POWER_TYPE_STEAM:
+        /*case POWER_TYPE_STEAM:
         case POWER_TYPE_HEAT:
         case POWER_TYPE_BLOOD:
         case POWER_TYPE_OOZE:
@@ -97,7 +97,7 @@ void Vehicle::Load(Unit* owner, uint32 creature_entry, uint32 vehicleid)
             owner->SetPowerType(POWER_TYPE_ENERGY);
             owner->SetMaxPower(POWER_TYPE_ENERGY, 50);
             owner->SetPower(POWER_TYPE_ENERGY, 50);
-            break;
+            break;*/
     }
 
     for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)

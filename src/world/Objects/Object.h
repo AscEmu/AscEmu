@@ -365,6 +365,12 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
             return m_uint32Values[index];
         }
 
+        const int32 & GetInt32Value(uint32 index) const
+        {
+            ASSERT(index < m_valuesCount);
+            return m_int32Values[index];
+        }
+
         const uint64 & GetUInt64Value(uint32 index) const
         {
             ARCEMU_ASSERT(index + uint32(1) < m_valuesCount);
@@ -776,6 +782,7 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         union
         {
             uint32* m_uint32Values;
+            int32* m_int32Values;
             float* m_floatValues;
         };
 

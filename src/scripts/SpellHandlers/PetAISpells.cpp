@@ -202,7 +202,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
                         s->SetBaseAttackTime(MELEE, item->GetItemProperties()->Delay);
                     }
 
-                    pOwner->SetPower(POWER_TYPE_RUNIC_POWER, 0);
+                    pOwner->SetPower(POWER_TYPE_RUNIC, 0);
                 }
 
                 s->SetMinDamage(owner->GetDamageDoneMod(SCHOOL_NORMAL));

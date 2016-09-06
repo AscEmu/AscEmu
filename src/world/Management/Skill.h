@@ -137,6 +137,7 @@ enum PlayerSkills
     SKILL_PET_BIRD_OF_PREY        = 655,
     SKILL_PET_WIND_SERPENT        = 656,
     SKILL_LANG_GUTTERSPEAK        = 673,
+    SKILL_DUALWIELD               = 674,
     SKILL_KODO_RIDING             = 713,
     SKILL_RACIAL_TROLL            = 733,
     SKILL_RACIAL_GNOME            = 753,

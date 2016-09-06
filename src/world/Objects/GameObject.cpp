@@ -605,7 +605,7 @@ QuestProperties const* GameObject_QuestGiver::FindQuest(uint32 quest_id, uint8 q
     {
         QuestRelation* qr = *itr;
 
-        if ((qr->qst->id == quest_id) && ((qr->type & quest_relation) != 0))
+        if ((qr->qst->GetQuestId() == quest_id) && ((qr->type & quest_relation) != 0))
         {
             return qr->qst;
         }
@@ -621,7 +621,7 @@ uint16 GameObject_QuestGiver::GetQuestRelation(uint32 quest_id)
     {
         QuestRelation* qr = *itr;
 
-        if ((qr != nullptr) && (qr->qst->id == quest_id))
+        if ((qr != nullptr) && (qr->qst->GetQuestId() == quest_id))
             quest_relation |= qr->type;
     }
 

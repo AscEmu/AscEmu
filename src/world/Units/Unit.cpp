@@ -264,6 +264,11 @@ Unit::Unit() : m_movementManager()
     CreatureAttackPowerMod[11] = 0;
     CreatureRangedAttackPowerMod[11] = 0;
 
+    //all powers stored in their place ?
+    memset(PowerFields, POWER_TYPE_MANA, sizeof(PowerFields));
+    for (uint8 i = 0; i < 11; ++i)
+        PowerFields[i] = -1;	//do not mod these
+
     m_invisibility = 0;
     m_invisible = false;
     m_invisFlag = INVIS_FLAG_NORMAL;
@@ -8162,31 +8167,39 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
 
 void Unit::SetPower(uint32 type, int32 value)
 {
-    uint32 maxpower = GetUInt32Value(UNIT_FIELD_MAXPOWER1 + type);
+    if (PowerFields[type] == -1)
+        return;
 
-    if (value < 0)
-        value = 0;
-    else if (value > (int32)maxpower)
+    uint32 maxpower = GetMaxPower(type);
+    if (value < MinPowerType[type])
+        value = MinPowerType[type];
+    else if (value >(int32)maxpower)
         value = maxpower;
 
-    SetUInt32Value(UNIT_FIELD_POWER1 + type, value);
+    SetUInt32Value(UNIT_FIELD_POWER1 + PowerFields[type], value);
+}
+
+uint32 Unit::GetPower(uint32 type)
+{
+    if (PowerFields[type] == -1)
+        return 0;
+    return GetUInt32Value(UNIT_FIELD_POWER1 + PowerFields[type]);
 }
 
 void Unit::SendPowerUpdate(bool self)
 {
-    uint32 amount = GetUInt32Value(UNIT_FIELD_POWER1 + GetPowerType()); //save the amount, so we send the same to the player and everyone else
+    int8 type = GetPowerType();
+    int32 value = GetPower(type);
 
-    WorldPacket data(SMSG_POWER_UPDATE, 14);
+    WorldPacket data(SMSG_POWER_UPDATE, 8 + 4 + 1 + 4);
     FastGUIDPack(data, GetGUID());
-    data << (uint8)GetPowerType();
-    data << amount;
-    // \todo This was added in revision 1726.  Is it necessary?  To me, it seems to just be sending the packet twice.
-    //	If it is needed for something, put it back in I guess.
-    //	CopyAndSendDelayedPacket(&data);
+    data << uint32(1);              // Count
+    data << uint8(type);
+    data << int32(value);
     SendMessageToSet(&data, self);
 
     //VLack: On 3.1.3, create and send a field update packet to everyone else, as this is the only way to update their GUI with the power values.
-    WorldPacket* pkt = BuildFieldUpdatePacket(UNIT_FIELD_POWER1 + GetPowerType(), amount);
+    WorldPacket* pkt = BuildFieldUpdatePacket(UNIT_FIELD_POWER1 + GetPowerType(), value);
     SendMessageToSet(pkt, false);
     delete pkt;
 }
@@ -8195,10 +8208,15 @@ void Unit::UpdatePowerAmm()
 {
     if (!IsPlayer())
         return;
-    WorldPacket data(SMSG_POWER_UPDATE, 14);
+
+    int8 type = GetPowerType();
+    int32 value = GetPower(type);
+
+    WorldPacket data(SMSG_POWER_UPDATE, 8 + 4 + 1 + 4);
     FastGUIDPack(data, GetGUID());
-    data << uint8(GetPowerType());
-    data << GetUInt32Value(UNIT_FIELD_POWER1 + GetPowerType());
+    data << uint32(1);// Count
+    data << uint8(type);
+    data << int32(value);
     SendMessageToSet(&data, true);
 }
 

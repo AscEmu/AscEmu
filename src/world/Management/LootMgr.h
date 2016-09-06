@@ -106,6 +106,14 @@ struct __LootItem
     }
 };
 
+struct LootCurencyStoreStruct
+{
+    uint32 entry;
+    uint32 currency_type;
+    uint32 currency_amt;
+    uint32 max_level;           // if attacker has higher level then this then he will not receive points
+    uint32 difficulty_mask;     // same mob might be present in multiple instance types but has to award different loot type
+};
 
 class ItemIsLooted
 {
@@ -146,6 +154,13 @@ struct StoreLootItem
     uint32 ffa_loot;	/// can everyone from the group loot the item?
 };
 
+struct __LootCurrency
+{
+    uint32 CurrencyType;
+    uint32 CurrencyCount;
+    LooterSet has_looted;
+};
+
 struct StoreLootList
 {
     uint32 count;
@@ -155,6 +170,7 @@ struct StoreLootList
 struct Loot
 {
     std::vector<__LootItem> items;
+    std::vector<__LootCurrency> currencies;
     uint32 gold;
     LooterSet looters;
 
@@ -193,6 +209,8 @@ typedef std::map<uint32, StoreLootList> LootStore;
 #define PARTY_LOOT_NBG 4
 #define PARTY_LOOT_GROUP 3
 
+typedef std::multimap<uint32, LootCurencyStoreStruct> LootCurrencyStore;
+typedef std::pair<LootCurrencyStore::const_iterator, LootCurrencyStore::const_iterator> LootCurrencyIdBounds;
 
 class SERVER_DECL LootMgr : public Singleton <LootMgr>
 {
@@ -221,6 +239,7 @@ class SERVER_DECL LootMgr : public Singleton <LootMgr>
         void FillFishingLoot(Loot* loot, uint32 loot_id);
         void FillSkinningLoot(Loot* loot, uint32 loot_id);
         void FillPickpocketingLoot(Loot* loot, uint32 loot_id);
+        void FillCurrencyLoot(Loot* loot, uint32 loot_id);
         bool CanGODrop(uint32 LootId, uint32 itemid);
         bool IsPickpocketable(uint32 creatureId);
         bool IsSkinnable(uint32 creatureId);
@@ -228,6 +247,9 @@ class SERVER_DECL LootMgr : public Singleton <LootMgr>
 
         void LoadLoot();
         void LoadLootProp();
+        void LoadCurrencyLoot();
+
+        LootCurrencyIdBounds GetLootCurrencyIdBounds(uint32 entry) const;
 
         LootStore CreatureLoot;
         LootStore FishingLoot;
@@ -249,6 +271,8 @@ class SERVER_DECL LootMgr : public Singleton <LootMgr>
         void PushLoot(StoreLootList* list, Loot* loot, uint32 type);
         std::map<uint32, RandomPropertyVector> _randomprops;
         std::map<uint32, RandomSuffixVector> _randomsuffix;
+
+        LootCurrencyStore mLootCurrency;
 };
 
 #define lootmgr LootMgr::getSingleton()

@@ -334,7 +334,7 @@ void ScriptMgr::register_quest_script(uint32 entry, QuestScript* qs)
     QuestProperties const* q = sMySQLStore.GetQuestProperties(entry);
     if (q != nullptr)
     {
-        if (q->pQuestScript != NULL)
+        if (q->pQuestScript != nullptr)
             LOG_ERROR("ScriptMgr is trying to register a script for Quest ID: %u even if there's already one for that Quest. Remove one of those scripts.", entry);
 
         const_cast<QuestProperties*>(q)->pQuestScript = qs;

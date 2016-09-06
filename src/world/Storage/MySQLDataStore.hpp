@@ -195,6 +195,9 @@ public:
     GameObjectPropertiesContainer _gameobjectPropertiesStore;
     QuestPropertiesContainer _questPropertiesStore;
 
+    typedef std::multimap<int32, uint32> ExclusiveQuestGroups;
+    ExclusiveQuestGroups mExclusiveQuestGroups;
+
     CreatureDifficultyContainer _creatureDifficultyStore;
     DisplayBoundingBoxesContainer _displayBoundingBoxesStore;
     VendorRestrictionContainer _vendorRestrictionsStore;

@@ -71,7 +71,7 @@ class BladespireQAI : public CreatureAIScript
             if (mKiller->IsPlayer())
             {
                 QuestLogEntry* en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10503);
-                if (en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
+                if (en && en->GetMobCount(0) < en->GetQuest()->ReqCreatureOrGOCount[0])
                 {
                     uint32 newcount = en->GetMobCount(0) + 1;
                     en->SetMobCount(0, newcount);
@@ -263,7 +263,7 @@ class BloodmaulQAI : public CreatureAIScript
                 }
             }
 
-            if (pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mobcount[0])
+            if (pQuest->GetMobCount(0) < pQuest->GetQuest()->ReqCreatureOrGOCount[0])
             {
                 uint32 NewCount = pQuest->GetMobCount(0) + 1;
                 pQuest->SetMobCount(0, NewCount);
@@ -392,7 +392,7 @@ class BrutebaneStoutTriggerAI : public MoonScriptCreatureAI
                     return;
 
                 QuestLogEntry* qle = plr->GetQuestLogForEntry(10512);
-                if (qle != nullptr && qle->GetMobCount(0) < qle->GetQuest()->required_mobcount[0])
+                if (qle != nullptr && qle->GetMobCount(0) < qle->GetQuest()->ReqCreatureOrGOCount[0])
                 {
                     qle->SetMobCount(0, qle->GetMobCount(0) + 1);
                     qle->SendUpdateAddKill(0);

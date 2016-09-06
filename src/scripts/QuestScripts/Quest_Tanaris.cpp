@@ -67,7 +67,7 @@ class SpiritScreeches : public GossipScript
                 case 1:
                     {
                         QuestLogEntry* en = plr->GetQuestLogForEntry(3520);
-                        if(en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
+                        if(en && en->GetMobCount(0) < en->GetQuest()->ReqCreatureOrGOCount[0])
                         {
                             en->SetMobCount(0, en->GetMobCount(0) + 1);
                             en->SendUpdateAddKill(0);

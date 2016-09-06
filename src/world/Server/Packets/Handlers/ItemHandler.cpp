@@ -2341,3 +2341,167 @@ void WorldSession::HandleReadItemOpcode(WorldPacket& recvPacket)
 //    LOG_DEBUG("Sent SMSG_ITEMREFUNDREQUEST.");
 //}
 
+void WorldSession::SendItemDb2Reply(uint32 entry)
+{
+    WorldPacket data(SMSG_DB_REPLY, 44);
+    ItemProperties const* proto = sMySQLStore.GetItemProperties(entry);
+    if (!proto)
+    {
+        data << uint32(-1);         // entry
+        data << uint32(DB2_REPLY_ITEM);
+        data << uint32(1322512289); // hotfix date
+        data << uint32(0);          // size of next block
+        return;
+    }
+
+    data << uint32(entry);
+    data << uint32(DB2_REPLY_ITEM);
+    data << uint32(1322512290);     // hotfix date
+
+    ByteBuffer buff;
+    buff << uint32(entry);
+    buff << uint32(proto->Class);
+    buff << uint32(proto->SubClass);
+    buff << int32(0);// unk?
+    buff << uint32(proto->LockMaterial);
+    buff << uint32(proto->DisplayInfoID);
+    buff << uint32(proto->InventoryType);
+    buff << uint32(proto->SheathID);
+
+    data << uint32(buff.size());
+    data.append(buff);
+
+    SendPacket(&data);
+}
+
+void WorldSession::SendItemSparseDb2Reply(uint32 entry)
+{
+    WorldPacket data(SMSG_DB_REPLY, 526);
+    ItemProperties const* proto = sMySQLStore.GetItemProperties(entry);
+    if (!proto)
+    {
+        data << uint32(-1);         // entry
+        data << uint32(DB2_REPLY_SPARSE);
+        data << uint32(1322512289); // hotfix date
+        data << uint32(0);          // size of next block
+        return;
+    }
+
+    data << uint32(entry);
+    data << uint32(DB2_REPLY_SPARSE);
+    data << uint32(1322512290);     // hotfix date
+
+    ByteBuffer buff;
+    buff << uint32(entry);
+    buff << uint32(proto->Quality);
+    buff << uint32(proto->Flags);
+    buff << uint32(proto->Flags2);
+    buff << float(1.0f);
+    buff << float(1.0f);
+    buff << uint32(proto->MaxCount);
+    buff << int32(proto->BuyPrice);
+    buff << uint32(proto->SellPrice);
+    buff << uint32(proto->InventoryType);
+    buff << int32(proto->AllowableClass);
+    buff << int32(proto->AllowableRace);
+    buff << uint32(proto->ItemLevel);
+    buff << uint32(proto->RequiredLevel);
+    buff << uint32(proto->RequiredSkill);
+    buff << uint32(proto->RequiredSkillRank);
+    buff << uint32(0);// req spell
+    buff << uint32(proto->RequiredPlayerRank1);
+    buff << uint32(proto->RequiredPlayerRank2);
+    buff << uint32(proto->RequiredFactionStanding);
+    buff << uint32(proto->RequiredFaction);
+    buff << int32(proto->MaxCount);
+    buff << int32(0);//stackable
+    buff << uint32(proto->ContainerSlots);
+
+    for (uint32 x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
+        buff << uint32(proto->Stats[x].Type);
+
+    for (uint32 x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
+        buff << int32(proto->Stats[x].Value);
+
+    for (uint32 x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
+        buff << int32(0);//unk
+
+    for (uint32 x = 0; x < MAX_ITEM_PROTO_STATS; ++x)
+        buff << int32(0);//unk
+
+    buff << uint32(proto->ScalingStatsEntry);
+    buff << uint32(0);// damage type
+    buff << uint32(proto->Delay);
+    buff << float(40);// ranged range
+
+    for (uint32 x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+        buff << int32(0);
+
+    for (uint32 x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+        buff << uint32(0);
+
+    for (uint32 x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+        buff << int32(0);
+
+    for (uint32 x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+        buff << int32(0);
+
+    for (uint32 x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+        buff << uint32(0);
+
+    for (uint32 x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
+        buff << int32(0);
+
+    buff << uint32(proto->Bonding);
+
+    // item name
+    std::string name = proto->Name;
+    buff << uint16(name.length());
+    if (name.length())
+        buff << name;
+
+    for (uint32 i = 0; i < 3; ++i) // other 3 names
+        buff << uint16(0);
+
+    std::string desc = proto->Description;
+    buff << uint16(desc.length());
+    if (desc.length())
+        buff << desc;
+
+    buff << uint32(proto->PageId);
+    buff << uint32(proto->PageLanguage);
+    buff << uint32(proto->PageMaterial);
+    buff << uint32(proto->QuestId);
+    buff << uint32(proto->LockId);
+    buff << int32(proto->LockMaterial);
+    buff << uint32(proto->SheathID);
+    buff << int32(proto->RandomPropId);
+    buff << int32(proto->RandomSuffixId);
+    buff << uint32(proto->ItemSet);
+
+    buff << uint32(0);// area
+    buff << uint32(proto->MapID);
+    buff << uint32(proto->BagFamily);
+    buff << uint32(proto->TotemCategory);
+
+    for (uint32 x = 0; x < MAX_ITEM_PROTO_SOCKETS; ++x)
+        buff << uint32(proto->Sockets[x].SocketColor);
+
+    for (uint32 x = 0; x < MAX_ITEM_PROTO_SOCKETS; ++x)
+        buff << uint32(proto->Sockets[x].Unk);
+
+    buff << uint32(proto->SocketBonus);
+    buff << uint32(proto->GemProperties);
+    buff << float(proto->ArmorDamageModifier);
+    buff << int32(proto->ExistingDuration);
+    buff << uint32(proto->ItemLimitCategory);
+    buff << uint32(proto->HolidayId);
+    buff << float(proto->ScalingStatsFlag);                  // StatScalingFactor
+    buff << uint32(0);            // archaeology unk
+    buff << uint32(0);         // archaeology findinds count
+
+    data << uint32(buff.size());
+    data.append(buff);
+
+    SendPacket(&data);
+}

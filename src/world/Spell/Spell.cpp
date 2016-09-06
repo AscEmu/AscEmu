@@ -2110,9 +2110,11 @@ void Spell::SendSpellStart()
 
         if (ip != nullptr)
             data << ip->DisplayInfoID << ip->InventoryType;
+        else
+            data << uint32(0) << uint32(0);
     }
 
-    data << (uint32)139; //3.0.2 seems to be some small value around 250 for shadow bolt.
+    //data << (uint32)139; //3.0.2 seems to be some small value around 250 for shadow bolt.
     m_caster->SendMessageToSet(&data, true);
 }
 
@@ -2688,9 +2690,9 @@ bool Spell::TakePower()
                 {
                     if (u_caster != nullptr)
                     {
-                        auto caster_runic_power = u_caster->GetPower(POWER_TYPE_RUNIC_POWER);
+                        auto caster_runic_power = u_caster->GetPower(POWER_TYPE_RUNIC);
                         auto spell_rune_gain = spell_rune_cost->runePowerGain;
-                        u_caster->SetPower(POWER_TYPE_RUNIC_POWER, (spell_rune_gain + caster_runic_power));
+                        u_caster->SetPower(POWER_TYPE_RUNIC, (spell_rune_gain + caster_runic_power));
                     }
                 }
             }

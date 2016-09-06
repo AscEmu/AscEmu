@@ -722,8 +722,8 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
                         QuestProperties const* qst = qr->qst;
                         if (qst != nullptr)
                         {
-                            if ((qr->type & QUESTGIVER_QUEST_START && !target->HasQuest(qst->id))
-                                || (qr->type & QUESTGIVER_QUEST_END && target->HasQuest(qst->id))
+                            if ((qr->type & QUESTGIVER_QUEST_START && !target->HasQuest(qst->GetQuestId()))
+                                || (qr->type & QUESTGIVER_QUEST_END && target->HasQuest(qst->GetQuestId()))
                                )
                             {
                                 activate_quest_object = true;
@@ -740,14 +740,12 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
                 {
                     for (GameObjectGOMap::const_iterator itr = gameobject_info->goMap.begin(); itr != gameobject_info->goMap.end(); ++itr)
                     {
-                        qle = target->GetQuestLogForEntry(itr->first->id);
+                        qle = target->GetQuestLogForEntry(itr->first->GetQuestId());
                         if (qle != NULL)
                         {
-                            if (qle->GetQuest()->count_required_mob == 0)
-                                continue;
                             for (uint8 i = 0; i < 4; ++i)
                             {
-                                if (qle->GetQuest()->required_mob[i] == static_cast<int32>(go->GetEntry()) && qle->GetMobCount(i) < qle->GetQuest()->required_mobcount[i])
+                                if (qle->GetQuest()->ReqCreatureOrGOId[i] == static_cast<int32>(go->GetEntry()) && qle->GetMobCount(i) < qle->GetQuest()->ReqCreatureOrGOCount[i])
                                 {
                                     activate_quest_object = true;
                                     break;
@@ -768,7 +766,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
                                  it2 != itr->second.end();
                                  ++it2)
                             {
-                                if ((qle = target->GetQuestLogForEntry(itr->first->id)) != 0)
+                                if ((qle = target->GetQuestLogForEntry(itr->first->GetQuestId())) != 0)
                                 {
                                     if (target->GetItemInterface()->GetItemCount(it2->first) < it2->second)
                                     {

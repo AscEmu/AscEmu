@@ -388,7 +388,7 @@ bool PreparationForBattle(uint32 i, Spell* pSpell)
     QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(12842);
     if (pQuest != NULL)
     {
-        if (pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mobcount[0])
+        if (pQuest->GetMobCount(0) < pQuest->GetQuest()->ReqCreatureOrGOCount[0])
         {
             pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
             pQuest->SendUpdateAddKill(0);

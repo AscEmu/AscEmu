@@ -31,7 +31,12 @@ class Field
 
         inline void SetValue(char* value) { mValue = value; }
 
-        inline const char* GetString() { return mValue; }
+        inline const char* GetString()
+        {
+            if (!mValue)
+                return "";
+            return mValue;
+        }
         inline float GetFloat() { return mValue ? static_cast<float>(atof(mValue)) : 0; }
         inline bool GetBool() { return mValue ? atoi(mValue) > 0 : false; }
 

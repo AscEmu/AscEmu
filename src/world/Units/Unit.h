@@ -1265,7 +1265,7 @@ class SERVER_DECL Unit : public Object
         void setGender(uint8 gender) { SetByte(UNIT_FIELD_BYTES_0, 2, gender); }
 
         void SetPowerType(uint8 type) { SetByte(UNIT_FIELD_BYTES_0, 3, type); }
-        uint8 GetPowerType() { return GetByte(UNIT_FIELD_BYTES_0, 3); }
+        uint8 GetPowerType() { return (GetUInt32Value(UNIT_FIELD_BYTES_0) >> 24); }
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         void SetHealth(uint32 val) { SetUInt32Value(UNIT_FIELD_HEALTH,  val); }
@@ -1277,31 +1277,40 @@ class SERVER_DECL Unit : public Object
         void ModHealth(int32 val) { ModUnsigned32Value(UNIT_FIELD_HEALTH, val); }
         void ModMaxHealth(int32 val) { ModUnsigned32Value(UNIT_FIELD_MAXHEALTH, val); }
 
+        int8 PowerFields[11];
+
         void SetPower(uint32 type, int32 value);
+        uint32 GetPower(uint32 index);
 
         void ModPower(uint32 index, int32 value)
         {
-            int32 power = static_cast< int32 >(m_uint32Values[ UNIT_FIELD_POWER1 + index ]);
-            int32 maxpower = static_cast< int32 >(m_uint32Values[ UNIT_FIELD_MAXPOWER1 + index ]);
-
-            if (value <= power)
-                SetUInt32Value(UNIT_FIELD_POWER1 + index, 0);
-            else
-                SetUInt32Value(UNIT_FIELD_POWER1 + index, power + value);
-
-            if ((value + power) > maxpower)
-                SetUInt32Value(UNIT_FIELD_POWER1 + index, maxpower);
-            else
-                SetUInt32Value(UNIT_FIELD_POWER1 + index, power + value);
+            int32 power = GetPower(index);
+            SetPower(index, power + value);
         }
 
-        uint32 GetPower(uint32 index) { return GetUInt32Value(UNIT_FIELD_POWER1 + index); }
+        void SetMaxPower(uint32 index, uint32 value)
+        {
+            if (PowerFields[index] == -1)
+                return;
 
-        void SetMaxPower(uint32 index, uint32 value) { SetUInt32Value(UNIT_FIELD_MAXPOWER1 + index, value); }
+            SetUInt32Value(UNIT_FIELD_MAXPOWER1 + PowerFields[index], value);
+        }
 
-        void ModMaxPower(uint32 index, int32 value) { ModUnsigned32Value(UNIT_FIELD_MAXPOWER1 + index, value); }
+        void ModMaxPower(uint32 index, int32 value)
+        {
+            if (PowerFields[index] == -1)
+                return;
 
-        uint32 GetMaxPower(uint32 index) { return GetUInt32Value(UNIT_FIELD_MAXPOWER1 + index); }
+            SetMaxPower(index, GetMaxPower(index) + value);
+        }
+
+        uint32 GetMaxPower(uint32 index)
+        {
+            if (PowerFields[index] == -1)
+                return 0;
+
+            return GetUInt32Value(UNIT_FIELD_MAXPOWER1 + PowerFields[index]);
+        }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

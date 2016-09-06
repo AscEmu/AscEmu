@@ -338,7 +338,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     // add to looter set
     pLoot->looters.insert(GetLowGUID());
 
-    WorldPacket data, data2(32);
+    WorldPacket data, data2(28);
     data.SetOpcode(SMSG_LOOT_RESPONSE);
 
     m_lootGuid = guid;
@@ -347,6 +347,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     data << uint8(loot_type);  //loot_type;
     data << uint32(pLoot->gold);
     data << uint8(0);   //loot size reserve
+    data << uint8(0);   //currency list size reserved
 
     std::vector<__LootItem>::iterator iter = pLoot->items.begin();
     uint32 count = 0;
@@ -405,7 +406,8 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
                 uint32 finishedCount = 0;
 
                 //check if its a questline.
-                for (uint32 i = 0; i < pQuest->count_requiredquests; ++i)
+                //\todo danko
+                /*for (uint32 i = 0; i < pQuest->count_requiredquests; ++i)
                 {
                     if (pQuest->required_quests[i])
                     {
@@ -418,7 +420,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
                             finishedCount++;
                         }
                     }
-                }
+                }*/
             }
         }
 
@@ -543,8 +545,24 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         }
         count++;
     }
+
+    uint32 count2 = 0;
+    uint32 x = 0;
+    LootCurrencyIdBounds Loot_Bounds = lootmgr.GetLootCurrencyIdBounds(GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid))->GetEntry());
+    for (LootCurrencyStore::const_iterator itr = Loot_Bounds.first; itr != Loot_Bounds.second; ++itr, x++)
+    {
+        if (itr->second.currency_amt == 0)
+            continue;
+
+        data << uint8(x);
+        data << uint32(itr->second.currency_type);
+        data << uint32(itr->second.currency_amt);
+        count2++;
+    }
+
     data.wpos(13);
     data << uint8(count);
+    data << uint8(count2);  //currency list size
 
     m_session->SendPacket(&data);
 

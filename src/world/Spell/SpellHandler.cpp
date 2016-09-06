@@ -336,9 +336,15 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     CHECK_INWORLD_RETURN
 
     uint32 spellId;
-    uint8 cn, unk; //Alice : Added to 3.0.2
+    uint8 cn;
+    uint32 glyphSlot;
+    uint8 missileflag;
 
-    recvPacket >> cn >> spellId >> unk;
+    recvPacket >> cn;
+    recvPacket >> spellId;
+    recvPacket >> glyphSlot;
+    recvPacket >> missileflag;
+
     // check for spell id
     OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellId);
 

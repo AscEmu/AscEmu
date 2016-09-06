@@ -27,7 +27,7 @@ class TabletOfTheSeven : public QuestScript
             if (mTarget == nullptr || qLogEntry == nullptr || entry != 169294)
                 return;
 
-            if (mTarget->GetItemInterface()->GetItemCount(11470) < qLogEntry->GetQuest()->required_itemcount[0])
+            if (mTarget->GetItemInterface()->GetItemCount(11470) < qLogEntry->GetQuest()->ReqItemCount[0])
                 mTarget->CastSpell(mTarget, 15065, false);
         }
 };

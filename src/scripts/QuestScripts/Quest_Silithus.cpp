@@ -31,7 +31,7 @@ class SCRIPT_DECL DearestNatalia1 : public GossipScript
 
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7736, Plr);
 
-            if(en && en->GetMobCount(1) < en->GetQuest()->required_mobcount[1])
+            if(en && en->GetMobCount(1) < en->GetQuest()->ReqCreatureOrGOCount[1])
                 Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(477), 3);     // Hello, Rutgar. The Commander has sent me here to gather some information about his missing wife.
 
             Menu->SendTo(Plr);
@@ -97,7 +97,7 @@ class SCRIPT_DECL DearestNatalia1 : public GossipScript
                 case 10:
                     {
                         QuestLogEntry* en = Plr->GetQuestLogForEntry(8304);
-                        if(en && en->GetMobCount(1) < en->GetQuest()->required_mobcount[1])
+                        if(en && en->GetMobCount(1) < en->GetQuest()->ReqCreatureOrGOCount[1])
                         {
                             en->SetMobCount(1, 1);
                             en->SendUpdateAddKill(1);
@@ -120,7 +120,7 @@ class SCRIPT_DECL DearestNatalia2 : public GossipScript
             objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7735, Plr);
 
             // you need to speak to Rutgar first !!
-            if(en && (en->GetMobCount(0) < en->GetQuest()->required_mobcount[0]) && (en->GetMobCount(1) == 1))
+            if(en && (en->GetMobCount(0) < en->GetQuest()->ReqCreatureOrGOCount[0]) && (en->GetMobCount(1) == 1))
                 Menu->AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(485), 3);     // Hello, Frankal. I've heard that you might have some information as to the whereabouts of Mistress Natalia Mar'alith.
 
             Menu->SendTo(Plr);
@@ -186,7 +186,7 @@ class SCRIPT_DECL DearestNatalia2 : public GossipScript
                 case 10:
                     {
                         QuestLogEntry* en = Plr->GetQuestLogForEntry(8304);
-                        if(en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
+                        if(en && en->GetMobCount(0) < en->GetQuest()->ReqCreatureOrGOCount[0])
                         {
                             en->SetMobCount(0, 1);
                             en->SendUpdateAddKill(0);

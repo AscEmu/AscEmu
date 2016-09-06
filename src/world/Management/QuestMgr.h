@@ -25,6 +25,7 @@
 #include "CommonTypes.hpp"
 #include "QuestLogEntry.hpp"
 #include "Management/Gossip/Gossip.h"
+#include "Skill.h"
 
 #include <vector>
 #include <unordered_map>
@@ -135,7 +136,7 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         uint32 GenerateQuestXP(Player* plr, QuestProperties const* qst);
         uint32 GenerateRewardMoney(Player* plr, QuestProperties const* qst);
 
-        void SendQuestInvalid(INVALID_REASON reason, Player* plyr);
+        void SendQuestInvalid(QuestFailedReasons reason, Player* plyr);
         void SendQuestFailed(FAILED_REASON failed, QuestProperties const* qst, Player* plyr);
         void SendQuestUpdateFailed(QuestProperties const* pQuest, Player* plyr);
         void SendQuestUpdateFailedTimer(QuestProperties const* pQuest, Player* plyr);
@@ -149,23 +150,21 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         QuestAssociationList* GetQuestAssociationListForItemId(uint32 itemId);
         uint32 GetGameObjectLootQuest(uint32 GO_Entry);
         void SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry);
-        inline bool IsQuestRepeatable(QuestProperties const* qst) { return (qst->is_repeatable == 1 ? true : false); }
-        inline bool IsQuestDaily(QuestProperties const* qst) { return (qst->is_repeatable == 2 ? true : false); }
 
         bool CanStoreReward(Player* plyr, QuestProperties const* qst, uint32 reward_slot);
 
         inline int32 QuestHasMob(QuestProperties const* qst, uint32 mob)
         {
             for (uint8 i = 0; i < 4; ++i)
-                if (qst->required_mob[i] == (int32)mob)
-                    return qst->required_mobcount[i];
+                if (qst->ReqCreatureOrGOId[i] == (int32)mob)
+                    return qst->ReqCreatureOrGOCount[i];
             return -1;
         }
 
         inline int32 GetOffsetForMob(QuestProperties const* qst, uint32 mob)
         {
             for (uint8 i = 0; i < 4; ++i)
-                if (qst->required_mob[i] == (int32)mob)
+                if (qst->ReqCreatureOrGOId[i] == (int32)mob)
                     return i;
 
             return -1;
@@ -174,11 +173,50 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         inline int32 GetOffsetForItem(QuestProperties const* qst, uint32 itm)
         {
             for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
-                if (qst->required_item[i] == itm)
+                if (qst->ReqItemId[i] == itm)
                     return i;
 
             return -1;
         }
+
+        inline uint8 ClassByQuestSort(int32 QuestSort)
+        {
+            switch (QuestSort)
+            {
+            case QUEST_SORT_WARLOCK:        return WARLOCK;
+            case QUEST_SORT_WARRIOR:        return WARRIOR;
+            case QUEST_SORT_SHAMAN:         return SHAMAN;
+            case QUEST_SORT_PALADIN:        return PALADIN;
+            case QUEST_SORT_MAGE:           return MAGE;
+            case QUEST_SORT_ROGUE:          return ROGUE;
+            case QUEST_SORT_HUNTER:         return HUNTER;
+            case QUEST_SORT_PRIEST:         return PRIEST;
+            case QUEST_SORT_DRUID:          return DRUID;
+            case QUEST_SORT_DEATH_KNIGHT:   return DEATHKNIGHT;
+            }
+            return 0;
+        }
+
+        inline uint32 SkillByQuestSort(int32 QuestSort)
+        {
+            switch (QuestSort)
+            {
+            case QUEST_SORT_HERBALISM:      return SKILL_HERBALISM;
+            case QUEST_SORT_FISHING:        return SKILL_FISHING;
+            case QUEST_SORT_BLACKSMITHING:  return SKILL_BLACKSMITHING;
+            case QUEST_SORT_ALCHEMY:        return SKILL_ALCHEMY;
+            case QUEST_SORT_LEATHERWORKING: return SKILL_LEATHERWORKING;
+            case QUEST_SORT_ENGINERING:     return SKILL_ENGINEERING;
+            case QUEST_SORT_TAILORING:      return SKILL_TAILORING;
+            case QUEST_SORT_COOKING:        return SKILL_COOKING;
+            case QUEST_SORT_FIRST_AID:      return SKILL_FIRST_AID;
+            case QUEST_SORT_JEWELCRAFTING:  return SKILL_JEWELCRAFTING;
+            case QUEST_SORT_INSCRIPTION:    return SKILL_INSCRIPTION;
+            case QUEST_SORT_ARCHAEOLOGY:    return SKILL_ARCHAEOLOGY;
+            }
+            return 0;
+        }
+
         void LoadExtraQuestStuff();
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -193,6 +231,8 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         //////////////////////////////////////////////////////////////////////////////////////////
         void FillQuestMenu(Creature*, Player*, Arcemu::Gossip::Menu &);
 
+        std::unordered_map<uint32, uint32> m_ObjectLootQuestList;
+
     private:
 
         std::unordered_map<uint32, std::list<QuestRelation*>* > m_npc_quests;
@@ -204,7 +244,6 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         inline std::unordered_map<uint32, std::list<QuestAssociation*>* >& GetQuestAssociationList()
         {return m_quest_associations;}
 
-        std::unordered_map<uint32, uint32> m_ObjectLootQuestList;
 
         template <class T> void _AddQuest(uint32 entryid, QuestProperties const* qst, uint8 type);
 

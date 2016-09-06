@@ -49,6 +49,9 @@ struct LfgProposal;
 struct LfgReward;
 struct LfgRoleCheck;
 
+#define DB2_REPLY_SPARSE 2442913102
+#define DB2_REPLY_ITEM   1344507586
+
 //#define SESSION_CAP 5
 #define CHECK_INWORLD_RETURN if (_player == NULL || !_player->IsInWorld()) { return; }
 
@@ -251,7 +254,7 @@ class SERVER_DECL WorldSession
         bool bDeleted;
         uint32 GetInstance() { return instanceId; }
         Mutex deleteMutex;
-        //void _HandleAreaTriggerOpcode(uint32 id);//real handle
+        void _HandleAreaTriggerOpcode(uint32 id); //real handle
         int32 m_moveDelayTime;
         int32 m_clientTimeDelay;
 
@@ -295,7 +298,7 @@ class SERVER_DECL WorldSession
         //void HandleAddIgnoreOpcode(WorldPacket& recvPacket);
         //void HandleDelIgnoreOpcode(WorldPacket& recvPacket);
         //void HandleBugOpcode(WorldPacket& recvPacket);
-        //void HandleAreaTriggerOpcode(WorldPacket& recvPacket);
+        void HandleAreaTriggerOpcode(WorldPacket& recvPacket);
         //void HandleUpdateAccountData(WorldPacket& recvPacket);
         //void HandleRequestAccountData(WorldPacket& recvPacket);
         void HandleSetActionButtonOpcode(WorldPacket& recvPacket);
@@ -374,7 +377,7 @@ class SERVER_DECL WorldSession
         //void HandleLfgProposalResultOpcode(WorldPacket& recv_data);
         //void HandleLfgSetRolesOpcode(WorldPacket& recv_data);
         //void HandleLfgSetBootVoteOpcode(WorldPacket& recv_data);
-        //void HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data);
+        void HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data);
         //void HandleLfgTeleportOpcode(WorldPacket& recv_data);
         //void HandleLfgPartyLockInfoRequestOpcode(WorldPacket& recv_data);
 
@@ -471,18 +474,18 @@ class SERVER_DECL WorldSession
 
         /// Quest opcodes (QuestHandler.cpp)
         void HandleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket);
-        //void HandleQuestgiverHelloOpcode(WorldPacket& recvPacket);
-        //void HandleQuestgiverAcceptQuestOpcode(WorldPacket& recvPacket);
-        //void HandleQuestgiverCancelOpcode(WorldPacket& recvPacket);
-        //void HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket);
-        //void HandleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket);
-        //void HandleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket);
+        void HandleQuestgiverHelloOpcode(WorldPacket& recvPacket);
+        void HandleQuestgiverAcceptQuestOpcode(WorldPacket& recvPacket);
+        void HandleQuestgiverCancelOpcode(WorldPacket& recvPacket);
+        void HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket);
+        void HandleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket);
+        void HandleQuestGiverQueryQuestOpcode(WorldPacket& recvPacket);
         void HandleQuestQueryOpcode(WorldPacket& recvPacket);
-        //void HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket);
+        void HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket);
         void HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket);
         void HandlePushQuestToPartyOpcode(WorldPacket& recvPacket);
-        //void HandleQuestPushResult(WorldPacket& recvPacket);
-        //void HandleQuestPOIQueryOpcode(WorldPacket& recv_data);
+        void HandleQuestPushResult(WorldPacket& recvPacket);
+        void HandleQuestPOIQueryOpcode(WorldPacket& recv_data);
     
         /// Vehicles
         //void HandleDismissVehicle(WorldPacket& recv_data);
@@ -635,6 +638,9 @@ class SERVER_DECL WorldSession
         //void HandleUnlearnSkillOpcode(WorldPacket& recv_data);
         //void HandleRandomRollOpcode(WorldPacket& recv_data);
         //void HandleOpenItemOpcode(WorldPacket& recv_data);
+        void HandleRequestHotfix(WorldPacket& recv_data);
+        void SendItemDb2Reply(uint32 entry);
+        void SendItemSparseDb2Reply(uint32 entry);
 
         //void HandleToggleHelmOpcode(WorldPacket& recv_data);
         //void HandleToggleCloakOpcode(WorldPacket& recv_data);

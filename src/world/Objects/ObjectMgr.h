@@ -658,6 +658,8 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         void ResetDailies();
 
+        void LoadQuestLoot(uint32 GO_Entry, uint32 Item_Entry);
+
         uint32 GenerateCreatureSpawnID();
         uint32 GenerateGameObjectSpawnID();
 

@@ -167,83 +167,83 @@ void BuildPartyLockDungeonBlock(WorldPacket& data, const LfgLockPartyMap& lockMa
 //    sLfgMgr.UpdateBoot(GetPlayer(), agree);
 //}
 
-//void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
-//{
-//    Log.Debug("LfgHandler", "CMSG_LFD_PLAYER_LOCK_INFO_REQUEST");
-//    uint64 guid = GetPlayer()->GetGUID();
-//    Log.Debug("LfgHandler", "CMSG_LFD_PLAYER_LOCK_INFO_REQUEST %u", guid);
-//
-//    // Get Random dungeons that can be done at a certain level and expansion
-//    // FIXME - Should return seasonals (when not disabled)
-//    LfgDungeonSet randomDungeons;
-//    uint8 level = GetPlayer()->getLevel();
-//    uint8 expansion = GetPlayer()->GetSession()->GetFlags();
-//
-//	for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
-//    {
-//        DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(i);
-//        if (dungeon && dungeon->type == LFG_TYPE_RANDOM && dungeon->expansion <= expansion && dungeon->minlevel <= level && level <= dungeon->maxlevel)
-//            randomDungeons.insert(dungeon->Entry());
-// 
-//    }
-//
-//    // Get player locked Dungeons
-//    LfgLockMap lock = sLfgMgr.GetLockedDungeons(guid);
-//    uint32 rsize = uint32(randomDungeons.size());
-//    uint32 lsize = uint32(lock.size());
-//
-//    Log.Debug("LfgHandler", "SMSG_LFG_PLAYER_INFO %u", guid);
-//    WorldPacket data(SMSG_LFG_PLAYER_INFO, 1 + rsize * (4 + 1 + 4 + 4 + 4 + 4 + 1 + 4 + 4 + 4) + 4 + lsize * (1 + 4 + 4 + 4 + 4 + 1 + 4 + 4 + 4));
-//
-//    data << uint8(randomDungeons.size());                  // Random Dungeon count
-//    for (LfgDungeonSet::const_iterator it = randomDungeons.begin(); it != randomDungeons.end(); ++it)
-//    {
-//        data << uint32(*it);                               // Dungeon Entry (id + type)
-//        LfgReward const* reward = sLfgMgr.GetRandomDungeonReward(*it, level);
-//        QuestProperties const* qRew = nullptr;
-//        uint8 done = 0;
-//        if (reward)
-//        {
-//            qRew = sMySQLStore.GetQuestProperties(reward->reward[0].questId);
-//            if (qRew)
-//            {
-//                done = GetPlayer()->HasFinishedQuest(qRew->id);
-//                if (done)
-//                    qRew = sMySQLStore.GetQuestProperties(reward->reward[1].questId);
-//            }
-//        }
-//        if (qRew)
-//        {
-//            data << uint8(done);
-//            data << uint32(qRew->reward_money);
-//            data << uint32(qRew->reward_xp);
-//            data << uint32(reward->reward[done].variableMoney);
-//            data << uint32(reward->reward[done].variableXP);
-//            ///\todo FIXME Linux: error: cast from const uint32* {aka const unsigned int*} to uint8 {aka unsigned char} loses precision 
-//            /// can someone check this now ?
-//            data << uint8(qRew->GetRewardItemCount());
-//            for (uint8 i = 0; i < 4; ++i)
-//                if (qRew->reward_item[i] != 0)
-//                {
-//                    ItemProperties const* item = sMySQLStore.GetItemProperties(qRew->reward_item[i]);
-//                    data << uint32(qRew->reward_item[i]);
-//                    data << uint32(item ? item->DisplayInfoID : 0);
-//                    data << uint32(qRew->reward_itemcount[i]);
-//                }
-//        }
-//        else
-//        {
-//            data << uint8(0);
-//            data << uint32(0);
-//            data << uint32(0);
-//            data << uint32(0);
-//            data << uint32(0);
-//            data << uint8(0);
-//        }
-//    }
-//    BuildPlayerLockDungeonBlock(data, lock);
-//    SendPacket(&data);
-//}
+void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
+{
+    Log.Debug("LfgHandler", "CMSG_LFD_PLAYER_LOCK_INFO_REQUEST");
+    uint64 guid = GetPlayer()->GetGUID();
+    Log.Debug("LfgHandler", "CMSG_LFD_PLAYER_LOCK_INFO_REQUEST %u", guid);
+
+    // Get Random dungeons that can be done at a certain level and expansion
+    // FIXME - Should return seasonals (when not disabled)
+    LfgDungeonSet randomDungeons;
+    uint8 level = GetPlayer()->getLevel();
+    uint8 expansion = GetPlayer()->GetSession()->GetFlags();
+
+	for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
+    {
+        DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(i);
+        if (dungeon && dungeon->type == LFG_TYPE_RANDOM && dungeon->expansion <= expansion && dungeon->minlevel <= level && level <= dungeon->maxlevel)
+            randomDungeons.insert(dungeon->Entry());
+ 
+    }
+
+    // Get player locked Dungeons
+    LfgLockMap lock = sLfgMgr.GetLockedDungeons(guid);
+    uint32 rsize = uint32(randomDungeons.size());
+    uint32 lsize = uint32(lock.size());
+
+    Log.Debug("LfgHandler", "SMSG_LFG_PLAYER_INFO %u", guid);
+    WorldPacket data(SMSG_LFG_PLAYER_INFO, 1 + rsize * (4 + 1 + 4 + 4 + 4 + 4 + 1 + 4 + 4 + 4) + 4 + lsize * (1 + 4 + 4 + 4 + 4 + 1 + 4 + 4 + 4));
+
+    data << uint8(randomDungeons.size());                  // Random Dungeon count
+    for (LfgDungeonSet::const_iterator it = randomDungeons.begin(); it != randomDungeons.end(); ++it)
+    {
+        data << uint32(*it);                               // Dungeon Entry (id + type)
+        LfgReward const* reward = sLfgMgr.GetRandomDungeonReward(*it, level);
+        QuestProperties const* qRew = nullptr;
+        uint8 done = 0;
+        if (reward)
+        {
+            qRew = sMySQLStore.GetQuestProperties(reward->reward[0].questId);
+            if (qRew)
+            {
+                done = GetPlayer()->HasFinishedQuest(qRew->GetQuestId());
+                if (done)
+                    qRew = sMySQLStore.GetQuestProperties(reward->reward[1].questId);
+            }
+        }
+        if (qRew)
+        {
+            data << uint8(done);
+            data << uint32(qRew->GetRewOrReqMoney());
+            data << uint32(qRew->XPValue(GetPlayer()));
+            data << uint32(reward->reward[done].variableMoney);
+            data << uint32(reward->reward[done].variableXP);
+            ///\todo FIXME Linux: error: cast from const uint32* {aka const unsigned int*} to uint8 {aka unsigned char} loses precision 
+            /// can someone check this now ?
+            data << uint8(qRew->GetRewItemsCount());
+            for (uint8 i = 0; i < 4; ++i)
+                if (qRew->RewItemId[i] != 0)
+                {
+                    ItemProperties const* item = sMySQLStore.GetItemProperties(qRew->RewItemId[i]);
+                    data << uint32(qRew->RewItemId[i]);
+                    data << uint32(item ? item->DisplayInfoID : 0);
+                    data << uint32(qRew->RewItemCount[i]);
+                }
+        }
+        else
+        {
+            data << uint8(0);
+            data << uint32(0);
+            data << uint32(0);
+            data << uint32(0);
+            data << uint32(0);
+            data << uint8(0);
+        }
+    }
+    BuildPlayerLockDungeonBlock(data, lock);
+    SendPacket(&data);
+}
 
 //void WorldSession::HandleLfgTeleportOpcode(WorldPacket& recv_data)
 //{
@@ -499,7 +499,7 @@ void WorldSession::SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 Dungeon
     if (!RandomDungeonEntry || !DungeonEntry || !qReward)
         return;
 
-    uint8 itemNum = uint8(qReward->GetRewardItemCount());
+    uint8 itemNum = uint8(qReward->GetRewItemsCount());
 
     Log.Debug("LfgHandler", "SMSG_LFG_PLAYER_REWARD %u rdungeonEntry: %u - sdungeonEntry: %u - done: %u", GetPlayer()->GetGUID(), RandomDungeonEntry, DungeonEntry, done);
 
@@ -509,8 +509,8 @@ void WorldSession::SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 Dungeon
     data << uint32(DungeonEntry);                         // Dungeon Finished
     data << uint8(done);
     data << uint32(1);
-    data << uint32(qReward->reward_money);
-    data << uint32(qReward->reward_xp);
+    data << uint32(qReward->GetRewOrReqMoney());
+    data << uint32(qReward->XPValue(GetPlayer()));
     data << uint32(reward->reward[done].variableMoney);
     data << uint32(reward->reward[done].variableXP);
     data << uint8(itemNum);
@@ -519,14 +519,14 @@ void WorldSession::SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 Dungeon
     {
         for (uint8 i = 0; i < 4; ++i)
         {
-            if (!qReward->reward_item[i])
+            if (!qReward->RewItemId[i])
                 continue;
 
-            ItemProperties const* iProto = sMySQLStore.GetItemProperties(qReward->reward_item[i]);
+            ItemProperties const* iProto = sMySQLStore.GetItemProperties(qReward->RewItemId[i]);
 
-            data << uint32(qReward->reward_item[i]);
+            data << uint32(qReward->RewItemId[i]);
             data << uint32(iProto ? iProto->DisplayInfoID : 0);
-            data << uint32(qReward->reward_itemcount[i]);
+            data << uint32(qReward->RewItemCount[i]);
         }
     }
     SendPacket(&data);

@@ -834,8 +834,6 @@ bool Player::Create(WorldPacket& data)
         m_team = 1;
     m_cache->SetUInt32Value(CACHE_PLAYER_INITIALTEAM, m_team);
 
-    uint8 powertype = static_cast<uint8>(myClass->power_type);
-
     // Automatically add the race's taxi hub to the character's taximask at creation time (1 << (taxi_node_id-1))
     // this is defined in table playercreateinfo, field taximask
     memcpy(m_taximask, info->taximask, sizeof(m_taximask));
@@ -844,19 +842,69 @@ bool Player::Create(WorldPacket& data)
     //SetScale( ((race==RACE_TAUREN)?1.3f:1.0f));
     SetScale(1.0f);
     SetHealth(info->health);
-    SetPower(POWER_TYPE_MANA, info->mana);
-    SetPower(POWER_TYPE_RAGE, 0);
-    SetPower(POWER_TYPE_FOCUS, info->focus); // focus
-    SetPower(POWER_TYPE_ENERGY, info->energy);
-    SetPower(POWER_TYPE_RUNES, 8);
 
     SetMaxHealth(info->health);
-    SetMaxPower(POWER_TYPE_MANA, info->mana);
-    SetMaxPower(POWER_TYPE_RAGE, info->rage);
-    SetMaxPower(POWER_TYPE_FOCUS, info->focus);
-    SetMaxPower(POWER_TYPE_ENERGY, info->energy);
-    SetMaxPower(POWER_TYPE_RUNES, 8);
-    SetMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
+
+    switch (getClass())
+    {
+    case WARRIOR:
+        PowerFields[POWER_TYPE_RAGE] = 0;	//rage is stored in first slot
+        SetPowerType(POWER_TYPE_RAGE);
+        SetMaxPower(POWER_TYPE_RAGE, 1000);
+        SetPower(POWER_TYPE_RAGE, 0);
+        break;
+    case HUNTER:
+        PowerFields[POWER_TYPE_FOCUS] = 0;	//focus is stored in first slot
+        SetPowerType(POWER_TYPE_FOCUS);
+        SetMaxPower(POWER_TYPE_FOCUS, 100);
+        SetPower(POWER_TYPE_FOCUS, 100);
+        break;
+    case ROGUE:
+        PowerFields[POWER_TYPE_ENERGY] = 0;	//energy is stored in first slot
+        SetPowerType(POWER_TYPE_ENERGY);
+        SetMaxPower(POWER_TYPE_ENERGY, 100);
+        SetPower(POWER_TYPE_ENERGY, 100);
+        break;
+    case DEATHKNIGHT:
+        PowerFields[POWER_TYPE_RUNIC] = 0;	//runic is stored in first slot
+        SetPowerType(POWER_TYPE_RUNIC);
+        SetMaxPower(POWER_TYPE_RUNIC, 1000);
+        SetPower(POWER_TYPE_RUNIC, 0);
+        break;
+    case PALADIN:
+        SetPowerType(POWER_TYPE_MANA);
+        PowerFields[POWER_TYPE_MANA] = 0;
+        PowerFields[POWER_TYPE_HOLY] = 1;	//holy is stored in second slot
+        SetMaxPower(POWER_TYPE_HOLY, 3);
+        SetPower(POWER_TYPE_HOLY, 0);
+        break;
+    case WARLOCK:
+        SetPowerType(POWER_TYPE_MANA);
+        PowerFields[POWER_TYPE_MANA] = 0;
+        PowerFields[POWER_TYPE_SOUL_SHARDS] = 1;	//shards is stored in second slot
+        SetMaxPower(POWER_TYPE_SOUL_SHARDS, 3);
+        SetPower(POWER_TYPE_SOUL_SHARDS, 0);
+        break;
+    case DRUID:
+        SetPowerType(POWER_TYPE_MANA);
+        PowerFields[POWER_TYPE_MANA] = 0;
+        PowerFields[POWER_TYPE_RAGE] = 1;	//rage is stored in second slot
+        PowerFields[POWER_TYPE_ENERGY] = 2;	//eclipse is stored in third slot
+        PowerFields[POWER_TYPE_ECLIPSE] = 3;	//eclipse is stored in forth slot
+        SetMaxPower(POWER_TYPE_RAGE, 1000);
+        SetPower(POWER_TYPE_RAGE, 0);
+        SetMaxPower(POWER_TYPE_ENERGY, 100);
+        SetPower(POWER_TYPE_ENERGY, 100);
+        SetMaxPower(POWER_TYPE_ECLIPSE, 100);
+        SetPower(POWER_TYPE_ECLIPSE, 0);
+        break;
+    case PRIEST:
+    case SHAMAN:
+    case MAGE:
+        SetPowerType(POWER_TYPE_MANA);
+        PowerFields[POWER_TYPE_MANA] = 0;
+        break;
+    };
 
     //THIS IS NEEDED
     SetBaseHealth(info->health);
@@ -885,7 +933,6 @@ bool Player::Create(WorldPacket& data)
     setRace(race);
     setClass(class_);
     setGender(gender);
-    SetPowerType(powertype);
 
     SetByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_PVP);
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
@@ -3030,17 +3077,70 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     // Initialize 'normal' fields
     SetScale(1.0f);
-    //SetUInt32Value(UNIT_FIELD_POWER2, 0);
-    SetPower(POWER_TYPE_FOCUS, info->focus); // focus
-    SetPower(POWER_TYPE_ENERGY, info->energy);
-    SetPower(POWER_TYPE_RUNES, 8);
-    SetMaxPower(POWER_TYPE_RAGE, info->rage);
-    SetMaxPower(POWER_TYPE_FOCUS, info->focus);
-    SetMaxPower(POWER_TYPE_ENERGY, info->energy);
-    SetMaxPower(POWER_TYPE_RUNES, 8);
-    SetMaxPower(POWER_TYPE_RUNIC_POWER, 1000);
+
     if (getClass() == WARRIOR)
         SetShapeShift(FORM_BATTLESTANCE);
+
+    switch (getClass())
+    {
+    case WARRIOR:
+        PowerFields[POWER_TYPE_RAGE] = 0;	//rage is stored in first slot
+        SetPowerType(POWER_TYPE_RAGE);
+        SetMaxPower(POWER_TYPE_RAGE, 1000);
+        SetPower(POWER_TYPE_RAGE, 0);
+        break;
+    case HUNTER:
+        PowerFields[POWER_TYPE_FOCUS] = 0;	//focus is stored in first slot
+        SetPowerType(POWER_TYPE_FOCUS);
+        SetMaxPower(POWER_TYPE_FOCUS, 100);
+        SetPower(POWER_TYPE_FOCUS, 100);
+        break;
+    case ROGUE:
+        PowerFields[POWER_TYPE_ENERGY] = 0;	//energy is stored in first slot
+        SetPowerType(POWER_TYPE_ENERGY);
+        SetMaxPower(POWER_TYPE_ENERGY, 100);
+        SetPower(POWER_TYPE_ENERGY, 100);
+        break;
+    case DEATHKNIGHT:
+        PowerFields[POWER_TYPE_RUNIC] = 0;	//runic is stored in first slot
+        SetPowerType(POWER_TYPE_RUNIC);
+        SetMaxPower(POWER_TYPE_RUNIC, 1000);
+        SetPower(POWER_TYPE_RUNIC, 0);
+        break;
+    case PALADIN:
+        SetPowerType(POWER_TYPE_MANA);
+        PowerFields[POWER_TYPE_MANA] = 0;
+        PowerFields[POWER_TYPE_HOLY] = 1;	//holy is stored in second slot
+        SetMaxPower(POWER_TYPE_HOLY, 3);
+        SetPower(POWER_TYPE_HOLY, 0);
+        break;
+    case WARLOCK:
+        SetPowerType(POWER_TYPE_MANA);
+        PowerFields[POWER_TYPE_MANA] = 0;
+        PowerFields[POWER_TYPE_SOUL_SHARDS] = 1;	//shards is stored in second slot
+        SetMaxPower(POWER_TYPE_SOUL_SHARDS, 3);
+        SetPower(POWER_TYPE_SOUL_SHARDS, 0);
+        break;
+    case DRUID:
+        SetPowerType(POWER_TYPE_MANA);
+        PowerFields[POWER_TYPE_MANA] = 0;
+        PowerFields[POWER_TYPE_RAGE] = 1;	//rage is stored in second slot
+        PowerFields[POWER_TYPE_ENERGY] = 2;	//eclipse is stored in third slot
+        PowerFields[POWER_TYPE_ECLIPSE] = 3;	//eclipse is stored in forth slot
+        SetMaxPower(POWER_TYPE_RAGE, 1000);
+        SetPower(POWER_TYPE_RAGE, 0);
+        SetMaxPower(POWER_TYPE_ENERGY, 100);
+        SetPower(POWER_TYPE_ENERGY, 100);
+        SetMaxPower(POWER_TYPE_ECLIPSE, 100);
+        SetPower(POWER_TYPE_ECLIPSE, 0);
+        break;
+    case PRIEST:
+    case SHAMAN:
+    case MAGE:
+        SetPowerType(POWER_TYPE_MANA);
+        PowerFields[POWER_TYPE_MANA] = 0;
+        break;
+    };
 
     SetUInt32Value(UNIT_FIELD_BYTES_2, (0x28 << 8));
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
@@ -3694,7 +3794,7 @@ QuestLogEntry* Player::GetQuestLogForEntry(uint32 quest)
     {
         if (m_questlog[i] != NULL)
         {
-            if (m_questlog[i]->GetQuest()->id == quest)
+            if (m_questlog[i]->GetQuest()->GetQuestId() == quest)
                 return m_questlog[i];
         }
     }
@@ -4713,7 +4813,7 @@ void Player::KillPlayer()
     if (getClass() == WARRIOR)   // Rage resets on death
         SetPower(POWER_TYPE_RAGE, 0);
     else if (getClass() == DEATHKNIGHT)
-        SetPower(POWER_TYPE_RUNIC_POWER, 0);
+        SetPower(POWER_TYPE_RUNIC, 0);
 
     summonhandler.RemoveAllSummons();
     DismissActivePets();
@@ -5032,7 +5132,7 @@ bool Player::HasFinishedQuest(uint32 quest_id)
 bool Player::HasTimedQuest()
 {
     for (uint8 i = 0; i < 25; i++)
-        if ((m_questlog[i] != NULL) && (m_questlog[i]->GetQuest()->time != 0))
+        if ((m_questlog[i] != NULL) && (m_questlog[i]->GetQuest()->GetLimitTime() != 0))
             return true;
 
     return false;
@@ -6039,12 +6139,8 @@ bool Player::HasQuestForItem(uint32 itemid)
                 } // end for
             } // end if
 
-            // No item_quest association found, check the quest requirements
-            if (!qst->count_required_item)
-                continue;
-
             for (uint32 j = 0; j < MAX_REQUIRED_QUEST_ITEM; ++j)
-                if (qst->required_item[j] == itemid && (GetItemInterface()->GetItemCount(itemid) < qst->required_itemcount[j]))
+                if (qst->ReqItemId[j] == itemid && (GetItemInterface()->GetItemCount(itemid) < qst->ReqItemCount[j]))
                     return true;
         }
     }
@@ -6648,12 +6744,12 @@ void Player::UpdateNearbyGameObjects()
             {
                 for (GameObjectGOMap::const_iterator GOitr = gameobject_info->goMap.begin(); GOitr != gameobject_info->goMap.end(); ++GOitr)
                 {
-                    if ((qle = GetQuestLogForEntry(GOitr->first->id)) != 0)
+                    if ((qle = GetQuestLogForEntry(GOitr->first->GetQuestId())) != 0)
                     {
-                        for (uint32 i = 0; i < qle->GetQuest()->count_required_mob; ++i)
+                        for (uint32 i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
                         {
-                            if (qle->GetQuest()->required_mob[i] == static_cast<int32>(go->GetEntry()) &&
-                                qle->GetMobCount(i) < qle->GetQuest()->required_mobcount[i])
+                            if (qle->GetQuest()->ReqCreatureOrGOId[i] == static_cast<int32>(go->GetEntry()) &&
+                                qle->GetMobCount(i) < qle->GetQuest()->ReqCreatureOrGOCount[i])
                             {
                                 activate_quest_object = true;
                                 break;
@@ -8358,7 +8454,7 @@ void Player::ApplyLevelInfo(LevelInfo* Info, uint32 Level)
     SetPower(POWER_TYPE_MANA, Info->Mana);
 
 
-    if (Level > PreviousLevel)
+    /*if (Level > PreviousLevel)
     {
         if (Level > 9)
             SetTalentPointsForAllSpec(Level - 9);
@@ -8367,11 +8463,24 @@ void Player::ApplyLevelInfo(LevelInfo* Info, uint32 Level)
     {
         if (Level != PreviousLevel)
             Reset_AllTalents();
-    }
+    }*/
+
+    LevelInfo* oldlevel = lvlinfo;
+    lvlinfo = objmgr.GetLevelInfo(getRace(), getClass(), PreviousLevel);
+
+    if (!oldlevel)
+        return;
 
     // Set base fields
     SetBaseHealth(Info->HP);
     SetBaseMana(Info->Mana);
+
+    SendLevelupInfo(Level, Info->HP, Info->Mana,
+        Info->Stat[0] - oldlevel->Stat[0],
+        Info->Stat[1] - oldlevel->Stat[1],
+        Info->Stat[2] - oldlevel->Stat[2],
+        Info->Stat[3] - oldlevel->Stat[3],
+        Info->Stat[4] - oldlevel->Stat[4]);
 
     _UpdateMaxSkillCounts();
     UpdateStats();
@@ -10593,7 +10702,7 @@ bool Player::HasQuest(uint32 entry)
 {
     for (uint8 i = 0; i < 25; i++)
     {
-        if (m_questlog[i] != NULL && m_questlog[i]->GetQuest()->id == entry)
+        if (m_questlog[i] != NULL && m_questlog[i]->GetQuest()->GetQuestId() == entry)
             return true;
     }
     return false;
@@ -12909,7 +13018,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         return;
     }
 
-    if (HasQuest(qst->id))
+    if (HasQuest(qst->GetQuestId()))
         return;
 
     if (qst_giver->IsCreature() && static_cast< Creature* >(qst_giver)->m_escorter != NULL)
@@ -12922,7 +13031,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     // it isn't available.
     uint32 status = sQuestMgr.CalcQuestStatus(qst_giver, this, qst, 3, bSkipLevelCheck);
 
-    if ((!sQuestMgr.IsQuestRepeatable(qst) && HasFinishedQuest(qst->id)) || (status != QMGR_QUEST_AVAILABLE && status != QMGR_QUEST_REPEATABLE && status != QMGR_QUEST_CHAT)
+    if ((!qst->IsRepeatable() && HasFinishedQuest(qst->GetQuestId())) || (status != QMGR_QUEST_AVAILABLE && status != QMGR_QUEST_REPEATABLE && status != QMGR_QUEST_CHAT)
         || !hasquest)
     {
         // We've got a hacker. Disconnect them.
@@ -12939,15 +13048,15 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         return;
     }
 
-    if ((qst->time != 0) && HasTimedQuest())
+    if ((qst->GetLimitTime() != 0) && HasTimedQuest())
     {
-        sQuestMgr.SendQuestInvalid(INVALID_REASON_HAVE_TIMED_QUEST, this);
+        sQuestMgr.SendQuestInvalid(INVALIDREASON_QUEST_ONLY_ONE_TIMED, this);
         return;
     }
 
-    if (qst->count_receiveitems || qst->srcitem)
+    if (qst->GetSrcItemId())
     {
-        uint32 slots_required = qst->count_receiveitems;
+        uint32 slots_required = qst->GetSrcItemCount();
 
         if (m_ItemInterface->CalculateFreeSlots(NULL) < slots_required)
         {
@@ -12961,40 +13070,21 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     qle->Init(qst, this, log_slot);
     qle->UpdatePlayerFields();
 
-    // If the quest should give any items on begin, give them the items.
-    for (uint8 i = 0; i < 4; ++i)
+    if (qst->GetSrcItemId())
     {
-        if (qst->receive_items[i])
+        if (!qst_giver->IsItem() || (qst_giver->GetEntry() != qst->GetSrcItemId()))
         {
-            Item* item = objmgr.CreateItem(qst->receive_items[i], this);
-            if (item == NULL)
-                continue;
-            if (!m_ItemInterface->AddItemToFreeSlot(item))
+            Item* item = objmgr.CreateItem(qst->GetSrcItemId(), this);
+            if (item != nullptr)
             {
-                item->DeleteMe();
-            }
-            else
-                SendItemPushResult(false, true, false, true,
-                m_ItemInterface->LastSearchItemBagSlot(), m_ItemInterface->LastSearchItemSlot(),
-                1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
-        }
-    }
-
-    if (qst->srcitem && qst->srcitem != qst->receive_items[0])
-    {
-        if (!qst_giver->IsItem() || (qst_giver->GetEntry() != qst->srcitem))
-        {
-            Item *item = objmgr.CreateItem(qst->srcitem, this);
-            if (item != NULL)
-            {
-                item->SetStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
+                item->SetStackCount(qst->GetSrcItemCount() ? qst->GetSrcItemCount() : 1);
                 if (!m_ItemInterface->AddItemToFreeSlot(item))
                     item->DeleteMe();
             }
         }
     }
 
-    if (qst->count_required_item || qst_giver->IsGameObject())    // gameobject quests deactivate
+    if (qst->ReqItemCount || qst_giver->IsGameObject())    // gameobject quests deactivate
         UpdateNearbyGameObjects();
 
     // Some spells applied at quest activation
@@ -13309,7 +13399,7 @@ void Player::AddQuestKill(uint32 questid, uint8 reqid, uint32 delay)
 
     auto quest = quest_entry->GetQuest();
 
-    if (quest_entry->GetMobCount(reqid) >= quest->required_mobcount[reqid])
+    if (quest_entry->GetMobCount(reqid) >= quest->ReqCreatureOrGOCount[reqid])
         return;
 
     quest_entry->IncrementMobCount(reqid);

@@ -129,16 +129,16 @@ WorldPacket& operator<<(WorldPacket& packet, const Gossip::Menu & menu)
     {
         for (Gossip::QuestList::const_iterator itr = menu.questlist_.begin(); itr != menu.questlist_.end(); ++itr)
         {
-            packet << itr->first->id;
+            packet << itr->first->GetQuestId();
             packet << uint32(itr->second);
-            packet << itr->first->min_level;
-            packet << itr->first->quest_flags;
+            packet << itr->first->GetMinLevel();
+            packet << itr->first->GetFlags();
             packet << uint8(0);
-            LocalizedQuest* lq = sLocalizationMgr.GetLocalizedQuest(itr->first->id, menu.language_);
+            LocalizedQuest* lq = sLocalizationMgr.GetLocalizedQuest(itr->first->GetQuestId(), menu.language_);
             if (lq != NULL)
                 packet << lq->Title;
             else
-                packet << itr->first->title;
+                packet << itr->first->GetTitle();
         }
     }
     return packet;
@@ -160,16 +160,16 @@ StackBuffer<size>& operator<<(StackBuffer<size> & packet, const Gossip::Menu & m
         std::string title;
         for (Gossip::QuestList::const_iterator itr = menu.questlist_.begin(); itr != menu.questlist_.end(); ++itr)
         {
-            packet << itr->first->id;
+            packet << itr->first->GetQuestId();
             packet << uint32(itr->second);
-            packet << itr->first->min_level;
-            packet << itr->first->quest_flags;
+            packet << itr->first->GetMinLevel();
+            packet << itr->first->GetFlags();
             packet << uint8(0);
-            LocalizedQuest* lq = sLocalizationMgr.GetLocalizedQuest(itr->first->id, menu.language_);
-            if (lq != NULL)
+            LocalizedQuest* lq = sLocalizationMgr.GetLocalizedQuest(itr->first->GetQuestId(), menu.language_);
+            if (lq != nullptr)
                 title = lq->Title;
             else
-                title = itr->first->title;
+                title = itr->first->GetTitle();
             packet << title;
         }
     }

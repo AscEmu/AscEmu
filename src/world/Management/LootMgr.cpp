@@ -98,6 +98,7 @@ void LootMgr::LoadLoot()
     //THIS MUST BE CALLED AFTER LOADING OF ITEMS
     is_loading = true;
     LoadLootProp();
+    LoadCurrencyLoot();
     LoadLootTables("loot_creatures", &CreatureLoot);
     LoadLootTables("loot_gameobjects", &GOLoot);
     LoadLootTables("loot_skinning", &SkinningLoot);
@@ -895,3 +896,36 @@ int32 LootRoll::event_GetInstanceID()
 {
     return _mgr->GetInstanceID();
 }
+
+void LootMgr::LoadCurrencyLoot()
+{
+    QueryResult* result = WorldDatabase.Query("SELECT * FROM loot_currency group by entry,currency order by entry");
+    if (!result)
+    {
+        Log.Error("ObjectMgr", "missing currency loot table !");
+        return;
+    }
+
+    do
+    {
+        Field *fields = result->Fetch();
+        uint32 entry = fields[0].GetUInt32();
+
+        LootCurencyStoreStruct LootCurencyStore;
+        LootCurencyStore.currency_type = fields[1].GetUInt32();
+        LootCurencyStore.currency_amt = fields[2].GetUInt32();
+        LootCurencyStore.max_level = fields[3].GetUInt32();
+        LootCurencyStore.difficulty_mask = fields[4].GetInt32();
+
+        LootCurencyStoreStruct* cr = &mLootCurrency.insert(LootCurrencyStore::value_type(entry, LootCurencyStore))->second;
+
+    } while (result->NextRow());
+
+    Log.Notice("LootMgr", "%u loots from loot_currency table cached.", result->GetRowCount());
+    delete result;
+}
+
+LootCurrencyIdBounds LootMgr::GetLootCurrencyIdBounds(uint32 entry) const
+{
+    return LootCurrencyIdBounds(mLootCurrency.lower_bound(entry), mLootCurrency.upper_bound(entry));
+} 

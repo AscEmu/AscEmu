@@ -2843,3 +2843,28 @@ void WorldSession::HandleObjectUpdateFailedOpcode(WorldPacket& recv_data)
     }
 
 }
+
+void WorldSession::HandleRequestHotfix(WorldPacket& recv_data)
+{
+    uint32 type, count;
+    recv_data >> type;
+    count = recv_data.readBits(23);
+
+    uint32 entry;
+    for (uint32 i = 0; i < count; ++i)
+    {
+        recv_data >> entry;
+
+        switch (type)
+        {
+        case DB2_REPLY_ITEM:
+            SendItemDb2Reply(entry);
+            break;
+        case DB2_REPLY_SPARSE:
+            SendItemSparseDb2Reply(entry);
+            break;
+        default:
+            break;
+        }
+    }
+}
