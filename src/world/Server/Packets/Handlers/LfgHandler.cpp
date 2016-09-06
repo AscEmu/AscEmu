@@ -169,8 +169,8 @@ void BuildPartyLockDungeonBlock(WorldPacket& data, const LfgLockPartyMap& lockMa
 
 void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
 {
-    Log.Debug("LfgHandler", "CMSG_LFD_PLAYER_LOCK_INFO_REQUEST");
     uint64 guid = GetPlayer()->GetGUID();
+
     Log.Debug("LfgHandler", "CMSG_LFD_PLAYER_LOCK_INFO_REQUEST %u", guid);
 
     // Get Random dungeons that can be done at a certain level and expansion
@@ -223,6 +223,7 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
             /// can someone check this now ?
             data << uint8(qRew->GetRewItemsCount());
             for (uint8 i = 0; i < 4; ++i)
+            {
                 if (qRew->RewItemId[i] != 0)
                 {
                     ItemProperties const* item = sMySQLStore.GetItemProperties(qRew->RewItemId[i]);
@@ -230,6 +231,7 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
                     data << uint32(item ? item->DisplayInfoID : 0);
                     data << uint32(qRew->RewItemCount[i]);
                 }
+            }
         }
         else
         {

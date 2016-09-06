@@ -183,16 +183,16 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         {
             switch (QuestSort)
             {
-            case QUEST_SORT_WARLOCK:        return WARLOCK;
-            case QUEST_SORT_WARRIOR:        return WARRIOR;
-            case QUEST_SORT_SHAMAN:         return SHAMAN;
-            case QUEST_SORT_PALADIN:        return PALADIN;
-            case QUEST_SORT_MAGE:           return MAGE;
-            case QUEST_SORT_ROGUE:          return ROGUE;
-            case QUEST_SORT_HUNTER:         return HUNTER;
-            case QUEST_SORT_PRIEST:         return PRIEST;
-            case QUEST_SORT_DRUID:          return DRUID;
-            case QUEST_SORT_DEATH_KNIGHT:   return DEATHKNIGHT;
+                case QUEST_SORT_WARLOCK:        return WARLOCK;
+                case QUEST_SORT_WARRIOR:        return WARRIOR;
+                case QUEST_SORT_SHAMAN:         return SHAMAN;
+                case QUEST_SORT_PALADIN:        return PALADIN;
+                case QUEST_SORT_MAGE:           return MAGE;
+                case QUEST_SORT_ROGUE:          return ROGUE;
+                case QUEST_SORT_HUNTER:         return HUNTER;
+                case QUEST_SORT_PRIEST:         return PRIEST;
+                case QUEST_SORT_DRUID:          return DRUID;
+                case QUEST_SORT_DEATH_KNIGHT:   return DEATHKNIGHT;
             }
             return 0;
         }
@@ -201,18 +201,18 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         {
             switch (QuestSort)
             {
-            case QUEST_SORT_HERBALISM:      return SKILL_HERBALISM;
-            case QUEST_SORT_FISHING:        return SKILL_FISHING;
-            case QUEST_SORT_BLACKSMITHING:  return SKILL_BLACKSMITHING;
-            case QUEST_SORT_ALCHEMY:        return SKILL_ALCHEMY;
-            case QUEST_SORT_LEATHERWORKING: return SKILL_LEATHERWORKING;
-            case QUEST_SORT_ENGINERING:     return SKILL_ENGINEERING;
-            case QUEST_SORT_TAILORING:      return SKILL_TAILORING;
-            case QUEST_SORT_COOKING:        return SKILL_COOKING;
-            case QUEST_SORT_FIRST_AID:      return SKILL_FIRST_AID;
-            case QUEST_SORT_JEWELCRAFTING:  return SKILL_JEWELCRAFTING;
-            case QUEST_SORT_INSCRIPTION:    return SKILL_INSCRIPTION;
-            case QUEST_SORT_ARCHAEOLOGY:    return SKILL_ARCHAEOLOGY;
+                case QUEST_SORT_HERBALISM:      return SKILL_HERBALISM;
+                case QUEST_SORT_FISHING:        return SKILL_FISHING;
+                case QUEST_SORT_BLACKSMITHING:  return SKILL_BLACKSMITHING;
+                case QUEST_SORT_ALCHEMY:        return SKILL_ALCHEMY;
+                case QUEST_SORT_LEATHERWORKING: return SKILL_LEATHERWORKING;
+                case QUEST_SORT_ENGINERING:     return SKILL_ENGINEERING;
+                case QUEST_SORT_TAILORING:      return SKILL_TAILORING;
+                case QUEST_SORT_COOKING:        return SKILL_COOKING;
+                case QUEST_SORT_FIRST_AID:      return SKILL_FIRST_AID;
+                case QUEST_SORT_JEWELCRAFTING:  return SKILL_JEWELCRAFTING;
+                case QUEST_SORT_INSCRIPTION:    return SKILL_INSCRIPTION;
+                case QUEST_SORT_ARCHAEOLOGY:    return SKILL_ARCHAEOLOGY;
             }
             return 0;
         }

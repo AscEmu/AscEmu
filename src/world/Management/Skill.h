@@ -177,7 +177,25 @@ enum PlayerSkills
     SKILL_RACIAL_GOLBLIN          = 790,
     SKILL_LANG_GILNEAN            = 791,
     SKILL_LANG_GOBLIN             = 792,
-    SKILL_ARCHAEOLOGY             = 794
+    SKILL_ARCHAEOLOGY             = 794,
+    SKILL_GENERAL_HUNTER          = 795,
+    SKILL_GENERAL_DEATHKNIGHT     = 796,
+    SKILL_GENERAL_ROGUE           = 797,
+    SKILL_GENERAL_DRUID           = 798,
+    SKILL_GENERAL_MAGE            = 799,
+    SKILL_GENERAL_PALADIN         = 800,
+    SKILL_GENERAL_SHAMAN          = 801,
+    SKILL_GENERAL_WARLOCK         = 802,
+    SKILL_GENERAL_WARRIOR         = 803,
+    SKILL_GENERAL_PRIEST          = 804,
+    SKILL_PET_WATER_ELEMENTAL     = 805,
+    SKILL_PET_FOX                 = 808,
+    SKILL_GLYPHS_ALL              = 810,
+    SKILL_PET_DOG                 = 811,
+    SKILL_MONKEY                  = 815,
+    SKILL_SHALE_SPIDER            = 817,
+    SKILL_BEETLE                  = 818,
+    SKILL_GUILD_PERKS_ALL         = 821
 };
 
 enum SkillTypes

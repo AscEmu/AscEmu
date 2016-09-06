@@ -651,17 +651,17 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
     if (qst->GetCharTitleId() > 0)
         plr->SetKnownTitle(static_cast<RankTitles>(qst->GetCharTitleId()), true);
 
-	// Some spells applied at quest reward
-	SpellAreaForQuestMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaForQuestMapBounds(qst->GetQuestId(), false);
-	if (saBounds.first != saBounds.second)
-	{
-		for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
-		{
-			if (itr->second->autocast && itr->second->IsFitToRequirements(plr, plr->GetZoneId(), plr->GetAreaID()))
-				if (!plr->HasAura(itr->second->spellId))
-					plr->CastSpell(plr, itr->second->spellId, true);
-		}
-	}
+    // Some spells applied at quest reward
+    SpellAreaForQuestMapBounds saBounds = sSpellFactoryMgr.GetSpellAreaForQuestMapBounds(qst->GetQuestId(), false);
+    if (saBounds.first != saBounds.second)
+    {
+        for (SpellAreaForAreaMap::const_iterator itr = saBounds.first; itr != saBounds.second; ++itr)
+        {
+            if (itr->second->autocast && itr->second->IsFitToRequirements(plr, plr->GetZoneId(), plr->GetAreaID()))
+                if (!plr->HasAura(itr->second->spellId))
+                    plr->CastSpell(plr, itr->second->spellId, true);
+        }
+    }
 
     WorldPacket data(SMSG_QUESTGIVER_QUEST_COMPLETE, (4 + 4 + 4 + 4 + 4));
 
@@ -675,7 +675,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
         data << uint32(qst->GetBonusTalents());     // bonus talents
         data << uint32(qst->GetRewSkillPoints());
         data << uint32(qst->XPValue(plr));
-        
+
     }
     else
     {

@@ -2050,7 +2050,7 @@ void Spell::SendSpellStart()
         cast_flags = 0x0F;
 
     data.SetOpcode(SMSG_SPELL_START);
-    if (i_caster != NULL)
+    if (i_caster != nullptr)
     {
         data << i_caster->GetNewGUID();
         data << u_caster->GetNewGUID();
@@ -2071,21 +2071,14 @@ void Spell::SendSpellStart()
     if (GetType() == SPELL_DMG_TYPE_RANGED)
     {
         ItemProperties const* ip = nullptr;
-        if (GetProto()->Id == SPELL_RANGED_THROW)   // throw
+        if (GetProto()->Id == SPELL_RANGED_THROW)
         {
-            if (p_caster != NULL)
+            if (p_caster != nullptr)
             {
                 auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 if (item != nullptr)
                 {
                     ip = item->GetItemProperties();
-                    /* Throwing Weapon Patch by Supalosa
-                    p_caster->GetItemInterface()->RemoveItemAmt(it->GetEntry(),1);
-                    (Supalosa: Instead of removing one from the stack, remove one from durability)
-                    We don't need to check if the durability is 0, because you can't cast the Throw spell if the thrown weapon is broken, because it returns "Requires Throwing Weapon" or something.
-                    */
-
-                    // burlex - added a check here anyway (wpe suckers :P)
                     if (item->GetDurability() > 0)
                     {
                         item->SetDurability(item->GetDurability() - 1);
@@ -2109,12 +2102,16 @@ void Spell::SendSpellStart()
         //}
 
         if (ip != nullptr)
-            data << ip->DisplayInfoID << ip->InventoryType;
+        {
+            data << ip->DisplayInfoID;
+            data << ip->InventoryType;
+        }
         else
-            data << uint32(0) << uint32(0);
+        {
+            data << uint32(0);
+            data << uint32(0);
+        }
     }
-
-    //data << (uint32)139; //3.0.2 seems to be some small value around 250 for shadow bolt.
     m_caster->SendMessageToSet(&data, true);
 }
 
@@ -2122,7 +2119,7 @@ void Spell::SendSpellGo()
 {
     // Fill UniqueTargets
     TargetsList::iterator i, j;
-    for (uint8 x = 0; x < 3; x++)
+    for (uint8 x = 0; x < 3; ++x)
     {
         if (GetProto()->Effect[x])
         {
@@ -2160,23 +2157,24 @@ void Spell::SendSpellGo()
         flags |= 0x20000;
 
     if (GetType() == SPELL_DMG_TYPE_RANGED)
-        flags |= SPELL_GO_FLAGS_RANGED; // 0x20 RANGED
+        flags |= SPELL_GO_FLAGS_RANGED;         // 0x20 RANGED
 
-    if (i_caster != NULL)
-        flags |= SPELL_GO_FLAGS_ITEM_CASTER; // 0x100 ITEM CASTER
+    if (i_caster != nullptr)
+        flags |= SPELL_GO_FLAGS_ITEM_CASTER;    // 0x100 ITEM CASTER
 
     if (ModeratedTargets.size() > 0)
-        flags |= SPELL_GO_FLAGS_EXTRA_MESSAGE; // 0x400 TARGET MISSES AND OTHER MESSAGES LIKE "Resist"
+        flags |= SPELL_GO_FLAGS_EXTRA_MESSAGE;  // 0x400 TARGET MISSES AND OTHER MESSAGES LIKE "Resist"
 
-    if (p_caster != NULL && GetProto()->powerType != POWER_TYPE_HEALTH)
+    if (p_caster != nullptr && GetProto()->powerType != POWER_TYPE_HEALTH)
         flags |= SPELL_GO_FLAGS_POWER_UPDATE;
 
     //experiments with rune updates
     uint8 cur_have_runes = 0;
-    if (p_caster && p_caster->IsDeathKnight())   //send our rune updates ^^
+    if (p_caster && p_caster->IsDeathKnight())  //send our rune updates ^^
     {
         if (GetProto()->RuneCostID && GetProto()->powerType == POWER_TYPE_RUNES)
             flags |= SPELL_GO_FLAGS_ITEM_CASTER | SPELL_GO_FLAGS_RUNE_UPDATE | SPELL_GO_FLAGS_UNK40000;
+
         //see what we will have after cast
         cur_have_runes = static_cast<DeathKnight*>(p_caster)->GetRuneFlags();
         if (cur_have_runes != m_rune_avail_before)
@@ -2187,7 +2185,7 @@ void Spell::SendSpellGo()
     if (GetProto()->Id == 8326)   // death
         flags = SPELL_GO_FLAGS_ITEM_CASTER | 0x0D;
 
-    if (i_caster != NULL && u_caster != NULL)   // this is needed for correct cooldown on items
+    if (i_caster != nullptr && u_caster != nullptr)   // this is needed for correct cooldown on items
     {
         data << i_caster->GetNewGUID();
         data << u_caster->GetNewGUID();
@@ -2211,7 +2209,9 @@ void Spell::SendSpellGo()
         writeSpellMissedTargets(&data);
     }
     else
+    {
         data << uint8(0);   //moderated target size is 0 since we did not set the flag
+    }
 
     m_targets.write(data);   // this write is included the target flag
 
@@ -2260,7 +2260,7 @@ void Spell::SendSpellGo()
     {
         data << uint8(m_rune_avail_before);
         data << uint8(cur_have_runes);
-        for (uint8 k = 0; k < MAX_RUNES; k++)
+        for (uint8 k = 0; k < MAX_RUNES; ++k)
         {
             uint8 x = (1 << k);
             if ((x & m_rune_avail_before) != (x & cur_have_runes))
@@ -2268,21 +2268,11 @@ void Spell::SendSpellGo()
         }
     }
 
-
-
-    /*
-            float dx = targets.m_destX - targets.m_srcX;
-            float dy = targets.m_destY - targets.m_srcY;
-            if (missilepitch != M_PI / 4 && missilepitch != -M_PI / 4) //lets not divide by 0 lul
-            traveltime = (sqrtf(dx * dx + dy * dy) / (cosf(missilepitch) * missilespeed)) * 1000;
-            */
-
     if (flags & 0x20000)
     {
         data << float(m_missilePitch);
         data << uint32(m_missileTravelTime);
     }
-
 
     if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
         data << uint8(0);   //some spells require this ? not sure if it is last byte or before that.

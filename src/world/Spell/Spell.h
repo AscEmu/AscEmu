@@ -1722,19 +1722,19 @@ typedef void(Spell::*pSpellTarget)(uint32 i, uint32 j);
 
 enum PowerType
 {
-    POWER_TYPE_HEALTH = -2,
-    POWER_TYPE_MANA = 0,
-    POWER_TYPE_RAGE = 1,
-    POWER_TYPE_FOCUS = 2,
-    POWER_TYPE_ENERGY = 3,
-    POWER_TYPE_HAPPINESS = 4,
-    POWER_TYPE_SUPPORTED_AS_UPDATEFIELD_COUNT = 5,
-    POWER_TYPE_RUNES = 5,	//this is used by auras combined with miscB value
-    POWER_TYPE_RUNIC = 6,
-    POWER_TYPE_SOUL_SHARDS = 7,  //check value
-    POWER_TYPE_ECLIPSE = 8,  //check value
-    POWER_TYPE_HOLY = 9,  //check value
-    POWER_TYPE_HEALTH2 = 10, //seen it in power update packet
+    POWER_TYPE_HEALTH                           = -2,
+    POWER_TYPE_MANA                             = 0,
+    POWER_TYPE_RAGE                             = 1,
+    POWER_TYPE_FOCUS                            = 2,
+    POWER_TYPE_ENERGY                           = 3,
+    POWER_TYPE_HAPPINESS                        = 4,
+    POWER_TYPE_SUPPORTED_AS_UPDATEFIELD_COUNT   = 5,
+    POWER_TYPE_RUNES                            = 5,	//this is used by auras combined with miscB value
+    POWER_TYPE_RUNIC                            = 6,
+    POWER_TYPE_SOUL_SHARDS                      = 7,  //check value
+    POWER_TYPE_ECLIPSE                          = 8,  //check value
+    POWER_TYPE_HOLY                             = 9,  //check value
+    POWER_TYPE_HEALTH2                          = 10, //seen it in power update packet
     POWER_TYPE_COUNT
 };
 // we have power type 15 and 31 :S

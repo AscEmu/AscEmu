@@ -267,7 +267,7 @@ Unit::Unit() : m_movementManager()
     //all powers stored in their place ?
     memset(PowerFields, POWER_TYPE_MANA, sizeof(PowerFields));
     for (uint8 i = 0; i < 11; ++i)
-        PowerFields[i] = -1;	//do not mod these
+        PowerFields[i] = -1;    //do not mod these
 
     m_invisibility = 0;
     m_invisible = false;

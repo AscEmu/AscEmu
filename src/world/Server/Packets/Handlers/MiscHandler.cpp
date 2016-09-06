@@ -2857,14 +2857,15 @@ void WorldSession::HandleRequestHotfix(WorldPacket& recv_data)
 
         switch (type)
         {
-        case DB2_REPLY_ITEM:
-            SendItemDb2Reply(entry);
-            break;
-        case DB2_REPLY_SPARSE:
-            SendItemSparseDb2Reply(entry);
-            break;
-        default:
-            break;
+            case DB2_REPLY_ITEM:
+                SendItemDb2Reply(entry);
+                break;
+            case DB2_REPLY_SPARSE:
+                SendItemSparseDb2Reply(entry);
+                break;
+            default:
+                Log.Debug("WorldSession::HandleRequestHotfix", "Received unknown gotfix type %u", type);
+                break;
         }
     }
 }

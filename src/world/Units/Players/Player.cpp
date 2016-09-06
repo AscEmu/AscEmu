@@ -848,25 +848,25 @@ bool Player::Create(WorldPacket& data)
     switch (getClass())
     {
     case WARRIOR:
-        PowerFields[POWER_TYPE_RAGE] = 0;	//rage is stored in first slot
+        PowerFields[POWER_TYPE_RAGE] = 0;   //rage is stored in first slot
         SetPowerType(POWER_TYPE_RAGE);
         SetMaxPower(POWER_TYPE_RAGE, 1000);
         SetPower(POWER_TYPE_RAGE, 0);
         break;
     case HUNTER:
-        PowerFields[POWER_TYPE_FOCUS] = 0;	//focus is stored in first slot
+        PowerFields[POWER_TYPE_FOCUS] = 0;  //focus is stored in first slot
         SetPowerType(POWER_TYPE_FOCUS);
         SetMaxPower(POWER_TYPE_FOCUS, 100);
         SetPower(POWER_TYPE_FOCUS, 100);
         break;
     case ROGUE:
-        PowerFields[POWER_TYPE_ENERGY] = 0;	//energy is stored in first slot
+        PowerFields[POWER_TYPE_ENERGY] = 0; //energy is stored in first slot
         SetPowerType(POWER_TYPE_ENERGY);
         SetMaxPower(POWER_TYPE_ENERGY, 100);
         SetPower(POWER_TYPE_ENERGY, 100);
         break;
     case DEATHKNIGHT:
-        PowerFields[POWER_TYPE_RUNIC] = 0;	//runic is stored in first slot
+        PowerFields[POWER_TYPE_RUNIC] = 0;  //runic is stored in first slot
         SetPowerType(POWER_TYPE_RUNIC);
         SetMaxPower(POWER_TYPE_RUNIC, 1000);
         SetPower(POWER_TYPE_RUNIC, 0);
@@ -874,23 +874,23 @@ bool Player::Create(WorldPacket& data)
     case PALADIN:
         SetPowerType(POWER_TYPE_MANA);
         PowerFields[POWER_TYPE_MANA] = 0;
-        PowerFields[POWER_TYPE_HOLY] = 1;	//holy is stored in second slot
+        PowerFields[POWER_TYPE_HOLY] = 1;   //holy is stored in second slot
         SetMaxPower(POWER_TYPE_HOLY, 3);
         SetPower(POWER_TYPE_HOLY, 0);
         break;
     case WARLOCK:
         SetPowerType(POWER_TYPE_MANA);
         PowerFields[POWER_TYPE_MANA] = 0;
-        PowerFields[POWER_TYPE_SOUL_SHARDS] = 1;	//shards is stored in second slot
+        PowerFields[POWER_TYPE_SOUL_SHARDS] = 1;    //shards is stored in second slot
         SetMaxPower(POWER_TYPE_SOUL_SHARDS, 3);
         SetPower(POWER_TYPE_SOUL_SHARDS, 0);
         break;
     case DRUID:
         SetPowerType(POWER_TYPE_MANA);
         PowerFields[POWER_TYPE_MANA] = 0;
-        PowerFields[POWER_TYPE_RAGE] = 1;	//rage is stored in second slot
-        PowerFields[POWER_TYPE_ENERGY] = 2;	//eclipse is stored in third slot
-        PowerFields[POWER_TYPE_ECLIPSE] = 3;	//eclipse is stored in forth slot
+        PowerFields[POWER_TYPE_RAGE] = 1;       //rage is stored in second slot
+        PowerFields[POWER_TYPE_ENERGY] = 2;     //eclipse is stored in third slot
+        PowerFields[POWER_TYPE_ECLIPSE] = 3;    //eclipse is stored in forth slot
         SetMaxPower(POWER_TYPE_RAGE, 1000);
         SetPower(POWER_TYPE_RAGE, 0);
         SetMaxPower(POWER_TYPE_ENERGY, 100);
@@ -912,7 +912,7 @@ bool Player::Create(WorldPacket& data)
     SetFaction(info->factiontemplate);
 
     if (class_ == DEATHKNIGHT)
-        SetTalentPointsForAllSpec(sWorld.DKStartTalentPoints); // Default is 0 in case you do not want to modify it
+        SetTalentPointsForAllSpec(sWorld.DKStartTalentPoints);  // Default is 0 in case you do not want to modify it
     else
         SetTalentPointsForAllSpec(0);
     if (class_ != DEATHKNIGHT || sWorld.StartingLevel > 55)
@@ -3084,25 +3084,25 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     switch (getClass())
     {
     case WARRIOR:
-        PowerFields[POWER_TYPE_RAGE] = 0;	//rage is stored in first slot
+        PowerFields[POWER_TYPE_RAGE] = 0;   //rage is stored in first slot
         SetPowerType(POWER_TYPE_RAGE);
         SetMaxPower(POWER_TYPE_RAGE, 1000);
         SetPower(POWER_TYPE_RAGE, 0);
         break;
     case HUNTER:
-        PowerFields[POWER_TYPE_FOCUS] = 0;	//focus is stored in first slot
+        PowerFields[POWER_TYPE_FOCUS] = 0;  //focus is stored in first slot
         SetPowerType(POWER_TYPE_FOCUS);
         SetMaxPower(POWER_TYPE_FOCUS, 100);
         SetPower(POWER_TYPE_FOCUS, 100);
         break;
     case ROGUE:
-        PowerFields[POWER_TYPE_ENERGY] = 0;	//energy is stored in first slot
+        PowerFields[POWER_TYPE_ENERGY] = 0; //energy is stored in first slot
         SetPowerType(POWER_TYPE_ENERGY);
         SetMaxPower(POWER_TYPE_ENERGY, 100);
         SetPower(POWER_TYPE_ENERGY, 100);
         break;
     case DEATHKNIGHT:
-        PowerFields[POWER_TYPE_RUNIC] = 0;	//runic is stored in first slot
+        PowerFields[POWER_TYPE_RUNIC] = 0;  //runic is stored in first slot
         SetPowerType(POWER_TYPE_RUNIC);
         SetMaxPower(POWER_TYPE_RUNIC, 1000);
         SetPower(POWER_TYPE_RUNIC, 0);
@@ -3110,23 +3110,23 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     case PALADIN:
         SetPowerType(POWER_TYPE_MANA);
         PowerFields[POWER_TYPE_MANA] = 0;
-        PowerFields[POWER_TYPE_HOLY] = 1;	//holy is stored in second slot
+        PowerFields[POWER_TYPE_HOLY] = 1;   //holy is stored in second slot
         SetMaxPower(POWER_TYPE_HOLY, 3);
         SetPower(POWER_TYPE_HOLY, 0);
         break;
     case WARLOCK:
         SetPowerType(POWER_TYPE_MANA);
         PowerFields[POWER_TYPE_MANA] = 0;
-        PowerFields[POWER_TYPE_SOUL_SHARDS] = 1;	//shards is stored in second slot
+        PowerFields[POWER_TYPE_SOUL_SHARDS] = 1;    //shards is stored in second slot
         SetMaxPower(POWER_TYPE_SOUL_SHARDS, 3);
         SetPower(POWER_TYPE_SOUL_SHARDS, 0);
         break;
     case DRUID:
         SetPowerType(POWER_TYPE_MANA);
         PowerFields[POWER_TYPE_MANA] = 0;
-        PowerFields[POWER_TYPE_RAGE] = 1;	//rage is stored in second slot
-        PowerFields[POWER_TYPE_ENERGY] = 2;	//eclipse is stored in third slot
-        PowerFields[POWER_TYPE_ECLIPSE] = 3;	//eclipse is stored in forth slot
+        PowerFields[POWER_TYPE_RAGE] = 1;       //rage is stored in second slot
+        PowerFields[POWER_TYPE_ENERGY] = 2;     //eclipse is stored in third slot
+        PowerFields[POWER_TYPE_ECLIPSE] = 3;    //eclipse is stored in forth slot
         SetMaxPower(POWER_TYPE_RAGE, 1000);
         SetPower(POWER_TYPE_RAGE, 0);
         SetMaxPower(POWER_TYPE_ENERGY, 100);

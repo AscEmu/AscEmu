@@ -1638,15 +1638,16 @@ void WorldSession::SendMOTD()
 
 void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recv_data)
 {
-    CHECK_INWORLD_RETURN LOG_DEBUG("Received CMSG_QUEST_POI_QUERY");
+    CHECK_INWORLD_RETURN
+
+    LOG_DEBUG("Received CMSG_QUEST_POI_QUERY");
 
     uint32 count = 0;
     recv_data >> count;
 
     if (count > MAX_QUEST_LOG_SIZE)
     {
-        LOG_DEBUG
-            ("Client sent Quest POI query for more than MAX_QUEST_LOG_SIZE quests.");
+        LOG_DEBUG("Client sent Quest POI query for more than MAX_QUEST_LOG_SIZE quests.");
 
         count = MAX_QUEST_LOG_SIZE;
     }
@@ -1655,7 +1656,7 @@ void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recv_data)
 
     data << uint32(count);
 
-    for (uint32 i = 0; i < count; i++)
+    for (uint32 i = 0; i < count; ++i)
     {
         uint32 questId;
         recv_data >> questId;
@@ -1664,8 +1665,6 @@ void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recv_data)
     }
 
     SendPacket(&data);
-
-    LOG_DEBUG("Sent SMSG_QUEST_POI_QUERY_RESPONSE");
 }
 
 //void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
