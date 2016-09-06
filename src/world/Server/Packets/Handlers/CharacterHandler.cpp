@@ -1047,45 +1047,44 @@ void WorldSession::FullLogin(Player* plr)
 
     bool enter_world = true;
 
-    // Find our transporter and add us if we're on one.
-    //if (plr->obj_movement_info.transporter_info.guid != 0)
-    //{
-    //    Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(plr->obj_movement_info.transporter_info.guid));
-    //    if (pTrans)
-    //    {
-    //        if (plr->IsDead())
-    //        {
-    //            plr->ResurrectPlayer();
-    //            plr->SetHealth(plr->GetMaxHealth());
-    //            plr->SetPower(POWER_TYPE_MANA, plr->GetMaxPower(POWER_TYPE_MANA));
-    //        }
+    //Find our transporter and add us if we're on one.
+    if (plr->transporter_info.guid != 0)
+    {
+        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(plr->transporter_info.guid));
+        if (pTrans)
+        {
+            if (plr->IsDead())
+            {
+                plr->ResurrectPlayer();
+                plr->SetHealth(plr->GetMaxHealth());
+                plr->SetPower(POWER_TYPE_MANA, plr->GetMaxPower(POWER_TYPE_MANA));
+            }
 
-    //        float c_tposx = pTrans->GetPositionX() + plr->GetTransPositionX();
-    //        float c_tposy = pTrans->GetPositionY() + plr->GetTransPositionY();
-    //        float c_tposz = pTrans->GetPositionZ() + plr->GetTransPositionZ();
+            float c_tposx = pTrans->GetPositionX() + plr->transporter_info.x;
+            float c_tposy = pTrans->GetPositionY() + plr->transporter_info.y;
+            float c_tposz = pTrans->GetPositionZ() + plr->transporter_info.z;
 
-    //        if (plr->GetMapId() != pTrans->GetMapId())       // loaded wrong map
-    //        {
-    //            plr->SetMapId(pTrans->GetMapId());
+            if (plr->GetMapId() != pTrans->GetMapId())       // loaded wrong map
+            {
+                plr->SetMapId(pTrans->GetMapId());
 
-    //            StackWorldPacket<20> dataw(SMSG_NEW_WORLD);
+                WorldPacket dataw(SMSG_NEW_WORLD, 4 + 4 + 4 + 4 + 4);
+                dataw << c_tposx;
+                dataw << plr->GetOrientation();
+                dataw << c_tposz;
+                dataw << pTrans->GetMapId();
+                dataw << c_tposy;
+                SendPacket(&dataw);
 
-    //            dataw << c_tposx;
-    //            dataw << plr->GetOrientation();
-    //            dataw << c_tposz;
-    //            dataw << pTrans->GetMapId();
-    //            dataw << c_tposy;
+                // shit is sent in worldport ack.
+                enter_world = false;
+            }
 
-    //            SendPacket(&dataw);
-
-    //            // shit is sent in worldport ack.
-    //            enter_world = false;
-    //        }
-
-    //        plr->SetPosition(c_tposx, c_tposy, c_tposz, plr->GetOrientation(), false);
-    //        pTrans->AddPassenger(plr);
-    //    }
-    //}
+            plr->SetPosition(c_tposx, c_tposy, c_tposz, plr->GetOrientation(), false);
+            plr->m_CurrentTransporter = pTrans;
+            pTrans->AddPassenger(plr);
+        }
+    }
 
     Log.Debug("Login", "Player %s logged in.", plr->GetName());
 

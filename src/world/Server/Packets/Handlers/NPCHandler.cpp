@@ -133,7 +133,12 @@ void WorldSession::SendTrainerList(Creature* pCreature)
         data << pCreature->GetGUID();
         data << pTrainer->TrainerType;
 
+        data << uint32(0x0);        //maybe some speach ID ?
+
+        size_t count_pos = data.wpos();
         data << uint32(0);
+
+        uint32 count = 0;
         for (std::vector<TrainerSpell>::iterator itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
         {
             pSpell = &(*itr);
@@ -147,106 +152,109 @@ void WorldSession::SendTrainerList(Creature* pCreature)
 
             data << Status;
             data << pSpell->Cost;
-            data << Spacer;
-            data << uint32(pSpell->IsProfession);
             data << uint8(pSpell->RequiredLevel);
             data << pSpell->RequiredSkillLine;
             data << pSpell->RequiredSkillLineValue;
-            data << pSpell->RequiredSpell;
-            data << Spacer;    //this is like a spell override or something, ex : (id=34568 or id=34547) or (id=36270 or id=34546) or (id=36271 or id=34548)
-            data << Spacer;
-            ++Count;
+            data << uint32(0);
+            data << uint32(0);
+            data << uint32(0);
+            data << uint32(0);
+            ++count;
         }
 
-        *(uint32*)&data.contents()[12] = Count;
+        data.put<uint32>(count_pos, count);
 
         if (stricmp(pTrainer->UIMessage, "DMSG") == 0)
             data << _player->GetSession()->LocalizedWorldSrv(37);
         else
             data << pTrainer->UIMessage;
+
         SendPacket(&data);
     }
 }
 
 
-//void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
-//{
-//    CHECK_INWORLD_ASSERT;
-//
-//    uint64 Guid;
-//    uint32 TeachingSpellID;
-//
-//    recvPacket >> Guid >> TeachingSpellID;
-//    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(Guid));
-//
-//    //////////////////////////////////////////////////////////////////////////////////////////
-//    // Checks
-//    if (pCreature == NULL) return;
-//
-//    Trainer* pTrainer = pCreature->GetTrainer();
-//    if (pTrainer == 0)
-//        return;
-//
-//    // Check if the trainer offers that spell
-//    TrainerSpell* pSpell = NULL;
-//    for (std::vector<TrainerSpell>::iterator itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
-//    {
-//        if ((itr->pCastSpell && itr->pCastSpell->Id == TeachingSpellID) ||
-//            (itr->pLearnSpell && itr->pLearnSpell->Id == TeachingSpellID))
-//        {
-//            pSpell = &(*itr);
-//        }
-//    }
-//
-//    // If the trainer doesn't offer it, this is probably some packet mangling
-//    if (pSpell == NULL)
-//    {
-//        // Disconnecting the player
-//        sCheatLog.writefromsession(this, "Player %s tried learning none-obtainable spell - Possibly using WPE", _player->GetName());
-//        this->Disconnect();
-//        return;
-//    }
-//
-//    // We can't learn it
-//    if (TrainerGetSpellStatus(pSpell) > 0)
-//        return;
-//
-//    //////////////////////////////////////////////////////////////////////////////////////////
-//    // Teaching
-//    _player->ModGold(-(int32)pSpell->Cost);
-//
-//    if (pSpell->pCastSpell)
-//    {
-//        _player->CastSpell(_player, pSpell->pCastSpell->Id, true);
-//    }
-//    else
-//    {
-//        //Showing the learning spellvisuals
-//        _player->SendPlaySpellVisual(pCreature->GetGUID(), 0x5B3);
-//        _player->SendPlaySpellVisual(_player->GetGUID(), 0x16A);
-//
-//        // add the spell itself
-//        _player->addSpell(pSpell->pLearnSpell->Id);
-//    }
-//
-//    if (pSpell->DeleteSpell)
-//    {
-//        // Remove old spell.
-//        if (pSpell->pLearnSpell)
-//            _player->removeSpell(pSpell->DeleteSpell, true, true, pSpell->pLearnSpell->Id);
-//        else if (pSpell->pCastSpell)
-//            _player->removeSpell(pSpell->DeleteSpell, true, true, pSpell->pCastRealSpell->Id);
-//        else
-//            _player->removeSpell(pSpell->DeleteSpell, true, false, 0);
-//    }
-//
-//    _player->_UpdateSkillFields();
-//
-//    WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, 12);
-//
-//    data << uint64(Guid) << uint32(TeachingSpellID);        // GUID of the trainer, ID of the spell we bought
-//    this->SendPacket(&data);
-//}
+void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
+{
+    CHECK_INWORLD_ASSERT;
+
+    uint64 Guid;
+    uint32 TeachingSpellID;
+    uint32 unk403;
+
+    recvPacket >> Guid;
+    recvPacket >> unk403;
+    recvPacket >> TeachingSpellID;
+    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(Guid));
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Checks
+    if (pCreature == NULL) return;
+
+    Trainer* pTrainer = pCreature->GetTrainer();
+    if (pTrainer == 0)
+        return;
+
+    // Check if the trainer offers that spell
+    TrainerSpell* pSpell = NULL;
+    for (std::vector<TrainerSpell>::iterator itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
+    {
+        if ((itr->pCastSpell && itr->pCastSpell->Id == TeachingSpellID) ||
+            (itr->pLearnSpell && itr->pLearnSpell->Id == TeachingSpellID))
+        {
+            pSpell = &(*itr);
+        }
+    }
+
+    // If the trainer doesn't offer it, this is probably some packet mangling
+    if (pSpell == NULL)
+    {
+        // Disconnecting the player
+        sCheatLog.writefromsession(this, "Player %s tried learning none-obtainable spell - Possibly using WPE", _player->GetName());
+        this->Disconnect();
+        return;
+    }
+
+    // We can't learn it
+    if (TrainerGetSpellStatus(pSpell) > 0)
+        return;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Teaching
+    _player->ModGold(-(int32)pSpell->Cost);
+
+    if (pSpell->pCastSpell)
+    {
+        _player->CastSpell(_player, pSpell->pCastSpell->Id, true);
+    }
+    else
+    {
+        //Showing the learning spellvisuals
+        _player->SendPlaySpellVisual(pCreature->GetGUID(), 0x5B3);
+        _player->SendPlaySpellVisual(_player->GetGUID(), 0x16A);
+
+        // add the spell itself
+        _player->addSpell(pSpell->pLearnSpell->Id);
+    }
+
+    if (pSpell->DeleteSpell)
+    {
+        // Remove old spell.
+        if (pSpell->pLearnSpell)
+            _player->removeSpell(pSpell->DeleteSpell, true, true, pSpell->pLearnSpell->Id);
+        else if (pSpell->pCastSpell)
+            _player->removeSpell(pSpell->DeleteSpell, true, true, pSpell->pCastRealSpell->Id);
+        else
+            _player->removeSpell(pSpell->DeleteSpell, true, false, 0);
+    }
+
+    _player->_UpdateSkillFields();
+
+    WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, 15);
+
+    data << uint64(Guid) << uint32(TeachingSpellID);        // GUID of the trainer, ID of the spell we bought
+    this->SendPacket(&data);
+}
 
 uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell)
 {

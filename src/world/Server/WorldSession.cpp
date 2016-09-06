@@ -293,11 +293,11 @@ void WorldSession::LogoutPlayer(bool Save)
         // part channels
         _player->CleanupChannels();
 
-        /*auto transport = _player->GetTransport();
+        auto transport = _player->m_CurrentTransporter;
         if (transport != nullptr)
         {
             transport->RemovePassenger(_player);
-        }*/
+        }
 
         // cancel current spell
         if (_player->m_currentSpell != NULL)
@@ -589,7 +589,7 @@ void WorldSession::InitPacketHandlerTable()
 
     //// Movement
     WorldPacketHandlers[MSG_MOVE_HEARTBEAT].handler = &WorldSession::HandleMovementOpcodes;
-    //WorldPacketHandlers[MSG_MOVE_WORLDPORT_ACK].handler = &WorldSession::HandleMoveWorldportAckOpcode;
+    WorldPacketHandlers[MSG_MOVE_WORLDPORT_ACK].handler = &WorldSession::HandleMoveWorldportAckOpcode;
     WorldPacketHandlers[CMSG_MOVE_JUMP].handler = &WorldSession::HandleMovementOpcodes;
     WorldPacketHandlers[CMSG_MOVE_START_ASCEND].handler = &WorldSession::HandleMovementOpcodes;
     WorldPacketHandlers[CMSG_MOVE_STOP_ASCEND].handler = &WorldSession::HandleMovementOpcodes;
@@ -620,7 +620,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_MOVE_CHNG_TRANSPORT].handler = &WorldSession::HandleMovementOpcodes;
 
     //// ACK
-    //WorldPacketHandlers[MSG_MOVE_TELEPORT_ACK].handler = &WorldSession::HandleMoveTeleportAckOpcode;
+    WorldPacketHandlers[MSG_MOVE_TELEPORT_ACK].handler = &WorldSession::HandleMoveTeleportAckOpcode;
     WorldPacketHandlers[CMSG_FORCE_WALK_SPEED_CHANGE_ACK].handler = &WorldSession::HandleAcknowledgementOpcodes;
     //WorldPacketHandlers[CMSG_MOVE_FEATHER_FALL_ACK].handler = &WorldSession::HandleAcknowledgementOpcodes;
     //WorldPacketHandlers[CMSG_MOVE_WATER_WALK_ACK].handler = &WorldSession::HandleAcknowledgementOpcodes;
@@ -770,7 +770,7 @@ void WorldSession::InitPacketHandlerTable()
     //WorldPacketHandlers[CMSG_BANKER_ACTIVATE].handler = &WorldSession::HandleBankerActivateOpcode;
     //WorldPacketHandlers[CMSG_BUY_BANK_SLOT].handler = &WorldSession::HandleBuyBankSlotOpcode;
     //WorldPacketHandlers[CMSG_TRAINER_LIST].handler = &WorldSession::HandleTrainerListOpcode;
-    //WorldPacketHandlers[CMSG_TRAINER_BUY_SPELL].handler = &WorldSession::HandleTrainerBuySpellOpcode;
+    WorldPacketHandlers[CMSG_TRAINER_BUY_SPELL].handler = &WorldSession::HandleTrainerBuySpellOpcode;
     //WorldPacketHandlers[CMSG_PETITION_SHOWLIST].handler = &WorldSession::HandleCharterShowListOpcode;
     //WorldPacketHandlers[MSG_AUCTION_HELLO].handler = &WorldSession::HandleAuctionHelloOpcode;
     WorldPacketHandlers[CMSG_GOSSIP_HELLO].handler = &WorldSession::HandleGossipHelloOpcode;

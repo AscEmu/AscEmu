@@ -150,6 +150,7 @@ Player::Player(uint32 guid)
     bHasBindDialogOpen(false),
     TrackingSpell(0),
     m_CurrentCharm(0),
+    m_CurrentTransporter(nullptr),
     // gm stuff
     //m_invincible(false),
     TaxiCheat(false),
@@ -1809,8 +1810,8 @@ void Player::smsg_InitialSpells()
 
     GetSession()->SendPacket(&data);
 
-    /*uint32 v = 0;
-    GetSession()->OutPacket(0x041d, 4, &v);*/
+    uint32 v = 0;
+    GetSession()->OutPacket(SMSG_SERVER_BUCK_DATA, 4, &v);
     //Log::getSingleton().outDetail("CHARACTER: Sent Initial Spells");
 }
 
@@ -2591,16 +2592,16 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     {
         ss << "0, 0, 0";
     }
-    /*auto transport = this->GetTransport();
-    if (!transport)*/
+    auto transport = m_CurrentTransporter;
+    if (!transport)
     {
         ss << "," << 0 << ",'0','0','0','0'";
     }
-    /*else
+    else
     {
         ss << "," << transport->GetEntry();
-        ss << ",'" << movement_info.GetTransportPos()->x << "','" << movement_info.GetTransportPos()->y << "','" << movement_info.GetTransportPos()->z << "','" << movement_info.GetTransportPos()->o << "'";
-    }*/
+        ss << ",'" << transporter_info.x << "','" << transporter_info.y << "','" << transporter_info.z << "','" << transporter_info.o << "'";
+    }
     ss << ",'";
 
     SaveSpells(bNewCharacter, buf);
@@ -3808,14 +3809,14 @@ void Player::SetQuestLogSlot(QuestLogEntry* entry, uint32 slot)
 
 void Player::AddToWorld()
 {
-    /*auto transport = this->GetTransport();
+    auto transport = this->m_CurrentTransporter;
     if (transport)
     {
-        this->SetPosition(transport->GetPositionX() + movement_info.GetTransportPos()->x,
-            transport->GetPositionY() + movement_info.GetTransportPos()->y,
-            transport->GetPositionZ() + movement_info.GetTransportPos()->z,
+        this->SetPosition(transport->GetPositionX() + transporter_info.x,
+            transport->GetPositionY() + transporter_info.y,
+            transport->GetPositionZ() + transporter_info.z,
             GetOrientation(), false);
-    }*/
+    }
 
     // If we join an invalid instance and get booted out, this will prevent our stats from doubling :P
     if (IsInWorld())
@@ -3842,15 +3843,15 @@ void Player::AddToWorld()
 void Player::AddToWorld(MapMgr* pMapMgr)
 {
     // check transporter
-    /*auto transport = this->GetTransport();
+    auto transport = this->m_CurrentTransporter;
     if (transport != nullptr)
     {
         auto t_loc = transport->GetPosition();
-        this->SetPosition(t_loc.x + this->movement_info.GetTransportPos()->x,
-            t_loc.y + this->movement_info.GetTransportPos()->y,
-            t_loc.z + this->movement_info.GetTransportPos()->z,
+        this->SetPosition(t_loc.x + this->transporter_info.x,
+            t_loc.y + this->transporter_info.y,
+            t_loc.z + this->transporter_info.z,
             this->GetOrientation(), false);
-    }*/
+    }
 
     // If we join an invalid instance and get booted out, this will prevent our stats from doubling :P
     if (IsInWorld())
@@ -4646,16 +4647,17 @@ void Player::RepopRequestedPlayer()
         return;
     }
 
-    //auto transport = this->GetTransport();
-    //if (transport != nullptr)
-    //{
-    //    transport->RemovePassenger(this);
-    //    this->obj_movement_info.transporter_info.guid = 0;
+    auto transport = this->m_CurrentTransporter;
+    if (transport != nullptr)
+    {
+        transport->RemovePassenger(this);
+        this->m_CurrentTransporter = nullptr;
+        this->transporter_info.guid = 0;
 
-    //    //ResurrectPlayer();
-    //    RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
-    //    return;
-    //}
+        //ResurrectPlayer();
+        RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
+        return;
+    }
 
     MapInfo const* pMapinfo = NULL;
 
@@ -7274,11 +7276,12 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
             RemoveFromWorld();
         }
 
-        data.Initialize(SMSG_NEW_WORLD);
-
-        data << uint32(mapid);
-        data << v;
+        data.Initialize(SMSG_NEW_WORLD, 4 + 4 + 4 + 4 + 4);
+        data << float(v.x);
         data << float(v.o);
+        data << float(v.z);
+        data << uint32(mapid);
+        data << float(v.y);
 
         m_session->SendPacket(&data);
 
@@ -8555,15 +8558,15 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
         SetSpeeds(RUN, m_runSpeed);
     }
-    /*if (obj_movement_info.transporter_info.guid)
+    if (transporter_info.guid)
     {
-        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
+        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(transporter_info.guid));
         if (pTrans)
         {
             pTrans->RemovePassenger(this);
-            obj_movement_info.transporter_info.guid = 0;
+            transporter_info.guid = 0;
         }
-    }*/
+    }
 
     bool instance = false;
     MapInfo const* mi = sMySQLStore.GetWorldMapInfo(MapID);
@@ -8655,15 +8658,19 @@ void Player::SafeTeleport(MapMgr* mgr, const LocationVector & vec)
 
     m_mapId = mgr->GetMapId();
     m_instanceId = mgr->GetInstanceID();
-    WorldPacket data(SMSG_TRANSFER_PENDING, 20);
-    data << mgr->GetMapId();
+    WorldPacket data(SMSG_TRANSFER_PENDING, 4 + 4 + 4);
+    data.writeBit(0);   // unknown
+    data.writeBit(0);   // has transport
+    data << uint32(mgr->GetMapId());
     GetSession()->SendPacket(&data);
 
-    data.Initialize(SMSG_NEW_WORLD);
-    data << mgr->GetMapId();
-    data << vec;
-    data << vec.o;
-    GetSession()->SendPacket(&data);
+    WorldPacket data2(SMSG_NEW_WORLD, 4 + 4 + 4 + 4 + 4);
+    data2 << float(vec.x);
+    data2 << float(vec.o);
+    data2 << float(vec.z);
+    data2 << mgr->GetMapId();
+    data2 << float(vec.y);
+    GetSession()->SendPacket(&data2);
 
     SetPlayerStatus(TRANSFER_PENDING);
     m_sentTeleportPosition = vec;
@@ -13862,11 +13869,14 @@ bool Player::IsPlayerJumping(MovementInfo const& minfo, uint16 opcode)
         jumping = false;
         return false;
     }
+
     if (!jumping && (opcode == CMSG_MOVE_JUMP || minfo.GetMovementFlags() & MOVEFLAG_FALLING))
     {
         jumping = true;
         return true;
     }
+
+    return false;
 }
 
 void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSession)

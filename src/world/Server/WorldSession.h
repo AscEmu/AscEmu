@@ -339,12 +339,12 @@ class SERVER_DECL WorldSession
         //void HandleAchievmentQueryOpcode(WorldPacket& recv_data);
 
         /// Opcodes implemented in MovementHandler.cpp
-        //void HandleMoveWorldportAckOpcode(WorldPacket& recvPacket);
+        void HandleMoveWorldportAckOpcode(WorldPacket& recvPacket);
         void HandleMovementOpcodes(WorldPacket& recvPacket);
         void HandleMoveTimeSkippedOpcode(WorldPacket& recv_data);
         void HandleMoveNotActiveMoverOpcode(WorldPacket& recv_data);
         void HandleSetActiveMoverOpcode(WorldPacket& recv_data);
-        //void HandleMoveTeleportAckOpcode(WorldPacket& recv_data);
+        void HandleMoveTeleportAckOpcode(WorldPacket& recv_data);
 
         /// Opcodes implemented in GroupHandler.cpp:
         //void HandleGroupInviteOpcode(WorldPacket& recvPacket);
@@ -392,7 +392,7 @@ class SERVER_DECL WorldSession
         //void HandleBankerActivateOpcode(WorldPacket& recvPacket);
         //void HandleBuyBankSlotOpcode(WorldPacket& recvPacket);
         //void HandleTrainerListOpcode(WorldPacket& recvPacket);
-        //void HandleTrainerBuySpellOpcode(WorldPacket& recvPacket);
+        void HandleTrainerBuySpellOpcode(WorldPacket& recvPacket);
         //void HandleCharterShowListOpcode(WorldPacket& recvPacket);
         void HandleGossipHelloOpcode(WorldPacket& recvPacket);
         void HandleGossipSelectOptionOpcode(WorldPacket& recvPacket);

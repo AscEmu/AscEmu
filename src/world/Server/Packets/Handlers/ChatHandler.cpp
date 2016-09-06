@@ -263,7 +263,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         case CHAT_MSG_SAY:
         {
             if (sWorld.interfaction_chat && lang > 0)
-                lang = 0;
+                lang = LANG_UNIVERSAL;
 
             if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
                 break;
@@ -281,10 +281,10 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             }
             else
             {
-                if (lang > 0 && LanguageSkills[lang] && !_player->_HasSkillLine(LanguageSkills[lang]))
+                if (lang > LANG_UNIVERSAL && LanguageSkills[lang] && !_player->_HasSkillLine(LanguageSkills[lang]))
                     return;
 
-                if (lang == 0 && !CanUseCommand('c') && !sWorld.interfaction_chat)
+                if (lang == LANG_UNIVERSAL && !CanUseCommand('c') && !sWorld.interfaction_chat)
                     return;
 
                 data = sChatHandler.FillMessageData(CHAT_MSG_SAY, lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
@@ -305,7 +305,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 break;
 
             if (sWorld.interfaction_chat && lang > 0)
-                lang = 0;
+                lang = LANG_UNIVERSAL;
 
             if (g_chatFilter->Parse(msg) == true)
             {
@@ -314,11 +314,12 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             }
 
             Group* pGroup = _player->GetGroup();
-            if (pGroup == NULL) break;
+            if (pGroup == nullptr)
+                break;
 
             if (GetPlayer()->m_modlanguage >= 0)
                 data = sChatHandler.FillMessageData(type, GetPlayer()->m_modlanguage, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
-            else if (lang == 0 && sWorld.interfaction_chat)
+            else if (lang == LANG_UNIVERSAL && sWorld.interfaction_chat)
                 data = sChatHandler.FillMessageData(type, (CanUseCommand('0') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
             else
                 data = sChatHandler.FillMessageData(type, (CanUseCommand('c') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
@@ -396,7 +397,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         case CHAT_MSG_YELL:
         {
             if (sWorld.interfaction_chat && lang > 0)
-                lang = 0;
+                lang = LANG_UNIVERSAL;
 
             if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
                 break;
@@ -406,10 +407,10 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 SystemMessage("Your chat message was blocked by a server-side filter.");
                 return;
             }
-            if (lang > 0 && LanguageSkills[lang] && _player->_HasSkillLine(LanguageSkills[lang]) == false)
+            if (lang > LANG_UNIVERSAL && LanguageSkills[lang] && _player->_HasSkillLine(LanguageSkills[lang]) == false)
                 return;
 
-            if (lang == 0 && sWorld.interfaction_chat)
+            if (lang == LANG_UNIVERSAL && sWorld.interfaction_chat)
                 data = sChatHandler.FillMessageData(CHAT_MSG_YELL, (CanUseCommand('0') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
 
             else if (GetPlayer()->m_modlanguage >= 0)

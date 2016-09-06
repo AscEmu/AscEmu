@@ -2064,6 +2064,7 @@ void Spell::SendSpellStart()
     data << extra_cast_number;
     data << GetProto()->Id;
     data << cast_flags;
+    data << uint32(m_timer);
     data << (uint32)m_castTime;
 
     m_targets.write(data);
@@ -2200,6 +2201,7 @@ void Spell::SendSpellGo()
     data << GetProto()->Id;
     data << flags;
     data << getMSTime();
+    data << uint32(m_timer);
     data << (uint8)(UniqueTargets.size()); //number of hits
     writeSpellGoTargets(&data);
 
