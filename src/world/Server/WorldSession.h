@@ -434,10 +434,10 @@ class SERVER_DECL WorldSession
         void HandleBuyItemOpcode(WorldPacket& recvPacket);
         void HandleListInventoryOpcode(WorldPacket& recvPacket);
         void HandleAutoStoreBagItemOpcode(WorldPacket& recvPacket);
-        //void HandleBuyBackOpcode(WorldPacket& recvPacket);
+        void HandleBuyBackOpcode(WorldPacket& recvPacket);
         void HandleSplitOpcode(WorldPacket& recvPacket);
         void HandleReadItemOpcode(WorldPacket& recvPacket);
-        //void HandleRepairItemOpcode(WorldPacket& recvPacket);
+        void HandleRepairItemOpcode(WorldPacket& recvPacket);
         //void HandleAutoBankItemOpcode(WorldPacket& recvPacket);
         //void HandleAutoStoreBankItemOpcode(WorldPacket& recvPacket);
         //void HandleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket);

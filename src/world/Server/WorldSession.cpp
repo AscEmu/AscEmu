@@ -792,10 +792,10 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_LIST_INVENTORY].handler = &WorldSession::HandleListInventoryOpcode;
     WorldPacketHandlers[CMSG_AUTOSTORE_BAG_ITEM].handler = &WorldSession::HandleAutoStoreBagItemOpcode;
     //WorldPacketHandlers[CMSG_SET_AMMO].handler = &WorldSession::HandleAmmoSetOpcode;
-    //WorldPacketHandlers[CMSG_BUYBACK_ITEM].handler = &WorldSession::HandleBuyBackOpcode;
+    WorldPacketHandlers[CMSG_BUYBACK_ITEM].handler = &WorldSession::HandleBuyBackOpcode;
     WorldPacketHandlers[CMSG_SPLIT_ITEM].handler = &WorldSession::HandleSplitOpcode;
     WorldPacketHandlers[CMSG_READ_ITEM].handler = &WorldSession::HandleReadItemOpcode;
-    //WorldPacketHandlers[CMSG_REPAIR_ITEM].handler = &WorldSession::HandleRepairItemOpcode;
+    WorldPacketHandlers[CMSG_REPAIR_ITEM].handler = &WorldSession::HandleRepairItemOpcode;
     //WorldPacketHandlers[CMSG_AUTOBANK_ITEM].handler = &WorldSession::HandleAutoBankItemOpcode;
     //WorldPacketHandlers[CMSG_AUTOSTORE_BANK_ITEM].handler = &WorldSession::HandleAutoStoreBankItemOpcode;
     //WorldPacketHandlers[CMSG_CANCEL_TEMP_ENCHANTMENT].handler = &WorldSession::HandleCancelTemporaryEnchantmentOpcode;
