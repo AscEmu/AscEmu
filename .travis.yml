@@ -48,7 +48,7 @@ addons:
     notification_email: autokaori@gmail.com
     build_command_prepend: cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=0 && cov-configure --comptype gcc --compiler /usr/bin/gcc-5 && make clean
     build_command: make -j2
-    branch_pattern: coverity_scan
+    branch_pattern: coverity_scan_3.3.5
 
 before_script:
   - ${CXX} --version
