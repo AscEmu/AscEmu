@@ -153,28 +153,28 @@
 //    _player->mTradeTarget = 0;
 //}
 
-//void WorldSession::HandleCancelTrade(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    if (_player->mTradeTarget == 0 || _player->mTradeStatus == TRADE_STATUS_COMPLETE)
-//        return;
-//
-//    uint32 TradeStatus = TRADE_STATUS_CANCELLED;
-//
-//    OutPacket(SMSG_TRADE_STATUS, 4, &TradeStatus);
-//
-//    Player* plr = _player->GetTradeTarget();
-//    if (plr)
-//    {
-//        if (plr->m_session && plr->m_session->GetSocket())
-//            plr->m_session->OutPacket(SMSG_TRADE_STATUS, 4, &TradeStatus);
-//
-//        plr->ResetTradeVariables();
-//    }
-//
-//    _player->ResetTradeVariables();
-//}
+void WorldSession::HandleCancelTrade(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    if (_player->mTradeTarget == 0 || _player->mTradeStatus == TRADE_STATUS_COMPLETE)
+        return;
+
+    uint32 TradeStatus = TRADE_STATUS_CANCELLED;
+
+    OutPacket(SMSG_TRADE_STATUS, 4, &TradeStatus);
+
+    Player* plr = _player->GetTradeTarget();
+    if (plr)
+    {
+        if (plr->m_session && plr->m_session->GetSocket())
+            plr->m_session->OutPacket(SMSG_TRADE_STATUS, 4, &TradeStatus);
+
+        plr->ResetTradeVariables();
+    }
+
+    _player->ResetTradeVariables();
+}
 
 //void WorldSession::HandleUnacceptTrade(WorldPacket& recv_data)
 //{

@@ -2850,10 +2850,31 @@ void WorldSession::HandleRequestHotfix(WorldPacket& recv_data)
     recv_data >> type;
     count = recv_data.readBits(23);
 
+    ObjectGuid* guids = new ObjectGuid[count];
+    for (uint32 i = 0; i < count; ++i)
+    {
+        guids[i][0] = recv_data.readBit();
+        guids[i][4] = recv_data.readBit();
+        guids[i][7] = recv_data.readBit();
+        guids[i][2] = recv_data.readBit();
+        guids[i][5] = recv_data.readBit();
+        guids[i][3] = recv_data.readBit();
+        guids[i][6] = recv_data.readBit();
+        guids[i][1] = recv_data.readBit();
+    }
+
     uint32 entry;
     for (uint32 i = 0; i < count; ++i)
     {
+        recv_data.ReadByteSeq(guids[i][5]);
+        recv_data.ReadByteSeq(guids[i][6]);
+        recv_data.ReadByteSeq(guids[i][7]);
+        recv_data.ReadByteSeq(guids[i][0]);
+        recv_data.ReadByteSeq(guids[i][1]);
+        recv_data.ReadByteSeq(guids[i][3]);
+        recv_data.ReadByteSeq(guids[i][4]);
         recv_data >> entry;
+        recv_data.ReadByteSeq(guids[i][2]);
 
         switch (type)
         {
@@ -2864,7 +2885,8 @@ void WorldSession::HandleRequestHotfix(WorldPacket& recv_data)
                 SendItemSparseDb2Reply(entry);
                 break;
             default:
-                Log.Debug("WorldSession::HandleRequestHotfix", "Received unknown gotfix type %u", type);
+                Log.Debug("WorldSession::HandleRequestHotfix", "Received unknown hotfix type %u", type);
+                recv_data.clear();
                 break;
         }
     }

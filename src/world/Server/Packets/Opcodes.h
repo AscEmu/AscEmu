@@ -123,8 +123,6 @@ enum Opcodes
     CMSG_SET_TRADE_ITEM                             = 0x11D,
     CMSG_CLEAR_TRADE_ITEM                           = 0x11E,
     CMSG_SET_TRADE_GOLD                             = 0x11F,
-    SMSG_TRADE_STATUS                               = 0x120,
-    SMSG_TRADE_STATUS_EXTENDED                      = 0x121,
     SMSG_SET_FACTION_VISIBLE                        = 0x123,
     SMSG_SET_FACTION_STANDING                       = 0x124,
     CMSG_SET_FACTION_ATWAR                          = 0x125,
@@ -388,7 +386,6 @@ enum Opcodes
     SMSG_MOVE_SET_FLIGHT_OBSOLETE                   = 0x33E,
     SMSG_MOVE_UNSET_FLIGHT_OBSOLETE                 = 0x33F,
     CMSG_MOVE_FLIGHT_ACK_OBSOLETE                   = 0x340,
-    CMSG_MOVE_SET_CAN_FLY_ACK                       = 0x345,
     CMSG_MOVE_SET_FLY                               = 0x346,
     CMSG_SOCKET_GEMS                                = 0x347,
     CMSG_ARENA_TEAM_CREATE                          = 0x348,
@@ -837,6 +834,8 @@ enum Opcodes
     CMSG_TEXT_EMOTE                                     = 0x2E24,
     SMSG_TEXT_EMOTE                                     = 0x0B05,
     CMSG_CANCEL_TRADE                                   = 0x731E,
+    SMSG_TRADE_STATUS                                   = 0x5CA3,
+    SMSG_TRADE_STATUS_EXTENDED                          = 0x70A2,
     SMSG_INITIALIZE_FACTIONS                            = 0x4634,
     CMSG_CHAR_CREATE                                    = 0x4A36,
     CMSG_CHAR_ENUM                                      = 0x0502,
@@ -1069,6 +1068,7 @@ enum Opcodes
     SMSG_SPLINE_MOVE_SET_SWIM_BACK_SPEED                = 0x59A1,
     SMSG_SPLINE_MOVE_SET_TURN_RATE                      = 0x78B5,
     SMSG_SPLINE_MOVE_SET_WALK_SPEED                     = 0x34A5,
+    CMSG_MOVE_SET_CAN_FLY_ACK                           = 0x790C,
 
     // LFG Check packet sending in LfgHandler.cpp
     SMSG_LFG_PLAYER_INFO                                = 0x1370,   // not updated
@@ -1424,16 +1424,21 @@ enum Opcodes
     SMSG_AREA_SPIRIT_HEALER_TIME                        = 0x0734,
     MSG_MOVE_UPDATE_TELEPORT                            = 0x50B2,
     SMSG_EXPLORATION_EXPERIENCE                         = 0x6716,
+    CMSG_REQUEST_HOTFIX                                 = 0x2401,
+    CMSG_AREATRIGGER                                    = 0x0937,
+    CMSG_OBJECT_UPDATE_FAILED                           = 0x3808,
 
     //Unknown packet send by client to server
     CMSG_UNREGISTER_ALL_ADDON_PREFIXES                  = 0x3D54,   // unknown?
     CMSG_VOICE_SESSION_ENABLE                           = 0x2314,   // unknown?
     CMSG_REQUEST_CATEGORY_COOLDOWNS                     = 0x7102,   // unknown?
-    CMSG_REQUEST_HOTFIX                                 = 0x2401,   // unknown?
     CMSG_REQUEST_CEMETERY_LIST                          = 0x720A,   // unknown?
     CMSG_REORDER_CHARACTERS                             = 0x0593,   // unknown?
-    CMSG_AREATRIGGER                                    = 0x0937,   // unknown?
-    CMSG_OBJECT_UPDATE_FAILED                           = 0x3808,   // unknown?
+    CMSG_UNK_7818                                       = 0x7818,
+    CMSG_UNK_7314                                       = 0x7315,
+    CMSG_UNK_7102                                       = 0x7102,
+    CMSG_UNK_3D54                                       = 0x3D54,
+    CMSG_UNK_720E                                       = 0x720E,
 
     NUM_MSG_TYPES                                       = 0xFFFF    // End of Opcodes
 };
