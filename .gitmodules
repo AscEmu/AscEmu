@@ -1,0 +1,3 @@
+[submodule "src/logonserver"]
+	path = src/logonserver
+	url = https://github.com/AscEmu/logonserver
