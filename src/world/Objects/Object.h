@@ -22,7 +22,7 @@
 #define _OBJECT_H
 
 #include "StdAfx.h"
-#include "Server/UpdateFields.h"
+#include "Server/UpdateFields.hpp"
 #include "Server/UpdateMask.h"
 #include "CommonTypes.hpp"
 #include "Server/EventableObject.h"
@@ -34,9 +34,10 @@
 #include "WoWGuid.h"
 #include "../shared/LocationVector.h"
 #include "Storage/DBC/DBCStructures.hpp"
+#include "Storage/DB2/DB2Structures.hpp"
 #include "../shared/StackBuffer.h"
 
-struct SpellEntry;
+struct OLD_SpellEntry;
 
 struct FactionDBC;
 
@@ -59,21 +60,26 @@ class UpdateMask;
 class EventableObject;
 
 
-enum HIGHGUID_TYPE
+enum HighGuidType
 {
-    HIGHGUID_TYPE_PLAYER			= 0x00000000,
-    HIGHGUID_TYPE_CORPSE			= 0x30000000,
-    HIGHGUID_TYPE_ITEM				= 0x40000000,
-    HIGHGUID_TYPE_CONTAINER			= 0x50000000,			// confirm this pl0x
-    HIGHGUID_TYPE_DYNAMICOBJECT		= 0x60000000,
-    HIGHGUID_TYPE_WAYPOINT			= 0x10000000,
-    HIGHGUID_TYPE_TRANSPORTER		= 0x1FC00000,
-    HIGHGUID_TYPE_GAMEOBJECT		= 0xF1100000,
-    HIGHGUID_TYPE_UNIT				= 0xF1300000,
-    HIGHGUID_TYPE_PET				= 0xF1400000,
-    HIGHGUID_TYPE_VEHICLE			= 0xF1500000,
+    HIGHGUID_TYPE_PLAYER            = 0x00000000,
+    HIGHGUID_TYPE_CORPSE            = 0x30000000,
+    HIGHGUID_TYPE_ITEM              = 0x40000000,
+    HIGHGUID_TYPE_CONTAINER         = 0x50000000,
+    HIGHGUID_TYPE_DYNAMICOBJECT     = 0x60000000,
+    HIGHGUID_TYPE_WAYPOINT          = 0x10000000,
+    HIGHGUID_TYPE_TRANSPORTER       = 0xF1200000,
+    HIGHGUID_TYPE_GAMEOBJECT        = 0xF1100000,
+    HIGHGUID_TYPE_UNIT              = 0xF1300000,
+    HIGHGUID_TYPE_PET               = 0xF1400000,
+    HIGHGUID_TYPE_VEHICLE           = 0xF1500000,
     HIGHGUID_TYPE_GROUP             = 0x1F500000,
-//===============================================
+    HIGHGUID_TYPE_GUILD             = 0x1FF70000,
+    HIGHGUID_TYPE_MO_TRANSPORT      = 0x1FC00000,
+    HIGHGUID_TYPE_BATTLEGROUND      = 0x1F100000,
+    HIGHGUID_TYPE_AREATRIGGER       = 0xF1020000,
+    HIGHGUID_TYPE_INSTANCE          = 0x1F400000,
+    ////////////////////////////////////////////
     HIGHGUID_TYPE_MASK				= 0xFFF00000,
     LOWGUID_ENTRY_MASK				= 0x00FFFFFF,
 };
@@ -85,6 +91,41 @@ enum HIGHGUID_TYPE
 #define IS_PLAYER_GUID(Guid) (Arcemu::Util::GUID_HIPART((Guid)) == HIGHGUID_TYPE_PLAYER && Guid != 0)
 
 #define MAX_INTERACTION_RANGE 5.0f
+
+enum TypeId
+{
+    TYPEID_OBJECT           = 0,
+    TYPEID_ITEM             = 1,
+    TYPEID_CONTAINER        = 2,
+    TYPEID_UNIT             = 3,
+    TYPEID_PLAYER           = 4,
+    TYPEID_GAMEOBJECT       = 5,
+    TYPEID_DYNAMICOBJECT    = 6,
+    TYPEID_CORPSE           = 7,
+    TYPEID_AIGROUP          = 8,
+    TYPEID_AREATRIGGER      = 9,
+    MAX_TYPE_ID
+};
+
+enum TypeMask
+{
+    TYPEMASK_OBJECT         = 0x0001,
+    TYPEMASK_ITEM           = 0x0002,
+    TYPEMASK_CONTAINER      = 0x0004,
+    TYPEMASK_UNIT           = 0x0008,
+    TYPEMASK_PLAYER         = 0x0010,
+    TYPEMASK_GAMEOBJECT     = 0x0020,
+    TYPEMASK_DYNAMICOBJECT  = 0x0040,
+    TYPEMASK_CORPSE         = 0x0080,
+    TYPEMASK_AIGROUP        = 0x0100,
+    TYPEMASK_AREATRIGGER    = 0x0200,
+
+    TYPEMASK_CREATURE_GO                = TYPEMASK_UNIT | TYPEMASK_GAMEOBJECT,
+    TYPEMASK_CREATURE_GO_ITEM           = TYPEMASK_UNIT | TYPEMASK_GAMEOBJECT | TYPEMASK_ITEM,
+    TYPEMASK_CREATURE_GO_PLAYER_ITEM    = TYPEMASK_UNIT | TYPEMASK_GAMEOBJECT | TYPEMASK_ITEM | TYPEMASK_PLAYER,
+
+    TYPEMASK_WORLDOBJECT                = TYPEMASK_UNIT | TYPEMASK_PLAYER | TYPEMASK_GAMEOBJECT | TYPEMASK_DYNAMICOBJECT | TYPEMASK_CORPSE
+};
 
 ///\todo fix that type mess
 
@@ -102,42 +143,12 @@ enum TYPE
     TYPE_AREATRIGGER	= 512
 };
 
-enum TYPEID
-{
-    TYPEID_OBJECT		    = 0,
-    TYPEID_ITEM		        = 1,
-    TYPEID_CONTAINER	    = 2,
-    TYPEID_UNIT		        = 3,
-    TYPEID_PLAYER		    = 4,
-    TYPEID_GAMEOBJECT	    = 5,
-    TYPEID_DYNAMICOBJECT    = 6,
-    TYPEID_CORPSE		    = 7,
-    TYPEID_AIGROUP	        = 8,
-    TYPEID_AREATRIGGER      = 9
-};
-
 enum OBJECT_UPDATE_TYPE
 {
     UPDATETYPE_VALUES = 0,
-    // 8 bytes - GUID
-    // Goto Update Block
-    UPDATETYPE_MOVEMENT = 1,
-    // 8 bytes - GUID
-    // Goto Position Update
-    UPDATETYPE_CREATE_OBJECT = 2,
-    // 8 bytes - GUID
-    // 1 byte - Object Type (*)
-    // Goto Position Update
-    // Goto Update Block
-    UPDATETYPE_CREATE_YOURSELF = 3,         /// Looks like 3 & 4 do the same thing
-    // 4 bytes - Count
-    // Loop Count Times:
-    // 8 bytes - GUID
-    UPDATETYPE_OUT_OF_RANGE_OBJECTS = 4     /// this is correct, not sure about 3
-    // 4 bytes - Count
-    // Loop Count Times:
-    // 8 bytes - GUID
-
+    UPDATETYPE_CREATE_OBJECT = 1,
+    UPDATETYPE_CREATE_OBJECT2 = 2,
+    UPDATETYPE_OUT_OF_RANGE_OBJECTS = 3
 };
 
 enum PHASECOMMANDS
@@ -155,75 +166,26 @@ typedef struct
 	uint32 resisted_damage;
 } dealdamage;
 
-struct MovementInfo
+struct TransporterInfo
 {
-    WoWGuid object_guid;
+    uint64 guid;
+    float x;
+    float y;
+    float z;
+    float o;
     uint32 flags;
-    uint16 flags2;
-    LocationVector position;
-    uint32 time;
+    uint8 seat;
 
-    //pitch
-    //-1.55=looking down, 0=looking forward, +1.55=looking up
-    float pitch;
-
-    //jumping related
-    float redirectVelocity;
-    float redirectSin;      //on slip 8 is zero, on jump some other number
-    float redirectCos;
-    float redirect2DSpeed;  //9,10 changes if you are not on foot
-
-    uint32 fall_time;       //fall_time in ms
-
-    float spline_elevation;
-
-    struct TransporterInfo
+    TransporterInfo()
     {
-        Transporter* m_transporter;
-        WoWGuid transGuid;
-        uint64 guid;        // switch to WoWGuid
-        LocationVector position;
-        uint32 time;
-        uint32 time2;
-        uint8 seat;
-
-        void Clear()
-        {
-            m_transporter = nullptr;
-            transGuid = 0;
-            guid = 0;
-            position.ChangeCoords(0.0f, 0.0f, 0.0f, 0.0f);
-            time = 0;
-            time2 = 0;
-            seat = 0;
-        }
-    }transporter_info;
-
-    MovementInfo()
-    {
-        object_guid = 0;
+        guid = 0;
+        x = 0.0f;
+        y = 0.0f;
+        z = 0.0f;
+        o = 0.0f;
         flags = 0;
-        flags2 = 0;
-        position.ChangeCoords(0.0f, 0.0f, 0.0f, 0.0f);
-
-        time = 0;
-
-        pitch = 0.0f;
-
-        redirectVelocity = 0.0f;
-        redirectSin = 0.0f;
-        redirectCos = 0.0f;
-        redirect2DSpeed = 0.0f;
-
-        fall_time = 0;
-        spline_elevation = 0;
-
-        transporter_info.Clear();
+        seat = 0;
     }
-
-    void init(WorldPacket& data);
-    void write(WorldPacket& data);
-    bool IsOnTransport() const { return this->transporter_info.guid != 0; };
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -361,14 +323,6 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         LocationVector & GetPositionNC() { return m_position; }
         LocationVector* GetPositionV() { return &m_position; }
 
-        // TransporterInfo
-        float GetTransPositionX() const { return obj_movement_info.transporter_info.position.x; }
-        float GetTransPositionY() const { return obj_movement_info.transporter_info.position.y; }
-        float GetTransPositionZ() const { return obj_movement_info.transporter_info.position.z; }
-        float GetTransPositionO() const { return obj_movement_info.transporter_info.position.o; }
-        uint32 GetTransTime() const { return obj_movement_info.transporter_info.time; }
-        uint8 GetTransSeat() const { return obj_movement_info.transporter_info.seat; }
-
         /// Distance Calculation
         float CalcDistance(Object* Ob);
         float CalcDistance(float ObX, float ObY, float ObZ);
@@ -411,6 +365,12 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
             return m_uint32Values[index];
         }
 
+        const int32 & GetInt32Value(uint32 index) const
+        {
+            ASSERT(index < m_valuesCount);
+            return m_int32Values[index];
+        }
+
         const uint64 & GetUInt64Value(uint32 index) const
         {
             ARCEMU_ASSERT(index + uint32(1) < m_valuesCount);
@@ -418,6 +378,13 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
             uint64* p = reinterpret_cast<uint64*>(&m_uint32Values[index]);
 
             return *p;
+        }
+
+        uint16 GetUInt16Value(uint16 index, uint8 offset) const
+        {
+            ARCEMU_ASSERT(index < m_valuesCount);
+            ARCEMU_ASSERT(offset < 2);
+            return *(((uint16*)&m_uint32Values[index]) + offset);
         }
 
         /// Get float property
@@ -631,7 +598,7 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         /// \return none
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-        virtual void OutPacket(uint16 opcode, uint16 len, const void* data) {};
+        virtual void OutPacket(uint32 opcode, uint16 len, const void* data) {};
 
 
         //////////////////////////////////////////////////////////////////////////////////////////
@@ -648,7 +615,7 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
 
         virtual void SendMessageToSet(WorldPacket* data, bool self, bool myteam_only = false);
         void SendMessageToSet(StackBufferBase* data, bool self) { OutPacketToSet(data->GetOpcode(), static_cast<uint16>(data->GetSize()), data->GetBufferPointer(), self); }
-        virtual void OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool self);
+        virtual void OutPacketToSet(uint32 Opcode, uint16 Len, const void* Data, bool self);
 
         //////////////////////////////////////////////////////////////////////////////////////////
         ///void SendAIReaction(uint32 reaction = 2)
@@ -688,14 +655,14 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         float m_swimSpeed;
         float m_backSwimSpeed;
         float m_turnRate;
+        float m_pitchRate;
         float m_flySpeed;
         float m_backFlySpeed;
 
         float m_base_runSpeed;
         float m_base_walkSpeed;
 
-        MovementInfo obj_movement_info;
-        Transporter* GetTransport() const;
+        TransporterInfo transporter_info;
 
         uint32 m_phase;         /// This stores the phase, if two objects have the same bit set, then they can see each other. The default phase is 0x1.
 
@@ -704,10 +671,10 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
 
         void EventSpellDamage(uint64 Victim, uint32 SpellID, uint32 Damage);
         void SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage, bool allowProc, bool static_damage = false, bool no_remove_auras = false);
-        virtual bool IsCriticalDamageForSpell(Object* victim, SpellEntry* spell) { return false; }
-        virtual float GetCriticalDamageBonusForSpell(Object* victim, SpellEntry* spell, float amount) { return 0; }
-        virtual bool IsCriticalHealForSpell(Object* victim, SpellEntry* spell) { return false; }
-        virtual float GetCriticalHealBonusForSpell(Object* victim, SpellEntry* spell, float amount) { return 0; }
+        virtual bool IsCriticalDamageForSpell(Object* victim, OLD_SpellEntry* spell) { return false; }
+        virtual float GetCriticalDamageBonusForSpell(Object* victim, OLD_SpellEntry* spell, float amount) { return 0; }
+        virtual bool IsCriticalHealForSpell(Object* victim, OLD_SpellEntry* spell) { return false; }
+        virtual float GetCriticalHealBonusForSpell(Object* victim, OLD_SpellEntry* spell, float amount) { return 0; }
 
         /// SpellLog packets just to keep the code cleaner and better to read
         void SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 SpellLogType);
@@ -798,10 +765,24 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         LocationVector m_lastMapUpdatePosition;
         LocationVector m_spawnLocation;
 
+        static float NormalizeOrientation(float o)
+        {
+            // fmod only supports positive numbers. Thus we have
+            // to emulate negative numbers
+            if (o < 0)
+            {
+                float mod = o *-1;
+                mod = fmod(mod, 2.0f * static_cast<float>(M_PI));
+                mod = -mod + 2.0f * static_cast<float>(M_PI);
+                return mod;
+            }
+            return fmod(o, 2.0f * static_cast<float>(M_PI));
+        }
         /// Object properties.
         union
         {
             uint32* m_uint32Values;
+            int32* m_int32Values;
             float* m_floatValues;
         };
 

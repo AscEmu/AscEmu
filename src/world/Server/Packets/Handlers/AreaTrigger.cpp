@@ -192,7 +192,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                             MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid);
                             QuestProperties const* pQuest = sMySQLStore.GetQuestProperties(pMi->required_quest_A);
                             if (pQuest)
-                                snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(35), pQuest->title.c_str());
+                                snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(35), pQuest->GetCharTitleId());
                             else
                                 snprintf(msg, 200, "%s", GetPlayer()->GetSession()->LocalizedWorldSrv(36));
 
@@ -204,7 +204,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                             MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid);
                             QuestProperties const* pQuest = sMySQLStore.GetQuestProperties(pMi->required_quest_H);
                             if (pQuest)
-                                snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(35), pQuest->title.c_str());
+                                snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(35), pQuest->GetCharTitleId());
                             else
                                 snprintf(msg, 200, "%s", GetPlayer()->GetSession()->LocalizedWorldSrv(36));
 

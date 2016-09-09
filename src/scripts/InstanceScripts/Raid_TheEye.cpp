@@ -1807,7 +1807,7 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32 pEffectIndex, Spell* pSpell)
     Unit* Target = Caster->GetAIInterface()->getNextTarget();
     if (!Target) return true;
 
-    SpellEntry* SpellInfo = dbcSpell.LookupEntry(SOLARIAN_WRATH_OF_THE_ASTROMANCER_BOMB);
+    OLD_SpellEntry* SpellInfo = dbcSpell.LookupEntry(SOLARIAN_WRATH_OF_THE_ASTROMANCER_BOMB);
     if (!SpellInfo) return true;
 
     //Explode bomb after 6sec

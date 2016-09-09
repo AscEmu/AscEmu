@@ -21,22 +21,23 @@
 
 #include "StdAfx.h"
 
-void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 4);
-    uint32 ChosenRank;
-    recv_data >> ChosenRank;
-    if (ChosenRank == 0xFFFFFFFF)
-        _player->SetChosenTitle(0);
-    else if (_player->HasTitle(static_cast<RankTitles>(ChosenRank)))
-        _player->SetChosenTitle(ChosenRank);
-}
+//void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recv_data, 4);
+//    uint32 ChosenRank;
+//    recv_data >> ChosenRank;
+//    if (ChosenRank == 0xFFFFFFFF)
+//        _player->SetChosenTitle(0);
+//    else if (_player->HasTitle(static_cast<RankTitles>(ChosenRank)))
+//        _player->SetChosenTitle(ChosenRank);
+//}
 
 void HonorHandler::AddHonorPointsToPlayer(Player* pPlayer, uint32 uAmount)
 {
-    pPlayer->AddHonor(uAmount, true);
+    //\todo danko
+    //pPlayer->AddHonor(uAmount, true);
 }
 
 int32 HonorHandler::CalculateHonorPointsForKill(uint32 playerLevel, uint32 victimLevel)
@@ -216,7 +217,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                 if (pAffectedPlayer->GetZoneId() == 3518)
                 {
                     // Add Halaa Battle Token
-                    SpellEntry* pvp_token_spell = dbcSpell.LookupEntry(pAffectedPlayer->IsTeamHorde() ? 33004 : 33005);
+                    OLD_SpellEntry* pvp_token_spell = dbcSpell.LookupEntry(pAffectedPlayer->IsTeamHorde() ? 33004 : 33005);
                     pAffectedPlayer->CastSpell(pAffectedPlayer, pvp_token_spell, true);
                 }
                 // If we are in Hellfire Peninsula <http://www.wowwiki.com/Hellfire_Peninsula#World_PvP_-_Hellfire_Fortifications>
@@ -232,7 +233,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                         */
 
                     // Add Mark of Thrallmar/Honor Hold
-                    SpellEntry* pvp_token_spell = dbcSpell.LookupEntry(pAffectedPlayer->IsTeamHorde() ? 32158 : 32155);
+                    OLD_SpellEntry* pvp_token_spell = dbcSpell.LookupEntry(pAffectedPlayer->IsTeamHorde() ? 32158 : 32155);
                     pAffectedPlayer->CastSpell(pAffectedPlayer, pvp_token_spell, true);
                 }
             }

@@ -13,6 +13,7 @@ set(SRC_STORAGE_DBC_FILES
    ${PATH_PREFIX}/DBCStorage.hpp
    ${PATH_PREFIX}/DBCStores.cpp
    ${PATH_PREFIX}/DBCStores.h
+   ${PATH_PREFIX}/DBCStructures.cpp
    ${PATH_PREFIX}/DBCStructures.hpp
 )
 

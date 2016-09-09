@@ -20,6 +20,8 @@
 #ifndef MODELHEADERS_H
 #define MODELHEADERS_H
 
+#include "mpqfile.h"    // integer typedefs
+
 #pragma pack(push,1)
 
 struct ModelHeader

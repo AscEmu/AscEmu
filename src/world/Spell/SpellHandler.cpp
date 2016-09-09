@@ -129,7 +129,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 
     SpellCastTargets targets(recvPacket, _player->GetGUID());
 
-    SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellId);
+    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellId);
     if (spellInfo == NULL)
     {
         LOG_ERROR("WORLD: unknown spell id %i", spellId);
@@ -321,7 +321,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     {
         cast_spell_id = sp->SpellID;
 
-        SpellEntry* spellInfo = dbcSpell.LookupEntryForced(cast_spell_id);
+        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(cast_spell_id);
         if (spellInfo == nullptr)
             return;
 
@@ -336,11 +336,17 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     CHECK_INWORLD_RETURN
 
     uint32 spellId;
-    uint8 cn, unk; //Alice : Added to 3.0.2
+    uint8 cn;
+    uint32 glyphSlot;
+    uint8 missileflag;
 
-    recvPacket >> cn >> spellId >> unk;
+    recvPacket >> cn;
+    recvPacket >> spellId;
+    recvPacket >> glyphSlot;
+    recvPacket >> missileflag;
+
     // check for spell id
-    SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellId);
+    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellId);
 
     if (!spellInfo)
     {
@@ -413,7 +419,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
                     LOG_DEBUG("Cancelling auto-shot cast because targets.m_unitTarget is null!");
                     return;
                 }
-                SpellEntry* sp = dbcSpell.LookupEntry(spellid);
+                OLD_SpellEntry* sp = dbcSpell.LookupEntry(spellid);
 
                 _player->m_AutoShotSpell = sp;
                 _player->m_AutoShotDuration = duration;
@@ -471,40 +477,40 @@ void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
         GetPlayer()->m_currentSpell->cancel();
 }
 
-void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    uint32 spellId;
-    recvPacket >> spellId;
-
-    // do not cancel ghost auras
-    if (spellId == 8326 || spellId == 9036)
-		return;
-
-    if (_player->m_currentSpell && _player->m_currentSpell->GetProto()->Id == spellId)
-        _player->m_currentSpell->cancel();
-    else
-    {
-        SpellEntry* info = dbcSpell.LookupEntryForced(spellId);
-        if (info == nullptr)
-            return;
-
-        Aura* aura = _player->FindAura(spellId);
-        if (aura)
-		{
-			if (!aura->IsPositive())
-				return;
-			if (info->Attributes & ATTRIBUTES_NEGATIVE)
-				return;
-		}
-        if (!(info->Attributes & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL)))
-        {
-            _player->RemoveAllAuraById(spellId);
-            LOG_DEBUG("Removing all auras with ID: %u", spellId);
-        }
-    }
-}
+//void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    uint32 spellId;
+//    recvPacket >> spellId;
+//
+//    // do not cancel ghost auras
+//    if (spellId == 8326 || spellId == 9036)
+//		return;
+//
+//    if (_player->m_currentSpell && _player->m_currentSpell->GetProto()->Id == spellId)
+//        _player->m_currentSpell->cancel();
+//    else
+//    {
+//        OLD_SpellEntry* info = dbcSpell.LookupEntryForced(spellId);
+//        if (info == nullptr)
+//            return;
+//
+//        Aura* aura = _player->FindAura(spellId);
+//        if (aura)
+//		{
+//			if (!aura->IsPositive())
+//				return;
+//			if (info->Attributes & ATTRIBUTES_NEGATIVE)
+//				return;
+//		}
+//        if (!(info->Attributes & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL)))
+//        {
+//            _player->RemoveAllAuraById(spellId);
+//            LOG_DEBUG("Removing all auras with ID: %u", spellId);
+//        }
+//    }
+//}
 
 void WorldSession::HandleCancelChannellingOpcode(WorldPacket& recvPacket)
 {
@@ -547,7 +553,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
     recvPacket >> spellid;
     recvPacket >> castflags;
 
-    SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
+    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
     if (sp == NULL)
         return;
     // Summoned Elemental's Freeze
@@ -648,49 +654,49 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
     }
 }
 
-void WorldSession::HandleCancelTotem(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
+//void WorldSession::HandleCancelTotem(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    uint8 slot;
+//    recv_data >> slot;
+//
+//    if (slot >= UNIT_SUMMON_SLOTS)
+//    {
+//        LOG_ERROR("Player %u %s tried to cancel a summon at slot %u, slot number is out of range. (tried to crash the server?)", _player->GetLowGUID(), _player->GetName(), slot);
+//        return;
+//    }
+//
+//    _player->summonhandler.RemoveSummonFromSlot(slot);
+//}
 
-    uint8 slot;
-    recv_data >> slot;
-
-    if (slot >= UNIT_SUMMON_SLOTS)
-    {
-        LOG_ERROR("Player %u %s tried to cancel a summon at slot %u, slot number is out of range. (tried to crash the server?)", _player->GetLowGUID(), _player->GetName(), slot);
-        return;
-    }
-
-    _player->summonhandler.RemoveSummonFromSlot(slot);
-}
-
-void WorldSession::HandleUpdateProjectilePosition(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint64 casterGuid;          // guid of the caster
-    uint32 spellId;             // spell ID of casted spell
-    uint8 castCount;            // count how many times it is/was cast
-    float x, y, z;              // missile hit position
-
-    casterGuid = recv_data.unpackGUID();
-    recv_data >> spellId;
-    recv_data >> castCount;
-    recv_data >> x;
-    recv_data >> y;
-    recv_data >> z;
-
-    Log.Debug("HandleUpdateProjectilePosition", "Recieved spell: %u, count: %i, position: x(%f) y(%f) z(%f)", spellId, castCount, x, y, z);
-
-    SpellEntry* spell = CheckAndReturnSpellEntry(spellId);
-    if (!spell || spell->ai_target_type == TARGET_FLAG_DEST_LOCATION)
-        return;
-
-    WorldPacket data(SMSG_SET_PROJECTILE_POSITION, 21);
-    data << uint64(casterGuid);
-    data << uint8(castCount);
-    data << float(x);
-    data << float(y);
-    data << float(z);
-    SendPacket(&data);
-}
+//void WorldSession::HandleUpdateProjectilePosition(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    uint64 casterGuid;          // guid of the caster
+//    uint32 spellId;             // spell ID of casted spell
+//    uint8 castCount;            // count how many times it is/was cast
+//    float x, y, z;              // missile hit position
+//
+//    casterGuid = recv_data.unpackGUID();
+//    recv_data >> spellId;
+//    recv_data >> castCount;
+//    recv_data >> x;
+//    recv_data >> y;
+//    recv_data >> z;
+//
+//    Log.Debug("HandleUpdateProjectilePosition", "Recieved spell: %u, count: %i, position: x(%f) y(%f) z(%f)", spellId, castCount, x, y, z);
+//
+//    OLD_SpellEntry* spell = CheckAndReturnSpellEntry(spellId);
+//    if (!spell || spell->ai_target_type == TARGET_FLAG_DEST_LOCATION)
+//        return;
+//
+//    WorldPacket data(SMSG_SET_PROJECTILE_POSITION, 21);
+//    data << uint64(casterGuid);
+//    data << uint8(castCount);
+//    data << float(x);
+//    data << float(y);
+//    data << float(z);
+//    SendPacket(&data);
+//}

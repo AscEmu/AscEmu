@@ -32,7 +32,7 @@ Item::Item()
     m_objectType |= TYPE_ITEM;
     m_objectTypeId = TYPEID_ITEM;
 
-    m_updateFlag = UPDATEFLAG_HIGHGUID;
+    m_updateFlag = 0;
 
     m_valuesCount = ITEM_END;
     m_uint32Values = _fields;
@@ -770,7 +770,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                     if (Apply)
                     {
                         SpellCastTargets targets(m_owner->GetGUID());
-                        SpellEntry* sp;
+                        OLD_SpellEntry* sp;
                         Spell* spell;
 
                         if (Entry->spell[c] != 0)

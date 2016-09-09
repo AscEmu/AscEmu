@@ -30,6 +30,7 @@
 #define WORLDSOCKET_SENDBUF_SIZE 131078
 #define WORLDSOCKET_RECVBUF_SIZE 16384
 
+class WorldPacket;
 class SocketHandler;
 class WorldSession;
 
@@ -55,8 +56,8 @@ class SERVER_DECL WorldSocket : public Socket
         inline void SendPacket(WorldPacket* packet) { if (!packet) return; OutPacket(packet->GetOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : NULL)); }
         inline void SendPacket(StackBufferBase* packet) { if (!packet) return; OutPacket(packet->GetOpcode(), packet->GetSize(), (packet->GetSize() ? (const void*)packet->GetBufferPointer() : NULL)); }
 
-        void  OutPacket(uint16 opcode, size_t len, const void* data);
-        OUTPACKET_RESULT _OutPacket(uint16 opcode, size_t len, const void* data);
+        void  OutPacket(uint32  opcode, size_t len, const void* data);
+        OUTPACKET_RESULT _OutPacket(uint32  opcode, size_t len, const void* data);
 
         inline uint32 GetLatency() { return _latency; }
 
@@ -65,8 +66,12 @@ class SERVER_DECL WorldSocket : public Socket
 
         void UpdateQueuePosition(uint32 Position);
 
+        void HandleWoWConnection(WorldPacket* recvPacket);
+        void SendAuthResponseError(uint8 code);
+
         void OnRead();
         void OnConnect();
+        void OnConnectTwo();
         void OnDisconnect();
 
         inline void SetSession(WorldSession* session) { mSession = session; }
@@ -87,8 +92,9 @@ class SERVER_DECL WorldSocket : public Socket
         uint32 mSize;
         uint32 mSeed;
         uint32 mClientSeed;
-        uint32 mClientBuild;
+        uint16 mClientBuild;
         uint32 mRequestID;
+        uint8 AuthDigest[20];
 
         WorldSession* mSession;
         WorldPacket* pAuthenticationPacket;

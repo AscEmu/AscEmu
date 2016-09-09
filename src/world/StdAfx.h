@@ -58,6 +58,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 
 #include "Database/DatabaseEnv.h"   // shared
 #include "Storage/DBC/DBCStores.h"
+#include "Storage/DB2/DB2Stores.hpp"
 
 #include "Network/Network.h"    // shared
 
@@ -89,7 +90,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 
 #include "Server/IUpdatable.h"
 #include "Server/WUtil.h"
-#include "Server/UpdateFields.h"
+#include "Server/UpdateFields.hpp"
 #include "Server/UpdateMask.h"
 #include "Server/Packets/Opcodes.h"
 #include "AuthCodes.h"

@@ -5,6 +5,7 @@ set(PATH_PREFIX Movement)
 set(SRC_MOVEMENT_FILES
    ${PATH_PREFIX}/MovementCommon.cpp
    ${PATH_PREFIX}/MovementCommon.hpp
+   ${PATH_PREFIX}/MovementStructures.hpp
    ${PATH_PREFIX}/UnitMovementManager.cpp
    ${PATH_PREFIX}/UnitMovementManager.hpp
 )

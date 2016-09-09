@@ -383,7 +383,7 @@ DBC::Structures::SkillLineAbilityEntry const* ObjectMgr::GetSpellSkill(uint32 id
     return mSpellSkills[id];
 }
 
-SpellEntry* ObjectMgr::GetNextSpellRank(SpellEntry* sp, uint32 level)
+OLD_SpellEntry* ObjectMgr::GetNextSpellRank(OLD_SpellEntry* sp, uint32 level)
 {
     // Looks for next spell rank
     if (sp == nullptr)
@@ -392,7 +392,7 @@ SpellEntry* ObjectMgr::GetNextSpellRank(SpellEntry* sp, uint32 level)
     auto skill_line_ability = GetSpellSkill(sp->Id);
     if (skill_line_ability != nullptr && skill_line_ability->next > 0)
     {
-        SpellEntry* sp1 = dbcSpell.LookupEntry(skill_line_ability->next);
+        OLD_SpellEntry* sp1 = dbcSpell.LookupEntry(skill_line_ability->next);
         if (sp1 && sp1->baseLevel <= level)   // check level
             return GetNextSpellRank(sp1, level);   // recursive for higher ranks
     }
@@ -459,7 +459,12 @@ void ObjectMgr::LoadPlayersInfo()
                 delete result2;
             }
 
-            if (pn->race == RACE_HUMAN || pn->race == RACE_DWARF || pn->race == RACE_GNOME || pn->race == RACE_NIGHTELF || pn->race == RACE_DRAENEI)
+            if (pn->race == RACE_HUMAN ||
+                pn->race == RACE_DWARF ||
+                pn->race == RACE_GNOME ||
+                pn->race == RACE_NIGHTELF ||
+                pn->race == RACE_DRAENEI ||
+                pn->race == RACE_WORGEN)
                 pn->team = 0;
             else
                 pn->team = 1;
@@ -1252,7 +1257,7 @@ void ObjectMgr::LoadVendors()
             Log.Notice("ObjectMgr", "Invalid format in vendors (%u/6) columns, loading anyway because we have enough data", result->GetFieldCount());
         }
 
-        DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = NULL;
+        DB2::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
         do
         {
             Field* fields = result->Fetch();
@@ -1316,7 +1321,7 @@ void ObjectMgr::LoadAIThreatToSpellId()
     do
     {
         Field* fields = result->Fetch();
-        SpellEntry* sp = dbcSpell.LookupEntryForced(fields[0].GetUInt32());
+        OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(fields[0].GetUInt32());
         if (sp != NULL)
         {
             sp->custom_ThreatForSpell = fields[1].GetUInt32();
@@ -1354,7 +1359,7 @@ void ObjectMgr::LoadSpellEffectsOverride()
 
             if (seo_SpellId)
             {
-                SpellEntry* sp = dbcSpell.LookupEntryForced(seo_SpellId);
+                OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(seo_SpellId);
                 if (sp != NULL)
                 {
                     if (seo_Disable)
@@ -1494,7 +1499,7 @@ AchievementCriteriaEntryList const & ObjectMgr::GetAchievementCriteriaByType(Ach
     return m_AchievementCriteriasByType[type];
 }
 
-void ObjectMgr::LoadAchievementCriteriaList()
+/*void ObjectMgr::LoadAchievementCriteriaList()
 {
     for (uint32 rowId = 0; rowId < sAchievementCriteriaStore.GetNumRows(); ++rowId)
     {
@@ -1504,7 +1509,7 @@ void ObjectMgr::LoadAchievementCriteriaList()
 
         m_AchievementCriteriasByType[criteria->requiredType].push_back(criteria);
     }
-}
+}*/
 #endif
 
 void ObjectMgr::CorpseAddEventDespawn(Corpse* pCorpse)
@@ -1727,7 +1732,7 @@ void ObjectMgr::GenerateLevelUpInfo()
             continue;
 
         // Search for a playercreateinfo.
-        for (uint8 Race = RACE_HUMAN; Race <= RACE_DRAENEI; ++Race)
+        for (uint8 Race = RACE_HUMAN; Race <= RACE_WORGEN; ++Race)
         {
             PlayerCreateInfo const* PCI = sMySQLStore.GetPlayerCreateInfo(static_cast<uint8>(Race), static_cast<uint8>(Class));
 
@@ -1984,7 +1989,7 @@ void ObjectMgr::LoadDefaultPetSpells()
             Field* f = result->Fetch();
             uint32 Entry = f[0].GetUInt32();
             uint32 spell = f[1].GetUInt32();
-            SpellEntry* sp = dbcSpell.LookupEntryForced(spell);
+            OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(spell);
 
             if (spell && Entry && sp)
             {
@@ -1993,7 +1998,7 @@ void ObjectMgr::LoadDefaultPetSpells()
                     itr->second.insert(sp);
                 else
                 {
-                    std::set<SpellEntry*> s;
+                    std::set<OLD_SpellEntry*> s;
                     s.insert(sp);
                     mDefaultPetSpells[Entry] = s;
                 }
@@ -2004,7 +2009,7 @@ void ObjectMgr::LoadDefaultPetSpells()
     }
 }
 
-std::set<SpellEntry*>* ObjectMgr::GetDefaultPetSpells(uint32 Entry)
+std::set<OLD_SpellEntry*>* ObjectMgr::GetDefaultPetSpells(uint32 Entry)
 {
     PetDefaultSpellMap::iterator itr = mDefaultPetSpells.find(Entry);
     if (itr == mDefaultPetSpells.end())
@@ -2051,7 +2056,7 @@ uint32 ObjectMgr::GetPetSpellCooldown(uint32 SpellId)
     if (itr != mPetSpellCooldowns.end())
         return itr->second;
 
-    SpellEntry* sp = dbcSpell.LookupEntry(SpellId);
+    OLD_SpellEntry* sp = dbcSpell.LookupEntry(SpellId);
     if (sp->RecoveryTime > sp->CategoryRecoveryTime)
         return sp->RecoveryTime;
     else
@@ -3464,7 +3469,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                 QuestLogEntry* pQuest = plr->GetQuestLogForEntry(itr->second.data_2);
                 if (pQuest != nullptr)
                 {
-                    if (pQuest->GetMobCount(itr->second.data_5) < pQuest->GetQuest()->required_mobcount[itr->second.data_5])
+                    if (pQuest->GetMobCount(itr->second.data_5) < pQuest->GetQuest()->ReqCreatureOrGOId[itr->second.data_5])
                     {
                         pQuest->SetMobCount(itr->second.data_5, pQuest->GetMobCount(itr->second.data_5) + 1);
                         pQuest->SendUpdateAddKill(itr->second.data_5);
@@ -3556,7 +3561,7 @@ void ObjectMgr::LoadCreatureAIAgents()
                 Field* fields = result->Fetch();
                 uint32 entry = fields[0].GetUInt32();
                 CreatureProperties const* cn = sMySQLStore.GetCreatureProperties(entry);
-                SpellEntry* spe = dbcSpell.LookupEntryForced(fields[6].GetUInt32());
+                OLD_SpellEntry* spe = dbcSpell.LookupEntryForced(fields[6].GetUInt32());
 
                 if (spe == nullptr)
                 {
@@ -3718,6 +3723,26 @@ void ObjectMgr::StoreBroadCastGroupKey()
             } while (percentResult->NextRow());
 
             delete percentResult;
+        }
+    }
+}
+
+void ObjectMgr::LoadQuestLoot(uint32 GO_Entry, uint32 Item_Entry)
+{
+    // Find the quest that has that item
+    uint32 QuestID = 0;
+    uint32 i;
+
+    for (auto itr = sMySQLStore._questPropertiesStore.begin(); itr != sMySQLStore._questPropertiesStore.end(); ++itr)
+    {
+        for (i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
+        {
+            if (itr->second.ReqItemId[i] == Item_Entry)
+            {
+                QuestID = itr->second.GetQuestId();
+                sQuestMgr.m_ObjectLootQuestList[GO_Entry] = QuestID;
+                return;
+            }
         }
     }
 }

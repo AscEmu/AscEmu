@@ -88,7 +88,7 @@ class SkillNameMgr
                     continue;
 
                 uint32 SkillID = skill_line->id;
-                char* SkillName = skill_line->Name[0];
+                char* SkillName = skill_line->Name;
 
                 SkillNames[SkillID] = new char [strlen(SkillName) + 1];
                 //When the DBCFile gets cleaned up, so does the record data, so make a copy of it..

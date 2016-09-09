@@ -25,7 +25,7 @@ typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*>
 
 #ifdef ENABLE_ACHIEVEMENTS
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementEntry> sAchievementStore(DBC::Structures::achievement_format);
-SERVER_DECL DBC::DBCStorage<AchievementCriteriaEntry> sAchievementCriteriaStore(DBC::Structures::achievement_criteria_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementCriteriaEntry> sAchievementCriteriaStore(DBC::Structures::achievement_criteria_format);
 #endif
 
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaGroupEntry> sAreaGroupStore(DBC::Structures::area_group_format);
@@ -34,7 +34,7 @@ static WMOAreaInfoByTripple sWMOAreaInfoByTripple;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTriggerEntry> sAreaTriggerStore(DBC::Structures::area_trigger_entry_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AuctionHouseEntry> sAuctionHouseStore(DBC::Structures::auction_house_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::BankBagSlotPrices> sBankBagSlotPricesStore(DBC::Structures::bank_bag_slot_prices_format);
-SERVER_DECL DBC::DBCStorage<DBC::Structures::StableSlotPrices> sStableSlotPricesStore(DBC::Structures::stable_slot_prices_format);
+//SERVER_DECL DBC::DBCStorage<DBC::Structures::StableSlotPrices> sStableSlotPricesStore(DBC::Structures::stable_slot_prices_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::BarberShopStyleEntry> sBarberShopStyleStore(DBC::Structures::barber_shop_style_entry_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClassesStore(DBC::Structures::chr_classes_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrRacesEntry> sChrRacesStore(DBC::Structures::chr_races_format);
@@ -57,10 +57,10 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellItemEnchantmentEntry> sSpellIt
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GemPropertiesEntry> sGemPropertiesStore(DBC::Structures::gem_properties_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphPropertiesEntry> sGlyphPropertiesStore(DBC::Structures::glyph_properties_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphSlotEntry> sGlyphSlotStore(DBC::Structures::glyph_slot_format);
-SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemExtendedCostEntry> sItemExtendedCostStore(DBC::Structures::item_extended_cost_format);
+// db2 SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemExtendedCostEntry> sItemExtendedCostStore(DBC::Structures::item_extended_cost_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore(DBC::Structures::item_limit_category_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemRandomSuffixEntry> sItemRandomSuffixStore(DBC::Structures::item_random_suffix_format);
-SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore(DBC::Structures::item_entry_format);
+// db2 SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore(DBC::Structures::item_entry_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemSetEntry> sItemSetStore(DBC::Structures::item_set_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::LockEntry> sLockStore(DBC::Structures::lock_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::MapEntry> sMapStore(DBC::Structures::map_format);
@@ -73,10 +73,31 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::SkillLineEntry> sSkillLineStore(DBC
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellCastTimesEntry> sSpellCastTimesStore(DBC::Structures::spell_cast_times_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDifficultyEntry> sSpellDifficultyStore(DBC::Structures::spell_difficulty_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDurationStore(DBC::Structures::spell_duration_format);
-SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellEntry_New> sSpellStore(DBC::Structures::spell_entry_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellAuraOptionsEntry> sSpellAuraOptionsStore(DBC::Structures::spell_aura_options_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellAuraRestrictionsEntry> sSpellAuraRestrictionsStore(DBC::Structures::spell_aura_restrictions_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellCastingRequirementsEntry> sSpellCastingRequirementsStore(DBC::Structures::spell_casting_requirements_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellCategoriesEntry> sSpellCategoriesStore(DBC::Structures::spell_categories_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellClassOptionsEntry> sSpellClassOptionsStore(DBC::Structures::spell_class_options_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellCooldownsEntry> sSpellCooldownsStore(DBC::Structures::spell_cooldowns_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellEquippedItemsEntry> sSpellEquippedItemsStore(DBC::Structures::spell_equipped_items_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellInterruptsEntry> sSpellInterruptsStore(DBC::Structures::spell_interrupts_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellLevelsEntry> sSpellLevelsStore(DBC::Structures::spell_levels_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellPowerEntry> sSpellPowerStore(DBC::Structures::spell_power_format);
+
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellScalingEntry> sSpellScalingStore(DBC::Structures::spell_scaling_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellReagentsEntry> sSpellReagentsStore(DBC::Structures::spell_reagents_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellShapeshiftEntry> sSpellShapeshiftStore(DBC::Structures::spell_shapeshift_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellTargetRestrictionsEntry> sSpellTargetRestrictionsStore(DBC::Structures::spell_target_restrictions_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellTotemsEntry> sSpellTotemsStore(DBC::Structures::spell_totems_format);
+
+DBC::Structures::SpellEffectMap sSpellEffectMap;
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellEffectEntry> sSpellEffectStore(DBC::Structures::spell_effect_format);
+DBC::Structures::SpellCategoryStore sSpellCategoryStore;
+
+SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellEntry> sSpellStore(DBC::Structures::spell_entry_format);
 
 ///\todo remove the old spell loader
-SERVER_DECL DBCStorage<SpellEntry> dbcSpell;
+SERVER_DECL DBCStorage<OLD_SpellEntry> dbcSpell;
 
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRadiusEntry> sSpellRadiusStore(DBC::Structures::spell_radius_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRangeEntry> sSpellRangeStore(DBC::Structures::spell_range_format);
@@ -85,8 +106,8 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentEntry> sTalentStore(DBC::Stru
 SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentTabEntry> sTalentTabStore(DBC::Structures::talent_tab_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::WorldMapOverlayEntry> sWorldMapOverlayStore(DBC::Structures::world_map_overlay_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore(DBC::Structures::gt_barber_shop_cost_format);
-SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore(DBC::Structures::gt_oct_regen_hp_format);
-SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore(DBC::Structures::gt_regen_hp_per_spt_format);
+//SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore(DBC::Structures::gt_oct_regen_hp_format);
+//SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenHPPerSptEntry> sGtRegenHPPerSptStore(DBC::Structures::gt_regen_hp_per_spt_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenMPEntry> sGtOCTRegenMPStore(DBC::Structures::gt_oct_regen_mp_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtRegenMPPerSptEntry> sGtRegenMPPerSptStore(DBC::Structures::gt_regen_mp_per_spt_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtChanceToMeleeCritEntry> sGtChanceToMeleeCritStore(DBC::Structures::gt_chance_to_melee_crit_format);
@@ -94,6 +115,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::GtChanceToMeleeCritBaseEntry> sGtCh
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtChanceToSpellCritEntry> sGtChanceToSpellCritStore(DBC::Structures::gt_chance_to_spell_crit_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtChanceToSpellCritBaseEntry> sGtChanceToSpellCritBaseStore(DBC::Structures::gt_chance_to_spell_crit_base_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellShapeshiftFormEntry> sSpellShapeshiftFormStore(DBC::Structures::spell_shapeshift_form_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::QuestSortEntry> sQuestSortStore(DBC::Structures::quest_sort_entry_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::QuestXP> sQuestXPStore(DBC::Structures::quest_xp_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::MailTemplateEntry> sMailTemplateStore(DBC::Structures::mail_template_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::WMOAreaTableEntry> sWMOAreaTableStore(DBC::Structures::wmo_area_table_format);
@@ -104,117 +126,8 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::LiquidTypeEntry> sLiquidTypeStore(D
 SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleEntry> sVehicleStore(DBC::Structures::vehicle_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSeatStore(DBC::Structures::vehicle_seat_format);
 
-///\todo remove the old spell loader
-const char* spellentryFormat =
-"u" // Id
-"u" // Category
-"u" // DispelType
-"u" // MechanicsType
-"u" // Attributes
-"u" // AttributesEx
-"u" // AttributesExB
-"u" // AttributesExC
-"u" // AttributesExD
-"u" // AttributesExE
-"u" // AttributesExF
-"u" // AttributesExG
-"u" // RequiredShapeShift
-"x" // unk 3.2.0
-"u" // ShapeshiftExclude
-"x" // unk 3.2.0
-"u" // Targets
-"u" // TargetCreatureType
-"u" // RequiresSpellFocus
-"u" // FacingCasterFlags
-"u" // CasterAuraState
-"u" // TargetAuraState
-"u" // ExcludeCasterAuraState
-"u" // ExcludeTargetAuraState
-"u" // casterAuraSpell
-"u" // targetAuraSpell
-"u" // ExcludeCasterAuraState
-"u" // ExcludeTargetAuraState
-"u" // CastingTimeIndex
-"u" // RecoveryTime
-"u" // CategoryRecoveryTime
-"u" // InterruptFlags
-"u" // AuraInterruptFlags
-"u" // ChannelInterruptFlags
-"u" // procFlags
-"u" // procChance
-"u" // procCharges
-"u" // maxLevel
-"u" // baseLevel
-"u" // spellLevel
-"u" // DurationIndex
-"u" // powerType
-"u" // manaCost
-"u" // manaCostPerlevel
-"u" // manaPerSecond
-"u" // manaPerSecondPerLevel
-"u" // rangeIndex
-"f" // speed
-"u" // modalNextSpell
-"u" // maxstack
-"uu" // Totem[2]
-"uuuuuuuu" // Reagent[8]
-"uuuuuuuu" // ReagentCount[8]
-"u" // EquippedItemClass
-"u" // EquippedItemSubClass
-"u" // RequiredItemFlags
-"uuu" // Effect[3]
-"uuu" // EffectDieSides[3]
-"uuu" // EffectRealPointsPerLevel[3]
-"uuu" // EffectBasePoints[3]
-"uuu" // EffectMechanic[3]
-"uuu" // EffectImplicitTargetA[3]
-"uuu" // EffectImplicitTargetB[3]
-"uuu" // EffectRadiusIndex[3]
-"uuu" // EffectApplyAuraName[3]
-"uuu" // EffectAmplitude[3]
-"uuu" // Effectunknown[3]
-"uuu" // EffectChainTarget[3]
-"uuu" // EffectSpellGroupRelation[3]
-"uuu" // EffectMiscValue[3]
-"uuu" // EffectMiscValueB[3]
-"uuu" // EffectTriggerSpell[3]
-"uuu" // EffectPointsPerComboPoint[3]
-"uuu" // EffectUnk0[3]
-"uuu" // EffectUnk1[3]
-"uuu" // EffectUnk2[3]
-"u" // SpellVisual
-"u" // field114
-"u" // spellIconID
-"u" // activeIconID
-"u" // spellPriority
-"lxxxxxxxxxxxxxxxx" // Name
-"lxxxxxxxxxxxxxxxx" // Rank
-"lxxxxxxxxxxxxxxxx" // Description
-"lxxxxxxxxxxxxxxxx" // BuffDescription
-"u" // ManaCostPercentage
-"u" // unkflags
-"u" // StartRecoveryTime
-"u" // StartRecoveryCategory
-"u" // MaxTargetLevel
-"u" // SpellFamilyName
-"uu" // SpellGroupType
-"u" // MaxTargets
-"u" // Spell_Dmg_Type
-"u" // PreventionType
-"u" // StanceBarOrder
-"fff" // dmg_multiplier[3]
-"u" // MinFactionID
-"u" // MinReputation
-"u" // RequiredAuraVision
-"uu" // TotemCategory[2]
-"i" // RequiresAreaId
-"u" // School
-"ux"
-"x" //Added in 3.1
-"xxx" // unk 3.2.0, float!
-"x" // unk 3.2.0
-"i"
-;
+
+const char* spellentryFormat = "niiiiiiiiiiiiiiifiiiissssiixxixiiiiiiixiiiiiiiix";
 
 template<class T>
 bool loader_stub(const char* filename, const char* format, bool ind, T & l, bool loadstrs)
@@ -240,7 +153,7 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCharTitlesStore, dbc_path, "CharTitles.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCurrencyTypesStore, dbc_path, "CurrencyTypes.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sBarberShopStyleStore, dbc_path, "BarberShopStyle.dbc");
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemStore, dbc_path, "Item.dbc");
+    //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemStore, dbc_path, "Item.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemSetStore, dbc_path, "ItemSet.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sLockStore, dbc_path, "Lock.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sEmotesTextStore, dbc_path, "EmotesText.dbc");
@@ -252,10 +165,8 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSkillLineStore, dbc_path, "SkillLine.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellStore, dbc_path, "Spell.dbc");
 
-    ///\todo remove the old spell loader
     LOAD_DBC("DBC/Spell.dbc", spellentryFormat, true, dbcSpell, true);
-
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemExtendedCostStore, dbc_path, "ItemExtendedCost.dbc");
+    //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemExtendedCostStore, dbc_path, "ItemExtendedCost.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentStore, dbc_path, "Talent.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentTabStore, dbc_path, "TalentTab.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellCastTimesStore, dbc_path, "SpellCastTimes.dbc");
@@ -264,6 +175,181 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRangeStore, dbc_path, "SpellRange.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRuneCostStore, dbc_path, "SpellRuneCost.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellDurationStore, dbc_path, "SpellDuration.dbc");
+
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellAuraOptionsStore, dbc_path, "SpellAuraOptions.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellAuraRestrictionsStore, dbc_path, "SpellAuraRestrictions.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellCastingRequirementsStore, dbc_path, "SpellCastingRequirements.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellCategoriesStore, dbc_path, "SpellCategories.dbc");
+    //todo danko DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellClassOptionsStore, dbc_path, "SpellClassOptions.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellCooldownsStore, dbc_path, "SpellCooldowns.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellEquippedItemsStore, dbc_path, "SpellEquippedItems.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellInterruptsStore, dbc_path, "SpellInterrupts.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellLevelsStore, dbc_path, "SpellLevels.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellPowerStore, dbc_path, "SpellPower.dbc");
+
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellScalingStore, dbc_path, "SpellScaling.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellReagentsStore, dbc_path, "SpellReagents.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellShapeshiftStore, dbc_path, "SpellShapeshift.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellTargetRestrictionsStore, dbc_path, "SpellTargetRestrictions.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellTotemsStore, dbc_path, "SpellTotems.dbc");
+
+    //todo danko DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellEffectStore, dbc_path, "SpellEffect.dbc");
+
+    for (uint32 i = 1; i < sSpellStore.GetNumRows(); ++i)
+    {
+        if (DBC::Structures::SpellEntry const* spell = sSpellStore.LookupEntry(i))
+        {
+            if (DBC::Structures::SpellCategoriesEntry const* category = spell->GetSpellCategories())
+                if (uint32 cat = category->Category)
+                    sSpellCategoryStore[cat].insert(i);
+        }
+    }
+
+    for (uint32 i = 1; i < sSpellStore.GetNumRows(); ++i)
+    {
+        if (DBC::Structures::SpellEntry const* spell = sSpellStore.LookupEntry(i))
+        {
+            uint32 entry = spell->Id;
+            OLD_SpellEntry* old_spell_entry = dbcSpell.LookupEntry(i);;
+            memset(old_spell_entry, 0, sizeof(OLD_SpellEntry));
+
+            old_spell_entry->Id = spell->Id;
+            old_spell_entry->Category = spell->GetCategory();
+            old_spell_entry->DispelType = spell->GetDispel();
+            old_spell_entry->MechanicsType = spell->GetMechanic();
+            old_spell_entry->Attributes = spell->Attributes;
+            old_spell_entry->AttributesEx = spell->AttributesEx;
+            old_spell_entry->AttributesExB = spell->AttributesExB;
+            old_spell_entry->AttributesExC = spell->AttributesExC;
+            old_spell_entry->AttributesExD = spell->AttributesExD;
+            old_spell_entry->AttributesExE = spell->AttributesExE;
+            old_spell_entry->AttributesExF = spell->AttributesExF;
+            old_spell_entry->AttributesExG = spell->AttributesExG;
+            old_spell_entry->RequiredShapeShift = spell->GetStances();
+            old_spell_entry->ShapeshiftExclude = spell->GetStancesNot();
+            old_spell_entry->Targets = spell->GetTargets();
+            old_spell_entry->TargetCreatureType = spell->GetSpellTargetRestrictions() ? spell->GetSpellTargetRestrictions()->TargetCreatureType : 0;
+            old_spell_entry->RequiresSpellFocus = spell->GetRequiresSpellFocus();
+            old_spell_entry->FacingCasterFlags = spell->GetSpellCastingRequirements() ? spell->GetSpellCastingRequirements()->RequiresSpellFocus : 0;
+            old_spell_entry->CasterAuraState = spell->GetCasterAuraState();
+            old_spell_entry->TargetAuraState = spell->GetTargetAuraState();
+            old_spell_entry->CasterAuraStateNot = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->CasterAuraStateNot : 0;
+            old_spell_entry->TargetAuraStateNot = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->TargetAuraStateNot : 0;
+            old_spell_entry->casterAuraSpell = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->casterAuraSpell : 0;
+            old_spell_entry->targetAuraSpell = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->targetAuraSpell : 0;
+            old_spell_entry->casterAuraSpellNot = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->excludeCasterAuraSpell : 0;
+            old_spell_entry->targetAuraSpellNot = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->excludeTargetAuraSpell : 0;
+            old_spell_entry->SpellVisual = spell->SpellVisual[0];
+            old_spell_entry->field114 = spell->SpellVisual[1];
+            old_spell_entry->spellIconID = spell->spellIconID;
+            old_spell_entry->activeIconID = spell->activeIconID;
+            old_spell_entry->Name = spell->Name ? spell->Name : "NoName";
+            old_spell_entry->Rank = spell->Rank ? spell->Rank : "NoRank";
+            old_spell_entry->Description = spell->Description ? spell->Description : "NoDescription";
+            old_spell_entry->BuffDescription = spell->BuffDescription ? spell->BuffDescription : "NoBuffDescription";
+            old_spell_entry->ManaCostPercentage = spell->GetManaCostPercentage();
+            old_spell_entry->StartRecoveryCategory = spell->GetStartRecoveryCategory();
+            old_spell_entry->StartRecoveryTime = spell->GetStartRecoveryTime();
+            old_spell_entry->Spell_Dmg_Type = spell->GetDmgClass();
+            old_spell_entry->RequiresAreaId = spell->GetAreaGroupId();
+            old_spell_entry->School = spell->School;
+            old_spell_entry->SpellDifficultyID = spell->SpellDifficultyId;
+            old_spell_entry->procFlags = spell->GetProcFlags();
+            old_spell_entry->procChance = spell->GetProcChance();
+            old_spell_entry->procCharges = spell->GetProcCharges();
+            old_spell_entry->MaxTargetLevel = spell->GetSpellTargetRestrictions() ? spell->GetSpellTargetRestrictions()->MaxTargetLevel : 0;
+            old_spell_entry->MaxTargets = spell->GetSpellTargetRestrictions() ? spell->GetSpellTargetRestrictions()->MaxAffectedTargets : 0;
+            old_spell_entry->RecoveryTime = spell->GetRecoveryTime();
+            old_spell_entry->CategoryRecoveryTime = spell->GetCategoryRecoveryTime();
+            old_spell_entry->SpellFamilyName = spell->GetSpellFamilyName();
+            old_spell_entry->maxLevel = spell->GetMaxLevel();
+            old_spell_entry->baseLevel = spell->GetBaseLevel();
+            old_spell_entry->spellLevel = spell->GetSpellLevel();
+            old_spell_entry->manaCost = spell->GetManaCost();
+            old_spell_entry->manaCostPerlevel = spell->GetManaCostPercentage();
+            old_spell_entry->manaPerSecond = spell->GetManaPerSecond();
+            old_spell_entry->manaPerSecondPerLevel = spell->GetManaCostPerLevel();
+            old_spell_entry->EquippedItemClass = spell->GetSpellEquippedItems() ? spell->GetSpellEquippedItems()->EquippedItemClass : 0;
+            old_spell_entry->EquippedItemSubClass = spell->GetSpellEquippedItems() ? spell->GetSpellEquippedItems()->EquippedItemSubClassMask : 0;
+            old_spell_entry->RequiredItemFlags = spell->GetSpellEquippedItems() ? spell->GetSpellEquippedItems()->EquippedItemInventoryTypeMask : 0;
+            old_spell_entry->PreventionType = spell->GetSpellCategories() ? spell->GetSpellCategories()->PreventionType : 0;
+            old_spell_entry->InterruptFlags = spell->GetSpellInterrupts() ? spell->GetSpellInterrupts()->InterruptFlags : 0;
+            old_spell_entry->AuraInterruptFlags = spell->GetSpellInterrupts() ? spell->GetSpellInterrupts()->AuraInterruptFlags : 0;
+            old_spell_entry->ChannelInterruptFlags = spell->GetSpellInterrupts() ? spell->GetSpellInterrupts()->ChannelInterruptFlags : 0;
+            old_spell_entry->DurationIndex = spell->DurationIndex;
+            old_spell_entry->maxstack = spell->GetSpellAuraOptions() ? spell->GetSpellAuraOptions()->StackAmount : 0;
+            old_spell_entry->CastingTimeIndex = spell->CastingTimeIndex;
+            old_spell_entry->powerType = spell->powerType;
+            old_spell_entry->rangeIndex = spell->rangeIndex;
+            old_spell_entry->speed = spell->speed;
+            old_spell_entry->RuneCostID = spell->RuneCostID;
+
+            old_spell_entry->spellPriority = 0;
+            old_spell_entry->StanceBarOrder =  0;
+            old_spell_entry->MinFactionID = 0;
+            old_spell_entry->MinReputation = 0;
+            old_spell_entry->RequiredAuraVision = 0;
+            old_spell_entry->custom_DiminishStatus = 0;            
+            old_spell_entry->modalNextSpell = 0;
+            
+            //custom setup
+            old_spell_entry->CustomFlags = 0;
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+                old_spell_entry->EffectCustomFlag[i] = spell->GetSpellEffectIdByIndex(SpellEffectIndex(i));
+
+            old_spell_entry->SpellFactoryFunc = NULL;
+            old_spell_entry->AuraFactoryFunc = NULL;
+
+            old_spell_entry->custom_proc_interval = 0;
+            old_spell_entry->custom_BGR_one_buff_on_target = 0;
+            old_spell_entry->custom_BGR_one_buff_from_caster_on_self = 0;
+            old_spell_entry->custom_c_is_flags = 0;
+            old_spell_entry->custom_RankNumber = 0;
+            old_spell_entry->custom_NameHash = 0;
+            old_spell_entry->custom_ThreatForSpell = 0;
+            old_spell_entry->custom_ThreatForSpellCoef = 0;
+            old_spell_entry->custom_spell_coef_flags = 0;
+            old_spell_entry->custom_base_range_or_radius_sqr = 0;
+            old_spell_entry->cone_width = 0;
+            old_spell_entry->casttime_coef = 0;
+            old_spell_entry->fixed_dddhcoef = 0;
+            old_spell_entry->fixed_hotdotcoef = 0;
+            old_spell_entry->Dspell_coef_override = 0;
+            old_spell_entry->OTspell_coef_override = 0;
+            old_spell_entry->ai_target_type = 0;
+            old_spell_entry->custom_self_cast_only = false;
+            old_spell_entry->custom_apply_on_shapeshift_change = false;
+            old_spell_entry->custom_always_apply = false;
+            old_spell_entry->custom_is_melee_spell = false;
+            old_spell_entry->custom_is_ranged_spell = false;
+            old_spell_entry->custom_SchoolMask = 0;
+        }
+    }
+
+    Log.Debug("SpellSystem", "Size of dbcSpell is %u", dbcSpell.GetNumRows());
+    OLD_SpellEntry* test_spell = dbcSpell.LookupEntry(4);
+    Log.Debug("SpellSystem", "TestSpell 4 `%s` set!", test_spell->Name);
+
+    for (uint32 i = 1; i < sSpellEffectStore.GetNumRows(); ++i)
+    {
+        if (DBC::Structures::SpellEffectEntry const* spellEffect = sSpellEffectStore.LookupEntry(i))
+        {
+            switch (spellEffect->EffectApplyAuraName)
+            {
+                case SPELL_AURA_MOD_INCREASE_ENERGY:
+                case SPELL_AURA_MOD_INCREASE_ENERGY_PERCENT:
+                case SPELL_AURA_PERIODIC_MANA_LEECH:
+                case SPELL_AURA_PERIODIC_ENERGIZE:
+                case SPELL_AURA_POWER_BURN:
+                    ARCEMU_ASSERT(spellEffect->EffectMiscValue >= 0 && spellEffect->EffectMiscValue < MAX_POWERS);
+                    break;
+            }
+
+            sSpellEffectMap[spellEffect->EffectSpellId].effects[spellEffect->EffectIndex] = spellEffect;
+        }
+    }
+
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellShapeshiftFormStore, dbc_path, "SpellShapeshiftForm.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemRandomPropertiesStore, dbc_path, "ItemRandomProperties.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAreaGroupStore, dbc_path, "AreaGroup.dbc");
@@ -287,7 +373,7 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sDurabilityQualityStore, dbc_path, "DurabilityQuality.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sDurabilityCostsStore, dbc_path, "DurabilityCosts.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sBankBagSlotPricesStore, dbc_path, "BankBagSlotPrices.dbc");
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sStableSlotPricesStore, dbc_path, "StableSlotPrices.dbc");
+    //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sStableSlotPricesStore, dbc_path, "StableSlotPrices.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sBarberShopCostBaseStore, dbc_path, "gtBarberShopCostBase.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtChanceToMeleeCritStore, dbc_path, "gtChanceToMeleeCrit.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtChanceToMeleeCritBaseStore, dbc_path, "gtChanceToMeleeCritBase.dbc");
@@ -295,15 +381,23 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtChanceToSpellCritBaseStore, dbc_path, "gtChanceToSpellCritBase.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtRegenMPPerSptStore, dbc_path, "gtRegenMPPerSpt.dbc");     //loaded but not used
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtOCTRegenMPStore, dbc_path, "gtOCTRegenMP.dbc");
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtRegenHPPerSptStore, dbc_path, "gtRegenHPPerSpt.dbc");
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtOCTRegenHPStore, dbc_path, "gtOCTRegenHP.dbc");
+    //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtRegenHPPerSptStore, dbc_path, "gtRegenHPPerSpt.dbc");
+    //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGtOCTRegenHPStore, dbc_path, "gtOCTRegenHP.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAreaTriggerStore, dbc_path, "AreaTrigger.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sScalingStatDistributionStore, dbc_path, "ScalingStatDistribution.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sScalingStatValuesStore, dbc_path, "ScalingStatValues.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemLimitCategoryStore, dbc_path, "ItemLimitCategory.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sQuestSortStore, dbc_path, "QuestSort.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sQuestXPStore, dbc_path, "QuestXP.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sMailTemplateStore, dbc_path, "MailTemplate.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sWMOAreaTableStore, dbc_path, "WMOAreaTable.dbc");
+    for (uint32 i = 0; i < sWMOAreaTableStore.GetNumRows(); ++i)
+    {
+        if (DBC::Structures::WMOAreaTableEntry const* entry = sWMOAreaTableStore.LookupEntry(i))
+        {
+            sWMOAreaInfoByTripple.insert(WMOAreaInfoByTripple::value_type(WMOAreaTableTripple(entry->rootId, entry->adtId, entry->groupId), entry));
+        }
+    }
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSummonPropertiesStore, dbc_path, "SummonProperties.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sNameGenStore, dbc_path, "NameGen.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sLFGDungeonStore, dbc_path, "LFGDungeons.dbc");
@@ -321,14 +415,7 @@ bool LoadDBCs()
 
         area_map_collection->insert(std::pair<uint32, uint32>(map_object->id, map_object->linked_zone));
     }
-    auto wmo_row_count = sWMOAreaTableStore.GetNumRows();
-    for (uint32 i = 0; i < wmo_row_count; ++i)
-    {
-        if (auto entry = sWMOAreaTableStore.LookupEntry(i))
-        {
-            sWMOAreaInfoByTripple.insert(WMOAreaInfoByTripple::value_type(WMOAreaTableTripple(entry->rootId, entry->adtId, entry->groupId), entry));
-        }
-    }
+    
     return true;
 }
 
@@ -338,4 +425,13 @@ DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 roo
     if (iter == sWMOAreaInfoByTripple.end())
         return nullptr;
     return iter->second;
+}
+
+DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, SpellEffectIndex effect)
+{
+    DBC::Structures::SpellEffectMap::const_iterator itr = sSpellEffectMap.find(spellId);
+    if (itr == sSpellEffectMap.end())
+        return NULL;
+
+    return itr->second.effects[effect];
 }

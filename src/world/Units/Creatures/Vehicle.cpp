@@ -83,7 +83,7 @@ void Vehicle::Load(Unit* owner, uint32 creature_entry, uint32 vehicleid)
 
     switch (vehicle_info->powerType)
     {
-        case POWER_TYPE_STEAM:
+        /*case POWER_TYPE_STEAM:
         case POWER_TYPE_HEAT:
         case POWER_TYPE_BLOOD:
         case POWER_TYPE_OOZE:
@@ -97,7 +97,7 @@ void Vehicle::Load(Unit* owner, uint32 creature_entry, uint32 vehicleid)
             owner->SetPowerType(POWER_TYPE_ENERGY);
             owner->SetMaxPower(POWER_TYPE_ENERGY, 50);
             owner->SetPower(POWER_TYPE_ENERGY, 50);
-            break;
+            break;*/
     }
 
     for (uint8 i = 0; i < MAX_VEHICLE_SEATS; i++)
@@ -167,11 +167,11 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     passenger->SetPosition(v, false);
 
     // Player's client sets these
-    if (passenger->IsCreature())
+    /*if (passenger->IsCreature())
     {
         passenger->obj_movement_info.transporter_info.guid = owner->GetGUID();
         passenger->obj_movement_info.transporter_info.seat = seatid;
-    }
+    }*/
 
     if (passenger->IsPlayer())
     {
@@ -539,7 +539,7 @@ uint16 Vehicle::GetMoveFlags2() const{
     uint16 flags2 = 0;
 
     if (vehicle_info->flags & VEHICLE_FLAG_NO_STRAFE)
-        flags2 |= MOVEFLAG2_NO_STRAFING;
+        flags2 |= MOVEFLAG2_NO_STRAFE;
 
     if (vehicle_info->flags & VEHICLE_FLAG_NO_JUMPING)
         flags2 |= MOVEFLAG2_NO_JUMPING;
@@ -579,8 +579,8 @@ void Vehicle::InstallAccessories()
 
         Creature* c = owner->GetMapMgr()->CreateCreature(accessory->accessory_entry);
         c->Load(cp, owner->GetPositionX(), owner->GetPositionY(), owner->GetPositionZ(), owner->GetOrientation());
-        c->obj_movement_info.transporter_info.guid = owner->GetGUID();
-        c->obj_movement_info.transporter_info.seat = accessory->seat;
+        /*c->obj_movement_info.transporter_info.guid = owner->GetGUID();
+        c->obj_movement_info.transporter_info.seat = accessory->seat;*/
         c->Phase(PHASE_SET, owner->GetPhase());
         c->SetFaction(owner->GetFaction());
         c->PushToWorld(owner->GetMapMgr());

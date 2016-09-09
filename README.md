@@ -1,8 +1,10 @@
 ﻿# ![logo](http://ascemu.org/style/img/logo.png)
-﻿
-[![Travis Status](https://travis-ci.org/AscEmu/AscEmu.svg?branch=master)](https://travis-ci.org/AscEmu/AscEmu)
-[![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu)
-[![Coverity Snac](https://scan.coverity.com/projects/4747/badge.svg)](https://scan.coverity.com/projects/4747)
+
+3.3.5 | 4.3.4
+:------------: | :------------:
+[![Travis Status](https://travis-ci.org/AscEmu/AscEmu.svg?branch=master)](https://travis-ci.org/AscEmu/AscEmu) | [![Travis Status](https://travis-ci.org/AscEmu/AscEmu.svg?branch=4.3.4)](https://travis-ci.org/AscEmu/AscEmu)
+[![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu) | [![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/4.3.4?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu)
+[![Coverity Snac](https://scan.coverity.com/projects/4747/badge.svg)](https://scan.coverity.com/projects/4747) | UNK
 [![Open HUB Stats](https://www.openhub.net/p/AscEmu/widgets/project_thin_badge.gif)](https://www.openhub.net/p/AscEmu)
 
 ## Introduction

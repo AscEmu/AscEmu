@@ -21,7 +21,7 @@
 #ifndef _WOWSERVER_DYNAMICOBJECT_H
 #define _WOWSERVER_DYNAMICOBJECT_H
 
-struct SpellEntry;
+struct OLD_SpellEntry;
 
 enum DynamicObjectType
 {
@@ -48,7 +48,7 @@ class SERVER_DECL DynamicObject : public Object
 
     protected:
 
-        SpellEntry* m_spellProto;
+        OLD_SpellEntry* m_spellProto;
         Unit* u_caster;
         Player* p_caster;
         Spell* m_parentSpell;

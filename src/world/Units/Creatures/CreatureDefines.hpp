@@ -23,6 +23,8 @@
 #include "CommonTypes.hpp"
 #include "Storage/DBC/DBCStores.h"
 #include "Storage/DBC/DBCStructures.hpp"
+#include "Storage/DB2/DB2Stores.hpp"
+#include "Storage/DB2/DB2Structures.hpp"
 #include "Units/UnitDefines.hpp"
 
 #include <ctime>
@@ -53,7 +55,7 @@ struct CreatureItem
     uint32 available_amount;
     uint32 max_amount;
     uint32 incrtime;
-    DBC::Structures::ItemExtendedCostEntry const* extended_cost;
+    DB2::Structures::ItemExtendedCostEntry const* extended_cost;
 };
 
 enum CreatureAISpellFlags

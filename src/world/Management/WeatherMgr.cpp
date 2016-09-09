@@ -50,28 +50,29 @@ initialiseSingleton(WeatherMgr);
 
 void BuildWeatherPacket(WorldPacket* data, uint32 Effect, float Density)
 {
-    data->Initialize(SMSG_WEATHER);
-    if (Effect == 0)    // set all parameter to 0 for sunny.
-    {
-        *data << uint32(0);
-        *data << float(0);
-        *data << uint32(0);
-        *data << uint8(0);
-    }
-    else if (Effect == 1)   // No sound/density for fog
-    {
-        *data << Effect;
-        *data << float(0);
-        *data << uint32(0);
-        *data << uint8(0);
-    }
-    else
-    {
-        *data << Effect;
-        *data << Density;
-        *data << GetSound(Effect, Density);
-        *data << uint8(0);
-    }
+    //\todo danko
+    //data->Initialize(SMSG_WEATHER);
+    //if (Effect == 0)    // set all parameter to 0 for sunny.
+    //{
+    //    *data << uint32(0);
+    //    *data << float(0);
+    //    *data << uint32(0);
+    //    *data << uint8(0);
+    //}
+    //else if (Effect == 1)   // No sound/density for fog
+    //{
+    //    *data << Effect;
+    //    *data << float(0);
+    //    *data << uint32(0);
+    //    *data << uint8(0);
+    //}
+    //else
+    //{
+    //    *data << Effect;
+    //    *data << Density;
+    //    *data << GetSound(Effect, Density);
+    //    *data << uint8(0);
+    //}
     //    LOG_DEBUG("Send Weather Update %d, Density %f, Sound %d, unint8(0)", Effect,Density,GetSound(Effect,Density));
 }
 

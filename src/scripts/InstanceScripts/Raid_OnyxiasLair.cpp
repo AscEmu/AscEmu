@@ -483,7 +483,7 @@ class OnyxiaAI : public CreatureAIScript
         uint32 m_aoeFearCooldown;
         uint32 m_fCastCount;
         uint32 m_currentWP;
-        SpellEntry* infoFear, *infoWBuffet, *infoCleave, *infoFBreath, *infoKAway, *infoSFireball, *infoDeepBreath;
+        OLD_SpellEntry* infoFear, *infoWBuffet, *infoCleave, *infoFBreath, *infoKAway, *infoSFireball, *infoDeepBreath;
 };
 
 void SetupOnyxiasLair(ScriptMgr* mgr)

@@ -46,17 +46,17 @@ trainertype trainer_types[TRAINER_TYPE_MAX] =
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles MSG_TABARDVENDOR_ACTIVATE:
 //////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleTabardVendorActivateOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_ASSERT;
-
-    uint64 guid;
-    recv_data >> guid;
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature) return;
-
-    SendTabardHelp(pCreature);
-}
+//void WorldSession::HandleTabardVendorActivateOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_ASSERT;
+//
+//    uint64 guid;
+//    recv_data >> guid;
+//    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+//    if (!pCreature) return;
+//
+//    SendTabardHelp(pCreature);
+//}
 
 void WorldSession::SendTabardHelp(Creature* pCreature)
 {
@@ -70,18 +70,18 @@ void WorldSession::SendTabardHelp(Creature* pCreature)
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles CMSG_BANKER_ACTIVATE:
 //////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleBankerActivateOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_ASSERT;
-
-    uint64 guid;
-    recv_data >> guid;
-
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature) return;
-
-    SendBankerList(pCreature);
-}
+//void WorldSession::HandleBankerActivateOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_ASSERT;
+//
+//    uint64 guid;
+//    recv_data >> guid;
+//
+//    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+//    if (!pCreature) return;
+//
+//    SendBankerList(pCreature);
+//}
 
 void WorldSession::SendBankerList(Creature* pCreature)
 {
@@ -98,19 +98,19 @@ void WorldSession::SendBankerList(Creature* pCreature)
 //NOTE: we select prerequirements for spell that TEACHES you
 //not by spell that you learn!
 
-void WorldSession::HandleTrainerListOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_ASSERT;
-
-    // Inits, grab creature, check.
-    uint64 guid;
-    recv_data >> guid;
-    Creature* train = GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!train) return;
-
-    _player->Reputation_OnTalk(train->m_factionDBC);
-    SendTrainerList(train);
-}
+//void WorldSession::HandleTrainerListOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_ASSERT;
+//
+//    // Inits, grab creature, check.
+//    uint64 guid;
+//    recv_data >> guid;
+//    Creature* train = GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+//    if (!train) return;
+//
+//    _player->Reputation_OnTalk(train->m_factionDBC);
+//    SendTrainerList(train);
+//}
 
 void WorldSession::SendTrainerList(Creature* pCreature)
 {
@@ -133,7 +133,12 @@ void WorldSession::SendTrainerList(Creature* pCreature)
         data << pCreature->GetGUID();
         data << pTrainer->TrainerType;
 
+        data << uint32(0x0);        //maybe some speach ID ?
+
+        size_t count_pos = data.wpos();
         data << uint32(0);
+
+        uint32 count = 0;
         for (std::vector<TrainerSpell>::iterator itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
         {
             pSpell = &(*itr);
@@ -147,23 +152,23 @@ void WorldSession::SendTrainerList(Creature* pCreature)
 
             data << Status;
             data << pSpell->Cost;
-            data << Spacer;
-            data << uint32(pSpell->IsProfession);
             data << uint8(pSpell->RequiredLevel);
             data << pSpell->RequiredSkillLine;
             data << pSpell->RequiredSkillLineValue;
-            data << pSpell->RequiredSpell;
-            data << Spacer;    //this is like a spell override or something, ex : (id=34568 or id=34547) or (id=36270 or id=34546) or (id=36271 or id=34548)
-            data << Spacer;
-            ++Count;
+            data << uint32(0);
+            data << uint32(0);
+            data << uint32(0);
+            data << uint32(0);
+            ++count;
         }
 
-        *(uint32*)&data.contents()[12] = Count;
+        data.put<uint32>(count_pos, count);
 
         if (stricmp(pTrainer->UIMessage, "DMSG") == 0)
             data << _player->GetSession()->LocalizedWorldSrv(37);
         else
             data << pTrainer->UIMessage;
+
         SendPacket(&data);
     }
 }
@@ -175,8 +180,11 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
 
     uint64 Guid;
     uint32 TeachingSpellID;
+    uint32 unk403;
 
-    recvPacket >> Guid >> TeachingSpellID;
+    recvPacket >> Guid;
+    recvPacket >> unk403;
+    recvPacket >> TeachingSpellID;
     Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(Guid));
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -242,7 +250,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
 
     _player->_UpdateSkillFields();
 
-    WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, 12);
+    WorldPacket data(SMSG_TRAINER_BUY_SUCCEEDED, 15);
 
     data << uint64(Guid) << uint32(TeachingSpellID);        // GUID of the trainer, ID of the spell we bought
     this->SendPacket(&data);
@@ -275,18 +283,18 @@ uint8 WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell)
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles CMSG_PETITION_SHOWLIST:
 //////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleCharterShowListOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint64 guid;
-    recv_data >> guid;
-
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature) return;
-
-    SendCharterRequest(pCreature);
-}
+//void WorldSession::HandleCharterShowListOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    uint64 guid;
+//    recv_data >> guid;
+//
+//    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+//    if (!pCreature) return;
+//
+//    SendCharterRequest(pCreature);
+//}
 
 void WorldSession::SendCharterRequest(Creature* pCreature)
 {
@@ -349,18 +357,18 @@ void WorldSession::SendCharterRequest(Creature* pCreature)
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles MSG_AUCTION_HELLO:
 //////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleAuctionHelloOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint64 guid;
-    recv_data >> guid;
-    Creature* auctioneer = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!auctioneer)
-        return;
-
-    SendAuctionList(auctioneer);
-}
+//void WorldSession::HandleAuctionHelloOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    uint64 guid;
+//    recv_data >> guid;
+//    Creature* auctioneer = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+//    if (!auctioneer)
+//        return;
+//
+//    SendAuctionList(auctioneer);
+//}
 
 void WorldSession::SendAuctionList(Creature* auctioneer)
 {
@@ -477,7 +485,7 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
 
         if (aur == NULL)        // If the player already have the aura, just extend it.
         {
-            SpellEntry* spellInfo = dbcSpell.LookupEntry(15007);    //resurrection sickness
+            OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(15007);    //resurrection sickness
             SpellCastTargets targets;
             targets.m_unitTarget = GetPlayer()->GetGUID();
             Spell* sp = sSpellFactoryMgr.NewSpell(_player, spellInfo, true, NULL);
@@ -579,17 +587,17 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
     return;
 }
 
-void WorldSession::HandleBinderActivateOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN;
-    uint64 guid;
-    recv_data >> guid;
-
-    Creature* pC = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pC) return;
-
-    SendInnkeeperBind(pC);
-}
+//void WorldSession::HandleBinderActivateOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN;
+//    uint64 guid;
+//    recv_data >> guid;
+//
+//    Creature* pC = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+//    if (!pC) return;
+//
+//    SendInnkeeperBind(pC);
+//}
 
 #define BIND_SPELL_ID 3286
 

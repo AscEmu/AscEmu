@@ -27,6 +27,8 @@
 #include "Management/Guild.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/DBC/DBCStores.h"
+#include "Storage/DB2/DB2Stores.hpp"
+#include "Storage/DB2/DB2Structures.hpp"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Management/TransporterHandler.h"
 #include "Management/Gossip/GossipDefines.hpp"
@@ -190,12 +192,12 @@ struct PointOfInterest
     std::string icon_name;
 };
 
-struct SpellEntry;
+struct OLD_SpellEntry;
 struct TrainerSpell
 {
-    SpellEntry* pCastSpell;
-    SpellEntry* pLearnSpell;
-    SpellEntry* pCastRealSpell;
+    OLD_SpellEntry* pCastSpell;
+    OLD_SpellEntry* pLearnSpell;
+    OLD_SpellEntry* pCastRealSpell;
     uint32 DeleteSpell;
     uint32 RequiredSpell;
     uint32 RequiredSkillLine;
@@ -416,7 +418,7 @@ typedef std::unordered_map<uint32, Player*>                     PlayerStorageMap
 typedef std::list<GM_Ticket*>                                       GmTicketList;
 typedef std::map<uint32, InstanceBossInfo*>                         InstanceBossInfoMap;
 #ifdef ENABLE_ACHIEVEMENTS
-typedef std::list<AchievementCriteriaEntry const*>                    AchievementCriteriaEntryList;
+typedef std::list<DBC::Structures::AchievementCriteriaEntry const*>                    AchievementCriteriaEntryList;
 #endif
 
 #ifndef WIN32
@@ -459,7 +461,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::map<uint32, LevelInfo*>                            LevelMap;
         typedef std::map<std::pair<uint32, uint32>, LevelMap*>          LevelInfoMap;
         
-        typedef std::map<uint32, std::set<SpellEntry*> >                PetDefaultSpellMap;
+        typedef std::map<uint32, std::set<OLD_SpellEntry*> >                PetDefaultSpellMap;
         typedef std::map<uint32, uint32>                                PetSpellCooldownMap;
         typedef std::multimap <uint32, uint32>                          BCEntryStorage;
         typedef std::map<uint32, SpellTargetConstraint*>                SpellTargetConstraintMap;
@@ -550,7 +552,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         GM_Ticket* GetGMTicketByPlayer(uint64 playerGuid);
 
         DBC::Structures::SkillLineAbilityEntry const* GetSpellSkill(uint32 id);
-        SpellEntry* GetNextSpellRank(SpellEntry* sp, uint32 level);
+        OLD_SpellEntry* GetNextSpellRank(OLD_SpellEntry* sp, uint32 level);
 
         //Vendors
         std::vector<CreatureItem> *GetVendorList(uint32 entry);
@@ -648,13 +650,15 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void GenerateLevelUpInfo();
 
         void LoadDefaultPetSpells();
-        std::set<SpellEntry*>* GetDefaultPetSpells(uint32 Entry);
+        std::set<OLD_SpellEntry*>* GetDefaultPetSpells(uint32 Entry);
         uint32 GetPetSpellCooldown(uint32 SpellId);
         void LoadPetSpellCooldowns();
         Movement::WayPointMap* GetWayPointMap(uint32 spawnid);
 
 
         void ResetDailies();
+
+        void LoadQuestLoot(uint32 GO_Entry, uint32 Item_Entry);
 
         uint32 GenerateCreatureSpawnID();
         uint32 GenerateGameObjectSpawnID();
@@ -750,7 +754,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         AreaTrigger const* GetMapEntranceTrigger(uint32 Map) const;
 
 #ifdef ENABLE_ACHIEVEMENTS
-        void LoadAchievementCriteriaList();
+        //void LoadAchievementCriteriaList();
         AchievementCriteriaEntryList const & GetAchievementCriteriaByType(AchievementCriteriaTypes type);
         std::set<uint32> allCompletedAchievements;
 #endif

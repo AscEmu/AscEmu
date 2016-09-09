@@ -178,7 +178,7 @@ void SpellCastTargets::write(WorldPacket & data)
         data << m_strTarget.c_str();
 }
 
-Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
+Spell::Spell(Object* Caster, OLD_SpellEntry* info, bool triggered, Aura* aur)
 {
     ARCEMU_ASSERT(Caster != NULL && info != NULL);
 
@@ -197,7 +197,7 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
 
     if ((info->SpellDifficultyID != 0) && (Caster->GetTypeId() != TYPEID_PLAYER) && (Caster->GetMapMgr() != NULL) && (Caster->GetMapMgr()->pInstance != NULL))
     {
-        SpellEntry* SpellDiffEntry = sSpellFactoryMgr.GetSpellEntryByDifficulty(info->SpellDifficultyID, Caster->GetMapMgr()->iInstanceMode);
+        OLD_SpellEntry* SpellDiffEntry = sSpellFactoryMgr.GetSpellEntryByDifficulty(info->SpellDifficultyID, Caster->GetMapMgr()->iInstanceMode);
         if (SpellDiffEntry != NULL)
             m_spellInfo = SpellDiffEntry;
         else
@@ -2050,7 +2050,7 @@ void Spell::SendSpellStart()
         cast_flags = 0x0F;
 
     data.SetOpcode(SMSG_SPELL_START);
-    if (i_caster != NULL)
+    if (i_caster != nullptr)
     {
         data << i_caster->GetNewGUID();
         data << u_caster->GetNewGUID();
@@ -2064,6 +2064,7 @@ void Spell::SendSpellStart()
     data << extra_cast_number;
     data << GetProto()->Id;
     data << cast_flags;
+    data << uint32(m_timer);
     data << (uint32)m_castTime;
 
     m_targets.write(data);
@@ -2071,21 +2072,14 @@ void Spell::SendSpellStart()
     if (GetType() == SPELL_DMG_TYPE_RANGED)
     {
         ItemProperties const* ip = nullptr;
-        if (GetProto()->Id == SPELL_RANGED_THROW)   // throw
+        if (GetProto()->Id == SPELL_RANGED_THROW)
         {
-            if (p_caster != NULL)
+            if (p_caster != nullptr)
             {
                 auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                 if (item != nullptr)
                 {
                     ip = item->GetItemProperties();
-                    /* Throwing Weapon Patch by Supalosa
-                    p_caster->GetItemInterface()->RemoveItemAmt(it->GetEntry(),1);
-                    (Supalosa: Instead of removing one from the stack, remove one from durability)
-                    We don't need to check if the durability is 0, because you can't cast the Throw spell if the thrown weapon is broken, because it returns "Requires Throwing Weapon" or something.
-                    */
-
-                    // burlex - added a check here anyway (wpe suckers :P)
                     if (item->GetDurability() > 0)
                     {
                         item->SetDurability(item->GetDurability() - 1);
@@ -2099,19 +2093,26 @@ void Spell::SendSpellStart()
                 }
             }
         }
-        else if (hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS))
-        {
-            if (p_caster != nullptr)
-                ip = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
-            else
-                ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
-        }
+        //\todo danko
+        //else if (hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS))
+        //{
+        //    if (p_caster != nullptr)
+        //        ip = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+        //    else
+        //        ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
+        //}
 
         if (ip != nullptr)
-            data << ip->DisplayInfoID << ip->InventoryType;
+        {
+            data << ip->DisplayInfoID;
+            data << ip->InventoryType;
+        }
+        else
+        {
+            data << uint32(0);
+            data << uint32(0);
+        }
     }
-
-    data << (uint32)139; //3.0.2 seems to be some small value around 250 for shadow bolt.
     m_caster->SendMessageToSet(&data, true);
 }
 
@@ -2119,7 +2120,7 @@ void Spell::SendSpellGo()
 {
     // Fill UniqueTargets
     TargetsList::iterator i, j;
-    for (uint8 x = 0; x < 3; x++)
+    for (uint8 x = 0; x < 3; ++x)
     {
         if (GetProto()->Effect[x])
         {
@@ -2157,23 +2158,24 @@ void Spell::SendSpellGo()
         flags |= 0x20000;
 
     if (GetType() == SPELL_DMG_TYPE_RANGED)
-        flags |= SPELL_GO_FLAGS_RANGED; // 0x20 RANGED
+        flags |= SPELL_GO_FLAGS_RANGED;         // 0x20 RANGED
 
-    if (i_caster != NULL)
-        flags |= SPELL_GO_FLAGS_ITEM_CASTER; // 0x100 ITEM CASTER
+    if (i_caster != nullptr)
+        flags |= SPELL_GO_FLAGS_ITEM_CASTER;    // 0x100 ITEM CASTER
 
     if (ModeratedTargets.size() > 0)
-        flags |= SPELL_GO_FLAGS_EXTRA_MESSAGE; // 0x400 TARGET MISSES AND OTHER MESSAGES LIKE "Resist"
+        flags |= SPELL_GO_FLAGS_EXTRA_MESSAGE;  // 0x400 TARGET MISSES AND OTHER MESSAGES LIKE "Resist"
 
-    if (p_caster != NULL && GetProto()->powerType != POWER_TYPE_HEALTH)
+    if (p_caster != nullptr && GetProto()->powerType != POWER_TYPE_HEALTH)
         flags |= SPELL_GO_FLAGS_POWER_UPDATE;
 
     //experiments with rune updates
     uint8 cur_have_runes = 0;
-    if (p_caster && p_caster->IsDeathKnight())   //send our rune updates ^^
+    if (p_caster && p_caster->IsDeathKnight())  //send our rune updates ^^
     {
         if (GetProto()->RuneCostID && GetProto()->powerType == POWER_TYPE_RUNES)
             flags |= SPELL_GO_FLAGS_ITEM_CASTER | SPELL_GO_FLAGS_RUNE_UPDATE | SPELL_GO_FLAGS_UNK40000;
+
         //see what we will have after cast
         cur_have_runes = static_cast<DeathKnight*>(p_caster)->GetRuneFlags();
         if (cur_have_runes != m_rune_avail_before)
@@ -2184,7 +2186,7 @@ void Spell::SendSpellGo()
     if (GetProto()->Id == 8326)   // death
         flags = SPELL_GO_FLAGS_ITEM_CASTER | 0x0D;
 
-    if (i_caster != NULL && u_caster != NULL)   // this is needed for correct cooldown on items
+    if (i_caster != nullptr && u_caster != nullptr)   // this is needed for correct cooldown on items
     {
         data << i_caster->GetNewGUID();
         data << u_caster->GetNewGUID();
@@ -2199,6 +2201,7 @@ void Spell::SendSpellGo()
     data << GetProto()->Id;
     data << flags;
     data << getMSTime();
+    data << uint32(m_timer);
     data << (uint8)(UniqueTargets.size()); //number of hits
     writeSpellGoTargets(&data);
 
@@ -2208,7 +2211,9 @@ void Spell::SendSpellGo()
         writeSpellMissedTargets(&data);
     }
     else
+    {
         data << uint8(0);   //moderated target size is 0 since we did not set the flag
+    }
 
     m_targets.write(data);   // this write is included the target flag
 
@@ -2230,13 +2235,14 @@ void Spell::SendSpellGo()
             else
                 ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
         }
-        else
-        {
-            if (p_caster != nullptr)
-                ip = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
-            else // HACK FIX
-                ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
-        }
+        //\todo danko
+        //else
+        //{
+        //    if (p_caster != nullptr)
+        //        ip = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+        //    else // HACK FIX
+        //        ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
+        //}
         if (ip != nullptr)
         {
             data << ip->DisplayInfoID;
@@ -2256,7 +2262,7 @@ void Spell::SendSpellGo()
     {
         data << uint8(m_rune_avail_before);
         data << uint8(cur_have_runes);
-        for (uint8 k = 0; k < MAX_RUNES; k++)
+        for (uint8 k = 0; k < MAX_RUNES; ++k)
         {
             uint8 x = (1 << k);
             if ((x & m_rune_avail_before) != (x & cur_have_runes))
@@ -2264,21 +2270,11 @@ void Spell::SendSpellGo()
         }
     }
 
-
-
-    /*
-            float dx = targets.m_destX - targets.m_srcX;
-            float dy = targets.m_destY - targets.m_srcY;
-            if (missilepitch != M_PI / 4 && missilepitch != -M_PI / 4) //lets not divide by 0 lul
-            traveltime = (sqrtf(dx * dx + dy * dy) / (cosf(missilepitch) * missilespeed)) * 1000;
-            */
-
     if (flags & 0x20000)
     {
         data << float(m_missilePitch);
         data << uint32(m_missileTravelTime);
     }
-
 
     if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
         data << uint8(0);   //some spells require this ? not sure if it is last byte or before that.
@@ -2518,9 +2514,9 @@ bool Spell::HasPower()
         case POWER_TYPE_HAPPINESS:
         {	powerField = UNIT_FIELD_POWER5;						}
         break;
-        case POWER_TYPE_RUNIC_POWER:
+        /*case POWER_TYPE_RUNIC_POWER:
         {	powerField = UNIT_FIELD_POWER7;						}
-        break;
+        break;*/
         case POWER_TYPE_RUNES:
         {
             if (GetProto()->RuneCostID && p_caster)
@@ -2665,9 +2661,9 @@ bool Spell::TakePower()
         case POWER_TYPE_HAPPINESS:
         {	powerField = UNIT_FIELD_POWER5;						}
         break;
-        case POWER_TYPE_RUNIC_POWER:
+        /*case POWER_TYPE_RUNIC_POWER:
         {	powerField = UNIT_FIELD_POWER7;						}
-        break;
+        break;*/
         case POWER_TYPE_RUNES:
         {
             if (GetProto()->RuneCostID && p_caster)
@@ -2686,9 +2682,9 @@ bool Spell::TakePower()
                 {
                     if (u_caster != nullptr)
                     {
-                        auto caster_runic_power = u_caster->GetPower(POWER_TYPE_RUNIC_POWER);
+                        auto caster_runic_power = u_caster->GetPower(POWER_TYPE_RUNIC);
                         auto spell_rune_gain = spell_rune_cost->runePowerGain;
-                        u_caster->SetPower(POWER_TYPE_RUNIC_POWER, (spell_rune_gain + caster_runic_power));
+                        u_caster->SetPower(POWER_TYPE_RUNIC, (spell_rune_gain + caster_runic_power));
                     }
                 }
             }
@@ -3004,7 +3000,7 @@ void Spell::HandleAddAura(uint64 guid)
         p_caster->GetShapeShift() == FORM_DIREBEAR) &&
         p_caster->HasAurasWithNameHash(SPELL_HASH_KING_OF_THE_JUNGLE))
     {
-        SpellEntry* spellInfo = dbcSpell.LookupEntryForced(51185);
+        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(51185);
         if (!spellInfo)
         {
             delete aur;
@@ -3047,7 +3043,7 @@ void Spell::HandleAddAura(uint64 guid)
 
     if (spellid && Target)
     {
-        SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellid);
+        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellid);
         if (!spellInfo)
         {
             delete aur;
@@ -4033,7 +4029,7 @@ uint8 Spell::CanCast(bool tolerate)
                         return SPELL_FAILED_NO_PET;
 
                     // other checks
-                    SpellEntry* trig = dbcSpell.LookupEntryForced(GetProto()->EffectTriggerSpell[0]);
+                    OLD_SpellEntry* trig = dbcSpell.LookupEntryForced(GetProto()->EffectTriggerSpell[0]);
                     if (trig == NULL)
                         return SPELL_FAILED_SPELL_UNAVAILABLE;
 
@@ -4443,7 +4439,7 @@ uint8 Spell::CanCast(bool tolerate)
 
         if (u_caster->GetChannelSpellTargetGUID() != 0)
         {
-            SpellEntry* t_spellInfo = (u_caster->GetCurrentSpell() ? u_caster->GetCurrentSpell()->GetProto() : NULL);
+            OLD_SpellEntry* t_spellInfo = (u_caster->GetCurrentSpell() ? u_caster->GetCurrentSpell()->GetProto() : NULL);
 
             if (!t_spellInfo || !m_triggeredSpell)
                 return SPELL_FAILED_SPELL_IN_PROGRESS;
@@ -4529,11 +4525,12 @@ void Spell::RemoveItems()
     // Ammo Removal
     if (p_caster != nullptr)
     {
-        if (hasAttributeExB(ATTRIBUTESEXB_REQ_RANGED_WEAPON) || hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS))
+        //\todo danko
+        /*if (hasAttributeExB(ATTRIBUTESEXB_REQ_RANGED_WEAPON) || hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS))
         {
             if (!p_caster->m_requiresNoAmmo)
                 p_caster->GetItemInterface()->RemoveItemAmt_ProtectPointer(p_caster->GetUInt32Value(PLAYER_AMMO_ID), 1, &i_caster);
-        }
+        }*/
 
         // Reagent Removal
         if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExD(FLAGS6_REAGENT_REMOVAL)))
@@ -5394,6 +5391,9 @@ void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multipli
                 case 450:
                 {	spellid = 55503; }
                 break;// Rank 6
+                case 525:
+                {    spellid = 74497; }
+                break;// Rank 7
             }
         }
 
@@ -5420,6 +5420,9 @@ void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multipli
                 case 450:
                 {	spellid = 53040; }
                 break;// Rank 6
+                case 525:
+                {    spellid = 74496; }
+                break;// Rank 7
             }
         }
 
@@ -5447,6 +5450,9 @@ void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multipli
                 case 450:
                 {	spellid = 53666; }
                 break;// Rank 6
+                case 525:
+                {    spellid = 74495; }
+                break;// Rank 7
             }
         }
 
@@ -5529,7 +5535,7 @@ void Spell::SafeAddModeratedTarget(uint64 guid, uint16 type)
 
 bool Spell::Reflect(Unit* refunit)
 {
-    SpellEntry* refspell = NULL;
+    OLD_SpellEntry* refspell = NULL;
     bool canreflect = false;
 
     if (m_reflectedParent != NULL || refunit == NULL || m_caster == refunit)
@@ -5594,7 +5600,7 @@ bool Spell::Reflect(Unit* refunit)
     return true;
 }
 
-void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellEntry* spell)
+void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, OLD_SpellEntry* spell)
 {
     uint32 status = spell->custom_DiminishStatus;
     uint32 Grp = status & 0xFFFF;   // other bytes are if apply to pvp
@@ -5639,7 +5645,7 @@ void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellEntry* spe
     ++Target->m_diminishCount[Grp];
 }
 
-void UnapplyDiminishingReturnTimer(Unit* Target, SpellEntry* spell)
+void UnapplyDiminishingReturnTimer(Unit* Target, OLD_SpellEntry* spell)
 {
     uint32 status = spell->custom_DiminishStatus;
     uint32 Grp = status & 0xFFFF;   // other bytes are if apply to pvp
@@ -5818,7 +5824,7 @@ uint32 GetDiminishingGroup(uint32 NameHash)
     return ret;
 }
 
-uint32 GetSpellDuration(SpellEntry* sp, Unit* caster /*= NULL*/)
+uint32 GetSpellDuration(OLD_SpellEntry* sp, Unit* caster /*= NULL*/)
 {
     auto spell_duration = sSpellDurationStore.LookupEntry(sp->DurationIndex);
     if (spell_duration == nullptr)
@@ -5863,10 +5869,10 @@ void Spell::SendCastSuccess(const uint64 & guid)
     *(uint32*)&buffer[c] = GetProto()->Id;
     c += 4;
 
-    plr->GetSession()->OutPacket(uint16(SMSG_CLEAR_EXTRA_AURA_INFO_OBSOLETE), static_cast<uint16>(c), buffer);
+    plr->GetSession()->OutPacket(uint32(SMSG_CLEAR_EXTRA_AURA_INFO_OBSOLETE), static_cast<uint16>(c), buffer);
 }
 
-uint8 Spell::GetErrorAtShapeshiftedCast(SpellEntry* spellInfo, uint32 form)
+uint8 Spell::GetErrorAtShapeshiftedCast(OLD_SpellEntry* spellInfo, uint32 form)
 {
     uint32 stanceMask = (form ? DecimalToMask(form) : 0);
 
@@ -6228,13 +6234,13 @@ void Spell::HandleTargetNoObject()
 }
 
 //Logs if the spell doesn't exist, using Debug loglevel.
-SpellEntry* CheckAndReturnSpellEntry(uint32 spellid)
+OLD_SpellEntry* CheckAndReturnSpellEntry(uint32 spellid)
 {
     //Logging that spellid 0 or -1 don't exist is not needed.
     if (spellid == 0 || spellid == uint32(-1))
         return NULL;
 
-    SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
+    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
     if (sp == NULL)
         LOG_DEBUG("Something tried to access nonexistent spell %u", spellid);
 
@@ -6242,7 +6248,7 @@ SpellEntry* CheckAndReturnSpellEntry(uint32 spellid)
 }
 
 
-bool IsDamagingSpell(SpellEntry* sp)
+bool IsDamagingSpell(OLD_SpellEntry* sp)
 {
 
     if (sp->HasEffect(SPELL_EFFECT_SCHOOL_DAMAGE) ||

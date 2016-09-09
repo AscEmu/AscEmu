@@ -279,7 +279,7 @@ World::~World()
     //eventholder = 0;
     delete eventholder;
 
-    for (std::list<SpellEntry*>::iterator itr = dummyspells.begin(); itr != dummyspells.end(); ++itr)
+    for (std::list<OLD_SpellEntry*>::iterator itr = dummyspells.begin(); itr != dummyspells.end(); ++itr)
         delete *itr;
 }
 
@@ -408,6 +408,8 @@ bool World::SetInitialWorldSettings()
 
     // Start
     uint32 start_time = getMSTime();
+
+    LoadDB2Stores();
 
     Log.Success("World", "Loading DBC files...");
     if (!LoadDBCs())
@@ -581,8 +583,8 @@ bool World::SetInitialWorldSettings()
 
     //Start the Achievement system :D
 #ifdef ENABLE_ACHIEVEMENTS
-    Log.Success("World", "Starting Achievement System..");
-    objmgr.LoadAchievementCriteriaList();
+    //Log.Success("World", "Starting Achievement System..");
+    //objmgr.LoadAchievementCriteriaList();
 #endif
     // start mail system
     MailSystem::getSingleton().StartMailSystem();
@@ -1636,6 +1638,7 @@ void World::Rehash(bool load)
 
 void World::LoadNameGenData()
 {
+    //\todo danko
     for (uint32 i = 0; i < sNameGenStore.GetNumRows(); ++i)
     {
         auto const name_gen_entry = sNameGenStore.LookupEntry(i);
@@ -2065,6 +2068,7 @@ void World::PollCharacterInsertQueue(DatabaseConnection* con)
                 case RACE_DWARF:
                 case RACE_NIGHTELF:
                 case RACE_DRAENEI:
+                case RACE_WORGEN:
                     inf->team = 0;
                     break;
 

@@ -43,7 +43,7 @@ class SpellProc
         }
 
         // Returns true if this spell can proc, false otherwise
-        virtual bool CanProc(Unit* victim, SpellEntry* CastingSpell);
+        virtual bool CanProc(Unit* victim, OLD_SpellEntry* CastingSpell);
 
         // Called when procFlags is to be compared.
         // Return true on success, false otherwise
@@ -54,30 +54,30 @@ class SpellProc
 
         // Called when is proccing from casting spell. It checks proc class mask with spell group type
         // Return true allow proc, false otherwise
-        virtual bool CheckClassMask(Unit* victim, SpellEntry* CastingSpell);
+        virtual bool CheckClassMask(Unit* victim, OLD_SpellEntry* CastingSpell);
 
         // Called after proc chance is rolled
         // Return false so Unit::HandleProc execute subsequent statements
         // Return true if this handle everything, so Unit::HandleProc skips to next iteration
-        virtual bool DoEffect(Unit* victim, SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type);
+        virtual bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type);
 
         // Called just after this object is created. Usefull for initialize object members
         virtual void Init(Object* obj);
 
-        virtual uint32 CalcProcChance(Unit* victim, SpellEntry* CastingSpell);
+        virtual uint32 CalcProcChance(Unit* victim, OLD_SpellEntry* CastingSpell);
 
         // Called when trying to proc on a triggered spell
         // Return true allow proc, false otherwise
-        virtual bool CanProcOnTriggered(Unit* victim, SpellEntry* CastingSpell);
+        virtual bool CanProcOnTriggered(Unit* victim, OLD_SpellEntry* CastingSpell);
 
         // Cast proc spell
-        virtual void CastSpell(Unit* victim, SpellEntry* CastingSpell, int* dmg_overwrite);
+        virtual void CastSpell(Unit* victim, OLD_SpellEntry* CastingSpell, int* dmg_overwrite);
 
         // Spell to proc
-        SpellEntry* mSpell;
+        OLD_SpellEntry* mSpell;
 
         // Spell that created this proc
-        SpellEntry* mOrigSpell;
+        OLD_SpellEntry* mOrigSpell;
 
         // Unit 'owner' of this proc
         Unit* mTarget;
@@ -117,7 +117,7 @@ class SpellProcMgr : public Singleton < SpellProcMgr >
 
         SpellProc* NewSpellProc(Unit* target, uint32 spell_id, uint32 orig_spell_id, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask, Object* obj);
 
-        SpellProc* NewSpellProc(Unit* target, SpellEntry* spell, SpellEntry* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask, Object* obj);
+        SpellProc* NewSpellProc(Unit* target, OLD_SpellEntry* spell, OLD_SpellEntry* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask, Object* obj);
 
     private:
 

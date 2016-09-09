@@ -31,6 +31,9 @@
 #include "Management/AchievementMgr.h"
 #include "Units//Unit.h"
 #include "Storage/DBC/DBCStructures.hpp"
+#include "Storage/DB2/DB2Stores.hpp"
+#include "Storage/DB2/DB2Structures.hpp"
+#include "Management/Guild.h"
 
 
 class QuestLogEntry;
@@ -335,7 +338,7 @@ typedef std::map<uint32, ScriptOverrideList* >      SpellOverrideMap;
 typedef std::map<uint32, uint32>                    SpellOverrideExtraAuraMap;
 typedef std::map<uint32, FactionReputation*>        ReputationMap;
 typedef std::map<uint32, uint64>                    SoloSpells;
-typedef std::map<SpellEntry*, std::pair<uint32, uint32> >StrikeSpellMap;
+typedef std::map<OLD_SpellEntry*, std::pair<uint32, uint32> >StrikeSpellMap;
 typedef std::map<uint32, OnHitSpell >               StrikeSpellDmgMap;
 typedef std::map<uint32, PlayerSkill>               SkillMap;
 typedef std::set<Player**>                          ReferenceSet;
@@ -441,10 +444,10 @@ class SERVER_DECL Player : public Unit
 
     public:
         void SetLastPotion(uint32 itemid) { m_lastPotionId = itemid; }
-        void Cooldown_AddStart(SpellEntry* pSpell);
-        void Cooldown_Add(SpellEntry* pSpell, Item* pItemCaster);
+        void Cooldown_AddStart(OLD_SpellEntry* pSpell);
+        void Cooldown_Add(OLD_SpellEntry* pSpell, Item* pItemCaster);
         void Cooldown_AddItem(ItemProperties const* pProto, uint32 x);
-        bool Cooldown_CanCast(SpellEntry* pSpell);
+        bool Cooldown_CanCast(OLD_SpellEntry* pSpell);
         bool Cooldown_CanCast(ItemProperties const* pProto, uint32 x);
         void UpdatePotionCooldown();
         bool HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoints);
@@ -734,11 +737,11 @@ class SERVER_DECL Player : public Unit
         void SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs);
 
         /// PLEASE DO NOT INLINE!
-        void AddOnStrikeSpell(SpellEntry* sp, uint32 delay)
+        void AddOnStrikeSpell(OLD_SpellEntry* sp, uint32 delay)
         {
-            m_onStrikeSpells.insert(std::map<SpellEntry*, std::pair<uint32, uint32>>::value_type(sp, std::make_pair(delay, 0)));
+            m_onStrikeSpells.insert(std::map<OLD_SpellEntry*, std::pair<uint32, uint32>>::value_type(sp, std::make_pair(delay, 0)));
         }
-        void RemoveOnStrikeSpell(SpellEntry* sp)
+        void RemoveOnStrikeSpell(OLD_SpellEntry* sp)
         {
             m_onStrikeSpells.erase(sp);
         }
@@ -841,8 +844,11 @@ class SERVER_DECL Player : public Unit
         // Guilds
         /////////////////////////////////////////////////////////////////////////////////////////
         Guild* GetGuild() { return m_playerInfo->guild; }
-        bool IsInGuild() {return (m_uint32Values[PLAYER_GUILDID] != 0) ? true : false;}
-        uint32 GetGuildId() { return m_uint32Values[PLAYER_GUILDID]; }
+
+        //\todo danko
+        bool IsInGuild() {return /*(m_playerInfo->guild->GetGuildId() != 0) ? true : */false;}
+        uint32 GetGuildId() { return 0;  /*m_playerInfo->guild->GetGuildId();*/ }
+
         void SetGuildId(uint32 guildId);
         uint32 GetGuildRank() { return m_uint32Values[PLAYER_GUILDRANK]; }
         GuildRank* GetGuildRankS() { return m_playerInfo->guildRank; }
@@ -1013,8 +1019,11 @@ class SERVER_DECL Player : public Unit
         // Movement system
         /////////////////////////////////////////////////////////////////////////////////////////
         void SetMovement(uint8 pType, uint32 flag);
-        void SetSpeeds(uint8 type, float speed);
+        //void SetSpeeds(uint8 type, float speed);
         float GetPlayerSpeed() { return m_runSpeed; }
+        void HandleFall(MovementInfo const& movementInfo);
+        bool IsPlayerJumping(MovementInfo const& minfo, uint16 opcode);
+        void HandleBreathing(MovementInfo & movement_info, WorldSession* pSession);
         uint8 m_currentMovement;
         bool m_isMoving;            /// moving + strafing + jumping
         bool moving;
@@ -1054,7 +1063,7 @@ class SERVER_DECL Player : public Unit
         uint32 GetBlockDamageReduction();
         void ApplyFeralAttackPower(bool apply, Item* item = NULL);
 
-        bool canCast(SpellEntry* m_spellInfo);
+        bool canCast(OLD_SpellEntry* m_spellInfo);
 
         float GetSpellCritFromSpell() { return m_spellcritfromspell; }
         float GetHitFromSpell() { return m_hitfromspell; }
@@ -1184,7 +1193,7 @@ class SERVER_DECL Player : public Unit
         uint32 m_AutoShotAttackTimer;
         bool m_onAutoShot;
         uint64 m_AutoShotTarget;
-        SpellEntry* m_AutoShotSpell;
+        OLD_SpellEntry* m_AutoShotSpell;
         void _InitialReputation();
         void EventActivateGameObject(GameObject* obj);
         void EventDeActivateGameObject(GameObject* obj);
@@ -1311,6 +1320,7 @@ class SERVER_DECL Player : public Unit
         void SoftDisconnect();
         uint32 m_KickDelay;
         uint64 m_CurrentCharm;
+        Transporter* m_CurrentTransporter;
 
         Object* GetSummonedObject() { return m_SummonedObject; };
         void SetSummonedObject(Object* t_SummonedObject) { m_SummonedObject = t_SummonedObject; };
@@ -1418,7 +1428,7 @@ class SERVER_DECL Player : public Unit
         void ApplyLevelInfo(LevelInfo* Info, uint32 Level);
         void BroadcastMessage(const char* Format, ...);
         std::map<uint32, std::set<uint32> > SummonSpells;
-        std::map<uint32, std::map<SpellEntry*, uint16>*> PetSpells;
+        std::map<uint32, std::map<OLD_SpellEntry*, uint16>*> PetSpells;
         void AddSummonSpell(uint32 Entry, uint32 SpellID);
         void RemoveSummonSpell(uint32 Entry, uint32 SpellID);
         std::set<uint32>* GetSummonSpells(uint32 Entry);
@@ -1526,11 +1536,12 @@ class SERVER_DECL Player : public Unit
         uint32 GetXpToLevel() { return GetUInt32Value(PLAYER_NEXT_LEVEL_XP); }
         void SetNextLevelXp(uint32 xp) { SetUInt32Value(PLAYER_NEXT_LEVEL_XP, xp); }
 
+        //\todo danko
         void SetTalentPointsForAllSpec(uint32 amt)
         {
             m_specs[0].SetTP(amt);
             m_specs[1].SetTP(amt);
-            SetUInt32Value(PLAYER_CHARACTER_POINTS1, amt);
+            //SetUInt32Value(PLAYER_CHARACTER_POINTS1, amt);
             smsg_TalentsInfo(false);
         }
 
@@ -1538,27 +1549,27 @@ class SERVER_DECL Player : public Unit
         {
             m_specs[0].SetTP(m_specs[0].GetTP() + amt);
             m_specs[1].SetTP(m_specs[1].GetTP() + amt);
-            SetUInt32Value(PLAYER_CHARACTER_POINTS1, GetUInt32Value(PLAYER_CHARACTER_POINTS1) + amt);
+            //SetUInt32Value(PLAYER_CHARACTER_POINTS1, GetUInt32Value(PLAYER_CHARACTER_POINTS1) + amt);
             smsg_TalentsInfo(false);
         }
 
         void SetCurrentTalentPoints(uint32 points)
         {
             m_specs[m_talentActiveSpec].SetTP(points);
-            SetUInt32Value(PLAYER_CHARACTER_POINTS1, points);
+            //SetUInt32Value(PLAYER_CHARACTER_POINTS1, points);
             smsg_TalentsInfo(false);
         }
 
-        uint32 GetCurrentTalentPoints()
+        /*uint32 GetCurrentTalentPoints()
         {
             uint32 points = GetUInt32Value(PLAYER_CHARACTER_POINTS1);
             Arcemu::Util::ArcemuAssert(points == m_specs[m_talentActiveSpec].GetTP());
             return points;
-        }
+        }*/
 
-        void SetPrimaryProfessionPoints(uint32 amt) { SetUInt32Value(PLAYER_CHARACTER_POINTS2, amt); }
-        void ModPrimaryProfessionPoints(int32 amt) { ModUnsigned32Value(PLAYER_CHARACTER_POINTS2, amt); }
-        uint32 GetPrimaryProfessionPoints() { return GetUInt32Value(PLAYER_CHARACTER_POINTS2); }
+        void SetPrimaryProfessionPoints(uint32 amt) { SetUInt32Value(PLAYER_CHARACTER_POINTS, amt); }
+        void ModPrimaryProfessionPoints(int32 amt) { ModUnsigned32Value(PLAYER_CHARACTER_POINTS, amt); }
+        uint32 GetPrimaryProfessionPoints() { return GetUInt32Value(PLAYER_CHARACTER_POINTS); }
 
         void ModPosDamageDoneMod(uint32 school, uint32 value) { ModUnsigned32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + school, value); }
         uint32 GetPosDamageDoneMod(uint32 school) { return GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + school); }
@@ -1569,20 +1580,21 @@ class SERVER_DECL Player : public Unit
         void ModHealingDoneMod(uint32 value) { ModUnsigned32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS, value); }
         uint32 GetHealingDoneMod() { return GetUInt32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS); }
 
-        void SetAmmoId(uint32 id) { SetUInt32Value(PLAYER_AMMO_ID, id); }
+        //\todo danko
+        /*void SetAmmoId(uint32 id) { SetUInt32Value(PLAYER_AMMO_ID, id); }
         uint32 GetAmmoId() { return GetUInt32Value(PLAYER_AMMO_ID); }
 
         void SetHonorCurrency(uint32 value) { SetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, value); }
         void ModHonorCurrency(uint32 value) { ModUnsigned32Value(PLAYER_FIELD_HONOR_CURRENCY, value); }
         uint32 GetHonorCurrency() { return GetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY); }
-        void AddHonor(uint32 honorPoints, bool sendUpdate);
+        void AddHonor(uint32 honorPoints, bool sendUpdate);*/
         void UpdateHonor();
 
-        void SetArenaCurrency(uint32 value) { SetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, value); }
+        /*void SetArenaCurrency(uint32 value) { SetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, value); }
         void ModArenaCurrency(uint32 value) { ModUnsigned32Value(PLAYER_FIELD_ARENA_CURRENCY, value); }
         uint32 GetArenaCurrency() { return GetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY); }
         void AddArenaPoints(uint32 arenaPoints, bool sendUpdate);
-        void UpdateArenaPoints();
+        void UpdateArenaPoints();*/
 
         void SetGlyph(uint32 slot, uint32 id) { SetUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot, id); }
         uint32 GetGlyph(uint32 slot) { return GetUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot); }
@@ -1685,7 +1697,7 @@ class SERVER_DECL Player : public Unit
         void SummonRequest(uint32 Requestor, uint32 ZoneID, uint32 MapID, uint32 InstanceID, const LocationVector & Position);
 
         bool m_deathVision;
-        SpellEntry* last_heal_spell;
+        OLD_SpellEntry* last_heal_spell;
         LocationVector m_sentTeleportPosition;
 
         bool InBattleground() const { return m_bgQueueInstanceId != 0; }

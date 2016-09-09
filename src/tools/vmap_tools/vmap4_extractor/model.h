@@ -20,7 +20,6 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include "loadlib.h"
 #include "vec3d.h"
 #include "modelheaders.h"
 #include <vector>
@@ -49,7 +48,9 @@ public:
     bool ConvertToVMAPModel(char const* outfilename);
 
     Model(std::string& filename);
-    ~Model() { _unload(); }
+    ~Model() {
+        _unload();
+    }
 };
 
 class ModelInstance

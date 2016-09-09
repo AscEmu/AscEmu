@@ -28,9 +28,9 @@ bool ChatHandler::HandleDebugDumpMovementCommand(const char* args, WorldSession*
         auto me = session->GetPlayerOrThrow();
 
         SystemMessage(session, "Position: [%f, %f, %f, %f]", me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
-        SystemMessage(session, "On transport: %s", me->obj_movement_info.transporter_info.guid != 0 ? "yes" : "no");
-        SystemMessage(session, "Transport GUID: %lu", me->obj_movement_info.transporter_info.guid);
-        SystemMessage(session, "Transport relative position: [%f, %f, %f, %f]", me->obj_movement_info.transporter_info.position.x, me->obj_movement_info.transporter_info.position.y, me->obj_movement_info.transporter_info.position.z, me->obj_movement_info.transporter_info.position.o);
+        SystemMessage(session, "On transport: %s", me->movement_info.t_guid != 0 ? "yes" : "no");
+        SystemMessage(session, "Transport GUID: %lu", me->movement_info.t_guid);
+        SystemMessage(session, "Transport relative position: [%f, %f, %f, %f]", me->movement_info.t_pos.m_positionX, me->movement_info.t_pos.m_positionY, me->movement_info.t_pos.m_positionZ, me->movement_info.t_pos.m_orientation);
 
         return true;
     }
@@ -918,7 +918,7 @@ bool ChatHandler::HandleClearWorldStatesCommand(const char* args, WorldSession* 
 
     BlueSystemMessage(session, "Clearing worldstates for zone %u", zone);
 
-    WorldPacket data(SMSG_INIT_WORLD_STATES, 16);
+    WorldPacket data(SMSG_INIT_WORLD_STATES, (4 + 4 + 4 + 2 + 8 * 8));
 
     data << uint32(p->GetMapId());
     data << uint32(p->GetZoneId());
@@ -971,7 +971,7 @@ bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
     }
     else
     {
-        SpellEntry* Sp = dbcSpell.LookupEntryForced(SpellID);
+        OLD_SpellEntry* Sp = dbcSpell.LookupEntryForced(SpellID);
         if (!Sp)
         {
             SystemMessage(m_session, "SpellID %u is invalid.", SpellID);
@@ -1143,10 +1143,10 @@ struct spell_thingo
     uint32 target;
 };
 
-std::list<SpellEntry*> aiagent_spells;
+std::list<OLD_SpellEntry*> aiagent_spells;
 std::map<uint32, spell_thingo> aiagent_extra;
 
-SpellCastTargets SetTargets(SpellEntry* sp, uint32 type, uint32 targettype, Unit* dst, Creature* src)
+SpellCastTargets SetTargets(OLD_SpellEntry* sp, uint32 type, uint32 targettype, Unit* dst, Creature* src)
 {
     SpellCastTargets targets;
     targets.m_unitTarget = 0;
@@ -1214,7 +1214,7 @@ bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_s
         if (!aiagent_spells.size())
             break;
 
-        SpellEntry* sp = *aiagent_spells.begin();
+        OLD_SpellEntry* sp = *aiagent_spells.begin();
         aiagent_spells.erase(aiagent_spells.begin());
         BlueSystemMessage(m_session, "Casting %u, " MSG_COLOR_SUBWHITE "%u remaining.", sp->Id, aiagent_spells.size());
 
@@ -1244,13 +1244,13 @@ bool ChatHandler::HandleAIAgentDebugBegin(const char* args, WorldSession* m_sess
 
     do
     {
-        SpellEntry* se = dbcSpell.LookupEntryForced(result->Fetch()[0].GetUInt32());
+        OLD_SpellEntry* se = dbcSpell.LookupEntryForced(result->Fetch()[0].GetUInt32());
         if (se)
             aiagent_spells.push_back(se);
     } while (result->NextRow());
     delete result;
 
-    for (std::list<SpellEntry*>::iterator itr = aiagent_spells.begin(); itr != aiagent_spells.end(); ++itr)
+    for (std::list<OLD_SpellEntry*>::iterator itr = aiagent_spells.begin(); itr != aiagent_spells.end(); ++itr)
     {
         result = WorldDatabase.Query("SELECT * FROM ai_agents WHERE spell = %u", (*itr)->Id);
         ARCEMU_ASSERT(result != NULL);
@@ -1278,7 +1278,7 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
     }
 
     uint32 spellid = atol(args);
-    SpellEntry* spellentry = dbcSpell.LookupEntryForced(spellid);
+    OLD_SpellEntry* spellentry = dbcSpell.LookupEntryForced(spellid);
     if (!spellentry)
     {
         RedSystemMessage(m_session, "Invalid spell id!");
@@ -1319,7 +1319,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
     }
 
     uint32 spellId = atol(args);
-    SpellEntry* spellentry = dbcSpell.LookupEntryForced(spellId);
+    OLD_SpellEntry* spellentry = dbcSpell.LookupEntryForced(spellId);
     if (!spellentry)
     {
         RedSystemMessage(m_session, "Invalid spell id!");
@@ -1379,7 +1379,7 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
     }
 
     uint32 spellid = atol(args);
-    SpellEntry* spellentry = dbcSpell.LookupEntryForced(spellid);
+    OLD_SpellEntry* spellentry = dbcSpell.LookupEntryForced(spellid);
     if (!spellentry)
     {
         RedSystemMessage(m_session, "Invalid spell id!");

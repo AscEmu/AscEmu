@@ -435,7 +435,7 @@ class SERVER_DECL Aura : public EventableObject
 {
     public:
 
-        Aura(SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
+        Aura(OLD_SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
         ~Aura();
 
         void ExpireRemove();
@@ -443,7 +443,7 @@ class SERVER_DECL Aura : public EventableObject
         void Expire();
         void AddMod(uint32 t, int32 a, uint32 miscValue, uint32 i);
 
-        inline SpellEntry* GetSpellProto() const { return m_spellProto; }
+        inline OLD_SpellEntry* GetSpellProto() const { return m_spellProto; }
         inline uint32 GetSpellId() const { return m_spellProto->Id; }
         inline bool IsPassive() { if (!m_spellProto) return false; return (m_spellProto->Attributes & ATTRIBUTES_PASSIVE && !m_areaAura); }
 
@@ -755,13 +755,13 @@ class SERVER_DECL Aura : public EventableObject
         void UpdateAuraModDecreaseSpeed();
 
         void SendModifierLog(int32** m, int32 v, uint32* mask, uint8 type, bool pct = false);
-        void SendDummyModifierLog(std::map<SpellEntry*, uint32> * m, SpellEntry* spellInfo, uint32 i, bool apply, bool pct = false);
+        void SendDummyModifierLog(std::map<OLD_SpellEntry*, uint32> * m, OLD_SpellEntry* spellInfo, uint32 i, bool apply, bool pct = false);
 
         // Events
         void EventPeriodicDamage(uint32);
         void EventPeriodicDamagePercent(uint32);
         void EventPeriodicHeal(uint32);
-        void EventPeriodicTriggerSpell(SpellEntry* spellInfo, bool overridevalues, int32 overridevalue);
+        void EventPeriodicTriggerSpell(OLD_SpellEntry* spellInfo, bool overridevalues, int32 overridevalue);
         void EventPeriodicTrigger(uint32 amount, uint32 type);
         void EventPeriodicEnergize(uint32, uint32);
         void EventPeriodicEnergizeVariable(uint32, uint32);
@@ -794,7 +794,7 @@ class SERVER_DECL Aura : public EventableObject
 
         virtual bool IsAbsorb() { return false; }
 
-        SpellEntry* m_spellProto;
+        OLD_SpellEntry* m_spellProto;
         AreaAuraList targets; // This is only used for AA
         uint64 m_casterGuid;
         uint16 m_auraSlot;

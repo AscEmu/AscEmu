@@ -78,6 +78,198 @@ struct FactionDBC;
 
 typedef std::unordered_map<uint32, uint64> UniqueAuraTargetMap;
 
+enum MovementFlags
+{
+    MOVEFLAG_NONE = 0x00000000,   //old MOVEFLAG_MOVE_STOP
+    MOVEFLAG_FORWARD = 0x00000001,   //old MOVEFLAG_MOVE_FORWARD
+    MOVEFLAG_BACKWARD = 0x00000002,   //old MOVEFLAG_MOVE_BACKWARD
+    MOVEFLAG_STRAFE_LEFT = 0x00000004,   //old MOVEFLAG_STRAFE_LEFT
+    MOVEFLAG_STRAFE_RIGHT = 0x00000008,   //old MOVEFLAG_STRAFE_RIGHT
+    MOVEFLAG_LEFT = 0x00000010,   //old MOVEFLAG_TURN_LEFT
+    MOVEFLAG_RIGHT = 0x00000020,   //old MOVEFLAG_TURN_RIGHT
+    MOVEFLAG_PITCH_UP = 0x00000040,   //old MOVEFLAG_PITCH_UP
+    MOVEFLAG_PITCH_DOWN = 0x00000080,   //old MOVEFLAG_PITCH_DOWN
+    MOVEFLAG_WALKING = 0x00000100,   //old MOVEFLAG_WALK 
+    MOVEFLAG_DISABLE_GRAVITY = 0x00000200,   //old MOVEFLAG_TRANSPORT
+    MOVEFLAG_ROOT = 0x00000400,   //old MOVEFLAG_ROOTED
+    MOVEFLAG_FALLING = 0x00000800,   //old MOVEFLAG_FALLING
+    MOVEFLAG_FALLING_FAR = 0x00001000,   //old MOVEFLAG_FALLING_FAR
+    MOVEFLAG_PENDING_STOP = 0x00002000,   //old MOVEFLAG_TB_PENDING_STOP
+    MOVEFLAG_PENDING_STRAFE_STOP = 0x00004000,   //old MOVEFLAG_TB_PENDING_UNSTRAFE
+    MOVEFLAG_PENDING_FORWARD = 0x00008000,   //old MOVEFLAG_TB_PENDING_FORWARD
+    MOVEFLAG_PENDING_BACKWARD = 0x00010000,   //old MOVEFLAG_TB_PENDING_BACKWARD
+    MOVEFLAG_PENDING_STRAFE_LEFT = 0x00020000,
+    MOVEFLAG_PENDING_STRAFE_RIGHT = 0x00040000,
+    MOVEFLAG_PENDING_ROOT = 0x00080000,
+    MOVEFLAG_SWIMMING = 0x00100000,   //old MOVEFLAG_SWIMMING
+    MOVEFLAG_ASCENDING = 0x00200000,
+    MOVEFLAG_DESCENDING = 0x00400000,
+    MOVEFLAG_CAN_FLY = 0x00800000,   //old MOVEFLAG_CAN_FLY
+    MOVEFLAG_FLYING = 0x01000000,   //old MOVEFLAG_AIR_SUSPENSION //old MOVEFLAG_AIR_SWIMMING
+    MOVEFLAG_SPLINE_ELEVATION = 0x02000000,   //old MOVEFLAG_SPLINE_ELEVATION
+    MOVEFLAG_WATERWALKING = 0x04000000,   //old MOVEFLAG_WATER_WALK
+    MOVEFLAG_FALLING_SLOW = 0x08000000,   //old MOVEFLAG_FEATHER_FALL //old MOVEFLAG_FREE_FALLING //old MOVEFLAG_SPLINE_ENABLED
+    MOVEFLAG_HOVER = 0x10000000,   //old MOVEFLAG_LEVITATE
+    MOVEFLAG_NO_COLLISION = 0x20000000,   //old MOVEFLAG_NO_COLLISION //old MOVEFLAG_LOCAL
+
+                                          // Masks
+                                          MOVEFLAG_MASK_MOVING =
+                                          MOVEFLAG_FORWARD | MOVEFLAG_BACKWARD | MOVEFLAG_STRAFE_LEFT | MOVEFLAG_STRAFE_RIGHT |
+    MOVEFLAG_PITCH_UP | MOVEFLAG_PITCH_DOWN | MOVEFLAG_FALLING | MOVEFLAG_FALLING_FAR | MOVEFLAG_ASCENDING | MOVEFLAG_DESCENDING |
+    MOVEFLAG_SPLINE_ELEVATION,
+
+    MOVEFLAG_MASK_TURNING = MOVEFLAG_LEFT | MOVEFLAG_RIGHT,
+
+    MOVEFLAG_FALLING_MASK = 0x6000,
+    MOVEFLAG_MOTION_MASK = 0xE00F,
+    MOVEFLAG_PENDING_MASK = 0x7F0000,
+    MOVEFLAG_PENDING_STRAFE_MASK = 0x600000,
+    MOVEFLAG_PENDING_MOVE_MASK = 0x180000,
+    MOVEFLAG_FULL_FALLING_MASK = 0xE000
+};
+
+enum MovementFlags2
+{
+    MOVEFLAG2_NONE = 0x0000,
+    MOVEFLAG2_NO_STRAFE = 0x0001,
+    MOVEFLAG2_NO_JUMPING = 0x0002,
+    MOVEFLAG2_FULLSPEED_TURNING = 0x0004,
+    MOVEFLAG2_FULLSPEED_PITCHING = 0x0008,
+    MOVEFLAG2_ALLOW_PITCHING = 0x0010,
+    MOVEFLAG2_UNK4 = 0x0020,
+    MOVEFLAG2_UNK5 = 0x0040,
+    MOVEFLAG2_UNK6 = 0x0080,
+    MOVEFLAG2_UNK7 = 0x0100,
+    MOVEFLAG2_INTERP_MOVEMENT = 0x0200,
+    MOVEFLAG2_INTERP_TURNING = 0x0400,
+    MOVEFLAG2_INTERP_PITCHING = 0x0800,
+    MOVEFLAG2_INTERP_MASK = MOVEFLAG2_INTERP_MOVEMENT | MOVEFLAG2_INTERP_TURNING | MOVEFLAG2_INTERP_PITCHING
+};
+
+struct Position
+{
+    Position() : m_positionX(0.0f), m_positionY(0.0f), m_positionZ(0.0f), m_orientation(0.0f) {}
+    Position(float _x, float _y, float _z, float _o) : m_positionX(_x), m_positionY(_y), m_positionZ(_z), m_orientation(_o) {}
+
+    void Relocate(float x, float y)
+    {
+        m_positionX = x; m_positionY = y;
+    }
+    void Relocate(float x, float y, float z)
+    {
+        m_positionX = x; m_positionY = y; m_positionZ = z;
+    }
+    void Relocate(float x, float y, float z, float orientation)
+    {
+        m_positionX = x; m_positionY = y; m_positionZ = z; SetOrientation(orientation);
+    }
+    void Relocate(const Position &pos)
+    {
+        m_positionX = pos.m_positionX; m_positionY = pos.m_positionY; m_positionZ = pos.m_positionZ; SetOrientation(pos.m_orientation);
+    }
+    void Relocate(const Position* pos)
+    {
+        m_positionX = pos->m_positionX; m_positionY = pos->m_positionY; m_positionZ = pos->m_positionZ; SetOrientation(pos->m_orientation);
+    }
+    void RelocateOffset(const Position &offset);
+    void SetOrientation(float orientation)
+    {
+        m_orientation = NormalizeOrientation(orientation);
+    }
+
+    float m_positionX, m_positionY, m_positionZ, m_orientation;
+
+    // modulos a radian orientation to the range of 0..2PI
+    static float NormalizeOrientation(float o)
+    {
+        // fmod only supports positive numbers. Thus we have
+        // to emulate negative numbers
+        if (o < 0)
+        {
+            float mod = o *-1;
+            mod = fmod(mod, 2.0f * static_cast<float>(M_PI));
+            mod = -mod + 2.0f * static_cast<float>(M_PI);
+            return mod;
+        }
+        return fmod(o, 2.0f * static_cast<float>(M_PI));
+    }
+};
+
+struct MovementInfo
+{
+    // common
+    uint64 guid;
+    uint32 flags;
+    uint16 flags2;
+    Position pos;
+    uint32 time;
+    // transport
+    uint64 t_guid;
+    Position t_pos;
+    int8 t_seat;
+    uint32 t_time;
+    uint32 t_time2;
+    uint32 t_time3;
+    // swimming/flying
+    float pitch;
+    // falling
+    uint32 fallTime;
+    // jumping
+    float j_zspeed, j_cosAngle, j_sinAngle, j_xyspeed;
+    // spline
+    float splineElevation;
+
+    MovementInfo()
+    {
+        pos.Relocate(0, 0, 0, 0);
+        guid = 0;
+        flags = 0;
+        flags2 = 0;
+        time = t_time = t_time2 = t_time3 = fallTime = 0;
+        splineElevation = 0;
+        pitch = j_zspeed = j_sinAngle = j_cosAngle = j_xyspeed = 0.0f;
+        t_guid = 0;
+        t_pos.Relocate(0, 0, 0, 0);
+        t_seat = -1;
+    }
+
+    float GetPitch() const {
+        return pitch;
+    }
+
+    uint32 GetMovementFlags() const {
+        return flags;
+    }
+    void SetMovementFlags(uint32 flag) {
+        flags = flag;
+    }
+    void AddMovementFlag(uint32 flag) {
+        flags |= flag;
+    }
+    void RemoveMovementFlag(uint32 flag) {
+        flags &= ~flag;
+    }
+    bool HasMovementFlag(uint32 flag) const {
+        return flags & flag;
+    }
+
+    uint16 GetExtraMovementFlags() const {
+        return flags2;
+    }
+    void AddExtraMovementFlag(uint16 flag) {
+        flags2 |= flag;
+    }
+    bool HasExtraMovementFlag(uint16 flag) const {
+        return flags2 & flag;
+    }
+
+    void SetFallTime(uint32 time) {
+        fallTime = time;
+    }
+
+    void OutDebug();
+};
+
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Checks for conditions specified in subclasses on Auras. When calling operator()
 /// it tells if the conditions are met.
@@ -138,7 +330,7 @@ struct AreaAura
 
 typedef struct
 {
-    SpellEntry* spell_info;
+    OLD_SpellEntry* spell_info;
     uint32 charges;
 } ExtraStrike;
 
@@ -271,36 +463,36 @@ class SERVER_DECL Unit : public Object
         uint8 getStandState() { return ((uint8)m_uint32Values[UNIT_FIELD_BYTES_1]); }
 
         //// Combat
-        uint32 GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability);
-        void Strike(Unit* pVictim, uint32 weapon_damage_type, SpellEntry* ability, int32 add_damage, int32 pct_dmg_mod, uint32 exclusive_damage, bool disable_proc, bool skip_hit_check, bool force_crit = false);
+        uint32 GetSpellDidHitResult(Unit* pVictim, uint32 weapon_damage_type, OLD_SpellEntry* ability);
+        void Strike(Unit* pVictim, uint32 weapon_damage_type, OLD_SpellEntry* ability, int32 add_damage, int32 pct_dmg_mod, uint32 exclusive_damage, bool disable_proc, bool skip_hit_check, bool force_crit = false);
         uint32 m_procCounter;
-        uint32 HandleProc(uint32 flag, Unit* Victim, SpellEntry* CastingSpell, bool is_triggered = false, uint32 dmg = -1, uint32 abs = 0, uint32 weapon_damage_type = 0);
+        uint32 HandleProc(uint32 flag, Unit* Victim, OLD_SpellEntry* CastingSpell, bool is_triggered = false, uint32 dmg = -1, uint32 abs = 0, uint32 weapon_damage_type = 0);
         void HandleProcDmgShield(uint32 flag, Unit* attacker);//almost the same as handleproc :P
-        bool IsCriticalDamageForSpell(Object* victim, SpellEntry* spell);
-        float GetCriticalDamageBonusForSpell(Object* victim, SpellEntry* spell, float amount);
-        bool IsCriticalHealForSpell(Object* victim, SpellEntry* spell);
-        float GetCriticalHealBonusForSpell(Object* victim, SpellEntry* spell, float amount);
+        bool IsCriticalDamageForSpell(Object* victim, OLD_SpellEntry* spell);
+        float GetCriticalDamageBonusForSpell(Object* victim, OLD_SpellEntry* spell, float amount);
+        bool IsCriticalHealForSpell(Object* victim, OLD_SpellEntry* spell);
+        float GetCriticalHealBonusForSpell(Object* victim, OLD_SpellEntry* spell, float amount);
 
-        void RemoveExtraStrikeTarget(SpellEntry* spell_info);
-        void AddExtraStrikeTarget(SpellEntry* spell_info, uint32 charges);
+        void RemoveExtraStrikeTarget(OLD_SpellEntry* spell_info);
+        void AddExtraStrikeTarget(OLD_SpellEntry* spell_info, uint32 charges);
 
         int32 GetAP();
         int32 GetRAP();
 
         uint8 CastSpell(Unit* Target, uint32 SpellID, bool triggered);
-        uint8 CastSpell(Unit* Target, SpellEntry* Sp, bool triggered);
+        uint8 CastSpell(Unit* Target, OLD_SpellEntry* Sp, bool triggered);
         uint8 CastSpell(uint64 targetGuid, uint32 SpellID, bool triggered);
-        uint8 CastSpell(uint64 targetGuid, SpellEntry* Sp, bool triggered);
+        uint8 CastSpell(uint64 targetGuid, OLD_SpellEntry* Sp, bool triggered);
         uint8 CastSpell(Unit* Target, uint32 SpellID, uint32 forced_basepoints, bool triggered);
-        uint8 CastSpell(Unit* Target, SpellEntry* Sp, uint32 forced_basepoints, bool triggered);
+        uint8 CastSpell(Unit* Target, OLD_SpellEntry* Sp, uint32 forced_basepoints, bool triggered);
         uint8 CastSpell(Unit* Target, uint32 SpellID, uint32 forced_basepoints, int32 charges, bool triggered);
-        uint8 CastSpell(Unit* Target, SpellEntry* Sp, uint32 forced_basepoints, int32 charges, bool triggered);
-        void CastSpellAoF(float x, float y, float z, SpellEntry* Sp, bool triggered);
-        void EventCastSpell(Unit* Target, SpellEntry* Sp);
+        uint8 CastSpell(Unit* Target, OLD_SpellEntry* Sp, uint32 forced_basepoints, int32 charges, bool triggered);
+        void CastSpellAoF(float x, float y, float z, OLD_SpellEntry* Sp, bool triggered);
+        void EventCastSpell(Unit* Target, OLD_SpellEntry* Sp);
 
         bool IsCasting();
         bool IsInInstance();
-        void CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, SpellEntry* ability, float ArmorPctReduce) ;
+        void CalculateResistanceReduction(Unit* pVictim, dealdamage* dmg, OLD_SpellEntry* ability, float ArmorPctReduce) ;
         void RegenerateHealth();
         void RegeneratePower(bool isinterrupted);
         void setHRegenTimer(uint32 time) { m_H_regenTimer = static_cast<uint16>(time); }
@@ -421,17 +613,17 @@ class SERVER_DECL Unit : public Object
         bool IsControlledByPlayer();
 
         // Auras that can affect only one target at a time
-        uint64 GetCurrentUnitForSingleTargetAura(SpellEntry* spell);
+        uint64 GetCurrentUnitForSingleTargetAura(OLD_SpellEntry* spell);
         uint64 GetCurrentUnitForSingleTargetAura(uint32* name_hashes, uint32* index);
-        void SetCurrentUnitForSingleTargetAura(SpellEntry* spell, uint64 guid);
-        void RemoveCurrentUnitForSingleTargetAura(SpellEntry* spell);
+        void SetCurrentUnitForSingleTargetAura(OLD_SpellEntry* spell, uint64 guid);
+        void RemoveCurrentUnitForSingleTargetAura(OLD_SpellEntry* spell);
         void RemoveCurrentUnitForSingleTargetAura(uint32 name_hash);
 
         // ProcTrigger
         std::list<SpellProc*> m_procSpells;
         SpellProc* AddProcTriggerSpell(uint32 spell_id, uint32 orig_spell_id, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
-        SpellProc* AddProcTriggerSpell(SpellEntry* spell, SpellEntry* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
-        SpellProc* AddProcTriggerSpell(SpellEntry* sp, uint64 caster, uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
+        SpellProc* AddProcTriggerSpell(OLD_SpellEntry* spell, OLD_SpellEntry* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
+        SpellProc* AddProcTriggerSpell(OLD_SpellEntry* sp, uint64 caster, uint32* groupRelation, uint32* procClassMask = NULL, Object* obj = NULL);
         SpellProc* GetProcTriggerSpell(uint32 spellId, uint64 casterGuid = 0);
         void RemoveProcTriggerSpell(uint32 spellId, uint64 casterGuid = 0, uint64 misc = 0);
 
@@ -454,9 +646,9 @@ class SERVER_DECL Unit : public Object
         void InterruptSpell();
 
         //caller is the caster
-        int32 GetSpellDmgBonus(Unit* pVictim, SpellEntry* spellInfo, int32 base_dmg, bool isdot);
+        int32 GetSpellDmgBonus(Unit* pVictim, OLD_SpellEntry* spellInfo, int32 base_dmg, bool isdot);
 
-        float CalcSpellDamageReduction(Unit* victim, SpellEntry* spell, float res);
+        float CalcSpellDamageReduction(Unit* victim, OLD_SpellEntry* spell, float res);
 
         uint32 m_addDmgOnce;
         uint32 m_ObjectSlots[4];
@@ -796,7 +988,8 @@ class SERVER_DECL Unit : public Object
         bool GetSpeedDecrease();
         int32 m_mountedspeedModifier;
         int32 m_flyspeedModifier;
-        virtual void SetSpeeds(uint8 type, float speed){}
+        //virtual void SetSpeeds(uint8 type, float speed){}
+        void SetSpeeds(uint8 type, float speed, bool forced = false);
         void UpdateSpeed();
 
         void EnableFlight();
@@ -862,8 +1055,8 @@ class SERVER_DECL Unit : public Object
 
         void SetFacing(float newo);     //only working if creature is idle
 
-        AuraCheckResponse AuraCheck(SpellEntry* proto, Object* caster = NULL);
-        AuraCheckResponse AuraCheck(SpellEntry* proto, Aura* aur, Object* caster = NULL);
+        AuraCheckResponse AuraCheck(OLD_SpellEntry* proto, Object* caster = NULL);
+        AuraCheckResponse AuraCheck(OLD_SpellEntry* proto, Aura* aur, Object* caster = NULL);
 
         uint16 m_diminishCount[DIMINISHING_GROUP_COUNT];
         uint8 m_diminishAuraCount[DIMINISHING_GROUP_COUNT];
@@ -886,7 +1079,7 @@ class SERVER_DECL Unit : public Object
         uint8 FindVisualSlot(uint32 SpellId, bool IsPos);
         uint32 m_auravisuals[MAX_NEGATIVE_VISUAL_AURAS_END];
 
-        SpellEntry* pLastSpell;
+        OLD_SpellEntry* pLastSpell;
         bool bProcInUse;
         bool bInvincible;
         Player* m_redirectSpellPackets;
@@ -909,7 +1102,7 @@ class SERVER_DECL Unit : public Object
 
         void CancelSpell(Spell* ptr);
         void EventStopChanneling(bool abort);
-        void EventStrikeWithAbility(uint64 guid, SpellEntry* sp, uint32 damage);
+        void EventStrikeWithAbility(uint64 guid, OLD_SpellEntry* sp, uint32 damage);
         void DispelAll(bool positive);
 
         void SendPowerUpdate(bool self);
@@ -1038,9 +1231,9 @@ class SERVER_DECL Unit : public Object
         void SetAttackPower(uint32 amt) { SetUInt32Value(UNIT_FIELD_ATTACK_POWER, amt); }
         uint32 GetAttackPower() { return GetUInt32Value(UNIT_FIELD_ATTACK_POWER); }
 
-        void SetAttackPowerMods(uint32 amt) { SetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt); }
-        uint32 GetAttackPowerMods() { return GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS); }
-        void ModAttackPowerMods(uint32 amt) { ModUnsigned32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt); }
+        void SetAttackPowerMods(uint32 amt) { SetUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS, amt); }
+        uint32 GetAttackPowerMods() { return GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS); }
+        void ModAttackPowerMods(uint32 amt) { ModUnsigned32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS, amt); }
 
         void SetAttackPowerMultiplier(float amt) { SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER, amt); }
         float GetAttackPowerMultiplier() { return GetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER); }
@@ -1051,9 +1244,9 @@ class SERVER_DECL Unit : public Object
         void SetRangedAttackPower(uint32 amt) { SetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER, amt); }
         uint32 GetRangedAttackPower() { return GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER); }
 
-        void SetRangedAttackPowerMods(uint32 amt) { SetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt); }
-        uint32 GetRangedAttackPowerMods() { return GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS); }
-        void ModRangedAttackPowerMods(uint32 amt) { ModUnsigned32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt); }
+        void SetRangedAttackPowerMods(uint32 amt) { SetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS, amt); }
+        uint32 GetRangedAttackPowerMods() { return GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS); }
+        void ModRangedAttackPowerMods(uint32 amt) { ModUnsigned32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS, amt); }
 
         void SetRangedAttackPowerMultiplier(float amt) { SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, amt); }
         float GetRangedAttackPowerMultiplier() { return GetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER); }
@@ -1072,7 +1265,7 @@ class SERVER_DECL Unit : public Object
         void setGender(uint8 gender) { SetByte(UNIT_FIELD_BYTES_0, 2, gender); }
 
         void SetPowerType(uint8 type) { SetByte(UNIT_FIELD_BYTES_0, 3, type); }
-        uint8 GetPowerType() { return GetByte(UNIT_FIELD_BYTES_0, 3); }
+        uint8 GetPowerType() { return (GetUInt32Value(UNIT_FIELD_BYTES_0) >> 24); }
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         void SetHealth(uint32 val) { SetUInt32Value(UNIT_FIELD_HEALTH,  val); }
@@ -1084,31 +1277,40 @@ class SERVER_DECL Unit : public Object
         void ModHealth(int32 val) { ModUnsigned32Value(UNIT_FIELD_HEALTH, val); }
         void ModMaxHealth(int32 val) { ModUnsigned32Value(UNIT_FIELD_MAXHEALTH, val); }
 
+        int8 PowerFields[11];
+
         void SetPower(uint32 type, int32 value);
+        uint32 GetPower(uint32 index);
 
         void ModPower(uint32 index, int32 value)
         {
-            int32 power = static_cast< int32 >(m_uint32Values[ UNIT_FIELD_POWER1 + index ]);
-            int32 maxpower = static_cast< int32 >(m_uint32Values[ UNIT_FIELD_MAXPOWER1 + index ]);
-
-            if (value <= power)
-                SetUInt32Value(UNIT_FIELD_POWER1 + index, 0);
-            else
-                SetUInt32Value(UNIT_FIELD_POWER1 + index, power + value);
-
-            if ((value + power) > maxpower)
-                SetUInt32Value(UNIT_FIELD_POWER1 + index, maxpower);
-            else
-                SetUInt32Value(UNIT_FIELD_POWER1 + index, power + value);
+            int32 power = GetPower(index);
+            SetPower(index, power + value);
         }
 
-        uint32 GetPower(uint32 index) { return GetUInt32Value(UNIT_FIELD_POWER1 + index); }
+        void SetMaxPower(uint32 index, uint32 value)
+        {
+            if (PowerFields[index] == -1)
+                return;
 
-        void SetMaxPower(uint32 index, uint32 value) { SetUInt32Value(UNIT_FIELD_MAXPOWER1 + index, value); }
+            SetUInt32Value(UNIT_FIELD_MAXPOWER1 + PowerFields[index], value);
+        }
 
-        void ModMaxPower(uint32 index, int32 value) { ModUnsigned32Value(UNIT_FIELD_MAXPOWER1 + index, value); }
+        void ModMaxPower(uint32 index, int32 value)
+        {
+            if (PowerFields[index] == -1)
+                return;
 
-        uint32 GetMaxPower(uint32 index) { return GetUInt32Value(UNIT_FIELD_MAXPOWER1 + index); }
+            SetMaxPower(index, GetMaxPower(index) + value);
+        }
+
+        uint32 GetMaxPower(uint32 index)
+        {
+            if (PowerFields[index] == -1)
+                return 0;
+
+            return GetUInt32Value(UNIT_FIELD_MAXPOWER1 + PowerFields[index]);
+        }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1223,22 +1425,33 @@ class SERVER_DECL Unit : public Object
 
         void BuildHeartBeatMsg(WorldPacket* data);
 
-        void BuildMovementPacket(ByteBuffer* data);
-        void BuildMovementPacket(ByteBuffer* data, float x, float y, float z, float o);
+        void BuildMovementPacket(ByteBuffer *data) const;
+        void ReadMovementInfo(WorldPacket& data, MovementInfo* mi);
+        void WriteMovementInfo(WorldPacket& data);
 
         MovementInfo* GetMovementInfo() { return &movement_info; }
+        MovementInfo movement_info;
 
-        uint32 GetUnitMovementFlags() const { return movement_info.flags; }   //checked
-        void SetUnitMovementFlags(uint32 f) { movement_info.flags = f; }
         void AddUnitMovementFlag(uint32 f) { movement_info.flags |= f; }
         void RemoveUnitMovementFlag(uint32 f) { movement_info.flags &= ~f; }
-        bool HasUnitMovementFlag(uint32 f) const { return (movement_info.flags & f) != 0; }
+        bool HasUnitMovementFlag(uint32 f) const { return (movement_info.flags & f) == f; }
+        uint32 GetUnitMovementFlags() const { return movement_info.flags; }
+        void SetUnitMovementFlags(uint32 f) { movement_info.flags = f; }
 
+        void AddExtraUnitMovementFlag(uint16 f) { movement_info.flags2 |= f; }
+        void RemoveExtraUnitMovementFlag(uint16 f) { movement_info.flags2 &= ~f; }
+        uint16 HasExtraUnitMovementFlag(uint16 f) const { return movement_info.flags2 & f; }
         uint16 GetExtraUnitMovementFlags() const { return movement_info.flags2; }
-        void AddExtraUnitMovementFlag(uint16 f2) { movement_info.flags2 |= f2; }
-        bool HasExtraUnitMovementFlag(uint16 f2) const { return (movement_info.flags2 & f2) != 0; }
+        void SetExtraUnitMovementFlags(uint16 f) { movement_info.flags2 = f; }
 
-        MovementInfo movement_info;
+        float GetPositionZMinusOffset() const
+        {
+            float offset = 0.0f;
+            if (HasUnitMovementFlag(MOVEFLAG_HOVER))
+                offset = GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
+
+            return GetPositionZ() - offset;
+        }
 };
 
 #endif      // _UNIT_H

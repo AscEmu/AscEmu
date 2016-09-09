@@ -141,7 +141,7 @@ bool GiftOfLife(uint32 i, Spell* s)
 
     SpellCastTargets tgt;
     tgt.m_unitTarget = playerTarget->GetGUID();
-    SpellEntry* inf = dbcSpell.LookupEntry(23782);
+    OLD_SpellEntry* inf = dbcSpell.LookupEntry(23782);
     Spell* spe = sSpellFactoryMgr.NewSpell(s->u_caster, inf, true, NULL);
     spe->prepare(&tgt);
 
@@ -194,13 +194,13 @@ bool NorthRendInscriptionResearch(uint32 i, Spell* s)
 
             if (skill_line_ability->skilline == SKILL_INSCRIPTION && skill_line_ability->next == 0)
             {
-                SpellEntry* se1 = dbcSpell.LookupEntryForced(skill_line_ability->spell);
+                OLD_SpellEntry* se1 = dbcSpell.LookupEntryForced(skill_line_ability->spell);
                 if (se1 && se1->Effect[0] == SPELL_EFFECT_CREATE_ITEM)
                 {
                     ItemProperties const* itm = sMySQLStore.GetItemProperties(se1->EffectItemType[0]);
                     if (itm && (itm->Spells[0].Id != 0))
                     {
-                        SpellEntry* se2 = dbcSpell.LookupEntryForced(itm->Spells[0].Id);
+                        OLD_SpellEntry* se2 = dbcSpell.LookupEntryForced(itm->Spells[0].Id);
                         if (se2 && se2->Effect[0] == SPELL_EFFECT_USE_GLYPH)
                         {
                             auto glyph_properties = sGlyphPropertiesStore.LookupEntry(se2->EffectMiscValue[0]);
@@ -370,7 +370,7 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32 pEffectIndex, Spell* pSpell)
     if (!Target)
         return true;
 
-    SpellEntry* SpellInfo = dbcSpell.LookupEntry(42787);
+    OLD_SpellEntry* SpellInfo = dbcSpell.LookupEntry(42787);
     if (!SpellInfo)
         return true;
 
@@ -388,7 +388,7 @@ bool PreparationForBattle(uint32 i, Spell* pSpell)
     QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(12842);
     if (pQuest != NULL)
     {
-        if (pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mobcount[0])
+        if (pQuest->GetMobCount(0) < pQuest->GetQuest()->ReqCreatureOrGOCount[0])
         {
             pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
             pQuest->SendUpdateAddKill(0);

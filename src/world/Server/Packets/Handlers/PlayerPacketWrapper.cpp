@@ -338,7 +338,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     // add to looter set
     pLoot->looters.insert(GetLowGUID());
 
-    WorldPacket data, data2(32);
+    WorldPacket data, data2(28);
     data.SetOpcode(SMSG_LOOT_RESPONSE);
 
     m_lootGuid = guid;
@@ -347,6 +347,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     data << uint8(loot_type);  //loot_type;
     data << uint32(pLoot->gold);
     data << uint8(0);   //loot size reserve
+    data << uint8(0);   //currency list size reserved
 
     std::vector<__LootItem>::iterator iter = pLoot->items.begin();
     uint32 count = 0;
@@ -405,7 +406,8 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
                 uint32 finishedCount = 0;
 
                 //check if its a questline.
-                for (uint32 i = 0; i < pQuest->count_requiredquests; ++i)
+                //\todo danko
+                /*for (uint32 i = 0; i < pQuest->count_requiredquests; ++i)
                 {
                     if (pQuest->required_quests[i])
                     {
@@ -418,7 +420,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
                             finishedCount++;
                         }
                     }
-                }
+                }*/
             }
         }
 
@@ -543,8 +545,24 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         }
         count++;
     }
+
+    uint32 count2 = 0;
+    uint32 x = 0;
+    LootCurrencyIdBounds Loot_Bounds = lootmgr.GetLootCurrencyIdBounds(GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid))->GetEntry());
+    for (LootCurrencyStore::const_iterator itr = Loot_Bounds.first; itr != Loot_Bounds.second; ++itr, x++)
+    {
+        if (itr->second.currency_amt == 0)
+            continue;
+
+        data << uint8(x);
+        data << uint32(itr->second.currency_type);
+        data << uint32(itr->second.currency_amt);
+        count2++;
+    }
+
     data.wpos(13);
     data << uint8(count);
+    data << uint8(count2);  //currency list size
 
     m_session->SendPacket(&data);
 
@@ -553,61 +571,41 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
 
 void Player::SendInitialLogonPackets()
 {
-    // Initial Packets... they seem to be re-sent on port.
-    //m_session->OutPacket(SMSG_SET_REST_START_OBSOLETE, 4, &m_timeLogoff); // Seem to be unused by client
+    WorldPacket datao(SMSG_BINDPOINTUPDATE, 5 * 4);
+    datao << float(m_bind_pos_x);
+    datao << float(m_bind_pos_y);
+    datao << float(m_bind_pos_z);
+    datao << uint32(m_bind_mapid);
+    datao << uint32(m_bind_zoneid);
+    m_session->SendPacket(&datao);
 
-    StackWorldPacket<32> data(SMSG_BINDPOINTUPDATE);
-
-    data << float(m_bind_pos_x);
-    data << float(m_bind_pos_y);
-    data << float(m_bind_pos_z);
-    data << uint32(m_bind_mapid);
-    data << uint32(m_bind_zoneid);
-
-    m_session->SendPacket(&data);
-
-    //Proficiencies
     SendSetProficiency(4, armor_proficiency);
     SendSetProficiency(2, weapon_proficiency);
 
-    //Tutorial Flags
-    data.Initialize(SMSG_TUTORIAL_FLAGS);
-
-    for (uint8 i = 0; i < 8; i++)
+    WorldPacket data(SMSG_TUTORIAL_FLAGS, 4 * 8);
+    for (int i = 0; i < 8; i++)
         data << uint32(m_Tutorials[i]);
-
     m_session->SendPacket(&data);
 
     smsg_TalentsInfo(false);
+
     smsg_InitialSpells();
 
-    data.Initialize(SMSG_SEND_UNLEARN_SPELLS);
-    data << uint32(0); // count, for (count) uint32;
-    GetSession()->SendPacket(&data);
+    WorldPacket datat(SMSG_SEND_UNLEARN_SPELLS, 4);
+    datat << uint32(0);
+    GetSession()->SendPacket(&datat);
 
     SendInitialActions();
     smsg_InitialFactions();
 
-    data.Initialize(SMSG_LOGIN_SETTIMESPEED);
+    WorldPacket datatt(SMSG_LOGIN_SETTIMESPEED, 4 + 4 + 4);
+    datatt << uint32(Arcemu::Util::MAKE_GAME_TIME());
+    datatt << float(0.0166666669777748f);
+    datatt << uint32(0);
+    m_session->SendPacket(&datatt);
 
-    data << uint32(Arcemu::Util::MAKE_GAME_TIME());
-    data << float(0.0166666669777748f);    // Normal Game Speed
-    data << uint32(0);   // 3.1.2
-
-    m_session->SendPacket(&data);
-
-    // cebernic for speedhack bug
     m_lastRunSpeed = 0;
     UpdateSpeed();
-
-    WorldPacket ArenaSettings(SMSG_UPDATE_WORLD_STATE, 16);
-
-    ArenaSettings << uint32(0xC77);
-    ArenaSettings << uint32(sWorld.Arena_Progress);
-    ArenaSettings << uint32(0xF3D);
-    ArenaSettings << uint32(sWorld.Arena_Season);
-
-    m_session->SendPacket(&ArenaSettings);
 
     LOG_DETAIL("WORLD: Sent initial logon packets for %s.", GetName());
 }
@@ -757,8 +755,8 @@ void Player::SendTotemCreated(uint8 slot, uint64 GUID, uint32 duration, uint32 s
 
 void Player::SendInitialWorldstates()
 {
-    WorldPacket data(SMSG_INIT_WORLD_STATES, 100);
+    /*WorldPacket data(SMSG_INIT_WORLD_STATES, (4 + 4 + 4 + 2 + 8 * 8));
 
     m_mapMgr->GetWorldStatesHandler().BuildInitWorldStatesForZone(m_zoneId, m_AreaID, data);
-    m_session->SendPacket(&data);
+    m_session->SendPacket(&data);*/
 }

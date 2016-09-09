@@ -202,7 +202,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
                         s->SetBaseAttackTime(MELEE, item->GetItemProperties()->Delay);
                     }
 
-                    pOwner->SetPower(POWER_TYPE_RUNIC_POWER, 0);
+                    pOwner->SetPower(POWER_TYPE_RUNIC, 0);
                 }
 
                 s->SetMinDamage(owner->GetDamageDoneMod(SCHOOL_NORMAL));
@@ -266,7 +266,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
                 if (dpsCycle > 11)
                     dpsCycle = 0;
 
-                SpellEntry* MyNextSpell = dbcSpell.LookupEntryForced(dpsSpell);
+                OLD_SpellEntry* MyNextSpell = dbcSpell.LookupEntryForced(dpsSpell);
                 if (MyNextSpell != NULL)
                     _unit->CastSpell(curtarget, MyNextSpell, true);
 
@@ -279,7 +279,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
             {
                 if (procSpell[p] != 0)
                 {
-                    SpellEntry* mProc = dbcSpell.LookupEntryForced(procSpell[p]);
+                    OLD_SpellEntry* mProc = dbcSpell.LookupEntryForced(procSpell[p]);
                     if (!mProc)
                         return;
                     int x = RandomUInt(99);

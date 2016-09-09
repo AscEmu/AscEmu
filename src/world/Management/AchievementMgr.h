@@ -295,11 +295,11 @@ class SERVER_DECL AchievementMgr
         void GiveAchievementReward(DBC::Structures::AchievementEntry const* entry);
         void SendAchievementEarned(DBC::Structures::AchievementEntry const* achievement);
         void SendCriteriaUpdate(CriteriaProgress* progress);
-        void SetCriteriaProgress(AchievementCriteriaEntry const* entry, int32 newValue, bool relative = false);
-        void UpdateCriteriaProgress(AchievementCriteriaEntry const* entry, int32 updateByValue);
-        void CompletedCriteria(AchievementCriteriaEntry const* entry);
+        void SetCriteriaProgress(DBC::Structures::AchievementCriteriaEntry const* entry, int32 newValue, bool relative = false);
+        void UpdateCriteriaProgress(DBC::Structures::AchievementCriteriaEntry const* entry, int32 updateByValue);
+        void CompletedCriteria(DBC::Structures::AchievementCriteriaEntry const* entry);
         void CompletedAchievement(DBC::Structures::AchievementEntry const* entry);
-        bool IsCompletedCriteria(AchievementCriteriaEntry const* entry);
+        bool IsCompletedCriteria(DBC::Structures::AchievementCriteriaEntry const* entry);
         AchievementCompletionState GetAchievementCompletionState(DBC::Structures::AchievementEntry const* entry);
 
         RWLock m_lock;

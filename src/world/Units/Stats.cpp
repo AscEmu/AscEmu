@@ -34,7 +34,8 @@ uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
         32, 33, 34, 35, 35, 36, 37, 38, 39, 39,     //41-50
         40, 41, 42, 43, 43, 44, 45, 46, 47, 47,     //51-60
         48, 49, 50, 51, 51, 52, 53, 54, 55, 56,     //61-70
-        57, 58, 59, 60, 61, 62, 63, 64, 65, 65      //71-80
+        57, 58, 59, 60, 61, 62, 63, 64, 65, 65,     //71-80
+        65, 66, 67, 68, 69                          //81-85
     };
 
     if (AttackerLvl + 5 <= VictimLvl)
@@ -480,7 +481,7 @@ uint32 GainStat(uint16 level, uint8 playerclass, uint8 Stat)
     return gain;
 }
 
-uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type, uint32* spellgroup, SpellEntry* ability)   // spellid is used only for 2-3 spells, that have AP bonus
+uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon_damage_type, uint32* spellgroup, OLD_SpellEntry* ability)   // spellid is used only for 2-3 spells, that have AP bonus
 {
     ///\todo Some awesome formula to determine how much damage to deal consider this is melee damage weapon_damage_type: 0 = melee, 1 = offhand(dualwield), 2 = ranged
 

@@ -88,19 +88,19 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                 foundmatch = false;
                 if (lookupname)
                 {
-                    y = std::string(achievement->name[0]);
+                    y = std::string(achievement->name);
                     arcemu_TOLOWER(y);
                     foundmatch = FindXinYString(x, y);
                 }
                 if (!foundmatch && lookupdesc)
                 {
-                    y = std::string(achievement->description[0]);
+                    y = std::string(achievement->description);
                     arcemu_TOLOWER(y);
                     foundmatch = FindXinYString(x, y);
                 }
                 if (!foundmatch && lookupreward)
                 {
-                    y = std::string(achievement->rewardName[0]);
+                    y = std::string(achievement->rewardName);
                     arcemu_TOLOWER(y);
                     foundmatch = FindXinYString(x, y);
                 }
@@ -133,7 +133,7 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                     // achievement is not completed
                     recout += ":0:0:0:-1:0:0:0:0|h[";
                 }
-                recout += achievement->name[0];
+                recout += achievement->name;
                 if (!lookupreward)
                 {
                     recout += "]|h|r";
@@ -141,7 +141,7 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                 else
                 {
                     recout += "]|h |cffffffff";
-                    recout += achievement->rewardName[0];
+                    recout += achievement->rewardName;
                     recout += "|r";
                 }
                 strm.str("");
@@ -168,7 +168,7 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                     // already listed this achievement (some achievements have multiple entries in dbc)
                     continue;
                 }
-                y = std::string(criteria->name[0]);
+                y = std::string(criteria->name);
                 arcemu_TOLOWER(y);
                 if (!FindXinYString(x, y))
                 {
@@ -180,7 +180,7 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                 recout = "|cffffffffCriteria ";
                 recout += strm.str();
                 recout += ": |cfffff000";
-                recout += criteria->name[0];
+                recout += criteria->name;
                 strm.str("");
                 auto achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
                 if (achievement)
@@ -216,7 +216,7 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                     else
                     {
                         recout += "]|h |cffffffff";
-                        recout += achievement->rewardName[0];
+                        recout += achievement->rewardName;
                         recout += "|r";
                     }
                     strm.str("");
@@ -317,11 +317,11 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
     for (uint32 index = 0; index < sFactionStore.GetNumRows(); ++index)
     {
         DBC::Structures::FactionEntry const* faction = sFactionStore.LookupEntry(index);
-        std::string y = std::string(faction->Name[0]);
+        std::string y = std::string(faction->Name);
         arcemu_TOLOWER(y);
         if (FindXinYString(x, y))
         {
-            SendHighlightedName(m_session, "Faction", faction->Name[0], y, x, faction->ID);
+            SendHighlightedName(m_session, "Faction", faction->Name, y, x, faction->ID);
             ++count;
             if (count == 25)
             {
@@ -469,13 +469,13 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
     MySQLDataStore::QuestPropertiesContainer const* its = sMySQLStore.GetQuestPropertiesStore();
     for (MySQLDataStore::QuestPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        QuestProperties const* quest = sMySQLStore.GetQuestProperties(itr->second.id);
+        QuestProperties const* quest = sMySQLStore.GetQuestProperties(itr->second.GetQuestId());
         if (quest == nullptr)
             continue;
 
-        std::string lower_quest_title = quest->title;
+        std::string lower_quest_title = quest->GetTitle();
 
-        LocalizedQuest* li = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedQuest(quest->id, m_session->language) : NULL;
+        LocalizedQuest* li = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedQuest(quest->GetQuestId(), m_session->language) : NULL;
 
         std::string liName = std::string(li ? li->Title : "");
 
@@ -488,14 +488,14 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
 
         if (FindXinYString(search_string, lower_quest_title) || localizedFound)
         {
-            std::string questid = MyConvertIntToString(quest->id);
-            std::string questtitle = localizedFound ? (li ? li->Title : "") : quest->title;
+            std::string questid = MyConvertIntToString(quest->GetQuestId());
+            std::string questtitle = localizedFound ? (li ? li->Title : "") : quest->GetTitle();
             // send quest link
             recout = questid.c_str();
             recout += ": |cff00ccff|Hquest:";
             recout += questid.c_str();
             recout += ":";
-            recout += MyConvertIntToString(quest->min_level);
+            recout += MyConvertIntToString(quest->GetMinLevel());
             recout += "|h[";
             recout += questtitle;
             recout += "]|h|r";
@@ -542,7 +542,7 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
     char itoabuf[12];
     for (uint32 index = 0; index < dbcSpell.GetNumRows(); ++index)
     {
-        SpellEntry* spell = dbcSpell.LookupRow(index);
+        OLD_SpellEntry* spell = dbcSpell.LookupEntry(index);
         std::string y = std::string(spell->Name);
         arcemu_TOLOWER(y);
         if (FindXinYString(x, y))
@@ -599,11 +599,11 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
         if (skill_line == nullptr)
             continue;
 
-        std::string y = std::string(skill_line->Name[0]);
+        std::string y = std::string(skill_line->Name);
         arcemu_TOLOWER(y);
         if (FindXinYString(x, y))
         {
-            SendHighlightedName(m_session, "Skill", skill_line->Name[0], y, x, skill_line->id);
+            SendHighlightedName(m_session, "Skill", skill_line->Name, y, x, skill_line->id);
             ++count;
             if (count == 25)
             {

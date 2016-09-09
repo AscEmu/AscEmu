@@ -101,7 +101,7 @@ void OnQuestAccept(Player* pPlayer, QuestProperties* pQuest, Object* pObject)
     if(pPlayer == NULL || pQuest == NULL || pObject == NULL || !pObject->IsInWorld() || !pPlayer->IsInWorld() || !pObject->IsCreature())
         return;
 
-    switch (pQuest->id)
+    switch (pQuest->GetQuestId())
     {
         case 790:
             Hanazua_III(pPlayer, pObject);
@@ -192,7 +192,7 @@ void OnQuestFinished(Player* pPlayer, QuestProperties* pQuest, Object* pObject)
     if(pPlayer == NULL || pQuest == NULL || pObject == NULL || !pObject->IsCreature())
         return;
 
-    switch (pQuest->id)
+    switch (pQuest->GetQuestId())
     {
         case 790:
             Hanazua_II(pPlayer, pObject);
@@ -238,7 +238,7 @@ void OnQuestCancelled(Player* pPlayer, QuestProperties* pQuest)
     if(pPlayer == NULL || pQuest == NULL)
         return;
 
-    switch (pQuest->id)
+    switch (pQuest->GetQuestId())
     {
         case 10872:
             ZuluhedtheWhackedCancel(pPlayer);

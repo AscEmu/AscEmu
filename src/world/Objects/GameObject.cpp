@@ -27,7 +27,7 @@ GameObject::GameObject(uint64 guid)
     m_objectType |= TYPE_GAMEOBJECT;
     m_objectTypeId = TYPEID_GAMEOBJECT;
 
-    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION | UPDATEFLAG_ROTATION);
+    m_updateFlag = UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION;
 
     m_valuesCount = GAMEOBJECT_END;
     m_uint32Values = _fields;
@@ -442,7 +442,7 @@ void GameObject::SetRotationAngles(float z_rot, float y_rot, float x_rot)
     SetRotationQuat(quat.x, quat.y, quat.z, quat.w);
 }
 
-void GameObject::CastSpell(uint64 TargetGUID, SpellEntry* sp)
+void GameObject::CastSpell(uint64 TargetGUID, OLD_SpellEntry* sp)
 {
     Spell* s = new Spell(this, sp, true, NULL);
 
@@ -457,7 +457,7 @@ void GameObject::CastSpell(uint64 TargetGUID, SpellEntry* sp)
 
 void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
 {
-    SpellEntry* sp = dbcSpell.LookupEntryForced(SpellID);
+    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(SpellID);
     if (sp == nullptr)
     {
         sLog.outError("GameObject %u tried to cast a non-existing Spell %u.", gameobject_properties->entry, SpellID);
@@ -605,7 +605,7 @@ QuestProperties const* GameObject_QuestGiver::FindQuest(uint32 quest_id, uint8 q
     {
         QuestRelation* qr = *itr;
 
-        if ((qr->qst->id == quest_id) && ((qr->type & quest_relation) != 0))
+        if ((qr->qst->GetQuestId() == quest_id) && ((qr->type & quest_relation) != 0))
         {
             return qr->qst;
         }
@@ -621,7 +621,7 @@ uint16 GameObject_QuestGiver::GetQuestRelation(uint32 quest_id)
     {
         QuestRelation* qr = *itr;
 
-        if ((qr != nullptr) && (qr->qst->id == quest_id))
+        if ((qr != nullptr) && (qr->qst->GetQuestId() == quest_id))
             quest_relation |= qr->type;
     }
 

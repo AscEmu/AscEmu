@@ -13,16 +13,14 @@ if(UNIX AND NOT IS_64BIT)
 endif()
 
 include_directories(
-   ${CMAKE_SOURCE_DIR}/dep/loadlib
-   ${CMAKE_SOURCE_DIR}/dep/dbcfile 
-   ${CMAKE_SOURCE_DIR}/dep/libmpq/libmpq
+   ${CMAKE_SOURCE_DIR}/dep/StormLib/src
    ${CMAKE_CURRENT_SOURCE_DIR}
    ${BZIP2_INCLUDE_DIRS}
    ${ZLIB_INCLUDE_DIRS}
 )
 
 add_executable(${PROJECT_NAME} ${source})
-target_link_libraries(${PROJECT_NAME} dbcfile loadlib ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES} ${BZIP2_LIBRARIES} storm)
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${ASCEMU_TOOLS_PATH})
 
 unset(sources)

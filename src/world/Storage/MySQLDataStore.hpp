@@ -53,7 +53,7 @@ public:
     typedef std::unordered_map<uint32, PlayerCreateInfo> PlayerCreateInfoContainer;
     typedef std::vector<uint32> PlayerXPperLevel;
 
-    typedef std::map<uint32, std::list<SpellEntry*>*> SpellOverrideIdMap;
+    typedef std::map<uint32, std::list<OLD_SpellEntry*>*> SpellOverrideIdMap;
 
     typedef std::map<uint32, uint32> NpcGossipTextIdMap;
 
@@ -194,6 +194,9 @@ public:
     CreaturePropertiesContainer _creaturePropertiesStore;
     GameObjectPropertiesContainer _gameobjectPropertiesStore;
     QuestPropertiesContainer _questPropertiesStore;
+
+    typedef std::multimap<int32, uint32> ExclusiveQuestGroups;
+    ExclusiveQuestGroups mExclusiveQuestGroups;
 
     CreatureDifficultyContainer _creatureDifficultyStore;
     DisplayBoundingBoxesContainer _displayBoundingBoxesStore;

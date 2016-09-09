@@ -2456,7 +2456,8 @@ void ItemInterface::BuyItem(ItemProperties const* item, uint32 total_amount, Cre
                 m_pOwner->GetItemInterface()->RemoveItemAmt(item_extended_cost->item[i], total_amount * item_extended_cost->count[i]);
         }
 
-        if (m_pOwner->GetHonorCurrency() >= (item_extended_cost->honor_points * total_amount))
+        //\todo danko
+        /*if (m_pOwner->GetHonorCurrency() >= (item_extended_cost->honor_points * total_amount))
         {
             m_pOwner->ModHonorCurrency(-int32((item_extended_cost->honor_points * total_amount)));
             m_pOwner->m_honorPoints -= int32(item_extended_cost->honor_points * total_amount);
@@ -2465,7 +2466,7 @@ void ItemInterface::BuyItem(ItemProperties const* item, uint32 total_amount, Cre
         {
             m_pOwner->ModArenaCurrency(-int32(item_extended_cost->arena_points * total_amount));
             m_pOwner->m_arenaPoints -= int32(item_extended_cost->arena_points * total_amount);
-        }
+        }*/
     }
 }
 
@@ -2483,12 +2484,13 @@ int8 ItemInterface::CanAffordItem(ItemProperties const* item, uint32 amount, Cre
             }
         }
 
-        if (m_pOwner->GetHonorCurrency() < (item_extended_cost->honor_points * amount))
+        //\todo danko
+        /*if (m_pOwner->GetHonorCurrency() < (item_extended_cost->honor_points * amount))
             return INV_ERR_NOT_ENOUGH_HONOR_POINTS;
         if (m_pOwner->GetArenaCurrency() < (item_extended_cost->arena_points * amount))
             return INV_ERR_NOT_ENOUGH_ARENA_POINTS;
         if (m_pOwner->GetMaxPersonalRating() < item_extended_cost->personalrating)
-            return INV_ERR_PERSONAL_ARENA_RATING_TOO_LOW;
+            return INV_ERR_PERSONAL_ARENA_RATING_TOO_LOW;*/
     }
 
     if (item->BuyPrice)

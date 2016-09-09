@@ -202,6 +202,7 @@ enum MsTimeVariables
 #define SI64FMTD "%I64d"
 #define snprintf _snprintf
 #define atoll __atoi64
+#define SIZEFMTD "%Iu"
 
 #else
 
@@ -210,6 +211,7 @@ enum MsTimeVariables
 #define I64FMT "%016llX"
 #define I64FMTD "%llu"
 #define SI64FMTD "%lld"
+#define SIZEFMTD "%zu"
 
 #endif
 
@@ -324,6 +326,10 @@ inline void reverse_array(uint8* pointer, size_t count)
         pointer[x] = temp[count - x - 1];
     free(temp);
 }
+
+#ifndef countof
+#define countof(array) (sizeof(array) / sizeof((array)[0]))
+#endif
 
 int32 GetTimePeriodFromString(const char* str);
 std::string ConvertTimeStampToString(uint32 timestamp);

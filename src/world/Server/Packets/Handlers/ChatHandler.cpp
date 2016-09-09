@@ -26,21 +26,21 @@ extern bool bLogChat;
 
 static const uint32 LanguageSkills[NUM_LANGUAGES] =
 {
-    0,                // UNIVERSAL        0x00
-    109,            // ORCISH            0x01
-    113,            // DARNASSIAN        0x02
+    0,              // UNIVERSAL          0x00
+    109,            // ORCISH             0x01
+    113,            // DARNASSIAN         0x02
     115,            // TAURAHE            0x03
     0,                // -                0x04
     0,                // -                0x05
-    111,            // DWARVISH            0x06
-    98,                // COMMON            0x07
-    139,            // DEMON TONGUE        0x08
-    140,            // TITAN            0x09
-    137,            // THALSSIAN        0x0A
-    138,            // DRACONIC            0x0B
-    0,                // KALIMAG            0x0C
+    111,            // DWARVISH           0x06
+    98,             // COMMON             0x07
+    139,            // DEMON TONGUE       0x08
+    140,            // TITAN              0x09
+    137,            // THALSSIAN          0x0A
+    138,            // DRACONIC           0x0B
+    0,              // KALIMAG            0x0C
     313,            // GNOMISH            0x0D
-    315,            // TROLL            0x0E
+    315,            // TROLL              0x0E
     0,                // -                0x0F
     0,                // -                0x10
     0,                // -                0x11
@@ -59,25 +59,80 @@ static const uint32 LanguageSkills[NUM_LANGUAGES] =
     0,                // -                0x1E
     0,                // -                0x1F
     0,                // -                0x20
-    673,            // -                0x21
+    673,            // GUTTERSPEAK        0x21
     0,                // -                0x22
-    759,            // -                0x23
+    759,            // DRAENEI            0x23
+    0,              // ZOMBIE             0x24
+    0,              // GNOMISH_BINAR      0x25
+    0,              // GOBLIN_BINARY      0x26
+    791,            // WORGEN             0x27
+    792,            // GOBLIN             0x28
 };
 
 void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    CHECK_PACKET_SIZE(recv_data, 9);
-    WorldPacket* data = NULL;
+    WorldPacket* data = nullptr;
 
     uint32 type;
     int32 lang;
 
     const char* pMisc = NULL;
     const char* pMsg = NULL;
-    recv_data >> type;
-    recv_data >> lang;
+    switch (recv_data.GetOpcode())
+    {
+        case CMSG_MESSAGECHAT_SAY:
+            type = CHAT_MSG_SAY;
+            break;
+        case CMSG_MESSAGECHAT_YELL:
+            type = CHAT_MSG_YELL;
+            break;
+        case CMSG_MESSAGECHAT_CHANNEL:
+            type = CHAT_MSG_CHANNEL;
+            break;
+        case CMSG_MESSAGECHAT_WHISPER:
+            type = CHAT_MSG_WHISPER;
+            break;
+        case CMSG_MESSAGECHAT_GUILD:
+            type = CHAT_MSG_GUILD;
+            break;
+        case CMSG_MESSAGECHAT_OFFICER:
+            type = CHAT_MSG_OFFICER;
+            break;
+        case CMSG_MESSAGECHAT_AFK:
+            type = CHAT_MSG_AFK;
+            break;
+        case CMSG_MESSAGECHAT_DND:
+            type = CHAT_MSG_DND;
+            break;
+        case CMSG_MESSAGECHAT_EMOTE:
+            type = CHAT_MSG_EMOTE;
+            break;
+        case CMSG_MESSAGECHAT_PARTY:
+            type = CHAT_MSG_PARTY;
+            break;
+        case CMSG_MESSAGECHAT_RAID:
+            type = CHAT_MSG_RAID;
+            break;
+        case CMSG_MESSAGECHAT_BATTLEGROUND:
+            type = CHAT_MSG_BATTLEGROUND;
+            break;
+        case CMSG_MESSAGECHAT_RAID_WARNING:
+            type = CHAT_MSG_RAID_WARNING;
+            break;
+        default:
+            sLog.outError("HandleMessagechatOpcode : Unknown chat opcode (0x%X)", recv_data.GetOpcode());
+            recv_data.clear();
+            return;
+    }
+
+    if (type != CHAT_MSG_EMOTE && type != CHAT_MSG_AFK && type != CHAT_MSG_DND)
+        recv_data >> lang;
+    else
+        lang = LANG_UNIVERSAL;
+
+    Log.Debug("ChatHandler", "player mod language %u and lang is %u \n", GetPlayer()->m_modlanguage, lang);
 
     if (lang >= NUM_LANGUAGES)
         return;
@@ -114,6 +169,15 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         case CHAT_MSG_YELL:
         case CHAT_MSG_WHISPER:
         case CHAT_MSG_CHANNEL:
+        case CHAT_MSG_PARTY:
+        case CHAT_MSG_PARTY_LEADER:
+        case CHAT_MSG_BATTLEGROUND:
+        case CHAT_MSG_BATTLEGROUND_LEADER:
+        case CHAT_MSG_RAID:
+        case CHAT_MSG_RAID_WARNING:
+        case CHAT_MSG_RAID_LEADER:
+        case CHAT_MSG_GUILD:
+        case CHAT_MSG_OFFICER:
         {
             if (m_muted && m_muted >= (uint32)UNIXTIME)
             {
@@ -131,39 +195,27 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
     switch (type)
     {
         case CHAT_MSG_SAY:
-        case CHAT_MSG_EMOTE:
         case CHAT_MSG_PARTY:
         case CHAT_MSG_PARTY_LEADER:
+        case CHAT_MSG_BATTLEGROUND_LEADER:
+        case CHAT_MSG_GUILD:
+        case CHAT_MSG_OFFICER:
         case CHAT_MSG_RAID:
         case CHAT_MSG_RAID_LEADER:
         case CHAT_MSG_RAID_WARNING:
-        case CHAT_MSG_GUILD:
-        case CHAT_MSG_OFFICER:
-        case CHAT_MSG_YELL:
-            recv_data >> msg;
-            pMsg = msg.c_str();
-            //g_chatFilter->ParseEscapeCodes((char*)pMsg,true);
-            pMisc = 0;
-            break;
-        case CHAT_MSG_WHISPER:
-            recv_data >> to >> msg;
-            pMsg = msg.c_str();
-            pMisc = to.c_str();
-            break;
-        case CHAT_MSG_CHANNEL:
-            recv_data >> channel;
-            recv_data >> msg;
-            pMsg = msg.c_str();
-            pMisc = channel.c_str();
-            break;
+        case CHAT_MSG_BATTLEGROUND:
         case CHAT_MSG_AFK:
         case CHAT_MSG_DND:
+            msg = recv_data.ReadString(recv_data.readBits(9));
             break;
-        case CHAT_MSG_BATTLEGROUND:
-        case CHAT_MSG_BATTLEGROUND_LEADER:
-            recv_data >> msg;
-            pMsg = msg.c_str();
-            break;
+        case CHAT_MSG_WHISPER:
+        {
+            uint32 toLength, msgLength;
+            toLength = recv_data.readBits(10);
+            msgLength = recv_data.readBits(9);
+            to = recv_data.ReadString(toLength);
+            msg = recv_data.ReadString(msgLength);
+        }
         default:
             LOG_ERROR("CHAT: unknown msg type %u, lang: %u", type, lang);
     }
@@ -211,7 +263,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         case CHAT_MSG_SAY:
         {
             if (sWorld.interfaction_chat && lang > 0)
-                lang = 0;
+                lang = LANG_UNIVERSAL;
 
             if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
                 break;
@@ -229,10 +281,10 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             }
             else
             {
-                if (lang > 0 && LanguageSkills[lang] && !_player->_HasSkillLine(LanguageSkills[lang]))
+                if (lang > LANG_UNIVERSAL && LanguageSkills[lang] && !_player->_HasSkillLine(LanguageSkills[lang]))
                     return;
 
-                if (lang == 0 && !CanUseCommand('c') && !sWorld.interfaction_chat)
+                if (lang == LANG_UNIVERSAL && !CanUseCommand('c') && !sWorld.interfaction_chat)
                     return;
 
                 data = sChatHandler.FillMessageData(CHAT_MSG_SAY, lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
@@ -253,7 +305,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 break;
 
             if (sWorld.interfaction_chat && lang > 0)
-                lang = 0;
+                lang = LANG_UNIVERSAL;
 
             if (g_chatFilter->Parse(msg) == true)
             {
@@ -262,11 +314,12 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             }
 
             Group* pGroup = _player->GetGroup();
-            if (pGroup == NULL) break;
+            if (pGroup == nullptr)
+                break;
 
             if (GetPlayer()->m_modlanguage >= 0)
                 data = sChatHandler.FillMessageData(type, GetPlayer()->m_modlanguage, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
-            else if (lang == 0 && sWorld.interfaction_chat)
+            else if (lang == LANG_UNIVERSAL && sWorld.interfaction_chat)
                 data = sChatHandler.FillMessageData(type, (CanUseCommand('0') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
             else
                 data = sChatHandler.FillMessageData(type, (CanUseCommand('c') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
@@ -344,7 +397,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         case CHAT_MSG_YELL:
         {
             if (sWorld.interfaction_chat && lang > 0)
-                lang = 0;
+                lang = LANG_UNIVERSAL;
 
             if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
                 break;
@@ -354,10 +407,10 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 SystemMessage("Your chat message was blocked by a server-side filter.");
                 return;
             }
-            if (lang > 0 && LanguageSkills[lang] && _player->_HasSkillLine(LanguageSkills[lang]) == false)
+            if (lang > LANG_UNIVERSAL && LanguageSkills[lang] && _player->_HasSkillLine(LanguageSkills[lang]) == false)
                 return;
 
-            if (lang == 0 && sWorld.interfaction_chat)
+            if (lang == LANG_UNIVERSAL && sWorld.interfaction_chat)
                 data = sChatHandler.FillMessageData(CHAT_MSG_YELL, (CanUseCommand('0') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
 
             else if (GetPlayer()->m_modlanguage >= 0)
@@ -675,50 +728,50 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
 
 
 ///\todo remove these unk unk unk nighrmare!
-void WorldSession::HandleReportSpamOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 1 + 8);
-    LOG_DEBUG("WORLD: CMSG_REPORT_SPAM");
-
-    uint8 spam_type;                                        // 0 - mail, 1 - chat
-    uint64 spammer_guid;
-    uint32 unk1 = 0;
-    uint32 unk2 = 0;
-    uint32 unk3 = 0;
-    uint32 unk4 = 0;
-
-    std::string description = "";
-    recv_data >> spam_type;                                 // unk 0x01 const, may be spam type (mail/chat)
-    recv_data >> spammer_guid;                              // player guid
-    switch (spam_type)
-    {
-        case 0:
-            CHECK_PACKET_SIZE(recv_data, recv_data.rpos() + 4 + 4 + 4);
-            recv_data >> unk1;                              // const 0
-            recv_data >> unk2;                              // probably mail id
-            recv_data >> unk3;                              // const 0
-            break;
-        case 1:
-            CHECK_PACKET_SIZE(recv_data, recv_data.rpos() + 4 + 4 + 4 + 4 + 1);
-            recv_data >> unk1;                              // probably language
-            recv_data >> unk2;                              // message type?
-            recv_data >> unk3;                              // probably channel id
-            recv_data >> unk4;                              // unk random value
-            recv_data >> description;                       // spam description string (messagetype, channel name, player name, message)
-            break;
-    }
-    // NOTE: all chat messages from this spammer automatically ignored by spam reporter until logout in case chat spam.
-    // if it's mail spam - ALL mails from this spammer automatically removed by client
-
-    // Complaint Received message
-    WorldPacket data(SMSG_COMPLAIN_RESULT, 1);
-    data << uint8(0);
-    SendPacket(&data);
-
-    LOG_DEBUG("REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", spam_type, Arcemu::Util::GUID_LOPART(spammer_guid), unk1, unk2, unk3, unk4, description.c_str());
-}
+//void WorldSession::HandleReportSpamOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recv_data, 1 + 8);
+//    LOG_DEBUG("WORLD: CMSG_REPORT_SPAM");
+//
+//    uint8 spam_type;                                        // 0 - mail, 1 - chat
+//    uint64 spammer_guid;
+//    uint32 unk1 = 0;
+//    uint32 unk2 = 0;
+//    uint32 unk3 = 0;
+//    uint32 unk4 = 0;
+//
+//    std::string description = "";
+//    recv_data >> spam_type;                                 // unk 0x01 const, may be spam type (mail/chat)
+//    recv_data >> spammer_guid;                              // player guid
+//    switch (spam_type)
+//    {
+//        case 0:
+//            CHECK_PACKET_SIZE(recv_data, recv_data.rpos() + 4 + 4 + 4);
+//            recv_data >> unk1;                              // const 0
+//            recv_data >> unk2;                              // probably mail id
+//            recv_data >> unk3;                              // const 0
+//            break;
+//        case 1:
+//            CHECK_PACKET_SIZE(recv_data, recv_data.rpos() + 4 + 4 + 4 + 4 + 1);
+//            recv_data >> unk1;                              // probably language
+//            recv_data >> unk2;                              // message type?
+//            recv_data >> unk3;                              // probably channel id
+//            recv_data >> unk4;                              // unk random value
+//            recv_data >> description;                       // spam description string (messagetype, channel name, player name, message)
+//            break;
+//    }
+//    // NOTE: all chat messages from this spammer automatically ignored by spam reporter until logout in case chat spam.
+//    // if it's mail spam - ALL mails from this spammer automatically removed by client
+//
+//    // Complaint Received message
+//    WorldPacket data(SMSG_COMPLAIN_RESULT, 1);
+//    data << uint8(0);
+//    SendPacket(&data);
+//
+//    LOG_DEBUG("REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", spam_type, Arcemu::Util::GUID_LOPART(spammer_guid), unk1, unk2, unk3, unk4, description.c_str());
+//}
 
 void WorldSession::HandleChatIgnoredOpcode(WorldPacket & recvPacket)
 {
@@ -726,11 +779,31 @@ void WorldSession::HandleChatIgnoredOpcode(WorldPacket & recvPacket)
 
     CHECK_PACKET_SIZE(recvPacket, 8 + 1);
 
-    uint64 iguid;
     uint8 unk;
 
-    recvPacket >> iguid;
-    recvPacket >> unk; // probably related to spam reporting
+    recvPacket >> unk;
+
+    uint8 playerGuid[8];
+
+    playerGuid[5] = recvPacket.readBit();
+    playerGuid[2] = recvPacket.readBit();
+    playerGuid[6] = recvPacket.readBit();
+    playerGuid[4] = recvPacket.readBit();
+    playerGuid[7] = recvPacket.readBit();
+    playerGuid[0] = recvPacket.readBit();
+    playerGuid[1] = recvPacket.readBit();
+    playerGuid[3] = recvPacket.readBit();
+
+    recvPacket.ReadByteSeq(playerGuid[0]);
+    recvPacket.ReadByteSeq(playerGuid[6]);
+    recvPacket.ReadByteSeq(playerGuid[5]);
+    recvPacket.ReadByteSeq(playerGuid[1]);
+    recvPacket.ReadByteSeq(playerGuid[4]);
+    recvPacket.ReadByteSeq(playerGuid[3]);
+    recvPacket.ReadByteSeq(playerGuid[7]);
+    recvPacket.ReadByteSeq(playerGuid[2]);
+
+    uint64 iguid = *(uint64*)playerGuid;
 
     Player* player = objmgr.GetPlayer(uint32(iguid));
     if (!player || !player->GetSession())

@@ -964,7 +964,8 @@ void InstanceMgr::CheckForExpiredInstances()
 
 void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
 {
-    WorldPacket data(4);
+    //\todo danko
+    /*WorldPacket data(4);
     Instance* in;
     InstanceMap::iterator itr;
     InstanceMap* instancemap;
@@ -1005,12 +1006,12 @@ void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
 
     data.SetOpcode(SMSG_UPDATE_INSTANCE_OWNERSHIP);
     data << uint32(0x00);
-    plr->GetSession()->SendPacket(&data);
+    plr->GetSession()->SendPacket(&data);*/
 }
 
 void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
 {
-    WorldPacket data(SMSG_RAID_INSTANCE_INFO, 200);
+    WorldPacket data(SMSG_RAID_INSTANCE_INFO, 4);
     Instance* in;
     InstanceMap::iterator itr;
     InstanceMap* instancemap;
@@ -1041,6 +1042,8 @@ void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
                         data << uint32(in->m_expiration - UNIXTIME);
                     else
                         data << uint32(0);
+
+                    data << uint32(0);
 
                     ++counter;
                 }

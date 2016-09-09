@@ -75,7 +75,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
 
     CHECK_PACKET_SIZE(recv_data, 12);
 
-    WorldPacket data(SMSG_CREATURE_QUERY_RESPONSE, 250); //VLack: thanks Aspire, this was 146 before
+    WorldPacket data(SMSG_CREATURE_QUERY_RESPONSE, sizeof(CreatureProperties) + 250 * 4);
     uint32 entry;
     uint64 guid;
     CreatureProperties const* ci;
@@ -104,48 +104,30 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
             return;
 
         LocalizedCreatureName* lcn = (language > 0) ? sLocalizationMgr.GetLocalizedCreatureName(entry, language) : NULL;
-
-        if (lcn == NULL)
-        {
-            LOG_DETAIL("WORLD: CMSG_CREATURE_QUERY '%s'", ci->Name.c_str());
-            data << entry;
-            data << ci->Name;       // name of the creature
-            data << uint8(0);       // name2, always seems to be empty
-            data << uint8(0);       // name3, always seems to be empty
-            data << uint8(0);       // name4, always seems to be empty
-            data << ci->SubName;    // this is the title/guild of the creature
-        }
-        else
-        {
-            LOG_DETAIL("WORLD: CMSG_CREATURE_QUERY '%s' (localized to %s)", ci->Name.c_str(), lcn->Name);
-            data << entry;
-            data << lcn->Name;
+        data << entry;
+        data << (lcn ? ci->Name : ci->Name);
+        for (uint8 i = 0; i < 7; ++i)
             data << uint8(0);
-            data << uint8(0);
-            data << uint8(0);
-            data << lcn->SubName;
-        }
-        data << ci->info_str;       // this is a string in 2.3.0 Example: stormwind guard has : "Direction"
-        data << ci->Flags1;         // flags like skinnable
-        data << ci->Type;           // humanoid, beast, etc
-        data << ci->Family;         // petfamily
-        data << ci->Rank;           // normal, elite, etc
-        data << ci->killcredit[0];  // quest kill credit 1
-        data << ci->killcredit[1];  // quest kill credit 2
-        data << ci->Male_DisplayID;
-        data << ci->Female_DisplayID;
-        data << ci->Male_DisplayID2;
-        data << ci->Female_DisplayID2;
-        data << ci->unkfloat1;
-        data << ci->unkfloat2;
-        data << ci->Leader;         // faction leader
-
-        // these are the 6 seperate quest items a creature can drop
-        for (uint8 i = 0; i < 6; ++i)
-        {
+        data << (lcn ? lcn->SubName : ci->SubName);
+        data << ci->info_str;
+        data << uint32(ci->Flags1);
+        data << uint32(0);
+        data << uint32(ci->Type);
+        data << uint32(ci->Family);
+        data << uint32(ci->Rank);
+        data << uint32(ci->killcredit[0]);
+        data << uint32(ci->killcredit[1]);
+        data << uint32(ci->Male_DisplayID);
+        data << uint32(ci->Female_DisplayID);
+        data << uint32(ci->Male_DisplayID2);
+        data << uint32(ci->Female_DisplayID2);
+        data << float(ci->unkfloat1);
+        data << float(ci->unkfloat2);
+        data << uint8(ci->Leader);
+        for (uint32 i = 0; i < 6; ++i)
             data << uint32(ci->QuestItems[i]);
-        }
-        data << ci->waypointid;
+        data << uint32(0);      //movementtype
+        data << uint32(0);
     }
 
     SendPacket(&data);
@@ -159,7 +141,7 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
 
     CHECK_PACKET_SIZE(recv_data, 12);
-    WorldPacket data(SMSG_GAMEOBJECT_QUERY_RESPONSE, 900);
+    WorldPacket data(SMSG_GAMEOBJECT_QUERY_RESPONSE, sizeof(GameObjectProperties) + 250 * 6);
 
     uint32 entryID;
     uint64 guid;
@@ -215,6 +197,15 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
     data << gameobject_info->raw.parameter_21;
     data << gameobject_info->raw.parameter_22;
     data << gameobject_info->raw.parameter_23;
+    data << uint32(0);
+    data << uint32(0);
+    data << uint32(0);
+    data << uint32(0);
+    data << uint32(0);
+    data << uint32(0);
+    data << uint32(0);
+    data << uint32(0);
+
     data << float(gameobject_info->size);       // scaling of the GO
 
     // questitems that the go can contain
@@ -223,131 +214,133 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
         data << uint32(gameobject_info->QuestItems[i]);
     }
 
+    data << uint32(0);
+
     SendPacket(&data);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles MSG_CORPSE_QUERY:
 //////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleCorpseQueryOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
+//void WorldSession::HandleCorpseQueryOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    LOG_DETAIL("WORLD: Received MSG_CORPSE_QUERY");
+//
+//    Corpse* pCorpse;
+//    WorldPacket data(MSG_CORPSE_QUERY, 25);
+//    MapInfo const* pMapinfo;
+//
+//    pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
+//    if (pCorpse)
+//    {
+//        pMapinfo = sMySQLStore.GetWorldMapInfo(pCorpse->GetMapId());
+//        if (pMapinfo)
+//        {
+//            if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
+//            {
+//                data << uint8(0x01);            //show ?
+//                data << pCorpse->GetMapId();    // mapid (that tombstones shown on)
+//                data << pCorpse->GetPositionX();
+//                data << pCorpse->GetPositionY();
+//                data << pCorpse->GetPositionZ();
+//                data << pCorpse->GetMapId();    //instance mapid (needs to be same as mapid to be able to recover corpse)
+//                data << uint32(0);
+//                SendPacket(&data);
+//            }
+//            else
+//            {
+//                data << uint8(0x01);            //show ?
+//                data << pMapinfo->repopmapid;   // mapid (that tombstones shown on)
+//                data << pMapinfo->repopx;
+//                data << pMapinfo->repopy;
+//                data << pMapinfo->repopz;
+//                data << pCorpse->GetMapId();    //instance mapid (needs to be same as mapid to be able to recover corpse)
+//                data << uint32(0);
+//                SendPacket(&data);
+//            }
+//        }
+//        else
+//        {
+//            data << uint8(0x01);                //show ?
+//            data << pCorpse->GetMapId();        // mapid (that tombstones shown on)
+//            data << pCorpse->GetPositionX();
+//            data << pCorpse->GetPositionY();
+//            data << pCorpse->GetPositionZ();
+//            data << pCorpse->GetMapId();        //instance mapid (needs to be same as mapid to be able to recover corpse)
+//            data << uint32(0);
+//            SendPacket(&data);
+//        }
+//    }
+//}
 
-    LOG_DETAIL("WORLD: Received MSG_CORPSE_QUERY");
-
-    Corpse* pCorpse;
-    WorldPacket data(MSG_CORPSE_QUERY, 25);
-    MapInfo const* pMapinfo;
-
-    pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
-    if (pCorpse)
-    {
-        pMapinfo = sMySQLStore.GetWorldMapInfo(pCorpse->GetMapId());
-        if (pMapinfo)
-        {
-            if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
-            {
-                data << uint8(0x01);            //show ?
-                data << pCorpse->GetMapId();    // mapid (that tombstones shown on)
-                data << pCorpse->GetPositionX();
-                data << pCorpse->GetPositionY();
-                data << pCorpse->GetPositionZ();
-                data << pCorpse->GetMapId();    //instance mapid (needs to be same as mapid to be able to recover corpse)
-                data << uint32(0);
-                SendPacket(&data);
-            }
-            else
-            {
-                data << uint8(0x01);            //show ?
-                data << pMapinfo->repopmapid;   // mapid (that tombstones shown on)
-                data << pMapinfo->repopx;
-                data << pMapinfo->repopy;
-                data << pMapinfo->repopz;
-                data << pCorpse->GetMapId();    //instance mapid (needs to be same as mapid to be able to recover corpse)
-                data << uint32(0);
-                SendPacket(&data);
-            }
-        }
-        else
-        {
-            data << uint8(0x01);                //show ?
-            data << pCorpse->GetMapId();        // mapid (that tombstones shown on)
-            data << pCorpse->GetPositionX();
-            data << pCorpse->GetPositionY();
-            data << pCorpse->GetPositionZ();
-            data << pCorpse->GetMapId();        //instance mapid (needs to be same as mapid to be able to recover corpse)
-            data << uint32(0);
-            SendPacket(&data);
-        }
-    }
-}
-
-void WorldSession::HandlePageTextQueryOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    CHECK_PACKET_SIZE(recv_data, 4);
-    uint32 pageid = 0;
-    recv_data >> pageid;
-
-    while (pageid)
-    {
-        ItemPage const* page = sMySQLStore.GetItemPage(pageid);
-        if (!page)
-            return;
-
-        LocalizedItemPage* lpi = (language > 0) ? sLocalizationMgr.GetLocalizedItemPage(pageid, language) : NULL;
-        WorldPacket data(SMSG_PAGE_TEXT_QUERY_RESPONSE, 1000);
-        data << pageid;
-        if (lpi)
-            data << lpi->Text;
-        else
-            data << page->text;
-
-        data << page->next_page;
-        pageid = page->next_page;
-        SendPacket(&data);
-    }
-}
+//void WorldSession::HandlePageTextQueryOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//
+//    CHECK_PACKET_SIZE(recv_data, 4);
+//    uint32 pageid = 0;
+//    recv_data >> pageid;
+//
+//    while (pageid)
+//    {
+//        ItemPage const* page = sMySQLStore.GetItemPage(pageid);
+//        if (!page)
+//            return;
+//
+//        LocalizedItemPage* lpi = (language > 0) ? sLocalizationMgr.GetLocalizedItemPage(pageid, language) : NULL;
+//        WorldPacket data(SMSG_PAGE_TEXT_QUERY_RESPONSE, 1000);
+//        data << pageid;
+//        if (lpi)
+//            data << lpi->Text;
+//        else
+//            data << page->text;
+//
+//        data << page->next_page;
+//        pageid = page->next_page;
+//        SendPacket(&data);
+//    }
+//}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles CMSG_ITEM_NAME_QUERY:
 //////////////////////////////////////////////////////////////////////////////////////////
-void WorldSession::HandleItemNameQueryOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-    CHECK_PACKET_SIZE(recv_data, 4);
-
-    uint32 itemid;
-
-    recv_data >> itemid;
-    recv_data.read_skip<uint64>();
-
-    WorldPacket reply(SMSG_ITEM_NAME_QUERY_RESPONSE, 100);
-    reply << itemid;
-
-    std::string Name = ("Unknown Item");
-
-    ItemProperties const* proto = sMySQLStore.GetItemProperties(itemid);
-    if (proto != nullptr)
-    {
-        LocalizedItem* li = (language > 0) ? sLocalizationMgr.GetLocalizedItem(itemid, language) : NULL;
-        if (li)
-            Name = li->Name;
-        else
-            Name = proto->Name;
-
-        reply << Name;
-        reply << proto->InventoryType;
-    }
-    else
-    {
-        reply << Name;
-    }
-
-
-    SendPacket(&reply);
-}
+//void WorldSession::HandleItemNameQueryOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN
+//    CHECK_PACKET_SIZE(recv_data, 4);
+//
+//    uint32 itemid;
+//
+//    recv_data >> itemid;
+//    recv_data.read_skip<uint64>();
+//
+//    WorldPacket reply(SMSG_ITEM_NAME_QUERY_RESPONSE, 100);
+//    reply << itemid;
+//
+//    std::string Name = ("Unknown Item");
+//
+//    ItemProperties const* proto = sMySQLStore.GetItemProperties(itemid);
+//    if (proto != nullptr)
+//    {
+//        LocalizedItem* li = (language > 0) ? sLocalizationMgr.GetLocalizedItem(itemid, language) : NULL;
+//        if (li)
+//            Name = li->Name;
+//        else
+//            Name = proto->Name;
+//
+//        reply << Name;
+//        reply << proto->InventoryType;
+//    }
+//    else
+//    {
+//        reply << Name;
+//    }
+//
+//
+//    SendPacket(&reply);
+//}
 
 void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
 {
@@ -383,17 +376,17 @@ void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-void WorldSession::HandleAchievmentQueryOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN;
-
-    uint64 guid = recv_data.unpackGUID();               // Get the inspectee's GUID
-    Player* pTarget = objmgr.GetPlayer((uint32)guid);
-    if (!pTarget)
-    {
-        return;
-    }
-#ifdef ENABLE_ACHIEVEMENTS
-    pTarget->GetAchievementMgr().SendAllAchievementData(GetPlayer());
-#endif
-}
+//void WorldSession::HandleAchievmentQueryOpcode(WorldPacket& recv_data)
+//{
+//    CHECK_INWORLD_RETURN;
+//
+//    uint64 guid = recv_data.unpackGUID();               // Get the inspectee's GUID
+//    Player* pTarget = objmgr.GetPlayer((uint32)guid);
+//    if (!pTarget)
+//    {
+//        return;
+//    }
+//#ifdef ENABLE_ACHIEVEMENTS
+//    pTarget->GetAchievementMgr().SendAllAchievementData(GetPlayer());
+//#endif
+//}

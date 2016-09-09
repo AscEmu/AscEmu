@@ -167,7 +167,7 @@ bool LastStand(uint32 i, Spell* s)
     SpellCastTargets tgt;
     tgt.m_unitTarget = playerTarget->GetGUID();
 
-    SpellEntry* inf = dbcSpell.LookupEntry(12976);
+    OLD_SpellEntry* inf = dbcSpell.LookupEntry(12976);
     Spell* spe = sSpellFactoryMgr.NewSpell(s->u_caster, inf, true, NULL);
     spe->prepare(&tgt);
 

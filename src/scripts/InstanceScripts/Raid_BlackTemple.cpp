@@ -1896,7 +1896,7 @@ class SupremusAI : public CreatureAIScript
         uint32 timer;
         uint32 m_phase;
         bool m_MoltenFlame, m_HurtfulStrike, m_MoltenPunch, m_VolcanicGazer;
-        SpellEntry* infoMoltenFlame, *infoHurtfulStrike, *infoMoltenPunch, *infoVolcanicGazer;
+        OLD_SpellEntry* infoMoltenFlame, *infoHurtfulStrike, *infoMoltenPunch, *infoVolcanicGazer;
 };
 
 //------------------------------------

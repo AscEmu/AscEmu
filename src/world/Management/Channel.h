@@ -26,15 +26,16 @@
 #define CHANNEL_LFG 26
 
 
-enum ChannelMemberFlags
+enum ChannelFlags
 {
-    CHANNEL_MEMBER_FLAG_NONE            = 0x00,
-    CHANNEL_MEMBER_FLAG_OWNER           = 0x01,
-    CHANNEL_MEMBER_FLAG_MODERATOR       = 0x02,
-    CHANNEL_MEMBER_FLAG_VOICED          = 0x04,
-    CHANNEL_MEMBER_FLAG_MUTED           = 0x08,
-    CHANNEL_MEMBER_FLAG_CUSTOM          = 0x10,
-    CHANNEL_MEMBER_FLAG_MIC_MUTED       = 0x20
+    CHANNEL_FLAG_NONE           = 0x00,
+    CHANNEL_FLAG_CUSTOM         = 0x01,
+    CHANNEL_FLAG_MODERATOR      = 0x02,
+    CHANNEL_FLAG_TRADE          = 0x04,
+    CHANNEL_FLAG_NOT_LFG        = 0x08,
+    CHANNEL_FLAG_GENERAL        = 0x10,
+    CHANNEL_FLAG_CITY           = 0x20,
+    CHANNEL_FLAG_LFG            = 0x40
 };
 
 enum ChannelNotifyFlags
@@ -80,40 +81,39 @@ enum ChannelNotifyFlags
 ///\todo where did they come from?
 enum ChannelDBCFlags
 {
-    CHANNEL_DBC_FLAG_NONE           = 0x00000,
-    CHANNEL_DBC_UNK_1               = 0x00001,
-    CHANNEL_DBC_HAS_ZONENAME        = 0x00002,
-    CHANNEL_DBC_GLOBAL              = 0x00004,
-    CHANNEL_DBC_TRADE               = 0x00008,
-    CHANNEL_DBC_CITY_ONLY_1         = 0x00010,
-    CHANNEL_DBC_CITY_ONLY_2         = 0x00020,     // 2 identical columns, who knows?
-    CHANNEL_DBC_UNUSED_1            = 0x00040,
-    CHANNEL_DBC_UNUSED_2            = 0x00080,
-    CHANNEL_DBC_UNUSED_3            = 0x00100,
-    CHANNEL_DBC_UNUSED_4            = 0x00200,
-    CHANNEL_DBC_UNUSED_5            = 0x00400,
-    CHANNEL_DBC_UNUSED_6            = 0x00800,
-    CHANNEL_DBC_UNUSED_7            = 0x01000,
-    CHANNEL_DBC_UNUSED_8            = 0x02000,
-    CHANNEL_DBC_UNUSED_9            = 0x04000,
-    CHANNEL_DBC_UNUSED_10           = 0x08000,
-    CHANNEL_DBC_DEFENSE             = 0x10000,
-    CHANNEL_DBC_GUILD_RECRUIT       = 0x20000,
-    CHANNEL_DBC_LFG                 = 0x40000,
-    CHANNEL_DBC_UNUSED_11           = 0x80000
+    CHANNEL_DBC_FLAG_NONE       = 0x00000,
+    CHANNEL_DBC_UNK_1           = 0x00001,
+    CHANNEL_DBC_HAS_ZONENAME    = 0x00002,
+    CHANNEL_DBC_MUTED_DELAYED   = 0x00004,
+    CHANNEL_DBC_FLAG_TRADE      = 0x00008,
+    CHANNEL_DBC_CITY_ONLY_1     = 0x00010,
+    CHANNEL_DBC_CITY_ONLY_2     = 0x00020,
+    CHANNEL_DBC_UNUSED_1        = 0x00040,
+    CHANNEL_DBC_UNUSED_2        = 0x00080,
+    CHANNEL_DBC_UNUSED_3        = 0x00100,
+    CHANNEL_DBC_UNUSED_4        = 0x00200,
+    CHANNEL_DBC_UNUSED_5        = 0x00400,
+    CHANNEL_DBC_UNUSED_6        = 0x00800,
+    CHANNEL_DBC_UNUSED_7        = 0x01000,
+    CHANNEL_DBC_UNUSED_8        = 0x02000,
+    CHANNEL_DBC_UNUSED_9        = 0x04000,
+    CHANNEL_DBC_UNUSED_10       = 0x08000,
+    CHANNEL_DBC_UNK_2           = 0x10000,
+    CHANNEL_DBC_UNK_3           = 0x20000,
+    CHANNEL_DBC_FLAG_LFG        = 0x40000,
+    CHANNEL_DBC_UNUSED_11       = 0x80000,
 };
 
-enum ChannelFlags
+enum CHANNEL_PACKET_FLAGS
 {
-    CHANNEL_FLAGS_NONE              = 0x00,
-    CHANNEL_FLAGS_CUSTOM            = 0x01,
-    CHANNEL_FLAGS_UNK1              = 0x02,     // not seen yet, perhaps related to worlddefense
-    CHANNEL_FLAGS_TRADE             = 0x04,
-    CHANNEL_FLAGS_NOT_LFG           = 0x08,
-    CHANNEL_FLAGS_GENERAL           = 0x10,
-    CHANNEL_FLAGS_CITY              = 0x20,
-    CHANNEL_FLAGS_LFG               = 0x40,
-    CHANNEL_FLAGS_VOICE             = 0x80
+    CHANNEL_PACKET_CUSTOM       = 0x01,
+    CHANNEL_PACKET_UNK1         = 0x02,
+    CHANNEL_PACKET_ALLOWLINKS   = 0x04,
+    CHANNEL_PACKET_ZONESPECIFIC = 0x08,
+    CHANNEL_PACKET_SYSTEMCHAN   = 0x10,
+    CHANNEL_PACKET_CITY         = 0x20,
+    CHANNEL_PACKET_LFG          = 0x40,
+    CHANNEL_PACKET_VOICE        = 0x80,
 };
 
 class SERVER_DECL Channel

@@ -149,8 +149,8 @@ class ThekaAI : public CreatureAIScript
     protected:
         int plaguecount, randomplague;
         bool morphcheck;
-        SpellEntry* morph;
-        SpellEntry* plague;
+        OLD_SpellEntry* morph;
+        OLD_SpellEntry* plague;
 };
 
 
@@ -395,7 +395,7 @@ class AntusulAI : public CreatureAIScript
         Creature* add6;
         Creature* trigger;
 
-        SpellEntry* servant;
+        OLD_SpellEntry* servant;
         //SpellEntry* healing_ward;
         //SpellEntry* earthgrab_ward;
 };

@@ -32,7 +32,7 @@ class SERVER_DECL StackBufferBase
 
         virtual ~StackBufferBase() {}
         virtual uint8* GetBufferPointer() = 0;
-        virtual uint16 GetOpcode() { return 0; }
+        virtual uint32 GetOpcode() { return 0; }
         virtual uint32 GetSize() = 0;
 };
 

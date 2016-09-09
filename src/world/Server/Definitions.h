@@ -53,19 +53,25 @@ enum TimeConstants
     IN_MILLISECONDS = 1000
 };
 
-#define MAX_RACES         12
+#define MAX_RACES 12    //not correct!
 
 #define RACEMASK_ALL_PLAYABLE \
-    ((1<<(RACE_HUMAN-1))   |(1<<(RACE_ORC-1))          |(1<<(RACE_DWARF-1))   | \
-    (1<<(RACE_NIGHTELF-1))|(1<<(RACE_UNDEAD-1))|(1<<(RACE_TAUREN-1))  | \
-    (1<<(RACE_GNOME-1))   |(1<<(RACE_TROLL-1))        |(1<<(RACE_BLOODELF-1))| \
-    (1<<(RACE_DRAENEI-1)))
+    ((1<<(RACE_HUMAN-1))    |(1<<(RACE_ORC-1))      |(1<<(RACE_DWARF-1))   | \
+    (1<<(RACE_NIGHTELF-1))  |(1<<(RACE_UNDEAD-1))   |(1<<(RACE_TAUREN-1))  | \
+    (1<<(RACE_GNOME-1))     |(1<<(RACE_TROLL-1))    |(1<<(RACE_BLOODELF-1))| \
+    (1<<(RACE_DRAENEI-1))   |(1<<(RACE_GOBLIN-1))   |(1<<(RACE_WORGEN-1)))
 
 #define RACEMASK_ALLIANCE \
-    ((1<<(RACE_HUMAN-1)) | (1<<(RACE_DWARF-1)) | (1<<(RACE_NIGHTELF-1)) | \
-    (1<<(RACE_GNOME-1)) | (1<<(RACE_DRAENEI-1)))
+    ((1<<(RACE_HUMAN-1))    | (1<<(RACE_DWARF-1))   |(1<<(RACE_NIGHTELF-1))| \
+    (1<<(RACE_GNOME-1))     | (1<<(RACE_DRAENEI-1)) |(1<<(RACE_WORGEN-1)))
 
 #define RACEMASK_HORDE RACEMASK_ALL_PLAYABLE & ~RACEMASK_ALLIANCE
+
+#define CLASSMASK_ALL_PLAYABLE \
+    ((1<<(WARRIOR-1))       |(1<<(PALADIN-1))       |(1<<(HUNTER-1))| \
+    (1<<(ROGUE-1))          |(1<<(PRIEST-1))        |(1<<(SHAMAN-1))| \
+    (1<<(MAGE-1))           |(1<<(WARLOCK-1))       |(1<<(DRUID-1)) | \
+    (1<<(DEATHKNIGHT-1)))
 
 #define MAKE_NEW_GUID(l, e, h)   uint64(uint64(l) | (uint64(e) << 24) | (uint64(h) << 48))
 

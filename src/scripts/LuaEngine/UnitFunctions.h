@@ -1698,7 +1698,7 @@ class LuaUnit
                         qle->UpdatePlayerFields();
 
                         // If the quest should give any items on begin, give them the items.
-                        for (uint8 i = 0; i < 4; ++i)
+                        /*for (uint8 i = 0; i < 4; ++i)
                         {
                             if (qst->receive_items[i])
                             {
@@ -1709,14 +1709,14 @@ class LuaUnit
                                 if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
                                     item->DeleteMe();
                             }
-                        }
+                        }*/
 
-                        if (qst->srcitem && qst->srcitem != qst->receive_items[0])
+                        if (qst->SrcItemId /* && qst->srcitem != qst->receive_items[0]*/)
                         {
-                            Item* item = objmgr.CreateItem(qst->srcitem, plr);
+                            Item* item = objmgr.CreateItem(qst->SrcItemId, plr);
                             if (item)
                             {
-                                item->SetStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
+                                item->SetStackCount(qst->SrcItemCount ? qst->SrcItemCount : 1);
                                 if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
                                     item->DeleteMe();
                             }
@@ -1790,7 +1790,7 @@ class LuaUnit
             auto questlog_entry = pl->GetQuestLogForEntry(questid);
             if (questlog_entry != nullptr)
             {
-                questlog_entry->SetMobCount(objective, questlog_entry->GetQuest()->required_mobcount[objective]);
+                questlog_entry->SetMobCount(objective, questlog_entry->GetQuest()->ReqCreatureOrGOCount[objective]);
                 questlog_entry->SendUpdateAddKill(objective);
                 if (questlog_entry->CanBeFinished())
                 {
@@ -3712,7 +3712,7 @@ class LuaUnit
         TEST_PLAYER()
             Player* plr = static_cast<Player*>(ptr);
         uint32 honor = CHECK_ULONG(L, 1);
-        plr->AddHonor(honor, true);
+        //plr->AddHonor(honor, true);
         return 0;
     }
 
@@ -4354,7 +4354,7 @@ class LuaUnit
             Creature* ctr = static_cast<Creature*>(ptr);
         uint32 questid = CHECK_ULONG(L, 1);
         QuestProperties const* qst = sMySQLStore.GetQuestProperties(questid);
-        if (ctr->HasQuest(qst->id, qst->type))
+        if (ctr->HasQuest(qst->GetQuestId(), qst->GetQuestMethod()))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
@@ -4553,7 +4553,7 @@ class LuaUnit
         uint32 itemid = (uint32)luaL_checknumber(L, 1);
         uint32 amount = (uint32)luaL_checknumber(L, 2);
         uint32 costid = (uint32)luaL_checknumber(L, 3);
-        auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : NULL;
+        DB2::Structures::ItemExtendedCostEntry const* item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : NULL;
         if (itemid && amount)
             ctr->AddVendorItem(itemid, amount, item_extended_cost);
         return 0;
@@ -4886,7 +4886,7 @@ class LuaUnit
         Player* plr = static_cast<Player*>(ptr);
         if (pnts > 0)
         {
-            plr->AddArenaPoints(pnts, true);
+            //plr->AddArenaPoints(pnts, true);
         }
         return 0;
     }
@@ -4905,7 +4905,7 @@ class LuaUnit
         {
             plr->m_arenaPoints = 0;
         }
-        plr->UpdateArenaPoints();
+        //plr->UpdateArenaPoints();
         return 0;
     }
 
@@ -5399,16 +5399,16 @@ class LuaUnit
         {
             lua_newtable(L);
             lua_pushstring(L, "x");
-            lua_pushnumber(L, movement_info->position.x);
+            lua_pushnumber(L, movement_info->pos.m_positionX);
             lua_rawset(L, -3);
             lua_pushstring(L, "y");
-            lua_pushnumber(L, movement_info->position.y);
+            lua_pushnumber(L, movement_info->pos.m_positionY);
             lua_rawset(L, -3);
             lua_pushstring(L, "z");
-            lua_pushnumber(L, movement_info->position.z);
+            lua_pushnumber(L, movement_info->pos.m_positionZ);
             lua_rawset(L, -3);
             lua_pushstring(L, "o");
-            lua_pushnumber(L, movement_info->position.o);
+            lua_pushnumber(L, movement_info->pos.m_orientation);
             lua_rawset(L, -3);
         }
         else
@@ -5421,7 +5421,7 @@ class LuaUnit
         TEST_PLAYER()
             MovementInfo* move_info = static_cast<Player*>(ptr)->GetSession()->GetMovementInfo();
         if (move_info != NULL)
-            lua_pushnumber(L, move_info->flags);
+            lua_pushnumber(L, move_info->GetMovementFlags());
         else
             RET_NIL()
             return 1;
@@ -5478,8 +5478,8 @@ class LuaUnit
         uint32 points = luaL_checkinteger(L, 2);
         static_cast<Player*>(ptr)->m_specs[spec].SetTP(points);
 
-        if (spec == static_cast<Player*>(ptr)->m_talentActiveSpec)
-            static_cast<Player*>(ptr)->SetUInt32Value(PLAYER_CHARACTER_POINTS1, points);
+        /*if (spec == static_cast<Player*>(ptr)->m_talentActiveSpec)
+            static_cast<Player*>(ptr)->SetUInt32Value(PLAYER_CHARACTER_POINTS1, points);*/
 
         static_cast<Player*>(ptr)->smsg_TalentsInfo(false);
         return 0;

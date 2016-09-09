@@ -22,25 +22,29 @@
 
 initialiseSingleton(ChannelMgr);
 
-void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
+void WorldSession::HandleJoinChannelOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
     CHECK_PACKET_SIZE(recvPacket, 1);
     std::string channelname, pass;
-    uint32 dbc_id = 0;
-    uint16 crap;        // crap = some sort of channel type?
+    uint32 channel_id;
+
     Channel* chn;
 
-    recvPacket >> dbc_id >> crap;
-    recvPacket >> channelname;
-    recvPacket >> pass;
+    recvPacket >> channel_id;
+    recvPacket.readBit();       // has voice
+    recvPacket.readBit();       // zone update
 
+    uint8 channelLength = recvPacket.readBits(8);
+    uint8 passwordLength = recvPacket.readBits(8);
+    channelname = recvPacket.ReadString(channelLength);
+    pass = recvPacket.ReadString(passwordLength);
 
     if (sWorld.GmClientChannel.size() && !stricmp(sWorld.GmClientChannel.c_str(), channelname.c_str()) && !GetPermissionCount())
         return;
 
-    chn = channelmgr.GetCreateChannel(channelname.c_str(), _player, dbc_id);
+    chn = channelmgr.GetCreateChannel(channelname.c_str(), _player, channel_id);
     if (chn == NULL)
         return;
 

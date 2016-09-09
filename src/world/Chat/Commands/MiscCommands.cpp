@@ -149,15 +149,19 @@ bool ChatHandler::HandleGoStartLocationCommand(const char* args, WorldSession* m
             raceid = 7;
         else if (race == "troll")
             raceid = 8;
+        else if (race == "goblin")
+            raceid = 9;
         else if (race == "bloodelf")
             raceid = 10;
         else if (race == "draenei")
             raceid = 11;
         else if (race == "deathknight")
             classid = 6;
+        else if (race == "worgen")
+            raceid = 22;
         else
         {
-            RedSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, tauren, undead, bloodelf, deathknight");
+            RedSystemMessage(m_session, "Invalid start location! Valid locations are: human, dwarf, gnome, nightelf, draenei, orc, troll, goblin, tauren, undead, bloodelf, worgen, deathknight");
             return true;
         }
     }
@@ -583,17 +587,17 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     auto out_y = obj->GetPositionY();
     auto out_z = obj->GetPositionZ();
     auto out_o = obj->GetOrientation();
-    auto out_area_name = at->area_name[0]; // enUS, hardcoded until locale is implemented properly
+    auto out_area_name = at->area_name; // enUS, hardcoded until locale is implemented properly
 
     snprintf((char*)buf, 400, "|cff00ff00Current Position: |cffffffffMap: |cff00ff00%d |cffffffffZone: |cff00ff00%u |cffffffffArea: |cff00ff00%u |cffffffffPhase: |cff00ff00%u |cffffffffX: |cff00ff00%f |cffffffffY: |cff00ff00%f |cffffffffZ: |cff00ff00%f |cffffffffOrientation: |cff00ff00%f |cffffffffArea Name: |cff00ff00%s |r",
         out_map_id, out_zone_id, out_area_id, out_phase, out_x, out_y, out_z, out_o, out_area_name);
     SystemMessage(m_session, buf);
 
-    if (obj->obj_movement_info.IsOnTransport())
+    /*if (obj->obj_movement_info.IsOnTransport())
     {
         SystemMessage(m_session, "Position on Transport:");
         SystemMessage(m_session, "  tX: %f  tY: %f  tZ: %f  tO: %f", obj->GetTransPositionX(), obj->GetTransPositionY(), obj->GetTransPositionZ(), obj->GetTransPositionO());
-    }
+    }*/
 
     // ".gps 1" will save gps info to file logs/gps.log - This probably isn't very multithread safe so don't have many gms spamming it!
     if (args != NULL && *args == '1')
@@ -997,8 +1001,8 @@ bool ChatHandler::HandlePlayerInfo(const char* args, WorldSession* m_session)
 
     static const char* classes[12] =
     { "None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "None", "Druid" };
-    static const char* races[12] =
-    { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "None", "Blood Elf", "Draenei" };
+    static const char* races[23] =
+    { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "Goblin", "Blood Elf", "Draenei", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "Worgen" };
 
     char playedLevel[64];
     char playedTotal[64];

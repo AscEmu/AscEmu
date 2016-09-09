@@ -155,7 +155,7 @@ bool ChatHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_ses
         return false;
 
     uint32 SpellId = atol(args);
-    SpellEntry* spell_entry = dbcSpell.LookupEntryForced(SpellId);
+    OLD_SpellEntry* spell_entry = dbcSpell.LookupEntryForced(SpellId);
     if (spell_entry == nullptr)
     {
         RedSystemMessage(m_session, "Invalid spell id %u.", SpellId);
@@ -190,7 +190,7 @@ bool ChatHandler::HandlePetRemoveSpellCommand(const char* args, WorldSession* m_
         return false;
 
     uint32 SpellId = atol(args);
-    SpellEntry* spell_entry = dbcSpell.LookupEntryForced(SpellId);
+    OLD_SpellEntry* spell_entry = dbcSpell.LookupEntryForced(SpellId);
     if (spell_entry == nullptr)
     {
         RedSystemMessage(m_session, "Invalid spell id requested.");

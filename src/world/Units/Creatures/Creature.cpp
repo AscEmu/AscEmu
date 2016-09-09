@@ -514,7 +514,7 @@ QuestProperties const* Creature::FindQuest(uint32 quest_id, uint8 quest_relation
     {
         QuestRelation* ptr = (*it);
 
-        if ((ptr->qst->id == quest_id) && (ptr->type & quest_relation))
+        if ((ptr->qst->GetQuestId() == quest_id) && (ptr->type & quest_relation))
         {
             return ptr->qst;
         }
@@ -529,7 +529,7 @@ uint16 Creature::GetQuestRelation(uint32 quest_id)
 
     for (it = m_quests->begin(); it != m_quests->end(); ++it)
     {
-        if ((*it)->qst->id == quest_id)
+        if ((*it)->qst->GetQuestId() == quest_id)
         {
             quest_relation |= (*it)->type;
         }
@@ -667,7 +667,7 @@ bool Creature::HasQuest(uint32 id, uint32 type)
     if (!m_quests) return false;
     for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
         {
-            if ((*itr)->qst->id == id && (*itr)->type & type)
+            if ((*itr)->qst->GetQuestId() == id && (*itr)->type & type)
                 return true;
         }
     return false;
@@ -1120,7 +1120,7 @@ Trainer* Creature::GetTrainer()
     return mTrainer;
 }
 
-void Creature::AddVendorItem(uint32 itemid, uint32 amount, DBC::Structures::ItemExtendedCostEntry const* ec)
+void Creature::AddVendorItem(uint32 itemid, uint32 amount, DB2::Structures::ItemExtendedCostEntry const* ec)
 {
     CreatureItem ci;
     ci.amount = amount;
@@ -1298,6 +1298,9 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
     SetMaxHealth(health);
     SetBaseHealth(health);
 
+    SetPowerType(POWER_TYPE_MANA);
+    PowerFields[POWER_TYPE_MANA] = 0; //mana is stored in slot 0
+
     SetMaxPower(POWER_TYPE_MANA, creature_properties->Mana);
     SetBaseMana(creature_properties->Mana);
     SetPower(POWER_TYPE_MANA, creature_properties->Mana);
@@ -1455,7 +1458,9 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
     if (creature_properties->Mana != 0)
         SetPowerType(POWER_TYPE_MANA);
     else
-        SetPowerType(0);
+        SetPowerType(POWER_TYPE_MANA);
+
+    PowerFields[POWER_TYPE_MANA] = 0;	//mana is stored in slot 0
 
     if (creature_properties->guardtype == GUARDTYPE_CITY)
         m_aiInterface->m_isGuard = true;
@@ -1532,6 +1537,9 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     SetHealth(health);
     SetMaxHealth(health);
     SetBaseHealth(health);
+
+    SetPowerType(POWER_TYPE_MANA);
+    PowerFields[POWER_TYPE_MANA] = 0; //mana is stored in slot 0
 
     SetMaxPower(POWER_TYPE_MANA, creature_properties->Mana);
     SetBaseMana(creature_properties->Mana);
@@ -1647,7 +1655,11 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         m_useAI = false;
     }
 
-    SetPowerType(POWER_TYPE_MANA);
+    /* more hacks! */
+    if (creature_properties->Mana != 0)
+        SetPowerType(POWER_TYPE_MANA);
+    else
+        SetPowerType(POWER_TYPE_MANA);
 
     if (creature_properties->guardtype == GUARDTYPE_CITY)
         m_aiInterface->m_isGuard = true;
@@ -1685,7 +1697,7 @@ void Creature::OnPushToWorld()
     }
 
     std::set<uint32>::iterator itr = creature_properties->start_auras.begin();
-    SpellEntry* sp;
+    OLD_SpellEntry* sp;
     for (; itr != creature_properties->start_auras.end(); ++itr)
     {
         sp = dbcSpell.LookupEntryForced((*itr));
@@ -2184,7 +2196,7 @@ void Creature::GetSellItemByItemId(uint32 itemid, CreatureItem& ci)
     ci.itemid = 0;
 }
 
-DBC::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByItemId(uint32 itemid)
+DB2::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByItemId(uint32 itemid)
 {
     for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
         {
@@ -2380,7 +2392,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
     // on die and an target die proc
     {
-        SpellEntry* killerspell;
+        OLD_SpellEntry* killerspell;
         if (spellid)
             killerspell = dbcSpell.LookupEntry(spellid);
         else killerspell = NULL;
@@ -2621,7 +2633,7 @@ void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
         // check for special variables $N=name $C=class $R=race $G=gender
         // $G is followed by male_string:female_string;
         std::string newText = text;
-        static const char* races[12] = { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "None", "Blood Elf", "Draenei" };
+        static const char* races[23] = { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "Goblin", "Blood Elf", "Draenei", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "Worgen" };
         static const char* classes[12] = { "None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "None", "Druid" };
         char* test = strstr((char*)text, "$R");
         if (test == NULL)

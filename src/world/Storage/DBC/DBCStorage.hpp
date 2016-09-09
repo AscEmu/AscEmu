@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "DBCSQL.hpp"
 #include "DBCLoader.hpp"
 #include "Database/Field.h"
+#include "DBCStructures.hpp"
 
 namespace DBC
 {

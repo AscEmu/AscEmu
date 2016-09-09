@@ -20,10 +20,12 @@
 #include "vmapexport.h"
 #include "model.h"
 #include "wmo.h"
-#include "mpq_libmpq04.h"
+#include "mpqfile.h"
 #include <cassert>
 #include <algorithm>
 #include <cstdio>
+
+extern HANDLE WorldMpq;
 
 Model::Model(std::string &filename) : filename(filename), vertices(0), indices(0)
 {
@@ -32,7 +34,7 @@ Model::Model(std::string &filename) : filename(filename), vertices(0), indices(0
 
 bool Model::open()
 {
-    MPQFile f(filename.c_str());
+    MPQFile f(WorldMpq, filename.c_str());
 
     if (f.isEof())
     {
@@ -51,7 +53,7 @@ bool Model::open()
         f.seekRelative(header.ofsBoundingVertices);
         vertices = new Vec3D[header.nBoundingVertices];
         f.read(vertices, header.nBoundingVertices * 12);
-        for (uint32 i = 0; i < header.nBoundingVertices; i++)
+        for (uint32 i = 0; i<header.nBoundingVertices; i++)
             vertices[i] = fixCoordSystem(vertices[i]);
         f.seek(0);
         f.seekRelative(header.ofsBoundingTriangles);
@@ -70,7 +72,7 @@ bool Model::open()
 
 bool Model::ConvertToVMAPModel(const char * outfilename)
 {
-    int N[12] = { 0,0,0,0,0,0,0,0,0,0,0,0 };
+    int N[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     FILE* output = fopen(outfilename, "wb");
     if (!output)
     {
@@ -115,7 +117,7 @@ bool Model::ConvertToVMAPModel(const char * outfilename)
     wsize = sizeof(int) + sizeof(float) * 3 * nVertices;
     fwrite(&wsize, sizeof(int), 1, output);
     fwrite(&nVertices, sizeof(int), 1, output);
-    if (nVertices > 0)
+    if (nVertices >0)
     {
         for (uint32 vpos = 0; vpos < nVertices; ++vpos)
         {
@@ -193,4 +195,20 @@ ModelInstance::ModelInstance(MPQFile& f, char const* ModelInstName, uint32 mapID
     uint32 nlen = strlen(ModelInstName);
     fwrite(&nlen, sizeof(uint32), 1, pDirfile);
     fwrite(ModelInstName, sizeof(char), nlen, pDirfile);
+
+    /* int realx1 = (int) ((float) pos.x / 533.333333f);
+    int realy1 = (int) ((float) pos.z / 533.333333f);
+    int realx2 = (int) ((float) pos.x / 533.333333f);
+    int realy2 = (int) ((float) pos.z / 533.333333f);
+
+    fprintf(pDirfile,"%s/%s %f,%f,%f_%f,%f,%f %f %d %d %d,%d %d\n",
+    MapName,
+    ModelInstName,
+    (float) pos.x, (float) pos.y, (float) pos.z,
+    (float) rot.x, (float) rot.y, (float) rot.z,
+    sc,
+    nVertices,
+    realx1, realy1,
+    realx2, realy2
+    ); */
 }
