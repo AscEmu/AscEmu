@@ -135,6 +135,14 @@ typedef struct Cords
     float x, y, z;
 } Cords;
 
+enum TrainerSpellState
+{
+    TRAINER_SPELL_GRAY = 0,
+    TRAINER_SPELL_GREEN = 1,
+    TRAINER_SPELL_RED = 2,
+    TRAINER_SPELL_GREEN_DISABLED = 10   // custom value, not send to client: formally green but learn not allowed
+};
+
 extern OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 void CapitalizeString(std::string & arg);
 
@@ -391,7 +399,7 @@ class SERVER_DECL WorldSession
         //void HandleTabardVendorActivateOpcode(WorldPacket& recvPacket);
         //void HandleBankerActivateOpcode(WorldPacket& recvPacket);
         //void HandleBuyBankSlotOpcode(WorldPacket& recvPacket);
-        //void HandleTrainerListOpcode(WorldPacket& recvPacket);
+        void HandleTrainerListOpcode(WorldPacket& recvPacket);
         void HandleTrainerBuySpellOpcode(WorldPacket& recvPacket);
         //void HandleCharterShowListOpcode(WorldPacket& recvPacket);
         void HandleGossipHelloOpcode(WorldPacket& recvPacket);
@@ -652,7 +660,7 @@ class SERVER_DECL WorldSession
         //void HandleDungeonDifficultyOpcode(WorldPacket& recv_data);
         //void HandleRaidDifficultyOpcode(WorldPacket& recv_data);
 
-        uint8 TrainerGetSpellStatus(TrainerSpell* pSpell);
+        TrainerSpellState TrainerGetSpellStatus(TrainerSpell* pSpell);
         void SendMailError(uint32 error);
 
         // At Login

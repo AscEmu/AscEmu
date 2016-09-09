@@ -117,8 +117,4 @@ struct trainertype
 #define TRAINER_TYPE_MAX 16
 extern trainertype trainer_types[TRAINER_TYPE_MAX];
 
-#define TRAINER_STATUS_LEARNABLE 0
-#define TRAINER_STATUS_NOT_LEARNABLE 1
-#define TRAINER_STATUS_ALREADY_HAVE 2
-
 #endif // _NPCHANDLER_H

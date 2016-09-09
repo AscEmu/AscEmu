@@ -735,6 +735,29 @@ class SERVER_DECL Player : public Unit
         bool removeSpell(uint32 SpellID, bool MoveToDeleted, bool SupercededSpell, uint32 SupercededSpellID);
         bool removeDeletedSpell(uint32 SpellID);
         void SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs);
+        bool IsSpellFitByClassAndRace(uint32 spell_id);
+        uint32 GetFreePrimaryProfessionPoints() const { return GetUInt32Value(PLAYER_CHARACTER_POINTS); }
+
+        bool IsPrimaryProfession(DBC::Structures::SpellEntry const* sp) const
+        {
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            {
+                if (sp->GetSpellEffect(SpellEffectIndex(i))->Effect == 118)   //SPELL_EFFECT_SKILL
+                {
+                    uint32 skill = sp->GetSpellEffect(SpellEffectIndex(i))->EffectMiscValue;
+
+                    if (IsPrimaryProfessionSkill(skill))
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        bool IsPrimaryProfessionSkill(uint32 skill) const
+        {
+            DBC::Structures::SkillLineAbilityEntry const* pSkill = sSkillLineAbilityStore.LookupEntry(skill);
+            return pSkill && pSkill->acquireMethod == 11;    //SKILL_TYPE_PROFESSION
+        }
 
         /// PLEASE DO NOT INLINE!
         void AddOnStrikeSpell(OLD_SpellEntry* sp, uint32 delay)

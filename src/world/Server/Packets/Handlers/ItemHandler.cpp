@@ -914,7 +914,6 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recv_data)
         data << uint32(stuff + 1);      // numbered from 1 at client
         data << int32(amount);
         data << uint32(amount);
-        data << uint32(amount);
         SendPacket(&data);
     }
 }

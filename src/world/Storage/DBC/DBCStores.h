@@ -22,6 +22,7 @@
 
 #include "DBCGlobals.hpp"
 #include "Server/Definitions.h"
+#include "Management/Skill.h"   //todo danko
 
 class Player;
 
@@ -196,6 +197,21 @@ struct OLD_SpellEntry
     /// Same for Auras
     void* (*AuraFactoryFunc);
 
+
+    bool IsProfession() const
+    {
+        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (Effect[i] == 118) // SPELL_EFFECT_SKILL
+            {
+                uint32 skill = EffectMiscValue[i];
+                // MAYBE I MISSED SOME !!
+                if (skill == SKILL_FISHING || skill == SKILL_COOKING || skill == SKILL_FIRST_AID || skill == SKILL_ALCHEMY || skill == SKILL_ARCHAEOLOGY || skill == SKILL_BLACKSMITHING || skill == SKILL_ENGINEERING || skill == SKILL_HERBALISM || skill == SKILL_LEATHERWORKING || skill == SKILL_JEWELCRAFTING)            
+                    return true;
+            }
+        }
+        return false;
+    }
     //////////////////////////////////////////////////////////////////////////////////////////
     /// \note bool HasEffect   - Tells if the Spell has a certain effect
     ///
