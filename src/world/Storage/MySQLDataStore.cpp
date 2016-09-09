@@ -685,6 +685,11 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
             creatureProperties.itemslot_2 = 0;
             creatureProperties.itemslot_3 = 0;
 
+            for (uint8 i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
+            {
+                creatureProperties.MonsterSay[i] = nullptr;
+            }
+
             ++creature_properties_count;
         } while (creature_properties_result->NextRow());
 
