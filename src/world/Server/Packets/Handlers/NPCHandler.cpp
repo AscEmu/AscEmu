@@ -450,18 +450,18 @@ void WorldSession::SendCharterRequest(Creature* pCreature)
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles MSG_AUCTION_HELLO:
 //////////////////////////////////////////////////////////////////////////////////////////
-//void WorldSession::HandleAuctionHelloOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint64 guid;
-//    recv_data >> guid;
-//    Creature* auctioneer = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-//    if (!auctioneer)
-//        return;
-//
-//    SendAuctionList(auctioneer);
-//}
+void WorldSession::HandleAuctionHelloOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    uint64 guid;
+    recv_data >> guid;
+    Creature* auctioneer = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    if (!auctioneer)
+        return;
+
+    SendAuctionList(auctioneer);
+}
 
 void WorldSession::SendAuctionList(Creature* auctioneer)
 {

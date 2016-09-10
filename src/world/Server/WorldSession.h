@@ -409,14 +409,14 @@ class SERVER_DECL WorldSession
         //void HandleBinderActivateOpcode(WorldPacket& recvPacket);
 
         // Auction House opcodes
-        //void HandleAuctionHelloOpcode(WorldPacket& recvPacket);
-        //void HandleAuctionListItems(WorldPacket& recv_data);
-        //void HandleAuctionListBidderItems(WorldPacket& recv_data);
-        //void HandleAuctionSellItem(WorldPacket& recv_data);
-        //void HandleAuctionListOwnerItems(WorldPacket& recv_data);
-        //void HandleAuctionPlaceBid(WorldPacket& recv_data);
-        //void HandleCancelAuction(WorldPacket& recv_data);
-        //void HandleAuctionListPendingSales(WorldPacket& recv_data);
+        void HandleAuctionHelloOpcode(WorldPacket& recvPacket);
+        void HandleAuctionListItems(WorldPacket& recv_data);
+        void HandleAuctionListBidderItems(WorldPacket& recv_data);
+        void HandleAuctionSellItem(WorldPacket& recv_data);
+        void HandleAuctionListOwnerItems(WorldPacket& recv_data);
+        void HandleAuctionPlaceBid(WorldPacket& recv_data);
+        void HandleCancelAuction(WorldPacket& recv_data);
+        void HandleAuctionListPendingSales(WorldPacket& recv_data);
 
         // Mail opcodes
         void HandleGetMail(WorldPacket& recv_data);

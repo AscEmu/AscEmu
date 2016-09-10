@@ -34,6 +34,7 @@
 #include "Storage/DB2/DB2Stores.hpp"
 #include "Storage/DB2/DB2Structures.hpp"
 #include "Management/Guild.h"
+#include "Management/AuctionHouse.h"
 
 
 class QuestLogEntry;
@@ -1544,6 +1545,8 @@ class SERVER_DECL Player : public Unit
         {
             ModUnsigned32Value(PLAYER_FIELD_COINAGE, -coins);
         }
+
+        void SendAuctionCommandResult(Auction* auction, uint32 Action, uint32 ErrorCode, uint32 bidError = 0);
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // EASY FUNCTIONS - MISC
