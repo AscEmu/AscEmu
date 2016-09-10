@@ -745,9 +745,13 @@ class SERVER_DECL Player : public Unit
         {
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
-                if (sp->GetSpellEffect(SpellEffectIndex(i))->Effect == 118)   //SPELL_EFFECT_SKILL
+                DBC::Structures::SpellEffectEntry const* spellEffect = sp->GetSpellEffect(SpellEffectIndex(i));
+                if (!spellEffect)
+                    continue;
+
+                if (spellEffect->Effect == 118)   //SPELL_EFFECT_SKILL
                 {
-                    uint32 skill = sp->GetSpellEffect(SpellEffectIndex(i))->EffectMiscValue;
+                    uint32 skill = spellEffect->EffectMiscValue;
 
                     if (IsPrimaryProfessionSkill(skill))
                         return true;
@@ -759,7 +763,10 @@ class SERVER_DECL Player : public Unit
         bool IsPrimaryProfessionSkill(uint32 skill) const
         {
             DBC::Structures::SkillLineAbilityEntry const* pSkill = sSkillLineAbilityStore.LookupEntry(skill);
-            return pSkill && pSkill->acquireMethod == 11;    //SKILL_TYPE_PROFESSION
+            if (!pSkill)
+                return false;
+
+            return pSkill->acquireMethod == 11;    //SKILL_TYPE_PROFESSION
         }
 
         /// PLEASE DO NOT INLINE!
