@@ -6957,11 +6957,13 @@ void Player::TaxiStart(TaxiPath* path, uint32 modelid, uint32 start_node)
 
     WorldPacket data(SMSG_MONSTER_MOVE, 38 + ((endn - start_node) * 12));
     data << GetNewGUID();
-    data << uint8(0); //VLack: it seems we have a 1 byte stuff after the new GUID
-    data << firstNode->x << firstNode->y << firstNode->z;
+    data << uint8(0);
+    data << firstNode->x;
+    data << firstNode->y;
+    data << firstNode->z;
     data << m_taxi_ride_time;
     data << uint8(0);
-    data << uint32(0x00003000);
+    data << uint32(0x0C008400);
     data << uint32(traveltime);
 
     if (!cn)

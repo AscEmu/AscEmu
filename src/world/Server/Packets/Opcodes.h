@@ -748,13 +748,6 @@ enum Opcodes
     SMSG_COMMENTATOR_SKIRMISH_QUEUE_RESULT2         = 0x51D,
     SMSG_MULTIPLE_MOVES                             = 0x51E,
 
-    CMSG_GM_SET_SECURITY_GROUP                          = 0x0000,
-    MSG_GM_BIND_OTHER                                   = 0x0000,
-    MSG_GM_SHOWLABEL                                    = 0x0000,
-    MSG_GM_SUMMON                                       = 0x0000,
-    CMSG_GM_INVIS                                       = 0x0000,
-    CMSG_GM_NUKE                                        = 0x0000,
-
 
     // 4.3.4 15595
     MSG_NULL_ACTION                                     = 0x1001,
@@ -1240,17 +1233,14 @@ enum Opcodes
     CMSG_BUYBACK_ITEM                                   = 0x6C17,    // 4.3.4
 
     //Taxi
-    CMSG_SET_TAXI_BENCHMARK_MODE                        = 0x04314,
-    CMSG_TAXICLEARALLNODES                              = 0x00000,
-    CMSG_TAXIENABLEALLNODES                             = 0x00000,
-    CMSG_TAXISHOWNODES                                  = 0x00000,
-    SMSG_SHOWTAXINODES                                  = 0x02A36,
-    CMSG_TAXINODE_STATUS_QUERY                          = 0x02F25,
-    SMSG_TAXINODE_STATUS                                = 0x02936,
-    CMSG_TAXIQUERYAVAILABLENODES                        = 0x06C06,
-    CMSG_ACTIVATETAXI                                   = 0x06E06,
-    SMSG_ACTIVATETAXIREPLY                              = 0x06A37,
-    SMSG_NEW_TAXI_PATH                                  = 0x04B35,
+    CMSG_SET_TAXI_BENCHMARK_MODE                        = 0x4314,
+    SMSG_SHOWTAXINODES                                  = 0x2A36,
+    CMSG_TAXINODE_STATUS_QUERY                          = 0x2F25,
+    SMSG_TAXINODE_STATUS                                = 0x2936,
+    CMSG_TAXIQUERYAVAILABLENODES                        = 0x6C06,
+    CMSG_ACTIVATETAXI                                   = 0x6E06,
+    SMSG_ACTIVATETAXIREPLY                              = 0x6A37,
+    SMSG_NEW_TAXI_PATH                                  = 0x4B35,
 
     //Auction
     MSG_AUCTION_HELLO                                   = 0x2307,
@@ -1439,6 +1429,17 @@ enum Opcodes
     CMSG_UNK_7102                                       = 0x7102,
     CMSG_UNK_3D54                                       = 0x3D54,
     CMSG_UNK_720E                                       = 0x720E,
+
+    //Unknown packet names
+    CMSG_GM_SET_SECURITY_GROUP                          = 0x0000,
+    MSG_GM_BIND_OTHER                                   = 0x0000,
+    MSG_GM_SHOWLABEL                                    = 0x0000,
+    MSG_GM_SUMMON                                       = 0x0000,
+    CMSG_GM_INVIS                                       = 0x0000,
+    CMSG_GM_NUKE                                        = 0x0000,
+    CMSG_TAXICLEARALLNODES                              = 0x0000,
+    CMSG_TAXIENABLEALLNODES                             = 0x0000,
+    CMSG_TAXISHOWNODES                                  = 0x0000,
 
     NUM_MSG_TYPES                                       = 0xFFFF    // End of Opcodes
 };

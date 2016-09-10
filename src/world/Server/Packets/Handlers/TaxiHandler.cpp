@@ -22,60 +22,60 @@
 #include "StdAfx.h"
 
 
-//void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    LOG_DEBUG("WORLD: Received CMSG_TAXINODE_STATUS_QUERY");
-//
-//    uint64 guid;
-//    uint32 curloc;
-//    uint8 field;
-//    uint32 submask;
-//
-//    recv_data >> guid;
-//
-//    curloc = sTaxiMgr.GetNearestTaxiNode(GetPlayer()->GetPositionX(), GetPlayer()->GetPositionY(), GetPlayer()->GetPositionZ(), GetPlayer()->GetMapId());
-//
-//    field = (uint8)((curloc - 1) / 32);
-//    submask = 1 << ((curloc - 1) % 32);
-//
-//    WorldPacket data(9);
-//    data.Initialize(SMSG_TAXINODE_STATUS);
-//    data << guid;
-//
-//    // Check for known nodes
-//    if ((GetPlayer()->GetTaximask(field) & submask) != submask)
-//    {
-//        data << uint8(0);
-//    }
-//    else
-//    {
-//        data << uint8(1);
-//    }
-//
-//    SendPacket(&data);
-//    LOG_DEBUG("WORLD: Sent SMSG_TAXINODE_STATUS");
-//}
+void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
 
-//void WorldSession::HandleTaxiQueryAvaibleNodesOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    LOG_DEBUG("WORLD: Received CMSG_TAXIQUERYAVAILABLENODES");
-//    uint64 guid;
-//    recv_data >> guid;
-//    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-//    if (!pCreature) return;
-//
-//    SendTaxiList(pCreature);
-//}
+    LOG_DEBUG("WORLD: Received CMSG_TAXINODE_STATUS_QUERY");
+
+    uint64 guid;
+    uint32 curloc;
+    uint8 field;
+    uint32 submask;
+
+    recv_data >> guid;
+
+    curloc = sTaxiMgr.GetNearestTaxiNode(GetPlayer()->GetPositionX(), GetPlayer()->GetPositionY(), GetPlayer()->GetPositionZ(), GetPlayer()->GetMapId());
+
+    field = (uint8)((curloc - 1) / 32);
+    submask = 1 << ((curloc - 1) % 32);
+
+    WorldPacket data(9);
+    data.Initialize(SMSG_TAXINODE_STATUS);
+    data << guid;
+
+    // Check for known nodes
+    if ((GetPlayer()->GetTaximask(field) & submask) != submask)
+    {
+        data << uint8(0);
+    }
+    else
+    {
+        data << uint8(1);
+    }
+
+    SendPacket(&data);
+    LOG_DEBUG("WORLD: Sent SMSG_TAXINODE_STATUS");
+}
+
+void WorldSession::HandleTaxiQueryAvaibleNodesOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    LOG_DEBUG("WORLD: Received CMSG_TAXIQUERYAVAILABLENODES");
+    uint64 guid;
+    recv_data >> guid;
+    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    if (!pCreature) return;
+
+    SendTaxiList(pCreature);
+}
 
 void WorldSession::SendTaxiList(Creature* pCreature)
 {
     uint32 curloc;
     uint8 field;
-    uint32 TaxiMask[12];
+    uint32 TaxiMask[TAXIMASK_SIZE];
     uint32 submask;
     uint64 guid = pCreature->GetGUID();
 
@@ -100,24 +100,26 @@ void WorldSession::SendTaxiList(Creature* pCreature)
     }
 
     //Set Mask
-    memset(TaxiMask, 0, sizeof(TaxiMask));
+    memset(TaxiMask, 0, sizeof(uint32) * TAXIMASK_SIZE);
     sTaxiMgr.GetGlobalTaxiNodeMask(curloc, TaxiMask);
-    TaxiMask[field] |= 1 << ((curloc - 1) % 32);
+    if (field < TAXIMASK_SIZE)
+        TaxiMask[field] |= submask;
 
     //Remove nodes unknown to player
     if (!GetPlayer()->TaxiCheat)
     {
-        for (uint8 i = 0; i < 12; i++)
+        for (uint8 i = 0; i < TAXIMASK_SIZE; i++)
         {
             TaxiMask[i] &= GetPlayer()->GetTaximask(i);
         }
     }
 
-    WorldPacket data(64);
-    data.Initialize(SMSG_SHOWTAXINODES);
-    data << uint32(1) << guid;
+    WorldPacket data(SMSG_SHOWTAXINODES, 1 + 8 + TAXIMASK_SIZE * 4);
+    data << uint32(1);
+    data << guid;
     data << uint32(curloc);
-    for (uint8 i = 0; i < 12; i++)
+    data << uint32(TAXIMASK_SIZE * 4);  //bytecount
+    for (uint8 i = 0; i < TAXIMASK_SIZE; ++i)
     {
         data << TaxiMask[i];
     }
@@ -126,127 +128,134 @@ void WorldSession::SendTaxiList(Creature* pCreature)
     LOG_DEBUG("WORLD: Sent SMSG_SHOWTAXINODES");
 }
 
-//void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    LOG_DEBUG("WORLD: Received CMSG_ACTIVATETAXI");
-//
-//    uint64 guid;
-//    uint32 sourcenode;
-//    uint32 destinationnode;
-//    int32 newmoney;
-//    uint32 curloc;
-//    uint8 field;
-//    uint32 submask;
-//
-//    recv_data >> guid;
-//    recv_data >> sourcenode;
-//    recv_data >> destinationnode;
-//
-//    if (GetPlayer()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER))
-//        return;
-//
-//    TaxiPath* taxipath = sTaxiMgr.GetTaxiPath(sourcenode, destinationnode);
-//    TaxiNode* taxinode = sTaxiMgr.GetTaxiNode(sourcenode);
-//
-//    if (!taxinode || !taxipath)
-//        return;
-//
-//    curloc = taxinode->id;
-//    field = (uint8)((curloc - 1) / 32);
-//    submask = 1 << ((curloc - 1) % 32);
-//
-//    WorldPacket data(SMSG_ACTIVATETAXIREPLY, 4);
-//
-//    // Check for known nodes
-//    if ((GetPlayer()->GetTaximask(field) & submask) != submask)
-//    {
-//        data << uint32(1);
-//        SendPacket(&data);
-//        return;
-//    }
-//
-//    // Check for valid node
-//    if (!taxipath->GetNodeCount())
-//    {
-//        data << uint32(2);
-//        SendPacket(&data);
-//        return;
-//    }
-//
-//    // Check for gold
-//    newmoney = (GetPlayer()->GetGold() - taxipath->GetPrice());
-//    if (newmoney < 0)
-//    {
-//        data << uint32(3);
-//        SendPacket(&data);
-//        return;
-//    }
-//
-//    // MOUNTDISPLAYID
-//    // bat: 1566
-//    // gryph: 1147
-//    // wyvern: 295
-//    // hippogryph: 479
-//    // fer0x: Incorrect system. Need take values from TaxiNodes.dbc
-//
-//    uint32 modelid = 0;
-//    if (_player->IsTeamHorde())
-//    {
-//        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
-//
-//        if (ci == nullptr)
-//            ci = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
-//
-//        if (ci == nullptr)
-//            ci = sMySQLStore.GetCreatureProperties(541); // Riding Gryphon, in case neither of the above work
-//
-//        if (ci != nullptr)
-//            modelid = ci->Male_DisplayID;
-//        else
-//            modelid = 6852; // Riding Gryphon modelid, in case it wasn't in the db;
-//    }
-//    else
-//    {
-//        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
-//
-//        if (ci == nullptr)
-//            ci = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
-//
-//        if (ci == nullptr)
-//            ci = sMySQLStore.GetCreatureProperties(541); // Riding Gryphon, in case neither of the above work
-//
-//        if (ci != nullptr)
-//            modelid = ci->Male_DisplayID;
-//        else
-//            modelid = 6852; // Riding Gryphon modelid, in case it wasn't in the db
-//    }
-//
-//    //GetPlayer()->setDismountCost(newmoney);
-//
-//    data << uint32(0);
-//    // 0 Ok
-//    // 1 Unspecified Server Taxi Error
-//    // 2.There is no direct path to that direction
-//    // 3 Not enough Money
-//    SendPacket(&data);
-//    LOG_DEBUG("WORLD: Sent SMSG_ACTIVATETAXIREPLY");
-//
-//    // 0x001000 seems to make a mount visible
-//    // 0x002000 seems to make you sit on the mount, and the mount move with you
-//    // 0x000004 locks you so you can't move, no msg_move updates are sent to the server
-//    // 0x000008 seems to enable detailed collision checking
-//
-//    //! Check if the player is casting, obviously they should not be able to cast on a taxi
-//    if (_player->GetCurrentSpell() != NULL)
-//        _player->GetCurrentSpell()->cancel();
-//
-//    _player->taxi_model_id = modelid;
-//    _player->TaxiStart(taxipath, modelid, 0);
-//
-//    //sLog.outString("TAXI: Starting taxi trip. Next update in %d msec.", first_node_time);
-//}
+void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    LOG_DEBUG("WORLD: Received CMSG_ACTIVATETAXI");
+
+    uint64 guid;
+    uint32 sourcenode;
+    uint32 destinationnode;
+    int32 newmoney;
+    uint32 curloc;
+    uint8 field;
+    uint32 submask;
+
+    recv_data >> guid;
+    recv_data >> sourcenode;
+    recv_data >> destinationnode;
+
+    if (GetPlayer()->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER))
+        return;
+
+    TaxiPath* taxipath = sTaxiMgr.GetTaxiPath(sourcenode, destinationnode);
+    TaxiNode* taxinode = sTaxiMgr.GetTaxiNode(sourcenode);
+
+    if (!taxinode || !taxipath)
+        return;
+
+    curloc = taxinode->id;
+    field = (uint8)((curloc - 1) / 32);
+    submask = 1 << ((curloc - 1) % 32);
+
+    WorldPacket data(SMSG_ACTIVATETAXIREPLY, 4);
+
+    // Check for known nodes
+    if ((GetPlayer()->GetTaximask(field) & submask) != submask)
+    {
+        data << uint32(1);
+        SendPacket(&data);
+        return;
+    }
+
+    // Check for valid node
+    if (!taxipath->GetNodeCount())
+    {
+        data << uint32(1);
+        SendPacket(&data);
+        return;
+    }
+
+    if (!taxipath || !taxipath->GetNodeCount())
+    {
+        data << uint32(2);
+        SendPacket(&data);
+        return;
+    }
+
+    // Check for gold
+    newmoney = (GetPlayer()->GetGold() - taxipath->GetPrice());
+    if (newmoney < 0)
+    {
+        data << uint32(3);
+        SendPacket(&data);
+        return;
+    }
+
+    // MOUNTDISPLAYID
+    // bat: 1566
+    // gryph: 1147
+    // wyvern: 295
+    // hippogryph: 479
+    // fer0x: Incorrect system. Need take values from TaxiNodes.dbc
+
+    uint32 modelid = 0;
+    if (_player->IsTeamHorde())
+    {
+        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
+
+        if (ci == nullptr)
+            ci = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
+
+        if (ci == nullptr)
+            ci = sMySQLStore.GetCreatureProperties(541); // Riding Gryphon, in case neither of the above work
+
+        if (ci != nullptr)
+            modelid = ci->Male_DisplayID;
+        else
+            modelid = 6852; // Riding Gryphon modelid, in case it wasn't in the db;
+    }
+    else
+    {
+        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
+
+        if (ci == nullptr)
+            ci = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
+
+        if (ci == nullptr)
+            ci = sMySQLStore.GetCreatureProperties(541); // Riding Gryphon, in case neither of the above work
+
+        if (ci != nullptr)
+            modelid = ci->Male_DisplayID;
+        else
+            modelid = 6852; // Riding Gryphon modelid, in case it wasn't in the db
+    }
+
+    //GetPlayer()->setDismountCost(newmoney);
+
+    data << uint32(0);
+    // 0 Ok
+    // 1 Unspecified Server Taxi Error
+    // 2.There is no direct path to that direction
+    // 3 Not enough Money
+    SendPacket(&data);
+    LOG_DEBUG("WORLD: Sent SMSG_ACTIVATETAXIREPLY");
+
+    // 0x001000 seems to make a mount visible
+    // 0x002000 seems to make you sit on the mount, and the mount move with you
+    // 0x000004 locks you so you can't move, no msg_move updates are sent to the server
+    // 0x000008 seems to enable detailed collision checking
+
+    //! Check if the player is casting, obviously they should not be able to cast on a taxi
+    if (_player->GetCurrentSpell() != NULL)
+        _player->GetCurrentSpell()->cancel();
+
+    _player->taxi_model_id = modelid;
+    _player->TaxiStart(taxipath, modelid, 0);
+
+    //sLog.outString("TAXI: Starting taxi trip. Next update in %d msec.", first_node_time);
+}
 
 //void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
 //{

@@ -390,9 +390,9 @@ class SERVER_DECL WorldSession
         //void HandleLfgPartyLockInfoRequestOpcode(WorldPacket& recv_data);
 
         /// Taxi opcodes (TaxiHandler.cpp)
-        //void HandleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket);
-        //void HandleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket);
-        //void HandleActivateTaxiOpcode(WorldPacket& recvPacket);
+        void HandleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket);
+        void HandleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket);
+        void HandleActivateTaxiOpcode(WorldPacket& recvPacket);
         //void HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket);
 
         /// NPC opcodes (NPCHandler.cpp)
@@ -438,7 +438,6 @@ class SERVER_DECL WorldSession
         void HandleAutoEquipItemSlotOpcode(WorldPacket& recvPacket);
         //void HandleItemQuerySingleOpcode(WorldPacket& recvPacket);
         void HandleSellItemOpcode(WorldPacket& recvPacket);
-        void HandleBuyItemInSlotOpcode(WorldPacket& recvPacket);
         void HandleBuyItemOpcode(WorldPacket& recvPacket);
         void HandleListInventoryOpcode(WorldPacket& recvPacket);
         void HandleAutoStoreBagItemOpcode(WorldPacket& recvPacket);
@@ -513,7 +512,7 @@ class SERVER_DECL WorldSession
         void HandleChatChannelWatchOpcode(WorldPacket& recvPacket);
 
         /// Corpse opcodes (Corpse.cpp)
-        //void HandleCorpseReclaimOpcode(WorldPacket& recvPacket);
+        void HandleCorpseReclaimOpcode(WorldPacket& recvPacket);
         //void HandleCorpseQueryOpcode(WorldPacket& recvPacket);
         //void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
 
@@ -698,7 +697,7 @@ class SERVER_DECL WorldSession
 
         // Misc
         void HandleWorldStateUITimerUpdate(WorldPacket& recv_data);
-        //void HandleSetTaxiBenchmarkOpcode(WorldPacket& recv_data);
+        void HandleSetTaxiBenchmarkOpcode(WorldPacket& recv_data);
         //void HandleMirrorImageOpcode(WorldPacket& recv_data);
         //void HandleSetFriendNote(WorldPacket& recv_data);
         void HandleInrangeQuestgiverQuery(WorldPacket& recv_data);
