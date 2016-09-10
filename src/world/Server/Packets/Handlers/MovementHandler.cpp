@@ -177,7 +177,7 @@ static MovementFlagName MoveFlagsToNames[] =
 static const uint32 nmovementflags = sizeof(MoveFlagsToNames) / sizeof(MovementFlagName);
 void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 {
-    uint16 opcode = recv_data.GetOpcode();
+    uint32 opcode = recv_data.GetOpcode();
     Player* mover = _player;
 
     if (MoverGuid != mover->GetGUID())
@@ -191,17 +191,18 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Clear standing state to stand.				                        */
     /************************************************************************/
-    if (recv_data.GetOpcode() == CMSG_MOVE_START_FORWARD)
-        _player->SetStandState(STANDSTATE_STAND);
+    /*if (recv_data.GetOpcode() == CMSG_MOVE_START_FORWARD)
+        _player->SetStandState(STANDSTATE_STAND);*/
+
     //extract packet
     MovementInfo movementInfo;
-    GetPlayer()->ReadMovementInfo(recv_data, &movementInfo);
+    recv_data >> movementInfo;
 
     /************************************************************************/
     /* Anti-Teleport                                                        */
     /************************************************************************/
 
-    if (!(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->GetCharmedUnitGUID())
+    /*if (!(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->GetCharmedUnitGUID())
     {
         if (sWorld.antihack_teleport && _player->m_position.Distance2DSq(movement_info.pos.m_positionX, movement_info.pos.m_positionY) > 3025.0f
             && _player->m_runSpeed < 50.0f && !_player->movement_info.t_guid)
@@ -210,57 +211,57 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
             Disconnect();
             return;
         }
-    }
+    }*/
 
     /************************************************************************/
     /* Remove Emote State                                                   */
     /************************************************************************/
-    if (_player->GetEmoteState())
-        _player->SetEmoteState(0);
+    /*if (_player->GetEmoteState())
+        _player->SetEmoteState(0);*/
 
     /************************************************************************/
     /* Make sure the co-ordinates are valid.                                */
     /************************************************************************/
-    if (!((movement_info.pos.m_positionX >= _minY) && (movement_info.pos.m_positionY <= _maxY)) || !((movement_info.pos.m_positionX >= _minX) && (movement_info.pos.m_positionX <= _maxX)))
+    /*if (!((movement_info.pos.m_positionX >= _minY) && (movement_info.pos.m_positionY <= _maxY)) || !((movement_info.pos.m_positionX >= _minX) && (movement_info.pos.m_positionX <= _maxX)))
     {
         Disconnect();
         return;
-    }
+    }*/
 
     //update the detector
-    if (sWorld.antihack_speed && !_player->GetTaxiState() && _player->movement_info.t_guid == 0 && !_player->GetSession()->GetPermissionCount())
-    {
-        // simplified: just take the fastest speed. less chance of fuckups too
-        float speed = (_player->flying_aura) ? _player->m_flySpeed : (_player->m_swimSpeed > _player->m_runSpeed) ? _player->m_swimSpeed : _player->m_runSpeed;
+    //if (sWorld.antihack_speed && !_player->GetTaxiState() && _player->movement_info.t_guid == 0 && !_player->GetSession()->GetPermissionCount())
+    //{
+    //    // simplified: just take the fastest speed. less chance of fuckups too
+    //    float speed = (_player->flying_aura) ? _player->m_flySpeed : (_player->m_swimSpeed > _player->m_runSpeed) ? _player->m_swimSpeed : _player->m_runSpeed;
 
-        _player->SDetector->AddSample(movement_info.pos.m_positionX, movement_info.pos.m_positionY, getMSTime(), speed);
+    //    _player->SDetector->AddSample(movement_info.pos.m_positionX, movement_info.pos.m_positionY, getMSTime(), speed);
 
-        if (_player->SDetector->IsCheatDetected())
-            _player->SDetector->ReportCheater(_player);
-    }
+    //    if (_player->SDetector->IsCheatDetected())
+    //        _player->SDetector->ReportCheater(_player);
+    //}
 
     /************************************************************************/
     /* Jumping Cheks                                                        */
     /************************************************************************/
-    _player->IsPlayerJumping(movementInfo, opcode);
+    /*_player->IsPlayerJumping(movementInfo, opcode);*/
 
     /************************************************************************/
     /* Fall damage generation                                               */
     /************************************************************************/
-    if (opcode == CMSG_MOVE_FALL_LAND && _player)
-        _player->HandleFall(movementInfo);
-    else
-    {
-        //whilst player is not falling, continuously update Z axis position.
-        //once player lands this will be used to determine how far he fell.
-        if (!(movement_info.GetMovementFlags() & MOVEFLAG_FALLING))
-            mover->z_axisposition = movement_info.pos.m_positionZ;
-    }
+    //if (opcode == CMSG_MOVE_FALL_LAND && _player)
+    //    _player->HandleFall(movementInfo);
+    //else
+    //{
+    //    //whilst player is not falling, continuously update Z axis position.
+    //    //once player lands this will be used to determine how far he fell.
+    //    if (!(movement_info.GetMovementFlags() & MOVEFLAG_FALLING))
+    //        mover->z_axisposition = movement_info.pos.m_positionZ;
+    //}
 
     /************************************************************************/
     /* Breathing                                                            */
     /************************************************************************/
-    _player->HandleBreathing(movementInfo, this);
+    /*_player->HandleBreathing(movementInfo, this);*/
 
 
     /************************************************************************/
@@ -268,15 +269,24 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     if (MoverGuid == _player->GetGUID())
     {
-        _player->SetPosition(movementInfo.pos.m_positionX, movementInfo.pos.m_positionY, movementInfo.pos.m_positionZ, movementInfo.pos.m_orientation);
+        _player->SetPosition(movementInfo.GetPos()->x, movementInfo.GetPos()->y, movementInfo.GetPos()->z, movementInfo.GetPos()->o);
+        mover->movement_info = movementInfo;
     }
 
+    /*
     movementInfo.time = getMSTime() + _latency + MOVEMENT_PACKET_TIME_DELAY;
     movementInfo.guid = mover->GetGUID();
-    mover->movement_info = movementInfo;
+    mover->movement_info = movementInfo;*/
+
+    if (opcode == CMSG_MOVE_FALL_LAND && mover /*&& !mover->IsTaxiFlying()*/)
+        mover->HandleFall(movementInfo);
+
+    /* process position-change */
+    /*HandleMoverRelocation(movementInfo);*/
 
     WorldPacket data(SMSG_PLAYER_MOVE, recv_data.size());
-    _player->WriteMovementInfo(data);
+    data << movementInfo;
+    /*_player->WriteMovementInfo(data);*/
     mover->SendMessageToSet(&data, false);
 
 //    CHECK_INWORLD_RETURN

@@ -21,6 +21,7 @@
 #define _LOCATIONVECTOR_H
 
 #include <math.h>
+#include "CommonDefines.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Location vector class (X, Y, Z, O)
@@ -176,6 +177,18 @@ class SERVER_DECL LocationVector
         float y;
         float z;
         float o;
+
+        static float NormalizeOrientation(float o)
+        {
+            if (o < 0)
+            {
+                float mod = o *-1;
+                mod = fmod(mod, 2.0f * static_cast<float>(M_PI));
+                mod = -mod + 2.0f * static_cast<float>(M_PI);
+                return mod;
+            }
+            return fmod(o, 2.0f * static_cast<float>(M_PI));
+        }
 };
 
 #endif      //_LOCATIONVECTOR_H

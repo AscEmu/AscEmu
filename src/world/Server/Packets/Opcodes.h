@@ -1140,7 +1140,7 @@ enum Opcodes
     SMSG_POWERGAINLOG_OBSOLETE = 0x20E, // old neds new opcode
     SMSG_ADD_RUNE_POWER                                 = 0x6915,
     CMSG_STANDSTATECHANGE                               = 0x0535,   // not updated (revieved by casting a spell)
-    CMSG_CAST_SPELL                                     = 0x4C07,   // not updated
+    CMSG_CAST_SPELL                                     = 0x4C07,
     SMSG_INITIAL_SPELLS                                 = 0x0104,
     SMSG_SUPERCEDED_SPELL                               = 0x35B0,
     SMSG_LEARNED_SPELL                                  = 0x58A2,

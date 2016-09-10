@@ -29,5 +29,4 @@
 #define M_Q_PI     0.785398163397448309615
 #define M_PI_FLOAT 3.14159f
 
-
 #endif  //_COMMON_DEFINES_HPP
