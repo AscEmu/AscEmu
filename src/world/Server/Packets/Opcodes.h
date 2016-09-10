@@ -351,7 +351,6 @@ enum Opcodes
     SMSG_SPLINE_MOVE_STOP_SWIM                      = 0x30C,
     SMSG_SPLINE_MOVE_SET_RUN_MODE                   = 0x30D,
     SMSG_SPLINE_MOVE_SET_WALK_MODE                  = 0x30E,
-    CMSG_ACTIVATETAXIEXPRESS                        = 0x312,
     SMSG_SET_FACTION_ATWAR                          = 0x313,
     SMSG_GAMETIMEBIAS_SET                           = 0x314,
     CMSG_DEBUG_ACTIONS_START                        = 0x315,
@@ -1241,6 +1240,7 @@ enum Opcodes
     CMSG_ACTIVATETAXI                                   = 0x6E06,
     SMSG_ACTIVATETAXIREPLY                              = 0x6A37,
     SMSG_NEW_TAXI_PATH                                  = 0x4B35,
+    CMSG_ACTIVATETAXIEXPRESS                            = 0x0515,
 
     //Auction
     MSG_AUCTION_HELLO                                   = 0x2307,

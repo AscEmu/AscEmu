@@ -419,16 +419,16 @@ class SERVER_DECL WorldSession
         //void HandleAuctionListPendingSales(WorldPacket& recv_data);
 
         // Mail opcodes
-        //void HandleGetMail(WorldPacket& recv_data);
-        //void HandleSendMail(WorldPacket& recv_data);
-        //void HandleTakeMoney(WorldPacket& recv_data);
-        //void HandleTakeItem(WorldPacket& recv_data);
-        //void HandleMarkAsRead(WorldPacket& recv_data);
-        //void HandleReturnToSender(WorldPacket& recv_data);
-        //void HandleMailDelete(WorldPacket& recv_data);
-        //void HandleItemTextQuery(WorldPacket& recv_data);
+        void HandleGetMail(WorldPacket& recv_data);
+        void HandleSendMail(WorldPacket& recv_data);
+        void HandleTakeMoney(WorldPacket& recv_data);
+        void HandleTakeItem(WorldPacket& recv_data);
+        void HandleMarkAsRead(WorldPacket& recv_data);
+        void HandleReturnToSender(WorldPacket& recv_data);
+        void HandleMailDelete(WorldPacket& recv_data);
+        void HandleItemTextQuery(WorldPacket& recv_data);
         void HandleMailTime(WorldPacket& recv_data);
-        //void HandleMailCreateTextItem(WorldPacket& recv_data);
+        void HandleMailCreateTextItem(WorldPacket& recv_data);
 
         /// Item opcodes (ItemHandler.cpp)
         void HandleSwapInvItemOpcode(WorldPacket& recvPacket);
