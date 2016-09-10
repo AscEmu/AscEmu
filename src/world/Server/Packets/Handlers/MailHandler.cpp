@@ -318,7 +318,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     data << uint32(MAIL_RES_ITEM_TAKEN);
 
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
-    if (message == 0 || message->items.empty())
+    if (!message || message->items.empty())
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
@@ -562,12 +562,15 @@ void WorldSession::HandleItemTextQuery(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
 
     uint64 itemGuid;
+
     recv_data >> itemGuid;
 
     Item* pItem = _player->GetItemInterface()->GetItemByGUID(itemGuid);
     WorldPacket data(SMSG_ITEM_TEXT_QUERY_RESPONSE, pItem->GetText().size() + 9);
     if (!pItem)
+    {
         data << uint8(1);
+    }
     else
     {
         data << uint8(0);

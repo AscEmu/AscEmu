@@ -224,8 +224,6 @@ enum Opcodes
     SMSG_BATTLEFIELD_LOSE_OBSOLETE                  = 0x240,
     CMSG_TAXICLEARNODE                              = 0x241,
     CMSG_TAXIENABLENODE                             = 0x242,
-    CMSG_ITEM_TEXT_QUERY                            = 0x243,
-    SMSG_ITEM_TEXT_QUERY_RESPONSE                   = 0x244,
     SMSG_DEBUGAURAPROC                              = 0x24D,
     SMSG_PERIODICAURALOG                            = 0x24E,
     SMSG_RESURRECT_FAILED                           = 0x252,
@@ -1303,31 +1301,34 @@ enum Opcodes
     SMSG_START_TIMER                                    = 0x59A5,   // not implemented
     SMSG_STOP_MIRROR_TIMER                              = 0x0B06,
 
-    CMSG_CHAR_RENAME                                    = 0x2327, // 15595
-    SMSG_CHAR_RENAME                                    = 0x2024, // 15595
-    SMSG_FEATURE_SYSTEM_STATUS                          = 0x3DB7, // 15595
-    SMSG_LEARNED_DANCE_MOVES                            = 0x0E05, // 15595
+    CMSG_CHAR_RENAME                                    = 0x2327,
+    SMSG_CHAR_RENAME                                    = 0x2024,
+    SMSG_FEATURE_SYSTEM_STATUS                          = 0x3DB7,
+    SMSG_LEARNED_DANCE_MOVES                            = 0x0E05,
 
     //Item
     CMSG_AUTOEQUIP_GROUND_ITEM                          = 0x1107,   // unchecked
     CMSG_AUTOSTORE_GROUND_ITEM                          = 0x1108,   // unchecked
     CMSG_AUTOSTORE_LOOT_ITEM                            = 0x0E34,   // unchecked
     CMSG_STORE_LOOT_IN_SLOT                             = 0x110A,   // unchecked
-    CMSG_AUTOEQUIP_ITEM                                 = 0x4304,   // checked
+    CMSG_AUTOEQUIP_ITEM                                 = 0x4304,
     CMSG_AUTOSTORE_BAG_ITEM                             = 0x0236,   // unchecked
     CMSG_SPLIT_ITEM                                     = 0x0F17,   // unchecked
-    CMSG_AUTOEQUIP_ITEM_SLOT                            = 0x4A17,   // checked
-    CMSG_SWAP_ITEM                                      = 0x6326,   // checked
-    CMSG_SWAP_INV_ITEM                                  = 0x2614,   // checked
+    CMSG_AUTOEQUIP_ITEM_SLOT                            = 0x4A17,
+    CMSG_SWAP_ITEM                                      = 0x6326,
+    CMSG_SWAP_INV_ITEM                                  = 0x2614,
     SMSG_INVENTORY_CHANGE_FAILURE                       = 0x2236,
-    CMSG_DESTROYITEM                                    = 0x4A27,   // checked
+    CMSG_DESTROYITEM                                    = 0x4A27,
     CMSG_USE_ITEM                                       = 0x2C06,
-    CMSG_OPEN_ITEM                                      = 0x6A34,   //
-    CMSG_READ_ITEM                                      = 0x2F16,   //
-    SMSG_READ_ITEM_OK                                   = 0x2605,   // 
-    SMSG_READ_ITEM_FAILED                               = 0x0F16,   // 
-    SMSG_ITEM_COOLDOWN                                  = 0x4D14,   //
+    CMSG_OPEN_ITEM                                      = 0x6A34,
+    CMSG_READ_ITEM                                      = 0x2F16,
+    SMSG_READ_ITEM_OK                                   = 0x2605,
+    SMSG_READ_ITEM_FAILED                               = 0x0F16,
+    SMSG_ITEM_COOLDOWN                                  = 0x4D14,
     SMSG_DB_REPLY                                       = 0x38A4,
+    CMSG_ITEM_TEXT_QUERY                                = 0x2406,
+    SMSG_ITEM_TEXT_QUERY_RESPONSE                       = 0x2725,
+
 
     //Quest
     CMSG_QUESTLOG_SWAP_QUEST                            = 0x1194,
