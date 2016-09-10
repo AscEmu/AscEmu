@@ -1105,52 +1105,50 @@ void WorldSession::HandleStandStateChangeOpcode(WorldPacket& recv_data)
 //    CharacterDatabase.ExecuteNA(ss.str().c_str());
 //}
 
-//void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    LOG_DETAIL("WORLD: Received CMSG_RECLAIM_CORPSE");
-//
-//    uint64 guid;
-//    recv_data >> guid;
-//
-//    if (guid == 0)
-//        return;
-//
-//    Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
-//    if (pCorpse == NULL)	return;
-//
-//    // Check that we're reviving from a corpse, and that corpse is associated with us.
-//    if (GET_LOWGUID_PART(pCorpse->GetOwner()) != _player->GetLowGUID() && pCorpse->GetUInt32Value(CORPSE_FIELD_FLAGS) == 5)
-//    {
-//        WorldPacket data(SMSG_RESURRECT_FAILED, 4);
-//        data << uint32(1); // this is a real guess!
-//        SendPacket(&data);
-//        return;
-//    }
-//
-//    // Check we are actually in range of our corpse
-//    if (pCorpse->GetDistance2dSq(_player) > CORPSE_MINIMUM_RECLAIM_RADIUS_SQ)
-//    {
-//        WorldPacket data(SMSG_RESURRECT_FAILED, 4);
-//        data << uint32(1);
-//        SendPacket(&data);
-//        return;
-//    }
-//
-//    // Check death clock before resurrect they must wait for release to complete
-//    // cebernic: changes for better logic
-//    if (time(NULL) < pCorpse->GetDeathClock() + CORPSE_RECLAIM_TIME)
-//    {
-//        WorldPacket data(SMSG_RESURRECT_FAILED, 4);
-//        data << uint32(1);
-//        SendPacket(&data);
-//        return;
-//    }
-//
-//    GetPlayer()->ResurrectPlayer();
-//    GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);
-//}
+void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    LOG_DETAIL("WORLD: Received CMSG_RECLAIM_CORPSE");
+
+    uint64 guid;
+    recv_data >> guid;
+
+    Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
+    if (pCorpse == nullptr)
+        return;
+
+    // Check that we're reviving from a corpse, and that corpse is associated with us.
+    if (GET_LOWGUID_PART(pCorpse->GetOwner()) != _player->GetLowGUID() && pCorpse->GetUInt32Value(CORPSE_FIELD_FLAGS) == 5)
+    {
+        WorldPacket data(SMSG_RESURRECT_FAILED, 4);
+        data << uint32(1); // this is a real guess!
+        SendPacket(&data);
+        return;
+    }
+
+    // Check we are actually in range of our corpse
+    if (pCorpse->GetDistance2dSq(_player) > CORPSE_MINIMUM_RECLAIM_RADIUS_SQ)
+    {
+        WorldPacket data(SMSG_RESURRECT_FAILED, 4);
+        data << uint32(1);
+        SendPacket(&data);
+        return;
+    }
+
+    // Check death clock before resurrect they must wait for release to complete
+    // cebernic: changes for better logic
+    if (time(NULL) < pCorpse->GetDeathClock() + CORPSE_RECLAIM_TIME)
+    {
+        WorldPacket data(SMSG_RESURRECT_FAILED, 4);
+        data << uint32(1);
+        SendPacket(&data);
+        return;
+    }
+
+    GetPlayer()->ResurrectPlayer();
+    GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);
+}
 
 //void WorldSession::HandleResurrectResponseOpcode(WorldPacket& recv_data)
 //{
@@ -2761,16 +2759,16 @@ void WorldSession::HandleWorldStateUITimerUpdate(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
-//void WorldSession::HandleSetTaxiBenchmarkOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//    CHECK_PACKET_SIZE(recv_data, 1);
-//
-//    uint8 mode;
-//    recv_data >> mode;
-//
-//    LOG_DEBUG("Client used \"/timetest %d\" command", mode);
-//}
+void WorldSession::HandleSetTaxiBenchmarkOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+    CHECK_PACKET_SIZE(recv_data, 1);
+
+    uint8 mode;
+    recv_data >> mode;
+
+    LOG_DEBUG("Client used \"/timetest %d\" command", mode);
+}
 
 void WorldSession::HandleRealmSplitOpcode(WorldPacket& recv_data)
 {
