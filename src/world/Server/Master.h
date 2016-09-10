@@ -27,8 +27,8 @@
 #include "MainServerDefines.h"
 #include "../shared/AscemuServerDefines.hpp"
 
-static const char* REQUIRED_CHAR_DB_VERSION = "2016-03-28_01_gm_survey";
-static const char* REQUIRED_WORLD_DB_VERSION = "2016-09-09_01_quest_loot_currency";
+static const char* REQUIRED_CHAR_DB_VERSION = "2016-09-10_02_char_talents";
+static const char* REQUIRED_WORLD_DB_VERSION = "2016-09-09_01_trainer";
 
 class Master : public Singleton<Master>
 {

@@ -640,7 +640,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
             data->WriteByteSeq(victimGuid[1]);
         }
         else
-            for (int i = 0; i < 8; i++)
+            for (uint8 i = 0; i < 8; ++i)
                 *data << uint8(0);
     }
 

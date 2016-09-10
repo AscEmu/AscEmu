@@ -135,6 +135,14 @@ typedef struct Cords
     float x, y, z;
 } Cords;
 
+enum TrainerSpellState
+{
+    TRAINER_SPELL_GRAY = 0,
+    TRAINER_SPELL_GREEN = 1,
+    TRAINER_SPELL_RED = 2,
+    TRAINER_SPELL_GREEN_DISABLED = 10   // custom value, not send to client: formally green but learn not allowed
+};
+
 extern OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 void CapitalizeString(std::string & arg);
 
@@ -382,16 +390,16 @@ class SERVER_DECL WorldSession
         //void HandleLfgPartyLockInfoRequestOpcode(WorldPacket& recv_data);
 
         /// Taxi opcodes (TaxiHandler.cpp)
-        //void HandleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket);
-        //void HandleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket);
-        //void HandleActivateTaxiOpcode(WorldPacket& recvPacket);
+        void HandleTaxiNodeStatusQueryOpcode(WorldPacket& recvPacket);
+        void HandleTaxiQueryAvaibleNodesOpcode(WorldPacket& recvPacket);
+        void HandleActivateTaxiOpcode(WorldPacket& recvPacket);
         //void HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket);
 
         /// NPC opcodes (NPCHandler.cpp)
         //void HandleTabardVendorActivateOpcode(WorldPacket& recvPacket);
         //void HandleBankerActivateOpcode(WorldPacket& recvPacket);
         //void HandleBuyBankSlotOpcode(WorldPacket& recvPacket);
-        //void HandleTrainerListOpcode(WorldPacket& recvPacket);
+        void HandleTrainerListOpcode(WorldPacket& recvPacket);
         void HandleTrainerBuySpellOpcode(WorldPacket& recvPacket);
         //void HandleCharterShowListOpcode(WorldPacket& recvPacket);
         void HandleGossipHelloOpcode(WorldPacket& recvPacket);
@@ -401,26 +409,26 @@ class SERVER_DECL WorldSession
         //void HandleBinderActivateOpcode(WorldPacket& recvPacket);
 
         // Auction House opcodes
-        //void HandleAuctionHelloOpcode(WorldPacket& recvPacket);
-        //void HandleAuctionListItems(WorldPacket& recv_data);
-        //void HandleAuctionListBidderItems(WorldPacket& recv_data);
-        //void HandleAuctionSellItem(WorldPacket& recv_data);
-        //void HandleAuctionListOwnerItems(WorldPacket& recv_data);
-        //void HandleAuctionPlaceBid(WorldPacket& recv_data);
-        //void HandleCancelAuction(WorldPacket& recv_data);
-        //void HandleAuctionListPendingSales(WorldPacket& recv_data);
+        void HandleAuctionHelloOpcode(WorldPacket& recvPacket);
+        void HandleAuctionListItems(WorldPacket& recv_data);
+        void HandleAuctionListBidderItems(WorldPacket& recv_data);
+        void HandleAuctionSellItem(WorldPacket& recv_data);
+        void HandleAuctionListOwnerItems(WorldPacket& recv_data);
+        void HandleAuctionPlaceBid(WorldPacket& recv_data);
+        void HandleCancelAuction(WorldPacket& recv_data);
+        void HandleAuctionListPendingSales(WorldPacket& recv_data);
 
         // Mail opcodes
-        //void HandleGetMail(WorldPacket& recv_data);
-        //void HandleSendMail(WorldPacket& recv_data);
-        //void HandleTakeMoney(WorldPacket& recv_data);
-        //void HandleTakeItem(WorldPacket& recv_data);
-        //void HandleMarkAsRead(WorldPacket& recv_data);
-        //void HandleReturnToSender(WorldPacket& recv_data);
-        //void HandleMailDelete(WorldPacket& recv_data);
-        //void HandleItemTextQuery(WorldPacket& recv_data);
+        void HandleGetMail(WorldPacket& recv_data);
+        void HandleSendMail(WorldPacket& recv_data);
+        void HandleTakeMoney(WorldPacket& recv_data);
+        void HandleTakeItem(WorldPacket& recv_data);
+        void HandleMarkAsRead(WorldPacket& recv_data);
+        void HandleReturnToSender(WorldPacket& recv_data);
+        void HandleMailDelete(WorldPacket& recv_data);
+        void HandleItemTextQuery(WorldPacket& recv_data);
         void HandleMailTime(WorldPacket& recv_data);
-        //void HandleMailCreateTextItem(WorldPacket& recv_data);
+        void HandleMailCreateTextItem(WorldPacket& recv_data);
 
         /// Item opcodes (ItemHandler.cpp)
         void HandleSwapInvItemOpcode(WorldPacket& recvPacket);
@@ -430,7 +438,6 @@ class SERVER_DECL WorldSession
         void HandleAutoEquipItemSlotOpcode(WorldPacket& recvPacket);
         //void HandleItemQuerySingleOpcode(WorldPacket& recvPacket);
         void HandleSellItemOpcode(WorldPacket& recvPacket);
-        void HandleBuyItemInSlotOpcode(WorldPacket& recvPacket);
         void HandleBuyItemOpcode(WorldPacket& recvPacket);
         void HandleListInventoryOpcode(WorldPacket& recvPacket);
         void HandleAutoStoreBagItemOpcode(WorldPacket& recvPacket);
@@ -469,8 +476,8 @@ class SERVER_DECL WorldSession
         /// Skill opcodes (SkillHandler.spp)
         //void HandleSkillLevelUpOpcode(WorldPacket& recvPacket);
         void HandleLearnTalentOpcode(WorldPacket& recvPacket);
-        //void HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket);
-        //void HandleUnlearnTalents(WorldPacket& recv_data);
+        void HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket);
+        void HandleUnlearnTalents(WorldPacket& recv_data);
 
         /// Quest opcodes (QuestHandler.cpp)
         void HandleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket);
@@ -505,7 +512,7 @@ class SERVER_DECL WorldSession
         void HandleChatChannelWatchOpcode(WorldPacket& recvPacket);
 
         /// Corpse opcodes (Corpse.cpp)
-        //void HandleCorpseReclaimOpcode(WorldPacket& recvPacket);
+        void HandleCorpseReclaimOpcode(WorldPacket& recvPacket);
         //void HandleCorpseQueryOpcode(WorldPacket& recvPacket);
         //void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
 
@@ -652,7 +659,7 @@ class SERVER_DECL WorldSession
         //void HandleDungeonDifficultyOpcode(WorldPacket& recv_data);
         //void HandleRaidDifficultyOpcode(WorldPacket& recv_data);
 
-        uint8 TrainerGetSpellStatus(TrainerSpell* pSpell);
+        TrainerSpellState TrainerGetSpellStatus(TrainerSpell* pSpell);
         void SendMailError(uint32 error);
 
         // At Login
@@ -690,7 +697,7 @@ class SERVER_DECL WorldSession
 
         // Misc
         void HandleWorldStateUITimerUpdate(WorldPacket& recv_data);
-        //void HandleSetTaxiBenchmarkOpcode(WorldPacket& recv_data);
+        void HandleSetTaxiBenchmarkOpcode(WorldPacket& recv_data);
         //void HandleMirrorImageOpcode(WorldPacket& recv_data);
         //void HandleSetFriendNote(WorldPacket& recv_data);
         void HandleInrangeQuestgiverQuery(WorldPacket& recv_data);

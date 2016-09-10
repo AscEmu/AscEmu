@@ -1554,6 +1554,125 @@ void ObjectMgr::CreateGossipMenuForPlayer(GossipMenu** Location, uint64 Guid, ui
     *Location = Menu;
 }
 
+//move to spellmgr or mysqldatastore todo danko
+void ObjectMgr::LoadSkillLineAbilityMap()
+{
+    uint32 oldMSTime = getMSTime();
+
+    mSkillLineAbilityMap.clear();
+
+    uint32 count = 0;
+
+    for (uint32 i = 0; i < sSkillLineAbilityStore.GetNumRows(); ++i)
+    {
+        DBC::Structures::SkillLineAbilityEntry const* SkillInfo = sSkillLineAbilityStore.LookupEntry(i);
+        if (!SkillInfo)
+            continue;
+
+        mSkillLineAbilityMap.insert(SkillLineAbilityMap::value_type(SkillInfo->Id, SkillInfo));
+        ++count;
+    }
+
+    Log.Success("ObjectMgr", "Loaded %u SkillLineAbility MultiMap Data in %u ms", count, (oldMSTime - getMSTime()));
+}
+
+SkillLineAbilityMapBounds ObjectMgr::GetSkillLineAbilityMapBounds(uint32 spell_id) const
+{
+    return mSkillLineAbilityMap.equal_range(spell_id);
+}
+
+void ObjectMgr::LoadSpellRequired()
+{
+    uint32 oldMSTime = getMSTime();
+
+    mSpellsReqSpell.clear();    // need for reload case
+    mSpellReq.clear();          // need for reload case
+
+    //                                                   0        1
+    QueryResult* result = WorldDatabase.Query("SELECT spell_id, req_spell from spell_required");
+
+    if (!result)
+    {
+        Log.Error("ObjectMgr", "Loaded 0 spell required records. DB table `spell_required` is empty.");
+
+        return;
+    }
+
+    uint32 count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+
+        uint32 spell_id = fields[0].GetUInt32();
+        uint32 spell_req = fields[1].GetUInt32();
+
+        // check if chain is made with valid first spell
+        DBC::Structures::SpellEntry const* spell = sSpellStore.LookupEntry(spell_id);
+        if (!spell)
+        {
+            Log.Error("ObjectMgr", "spell_id %u in `spell_required` table is not found in dbcs, skipped", spell_id);
+            continue;
+        }
+
+        DBC::Structures::SpellEntry const* req_spell = sSpellStore.LookupEntry(spell_req);
+        if (!req_spell)
+        {
+            Log.Error("ObjectMgr", "req_spell %u in `spell_required` table is not found in dbcs, skipped", spell_req);
+            continue;
+        }
+
+        if (IsSpellRequiringSpell(spell_id, spell_req))
+        {
+            Log.Error("ObjectMgr", "duplicated entry of req_spell %u and spell_id %u in `spell_required`, skipped", spell_req, spell_id);
+            continue;
+        }
+
+        mSpellReq.insert(std::pair<uint32, uint32>(spell_id, spell_req));
+        mSpellsReqSpell.insert(std::pair<uint32, uint32>(spell_req, spell_id));
+        ++count;
+
+    } while (result->NextRow());
+
+    Log.Success("ObjectMgr", ">> Loaded %u spell required records in %u ms", count, (oldMSTime - getMSTime()));
+}
+
+
+SpellRequiredMapBounds ObjectMgr::GetSpellsRequiredForSpellBounds(uint32 spell_id) const
+{
+    return mSpellReq.equal_range(spell_id);
+}
+
+SpellsRequiringSpellMapBounds ObjectMgr::GetSpellsRequiringSpellBounds(uint32 spell_id) const
+{
+    return mSpellsReqSpell.equal_range(spell_id);
+}
+
+bool ObjectMgr::IsSpellRequiringSpell(uint32 spellid, uint32 req_spellid) const
+{
+    SpellsRequiringSpellMapBounds spellsRequiringSpell = GetSpellsRequiringSpellBounds(req_spellid);
+    for (SpellsRequiringSpellMap::const_iterator itr = spellsRequiringSpell.first; itr != spellsRequiringSpell.second; ++itr)
+    {
+        if (itr->second == spellid)
+            return true;
+    }
+    return false;
+}
+
+const SpellsRequiringSpellMap ObjectMgr::GetSpellsRequiringSpell()
+{
+    return this->mSpellsReqSpell;
+}
+
+uint32 ObjectMgr::GetSpellRequired(uint32 spell_id) const
+{
+    SpellRequiredMap::const_iterator itr = mSpellReq.find(spell_id);
+
+    if (itr == mSpellReq.end())
+        return 0;
+
+    return itr->second;
+}
+
 void ObjectMgr::LoadTrainers()
 {
     QueryResult* result = WorldDatabase.Query("SELECT * FROM trainer_defs");
@@ -1608,7 +1727,7 @@ void ObjectMgr::LoadTrainers()
             delete tr;
             continue;
         }
-        if (result2->GetFieldCount() != 9)
+        if (result2->GetFieldCount() != 6)
         {
             Log.LargeErrorMessage("Trainers table format is invalid. Please update your database.", NULL);
             delete tr;
@@ -1621,72 +1740,62 @@ void ObjectMgr::LoadTrainers()
             do
             {
                 Field* fields2 = result2->Fetch();
+                uint32 entry = fields2[0].GetUInt32();
+                uint32 spell = fields2[1].GetUInt32();
+                uint32 spellCost = fields2[2].GetUInt32();
+                uint32 reqSkill = fields2[3].GetUInt16();
+                uint32 reqSkillValue = fields2[4].GetUInt16();
+                uint32 reqLevel = fields2[5].GetUInt8();
+
                 TrainerSpell ts;
-                bool abrt = false;
-                uint32 CastSpellID = fields2[1].GetUInt32();
-                uint32 LearnSpellID = fields2[2].GetUInt32();
+                ts.spell = spell;
+                ts.spellCost = spellCost;
+                ts.reqSkill = reqSkill;
+                ts.reqSkillValue = reqSkillValue;
+                ts.reqLevel = reqLevel;
 
-                ts.pCastSpell = NULL;
-                ts.pLearnSpell = NULL;
-                ts.pCastRealSpell = NULL;
+                DBC::Structures::SpellEntry const* spellInfo = sSpellStore.LookupEntry(spell);
 
-                if (CastSpellID != 0)
-                {
-                    ts.pCastSpell = dbcSpell.LookupEntryForced(CastSpellID);
-                    if (ts.pCastSpell)
-                    {
-                        for (uint8 k = 0; k < 3; ++k)
-                        {
-                            if (ts.pCastSpell->Effect[k] == SPELL_EFFECT_LEARN_SPELL)
-                            {
-                                ts.pCastRealSpell = dbcSpell.LookupEntryForced(ts.pCastSpell->EffectTriggerSpell[k]);
-                                if (ts.pCastRealSpell == NULL)
-                                {
-                                    Log.Error("Trainers", "Trainer %u contains cast spell %u that is non-teaching", entry, CastSpellID);
-                                    abrt = true;
-                                }
-                                break;
-                            }
-                        }
-                    }
-
-                    if (abrt)
-                        continue;
-                }
-
-                if (LearnSpellID != 0)
-                {
-                    ts.pLearnSpell = dbcSpell.LookupEntryForced(LearnSpellID);
-                }
-
-                if (ts.pCastSpell == NULL && ts.pLearnSpell == NULL)
-                {
-                    Log.Error("LoadTrainers", "Trainer %u without valid spells (%u/%u).", entry, CastSpellID, LearnSpellID);
-                    continue; //omg a bad spell !
-                }
-
-                if (ts.pCastSpell && !ts.pCastRealSpell)
+                if (spellInfo == nullptr)
                     continue;
 
-                ts.Cost = fields2[3].GetUInt32();
-                ts.RequiredSpell = fields2[4].GetUInt32();
-                ts.RequiredSkillLine = fields2[5].GetUInt32();
-                ts.RequiredSkillLineValue = fields2[6].GetUInt32();
-                ts.RequiredLevel = fields2[7].GetUInt32();
-                ts.DeleteSpell = fields2[8].GetUInt32();
-                //IsProfession is true if the TrainerSpell will teach a primary profession
-                if (ts.RequiredSkillLine == 0 && ts.pCastRealSpell != NULL && ts.pCastRealSpell->Effect[1] == SPELL_EFFECT_SKILL)
+                if (!ts.reqLevel)
+                    ts.reqLevel = spellInfo->GetSpellLevel();
+
+                // calculate learned spell for profession case when stored cast-spell
+                ts.learnedSpell[0] = spell;
+                for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
                 {
-                    uint32 skill = ts.pCastRealSpell->EffectMiscValue[1];
-                    auto skill_line = sSkillLineStore.LookupEntry(skill);
-                    ARCEMU_ASSERT(skill_line != NULL);
-                    if (skill_line->type == SKILL_TYPE_PROFESSION)
-                        ts.IsProfession = true;
-                    else
-                        ts.IsProfession = false;
+                    auto effect = spellInfo->GetSpellEffect(SpellEffectIndex(i));
+                    if (effect == nullptr)
+                        continue;
+
+                    if (effect->Effect != SPELL_EFFECT_LEARN_SPELL)
+                        continue;
+
+                    if (ts.learnedSpell[0] == spell)
+                        ts.learnedSpell[0] = 0;
+                    // player must be able to cast spell on himself
+                    if (effect->EffectImplicitTargetA != 0 &&
+                        effect->EffectImplicitTargetA != 21 &&
+                        effect->EffectImplicitTargetA != 25 &&
+                        effect->EffectImplicitTargetA != 1)
+                    {
+                        Log.Error("Trainer Spells", "Table `trainer_spels` has spell %u for trainer entry %u with learn effect which has incorrect target type, ignoring learn effect!", spell, entry);
+                        continue;
+                    }
+
+                    ts.learnedSpell[i] = spellInfo->GetSpellEffect(SpellEffectIndex(i))->EffectTriggerSpell;
+
+                    if (ts.learnedSpell[i])
+                    {
+                        /*
+                        SpellEntry const* learnedSpellInfo = dbcSpell.LookupEntry(ts.learnedSpell[i]);
+                        if (learnedSpellInfo && learnedSpellInfo->)
+                        tr->TrainerType = 2;
+                        */
+                    }
                 }
-                else
-                    ts.IsProfession = false;
 
                 tr->Spells.push_back(ts);
             }

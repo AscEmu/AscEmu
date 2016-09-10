@@ -97,11 +97,9 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
 
     uint32 spellid;
     uint32 cost;
-    uint32 reqspell;
     uint32 reqlevel;
-    uint32 delspell;
 
-    if (sscanf(args, "%u %u %u %u %u", &spellid, &cost, &reqspell, &reqlevel, &delspell) != 5)
+    if (sscanf(args, "%u %u %u", &spellid, &cost, &reqlevel) != 3)
     {
         RedSystemMessage(m_session, "Command must be in format: .npc add trainerspell <spell_id> <cost> <required_spell> <required_player_level> <delete_spell_id>.");
         return true;
@@ -128,22 +126,17 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
     }
 
     TrainerSpell sp;
-    sp.Cost = cost;
-    sp.IsProfession = false;
-    sp.pLearnSpell = learn_spell;
-    sp.pCastRealSpell = nullptr;
-    sp.pCastSpell = nullptr;
-    sp.RequiredLevel = reqlevel;
-    sp.RequiredSpell = reqspell;
-    sp.DeleteSpell = delspell;
+    sp.spellCost = cost;
+    sp.spell = learn_spell->Id;
+    sp.reqLevel = reqlevel;
 
     creature_trainer->Spells.push_back(sp);
     creature_trainer->SpellCount++;
 
     SystemMessage(m_session, "Added spell %s (%u) to trainer %s (%u).", learn_spell->Name, learn_spell->Id, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
     sGMLog.writefromsession(m_session, "added spell  %s (%u) to trainer %s (%u)", learn_spell->Name, learn_spell->Id, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
-    WorldDatabase.Execute("REPLACE INTO trainer_spells VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)",
-        creature_target->GetEntry(), (int)0, learn_spell->Id, cost, reqspell, (int)0, (int)0, reqlevel, delspell, (int)0);
+    WorldDatabase.Execute("REPLACE INTO trainer_spells VALUES(%u, %u, %u, %u, %u, %u)",
+        creature_target->GetEntry(), learn_spell->Id, cost, uint32(0), uint32(0), reqlevel);
 
     return true;
 }

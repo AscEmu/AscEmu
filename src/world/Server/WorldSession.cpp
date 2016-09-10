@@ -762,17 +762,17 @@ void WorldSession::InitPacketHandlerTable()
     //WorldPacketHandlers[CMSG_LFD_PARTY_LOCK_INFO_REQUEST].handler = &WorldSession::HandleLfgPartyLockInfoRequestOpcode;
 
     //// Taxi / NPC Interaction
-    //WorldPacketHandlers[CMSG_ENABLETAXI].handler = &WorldSession::HandleTaxiQueryAvaibleNodesOpcode;
-    //WorldPacketHandlers[CMSG_TAXINODE_STATUS_QUERY].handler = &WorldSession::HandleTaxiNodeStatusQueryOpcode;
-    //WorldPacketHandlers[CMSG_TAXIQUERYAVAILABLENODES].handler = &WorldSession::HandleTaxiQueryAvaibleNodesOpcode;
-    //WorldPacketHandlers[CMSG_ACTIVATETAXI].handler = &WorldSession::HandleActivateTaxiOpcode;
+    WorldPacketHandlers[CMSG_ENABLETAXI].handler = &WorldSession::HandleTaxiQueryAvaibleNodesOpcode;
+    WorldPacketHandlers[CMSG_TAXINODE_STATUS_QUERY].handler = &WorldSession::HandleTaxiNodeStatusQueryOpcode;
+    WorldPacketHandlers[CMSG_TAXIQUERYAVAILABLENODES].handler = &WorldSession::HandleTaxiQueryAvaibleNodesOpcode;
+    WorldPacketHandlers[CMSG_ACTIVATETAXI].handler = &WorldSession::HandleActivateTaxiOpcode;
     //WorldPacketHandlers[MSG_TABARDVENDOR_ACTIVATE].handler = &WorldSession::HandleTabardVendorActivateOpcode;
     //WorldPacketHandlers[CMSG_BANKER_ACTIVATE].handler = &WorldSession::HandleBankerActivateOpcode;
     //WorldPacketHandlers[CMSG_BUY_BANK_SLOT].handler = &WorldSession::HandleBuyBankSlotOpcode;
-    //WorldPacketHandlers[CMSG_TRAINER_LIST].handler = &WorldSession::HandleTrainerListOpcode;
+    WorldPacketHandlers[CMSG_TRAINER_LIST].handler = &WorldSession::HandleTrainerListOpcode;
     WorldPacketHandlers[CMSG_TRAINER_BUY_SPELL].handler = &WorldSession::HandleTrainerBuySpellOpcode;
     //WorldPacketHandlers[CMSG_PETITION_SHOWLIST].handler = &WorldSession::HandleCharterShowListOpcode;
-    //WorldPacketHandlers[MSG_AUCTION_HELLO].handler = &WorldSession::HandleAuctionHelloOpcode;
+    WorldPacketHandlers[MSG_AUCTION_HELLO].handler = &WorldSession::HandleAuctionHelloOpcode;
     WorldPacketHandlers[CMSG_GOSSIP_HELLO].handler = &WorldSession::HandleGossipHelloOpcode;
     WorldPacketHandlers[CMSG_GOSSIP_SELECT_OPTION].handler = &WorldSession::HandleGossipSelectOptionOpcode;
     WorldPacketHandlers[CMSG_SPIRIT_HEALER_ACTIVATE].handler = &WorldSession::HandleSpiritHealerActivateOpcode;
@@ -818,9 +818,9 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_CANCEL_AUTO_REPEAT_SPELL].handler = &WorldSession::HandleCancelAutoRepeatSpellOpcode;
     //WorldPacketHandlers[CMSG_TOTEM_DESTROYED].handler = &WorldSession::HandleCancelTotem;
     WorldPacketHandlers[CMSG_LEARN_TALENT].handler = &WorldSession::HandleLearnTalentOpcode;
-    //WorldPacketHandlers[CMSG_LEARN_TALENTS_MULTIPLE].handler = &WorldSession::HandleLearnMultipleTalentsOpcode;
-    //WorldPacketHandlers[CMSG_UNLEARN_TALENTS].handler = &WorldSession::HandleUnlearnTalents;
-    //WorldPacketHandlers[MSG_TALENT_WIPE_CONFIRM].handler = &WorldSession::HandleUnlearnTalents;
+    WorldPacketHandlers[CMSG_LEARN_PREVIEW_TALENTS].handler = &WorldSession::HandleLearnMultipleTalentsOpcode;
+    WorldPacketHandlers[CMSG_UNLEARN_TALENTS].handler = &WorldSession::HandleUnlearnTalents;
+    WorldPacketHandlers[MSG_TALENT_WIPE_CONFIRM].handler = &WorldSession::HandleUnlearnTalents;
     //WorldPacketHandlers[CMSG_UPDATE_PROJECTILE_POSITION].handler = &WorldSession::HandleUpdateProjectilePosition;
 
     //// Combat / Duel
@@ -853,32 +853,32 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_QUESTGIVER_QUERY_QUEST].handler = &WorldSession::HandleQuestGiverQueryQuestOpcode;
     WorldPacketHandlers[CMSG_QUESTGIVER_COMPLETE_QUEST].handler = &WorldSession::HandleQuestgiverCompleteQuestOpcode;
     WorldPacketHandlers[CMSG_QUESTLOG_REMOVE_QUEST].handler = &WorldSession::HandleQuestlogRemoveQuestOpcode;
-    //WorldPacketHandlers[CMSG_RECLAIM_CORPSE].handler = &WorldSession::HandleCorpseReclaimOpcode;
+    WorldPacketHandlers[CMSG_RECLAIM_CORPSE].handler = &WorldSession::HandleCorpseReclaimOpcode;
     //WorldPacketHandlers[CMSG_RESURRECT_RESPONSE].handler = &WorldSession::HandleResurrectResponseOpcode;
     WorldPacketHandlers[CMSG_PUSHQUESTTOPARTY].handler = &WorldSession::HandlePushQuestToPartyOpcode;
     WorldPacketHandlers[MSG_QUEST_PUSH_RESULT].handler = &WorldSession::HandleQuestPushResult;
     WorldPacketHandlers[CMSG_QUEST_POI_QUERY].handler = &WorldSession::HandleQuestPOIQueryOpcode;
 
     //// Auction System
-    //WorldPacketHandlers[CMSG_AUCTION_LIST_ITEMS].handler = &WorldSession::HandleAuctionListItems;
-    //WorldPacketHandlers[CMSG_AUCTION_LIST_BIDDER_ITEMS].handler = &WorldSession::HandleAuctionListBidderItems;
-    //WorldPacketHandlers[CMSG_AUCTION_SELL_ITEM].handler = &WorldSession::HandleAuctionSellItem;
-    //WorldPacketHandlers[CMSG_AUCTION_LIST_OWNER_ITEMS].handler = &WorldSession::HandleAuctionListOwnerItems;
-    //WorldPacketHandlers[CMSG_AUCTION_PLACE_BID].handler = &WorldSession::HandleAuctionPlaceBid;
-    //WorldPacketHandlers[CMSG_AUCTION_REMOVE_ITEM].handler = &WorldSession::HandleCancelAuction;
-    //WorldPacketHandlers[CMSG_AUCTION_LIST_PENDING_SALES].handler = &WorldSession::HandleAuctionListPendingSales;
+    WorldPacketHandlers[CMSG_AUCTION_LIST_ITEMS].handler = &WorldSession::HandleAuctionListItems;
+    WorldPacketHandlers[CMSG_AUCTION_LIST_BIDDER_ITEMS].handler = &WorldSession::HandleAuctionListBidderItems;
+    WorldPacketHandlers[CMSG_AUCTION_SELL_ITEM].handler = &WorldSession::HandleAuctionSellItem;
+    WorldPacketHandlers[CMSG_AUCTION_LIST_OWNER_ITEMS].handler = &WorldSession::HandleAuctionListOwnerItems;
+    WorldPacketHandlers[CMSG_AUCTION_PLACE_BID].handler = &WorldSession::HandleAuctionPlaceBid;
+    WorldPacketHandlers[CMSG_AUCTION_REMOVE_ITEM].handler = &WorldSession::HandleCancelAuction;
+    WorldPacketHandlers[CMSG_AUCTION_LIST_PENDING_SALES].handler = &WorldSession::HandleAuctionListPendingSales;
 
     //// Mail System
-    //WorldPacketHandlers[CMSG_GET_MAIL_LIST].handler = &WorldSession::HandleGetMail;
-    //WorldPacketHandlers[CMSG_ITEM_TEXT_QUERY].handler = &WorldSession::HandleItemTextQuery;
-    //WorldPacketHandlers[CMSG_SEND_MAIL].handler = &WorldSession::HandleSendMail;
-    //WorldPacketHandlers[CMSG_MAIL_TAKE_MONEY].handler = &WorldSession::HandleTakeMoney;
-    //WorldPacketHandlers[CMSG_MAIL_TAKE_ITEM].handler = &WorldSession::HandleTakeItem;
-    //WorldPacketHandlers[CMSG_MAIL_MARK_AS_READ].handler = &WorldSession::HandleMarkAsRead;
-    //WorldPacketHandlers[CMSG_MAIL_RETURN_TO_SENDER].handler = &WorldSession::HandleReturnToSender;
-    //WorldPacketHandlers[CMSG_MAIL_DELETE].handler = &WorldSession::HandleMailDelete;
+    WorldPacketHandlers[CMSG_GET_MAIL_LIST].handler = &WorldSession::HandleGetMail;
+    WorldPacketHandlers[CMSG_ITEM_TEXT_QUERY].handler = &WorldSession::HandleItemTextQuery;
+    WorldPacketHandlers[CMSG_SEND_MAIL].handler = &WorldSession::HandleSendMail;
+    WorldPacketHandlers[CMSG_MAIL_TAKE_MONEY].handler = &WorldSession::HandleTakeMoney;
+    WorldPacketHandlers[CMSG_MAIL_TAKE_ITEM].handler = &WorldSession::HandleTakeItem;
+    WorldPacketHandlers[CMSG_MAIL_MARK_AS_READ].handler = &WorldSession::HandleMarkAsRead;
+    WorldPacketHandlers[CMSG_MAIL_RETURN_TO_SENDER].handler = &WorldSession::HandleReturnToSender;
+    WorldPacketHandlers[CMSG_MAIL_DELETE].handler = &WorldSession::HandleMailDelete;
     WorldPacketHandlers[MSG_QUERY_NEXT_MAIL_TIME].handler = &WorldSession::HandleMailTime;
-    //WorldPacketHandlers[CMSG_MAIL_CREATE_TEXT_ITEM].handler = &WorldSession::HandleMailCreateTextItem;
+    WorldPacketHandlers[CMSG_MAIL_CREATE_TEXT_ITEM].handler = &WorldSession::HandleMailCreateTextItem;
 
     //// Guild Query (called when not logged in sometimes)
     //WorldPacketHandlers[CMSG_GUILD_QUERY].handler = &WorldSession::HandleGuildQuery;
@@ -1002,7 +1002,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_GAMEOBJ_REPORT_USE].handler = &WorldSession::HandleGameobjReportUseOpCode;
     WorldPacketHandlers[CMSG_PET_CAST_SPELL].handler = &WorldSession::HandlePetCastSpell;
     WorldPacketHandlers[CMSG_WORLD_STATE_UI_TIMER_UPDATE].handler = &WorldSession::HandleWorldStateUITimerUpdate;
-    //WorldPacketHandlers[CMSG_SET_TAXI_BENCHMARK_MODE].handler = &WorldSession::HandleSetTaxiBenchmarkOpcode;
+    WorldPacketHandlers[CMSG_SET_TAXI_BENCHMARK_MODE].handler = &WorldSession::HandleSetTaxiBenchmarkOpcode;
     //WorldPacketHandlers[CMSG_UNLEARN_SKILL].handler = &WorldSession::HandleUnlearnSkillOpcode;
 
     //// Chat
@@ -1382,17 +1382,18 @@ void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
     _player->LearnTalent(talent_id, requested_rank);
 }
 
-//void WorldSession::HandleUnlearnTalents(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//        uint32 price = GetPlayer()->CalcTalentResetCost(GetPlayer()->GetTalentResetTimes());
-//    if (!GetPlayer()->HasGold(price))
-//        return;
-//
-//    GetPlayer()->SetTalentResetTimes(GetPlayer()->GetTalentResetTimes() + 1);
-//    GetPlayer()->ModGold(-(int32)price);
-//    GetPlayer()->Reset_Talents();
-//}
+void WorldSession::HandleUnlearnTalents(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    uint32 price = GetPlayer()->CalcTalentResetCost(GetPlayer()->GetTalentResetTimes());
+    if (!GetPlayer()->HasGold(price))
+        return;
+
+    GetPlayer()->SetTalentResetTimes(GetPlayer()->GetTalentResetTimes() + 1);
+    GetPlayer()->ModGold(-(int32)price);
+    GetPlayer()->Reset_Talents();
+}
 
 //void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
 //{
@@ -1422,44 +1423,51 @@ void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
 //    }
 //}
 
-//void WorldSession::HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
-//{
-//    CHECK_INWORLD_RETURN uint32 talentcount;
-//    uint32 talentid;
-//    uint32 rank;
-//
-//    LOG_DEBUG("Recieved packet CMSG_LEARN_TALENTS_MULTIPLE.");
-//
-//    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//    // 0x04C1 CMSG_LEARN_TALENTS_MULTIPLE
-//    // As of 3.2.2.10550 the client sends this packet when clicking "learn" on
-//    // the talent interface (in preview talents mode)
-//    // This packet tells the server which talents to learn
-//    //
-//    // Structure:
-//    //
-//    // struct talentdata{
-//    // uint32 talentid; - unique numeric identifier of the talent (index of
-//    // talent.dbc)
-//    // uint32 talentrank; - rank of the talent
-//    // };
-//    //
-//    // uint32 talentcount; - number of talentid-rank pairs in the packet
-//    // talentdata[ talentcount ];
-//    //
-//    //
-//    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//    recvPacket >> talentcount;
-//
-//    for (uint32 i = 0; i < talentcount; ++i)
-//    {
-//        recvPacket >> talentid;
-//        recvPacket >> rank;
-//
-//        _player->LearnTalent(talentid, rank, true);
-//    }
-//}
+void WorldSession::HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    uint32 talentcount;
+    uint32 talentid;
+    uint32 rank;
+
+    LOG_DEBUG("Recieved packet CMSG_LEARN_TALENTS_MULTIPLE.");
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // 0x04C1 CMSG_LEARN_TALENTS_MULTIPLE
+    // As of 3.2.2.10550 the client sends this packet when clicking "learn" on
+    // the talent interface (in preview talents mode)
+    // This packet tells the server which talents to learn
+    //
+    // Structure:
+    //
+    // struct talentdata{
+    // uint32 talentid; - unique numeric identifier of the talent (index of
+    // talent.dbc)
+    // uint32 talentrank; - rank of the talent
+    // };
+    //
+    // uint32 talentcount; - number of talentid-rank pairs in the packet
+    // talentdata[ talentcount ];
+    //
+    //
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    uint32 learn_talents_on_tab;
+    recvPacket >> learn_talents_on_tab;	//can be 0,1,2
+
+    recvPacket >> talentcount;
+
+    for (uint32 i = 0; i < talentcount; ++i)
+    {
+        recvPacket >> talentid;
+        recvPacket >> rank;
+
+        _player->LearnTalent(talentid, rank, true);
+    }
+
+    _player->smsg_TalentsInfo(false);
+}
 
 void WorldSession::SendMOTD()
 {

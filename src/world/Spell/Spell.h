@@ -1091,22 +1091,83 @@ enum SpellTypes // SPELL_ENTRY_buffType
 //custom stuff generated for spells that will not change in time
 enum SpellIsFlags
 {
-    SPELL_FLAG_IS_DAMAGING              = 0x00000001,
-    SPELL_FLAG_IS_HEALING               = 0x00000002,
-    SPELL_FLAG_IS_TARGETINGSTEALTHED    = 0x00000004,
-    SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE = 0x00000008, //it started with rogue cold blood but I'm sure others will come
-    SPELL_FLAG_IS_POISON                = 0x00000010, //rogue has a few spells that can stack so can't use the spell_type enum ;)
-    SPELL_FLAG_IS_FINISHING_MOVE        = 0x00000020, //rogue has a few spells that can stack so can't use the spell_type enum ;)
-    SPELL_FLAG_IS_NOT_USING_DMG_BONUS   = 0x00000040,
-    SPELL_FLAG_IS_CHILD_SPELL           = 0x00000080, //auras proc auras that have same name, these should not remove mother aura when adding to target
+    SPELL_FLAG_IS_DAMAGING                          = 0x00000001,
+    SPELL_FLAG_IS_HEALING                           = 0x00000002,
+    SPELL_FLAG_IS_TARGETINGSTEALTHED                = 0x00000004,
+    SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE             = 0x00000008, //it started with rogue cold blood but I'm sure others will come
+    SPELL_FLAG_IS_POISON                            = 0x00000010, //rogue has a few spells that can stack so can't use the spell_type enum ;)
+    SPELL_FLAG_IS_FINISHING_MOVE                    = 0x00000020, //rogue has a few spells that can stack so can't use the spell_type enum ;)
+    SPELL_FLAG_IS_NOT_USING_DMG_BONUS               = 0x00000040,
+    SPELL_FLAG_IS_CHILD_SPELL                       = 0x00000080, //auras proc auras that have same name, these should not remove mother aura when adding to target
     SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_ON_PET       = 0x00000100, //we should cast these on pet too
     SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER    = 0x00000200, //we should cast these on owner too
-    SPELL_FLAG_IS_EXPIREING_WITH_PET    = 0x00000400, //when pet dies, we remove this too
-    SPELL_FLAG_IS_EXPIREING_ON_PET      = 0x00000800, //when pet is summoned
-    SPELL_FLAG_IS_FORCEDDEBUFF          = 0x00001000, // forced to be a debuff
-    SPELL_FLAG_IS_FORCEDBUFF            = 0x00002000, // forced to be a buff
-    SPELL_FLAG_IS_INHERITING_LEVEL      = 0x00004000, // summons to inherit caster level or not
-    SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF   = 0x00008000, // summons to inherit caster level or not
+    SPELL_FLAG_IS_EXPIREING_WITH_PET                = 0x00000400, //when pet dies, we remove this too
+    SPELL_FLAG_IS_EXPIREING_ON_PET                  = 0x00000800, //when pet is summoned
+    SPELL_FLAG_IS_FORCEDDEBUFF                      = 0x00001000, // forced to be a debuff
+    SPELL_FLAG_IS_FORCEDBUFF                        = 0x00002000, // forced to be a buff
+    SPELL_FLAG_IS_INHERITING_LEVEL                  = 0x00004000, // summons to inherit caster level or not
+    SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF               = 0x00008000, // summons to inherit caster level or not
+    SPELL_FLAG_IS_CONDITIONAL_PASSIVE_CAST          = 0x40000000, // some talents are active only if health is below x%
+    SPELL_FLAG_IS_STACKABLE_OTHER_CASTER_POS        = 0x80000000  // almost not profession spell procs other spells
+};
+
+enum SpellIsFlags2
+{
+    SPELL_FLAG2_IS_BREAKING_STEALTH                 = 0x00000001, //manually set these for those that QQ
+    SPELL_FLAG2_IS_VALUE_SCALED                     = 0x00000002, //when spell value is too small to store in int
+    SPELL_FLAG2_IS_VALUE_OVER_TIME                  = 0x00000004, //sometimes values should be used / tickcount 
+    SPELL_FLAG2_IS_DRAINING_ALL_POWER               = 0x00000008, //the new spells that drain all additional power. Need to find the spell flag for this. There must be one 
+    SPELL_FLAG2_IS_AVOIDING_ALL_RESIST              = 0x00000010, //only chaos bolt ?
+    SPELL_FLAG2_IS_GUILD_PERK                       = 0x00000020, //i bet this has a skilline or something
+    SPELL_FLAG2_IS_CASTABLE_BY_ANYONE               = 0x00000040, //archaeology for example
+    SPELL_FLAG2_IS_TRIGGERED_ON_TARGET              = 0x00000080, // force on target cast a spell
+    SPELL_FLAG2_IS_ENEMY_AOE_TARGETTING             = 0x00000100, // one of the effects of this spell will target more then 1 person
+    SPELL_FLAG2_IS_MOVEMENT_IMPAIRING_SPELL         = 0x00000200,
+    SPELL_FLAG2_IS_TAXI_CASTABLE_ONLY               = 0x00000400,
+    SPELL_FLAG2_IS_PROFESSION_SPELL                 = 0x00000800, // in case i did not miss out any here :P
+    SPELL_FLAG2_IS_ALLOWED_TO_LEAVE_CHAINED_AURAS   = 0x00001000, //1 spell only ?
+    //SPELL_FLAG2_IS_TALENT_SPEC                    = 0x00002000, // the icons you click client side
+    SPELL_FLAG2_IS_NON_CLIENT_CASTABLE              = 0x00004000, // there should be a lot of spells like this. Right now only hack spells added manually
+    SPELL_FLAG2_IS_PROCCING_PURSUIT_OF_JUSTICE      = 0x00008000, // what a waste of a flag, i hope thsi talent gets removed :P
+    SPELL_FLAG2_IS_REFLECTABLE                      = 0x00010000, // copy pasting old crap code
+    SPELL_FLAG2_IS_NON_REFLECTABLE                  = 0x00020000, // copy pasting old crap code
+    SPELL_FLAG2_IS_CASTABLE_FEARED_CHARM_SLEEP      = 0x00040000,
+    SPELL_FLAG2_IS_CASTABLE_STUNNED                 = 0x00080000,
+    SPELL_FLAG2_IS_CASTABLE_PACIFIED                = 0x00100000, // pacify is for phisical dmg
+    SPELL_FLAG2_IS_CASTABLE_SILANCED                = 0x00200000,
+    SPELL_FLAG2_IS_CASTABLE_SCHOOL_SILANCE          = 0x00400000,
+    SPELL_FLAG2_IS_AA_CALLING_SCRIPT                = 0x00800000, //there is one spell that requires both the visual effects of Dyn Object and the periodic cast of a spell
+    SPELL_FLAG2_IS_IGNORING_MOVE_INTERUPT           = 0x01000000,
+    SPELL_FLAG2_IS_MAP_CAST_BOUND                   = 0x02000000, // auras that link 2 objects, like Dark Intent, beacon of light,...
+    SPELL_FLAG2_IS_OK_TO_NO_RESET                   = 0x04000000, // on player spell reset, these spells can be kept as safe spells. Ex : profession spells = racials
+    SPELL_FLAG2_IS_TICKING_IMEDIATLY                = 0x08000000, // spells like Rend tick instantly after getting applied
+    SPELL_FLAG2_IS_SPELL_STEAL_SAFE                 = 0x10000000, // manually enabled talents that can be spell stealed
+    SPELL_FLAG2_IS_CONVERTING_RECHARGING_RUNE       = 0x20000000, // some DH spells willtarget full runes, others the runes that got recently used
+    SPELL_FLAG2_IS_ENERGIZING                       = 0x40000000, // restore energy. Used by target raid members
+    SPELL_FLAG2_IS_AA_TARGETTING_EVERYONE           = 0x80000000  // neutral caster
+};
+
+enum SpellIsFlags3
+{
+    SPELL_FLAG3_IS_BLOCKING_BLINK                   = 0x00000001, // I'm sure there is a better way to detect this. Kinda rage fixing it for the moment
+    SPELL_FLAG3_IS_DIRECT_TARGET                    = 0x00000002, // required for proc : Direct heal or direct dmg spell means it has single target ( not AOE )
+    SPELL_FLAG3_IS_FRIENDLY_AOE_TARGETING           = 0x00000004, // required for proc : Direct heal or direct dmg spell means it has single target ( not AOE )
+    SPELL_FLAG3_IS_STEALTH_SPELL                    = 0x00000008, // for faery fire cast condition
+    SPELL_FLAG3_IS_ALLOWED_0_COOLDOWN               = 0x00000010, // required for chain lightning and Elemental Fury specialization
+    SPELL_FLAG3_IS_PROPERLY_IMPLEMENTED_CANCEL      = 0x00000020, // for example Glyph of Unleashed Lightning & Lightning bolt
+    SPELL_FLAG3_IS_NOT_USING_HASTE                  = 0x00000040, // mounts / professions...
+    SPELL_FLAG3_IS_NOT_CASTABLE_ROOTED              = 0x00000080, // charge, intercept...
+    SPELL_FLAG3_IS_SAFE_SIMULACRUM_STEAL            = 0x00000100, // almost all mana spells. just almost
+    SPELL_FLAG3_IS_HUNTER_TRAP                      = 0x00000200, // using it to detect dyn go trap arm duration
+    SPELL_FLAG3_IS_BREAKING_STEALTH_TARGET          = 0x00000400,
+    SPELL_FLAG3_IS_REMOVED_ON_SHAPESHIFT            = 0x00000800,
+    SPELL_FLAG3_IS_OVERRIDE_ON_TARGET               = 0x00001000, // caster can put override on target and it will be called
+    SPELL_FLAG3_IS_SCHOOL_IMMUNE_ALL                = 0x00002000, // cyclone denies both heal and debuffs
+    SPELL_FLAG3_IS_DISPEL_MECHANIC                  = 0x00004000,
+    SPELL_FLAG3_IS_DISABLE_OTHER_SPELL_CPROC        = 0x00008000, // almost not profession spell procs other spells
+    SPELL_FLAG3_IS_SKIP_REFRESH_SAME_AURAS_OTHERS   = 0x00010000,
+    SPELL_FLAG3_IS_NEEDING_LOS_CHECK                = 0x00020000,
+    SPELL_FLAG3_IS_SKIPPING_AUTOFACE_ON_CAST        = 0x00040000
 };
 
 enum SpellCoefficientsFlags

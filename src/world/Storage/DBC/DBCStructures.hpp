@@ -752,7 +752,7 @@ namespace DBC
             char const summon_properties_format[] = "niiiii";
             char const talent_format[] = "niiiiiiiiixxixxxxxx";
             char const talent_tab_format[] = "nxxiiixxiii";
-            //char const talent_tree_primary_spells_format[] = "diix"; new
+            char const talent_tree_primary_spells_format[] = "iiix";
             char const taxi_nodes_format[] = "nifffsiixxx";
             char const taxi_path_format[] = "niii";
             char const taxi_path_node_format[] = "diiifffiiii";
@@ -2361,6 +2361,14 @@ namespace DBC
             //char* description;        // 7
             uint32 rolesMask;           // 8
             uint32 masterySpells[2];   // 9-10
+        };
+
+        struct TalentTreePrimarySpells
+        {
+            uint32 ID;                  // 0
+            uint32 tabID;               // 1
+            uint32 SpellID;             // 2
+            //unk                       // 3
         };
 
         struct TaxiNodesEntry   //cata

@@ -247,7 +247,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             }
 
             if (GetPlayer()->m_modlanguage >= 0)
-                data = sChatHandler.FillMessageData(CHAT_MSG_EMOTE, GetPlayer()->m_modlanguage, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
+                data = sChatHandler.FillMessageData(CHAT_MSG_EMOTE, lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
             else if (lang == 0 && sWorld.interfaction_chat)
                 data = sChatHandler.FillMessageData(CHAT_MSG_EMOTE, CanUseCommand('0') ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
             else

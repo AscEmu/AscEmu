@@ -1048,19 +1048,19 @@ void MySQLDataStore::LoadQuestPropertiesTable()
             questInfo.SoundAccept = fields[152].GetUInt32();
             questInfo.SoundTurnIn = fields[153].GetUInt32();
 
-            for (int i = 0; i < QUEST_EMOTE_COUNT; ++i)
+            for (uint8 i = 0; i < QUEST_EMOTE_COUNT; ++i)
                 questInfo.DetailsEmote[i] = fields[154 + i].GetUInt32();
 
-            for (int i = 0; i < QUEST_EMOTE_COUNT; ++i)
+            for (uint8 i = 0; i < QUEST_EMOTE_COUNT; ++i)
                 questInfo.DetailsEmoteDelay[i] = fields[158 + i].GetUInt32();
 
             questInfo.IncompleteEmote = fields[162].GetUInt32();
             questInfo.CompleteEmote = fields[163].GetUInt32();
 
-            for (int i = 0; i < QUEST_EMOTE_COUNT; ++i)
+            for (uint8 i = 0; i < QUEST_EMOTE_COUNT; ++i)
                 questInfo.OfferRewardEmote[i] = fields[164 + i].GetInt32();
 
-            for (int i = 0; i < QUEST_EMOTE_COUNT; ++i)
+            for (uint8 i = 0; i < QUEST_EMOTE_COUNT; ++i)
                 questInfo.OfferRewardEmoteDelay[i] = fields[168 + i].GetUInt32();
 
             questInfo.ReqEmoteId = fields[172].GetUInt32();
@@ -1069,7 +1069,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
             questInfo.m_reqExploreTrigger[1] = 0;
             questInfo.m_reqExploreTrigger[2] = 0;
 
-            for (int i = 0; i < 3; ++i)
+            for (uint8 i = 0; i < 3; ++i)
                 questInfo.m_reqExploreTrigger[i] = fields[173 + i].GetUInt32();
 
             questInfo.QuestFlags |= questInfo.SpecialFlags << 20;
@@ -1088,7 +1088,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
             questInfo.m_reqMobType[2] = 0;
             questInfo.m_reqMobType[3] = 0;
 
-            for (int i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
+            for (uint8 i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
             {
                 if (questInfo.ReqCreatureOrGOId[i] != 0)
                 {
@@ -1122,23 +1122,23 @@ void MySQLDataStore::LoadQuestPropertiesTable()
                 }
             }
 
-            for (int i = 0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
+            for (uint8 i = 0; i < QUEST_ITEM_OBJECTIVES_COUNT; ++i)
                 if (questInfo.ReqItemId[i])
                     ++questInfo.m_reqitemscount;
 
-            for (int i = 0; i < QUEST_REWARDS_COUNT; ++i)
+            for (uint8 i = 0; i < QUEST_REWARDS_COUNT; ++i)
                 if (questInfo.RewItemId[i])
                     ++questInfo.m_rewitemscount;
 
-            for (int i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
+            for (uint8 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
                 if (questInfo.RewChoiceItemId[i])
                     ++questInfo.m_rewchoiceitemscount;
 
-            for (int i = 0; i < QUEST_CURRENCY_COUNT; ++i)
+            for (uint8 i = 0; i < QUEST_CURRENCY_COUNT; ++i)
                 if (questInfo.RewCurrencyId[i])
                     ++questInfo.m_rewCurrencyCount;
 
-            for (int i = 0; i < QUEST_CURRENCY_COUNT; ++i)
+            for (uint8 i = 0; i < QUEST_CURRENCY_COUNT; ++i)
                 if (questInfo.ReqCurrencyCount[i])
                     ++questInfo.m_reqCurrencyCount;
 

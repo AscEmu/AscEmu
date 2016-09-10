@@ -3057,7 +3057,7 @@ void LuaEngine::Unload()
                            // clean up the engine of any existing defined variables
     for (LuaObjectBindingMap::iterator itr = m_unitBinding.begin(); itr != m_unitBinding.end(); ++itr)
     {
-        for (int i = 0; i < CREATURE_EVENT_COUNT; ++i)
+        for (uint8 i = 0; i < CREATURE_EVENT_COUNT; ++i)
         {
             if (itr->second.m_functionReferences[i] > 0)
             {
@@ -3068,7 +3068,7 @@ void LuaEngine::Unload()
     m_unitBinding.clear();
     for (LuaObjectBindingMap::iterator itr = m_gameobjectBinding.begin(); itr != m_gameobjectBinding.end(); ++itr)
     {
-        for (int i = 0; i < GAMEOBJECT_EVENT_COUNT; ++i)
+        for (uint8 i = 0; i < GAMEOBJECT_EVENT_COUNT; ++i)
         {
             if (itr->second.m_functionReferences[i] > 0)
             {
@@ -3079,7 +3079,7 @@ void LuaEngine::Unload()
     m_gameobjectBinding.clear();
     for (LuaObjectBindingMap::iterator itr = m_questBinding.begin(); itr != m_questBinding.end(); ++itr)
     {
-        for (int i = 0; i < QUEST_EVENT_COUNT; ++i)
+        for (uint8 i = 0; i < QUEST_EVENT_COUNT; ++i)
         {
             if (itr->second.m_functionReferences[i] > 0)
             {
@@ -3090,7 +3090,7 @@ void LuaEngine::Unload()
     m_questBinding.clear();
     for (LuaObjectBindingMap::iterator itr = m_instanceBinding.begin(); itr != m_instanceBinding.end(); ++itr)
     {
-        for (int i = 0; i < INSTANCE_EVENT_COUNT; ++i)
+        for (uint8 i = 0; i < INSTANCE_EVENT_COUNT; ++i)
         {
             if (itr->second.m_functionReferences[i] > 0)
             {
@@ -3101,7 +3101,7 @@ void LuaEngine::Unload()
     m_instanceBinding.clear();
     for (LuaObjectBindingMap::iterator itr = m_unit_gossipBinding.begin(); itr != m_unit_gossipBinding.end(); ++itr)
     {
-        for (int i = 0; i < GOSSIP_EVENT_COUNT; ++i)
+        for (uint8 i = 0; i < GOSSIP_EVENT_COUNT; ++i)
         {
             if (itr->second.m_functionReferences[i] > 0)
             {
@@ -3112,7 +3112,7 @@ void LuaEngine::Unload()
     m_unit_gossipBinding.clear();
     for (LuaObjectBindingMap::iterator itr = m_item_gossipBinding.begin(); itr != m_item_gossipBinding.end(); ++itr)
     {
-        for (int i = 0; i < GOSSIP_EVENT_COUNT; ++i)
+        for (uint8 i = 0; i < GOSSIP_EVENT_COUNT; ++i)
         {
             if (itr->second.m_functionReferences[i] > 0)
             {
@@ -3123,7 +3123,7 @@ void LuaEngine::Unload()
     m_item_gossipBinding.clear();
     for (LuaObjectBindingMap::iterator itr = m_go_gossipBinding.begin(); itr != m_go_gossipBinding.end(); ++itr)
     {
-        for (int i = 0; i < GOSSIP_EVENT_COUNT; ++i)
+        for (uint8 i = 0; i < GOSSIP_EVENT_COUNT; ++i)
         {
             if (itr->second.m_functionReferences[i] > 0)
             {
@@ -3133,7 +3133,7 @@ void LuaEngine::Unload()
     }
     m_go_gossipBinding.clear();
     //Serv hooks : had forgotten these.
-    for (int i = 0; i < NUM_SERVER_HOOKS; ++i)
+    for (uint8 i = 0; i < NUM_SERVER_HOOKS; ++i)
     {
         std::vector<uint16>& next = EventAsToFuncName[i];
         for (std::vector<uint16>::iterator itr = next.begin(); itr != next.end(); ++itr)

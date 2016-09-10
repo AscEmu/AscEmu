@@ -1,7 +1,7 @@
 /*
 ********************************************************************
 AscEmu char structure
-Last update: 03/28/2016
+Last update: 10/09/2016
 *********************************************************************
 */
 
@@ -230,6 +230,7 @@ CREATE TABLE IF NOT EXISTS `characters` (
   `numspecs` int(10) NOT NULL DEFAULT '1',
   `currentspec` int(10) NOT NULL DEFAULT '0',
   `talentpoints` longtext NOT NULL,
+  `firsttalenttree` int(11) DEFAULT NULL,
   `phase` int(10) unsigned NOT NULL DEFAULT '1',
   `CanGainXp` int(10) unsigned NOT NULL DEFAULT '1',
   `data` longtext,
@@ -380,7 +381,7 @@ CREATE TABLE IF NOT EXISTS `character_db_version` (
 -- Dumping data for table character_db_version: ~1 rows (approximately)
 /*!40000 ALTER TABLE `character_db_version` DISABLE KEYS */;
 INSERT INTO `character_db_version` (`LastUpdate`) VALUES
-	('2016-03-28_01_gm_survey');
+	('2016-09-10_02_char_talents');
 /*!40000 ALTER TABLE `character_db_version` ENABLE KEYS */;
 
 
@@ -835,7 +836,7 @@ CREATE TABLE IF NOT EXISTS `mailbox` (
   `money` int(30) NOT NULL DEFAULT '0',
   `attached_item_guids` varchar(200) NOT NULL DEFAULT '',
   `cod` int(30) NOT NULL DEFAULT '0',
-  `stationary` int(30) NOT NULL DEFAULT '0',
+  `stationary` bigint(20) NOT NULL DEFAULT '0',
   `expiry_time` int(30) NOT NULL DEFAULT '0',
   `delivery_time` int(30) NOT NULL DEFAULT '0',
   `checked_flag` int(30) unsigned NOT NULL DEFAULT '0',

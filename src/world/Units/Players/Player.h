@@ -34,6 +34,7 @@
 #include "Storage/DB2/DB2Stores.hpp"
 #include "Storage/DB2/DB2Structures.hpp"
 #include "Management/Guild.h"
+#include "Management/AuctionHouse.h"
 
 
 class QuestLogEntry;
@@ -67,6 +68,8 @@ struct CharClassEntry;
 struct VendorRestrictionEntry;
 struct Trainer;
 class Aura;
+
+#define TAXIMASK_SIZE 86
 
 #pragma pack(push,1)
 struct ActionButton
@@ -735,6 +738,36 @@ class SERVER_DECL Player : public Unit
         bool removeSpell(uint32 SpellID, bool MoveToDeleted, bool SupercededSpell, uint32 SupercededSpellID);
         bool removeDeletedSpell(uint32 SpellID);
         void SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs);
+        bool IsSpellFitByClassAndRace(uint32 spell_id);
+        uint32 GetFreePrimaryProfessionPoints() const { return GetUInt32Value(PLAYER_CHARACTER_POINTS); }
+
+        bool IsPrimaryProfession(DBC::Structures::SpellEntry const* sp) const
+        {
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            {
+                DBC::Structures::SpellEffectEntry const* spellEffect = sp->GetSpellEffect(SpellEffectIndex(i));
+                if (!spellEffect)
+                    continue;
+
+                if (spellEffect->Effect == 118)   //SPELL_EFFECT_SKILL
+                {
+                    uint32 skill = spellEffect->EffectMiscValue;
+
+                    if (IsPrimaryProfessionSkill(skill))
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        bool IsPrimaryProfessionSkill(uint32 skill) const
+        {
+            DBC::Structures::SkillLineAbilityEntry const* pSkill = sSkillLineAbilityStore.LookupEntry(skill);
+            if (!pSkill)
+                return false;
+
+            return pSkill->acquireMethod == 11;    //SKILL_TYPE_PROFESSION
+        }
 
         /// PLEASE DO NOT INLINE!
         void AddOnStrikeSpell(OLD_SpellEntry* sp, uint32 delay)
@@ -1520,6 +1553,8 @@ class SERVER_DECL Player : public Unit
             ModUnsigned32Value(PLAYER_FIELD_COINAGE, -coins);
         }
 
+        void SendAuctionCommandResult(Auction* auction, uint32 Action, uint32 ErrorCode, uint32 bidError = 0);
+
         /////////////////////////////////////////////////////////////////////////////////////////
         // EASY FUNCTIONS - MISC
         /////////////////////////////////////////////////////////////////////////////////////////
@@ -1536,12 +1571,11 @@ class SERVER_DECL Player : public Unit
         uint32 GetXpToLevel() { return GetUInt32Value(PLAYER_NEXT_LEVEL_XP); }
         void SetNextLevelXp(uint32 xp) { SetUInt32Value(PLAYER_NEXT_LEVEL_XP, xp); }
 
-        //\todo danko
         void SetTalentPointsForAllSpec(uint32 amt)
         {
             m_specs[0].SetTP(amt);
             m_specs[1].SetTP(amt);
-            //SetUInt32Value(PLAYER_CHARACTER_POINTS1, amt);
+            SetUInt32Value(PLAYER_CHARACTER_POINTS, amt);
             smsg_TalentsInfo(false);
         }
 
@@ -1549,23 +1583,23 @@ class SERVER_DECL Player : public Unit
         {
             m_specs[0].SetTP(m_specs[0].GetTP() + amt);
             m_specs[1].SetTP(m_specs[1].GetTP() + amt);
-            //SetUInt32Value(PLAYER_CHARACTER_POINTS1, GetUInt32Value(PLAYER_CHARACTER_POINTS1) + amt);
+            SetUInt32Value(PLAYER_CHARACTER_POINTS, GetUInt32Value(PLAYER_CHARACTER_POINTS) + amt);
             smsg_TalentsInfo(false);
         }
 
         void SetCurrentTalentPoints(uint32 points)
         {
             m_specs[m_talentActiveSpec].SetTP(points);
-            //SetUInt32Value(PLAYER_CHARACTER_POINTS1, points);
+            SetUInt32Value(PLAYER_CHARACTER_POINTS, points);
             smsg_TalentsInfo(false);
         }
 
-        /*uint32 GetCurrentTalentPoints()
+        uint32 GetCurrentTalentPoints()
         {
-            uint32 points = GetUInt32Value(PLAYER_CHARACTER_POINTS1);
+            uint32 points = GetUInt32Value(PLAYER_CHARACTER_POINTS);
             Arcemu::Util::ArcemuAssert(points == m_specs[m_talentActiveSpec].GetTP());
             return points;
-        }*/
+        }
 
         void SetPrimaryProfessionPoints(uint32 amt) { SetUInt32Value(PLAYER_CHARACTER_POINTS, amt); }
         void ModPrimaryProfessionPoints(int32 amt) { ModUnsigned32Value(PLAYER_CHARACTER_POINTS, amt); }
@@ -1984,6 +2018,8 @@ class SERVER_DECL Player : public Unit
         uint16 m_maxTalentPoints;
         uint8 m_talentSpecsCount;
         uint8 m_talentActiveSpec;
+        uint32 m_FirstTalentTreeLock;                   //this is the spec ID where you put first talent point on
+        uint32 CalcTalentPointsHaveSpent(uint32 spec);
 
         PlayerSpec m_specs[MAX_SPEC_COUNT];
 

@@ -83,6 +83,7 @@ void Player::SendLevelupInfo(uint32 level, uint32 Hp, uint32 Mana, uint32 Stat0,
 
     data << uint32(level);
     data << uint32(Hp);
+
     data << uint32(Mana);
 
     for (uint8 i = 0; i < 6; ++i)
@@ -583,8 +584,9 @@ void Player::SendInitialLogonPackets()
     SendSetProficiency(2, weapon_proficiency);
 
     WorldPacket data(SMSG_TUTORIAL_FLAGS, 4 * 8);
-    for (int i = 0; i < 8; i++)
+    for (uint8 i = 0; i < 8; i++)
         data << uint32(m_Tutorials[i]);
+
     m_session->SendPacket(&data);
 
     smsg_TalentsInfo(false);

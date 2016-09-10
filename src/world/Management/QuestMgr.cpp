@@ -408,22 +408,22 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
     *data << uint32(0);                         // Unknown 4.0.6
     *data << uint32(0);
 
-    for (int i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
         *data << uint32(qst->RewRepFaction[i]);
 
-    for (int i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
         *data << int32(qst->RewRepValueId[i]);
 
-    for (int i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
         *data << int32(qst->RewRepValue[i]);
 
     *data << int32(qst->GetRewSpellCast());
     *data << uint32(0); // Probably invisible spell cast ;/
 
-    for (int i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < 4; ++i)
         *data << uint32(0);
 
-    for (int i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < 4; ++i)
         *data << uint32(0);
 
     *data << uint32(0);

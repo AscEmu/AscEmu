@@ -467,7 +467,7 @@ class LuaEngine
             std::vector<uint32> dummyHooks;
             _ENGINEHOOKINFO()
             {
-                for (int i = 0; i < NUM_SERVER_HOOKS; ++i)
+                for (uint8 i = 0; i < NUM_SERVER_HOOKS; ++i)
                     hooks[i] = false;
             }
         } HookInfo;

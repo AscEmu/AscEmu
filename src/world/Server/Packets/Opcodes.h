@@ -224,8 +224,6 @@ enum Opcodes
     SMSG_BATTLEFIELD_LOSE_OBSOLETE                  = 0x240,
     CMSG_TAXICLEARNODE                              = 0x241,
     CMSG_TAXIENABLENODE                             = 0x242,
-    CMSG_ITEM_TEXT_QUERY                            = 0x243,
-    SMSG_ITEM_TEXT_QUERY_RESPONSE                   = 0x244,
     SMSG_DEBUGAURAPROC                              = 0x24D,
     SMSG_PERIODICAURALOG                            = 0x24E,
     SMSG_RESURRECT_FAILED                           = 0x252,
@@ -351,7 +349,6 @@ enum Opcodes
     SMSG_SPLINE_MOVE_STOP_SWIM                      = 0x30C,
     SMSG_SPLINE_MOVE_SET_RUN_MODE                   = 0x30D,
     SMSG_SPLINE_MOVE_SET_WALK_MODE                  = 0x30E,
-    CMSG_ACTIVATETAXIEXPRESS                        = 0x312,
     SMSG_SET_FACTION_ATWAR                          = 0x313,
     SMSG_GAMETIMEBIAS_SET                           = 0x314,
     CMSG_DEBUG_ACTIONS_START                        = 0x315,
@@ -747,13 +744,6 @@ enum Opcodes
     SMSG_COMMENTATOR_SKIRMISH_QUEUE_RESULT1         = 0x51C,
     SMSG_COMMENTATOR_SKIRMISH_QUEUE_RESULT2         = 0x51D,
     SMSG_MULTIPLE_MOVES                             = 0x51E,
-
-    CMSG_GM_SET_SECURITY_GROUP                          = 0x0000,
-    MSG_GM_BIND_OTHER                                   = 0x0000,
-    MSG_GM_SHOWLABEL                                    = 0x0000,
-    MSG_GM_SUMMON                                       = 0x0000,
-    CMSG_GM_INVIS                                       = 0x0000,
-    CMSG_GM_NUKE                                        = 0x0000,
 
 
     // 4.3.4 15595
@@ -1240,17 +1230,15 @@ enum Opcodes
     CMSG_BUYBACK_ITEM                                   = 0x6C17,    // 4.3.4
 
     //Taxi
-    CMSG_SET_TAXI_BENCHMARK_MODE                        = 0x04314,
-    CMSG_TAXICLEARALLNODES                              = 0x00000,
-    CMSG_TAXIENABLEALLNODES                             = 0x00000,
-    CMSG_TAXISHOWNODES                                  = 0x00000,
-    SMSG_SHOWTAXINODES                                  = 0x02A36,
-    CMSG_TAXINODE_STATUS_QUERY                          = 0x02F25,
-    SMSG_TAXINODE_STATUS                                = 0x02936,
-    CMSG_TAXIQUERYAVAILABLENODES                        = 0x06C06,
-    CMSG_ACTIVATETAXI                                   = 0x06E06,
-    SMSG_ACTIVATETAXIREPLY                              = 0x06A37,
-    SMSG_NEW_TAXI_PATH                                  = 0x04B35,
+    CMSG_SET_TAXI_BENCHMARK_MODE                        = 0x4314,
+    SMSG_SHOWTAXINODES                                  = 0x2A36,
+    CMSG_TAXINODE_STATUS_QUERY                          = 0x2F25,
+    SMSG_TAXINODE_STATUS                                = 0x2936,
+    CMSG_TAXIQUERYAVAILABLENODES                        = 0x6C06,
+    CMSG_ACTIVATETAXI                                   = 0x6E06,
+    SMSG_ACTIVATETAXIREPLY                              = 0x6A37,
+    SMSG_NEW_TAXI_PATH                                  = 0x4B35,
+    CMSG_ACTIVATETAXIEXPRESS                            = 0x0515,
 
     //Auction
     MSG_AUCTION_HELLO                                   = 0x2307,
@@ -1313,31 +1301,34 @@ enum Opcodes
     SMSG_START_TIMER                                    = 0x59A5,   // not implemented
     SMSG_STOP_MIRROR_TIMER                              = 0x0B06,
 
-    CMSG_CHAR_RENAME                                    = 0x2327, // 15595
-    SMSG_CHAR_RENAME                                    = 0x2024, // 15595
-    SMSG_FEATURE_SYSTEM_STATUS                          = 0x3DB7, // 15595
-    SMSG_LEARNED_DANCE_MOVES                            = 0x0E05, // 15595
+    CMSG_CHAR_RENAME                                    = 0x2327,
+    SMSG_CHAR_RENAME                                    = 0x2024,
+    SMSG_FEATURE_SYSTEM_STATUS                          = 0x3DB7,
+    SMSG_LEARNED_DANCE_MOVES                            = 0x0E05,
 
     //Item
     CMSG_AUTOEQUIP_GROUND_ITEM                          = 0x1107,   // unchecked
     CMSG_AUTOSTORE_GROUND_ITEM                          = 0x1108,   // unchecked
     CMSG_AUTOSTORE_LOOT_ITEM                            = 0x0E34,   // unchecked
     CMSG_STORE_LOOT_IN_SLOT                             = 0x110A,   // unchecked
-    CMSG_AUTOEQUIP_ITEM                                 = 0x4304,   // checked
+    CMSG_AUTOEQUIP_ITEM                                 = 0x4304,
     CMSG_AUTOSTORE_BAG_ITEM                             = 0x0236,   // unchecked
     CMSG_SPLIT_ITEM                                     = 0x0F17,   // unchecked
-    CMSG_AUTOEQUIP_ITEM_SLOT                            = 0x4A17,   // checked
-    CMSG_SWAP_ITEM                                      = 0x6326,   // checked
-    CMSG_SWAP_INV_ITEM                                  = 0x2614,   // checked
+    CMSG_AUTOEQUIP_ITEM_SLOT                            = 0x4A17,
+    CMSG_SWAP_ITEM                                      = 0x6326,
+    CMSG_SWAP_INV_ITEM                                  = 0x2614,
     SMSG_INVENTORY_CHANGE_FAILURE                       = 0x2236,
-    CMSG_DESTROYITEM                                    = 0x4A27,   // checked
+    CMSG_DESTROYITEM                                    = 0x4A27,
     CMSG_USE_ITEM                                       = 0x2C06,
-    CMSG_OPEN_ITEM                                      = 0x6A34,   //
-    CMSG_READ_ITEM                                      = 0x2F16,   //
-    SMSG_READ_ITEM_OK                                   = 0x2605,   // 
-    SMSG_READ_ITEM_FAILED                               = 0x0F16,   // 
-    SMSG_ITEM_COOLDOWN                                  = 0x4D14,   //
+    CMSG_OPEN_ITEM                                      = 0x6A34,
+    CMSG_READ_ITEM                                      = 0x2F16,
+    SMSG_READ_ITEM_OK                                   = 0x2605,
+    SMSG_READ_ITEM_FAILED                               = 0x0F16,
+    SMSG_ITEM_COOLDOWN                                  = 0x4D14,
     SMSG_DB_REPLY                                       = 0x38A4,
+    CMSG_ITEM_TEXT_QUERY                                = 0x2406,
+    SMSG_ITEM_TEXT_QUERY_RESPONSE                       = 0x2725,
+
 
     //Quest
     CMSG_QUESTLOG_SWAP_QUEST                            = 0x1194,
@@ -1439,6 +1430,17 @@ enum Opcodes
     CMSG_UNK_7102                                       = 0x7102,
     CMSG_UNK_3D54                                       = 0x3D54,
     CMSG_UNK_720E                                       = 0x720E,
+
+    //Unknown packet names
+    CMSG_GM_SET_SECURITY_GROUP                          = 0x0000,
+    MSG_GM_BIND_OTHER                                   = 0x0000,
+    MSG_GM_SHOWLABEL                                    = 0x0000,
+    MSG_GM_SUMMON                                       = 0x0000,
+    CMSG_GM_INVIS                                       = 0x0000,
+    CMSG_GM_NUKE                                        = 0x0000,
+    CMSG_TAXICLEARALLNODES                              = 0x0000,
+    CMSG_TAXIENABLEALLNODES                             = 0x0000,
+    CMSG_TAXISHOWNODES                                  = 0x0000,
 
     NUM_MSG_TYPES                                       = 0xFFFF    // End of Opcodes
 };
