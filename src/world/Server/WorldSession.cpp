@@ -818,9 +818,9 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_CANCEL_AUTO_REPEAT_SPELL].handler = &WorldSession::HandleCancelAutoRepeatSpellOpcode;
     //WorldPacketHandlers[CMSG_TOTEM_DESTROYED].handler = &WorldSession::HandleCancelTotem;
     WorldPacketHandlers[CMSG_LEARN_TALENT].handler = &WorldSession::HandleLearnTalentOpcode;
-    //WorldPacketHandlers[CMSG_LEARN_TALENTS_MULTIPLE].handler = &WorldSession::HandleLearnMultipleTalentsOpcode;
-    //WorldPacketHandlers[CMSG_UNLEARN_TALENTS].handler = &WorldSession::HandleUnlearnTalents;
-    //WorldPacketHandlers[MSG_TALENT_WIPE_CONFIRM].handler = &WorldSession::HandleUnlearnTalents;
+    WorldPacketHandlers[CMSG_LEARN_PREVIEW_TALENTS].handler = &WorldSession::HandleLearnMultipleTalentsOpcode;
+    WorldPacketHandlers[CMSG_UNLEARN_TALENTS].handler = &WorldSession::HandleUnlearnTalents;
+    WorldPacketHandlers[MSG_TALENT_WIPE_CONFIRM].handler = &WorldSession::HandleUnlearnTalents;
     //WorldPacketHandlers[CMSG_UPDATE_PROJECTILE_POSITION].handler = &WorldSession::HandleUpdateProjectilePosition;
 
     //// Combat / Duel
@@ -1382,17 +1382,17 @@ void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
     _player->LearnTalent(talent_id, requested_rank);
 }
 
-//void WorldSession::HandleUnlearnTalents(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//        uint32 price = GetPlayer()->CalcTalentResetCost(GetPlayer()->GetTalentResetTimes());
-//    if (!GetPlayer()->HasGold(price))
-//        return;
-//
-//    GetPlayer()->SetTalentResetTimes(GetPlayer()->GetTalentResetTimes() + 1);
-//    GetPlayer()->ModGold(-(int32)price);
-//    GetPlayer()->Reset_Talents();
-//}
+void WorldSession::HandleUnlearnTalents(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+        uint32 price = GetPlayer()->CalcTalentResetCost(GetPlayer()->GetTalentResetTimes());
+    if (!GetPlayer()->HasGold(price))
+        return;
+
+    GetPlayer()->SetTalentResetTimes(GetPlayer()->GetTalentResetTimes() + 1);
+    GetPlayer()->ModGold(-(int32)price);
+    GetPlayer()->Reset_Talents();
+}
 
 //void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
 //{
@@ -1422,44 +1422,51 @@ void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
 //    }
 //}
 
-//void WorldSession::HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
-//{
-//    CHECK_INWORLD_RETURN uint32 talentcount;
-//    uint32 talentid;
-//    uint32 rank;
-//
-//    LOG_DEBUG("Recieved packet CMSG_LEARN_TALENTS_MULTIPLE.");
-//
-//    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//    // 0x04C1 CMSG_LEARN_TALENTS_MULTIPLE
-//    // As of 3.2.2.10550 the client sends this packet when clicking "learn" on
-//    // the talent interface (in preview talents mode)
-//    // This packet tells the server which talents to learn
-//    //
-//    // Structure:
-//    //
-//    // struct talentdata{
-//    // uint32 talentid; - unique numeric identifier of the talent (index of
-//    // talent.dbc)
-//    // uint32 talentrank; - rank of the talent
-//    // };
-//    //
-//    // uint32 talentcount; - number of talentid-rank pairs in the packet
-//    // talentdata[ talentcount ];
-//    //
-//    //
-//    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//    recvPacket >> talentcount;
-//
-//    for (uint32 i = 0; i < talentcount; ++i)
-//    {
-//        recvPacket >> talentid;
-//        recvPacket >> rank;
-//
-//        _player->LearnTalent(talentid, rank, true);
-//    }
-//}
+void WorldSession::HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    uint32 talentcount;
+    uint32 talentid;
+    uint32 rank;
+
+    LOG_DEBUG("Recieved packet CMSG_LEARN_TALENTS_MULTIPLE.");
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // 0x04C1 CMSG_LEARN_TALENTS_MULTIPLE
+    // As of 3.2.2.10550 the client sends this packet when clicking "learn" on
+    // the talent interface (in preview talents mode)
+    // This packet tells the server which talents to learn
+    //
+    // Structure:
+    //
+    // struct talentdata{
+    // uint32 talentid; - unique numeric identifier of the talent (index of
+    // talent.dbc)
+    // uint32 talentrank; - rank of the talent
+    // };
+    //
+    // uint32 talentcount; - number of talentid-rank pairs in the packet
+    // talentdata[ talentcount ];
+    //
+    //
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    uint32 learn_talents_on_tab;
+    recvPacket >> learn_talents_on_tab;	//can be 0,1,2
+
+    recvPacket >> talentcount;
+
+    for (uint32 i = 0; i < talentcount; ++i)
+    {
+        recvPacket >> talentid;
+        recvPacket >> rank;
+
+        _player->LearnTalent(talentid, rank, true);
+    }
+
+    _player->smsg_TalentsInfo(false);
+}
 
 void WorldSession::SendMOTD()
 {

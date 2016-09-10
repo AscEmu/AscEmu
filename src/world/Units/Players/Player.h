@@ -1564,12 +1564,11 @@ class SERVER_DECL Player : public Unit
         uint32 GetXpToLevel() { return GetUInt32Value(PLAYER_NEXT_LEVEL_XP); }
         void SetNextLevelXp(uint32 xp) { SetUInt32Value(PLAYER_NEXT_LEVEL_XP, xp); }
 
-        //\todo danko
         void SetTalentPointsForAllSpec(uint32 amt)
         {
             m_specs[0].SetTP(amt);
             m_specs[1].SetTP(amt);
-            //SetUInt32Value(PLAYER_CHARACTER_POINTS1, amt);
+            SetUInt32Value(PLAYER_CHARACTER_POINTS, amt);
             smsg_TalentsInfo(false);
         }
 
@@ -1577,23 +1576,23 @@ class SERVER_DECL Player : public Unit
         {
             m_specs[0].SetTP(m_specs[0].GetTP() + amt);
             m_specs[1].SetTP(m_specs[1].GetTP() + amt);
-            //SetUInt32Value(PLAYER_CHARACTER_POINTS1, GetUInt32Value(PLAYER_CHARACTER_POINTS1) + amt);
+            SetUInt32Value(PLAYER_CHARACTER_POINTS, GetUInt32Value(PLAYER_CHARACTER_POINTS) + amt);
             smsg_TalentsInfo(false);
         }
 
         void SetCurrentTalentPoints(uint32 points)
         {
             m_specs[m_talentActiveSpec].SetTP(points);
-            //SetUInt32Value(PLAYER_CHARACTER_POINTS1, points);
+            SetUInt32Value(PLAYER_CHARACTER_POINTS, points);
             smsg_TalentsInfo(false);
         }
 
-        /*uint32 GetCurrentTalentPoints()
+        uint32 GetCurrentTalentPoints()
         {
-            uint32 points = GetUInt32Value(PLAYER_CHARACTER_POINTS1);
+            uint32 points = GetUInt32Value(PLAYER_CHARACTER_POINTS);
             Arcemu::Util::ArcemuAssert(points == m_specs[m_talentActiveSpec].GetTP());
             return points;
-        }*/
+        }
 
         void SetPrimaryProfessionPoints(uint32 amt) { SetUInt32Value(PLAYER_CHARACTER_POINTS, amt); }
         void ModPrimaryProfessionPoints(int32 amt) { ModUnsigned32Value(PLAYER_CHARACTER_POINTS, amt); }
@@ -2012,6 +2011,8 @@ class SERVER_DECL Player : public Unit
         uint16 m_maxTalentPoints;
         uint8 m_talentSpecsCount;
         uint8 m_talentActiveSpec;
+        uint32 m_FirstTalentTreeLock;                   //this is the spec ID where you put first talent point on
+        uint32 CalcTalentPointsHaveSpent(uint32 spec);
 
         PlayerSpec m_specs[MAX_SPEC_COUNT];
 
