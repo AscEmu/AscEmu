@@ -61,14 +61,17 @@ void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPacket& recv_data)
 void WorldSession::HandleTaxiQueryAvaibleNodesOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
-
     LOG_DEBUG("WORLD: Received CMSG_TAXIQUERYAVAILABLENODES");
-    uint64 guid;
-    recv_data >> guid;
-    Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pCreature) return;
 
-    SendTaxiList(pCreature);
+    uint64 guid;
+
+    recv_data >> guid;
+
+    Creature* creature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    if (!creature)
+        return;
+
+    SendTaxiList(creature);
 }
 
 void WorldSession::SendTaxiList(Creature* pCreature)
@@ -108,7 +111,7 @@ void WorldSession::SendTaxiList(Creature* pCreature)
     //Remove nodes unknown to player
     if (!GetPlayer()->TaxiCheat)
     {
-        for (uint8 i = 0; i < TAXIMASK_SIZE; i++)
+        for (uint8 i = 0; i < TAXIMASK_SIZE; ++i)
         {
             TaxiMask[i] &= GetPlayer()->GetTaximask(i);
         }
@@ -193,41 +196,34 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
         return;
     }
 
-    // MOUNTDISPLAYID
-    // bat: 1566
-    // gryph: 1147
-    // wyvern: 295
-    // hippogryph: 479
-    // fer0x: Incorrect system. Need take values from TaxiNodes.dbc
-
     uint32 modelid = 0;
     if (_player->IsTeamHorde())
     {
-        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
+        CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
 
-        if (ci == nullptr)
-            ci = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
+        if (creature_properties == nullptr)
+            creature_properties = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
 
-        if (ci == nullptr)
-            ci = sMySQLStore.GetCreatureProperties(541); // Riding Gryphon, in case neither of the above work
+        if (creature_properties == nullptr)
+            creature_properties = sMySQLStore.GetCreatureProperties(541); // Riding Gryphon, in case neither of the above work
 
-        if (ci != nullptr)
-            modelid = ci->Male_DisplayID;
+        if (creature_properties != nullptr)
+            modelid = creature_properties->Male_DisplayID;
         else
             modelid = 6852; // Riding Gryphon modelid, in case it wasn't in the db;
     }
     else
     {
-        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
+        CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
 
-        if (ci == nullptr)
-            ci = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
+        if (creature_properties == nullptr)
+            creature_properties = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
 
-        if (ci == nullptr)
-            ci = sMySQLStore.GetCreatureProperties(541); // Riding Gryphon, in case neither of the above work
+        if (creature_properties == nullptr)
+            creature_properties = sMySQLStore.GetCreatureProperties(541); // Riding Gryphon, in case neither of the above work
 
-        if (ci != nullptr)
-            modelid = ci->Male_DisplayID;
+        if (creature_properties != nullptr)
+            modelid = creature_properties->Male_DisplayID;
         else
             modelid = 6852; // Riding Gryphon modelid, in case it wasn't in the db
     }

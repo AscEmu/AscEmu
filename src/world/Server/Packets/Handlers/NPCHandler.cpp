@@ -102,14 +102,16 @@ void WorldSession::HandleTrainerListOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_ASSERT;
 
-    // Inits, grab creature, check.
     uint64 guid;
-    recv_data >> guid;
-    Creature* train = GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!train) return;
 
-    _player->Reputation_OnTalk(train->m_factionDBC);
-    SendTrainerList(train);
+    recv_data >> guid;
+
+    Creature* tratrainer = GetPlayer()->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    if (!tratrainer)
+        return;
+
+    _player->Reputation_OnTalk(tratrainer->m_factionDBC);
+    SendTrainerList(tratrainer);
 }
 
 void WorldSession::SendTrainerList(Creature* pCreature)

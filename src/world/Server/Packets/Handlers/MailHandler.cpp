@@ -23,7 +23,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-        MailMessage msg;
+    MailMessage msg;
     ObjectGuid mailbox;
     uint32 unk1, unk2;
     uint64 money, COD;
@@ -109,8 +109,8 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     // packet read complete, now do check
 
     // Search for the recipient
-    PlayerInfo* player = ObjectMgr::getSingleton().GetPlayerInfoByName(receiver.c_str());
-    if (player == NULL)
+    PlayerInfo* player_info = ObjectMgr::getSingleton().GetPlayerInfoByName(receiver.c_str());
+    if (!player_info)
     {
         SendMailError(MAIL_ERR_RECIPIENT_NOT_FOUND);
         return;
@@ -119,12 +119,12 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     for (uint8 i = 0; i < items_count; ++i)
     {
         pItem = _player->GetItemInterface()->GetItemByGUID(itemGUIDs[i]);
-        if (pItem == NULL || pItem->IsSoulbound() || pItem->IsConjured())
+        if (pItem == nullptr || pItem->IsSoulbound() || pItem->IsConjured())
         {
             SendMailError(MAIL_ERR_INTERNAL_ERROR);
             return;
         }
-        if (pItem->IsAccountbound() && GetAccountId() != player->acct) // don't mail account-bound items to another account
+        if (pItem->IsAccountbound() && GetAccountId() != player_info->acct) // don't mail account-bound items to another account
         {
             WorldPacket data(SMSG_SEND_MAIL_RESULT, 16);
             data << uint32(0);
@@ -148,14 +148,14 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     }
 
     // Check we're sending to the same faction (disable this for testing)
-    if (player->team != _player->GetTeam() && !interfaction)
+    if (player_info->team != _player->GetTeam() && !interfaction)
     {
         SendMailError(MAIL_ERR_NOT_YOUR_ALLIANCE);
         return;
     }
 
     // Check if we're sending mail to ourselves
-    if (strcmp(player->name, _player->GetName()) == 0 && !GetPermissionCount())
+    if (strcmp(player_info->name, _player->GetName()) == 0 && !GetPermissionCount())
     {
         SendMailError(MAIL_ERR_CANNOT_SEND_TO_SELF);
         return;
@@ -204,14 +204,14 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
             if (GetPermissionCount() > 0)
             {
                 /* log the message */
-                sGMLog.writefromsession(this, "sent mail with item entry %u to %s, with gold %u.", pItem->GetEntry(), player->name, money);
+                sGMLog.writefromsession(this, "sent mail with item entry %u to %s, with gold %u.", pItem->GetEntry(), player_info->name, money);
             }
 
             pItem->DeleteMe();
         }
     }
 
-    if (money != 0 || COD != 0 || (!items.size() && player->acct != _player->GetSession()->GetAccountId()))
+    if (money != 0 || COD != 0 || (!items.size() && player_info->acct != _player->GetSession()->GetAccountId()))
     {
         if (!sMailSystem.MailOption(MAIL_FLAG_DISABLE_HOUR_DELAY_FOR_ITEMS))
             msg.delivery_time += 3600;  // 1hr
@@ -221,7 +221,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     _player->ModGold(-cost);
 
     // Fill in the rest of the info
-    msg.player_guid = player->guid;
+    msg.player_guid = player_info->guid;
     msg.sender_guid = _player->GetGUID();
     msg.money = money;
     msg.cod = COD;
@@ -239,7 +239,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     msg.checked_flag = msg.body.empty() ? MAIL_CHECK_MASK_COPIED : MAIL_CHECK_MASK_HAS_BODY;
 
     // Great, all our info is filled in. Now we can add it to the other players mailbox.
-    sMailSystem.DeliverMessage(player->guid, &msg);
+    sMailSystem.DeliverMessage(player_info->guid, &msg);
     // Save/Update character's gold if they've received gold that is. This prevents a rollback.
     CharacterDatabase.Execute("UPDATE characters SET gold = %u WHERE guid = %u", _player->GetGold(), _player->m_playerInfo->guid);
     // Success packet :)
@@ -277,6 +277,7 @@ void WorldSession::HandleMailDelete(WorldPacket& recv_data)
 
     uint64 mailbox;
     uint32 message_id;
+
     recv_data >> mailbox;
     recv_data >> message_id;
     recv_data.read_skip<uint32>();
@@ -286,7 +287,7 @@ void WorldSession::HandleMailDelete(WorldPacket& recv_data)
     data << uint32(MAIL_RES_DELETED);
 
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
-    if (message == 0)
+    if (!message)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
@@ -349,17 +350,16 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
 
     // grab the item
     Item* item = objmgr.LoadItem(*itr);
-    if (item == 0)  // doesn't exist
+    if (!item)  // doesn't exist
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
-
         return;
     }
 
     //Find free slot
     SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(item->GetItemProperties());
-    if (result.Result == 0) //End of slots
+    if (result.Result == false) //End of slots
     {
         data << uint32(MAIL_ERR_BAG_FULL);
         SendPacket(&data);
@@ -418,6 +418,7 @@ void WorldSession::HandleTakeMoney(WorldPacket& recv_data)
 
     uint64 mailbox;
     uint32 message_id;
+
     recv_data >> mailbox;
     recv_data >> message_id;
 
@@ -426,7 +427,7 @@ void WorldSession::HandleTakeMoney(WorldPacket& recv_data)
     data << uint32(MAIL_RES_MONEY_TAKEN);
 
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
-    if (message == 0 || !message->money)
+    if (!message || !message->money)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
@@ -463,6 +464,7 @@ void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
 
     uint64 mailbox;
     uint32 message_id;
+
     recv_data >> mailbox;
     recv_data >> message_id;
 
@@ -471,7 +473,7 @@ void WorldSession::HandleReturnToSender(WorldPacket& recv_data)
     data << uint32(MAIL_RES_RETURNED_TO_SENDER);
 
     MailMessage* msg = _player->m_mailBox.GetMessage(message_id);
-    if (msg == 0)
+    if (!msg)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
@@ -512,6 +514,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
 
     uint64 mailbox;
     uint32 message_id;
+
     recv_data >> mailbox;
     recv_data >> message_id;
 
@@ -519,17 +522,17 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
     data << message_id;
     data << uint32(MAIL_RES_MADE_PERMANENT);
 
-    ItemProperties const* proto = sMySQLStore.GetItemProperties(8383);
+    ItemProperties const* item_properties = sMySQLStore.GetItemProperties(8383);
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
-    if (message == 0 || !proto)
+    if (!message || !item_properties)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
         return;
     }
 
-    SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(proto);
-    if (result.Result == 0)
+    SlotResult result = _player->GetItemInterface()->FindFreeInventorySlot(item_properties);
+    if (result.Result == false)
     {
         data << uint32(MAIL_ERR_INTERNAL_ERROR);
         SendPacket(&data);
@@ -537,7 +540,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
     }
 
     Item* pItem = objmgr.CreateItem(8383, _player);
-    if (pItem == NULL)
+    if (!pItem)
         return;
 
     pItem->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_WRAP_GIFT); // the flag is probably misnamed

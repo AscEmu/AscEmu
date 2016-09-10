@@ -37,7 +37,7 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(QuestProperties const* pQuest
     QuestTurnTextWindow = pQuest->GetQuestTurnInPortraitText();
     QuestTurnTargetName = pQuest->GetQuestTurnInPortraitUnk();
 
-    for (int i = 0; i<QUEST_OBJECTIVES_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
         ObjectiveText[i] = pQuest->ObjectiveText[i];
 
     WorldPacket* data = new WorldPacket(SMSG_QUEST_QUERY_RESPONSE, 248);
@@ -104,13 +104,13 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(QuestProperties const* pQuest
         }
     }
 
-    for (int i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)         // reward factions ids
+    for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)         // reward factions ids
         *data << uint32(pQuest->RewRepFaction[i]);
 
-    for (int i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)         // columnid+1 QuestFactionReward.dbc?
+    for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)         // columnid+1 QuestFactionReward.dbc?
         *data << int32(pQuest->RewRepValueId[i]);
 
-    for (int i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)         // unk (0)
+    for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)         // unk (0)
         *data << int32(pQuest->RewRepValue[i]);
 
     *data << uint32(pQuest->GetPointMapId());

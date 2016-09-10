@@ -252,12 +252,11 @@ void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* packet)
     WorldPacket data(SMSG_AUCTION_BIDDER_LIST_RESULT, 4 + 4 + 4);
     data << uint32(0);                  // Placeholder
 
-    Auction* auct;
     auctionLock.AcquireReadLock();
     std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
     for (; itr != auctions.end(); ++itr)
     {
-        auct = itr->second;
+        Auction* auct = itr->second;
         if (auct->HighestBidder == plr->GetGUID())
         {
             if (auct->Deleted) continue;
@@ -467,7 +466,7 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recv_data)
     // Find Item
     AuctionHouse* ah = pCreature->auctionHouse;
     Auction* auct = ah->GetAuction(auction_id);
-    if (auct == 0 || !auct->Owner || !_player)
+    if (!auct || !auct->Owner || !_player)
     {
         SendAuctionPlaceBidResultPacket(0, AUCTION_ERR_INTERNAL_DB);
         return;
@@ -533,9 +532,9 @@ void WorldSession::HandleCancelAuction(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
 
     uint64 guid;
-    recv_data >> guid;
-
     uint32 auction_id;
+
+    recv_data >> guid;
     recv_data >> auction_id;
 
     Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
@@ -544,13 +543,16 @@ void WorldSession::HandleCancelAuction(WorldPacket& recv_data)
 
     // Find Item
     Auction* auct = pCreature->auctionHouse->GetAuction(auction_id);
-    if (auct == 0) return;
+    if (!auct)
+        return;
 
     pCreature->auctionHouse->QueueDeletion(auct, AUCTION_REMOVE_CANCELLED);
 
     // Send response packet.
     WorldPacket data(SMSG_AUCTION_COMMAND_RESULT, 8);
-    data << auction_id << uint32(AUCTION_CANCEL) << uint32(0);
+    data << auction_id;
+    data << uint32(AUCTION_CANCEL);
+    data << uint32(0);
     SendPacket(&data);
 
     // Re-send the owner list.
@@ -614,7 +616,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
         Item* item = _player->GetItemInterface()->GetItemByGUID(itemGUIDs[i]);
         if (!item)
         {
-            _player->SendAuctionCommandResult(NULL, AUCTION_CREATE, AUCTION_ERR_ITEM_NOT_FOUND);
+            _player->SendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERR_ITEM_NOT_FOUND);
             return;
         }
 
@@ -624,7 +626,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
 
     if (!finalCount)
     {
-        _player->SendAuctionCommandResult(NULL, AUCTION_CREATE, AUCTION_ERR_INTERNAL_DB);
+        _player->SendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERR_INTERNAL_DB);
         return;
     }
 
@@ -634,7 +636,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
 
         if (item->GetStackCount() < finalCount)
         {
-            _player->SendAuctionCommandResult(NULL, AUCTION_CREATE, AUCTION_ERR_INTERNAL_DB);
+            _player->SendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERR_INTERNAL_DB);
             return;
         }
     }
@@ -651,7 +653,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
 
         if (!_player->HasGold((uint64)item_deposit))
         {
-            _player->SendAuctionCommandResult(NULL, AUCTION_CREATE, AUCTION_ERR_NOT_ENOUGH_MONEY);
+            _player->SendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERR_NOT_ENOUGH_MONEY);
             return;
         }
 
@@ -660,7 +662,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
         item = _player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(itemGUIDs[i], false);
         if (!item)
         {
-            _player->SendAuctionCommandResult(NULL, AUCTION_CREATE, AUCTION_ERR_ITEM_NOT_FOUND);
+            _player->SendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERR_ITEM_NOT_FOUND);
             return;
         };
 
@@ -692,7 +694,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
         auct->SaveToDB(ah->GetID());
 
         // Send result packet
-        _player->SendAuctionCommandResult(NULL, AUCTION_CREATE, AUCTION_ERR_NONE);
+        _player->SendAuctionCommandResult(nullptr, AUCTION_CREATE, AUCTION_ERR_NONE);
     }
 
     ah->SendOwnerListPacket(_player, &recv_data);
@@ -707,18 +709,18 @@ void Player::SendAuctionCommandResult(Auction* auction, uint32 action, uint32 er
 
     switch (errorCode)
     {
-    case AUCTION_ERR_NONE:
-        if (action == AUCTION_BID)
-            data << uint64(auction->HighestBid? auction->GetAuctionOutBid() : 0);
-        break;
-    case AUCTION_ERR_INVENTORY:
-        data << uint32(bidError);
-        break;
-    case AUCTION_ERR_HIGHER_BID:
-        data << uint64(auction->HighestBidder);
-        data << uint64(auction->HighestBid);
-        data << uint64(auction->HighestBid ? auction->GetAuctionOutBid() : 0);
-        break;
+        case AUCTION_ERR_NONE:
+            if (action == AUCTION_BID)
+                data << uint64(auction->HighestBid? auction->GetAuctionOutBid() : 0);
+            break;
+        case AUCTION_ERR_INVENTORY:
+            data << uint32(bidError);
+            break;
+        case AUCTION_ERR_HIGHER_BID:
+            data << uint64(auction->HighestBidder);
+            data << uint64(auction->HighestBid);
+            data << uint64(auction->HighestBid ? auction->GetAuctionOutBid() : 0);
+            break;
     }
 
     SendPacket(&data);
@@ -751,14 +753,24 @@ void WorldSession::HandleAuctionListOwnerItems(WorldPacket& recv_data)
 void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
 {
     std::string searchedname;
-    uint8 levelmin, levelmax, usable;
-    uint32 listfrom, auctionSlotID, auctionMainCategory, auctionSubCategory, quality;
+    uint8 levelmin;
+    uint8 levelmax;
+    uint8 usable;
+    uint32 listfrom;
+    uint32 auctionSlotID;
+    uint32 auctionMainCategory;
+    uint32 auctionSubCategory;
+    uint32 quality;
 
     *packet >> listfrom;                // start, used for page control listing by 50 elements
     *packet >> searchedname;
-    *packet >> levelmin >> levelmax;
-    *packet >> auctionSlotID >> auctionMainCategory >> auctionSubCategory;
-    *packet >> quality >> usable;
+    *packet >> levelmin;
+    *packet >> levelmax;
+    *packet >> auctionSlotID;
+    *packet >> auctionMainCategory;
+    *packet >> auctionSubCategory;
+    *packet >> quality;
+    *packet >> usable;
 
     packet->read_skip<uint8>();
     packet->read_skip<uint8>();
@@ -887,10 +899,8 @@ void WorldSession::HandleAuctionListPendingSales(WorldPacket& recv_data)
 
     LOG_DEBUG("WORLD: Received CMSG_AUCTION_LIST_PENDING_SALES");
 
-    uint32 count = 0;
-
     WorldPacket data(SMSG_AUCTION_LIST_PENDING_SALES, 4);
-    data << uint32(count);      // count
+    data << uint32(0);      // count
     SendPacket(&data);
 }
 

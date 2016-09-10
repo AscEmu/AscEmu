@@ -12060,7 +12060,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
             }
         }
         
-        for (uint32 i = rank; i < 5; ++i)
+        for (uint8 i = rank; i < 5; ++i)
         {
             if (talent_info->RankID[i] != 0 && HasSpell(talent_info->RankID[i]))
             {
