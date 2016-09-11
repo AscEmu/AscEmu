@@ -9047,11 +9047,9 @@ void Unit::UnPossess()
     }
 }
 
-////////////////////////////////////////////////////////////
-// MovementInfo
 
 ////////////////////////////////////////////////////////////
-// Methods of class MovementInfo
+// MovementInfo
 
 void MovementInfo::Read(ByteBuffer& data, uint32 opcode)
 {

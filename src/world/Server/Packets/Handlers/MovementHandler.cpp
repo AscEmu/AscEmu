@@ -183,7 +183,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     if (MoverGuid != mover->GetGUID())
         return;
 
-    if (_player->GetCharmedByGUID() || !_player->IsInWorld() || _player->GetPlayerStatus() == TRANSFER_PENDING || _player->GetTaxiState())
+    if (mover->GetCharmedByGUID() || !mover->IsInWorld() || mover->GetPlayerStatus() == TRANSFER_PENDING || mover->GetTaxiState())
     {
         return;
     }
@@ -191,8 +191,8 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Clear standing state to stand.				                        */
     /************************************************************************/
-    /*if (recv_data.GetOpcode() == CMSG_MOVE_START_FORWARD)
-        _player->SetStandState(STANDSTATE_STAND);*/
+    if (opcode == CMSG_MOVE_START_FORWARD)
+        mover->SetStandState(STANDSTATE_STAND);
 
     //extract packet
     MovementInfo movementInfo;
@@ -216,8 +216,8 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Remove Emote State                                                   */
     /************************************************************************/
-    /*if (_player->GetEmoteState())
-        _player->SetEmoteState(0);*/
+    if (mover->GetEmoteState())
+        mover->SetEmoteState(EMOTE_ONESHOT_NONE);
 
     /************************************************************************/
     /* Make sure the co-ordinates are valid.                                */
@@ -261,17 +261,42 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Breathing                                                            */
     /************************************************************************/
-    /*_player->HandleBreathing(movementInfo, this);*/
+    mover->HandleBreathing(movementInfo, this);
 
+    /************************************************************************/
+    /* Transporter Data                                                     */
+    /************************************************************************/
+    uint64 t_guid = (uint64 &)movementInfo.GetTransportGuid();
+    if (t_guid)
+    {
+        if (!mover->m_transporter)
+        {
+            Transporter* transporter = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(t_guid));
+            if (transporter != nullptr)
+            {
+                transporter->AddPassenger(mover);
+                mover->m_transporter = transporter;
+            }
+        }
+    }
+    else
+    {
+        if (mover->m_transporter)
+        {
+            mover->m_transporter->RemovePassenger(mover);
+            mover->m_transporter = nullptr;
+            movementInfo.ClearTransportData();
+        }
+    }
 
     /************************************************************************/
     /* Update our Position                                                  */
     /************************************************************************/
-    if (MoverGuid == _player->GetGUID())
-    {
-        _player->SetPosition(movementInfo.GetPos()->x, movementInfo.GetPos()->y, movementInfo.GetPos()->z, movementInfo.GetPos()->o);
-        mover->movement_info = movementInfo;
-    }
+    /*if (MoverGuid == _player->GetGUID()) See line 183
+    {*/
+    mover->SetPosition(movementInfo.GetPos()->x, movementInfo.GetPos()->y, movementInfo.GetPos()->z, movementInfo.GetPos()->o);
+    mover->movement_info = movementInfo;
+    //}
 
     /*
     movementInfo.time = getMSTime() + _latency + MOVEMENT_PACKET_TIME_DELAY;
@@ -281,13 +306,10 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     if (opcode == CMSG_MOVE_FALL_LAND && mover /*&& !mover->IsTaxiFlying()*/)
         mover->HandleFall(movementInfo);
 
-    /* process position-change */
-    /*HandleMoverRelocation(movementInfo);*/
-
     WorldPacket data(SMSG_PLAYER_MOVE, recv_data.size());
     data << movementInfo;
-    /*_player->WriteMovementInfo(data);*/
     mover->SendMessageToSet(&data, false);
+
 
 //    CHECK_INWORLD_RETURN
 //

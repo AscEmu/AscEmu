@@ -433,7 +433,6 @@ enum Opcodes
     CMSG_MAELSTROM_INVALIDATE_CACHE                 = 0x387,
     SMSG_FLIGHT_SPLINE_SYNC                         = 0x388,
     SMSG_JOINED_BATTLEGROUND_QUEUE                  = 0x38A,
-    CMSG_MOVE_CHNG_TRANSPORT                        = 0x38D,
     MSG_PARTY_ASSIGNMENT                            = 0x38E,
     SMSG_OFFER_PETITION_ERROR                       = 0x38F,
     CMSG_SEND_LOCAL_EVENT                           = 0x392,
@@ -1059,6 +1058,7 @@ enum Opcodes
     SMSG_SPLINE_MOVE_SET_TURN_RATE                      = 0x78B5,
     SMSG_SPLINE_MOVE_SET_WALK_SPEED                     = 0x34A5,
     CMSG_MOVE_SET_CAN_FLY_ACK                           = 0x790C,
+    CMSG_MOVE_CHNG_TRANSPORT                            = 0x3102,
 
     // LFG Check packet sending in LfgHandler.cpp
     SMSG_LFG_PLAYER_INFO                                = 0x1370,   // not updated

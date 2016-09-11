@@ -806,10 +806,12 @@ float MapMgr::GetUpdateDistance(Object* curObj, Object* obj, Player* plObj)
     static float no_distance = 0.0f;
 
     // unlimited distance for people on same boat
-    if (curObj->IsPlayer() && obj->IsPlayer() && plObj != nullptr /*&& plObj->obj_movement_info.GetTransportGuid()*/ /*&& plObj->obj_movement_info.GetTransportGuid() == static_cast< Player* >(curObj)->obj_movement_info.GetTransportGuid()*/)
+    if (curObj->IsPlayer() && obj->IsPlayer() && plObj != nullptr && plObj->m_transporter)
         return no_distance;
     // unlimited distance for transporters (only up to 2 cells +/- anyway.)
     else if (curObj->GetTypeFromGUID() == HIGHGUID_TYPE_TRANSPORTER)
+        return no_distance;
+    else if (curObj->IsCreature() && static_cast<Creature*>(curObj)->HasUnitMovementFlag(MOVEFLAG_TRANSPORT) || obj->IsCreature() && static_cast<Creature*>(obj)->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
         return no_distance;
     //If the object announcing its position is a transport, or other special object, then deleting it from visible objects should be avoided. - By: VLack
     else if (obj->IsGameObject() && (static_cast<GameObject*>(obj)->GetOverrides() & GAMEOBJECT_INFVIS) && obj->GetMapId() == curObj->GetMapId())

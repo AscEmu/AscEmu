@@ -110,7 +110,7 @@ enum Factions
     FACTION_SHATTERED_SUN_OFFENSIVE = 80
 };
 
-typedef enum
+enum TextEmoteType
 {
     TEXTEMOTE_AGREE             = 1,
     TEXTEMOTE_AMAZE             = 2,
@@ -363,9 +363,9 @@ typedef enum
     TEXTEMOTE_LOOK              = 449,
     TEXTEMOTE_OBJECT            = 450,
     TEXTEMOTE_SWEAT             = 451,
-} TextEmoteType;
+};
 
-typedef enum
+enum EmoteType
 {
     EMOTE_ONESHOT_NONE                  = 0,
     EMOTE_ONESHOT_TALK                  = 1, // DNR
@@ -537,7 +537,7 @@ typedef enum
     EMOTE_STATE_SPELL_CHANNEL_OMNI      = 468,
     EMOTE_STATE_SPELL_CHANNEL_DIRECTED  = 469,
     EMOTE_ZZOLD_STATE_KNEEL_NO_INTERRUPT = 470,
-} EmoteType;
+};
 
 enum UnitSpecialStates
 {

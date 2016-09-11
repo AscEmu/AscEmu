@@ -1781,6 +1781,8 @@ class SERVER_DECL Player : public Unit
         void PartLFGChannel();
         SpeedCheatDetector* SDetector;
 
+        Transporter* m_transporter;
+
     protected:
 
         LocationVector m_summonPos;

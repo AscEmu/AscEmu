@@ -513,6 +513,8 @@ Player::Player(uint32 guid)
     GroupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
     m_FirstLogin = false;
 
+    m_transporter = nullptr;
+
     // command
     go_last_x_rotation = 0.0f;
     go_last_y_rotation = 0.0f;
@@ -7256,11 +7258,19 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
     WorldPacket data(41);
     if (sendpending && mapid != m_mapId && force_new_world)
     {
-        data.SetOpcode(SMSG_TRANSFER_PENDING);
+        WorldPacket data(SMSG_TRANSFER_PENDING, (4 + 4 + 4));
+        data.writeBit(0);       // unknown
+        if (m_transporter)
+        {
+            data.writeBit(1);   // has transport
+            data << uint32(GetMapId());
+            data << uint32(m_transporter->GetEntry());
+        }
+        else
+            data.writeBit(0);   // has transport
 
-        data << mapid;
-
-        m_session->SendPacket(&data);
+        data << uint32(mapid);
+        GetSession()->SendPacket(&data);
     }
     bool sendpacket = (mapid == m_mapId);
     //Dismount before teleport and before being removed from world,
@@ -8675,8 +8685,16 @@ void Player::SafeTeleport(MapMgr* mgr, const LocationVector & vec)
     m_mapId = mgr->GetMapId();
     m_instanceId = mgr->GetInstanceID();
     WorldPacket data(SMSG_TRANSFER_PENDING, 4 + 4 + 4);
-    data.writeBit(0);   // unknown
-    data.writeBit(0);   // has transport
+    data.writeBit(0);       // unknown
+    if (m_transporter)
+    {
+        data.writeBit(1);   // has transport
+        data << uint32(GetMapId());
+        data << uint32(m_transporter->GetEntry());
+    }
+    else
+        data.writeBit(0);   // has transport
+
     data << uint32(mgr->GetMapId());
     GetSession()->SendPacket(&data);
 
