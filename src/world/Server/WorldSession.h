@@ -285,11 +285,14 @@ class SERVER_DECL WorldSession
         /// Authentification and misc opcodes (MiscHandler.cpp):
         void HandleRepopRequestOpcode(WorldPacket& recvPacket);
         void HandleAutostoreLootItemOpcode(WorldPacket& recvPacket);
-        //void HandleLootMoneyOpcode(WorldPacket& recvPacket);
-        //void HandleLootOpcode(WorldPacket& recvPacket);
-        //void HandleLootReleaseOpcode(WorldPacket& recvPacket);
-        //void HandleLootMasterGiveOpcode(WorldPacket& recv_data);
-        //void HandleLootRollOpcode(WorldPacket& recv_data);
+
+        //Loot
+        void HandleLootMoneyOpcode(WorldPacket& recvPacket);
+        void HandleLootOpcode(WorldPacket& recvPacket);
+        void HandleLootReleaseOpcode(WorldPacket& recvPacket);
+        void HandleLootMasterGiveOpcode(WorldPacket& recv_data);
+        void HandleLootRollOpcode(WorldPacket& recv_data);
+
         void HandleWhoOpcode(WorldPacket& recvPacket);
         void HandleWhoIsOpcode(WorldPacket& recvPacket);
         void HandleLogoutRequestOpcode(WorldPacket& recvPacket);
@@ -458,7 +461,7 @@ class SERVER_DECL WorldSession
         //void HandleEquipmentSetDelete(WorldPacket& data);
 
         /// Combat opcodes (CombatHandler.cpp)
-        //void HandleAttackSwingOpcode(WorldPacket& recvPacket);
+        void HandleAttackSwingOpcode(WorldPacket& recvPacket);
         void HandleAttackStopOpcode(WorldPacket& recvPacket);
 
         /// Spell opcodes (SpellHandler.cpp)

@@ -1260,10 +1260,10 @@ enum Opcodes
 
     //Player
     SMSG_CHAT_PLAYER_NOT_FOUND                          = 0x2526,
-    CMSG_ATTACKSWING                                    = 0x0926,   // unchecked
-    CMSG_ATTACKSTOP                                     = 0x4106,   // unchecked
-    SMSG_ATTACKSTART                                    = 0x2D15,   // unchecked
-    SMSG_ATTACKSTOP                                     = 0x0934,   // unchecked
+    CMSG_ATTACKSWING                                    = 0x0926,
+    CMSG_ATTACKSTOP                                     = 0x4106,
+    SMSG_ATTACKSTART                                    = 0x2D15,
+    SMSG_ATTACKSTOP                                     = 0x0934,
     SMSG_ATTACKSWING_NOTINRANGE                         = 0x0B36,   // unchecked
     SMSG_ATTACKSWING_BADFACING                          = 0x6C07,   // unchecked
     SMSG_ATTACKSWING_NOTSTANDING                        = 0x2B26,   // unchecked SMSG_ATTACKSWING_DEADTARGET
