@@ -524,10 +524,28 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
             creatureProperties.Id = entry;
             creatureProperties.killcredit[0] = fields[1].GetUInt32();
             creatureProperties.killcredit[1] = fields[2].GetUInt32();
-            creatureProperties.Male_DisplayID = fields[3].GetUInt32();
-            creatureProperties.Female_DisplayID = fields[4].GetUInt32();
-            creatureProperties.Male_DisplayID2 = fields[5].GetUInt32();
-            creatureProperties.Female_DisplayID2 = fields[6].GetUInt32();
+            uint32 display_info[4];
+            display_info[0] = fields[3].GetUInt32();
+            display_info[1] = fields[4].GetUInt32();
+            display_info[2] = fields[5].GetUInt32();
+            display_info[3] = fields[6].GetUInt32();
+            for (uint8 i = 0; i < 4; ++i)
+            {
+                if (display_info[i])
+                {
+                    DBC::Structures::CreatureDisplayInfoEntry const* dbc_display = sCreatureDisplayInfoStore.LookupEntry(display_info[i]);
+                    if (!dbc_display)
+                    {
+                        Log.Error("MySQLDataLoads", "Creature %u has nonexistent modelId %u (%u). To prevent client crash this model is set to 0", entry, i + 1, display_info[i]);
+                        display_info[i] = 0;
+                    }
+                }
+            }
+            creatureProperties.Male_DisplayID = display_info[0];
+            creatureProperties.Female_DisplayID = display_info[1];
+            creatureProperties.Male_DisplayID2 = display_info[2];
+            creatureProperties.Female_DisplayID2 = display_info[3];
+
             creatureProperties.Name = fields[7].GetString();
             creatureProperties.SubName = fields[8].GetString();
             creatureProperties.info_str = fields[9].GetString();

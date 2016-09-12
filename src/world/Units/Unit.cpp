@@ -5256,10 +5256,21 @@ void Unit::DeMorph()
 
 void Unit::Emote(EmoteType emote)
 {
-    WorldPacket data(SMSG_EMOTE, 12);
-    data << uint32(emote);
-    data << this->GetGUID();
-    SendMessageToSet(&data, true);
+    DBC::Structures::EmotesEntry const* emote_entry = sEmotesStore.LookupEntry(emote);
+    if (emote_entry == nullptr)
+    {
+        if (IsPlayer())
+            Log.Error("Unit::Emote", "Player %u tried to emote invalid id %u. Set to 0 to prevent client crash.", static_cast<Player*>(this)->getPlayerInfo()->guid, emote);
+        else if (IsCreature())
+            Log.Error("Unit::Emote", "Creature %u tried to emote invalid id %u. Set to 0 to prevent client crash.", static_cast<Creature*>(this)->GetEntry(), emote);
+    }
+    else
+    {
+        WorldPacket data(SMSG_EMOTE, 12);
+        data << uint32(emote);
+        data << this->GetGUID();
+        SendMessageToSet(&data, true);
+    }
 }
 
 void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, const char* msg)

@@ -202,6 +202,10 @@ void ObjectMgr::LoadTransports()
             float tO = fields[6].GetFloat();
             uint32 anim = fields[7].GetInt32();
 
+            CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(entry);
+            if (creature_properties == nullptr)
+                continue;
+
             for (ObjectMgr::TransporterSet::iterator itr = m_Transporters.begin(); itr != m_Transporters.end(); ++itr)
             {
                 if ((*itr)->GetEntry() == transportEntry)
@@ -622,13 +626,13 @@ uint32 Transporter::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* ta
     uint32 cnt = Object::BuildCreateUpdateBlockForPlayer(data, target);
 
     // add all the npcs to the packet
-    /*m_creatureSetMutex.Acquire();
+    m_creatureSetMutex.Acquire();
     for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
     {
         Creature* npc = *itr;
         cnt += npc->BuildCreateUpdateBlockForPlayer(data, target);
     }
-    m_creatureSetMutex.Release();*/
+    m_creatureSetMutex.Release();
     return cnt;
 }
 
@@ -662,22 +666,22 @@ void Transporter::Update()
         {
             switch (GetGameObjectProperties()->display_id)
             {
-            case 3015:
-            case 7087:
-            {
-                PlaySoundToSet(5154);        // ShipDocked LightHouseFogHorn.wav
-            }
-            break;
-            case 3031:
-            {
-                PlaySoundToSet(11804);        // ZeppelinDocked    ZeppelinHorn.wav
-            }
-            break;
-            default:
-            {
-                PlaySoundToSet(5495);        // BoatDockingWarning    BoatDockedWarning.wav
-            }
-            break;
+                case 3015:
+                case 7087:
+                {
+                    PlaySoundToSet(5154);        // ShipDocked LightHouseFogHorn.wav
+                }
+                break;
+                case 3031:
+                {
+                    PlaySoundToSet(11804);        // ZeppelinDocked    ZeppelinHorn.wav
+                }
+                break;
+                default:
+                {
+                    PlaySoundToSet(5495);        // BoatDockingWarning    BoatDockedWarning.wav
+                }
+                break;
             }
             TransportGossip(GetGameObjectProperties()->display_id);
         }
@@ -730,23 +734,21 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
     if (creature_properties == nullptr || map == nullptr)
         return 0;
 
-    float transporter_x = GetPositionX() + x;
-    float transporter_y = GetPositionY() + y;
-    float transporter_z = GetPositionZ() + z;
-
     Creature* pCreature = map->CreateCreature(entry);
-    pCreature->Create(map->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
-    pCreature->Load(creature_properties, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
+
+    float transporter_x = pCreature->GetPositionX() + x;
+    float transporter_y = pCreature->GetPositionY() + y;
+    float transporter_z = pCreature->GetPositionZ() + z;
+    float transporter_o = (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o;
+
+    pCreature->Create(map->GetMapId(), transporter_x, transporter_y, transporter_z, transporter_o);
+    pCreature->Load(creature_properties, transporter_x, transporter_y, transporter_z, transporter_o);
     pCreature->AddToWorld(map);
 
     pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);
-    pCreature->movement_info.SetTransportData(GetGUID(), x, y, z, o, 0, 0);
-
-    /*pCreature->m_transportData.transportGuid = this->GetGUID();
-    pCreature->m_transportData.relativePosition.x = x;
-    pCreature->m_transportData.relativePosition.y = y;
-    pCreature->m_transportData.relativePosition.z = z;
-    pCreature->m_transportData.relativePosition.o = o;*/
+    
+    pCreature->SetPosition(transporter_x, transporter_y, transporter_z, transporter_o);
+    /*pCreature->movement_info.SetTransportData(GetGUID(), x, y, z, o, 0, 0);*/
 
     /*if (anim)
         pCreature->SetUInt32Value(UNIT_NPC_EMOTESTATE, anim);*/
@@ -776,22 +778,21 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
     if (creature_properties == nullptr || map == nullptr)
         return nullptr;
 
-    float transporter_x = GetPositionX() + x;
-    float transporter_y = GetPositionY() + y;
-    float transporter_z = GetPositionZ() + z;
-
     Creature* pCreature = map->CreateCreature(entry);
-    pCreature->Create(map->GetMapId(), transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
-    pCreature->Load(creature_properties, transporter_x, transporter_y, transporter_z, (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o);
+
+    float transporter_x = pCreature->GetPositionX() + x;
+    float transporter_y = pCreature->GetPositionY() + y;
+    float transporter_z = pCreature->GetPositionZ() + z;
+    float transporter_o = (std::atan2(transporter_x, transporter_y) + float(M_PI)) + o;
+
+    pCreature->Create(map->GetMapId(), transporter_x, transporter_y, transporter_z, transporter_o);
+    pCreature->Load(creature_properties, transporter_x, transporter_y, transporter_z, transporter_o);
     pCreature->AddToWorld(map);
     pCreature->SetUnitMovementFlags(MOVEFLAG_TRANSPORT);
-    pCreature->movement_info.SetTransportData(GetGUID(), x, y, z, o, 0, 0);
 
-    /*pCreature->m_transportData.transportGuid = this->GetGUID();
-    pCreature->m_transportData.relativePosition.x = x;
-    pCreature->m_transportData.relativePosition.y = y;
-    pCreature->m_transportData.relativePosition.z = z;
-    pCreature->m_transportData.relativePosition.o = o;*/
+    pCreature->SetPosition(transporter_x, transporter_y, transporter_z, transporter_o);
+    /*pCreature->movement_info.SetTransportData(GetGUID(), x, y, z, o, 0, 0);*/
+
     m_creatureSetMutex.Acquire();
     m_NPCPassengerSet.insert(pCreature);
     m_creatureSetMutex.Release();
@@ -815,7 +816,6 @@ void Transporter::UpdatePlayerPositions(float x, float y, float z, float o)
     {
         if (auto player = objmgr.GetPlayer(playerGuid))
         {
-            player->movement_info.SetTransportData(GetGUID(), x, y, z, o, 0, 0);
             player->SetPosition(
                 x + player->movement_info.GetTransportPos()->x,
                 y + player->movement_info.GetTransportPos()->y,

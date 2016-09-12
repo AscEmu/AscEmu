@@ -649,8 +649,8 @@ namespace DBC
             char const chr_races_format[] = "nxixiixixxxxixsxxxxxixxx";
             //char const chr_classes_xpower_types_format[]="nii"; new
             //char const cinematic_sequences_format[]="nxxxxxxxxx"; new
-            //char const creature_display_info_format[]="nixifxxxxxxxxxxxx"; new
-            //char const creature_display_info_extra_format[]="nixxxxxxxxxxxxxxxxxxx"; new
+            char const creature_display_info_format[]="nixifxxxxxxxxxxxx";
+            char const creature_display_info_extra_format[]="nixxxxxxxxxxxxxxxxxxx";
             char const creature_family_format[] = "nfifiiiiixsx";
             //char const creature_model_data_format[] = "nxxxxxxxxxxxxxxffxxxxxxxxxxxxxx"; new
             char const creature_spell_data_format[] = "niiiiiiii";  //niiiixxxx
@@ -660,7 +660,7 @@ namespace DBC
             //char const dungeon_encounter_format[]="niiiisxx"; new
             char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
             char const durability_quality_format[] = "nf";
-            //char const emotes_format[] = "nxxiiixx"; new
+            char const emotes_entry_format[] = "nxxiiixx";
             char const emotes_text_format[] = "nxixxxxxxxxxxxxxxxx";
             char const faction_format[] = "niiiiiiiiiiiiiiiiiiffixsxx";
             char const faction_template_format[] = "niiiiiiiiiiiii";
@@ -1364,6 +1364,40 @@ namespace DBC
         //    uint32 power;                   // 2
         //};
 
+        struct CreatureDisplayInfoEntry
+        {
+            uint32 Displayid;               // 0
+            uint32 ModelId;                 // 1
+            //uint32 sound_id;              // 2
+            uint32 ExtendedDisplayInfoID;   // 3
+            float scale;                    // 4
+            //uint32 unk01;                 // 5
+            //uint32 unk02[2];              // 6-8
+            //uint32 unk03;                 // 9
+            //uint32 unk04;                 // 10
+            //uint32 unk05;                 // 11
+            //uint32 unk06;                 // 12
+            //uint32 unk07;                 // 13
+            //uint32 unk08;                 // 14
+            //uint32 unk09;                 // 15
+            //uint32 unk10;                 // 16
+        };
+
+        struct CreatureDisplayInfoExtraEntry
+        {
+            uint32 DisplayExtraId;          // 0
+            uint32 Race;                    // 1
+            //uint32 Gender;                // 2
+            //uint32 SkinColor;             // 3
+            //uint32 FaceType;              // 4
+            //uint32 HairType;              // 5
+            //uint32 HairStyle;             // 6
+            //uint32 BeardStyle;            // 7
+            //uint32 Equipment[11];         // 8-18
+            //uint32 CanEquip;              // 19
+            //char*                         // 20
+        };
+
         struct CreatureFamilyEntry          //cata
         {
             uint32 ID;                      // 0
@@ -1422,6 +1456,18 @@ namespace DBC
         {
             uint32 id;              // 0
             float quality_modifier; // 1
+        };
+
+        struct EmotesEntry
+        {
+            uint32 Id;              // 0
+            //char* name;           // 1
+            //uint32 animationId;   // 2
+            uint32 Flags;           // 3
+            uint32 EmoteType;       // 4
+            uint32 UnitStandState;  // 5
+            //uint32 soundId;       // 6
+            //uint32 unk;           // 7
         };
 
         struct EmotesTextEntry  //cata
