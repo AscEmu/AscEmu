@@ -708,7 +708,7 @@ namespace DBC
             char const name_gen_format[] = "nsii";
             //char const num_talents_at_level_format[] = "df"; new
             //char const override_spell_data_format[] = "niiiiiiiiiixx"; new
-            //char const phase_format[] = "nii"; new
+            char const phase_entry_format[] = "nii";
             //char const power_display_format[] = "nixxxx"; new
             //char const pvp_difficulty_format[] = "diiiii"; new
             //char const quest_faction_reward_format[] = "niiiiiiiiii"; new
@@ -1751,6 +1751,13 @@ namespace DBC
             char* Name;             // 1
             uint32 unk1;            // 2
             uint32 type;            // 3
+        };
+
+        struct PhaseEntry
+        {
+            uint32 Id;              // 0
+            uint32 PhaseShift;      // 1
+            uint32 Flags;           // 2
         };
 
         struct QuestSortEntry

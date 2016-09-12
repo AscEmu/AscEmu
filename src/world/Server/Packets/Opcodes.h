@@ -617,7 +617,6 @@ enum Opcodes
     CMSG_REQUEST_VEHICLE_NEXT_SEAT                  = 0x478,
     CMSG_REQUEST_VEHICLE_SWITCH_SEAT                = 0x479,
     CMSG_PET_UNLEARN_TALENTS                        = 0x47B,
-    SMSG_SET_PHASE_SHIFT                            = 0x47C,
     CMSG_FORCE_SAY_CHEAT                            = 0x47E,
     SMSG_HEALTH_UPDATE                              = 0x47F,
     SMSG_HIGHEST_THREAT_UPDATE                      = 0x482,
@@ -1137,7 +1136,7 @@ enum Opcodes
 
     // Spells
     SMSG_POWER_UPDATE                                   = 0x4A07,
-    SMSG_POWERGAINLOG_OBSOLETE = 0x20E, // old neds new opcode
+    SMSG_POWERGAINLOG_OBSOLETE                          = 0x20E, // old neds new opcode
     SMSG_ADD_RUNE_POWER                                 = 0x6915,
     CMSG_STANDSTATECHANGE                               = 0x0535,   // not updated (revieved by casting a spell)
     CMSG_CAST_SPELL                                     = 0x4C07,
@@ -1277,13 +1276,12 @@ enum Opcodes
     CMSG_LF_GUILD_GET_APPLICATIONS                      = 0x1230,   // not implemented
     CMSG_LF_GUILD_BROWSE                                = 0x0548,   // not implemented
     CMSG_SET_TITLE                                      = 0x2117,
-    SMSG_LEVELUP_INFO                                   = 0x00435,
+    SMSG_LEVELUP_INFO                                   = 0x0435,
     CMSG_SET_GRANTABLE_LEVELS                           = 0x40C, // old opcode ned neew ? research
-    CMSG_GRANT_LEVEL                                    = 0x00000,
-    SMSG_PROPOSE_LEVEL_GRANT                            = 0x06114,
-    CMSG_ACCEPT_LEVEL_GRANT                             = 0x00205,
-    CMSG_SET_ALLOW_LOW_LEVEL_RAID1                      = 0x04435,
-    CMSG_SET_ALLOW_LOW_LEVEL_RAID2                      = 0x00536,
+    SMSG_PROPOSE_LEVEL_GRANT                            = 0x6114,
+    CMSG_ACCEPT_LEVEL_GRANT                             = 0x0205,
+    CMSG_SET_ALLOW_LOW_LEVEL_RAID1                      = 0x4435,
+    CMSG_SET_ALLOW_LOW_LEVEL_RAID2                      = 0x0536,
 
     SMSG_TALENTS_INFO                                   = 0x6F26,
     CMSG_LEARN_PREVIEW_TALENTS                          = 0x2415,
@@ -1366,7 +1364,6 @@ enum Opcodes
     SMSG_LOOT_LIST                                      = 0x6807,
     CMSG_OPT_OUT_OF_LOOT                                = 0x6B16,
     SMSG_LOOT_UPDATE                                    = 0x14FE, // USED FOR ?
-    SMSG_LOOT_SLOT_CHANGED                              = 0x4FD, // NEW OPCODE NEEDED
     SMSG_INSPECT                                        = 0x4014,
     CMSG_SET_ACTION_BUTTON                              = 0x6F06,
 
@@ -1418,6 +1415,7 @@ enum Opcodes
     CMSG_REQUEST_HOTFIX                                 = 0x2401,
     CMSG_AREATRIGGER                                    = 0x0937,
     CMSG_OBJECT_UPDATE_FAILED                           = 0x3808,
+    SMSG_SET_PHASE_SHIFT                                = 0x70A0,
 
     //Unknown packet send by client to server
     CMSG_UNREGISTER_ALL_ADDON_PREFIXES                  = 0x3D54,   // unknown?
@@ -1441,6 +1439,7 @@ enum Opcodes
     CMSG_TAXICLEARALLNODES                              = 0x0000,
     CMSG_TAXIENABLEALLNODES                             = 0x0000,
     CMSG_TAXISHOWNODES                                  = 0x0000,
+    CMSG_GRANT_LEVEL                                    = 0x0000,
 
     NUM_MSG_TYPES                                       = 0xFFFF    // End of Opcodes
 };
