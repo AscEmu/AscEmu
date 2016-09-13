@@ -837,12 +837,14 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
     }
 }
 
-// This is not called!
-void Unit::BuildHeartBeatMsg(WorldPacket* data)
+// cNot called - \todo danko call it on near teleport
+void Unit::SendHeartBeatMsg()
 {
-    /*data->Initialize(MSG_MOVE_HEARTBEAT, 32);
-    *data << GetGUID();
-    BuildMovementPacket(data);*/
+    movement_info.UpdateTime(getMSTime());
+    WorldPacket data(MSG_MOVE_HEARTBEAT, 64);
+    data << GetGUID();
+    data << movement_info;
+    SendMessageToSet(&data, true);
 }
 
 bool Object::SetPosition(const LocationVector & v, bool allowPorting /* = false */)

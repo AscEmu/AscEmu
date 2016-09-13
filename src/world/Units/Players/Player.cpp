@@ -7262,12 +7262,12 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
         data.writeBit(0);       // unknown
         if (m_transporter)
         {
-            data.writeBit(1);   // has transport
+            data.writeBit(true);   // has transport
             data << uint32(GetMapId());
             data << uint32(m_transporter->GetEntry());
         }
         else
-            data.writeBit(0);   // has transport
+            data.writeBit(false);   // has transport
 
         data << uint32(mapid);
         GetSession()->SendPacket(&data);
@@ -8688,12 +8688,12 @@ void Player::SafeTeleport(MapMgr* mgr, const LocationVector & vec)
     data.writeBit(0);       // unknown
     if (m_transporter)
     {
-        data.writeBit(1);   // has transport
+        data.writeBit(true);   // has transport
         data << uint32(GetMapId());
         data << uint32(m_transporter->GetEntry());
     }
     else
-        data.writeBit(0);   // has transport
+        data.writeBit(false);   // has transport
 
     data << uint32(mgr->GetMapId());
     GetSession()->SendPacket(&data);

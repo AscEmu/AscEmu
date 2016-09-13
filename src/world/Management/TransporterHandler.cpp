@@ -567,7 +567,7 @@ void Transporter::TeleportTransport(uint32 newMapid, uint32 oldmap, float x, flo
 
         WorldPacket data(SMSG_TRANSFER_PENDING, 12);
         data.writeBit(0);       // unknown
-        data.writeBit(1);       // has transport
+        data.writeBit(true);       // has transport
         data << uint32(newMapid);
         data << uint32(GetEntry());
         data << uint32(oldmap);

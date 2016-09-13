@@ -80,71 +80,73 @@ typedef std::unordered_map<uint32, uint64> UniqueAuraTargetMap;
 
 enum MovementFlags
 {
-    MOVEFLAG_NONE = 0x00000000,   //old MOVEFLAG_MOVE_STOP
-    MOVEFLAG_FORWARD = 0x00000001,   //old MOVEFLAG_MOVE_FORWARD
-    MOVEFLAG_BACKWARD = 0x00000002,   //old MOVEFLAG_MOVE_BACKWARD
-    MOVEFLAG_STRAFE_LEFT = 0x00000004,   //old MOVEFLAG_STRAFE_LEFT
-    MOVEFLAG_STRAFE_RIGHT = 0x00000008,   //old MOVEFLAG_STRAFE_RIGHT
-    MOVEFLAG_LEFT = 0x00000010,   //old MOVEFLAG_TURN_LEFT
-    MOVEFLAG_RIGHT = 0x00000020,   //old MOVEFLAG_TURN_RIGHT
-    MOVEFLAG_PITCH_UP = 0x00000040,   //old MOVEFLAG_PITCH_UP
-    MOVEFLAG_PITCH_DOWN = 0x00000080,   //old MOVEFLAG_PITCH_DOWN
-    MOVEFLAG_WALKING = 0x00000100,   //old MOVEFLAG_WALK 
-    MOVEFLAG_DISABLE_GRAVITY = 0x00000200,   //old MOVEFLAG_TRANSPORT
-    MOVEFLAG_ROOT = 0x00000400,   //old MOVEFLAG_ROOTED
-    MOVEFLAG_FALLING = 0x00000800,   //old MOVEFLAG_FALLING
-    MOVEFLAG_FALLING_FAR = 0x00001000,   //old MOVEFLAG_FALLING_FAR
-    MOVEFLAG_PENDING_STOP = 0x00002000,   //old MOVEFLAG_TB_PENDING_STOP
-    MOVEFLAG_PENDING_STRAFE_STOP = 0x00004000,   //old MOVEFLAG_TB_PENDING_UNSTRAFE
-    MOVEFLAG_PENDING_FORWARD = 0x00008000,   //old MOVEFLAG_TB_PENDING_FORWARD
-    MOVEFLAG_PENDING_BACKWARD = 0x00010000,   //old MOVEFLAG_TB_PENDING_BACKWARD
-    MOVEFLAG_PENDING_STRAFE_LEFT = 0x00020000,
-    MOVEFLAG_PENDING_STRAFE_RIGHT = 0x00040000,
-    MOVEFLAG_PENDING_ROOT = 0x00080000,
-    MOVEFLAG_SWIMMING = 0x00100000,   //old MOVEFLAG_SWIMMING
-    MOVEFLAG_ASCENDING = 0x00200000,
-    MOVEFLAG_DESCENDING = 0x00400000,
-    MOVEFLAG_CAN_FLY = 0x00800000,   //old MOVEFLAG_CAN_FLY
-    MOVEFLAG_FLYING = 0x01000000,   //old MOVEFLAG_AIR_SUSPENSION //old MOVEFLAG_AIR_SWIMMING
-    MOVEFLAG_SPLINE_ELEVATION = 0x02000000,   //old MOVEFLAG_SPLINE_ELEVATION
-    MOVEFLAG_WATERWALKING = 0x04000000,   //old MOVEFLAG_WATER_WALK
-    MOVEFLAG_FALLING_SLOW = 0x08000000,   //old MOVEFLAG_FEATHER_FALL //old MOVEFLAG_FREE_FALLING //old MOVEFLAG_SPLINE_ENABLED
-    MOVEFLAG_HOVER = 0x10000000,   //old MOVEFLAG_LEVITATE
-    MOVEFLAG_NO_COLLISION = 0x20000000,   //old MOVEFLAG_NO_COLLISION //old MOVEFLAG_LOCAL
-    MOVEFLAG_TRANSPORT = 0x40000000,
+    MOVEFLAG_NONE                   = 0x00000000,   //old MOVEFLAG_MOVE_STOP
+    MOVEFLAG_FORWARD                = 0x00000001,   //old MOVEFLAG_MOVE_FORWARD
+    MOVEFLAG_BACKWARD               = 0x00000002,   //old MOVEFLAG_MOVE_BACKWARD
+    MOVEFLAG_STRAFE_LEFT            = 0x00000004,   //old MOVEFLAG_STRAFE_LEFT
+    MOVEFLAG_STRAFE_RIGHT           = 0x00000008,   //old MOVEFLAG_STRAFE_RIGHT
+    MOVEFLAG_LEFT                   = 0x00000010,   //old MOVEFLAG_TURN_LEFT
+    MOVEFLAG_RIGHT                  = 0x00000020,   //old MOVEFLAG_TURN_RIGHT
+    MOVEFLAG_PITCH_UP               = 0x00000040,   //old MOVEFLAG_PITCH_UP
+    MOVEFLAG_PITCH_DOWN             = 0x00000080,   //old MOVEFLAG_PITCH_DOWN
+    MOVEFLAG_WALKING                = 0x00000100,   //old MOVEFLAG_WALK 
+    MOVEFLAG_DISABLE_GRAVITY        = 0x00000200,   //old MOVEFLAG_TRANSPORT
+    MOVEFLAG_ROOT                   = 0x00000400,   //old MOVEFLAG_ROOTED
+    MOVEFLAG_FALLING                = 0x00000800,   //old MOVEFLAG_FALLING
+    MOVEFLAG_FALLING_FAR            = 0x00001000,   //old MOVEFLAG_FALLING_FAR
+    MOVEFLAG_PENDING_STOP           = 0x00002000,   //old MOVEFLAG_TB_PENDING_STOP
+    MOVEFLAG_PENDING_STRAFE_STOP    = 0x00004000,   //old MOVEFLAG_TB_PENDING_UNSTRAFE
+    MOVEFLAG_PENDING_FORWARD        = 0x00008000,   //old MOVEFLAG_TB_PENDING_FORWARD
+    MOVEFLAG_PENDING_BACKWARD       = 0x00010000,   //old MOVEFLAG_TB_PENDING_BACKWARD
+    MOVEFLAG_PENDING_STRAFE_LEFT    = 0x00020000,
+    MOVEFLAG_PENDING_STRAFE_RIGHT   = 0x00040000,
+    MOVEFLAG_PENDING_ROOT           = 0x00080000,
+    MOVEFLAG_SWIMMING               = 0x00100000,   //old MOVEFLAG_SWIMMING
+    MOVEFLAG_ASCENDING              = 0x00200000,
+    MOVEFLAG_DESCENDING             = 0x00400000,
+    MOVEFLAG_CAN_FLY                = 0x00800000,   //old MOVEFLAG_CAN_FLY
+    MOVEFLAG_FLYING                 = 0x01000000,   //old MOVEFLAG_AIR_SUSPENSION //old MOVEFLAG_AIR_SWIMMING
+    MOVEFLAG_SPLINE_ELEVATION       = 0x02000000,   //old MOVEFLAG_SPLINE_ELEVATION
+    MOVEFLAG_WATERWALKING           = 0x04000000,   //old MOVEFLAG_WATER_WALK
+    MOVEFLAG_FALLING_SLOW           = 0x08000000,   //old MOVEFLAG_FEATHER_FALL //old MOVEFLAG_FREE_FALLING //old MOVEFLAG_SPLINE_ENABLED
+    MOVEFLAG_HOVER                  = 0x10000000,   //old MOVEFLAG_LEVITATE
+    MOVEFLAG_NO_COLLISION           = 0x20000000,   //old MOVEFLAG_NO_COLLISION //old MOVEFLAG_LOCAL
+    MOVEFLAG_TRANSPORT              = 0x40000000,
 
-                                          // Masks
-                                          MOVEFLAG_MASK_MOVING =
-                                          MOVEFLAG_FORWARD | MOVEFLAG_BACKWARD | MOVEFLAG_STRAFE_LEFT | MOVEFLAG_STRAFE_RIGHT |
-    MOVEFLAG_PITCH_UP | MOVEFLAG_PITCH_DOWN | MOVEFLAG_FALLING | MOVEFLAG_FALLING_FAR | MOVEFLAG_ASCENDING | MOVEFLAG_DESCENDING |
-    MOVEFLAG_SPLINE_ELEVATION,
+    // Masks
+    MOVEFLAG_MASK_MOVING =
+        MOVEFLAG_FORWARD | MOVEFLAG_BACKWARD | MOVEFLAG_STRAFE_LEFT | MOVEFLAG_STRAFE_RIGHT |
+        MOVEFLAG_PITCH_UP | MOVEFLAG_PITCH_DOWN | MOVEFLAG_FALLING | MOVEFLAG_FALLING_FAR | 
+        MOVEFLAG_ASCENDING | MOVEFLAG_DESCENDING | MOVEFLAG_SPLINE_ELEVATION,
 
-    MOVEFLAG_MASK_TURNING = MOVEFLAG_LEFT | MOVEFLAG_RIGHT,
+    MOVEFLAG_MASK_TURNING = 
+        MOVEFLAG_LEFT | MOVEFLAG_RIGHT,
 
-    MOVEFLAG_FALLING_MASK = 0x6000,
-    MOVEFLAG_MOTION_MASK = 0xE00F,
-    MOVEFLAG_PENDING_MASK = 0x7F0000,
-    MOVEFLAG_PENDING_STRAFE_MASK = 0x600000,
-    MOVEFLAG_PENDING_MOVE_MASK = 0x180000,
-    MOVEFLAG_FULL_FALLING_MASK = 0xE000
+    MOVEFLAG_FALLING_MASK           = 0x6000,
+    MOVEFLAG_MOTION_MASK            = 0xE00F,
+    MOVEFLAG_PENDING_MASK           = 0x7F0000,
+    MOVEFLAG_PENDING_STRAFE_MASK    = 0x600000,
+    MOVEFLAG_PENDING_MOVE_MASK      = 0x180000,
+    MOVEFLAG_FULL_FALLING_MASK      = 0xE000
 };
 
 enum MovementFlags2
 {
-    MOVEFLAG2_NONE = 0x0000,
-    MOVEFLAG2_NO_STRAFE = 0x0001,
-    MOVEFLAG2_NO_JUMPING = 0x0002,
-    MOVEFLAG2_FULLSPEED_TURNING = 0x0004,
-    MOVEFLAG2_FULLSPEED_PITCHING = 0x0008,
-    MOVEFLAG2_ALLOW_PITCHING = 0x0010,
-    MOVEFLAG2_UNK4 = 0x0020,
-    MOVEFLAG2_UNK5 = 0x0040,
-    MOVEFLAG2_UNK6 = 0x0080,
-    MOVEFLAG2_UNK7 = 0x0100,
-    MOVEFLAG2_INTERP_MOVEMENT = 0x0200,
-    MOVEFLAG2_INTERP_TURNING = 0x0400,
-    MOVEFLAG2_INTERP_PITCHING = 0x0800,
-    MOVEFLAG2_INTERP_MASK = MOVEFLAG2_INTERP_MOVEMENT | MOVEFLAG2_INTERP_TURNING | MOVEFLAG2_INTERP_PITCHING
+    MOVEFLAG2_NONE                  = 0x0000,
+    MOVEFLAG2_NO_STRAFE             = 0x0001,
+    MOVEFLAG2_NO_JUMPING            = 0x0002,
+    MOVEFLAG2_FULLSPEED_TURNING     = 0x0004,
+    MOVEFLAG2_FULLSPEED_PITCHING    = 0x0008,
+    MOVEFLAG2_ALLOW_PITCHING        = 0x0010,
+    MOVEFLAG2_UNK4                  = 0x0020,
+    MOVEFLAG2_UNK5                  = 0x0040,
+    MOVEFLAG2_UNK6                  = 0x0080,
+    MOVEFLAG2_UNK7                  = 0x0100,
+    MOVEFLAG2_INTERP_MOVEMENT       = 0x0200,
+    MOVEFLAG2_INTERP_TURNING        = 0x0400,
+    MOVEFLAG2_INTERP_PITCHING       = 0x0800,
+    MOVEFLAG2_INTERP_MASK = 
+        MOVEFLAG2_INTERP_MOVEMENT | MOVEFLAG2_INTERP_TURNING | MOVEFLAG2_INTERP_PITCHING
 };
 
 
@@ -236,24 +238,30 @@ class MovementInfo
         // common
         ObjectGuid guid;
         ObjectGuid guid2;
-        uint32   moveFlags;                                 // see enum MovementFlags
-        uint16   moveFlags2;                                // see enum MovementFlags2
-        uint32   time;
+        uint32 moveFlags;           // enum MovementFlags
+        uint16 moveFlags2;          // enum MovementFlags2
+        uint32 time;
         LocationVector pos;
+
         // transport
         ObjectGuid t_guid;
         LocationVector t_pos;
-        uint32   t_time;
-        int8     t_seat;
-        uint32   t_time2;
+        uint32 t_time;
+        int8 t_seat;
+        uint32 t_time2;
+
         // swimming and flying
-        float    s_pitch;
+        float s_pitch;
+
         // last fall time
-        uint32   fallTime;
+        uint32 fallTime;
+
         // jumping
         JumpInfo jump;
+
         // spline
-        float    splineElevation;
+        float splineElevation;
+
         // status info
         StatusInfo si;
         int8 byteParam;
@@ -329,11 +337,11 @@ struct AreaAura
     Unit* caster;
 };
 
-typedef struct
+struct ExtraStrike
 {
     OLD_SpellEntry* spell_info;
     uint32 charges;
-} ExtraStrike;
+};
 
 struct AuraCheckResponse
 {
@@ -380,7 +388,7 @@ class SERVER_DECL CombatStatusHandler
 
         void UpdateFlag();                                              // detects if we have changed combat state (in/out), and applies the flag.
 
-        bool IsInCombat() const;                                                // checks if we are in combat or not.
+        bool IsInCombat() const;                                        // checks if we are in combat or not.
 
         void OnRemoveFromWorld();                                       // called when we are removed from world, kills all references to us.
 
@@ -1424,11 +1432,7 @@ class SERVER_DECL Unit : public Object
         
         void SendEnvironmentalDamageLog(uint64 guid, uint8 type, uint32 damage);
 
-        void BuildHeartBeatMsg(WorldPacket* data);
-
-        /*void BuildMovementPacket(ByteBuffer *data) const;
-        void ReadMovementInfo(WorldPacket& data, MovementInfo* mi);
-        void WriteMovementInfo(WorldPacket& data);*/
+        void SendHeartBeatMsg();
 
         MovementInfo* GetMovementInfo() { return &movement_info; }
         MovementInfo movement_info;
