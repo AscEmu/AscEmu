@@ -42,6 +42,8 @@ public:
         _data.u64 = other._data.u64;
     }
 
+    bool IsEmpty() const { return _data.u64 == 0; }
+
     uint8& operator[](uint32 index)
     {
         ASSERT(index < sizeof(uint64));

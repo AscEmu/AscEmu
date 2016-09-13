@@ -556,7 +556,7 @@ bool ChatHandler::HandleWorldPortCommand(const char* args, WorldSession* m_sessi
 //.gps
 bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
 {
-    Object* obj;
+    Unit* obj;
     uint64 guid = m_session->GetPlayer()->GetSelection();
     if (guid != 0)
     {
@@ -593,11 +593,11 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
         out_map_id, out_zone_id, out_area_id, out_phase, out_x, out_y, out_z, out_o, out_area_name);
     SystemMessage(m_session, buf);
 
-    /*if (obj->obj_movement_info.IsOnTransport())
+    if ((uint64&)obj->movement_info.GetTransportGuid())
     {
         SystemMessage(m_session, "Position on Transport:");
-        SystemMessage(m_session, "  tX: %f  tY: %f  tZ: %f  tO: %f", obj->GetTransPositionX(), obj->GetTransPositionY(), obj->GetTransPositionZ(), obj->GetTransPositionO());
-    }*/
+        SystemMessage(m_session, "  tX: %f  tY: %f  tZ: %f  tO: %f", obj->movement_info.GetTransportPos()->x, obj->movement_info.GetTransportPos()->y, obj->movement_info.GetTransportPos()->z, obj->movement_info.GetTransportPos()->o);
+    }
 
     // ".gps 1" will save gps info to file logs/gps.log - This probably isn't very multithread safe so don't have many gms spamming it!
     if (args != NULL && *args == '1')

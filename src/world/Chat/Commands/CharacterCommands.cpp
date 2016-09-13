@@ -1492,8 +1492,8 @@ bool ChatHandler::HandleCharSetNameCommand(const char* args, WorldSession* m_ses
 //.character set phase
 bool ChatHandler::HandleCharSetPhaseCommand(const char* args, WorldSession* m_session)
 {
-    uint32 phase = atoi(args);
-    if (phase == 0)
+    uint32 phaseMask = atoi(args);
+    if (phaseMask == 0)
     {
         RedSystemMessage(m_session, "No phase set. Use .character set phase <phase>");
         return true;
@@ -1503,24 +1503,70 @@ bool ChatHandler::HandleCharSetPhaseCommand(const char* args, WorldSession* m_se
     if (player_target == nullptr)
         return true;
 
-    player_target->Phase(PHASE_SET, phase);
+    player_target->Phase(PHASE_SET, phaseMask);
 
     if (player_target->GetSession())
     {
-        WorldPacket data(SMSG_SET_PHASE_SHIFT, 4);
-        data << phase;
+        ObjectGuid guid = player_target->GetGUID();
+
+        uint32 phaseFlags = 0;
+
+        for (uint32 i = 0; i < sPhaseStore.GetNumRows(); i++)
+        {
+            if (DBC::Structures::PhaseEntry const* phase = sPhaseStore.LookupEntry(i))
+            {
+                if (phase->PhaseShift == phaseMask)
+                {
+                    phaseFlags = phase->Flags;
+                    break;
+                }
+            }
+        }
+
+        WorldPacket data(SMSG_SET_PHASE_SHIFT, 30);
+        data.WriteByteMask(guid[2]);
+        data.WriteByteMask(guid[3]);
+        data.WriteByteMask(guid[1]);
+        data.WriteByteMask(guid[6]);
+        data.WriteByteMask(guid[4]);
+        data.WriteByteMask(guid[5]);
+        data.WriteByteMask(guid[0]);
+        data.WriteByteMask(guid[7]);
+
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[4]);
+        data << uint32(0);                          //unk
+        data.WriteByteSeq(guid[1]);
+        data << uint32(phaseMask ? phaseFlags : 8);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[6]);
+        data << uint32(0);                          //unk
+        data << uint32(phaseMask ? 2 : 0);          //unk
+
+        if (phaseMask)
+            data << uint16(phaseMask);
+
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[0]);
+        data << uint32(player_target->GetMapId() ? 2 : 0);
+
+        if (player_target->GetMapId())
+            data << uint16(player_target->GetMapId());
+
+        data.WriteByteSeq(guid[5]);
+
         player_target->GetSession()->SendPacket(&data);
     }
 
     if (player_target != m_session->GetPlayer())
     {
-        BlueSystemMessage(m_session, "Setting the phase of %s to %u.", player_target->GetName(), phase);
-        GreenSystemMessage(player_target->GetSession(), "%s set your phase to %u.", m_session->GetPlayer()->GetName(), phase);
-        sGMLog.writefromsession(m_session, "set phase on %s, phase %u", player_target->GetName(), phase);
+        BlueSystemMessage(m_session, "Setting the phase of %s to %u.", player_target->GetName(), phaseMask);
+        GreenSystemMessage(player_target->GetSession(), "%s set your phase to %u.", m_session->GetPlayer()->GetName(), phaseMask);
+        sGMLog.writefromsession(m_session, "set phase on %s, phase %u", player_target->GetName(), phaseMask);
     }
     else
     {
-        BlueSystemMessage(m_session, "You set your own phase to %u.", phase);
+        BlueSystemMessage(m_session, "You set your own phase to %u.", phaseMask);
     }
 
     return true;

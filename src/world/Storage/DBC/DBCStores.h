@@ -829,6 +829,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellEffectEntry> sSpellEffe
 
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRangeEntry> sSpellRangeStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellShapeshiftFormEntry> sSpellShapeshiftFormStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesEntry> sEmotesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesTextEntry> sEmotesTextStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRadiusEntry> sSpellRadiusStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellCastTimesEntry> sSpellCastTimesStore;
@@ -852,6 +853,8 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureSpellDataEntry> sCre
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureFamilyEntry> sCreatureFamilyStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClassesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrRacesEntry> sChrRacesStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureDisplayInfoEntry>  sCreatureDisplayInfoStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::CreatureDisplayInfoExtraEntry> sCreatureDisplayInfoExtraStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MapEntry> sMapStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::HolidaysEntry> sHolidaysStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRuneCostEntry> sSpellRuneCostStore;
@@ -881,6 +884,7 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MailTemplateEntry> sMailTemp
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::WMOAreaTableEntry> sWMOAreaTableStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SummonPropertiesEntry> sSummonPropertiesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::NameGenEntry> sNameGenStore;
+extern SERVER_DECL DBC::DBCStorage<DBC::Structures::PhaseEntry> sPhaseStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LFGDungeonEntry> sLFGDungeonStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LiquidTypeEntry> sLiquidTypeStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleEntry> sVehicleStore;

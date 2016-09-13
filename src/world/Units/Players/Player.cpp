@@ -513,6 +513,8 @@ Player::Player(uint32 guid)
     GroupUpdateFlags = GROUP_UPDATE_FLAG_NONE;
     m_FirstLogin = false;
 
+    m_transporter = nullptr;
+
     // command
     go_last_x_rotation = 0.0f;
     go_last_y_rotation = 0.0f;
@@ -7256,11 +7258,19 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
     WorldPacket data(41);
     if (sendpending && mapid != m_mapId && force_new_world)
     {
-        data.SetOpcode(SMSG_TRANSFER_PENDING);
+        WorldPacket data(SMSG_TRANSFER_PENDING, (4 + 4 + 4));
+        data.writeBit(0);       // unknown
+        if (m_transporter)
+        {
+            data.writeBit(true);   // has transport
+            data << uint32(GetMapId());
+            data << uint32(m_transporter->GetEntry());
+        }
+        else
+            data.writeBit(false);   // has transport
 
-        data << mapid;
-
-        m_session->SendPacket(&data);
+        data << uint32(mapid);
+        GetSession()->SendPacket(&data);
     }
     bool sendpacket = (mapid == m_mapId);
     //Dismount before teleport and before being removed from world,
@@ -8675,8 +8685,16 @@ void Player::SafeTeleport(MapMgr* mgr, const LocationVector & vec)
     m_mapId = mgr->GetMapId();
     m_instanceId = mgr->GetInstanceID();
     WorldPacket data(SMSG_TRANSFER_PENDING, 4 + 4 + 4);
-    data.writeBit(0);   // unknown
-    data.writeBit(0);   // has transport
+    data.writeBit(0);       // unknown
+    if (m_transporter)
+    {
+        data.writeBit(true);   // has transport
+        data << uint32(GetMapId());
+        data << uint32(m_transporter->GetEntry());
+    }
+    else
+        data.writeBit(false);   // has transport
+
     data << uint32(mgr->GetMapId());
     GetSession()->SendPacket(&data);
 
@@ -13832,11 +13850,11 @@ void Player::HandleFall(MovementInfo const& movementInfo)
         // player has finished falling
         //if z_axisposition contains no data then set to current position
         if (!z_axisposition)
-            z_axisposition = movement_info.pos.m_positionZ;
+            z_axisposition = movement_info.GetPos()->z;
 
         // calculate distance fallen
-        uint32 falldistance = float2int32(z_axisposition - movement_info.pos.m_positionZ);
-        if (z_axisposition <= movement_info.pos.m_positionZ)
+        uint32 falldistance = float2int32(z_axisposition - movement_info.GetPos()->z);
+        if (z_axisposition <= movement_info.GetPos()->z)
             falldistance = 1;
         /*Safe Fall*/
         if ((int)falldistance > m_safeFall)
@@ -13916,7 +13934,7 @@ void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSessio
         // player is above water level
         if (pSession->m_bIsWLevelSet)
         {
-            if ((movement_info.pos.m_positionZ + m_noseLevel) > pSession->m_wLevel)
+            if ((movement_info.GetPos()->z + m_noseLevel) > pSession->m_wLevel)
             {
                 RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
 
@@ -13937,7 +13955,7 @@ void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSessio
         if (!pSession->m_bIsWLevelSet)
         {
             // water level is somewhere below the nose of the character when entering water
-            pSession->m_wLevel = movement_info.pos.m_positionZ + m_noseLevel * 0.95f;
+            pSession->m_wLevel = movement_info.GetPos()->z + m_noseLevel * 0.95f;
             pSession->m_bIsWLevelSet = true;
         }
 
@@ -13948,7 +13966,7 @@ void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSessio
     if (!(movement_info.GetMovementFlags() & MOVEFLAG_SWIMMING) && (movement_info.GetMovementFlags() != MOVEFLAG_NONE) && (m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
     {
         // player is above water level
-        if ((movement_info.pos.m_positionZ + m_noseLevel) > pSession->m_wLevel)
+        if ((movement_info.GetPos()->z + m_noseLevel) > pSession->m_wLevel)
         {
             RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
 
@@ -13963,7 +13981,7 @@ void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSessio
     if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING && !(m_UnderwaterState & UNDERWATERSTATE_UNDERWATER))
     {
         //the player is in the water and has gone under water, requires breath bar.
-        if ((movement_info.pos.m_positionZ + m_noseLevel) < pSession->m_wLevel)
+        if ((movement_info.GetPos()->z + m_noseLevel) < pSession->m_wLevel)
         {
             m_UnderwaterState |= UNDERWATERSTATE_UNDERWATER;
             WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
@@ -13981,7 +13999,7 @@ void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSessio
     if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING && m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
     {
         //the player is in the water but their face is above water, no breath bar needed.
-        if ((movement_info.pos.m_positionZ + m_noseLevel) > pSession->m_wLevel)
+        if ((movement_info.GetPos()->z + m_noseLevel) > pSession->m_wLevel)
         {
             m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
             WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
@@ -13998,7 +14016,7 @@ void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSessio
     if (!(m_UnderwaterState & UNDERWATERSTATE_SWIMMING) && m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
     {
         //the player is out of the water, no breath bar needed.
-        if ((movement_info.pos.m_positionZ + m_noseLevel) > pSession->m_wLevel)
+        if ((movement_info.GetPos()->z + m_noseLevel) > pSession->m_wLevel)
         {
             m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
             WorldPacket data(SMSG_START_MIRROR_TIMER, 20);

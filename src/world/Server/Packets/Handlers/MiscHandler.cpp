@@ -242,402 +242,402 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
 }
 
-//void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    Loot* pLoot = NULL;
-//    uint64 lootguid = GetPlayer()->GetLootGUID();
-//    if (!lootguid)
-//        return;   // dunno why this happens
-//
-//    if (_player->IsCasting())
-//        _player->InterruptSpell();
-//
-//    WorldPacket pkt;
-//    Unit* pt = 0;
-//    uint32 guidtype = GET_TYPE_FROM_GUID(lootguid);
-//
-//    if (guidtype == HIGHGUID_TYPE_UNIT)
-//    {
-//        Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(lootguid));
-//        if (!pCreature)return;
-//        pLoot = &pCreature->loot;
-//        pt = pCreature;
-//    }
-//    else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
-//    {
-//        GameObject* pGO = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(lootguid));
-//        if (!pGO)
-//            return;
-//
-//        if (!pGO->IsLootable())
-//            return;
-//
-//        GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
-//
-//        pLoot = &pLGO->loot;
-//    }
-//    else if (guidtype == HIGHGUID_TYPE_CORPSE)
-//    {
-//        Corpse* pCorpse = objmgr.GetCorpse((uint32)lootguid);
-//        if (!pCorpse)return;
-//        pLoot = &pCorpse->loot;
-//    }
-//    else if (guidtype == HIGHGUID_TYPE_PLAYER)
-//    {
-//        Player* pPlayer = _player->GetMapMgr()->GetPlayer((uint32)lootguid);
-//        if (!pPlayer) return;
-//        pLoot = &pPlayer->loot;
-//        pPlayer->bShouldHaveLootableOnCorpse = false;
-//        pt = pPlayer;
-//    }
-//    else if (guidtype == HIGHGUID_TYPE_ITEM)
-//    {
-//        Item* pItem = _player->GetItemInterface()->GetItemByGUID(lootguid);
-//        if (!pItem)
-//            return;
-//        pLoot = pItem->loot;
-//    }
-//
-//    if (!pLoot)
-//    {
-//        //bitch about cheating maybe?
-//        return;
-//    }
-//
-//    uint32 money = pLoot->gold;
-//
-//    pLoot->gold = 0;
-//    WorldPacket data(1);
-//    data.SetOpcode(SMSG_LOOT_CLEAR_MONEY);
-//    // send to all looters
-//    Player* plr;
-//    for (LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
-//    {
-//        if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
-//            plr->GetSession()->SendPacket(&data);
-//    }
-//
-//    if (!_player->InGroup())
-//    {
-//        if (money)
-//        {
-//            // Check they don't have more than the max gold
-//            if (sWorld.GoldCapEnabled && (GetPlayer()->GetGold() + money) > sWorld.GoldLimit)
-//            {
-//                GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
-//            }
-//            else
-//            {
-//                GetPlayer()->ModGold(money);
-//#ifdef ENABLE_ACHIEVEMENTS
-//                GetPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, money, 0, 0);
-//#endif
-//            }
-//            sHookInterface.OnLoot(_player, pt, money, 0);
-//        }
-//    }
-//    else
-//    {
-//        //this code is wrong must be party not raid!
-//        Group* party = _player->GetGroup();
-//        if (party)
-//        {
-//            /*uint32 share = money/party->MemberCount();*/
-//            std::vector<Player*> targets;
-//            targets.reserve(party->MemberCount());
-//
-//            GroupMembersSet::iterator itr;
-//            SubGroup* sgrp;
-//            party->getLock().Acquire();
-//            for (uint32 i = 0; i < party->GetSubGroupCount(); i++)
-//            {
-//                sgrp = party->GetSubGroup(i);
-//                for (itr = sgrp->GetGroupMembersBegin(); itr != sgrp->GetGroupMembersEnd(); ++itr)
-//                {
-//                    if ((*itr)->m_loggedInPlayer && (*itr)->m_loggedInPlayer->GetZoneId() == _player->GetZoneId() && _player->GetInstanceID() == (*itr)->m_loggedInPlayer->GetInstanceID())
-//                        targets.push_back((*itr)->m_loggedInPlayer);
-//                }
-//            }
-//            party->getLock().Release();
-//
-//            if (!targets.size())
-//                return;
-//
-//            uint32 share = money / uint32(targets.size());
-//
-//            pkt.SetOpcode(SMSG_LOOT_MONEY_NOTIFY);
-//            pkt << share;
-//
-//            for (std::vector<Player*>::iterator itr2 = targets.begin(); itr2 != targets.end(); ++itr2)
-//            {
-//                // Check they don't have more than the max gold
-//                if (sWorld.GoldCapEnabled && ((*itr2)->GetGold() + share) > sWorld.GoldLimit)
-//                {
-//                    (*itr2)->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
-//                }
-//                else
-//                {
-//                    (*itr2)->ModGold(share);
-//                    (*itr2)->GetSession()->SendPacket(&pkt);
-//#ifdef ENABLE_ACHIEVEMENTS
-//                    (*itr2)->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, share, 0, 0);
-//#endif
-//                }
-//            }
-//        }
-//    }
-//}
+void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
 
-//void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint64 guid;
-//    recv_data >> guid;
-//
-//    if (guid == 0)
-//        return;
-//
-//    if (_player->IsDead())    // If the player is dead they can't loot!
-//        return;
-//
-//    if (_player->IsStealth())    // Check if the player is stealthed
-//        _player->RemoveStealth(); // cebernic:RemoveStealth on looting. Blizzlike
-//
-//    if (_player->IsCasting())    // Check if the player is casting
-//        _player->InterruptSpell(); // Cancel spell casting
-//
-//    if (_player->IsInvisible())    // Check if the player is invisible for what ever reason
-//        _player->RemoveInvisibility(); // Remove all invisibility
-//
-//
-//    if (_player->InGroup() && !_player->m_bg)
-//    {
-//        Group* party = _player->GetGroup();
-//        if (party)
-//        {
-//            if (party->GetMethod() == PARTY_LOOT_MASTER)
-//            {
-//                WorldPacket data(SMSG_LOOT_MASTER_LIST, 330);  // wont be any larger
-//                data << (uint8)party->MemberCount();
-//                uint32 real_count = 0;
-//                SubGroup* s;
-//                GroupMembersSet::iterator itr;
-//                party->Lock();
-//                for (uint32 i = 0; i < party->GetSubGroupCount(); ++i)
-//                {
-//                    s = party->GetSubGroup(i);
-//                    for (itr = s->GetGroupMembersBegin(); itr != s->GetGroupMembersEnd(); ++itr)
-//                    {
-//                        if ((*itr)->m_loggedInPlayer && _player->GetZoneId() == (*itr)->m_loggedInPlayer->GetZoneId())
-//                        {
-//                            data << (*itr)->m_loggedInPlayer->GetGUID();
-//                            ++real_count;
-//                        }
-//                    }
-//                }
-//                party->Unlock();
-//                *(uint8*)&data.contents()[0] = static_cast<uint8>(real_count);
-//
-//                party->SendPacketToAll(&data);
-//            }
-//        }
-//    }
-//    _player->SendLoot(guid, LOOT_CORPSE, _player->GetMapId());
-//}
+    Loot* pLoot = NULL;
+    uint64 lootguid = GetPlayer()->GetLootGUID();
+    if (!lootguid)
+        return;   // dunno why this happens
+
+    if (_player->IsCasting())
+        _player->InterruptSpell();
+
+    WorldPacket pkt;
+    Unit* pt = 0;
+    uint32 guidtype = GET_TYPE_FROM_GUID(lootguid);
+
+    if (guidtype == HIGHGUID_TYPE_UNIT)
+    {
+        Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(lootguid));
+        if (!pCreature)return;
+        pLoot = &pCreature->loot;
+        pt = pCreature;
+    }
+    else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
+    {
+        GameObject* pGO = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(lootguid));
+        if (!pGO)
+            return;
+
+        if (!pGO->IsLootable())
+            return;
+
+        GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
+
+        pLoot = &pLGO->loot;
+    }
+    else if (guidtype == HIGHGUID_TYPE_CORPSE)
+    {
+        Corpse* pCorpse = objmgr.GetCorpse((uint32)lootguid);
+        if (!pCorpse)return;
+        pLoot = &pCorpse->loot;
+    }
+    else if (guidtype == HIGHGUID_TYPE_PLAYER)
+    {
+        Player* pPlayer = _player->GetMapMgr()->GetPlayer((uint32)lootguid);
+        if (!pPlayer) return;
+        pLoot = &pPlayer->loot;
+        pPlayer->bShouldHaveLootableOnCorpse = false;
+        pt = pPlayer;
+    }
+    else if (guidtype == HIGHGUID_TYPE_ITEM)
+    {
+        Item* pItem = _player->GetItemInterface()->GetItemByGUID(lootguid);
+        if (!pItem)
+            return;
+        pLoot = pItem->loot;
+    }
+
+    if (!pLoot)
+    {
+        //bitch about cheating maybe?
+        return;
+    }
+
+    uint32 money = pLoot->gold;
+
+    pLoot->gold = 0;
+    WorldPacket data(1);
+    data.SetOpcode(SMSG_LOOT_CLEAR_MONEY);
+    // send to all looters
+    Player* plr;
+    for (LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
+    {
+        if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
+            plr->GetSession()->SendPacket(&data);
+    }
+
+    if (!_player->InGroup())
+    {
+        if (money)
+        {
+            // Check they don't have more than the max gold
+            if (sWorld.GoldCapEnabled && (GetPlayer()->GetGold() + money) > sWorld.GoldLimit)
+            {
+                GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
+            }
+            else
+            {
+                GetPlayer()->ModGold(money);
+#ifdef ENABLE_ACHIEVEMENTS
+                GetPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, money, 0, 0);
+#endif
+            }
+            sHookInterface.OnLoot(_player, pt, money, 0);
+        }
+    }
+    else
+    {
+        //this code is wrong must be party not raid!
+        Group* party = _player->GetGroup();
+        if (party)
+        {
+            /*uint32 share = money/party->MemberCount();*/
+            std::vector<Player*> targets;
+            targets.reserve(party->MemberCount());
+
+            GroupMembersSet::iterator itr;
+            SubGroup* sgrp;
+            party->getLock().Acquire();
+            for (uint32 i = 0; i < party->GetSubGroupCount(); i++)
+            {
+                sgrp = party->GetSubGroup(i);
+                for (itr = sgrp->GetGroupMembersBegin(); itr != sgrp->GetGroupMembersEnd(); ++itr)
+                {
+                    if ((*itr)->m_loggedInPlayer && (*itr)->m_loggedInPlayer->GetZoneId() == _player->GetZoneId() && _player->GetInstanceID() == (*itr)->m_loggedInPlayer->GetInstanceID())
+                        targets.push_back((*itr)->m_loggedInPlayer);
+                }
+            }
+            party->getLock().Release();
+
+            if (!targets.size())
+                return;
+
+            uint32 share = money / uint32(targets.size());
+
+            pkt.SetOpcode(SMSG_LOOT_MONEY_NOTIFY);
+            pkt << share;
+
+            for (std::vector<Player*>::iterator itr2 = targets.begin(); itr2 != targets.end(); ++itr2)
+            {
+                // Check they don't have more than the max gold
+                if (sWorld.GoldCapEnabled && ((*itr2)->GetGold() + share) > sWorld.GoldLimit)
+                {
+                    (*itr2)->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
+                }
+                else
+                {
+                    (*itr2)->ModGold(share);
+                    (*itr2)->GetSession()->SendPacket(&pkt);
+#ifdef ENABLE_ACHIEVEMENTS
+                    (*itr2)->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, share, 0, 0);
+#endif
+                }
+            }
+        }
+    }
+}
+
+void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    uint64 guid;
+    recv_data >> guid;
+
+    if (guid == 0)
+        return;
+
+    if (_player->IsDead())    // If the player is dead they can't loot!
+        return;
+
+    if (_player->IsStealth())    // Check if the player is stealthed
+        _player->RemoveStealth(); // cebernic:RemoveStealth on looting. Blizzlike
+
+    if (_player->IsCasting())    // Check if the player is casting
+        _player->InterruptSpell(); // Cancel spell casting
+
+    if (_player->IsInvisible())    // Check if the player is invisible for what ever reason
+        _player->RemoveInvisibility(); // Remove all invisibility
 
 
-//void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint64 guid;
-//    recv_data >> guid;
-//    WorldPacket data(SMSG_LOOT_RELEASE_RESPONSE, 9);
-//    data << guid;
-//    data << uint8(1);
-//    SendPacket(&data);
-//
-//    _player->SetLootGUID(0);
-//    _player->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOOTING);
-//    _player->m_currentLoot = 0;
-//
-//    if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_UNIT)
-//    {
-//        Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-//        if (pCreature == NULL)
-//            return;
-//        // remove from looter set
-//        pCreature->loot.looters.erase(_player->GetLowGUID());
-//        if (pCreature->loot.gold <= 0)
-//        {
-//            for (std::vector<__LootItem>::iterator i = pCreature->loot.items.begin(); i != pCreature->loot.items.end(); ++i)
-//                if (i->iItemsCount > 0)
-//                {
-//                    ItemProperties const* proto = i->item.itemproto;
-//                    if (proto->Class != 12)
-//                        return;
-//                    if (_player->HasQuestForItem(i->item.itemproto->ItemId))
-//                        return;
-//                }
-//            pCreature->BuildFieldUpdatePacket(_player, UNIT_DYNAMIC_FLAGS, 0);
-//
-//            if (!pCreature->Skinned)
-//            {
-//                if (lootmgr.IsSkinnable(pCreature->GetEntry()))
-//                {
-//                    pCreature->BuildFieldUpdatePacket(_player, UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
-//                }
-//            }
-//        }
-//    }
-//    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_GAMEOBJECT)
-//    {
-//        GameObject* pGO = _player->GetMapMgr()->GetGameObject((uint32)guid);
-//        if (pGO == NULL)
-//            return;
-//
-//        switch (pGO->GetType())
-//        {
-//            case GAMEOBJECT_TYPE_FISHINGNODE:
-//            {
-//                GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
-//                pLGO->loot.looters.erase(_player->GetLowGUID());
-//                if (pGO->IsInWorld())
-//                {
-//                    pGO->RemoveFromWorld(true);
-//                }
-//                delete pGO;
-//            }
-//            break;
-//            case GAMEOBJECT_TYPE_CHEST:
-//            {
-//                GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
-//                pLGO->loot.looters.erase(_player->GetLowGUID());
-//                //check for locktypes
-//
-//                bool despawn = false;
-//                if (pGO->GetGameObjectProperties()->chest.consumable == 1)
-//                    despawn = true;
-//
-//                auto pLock = sLockStore.LookupEntry(pGO->GetGameObjectProperties()->chest.lock_id);
-//                if (pLock != nullptr)
-//                {
-//                    for (uint32 i = 0; i < LOCK_NUM_CASES; i++)
-//                    {
-//                        if (pLock->locktype[i] != 0)
-//                        {
-//                            if (pLock->locktype[i] == 1)   //Item or Quest Required;
-//                            {
-//                                if (despawn)
-//                                    pGO->Despawn(0, (sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : 900000 + (RandomUInt(600000))));
-//                                else
-//                                    pGO->SetState(GO_STATE_CLOSED);
-//
-//                                return;
-//                            }
-//                            else if (pLock->locktype[i] == 2)   //locktype;
-//                            {
-//                                //herbalism and mining;
-//                                if (pLock->lockmisc[i] == LOCKTYPE_MINING || pLock->lockmisc[i] == LOCKTYPE_HERBALISM)
-//                                {
-//                                    //we still have loot inside.
-//                                    if (pLGO->HasLoot())
-//                                    {
-//                                        pGO->SetState(GO_STATE_CLOSED);
-//                                        ///\todo redo this temporary fix, because for some reason hasloot is true even when we loot everything my guess is we need to set up some even that rechecks the GO in 10 seconds or something
-//                                        //pGO->Despawn(600000 + (RandomUInt(300000)));
-//                                        return;
-//                                    }
-//
-//                                    pGO->Despawn(0, 900000 + (RandomUInt(600000)));
-//                                    return;
-//                                }
-//                            }
-//                            else
-//                            {
-//                                if (pLGO->HasLoot())
-//                                {
-//                                    pGO->SetState(GO_STATE_CLOSED);
-//                                    return;
-//                                }
-//                                pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (RandomUInt(600000))));
-//                                return;
-//                            }
-//                        }
-//                        else //other type of locks that i don't bother to split atm ;P
-//                        {
-//                            if (pLGO->HasLoot())
-//                            {
-//                                pGO->SetState(1);
-//                                return;
-//                            }
-//                            pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (RandomUInt(600000))));
-//                            return;
-//                        }
-//                    }
-//                }
-//                else
-//                {
-//                    if (pLGO->HasLoot())
-//                    {
-//                        pGO->SetState(GO_STATE_CLOSED);
-//                        return;
-//                    }
-//                    pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (RandomUInt(600000))));
-//
-//                    return;
-//
-//                }
-//            }
-//            default:
-//                break;
-//        }
-//    }
-//    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_CORPSE)
-//    {
-//        Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
-//        if (pCorpse)
-//            pCorpse->SetUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 0);
-//    }
-//    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_PLAYER)
-//    {
-//        Player* plr = objmgr.GetPlayer((uint32)guid);
-//        if (plr)
-//        {
-//            plr->bShouldHaveLootableOnCorpse = false;
-//            plr->loot.items.clear();
-//            plr->RemoveFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_LOOTABLE);
-//        }
-//    }
-//    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_ITEM)     // Loot from items, eg. sacks, milling, prospecting...
-//    {
-//        Item* item = _player->GetItemInterface()->GetItemByGUID(guid);
-//        if (item == NULL)
-//            return;
-//
-//        // delete current loot, so the next one can be filled
-//        if (item->loot != NULL)
-//        {
-//            uint32 itemsNotLooted =
-//                std::count_if (item->loot->items.begin(), item->loot->items.end(), ItemIsNotLooted());
-//
-//            if ((itemsNotLooted == 0) && (item->loot->gold == 0))
-//            {
-//                delete item->loot;
-//                item->loot = NULL;
-//            }
-//        }
-//
-//        // remove loot source items
-//        if (item->loot == NULL)
-//            _player->GetItemInterface()->RemoveItemAmtByGuid(guid, 1);
-//    }
-//    else
-//        LOG_DEBUG("Unhandled loot source object type in HandleLootReleaseOpcode");
-//}
+    if (_player->InGroup() && !_player->m_bg)
+    {
+        Group* party = _player->GetGroup();
+        if (party)
+        {
+            if (party->GetMethod() == PARTY_LOOT_MASTER)
+            {
+                WorldPacket data(SMSG_LOOT_MASTER_LIST, 330);  // wont be any larger
+                data << (uint8)party->MemberCount();
+                uint32 real_count = 0;
+                SubGroup* s;
+                GroupMembersSet::iterator itr;
+                party->Lock();
+                for (uint32 i = 0; i < party->GetSubGroupCount(); ++i)
+                {
+                    s = party->GetSubGroup(i);
+                    for (itr = s->GetGroupMembersBegin(); itr != s->GetGroupMembersEnd(); ++itr)
+                    {
+                        if ((*itr)->m_loggedInPlayer && _player->GetZoneId() == (*itr)->m_loggedInPlayer->GetZoneId())
+                        {
+                            data << (*itr)->m_loggedInPlayer->GetGUID();
+                            ++real_count;
+                        }
+                    }
+                }
+                party->Unlock();
+                *(uint8*)&data.contents()[0] = static_cast<uint8>(real_count);
+
+                party->SendPacketToAll(&data);
+            }
+        }
+    }
+    _player->SendLoot(guid, LOOT_CORPSE, _player->GetMapId());
+}
+
+
+void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    uint64 guid;
+    recv_data >> guid;
+    WorldPacket data(SMSG_LOOT_RELEASE_RESPONSE, 9);
+    data << guid;
+    data << uint8(1);
+    SendPacket(&data);
+
+    _player->SetLootGUID(0);
+    _player->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOOTING);
+    _player->m_currentLoot = 0;
+
+    if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_UNIT)
+    {
+        Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+        if (pCreature == NULL)
+            return;
+        // remove from looter set
+        pCreature->loot.looters.erase(_player->GetLowGUID());
+        if (pCreature->loot.gold <= 0)
+        {
+            for (std::vector<__LootItem>::iterator i = pCreature->loot.items.begin(); i != pCreature->loot.items.end(); ++i)
+                if (i->iItemsCount > 0)
+                {
+                    ItemProperties const* proto = i->item.itemproto;
+                    if (proto->Class != 12)
+                        return;
+                    if (_player->HasQuestForItem(i->item.itemproto->ItemId))
+                        return;
+                }
+            pCreature->BuildFieldUpdatePacket(_player, UNIT_DYNAMIC_FLAGS, 0);
+
+            if (!pCreature->Skinned)
+            {
+                if (lootmgr.IsSkinnable(pCreature->GetEntry()))
+                {
+                    pCreature->BuildFieldUpdatePacket(_player, UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
+                }
+            }
+        }
+    }
+    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_GAMEOBJECT)
+    {
+        GameObject* pGO = _player->GetMapMgr()->GetGameObject((uint32)guid);
+        if (pGO == NULL)
+            return;
+
+        switch (pGO->GetType())
+        {
+            case GAMEOBJECT_TYPE_FISHINGNODE:
+            {
+                GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
+                pLGO->loot.looters.erase(_player->GetLowGUID());
+                if (pGO->IsInWorld())
+                {
+                    pGO->RemoveFromWorld(true);
+                }
+                delete pGO;
+            }
+            break;
+            case GAMEOBJECT_TYPE_CHEST:
+            {
+                GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
+                pLGO->loot.looters.erase(_player->GetLowGUID());
+                //check for locktypes
+
+                bool despawn = false;
+                if (pGO->GetGameObjectProperties()->chest.consumable == 1)
+                    despawn = true;
+
+                auto pLock = sLockStore.LookupEntry(pGO->GetGameObjectProperties()->chest.lock_id);
+                if (pLock != nullptr)
+                {
+                    for (uint32 i = 0; i < LOCK_NUM_CASES; ++i)
+                    {
+                        if (pLock->locktype[i] != 0)
+                        {
+                            if (pLock->locktype[i] == 1)   //Item or Quest Required;
+                            {
+                                if (despawn)
+                                    pGO->Despawn(0, (sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : 900000 + (RandomUInt(600000))));
+                                else
+                                    pGO->SetState(GO_STATE_CLOSED);
+
+                                return;
+                            }
+                            else if (pLock->locktype[i] == 2)   //locktype;
+                            {
+                                //herbalism and mining;
+                                if (pLock->lockmisc[i] == LOCKTYPE_MINING || pLock->lockmisc[i] == LOCKTYPE_HERBALISM)
+                                {
+                                    //we still have loot inside.
+                                    if (pLGO->HasLoot())
+                                    {
+                                        pGO->SetState(GO_STATE_CLOSED);
+                                        ///\todo redo this temporary fix, because for some reason hasloot is true even when we loot everything my guess is we need to set up some even that rechecks the GO in 10 seconds or something
+                                        //pGO->Despawn(600000 + (RandomUInt(300000)));
+                                        return;
+                                    }
+
+                                    pGO->Despawn(0, 900000 + (RandomUInt(600000)));
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                if (pLGO->HasLoot())
+                                {
+                                    pGO->SetState(GO_STATE_CLOSED);
+                                    return;
+                                }
+                                pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (RandomUInt(600000))));
+                                return;
+                            }
+                        }
+                        else //other type of locks that i don't bother to split atm ;P
+                        {
+                            if (pLGO->HasLoot())
+                            {
+                                pGO->SetState(GO_STATE_CLOSED);
+                                return;
+                            }
+                            pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (RandomUInt(600000))));
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    if (pLGO->HasLoot())
+                    {
+                        pGO->SetState(GO_STATE_CLOSED);
+                        return;
+                    }
+                    pGO->Despawn(0, sQuestMgr.GetGameObjectLootQuest(pGO->GetEntry()) ? 180000 + (RandomUInt(180000)) : (IS_INSTANCE(pGO->GetMapId()) ? 0 : 900000 + (RandomUInt(600000))));
+
+                    return;
+
+                }
+            }
+            default:
+                break;
+        }
+    }
+    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_CORPSE)
+    {
+        Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
+        if (pCorpse)
+            pCorpse->SetUInt32Value(CORPSE_FIELD_DYNAMIC_FLAGS, 0);
+    }
+    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_PLAYER)
+    {
+        Player* plr = objmgr.GetPlayer((uint32)guid);
+        if (plr)
+        {
+            plr->bShouldHaveLootableOnCorpse = false;
+            plr->loot.items.clear();
+            plr->RemoveFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_LOOTABLE);
+        }
+    }
+    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_ITEM)     // Loot from items, eg. sacks, milling, prospecting...
+    {
+        Item* item = _player->GetItemInterface()->GetItemByGUID(guid);
+        if (item == NULL)
+            return;
+
+        // delete current loot, so the next one can be filled
+        if (item->loot != NULL)
+        {
+            uint32 itemsNotLooted =
+                std::count_if (item->loot->items.begin(), item->loot->items.end(), ItemIsNotLooted());
+
+            if ((itemsNotLooted == 0) && (item->loot->gold == 0))
+            {
+                delete item->loot;
+                item->loot = NULL;
+            }
+        }
+
+        // remove loot source items
+        if (item->loot == NULL)
+            _player->GetItemInterface()->RemoveItemAmtByGuid(guid, 1);
+    }
+    else
+        LOG_DEBUG("Unhandled loot source object type in HandleLootReleaseOpcode");
+}
 
 void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
 {
@@ -2287,234 +2287,220 @@ void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)
 //        SendPacket(&data);
 //}
 
-//void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    //	uint8 slot = 0;
-//    uint32 itemid = 0;
-//    uint32 amt = 1;
-//    uint8 error = 0;
-//    SlotResult slotresult;
-//
-//    Creature* pCreature = NULL;
-//    GameObject* pGameObject = NULL; //cebernic added it
-//    Object* pObj = NULL;
-//    Loot* pLoot = NULL;
-//    /* struct:
-//    {CLIENT} Packet: (0x02A3) CMSG_LOOT_MASTER_GIVE PacketSize = 17
-//    |------------------------------------------------|----------------|
-//    |00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|
-//    |------------------------------------------------|----------------|
-//    |39 23 05 00 81 02 27 F0 01 7B FC 02 00 00 00 00 |9#....'..{......|
-//    |00											  |.			   |
-//    -------------------------------------------------------------------
-//
-//    uint64 creatureguid
-//    uint8  slotid
-//    uint64 target_playerguid
-//
-//    */
-//    uint64 creatureguid;
-//    uint64 target_playerguid;
-//    uint8 slotid;
-//
-//    recv_data >> creatureguid;
-//    recv_data >> slotid;
-//    recv_data >> target_playerguid;
-//
-//    if (_player->GetGroup() == NULL || _player->GetGroup()->GetLooter() != _player->m_playerInfo)
-//        return;
-//
-//    Player* player = _player->GetMapMgr()->GetPlayer((uint32)target_playerguid);
-//    if (!player)
-//        return;
-//
-//    // cheaterz!
-//    if (_player->GetLootGUID() != creatureguid)
-//        return;
-//
-//    //now its time to give the loot to the target player
-//    if (GET_TYPE_FROM_GUID(GetPlayer()->GetLootGUID()) == HIGHGUID_TYPE_UNIT)
-//    {
-//        pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(creatureguid));
-//        if (!pCreature)
-//            return;
-//        pLoot = &pCreature->loot;
-//    }
-//    else if (GET_TYPE_FROM_GUID(GetPlayer()->GetLootGUID()) == HIGHGUID_TYPE_GAMEOBJECT) // cebernic added it support gomastergive
-//    {
-//        pGameObject = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(creatureguid));
-//        if (!pGameObject)
-//            return;
-//
-//        if (!pGameObject->IsLootable())
-//            return;
-//
-//        GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGameObject);
-//        pGameObject->SetState(GO_STATE_OPEN);
-//        pLoot = &pLGO->loot;
-//    }
-//
-//
-//    if (!pLoot)
-//        return;
-//    if (pCreature)
-//        pObj = pCreature;
-//    else
-//        pObj = pGameObject;
-//
-//    if (slotid >= pLoot->items.size())
-//    {
-//        LOG_DEBUG("AutoLootItem: Player %s might be using a hack! (slot %d, size %d)",
-//                  GetPlayer()->GetName(), slotid, pLoot->items.size());
-//        return;
-//    }
-//
-//    amt = pLoot->items.at(slotid).iItemsCount;
-//
-//    if (!pLoot->items.at(slotid).ffa_loot)
-//    {
-//        if (!amt) //Test for party loot
-//        {
-//            GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_ALREADY_LOOTED);
-//            return;
-//        }
-//    }
-//    else
-//    {
-//        //make sure this player can still loot it in case of ffa_loot
-//        LooterSet::iterator itr = pLoot->items.at(slotid).has_looted.find(player->GetLowGUID());
-//
-//        if (pLoot->items.at(slotid).has_looted.end() != itr)
-//        {
-//            GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_ALREADY_LOOTED);
-//            return;
-//        }
-//    }
-//
-//    itemid = pLoot->items.at(slotid).item.itemproto->ItemId;
-//    ItemProperties const* it = pLoot->items.at(slotid).item.itemproto;
-//
-//    if ((error = player->GetItemInterface()->CanReceiveItem(it, 1)) != 0)
-//    {
-//        _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);
-//        return;
-//    }
-//
-//    if (pCreature)
-//        CALL_SCRIPT_EVENT(pCreature, OnLootTaken)(player, it);
-//
-//
-//    slotresult = player->GetItemInterface()->FindFreeInventorySlot(it);
-//    if (!slotresult.Result)
-//    {
-//        GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_INVENTORY_FULL);
-//        return;
-//    }
-//
-//    Item* item = objmgr.CreateItem(itemid, player);
-//    if (item == NULL)
-//        return;
-//
-//    item->SetStackCount(amt);
-//    if (pLoot->items.at(slotid).iRandomProperty != NULL)
-//    {
-//        item->SetItemRandomPropertyId(pLoot->items.at(slotid).iRandomProperty->ID);
-//        item->ApplyRandomProperties(false);
-//    }
-//    else if (pLoot->items.at(slotid).iRandomSuffix != NULL)
-//    {
-//        item->SetRandomSuffix(pLoot->items.at(slotid).iRandomSuffix->id);
-//        item->ApplyRandomProperties(false);
-//    }
-//
-//    if (player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
-//    {
-//        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
-//        sQuestMgr.OnPlayerItemPickup(player, item);
-//#ifdef ENABLE_ACHIEVEMENTS
-//        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->GetEntry(), 1, 0);
-//#endif
-//    }
-//    else
-//        item->DeleteMe();
-//
-//    pLoot->items.at(slotid).iItemsCount = 0;
-//
-//    // this gets sent to all looters
-//    if (!pLoot->items.at(slotid).ffa_loot)
-//    {
-//        pLoot->items.at(slotid).iItemsCount = 0;
-//
-//        // this gets sent to all looters
-//        WorldPacket data(1);
-//        data.SetOpcode(SMSG_LOOT_REMOVED);
-//        data << slotid;
-//        Player* plr;
-//        for (LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
-//        {
-//            if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
-//                plr->GetSession()->SendPacket(&data);
-//        }
-//    }
-//    else
-//    {
-//        pLoot->items.at(slotid).has_looted.insert(player->GetLowGUID());
-//    }
-//}
+void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
 
-//void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint64 creatureguid;
-//    uint32 slotid;
-//    uint8 choice;
-//
-//    recv_data >> creatureguid;
-//    recv_data >> slotid;
-//    recv_data >> choice;
-//
-//    LootRoll* li = NULL;
-//
-//    uint32 guidtype = GET_TYPE_FROM_GUID(creatureguid);
-//    if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
-//    {
-//        GameObject* pGO = _player->GetMapMgr()->GetGameObject((uint32)creatureguid);
-//        if (!pGO)
-//            return;
-//
-//        if (pGO->IsLootable())
-//            return;
-//
-//        GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
-//        if ((slotid >= pLGO->loot.items.size()) || (pLGO->loot.items.size() == 0))
-//            return;
-//
-//        if (pGO->GetType() == GAMEOBJECT_TYPE_CHEST)
-//            li = pLGO->loot.items[slotid].roll;
-//    }
-//    else if (guidtype == HIGHGUID_TYPE_UNIT)
-//    {
-//        // Creatures
-//        Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(creatureguid));
-//        if (!pCreature)
-//            return;
-//
-//        if (slotid >= pCreature->loot.items.size() || pCreature->loot.items.size() == 0)
-//            return;
-//
-//        li = pCreature->loot.items[slotid].roll;
-//    }
-//    else
-//        return;
-//
-//    if (!li)
-//        return;
-//
-//    li->PlayerRolled(_player, choice);
-//}
+    uint32 itemid = 0;
+    uint32 amt = 1;
+    uint8 error = 0;
+    SlotResult slotresult;
+
+    Creature* pCreature = nullptr;
+    GameObject* pGameObject = nullptr; //cebernic added it
+    Object* pObj = nullptr;
+    Loot* pLoot = nullptr;
+
+    uint64 creatureguid;
+    uint64 target_playerguid;
+    uint8 slotid;
+
+    recv_data >> creatureguid;
+    recv_data >> slotid;
+    recv_data >> target_playerguid;
+
+    if (_player->GetGroup() == nullptr || _player->GetGroup()->GetLooter() != _player->m_playerInfo)
+        return;
+
+    Player* player = _player->GetMapMgr()->GetPlayer((uint32)target_playerguid);
+    if (!player)
+        return;
+
+    // cheaterz!
+    if (_player->GetLootGUID() != creatureguid)
+        return;
+
+    //now its time to give the loot to the target player
+    if (GET_TYPE_FROM_GUID(GetPlayer()->GetLootGUID()) == HIGHGUID_TYPE_UNIT)
+    {
+        pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(creatureguid));
+        if (!pCreature)
+            return;
+        pLoot = &pCreature->loot;
+    }
+    else if (GET_TYPE_FROM_GUID(GetPlayer()->GetLootGUID()) == HIGHGUID_TYPE_GAMEOBJECT) // cebernic added it support gomastergive
+    {
+        pGameObject = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(creatureguid));
+        if (!pGameObject)
+            return;
+
+        if (!pGameObject->IsLootable())
+            return;
+
+        GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGameObject);
+        pGameObject->SetState(GO_STATE_OPEN);
+        pLoot = &pLGO->loot;
+    }
+
+
+    if (!pLoot)
+        return;
+
+    if (pCreature)
+        pObj = pCreature;
+    else
+        pObj = pGameObject;
+
+    if (slotid >= pLoot->items.size())
+    {
+        LOG_DEBUG("AutoLootItem: Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->GetName(), slotid, pLoot->items.size());
+        return;
+    }
+
+    amt = pLoot->items.at(slotid).iItemsCount;
+
+    if (!pLoot->items.at(slotid).ffa_loot)
+    {
+        if (!amt) //Test for party loot
+        {
+            GetPlayer()->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
+            return;
+        }
+    }
+    else
+    {
+        //make sure this player can still loot it in case of ffa_loot
+        LooterSet::iterator itr = pLoot->items.at(slotid).has_looted.find(player->GetLowGUID());
+
+        if (pLoot->items.at(slotid).has_looted.end() != itr)
+        {
+            GetPlayer()->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_ALREADY_LOOTED);
+            return;
+        }
+    }
+
+    itemid = pLoot->items.at(slotid).item.itemproto->ItemId;
+    ItemProperties const* it = pLoot->items.at(slotid).item.itemproto;
+
+    if ((error = player->GetItemInterface()->CanReceiveItem(it, 1)) != 0)
+    {
+        _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, error);
+        return;
+    }
+
+    if (pCreature)
+        CALL_SCRIPT_EVENT(pCreature, OnLootTaken)(player, it);
+
+
+    slotresult = player->GetItemInterface()->FindFreeInventorySlot(it);
+    if (!slotresult.Result)
+    {
+        GetPlayer()->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_INVENTORY_FULL);
+        return;
+    }
+
+    Item* item = objmgr.CreateItem(itemid, player);
+    if (item == nullptr)
+        return;
+
+    item->SetStackCount(amt);
+    if (pLoot->items.at(slotid).iRandomProperty != nullptr)
+    {
+        item->SetItemRandomPropertyId(pLoot->items.at(slotid).iRandomProperty->ID);
+        item->ApplyRandomProperties(false);
+    }
+    else if (pLoot->items.at(slotid).iRandomSuffix != nullptr)
+    {
+        item->SetRandomSuffix(pLoot->items.at(slotid).iRandomSuffix->id);
+        item->ApplyRandomProperties(false);
+    }
+
+    if (player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
+    {
+        player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+        sQuestMgr.OnPlayerItemPickup(player, item);
+#ifdef ENABLE_ACHIEVEMENTS
+        _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->GetEntry(), 1, 0);
+#endif
+    }
+    else
+        item->DeleteMe();
+
+    pLoot->items.at(slotid).iItemsCount = 0;
+
+    // this gets sent to all looters
+    if (!pLoot->items.at(slotid).ffa_loot)
+    {
+        pLoot->items.at(slotid).iItemsCount = 0;
+
+        // this gets sent to all looters
+        WorldPacket data(1);
+        data.SetOpcode(SMSG_LOOT_REMOVED);
+        data << slotid;
+        Player* plr;
+        for (LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
+        {
+            if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
+                plr->GetSession()->SendPacket(&data);
+        }
+    }
+    else
+    {
+        pLoot->items.at(slotid).has_looted.insert(player->GetLowGUID());
+    }
+}
+
+void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    uint64 creatureguid;
+    uint32 slotid;
+    uint8 choice;
+
+    recv_data >> creatureguid;
+    recv_data >> slotid;
+    recv_data >> choice;
+
+    LootRoll* li = nullptr;
+
+    uint32 guidtype = GET_TYPE_FROM_GUID(creatureguid);
+    if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
+    {
+        GameObject* pGO = _player->GetMapMgr()->GetGameObject((uint32)creatureguid);
+        if (!pGO)
+            return;
+
+        if (pGO->IsLootable())
+            return;
+
+        GameObject_Lootable* pLGO = static_cast<GameObject_Lootable*>(pGO);
+        if ((slotid >= pLGO->loot.items.size()) || (pLGO->loot.items.size() == 0))
+            return;
+
+        if (pGO->GetType() == GAMEOBJECT_TYPE_CHEST)
+            li = pLGO->loot.items[slotid].roll;
+    }
+    else if (guidtype == HIGHGUID_TYPE_UNIT)
+    {
+        // Creatures
+        Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(creatureguid));
+        if (!pCreature)
+            return;
+
+        if (slotid >= pCreature->loot.items.size() || pCreature->loot.items.size() == 0)
+            return;
+
+        li = pCreature->loot.items[slotid].roll;
+    }
+    else
+        return;
+
+    if (!li)
+        return;
+
+    li->PlayerRolled(_player, choice);
+}
 
 //void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
 //{
