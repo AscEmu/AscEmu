@@ -824,7 +824,7 @@ class SERVER_DECL Guild
         void BroadcastWorker(Do& _do, Player* except = NULL)
         {
             for (Members::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
-                if (Player* player = itr->second->FindPlayer())
+                if (Player* player = itr->second->FindPlayer(itr->second->GetGUID()))
                     if (player != except)
                         _do(player);
         }
