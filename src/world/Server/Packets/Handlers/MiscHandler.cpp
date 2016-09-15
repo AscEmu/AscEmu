@@ -747,7 +747,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
         // Guild name
         if (gname)
         {
-            if (!plr->GetGuild() || strcmp(plr->GetGuild()->GetGuildName(), guildname.c_str()) != 0)
+            if (!plr->GetGuild() || strcmp(plr->GetGuild()->GetName().c_str(), guildname.c_str()) != 0)
                 continue;
         }
 
@@ -805,8 +805,8 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
         // so add the names :)
         data << plr->GetName();
 
-        if (plr->m_playerInfo->guild)
-            data << plr->m_playerInfo->guild->GetGuildName();
+        if (plr->m_playerInfo->m_guild)
+            data << sGuildMgr.GetGuildById(plr->m_playerInfo->m_guild)->GetName().c_str();
         else
             data << uint8(0);	   // Guild name
 

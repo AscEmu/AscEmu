@@ -24,7 +24,7 @@
 #include "Chat/ChatHandler.hpp"
 #include "Units/Creatures/Corpse.h"
 #include "Units/Players/Player.h"
-#include "Management/Guild.h"
+#include "Management/Guild.hpp"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/DBC/DBCStores.h"
 #include "Storage/DB2/DB2Stores.hpp"
@@ -539,14 +539,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void RenamePlayerInfo(PlayerInfo* pn, const char* oldname, const char* newname);
         void DeletePlayerInfo(uint32 guid);
 
-        // Guild
-        void AddGuild(Guild* pGuild);
-        uint32 GetTotalGuildCount();
-        bool RemoveGuild(uint32 guildId);
-        Guild* GetGuild(uint32 guildId);
-        Guild* GetGuildByLeaderGuid(uint64 leaderGuid);
-        Guild* GetGuildByGuildName(std::string guildName);
-
         //Corpse Stuff
         Corpse* GetCorpseByOwner(uint32 ownerguid);
         void CorpseCollectorUnload();
@@ -607,7 +599,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void LoadAreaTrigger();
         void LoadPlayersInfo();
 
-        void LoadGuilds();
         Corpse* LoadCorpse(uint32 guid);
         void LoadCorpses(MapMgr* mgr);
         void LoadGMTickets();

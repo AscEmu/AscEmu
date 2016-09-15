@@ -316,6 +316,49 @@ std::string ConvertTimeStampToDataTime(uint32 timestamp)
     return szResult;
 }
 
+unsigned int TimeToGametime(time_t unixtime)
+{
+    uint32 gameTime;
+    time_t basetime = unixtime;
+
+    time_t minutes = ((unixtime / 60) % 60);
+    time_t hours = ((unixtime / (60 * 60)) % 60);
+
+    struct tm * timeinfo = localtime(&basetime);
+    uint32 DayOfTheWeek;
+    if (timeinfo->tm_wday == 0)
+        DayOfTheWeek = 6;                           //  It's Sunday
+    else
+        DayOfTheWeek = timeinfo->tm_wday - 1;       //  0b111 = (any) day, 0 = Monday ect)
+    uint32 DayOfTheMonth = timeinfo->tm_mday - 1;   //  Day - 1 (0 is actual 1) its now the 20e here.
+    uint32 CurrentMonth = timeinfo->tm_mon;         //  Month - 1 (0 is actual 1) same as above.
+    uint32 CurrentYear = timeinfo->tm_year - 100;   //  2000 + this number results in a correct value for this crap.
+
+#define MINUTE_BITMASK      0x0000003F
+#define HOUR_BITMASK        0x000007C0
+#define WEEKDAY_BITMASK     0x00003800
+#define DAY_BITMASK         0x000FC000
+#define MONTH_BITMASK       0x00F00000
+#define YEAR_BITMASK        0x1F000000
+#define UNK_BITMASK         0xE0000000
+
+#define MINUTE_SHIFTMASK    0
+#define HOUR_SHIFTMASK      6
+#define WEEKDAY_SHIFTMASK   11
+#define DAY_SHIFTMASK       14
+#define MONTH_SHIFTMASK     20
+#define YEAR_SHIFTMASK      24
+#define UNK_SHIFTMASK       29
+
+    gameTime = ((minutes << MINUTE_SHIFTMASK) & MINUTE_BITMASK);
+    gameTime |= ((hours << HOUR_SHIFTMASK) & HOUR_BITMASK);
+    gameTime |= ((DayOfTheWeek << WEEKDAY_SHIFTMASK) & WEEKDAY_BITMASK);
+    gameTime |= ((DayOfTheMonth << DAY_SHIFTMASK) & DAY_BITMASK);
+    gameTime |= ((CurrentMonth << MONTH_SHIFTMASK) & MONTH_BITMASK);
+    gameTime |= ((CurrentYear << YEAR_SHIFTMASK) & YEAR_BITMASK);
+    return gameTime;
+}
+
 uint32 DecimalToMask(uint32 dec)
 {
     return ((uint32)1 << (dec - 1));
@@ -456,4 +499,28 @@ namespace Arcemu
 #endif
 
     }
+}
+
+std::string ByteArrayToHexStr(uint8 const* bytes, uint32 arrayLen, bool reverse /* = false */)
+{
+    int32 init = 0;
+    int32 end = arrayLen;
+    int8 op = 1;
+
+    if (reverse)
+    {
+        init = arrayLen - 1;
+        end = -1;
+        op = -1;
+    }
+
+    std::ostringstream ss;
+    for (int32 i = init; i != end; i += op)
+    {
+        char buffer[4];
+        sprintf(buffer, "%02X", bytes[i]);
+        ss << buffer;
+    }
+
+    return ss.str();
 }

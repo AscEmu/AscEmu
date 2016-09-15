@@ -93,6 +93,18 @@ public:
             writeBit((value >> i) & 1);
     }
 
+    void WriteString(std::string const& str)
+    {
+        if (size_t len = str.length())
+            append(str.c_str(), len);
+    }
+
+    void AppendPackedTime(time_t time)
+    {
+        tm* lt = localtime(&time);
+        append<uint32>((lt->tm_year - 100) << 24 | lt->tm_mon << 20 | (lt->tm_mday - 1) << 14 | lt->tm_wday << 11 | lt->tm_hour << 6 | lt->tm_min);
+    }
+
     // get account name (new in cataclysm)
     /*std::string ReadString(uint32 count)
     {

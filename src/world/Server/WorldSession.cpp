@@ -325,11 +325,11 @@ void WorldSession::LogoutPlayer(bool Save)
 
         // Issue a message telling all guild members that this player signed
         // off
-        if (_player->IsInGuild())
+        if (_player->GetGuild())
         {
-            Guild* pGuild = _player->m_playerInfo->guild;
+            Guild* pGuild = _player->GetGuild();
             if (pGuild != NULL)
-                pGuild->LogGuildEvent(GUILD_EVENT_HASGONEOFFLINE, 1, _player->GetName());
+                pGuild->HandleMemberLogout(this);
         }
 
         _player->GetItemInterface()->EmptyBuyBack();
@@ -880,52 +880,68 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[MSG_QUERY_NEXT_MAIL_TIME].handler = &WorldSession::HandleMailTime;
     WorldPacketHandlers[CMSG_MAIL_CREATE_TEXT_ITEM].handler = &WorldSession::HandleMailCreateTextItem;
 
-    //// Guild Query (called when not logged in sometimes)
-    //WorldPacketHandlers[CMSG_GUILD_QUERY].handler = &WorldSession::HandleGuildQuery;
-    //WorldPacketHandlers[CMSG_GUILD_QUERY].status = STATUS_AUTHED;
+    // Guild Query (called when not logged in sometimes)
+    WorldPacketHandlers[CMSG_GUILD_QUERY].handler = &WorldSession::HandleGuildQueryOpcode;
+    WorldPacketHandlers[CMSG_GUILD_QUERY].status = STATUS_AUTHED;
 
     //// Guild System
     //WorldPacketHandlers[CMSG_GUILD_CREATE].handler = &WorldSession::HandleCreateGuild;
-    //WorldPacketHandlers[CMSG_GUILD_INVITE].handler = &WorldSession::HandleInviteToGuild;
-    //WorldPacketHandlers[CMSG_GUILD_ACCEPT].handler = &WorldSession::HandleGuildAccept;
-    //WorldPacketHandlers[CMSG_GUILD_DECLINE].handler = &WorldSession::HandleGuildDecline;
+    WorldPacketHandlers[CMSG_GUILD_INVITE].handler = &WorldSession::HandleInviteToGuildOpcode;
+    WorldPacketHandlers[CMSG_GUILD_ACCEPT].handler = &WorldSession::HandleGuildAcceptOpcode;
+    WorldPacketHandlers[CMSG_GUILD_DECLINE].handler = &WorldSession::HandleGuildDeclineOpcode;
     //WorldPacketHandlers[CMSG_GUILD_INFO].handler = &WorldSession::HandleGuildInfo;
-    //WorldPacketHandlers[CMSG_GUILD_ROSTER].handler = &WorldSession::HandleGuildRoster;
-    //WorldPacketHandlers[CMSG_GUILD_PROMOTE].handler = &WorldSession::HandleGuildPromote;
-    //WorldPacketHandlers[CMSG_GUILD_DEMOTE].handler = &WorldSession::HandleGuildDemote;
-    //WorldPacketHandlers[CMSG_GUILD_LEAVE].handler = &WorldSession::HandleGuildLeave;
-    //WorldPacketHandlers[CMSG_GUILD_REMOVE].handler = &WorldSession::HandleGuildRemove;
-    //WorldPacketHandlers[CMSG_GUILD_DISBAND].handler = &WorldSession::HandleGuildDisband;
-    //WorldPacketHandlers[CMSG_GUILD_LEADER].handler = &WorldSession::HandleGuildLeader;
-    //WorldPacketHandlers[CMSG_GUILD_MOTD].handler = &WorldSession::HandleGuildMotd;
+    WorldPacketHandlers[CMSG_GUILD_ROSTER].handler = &WorldSession::HandleGuildRosterOpcode;
+    WorldPacketHandlers[CMSG_GUILD_PROMOTE].handler = &WorldSession::HandleGuildPromoteOpcode;
+    WorldPacketHandlers[CMSG_GUILD_DEMOTE].handler = &WorldSession::HandleGuildDemoteOpcode;
+    WorldPacketHandlers[CMSG_GUILD_LEAVE].handler = &WorldSession::HandleGuildLeaveOpcode;
+    WorldPacketHandlers[CMSG_GUILD_REMOVE].handler = &WorldSession::HandleGuildRemoveOpcode;
+    WorldPacketHandlers[CMSG_GUILD_DISBAND].handler = &WorldSession::HandleGuildDisbandOpcode;
+    WorldPacketHandlers[CMSG_GUILD_LEADER].handler = &WorldSession::HandleGuildLeaderOpcode;
+    WorldPacketHandlers[CMSG_GUILD_MOTD].handler = &WorldSession::HandleGuildMotdOpcode;
     //WorldPacketHandlers[CMSG_GUILD_RANK].handler = &WorldSession::HandleGuildRank;
-    //WorldPacketHandlers[CMSG_GUILD_ADD_RANK].handler = &WorldSession::HandleGuildAddRank;
-    //WorldPacketHandlers[CMSG_GUILD_DEL_RANK].handler = &WorldSession::HandleGuildDelRank;
-    //WorldPacketHandlers[CMSG_GUILD_SET_PUBLIC_NOTE].handler = &WorldSession::HandleGuildSetPublicNote;
-    //WorldPacketHandlers[CMSG_GUILD_SET_OFFICER_NOTE].handler = &WorldSession::HandleGuildSetOfficerNote;
-    //WorldPacketHandlers[CMSG_PETITION_BUY].handler = &WorldSession::HandleCharterBuy;
-    //WorldPacketHandlers[CMSG_PETITION_SHOW_SIGNATURES].handler = &WorldSession::HandleCharterShowSignatures;
-    //WorldPacketHandlers[CMSG_TURN_IN_PETITION].handler = &WorldSession::HandleCharterTurnInCharter;
-    //WorldPacketHandlers[CMSG_PETITION_QUERY].handler = &WorldSession::HandleCharterQuery;
-    //WorldPacketHandlers[CMSG_OFFER_PETITION].handler = &WorldSession::HandleCharterOffer;
-    //WorldPacketHandlers[CMSG_PETITION_SIGN].handler = &WorldSession::HandleCharterSign;
-    //WorldPacketHandlers[MSG_PETITION_DECLINE].handler = &WorldSession::HandleCharterDecline;
-    //WorldPacketHandlers[MSG_PETITION_RENAME].handler = &WorldSession::HandleCharterRename;
-    //WorldPacketHandlers[MSG_SAVE_GUILD_EMBLEM].handler = &WorldSession::HandleSaveGuildEmblem;
-    //WorldPacketHandlers[CMSG_GUILD_INFO_TEXT].handler = &WorldSession::HandleSetGuildInformation;
-    //WorldPacketHandlers[MSG_QUERY_GUILD_BANK_TEXT].handler = &WorldSession::HandleGuildBankQueryText;
-    //WorldPacketHandlers[CMSG_SET_GUILD_BANK_TEXT].handler = &WorldSession::HandleSetGuildBankText;
-    //WorldPacketHandlers[MSG_GUILD_EVENT_LOG_QUERY].handler = &WorldSession::HandleGuildLog;
-    WorldPacketHandlers[CMSG_GUILD_BANKER_ACTIVATE].handler = &WorldSession::HandleGuildBankOpenVault;
-    //WorldPacketHandlers[CMSG_GUILD_BANK_BUY_TAB].handler = &WorldSession::HandleGuildBankBuyTab;
-    //WorldPacketHandlers[MSG_GUILD_BANK_MONEY_WITHDRAWN].handler = &WorldSession::HandleGuildBankGetAvailableAmount;
-    //WorldPacketHandlers[CMSG_GUILD_BANK_UPDATE_TAB].handler = &WorldSession::HandleGuildBankModifyTab;
-    //WorldPacketHandlers[CMSG_GUILD_BANK_SWAP_ITEMS].handler = &WorldSession::HandleGuildBankDepositItem;
-    //WorldPacketHandlers[CMSG_GUILD_BANK_WITHDRAW_MONEY].handler = &WorldSession::HandleGuildBankWithdrawMoney;
-    //WorldPacketHandlers[CMSG_GUILD_BANK_DEPOSIT_MONEY].handler = &WorldSession::HandleGuildBankDepositMoney;
-    //WorldPacketHandlers[CMSG_GUILD_BANK_QUERY_TAB].handler = &WorldSession::HandleGuildBankViewTab;
-    //WorldPacketHandlers[MSG_GUILD_BANK_LOG_QUERY].handler = &WorldSession::HandleGuildBankViewLog;
-    //WorldPacketHandlers[MSG_GUILD_PERMISSIONS].handler = &WorldSession::HandleGuildGetFullPermissions;
+    WorldPacketHandlers[CMSG_GUILD_ADD_RANK].handler = &WorldSession::HandleGuildAddRankOpcode;
+    WorldPacketHandlers[CMSG_GUILD_DEL_RANK].handler = &WorldSession::HandleGuildDelRankOpcode;
+    WorldPacketHandlers[CMSG_GUILD_SET_PUBLIC_NOTE].handler = &WorldSession::HandleGuildSetPublicNoteOpcode;
+    WorldPacketHandlers[CMSG_GUILD_SET_OFFICER_NOTE].handler = &WorldSession::HandleGuildSetOfficerNoteOpcode;
+    WorldPacketHandlers[CMSG_PETITION_BUY].handler = &WorldSession::HandleCharterBuyOpcode;
+    WorldPacketHandlers[CMSG_PETITION_SHOW_SIGNATURES].handler = &WorldSession::HandleCharterShowSignaturesOpcode;
+    WorldPacketHandlers[CMSG_TURN_IN_PETITION].handler = &WorldSession::HandleCharterTurnInCharterOpcode;
+    WorldPacketHandlers[CMSG_PETITION_QUERY].handler = &WorldSession::HandleCharterQueryOpcode;
+    WorldPacketHandlers[CMSG_OFFER_PETITION].handler = &WorldSession::HandleCharterOfferOpcode;
+    WorldPacketHandlers[CMSG_PETITION_SIGN].handler = &WorldSession::HandleCharterSignOpcode;
+    WorldPacketHandlers[MSG_PETITION_DECLINE].handler = &WorldSession::HandleCharterDeclineOpcode;
+    WorldPacketHandlers[MSG_PETITION_RENAME].handler = &WorldSession::HandleCharterRenameOpcode;
+    WorldPacketHandlers[MSG_SAVE_GUILD_EMBLEM].handler = &WorldSession::HandleSaveGuildEmblemOpcode;
+    WorldPacketHandlers[CMSG_GUILD_INFO_TEXT].handler = &WorldSession::HandleGuildChangeInfoTextOpcode;
+    WorldPacketHandlers[CMSG_GUILD_BANK_MONEY_WITHDRAWN_QUERY].handler = &WorldSession::HandleGuildBankMoneyWithdrawn;
+    WorldPacketHandlers[CMSG_GUILD_BANKER_ACTIVATE].handler = &WorldSession::HandleGuildBankerActivate;
+    WorldPacketHandlers[CMSG_GUILD_BANK_QUERY_TAB].handler = &WorldSession::HandleGuildBankQueryTab;
+    WorldPacketHandlers[CMSG_GUILD_BANK_SWAP_ITEMS].handler = &WorldSession::HandleGuildBankSwapItems;
+    WorldPacketHandlers[CMSG_GUILD_BANK_BUY_TAB].handler = &WorldSession::HandleGuildBankBuyTab;
+    WorldPacketHandlers[CMSG_GUILD_BANK_UPDATE_TAB].handler = &WorldSession::HandleGuildBankUpdateTab;
+    WorldPacketHandlers[CMSG_GUILD_BANK_LOG_QUERY].handler = &WorldSession::HandleGuildBankLogQuery;
+    WorldPacketHandlers[CMSG_GUILD_BANK_QUERY_TEXT].handler = &WorldSession::HandleQueryGuildBankTabText;
+    WorldPacketHandlers[CMSG_GUILD_BANK_WITHDRAW_MONEY].handler = &WorldSession::HandleGuildBankWithdrawMoney;
+    WorldPacketHandlers[CMSG_GUILD_BANK_DEPOSIT_MONEY].handler = &WorldSession::HandleGuildBankDepositMoney;
+    WorldPacketHandlers[CMSG_SET_GUILD_BANK_TEXT].handler = &WorldSession::HandleSetGuildBankTabText;
+    WorldPacketHandlers[CMSG_QUERY_GUILD_XP].handler = &WorldSession::HandleGuildQueryXPOpcode;
+    WorldPacketHandlers[CMSG_GUILD_SET_RANK_PERMISSIONS].handler = &WorldSession::HandleGuildSetRankPermissionsOpcode;
+    WorldPacketHandlers[CMSG_GUILD_SET_NOTE].handler = &WorldSession::HandleGuildSetNoteOpcode;
+    WorldPacketHandlers[CMSG_QUERY_GUILD_REWARDS].handler = &WorldSession::HandleGuildRewardsQueryOpcode;
+    WorldPacketHandlers[CMSG_GUILD_QUERY_RANKS].handler = &WorldSession::HandleGuildQueryRanksOpcode;
+    WorldPacketHandlers[CMSG_GUILD_ASSIGN_MEMBER_RANK].handler = &WorldSession::HandleGuildAssignRankOpcode;
+    WorldPacketHandlers[CMSG_GUILD_EVENT_LOG_QUERY].handler = &WorldSession::HandleGuildEventLogQueryOpcode;
+    WorldPacketHandlers[CMSG_SET_GUILD_BANK_TEXT].handler = &WorldSession::HandleSetGuildBankTabText;
+
+    // Guild Finder
+    WorldPacketHandlers[CMSG_LF_GUILD_GET_RECRUITS].handler = &WorldSession::HandleGuildFinderGetRecruits;
+    WorldPacketHandlers[CMSG_LF_GUILD_ADD_RECRUIT].handler = &WorldSession::HandleGuildFinderAddRecruit;
+    WorldPacketHandlers[CMSG_LF_GUILD_BROWSE].handler = &WorldSession::HandleGuildFinderBrowse;
+    WorldPacketHandlers[CMSG_LF_GUILD_DECLINE_RECRUIT].handler = &WorldSession::HandleGuildFinderDeclineRecruit;
+    WorldPacketHandlers[CMSG_LF_GUILD_GET_APPLICATIONS].handler = &WorldSession::HandleGuildFinderGetApplications;
+    WorldPacketHandlers[CMSG_LF_GUILD_POST_REQUEST].handler = &WorldSession::HandleGuildFinderPostRequest;
+    WorldPacketHandlers[CMSG_LF_GUILD_REMOVE_RECRUIT].handler = &WorldSession::HandleGuildFinderRemoveRecruit;
+    WorldPacketHandlers[CMSG_LF_GUILD_SET_GUILD_POST].handler = &WorldSession::HandleGuildFinderSetGuildPost;
 
     //// Tutorials
     WorldPacketHandlers[CMSG_TUTORIAL_FLAG].handler = &WorldSession::HandleTutorialFlag;
@@ -1721,7 +1737,7 @@ void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recv_data)
 //        data << uint8(pcaster->GetByte(PLAYER_BYTES, 3));	// hair color
 //        data << uint8(pcaster->GetByte(PLAYER_BYTES_2, 0));	// facial hair
 //
-//        if (pcaster->IsInGuild())
+//        if (pcaster->GetGuildId())
 //            data << uint32(pcaster->GetGuildId());
 //        else
 //            data << uint32(0);

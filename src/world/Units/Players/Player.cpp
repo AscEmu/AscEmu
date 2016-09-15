@@ -400,6 +400,8 @@ Player::Player(uint32 guid)
         memset(m_specs[s].mActions, 0, PLAYER_ACTION_BUTTON_SIZE);
     }
 
+    m_GuildId = 0;
+
     m_drunkTimer = 0;
     m_drunk = 0;
 
@@ -1621,6 +1623,17 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
 {
     if (xp < 1)
         return;
+
+    //this is new since 403. As we gain XP we also gain XP with our guild
+    if (m_playerInfo && m_playerInfo->m_guild)
+    {
+        uint32 guild_share = xp / 100;
+
+        Guild* guild = sGuildMgr.GetGuildById(m_playerInfo->m_guild);
+
+        if (guild)
+            guild->GiveXP(guild_share, this);
+    }
 
     // Obviously if Xp gaining is disabled we don't want to gain XP
     if (!m_XpGain)
@@ -8717,8 +8730,64 @@ void Player::SetGuildId(uint32 guildId)
 {
     if (IsInWorld())
     {
-        m_playerInfo->guild->SetGuildId(guildId);
+        m_GuildId = guildId;
+        if (m_GuildId == 0)
+        {
+            SetUInt64Value(OBJECT_FIELD_DATA, 0);
+            SetUInt32Value(OBJECT_FIELD_TYPE, GetUInt32Value(OBJECT_FIELD_TYPE) | 0x00010000);
+        }
+        else
+        {
+            SetUInt64Value(OBJECT_FIELD_DATA, m_GuildId);
+            SetUInt32Value(OBJECT_FIELD_TYPE, GetUInt32Value(OBJECT_FIELD_TYPE) & ~0x00010000);
+        }
+
+        //ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_GUILD_LEVEL_ENABLED, guildId != 0 );
+        SetUInt16Value(OBJECT_FIELD_TYPE, 1, m_GuildId != 0);
+
     }
+}
+
+void Player::SetInGuild(uint32 guildId)
+{
+    if (IsInWorld())
+    {
+        m_GuildId = guildId;
+        if (m_GuildId == 0)
+        {
+            SetUInt64Value(OBJECT_FIELD_DATA, 0);
+            SetUInt32Value(OBJECT_FIELD_TYPE, GetUInt32Value(OBJECT_FIELD_TYPE) | 0x00010000);
+        }
+        else
+        {
+            SetUInt64Value(OBJECT_FIELD_DATA, m_GuildId);
+            SetUInt32Value(OBJECT_FIELD_TYPE, GetUInt32Value(OBJECT_FIELD_TYPE) & ~0x00010000);
+        }
+
+        ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_GUILD_LEVEL_ENABLED, guildId != 0 );
+        SetUInt16Value(OBJECT_FIELD_TYPE, 1, m_GuildId != 0);
+    }
+}
+
+Guild* Player::GetGuild()
+{
+    uint32 guildId = GetGuildId();
+    return guildId ? sGuildMgr.GetGuildById(guildId) : NULL;
+}
+
+uint32 Player::GetGuildIdFromDB(uint64 guid)
+{
+    return 0;
+}
+
+uint8 Player::GetRankFromDB(uint64 guid)
+{
+    return 0;
+}
+
+std::string Player::GetGuildName()
+{
+    return GetGuildId() ? sGuildMgr.GetGuildById(GetGuildId())->GetName() : "";
 }
 
 void Player::SetGuildRank(uint32 guildRank)
@@ -9559,7 +9628,7 @@ bool Player::CanSignCharter(Charter* charter, Player* requester)
     if (charter->CharterType >= CHARTER_TYPE_ARENA_2V2 && m_arenaTeams[charter->CharterType - 1] != NULL)
         return false;
 
-    if (charter->CharterType == CHARTER_TYPE_GUILD && IsInGuild())
+    if (charter->CharterType == CHARTER_TYPE_GUILD && requester->GetGuild())
         return false;
 
     if (m_charters[charter->CharterType] || requester->GetTeam() != GetTeam() || this == requester)
@@ -13693,7 +13762,7 @@ void Player::SendGuildMOTD()
         return;
 
     WorldPacket data(SMSG_GUILD_EVENT, 50);
-    data << uint8(GUILD_EVENT_MOTD);
+    data << uint8(255);
     data << uint8(1);
     data << GetGuild()->GetMOTD();
     SendPacket(&data);	

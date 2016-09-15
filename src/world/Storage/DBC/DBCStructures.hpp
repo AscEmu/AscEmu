@@ -683,6 +683,7 @@ namespace DBC
             char const gt_regen_hp_per_spt_format[] = "xf";
             char const gt_regen_mp_per_spt_format[] = "xf";
             //char const gt_spell_scaling_format[] = "df"; new
+            char const guild_perk_spells_format[] = "xdii";
             char const holidays_format[] = "nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
             //char const item_armor_quality_format[] = "nfffffffi"; new
             //char const item_armor_shield_format[] = "nifffffff"; new
@@ -1598,6 +1599,13 @@ namespace DBC
         struct GtRegenMPPerSptEntry //cata
         {
             float ratio;            // 0 regen base
+        };
+
+        struct GuildPerkSpellsEntry
+        {
+            //uint32 Id;            // 0
+            uint32 Level;           // 1
+            uint32 SpellId;         // 2
         };
 
 #define MAX_HOLIDAY_DURATIONS 10

@@ -129,6 +129,17 @@ World::World()
     GoldLimit = 214748;
     GoldStartAmount = 0;
 
+    m_guild.MaxLevel = 25;
+    m_guild.MaxMembers = 80;
+    m_guild.MaxXpPerDay = 7807500;
+    m_guild.MaxRepPerWeek = 4375;
+    m_guild.LevlingEnabled = true;
+    m_guild.UndeletabelLevel = 4;
+    m_guild.EventLogCount = 100;
+    m_guild.NewsLogCount = 250;
+    m_guild.BankLogCount = 25;
+    m_guild.SaveInterval = 300;
+
     CacheVersion = 0;
 
     announce_tagcolor = 2;
@@ -249,6 +260,12 @@ World::~World()
 
     Log.Notice("TaxiMgr", "~TaxiMgr()");
     delete TaxiMgr::getSingletonPtr();
+
+    Log.Notice("GuildMgr", "~GuildMgr()");
+    delete GuildMgr::getSingletonPtr();
+
+    Log.Notice("GuildFinderMgr", "~GuildFinderMgr()");
+    delete GuildFinderMgr::getSingletonPtr();
 
     Log.Notice("BattlegroundMgr", "~BattlegroundMgr()");
     delete CBattlegroundManager::getSingletonPtr();
@@ -424,6 +441,8 @@ bool World::SetInitialWorldSettings()
     new LfgMgr;
     new WeatherMgr;
     new TaxiMgr;
+    new GuildFinderMgr;
+    new GuildMgr;
     new AddonMgr;
     new GameEventMgr;
     new CalendarMgr;
@@ -487,7 +506,6 @@ bool World::SetInitialWorldSettings()
     sMySQLStore.LoadNpcGossipTextIdTable();
     sMySQLStore.LoadPetLevelAbilitiesTable();
 
-
 #define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr)))
     // Fill the task list with jobs to do.
     TaskList tl;
@@ -529,6 +547,11 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
     MAKE_TASK(ObjectMgr, LoadAreaTrigger);
 
+    sGuildMgr.LoadGuildXpForLevel();
+    sGuildMgr.LoadGuildRewards();
+    sGuildMgr.LoadGuilds();
+
+    sGuildFinderMgr.LoadFromDB();
 
 #ifdef ENABLE_ACHIEVEMENTS
     MAKE_TASK(ObjectMgr, LoadAchievementRewards);
@@ -701,6 +724,8 @@ void World::Update(unsigned long time_passed)
     if (GetSessionCount() >= SESSION_CAP)
         TerminateProcess(GetCurrentProcess(), 0);
 #endif
+
+    sGuildMgr.Update((uint32)time_passed);
 }
 
 void World::SendGlobalMessage(WorldPacket* packet, WorldSession* self)
@@ -1626,6 +1651,18 @@ void World::Rehash(bool load)
     m_movementCompressThreshold *= m_movementCompressThreshold;        // square it to avoid sqrt() on checks
     // ======================================
 
+    // Guild System
+    m_guild.MaxLevel = Config.MainConfig.GetIntDefault("Guild", "MaxLevel", 25);
+    m_guild.MaxMembers = Config.MainConfig.GetIntDefault("Guild", "MaxMembers", 80);
+    m_guild.MaxXpPerDay = Config.MainConfig.GetIntDefault("Guild", "MaxXpPerDay", 7807500);
+    m_guild.MaxRepPerWeek = Config.MainConfig.GetIntDefault("Guild", "MaxRepPerWeek", 4375);
+    m_guild.LevlingEnabled = Config.MainConfig.GetBoolDefault("Guild", "LevlingEnabled", true);
+    m_guild.UndeletabelLevel = Config.MainConfig.GetIntDefault("Guild", "UndeletabelLevel", 4);
+    m_guild.EventLogCount = Config.MainConfig.GetIntDefault("Guild", "EventLogCount", 100);
+    m_guild.NewsLogCount = Config.MainConfig.GetIntDefault("Guild", "NewsLogCount", 250);
+    m_guild.BankLogCount = Config.MainConfig.GetIntDefault("Guild", "BankLogCount", 25);
+    m_guild.SaveInterval = Config.MainConfig.GetIntDefault("Guild", "SaveInterval", 300);
+
     if (m_banTable != NULL)
         free(m_banTable);
 
@@ -2058,9 +2095,7 @@ void World::PollCharacterInsertQueue(DatabaseConnection* con)
             inf->lastZone = 0;
             inf->m_Group = NULL;
             inf->m_loggedInPlayer = NULL;
-            inf->guild = NULL;
-            inf->guildRank = NULL;
-            inf->guildMember = NULL;
+            inf->guildRank = GUILD_RANK_NONE;
             inf->race = f[3].GetUInt32();
             inf->subGroup = 0;
             switch (inf->race)

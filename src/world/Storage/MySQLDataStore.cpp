@@ -1403,7 +1403,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
                         // no changes, quest can't be done for this requirement
                     }
 
-                    if (!GetItemProperties(id))
+                    if (!sItemStore.LookupEntry(id))
                     {
                         Log.Debug("ObjectMgr", "Quest %u has `ReqItemId%d` = %u but item with entry %u does not exist, quest can't be done.",
                                   qinfo.GetQuestId(), j + 1, id, id);
@@ -1423,7 +1423,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
                 uint32 id = qinfo.ReqSourceId[j];
                 if (id)
                 {
-                    if (!GetItemProperties(id))
+                    if (!sItemStore.LookupEntry(id))
                     {
                         Log.Debug("ObjectMgr", "Quest %u has `ReqSourceId%d` = %u but item with entry %u does not exist, quest can't be done.",
                                   qinfo.GetQuestId(), j + 1, id, id);
@@ -1495,7 +1495,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
                 uint32 id = qinfo.RewChoiceItemId[j];
                 if (id)
                 {
-                    if (!GetItemProperties(id))
+                    if (!sItemStore.LookupEntry(id))
                     {
                         Log.Debug("ObjectMgr", "Quest %u has `RewChoiceItemId%d` = %u but item with entry %u does not exist, quest will not reward this item.",
                                   qinfo.GetQuestId(), j + 1, id, id);
@@ -1522,7 +1522,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
                 uint32 id = qinfo.RewItemId[j];
                 if (id)
                 {
-                    if (!GetItemProperties(id))
+                    if (!sItemStore.LookupEntry(id))
                     {
                         Log.Debug("ObjectMgr", "Quest %u has `RewItemId%d` = %u but item with entry %u does not exist, quest will not reward this item.",
                                   qinfo.GetQuestId(), j + 1, id, id);

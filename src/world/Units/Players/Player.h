@@ -33,7 +33,7 @@
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/DB2/DB2Stores.hpp"
 #include "Storage/DB2/DB2Structures.hpp"
-#include "Management/Guild.h"
+#include "Management/Guild.hpp"
 #include "Management/AuctionHouse.h"
 
 
@@ -192,9 +192,8 @@ class SERVER_DECL PlayerInfo
         PlayerInstanceMap savedInstanceIds[NUM_INSTANCE_MODES];
 
         Player* m_loggedInPlayer;
-        Guild* guild;
-        GuildRank* guildRank;
-        GuildMember* guildMember;
+        uint32 m_guild;
+        uint32 guildRank;
 };
 
 struct PlayerPet
@@ -876,20 +875,28 @@ class SERVER_DECL Player : public Unit
         /////////////////////////////////////////////////////////////////////////////////////////
         // Guilds
         /////////////////////////////////////////////////////////////////////////////////////////
-        Guild* GetGuild() { return m_playerInfo->guild; }
-
-        //\todo danko
-        bool IsInGuild() {return /*(m_playerInfo->guild->GetGuildId() != 0) ? true : */false;}
-        uint32 GetGuildId() { return 0;  /*m_playerInfo->guild->GetGuildId();*/ }
+        uint32 m_GuildId;
+        uint32 m_GuildIdInvited;
 
         void SetGuildId(uint32 guildId);
-        uint32 GetGuildRank() { return m_uint32Values[PLAYER_GUILDRANK]; }
-        GuildRank* GetGuildRankS() { return m_playerInfo->guildRank; }
         void SetGuildRank(uint32 guildRank);
-        uint32 GetGuildInvitersGuid() { return m_invitersGuid; }
-        void SetGuildInvitersGuid(uint32 guid) { m_invitersGuid = guid; }
-        void UnSetGuildInvitersGuid() { m_invitersGuid = 0; }
-        GuildMember* GetGuildMember() { return m_playerInfo->guildMember; }
+        void SetInGuild(uint32 guildId);
+
+        void SetRank(uint8 rankId) { SetUInt32Value(PLAYER_GUILDRANK, rankId); }
+        uint8 GetRank() const { return uint8(GetUInt32Value(PLAYER_GUILDRANK)); }
+
+        void SetGuildLevel(uint32 level) { SetUInt32Value(PLAYER_GUILDLEVEL, level); }
+        uint32 GetGuildLevel() { return GetUInt32Value(PLAYER_GUILDLEVEL); }
+
+        void SetGuildIdInvited(uint32 GuildId) { m_GuildIdInvited = GuildId; }
+        uint32 GetGuildId() const { return GetUInt32Value(OBJECT_FIELD_DATA); /* return only lower part */ }
+        Guild* GetGuild();
+
+        static uint32 GetGuildIdFromDB(uint64 guid);
+        static uint8 GetRankFromDB(uint64 guid);
+        int GetGuildIdInvited() { return m_GuildIdInvited; }
+
+        std::string GetGuildName();
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Duel

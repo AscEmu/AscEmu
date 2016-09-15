@@ -140,7 +140,8 @@ enum TYPE
     TYPE_DYNAMICOBJECT  = 64,
     TYPE_CORPSE		    = 128,
     TYPE_AIGROUP		= 256,
-    TYPE_AREATRIGGER	= 512
+    TYPE_AREATRIGGER	= 512,
+    TYPE_IN_GUILD       = 1024,
 };
 
 enum OBJECT_UPDATE_TYPE
@@ -437,6 +438,8 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         }
 
         void EventSetUInt32Value(uint32 index, uint32 value);
+
+        void SetUInt16Value(uint16 index, uint8 offset, uint16 value);
         void SetUInt32Value(const uint32 index, const uint32 value);
 
         /// Set uint64 property
@@ -453,6 +456,14 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         {
             ARCEMU_ASSERT(index < m_valuesCount);
             return m_uint32Values[index] & flag;
+        }
+
+        void ApplyModFlag(uint16 index, uint32 flag, bool apply)
+        {
+            if (apply)
+                SetFlag(index, flag);
+            else
+                RemoveFlag(index, flag);
         }
 
         ////////////////////////////////////////
