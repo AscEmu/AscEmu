@@ -8777,12 +8777,26 @@ Guild* Player::GetGuild()
 
 uint32 Player::GetGuildIdFromDB(uint64 guid)
 {
-    return 0;
+    QueryResult* result = CharacterDatabase.Query("SELECT guildId, playerGuid FROM guild_member WHERE playerGuid = %u", Arcemu::Util::GUID_LOPART(guid));
+    if (result)
+    {
+        Field* fields = result->Fetch();
+        return fields[0].GetUInt32();
+    }
+    else
+        return 0;
 }
 
-uint8 Player::GetRankFromDB(uint64 guid)
+int8 Player::GetRankFromDB(uint64 guid)
 {
-    return 0;
+    QueryResult* result = CharacterDatabase.Query("SELECT playerGuid, rank FROM guild_member WHERE playerGuid = %u", Arcemu::Util::GUID_LOPART(guid));
+    if (result)
+    {
+        Field* fields = result->Fetch();
+        return fields[1].GetUInt8();
+    }
+    else
+        return -1;
 }
 
 std::string Player::GetGuildName()

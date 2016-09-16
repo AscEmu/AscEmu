@@ -893,7 +893,7 @@ class SERVER_DECL Player : public Unit
         Guild* GetGuild();
 
         static uint32 GetGuildIdFromDB(uint64 guid);
-        static uint8 GetRankFromDB(uint64 guid);
+        static int8 GetRankFromDB(uint64 guid);
         int GetGuildIdInvited() { return m_GuildIdInvited; }
 
         std::string GetGuildName();

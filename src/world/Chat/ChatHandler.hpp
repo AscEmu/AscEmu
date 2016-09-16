@@ -280,6 +280,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         //Guild Command
         bool HandleGuildCreateCommand(const char* args, WorldSession* m_session);
         bool HandleGuildDisbandCommand(const char* /*args*/, WorldSession* m_session);
+        bool HandleGuildInfoCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleGuildJoinCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleGuildListMembersCommand(const char* /*args*/, WorldSession* m_session);
         bool HandleRenameGuildCommand(const char* args, WorldSession* m_session);
