@@ -1226,7 +1226,6 @@ enum Opcodes
     CMSG_ITEM_REFUND_INFO                               = 0x2206,   // not implemented
     CMSG_SET_TITLE                                      = 0x2117,
     SMSG_LEVELUP_INFO                                   = 0x0435,
-    CMSG_SET_GRANTABLE_LEVELS                           = 0x40C, // old opcode ned neew ? research
     SMSG_PROPOSE_LEVEL_GRANT                            = 0x6114,
     CMSG_ACCEPT_LEVEL_GRANT                             = 0x0205,
     CMSG_SET_ALLOW_LOW_LEVEL_RAID1                      = 0x4435,
@@ -1235,7 +1234,6 @@ enum Opcodes
     SMSG_TALENTS_INFO                                   = 0x6F26,
     CMSG_LEARN_PREVIEW_TALENTS                          = 0x2415,
     CMSG_LEARN_TALENT                                   = 0x6E24,
-    CMSG_LEARN_TALENTS_MULTIPLE                         = 0x4C1, // unk need new
     CMSG_LEARN_PREVIEW_TALENTS_PET                      = 0x0000,
     MSG_TALENT_WIPE_CONFIRM                             = 0x0107,
     SMSG_INSPECT_TALENT                                 = 0x4014,
@@ -1357,14 +1355,11 @@ enum Opcodes
     CMSG_QUERY_INSPECT_ACHIEVEMENTS                     = 0x4D27,   // No Handler
 
     //Guild
-    CMSG_GUILD_CREATE                                   = 0x0000,   //NA
     CMSG_GUILD_INVITE                                   = 0x24B0,
     SMSG_GUILD_INVITE                                   = 0x14A2,
     CMSG_GUILD_ACCEPT                                   = 0x2531,
     CMSG_GUILD_DECLINE                                  = 0x3231,
     SMSG_GUILD_DECLINE                                  = 0x2C07,
-    CMSG_GUILD_INFO                                     = 0x0000,   //NA
-    SMSG_GUILD_INFO                                     = 0x0000,   //NA
     CMSG_GUILD_ROSTER                                   = 0x1226,
     SMSG_GUILD_ROSTER                                   = 0x3DA3,
     CMSG_GUILD_PROMOTE                                  = 0x1030,
@@ -1375,14 +1370,10 @@ enum Opcodes
     CMSG_GUILD_LEADER                                   = 0x3034,
     CMSG_GUILD_MOTD                                     = 0x1035,
     SMSG_GUILD_COMMAND_RESULT                           = 0x7DB3,
-    UMSG_UPDATE_GUILD                                   = 0x0000,   //NA
-    UMSG_DELETE_GUILD_CHARTER                           = 0x0000,   //NA
     MSG_SAVE_GUILD_EMBLEM                               = 0x2404,
     CMSG_GUILD_RANK                                     = 0x1024,
     CMSG_GUILD_ADD_RANK                                 = 0x3030,
     CMSG_GUILD_DEL_RANK                                 = 0x3234,
-    CMSG_GUILD_SET_PUBLIC_NOTE                          = 0x0000,   //NA
-    CMSG_GUILD_SET_OFFICER_NOTE                         = 0x0000,   //NA
     CMSG_GUILD_INFO_TEXT                                = 0x3227,
     CMSG_GUILD_BANKER_ACTIVATE                          = 0x2E37,
     CMSG_GUILD_BANK_QUERY_TAB                           = 0x2E35,
@@ -1464,11 +1455,11 @@ enum Opcodes
     SMSG_SET_PHASE_SHIFT                                = 0x70A0,
 
     //Unknown packet send by client to server
-    CMSG_UNREGISTER_ALL_ADDON_PREFIXES                  = 0x3D54,   // unknown?
-    CMSG_VOICE_SESSION_ENABLE                           = 0x2314,   // unknown?
-    CMSG_REQUEST_CATEGORY_COOLDOWNS                     = 0x7102,   // unknown?
-    CMSG_REQUEST_CEMETERY_LIST                          = 0x720A,   // unknown?
-    CMSG_REORDER_CHARACTERS                             = 0x0593,   // unknown?
+    CMSG_UNREGISTER_ALL_ADDON_PREFIXES                  = 0x3D54,
+    CMSG_VOICE_SESSION_ENABLE                           = 0x2314,
+    CMSG_REQUEST_CATEGORY_COOLDOWNS                     = 0x7102,
+    CMSG_REQUEST_CEMETERY_LIST                          = 0x720A,
+    CMSG_REORDER_CHARACTERS                             = 0x0593,
     CMSG_UNK_7818                                       = 0x7818,
     CMSG_UNK_7314                                       = 0x7315,
     CMSG_UNK_7102                                       = 0x7102,
@@ -1486,6 +1477,15 @@ enum Opcodes
     CMSG_TAXIENABLEALLNODES                             = 0x0000,
     CMSG_TAXISHOWNODES                                  = 0x0000,
     CMSG_GRANT_LEVEL                                    = 0x0000,
+    CMSG_GUILD_CREATE                                   = 0x0000,
+    CMSG_GUILD_INFO                                     = 0x0000,
+    SMSG_GUILD_INFO                                     = 0x0000,
+    UMSG_UPDATE_GUILD                                   = 0x0000,
+    UMSG_DELETE_GUILD_CHARTER                           = 0x0000,
+    CMSG_GUILD_SET_PUBLIC_NOTE                          = 0x0000,
+    CMSG_GUILD_SET_OFFICER_NOTE                         = 0x0000,
+    CMSG_LEARN_TALENTS_MULTIPLE                         = 0x0000,
+    CMSG_SET_GRANTABLE_LEVELS                           = 0x0000,
 
     NUM_MSG_TYPES                                       = 0xFFFF    // End of Opcodes
 };

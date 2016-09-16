@@ -557,20 +557,20 @@ class SERVER_DECL WorldSession
 
         // Guild
         void HandleGuildQueryOpcode(WorldPacket& recv_data);
-        void HandleCreateGuild(WorldPacket& recv_data); // old opcode
+        //void HandleCreateGuild(WorldPacket& recv_data);
         void HandleInviteToGuildOpcode(WorldPacket& recv_data);
         void HandleGuildRemoveOpcode(WorldPacket& recv_data);
         void HandleGuildAcceptOpcode(WorldPacket& recv_data);
         void HandleGuildDeclineOpcode(WorldPacket& recv_data);
-        void HandleSetGuildInformation(WorldPacket& recv_data); // old opcode
-        void HandleGuildInfo(WorldPacket& recv_data); // old opcode
+        //void HandleSetGuildInformation(WorldPacket& recv_data);
+        //void HandleGuildInfo(WorldPacket& recv_data);
         void HandleGuildRosterOpcode(WorldPacket& recv_data);
         void HandleGuildPromoteOpcode(WorldPacket& recv_data);
         void HandleGuildAssignRankOpcode(WorldPacket& recv_data);
         void HandleGuildDemoteOpcode(WorldPacket& recv_data);
         void HandleGuildLeaveOpcode(WorldPacket& recv_data);
         void HandleGuildDisbandOpcode(WorldPacket& recv_data);
-        void HandleGuildLeaderOpcode(WorldPacket& recv_data); // old opcode
+        //void HandleGuildLeaderOpcode(WorldPacket& recv_data);
         void HandleGuildMotdOpcode(WorldPacket& recv_data);
         void HandleGuildSetNoteOpcode(WorldPacket& recv_data);
         void HandleGuildQueryRanksOpcode(WorldPacket& recv_data);
@@ -580,8 +580,8 @@ class SERVER_DECL WorldSession
         void HandleGuildQueryNewsOpcode(WorldPacket& recv_data);
         void HandleGuildNewsUpdateStickyOpcode(WorldPacket& recv_data);
         void HandleGuildSetGuildMaster(WorldPacket& recv_data);
-        void HandleGuildSetPublicNoteOpcode(WorldPacket& recv_data);// old opcode
-        void HandleGuildSetOfficerNoteOpcode(WorldPacket& recv_data);// old opcode
+        //void HandleGuildSetPublicNoteOpcode(WorldPacket& recv_data);
+        //void HandleGuildSetOfficerNoteOpcode(WorldPacket& recv_data);
         void HandleSaveGuildEmblemOpcode(WorldPacket& recv_data);
         void HandleGuildEventLogQueryOpcode(WorldPacket& recv_data);
         void HandleGuildQueryXPOpcode(WorldPacket& recv_data);
