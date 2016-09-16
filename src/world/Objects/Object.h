@@ -131,32 +131,33 @@ enum TypeMask
 
 enum TYPE
 {
-    TYPE_OBJECT		    = 1,
-    TYPE_ITEM		    = 2,
-    TYPE_CONTAINER	    = 4,
-    TYPE_UNIT		    = 8,
-    TYPE_PLAYER		    = 16,
-    TYPE_GAMEOBJECT	    = 32,
-    TYPE_DYNAMICOBJECT  = 64,
-    TYPE_CORPSE		    = 128,
-    TYPE_AIGROUP		= 256,
-    TYPE_AREATRIGGER	= 512
+    TYPE_OBJECT             = 1,
+    TYPE_ITEM               = 2,
+    TYPE_CONTAINER          = 4,
+    TYPE_UNIT               = 8,
+    TYPE_PLAYER             = 16,
+    TYPE_GAMEOBJECT         = 32,
+    TYPE_DYNAMICOBJECT      = 64,
+    TYPE_CORPSE             = 128,
+    TYPE_AIGROUP            = 256,
+    TYPE_AREATRIGGER        = 512,
+    TYPE_IN_GUILD           = 1024,
 };
 
 enum OBJECT_UPDATE_TYPE
 {
-    UPDATETYPE_VALUES = 0,
-    UPDATETYPE_CREATE_OBJECT = 1,
-    UPDATETYPE_CREATE_OBJECT2 = 2,
+    UPDATETYPE_VALUES               = 0,
+    UPDATETYPE_CREATE_OBJECT        = 1,
+    UPDATETYPE_CREATE_OBJECT2       = 2,
     UPDATETYPE_OUT_OF_RANGE_OBJECTS = 3
 };
 
 enum PHASECOMMANDS
 {
-    PHASE_SET = 0,      /// overwrites the phase value with the supplied one
-    PHASE_ADD = 1,      /// adds the new bits to the current phase value
-    PHASE_DEL = 2,      /// removes the given bits from the current phase value
-    PHASE_RESET = 3     /// sets the default phase of 1, same as PHASE_SET with 1 as the new value
+    PHASE_SET       = 0,    // overwrites the phase value with the supplied one
+    PHASE_ADD       = 1,    // adds the new bits to the current phase value
+    PHASE_DEL       = 2,    // removes the given bits from the current phase value
+    PHASE_RESET     = 3     // sets the default phase of 1, same as PHASE_SET with 1 as the new value
 };
 
 typedef struct
@@ -437,6 +438,8 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         }
 
         void EventSetUInt32Value(uint32 index, uint32 value);
+
+        void SetUInt16Value(uint16 index, uint8 offset, uint16 value);
         void SetUInt32Value(const uint32 index, const uint32 value);
 
         /// Set uint64 property
@@ -453,6 +456,14 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         {
             ARCEMU_ASSERT(index < m_valuesCount);
             return m_uint32Values[index] & flag;
+        }
+
+        void ApplyModFlag(uint16 index, uint32 flag, bool apply)
+        {
+            if (apply)
+                SetFlag(index, flag);
+            else
+                RemoveFlag(index, flag);
         }
 
         ////////////////////////////////////////

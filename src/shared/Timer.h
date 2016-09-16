@@ -45,6 +45,8 @@ inline uint32 GetMSTimeDiffToNow(uint32 oldMSTime)
     return getMSTimeDiff(oldMSTime, getMSTime());
 }
 
+std::string ByteArrayToHexStr(uint8 const* bytes, uint32 length, bool reverse = false);
+
 struct IntervalTimer
 {
     public:

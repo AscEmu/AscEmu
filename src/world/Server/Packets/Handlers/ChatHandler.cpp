@@ -373,8 +373,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 return;
             }
 
-            if (_player->m_playerInfo->guild)
-                _player->m_playerInfo->guild->GuildChat(msg.c_str(), this, lang);
+            if (_player->m_playerInfo->m_guild)
+                sGuildMgr.GetGuildById(_player->m_playerInfo->m_guild)->BroadcastToGuild(this, false, msg.c_str(), lang);
 
         }
         break;
@@ -389,8 +389,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 return;
             }
 
-            if (_player->m_playerInfo->guild)
-                _player->m_playerInfo->guild->OfficerChat(msg.c_str(), this, lang);
+            if (_player->m_playerInfo->m_guild)
+                sGuildMgr.GetGuildById(_player->m_playerInfo->m_guild)->BroadcastToGuild(this, true, msg.c_str(), lang);
 
         }
         break;

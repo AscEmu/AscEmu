@@ -1114,7 +1114,7 @@ void LuaHookOnGuildJoin(Player* pPlayer, Guild* pGuild)
         sLuaMgr.BeginCall((*itr));
         sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_GUILD_JOIN);
         sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_STRING(pGuild->GetGuildName());
+        sLuaMgr.PUSH_STRING(pGuild->GetName().c_str());
         sLuaMgr.ExecuteCall(3);
     }
     RELEASE_LOCK
@@ -1357,7 +1357,7 @@ void LuaHookOnGuildCreate(Player* pLeader, Guild* pGuild)
         sLuaMgr.BeginCall((*itr));
         sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_GUILD_CREATE);
         sLuaMgr.PushUnit(pLeader);
-        sLuaMgr.PUSH_STRING(pGuild->GetGuildName());
+        sLuaMgr.PUSH_STRING(pGuild->GetName().c_str());
         sLuaMgr.ExecuteCall(3);
     }
     RELEASE_LOCK

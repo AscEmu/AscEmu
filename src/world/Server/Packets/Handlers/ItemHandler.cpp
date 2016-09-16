@@ -1516,14 +1516,15 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
 
     if (guildmoney)
     {
-        if (_player->IsInGuild())
-        {
-            if (!(_player->GetGuildRankS()->iRights & GR_RIGHT_GUILD_BANK_REPAIR))
-            {
-                return; //we have not permissions to do that
-            }
-        }
-        else
+        //\todo danko
+        //if (_player->IsInGuild())
+        //{
+        //    if (!(_player->GetGuildRankS()->iRights & GR_RIGHT_GUILD_BANK_REPAIR))
+        //    {
+        //        return; //we have not permissions to do that
+        //    }
+        //}
+        //else
             return;//can't repair with guild money if player is not in guild.
     }
 
@@ -1557,8 +1558,9 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
                 }
             }
         }
-        if (totalcost > 0)  //we already checked if it's in guild in RepairItem()
-            _player->GetGuild()->LogGuildBankActionMoney(GUILD_BANK_LOG_EVENT_REPAIR, _player->GetLowGUID(), totalcost);
+        //\todo danko
+        //if (totalcost > 0)  //we already checked if it's in guild in RepairItem()
+        //    _player->GetGuild()->LogGuildBankActionMoney(GUILD_BANK_LOG_EVENT_REPAIR, _player->GetLowGUID(), totalcost);
     }
     else
     {

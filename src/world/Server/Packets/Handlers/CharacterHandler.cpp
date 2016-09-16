@@ -216,14 +216,14 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
             uint32 atLoginFlags = fields[17].GetUInt32();
             uint32 GuildId = fields[18].GetUInt32();
-            ObjectGuid guildGuid = MAKE_NEW_GUID(GuildId, 0, GuildId ? uint32(0x1FF) : 0);
+            ObjectGuid guildGuid = MAKE_NEW_GUID(GuildId, 0, HIGHGUID_TYPE_GUILD);
 
             //  0     1      2     3       4       5     6      7
             //guid, level, race, class, gender, bytes, bytes2, name,
             //    8         9          10        11     12     13
             //positionX, positionY, positionZ, mapId, zoneId, banned,
             //     14        15           16            17               18
-            //restState, deathstate, login_flags, player_flags, guild_data.guildid
+            //restState, deathstate, login_flags, player_flags, guild_member.guildId
 
             banned = fields[13].GetUInt32();
             uint32 char_flags = 0;
@@ -418,7 +418,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 void WorldSession::HandleCharEnumOpcode(WorldPacket& recv_data)
 {
     AsyncQuery* q = new AsyncQuery(new SQLClassCallbackP1<World, uint32>(World::getSingletonPtr(), &World::CharacterEnumProc, GetAccountId()));
-    q->AddQuery("SELECT guid, level, race, class, gender, bytes, bytes2, name, positionX, positionY, positionZ, mapId, zoneId, banned, restState, deathstate, login_flags, player_flags, guild_data.guildid FROM characters LEFT JOIN guild_data ON characters.guid = guild_data.playerid WHERE acct=%u ORDER BY guid LIMIT 10", GetAccountId());
+    q->AddQuery("SELECT guid, level, race, class, gender, bytes, bytes2, name, positionX, positionY, positionZ, mapId, zoneId, banned, restState, deathstate, login_flags, player_flags, guild_member.guildId FROM characters LEFT JOIN guild_member ON characters.guid = guild_member.playerGuid WHERE acct=%u ORDER BY guid LIMIT 10", GetAccountId());
     CharacterDatabase.QueueAsyncQuery(q);
 }
 
@@ -594,9 +594,8 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     pn->subGroup = 0;
     pn->m_loggedInPlayer = NULL;
     pn->team = pNewChar->GetTeam();
-    pn->guild = NULL;
-    pn->guildRank = NULL;
-    pn->guildMember = NULL;
+    pn->m_guild = 0;
+    pn->guildRank = GUILD_RANK_NONE;
     pn->lastOnline = UNIXTIME;
     objmgr.AddPlayerInfo(pn);
 
@@ -641,12 +640,13 @@ uint8 WorldSession::DeleteCharacter(uint32 guid)
         std::string name = result->Fetch()[0].GetString();
         delete result;
 
-        if (inf->guild)
+        if (inf->m_guild)
         {
-            if (inf->guild->GetGuildLeader() == inf->guid)
+            Guild* guild = sGuildMgr.GetGuildById(inf->m_guild);
+            if (guild->GetLeaderGUID() == inf->guid)
                 return E_CHAR_DELETE_FAILED_GUILD_LEADER;
             else
-                inf->guild->RemoveGuildMember(inf, NULL);
+                guild->HandleRemoveMember(this, Arcemu::Util::GUID_HIPART(inf->guid));
         }
 
         for (uint8 i = 0; i < NUM_CHARTER_TYPES; ++i)
@@ -1023,19 +1023,12 @@ void WorldSession::FullLogin(Player* plr)
         info->lastZone = plr->GetZoneId();
         info->race = plr->getRace();
         info->team = plr->GetTeam();
-        info->guild = NULL;
-        info->guildRank = NULL;
-        info->guildMember = NULL;
+        info->guildRank = GUILD_RANK_NONE;
         info->m_Group = NULL;
         info->subGroup = 0;
         objmgr.AddPlayerInfo(info);
     }
     plr->m_playerInfo = info;
-    if (plr->m_playerInfo->guild)
-    {
-        plr->SetGuildId(plr->m_playerInfo->guild->GetGuildId());
-        plr->SetGuildRank(plr->m_playerInfo->guildRank->iId);
-    }
 
     info->m_loggedInPlayer = plr;
 
@@ -1110,13 +1103,6 @@ void WorldSession::FullLogin(Player* plr)
     // Login time, will be used for played time calc
     plr->m_playedtime[2] = uint32(UNIXTIME);
 
-    //Issue a message telling all guild members that this player has signed on
-    if (plr->IsInGuild())
-    {
-        plr->SendGuildMOTD();
-        plr->m_playerInfo->guild->LogGuildEvent(GUILD_EVENT_HASCOMEONLINE, 1, plr->GetName());
-    }
-
     // Send online status to people having this char in friendlist
     _player->Social_TellFriendsOnline();
     // send friend list (for ignores)
@@ -1189,6 +1175,21 @@ void WorldSession::FullLogin(Player* plr)
         plr->AddToWorld();
 
     sHookInterface.OnFullLogin(_player);
+
+    // Set our Guild Infos   
+    if (plr->getPlayerInfo()->m_guild && sGuildMgr.GetGuildById(plr->getPlayerInfo()->m_guild != NULL))
+    {
+        plr->SetInGuild(plr->getPlayerInfo()->m_guild);
+        plr->SetRank(plr->getPlayerInfo()->guildRank);
+        plr->GetGuild()->SendLoginInfo(plr->GetSession());
+        if (Guild* guild = sGuildMgr.GetGuildById(plr->GetGuildId()))
+            plr->SetGuildLevel(guild->GetLevel());
+    }
+    else
+    {
+        plr->SetInGuild(0);
+        plr->SetRank(GUILD_RANK_NONE);
+    }
 
     objmgr.AddPlayer(_player);
 

@@ -150,7 +150,11 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "Objects/CObjectFactory.h"
 #include "Management/CRitual.h"
 #include "Management/Group.h"
-#include "Management/Guild.h"
+
+#include "Management/GuildFinderMgr.hpp"
+#include "Management/Guild.hpp"
+#include "Management/GuildMgr.hpp"
+
 #include "Server/Packets/Handlers/HonorHandler.h"
 #include "Management/ItemPrototype.h"
 #include "Management/Item.h"

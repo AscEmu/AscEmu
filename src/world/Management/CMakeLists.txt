@@ -33,7 +33,11 @@ set(SRC_MANAGEMENT_FILES
    ${PATH_PREFIX}/Group.cpp
    ${PATH_PREFIX}/Group.h
    ${PATH_PREFIX}/Guild.cpp
-   ${PATH_PREFIX}/Guild.h
+   ${PATH_PREFIX}/Guild.hpp
+   ${PATH_PREFIX}/GuildFinderMgr.cpp
+   ${PATH_PREFIX}/GuildFinderMgr.hpp
+   ${PATH_PREFIX}/GuildMgr.cpp
+   ${PATH_PREFIX}/GuildMgr.hpp
    ${PATH_PREFIX}/Item.cpp
    ${PATH_PREFIX}/Item.h
    ${PATH_PREFIX}/ItemInterface.cpp

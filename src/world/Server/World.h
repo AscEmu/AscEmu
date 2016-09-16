@@ -714,6 +714,21 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         uint32 GoldLimit;
         uint32 GoldStartAmount;
 
+        // Guild
+        struct
+        {
+            uint32 MaxLevel;
+            uint32 MaxMembers;
+            uint32 MaxXpPerDay;
+            uint32 MaxRepPerWeek;
+            bool LevlingEnabled;
+            uint32 UndeletabelLevel;
+            uint32 EventLogCount;
+            uint32 NewsLogCount;
+            uint32 BankLogCount;
+            uint32 SaveInterval;
+        } m_guild;
+
         uint32 CacheVersion;
 
         char* m_banTable;
