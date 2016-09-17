@@ -336,10 +336,6 @@ bool LoadDBCs()
         }
     }
 
-    Log.Debug("SpellSystem", "Size of dbcSpell is %u", dbcSpell.GetNumRows());
-    OLD_SpellEntry* test_spell = dbcSpell.LookupEntry(4);
-    Log.Debug("SpellSystem", "TestSpell 4 `%s` set!", test_spell->Name);
-
     for (uint32 i = 1; i < sSpellEffectStore.GetNumRows(); ++i)
     {
         if (DBC::Structures::SpellEffectEntry const* spellEffect = sSpellEffectStore.LookupEntry(i))

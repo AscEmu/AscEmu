@@ -1604,18 +1604,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(7384);
     if (sp != NULL)
         sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
-    // Warrior - Overpower Rank 2
-    sp = CheckAndReturnSpellEntry(7887);
-    if (sp != NULL)
-        sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
-    // Warrior - Overpower Rank 3
-    sp = CheckAndReturnSpellEntry(11584);
-    if (sp != NULL)
-        sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
-    // Warrior - Overpower Rank 4
-    sp = CheckAndReturnSpellEntry(11585);
-    if (sp != NULL)
-        sp->Attributes |= ATTRIBUTES_CANT_BE_DPB;
+    
 
     // Warrior - Tactical Mastery Rank 1
     sp = CheckAndReturnSpellEntry(12295);
@@ -1625,10 +1614,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(12676);
     if (sp != NULL)
         sp->RequiredShapeShift = 0x00070000;
-    // Warrior - Tactical Mastery Rank 3
-    sp = CheckAndReturnSpellEntry(12677);
-    if (sp != NULL)
-        sp->RequiredShapeShift = 0x00070000;
+    
 
     // Warrior - Heroic Throw
     sp = CheckAndReturnSpellEntry(57755);
@@ -1641,27 +1627,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(772);
     if (sp != NULL)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(6546);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(6547);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(6548);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(11572);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(11573);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(11574);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(25208);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+   
 
     ////////////////////////////////////////////////////////////
     // Fury
@@ -1671,33 +1637,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
 
-    sp = CheckAndReturnSpellEntry(8820);
-    if (sp != NULL)
-        sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
-
-    sp = CheckAndReturnSpellEntry(11604);
-    if (sp != NULL)
-        sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
-
-    sp = CheckAndReturnSpellEntry(11605);
-    if (sp != NULL)
-        sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
-
-    sp = CheckAndReturnSpellEntry(25241);
-    if (sp != NULL)
-        sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
-
-    sp = CheckAndReturnSpellEntry(25242);
-    if (sp != NULL)
-        sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
-
-    sp = CheckAndReturnSpellEntry(47474);
-    if (sp != NULL)
-        sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
-
-    sp = CheckAndReturnSpellEntry(47475);
-    if (sp != NULL)
-        sp->Effect[0] = SPELL_EFFECT_SCHOOL_DAMAGE;
+    
 
     // Warrior - Bloodthirst new version is ok but old version is wrong from now on :(
     sp = CheckAndReturnSpellEntry(23881);
@@ -1705,36 +1645,6 @@ void ApplyNormalFixes()
     {
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL; //cast on us, it is good
         sp->EffectTriggerSpell[1] = 23885; //evil , but this is good for us :D
-    }
-    sp = CheckAndReturnSpellEntry(23892);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 23886; //evil , but this is good for us :D  // DankoDJ: Is there a reason to trigger an non existing spell?
-    }
-    sp = CheckAndReturnSpellEntry(23893);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL; //
-        sp->EffectTriggerSpell[1] = 23887; //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
-    }
-    sp = CheckAndReturnSpellEntry(23894);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL; //
-        sp->EffectTriggerSpell[1] = 23888; //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
-    }
-    sp = CheckAndReturnSpellEntry(25251);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL; //aura
-        sp->EffectTriggerSpell[1] = 25252; //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
-    }
-    sp = CheckAndReturnSpellEntry(30335);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL; //aura
-        sp->EffectTriggerSpell[1] = 30339; //evil , but this is good for us :D // DankoDJ: Is there a reason to trigger an non existing spell?
     }
 
     // Warrior - Berserker Rage
@@ -1781,24 +1691,6 @@ void ApplyNormalFixes()
         sp->speed = 0;    //without, no damage is done
     }
 
-    //Paladin - Seal of Martyr
-    sp = CheckAndReturnSpellEntry(53720);
-    if (sp != NULL)
-    {
-        sp->School = SCHOOL_HOLY;
-    }
-    //Paladin - seal of blood
-    sp = CheckAndReturnSpellEntry(31892);
-    if (sp != NULL)
-    {
-        sp->School = SCHOOL_HOLY;
-    }
-    sp = CheckAndReturnSpellEntry(53719);
-    if (sp != NULL)
-    {
-        sp->School = SCHOOL_HOLY;
-        sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC;
-    }
     sp = CheckAndReturnSpellEntry(31893);
     if (sp != NULL)
     {
@@ -1839,13 +1731,7 @@ void ApplyNormalFixes()
         sp->SpellGroupType[2] = 0;
     }
 
-    //Paladin - Avenging Wrath marker - Is forced debuff
-    sp = CheckAndReturnSpellEntry(61987);
-    if (sp != NULL)
-    {
-        sp->Attributes = ATTRIBUTES_IGNORE_INVULNERABILITY;
-    }
-
+    
     //Paladin - Forbearance - Is forced debuff
     sp = CheckAndReturnSpellEntry(25771);
     if (sp != NULL)
@@ -1868,26 +1754,13 @@ void ApplyNormalFixes()
     if (sp != NULL)
         sp->targetAuraSpellNot = 25771;
 
-    //Hand of Protection Rank 2
-    sp = CheckAndReturnSpellEntry(5599);
-    if (sp != NULL)
-        sp->targetAuraSpellNot = 25771;
-
-    //Hand of Protection Rank 3
-    sp = CheckAndReturnSpellEntry(10278);
-    if (sp != NULL)
-        sp->targetAuraSpellNot = 25771;
-
     //Paladin - Art of War
     sp = CheckAndReturnSpellEntry(53486);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_MOD_DAMAGE_DONE;
     }
-    sp = CheckAndReturnSpellEntry(53489);
-    if (sp != NULL)
-        sp->AuraInterruptFlags = AURA_INTERRUPT_ON_CAST_SPELL;
-
+    
     sp = CheckAndReturnSpellEntry(53488);
     if (sp != NULL)
     {
@@ -1904,24 +1777,7 @@ void ApplyNormalFixes()
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 32747;
     }
-    sp = CheckAndReturnSpellEntry(5588);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 32747;
-    }
-    sp = CheckAndReturnSpellEntry(5589);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 32747;
-    }
-    sp = CheckAndReturnSpellEntry(10308);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 32747;
-    }
+   
 
     //////////////////////////////////////////
     // HUNTER                                //
@@ -1989,24 +1845,6 @@ void ApplyNormalFixes()
     }
 
     // Hunter - Ferocious Inspiration
-    sp = CheckAndReturnSpellEntry(34455);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
-        sp->EffectTriggerSpell[0] = 34456;
-        sp->procFlags = PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF); //maybe target master ?
-        sp->Effect[1] = SPELL_EFFECT_NULL; //remove this
-    }
-    sp = CheckAndReturnSpellEntry(34459);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
-        sp->EffectTriggerSpell[0] = 34456;
-        sp->procFlags = PROC_ON_CRIT_ATTACK | PROC_ON_SPELL_CRIT_HIT | static_cast<uint32>(PROC_TARGET_SELF);
-        sp->Effect[1] = SPELL_EFFECT_NULL; //remove this
-    }
     sp = CheckAndReturnSpellEntry(34460);
     if (sp != NULL)
     {
@@ -2085,24 +1923,6 @@ void ApplyNormalFixes()
         sp->procChance = sp->EffectBasePoints[0];
         sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
     }
-    sp = CheckAndReturnSpellEntry(19624);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 19615;
-        sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
-        sp->procChance = sp->EffectBasePoints[0];
-        sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
-    }
-    sp = CheckAndReturnSpellEntry(19625);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 19615;
-        sp->EffectImplicitTargetA[0] = EFF_TARGET_PET;
-        sp->procChance = sp->EffectBasePoints[0];
-        sp->procFlags = PROC_ON_CRIT_ATTACK | static_cast<uint32>(PROC_TARGET_SELF);        //Zyres: moved from custom_c_is_flag
-    }
 
     //Hunter : Pathfinding
     sp = CheckAndReturnSpellEntry(19559);
@@ -2127,18 +1947,6 @@ void ApplyNormalFixes()
     {
         sp->procFlags = PROC_ON_GAIN_EXPIERIENCE | static_cast<uint32>(PROC_TARGET_SELF);
     }
-    
-    /* Zyres: Same procFlags are already in the dbcs!
-    //Hunter : Entrapment
-    sp = CheckAndReturnSpellEntry(19184);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_TRAP_TRIGGER;
-    sp = CheckAndReturnSpellEntry(19387);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_TRAP_TRIGGER;
-    sp = CheckAndReturnSpellEntry(19388);
-    if (sp != NULL)
-        sp->procFlags = PROC_ON_TRAP_TRIGGER;*/
 
     // Feed pet
     sp = CheckAndReturnSpellEntry(6991);
@@ -2157,13 +1965,6 @@ void ApplyNormalFixes()
         sp->custom_ProcOnNameHash[1] = SPELL_HASH_FLASH_HEAL;
     }
     sp = CheckAndReturnSpellEntry(63733);   // Rank 2
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_BINDING_HEAL;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_FLASH_HEAL;
-    }
-    sp = CheckAndReturnSpellEntry(63737);   // Rank 3
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
@@ -2197,16 +1998,6 @@ void ApplyNormalFixes()
     {
         sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
     }
-    sp = CheckAndReturnSpellEntry(14063);
-    if (sp != NULL)
-    {
-        sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
-    }
-
-    //rogue - Vanish : Second Trigger Spell
-    sp = CheckAndReturnSpellEntry(18461);
-    if (sp != NULL)
-        sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
 
     // rogue - Blind (Make it able to miss!)
     sp = CheckAndReturnSpellEntry(2094);
@@ -2223,9 +2014,6 @@ void ApplyNormalFixes()
         sp->EffectMiscValue[2] = SMT_MISC_EFFECT;
     }
     // Still related to shadowstep - prevent the trigger spells from breaking stealth.
-    sp = CheckAndReturnSpellEntry(44373);
-    if (sp != NULL)
-        sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
     sp = CheckAndReturnSpellEntry(36563);
     if (sp != NULL)
         sp->AttributesEx |= ATTRIBUTESEX_NOT_BREAK_STEALTH;
@@ -2237,50 +2025,13 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(703);
     if (sp != NULL)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(8631);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(8632);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(8633);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(11289);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(11290);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(26839);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(26884);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+   
 
     //rupture
     sp = CheckAndReturnSpellEntry(1943);
     if (sp != NULL)
         sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(8639);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(8640);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(11273);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(11274);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(11275);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
-    sp = CheckAndReturnSpellEntry(26867);
-    if (sp != NULL)
-        sp->MechanicsType = MECHANIC_BLEEDING;
+    
 
     //Rogue - Killing Spree Stealth fix
     sp = CheckAndReturnSpellEntry(51690);
@@ -2301,18 +2052,7 @@ void ApplyNormalFixes()
         sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
     }
-    sp = CheckAndReturnSpellEntry(48110);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
-        sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
-    }
-    sp = CheckAndReturnSpellEntry(48111);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_DUMMY;
-        sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
-    }
+    
     sp = CheckAndReturnSpellEntry(33110);
     if (sp != NULL)
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
@@ -2344,23 +2084,6 @@ void ApplyNormalFixes()
         sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
         sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
     }
-    sp = CheckAndReturnSpellEntry(15314);   //rank 4
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
-        sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
-    }
-    sp = CheckAndReturnSpellEntry(15316);   //rank 5
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_APPLY_AURA;
-        sp->EffectApplyAuraName[1] = SPELL_AURA_DUMMY;
-    }
-
-    // Body and soul - fix duration of cleanse poison
-    sp = CheckAndReturnSpellEntry(64134);
-    if (sp != NULL)
-        sp->DurationIndex = 29;
 
     // Spirit of Redemption - required spells can be casted while dead
     sp = CheckAndReturnSpellEntry(27795);   // This is casted by shape shift
@@ -2409,16 +2132,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(15357);
     if (sp != NULL)
         sp->rangeIndex = 4;
-    sp = CheckAndReturnSpellEntry(15359);
-    if (sp != NULL)
-        sp->rangeIndex = 4;
-
-    //priest - surge of light
-    sp = CheckAndReturnSpellEntry(33151);
-    if (sp != NULL)
-    {
-        sp->AuraInterruptFlags = AURA_INTERRUPT_ON_CAST_SPELL;
-    }
+    
     // priest - Reflective Shield
     sp = CheckAndReturnSpellEntry(33201);
     if (sp != NULL)
@@ -2449,52 +2163,12 @@ void ApplyNormalFixes()
         sp->ChannelInterruptFlags = 0; // Remove channeling behavior.
     }
 
-    sp = CheckAndReturnSpellEntry(53005);
-    if (sp != NULL)
-    {
-        sp->DurationIndex = 566;
-        sp->ChannelInterruptFlags = 0;
-    }
-
-    sp = CheckAndReturnSpellEntry(53006);
-    if (sp != NULL)
-    {
-        sp->DurationIndex = 566;
-        sp->ChannelInterruptFlags = 0;
-    }
-
-    sp = CheckAndReturnSpellEntry(53007);
-    if (sp != NULL)
-    {
-        sp->DurationIndex = 566;
-        sp->ChannelInterruptFlags = 0;
-    }
-
     // Penance triggered healing spells have wrong targets.
     sp = CheckAndReturnSpellEntry(47750);
     if (sp != NULL)
     {
         sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
     }
-
-    sp = CheckAndReturnSpellEntry(52983);
-    if (sp != NULL)
-    {
-        sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
-    }
-
-    sp = CheckAndReturnSpellEntry(52984);
-    if (sp != NULL)
-    {
-        sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
-    }
-
-    sp = CheckAndReturnSpellEntry(52985);
-    if (sp != NULL)
-    {
-        sp->EffectImplicitTargetA[0] = EFF_TARGET_SINGLE_FRIEND;
-    }
-
 
     //////////////////////////////////////////
     // SHAMAN                                //
@@ -2529,13 +2203,6 @@ void ApplyNormalFixes()
         sp->EffectMiscValue[1] = SMT_COST;
         // sp->AuraInterruptFlags = AURA_INTERRUPT_ON_AFTER_CAST_SPELL;
     }
-
-    ////////////////////////////////////////////////////////////
-    // Shamanistic Rage
-    OLD_SpellEntry*  parentsp = CheckAndReturnSpellEntry(30823);
-    OLD_SpellEntry* triggersp = CheckAndReturnSpellEntry(30824);
-    if (parentsp != NULL && triggersp != NULL)
-        triggersp->EffectBasePoints[0] = parentsp->EffectBasePoints[0];
 
     //summon only 1 elemental totem
     sp = CheckAndReturnSpellEntry(2894);
@@ -2581,9 +2248,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(370);
     if (sp != NULL)
         sp->DispelType = DISPEL_MAGIC;
-    sp = CheckAndReturnSpellEntry(8012);
-    if (sp != NULL)
-        sp->DispelType = DISPEL_MAGIC;
     sp = CheckAndReturnSpellEntry(27626);
     if (sp != NULL)
         sp->DispelType = DISPEL_MAGIC;
@@ -2617,24 +2281,6 @@ void ApplyNormalFixes()
         sp->EffectDieSides[0] = 0;
     }
 
-    //shaman - Improved Weapon Totems
-    sp = CheckAndReturnSpellEntry(29193);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
-        sp->EffectApplyAuraName[1] = SPELL_AURA_ADD_PCT_MODIFIER;
-        sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
-        sp->EffectMiscValue[1] = SMT_MISC_EFFECT;
-    }
-    sp = CheckAndReturnSpellEntry(29192);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[0] = SPELL_AURA_ADD_PCT_MODIFIER;
-        sp->EffectApplyAuraName[1] = SPELL_AURA_ADD_PCT_MODIFIER;
-        sp->EffectMiscValue[0] = SMT_MISC_EFFECT;
-        sp->EffectMiscValue[1] = SMT_MISC_EFFECT;
-    }
-
     // Shaman - Improved Fire Totems
     sp = CheckAndReturnSpellEntry(16544);
     if (sp != NULL)
@@ -2648,12 +2294,6 @@ void ApplyNormalFixes()
     }
 
     //shaman - Elemental Weapons
-    sp = CheckAndReturnSpellEntry(29080);
-    if (sp != NULL)
-    {
-        sp->EffectMiscValue[1] = SMT_DAMAGE_DONE;
-        sp->EffectMiscValue[2] = SMT_DAMAGE_DONE;
-    }
     sp = CheckAndReturnSpellEntry(29079);
     if (sp != NULL)
     {
@@ -2668,18 +2308,6 @@ void ApplyNormalFixes()
     }
 
     // Magma Totem - 0% spd coefficient
-    sp = CheckAndReturnSpellEntry(25550);
-    if (sp != NULL)
-        sp->fixed_dddhcoef = 0.0f;
-    sp = CheckAndReturnSpellEntry(10581);
-    if (sp != NULL)
-        sp->fixed_dddhcoef = 0.0f;
-    sp = CheckAndReturnSpellEntry(10580);
-    if (sp != NULL)
-        sp->fixed_dddhcoef = 0.0f;
-    sp = CheckAndReturnSpellEntry(10579);
-    if (sp != NULL)
-        sp->fixed_dddhcoef = 0.0f;
     sp = CheckAndReturnSpellEntry(8187);
     if (sp != NULL)
         sp->fixed_dddhcoef = 0.0f;
@@ -2698,12 +2326,6 @@ void ApplyNormalFixes()
         sp->procFlags = PROC_ON_CRIT_ATTACK;
         sp->Effect[0] = SPELL_EFFECT_APPLY_GROUP_AREA_AURA;
     }
-    sp = CheckAndReturnSpellEntry(30809);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CRIT_ATTACK;
-        sp->Effect[0] = SPELL_EFFECT_APPLY_GROUP_AREA_AURA;
-    }
 
     ////////////////////////////////////////////////////////////
     // Ancestral healing proc spell
@@ -2713,9 +2335,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(16236);
     if (sp != NULL)
         sp->rangeIndex = 4;
-    sp = CheckAndReturnSpellEntry(16237);
-    if (sp != NULL)
-        sp->rangeIndex = 4;
+   
 
     sp = CheckAndReturnSpellEntry(20608);   //Reincarnation
     if (sp != NULL)
@@ -2825,29 +2445,6 @@ void ApplyNormalFixes()
         sp->custom_ProcOnNameHash[1] = SPELL_HASH_ARCANE_BLAST;
     }
 
-    // Arcane Blast
-    sp = CheckAndReturnSpellEntry(42894);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_ARCANE_BLAST;
-    }
-
-    sp = CheckAndReturnSpellEntry(42896);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-    }
-
-    sp = CheckAndReturnSpellEntry(42897);
-    if (sp != NULL)
-    {
-        sp->EffectApplyAuraName[1] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-    }
-
     //mage : Empowered Arcane Missiles
     //heh B thinks he is smart by adding this to description ? If it doesn't work std then it still needs to made by hand
     sp = CheckAndReturnSpellEntry(31579);
@@ -2929,23 +2526,11 @@ void ApplyNormalFixes()
     }
 
     //Ice Lances
-    sp = CheckAndReturnSpellEntry(42914);
-    if (sp != NULL)
-        sp->Dspell_coef_override = 0.1429f;
-
-    sp = CheckAndReturnSpellEntry(42913);
-    if (sp != NULL)
-        sp->Dspell_coef_override = 0.1429f;
-
     sp = CheckAndReturnSpellEntry(30455);
     if (sp != NULL)
         sp->Dspell_coef_override = 0.1429f;
 
     // Frostfire Bolts
-    sp = CheckAndReturnSpellEntry(47610);
-    if (sp != NULL)
-        sp->fixed_dddhcoef = 0.8571f;
-
     sp = CheckAndReturnSpellEntry(44614);
     if (sp != NULL)
         sp->fixed_dddhcoef = 0.8571f;
@@ -3040,22 +2625,6 @@ void ApplyNormalFixes()
     }
 
     //megai2: Everlasting Affliction
-    sp = CheckAndReturnSpellEntry(47205);
-    if (sp != NULL)
-    {
-        sp->EffectSpellClassMask[1][0] = 0x111;
-        sp->EffectSpellClassMask[1][1] = 0;
-        sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
-    }
-
-    sp = CheckAndReturnSpellEntry(47204);
-    if (sp != NULL)
-    {
-        sp->EffectSpellClassMask[1][0] = 0x111;
-        sp->EffectSpellClassMask[1][1] = 0;
-        sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
-    }
-
     sp = CheckAndReturnSpellEntry(47203);
     if (sp != NULL)
     {
@@ -3500,30 +3069,6 @@ void ApplyNormalFixes()
         sp->Effect[1] = SPELL_EFFECT_NULL; //hacks, we are handling this in another way
     }
 
-    //warlock - Improved Drain Soul
-    sp = CheckAndReturnSpellEntry(18213);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_TARGET_DIE | static_cast<uint32>(PROC_TARGET_SELF);
-        sp->procChance = 100;
-        sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 18371;
-        sp->EffectImplicitTargetA[0] = EFF_TARGET_SELF;
-        sp->Effect[2] = SPELL_EFFECT_NULL; //remove this effect
-    }
-    sp = CheckAndReturnSpellEntry(18372);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_TARGET_DIE | static_cast<uint32>(PROC_TARGET_SELF);
-        sp->procChance = 100;
-        sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
-        sp->EffectApplyAuraName[0] = SPELL_AURA_PROC_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[0] = 18371;
-        sp->EffectImplicitTargetA[0] = EFF_TARGET_SELF;
-        sp->Effect[2] = SPELL_EFFECT_NULL; //remove this effect
-    }
-
     //Warlock Chaos bolt
     sp = CheckAndReturnSpellEntry(50796);
     if (sp != NULL)
@@ -3532,37 +3077,14 @@ void ApplyNormalFixes()
         sp->School = SCHOOL_FIRE;
     }
 
-    sp = CheckAndReturnSpellEntry(59170);
-    if (sp != NULL)
-    {
-        sp->Attributes |= ATTRIBUTES_IGNORE_INVULNERABILITY;
-        sp->School = SCHOOL_FIRE;
-    }
-
-    sp = CheckAndReturnSpellEntry(59171);
-    if (sp != NULL)
-    {
-        sp->Attributes |= ATTRIBUTES_IGNORE_INVULNERABILITY;
-        sp->School = SCHOOL_FIRE;
-    }
-
-    sp = CheckAndReturnSpellEntry(59172);
-    if (sp != NULL)
-    {
-        sp->Attributes |= ATTRIBUTES_IGNORE_INVULNERABILITY;
-        sp->School = SCHOOL_FIRE;
-    }
     // End Warlock chaos bolt
 
     //Warlock Healthstones
-    int HealthStoneID[8] = { 6201, 6202, 5699, 11729, 11730, 27230, 47871, 47878 };
-    for (uint8 i = 0; i < 8; i++)
+
+    sp = CheckAndReturnSpellEntry(6201);
+    if (sp != NULL)
     {
-        sp = CheckAndReturnSpellEntry(HealthStoneID[i]);
-        if (sp != NULL)
-        {
-            sp->Reagent[1] = 0;
-        }
+         sp->Reagent[1] = 0;
     }
 
     //////////////////////////////////////////
@@ -3606,15 +3128,6 @@ void ApplyNormalFixes()
         sp->custom_ProcOnNameHash[2] = SPELL_HASH_MANGLE;
     }
 
-    sp = CheckAndReturnSpellEntry(48485);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPECIFIC_SPELL;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_SHRED;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_MAUL;
-        sp->custom_ProcOnNameHash[2] = SPELL_HASH_MANGLE;
-    }
-
     // Druid - Bash - Interrupt effect
     sp = CheckAndReturnSpellEntry(5211);
     if (sp != NULL)
@@ -3622,18 +3135,7 @@ void ApplyNormalFixes()
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 32747;
     }
-    sp = CheckAndReturnSpellEntry(6798);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 32747;
-    }
-    sp = CheckAndReturnSpellEntry(8983);
-    if (sp != NULL)
-    {
-        sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
-        sp->EffectTriggerSpell[1] = 32747;
-    }
+    
 
     //Druid - Feral Swiftness
     sp = CheckAndReturnSpellEntry(17002);
@@ -3651,12 +3153,6 @@ void ApplyNormalFixes()
 
     // Druid - Maim
     sp = CheckAndReturnSpellEntry(22570);
-    if (sp != NULL)
-    {
-        sp->AuraInterruptFlags = AURA_INTERRUPT_ON_UNUSED2;
-        sp->custom_is_melee_spell = true;
-    }
-    sp = CheckAndReturnSpellEntry(49802);
     if (sp != NULL)
     {
         sp->AuraInterruptFlags = AURA_INTERRUPT_ON_UNUSED2;
@@ -3708,9 +3204,6 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(16974);
     if (sp != NULL)
         sp->RequiredShapeShift = mm;
-    sp = CheckAndReturnSpellEntry(16975);
-    if (sp != NULL)
-        sp->RequiredShapeShift = mm;
 
     ////////////////////////////////////////////////////////////
     // Restoration
@@ -3729,9 +3222,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(16834);
     if (sp != NULL)
         sp->DurationIndex = 0;
-    sp = CheckAndReturnSpellEntry(16835);
-    if (sp != NULL)
-        sp->DurationIndex = 0;
+
 
     sp = CheckAndReturnSpellEntry(61177); // Northrend Inscription Research
     if (sp != NULL)
@@ -4439,31 +3930,6 @@ void ApplyNormalFixes()
     {
         sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
     }
-    sp = CheckAndReturnSpellEntry(51416);
-    if (sp != NULL)
-    {
-        sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
-    }
-    sp = CheckAndReturnSpellEntry(51417);
-    if (sp != NULL)
-    {
-        sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
-    }
-    sp = CheckAndReturnSpellEntry(51418);
-    if (sp != NULL)
-    {
-        sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
-    }
-    sp = CheckAndReturnSpellEntry(51419);
-    if (sp != NULL)
-    {
-        sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
-    }
-    sp = CheckAndReturnSpellEntry(55268);
-    if (sp != NULL)
-    {
-        sp->Attributes = ATTRIBUTES_CANT_BE_DPB;
-    }
 
     // Noggenfogger elixir - reduce size effect
     sp = CheckAndReturnSpellEntry(16595);
@@ -4631,24 +4097,6 @@ void ApplyNormalFixes()
         sp->EffectMechanic[0] = MECHANIC_SHACKLED;
         sp->EffectImplicitTargetA[0] = EFF_TARGET_ALL_ENEMY_IN_AREA;
         sp->EffectImplicitTargetB[0] = EFF_TARGET_NONE;
-    }
-
-    //Mage - firestarter talent ranks 1 & 2
-    // overwrite procs, should only proc on these 2 spellgroups.
-    sp = CheckAndReturnSpellEntry(44442);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->procChance = 50;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_DRAGON_S_BREATH;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_BLAST_WAVE;
-    }
-    sp = CheckAndReturnSpellEntry(44443);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->custom_ProcOnNameHash[0] = SPELL_HASH_DRAGON_S_BREATH;
-        sp->custom_ProcOnNameHash[1] = SPELL_HASH_BLAST_WAVE;
     }
 }
 

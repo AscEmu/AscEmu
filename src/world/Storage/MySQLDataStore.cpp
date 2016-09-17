@@ -1360,7 +1360,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
 
             if (qinfo.SrcItemId)
             {
-                if (!GetItemProperties(qinfo.SrcItemId))
+                if (!sItemStore.LookupEntry(qinfo.SrcItemId))
                 {
                     Log.Debug("ObjectMgr", "Quest %u has `SrcItemId` = %u but item with entry %u does not exist, quest can't be done.",
                               qinfo.GetQuestId(), qinfo.SrcItemId, qinfo.SrcItemId);
@@ -1466,7 +1466,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
                     qinfo.ReqCreatureOrGOId[j] = 0;            // quest can't be done for this requirement
                 }
 
-                if (id > 0 && !GetGameObjectProperties(id))
+                if (id > 0 && !GetCreatureProperties(id))
                 {
                     Log.Debug("ObjectMgr", "Quest %u has `ReqCreatureOrGOId%d` = %i but creature with entry %u does not exist, quest can't be done.",
                               qinfo.GetQuestId(), j + 1, id, uint32(id));
@@ -2960,7 +2960,8 @@ void MySQLDataStore::LoadPlayerCreateInfoItemsTable()
         uint32 player_info_index = fields[0].GetUInt32();
         uint32 item_id = fields[1].GetUInt32();
 
-        auto player_item = sMySQLStore.GetItemProperties(item_id);
+        //auto player_item = sMySQLStore.GetItemProperties(item_id);
+        DB2::Structures::ItemEntry const* player_item = sItemStore.LookupEntry(item_id);
         if (player_item == nullptr)
         {
             Log.Error("MySQLDataLoads", "Table `playercreateinfo_items` includes invalid item %u for index %u", item_id, player_info_index);
