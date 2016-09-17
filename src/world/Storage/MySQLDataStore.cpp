@@ -1112,7 +1112,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
                 {
                     if (questInfo.ReqCreatureOrGOId[i] < 0)
                     {
-                        auto gameobject_info = sMySQLStore.GetGameObjectProperties(questInfo.ReqCreatureOrGOId[i] * -1);
+                        auto gameobject_info = sMySQLStore.GetGameObjectProperties(-questInfo.ReqCreatureOrGOId[i]);
                         if (gameobject_info)
                         {
                             questInfo.m_reqMobType[i] = QUEST_MOB_TYPE_GAMEOBJECT;
@@ -1121,7 +1121,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
                         else
                         {
                             // if quest has neither valid gameobject, log it.
-                            LOG_DEBUG("Quest %lu has required_mobtype[%d]==%lu, it's not a valid GameObject.", questInfo.GetQuestId(), i, questInfo.ReqCreatureOrGOId[i]);
+                            LOG_DEBUG("Quest %u has required_mobtype[%u]==%u, it's not a valid GameObject.", questInfo.GetQuestId(), i, uint32(-questInfo.ReqCreatureOrGOId[i]));
                         }
                     }
                     else
@@ -1132,7 +1132,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
                         else
                         {
                             // if quest has neither valid creature, log it.
-                            LOG_DEBUG("Quest %lu has required_mobtype[%d]==%lu, it's not a valid Creature.", questInfo.GetQuestId(), i, questInfo.ReqCreatureOrGOId[i]);
+                            LOG_DEBUG("Quest %u has required_mobtype[%u]==%u, it's not a valid Creature.", questInfo.GetQuestId(), i, questInfo.ReqCreatureOrGOId[i]);
                         }
                     }
 
