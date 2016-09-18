@@ -697,7 +697,7 @@ namespace DBC
             char const item_random_suffix_format[] = "nsxiiiiiiiiii";
             char const item_set_format[] = "dsxxxxxxxxxxxxxxxxxiiiiiiiiiiiiiiiiii";
             char const item_limit_category_format[] = "nxii";
-            char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
+            char const lfg_dungeon_entry_format[] = "nsiiiiiiiiiisiiisiiii";
             char const liquid_type_entry_format[] = "nxxixixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
             char const lock_format[] = "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx";
             char const mail_template_format[] = "nss";  //nxs
@@ -1667,22 +1667,26 @@ namespace DBC
         struct LFGDungeonEntry
         {
             uint32 ID;              // 0
-            char* name[16];         // 1-17 Name lang
-            uint32 minlevel;        // 18
-            uint32 maxlevel;        // 19
-            uint32 reclevel;        // 20
-            uint32 recminlevel;     // 21
-            uint32 recmaxlevel;     // 22
-            int32 map;              // 23
-            uint32 difficulty;      // 24
-            uint32 flags;           // 25
-            uint32 type;            // 26
-            //uint32  unk;          // 27
-            //char* iconname;       // 28
-            uint32 expansion;       // 29
-            //uint32 unk4;          // 30
-            uint32 grouptype;       // 31
-            //char* desc[16];       // 32-47 Description
+            char* name;             // 1
+            uint32 minlevel;        // 2
+            uint32 maxlevel;        // 3
+            uint32 reclevel;        // 4
+            uint32 recminlevel;     // 5
+            uint32 recmaxlevel;     // 6
+            int32 map;              // 7
+            uint32 difficulty;      // 8
+            uint32 unk;             // 9
+            uint32 flags;           // 10
+            int32 type;             // 11
+            char* iconname;         // 12
+            uint32 expansion;       // 13
+            uint32 unk4;            // 14
+            uint32 unk5;            // 15
+            char* unk_text;         // 16
+            uint32 grouptype;       // 17
+            uint32 unkflags1;       // 18
+            uint32 unkflags2;       // 19
+            uint32 unk7;            // 20
 
             // Helpers
             uint32 Entry() const { return ID + (type << 24); }

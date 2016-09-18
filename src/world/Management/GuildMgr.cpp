@@ -414,7 +414,7 @@ void GuildMgr::LoadGuildXpForLevel()
 
         if (level >= sWorld.m_guild.MaxLevel)
         {
-            Log.Debug("GuildMgr", "Unused (> Guild.MaxLevel in worldserver.conf) level %u in `guild_xp_for_level` table, ignoring.", uint32(level));
+            Log.Debug("GuildMgr", "Table `guild_xp_for_level` includes invalid xp definitions for level %u which is higher than the defined levelcap in your config file! <skipped>", level);
             continue;
         }
 
