@@ -298,14 +298,20 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 
     if (!bValid)
     {
-        LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for ActiveQuestsCount. TypeId: %d.", quest_giver->GetGUID(), quest_giver->GetTypeId());
+        Log.Debug("QuestMgr::ActiveQuestsCount", "QUESTS: Warning, invalid NPC " I64FMT " specified for ActiveQuestsCount. TypeId: %d.", quest_giver->GetGUID(), quest_giver->GetTypeId());
         return 0;
     }
 
     for (itr = q_begin; itr != q_end; ++itr)
     {
-        if (CalcQuestStatus(quest_giver, plr, *itr) >= QMGR_QUEST_CHAT)
+        if (CalcQuestStatus(quest_giver, plr, *itr) <= QMGR_QUEST_CHAT)
         {
+            uint32 quest_id = (*itr)->qst->GetQuestId();
+
+            auto quest_properties = sMySQLStore.GetQuestProperties(quest_id);
+            if (quest_properties == nullptr)
+                continue;
+
             if (tmp_map.find((*itr)->qst->GetQuestId()) == tmp_map.end())
             {
                 tmp_map.insert(std::map<uint32, uint8>::value_type((*itr)->qst->GetQuestId(), 1));
@@ -319,6 +325,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 
 void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr)
 {
+    Log.Debug("QuestMgr::BuildOfferReward", "WORLD: Sent SMSG_QUESTGIVER_OFFER_REWARD.");
     LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->GetQuestId(), language) : NULL;
     ItemProperties const* it;
 
@@ -550,6 +557,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 
 void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 status, uint32 language)
 {
+    Log.Debug("QuestMgr::BuildRequestItems", "WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->GetQuestId(), language) : NULL;
     ItemProperties const* it;
     data->SetOpcode(SMSG_QUESTGIVER_REQUEST_ITEMS);
@@ -665,44 +673,51 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
 
     WorldPacket data(SMSG_QUESTGIVER_QUEST_COMPLETE, (4 + 4 + 4 + 4 + 4));
 
-    data << uint8(0x80);                            // unk 4.0.1 flags
+    data << uint32(qst->GetBonusTalents());                            // unk 4.0.1 flags
     data << uint32(qst->GetRewSkillLineId());
-    data << uint32(qst->GetQuestId());
 
     if (plr->getLevel() < sWorld.m_levelCap)
     {
         data << uint32(qst->GetRewOrReqMoney());
-        data << uint32(qst->GetBonusTalents());     // bonus talents
-        data << uint32(qst->GetRewSkillPoints());
         data << uint32(qst->XPValue(plr));
-
     }
     else
     {
         data << uint32(qst->GetRewOrReqMoney() + int32(qst->GetRewMoneyMaxLevel()));
-        data << uint32(qst->GetRewSkillPoints());   // bonus talents
-        data << uint32(0);
-
         data << uint32(0);
     }
+
+    data << uint32(qst->GetQuestId());
+    data << uint32(qst->GetRewSkillPoints());
+
+    data.writeBit(0);               // FIXME: unknown bits, common values sent
+    data.writeBit(1);
+    data.flushBits();
+
     plr->SendPacket(&data);
 }
 
-void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32 language)
+void QuestMgr::BuildQuestList(Object* qst_giver, Player* plr, uint32 language)
 {
-    if (!plr || !plr->GetSession()) return;
+    if (!plr || !plr->GetSession())
+        return;
+
+    Log.Debug("QuestMgr::BuildQuestList", "WORLD: Sent SMSG_QUESTGIVER_QUEST_LIST.");
+
     uint32 status;
     std::list<QuestRelation*>::iterator it;
     std::list<QuestRelation*>::iterator st;
     std::list<QuestRelation*>::iterator ed;
     std::map<uint32, uint8> tmp_map;
 
-    data->Initialize(SMSG_QUESTGIVER_QUEST_LIST);
+    WorldPacket data(SMSG_QUESTGIVER_QUEST_LIST, 100);
 
-    *data << qst_giver->GetGUID();
-    *data << plr->GetSession()->LocalizedWorldSrv(70);//"How can I help you?"; //Hello line
-    *data << uint32(1);//Emote Delay
-    *data << uint32(1);//Emote
+    data << uint64(qst_giver->GetGUID());
+    data << plr->GetSession()->LocalizedWorldSrv(70);//"How can I help you?"; //Hello line
+    data << uint32(1);//Emote Delay
+    data << uint32(1);//Emote
+
+    size_t count_pos = data.wpos();
 
     bool bValid = false;
     if (qst_giver->IsGameObject())
@@ -731,56 +746,61 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
         }
     }
 
-    if (!bValid)
+    /*if (!bValid)
     {
         *data << uint8(0);
         return;
-    }
+    }*/
 
-    *data << uint8(sQuestMgr.ActiveQuestsCount(qst_giver, plr));
+    data << uint8(sQuestMgr.ActiveQuestsCount(qst_giver, plr));
 
+    uint32 count = 0;
     for (it = st; it != ed; ++it)
     {
         status = sQuestMgr.CalcQuestStatus(qst_giver, plr, *it);
-        if (status >= QMGR_QUEST_CHAT)
+        if (status <= QMGR_QUEST_CHAT)
         {
             if (tmp_map.find((*it)->qst->GetQuestId()) == tmp_map.end())
             {
                 tmp_map.insert(std::map<uint32, uint8>::value_type((*it)->qst->GetQuestId(), 1));
                 LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest((*it)->qst->GetQuestId(), language) : NULL;
 
-                *data << (*it)->qst->GetQuestId();
+                data << uint32((*it)->qst->GetQuestId());
                 /**data << sQuestMgr.CalcQuestStatus(qst_giver, plr, *it);
                 *data << uint32(0);*/
 
                 switch (status)
                 {
                     case QMGR_QUEST_NOT_FINISHED:
-                        *data << uint32(4);
+                        data << uint32(4);
                         break;
 
                     case QMGR_QUEST_FINISHED:
-                        *data << uint32(4);
+                        data << uint32(4);
                         break;
 
                     case QMGR_QUEST_CHAT:
-                        *data << uint32(QMGR_QUEST_AVAILABLE);
+                        data << uint32(QMGR_QUEST_AVAILABLE);
                         break;
 
                     default:
-                        *data << status;
+                        data << status;
                 }
-                *data << int32((*it)->qst->GetQuestLevel());
-                *data << uint32((*it)->qst->GetQuestFlags());
-                *data << uint8(0);
+                data << int32((*it)->qst->GetQuestLevel());
+                data << uint32((*it)->qst->GetQuestFlags());
+                data << uint8(0);
 
                 if (lq)
-                    *data << lq->Title;
+                    data << lq->Title;
                 else
-                    *data << (*it)->qst->GetTitle();
+                    data << (*it)->qst->GetTitle();
             }
+            ++count;
         }
     }
+    data.put<uint8>(count_pos, count);
+
+    plr->SendPacket(&data);
 }
 
 void QuestMgr::BuildQuestUpdateAddItem(WorldPacket* data, uint32 itemid, uint32 count)
@@ -1817,7 +1837,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
     if (questCount == 0)
     {
-        LOG_DEBUG("WORLD: Invalid NPC for CMSG_QUESTGIVER_HELLO.");
+        Log.Debug("QuestMgr::OnActivateQuestGiver", "WORLD: Invalid NPC for CMSG_QUESTGIVER_HELLO.");
         return false;
     }
     else if (questCount == 1)
@@ -1858,15 +1878,15 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
         if (!bValid)
         {
-            LOG_DEBUG("QUESTS: Warning, invalid NPC " I64FMT " specified for OnActivateQuestGiver. TypeId: %d.", qst_giver->GetGUID(), qst_giver->GetTypeId());
+            Log.Debug("QuestMgr::OnActivateQuestGiver", "QUESTS: Warning, invalid NPC " I64FMT " specified for OnActivateQuestGiver. TypeId: %d.", qst_giver->GetGUID(), qst_giver->GetTypeId());
             return false;
         }
 
         for (itr = q_begin; itr != q_end; ++itr)
-            if (sQuestMgr.CalcQuestStatus(qst_giver, plr, *itr) >= QMGR_QUEST_CHAT)
+            if (sQuestMgr.CalcQuestStatus(qst_giver, plr, *itr) <= QMGR_QUEST_CHAT)
                 break;
 
-        if (sQuestMgr.CalcStatus(qst_giver, plr) < QMGR_QUEST_CHAT)
+        if (sQuestMgr.CalcStatus(qst_giver, plr) > QMGR_QUEST_CHAT)
             return false;
 
         ARCEMU_ASSERT(itr != q_end);
@@ -1877,7 +1897,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
         {
             sQuestMgr.BuildQuestDetails(&data, (*itr)->qst, qst_giver, 1, plr->GetSession()->language, plr);		// 1 because we have 1 quest, and we want goodbye to function
             plr->GetSession()->SendPacket(&data);
-            LOG_DEBUG("WORLD: Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
+            Log.Debug("QuestMgr::OnActivateQuestGiver", "WORLD: Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
 
             if ((*itr)->qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
                 plr->AcceptQuest(qst_giver->GetGUID(), (*itr)->qst->GetQuestId());
@@ -1887,20 +1907,20 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
             sQuestMgr.BuildOfferReward(&data, (*itr)->qst, qst_giver, 1, plr->GetSession()->language, plr);
             plr->GetSession()->SendPacket(&data);
             //ss
-            LOG_DEBUG("WORLD: Sent SMSG_QUESTGIVER_OFFER_REWARD.");
+            Log.Debug("QuestMgr::OnActivateQuestGiver", "WORLD: Sent SMSG_QUESTGIVER_OFFER_REWARD.");
         }
         else if (status == QMGR_QUEST_NOT_FINISHED)
         {
             sQuestMgr.BuildRequestItems(&data, (*itr)->qst, qst_giver, status, plr->GetSession()->language);
             plr->GetSession()->SendPacket(&data);
-            LOG_DEBUG("WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
+            Log.Debug("QuestMgr::OnActivateQuestGiver", "WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
         }
     }
     else
     {
-        sQuestMgr.BuildQuestList(&data, qst_giver, plr, plr->GetSession()->language);
+        sQuestMgr.BuildQuestList(qst_giver, plr, plr->GetSession()->language);
         plr->GetSession()->SendPacket(&data);
-        LOG_DEBUG("WORLD: Sent SMSG_QUESTGIVER_QUEST_LIST.");
+        
     }
     return true;
 }
@@ -2411,7 +2431,7 @@ void QuestMgr::FillQuestMenu(Creature* giver, Player* plr, Arcemu::Gossip::Menu 
         for (std::list<QuestRelation*>::iterator itr = giver->QuestsBegin(); itr != giver->QuestsEnd(); ++itr)
         {
             status = sQuestMgr.CalcQuestStatus(giver, plr, *itr);
-            if (status >= QMGR_QUEST_CHAT)
+            if (status <= QMGR_QUEST_CHAT)
             {
                 switch (status)
                 {

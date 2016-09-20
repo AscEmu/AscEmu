@@ -210,7 +210,6 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
     {
         sQuestMgr.BuildRequestItems(&data, qst, qst_giver, status, language);
         SendPacket(&data);
-        LOG_DEBUG("WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     }
 }
 
@@ -220,9 +219,11 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode(WorldPacket& recv_data)
 
     uint64 guid;
     uint32 quest_id;
+    uint32 unk1;
 
     recv_data >> guid;
     recv_data >> quest_id;
+    recv_data >> unk1;
 
     _player->AcceptQuest(guid, quest_id);
 }
@@ -298,10 +299,12 @@ void WorldSession::HandleQuestQueryOpcode(WorldPacket& recv_data)
         LOG_DEBUG("WORLD: Invalid quest ID.");
         return;
     }
+    else
+    {
+        WorldPacket* pkt = BuildQuestQueryResponse(qst);
+        SendPacket(pkt);
+    }
 
-    WorldPacket* pkt = BuildQuestQueryResponse(qst);
-    SendPacket(pkt);
-    delete pkt;
 }
 
 void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
@@ -381,7 +384,6 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
         WorldPacket data;
         sQuestMgr.BuildOfferReward(&data, qst, qst_giver, 1, language, _player);
         SendPacket(&data);
-        LOG_DEBUG("WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     }
 
     // if we got here it means we're cheating
@@ -391,15 +393,21 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
+    Log.Debug("WorldSession", "Received CMSG_QUESTGIVER_COMPLETE_QUEST");
+
     uint64 guid;
     uint32 quest_id;
+    uint8 unk1;
 
     recvPacket >> guid;
     recvPacket >> quest_id;
+    recvPacket >> unk1;
 
     bool bValid = false;
+
     QuestProperties const* qst = nullptr;
-    Object* qst_giver = NULL;
+
+    Object* qst_giver = nullptr;
     uint32 status = 0;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
 
@@ -460,7 +468,6 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
         WorldPacket data;
         sQuestMgr.BuildRequestItems(&data, qst, qst_giver, status, language);
         SendPacket(&data);
-        LOG_DEBUG("WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     }
 
     if (status == QMGR_QUEST_FINISHED)
@@ -468,7 +475,6 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
         WorldPacket data;
         sQuestMgr.BuildOfferReward(&data, qst, qst_giver, 1, language, _player);
         SendPacket(&data);
-        LOG_DEBUG("WORLD: Sent SMSG_QUESTGIVER_REQUEST_ITEMS.");
     }
 
     sHookInterface.OnQuestFinished(_player, qst, qst_giver);
@@ -521,13 +527,13 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 
     if (!qst_giver)
     {
-        LOG_DEBUG("WORLD: Invalid questgiver GUID.");
+        Log.Debug("WorldSession::HandleQuestgiverChooseRewardOpcode", "WORLD: Invalid questgiver GUID.");
         return;
     }
 
     if (!bValid || qst == NULL)
     {
-        LOG_DEBUG("WORLD: Creature is not a questgiver.");
+        Log.Debug("WorldSession::HandleQuestgiverChooseRewardOpcode", "WORLD: Creature is not a questgiver.");
         return;
     }
 
@@ -536,13 +542,13 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     QuestLogEntry* qle = _player->GetQuestLogForEntry(quest_id);
     if (!qle && !qst->IsRepeatable())
     {
-        LOG_DEBUG("WORLD: QuestLogEntry not found.");
+        Log.Debug("WorldSession::HandleQuestgiverChooseRewardOpcode", "WORLD: QuestLogEntry not found.");
         return;
     }
 
     if (qle && !qle->CanBeFinished())
     {
-        LOG_DEBUG("WORLD: Quest not finished.");
+        Log.Debug("WorldSession::HandleQuestgiverChooseRewardOpcode", "WORLD: Quest not finished.");
         return;
     }
 
