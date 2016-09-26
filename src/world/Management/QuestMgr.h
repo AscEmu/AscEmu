@@ -104,9 +104,9 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         uint32 ActiveQuestsCount(Object* quest_giver, Player* plr);
 
         //Packet Forging...
-        void BuildOfferReward(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr);
-        void BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr);
-        void BuildRequestItems(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 status, uint32 language);
+        void BuildOfferReward(QuestProperties const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr);
+        void BuildQuestDetails(QuestProperties const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr);
+        void BuildRequestItems(QuestProperties const* qst, Object* qst_giver, uint32 status, uint32 language, Player* plr);
         void BuildQuestComplete(Player*, QuestProperties const* qst);
         void BuildQuestList(Object* qst_giver, Player* plr, uint32 language);
         bool OnActivateQuestGiver(Object* qst_giver, Player* plr);

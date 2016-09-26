@@ -90,9 +90,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         if (!qst)
             return;
 
-        WorldPacket data;
-        sQuestMgr.BuildQuestDetails(&data, qst, tmpItem, 0, language, _player);
-        SendPacket(&data);
+        sQuestMgr.BuildQuestDetails(qst, tmpItem, 0, language, _player);
     }
 
     // Let's check if the item even has that spell
