@@ -13073,7 +13073,10 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     bool hasquest = true;
     bool bSkipLevelCheck = false;
 
-    QuestProperties const* qst = nullptr;
+    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    if (qst == nullptr)
+        return;
+
     Object* qst_giver = nullptr;
 
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
@@ -13089,7 +13092,6 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         if (quest_giver->isQuestGiver())
         {
             bValid = true;
-            qst = sMySQLStore.GetQuestProperties(quest_id);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
@@ -13101,7 +13103,6 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             return;
 
         bValid = true;
-        qst = sMySQLStore.GetQuestProperties(quest_id);
     }
     else if (guidtype == HIGHGUID_TYPE_ITEM)
     {
@@ -13112,7 +13113,6 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             return;
         bValid = true;
         bSkipLevelCheck = true;
-        qst = sMySQLStore.GetQuestProperties(quest_id);
     }
     else if (guidtype == HIGHGUID_TYPE_PLAYER)
     {
@@ -13122,7 +13122,6 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         else
             return;
         bValid = true;
-        qst = sMySQLStore.GetQuestProperties(quest_id);
     }
 
     if (!qst_giver)
@@ -13131,7 +13130,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         return;
     }
 
-    if (!bValid || qst == nullptr)
+    if (!bValid)
     {
         Log.Debug("Player::AcceptQuest", "WORLD: Creature is not a questgiver.");
         return;

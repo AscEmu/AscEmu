@@ -26,6 +26,8 @@
 #define QUEST_REPEATABLE 1
 #define QUEST_REPEATABLE_DAILY 2
 #define MAX_REQUIRED_QUEST_ITEM 6
+#define QUEST_REWARD_CURRENCY_COUNT 4
+#define QUEST_REQUIRED_CURRENCY_COUNT 4
 
 class QuestScript;
 
@@ -263,10 +265,17 @@ struct QuestProperties
             return false;
     }
 
+    uint32 RewardCurrencyId[QUEST_REWARD_CURRENCY_COUNT];
+    uint32 RewardCurrencyCount[QUEST_REWARD_CURRENCY_COUNT];
+    uint32 RequiredCurrencyId[QUEST_REQUIRED_CURRENCY_COUNT];
+    uint32 RequiredCurrencyCount[QUEST_REQUIRED_CURRENCY_COUNT];
+
     uint32 GetReqItemsCount() const { return m_reqitemscount; }
     uint32 GetReqCreatureOrGOcount() const { return m_reqCreatureOrGOcount; }
     uint32 GetRewChoiceItemsCount() const { return m_rewchoiceitemscount; }
     uint32 GetRewItemsCount() const { return m_rewitemscount; }
+    uint32 GetRewCurrencyCount() const { return m_rewCurrencyCount; }
+    uint32 GetReqCurrencyCount() const { return m_reqCurrencyCount; }
 
     typedef std::vector<int32> PrevQuests;
     PrevQuests prevQuests;

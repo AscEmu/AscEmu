@@ -1153,7 +1153,7 @@ enum Opcodes
     SMSG_QUESTGIVER_QUEST_DETAILS                       = 0x2425,   // unchecked
     CMSG_QUESTGIVER_ACCEPT_QUEST                        = 0x6B37,   // unchecked
     CMSG_QUESTGIVER_COMPLETE_QUEST                      = 0x0114,   // unchecked
-    SMSG_QUESTGIVER_REQUEST_ITEMS                       = 0x6236,   // unchecked
+    SMSG_QUESTGIVER_REQUEST_ITEMS                       = 0x6236,
     CMSG_QUESTGIVER_REQUEST_REWARD                      = 0x2534,   // unchecked
     SMSG_QUESTGIVER_OFFER_REWARD                        = 0x2427,   // unchecked
     CMSG_QUESTGIVER_CHOOSE_REWARD                       = 0x2125,   // unchecked

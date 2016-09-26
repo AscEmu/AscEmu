@@ -571,7 +571,7 @@ void QuestMgr::BuildRequestItems(QuestProperties const* qst, Object* qst_giver, 
 
     LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->GetQuestId(), language) : NULL;
     ItemProperties const* it;
-    WorldPacket data(SMSG_QUESTGIVER_REQUEST_ITEMS);
+    WorldPacket data(SMSG_QUESTGIVER_REQUEST_ITEMS, 100);
 
     data << uint64(qst_giver->GetGUID());
     data << uint32(qst->GetQuestId());
@@ -626,13 +626,14 @@ void QuestMgr::BuildRequestItems(QuestProperties const* qst, Object* qst_giver, 
             data << uint32(0);
     }
 
-    // Added in 4.0.1
-    uint32 counter = 0;
-    data << counter;
-    for (uint32 i = 0; i < counter; ++i)
+    data << uint32(qst->GetReqCurrencyCount());
+    for (uint32 i = 0; i < QUEST_REQUIRED_CURRENCY_COUNT; ++i)
     {
-        data << uint32(0);
-        data << uint32(0);
+        if (!qst->RequiredCurrencyId[i])
+            continue;
+
+        data << uint32(qst->RequiredCurrencyId[i]);
+        data << uint32(qst->RequiredCurrencyCount[i]);
     }
 
     if (status == QMGR_QUEST_NOT_FINISHED)
