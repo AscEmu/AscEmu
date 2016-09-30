@@ -733,7 +733,6 @@ void QuestMgr::BuildQuestList(Object* qst_giver, Player* plr, uint32 language)
 
     size_t count_pos = data.wpos();
 
-    bool bValid = false;
     if (qst_giver->IsGameObject())
     {
         GameObject* go = static_cast<GameObject*>(qst_giver);
@@ -742,29 +741,20 @@ void QuestMgr::BuildQuestList(Object* qst_giver, Player* plr, uint32 language)
         {
             go_quest_giver = static_cast<GameObject_QuestGiver*>(go);
             if (go_quest_giver->HasQuests())
-                bValid = true;
-        }
-        if (bValid)
-        {
-            st = go_quest_giver->QuestsBegin();
-            ed = go_quest_giver->QuestsEnd();
+            {
+                st = go_quest_giver->QuestsBegin();
+                ed = go_quest_giver->QuestsEnd();
+            }
         }
     }
     else if (qst_giver->IsCreature())
     {
-        bValid = static_cast< Creature* >(qst_giver)->HasQuests();
-        if (bValid)
+        if (static_cast< Creature* >(qst_giver)->HasQuests())
         {
             st = static_cast< Creature* >(qst_giver)->QuestsBegin();
             ed = static_cast< Creature* >(qst_giver)->QuestsEnd();
         }
     }
-
-    /*if (!bValid)
-    {
-        *data << uint8(0);
-        return;
-    }*/
 
     data << uint8(sQuestMgr.ActiveQuestsCount(qst_giver, plr));
 
