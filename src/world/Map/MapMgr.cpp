@@ -437,6 +437,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
             break;
         }
         case HIGHGUID_TYPE_TRANSPORTER:
+        case HIGHGUID_TYPE_MO_TRANSPORT:
         {
             break;
         }

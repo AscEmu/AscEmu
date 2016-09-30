@@ -13069,12 +13069,16 @@ void Player::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, P
 
 void Player::AcceptQuest(uint64 guid, uint32 quest_id)
 {
-
     bool bValid = false;
     bool hasquest = true;
     bool bSkipLevelCheck = false;
-    QuestProperties const* qst = NULL;
-    Object* qst_giver = NULL;
+
+    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    if (qst == nullptr)
+        return;
+
+    Object* qst_giver = nullptr;
+
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
 
     if (guidtype == HIGHGUID_TYPE_UNIT)
@@ -13088,7 +13092,6 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         if (quest_giver->isQuestGiver())
         {
             bValid = true;
-            qst = sMySQLStore.GetQuestProperties(quest_id);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
@@ -13100,7 +13103,6 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             return;
 
         bValid = true;
-        qst = sMySQLStore.GetQuestProperties(quest_id);
     }
     else if (guidtype == HIGHGUID_TYPE_ITEM)
     {
@@ -13111,7 +13113,6 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             return;
         bValid = true;
         bSkipLevelCheck = true;
-        qst = sMySQLStore.GetQuestProperties(quest_id);
     }
     else if (guidtype == HIGHGUID_TYPE_PLAYER)
     {
@@ -13121,18 +13122,17 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         else
             return;
         bValid = true;
-        qst = sMySQLStore.GetQuestProperties(quest_id);
     }
 
     if (!qst_giver)
     {
-        LOG_DEBUG("WORLD: Invalid questgiver GUID.");
+        Log.Debug("Player::AcceptQuest", "WORLD: Invalid questgiver GUID.");
         return;
     }
 
-    if (!bValid || qst == NULL)
+    if (!bValid)
     {
-        LOG_DEBUG("WORLD: Creature is not a questgiver.");
+        Log.Debug("Player::AcceptQuest", "WORLD: Creature is not a questgiver.");
         return;
     }
 
@@ -13219,7 +13219,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
 
     sQuestMgr.OnQuestAccepted(this, qst, qst_giver);
 
-    LOG_DEBUG("WORLD: Added new QLE.");
+    Log.Debug("Player::AcceptQuest", "WORLD: Added new QLE.");
     sHookInterface.OnQuestAccept(this, qst, qst_giver);
 }
 
