@@ -315,8 +315,8 @@ Player::Player(uint32 guid)
 
 
     bProcessPending = false;
-    for (i = 0; i < 25; ++i)
-        m_questlog[i] = NULL;
+    for (i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
+        m_questlog[i] = nullptr;
 
     m_ItemInterface = new ItemInterface(this);
     CurrentGossipMenu = NULL;
@@ -570,12 +570,12 @@ Player::~Player()
 
     // delete m_talenttree
 
-    for (uint8 i = 0; i < 25; ++i)
+    for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
     {
-        if (m_questlog[i] != NULL)
+        if (m_questlog[i] != nullptr)
         {
             delete m_questlog[i];
-            m_questlog[i] = NULL;
+            m_questlog[i] = nullptr;
         }
     }
 
@@ -2770,7 +2770,7 @@ void Player::_SaveQuestLogEntry(QueryBuffer* buf)
 {
     for (std::set<uint32>::iterator itr = m_removequests.begin(); itr != m_removequests.end(); ++itr)
     {
-        if (buf == NULL)
+        if (buf == nullptr)
             CharacterDatabase.Execute("DELETE FROM questlog WHERE player_guid=%u AND quest_id=%u", GetLowGUID(), (*itr));
         else
             buf->AddQuery("DELETE FROM questlog WHERE player_guid=%u AND quest_id=%u", GetLowGUID(), (*itr));
@@ -2778,9 +2778,9 @@ void Player::_SaveQuestLogEntry(QueryBuffer* buf)
 
     m_removequests.clear();
 
-    for (uint8 i = 0; i < 25; ++i)
+    for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
     {
-        if (m_questlog[i] != NULL)
+        if (m_questlog[i] != nullptr)
             m_questlog[i]->SaveToDB(buf);
     }
 }
@@ -3768,33 +3768,25 @@ void Player::RolloverHonor()
 
 void Player::_LoadQuestLogEntry(QueryResult* result)
 {
-    QuestLogEntry* entry;
-    QuestProperties const* quest;
-    Field* fields;
-    uint32 questid;
-    uint32 baseindex;
-
     // clear all fields
-    for (uint8 i = 0; i < 25; ++i)
+    for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
     {
-        baseindex = PLAYER_QUEST_LOG_1_1 + (i * 5);
+        uint32 baseindex = PLAYER_QUEST_LOG_1_1 + (i * 5);
         SetUInt32Value(baseindex + 0, 0);
         SetUInt32Value(baseindex + 1, 0);
-        SetUInt64Value(baseindex + 2, 0);
+        SetUInt32Value(baseindex + 2, 0);
+        SetUInt32Value(baseindex + 2 + 1, 0);
         SetUInt32Value(baseindex + 4, 0);
     }
-
-    int slot = 0;
 
     if (result)
     {
         do
         {
-            fields = result->Fetch();
-            questid = fields[1].GetUInt32();
-            quest = sMySQLStore.GetQuestProperties(questid);
-            slot = fields[2].GetUInt32();
-            ARCEMU_ASSERT(slot != -1);
+            Field* fields = result->Fetch();
+            uint32 questid = fields[1].GetUInt32();
+            QuestProperties const* quest = sMySQLStore.GetQuestProperties(questid);
+            uint32 slot = fields[2].GetUInt32();
 
             // remove on next save if bad quest
             if (!quest)
@@ -3802,10 +3794,10 @@ void Player::_LoadQuestLogEntry(QueryResult* result)
                 m_removequests.insert(questid);
                 continue;
             }
-            if (m_questlog[slot] != 0)
+            if (m_questlog[slot] != nullptr)
                 continue;
 
-            entry = new QuestLogEntry;
+            QuestLogEntry* entry = new QuestLogEntry;
             entry->Init(quest, this, slot);
             entry->LoadFromDB(fields);
             entry->UpdatePlayerFields();
@@ -3819,13 +3811,13 @@ QuestLogEntry* Player::GetQuestLogForEntry(uint32 quest)
 {
     for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
     {
-        if (m_questlog[i] != NULL)
+        if (m_questlog[i] != nullptr)
         {
             if (m_questlog[i]->GetQuest()->GetQuestId() == quest)
                 return m_questlog[i];
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 void Player::SetQuestLogSlot(QuestLogEntry* entry, uint32 slot)
@@ -5136,8 +5128,8 @@ bool Player::IsGroupMember(Player* plyr)
 
 int32 Player::GetOpenQuestSlot()
 {
-    for (uint8 i = 0; i < 25; ++i)
-        if (m_questlog[i] == NULL)
+    for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
+        if (m_questlog[i] == nullptr)
             return i;
 
     return -1;
@@ -5159,8 +5151,8 @@ bool Player::HasFinishedQuest(uint32 quest_id)
 
 bool Player::HasTimedQuest()
 {
-    for (uint8 i = 0; i < 25; i++)
-        if ((m_questlog[i] != NULL) && (m_questlog[i]->GetQuest()->GetLimitTime() != 0))
+    for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; i++)
+        if ((m_questlog[i] != nullptr) && (m_questlog[i]->GetQuest()->GetLimitTime() != 0))
             return true;
 
     return false;
@@ -6147,9 +6139,9 @@ void Player::LoadTaxiMask(const char* data)
 bool Player::HasQuestForItem(uint32 itemid)
 {
     QuestProperties const* qst;
-    for (uint8 i = 0; i < 25; ++i)
+    for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
     {
-        if (m_questlog[i] != NULL)
+        if (m_questlog[i] != nullptr)
         {
             qst = m_questlog[i]->GetQuest();
 
@@ -10824,9 +10816,9 @@ bool Player::HasQuestMob(uint32 entry) //Only for Kill Quests
 
 bool Player::HasQuest(uint32 entry)
 {
-    for (uint8 i = 0; i < 25; i++)
+    for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
     {
-        if (m_questlog[i] != NULL && m_questlog[i]->GetQuest()->GetQuestId() == entry)
+        if (m_questlog[i] != nullptr && m_questlog[i]->GetQuest()->GetQuestId() == entry)
             return true;
     }
     return false;

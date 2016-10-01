@@ -241,20 +241,17 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
     CALL_QUESTSCRIPT_EVENT(qEntry, OnQuestCancel)(GetPlayer());
     qEntry->Finish();
 
-    // Remove all items given by the questgiver at the beginning
-    for (uint8 i = 0; i < 4; ++i)
-    {
-        /*if (qPtr->receive_items[i])
-            GetPlayer()->GetItemInterface()->RemoveItemAmt(qPtr->receive_items[i], 1);*/
-    }
 
-    if (qPtr->GetSrcItemId() /*&& qPtr->GetSrcItemId() != qPtr->receive_items[0]*/)
-    {
-        ItemProperties const* itemProto = sMySQLStore.GetItemProperties(qPtr->GetSrcItemId());
-        if (itemProto != NULL)
-            if (itemProto->QuestId != qPtr->GetQuestId())
-                _player->GetItemInterface()->RemoveItemAmt(qPtr->GetSrcItemId(), qPtr->GetSrcItemCount() ? qPtr->GetSrcItemCount() : 1);
-    }
+    if (qPtr->GetSrcItemId())
+        GetPlayer()->GetItemInterface()->RemoveItemAmt(qPtr->GetSrcItemId(), qPtr->GetSrcItemCount() ? qPtr->GetSrcItemCount() : 1);
+
+    //if (qPtr->GetSrcItemId() /*&& qPtr->GetSrcItemId() != qPtr->receive_items[0]*/)
+    //{
+    //    ItemProperties const* itemProto = sMySQLStore.GetItemProperties(qPtr->GetSrcItemId());
+    //    if (itemProto != NULL)
+    //        if (itemProto->QuestId != qPtr->GetQuestId())
+    //            _player->GetItemInterface()->RemoveItemAmt(qPtr->GetSrcItemId(), qPtr->GetSrcItemCount() ? qPtr->GetSrcItemCount() : 1);
+    //}
     //remove all quest items (but not trade goods) collected and required only by this quest
     for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
     {
@@ -364,7 +361,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (status == QMGR_QUEST_FINISHED)
+    if (status != QMGR_QUEST_FINISHED)
     {
         sQuestMgr.BuildOfferReward(qst, qst_giver, 1, language, _player);
     }
@@ -414,7 +411,7 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
 
             if (status == QMGR_QUEST_NOT_FINISHED || status == QMGR_QUEST_REPEATABLE)
             {
-                sQuestMgr.BuildRequestItems(qst, qst_giver, status, language, _player);
+                sQuestMgr.BuildRequestItems(qst, qst_giver, 1024, language, _player);
             }
             else if (status == QMGR_QUEST_FINISHED)
             {
@@ -485,12 +482,12 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     recvPacket >> quest_id;
     recvPacket >> reward_slot;
 
-    if (reward_slot >= 6)
+    if (reward_slot >= QUEST_REWARD_CHOICES_COUNT)
         return;
 
     bool bValid = false;
-    QuestProperties const* qst = NULL;
-    Object* qst_giver = NULL;
+    QuestProperties const* qst = nullptr;
+    Object* qst_giver = nullptr;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
 
     if (guidtype == HIGHGUID_TYPE_UNIT)

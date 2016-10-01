@@ -65,15 +65,17 @@ void QuestLogEntry::Init(QuestProperties const* quest, Player* plr, uint32 slot)
             if (!plr->HasQuestSpell(quest->ReqSpell[i]))
                 plr->quest_spells.insert(quest->ReqSpell[i]);
         }
-        /*else if (quest->required_emote[i] != 0)
-        {
-            isemotequest = true;
-        }*/
+
         if (quest->ReqCreatureOrGOId[i] != 0)
         {
             if (!plr->HasQuestMob(quest->ReqCreatureOrGOId[i]))
                 plr->quest_mobs.insert(quest->ReqCreatureOrGOId[i]);
         }
+    }
+
+    if (quest->ReqEmoteId)
+    {
+        isemotequest = true;
     }
 
     // update slot
@@ -82,7 +84,7 @@ void QuestLogEntry::Init(QuestProperties const* quest, Player* plr, uint32 slot)
     mDirty = true;
 
     /*memset(m_mobcount, 0, 4 * 4);
-    memset(m_explored_areas, 0, 4 * 4);*/
+    memset(m_explored_areas, 0, 3 * 3);*/
 
     if (m_quest->GetLimitTime() > 0)
         expirytime = UNIXTIME + m_quest->GetLimitTime() / 1000;
@@ -139,8 +141,10 @@ void QuestLogEntry::SaveToDB(QueryBuffer* buf)
 
     ss << "INSERT INTO questlog VALUES(";
     ss << m_plr->GetLowGUID() << "," << m_quest->GetQuestId() << "," << m_slot << "," << expirytime;
-    for (uint8 i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < QUEST_REQUIRED_AREA_TRIGGERS; ++i)
         ss << "," << m_explored_areas[i];
+
+    ss << "," << 0; //unused 4th areatrigger value!
 
     for (uint8 i = 0; i < 4; ++i)
         ss << "," << m_mobcount[i];
@@ -158,21 +162,18 @@ void QuestLogEntry::SaveToDB(QueryBuffer* buf)
 bool QuestLogEntry::LoadFromDB(Field* fields)
 {
     // playerguid,questid,timeleft,area0,area1,area2,area3,kill0,kill1,kill2,kill3
-    int f = 3;
     ARCEMU_ASSERT(m_plr && m_quest);
-    expirytime = fields[f].GetUInt32();
-    f++;
-    /*for (uint8 i = 0; i < 4; ++i)
+    expirytime = fields[3].GetUInt32();
+
+    for (uint8 i = 0; i < QUEST_REQUIRED_AREA_TRIGGERS; ++i)
     {
-        m_explored_areas[i] = fields[f].GetUInt32();
-        f++;
+        m_explored_areas[i] = fields[4 + i].GetUInt32();
         CALL_QUESTSCRIPT_EVENT(this, OnExploreArea)(m_explored_areas[i], m_plr, this);
-    }*/
+    }
 
     for (uint8 i = 0; i < 4; ++i)
     {
-        m_mobcount[i] = fields[f].GetUInt32();
-        f++;
+        m_mobcount[i] = fields[8 + i].GetUInt32();
         if (GetQuest()->m_reqMobType[i] == QUEST_MOB_TYPE_CREATURE)
         {
             CALL_QUESTSCRIPT_EVENT(this, OnCreatureKill)(GetQuest()->ReqCreatureOrGOId[i], m_plr, this);
@@ -183,7 +184,7 @@ bool QuestLogEntry::LoadFromDB(Field* fields)
         }
     }
 
-    completed = fields[f].GetUInt32();
+    completed = fields[12].GetUInt32();
 
     mDirty = false;
     return true;
@@ -191,8 +192,6 @@ bool QuestLogEntry::LoadFromDB(Field* fields)
 
 bool QuestLogEntry::CanBeFinished()
 {
-    uint32 i;
-
     //\todo danko
     /*if (m_quest->iscompletedbyspelleffect && (completed == QUEST_INCOMPLETE))
         return false;*/
@@ -203,7 +202,7 @@ bool QuestLogEntry::CanBeFinished()
         if (completed == QUEST_COMPLETE)
             return true;
 
-    for (i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < 4; ++i)
     {
         if (m_quest->ReqCreatureOrGOId[i])
         {
@@ -219,17 +218,17 @@ bool QuestLogEntry::CanBeFinished()
                 return false;
             }
         }
-        //\todo danko
-        //if (m_quest->required_emote[i])   // requires emote, with no required target
-        //{
-        //    if (m_mobcount[i] == 0 || m_mobcount[i] < m_quest->ReqCreatureOrGOCount[i])
-        //    {
-        //        return false;
-        //    }
-        //}
+
+        if (m_quest->ReqEmoteId)   // requires emote, with no required target
+        {
+            if (m_mobcount[i] == 0 || m_mobcount[i] < m_quest->ReqCreatureOrGOCount[i])
+            {
+                return false;
+            }
+        }
     }
 
-    for (i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
+    for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
     {
         if (m_quest->ReqItemId[i])
         {
@@ -244,15 +243,14 @@ bool QuestLogEntry::CanBeFinished()
     if (m_quest->GetRewOrReqMoney() < 0 && m_plr->GetGold() < uint32(-m_quest->GetRewOrReqMoney()))
         return false;
 
-    //\todo danko
-    /*for (i = 0; i < 4; ++i)
+    for (uint8 i = 0; i < QUEST_REQUIRED_AREA_TRIGGERS; ++i)
     {
-        if (m_quest->required_triggers[i])
+        if (m_quest->m_reqExploreTrigger[i])
         {
             if (m_explored_areas[i] == 0)
                 return false;
         }
-    }*/
+    }
 
     return true;
 }
@@ -273,7 +271,7 @@ void QuestLogEntry::IncrementMobCount(uint32 i)
 
 void QuestLogEntry::SetTrigger(uint32 i)
 {
-    ARCEMU_ASSERT(i < 4);
+    ARCEMU_ASSERT(i < QUEST_REQUIRED_AREA_TRIGGERS);
     m_explored_areas[i] = 1;
     mDirty = true;
 }
@@ -295,7 +293,7 @@ void QuestLogEntry::Finish()
     m_plr->SetUInt32Value(base + 4, 0);
 
     // clear from player log
-    m_plr->SetQuestLogSlot(NULL, m_slot);
+    m_plr->SetQuestLogSlot(nullptr, m_slot);
     m_plr->PushToRemovedQuests(m_quest->GetQuestId());
     m_plr->UpdateNearbyGameObjects();
 
@@ -338,26 +336,23 @@ void QuestLogEntry::UpdatePlayerFields()
     uint64 field1 = 0;
 
     // explored areas
-    //\todo danko
-   /* if (m_quest->count_requiredtriggers)
+    uint32 count = 0;
+    for (uint8 i = 0; i < QUEST_REQUIRED_AREA_TRIGGERS; ++i)
     {
-        uint32 count = 0;
-        for (uint8 i = 0; i < 4; ++i)
+        if (m_quest->m_reqExploreTrigger[i])
         {
-            if (m_quest->required_triggers[i])
+            if (m_explored_areas[i] == 1)
             {
-                if (m_explored_areas[i] == 1)
-                {
-                    count++;
-                }
+                ++count;
             }
         }
+    }
 
-        if (count == m_quest->count_requiredtriggers)
-        {
-            field1 |= 0x01000000;
-        }
-    }*/
+    if (count > 0)
+    {
+        field1 |= 0x01000000;
+    }
+
 
     // spell casts / emotes
     if (iscastquest)
@@ -381,12 +376,11 @@ void QuestLogEntry::UpdatePlayerFields()
         bool emote_complete = true;
         for (uint8 i = 0; i < 4; ++i)
         {
-            //\todo danko
-            /*if (m_quest->required_emote[i] && m_quest->required_mobcount[i] > m_mobcount[i])
+            if (m_quest->ReqEmoteId && m_quest->ReqCreatureOrGOCount[i] > m_mobcount[i])
             {
                 emote_complete = false;
                 break;
-            }*/
+            }
         }
         if (emote_complete)
         {
@@ -395,15 +389,15 @@ void QuestLogEntry::UpdatePlayerFields()
     }
 
     // mob hunting / counter
-    /*if (m_quest->count_required_mob)
-    {*/
+    if (m_quest->ReqCurrencyCount[0])
+    {
         uint8* p = (uint8*)&field1;
         for (uint8 i = 0; i < 4; ++i)
         {
             if (m_quest->ReqCreatureOrGOId[i] && m_mobcount[i] > 0)
                 p[2 * i] |= (uint8)m_mobcount[i];
         }
-    //}
+    }
 
     if ((m_quest->GetLimitTime() != 0) && (expirytime < UNIXTIME))
         completed = QUEST_FAILED;

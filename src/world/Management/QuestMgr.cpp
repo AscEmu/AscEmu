@@ -128,6 +128,12 @@ uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, QuestProperti
 
     if (!quest_log_entry)
     {
+        if (plr->HasFinishedQuest(qst->GetQuestId()) && !qst->IsRepeatable() && !qst->IsDaily())
+            return QMGR_QUEST_NOT_AVAILABLE;
+
+        if (qst->GetPrevQuestId() && !plr->HasFinishedQuest(qst->GetPrevQuestId()))
+            return QMGR_QUEST_NOT_AVAILABLE;
+
         if (type & QUESTGIVER_QUEST_START)
         {
             return PlayerMeetsReqs(plr, qst, skiplevelcheck);
@@ -139,6 +145,24 @@ uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, QuestProperti
             return QMGR_QUEST_NOT_FINISHED;
 
         if (type & QUESTGIVER_QUEST_END)
+        {
+            if (!quest_log_entry->CanBeFinished())
+            {
+                if (qst->GetQuestFlags() == QUEST_FLAGS_REPEATABLE)
+                {
+                    return QMGR_QUEST_REPEATABLE;
+                }
+                else
+                {
+                    return QMGR_QUEST_NOT_FINISHED;
+                }
+            }
+            else
+            {
+                return QMGR_QUEST_FINISHED;
+            }
+        }
+        else if (type & QUESTGIVER_QUEST_START)
         {
             if (!quest_log_entry->CanBeFinished())
             {
@@ -337,7 +361,7 @@ void QuestMgr::BuildOfferReward(QuestProperties const* qst, Object* qst_giver, u
     std::string QuestCompleteTextWindow = qst->GetQuestTurnInPortraitText();
     std::string QuestCompleteName = qst->GetQuestTurnInPortraitUnk();
 
-    WorldPacket data(SMSG_QUESTGIVER_OFFER_REWARD);
+    WorldPacket data(SMSG_QUESTGIVER_OFFER_REWARD, 50);
     data << uint64(qst_giver->GetGUID());
     data << uint32(qst->GetQuestId());
     data << Title;
@@ -357,14 +381,12 @@ void QuestMgr::BuildOfferReward(QuestProperties const* qst, Object* qst_giver, u
     data << uint32(qst->GetSuggestedPlayers());    // SuggestedGroupNum
 
     uint32 EmoteCount = 0;
-    
-    for (uint8 i = 0; i < QUEST_EMOTE_COUNT; i++)
+    for (uint8 i = 0; i < QUEST_EMOTE_COUNT; ++i)
     {
         if (qst->OfferRewardEmote[i] <= 0)
             break;
         ++EmoteCount;
     }
-
     data << EmoteCount;
 
     for (uint32 i = 0; i < EmoteCount; ++i)
@@ -374,30 +396,30 @@ void QuestMgr::BuildOfferReward(QuestProperties const* qst, Object* qst_giver, u
     }
 
     data << uint32(qst->GetRewChoiceItemsCount());
-    for (uint32 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
         data << uint32(qst->RewChoiceItemId[i]);
 
-    for (uint32 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
         data << uint32(qst->RewChoiceItemCount[i]);
 
-    for (uint32 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_REWARD_CHOICES_COUNT; ++i)
     {
         it = sMySQLStore.GetItemProperties(qst->RewChoiceItemId[i]);
         if (it)
             data << uint32(it->DisplayInfoID);
         else
-            data << uint32(0x00);
+            data << uint32(0);
     }
 
     data << qst->GetRewItemsCount();
 
-    for (uint32 i = 0; i < QUEST_REWARDS_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_REWARDS_COUNT; ++i)
         data << uint32(qst->RewItemId[i]);
 
-    for (uint32 i = 0; i < QUEST_REWARDS_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_REWARDS_COUNT; ++i)
         data << uint32(qst->RewItemCount[i]);
 
-    for (uint32 i = 0; i < QUEST_REWARDS_COUNT; ++i)
+    for (uint8 i = 0; i < QUEST_REWARDS_COUNT; ++i)
     {
         it = sMySQLStore.GetItemProperties(qst->RewItemId[i]);
         if (it)
@@ -408,13 +430,14 @@ void QuestMgr::BuildOfferReward(QuestProperties const* qst, Object* qst_giver, u
     
     data << uint32(qst->GetRewOrReqMoney());
     data << uint32(qst->XPValue(plr));         // 4.0.6
+
     data << uint32(qst->GetCharTitleId());
     data << uint32(0);                         // Unknown 4.0.6
-    data << uint32(0);                         // Unknown 4.0.6
+    data << float(0.0f);                       // Unknown 4.0.6
     data << uint32(qst->GetBonusTalents());
     data << uint32(0);                         // Unknown 4.0.6
-    data << uint32(0);                         // Unknown 4.0.6
-    data << uint32(0);
+    data << uint32(qst->GetRewRepMask());      // Unknown 4.0.6
+
 
     for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
         data << uint32(qst->RewRepFaction[i]);
@@ -423,19 +446,19 @@ void QuestMgr::BuildOfferReward(QuestProperties const* qst, Object* qst_giver, u
         data << int32(qst->RewRepValueId[i]);
 
     for (uint8 i = 0; i < QUEST_REPUTATIONS_COUNT; ++i)
-        data << int32(qst->RewRepValue[i]);
+        data << uint32(qst->RewRepValue[i]);
 
-    data << int32(qst->GetRewSpellCast());
-    data << uint32(0); // Probably invisible spell cast ;/
+    data << uint32(qst->GetRewSpell());
+    data << uint32(qst->GetRewSpellCast());
 
-    for (uint8 i = 0; i < 4; ++i)
-        data << uint32(0);
+    for (uint8 i = 0; i < QUEST_REWARD_CURRENCY_COUNT; ++i)
+        data << uint32(qst->RewardCurrencyId[i]);
 
-    for (uint8 i = 0; i < 4; ++i)
-        data << uint32(0);
+    for (uint8 i = 0; i < QUEST_REWARD_CURRENCY_COUNT; ++i)
+        data << uint32(qst->RewardCurrencyCount[i]);
 
-    data << uint32(0);
-    data << uint32(0);
+    data << uint32(qst->GetRewSkillLineId());
+    data << uint32(qst->GetRewSkillPoints());
 
     plr->SendPacket(&data);
 }
@@ -702,7 +725,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
     }
 
     data << uint32(qst->GetQuestId());
-    data << uint32(qst->GetRewSkillPoints());
+    data << uint32(qst->GetRewSkillLineId());
 
     data.writeBit(0);               // FIXME: unknown bits, common values sent
     data.writeBit(1);
@@ -912,7 +935,7 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
 
     if (plr->HasQuestMob(entry))
     {
-        for (uint8 i = 0; i < 25; ++i)
+        for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
         {
             auto quest_log_entry = plr->GetQuestLogInSlot(i);
             if (quest_log_entry)
@@ -1104,7 +1127,7 @@ void QuestMgr::OnPlayerExploreArea(Player* plr, uint32 AreaID)
             if (quest_log_entry->GetQuest()->GetZoneOrSort() == 0)
                 continue;
 
-            for (uint8 j = 0; j < 3; ++j)
+            for (uint8 j = 0; j < QUEST_REQUIRED_AREA_TRIGGERS; ++j)
             {
                 if (quest_log_entry->GetQuest()->m_reqExploreTrigger[j] == AreaID && !quest_log_entry->m_explored_areas[j])
                 {
@@ -1132,7 +1155,7 @@ void QuestMgr::AreaExplored(Player* plr, uint32 QuestID)
             // search for quest
             if (quest_log_entry->GetQuest()->GetQuestId() == QuestID)
             {
-                for (uint8 j = 0; j < 4; ++j)
+                for (uint8 j = 0; j < QUEST_REQUIRED_AREA_TRIGGERS; ++j)
                 {
                     if (quest_log_entry->GetQuest()->m_reqExploreTrigger[j] && !quest_log_entry->m_explored_areas[j])
                     {
@@ -1201,8 +1224,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         return;
     }
 
-    QuestLogEntry* qle = NULL;
-    qle = plr->GetQuestLogForEntry(qst->GetQuestId());
+    QuestLogEntry* qle = plr->GetQuestLogForEntry(qst->GetQuestId());
     if (!qle)
         return;
 
@@ -2430,16 +2452,18 @@ void QuestMgr::FillQuestMenu(Creature* giver, Player* plr, Arcemu::Gossip::Menu 
                 switch (status)
                 {
                     case QMGR_QUEST_NOT_FINISHED:
-                        icon = QMGR_QUEST_REPEATABLE_LOWLEVEL;
+                        icon = 4;
                         break;
 
                     case QMGR_QUEST_FINISHED:
-                        icon = QMGR_QUEST_REPEATABLE_LOWLEVEL;
+                        icon = 4;
                         break;
 
                     case QMGR_QUEST_CHAT:
                         icon = QMGR_QUEST_AVAILABLE;
                         break;
+                    case QMGR_QUEST_NOT_AVAILABLE:
+                        continue;
 
                     default:
                         icon = (uint8)status;

@@ -54,12 +54,8 @@ std::string RemoveQuestFromPlayer(Player* plr, QuestProperties const* qst)
                 CALL_QUESTSCRIPT_EVENT(qLogEntry, OnQuestCancel)(plr);
                 qLogEntry->Finish();
 
-                // Remove all items given by the questgiver at the beginning
-                /*for (uint8 i = 0; i < 4; ++i)
-                {
-                    if (qst->receive_items[i])
-                        plr->GetItemInterface()->RemoveItemAmt(qst->receive_items[i], 1);
-                }*/
+                if (qst->SrcItemId)
+                    plr->GetItemInterface()->RemoveItemAmt(qst->SrcItemId, qst->SrcItemCount ? qst->SrcItemCount : 1);
 
                 plr->UpdateNearbyGameObjects();
             }
@@ -171,20 +167,6 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                     QuestLogEntry* qle = new QuestLogEntry();
                     qle->Init(qst, plr, (uint32)open_slot);
                     qle->UpdatePlayerFields();
-
-                    // If the quest should give any items on begin, give them the items.
-                    /*for (uint8 i = 0; i < 4; ++i)
-                    {
-                        if (qst->receive_items[i])
-                        {
-                            Item* item = objmgr.CreateItem(qst->receive_items[i], plr);
-                            if (item == NULL)
-                                return false;
-
-                            if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
-                                item->DeleteMe();
-                        }
-                    }*/
 
                     if (qst->GetSrcItemId())
                     {

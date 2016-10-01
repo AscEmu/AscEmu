@@ -293,7 +293,7 @@ struct QuestProperties
     uint32 m_rewCurrencyCount;
     uint32 m_reqCurrencyCount;
     uint8 m_reqMobType[4];
-    uint32 m_reqExploreTrigger[3];
+    uint32 m_reqExploreTrigger[QUEST_REQUIRED_AREA_TRIGGERS];
 };
 
 #pragma pack(pop)

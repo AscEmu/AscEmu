@@ -1087,7 +1087,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
             questInfo.m_reqExploreTrigger[1] = 0;
             questInfo.m_reqExploreTrigger[2] = 0;
 
-            for (uint8 i = 0; i < 3; ++i)
+            for (uint8 i = 0; i < QUEST_REQUIRED_AREA_TRIGGERS; ++i)
                 questInfo.m_reqExploreTrigger[i] = fields[173 + i].GetUInt32();
 
             questInfo.QuestFlags |= questInfo.SpecialFlags << 20;
