@@ -3775,7 +3775,7 @@ void Player::_LoadQuestLogEntry(QueryResult* result)
         SetUInt32Value(baseindex + 0, 0);
         SetUInt32Value(baseindex + 1, 0);
         SetUInt32Value(baseindex + 2, 0);
-        SetUInt32Value(baseindex + 2 + 1, 0);
+        /*SetUInt32Value(baseindex + 2 + 1, 0);*/
         SetUInt32Value(baseindex + 4, 0);
     }
 
@@ -3813,7 +3813,7 @@ QuestLogEntry* Player::GetQuestLogForEntry(uint32 quest)
     {
         if (m_questlog[i] != nullptr)
         {
-            if (m_questlog[i]->GetQuest()->GetQuestId() == quest)
+            if (m_questlog[i]->GetQuest()->id == quest)
                 return m_questlog[i];
         }
     }
@@ -5152,7 +5152,7 @@ bool Player::HasFinishedQuest(uint32 quest_id)
 bool Player::HasTimedQuest()
 {
     for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; i++)
-        if ((m_questlog[i] != nullptr) && (m_questlog[i]->GetQuest()->GetLimitTime() != 0))
+        if ((m_questlog[i] != nullptr) && (m_questlog[i]->GetQuest()->time != 0))
             return true;
 
     return false;
@@ -6160,7 +6160,7 @@ bool Player::HasQuestForItem(uint32 itemid)
             } // end if
 
             for (uint32 j = 0; j < MAX_REQUIRED_QUEST_ITEM; ++j)
-                if (qst->ReqItemId[j] == itemid && (GetItemInterface()->GetItemCount(itemid) < qst->ReqItemCount[j]))
+                if (qst->required_item[j] == itemid && (GetItemInterface()->GetItemCount(itemid) < qst->required_itemcount[j]))
                     return true;
         }
     }
@@ -6765,12 +6765,12 @@ void Player::UpdateNearbyGameObjects()
             {
                 for (GameObjectGOMap::const_iterator GOitr = gameobject_info->goMap.begin(); GOitr != gameobject_info->goMap.end(); ++GOitr)
                 {
-                    if ((qle = GetQuestLogForEntry(GOitr->first->GetQuestId())) != 0)
+                    if ((qle = GetQuestLogForEntry(GOitr->first->id)) != 0)
                     {
-                        for (uint32 i = 0; i < QUEST_OBJECTIVES_COUNT; ++i)
+                        for (uint32 i = 0; i < qle->GetQuest()->count_required_mob; ++i)
                         {
-                            if (qle->GetQuest()->ReqCreatureOrGOId[i] == static_cast<int32>(go->GetEntry()) &&
-                                qle->GetMobCount(i) < qle->GetQuest()->ReqCreatureOrGOCount[i])
+                            if (qle->GetQuest()->required_mob_or_go[i] == static_cast<int32>(go->GetEntry()) &&
+                                qle->GetMobCount(i) < qle->GetQuest()->required_mob_or_go_count[i])
                             {
                                 activate_quest_object = true;
                                 break;
@@ -10818,7 +10818,7 @@ bool Player::HasQuest(uint32 entry)
 {
     for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
     {
-        if (m_questlog[i] != nullptr && m_questlog[i]->GetQuest()->GetQuestId() == entry)
+        if (m_questlog[i] != nullptr && m_questlog[i]->GetQuest()->id == entry)
             return true;
     }
     return false;
@@ -13061,16 +13061,12 @@ void Player::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, P
 
 void Player::AcceptQuest(uint64 guid, uint32 quest_id)
 {
+
     bool bValid = false;
     bool hasquest = true;
     bool bSkipLevelCheck = false;
-
-    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
-    if (qst == nullptr)
-        return;
-
-    Object* qst_giver = nullptr;
-
+    QuestProperties const* qst = NULL;
+    Object* qst_giver = NULL;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
 
     if (guidtype == HIGHGUID_TYPE_UNIT)
@@ -13080,10 +13076,11 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             qst_giver = quest_giver;
         else
             return;
-        hasquest = quest_giver->HasQuest(quest_id, 1);
+        hasquest = quest_giver->HasQuest(quest_id, QUESTGIVER_QUEST_START);
         if (quest_giver->isQuestGiver())
         {
             bValid = true;
+            qst = sMySQLStore.GetQuestProperties(quest_id);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
@@ -13095,6 +13092,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             return;
 
         bValid = true;
+        qst = sMySQLStore.GetQuestProperties(quest_id);
     }
     else if (guidtype == HIGHGUID_TYPE_ITEM)
     {
@@ -13105,6 +13103,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             return;
         bValid = true;
         bSkipLevelCheck = true;
+        qst = sMySQLStore.GetQuestProperties(quest_id);
     }
     else if (guidtype == HIGHGUID_TYPE_PLAYER)
     {
@@ -13114,21 +13113,22 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         else
             return;
         bValid = true;
+        qst = sMySQLStore.GetQuestProperties(quest_id);
     }
 
     if (!qst_giver)
     {
-        Log.Debug("Player::AcceptQuest", "WORLD: Invalid questgiver GUID.");
+        LOG_DEBUG("WORLD: Invalid questgiver GUID.");
         return;
     }
 
-    if (!bValid)
+    if (!bValid || qst == NULL)
     {
-        Log.Debug("Player::AcceptQuest", "WORLD: Creature is not a questgiver.");
+        LOG_DEBUG("WORLD: Creature is not a questgiver.");
         return;
     }
 
-    if (HasQuest(qst->GetQuestId()))
+    if (HasQuest(qst->id))
         return;
 
     if (qst_giver->IsCreature() && static_cast< Creature* >(qst_giver)->m_escorter != NULL)
@@ -13141,7 +13141,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     // it isn't available.
     uint32 status = sQuestMgr.CalcQuestStatus(qst_giver, this, qst, 3, bSkipLevelCheck);
 
-    if ((!qst->IsRepeatable() && HasFinishedQuest(qst->GetQuestId())) || (status != QMGR_QUEST_AVAILABLE && status != QMGR_QUEST_REPEATABLE && status != QMGR_QUEST_CHAT)
+    if ((!sQuestMgr.IsQuestRepeatable(qst) && HasFinishedQuest(qst->id)) || (status != QMGR_QUEST_AVAILABLE && status != QMGR_QUEST_REPEATABLE && status != QMGR_QUEST_CHAT)
         || !hasquest)
     {
         // We've got a hacker. Disconnect them.
@@ -13158,15 +13158,15 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         return;
     }
 
-    if ((qst->GetLimitTime() != 0) && HasTimedQuest())
+    if ((qst->time != 0) && HasTimedQuest())
     {
-        sQuestMgr.SendQuestInvalid(INVALIDREASON_QUEST_ONLY_ONE_TIMED, this);
+        sQuestMgr.SendQuestInvalid(INVALID_REASON_HAVE_TIMED_QUEST, this);
         return;
     }
 
-    if (qst->GetSrcItemId())
+    if (qst->count_receiveitems || qst->srcitem)
     {
-        uint32 slots_required = qst->GetSrcItemCount();
+        uint32 slots_required = qst->count_receiveitems;
 
         if (m_ItemInterface->CalculateFreeSlots(NULL) < slots_required)
         {
@@ -13180,21 +13180,39 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
     qle->Init(qst, this, log_slot);
     qle->UpdatePlayerFields();
 
-    if (qst->GetSrcItemId())
+    // If the quest should give any items on begin, give them the items.
+    for (uint8 i = 0; i < 4; ++i)
     {
-        if (!qst_giver->IsItem() || (qst_giver->GetEntry() != qst->GetSrcItemId()))
+        if (qst->receive_items[i])
         {
-            Item* item = objmgr.CreateItem(qst->GetSrcItemId(), this);
-            if (item != nullptr)
+            Item* item = objmgr.CreateItem(qst->receive_items[i], this);
+            if (item == NULL)
+                continue;
+            if (!m_ItemInterface->AddItemToFreeSlot(item))
             {
-                item->SetStackCount(qst->GetSrcItemCount() ? qst->GetSrcItemCount() : 1);
+                item->DeleteMe();
+            }
+            else
+                SendItemPushResult(false, true, false, true,
+                                   m_ItemInterface->LastSearchItemBagSlot(), m_ItemInterface->LastSearchItemSlot(),
+                                   1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
+        }
+    }
+
+    if (qst->srcitem && qst->srcitem != qst->receive_items[0])
+    {
+        if (!qst_giver->IsItem() || (qst_giver->GetEntry() != qst->srcitem))
+        {
+            if (Item* item = objmgr.CreateItem(qst->srcitem, this))
+            {
+                item->SetStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
                 if (!m_ItemInterface->AddItemToFreeSlot(item))
                     item->DeleteMe();
             }
         }
     }
 
-    if (qst->ReqItemCount || qst_giver->IsGameObject())    // gameobject quests deactivate
+    if (qst->count_required_item || qst_giver->IsGameObject())    // gameobject quests deactivate
         UpdateNearbyGameObjects();
 
     // Some spells applied at quest activation
@@ -13211,7 +13229,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
 
     sQuestMgr.OnQuestAccepted(this, qst, qst_giver);
 
-    Log.Debug("Player::AcceptQuest", "WORLD: Added new QLE.");
+    LOG_DEBUG("WORLD: Added new QLE.");
     sHookInterface.OnQuestAccept(this, qst, qst_giver);
 }
 
@@ -13509,7 +13527,7 @@ void Player::AddQuestKill(uint32 questid, uint8 reqid, uint32 delay)
 
     auto quest = quest_entry->GetQuest();
 
-    if (quest_entry->GetMobCount(reqid) >= quest->ReqCreatureOrGOCount[reqid])
+    if (quest_entry->GetMobCount(reqid) >= quest->required_mob_or_go_count[reqid])
         return;
 
     quest_entry->IncrementMobCount(reqid);

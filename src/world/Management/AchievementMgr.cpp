@@ -1267,7 +1267,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                 for (; qc != GetPlayer()->m_finishedQuests.end(); ++qc)
                 {
                     QuestProperties const* qst = sMySQLStore.GetQuestProperties(*qc);
-                    if (qst && qst->GetZoneOrSort() == achievementCriteria->complete_quests_in_zone.zoneID)
+                    if (qst && qst->zone_id == achievementCriteria->complete_quests_in_zone.zoneID)
                     {
                         ++qcinzone;
                     }

@@ -257,7 +257,7 @@ class ChieftainOomoorooQAI : public CreatureAIScript
             if (mKiller->IsPlayer())
             {
                 QuestLogEntry* pQuest = static_cast<Player*>(mKiller)->GetQuestLogForEntry(9573);
-                if (pQuest != nullptr && pQuest->GetMobCount(1) < pQuest->GetQuest()->ReqCreatureOrGOCount[1])
+                if (pQuest != nullptr && pQuest->GetMobCount(1) < pQuest->GetQuest()->required_mob_or_go_count[1])
                 {
                     pQuest->SetMobCount(1, pQuest->GetMobCount(1) + 1);
                     pQuest->SendUpdateAddKill(1);

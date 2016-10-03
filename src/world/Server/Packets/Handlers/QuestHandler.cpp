@@ -33,7 +33,7 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
         return;         //Added in 3.0.2, quests can be shared anywhere besides a BG
 
     uint64 guid;
-    WorldPacket data(SMSG_QUESTGIVER_STATUS, 12);
+    
     Object* qst_giver = NULL;
 
     recv_data >> guid;
@@ -75,6 +75,8 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
         return;
     }
 
+    LOG_DEBUG("Send SMSG_QUESTGIVER_STATUS");
+    WorldPacket data(SMSG_QUESTGIVER_STATUS, 12);
     data << guid;
     data << sQuestMgr.CalcStatus(qst_giver, GetPlayer());
     SendPacket(&data);
@@ -122,6 +124,8 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
 
     Object* qst_giver = NULL;
 
+    bool bValid = false;
+
     QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
     if (!qst)
     {
@@ -139,7 +143,8 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
             return;
         if (quest_giver->isQuestGiver())
         {
-            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->GetQuestId()), false);
+            bValid = true;
+            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
@@ -149,11 +154,12 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
             qst_giver = quest_giver;
         else
             return;
-
+        bValid = false;
         if (quest_giver->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
+            bValid = true;
             GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(quest_giver);
-            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)go_quest_giver->GetQuestRelation(qst->GetQuestId()), false);
+            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)go_quest_giver->GetQuestRelation(qst->id), false);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_ITEM)
@@ -176,6 +182,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
         if (itemProto->Bonding == ITEM_BIND_ON_USE)
             quest_giver->SoulBind();
 
+        bValid = true;
         status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, 1, false);
     }
 
@@ -185,14 +192,19 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (status == QMGR_QUEST_AVAILABLE || status == QMGR_QUEST_REPEATABLE || status == QMGR_QUEST_CHAT)
+    if (!bValid)
     {
-        sQuestMgr.BuildQuestDetails( qst, qst_giver, 0, language, _player);	 // 0 because we want goodbye to function
-
-        if (qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
-            _player->AcceptQuest(qst_giver->GetGUID(), qst->GetQuestId());
+        LOG_DEBUG("WORLD: object is not a questgiver.");
+        return;
     }
-    else /*if (status == QMGR_QUEST_NOT_FINISHED || status == QMGR_QUEST_FINISHED)*/
+
+    if ((status == QMGR_QUEST_AVAILABLE) || (status == QMGR_QUEST_REPEATABLE) || (status == QMGR_QUEST_CHAT))
+    {
+        sQuestMgr.BuildQuestDetails(qst, qst_giver, 1, language, _player);	 // 0 because we want goodbye to function
+        if (qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
+            _player->AcceptQuest(qst_giver->GetGUID(), qst->id);
+    }
+    else if (status == QMGR_QUEST_NOT_FINISHED || status == QMGR_QUEST_FINISHED)
     {
         sQuestMgr.BuildRequestItems(qst, qst_giver, status, language, _player);
     }
@@ -241,25 +253,28 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
     CALL_QUESTSCRIPT_EVENT(qEntry, OnQuestCancel)(GetPlayer());
     qEntry->Finish();
 
+    // Remove all items given by the questgiver at the beginning
+    for (uint8 i = 0; i < 4; ++i)
+    {
+        if (qPtr->receive_items[i])
+            GetPlayer()->GetItemInterface()->RemoveItemAmt(qPtr->receive_items[i], 1);
+    }
 
-    if (qPtr->GetSrcItemId())
-        GetPlayer()->GetItemInterface()->RemoveItemAmt(qPtr->GetSrcItemId(), qPtr->GetSrcItemCount() ? qPtr->GetSrcItemCount() : 1);
-
-    //if (qPtr->GetSrcItemId() /*&& qPtr->GetSrcItemId() != qPtr->receive_items[0]*/)
-    //{
-    //    ItemProperties const* itemProto = sMySQLStore.GetItemProperties(qPtr->GetSrcItemId());
-    //    if (itemProto != NULL)
-    //        if (itemProto->QuestId != qPtr->GetQuestId())
-    //            _player->GetItemInterface()->RemoveItemAmt(qPtr->GetSrcItemId(), qPtr->GetSrcItemCount() ? qPtr->GetSrcItemCount() : 1);
-    //}
+    if (qPtr->srcitem && qPtr->srcitem != qPtr->receive_items[0])
+    {
+        ItemProperties const* itemProto = sMySQLStore.GetItemProperties(qPtr->srcitem);
+        if (itemProto != NULL)
+            if (itemProto->QuestId != qPtr->id)
+                _player->GetItemInterface()->RemoveItemAmt(qPtr->srcitem, qPtr->srcitemcount ? qPtr->srcitemcount : 1);
+    }
     //remove all quest items (but not trade goods) collected and required only by this quest
     for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
     {
-        if (qPtr->ReqItemId[i] != 0)
+        if (qPtr->required_item[i] != 0)
         {
-            ItemProperties const* itemProto = sMySQLStore.GetItemProperties(qPtr->ReqItemId[i]);
+            ItemProperties const* itemProto = sMySQLStore.GetItemProperties(qPtr->required_item[i]);
             if (itemProto != NULL && itemProto->Class == ITEM_CLASS_QUEST)
-                GetPlayer()->GetItemInterface()->RemoveItemAmt(qPtr->ReqItemId[i], qPtr->ReqItemCount[i]);
+                GetPlayer()->GetItemInterface()->RemoveItemAmt(qPtr->required_item[i], qPtr->required_itemcount[i]);
         }
     }
 
@@ -281,12 +296,8 @@ void WorldSession::HandleQuestQueryOpcode(WorldPacket& recv_data)
         LOG_DEBUG("WORLD: Invalid quest ID.");
         return;
     }
-    else
-    {
-        WorldPacket* pkt = BuildQuestQueryResponse(qst);
-        SendPacket(pkt);
-    }
 
+    BuildQuestQueryResponse(qst);
 }
 
 void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
@@ -324,7 +335,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
                 LOG_ERROR("WARNING: Cannot get reward for quest %u, as it doesn't exist at Unit %u.", quest_id, quest_giver->GetEntry());
                 return;
             }
-            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->GetQuestId()), false);
+            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
@@ -345,7 +356,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
                 LOG_ERROR("WARNING: Cannot get reward for quest %u, as it doesn't exist at GO %u.", quest_id, quest_giver->GetEntry());
                 return;
             }
-            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)go_quest_giver->GetQuestRelation(qst->GetQuestId()), false);
+            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)go_quest_giver->GetQuestRelation(qst->id), false);
         }
     }
 
@@ -361,7 +372,7 @@ void WorldSession::HandleQuestgiverRequestRewardOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (status != QMGR_QUEST_FINISHED)
+    if (status == QMGR_QUEST_FINISHED)
     {
         sQuestMgr.BuildOfferReward(qst, qst_giver, 1, language, _player);
     }
@@ -373,98 +384,80 @@ void WorldSession::HandleQuestgiverCompleteQuestOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    Log.Debug("WorldSession", "Received CMSG_QUESTGIVER_COMPLETE_QUEST");
-
     uint64 guid;
     uint32 quest_id;
-    uint8 unk1;
+    int8 unkByte;
 
     recvPacket >> guid;
     recvPacket >> quest_id;
-    recvPacket >> unk1;
+    recvPacket >> unkByte;
 
-    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
-    if (qst == nullptr)
-        return;
-
-    Object* qst_giver = nullptr;
+    bool bValid = false;
+    QuestProperties const* qst = nullptr;
+    Object* qst_giver = NULL;
     uint32 status = 0;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
 
     if (guidtype == HIGHGUID_TYPE_UNIT)
     {
-        Creature* creature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-        if (creature == nullptr)
-            return;
+        Creature* quest_giver = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+        if (quest_giver)
+            qst_giver = quest_giver;
         else
-            qst_giver = creature;
-
-        if (creature->isQuestGiver())
+            return;
+        if (quest_giver->isQuestGiver())
         {
-            /*qst = creature->FindQuest(quest_id, QUESTGIVER_QUEST_END);
+            bValid = true;
+            qst = quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
             if (!qst)
             {
-                LOG_ERROR("WARNING: Cannot complete quest %u, as it doesn't exist at Unit %u.", quest_id, creature->GetEntry());
+                LOG_ERROR("WARNING: Cannot complete quest %u, as it doesn't exist at Unit %u.", quest_id, quest_giver->GetEntry());
                 return;
-            }*/
-            status = sQuestMgr.CalcQuestStatus(creature, GetPlayer(), qst, (uint8)creature->GetQuestRelation(qst->GetQuestId()), false);
-
-            if (status == QMGR_QUEST_NOT_FINISHED || status == QMGR_QUEST_REPEATABLE)
-            {
-                sQuestMgr.BuildRequestItems(qst, qst_giver, 1024, language, _player);
             }
-            else if (status == QMGR_QUEST_FINISHED)
-            {
-                sQuestMgr.BuildOfferReward(qst, qst_giver, 1, language, _player);
-            }
-            else if (status == QMGR_QUEST_AVAILABLE)
-            {
-                sQuestMgr.BuildQuestDetails(qst, qst_giver, 0, language, _player);
-                if (qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
-                    _player->AcceptQuest(qst_giver->GetGUID(), qst->GetQuestId());
-            }
-
+            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)quest_giver->GetQuestRelation(qst->id), false);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
     {
-        GameObject* gameobject = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
-        if (gameobject == nullptr)
-            return;
+        GameObject* quest_giver = _player->GetMapMgr()->GetGameObject(GET_LOWGUID_PART(guid));
+        if (quest_giver)
+            qst_giver = quest_giver;
         else
-            qst_giver = gameobject;
-
-        if (gameobject->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
+            return; // oops..
+        bValid = false;
+        if (quest_giver->GetType() == GAMEOBJECT_TYPE_QUESTGIVER)
         {
-            GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(gameobject);
-            /*qst = go_quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
+            GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(quest_giver);
+            qst = go_quest_giver->FindQuest(quest_id, QUESTGIVER_QUEST_END);
             if (!qst)
             {
-                LOG_ERROR("WARNING: Cannot complete quest %u, as it doesn't exist at GO %u.", quest_id, gameobject->GetEntry());
+                LOG_ERROR("WARNING: Cannot complete quest %u, as it doesn't exist at GO %u.", quest_id, quest_giver->GetEntry());
                 return;
-            }*/
-            status = sQuestMgr.CalcQuestStatus(gameobject, GetPlayer(), qst, (uint8)go_quest_giver->GetQuestRelation(qst->GetQuestId()), false);
-
-            if (status == QMGR_QUEST_NOT_FINISHED || status == QMGR_QUEST_REPEATABLE)
-            {
-                sQuestMgr.BuildRequestItems(qst, qst_giver, status, language, _player);
             }
-            else if (status == QMGR_QUEST_FINISHED)
-            {
-                sQuestMgr.BuildOfferReward(qst, qst_giver, 1, language, _player);
-            }
-            else if (status == QMGR_QUEST_AVAILABLE)
-            {
-                sQuestMgr.BuildQuestDetails(qst, qst_giver, 0, language, _player);
-                /*if (qst->HasFlag(QUEST_FLAGS_AUTO_ACCEPT))
-                    _player->AcceptQuest(qst_giver->GetGUID(), qst->GetQuestId());*/
-            }
+            status = sQuestMgr.CalcQuestStatus(qst_giver, GetPlayer(), qst, (uint8)go_quest_giver->GetQuestRelation(qst->id), false);
         }
     }
-    else
+
+    if (!qst_giver)
     {
-        Log.Error("WorldSession", "Received CMSG_QUESTGIVER_COMPLETE_QUEST from invalid highguidtype!");
+        LOG_DEBUG("WORLD: Invalid questgiver GUID.");
         return;
+    }
+
+    if (!bValid || qst == NULL)
+    {
+        LOG_DEBUG("WORLD: Creature is not a questgiver.");
+        return;
+    }
+
+    if (status == QMGR_QUEST_NOT_FINISHED || status == QMGR_QUEST_REPEATABLE)
+    {
+        sQuestMgr.BuildRequestItems(qst, qst_giver, status, language, _player);
+    }
+
+    if (status == QMGR_QUEST_FINISHED)
+    {
+        sQuestMgr.BuildOfferReward(qst, qst_giver, 1, language, _player);
     }
 
     sHookInterface.OnQuestFinished(_player, qst, qst_giver);
@@ -482,12 +475,12 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     recvPacket >> quest_id;
     recvPacket >> reward_slot;
 
-    if (reward_slot >= QUEST_REWARD_CHOICES_COUNT)
+    if (reward_slot >= 6)
         return;
 
     bool bValid = false;
-    QuestProperties const* qst = nullptr;
-    Object* qst_giver = nullptr;
+    QuestProperties const* qst = NULL;
+    Object* qst_giver = NULL;
     uint32 guidtype = GET_TYPE_FROM_GUID(guid);
 
     if (guidtype == HIGHGUID_TYPE_UNIT)
@@ -517,28 +510,28 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
 
     if (!qst_giver)
     {
-        Log.Debug("WorldSession::HandleQuestgiverChooseRewardOpcode", "WORLD: Invalid questgiver GUID.");
+        LOG_DEBUG("WORLD: Invalid questgiver GUID.");
         return;
     }
 
     if (!bValid || qst == NULL)
     {
-        Log.Debug("WorldSession::HandleQuestgiverChooseRewardOpcode", "WORLD: Creature is not a questgiver.");
+        LOG_DEBUG("WORLD: Creature is not a questgiver.");
         return;
     }
 
     //FIX ME: Some Quest givers talk in the end of the quest.
     //   qst_giver->SendChatMessage(CHAT_MSG_MONSTER_SAY,LANG_UNIVERSAL,qst->GetQuestEndMessage().c_str());
     QuestLogEntry* qle = _player->GetQuestLogForEntry(quest_id);
-    if (!qle && !qst->IsRepeatable())
+    if (!qle && !qst->is_repeatable)
     {
-        Log.Debug("WorldSession::HandleQuestgiverChooseRewardOpcode", "WORLD: QuestLogEntry not found.");
+        LOG_DEBUG("WORLD: QuestLogEntry not found.");
         return;
     }
 
     if (qle && !qle->CanBeFinished())
     {
-        Log.Debug("WorldSession::HandleQuestgiverChooseRewardOpcode", "WORLD: Quest not finished.");
+        LOG_DEBUG("WORLD: Quest not finished.");
         return;
     }
 
@@ -558,14 +551,13 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     sQuestMgr.OnQuestFinished(GetPlayer(), qst, qst_giver, reward_slot);
     //if (qst_giver->GetTypeId() == TYPEID_UNIT) qst->LUA_SendEvent(TO< Creature* >(qst_giver),GetPlayer(),ON_QUEST_COMPLETEQUEST);
 
-    if (qst->GetNextQuestId())
+    /*if (qst->next_quest_id)
     {
-        WorldPacket data(12);
-        data.Initialize(CMSG_QUESTGIVER_QUERY_QUEST);
+        WorldPacket data(CMSG_QUESTGIVER_QUERY_QUEST, 12);
         data << guid;
-        data << qst->GetNextQuestId();
+        data << qst->next_quest_id;
         HandleQuestGiverQueryQuestOpcode(data);
-    }
+    }*/
 }
 
 void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
@@ -647,6 +639,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
                         data.clear();
                         sQuestMgr.BuildQuestDetails(pQuest, _player, 1, pPlayer->GetSession()->language, pPlayer);
                         pPlayer->SetQuestSharer(pguid); //VLack: better to set this _before_ sending out the packet, so no race conditions can happen on heavily loaded servers.
+                        pPlayer->GetSession()->SendPacket(&data);
                     }
                 }
                 _player->GetGroup()->Unlock();

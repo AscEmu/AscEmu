@@ -44,18 +44,22 @@ std::string RemoveQuestFromPlayer(Player* plr, QuestProperties const* qst)
 
     if (plr->HasQuests())
     {
-        if (plr->HasFinishedQuest(qst->GetQuestId()))
+        if (plr->HasFinishedQuest(qst->id))
             recout += "Player has already completed that quest.\n\n";
         else
         {
-            QuestLogEntry* qLogEntry = plr->GetQuestLogForEntry(qst->GetQuestId());
+            QuestLogEntry* qLogEntry = plr->GetQuestLogForEntry(qst->id);
             if (qLogEntry)
             {
                 CALL_QUESTSCRIPT_EVENT(qLogEntry, OnQuestCancel)(plr);
                 qLogEntry->Finish();
 
-                if (qst->SrcItemId)
-                    plr->GetItemInterface()->RemoveItemAmt(qst->SrcItemId, qst->SrcItemCount ? qst->SrcItemCount : 1);
+                // Remove all items given by the questgiver at the beginning
+                for (uint8 i = 0; i < 4; ++i)
+                {
+                    if (qst->receive_items[i])
+                        plr->GetItemInterface()->RemoveItemAmt(qst->receive_items[i], 1);
+                }
 
                 plr->UpdateNearbyGameObjects();
             }
@@ -156,24 +160,38 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
                 }
                 else
                 {
-                    if ((qst->GetLimitTime() != 0) && plr->HasTimedQuest())
+                    if ((qst->time != 0) && plr->HasTimedQuest())
                     {
-                        sQuestMgr.SendQuestInvalid(INVALIDREASON_QUEST_ONLY_ONE_TIMED, plr);
+                        sQuestMgr.SendQuestInvalid(INVALID_REASON_HAVE_TIMED_QUEST, plr);
                         return true;
                     }
 
-                    sGMLog.writefromsession(m_session, "started quest %u TitleId [%u] for player %s", qst->GetQuestId(), qst->GetCharTitleId(), plr->GetName());
+                    sGMLog.writefromsession(m_session, "started quest %u [%s] for player %s", qst->id, qst->title.c_str(), plr->GetName());
 
                     QuestLogEntry* qle = new QuestLogEntry();
                     qle->Init(qst, plr, (uint32)open_slot);
                     qle->UpdatePlayerFields();
 
-                    if (qst->GetSrcItemId())
+                    // If the quest should give any items on begin, give them the items.
+                    for (uint8 i = 0; i < 4; ++i)
                     {
-                        Item* item = objmgr.CreateItem(qst->GetSrcItemId(), plr);
+                        if (qst->receive_items[i])
+                        {
+                            Item* item = objmgr.CreateItem(qst->receive_items[i], plr);
+                            if (item == NULL)
+                                return false;
+
+                            if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
+                                item->DeleteMe();
+                        }
+                    }
+
+                    if (qst->srcitem && qst->srcitem != qst->receive_items[0])
+                    {
+                        Item* item = objmgr.CreateItem(qst->srcitem, plr);
                         if (item)
                         {
-                            item->SetStackCount(qst->GetSrcItemCount() ? qst->GetSrcItemCount() : 1);
+                            item->SetStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
                             if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
                                 item->DeleteMe();
                         }
@@ -316,39 +334,43 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 recout += "The quest has now been completed for that player.";
             }
 
-            sGMLog.writefromsession(m_session, "completed quest %u TitleId [%u] for player %s", quest_id, qst->GetCharTitleId(), plr->GetName());
+            sGMLog.writefromsession(m_session, "completed quest %u [%s] for player %s", quest_id, qst->title.c_str(), plr->GetName());
             sQuestMgr.BuildQuestComplete(plr, qst);
             plr->AddToFinishedQuests(quest_id);
 
             // Quest Rewards : Copied from QuestMgr::OnQuestFinished()
             // Reputation reward
-            for (uint8 z = 0; z < 6; ++z)
+            for (uint8 z = 0; z < 6; z++)
             {
-                if (qst->RewRepFaction[z])
+                if (qst->reward_repfaction[z])
                 {
                     int32 amt = 0;
-                    uint32 fact = qst->RewRepFaction[z];
-                    if (qst->RewRepValue[z])
+                    uint32 fact = qst->reward_repfaction[z];
+                    if (qst->reward_repvalue[z])
                     {
-                        amt = qst->RewRepValue[z];
+                        amt = qst->reward_repvalue[z];
+                    }
+                    if (qst->reward_replimit && (plr->GetStanding(fact) >= (int32)qst->reward_replimit))
+                    {
+                        continue;
                     }
                     amt = float2int32(amt * sWorld.getRate(RATE_QUESTREPUTATION));
                     plr->ModStanding(fact, amt);
                 }
             }
             // Static Item reward
-            for (uint8 i = 0; i < 4; ++i)
+            for (uint8 i = 0; i < QUEST_MAX_REWARD_ITEM; ++i)
             {
-                if (qst->RewItemId[i])
+                if (qst->reward_item[i])
                 {
-                    ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->RewItemId[i]);
+                    ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_item[i]);
                     if (!proto)
                     {
-                        LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->RewItemId[i], qst->GetQuestId());
+                        LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
                     }
                     else
                     {
-                        auto item_add = plr->GetItemInterface()->FindItemLessMax(qst->RewItemId[i], qst->RewItemCount[i], false);
+                        auto item_add = plr->GetItemInterface()->FindItemLessMax(qst->reward_item[i], qst->reward_itemcount[i], false);
                         if (!item_add)
                         {
                             auto slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
@@ -358,10 +380,10 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                             }
                             else
                             {
-                                auto item = objmgr.CreateItem(qst->RewItemId[i], plr);
+                                auto item = objmgr.CreateItem(qst->reward_item[i], plr);
                                 if (item)
                                 {
-                                    item->SetStackCount(uint32(qst->RewItemCount[i]));
+                                    item->SetStackCount(uint32(qst->reward_itemcount[i]));
                                     if (!plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                     {
                                         item->DeleteMe();
@@ -371,23 +393,23 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                         }
                         else
                         {
-                            item_add->SetStackCount(item_add->GetStackCount() + qst->RewItemCount[i]);
+                            item_add->SetStackCount(item_add->GetStackCount() + qst->reward_itemcount[i]);
                             item_add->m_isDirty = true;
                         }
                     }
                 }
             }
             // Choice Rewards -- Defaulting to choice 0 for ".quest complete" command
-            if (qst->RewChoiceItemId[reward_slot])
+            if (qst->reward_choiceitem[reward_slot])
             {
-                ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->RewChoiceItemId[reward_slot]);
+                ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_choiceitem[reward_slot]);
                 if (!proto)
                 {
-                    LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->RewChoiceItemId[reward_slot], qst->GetQuestId());
+                    LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
                 }
                 else
                 {
-                    auto item_add = plr->GetItemInterface()->FindItemLessMax(qst->RewChoiceItemId[reward_slot], qst->RewChoiceItemCount[reward_slot], false);
+                    auto item_add = plr->GetItemInterface()->FindItemLessMax(qst->reward_choiceitem[reward_slot], qst->reward_choiceitemcount[reward_slot], false);
                     if (!item_add)
                     {
                         auto slotresult = plr->GetItemInterface()->FindFreeInventorySlot(proto);
@@ -397,10 +419,10 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                         }
                         else
                         {
-                            auto item = objmgr.CreateItem(qst->RewChoiceItemId[reward_slot], plr);
+                            auto item = objmgr.CreateItem(qst->reward_choiceitem[reward_slot], plr);
                             if (item)
                             {
-                                item->SetStackCount(uint32(qst->RewChoiceItemCount[reward_slot]));
+                                item->SetStackCount(uint32(qst->reward_choiceitemcount[reward_slot]));
                                 if (!plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 {
                                     item->DeleteMe();
@@ -410,14 +432,14 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                     }
                     else
                     {
-                        item_add->SetStackCount(item_add->GetStackCount() + qst->RewChoiceItemCount[reward_slot]);
+                        item_add->SetStackCount(item_add->GetStackCount() + qst->reward_choiceitemcount[reward_slot]);
                         item_add->m_isDirty = true;
                     }
                 }
             }
             // if daily then append to finished dailies
-            if (qst->IsRepeatable())
-                plr->PushToFinishedDailies(qst->GetQuestId());
+            if (qst->is_repeatable == QUEST_REPEATABLE_DAILY)
+                plr->PushToFinishedDailies(qst->id);
             // Remove quests that are listed to be removed on quest complete.
             std::set<uint32>::iterator iter = qst->remove_quest_list.begin();
             for (; iter != qst->remove_quest_list.end(); ++iter)
@@ -427,18 +449,18 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             }
 #ifdef ENABLE_ACHIEVEMENTS
             plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
-            if (qst->GetRewOrReqMoney() > 0)
+            if (qst->reward_money > 0)
             {
                 // Money reward
                 // Check they don't have more than the max gold
-                if (sWorld.GoldCapEnabled && (plr->GetGold() + qst->GetRewOrReqMoney()) <= sWorld.GoldLimit)
+                if (sWorld.GoldCapEnabled && (plr->GetGold() + qst->reward_money) <= sWorld.GoldLimit)
                 {
-                    plr->ModGold(qst->GetRewOrReqMoney());
+                    plr->ModGold(qst->reward_money);
                 }
-                plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qst->GetRewOrReqMoney(), 0, 0);
+                plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qst->reward_money, 0, 0);
             }
-            plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qst->GetZoneOrSort(), 0, 0);
-            plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qst->GetQuestId(), 0, 0);
+            plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qst->zone_id, 0, 0);
+            plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qst->id, 0, 0);
 #endif
         }
     }
@@ -720,7 +742,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
                 continue;
 
             std::string qid = MyConvertIntToString(quest_id);
-            std::string qname = qst->GetTitle();
+            std::string qname = qst->title;
 
             recout = "|cff00ccff";
             recout += qid.c_str();
@@ -824,14 +846,14 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
 
     unit->_LoadQuests();
 
-    std::string qname = qst->GetTitle();
+    std::string qname = qst->title;
 
     std::string recout = "|cff00ff00Added Quest to NPC as starter: ";
     recout += "|cff00ccff";
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "added starter of quest %u [%s] to NPC %u [%s]", qst->GetQuestId(), qst->GetTitle().c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
+    sGMLog.writefromsession(m_session, "added starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
 
     delete qstrel;
     return true;
@@ -909,14 +931,14 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
 
     unit->_LoadQuests();
 
-    std::string qname = qst->GetTitle();
+    std::string qname = qst->title;
 
     std::string recout = "|cff00ff00Added Quest to NPC as finisher: ";
     recout += "|cff00ccff";
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "added finisher of quest %u [%s] to NPC %u [%s]", qst->GetQuestId(), qst->GetTitle().c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
+    sGMLog.writefromsession(m_session, "added finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
 
     delete qstrel;
     return true;
@@ -1006,14 +1028,14 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
     }
     unit->_LoadQuests();
 
-    std::string qname = qst->GetTitle();
+    std::string qname = qst->title;
 
     std::string recout = "|cff00ff00Deleted Quest from NPC: ";
     recout += "|cff00ccff";
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "deleted starter of quest %u [%s] to NPC %u [%s]", qst->GetQuestId(), qst->GetTitle().c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
+    sGMLog.writefromsession(m_session, "deleted starter of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
 
     delete qstrel;
     return true;
@@ -1091,14 +1113,14 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
 
     unit->_LoadQuests();
 
-    std::string qname = qst->GetTitle();
+    std::string qname = qst->title;
 
     std::string recout = "|cff00ff00Deleted Quest from NPC: ";
     recout += "|cff00ccff";
     recout += qname;
     recout += "\n\n";
     SendMultilineMessage(m_session, recout.c_str());
-    sGMLog.writefromsession(m_session, "deleted finisher of quest %u [%s] to NPC %u [%s]", qst->GetQuestId(), qst->GetTitle().c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
+    sGMLog.writefromsession(m_session, "deleted finisher of quest %u [%s] to NPC %u [%s]", qst->id, qst->title.c_str(), unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
 
     delete qstrel;
     return true;
@@ -1426,7 +1448,7 @@ bool ChatHandler::HandleQuestRemoveCommand(const char* args, WorldSession* m_ses
     if (qst)
     {
         recout = RemoveQuestFromPlayer(plr, qst);
-        sGMLog.writefromsession(m_session, "removed quest %u [%s] from player %s%", qst->GetQuestId(), qst->GetTitle().c_str(), plr->GetName());
+        sGMLog.writefromsession(m_session, "removed quest %u [%s] from player %s%", qst->id, qst->title.c_str(), plr->GetName());
     }
     else
         recout = "Invalid quest selected, unable to remove.\n\n";
@@ -1453,9 +1475,9 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
     QuestProperties const* q = sMySQLStore.GetQuestProperties(qu_id);
     if (q)
     {
-        for (uint32 r = 0; r < QUEST_REWARDS_COUNT; ++r)
+        for (uint32 r = 0; r < q->count_reward_item; ++r)
         {
-            uint32 itemid = q->RewItemId[r];
+            uint32 itemid = q->reward_item[r];
             ItemProperties const* itemProto = sMySQLStore.GetItemProperties(itemid);
             if (!itemProto)
             {
@@ -1465,15 +1487,15 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
             else
             {
                 recout << "Reward (" << itemid << "): " << GetItemLinkByProto(itemProto, m_session->language);
-                if (q->RewItemCount[r] == 1)
+                if (q->reward_itemcount[r] == 1)
                     recout << "\n";
                 else
-                    recout << "[x" << q->RewItemCount[r] << "]\n";
+                    recout << "[x" << q->reward_itemcount[r] << "]\n";
             }
         }
-        for (uint32 r = 0; r < QUEST_REWARD_CHOICES_COUNT; ++r)
+        for (uint32 r = 0; r < q->count_reward_choiceitem; ++r)
         {
-            uint32 itemid = q->RewChoiceItemId[r];
+            uint32 itemid = q->reward_choiceitem[r];
             ItemProperties const* itemProto = sMySQLStore.GetItemProperties(itemid);
             if (!itemProto)
             {
@@ -1483,13 +1505,13 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
             else
             {
                 recout << "Reward choice (" << itemid << "): " << GetItemLinkByProto(itemProto, m_session->language);
-                if (q->RewChoiceItemCount[r] == 1)
+                if (q->reward_choiceitemcount[r] == 1)
                     recout << "\n";
                 else
-                    recout << "[x" << q->RewChoiceItemCount[r] << "]\n";
+                    recout << "[x" << q->reward_choiceitemcount[r] << "]\n";
             }
         }
-        if ((q->RewChoiceItemCount == 0) && (q->RewChoiceItemId == 0))
+        if ((q->count_reward_choiceitem == 0) && (q->count_reward_item == 0))
         {
             recout << "Quest " << qu_id << " has no item rewards.";
         }

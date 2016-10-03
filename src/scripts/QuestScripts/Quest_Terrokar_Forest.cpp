@@ -36,7 +36,7 @@ class ThreatFromAboveQAI : public CreatureAIScript
             if(mKiller->IsPlayer())
             {
                 QuestLogEntry* en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(11096);
-                if(en && en->GetMobCount(0) < en->GetQuest()->ReqCreatureOrGOCount[0])
+                if(en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
                 {
                     uint32 newcount = en->GetMobCount(0) + 1;
                     en->SetMobCount(0, newcount);
@@ -164,7 +164,7 @@ class TakenInTheNight : public CreatureAIScript
             if(qle == NULL)
                 return;
 
-            if(qle->GetMobCount(0) == qle->GetQuest()->ReqCreatureOrGOCount[0])
+            if(qle->GetMobCount(0) == qle->GetQuest()->required_mob_or_go_count[0])
                 return;
 
             qle->SetMobCount(0, qle->GetMobCount(0) + 1);
@@ -230,7 +230,7 @@ class TheMomentofTruth : public GossipScript
                     {
                         plr->GetItemInterface()->RemoveItemAmt(2799, 1);
                         QuestLogEntry* qle = plr->GetQuestLogForEntry(10201);
-                        if(qle && qle->GetMobCount(0) < qle->GetQuest()->ReqCreatureOrGOCount[0])
+                        if(qle && qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
                         {
                             qle->SetMobCount(0, qle->GetMobCount(0) + 1);
                             qle->SendUpdateAddKill(0);

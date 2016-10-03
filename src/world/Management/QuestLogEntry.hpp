@@ -24,7 +24,7 @@
 #include <Database/Field.h>
 #include "CommonDefines.hpp"
 #include "Server/EventableObject.h"
-#include "Management/Quest.h"
+#include "Management/Quest.hpp"
 #include "Units/Players/Player.h"
 #include "Server/Script/ScriptMgr.h"
 
@@ -106,7 +106,7 @@ class SERVER_DECL QuestLogEntry : public EventableObject
 		Player* m_plr;
 
 		uint32 m_mobcount[4];
-		uint32 m_explored_areas[QUEST_REQUIRED_AREA_TRIGGERS];
+		uint32 m_explored_areas[4];
 
 		std::set<uint64> m_affected_units;
 		bool iscastquest;

@@ -43,7 +43,7 @@ QuestLogEntry::QuestLogEntry()
 
 QuestLogEntry::~QuestLogEntry()
 {
-    
+
 }
 
 void QuestLogEntry::Init(QuestProperties const* quest, Player* plr, uint32 slot)
@@ -59,23 +59,21 @@ void QuestLogEntry::Init(QuestProperties const* quest, Player* plr, uint32 slot)
     isemotequest = false;
     for (uint8 i = 0; i < 4; ++i)
     {
-        if (quest->ReqSpell[i] != 0)
+        if (quest->required_spell[i] != 0)
         {
             iscastquest = true;
-            if (!plr->HasQuestSpell(quest->ReqSpell[i]))
-                plr->quest_spells.insert(quest->ReqSpell[i]);
+            if (!plr->HasQuestSpell(quest->required_spell[i]))
+                plr->quest_spells.insert(quest->required_spell[i]);
         }
-
-        if (quest->ReqCreatureOrGOId[i] != 0)
+        else if (quest->required_emote[i] != 0)
         {
-            if (!plr->HasQuestMob(quest->ReqCreatureOrGOId[i]))
-                plr->quest_mobs.insert(quest->ReqCreatureOrGOId[i]);
+            isemotequest = true;
         }
-    }
-
-    if (quest->ReqEmoteId)
-    {
-        isemotequest = true;
+        if (quest->required_mob_or_go[i] != 0)
+        {
+            if (!plr->HasQuestMob(quest->required_mob_or_go[i]))
+                plr->quest_mobs.insert(quest->required_mob_or_go[i]);
+        }
     }
 
     // update slot
@@ -83,11 +81,11 @@ void QuestLogEntry::Init(QuestProperties const* quest, Player* plr, uint32 slot)
 
     mDirty = true;
 
-    /*memset(m_mobcount, 0, 4 * 4);
-    memset(m_explored_areas, 0, 3 * 3);*/
+    memset(m_mobcount, 0, 4 * 4);
+    memset(m_explored_areas, 0, 4 * 4);
 
-    if (m_quest->GetLimitTime() > 0)
-        expirytime = UNIXTIME + m_quest->GetLimitTime() / 1000;
+    if (m_quest->time > 0)
+        expirytime = UNIXTIME + m_quest->time / 1000;
     else
         expirytime = 0;
 
@@ -129,7 +127,7 @@ void QuestLogEntry::SaveToDB(QueryBuffer* buf)
     ss << "DELETE FROM questlog WHERE player_guid = ";
     ss << m_plr->GetLowGUID();
     ss << " AND quest_id = ";
-    ss << m_quest->GetQuestId();
+    ss << m_quest->id;
     ss << ";";
 
     if (buf == nullptr)
@@ -140,11 +138,9 @@ void QuestLogEntry::SaveToDB(QueryBuffer* buf)
     ss.rdbuf()->str("");
 
     ss << "INSERT INTO questlog VALUES(";
-    ss << m_plr->GetLowGUID() << "," << m_quest->GetQuestId() << "," << m_slot << "," << expirytime;
-    for (uint8 i = 0; i < QUEST_REQUIRED_AREA_TRIGGERS; ++i)
+    ss << m_plr->GetLowGUID() << "," << m_quest->id << "," << m_slot << "," << expirytime;
+    for (uint8 i = 0; i < 4; ++i)
         ss << "," << m_explored_areas[i];
-
-    ss << "," << 0; //unused 4th areatrigger value!
 
     for (uint8 i = 0; i < 4; ++i)
         ss << "," << m_mobcount[i];
@@ -162,29 +158,32 @@ void QuestLogEntry::SaveToDB(QueryBuffer* buf)
 bool QuestLogEntry::LoadFromDB(Field* fields)
 {
     // playerguid,questid,timeleft,area0,area1,area2,area3,kill0,kill1,kill2,kill3
+    int f = 3;
     ARCEMU_ASSERT(m_plr && m_quest);
-    expirytime = fields[3].GetUInt32();
-
-    for (uint8 i = 0; i < QUEST_REQUIRED_AREA_TRIGGERS; ++i)
+    expirytime = fields[f].GetUInt32();
+    f++;
+    for (uint8 i = 0; i < 4; ++i)
     {
-        m_explored_areas[i] = fields[4 + i].GetUInt32();
+        m_explored_areas[i] = fields[f].GetUInt32();
+        f++;
         CALL_QUESTSCRIPT_EVENT(this, OnExploreArea)(m_explored_areas[i], m_plr, this);
     }
 
     for (uint8 i = 0; i < 4; ++i)
     {
-        m_mobcount[i] = fields[8 + i].GetUInt32();
-        if (GetQuest()->m_reqMobType[i] == QUEST_MOB_TYPE_CREATURE)
+        m_mobcount[i] = fields[f].GetUInt32();
+        f++;
+        if (GetQuest()->required_mobtype[i] == QUEST_MOB_TYPE_CREATURE)
         {
-            CALL_QUESTSCRIPT_EVENT(this, OnCreatureKill)(GetQuest()->ReqCreatureOrGOId[i], m_plr, this);
+            CALL_QUESTSCRIPT_EVENT(this, OnCreatureKill)(GetQuest()->required_mob_or_go[i], m_plr, this);
         }
         else
         {
-            CALL_QUESTSCRIPT_EVENT(this, OnGameObjectActivate)(GetQuest()->ReqCreatureOrGOId[i], m_plr, this);
+            CALL_QUESTSCRIPT_EVENT(this, OnGameObjectActivate)(GetQuest()->required_mob_or_go[i], m_plr, this);
         }
     }
 
-    completed = fields[12].GetUInt32();
+    completed = fields[f].GetUInt32();
 
     mDirty = false;
     return true;
@@ -192,9 +191,10 @@ bool QuestLogEntry::LoadFromDB(Field* fields)
 
 bool QuestLogEntry::CanBeFinished()
 {
-    //\todo danko
-    /*if (m_quest->iscompletedbyspelleffect && (completed == QUEST_INCOMPLETE))
-        return false;*/
+    uint32 i;
+
+    if (m_quest->iscompletedbyspelleffect && (completed == QUEST_INCOMPLETE))
+        return false;
 
     if (completed == QUEST_FAILED)
         return false;
@@ -202,37 +202,36 @@ bool QuestLogEntry::CanBeFinished()
         if (completed == QUEST_COMPLETE)
             return true;
 
-    for (uint8 i = 0; i < 4; ++i)
+    for (i = 0; i < 4; ++i)
     {
-        if (m_quest->ReqCreatureOrGOId[i])
+        if (m_quest->required_mob_or_go[i])
         {
-            if (m_mobcount[i] < m_quest->ReqCreatureOrGOCount[i])
+            if (m_mobcount[i] < m_quest->required_mob_or_go_count[i])
             {
                 return false;
             }
         }
-        if (m_quest->ReqSpell[i])   // requires spell cast, with no required target
+        if (m_quest->required_spell[i])   // requires spell cast, with no required target
         {
-            if (m_mobcount[i] == 0 || m_mobcount[i] < m_quest->ReqCreatureOrGOCount[i])
+            if (m_mobcount[i] == 0 || m_mobcount[i] < m_quest->required_mob_or_go_count[i])
             {
                 return false;
             }
         }
-
-        if (m_quest->ReqEmoteId)   // requires emote, with no required target
+        if (m_quest->required_emote[i])   // requires emote, with no required target
         {
-            if (m_mobcount[i] == 0 || m_mobcount[i] < m_quest->ReqCreatureOrGOCount[i])
+            if (m_mobcount[i] == 0 || m_mobcount[i] < m_quest->required_mob_or_go_count[i])
             {
                 return false;
             }
         }
     }
 
-    for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
+    for (i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
     {
-        if (m_quest->ReqItemId[i])
+        if (m_quest->required_item[i])
         {
-            if (m_plr->GetItemInterface()->GetItemCount(m_quest->ReqItemId[i]) < m_quest->ReqItemCount[i])
+            if (m_plr->GetItemInterface()->GetItemCount(m_quest->required_item[i]) < m_quest->required_itemcount[i])
             {
                 return false;
             }
@@ -240,12 +239,12 @@ bool QuestLogEntry::CanBeFinished()
     }
 
     //Check for Gold & AreaTrigger Requirements
-    if (m_quest->GetRewOrReqMoney() < 0 && m_plr->GetGold() < uint32(-m_quest->GetRewOrReqMoney()))
+    if (m_quest->reward_money < 0 && m_plr->GetGold() < uint32(-m_quest->reward_money))
         return false;
 
-    for (uint8 i = 0; i < QUEST_REQUIRED_AREA_TRIGGERS; ++i)
+    for (i = 0; i < 4; ++i)
     {
-        if (m_quest->m_reqExploreTrigger[i])
+        if (m_quest->required_triggers[i])
         {
             if (m_explored_areas[i] == 0)
                 return false;
@@ -271,7 +270,7 @@ void QuestLogEntry::IncrementMobCount(uint32 i)
 
 void QuestLogEntry::SetTrigger(uint32 i)
 {
-    ARCEMU_ASSERT(i < QUEST_REQUIRED_AREA_TRIGGERS);
+    ARCEMU_ASSERT(i < 4);
     m_explored_areas[i] = 1;
     mDirty = true;
 }
@@ -293,8 +292,8 @@ void QuestLogEntry::Finish()
     m_plr->SetUInt32Value(base + 4, 0);
 
     // clear from player log
-    m_plr->SetQuestLogSlot(nullptr, m_slot);
-    m_plr->PushToRemovedQuests(m_quest->GetQuestId());
+    m_plr->SetQuestLogSlot(NULL, m_slot);
+    m_plr->PushToRemovedQuests(m_quest->id);
     m_plr->UpdateNearbyGameObjects();
 
     // delete ourselves
@@ -329,30 +328,32 @@ void QuestLogEntry::UpdatePlayerFields()
         return;
 
     uint32 base = GetBaseField(m_slot);
-    m_plr->SetUInt32Value(base + 0, m_quest->GetQuestId());
+    m_plr->SetUInt32Value(base + 0, m_quest->id);
     uint32 field0 = 0;          // 0x01000000 = "Objective Complete" - 0x02 = Quest Failed - 0x04 = Quest Accepted
 
     // next field is count (kills, etc)
     uint64 field1 = 0;
 
     // explored areas
-    uint32 count = 0;
-    for (uint8 i = 0; i < QUEST_REQUIRED_AREA_TRIGGERS; ++i)
+    if (m_quest->count_requiredtriggers)
     {
-        if (m_quest->m_reqExploreTrigger[i])
+        uint32 count = 0;
+        for (uint8 i = 0; i < 4; ++i)
         {
-            if (m_explored_areas[i] == 1)
+            if (m_quest->required_triggers[i])
             {
-                ++count;
+                if (m_explored_areas[i] == 1)
+                {
+                    count++;
+                }
             }
         }
-    }
 
-    if (count > 0)
-    {
-        field1 |= 0x01000000;
+        if (count == m_quest->count_requiredtriggers)
+        {
+            field1 |= 0x01000000;
+        }
     }
-
 
     // spell casts / emotes
     if (iscastquest)
@@ -360,7 +361,7 @@ void QuestLogEntry::UpdatePlayerFields()
         bool cast_complete = true;
         for (uint8 i = 0; i < 4; ++i)
         {
-            if (m_quest->ReqSpell[i] && m_quest->ReqCreatureOrGOCount[i] > m_mobcount[i])
+            if (m_quest->required_spell[i] && m_quest->required_mob_or_go_count[i] > m_mobcount[i])
             {
                 cast_complete = false;
                 break;
@@ -376,7 +377,7 @@ void QuestLogEntry::UpdatePlayerFields()
         bool emote_complete = true;
         for (uint8 i = 0; i < 4; ++i)
         {
-            if (m_quest->ReqEmoteId && m_quest->ReqCreatureOrGOCount[i] > m_mobcount[i])
+            if (m_quest->required_emote[i] && m_quest->required_mob_or_go_count[i] > m_mobcount[i])
             {
                 emote_complete = false;
                 break;
@@ -389,17 +390,17 @@ void QuestLogEntry::UpdatePlayerFields()
     }
 
     // mob hunting / counter
-    if (m_quest->ReqCurrencyCount[0])
+    if (m_quest->count_required_mob)
     {
         uint8* p = (uint8*)&field1;
         for (uint8 i = 0; i < 4; ++i)
         {
-            if (m_quest->ReqCreatureOrGOId[i] && m_mobcount[i] > 0)
+            if (m_quest->required_mob_or_go[i] && m_mobcount[i] > 0)
                 p[2 * i] |= (uint8)m_mobcount[i];
         }
     }
 
-    if ((m_quest->GetLimitTime() != 0) && (expirytime < UNIXTIME))
+    if ((m_quest->time != 0) && (expirytime < UNIXTIME))
         completed = QUEST_FAILED;
 
     if (completed == QUEST_FAILED)
@@ -408,10 +409,10 @@ void QuestLogEntry::UpdatePlayerFields()
     m_plr->SetUInt32Value(base + 1, field0);
     m_plr->SetUInt64Value(base + 2, field1);
 
-    if ((m_quest->GetLimitTime() != 0) && (completed != QUEST_FAILED))
+    if ((m_quest->time != 0) && (completed != QUEST_FAILED))
     {
         m_plr->SetUInt32Value(base + 4, expirytime);
-        sEventMgr.AddEvent(m_plr, &Player::EventTimedQuestExpire, m_quest->GetQuestId(), EVENT_TIMED_QUEST_EXPIRE, (expirytime - UNIXTIME) * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(m_plr, &Player::EventTimedQuestExpire, m_quest->id, EVENT_TIMED_QUEST_EXPIRE, (expirytime - UNIXTIME) * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
     else
         m_plr->SetUInt32Value(base + 4, 0);
@@ -422,7 +423,7 @@ void QuestLogEntry::SendQuestComplete()
     WorldPacket data(4);
 
     data.SetOpcode(SMSG_QUESTUPDATE_COMPLETE);
-    data << m_quest->GetQuestId();
+    data << m_quest->id;
 
     m_plr->GetSession()->SendPacket(&data);
     m_plr->UpdateNearbyGameObjects();
@@ -431,7 +432,7 @@ void QuestLogEntry::SendQuestComplete()
 
 void QuestLogEntry::SendUpdateAddKill(uint32 i)
 {
-    sQuestMgr.SendQuestUpdateAddKill(m_plr, m_quest->GetQuestId(), m_quest->ReqCreatureOrGOId[i], m_mobcount[i], m_quest->ReqCreatureOrGOCount[i], 0);
+    sQuestMgr.SendQuestUpdateAddKill(m_plr, m_quest->id, m_quest->required_mob_or_go[i], m_mobcount[i], m_quest->required_mob_or_go_count[i], 0);
 }
 
 void QuestLogEntry::Complete()

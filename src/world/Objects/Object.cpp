@@ -721,8 +721,8 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
                         QuestProperties const* qst = qr->qst;
                         if (qst != nullptr)
                         {
-                            if ((qr->type & QUESTGIVER_QUEST_START && !target->HasQuest(qst->GetQuestId()))
-                                || (qr->type & QUESTGIVER_QUEST_END && target->HasQuest(qst->GetQuestId()))
+                            if ((qr->type & QUESTGIVER_QUEST_START && !target->HasQuest(qst->id))
+                                || (qr->type & QUESTGIVER_QUEST_END && target->HasQuest(qst->id))
                                )
                             {
                                 activate_quest_object = true;
@@ -739,12 +739,12 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
                 {
                     for (GameObjectGOMap::const_iterator itr = gameobject_info->goMap.begin(); itr != gameobject_info->goMap.end(); ++itr)
                     {
-                        qle = target->GetQuestLogForEntry(itr->first->GetQuestId());
+                        qle = target->GetQuestLogForEntry(itr->first->id);
                         if (qle != NULL)
                         {
                             for (uint8 i = 0; i < 4; ++i)
                             {
-                                if (qle->GetQuest()->ReqCreatureOrGOId[i] == static_cast<int32>(go->GetEntry()) && qle->GetMobCount(i) < qle->GetQuest()->ReqCreatureOrGOCount[i])
+                                if (qle->GetQuest()->required_mob_or_go[i] == static_cast<int32>(go->GetEntry()) && qle->GetMobCount(i) < qle->GetQuest()->required_mob_or_go_count[i])
                                 {
                                     activate_quest_object = true;
                                     break;
@@ -765,7 +765,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
                                  it2 != itr->second.end();
                                  ++it2)
                             {
-                                if ((qle = target->GetQuestLogForEntry(itr->first->GetQuestId())) != 0)
+                                if ((qle = target->GetQuestLogForEntry(itr->first->id)) != 0)
                                 {
                                     if (target->GetItemInterface()->GetItemCount(it2->first) < it2->second)
                                     {

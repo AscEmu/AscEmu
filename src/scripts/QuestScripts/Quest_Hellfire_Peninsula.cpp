@@ -35,7 +35,7 @@ class FelOrcScavengersQAI : public CreatureAIScript
             if (mKiller->IsPlayer())
             {
                 QuestLogEntry* pQuest = static_cast<Player*>(mKiller)->GetQuestLogForEntry(10482);
-                if (pQuest != NULL && pQuest->GetMobCount(0) < pQuest->GetQuest()->ReqCreatureOrGOCount[0])
+                if (pQuest != NULL && pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
                 {
                     pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
                     pQuest->SendUpdateAddKill(0);
@@ -57,7 +57,7 @@ class Dreadtusk : public CreatureAIScript
                 return;
 
             QuestLogEntry* pQuest = static_cast<Player*>(mKiller)->GetQuestLogForEntry(10255);
-            if (pQuest != NULL && pQuest->GetMobCount(0) < pQuest->GetQuest()->ReqCreatureOrGOCount[0])
+            if (pQuest != NULL && pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
             {
                 pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
                 pQuest->SendUpdateAddKill(0);
@@ -92,7 +92,7 @@ class ZethGorMustBurnAlliance : public GameObjectAIScript
                 }
 
                 // Northern Zeth'Gor Tower
-                if (pQuest->GetMobCount(0) < pQuest->GetQuest()->ReqCreatureOrGOCount[0])
+                if (pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
                 {
                     GameObject* pNorthern = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-820.0f, 2029.0f, 55.0f, 300150);
                     if (pNorthern != NULL && pPlayer->CalcDistance(pPlayer, pNorthern) < 40)      // if reduced the server will crash when out of range
@@ -112,7 +112,7 @@ class ZethGorMustBurnAlliance : public GameObjectAIScript
                 }
 
                 // Southern Zeth'Gor Tower
-                if (pQuest->GetMobCount(1) < pQuest->GetQuest()->ReqCreatureOrGOCount[1])
+                if (pQuest->GetMobCount(1) < pQuest->GetQuest()->required_mob_or_go_count[1])
                 {
                     GameObject* pSouthern = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-1150.0f, 2110.0f, 84.0f, 300150);
                     if (pSouthern != NULL && pPlayer->CalcDistance(pPlayer, pSouthern) < 40)
@@ -132,7 +132,7 @@ class ZethGorMustBurnAlliance : public GameObjectAIScript
                 }
 
                 // Forge Zeth'Gor Tower
-                if (pQuest->GetMobCount(2) < pQuest->GetQuest()->ReqCreatureOrGOCount[2])
+                if (pQuest->GetMobCount(2) < pQuest->GetQuest()->required_mob_or_go_count[2])
                 {
                     GameObject* pForge = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-893.0f, 1919.0f, 82.0f, 300150);
                     if (pForge != NULL && pPlayer->CalcDistance(pPlayer, pForge) < 40)
@@ -152,7 +152,7 @@ class ZethGorMustBurnAlliance : public GameObjectAIScript
                 }
 
                 // Foothill Zeth'Gor Tower
-                if (pQuest->GetMobCount(3) < pQuest->GetQuest()->ReqCreatureOrGOCount[3])
+                if (pQuest->GetMobCount(3) < pQuest->GetQuest()->required_mob_or_go_count[3])
                 {
                     GameObject* pFoothill = pPlayer->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(-978.0f, 1879.0f, 111.0f, 300150);
                     if (pFoothill != NULL && pPlayer->CalcDistance(pPlayer, pFoothill) < 40)
@@ -219,7 +219,7 @@ class PrisonerGossip : public GossipScript
                 return;
 
             QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10368);
-            if (pQuest != NULL && pQuest->GetMobCount(i) < pQuest->GetQuest()->ReqCreatureOrGOCount[i])
+            if (pQuest != NULL && pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
             {
                 if (pPlayer->GetItemInterface()->GetItemCount(29501) > 0)
                 {
@@ -266,7 +266,7 @@ class PrisonerGossip : public GossipScript
                         return;
 
                     QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(10368);
-                    if (pQuest != NULL && pQuest->GetMobCount(i) < pQuest->GetQuest()->ReqCreatureOrGOCount[i])
+                    if (pQuest != NULL && pQuest->GetMobCount(i) < pQuest->GetQuest()->required_mob_or_go_count[i])
                     {
                         pQuest->SetMobCount(i, pQuest->GetMobCount(i) + 1);
                         pQuest->SendUpdateAddKill(i);

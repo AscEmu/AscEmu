@@ -207,7 +207,7 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
             qRew = sMySQLStore.GetQuestProperties(reward->reward[0].questId);
             if (qRew)
             {
-                done = GetPlayer()->HasFinishedQuest(qRew->GetQuestId());
+                done = GetPlayer()->HasFinishedQuest(qRew->id);
                 if (done)
                     qRew = sMySQLStore.GetQuestProperties(reward->reward[1].questId);
             }
@@ -215,23 +215,21 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
         if (qRew)
         {
             data << uint8(done);
-            data << uint32(qRew->GetRewOrReqMoney());
-            data << uint32(qRew->XPValue(GetPlayer()));
+            data << uint32(qRew->reward_money);
+            data << uint32(qRew->reward_xp);
             data << uint32(reward->reward[done].variableMoney);
             data << uint32(reward->reward[done].variableXP);
             ///\todo FIXME Linux: error: cast from const uint32* {aka const unsigned int*} to uint8 {aka unsigned char} loses precision 
             /// can someone check this now ?
-            data << uint8(qRew->GetRewItemsCount());
-            for (uint8 i = 0; i < 4; ++i)
-            {
-                if (qRew->RewItemId[i] != 0)
+            data << uint8(qRew->GetRewardItemCount());
+            for (uint8 i = 0; i < QUEST_MAX_REWARD_ITEM; ++i)
+                if (qRew->reward_item[i] != 0)
                 {
-                    ItemProperties const* item = sMySQLStore.GetItemProperties(qRew->RewItemId[i]);
-                    data << uint32(qRew->RewItemId[i]);
+                    ItemProperties const* item = sMySQLStore.GetItemProperties(qRew->reward_item[i]);
+                    data << uint32(qRew->reward_item[i]);
                     data << uint32(item ? item->DisplayInfoID : 0);
-                    data << uint32(qRew->RewItemCount[i]);
+                    data << uint32(qRew->reward_itemcount[i]);
                 }
-            }
         }
         else
         {
@@ -501,7 +499,7 @@ void WorldSession::SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 Dungeon
     if (!RandomDungeonEntry || !DungeonEntry || !qReward)
         return;
 
-    uint8 itemNum = uint8(qReward->GetRewItemsCount());
+    uint8 itemNum = uint8(qReward->GetRewardItemCount());
 
     Log.Debug("LfgHandler", "SMSG_LFG_PLAYER_REWARD %u rdungeonEntry: %u - sdungeonEntry: %u - done: %u", GetPlayer()->GetGUID(), RandomDungeonEntry, DungeonEntry, done);
 
@@ -511,24 +509,24 @@ void WorldSession::SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 Dungeon
     data << uint32(DungeonEntry);                         // Dungeon Finished
     data << uint8(done);
     data << uint32(1);
-    data << uint32(qReward->GetRewOrReqMoney());
-    data << uint32(qReward->XPValue(GetPlayer()));
+    data << uint32(qReward->reward_money);
+    data << uint32(qReward->reward_xp);
     data << uint32(reward->reward[done].variableMoney);
     data << uint32(reward->reward[done].variableXP);
     data << uint8(itemNum);
 
     if (itemNum)
     {
-        for (uint8 i = 0; i < 4; ++i)
+        for (uint8 i = 0; i < QUEST_MAX_REWARD_ITEM; ++i)
         {
-            if (!qReward->RewItemId[i])
+            if (!qReward->reward_item[i])
                 continue;
 
-            ItemProperties const* iProto = sMySQLStore.GetItemProperties(qReward->RewItemId[i]);
+            ItemProperties const* iProto = sMySQLStore.GetItemProperties(qReward->reward_item[i]);
 
-            data << uint32(qReward->RewItemId[i]);
+            data << uint32(qReward->reward_item[i]);
             data << uint32(iProto ? iProto->DisplayInfoID : 0);
-            data << uint32(qReward->RewItemCount[i]);
+            data << uint32(qReward->reward_itemcount[i]);
         }
     }
     SendPacket(&data);

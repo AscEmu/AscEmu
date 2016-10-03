@@ -1260,34 +1260,34 @@ void LuaHookOnLogout(Player* pPlayer)
 void LuaHookOnQuestAccept(Player* pPlayer, QuestProperties* pQuest, Object* pQuestGiver)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT].end(); ++itr)
-    {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_ACCEPT);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_UINT(pQuest->GetQuestId());
-        if (!pQuestGiver)
+        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT].end(); ++itr)
         {
-            sLuaMgr.PUSH_NIL();
+            sLuaMgr.BeginCall((*itr));
+            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_ACCEPT);
+            sLuaMgr.PushUnit(pPlayer);
+            sLuaMgr.PUSH_UINT(pQuest->id);
+            if (!pQuestGiver)
+            {
+                sLuaMgr.PUSH_NIL();
+            }
+            else if (pQuestGiver->IsUnit())
+            {
+                sLuaMgr.PushUnit(pQuestGiver);
+            }
+            else if (pQuestGiver->IsGameObject())
+            {
+                sLuaMgr.PushGo(pQuestGiver);
+            }
+            else if (pQuestGiver->IsItem())
+            {
+                sLuaMgr.PushItem(pQuestGiver);
+            }
+            else
+            {
+                sLuaMgr.PUSH_NIL();
+            }
+            sLuaMgr.ExecuteCall(4);
         }
-        else if (pQuestGiver->IsUnit())
-        {
-            sLuaMgr.PushUnit(pQuestGiver);
-        }
-        else if (pQuestGiver->IsGameObject())
-        {
-            sLuaMgr.PushGo(pQuestGiver);
-        }
-        else if (pQuestGiver->IsItem())
-        {
-            sLuaMgr.PushItem(pQuestGiver);
-        }
-        else
-        {
-            sLuaMgr.PUSH_NIL();
-        }
-        sLuaMgr.ExecuteCall(4);
-    }
     RELEASE_LOCK
 }
 
@@ -1397,7 +1397,7 @@ void LuaHookOnQuestCancelled(Player* pPlayer, QuestProperties* pQuest)
         sLuaMgr.BeginCall((*itr));
         sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_CANCELLED);
         sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_UINT(pQuest->GetQuestId());
+        sLuaMgr.PUSH_UINT(pQuest->id);
         sLuaMgr.ExecuteCall(3);
     }
     RELEASE_LOCK
@@ -1411,7 +1411,7 @@ void LuaHookOnQuestFinished(Player* pPlayer, QuestProperties* pQuest, Object* pQ
         sLuaMgr.BeginCall((*itr));
         sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_FINISHED);
         sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_UINT(pQuest->GetQuestId());
+        sLuaMgr.PUSH_UINT(pQuest->id);
         if (!pQuestGiver)
         {
             sLuaMgr.PUSH_NIL();
@@ -2369,7 +2369,7 @@ class LuaQuest : public QuestScript
             CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_ACCEPT]);
             sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->GetQuestId());
+            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
             sLuaMgr.ExecuteCall(2);
             RELEASE_LOCK
         }
@@ -2380,7 +2380,7 @@ class LuaQuest : public QuestScript
             CHECK_BINDING_ACQUIRELOCK
             sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_COMPLETE]);
             sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->GetQuestId());
+            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
             sLuaMgr.ExecuteCall(2);
             RELEASE_LOCK
         }
@@ -2398,7 +2398,7 @@ class LuaQuest : public QuestScript
             sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_GAMEOBJECT_ACTIVATE]);
             sLuaMgr.PUSH_UINT(entry);
             sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->GetQuestId());
+            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
             sLuaMgr.ExecuteCall(3);
             RELEASE_LOCK
         }
@@ -2408,7 +2408,7 @@ class LuaQuest : public QuestScript
             sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_CREATURE_KILL]);
             sLuaMgr.PUSH_UINT(entry);
             sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->GetQuestId());
+            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
             sLuaMgr.ExecuteCall(3);
             RELEASE_LOCK
         }
@@ -2418,7 +2418,7 @@ class LuaQuest : public QuestScript
             sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_EXPLORE_AREA]);
             sLuaMgr.PUSH_UINT(areaId);
             sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->GetQuestId());
+            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
             sLuaMgr.ExecuteCall(3);
             RELEASE_LOCK
         }
@@ -2429,7 +2429,7 @@ class LuaQuest : public QuestScript
             sLuaMgr.PUSH_UINT(itemId);
             sLuaMgr.PUSH_UINT(totalCount);
             sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->GetQuestId());
+            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
             sLuaMgr.ExecuteCall(4);
             RELEASE_LOCK
         }

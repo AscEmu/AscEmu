@@ -469,13 +469,13 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
     MySQLDataStore::QuestPropertiesContainer const* its = sMySQLStore.GetQuestPropertiesStore();
     for (MySQLDataStore::QuestPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        QuestProperties const* quest = sMySQLStore.GetQuestProperties(itr->second.GetQuestId());
+        QuestProperties const* quest = sMySQLStore.GetQuestProperties(itr->second.id);
         if (quest == nullptr)
             continue;
 
-        std::string lower_quest_title = quest->GetTitle();
+        std::string lower_quest_title = quest->title;
 
-        LocalizedQuest* li = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedQuest(quest->GetQuestId(), m_session->language) : NULL;
+        LocalizedQuest* li = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedQuest(quest->id, m_session->language) : NULL;
 
         std::string liName = std::string(li ? li->Title : "");
 
@@ -488,14 +488,14 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
 
         if (FindXinYString(search_string, lower_quest_title) || localizedFound)
         {
-            std::string questid = MyConvertIntToString(quest->GetQuestId());
-            std::string questtitle = localizedFound ? (li ? li->Title : "") : quest->GetTitle();
+            std::string questid = MyConvertIntToString(quest->id);
+            std::string questtitle = localizedFound ? (li ? li->Title : "") : quest->title;
             // send quest link
             recout = questid.c_str();
             recout += ": |cff00ccff|Hquest:";
             recout += questid.c_str();
             recout += ":";
-            recout += MyConvertIntToString(quest->GetMinLevel());
+            recout += MyConvertIntToString(quest->min_level);
             recout += "|h[";
             recout += questtitle;
             recout += "]|h|r";

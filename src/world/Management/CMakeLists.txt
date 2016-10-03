@@ -50,7 +50,7 @@ set(SRC_MANAGEMENT_FILES
    ${PATH_PREFIX}/MailMgr.cpp
    ${PATH_PREFIX}/MailMgr.h
    ${PATH_PREFIX}/Quest.cpp
-   ${PATH_PREFIX}/Quest.h
+   ${PATH_PREFIX}/Quest.hpp
    ${PATH_PREFIX}/QuestDefines.hpp
    ${PATH_PREFIX}/QuestLogEntry.cpp
    ${PATH_PREFIX}/QuestLogEntry.hpp

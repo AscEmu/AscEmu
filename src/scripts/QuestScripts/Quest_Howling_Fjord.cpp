@@ -33,7 +33,7 @@ class NorthFleet : public CreatureAIScript
                 QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11230);
                 if(qle != NULL)
                 {
-                    if(qle->GetMobCount(0) < qle->GetQuest()->ReqCreatureOrGOCount[ 0 ])
+                    if(qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
                     {
                         uint32 newcount = qle->GetMobCount(0) + 1;
                         qle->SetMobCount(0, newcount);
@@ -58,7 +58,7 @@ class ChillmereScourge : public CreatureAIScript
                 QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11397);
                 if(qle != NULL)
                 {
-                    if(qle->GetMobCount(0) < qle->GetQuest()->ReqCreatureOrGOCount[ 0 ])
+                    if(qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
                     {
                         uint32 newcount = qle->GetMobCount(0) + 1;
                         qle->SetMobCount(0, newcount);
@@ -83,7 +83,7 @@ class Baleheim : public CreatureAIScript
                 QuestLogEntry* qle = static_cast<Player*>(mKiller)->GetQuestLogForEntry(11283);
                 if(qle != NULL)
                 {
-                    if(qle->GetMobCount(0) < qle->GetQuest()->ReqCreatureOrGOCount[ 0 ])
+                    if(qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
                     {
                         uint32 newcount = qle->GetMobCount(0) + 1;
                         qle->SetMobCount(0, newcount);

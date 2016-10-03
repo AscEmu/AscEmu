@@ -21,7 +21,7 @@
 
 #include "StdAfx.h"
 #include "Management/QuestMgr.h"
-#include "Management/Quest.h"
+#include "Management/Quest.hpp"
 
 
 Creature::Creature(uint64 guid)
@@ -514,7 +514,7 @@ QuestProperties const* Creature::FindQuest(uint32 quest_id, uint8 quest_relation
     {
         QuestRelation* ptr = (*it);
 
-        if ((ptr->qst->GetQuestId() == quest_id) && (ptr->type & quest_relation))
+        if ((ptr->qst->id == quest_id) && (ptr->type & quest_relation))
         {
             return ptr->qst;
         }
@@ -529,7 +529,7 @@ uint16 Creature::GetQuestRelation(uint32 quest_id)
 
     for (it = m_quests->begin(); it != m_quests->end(); ++it)
     {
-        if ((*it)->qst->GetQuestId() == quest_id)
+        if ((*it)->qst->id == quest_id)
         {
             quest_relation |= (*it)->type;
         }
@@ -667,7 +667,7 @@ bool Creature::HasQuest(uint32 id, uint32 type)
     if (!m_quests) return false;
     for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
         {
-            if ((*itr)->qst->GetQuestId() == id && (*itr)->type & type)
+            if ((*itr)->qst->id == id && (*itr)->type & type)
                 return true;
         }
     return false;
