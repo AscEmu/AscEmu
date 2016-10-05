@@ -1692,43 +1692,43 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         return;
 
     // if we can take the quest, means that we haven't done this kind of "run", IE: First Heroic Random of Day.
-    if (!player->HasFinishedDaily(qReward->GetQuestId()) || !player->HasFinishedQuest(qReward->GetQuestId()))
+    if (!player->HasFinishedDaily(qReward->id) || !player->HasFinishedQuest(qReward->id))
     {
         sQuestMgr.BuildQuestComplete(player, qReward);
-        player->AddToFinishedQuests(qReward->GetQuestId());
+        player->AddToFinishedQuests(qReward->id);
 
         // Reputation reward
         for (uint8 z = 0; z < 6; z++)
         {
-            if (qReward->RewRepFaction[z])
+            if (qReward->reward_repfaction[z])
             {
                 int32 amt = 0;
-                uint32 fact = qReward->RewRepFaction[z];
-                if (qReward->RewRepValue[z])
+                uint32 fact = qReward->reward_repfaction[z];
+                if (qReward->reward_repvalue[z])
                 {
-                    amt = qReward->RewRepValue[z];
+                    amt = qReward->reward_repvalue[z];
                 }
-                /*if (qReward->rewrepli reward_replimit && (player->GetStanding(fact) >= (int32)qReward->reward_replimit))
+                if (qReward->reward_replimit && (player->GetStanding(fact) >= (int32)qReward->reward_replimit))
                 {
                     continue;
-                }*/
+                }
                 amt = float2int32(amt * sWorld.getRate(RATE_QUESTREPUTATION));
                 player->ModStanding(fact, amt);
             }
         }
         // Static Item reward
-        for (uint8 i = 0; i < 4; ++i)
+        for (uint8 i = 0; i < QUEST_MAX_REWARD_ITEM; ++i)
         {
-            if (qReward->RewItemId[i])
+            if (qReward->reward_item[i])
             {
-                ItemProperties const* proto = sMySQLStore.GetItemProperties(qReward->RewItemId[i]);
+                ItemProperties const* proto = sMySQLStore.GetItemProperties(qReward->reward_item[i]);
                 if (!proto)
                 {
-                    Log.Error("LfgMgr", "Invalid item prototype in quest reward! ID %d, quest %d", qReward->RewItemId[i], qReward->GetQuestId());
+                    Log.Error("LfgMgr", "Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
                 }
                 else
                 {
-                    auto item_add = player->GetItemInterface()->FindItemLessMax(qReward->RewItemId[i], qReward->RewItemCount[i], false);
+                    auto item_add = player->GetItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
                     if (!item_add)
                     {
                         auto slotresult = player->GetItemInterface()->FindFreeInventorySlot(proto);
@@ -1738,10 +1738,10 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                         }
                         else
                         {
-                            auto item = objmgr.CreateItem(qReward->RewItemId[i], player);
+                            auto item = objmgr.CreateItem(qReward->reward_item[i], player);
                             if (item)
                             {
-                                item->SetStackCount(uint32(qReward->RewItemCount[i]));
+                                item->SetStackCount(uint32(qReward->reward_itemcount[i]));
                                 if (!player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 {
                                     item->DeleteMe();
@@ -1751,7 +1751,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                     }
                     else
                     {
-                        item_add->SetStackCount(item_add->GetStackCount() + qReward->RewItemCount[i]);
+                        item_add->SetStackCount(item_add->GetStackCount() + qReward->reward_itemcount[i]);
                         item_add->m_isDirty = true;
                     }
                 }
@@ -1759,23 +1759,23 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         }
 
         // if daily then append to finished dailies
-        if (qReward->IsRepeatable() == QUEST_REPEATABLE_DAILY)
-            player->PushToFinishedDailies(qReward->GetQuestId());
+        if (qReward->is_repeatable == QUEST_REPEATABLE_DAILY)
+            player->PushToFinishedDailies(qReward->id);
 
 #ifdef ENABLE_ACHIEVEMENTS
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
-        if (qReward->GetRewOrReqMoney() > 0)
+        if (qReward->reward_money > 0)
         {
             // Money reward
             // Check they don't have more than the max gold
-            if (sWorld.GoldCapEnabled && (player->GetGold() + qReward->GetRewOrReqMoney()) <= sWorld.GoldLimit)
+            if (sWorld.GoldCapEnabled && (player->GetGold() + qReward->reward_money) <= sWorld.GoldLimit)
             {
-                player->ModGold(qReward->GetRewOrReqMoney());
+                player->ModGold(qReward->reward_money);
             }
-            player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->GetRewOrReqMoney(), 0, 0);
+            player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->reward_money, 0, 0);
         }
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->GetZoneOrSort(), 0, 0);
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->GetQuestId(), 0, 0);
+        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->zone_id, 0, 0);
+        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->id, 0, 0);
 #endif
     }
     else
@@ -1786,40 +1786,40 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
             return;
 
         sQuestMgr.BuildQuestComplete(player, qReward);
-        player->AddToFinishedQuests(qReward->GetQuestId());
+        player->AddToFinishedQuests(qReward->id);
 
         // Reputation reward
         for (uint8 z = 0; z < 6; z++)
         {
-            if (qReward->RewRepFaction[z])
+            if (qReward->reward_repfaction[z])
             {
                 int32 amt = 0;
-                uint32 fact = qReward->RewRepFaction[z];
-                if (qReward->RewRepValue[z])
+                uint32 fact = qReward->reward_repfaction[z];
+                if (qReward->reward_repvalue[z])
                 {
-                    amt = qReward->RewRepValue[z];
+                    amt = qReward->reward_repvalue[z];
                 }
-                /*if (qReward->reward_replimit && (player->GetStanding(fact) >= (int32)qReward->reward_replimit))
+                if (qReward->reward_replimit && (player->GetStanding(fact) >= (int32)qReward->reward_replimit))
                 {
                     continue;
-                }*/
+                }
                 amt = float2int32(amt * sWorld.getRate(RATE_QUESTREPUTATION));
                 player->ModStanding(fact, amt);
             }
         }
         // Static Item reward
-        for (uint8 i = 0; i < 4; ++i)
+        for (uint8 i = 0; i < QUEST_MAX_REWARD_ITEM; ++i)
         {
-            if (qReward->RewItemId[i])
+            if (qReward->reward_item[i])
             {
-                ItemProperties const* proto = sMySQLStore.GetItemProperties(qReward->RewItemId[i]);
+                ItemProperties const* proto = sMySQLStore.GetItemProperties(qReward->reward_item[i]);
                 if (!proto)
                 {
-                    Log.Error("LfgMgr", "Invalid item prototype in quest reward! ID %d, quest %d", qReward->RewItemId[i], qReward->GetQuestId());
+                    Log.Error("LfgMgr", "Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
                 }
                 else
                 {
-                    auto item_add = player->GetItemInterface()->FindItemLessMax(qReward->RewItemId[i], qReward->RewItemCount[i], false);
+                    auto item_add = player->GetItemInterface()->FindItemLessMax(qReward->reward_item[i], qReward->reward_itemcount[i], false);
                     if (!item_add)
                     {
                         auto slotresult = player->GetItemInterface()->FindFreeInventorySlot(proto);
@@ -1829,10 +1829,10 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                         }
                         else
                         {
-                            auto item = objmgr.CreateItem(qReward->RewItemId[i], player);
+                            auto item = objmgr.CreateItem(qReward->reward_item[i], player);
                             if (item)
                             {
-                                item->SetStackCount(uint32(qReward->RewItemCount[i]));
+                                item->SetStackCount(uint32(qReward->reward_itemcount[i]));
                                 if (!player->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot))
                                 {
                                     item->DeleteMe();
@@ -1842,7 +1842,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                     }
                     else
                     {
-                        item_add->SetStackCount(item_add->GetStackCount() + qReward->RewItemCount[i]);
+                        item_add->SetStackCount(item_add->GetStackCount() + qReward->reward_itemcount[i]);
                         item_add->m_isDirty = true;
                     }
                 }
@@ -1850,23 +1850,23 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         }
 
         // if daily then append to finished dailies
-        if (qReward->IsRepeatable() == QUEST_REPEATABLE_DAILY)
-            player->PushToFinishedDailies(qReward->GetQuestId());
+        if (qReward->is_repeatable == QUEST_REPEATABLE_DAILY)
+            player->PushToFinishedDailies(qReward->id);
 
 #ifdef ENABLE_ACHIEVEMENTS
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
-        if (qReward->GetRewOrReqMoney() > 0)
+        if (qReward->reward_money > 0)
         {
             // Money reward
             // Check they don't have more than the max gold
-            if (sWorld.GoldCapEnabled && (player->GetGold() + qReward->GetRewOrReqMoney()) <= sWorld.GoldLimit)
+            if (sWorld.GoldCapEnabled && (player->GetGold() + qReward->reward_money) <= sWorld.GoldLimit)
             {
-                player->ModGold(qReward->GetRewOrReqMoney());
+                player->ModGold(qReward->reward_money);
             }
-            player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->GetRewOrReqMoney(), 0, 0);
+            player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->reward_money, 0, 0);
         }
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->GetZoneOrSort(), 0, 0);
-        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->GetQuestId(), 0, 0);
+        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->zone_id, 0, 0);
+        player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->id, 0, 0);
 #endif
     }
 

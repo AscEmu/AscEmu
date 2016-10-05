@@ -1146,21 +1146,19 @@ enum Opcodes
     SMSG_LIST_INVENTORY                                 = 0x7CB0,
     CMSG_QUESTGIVER_STATUS_QUERY                        = 0x4407,
     SMSG_QUESTGIVER_STATUS                              = 0x2115,
-    CMSG_QUESTGIVER_HELLO                               = 0x0D17,   // unchecked
-    SMSG_QUESTGIVER_QUEST_LIST                          = 0x0134,   // unchecked
-    CMSG_QUESTGIVER_QUERY_QUEST                         = 0x2F14,   // unchecked
-    CMSG_QUESTGIVER_QUEST_AUTOLAUNCH                    = 0x1188,   // unchecked
-    SMSG_QUESTGIVER_QUEST_DETAILS                       = 0x2425,   // unchecked
-    CMSG_QUESTGIVER_ACCEPT_QUEST                        = 0x6B37,   // unchecked
-    CMSG_QUESTGIVER_COMPLETE_QUEST                      = 0x0114,   // unchecked
+    CMSG_QUESTGIVER_HELLO                               = 0x0D17,
+    SMSG_QUESTGIVER_QUEST_LIST                          = 0x0134,
+    CMSG_QUESTGIVER_QUERY_QUEST                         = 0x2F14,
+    SMSG_QUESTGIVER_QUEST_DETAILS                       = 0x2425,
+    CMSG_QUESTGIVER_ACCEPT_QUEST                        = 0x6B37,
+    CMSG_QUESTGIVER_COMPLETE_QUEST                      = 0x0114,
     SMSG_QUESTGIVER_REQUEST_ITEMS                       = 0x6236,
-    CMSG_QUESTGIVER_REQUEST_REWARD                      = 0x2534,   // unchecked
-    SMSG_QUESTGIVER_OFFER_REWARD                        = 0x2427,   // unchecked
-    CMSG_QUESTGIVER_CHOOSE_REWARD                       = 0x2125,   // unchecked
-    SMSG_QUESTGIVER_QUEST_INVALID                       = 0x4016,   // unchecked
-    CMSG_QUESTGIVER_CANCEL                              = 0x1191,   // unchecked
-    SMSG_QUESTGIVER_QUEST_COMPLETE                      = 0x55A4,   // unchecked
-    SMSG_QUESTGIVER_QUEST_FAILED                        = 0x4236,   // unchecked
+    CMSG_QUESTGIVER_REQUEST_REWARD                      = 0x2534,
+    SMSG_QUESTGIVER_OFFER_REWARD                        = 0x2427,
+    CMSG_QUESTGIVER_CHOOSE_REWARD                       = 0x2125,
+    SMSG_QUESTGIVER_QUEST_INVALID                       = 0x4016,
+    SMSG_QUESTGIVER_QUEST_COMPLETE                      = 0x55A4,
+    SMSG_QUESTGIVER_QUEST_FAILED                        = 0x4236,
     CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY               = 0x6305,
     SMSG_QUESTGIVER_STATUS_MULTIPLE                     = 0x4F25,
     CMSG_NPC_TEXT_QUERY                                 = 0x4E24,
@@ -1486,6 +1484,8 @@ enum Opcodes
     CMSG_GUILD_SET_OFFICER_NOTE                         = 0x0000,
     CMSG_LEARN_TALENTS_MULTIPLE                         = 0x0000,
     CMSG_SET_GRANTABLE_LEVELS                           = 0x0000,
+    CMSG_QUESTGIVER_QUEST_AUTOLAUNCH                    = 0x0000,
+    CMSG_QUESTGIVER_CANCEL                              = 0x0000,
 
     NUM_MSG_TYPES                                       = 0xFFFF    // End of Opcodes
 };

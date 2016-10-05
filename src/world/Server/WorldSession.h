@@ -24,7 +24,7 @@
 
 #include <Threading/Mutex.h>
 #include "Server/Packets/Opcodes.h"
-#include "Management/Quest.h"
+#include "Management/Quest.hpp"
 #include "FastQueue.h"
 #include "Units/Unit.h"
 #include <stddef.h>
@@ -847,7 +847,7 @@ class SERVER_DECL WorldSession
         void SystemMessage(const char* format, ...);
 
         uint32 language;
-        WorldPacket* BuildQuestQueryResponse(QuestProperties const* qst);
+        void BuildQuestQueryResponse(QuestProperties const* qst);
         uint32 m_muted;
 
         void SendClientCacheVersion(uint32 version);

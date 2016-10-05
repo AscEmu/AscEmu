@@ -159,7 +159,7 @@ class TheBattleForTheSunReachArmory : public CreatureAIScript
                         return;
                 }
 
-                if(qle->GetMobCount(1) < qle->GetQuest()->ReqCreatureOrGOCount[ 1 ])
+                if(qle->GetMobCount(1) < qle->GetQuest()->required_mob_or_go_count[1])
                 {
                     uint32 newcount = qle->GetMobCount(1) + 1;
                     qle->SetMobCount(1, newcount);

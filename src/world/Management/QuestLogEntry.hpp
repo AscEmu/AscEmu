@@ -24,7 +24,7 @@
 #include <Database/Field.h>
 #include "CommonDefines.hpp"
 #include "Server/EventableObject.h"
-#include "Management/Quest.h"
+#include "Management/Quest.hpp"
 #include "Units/Players/Player.h"
 #include "Server/Script/ScriptMgr.h"
 

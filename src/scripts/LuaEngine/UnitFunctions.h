@@ -1698,7 +1698,7 @@ class LuaUnit
                         qle->UpdatePlayerFields();
 
                         // If the quest should give any items on begin, give them the items.
-                        /*for (uint8 i = 0; i < 4; ++i)
+                        for (uint8 i = 0; i < 4; ++i)
                         {
                             if (qst->receive_items[i])
                             {
@@ -1709,14 +1709,14 @@ class LuaUnit
                                 if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
                                     item->DeleteMe();
                             }
-                        }*/
+                        }
 
-                        if (qst->SrcItemId /* && qst->srcitem != qst->receive_items[0]*/)
+                        if (qst->srcitem && qst->srcitem != qst->receive_items[0])
                         {
-                            Item* item = objmgr.CreateItem(qst->SrcItemId, plr);
+                            Item* item = objmgr.CreateItem(qst->srcitem, plr);
                             if (item)
                             {
-                                item->SetStackCount(qst->SrcItemCount ? qst->SrcItemCount : 1);
+                                item->SetStackCount(qst->srcitemcount ? qst->srcitemcount : 1);
                                 if (!plr->GetItemInterface()->AddItemToFreeSlot(item))
                                     item->DeleteMe();
                             }
@@ -1790,7 +1790,7 @@ class LuaUnit
             auto questlog_entry = pl->GetQuestLogForEntry(questid);
             if (questlog_entry != nullptr)
             {
-                questlog_entry->SetMobCount(objective, questlog_entry->GetQuest()->ReqCreatureOrGOCount[objective]);
+                questlog_entry->SetMobCount(objective, questlog_entry->GetQuest()->required_mob_or_go_count[objective]);
                 questlog_entry->SendUpdateAddKill(objective);
                 if (questlog_entry->CanBeFinished())
                 {
@@ -4354,7 +4354,7 @@ class LuaUnit
             Creature* ctr = static_cast<Creature*>(ptr);
         uint32 questid = CHECK_ULONG(L, 1);
         QuestProperties const* qst = sMySQLStore.GetQuestProperties(questid);
-        if (ctr->HasQuest(qst->GetQuestId(), qst->GetQuestMethod()))
+        if (ctr->HasQuest(qst->id, qst->type))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);

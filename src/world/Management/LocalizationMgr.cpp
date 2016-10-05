@@ -52,10 +52,8 @@ void LocalizationMgr::Shutdown()
             SAFE_FREE_PTR(itr->second.CompletionText);
             SAFE_FREE_PTR(itr->second.IncompleteText);
             SAFE_FREE_PTR(itr->second.EndText);
-            SAFE_FREE_PTR(itr->second.ObjectiveText[0]);
-            SAFE_FREE_PTR(itr->second.ObjectiveText[1]);
-            SAFE_FREE_PTR(itr->second.ObjectiveText[2]);
-            SAFE_FREE_PTR(itr->second.ObjectiveText[3]);
+            for (uint8 i = 0; i < QUEST_MAX_OBJECTIVES; ++i)
+                SAFE_FREE_PTR(itr->second.ObjectiveText[i]);
         }
 
         for (std::unordered_map<uint32, LocalizedItem>::iterator itr = m_Items[i].begin(); itr != m_Items[i].end(); ++itr)
@@ -399,10 +397,8 @@ void LocalizationMgr::Reload(bool first)
                 q.CompletionText = strdup(f[5].GetString());
                 q.IncompleteText = strdup(f[6].GetString());
                 q.EndText = strdup(f[7].GetString());
-                q.ObjectiveText[0] = strdup(f[8].GetString());
-                q.ObjectiveText[1] = strdup(f[9].GetString());
-                q.ObjectiveText[2] = strdup(f[10].GetString());
-                q.ObjectiveText[3] = strdup(f[11].GetString());
+                for (uint8 i = 0; i < QUEST_MAX_OBJECTIVES; ++i)
+                    q.ObjectiveText[i] = strdup(f[8 + i].GetString());
 
                 m_Quests[lid].insert(std::make_pair(entry, q));
             }

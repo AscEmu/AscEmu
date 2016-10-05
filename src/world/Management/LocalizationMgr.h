@@ -56,7 +56,7 @@ struct LocalizedQuest
     char* CompletionText;
     char* IncompleteText;
     char* EndText;
-    char* ObjectiveText[4];
+    char* ObjectiveText[QUEST_MAX_OBJECTIVES];
 };
 
 struct LocalizedWorldBroadCast

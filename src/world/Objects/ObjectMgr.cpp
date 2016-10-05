@@ -3490,7 +3490,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                 QuestLogEntry* pQuest = plr->GetQuestLogForEntry(itr->second.data_2);
                 if (pQuest != nullptr)
                 {
-                    if (pQuest->GetMobCount(itr->second.data_5) < pQuest->GetQuest()->ReqCreatureOrGOId[itr->second.data_5])
+                    if (pQuest->GetMobCount(itr->second.data_5) < pQuest->GetQuest()->required_mob_or_go_count[itr->second.data_5])
                     {
                         pQuest->SetMobCount(itr->second.data_5, pQuest->GetMobCount(itr->second.data_5) + 1);
                         pQuest->SendUpdateAddKill(itr->second.data_5);
@@ -3754,16 +3754,16 @@ void ObjectMgr::LoadQuestLoot(uint32 GO_Entry, uint32 Item_Entry)
     uint32 QuestID = 0;
     uint32 i;
 
-    for (auto itr = sMySQLStore._questPropertiesStore.begin(); itr != sMySQLStore._questPropertiesStore.end(); ++itr)
+    /*for (auto itr = sMySQLStore._questPropertiesStore.begin(); itr != sMySQLStore._questPropertiesStore.end(); ++itr)
     {
         for (i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
         {
-            if (itr->second.ReqItemId[i] == Item_Entry)
+            if (itr->second.required_item[i] == Item_Entry)
             {
-                QuestID = itr->second.GetQuestId();
+                QuestID = itr->second.id;
                 sQuestMgr.m_ObjectLootQuestList[GO_Entry] = QuestID;
                 return;
             }
         }
-    }
+    }*/
 }

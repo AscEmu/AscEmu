@@ -590,9 +590,9 @@ class SERVER_DECL Player : public Unit
         /////////////////////////////////////////////////////////////////////////////////////////
         bool HasQuests()
         {
-            for (uint8 i = 0; i < 25; ++i)
+            for (uint8 i = 0; i < MAX_QUEST_LOG_SIZE; ++i)
             {
-                if (m_questlog[i] != 0)
+                if (m_questlog[i] != nullptr)
                     return true;
             }
             return false;
