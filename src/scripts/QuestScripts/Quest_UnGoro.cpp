@@ -54,7 +54,7 @@ class NorthernPylon : public GameObjectAIScript
             if(pPlayer->HasFinishedQuest(4284))
             {
                 QuestLogEntry* en = pPlayer->GetQuestLogForEntry(4285);
-                if(en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
+                if(en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
                 {
                     uint32 newcount = en->GetMobCount(0) + 1;
                     en->SetMobCount(0, newcount);
@@ -86,7 +86,7 @@ class EasternPylon : public GameObjectAIScript
             if(pPlayer->HasFinishedQuest(4284))
             {
                 QuestLogEntry* en = pPlayer->GetQuestLogForEntry(4287);
-                if(en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
+                if(en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
                 {
                     uint32 newcount = en->GetMobCount(0) + 1;
                     en->SetMobCount(0, newcount);
@@ -118,7 +118,7 @@ class WesternPylon : public GameObjectAIScript
             if(pPlayer->HasFinishedQuest(4284))
             {
                 QuestLogEntry* en = pPlayer->GetQuestLogForEntry(4288);
-                if(en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
+                if(en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
                 {
                     uint32 newcount = en->GetMobCount(0) + 1;
                     en->SetMobCount(0, newcount);

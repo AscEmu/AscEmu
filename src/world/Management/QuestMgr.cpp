@@ -760,7 +760,7 @@ bool QuestMgr::OnGameObjectActivate(Player* plr, GameObject* go)
 
             for (uint8 j = 0; j < 4; ++j)
             {
-                if (qst->required_mob[j] == static_cast<int32>(entry) && qst->required_mobtype[j] == QUEST_MOB_TYPE_GAMEOBJECT && qle->m_mobcount[j] < qst->required_mobcount[j])
+                if (qst->required_mob_or_go[j] == static_cast<int32>(entry) && qst->required_mobtype[j] == QUEST_MOB_TYPE_GAMEOBJECT && qle->m_mobcount[j] < qst->required_mob_or_go_count[j])
                 {
                     // add another kill.
                     // (auto-dirty's it)
@@ -816,10 +816,10 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
                 qst = quest_log_entry->GetQuest();
                 for (uint8 j = 0; j < 4; ++j)
                 {
-                    if (qst->required_mob[j] == 0)
+                    if (qst->required_mob_or_go[j] == 0)
                         continue;
 
-                    if (qst->required_mob[j] == static_cast<int32>(entry) && qst->required_mobtype[j] == QUEST_MOB_TYPE_CREATURE && quest_log_entry->m_mobcount[j] < qst->required_mobcount[j])
+                    if (qst->required_mob_or_go[j] == static_cast<int32>(entry) && qst->required_mobtype[j] == QUEST_MOB_TYPE_CREATURE && quest_log_entry->m_mobcount[j] < qst->required_mob_or_go_count[j])
                     {
                         // add another kill.(auto-dirty's it)
                         quest_log_entry->IncrementMobCount(j);
@@ -845,10 +845,6 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
         {
             if (Group* pGroup = plr->GetGroup())
             {
-                //removed by Zack How the hell will healers get the kills then ?
-                //if (pGroup->GetGroupType() != GROUP_TYPE_PARTY)
-                //	return;  // Raid's don't get shared kills.
-
                 GroupMembersSet::iterator gitr;
                 pGroup->Lock();
                 for (uint32 k = 0; k < pGroup->GetSubGroupCount(); k++)
@@ -860,19 +856,17 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
                         {
                             for (uint8 i = 0; i < 25; ++i)
                             {
-                                auto quest_log_entry = plr->GetQuestLogInSlot(i);
+                                auto quest_log_entry = gplr->GetQuestLogInSlot(i);
                                 if (quest_log_entry)
                                 {
                                     qst = quest_log_entry->GetQuest();
                                     for (uint8 j = 0; j < 4; ++j)
                                     {
-                                        if (qst->required_mob[j] == 0)
+                                        if (qst->required_mob_or_go[j] == 0)
                                             continue;
 
-                                        if (qst->required_mob[j] == static_cast<int32>(entry) && qst->required_mobtype[j] == QUEST_MOB_TYPE_CREATURE && quest_log_entry->m_mobcount[j] < qst->required_mobcount[j])
+                                        if (qst->required_mob_or_go[j] == static_cast<int32>(entry) && qst->required_mobtype[j] == QUEST_MOB_TYPE_CREATURE && quest_log_entry->m_mobcount[j] < qst->required_mob_or_go_count[j])
                                         {
-                                            // add another kill.
-                                            // (auto-dirty's it)
                                             quest_log_entry->IncrementMobCount(j);
                                             quest_log_entry->SendUpdateAddKill(j);
                                             CALL_QUESTSCRIPT_EVENT(quest_log_entry, OnCreatureKill)(entry, gplr, quest_log_entry);
@@ -915,9 +909,9 @@ void QuestMgr::OnPlayerCast(Player* plr, uint32 spellid, uint64 & victimguid)
             QuestProperties const* quest = quest_log_entry->GetQuest();
             for (uint8 j = 0; j < 4; ++j)
             {
-                if (quest->required_mob[j])
+                if (quest->required_mob_or_go[j])
                 {
-                    if (victim && quest->required_mob[j] == static_cast<int32>(entry) && quest->required_spell[j] == spellid && (quest_log_entry->m_mobcount[j] < quest->required_mobcount[j] || quest_log_entry->m_mobcount[j] == 0) && !quest_log_entry->IsUnitAffected(victim))
+                    if (victim && quest->required_mob_or_go[j] == static_cast<int32>(entry) && quest->required_spell[j] == spellid && (quest_log_entry->m_mobcount[j] < quest->required_mob_or_go_count[j] || quest_log_entry->m_mobcount[j] == 0) && !quest_log_entry->IsUnitAffected(victim))
                     {
                         quest_log_entry->AddAffectedUnit(victim);
                         quest_log_entry->IncrementMobCount(j);
@@ -1104,10 +1098,10 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             if (plr->HasQuestSpell(qst->required_spell[x]))
                 plr->RemoveQuestSpell(qst->required_spell[x]);
         }
-        else if (qst->required_mob[x] != 0)
+        else if (qst->required_mob_or_go[x] != 0)
         {
-            if (plr->HasQuestMob(qst->required_mob[x]))
-                plr->RemoveQuestMob(qst->required_mob[x]);
+            if (plr->HasQuestMob(qst->required_mob_or_go[x]))
+                plr->RemoveQuestMob(qst->required_mob_or_go[x]);
         }
     }
     qle->ClearAffectedUnits();
@@ -1995,31 +1989,31 @@ void QuestMgr::LoadExtraQuestStuff()
 
         for (uint8 i = 0; i < 4; ++i)
         {
-            if (qst->required_mob[i] != 0)
+            if (qst->required_mob_or_go[i] != 0)
             {
-                if (qst->required_mob[i] < 0)
+                if (qst->required_mob_or_go[i] < 0)
                 {
-                    auto gameobject_info = sMySQLStore.GetGameObjectProperties(qst->required_mob[i] * -1);
+                    auto gameobject_info = sMySQLStore.GetGameObjectProperties(qst->required_mob_or_go[i] * -1);
                     if (gameobject_info)
                     {
                         const_cast<QuestProperties*>(qst)->required_mobtype[i] = QUEST_MOB_TYPE_GAMEOBJECT;
-                        const_cast<QuestProperties*>(qst)->required_mob[i] *= -1;
+                        const_cast<QuestProperties*>(qst)->required_mob_or_go[i] *= -1;
                     }
                     else
                     {
                         // if quest has neither valid gameobject, log it.
-                        LOG_DEBUG("Quest %lu has required_mobtype[%d]==%lu, it's not a valid GameObject.", qst->id, i, qst->required_mob[i]);
+                        LOG_DEBUG("Quest %lu has required_mobtype[%d]==%lu, it's not a valid GameObject.", qst->id, i, qst->required_mob_or_go[i]);
                     }
                 }
                 else
                 {
-                    CreatureProperties const* c_info = sMySQLStore.GetCreatureProperties(qst->required_mob[i]);
+                    CreatureProperties const* c_info = sMySQLStore.GetCreatureProperties(qst->required_mob_or_go[i]);
                     if (c_info)
                         const_cast<QuestProperties*>(qst)->required_mobtype[i] = QUEST_MOB_TYPE_CREATURE;
                     else
                     {
                         // if quest has neither valid creature, log it.
-                        LOG_DEBUG("Quest %lu has required_mobtype[%d]==%lu, it's not a valid Creature.", qst->id, i, qst->required_mob[i]);
+                        LOG_DEBUG("Quest %lu has required_mobtype[%d]==%lu, it's not a valid Creature.", qst->id, i, qst->required_mob_or_go[i]);
                     }
                 }
 
@@ -2352,9 +2346,9 @@ void QuestMgr::OnPlayerEmote(Player* plr, uint32 emoteid, uint64 & victimguid)
             QuestProperties const* qst = qle->GetQuest();
             for (j = 0; j < 4; ++j)
             {
-                if (qst->required_mob[j])
+                if (qst->required_mob_or_go[j])
                 {
-                    if (victim && qst->required_mob[j] == static_cast<int32>(entry) && qst->required_emote[j] == emoteid && (qle->m_mobcount[j] < qst->required_mobcount[j] || qle->m_mobcount[j] == 0) && !qle->IsUnitAffected(victim))
+                    if (victim && qst->required_mob_or_go[j] == static_cast<int32>(entry) && qst->required_emote[j] == emoteid && (qle->m_mobcount[j] < qst->required_mob_or_go_count[j] || qle->m_mobcount[j] == 0) && !qle->IsUnitAffected(victim))
                     {
                         qle->AddAffectedUnit(victim);
                         qle->IncrementMobCount(j);

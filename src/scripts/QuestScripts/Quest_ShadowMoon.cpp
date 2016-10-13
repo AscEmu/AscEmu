@@ -34,7 +34,7 @@ class InfiltratingDragonmawFortressQAI : public CreatureAIScript
             if(mKiller->IsPlayer())
             {
                 QuestLogEntry* en = (static_cast<Player*>(mKiller))->GetQuestLogForEntry(10836);
-                if(en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
+                if(en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
                 {
                     uint32 newcount = en->GetMobCount(0) + 1;
                     en->SetMobCount(0, newcount);
@@ -67,7 +67,7 @@ class KneepadsQAI : public CreatureAIScript
                     }
                 }
 
-                if(en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
+                if(en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
                 {
                     uint32 newcount = en->GetMobCount(0) + 1;
                     en->SetMobCount(0, newcount);
@@ -328,7 +328,7 @@ class NeltharakusTale_Gossip : public GossipScript
                 case 4:
                     {
                         QuestLogEntry* pQuest = plr->GetQuestLogForEntry(10814);
-                        if(pQuest && pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mobcount[0])
+                        if(pQuest && pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
                         {
                             pQuest->SetMobCount(0, 1);
                             pQuest->SendUpdateAddKill(0);

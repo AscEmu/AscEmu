@@ -3464,7 +3464,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                 QuestLogEntry* pQuest = plr->GetQuestLogForEntry(itr->second.data_2);
                 if (pQuest != nullptr)
                 {
-                    if (pQuest->GetMobCount(itr->second.data_5) < pQuest->GetQuest()->required_mobcount[itr->second.data_5])
+                    if (pQuest->GetMobCount(itr->second.data_5) < pQuest->GetQuest()->required_mob_or_go[itr->second.data_5])
                     {
                         pQuest->SetMobCount(itr->second.data_5, pQuest->GetMobCount(itr->second.data_5) + 1);
                         pQuest->SendUpdateAddKill(itr->second.data_5);

@@ -64,8 +64,8 @@ struct QuestProperties
 	uint32 required_item[MAX_REQUIRED_QUEST_ITEM];
 	uint32 required_itemcount[MAX_REQUIRED_QUEST_ITEM];
 
-	int32 required_mob[4];              /// positive is NPC, negative is GO
-	uint32 required_mobcount[4];
+	int32 required_mob_or_go[4];              /// positive is NPC, negative is GO
+	uint32 required_mob_or_go_count[4];
 	uint32 required_spell[4];
 	uint32 required_emote[4];
 

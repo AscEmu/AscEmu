@@ -306,7 +306,7 @@ bool ScryingCrystal(uint32 i, Spell* pSpell)
         pSpell->p_caster->GetPositionY(), pSpell->p_caster->GetPositionZ(), 300078) && en)
     {
 
-        if (en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
+        if (en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
         {
             en->SetMobCount(0, 1);
             en->SendUpdateAddKill(0);
@@ -317,7 +317,7 @@ bool ScryingCrystal(uint32 i, Spell* pSpell)
     else if (pSpell->p_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(pSpell->p_caster->GetPositionX(),
         pSpell->p_caster->GetPositionY(), pSpell->p_caster->GetPositionZ(), 300142) && en)
     {
-        if (en->GetMobCount(1) < en->GetQuest()->required_mobcount[1])
+        if (en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
         {
             en->SetMobCount(1, 1);
             en->SendUpdateAddKill(1);

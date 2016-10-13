@@ -964,8 +964,8 @@ void MySQLDataStore::LoadQuestPropertiesTable()
 
             for (uint8 i = 0; i < 4; ++i)
             {
-                questInfo.required_mob[i] = fields[40 + i].GetUInt32();
-                questInfo.required_mobcount[i] = fields[44 + i].GetUInt32();
+                questInfo.required_mob_or_go[i] = fields[40 + i].GetInt32();
+                questInfo.required_mob_or_go_count[i] = fields[44 + i].GetUInt32();
                 questInfo.required_spell[i] = fields[48 + i].GetUInt32();
                 questInfo.required_emote[i] = fields[52 + i].GetUInt32();
             }

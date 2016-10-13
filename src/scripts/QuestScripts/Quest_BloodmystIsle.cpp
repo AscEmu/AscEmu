@@ -77,7 +77,7 @@ class TheKesselRun1 : public GossipScript
                 case 1:
                 {
                     QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
-                    if (en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
+                    if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
                     {
                         en->SetMobCount(0, en->GetMobCount(0) + 1);
                         en->SendUpdateAddKill(0);
@@ -130,7 +130,7 @@ class TheKesselRun2 : public GossipScript
                 case 1:
                 {
                     QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
-                    if (en && en->GetMobCount(1) < en->GetQuest()->required_mobcount[1])
+                    if (en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
                     {
                         en->SetMobCount(1, en->GetMobCount(1) + 1);
                         en->SendUpdateAddKill(1);
@@ -183,7 +183,7 @@ class TheKesselRun3 : public GossipScript
                 case 1:
                 {
                     QuestLogEntry* en = plr->GetQuestLogForEntry(9663);
-                    if (en && en->GetMobCount(2) < en->GetQuest()->required_mobcount[2])
+                    if (en && en->GetMobCount(2) < en->GetQuest()->required_mob_or_go_count[2])
                     {
                         en->SetMobCount(2, en->GetMobCount(2) + 1);
                         en->SendUpdateAddKill(2);
@@ -211,7 +211,7 @@ class SavingPrincessStillpine : public GameObjectAIScript
             if (qle == NULL)
                 return;
 
-            if (qle->GetMobCount(0) < qle->GetQuest()->required_mobcount[0])
+            if (qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
             {
                 qle->SetMobCount(0, qle->GetMobCount(0) + 1);
                 qle->SendUpdateAddKill(0);
@@ -316,7 +316,7 @@ class WebbedCreature : public CreatureAIScript
                 {
                     RandomCreature->m_noRespawn = true;
                     RandomCreature->Despawn(60000, 0);
-                    if (RandomCreature->GetEntry() == 17681 && Quest->GetMobCount(0) < Quest->GetQuest()->required_mobcount[0])
+                    if (RandomCreature->GetEntry() == 17681 && Quest->GetMobCount(0) < Quest->GetQuest()->required_mob_or_go_count[0])
                     {
                         Quest->SetMobCount(0, Quest->GetMobCount(0) + 1);
                         Quest->SendUpdateAddKill(0);

@@ -52,7 +52,7 @@ class AndorhalTower1 : public GameObjectAIScript
                     return;
             }
 
-            if(qle->GetMobCount(0) < qle->GetQuest()->required_mobcount[0])
+            if(qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
             {
                 qle->SetMobCount(0, qle->GetMobCount(0) + 1);
                 qle->SendUpdateAddKill(0);
@@ -80,7 +80,7 @@ class AndorhalTower2 : public GameObjectAIScript
                     return;
             }
 
-            if(qle->GetMobCount(1) < qle->GetQuest()->required_mobcount[1])
+            if(qle->GetMobCount(1) < qle->GetQuest()->required_mob_or_go_count[1])
             {
                 qle->SetMobCount(1, qle->GetMobCount(1) + 1);
                 qle->SendUpdateAddKill(1);
@@ -108,7 +108,7 @@ class AndorhalTower3 : public GameObjectAIScript
                     return;
             }
 
-            if(qle->GetMobCount(2) < qle->GetQuest()->required_mobcount[2])
+            if(qle->GetMobCount(2) < qle->GetQuest()->required_mob_or_go_count[2])
             {
                 qle->SetMobCount(2, qle->GetMobCount(2) + 1);
                 qle->SendUpdateAddKill(2);
@@ -135,7 +135,7 @@ class AndorhalTower4 : public GameObjectAIScript
                     return;
             }
 
-            if(qle->GetMobCount(3) < qle->GetQuest()->required_mobcount[3])
+            if(qle->GetMobCount(3) < qle->GetQuest()->required_mob_or_go_count[3])
             {
                 qle->SetMobCount(3, qle->GetMobCount(3) + 1);
                 qle->SendUpdateAddKill(3);
@@ -600,7 +600,7 @@ class MysteriousEgg : public GameObjectAIScript
             if(qle == NULL)
                 return;
 
-            if(qle->GetMobCount(0) < qle->GetQuest()->required_mobcount[0])
+            if(qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
             {
                 qle->SetMobCount(0, qle->GetMobCount(0) + 1);
                 qle->SendUpdateAddKill(0);
@@ -786,7 +786,7 @@ class LegionPortals : public GameObjectAIScript
             if(qle == NULL)
                 return;
 
-            if(qle->GetMobCount(0) < qle->GetQuest()->required_mobcount[0])
+            if(qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
             {
                 qle->SetMobCount(0, qle->GetMobCount(0) + 1);
                 qle->SendUpdateAddKill(0);
@@ -810,7 +810,7 @@ class ProphecyofAkida : public GameObjectAIScript
             if(qle == NULL)
                 return;
 
-            if(qle->GetMobCount(0) < qle->GetQuest()->required_mobcount[0])
+            if(qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
             {
                 qle->SetMobCount(0, qle->GetMobCount(0) + 1);
                 qle->SendUpdateAddKill(0);
@@ -927,7 +927,7 @@ class TheFinalCode : public GameObjectAIScript
             if(qle == NULL)
                 return;
 
-            if(qle->GetMobCount(1) < qle->GetQuest()->required_mobcount[1])
+            if(qle->GetMobCount(1) < qle->GetQuest()->required_mob_or_go_count[1])
             {
                 qle->SetMobCount(1, qle->GetMobCount(1) + 1);
                 qle->SendUpdateAddKill(1);
@@ -1018,7 +1018,7 @@ class HealingTheLake : public GameObjectAIScript
         void OnActivate(Player* pPlayer)
         {
             QuestLogEntry* pQuest = pPlayer->GetQuestLogForEntry(181433);
-            if(pQuest && pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mobcount[0])
+            if(pQuest && pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
             {
                 pQuest->SetMobCount(0, 1);
                 pQuest->SendUpdateAddKill(0);

@@ -157,15 +157,15 @@ class SERVER_DECL QuestMgr : public Singleton <QuestMgr>
         inline int32 QuestHasMob(QuestProperties const* qst, uint32 mob)
         {
             for (uint8 i = 0; i < 4; ++i)
-                if (qst->required_mob[i] == (int32)mob)
-                    return qst->required_mobcount[i];
+                if (qst->required_mob_or_go[i] == (int32)mob)
+                    return qst->required_mob_or_go_count[i];
             return -1;
         }
 
         inline int32 GetOffsetForMob(QuestProperties const* qst, uint32 mob)
         {
             for (uint8 i = 0; i < 4; ++i)
-                if (qst->required_mob[i] == (int32)mob)
+                if (qst->required_mob_or_go[i] == (int32)mob)
                     return i;
 
             return -1;
