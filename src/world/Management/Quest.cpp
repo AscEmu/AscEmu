@@ -118,8 +118,8 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(QuestProperties const* qst)
 
     for (i = 0; i < 4; ++i)
     {
-        *data << qst->required_mob[i];              // Kill mob entry ID [i]
-        *data << qst->required_mobcount[i];         // Kill mob count [i]
+        *data << qst->required_mob_or_go[i];              // Kill mob entry ID [i]
+        *data << qst->required_mob_or_go_count[i];         // Kill mob count [i]
         *data << uint32(0);                         // Unknown
         *data << uint32(0);                         // 3.3.0 Unknown
     }

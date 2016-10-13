@@ -69,10 +69,10 @@ void QuestLogEntry::Init(QuestProperties const* quest, Player* plr, uint32 slot)
         {
             isemotequest = true;
         }
-        if (quest->required_mob[i] != 0)
+        if (quest->required_mob_or_go[i] != 0)
         {
-            if (!plr->HasQuestMob(quest->required_mob[i]))
-                plr->quest_mobs.insert(quest->required_mob[i]);
+            if (!plr->HasQuestMob(quest->required_mob_or_go[i]))
+                plr->quest_mobs.insert(quest->required_mob_or_go[i]);
         }
     }
 
@@ -175,11 +175,11 @@ bool QuestLogEntry::LoadFromDB(Field* fields)
         f++;
         if (GetQuest()->required_mobtype[i] == QUEST_MOB_TYPE_CREATURE)
         {
-            CALL_QUESTSCRIPT_EVENT(this, OnCreatureKill)(GetQuest()->required_mob[i], m_plr, this);
+            CALL_QUESTSCRIPT_EVENT(this, OnCreatureKill)(GetQuest()->required_mob_or_go[i], m_plr, this);
         }
         else
         {
-            CALL_QUESTSCRIPT_EVENT(this, OnGameObjectActivate)(GetQuest()->required_mob[i], m_plr, this);
+            CALL_QUESTSCRIPT_EVENT(this, OnGameObjectActivate)(GetQuest()->required_mob_or_go[i], m_plr, this);
         }
     }
 
@@ -204,23 +204,23 @@ bool QuestLogEntry::CanBeFinished()
 
     for (i = 0; i < 4; ++i)
     {
-        if (m_quest->required_mob[i])
+        if (m_quest->required_mob_or_go[i])
         {
-            if (m_mobcount[i] < m_quest->required_mobcount[i])
+            if (m_mobcount[i] < m_quest->required_mob_or_go_count[i])
             {
                 return false;
             }
         }
         if (m_quest->required_spell[i])   // requires spell cast, with no required target
         {
-            if (m_mobcount[i] == 0 || m_mobcount[i] < m_quest->required_mobcount[i])
+            if (m_mobcount[i] == 0 || m_mobcount[i] < m_quest->required_mob_or_go_count[i])
             {
                 return false;
             }
         }
         if (m_quest->required_emote[i])   // requires emote, with no required target
         {
-            if (m_mobcount[i] == 0 || m_mobcount[i] < m_quest->required_mobcount[i])
+            if (m_mobcount[i] == 0 || m_mobcount[i] < m_quest->required_mob_or_go_count[i])
             {
                 return false;
             }
@@ -361,7 +361,7 @@ void QuestLogEntry::UpdatePlayerFields()
         bool cast_complete = true;
         for (uint8 i = 0; i < 4; ++i)
         {
-            if (m_quest->required_spell[i] && m_quest->required_mobcount[i] > m_mobcount[i])
+            if (m_quest->required_spell[i] && m_quest->required_mob_or_go_count[i] > m_mobcount[i])
             {
                 cast_complete = false;
                 break;
@@ -377,7 +377,7 @@ void QuestLogEntry::UpdatePlayerFields()
         bool emote_complete = true;
         for (uint8 i = 0; i < 4; ++i)
         {
-            if (m_quest->required_emote[i] && m_quest->required_mobcount[i] > m_mobcount[i])
+            if (m_quest->required_emote[i] && m_quest->required_mob_or_go_count[i] > m_mobcount[i])
             {
                 emote_complete = false;
                 break;
@@ -395,7 +395,7 @@ void QuestLogEntry::UpdatePlayerFields()
         uint8* p = (uint8*)&field1;
         for (uint8 i = 0; i < 4; ++i)
         {
-            if (m_quest->required_mob[i] && m_mobcount[i] > 0)
+            if (m_quest->required_mob_or_go[i] && m_mobcount[i] > 0)
                 p[2 * i] |= (uint8)m_mobcount[i];
         }
     }
@@ -432,7 +432,7 @@ void QuestLogEntry::SendQuestComplete()
 
 void QuestLogEntry::SendUpdateAddKill(uint32 i)
 {
-    sQuestMgr.SendQuestUpdateAddKill(m_plr, m_quest->id, m_quest->required_mob[i], m_mobcount[i], m_quest->required_mobcount[i], 0);
+    sQuestMgr.SendQuestUpdateAddKill(m_plr, m_quest->id, m_quest->required_mob_or_go[i], m_mobcount[i], m_quest->required_mob_or_go_count[i], 0);
 }
 
 void QuestLogEntry::Complete()

@@ -63,7 +63,7 @@ class AncientMarks : public GossipScript
                 {
                     case 17900:
                         {
-                            if(en && en->GetMobCount(0) < en->GetQuest()->required_mobcount[0])
+                            if(en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
                             {
                                 en->SetMobCount(0, 1);
                                 en->SendUpdateAddKill(0);
@@ -83,7 +83,7 @@ class AncientMarks : public GossipScript
                         break;
                     case 17901:
                         {
-                            if(en && en->GetMobCount(1) < en->GetQuest()->required_mobcount[1])
+                            if(en && en->GetMobCount(1) < en->GetQuest()->required_mob_or_go_count[1])
                             {
                                 en->SetMobCount(1, 1);
                                 en->SendUpdateAddKill(1);

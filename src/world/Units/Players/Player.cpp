@@ -6621,8 +6621,8 @@ void Player::UpdateNearbyGameObjects()
                     {
                         for (uint32 i = 0; i < qle->GetQuest()->count_required_mob; ++i)
                         {
-                            if (qle->GetQuest()->required_mob[i] == static_cast<int32>(go->GetEntry()) &&
-                                qle->GetMobCount(i) < qle->GetQuest()->required_mobcount[i])
+                            if (qle->GetQuest()->required_mob_or_go[i] == static_cast<int32>(go->GetEntry()) &&
+                                qle->GetMobCount(i) < qle->GetQuest()->required_mob_or_go_count[i])
                             {
                                 activate_quest_object = true;
                                 break;
@@ -13247,7 +13247,7 @@ void Player::AddQuestKill(uint32 questid, uint8 reqid, uint32 delay)
 
     auto quest = quest_entry->GetQuest();
 
-    if (quest_entry->GetMobCount(reqid) >= quest->required_mobcount[reqid])
+    if (quest_entry->GetMobCount(reqid) >= quest->required_mob_or_go_count[reqid])
         return;
 
     quest_entry->IncrementMobCount(reqid);

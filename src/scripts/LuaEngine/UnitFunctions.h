@@ -1790,7 +1790,7 @@ class LuaUnit
             auto questlog_entry = pl->GetQuestLogForEntry(questid);
             if (questlog_entry != nullptr)
             {
-                questlog_entry->SetMobCount(objective, questlog_entry->GetQuest()->required_mobcount[objective]);
+                questlog_entry->SetMobCount(objective, questlog_entry->GetQuest()->required_mob_or_go[objective]);
                 questlog_entry->SendUpdateAddKill(objective);
                 if (questlog_entry->CanBeFinished())
                 {
