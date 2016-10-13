@@ -876,10 +876,6 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
         {
             if (Group* pGroup = plr->GetGroup())
             {
-                //removed by Zack How the hell will healers get the kills then ?
-                //if (pGroup->GetGroupType() != GROUP_TYPE_PARTY)
-                //	return;  // Raid's don't get shared kills.
-
                 GroupMembersSet::iterator gitr;
                 pGroup->Lock();
                 for (uint32 k = 0; k < pGroup->GetSubGroupCount(); k++)
@@ -891,7 +887,7 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
                         {
                             for (uint8 i = 0; i < 25; ++i)
                             {
-                                auto quest_log_entry = plr->GetQuestLogInSlot(i);
+                                auto quest_log_entry = gplr->GetQuestLogInSlot(i);
                                 if (quest_log_entry)
                                 {
                                     qst = quest_log_entry->GetQuest();
@@ -902,8 +898,6 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
 
                                         if (qst->required_mob_or_go[j] == static_cast<int32>(entry) && qst->required_mobtype[j] == QUEST_MOB_TYPE_CREATURE && quest_log_entry->m_mobcount[j] < qst->required_mob_or_go_count[j])
                                         {
-                                            // add another kill.
-                                            // (auto-dirty's it)
                                             quest_log_entry->IncrementMobCount(j);
                                             quest_log_entry->SendUpdateAddKill(j);
                                             CALL_QUESTSCRIPT_EVENT(quest_log_entry, OnCreatureKill)(entry, gplr, quest_log_entry);
