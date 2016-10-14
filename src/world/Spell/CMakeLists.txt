@@ -8,6 +8,7 @@ set(SRC_SPELL_FILES
    ${PATH_PREFIX}/Spell_ClassScripts.cpp
    ${PATH_PREFIX}/SpellAuras.cpp
    ${PATH_PREFIX}/SpellAuras.h
+   ${PATH_PREFIX}/SpellDefines.hpp
    ${PATH_PREFIX}/SpellEffects.cpp
    ${PATH_PREFIX}/SpellFailure.h
    ${PATH_PREFIX}/SpellHandler.cpp
