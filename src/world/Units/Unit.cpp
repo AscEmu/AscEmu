@@ -2579,7 +2579,6 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
         return;
     m_damgeShieldsInUse = true;
     //charges are already removed in handleproc
-    WorldPacket data(24);
     std::list<DamageProc>::iterator i;
     std::list<DamageProc>::iterator i2;
     for (i = m_damageShields.begin(); i != m_damageShields.end();)    // Deal Damage to Attacker
@@ -2589,12 +2588,14 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
         {
             if (PROC_MISC & (*i2).m_flags)
             {
-                data.Initialize(SMSG_SPELLDAMAGESHIELD);
+                WorldPacket data(SMSG_SPELLDAMAGESHIELD, 8 + 8 + 4 + 4 + 4 + 4);
                 data << this->GetGUID();
                 data << attacker->GetGUID();
-                data << (*i2).m_spellId;
-                data << (*i2).m_damage;
-                data << (1 << (*i2).m_school);
+                data << uint32((*i2).m_spellId);
+                data << uint32((*i2).m_damage);
+                data << uint32(0);              //overkill
+                data << uint32((1 << (*i2).m_school));
+                data << uint32(0);              //resist
                 SendMessageToSet(&data, true);
                 this->DealDamage(attacker, (*i2).m_damage, 0, 0, (*i2).m_spellId);
             }
@@ -5785,8 +5786,30 @@ void Unit::CastSpellAoF(float x, float y, float z, OLD_SpellEntry* Sp, bool trig
 
 void Unit::PlaySpellVisual(uint64 target, uint32 spellVisual)
 {
-    WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 12);
-    data << target << spellVisual;
+    WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 21);
+    data << uint32(0);      //always 0?
+    data << uint32(spellVisual);
+    data << uint32(1);      // bool true if it has an impact on target....
+
+    ObjectGuid guid = GetGUID();
+    data.WriteByteMask(guid[4]);
+    data.WriteByteMask(guid[7]);
+    data.WriteByteMask(guid[5]);
+    data.WriteByteMask(guid[3]);
+    data.WriteByteMask(guid[1]);
+    data.WriteByteMask(guid[2]);
+    data.WriteByteMask(guid[0]);
+    data.WriteByteMask(guid[6]);
+
+    data.WriteByteSeq(guid[0]);
+    data.WriteByteSeq(guid[4]);
+    data.WriteByteSeq(guid[1]);
+    data.WriteByteSeq(guid[6]);
+    data.WriteByteSeq(guid[7]);
+    data.WriteByteSeq(guid[2]);
+    data.WriteByteSeq(guid[3]);
+    data.WriteByteSeq(guid[5]);
+
     SendMessageToSet(&data, true);
 }
 

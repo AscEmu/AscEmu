@@ -1087,19 +1087,18 @@ enum Opcodes
 
     // Spells
     SMSG_POWER_UPDATE                                   = 0x4A07,
-    SMSG_POWERGAINLOG_OBSOLETE                          = 0x20E, // old neds new opcode
     SMSG_ADD_RUNE_POWER                                 = 0x6915,
-    CMSG_STANDSTATECHANGE                               = 0x0535,   // not updated (revieved by casting a spell)
+    CMSG_STANDSTATECHANGE                               = 0x0535,
     CMSG_CAST_SPELL                                     = 0x4C07,
     SMSG_INITIAL_SPELLS                                 = 0x0104,
     SMSG_SUPERCEDED_SPELL                               = 0x35B0,
     SMSG_LEARNED_SPELL                                  = 0x58A2,
-    CMSG_NEW_SPELL_SLOT                                 = 0x112E,
+    
     SMSG_SPELL_START                                    = 0x6415,
     SMSG_SPELL_GO                                       = 0x6E16,
     SMSG_SPELL_FAILURE                                  = 0x0C34,
     SMSG_SPELL_COOLDOWN                                 = 0x4B16,
-    SMSG_SPELLBREAKLOG                                  = 0x6B17,
+    SMSG_SPELLBREAKLOG                                  = 0x6B17,   //not implemented
     SMSG_SPELLHEALLOG                                   = 0x2816,
     SMSG_SPELLENERGIZELOG                               = 0x0414,
     SMSG_PET_SPELLS                                     = 0x4114,
@@ -1112,7 +1111,7 @@ enum Opcodes
     SMSG_SPELLLOGEXECUTE                                = 0x0626,
     SMSG_SPELLDAMAGESHIELD                              = 0x2927, 
     SMSG_SPELLNONMELEEDAMAGELOG                         = 0x4315,
-    SMSG_SPELLOGDAMAGE_IMMUNE                           = 0x4507, // check this
+    SMSG_SPELLOGDAMAGE_IMMUNE                           = 0x4507,   //not implemented
     SMSG_SET_FLAT_SPELL_MODIFIER                        = 0x2834,
     SMSG_SET_PCT_SPELL_MODIFIER                         = 0x0224,
     CMSG_CANCEL_AUTO_REPEAT_SPELL                       = 0x6C35,
@@ -1486,6 +1485,7 @@ enum Opcodes
     CMSG_SET_GRANTABLE_LEVELS                           = 0x0000,
     CMSG_QUESTGIVER_QUEST_AUTOLAUNCH                    = 0x0000,
     CMSG_QUESTGIVER_CANCEL                              = 0x0000,
+    CMSG_NEW_SPELL_SLOT                                 = 0x0000,
 
     NUM_MSG_TYPES                                       = 0xFFFF    // End of Opcodes
 };

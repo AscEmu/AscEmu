@@ -1061,10 +1061,10 @@ void WorldSession::HandleStandStateChangeOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint8 animstate;
+    uint32 animstate;
     recv_data >> animstate;
 
-    _player->SetStandState(animstate);
+    _player->SetStandState((uint8)animstate);
 }
 
 //void WorldSession::HandleBugOpcode(WorldPacket& recv_data)
