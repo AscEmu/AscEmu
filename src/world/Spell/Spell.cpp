@@ -1980,7 +1980,7 @@ void Spell::SendCastResult(Player* caster, uint8 castCount, uint8 result, SpellE
 
     if (caster != nullptr)
     {
-        WorldPacket data(SMSG_CAST_FAILED, 1 + 4 + 1);
+        WorldPacket data(SMSG_CAST_FAILED, 1 + 4 + 2);
         WriteCastResult(data, caster, spellInfo, castCount, result, extraError);
         caster->GetSession()->SendPacket(&data);
     }
@@ -2149,9 +2149,6 @@ void Spell::SendSpellGo()
     if (!m_caster->IsInWorld() || hasAttribute(ATTRIBUTES_PASSIVE))
         return;
 
-    // Start Spell
-    WorldPacket data(200);
-    data.SetOpcode(SMSG_SPELL_GO);
     uint32 flags = 0;
 
     if (m_missileTravelTime != 0)
@@ -2186,6 +2183,8 @@ void Spell::SendSpellGo()
     if (GetProto()->Id == 8326)   // death
         flags = SPELL_GO_FLAGS_ITEM_CASTER | 0x0D;
 
+    WorldPacket data(SMSG_SPELL_GO, 50);
+
     if (i_caster != nullptr && u_caster != nullptr)   // this is needed for correct cooldown on items
     {
         data << i_caster->GetNewGUID();
@@ -2197,11 +2196,11 @@ void Spell::SendSpellGo()
         data << m_caster->GetNewGUID();
     }
 
-    data << extra_cast_number; //3.0.2
-    data << GetProto()->Id;
-    data << flags;
-    data << getMSTime();
+    data << uint8(extra_cast_number);
+    data << uint32(GetProto()->Id);
+    data << uint32(flags);
     data << uint32(m_timer);
+    data << uint32(getMSTime());
     data << (uint8)(UniqueTargets.size()); //number of hits
     writeSpellGoTargets(&data);
 
@@ -2219,6 +2218,27 @@ void Spell::SendSpellGo()
 
     if (flags & SPELL_GO_FLAGS_POWER_UPDATE)
         data << (uint32)p_caster->GetPower(GetProto()->powerType);
+
+    //data order depending on flags : 0x800, 0x200000, 0x20000, 0x20, 0x80000, 0x40 (this is not spellgoflag but seems to be from spellentry or packet..)
+    //.text:00401110                 mov     eax, [ecx+14h] -> them
+    //.text:00401115                 cmp     eax, [ecx+10h] -> us
+    if (flags & SPELL_GO_FLAGS_RUNE_UPDATE)
+    {
+        data << uint8(m_rune_avail_before);
+        data << uint8(cur_have_runes);
+        for (uint8 k = 0; k < MAX_RUNES; ++k)
+        {
+            uint8 x = (1 << k);
+            if ((x & m_rune_avail_before) != (x & cur_have_runes))
+                data << uint8(0);   //values of the rune converted into byte. We just think it is 0 but maybe it is not :P
+        }
+    }
+
+    if (flags & 0x20000)
+    {
+        data << float(m_missilePitch);
+        data << uint32(m_missileTravelTime);
+    }
 
     // er why handle it being null inside if if you can't get into if if its null
     if (GetType() == SPELL_DMG_TYPE_RANGED)
@@ -2248,32 +2268,6 @@ void Spell::SendSpellGo()
             data << ip->DisplayInfoID;
             data << ip->InventoryType;
         }
-        else
-        {
-            data << uint32(0);
-            data << uint32(0);
-        }
-    }
-
-    //data order depending on flags : 0x800, 0x200000, 0x20000, 0x20, 0x80000, 0x40 (this is not spellgoflag but seems to be from spellentry or packet..)
-    //.text:00401110                 mov     eax, [ecx+14h] -> them
-    //.text:00401115                 cmp     eax, [ecx+10h] -> us
-    if (flags & SPELL_GO_FLAGS_RUNE_UPDATE)
-    {
-        data << uint8(m_rune_avail_before);
-        data << uint8(cur_have_runes);
-        for (uint8 k = 0; k < MAX_RUNES; ++k)
-        {
-            uint8 x = (1 << k);
-            if ((x & m_rune_avail_before) != (x & cur_have_runes))
-                data << uint8(0);   //values of the rune converted into byte. We just think it is 0 but maybe it is not :P
-        }
-    }
-
-    if (flags & 0x20000)
-    {
-        data << float(m_missilePitch);
-        data << uint32(m_missileTravelTime);
     }
 
     if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
@@ -5106,12 +5100,12 @@ void Spell::SendHealSpellOnPlayer(Object* caster, Object* target, uint32 healed,
     WorldPacket data(SMSG_SPELLHEALLOG, 33);
     data << target->GetNewGUID();
     data << caster->GetNewGUID();
-    data << spellid;
-    data << healed;
-    data << overhealed;
-    data << absorbed;
+    data << uint32(spellid);
+    data << uint32(healed);
+    data << uint32(overhealed);
+    data << uint32(absorbed);
     data << uint8(critical);
-
+    data << uint8(0);
     caster->SendMessageToSet(&data, true);
 }
 
@@ -5121,13 +5115,11 @@ void Spell::SendHealManaSpellOnPlayer(Object* caster, Object* target, uint32 dmg
         return;
 
     WorldPacket data(SMSG_SPELLENERGIZELOG, 30);
-
     data << target->GetNewGUID();
     data << caster->GetNewGUID();
-    data << spellid;
-    data << powertype;
-    data << dmg;
-
+    data << int32(spellid);
+    data << int32(powertype);
+    data << int32(dmg);
     caster->SendMessageToSet(&data, true);
 }
 

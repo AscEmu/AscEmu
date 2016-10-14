@@ -469,6 +469,7 @@ void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
     CHECK_INWORLD_RETURN
 
     uint32 spellId;
+    recvPacket.read_skip<uint8>();
     recvPacket >> spellId;
 
     if (GetPlayer()->m_currentSpell)

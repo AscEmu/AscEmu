@@ -151,6 +151,8 @@ void Player::SendSpellCooldownEvent(uint32 SpellId)
 void Player::SendSpellModifier(uint8 spellgroup, uint8 spelltype, int32 v, bool is_pct)
 {
     WorldPacket data((uint16)(is_pct ? SMSG_SET_PCT_SPELL_MODIFIER : SMSG_SET_FLAT_SPELL_MODIFIER), 48);
+    data << uint32(1);              // mod options?
+    data << uint32(0);              //mod type count
     data << uint8(spellgroup);
     data << uint8(spelltype);
     data << uint32(v);
@@ -215,11 +217,31 @@ void Player::SendLoginVerifyWorld(uint32 MapId, float X, float Y, float Z, float
     m_session->SendPacket(&data);
 }
 
-void Player::SendPlaySpellVisual(uint64 guid, uint32 visualid)
+void Player::SendPlaySpellVisual(uint64 tguid, uint32 visualid)
 {
-    WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 12);
-    data << uint64(guid);
+    WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 21);
+    data << uint32(0);      //always 0?
     data << uint32(visualid);
+    data << uint32(1);      // bool true if it has an impact on target....
+
+    ObjectGuid guid = tguid;
+    data.WriteByteMask(guid[4]);
+    data.WriteByteMask(guid[7]);
+    data.WriteByteMask(guid[5]);
+    data.WriteByteMask(guid[3]);
+    data.WriteByteMask(guid[1]);
+    data.WriteByteMask(guid[2]);
+    data.WriteByteMask(guid[0]);
+    data.WriteByteMask(guid[6]);
+
+    data.WriteByteSeq(guid[0]);
+    data.WriteByteSeq(guid[4]);
+    data.WriteByteSeq(guid[1]);
+    data.WriteByteSeq(guid[6]);
+    data.WriteByteSeq(guid[7]);
+    data.WriteByteSeq(guid[2]);
+    data.WriteByteSeq(guid[3]);
+    data.WriteByteSeq(guid[5]);
 
     SendMessageToSet(&data, true, false);
 }

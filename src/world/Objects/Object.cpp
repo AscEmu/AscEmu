@@ -1990,16 +1990,13 @@ void Object::SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 
     if (Caster == NULL || Target == NULL || Ability == 0)
         return;
 
-
     WorldPacket data(SMSG_SPELLLOGMISS, 26);
-
     data << uint32(Ability);            // spellid
     data << Caster->GetGUID();          // caster / player
-    data << uint8(1);                   // unknown but I think they are const
+    data << uint8(0);                   // unknown but I think they are const
     data << uint32(1);                  // unknown but I think they are const
     data << Target->GetGUID();          // target
     data << uint8(SpellLogType);        // spelllogtype
-
     Caster->SendMessageToSet(&data, true);
 }
 
@@ -2029,11 +2026,11 @@ void Object::SendSpellNonMeleeDamageLog(Object* Caster, Object* Target, uint32 S
 
     // unknown const
     if (CriticalHit)
-        data << uint8(7);
+        data << uint32(39); // 1 + 4 + 32 + 2
     else
-        data << uint8(5);
+        data << uint32(37); // 1 + 4 + 32
 
-    data << uint32(0);
+    data << uint8(0);
 
     Caster->SendMessageToSet(&data, bToset);
 }

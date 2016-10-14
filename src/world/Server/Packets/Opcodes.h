@@ -108,12 +108,9 @@ enum Opcodes
     SMSG_SET_FACTION_STANDING                       = 0x124,
     CMSG_SET_FACTION_ATWAR                          = 0x125,
     CMSG_SET_FACTION_CHEAT                          = 0x126,
-    CMSG_CANCEL_CAST                                = 0x12F,
-    SMSG_CAST_FAILED                                = 0x130,
     SMSG_COOLDOWN_EVENT                             = 0x135,
     CMSG_CANCEL_AURA                                = 0x136,
     SMSG_EQUIPMENT_SET_SAVED                        = 0x137,
-    SMSG_PET_CAST_FAILED                            = 0x138,
     SMSG_AI_REACTION                                = 0x13C,
     CMSG_EQUIPMENT_SET_DELETE                       = 0x13E,
     CMSG_UNUSED                                     = 0x13F,
@@ -160,7 +157,6 @@ enum Opcodes
     SMSG_NOTIFICATION                               = 0x1CB,
     SMSG_QUERY_TIME_RESPONSE                        = 0x1CF,
     SMSG_LOG_XPGAIN                                 = 0x1D0,
-    SMSG_AURACASTLOG_OBSOLETE                       = 0x1D1,
     CMSG_WRAP_ITEM                                  = 0x1D3,
     MSG_MINIMAP_PING                                = 0x1D5,
     SMSG_RESISTLOG                                  = 0x1D6,
@@ -456,8 +452,6 @@ enum Opcodes
     MSG_RAID_READY_CHECK_FINISHED                   = 0x3C6,
     CMSG_COMPLAIN                                   = 0x3C7,
     SMSG_COMPLAIN_RESULT                            = 0x3C8,
-    CMSG_TARGET_CAST                                = 0x3D0,
-    CMSG_TARGET_SCRIPT_CAST                         = 0x3D1,
     CMSG_DEBUG_LIST_TARGETS                         = 0x3D8,
     SMSG_DEBUG_LIST_TARGETS                         = 0x3D9,
     CMSG_ADD_VOICE_IGNORE                           = 0x3DB,
@@ -1087,19 +1081,18 @@ enum Opcodes
 
     // Spells
     SMSG_POWER_UPDATE                                   = 0x4A07,
-    SMSG_POWERGAINLOG_OBSOLETE                          = 0x20E, // old neds new opcode
     SMSG_ADD_RUNE_POWER                                 = 0x6915,
-    CMSG_STANDSTATECHANGE                               = 0x0535,   // not updated (revieved by casting a spell)
+    CMSG_STANDSTATECHANGE                               = 0x0535,
     CMSG_CAST_SPELL                                     = 0x4C07,
     SMSG_INITIAL_SPELLS                                 = 0x0104,
     SMSG_SUPERCEDED_SPELL                               = 0x35B0,
     SMSG_LEARNED_SPELL                                  = 0x58A2,
-    CMSG_NEW_SPELL_SLOT                                 = 0x112E,
+    
     SMSG_SPELL_START                                    = 0x6415,
     SMSG_SPELL_GO                                       = 0x6E16,
     SMSG_SPELL_FAILURE                                  = 0x0C34,
     SMSG_SPELL_COOLDOWN                                 = 0x4B16,
-    SMSG_SPELLBREAKLOG                                  = 0x6B17,
+    SMSG_SPELLBREAKLOG                                  = 0x6B17,   //not implemented
     SMSG_SPELLHEALLOG                                   = 0x2816,
     SMSG_SPELLENERGIZELOG                               = 0x0414,
     SMSG_PET_SPELLS                                     = 0x4114,
@@ -1112,7 +1105,10 @@ enum Opcodes
     SMSG_SPELLLOGEXECUTE                                = 0x0626,
     SMSG_SPELLDAMAGESHIELD                              = 0x2927, 
     SMSG_SPELLNONMELEEDAMAGELOG                         = 0x4315,
-    SMSG_SPELLOGDAMAGE_IMMUNE                           = 0x4507, // check this
+    SMSG_SPELLOGDAMAGE_IMMUNE                           = 0x4507,   //not implemented
+    SMSG_CAST_FAILED                                    = 0x4D16,
+    CMSG_CANCEL_CAST                                    = 0x0115,
+    SMSG_PET_CAST_FAILED                                = 0x2B15,
     SMSG_SET_FLAT_SPELL_MODIFIER                        = 0x2834,
     SMSG_SET_PCT_SPELL_MODIFIER                         = 0x0224,
     CMSG_CANCEL_AUTO_REPEAT_SPELL                       = 0x6C35,
@@ -1486,6 +1482,9 @@ enum Opcodes
     CMSG_SET_GRANTABLE_LEVELS                           = 0x0000,
     CMSG_QUESTGIVER_QUEST_AUTOLAUNCH                    = 0x0000,
     CMSG_QUESTGIVER_CANCEL                              = 0x0000,
+    CMSG_NEW_SPELL_SLOT                                 = 0x0000,
+    CMSG_TARGET_CAST                                    = 0x0000,
+    CMSG_TARGET_SCRIPT_CAST                             = 0x0000,
 
     NUM_MSG_TYPES                                       = 0xFFFF    // End of Opcodes
 };
