@@ -31,7 +31,7 @@ class TerrainMgr;
 
 struct Formation;
 
-typedef struct
+struct CreatureSpawn
 {
     uint32 id;          /// spawn ID
     uint32 entry;
@@ -74,9 +74,9 @@ typedef struct
 
         return buffer;
     }
-} CreatureSpawn;
+};
 
-typedef struct
+struct GameobjectSpawn
 {
     uint32 id;          /// spawn ID
     uint32 entry;
@@ -99,16 +99,16 @@ typedef struct
     //uint32 stateNpcLink;
     uint32 phase;
     uint32 overrides;
-} GameobjectSpawn;
+};
 
 typedef std::vector<CreatureSpawn*> CreatureSpawnList;
 typedef std::vector<GameobjectSpawn*> GameobjectSpawnList;
 
-typedef struct
+struct CellSpawns
 {
     CreatureSpawnList CreatureSpawns;
     GameobjectSpawnList GameobjectSpawns;
-} CellSpawns;
+};
 
 
 class SERVER_DECL Map
