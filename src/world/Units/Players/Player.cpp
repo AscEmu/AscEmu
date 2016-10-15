@@ -2223,6 +2223,12 @@ void Player::addSpell(uint32 spell_id)
     // Add the skill line for this spell if we don't already have it.
     auto skill_line_ability = objmgr.GetSpellSkill(spell_id);
     OLD_SpellEntry* spell = sSpellCustomizations.GetServersideSpell(spell_id);
+    if (spell == nullptr)
+    {
+        Log.Error("Player::addSpell", "Your table `spells` miss spell %u!", spell_id);
+        return;
+    }
+
     if (skill_line_ability && !_HasSkillLine(skill_line_ability->skilline))
     {
         auto skill_line = sSkillLineStore.LookupEntry(skill_line_ability->skilline);
@@ -6417,6 +6423,12 @@ bool Player::HasSpellwithNameHash(uint32 hash)
         it = iter++;
         uint32 SpellID = *it;
         OLD_SpellEntry* e = sSpellCustomizations.GetServersideSpell(SpellID);
+        if (e == nullptr)
+        {
+            Log.Error("Player::HasSpellwithNameHash", "Your table `spells` miss spell %u!", SpellID);
+            continue;
+        }
+
         if (e->custom_NameHash == hash)
             return true;
     }
@@ -10397,6 +10409,12 @@ void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
                 for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
                 {
                     se = sSpellCustomizations.GetServersideSpell(*itr);
+                    if (se == nullptr)
+                    {
+                        Log.Error("Player::_LearnSkillSpells", "Your table `spells` miss skill spell %u!", *itr);
+                        continue;
+                    }
+
                     if ((se->custom_NameHash == sp->custom_NameHash) && (se->custom_RankNumber >= sp->custom_RankNumber))
                     {
                         // Stupid profession related spells for "skinning" having the same namehash and not ranked
@@ -12168,6 +12186,11 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
             addSpell(spellid);
 
             OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(spellid);
+            if (spellInfo == nullptr)
+            {
+                Log.Error("Player::LearnTalent", "Your table `spells` miss skill spell %u!", spellid);
+                return;
+            }
             //make sure pets that get bonus from owner do not stack it up
             if (getClass() == HUNTER && GetSummon())
                 GetSummon()->RemoveAura(spellInfo->Id);
@@ -12181,6 +12204,11 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
                     RemoveAura(respellid);
 
                     OLD_SpellEntry* spellInfoReq = sSpellCustomizations.GetServersideSpell(respellid);
+                    if (spellInfoReq == nullptr)
+                    {
+                        Log.Error("Player::LearnTalent", "Your table `spells` miss skill spell %u!", spellid);
+                        return;
+                    }
                     if (getClass() == HUNTER && GetSummon())
                         GetSummon()->RemoveAura(spellInfoReq->Id);
                 }

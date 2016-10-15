@@ -1604,7 +1604,7 @@ class SERVER_DECL Player : public Unit
         uint32 GetCurrentTalentPoints()
         {
             uint32 points = GetUInt32Value(PLAYER_CHARACTER_POINTS);
-            Arcemu::Util::ArcemuAssert(points == m_specs[m_talentActiveSpec].GetTP());
+            //Arcemu::Util::ArcemuAssert(points == m_specs[m_talentActiveSpec].GetTP());
             return points;
         }
 
