@@ -1741,7 +1741,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     if (pVictim == NULL || !pVictim->isAlive())
         return;
 
-    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellID);
+    OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(spellID);
     if (spellInfo == NULL)
         return;
 
@@ -1875,7 +1875,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
         if (spellpower > hp)
             spellpower = hp;
 
-        OLD_SpellEntry* entry = dbcSpell.LookupEntryForced(44413);
+        OLD_SpellEntry* entry = sSpellCustomizations.GetServersideSpell(44413);
         if (!entry)
             return;
 

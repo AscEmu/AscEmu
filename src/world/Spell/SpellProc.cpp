@@ -103,7 +103,7 @@ void SpellProc::CastSpell(Unit* victim, OLD_SpellEntry* CastingSpell, int* dmg_o
 
 SpellProc* SpellProcMgr::NewSpellProc(Unit* target, uint32 spell_id, uint32 orig_spell_id, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask, Object* obj)
 {
-    return NewSpellProc(target, dbcSpell.LookupEntryForced(spell_id), dbcSpell.LookupEntryForced(orig_spell_id), caster, procChance, procFlags, procCharges, groupRelation, procClassMask, obj);
+    return NewSpellProc(target, sSpellCustomizations.GetServersideSpell(spell_id), sSpellCustomizations.GetServersideSpell(orig_spell_id), caster, procChance, procFlags, procCharges, groupRelation, procClassMask, obj);
 }
 
 SpellProc* SpellProcMgr::NewSpellProc(Unit* target, OLD_SpellEntry* spell, OLD_SpellEntry* orig_spell, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask, Object* obj)

@@ -98,7 +98,7 @@ class AlzzinTheWildshaper : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(22689);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(22689);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -107,7 +107,7 @@ class AlzzinTheWildshaper : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(22662);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(22662);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -116,7 +116,7 @@ class AlzzinTheWildshaper : public CreatureAIScript
             m_spellcheck[1] = true;
 
 
-            spells[2].info = dbcSpell.LookupEntry(19319);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(19319);
             spells[2].cooldown = 10;
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
@@ -232,7 +232,7 @@ class CaptainKromcrush : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(15708);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(15708);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -241,7 +241,7 @@ class CaptainKromcrush : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(23511);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(23511);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -357,7 +357,7 @@ class ChoRushTheObserver : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(10947);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(10947);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -366,7 +366,7 @@ class ChoRushTheObserver : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(10151);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(10151);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -482,7 +482,7 @@ class GuardFengus : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(15580);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(15580);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -491,7 +491,7 @@ class GuardFengus : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(15655);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(15655);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -500,7 +500,7 @@ class GuardFengus : public CreatureAIScript
             m_spellcheck[1] = true;
 
 
-            spells[2].info = dbcSpell.LookupEntry(22572);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(22572);
             spells[2].cooldown = 10;
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
@@ -509,7 +509,7 @@ class GuardFengus : public CreatureAIScript
             m_spellcheck[2] = true;
 
 
-            spells[3].info = dbcSpell.LookupEntry(20691);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(20691);
             spells[3].cooldown = 10;
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
@@ -625,7 +625,7 @@ class GuardMolDar : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(15580);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(15580);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -634,7 +634,7 @@ class GuardMolDar : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(15655);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(15655);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -643,7 +643,7 @@ class GuardMolDar : public CreatureAIScript
             m_spellcheck[1] = true;
 
 
-            spells[2].info = dbcSpell.LookupEntry(20691);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(20691);
             spells[2].cooldown = 10;
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
@@ -759,7 +759,7 @@ class GuardSlipKik : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(15580);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(15580);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -768,7 +768,7 @@ class GuardSlipKik : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(17307);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(17307);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -777,7 +777,7 @@ class GuardSlipKik : public CreatureAIScript
             m_spellcheck[1] = true;
 
 
-            spells[2].info = dbcSpell.LookupEntry(20691);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(20691);
             spells[2].cooldown = 10;
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
@@ -893,7 +893,7 @@ class Hydrospawn : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(22419);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(22419);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -902,7 +902,7 @@ class Hydrospawn : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(22420);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(22420);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -911,7 +911,7 @@ class Hydrospawn : public CreatureAIScript
             m_spellcheck[1] = true;
 
 
-            spells[2].info = dbcSpell.LookupEntry(22421);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(22421);
             spells[2].cooldown = 10;
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
@@ -1021,7 +1021,7 @@ class MassiveGeyser : public CreatureAIScript
 
         MassiveGeyser(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            spell.info = dbcSpell.LookupEntry(22422);
+            spell.info = sSpellCustomizations.GetServersideSpell(22422);
             spell.cooldown = 10;
             spell.targettype = TARGET_ATTACKING;
             spell.instant = true;
@@ -1118,7 +1118,7 @@ class IllyanaRavenoak : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(5116);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(5116);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -1127,7 +1127,7 @@ class IllyanaRavenoak : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(20904);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(20904);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -1136,7 +1136,7 @@ class IllyanaRavenoak : public CreatureAIScript
             m_spellcheck[1] = true;
 
 
-            spells[2].info = dbcSpell.LookupEntry(14290);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(14290);
             spells[2].cooldown = 10;
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
@@ -1145,7 +1145,7 @@ class IllyanaRavenoak : public CreatureAIScript
             m_spellcheck[2] = true;
 
 
-            spells[3].info = dbcSpell.LookupEntry(14295);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(14295);
             spells[3].cooldown = 10;
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
@@ -1261,7 +1261,7 @@ class Immolthar : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(16128);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(16128);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -1270,7 +1270,7 @@ class Immolthar : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(15550);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(15550);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -1279,7 +1279,7 @@ class Immolthar : public CreatureAIScript
             m_spellcheck[1] = true;
 
 
-            spells[2].info = dbcSpell.LookupEntry(22899);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(22899);
             spells[2].cooldown = 10;
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
@@ -1389,7 +1389,7 @@ class EyeOfImmolThar : public CreatureAIScript
 
         EyeOfImmolThar(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            spell.info = dbcSpell.LookupEntry(22909);
+            spell.info = sSpellCustomizations.GetServersideSpell(22909);
             spell.cooldown = 10;
             spell.targettype = TARGET_ATTACKING;
             spell.instant = true;
@@ -1485,7 +1485,7 @@ class KingGordok : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(15708);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(15708);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -1494,7 +1494,7 @@ class KingGordok : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(24375);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(24375);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -1610,7 +1610,7 @@ class Lethtendris : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(11668);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(11668);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -1619,7 +1619,7 @@ class Lethtendris : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(14887);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(14887);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -1729,7 +1729,7 @@ class LordHelNurath : public CreatureAIScript
 
         LordHelNurath(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            spell.info = dbcSpell.LookupEntry(10984);
+            spell.info = sSpellCustomizations.GetServersideSpell(10984);
             spell.cooldown = 10;
             spell.targettype = TARGET_ATTACKING;
             spell.instant = true;
@@ -1823,7 +1823,7 @@ class MagisterKalendris : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(10894);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(10894);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -1832,7 +1832,7 @@ class MagisterKalendris : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(10947);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(10947);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -1841,7 +1841,7 @@ class MagisterKalendris : public CreatureAIScript
             m_spellcheck[1] = true;
 
 
-            spells[2].info = dbcSpell.LookupEntry(18807);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(18807);
             spells[2].cooldown = 10;
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
@@ -1957,7 +1957,7 @@ class PrinceTortheldrin : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(20691);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(20691);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -1966,7 +1966,7 @@ class PrinceTortheldrin : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(22920);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(22920);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -2082,7 +2082,7 @@ class Pusillin : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(22424);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(22424);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -2091,7 +2091,7 @@ class Pusillin : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(10151);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(10151);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -2100,7 +2100,7 @@ class Pusillin : public CreatureAIScript
             m_spellcheck[1] = true;
 
 
-            spells[2].info = dbcSpell.LookupEntry(16144);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(16144);
             spells[2].cooldown = 10;
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
@@ -2216,7 +2216,7 @@ class SkarrTheUnbreakable : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(20691);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(20691);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -2225,7 +2225,7 @@ class SkarrTheUnbreakable : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(24375);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(24375);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -2341,7 +2341,7 @@ class TendrisWarpwood : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(15550);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(15550);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -2350,7 +2350,7 @@ class TendrisWarpwood : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(22924);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(22924);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -2359,7 +2359,7 @@ class TendrisWarpwood : public CreatureAIScript
             m_spellcheck[1] = true;
 
 
-            spells[2].info = dbcSpell.LookupEntry(22994);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(22994);
             spells[2].cooldown = 10;
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
@@ -2478,7 +2478,7 @@ class ZevrimThornhoof : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(22478);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(22478);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -2487,7 +2487,7 @@ class ZevrimThornhoof : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(22651);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(22651);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -2603,7 +2603,7 @@ class GordokMageLord : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(20832);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(20832);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -2612,7 +2612,7 @@ class GordokMageLord : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(16102);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(16102);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -2621,7 +2621,7 @@ class GordokMageLord : public CreatureAIScript
             m_spellcheck[1] = true;
 
 
-            spells[2].info = dbcSpell.LookupEntry(15530);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(15530);
             spells[2].cooldown = 10;
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
@@ -2630,7 +2630,7 @@ class GordokMageLord : public CreatureAIScript
             m_spellcheck[2] = true;
 
 
-            spells[3].info = dbcSpell.LookupEntry(16170);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(16170);
             spells[3].cooldown = 10;
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
@@ -2746,7 +2746,7 @@ class GordokReaver : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(22572);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(22572);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -2755,7 +2755,7 @@ class GordokReaver : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(22916);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(22916);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -2871,7 +2871,7 @@ class GordokBrute : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(13737);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(13737);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -2880,7 +2880,7 @@ class GordokBrute : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(20677);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(20677);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
@@ -2889,7 +2889,7 @@ class GordokBrute : public CreatureAIScript
             m_spellcheck[1] = true;
 
 
-            spells[2].info = dbcSpell.LookupEntry(24317);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(24317);
             spells[2].cooldown = 10;
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
@@ -3005,7 +3005,7 @@ class FelLash : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(22460);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(22460);
             spells[0].cooldown = 10;
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
@@ -3014,7 +3014,7 @@ class FelLash : public CreatureAIScript
             m_spellcheck[0] = true;
 
 
-            spells[1].info = dbcSpell.LookupEntry(22272);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(22272);
             spells[1].cooldown = 10;
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;

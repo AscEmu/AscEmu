@@ -109,8 +109,8 @@ void TotemSummon::SetupSpells()
     if (GetOwner() == NULL)
         return;
 
-    OLD_SpellEntry* creatorspell = dbcSpell.LookupEntry(GetCreatedBySpell());
-    OLD_SpellEntry* TotemSpell = dbcSpell.LookupEntry(creature_properties->AISpells[0]);
+    OLD_SpellEntry* creatorspell = sSpellCustomizations.GetServersideSpell(GetCreatedBySpell());
+    OLD_SpellEntry* TotemSpell = sSpellCustomizations.GetServersideSpell(creature_properties->AISpells[0]);
 
     if (TotemSpell == NULL)
     {

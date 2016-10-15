@@ -51,13 +51,13 @@ class DTcaptainAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = dbcSpell.LookupEntry(MARK_OF_FLAMES);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(MARK_OF_FLAMES);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].perctrigger = 15.0f;
             spells[0].attackstoptimer = 1000; // 1sec
 
-            spells[1].info = dbcSpell.LookupEntry(MARK_OF_DETONATION);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(MARK_OF_DETONATION);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].perctrigger = 4.0f;
@@ -170,7 +170,7 @@ class DTflamescaleAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = dbcSpell.LookupEntry(FLAME_SHOCK);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(FLAME_SHOCK);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].perctrigger = 100.0f;
@@ -291,7 +291,7 @@ class DTwyrmkinAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = dbcSpell.LookupEntry(FIREBALL_VOLLEY);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(FIREBALL_VOLLEY);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].perctrigger = 40.0f;
@@ -406,7 +406,7 @@ class TechnicianAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = dbcSpell.LookupEntry(GRANADE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(GRANADE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].perctrigger = 25.0f;
@@ -511,13 +511,13 @@ class BlackWarlockAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = dbcSpell.LookupEntry(RAIN_OF_FIRE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(RAIN_OF_FIRE);
             spells[0].targettype = TARGET_DESTINATION;
             spells[0].instant = false;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 6000; // 1sec
 
-            spells[1].info = dbcSpell.LookupEntry(SHADOW_BOLT);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SHADOW_BOLT);
             spells[1].targettype = TARGET_DESTINATION;
             spells[1].instant = true;
             spells[1].perctrigger = 15.0f;
@@ -656,7 +656,7 @@ class LashlayerAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = dbcSpell.LookupEntry(FIRE_NOVA_LASH);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(FIRE_NOVA_LASH);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].perctrigger = 15.0f;
@@ -760,13 +760,13 @@ class FiremawAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = dbcSpell.LookupEntry(WING_BUFFET);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(WING_BUFFET);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000; // 1sec
 
-            spells[1].info = dbcSpell.LookupEntry(FLAME_BUFFET);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(FLAME_BUFFET);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = false;
             spells[1].perctrigger = 15.0f;
@@ -868,13 +868,13 @@ class EbonrocAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = dbcSpell.LookupEntry(WING_BUFFET);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(WING_BUFFET);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000; // 1sec
 
-            spells[1].info = dbcSpell.LookupEntry(SHADOW_OF_EBONROC);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SHADOW_OF_EBONROC);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].perctrigger = 15.0f;
@@ -976,13 +976,13 @@ class FlamegorAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = dbcSpell.LookupEntry(WING_BUFFET);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(WING_BUFFET);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000; // 1sec
 
-            spells[1].info = dbcSpell.LookupEntry(FIRE_NOVA);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(FIRE_NOVA);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].perctrigger = 20.0f;
@@ -1109,20 +1109,20 @@ class VaelastraszAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = dbcSpell.LookupEntry(ESSENCE_OF_THE_RED);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(ESSENCE_OF_THE_RED);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000; // 1sec
             m_spellcheck[0] = true;
 
-            spells[1].info = dbcSpell.LookupEntry(FLAME_BREATH);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(FLAME_BREATH);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = false;
             spells[1].perctrigger = 15.0f;
             spells[1].attackstoptimer = 3000; // 1sec
 
-            spells[2].info = dbcSpell.LookupEntry(BURNING_ADRENALINE);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(BURNING_ADRENALINE);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = false;
             spells[2].perctrigger = 3.0f;

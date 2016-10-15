@@ -127,7 +127,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 
     SpellCastTargets targets(recvPacket, _player->GetGUID());
 
-    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellId);
+    OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(spellId);
     if (spellInfo == NULL)
     {
         LOG_ERROR("WORLD: unknown spell id %i", spellId);
@@ -319,7 +319,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     {
         cast_spell_id = sp->SpellID;
 
-        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(cast_spell_id);
+        OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(cast_spell_id);
         if (spellInfo == nullptr)
             return;
 
@@ -344,7 +344,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     recvPacket >> missileflag;
 
     // check for spell id
-    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellId);
+    OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(spellId);
 
     if (!spellInfo)
     {
@@ -356,7 +356,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         return;
 
     LOG_DETAIL("WORLD: got cast spell packet, spellId - %i (%s), data length = %i",
-               spellId, spellInfo->Name, recvPacket.size());
+               spellId, spellInfo->Name.c_str(), recvPacket.size());
 
     // Cheat Detection only if player and not from an item
     // this could fuck up things but meh it's needed ALOT of the newbs are using WPE now
@@ -417,7 +417,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
                     LOG_DEBUG("Cancelling auto-shot cast because targets.m_unitTarget is null!");
                     return;
                 }
-                OLD_SpellEntry* sp = dbcSpell.LookupEntry(spellid);
+                OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(spellid);
 
                 _player->m_AutoShotSpell = sp;
                 _player->m_AutoShotDuration = duration;
@@ -491,7 +491,7 @@ void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
 //        _player->m_currentSpell->cancel();
 //    else
 //    {
-//        OLD_SpellEntry* info = dbcSpell.LookupEntryForced(spellId);
+//        OLD_SpellEntry* info = sSpellCustomizations.GetServersideSpell(spellId);
 //        if (info == nullptr)
 //            return;
 //
@@ -552,7 +552,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
     recvPacket >> spellid;
     recvPacket >> castflags;
 
-    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
+    OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(spellid);
     if (sp == NULL)
         return;
     // Summoned Elemental's Freeze

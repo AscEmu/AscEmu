@@ -48,13 +48,13 @@ class OnyxiaAI : public CreatureAIScript
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, Movement::WP_MOVE_TYPE_FLY));
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(8, 0, Movement::WP_MOVE_TYPE_FLY));
 
-            infoFear = dbcSpell.LookupEntry(AOE_FEAR);
-            infoCleave = dbcSpell.LookupEntry(CLEAVE);
-            infoFBreath = dbcSpell.LookupEntry(FLAME_BREATH);
-            infoKAway = dbcSpell.LookupEntry(KNOCK_AWAY);
-            infoSFireball = dbcSpell.LookupEntry(SCRIPTABLE_FIREBALL);
-            infoWBuffet = dbcSpell.LookupEntry(WING_BUFFET);
-            infoDeepBreath = dbcSpell.LookupEntry(DEEP_BREATH);
+            infoFear = sSpellCustomizations.GetServersideSpell(AOE_FEAR);
+            infoCleave = sSpellCustomizations.GetServersideSpell(CLEAVE);
+            infoFBreath = sSpellCustomizations.GetServersideSpell(FLAME_BREATH);
+            infoKAway = sSpellCustomizations.GetServersideSpell(KNOCK_AWAY);
+            infoSFireball = sSpellCustomizations.GetServersideSpell(SCRIPTABLE_FIREBALL);
+            infoWBuffet = sSpellCustomizations.GetServersideSpell(WING_BUFFET);
+            infoDeepBreath = sSpellCustomizations.GetServersideSpell(DEEP_BREATH);
 
             if (!infoFear || !infoCleave || !infoFBreath
                     || !infoKAway || !infoSFireball || !infoWBuffet || !infoDeepBreath)

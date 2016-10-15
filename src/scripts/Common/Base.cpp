@@ -538,7 +538,7 @@ SpellDesc* MoonScriptCreatureAI::AddSpell(uint32 pSpellId, TargetType pTargetTyp
     SpellDesc* NewSpell = NULL;
 
     //Find spell info from spell id
-    OLD_SpellEntry* Info = dbcSpell.LookupEntry(pSpellId);
+    OLD_SpellEntry* Info = sSpellCustomizations.GetServersideSpell(pSpellId);
 
 #ifdef USE_DBC_SPELL_INFO
     float CastTime = (Info->CastingTimeIndex) ? GetCastTime(sSpellCastTimesStore.LookupEntry(Info->CastingTimeIndex)) : pCastTime;
@@ -611,7 +611,7 @@ bool MoonScriptCreatureAI::IsCasting()
 
 void MoonScriptCreatureAI::ApplyAura(uint32 pSpellId)
 {
-    _unit->CastSpell(_unit, dbcSpell.LookupEntry(pSpellId), true);
+    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(pSpellId), true);
 }
 
 void MoonScriptCreatureAI::RemoveAura(uint32 pSpellId)

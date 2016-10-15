@@ -157,7 +157,7 @@
 //            case PET_ACTION_SPELL:
 //            {
 //                // misc == spellid
-//                OLD_SpellEntry* entry = dbcSpell.LookupEntryForced(misc);
+//                OLD_SpellEntry* entry = sSpellCustomizations.GetServersideSpell(misc);
 //                if (entry == NULL)
 //                    return;
 //
@@ -422,7 +422,7 @@
 //        return;
 //
 //    Pet* pet = _player->GetSummon();
-//    OLD_SpellEntry* spe = dbcSpell.LookupEntryForced(spell);
+//    OLD_SpellEntry* spe = sSpellCustomizations.GetServersideSpell(spell);
 //    if (spe == NULL)
 //        return;
 //
@@ -537,7 +537,7 @@ void WorldSession::HandlePetSpellAutocast(WorldPacket& recvPacket)
     uint8  state;
     recvPacket >> guid >> spellid >> unk >> state;
 
-    OLD_SpellEntry* spe = dbcSpell.LookupEntryForced(spellid);
+    OLD_SpellEntry* spe = sSpellCustomizations.GetServersideSpell(spellid);
     if (spe == NULL)
         return;
 
@@ -562,7 +562,7 @@ void WorldSession::HandlePetSpellAutocast(WorldPacket& recvPacket)
 //
 //    recvPacket >> guid >> spellid;
 //
-//    OLD_SpellEntry* info = dbcSpell.LookupEntryForced(spellid);
+//    OLD_SpellEntry* info = sSpellCustomizations.GetServersideSpell(spellid);
 //    if (info != NULL && info->Attributes & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL))
 //        return;
 //    Creature* pet = _player->GetMapMgr()->GetCreature(guid);
@@ -625,7 +625,7 @@ void WorldSession::HandlePetSpellAutocast(WorldPacket& recvPacket)
 //        pPet->RemoveSpell(talent->RankID[talentcol - 1]);
 //
 //    // add spell, discount talent point
-//    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(talent->RankID[talentcol]);
+//    OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(talent->RankID[talentcol]);
 //    if (sp != NULL)
 //    {
 //        pPet->AddSpell(sp, true);

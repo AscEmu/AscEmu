@@ -1622,7 +1622,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //        break;
 //        case GAMEOBJECT_TYPE_CHEST:     //cast da spell
 //        {
-//            spellInfo = dbcSpell.LookupEntry(OPEN_CHEST);
+//            spellInfo = sSpellCustomizations.GetServersideSpell(OPEN_CHEST);
 //            spell = sSpellFactoryMgr.NewSpell(plyr, spellInfo, true, NULL);
 //            _player->m_currentSpell = spell;
 //            targets.m_unitTarget = obj->GetGUID();
@@ -1822,7 +1822,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //                    if (!ritual_obj->GetRitual()->GetTargetGUID() == 0)
 //                        return;
 //
-//                    info = dbcSpell.LookupEntryForced(gameobject_info->summoning_ritual.spell_id);
+//                    info = sSpellCustomizations.GetServersideSpell(gameobject_info->summoning_ritual.spell_id);
 //                    if (info == nullptr)
 //                        break;
 //
@@ -1846,7 +1846,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //                    if (!psacrifice || !pCaster)
 //                        return;
 //
-//                    info = dbcSpell.LookupEntryForced(gameobject_info->summoning_ritual.caster_target_spell);
+//                    info = sSpellCustomizations.GetServersideSpell(gameobject_info->summoning_ritual.caster_target_spell);
 //                    if (!info)
 //                        break;
 //
@@ -1855,7 +1855,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //                    spell->prepare(&targets);
 //
 //                    // summons demon
-//                    info = dbcSpell.LookupEntry(gameobject_info->summoning_ritual.spell_id);
+//                    info = sSpellCustomizations.GetServersideSpell(gameobject_info->summoning_ritual.spell_id);
 //                    spell = sSpellFactoryMgr.NewSpell(pCaster, info, true, NULL);
 //                    SpellCastTargets targets2;
 //                    targets2.m_unitTarget = pCaster->GetGUID();
@@ -1871,7 +1871,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //                    if (!pleader)
 //                        return;
 //
-//                    info = dbcSpell.LookupEntry(gameobject_info->summoning_ritual.spell_id);
+//                    info = sSpellCustomizations.GetServersideSpell(gameobject_info->summoning_ritual.spell_id);
 //                    spell = sSpellFactoryMgr.NewSpell(pleader, info, true, NULL);
 //                    SpellCastTargets targets2(plr->GetGUID());
 //                    spell->prepare(&targets2);
@@ -1881,7 +1881,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //                }
 //                else if (gameobject_info->entry == 186811 || gameobject_info->entry == 181622)
 //                {
-//                    info = dbcSpell.LookupEntryForced(gameobject_info->summoning_ritual.spell_id);
+//                    info = sSpellCustomizations.GetServersideSpell(gameobject_info->summoning_ritual.spell_id);
 //                    if (info == NULL)
 //                        return;
 //
@@ -2240,7 +2240,7 @@ void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)
 //    uint32 self_res_spell = _player->GetUInt32Value(PLAYER_SELF_RES_SPELL);
 //    if (self_res_spell)
 //    {
-//        OLD_SpellEntry* sp = dbcSpell.LookupEntry(self_res_spell);
+//        OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(self_res_spell);
 //        Spell* s = sSpellFactoryMgr.NewSpell(_player, sp, true, NULL);
 //        SpellCastTargets tgt;
 //        tgt.m_unitTarget = _player->GetGUID();

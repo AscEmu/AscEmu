@@ -58,13 +58,13 @@ bool NoggenFoggerElixr(uint32 i, Spell* pSpell)
     switch (chance)
     {
         case 0:
-            pSpell->p_caster->CastSpell(pSpell->p_caster, dbcSpell.LookupEntry(16591), true);
+            pSpell->p_caster->CastSpell(pSpell->p_caster, sSpellCustomizations.GetServersideSpell(16591), true);
             break;
         case 1:
-            pSpell->p_caster->CastSpell(pSpell->p_caster, dbcSpell.LookupEntry(16593), true);
+            pSpell->p_caster->CastSpell(pSpell->p_caster, sSpellCustomizations.GetServersideSpell(16593), true);
             break;
         case 2:
-            pSpell->p_caster->CastSpell(pSpell->p_caster, dbcSpell.LookupEntry(16595), true);
+            pSpell->p_caster->CastSpell(pSpell->p_caster, sSpellCustomizations.GetServersideSpell(16595), true);
             break;
     }
     return true;
@@ -77,7 +77,7 @@ bool HallowsEndCandy(uint32 i, Spell* pSpell)
 
     int newspell = 24924 + RandomUInt(3);
 
-    OLD_SpellEntry* spInfo = dbcSpell.LookupEntryForced(newspell);
+    OLD_SpellEntry* spInfo = sSpellCustomizations.GetServersideSpell(newspell);
     if (!spInfo) return true;
 
     pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
@@ -91,7 +91,7 @@ bool DeviateFish(uint32 i, Spell* pSpell)
 
     int newspell = 8064 + RandomUInt(4);
 
-    OLD_SpellEntry* spInfo = dbcSpell.LookupEntryForced(newspell);
+    OLD_SpellEntry* spInfo = sSpellCustomizations.GetServersideSpell(newspell);
     if (!spInfo) return true;
 
     pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
@@ -120,7 +120,7 @@ bool CookedDeviateFish(uint32 i, Spell* pSpell)
 
     if (newspell)
     {
-        OLD_SpellEntry* spInfo = dbcSpell.LookupEntryForced(newspell);
+        OLD_SpellEntry* spInfo = sSpellCustomizations.GetServersideSpell(newspell);
         if (!spInfo) return true;
 
         pSpell->p_caster->CastSpell(pSpell->p_caster, spInfo, true);
@@ -157,7 +157,7 @@ bool NetOMatic(uint32 i, Spell* pSpell)
     if (!pSpell->p_caster || !target)
         return true;
 
-    OLD_SpellEntry* spInfo = dbcSpell.LookupEntryForced(13099);
+    OLD_SpellEntry* spInfo = sSpellCustomizations.GetServersideSpell(13099);
     if (!spInfo)
         return true;
 
@@ -218,7 +218,7 @@ bool ForemansBlackjack(uint32 i, Spell* pSpell)
     c_target->Emote(EMOTE_STATE_WORK_CHOPWOOD);
 
     // Add timed event to return lazy peon to Zzz after 5-10 minutes (spell 17743)
-    OLD_SpellEntry* pSpellEntry = dbcSpell.LookupEntry(17743);
+    OLD_SpellEntry* pSpellEntry = sSpellCustomizations.GetServersideSpell(17743);
     sEventMgr.AddEvent(target, &Unit::EventCastSpell, target, pSpellEntry, EVENT_UNK, 300000 + RandomUInt(300000), 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
     return true;
@@ -246,9 +246,9 @@ bool NighInvulnBelt(uint32 i, Spell* pSpell)
     int chance = RandomUInt(99) + 1;
 
     if (chance > 10)    // Buff - Nigh-Invulnerability - 30456
-        pSpell->p_caster->CastSpell(pSpell->p_caster, dbcSpell.LookupEntry(30456), true);
+        pSpell->p_caster->CastSpell(pSpell->p_caster, sSpellCustomizations.GetServersideSpell(30456), true);
     else                // Malfunction - Complete Vulnerability - 30457
-        pSpell->p_caster->CastSpell(pSpell->p_caster, dbcSpell.LookupEntry(30457), true);
+        pSpell->p_caster->CastSpell(pSpell->p_caster, sSpellCustomizations.GetServersideSpell(30457), true);
 
     return true;
 }

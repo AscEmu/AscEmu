@@ -2552,7 +2552,7 @@ void MySQLDataStore::LoadSpellOverrideTable()
             {
                 Field* fieldsIn = spellid_for_overrideid_result->Fetch();
                 uint32 spellid = fieldsIn[0].GetUInt32();
-                OLD_SpellEntry* spell = dbcSpell.LookupEntryForced(spellid);
+                OLD_SpellEntry* spell = sSpellCustomizations.GetServersideSpell(spellid);
                 if (spell == nullptr)
                 {
                     Log.Error("MySQLDataStore", "Table `spelloverride` includes invalid spellId %u for overrideId %u! <skipped>", spellid, distinct_override_id);

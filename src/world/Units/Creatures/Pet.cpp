@@ -627,9 +627,9 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
                 break;
 
             ActionBar[i] = spellid;
-            //SetSpellState(dbcSpell.LookupEntry(spellid), spstate);
+            //SetSpellState(sSpellCustomizations.GetServersideSpell(spellid), spstate);
             if (!(ActionBar[i] & 0x4000000) && spellid)
-                mSpells[dbcSpell.LookupEntry(spellid)] = static_cast<unsigned short>(spstate);
+                mSpells[sSpellCustomizations.GetServersideSpell(spellid)] = static_cast<unsigned short>(spstate);
 
             i++;
 
@@ -780,7 +780,7 @@ void Pet::InitializeMe(bool first)
             do
             {
                 Field* f = query->Fetch();
-                OLD_SpellEntry* spell = dbcSpell.LookupEntryForced(f[2].GetUInt32());
+                OLD_SpellEntry* spell = sSpellCustomizations.GetServersideSpell(f[2].GetUInt32());
                 uint16 flags = f[3].GetUInt16();
                 if (spell != NULL && mSpells.find(spell) == mSpells.end())
                     mSpells.insert(std::make_pair(spell, flags));
@@ -1037,7 +1037,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
 
             if (spellid != 0)
             {
-                OLD_SpellEntry* sp = dbcSpell.LookupEntry(spellid);
+                OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(spellid);
                 if (sp != NULL)
                     AddSpell(sp, true, showLearnSpells);
             }
@@ -1049,7 +1049,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
         uint32 spellid = creature_properties->AISpells[i];
         if (spellid != 0)
         {
-            OLD_SpellEntry* sp = dbcSpell.LookupEntry(spellid);
+            OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(spellid);
             if (sp != NULL)
                 AddSpell(sp, true, showLearnSpells);
         }
@@ -1065,7 +1065,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
             it2 = it1->second.begin();
             for (; it2 != it1->second.end(); ++it2)
             {
-                AddSpell(dbcSpell.LookupEntry(*it2), true, showLearnSpells);
+                AddSpell(sSpellCustomizations.GetServersideSpell(*it2), true, showLearnSpells);
             }
         }
         return;
@@ -1093,7 +1093,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
             // Update existing spell, or add new "automatic-acquired" spell
             if ((skill_line_ability->skilline == s || skill_line_ability->skilline == s2) && skill_line_ability->acquireMethod == 2)
             {
-                sp = dbcSpell.LookupEntryForced(skill_line_ability->spell);
+                sp = sSpellCustomizations.GetServersideSpell(skill_line_ability->spell);
                 if (sp && getLevel() >= sp->baseLevel)
                 {
                     // Pet is able to learn this spell; now check if it already has it, or a higher rank of it
@@ -2089,7 +2089,7 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     {
         OLD_SpellEntry* killerspell;
         if (spellid)
-            killerspell = dbcSpell.LookupEntry(spellid);
+            killerspell = sSpellCustomizations.GetServersideSpell(spellid);
         else killerspell = NULL;
 
         HandleProc(PROC_ON_DIE, this, killerspell);

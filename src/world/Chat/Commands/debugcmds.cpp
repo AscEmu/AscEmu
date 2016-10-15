@@ -474,7 +474,7 @@ bool ChatHandler::HandleCalcThreatCommand(const char* args, WorldSession* m_sess
     if (!spellId)
         return false;
 
-    uint32 threat = target->GetAIInterface()->_CalcThreat(atol(dmg), dbcSpell.LookupEntry(atoi(spellId)), m_session->GetPlayer());
+    uint32 threat = target->GetAIInterface()->_CalcThreat(atol(dmg), sSpellCustomizations.GetServersideSpell(atoi(spellId)), m_session->GetPlayer());
 
     std::stringstream sstext;
     sstext << "generated threat is: " << threat << '\0';
@@ -971,7 +971,7 @@ bool ChatHandler::HandleAuraUpdateAdd(const char* args, WorldSession* m_session)
     }
     else
     {
-        OLD_SpellEntry* Sp = dbcSpell.LookupEntryForced(SpellID);
+        OLD_SpellEntry* Sp = sSpellCustomizations.GetServersideSpell(SpellID);
         if (!Sp)
         {
             SystemMessage(m_session, "SpellID %u is invalid.", SpellID);
@@ -1244,7 +1244,7 @@ bool ChatHandler::HandleAIAgentDebugBegin(const char* args, WorldSession* m_sess
 
     do
     {
-        OLD_SpellEntry* se = dbcSpell.LookupEntryForced(result->Fetch()[0].GetUInt32());
+        OLD_SpellEntry* se = sSpellCustomizations.GetServersideSpell(result->Fetch()[0].GetUInt32());
         if (se)
             aiagent_spells.push_back(se);
     } while (result->NextRow());
@@ -1278,7 +1278,7 @@ bool ChatHandler::HandleCastSpellCommand(const char* args, WorldSession* m_sessi
     }
 
     uint32 spellid = atol(args);
-    OLD_SpellEntry* spellentry = dbcSpell.LookupEntryForced(spellid);
+    OLD_SpellEntry* spellentry = sSpellCustomizations.GetServersideSpell(spellid);
     if (!spellentry)
     {
         RedSystemMessage(m_session, "Invalid spell id!");
@@ -1319,7 +1319,7 @@ bool ChatHandler::HandleCastSpellNECommand(const char* args, WorldSession* m_ses
     }
 
     uint32 spellId = atol(args);
-    OLD_SpellEntry* spellentry = dbcSpell.LookupEntryForced(spellId);
+    OLD_SpellEntry* spellentry = sSpellCustomizations.GetServersideSpell(spellId);
     if (!spellentry)
     {
         RedSystemMessage(m_session, "Invalid spell id!");
@@ -1379,7 +1379,7 @@ bool ChatHandler::HandleCastSelfCommand(const char* args, WorldSession* m_sessio
     }
 
     uint32 spellid = atol(args);
-    OLD_SpellEntry* spellentry = dbcSpell.LookupEntryForced(spellid);
+    OLD_SpellEntry* spellentry = sSpellCustomizations.GetServersideSpell(spellid);
     if (!spellentry)
     {
         RedSystemMessage(m_session, "Invalid spell id!");

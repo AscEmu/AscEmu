@@ -28,11 +28,6 @@ class Player;
 
 #pragma pack(push,1)
 
-#ifdef ENABLE_ACHIEVEMENTS
-
-
-#endif
-
 #define MAX_SPELL_EFFECTS 3
 
 // Struct for the entry in Spell.dbc
@@ -51,9 +46,9 @@ struct OLD_SpellEntry
     uint32 AttributesExF;                                     // 10
     uint32 AttributesExG;                                     // 11  8
     uint32 RequiredShapeShift;                                // 12
-  //uint32 Unknown;                                           // 13 (12-13 Stances[2])
+                                                              //uint32 Unknown;                                           // 13 (12-13 Stances[2])
     uint32 ShapeshiftExclude;                                 // 14 
-  //uint32 Unknown;                                           // 15 (14-15 StancesExcluded[2])
+                                                              //uint32 Unknown;                                           // 15 (14-15 StancesExcluded[2])
     uint32 Targets;                                           // 16
     uint32 TargetCreatureType;                                // 17
     uint32 RequiresSpellFocus;                                // 18
@@ -117,18 +112,18 @@ struct OLD_SpellEntry
     uint32 spellIconID;                                       // 133
     uint32 activeIconID;                                      // 134 activeIconID;
     uint32 spellPriority;                                     // 135
-    const char* Name;                                         // 136
-  //char* NameAlt[15];                                        // 137 - 151 (136-151 Name[16])
-  //uint32 NameFlags;                                         // 152 not used
-    const char* Rank;                                         // 153
-  //char* RankAlt[15];                                        // 154 - 168 (153-168 Rank[16])
-  //uint32 RankFlags;                                         // 169 not used
-    const char* Description;                                  // 170  comment this out
-  //char* DescriptionAlt[15];                                 // 171 - 185 (170-185 Description[16])
-  //uint32 DescriptionFlags;                                  // 186 not used
-    const char* BuffDescription;                              // 187  comment this out
-  //char* BuffDescription[15];                                // 188 - 202 (187-202 BuffDescription[16])
-  //uint32 buffdescflags;                                     // 203 not used
+    std::string Name;                                         // 136
+                                                              //char* NameAlt[15];                                        // 137 - 151 (136-151 Name[16])
+                                                              //uint32 NameFlags;                                         // 152 not used
+    std::string Rank;                                         // 153
+                                                              //char* RankAlt[15];                                        // 154 - 168 (153-168 Rank[16])
+                                                              //uint32 RankFlags;                                         // 169 not used
+    std::string Description;                                  // 170  comment this out
+                                                              //char* DescriptionAlt[15];                                 // 171 - 185 (170-185 Description[16])
+                                                              //uint32 DescriptionFlags;                                  // 186 not used
+    std::string BuffDescription;                              // 187  comment this out
+                                                              //char* BuffDescription[15];                                // 188 - 202 (187-202 BuffDescription[16])
+                                                              //uint32 buffdescflags;                                     // 203 not used
     uint32 ManaCostPercentage;                                // 204
     uint32 StartRecoveryCategory;                             // 205
     uint32 StartRecoveryTime;                                 // 206
@@ -147,17 +142,17 @@ struct OLD_SpellEntry
     int32 RequiresAreaId;                                     // 224
     uint32 School;                                            // 225
     uint32 RuneCostID;                                        // 226
-  //uint32 SpellMissileID;                                    // 227
-  //uint32 PowerDisplayId;                                    // 228
-  //float EffectBonusMultiplier[MAX_SPELL_EFFECTS];           // 229 - 231
-  //uint32 SpellDescriptionVariable;                          // 232
+                                                              //uint32 SpellMissileID;                                    // 227
+                                                              //uint32 PowerDisplayId;                                    // 228
+                                                              //float EffectBonusMultiplier[MAX_SPELL_EFFECTS];           // 229 - 231
+                                                              //uint32 SpellDescriptionVariable;                          // 232
     uint32 SpellDifficultyID;                                 // 233  comment this out
 
-    /// CUSTOM: these fields are used for the modifications made in the world.cpp
+                                                              /// CUSTOM: these fields are used for the modifications made in the world.cpp
     uint32 custom_DiminishStatus;
     uint32 custom_proc_interval;
-                                                                    /// Buff Groupin Rule -> caster can cast this spell only on 1 target. Value represents the group spell is part of. Can be part of only 1 group
-                                                                    /// target can have only buff of this type on self. Value represents the group spell is part of. Can be part of only 1 group
+    /// Buff Groupin Rule -> caster can cast this spell only on 1 target. Value represents the group spell is part of. Can be part of only 1 group
+    /// target can have only buff of this type on self. Value represents the group spell is part of. Can be part of only 1 group
     uint32 custom_BGR_one_buff_on_target;                           /// these are related to creating a item through a spell caster can have only 1 Aura per spell group, ex pal auras
     uint32 custom_BGR_one_buff_from_caster_on_self;                 /// these are related to creating a item through a spell
     uint32 custom_c_is_flags;                                       /// store spell checks in a static way : isdamageind,ishealing
@@ -169,7 +164,7 @@ struct OLD_SpellEntry
     uint32 custom_spell_coef_flags;                                 /// store flags for spell coefficient calculations
 
     float custom_base_range_or_radius_sqr;                                 /// needed for aoe spells most of the time
-    /// love me or hate me, all "In a cone in front of the caster" spells don't necessarily mean "in front"
+                                                                           /// love me or hate me, all "In a cone in front of the caster" spells don't necessarily mean "in front"
     float cone_width;
     float casttime_coef;                                    /// CUSTOM, faster spell bonus calculation
     float fixed_dddhcoef;                                   /// CUSTOM, fixed DD-DH coefficient for some spells
@@ -184,14 +179,14 @@ struct OLD_SpellEntry
     bool custom_is_melee_spell;
     bool custom_is_ranged_spell;
 
-	bool CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player = NULL);
+    bool CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player = NULL);
 
     uint32 custom_SchoolMask;
     uint32 CustomFlags;                                     /// Custom
     uint32 EffectCustomFlag[MAX_SPELL_EFFECTS];             /// Custom
 
-    /// Pointer to static method of a Spell subclass to create a new instance. If this is NULL, the generic Spell class will be created
-    /// Its type is void because class Spell is not visible here, so it'll be casted accordingly when necessary
+                                                            /// Pointer to static method of a Spell subclass to create a new instance. If this is NULL, the generic Spell class will be created
+                                                            /// Its type is void because class Spell is not visible here, so it'll be casted accordingly when necessary
     void* (*SpellFactoryFunc);
 
     /// Same for Auras
@@ -248,14 +243,14 @@ struct OLD_SpellEntry
         {
 
             if ((Effect[i] == 6 ||        /// SPELL_EFFECT_APPLY_GROUP_AREA_AURA
-                    Effect[i] == 27 ||    /// SPELL_EFFECT_PERSISTENT_AREA_AURA
-                    Effect[i] == 35 ||    /// SPELL_EFFECT_APPLY_GROUP_AREA_AURA
-                    Effect[i] == 65 ||    /// SPELL_EFFECT_APPLY_RAID_AREA_AURA
-                    Effect[i] == 119 ||   /// SPELL_EFFECT_APPLY_PET_AREA_AURA
-                    Effect[i] == 128 ||   /// SPELL_EFFECT_APPLY_FRIEND_AREA_AURA
-                    Effect[i] == 129 ||   /// SPELL_EFFECT_APPLY_ENEMY_AREA_AURA
-                    Effect[i] == 143) &&  /// SPELL_EFFECT_APPLY_OWNER_AREA_AURA
-                    EffectApplyAuraName[i] == aura)
+                 Effect[i] == 27 ||    /// SPELL_EFFECT_PERSISTENT_AREA_AURA
+                 Effect[i] == 35 ||    /// SPELL_EFFECT_APPLY_GROUP_AREA_AURA
+                 Effect[i] == 65 ||    /// SPELL_EFFECT_APPLY_RAID_AREA_AURA
+                 Effect[i] == 119 ||   /// SPELL_EFFECT_APPLY_PET_AREA_AURA
+                 Effect[i] == 128 ||   /// SPELL_EFFECT_APPLY_FRIEND_AREA_AURA
+                 Effect[i] == 129 ||   /// SPELL_EFFECT_APPLY_ENEMY_AREA_AURA
+                 Effect[i] == 143) &&  /// SPELL_EFFECT_APPLY_OWNER_AREA_AURA
+                EffectApplyAuraName[i] == aura)
                 return true;
         }
 
@@ -277,11 +272,11 @@ struct OLD_SpellEntry
         {
 
             if (Effect[i] == 35 ||        /// SPELL_EFFECT_APPLY_GROUP_AREA_AURA
-                    Effect[i] == 65 ||    /// SPELL_EFFECT_APPLY_RAID_AREA_AURA
-                    Effect[i] == 119 ||   /// SPELL_EFFECT_APPLY_PET_AREA_AURA
-                    Effect[i] == 128 ||   /// SPELL_EFFECT_APPLY_FRIEND_AREA_AURA
-                    Effect[i] == 129 ||   /// SPELL_EFFECT_APPLY_ENEMY_AREA_AURA
-                    Effect[i] == 143)     /// SPELL_EFFECT_APPLY_OWNER_AREA_AURA
+                Effect[i] == 65 ||    /// SPELL_EFFECT_APPLY_RAID_AREA_AURA
+                Effect[i] == 119 ||   /// SPELL_EFFECT_APPLY_PET_AREA_AURA
+                Effect[i] == 128 ||   /// SPELL_EFFECT_APPLY_FRIEND_AREA_AURA
+                Effect[i] == 129 ||   /// SPELL_EFFECT_APPLY_ENEMY_AREA_AURA
+                Effect[i] == 143)     /// SPELL_EFFECT_APPLY_OWNER_AREA_AURA
                 return Effect[i];
         }
 
@@ -331,6 +326,10 @@ struct OLD_SpellEntry
         custom_NameHash = 0;
         custom_ThreatForSpell = 0;
         custom_ThreatForSpellCoef = 0;
+
+        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+            custom_ProcOnNameHash[i] = 0;
+
         custom_spell_coef_flags = 0;
         custom_base_range_or_radius_sqr = 0;
         cone_width = 0;
@@ -352,10 +351,10 @@ struct OLD_SpellEntry
         spellIconID = 0;
         activeIconID = 0;
         spellPriority = 0;
-        Name = nullptr;
-        Rank = nullptr;
-        Description = 0;
-        BuffDescription = 0;
+        Name = "";
+        Rank = "";
+        Description = "";
+        BuffDescription = "";
         ManaCostPercentage = 0;
         StartRecoveryCategory = 0;
         StartRecoveryTime = 0;
@@ -804,8 +803,6 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphSlotEntry> sGlyphSlotSt
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemSetEntry> sItemSetStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LockEntry> sLockStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellEntry> sSpellStore;
-///\todo remove the old spell loader
-extern SERVER_DECL DBCStorage<OLD_SpellEntry> dbcSpell;
 
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDifficultyEntry> sSpellDifficultyStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDurationStore;

@@ -133,7 +133,7 @@ class FlametongueWeaponSpellProc : public SpellProc
         EnchantmentInstance* enchant = item->GetEnchantment(TEMP_ENCHANTMENT_SLOT);
         if (enchant != nullptr)
         {
-            OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(enchant->Enchantment->spell[0]);
+            OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(enchant->Enchantment->spell[0]);
             if (sp != nullptr && sp->custom_NameHash == SPELL_HASH_FLAMETONGUE_WEAPON__PASSIVE_)
             {
                 wp_speed = item->GetItemProperties()->Delay;
@@ -427,7 +427,7 @@ class VampiricTouchEnergizeSpellProc : public SpellProc
 
     void Init(Object* obj)
     {
-        mReplenishmentSpell = dbcSpell.LookupEntryForced(57669);
+        mReplenishmentSpell = sSpellCustomizations.GetServersideSpell(57669);
     }
 
     bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
@@ -458,7 +458,7 @@ class VampiricTouchDispelDamageSpellProc : public SpellProc
     bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         // For PROC_ON_PRE_DISPELL_AURA_VICTIM, parameter dmg has aur->GetSpellId()
-        OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(dmg);
+        OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(dmg);
 
         if (CastingSpell == NULL || sp == NULL || sp->custom_NameHash != SPELL_HASH_VAMPIRIC_TOUCH)
             return true;

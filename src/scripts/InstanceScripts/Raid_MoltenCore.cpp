@@ -37,7 +37,7 @@ class CoreRagerAI : public CreatureAIScript
         {
             m_mangle = true;
 
-            info_mangle = dbcSpell.LookupEntry(MANGLE);
+            info_mangle = sSpellCustomizations.GetServersideSpell(MANGLE);
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -105,9 +105,9 @@ class SulfuronAI : public CreatureAIScript
         {
             m_demoralizingshout = m_inspire = m_flamespear = true;
 
-            info_demoralizingshout = dbcSpell.LookupEntry(DEMORALIZING_SHOUT);
-            info_inspire = dbcSpell.LookupEntry(INSPIRE);
-            info_flamespear = dbcSpell.LookupEntry(FLAME_SPEAR);
+            info_demoralizingshout = sSpellCustomizations.GetServersideSpell(DEMORALIZING_SHOUT);
+            info_inspire = sSpellCustomizations.GetServersideSpell(INSPIRE);
+            info_flamespear = sSpellCustomizations.GetServersideSpell(FLAME_SPEAR);
         }
 
         void OnCombatStart(Unit* mTarget)
@@ -223,11 +223,11 @@ class RagnarosAI : public CreatureAIScript
         {
             m_elementalfire = m_wrath = m_hammer = m_meltweapon = m_summonsons = true;
 
-            info_elementalfire = dbcSpell.LookupEntry(ELEMENTAL_FIRE);
-            info_wrath = dbcSpell.LookupEntry(WRATH_OF_RAGNAROS);
-            info_hammer = dbcSpell.LookupEntry(HAMMER_OF_RAGNAROS);
-            info_meltweapon = dbcSpell.LookupEntry(MELT_WEAPON);
-            info_summonsons = dbcSpell.LookupEntry(SUMMON_SONS_OF_FLAMES);
+            info_elementalfire = sSpellCustomizations.GetServersideSpell(ELEMENTAL_FIRE);
+            info_wrath = sSpellCustomizations.GetServersideSpell(WRATH_OF_RAGNAROS);
+            info_hammer = sSpellCustomizations.GetServersideSpell(HAMMER_OF_RAGNAROS);
+            info_meltweapon = sSpellCustomizations.GetServersideSpell(MELT_WEAPON);
+            info_summonsons = sSpellCustomizations.GetServersideSpell(SUMMON_SONS_OF_FLAMES);
             _unit->Root();
         }
 

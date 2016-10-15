@@ -219,7 +219,7 @@ class RageWinterchillAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(FROSTBOLT);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(FROSTBOLT);
             spells[0].targettype = TARGET_RANDOM_SINGLE;
             spells[0].instant = true;
             spells[0].perctrigger = 8.0f;
@@ -228,7 +228,7 @@ class RageWinterchillAI : public CreatureAIScript
             spells[0].mindist2cast = 0.0f;
             spells[0].maxdist2cast = 80.0f;
 
-            spells[1].info = dbcSpell.LookupEntry(DEATCH_AND_DECAY);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(DEATCH_AND_DECAY);
             spells[1].targettype = TARGET_RANDOM_DESTINATION;
             spells[1].instant = false;
             spells[1].perctrigger = 3.0f;
@@ -237,7 +237,7 @@ class RageWinterchillAI : public CreatureAIScript
             spells[1].mindist2cast = 0.0f;
             spells[1].maxdist2cast = 30.0f;
 
-            spells[2].info = dbcSpell.LookupEntry(FROST_NOVA);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(FROST_NOVA);
             spells[2].targettype = TARGET_RANDOM_SINGLE;
             spells[2].instant = true;
             spells[2].perctrigger = 5.0f;
@@ -246,7 +246,7 @@ class RageWinterchillAI : public CreatureAIScript
             spells[2].mindist2cast = 0.0f;
             spells[2].maxdist2cast = 45.0f;
 
-            spells[3].info = dbcSpell.LookupEntry(FROST_ARMOR);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(FROST_ARMOR);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
             spells[3].perctrigger = 5.0f;
@@ -435,7 +435,7 @@ class AnetheronAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(CARRION_SWARM);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(CARRION_SWARM);
             spells[0].targettype = TARGET_RANDOM_SINGLE;
             spells[0].instant = true;
             spells[0].perctrigger = 10.0f;
@@ -444,14 +444,14 @@ class AnetheronAI : public CreatureAIScript
             spells[0].mindist2cast = 0.0f;
             spells[0].maxdist2cast = 60.0f;
 
-            spells[1].info = dbcSpell.LookupEntry(VAMPIRIC_AURA);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(VAMPIRIC_AURA);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].perctrigger = 8.0f;
             spells[1].attackstoptimer = 1000;
             spells[1].cooldown = 8;
 
-            spells[2].info = dbcSpell.LookupEntry(INFERNO);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(INFERNO);
             spells[2].targettype = TARGET_RANDOM_DESTINATION;
             spells[2].instant = false;
             spells[2].perctrigger = 6.0f;
@@ -462,7 +462,7 @@ class AnetheronAI : public CreatureAIScript
             spells[2].speech = "Hit he, no time for a slow death";
             spells[2].soundid = 11039;
 
-            spells[3].info = dbcSpell.LookupEntry(SLEEP);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(SLEEP);
             spells[3].targettype = TARGET_RANDOM_SINGLE;
             spells[3].instant = true;
             spells[3].perctrigger = 5.0f;
@@ -471,7 +471,7 @@ class AnetheronAI : public CreatureAIScript
             spells[3].mindist2cast = 0.0f;
             spells[3].maxdist2cast = 30.0f;
 
-            spells[4].info = dbcSpell.LookupEntry(BERSERK);
+            spells[4].info = sSpellCustomizations.GetServersideSpell(BERSERK);
             spells[4].targettype = TARGET_SELF;
             spells[4].instant = true;
             spells[4].cooldown = 600;
@@ -674,28 +674,28 @@ class KazrogalAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(K_CLEAVE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(K_CLEAVE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
             spells[0].cooldown = 10;
 
-            spells[1].info = dbcSpell.LookupEntry(WAR_STOMP);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(WAR_STOMP);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].perctrigger = 6.0f;
             spells[1].attackstoptimer = 1000;
             spells[1].cooldown = 15;
 
-            spells[2].info = dbcSpell.LookupEntry(MARK_OF_KAZROGAL);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(MARK_OF_KAZROGAL);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = false;
             spells[2].perctrigger = 4.0f;
             spells[2].attackstoptimer = 2000;
             spells[2].cooldown = 25;
 
-            spells[3].info = dbcSpell.LookupEntry(MARK_OF_KAZROGAL2);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(MARK_OF_KAZROGAL2);
             spells[3].targettype = TARGET_VARIOUS;
             spells[3].instant = true;
 
@@ -912,14 +912,14 @@ class AzgalorAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(CLEAVE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(CLEAVE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 3000;
             spells[0].cooldown = 10;
 
-            spells[1].info = dbcSpell.LookupEntry(RAIN_OF_FIRE);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(RAIN_OF_FIRE);
             spells[1].targettype = TARGET_RANDOM_DESTINATION;
             spells[1].instant = true;
             spells[1].perctrigger = 7.0f;
@@ -928,14 +928,14 @@ class AzgalorAI : public CreatureAIScript
             spells[1].mindist2cast = 0.0f;
             spells[1].maxdist2cast = 40.0f;
 
-            spells[2].info = dbcSpell.LookupEntry(HOWL_OF_AZGALOR);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(HOWL_OF_AZGALOR);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = true;
             spells[2].perctrigger = 5.0f;
             spells[2].attackstoptimer = 2000;
             spells[2].cooldown = 15;
 
-            spells[3].info = dbcSpell.LookupEntry(DOOM);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(DOOM);
             spells[3].targettype = TARGET_RANDOM_SINGLE;
             spells[3].instant = true;
             spells[3].cooldown = 45;
@@ -1303,14 +1303,14 @@ class ArchimondeAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(AIR_BURST);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(AIR_BURST);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].perctrigger = 5.0f;
             spells[0].attackstoptimer = 1000;
             spells[0].cooldown = 25;
 
-            spells[1].info = dbcSpell.LookupEntry(GRIP_OF_THE_LEGION);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(GRIP_OF_THE_LEGION);
             spells[1].targettype = TARGET_RANDOM_SINGLE;
             spells[1].instant = true;
             spells[1].perctrigger = 5.0f;
@@ -1319,20 +1319,20 @@ class ArchimondeAI : public CreatureAIScript
             spells[1].mindist2cast = 0.0f;
             spells[1].maxdist2cast = 60.0f;
 
-            spells[2].info = dbcSpell.LookupEntry(DOOMFIRE_STRIKE);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(DOOMFIRE_STRIKE);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = true;
             spells[2].perctrigger = 7.0f;
             spells[2].attackstoptimer = 2000;
 
-            spells[3].info = dbcSpell.LookupEntry(FEAR);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(FEAR);
             spells[3].targettype = TARGET_VARIOUS;
             spells[3].instant = true;
             spells[3].perctrigger = 0.0f;
             spells[3].attackstoptimer = 1000;
             spells[3].cooldown = 40;
 
-            spells[4].info = dbcSpell.LookupEntry(FINGER_OF_DEATH);
+            spells[4].info = sSpellCustomizations.GetServersideSpell(FINGER_OF_DEATH);
             spells[4].targettype = TARGET_RANDOM_SINGLE;
             spells[4].instant = false;
             spells[4].perctrigger = 0.0f;
@@ -1340,7 +1340,7 @@ class ArchimondeAI : public CreatureAIScript
             spells[4].mindist2cast = 30.0f;
             spells[4].maxdist2cast = 80.0f;
 
-            spells[5].info = dbcSpell.LookupEntry(HAND_OF_DEATH);
+            spells[5].info = sSpellCustomizations.GetServersideSpell(HAND_OF_DEATH);
             spells[5].targettype = TARGET_VARIOUS;
             spells[5].instant = true;
             spells[5].perctrigger = 0.0f;
@@ -1418,7 +1418,7 @@ class ArchimondeAI : public CreatureAIScript
                     else
                         SpellID = SOUL_CHARGEG;
 
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SpellID), spells[6].instant);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SpellID), spells[6].instant);
 
                     spells[6].casttime = t + spells[6].cooldown;
                 }

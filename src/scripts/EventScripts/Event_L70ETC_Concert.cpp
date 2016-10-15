@@ -51,7 +51,7 @@ class SamAI : public CreatureAIScript
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->disable_melee = true;
             _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -75,7 +75,7 @@ class SamAI : public CreatureAIScript
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
         }
 
         void OnDespawn()
@@ -88,13 +88,13 @@ class SamAI : public CreatureAIScript
             switch (timer)
             {
                 case 1:  _unit->PlaySoundToSet(11803); break;
-                case 2:  _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true); break;
+                case 2:  _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true); break;
                 case 19:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL05); break;
                 case 30:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
                 case 65:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
                 case 70:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
                 case 84:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
-                case 112: _unit->CastSpell(_unit, dbcSpell.LookupEntry(SINGERSLIGHT), true); break;
+                case 112: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SINGERSLIGHT), true); break;
                 case 123: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
                 case 137: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
                 case 142: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
@@ -102,7 +102,7 @@ class SamAI : public CreatureAIScript
                 case 229: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
                 case 239: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
                 case 259: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
-                case 279: _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true); break;
+                case 279: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true); break;
                 case 280: _unit->Despawn(1000, 300000); break;
             }
             timer++;
@@ -123,7 +123,7 @@ class BerAI : public CreatureAIScript
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->disable_melee = true;
             _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
             timer = 0;
             RegisterAIUpdateEvent(1000);
         }
@@ -147,7 +147,7 @@ class BerAI : public CreatureAIScript
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
         }
 
         void OnDespawn()
@@ -159,19 +159,19 @@ class BerAI : public CreatureAIScript
         {
             switch (timer)
             {
-                case 0: _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true); break;
+                case 0: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true); break;
                 case 10:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
                 case 30:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
                 case 34:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
                 case 38:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
                 case 104: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
                 case 123: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-                case 140: _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPOTLIGHT), true); break;
+                case 140: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPOTLIGHT), true); break;
                 case 145: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
                 case 168: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
                 case 229: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
                 case 230: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
-                case 279: _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true); break;
+                case 279: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true); break;
                 case 280: _unit->Despawn(1000, 300050); break;
             }
             timer++;
@@ -214,7 +214,7 @@ class SigAI : public CreatureAIScript
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
         }
 
         void OnDespawn()
@@ -226,7 +226,7 @@ class SigAI : public CreatureAIScript
         {
             switch (timer)
             {
-                case 0: _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true); break;
+                case 0: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true); break;
                 case 10:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
                 case 30:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
                 case 34:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
@@ -235,14 +235,14 @@ class SigAI : public CreatureAIScript
                 case 85:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
                 case 123: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
                 case 140: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
-                case 165: _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPOTLIGHT), true); break;
+                case 165: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPOTLIGHT), true); break;
                 case 166: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
                 case 168: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
                 case 180: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
                 case 193: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
                 case 229: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL06); break;
                 case 259: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 279: _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true); break;
+                case 279: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true); break;
                 case 280: _unit->Despawn(1000, 300050); break;
             }
             timer++;
@@ -285,7 +285,7 @@ class MaiAI : public CreatureAIScript
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
         }
 
         void OnDespawn()
@@ -297,7 +297,7 @@ class MaiAI : public CreatureAIScript
         {
             switch (timer)
             {
-                case 0: _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true); break;
+                case 0: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true); break;
                 case 10:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
                 case 30:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
                 case 45:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
@@ -307,11 +307,11 @@ class MaiAI : public CreatureAIScript
                 case 102: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
                 case 115: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL01); break;
                 case 123: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL02); break;
-                case 165: _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPOTLIGHT), true); break;
+                case 165: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPOTLIGHT), true); break;
                 case 192: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
                 case 203: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL03); break;
                 case 229: _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
-                case 279: _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true); break;
+                case 279: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true); break;
                 case 280: _unit->Despawn(1000, 300050); break;
             }
             timer++;
@@ -356,20 +356,20 @@ class ThuAI : public CreatureAIScript
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
         }
 
         void OnDespawn()
         {
             RemoveAIUpdateEvent();
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
         }
 
         void AIUpdate()
         {
             switch (timer)
             {
-                case 2: _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true); break;
+                case 2: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true); break;
                 case 3:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
                 case 14:  _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "ARE YOU READY TO ROCK?!?!"); break;
                 case 17:  _unit->Emote(EMOTE_ONESHOT_CUSTOMSPELL04); break;
@@ -395,7 +395,7 @@ class ThuAI : public CreatureAIScript
                     _unit->SetUInt32Value(UNIT_NPC_EMOTESTATE, 401);
                     break;
                 }
-                case 279: _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true); break;
+                case 279: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true); break;
                 case 281: _unit->Despawn(1000, 301000); break;
             }
             timer++;
@@ -440,13 +440,13 @@ class UndeadAI : public CreatureAIScript
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
         }
 
         void OnDespawn()
         {
             RemoveAIUpdateEvent();
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
         }
 
         void AIUpdate()
@@ -498,14 +498,14 @@ class Undead2AI : public CreatureAIScript
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
         }
 
         void OnDespawn()
         {
             _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
             RemoveAIUpdateEvent();
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
         }
 
         void AIUpdate()
@@ -558,7 +558,7 @@ class Undead3AI : public CreatureAIScript
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
         }
 
         void AIUpdate()
@@ -611,62 +611,62 @@ class TriggerAI : public CreatureAIScript
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
         }
 
         void OnDespawn()
         {
             _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
             RemoveAIUpdateEvent();
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
         }
 
         void AIUpdate()
         {
             switch (timer)
             {
-                case 1: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 8: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 15: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 21: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 28: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 35: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 41: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 48: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 55: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 62: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 69: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 76: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 81: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 89: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 96: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 101: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 108: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 115: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 121: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 128: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 135: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 141: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 148: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 155: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 162: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 169: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 176: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 181: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 189: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 196: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 201: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 208: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 215: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 221: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 228: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 235: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 241: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 248: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 255: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 262: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 269: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 276: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
+                case 1: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 8: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 15: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 21: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 28: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 35: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 41: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 48: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 55: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 62: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 69: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 76: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 81: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 89: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 96: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 101: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 108: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 115: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 121: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 128: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 135: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 141: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 148: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 155: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 162: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 169: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 176: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 181: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 189: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 196: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 201: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 208: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 215: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 221: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 228: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 235: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 241: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 248: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 255: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 262: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 269: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 276: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
                 case 281:
                 {
                     _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
@@ -716,61 +716,61 @@ class Trigger2AI : public CreatureAIScript
 
         void OnSpawn()
         {
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
         }
 
         void OnDespawn()
         {
             _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "THAT WAS GREAT!");
             RemoveAIUpdateEvent();
-            _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
         }
         void AIUpdate()
         {
             switch (timer)
             {
-                case 3: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 10: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 18: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 24: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 22: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 38: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 44: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 52: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 58: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 68: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 69: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 76: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 85: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 90: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 96: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 107: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 109: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 125: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 127: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 129: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 132: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 144: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 149: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 159: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 166: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 169: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 176: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 183: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 186: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 194: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 204: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 209: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 218: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 223: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 228: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 235: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 241: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 248: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 252: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 263: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 266: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
-                case 274: _unit->CastSpell(_unit, dbcSpell.LookupEntry(CONSECRATION), true); break;
+                case 3: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 10: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 18: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 24: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 22: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 38: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 44: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 52: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 58: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 68: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 69: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 76: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 85: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 90: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 96: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 107: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 109: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 125: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 127: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 129: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 132: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 144: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 149: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 159: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 166: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 169: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 176: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 183: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 186: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 194: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 204: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 209: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 218: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 223: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 228: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 235: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 241: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 248: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 252: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 263: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 266: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
+                case 274: _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(CONSECRATION), true); break;
                 case 281: _unit->Despawn(1000, 301000); break;
             }
             timer++;
@@ -829,72 +829,72 @@ class Effectsground : public CreatureAIScript
             {
                 case 2:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLLLIGHTNING), true);
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLLLIGHTNING2), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLLLIGHTNING), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLLLIGHTNING2), true);
                 }break;
                 case 6:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLEARTH), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLEARTH), true);
                 }break;
                 case 8:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFIRE), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFIRE), true);
                 }break;
                 case 72:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLLLIGHTNING), true);
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLLLIGHTNING2), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLLLIGHTNING), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLLLIGHTNING2), true);
                 }break;
                 case 76:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLEARTH), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLEARTH), true);
                 }break;
                 case 78:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFIRE), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFIRE), true);
                 }break;
                 case 125:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLLLIGHTNING), true);
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLLLIGHTNING2), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLLLIGHTNING), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLLLIGHTNING2), true);
                 }break;
                 case 128:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLEARTH), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLEARTH), true);
                 }break;
                 case 132:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFIRE), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFIRE), true);
                 }break;
                 case 232:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLLLIGHTNING), true);
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLLLIGHTNING2), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLLLIGHTNING), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLLLIGHTNING2), true);
                 }break;
                 case 236:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLEARTH), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLEARTH), true);
                 }break;
                 case 238:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFIRE), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFIRE), true);
                 }break;
                 case 245:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLLLIGHTNING), true);
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLLLIGHTNING2), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLLLIGHTNING), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLLLIGHTNING2), true);
                 }break;
                 case 249:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLEARTH), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLEARTH), true);
                 }break;
                 case 251:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFIRE), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFIRE), true);
                 }break;
                 case 279:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLFLARE), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLFLARE), true);
                 }break;
                 case 280:
                 {
@@ -957,23 +957,23 @@ class Effectsair : public CreatureAIScript
             {
                 case 1:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLSTORM), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLSTORM), true);
                 }break;
                 case 70:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLSTORM), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLSTORM), true);
                 }break;
                 case 123:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLSTORM), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLSTORM), true);
                 }break;
                 case 230:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLSTORM), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLSTORM), true);
                 }break;
                 case 243:
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(SPELLSTORM), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELLSTORM), true);
                 }break;
                 case 280:
                 {

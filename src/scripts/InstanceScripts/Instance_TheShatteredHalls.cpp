@@ -98,7 +98,7 @@ class FelOrcConvertAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_FEL_ORC_CONVERTER_HEMORRHAGE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_FEL_ORC_CONVERTER_HEMORRHAGE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 25;
@@ -209,14 +209,14 @@ class ShatteredHandHeathenAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_HAND_HEATHEN_BLOODTHIRST);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_HAND_HEATHEN_BLOODTHIRST);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 25;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_HAND_HEATHEN_ENRAGE);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_HAND_HEATHEN_ENRAGE);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].cooldown = 70;
@@ -326,21 +326,21 @@ class ShatteredHandLegionnaireAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(SP_HAND_LEGI_AURA_OF_DISCIPLINE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_HAND_LEGI_AURA_OF_DISCIPLINE);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = -1;    // no idea if this should be like that
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_HAND_LEGI_PUMMEL);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_HAND_LEGI_PUMMEL);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = 25;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_HAND_LEGI_ENRAGE);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_HAND_LEGI_ENRAGE);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].cooldown = 70;
@@ -451,21 +451,21 @@ class ShatteredHandSavageAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_HAND_SAVAGE_SLICE_AND_DICE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_HAND_SAVAGE_SLICE_AND_DICE);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = true;
             spells[0].cooldown = 35;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_HAND_SAVAGE_ENRAGE);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_HAND_SAVAGE_ENRAGE);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].cooldown = 70;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_HAND_SAVAGE_DEATHBLOW);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_HAND_SAVAGE_DEATHBLOW);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].cooldown = 25;
@@ -577,28 +577,28 @@ class ShadowmoonAcolyteAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_SHADOWMOON_ACOLYTE_HEAL);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_SHADOWMOON_ACOLYTE_HEAL);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = false;
             spells[0].cooldown = 35;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_SHADOWMOON_ACOLYTE_PW_SHIELD);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_SHADOWMOON_ACOLYTE_PW_SHIELD);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].cooldown = 45;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_SHADOWMOON_ACOLYTE_MIND_BLAST);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_SHADOWMOON_ACOLYTE_MIND_BLAST);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = false;
             spells[2].cooldown = 10;
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(SP_SHADOWMOON_ACOLYTE_RESIST_SHADOW);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(SP_SHADOWMOON_ACOLYTE_RESIST_SHADOW);
             spells[3].targettype = TARGET_SELF; // should be ally
             spells[3].instant = true;
             spells[3].cooldown = 65;
@@ -713,21 +713,21 @@ class ShatteredHandAssassinAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_SHATT_HAND_ASSASSIN_SAP);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_ASSASSIN_SAP);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_SHATT_HAND_ASSASSIN_STEALTH);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_ASSASSIN_STEALTH);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_SHATT_HAND_ASSASSIN_CHEAP_SHOT);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_ASSASSIN_CHEAP_SHOT);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].cooldown = 25;
@@ -843,7 +843,7 @@ class ShatteredHandGladiatorAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_SHATT_HAND_GLADI_MORTAL_STRIKE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_GLADI_MORTAL_STRIKE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 15;
@@ -954,7 +954,7 @@ class ShatteredHandHoundmasterAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_SHATT_HAND_HOUNDMASTER_VOLLEY);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_HOUNDMASTER_VOLLEY);
             spells[0].targettype = TARGET_DESTINATION;
             spells[0].instant = false;
             spells[0].cooldown = 30;
@@ -1063,21 +1063,21 @@ class ShatteredHandReaverAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(SP_SHATT_HAND_REAVER_CLEAVE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_REAVER_CLEAVE);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = 10;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_SHATT_HAND_REAVER_UPPERCUT);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_REAVER_UPPERCUT);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = 35;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_SHATT_HAND_REAVER_ENRAGE);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_REAVER_ENRAGE);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].cooldown = 70;
@@ -1191,14 +1191,14 @@ class ShatteredHandSentryAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_SHATT_HAND_SENTRY_HAMSTERING);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_SENTRY_HAMSTERING);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 20;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_SHATT_HAND_SENTRY_CHARGE);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_SENTRY_CHARGE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = -1;
@@ -1319,28 +1319,28 @@ class ShatteredHandSharpshooterAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_SHATT_HAND_SHARP_SCATTER_SHOT);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_SHARP_SCATTER_SHOT);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 20;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_SHATT_HAND_SHARP_IMMO_ARROW);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_SHARP_IMMO_ARROW);
             spells[1].targettype = TARGET_ATTACKING;    // no idea why fire stays under caster instead of target
             spells[1].instant = false;
             spells[1].cooldown = 5;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_SHATT_HAND_SHARP_SHOT);    // disabled for now
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_SHARP_SHOT);    // disabled for now
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(SP_SHATT_HAND_SHARP_INCENDIARY_SHOT);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_SHARP_INCENDIARY_SHOT);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = false;
             spells[3].cooldown = 35;
@@ -1419,21 +1419,21 @@ class ShatteredHandBrawlerAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(SP_CURSE_OF_THE_SHATTERED_HAND);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_CURSE_OF_THE_SHATTERED_HAND);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 35;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_SHATT_HAND_BRAWLER_KICK);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_BRAWLER_KICK);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = 25;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_SHATT_HAND_BRAWLER_TRASH);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_SHATT_HAND_BRAWLER_TRASH);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].cooldown = 20;
@@ -1643,7 +1643,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_GRAND_WARLOCK_NETH_DEATH_COIL);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_GRAND_WARLOCK_NETH_DEATH_COIL);
             spells[0].targettype = TARGET_RANDOM_SINGLE;
             spells[0].instant = true;
             spells[0].cooldown = 15;
@@ -1652,7 +1652,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
             spells[0].mindist2cast = 0.0f;
             spells[0].maxdist2cast = 40.0f;
             // disabled for now
-            spells[1].info = dbcSpell.LookupEntry(SP_LESSER_SHADOW_FISSURE);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_LESSER_SHADOW_FISSURE);
             spells[1].targettype = TARGET_RANDOM_SINGLE;
             spells[1].instant = true;    // doesn't work, because of lack of core support (so to prevent channeling I changed false to true)
             spells[1].cooldown = 25;
@@ -1661,7 +1661,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
             spells[1].mindist2cast = 0.0f;
             spells[1].maxdist2cast = 40.0f;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_GRAND_WARLOCK_NETH_DARK_SPIN);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_GRAND_WARLOCK_NETH_DARK_SPIN);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = false;
             spells[2].cooldown = 60;
@@ -1932,7 +1932,7 @@ class BloodGuardPorungAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_BLOOD_GUARD_PORUNG_CLEAVE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_BLOOD_GUARD_PORUNG_CLEAVE);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = 15;
@@ -2308,7 +2308,7 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_WARCHIEF_LARAGATH_BLADE_DANCE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_WARCHIEF_LARAGATH_BLADE_DANCE);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = 30;

@@ -101,19 +101,19 @@ class DoctorTheolenKrastinovAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_DR_THEOL_REND);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_DR_THEOL_REND);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 20.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_DR_THEOL_KRASTINOVCLEAVE);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_DR_THEOL_KRASTINOVCLEAVE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 9.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_DR_THEOL_FRENZY);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_DR_THEOL_FRENZY);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].perctrigger = 0.0f;
@@ -219,31 +219,31 @@ class InstructorMaliciaAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_MALICIA_CALL_OF_GRAVE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_MALICIA_CALL_OF_GRAVE);
             spells[0].targettype = TARGET_DESTINATION; // VARIOUS, DESINATION or ATTACKING?
             spells[0].instant = true;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_MALICIA_CORRUPTION);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_MALICIA_CORRUPTION);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;    // should be false, but doesn't work then
             spells[1].perctrigger = 9.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_MALICIA_FLASH_HEAL);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_MALICIA_FLASH_HEAL);
             spells[2].targettype = TARGET_SELF;    // works for caster and his enemy :o
             spells[2].instant = true;    // should be false, but doesn't work then
             spells[2].perctrigger = 5.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(SP_MALICIA_RENEW);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(SP_MALICIA_RENEW);
             spells[3].targettype = TARGET_SELF;    // w00t, heals player too ? :|
             spells[3].instant = true;
             spells[3].perctrigger = 4.0f;    // why 0?:|
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = dbcSpell.LookupEntry(SP_MALICIA_HEAL);
+            spells[4].info = sSpellCustomizations.GetServersideSpell(SP_MALICIA_HEAL);
             spells[4].targettype = TARGET_SELF;
             spells[4].instant = true;    // should be false, but doesn't work then
             spells[4].perctrigger = 5.0f;
@@ -337,25 +337,25 @@ class TheRavenianAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_RAVENIAN_TRAMPLE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_RAVENIAN_TRAMPLE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_RAVENIAN_RAVENIANCLEAVE);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_RAVENIAN_RAVENIANCLEAVE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 9.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_RAVENIAN_SUNDERINCLEAVE);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_RAVENIAN_SUNDERINCLEAVE);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].perctrigger = 20.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(SP_RAVENIAN_KNOCKAWAY);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(SP_RAVENIAN_KNOCKAWAY);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
             spells[3].perctrigger = 11.0f;
@@ -449,31 +449,31 @@ class LadyIlluciaBarovAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_ILLUCIA_CURSE_OF_AGONY);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_ILLUCIA_CURSE_OF_AGONY);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_ILLUCIA_SHADOW_SHOCK);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_ILLUCIA_SHADOW_SHOCK);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].perctrigger = 12.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_ILLUCIA_SILENCE);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_ILLUCIA_SILENCE);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].perctrigger = 8.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(SP_ILLUCIA_FEAR);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(SP_ILLUCIA_FEAR);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
             spells[3].perctrigger = 4.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = dbcSpell.LookupEntry(SP_ILLUCIA_DOMINATE_MIND);
+            spells[4].info = sSpellCustomizations.GetServersideSpell(SP_ILLUCIA_DOMINATE_MIND);
             spells[4].targettype = TARGET_ATTACKING;
             spells[4].instant = true;
             spells[4].perctrigger = 4.0f;
@@ -567,37 +567,37 @@ class RasForstwhisperAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_RAS_FORTH_FROSTBOLT);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_RAS_FORTH_FROSTBOLT);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].perctrigger = 14.0f;
             spells[0].attackstoptimer = 2000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_RAS_FORTH_ICE_ARMOR);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_RAS_FORTH_ICE_ARMOR);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_RAS_FORTH_FREEZE);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_RAS_FORTH_FREEZE);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = false;
             spells[2].perctrigger = 11.0f;
             spells[2].attackstoptimer = 4000;
 
-            spells[3].info = dbcSpell.LookupEntry(SP_RAS_FORTH_FEAR);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(SP_RAS_FORTH_FEAR);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;    // should be false, but doesn't work then
             spells[3].perctrigger = 9.0f;
             spells[3].attackstoptimer = 2000;
 
-            spells[4].info = dbcSpell.LookupEntry(SP_RAS_FORTH_CHILL_NOVA);
+            spells[4].info = sSpellCustomizations.GetServersideSpell(SP_RAS_FORTH_CHILL_NOVA);
             spells[4].targettype = TARGET_VARIOUS;
             spells[4].instant = true;
             spells[4].perctrigger = 8.0f;
             spells[4].attackstoptimer = 1000;
 
-            spells[5].info = dbcSpell.LookupEntry(SP_RAS_FORTH_FROSTB_VOLLEY);
+            spells[5].info = sSpellCustomizations.GetServersideSpell(SP_RAS_FORTH_FROSTB_VOLLEY);
             spells[5].targettype = TARGET_VARIOUS;
             spells[5].instant = true;    // should be false, but doesn't work then
             spells[5].perctrigger = 13.0f;
@@ -692,19 +692,19 @@ class JandiceBarovAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_JANDICE_CURSE_OF_BLOOD);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_JANDICE_CURSE_OF_BLOOD);
             spells[0].targettype = TARGET_DESTINATION;
             spells[0].instant = true;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_JANDICE_BANISH);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_JANDICE_BANISH);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].perctrigger = 8.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_JANDICE_SUMMON_ILLUSION);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_JANDICE_SUMMON_ILLUSION);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].perctrigger = 5.0f;
@@ -798,19 +798,19 @@ class KormokAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_KORMOK_SHADOW_B_VOLLEY);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_KORMOK_SHADOW_B_VOLLEY);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].perctrigger = 11.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_KORMOK_BONE_SHIELD);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_KORMOK_BONE_SHIELD);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_KORMOK_SUM_RISEY_LACKEY);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_KORMOK_SUM_RISEY_LACKEY);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = false;
             spells[2].perctrigger = 4.0f;
@@ -906,19 +906,19 @@ class VectusAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_VECTUS_BLAST_WAVE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_VECTUS_BLAST_WAVE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 18.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_VECTUS_FIRE_SHIELD);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_VECTUS_FIRE_SHIELD);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].perctrigger = 5.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_VECTUS_FRENZY);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_VECTUS_FRENZY);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].perctrigger = 0.0f;
@@ -1022,19 +1022,19 @@ class LordAlexeiBarovAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_ALEXEI_UNHOLY_AURA);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_ALEXEI_UNHOLY_AURA);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = true;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_ALEXEI_IMMOLATE);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_ALEXEI_IMMOLATE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 10.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_ALEXEI_VEIL_OF_SHADOW);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_ALEXEI_VEIL_OF_SHADOW);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = false;
             spells[2].perctrigger = 8.0f;
@@ -1129,25 +1129,25 @@ class LorekeeperPolkeltAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_LORE_VOLATILE_INFECTION);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_LORE_VOLATILE_INFECTION);
             spells[0].targettype = TARGET_ATTACKING;    // various affects caster too
             spells[0].instant = true;
             spells[0].perctrigger = 6.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_LORE_DARK_PLAGUE);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_LORE_DARK_PLAGUE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 8.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_LORE_CORROSIVE_ACID);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_LORE_CORROSIVE_ACID);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;    // should be false, but doesn't work then =/
             spells[2].perctrigger = 12.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(SP_LORE_NOXIOUS_CATALYST);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(SP_LORE_NOXIOUS_CATALYST);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
             spells[3].perctrigger = 10.0f;
@@ -1241,19 +1241,19 @@ class DarkmasterGandlingAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_GANDLING_ARCANE_MISSILES); //VOLATILEINFECTION ???????? :|
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SP_GANDLING_ARCANE_MISSILES); //VOLATILEINFECTION ???????? :|
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 12.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_GANDLING_COT_DARKMASTER);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SP_GANDLING_COT_DARKMASTER);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].perctrigger = 7.0f;
             spells[1].attackstoptimer = 2000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_GANDLING_SHADOW_SHIELD);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SP_GANDLING_SHADOW_SHIELD);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].perctrigger = 0.0f;

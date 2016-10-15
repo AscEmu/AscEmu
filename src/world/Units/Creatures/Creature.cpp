@@ -1700,7 +1700,7 @@ void Creature::OnPushToWorld()
     OLD_SpellEntry* sp;
     for (; itr != creature_properties->start_auras.end(); ++itr)
     {
-        sp = dbcSpell.LookupEntryForced((*itr));
+        sp = sSpellCustomizations.GetServersideSpell((*itr));
         if (sp == nullptr)
             continue;
 
@@ -2394,7 +2394,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     {
         OLD_SpellEntry* killerspell;
         if (spellid)
-            killerspell = dbcSpell.LookupEntry(spellid);
+            killerspell = sSpellCustomizations.GetServersideSpell(spellid);
         else killerspell = NULL;
 
         HandleProc(PROC_ON_DIE, this, killerspell);

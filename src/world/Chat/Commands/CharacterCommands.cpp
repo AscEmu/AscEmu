@@ -401,7 +401,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         uint8 player_class = selected_player->getClass();
         for (uint32 i = 0; spellarray[player_class][i] != 0; ++i)
         {
-            spell_entry = dbcSpell.LookupEntryForced(spellarray[player_class][i]);
+            spell_entry = sSpellCustomizations.GetServersideSpell(spellarray[player_class][i]);
             if (spell_entry == nullptr)
                 continue;
 
@@ -498,7 +498,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
             case PALADIN:
                 for (uint32 i = 0; paladinspellarray[player_race][i] != 0; ++i)
                 {
-                    spell_entry = dbcSpell.LookupEntryForced(paladinspellarray[player_race][i]);
+                    spell_entry = sSpellCustomizations.GetServersideSpell(paladinspellarray[player_race][i]);
                     if (spell_entry == nullptr)
                         continue;
 
@@ -511,7 +511,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
             case MAGE:
                 for (uint32 i = 0; magespellarray[player_race][i] != 0; ++i)
                 {
-                    spell_entry = dbcSpell.LookupEntryForced(magespellarray[player_race][i]);
+                    spell_entry = sSpellCustomizations.GetServersideSpell(magespellarray[player_race][i]);
                     if (spell_entry == nullptr)
                         continue;
 
@@ -524,7 +524,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
             case SHAMAN:
                 for (uint32 i = 0; shamanspellarray[player_race][i] != 0; ++i)
                 {
-                    spell_entry = dbcSpell.LookupEntryForced(shamanspellarray[player_race][i]);
+                    spell_entry = sSpellCustomizations.GetServersideSpell(shamanspellarray[player_race][i]);
                     if (spell_entry == nullptr)
                         continue;
 
@@ -544,7 +544,7 @@ bool ChatHandler::HandleCharLearnCommand(const char* args, WorldSession* m_sessi
         spell = GetSpellIDFromLink(args);
     }
 
-    spell_entry = dbcSpell.LookupEntryForced(spell);
+    spell_entry = sSpellCustomizations.GetServersideSpell(spell);
     if (spell_entry == nullptr)
     {
         SystemMessage(m_session, "Invalid spell %u", spell);

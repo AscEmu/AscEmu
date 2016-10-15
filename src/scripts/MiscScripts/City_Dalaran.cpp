@@ -38,7 +38,7 @@ class SilverCovenantMageGuard : public MoonScriptCreatureAI
             if (player_x < 5761.9f && player_x >5738.68f && player_y < 732.12f && player_y >712.09f && player_z > 635.0f)
             {
                 _unit->SetTargetGUID(player->GetGUID());
-                _unit->EventCastSpell(player, dbcSpell.LookupEntry(54028));
+                _unit->EventCastSpell(player, sSpellCustomizations.GetServersideSpell(54028));
             }
             else
             {
@@ -86,7 +86,7 @@ class SunreaversMageGuard : public MoonScriptCreatureAI
             if (player_x < 5891.88f && player_x >5858.89f && player_y < 594.99f && player_y >565.51f && player_z > 635.0f)
             {
                 _unit->SetTargetGUID(player->GetGUID());
-                _unit->EventCastSpell(player, dbcSpell.LookupEntry(54029));
+                _unit->EventCastSpell(player, sSpellCustomizations.GetServersideSpell(54029));
             }
             else
             {

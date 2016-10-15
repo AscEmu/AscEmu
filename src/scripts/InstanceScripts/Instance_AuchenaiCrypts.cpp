@@ -98,21 +98,21 @@ class SHIRRAKTHEDEADWATCHERAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(INHIBIT_MAGIC);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(INHIBIT_MAGIC);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = true;
             spells[0].perctrigger = 7.0f;
             spells[0].attackstoptimer = 1000;
             spells[0].cooldown = 10;
 
-            spells[1].info = dbcSpell.LookupEntry(CARNIVOROUS_BITE);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(CARNIVOROUS_BITE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 15.0f;
             spells[1].attackstoptimer = 1000;
             spells[1].cooldown = 10;
 
-            spells[2].info = dbcSpell.LookupEntry(FOCUS_FIRE);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(FOCUS_FIRE);
             spells[2].targettype = TARGET_RANDOM_DESTINATION;   // changed from attack as it wasn't working anyway
             spells[2].instant = false;
             spells[2].perctrigger = 8.0f;
@@ -121,7 +121,7 @@ class SHIRRAKTHEDEADWATCHERAI : public CreatureAIScript
             spells[2].mindist2cast = 0.0f;
             spells[2].maxdist2cast = 40.0f;
 
-            spells[3].info = dbcSpell.LookupEntry(ATTRACT_MAGIC);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(ATTRACT_MAGIC);
             spells[3].targettype = TARGET_VARIOUS;
             spells[3].instant = true;
             spells[3].perctrigger = 10.0f;
@@ -277,21 +277,21 @@ class AvatarOfTheMartyredAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SUNDER_ARMOR);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SUNDER_ARMOR);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 15.0f;
             spells[0].attackstoptimer = 1000;
             spells[0].cooldown = 10;
 
-            spells[1].info = dbcSpell.LookupEntry(MORTAL_STRIKE);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(MORTAL_STRIKE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 10.0f;
             spells[1].attackstoptimer = 1000;
             spells[1].cooldown = 10;
 
-            spells[2].info = dbcSpell.LookupEntry(PHASE_IN);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(PHASE_IN);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].perctrigger = 0.0f;
@@ -403,7 +403,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SOUL_SCREAM);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(SOUL_SCREAM);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].perctrigger = 10.0f;
@@ -412,7 +412,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
             spells[0].soundid = 10510;
             spells[0].speech = "Let your mind be clouded.";    // dunno for sure if it should be here, but still gives better effect of fight :)
 
-            spells[1].info = dbcSpell.LookupEntry(RIBBON_OF_SOULS);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(RIBBON_OF_SOULS);
             spells[1].targettype = TARGET_RANDOM_SINGLE;
             spells[1].instant = false;
             spells[1].perctrigger = 15.0f;
@@ -423,7 +423,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
             spells[1].soundid = 10511;
             spells[1].speech = "Stare into the darkness of your soul!"; // not sure if it's really "stand"
 
-            spells[2].info = dbcSpell.LookupEntry(STOLEN_SOUL);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(STOLEN_SOUL);
             spells[2].targettype = TARGET_RANDOM_SINGLE;
             spells[2].instant = false;
             spells[2].perctrigger = 7.0f;
@@ -432,7 +432,7 @@ class EXARCHMALADAARAI : public CreatureAIScript
             spells[2].mindist2cast = 0.0f;
             spells[2].maxdist2cast = 40.0f;
 
-            spells[3].info = dbcSpell.LookupEntry(SUMMON_AVATAR);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(SUMMON_AVATAR);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = false;
             spells[3].perctrigger = 0.0f;

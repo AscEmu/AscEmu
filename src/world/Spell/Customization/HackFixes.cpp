@@ -39,7 +39,7 @@ void CreateDummySpell(uint32 id)
     sp->custom_NameHash = crc32((const unsigned char*)name, (unsigned int)strlen(name));
     sp->dmg_multiplier[0] = 1.0f;
     sp->StanceBarOrder = -1;
-    dbcSpell.SetRow(id, sp);
+    //dbcSpell.SetRow(id, sp);
     sWorld.dummyspells.push_back(sp);
 }
 
@@ -626,25 +626,23 @@ void ApplyNormalFixes()
 {
     //Updating spell.dbc
 
-    Log.Success("World", "Processing %u spells...", dbcSpell.GetNumRows());
+    Log.Success("World", "Processing %u spells...", sSpellCustomizations.GetServersideSpellStore()->size());
 
     //checking if the DBCs have been extracted from an english client, based on namehash of spell 4, the first with a different name in non-english DBCs
-    OLD_SpellEntry* sp = dbcSpell.LookupEntry(4);
+    OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(4);
     if (sp == nullptr)
         return;
 
-    if (crc32((const unsigned char*)sp->Name, (unsigned int)strlen(sp->Name)) != SPELL_HASH_WORD_OF_RECALL_OTHER)
+    if (crc32((const unsigned char*)sp->Name.c_str(), (unsigned int)strlen(sp->Name.c_str())) != SPELL_HASH_WORD_OF_RECALL_OTHER)
     {
         Log.LargeErrorMessage("You are using DBCs extracted from an unsupported client.", "ArcEmu supports only enUS and enGB!!!", NULL);
         abort();
     }
 
-    uint32 cnt = dbcSpell.GetNumRows();
-
-    for (uint32 x = 0; x < cnt; x++)
+    for (auto it = sSpellCustomizations.GetServersideSpellStore()->begin(); it != sSpellCustomizations.GetServersideSpellStore()->end(); ++it)
     {
         // Read every SpellEntry row
-        sp = dbcSpell.LookupEntry(x);
+        sp = sSpellCustomizations.GetServersideSpell(it->first);
         if (sp == nullptr)
             continue;
 
@@ -653,10 +651,10 @@ void ApplyNormalFixes()
         // hash the name
         //!!!!!!! representing all strings on 32 bits is dangerous. There is a chance to get same hash for a lot of strings ;)
 
-        if (!sp->Name)
+        if (!sp->Name.c_str())
             continue;
 
-        namehash = crc32((const unsigned char*)sp->Name, (unsigned int)strlen(sp->Name));
+        namehash = crc32((const unsigned char*)sp->Name.c_str(), (unsigned int)strlen(sp->Name.c_str()));
         sp->custom_NameHash = namehash; //need these set before we start processing spells
 
         float radius = std::max(::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[0])), ::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[1])));
@@ -766,7 +764,7 @@ void ApplyNormalFixes()
 
         for (uint32 b = 0; b < 3; ++b)
         {
-            if (sp->EffectTriggerSpell[b] != 0 && dbcSpell.LookupEntryForced(sp->EffectTriggerSpell[b]) == NULL)
+            if (sp->EffectTriggerSpell[b] != 0 && sSpellCustomizations.GetServersideSpell(sp->EffectTriggerSpell[b]) == NULL)
             {
                 // proc spell referencing non-existent spell. create a dummy spell for use w/ it.
                 CreateDummySpell(sp->EffectTriggerSpell[b]);
@@ -1071,10 +1069,12 @@ void ApplyNormalFixes()
     //SPELL COEFFICIENT SETTINGS START
     //////////////////////////////////////////////////////////////////
 
-    for (uint32 x = 0; x < cnt; x++)
+    for (auto it = sSpellCustomizations.GetServersideSpellStore()->begin(); it != sSpellCustomizations.GetServersideSpellStore()->end(); ++it)
     {
         // get spellentry
-        sp = dbcSpell.LookupRow(x);
+        sp = sSpellCustomizations.GetServersideSpell(it->first);
+        if (sp == nullptr)
+            continue;
 
         //Setting Cast Time Coefficient
         auto spell_cast_time = sSpellCastTimesStore.LookupEntry(sp->CastingTimeIndex);
@@ -1493,7 +1493,7 @@ void ApplyNormalFixes()
         {
             Field* f;
             f = resultx->Fetch();
-            sp = dbcSpell.LookupEntryForced(f[0].GetUInt32());
+            sp = sSpellCustomizations.GetServersideSpell(f[0].GetUInt32());
             if (sp != NULL)
             {
                 sp->Dspell_coef_override = f[2].GetFloat();
@@ -1507,14 +1507,17 @@ void ApplyNormalFixes()
     }
 
     //Fully loaded coefficients, we must share channeled coefficient to its triggered spells
-    for (uint32 x = 0; x < cnt; x++)
+    for (auto it = sSpellCustomizations.GetServersideSpellStore()->begin(); it != sSpellCustomizations.GetServersideSpellStore()->end(); ++it)
     {
         // get spellentry
-        sp = dbcSpell.LookupRow(x);
+        sp = sSpellCustomizations.GetServersideSpell(it->first);
+        if (sp == nullptr)
+            continue;
+
         OLD_SpellEntry* spz;
 
         //Case SPELL_AURA_PERIODIC_TRIGGER_SPELL
-        for (uint8 i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; ++i)
         {
             if (sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_TRIGGER_SPELL)
             {
@@ -2340,7 +2343,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(20608);   //Reincarnation
     if (sp != NULL)
     {
-        for (uint8 i = 0; i < 8; i++)
+        for (uint8 i = 0; i < 8; ++i)
         {
             if (sp->Reagent[i])
             {
@@ -3030,7 +3033,7 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     // Zyres: eeek
-    for (uint32 i = 23833; i <= 23844; i++)
+    for (uint32 i = 23833; i <= 23844; ++i)
     {
         sp = CheckAndReturnSpellEntry(i);
         if (sp != NULL)
@@ -3707,7 +3710,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(21075);
     if (sp != NULL)
     {
-        for (uint8 i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; ++i)
         {
             if (sp->EffectImplicitTargetA[i] > 0)
                 sp->EffectImplicitTargetA[i] = EFF_TARGET_ALL_FRIENDLY_IN_AREA;
@@ -3848,28 +3851,28 @@ void ApplyNormalFixes()
     }
 
     // DEATH AND DECAY
-    sp = dbcSpell.LookupEntryForced(49937);
+    sp = sSpellCustomizations.GetServersideSpell(49937);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    sp = dbcSpell.LookupEntryForced(49936);
+    sp = sSpellCustomizations.GetServersideSpell(49936);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    sp = dbcSpell.LookupEntryForced(49938);
+    sp = sSpellCustomizations.GetServersideSpell(49938);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    sp = dbcSpell.LookupEntryForced(43265);
+    sp = sSpellCustomizations.GetServersideSpell(43265);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
@@ -3877,7 +3880,7 @@ void ApplyNormalFixes()
     }
 
     // Runic Empowerment
-    /*sp = dbcSpell.LookupEntryForced(81229);
+    /*sp = sSpellCustomizations.GetServersideSpell(81229);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
@@ -3890,7 +3893,7 @@ void ApplyNormalFixes()
     }*/
 
     // Vengeance
-    sp = dbcSpell.LookupEntryForced(93099);
+    sp = sSpellCustomizations.GetServersideSpell(93099);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_ANY_DAMAGE_VICTIM;
@@ -4046,7 +4049,7 @@ void ApplyNormalFixes()
     {
         const uint32 ritOfSummId = 62330;
         CreateDummySpell(ritOfSummId);
-        OLD_SpellEntry * ritOfSumm = dbcSpell.LookupEntryForced(ritOfSummId);
+        OLD_SpellEntry * ritOfSumm = sSpellCustomizations.GetServersideSpell(ritOfSummId);
         if (ritOfSumm != NULL)
         {
             memcpy(ritOfSumm, sp, sizeof(OLD_SpellEntry));

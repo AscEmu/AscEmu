@@ -838,7 +838,7 @@ void Aura::Remove()
         if (m_spellProto->Effect[x] == SPELL_EFFECT_TRIGGER_SPELL && !m_spellProto->custom_always_apply)
         {
             // I'm not sure about this! FIX ME!!
-            auto spell_entry = dbcSpell.LookupEntryForced(GetSpellProto()->EffectTriggerSpell[x]);
+            auto spell_entry = sSpellCustomizations.GetServersideSpell(GetSpellProto()->EffectTriggerSpell[x]);
             if (spell_entry != nullptr)
                 if (spell_entry->DurationIndex < m_spellProto->DurationIndex)
                     m_target->RemoveAura(GetSpellProto()->EffectTriggerSpell[x]);
@@ -1707,7 +1707,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
             {
                 if (!pSpellId) //we need a parent spell and should always have one since it procs on it
                     break;
-                OLD_SpellEntry* parentsp = dbcSpell.LookupEntryForced(pSpellId);
+                OLD_SpellEntry* parentsp = sSpellCustomizations.GetServersideSpell(pSpellId);
                 if (!parentsp)
                     return;
                 if (c != nullptr && c->IsPlayer())
@@ -1936,7 +1936,7 @@ void Aura::SpellAuraDummy(bool apply)
     if (sScriptMgr.CallScriptedDummyAura(GetSpellId(), mod->i, this, apply))
         return;
 
-    Log.Debug("Aura::SpellAuraDummy", "Spell %u (%s) has an apply dummy aura effect, but no handler for it. ", m_spellProto->Id, m_spellProto->Name);
+    Log.Debug("Aura::SpellAuraDummy", "Spell %u (%s) has an apply dummy aura effect, but no handler for it. ", m_spellProto->Id, m_spellProto->Name.c_str());
 }
 
 void Aura::SpellAuraModConfuse(bool apply)
@@ -2980,7 +2980,7 @@ void Aura::EventPeriodicManaPct(float RegenPct)
 void Aura::EventPeriodicTriggerDummy()
 {
     if (!sScriptMgr.CallScriptedDummyAura(m_spellProto->Id, mod->i, this, true))
-        LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellProto->Id, m_spellProto->Name);
+        LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellProto->Id, m_spellProto->Name.c_str());
 }
 
 void Aura::SpellAuraModResistance(bool apply)
@@ -3047,7 +3047,7 @@ void Aura::SpellAuraPeriodicTriggerSpellWithValue(bool apply)
 {
     if (apply)
     {
-        OLD_SpellEntry* spe = dbcSpell.LookupEntryForced(m_spellProto->EffectTriggerSpell[mod->i]);
+        OLD_SpellEntry* spe = sSpellCustomizations.GetServersideSpell(m_spellProto->EffectTriggerSpell[mod->i]);
         if (spe == NULL)
             return;
 
@@ -3110,7 +3110,7 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
     if (target == 0 || !target->IsPlayer())
     return; //what about creatures ?
 
-    SpellEntry *proto = dbcSpell.LookupEntry(m_spellProto->EffectTriggerSpell[mod->i]);
+    SpellEntry *proto = sSpellCustomizations.GetServersideSpell(m_spellProto->EffectTriggerSpell[mod->i]);
 
     if (apply)
     TO< Player* >(target)->AddOnStrikeSpell(proto, m_spellProto->EffectAmplitude[mod->i]);
@@ -3123,7 +3123,7 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
 
     if (apply)
     {
-        OLD_SpellEntry* trigger = dbcSpell.LookupEntryForced(GetSpellProto()->EffectTriggerSpell[mod->i]);
+        OLD_SpellEntry* trigger = sSpellCustomizations.GetServersideSpell(GetSpellProto()->EffectTriggerSpell[mod->i]);
 
         if (trigger == NULL)
             return;
@@ -3685,7 +3685,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
                     modelId = 2289;
 
                 //some say there is a second effect
-                OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(21178);
+                OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(21178);
 
                 Spell* sp = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, NULL);
                 SpellCastTargets tgt;
@@ -3827,7 +3827,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
 
                     if (furorSpell != 0)
                     {
-                        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(furorSpell);
+                        OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(furorSpell);
 
                         Spell* sp = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, NULL);
                         SpellCastTargets tgt;
@@ -3858,7 +3858,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
         if (spellId == 0)
             return;
 
-        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(spellId);
+        OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(spellId);
 
         Spell* sp = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, NULL);
         SpellCastTargets tgt;
@@ -3867,7 +3867,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
 
         /*if (spellId2 != 0) This cannot be true CID 52824
         {
-            spellInfo = dbcSpell.LookupEntry(spellId2);
+            spellInfo = sSpellCustomizations.GetServersideSpell(spellId2);
             sp = sSpellFactoryMgr.NewSpell(m_target, spellInfo, true, NULL);
             sp->prepare(&tgt);
         }*/
@@ -5534,7 +5534,7 @@ void Aura::SpellAuraPeriodicTriggerDummy(bool apply)
     else
     {
         if (!sScriptMgr.CallScriptedDummyAura(m_spellProto->Id, mod->i, this, false))
-            LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellProto->Id, m_spellProto->Name);
+            LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellProto->Id, m_spellProto->Name.c_str());
     }
 }
 
@@ -6245,7 +6245,7 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
         OLD_SpellEntry* sp;
 
         // Find spell of effect to be triggered
-        sp = dbcSpell.LookupEntryForced(GetSpellProto()->EffectTriggerSpell[mod->i]);
+        sp = sSpellCustomizations.GetServersideSpell(GetSpellProto()->EffectTriggerSpell[mod->i]);
         if (sp == NULL)
         {
             LOG_DEBUG("Warning! class trigger spell is null for spell %u", GetSpellProto()->Id);
@@ -8230,7 +8230,7 @@ void Aura::SpellAuraSpiritOfRedemption(bool apply)
     {
         m_target->SetScale(0.5);
         m_target->SetHealth(1);
-        OLD_SpellEntry* sorInfo = dbcSpell.LookupEntry(27792);
+        OLD_SpellEntry* sorInfo = sSpellCustomizations.GetServersideSpell(27792);
         Spell* sor = sSpellFactoryMgr.NewSpell(m_target, sorInfo, true, NULL);
         SpellCastTargets targets;
         targets.m_unitTarget = m_target->GetGUID();

@@ -733,7 +733,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                                 float his_facing = getNextTarget()->GetOrientation();
                                 if (fabs(our_facing - his_facing) < CREATURE_DAZE_TRIGGER_ANGLE && !getNextTarget()->HasAura(CREATURE_SPELL_TO_DAZE))
                                 {
-                                    OLD_SpellEntry* info = dbcSpell.LookupEntry(CREATURE_SPELL_TO_DAZE);
+                                    OLD_SpellEntry* info = sSpellCustomizations.GetServersideSpell(CREATURE_SPELL_TO_DAZE);
                                     Spell* sp = sSpellFactoryMgr.NewSpell(m_Unit, info, false, NULL);
                                     SpellCastTargets targets;
                                     targets.m_unitTarget = getNextTarget()->GetGUID();
@@ -798,7 +798,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                         if (infront)
                         {
                             m_Unit->setAttackTimer(0, false);
-                            OLD_SpellEntry* info = dbcSpell.LookupEntryForced(SPELL_RANGED_GENERAL);
+                            OLD_SpellEntry* info = sSpellCustomizations.GetServersideSpell(SPELL_RANGED_GENERAL);
                             if (info)
                             {
                                 Spell* sp = sSpellFactoryMgr.NewSpell(m_Unit, info, false, NULL);
@@ -1078,7 +1078,7 @@ void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellI
         HandleEvent(EVENT_ENTERCOMBAT, pUnit, 1);
     }
 
-    HandleEvent(EVENT_DAMAGETAKEN, pUnit, _CalcThreat(damage_dealt, spellId ? dbcSpell.LookupEntryForced(spellId) : NULL, pUnit));
+    HandleEvent(EVENT_DAMAGETAKEN, pUnit, _CalcThreat(damage_dealt, spellId ? sSpellCustomizations.GetServersideSpell(spellId) : NULL, pUnit));
 }
 
 void AIInterface::HealReaction(Unit* caster, Unit* victim, OLD_SpellEntry* sp, uint32 amount)
@@ -2640,7 +2640,7 @@ void AIInterface::CastSpell(Unit* caster, OLD_SpellEntry* spellInfo, SpellCastTa
 
 OLD_SpellEntry* AIInterface::getSpellEntry(uint32 spellId)
 {
-    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(spellId);
+    OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(spellId);
 
     if (!spellInfo)
     {

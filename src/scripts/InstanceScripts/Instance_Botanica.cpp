@@ -104,7 +104,7 @@ class BloodProtectorAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = dbcSpell.LookupEntry(CRYSTAL_STRIKE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(CRYSTAL_STRIKE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].perctrigger = 10.0f;
@@ -210,7 +210,7 @@ class BloodGreenkeeperAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = dbcSpell.LookupEntry(GREENKEEPER_FURY);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(GREENKEEPER_FURY);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].perctrigger = 10.0f;
@@ -309,13 +309,13 @@ class SunchemistAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = dbcSpell.LookupEntry(FLAME_BREATH);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(FLAME_BREATH);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 3000; // 1sec
 
-            spells[1].info = dbcSpell.LookupEntry(POISON_CLOUD);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(POISON_CLOUD);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = false;
             spells[1].perctrigger = 5.0f;
@@ -413,25 +413,25 @@ class SunResearcherAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = dbcSpell.LookupEntry(POISON_SHIELD);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(POISON_SHIELD);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = false;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000; // 1sec
 
-            spells[1].info = dbcSpell.LookupEntry(MIND_SHOCK);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(MIND_SHOCK);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].perctrigger = 5.0f;
             spells[1].attackstoptimer = 2000; // 1sec
 
-            spells[2].info = dbcSpell.LookupEntry(FROST_SHOCK);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(FROST_SHOCK);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = false;
             spells[2].perctrigger = 5.0f;
             spells[2].attackstoptimer = 2000; // 1sec
 
-            spells[3].info = dbcSpell.LookupEntry(FLAME_SHOCK);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(FLAME_SHOCK);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = false;
             spells[3].perctrigger = 10.0f;
@@ -526,21 +526,21 @@ class CommanderSarannisAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(ARCANE_RESONANCE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(ARCANE_RESONANCE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 7.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(ARCANE_DEVASTATION);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(ARCANE_DEVASTATION);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 15.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SUMMON_REINFORCEMENTS);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SUMMON_REINFORCEMENTS);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].cooldown = -1;
@@ -695,49 +695,49 @@ class HighBotanistFreywinnAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(PLANT_RED_SEEDLING);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(PLANT_RED_SEEDLING);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(PLANT_GREEN_SEEDLING);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(PLANT_GREEN_SEEDLING);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(PLANT_WHITE_SEEDLING);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(PLANT_WHITE_SEEDLING);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(PLANT_BLUE_SEEDLING);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(PLANT_BLUE_SEEDLING);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
             spells[3].cooldown = -1;
             spells[3].perctrigger = 0.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = dbcSpell.LookupEntry(SUMMON_FRAYER_PROTECTOR);
+            spells[4].info = sSpellCustomizations.GetServersideSpell(SUMMON_FRAYER_PROTECTOR);
             spells[4].targettype = TARGET_SELF;
             spells[4].instant = true;
             spells[4].cooldown = -1;
             spells[4].perctrigger = 5.0f;
             spells[4].attackstoptimer = 1000;
 
-            spells[5].info = dbcSpell.LookupEntry(TREE_FORM);
+            spells[5].info = sSpellCustomizations.GetServersideSpell(TREE_FORM);
             spells[5].targettype = TARGET_SELF;
             spells[5].instant = true;
             spells[5].cooldown = 40;
             spells[5].perctrigger = 0.0f;
             spells[5].attackstoptimer = 1000;
 
-            spells[6].info = dbcSpell.LookupEntry(TRANQUILITY);
+            spells[6].info = sSpellCustomizations.GetServersideSpell(TRANQUILITY);
             spells[6].targettype = TARGET_VARIOUS;
             spells[6].instant = false;
             spells[6].cooldown = -1;
@@ -931,21 +931,21 @@ class ThorngrinTheTenderAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(HELLFIRE);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(HELLFIRE);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 9.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SACRIFICE);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SACRIFICE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 6.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(ENRAGE);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(ENRAGE);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].cooldown = -1;
@@ -1122,28 +1122,28 @@ class LajAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(ALERGIC_REACTION);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(ALERGIC_REACTION);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SUMMON_THORN_LASHER);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SUMMON_THORN_LASHER);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 6.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SUMMON_THORN_FLAYER);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(SUMMON_THORN_FLAYER);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 6.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(TELEPORT_SELF);
+            spells[3].info = sSpellCustomizations.GetServersideSpell(TELEPORT_SELF);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
             spells[3].cooldown = -1; // will take this spell separately as it needs additional coding for changing position
@@ -1274,21 +1274,21 @@ class WarpSplinterAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(STOMP);
+            spells[0].info = sSpellCustomizations.GetServersideSpell(STOMP);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SUMMON_SAPLINGS);
+            spells[1].info = sSpellCustomizations.GetServersideSpell(SUMMON_SAPLINGS);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(ARCANE_VOLLEY);
+            spells[2].info = sSpellCustomizations.GetServersideSpell(ARCANE_VOLLEY);
             spells[2].targettype = TARGET_VARIOUS;    // VARIOUS
             spells[2].instant = false;
             spells[2].cooldown = -1;

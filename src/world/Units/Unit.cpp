@@ -1003,7 +1003,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, OLD_SpellEntry* CastingSpell,
     {
         /* something has proceed over 10 times in a loop :/ dump the spellids to the crashlog, as the crashdump will most likely be useless. */
         // BURLEX FIX ME!
-        //OutputCrashLogLine("HandleProc %u SpellId %u (%s) %u", flag, spellId, sSpellStore.LookupString(sSpellStore.LookupEntry(spellId)->Name), m_procCounter);
+        //OutputCrashLogLine("HandleProc %u SpellId %u (%s) %u", flag, spellId, sSpellStore.LookupString(sSpellStore.LookupEntry(spellId)->Name.c_str()), m_procCounter);
         return 0;
     }
 
@@ -1058,7 +1058,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, OLD_SpellEntry* CastingSpell,
             origId = spell_proc->mOrigSpell->Id;
         else
             origId = 0;
-        OLD_SpellEntry* ospinfo = dbcSpell.LookupEntry(origId);  //no need to check if exists or not since we were not able to register this trigger if it would not exist :P
+        OLD_SpellEntry* ospinfo = sSpellCustomizations.GetServersideSpell(origId);  //no need to check if exists or not since we were not able to register this trigger if it would not exist :P
 
         //this requires some specific spell check,not yet implemented
         //this sucks and should be rewrote
@@ -1398,7 +1398,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, OLD_SpellEntry* CastingSpell,
                         continue;
                     if (CastingSpell->School != SCHOOL_FIRE)
                         continue;
-                    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(spellId);   //we already modified this spell on server loading so it must exist
+                    OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(spellId);   //we already modified this spell on server loading so it must exist
                     auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->DurationIndex);
                     uint32 tickcount = GetDuration(spell_duration) / spellInfo->EffectAmplitude[0];
                     dmg_overwrite[0] = ospinfo->EffectBasePoints[0] * dmg / (100 * tickcount);
@@ -1480,7 +1480,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, OLD_SpellEntry* CastingSpell,
                     Unit* new_caster = victim;
                     if (new_caster && new_caster->isAlive())
                     {
-                        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(spellId);   //we already modified this spell on server loading so it must exist
+                        OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(spellId);   //we already modified this spell on server loading so it must exist
                         Spell* spell = sSpellFactoryMgr.NewSpell(new_caster, spellInfo, true, NULL);
                         SpellCastTargets targets;
                         targets.m_destX = GetPositionX();
@@ -1597,7 +1597,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, OLD_SpellEntry* CastingSpell,
                     }
                     if (!amount)
                         continue;
-                    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(spellId);
+                    OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(spellId);
                     Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);
                     spell->SetUnitTarget(this);
                     spell->Heal(amount * (ospinfo->EffectBasePoints[0] + 1) / 100);
@@ -1720,8 +1720,8 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, OLD_SpellEntry* CastingSpell,
                 {
                     if (!IsPlayer() || !dmg)
                         continue;
-                    OLD_SpellEntry* parentproc = dbcSpell.LookupEntryForced(origId);
-                    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellId);
+                    OLD_SpellEntry* parentproc = sSpellCustomizations.GetServersideSpell(origId);
+                    OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(spellId);
                     if (!parentproc || !spellInfo)
                         continue;
                     int32 val = parentproc->EffectBasePoints[0] + 1;
@@ -1856,10 +1856,10 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, OLD_SpellEntry* CastingSpell,
                         continue;
                     //!! The weird thing is that we need the spell that triggered this enchant spell in order to output logs ..we are using oldspell info too
                     //we have to recalc the value of this spell
-                    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(origId);
+                    OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(origId);
                     uint32 AP_owerride = spellInfo->EffectBasePoints[0] + 1;
                     uint32 dmg2 = static_cast<Player*>(this)->GetMainMeleeDamage(AP_owerride);
-                    OLD_SpellEntry* sp_for_the_logs = dbcSpell.LookupEntry(spellId);
+                    OLD_SpellEntry* sp_for_the_logs = sSpellCustomizations.GetServersideSpell(spellId);
                     Strike(victim, MELEE, sp_for_the_logs, dmg2, 0, 0, true, false);
                     Strike(victim, MELEE, sp_for_the_logs, dmg2, 0, 0, true, false);
                     spellId = 33010; // WF animation
@@ -2035,7 +2035,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, OLD_SpellEntry* CastingSpell,
                         continue;
                     if (CastingSpell->custom_NameHash != SPELL_HASH_FLASH_OF_LIGHT && CastingSpell->custom_NameHash != SPELL_HASH_HOLY_LIGHT)
                         continue;
-                    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(54203);
+                    OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(54203);
                     auto spell_duration = sSpellDurationStore.LookupEntry(spellInfo->DurationIndex);
                     uint32 tickcount = GetDuration(spell_duration) / spellInfo->EffectAmplitude[0];
                     dmg_overwrite[0] = ospinfo->EffectBasePoints[0] * dmg / (100 * tickcount);
@@ -2601,7 +2601,7 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
             }
             else
             {
-                OLD_SpellEntry*	ability = dbcSpell.LookupEntry((*i2).m_spellId);
+                OLD_SpellEntry*	ability = sSpellCustomizations.GetServersideSpell((*i2).m_spellId);
                 this->Strike(attacker, RANGED, ability, 0, 0, (*i2).m_damage, true, true);  //can dmg shields miss at all ?
             }
         }
@@ -4357,7 +4357,7 @@ void Unit::AddAura(Aura* aur)
         // Nasty check for Blood Fury debuff (spell system based on namehashes is bs anyways)
         if (aur->GetSpellProto()->custom_always_apply == false)
         {
-            //uint32 aurName = aur->GetSpellProto()->Name;
+            //uint32 aurName = aur->GetSpellProto()->Name.c_str();
             //uint32 aurRank = aur->GetSpellProto()->Rank;
             uint32 maxStack = aur->GetSpellProto()->maxstack;
             if (aur->GetSpellProto()->procCharges > 0)
@@ -4482,7 +4482,7 @@ void Unit::AddAura(Aura* aur)
                                         {
                                             if (Entry->type[c] && Entry->spell[c])
                                             {
-                                                OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(Entry->spell[c]);
+                                                OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(Entry->spell[c]);
                                                 if (sp && sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
                                                 {
                                                     switch (sp->custom_NameHash)
@@ -4515,7 +4515,7 @@ void Unit::AddAura(Aura* aur)
                                             {
                                                 if (Entry->type[c] && Entry->spell[c])
                                                 {
-                                                    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(Entry->spell[c]);
+                                                    OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(Entry->spell[c]);
                                                     if (sp && sp->custom_c_is_flags & SPELL_FLAG_IS_POISON)
                                                     {
                                                         switch (sp->custom_NameHash)
@@ -5693,7 +5693,7 @@ uint8 Unit::CastSpell(Unit* Target, OLD_SpellEntry* Sp, bool triggered)
 
 uint8 Unit::CastSpell(Unit* Target, uint32 SpellID, bool triggered)
 {
-    OLD_SpellEntry* ent = dbcSpell.LookupEntryForced(SpellID);
+    OLD_SpellEntry* ent = sSpellCustomizations.GetServersideSpell(SpellID);
     if (ent == NULL) return SPELL_FAILED_UNKNOWN;
 
     return CastSpell(Target, ent, triggered);
@@ -5711,7 +5711,7 @@ uint8 Unit::CastSpell(uint64 targetGuid, OLD_SpellEntry* Sp, bool triggered)
 
 uint8 Unit::CastSpell(uint64 targetGuid, uint32 SpellID, bool triggered)
 {
-    OLD_SpellEntry* ent = dbcSpell.LookupEntryForced(SpellID);
+    OLD_SpellEntry* ent = sSpellCustomizations.GetServersideSpell(SpellID);
     if (ent == NULL) return SPELL_FAILED_UNKNOWN;
 
     return CastSpell(targetGuid, ent, triggered);
@@ -5719,7 +5719,7 @@ uint8 Unit::CastSpell(uint64 targetGuid, uint32 SpellID, bool triggered)
 
 uint8 Unit::CastSpell(Unit* Target, uint32 SpellID, uint32 forced_basepoints, bool triggered)
 {
-    return CastSpell(Target, dbcSpell.LookupEntryForced(SpellID), forced_basepoints, triggered);
+    return CastSpell(Target, sSpellCustomizations.GetServersideSpell(SpellID), forced_basepoints, triggered);
 }
 
 uint8 Unit::CastSpell(Unit* Target, OLD_SpellEntry* Sp, uint32 forced_basepoints, bool triggered)
@@ -5745,7 +5745,7 @@ uint8 Unit::CastSpell(Unit* Target, OLD_SpellEntry* Sp, uint32 forced_basepoints
 
 uint8 Unit::CastSpell(Unit* Target, uint32 SpellID, uint32 forced_basepoints, int32 charges, bool triggered)
 {
-    return CastSpell(Target, dbcSpell.LookupEntryForced(SpellID), forced_basepoints, charges, triggered);
+    return CastSpell(Target, sSpellCustomizations.GetServersideSpell(SpellID), forced_basepoints, charges, triggered);
 }
 
 uint8 Unit::CastSpell(Unit* Target, OLD_SpellEntry* Sp, uint32 forced_basepoints, int32 charges, bool triggered)
@@ -6083,7 +6083,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                             continue;
 
                         //this spell gets removed only when casting smite
-                        OLD_SpellEntry* spi = dbcSpell.LookupEntryForced(skip);
+                        OLD_SpellEntry* spi = sSpellCustomizations.GetServersideSpell(skip);
                         if (spi && spi->custom_NameHash != SPELL_HASH_SMITE)
                             continue;
                     }
@@ -6094,7 +6094,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                             continue;
                         if (m_currentSpell && m_currentSpell->GetProto()->custom_NameHash == SPELL_HASH_INCINERATE)
                             continue;
-                        OLD_SpellEntry* spi = dbcSpell.LookupEntryForced(skip);
+                        OLD_SpellEntry* spi = sSpellCustomizations.GetServersideSpell(skip);
                         if (spi && spi->custom_NameHash != SPELL_HASH_SHADOW_BOLT && spi->custom_NameHash != SPELL_HASH_INCINERATE)
                             continue;
                     }
@@ -6104,7 +6104,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     {
                         if (m_currentSpell && m_currentSpell->m_spellInfo->custom_NameHash == SPELL_HASH_FLASH_OF_LIGHT)
                             continue;
-                        OLD_SpellEntry* spi = dbcSpell.LookupEntryForced(skip);
+                        OLD_SpellEntry* spi = sSpellCustomizations.GetServersideSpell(skip);
                         if (spi && spi->custom_NameHash != SPELL_HASH_FLASH_OF_LIGHT)
                             continue;
                     }
@@ -6113,14 +6113,14 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     {
                         if (m_currentSpell && m_currentSpell->GetProto()->custom_NameHash == SPELL_HASH_SHADOW_BOLT)
                             continue;
-                        OLD_SpellEntry* spi = dbcSpell.LookupEntryForced(skip);
+                        OLD_SpellEntry* spi = sSpellCustomizations.GetServersideSpell(skip);
                         if (spi && spi->custom_NameHash != SPELL_HASH_SHADOW_BOLT)
                             continue;
                     }
                     break;
                     case 16166: // [Shaman] Elemental Mastery
                     {
-                        OLD_SpellEntry* spi = dbcSpell.LookupEntryForced(skip);
+                        OLD_SpellEntry* spi = sSpellCustomizations.GetServersideSpell(skip);
                         if (spi && !(spi->School == SCHOOL_FIRE || spi->School == SCHOOL_FROST || spi->School == SCHOOL_NATURE))
                             continue;
                     }
@@ -7986,7 +7986,7 @@ void Unit::EventStunOrImmobilize(Unit* proc_target, bool is_victim)
         if (t_trigger_on_stun_chance < 100 && !Rand(t_trigger_on_stun_chance))
             return;
 
-        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(t_trigger_on_stun);
+        OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(t_trigger_on_stun);
 
         if (!spellInfo)
             return;
@@ -8027,7 +8027,7 @@ void Unit::EventChill(Unit* proc_target, bool is_victim)
         if (t_trigger_on_chill_chance < 100 && !Rand(t_trigger_on_chill_chance))
             return;
 
-        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(t_trigger_on_chill);
+        OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(t_trigger_on_chill);
 
         if (!spellInfo)
             return;
@@ -8380,7 +8380,7 @@ SpellProc* Unit::AddProcTriggerSpell(OLD_SpellEntry* spell, OLD_SpellEntry* orig
 
 SpellProc* Unit::AddProcTriggerSpell(uint32 spell_id, uint32 orig_spell_id, uint64 caster, uint32 procChance, uint32 procFlags, uint32 procCharges, uint32* groupRelation, uint32* procClassMask, Object* obj)
 {
-    return AddProcTriggerSpell(dbcSpell.LookupEntryForced(spell_id), dbcSpell.LookupEntryForced(orig_spell_id), caster, procChance, procFlags, procCharges, groupRelation, procClassMask, obj);
+    return AddProcTriggerSpell(sSpellCustomizations.GetServersideSpell(spell_id), sSpellCustomizations.GetServersideSpell(orig_spell_id), caster, procChance, procFlags, procCharges, groupRelation, procClassMask, obj);
 }
 
 SpellProc* Unit::AddProcTriggerSpell(OLD_SpellEntry* sp, uint64 caster, uint32* groupRelation, uint32* procClassMask, Object* obj)
@@ -8749,7 +8749,7 @@ void Unit::BuildPetSpellList(WorldPacket& data)
 
 void Unit::CastOnMeleeSpell()
 {
-    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(GetOnMeleeSpell());
+    OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(GetOnMeleeSpell());
     Spell* spell = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);
     spell->extra_cast_number = GetOnMeleeSpellEcn();
     SpellCastTargets targets;

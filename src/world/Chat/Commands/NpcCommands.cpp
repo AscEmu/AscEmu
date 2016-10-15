@@ -30,7 +30,7 @@ bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    auto spell_entry = dbcSpell.LookupEntry(spellId);
+    auto spell_entry = sSpellCustomizations.GetServersideSpell(spellId);
     if (spell_entry == nullptr)
     {
         RedSystemMessage(m_session, "Spell %u is not invalid!", spellId);
@@ -112,7 +112,7 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
         return true;
     }
 
-    auto learn_spell = dbcSpell.LookupEntryForced(spellid);
+    auto learn_spell = sSpellCustomizations.GetServersideSpell(spellid);
     if (learn_spell == nullptr)
     {
         RedSystemMessage(m_session, "Invalid spell %u.", spellid);
@@ -155,7 +155,7 @@ bool ChatHandler::HandleNpcCastCommand(const char* args, WorldSession* m_session
         return true;
     }
 
-    auto spell_entry = dbcSpell.LookupEntry(spell_id);
+    auto spell_entry = sSpellCustomizations.GetServersideSpell(spell_id);
     if (spell_entry == nullptr)
     {
         RedSystemMessage(m_session, "Invalid Spell ID: %u !", spell_id);

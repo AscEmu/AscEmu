@@ -16,18 +16,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CThreads.h"
+#include "Singleton.h"
+#include "Storage/DBC/DBCStores.h"
 
 #ifndef _SPELL_CUSTOMIZATIONS_HPP
 #define _SPELL_CUSTOMIZATIONS_HPP
 
 
-class SpellCustomizations : public Singleton <SpellCustomizations>
+class SERVER_DECL SpellCustomizations : public Singleton <SpellCustomizations>
 {
     public:
 
         SpellCustomizations();
         ~SpellCustomizations();
+
+        typedef std::unordered_map<uint32, OLD_SpellEntry> ServersideSpellContainer;
+
+        void LoadServersideSpells();
+        OLD_SpellEntry* GetServersideSpell(uint32 spell_id);
+        ServersideSpellContainer* GetServersideSpellStore() { return &_serversideSpellContainerStore; }
 
         void StartSpellCustomization();
 
@@ -47,6 +54,8 @@ class SpellCustomizations : public Singleton <SpellCustomizations>
         void SetCustomFlags(OLD_SpellEntry* spell_entry);
         void SetOnShapeshiftChange(OLD_SpellEntry* spell_entry);
         void SetAlwaysApply(OLD_SpellEntry* spell_entry);
+
+        ServersideSpellContainer _serversideSpellContainerStore;
 };
 
 #define sSpellCustomizations SpellCustomizations::getSingleton()

@@ -62,7 +62,7 @@ class StrFever : public GossipScript
                 case 1:
                     {
                         plr->GetItemInterface()->RemoveItemAmt(2799, 1);
-                        doctor->CastSpell(doctor, dbcSpell.LookupEntry(12380), true);
+                        doctor->CastSpell(doctor, sSpellCustomizations.GetServersideSpell(12380), true);
                         if(!plr || !plr->GetMapMgr() || !plr->GetMapMgr()->GetInterface())
                             return;
                         Creature* firstenemy = sEAS.SpawnCreature(plr, 1511, -13770.5f, -6.79f, 42.8f, 5.7f , 0);
@@ -171,7 +171,7 @@ class BloodscalpClanHeads : public QuestScript
             msg1 += mTarget->GetName();
             msg1 += ". Now let us see what tale these heads tell...";
             Kin_weelay->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg1.c_str());
-            Kin_weelay->CastSpell(Kin_weelay, dbcSpell.LookupEntry(3644), false);
+            Kin_weelay->CastSpell(Kin_weelay, sSpellCustomizations.GetServersideSpell(3644), false);
             skull1->Despawn(5000, 0);
             GameObject* skull2 = mTarget->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(SSX, SSY, SSZ, 2551);
             if(skull2)

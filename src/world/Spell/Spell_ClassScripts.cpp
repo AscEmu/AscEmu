@@ -106,7 +106,7 @@ class FireNova : public Spell
     {
         uint32 fireNovaSpells = Spell::GetProto()->Id;
         //Cast spell. NOTICE All ranks are linked with a extra spell in HackFixes.cpp
-        totem->CastSpellAoF(totem->GetPositionX(), totem->GetPositionY(), totem->GetPositionZ(), dbcSpell.LookupEntryForced(fireNovaSpells), true);
+        totem->CastSpellAoF(totem->GetPositionX(), totem->GetPositionY(), totem->GetPositionZ(), sSpellCustomizations.GetServersideSpell(fireNovaSpells), true);
     }
 };
 
@@ -121,7 +121,7 @@ public:
     CheatDeathAura(OLD_SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL)
         : AbsorbAura(proto, duration, caster, target, temporary, i_caster)
     {
-        dSpell = dbcSpell.LookupEntry(31231);
+        dSpell = sSpellCustomizations.GetServersideSpell(31231);
     }
 
     uint32 AbsorbDamage(uint32 School, uint32* dmg)

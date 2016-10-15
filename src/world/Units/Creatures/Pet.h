@@ -212,19 +212,19 @@ class SERVER_DECL Pet : public Creature
         uint16 GetSpellState(OLD_SpellEntry* sp);
         bool HasSpell(uint32 SpellID)
         {
-            OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(SpellID);
+            OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(SpellID);
             if (sp)
                 return mSpells.find(sp) != mSpells.end();
             return false;
         }
         inline void RemoveSpell(uint32 SpellID)
         {
-            OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(SpellID);
+            OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(SpellID);
             if (sp) RemoveSpell(sp);
         }
         inline void SetSpellState(uint32 SpellID, uint16 State)
         {
-            OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(SpellID);
+            OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(SpellID);
             if (sp) SetSpellState(sp, State);
         }
         inline uint16 GetSpellState(uint32 SpellID)
@@ -232,7 +232,7 @@ class SERVER_DECL Pet : public Creature
             if (SpellID == 0)
                 return DEFAULT_SPELL_STATE;
 
-            OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(SpellID);
+            OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(SpellID);
             if (sp)
                 return GetSpellState(sp);
             return DEFAULT_SPELL_STATE;

@@ -1040,7 +1040,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         {
             /* talents procing - don't remove stealth either */
             if (!hasAttribute(ATTRIBUTES_PASSIVE) &&
-                !(pSpellId && dbcSpell.LookupEntry(pSpellId)->Attributes & ATTRIBUTES_PASSIVE))
+                !(pSpellId && sSpellCustomizations.GetServersideSpell(pSpellId)->Attributes & ATTRIBUTES_PASSIVE))
             {
                 p_caster->RemoveAura(p_caster->m_stealth);
                 p_caster->m_stealth = 0;
@@ -1305,7 +1305,7 @@ void Spell::cast(bool check)
                 && GetProto()->Id != 1)  //check spells that get trigger spell 1 after spell loading
             {
                 /* talents procing - don't remove stealth either */
-                if (!hasAttribute(ATTRIBUTES_PASSIVE) && !(pSpellId && dbcSpell.LookupEntry(pSpellId)->Attributes & ATTRIBUTES_PASSIVE))
+                if (!hasAttribute(ATTRIBUTES_PASSIVE) && !(pSpellId && sSpellCustomizations.GetServersideSpell(pSpellId)->Attributes & ATTRIBUTES_PASSIVE))
                 {
                     p_caster->RemoveAura(p_caster->m_stealth);
                     p_caster->m_stealth = 0;
@@ -2996,7 +2996,7 @@ void Spell::HandleAddAura(uint64 guid)
         p_caster->GetShapeShift() == FORM_DIREBEAR) &&
         p_caster->HasAurasWithNameHash(SPELL_HASH_KING_OF_THE_JUNGLE))
     {
-        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(51185);
+        OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(51185);
         if (!spellInfo)
         {
             delete aur;
@@ -3039,7 +3039,7 @@ void Spell::HandleAddAura(uint64 guid)
 
     if (spellid && Target)
     {
-        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellid);
+        OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(spellid);
         if (!spellInfo)
         {
             delete aur;
@@ -4025,7 +4025,7 @@ uint8 Spell::CanCast(bool tolerate)
                         return SPELL_FAILED_NO_PET;
 
                     // other checks
-                    OLD_SpellEntry* trig = dbcSpell.LookupEntryForced(GetProto()->EffectTriggerSpell[0]);
+                    OLD_SpellEntry* trig = sSpellCustomizations.GetServersideSpell(GetProto()->EffectTriggerSpell[0]);
                     if (trig == NULL)
                         return SPELL_FAILED_SPELL_UNAVAILABLE;
 
@@ -5213,7 +5213,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         {
             case 54172: //Paladin - Divine Storm heal effect
             {
-                int dmg = (int)CalculateDamage(u_caster, unitTarget, MELEE, 0, dbcSpell.LookupEntry(53385));    //1 hit
+                int dmg = (int)CalculateDamage(u_caster, unitTarget, MELEE, 0, sSpellCustomizations.GetServersideSpell(53385));    //1 hit
                 int target = 0;
                 uint8 did_hit_result;
                 std::set<Object*>::iterator itr, itr2;
@@ -5224,7 +5224,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
                     ++itr2;
                     if ((*itr)->IsUnit() && static_cast<Unit*>(*itr)->isAlive() && IsInrange(u_caster, (*itr), 8) && (u_caster->GetPhase() & (*itr)->GetPhase()))
                     {
-                        did_hit_result = DidHit(dbcSpell.LookupEntry(53385)->Effect[0], static_cast<Unit*>(*itr));
+                        did_hit_result = DidHit(sSpellCustomizations.GetServersideSpell(53385)->Effect[0], static_cast<Unit*>(*itr));
                         if (did_hit_result == SPELL_DID_HIT_SUCCESS)
                             target++;
                     }
@@ -6234,7 +6234,7 @@ OLD_SpellEntry* CheckAndReturnSpellEntry(uint32 spellid)
     if (spellid == 0 || spellid == uint32(-1))
         return NULL;
 
-    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
+    OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(spellid);
     if (sp == NULL)
         LOG_DEBUG("Something tried to access nonexistent spell %u", spellid);
 

@@ -73,7 +73,7 @@ class ZephyrGossipScript : public Arcemu::Gossip::Script
         {
             if (plr->GetStanding(989) >= 21000)
                 //plr->SafeTeleport( 1, 0, -8170.441406f, -4751.321777f, 33.457771f, 5.136f);
-                static_cast<Creature*>(pObject)->CastSpell(plr, dbcSpell.LookupEntry(37778), true);
+                static_cast<Creature*>(pObject)->CastSpell(plr, sSpellCustomizations.GetServersideSpell(37778), true);
             else
                 plr->BroadcastMessage(plr->GetSession()->LocalizedWorldSrv(Worldstring::SHATT_ZEPH_KOT)); // Dunno what the correct text is ^^
             Arcemu::Gossip::Menu::Complete(plr);

@@ -482,7 +482,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
             }
             if (DemonicSacEffectSpellId)
             {
-                OLD_SpellEntry* se = dbcSpell.LookupEntryForced(DemonicSacEffectSpellId);
+                OLD_SpellEntry* se = sSpellCustomizations.GetServersideSpell(DemonicSacEffectSpellId);
                 if (se && u_caster)
                     u_caster->CastSpell(u_caster, se, true);
             }
@@ -497,7 +497,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
 
             //TO< Pet* >(u_caster)->Dismiss(true);
 
-            OLD_SpellEntry* se = dbcSpell.LookupEntry(5);
+            OLD_SpellEntry* se = sSpellCustomizations.GetServersideSpell(5);
             if (static_cast< Pet* >(u_caster)->GetPetOwner() == NULL)
                 return;
 
@@ -514,7 +514,7 @@ void Spell::SpellEffectInstantKill(uint32 i)
 
             //TO< Pet* >(unitTarget)->Dismiss(true);
 
-            OLD_SpellEntry* se = dbcSpell.LookupEntry(5);
+            OLD_SpellEntry* se = sSpellCustomizations.GetServersideSpell(5);
 
             SpellCastTargets targets(unitTarget->GetGUID());
             Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, se, true, 0);
@@ -1133,7 +1133,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
     if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->Id, i, this))
         return;
 
-    Log.Debug("Spell::SpellEffectDummy", "Spell ID: %u (%s) has a dummy effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name, i);
+    Log.Debug("Spell::SpellEffectDummy", "Spell ID: %u (%s) has a dummy effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
 }
 
 void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
@@ -1149,7 +1149,7 @@ void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
         TeleportCoords const* teleport_coord = sMySQLStore.GetTeleportCoord(spellId);
         if (teleport_coord == nullptr)
         {
-            LOG_ERROR("Spell %u (%s) has a TELEPORT TO COORDINATES effect, but has no coordinates to teleport to. ", spellId, m_spellInfo->Name);
+            LOG_ERROR("Spell %u (%s) has a TELEPORT TO COORDINATES effect, but has no coordinates to teleport to. ", spellId, m_spellInfo->Name.c_str());
             return;
         }
 
@@ -1238,7 +1238,7 @@ void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
     if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->Id, i, this))
         return;
 
-    LOG_ERROR("Unhandled Teleport effect %u for Spell %u (%s).", i, m_spellInfo->Id, m_spellInfo->Name);
+    LOG_ERROR("Unhandled Teleport effect %u for Spell %u (%s).", i, m_spellInfo->Id, m_spellInfo->Name.c_str());
 }
 
 void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
@@ -1606,7 +1606,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
                 if (unitTarget && unitTarget->IsPlayer() && pSpellId && unitTarget->GetHealthPct() < 30)
                 {
                     //check for that 10 second cooldown
-                    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(pSpellId);
+                    OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(pSpellId);
                     if (spellInfo)
                     {
                         //heal value is received by the level of current active talent :s
@@ -1725,7 +1725,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
 
                     if (new_dmg > 0)
                     {
-                        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(18562);
+                        OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(18562);
                         Spell* spell = sSpellFactoryMgr.NewSpell(unitTarget, spellInfo, true, NULL);
                         spell->SetUnitTarget(unitTarget);
                         spell->Heal((int32)new_dmg);
@@ -1885,7 +1885,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
 
     if (playerTarget == nullptr)
     {
-        LOG_ERROR("Spell %u (%s) has a create item effect but no player target!", spellid, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has a create item effect but no player target!", spellid, m_spellInfo->Name.c_str());
         return;
     }
 
@@ -1897,14 +1897,14 @@ void Spell::SpellEffectCreateItem(uint32 i)
 
     if (itemid == 0)
     {
-        LOG_ERROR("Spell %u (%s) has a create item effect but no itemid to add, Spell needs to be fixed!", spellid, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has a create item effect but no itemid to add, Spell needs to be fixed!", spellid, m_spellInfo->Name.c_str());
         return;
     }
 
     ItemProperties const* m_itemProto = sMySQLStore.GetItemProperties(itemid);
     if (m_itemProto == nullptr)
     {
-        LOG_ERROR("Spell %u (%s) has a create item effect but the itemid is invalid!", spellid, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has a create item effect but the itemid is invalid!", spellid, m_spellInfo->Name.c_str());
         return;
     }
 
@@ -1936,7 +1936,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
 
     if (count <= 0)
     {
-        LOG_ERROR("Spell %u (%s) has a create item effect but no item count to add, Spell needs to be fixed! Count overriden to 1.", spellid, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has a create item effect but no item count to add, Spell needs to be fixed! Count overriden to 1.", spellid, m_spellInfo->Name.c_str());
         count = 1;
     }
 
@@ -2060,16 +2060,16 @@ void Spell::SpellEffectCreateItem(uint32 i)
 
             if ((learn_spell != 0) && (p_caster->getLevel() > 60) && !p_caster->HasSpell(learn_spell) && Rand(cast_chance))
             {
-                OLD_SpellEntry* dspellproto = dbcSpell.LookupEntryForced(learn_spell);
+                OLD_SpellEntry* dspellproto = sSpellCustomizations.GetServersideSpell(learn_spell);
 
                 if (dspellproto != NULL)
                 {
-                    p_caster->BroadcastMessage("%sDISCOVERY! You discovered the %s !|r", MSG_COLOR_YELLOW, dspellproto->Name);
+                    p_caster->BroadcastMessage("%sDISCOVERY! You discovered the %s !|r", MSG_COLOR_YELLOW, dspellproto->Name.c_str());
                     p_caster->addSpell(learn_spell);
                 }
                 else
                 {
-                    LOG_ERROR("Spell %u (%s) Effect %u tried to teach a non-existing Spell %u in %s:%u", spellid, m_spellInfo->Name, i, learn_spell, __FILE__, __LINE__);
+                    LOG_ERROR("Spell %u (%s) Effect %u tried to teach a non-existing Spell %u in %s:%u", spellid, m_spellInfo->Name.c_str(), i, learn_spell, __FILE__, __LINE__);
                 }
             }
         }
@@ -2093,7 +2093,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
             // if something was discovered teach player that recipe and broadcast message
             if (discovered_recipe != 0)
             {
-                OLD_SpellEntry* se = dbcSpell.LookupEntryForced(discovered_recipe);
+                OLD_SpellEntry* se = sSpellCustomizations.GetServersideSpell(discovered_recipe);
 
                 if (se != NULL)
                 {
@@ -2101,14 +2101,14 @@ void Spell::SpellEffectCreateItem(uint32 i)
 
                     WorldPacket* data;
                     char msg[256];
-                    sprintf(msg, "%sDISCOVERY! %s has discovered how to create %s.|r", MSG_COLOR_GOLD, p_caster->GetName(), se->Name);
+                    sprintf(msg, "%sDISCOVERY! %s has discovered how to create %s.|r", MSG_COLOR_GOLD, p_caster->GetName(), se->Name.c_str());
                     data = sChatHandler.FillMessageData(CHAT_MSG_SYSTEM, LANG_UNIVERSAL, msg, p_caster->GetGUID(), 0);
                     p_caster->GetMapMgr()->SendChatMessageToCellPlayers(p_caster, data, 2, 1, LANG_UNIVERSAL, p_caster->GetSession());
                     delete data;
                 }
                 else
                 {
-                    LOG_ERROR("Spell %u (%s) Effect %u tried to teach a non-existing Spell %u in %s:%u", spellid, m_spellInfo->Name, i, learn_spell, __FILE__, __LINE__);
+                    LOG_ERROR("Spell %u (%s) Effect %u tried to teach a non-existing Spell %u in %s:%u", spellid, m_spellInfo->Name.c_str(), i, learn_spell, __FILE__, __LINE__);
                 }
             }
         }
@@ -2348,7 +2348,7 @@ void Spell::SpellEffectSummon(uint32 i)
     auto summon_properties = sSummonPropertiesStore.LookupEntry(summonpropid);
     if (summon_properties == nullptr)
     {
-        LOG_ERROR("No SummonPropertiesEntry for Spell %u (%s)", m_spellInfo->Id, m_spellInfo->Name);
+        LOG_ERROR("No SummonPropertiesEntry for Spell %u (%s)", m_spellInfo->Id, m_spellInfo->Name.c_str());
         return;
     }
 
@@ -2358,7 +2358,7 @@ void Spell::SpellEffectSummon(uint32 i)
 
     if (cp == nullptr)
     {
-        LOG_ERROR("Spell %u (%s) tried to summon creature %u without database data", m_spellInfo->Id, m_spellInfo->Name, entry);
+        LOG_ERROR("Spell %u (%s) tried to summon creature %u without database data", m_spellInfo->Id, m_spellInfo->Name.c_str(), entry);
         return;
     }
 
@@ -2448,7 +2448,7 @@ void Spell::SpellEffectSummon(uint32 i)
             return;
     }
 
-    LOG_ERROR("Unknown summon type in summon property %u in spell %u %s", summonpropid, m_spellInfo->Id, m_spellInfo->Name);
+    LOG_ERROR("Unknown summon type in summon property %u in spell %u %s", summonpropid, m_spellInfo->Id, m_spellInfo->Name.c_str());
 }
 
 void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
@@ -2766,7 +2766,7 @@ void Spell::SpellEffectEnergize(uint32 i) // Energize
         case 31786: // Paladin - Spiritual Attunement
             if (ProcedOnSpell)
             {
-                OLD_SpellEntry* motherspell = dbcSpell.LookupEntryForced(pSpellId);
+                OLD_SpellEntry* motherspell = sSpellCustomizations.GetServersideSpell(pSpellId);
                 if (motherspell)
                 {
                     //heal amount from procspell (we only proceed on a heal spell)
@@ -2868,14 +2868,14 @@ void Spell::SpellEffectTriggerMissile(uint32 i) // Trigger Missile
     uint32 spellid = GetProto()->EffectTriggerSpell[i];
     if (spellid == 0)
     {
-        LOG_ERROR("Spell %u (%s) has a trigger missle effect (%u) but no trigger spell ID. Spell needs fixing.", m_spellInfo->Id, m_spellInfo->Name, i);
+        LOG_ERROR("Spell %u (%s) has a trigger missle effect (%u) but no trigger spell ID. Spell needs fixing.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
         return;
     }
 
-    OLD_SpellEntry* spInfo = dbcSpell.LookupEntryForced(spellid);
+    OLD_SpellEntry* spInfo = sSpellCustomizations.GetServersideSpell(spellid);
     if (spInfo == NULL)
     {
-        LOG_ERROR("Spell %u (%s) has a trigger missle effect (%u) but has an invalid trigger spell ID. Spell needs fixing.", m_spellInfo->Id, m_spellInfo->Name, i);
+        LOG_ERROR("Spell %u (%s) has a trigger missle effect (%u) but has an invalid trigger spell ID. Spell needs fixing.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
         return;
     }
 
@@ -3071,7 +3071,7 @@ void Spell::SpellEffectOpenLock(uint32 i)
                     return;
 
             uint32 spellid = !gameObjTarget->GetGameObjectProperties()->raw.parameter_10 ? 23932 : gameObjTarget->GetGameObjectProperties()->raw.parameter_10;
-            OLD_SpellEntry* en = dbcSpell.LookupEntry(spellid);
+            OLD_SpellEntry* en = sSpellCustomizations.GetServersideSpell(spellid);
             Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, en, true, NULL);
             SpellCastTargets tgt;
             tgt.m_unitTarget = gameObjTarget->GetGUID();
@@ -3202,7 +3202,7 @@ void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
             }
         }
 
-        if (!spellid || !dbcSpell.LookupEntryForced(spellid)) return;
+        if (!spellid || !sSpellCustomizations.GetServersideSpell(spellid)) return;
 
         // learn me!
         p_caster->addSpell(spellid);
@@ -3226,7 +3226,7 @@ void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
             playerTarget->addSpell(32605);
 
         //smth is wrong here, first we add this spell to player then we may cast it on player...
-        OLD_SpellEntry* spellinfo = dbcSpell.LookupEntry(spellToLearn);
+        OLD_SpellEntry* spellinfo = sSpellCustomizations.GetServersideSpell(spellToLearn);
         //remove specializations
         switch (spellinfo->Id)
         {
@@ -3385,7 +3385,7 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
                 {
                     if (aursp->custom_NameHash == SPELL_HASH_UNSTABLE_AFFLICTION)
                     {
-                        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(31117);
+                        OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(31117);
                         Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, NULL);
                         spell->forced_basepoints[0] = (aursp->EffectBasePoints[0] + 1) * 9;   //damage effect
                         spell->ProcedOnSpell = GetProto();
@@ -3585,7 +3585,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
     GameObjectProperties const* info = sMySQLStore.GetGameObjectProperties(entry);
     if (info == nullptr)
     {
-        sLog.outError("Spell %u ( %s ) Effect %u tried to summon a GameObject with ID %u. GameObject is not in the database.", m_spellInfo->Id, m_spellInfo->Name, i, entry);
+        sLog.outError("Spell %u ( %s ) Effect %u tried to summon a GameObject with ID %u. GameObject is not in the database.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i, entry);
         return;
     }
 
@@ -3736,13 +3736,13 @@ void Spell::SpellEffectEnchantItemTemporary(uint32 i)  // Enchant Item Temporary
 
     if (Duration == 0)
     {
-        LOG_ERROR("Spell %u (%s) has no enchantment duration. Spell needs to be fixed!", m_spellInfo->Id, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has no enchantment duration. Spell needs to be fixed!", m_spellInfo->Id, m_spellInfo->Name.c_str());
         return;
     }
 
     if (EnchantmentID == 0)
     {
-        LOG_ERROR("Spell %u (%s) has no enchantment ID. Spell needs to be fixed!", m_spellInfo->Id, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has no enchantment ID. Spell needs to be fixed!", m_spellInfo->Id, m_spellInfo->Name.c_str());
         return;
     }
 
@@ -3867,7 +3867,7 @@ void Spell::SpellEffectLearnPetSpell(uint32 i)
         if (pPet->IsSummonedPet())
             p_caster->AddSummonSpell(unitTarget->GetEntry(), GetProto()->EffectTriggerSpell[i]);
 
-        pPet->AddSpell(dbcSpell.LookupEntry(GetProto()->EffectTriggerSpell[i]), true);
+        pPet->AddSpell(sSpellCustomizations.GetServersideSpell(GetProto()->EffectTriggerSpell[i]), true);
 
         // Send Packet
         /*      WorldPacket data(SMSG_SET_EXTRA_AURA_INFO_OBSOLETE, 22);
@@ -3956,7 +3956,7 @@ void Spell::SpellEffectSendEvent(uint32 i) //Send Event
     if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->Id, i, this))
         return;
 
-    Log.Debug("Spell::SpellEffectSendEvent", "Spell ID: %u (%s) has a scripted effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name, i);
+    Log.Debug("Spell::SpellEffectSendEvent", "Spell ID: %u (%s) has a scripted effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
 
 }
 
@@ -4010,7 +4010,7 @@ void Spell::SpellEffectClearQuest(uint32 i)
 {
     if (playerTarget == NULL)
     {
-        LOG_ERROR("Spell %u (%s) was not casted on Player, but Spell requires Player to be a target.", m_spellInfo->Id, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) was not casted on Player, but Spell requires Player to be a target.", m_spellInfo->Id, m_spellInfo->Name.c_str());
         return;
     }
 
@@ -4023,7 +4023,7 @@ void Spell::SpellEffectClearQuest(uint32 i)
 
 void Spell::SpellEffectTriggerSpell(uint32 i) // Trigger Spell
 {
-    OLD_SpellEntry* entry = dbcSpell.LookupEntryForced(GetProto()->EffectTriggerSpell[i]);
+    OLD_SpellEntry* entry = sSpellCustomizations.GetServersideSpell(GetProto()->EffectTriggerSpell[i]);
     if (entry == NULL)
         return;
 
@@ -4268,7 +4268,7 @@ void Spell::SpellEffectScriptEffect(uint32 i) // Script Effect
     if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->Id, i, this))
         return;
 
-    LOG_ERROR("Spell ID: %u (%s) has a scripted effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name, i);
+    LOG_ERROR("Spell ID: %u (%s) has a scripted effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
 }
 
 void Spell::SpellEffectSanctuary(uint32 i) // Stop all attacks made to you
@@ -4396,7 +4396,7 @@ void Spell::SpellEffectActivateObject(uint32 i) // Activate Object
 
     if (!gameObjTarget)
     {
-        LOG_ERROR("Spell %u (%s) effect %u not handled because no target was found. ", m_spellInfo->Id, m_spellInfo->Name, i);
+        LOG_ERROR("Spell %u (%s) effect %u not handled because no target was found. ", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
         return;
     }
 
@@ -4410,7 +4410,7 @@ void Spell::SpellEffectBuildingDamage(uint32 i)
 {
     if (gameObjTarget == NULL)
     {
-        LOG_ERROR("Spell %u (%s) effect %u not handled because no target was found. ", m_spellInfo->Id, m_spellInfo->Name, i);
+        LOG_ERROR("Spell %u (%s) effect %u not handled because no target was found. ", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
         return;
     }
 
@@ -4665,7 +4665,7 @@ void Spell::SpellEffectFeedPet(uint32 i)  // Feed Pet
     if (deltaLvl > 20) damage = damage >> 1;
     damage *= 1000;
 
-    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(GetProto()->EffectTriggerSpell[i]);
+    OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(GetProto()->EffectTriggerSpell[i]);
     Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, spellInfo, true, NULL);
     sp->forced_basepoints[0] = damage;
     SpellCastTargets tgt;
@@ -4845,7 +4845,7 @@ void Spell::SpellEffectDestroyAllTotems(uint32 i)
     for (std::vector< uint32 >::iterator itr = spellids.begin(); itr != spellids.end(); ++itr)
     {
         uint32 spellid = *itr;
-        OLD_SpellEntry* sp = dbcSpell.LookupEntry(spellid);
+        OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(spellid);
 
         if (sp != NULL)
         {
@@ -5033,7 +5033,7 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
     {
         //count the number of sunder armors on target
         uint32 sunder_count = 0;
-        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(7386);
+        OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(7386);
         for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
             if (unitTarget->m_auras[x] && unitTarget->m_auras[x]->GetSpellProto()->custom_NameHash == SPELL_HASH_SUNDER_ARMOR)
             {
@@ -5413,7 +5413,7 @@ void Spell::SpellEffectPlayMusic(uint32 i)
 
     if (soundid == 0)
     {
-        LOG_ERROR("Spell %u (%s) has no sound ID to play. Spell needs fixing!", m_spellInfo->Id, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has no sound ID to play. Spell needs fixing!", m_spellInfo->Id, m_spellInfo->Name.c_str());
         return;
     }
 
@@ -5457,7 +5457,7 @@ void Spell::SpellEffectTriggerSpellWithValue(uint32 i)
 {
     if (!unitTarget) return;
 
-    OLD_SpellEntry* TriggeredSpell = dbcSpell.LookupEntryForced(GetProto()->EffectTriggerSpell[i]);
+    OLD_SpellEntry* TriggeredSpell = sSpellCustomizations.GetServersideSpell(GetProto()->EffectTriggerSpell[i]);
     if (TriggeredSpell == NULL)
         return;
 

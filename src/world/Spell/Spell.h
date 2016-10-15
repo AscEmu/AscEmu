@@ -2233,7 +2233,7 @@ class SERVER_DECL Spell : public EventableObject
         {
             if (m_spellInfo_override != NULL)
                 return;
-            m_spellInfo_override = dbcSpell.CreateCopy(m_spellInfo);
+            m_spellInfo_override = sSpellCustomizations.GetServersideSpell(m_spellInfo->Id);
         }
         uint32 GetDuration()
         {

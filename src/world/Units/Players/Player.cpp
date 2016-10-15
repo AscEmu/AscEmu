@@ -1419,7 +1419,7 @@ void Player::_EventCharmAttack()
             }
             else
             {
-                OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(currentCharm->GetOnMeleeSpell());
+                OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(currentCharm->GetOnMeleeSpell());
                 currentCharm->SetOnMeleeSpell(0);
                 Spell* spell = sSpellFactoryMgr.NewSpell(currentCharm, spellInfo, true, NULL);
                 SpellCastTargets targets;
@@ -2032,7 +2032,7 @@ void Player::_SavePetSpells(QueryBuffer* buf)
 
 void Player::AddSummonSpell(uint32 Entry, uint32 SpellID)
 {
-    OLD_SpellEntry* sp = dbcSpell.LookupEntry(SpellID);
+    OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(SpellID);
     std::map<uint32, std::set<uint32> >::iterator itr = SummonSpells.find(Entry);
     if (itr == SummonSpells.end())
         SummonSpells[Entry].insert(SpellID);
@@ -2042,7 +2042,7 @@ void Player::AddSummonSpell(uint32 Entry, uint32 SpellID)
         for (std::set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end();)
         {
             it3 = it2++;
-            if (dbcSpell.LookupEntry(*it3)->custom_NameHash == sp->custom_NameHash)
+            if (sSpellCustomizations.GetServersideSpell(*it3)->custom_NameHash == sp->custom_NameHash)
                 itr->second.erase(it3);
         }
         itr->second.insert(SpellID);
@@ -2222,7 +2222,7 @@ void Player::addSpell(uint32 spell_id)
 
     // Add the skill line for this spell if we don't already have it.
     auto skill_line_ability = objmgr.GetSpellSkill(spell_id);
-    OLD_SpellEntry* spell = dbcSpell.LookupEntry(spell_id);
+    OLD_SpellEntry* spell = sSpellCustomizations.GetServersideSpell(spell_id);
     if (skill_line_ability && !_HasSkillLine(skill_line_ability->skilline))
     {
         auto skill_line = sSkillLineStore.LookupEntry(skill_line_ability->skilline);
@@ -2263,7 +2263,7 @@ void Player::addSpell(uint32 spell_id)
     {
         // miscvalue1==777 for mounts, 778 for pets
         // make sure it's a companion pet, not some other summon-type spell
-        if (strncmp(spell->Description, "Right Cl", 8) == 0) // "Right Click to summon and dismiss " ...
+        if (strncmp(spell->Description.c_str(), "Right Cl", 8) == 0) // "Right Click to summon and dismiss " ...
         {
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS, 778, 0, 0);
         }
@@ -4165,7 +4165,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
                         if (Set->itemscount == item_set_entry->itemscount[x])
                         {
                             //cast new spell
-                            OLD_SpellEntry* info = dbcSpell.LookupEntry(item_set_entry->SpellID[x]);
+                            OLD_SpellEntry* info = sSpellCustomizations.GetServersideSpell(item_set_entry->SpellID[x]);
                             Spell* spell = sSpellFactoryMgr.NewSpell(this, info, true, NULL);
                             SpellCastTargets targets;
                             targets.m_unitTarget = this->GetGUID();
@@ -4411,7 +4411,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
             if (item->GetItemProperties()->Spells[k].Id == 0)
                 continue;//this isn't needed since the check below handles this case but it's a lot faster performance-wise.
 
-            spells = dbcSpell.LookupEntryForced(item->GetItemProperties()->Spells[k].Id);
+            spells = sSpellCustomizations.GetServersideSpell(item->GetItemProperties()->Spells[k].Id);
             if (spells == nullptr)
                 continue;
 
@@ -4444,7 +4444,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         {
             if (item->GetItemProperties()->Spells[k].Trigger == ON_EQUIP)
             {
-                OLD_SpellEntry* spells = dbcSpell.LookupEntry(item->GetItemProperties()->Spells[k].Id);
+                OLD_SpellEntry* spells = sSpellCustomizations.GetServersideSpell(item->GetItemProperties()->Spells[k].Id);
                 if (spells->RequiredShapeShift)
                     RemoveShapeShiftSpell(spells->Id);
                 else
@@ -4625,13 +4625,13 @@ void Player::BuildPlayerRepop()
 
     if (getRace() == RACE_NIGHTELF)
     {
-        OLD_SpellEntry* inf = dbcSpell.LookupEntry(9036);
+        OLD_SpellEntry* inf = sSpellCustomizations.GetServersideSpell(9036);
         Spell* sp = sSpellFactoryMgr.NewSpell(this, inf, true, NULL);
         sp->prepare(&tgt);
     }
     else
     {
-        OLD_SpellEntry* inf = dbcSpell.LookupEntry(8326);
+        OLD_SpellEntry* inf = sSpellCustomizations.GetServersideSpell(8326);
         Spell* sp = sSpellFactoryMgr.NewSpell(this, inf, true, NULL);
         sp->prepare(&tgt);
     }
@@ -6192,12 +6192,12 @@ uint32 Player::CalcTalentResetCost(uint32 resetnum)
 
 int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 {
-    OLD_SpellEntry* spell_info = dbcSpell.LookupEntryForced(spellid);
+    OLD_SpellEntry* spell_info = sSpellCustomizations.GetServersideSpell(spellid);
 
     if (spell_info == nullptr)
         return -1;
 
-    //sLog.outString("Canshootwithrangedweapon!?!? spell: [%u] %s" , spellinfo->Id , spellinfo->Name);
+    //sLog.outString("Canshootwithrangedweapon!?!? spell: [%u] %s" , spellinfo->Id , spellinfo->Name.c_str());
 
     // Check if Morphed
     if (polySpell > 0)
@@ -6259,7 +6259,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     //float bonusRange = 0;
     // another hackfix: bonus range from hunter talent hawk eye: +2/4/6 yard range to ranged weapons
     //if (autoshot)
-    //SM_FFValue(SM_FRange, &bonusRange, dbcSpell.LookupEntry(75)->SpellGroupType); // HORRIBLE hackfixes :P
+    //SM_FFValue(SM_FRange, &bonusRange, sSpellCustomizations.GetServersideSpell(75)->SpellGroupType); // HORRIBLE hackfixes :P
     // Partha: +2.52yds to max range, this matches the range the client is calculating.
     // see extra/supalosa_range_research.txt for more info
     //bonusRange = 2.52f;
@@ -6416,7 +6416,7 @@ bool Player::HasSpellwithNameHash(uint32 hash)
     {
         it = iter++;
         uint32 SpellID = *it;
-        OLD_SpellEntry* e = dbcSpell.LookupEntry(SpellID);
+        OLD_SpellEntry* e = sSpellCustomizations.GetServersideSpell(SpellID);
         if (e->custom_NameHash == hash)
             return true;
     }
@@ -6436,7 +6436,7 @@ void Player::removeSpellByHashName(uint32 hash)
     {
         it = iter++;
         uint32 SpellID = *it;
-        OLD_SpellEntry* e = dbcSpell.LookupEntry(SpellID);
+        OLD_SpellEntry* e = sSpellCustomizations.GetServersideSpell(SpellID);
         if (e->custom_NameHash == hash)
         {
             if (info->spell_list.find(e->Id) != info->spell_list.end())
@@ -6454,7 +6454,7 @@ void Player::removeSpellByHashName(uint32 hash)
     {
         it = iter++;
         uint32 SpellID = *it;
-        OLD_SpellEntry* e = dbcSpell.LookupEntry(SpellID);
+        OLD_SpellEntry* e = sSpellCustomizations.GetServersideSpell(SpellID);
         if (e->custom_NameHash == hash)
         {
             if (info->spell_list.find(e->Id) != info->spell_list.end())
@@ -6633,7 +6633,7 @@ void Player::Reset_Talents()
         {
             if (temp_talent->RankID[j] != 0)
             {
-                spellInfo = dbcSpell.LookupEntryForced(temp_talent->RankID[j]);
+                spellInfo = sSpellCustomizations.GetServersideSpell(temp_talent->RankID[j]);
                 if (spellInfo != NULL)
                 {
                     for (uint8 k = 0; k < 3; ++k)
@@ -6642,7 +6642,7 @@ void Player::Reset_Talents()
                         {
                             // removeSpell(spellInfo->EffectTriggerSpell[k], false, 0, 0);
                             // remove higher ranks of this spell too (like earth shield lvl 1 is talent and the rest is taught from trainer)
-                            spellInfo2 = dbcSpell.LookupEntryForced(spellInfo->EffectTriggerSpell[k]);
+                            spellInfo2 = sSpellCustomizations.GetServersideSpell(spellInfo->EffectTriggerSpell[k]);
                             if (spellInfo2 != NULL)
                             {
                                 removeSpellByHashName(spellInfo2->custom_NameHash);
@@ -7461,7 +7461,7 @@ void Player::ClearCooldownForSpell(uint32 spell_id)
     // remove cooldown data from Server side lists
     uint32 i;
     PlayerCooldownMap::iterator itr, itr2;
-    OLD_SpellEntry* spe = dbcSpell.LookupEntryForced(spell_id);
+    OLD_SpellEntry* spe = sSpellCustomizations.GetServersideSpell(spell_id);
     if (!spe) return;
 
     for (i = 0; i < NUM_COOLDOWN_TYPES; ++i)
@@ -9206,12 +9206,12 @@ void Player::CompleteLoading()
     if (getClass() == WARRIOR)
     {
         // battle stance passive
-        CastSpell(this, dbcSpell.LookupEntry(2457), true);
+        CastSpell(this, sSpellCustomizations.GetServersideSpell(2457), true);
     }
 
     for (itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
-        info = dbcSpell.LookupEntryForced(*itr);
+        info = sSpellCustomizations.GetServersideSpell(*itr);
 
         if (info != NULL
             && (info->Attributes & ATTRIBUTES_PASSIVE)  // passive
@@ -9232,7 +9232,7 @@ void Player::CompleteLoading()
 
     for (; i != loginauras.end(); ++i)
     {
-        OLD_SpellEntry* sp = dbcSpell.LookupEntry((*i).id);
+        OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell((*i).id);
 
         if (sp->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
             continue; //do not load auras that only exist while pet exist. We should recast these when pet is created anyway
@@ -9316,7 +9316,7 @@ void Player::CompleteLoading()
         SpawnActivePet();
 
     // useless logon spell
-    /*Spell* logonspell = sSpellFactoryMgr.NewSpell(this, dbcSpell.LookupEntry(836), false, NULL);
+    /*Spell* logonspell = sSpellFactoryMgr.NewSpell(this, sSpellCustomizations.GetServersideSpell(836), false, NULL);
     logonspell->prepare(&targets);*/
 
     if (IsBanned())
@@ -9743,7 +9743,7 @@ void Player::SetShapeShift(uint8 ss)
 
     for (itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
-        sp = dbcSpell.LookupEntry(*itr);
+        sp = sSpellCustomizations.GetServersideSpell(*itr);
         if (sp->custom_apply_on_shapeshift_change || sp->Attributes & 64)        // passive/talent
         {
             if (sp->RequiredShapeShift && ((uint32)1 << (ss - 1)) & sp->RequiredShapeShift)
@@ -9770,7 +9770,7 @@ void Player::SetShapeShift(uint8 ss)
     // now dummy-handler stupid hacky fixed shapeshift spells (leader of the pack, etc)
     for (itr = mShapeShiftSpells.begin(); itr != mShapeShiftSpells.end(); ++itr)
     {
-        sp = dbcSpell.LookupEntry(*itr);
+        sp = sSpellCustomizations.GetServersideSpell(*itr);
         if (sp->RequiredShapeShift && ((uint32)1 << (ss - 1)) & sp->RequiredShapeShift)
         {
             spe = sSpellFactoryMgr.NewSpell(this, sp, true, NULL);
@@ -10388,7 +10388,7 @@ void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
         // add new "automatic-acquired" spell
         if ((skill_line_ability->skilline == SkillLine) && (skill_line_ability->acquireMethod == 1))
         {
-            sp = dbcSpell.LookupEntryForced(skill_line_ability->spell);
+            sp = sSpellCustomizations.GetServersideSpell(skill_line_ability->spell);
             if (sp && (curr_sk >= skill_line_ability->minSkillLineRank))
             {
                 // Player is able to learn this spell; check if they already have it, or a higher rank (shouldn't, but just in case)
@@ -10396,7 +10396,7 @@ void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
                 OLD_SpellEntry* se;
                 for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
                 {
-                    se = dbcSpell.LookupEntry(*itr);
+                    se = sSpellCustomizations.GetServersideSpell(*itr);
                     if ((se->custom_NameHash == sp->custom_NameHash) && (se->custom_RankNumber >= sp->custom_RankNumber))
                     {
                         // Stupid profession related spells for "skinning" having the same namehash and not ranked
@@ -10873,7 +10873,7 @@ void Player::EventSummonPet(Pet* new_pet)
     {
         it = iter++;
         uint32 SpellID = *it;
-        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(SpellID);
+        OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(SpellID);
         if (spellInfo->custom_c_is_flags & SPELL_FLAG_IS_CASTED_ON_PET_SUMMON_PET_OWNER)
         {
             this->RemoveAllAuras(SpellID, this->GetGUID());   //this is required since unit::addaura does not check for talent stacking
@@ -10909,7 +10909,7 @@ void Player::EventDismissPet()
 
 void Player::AddShapeShiftSpell(uint32 id)
 {
-    OLD_SpellEntry* sp = dbcSpell.LookupEntry(id);
+    OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(id);
     mShapeShiftSpells.insert(id);
 
     if (sp->RequiredShapeShift && ((uint32)1 << (GetShapeShift() - 1)) & sp->RequiredShapeShift)
@@ -10939,7 +10939,7 @@ void Player::UpdatePotionCooldown()
         {
             if (proto->Spells[i].Id && proto->Spells[i].Trigger == USE)
             {
-                OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(proto->Spells[i].Id);
+                OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(proto->Spells[i].Id);
                 if (spellInfo != NULL)
                 {
                     Cooldown_AddItem(proto, i);
@@ -10956,7 +10956,7 @@ bool Player::HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoint
 {
     for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
-        OLD_SpellEntry *sp = dbcSpell.LookupEntry(*itr);
+        OLD_SpellEntry *sp = sSpellCustomizations.GetServersideSpell(*itr);
 
         for (uint8 i = 0; i < 3; ++i)
         {
@@ -12167,7 +12167,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
         {
             addSpell(spellid);
 
-            OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(spellid);
+            OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(spellid);
             //make sure pets that get bonus from owner do not stack it up
             if (getClass() == HUNTER && GetSummon())
                 GetSummon()->RemoveAura(spellInfo->Id);
@@ -12180,7 +12180,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
                     removeSpell(respellid, false, false, 0);
                     RemoveAura(respellid);
 
-                    OLD_SpellEntry* spellInfoReq = dbcSpell.LookupEntry(respellid);
+                    OLD_SpellEntry* spellInfoReq = sSpellCustomizations.GetServersideSpell(respellid);
                     if (getClass() == HUNTER && GetSummon())
                         GetSummon()->RemoveAura(spellInfoReq->Id);
                 }
@@ -12241,7 +12241,7 @@ void Player::SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs)
     {
         uint32 SpellId = (*sitr);
 
-        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntry(SpellId);
+        OLD_SpellEntry* spellInfo = sSpellCustomizations.GetServersideSpell(SpellId);
 
         if (!spellInfo)
         {
@@ -12829,7 +12829,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     {
         OLD_SpellEntry* killerspell;
         if (spellid)
-            killerspell = dbcSpell.LookupEntry(spellid);
+            killerspell = sSpellCustomizations.GetServersideSpell(spellid);
         else killerspell = NULL;
 
         HandleProc(PROC_ON_DIE, this, killerspell);
@@ -12894,7 +12894,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
             if (self_res_spell == 0 && bReincarnation)
             {
-                OLD_SpellEntry* m_reincarnSpellInfo = dbcSpell.LookupEntry(20608);
+                OLD_SpellEntry* m_reincarnSpellInfo = sSpellCustomizations.GetServersideSpell(20608);
                 if (Cooldown_CanCast(m_reincarnSpellInfo))
                 {
 
@@ -12929,7 +12929,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     //check for spirit of Redemption
     if (HasSpell(20711))
     {
-        OLD_SpellEntry* sorInfo = dbcSpell.LookupEntryForced(27827);
+        OLD_SpellEntry* sorInfo = sSpellCustomizations.GetServersideSpell(27827);
 
         if (sorInfo != NULL)
         {
@@ -13330,7 +13330,7 @@ bool Player::LoadSpells(QueryResult* result)
 
         uint32 spellid = fields[0].GetUInt32();
 
-        OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
+        OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(spellid);
         if (sp != NULL)
             mSpells.insert(spellid);
 
@@ -13389,7 +13389,7 @@ bool Player::LoadDeletedSpells(QueryResult* result)
 
         uint32 spellid = fields[0].GetUInt32();
 
-        OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
+        OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(spellid);
         if (sp != NULL)
             mDeletedSpells.insert(spellid);
 
