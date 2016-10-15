@@ -170,7 +170,6 @@ enum Opcodes
     SMSG_ITEM_ENCHANT_TIME_UPDATE                   = 0x1EB,
     SMSG_PARTYKILLLOG                               = 0x1F5,
     SMSG_PLAY_SPELL_IMPACT                          = 0x1F7,
-    SMSG_ENVIRONMENTALDAMAGELOG                     = 0x1FC,
     CMSG_RWHOIS_OBSOLETE                            = 0x1FD,
     SMSG_RWHOIS                                     = 0x1FE,
     SMSG_LFG_PLAYER_REWARD                          = 0x1FF,
@@ -389,7 +388,6 @@ enum Opcodes
     CMSG_CANCEL_MOUNT_AURA                          = 0x375,
     SMSG_ARENA_ERROR                                = 0x376,
     MSG_INSPECT_ARENA_TEAMS                         = 0x377,
-    CMSG_CANCEL_TEMP_ENCHANTMENT                    = 0x379,
     SMSG_FORCED_DEATH_UPDATE                        = 0x37A,
     CMSG_CHEAT_SET_HONOR_CURRENCY                   = 0x37B,
     CMSG_CHEAT_SET_ARENA_CURRENCY                   = 0x37C,
@@ -1127,6 +1125,8 @@ enum Opcodes
     SMSG_PET_LEARNED_SPELL                              = 0x0507, 
     SMSG_PET_UNLEARNED_SPELL                            = 0x6A04,
     CMSG_LEARN_SPELL                                    = 0x1011,
+    CMSG_CANCEL_TEMP_ENCHANTMENT                        = 0x6C37,
+    SMSG_ENVIRONMENTALDAMAGELOG                         = 0x6C05,
 
     // GO/Creatures
     SMSG_MONSTER_MOVE                                   = 0x6E17,

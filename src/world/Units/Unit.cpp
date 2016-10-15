@@ -8856,13 +8856,12 @@ Unit* Unit::GetVehicleBase()
 
 void Unit::SendEnvironmentalDamageLog(uint64 guid, uint8 type, uint32 damage)
 {
-    WorldPacket data(SMSG_ENVIRONMENTALDAMAGELOG, 20);
-
+    WorldPacket data(SMSG_ENVIRONMENTALDAMAGELOG, 21);
     data << uint64(guid);
     data << uint8(type);
     data << uint32(damage);
-    data << uint64(0);
-
+    data << uint32(0);          //absorb
+    data << uint32(0);          //resist
     SendMessageToSet(&data, true, false);
 }
 

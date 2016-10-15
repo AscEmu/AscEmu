@@ -1725,18 +1725,19 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
 //    }
 //}
 
-//void WorldSession::HandleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint32 inventory_slot;
-//    recvPacket >> inventory_slot;
-//
-//    Item* item = _player->GetItemInterface()->GetInventoryItem(static_cast<int16>(inventory_slot));
-//    if (!item) return;
-//
-//    item->RemoveAllEnchantments(true);
-//}
+void WorldSession::HandleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    uint32 inventory_slot;
+    recvPacket >> inventory_slot;
+
+    Item* item = _player->GetItemInterface()->GetInventoryItem(static_cast<int16>(inventory_slot));
+    if (!item)
+        return;
+
+    item->RemoveAllEnchantments(true);
+}
 
 //void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
 //{
