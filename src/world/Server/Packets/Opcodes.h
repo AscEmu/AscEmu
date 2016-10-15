@@ -1447,12 +1447,13 @@ enum Opcodes
     CMSG_AREATRIGGER                                    = 0x0937,
     CMSG_OBJECT_UPDATE_FAILED                           = 0x3808,
     SMSG_SET_PHASE_SHIFT                                = 0x70A0,
+    CMSG_REQUEST_CEMETERY_LIST                          = 0x720A,
+    SMSG_REQUEST_CEMETERY_LIST_RESPONSE                 = 0x30A7,
 
     //Unknown packet send by client to server
     CMSG_UNREGISTER_ALL_ADDON_PREFIXES                  = 0x3D54,
     CMSG_VOICE_SESSION_ENABLE                           = 0x2314,
     CMSG_REQUEST_CATEGORY_COOLDOWNS                     = 0x7102,
-    CMSG_REQUEST_CEMETERY_LIST                          = 0x720A,
     CMSG_REORDER_CHARACTERS                             = 0x0593,
     CMSG_UNK_7818                                       = 0x7818,
     CMSG_UNK_7314                                       = 0x7315,

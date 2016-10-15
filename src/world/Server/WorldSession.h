@@ -732,6 +732,7 @@ class SERVER_DECL WorldSession
         void HandleInrangeQuestgiverQuery(WorldPacket& recv_data);
         //void HandleRemoveGlyph(WorldPacket& recv_data);
         //void HandleSetFactionInactiveOpcode(WorldPacket& recv_data);
+        void HandleRequestCemeteryListOpcode(WorldPacket& recv_data);
 
         // Calendar \todo handle it
         void HandleCalendarGetCalendar(WorldPacket& /*recv_data*/);
