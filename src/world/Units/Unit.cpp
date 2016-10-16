@@ -6223,7 +6223,7 @@ void Unit::SendFullAuraUpdate()
 
             data << uint8(aur->m_visualSlot);
             data << uint32(aur->GetSpellId());
-            data << uint8(Flags);
+            data << uint16(Flags);
             data << uint8(getLevel());
             data << uint8(m_auraStackCount[aur->m_visualSlot]);
 
@@ -6274,7 +6274,7 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
         data << uint8(aur->m_visualSlot);
 
         data << uint32(aur->GetSpellId());
-        data << uint8(flags);
+        data << uint16(flags);
 
         Unit* caster = aur->GetUnitCaster();
         if (caster != NULL)

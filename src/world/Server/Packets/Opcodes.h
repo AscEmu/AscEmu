@@ -160,14 +160,12 @@ enum Opcodes
     CMSG_WRAP_ITEM                                  = 0x1D3,
     MSG_MINIMAP_PING                                = 0x1D5,
     SMSG_RESISTLOG                                  = 0x1D6,
-    SMSG_ENCHANTMENTLOG                             = 0x1D7,
     CMSG_SET_SKILL_CHEAT                            = 0x1D8,
     SMSG_CLEAR_COOLDOWN                             = 0x1DE,
     SMSG_GAMEOBJECT_PAGETEXT                        = 0x1DF,
     SMSG_COOLDOWN_CHEAT                             = 0x1E1,
     CMSG_GHOST                                      = 0x1E5,
     SMSG_INVALID_PROMOTION_CODE                     = 0x1E7,
-    SMSG_ITEM_ENCHANT_TIME_UPDATE                   = 0x1EB,
     SMSG_PARTYKILLLOG                               = 0x1F5,
     SMSG_PLAY_SPELL_IMPACT                          = 0x1F7,
     CMSG_RWHOIS_OBSOLETE                            = 0x1FD,
@@ -195,7 +193,6 @@ enum Opcodes
     CMSG_TAXICLEARNODE                              = 0x241,
     CMSG_TAXIENABLENODE                             = 0x242,
     SMSG_DEBUGAURAPROC                              = 0x24D,
-    SMSG_PERIODICAURALOG                            = 0x24E,
     SMSG_RESURRECT_FAILED                           = 0x252,
     CMSG_TOGGLE_PVP                                 = 0x253,
     SMSG_ZONE_UNDER_ATTACK                          = 0x254,
@@ -728,7 +725,6 @@ enum Opcodes
     CMSG_QUERY_TIME                                     = 0x0A36,
     CMSG_PING                                           = 0x444D,
     SMSG_PONG                                           = 0x4D42,
-    SMSG_ITEM_TIME_UPDATE                               = 0x2407,
     SMSG_AUTH_CHALLENGE                                 = 0x4542,
     CMSG_AUTH_SESSION                                   = 0x0449,
     SMSG_AUTH_RESPONSE                                  = 0x5DB6,
@@ -1020,6 +1016,8 @@ enum Opcodes
     CMSG_SETSHEATHED                                    = 0x4326,   //pressing x sitting down
     SMSG_AURA_UPDATE_ALL                                = 0x6916,
     SMSG_AURA_UPDATE                                    = 0x4707,
+    SMSG_ITEM_TIME_UPDATE                               = 0x2407,
+    SMSG_ITEM_ENCHANT_TIME_UPDATE                       = 0x0F27,
 
     //Guild / Tabard
     MSG_TABARDVENDOR_ACTIVATE                           = 0x6926,
@@ -1101,6 +1099,7 @@ enum Opcodes
     SMSG_REMOVED_SPELL                                  = 0x4804,
     SMSG_SPELLLOGMISS                                   = 0x0625, 
     SMSG_SPELLLOGEXECUTE                                = 0x0626,
+    SMSG_PERIODICAURALOG                                = 0x0416,
     SMSG_SPELLDAMAGESHIELD                              = 0x2927, 
     SMSG_SPELLNONMELEEDAMAGELOG                         = 0x4315,
     SMSG_SPELLOGDAMAGE_IMMUNE                           = 0x4507,   //not implemented
@@ -1127,6 +1126,7 @@ enum Opcodes
     CMSG_LEARN_SPELL                                    = 0x1011,
     CMSG_CANCEL_TEMP_ENCHANTMENT                        = 0x6C37,
     SMSG_ENVIRONMENTALDAMAGELOG                         = 0x6C05,
+    SMSG_ENCHANTMENTLOG                                 = 0x6035,
 
     // GO/Creatures
     SMSG_MONSTER_MOVE                                   = 0x6E17,

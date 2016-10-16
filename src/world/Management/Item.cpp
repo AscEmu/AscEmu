@@ -654,9 +654,9 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
         WorldPacket EnchantLog(SMSG_ENCHANTMENTLOG, 25);
         EnchantLog << m_owner->GetGUID();
         EnchantLog << m_owner->GetGUID();
-        EnchantLog << GetEntry();
-        EnchantLog << Enchantment->Id;
-        EnchantLog << uint8(0);
+        EnchantLog << uint32(GetEntry());
+        EnchantLog << uint32(Enchantment->Id);
+        //EnchantLog << uint8(0);
         m_owner->SendPacket(&EnchantLog);
 
         if (m_owner->GetTradeTarget())
@@ -975,27 +975,12 @@ void Item::ModifyEnchantmentTime(uint32 Slot, uint32 Duration)
 
 void Item::SendEnchantTimeUpdate(uint32 Slot, uint32 Duration)
 {
-    /*
-    {SERVER} Packet: (0x01EB) SMSG_ITEM_ENCHANT_TIME_UPDATE Size = 24
-    |------------------------------------------------|----------------|
-    |00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|
-    |------------------------------------------------|----------------|
-    |69 32 F0 35 00 00 00 40 01 00 00 00 08 07 00 00 |i2.5...@........|
-    |51 46 35 00 00 00 00 00                         |QF5.....        |
-    -------------------------------------------------------------------
-
-    uint64 item_guid
-    uint32 slot
-    uint32 time_in_seconds
-    uint64 player_guid
-    */
-
-    WorldPacket* data = new WorldPacket(SMSG_ITEM_ENCHANT_TIME_UPDATE, 24);
-    *data << GetGUID();
-    *data << Slot;
-    *data << Duration;
-    *data << m_owner->GetGUID();
-    m_owner->delayedPackets.add(data);
+    WorldPacket data(SMSG_ITEM_ENCHANT_TIME_UPDATE, 25);
+    data << GetGUID();
+    data << uint32(Slot);
+    data << uint32(Duration);
+    data << m_owner->GetGUID();
+    m_owner->SendPacket(&data);
 }
 
 void Item::RemoveAllEnchantments(bool OnlyTemporary)
@@ -1241,19 +1226,6 @@ void Item::EventRemoveItem()
 
 void Item::SendDurationUpdate()
 {
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////
-    //  As of 3.1.3 the server sends this to set the actual durationtime (the time the item exists for)
-    //  of the item
-    //
-    //  {SERVER} Packet: (0x01EA) SMSG_ITEM_TIME_UPDATE PacketSize = 12 TimeStamp = 37339296
-    //  05 76 83 E7 01 00 00 42 10 0E 00 00
-    //
-    //  Structure:
-    //
-    //  uint64 GUID                      - the identifier of the item (not the itemid)
-    //  uint32 remainingtime             - remaining duration
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
     WorldPacket durationupdate(SMSG_ITEM_TIME_UPDATE, 12);
     durationupdate << uint64(GetGUID());
     durationupdate << uint32(GetItemExpireTime() - UNIXTIME);
