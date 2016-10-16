@@ -1691,14 +1691,6 @@ void ApplyNormalFixes()
         sp->speed = 0;    //without, no damage is done
     }
 
-    sp = CheckAndReturnSpellEntry(31893);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_PHYSICAL_ATTACK;
-        sp->School = SCHOOL_HOLY;
-        sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC;
-    }
-
     //Paladin - Divine Storm
     sp = CheckAndReturnSpellEntry(53385);
     if (sp != NULL)
@@ -1711,26 +1703,6 @@ void ApplyNormalFixes()
         sp->procChance = 100;
         sp->MaxTargets = 4;
     }
-
-    //Paladin - Judgements of the Wise
-    sp = CheckAndReturnSpellEntry(31930);
-    if (sp != NULL)
-    {
-        sp->SpellFamilyName = 0;
-        sp->SpellGroupType[0] = 0;
-        sp->SpellGroupType[1] = 0;
-        sp->SpellGroupType[2] = 0;
-    }
-
-    sp = CheckAndReturnSpellEntry(54180);
-    if (sp != NULL)
-    {
-        sp->SpellFamilyName = 0;
-        sp->SpellGroupType[0] = 0;
-        sp->SpellGroupType[1] = 0;
-        sp->SpellGroupType[2] = 0;
-    }
-
     
     //Paladin - Forbearance - Is forced debuff
     sp = CheckAndReturnSpellEntry(25771);
