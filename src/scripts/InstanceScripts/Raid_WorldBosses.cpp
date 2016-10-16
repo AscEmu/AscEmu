@@ -56,35 +56,35 @@ class EmerissAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(SLEEP);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(SLEEP);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(NOXIOUS_BREATH);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(NOXIOUS_BREATH);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 15.0f;
             spells[1].attackstoptimer = 2000;
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(TAIL_SWEEP);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(TAIL_SWEEP);
             spells[2].targettype = TARGET_ATTACKING;        //if players are behind it's tail
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 7.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = sSpellCustomizations.GetServersideSpell(VOLATILE_INFECTION);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(VOLATILE_INFECTION);
             spells[3].targettype = TARGET_VARIOUS;
             spells[3].instant = false;
             spells[3].cooldown = -1;
             spells[3].perctrigger = 10.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = sSpellCustomizations.GetServersideSpell(CORRUPTION_OF_EARTH);
+            spells[4].info = sSpellCustomizations.GetSpellInfo(CORRUPTION_OF_EARTH);
             spells[4].targettype = TARGET_ATTACKING;
             spells[4].instant = true;
             spells[4].cooldown = -1;
@@ -92,14 +92,14 @@ class EmerissAI : public CreatureAIScript
             spells[4].attackstoptimer = 1000;
             spells[4].speech = "Taste your world's corruption!";
 
-            spells[5].info = sSpellCustomizations.GetServersideSpell(PUTRID_MUSHROOM);
+            spells[5].info = sSpellCustomizations.GetSpellInfo(PUTRID_MUSHROOM);
             spells[5].targettype = TARGET_DESTINATION;
             spells[5].instant = true;
             spells[5].cooldown = -1;
             spells[5].perctrigger = 0.0f;
             spells[5].attackstoptimer = 1000;
 
-            spells[6].info = sSpellCustomizations.GetServersideSpell(MARK_OF_NATURE);
+            spells[6].info = sSpellCustomizations.GetSpellInfo(MARK_OF_NATURE);
             spells[6].targettype = TARGET_VARIOUS;
             spells[6].instant = true;
             spells[6].cooldown = -1;
@@ -245,42 +245,42 @@ class TaerarAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(SLEEP);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(SLEEP);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 3.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(NOXIOUS_BREATH);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(NOXIOUS_BREATH);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 5.0f;
             spells[1].attackstoptimer = 2000;
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(TAIL_SWEEP);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(TAIL_SWEEP);
             spells[2].targettype = TARGET_ATTACKING;        //if players are behind it's tail
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 3.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = sSpellCustomizations.GetServersideSpell(ARCANE_BLAST);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(ARCANE_BLAST);
             spells[3].targettype = TARGET_VARIOUS;
             spells[3].instant = true;
             spells[3].cooldown = -1;
             spells[3].perctrigger = 3.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = sSpellCustomizations.GetServersideSpell(BELLOWING_ROAR);
+            spells[4].info = sSpellCustomizations.GetSpellInfo(BELLOWING_ROAR);
             spells[4].targettype = TARGET_ATTACKING;
             spells[4].instant = true;
             spells[4].cooldown = -1;
             spells[4].perctrigger = 2.0f;
             spells[4].attackstoptimer = 1000;
 
-            spells[5].info = sSpellCustomizations.GetServersideSpell(SUMMON_SHADE);
+            spells[5].info = sSpellCustomizations.GetSpellInfo(SUMMON_SHADE);
             spells[5].targettype = TARGET_DESTINATION;
             spells[5].instant = true;
             spells[5].cooldown = -1;
@@ -288,7 +288,7 @@ class TaerarAI : public CreatureAIScript
             spells[5].attackstoptimer = 1000;
             spells[5].speech = "Children of Madness - I release you upon this world!";
 
-            spells[6].info = sSpellCustomizations.GetServersideSpell(MARK_OF_NATURE);
+            spells[6].info = sSpellCustomizations.GetSpellInfo(MARK_OF_NATURE);
             spells[6].targettype = TARGET_VARIOUS;
             spells[6].instant = true;
             spells[6].cooldown = -1;
@@ -469,14 +469,14 @@ class ShadeofTaerarAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(POSION_CLOUD);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(POSION_CLOUD);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 18.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(POSION_BREATH);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(POSION_BREATH);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].cooldown = -1;
@@ -605,35 +605,35 @@ class YsondreAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(SLEEP);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(SLEEP);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 3.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(NOXIOUS_BREATH);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(NOXIOUS_BREATH);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 5.0f;
             spells[1].attackstoptimer = 2000;
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(TAIL_SWEEP);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(TAIL_SWEEP);
             spells[2].targettype = TARGET_ATTACKING;        //if players are behind it's tail
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 3.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = sSpellCustomizations.GetServersideSpell(LIGHTNING_WAVE);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(LIGHTNING_WAVE);
             spells[3].targettype = TARGET_VARIOUS;
             spells[3].instant = true;
             spells[3].cooldown = -1;
             spells[3].perctrigger = 3.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = sSpellCustomizations.GetServersideSpell(SUMMON_DRUIDS);
+            spells[4].info = sSpellCustomizations.GetSpellInfo(SUMMON_DRUIDS);
             spells[4].targettype = TARGET_DESTINATION;
             spells[4].instant = true;
             spells[4].cooldown = -1;
@@ -641,7 +641,7 @@ class YsondreAI : public CreatureAIScript
             spells[4].attackstoptimer = 1000;
             spells[4].speech = "Come forth, ye Dreamers - and claim your vengeance!";
 
-            spells[5].info = sSpellCustomizations.GetServersideSpell(MARK_OF_NATURE);
+            spells[5].info = sSpellCustomizations.GetSpellInfo(MARK_OF_NATURE);
             spells[5].targettype = TARGET_VARIOUS;
             spells[5].instant = true;
             spells[5].cooldown = -1;
@@ -784,7 +784,7 @@ class DementedDruidSpiritAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(MOONFIRE);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(MOONFIRE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
@@ -910,35 +910,35 @@ class LethonAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(SLEEP);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(SLEEP);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 3.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(NOXIOUS_BREATH);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(NOXIOUS_BREATH);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 5.0f;
             spells[1].attackstoptimer = 2000;
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(TAIL_SWEEP);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(TAIL_SWEEP);
             spells[2].targettype = TARGET_ATTACKING;        //if players are behind it's tail
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 3.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = sSpellCustomizations.GetServersideSpell(SHADOW_WHIRL);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(SHADOW_WHIRL);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
             spells[3].cooldown = -1;
             spells[3].perctrigger = 2.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = sSpellCustomizations.GetServersideSpell(SUMMON_SHADES);
+            spells[4].info = sSpellCustomizations.GetSpellInfo(SUMMON_SHADES);
             spells[4].targettype = TARGET_SELF;
             spells[4].instant = true;
             spells[4].cooldown = -1;
@@ -946,7 +946,7 @@ class LethonAI : public CreatureAIScript
             spells[4].attackstoptimer = 1000;
             spells[4].speech = "Your wicked souls shall feed my power!";
 
-            spells[5].info = sSpellCustomizations.GetServersideSpell(MARK_OF_NATURE);
+            spells[5].info = sSpellCustomizations.GetSpellInfo(MARK_OF_NATURE);
             spells[5].targettype = TARGET_VARIOUS;
             spells[5].instant = true;
             spells[5].cooldown = -1;
@@ -1198,49 +1198,49 @@ class KruulAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(SHADOW_VOLLEY);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(SHADOW_VOLLEY);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 5.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(CLEAVE);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(CLEAVE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 12.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(THUNDER_CLAP);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(THUNDER_CLAP);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 10.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = sSpellCustomizations.GetServersideSpell(TWISTED_REFLECTION);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(TWISTED_REFLECTION);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
             spells[3].cooldown = -1;
             spells[3].perctrigger = 7.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = sSpellCustomizations.GetServersideSpell(VOID_BOLT);
+            spells[4].info = sSpellCustomizations.GetSpellInfo(VOID_BOLT);
             spells[4].targettype = TARGET_ATTACKING;
             spells[4].instant = false;
             spells[4].cooldown = -1;
             spells[4].perctrigger = 5.0f;
             spells[4].attackstoptimer = 1000;
 
-            spells[5].info = sSpellCustomizations.GetServersideSpell(CAPTURE_SOUL);
+            spells[5].info = sSpellCustomizations.GetSpellInfo(CAPTURE_SOUL);
             spells[5].targettype = TARGET_VARIOUS;
             spells[5].instant = true;
             spells[5].cooldown = -1;
             spells[5].perctrigger = 0.0f;
             spells[5].attackstoptimer = 1000;
 
-            spells[6].info = sSpellCustomizations.GetServersideSpell(RAGE);
+            spells[6].info = sSpellCustomizations.GetSpellInfo(RAGE);
             spells[6].targettype = TARGET_SELF;
             spells[6].instant = true;
             spells[6].cooldown = -1;
@@ -1460,56 +1460,56 @@ class KazzakAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(SHADOW_VOLLEY);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(SHADOW_VOLLEY);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 5.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(CLEAVE);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(CLEAVE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 12.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(THUNDER_CLAP);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(THUNDER_CLAP);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 10.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = sSpellCustomizations.GetServersideSpell(TWISTED_REFLECTION);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(TWISTED_REFLECTION);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
             spells[3].cooldown = -1;
             spells[3].perctrigger = 7.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = sSpellCustomizations.GetServersideSpell(VOID_BOLT);
+            spells[4].info = sSpellCustomizations.GetSpellInfo(VOID_BOLT);
             spells[4].targettype = TARGET_ATTACKING;
             spells[4].instant = false;
             spells[4].cooldown = -1;
             spells[4].perctrigger = 5.0f;
             spells[4].attackstoptimer = 1000;
 
-            spells[5].info = sSpellCustomizations.GetServersideSpell(MARK_OF_KAZZAK);
+            spells[5].info = sSpellCustomizations.GetSpellInfo(MARK_OF_KAZZAK);
             spells[5].targettype = TARGET_VARIOUS;
             spells[5].instant = true;
             spells[5].cooldown = -1;
             spells[5].perctrigger = 5.0f;
             spells[5].attackstoptimer = 1000;
 
-            spells[6].info = sSpellCustomizations.GetServersideSpell(CAPTURE_SOUL);
+            spells[6].info = sSpellCustomizations.GetSpellInfo(CAPTURE_SOUL);
             spells[6].targettype = TARGET_DESTINATION;
             spells[6].instant = true;
             spells[6].cooldown = -1;
             spells[6].perctrigger = 0.0f;
             spells[6].attackstoptimer = 1000;
 
-            spells[7].info = sSpellCustomizations.GetServersideSpell(RAGE);
+            spells[7].info = sSpellCustomizations.GetSpellInfo(RAGE);
             spells[7].targettype = TARGET_SELF;
             spells[7].instant = true;
             spells[7].cooldown = -1;
@@ -1700,28 +1700,28 @@ class AzuregosAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(MANA_STORM);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(MANA_STORM);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].cooldown = -1;
             spells[0].perctrigger = 7.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(ACLEAVE);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(ACLEAVE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 15.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(CONE_OF_COLD);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(CONE_OF_COLD);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = false;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 10.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = sSpellCustomizations.GetServersideSpell(REFLECT);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(REFLECT);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
             spells[3].casttime = 45;
@@ -1729,7 +1729,7 @@ class AzuregosAI : public CreatureAIScript
             spells[3].perctrigger = 0.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = sSpellCustomizations.GetServersideSpell(MARK_OF_FROST);
+            spells[4].info = sSpellCustomizations.GetSpellInfo(MARK_OF_FROST);
             spells[4].targettype = TARGET_DESTINATION;
             spells[4].instant = true;
             spells[4].cooldown = -1;
@@ -1877,7 +1877,7 @@ class DoomwalkerAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(EARTHQUAKE);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(EARTHQUAKE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 55;
@@ -1885,21 +1885,21 @@ class DoomwalkerAI : public CreatureAIScript
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(MARK_OF_DEATH);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(MARK_OF_DEATH);
             spells[1].targettype = TARGET_DESTINATION;
             spells[1].instant = false;
             spells[1].cooldown = -1;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(CHAIN_LIGHTNING);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(CHAIN_LIGHTNING);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = false;
             spells[2].cooldown = -1;
             spells[2].perctrigger = 8.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = sSpellCustomizations.GetServersideSpell(OVERRUN);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(OVERRUN);
             spells[3].targettype = TARGET_VARIOUS;
             spells[3].instant = true;
             spells[3].casttime = 45;
@@ -1907,13 +1907,13 @@ class DoomwalkerAI : public CreatureAIScript
             spells[3].perctrigger = 0.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = sSpellCustomizations.GetServersideSpell(ENRAGE);
+            spells[4].info = sSpellCustomizations.GetSpellInfo(ENRAGE);
             spells[4].targettype = TARGET_SELF;
             spells[4].instant = true;
             spells[4].perctrigger = 0.0f;
             spells[4].attackstoptimer = 1000;
 
-            spells[5].info = sSpellCustomizations.GetServersideSpell(SUNDER_ARMOR);
+            spells[5].info = sSpellCustomizations.GetSpellInfo(SUNDER_ARMOR);
             spells[5].targettype = TARGET_ATTACKING;
             spells[5].instant = true;
             spells[5].cooldown = 15;
@@ -2091,19 +2091,19 @@ class TeremusAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(FLAME_BREATH);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(FLAME_BREATH);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(SOUL_CONSUMPTION);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(SOUL_CONSUMPTION);
             spells[1].targettype = TARGET_DESTINATION;
             spells[1].instant = false;
             spells[1].perctrigger = 9.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(RESIST_ALL);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(RESIST_ALL);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = false;
             spells[2].perctrigger = 5.0f;

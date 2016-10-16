@@ -56,39 +56,39 @@ class JeklikAI : public CreatureAIScript
             // ----------------------
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-            spells[0].info = sSpellCustomizations.GetServersideSpell(TRANSFORM_BAT);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(TRANSFORM_BAT);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = true;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000; // 1sec
             m_spellcheck[0] = true;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(CRUSHING_BLOW);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(CRUSHING_BLOW);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = false;
             spells[1].perctrigger = 10.0f;
             spells[1].attackstoptimer = 2000; // 1sec
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(CRUSHING_AOE_SILENCE);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(CRUSHING_AOE_SILENCE);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = false;
             spells[2].perctrigger = 10.0f;
             spells[2].attackstoptimer = 2000; // 1sec
 
             // 2 phase spells
-            spells[3].info = sSpellCustomizations.GetServersideSpell(MIND_FLAY);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(MIND_FLAY);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = false;
             spells[3].perctrigger = 10.0f;
             spells[3].attackstoptimer = 6000; // 1sec
 
-            spells[4].info = sSpellCustomizations.GetServersideSpell(SHADOW_WORD_PAIN);
+            spells[4].info = sSpellCustomizations.GetSpellInfo(SHADOW_WORD_PAIN);
             spells[4].targettype = TARGET_ATTACKING;
             spells[4].instant = false;
             spells[4].perctrigger = 10.0f;
             spells[4].attackstoptimer = 2000; // 1sec
 
-            spells[5].info = sSpellCustomizations.GetServersideSpell(GREAT_HEAL);
+            spells[5].info = sSpellCustomizations.GetSpellInfo(GREAT_HEAL);
             spells[5].targettype = TARGET_SELF;
             spells[5].instant = false;
             spells[5].perctrigger = 10.0f;
@@ -215,26 +215,26 @@ class VenoxisAI : public CreatureAIScript
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(TRANSFORM_SNAKE);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(TRANSFORM_SNAKE);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = false;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000; // 1sec
             m_spellcheck[0] = true;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(HOLY_NOVA);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(HOLY_NOVA);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = false;
             spells[1].perctrigger = 10.0f;
             spells[1].attackstoptimer = 2000; // 2sec
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(HOLY_FIRE);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(HOLY_FIRE);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = false;
             spells[2].perctrigger = 10.0f;
             spells[2].attackstoptimer = 2000; // 2sec
 
-            spells[3].info = sSpellCustomizations.GetServersideSpell(SPIT_POISON);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(SPIT_POISON);
             spells[3].targettype = TARGET_VARIOUS;
             spells[3].instant = false;
             spells[3].perctrigger = 10.0f;

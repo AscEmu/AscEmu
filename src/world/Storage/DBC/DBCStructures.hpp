@@ -1945,14 +1945,14 @@ namespace DBC
         {
             //uint32    Id;                                         // 0        m_ID
             //uint32    modalNextSpell;                             // 1        m_modalNextSpell not used
-            ClassFamilyMask SpellFamilyFlags;                       // 2-4      m_spellClassMask NOTE: size is 12 bytes!!!
-            uint32    SpellFamilyName;                              // 5        m_spellClassSet
+            uint32 SpellFamilyFlags[3];                       // 2-4      m_spellClassMask NOTE: size is 12 bytes!!!
+            uint32 SpellFamilyName;                              // 5        m_spellClassSet
                                                                     //char*   Description;                                  // 6 4.0.0
                                                                     // helpers
 
             bool IsFitToFamilyMask(uint64 familyFlags, uint32 familyFlags2 = 0) const
             {
-                return SpellFamilyFlags.IsFitToFamilyMask(familyFlags, familyFlags2);
+                return true; // SpellFamilyFlags.IsFitToFamilyMask(familyFlags, familyFlags2);
             }
 
             bool IsFitToFamily(SpellFamily family, uint64 familyFlags, uint32 familyFlags2 = 0) const
@@ -1962,7 +1962,7 @@ namespace DBC
 
             bool IsFitToFamilyMask(ClassFamilyMask const& mask) const
             {
-                return SpellFamilyFlags.IsFitToFamilyMask(mask);
+                return true;// SpellFamilyFlags.IsFitToFamilyMask(mask);
             }
 
             bool IsFitToFamily(SpellFamily family, ClassFamilyMask const& mask) const
@@ -2022,7 +2022,8 @@ namespace DBC
             uint32    EffectRadiusIndex;                            // 15       m_effectRadiusIndex - spellradius.dbc
             uint32    EffectRadiusMaxIndex;                         // 16       4.0.0
             float     EffectRealPointsPerLevel;                     // 17       m_effectRealPointsPerLevel
-            ClassFamilyMask EffectSpellClassMask;                   // 18 19 20 m_effectSpellClassMask
+            uint32 EffectSpellClassMask[3];
+            //ClassFamilyMask EffectSpellClassMask;                   // 18 19 20 m_effectSpellClassMask
             uint32    EffectTriggerSpell;                           // 21       m_effectTriggerSpell
             uint32    EffectImplicitTargetA;                        // 22       m_implicitTargetA
             uint32    EffectImplicitTargetB;                        // 23       m_implicitTargetB

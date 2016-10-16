@@ -1697,10 +1697,10 @@ void Creature::OnPushToWorld()
     }
 
     std::set<uint32>::iterator itr = creature_properties->start_auras.begin();
-    OLD_SpellEntry* sp;
+    SpellInfo* sp;
     for (; itr != creature_properties->start_auras.end(); ++itr)
     {
-        sp = sSpellCustomizations.GetServersideSpell((*itr));
+        sp = sSpellCustomizations.GetSpellInfo((*itr));
         if (sp == nullptr)
             continue;
 
@@ -2392,9 +2392,9 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
     // on die and an target die proc
     {
-        OLD_SpellEntry* killerspell;
+        SpellInfo* killerspell;
         if (spellid)
-            killerspell = sSpellCustomizations.GetServersideSpell(spellid);
+            killerspell = sSpellCustomizations.GetSpellInfo(spellid);
         else killerspell = NULL;
 
         HandleProc(PROC_ON_DIE, this, killerspell);

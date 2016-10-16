@@ -600,7 +600,7 @@ class VHIntroAzureBinder : VHCreatureAI
             }
 
             auto spellArcaneBarrage = SP_AI_Spell();
-            spellArcaneBarrage.info = sSpellCustomizations.GetServersideSpell(SPELL_ARCANE_BARRAGE);
+            spellArcaneBarrage.info = sSpellCustomizations.GetSpellInfo(SPELL_ARCANE_BARRAGE);
             spellArcaneBarrage.cooldown = 6;
             spellArcaneBarrage.targettype = TARGET_ATTACKING;
             spellArcaneBarrage.instant = true;
@@ -610,7 +610,7 @@ class VHIntroAzureBinder : VHCreatureAI
             m_spellsEnabled[0] = true;
 
             auto spellArcaneExplosion = SP_AI_Spell();
-            spellArcaneExplosion.info = sSpellCustomizations.GetServersideSpell(SPELL_ARCANE_EXPLOSION);
+            spellArcaneExplosion.info = sSpellCustomizations.GetSpellInfo(SPELL_ARCANE_EXPLOSION);
             spellArcaneExplosion.cooldown = 4;
             spellArcaneExplosion.targettype = TARGET_VARIOUS;
             spellArcaneExplosion.instant = true;
@@ -641,7 +641,7 @@ class VHIntroAzureInvader : VHCreatureAI
             }
 
             auto spellCleave = SP_AI_Spell();
-            spellCleave.info = sSpellCustomizations.GetServersideSpell(SPELL_CLEAVE);
+            spellCleave.info = sSpellCustomizations.GetSpellInfo(SPELL_CLEAVE);
             spellCleave.cooldown = 6;
             spellCleave.targettype = TARGET_ATTACKING;
             spellCleave.instant = true;
@@ -651,7 +651,7 @@ class VHIntroAzureInvader : VHCreatureAI
             m_spellsEnabled[0] = true;
 
             auto spellImpale = SP_AI_Spell();
-            spellImpale.info = sSpellCustomizations.GetServersideSpell(SPELL_IMPALE);
+            spellImpale.info = sSpellCustomizations.GetSpellInfo(SPELL_IMPALE);
             spellImpale.cooldown = 8;
             spellImpale.targettype = TARGET_ATTACKING;
             spellImpale.instant = true;
@@ -681,7 +681,7 @@ class VHIntroAzureMageSlayer : VHCreatureAI
             }
 
             auto spellArcaneEmpowerment = SP_AI_Spell();
-            spellArcaneEmpowerment.info = sSpellCustomizations.GetServersideSpell(SPELL_ARCANE_EMPOWERMENT);
+            spellArcaneEmpowerment.info = sSpellCustomizations.GetSpellInfo(SPELL_ARCANE_EMPOWERMENT);
             spellArcaneEmpowerment.cooldown = 8;
             spellArcaneEmpowerment.targettype = TARGET_SELF;
             spellArcaneEmpowerment.instant = true;
@@ -712,7 +712,7 @@ class VHIntroAzureSpellBreaker : VHCreatureAI
             }
 
             auto spellArcaneBlast = SP_AI_Spell();
-            spellArcaneBlast.info = sSpellCustomizations.GetServersideSpell(SPELL_ARCANE_BLAST);
+            spellArcaneBlast.info = sSpellCustomizations.GetSpellInfo(SPELL_ARCANE_BLAST);
             spellArcaneBlast.cooldown = 3;
             spellArcaneBlast.targettype = TARGET_ATTACKING;
             spellArcaneBlast.instant = false;
@@ -723,7 +723,7 @@ class VHIntroAzureSpellBreaker : VHCreatureAI
             m_spellsEnabled[0] = true;
 
             auto spellSlow = SP_AI_Spell();
-            spellSlow.info = sSpellCustomizations.GetServersideSpell(SPELL_SLOW);
+            spellSlow.info = sSpellCustomizations.GetSpellInfo(SPELL_SLOW);
             spellSlow.cooldown = 7;
             spellSlow.targettype = TARGET_ATTACKING;
             spellSlow.instant = true;

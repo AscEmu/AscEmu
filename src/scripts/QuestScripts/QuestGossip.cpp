@@ -45,7 +45,7 @@ class Lady_Jaina : public GossipScript
                     break;
                 case 1: // Give Item
                 {
-                    plr->CastSpell(plr, sSpellCustomizations.GetServersideSpell(23122), true);
+                    plr->CastSpell(plr, sSpellCustomizations.GetSpellInfo(23122), true);
                     plr->Gossip_Complete();
                     break;
                 }
@@ -81,7 +81,7 @@ class Cairne : public GossipScript
                 {
                     objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), 7014, plr);
                     Menu->SendTo(plr);
-                    plr->CastSpell(plr, sSpellCustomizations.GetServersideSpell(23123), true);
+                    plr->CastSpell(plr, sSpellCustomizations.GetSpellInfo(23123), true);
                     break;
                 }
                 break;

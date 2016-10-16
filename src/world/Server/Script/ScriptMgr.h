@@ -93,7 +93,7 @@ typedef void(*tOnDeath)(Player* pPlayer);
 typedef bool(*tOnRepop)(Player* pPlayer);
 typedef void(*tOnEmote)(Player* pPlayer, uint32 Emote, Unit* pUnit);
 typedef void(*tOnEnterCombat)(Player* pPlayer, Unit* pTarget);
-typedef bool(*tOnCastSpell)(Player* pPlayer, OLD_SpellEntry* pSpell, Spell* spell);
+typedef bool(*tOnCastSpell)(Player* pPlayer, SpellInfo* pSpell, Spell* spell);
 typedef void(*tOnTick)();
 typedef bool(*tOnLogoutRequest)(Player* pPlayer);
 typedef void(*tOnLogout)(Player* pPlayer);
@@ -513,7 +513,7 @@ class SERVER_DECL InstanceScript
         virtual ~InstanceScript() {};
 
         // Procedures that had been here before
-        virtual GameObject* GetObjectForOpenLock(Player* /*pCaster*/, Spell* /*pSpell*/, OLD_SpellEntry* /*pSpellEntry*/) { return NULL; };
+        virtual GameObject* GetObjectForOpenLock(Player* /*pCaster*/, Spell* /*pSpell*/, SpellInfo* /*pSpellEntry*/) { return NULL; };
         virtual void SetLockOptions(uint32 /*pEntryId*/, GameObject* /*pGameObject*/) {};
         virtual uint32 GetRespawnTimeForCreature(uint32 /*pEntryId*/, Creature* /*pCreature*/) { return 240000; };
 
@@ -570,7 +570,7 @@ class SERVER_DECL HookInterface : public Singleton<HookInterface>
         bool OnRepop(Player* pPlayer);
         void OnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit);
         void OnEnterCombat(Player* pPlayer, Unit* pTarget);
-        bool OnCastSpell(Player* pPlayer, OLD_SpellEntry* pSpell, Spell* spell);
+        bool OnCastSpell(Player* pPlayer, SpellInfo* pSpell, Spell* spell);
         bool OnLogoutRequest(Player* pPlayer);
         void OnLogout(Player* pPlayer);
         void OnQuestAccept(Player* pPlayer, QuestProperties const* pQuest, Object* pQuestGiver);

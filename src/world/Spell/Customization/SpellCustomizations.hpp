@@ -30,11 +30,11 @@ class SERVER_DECL SpellCustomizations : public Singleton <SpellCustomizations>
         SpellCustomizations();
         ~SpellCustomizations();
 
-        typedef std::unordered_map<uint32, OLD_SpellEntry> ServersideSpellContainer;
+        typedef std::unordered_map<uint32, SpellInfo> SpellInfoContainer;
 
-        void LoadServersideSpells();
-        OLD_SpellEntry* GetServersideSpell(uint32 spell_id);
-        ServersideSpellContainer* GetServersideSpellStore() { return &_serversideSpellContainerStore; }
+        void LoadSpellInfoData();
+        SpellInfo* SpellCustomizations::GetSpellInfo(uint32 spell_id);
+        SpellInfoContainer* GetSpellInfoStore() { return &_spellInfoContainerStore; }
 
         void StartSpellCustomization();
 
@@ -44,18 +44,18 @@ class SERVER_DECL SpellCustomizations : public Singleton <SpellCustomizations>
         void LoadSpellCustomCoefFlags();
         void LoadSpellProcs();
 
-        void SetEffectAmplitude(OLD_SpellEntry* spell_entry);
-        void SetAuraFactoryFunc(OLD_SpellEntry* spell_entry);
+        void SetEffectAmplitude(SpellInfo* spell_entry);
+        void SetAuraFactoryFunc(SpellInfo* spell_entry);
 
-        void SetMeleeSpellBool(OLD_SpellEntry* spell_entry);
-        void SetRangedSpellBool(OLD_SpellEntry* spell_entry);
+        void SetMeleeSpellBool(SpellInfo* spell_entry);
+        void SetRangedSpellBool(SpellInfo* spell_entry);
 
-        void SetMissingCIsFlags(OLD_SpellEntry* spell_entry);
-        void SetCustomFlags(OLD_SpellEntry* spell_entry);
-        void SetOnShapeshiftChange(OLD_SpellEntry* spell_entry);
-        void SetAlwaysApply(OLD_SpellEntry* spell_entry);
+        void SetMissingCIsFlags(SpellInfo* spell_entry);
+        void SetCustomFlags(SpellInfo* spell_entry);
+        void SetOnShapeshiftChange(SpellInfo* spell_entry);
+        void SetAlwaysApply(SpellInfo* spell_entry);
 
-        ServersideSpellContainer _serversideSpellContainerStore;
+        SpellInfoContainer _spellInfoContainerStore;
 };
 
 #define sSpellCustomizations SpellCustomizations::getSingleton()

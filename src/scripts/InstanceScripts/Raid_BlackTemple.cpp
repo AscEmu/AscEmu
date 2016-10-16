@@ -121,7 +121,7 @@ class MutantWarHoundAI : public MoonScriptCreatureAI
         {
             ParentClass::OnDied(pKiller);
 
-            Aura* pAura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetServersideSpell(MUTANT_WAR_HOUND_CLOUD_OF_DISEASE), (uint32)20000, _unit, _unit);
+            Aura* pAura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(MUTANT_WAR_HOUND_CLOUD_OF_DISEASE), (uint32)20000, _unit, _unit);
             _unit->AddAura(pAura);
         }
 };
@@ -1504,14 +1504,14 @@ class NajentusAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(CRASHING_WAVE);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(CRASHING_WAVE);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000;
             spells[0].cooldown = 15;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(NEEDLE_SPINE);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(NEEDLE_SPINE);
             spells[1].targettype = TARGET_RANDOM_SINGLE;
             spells[1].instant = false;
             spells[1].perctrigger = 10.0f;
@@ -1520,14 +1520,14 @@ class NajentusAI : public CreatureAIScript
             spells[1].mindist2cast = 0.0f;
             spells[1].maxdist2cast = 60.0f;
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(TIDAL_SHIELD);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(TIDAL_SHIELD);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = false;
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 2000;
             spells[2].cooldown = 105;
 
-            spells[3].info = sSpellCustomizations.GetServersideSpell(IMPALING_SPINE);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(IMPALING_SPINE);
             spells[3].targettype = TARGET_RANDOM_SINGLE;
             spells[3].instant = false;
             spells[3].perctrigger = 0.0f;
@@ -1737,10 +1737,10 @@ class SupremusAI : public CreatureAIScript
         {
             m_MoltenFlame = m_HurtfulStrike = m_MoltenPunch = m_VolcanicGazer = true;
 
-            infoMoltenFlame = sSpellCustomizations.GetServersideSpell(MOLTEN_FLAME);
-            infoHurtfulStrike = sSpellCustomizations.GetServersideSpell(HURTFUL_STRIKE);
-            infoMoltenPunch =  sSpellCustomizations.GetServersideSpell(MOLTEN_PUNCH);
-            infoVolcanicGazer =  sSpellCustomizations.GetServersideSpell(VOLCANIC_GAZER);
+            infoMoltenFlame = sSpellCustomizations.GetSpellInfo(MOLTEN_FLAME);
+            infoHurtfulStrike = sSpellCustomizations.GetSpellInfo(HURTFUL_STRIKE);
+            infoMoltenPunch =  sSpellCustomizations.GetSpellInfo(MOLTEN_PUNCH);
+            infoVolcanicGazer =  sSpellCustomizations.GetSpellInfo(VOLCANIC_GAZER);
 
             timer = 0;
             m_phase = 0;
@@ -1896,7 +1896,7 @@ class SupremusAI : public CreatureAIScript
         uint32 timer;
         uint32 m_phase;
         bool m_MoltenFlame, m_HurtfulStrike, m_MoltenPunch, m_VolcanicGazer;
-        OLD_SpellEntry* infoMoltenFlame, *infoHurtfulStrike, *infoMoltenPunch, *infoVolcanicGazer;
+        SpellInfo* infoMoltenFlame, *infoHurtfulStrike, *infoMoltenPunch, *infoVolcanicGazer;
 };
 
 //------------------------------------
@@ -1954,14 +1954,14 @@ class GurtoggAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(ARCING_SMASH);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(ARCING_SMASH);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
             spells[0].cooldown = 10;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(FEL_ACID_BREATH);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(FEL_ACID_BREATH);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 10.0f;
@@ -1969,7 +1969,7 @@ class GurtoggAI : public CreatureAIScript
             spells[1].cooldown = 15;
 
             // Phase 1
-            spells[2].info = sSpellCustomizations.GetServersideSpell(BLOODBOIL);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(BLOODBOIL);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = true;
             spells[2].perctrigger = 0.0f;
@@ -1977,21 +1977,21 @@ class GurtoggAI : public CreatureAIScript
             spells[2].cooldown = 10;
 
             // Not sure about this one system of casting
-            spells[3].info = sSpellCustomizations.GetServersideSpell(ACIDIC_WOUND);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(ACIDIC_WOUND);
             spells[3].targettype = TARGET_ATTACKING;
             spells[3].instant = true;
             spells[3].perctrigger = 10.0f;
             spells[3].attackstoptimer = 2000;
             spells[3].cooldown = 15;
 
-            spells[4].info = sSpellCustomizations.GetServersideSpell(DISORIENT);
+            spells[4].info = sSpellCustomizations.GetSpellInfo(DISORIENT);
             spells[4].targettype = TARGET_ATTACKING;
             spells[4].instant = true;
             spells[4].perctrigger = 7.0f;
             spells[4].attackstoptimer = 2000;
             spells[4].cooldown = 10;
 
-            spells[5].info = sSpellCustomizations.GetServersideSpell(KNOCKBACK);
+            spells[5].info = sSpellCustomizations.GetSpellInfo(KNOCKBACK);
             spells[5].targettype = TARGET_ATTACKING;
             spells[5].instant = true;
             spells[5].perctrigger = 0.0f;
@@ -1999,14 +1999,14 @@ class GurtoggAI : public CreatureAIScript
             spells[5].cooldown = 15;
 
             // Phase 2
-            spells[6].info = sSpellCustomizations.GetServersideSpell(ACID_GEYSER);
+            spells[6].info = sSpellCustomizations.GetSpellInfo(ACID_GEYSER);
             spells[6].targettype = TARGET_DESTINATION;
             spells[6].instant = true;
             spells[6].perctrigger = 0.0f;
             spells[6].attackstoptimer = 2000;
             spells[6].cooldown = 10;
 
-            spells[7].info = sSpellCustomizations.GetServersideSpell(FEL_RAGE1);
+            spells[7].info = sSpellCustomizations.GetSpellInfo(FEL_RAGE1);
             spells[7].targettype = TARGET_RANDOM_SINGLE;
             spells[7].instant = true;
             spells[7].perctrigger = 0.0f;
@@ -2015,7 +2015,7 @@ class GurtoggAI : public CreatureAIScript
             spells[7].mindist2cast = 0.0f;
             spells[7].maxdist2cast = 60.0f;
 
-            spells[8].info = sSpellCustomizations.GetServersideSpell(FEL_RAGE2);
+            spells[8].info = sSpellCustomizations.GetSpellInfo(FEL_RAGE2);
             spells[8].targettype = TARGET_RANDOM_SINGLE;
             spells[8].instant = true;
             spells[8].perctrigger = 0.0f;
@@ -2743,14 +2743,14 @@ class ShahrazAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(SABER_LASH);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(SABER_LASH);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
             spells[0].cooldown = 15;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(FATAL_ATTRACTION);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(FATAL_ATTRACTION);
             spells[1].targettype = TARGET_RANDOM_SINGLE;
             spells[1].instant = true;
             spells[1].perctrigger = 10.0f;
@@ -2759,7 +2759,7 @@ class ShahrazAI : public CreatureAIScript
             spells[1].mindist2cast = 10.0f;
             spells[1].maxdist2cast = 60.0f;
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(SINFUL_BEAM);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(SINFUL_BEAM);
             spells[2].targettype = TARGET_RANDOM_SINGLE;
             spells[2].instant = true;
             spells[2].perctrigger = 0.0f;
@@ -2768,7 +2768,7 @@ class ShahrazAI : public CreatureAIScript
             spells[2].mindist2cast = 0.0f;
             spells[2].maxdist2cast = 80.0f;
 
-            spells[3].info = sSpellCustomizations.GetServersideSpell(WICKED_BEAM);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(WICKED_BEAM);
             spells[3].targettype = TARGET_RANDOM_SINGLE;
             spells[3].instant = true;
             spells[3].perctrigger = 0.0f;
@@ -2777,7 +2777,7 @@ class ShahrazAI : public CreatureAIScript
             spells[3].mindist2cast = 0.0f;
             spells[3].maxdist2cast = 80.0f;
 
-            spells[4].info = sSpellCustomizations.GetServersideSpell(VILE_BEAM);
+            spells[4].info = sSpellCustomizations.GetSpellInfo(VILE_BEAM);
             spells[4].targettype = TARGET_RANDOM_SINGLE;
             spells[4].instant = true;
             spells[4].perctrigger = 0.0f;
@@ -2786,7 +2786,7 @@ class ShahrazAI : public CreatureAIScript
             spells[4].mindist2cast = 0.0f;
             spells[4].maxdist2cast = 80.0f;
 
-            spells[5].info = sSpellCustomizations.GetServersideSpell(SINISTER_BEAM);
+            spells[5].info = sSpellCustomizations.GetSpellInfo(SINISTER_BEAM);
             spells[5].targettype = TARGET_RANDOM_SINGLE;
             spells[5].instant = true;
             spells[5].perctrigger = 0.0f;
@@ -2903,7 +2903,7 @@ class ShahrazAI : public CreatureAIScript
                 }
 
                 //_unit->CastSpell(_unit, SpellId, true);
-                Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetServersideSpell(SpellId), (uint32)15000, _unit, _unit);
+                Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(SpellId), (uint32)15000, _unit, _unit);
                 _unit->AddAura(aura);
 
                 AuraChange = t + 15;
@@ -3245,21 +3245,21 @@ class TeronGorefiendAI : public CreatureAIScript
 
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(DOOM_BLOSSOM); //summon visual effect
+            spells[0].info = sSpellCustomizations.GetSpellInfo(DOOM_BLOSSOM); //summon visual effect
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = true;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
             spells[0].cooldown = 25;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(CRUSHING_SHADOWS);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(CRUSHING_SHADOWS);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = false;
             spells[1].perctrigger = 10.0f;
             spells[1].attackstoptimer = 1000;
             spells[1].cooldown = 20;
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(INCINERATE);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(INCINERATE);
             spells[2].targettype = TARGET_RANDOM_SINGLE;
             spells[2].instant = true;
             spells[2].perctrigger = 0.0f;
@@ -3268,7 +3268,7 @@ class TeronGorefiendAI : public CreatureAIScript
             spells[2].mindist2cast = 0.0f;
             spells[2].maxdist2cast = 45.0f;
 
-            spells[3].info = sSpellCustomizations.GetServersideSpell(SHADOW_OF_DEATH);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(SHADOW_OF_DEATH);
             spells[3].targettype = TARGET_RANDOM_SINGLE;
             spells[3].instant = false;
             spells[3].perctrigger = 0.0f;
@@ -3469,7 +3469,7 @@ class ShadeofakamaAI : public CreatureAIScript
                 m_spellcheck[i] = false;
 
             }
-            spells[0].info = sSpellCustomizations.GetServersideSpell(SINFUL_BEAM0);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(SINFUL_BEAM0);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].perctrigger = 0.0f;
@@ -4477,7 +4477,7 @@ class AkamaAI : public MoonScriptBossAI
                     pGate->SetState(GO_STATE_OPEN);
                     if (pDoorTrigger != NULL)
                     {
-                        pDoorTrigger->CastSpell(pDoorTrigger, sSpellCustomizations.GetServersideSpell(GATE_FAILURE), true);
+                        pDoorTrigger->CastSpell(pDoorTrigger, sSpellCustomizations.GetSpellInfo(GATE_FAILURE), true);
                     }
                     break;
                 case 12:
@@ -5659,7 +5659,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     case 1:
                         for (uint8 i = 0; i < 2; ++i)
                         {
-                            _unit->CastSpellAoF(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, sSpellCustomizations.GetServersideSpell(ILLIDAN_THROW_GLAIVE1), false);
+                            _unit->CastSpellAoF(UnitPos[i].x, UnitPos[i].y, UnitPos[i].z, sSpellCustomizations.GetSpellInfo(ILLIDAN_THROW_GLAIVE1), false);
                         }
                         SetWieldWeapon(false);
                         break;

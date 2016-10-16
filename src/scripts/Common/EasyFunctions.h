@@ -274,7 +274,7 @@ class SCRIPT_DECL EasyFunctions
 
         void EventCastSpell(Unit* caster, Unit* target, uint32 spellid, uint32 time)
         {
-            sEventMgr.AddEvent(static_cast<Unit*>(caster), &Unit::EventCastSpell, static_cast<Unit*>(target), sSpellCustomizations.GetServersideSpell(spellid), EVENT_UNK, time, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<Unit*>(caster), &Unit::EventCastSpell, static_cast<Unit*>(target), sSpellCustomizations.GetSpellInfo(spellid), EVENT_UNK, time, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
 
         void EventPlaySound(Creature* creat, uint32 id, uint32 time)

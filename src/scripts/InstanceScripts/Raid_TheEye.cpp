@@ -43,14 +43,14 @@ class AStarScryerAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = sSpellCustomizations.GetServersideSpell(ARCANE_VOLLEY);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(ARCANE_VOLLEY);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = 15;
             spells[0].perctrigger = 50.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(A_STAR_ARCANE_EXPLOSION);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(A_STAR_ARCANE_EXPLOSION);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].cooldown = 5;
@@ -214,7 +214,7 @@ class StarScryerAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = sSpellCustomizations.GetServersideSpell(STARFALL);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(STARFALL);
             spells[0].targettype = TARGET_RANDOM_SINGLE;
             spells[0].instant = true;
             spells[0].cooldown = 12;
@@ -430,21 +430,21 @@ class AstromancerLordAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = sSpellCustomizations.GetServersideSpell(A_LORD_FIREBALL_VOLLEY);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(A_LORD_FIREBALL_VOLLEY);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].cooldown = 15;
             spells[0].perctrigger = 50.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(BLAST_WEAVE);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(BLAST_WEAVE);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].cooldown = 7;
             spells[1].perctrigger = 50.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(DRAGONS_BREATH);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(DRAGONS_BREATH);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].cooldown = 10;
@@ -609,14 +609,14 @@ class BloodVindicatorAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = sSpellCustomizations.GetServersideSpell(HAMMER_OF_JUSTICE);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(HAMMER_OF_JUSTICE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 10;
             spells[0].perctrigger = 50.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(FLASH_HEAL);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(FLASH_HEAL);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = false;
             spells[1].cooldown = 15;
@@ -781,14 +781,14 @@ class BloodLegionnareAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = sSpellCustomizations.GetServersideSpell(LEGION_WHIRLWIND);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(LEGION_WHIRLWIND);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 15;
             spells[0].perctrigger = 50.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(CLEAVE);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(CLEAVE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = 10;
@@ -953,14 +953,14 @@ class BloodMarshalAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = sSpellCustomizations.GetServersideSpell(WHIRLWIND);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(WHIRLWIND);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 15;
             spells[0].perctrigger = 50.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(UPPERCUT);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(UPPERCUT);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = 20;
@@ -1125,14 +1125,14 @@ class PhoenixHawkAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = sSpellCustomizations.GetServersideSpell(MANA_BURN);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(MANA_BURN);
             spells[0].targettype = TARGET_RANDOM_SINGLE;
             spells[0].instant = true;
             spells[0].cooldown = 15;
             spells[0].perctrigger = 50.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(HAWK_CHARGE);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(HAWK_CHARGE);
             spells[1].targettype = TARGET_RANDOM_SINGLE;
             spells[1].instant = true;
             spells[1].cooldown = 12;
@@ -1299,14 +1299,14 @@ class CrystalSentinelAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = sSpellCustomizations.GetServersideSpell(TRAMPLE);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(TRAMPLE);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = 15;
             spells[0].perctrigger = 50.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(CHARGET_ARCANE_EXPLOSION);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(CHARGET_ARCANE_EXPLOSION);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = false;
             spells[1].cooldown = 20;
@@ -1470,7 +1470,7 @@ class CrystalMechanicAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = sSpellCustomizations.GetServersideSpell(SAW_BLADE);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(SAW_BLADE);
             spells[0].targettype = TARGET_RANDOM_SINGLE;
             spells[0].instant = true;
             spells[0].cooldown = 6;
@@ -1807,7 +1807,7 @@ bool Dummy_Solarian_WrathOfTheAstromancer(uint32 pEffectIndex, Spell* pSpell)
     Unit* Target = Caster->GetAIInterface()->getNextTarget();
     if (!Target) return true;
 
-    OLD_SpellEntry* SpellInfo = sSpellCustomizations.GetServersideSpell(SOLARIAN_WRATH_OF_THE_ASTROMANCER_BOMB);
+    SpellInfo* SpellInfo = sSpellCustomizations.GetSpellInfo(SOLARIAN_WRATH_OF_THE_ASTROMANCER_BOMB);
     if (!SpellInfo) return true;
 
     //Explode bomb after 6sec
@@ -1955,49 +1955,49 @@ class AlarAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(FLAME_BUFFET);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(FLAME_BUFFET);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].cooldown = 4;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(FLAME_QUILLS);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(FLAME_QUILLS);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].cooldown = 3;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(SUMMON_PHOENIX_ADDS);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(SUMMON_PHOENIX_ADDS);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = true;
             spells[2].cooldown = 5;
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = sSpellCustomizations.GetServersideSpell(FLAME_PATCH);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(FLAME_PATCH);
             spells[3].targettype = TARGET_VARIOUS;
             spells[3].instant = true;
             spells[3].cooldown = 10;
             spells[3].perctrigger = 0.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = sSpellCustomizations.GetServersideSpell(METEOR);
+            spells[4].info = sSpellCustomizations.GetSpellInfo(METEOR);
             spells[4].targettype = TARGET_ATTACKING;
             spells[4].instant = true;    // =(
             spells[4].cooldown = 30;
             spells[4].perctrigger = 0.0f;
             spells[4].attackstoptimer = 1000;
 
-            spells[5].info = sSpellCustomizations.GetServersideSpell(MELT_ARMOR);
+            spells[5].info = sSpellCustomizations.GetSpellInfo(MELT_ARMOR);
             spells[5].targettype = TARGET_ATTACKING;
             spells[5].instant = true;
             spells[5].cooldown = 60;
             spells[5].perctrigger = 0.0f;
             spells[5].attackstoptimer = 1000;
 
-            spells[6].info = sSpellCustomizations.GetServersideSpell(REBIRTH);
+            spells[6].info = sSpellCustomizations.GetSpellInfo(REBIRTH);
             spells[6].targettype = TARGET_SELF;
             spells[6].instant = false;
             spells[6].cooldown = -1;
@@ -2159,7 +2159,7 @@ class AlarAI : public CreatureAIScript
             if (FlameQuills == true)
             {
 
-                //_unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(34229), true);
+                //_unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(34229), true);
                 if (lasttime + 11 == timer)
                 {
                     _unit->CastSpellAoF(fly[1].x, fly[1].y, fly[1].z, spells[1].info, spells[1].instant);
@@ -2326,7 +2326,7 @@ class AlarAI : public CreatureAIScript
                             NextWP = 6;
                             lasttime = timer;
                             //_unit->Emote(EMOTE_STATE_WHIRLWIND);
-                            _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(34229), true);
+                            _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(34229), true);
                         }
 
                         if (Phase == 2)
@@ -2393,7 +2393,7 @@ class EmberAlarAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = sSpellCustomizations.GetServersideSpell(34341);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(34341);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = 15;
@@ -2486,7 +2486,7 @@ class PatchAlarAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = sSpellCustomizations.GetServersideSpell(35380);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(35380);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = 15;

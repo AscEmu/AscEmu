@@ -269,28 +269,28 @@ class LordMarrowgarAI : public MoonScriptBossAI
 
             nrspells = 4;
 
-            spells[0].info = sSpellCustomizations.GetServersideSpell(BONE_SLICE);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(BONE_SLICE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 15;
             spells[0].perctrigger = 50.0f;
             spells[0].attackstoptimer = 10000;
 
-            spells[1].info = sSpellCustomizations.GetServersideSpell(BONE_STORM);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(BONE_STORM);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].cooldown = 60000;
             spells[1].perctrigger = 75.0f;
             spells[1].attackstoptimer = 60000;
 
-            spells[2].info = sSpellCustomizations.GetServersideSpell(LM_BERSERK);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(LM_BERSERK);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].cooldown = 15;
             spells[2].perctrigger = 50.0f;
             spells[2].attackstoptimer = 10000;
 
-            spells[3].info = sSpellCustomizations.GetServersideSpell(SOUL_FEAST);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(SOUL_FEAST);
             spells[3].targettype = TARGET_RANDOM_SINGLE;
             spells[3].instant = true;
             spells[3].cooldown = 20;
@@ -357,7 +357,7 @@ class LordMarrowgarAI : public MoonScriptBossAI
             if (random_target == nullptr)
                 return;
 
-            _unit->CastSpell(random_target, sSpellCustomizations.GetServersideSpell(BONE_SPIKE), false);
+            _unit->CastSpell(random_target, sSpellCustomizations.GetSpellInfo(BONE_SPIKE), false);
 
             TargetTable.clear();
 

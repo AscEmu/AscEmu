@@ -27,218 +27,249 @@ initialiseSingleton(SpellCustomizations);
 SpellCustomizations::SpellCustomizations() {}
 SpellCustomizations::~SpellCustomizations() {}
 
-void SpellCustomizations::LoadServersideSpells()
+void SpellCustomizations::LoadSpellInfoData()
 {
-    uint32 start_time = getMSTime();
-
-    QueryResult* spells_result = WorldDatabase.Query("SELECT * FROM spells");
-
-    if (spells_result == nullptr)
+    for (uint32 i = 0; i < MAX_SPELL_ID; ++i)
     {
-        Log.Notice("SpellCustomizations", "Table `spells` is empty!");
-        return;
-    }
-
-    Log.Notice("SpellCustomizations", "Table `spells` has %u columns", spells_result->GetFieldCount());
-
-    _serversideSpellContainerStore.rehash(spells_result->GetRowCount());
-
-    uint32 serverside_spell_count = 0;
-    do
-    {
-        Field* fields = spells_result->Fetch();
-
-        uint32 entry = fields[0].GetUInt32();
-
-        OLD_SpellEntry& serversideSpell = _serversideSpellContainerStore[entry];
-
-        serversideSpell.Id = entry;
-
-        serversideSpell.Category = fields[1].GetUInt32();
-        serversideSpell.DispelType = fields[2].GetUInt32();
-        serversideSpell.MechanicsType = fields[3].GetUInt32();
-        serversideSpell.Attributes = fields[4].GetUInt32();
-        serversideSpell.AttributesEx = fields[5].GetUInt32();
-        serversideSpell.AttributesExB = fields[6].GetUInt32();
-        serversideSpell.AttributesExC = fields[7].GetUInt32();
-        serversideSpell.AttributesExD = fields[8].GetUInt32();
-        serversideSpell.AttributesExE = fields[9].GetUInt32();
-        serversideSpell.AttributesExF = fields[10].GetUInt32();
-        serversideSpell.AttributesExG = fields[11].GetUInt32();
-        serversideSpell.RequiredShapeShift = fields[12].GetUInt32();
-        //serversideSpell.Unknown = fields[13].GetUInt32();
-        serversideSpell.ShapeshiftExclude = fields[14].GetUInt32();
-        //serversideSpell.Unknown = fields[15].GetUInt32();
-        serversideSpell.Targets = fields[16].GetUInt32();
-        serversideSpell.TargetCreatureType = fields[17].GetUInt32();
-        serversideSpell.RequiresSpellFocus = fields[18].GetUInt32();
-        serversideSpell.FacingCasterFlags = fields[19].GetUInt32();
-        serversideSpell.CasterAuraState = fields[20].GetUInt32();
-        serversideSpell.TargetAuraState = fields[21].GetUInt32();
-        serversideSpell.CasterAuraStateNot = fields[22].GetUInt32();
-        serversideSpell.TargetAuraStateNot = fields[23].GetUInt32();
-        serversideSpell.casterAuraSpell = fields[24].GetUInt32();
-        serversideSpell.targetAuraSpell = fields[25].GetUInt32();
-        serversideSpell.casterAuraSpellNot = fields[26].GetUInt32();
-        serversideSpell.targetAuraSpellNot = fields[27].GetUInt32();
-        serversideSpell.CastingTimeIndex = fields[28].GetUInt32();
-        serversideSpell.RecoveryTime = fields[29].GetUInt32();
-        serversideSpell.CategoryRecoveryTime = fields[30].GetUInt32();
-        serversideSpell.InterruptFlags = fields[31].GetUInt32();
-        serversideSpell.AuraInterruptFlags = fields[32].GetUInt32();
-        serversideSpell.ChannelInterruptFlags = fields[33].GetUInt32();
-        serversideSpell.procFlags = fields[34].GetUInt32();
-        serversideSpell.procChance = fields[35].GetUInt32();
-        serversideSpell.procCharges = fields[36].GetUInt32();
-        serversideSpell.maxLevel = fields[37].GetUInt32();
-        serversideSpell.baseLevel = fields[38].GetUInt32();
-        serversideSpell.spellLevel = fields[39].GetUInt32();
-        serversideSpell.DurationIndex = fields[40].GetUInt32();
-        serversideSpell.powerType = fields[41].GetInt32();
-        serversideSpell.manaCost = fields[42].GetUInt32();
-        serversideSpell.manaCostPerlevel = fields[43].GetUInt32();
-        serversideSpell.manaPerSecond = fields[44].GetUInt32();
-        serversideSpell.manaPerSecondPerLevel = fields[45].GetUInt32();
-        serversideSpell.rangeIndex = fields[46].GetUInt32();
-        serversideSpell.speed = fields[47].GetFloat();
-        serversideSpell.modalNextSpell = fields[48].GetUInt32();
-        serversideSpell.maxstack = fields[49].GetUInt32();
-
-        for (uint8 i = 0; i < 2; ++i)
-            serversideSpell.Totem[i] = fields[50 + i].GetUInt32();
-
-        for (uint8 i = 0; i < 8; ++i)
-            serversideSpell.Reagent[i] = fields[52 + i].GetUInt32();
-
-        for (uint8 i = 0; i < 8; ++i)
-            serversideSpell.ReagentCount[i] = fields[60 + i].GetUInt32();
-
-        serversideSpell.EquippedItemClass = fields[68].GetInt32();
-        serversideSpell.EquippedItemSubClass = fields[69].GetUInt32();
-        serversideSpell.RequiredItemFlags = fields[70].GetUInt32();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.Effect[i] = fields[71 + i].GetUInt32();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectDieSides[i] = fields[74 + i].GetUInt32();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectRealPointsPerLevel[i] = fields[77 + i].GetFloat();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectBasePoints[i] = fields[80 + i].GetInt32();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectMechanic[i] = fields[83 + i].GetInt32();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectImplicitTargetA[i] = fields[86 + i].GetUInt32();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectImplicitTargetB[i] = fields[89 + i].GetUInt32();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectRadiusIndex[i] = fields[92 + i].GetUInt32();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectApplyAuraName[i] = fields[95 + i].GetUInt32();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectAmplitude[i] = fields[98 + i].GetUInt32();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectMultipleValue[i] = fields[101 + i].GetFloat();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectChainTarget[i] = fields[104 + i].GetUInt32();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectItemType[i] = fields[107 + i].GetUInt32();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectMiscValue[i] = fields[110 + i].GetUInt32();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectMiscValueB[i] = fields[113 + i].GetUInt32();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectTriggerSpell[i] = fields[116 + i].GetUInt32();
-
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.EffectPointsPerComboPoint[i] = fields[119 + i].GetFloat();
-
-        for (uint8 c = 0; c < MAX_SPELL_EFFECTS; ++c)
+        DBC::Structures::SpellEntry const* dbc_spell_entry = sSpellStore.LookupEntry(i);
+        if (dbc_spell_entry == nullptr)
         {
-            serversideSpell.EffectSpellClassMask[0][c] = fields[122 + c].GetUInt32();
-            serversideSpell.EffectSpellClassMask[1][c] = fields[125 + c].GetUInt32();
-            serversideSpell.EffectSpellClassMask[2][c] = fields[128 + c].GetUInt32();
+            continue;
         }
+        else
+        {
+            uint32 spell_id = dbc_spell_entry->Id;
+            SpellInfo& spellInfo = _spellInfoContainerStore[spell_id];
+            spellInfo.Id = spell_id;
+            spellInfo.Attributes = dbc_spell_entry->Attributes;
+            spellInfo.AttributesEx = dbc_spell_entry->AttributesEx;
+            spellInfo.AttributesExB = dbc_spell_entry->AttributesExB;
+            spellInfo.AttributesExC = dbc_spell_entry->AttributesExC;
+            spellInfo.AttributesExD = dbc_spell_entry->AttributesExD;
+            spellInfo.AttributesExE = dbc_spell_entry->AttributesExE;
+            spellInfo.AttributesExF = dbc_spell_entry->AttributesExF;
+            spellInfo.AttributesExG = dbc_spell_entry->AttributesExG;
+            spellInfo.AttributesExH = dbc_spell_entry->AttributesExH;
+            spellInfo.AttributesExI = dbc_spell_entry->AttributesExI;
+            spellInfo.AttributesExJ = dbc_spell_entry->AttributesExJ;
+            spellInfo.CastingTimeIndex = dbc_spell_entry->CastingTimeIndex;
+            spellInfo.DurationIndex = dbc_spell_entry->DurationIndex;
+            spellInfo.powerType = dbc_spell_entry->powerType;
+            spellInfo.rangeIndex = dbc_spell_entry->rangeIndex;
+            spellInfo.speed = dbc_spell_entry->speed;
+            spellInfo.SpellVisual = dbc_spell_entry->SpellVisual[0];
+            spellInfo.field114 = dbc_spell_entry->SpellVisual[1];
+            spellInfo.spellIconID = dbc_spell_entry->spellIconID;
+            spellInfo.activeIconID = dbc_spell_entry->activeIconID;
+            spellInfo.Name = dbc_spell_entry->Name;
+            spellInfo.Rank = dbc_spell_entry->Rank;
+            spellInfo.Description = dbc_spell_entry->Description;
+            spellInfo.BuffDescription = dbc_spell_entry->BuffDescription;
+            spellInfo.School = dbc_spell_entry->School;
+            spellInfo.RuneCostID = dbc_spell_entry->RuneCostID;
+            spellInfo.SpellDifficultyID = dbc_spell_entry->SpellDifficultyId;
 
-        serversideSpell.SpellVisual = fields[131].GetUInt32();
-        serversideSpell.field114 = fields[132].GetUInt32();
-        serversideSpell.spellIconID = fields[133].GetUInt32();
-        serversideSpell.activeIconID = fields[134].GetUInt32();
-        serversideSpell.spellPriority = fields[135].GetUInt32();
-        serversideSpell.Name = fields[136].GetString();
-        serversideSpell.Rank = fields[137].GetString();
-        serversideSpell.Description = fields[138].GetString();
-        serversideSpell.BuffDescription = fields[139].GetString();
-        serversideSpell.ManaCostPercentage = fields[140].GetUInt32();
-        serversideSpell.StartRecoveryCategory = fields[141].GetUInt32();
-        serversideSpell.StartRecoveryTime = fields[142].GetUInt32();
-        serversideSpell.MaxTargetLevel = fields[143].GetUInt32();
-        serversideSpell.SpellFamilyName = fields[144].GetUInt32();
+            // dbc links
+            spellInfo.SpellScalingId = dbc_spell_entry->SpellScalingId;
+            spellInfo.SpellAuraOptionsId = dbc_spell_entry->SpellAuraOptionsId;
+            spellInfo.SpellAuraRestrictionsId = dbc_spell_entry->SpellAuraRestrictionsId;
+            spellInfo.SpellCastingRequirementsId = dbc_spell_entry->SpellCastingRequirementsId;
+            spellInfo.SpellCategoriesId = dbc_spell_entry->SpellCategoriesId;
+            spellInfo.SpellClassOptionsId = dbc_spell_entry->SpellClassOptionsId;
+            spellInfo.SpellCooldownsId = dbc_spell_entry->SpellCooldownsId;
+            spellInfo.SpellEquippedItemsId = dbc_spell_entry->SpellEquippedItemsId;
+            spellInfo.SpellInterruptsId = dbc_spell_entry->SpellInterruptsId;
+            spellInfo.SpellLevelsId = dbc_spell_entry->SpellLevelsId;
+            spellInfo.SpellPowerId = dbc_spell_entry->SpellPowerId;
+            spellInfo.SpellReagentsId = dbc_spell_entry->SpellReagentsId;
+            spellInfo.SpellShapeshiftId = dbc_spell_entry->SpellShapeshiftId;
+            spellInfo.SpellTargetRestrictionsId = dbc_spell_entry->SpellTargetRestrictionsId;
+            spellInfo.SpellTotemsId = dbc_spell_entry->SpellTotemsId;
 
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.SpellGroupType[i] = fields[145 + i].GetUInt32();
+            // data from SpellScaling.dbc
+            // data from SpellAuraOptions.dbc
+            if (dbc_spell_entry->SpellAuraOptionsId && dbc_spell_entry->GetSpellAuraOptions() != nullptr)
+            {
+                spellInfo.maxstack = dbc_spell_entry->GetSpellAuraOptions()->StackAmount;
+                spellInfo.procChance = dbc_spell_entry->GetSpellAuraOptions()->procChance;
+                spellInfo.procCharges = dbc_spell_entry->GetSpellAuraOptions()->procCharges;
+                spellInfo.procFlags = dbc_spell_entry->GetSpellAuraOptions()->procFlags;
+            }
 
-        serversideSpell.MaxTargets = fields[148].GetUInt32();
-        serversideSpell.Spell_Dmg_Type = fields[149].GetUInt32();
-        serversideSpell.PreventionType = fields[150].GetUInt32();
-        serversideSpell.StanceBarOrder = fields[151].GetInt32();
+            // data from SpellAuraRestrictions.dbc
+            if (dbc_spell_entry->SpellAuraRestrictionsId && dbc_spell_entry->GetSpellAuraRestrictions() != nullptr)
+            {
+                spellInfo.CasterAuraState = dbc_spell_entry->GetSpellAuraRestrictions()->CasterAuraState;
+                spellInfo.TargetAuraState = dbc_spell_entry->GetSpellAuraRestrictions()->TargetAuraState;
+                spellInfo.CasterAuraStateNot = dbc_spell_entry->GetSpellAuraRestrictions()->CasterAuraStateNot;
+                spellInfo.TargetAuraStateNot = dbc_spell_entry->GetSpellAuraRestrictions()->TargetAuraStateNot;
+                spellInfo.casterAuraSpell = dbc_spell_entry->GetSpellAuraRestrictions()->casterAuraSpell;
+                spellInfo.targetAuraSpell = dbc_spell_entry->GetSpellAuraRestrictions()->targetAuraSpell;
+                spellInfo.casterAuraSpellNot = dbc_spell_entry->GetSpellAuraRestrictions()->excludeCasterAuraSpell;
+                spellInfo.targetAuraSpellNot = dbc_spell_entry->GetSpellAuraRestrictions()->excludeTargetAuraSpell;
+            }
 
-        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            serversideSpell.dmg_multiplier[i] = fields[152 + i].GetUInt32();
+            // data from SpellCastingRequirements.dbc
+            if (dbc_spell_entry->SpellCastingRequirementsId && dbc_spell_entry->GetSpellCastingRequirements() != nullptr)
+            {
+                spellInfo.FacingCasterFlags = dbc_spell_entry->GetSpellCastingRequirements()->FacingCasterFlags;
+                spellInfo.RequiresAreaId = dbc_spell_entry->GetSpellCastingRequirements()->AreaGroupId;
+                spellInfo.RequiresSpellFocus = dbc_spell_entry->GetSpellCastingRequirements()->RequiresSpellFocus;
+            }
 
-        serversideSpell.MinFactionID = fields[155].GetUInt32();
-        serversideSpell.MinReputation = fields[156].GetUInt32();
-        serversideSpell.RequiredAuraVision = fields[157].GetUInt32();
+            // data from SpellCategories.dbc
+            if (dbc_spell_entry->SpellCategoriesId && dbc_spell_entry->GetSpellCategories() != nullptr)
+            {
+                spellInfo.Category = dbc_spell_entry->GetSpellCategories()->Category;
+                spellInfo.DispelType = dbc_spell_entry->GetSpellCategories()->Dispel;
+                spellInfo.Spell_Dmg_Type = dbc_spell_entry->GetSpellCategories()->DmgClass;
+                spellInfo.MechanicsType = dbc_spell_entry->GetSpellCategories()->Mechanic;
+                spellInfo.PreventionType = dbc_spell_entry->GetSpellCategories()->PreventionType;
+                spellInfo.StartRecoveryCategory = dbc_spell_entry->GetSpellCategories()->StartRecoveryCategory;
+            }
 
-        for (uint8 i = 0; i < 2; ++i)
-            serversideSpell.TotemCategory[i] = fields[158 + i].GetUInt32();
+            // data from SpellClassOptions.dbc
+            if (dbc_spell_entry->SpellClassOptionsId && dbc_spell_entry->GetSpellClassOptions() != nullptr)
+            {
+                spellInfo.SpellFamilyName = dbc_spell_entry->GetSpellClassOptions()->SpellFamilyName;
 
-        serversideSpell.RequiresAreaId = fields[160].GetInt32();
-        serversideSpell.School = fields[161].GetUInt32();
-        serversideSpell.RuneCostID = fields[162].GetUInt32();
-        //serversideSpell.SpellMissileID = fields[163].GetUInt32();
-        //serversideSpell.PowerDisplayId = fields[164].GetUInt32();
-        //for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            //serversideSpell.EffectBonusMultiplier[i] = fields[165 + i].GetFloat();
+                for (uint8 i = 0; i < 3; ++i)
+                {
+                    spellInfo.SpellGroupType[i] = dbc_spell_entry->GetSpellClassOptions()->SpellFamilyFlags[i];
+                }
 
-        //serversideSpell.SpellDescriptionVariable = fields[168].GetUInt32();
-        serversideSpell.SpellDifficultyID = fields[169].GetUInt32();
+            }
 
-        ++serverside_spell_count;
-    } while (spells_result->NextRow());
+            // data from SpellCooldowns.dbc
+            if (dbc_spell_entry->SpellCooldownsId && dbc_spell_entry->GetSpellCooldowns() != nullptr)
+            {
+                spellInfo.CategoryRecoveryTime = dbc_spell_entry->GetSpellCooldowns()->CategoryRecoveryTime;
+                spellInfo.RecoveryTime = dbc_spell_entry->GetSpellCooldowns()->RecoveryTime;
+                spellInfo.StartRecoveryTime = dbc_spell_entry->GetSpellCooldowns()->StartRecoveryTime;
+            }
 
-    delete spells_result;
+            // data from SpellEquippedItems.dbc
+            if (dbc_spell_entry->SpellEquippedItemsId && dbc_spell_entry->GetSpellEquippedItems() != nullptr)
+            {
+                spellInfo.EquippedItemClass = dbc_spell_entry->GetSpellEquippedItems()->EquippedItemClass;
+                spellInfo.EquippedItemInventoryTypeMask = dbc_spell_entry->GetSpellEquippedItems()->EquippedItemInventoryTypeMask;
+                spellInfo.EquippedItemSubClass = dbc_spell_entry->GetSpellEquippedItems()->EquippedItemSubClassMask;
+            }
 
-    Log.Success("SpellCustomizations", "Loaded %u serverside spells from `spells` table in %u ms!", serverside_spell_count, getMSTime() - start_time);
+            // data from SpellInterrupts.dbc
+            if (dbc_spell_entry->SpellInterruptsId && dbc_spell_entry->GetSpellInterrupts() != nullptr)
+            {
+                spellInfo.AuraInterruptFlags = dbc_spell_entry->GetSpellInterrupts()->AuraInterruptFlags;
+                spellInfo.ChannelInterruptFlags = dbc_spell_entry->GetSpellInterrupts()->ChannelInterruptFlags;
+                spellInfo.InterruptFlags = dbc_spell_entry->GetSpellInterrupts()->InterruptFlags;
+            }
+
+            // data from SpellLevels.dbc
+            if (dbc_spell_entry->SpellLevelsId && dbc_spell_entry->GetSpellLevels() != nullptr)
+            {
+                spellInfo.baseLevel = dbc_spell_entry->GetSpellLevels()->baseLevel;
+                spellInfo.maxLevel = dbc_spell_entry->GetSpellLevels()->maxLevel;
+                spellInfo.spellLevel = dbc_spell_entry->GetSpellLevels()->spellLevel;
+            }
+
+            // data from SpellPower.dbc
+            if (dbc_spell_entry->SpellPowerId && dbc_spell_entry->GetSpellPower() != nullptr)
+            {
+                spellInfo.manaCost = dbc_spell_entry->GetSpellPower()->manaCost;
+                spellInfo.manaCostPerlevel = dbc_spell_entry->GetSpellPower()->manaCostPerlevel;
+                spellInfo.ManaCostPercentage = dbc_spell_entry->GetSpellPower()->ManaCostPercentage;
+                spellInfo.manaPerSecond = dbc_spell_entry->GetSpellPower()->manaPerSecond;
+                spellInfo.manaPerSecondPerLevel = dbc_spell_entry->GetSpellPower()->manaPerSecondPerLevel;
+            }
+
+            // data from SpellReagents.dbc
+            if (dbc_spell_entry->SpellReagentsId && dbc_spell_entry->GetSpellReagents() != nullptr)
+            {
+                for (uint8 i = 0; i < MAX_SPELL_REAGENTS; ++i)
+                {
+                    spellInfo.Reagent[i] = dbc_spell_entry->GetSpellReagents()->Reagent[i];
+                    spellInfo.ReagentCount[i] = dbc_spell_entry->GetSpellReagents()->ReagentCount[i];
+                }
+            }
+
+            // data from SpellShapeshift.dbc
+            if (dbc_spell_entry->SpellShapeshiftId && dbc_spell_entry->GetSpellShapeshift() != nullptr)
+            {
+                spellInfo.RequiredShapeShift = dbc_spell_entry->GetSpellShapeshift()->Stances;
+                spellInfo.ShapeshiftExclude = dbc_spell_entry->GetSpellShapeshift()->StancesNot;
+            }
+
+            // data from SpellTargetRestrictions.dbc
+            if (dbc_spell_entry->SpellTargetRestrictionsId && dbc_spell_entry->GetSpellTargetRestrictions() != nullptr)
+            {
+                spellInfo.MaxTargets = dbc_spell_entry->GetSpellTargetRestrictions()->MaxAffectedTargets;
+                spellInfo.MaxTargetLevel = dbc_spell_entry->GetSpellTargetRestrictions()->MaxTargetLevel;
+                spellInfo.TargetCreatureType = dbc_spell_entry->GetSpellTargetRestrictions()->TargetCreatureType;
+                spellInfo.Targets = dbc_spell_entry->GetSpellTargetRestrictions()->Targets;
+            }
+
+            // data from SpellTotems.dbc
+            if (dbc_spell_entry->SpellTotemsId && dbc_spell_entry->GetSpellTotems() != nullptr)
+            {
+                for (uint8 i = 0; i < MAX_SPELL_TOTEMS; ++i)
+                {
+                    spellInfo.TotemCategory[i] = dbc_spell_entry->GetSpellTotems()->TotemCategory[i];
+                    spellInfo.Totem[i] = dbc_spell_entry->GetSpellTotems()->Totem[i];
+                }
+            }
+
+            // data from SpellEffect.dbc
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            {
+                DBC::Structures::SpellEffectEntry const* spell_effect_entry = GetSpellEffectEntry(spell_id, SpellEffectIndex(i));
+                if (spell_effect_entry == nullptr)
+                {
+                    continue;
+                }
+                else
+                {
+                    spellInfo.Effect[i] = spell_effect_entry->Effect;
+                    spellInfo.EffectMultipleValue[i] = spell_effect_entry->EffectMultipleValue;
+                    spellInfo.EffectApplyAuraName[i] = spell_effect_entry->EffectApplyAuraName;
+                    spellInfo.EffectAmplitude[i] = spell_effect_entry->EffectAmplitude;
+                    spellInfo.EffectBasePoints[i] = spell_effect_entry->EffectBasePoints;
+                    spellInfo.EffectBonusMultiplier[i] = spell_effect_entry->EffectBonusMultiplier;
+                    spellInfo.dmg_multiplier[i] = spell_effect_entry->EffectDamageMultiplier;
+                    spellInfo.EffectChainTarget[i] = spell_effect_entry->EffectChainTarget;
+                    spellInfo.EffectDieSides[i] = spell_effect_entry->EffectDieSides;
+                    spellInfo.EffectItemType[i] = spell_effect_entry->EffectItemType;
+                    spellInfo.EffectMechanic[i] = spell_effect_entry->EffectMechanic;
+                    spellInfo.EffectMiscValue[i] = spell_effect_entry->EffectMiscValue;
+                    spellInfo.EffectMiscValueB[i] = spell_effect_entry->EffectMiscValueB;
+                    spellInfo.EffectPointsPerComboPoint[i] = spell_effect_entry->EffectPointsPerComboPoint;
+                    spellInfo.EffectRadiusIndex[i] = spell_effect_entry->EffectRadiusIndex;
+                    spellInfo.EffectRadiusMaxIndex[i] = spell_effect_entry->EffectRadiusMaxIndex;
+                    spellInfo.EffectRealPointsPerLevel[i] = spell_effect_entry->EffectRealPointsPerLevel;
+                    spellInfo.EffectSpellClassMask[i] = spell_effect_entry->EffectSpellClassMask[i];
+                    spellInfo.EffectTriggerSpell[i] = spell_effect_entry->EffectTriggerSpell;
+                    spellInfo.EffectImplicitTargetA[i] = spell_effect_entry->EffectImplicitTargetA;
+                    spellInfo.EffectImplicitTargetB[i] = spell_effect_entry->EffectImplicitTargetB;
+                    spellInfo.EffectSpellId[i] = spell_effect_entry->EffectSpellId;
+                    spellInfo.EffectIndex[i] = spell_effect_entry->EffectIndex;
+                }
+            }
+
+        }
+    }
 }
 
-OLD_SpellEntry* SpellCustomizations::GetServersideSpell(uint32 spell_id)
+SpellInfo* SpellCustomizations::GetSpellInfo(uint32 spell_id)
 {
-    ServersideSpellContainer::const_iterator itr = _serversideSpellContainerStore.find(spell_id);
-    if (itr != _serversideSpellContainerStore.end())
-        return const_cast<OLD_SpellEntry*>(&itr->second);
+    SpellInfoContainer::const_iterator itr = _spellInfoContainerStore.find(spell_id);
+    if (itr != _spellInfoContainerStore.end())
+        return const_cast<SpellInfo*>(&itr->second);
 
     return nullptr;
 }
 
 void SpellCustomizations::StartSpellCustomization()
 {
-    LoadServersideSpells();
+    LoadSpellInfoData();
 
     Log.Debug("SpellCustomizations::StartSpellCustomization", "Successfull started");
 
@@ -247,9 +278,9 @@ void SpellCustomizations::StartSpellCustomization()
     LoadSpellCustomCoefFlags();
     LoadSpellProcs();
 
-    for (auto it = sSpellCustomizations.GetServersideSpellStore()->begin(); it != sSpellCustomizations.GetServersideSpellStore()->end(); ++it)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
-        auto spellentry = GetServersideSpell(it->first);
+        auto spellentry = GetSpellInfo(it->first);
         if (spellentry != nullptr)
         {
             //Set spell overwrites (effect based)
@@ -280,7 +311,7 @@ void SpellCustomizations::LoadSpellRanks()
             uint32 spell_id = result->Fetch()[0].GetUInt32();
             uint32 pRank = result->Fetch()[1].GetUInt32();
 
-            OLD_SpellEntry* spell_entry = GetServersideSpell(spell_id);
+            SpellInfo* spell_entry = GetSpellInfo(spell_id);
             if (spell_entry != nullptr)
             {
                 spell_entry->custom_RankNumber = pRank;
@@ -321,7 +352,7 @@ void SpellCustomizations::LoadSpellCustomAssign()
             bool self_cast_only = result->Fetch()[3].GetBool();
             uint32 c_is_flag = result->Fetch()[4].GetUInt32();
 
-            OLD_SpellEntry* spell_entry = GetServersideSpell(spell_id);
+            SpellInfo* spell_entry = GetSpellInfo(spell_id);
             if (spell_entry != nullptr)
             {
                 spell_entry->custom_BGR_one_buff_on_target = on_target;
@@ -362,7 +393,7 @@ void SpellCustomizations::LoadSpellCustomCoefFlags()
             uint32 spell_id = result->Fetch()[0].GetUInt32();
             uint32 coef_flags = result->Fetch()[1].GetUInt32();
 
-            OLD_SpellEntry* spell_entry = GetServersideSpell(spell_id);
+            SpellInfo* spell_entry = GetSpellInfo(spell_id);
             if (spell_entry != nullptr)
             {
                 spell_entry->custom_spell_coef_flags = coef_flags;
@@ -400,7 +431,7 @@ void SpellCustomizations::LoadSpellProcs()
             uint32 spell_id = f[0].GetUInt32();
             uint32 name_hash = f[1].GetUInt32();
 
-            auto spell_entry = GetServersideSpell(spell_id);
+            auto spell_entry = GetSpellInfo(spell_id);
             if (spell_entry != nullptr)
             {
                 uint8 x;
@@ -462,7 +493,7 @@ void SpellCustomizations::LoadSpellProcs()
 }
 
 ///Fix if it is a periodic trigger with amplitude = 0, to avoid division by zero
-void SpellCustomizations::SetEffectAmplitude(OLD_SpellEntry* spell_entry)
+void SpellCustomizations::SetEffectAmplitude(SpellInfo* spell_entry)
 {
     for (uint8 y = 0; y < 3; y++)
     {
@@ -482,7 +513,7 @@ void SpellCustomizations::SetEffectAmplitude(OLD_SpellEntry* spell_entry)
     }
 }
 
-void SpellCustomizations::SetAuraFactoryFunc(OLD_SpellEntry* spell_entry)
+void SpellCustomizations::SetAuraFactoryFunc(SpellInfo* spell_entry)
 {
     bool spell_aura_factory_functions_loaded = false;
 
@@ -509,7 +540,7 @@ void SpellCustomizations::SetAuraFactoryFunc(OLD_SpellEntry* spell_entry)
     }
 }
 
-void SpellCustomizations::SetMeleeSpellBool(OLD_SpellEntry* spell_entry)
+void SpellCustomizations::SetMeleeSpellBool(SpellInfo* spell_entry)
 {
     for (uint8 z = 0; z < 3; z++)
     {
@@ -539,7 +570,7 @@ void SpellCustomizations::SetMeleeSpellBool(OLD_SpellEntry* spell_entry)
     }
 }
 
-void SpellCustomizations::SetRangedSpellBool(OLD_SpellEntry* spell_entry)
+void SpellCustomizations::SetRangedSpellBool(SpellInfo* spell_entry)
 {
     for (uint8 z = 0; z < 3; z++)
     {
@@ -555,7 +586,7 @@ void SpellCustomizations::SetRangedSpellBool(OLD_SpellEntry* spell_entry)
     }
 }
 
-void SpellCustomizations::SetMissingCIsFlags(OLD_SpellEntry* spell_entry)
+void SpellCustomizations::SetMissingCIsFlags(SpellInfo* spell_entry)
 {
     // Zyres: Special cases, not handled in spell_custom_assign!
     if (IsDamagingSpell(spell_entry))
@@ -568,7 +599,7 @@ void SpellCustomizations::SetMissingCIsFlags(OLD_SpellEntry* spell_entry)
         spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
 }
 
-void SpellCustomizations::SetCustomFlags(OLD_SpellEntry* spell_entry)
+void SpellCustomizations::SetCustomFlags(SpellInfo* spell_entry)
 {
     // Currently only set for 781 Disengage
     if (spell_entry->Id != 781)
@@ -581,7 +612,7 @@ void SpellCustomizations::SetCustomFlags(OLD_SpellEntry* spell_entry)
     }
 }
 
-void SpellCustomizations::SetOnShapeshiftChange(OLD_SpellEntry* spell_entry)
+void SpellCustomizations::SetOnShapeshiftChange(SpellInfo* spell_entry)
 {
     // Currently only for spell Track Humanoids
     if (spell_entry->Id != 5225 && spell_entry->Id != 19883)
@@ -594,7 +625,7 @@ void SpellCustomizations::SetOnShapeshiftChange(OLD_SpellEntry* spell_entry)
     }
 }
 
-void SpellCustomizations::SetAlwaysApply(OLD_SpellEntry* spell_entry)
+void SpellCustomizations::SetAlwaysApply(SpellInfo* spell_entry)
 {
     switch (spell_entry->Id)
     {

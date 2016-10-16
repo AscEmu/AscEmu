@@ -540,9 +540,9 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
     uint32 count = 0;
     std::string recout;
     char itoabuf[12];
-    for (auto it = sSpellCustomizations.GetServersideSpellStore()->begin(); it != sSpellCustomizations.GetServersideSpellStore()->end(); ++it)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
-        OLD_SpellEntry* spell = sSpellCustomizations.GetServersideSpell(it->first);
+        SpellInfo* spell = sSpellCustomizations.GetSpellInfo(it->first);
         std::string y = std::string(spell->Name);
         arcemu_TOLOWER(y);
         if (FindXinYString(x, y))

@@ -199,9 +199,9 @@ void ScriptMgr::DumpUnimplementedSpells()
 
     of.open("unimplemented1.txt");
 
-    for (auto it = sSpellCustomizations.GetServersideSpellStore()->begin(); it != sSpellCustomizations.GetServersideSpellStore()->end(); ++it)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
-        OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(it->first);
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(it->first);
         if (!sp)
             continue;
 
@@ -236,9 +236,9 @@ void ScriptMgr::DumpUnimplementedSpells()
 
     count = 0;
 
-    for (auto it = sSpellCustomizations.GetServersideSpellStore()->begin(); it != sSpellCustomizations.GetServersideSpellStore()->end(); ++it)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
-        OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(it->first);
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(it->first);
         if (!sp)
             continue;
 
@@ -290,7 +290,7 @@ void ScriptMgr::register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback
         LOG_ERROR("ScriptMgr is trying to register a script for Aura ID: %u even if there's already one for that Aura. Remove one of those scripts.", entry);
     }
 
-    OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(entry);
+    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(entry);
     if (sp == NULL)
     {
         LOG_ERROR("ScriptMgr is trying to register a dummy aura handler for Spell ID: %u which is invalid.", entry);
@@ -311,7 +311,7 @@ void ScriptMgr::register_dummy_spell(uint32 entry, exp_handle_dummy_spell callba
         return;
     }
 
-    OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(entry);
+    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(entry);
     if (sp == NULL)
     {
         LOG_ERROR("ScriptMgr is trying to register a dummy handler for Spell ID: %u which is invalid.", entry);
@@ -423,7 +423,7 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
         return;
     }
 
-    OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(entry);
+    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(entry);
     if (sp == NULL)
     {
         LOG_ERROR("ScriptMgr tried to register a script effect handler for Spell %u, which is invalid.", entry);
@@ -881,7 +881,7 @@ void HookInterface::OnEnterCombat(Player* pPlayer, Unit* pTarget)
         ((tOnEnterCombat)*itr)(pPlayer, pTarget);
 }
 
-bool HookInterface::OnCastSpell(Player* pPlayer, OLD_SpellEntry* pSpell, Spell* spell)
+bool HookInterface::OnCastSpell(Player* pPlayer, SpellInfo* pSpell, Spell* spell)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_CAST_SPELL];
     bool ret_val = true;

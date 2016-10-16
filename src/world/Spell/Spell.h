@@ -1252,9 +1252,9 @@ inline bool CanAgroHash(uint32 spellhashname)
 //  Returns false otherwise.
 //
 ////////////////////////////////////////////////////////////////////////////////
-bool IsDamagingSpell(OLD_SpellEntry* sp);
+bool IsDamagingSpell(SpellInfo* sp);
 
-inline uint32 IsHealingSpell(OLD_SpellEntry* sp)
+inline uint32 IsHealingSpell(SpellInfo* sp)
 {
     switch(sp->Effect[0])
     {
@@ -1649,7 +1649,7 @@ typedef enum
 } SpellEffectTarget;
 
 
-inline bool HasTargetType(OLD_SpellEntry* sp, uint32 ttype)
+inline bool HasTargetType(SpellInfo* sp, uint32 ttype)
 {
     if (
         sp->EffectImplicitTargetA[0] == ttype ||
@@ -1663,7 +1663,7 @@ inline bool HasTargetType(OLD_SpellEntry* sp, uint32 ttype)
     return false;
 }
 
-inline int GetAiTargetType(OLD_SpellEntry* sp)
+inline int GetAiTargetType(SpellInfo* sp)
 {
     /*  this is not good as one spell effect can target self and other one an enemy,
         maybe we should make it for each spell effect or use as flags */
@@ -1720,7 +1720,7 @@ inline int GetAiTargetType(OLD_SpellEntry* sp)
     return TTYPE_NULL;
 }
 
-inline bool IsTargetingStealthed(OLD_SpellEntry* sp)
+inline bool IsTargetingStealthed(SpellInfo* sp)
 {
     if (HasTargetType(sp, EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS) ||
         HasTargetType(sp, EFF_TARGET_ALL_ENEMIES_AROUND_CASTER) ||
@@ -1755,7 +1755,7 @@ inline bool IsTargetingStealthed(OLD_SpellEntry* sp)
     return 0;
 }
 
-inline bool IsRequireCooldownSpell(OLD_SpellEntry* sp)
+inline bool IsRequireCooldownSpell(SpellInfo* sp)
 {
     if ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN && sp->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH)     //rogue cold blood
         || (sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN && (!sp->AttributesEx || sp->AttributesEx & ATTRIBUTESEX_REMAIN_OOC)))
@@ -1889,7 +1889,7 @@ class SERVER_DECL Spell : public EventableObject
     public:
 
         friend class DummySpellHandler;
-        Spell(Object* Caster, OLD_SpellEntry* info, bool triggered, Aura* aur);
+        Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
         ~Spell();
 
         int32 event_GetInstanceID() { return m_caster->GetInstanceID(); }
@@ -1980,7 +1980,7 @@ class SERVER_DECL Spell : public EventableObject
         void AddCooldown();
         void AddStartCooldown();
         //
-        uint8 GetErrorAtShapeshiftedCast(OLD_SpellEntry* spellInfo, uint32 form);
+        uint8 GetErrorAtShapeshiftedCast(SpellInfo* spellInfo, uint32 form);
 
 
         bool Reflect(Unit* refunit);
@@ -2012,7 +2012,7 @@ class SERVER_DECL Spell : public EventableObject
         // Zyres: Not called.
         //void writeAmmoToPacket(WorldPacket* data);
         uint32 pSpellId;
-        OLD_SpellEntry* ProcedOnSpell; //some spells need to know the origins of the proc too
+        SpellInfo* ProcedOnSpell; //some spells need to know the origins of the proc too
         SpellCastTargets m_targets;
         SpellExtraError m_extraError;
 
@@ -2228,12 +2228,12 @@ class SERVER_DECL Spell : public EventableObject
         bool IsAspect();
         bool IsSeal();
 
-        inline OLD_SpellEntry* GetProto() { return (m_spellInfo_override == NULL) ? m_spellInfo : m_spellInfo_override; }
+        inline SpellInfo* GetProto() { return (m_spellInfo_override == NULL) ? m_spellInfo : m_spellInfo_override; }
         void InitProtoOverride()
         {
             if (m_spellInfo_override != NULL)
                 return;
-            m_spellInfo_override = sSpellCustomizations.GetServersideSpell(m_spellInfo->Id);
+            m_spellInfo_override = sSpellCustomizations.GetSpellInfo(m_spellInfo->Id);
         }
         uint32 GetDuration()
         {
@@ -2343,7 +2343,7 @@ class SERVER_DECL Spell : public EventableObject
             return dmg;
         }
 
-        inline static uint32 GetMechanic(OLD_SpellEntry* sp)
+        inline static uint32 GetMechanic(SpellInfo* sp)
         {
             if (sp->MechanicsType)
                 return sp->MechanicsType;
@@ -2506,18 +2506,18 @@ class SERVER_DECL Spell : public EventableObject
 
     public:
 
-        OLD_SpellEntry* m_spellInfo;
-        OLD_SpellEntry* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
+        SpellInfo* m_spellInfo;
+        SpellInfo* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
 
 };
 
-void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, OLD_SpellEntry* spell);
-void UnapplyDiminishingReturnTimer(Unit* Target, OLD_SpellEntry* spell);
+void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellInfo* spell);
+void UnapplyDiminishingReturnTimer(Unit* Target, SpellInfo* spell);
 
 uint32 GetDiminishingGroup(uint32 NameHash);
-uint32 GetSpellDuration(OLD_SpellEntry* sp, Unit* caster = NULL);
+uint32 GetSpellDuration(SpellInfo* sp, Unit* caster = NULL);
 
 //Logs if the spell doesn't exist, using Debug loglevel.
-OLD_SpellEntry* CheckAndReturnSpellEntry(uint32 spellid);
+SpellInfo* CheckAndReturnSpellEntry(uint32 spellid);
 
 #endif // _SPELL_H

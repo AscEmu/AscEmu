@@ -53,16 +53,16 @@ class Aura;
 
 #define SPELL_FACTORY_FUNCTION(T) \
   public: \
-  static Spell* Create(Object* Caster, OLD_SpellEntry *info, bool triggered, Aura* aur) { return new T(Caster, info, triggered, aur); } \
-  T(Object* Caster, OLD_SpellEntry *info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
+  static Spell* Create(Object* Caster, SpellInfo*info, bool triggered, Aura* aur) { return new T(Caster, info, triggered, aur); } \
+  T(Object* Caster, SpellInfo*info, bool triggered, Aura* aur) : Spell(Caster, info, triggered, aur) {}
 
 #define AURA_FACTORY_FUNCTION(T) \
   public: \
-  static Aura* Create(OLD_SpellEntry *proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new T(proto, duration, caster, target, temporary, i_caster); } \
-  T(OLD_SpellEntry *proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) : Aura(proto, duration, caster, target, temporary, i_caster) {}
+  static Aura* Create(SpellInfo*proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) { return new T(proto, duration, caster, target, temporary, i_caster); } \
+  T(SpellInfo*proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL) : Aura(proto, duration, caster, target, temporary, i_caster) {}
 
-typedef Spell* (*spell_factory_function)(Object* Caster, OLD_SpellEntry* info, bool triggered, Aura* aur);
-typedef Aura* (*aura_factory_function)(OLD_SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster);
+typedef Spell* (*spell_factory_function)(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
+typedef Aura* (*aura_factory_function)(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster);
 
 class SERVER_DECL SpellFactoryMgr: public Singleton < SpellFactoryMgr >
 {
@@ -77,9 +77,9 @@ class SERVER_DECL SpellFactoryMgr: public Singleton < SpellFactoryMgr >
 		{
 		}
 
-		OLD_SpellEntry* GetSpellEntryByDifficulty(uint32 id, uint8 difficulty);
-		Spell* NewSpell(Object* Caster, OLD_SpellEntry* info, bool triggered, Aura* aur);
-		Aura* NewAura(OLD_SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
+		SpellInfo* GetSpellEntryByDifficulty(uint32 id, uint8 difficulty);
+		Spell* NewSpell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
+		Aura* NewAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
 
 		// Spell area
 		void LoadSpellAreas();
@@ -92,11 +92,11 @@ class SERVER_DECL SpellFactoryMgr: public Singleton < SpellFactoryMgr >
 
 	private:
 
-		void AddSpellByEntry(OLD_SpellEntry* info, spell_factory_function spell_func);
+		void AddSpellByEntry(SpellInfo* info, spell_factory_function spell_func);
 		void AddSpellById(uint32 spellId, spell_factory_function spell_func);
 		void AddSpellByNameHash(uint32 name_hash, spell_factory_function spell_func);
 
-		void AddAuraByEntry(OLD_SpellEntry* info, aura_factory_function aura_func);
+		void AddAuraByEntry(SpellInfo* info, aura_factory_function aura_func);
 		void AddAuraById(uint32 spellId, aura_factory_function aura_func);
 		void AddAuraByNameHash(uint32 name_hash, aura_factory_function aura_func);
 

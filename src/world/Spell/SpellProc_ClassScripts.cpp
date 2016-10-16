@@ -27,7 +27,7 @@ class DamageShieldSpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(DamageShieldSpellProc);
 
-    bool CanProc(Unit* victim, OLD_SpellEntry* CastingSpell)
+    bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
         // Allow only proc for player unit
         if (!mTarget->IsPlayer())
@@ -35,7 +35,7 @@ class DamageShieldSpellProc : public SpellProc
         return true;
     }
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         Player* plr = static_cast<Player*>(mTarget);
 
@@ -53,7 +53,7 @@ class JuggernautSpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(JuggernautSpellProc);
 
-    bool CanProc(Unit* victim, OLD_SpellEntry* CastingSpell)
+    bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
         if (CastingSpell == NULL)
             return false;
@@ -90,7 +90,7 @@ class EarthShieldSpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(EarthShieldSpellProc);
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         int32 value = mOrigSpell->EffectBasePoints[0];
         dmg_overwrite[0] = value;
@@ -98,7 +98,7 @@ class EarthShieldSpellProc : public SpellProc
         return false;
     }
 
-    void CastSpell(Unit* victim, OLD_SpellEntry* CastingSpell, int* dmg_overwrite)
+    void CastSpell(Unit* victim, SpellInfo* CastingSpell, int* dmg_overwrite)
     {
         Unit* caster = mTarget->GetMapMgr()->GetUnit(mCaster);
         if (caster == NULL)
@@ -133,7 +133,7 @@ class FlametongueWeaponSpellProc : public SpellProc
         EnchantmentInstance* enchant = item->GetEnchantment(TEMP_ENCHANTMENT_SLOT);
         if (enchant != nullptr)
         {
-            OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(enchant->Enchantment->spell[0]);
+            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(enchant->Enchantment->spell[0]);
             if (sp != nullptr && sp->custom_NameHash == SPELL_HASH_FLAMETONGUE_WEAPON__PASSIVE_)
             {
                 wp_speed = item->GetItemProperties()->Delay;
@@ -150,14 +150,14 @@ class FlametongueWeaponSpellProc : public SpellProc
         return false;
     }
 
-    bool CanProc(Unit* victim, OLD_SpellEntry* CastingSpell)
+    bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
         if (mTarget->IsPlayer())
             return true;
         return false;
     }
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         Item* item;
 
@@ -214,7 +214,7 @@ class PoisonSpellProc : public SpellProc
     }
 
     // Allow proc on ability cast (like eviscerate, envenom, fan of knives, rupture)
-    bool CanProcOnTriggered(Unit* victim, OLD_SpellEntry* CastingSpell)
+    bool CanProcOnTriggered(Unit* victim, SpellInfo* CastingSpell)
     {
         if (CastingSpell != NULL && (CastingSpell->SpellGroupType[0] & 0x120000 || CastingSpell->SpellGroupType[1] & 0x240008))
             return true;
@@ -223,7 +223,7 @@ class PoisonSpellProc : public SpellProc
     }
 
     // Allow proc only if proccing hand is the one where poison was applied
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         Item* item;
 
@@ -271,7 +271,7 @@ class CutToTheChaseSpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(CutToTheChaseSpellProc);
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         Aura* aura = mTarget->FindAuraByNameHash(SPELL_HASH_SLICE_AND_DICE);
         if (aura)
@@ -296,7 +296,7 @@ class DeadlyBrewSpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(DeadlyBrewSpellProc);
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         mTarget->CastSpell(static_cast<Unit*>(NULL), 3409, true);    //Spell Id 3409: Crippling Poison
 
@@ -326,7 +326,7 @@ class ImprovedSpiritTapSpellProc : public SpellProc
         mProcFlags = PROC_ON_SPELL_CRIT_HIT;
     }
 
-    uint32 CalcProcChance(Unit* victim, OLD_SpellEntry* CastingSpell)
+    uint32 CalcProcChance(Unit* victim, SpellInfo* CastingSpell)
     {
         if (CastingSpell == NULL)
             return 0;
@@ -368,7 +368,7 @@ class DivineAegisSpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(DivineAegisSpellProc);
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         if (CastingSpell == NULL)
             return true;
@@ -386,7 +386,7 @@ class ImprovedDevouringPlagueSpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(ImprovedDevouringPlagueSpellProc);
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         // Get dmg amt for 1 tick
         dmg = CastingSpell->EffectBasePoints[0] + 1;
@@ -404,7 +404,7 @@ class VampiricEmbraceSpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(VampiricEmbraceSpellProc);
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         // Only proc for damaging shadow spells
         if (CastingSpell->School != SCHOOL_SHADOW || !IsDamagingSpell(CastingSpell))
@@ -427,10 +427,10 @@ class VampiricTouchEnergizeSpellProc : public SpellProc
 
     void Init(Object* obj)
     {
-        mReplenishmentSpell = sSpellCustomizations.GetServersideSpell(57669);
+        mReplenishmentSpell = sSpellCustomizations.GetSpellInfo(57669);
     }
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         // Check for Mind Blast hit from this proc caster
         if (CastingSpell == NULL || CastingSpell->custom_NameHash != SPELL_HASH_MIND_BLAST || mCaster != victim->GetGUID())
@@ -443,7 +443,7 @@ class VampiricTouchEnergizeSpellProc : public SpellProc
     }
 
 private:
-    OLD_SpellEntry* mReplenishmentSpell;
+    SpellInfo* mReplenishmentSpell;
 };
 
 class VampiricTouchDispelDamageSpellProc : public SpellProc
@@ -455,10 +455,10 @@ class VampiricTouchDispelDamageSpellProc : public SpellProc
         mDispelDmg = 8 * (mOrigSpell->EffectBasePoints[1] + 1);
     }
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         // For PROC_ON_PRE_DISPELL_AURA_VICTIM, parameter dmg has aur->GetSpellId()
-        OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(dmg);
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(dmg);
 
         if (CastingSpell == NULL || sp == NULL || sp->custom_NameHash != SPELL_HASH_VAMPIRIC_TOUCH)
             return true;
@@ -476,7 +476,7 @@ class EmpoweredRenewSpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(EmpoweredRenewSpellProc);
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         // Get heal amt for 1 tick
         dmg = CastingSpell->EffectBasePoints[0] + 1;
@@ -490,7 +490,7 @@ class EmpoweredRenewSpellProc : public SpellProc
         return false;
     }
 
-    void CastSpell(Unit* victim, OLD_SpellEntry* CastingSpell, int* dmg_overwrite)
+    void CastSpell(Unit* victim, SpellInfo* CastingSpell, int* dmg_overwrite)
     {
         SpellCastTargets targets;
         targets.m_unitTarget = victim->GetGUID();
@@ -509,7 +509,7 @@ class ImprovedMindBlastSpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(ImprovedMindBlastSpellProc);
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         // If spell is not Mind Blast (by SpellGroupType) or player is not on shadowform, don't proc
         if (!(CastingSpell->SpellGroupType[0] & mProcClassMask[0] && mTarget->IsPlayer() && static_cast<Player*>(mTarget)->GetShapeShift() == FORM_SHADOW))
@@ -523,7 +523,7 @@ class BodyAndSoulDummySpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(BodyAndSoulDummySpellProc);
 
-    bool CanProc(Unit* victim, OLD_SpellEntry* CastingSpell)
+    bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
         if (victim != NULL && mTarget->GetGUID() == victim->GetGUID())
             return true;
@@ -560,7 +560,7 @@ class PrayerOfMendingProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(PrayerOfMendingProc);
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         Aura* aura = mTarget->FindAura(mSpell->Id);
         if (aura == NULL)
@@ -632,7 +632,7 @@ class EyeForAnEyeSpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(EyeForAnEyeSpellProc);
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         // If this player died by crit damage, don't do dmg back
         if (!mTarget->isAlive())
@@ -667,7 +667,7 @@ class SpiritualAttunementSpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(SpiritualAttunementSpellProc);
 
-    bool CanProc(Unit* victim, OLD_SpellEntry* CastingSpell)
+    bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
         if (CastingSpell == NULL || !IsHealingSpell(CastingSpell))
             return false;
@@ -690,7 +690,7 @@ class SealOfCorruptionSpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(SealOfCorruptionSpellProc);
 
-    bool CanProc(Unit* victim, OLD_SpellEntry* CastingSpell)
+    bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
         if (victim == NULL || victim->FindAuraCountByHash(SPELL_HASH_BLOOD_CORRUPTION) < 5)
             return false;
@@ -703,7 +703,7 @@ class SealOfVengeanceSpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(SealOfVengeanceSpellProc);
 
-    bool CanProc(Unit* victim, OLD_SpellEntry* CastingSpell)
+    bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
         if (victim == NULL || victim->FindAuraCountByHash(SPELL_HASH_HOLY_VENGEANCE) < 5)
             return false;
@@ -723,7 +723,7 @@ class HotStreakSpellProc : public SpellProc
         mCritsInARow = 0;
     }
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         // Check for classmask. Should proc only if CastingSpell is one listed in http://www.wowhead.com/spell=44448
         if (!CheckClassMask(victim, CastingSpell))
@@ -753,7 +753,7 @@ class ButcherySpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(ButcherySpellProc);
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         dmg_overwrite[0] = mOrigSpell->EffectBasePoints[0] + 1;
 
@@ -769,14 +769,14 @@ class BladeBarrierSpellProc : public SpellProc
     {
         mProcFlags = PROC_ON_CAST_SPELL;
 
-        mProcClassMask[0] = mOrigSpell->EffectSpellClassMask[0][0];
-        mProcClassMask[1] = mOrigSpell->EffectSpellClassMask[0][1];
-        mProcClassMask[2] = mOrigSpell->EffectSpellClassMask[0][2];
+        mProcClassMask[0] = mOrigSpell->EffectSpellClassMask[0];
+        mProcClassMask[1] = mOrigSpell->EffectSpellClassMask[1];
+        mProcClassMask[2] = mOrigSpell->EffectSpellClassMask[2];
 
         dk = static_cast<DeathKnight*>(mTarget);
     }
 
-    bool CanProc(Unit* victim, OLD_SpellEntry* CastingSpell)
+    bool CanProc(Unit* victim, SpellInfo* CastingSpell)
     {
         if (dk->IsAllRunesOfTypeInUse(RUNE_BLOOD))
             return true;
@@ -791,7 +791,7 @@ class DeathRuneMasterySpellProc : public SpellProc
 {
     SPELL_PROC_FACTORY_FUNCTION(DeathRuneMasterySpellProc);
 
-    bool DoEffect(Unit* victim, OLD_SpellEntry* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
+    bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
         DeathKnight* dk = static_cast<DeathKnight*>(mTarget);
 

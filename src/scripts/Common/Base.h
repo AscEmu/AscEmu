@@ -257,7 +257,7 @@ class SpellDesc
 {
     public:
 
-        SpellDesc(OLD_SpellEntry* pInfo, SpellFunc pFnc, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange, float pMaxRange,
+        SpellDesc(SpellInfo* pInfo, SpellFunc pFnc, TargetType pTargetType, float pChance, float pCastTime, int32 pCooldown, float pMinRange, float pMaxRange,
                   bool pStrictRange, const char* pText, TextType pTextType, uint32 pSoundId, const char* pAnnouncement);
 
         virtual ~SpellDesc();
@@ -267,7 +267,7 @@ class SpellDesc
         void TriggerCooldown(uint32 pCurrentTime = 0);
         void AddAnnouncement(const char* pText);
 
-        OLD_SpellEntry* mInfo;              //Spell Entry information (generally you either want a SpellEntry OR a SpellFunc, not both)
+        SpellInfo* mInfo;              //Spell Entry information (generally you either want a SpellEntry OR a SpellFunc, not both)
         SpellFunc mSpellFunc;           //Spell Function to be executed (generally you either want a SpellEntry OR a SpellFunc, not both)
         TargetType mTargetType;         //Target type (see class above)
 
@@ -443,7 +443,7 @@ class MoonScriptCreatureAI : public CreatureAIScript
 
         bool IsSpellScheduled(SpellDesc* pSpell);
         bool CastSpellInternal(SpellDesc* pSpell, uint32 pCurrentTime = 0);
-        void CastSpellOnTarget(Unit* pTarget, TargetType pType, OLD_SpellEntry* pEntry, bool pInstant);
+        void CastSpellOnTarget(Unit* pTarget, TargetType pType, SpellInfo* pEntry, bool pInstant);
         int32 CalcSpellAttackTime(SpellDesc* pSpell);
         void CancelAllSpells();
 

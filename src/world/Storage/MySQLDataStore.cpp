@@ -2545,14 +2545,14 @@ void MySQLDataStore::LoadSpellOverrideTable()
         uint32 distinct_override_id = fields[0].GetUInt32();
 
         QueryResult* spellid_for_overrideid_result = WorldDatabase.Query("SELECT spellId FROM spelloverride WHERE overrideId = %u", distinct_override_id);
-        std::list<OLD_SpellEntry*>* list = new std::list < OLD_SpellEntry* >;
+        std::list<SpellInfo*>* list = new std::list < SpellInfo* >;
         if (spellid_for_overrideid_result != nullptr)
         {
             do
             {
                 Field* fieldsIn = spellid_for_overrideid_result->Fetch();
                 uint32 spellid = fieldsIn[0].GetUInt32();
-                OLD_SpellEntry* spell = sSpellCustomizations.GetServersideSpell(spellid);
+                SpellInfo* spell = sSpellCustomizations.GetSpellInfo(spellid);
                 if (spell == nullptr)
                 {
                     Log.Error("MySQLDataStore", "Table `spelloverride` includes invalid spellId %u for overrideId %u! <skipped>", spellid, distinct_override_id);

@@ -1578,7 +1578,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //    recv_data >> guid;
 //    SpellCastTargets targets;
 //    Spell* spell = NULL;
-//    OLD_SpellEntry* spellInfo = NULL;
+//    SpellInfo* spellInfo = NULL;
 //    LOG_DEBUG("WORLD: CMSG_GAMEOBJ_USE: [GUID %d]", guid);
 //
 //    GameObject* obj = _player->GetMapMgr()->GetGameObject((uint32)guid);
@@ -1622,7 +1622,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //        break;
 //        case GAMEOBJECT_TYPE_CHEST:     //cast da spell
 //        {
-//            spellInfo = sSpellCustomizations.GetServersideSpell(OPEN_CHEST);
+//            spellInfo = sSpellCustomizations.GetSpellInfo(OPEN_CHEST);
 //            spell = sSpellFactoryMgr.NewSpell(plyr, spellInfo, true, NULL);
 //            _player->m_currentSpell = spell;
 //            targets.m_unitTarget = obj->GetGUID();
@@ -1816,13 +1816,13 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //                    }
 //                }
 //
-//                OLD_SpellEntry* info = nullptr;
+//                SpellInfo* info = nullptr;
 //                if (gameobject_info->entry == 36727 || gameobject_info->entry == 194108)   // summon portal
 //                {
 //                    if (!ritual_obj->GetRitual()->GetTargetGUID() == 0)
 //                        return;
 //
-//                    info = sSpellCustomizations.GetServersideSpell(gameobject_info->summoning_ritual.spell_id);
+//                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
 //                    if (info == nullptr)
 //                        break;
 //
@@ -1846,7 +1846,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //                    if (!psacrifice || !pCaster)
 //                        return;
 //
-//                    info = sSpellCustomizations.GetServersideSpell(gameobject_info->summoning_ritual.caster_target_spell);
+//                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.caster_target_spell);
 //                    if (!info)
 //                        break;
 //
@@ -1855,7 +1855,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //                    spell->prepare(&targets);
 //
 //                    // summons demon
-//                    info = sSpellCustomizations.GetServersideSpell(gameobject_info->summoning_ritual.spell_id);
+//                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
 //                    spell = sSpellFactoryMgr.NewSpell(pCaster, info, true, NULL);
 //                    SpellCastTargets targets2;
 //                    targets2.m_unitTarget = pCaster->GetGUID();
@@ -1871,7 +1871,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //                    if (!pleader)
 //                        return;
 //
-//                    info = sSpellCustomizations.GetServersideSpell(gameobject_info->summoning_ritual.spell_id);
+//                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
 //                    spell = sSpellFactoryMgr.NewSpell(pleader, info, true, NULL);
 //                    SpellCastTargets targets2(plr->GetGUID());
 //                    spell->prepare(&targets2);
@@ -1881,7 +1881,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //                }
 //                else if (gameobject_info->entry == 186811 || gameobject_info->entry == 181622)
 //                {
-//                    info = sSpellCustomizations.GetServersideSpell(gameobject_info->summoning_ritual.spell_id);
+//                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
 //                    if (info == NULL)
 //                        return;
 //
@@ -2240,7 +2240,7 @@ void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)
 //    uint32 self_res_spell = _player->GetUInt32Value(PLAYER_SELF_RES_SPELL);
 //    if (self_res_spell)
 //    {
-//        OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(self_res_spell);
+//        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(self_res_spell);
 //        Spell* s = sSpellFactoryMgr.NewSpell(_player, sp, true, NULL);
 //        SpellCastTargets tgt;
 //        tgt.m_unitTarget = _player->GetGUID();

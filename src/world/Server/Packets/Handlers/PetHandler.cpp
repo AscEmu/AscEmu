@@ -157,7 +157,7 @@
 //            case PET_ACTION_SPELL:
 //            {
 //                // misc == spellid
-//                OLD_SpellEntry* entry = sSpellCustomizations.GetServersideSpell(misc);
+//                SpellInfo* entry = sSpellCustomizations.GetSpellInfo(misc);
 //                if (entry == NULL)
 //                    return;
 //
@@ -422,7 +422,7 @@
 //        return;
 //
 //    Pet* pet = _player->GetSummon();
-//    OLD_SpellEntry* spe = sSpellCustomizations.GetServersideSpell(spell);
+//    SpellInfo* spe = sSpellCustomizations.GetSpellInfo(spell);
 //    if (spe == NULL)
 //        return;
 //
@@ -537,7 +537,7 @@ void WorldSession::HandlePetSpellAutocast(WorldPacket& recvPacket)
     uint8  state;
     recvPacket >> guid >> spellid >> unk >> state;
 
-    OLD_SpellEntry* spe = sSpellCustomizations.GetServersideSpell(spellid);
+    SpellInfo* spe = sSpellCustomizations.GetSpellInfo(spellid);
     if (spe == NULL)
         return;
 
@@ -562,7 +562,7 @@ void WorldSession::HandlePetSpellAutocast(WorldPacket& recvPacket)
 //
 //    recvPacket >> guid >> spellid;
 //
-//    OLD_SpellEntry* info = sSpellCustomizations.GetServersideSpell(spellid);
+//    SpellInfo* info = sSpellCustomizations.GetSpellInfo(spellid);
 //    if (info != NULL && info->Attributes & static_cast<uint32>(ATTRIBUTES_CANT_CANCEL))
 //        return;
 //    Creature* pet = _player->GetMapMgr()->GetCreature(guid);
@@ -625,7 +625,7 @@ void WorldSession::HandlePetSpellAutocast(WorldPacket& recvPacket)
 //        pPet->RemoveSpell(talent->RankID[talentcol - 1]);
 //
 //    // add spell, discount talent point
-//    OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(talent->RankID[talentcol]);
+//    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(talent->RankID[talentcol]);
 //    if (sp != NULL)
 //    {
 //        pPet->AddSpell(sp, true);

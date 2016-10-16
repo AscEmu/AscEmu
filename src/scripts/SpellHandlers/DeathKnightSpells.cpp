@@ -114,7 +114,7 @@ bool RaiseDead(uint32 i, Spell* s)
     float y = s->p_caster->GetPositionY() - 1;
     float z = s->p_caster->GetPositionZ();
 
-    OLD_SpellEntry* sp = NULL;
+    SpellInfo* sp = NULL;
 
     // Master of Ghouls
     if(!s->p_caster->HasAura(52143))
@@ -134,12 +134,12 @@ bool RaiseDead(uint32 i, Spell* s)
 
 
         // Minion version, 1 min duration
-        sp = sSpellCustomizations.GetServersideSpell(46585);
+        sp = sSpellCustomizations.GetSpellInfo(46585);
     }
     else
     {
         // Pet version, infinite duration
-        sp = sSpellCustomizations.GetServersideSpell(52150);
+        sp = sSpellCustomizations.GetSpellInfo(52150);
     }
 
     s->p_caster->CastSpellAoF(x, y, z, sp, true);

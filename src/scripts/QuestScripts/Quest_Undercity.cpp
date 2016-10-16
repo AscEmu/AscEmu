@@ -37,7 +37,7 @@ class Quest_JourneytoUndercity : public QuestScript // never extend std::tr1::en
             sEAS.SpawnCreatureExtended(mTarget, 21628, 1284.536011f, 314.496338f, -57.320845f, 0.580401f, 35, 180000, true, true, true);
 
             creat->PlaySoundToSet(10896);
-            creat->CastSpell(creat, sSpellCustomizations.GetServersideSpell(36568), false);
+            creat->CastSpell(creat, sSpellCustomizations.GetSpellInfo(36568), false);
 
             creat->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 

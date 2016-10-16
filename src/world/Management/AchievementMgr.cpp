@@ -1308,7 +1308,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                 uint32 nm = 0;
                 while (sl != GetPlayer()->mSpells.end())
                 {
-                    OLD_SpellEntry* sp = sSpellCustomizations.GetServersideSpell(*sl);
+                    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(*sl);
                     if (achievementCriteria->number_of_mounts.unknown == 777 && sp && sp->MechanicsType == MECHANIC_MOUNTED)
                     {
                         // mount spell

@@ -15,7 +15,7 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
     }
 
     uint32 spell_id = atol(args);
-    auto spell_entry = sSpellCustomizations.GetServersideSpell(spell_id);
+    auto spell_entry = sSpellCustomizations.GetSpellInfo(spell_id);
     if (!spell_entry)
     {
         RedSystemMessage(m_session, "Spell %u is not a valid spell!", spell_id);

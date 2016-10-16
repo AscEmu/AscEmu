@@ -143,11 +143,11 @@ class ChaoticRiftAI : public MoonScriptBossAI
         ChaoticRiftAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-            auto spell_mana_wrath = sSpellCustomizations.GetServersideSpell(SUMMON_MANA_WRAITH);
+            auto spell_mana_wrath = sSpellCustomizations.GetSpellInfo(SUMMON_MANA_WRAITH);
             if (spell_mana_wrath != nullptr)
                 AddSpell(SUMMON_MANA_WRAITH, Target_Self, 30, 0, spell_mana_wrath->RecoveryTime);
 
-            auto spell_energy_burst = sSpellCustomizations.GetServersideSpell(CHAOTIC_ENERGY_BURST);
+            auto spell_energy_burst = sSpellCustomizations.GetSpellInfo(CHAOTIC_ENERGY_BURST);
             if (spell_energy_burst != nullptr)
                 AddSpell(CHAOTIC_ENERGY_BURST, Target_RandomPlayer, 30, 0, spell_energy_burst->RecoveryTime);
         };
@@ -512,11 +512,11 @@ class CrystalSpikeAI : public MoonScriptBossAI
         {
             if (IsHeroic())
             {
-                _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELL_CRYSTAL_SPIKE_H), true);
+                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELL_CRYSTAL_SPIKE_H), true);
             }
             else
             {
-                _unit->CastSpell(_unit, sSpellCustomizations.GetServersideSpell(SPELL_CRYSTAL_SPIKE), true);
+                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(SPELL_CRYSTAL_SPIKE), true);
             };
         };
     };

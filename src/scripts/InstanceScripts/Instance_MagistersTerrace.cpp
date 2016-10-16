@@ -102,7 +102,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
         if (_unit->GetMapMgr()->iInstanceMode == MODE_HEROIC)
             AddSpell(SF_DRAINMANA, Target_RandomPlayer, 8, 0, 35);
 
-        ManaRage = sSpellCustomizations.GetServersideSpell(FC_MANARAGE);
+        ManaRage = sSpellCustomizations.GetSpellInfo(FC_MANARAGE);
         ManaRageTrigger = AddSpell(FC_MANARAGE_TRIGGER, Target_Self, 0, 0, 0);
         FelExplosion = AddSpell(SF_FELEXPLOSION, Target_Self, 0, 0, 0);
     }
@@ -212,7 +212,7 @@ class SelinFireheartAI : public MoonScriptCreatureAI
         _unit->SetUInt32Value(UNIT_FIELD_POWER1, _unit->GetPower(POWER_TYPE_MANA) - 3231);
     }
 
-    OLD_SpellEntry* ManaRage;
+    SpellInfo* ManaRage;
     SpellDesc* ManaRageTrigger;
     SpellDesc* FelExplosion;
 };
