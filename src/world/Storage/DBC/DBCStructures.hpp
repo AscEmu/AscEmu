@@ -691,8 +691,6 @@ namespace DBC
             //char const item_bag_family_format[] = "nx"; new
             //char const item_class_format[] = "nixxxs"; new
             //char const item_damage_format[] = "nfffffffi"; new
-            //char const item_entry_format[] = "niiiiiii"; db2
-            //char const item_extended_cost_format[] = "niiiiiiiiiiiiiix"; db2
             char const item_random_properties_format[] = "nxiiiiis";
             char const item_random_suffix_format[] = "nsxiiiiiiiiii";
             char const item_set_format[] = "dsxxxxxxxxxxxxxxxxxiiiiiiiiiiiiiiiiii";
