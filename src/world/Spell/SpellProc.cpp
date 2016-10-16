@@ -68,7 +68,7 @@ void SpellProc::Init(Object* obj)
 uint32 SpellProc::CalcProcChance(Unit* victim, SpellInfo* CastingSpell)
 {
     // Check if proc chance is based on combo points
-    if (mTarget->IsPlayer() && mOrigSpell && mOrigSpell->AttributesEx & ATTRIBUTESEX_REQ_COMBO_POINTS1 && mOrigSpell->AttributesExD & SP_ATTR_EX_D_PROCCHANCE_COMBOBASED)
+    if (mTarget->IsPlayer() && mOrigSpell && mOrigSpell->AttributesEx & ATTRIBUTESEX_REQ_COMBO_POINTS1 && mOrigSpell->AttributesExD & ATTRIBUTESEXD_PROCCHANCE_COMBOBASED)
         return float2int32(static_cast<Player*>(mTarget)->m_comboPoints * mOrigSpell->EffectPointsPerComboPoint[0]);
     else
         return mProcChance;
@@ -76,7 +76,7 @@ uint32 SpellProc::CalcProcChance(Unit* victim, SpellInfo* CastingSpell)
 
 bool SpellProc::CanProcOnTriggered(Unit* victim, SpellInfo* CastingSpell)
 {
-    if (mOrigSpell != NULL && mOrigSpell->AttributesExC & FLAGS4_CAN_PROC_ON_TRIGGERED)
+    if (mOrigSpell != NULL && mOrigSpell->AttributesExC & ATTRIBUTESEXC_CAN_PROC_ON_TRIGGERED)
         return true;
     return false;
 }

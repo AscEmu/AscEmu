@@ -1113,7 +1113,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                     _type = RANGED;
                 else
                 {
-                    if (GetProto()->AttributesExC & FLAGS4_TYPE_OFFHAND)
+                    if (GetProto()->AttributesExC & ATTRIBUTESEXC_TYPE_OFFHAND)
                         _type = OFFHAND;
                     else
                         _type = MELEE;
@@ -3897,7 +3897,7 @@ void Spell::SpellEffectWeapondamage(uint32 i)   // Weapon damage +
         _type = RANGED;
     else
     {
-        if (hasAttributeExC(FLAGS4_TYPE_OFFHAND))
+        if (hasAttributeExC(ATTRIBUTESEXC_TYPE_OFFHAND))
             _type = OFFHAND;
         else
             _type = MELEE;
@@ -4071,7 +4071,7 @@ void Spell::SpellEffectInterruptCast(uint32 i) // Interrupt Cast
     if (!unitTarget || !unitTarget->isAlive())
         return;
 
-    if (GetProto()->AttributesExG & SP_ATTR_EX_G_INTERRUPT_NPC && unitTarget->IsPlayer())
+    if (GetProto()->AttributesExG & ATTRIBUTESEXG_INTERRUPT_NPC && unitTarget->IsPlayer())
         return;
 
     if (!playerTarget)

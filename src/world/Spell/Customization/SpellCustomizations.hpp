@@ -33,7 +33,7 @@ class SERVER_DECL SpellCustomizations : public Singleton <SpellCustomizations>
         typedef std::unordered_map<uint32, SpellInfo> SpellInfoContainer;
 
         void LoadSpellInfoData();
-        SpellInfo* SpellCustomizations::GetSpellInfo(uint32 spell_id);
+        SpellInfo* GetSpellInfo(uint32 spell_id);
         SpellInfoContainer* GetSpellInfoStore() { return &_spellInfoContainerStore; }
 
         void StartSpellCustomization();

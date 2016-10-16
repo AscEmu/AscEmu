@@ -4285,7 +4285,7 @@ void Unit::AddAura(Aura* aur)
     if (aur == NULL)
         return;
 
-    if (!(isAlive() || (aur->GetSpellProto()->AttributesExC & CAN_PERSIST_AND_CASTED_WHILE_DEAD)))
+    if (!(isAlive() || (aur->GetSpellProto()->AttributesExC & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)))
     {
         delete aur;
         return;
@@ -4311,7 +4311,7 @@ void Unit::AddAura(Aura* aur)
     }
 
     // If this aura can only affect one target at a time
-    if (aur->GetSpellProto()->AttributesExE & FLAGS6_SINGLE_TARGET_AURA)
+    if (aur->GetSpellProto()->AttributesExE & ATTRIBUTESEXE_SINGLE_TARGET_AURA)
     {
         // remove aura from the previous applied target
         Unit* caster = aur->GetUnitCaster();
@@ -4675,7 +4675,7 @@ void Unit::AddAura(Aura* aur)
     }
 
     // If this aura can only affect one target at a time, store this target GUID for future reference
-    if (aur->GetSpellProto()->AttributesExE & FLAGS6_SINGLE_TARGET_AURA)
+    if (aur->GetSpellProto()->AttributesExE & ATTRIBUTESEXE_SINGLE_TARGET_AURA)
     {
         Unit* caster = aur->GetUnitCaster();
         if (caster != NULL)
@@ -4949,7 +4949,7 @@ void Unit::RemoveNegativeAuras()
     {
         if (m_auras[x])
         {
-            if (m_auras[x]->GetSpellProto()->AttributesExC & CAN_PERSIST_AND_CASTED_WHILE_DEAD)
+            if (m_auras[x]->GetSpellProto()->AttributesExC & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)
                 continue;
             else
                 m_auras[x]->Remove();
@@ -4969,7 +4969,7 @@ void Unit::RemoveAllNonPersistentAuras()
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
         if (m_auras[x])
         {
-            if (m_auras[x]->GetSpellProto()->AttributesExC & CAN_PERSIST_AND_CASTED_WHILE_DEAD)
+            if (m_auras[x]->GetSpellProto()->AttributesExC & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)
                 continue;
             else
                 m_auras[x]->Remove();
@@ -5599,7 +5599,7 @@ void Unit::DropAurasOnDeath()
     for (uint32 x = MAX_REMOVABLE_AURAS_START; x < MAX_REMOVABLE_AURAS_END; x++)
         if (m_auras[x])
         {
-            if (m_auras[x] && m_auras[x]->GetSpellProto()->AttributesExC & CAN_PERSIST_AND_CASTED_WHILE_DEAD)
+            if (m_auras[x] && m_auras[x]->GetSpellProto()->AttributesExC & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)
                 continue;
             else
                 m_auras[x]->Remove();
@@ -6267,7 +6267,7 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
         else
             flags |= AFLAG_NEGATIVE;
 
-        if (aur->GetDuration() != 0 && !(aur->GetSpellProto()->AttributesExE & FLAGS6_HIDE_DURATION))
+        if (aur->GetDuration() != 0 && !(aur->GetSpellProto()->AttributesExE & ATTRIBUTESEXE_HIDE_DURATION))
             flags |= AFLAG_DURATION;
 
         data << WoWGuid(GetGUID());

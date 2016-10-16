@@ -915,7 +915,7 @@ void Aura::Remove()
     }
 
     // If this aura can affect one target at a time, remove this target from the caster map
-    if (caster != NULL && GetSpellProto()->AttributesExE & FLAGS6_SINGLE_TARGET_AURA && m_target->GetAuraStackCount(GetSpellId()) == 1)
+    if (caster != NULL && GetSpellProto()->AttributesExE & ATTRIBUTESEXE_SINGLE_TARGET_AURA && m_target->GetAuraStackCount(GetSpellId()) == 1)
         caster->RemoveCurrentUnitForSingleTargetAura(GetSpellProto());
 
     /* Remove aurastates */
