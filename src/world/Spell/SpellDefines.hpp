@@ -419,6 +419,8 @@ enum SpellAttributesExJ
 #define MAX_SPELL_REAGENTS 8
 #define MAX_SPELL_ID 121820
 
+class Player;
+
 struct SERVER_DECL SpellInfo
 {
     // Applied
