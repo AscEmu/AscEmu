@@ -339,8 +339,61 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraNULL,                                                   // 313
     &Aura::SpellAuraNULL,                                                   // 314
     &Aura::SpellAuraNULL,                                                   // 315
-    &Aura::SpellAuraNULL                                                    // 316
-
+    &Aura::SpellAuraNULL,                                                   // 316
+    &Aura::SpellAuraNULL,                                                   // 317
+    &Aura::SpellAuraNULL,                                                   // 318
+    &Aura::SpellAuraNULL,                                                   // 319
+    &Aura::SpellAuraNULL,                                                   // 320
+    &Aura::SpellAuraNULL,                                                   // 321
+    &Aura::SpellAuraNULL,                                                   // 322
+    &Aura::SpellAuraNULL,                                                   // 323
+    &Aura::SpellAuraNULL,                                                   // 324
+    &Aura::SpellAuraNULL,                                                   // 325
+    &Aura::SpellAuraNULL,                                                   // 326
+    &Aura::SpellAuraNULL,                                                   // 327
+    &Aura::SpellAuraNULL,                                                   // 328
+    &Aura::SpellAuraNULL,                                                   // 329
+    &Aura::SpellAuraNULL,                                                   // 330
+    &Aura::SpellAuraNULL,                                                   // 331
+    &Aura::SpellAuraNULL,                                                   // 332
+    &Aura::SpellAuraNULL,                                                   // 333
+    &Aura::SpellAuraNULL,                                                   // 334
+    &Aura::SpellAuraNULL,                                                   // 335
+    &Aura::SpellAuraNULL,                                                   // 336
+    &Aura::SpellAuraNULL,                                                   // 337
+    &Aura::SpellAuraNULL,                                                   // 338
+    &Aura::SpellAuraNULL,                                                   // 339
+    &Aura::SpellAuraNULL,                                                   // 340
+    &Aura::SpellAuraNULL,                                                   // 341
+    &Aura::SpellAuraNULL,                                                   // 342
+    &Aura::SpellAuraNULL,                                                   // 343
+    &Aura::SpellAuraNULL,                                                   // 344
+    &Aura::SpellAuraNULL,                                                   // 345
+    &Aura::SpellAuraNULL,                                                   // 346
+    &Aura::SpellAuraNULL,                                                   // 347
+    &Aura::SpellAuraNULL,                                                   // 348
+    &Aura::SpellAuraNULL,                                                   // 349
+    &Aura::SpellAuraNULL,                                                   // 350
+    &Aura::SpellAuraNULL,                                                   // 351
+    &Aura::SpellAuraNULL,                                                   // 352
+    &Aura::SpellAuraNULL,                                                   // 353
+    &Aura::SpellAuraNULL,                                                   // 354
+    &Aura::SpellAuraNULL,                                                   // 355
+    &Aura::SpellAuraNULL,                                                   // 356
+    &Aura::SpellAuraNULL,                                                   // 357
+    &Aura::SpellAuraNULL,                                                   // 358
+    &Aura::SpellAuraNULL,                                                   // 359
+    &Aura::SpellAuraNULL,                                                   // 360
+    &Aura::SpellAuraNULL,                                                   // 361
+    &Aura::SpellAuraNULL,                                                   // 362
+    &Aura::SpellAuraNULL,                                                   // 363
+    &Aura::SpellAuraNULL,                                                   // 364
+    &Aura::SpellAuraNULL,                                                   // 365
+    &Aura::SpellAuraNULL,                                                   // 366
+    &Aura::SpellAuraNULL,                                                   // 367
+    &Aura::SpellAuraNULL,                                                   // 368
+    &Aura::SpellAuraNULL,                                                   // 369
+    &Aura::SpellAuraNULL                                                    // 370
 };
 
 const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
@@ -661,7 +714,61 @@ const char* SpellAuraNames[TOTAL_SPELL_AURAS] =
     "",                                                 // 313
     "",                                                 // 314
     "",                                                 // 315
-    ""                                                  // 316
+    "",                                                 // 316
+    "",                                                 // 317
+    "",                                                 // 318
+    "",                                                 // 319
+    "",                                                 // 320
+    "",                                                 // 321
+    "",                                                 // 322
+    "",                                                 // 323
+    "",                                                 // 324
+    "",                                                 // 325
+    "",                                                 // 326
+    "",                                                 // 327
+    "",                                                 // 328
+    "",                                                 // 329
+    "",                                                 // 330
+    "",                                                 // 331
+    "",                                                 // 332
+    "",                                                 // 333
+    "",                                                 // 334
+    "",                                                 // 335
+    "",                                                 // 336
+    "",                                                 // 337
+    "",                                                 // 338
+    "",                                                 // 339
+    "",                                                 // 340
+    "",                                                 // 341
+    "",                                                 // 342
+    "",                                                 // 343
+    "",                                                 // 344
+    "",                                                 // 345
+    "",                                                 // 346
+    "",                                                 // 347
+    "",                                                 // 348
+    "",                                                 // 349
+    "",                                                 // 350
+    "",                                                 // 351
+    "",                                                 // 352
+    "",                                                 // 353
+    "",                                                 // 354
+    "",                                                 // 355
+    "",                                                 // 356
+    "",                                                 // 357
+    "",                                                 // 358
+    "",                                                 // 359
+    "",                                                 // 360
+    "",                                                 // 361
+    "",                                                 // 362
+    "",                                                 // 363
+    "",                                                 // 364
+    "",                                                 // 365
+    "",                                                 // 366
+    "",                                                 // 367
+    "",                                                 // 368
+    "",                                                 // 369
+    ""                                                  // 370
 };
 
 

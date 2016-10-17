@@ -188,6 +188,27 @@ pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
     &Spell::SpellEffectNULL,                    // 160 unknown
     &Spell::SpellEffectLearnSpec,               // 161 Learn or unlearn a spec
     &Spell::SpellEffectActivateSpec,            // 162 Activate a spec
+    &Spell::SpellEffectNULL,                    // 163
+    &Spell::SpellEffectNULL,                    // 164
+    &Spell::SpellEffectNULL,                    // 165
+    &Spell::SpellEffectNULL,                    // 166
+    &Spell::SpellEffectNULL,                    // 167
+    &Spell::SpellEffectNULL,                    // 168
+    &Spell::SpellEffectNULL,                    // 169
+    &Spell::SpellEffectNULL,                    // 170
+    &Spell::SpellEffectNULL,                    // 171
+    &Spell::SpellEffectNULL,                    // 172
+    &Spell::SpellEffectNULL,                    // 173
+    &Spell::SpellEffectNULL,                    // 174
+    &Spell::SpellEffectNULL,                    // 175
+    &Spell::SpellEffectNULL,                    // 176
+    &Spell::SpellEffectNULL,                    // 177
+    &Spell::SpellEffectNULL,                    // 178
+    &Spell::SpellEffectNULL,                    // 179
+    &Spell::SpellEffectNULL,                    // 180
+    &Spell::SpellEffectNULL,                    // 181
+    &Spell::SpellEffectNULL                     // 182
+
 };
 
 const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
@@ -354,6 +375,26 @@ const char* SpellEffectNames[TOTAL_SPELL_EFFECTS] =
     "ALLOW_PET_RENAME",          //    159
     "UNKNOWN36",                 //    160
     "UNKNOWN37"                  //    161 //used by spell 63624(dual talents)
+    "",                          // 163
+    "",                          // 164
+    "",                          // 165
+    "",                          // 166
+    "",                          // 167
+    "",                          // 168
+    "",                          // 169
+    "",                          // 170
+    "",                          // 171
+    "",                          // 172
+    "",                          // 173
+    "",                          // 174
+    "",                          // 175
+    "",                          // 176
+    "",                          // 177
+    "",                          // 178
+    "",                          // 179
+    "",                          // 180
+    "",                          // 181
+    ""                           // 182
 };
 
 void Spell::SpellEffectUnused(uint32 i)
