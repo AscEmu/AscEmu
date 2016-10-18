@@ -4179,21 +4179,12 @@ void Unit::smsg_AttackStop(Unit* pVictim)
         return;
 
     WorldPacket data(SMSG_ATTACKSTOP, 24);
-    if (IsPlayer())
-    {
-        data << pVictim->GetNewGUID();
-        data << uint8(0);
-        data << uint32(0);
-        static_cast<Player*>(this)->GetSession()->SendPacket(&data);
-        data.clear();
-    }
-
     data << GetNewGUID();
     data << pVictim->GetNewGUID();
     data << uint32(0);
-    SendMessageToSet(&data, true);
-    // stop swinging, reset pvp timeout
+    SendMessageToSet(&data, IsPlayer());
 
+    // stop swinging, reset pvp timeout
     if (pVictim->IsPlayer())
     {
         pVictim->CombatStatusHandler_ResetPvPTimeout();
@@ -4217,8 +4208,7 @@ void Unit::smsg_AttackStop(Unit* pVictim)
 
 void Unit::smsg_AttackStop(uint64 victimGuid)
 {
-    WorldPacket data(20);
-    data.Initialize(SMSG_ATTACKSTOP);
+    WorldPacket data(SMSG_ATTACKSTOP, 20);
     data << GetNewGUID();
     FastGUIDPack(data, victimGuid);
     data << uint32(0);

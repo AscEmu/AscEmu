@@ -1752,27 +1752,26 @@ void Player::smsg_InitialSpells()
 {
     PlayerCooldownMap::iterator itr, itr2;
 
-    uint16 spellCount = (uint16)mSpells.size();
+    uint16 spellCount = 0;
     size_t itemCount = m_cooldownMap[0].size() + m_cooldownMap[1].size();
     uint32 mstime = getMSTime();
-    size_t pos;
-
-    WorldPacket data(SMSG_INITIAL_SPELLS, 5 + (spellCount * 4) + (itemCount * 4));
+    
+    WorldPacket data(SMSG_INITIAL_SPELLS, 5 + (mSpells.size() * 4) + (itemCount * 4));
     data << uint8(0);
-    data << uint16(spellCount); // spell count
+    size_t pos = data.wpos();
 
-    SpellSet::iterator sitr;
-    for (sitr = mSpells.begin(); sitr != mSpells.end(); ++sitr)
+    data << uint16(spellCount); // spell count
+    for (SpellSet::iterator sitr = mSpells.begin(); sitr != mSpells.end(); ++sitr)
     {
-        ///\todo check out when we should send 0x0 and when we should send 0xeeee this is not slot, values is always eeee or 0, seems to be cooldown
         data << uint32(*sitr);                   // spell id
         data << uint16(0x0000);
+
+        spellCount += 1;
     }
 
-    pos = data.wpos();
-    data << uint16(0);        // placeholder
+    data.put<uint16>(pos, spellCount);
 
-    itemCount = 0;
+    data << uint16(itemCount);
     for (itr = m_cooldownMap[COOLDOWN_TYPE_SPELL].begin(); itr != m_cooldownMap[COOLDOWN_TYPE_SPELL].end();)
     {
         itr2 = itr++;
@@ -1784,17 +1783,20 @@ void Player::smsg_InitialSpells()
             continue;
         }
 
+        if (itr2->second.ExpireTime >= MONTH / 2)
+        {
+            data << uint32(1);                              // cooldown
+            data << uint32(0x80000000);                     // category cooldown
+            continue;
+        }
+
         data << uint32(itr2->first);                        // spell id
         data << uint32(itr2->second.ItemId);                // item id
-        data << uint16(0);                                  // spell category
+        data << uint16(itr2->first);                        // spell category
         data << uint32(itr2->second.ExpireTime - mstime);   // cooldown remaining in ms (for spell)
         data << uint32(0);                                  // cooldown remaining in ms (for category)
 
-        ++itemCount;
-
-#ifdef _DEBUG
-        Log.Debug("InitialSpells", "sending spell cooldown for spell %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
-#endif
+        //Log.Debug("InitialSpells", "sending spell cooldown for spell %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
     }
 
     for (itr = m_cooldownMap[COOLDOWN_TYPE_CATEGORY].begin(); itr != m_cooldownMap[COOLDOWN_TYPE_CATEGORY].end();)
@@ -1808,27 +1810,25 @@ void Player::smsg_InitialSpells()
             continue;
         }
 
-        data << uint32(itr2->second.SpellId);                // spell id
-        data << uint16(itr2->second.ItemId);                // item id
+        if (itr2->second.ExpireTime >= MONTH / 2)
+        {
+            data << uint32(1);                              // cooldown
+            data << uint32(0x80000000);                     // category cooldown
+            continue;
+        }
+
+        data << uint32(itr2->second.SpellId);
+        data << uint32(itr2->second.ItemId);
         data << uint16(itr2->first);                        // spell category
-        data << uint32(0);                                // cooldown remaining in ms (for spell)
-        data << uint32(itr2->second.ExpireTime - mstime);    // cooldown remaining in ms (for category)
+        data << uint32(0);                                  // cooldown remaining in ms (for spell)
+        data << uint32(itr2->second.ExpireTime - mstime);   // cooldown remaining in ms (for category)
 
-        ++itemCount;
-
-#ifdef _DEBUG
-        Log.Debug("InitialSpells", "sending category cooldown for cat %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
-#endif
+        //Log.Debug("InitialSpells", "sending category cooldown for cat %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
     }
-
-
-    *(uint16*)&data.contents()[pos] = (uint16)itemCount;
 
     GetSession()->SendPacket(&data);
 
-    uint32 v = 0;
-    GetSession()->OutPacket(SMSG_SERVER_BUCK_DATA, 4, &v);
-    //Log::getSingleton().outDetail("CHARACTER: Sent Initial Spells");
+    Log.Debug("Player::smsg_InitialSpells()", "sent SMSG_INITIAL_SPELLS");
 }
 
 void Player::smsg_TalentsInfo(bool SendPetTalents)
@@ -4825,7 +4825,9 @@ void Player::KillPlayer()
 
     EventDeath();
 
-    m_session->OutPacket(SMSG_CANCEL_COMBAT);
+    WorldPacket data(SMSG_CANCEL_COMBAT, 0);
+    m_session->SendPacket(&data);
+
     m_session->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
 
     SetMovement(MOVE_ROOT, 0);
@@ -4987,7 +4989,10 @@ void Player::SpawnCorpseBones()
 
 void Player::DeathDurabilityLoss(double percent)
 {
-    m_session->OutPacket(SMSG_DURABILITY_DAMAGE_DEATH);
+    //Message
+    WorldPacket data(SMSG_DURABILITY_DAMAGE_DEATH, 0);
+    GetSession()->SendPacket(&data);
+
     uint32 pDurability;
     uint32 pMaxDurability;
     int32 pNewDurability;
@@ -8436,8 +8441,9 @@ void Player::EndDuel(uint8 WinCondition)
     }
 
     //Stop Players attacking so they don't kill the other player
-    m_session->OutPacket(SMSG_CANCEL_COMBAT);
-    DuelingWith->m_session->OutPacket(SMSG_CANCEL_COMBAT);
+    WorldPacket data2(SMSG_CANCEL_COMBAT, 0);
+    m_session->SendPacket(&data2);
+    DuelingWith->m_session->SendPacket(&data2);
 
     smsg_AttackStop(DuelingWith);
     DuelingWith->smsg_AttackStop(this);

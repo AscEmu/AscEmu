@@ -118,7 +118,6 @@ enum Opcodes
     SMSG_VICTIMSTATEUPDATE_OBSOLETE                 = 0x14B,
     SMSG_DAMAGE_DONE_OBSOLETE                       = 0x14C,
     SMSG_DAMAGE_TAKEN_OBSOLETE                      = 0x14D,
-    SMSG_CANCEL_COMBAT                              = 0x14E,
     SMSG_BREAK_TARGET                               = 0x152,
     CMSG_SAVE_PLAYER                                = 0x153,
     CMSG_SETDEATHBINDPOINT                          = 0x154,
@@ -155,7 +154,6 @@ enum Opcodes
     SMSG_FISH_ESCAPED                               = 0x1C9,
     CMSG_BUG                                        = 0x1CA,
     SMSG_NOTIFICATION                               = 0x1CB,
-    SMSG_QUERY_TIME_RESPONSE                        = 0x1CF,
     SMSG_LOG_XPGAIN                                 = 0x1D0,
     CMSG_WRAP_ITEM                                  = 0x1D3,
     MSG_MINIMAP_PING                                = 0x1D5,
@@ -178,7 +176,6 @@ enum Opcodes
     SMSG_CLEAR_FAR_SIGHT_IMMEDIATE                  = 0x20D,
     CMSG_UNLEARN_TALENTS                            = 0x213,
     SMSG_GAMEOBJECT_SPAWN_ANIM_OBSOLETE             = 0x214,
-    SMSG_GAMEOBJECT_DESPAWN_ANIM                    = 0x215,
     CMSG_SET_STAT_CHEAT                             = 0x21D,
     SMSG_SET_REST_START_OBSOLETE                    = 0x21E,
     CMSG_SKILL_BUY_STEP                             = 0x21F,
@@ -261,7 +258,6 @@ enum Opcodes
     CMSG_TOGGLE_CLOAK                               = 0x2BA,
     SMSG_LFG_ROLE_CHOSEN                            = 0x2BB,
     SMSG_PLAYER_SKINNED                             = 0x2BC,
-    SMSG_DURABILITY_DAMAGE_DEATH                    = 0x2BD,
     CMSG_SET_EXPLORATION                            = 0x2BE,
     SMSG_INIT_WORLD_STATES                          = 0x2C2,
     SMSG_UPDATE_WORLD_STATE                         = 0x2C3,
@@ -723,6 +719,7 @@ enum Opcodes
     CMSG_PLAYED_TIME                                    = 0x0804,
     SMSG_PLAYED_TIME                                    = 0x6037,
     CMSG_QUERY_TIME                                     = 0x0A36,
+    SMSG_QUERY_TIME_RESPONSE                            = 0x2124,
     CMSG_PING                                           = 0x444D,
     SMSG_PONG                                           = 0x4D42,
     SMSG_AUTH_CHALLENGE                                 = 0x4542,
@@ -1172,6 +1169,7 @@ enum Opcodes
     CMSG_REPAIR_ITEM                                    = 0x2917,    // 4.3.4
     SMSG_BUY_FAILED                                     = 0x6435,    // 4.3.4
     CMSG_BUYBACK_ITEM                                   = 0x6C17,    // 4.3.4
+    SMSG_GAMEOBJECT_DESPAWN_ANIM                        = 0x6735,
 
     //Taxi
     CMSG_SET_TAXI_BENCHMARK_MODE                        = 0x4314,
@@ -1212,7 +1210,7 @@ enum Opcodes
     SMSG_ATTACKSWING_BADFACING                          = 0x6C07,   // unchecked
     SMSG_ATTACKSWING_NOTSTANDING                        = 0x2B26,   // unchecked SMSG_ATTACKSWING_DEADTARGET
     SMSG_ATTACKSWING_CANT_ATTACK                        = 0x0016,   // unchecked
-    SMSG_ATTACKERSTATEUPDATE                            = 0x0B25,   // unchecked
+    SMSG_ATTACKERSTATEUPDATE                            = 0x0B25,
     CMSG_INSPECT                                        = 0x0927,
     CMSG_GUILD_BANK_MONEY_WITHDRAWN                     = 0x1225,   // unhandled
     SMSG_GUILD_BANK_MONEY_WITHDRAWN                     = 0x5DB4,   // unhandled
@@ -1224,6 +1222,9 @@ enum Opcodes
     CMSG_ACCEPT_LEVEL_GRANT                             = 0x0205,
     CMSG_SET_ALLOW_LOW_LEVEL_RAID1                      = 0x4435,
     CMSG_SET_ALLOW_LOW_LEVEL_RAID2                      = 0x0536,
+
+    SMSG_DURABILITY_DAMAGE_DEATH                        = 0x4C27,
+    SMSG_CANCEL_COMBAT                                  = 0x4F04,
 
     SMSG_TALENTS_INFO                                   = 0x6F26,
     CMSG_LEARN_PREVIEW_TALENTS                          = 0x2415,

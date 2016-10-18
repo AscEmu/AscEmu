@@ -224,7 +224,6 @@ void DynamicObject::Remove()
     }
 
     WorldPacket data(SMSG_GAMEOBJECT_DESPAWN_ANIM, 8);
-
     data << GetGUID();
     SendMessageToSet(&data, false);
 

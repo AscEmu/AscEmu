@@ -1575,17 +1575,6 @@ void Spell::cast(bool check)
                 u_caster->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_CAST);
             }
 
-            //not sure if it must be there...
-            /*if (p_caster != NULL)
-            {
-            if (p_caster->m_onAutoShot)
-            {
-            p_caster->GetSession()->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
-            p_caster->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
-            p_caster->m_onAutoShot = false;
-            }
-            }*/
-
             m_isCasting = false;
             SendCastResult(cancastresult);
             if (u_caster != NULL)
@@ -1792,7 +1781,9 @@ void Spell::finish(bool successful)
         {
             p_caster->EventAttackStop();
             p_caster->smsg_AttackStop(p_caster->GetSelection());
-            p_caster->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
+
+            WorldPacket data(SMSG_CANCEL_COMBAT, 0);
+            p_caster->GetSession()->SendPacket(&data);
         }
 
         if (m_requiresCP && !GetSpellFailed())
