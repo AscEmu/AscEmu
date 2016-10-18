@@ -516,7 +516,7 @@ class SERVER_DECL WorldSession
 
         /// Corpse opcodes (Corpse.cpp)
         void HandleCorpseReclaimOpcode(WorldPacket& recvPacket);
-        //void HandleCorpseQueryOpcode(WorldPacket& recvPacket);
+        void HandleCorpseQueryOpcode(WorldPacket& recvPacket);
         //void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
 
         /// Channel Opcodes (ChannelHandler.cpp)

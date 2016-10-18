@@ -190,7 +190,6 @@ enum Opcodes
     CMSG_TAXICLEARNODE                              = 0x241,
     CMSG_TAXIENABLENODE                             = 0x242,
     SMSG_DEBUGAURAPROC                              = 0x24D,
-    SMSG_RESURRECT_FAILED                           = 0x252,
     CMSG_TOGGLE_PVP                                 = 0x253,
     SMSG_ZONE_UNDER_ATTACK                          = 0x254,
     SMSG_PROCRESIST                                 = 0x260,
@@ -790,7 +789,7 @@ enum Opcodes
     CMSG_TELEPORT_TO_UNIT                               = 0x4206,
     CMSG_SET_ACTIVE_MOVER                               = 0x3314,
     CMSG_RECLAIM_CORPSE                                 = 0x4036,
-    MSG_CORPSE_QUERY                                    = 0x4336, // 15595
+    MSG_CORPSE_QUERY                                    = 0x4336,
     CMSG_SPIRIT_HEALER_ACTIVATE                         = 0x2E26, // 15595
     SMSG_SPIRIT_HEALER_CONFIRM                          = 0x4917, // 15595
     SMSG_CORPSE_RECLAIM_DELAY                           = 0x0D34, // 15595

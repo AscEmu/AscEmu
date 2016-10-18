@@ -1111,60 +1111,21 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
 
     LOG_DETAIL("WORLD: Received CMSG_RECLAIM_CORPSE");
 
-    ObjectGuid guid;
-    
-    guid[1] = recv_data.readBit();
-    guid[5] = recv_data.readBit();
-    guid[7] = recv_data.readBit();
-    guid[2] = recv_data.readBit();
-    guid[6] = recv_data.readBit();
-    guid[3] = recv_data.readBit();
-    guid[0] = recv_data.readBit();
-    guid[4] = recv_data.readBit();
-    
-    recv_data.ReadByteSeq(guid[2]);
-    recv_data.ReadByteSeq(guid[5]);
-    recv_data.ReadByteSeq(guid[4]);
-    recv_data.ReadByteSeq(guid[6]);
-    recv_data.ReadByteSeq(guid[1]);
-    recv_data.ReadByteSeq(guid[0]);
-    recv_data.ReadByteSeq(guid[7]);
-    recv_data.ReadByteSeq(guid[3]);
+    uint64 guid;
+    recv_data >> guid;
 
-    if (guid == 0)
-        return;
-
-    Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
+    Corpse* pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
     if (pCorpse == nullptr)
         return;
 
-    // Check that we're reviving from a corpse, and that corpse is associated with us.
-    if (GET_LOWGUID_PART(pCorpse->GetOwner()) != _player->GetLowGUID() && pCorpse->GetUInt32Value(CORPSE_FIELD_FLAGS) == 5)
-    {
-        WorldPacket data(SMSG_RESURRECT_FAILED, 4);
-        data << uint32(1); // this is a real guess!
-        SendPacket(&data);
-        return;
-    }
-
-    // Check we are actually in range of our corpse
-    if (pCorpse->GetDistance2dSq(_player) > CORPSE_MINIMUM_RECLAIM_RADIUS_SQ)
-    {
-        WorldPacket data(SMSG_RESURRECT_FAILED, 4);
-        data << uint32(1);
-        SendPacket(&data);
-        return;
-    }
-
-    // Check death clock before resurrect they must wait for release to complete
-    // cebernic: changes for better logic
-    if (time(NULL) < pCorpse->GetDeathClock() + CORPSE_RECLAIM_TIME)
-    {
-        WorldPacket data(SMSG_RESURRECT_FAILED, 4);
-        data << uint32(1);
-        SendPacket(&data);
-        return;
-    }
+    //// Check that we're reviving from a corpse, and that corpse is associated with us.
+    //if (GET_LOWGUID_PART(pCorpse->GetOwner()) != _player->GetLowGUID() && pCorpse->GetUInt32Value(CORPSE_FIELD_FLAGS) == 5)
+    //{
+    //    WorldPacket data(SMSG_RESURRECT_FAILED, 4);
+    //    data << uint32(1); // this is a real guess!
+    //    SendPacket(&data);
+    //    return;
+    //}
 
     GetPlayer()->ResurrectPlayer();
     GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);
