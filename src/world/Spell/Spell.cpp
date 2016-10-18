@@ -2341,8 +2341,6 @@ void Spell::SendInterrupted(uint8 result)
     if (m_caster == NULL || !m_caster->IsInWorld())
         return;
 
-    WorldPacket data(SMSG_SPELL_FAILURE, 20);
-
     // send the failure to pet owner if we're a pet
     Player* plr = p_caster;
     if (plr == NULL && m_caster->IsPet())
@@ -2356,22 +2354,20 @@ void Spell::SendInterrupted(uint8 result)
 
         if (plr != NULL && plr->IsPlayer())
         {
+            WorldPacket data(SMSG_SPELL_FAILURE, 8 + 1 + 4 + 1);
             data << m_caster->GetNewGUID();
             data << uint8(extra_cast_number);
             data << uint32(m_spellInfo->Id);
             data << uint8(result);
-
-            plr->GetSession()->SendPacket(&data);
+            plr->SendMessageToSet(&data, false);
         }
     }
 
-    data.Initialize(SMSG_SPELL_FAILED_OTHER);
-
+    WorldPacket data(SMSG_SPELL_FAILED_OTHER, 8 + 1 + 4 + 1);
     data << m_caster->GetNewGUID();
     data << uint8(extra_cast_number);
     data << uint32(GetProto()->Id);
     data << uint8(result);
-
     m_caster->SendMessageToSet(&data, false);
 }
 

@@ -1118,15 +1118,6 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
     if (pCorpse == nullptr)
         return;
 
-    //// Check that we're reviving from a corpse, and that corpse is associated with us.
-    //if (GET_LOWGUID_PART(pCorpse->GetOwner()) != _player->GetLowGUID() && pCorpse->GetUInt32Value(CORPSE_FIELD_FLAGS) == 5)
-    //{
-    //    WorldPacket data(SMSG_RESURRECT_FAILED, 4);
-    //    data << uint32(1); // this is a real guess!
-    //    SendPacket(&data);
-    //    return;
-    //}
-
     GetPlayer()->ResurrectPlayer();
     GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);
 }

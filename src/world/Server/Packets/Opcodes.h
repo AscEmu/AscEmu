@@ -108,7 +108,6 @@ enum Opcodes
     SMSG_SET_FACTION_STANDING                       = 0x124,
     CMSG_SET_FACTION_ATWAR                          = 0x125,
     CMSG_SET_FACTION_CHEAT                          = 0x126,
-    SMSG_COOLDOWN_EVENT                             = 0x135,
     CMSG_CANCEL_AURA                                = 0x136,
     SMSG_EQUIPMENT_SET_SAVED                        = 0x137,
     SMSG_AI_REACTION                                = 0x13C,
@@ -710,7 +709,7 @@ enum Opcodes
     CMSG_REALM_SPLIT                                    = 0x2906,
     SMSG_TIME_SYNC_REQ                                  = 0x3CA4,
     CMSG_TIME_SYNC_RESP                                 = 0x3B0C,
-    SMSG_SET_PROFICIENCY                                = 0x6207,   // not sure
+    SMSG_SET_PROFICIENCY                                = 0x6207,
     SMSG_ACTION_BUTTONS                                 = 0x38B5,
     CMSG_SET_SELECTION                                  = 0x0506,
     SMSG_BINDPOINTUPDATE                                = 0x0527,
@@ -1123,6 +1122,7 @@ enum Opcodes
     CMSG_CANCEL_TEMP_ENCHANTMENT                        = 0x6C37,
     SMSG_ENVIRONMENTALDAMAGELOG                         = 0x6C05,
     SMSG_ENCHANTMENTLOG                                 = 0x6035,
+    SMSG_COOLDOWN_EVENT                                 = 0x4F26,
 
     // GO/Creatures
     SMSG_MONSTER_MOVE                                   = 0x6E17,
