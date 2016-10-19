@@ -343,7 +343,6 @@ enum Opcodes
     SMSG_MOVE_UNSET_FLIGHT_OBSOLETE                 = 0x33F,
     CMSG_MOVE_FLIGHT_ACK_OBSOLETE                   = 0x340,
     CMSG_MOVE_SET_FLY                               = 0x346,
-    CMSG_SOCKET_GEMS                                = 0x347,
     CMSG_ARENA_TEAM_CREATE                          = 0x348,
     SMSG_ARENA_TEAM_COMMAND_RESULT                  = 0x349,
     UMSG_UPDATE_ARENA_TEAM_OBSOLETE                 = 0x34A,
@@ -789,8 +788,8 @@ enum Opcodes
     CMSG_SET_ACTIVE_MOVER                               = 0x3314,
     CMSG_RECLAIM_CORPSE                                 = 0x4036,
     MSG_CORPSE_QUERY                                    = 0x4336,
-    CMSG_SPIRIT_HEALER_ACTIVATE                         = 0x2E26, // 15595
-    SMSG_SPIRIT_HEALER_CONFIRM                          = 0x4917, // 15595
+    CMSG_SPIRIT_HEALER_ACTIVATE                         = 0x2E26,
+    SMSG_SPIRIT_HEALER_CONFIRM                          = 0x4917,
     SMSG_CORPSE_RECLAIM_DELAY                           = 0x0D34, // 15595
     SMSG_DEATH_RELEASE_LOC                              = 0x2F07, // 15595
     SMSG_PRE_RESURRECT                                  = 0x6C36, // 15595
@@ -800,6 +799,7 @@ enum Opcodes
     CMSG_RESURRECT_RESPONSE                             = 0x6827,
     CMSG_NEXT_CINEMATIC_CAMERA                          = 0x2014,
     CMSG_COMPLETE_CINEMATIC                             = 0x2116,
+    CMSG_SOCKET_GEMS                                    = 0x2F04,
 
     //GM
     CMSG_GM_NUKE_CHARACTER                              = 0x507,   // unchecked
