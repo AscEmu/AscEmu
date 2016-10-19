@@ -12971,7 +12971,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
 void Player::HandleKnockback(Object* caster, float horizontal, float vertical)
 {
-    if (caster == NULL)
+    if (caster == nullptr)
         caster = this;
 
     float angle = calcRadAngle(caster->GetPositionX(), caster->GetPositionY(), GetPositionX(), GetPositionY());
@@ -12981,14 +12981,30 @@ void Player::HandleKnockback(Object* caster, float horizontal, float vertical)
     float sin = sinf(angle);
     float cos = cosf(angle);
 
-    WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
+    ObjectGuid guid = GetGUID();
 
-    data << GetNewGUID();
-    data << uint32(getMSTime());
-    data << float(cos);
+    WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
+    data.WriteByteMask(guid[0]);
+    data.WriteByteMask(guid[3]);
+    data.WriteByteMask(guid[6]);
+    data.WriteByteMask(guid[7]);
+    data.WriteByteMask(guid[2]);
+    data.WriteByteMask(guid[5]);
+    data.WriteByteMask(guid[1]);
+    data.WriteByteMask(guid[4]);
+
+    data.WriteByteSeq(guid[1]);
     data << float(sin);
+    data << uint32(0);              // unk
+    data.WriteByteSeq(guid[6]);
+    data.WriteByteSeq(guid[7]);
     data << float(horizontal);
+    data.WriteByteSeq(guid[4]);
+    data.WriteByteSeq(guid[5]);
+    data.WriteByteSeq(guid[3]);
     data << float(-vertical);
+    data.WriteByteSeq(guid[2]);
+    data.WriteByteSeq(guid[0]);
 
     GetSession()->SendPacket(&data);
 
