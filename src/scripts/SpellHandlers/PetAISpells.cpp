@@ -118,7 +118,7 @@ class MirrorImageAI : public CreatureAIScript
 
                     AI_Spell sp1;
                     sp1.entryId = 59638;
-                    sp1.spell = dbcSpell.LookupEntryForced(sp1.entryId);
+                    sp1.spell = sSpellCustomizations.GetSpellInfo(sp1.entryId);
                     if (!sp1.spell)
                         return;
 
@@ -138,7 +138,7 @@ class MirrorImageAI : public CreatureAIScript
 
                     AI_Spell sp2;
                     sp2.entryId = 59637;
-                    sp2.spell = dbcSpell.LookupEntryForced(sp2.entryId);
+                    sp2.spell = sSpellCustomizations.GetSpellInfo(sp2.entryId);
                     if (!sp2.spell)
                         return;
 
@@ -266,7 +266,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
                 if (dpsCycle > 11)
                     dpsCycle = 0;
 
-                OLD_SpellEntry* MyNextSpell = dbcSpell.LookupEntryForced(dpsSpell);
+                SpellInfo* MyNextSpell = sSpellCustomizations.GetSpellInfo(dpsSpell);
                 if (MyNextSpell != NULL)
                     _unit->CastSpell(curtarget, MyNextSpell, true);
 
@@ -279,7 +279,7 @@ class DancingRuneWeaponAI : public CreatureAIScript
             {
                 if (procSpell[p] != 0)
                 {
-                    OLD_SpellEntry* mProc = dbcSpell.LookupEntryForced(procSpell[p]);
+                    SpellInfo* mProc = sSpellCustomizations.GetSpellInfo(procSpell[p]);
                     if (!mProc)
                         return;
                     int x = RandomUInt(99);

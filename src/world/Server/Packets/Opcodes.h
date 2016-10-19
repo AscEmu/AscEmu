@@ -108,7 +108,6 @@ enum Opcodes
     SMSG_SET_FACTION_STANDING                       = 0x124,
     CMSG_SET_FACTION_ATWAR                          = 0x125,
     CMSG_SET_FACTION_CHEAT                          = 0x126,
-    SMSG_COOLDOWN_EVENT                             = 0x135,
     CMSG_CANCEL_AURA                                = 0x136,
     SMSG_EQUIPMENT_SET_SAVED                        = 0x137,
     SMSG_AI_REACTION                                = 0x13C,
@@ -118,7 +117,6 @@ enum Opcodes
     SMSG_VICTIMSTATEUPDATE_OBSOLETE                 = 0x14B,
     SMSG_DAMAGE_DONE_OBSOLETE                       = 0x14C,
     SMSG_DAMAGE_TAKEN_OBSOLETE                      = 0x14D,
-    SMSG_CANCEL_COMBAT                              = 0x14E,
     SMSG_BREAK_TARGET                               = 0x152,
     CMSG_SAVE_PLAYER                                = 0x153,
     CMSG_SETDEATHBINDPOINT                          = 0x154,
@@ -155,22 +153,18 @@ enum Opcodes
     SMSG_FISH_ESCAPED                               = 0x1C9,
     CMSG_BUG                                        = 0x1CA,
     SMSG_NOTIFICATION                               = 0x1CB,
-    SMSG_QUERY_TIME_RESPONSE                        = 0x1CF,
     SMSG_LOG_XPGAIN                                 = 0x1D0,
     CMSG_WRAP_ITEM                                  = 0x1D3,
     MSG_MINIMAP_PING                                = 0x1D5,
     SMSG_RESISTLOG                                  = 0x1D6,
-    SMSG_ENCHANTMENTLOG                             = 0x1D7,
     CMSG_SET_SKILL_CHEAT                            = 0x1D8,
     SMSG_CLEAR_COOLDOWN                             = 0x1DE,
     SMSG_GAMEOBJECT_PAGETEXT                        = 0x1DF,
     SMSG_COOLDOWN_CHEAT                             = 0x1E1,
     CMSG_GHOST                                      = 0x1E5,
     SMSG_INVALID_PROMOTION_CODE                     = 0x1E7,
-    SMSG_ITEM_ENCHANT_TIME_UPDATE                   = 0x1EB,
     SMSG_PARTYKILLLOG                               = 0x1F5,
     SMSG_PLAY_SPELL_IMPACT                          = 0x1F7,
-    SMSG_ENVIRONMENTALDAMAGELOG                     = 0x1FC,
     CMSG_RWHOIS_OBSOLETE                            = 0x1FD,
     SMSG_RWHOIS                                     = 0x1FE,
     SMSG_LFG_PLAYER_REWARD                          = 0x1FF,
@@ -181,7 +175,6 @@ enum Opcodes
     SMSG_CLEAR_FAR_SIGHT_IMMEDIATE                  = 0x20D,
     CMSG_UNLEARN_TALENTS                            = 0x213,
     SMSG_GAMEOBJECT_SPAWN_ANIM_OBSOLETE             = 0x214,
-    SMSG_GAMEOBJECT_DESPAWN_ANIM                    = 0x215,
     CMSG_SET_STAT_CHEAT                             = 0x21D,
     SMSG_SET_REST_START_OBSOLETE                    = 0x21E,
     CMSG_SKILL_BUY_STEP                             = 0x21F,
@@ -196,8 +189,6 @@ enum Opcodes
     CMSG_TAXICLEARNODE                              = 0x241,
     CMSG_TAXIENABLENODE                             = 0x242,
     SMSG_DEBUGAURAPROC                              = 0x24D,
-    SMSG_PERIODICAURALOG                            = 0x24E,
-    SMSG_RESURRECT_FAILED                           = 0x252,
     CMSG_TOGGLE_PVP                                 = 0x253,
     SMSG_ZONE_UNDER_ATTACK                          = 0x254,
     SMSG_PROCRESIST                                 = 0x260,
@@ -265,7 +256,6 @@ enum Opcodes
     CMSG_TOGGLE_CLOAK                               = 0x2BA,
     SMSG_LFG_ROLE_CHOSEN                            = 0x2BB,
     SMSG_PLAYER_SKINNED                             = 0x2BC,
-    SMSG_DURABILITY_DAMAGE_DEATH                    = 0x2BD,
     CMSG_SET_EXPLORATION                            = 0x2BE,
     SMSG_INIT_WORLD_STATES                          = 0x2C2,
     SMSG_UPDATE_WORLD_STATE                         = 0x2C3,
@@ -389,7 +379,6 @@ enum Opcodes
     CMSG_CANCEL_MOUNT_AURA                          = 0x375,
     SMSG_ARENA_ERROR                                = 0x376,
     MSG_INSPECT_ARENA_TEAMS                         = 0x377,
-    CMSG_CANCEL_TEMP_ENCHANTMENT                    = 0x379,
     SMSG_FORCED_DEATH_UPDATE                        = 0x37A,
     CMSG_CHEAT_SET_HONOR_CURRENCY                   = 0x37B,
     CMSG_CHEAT_SET_ARENA_CURRENCY                   = 0x37C,
@@ -720,7 +709,7 @@ enum Opcodes
     CMSG_REALM_SPLIT                                    = 0x2906,
     SMSG_TIME_SYNC_REQ                                  = 0x3CA4,
     CMSG_TIME_SYNC_RESP                                 = 0x3B0C,
-    SMSG_SET_PROFICIENCY                                = 0x6207,   // not sure
+    SMSG_SET_PROFICIENCY                                = 0x6207,
     SMSG_ACTION_BUTTONS                                 = 0x38B5,
     CMSG_SET_SELECTION                                  = 0x0506,
     SMSG_BINDPOINTUPDATE                                = 0x0527,
@@ -728,9 +717,9 @@ enum Opcodes
     CMSG_PLAYED_TIME                                    = 0x0804,
     SMSG_PLAYED_TIME                                    = 0x6037,
     CMSG_QUERY_TIME                                     = 0x0A36,
+    SMSG_QUERY_TIME_RESPONSE                            = 0x2124,
     CMSG_PING                                           = 0x444D,
     SMSG_PONG                                           = 0x4D42,
-    SMSG_ITEM_TIME_UPDATE                               = 0x2407,
     SMSG_AUTH_CHALLENGE                                 = 0x4542,
     CMSG_AUTH_SESSION                                   = 0x0449,
     SMSG_AUTH_RESPONSE                                  = 0x5DB6,
@@ -799,7 +788,7 @@ enum Opcodes
     CMSG_TELEPORT_TO_UNIT                               = 0x4206,
     CMSG_SET_ACTIVE_MOVER                               = 0x3314,
     CMSG_RECLAIM_CORPSE                                 = 0x4036,
-    MSG_CORPSE_QUERY                                    = 0x4336, // 15595
+    MSG_CORPSE_QUERY                                    = 0x4336,
     CMSG_SPIRIT_HEALER_ACTIVATE                         = 0x2E26, // 15595
     SMSG_SPIRIT_HEALER_CONFIRM                          = 0x4917, // 15595
     SMSG_CORPSE_RECLAIM_DELAY                           = 0x0D34, // 15595
@@ -1022,6 +1011,8 @@ enum Opcodes
     CMSG_SETSHEATHED                                    = 0x4326,   //pressing x sitting down
     SMSG_AURA_UPDATE_ALL                                = 0x6916,
     SMSG_AURA_UPDATE                                    = 0x4707,
+    SMSG_ITEM_TIME_UPDATE                               = 0x2407,
+    SMSG_ITEM_ENCHANT_TIME_UPDATE                       = 0x0F27,
 
     //Guild / Tabard
     MSG_TABARDVENDOR_ACTIVATE                           = 0x6926,
@@ -1103,6 +1094,7 @@ enum Opcodes
     SMSG_REMOVED_SPELL                                  = 0x4804,
     SMSG_SPELLLOGMISS                                   = 0x0625, 
     SMSG_SPELLLOGEXECUTE                                = 0x0626,
+    SMSG_PERIODICAURALOG                                = 0x0416,
     SMSG_SPELLDAMAGESHIELD                              = 0x2927, 
     SMSG_SPELLNONMELEEDAMAGELOG                         = 0x4315,
     SMSG_SPELLOGDAMAGE_IMMUNE                           = 0x4507,   //not implemented
@@ -1127,6 +1119,10 @@ enum Opcodes
     SMSG_PET_LEARNED_SPELL                              = 0x0507, 
     SMSG_PET_UNLEARNED_SPELL                            = 0x6A04,
     CMSG_LEARN_SPELL                                    = 0x1011,
+    CMSG_CANCEL_TEMP_ENCHANTMENT                        = 0x6C37,
+    SMSG_ENVIRONMENTALDAMAGELOG                         = 0x6C05,
+    SMSG_ENCHANTMENTLOG                                 = 0x6035,
+    SMSG_COOLDOWN_EVENT                                 = 0x4F26,
 
     // GO/Creatures
     SMSG_MONSTER_MOVE                                   = 0x6E17,
@@ -1172,6 +1168,7 @@ enum Opcodes
     CMSG_REPAIR_ITEM                                    = 0x2917,    // 4.3.4
     SMSG_BUY_FAILED                                     = 0x6435,    // 4.3.4
     CMSG_BUYBACK_ITEM                                   = 0x6C17,    // 4.3.4
+    SMSG_GAMEOBJECT_DESPAWN_ANIM                        = 0x6735,
 
     //Taxi
     CMSG_SET_TAXI_BENCHMARK_MODE                        = 0x4314,
@@ -1212,7 +1209,7 @@ enum Opcodes
     SMSG_ATTACKSWING_BADFACING                          = 0x6C07,   // unchecked
     SMSG_ATTACKSWING_NOTSTANDING                        = 0x2B26,   // unchecked SMSG_ATTACKSWING_DEADTARGET
     SMSG_ATTACKSWING_CANT_ATTACK                        = 0x0016,   // unchecked
-    SMSG_ATTACKERSTATEUPDATE                            = 0x0B25,   // unchecked
+    SMSG_ATTACKERSTATEUPDATE                            = 0x0B25,
     CMSG_INSPECT                                        = 0x0927,
     CMSG_GUILD_BANK_MONEY_WITHDRAWN                     = 0x1225,   // unhandled
     SMSG_GUILD_BANK_MONEY_WITHDRAWN                     = 0x5DB4,   // unhandled
@@ -1224,6 +1221,9 @@ enum Opcodes
     CMSG_ACCEPT_LEVEL_GRANT                             = 0x0205,
     CMSG_SET_ALLOW_LOW_LEVEL_RAID1                      = 0x4435,
     CMSG_SET_ALLOW_LOW_LEVEL_RAID2                      = 0x0536,
+
+    SMSG_DURABILITY_DAMAGE_DEATH                        = 0x4C27,
+    SMSG_CANCEL_COMBAT                                  = 0x4F04,
 
     SMSG_TALENTS_INFO                                   = 0x6F26,
     CMSG_LEARN_PREVIEW_TALENTS                          = 0x2415,
@@ -1447,12 +1447,13 @@ enum Opcodes
     CMSG_AREATRIGGER                                    = 0x0937,
     CMSG_OBJECT_UPDATE_FAILED                           = 0x3808,
     SMSG_SET_PHASE_SHIFT                                = 0x70A0,
+    CMSG_REQUEST_CEMETERY_LIST                          = 0x720A,
+    SMSG_REQUEST_CEMETERY_LIST_RESPONSE                 = 0x30A7,
 
     //Unknown packet send by client to server
     CMSG_UNREGISTER_ALL_ADDON_PREFIXES                  = 0x3D54,
     CMSG_VOICE_SESSION_ENABLE                           = 0x2314,
     CMSG_REQUEST_CATEGORY_COOLDOWNS                     = 0x7102,
-    CMSG_REQUEST_CEMETERY_LIST                          = 0x720A,
     CMSG_REORDER_CHARACTERS                             = 0x0593,
     CMSG_UNK_7818                                       = 0x7818,
     CMSG_UNK_7314                                       = 0x7315,

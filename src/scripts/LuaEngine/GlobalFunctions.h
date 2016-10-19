@@ -406,7 +406,7 @@ namespace luaGlobalFunctions
             subindex = luaL_optinteger(L, 3, 0);
             valindex++;
         }
-        OLD_SpellEntry* proto = dbcSpell.LookupEntryForced(entry);
+        SpellInfo* proto = sSpellCustomizations.GetSpellInfo(entry);
         if (!entry || !var || subindex < 0 || !proto)
         {
             lua_pushboolean(L, 0);
@@ -442,7 +442,7 @@ namespace luaGlobalFunctions
         uint32 entry = luaL_checkinteger(L, 1);
         const char* var = luaL_checkstring(L, 2);
         int subindex = luaL_optinteger(L, 3, 0);
-        OLD_SpellEntry* proto = dbcSpell.LookupEntryForced(entry);
+        SpellInfo* proto = sSpellCustomizations.GetSpellInfo(entry);
         if (!entry || !var || subindex < 0 || !proto)
         {
             lua_pushnil(L);

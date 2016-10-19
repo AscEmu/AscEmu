@@ -53,7 +53,7 @@ public:
     typedef std::unordered_map<uint32, PlayerCreateInfo> PlayerCreateInfoContainer;
     typedef std::vector<uint32> PlayerXPperLevel;
 
-    typedef std::map<uint32, std::list<OLD_SpellEntry*>*> SpellOverrideIdMap;
+    typedef std::map<uint32, std::list<SpellInfo*>*> SpellOverrideIdMap;
 
     typedef std::map<uint32, uint32> NpcGossipTextIdMap;
 

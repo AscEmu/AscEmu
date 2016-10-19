@@ -442,7 +442,7 @@ void GameObject::SetRotationAngles(float z_rot, float y_rot, float x_rot)
     SetRotationQuat(quat.x, quat.y, quat.z, quat.w);
 }
 
-void GameObject::CastSpell(uint64 TargetGUID, OLD_SpellEntry* sp)
+void GameObject::CastSpell(uint64 TargetGUID, SpellInfo* sp)
 {
     Spell* s = new Spell(this, sp, true, NULL);
 
@@ -457,7 +457,7 @@ void GameObject::CastSpell(uint64 TargetGUID, OLD_SpellEntry* sp)
 
 void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
 {
-    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(SpellID);
+    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(SpellID);
     if (sp == nullptr)
     {
         sLog.outError("GameObject %u tried to cast a non-existing Spell %u.", gameobject_properties->entry, SpellID);
@@ -535,7 +535,7 @@ void GameObject_Button::InitAI()
         if (gameobject_info != nullptr)
         {
             if (gameobject_info->trap.spell_id != 0)
-                spell = dbcSpell.LookupEntryForced(gameobject_info->trap.spell_id);
+                spell = sSpellCustomizations.GetSpellInfo(gameobject_info->trap.spell_id);
         }
     }
 }
@@ -649,7 +649,7 @@ void GameObject_Chest::InitAI()
         if (gameobject_info != nullptr)
         {
             if (gameobject_info->trap.spell_id != 0)
-                spell = dbcSpell.LookupEntryForced(gameobject_info->trap.spell_id);
+                spell = sSpellCustomizations.GetSpellInfo(gameobject_info->trap.spell_id);
         }
     }
 }
@@ -723,7 +723,7 @@ void GameObject_Trap::InitAI()
             return;
     }
 
-    spell = dbcSpell.LookupEntryForced(gameobject_properties->trap.spell_id);
+    spell = sSpellCustomizations.GetSpellInfo(gameobject_properties->trap.spell_id);
     charges = gameobject_properties->trap.charges;
 
     if (gameobject_properties->trap.stealthed != 0)
@@ -880,7 +880,7 @@ void GameObject_Goober::InitAI()
         if (gameobject_info != nullptr)
         {
             if (gameobject_info->trap.spell_id != 0)
-                spell = dbcSpell.LookupEntryForced(gameobject_info->trap.spell_id);
+                spell = sSpellCustomizations.GetSpellInfo(gameobject_info->trap.spell_id);
         }
     }
 }
@@ -1018,7 +1018,7 @@ void GameObject_SpellCaster::InitAI()
 {
     charges = gameobject_properties->spell_caster.charges;
 
-    spell = dbcSpell.LookupEntry(gameobject_properties->spell_caster.spell_id);
+    spell = sSpellCustomizations.GetSpellInfo(gameobject_properties->spell_caster.spell_id);
     if (spell == nullptr)
         sLog.outError("GameObject %u ( %s ) has a nonexistant spellID in the database.", gameobject_properties->entry, gameobject_properties->name.c_str());
 }

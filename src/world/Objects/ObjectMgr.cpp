@@ -375,7 +375,7 @@ DBC::Structures::SkillLineAbilityEntry const* ObjectMgr::GetSpellSkill(uint32 id
     return mSpellSkills[id];
 }
 
-OLD_SpellEntry* ObjectMgr::GetNextSpellRank(OLD_SpellEntry* sp, uint32 level)
+SpellInfo* ObjectMgr::GetNextSpellRank(SpellInfo* sp, uint32 level)
 {
     // Looks for next spell rank
     if (sp == nullptr)
@@ -384,7 +384,7 @@ OLD_SpellEntry* ObjectMgr::GetNextSpellRank(OLD_SpellEntry* sp, uint32 level)
     auto skill_line_ability = GetSpellSkill(sp->Id);
     if (skill_line_ability != nullptr && skill_line_ability->next > 0)
     {
-        OLD_SpellEntry* sp1 = dbcSpell.LookupEntry(skill_line_ability->next);
+        SpellInfo* sp1 = sSpellCustomizations.GetSpellInfo(skill_line_ability->next);
         if (sp1 && sp1->baseLevel <= level)   // check level
             return GetNextSpellRank(sp1, level);   // recursive for higher ranks
     }
@@ -1233,7 +1233,7 @@ void ObjectMgr::LoadAIThreatToSpellId()
     do
     {
         Field* fields = result->Fetch();
-        OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(fields[0].GetUInt32());
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(fields[0].GetUInt32());
         if (sp != NULL)
         {
             sp->custom_ThreatForSpell = fields[1].GetUInt32();
@@ -1271,7 +1271,7 @@ void ObjectMgr::LoadSpellEffectsOverride()
 
             if (seo_SpellId)
             {
-                OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(seo_SpellId);
+                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(seo_SpellId);
                 if (sp != NULL)
                 {
                     if (seo_Disable)
@@ -1702,7 +1702,7 @@ void ObjectMgr::LoadTrainers()
                     if (ts.learnedSpell[i])
                     {
                         /*
-                        SpellEntry const* learnedSpellInfo = dbcSpell.LookupEntry(ts.learnedSpell[i]);
+                        SpellEntry const* learnedSpellInfo = sSpellCustomizations.GetSpellInfo(ts.learnedSpell[i]);
                         if (learnedSpellInfo && learnedSpellInfo->)
                         tr->TrainerType = 2;
                         */
@@ -2010,7 +2010,7 @@ void ObjectMgr::LoadDefaultPetSpells()
             Field* f = result->Fetch();
             uint32 Entry = f[0].GetUInt32();
             uint32 spell = f[1].GetUInt32();
-            OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(spell);
+            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spell);
 
             if (spell && Entry && sp)
             {
@@ -2019,7 +2019,7 @@ void ObjectMgr::LoadDefaultPetSpells()
                     itr->second.insert(sp);
                 else
                 {
-                    std::set<OLD_SpellEntry*> s;
+                    std::set<SpellInfo*> s;
                     s.insert(sp);
                     mDefaultPetSpells[Entry] = s;
                 }
@@ -2030,7 +2030,7 @@ void ObjectMgr::LoadDefaultPetSpells()
     }
 }
 
-std::set<OLD_SpellEntry*>* ObjectMgr::GetDefaultPetSpells(uint32 Entry)
+std::set<SpellInfo*>* ObjectMgr::GetDefaultPetSpells(uint32 Entry)
 {
     PetDefaultSpellMap::iterator itr = mDefaultPetSpells.find(Entry);
     if (itr == mDefaultPetSpells.end())
@@ -2077,7 +2077,7 @@ uint32 ObjectMgr::GetPetSpellCooldown(uint32 SpellId)
     if (itr != mPetSpellCooldowns.end())
         return itr->second;
 
-    OLD_SpellEntry* sp = dbcSpell.LookupEntry(SpellId);
+    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(SpellId);
     if (sp->RecoveryTime > sp->CategoryRecoveryTime)
         return sp->RecoveryTime;
     else
@@ -3582,7 +3582,7 @@ void ObjectMgr::LoadCreatureAIAgents()
                 Field* fields = result->Fetch();
                 uint32 entry = fields[0].GetUInt32();
                 CreatureProperties const* cn = sMySQLStore.GetCreatureProperties(entry);
-                OLD_SpellEntry* spe = dbcSpell.LookupEntryForced(fields[6].GetUInt32());
+                SpellInfo* spe = sSpellCustomizations.GetSpellInfo(fields[6].GetUInt32());
 
                 if (spe == nullptr)
                 {

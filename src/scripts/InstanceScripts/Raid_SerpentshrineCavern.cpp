@@ -63,14 +63,14 @@ class HydrossTheUnstableAI : public CreatureAIScript
         {
             nrspells = 2;
 
-            spells[0].info = dbcSpell.LookupEntry(WATER_TOMB);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(WATER_TOMB);
             spells[0].targettype = TARGET_RANDOM_SINGLE;
             spells[0].instant = true;
             spells[0].cooldown = 7;
             spells[0].attackstoptimer = 1000;
             m_spellcheck[0] = false;
 
-            spells[1].info = dbcSpell.LookupEntry(VILE_SLUDGE);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(VILE_SLUDGE);
             spells[1].targettype = TARGET_RANDOM_SINGLE;
             spells[1].instant = true;
             spells[1].cooldown = 15;
@@ -179,27 +179,27 @@ class HydrossTheUnstableAI : public CreatureAIScript
                         switch (MarkCount)
                         {
                             case 0:
-                                _unit->CastSpell(_unit, dbcSpell.LookupEntry(MARK_OF_HYDROSS1), true);
+                                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(MARK_OF_HYDROSS1), true);
                                 break;
 
                             case 1:
-                                _unit->CastSpell(_unit, dbcSpell.LookupEntry(MARK_OF_HYDROSS2), true);
+                                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(MARK_OF_HYDROSS2), true);
                                 break;
 
                             case 2:
-                                _unit->CastSpell(_unit, dbcSpell.LookupEntry(MARK_OF_HYDROSS3), true);
+                                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(MARK_OF_HYDROSS3), true);
                                 break;
 
                             case 3:
-                                _unit->CastSpell(_unit, dbcSpell.LookupEntry(MARK_OF_HYDROSS4), true);
+                                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(MARK_OF_HYDROSS4), true);
                                 break;
 
                             case 4:
-                                _unit->CastSpell(_unit, dbcSpell.LookupEntry(MARK_OF_HYDROSS5), true);
+                                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(MARK_OF_HYDROSS5), true);
                                 break;
 
                             case 5:
-                                _unit->CastSpell(_unit, dbcSpell.LookupEntry(MARK_OF_HYDROSS6), true);
+                                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(MARK_OF_HYDROSS6), true);
                                 break;
                         }
 
@@ -263,27 +263,27 @@ class HydrossTheUnstableAI : public CreatureAIScript
                         switch (MarkCount)
                         {
                             case 0:
-                                _unit->CastSpell(_unit, dbcSpell.LookupEntry(MARK_OF_CORRUPTION1), true);
+                                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(MARK_OF_CORRUPTION1), true);
                                 break;
 
                             case 1:
-                                _unit->CastSpell(_unit, dbcSpell.LookupEntry(MARK_OF_CORRUPTION2), true);
+                                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(MARK_OF_CORRUPTION2), true);
                                 break;
 
                             case 2:
-                                _unit->CastSpell(_unit, dbcSpell.LookupEntry(MARK_OF_CORRUPTION3), true);
+                                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(MARK_OF_CORRUPTION3), true);
                                 break;
 
                             case 3:
-                                _unit->CastSpell(_unit, dbcSpell.LookupEntry(MARK_OF_CORRUPTION4), true);
+                                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(MARK_OF_CORRUPTION4), true);
                                 break;
 
                             case 4:
-                                _unit->CastSpell(_unit, dbcSpell.LookupEntry(MARK_OF_CORRUPTION5), true);
+                                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(MARK_OF_CORRUPTION5), true);
                                 break;
 
                             case 5:
-                                _unit->CastSpell(_unit, dbcSpell.LookupEntry(MARK_OF_CORRUPTION6), true);
+                                _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(MARK_OF_CORRUPTION6), true);
                                 break;
                         }
 
@@ -342,7 +342,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
                 EnrageTimer--;
                 if (!EnrageTimer)
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(HYDROSS_ENRAGE), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(HYDROSS_ENRAGE), true);
                     Enraged = true;
                 }
             }
@@ -478,7 +478,7 @@ class LurkerAI : public CreatureAIScript
 
             // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
 
-            spells[0].info = dbcSpell.LookupEntry(WHIRL);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(WHIRL);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 30;
@@ -486,21 +486,21 @@ class LurkerAI : public CreatureAIScript
             spells[0].attackstoptimer = 1000; // 1sec
             m_spellcheck[0] = true;
 
-            spells[1].info = dbcSpell.LookupEntry(GEYSER);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(GEYSER);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].cooldown = 10;
             spells[1].perctrigger = 10.0f;
             spells[1].attackstoptimer = 2000; // 2sec
 
-            spells[2].info = dbcSpell.LookupEntry(SPOUT);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(SPOUT);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = false;
             spells[2].cooldown = 60;
             spells[2].perctrigger = 5.0f;
             spells[2].attackstoptimer = 2000; // 2sec
 
-            spells[3].info = dbcSpell.LookupEntry(SUBMERGE);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(SUBMERGE);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
             spells[3].cooldown = 120;
@@ -610,15 +610,15 @@ class LeotherasAI : public CreatureAIScript
             //Insidious Whisper (inner demons)
             //"We all have our demons..."
             ////Debuff that summons an Inner Demon from up to five raid members. Each Inner Demon can be attacked only by the person it spawned from. If you do not kill your Inner Demon before Leotheras gets back into humanoid form you will become Mind Controlled for 10 minutes and can't get out of it unless killed. Inner Demons take increased damage from arcane, nature, and holy spells.
-            spells[0].info = dbcSpell.LookupEntry(INSIDIOUS_WHISPER);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(INSIDIOUS_WHISPER);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].perctrigger = 2.0f;
             spells[0].attackstoptimer = 2000;
             m_spellcheck[0] = false;
 
-            info_chaos_blast = dbcSpell.LookupEntry(CHAOS_BLAST_ANIMATION);
-            info_whirlwind = dbcSpell.LookupEntry(WHIRLWINDLEO);
+            info_chaos_blast = sSpellCustomizations.GetSpellInfo(CHAOS_BLAST_ANIMATION);
+            info_whirlwind = sSpellCustomizations.GetSpellInfo(WHIRLWINDLEO);
 
             _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -856,7 +856,7 @@ class LeotherasAI : public CreatureAIScript
                     EnrageTimer--;
                     if (!EnrageTimer)
                     {
-                        _unit->CastSpell(_unit, dbcSpell.LookupEntry(LEO_ENRAGE), true);
+                        _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(LEO_ENRAGE), true);
                         Enraged = true;
                     }
                 }
@@ -952,8 +952,8 @@ class LeotherasAI : public CreatureAIScript
         bool mInWhirlwind;
         bool IsMorphing;
         uint32 Phase;
-        OLD_SpellEntry* info_whirlwind;
-        OLD_SpellEntry* info_chaos_blast;
+        SpellInfo* info_whirlwind;
+        SpellInfo* info_chaos_blast;
         uint32 FinalPhaseSubphase;
         uint32 FinalPhaseTimer;
 };
@@ -969,7 +969,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
         {
             nrspells = 1;
 
-            spells[0].info = dbcSpell.LookupEntry(MIND_BLAST);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(MIND_BLAST);
             spells[0].targettype = TARGET_RANDOM_SINGLE;
             spells[0].instant = true;
             spells[0].perctrigger = 50.0f;
@@ -1137,7 +1137,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
 
         ShadowofLeotherasAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            info_chaos_blast = dbcSpell.LookupEntry(CHAOS_BLAST_ANIMATION);
+            info_chaos_blast = sSpellCustomizations.GetSpellInfo(CHAOS_BLAST_ANIMATION);
 
             _unit->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
             _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
@@ -1182,7 +1182,7 @@ class ShadowofLeotherasAI : public CreatureAIScript
         }
 
     protected:
-        OLD_SpellEntry* info_chaos_blast;
+        SpellInfo* info_chaos_blast;
 };
 
 
@@ -1201,7 +1201,7 @@ class KarathressAI : public CreatureAIScript
 
         KarathressAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            info_cataclysmic_bolt = dbcSpell.LookupEntry(CATACLYSMIC_BOLT);
+            info_cataclysmic_bolt = sSpellCustomizations.GetSpellInfo(CATACLYSMIC_BOLT);
             AdvisorsLeft = 3;
             BlessingOfTidesCounter = 0;
 
@@ -1284,7 +1284,7 @@ class KarathressAI : public CreatureAIScript
                 if (BlessingOfTidesCounter < AdvisorsLeft)
                 {
                     _unit->SendScriptTextChatMessage(4741);     // Your overconfidence will be your undoing! Guards, lend me your strength!
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(BLESSING_OF_THE_TIDES), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(BLESSING_OF_THE_TIDES), true);
                     BlessingOfTidesCounter++;
                 }
             }
@@ -1295,7 +1295,7 @@ class KarathressAI : public CreatureAIScript
                 EnrageTimer--;
                 if (!EnrageTimer)
                 {
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(KARATHRESS_ENRAGE), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(KARATHRESS_ENRAGE), true);
                     Enraged = true;
                 }
             }
@@ -1304,7 +1304,7 @@ class KarathressAI : public CreatureAIScript
         uint32 AdvisorsLeft;
 
     private:
-        OLD_SpellEntry* info_cataclysmic_bolt;
+        SpellInfo* info_cataclysmic_bolt;
         uint32 CataclysmicBoltTimer;
         uint32 EnrageTimer;
         uint32 BlessingOfTidesCounter;
@@ -1343,7 +1343,7 @@ class FathomGuardSharkissAI : public MoonScriptCreatureAI
             Creature* FLK = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
             if (FLK)
             {
-                FLK->CastSpell(FLK, dbcSpell.LookupEntry(38455), true); //Power of Sharkkis
+                FLK->CastSpell(FLK, sSpellCustomizations.GetSpellInfo(38455), true); //Power of Sharkkis
                 FLK->SendScriptTextChatMessage(4743);     // I am more powerful than ever!
                 if (static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft > 0)
                     static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft--;
@@ -1410,7 +1410,7 @@ class FathomGuardTidalvessAI : public MoonScriptCreatureAI
             Creature* FLK = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
             if (FLK)
             {
-                FLK->CastSpell(FLK, dbcSpell.LookupEntry(38452), true); //Power of Tidalvess
+                FLK->CastSpell(FLK, sSpellCustomizations.GetSpellInfo(38452), true); //Power of Tidalvess
                 FLK->SendScriptTextChatMessage(4742);     // Go on, kill them! I'll be the better for it!
                 if (static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft > 0)
                     static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft--;
@@ -1467,7 +1467,7 @@ class FathomGuardCaribdisAI : public MoonScriptCreatureAI
             Creature* FLK = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), CN_FATHOM_LORD_KARATHRESS);
             if (FLK)
             {
-                FLK->CastSpell(FLK, dbcSpell.LookupEntry(38451), true); //Power of Caribdis
+                FLK->CastSpell(FLK, sSpellCustomizations.GetSpellInfo(38451), true); //Power of Caribdis
                 FLK->SendScriptTextChatMessage(4744);     // More knowledge, more power!
                 if (static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft > 0)
                     static_cast< KarathressAI* >(FLK->GetScript())->AdvisorsLeft--;
@@ -1497,18 +1497,18 @@ class MorogrimAI : public CreatureAIScript
 
         MorogrimAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            spells[0].info = dbcSpell.LookupEntry(TIDAL_WAVE);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(TIDAL_WAVE);
             spells[0].instant = true;
 
-            spells[1].info = dbcSpell.LookupEntry(EARTHQUAKE);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(EARTHQUAKE);
             spells[1].instant = true;
             spells[1].cooldown = 40;
 
-            spells[2].info = dbcSpell.LookupEntry(WATERY_GRAVE);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(WATERY_GRAVE);
             spells[2].instant = true;
             spells[2].cooldown = 30;
 
-            spells[3].info = dbcSpell.LookupEntry(SUMMON_WATER_GLOBULE);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(SUMMON_WATER_GLOBULE);
             spells[3].instant = true;
             spells[3].cooldown = 30;
         }
@@ -1777,7 +1777,7 @@ class VashjAI : public CreatureAIScript
         {
             nrspells = 3;
 
-            spells[0].info = dbcSpell.LookupEntry(SHOCK_BLAST);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(SHOCK_BLAST);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 5;
@@ -1785,7 +1785,7 @@ class VashjAI : public CreatureAIScript
             spells[0].attackstoptimer = 2000;
             m_spellcheck[0] = false;
 
-            spells[1].info = dbcSpell.LookupEntry(STATIC_CHARGE);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(STATIC_CHARGE);
             spells[1].targettype = TARGET_RANDOM_SINGLE;
             spells[1].instant = true;
             spells[1].cooldown = 5;
@@ -1793,7 +1793,7 @@ class VashjAI : public CreatureAIScript
             spells[1].attackstoptimer = 1000;
             m_spellcheck[1] = false;
 
-            spells[2].info = dbcSpell.LookupEntry(ENTANGLE);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(ENTANGLE);
             spells[2].targettype = TARGET_RANDOM_DESTINATION;
             spells[2].instant = true;
             spells[2].cooldown = 15;
@@ -1801,13 +1801,13 @@ class VashjAI : public CreatureAIScript
             spells[2].attackstoptimer = 1000;
             m_spellcheck[2] = false;
 
-            spells[3].info = dbcSpell.LookupEntry(FORKED_LIGHTNING);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(FORKED_LIGHTNING);
             spells[3].targettype = TARGET_RANDOM_SINGLE;
             spells[3].perctrigger = 0.0f;
             spells[3].instant = false;
 
-            info_multishot = dbcSpell.LookupEntry(MULTI_SHOT);
-            info_shot = dbcSpell.LookupEntry(SHOOT);
+            info_multishot = sSpellCustomizations.GetSpellInfo(MULTI_SHOT);
+            info_shot = sSpellCustomizations.GetSpellInfo(SHOOT);
 
             Movement::WayPoint* wp = _unit->CreateWaypointStruct();
             wp->id = 1;
@@ -1950,7 +1950,7 @@ class VashjAI : public CreatureAIScript
                     _unit->GetAIInterface()->setWaypointToMove(1);
                     _unit->SendScriptTextChatMessage(4764);     // The time is now! Leave none standing!
                     _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(VASHJ_SHIELD), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(VASHJ_SHIELD), true);
                     _unit->GetAIInterface()->setOutOfCombatRange(3000);
                     Phase = 2;
                 }
@@ -2256,8 +2256,8 @@ class VashjAI : public CreatureAIScript
         uint32 CoilfangEliteTimer;
         uint32 SporebatTimer;
         uint32 ForkedLightningTimer;
-        OLD_SpellEntry* info_multishot;
-        OLD_SpellEntry* info_shot;
+        SpellInfo* info_multishot;
+        SpellInfo* info_shot;
 };
 
 class TaintedElementalAI : public CreatureAIScript
@@ -2270,7 +2270,7 @@ class TaintedElementalAI : public CreatureAIScript
             spell_poison_spit = new AI_Spell();
             spell_poison_spit->agent = AGENT_SPELL;
             spell_poison_spit->procChance = 0;
-            spell_poison_spit->spell = dbcSpell.LookupEntry(POISON_SPIT);
+            spell_poison_spit->spell = sSpellCustomizations.GetSpellInfo(POISON_SPIT);
             spell_poison_spit->spellType = STYPE_DAMAGE;
             spell_poison_spit->spelltargetType = TTYPE_SINGLETARGET;
             spell_poison_spit->cooldown = 2000;
@@ -2391,7 +2391,7 @@ class ToxicSporeBatAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(TOXIC_SPORES);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(TOXIC_SPORES);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = -1;
@@ -2887,7 +2887,7 @@ class UnderbogColossusAI : public MoonScriptCreatureAI
             {
                 case 0:
                     //cast toxic pool
-                    _unit->CastSpell(_unit, dbcSpell.LookupEntry(TOXIC_POOL), true);
+                    _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(TOXIC_POOL), true);
                     break;
                 case 1:
                     //spawn two colossus lurkers

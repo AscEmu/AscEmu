@@ -153,7 +153,7 @@ bool KarangsBanner(uint32 i, Spell* pSpell)
     Player* pPlayer = pSpell->p_caster;
 
     // Banner Aura
-    pPlayer->CastSpell(pPlayer, dbcSpell.LookupEntry(20746), true);
+    pPlayer->CastSpell(pPlayer, sSpellCustomizations.GetSpellInfo(20746), true);
 
     pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(12921, 2231.710205f, -1543.603027f, 90.694946f, 4.700579f, true, false, 0, 0);
     pSpell->p_caster->GetMapMgr()->GetInterface()->SpawnCreature(12921, 2232.534912f, -1556.983276f, 89.744415f, 1.527570f, true, false, 0, 0);
@@ -1106,7 +1106,7 @@ bool GoblinWeatherMachine(uint32 i, Spell* pSpell)
 
     uint32 Weather = 46736 + RandomUInt(4);
 
-    pSpell->p_caster->CastSpell(pSpell->p_caster, dbcSpell.LookupEntry(Weather), true);
+    pSpell->p_caster->CastSpell(pSpell->p_caster, sSpellCustomizations.GetSpellInfo(Weather), true);
     return true;
 }
 
@@ -1396,7 +1396,7 @@ bool HunterTamingQuest(uint32 i, Aura* a, bool apply)
     {
         uint32 TamingSpellid = a->GetSpellProto()->EffectMiscValue[1];
 
-        OLD_SpellEntry* triggerspell = dbcSpell.LookupEntryForced(TamingSpellid);
+        SpellInfo* triggerspell = sSpellCustomizations.GetSpellInfo(TamingSpellid);
         if (triggerspell == NULL)
         {
             sLog.outError("An Aura with spellid %u is calling HunterTamingQuest() with an invalid TamingSpellid: %u", a->GetSpellId(), TamingSpellid);
@@ -1840,7 +1840,7 @@ bool Triage(uint32 i, Spell* pSpell)
     if (!pSpell->p_caster || pSpell->GetUnitTarget() == nullptr)
         return true;
 
-    pSpell->p_caster->CastSpell(pSpell->GetUnitTarget(), dbcSpell.LookupEntry(746), true);
+    pSpell->p_caster->CastSpell(pSpell->GetUnitTarget(), sSpellCustomizations.GetSpellInfo(746), true);
     QuestLogEntry* en = pSpell->p_caster->GetQuestLogForEntry(6624);
 
     if (en && en->GetMobCount(0) < en->GetQuest()->required_mob_or_go_count[0])
@@ -2741,7 +2741,7 @@ bool ManaRemnants(uint32 i, Spell* pSpell)
         QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(quests[i]);
         if (qle != nullptr && qle->GetMobCount(0) < qle->GetQuest()->required_mob_or_go_count[0])
         {
-            pPlayer->CastSpell(Ward, dbcSpell.LookupEntry(44981), false);
+            pPlayer->CastSpell(Ward, sSpellCustomizations.GetSpellInfo(44981), false);
             pPlayer->SetChannelSpellTargetGUID(Ward->GetGUID());
             pPlayer->SetChannelSpellId(44981);
             qle->SetMobCount(0, qle->GetMobCount(0) + 1);
@@ -2978,7 +2978,7 @@ bool Carcass(uint32 i, Spell* pSpell) // Becoming a Shadoweave Tailor
 
     if (pQuest != nullptr && pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
     {
-        NetherDrake->CastSpell(NetherDrake, dbcSpell.LookupEntry(38502), true);
+        NetherDrake->CastSpell(NetherDrake, sSpellCustomizations.GetSpellInfo(38502), true);
         NetherDrake->GetAIInterface()->SetFly();
         NetherDrake->GetAIInterface()->MoveTo(pPlayer->GetPositionX(), pPlayer->GetPositionY() + 2, pPlayer->GetPositionZ(), 0);
         pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
@@ -3007,7 +3007,7 @@ bool ForceofNeltharakuSpell(uint32 i, Spell* pSpell) // Becoming a Shadoweave Ta
     {
         if (pQuest->GetMobCount(0) < pQuest->GetQuest()->required_mob_or_go_count[0])
         {
-            pTarget->CastSpell(pPlayer, dbcSpell.LookupEntry(38775), true);
+            pTarget->CastSpell(pPlayer, sSpellCustomizations.GetSpellInfo(38775), true);
             pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
             pQuest->SendUpdateAddKill(0);
             pQuest->UpdatePlayerFields();

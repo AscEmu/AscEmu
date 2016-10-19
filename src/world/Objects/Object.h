@@ -37,7 +37,7 @@
 #include "Storage/DB2/DB2Structures.hpp"
 #include "../shared/StackBuffer.h"
 
-struct OLD_SpellEntry;
+struct SpellInfo;
 
 struct FactionDBC;
 
@@ -58,7 +58,6 @@ class Pet;
 class Spell;
 class UpdateMask;
 class EventableObject;
-
 
 enum HighGuidType
 {
@@ -694,10 +693,10 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
 
         void EventSpellDamage(uint64 Victim, uint32 SpellID, uint32 Damage);
         void SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage, bool allowProc, bool static_damage = false, bool no_remove_auras = false);
-        virtual bool IsCriticalDamageForSpell(Object* victim, OLD_SpellEntry* spell) { return false; }
-        virtual float GetCriticalDamageBonusForSpell(Object* victim, OLD_SpellEntry* spell, float amount) { return 0; }
-        virtual bool IsCriticalHealForSpell(Object* victim, OLD_SpellEntry* spell) { return false; }
-        virtual float GetCriticalHealBonusForSpell(Object* victim, OLD_SpellEntry* spell, float amount) { return 0; }
+        virtual bool IsCriticalDamageForSpell(Object* victim, SpellInfo* spell) { return false; }
+        virtual float GetCriticalDamageBonusForSpell(Object* victim, SpellInfo* spell, float amount) { return 0; }
+        virtual bool IsCriticalHealForSpell(Object* victim, SpellInfo* spell) { return false; }
+        virtual float GetCriticalHealBonusForSpell(Object* victim, SpellInfo* spell, float amount) { return 0; }
 
         /// SpellLog packets just to keep the code cleaner and better to read
         void SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 SpellLogType);

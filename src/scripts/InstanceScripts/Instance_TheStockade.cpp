@@ -92,7 +92,7 @@ class DeepfuryAI : public CreatureAIScript
         DeepfuryAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             m_spellcheck = false;
-            spell.info = dbcSpell.LookupEntry(KAM_SHIELDSLAM);
+            spell.info = sSpellCustomizations.GetSpellInfo(KAM_SHIELDSLAM);
             spell.targettype = TARGET_ATTACKING;
             spell.instant = true;
             spell.perctrigger = 0.0f;
@@ -182,14 +182,14 @@ class HamhockAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(CHAINLIGHT);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(CHAINLIGHT);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].perctrigger = 0.0f;
             spells[0].cooldown = 10;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(DEMORALIZO);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(DEMORALIZO);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 0.0f;
@@ -293,7 +293,7 @@ class BazilAI : public CreatureAIScript
         BazilAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             m_spellcheck = false;
-            spell.info = dbcSpell.LookupEntry(BAZILBOMB);
+            spell.info = sSpellCustomizations.GetSpellInfo(BAZILBOMB);
             spell.targettype = TARGET_RANDOM_SINGLE;
             spell.instant = true;
             spell.perctrigger = 0.0f;
@@ -400,7 +400,7 @@ class DextrenAI : public CreatureAIScript
         DextrenAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             m_spellcheck = false;
-            spell.info = dbcSpell.LookupEntry(INTIMIDATING);
+            spell.info = sSpellCustomizations.GetSpellInfo(INTIMIDATING);
             spell.targettype = TARGET_ATTACKING;
             spell.instant = true;
             spell.perctrigger = 0.0f;
@@ -485,7 +485,7 @@ class InmateAI : public CreatureAIScript
         InmateAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             m_spellcheck = false;
-            spell.info = dbcSpell.LookupEntry(CONVICTREND);
+            spell.info = sSpellCustomizations.GetSpellInfo(CONVICTREND);
             spell.targettype = TARGET_ATTACKING;
             spell.instant = true;
             spell.perctrigger = 0.0f;
@@ -570,7 +570,7 @@ class InsurgentAI : public CreatureAIScript
         InsurgentAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             m_spellcheck = false;
-            spell.info = dbcSpell.LookupEntry(INSURGENTDEMORALIZO);
+            spell.info = sSpellCustomizations.GetSpellInfo(INSURGENTDEMORALIZO);
             spell.targettype = TARGET_SELF;
             spell.instant = true;
             spell.perctrigger = 0.0f;
@@ -660,14 +660,14 @@ class PrisonerAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(PRISONKICK);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(PRISONKICK);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 0.0f;
             spells[0].cooldown = 11;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(PRISONDISARM);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(PRISONDISARM);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 0.0f;
@@ -771,7 +771,7 @@ class ConvictAI : public CreatureAIScript
         ConvictAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             m_spellcheck = false;
-            spell.info = dbcSpell.LookupEntry(CONVICTBACKHAND);
+            spell.info = sSpellCustomizations.GetSpellInfo(CONVICTBACKHAND);
             spell.targettype = TARGET_ATTACKING;
             spell.instant = true;
             spell.perctrigger = 0.0f;

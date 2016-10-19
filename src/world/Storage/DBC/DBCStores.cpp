@@ -1,22 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2011 <http://www.ArcEmu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2016 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "StdAfx.h"
 #include "DBCGlobals.hpp"
@@ -34,7 +19,6 @@ static WMOAreaInfoByTripple sWMOAreaInfoByTripple;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaTriggerEntry> sAreaTriggerStore(DBC::Structures::area_trigger_entry_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AuctionHouseEntry> sAuctionHouseStore(DBC::Structures::auction_house_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::BankBagSlotPrices> sBankBagSlotPricesStore(DBC::Structures::bank_bag_slot_prices_format);
-//SERVER_DECL DBC::DBCStorage<DBC::Structures::StableSlotPrices> sStableSlotPricesStore(DBC::Structures::stable_slot_prices_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::BarberShopStyleEntry> sBarberShopStyleStore(DBC::Structures::barber_shop_style_entry_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrClassesEntry> sChrClassesStore(DBC::Structures::chr_classes_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrRacesEntry> sChrRacesStore(DBC::Structures::chr_races_format);
@@ -54,7 +38,6 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::DurabilityQualityEntry> sDurability
 SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionTemplateEntry> sFactionTemplateStore(DBC::Structures::faction_template_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::FactionEntry> sFactionStore(DBC::Structures::faction_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GameObjectDisplayInfoEntry> sGameObjectDisplayInfoStore(DBC::Structures::game_object_display_info_format);
-
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GuildPerkSpellsEntry> sGuildPerkSpellsStore(DBC::Structures::guild_perk_spells_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesEntry> sEmotesStore(DBC::Structures::emotes_entry_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::EmotesTextEntry> sEmotesTextStore(DBC::Structures::emotes_text_format);
@@ -62,10 +45,8 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellItemEnchantmentEntry> sSpellIt
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GemPropertiesEntry> sGemPropertiesStore(DBC::Structures::gem_properties_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphPropertiesEntry> sGlyphPropertiesStore(DBC::Structures::glyph_properties_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphSlotEntry> sGlyphSlotStore(DBC::Structures::glyph_slot_format);
-// db2 SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemExtendedCostEntry> sItemExtendedCostStore(DBC::Structures::item_extended_cost_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemLimitCategoryEntry> sItemLimitCategoryStore(DBC::Structures::item_limit_category_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemRandomSuffixEntry> sItemRandomSuffixStore(DBC::Structures::item_random_suffix_format);
-// db2 SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore(DBC::Structures::item_entry_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemSetEntry> sItemSetStore(DBC::Structures::item_set_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::LockEntry> sLockStore(DBC::Structures::lock_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::MapEntry> sMapStore(DBC::Structures::map_format);
@@ -88,22 +69,15 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellEquippedItemsEntry> sSpellEqui
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellInterruptsEntry> sSpellInterruptsStore(DBC::Structures::spell_interrupts_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellLevelsEntry> sSpellLevelsStore(DBC::Structures::spell_levels_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellPowerEntry> sSpellPowerStore(DBC::Structures::spell_power_format);
-
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellScalingEntry> sSpellScalingStore(DBC::Structures::spell_scaling_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellReagentsEntry> sSpellReagentsStore(DBC::Structures::spell_reagents_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellShapeshiftEntry> sSpellShapeshiftStore(DBC::Structures::spell_shapeshift_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellTargetRestrictionsEntry> sSpellTargetRestrictionsStore(DBC::Structures::spell_target_restrictions_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellTotemsEntry> sSpellTotemsStore(DBC::Structures::spell_totems_format);
-
 DBC::Structures::SpellEffectMap sSpellEffectMap;
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellEffectEntry> sSpellEffectStore(DBC::Structures::spell_effect_format);
 DBC::Structures::SpellCategoryStore sSpellCategoryStore;
-
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellEntry> sSpellStore(DBC::Structures::spell_entry_format);
-
-///\todo remove the old spell loader
-SERVER_DECL DBCStorage<OLD_SpellEntry> dbcSpell;
-
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRadiusEntry> sSpellRadiusStore(DBC::Structures::spell_radius_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRangeEntry> sSpellRangeStore(DBC::Structures::spell_range_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRuneCostEntry> sSpellRuneCostStore(DBC::Structures::spell_rune_cost_format);
@@ -134,16 +108,12 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleEntry> sVehicleStore(DBC::St
 SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSeatStore(DBC::Structures::vehicle_seat_format);
 
 
-const char* spellentryFormat = "niiiiiiiiiiiiiiifiiiissssiixxixiiiiiiixiiiiiiiix";
-
 template<class T>
 bool loader_stub(const char* filename, const char* format, bool ind, T & l, bool loadstrs)
 {
     Log.Notice("DBC", "Loading %s.", filename);
     return l.Load(filename, format, ind, loadstrs);
 }
-
-#define LOAD_DBC(filename, format, ind, stor, strings) if (!loader_stub(filename, format, ind, stor, strings)) { return false; }
 
 bool LoadDBCs()
 {
@@ -160,7 +130,6 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCharTitlesStore, dbc_path, "CharTitles.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sCurrencyTypesStore, dbc_path, "CurrencyTypes.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sBarberShopStyleStore, dbc_path, "BarberShopStyle.dbc");
-    //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemStore, dbc_path, "Item.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemSetStore, dbc_path, "ItemSet.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sLockStore, dbc_path, "Lock.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sEmotesStore, dbc_path, "Emotes.dbc");
@@ -172,15 +141,12 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGlyphSlotStore, dbc_path, "GlyphSlot.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSkillLineStore, dbc_path, "SkillLine.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellStore, dbc_path, "Spell.dbc");
-
-    LOAD_DBC("DBC/Spell.dbc", spellentryFormat, true, dbcSpell, true);
-    //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemExtendedCostStore, dbc_path, "ItemExtendedCost.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentStore, dbc_path, "Talent.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentTabStore, dbc_path, "TalentTab.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentTreePrimarySpellsStore, dbc_path, "TalentTreePrimarySpells.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellCastTimesStore, dbc_path, "SpellCastTimes.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellDifficultyStore, dbc_path, "SpellDifficulty.dbc");
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRadiusStore, dbc_path, "SpellRadius.dbc");     ///\todo handle max and level radius
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRadiusStore, dbc_path, "SpellRadius.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRangeStore, dbc_path, "SpellRange.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellRuneCostStore, dbc_path, "SpellRuneCost.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellDurationStore, dbc_path, "SpellDuration.dbc");
@@ -189,7 +155,7 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellAuraRestrictionsStore, dbc_path, "SpellAuraRestrictions.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellCastingRequirementsStore, dbc_path, "SpellCastingRequirements.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellCategoriesStore, dbc_path, "SpellCategories.dbc");
-    //todo danko DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellClassOptionsStore, dbc_path, "SpellClassOptions.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellClassOptionsStore, dbc_path, "SpellClassOptions.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellCooldownsStore, dbc_path, "SpellCooldowns.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellEquippedItemsStore, dbc_path, "SpellEquippedItems.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellInterruptsStore, dbc_path, "SpellInterrupts.dbc");
@@ -201,8 +167,7 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellShapeshiftStore, dbc_path, "SpellShapeshift.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellTargetRestrictionsStore, dbc_path, "SpellTargetRestrictions.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellTotemsStore, dbc_path, "SpellTotems.dbc");
-
-    //todo danko DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellEffectStore, dbc_path, "SpellEffect.dbc");
+    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellEffectStore, dbc_path, "SpellEffect.dbc");
 
     for (uint32 i = 1; i < sSpellStore.GetNumRows(); ++i)
     {
@@ -211,128 +176,6 @@ bool LoadDBCs()
             if (DBC::Structures::SpellCategoriesEntry const* category = spell->GetSpellCategories())
                 if (uint32 cat = category->Category)
                     sSpellCategoryStore[cat].insert(i);
-        }
-    }
-
-    for (uint32 i = 1; i < sSpellStore.GetNumRows(); ++i)
-    {
-        if (DBC::Structures::SpellEntry const* spell = sSpellStore.LookupEntry(i))
-        {
-            uint32 entry = spell->Id;
-            OLD_SpellEntry* old_spell_entry = dbcSpell.LookupEntry(i);;
-            memset(old_spell_entry, 0, sizeof(OLD_SpellEntry));
-
-            old_spell_entry->Id = spell->Id;
-            old_spell_entry->Category = spell->GetCategory();
-            old_spell_entry->DispelType = spell->GetDispel();
-            old_spell_entry->MechanicsType = spell->GetMechanic();
-            old_spell_entry->Attributes = spell->Attributes;
-            old_spell_entry->AttributesEx = spell->AttributesEx;
-            old_spell_entry->AttributesExB = spell->AttributesExB;
-            old_spell_entry->AttributesExC = spell->AttributesExC;
-            old_spell_entry->AttributesExD = spell->AttributesExD;
-            old_spell_entry->AttributesExE = spell->AttributesExE;
-            old_spell_entry->AttributesExF = spell->AttributesExF;
-            old_spell_entry->AttributesExG = spell->AttributesExG;
-            old_spell_entry->RequiredShapeShift = spell->GetStances();
-            old_spell_entry->ShapeshiftExclude = spell->GetStancesNot();
-            old_spell_entry->Targets = spell->GetTargets();
-            old_spell_entry->TargetCreatureType = spell->GetSpellTargetRestrictions() ? spell->GetSpellTargetRestrictions()->TargetCreatureType : 0;
-            old_spell_entry->RequiresSpellFocus = spell->GetRequiresSpellFocus();
-            old_spell_entry->FacingCasterFlags = spell->GetSpellCastingRequirements() ? spell->GetSpellCastingRequirements()->RequiresSpellFocus : 0;
-            old_spell_entry->CasterAuraState = spell->GetCasterAuraState();
-            old_spell_entry->TargetAuraState = spell->GetTargetAuraState();
-            old_spell_entry->CasterAuraStateNot = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->CasterAuraStateNot : 0;
-            old_spell_entry->TargetAuraStateNot = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->TargetAuraStateNot : 0;
-            old_spell_entry->casterAuraSpell = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->casterAuraSpell : 0;
-            old_spell_entry->targetAuraSpell = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->targetAuraSpell : 0;
-            old_spell_entry->casterAuraSpellNot = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->excludeCasterAuraSpell : 0;
-            old_spell_entry->targetAuraSpellNot = spell->GetSpellAuraRestrictions() ? spell->GetSpellAuraRestrictions()->excludeTargetAuraSpell : 0;
-            old_spell_entry->SpellVisual = spell->SpellVisual[0];
-            old_spell_entry->field114 = spell->SpellVisual[1];
-            old_spell_entry->spellIconID = spell->spellIconID;
-            old_spell_entry->activeIconID = spell->activeIconID;
-            old_spell_entry->Name = spell->Name ? spell->Name : "NoName";
-            old_spell_entry->Rank = spell->Rank ? spell->Rank : "NoRank";
-            old_spell_entry->Description = spell->Description ? spell->Description : "NoDescription";
-            old_spell_entry->BuffDescription = spell->BuffDescription ? spell->BuffDescription : "NoBuffDescription";
-            old_spell_entry->ManaCostPercentage = spell->GetManaCostPercentage();
-            old_spell_entry->StartRecoveryCategory = spell->GetStartRecoveryCategory();
-            old_spell_entry->StartRecoveryTime = spell->GetStartRecoveryTime();
-            old_spell_entry->Spell_Dmg_Type = spell->GetDmgClass();
-            old_spell_entry->RequiresAreaId = spell->GetAreaGroupId();
-            old_spell_entry->School = spell->School;
-            old_spell_entry->SpellDifficultyID = spell->SpellDifficultyId;
-            old_spell_entry->procFlags = spell->GetProcFlags();
-            old_spell_entry->procChance = spell->GetProcChance();
-            old_spell_entry->procCharges = spell->GetProcCharges();
-            old_spell_entry->MaxTargetLevel = spell->GetSpellTargetRestrictions() ? spell->GetSpellTargetRestrictions()->MaxTargetLevel : 0;
-            old_spell_entry->MaxTargets = spell->GetSpellTargetRestrictions() ? spell->GetSpellTargetRestrictions()->MaxAffectedTargets : 0;
-            old_spell_entry->RecoveryTime = spell->GetRecoveryTime();
-            old_spell_entry->CategoryRecoveryTime = spell->GetCategoryRecoveryTime();
-            old_spell_entry->SpellFamilyName = spell->GetSpellFamilyName();
-            old_spell_entry->maxLevel = spell->GetMaxLevel();
-            old_spell_entry->baseLevel = spell->GetBaseLevel();
-            old_spell_entry->spellLevel = spell->GetSpellLevel();
-            old_spell_entry->manaCost = spell->GetManaCost();
-            old_spell_entry->manaCostPerlevel = spell->GetManaCostPercentage();
-            old_spell_entry->manaPerSecond = spell->GetManaPerSecond();
-            old_spell_entry->manaPerSecondPerLevel = spell->GetManaCostPerLevel();
-            old_spell_entry->EquippedItemClass = spell->GetSpellEquippedItems() ? spell->GetSpellEquippedItems()->EquippedItemClass : 0;
-            old_spell_entry->EquippedItemSubClass = spell->GetSpellEquippedItems() ? spell->GetSpellEquippedItems()->EquippedItemSubClassMask : 0;
-            old_spell_entry->RequiredItemFlags = spell->GetSpellEquippedItems() ? spell->GetSpellEquippedItems()->EquippedItemInventoryTypeMask : 0;
-            old_spell_entry->PreventionType = spell->GetSpellCategories() ? spell->GetSpellCategories()->PreventionType : 0;
-            old_spell_entry->InterruptFlags = spell->GetSpellInterrupts() ? spell->GetSpellInterrupts()->InterruptFlags : 0;
-            old_spell_entry->AuraInterruptFlags = spell->GetSpellInterrupts() ? spell->GetSpellInterrupts()->AuraInterruptFlags : 0;
-            old_spell_entry->ChannelInterruptFlags = spell->GetSpellInterrupts() ? spell->GetSpellInterrupts()->ChannelInterruptFlags : 0;
-            old_spell_entry->DurationIndex = spell->DurationIndex;
-            old_spell_entry->maxstack = spell->GetSpellAuraOptions() ? spell->GetSpellAuraOptions()->StackAmount : 0;
-            old_spell_entry->CastingTimeIndex = spell->CastingTimeIndex;
-            old_spell_entry->powerType = spell->powerType;
-            old_spell_entry->rangeIndex = spell->rangeIndex;
-            old_spell_entry->speed = spell->speed;
-            old_spell_entry->RuneCostID = spell->RuneCostID;
-
-            old_spell_entry->spellPriority = 0;
-            old_spell_entry->StanceBarOrder =  0;
-            old_spell_entry->MinFactionID = 0;
-            old_spell_entry->MinReputation = 0;
-            old_spell_entry->RequiredAuraVision = 0;
-            old_spell_entry->custom_DiminishStatus = 0;            
-            old_spell_entry->modalNextSpell = 0;
-            
-            //custom setup
-            old_spell_entry->CustomFlags = 0;
-
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
-                old_spell_entry->EffectCustomFlag[i] = spell->GetSpellEffectIdByIndex(SpellEffectIndex(i));
-
-            old_spell_entry->SpellFactoryFunc = NULL;
-            old_spell_entry->AuraFactoryFunc = NULL;
-
-            old_spell_entry->custom_proc_interval = 0;
-            old_spell_entry->custom_BGR_one_buff_on_target = 0;
-            old_spell_entry->custom_BGR_one_buff_from_caster_on_self = 0;
-            old_spell_entry->custom_c_is_flags = 0;
-            old_spell_entry->custom_RankNumber = 0;
-            old_spell_entry->custom_NameHash = 0;
-            old_spell_entry->custom_ThreatForSpell = 0;
-            old_spell_entry->custom_ThreatForSpellCoef = 0;
-            old_spell_entry->custom_spell_coef_flags = 0;
-            old_spell_entry->custom_base_range_or_radius_sqr = 0;
-            old_spell_entry->cone_width = 0;
-            old_spell_entry->casttime_coef = 0;
-            old_spell_entry->fixed_dddhcoef = 0;
-            old_spell_entry->fixed_hotdotcoef = 0;
-            old_spell_entry->Dspell_coef_override = 0;
-            old_spell_entry->OTspell_coef_override = 0;
-            old_spell_entry->ai_target_type = 0;
-            old_spell_entry->custom_self_cast_only = false;
-            old_spell_entry->custom_apply_on_shapeshift_change = false;
-            old_spell_entry->custom_always_apply = false;
-            old_spell_entry->custom_is_melee_spell = false;
-            old_spell_entry->custom_is_ranged_spell = false;
-            old_spell_entry->custom_SchoolMask = 0;
         }
     }
 
@@ -441,7 +284,7 @@ DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, Spe
 {
     DBC::Structures::SpellEffectMap::const_iterator itr = sSpellEffectMap.find(spellId);
     if (itr == sSpellEffectMap.end())
-        return NULL;
+        return nullptr;
 
     return itr->second.effects[effect];
 }

@@ -373,302 +373,6 @@ enum ChannelInterruptFlags
     CHANNEL_INTERRUPT_ON_18 = 0x20000
 };
 
-enum Attributes // 0
-{
-    ATTRIBUTES_NULL                         = 0x00000000,
-    ATTRIBUTES_UNK2                         = 0x00000001,
-    ATTRIBUTES_RANGED                       = 0x00000002,   // related to ranged??
-    ATTRIBUTE_ON_NEXT_ATTACK                = 0x00000004,
-    ATTRIBUTES_UNK5                         = 0x00000008,   // ATTRIBUTES_UNUSED0
-    ATTRIBUTES_ABILITY                      = 0x00000010,
-    ATTRIBUTES_TRADESPELL                   = 0x00000020,   // Tradeskill recipies
-    ATTRIBUTES_PASSIVE                      = 0x00000040,
-    ATTRIBUTES_NO_VISUAL_AURA               = 0x00000080,   // not visible in spellbook or aura bar
-    ATTRIBUTES_NO_CAST                      = 0x00000100,   //seems to be afflicts pet
-    ATTRIBUTES_TARGET_MAINHAND              = 0x00000200,   // automatically select item from mainhand
-    ATTRIBUTES_ON_NEXT_SWING_2              = 0x00000400,   //completely the same as ATTRIBUTE_ON_NEXT_ATTACK for class spells. So difference somewhere in mob abilities.
-    ATTRIBUTES_UNK13                        = 0x00000800,
-    ATTRIBUTES_DAY_ONLY                     = 0x00001000,
-    ATTRIBUTES_NIGHT_ONLY                   = 0x00002000,
-    ATTRIBUTES_ONLY_INDOORS                 = 0x00004000,
-    ATTRIBUTES_ONLY_OUTDOORS                = 0x00008000,
-    ATTRIBUTES_NOT_SHAPESHIFT               = 0x00010000,
-    ATTRIBUTES_REQ_STEALTH                  = 0x00020000,
-    ATTRIBUTES_UNK20                        = 0x00040000,   //it's not : must be behind
-    ATTRIBUTES_LEVEL_DAMAGE_CALCULATION     = 0x00080000,
-    ATTRIBUTES_STOP_ATTACK                  = 0x00100000,   //switch off auto attack on use. Maim,Gouge,Disengage,Polymorph etc
-    ATTRIBUTES_CANT_BE_DPB                  = 0x00200000,   //can't be dodged, blocked, parried
-    ATTRIBUTES_UNK24                        = 0x00400000,   // related to ranged
-    ATTRIBUTES_DEAD_CASTABLE                = 0x00800000,   //castable while dead
-    ATTRIBUTES_MOUNT_CASTABLE               = 0x01000000,   //castable on mounts
-    ATTRIBUTES_TRIGGER_COOLDOWN             = 0x02000000,   //also requires atributes ex = 32 ?
-    ATTRIBUTES_NEGATIVE                     = 0x04000000,   // most negative spells have this attribute
-    ATTRIBUTES_CASTABLE_WHILE_SITTING       = 0x08000000,
-    ATTRIBUTES_REQ_OOC                      = 0x10000000,   // ATTRIBUTES_REQ_OUT_OF_COMBAT
-    ATTRIBUTES_IGNORE_INVULNERABILITY       = 0x20000000,   // debuffs that can't be removed by any spell and spells that can't be resisted in any case
-    ATTRIBUTES_UNK32                        = 0x40000000,   // seems like IS_DIMINISHING but some spells not there (f.e. Gouge)
-    ATTRIBUTES_CANT_CANCEL                  = 0x80000000,   // seems like aura is not removeable by CMSG_CANCEL_AURA
-};
-
-enum AttributesEx // 1
-{
-    ATTRIBUTESEX_NULL                       = 0x00000000,   // 2^x
-    ATTRIBUTESEX_UNK2                       = 0x00000001,   // 0, pet summonings
-    ATTRIBUTESEX_DRAIN_WHOLE_POWER          = 0x00000002,   // 1, Uses all power / health
-    ATTRIBUTESEX_CHANNELED_1                = 0x00000004,   // 2, Channeled
-    ATTRIBUTESEX_UNK5                       = 0x00000008,   // 3,
-    ATTRIBUTESEX_IGNORE_IN_FRONT            = 0x00000010,   // 4, ignore verification isInFront() in unit::strike
-    ATTRIBUTESEX_NOT_BREAK_STEALTH          = 0x00000020,   // 5, does not break stealth
-    ATTRIBUTESEX_CHANNELED_2                = 0x00000040,   // 6, Channeled - [POSSIBLY: dynamite, grenades from engineering etc..]
-    ATTRIBUTESEX_NEGATIVE                   = 0x00000080,   // 7,
-    ATTRIBUTESEX_REQ_OOC_TARGET             = 0x00000100,   // 8, Spell req target should not be in combat
-    ATTRIBUTESEX_UNK11                      = 0x00000200,   // 9,
-    ATTRIBUTESEX_NO_INITIAL_AGGRO           = 0x00000400,   // 10, guessed
-    ATTRIBUTESEX_UNK13                      = 0x00000800,   // 11,
-    ATTRIBUTESEX_UNK14                      = 0x00001000,   // 12, related to pickpocket
-    ATTRIBUTESEX_UNK15                      = 0x00002000,   // 13, related to remote control
-    ATTRIBUTESEX_UNK16                      = 0x00004000,   // 14,
-    ATTRIBUTESEX_DISPEL_AURAS_ON_IMMUNITY   = 0x00008000,   // 15, remove auras on immunity - something like "grant immunity"
-    ATTRIBUTESEX_UNAFFECTED_BY_SCHOOL_IMMUNE = 0x00010000,  // 16, unaffected by school immunity - something like "grant immunity" too
-    ATTRIBUTESEX_REMAIN_OOC                 = 0x00020000,   // 17,
-    ATTRIBUTESEX_UNK20                      = 0x00040000,   // 18,
-    ATTRIBUTESEX_UNK21                      = 0x00080000,   // 19,
-    ATTRIBUTESEX_REQ_COMBO_POINTS1          = 0x00100000,   // 20, related to "Finishing move" and "Instantly overpowers"
-    ATTRIBUTESEX_UNK23                      = 0x00200000,   // 21,
-    ATTRIBUTESEX_REQ_COMBO_POINTS2          = 0x00400000,   // 22, only related to "Finishing move"
-    ATTRIBUTESEX_UNK25                      = 0x00800000,   // 23, related to spells like "ClearAllBuffs"
-    ATTRIBUTESEX_UNK26                      = 0x01000000,   // 24, req fishing pole? FISHING SPELLS
-    ATTRIBUTESEX_UNK27                      = 0x02000000,   // 25, related to "Detect" spell
-    ATTRIBUTESEX_UNK28                      = 0x04000000,   // 26,
-    ATTRIBUTESEX_UNK29                      = 0x08000000,   // 27,
-    ATTRIBUTESEX_UNK30                      = 0x10000000,   // 28,
-    ATTRIBUTESEX_UNK31                      = 0x20000000,   // 29,
-    ATTRIBUTESEX_UNK32                      = 0x40000000,   // 30, Overpower
-    ATTRIBUTESEX_UNK33                      = 0x80000000,   // 31,
-};
-
-enum AttributesExB // 2
-{
-    ATTRIBUTESEXB_NULL                      = 0x00000000,   //
-    ATTRIBUTESEXB_UNK2                      = 0x00000001,   // 0
-    ATTRIBUTESEXB_UNK3                      = 0x00000002,   // 1, Can be used while stealthed
-    ATTRIBUTESEXB_UNK4                      = 0x00000004,   // 2, request pet maybe
-    ATTRIBUTESEXB_UNK5                      = 0x00000008,   // 3, something todo with temp enchanted items
-    ATTRIBUTESEXB_PARTY_EFFECTING_AURA      = 0x00000010,   // 4, Party affecting aura's
-    ATTRIBUTESEXB_ACTIVATE_AUTO_SHOT        = 0x00000020,   // 5, spell that enable's auto shoot
-    ATTRIBUTESEXB_UNK8                      = 0x00000040,   // 6, Polymorph spells
-    ATTRIBUTESEXB_UNK9                      = 0x00000080,   // 7,
-    ATTRIBUTESEXB_UNUSED1                   = 0x00000100,   // 8, not set in 3.0.3
-    ATTRIBUTESEXB_UNK11                     = 0x00000200,   // 9, used by 2 spells, 30421 | Nether Portal - Perseverence and  30466 | Nether Portal - Perseverence
-    ATTRIBUTESEXB_TAME_X                    = 0x00000400,   // 10, tame [creature]
-    ATTRIBUTESEXB_FUNNEL                    = 0x00000800,   // 11, only funnel spells
-    ATTRIBUTESEXB_UNK14                     = 0x00001000,   // 12, swipe / Cleave spells
-    ATTRIBUTESEXB_ENCHANT_OWN_ONLY          = 0x00002000,   // 13, no trade window targets, BoE items get soulbound to you
-    ATTRIBUTESEXB_SPELL_PLAYER_EVENT        = 0x00004000,   // 14, Player event's like logging in, finishing quests, triggering cinematic, being adored, Heartbroken etc
-    ATTRIBUTESEXB_UNUSED3                   = 0x00008000,   // 15, not set in 3.0.3
-    ATTRIBUTESEXB_CONTROL_UNIT              = 0x00010000,   // 16, PvP Controller, RC, Creature taming, Taming Lesson
-    ATTRIBUTESEXB_REQ_RANGED_WEAPON         = 0x00020000,   // 17, used by hunters shot and stings... Possibly triggers autoshot?
-    ATTRIBUTESEXB_REQ_DEAD_PET              = 0x00040000,   // 18,
-    ATTRIBUTESEXB_NOT_NEED_SHAPESHIFT       = 0x00080000,   // 19, does not necessarily need shapeshift
-    ATTRIBUTESEXB_REQ_BEHIND_TARGET         = 0x00100000,   // 20,
-    ATTRIBUTESEXB_UNK23                     = 0x00200000,   // 21,
-    ATTRIBUTESEXB_UNK24                     = 0x00400000,   // 22,
-    ATTRIBUTESEXB_UNK25                     = 0x00800000,   // 23,
-    ATTRIBUTESEXB_UNK26                     = 0x01000000,   // 24,
-    ATTRIBUTESEXB_UNK27                     = 0x02000000,   // 25,
-    ATTRIBUTESEXB_UNK28                     = 0x04000000,   // 26,
-    ATTRIBUTESEXB_UNK29                     = 0x08000000,   // 27, fishing spells and enchanting weapons
-    ATTRIBUTESEXB_UNK30                     = 0x10000000,   // 28, some secondairy spell triggers, especialy for lightning shield alike spells
-    ATTRIBUTESEXB_CANT_CRIT                 = 0x20000000,   // 29, spell can't crit
-    ATTRIBUTESEXB_UNK32                     = 0x40000000,   // 30,
-    ATTRIBUTESEXB_UNK33                     = 0x80000000,   // 31,
-};
-
-enum AttributesExC // 3
-{
-    FLAGS4_NULL                             = 0x00000000,
-    FLAGS4_UNK2                             = 0x00000001,
-    FLAGS4_UNK3                             = 0x00000002,
-    FLAGS4_UNK4                             = 0x00000004,
-    FLAGS4_UNK5                             = 0x00000008,
-    FLAGS4_UNK6                             = 0x00000010,   // ignor resurrection
-    FLAGS4_UNK7                             = 0x00000020,
-    FLAGS4_UNK8                             = 0x00000040,
-    FLAGS4_UNK9                             = 0x00000080,
-    FLAGS4_UNK10                            = 0x00000100,
-    FLAGS4_UNK11                            = 0x00000200,
-    FLAGS4_UNK12                            = 0x00000400,
-    FLAGS4_BG_ONLY                          = 0x00000800,
-    FLAGS4_UNK14                            = 0x00001000,
-    FLAGS4_UNK15                            = 0x00002000,
-    FLAGS4_UNK16                            = 0x00004000,
-    FLAGS4_PLAYER_RANGED_SPELLS             = 0x00008000,
-    FLAGS4_UNK18                            = 0x00010000,
-    FLAGS4_UNK19                            = 0x00020000,
-    FLAGS4_UNK20                            = 0x00040000,
-    FLAGS4_UNK21                            = 0x00080000,   // e.g. Totemic mastery
-    CAN_PERSIST_AND_CASTED_WHILE_DEAD       = 0x00100000,
-    FLAGS4_UNK23                            = 0x00200000,
-    FLAGS4_PLAYER_REQUIRED_WAND             = 0x00400000,   // required wand
-    FLAGS4_UNK25                            = 0x00800000,
-    FLAGS4_TYPE_OFFHAND                     = 0x01000000,   // required offhand
-    FLAGS4_NO_HEALING_BONUS                 = 0x02000000,
-    FLAGS4_CAN_PROC_ON_TRIGGERED            = 0x04000000,
-    FLAGS4_DRAIN_SOUL                       = 0x08000000,   // just drain soul has this flag
-    FLAGS4_UNK30                            = 0x10000000,
-    FLAGS4_NO_DONE_BONUS                    = 0x20000000,   ///\todo used for checking spellpower/damage mods
-    FLAGS4_NO_DISPLAY_RANGE                 = 0x40000000,   // tooltip dont show range
-    FLAGS4_UNK33                            = 0x80000000,
-};
-
-enum AttributesExD  // 4
-{
-    SP_ATTR_EX_D_NULL                       = 0x00000000,
-    SP_ATTR_EX_D_UNK1                       = 0x00000001,
-    SP_ATTR_EX_D_PROCCHANCE_COMBOBASED      = 0x00000002,
-    SP_ATTR_EX_D_UNK2                       = 0x00000004,
-    SP_ATTR_EX_D_UNK3                       = 0x00000008,
-    SP_ATTR_EX_D_UNK4                       = 0x00000010,
-    SP_ATTR_EX_D_UNK5                       = 0x00000020,
-    SP_ATTR_EX_D_NOT_STEALABLE              = 0x00000040,
-    SP_ATTR_EX_D_TRIGGERED                  = 0x00000080,   // spells forced to be triggered
-    SP_ATTR_EX_D_UNK6                       = 0x00000100,
-    SP_ATTR_EX_D_TRIGGER_ACTIVATE           = 0x00000200,   // trigger activate (Deep Freeze...)
-    SP_ATTR_EX_D_UNK7                       = 0x00000400,
-    SP_ATTR_EX_D_UNK8                       = 0x00000800,
-    SP_ATTR_EX_D_UNK9                       = 0x00001000,
-    SP_ATTR_EX_D_UNK10                      = 0x00002000,
-    SP_ATTR_EX_D_NOT_BREAK_AURAS            = 0x00004000,   // not breake auras by damage from this spell
-    SP_ATTR_EX_D_UNK11                      = 0x00008000,
-    SP_ATTR_EX_D_NOT_IN_ARENA               = 0x00010000,   // can not be used in arenas
-    SP_ATTR_EX_D_UNK12                      = 0x00020000,   // can be used in arenas
-    SP_ATTR_EX_D_UNK13                      = 0x00040000,
-    SP_ATTR_EX_D_UNK14                      = 0x00080000,
-    SP_ATTR_EX_D_UNK15                      = 0x00100000,
-    SP_ATTR_EX_D_UNK16                      = 0x00200000,   // pala aura, dk presence, dudu form, warrior stance, shadowform, hunter track
-    SP_ATTR_EX_D_UNK17                      = 0x00400000,
-    SP_ATTR_EX_D_UNK18                      = 0x00800000,
-    SP_ATTR_EX_D_UNK19                      = 0x01000000,
-    SP_ATTR_EX_D_NOT_USED                   = 0x02000000,
-    SP_ATTR_EX_D_ONLY_IN_OUTLANDS           = 0x04000000,   // can be used only in outland
-    SP_ATTR_EX_D_UNK20                      = 0x08000000,
-    SP_ATTR_EX_D_UNK21                      = 0x10000000,
-    SP_ATTR_EX_D_UNK22                      = 0x20000000,
-    SP_ATTR_EX_D_UNK23                      = 0x40000000,
-    SP_ATTR_EX_D_UNK24                      = 0x80000000,
-};
-
-enum AttributesExE // 5
-{
-    FLAGS6_NULL                             = 0x00000000,
-    FLAGS6_UNK2                             = 0x00000001,
-    FLAGS6_REAGENT_REMOVAL                  = 0x00000002,
-    FLAGS6_UNK4                             = 0x00000004,
-    FLAGS6_USABLE_WHILE_STUNNED             = 0x00000008,   // usable while stunned
-    FLAGS6_UNK6                             = 0x00000010,
-    FLAGS6_SINGLE_TARGET_AURA               = 0x00000020,   // only one target can be applied
-    FLAGS6_UNK8                             = 0x00000040,
-    FLAGS6_UNK9                             = 0x00000080,
-    FLAGS6_UNK10                            = 0x00000100,
-    FLAGS6_UNK11                            = 0x00000200,   // periodic aura apply
-    FLAGS6_HIDE_DURATION                    = 0x00000400,   // no duration for client
-    FLAGS6_UNK13                            = 0x00000800,
-    FLAGS6_UNK14                            = 0x00001000,
-    FLAGS6_UNK15                            = 0x00002000,   // haste effect duration
-    FLAGS6_UNK16                            = 0x00004000,
-    FLAGS6_UNK17                            = 0x00008000,
-    FLAGS6_ITEM_CLASS_CHECK                 = 0x00010000,   ///\todo this allows spells with EquippedItemClass to affect spells from other items if the required item is equipped
-    FLAGS6_USABLE_WHILE_FEARED              = 0x00020000,   // usable while feared
-    FLAGS6_USABLE_WHILE_CONFUSED            = 0x00040000,   // usable while confused
-    FLAGS6_UNK21                            = 0x00080000,
-    FLAGS6_UNK22                            = 0x00100000,
-    FLAGS6_UNK23                            = 0x00200000,
-    FLAGS6_UNK24                            = 0x00400000,
-    FLAGS6_UNK25                            = 0x00800000,
-    FLAGS6_UNK26                            = 0x01000000,
-    FLAGS6_UNK27                            = 0x02000000,
-    FLAGS6_UNK28                            = 0x04000000,
-    FLAGS6_UNK29                            = 0x08000000,
-    FLAGS6_UNK30                            = 0x10000000,
-    FLAGS6_UNK31                            = 0x20000000,
-    FLAGS6_UNK32                            = 0x40000000,
-    FLAGS6_UNK33                            = 0x80000000,
-};
-
-enum AttributesExF // 6
-{
-    FLAGS7_NULL                             = 0x00000000,
-    FLAGS7_UNK2                             = 0x00000001,   // cooldown in tooltyp (not displayed)
-    FLAGS7_UNUSED1                          = 0x00000002,   // only arena
-    FLAGS7_UNK4                             = 0x00000004,
-    FLAGS7_UNK5                             = 0x00000008,
-    FLAGS7_UNK6                             = 0x00000010,
-    FLAGS7_UNK7                             = 0x00000020,
-    FLAGS7_UNK8                             = 0x00000040,
-    FLAGS7_UNK9                             = 0x00000080,
-    FLAGS7_UNK10                            = 0x00000100,
-    FLAGS7_UNK11                            = 0x00000200,
-    FLAGS7_UNK12                            = 0x00000400,
-    FLAGS7_UNK13                            = 0x00000800,   // not in raid/instances
-    FLAGS7_UNUSED4                          = 0x00001000,   // castable on vehicle
-    FLAGS7_UNK15                            = 0x00002000,
-    FLAGS7_UNUSED5                          = 0x00004000,
-    FLAGS7_UNUSED6                          = 0x00008000,   // 54368, 67892
-    FLAGS7_UNUSED7                          = 0x00010000,
-    FLAGS7_UNK19                            = 0x00020000,   // Mountspells?
-    FLAGS7_CAST_BY_CHARMER                  = 0x00040000,
-    FLAGS7_UNK21                            = 0x00080000,
-    FLAGS7_UNK22                            = 0x00100000,
-    FLAGS7_UNK23                            = 0x00200000,
-    FLAGS7_UNK24                            = 0x00400000,
-    FLAGS7_UNK25                            = 0x00800000,
-    FLAGS7_UNK26                            = 0x01000000,
-    FLAGS7_UNK27                            = 0x02000000,
-    FLAGS7_UNK28                            = 0x04000000,
-    FLAGS7_UNK29                            = 0x08000000,
-    FLAGS7_UNK30                            = 0x10000000,
-    FLAGS7_UNK31                            = 0x20000000,
-    FLAGS7_UNK32                            = 0x40000000,
-    FLAGS7_UNK33                            = 0x80000000,
-};
-
-enum AttributesExG // 7
-{
-    SP_ATTR_EX_G_NULL                       = 0x00000000,
-    SP_ATTR_EX_G_UNK1                       = 0x00000001,
-    SP_ATTR_EX_G_UNK2                       = 0x00000002,
-    SP_ATTR_EX_G_UNK3                       = 0x00000004,
-    SP_ATTR_EX_G_IS_CHEAT_SPELL             = 0x00000008,
-    SP_ATTR_EX_G_UNK5                       = 0x00000010,
-    SP_ATTR_EX_G_UNK6                       = 0x00000020,   // shaman player totem summon?
-    SP_ATTR_EX_G_UNK7                       = 0x00000040,
-    SP_ATTR_EX_G_UNK8                       = 0x00000080,
-    SP_ATTR_EX_G_UNK9                       = 0x00000100,
-    SP_ATTR_EX_G_UNK10                      = 0x00000200,
-    SP_ATTR_EX_G_UNK11                      = 0x00000400,
-    SP_ATTR_EX_G_INTERRUPT_NPC              = 0x00000800,   // non player character casts interruption
-    SP_ATTR_EX_G_UNK13                      = 0x00001000,
-    SP_ATTR_EX_G_UNK14                      = 0x00002000,
-    SP_ATTR_EX_G_UNK15                      = 0x00004000,
-    SP_ATTR_EX_G_UNK16                      = 0x00008000,
-    SP_ATTR_EX_G_UNK17                      = 0x00010000,
-    SP_ATTR_EX_G_UNK18                      = 0x00020000,
-    SP_ATTR_EX_G_UNK19                      = 0x00040000,
-    SP_ATTR_EX_G_UNK20                      = 0x00080000,
-    SP_ATTR_EX_G_UNK21                      = 0x00100000,
-    SP_ATTR_EX_G_UNK22                      = 0x00200000,
-    SP_ATTR_EX_G_UNK23                      = 0x00400000,
-    SP_ATTR_EX_G_UNK24                      = 0x00800000,
-    SP_ATTR_EX_G_UNK25                      = 0x01000000,
-    SP_ATTR_EX_G_UNK26                      = 0x02000000,
-    SP_ATTR_EX_G_UNK27                      = 0x04000000,
-    SP_ATTR_EX_G_UNK28                      = 0x08000000,
-    SP_ATTR_EX_G_UNK29                      = 0x10000000,
-    SP_ATTR_EX_G_UNK30                      = 0x20000000,
-    SP_ATTR_EX_G_UNK31                      = 0x40000000,
-    SP_ATTR_EX_G_UNK32                      = 0x80000000,
-};
-
 enum SpellCustomFlags
 {
     CUSTOM_FLAG_SPELL_REQUIRES_COMBAT       = 0x1
@@ -1031,7 +735,27 @@ enum SpellEffects
     SPELL_EFFECT_UNKNOWN38,                 //    160
     SPELL_EFFECT_LEARN_SPEC,                //    161
     SPELL_EFFECT_ACTIVATE_SPEC,             //    162
-    TOTAL_SPELL_EFFECTS,                    //    163
+    SPELL_EFFECT_UNK_163,
+    SPELL_EFFECT_UNK_164,
+    SPELL_EFFECT_UNK_165,
+    SPELL_EFFECT_UNK_166,
+    SPELL_EFFECT_UNK_167,
+    SPELL_EFFECT_UNK_168,
+    SPELL_EFFECT_UNK_169,
+    SPELL_EFFECT_UNK_170,
+    SPELL_EFFECT_UNK_171,
+    SPELL_EFFECT_UNK_172,
+    SPELL_EFFECT_UNK_173,
+    SPELL_EFFECT_UNK_174,
+    SPELL_EFFECT_UNK_175,
+    SPELL_EFFECT_UNK_176,
+    SPELL_EFFECT_UNK_177,
+    SPELL_EFFECT_UNK_178,
+    SPELL_EFFECT_UNK_179,
+    SPELL_EFFECT_UNK_180,
+    SPELL_EFFECT_UNK_181,
+    SPELL_EFFECT_UNK_182,
+    TOTAL_SPELL_EFFECTS,                    //    183
 };
 
 // target type flags
@@ -1252,9 +976,9 @@ inline bool CanAgroHash(uint32 spellhashname)
 //  Returns false otherwise.
 //
 ////////////////////////////////////////////////////////////////////////////////
-bool IsDamagingSpell(OLD_SpellEntry* sp);
+bool IsDamagingSpell(SpellInfo* sp);
 
-inline uint32 IsHealingSpell(OLD_SpellEntry* sp)
+inline uint32 IsHealingSpell(SpellInfo* sp)
 {
     switch(sp->Effect[0])
     {
@@ -1649,7 +1373,7 @@ typedef enum
 } SpellEffectTarget;
 
 
-inline bool HasTargetType(OLD_SpellEntry* sp, uint32 ttype)
+inline bool HasTargetType(SpellInfo* sp, uint32 ttype)
 {
     if (
         sp->EffectImplicitTargetA[0] == ttype ||
@@ -1663,7 +1387,7 @@ inline bool HasTargetType(OLD_SpellEntry* sp, uint32 ttype)
     return false;
 }
 
-inline int GetAiTargetType(OLD_SpellEntry* sp)
+inline int GetAiTargetType(SpellInfo* sp)
 {
     /*  this is not good as one spell effect can target self and other one an enemy,
         maybe we should make it for each spell effect or use as flags */
@@ -1720,7 +1444,7 @@ inline int GetAiTargetType(OLD_SpellEntry* sp)
     return TTYPE_NULL;
 }
 
-inline bool IsTargetingStealthed(OLD_SpellEntry* sp)
+inline bool IsTargetingStealthed(SpellInfo* sp)
 {
     if (HasTargetType(sp, EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS) ||
         HasTargetType(sp, EFF_TARGET_ALL_ENEMIES_AROUND_CASTER) ||
@@ -1755,7 +1479,7 @@ inline bool IsTargetingStealthed(OLD_SpellEntry* sp)
     return 0;
 }
 
-inline bool IsRequireCooldownSpell(OLD_SpellEntry* sp)
+inline bool IsRequireCooldownSpell(SpellInfo* sp)
 {
     if ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN && sp->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH)     //rogue cold blood
         || (sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN && (!sp->AttributesEx || sp->AttributesEx & ATTRIBUTESEX_REMAIN_OOC)))
@@ -1889,7 +1613,7 @@ class SERVER_DECL Spell : public EventableObject
     public:
 
         friend class DummySpellHandler;
-        Spell(Object* Caster, OLD_SpellEntry* info, bool triggered, Aura* aur);
+        Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
         ~Spell();
 
         int32 event_GetInstanceID() { return m_caster->GetInstanceID(); }
@@ -1980,7 +1704,7 @@ class SERVER_DECL Spell : public EventableObject
         void AddCooldown();
         void AddStartCooldown();
         //
-        uint8 GetErrorAtShapeshiftedCast(OLD_SpellEntry* spellInfo, uint32 form);
+        uint8 GetErrorAtShapeshiftedCast(SpellInfo* spellInfo, uint32 form);
 
 
         bool Reflect(Unit* refunit);
@@ -2012,7 +1736,7 @@ class SERVER_DECL Spell : public EventableObject
         // Zyres: Not called.
         //void writeAmmoToPacket(WorldPacket* data);
         uint32 pSpellId;
-        OLD_SpellEntry* ProcedOnSpell; //some spells need to know the origins of the proc too
+        SpellInfo* ProcedOnSpell; //some spells need to know the origins of the proc too
         SpellCastTargets m_targets;
         SpellExtraError m_extraError;
 
@@ -2228,12 +1952,12 @@ class SERVER_DECL Spell : public EventableObject
         bool IsAspect();
         bool IsSeal();
 
-        inline OLD_SpellEntry* GetProto() { return (m_spellInfo_override == NULL) ? m_spellInfo : m_spellInfo_override; }
+        inline SpellInfo* GetProto() { return (m_spellInfo_override == NULL) ? m_spellInfo : m_spellInfo_override; }
         void InitProtoOverride()
         {
             if (m_spellInfo_override != NULL)
                 return;
-            m_spellInfo_override = dbcSpell.CreateCopy(m_spellInfo);
+            m_spellInfo_override = sSpellCustomizations.GetSpellInfo(m_spellInfo->Id);
         }
         uint32 GetDuration()
         {
@@ -2343,7 +2067,7 @@ class SERVER_DECL Spell : public EventableObject
             return dmg;
         }
 
-        inline static uint32 GetMechanic(OLD_SpellEntry* sp)
+        inline static uint32 GetMechanic(SpellInfo* sp)
         {
             if (sp->MechanicsType)
                 return sp->MechanicsType;
@@ -2506,18 +2230,18 @@ class SERVER_DECL Spell : public EventableObject
 
     public:
 
-        OLD_SpellEntry* m_spellInfo;
-        OLD_SpellEntry* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
+        SpellInfo* m_spellInfo;
+        SpellInfo* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
 
 };
 
-void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, OLD_SpellEntry* spell);
-void UnapplyDiminishingReturnTimer(Unit* Target, OLD_SpellEntry* spell);
+void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellInfo* spell);
+void UnapplyDiminishingReturnTimer(Unit* Target, SpellInfo* spell);
 
 uint32 GetDiminishingGroup(uint32 NameHash);
-uint32 GetSpellDuration(OLD_SpellEntry* sp, Unit* caster = NULL);
+uint32 GetSpellDuration(SpellInfo* sp, Unit* caster = NULL);
 
 //Logs if the spell doesn't exist, using Debug loglevel.
-OLD_SpellEntry* CheckAndReturnSpellEntry(uint32 spellid);
+SpellInfo* CheckAndReturnSpellEntry(uint32 spellid);
 
 #endif // _SPELL_H

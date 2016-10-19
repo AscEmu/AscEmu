@@ -127,7 +127,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 
     SpellCastTargets targets(recvPacket, _player->GetGUID());
 
-    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellId);
+    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
     if (spellInfo == NULL)
     {
         LOG_ERROR("WORLD: unknown spell id %i", spellId);
@@ -319,7 +319,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     {
         cast_spell_id = sp->SpellID;
 
-        OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(cast_spell_id);
+        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(cast_spell_id);
         if (spellInfo == nullptr)
             return;
 
@@ -344,7 +344,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     recvPacket >> missileflag;
 
     // check for spell id
-    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellId);
+    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
 
     if (!spellInfo)
     {
@@ -356,7 +356,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         return;
 
     LOG_DETAIL("WORLD: got cast spell packet, spellId - %i (%s), data length = %i",
-               spellId, spellInfo->Name, recvPacket.size());
+               spellId, spellInfo->Name.c_str(), recvPacket.size());
 
     // Cheat Detection only if player and not from an item
     // this could fuck up things but meh it's needed ALOT of the newbs are using WPE now
@@ -417,7 +417,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
                     LOG_DEBUG("Cancelling auto-shot cast because targets.m_unitTarget is null!");
                     return;
                 }
-                OLD_SpellEntry* sp = dbcSpell.LookupEntry(spellid);
+                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
 
                 _player->m_AutoShotSpell = sp;
                 _player->m_AutoShotDuration = duration;
@@ -491,7 +491,7 @@ void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
 //        _player->m_currentSpell->cancel();
 //    else
 //    {
-//        OLD_SpellEntry* info = dbcSpell.LookupEntryForced(spellId);
+//        SpellInfo* info = sSpellCustomizations.GetSpellInfo(spellId);
 //        if (info == nullptr)
 //            return;
 //
@@ -531,10 +531,7 @@ void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-        //sLog.outString("Received CMSG_CANCEL_AUTO_REPEAT_SPELL message.");
-        //on original we automatically enter combat when creature got close to us
-        //	GetPlayer()->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
-        GetPlayer()->m_onAutoShot = false;
+    GetPlayer()->m_onAutoShot = false;
 }
 
 void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
@@ -552,7 +549,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
     recvPacket >> spellid;
     recvPacket >> castflags;
 
-    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
+    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
     if (sp == NULL)
         return;
     // Summoned Elemental's Freeze
@@ -687,7 +684,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
 //
 //    Log.Debug("HandleUpdateProjectilePosition", "Recieved spell: %u, count: %i, position: x(%f) y(%f) z(%f)", spellId, castCount, x, y, z);
 //
-//    OLD_SpellEntry* spell = CheckAndReturnSpellEntry(spellId);
+//    SpellInfo* spell = CheckAndReturnSpellEntry(spellId);
 //    if (!spell || spell->ai_target_type == TARGET_FLAG_DEST_LOCATION)
 //        return;
 //

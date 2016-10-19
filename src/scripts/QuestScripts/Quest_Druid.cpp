@@ -247,7 +247,7 @@ class MoongladeQuest : public QuestScript
         void OnQuestStart(Player* mTarget, QuestLogEntry* qLogEntry)
         {
             if(!mTarget->HasSpell(19027))
-                mTarget->CastSpell(mTarget, dbcSpell.LookupEntry(19027), true);
+                mTarget->CastSpell(mTarget, sSpellCustomizations.GetSpellInfo(19027), true);
         }
 };
 

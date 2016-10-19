@@ -252,7 +252,7 @@ bool ChatHandler::HandleKillCommand(const char* args, WorldSession* m_session)
                 case TYPEID_UNIT:
                 {
                     auto creature = static_cast<Creature*>(unit_target);
-                    auto kill_spell = dbcSpell.LookupEntryForced(5);
+                    auto kill_spell = sSpellCustomizations.GetSpellInfo(5);
                     if (kill_spell == nullptr)
                         return true;
 

@@ -578,7 +578,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_TIME_SYNC_RESP].status = STATUS_AUTHED;
 
     //// Queries
-    //WorldPacketHandlers[MSG_CORPSE_QUERY].handler = &WorldSession::HandleCorpseQueryOpcode;
+    WorldPacketHandlers[MSG_CORPSE_QUERY].handler = &WorldSession::HandleCorpseQueryOpcode;
     WorldPacketHandlers[CMSG_NAME_QUERY].handler = &WorldSession::HandleNameQueryOpcode;
     WorldPacketHandlers[CMSG_QUERY_TIME].handler = &WorldSession::HandleQueryTimeOpcode;
     WorldPacketHandlers[CMSG_CREATURE_QUERY].handler = &WorldSession::HandleCreatureQueryOpcode;
@@ -798,7 +798,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_REPAIR_ITEM].handler = &WorldSession::HandleRepairItemOpcode;
     //WorldPacketHandlers[CMSG_AUTOBANK_ITEM].handler = &WorldSession::HandleAutoBankItemOpcode;
     //WorldPacketHandlers[CMSG_AUTOSTORE_BANK_ITEM].handler = &WorldSession::HandleAutoStoreBankItemOpcode;
-    //WorldPacketHandlers[CMSG_CANCEL_TEMP_ENCHANTMENT].handler = &WorldSession::HandleCancelTemporaryEnchantmentOpcode;
+    WorldPacketHandlers[CMSG_CANCEL_TEMP_ENCHANTMENT].handler = &WorldSession::HandleCancelTemporaryEnchantmentOpcode;
     //WorldPacketHandlers[CMSG_SOCKET_GEMS].handler = &WorldSession::HandleInsertGemOpcode;
     //WorldPacketHandlers[CMSG_WRAP_ITEM].handler = &WorldSession::HandleWrapItemOpcode;
     //WorldPacketHandlers[CMSG_ITEMREFUNDINFO].handler = &WorldSession::HandleItemRefundInfoOpcode;
@@ -1020,6 +1020,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_WORLD_STATE_UI_TIMER_UPDATE].handler = &WorldSession::HandleWorldStateUITimerUpdate;
     WorldPacketHandlers[CMSG_SET_TAXI_BENCHMARK_MODE].handler = &WorldSession::HandleSetTaxiBenchmarkOpcode;
     //WorldPacketHandlers[CMSG_UNLEARN_SKILL].handler = &WorldSession::HandleUnlearnSkillOpcode;
+    WorldPacketHandlers[CMSG_REQUEST_CEMETERY_LIST].handler = &WorldSession::HandleRequestCemeteryListOpcode;
 
     //// Chat
     WorldPacketHandlers[CMSG_CHAT_IGNORED].handler = &WorldSession::HandleChatIgnoredOpcode;

@@ -1111,60 +1111,12 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
 
     LOG_DETAIL("WORLD: Received CMSG_RECLAIM_CORPSE");
 
-    ObjectGuid guid;
-    
-    guid[1] = recv_data.readBit();
-    guid[5] = recv_data.readBit();
-    guid[7] = recv_data.readBit();
-    guid[2] = recv_data.readBit();
-    guid[6] = recv_data.readBit();
-    guid[3] = recv_data.readBit();
-    guid[0] = recv_data.readBit();
-    guid[4] = recv_data.readBit();
-    
-    recv_data.ReadByteSeq(guid[2]);
-    recv_data.ReadByteSeq(guid[5]);
-    recv_data.ReadByteSeq(guid[4]);
-    recv_data.ReadByteSeq(guid[6]);
-    recv_data.ReadByteSeq(guid[1]);
-    recv_data.ReadByteSeq(guid[0]);
-    recv_data.ReadByteSeq(guid[7]);
-    recv_data.ReadByteSeq(guid[3]);
+    uint64 guid;
+    recv_data >> guid;
 
-    if (guid == 0)
-        return;
-
-    Corpse* pCorpse = objmgr.GetCorpse((uint32)guid);
+    Corpse* pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
     if (pCorpse == nullptr)
         return;
-
-    // Check that we're reviving from a corpse, and that corpse is associated with us.
-    if (GET_LOWGUID_PART(pCorpse->GetOwner()) != _player->GetLowGUID() && pCorpse->GetUInt32Value(CORPSE_FIELD_FLAGS) == 5)
-    {
-        WorldPacket data(SMSG_RESURRECT_FAILED, 4);
-        data << uint32(1); // this is a real guess!
-        SendPacket(&data);
-        return;
-    }
-
-    // Check we are actually in range of our corpse
-    if (pCorpse->GetDistance2dSq(_player) > CORPSE_MINIMUM_RECLAIM_RADIUS_SQ)
-    {
-        WorldPacket data(SMSG_RESURRECT_FAILED, 4);
-        data << uint32(1);
-        SendPacket(&data);
-        return;
-    }
-
-    // Check death clock before resurrect they must wait for release to complete
-    // cebernic: changes for better logic
-    if (time(NULL) < pCorpse->GetDeathClock() + CORPSE_RECLAIM_TIME)
-    {
-        WorldPacket data(SMSG_RESURRECT_FAILED, 4);
-        data << uint32(1);
-        SendPacket(&data);
-        return;
-    }
 
     GetPlayer()->ResurrectPlayer();
     GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);
@@ -1578,7 +1530,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //    recv_data >> guid;
 //    SpellCastTargets targets;
 //    Spell* spell = NULL;
-//    OLD_SpellEntry* spellInfo = NULL;
+//    SpellInfo* spellInfo = NULL;
 //    LOG_DEBUG("WORLD: CMSG_GAMEOBJ_USE: [GUID %d]", guid);
 //
 //    GameObject* obj = _player->GetMapMgr()->GetGameObject((uint32)guid);
@@ -1622,7 +1574,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //        break;
 //        case GAMEOBJECT_TYPE_CHEST:     //cast da spell
 //        {
-//            spellInfo = dbcSpell.LookupEntry(OPEN_CHEST);
+//            spellInfo = sSpellCustomizations.GetSpellInfo(OPEN_CHEST);
 //            spell = sSpellFactoryMgr.NewSpell(plyr, spellInfo, true, NULL);
 //            _player->m_currentSpell = spell;
 //            targets.m_unitTarget = obj->GetGUID();
@@ -1816,13 +1768,13 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //                    }
 //                }
 //
-//                OLD_SpellEntry* info = nullptr;
+//                SpellInfo* info = nullptr;
 //                if (gameobject_info->entry == 36727 || gameobject_info->entry == 194108)   // summon portal
 //                {
 //                    if (!ritual_obj->GetRitual()->GetTargetGUID() == 0)
 //                        return;
 //
-//                    info = dbcSpell.LookupEntryForced(gameobject_info->summoning_ritual.spell_id);
+//                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
 //                    if (info == nullptr)
 //                        break;
 //
@@ -1846,7 +1798,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //                    if (!psacrifice || !pCaster)
 //                        return;
 //
-//                    info = dbcSpell.LookupEntryForced(gameobject_info->summoning_ritual.caster_target_spell);
+//                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.caster_target_spell);
 //                    if (!info)
 //                        break;
 //
@@ -1855,7 +1807,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //                    spell->prepare(&targets);
 //
 //                    // summons demon
-//                    info = dbcSpell.LookupEntry(gameobject_info->summoning_ritual.spell_id);
+//                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
 //                    spell = sSpellFactoryMgr.NewSpell(pCaster, info, true, NULL);
 //                    SpellCastTargets targets2;
 //                    targets2.m_unitTarget = pCaster->GetGUID();
@@ -1871,7 +1823,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //                    if (!pleader)
 //                        return;
 //
-//                    info = dbcSpell.LookupEntry(gameobject_info->summoning_ritual.spell_id);
+//                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
 //                    spell = sSpellFactoryMgr.NewSpell(pleader, info, true, NULL);
 //                    SpellCastTargets targets2(plr->GetGUID());
 //                    spell->prepare(&targets2);
@@ -1881,7 +1833,7 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //                }
 //                else if (gameobject_info->entry == 186811 || gameobject_info->entry == 181622)
 //                {
-//                    info = dbcSpell.LookupEntryForced(gameobject_info->summoning_ritual.spell_id);
+//                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
 //                    if (info == NULL)
 //                        return;
 //
@@ -2240,7 +2192,7 @@ void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)
 //    uint32 self_res_spell = _player->GetUInt32Value(PLAYER_SELF_RES_SPELL);
 //    if (self_res_spell)
 //    {
-//        OLD_SpellEntry* sp = dbcSpell.LookupEntry(self_res_spell);
+//        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(self_res_spell);
 //        Spell* s = sSpellFactoryMgr.NewSpell(_player, sp, true, NULL);
 //        SpellCastTargets tgt;
 //        tgt.m_unitTarget = _player->GetGUID();
@@ -2895,3 +2847,29 @@ void WorldSession::HandleRequestHotfix(WorldPacket& recv_data)
         }
     }
 }
+
+void WorldSession::HandleRequestCemeteryListOpcode(WorldPacket& recv_data)
+{
+    Log.Debug("WorldSession::HandleRequestCemeteryListOpcode", "Received CMSG_REQUEST_CEMETERY_LIST");
+
+    QueryResult* result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->GetTeam());
+
+    if (result)
+    {
+        WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE);
+        data.writeBit(false);               //unk bit
+        data.flushBits();
+        data.writeBits(result->GetRowCount(), 24);
+        data.flushBits();
+
+        do
+        {
+            Field* field = result->Fetch();
+            data << uint32(field[0].GetUInt32());
+        } while (result->NextRow());
+        delete result;
+
+        SendPacket(&data);
+    }
+}
+

@@ -16,8 +16,8 @@ int32 DBC::Structures::SpellEntry::CalculateSimpleValue(SpellEffectIndex eff) co
 
 DBC::Structures::ClassFamilyMask const& DBC::Structures::SpellEntry::GetEffectSpellClassMask(SpellEffectIndex eff) const
 {
-    if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
-        return effectEntry->EffectSpellClassMask;
+    /*if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+        return effectEntry->EffectSpellClassMask;*/
 
     static ClassFamilyMask const emptyCFM;
 

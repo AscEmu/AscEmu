@@ -24,8 +24,8 @@
 void CreateDummySpell(uint32 id)
 {
     const char* name = "Dummy Trigger";
-    OLD_SpellEntry* sp = new OLD_SpellEntry;
-    memset(sp, 0, sizeof(OLD_SpellEntry));
+    SpellInfo* sp = new SpellInfo;
+    memset(sp, 0, sizeof(SpellInfo));
     sp->Id = id;
     sp->Attributes = 384;
     sp->AttributesEx = 268435456;
@@ -38,12 +38,10 @@ void CreateDummySpell(uint32 id)
     sp->EffectImplicitTargetA[0] = 25;
     sp->custom_NameHash = crc32((const unsigned char*)name, (unsigned int)strlen(name));
     sp->dmg_multiplier[0] = 1.0f;
-    sp->StanceBarOrder = -1;
-    dbcSpell.SetRow(id, sp);
     sWorld.dummyspells.push_back(sp);
 }
 
-void Modify_EffectBasePoints(OLD_SpellEntry* sp)
+void Modify_EffectBasePoints(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
@@ -82,7 +80,7 @@ void Modify_EffectBasePoints(OLD_SpellEntry* sp)
         sp->EffectBasePoints[0] = 40;
 }
 
-void Set_missing_spellLevel(OLD_SpellEntry* sp)
+void Set_missing_spellLevel(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
@@ -416,7 +414,7 @@ void Set_missing_spellLevel(OLD_SpellEntry* sp)
 
             if (teachspell)
             {
-                OLD_SpellEntry* spellInfo;
+                SpellInfo* spellInfo;
                 spellInfo = CheckAndReturnSpellEntry(teachspell);
                 spellInfo->spellLevel = new_level;
                 sp->spellLevel = new_level;
@@ -425,7 +423,7 @@ void Set_missing_spellLevel(OLD_SpellEntry* sp)
     }
 }
 
-void Modify_AuraInterruptFlags(OLD_SpellEntry* sp)
+void Modify_AuraInterruptFlags(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
@@ -447,7 +445,7 @@ void Modify_AuraInterruptFlags(OLD_SpellEntry* sp)
     }
 }
 
-void Modify_RecoveryTime(OLD_SpellEntry* sp)
+void Modify_RecoveryTime(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
@@ -626,25 +624,23 @@ void ApplyNormalFixes()
 {
     //Updating spell.dbc
 
-    Log.Success("World", "Processing %u spells...", dbcSpell.GetNumRows());
+    Log.Success("World", "Processing %u spells...", sSpellCustomizations.GetSpellInfoStore()->size());
 
     //checking if the DBCs have been extracted from an english client, based on namehash of spell 4, the first with a different name in non-english DBCs
-    OLD_SpellEntry* sp = dbcSpell.LookupEntry(4);
+    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(4);
     if (sp == nullptr)
         return;
 
-    if (crc32((const unsigned char*)sp->Name, (unsigned int)strlen(sp->Name)) != SPELL_HASH_WORD_OF_RECALL_OTHER)
+    if (crc32((const unsigned char*)sp->Name.c_str(), (unsigned int)strlen(sp->Name.c_str())) != SPELL_HASH_WORD_OF_RECALL_OTHER)
     {
         Log.LargeErrorMessage("You are using DBCs extracted from an unsupported client.", "ArcEmu supports only enUS and enGB!!!", NULL);
         abort();
     }
 
-    uint32 cnt = dbcSpell.GetNumRows();
-
-    for (uint32 x = 0; x < cnt; x++)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
         // Read every SpellEntry row
-        sp = dbcSpell.LookupEntry(x);
+        sp = sSpellCustomizations.GetSpellInfo(it->first);
         if (sp == nullptr)
             continue;
 
@@ -653,10 +649,10 @@ void ApplyNormalFixes()
         // hash the name
         //!!!!!!! representing all strings on 32 bits is dangerous. There is a chance to get same hash for a lot of strings ;)
 
-        if (!sp->Name)
+        if (!sp->Name.c_str())
             continue;
 
-        namehash = crc32((const unsigned char*)sp->Name, (unsigned int)strlen(sp->Name));
+        namehash = crc32((const unsigned char*)sp->Name.c_str(), (unsigned int)strlen(sp->Name.c_str()));
         sp->custom_NameHash = namehash; //need these set before we start processing spells
 
         float radius = std::max(::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[0])), ::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[1])));
@@ -766,7 +762,7 @@ void ApplyNormalFixes()
 
         for (uint32 b = 0; b < 3; ++b)
         {
-            if (sp->EffectTriggerSpell[b] != 0 && dbcSpell.LookupEntryForced(sp->EffectTriggerSpell[b]) == NULL)
+            if (sp->EffectTriggerSpell[b] != 0 && sSpellCustomizations.GetSpellInfo(sp->EffectTriggerSpell[b]) == NULL)
             {
                 // proc spell referencing non-existent spell. create a dummy spell for use w/ it.
                 CreateDummySpell(sp->EffectTriggerSpell[b]);
@@ -780,7 +776,7 @@ void ApplyNormalFixes()
             if (sp->EffectApplyAuraName[b] == SPELL_AURA_PREVENT_RESURRECTION)
 			{
 				sp->Attributes |= ATTRIBUTES_NEGATIVE;
-				sp->AttributesExC |= CAN_PERSIST_AND_CASTED_WHILE_DEAD;
+				sp->AttributesExC |= ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD;
 			}
         }
 
@@ -1071,10 +1067,12 @@ void ApplyNormalFixes()
     //SPELL COEFFICIENT SETTINGS START
     //////////////////////////////////////////////////////////////////
 
-    for (uint32 x = 0; x < cnt; x++)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
         // get spellentry
-        sp = dbcSpell.LookupRow(x);
+        sp = sSpellCustomizations.GetSpellInfo(it->first);
+        if (sp == nullptr)
+            continue;
 
         //Setting Cast Time Coefficient
         auto spell_cast_time = sSpellCastTimesStore.LookupEntry(sp->CastingTimeIndex);
@@ -1197,9 +1195,8 @@ void ApplyNormalFixes()
             case 20331:     // Seals of the Pure Rank 4
             case 20332:     // Seals of the Pure Rank 5
             {
-                sp->EffectSpellClassMask[0][0] = 0x08000400;
-                sp->EffectSpellClassMask[0][1] = 0x20000000;
-                sp->EffectSpellClassMask[1][1] = 0x800;
+                sp->EffectSpellClassMask[0] = 0x08000400;
+                sp->EffectSpellClassMask[1] = 0x20000000 | 0x800;
             } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
@@ -1235,7 +1232,7 @@ void ApplyNormalFixes()
             case 68111:
             {
                 //sp->Effect[1] = SPELL_EFFECT_DUMMY;
-                sp->AttributesExC |= FLAGS4_NO_DONE_BONUS;
+                sp->AttributesExC |= ATTRIBUTESEXC_NO_DONE_BONUS;
             } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
@@ -1282,7 +1279,7 @@ void ApplyNormalFixes()
                 // Frostbrand Weapon - 10% spd coefficient
                 sp->fixed_dddhcoef = 0.1f;
                 // Attributes addition
-                sp->AttributesExC |= FLAGS4_NO_DONE_BONUS;
+                sp->AttributesExC |= ATTRIBUTESEXC_NO_DONE_BONUS;
             } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
@@ -1493,7 +1490,7 @@ void ApplyNormalFixes()
         {
             Field* f;
             f = resultx->Fetch();
-            sp = dbcSpell.LookupEntryForced(f[0].GetUInt32());
+            sp = sSpellCustomizations.GetSpellInfo(f[0].GetUInt32());
             if (sp != NULL)
             {
                 sp->Dspell_coef_override = f[2].GetFloat();
@@ -1507,14 +1504,17 @@ void ApplyNormalFixes()
     }
 
     //Fully loaded coefficients, we must share channeled coefficient to its triggered spells
-    for (uint32 x = 0; x < cnt; x++)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
         // get spellentry
-        sp = dbcSpell.LookupRow(x);
-        OLD_SpellEntry* spz;
+        sp = sSpellCustomizations.GetSpellInfo(it->first);
+        if (sp == nullptr)
+            continue;
+
+        SpellInfo* spz;
 
         //Case SPELL_AURA_PERIODIC_TRIGGER_SPELL
-        for (uint8 i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; ++i)
         {
             if (sp->EffectApplyAuraName[i] == SPELL_AURA_PERIODIC_TRIGGER_SPELL)
             {
@@ -1691,14 +1691,6 @@ void ApplyNormalFixes()
         sp->speed = 0;    //without, no damage is done
     }
 
-    sp = CheckAndReturnSpellEntry(31893);
-    if (sp != NULL)
-    {
-        sp->procFlags = PROC_ON_PHYSICAL_ATTACK;
-        sp->School = SCHOOL_HOLY;
-        sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC;
-    }
-
     //Paladin - Divine Storm
     sp = CheckAndReturnSpellEntry(53385);
     if (sp != NULL)
@@ -1711,26 +1703,6 @@ void ApplyNormalFixes()
         sp->procChance = 100;
         sp->MaxTargets = 4;
     }
-
-    //Paladin - Judgements of the Wise
-    sp = CheckAndReturnSpellEntry(31930);
-    if (sp != NULL)
-    {
-        sp->SpellFamilyName = 0;
-        sp->SpellGroupType[0] = 0;
-        sp->SpellGroupType[1] = 0;
-        sp->SpellGroupType[2] = 0;
-    }
-
-    sp = CheckAndReturnSpellEntry(54180);
-    if (sp != NULL)
-    {
-        sp->SpellFamilyName = 0;
-        sp->SpellGroupType[0] = 0;
-        sp->SpellGroupType[1] = 0;
-        sp->SpellGroupType[2] = 0;
-    }
-
     
     //Paladin - Forbearance - Is forced debuff
     sp = CheckAndReturnSpellEntry(25771);
@@ -2088,10 +2060,10 @@ void ApplyNormalFixes()
     // Spirit of Redemption - required spells can be casted while dead
     sp = CheckAndReturnSpellEntry(27795);   // This is casted by shape shift
     if (sp != NULL)
-        sp->AttributesExC |= CAN_PERSIST_AND_CASTED_WHILE_DEAD;
+        sp->AttributesExC |= ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD;
     sp = CheckAndReturnSpellEntry(27792);   // This is casted by Apply Aura: Spirit of Redemption
     if (sp != NULL)
-        sp->AttributesExC |= CAN_PERSIST_AND_CASTED_WHILE_DEAD;
+        sp->AttributesExC |= ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD;
 
     //Priest - Wand Specialization
     sp = CheckAndReturnSpellEntry(14524);
@@ -2340,7 +2312,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(20608);   //Reincarnation
     if (sp != NULL)
     {
-        for (uint8 i = 0; i < 8; i++)
+        for (uint8 i = 0; i < 8; ++i)
         {
             if (sp->Reagent[i])
             {
@@ -2628,24 +2600,24 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(47203);
     if (sp != NULL)
     {
-        sp->EffectSpellClassMask[1][0] = 0x111;
-        sp->EffectSpellClassMask[1][1] = 0;
+        sp->EffectSpellClassMask[0] = 0x111;
+        sp->EffectSpellClassMask[1] = 0;
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
     }
 
     sp = CheckAndReturnSpellEntry(47202);
     if (sp != NULL)
     {
-        sp->EffectSpellClassMask[1][0] = 0x111;
-        sp->EffectSpellClassMask[1][1] = 0;
+        sp->EffectSpellClassMask[0] = 0x111;
+        sp->EffectSpellClassMask[1] = 0;
         sp->procFlags = PROC_ON_ANY_HOSTILE_ACTION;
     }
 
     sp = CheckAndReturnSpellEntry(47201);
     if (sp != NULL)
     {
-        sp->EffectSpellClassMask[1][0] = 0x111;
-        sp->EffectSpellClassMask[1][1] = 0;
+        sp->EffectSpellClassMask[0] = 0x111;
+        sp->EffectSpellClassMask[1] = 0;
     }
 
     ////////////////////////////////////////////////////////////
@@ -3030,7 +3002,7 @@ void ApplyNormalFixes()
         sp->Effect[0] = SPELL_EFFECT_APPLY_AURA;
     }
     // Zyres: eeek
-    for (uint32 i = 23833; i <= 23844; i++)
+    for (uint32 i = 23833; i <= 23844; ++i)
     {
         sp = CheckAndReturnSpellEntry(i);
         if (sp != NULL)
@@ -3254,40 +3226,40 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(46097); // Brutal Totem of Survival
     if (sp != NULL)
     {
-        sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
-        sp->EffectSpellClassMask[0][1] = 0x08000000;
+        sp->EffectSpellClassMask[0] = 0x00100000 | 0x10000000 | 0x80000000;
+        sp->EffectSpellClassMask[1] = 0x08000000;
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
     }
     sp = CheckAndReturnSpellEntry(43860); // Totem of Survival
     if (sp != NULL)
     {
-        sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
-        sp->EffectSpellClassMask[0][1] = 0x08000000;
+        sp->EffectSpellClassMask[0] = 0x00100000 | 0x10000000 | 0x80000000;
+        sp->EffectSpellClassMask[1] = 0x08000000;
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
     }
     sp = CheckAndReturnSpellEntry(43861); // Merciless Totem of Survival
     if (sp != NULL)
     {
-        sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
-        sp->EffectSpellClassMask[0][1] = 0x08000000;
+        sp->EffectSpellClassMask[0] = 0x00100000 | 0x10000000 | 0x80000000;
+        sp->EffectSpellClassMask[1] = 0x08000000;
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
     }
     sp = CheckAndReturnSpellEntry(43862); // Vengeful Totem of Survival
     if (sp != NULL)
     {
-        sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
-        sp->EffectSpellClassMask[0][1] = 0x08000000;
+        sp->EffectSpellClassMask[0] = 0x00100000 | 0x10000000 | 0x80000000;
+        sp->EffectSpellClassMask[1] = 0x08000000;
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
     }
     sp = CheckAndReturnSpellEntry(60564); // Savage Gladiator's Totem of Survival
     if (sp != NULL)
     {
-        sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
-        sp->EffectSpellClassMask[0][1] = 0x08000000;
+        sp->EffectSpellClassMask[0] = 0x00100000 | 0x10000000 | 0x80000000;
+        sp->EffectSpellClassMask[1] = 0x08000000;
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
@@ -3296,8 +3268,8 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(60571); // Hateful Gladiator's Totem of Survival
     if (sp != NULL)
     {
-        sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
-        sp->EffectSpellClassMask[0][1] = 0x08000000;
+        sp->EffectSpellClassMask[0] = 0x00100000 | 0x10000000 | 0x80000000;
+        sp->EffectSpellClassMask[1] = 0x08000000;
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
@@ -3306,8 +3278,8 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(60572); // Deadly Gladiator's Totem of Survival
     if (sp != NULL)
     {
-        sp->EffectSpellClassMask[0][0] = 0x00100000 | 0x10000000 | 0x80000000;
-        sp->EffectSpellClassMask[0][1] = 0x08000000;
+        sp->EffectSpellClassMask[0] = 0x00100000 | 0x10000000 | 0x80000000;
+        sp->EffectSpellClassMask[1] = 0x08000000;
         sp->procFlags = PROC_ON_CAST_SPELL;
         sp->EffectImplicitTargetA[1] = EFF_TARGET_SELF;
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
@@ -3320,7 +3292,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->EffectSpellClassMask[0][0] = 0x00000080;
+        sp->EffectSpellClassMask[0] = 0x00000080;
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 46099; // Brutal Gladiator's Totem of the Third Wind
     }
@@ -3328,7 +3300,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->EffectSpellClassMask[0][0] = 0x00000080;
+        sp->EffectSpellClassMask[0] = 0x00000080;
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 34132; // Gladiator's Totem of the Third Wind
     }
@@ -3336,7 +3308,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->EffectSpellClassMask[0][0] = 0x00000080;
+        sp->EffectSpellClassMask[0] = 0x00000080;
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 42371; // Merciless Gladiator's Totem of the Third Wind
     }
@@ -3344,7 +3316,7 @@ void ApplyNormalFixes()
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
-        sp->EffectSpellClassMask[0][0] = 0x00000080;
+        sp->EffectSpellClassMask[0] = 0x00000080;
         sp->Effect[1] = SPELL_EFFECT_TRIGGER_SPELL;
         sp->EffectTriggerSpell[1] = 43729; // Vengeful Gladiator's Totem of the Third Wind
     }
@@ -3707,7 +3679,7 @@ void ApplyNormalFixes()
     sp = CheckAndReturnSpellEntry(21075);
     if (sp != NULL)
     {
-        for (uint8 i = 0; i < 3; i++)
+        for (uint8 i = 0; i < 3; ++i)
         {
             if (sp->EffectImplicitTargetA[i] > 0)
                 sp->EffectImplicitTargetA[i] = EFF_TARGET_ALL_FRIENDLY_IN_AREA;
@@ -3848,28 +3820,28 @@ void ApplyNormalFixes()
     }
 
     // DEATH AND DECAY
-    sp = dbcSpell.LookupEntryForced(49937);
+    sp = sSpellCustomizations.GetSpellInfo(49937);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    sp = dbcSpell.LookupEntryForced(49936);
+    sp = sSpellCustomizations.GetSpellInfo(49936);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    sp = dbcSpell.LookupEntryForced(49938);
+    sp = sSpellCustomizations.GetSpellInfo(49938);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    sp = dbcSpell.LookupEntryForced(43265);
+    sp = sSpellCustomizations.GetSpellInfo(43265);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
@@ -3877,7 +3849,7 @@ void ApplyNormalFixes()
     }
 
     // Runic Empowerment
-    /*sp = dbcSpell.LookupEntryForced(81229);
+    /*sp = sSpellCustomizations.GetSpellInfo(81229);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
@@ -3890,7 +3862,7 @@ void ApplyNormalFixes()
     }*/
 
     // Vengeance
-    sp = dbcSpell.LookupEntryForced(93099);
+    sp = sSpellCustomizations.GetSpellInfo(93099);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_ANY_DAMAGE_VICTIM;
@@ -4046,10 +4018,10 @@ void ApplyNormalFixes()
     {
         const uint32 ritOfSummId = 62330;
         CreateDummySpell(ritOfSummId);
-        OLD_SpellEntry * ritOfSumm = dbcSpell.LookupEntryForced(ritOfSummId);
+        SpellInfo* ritOfSumm = sSpellCustomizations.GetSpellInfo(ritOfSummId);
         if (ritOfSumm != NULL)
         {
-            memcpy(ritOfSumm, sp, sizeof(OLD_SpellEntry));
+            memcpy(ritOfSumm, sp, sizeof(SpellInfo));
             ritOfSumm->Id = ritOfSummId;
         }
     }

@@ -16,18 +16,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CThreads.h"
+#include "Singleton.h"
+#include "Storage/DBC/DBCStores.h"
 
 #ifndef _SPELL_CUSTOMIZATIONS_HPP
 #define _SPELL_CUSTOMIZATIONS_HPP
 
 
-class SpellCustomizations : public Singleton <SpellCustomizations>
+class SERVER_DECL SpellCustomizations : public Singleton <SpellCustomizations>
 {
     public:
 
         SpellCustomizations();
         ~SpellCustomizations();
+
+        typedef std::unordered_map<uint32, SpellInfo> SpellInfoContainer;
+
+        void LoadSpellInfoData();
+        SpellInfo* GetSpellInfo(uint32 spell_id);
+        SpellInfoContainer* GetSpellInfoStore() { return &_spellInfoContainerStore; }
 
         void StartSpellCustomization();
 
@@ -37,16 +44,18 @@ class SpellCustomizations : public Singleton <SpellCustomizations>
         void LoadSpellCustomCoefFlags();
         void LoadSpellProcs();
 
-        void SetEffectAmplitude(OLD_SpellEntry* spell_entry);
-        void SetAuraFactoryFunc(OLD_SpellEntry* spell_entry);
+        void SetEffectAmplitude(SpellInfo* spell_entry);
+        void SetAuraFactoryFunc(SpellInfo* spell_entry);
 
-        void SetMeleeSpellBool(OLD_SpellEntry* spell_entry);
-        void SetRangedSpellBool(OLD_SpellEntry* spell_entry);
+        void SetMeleeSpellBool(SpellInfo* spell_entry);
+        void SetRangedSpellBool(SpellInfo* spell_entry);
 
-        void SetMissingCIsFlags(OLD_SpellEntry* spell_entry);
-        void SetCustomFlags(OLD_SpellEntry* spell_entry);
-        void SetOnShapeshiftChange(OLD_SpellEntry* spell_entry);
-        void SetAlwaysApply(OLD_SpellEntry* spell_entry);
+        void SetMissingCIsFlags(SpellInfo* spell_entry);
+        void SetCustomFlags(SpellInfo* spell_entry);
+        void SetOnShapeshiftChange(SpellInfo* spell_entry);
+        void SetAlwaysApply(SpellInfo* spell_entry);
+
+        SpellInfoContainer _spellInfoContainerStore;
 };
 
 #define sSpellCustomizations SpellCustomizations::getSingleton()

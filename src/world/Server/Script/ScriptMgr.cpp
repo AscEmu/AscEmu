@@ -199,9 +199,11 @@ void ScriptMgr::DumpUnimplementedSpells()
 
     of.open("unimplemented1.txt");
 
-    for (DBCStorage< OLD_SpellEntry >::iterator itr = dbcSpell.begin(); itr != dbcSpell.end(); ++itr)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
-        OLD_SpellEntry* sp = *itr;
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(it->first);
+        if (!sp)
+            continue;
 
         if (!sp->HasEffect(SPELL_EFFECT_DUMMY) && !sp->HasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->HasEffect(SPELL_EFFECT_SEND_EVENT))
             continue;
@@ -234,9 +236,12 @@ void ScriptMgr::DumpUnimplementedSpells()
 
     count = 0;
 
-    for (DBCStorage< OLD_SpellEntry >::iterator itr = dbcSpell.begin(); itr != dbcSpell.end(); ++itr)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
-        OLD_SpellEntry* sp = *itr;
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(it->first);
+        if (!sp)
+            continue;
+
         if (!sp->AppliesAura(SPELL_AURA_DUMMY))
             continue;
 
@@ -285,7 +290,7 @@ void ScriptMgr::register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback
         LOG_ERROR("ScriptMgr is trying to register a script for Aura ID: %u even if there's already one for that Aura. Remove one of those scripts.", entry);
     }
 
-    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(entry);
+    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(entry);
     if (sp == NULL)
     {
         LOG_ERROR("ScriptMgr is trying to register a dummy aura handler for Spell ID: %u which is invalid.", entry);
@@ -306,7 +311,7 @@ void ScriptMgr::register_dummy_spell(uint32 entry, exp_handle_dummy_spell callba
         return;
     }
 
-    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(entry);
+    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(entry);
     if (sp == NULL)
     {
         LOG_ERROR("ScriptMgr is trying to register a dummy handler for Spell ID: %u which is invalid.", entry);
@@ -418,7 +423,7 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
         return;
     }
 
-    OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(entry);
+    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(entry);
     if (sp == NULL)
     {
         LOG_ERROR("ScriptMgr tried to register a script effect handler for Spell %u, which is invalid.", entry);
@@ -876,7 +881,7 @@ void HookInterface::OnEnterCombat(Player* pPlayer, Unit* pTarget)
         ((tOnEnterCombat)*itr)(pPlayer, pTarget);
 }
 
-bool HookInterface::OnCastSpell(Player* pPlayer, OLD_SpellEntry* pSpell, Spell* spell)
+bool HookInterface::OnCastSpell(Player* pPlayer, SpellInfo* pSpell, Spell* spell)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_CAST_SPELL];
     bool ret_val = true;

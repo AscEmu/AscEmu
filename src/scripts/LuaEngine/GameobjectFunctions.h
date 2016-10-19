@@ -657,7 +657,7 @@ class LuaGameObject
             uint32 sp = CHECK_ULONG(L, 1);
             if (sp)
             {
-                Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, dbcSpell.LookupEntry(sp), true, NULL);
+                Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), true, NULL);
                 SpellCastTargets tar(ptr->GetGUID());
                 tSpell->prepare(&tar);
             }
@@ -670,7 +670,7 @@ class LuaGameObject
             Object* target = CHECK_OBJECT(L, 2);
             if (sp && target != NULL)
             {
-                Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, dbcSpell.LookupEntry(sp), true, NULL);
+                Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), true, NULL);
                 SpellCastTargets spCastTargets(target->GetGUID());
                 tSpell->prepare(&spCastTargets);
             }
@@ -1088,7 +1088,7 @@ class LuaGameObject
             Object* target = CHECK_OBJECT(L, 2);
             if (sp && target != NULL)
             {
-                Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, dbcSpell.LookupEntry(sp), false, NULL);
+                Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), false, NULL);
                 SpellCastTargets sct(target->GetGUID());
                 tSpell->prepare(&sct);
             }
@@ -1100,7 +1100,7 @@ class LuaGameObject
             uint32 sp = CHECK_ULONG(L, 1);
             if (sp)
             {
-                Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, dbcSpell.LookupEntry(sp), false, NULL);
+                Spell* tSpell = sSpellFactoryMgr.NewSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), false, NULL);
                 SpellCastTargets sct(ptr->GetGUID());
                 tSpell->prepare(&sct);
             }

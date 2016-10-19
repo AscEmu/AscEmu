@@ -988,7 +988,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : MoonScri
 
     // Blood Strike
     auto blood_strike_spell = new AI_Spell;
-    blood_strike_spell->spell = dbcSpell.LookupEntry(DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE);
+    blood_strike_spell->spell = sSpellCustomizations.GetSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BLOOD_STRIKE);
     blood_strike_spell->agent = AGENT_SPELL;
     blood_strike_spell->entryId = _unit->GetEntry();
     blood_strike_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(blood_strike_spell->spell->rangeIndex));
@@ -1007,7 +1007,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : MoonScri
 
     // Bone Barrier
     auto bone_barrier_spell = new AI_Spell;
-    bone_barrier_spell->spell = dbcSpell.LookupEntry(DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER);
+    bone_barrier_spell->spell = sSpellCustomizations.GetSpellInfo(DEATH_KNIGHT_UNDERSTUDY_BONE_BARRIER);
     bone_barrier_spell->agent = AGENT_SPELL;
     bone_barrier_spell->entryId = _unit->GetEntry();
     bone_barrier_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(bone_barrier_spell->spell->rangeIndex));
@@ -1026,7 +1026,7 @@ DeathKnightUnderstudyAI::DeathKnightUnderstudyAI(Creature* pCreature) : MoonScri
 
     // Taunt
     auto understudy_taunt_spell = new AI_Spell;
-    understudy_taunt_spell->spell = dbcSpell.LookupEntry(DEATH_KNIGHT_UNDERSTUDY_TAUNT);
+    understudy_taunt_spell->spell = sSpellCustomizations.GetSpellInfo(DEATH_KNIGHT_UNDERSTUDY_TAUNT);
     understudy_taunt_spell->agent = AGENT_SPELL;
     understudy_taunt_spell->entryId = _unit->GetEntry();
     understudy_taunt_spell->maxrange = GetMaxRange(sSpellRangeStore.LookupEntry(understudy_taunt_spell->spell->rangeIndex));
@@ -1246,13 +1246,13 @@ class StickedSpewerAI : public CreatureAIScript
         // ----------------------
 
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-        spells[0].info = dbcSpell.LookupEntry(CN_SLIME_BOLT);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(CN_SLIME_BOLT);
         spells[0].targettype = TARGET_VARIOUS;
         spells[0].instant = false;
         spells[0].perctrigger = 10.0f;
         spells[0].attackstoptimer = 2000; // 1sec
 
-        spells[1].info = dbcSpell.LookupEntry(CN_UPPERCUT);
+        spells[1].info = sSpellCustomizations.GetSpellInfo(CN_UPPERCUT);
         spells[1].targettype = TARGET_VARIOUS;
         spells[1].instant = false;
         spells[1].perctrigger = 10.0f;
@@ -1355,7 +1355,7 @@ class SurgicalAssistantAI : public CreatureAIScript
         // ----------------------
 
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-        spells[0].info = dbcSpell.LookupEntry(MIND_FLAY);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(MIND_FLAY);
         spells[0].targettype = TARGET_ATTACKING;
         spells[0].instant = false;
         spells[0].perctrigger = 20.0f;
@@ -1458,13 +1458,13 @@ class SludgeBelcherAI : public CreatureAIScript
         // ----------------------
 
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-        spells[0].info = dbcSpell.LookupEntry(DISEISE_BUFFET);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(DISEISE_BUFFET);
         spells[0].targettype = TARGET_ATTACKING;
         spells[0].instant = false;
         spells[0].perctrigger = 20.0f;
         spells[0].attackstoptimer = 1000; // 1sec
 
-        spells[1].info = dbcSpell.LookupEntry(SUMMON_BILE_SLIMES);
+        spells[1].info = sSpellCustomizations.GetSpellInfo(SUMMON_BILE_SLIMES);
         spells[1].targettype = TARGET_SELF;
         spells[1].instant = false;
         spells[1].perctrigger = 5.0f;
@@ -1573,13 +1573,13 @@ class GrobbulusAI : public CreatureAIScript
         // ----------------------
 
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-        spells[0].info = dbcSpell.LookupEntry(POISON_CLOUD_GROB);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(POISON_CLOUD_GROB);
         spells[0].targettype = TARGET_SELF;
         spells[0].instant = false;
         spells[0].perctrigger = 0.0f;
         spells[0].attackstoptimer = 1000; // 1sec
 
-        spells[1].info = dbcSpell.LookupEntry(SLIME_SPRAY);
+        spells[1].info = sSpellCustomizations.GetSpellInfo(SLIME_SPRAY);
         spells[1].targettype = TARGET_VARIOUS;
         spells[1].instant = false;
         spells[1].perctrigger = 15.0f;
@@ -1685,19 +1685,19 @@ class GluthAI : public CreatureAIScript
         // ----------------------
 
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-        spells[0].info = dbcSpell.LookupEntry(MORTAL_WOUND);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(MORTAL_WOUND);
         spells[0].targettype = TARGET_ATTACKING;
         spells[0].instant = false;
         spells[0].perctrigger = 15.0f;
         spells[0].attackstoptimer = 2000; // 1sec
 
-        spells[1].info = dbcSpell.LookupEntry(TERRIFYING_ROAR);
+        spells[1].info = sSpellCustomizations.GetSpellInfo(TERRIFYING_ROAR);
         spells[1].targettype = TARGET_VARIOUS;
         spells[1].instant = false;
         spells[1].perctrigger = 5.0f;
         spells[1].attackstoptimer = 3000; // 1sec
 
-        spells[2].info = dbcSpell.LookupEntry(FRENZY);
+        spells[2].info = sSpellCustomizations.GetSpellInfo(FRENZY);
         spells[2].targettype = TARGET_SELF;
         spells[2].instant = false;
         spells[2].perctrigger = 5.0f;
@@ -1805,7 +1805,7 @@ class BonyConstructAI : public CreatureAIScript
         // ----------------------
 
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-        spells[0].info = dbcSpell.LookupEntry(SWEEPING_SLAM);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(SWEEPING_SLAM);
         spells[0].targettype = TARGET_VARIOUS;
         spells[0].instant = false;
         spells[0].perctrigger = 15.0f;
@@ -1908,7 +1908,7 @@ class DeathLordAI : public CreatureAIScript
         // ----------------------
 
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-        spells[0].info = dbcSpell.LookupEntry(AURA_OF_AGONY);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(AURA_OF_AGONY);
         spells[0].targettype = TARGET_VARIOUS;
         spells[0].instant = false;
         spells[0].perctrigger = 15.0f;
@@ -2012,13 +2012,13 @@ class RazuviousAI : public CreatureAIScript
         // ----------------------
 
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-        spells[0].info = dbcSpell.LookupEntry(DISRUPTING_SHOUT);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(DISRUPTING_SHOUT);
         spells[0].targettype = TARGET_VARIOUS;
         spells[0].instant = false;
         spells[0].perctrigger = 15.0f;
         spells[0].attackstoptimer = 3000; // 1sec
 
-        spells[1].info = dbcSpell.LookupEntry(UNBALANCING_STRIKE);
+        spells[1].info = sSpellCustomizations.GetSpellInfo(UNBALANCING_STRIKE);
         spells[1].targettype = TARGET_ATTACKING;
         spells[1].instant = false;
         spells[1].perctrigger = 35.0f;
@@ -2141,13 +2141,13 @@ class KorthazzAI : public CreatureAIScript
         m_attackstart = false;
 
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-        spells[0].info = dbcSpell.LookupEntry(MARK_OF_KORTHAZZ);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(MARK_OF_KORTHAZZ);
         spells[0].targettype = TARGET_VARIOUS;
         spells[0].instant = false;
         spells[0].perctrigger = 5.0f;
         spells[0].attackstoptimer = 1000; // 1sec
 
-        spells[1].info = dbcSpell.LookupEntry(METEOR);
+        spells[1].info = sSpellCustomizations.GetSpellInfo(METEOR);
         spells[1].targettype = TARGET_ATTACKING;
         spells[1].instant = false;
         spells[1].perctrigger = 15.0f;
@@ -2319,13 +2319,13 @@ class BlaumeuxAI : public CreatureAIScript
         m_attackstart = false;
 
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-        spells[0].info = dbcSpell.LookupEntry(MARK_OF_BLAUMEUX);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(MARK_OF_BLAUMEUX);
         spells[0].targettype = TARGET_VARIOUS;
         spells[0].instant = false;
         spells[0].perctrigger = 5.0f;
         spells[0].attackstoptimer = 1000; // 1sec
 
-        spells[1].info = dbcSpell.LookupEntry(VOID_ZONE);
+        spells[1].info = sSpellCustomizations.GetSpellInfo(VOID_ZONE);
         spells[1].targettype = TARGET_VARIOUS;
         spells[1].instant = false;
         spells[1].perctrigger = 15.0f;
@@ -2492,13 +2492,13 @@ class ZeliekAI : public CreatureAIScript
         m_attackstart = false;
 
         // Create basic info for spells here, and play with it later , fill always the info, targettype and if is instant or not!
-        spells[0].info = dbcSpell.LookupEntry(MARK_OF_ZELIEK);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(MARK_OF_ZELIEK);
         spells[0].targettype = TARGET_VARIOUS;
         spells[0].instant = false;
         spells[0].perctrigger = 5.0f;
         spells[0].attackstoptimer = 1000; // 1sec
 
-        spells[1].info = dbcSpell.LookupEntry(HOLY_WRATH);
+        spells[1].info = sSpellCustomizations.GetSpellInfo(HOLY_WRATH);
         spells[1].targettype = TARGET_ATTACKING;
         spells[1].instant = false;
         spells[1].perctrigger = 15.0f;
@@ -2789,7 +2789,7 @@ class ChillTriggerAI : public CreatureAIScript
 
     ChillTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->CastSpellAoF(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), dbcSpell.LookupEntry(28547), true);
+        _unit->CastSpellAoF(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), sSpellCustomizations.GetSpellInfo(28547), true);
         _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         _unit->GetAIInterface()->disable_melee = true;
         _unit->GetAIInterface()->m_canMove = false;
@@ -2853,14 +2853,14 @@ class SapphironAI : public CreatureAIScript
             spells[i].casttime = 0;
         }
 
-        spells[0].info = dbcSpell.LookupEntry(LIFE_DRAIN);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(LIFE_DRAIN);
         spells[0].targettype = TARGET_VARIOUS;
         spells[0].instant = true;
         spells[0].perctrigger = 8.0f;
         spells[0].cooldown = 20;
         spells[0].attackstoptimer = 2000;
 
-        spells[1].info = dbcSpell.LookupEntry(CHILL);
+        spells[1].info = sSpellCustomizations.GetSpellInfo(CHILL);
         spells[1].targettype = TARGET_RANDOM_DESTINATION;
         spells[1].instant = true;
         spells[1].perctrigger = 10.0f;
@@ -2871,7 +2871,7 @@ class SapphironAI : public CreatureAIScript
         spells[1].minhp2cast = 0;
         spells[1].maxhp2cast = 100;
 
-        spells[2].info = dbcSpell.LookupEntry(ICEBOLT);
+        spells[2].info = sSpellCustomizations.GetSpellInfo(ICEBOLT);
         spells[2].targettype = TARGET_RANDOM_SINGLE;
         spells[2].instant = true;
         spells[2].perctrigger = 0.0f;
@@ -2882,7 +2882,7 @@ class SapphironAI : public CreatureAIScript
         spells[2].minhp2cast = 0;
         spells[2].maxhp2cast = 100;
 
-        spells[3].info = dbcSpell.LookupEntry(BERSERK);
+        spells[3].info = sSpellCustomizations.GetSpellInfo(BERSERK);
         spells[3].targettype = TARGET_SELF;
         spells[3].instant = true;
         spells[3].perctrigger = 0.0f;
@@ -3571,21 +3571,21 @@ class KelthuzadAI : public CreatureAIScript
             SoulWeavers[i] = false;
         }
 
-        spells[0].info = dbcSpell.LookupEntry(SFROSTBOLT);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(SFROSTBOLT);
         spells[0].targettype = TARGET_ATTACKING;
         spells[0].instant = false;
         spells[0].perctrigger = 7.0f;
         spells[0].cooldown = 0;
         spells[0].attackstoptimer = 2000;
 
-        spells[1].info = dbcSpell.LookupEntry(MFROSTBOLT);
+        spells[1].info = sSpellCustomizations.GetSpellInfo(MFROSTBOLT);
         spells[1].targettype = TARGET_VARIOUS;
         spells[1].instant = true;
         spells[1].perctrigger = 0.1f;
         spells[1].cooldown = 15;            // it's casted after 15 sec anyway, so it does need additional perctrigger
         spells[1].attackstoptimer = 1000;
 
-        spells[2].info = dbcSpell.LookupEntry(CHAINS_OF_KELTHUZAD);
+        spells[2].info = sSpellCustomizations.GetSpellInfo(CHAINS_OF_KELTHUZAD);
         spells[2].targettype = TARGET_RANDOM_SINGLE;
         spells[2].instant = true;
         spells[2].perctrigger = 5.0f;
@@ -3596,7 +3596,7 @@ class KelthuzadAI : public CreatureAIScript
         spells[2].minhp2cast = 0;
         spells[2].maxhp2cast = 100;
 
-        spells[3].info = dbcSpell.LookupEntry(DETONATE_MANA);
+        spells[3].info = sSpellCustomizations.GetSpellInfo(DETONATE_MANA);
         spells[3].targettype = TARGET_RANDOM_SINGLE;
         spells[3].instant = true;
         spells[3].perctrigger = 6.0f;
@@ -3607,14 +3607,14 @@ class KelthuzadAI : public CreatureAIScript
         spells[3].minhp2cast = 0;
         spells[3].maxhp2cast = 100;
 
-        spells[4].info = dbcSpell.LookupEntry(SHADOW_FISSURE);
+        spells[4].info = sSpellCustomizations.GetSpellInfo(SHADOW_FISSURE);
         spells[4].targettype = TARGET_ATTACKING;
         spells[4].instant = true;
         spells[4].perctrigger = 5.0f;
         spells[4].cooldown = 10;
         spells[4].attackstoptimer = 2000;
 
-        spells[5].info = dbcSpell.LookupEntry(FROST_BLAST);
+        spells[5].info = sSpellCustomizations.GetSpellInfo(FROST_BLAST);
         spells[5].targettype = TARGET_RANDOM_SINGLE;
         spells[5].instant = true;
         spells[5].perctrigger = 6.0f;
@@ -3627,7 +3627,7 @@ class KelthuzadAI : public CreatureAIScript
         spells[5].minhp2cast = 0;
         spells[5].maxhp2cast = 100;
 
-        spells[6].info = dbcSpell.LookupEntry(KELTHUZAD_CHANNEL);
+        spells[6].info = sSpellCustomizations.GetSpellInfo(KELTHUZAD_CHANNEL);
         spells[6].targettype = TARGET_SELF;
         spells[6].instant = false;
         spells[6].perctrigger = 0.0f;
@@ -4288,7 +4288,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
             spells[i].casttime = 0;
         }
 
-        spells[0].info = dbcSpell.LookupEntry(UA_MORTAL_WOUND);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(UA_MORTAL_WOUND);
         spells[0].targettype = TARGET_ATTACKING;
         spells[0].instant = true;
         spells[0].cooldown = 10;
@@ -4460,7 +4460,7 @@ class SoulWeaverAI : public CreatureAIScript
             spells[i].casttime = 0;
         }
 
-        spells[0].info = dbcSpell.LookupEntry(WAIL_OF_SOULS);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(WAIL_OF_SOULS);
         spells[0].targettype = TARGET_VARIOUS;
         spells[0].instant = true;
         spells[0].cooldown = 10;
@@ -4631,7 +4631,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
             m_spellcheck[i] = false;
         }
 
-        spells[0].info = dbcSpell.LookupEntry(BLOOD_TAP);
+        spells[0].info = sSpellCustomizations.GetSpellInfo(BLOOD_TAP);
         spells[0].targettype = TARGET_SELF;
         spells[0].instant = true;
         spells[0].cooldown = 0;

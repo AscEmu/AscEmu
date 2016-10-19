@@ -140,13 +140,10 @@ void Player::SendCastResult(uint32 SpellId, uint8 ErrorMessage, uint8 MultiCast,
 void Player::SendSpellCooldownEvent(uint32 SpellId)
 {
     WorldPacket data(SMSG_COOLDOWN_EVENT, 12);
-
     data << uint32(SpellId);
     data << uint64(GetGUID());
-
     m_session->SendPacket(&data);
 }
-
 
 void Player::SendSpellModifier(uint8 spellgroup, uint8 spelltype, int32 v, bool is_pct)
 {
@@ -198,10 +195,9 @@ void Player::SendItemPushResult(bool created, bool recieved, bool sendtoset, boo
 
 void Player::SendSetProficiency(uint8 ItemClass, uint32 Proficiency)
 {
-    WorldPacket data(SMSG_SET_PROFICIENCY, 40);
+    WorldPacket data(SMSG_SET_PROFICIENCY, 1 + 4);
     data << uint8(ItemClass);
     data << uint32(Proficiency);
-
     m_session->SendPacket(&data);
 }
 

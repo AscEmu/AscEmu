@@ -24,7 +24,7 @@
 
 initialiseSingleton(SpellFactoryMgr);
 
-void SpellFactoryMgr::AddSpellByEntry(OLD_SpellEntry* info, spell_factory_function spell_func)
+void SpellFactoryMgr::AddSpellByEntry(SpellInfo* info, spell_factory_function spell_func)
 {
     if (info != NULL)
         info->SpellFactoryFunc = (void * (*)) spell_func;
@@ -32,17 +32,14 @@ void SpellFactoryMgr::AddSpellByEntry(OLD_SpellEntry* info, spell_factory_functi
 
 void SpellFactoryMgr::AddSpellById(uint32 spellId, spell_factory_function spell_func)
 {
-    AddSpellByEntry(dbcSpell.LookupEntryForced(spellId), spell_func);
+    AddSpellByEntry(sSpellCustomizations.GetSpellInfo(spellId), spell_func);
 }
 
 void SpellFactoryMgr::AddSpellByNameHash(uint32 name_hash, spell_factory_function spell_func)
 {
-    uint32 cnt = dbcSpell.GetNumRows();
-    OLD_SpellEntry* sp;
-
-    for (uint32 x = 0; x < cnt; x++)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
-        sp = dbcSpell.LookupEntry(x);
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(it->first);
 
         if (!sp || sp->custom_NameHash != name_hash)
             continue;
@@ -51,7 +48,7 @@ void SpellFactoryMgr::AddSpellByNameHash(uint32 name_hash, spell_factory_functio
     }
 }
 
-void SpellFactoryMgr::AddAuraByEntry(OLD_SpellEntry* info, aura_factory_function aura_func)
+void SpellFactoryMgr::AddAuraByEntry(SpellInfo* info, aura_factory_function aura_func)
 {
     if (info != NULL)
         info->AuraFactoryFunc = (void * (*)) aura_func;
@@ -59,17 +56,14 @@ void SpellFactoryMgr::AddAuraByEntry(OLD_SpellEntry* info, aura_factory_function
 
 void SpellFactoryMgr::AddAuraById(uint32 spellId, aura_factory_function aura_func)
 {
-    AddAuraByEntry(dbcSpell.LookupEntryForced(spellId), aura_func);
+    AddAuraByEntry(sSpellCustomizations.GetSpellInfo(spellId), aura_func);
 }
 
 void SpellFactoryMgr::AddAuraByNameHash(uint32 name_hash, aura_factory_function aura_func)
 {
-    uint32 cnt = dbcSpell.GetNumRows();
-    OLD_SpellEntry* sp;
-
-    for (uint32 x = 0; x < cnt; x++)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
-        sp = dbcSpell.LookupEntry(x);
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(it->first);
 
         if (!sp || sp->custom_NameHash != name_hash)
             continue;
@@ -78,7 +72,7 @@ void SpellFactoryMgr::AddAuraByNameHash(uint32 name_hash, aura_factory_function 
     }
 }
 
-OLD_SpellEntry* SpellFactoryMgr::GetSpellEntryByDifficulty(uint32 id, uint8 difficulty)
+SpellInfo* SpellFactoryMgr::GetSpellEntryByDifficulty(uint32 id, uint8 difficulty)
 {
     auto spell_difficulty = sSpellDifficultyStore.LookupEntry(id);
     if (spell_difficulty == nullptr)
@@ -87,10 +81,10 @@ OLD_SpellEntry* SpellFactoryMgr::GetSpellEntryByDifficulty(uint32 id, uint8 diff
     if (spell_difficulty->SpellId[difficulty] <= 0)
         return NULL;
 
-    return dbcSpell.LookupEntryForced(spell_difficulty->SpellId[difficulty]);
+    return sSpellCustomizations.GetSpellInfo(spell_difficulty->SpellId[difficulty]);
 }
 
-Spell* SpellFactoryMgr::NewSpell(Object* Caster, OLD_SpellEntry* info, bool triggered, Aura* aur)
+Spell* SpellFactoryMgr::NewSpell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
 {
     if (info->SpellFactoryFunc == NULL)
         return new Spell(Caster, info, triggered, aur);
@@ -102,7 +96,7 @@ Spell* SpellFactoryMgr::NewSpell(Object* Caster, OLD_SpellEntry* info, bool trig
     }
 }
 
-Aura* SpellFactoryMgr::NewAura(OLD_SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster)
+Aura* SpellFactoryMgr::NewAura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster)
 {
     if (proto->AuraFactoryFunc == NULL)
         return new Aura(proto, duration, caster, target, temporary, i_caster);
@@ -209,7 +203,7 @@ void SpellFactoryMgr::LoadSpellAreas()
 
         if (spellArea.auraSpell)
         {
-            OLD_SpellEntry const* spellInfo = dbcSpell.LookupEntryForced(abs(spellArea.auraSpell));
+            SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(abs(spellArea.auraSpell));
             if (!spellInfo)
             {
                 Log.Error("SpellArea", "Spell %u listed in `spell_area` have wrong aura spell (%u) requirement.", spell, abs(spellArea.auraSpell));
@@ -372,7 +366,7 @@ bool SpellArea::IsFitToRequirements(Player* player, uint32 newZone, uint32 newAr
     return true;
 }
 
-bool OLD_SpellEntry::CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player)
+bool SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player)
 {
     // normal case
     if (RequiresAreaId > 0)

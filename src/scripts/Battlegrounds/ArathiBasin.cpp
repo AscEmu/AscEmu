@@ -645,7 +645,7 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
             sEventMgr.AddEvent(this, &ArathiBasin::SpawnBuff, static_cast<uint32>(buffslot), EVENT_AB_RESPAWN_BUFF, AB_BUFF_RESPAWN_TIME, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
             // cast the spell on the player
-            OLD_SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
+            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
             if (sp)
             {
                 Spell* pSpell = sSpellFactoryMgr.NewSpell(plr, sp, true, nullptr);

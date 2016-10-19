@@ -361,7 +361,61 @@ enum MOD_TYPES
     SPELL_AURA_PREVENT_RESURRECTION = 314,
     SPELL_AURA_315 = 315,
     SPELL_AURA_316 = 316,
-    TOTAL_SPELL_AURAS = 317,
+    SPELL_AURA_317 = 317,
+    SPELL_AURA_318 = 318,
+    SPELL_AURA_319 = 319,
+    SPELL_AURA_320 = 320,
+    SPELL_AURA_321 = 321,
+    SPELL_AURA_322 = 322,
+    SPELL_AURA_323 = 323,
+    SPELL_AURA_324 = 324,
+    SPELL_AURA_325 = 325,
+    SPELL_AURA_326 = 326,
+    SPELL_AURA_327 = 327,
+    SPELL_AURA_328 = 328,
+    SPELL_AURA_329 = 329,
+    SPELL_AURA_330 = 330,
+    SPELL_AURA_331 = 331,
+    SPELL_AURA_332 = 332,
+    SPELL_AURA_333 = 333,
+    SPELL_AURA_334 = 334,
+    SPELL_AURA_335 = 335,
+    SPELL_AURA_336 = 336,
+    SPELL_AURA_337 = 337,
+    SPELL_AURA_338 = 338,
+    SPELL_AURA_339 = 339,
+    SPELL_AURA_340 = 340,
+    SPELL_AURA_341 = 341,
+    SPELL_AURA_342 = 342,
+    SPELL_AURA_343 = 343,
+    SPELL_AURA_344 = 344,
+    SPELL_AURA_345 = 345,
+    SPELL_AURA_346 = 346,
+    SPELL_AURA_347 = 347,
+    SPELL_AURA_348 = 348,
+    SPELL_AURA_349 = 349,
+    SPELL_AURA_350 = 350,
+    SPELL_AURA_351 = 351,
+    SPELL_AURA_352 = 352,
+    SPELL_AURA_353 = 353,
+    SPELL_AURA_354 = 354,
+    SPELL_AURA_355 = 355,
+    SPELL_AURA_356 = 356,
+    SPELL_AURA_357 = 357,
+    SPELL_AURA_358 = 358,
+    SPELL_AURA_359 = 359,
+    SPELL_AURA_360 = 360,
+    SPELL_AURA_361 = 361,
+    SPELL_AURA_362 = 362,
+    SPELL_AURA_363 = 363,
+    SPELL_AURA_364 = 364,
+    SPELL_AURA_365 = 365,
+    SPELL_AURA_366 = 366,
+    SPELL_AURA_367 = 367,
+    SPELL_AURA_368 = 368,
+    SPELL_AURA_369 = 369,
+    SPELL_AURA_370 = 370,
+    TOTAL_SPELL_AURAS = 371,
 };
 
 enum AuraTickFlags
@@ -435,7 +489,7 @@ class SERVER_DECL Aura : public EventableObject
 {
     public:
 
-        Aura(OLD_SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
+        Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
         ~Aura();
 
         void ExpireRemove();
@@ -443,7 +497,7 @@ class SERVER_DECL Aura : public EventableObject
         void Expire();
         void AddMod(uint32 t, int32 a, uint32 miscValue, uint32 i);
 
-        inline OLD_SpellEntry* GetSpellProto() const { return m_spellProto; }
+        inline SpellInfo* GetSpellProto() const { return m_spellProto; }
         inline uint32 GetSpellId() const { return m_spellProto->Id; }
         inline bool IsPassive() { if (!m_spellProto) return false; return (m_spellProto->Attributes & ATTRIBUTES_PASSIVE && !m_areaAura); }
 
@@ -755,13 +809,13 @@ class SERVER_DECL Aura : public EventableObject
         void UpdateAuraModDecreaseSpeed();
 
         void SendModifierLog(int32** m, int32 v, uint32* mask, uint8 type, bool pct = false);
-        void SendDummyModifierLog(std::map<OLD_SpellEntry*, uint32> * m, OLD_SpellEntry* spellInfo, uint32 i, bool apply, bool pct = false);
+        void SendDummyModifierLog(std::map<SpellInfo*, uint32> * m, SpellInfo* spellInfo, uint32 i, bool apply, bool pct = false);
 
         // Events
         void EventPeriodicDamage(uint32);
         void EventPeriodicDamagePercent(uint32);
         void EventPeriodicHeal(uint32);
-        void EventPeriodicTriggerSpell(OLD_SpellEntry* spellInfo, bool overridevalues, int32 overridevalue);
+        void EventPeriodicTriggerSpell(SpellInfo* spellInfo, bool overridevalues, int32 overridevalue);
         void EventPeriodicTrigger(uint32 amount, uint32 type);
         void EventPeriodicEnergize(uint32, uint32);
         void EventPeriodicEnergizeVariable(uint32, uint32);
@@ -794,7 +848,7 @@ class SERVER_DECL Aura : public EventableObject
 
         virtual bool IsAbsorb() { return false; }
 
-        OLD_SpellEntry* m_spellProto;
+        SpellInfo* m_spellProto;
         AreaAuraList targets; // This is only used for AA
         uint64 m_casterGuid;
         uint16 m_auraSlot;

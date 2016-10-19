@@ -100,7 +100,7 @@ class CoilfangChampionAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(INTIMIDATING_SHOUT);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(INTIMIDATING_SHOUT);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 15;
@@ -215,7 +215,7 @@ class CoilfangObserverAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(IMMOLATE);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(IMMOLATE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].cooldown = 35;
@@ -333,7 +333,7 @@ class CoilfangDefenderAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(REFLECTIVE_SHIELD);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(REFLECTIVE_SHIELD);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true; // for other spells than 41475 false!
             spells[0].cooldown = 40; // 20
@@ -451,21 +451,21 @@ class CoilfangScaleHealerAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(HOLY_NOVA);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(HOLY_NOVA);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].cooldown = 20;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(POWER_WORD_SHIELD);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(POWER_WORD_SHIELD);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].cooldown = 45;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(GREATER_HEAL);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(GREATER_HEAL);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = false;
             spells[2].cooldown = 50;
@@ -583,7 +583,7 @@ class CoilfangSoothsayerAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(MIND_CONTROL);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(MIND_CONTROL);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 40;
@@ -700,14 +700,14 @@ class CoilfangTechnicianAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(RAIN_OF_FIRE);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(RAIN_OF_FIRE);
             spells[0].targettype = TARGET_DESTINATION;
             spells[0].instant = true;
             spells[0].cooldown = 35;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(BLIZZARD);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(BLIZZARD);
             spells[1].targettype = TARGET_DESTINATION;
             spells[1].instant = false;
             spells[1].cooldown = 20;
@@ -822,7 +822,7 @@ class CoilfangRayAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(HOWL_OF_TERROR);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(HOWL_OF_TERROR);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].cooldown = 20;
@@ -1011,35 +1011,35 @@ class MennuTheBetrayerAI : public CreatureAIScript
             for (uint8 i = 0; i < 4; i++)
                 SummonedTotems[i] = false;
 
-            spells[0].info = dbcSpell.LookupEntry(LIGHTNING_BOLT);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(LIGHTNING_BOLT);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].cooldown = 15;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 5000;
 
-            spells[1].info = dbcSpell.LookupEntry(MENNUS_HEALING_WARD);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(MENNUS_HEALING_WARD);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].cooldown = 20;
             spells[1].perctrigger = 10.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(TAINTED_EARTHGRAB_TOTEM);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(TAINTED_EARTHGRAB_TOTEM);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].cooldown = 0;
             spells[2].perctrigger = 0.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[3].info = dbcSpell.LookupEntry(TAINTED_STONESKIN_TOTEM);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(TAINTED_STONESKIN_TOTEM);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
             spells[3].cooldown = 0;
             spells[3].perctrigger = 0.0f;
             spells[3].attackstoptimer = 1000;
 
-            spells[4].info = dbcSpell.LookupEntry(CORRUPTED_NOVA_TOTEM);
+            spells[4].info = sSpellCustomizations.GetSpellInfo(CORRUPTED_NOVA_TOTEM);
             spells[4].targettype = TARGET_SELF;
             spells[4].instant = true;
             spells[4].cooldown = 0;
@@ -1241,21 +1241,21 @@ class RokmarTheCracklerAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(GRIEVOUS_WOUND);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(GRIEVOUS_WOUND);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 20;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(WATER_SPIT);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(WATER_SPIT);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = false;
             spells[1].cooldown = 10;
             spells[1].perctrigger = 16.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(ENSNARING_MOSS);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(ENSNARING_MOSS);
             spells[2].targettype = TARGET_RANDOM_SINGLE;
             spells[2].instant = false;
             spells[2].cooldown = 35;
@@ -1264,7 +1264,7 @@ class RokmarTheCracklerAI : public CreatureAIScript
             spells[2].mindist2cast = 0.0f;
             spells[2].maxdist2cast = 30.0f;
 
-            spells[3].info = dbcSpell.LookupEntry(ENRAGE);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(ENRAGE);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
             spells[3].cooldown = 0;
@@ -1437,7 +1437,7 @@ class QuagmirranAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(ACID_GEYSER);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(ACID_GEYSER);
             spells[0].targettype = TARGET_RANDOM_SINGLE;
             spells[0].instant = false;
             spells[0].cooldown = 20;
@@ -1446,14 +1446,14 @@ class QuagmirranAI : public CreatureAIScript
             spells[0].mindist2cast = 0.0f;
             spells[0].maxdist2cast = 40.0f;
 
-            spells[1].info = dbcSpell.LookupEntry(POISON_BOLT_VOLLEY);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(POISON_BOLT_VOLLEY);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].cooldown = 10;
             spells[1].perctrigger = 15.0f;
             spells[1].attackstoptimer = 2000;
 
-            spells[2].info = dbcSpell.LookupEntry(CLEAVE);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(CLEAVE);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].cooldown = 15;

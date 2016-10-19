@@ -40,7 +40,7 @@ class Veronia : public GossipScript
             switch(IntId)
             {
                 case 1:
-                    creat->CastSpell(plr, dbcSpell.LookupEntry(34905), true);
+                    creat->CastSpell(plr, sSpellCustomizations.GetSpellInfo(34905), true);
                     break;
             }
         }

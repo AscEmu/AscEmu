@@ -192,7 +192,7 @@ struct PointOfInterest
     std::string icon_name;
 };
 
-struct OLD_SpellEntry;
+struct SpellInfo;
 struct TrainerSpell
 {
     TrainerSpell() : spell(0), spellCost(0), reqSkill(0), reqSkillValue(0), reqLevel(0)
@@ -478,7 +478,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::map<uint32, LevelInfo*>                            LevelMap;
         typedef std::map<std::pair<uint32, uint32>, LevelMap*>          LevelInfoMap;
         
-        typedef std::map<uint32, std::set<OLD_SpellEntry*> >                PetDefaultSpellMap;
+        typedef std::map<uint32, std::set<SpellInfo*> >                PetDefaultSpellMap;
         typedef std::map<uint32, uint32>                                PetSpellCooldownMap;
         typedef std::multimap <uint32, uint32>                          BCEntryStorage;
         typedef std::map<uint32, SpellTargetConstraint*>                SpellTargetConstraintMap;
@@ -561,7 +561,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         GM_Ticket* GetGMTicketByPlayer(uint64 playerGuid);
 
         DBC::Structures::SkillLineAbilityEntry const* GetSpellSkill(uint32 id);
-        OLD_SpellEntry* GetNextSpellRank(OLD_SpellEntry* sp, uint32 level);
+        SpellInfo* GetNextSpellRank(SpellInfo* sp, uint32 level);
 
         //Vendors
         std::vector<CreatureItem> *GetVendorList(uint32 entry);
@@ -669,7 +669,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void GenerateLevelUpInfo();
 
         void LoadDefaultPetSpells();
-        std::set<OLD_SpellEntry*>* GetDefaultPetSpells(uint32 Entry);
+        std::set<SpellInfo*>* GetDefaultPetSpells(uint32 Entry);
         uint32 GetPetSpellCooldown(uint32 SpellId);
         void LoadPetSpellCooldowns();
         Movement::WayPointMap* GetWayPointMap(uint32 spawnid);

@@ -296,7 +296,7 @@ World::~World()
     //eventholder = 0;
     delete eventholder;
 
-    for (std::list<OLD_SpellEntry*>::iterator itr = dummyspells.begin(); itr != dummyspells.end(); ++itr)
+    for (std::list<SpellInfo*>::iterator itr = dummyspells.begin(); itr != dummyspells.end(); ++itr)
         delete *itr;
 }
 

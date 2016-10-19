@@ -130,12 +130,12 @@ class TotemofTikti : public QuestScript
             Coo->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 6000);
 
             if (mTarget->CalcDistance(Coo, mTarget) <= 10)
-                sEventMgr.AddEvent(static_cast<Unit*>(Coo), &Unit::EventCastSpell, Plr, dbcSpell.LookupEntry(30424), EVENT_CREATURE_UPDATE, 8750, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(static_cast<Unit*>(Coo), &Unit::EventCastSpell, Plr, sSpellCustomizations.GetSpellInfo(30424), EVENT_CREATURE_UPDATE, 8750, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
             std::string msg2 = "Coo xip fly... Jump ilos river. Find Tikti.";
             Coo->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 9000);
 
-            sEventMgr.AddEvent(static_cast<Unit*>(Coo), &Unit::EventCastSpell, Totem, dbcSpell.LookupEntry(30473), EVENT_CREATURE_UPDATE, 12750, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<Unit*>(Coo), &Unit::EventCastSpell, Totem, sSpellCustomizations.GetSpellInfo(30473), EVENT_CREATURE_UPDATE, 12750, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             Coo->Despawn(15200, 0);
         }
 
@@ -177,12 +177,12 @@ class TotemofYor : public QuestScript
             Tikti->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg.c_str(), 15000);
 
             if (mTarget->CalcDistance(Tikti, mTarget) <= 10)
-                sEventMgr.AddEvent(static_cast<Unit*>(Tikti), &Unit::EventCastSpell, Plr, dbcSpell.LookupEntry(30430), EVENT_CREATURE_UPDATE, 18000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(static_cast<Unit*>(Tikti), &Unit::EventCastSpell, Plr, sSpellCustomizations.GetSpellInfo(30430), EVENT_CREATURE_UPDATE, 18000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
             std::string msg2 = "[Furbolg] Go... Search yitix'kil bottom river. South!";
             Tikti->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 20000);
 
-            sEventMgr.AddEvent(static_cast<Unit*>(Tikti), &Unit::EventCastSpell, Totem, dbcSpell.LookupEntry(30431), EVENT_GMSCRIPT_EVENT, 20000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(static_cast<Unit*>(Tikti), &Unit::EventCastSpell, Totem, sSpellCustomizations.GetSpellInfo(30431), EVENT_GMSCRIPT_EVENT, 20000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
             Tikti->Despawn(24000, 0);
         }
@@ -225,17 +225,17 @@ class TotemofVark : public QuestScript
             Unit* Plr = static_cast<Unit*>(mTarget);
 
             // Change to Stillpine form
-            sEventMgr.AddEvent(Totem, &Unit::EventCastSpell, Totem, dbcSpell.LookupEntry(30446), EVENT_CREATURE_UPDATE, 15500, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(Totem, &Unit::EventCastSpell, Totem, sSpellCustomizations.GetSpellInfo(30446), EVENT_CREATURE_UPDATE, 15500, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             std::string msg2 = "[Furbolg] We go now, together. We will seek Vark.";
             Yor->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg2.c_str(), 26500);
 
             // Change to nightsaber form
-            sEventMgr.AddEvent(Totem, &Unit::EventCastSpell, Totem, dbcSpell.LookupEntry(30448), EVENT_CREATURE_UPDATE, 30000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(Totem, &Unit::EventCastSpell, Totem, sSpellCustomizations.GetSpellInfo(30448), EVENT_CREATURE_UPDATE, 30000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             std::string msg3 = "[Furbolg] Follow me to Vark.";
             Yor->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, msg3.c_str(), 31000);
 
             if (mTarget->CalcDistance(Totem, Plr) <= 10)
-                sEventMgr.AddEvent(Totem, &Unit::EventCastSpell, Plr, dbcSpell.LookupEntry(30448), EVENT_CREATURE_UPDATE, 31000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(Totem, &Unit::EventCastSpell, Plr, sSpellCustomizations.GetSpellInfo(30448), EVENT_CREATURE_UPDATE, 31000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
 
     // NEED TO MAKE THE PATH TO THE TOTEM OF VARK

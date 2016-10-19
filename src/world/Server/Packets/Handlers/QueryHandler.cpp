@@ -58,12 +58,10 @@ void WorldSession::HandleNameQueryOpcode(WorldPacket& recv_data)
 //////////////////////////////////////////////////////////////////////////////////////////
 void WorldSession::HandleQueryTimeOpcode(WorldPacket& recv_data)
 {
-
     WorldPacket data(SMSG_QUERY_TIME_RESPONSE, 4 + 4);
-    data << (uint32)UNIXTIME;
-    data << (uint32)0; //VLack: 3.1; thanks Stewart for reminding me to have the correct structure even if it seems the old one still works.
+    data << uint32(UNIXTIME);
+    data << uint32(0);          //\todo time left for reset daily quests
     SendPacket(&data);
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -222,58 +220,65 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles MSG_CORPSE_QUERY:
 //////////////////////////////////////////////////////////////////////////////////////////
-//void WorldSession::HandleCorpseQueryOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    LOG_DETAIL("WORLD: Received MSG_CORPSE_QUERY");
-//
-//    Corpse* pCorpse;
-//    WorldPacket data(MSG_CORPSE_QUERY, 25);
-//    MapInfo const* pMapinfo;
-//
-//    pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
-//    if (pCorpse)
-//    {
-//        pMapinfo = sMySQLStore.GetWorldMapInfo(pCorpse->GetMapId());
-//        if (pMapinfo)
-//        {
-//            if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
-//            {
-//                data << uint8(0x01);            //show ?
-//                data << pCorpse->GetMapId();    // mapid (that tombstones shown on)
-//                data << pCorpse->GetPositionX();
-//                data << pCorpse->GetPositionY();
-//                data << pCorpse->GetPositionZ();
-//                data << pCorpse->GetMapId();    //instance mapid (needs to be same as mapid to be able to recover corpse)
-//                data << uint32(0);
-//                SendPacket(&data);
-//            }
-//            else
-//            {
-//                data << uint8(0x01);            //show ?
-//                data << pMapinfo->repopmapid;   // mapid (that tombstones shown on)
-//                data << pMapinfo->repopx;
-//                data << pMapinfo->repopy;
-//                data << pMapinfo->repopz;
-//                data << pCorpse->GetMapId();    //instance mapid (needs to be same as mapid to be able to recover corpse)
-//                data << uint32(0);
-//                SendPacket(&data);
-//            }
-//        }
-//        else
-//        {
-//            data << uint8(0x01);                //show ?
-//            data << pCorpse->GetMapId();        // mapid (that tombstones shown on)
-//            data << pCorpse->GetPositionX();
-//            data << pCorpse->GetPositionY();
-//            data << pCorpse->GetPositionZ();
-//            data << pCorpse->GetMapId();        //instance mapid (needs to be same as mapid to be able to recover corpse)
-//            data << uint32(0);
-//            SendPacket(&data);
-//        }
-//    }
-//}
+void WorldSession::HandleCorpseQueryOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    LOG_DETAIL("WORLD: Received MSG_CORPSE_QUERY");
+    
+    Corpse* pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
+    if (!pCorpse)
+    {
+        WorldPacket data(MSG_CORPSE_QUERY, 1);
+        data << uint8(0);                   // no coprse for player
+        SendPacket(&data);
+    }
+    else
+    {
+        WorldPacket data(MSG_CORPSE_QUERY, 25);
+        data << uint8(1);                   // corpse found
+
+        uint32 corpsemap, repopmap;
+        float x, y, z;
+
+        MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(pCorpse->GetMapId());
+        if (pMapinfo)
+        {
+            if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
+            {
+                repopmap = pCorpse->GetMapId();    // mapid (that tombstones shown on)
+                x = pCorpse->GetPositionX();
+                y = pCorpse->GetPositionY();
+                z = pCorpse->GetPositionZ();
+                corpsemap = pCorpse->GetMapId();    //instance mapid (needs to be same as mapid to be able to recover corpse)
+            }
+            else
+            {
+                repopmap = pMapinfo->repopmapid;   // mapid (that tombstones shown on)
+                x = pMapinfo->repopx;
+                y = pMapinfo->repopy;
+                z = pMapinfo->repopz;
+                corpsemap = pCorpse->GetMapId();    //instance mapid (needs to be same as mapid to be able to recover corpse)
+            }
+        }
+        else
+        {
+            repopmap = pCorpse->GetMapId();        // mapid (that tombstones shown on)
+            x = pCorpse->GetPositionX();
+            y = pCorpse->GetPositionY();
+            z = pCorpse->GetPositionZ();
+            corpsemap = pCorpse->GetMapId();        //instance mapid (needs to be same as mapid to be able to recover corpse)
+        }
+
+        data << uint32(repopmap);
+        data << float(x);
+        data << float(y);
+        data << float(z);
+        data << uint32(corpsemap);
+        data << uint32(0);          //unk
+        SendPacket(&data);
+    }
+}
 
 //void WorldSession::HandlePageTextQueryOpcode(WorldPacket& recv_data)
 //{

@@ -450,7 +450,7 @@ class SERVER_DECL WorldSession
         void HandleRepairItemOpcode(WorldPacket& recvPacket);
         //void HandleAutoBankItemOpcode(WorldPacket& recvPacket);
         //void HandleAutoStoreBankItemOpcode(WorldPacket& recvPacket);
-        //void HandleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket);
+        void HandleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket);
         //void HandleInsertGemOpcode(WorldPacket& recvPacket);
         //void HandleItemRefundInfoOpcode(WorldPacket& recvPacket);
         //void HandleItemRefundRequestOpcode(WorldPacket& recvPacket);
@@ -516,7 +516,7 @@ class SERVER_DECL WorldSession
 
         /// Corpse opcodes (Corpse.cpp)
         void HandleCorpseReclaimOpcode(WorldPacket& recvPacket);
-        //void HandleCorpseQueryOpcode(WorldPacket& recvPacket);
+        void HandleCorpseQueryOpcode(WorldPacket& recvPacket);
         //void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
 
         /// Channel Opcodes (ChannelHandler.cpp)
@@ -732,6 +732,7 @@ class SERVER_DECL WorldSession
         void HandleInrangeQuestgiverQuery(WorldPacket& recv_data);
         //void HandleRemoveGlyph(WorldPacket& recv_data);
         //void HandleSetFactionInactiveOpcode(WorldPacket& recv_data);
+        void HandleRequestCemeteryListOpcode(WorldPacket& recv_data);
 
         // Calendar \todo handle it
         void HandleCalendarGetCalendar(WorldPacket& /*recv_data*/);

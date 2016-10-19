@@ -1741,7 +1741,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     if (pVictim == NULL || !pVictim->isAlive())
         return;
 
-    OLD_SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellID);
+    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellID);
     if (spellInfo == NULL)
         return;
 
@@ -1875,7 +1875,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
         if (spellpower > hp)
             spellpower = hp;
 
-        OLD_SpellEntry* entry = dbcSpell.LookupEntryForced(44413);
+        SpellInfo* entry = sSpellCustomizations.GetSpellInfo(44413);
         if (!entry)
             return;
 
@@ -2040,17 +2040,15 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
     if (!Caster || !Target || !Dmg)
         return;
 
-    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 108);
-
     uint32 Overkill = 0;
 
     if (Damage > Target->GetUInt32Value(UNIT_FIELD_MAXHEALTH))
         Overkill = Damage - Target->GetUInt32Value(UNIT_FIELD_HEALTH);
 
+    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 16 + 45);
     data << uint32(HitStatus);
     data << Caster->GetNewGUID();
     data << Target->GetNewGUID();
-
     data << uint32(Damage);                 // Realdamage
     data << uint32(Overkill);               // Overkill
     data << uint8(1);                       // Damage type counter / swing type
@@ -2096,8 +2094,11 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
         data << float(0);
         data << float(0);
 
-        data << float(0);       // Found in loop
-        data << float(0);       // Found in loop
+        for (uint8 i = 0; i < 5; ++i)
+        {
+            data << float(0);
+            data << float(0);
+        }
         data << uint32(0);
     }
 

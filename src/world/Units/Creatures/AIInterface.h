@@ -171,7 +171,7 @@ enum CreatureState
 };
 
 
-struct OLD_SpellEntry;
+struct SpellInfo;
 
 const uint32 AISPELL_ANY_DIFFICULTY = 4;
 
@@ -182,7 +182,7 @@ struct AI_Spell
     uint32 instance_mode;
     uint16 agent;
     uint32 procChance;
-    OLD_SpellEntry* spell;
+    SpellInfo* spell;
     uint8 spellType;
     uint8 spelltargetType;
     uint32 cooldown;
@@ -270,9 +270,9 @@ class SERVER_DECL AIInterface : public IUpdatable
         void setOutOfCombatRange(uint32 val) { m_outOfCombatRange = val; }
 
         // Spell
-        void CastSpell(Unit* caster, OLD_SpellEntry* spellInfo, SpellCastTargets targets);
-        OLD_SpellEntry* getSpellEntry(uint32 spellId);
-        SpellCastTargets setSpellTargets(OLD_SpellEntry* spellInfo, Unit* target);
+        void CastSpell(Unit* caster, SpellInfo* spellInfo, SpellCastTargets targets);
+        SpellInfo* getSpellEntry(uint32 spellId);
+        SpellCastTargets setSpellTargets(SpellInfo* spellInfo, Unit* target);
         AI_Spell* getSpell();
         void addSpellToList(AI_Spell* sp);
         ///\todo don't use this until i finish it !!
@@ -295,7 +295,7 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         void OnDeath(Object* pKiller);
         void AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellId = 0);
-        void HealReaction(Unit* caster, Unit* victim, OLD_SpellEntry* sp, uint32 amount);
+        void HealReaction(Unit* caster, Unit* victim, SpellInfo* sp, uint32 amount);
         void EventAiInterfaceParamsetFinish();
         void EventChangeFaction(Unit* ForceAttackersToHateThisInstead = NULL);    /// we have to tell our current enemies to stop attacking us, we should also forget about our targets
 
@@ -360,7 +360,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         void _CalcDestinationAndMove(Unit* target, float dist);
         float _CalcCombatRange(Unit* target, bool ranged);
         float _CalcDistanceFromHome();
-        uint32 _CalcThreat(uint32 damage, OLD_SpellEntry* sp, Unit* Attacker);
+        uint32 _CalcThreat(uint32 damage, SpellInfo* sp, Unit* Attacker);
 
         void SetAllowedToEnterCombat(bool val) { m_AllowedToEnterCombat = val; }
         inline bool GetAllowedToEnterCombat(void) { return m_AllowedToEnterCombat; }
@@ -398,7 +398,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         float m_CallForHelpHealth;
         uint32 m_totemspelltimer;
         uint32 m_totemspelltime;
-        OLD_SpellEntry* totemspell;
+        SpellInfo* totemspell;
 
         uint32 m_totalMoveTime;
         inline void AddStopTime(uint32 Time) { m_moveTimer += Time; }
