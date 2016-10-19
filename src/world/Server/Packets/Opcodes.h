@@ -790,9 +790,9 @@ enum Opcodes
     MSG_CORPSE_QUERY                                    = 0x4336,
     CMSG_SPIRIT_HEALER_ACTIVATE                         = 0x2E26,
     SMSG_SPIRIT_HEALER_CONFIRM                          = 0x4917,
-    SMSG_CORPSE_RECLAIM_DELAY                           = 0x0D34, // 15595
-    SMSG_DEATH_RELEASE_LOC                              = 0x2F07, // 15595
-    SMSG_PRE_RESURRECT                                  = 0x6C36, // 15595
+    SMSG_CORPSE_RECLAIM_DELAY                           = 0x0D34,
+    SMSG_DEATH_RELEASE_LOC                              = 0x2F07,
+    SMSG_PRE_RESURRECT                                  = 0x6C36,
     CMSG_RETURN_TO_GRAVEYARD                            = 0x301E, // 15595
     CMSG_REPOP_REQUEST                                  = 0x6235,
     SMSG_RESURRECT_REQUEST                              = 0x2905,
