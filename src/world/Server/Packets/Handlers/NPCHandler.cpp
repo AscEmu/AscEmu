@@ -568,8 +568,8 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-        if (!_player->IsDead())
-            return;
+    if (!_player->IsDead())
+        return;
 
     GetPlayer()->DeathDurabilityLoss(0.25);
     GetPlayer()->ResurrectPlayer();
@@ -577,8 +577,7 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
     if (_player->getLevel() > 10)
     {
         Aura* aur = GetPlayer()->FindAura(15007);
-
-        if (aur == NULL)        // If the player already have the aura, just extend it.
+        if (aur == nullptr)        // If the player already have the aura, just extend it.
         {
             SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(15007);    //resurrection sickness
             SpellCastTargets targets;
@@ -587,13 +586,11 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
             sp->prepare(&targets);
         }
 
-        //calc new duration
-        int32 duration = 600000;        //10mins
-
+        int32 duration = 600000;    //10mins
         if (_player->getLevel() < 20)
             duration = (_player->getLevel() - 10) * 60000;
 
-        _player->SetAurDuration(15007, duration);                   //cebernic: change this to setaurduration() to be refreshed.
+        _player->SetAurDuration(15007, duration);
     }
 
     GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);

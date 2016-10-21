@@ -1739,164 +1739,165 @@ void WorldSession::HandleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacke
     item->RemoveAllEnchantments(true);
 }
 
-//void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint64 itemguid;
-//    uint64 gemguid[3];
-//    ItemInterface* itemi = _player->GetItemInterface();
-//    DBC::Structures::GemPropertiesEntry const* gem_properties;
-//    DBC::Structures::SpellItemEnchantmentEntry const* spell_item_enchant;
-//    recvPacket >> itemguid;
-//
-//    Item* TargetItem = itemi->GetItemByGUID(itemguid);
-//    if (!TargetItem)
-//        return;
-//
-//    ItemProperties const* TargetProto = TargetItem->GetItemProperties();
-//    int slot = itemi->GetInventorySlotByGuid(itemguid);
-//
-//    bool apply = (slot >= 0 && slot < 19);
-//    uint32 FilledSlots = 0;
-//
-//    //cheat -> tried to socket same gem multiple times
-//    for (uint8 i = 0; i < 3; ++i)
-//        recvPacket >> gemguid[i];
-//
-//    if ((gemguid[0] && (gemguid[0] == gemguid[1] || gemguid[0] == gemguid[2])) || (gemguid[1] && (gemguid[1] == gemguid[2])))
-//    {
-//        return;
-//    }
-//
-//    bool ColorMatch = true;
-//    for (uint32 i = 0; i < TargetItem->GetSocketsCount(); ++i)
-//    {
-//        EnchantmentInstance* EI = TargetItem->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + i);
-//        if (EI)
-//        {
-//            FilledSlots++;
-//            ItemProperties const* ip = sMySQLStore.GetItemProperties(EI->Enchantment->GemEntry);
-//            if (ip == nullptr)
-//                gem_properties = nullptr;
-//            else
-//                gem_properties = sGemPropertiesStore.LookupEntry(ip->GemProperties);
-//
-//            if (gem_properties && !(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
-//                ColorMatch = false;
-//        }
-//
-//        if (gemguid[i])  //add or replace gem
-//        {
-//            Item* it = NULL;
-//            ItemProperties const* ip = nullptr;
-//
-//            // tried to put gem in socket where no socket exists (take care about prismatic sockets)
-//            if (!TargetProto->Sockets[i].SocketColor)
-//            {
-//                // no prismatic socket
-//                if (!TargetItem->GetEnchantment(PRISMATIC_ENCHANTMENT_SLOT))
-//                    return;
-//
-//                // not first not-colored (not normally used) socket
-//                if (i != 0 && !TargetProto->Sockets[i - 1].SocketColor && (i + 1 >= 3 || TargetProto->Sockets[i + 1].SocketColor))
-//                    return;
-//
-//                // ok, this is first not colored socket for item with prismatic socket
-//            }
-//
-//
-//            if (apply)
-//            {
-//                it = itemi->GetItemByGUID(gemguid[i]);
-//                if (!it)
-//                    continue;
-//
-//                ip = it->GetItemProperties();
-//                if (ip->Flags & ITEM_FLAG_UNIQUE_EQUIP && itemi->IsEquipped(ip->ItemId))
-//                {
-//                    itemi->BuildInventoryChangeError(it, TargetItem, INV_ERR_CANT_CARRY_MORE_OF_THIS);
-//                    continue;
-//                }
-//                // Skill requirement
-//                if (ip->RequiredSkill)
-//                {
-//                    if (ip->RequiredSkillRank > _player->_GetSkillLineCurrent(ip->RequiredSkill, true))
-//                    {
-//                        itemi->BuildInventoryChangeError(it, TargetItem, INV_ERR_SKILL_ISNT_HIGH_ENOUGH);
-//                        continue;
-//                    }
-//                }
-//                if (ip->ItemLimitCategory)
-//                {
-//                    auto item_limit_category = sItemLimitCategoryStore.LookupEntry(ip->ItemLimitCategory);
-//                    if (item_limit_category != nullptr && itemi->GetEquippedCountByItemLimit(ip->ItemLimitCategory) >= item_limit_category->maxAmount)
-//                    {
-//                        itemi->BuildInventoryChangeError(it, TargetItem, INV_ERR_ITEM_MAX_COUNT_EQUIPPED_SOCKETED);
-//                        continue;
-//                    }
-//                }
-//            }
-//
-//            it = itemi->SafeRemoveAndRetreiveItemByGuid(gemguid[i], true);
-//            if (!it)
-//                return; //someone sending hacked packets to crash server
-//
-//            gem_properties = sGemPropertiesStore.LookupEntry(it->GetItemProperties()->GemProperties);
-//            it->DeleteMe();
-//
-//            if (!gem_properties)
-//                continue;
-//
-//            if (!(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
-//                ColorMatch = false;
-//
-//            if (!gem_properties->EnchantmentID)//this is ok in few cases
-//                continue;
-//            //Meta gems only go in meta sockets.
-//            if (TargetProto->Sockets[i].SocketColor != GEM_META_SOCKET && gem_properties->SocketMask == GEM_META_SOCKET)
-//                continue;
-//            if (EI)//replace gem
-//                TargetItem->RemoveEnchantment(2 + i); //remove previous
-//            else//add gem
-//                FilledSlots++;
-//
-//            spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(gem_properties->EnchantmentID);
-//            if (spell_item_enchant != nullptr)
-//            {
-//                if (TargetItem->GetItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
-//                    TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, 2 + i);
-//            }
-//
-//        }
-//    }
-//
-//    //Add color match bonus
-//    if (TargetItem->GetItemProperties()->SocketBonus)
-//    {
-//        if (ColorMatch && (FilledSlots == TargetItem->GetSocketsCount()))
-//        {
-//            if (TargetItem->HasEnchantment(TargetItem->GetItemProperties()->SocketBonus) > 0)
-//                return;
-//
-//            spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(TargetItem->GetItemProperties()->SocketBonus);
-//            if (spell_item_enchant != nullptr)
-//            {
-//                if (TargetItem->GetItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
-//                {
-//                    uint32 Slot = TargetItem->FindFreeEnchantSlot(spell_item_enchant, 0);
-//                    TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, Slot);
-//                }
-//            }
-//        }
-//        else  //remove
-//        {
-//            TargetItem->RemoveSocketBonusEnchant();
-//        }
-//    }
-//
-//    TargetItem->m_isDirty = true;
-//}
+void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    uint64 itemguid;
+    uint64 gemguid[3];
+    ItemInterface* itemi = _player->GetItemInterface();
+
+    DBC::Structures::GemPropertiesEntry const* gem_properties;
+    DBC::Structures::SpellItemEnchantmentEntry const* spell_item_enchant;
+
+    recvPacket >> itemguid;
+
+    Item* TargetItem = itemi->GetItemByGUID(itemguid);
+    if (!TargetItem)
+        return;
+
+    ItemProperties const* TargetProto = TargetItem->GetItemProperties();
+    int slot = itemi->GetInventorySlotByGuid(itemguid);
+
+    bool apply = (slot >= 0 && slot < 19);
+    uint32 FilledSlots = 0;
+
+    //cheat -> tried to socket same gem multiple times
+    for (uint8 i = 0; i < 3; ++i)
+        recvPacket >> gemguid[i];
+
+    if ((gemguid[0] && (gemguid[0] == gemguid[1] || gemguid[0] == gemguid[2])) || (gemguid[1] && (gemguid[1] == gemguid[2])))
+    {
+        return;
+    }
+
+    bool ColorMatch = true;
+    for (uint32 i = 0; i < TargetItem->GetSocketsCount(); ++i)
+    {
+        EnchantmentInstance* EI = TargetItem->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + i);
+        if (EI)
+        {
+            FilledSlots++;
+            ItemProperties const* ip = sMySQLStore.GetItemProperties(EI->Enchantment->GemEntry);
+            if (ip == nullptr)
+                gem_properties = nullptr;
+            else
+                gem_properties = sGemPropertiesStore.LookupEntry(ip->GemProperties);
+
+            if (gem_properties && !(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
+                ColorMatch = false;
+        }
+
+        if (gemguid[i])  //add or replace gem
+        {
+            Item* it = NULL;
+            ItemProperties const* ip = nullptr;
+
+            // tried to put gem in socket where no socket exists (take care about prismatic sockets)
+            if (!TargetProto->Sockets[i].SocketColor)
+            {
+                // no prismatic socket
+                if (!TargetItem->GetEnchantment(PRISMATIC_ENCHANTMENT_SLOT))
+                    return;
+
+                // not first not-colored (not normally used) socket
+                if (i != 0 && !TargetProto->Sockets[i - 1].SocketColor && (i + 1 >= 3 || TargetProto->Sockets[i + 1].SocketColor))
+                    return;
+
+                // ok, this is first not colored socket for item with prismatic socket
+            }
+
+
+            if (apply)
+            {
+                it = itemi->GetItemByGUID(gemguid[i]);
+                if (!it)
+                    continue;
+
+                ip = it->GetItemProperties();
+                if (ip->Flags & ITEM_FLAG_UNIQUE_EQUIP && itemi->IsEquipped(ip->ItemId))
+                {
+                    itemi->BuildInventoryChangeError(it, TargetItem, INV_ERR_CANT_CARRY_MORE_OF_THIS);
+                    continue;
+                }
+                // Skill requirement
+                if (ip->RequiredSkill)
+                {
+                    if (ip->RequiredSkillRank > _player->_GetSkillLineCurrent(ip->RequiredSkill, true))
+                    {
+                        itemi->BuildInventoryChangeError(it, TargetItem, INV_ERR_SKILL_ISNT_HIGH_ENOUGH);
+                        continue;
+                    }
+                }
+                if (ip->ItemLimitCategory)
+                {
+                    auto item_limit_category = sItemLimitCategoryStore.LookupEntry(ip->ItemLimitCategory);
+                    if (item_limit_category != nullptr && itemi->GetEquippedCountByItemLimit(ip->ItemLimitCategory) >= item_limit_category->maxAmount)
+                    {
+                        itemi->BuildInventoryChangeError(it, TargetItem, INV_ERR_ITEM_MAX_COUNT_EQUIPPED_SOCKETED);
+                        continue;
+                    }
+                }
+            }
+
+            it = itemi->SafeRemoveAndRetreiveItemByGuid(gemguid[i], true);
+            if (!it)
+                return; //someone sending hacked packets to crash server
+
+            gem_properties = sGemPropertiesStore.LookupEntry(it->GetItemProperties()->GemProperties);
+            it->DeleteMe();
+
+            if (!gem_properties)
+                continue;
+
+            if (!(gem_properties->SocketMask & TargetProto->Sockets[i].SocketColor))
+                ColorMatch = false;
+
+            if (!gem_properties->EnchantmentID)//this is ok in few cases
+                continue;
+            //Meta gems only go in meta sockets.
+            if (TargetProto->Sockets[i].SocketColor != GEM_META_SOCKET && gem_properties->SocketMask == GEM_META_SOCKET)
+                continue;
+            if (EI)//replace gem
+                TargetItem->RemoveEnchantment(2 + i); //remove previous
+            else//add gem
+                FilledSlots++;
+
+            spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(gem_properties->EnchantmentID);
+            if (spell_item_enchant != nullptr)
+            {
+                if (TargetItem->GetItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+                    TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, 2 + i);
+            }
+        }
+    }
+
+    //Add color match bonus
+    if (TargetItem->GetItemProperties()->SocketBonus)
+    {
+        if (ColorMatch && (FilledSlots == TargetItem->GetSocketsCount()))
+        {
+            if (TargetItem->HasEnchantment(TargetItem->GetItemProperties()->SocketBonus) > 0)
+                return;
+
+            spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(TargetItem->GetItemProperties()->SocketBonus);
+            if (spell_item_enchant != nullptr)
+            {
+                if (TargetItem->GetItemProperties()->SubClass != ITEM_SUBCLASS_WEAPON_THROWN)
+                {
+                    uint32 Slot = TargetItem->FindFreeEnchantSlot(spell_item_enchant, 0);
+                    TargetItem->AddEnchantment(spell_item_enchant, 0, true, apply, false, Slot);
+                }
+            }
+        }
+        else  //remove
+        {
+            TargetItem->RemoveSocketBonusEnchant();
+        }
+    }
+
+    TargetItem->m_isDirty = true;
+}
 
 //void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
 //{

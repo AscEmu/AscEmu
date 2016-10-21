@@ -451,7 +451,7 @@ class SERVER_DECL WorldSession
         //void HandleAutoBankItemOpcode(WorldPacket& recvPacket);
         //void HandleAutoStoreBankItemOpcode(WorldPacket& recvPacket);
         void HandleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket);
-        //void HandleInsertGemOpcode(WorldPacket& recvPacket);
+        void HandleInsertGemOpcode(WorldPacket& recvPacket);
         //void HandleItemRefundInfoOpcode(WorldPacket& recvPacket);
         //void HandleItemRefundRequestOpcode(WorldPacket& recvPacket);
 

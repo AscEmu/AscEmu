@@ -343,7 +343,6 @@ enum Opcodes
     SMSG_MOVE_UNSET_FLIGHT_OBSOLETE                 = 0x33F,
     CMSG_MOVE_FLIGHT_ACK_OBSOLETE                   = 0x340,
     CMSG_MOVE_SET_FLY                               = 0x346,
-    CMSG_SOCKET_GEMS                                = 0x347,
     CMSG_ARENA_TEAM_CREATE                          = 0x348,
     SMSG_ARENA_TEAM_COMMAND_RESULT                  = 0x349,
     UMSG_UPDATE_ARENA_TEAM_OBSOLETE                 = 0x34A,
@@ -738,8 +737,8 @@ enum Opcodes
     SMSG_CREATURE_QUERY_RESPONSE                        = 0x6024,
     CMSG_WHO                                            = 0x6C15,
     SMSG_WHO                                            = 0x6907,
-    CMSG_WHOIS                                          = 0x6B05,   // not implemented
-    SMSG_WHOIS                                          = 0x6917,   // not implemented
+    CMSG_WHOIS                                          = 0x6B05,
+    SMSG_WHOIS                                          = 0x6917,
     CMSG_CONTACT_LIST                                   = 0x4534,   // not sure
     SMSG_CONTACT_LIST                                   = 0x6017,   // not sure
     SMSG_FRIEND_STATUS                                  = 0x0717,   // not sure
@@ -750,13 +749,13 @@ enum Opcodes
     CMSG_DEL_IGNORE                                     = 0x6D26,
     SMSG_UPDATE_OBJECT                                  = 0x4715,
     SMSG_DESTROY_OBJECT                                 = 0x4724,
-    CMSG_GAMEOBJ_USE                                    = 0x4E17,   // not sure
+    CMSG_GAMEOBJ_USE                                    = 0x4E17,
     SMSG_TRIGGER_CINEMATIC                              = 0x6C27,
-    SMSG_TUTORIAL_FLAGS                                 = 0x0B35,   // not sure
+    SMSG_TUTORIAL_FLAGS                                 = 0x0B35,
     CMSG_TUTORIAL_FLAG                                  = 0x6C26,
     CMSG_TUTORIAL_CLEAR                                 = 0x6515,
     CMSG_TUTORIAL_RESET                                 = 0x2726,
-    CMSG_EMOTE                                          = 0x4C26,   // not sure
+    CMSG_EMOTE                                          = 0x4C26,
     SMSG_EMOTE                                          = 0x0A34,
     CMSG_TEXT_EMOTE                                     = 0x2E24,
     SMSG_TEXT_EMOTE                                     = 0x0B05,
@@ -789,17 +788,18 @@ enum Opcodes
     CMSG_SET_ACTIVE_MOVER                               = 0x3314,
     CMSG_RECLAIM_CORPSE                                 = 0x4036,
     MSG_CORPSE_QUERY                                    = 0x4336,
-    CMSG_SPIRIT_HEALER_ACTIVATE                         = 0x2E26, // 15595
-    SMSG_SPIRIT_HEALER_CONFIRM                          = 0x4917, // 15595
-    SMSG_CORPSE_RECLAIM_DELAY                           = 0x0D34, // 15595
-    SMSG_DEATH_RELEASE_LOC                              = 0x2F07, // 15595
-    SMSG_PRE_RESURRECT                                  = 0x6C36, // 15595
-    CMSG_RETURN_TO_GRAVEYARD                            = 0x301E, // 15595
+    CMSG_SPIRIT_HEALER_ACTIVATE                         = 0x2E26,
+    SMSG_SPIRIT_HEALER_CONFIRM                          = 0x4917,
+    SMSG_CORPSE_RECLAIM_DELAY                           = 0x0D34,
+    SMSG_DEATH_RELEASE_LOC                              = 0x2F07,
+    SMSG_PRE_RESURRECT                                  = 0x6C36,
+    CMSG_RETURN_TO_GRAVEYARD                            = 0x301E,
     CMSG_REPOP_REQUEST                                  = 0x6235,
     SMSG_RESURRECT_REQUEST                              = 0x2905,
     CMSG_RESURRECT_RESPONSE                             = 0x6827,
     CMSG_NEXT_CINEMATIC_CAMERA                          = 0x2014,
     CMSG_COMPLETE_CINEMATIC                             = 0x2116,
+    CMSG_SOCKET_GEMS                                    = 0x2F04,
 
     //GM
     CMSG_GM_NUKE_CHARACTER                              = 0x507,   // unchecked
@@ -948,7 +948,6 @@ enum Opcodes
     MSG_MOVE_WORLDPORT_ACK                              = 0x2411,
     SMSG_MOVE_WATER_WALK                                = 0x75B1,
     SMSG_MOVE_LAND_WALK                                 = 0x34B7,
-    MSG_MOVE_SET_RAW_POSITION_ACK                       = 0x0E0,// need new opcode
     CMSG_MOVE_SET_RAW_POSITION                          = 0x10E2,
     SMSG_FORCE_RUN_SPEED_CHANGE                         = 0x10E3,
     CMSG_FORCE_RUN_SPEED_CHANGE_ACK                     = 0x10E4,
@@ -964,7 +963,6 @@ enum Opcodes
     MSG_MOVE_UNROOT                                     = 0x10EE,
     SMSG_MOVE_KNOCK_BACK                                = 0x5CB4,
     CMSG_MOVE_KNOCK_BACK_ACK                            = 0x721C,
-    MSG_MOVE_KNOCK_BACK                                 = 0x0F1,// ned new opcode
     SMSG_MOVE_FEATHER_FALL                              = 0x79B0,
     SMSG_MOVE_NORMAL_FALL                               = 0x51B6,
     SMSG_MOVE_SET_HOVER                                 = 0x5CB3,

@@ -1139,7 +1139,7 @@ void Player::Update(unsigned long time_passed)
             if (m_UnderwaterTime >= m_UnderwaterMaxTime)
             {
                 m_UnderwaterTime = m_UnderwaterMaxTime;
-                StopMirrorTimer(1);
+                StopMirrorTimer(MIRROR_TYPE_BREATH);
             }
         }
     }
@@ -4642,9 +4642,9 @@ void Player::BuildPlayerRepop()
         sp->prepare(&tgt);
     }
 
-    StopMirrorTimer(0);
-    StopMirrorTimer(1);
-    StopMirrorTimer(2);
+    StopMirrorTimer(MIRROR_TYPE_FATIGUE);
+    StopMirrorTimer(MIRROR_TYPE_BREATH);
+    StopMirrorTimer(MIRROR_TYPE_FIRE);
 
     SetFlag(PLAYER_FLAGS, PLAYER_FLAG_DEATH_WORLD_ENABLE);
 
@@ -4683,8 +4683,6 @@ void Player::RepopRequestedPlayer()
         return;
     }
 
-    MapInfo const* pMapinfo = NULL;
-
     // Set death state to corpse, that way players will lose visibility
     setDeathState(CORPSE);
 
@@ -4699,24 +4697,19 @@ void Player::RepopRequestedPlayer()
     if (corpse)
         CreateCorpse();
 
-
     BuildPlayerRepop();
-
 
     // Cebernic: don't do this.
     if (!m_bg || (m_bg && m_bg->HasStarted()))
     {
-        pMapinfo = sMySQLStore.GetWorldMapInfo(GetMapId());
-        if (pMapinfo != NULL)
+        MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(GetMapId());
+        if (pMapinfo)
         {
             if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
-            {
                 RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
-            }
             else
-            {
                 RepopAtGraveyard(pMapinfo->repopx, pMapinfo->repopy, pMapinfo->repopz, pMapinfo->repopmapid);
-            }
+
             switch (pMapinfo->mapid)
             {
                 case 533: // Naxx
@@ -4727,7 +4720,6 @@ void Player::RepopRequestedPlayer()
                     ResurrectPlayer();
                     return;
             }
-
         }
         else
         {
@@ -4744,24 +4736,21 @@ void Player::RepopRequestedPlayer()
         if (myCorpseInstanceId != 0)
         {
             Corpse* myCorpse = objmgr.GetCorpseByOwner(GetLowGUID());
-            if (myCorpse != NULL)
+            if (myCorpse != nullptr)
                 myCorpse->ResetDeathClock();
         }
 
-        /* Send Spirit Healer Location */
+        // Send Spirit Healer Location
         WorldPacket data(SMSG_DEATH_RELEASE_LOC, 16);
-
         data << m_mapId;
         data << m_position;
-
         m_session->SendPacket(&data);
 
-        /* Corpse reclaim delay */
+        // Corpse reclaim delay
         WorldPacket data2(SMSG_CORPSE_RECLAIM_DELAY, 4);
         data2 << uint32(CORPSE_RECLAIM_TIME_MS);
         m_session->SendPacket(&data2);
     }
-
 }
 
 void Player::ResurrectPlayer()
@@ -4831,9 +4820,9 @@ void Player::KillPlayer()
     m_session->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
 
     SetMovement(MOVE_ROOT, 0);
-    StopMirrorTimer(0);
-    StopMirrorTimer(1);
-    StopMirrorTimer(2);
+    StopMirrorTimer(MIRROR_TYPE_FATIGUE);
+    StopMirrorTimer(MIRROR_TYPE_BREATH);
+    StopMirrorTimer(MIRROR_TYPE_FIRE);
 
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE); // Player death animation, also can be used with DYNAMIC_FLAGS <- huh???
     SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0x00);
@@ -8455,7 +8444,7 @@ void Player::EndDuel(uint8 WinCondition)
     DuelingWith = NULL;
 }
 
-void Player::StopMirrorTimer(uint32 Type)
+void Player::StopMirrorTimer(MirrorTimerTypes Type)
 {
     m_session->OutPacket(SMSG_STOP_MIRROR_TIMER, 4, &Type);
 }
@@ -9322,8 +9311,9 @@ void Player::CompleteLoading()
             Corpse* myCorpse = objmgr.GetCorpseByOwner(GetLowGUID());
             if (myCorpse != NULL)
                 myCorpse->ResetDeathClock();
+
             WorldPacket SendCounter(SMSG_CORPSE_RECLAIM_DELAY, 4);
-            SendCounter << (uint32)(CORPSE_RECLAIM_TIME_MS);
+            SendCounter << uint32(CORPSE_RECLAIM_TIME_MS);
             GetSession()->SendPacket(&SendCounter);
         }
         //RepopRequestedPlayer();
@@ -12981,7 +12971,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
 void Player::HandleKnockback(Object* caster, float horizontal, float vertical)
 {
-    if (caster == NULL)
+    if (caster == nullptr)
         caster = this;
 
     float angle = calcRadAngle(caster->GetPositionX(), caster->GetPositionY(), GetPositionX(), GetPositionY());
@@ -12991,14 +12981,30 @@ void Player::HandleKnockback(Object* caster, float horizontal, float vertical)
     float sin = sinf(angle);
     float cos = cosf(angle);
 
-    WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
+    ObjectGuid guid = GetGUID();
 
-    data << GetNewGUID();
-    data << uint32(getMSTime());
-    data << float(cos);
+    WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
+    data.WriteByteMask(guid[0]);
+    data.WriteByteMask(guid[3]);
+    data.WriteByteMask(guid[6]);
+    data.WriteByteMask(guid[7]);
+    data.WriteByteMask(guid[2]);
+    data.WriteByteMask(guid[5]);
+    data.WriteByteMask(guid[1]);
+    data.WriteByteMask(guid[4]);
+
+    data.WriteByteSeq(guid[1]);
     data << float(sin);
+    data << uint32(0);              // unk
+    data.WriteByteSeq(guid[6]);
+    data.WriteByteSeq(guid[7]);
     data << float(horizontal);
+    data.WriteByteSeq(guid[4]);
+    data.WriteByteSeq(guid[5]);
+    data.WriteByteSeq(guid[3]);
     data << float(-vertical);
+    data.WriteByteSeq(guid[2]);
+    data.WriteByteSeq(guid[0]);
 
     GetSession()->SendPacket(&data);
 
