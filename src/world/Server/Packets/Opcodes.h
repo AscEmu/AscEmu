@@ -684,7 +684,6 @@ enum Opcodes
     SMSG_UI_TIME                                        = 0x4A14,
 
     SMSG_CLIENTCACHE_VERSION                            = 0x2734,
-    CMSG_GAMEOBJ_REPORT_USE                             = 0x4827,
     CMSG_KEEP_ALIVE                                     = 0x0015,   // not implemented?
     SMSG_UPDATE_ACCOUNT_DATA_COMPLETE                   = 0x2015,
     SMSG_STANDSTATE_UPDATE                              = 0x6F04,
@@ -737,7 +736,7 @@ enum Opcodes
     CMSG_DEL_IGNORE                                     = 0x6D26,
     SMSG_UPDATE_OBJECT                                  = 0x4715,
     SMSG_DESTROY_OBJECT                                 = 0x4724,
-    CMSG_GAMEOBJ_USE                                    = 0x4E17,
+    
     SMSG_TRIGGER_CINEMATIC                              = 0x6C27,
     SMSG_TUTORIAL_FLAGS                                 = 0x0B35,
     CMSG_TUTORIAL_FLAG                                  = 0x6C26,
@@ -1161,6 +1160,8 @@ enum Opcodes
     SMSG_BUY_FAILED                                     = 0x6435,    // 4.3.4
     CMSG_BUYBACK_ITEM                                   = 0x6C17,    // 4.3.4
     SMSG_GAMEOBJECT_DESPAWN_ANIM                        = 0x6735,
+    CMSG_GAMEOBJ_REPORT_USE                             = 0x4827,
+    CMSG_GAMEOBJ_USE                                    = 0x4E17,
 
     //Taxi
     CMSG_SET_TAXI_BENCHMARK_MODE                        = 0x4314,

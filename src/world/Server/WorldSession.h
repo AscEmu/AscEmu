@@ -317,7 +317,7 @@ class SERVER_DECL WorldSession
         //void HandleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket);
         void HandleTogglePVPOpcode(WorldPacket& recvPacket);
         //void HandleAmmoSetOpcode(WorldPacket& recvPacket);
-        //void HandleGameObjectUse(WorldPacket& recvPacket);
+        void HandleGameObjectUse(WorldPacket& recvPacket);
         //void HandleBarberShopResult(WorldPacket& recvPacket);
         //void HandleLeaveChannelOpcode(WorldPacket& recvPacket);
         void HandlePlayedTimeOpcode(WorldPacket& recv_data);

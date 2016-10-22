@@ -1521,391 +1521,393 @@ void WorldSession::HandleTogglePVPOpcode(WorldPacket& recv_data)
 //#endif
 //}
 
-//void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint64 guid;
-//    recv_data >> guid;
-//    SpellCastTargets targets;
-//    Spell* spell = NULL;
-//    SpellInfo* spellInfo = NULL;
-//    LOG_DEBUG("WORLD: CMSG_GAMEOBJ_USE: [GUID %d]", guid);
-//
-//    GameObject* obj = _player->GetMapMgr()->GetGameObject((uint32)guid);
-//    if (!obj)
-//        return;
-//    auto gameobject_info = obj->GetGameObjectProperties();
-//    if (!gameobject_info)
-//        return;
-//
-//    Player* plyr = GetPlayer();
-//
-//    //Event Scripts
-//    objmgr.CheckforScripts(plyr, obj->GetGameObjectProperties()->raw.parameter_9);
-//
-//    CALL_GO_SCRIPT_EVENT(obj, OnActivate)(_player);
-//    CALL_INSTANCE_SCRIPT_EVENT(_player->GetMapMgr(), OnGameObjectActivate)(obj, _player);
-//
-//    _player->RemoveStealth(); // cebernic:RemoveStealth due to GO was using. Blizzlike
-//
-//    uint32 type = obj->GetType();
-//    switch (type)
-//    {
-//        case GAMEOBJECT_TYPE_CHAIR:
-//        {
-//            plyr->SafeTeleport(plyr->GetMapId(), plyr->GetInstanceID(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
-//            plyr->SetStandState(STANDSTATE_SIT_MEDIUM_CHAIR);
-//            plyr->m_lastRunSpeed = 0; //counteract mount-bug; reset speed to zero to force update SetPlayerSpeed in next line.
-//            plyr->UpdateSpeed();
-//        }
-//        break;
-//        case GAMEOBJECT_TYPE_BARBER_CHAIR:
-//        {
-//            plyr->SafeTeleport(plyr->GetMapId(), plyr->GetInstanceID(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
-//            plyr->m_lastRunSpeed = 0; //counteract mount-bug; reset speed to zero to force update SetPlayerSpeed in next line.
-//            plyr->UpdateSpeed();
-//            //send barber shop menu to player
-//            WorldPacket data(SMSG_ENABLE_BARBER_SHOP, 0);
-//            SendPacket(&data);
-//            plyr->SetStandState(STANDSTATE_SIT_HIGH_CHAIR);
-//        }
-//        break;
-//        case GAMEOBJECT_TYPE_CHEST:     //cast da spell
-//        {
-//            spellInfo = sSpellCustomizations.GetSpellInfo(OPEN_CHEST);
-//            spell = sSpellFactoryMgr.NewSpell(plyr, spellInfo, true, NULL);
-//            _player->m_currentSpell = spell;
-//            targets.m_unitTarget = obj->GetGUID();
-//            spell->prepare(&targets);
-//        }
-//        break;
-//        case GAMEOBJECT_TYPE_FISHINGNODE:
-//        {
-//            sEventMgr.RemoveEvents(_player, EVENT_STOP_CHANNELING);
-//
-//            GameObject_FishingNode* fn = static_cast<GameObject_FishingNode*>(obj);
-//
-//            bool success = fn->UseNode();
-//
-//            uint32 zone = 0;
-//            FishingZoneEntry const* entry = nullptr;
-//
-//            if (success)
-//            {
-//                zone = plyr->GetAreaID();
-//
-//                if (zone == 0)                  // If the player's area ID is 0, use the zone ID instead
-//                    zone = plyr->GetZoneId();
-//
-//                entry = sMySQLStore.GetFishingZone(zone);
-//                if (entry == nullptr)
-//                {
-//                    sLog.outError("ERROR: Fishing zone information for zone %d not found!", zone);
-//                    fn->EndFishing(true);
-//                    success = false;
-//                }
-//            }
-//
-//            if (success)
-//            {
-//                uint32 maxskill = entry->MaxSkill;
-//                uint32 minskill = entry->MinSkill;
-//
-//                if (plyr->_GetSkillLineCurrent(SKILL_FISHING, false) < maxskill)
-//                    plyr->_AdvanceSkillLine(SKILL_FISHING, float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE)));
-//
-//                GameObject* go = nullptr;
-//                GameObject_FishingHole* school = nullptr;
-//
-//                go = fn->GetMapMgr()->FindNearestGoWithType(fn, GAMEOBJECT_TYPE_FISHINGHOLE);
-//                if (go != nullptr)
-//                {
-//                    school = static_cast<GameObject_FishingHole*>(go);
-//
-//                    if (!fn->isInRange(school, static_cast<float>(school->GetGameObjectProperties()->fishinghole.radius)))
-//                        school = nullptr;
-//                }
-//
-//                if (school != nullptr)
-//                {
-//                    if (school->GetMapMgr() != NULL)
-//                        lootmgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, school->GetMapMgr()->iInstanceMode);
-//                    else
-//                        lootmgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, 0);
-//
-//                    plyr->SendLoot(school->GetGUID(), LOOT_FISHING, school->GetMapId());
-//                    fn->EndFishing(false);
-//                    school->CatchFish();
-//
-//                }
-//                else if (maxskill != 0 && Rand(((plyr->_GetSkillLineCurrent(SKILL_FISHING, true) - minskill) * 100) / maxskill))
-//                {
-//                    lootmgr.FillFishingLoot(&fn->loot, zone);
-//                    plyr->SendLoot(fn->GetGUID(), LOOT_FISHING, fn->GetMapId());
-//                    fn->EndFishing(false);
-//                }
-//                else
-//                {
-//                    plyr->GetSession()->OutPacket(SMSG_FISH_ESCAPED);
-//                    fn->EndFishing(true);
-//                }
-//            }
-//            else
-//            {
-//                plyr->GetSession()->OutPacket(SMSG_FISH_NOT_HOOKED);
-//            }
-//
-//            auto spell = plyr->GetCurrentSpell();
-//            if (spell != nullptr)
-//            {
-//                if (success)
-//                {
-//                    spell->SendChannelUpdate(0);
-//                    spell->finish(true);
-//                }
-//                else
-//                {
-//                    spell->SendChannelUpdate(0);
-//                    spell->finish(false);
-//                }
-//            }
-//        }
-//        break;
-//        case GAMEOBJECT_TYPE_DOOR:
-//        {
-//            obj->Use(plyr->GetGUID());
-//        }
-//        break;
-//        case GAMEOBJECT_TYPE_BUTTON:
-//        {
-//            obj->Use(plyr->GetGUID());
-//        }
-//        break;
-//        case GAMEOBJECT_TYPE_FLAGSTAND:
-//        {
-//            // battleground/warsong gulch flag
-//            if (plyr->m_bg)
-//                plyr->m_bg->HookFlagStand(plyr, obj);
-//        }
-//        break;
-//        case GAMEOBJECT_TYPE_FLAGDROP:
-//        {
-//            // Dropped flag
-//            if (plyr->m_bg)
-//                plyr->m_bg->HookFlagDrop(plyr, obj);
-//        }
-//        break;
-//        case GAMEOBJECT_TYPE_QUESTGIVER:
-//        {
-//            GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(obj);
-//            // Questgiver
-//            if (go_quest_giver->HasQuests())
-//            {
-//                sQuestMgr.OnActivateQuestGiver(obj, plyr);
-//            }
-//        }
-//        break;
-//        case GAMEOBJECT_TYPE_SPELLCASTER:
-//        {
-//            if (obj->GetGameObjectProperties()->spell_caster.party_only != 0)
-//            {
-//                if (obj->m_summoner != NULL && obj->m_summoner->IsPlayer())
-//                {
-//                    Player* summoner = static_cast<Player*>(obj->m_summoner);
-//
-//                    if (summoner->GetGUID() != plyr->GetGUID())
-//                    {
-//                        if (!plyr->InGroup())
-//                            return;
-//
-//                        if (plyr->GetGroup() != summoner->GetGroup())
-//                            return;
-//                    }
-//                }
-//            }
-//
-//            obj->Use(plyr->GetGUID());
-//        }
-//        break;
-//        case GAMEOBJECT_TYPE_RITUAL:
-//        {
-//            // store the members in the ritual, cast sacrifice spell, and summon.
-//            GameObject_Ritual* ritual_obj = static_cast<GameObject_Ritual*>(obj);
-//            if (ritual_obj->GetRitual()->IsFinished() || ritual_obj->GetRitual()->GetCasterGUID() == 0)
-//                return;
-//
-//            // If we clicked on the ritual we are already in, remove us, otherwise add us as a ritual member
-//            if (ritual_obj->GetRitual()->HasMember(plyr->GetLowGUID()))
-//            {
-//                ritual_obj->GetRitual()->RemoveMember(plyr->GetLowGUID());
-//                plyr->SetChannelSpellId(0);
-//                plyr->SetChannelSpellTargetGUID(0);
-//                return;
-//            }
-//            else
-//            {
-//                ritual_obj->GetRitual()->AddMember(plyr->GetLowGUID());
-//                plyr->SetChannelSpellId(ritual_obj->GetRitual()->GetSpellID());
-//                plyr->SetChannelSpellTargetGUID(ritual_obj->GetGUID());
-//            }
-//
-//            // If we were the last required member, proceed with the ritual!
-//            if (!ritual_obj->GetRitual()->HasFreeSlots())
-//            {
-//                ritual_obj->GetRitual()->Finish();
-//                Player* plr = nullptr;
-//
-//                unsigned long MaxMembers = ritual_obj->GetRitual()->GetMaxMembers();
-//                for (unsigned long i = 0; i < MaxMembers; i++)
-//                {
-//                    plr = plyr->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetMemberGUIDBySlot(i));
-//                    if (plr != nullptr)
-//                    {
-//                        plr->SetChannelSpellTargetGUID(0);
-//                        plr->SetChannelSpellId(0);
-//                    }
-//                }
-//
-//                SpellInfo* info = nullptr;
-//                if (gameobject_info->entry == 36727 || gameobject_info->entry == 194108)   // summon portal
-//                {
-//                    if (!ritual_obj->GetRitual()->GetTargetGUID() == 0)
-//                        return;
-//
-//                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
-//                    if (info == nullptr)
-//                        break;
-//
-//                    Player* target = objmgr.GetPlayer(ritual_obj->GetRitual()->GetTargetGUID());
-//                    if (target == nullptr || !target->IsInWorld())
-//                        return;
-//
-//                    spell = sSpellFactoryMgr.NewSpell(_player->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetCasterGUID()), info, true, NULL);
-//                    targets.m_unitTarget = target->GetGUID();
-//                    spell->prepare(&targets);
-//                }
-//                else if (gameobject_info->entry == 177193)    // doom portal
-//                {
-//                    Player* psacrifice = nullptr;
-//
-//                    uint32 victimid = RandomUInt(ritual_obj->GetRitual()->GetMaxMembers() - 1);
-//
-//                    // kill the sacrifice player
-//                    psacrifice = _player->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetMemberGUIDBySlot(victimid));
-//                    Player* pCaster = obj->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetCasterGUID());
-//                    if (!psacrifice || !pCaster)
-//                        return;
-//
-//                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.caster_target_spell);
-//                    if (!info)
-//                        break;
-//
-//                    spell = sSpellFactoryMgr.NewSpell(psacrifice, info, true, NULL);
-//                    targets.m_unitTarget = psacrifice->GetGUID();
-//                    spell->prepare(&targets);
-//
-//                    // summons demon
-//                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
-//                    spell = sSpellFactoryMgr.NewSpell(pCaster, info, true, NULL);
-//                    SpellCastTargets targets2;
-//                    targets2.m_unitTarget = pCaster->GetGUID();
-//                    spell->prepare(&targets2);
-//                }
-//                else if (gameobject_info->entry == 179944)    // Summoning portal for meeting stones
-//                {
-//                    plr = _player->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetTargetGUID());
-//                    if (!plr)
-//                        return;
-//
-//                    Player* pleader = _player->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetCasterGUID());
-//                    if (!pleader)
-//                        return;
-//
-//                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
-//                    spell = sSpellFactoryMgr.NewSpell(pleader, info, true, NULL);
-//                    SpellCastTargets targets2(plr->GetGUID());
-//                    spell->prepare(&targets2);
-//
-//                    /* expire the gameobject */
-//                    ritual_obj->ExpireAndDelete();
-//                }
-//                else if (gameobject_info->entry == 186811 || gameobject_info->entry == 181622)
-//                {
-//                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
-//                    if (info == NULL)
-//                        return;
-//
-//                    spell = sSpellFactoryMgr.NewSpell(_player->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetCasterGUID()), info, true, NULL);
-//                    SpellCastTargets targets2(ritual_obj->GetRitual()->GetCasterGUID());
-//                    spell->prepare(&targets2);
-//                    ritual_obj->ExpireAndDelete();
-//                }
-//            }
-//        }
-//        break;
-//        case GAMEOBJECT_TYPE_GOOBER:
-//        {
-//            obj->Use(plyr->GetGUID());
-//
-//            plyr->CastSpell(guid, gameobject_info->goober.spell_id, false);
-//
-//            // show page
-//            if (gameobject_info->goober.page_id)
-//            {
-//                WorldPacket data(SMSG_GAMEOBJECT_PAGETEXT, 8);
-//                data << obj->GetGUID();
-//                plyr->GetSession()->SendPacket(&data);
-//            }
-//        }
-//        break;
-//        case GAMEOBJECT_TYPE_CAMERA://eye of azora
-//        {
-//            if (gameobject_info->camera.cinematic_id != 0)
-//            {
-//                plyr->GetSession()->OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &gameobject_info->camera.cinematic_id);
-//            }
-//        }
-//        break;
-//        case GAMEOBJECT_TYPE_MEETINGSTONE:	// Meeting Stone
-//        {
-//            /* Use selection */
-//            Player* pPlayer = objmgr.GetPlayer((uint32)_player->GetSelection());
-//            if (pPlayer == nullptr)
-//                return;
-//
-//            // If we are not in a group we can't summon anyone
-//            if (!_player->InGroup())
-//                return;
-//
-//            // We can only summon someone if they are in our raid/group
-//            if (_player->GetGroup() != pPlayer->GetGroup())
-//                return;
-//
-//            // We can't summon ourselves!
-//            if (pPlayer->GetGUID() == _player->GetGUID())
-//                return;
-//
-//            // Create the summoning portal
-//            GameObject* pGo = _player->GetMapMgr()->CreateGameObject(179944);
-//            if (pGo == nullptr)
-//                return;
-//
-//            GameObject_Ritual* rGo = static_cast<GameObject_Ritual*>(pGo);
-//
-//            rGo->CreateFromProto(179944, _player->GetMapId(), _player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), 0);
-//            rGo->GetRitual()->Setup(_player->GetLowGUID(), pPlayer->GetLowGUID(), 18540);
-//            rGo->PushToWorld(_player->GetMapMgr());
-//
-//            _player->SetChannelSpellTargetGUID(rGo->GetGUID());
-//            _player->SetChannelSpellId(rGo->GetRitual()->GetSpellID());
-//
-//            // expire after 2mins
-//            sEventMgr.AddEvent(pGo, &GameObject::_Expire, EVENT_GAMEOBJECT_EXPIRE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-//        }
-//        break;
-//    }
-//}
+void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    uint64 guid;
+    recv_data >> guid;
+
+    SpellCastTargets targets;
+    Spell* spell = NULL;
+    SpellInfo* spellInfo = NULL;
+    LOG_DEBUG("WORLD: CMSG_GAMEOBJ_USE: [GUID %d]", guid);
+
+    GameObject* obj = _player->GetMapMgr()->GetGameObject((uint32)guid);
+    if (!obj)
+        return;
+
+    auto gameobject_info = obj->GetGameObjectProperties();
+    if (!gameobject_info)
+        return;
+
+    Player* plyr = GetPlayer();
+
+    //Event Scripts
+    objmgr.CheckforScripts(plyr, obj->GetGameObjectProperties()->raw.parameter_9);
+
+    CALL_GO_SCRIPT_EVENT(obj, OnActivate)(_player);
+    CALL_INSTANCE_SCRIPT_EVENT(_player->GetMapMgr(), OnGameObjectActivate)(obj, _player);
+
+    _player->RemoveStealth(); // cebernic:RemoveStealth due to GO was using. Blizzlike
+
+    uint32 type = obj->GetType();
+    switch (type)
+    {
+        case GAMEOBJECT_TYPE_CHAIR:
+        {
+            plyr->SafeTeleport(plyr->GetMapId(), plyr->GetInstanceID(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
+            plyr->SetStandState(STANDSTATE_SIT_MEDIUM_CHAIR);
+            plyr->m_lastRunSpeed = 0; //counteract mount-bug; reset speed to zero to force update SetPlayerSpeed in next line.
+            plyr->UpdateSpeed();
+        }
+        break;
+        case GAMEOBJECT_TYPE_BARBER_CHAIR:
+        {
+            plyr->SafeTeleport(plyr->GetMapId(), plyr->GetInstanceID(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
+            plyr->m_lastRunSpeed = 0; //counteract mount-bug; reset speed to zero to force update SetPlayerSpeed in next line.
+            plyr->UpdateSpeed();
+            //send barber shop menu to player
+            WorldPacket data(SMSG_ENABLE_BARBER_SHOP, 0);
+            SendPacket(&data);
+            plyr->SetStandState(STANDSTATE_SIT_HIGH_CHAIR);
+        }
+        break;
+        case GAMEOBJECT_TYPE_CHEST:     //cast da spell
+        {
+            spellInfo = sSpellCustomizations.GetSpellInfo(OPEN_CHEST);
+            spell = sSpellFactoryMgr.NewSpell(plyr, spellInfo, true, NULL);
+            _player->m_currentSpell = spell;
+            targets.m_unitTarget = obj->GetGUID();
+            spell->prepare(&targets);
+        }
+        break;
+        case GAMEOBJECT_TYPE_FISHINGNODE:
+        {
+            sEventMgr.RemoveEvents(_player, EVENT_STOP_CHANNELING);
+
+            GameObject_FishingNode* fn = static_cast<GameObject_FishingNode*>(obj);
+
+            bool success = fn->UseNode();
+
+            uint32 zone = 0;
+            FishingZoneEntry const* entry = nullptr;
+
+            if (success)
+            {
+                zone = plyr->GetAreaID();
+
+                if (zone == 0)                  // If the player's area ID is 0, use the zone ID instead
+                    zone = plyr->GetZoneId();
+
+                entry = sMySQLStore.GetFishingZone(zone);
+                if (entry == nullptr)
+                {
+                    sLog.outError("ERROR: Fishing zone information for zone %d not found!", zone);
+                    fn->EndFishing(true);
+                    success = false;
+                }
+            }
+
+            if (success)
+            {
+                uint32 maxskill = entry->MaxSkill;
+                uint32 minskill = entry->MinSkill;
+
+                if (plyr->_GetSkillLineCurrent(SKILL_FISHING, false) < maxskill)
+                    plyr->_AdvanceSkillLine(SKILL_FISHING, float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE)));
+
+                GameObject* go = nullptr;
+                GameObject_FishingHole* school = nullptr;
+
+                go = fn->GetMapMgr()->FindNearestGoWithType(fn, GAMEOBJECT_TYPE_FISHINGHOLE);
+                if (go != nullptr)
+                {
+                    school = static_cast<GameObject_FishingHole*>(go);
+
+                    if (!fn->isInRange(school, static_cast<float>(school->GetGameObjectProperties()->fishinghole.radius)))
+                        school = nullptr;
+                }
+
+                if (school != nullptr)
+                {
+                    if (school->GetMapMgr() != NULL)
+                        lootmgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, school->GetMapMgr()->iInstanceMode);
+                    else
+                        lootmgr.FillGOLoot(&school->loot, school->GetGameObjectProperties()->raw.parameter_1, 0);
+
+                    plyr->SendLoot(school->GetGUID(), LOOT_FISHING, school->GetMapId());
+                    fn->EndFishing(false);
+                    school->CatchFish();
+
+                }
+                else if (maxskill != 0 && Rand(((plyr->_GetSkillLineCurrent(SKILL_FISHING, true) - minskill) * 100) / maxskill))
+                {
+                    lootmgr.FillFishingLoot(&fn->loot, zone);
+                    plyr->SendLoot(fn->GetGUID(), LOOT_FISHING, fn->GetMapId());
+                    fn->EndFishing(false);
+                }
+                else
+                {
+                    plyr->GetSession()->OutPacket(SMSG_FISH_ESCAPED);
+                    fn->EndFishing(true);
+                }
+            }
+            else
+            {
+                plyr->GetSession()->OutPacket(SMSG_FISH_NOT_HOOKED);
+            }
+
+            auto spell = plyr->GetCurrentSpell();
+            if (spell != nullptr)
+            {
+                if (success)
+                {
+                    spell->SendChannelUpdate(0);
+                    spell->finish(true);
+                }
+                else
+                {
+                    spell->SendChannelUpdate(0);
+                    spell->finish(false);
+                }
+            }
+        }
+        break;
+        case GAMEOBJECT_TYPE_DOOR:
+        {
+            obj->Use(plyr->GetGUID());
+        }
+        break;
+        case GAMEOBJECT_TYPE_BUTTON:
+        {
+            obj->Use(plyr->GetGUID());
+        }
+        break;
+        case GAMEOBJECT_TYPE_FLAGSTAND:
+        {
+            // battleground/warsong gulch flag
+            if (plyr->m_bg)
+                plyr->m_bg->HookFlagStand(plyr, obj);
+        }
+        break;
+        case GAMEOBJECT_TYPE_FLAGDROP:
+        {
+            // Dropped flag
+            if (plyr->m_bg)
+                plyr->m_bg->HookFlagDrop(plyr, obj);
+        }
+        break;
+        case GAMEOBJECT_TYPE_QUESTGIVER:
+        {
+            GameObject_QuestGiver* go_quest_giver = static_cast<GameObject_QuestGiver*>(obj);
+            // Questgiver
+            if (go_quest_giver->HasQuests())
+            {
+                sQuestMgr.OnActivateQuestGiver(obj, plyr);
+            }
+        }
+        break;
+        case GAMEOBJECT_TYPE_SPELLCASTER:
+        {
+            if (obj->GetGameObjectProperties()->spell_caster.party_only != 0)
+            {
+                if (obj->m_summoner != NULL && obj->m_summoner->IsPlayer())
+                {
+                    Player* summoner = static_cast<Player*>(obj->m_summoner);
+
+                    if (summoner->GetGUID() != plyr->GetGUID())
+                    {
+                        if (!plyr->InGroup())
+                            return;
+
+                        if (plyr->GetGroup() != summoner->GetGroup())
+                            return;
+                    }
+                }
+            }
+
+            obj->Use(plyr->GetGUID());
+        }
+        break;
+        case GAMEOBJECT_TYPE_RITUAL:
+        {
+            // store the members in the ritual, cast sacrifice spell, and summon.
+            GameObject_Ritual* ritual_obj = static_cast<GameObject_Ritual*>(obj);
+            if (ritual_obj->GetRitual()->IsFinished() || ritual_obj->GetRitual()->GetCasterGUID() == 0)
+                return;
+
+            // If we clicked on the ritual we are already in, remove us, otherwise add us as a ritual member
+            if (ritual_obj->GetRitual()->HasMember(plyr->GetLowGUID()))
+            {
+                ritual_obj->GetRitual()->RemoveMember(plyr->GetLowGUID());
+                plyr->SetChannelSpellId(0);
+                plyr->SetChannelSpellTargetGUID(0);
+                return;
+            }
+            else
+            {
+                ritual_obj->GetRitual()->AddMember(plyr->GetLowGUID());
+                plyr->SetChannelSpellId(ritual_obj->GetRitual()->GetSpellID());
+                plyr->SetChannelSpellTargetGUID(ritual_obj->GetGUID());
+            }
+
+            // If we were the last required member, proceed with the ritual!
+            if (!ritual_obj->GetRitual()->HasFreeSlots())
+            {
+                ritual_obj->GetRitual()->Finish();
+                Player* plr = nullptr;
+
+                unsigned long MaxMembers = ritual_obj->GetRitual()->GetMaxMembers();
+                for (unsigned long i = 0; i < MaxMembers; i++)
+                {
+                    plr = plyr->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetMemberGUIDBySlot(i));
+                    if (plr != nullptr)
+                    {
+                        plr->SetChannelSpellTargetGUID(0);
+                        plr->SetChannelSpellId(0);
+                    }
+                }
+
+                SpellInfo* info = nullptr;
+                if (gameobject_info->entry == 36727 || gameobject_info->entry == 194108)   // summon portal
+                {
+                    if (!ritual_obj->GetRitual()->GetTargetGUID() == 0)
+                        return;
+
+                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
+                    if (info == nullptr)
+                        break;
+
+                    Player* target = objmgr.GetPlayer(ritual_obj->GetRitual()->GetTargetGUID());
+                    if (target == nullptr || !target->IsInWorld())
+                        return;
+
+                    spell = sSpellFactoryMgr.NewSpell(_player->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetCasterGUID()), info, true, NULL);
+                    targets.m_unitTarget = target->GetGUID();
+                    spell->prepare(&targets);
+                }
+                else if (gameobject_info->entry == 177193)    // doom portal
+                {
+                    Player* psacrifice = nullptr;
+
+                    uint32 victimid = RandomUInt(ritual_obj->GetRitual()->GetMaxMembers() - 1);
+
+                    // kill the sacrifice player
+                    psacrifice = _player->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetMemberGUIDBySlot(victimid));
+                    Player* pCaster = obj->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetCasterGUID());
+                    if (!psacrifice || !pCaster)
+                        return;
+
+                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.caster_target_spell);
+                    if (!info)
+                        break;
+
+                    spell = sSpellFactoryMgr.NewSpell(psacrifice, info, true, NULL);
+                    targets.m_unitTarget = psacrifice->GetGUID();
+                    spell->prepare(&targets);
+
+                    // summons demon
+                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
+                    spell = sSpellFactoryMgr.NewSpell(pCaster, info, true, NULL);
+                    SpellCastTargets targets2;
+                    targets2.m_unitTarget = pCaster->GetGUID();
+                    spell->prepare(&targets2);
+                }
+                else if (gameobject_info->entry == 179944)    // Summoning portal for meeting stones
+                {
+                    plr = _player->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetTargetGUID());
+                    if (!plr)
+                        return;
+
+                    Player* pleader = _player->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetCasterGUID());
+                    if (!pleader)
+                        return;
+
+                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
+                    spell = sSpellFactoryMgr.NewSpell(pleader, info, true, NULL);
+                    SpellCastTargets targets2(plr->GetGUID());
+                    spell->prepare(&targets2);
+
+                    /* expire the gameobject */
+                    ritual_obj->ExpireAndDelete();
+                }
+                else if (gameobject_info->entry == 186811 || gameobject_info->entry == 181622)
+                {
+                    info = sSpellCustomizations.GetSpellInfo(gameobject_info->summoning_ritual.spell_id);
+                    if (info == NULL)
+                        return;
+
+                    spell = sSpellFactoryMgr.NewSpell(_player->GetMapMgr()->GetPlayer(ritual_obj->GetRitual()->GetCasterGUID()), info, true, NULL);
+                    SpellCastTargets targets2(ritual_obj->GetRitual()->GetCasterGUID());
+                    spell->prepare(&targets2);
+                    ritual_obj->ExpireAndDelete();
+                }
+            }
+        }
+        break;
+        case GAMEOBJECT_TYPE_GOOBER:
+        {
+            obj->Use(plyr->GetGUID());
+
+            plyr->CastSpell(guid, gameobject_info->goober.spell_id, false);
+
+            // show page
+            if (gameobject_info->goober.page_id)
+            {
+                WorldPacket data(SMSG_GAMEOBJECT_PAGETEXT, 8);
+                data << obj->GetGUID();
+                plyr->GetSession()->SendPacket(&data);
+            }
+        }
+        break;
+        case GAMEOBJECT_TYPE_CAMERA://eye of azora
+        {
+            if (gameobject_info->camera.cinematic_id != 0)
+            {
+                plyr->GetSession()->OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &gameobject_info->camera.cinematic_id);
+            }
+        }
+        break;
+        case GAMEOBJECT_TYPE_MEETINGSTONE:	// Meeting Stone
+        {
+            /* Use selection */
+            Player* pPlayer = objmgr.GetPlayer((uint32)_player->GetSelection());
+            if (pPlayer == nullptr)
+                return;
+
+            // If we are not in a group we can't summon anyone
+            if (!_player->InGroup())
+                return;
+
+            // We can only summon someone if they are in our raid/group
+            if (_player->GetGroup() != pPlayer->GetGroup())
+                return;
+
+            // We can't summon ourselves!
+            if (pPlayer->GetGUID() == _player->GetGUID())
+                return;
+
+            // Create the summoning portal
+            GameObject* pGo = _player->GetMapMgr()->CreateGameObject(179944);
+            if (pGo == nullptr)
+                return;
+
+            GameObject_Ritual* rGo = static_cast<GameObject_Ritual*>(pGo);
+
+            rGo->CreateFromProto(179944, _player->GetMapId(), _player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), 0);
+            rGo->GetRitual()->Setup(_player->GetLowGUID(), pPlayer->GetLowGUID(), 18540);
+            rGo->PushToWorld(_player->GetMapMgr());
+
+            _player->SetChannelSpellTargetGUID(rGo->GetGUID());
+            _player->SetChannelSpellId(rGo->GetRitual()->GetSpellID());
+
+            // expire after 2mins
+            sEventMgr.AddEvent(pGo, &GameObject::_Expire, EVENT_GAMEOBJECT_EXPIRE, 120000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        }
+        break;
+    }
+}
 
 void WorldSession::HandleTutorialFlag(WorldPacket& recv_data)
 {
