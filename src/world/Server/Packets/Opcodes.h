@@ -540,8 +540,7 @@ enum Opcodes
     CMSG_SET_CRITERIA_CHEAT                         = 0x470,
     SMSG_GROUP_SWAP_FAILED                          = 0x471,
     CMSG_UNITANIMTIER_CHEAT                         = 0x472,
-    CMSG_CHAR_CUSTOMIZE                             = 0x473,
-    SMSG_CHAR_CUSTOMIZE                             = 0x474,
+
     SMSG_PET_RENAMEABLE                             = 0x475,
     CMSG_REQUEST_VEHICLE_EXIT                       = 0x476,
     CMSG_REQUEST_VEHICLE_PREV_SEAT                  = 0x477,
@@ -1206,8 +1205,11 @@ enum Opcodes
     SMSG_START_TIMER                                    = 0x59A5,   // not implemented BG/ARENA timer?
     SMSG_STOP_MIRROR_TIMER                              = 0x0B06,
 
+    CMSG_CHAR_CUSTOMIZE                                 = 0x2C34,
+    SMSG_CHAR_CUSTOMIZE                                 = 0x4F16,
     CMSG_CHAR_RENAME                                    = 0x2327,
     SMSG_CHAR_RENAME                                    = 0x2024,
+
     SMSG_FEATURE_SYSTEM_STATUS                          = 0x3DB7,
     SMSG_LEARNED_DANCE_MOVES                            = 0x0E05,
     CMSG_TOGGLE_PVP                                     = 0x6815,
