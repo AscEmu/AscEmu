@@ -577,6 +577,13 @@ enum PlayerCombatRating
     MAX_PCR                         = 25
 };
 
+enum MirrorTimerTypes
+{
+    MIRROR_TYPE_FATIGUE     = 0,
+    MIRROR_TYPE_BREATH      = 1,
+    MIRROR_TYPE_FIRE        = 2
+};
+
 enum PlayerCheats
 {
     PLAYER_CHEAT_NONE           = 0x000,

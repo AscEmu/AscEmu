@@ -1058,7 +1058,7 @@ void Player::Update(unsigned long time_passed)
             if (m_UnderwaterTime >= m_UnderwaterMaxTime)
             {
                 m_UnderwaterTime = m_UnderwaterMaxTime;
-                StopMirrorTimer(1);
+                StopMirrorTimer(MIRROR_TYPE_BREATH);
             }
         }
     }
@@ -4487,9 +4487,9 @@ void Player::BuildPlayerRepop()
         sp->prepare(&tgt);
     }
 
-    StopMirrorTimer(0);
-    StopMirrorTimer(1);
-    StopMirrorTimer(2);
+    StopMirrorTimer(MIRROR_TYPE_FATIGUE);
+    StopMirrorTimer(MIRROR_TYPE_BREATH);
+    StopMirrorTimer(MIRROR_TYPE_FIRE);
 
     SetFlag(PLAYER_FLAGS, PLAYER_FLAG_DEATH_WORLD_ENABLE);
 
@@ -4673,9 +4673,9 @@ void Player::KillPlayer()
     m_session->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
 
     SetMovement(MOVE_ROOT, 0);
-    StopMirrorTimer(0);
-    StopMirrorTimer(1);
-    StopMirrorTimer(2);
+    StopMirrorTimer(MIRROR_TYPE_FATIGUE);
+    StopMirrorTimer(MIRROR_TYPE_BREATH);
+    StopMirrorTimer(MIRROR_TYPE_FIRE);
 
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE); // Player death animation, also can be used with DYNAMIC_FLAGS <- huh???
     SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0x00);
@@ -8269,7 +8269,7 @@ void Player::EndDuel(uint8 WinCondition)
     DuelingWith = NULL;
 }
 
-void Player::StopMirrorTimer(uint32 Type)
+void Player::StopMirrorTimer(MirrorTimerTypes Type)
 {
     m_session->OutPacket(SMSG_STOP_MIRROR_TIMER, 4, &Type);
 }
