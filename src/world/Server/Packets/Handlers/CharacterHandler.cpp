@@ -81,8 +81,6 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
     uint8 hairStyle;
     uint8 hairColor;
     uint8 facialHair;
-    uint8 race;
-    uint8 faction;
 
     recv_data >> gender;
     recv_data >> skin;
@@ -90,8 +88,6 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
     recv_data >> hairStyle;
     recv_data >> facialHair;
     recv_data >> face;
-    recv_data >> race;
-    recv_data >> faction;
 
     LoginErrorCode res = VerifyName(newname.c_str(), newname.length());
     if (res != E_CHAR_NAME_SUCCESS)
@@ -115,7 +111,7 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
     }
 
     PlayerInfo* info = objmgr.GetPlayerInfoByName(newname.c_str());
-    if (info != NULL && info->guid != guid)
+    if (info != nullptr && info->guid != guid)
     {
         WorldPacket data(SMSG_CHAR_CUSTOMIZE, 1);
         data << uint8(E_CHAR_CREATE_NAME_IN_USE);

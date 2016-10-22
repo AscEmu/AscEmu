@@ -35,7 +35,7 @@ bool VerifyBagSlots(int8 ContainerSlot, int8 Slot)
     return true;
 }
 
-void WorldSession::HandleSplitOpcode(WorldPacket& recv_data)
+void WorldSession::HandleSplitItemOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN;
     CHECK_PACKET_SIZE(recv_data, 8);
@@ -1341,24 +1341,17 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    CHECK_PACKET_SIZE(recv_data, 3);
     LOG_DETAIL("WORLD: Recvd CMSG_AUTO_STORE_BAG_ITEM");
 
-    //WorldPacket data;
-    WorldPacket packet;
-    int8 SrcInv = 0, Slot = 0, DstInv = 0;
-    //    Item *item= NULL;
-    Item* srcitem = NULL;
-    Item* dstitem = NULL;
-    int8 NewSlot = 0;
-    int8 error;
-    AddItemResult result;
+    uint8 SrcInv;
+    uint8 Slot;
+    uint8 DstInv;
 
     recv_data >> SrcInv;
     recv_data >> Slot;
     recv_data >> DstInv;
 
-    srcitem = _player->GetItemInterface()->GetInventoryItem(SrcInv, Slot);
+    Item* srcitem = srcitem = _player->GetItemInterface()->GetInventoryItem(SrcInv, Slot);
 
     //source item exists
     if (srcitem)
@@ -1374,7 +1367,7 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recv_data)
         if (DstInv == INVENTORY_SLOT_NOT_SET)
         {
             //check for space
-            NewSlot = _player->GetItemInterface()->FindFreeBackPackSlot();
+            int8 NewSlot = _player->GetItemInterface()->FindFreeBackPackSlot();
             if (NewSlot == ITEM_NO_SLOT_AVAILABLE)
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(srcitem, 0, INV_ERR_BAG_FULL);
@@ -1386,7 +1379,7 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recv_data)
                 srcitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInv, Slot, false);
                 if (srcitem)
                 {
-                    result = _player->GetItemInterface()->SafeAddItem(srcitem, INVENTORY_SLOT_NOT_SET, NewSlot);
+                    AddItemResult result = _player->GetItemInterface()->SafeAddItem(srcitem, INVENTORY_SLOT_NOT_SET, NewSlot);
                     if (!result)
                     {
                         LOG_ERROR("HandleAutoStoreBagItem: Error while adding item to newslot");
@@ -1398,6 +1391,8 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recv_data)
         }
         else
         {
+            Item* dstitem = nullptr;
+            int8 error;
             if ((error = _player->GetItemInterface()->CanEquipItemInSlot2(DstInv, DstInv, srcitem)) != 0)
             {
                 if (DstInv < INVENTORY_KEYRING_END)
@@ -1414,7 +1409,7 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recv_data)
                 //dstitem exists, detect if its a container
                 if (dstitem->IsContainer())
                 {
-                    NewSlot = static_cast< Container* >(dstitem)->FindFreeSlot();
+                    int8 NewSlot = static_cast< Container* >(dstitem)->FindFreeSlot();
                     if (NewSlot == ITEM_NO_SLOT_AVAILABLE)
                     {
                         _player->GetItemInterface()->BuildInventoryChangeError(srcitem, 0, INV_ERR_BAG_FULL);
@@ -1423,9 +1418,9 @@ void WorldSession::HandleAutoStoreBagItemOpcode(WorldPacket& recv_data)
                     else
                     {
                         srcitem = _player->GetItemInterface()->SafeRemoveAndRetreiveItemFromSlot(SrcInv, Slot, false);
-                        if (srcitem != NULL)
+                        if (!srcitem)
                         {
-                            result = _player->GetItemInterface()->SafeAddItem(srcitem, DstInv, NewSlot);
+                            AddItemResult result = _player->GetItemInterface()->SafeAddItem(srcitem, DstInv, NewSlot);
                             if (!result)
                             {
                                 LOG_ERROR("HandleBuyItemInSlot: Error while adding item to newslot");
@@ -2040,30 +2035,17 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
 //    dst->SaveToDB(destitem_bagslot, destitem_slot, false, NULL);
 //}
 
-//void WorldSession::HandleItemRefundInfoOpcode(WorldPacket& recvPacket)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    LOG_DEBUG("Recieved CMSG_ITEMREFUNDINFO.");
-//
-//    //////////////////////////////////////////////////////////////////////////////////////////
-//    //  As of 3.2.0a the client sends this packet to request refund info on an item
-//    //
-//    //    {CLIENT} Packet: (0x04B3) UNKNOWN PacketSize = 8 TimeStamp = 265984125
-//    //    E6 EE 09 18 02 00 00 42
-//    //
-//    //
-//    //
-//    //  Structure:
-//    //  uint64 GUID
-//    //////////////////////////////////////////////////////////////////////////////////////////
-//
-//    uint64 GUID;
-//    recvPacket >> GUID;
-//
-//    this->SendRefundInfo(GUID);
-//
-//}
+void WorldSession::HandleItemRefundInfoOpcode(WorldPacket& recvPacket)
+{
+    CHECK_INWORLD_RETURN
+
+    LOG_DEBUG("Recieved CMSG_ITEMREFUNDINFO.");
+
+    uint64 GUID;
+    recvPacket >> GUID;
+
+    this->SendRefundInfo(GUID);
+}
 
 //void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 //{

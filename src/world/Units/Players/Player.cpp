@@ -10089,15 +10089,18 @@ void Player::UpdateComboPoints()
 void Player::SendAreaTriggerMessage(const char* message, ...)
 {
     va_list ap;
+    char msg[1024];
+    msg[0] = '\0';
+
     va_start(ap, message);
-    char msg[500];
-    vsnprintf(msg, 500, message, ap);
+    vsnprintf(msg, 1024, message, ap);
     va_end(ap);
 
-    WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 6 + strlen(msg));
-    data << uint32(0);
+    uint32 length = strlen(msg) + 1;
+
+    WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 6 + length);
+    data << uint32(length);
     data << msg;
-    data << uint8(0x00);
     m_session->SendPacket(&data);
 }
 

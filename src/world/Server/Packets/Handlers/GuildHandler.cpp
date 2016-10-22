@@ -405,7 +405,7 @@ void WorldSession::HandleGuildEventLogQueryOpcode(WorldPacket& /* recv_data */)
 
 void WorldSession::HandleGuildBankMoneyWithdrawn(WorldPacket& /* recv_data */)
 {
-    Log.Debug("GuildHandler", "CMSG_GUILD_BANK_MONEY_WITHDRAWN [%s]", _player->GetName());
+    Log.Debug("GuildHandler", "CMSG_GUILD_BANK_MONEY_WITHDRAWN_QUERY [%s]", _player->GetName());
 
     if (Guild* guild = GetPlayer()->GetGuild())
         guild->SendMoneyInfo(this);

@@ -787,23 +787,19 @@ void Instance::LoadFromDB(Field* fields)
 void InstanceMgr::ResetSavedInstances(Player* plr)
 {
     WorldPacket data(SMSG_INSTANCE_RESET, 4);
-    Instance* in;
-    InstanceMap::iterator itr;
-    InstanceMap* instancemap;
-    uint32 i;
 
     if (!plr->IsInWorld() || plr->GetMapMgr()->GetMapInfo()->type != INSTANCE_NULL)
         return;
 
     m_mapLock.Acquire();
-    for (i = 0; i < NUM_MAPS; ++i)
+    for (uint32 i = 0; i < NUM_MAPS; ++i)
     {
         if (m_instances[i] != NULL)
         {
-            instancemap = m_instances[i];
-            for (itr = instancemap->begin(); itr != instancemap->end();)
+            InstanceMap* instancemap = m_instances[i];
+            for (InstanceMap::iterator itr = instancemap->begin(); itr != instancemap->end();)
             {
-                in = itr->second;
+                Instance* in = itr->second;
                 ++itr;
 
                 if (IS_RESETABLE_INSTANCE(in) && (CHECK_INSTANCE_GROUP(in, plr->GetGroup()) || plr->GetLowGUID() == in->m_creatorGuid))
@@ -964,24 +960,19 @@ void InstanceMgr::CheckForExpiredInstances()
 
 void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
 {
-    //\todo danko
-    /*WorldPacket data(4);
-    Instance* in;
-    InstanceMap::iterator itr;
-    InstanceMap* instancemap;
-    uint32 i;
+    WorldPacket data(4);
 
     if (!plr->IsInWorld() || plr->GetMapMgr()->GetMapInfo()->type != INSTANCE_NULL)
     {
         m_mapLock.Acquire();
-        for (i = 0; i < NUM_MAPS; ++i)
+        for (uint32 i = 0; i < NUM_MAPS; ++i)
         {
             if (m_instances[i] != NULL)
             {
-                instancemap = m_instances[i];
-                for (itr = instancemap->begin(); itr != instancemap->end();)
+                InstanceMap* instancemap = m_instances[i];
+                for (InstanceMap::iterator itr = instancemap->begin(); itr != instancemap->end();)
                 {
-                    in = itr->second;
+                    Instance* in = itr->second;
                     ++itr;
 
                     if (PlayerOwnsInstance(in, plr) && in->m_mapInfo->type == INSTANCE_NONRAID)
@@ -1004,7 +995,7 @@ void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
         m_mapLock.Release();
     }
 
-    data.SetOpcode(SMSG_UPDATE_INSTANCE_OWNERSHIP);
+    /*data.SetOpcode(SMSG_UPDATE_INSTANCE_OWNERSHIP);
     data << uint32(0x00);
     plr->GetSession()->SendPacket(&data);*/
 }

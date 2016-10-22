@@ -315,10 +315,10 @@ class SERVER_DECL WorldSession
         void HandleSetActionButtonOpcode(WorldPacket& recvPacket);
         //void HandleSetAtWarOpcode(WorldPacket& recvPacket);
         //void HandleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket);
-        //void HandleTogglePVPOpcode(WorldPacket& recvPacket);
+        void HandleTogglePVPOpcode(WorldPacket& recvPacket);
         //void HandleAmmoSetOpcode(WorldPacket& recvPacket);
-        //void HandleGameObjectUse(WorldPacket& recvPacket);
-        //void HandleBarberShopResult(WorldPacket& recvPacket);
+        void HandleGameObjectUse(WorldPacket& recvPacket);
+        void HandleBarberShopResult(WorldPacket& recvPacket);
         //void HandleLeaveChannelOpcode(WorldPacket& recvPacket);
         void HandlePlayedTimeOpcode(WorldPacket& recv_data);
         void HandleSetSheathedOpcode(WorldPacket& recv_data);
@@ -409,7 +409,7 @@ class SERVER_DECL WorldSession
         void HandleGossipSelectOptionOpcode(WorldPacket& recvPacket);
         void HandleSpiritHealerActivateOpcode(WorldPacket& recvPacket);
         void HandleNpcTextQueryOpcode(WorldPacket& recvPacket);
-        //void HandleBinderActivateOpcode(WorldPacket& recvPacket);
+        void HandleBinderActivateOpcode(WorldPacket& recvPacket);
 
         // Auction House opcodes
         void HandleAuctionHelloOpcode(WorldPacket& recvPacket);
@@ -445,14 +445,14 @@ class SERVER_DECL WorldSession
         void HandleListInventoryOpcode(WorldPacket& recvPacket);
         void HandleAutoStoreBagItemOpcode(WorldPacket& recvPacket);
         void HandleBuyBackOpcode(WorldPacket& recvPacket);
-        void HandleSplitOpcode(WorldPacket& recvPacket);
+        void HandleSplitItemOpcode(WorldPacket& recvPacket);
         void HandleReadItemOpcode(WorldPacket& recvPacket);
         void HandleRepairItemOpcode(WorldPacket& recvPacket);
         //void HandleAutoBankItemOpcode(WorldPacket& recvPacket);
         //void HandleAutoStoreBankItemOpcode(WorldPacket& recvPacket);
         void HandleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket);
         void HandleInsertGemOpcode(WorldPacket& recvPacket);
-        //void HandleItemRefundInfoOpcode(WorldPacket& recvPacket);
+        void HandleItemRefundInfoOpcode(WorldPacket& recvPacket);
         //void HandleItemRefundRequestOpcode(WorldPacket& recvPacket);
 
         // Equipment set opcode
@@ -684,9 +684,9 @@ class SERVER_DECL WorldSession
         //void HandlePetSetActionOpcode(WorldPacket& recv_data);
 
         // Instances
-        //void HandleResetInstanceOpcode(WorldPacket& recv_data);
-        //void HandleDungeonDifficultyOpcode(WorldPacket& recv_data);
-        //void HandleRaidDifficultyOpcode(WorldPacket& recv_data);
+        void HandleResetInstanceOpcode(WorldPacket& recv_data);
+        void HandleDungeonDifficultyOpcode(WorldPacket& recv_data);
+        void HandleRaidDifficultyOpcode(WorldPacket& recv_data);
 
         TrainerSpellState TrainerGetSpellStatus(TrainerSpell* pSpell);
         void SendMailError(uint32 error);
@@ -758,6 +758,7 @@ class SERVER_DECL WorldSession
         void HandleTimeSyncRespOpcode(WorldPacket& recv_data);
 
         void Unhandled(WorldPacket& recv_data);
+        void HandledClientSide(WorldPacket& recv_data);
 
     public:
 

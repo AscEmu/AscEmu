@@ -1661,7 +1661,7 @@ void Guild::SendMoneyInfo(WorldSession* session) const
 
     int32 amount = _GetMemberRemainingMoney(member);
     WorldPacket data(SMSG_GUILD_BANK_MONEY_WITHDRAWN, 8);
-    data << int64(amount);
+    data << uint64(amount);
     session->SendPacket(&data);
     Log.Debug("Guild", "SMSG_GUILD_BANK_MONEY_WITHDRAWN [%s] Money: %u", session->GetPlayer()->GetName(), amount);
 }

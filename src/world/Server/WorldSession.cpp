@@ -679,21 +679,21 @@ void WorldSession::InitPacketHandlerTable()
     //WorldPacketHandlers[CMSG_UPDATE_ACCOUNT_DATA].handler = &WorldSession::HandleUpdateAccountData;
     //WorldPacketHandlers[CMSG_UPDATE_ACCOUNT_DATA].status = STATUS_AUTHED;
     //WorldPacketHandlers[CMSG_REQUEST_ACCOUNT_DATA].handler = &WorldSession::HandleRequestAccountData;
-    //WorldPacketHandlers[CMSG_TOGGLE_PVP].handler = &WorldSession::HandleTogglePVPOpcode;
+    WorldPacketHandlers[CMSG_TOGGLE_PVP].handler = &WorldSession::HandleTogglePVPOpcode;
 
     //// Faction / Reputation
     //WorldPacketHandlers[CMSG_SET_FACTION_ATWAR].handler = &WorldSession::HandleSetAtWarOpcode;
     //WorldPacketHandlers[CMSG_SET_WATCHED_FACTION].handler = &WorldSession::HandleSetWatchedFactionIndexOpcode;
     //WorldPacketHandlers[CMSG_SET_FACTION_INACTIVE].handler = &WorldSession::HandleSetFactionInactiveOpcode;
 
-    //// Player Interaction
-    //WorldPacketHandlers[CMSG_GAMEOBJ_USE].handler = &WorldSession::HandleGameObjectUse;
+    // Player Interaction
+    WorldPacketHandlers[CMSG_GAMEOBJ_USE].handler = &WorldSession::HandleGameObjectUse;
     WorldPacketHandlers[CMSG_PLAYED_TIME].handler = &WorldSession::HandlePlayedTimeOpcode;
     WorldPacketHandlers[CMSG_SETSHEATHED].handler = &WorldSession::HandleSetSheathedOpcode;
     WorldPacketHandlers[CMSG_EMOTE].handler = &WorldSession::HandleEmoteOpcode;
     WorldPacketHandlers[CMSG_TEXT_EMOTE].handler = &WorldSession::HandleTextEmoteOpcode;
     WorldPacketHandlers[CMSG_INSPECT].handler = &WorldSession::HandleInspectOpcode;
-    //WorldPacketHandlers[SMSG_BARBER_SHOP_RESULT].handler = &WorldSession::HandleBarberShopResult;
+    WorldPacketHandlers[SMSG_BARBER_SHOP_RESULT].handler = &WorldSession::HandleBarberShopResult;
     WorldPacketHandlers[CMSG_MESSAGECHAT_SAY].handler = &WorldSession::HandleMessagechatOpcode;
     WorldPacketHandlers[CMSG_MESSAGECHAT_YELL].handler = &WorldSession::HandleMessagechatOpcode;
     WorldPacketHandlers[CMSG_MESSAGECHAT_CHANNEL].handler = &WorldSession::HandleMessagechatOpcode;
@@ -777,7 +777,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_GOSSIP_SELECT_OPTION].handler = &WorldSession::HandleGossipSelectOptionOpcode;
     WorldPacketHandlers[CMSG_SPIRIT_HEALER_ACTIVATE].handler = &WorldSession::HandleSpiritHealerActivateOpcode;
     WorldPacketHandlers[CMSG_NPC_TEXT_QUERY].handler = &WorldSession::HandleNpcTextQueryOpcode;
-    //WorldPacketHandlers[CMSG_BINDER_ACTIVATE].handler = &WorldSession::HandleBinderActivateOpcode;
+    WorldPacketHandlers[CMSG_BINDER_ACTIVATE].handler = &WorldSession::HandleBinderActivateOpcode;
     //WorldPacketHandlers[CMSG_ACTIVATETAXIEXPRESS].handler = &WorldSession::HandleMultipleActivateTaxiOpcode;
 
     //// Item / Vendors
@@ -793,7 +793,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_AUTOSTORE_BAG_ITEM].handler = &WorldSession::HandleAutoStoreBagItemOpcode;
     //WorldPacketHandlers[CMSG_SET_AMMO].handler = &WorldSession::HandleAmmoSetOpcode;
     WorldPacketHandlers[CMSG_BUYBACK_ITEM].handler = &WorldSession::HandleBuyBackOpcode;
-    WorldPacketHandlers[CMSG_SPLIT_ITEM].handler = &WorldSession::HandleSplitOpcode;
+    WorldPacketHandlers[CMSG_SPLIT_ITEM].handler = &WorldSession::HandleSplitItemOpcode;
     WorldPacketHandlers[CMSG_READ_ITEM].handler = &WorldSession::HandleReadItemOpcode;
     WorldPacketHandlers[CMSG_REPAIR_ITEM].handler = &WorldSession::HandleRepairItemOpcode;
     //WorldPacketHandlers[CMSG_AUTOBANK_ITEM].handler = &WorldSession::HandleAutoBankItemOpcode;
@@ -801,7 +801,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_CANCEL_TEMP_ENCHANTMENT].handler = &WorldSession::HandleCancelTemporaryEnchantmentOpcode;
     WorldPacketHandlers[CMSG_SOCKET_GEMS].handler = &WorldSession::HandleInsertGemOpcode;
     //WorldPacketHandlers[CMSG_WRAP_ITEM].handler = &WorldSession::HandleWrapItemOpcode;
-    //WorldPacketHandlers[CMSG_ITEMREFUNDINFO].handler = &WorldSession::HandleItemRefundInfoOpcode;
+    WorldPacketHandlers[CMSG_ITEM_REFUND_INFO].handler = &WorldSession::HandleItemRefundInfoOpcode;
     //WorldPacketHandlers[CMSG_ITEMREFUNDREQUEST].handler = &WorldSession::HandleItemRefundRequestOpcode;
 
     //WorldPacketHandlers[CMSG_EQUIPMENT_SET_SAVE].handler = &WorldSession::HandleEquipmentSetSave;
@@ -1000,11 +1000,11 @@ void WorldSession::InitPacketHandlerTable()
 
     //// Meeting Stone / Instances
     //WorldPacketHandlers[CMSG_SUMMON_RESPONSE].handler = &WorldSession::HandleSummonResponseOpcode;
-    //WorldPacketHandlers[CMSG_RESET_INSTANCES].handler = &WorldSession::HandleResetInstanceOpcode;
+    WorldPacketHandlers[CMSG_RESET_INSTANCES].handler = &WorldSession::HandleResetInstanceOpcode;
     //WorldPacketHandlers[CMSG_SELF_RES].handler = &WorldSession::HandleSelfResurrectOpcode;
     //WorldPacketHandlers[MSG_RANDOM_ROLL].handler = &WorldSession::HandleRandomRollOpcode;
-    //WorldPacketHandlers[MSG_SET_DUNGEON_DIFFICULTY].handler = &WorldSession::HandleDungeonDifficultyOpcode;
-    //WorldPacketHandlers[MSG_SET_RAID_DIFFICULTY].handler = &WorldSession::HandleRaidDifficultyOpcode;
+    WorldPacketHandlers[MSG_SET_DUNGEON_DIFFICULTY].handler = &WorldSession::HandleDungeonDifficultyOpcode;
+    WorldPacketHandlers[MSG_SET_RAID_DIFFICULTY].handler = &WorldSession::HandleRaidDifficultyOpcode;
 
     //// Misc
     //WorldPacketHandlers[CMSG_OPEN_ITEM].handler = &WorldSession::HandleOpenItemOpcode;
@@ -1058,7 +1058,7 @@ void WorldSession::InitPacketHandlerTable()
 
     //WorldPacketHandlers[CMSG_OPT_OUT_OF_LOOT].handler = &WorldSession::HandleSetAutoLootPassOpcode;
     //WorldPacketHandlers[CMSG_REMOVE_GLYPH].handler = &WorldSession::HandleRemoveGlyph;
-    //WorldPacketHandlers[CMSG_ALTER_APPEARANCE].handler = &WorldSession::HandleBarberShopResult;
+    WorldPacketHandlers[CMSG_ALTER_APPEARANCE].handler = &WorldSession::HandleBarberShopResult;
 
     //WorldPacketHandlers[CMSG_GET_MIRRORIMAGE_DATA].handler = &WorldSession::HandleMirrorImageOpcode;
 
@@ -1103,7 +1103,8 @@ void WorldSession::InitPacketHandlerTable()
 
     WorldPacketHandlers[CMSG_REQUEST_HOTFIX].handler = &WorldSession::HandleRequestHotfix;
 
-    ////Misc - Unhandled
+    ////Misc - Unhandled/HandledClientSide
+    WorldPacketHandlers[CMSG_COMPLETE_MOVIE].handler = &WorldSession::HandledClientSide;
     //WorldPacketHandlers[CMSG_FAR_SIGHT].handler = &WorldSession::Unhandled;
     //WorldPacketHandlers[CMSG_LFG_GET_STATUS].handler = &WorldSession::Unhandled;
     //WorldPacketHandlers[CMSG_VOICE_SESSION_ENABLE].handler = &WorldSession::Unhandled;
@@ -1283,9 +1284,12 @@ void WorldSession::SendRefundInfo(uint64 GUID)
     if (!_player || !_player->IsInWorld())
         return;
 
-    auto item = _player->GetItemInterface()->GetItemByGUID(GUID);
+    Item* item = _player->GetItemInterface()->GetItemByGUID(GUID);
     if (item == nullptr)
+    {
+        Log.Debug("WorldSession::SendRefundInfo", "Called invalid item!");
         return;
+    }
 
     if (item->IsEligibleForRefund())
     {
@@ -1303,66 +1307,47 @@ void WorldSession::SendRefundInfo(uint64 GUID)
         ItemProperties const* proto = item->GetItemProperties();
 
         item->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE);
-        // ////////////////////////////////////////////////////////////////////////////////////////
-        // As of 3.2.0a the server sends this packet to provide refund info on
-        // an item
-        //
-        // {SERVER} Packet: (0x04B2) UNKNOWN PacketSize = 68 TimeStamp =
-        // 265984265
-        // E6 EE 09 18 02 00 00 42 00 00 00 00 4B 25 00 00 00 00 00 00 50 50
-        // 00 00 0A 00 00 00 00
-        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-        // 00 00 00 00 00 00 00
-        // 00 00 00 00 00 00 D3 12 12 00
-        //
-        // Structure:
-        // uint64 GUID
-        // uint32 price (in copper)
-        // uint32 honor
-        // uint32 arena
-        // uint32 item1
-        // uint32 item1cnt
-        // uint32 item2
-        // uint32 item2cnt
-        // uint32 item3
-        // uint32 item3cnt
-        // uint32 item4
-        // uint32 item4cnt
-        // uint32 item5
-        // uint32 item5cnt
-        // uint32 unknown - always seems 0
-        // uint32 buytime - buytime in total playedtime seconds
-        //
-        //
-        // Remainingtime:
-        // Seems to be in playedtime format
-        //
-        //
-        // ////////////////////////////////////////////////////////////////////////////////////////
 
-
-        WorldPacket packet(SMSG_ITEMREFUNDINFO, 68);
-        packet << uint64(GUID);
-        packet << uint32(proto->BuyPrice);
-        packet << uint32(item_extended_cost->honor_points);
-        packet << uint32(item_extended_cost->arena_points);
-
-        for (uint8 i = 0; i < 5; ++i)
-        {
-            packet << uint32(item_extended_cost->item[i]);
-            packet << uint32(item_extended_cost->count[i]);
-        }
-
-        packet << uint32(0);	// always seems to be 0
-
+        ObjectGuid guid = item->GetGUID();
+        WorldPacket data(SMSG_ITEM_REFUND_INFO, 68);    //guessed
+        data.writeBit(guid[3]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[2]);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[1]);
+        data.flushBits();
+        data.WriteByteSeq(guid[7]);
         uint32* played = _player->GetPlayedtime();
 
         if (played[1] >(RefundEntry.first + 60 * 60 * 2))
-            packet << uint32(0);
+            data << uint32(0);
         else
-            packet << uint32(RefundEntry.first);
+            data << uint32(RefundEntry.first);
+        for (uint8 i = 0; i < 5; ++i)
+        {
+            data << uint32(item_extended_cost->item[i]);
+            data << uint32(item_extended_cost->count[i]);
+        }
 
-        this->SendPacket(&packet);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[2]);
+        for (uint8 i = 0; i < 5; ++i)
+        {
+            data << uint32(item_extended_cost->reqcurrcount[i]);
+            data << uint32(item_extended_cost->reqcur[i]);
+        }
+
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[5]);
+        data << uint32(0);
+        data.WriteByteSeq(guid[0]);
+        data << uint32(proto->BuyPrice);
+        this->SendPacket(&data);
 
         LOG_DEBUG("Sent SMSG_ITEMREFUNDINFO.");
     }
@@ -1791,7 +1776,10 @@ void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recv_data)
 //}
 
 void WorldSession::Unhandled(WorldPacket& recv_data)
-{}
+{ }
+
+void WorldSession::HandledClientSide(WorldPacket& recv_data)
+{ }
 
 //void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
 //{
