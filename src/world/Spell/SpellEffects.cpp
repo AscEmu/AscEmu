@@ -1787,7 +1787,6 @@ void Spell::SpellEffectBind(uint32 i)
     if (!playerTarget || !playerTarget->isAlive() || !m_caster)
         return;
 
-    WorldPacket data(45);
     uint32 areaid = playerTarget->GetZoneId();
     uint32 mapid = playerTarget->GetMapId();
     if (GetProto()->EffectMiscValue[i])
@@ -1801,17 +1800,17 @@ void Spell::SpellEffectBind(uint32 i)
 
     playerTarget->SetBindPoint(playerTarget->GetPositionX(), playerTarget->GetPositionY(), playerTarget->GetPositionZ(), mapid, areaid);
 
-    data.Initialize(SMSG_BINDPOINTUPDATE);
-    data << playerTarget->GetBindPositionX();
-    data << playerTarget->GetBindPositionY();
-    data << playerTarget->GetBindPositionZ();
-    data << playerTarget->GetBindMapId();
-    data << playerTarget->GetBindZoneId();
+    WorldPacket data(SMSG_BINDPOINTUPDATE, 20);
+    data << float(playerTarget->GetBindPositionX());
+    data << float(playerTarget->GetBindPositionY());
+    data << float(playerTarget->GetBindPositionZ());
+    data << uint32(playerTarget->GetBindMapId());
+    data << uint32(playerTarget->GetBindZoneId());
     playerTarget->GetSession()->SendPacket(&data);
 
-    data.Initialize(SMSG_PLAYERBOUND);
+    data.Initialize(SMSG_PLAYERBOUND, 12);
     data << m_caster->GetGUID();
-    data << playerTarget->GetBindZoneId();
+    data << uint32(playerTarget->GetBindZoneId());
     playerTarget->GetSession()->SendPacket(&data);
 }
 

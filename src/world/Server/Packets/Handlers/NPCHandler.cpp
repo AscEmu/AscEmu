@@ -679,30 +679,41 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
     return;
 }
 
-//void WorldSession::HandleBinderActivateOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN;
-//    uint64 guid;
-//    recv_data >> guid;
-//
-//    Creature* pC = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-//    if (!pC) return;
-//
-//    SendInnkeeperBind(pC);
-//}
+void WorldSession::HandleBinderActivateOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN;
+    uint64 guid;
+    recv_data >> guid;
+
+    Creature* creature_inkeeper = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    if (!creature_inkeeper)
+        return;
+
+    SendInnkeeperBind(creature_inkeeper);
+}
 
 #define BIND_SPELL_ID 3286
 
 void WorldSession::SendInnkeeperBind(Creature* pCreature)
 {
-    WorldPacket data(45);
+    uint32 current_zone = _player->GetZoneId();
+    if (_player->m_bind_zoneid == current_zone)
+    {
+        OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
+
+        WorldPacket data(SMSG_PLAYERBINDERROR, 1);
+        data << uint32(1);                          // already bound here!
+        SendPacket(&data);
+        return;
+    }
 
     if (!_player->bHasBindDialogOpen)
     {
         OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
 
-        data.Initialize(SMSG_BINDER_CONFIRM);
-        data << pCreature->GetGUID() << _player->GetZoneId();
+        WorldPacket data(SMSG_BINDER_CONFIRM, 12);
+        data << uint64(pCreature->GetGUID());
+        data << uint32(_player->GetZoneId());
         SendPacket(&data);
 
         _player->bHasBindDialogOpen = true;
@@ -710,9 +721,17 @@ void WorldSession::SendInnkeeperBind(Creature* pCreature)
     }
 
     _player->bHasBindDialogOpen = false;
-    OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
 
-    pCreature->CastSpell(_player->GetGUID(), BIND_SPELL_ID, true);
+    //zyres: seems the spell did not work as intended so set up our new bin position
+    /*_player->m_bind_mapid = _player->GetMapId();
+    _player->m_bind_pos_x = _player->GetPositionX();
+    _player->m_bind_pos_y = _player->GetPositionY();
+    _player->m_bind_pos_z = _player->GetPositionZ();
+    _player->m_bind_zoneid = _player->GetZoneId();*/
+
+    OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
+    uint64 player_guid = _player->GetGUID();
+    pCreature->CastSpell(player_guid, BIND_SPELL_ID, true);
 }
 
 #undef BIND_SPELL_ID

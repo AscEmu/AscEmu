@@ -120,7 +120,7 @@ enum Opcodes
     CMSG_SAVE_PLAYER                                = 0x153,
     CMSG_SETDEATHBINDPOINT                          = 0x154,
     CMSG_GETDEATHBINDZONE                           = 0x156,
-    SMSG_BINDZONEREPLY                              = 0x157,
+    
     SMSG_CLIENT_CONTROL_UPDATE                      = 0x159,
     SMSG_ITEM_PUSH_RESULT                           = 0x166,
     SMSG_DUEL_REQUESTED                             = 0x167,
@@ -142,8 +142,7 @@ enum Opcodes
     CMSG_PET_RENAME                                 = 0x177,
     SMSG_PET_NAME_INVALID                           = 0x178,
     SMSG_PET_MODE                                   = 0x17A,
-    CMSG_BINDER_ACTIVATE                            = 0x1B5,
-    SMSG_PLAYERBINDERROR                            = 0x1B6,
+
     CMSG_BANKER_ACTIVATE                            = 0x1B7,
     SMSG_SHOW_BANK                                  = 0x1B8,
     CMSG_BUY_BANK_SLOT                              = 0x1B9,
@@ -275,7 +274,7 @@ enum Opcodes
     SMSG_GROUP_JOINED_BATTLEGROUND                  = 0x2E8,
     MSG_BATTLEGROUND_PLAYER_POSITIONS               = 0x2E9,
     CMSG_PET_STOP_ATTACK                            = 0x2EA,
-    SMSG_BINDER_CONFIRM                             = 0x2EB,
+
     SMSG_BATTLEGROUND_PLAYER_JOINED                 = 0x2EC,
     SMSG_BATTLEGROUND_PLAYER_LEFT                   = 0x2ED,
     CMSG_PET_UNLEARN                                = 0x2F0,
@@ -695,7 +694,7 @@ enum Opcodes
     SMSG_SET_PROFICIENCY                                = 0x6207,
     SMSG_ACTION_BUTTONS                                 = 0x38B5,
     CMSG_SET_SELECTION                                  = 0x0506,
-    SMSG_BINDPOINTUPDATE                                = 0x0527,
+
     SMSG_PLAYERBOUND                                    = 0x2516,
     CMSG_PLAYED_TIME                                    = 0x0804,
     SMSG_PLAYED_TIME                                    = 0x6037,
@@ -744,6 +743,11 @@ enum Opcodes
     CMSG_TUTORIAL_FLAG                                  = 0x6C26,
     CMSG_TUTORIAL_CLEAR                                 = 0x6515,
     CMSG_TUTORIAL_RESET                                 = 0x2726,
+
+    SMSG_BINDER_CONFIRM                                 = 0x2835,
+    SMSG_BINDPOINTUPDATE                                = 0x0527,
+    CMSG_BINDER_ACTIVATE                                = 0x4006,
+    SMSG_PLAYERBINDERROR                                = 0x6A24,
 
     CMSG_EMOTE                                          = 0x4C26,
     SMSG_EMOTE                                          = 0x0A34,
@@ -1491,6 +1495,7 @@ enum Opcodes
     MSG_GM_GEARRATING                                   = 0x0000,
     MSG_GM_CHANGE_ARENA_RATING                          = 0x0000,
     SMSG_GMRESPONSE_CREATE_TICKET                       = 0x0000,
+    SMSG_BINDZONEREPLY                                  = 0x0000,
 
     NUM_MSG_TYPES                                       = 0xFFFF    // End of Opcodes
 };

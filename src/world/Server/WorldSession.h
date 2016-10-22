@@ -409,7 +409,7 @@ class SERVER_DECL WorldSession
         void HandleGossipSelectOptionOpcode(WorldPacket& recvPacket);
         void HandleSpiritHealerActivateOpcode(WorldPacket& recvPacket);
         void HandleNpcTextQueryOpcode(WorldPacket& recvPacket);
-        //void HandleBinderActivateOpcode(WorldPacket& recvPacket);
+        void HandleBinderActivateOpcode(WorldPacket& recvPacket);
 
         // Auction House opcodes
         void HandleAuctionHelloOpcode(WorldPacket& recvPacket);
