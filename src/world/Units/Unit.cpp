@@ -5519,11 +5519,16 @@ void Unit::SetStandState(uint8 standstate)
         return;
 
     SetByte(UNIT_FIELD_BYTES_1, 0, standstate);
+
     if (standstate == STANDSTATE_STAND)  //standup
         RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_STAND_UP);
 
     if (IsPlayer())
-        static_cast<Player*>(this)->GetSession()->OutPacket(SMSG_STANDSTATE_UPDATE, 1, &standstate);
+    {
+        WorldPacket data(SMSG_STANDSTATE_UPDATE, 1);
+        data << uint8(standstate);
+        static_cast<Player*>(this)->GetSession()->SendPacket(&data);
+    }
 }
 
 void Unit::RemoveAurasByInterruptFlag(uint32 flag)

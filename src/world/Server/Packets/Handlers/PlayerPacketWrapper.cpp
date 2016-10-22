@@ -734,7 +734,7 @@ void Player::SendDestroyObject(uint64 GUID)
 
 void Player::SendEquipmentSetList()
 {
-    WorldPacket data(SMSG_EQUIPMENT_SET_LIST, 1000);
+    WorldPacket data(SMSG_EQUIPMENT_SET_LIST, 4);
 
     m_ItemInterface->m_EquipmentSets.FillEquipmentSetListPacket(data);
     m_session->SendPacket(&data);
@@ -757,7 +757,6 @@ void Player::SendEquipmentSetUseResult(uint8 result)
 {
     WorldPacket data(SMSG_EQUIPMENT_SET_USE_RESULT, 1);
     data << uint8(result);
-
     m_session->SendPacket(&data);
 
     LOG_DEBUG("SMSG_EQUIPMENT_SET_USE_RESULT sent.");

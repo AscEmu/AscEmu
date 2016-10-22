@@ -109,7 +109,6 @@ enum Opcodes
     CMSG_SET_FACTION_ATWAR                          = 0x125,
     CMSG_SET_FACTION_CHEAT                          = 0x126,
     CMSG_CANCEL_AURA                                = 0x136,
-    SMSG_EQUIPMENT_SET_SAVED                        = 0x137,
     SMSG_AI_REACTION                                = 0x13C,
     CMSG_EQUIPMENT_SET_DELETE                       = 0x13E,
     CMSG_UNUSED                                     = 0x13F,
@@ -618,7 +617,6 @@ enum Opcodes
     SMSG_SPLINE_MOVE_GRAVITY_DISABLE                = 0x4D3,
     SMSG_SPLINE_MOVE_GRAVITY_ENABLE                 = 0x4D4,
     CMSG_EQUIPMENT_SET_USE                          = 0x4D5,
-    SMSG_EQUIPMENT_SET_USE_RESULT                   = 0x4D6,
     CMSG_FORCE_ANIM                                 = 0x4D7,
     SMSG_FORCE_ANIM                                 = 0x4D8,
     CMSG_CHAR_FACTION_CHANGE                        = 0x4D9,
@@ -684,13 +682,12 @@ enum Opcodes
     CMSG_LOAD_SCREEN                                    = 0x2422,
     CMSG_UI_TIME_REQUEST                                = 0x4605,
     SMSG_UI_TIME                                        = 0x4A14,
-    
-    SMSG_EQUIPMENT_SET_LIST                             = 0x2E04,   // not updated
+
     SMSG_CLIENTCACHE_VERSION                            = 0x2734,
     CMSG_GAMEOBJ_REPORT_USE                             = 0x4827,
     CMSG_KEEP_ALIVE                                     = 0x0015,   // not implemented?
     SMSG_UPDATE_ACCOUNT_DATA_COMPLETE                   = 0x2015,
-    SMSG_STANDSTATE_UPDATE                              = 0x6F04,   // not sure
+    SMSG_STANDSTATE_UPDATE                              = 0x6F04,
     SMSG_ADDON_INFO                                     = 0x2C14,
     SMSG_WEATHER                                        = 0x2904,   // not updated
     
@@ -1259,6 +1256,9 @@ enum Opcodes
     SMSG_DB_REPLY                                       = 0x38A4,
     CMSG_ITEM_TEXT_QUERY                                = 0x2406,
     SMSG_ITEM_TEXT_QUERY_RESPONSE                       = 0x2725,
+    SMSG_EQUIPMENT_SET_LIST                             = 0x2E04,
+    SMSG_EQUIPMENT_SET_SAVED                            = 0x2216,
+    SMSG_EQUIPMENT_SET_USE_RESULT                       = 0x2424,
 
 
     //Quest

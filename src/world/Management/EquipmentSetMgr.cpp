@@ -154,7 +154,9 @@ namespace Arcemu
 
     void EquipmentSetMgr::FillEquipmentSetListPacket(WorldPacket& data)
     {
-
+        uint32 count = 0;
+        size_t count_pos = data.wpos();
+        data << uint32(count);
         data << uint32(EquipmentSets.size());
 
         for (EquipmentSetStorage::iterator itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
@@ -166,10 +168,14 @@ namespace Arcemu
             data << std::string(set->SetName);
             data << std::string(set->IconName);
 
-            for (uint32 i = 0; i < set->ItemGUID.size(); ++i)
+            for (uint32 i = 0; i < EQUIPMENT_SLOT_END; ++i)
             {
                 data << WoWGuid(uint64(Arcemu::Util::MAKE_ITEM_GUID(set->ItemGUID[i])));
             }
+
+            ++count;
         }
+
+        data.put<uint32>(count_pos, count);
     }
 }
