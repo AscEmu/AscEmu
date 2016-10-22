@@ -315,7 +315,7 @@ class SERVER_DECL WorldSession
         void HandleSetActionButtonOpcode(WorldPacket& recvPacket);
         //void HandleSetAtWarOpcode(WorldPacket& recvPacket);
         //void HandleSetWatchedFactionIndexOpcode(WorldPacket& recvPacket);
-        //void HandleTogglePVPOpcode(WorldPacket& recvPacket);
+        void HandleTogglePVPOpcode(WorldPacket& recvPacket);
         //void HandleAmmoSetOpcode(WorldPacket& recvPacket);
         //void HandleGameObjectUse(WorldPacket& recvPacket);
         //void HandleBarberShopResult(WorldPacket& recvPacket);
@@ -685,8 +685,8 @@ class SERVER_DECL WorldSession
 
         // Instances
         void HandleResetInstanceOpcode(WorldPacket& recv_data);
-        //void HandleDungeonDifficultyOpcode(WorldPacket& recv_data);
-        //void HandleRaidDifficultyOpcode(WorldPacket& recv_data);
+        void HandleDungeonDifficultyOpcode(WorldPacket& recv_data);
+        void HandleRaidDifficultyOpcode(WorldPacket& recv_data);
 
         TrainerSpellState TrainerGetSpellStatus(TrainerSpell* pSpell);
         void SendMailError(uint32 error);

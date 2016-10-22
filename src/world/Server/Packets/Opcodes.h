@@ -189,7 +189,6 @@ enum Opcodes
     CMSG_TAXICLEARNODE                              = 0x241,
     CMSG_TAXIENABLENODE                             = 0x242,
     SMSG_DEBUGAURAPROC                              = 0x24D,
-    CMSG_TOGGLE_PVP                                 = 0x253,
     SMSG_ZONE_UNDER_ATTACK                          = 0x254,
     SMSG_PROCRESIST                                 = 0x260,
     SMSG_STANDSTATE_CHANGE_FAILURE_OBSOLETE         = 0x261,
@@ -251,7 +250,6 @@ enum Opcodes
     CMSG_RUN_SCRIPT                                 = 0x2B5,
     SMSG_SCRIPT_MESSAGE                             = 0x2B6,
     SMSG_DUEL_COUNTDOWN                             = 0x2B7,
-    SMSG_AREA_TRIGGER_MESSAGE                       = 0x2B8,
     CMSG_TOGGLE_HELM                                = 0x2B9,
     CMSG_TOGGLE_CLOAK                               = 0x2BA,
     SMSG_LFG_ROLE_CHOSEN                            = 0x2BB,
@@ -686,7 +684,7 @@ enum Opcodes
     CMSG_LOAD_SCREEN                                    = 0x2422,
     CMSG_UI_TIME_REQUEST                                = 0x4605,
     SMSG_UI_TIME                                        = 0x4A14,
-    MSG_SET_RAID_DIFFICULTY                             = 0x0614,
+    
     SMSG_EQUIPMENT_SET_LIST                             = 0x2E04,   // not updated
     SMSG_CLIENTCACHE_VERSION                            = 0x2734,
     CMSG_GAMEOBJ_REPORT_USE                             = 0x4827,
@@ -695,8 +693,7 @@ enum Opcodes
     SMSG_STANDSTATE_UPDATE                              = 0x6F04,   // not sure
     SMSG_ADDON_INFO                                     = 0x2C14,
     SMSG_WEATHER                                        = 0x2904,   // not updated
-    MSG_SET_DUNGEON_DIFFICULTY                          = 0x4925,
-    SMSG_UPDATE_INSTANCE_OWNERSHIP                      = 0x4915,
+    
     SMSG_MOTD                                           = 0x0A35,
     SMSG_REALM_SPLIT                                    = 0x2714,
     CMSG_REALM_SPLIT                                    = 0x2906,
@@ -1045,8 +1042,10 @@ enum Opcodes
     CMSG_RESET_INSTANCES                                = 0x6E14,
     SMSG_INSTANCE_RESET                                 = 0x6F05,
     SMSG_INSTANCE_RESET_FAILED                          = 0x4725,   // not implemented
+    SMSG_UPDATE_INSTANCE_OWNERSHIP                      = 0x4915,
     SMSG_UPDATE_LAST_INSTANCE                           = 0x0437,
-
+    MSG_SET_DUNGEON_DIFFICULTY                          = 0x4925,
+    MSG_SET_RAID_DIFFICULTY                             = 0x0614,
 
     // Calendar
     CMSG_CALENDAR_GET_CALENDAR                          = 0x2814,   // not implemented
@@ -1239,6 +1238,7 @@ enum Opcodes
     SMSG_CHAR_RENAME                                    = 0x2024,
     SMSG_FEATURE_SYSTEM_STATUS                          = 0x3DB7,
     SMSG_LEARNED_DANCE_MOVES                            = 0x0E05,
+    CMSG_TOGGLE_PVP                                     = 0x6815,
 
     //Item
     CMSG_AUTOSTORE_LOOT_ITEM                            = 0x0E34,
@@ -1438,6 +1438,7 @@ enum Opcodes
     SMSG_EXPLORATION_EXPERIENCE                         = 0x6716,
     CMSG_REQUEST_HOTFIX                                 = 0x2401,
     CMSG_AREATRIGGER                                    = 0x0937,
+    SMSG_AREA_TRIGGER_MESSAGE                           = 0x4505,
     CMSG_OBJECT_UPDATE_FAILED                           = 0x3808,
     SMSG_SET_PHASE_SHIFT                                = 0x70A0,
     CMSG_REQUEST_CEMETERY_LIST                          = 0x720A,

@@ -1351,12 +1351,12 @@ void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recv_data)
 //    GetPlayer()->SetUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, factionid);
 //}
 
-//void WorldSession::HandleTogglePVPOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    _player->PvPToggle();
-//}
+void WorldSession::HandleTogglePVPOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    _player->PvPToggle();
+}
 
 //void WorldSession::HandleAmmoSetOpcode(WorldPacket& recv_data)
 //{
@@ -2573,41 +2573,41 @@ void WorldSession::HandleResetInstanceOpcode(WorldPacket& recv_data)
 //        _player->SetFlag(PLAYER_FLAGS, PLAYER_FLAG_NOHELM);
 //}
 
-//void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint32 data;
-//    recv_data >> data;
-//
-//    // Set dungeon difficulty for us
-//    _player->iInstanceType = data;
-//    sInstanceMgr.ResetSavedInstances(_player);
-//
-//    Group* m_Group = _player->GetGroup();
-//
-//    // If we have a group and we are the leader then set it for the entire group as well
-//    if (m_Group && _player->IsGroupLeader())
-//        m_Group->SetDungeonDifficulty(data);
-//}
+void WorldSession::HandleDungeonDifficultyOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
 
-//void WorldSession::HandleRaidDifficultyOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint32 data;
-//    recv_data >> data;
-//
-//    // set the raid difficulty for us
-//    _player->SetRaidDifficulty(data);
-//    sInstanceMgr.ResetSavedInstances(_player);
-//
-//    Group* m_Group = _player->GetGroup();
-//
-//    // if we have a group and we are the leader then set it for the entire group as well
-//    if (m_Group && _player->IsGroupLeader())
-//        m_Group->SetRaidDifficulty(data);
-//}
+    uint32 data;
+    recv_data >> data;
+
+    // Set dungeon difficulty for us
+    _player->iInstanceType = data;
+    sInstanceMgr.ResetSavedInstances(_player);
+
+    Group* m_Group = _player->GetGroup();
+
+    // If we have a group and we are the leader then set it for the entire group as well
+    if (m_Group && _player->IsGroupLeader())
+        m_Group->SetDungeonDifficulty(data);
+}
+
+void WorldSession::HandleRaidDifficultyOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    uint32 data;
+    recv_data >> data;
+
+    // set the raid difficulty for us
+    _player->SetRaidDifficulty(data);
+    sInstanceMgr.ResetSavedInstances(_player);
+
+    Group* m_Group = _player->GetGroup();
+
+    // if we have a group and we are the leader then set it for the entire group as well
+    if (m_Group && _player->IsGroupLeader())
+        m_Group->SetRaidDifficulty(data);
+}
 
 //void WorldSession::HandleSummonResponseOpcode(WorldPacket& recv_data)
 //{
