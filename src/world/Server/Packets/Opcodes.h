@@ -594,8 +594,6 @@ enum Opcodes
     UMSG_UNKNOWN_1199                               = 0x4AF,
     UMSG_UNKNOWN_1200                               = 0x4B0,
     UMSG_UNKNOWN_1201                               = 0x4B1,
-    SMSG_ITEMREFUNDINFO                             = 0x4B2,
-    CMSG_ITEMREFUNDINFO                             = 0x4B3,
     CMSG_ITEMREFUNDREQUEST                          = 0x4B4,
     SMSG_ITEMREFUNDREQUEST                          = 0x4B5,
     CMSG_UNKNOWN_1206                               = 0x4B6,
@@ -1213,6 +1211,7 @@ enum Opcodes
     SMSG_GUILD_BANK_MONEY_WITHDRAWN                     = 0x5DB4,   // unhandled
     CMSG_PET_LEVEL_CHEAT                                = 0x1027,
     CMSG_ITEM_REFUND_INFO                               = 0x2206,   // not implemented
+    SMSG_ITEM_REFUND_INFO                               = 0x15A3,
     CMSG_SET_TITLE                                      = 0x2117,
     SMSG_LEVELUP_INFO                                   = 0x0435,
     SMSG_PROPOSE_LEVEL_GRANT                            = 0x6114,
@@ -1235,7 +1234,7 @@ enum Opcodes
     SMSG_WORLD_STATE_UI_TIMER_UPDATE                    = 0x4A14,
     SMSG_PAUSE_MIRROR_TIMER                             = 0x4015,
     SMSG_START_MIRROR_TIMER                             = 0x6824,
-    SMSG_START_TIMER                                    = 0x59A5,   // not implemented
+    SMSG_START_TIMER                                    = 0x59A5,   // not implemented BG/ARENA timer?
     SMSG_STOP_MIRROR_TIMER                              = 0x0B06,
 
     CMSG_CHAR_RENAME                                    = 0x2327,
@@ -1244,13 +1243,10 @@ enum Opcodes
     SMSG_LEARNED_DANCE_MOVES                            = 0x0E05,
 
     //Item
-    CMSG_AUTOEQUIP_GROUND_ITEM                          = 0x1107,   // unchecked
-    CMSG_AUTOSTORE_GROUND_ITEM                          = 0x1108,   // unchecked
-    CMSG_AUTOSTORE_LOOT_ITEM                            = 0x0E34,   // unchecked
-    CMSG_STORE_LOOT_IN_SLOT                             = 0x110A,   // unchecked
+    CMSG_AUTOSTORE_LOOT_ITEM                            = 0x0E34,
     CMSG_AUTOEQUIP_ITEM                                 = 0x4304,
-    CMSG_AUTOSTORE_BAG_ITEM                             = 0x0236,   // unchecked
-    CMSG_SPLIT_ITEM                                     = 0x0F17,   // unchecked
+    CMSG_AUTOSTORE_BAG_ITEM                             = 0x0236,
+    CMSG_SPLIT_ITEM                                     = 0x0F17,
     CMSG_AUTOEQUIP_ITEM_SLOT                            = 0x4A17,
     CMSG_SWAP_ITEM                                      = 0x6326,
     CMSG_SWAP_INV_ITEM                                  = 0x2614,
@@ -1484,6 +1480,9 @@ enum Opcodes
     CMSG_NEW_SPELL_SLOT                                 = 0x0000,
     CMSG_TARGET_CAST                                    = 0x0000,
     CMSG_TARGET_SCRIPT_CAST                             = 0x0000,
+    CMSG_STORE_LOOT_IN_SLOT                             = 0x0000,
+    CMSG_AUTOEQUIP_GROUND_ITEM                          = 0x0000,
+    CMSG_AUTOSTORE_GROUND_ITEM                          = 0x0000,
 
     NUM_MSG_TYPES                                       = 0xFFFF    // End of Opcodes
 };

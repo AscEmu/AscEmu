@@ -445,14 +445,14 @@ class SERVER_DECL WorldSession
         void HandleListInventoryOpcode(WorldPacket& recvPacket);
         void HandleAutoStoreBagItemOpcode(WorldPacket& recvPacket);
         void HandleBuyBackOpcode(WorldPacket& recvPacket);
-        void HandleSplitOpcode(WorldPacket& recvPacket);
+        void HandleSplitItemOpcode(WorldPacket& recvPacket);
         void HandleReadItemOpcode(WorldPacket& recvPacket);
         void HandleRepairItemOpcode(WorldPacket& recvPacket);
         //void HandleAutoBankItemOpcode(WorldPacket& recvPacket);
         //void HandleAutoStoreBankItemOpcode(WorldPacket& recvPacket);
         void HandleCancelTemporaryEnchantmentOpcode(WorldPacket& recvPacket);
         void HandleInsertGemOpcode(WorldPacket& recvPacket);
-        //void HandleItemRefundInfoOpcode(WorldPacket& recvPacket);
+        void HandleItemRefundInfoOpcode(WorldPacket& recvPacket);
         //void HandleItemRefundRequestOpcode(WorldPacket& recvPacket);
 
         // Equipment set opcode

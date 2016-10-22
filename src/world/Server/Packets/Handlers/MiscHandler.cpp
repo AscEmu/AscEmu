@@ -45,26 +45,28 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    uint32 itemid = 0;
-    uint32 amt = 1;
-    uint8 lootSlot = 0;
+    uint8 lootSlot;
+    recv_data >> lootSlot;
+
     uint8 error = 0;
     SlotResult slotresult;
 
-    Item* add;
-    Loot* pLoot = NULL;
+    Loot* pLoot = nullptr;
 
     if (_player->IsCasting())
         _player->InterruptSpell();
-    GameObject* pGO = NULL;
-    Creature* pCreature = NULL;
-    Item *lootSrcItem = NULL;
+
+    GameObject* pGO = nullptr;
+    Creature* pCreature = nullptr;
+    Item* lootSrcItem = nullptr;
 
     uint32 guidtype = GET_TYPE_FROM_GUID(_player->GetLootGUID());
     if (guidtype == HIGHGUID_TYPE_UNIT)
     {
         pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(GetPlayer()->GetLootGUID()));
-        if (!pCreature)return;
+        if (!pCreature)
+            return;
+
         pLoot = &pCreature->loot;
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
@@ -84,23 +86,25 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         Item* pItem = _player->GetItemInterface()->GetItemByGUID(_player->GetLootGUID());
         if (!pItem)
             return;
+
         lootSrcItem = pItem;
         pLoot = pItem->loot;
     }
     else if (guidtype == HIGHGUID_TYPE_PLAYER)
     {
         Player* pl = _player->GetMapMgr()->GetPlayer((uint32)GetPlayer()->GetLootGUID());
-        if (!pl) return;
+        if (!pl)
+            return;
+
         pLoot = &pl->loot;
     }
 
-    if (!pLoot) return;
+    if (!pLoot)
+        return;
 
-    recv_data >> lootSlot;
     if (lootSlot >= pLoot->items.size())
     {
-        LOG_DEBUG("Player %s might be using a hack! (slot %d, size %d)",
-                  GetPlayer()->GetName(), lootSlot, pLoot->items.size());
+        LOG_DEBUG("Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->GetName(), lootSlot, pLoot->items.size());
         return;
     }
 
@@ -110,7 +114,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         return;
     }
 
-    amt = pLoot->items.at(lootSlot).iItemsCount;
+    uint32 amt = pLoot->items.at(lootSlot).iItemsCount;
     if (pLoot->items.at(lootSlot).roll != NULL)
         return;
 
@@ -134,7 +138,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         }
     }
 
-    itemid = pLoot->items.at(lootSlot).item.itemproto->ItemId;
+    uint32 itemid = pLoot->items.at(lootSlot).item.itemproto->ItemId;
     ItemProperties const* it = pLoot->items.at(lootSlot).item.itemproto;
 
     if ((error = _player->GetItemInterface()->CanReceiveItem(it, 1)) != 0)
@@ -144,13 +148,11 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     }
 
     if (pGO)
-    {
         CALL_GO_SCRIPT_EVENT(pGO, OnLootTaken)(_player, it);
-    }
     else if (pCreature)
         CALL_SCRIPT_EVENT(pCreature, OnLootTaken)(_player, it);
 
-    add = GetPlayer()->GetItemInterface()->FindItemLessMax(itemid, amt, false);
+    Item* add = GetPlayer()->GetItemInterface()->FindItemLessMax(itemid, amt, false);
     sHookInterface.OnLoot(_player, pCreature, 0, itemid);
     if (!add)
     {
@@ -163,7 +165,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 
         LOG_DEBUG("AutoLootItem MISC");
         Item* item = objmgr.CreateItem(itemid, GetPlayer());
-        if (item == NULL)
+        if (item == nullptr)
             return;
 
         item->SetStackCount(amt);
@@ -207,21 +209,18 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         pLoot->items.at(lootSlot).iItemsCount = 0;
 
         // this gets sent to all looters
-        WorldPacket data(1);
-        data.SetOpcode(SMSG_LOOT_REMOVED);
+        WorldPacket data(SMSG_LOOT_REMOVED, 1);
         data << lootSlot;
-        Player* plr;
         for (LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
         {
-            if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
+            if (Player* plr = _player->GetMapMgr()->GetPlayer(*itr))
                 plr->GetSession()->SendPacket(&data);
         }
     }
     else
     {
         pLoot->items.at(lootSlot).has_looted.insert(_player->GetLowGUID());
-        WorldPacket data(1);
-        data.SetOpcode(SMSG_LOOT_REMOVED);
+        WorldPacket data(SMSG_LOOT_REMOVED, 1);
         data << lootSlot;
         _player->GetSession()->SendPacket(&data);
     }
@@ -234,7 +233,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     /* any left yet? (for fishing bobbers) */
     if (pGO && pGO->GetEntry() == GO_FISHING_BOBBER)
     {
-        int count = 0;
+        uint32 count = 0;
         for (std::vector<__LootItem>::iterator itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
             count += (*itr).iItemsCount;
         if (!count)

@@ -793,7 +793,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_AUTOSTORE_BAG_ITEM].handler = &WorldSession::HandleAutoStoreBagItemOpcode;
     //WorldPacketHandlers[CMSG_SET_AMMO].handler = &WorldSession::HandleAmmoSetOpcode;
     WorldPacketHandlers[CMSG_BUYBACK_ITEM].handler = &WorldSession::HandleBuyBackOpcode;
-    WorldPacketHandlers[CMSG_SPLIT_ITEM].handler = &WorldSession::HandleSplitOpcode;
+    WorldPacketHandlers[CMSG_SPLIT_ITEM].handler = &WorldSession::HandleSplitItemOpcode;
     WorldPacketHandlers[CMSG_READ_ITEM].handler = &WorldSession::HandleReadItemOpcode;
     WorldPacketHandlers[CMSG_REPAIR_ITEM].handler = &WorldSession::HandleRepairItemOpcode;
     //WorldPacketHandlers[CMSG_AUTOBANK_ITEM].handler = &WorldSession::HandleAutoBankItemOpcode;
@@ -801,7 +801,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_CANCEL_TEMP_ENCHANTMENT].handler = &WorldSession::HandleCancelTemporaryEnchantmentOpcode;
     WorldPacketHandlers[CMSG_SOCKET_GEMS].handler = &WorldSession::HandleInsertGemOpcode;
     //WorldPacketHandlers[CMSG_WRAP_ITEM].handler = &WorldSession::HandleWrapItemOpcode;
-    //WorldPacketHandlers[CMSG_ITEMREFUNDINFO].handler = &WorldSession::HandleItemRefundInfoOpcode;
+    WorldPacketHandlers[CMSG_ITEM_REFUND_INFO].handler = &WorldSession::HandleItemRefundInfoOpcode;
     //WorldPacketHandlers[CMSG_ITEMREFUNDREQUEST].handler = &WorldSession::HandleItemRefundRequestOpcode;
 
     //WorldPacketHandlers[CMSG_EQUIPMENT_SET_SAVE].handler = &WorldSession::HandleEquipmentSetSave;
@@ -1283,9 +1283,12 @@ void WorldSession::SendRefundInfo(uint64 GUID)
     if (!_player || !_player->IsInWorld())
         return;
 
-    auto item = _player->GetItemInterface()->GetItemByGUID(GUID);
+    Item* item = _player->GetItemInterface()->GetItemByGUID(GUID);
     if (item == nullptr)
+    {
+        Log.Debug("WorldSession::SendRefundInfo", "Called invalid item!");
         return;
+    }
 
     if (item->IsEligibleForRefund())
     {
@@ -1303,66 +1306,47 @@ void WorldSession::SendRefundInfo(uint64 GUID)
         ItemProperties const* proto = item->GetItemProperties();
 
         item->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE);
-        // ////////////////////////////////////////////////////////////////////////////////////////
-        // As of 3.2.0a the server sends this packet to provide refund info on
-        // an item
-        //
-        // {SERVER} Packet: (0x04B2) UNKNOWN PacketSize = 68 TimeStamp =
-        // 265984265
-        // E6 EE 09 18 02 00 00 42 00 00 00 00 4B 25 00 00 00 00 00 00 50 50
-        // 00 00 0A 00 00 00 00
-        // 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-        // 00 00 00 00 00 00 00
-        // 00 00 00 00 00 00 D3 12 12 00
-        //
-        // Structure:
-        // uint64 GUID
-        // uint32 price (in copper)
-        // uint32 honor
-        // uint32 arena
-        // uint32 item1
-        // uint32 item1cnt
-        // uint32 item2
-        // uint32 item2cnt
-        // uint32 item3
-        // uint32 item3cnt
-        // uint32 item4
-        // uint32 item4cnt
-        // uint32 item5
-        // uint32 item5cnt
-        // uint32 unknown - always seems 0
-        // uint32 buytime - buytime in total playedtime seconds
-        //
-        //
-        // Remainingtime:
-        // Seems to be in playedtime format
-        //
-        //
-        // ////////////////////////////////////////////////////////////////////////////////////////
 
-
-        WorldPacket packet(SMSG_ITEMREFUNDINFO, 68);
-        packet << uint64(GUID);
-        packet << uint32(proto->BuyPrice);
-        packet << uint32(item_extended_cost->honor_points);
-        packet << uint32(item_extended_cost->arena_points);
-
-        for (uint8 i = 0; i < 5; ++i)
-        {
-            packet << uint32(item_extended_cost->item[i]);
-            packet << uint32(item_extended_cost->count[i]);
-        }
-
-        packet << uint32(0);	// always seems to be 0
-
+        ObjectGuid guid = item->GetGUID();
+        WorldPacket data(SMSG_ITEM_REFUND_INFO, 68);    //guessed
+        data.writeBit(guid[3]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[6]);
+        data.writeBit(guid[2]);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[1]);
+        data.flushBits();
+        data.WriteByteSeq(guid[7]);
         uint32* played = _player->GetPlayedtime();
 
         if (played[1] >(RefundEntry.first + 60 * 60 * 2))
-            packet << uint32(0);
+            data << uint32(0);
         else
-            packet << uint32(RefundEntry.first);
+            data << uint32(RefundEntry.first);
+        for (uint8 i = 0; i < 5; ++i)
+        {
+            data << uint32(item_extended_cost->item[i]);
+            data << uint32(item_extended_cost->count[i]);
+        }
 
-        this->SendPacket(&packet);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[2]);
+        for (uint8 i = 0; i < 5; ++i)
+        {
+            data << uint32(item_extended_cost->reqcurrcount[i]);
+            data << uint32(item_extended_cost->reqcur[i]);
+        }
+
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[5]);
+        data << uint32(0);
+        data.WriteByteSeq(guid[0]);
+        data << uint32(proto->BuyPrice);
+        this->SendPacket(&data);
 
         LOG_DEBUG("Sent SMSG_ITEMREFUNDINFO.");
     }
