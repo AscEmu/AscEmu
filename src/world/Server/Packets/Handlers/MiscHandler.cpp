@@ -2013,17 +2013,15 @@ void WorldSession::HandlePlayedTimeOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
 {
-    CHECK_PACKET_SIZE(recv_data, 8);
     CHECK_INWORLD_RETURN;
 
     uint64 guid;
-    ByteBuffer m_Packed_GUID;
     recv_data >> guid;
-    Player* player = _player->GetMapMgr()->GetPlayer((uint32)guid);
 
-    if (player == NULL)
+    Player* player = _player->GetMapMgr()->GetPlayer((uint32)guid);
+    if (player == nullptr)
     {
-        LOG_ERROR("HandleInspectOpcode: guid was null");
+        Log.Debug("WorldSession::HandleInspectOpcode", "No player found for received guid!");
         return;
     }
 
@@ -2033,26 +2031,14 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
     if (_player->m_comboPoints)
         _player->UpdateComboPoints();
 
-    WorldPacket data(SMSG_INSPECT_TALENT, 1000);
-    m_Packed_GUID.appendPackGUID(player->GetGUID());
-    data.append(m_Packed_GUID);
+    WorldPacket data(SMSG_INSPECT_RESULT, 50);
+    data << player->GetNewGUID();
 
-    //data.appendPackGUID(guid);
-    //data.appendPackGUID(player->GetGUID());
-    //data << player->GetNewGUID();
-#ifdef SAVE_BANDWIDTH
-    PlayerSpec *currSpec = &player->m_specs[player->m_talentActiveSpec];
-    data << uint32(currSpec->GetTP());
-    data << uint8(1) << uint8(0);
-    data << uint8(currSpec->talents.size()); //fake value, will be overwritten at the end
-    for (std::map<uint32, uint8>::iterator itr = currSpec->talents.begin(); itr != currSpec->talents.end(); itr++)
-        data << itr->first << itr->second;
-    data << uint8(0); // Send Glyph info
-#else
     data << uint32(player->m_specs[player->m_talentActiveSpec].GetTP());
     data << uint8(player->m_talentSpecsCount);
     data << uint8(player->m_talentActiveSpec);
-    for (uint8 s = 0; s < player->m_talentSpecsCount; s++)
+
+    for (uint8 s = 0; s < player->m_talentSpecsCount; ++s)
     {
         PlayerSpec spec = player->m_specs[s];
 
@@ -2061,8 +2047,8 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
 
         uint8 talent_count = 0;
         size_t pos = data.wpos();
-        data << uint8(talent_count); //fake value, will be overwritten at the end
 
+        data << uint8(talent_count);
         for (uint8 i = 0; i < 3; ++i)
         {
             talent_tab_id = sWorld.InspectTalentTabPages[player->getClass()][i];
@@ -2105,11 +2091,11 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
 
         // Send Glyph info
         data << uint8(GLYPHS_COUNT);
-        for (uint8 i = 0; i < GLYPHS_COUNT; i++)
+        for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
             data << uint16(spec.glyphs[i]);
 
     }
-#endif
+
 
     // ----[ Build the item list with their enchantments ]----
     uint32 slot_mask = 0;
@@ -2121,7 +2107,6 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
     for (uint32 i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)   // Ideally this goes from 0 to 18 (EQUIPMENT_SLOT_END is 19 at the moment)
     {
         Item* item = iif->GetInventoryItem(static_cast<uint16>(i));
-
         if (!item)
             continue;
 
@@ -2131,7 +2116,6 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
 
         uint16 enchant_mask = 0;
         size_t enchant_mask_pos = data.wpos();
-
         data << uint16(enchant_mask);
 
         for (uint32 Slot = 0; Slot < MAX_ENCHANTMENT_SLOT; ++Slot) // In UpdateFields.h we have ITEM_FIELD_ENCHANTMENT_1_1 to ITEM_FIELD_ENCHANTMENT_12_1, iterate on them...
@@ -2152,6 +2136,14 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
         data << uint32(0);   // UNKNOWN
     }
     data.put<uint32>(slot_mask_pos, slot_mask);
+
+    if (Guild* guild = sGuildMgr.GetGuildById(player->GetGuildId()))
+    {
+        data << guild->GetGUID();
+        data << uint32(guild->GetLevel());
+        data << uint64(guild->GetExperience());
+        data << uint32(guild->GetMembersCount());
+    }
 
     SendPacket(&data);
 }

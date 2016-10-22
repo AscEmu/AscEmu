@@ -1207,10 +1207,9 @@ enum Opcodes
     SMSG_ATTACKSWING_CANT_ATTACK                        = 0x0016,   // unchecked
     SMSG_ATTACKERSTATEUPDATE                            = 0x0B25,
     CMSG_INSPECT                                        = 0x0927,
-    CMSG_GUILD_BANK_MONEY_WITHDRAWN                     = 0x1225,   // unhandled
-    SMSG_GUILD_BANK_MONEY_WITHDRAWN                     = 0x5DB4,   // unhandled
+    SMSG_INSPECT_RESULT                                 = 0x4014,
     CMSG_PET_LEVEL_CHEAT                                = 0x1027,
-    CMSG_ITEM_REFUND_INFO                               = 0x2206,   // not implemented
+    CMSG_ITEM_REFUND_INFO                               = 0x2206,
     SMSG_ITEM_REFUND_INFO                               = 0x15A3,
     CMSG_SET_TITLE                                      = 0x2117,
     SMSG_LEVELUP_INFO                                   = 0x0435,
@@ -1227,7 +1226,6 @@ enum Opcodes
     CMSG_LEARN_TALENT                                   = 0x6E24,
     CMSG_LEARN_PREVIEW_TALENTS_PET                      = 0x0000,
     MSG_TALENT_WIPE_CONFIRM                             = 0x0107,
-    SMSG_INSPECT_TALENT                                 = 0x4014,
     CMSG_PET_LEARN_TALENT                               = 0x0000,
     SMSG_TALENTS_INVOLUNTARILY_RESET                    = 0x2C27,
     CMSG_WORLD_STATE_UI_TIMER_UPDATE                    = 0x4605,
@@ -1402,6 +1400,7 @@ enum Opcodes
     SMSG_GUILD_RANK                                     = 0x30B4,
     SMSG_GUILD_REWARDS_LIST                             = 0x1DB0,
     CMSG_GUILD_BANK_MONEY_WITHDRAWN_QUERY               = 0x1225,
+    SMSG_GUILD_BANK_MONEY_WITHDRAWN                     = 0x5DB4,
     CMSG_GUILD_BANK_LOG_QUERY                           = 0x3224,
     CMSG_GUILD_BANK_QUERY_TEXT                          = 0x3220,
     CMSG_QUERY_GUILD_XP                                 = 0x1237,
