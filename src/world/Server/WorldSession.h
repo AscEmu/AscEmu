@@ -684,7 +684,7 @@ class SERVER_DECL WorldSession
         //void HandlePetSetActionOpcode(WorldPacket& recv_data);
 
         // Instances
-        //void HandleResetInstanceOpcode(WorldPacket& recv_data);
+        void HandleResetInstanceOpcode(WorldPacket& recv_data);
         //void HandleDungeonDifficultyOpcode(WorldPacket& recv_data);
         //void HandleRaidDifficultyOpcode(WorldPacket& recv_data);
 

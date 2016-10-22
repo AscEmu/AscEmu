@@ -318,10 +318,6 @@ enum Opcodes
     SMSG_SPLINE_MOVE_ROOT                           = 0x31A,
     CMSG_SET_EXPLORATION_ALL                        = 0x31B,
     SMSG_INVALIDATE_PLAYER                          = 0x31C,
-    CMSG_RESET_INSTANCES                            = 0x31D,
-    SMSG_INSTANCE_RESET                             = 0x31E,
-    SMSG_INSTANCE_RESET_FAILED                      = 0x31F,
-    SMSG_UPDATE_LAST_INSTANCE                       = 0x320,
     MSG_RAID_TARGET_UPDATE                          = 0x321,
     MSG_RAID_READY_CHECK                            = 0x322,
     CMSG_LUA_USAGE                                  = 0x323,
@@ -1046,6 +1042,10 @@ enum Opcodes
     CMSG_LFG_SET_COMMENT                                = 0x0530,   // not implemented
     SMSG_CORPSE_NOT_IN_INSTANCE                         = 0x2A14,
     CMSG_BATTLEFIELD_MGR_QUEUE_REQUEST                  = 0x710C,
+    CMSG_RESET_INSTANCES                                = 0x6E14,
+    SMSG_INSTANCE_RESET                                 = 0x6F05,
+    SMSG_INSTANCE_RESET_FAILED                          = 0x4725,   // not implemented
+    SMSG_UPDATE_LAST_INSTANCE                           = 0x0437,
 
 
     // Calendar
