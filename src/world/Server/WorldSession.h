@@ -318,7 +318,7 @@ class SERVER_DECL WorldSession
         void HandleTogglePVPOpcode(WorldPacket& recvPacket);
         //void HandleAmmoSetOpcode(WorldPacket& recvPacket);
         void HandleGameObjectUse(WorldPacket& recvPacket);
-        //void HandleBarberShopResult(WorldPacket& recvPacket);
+        void HandleBarberShopResult(WorldPacket& recvPacket);
         //void HandleLeaveChannelOpcode(WorldPacket& recvPacket);
         void HandlePlayedTimeOpcode(WorldPacket& recv_data);
         void HandleSetSheathedOpcode(WorldPacket& recv_data);
@@ -758,6 +758,7 @@ class SERVER_DECL WorldSession
         void HandleTimeSyncRespOpcode(WorldPacket& recv_data);
 
         void Unhandled(WorldPacket& recv_data);
+        void HandledClientSide(WorldPacket& recv_data);
 
     public:
 

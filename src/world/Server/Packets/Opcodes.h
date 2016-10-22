@@ -475,9 +475,7 @@ enum Opcodes
     SMSG_SPLINE_MOVE_UNSET_FLYING                   = 0x423,
     SMSG_SUMMON_CANCEL                              = 0x424,
     CMSG_CHANGE_PERSONAL_ARENA_RATING               = 0x425,
-    CMSG_ALTER_APPEARANCE                           = 0x426,
-    SMSG_ENABLE_BARBER_SHOP                         = 0x427,
-    SMSG_BARBER_SHOP_RESULT                         = 0x428,
+    
     CMSG_CALENDAR_GET_EVENT                         = 0x42A,
     CMSG_CALENDAR_GUILD_FILTER                      = 0x42B,
     CMSG_CALENDAR_ARENA_TEAM                        = 0x42C,
@@ -531,8 +529,8 @@ enum Opcodes
     MSG_MOVE_ABANDON_TRANSPORT                      = 0x460,
     CMSG_MOVE_ABANDON_TRANSPORT_ACK                 = 0x461,
     CMSG_UPDATE_MISSILE_TRAJECTORY                  = 0x462,
-    SMSG_TRIGGER_MOVIE                              = 0x464,
-    CMSG_COMPLETE_MOVIE                             = 0x465,
+
+
     CMSG_SET_GLYPH_SLOT                             = 0x466,
     CMSG_SET_GLYPH                                  = 0x467,
     SMSG_DYNAMIC_DROP_ROLL_RESULT                   = 0x469,
@@ -737,11 +735,17 @@ enum Opcodes
     SMSG_UPDATE_OBJECT                                  = 0x4715,
     SMSG_DESTROY_OBJECT                                 = 0x4724,
     
+    SMSG_TRIGGER_MOVIE                                  = 0x4625,
+    CMSG_COMPLETE_MOVIE                                 = 0x4136,
     SMSG_TRIGGER_CINEMATIC                              = 0x6C27,
+    CMSG_NEXT_CINEMATIC_CAMERA                          = 0x2014,
+    CMSG_COMPLETE_CINEMATIC                             = 0x2116,
+
     SMSG_TUTORIAL_FLAGS                                 = 0x0B35,
     CMSG_TUTORIAL_FLAG                                  = 0x6C26,
     CMSG_TUTORIAL_CLEAR                                 = 0x6515,
     CMSG_TUTORIAL_RESET                                 = 0x2726,
+
     CMSG_EMOTE                                          = 0x4C26,
     SMSG_EMOTE                                          = 0x0A34,
     CMSG_TEXT_EMOTE                                     = 0x2E24,
@@ -784,8 +788,6 @@ enum Opcodes
     CMSG_REPOP_REQUEST                                  = 0x6235,
     SMSG_RESURRECT_REQUEST                              = 0x2905,
     CMSG_RESURRECT_RESPONSE                             = 0x6827,
-    CMSG_NEXT_CINEMATIC_CAMERA                          = 0x2014,
-    CMSG_COMPLETE_CINEMATIC                             = 0x2116,
     CMSG_SOCKET_GEMS                                    = 0x2F04,
 
     //GM
@@ -1131,6 +1133,9 @@ enum Opcodes
     SMSG_GAMEOBJECT_DESPAWN_ANIM                        = 0x6735,
     CMSG_GAMEOBJ_REPORT_USE                             = 0x4827,
     CMSG_GAMEOBJ_USE                                    = 0x4E17,
+    CMSG_ALTER_APPEARANCE                               = 0x0914,
+    SMSG_ENABLE_BARBER_SHOP                             = 0x2D16,
+    SMSG_BARBER_SHOP_RESULT                             = 0x6125,
 
     //Taxi
     CMSG_SET_TAXI_BENCHMARK_MODE                        = 0x4314,

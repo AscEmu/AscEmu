@@ -693,7 +693,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_EMOTE].handler = &WorldSession::HandleEmoteOpcode;
     WorldPacketHandlers[CMSG_TEXT_EMOTE].handler = &WorldSession::HandleTextEmoteOpcode;
     WorldPacketHandlers[CMSG_INSPECT].handler = &WorldSession::HandleInspectOpcode;
-    //WorldPacketHandlers[SMSG_BARBER_SHOP_RESULT].handler = &WorldSession::HandleBarberShopResult;
+    WorldPacketHandlers[SMSG_BARBER_SHOP_RESULT].handler = &WorldSession::HandleBarberShopResult;
     WorldPacketHandlers[CMSG_MESSAGECHAT_SAY].handler = &WorldSession::HandleMessagechatOpcode;
     WorldPacketHandlers[CMSG_MESSAGECHAT_YELL].handler = &WorldSession::HandleMessagechatOpcode;
     WorldPacketHandlers[CMSG_MESSAGECHAT_CHANNEL].handler = &WorldSession::HandleMessagechatOpcode;
@@ -1058,7 +1058,7 @@ void WorldSession::InitPacketHandlerTable()
 
     //WorldPacketHandlers[CMSG_OPT_OUT_OF_LOOT].handler = &WorldSession::HandleSetAutoLootPassOpcode;
     //WorldPacketHandlers[CMSG_REMOVE_GLYPH].handler = &WorldSession::HandleRemoveGlyph;
-    //WorldPacketHandlers[CMSG_ALTER_APPEARANCE].handler = &WorldSession::HandleBarberShopResult;
+    WorldPacketHandlers[CMSG_ALTER_APPEARANCE].handler = &WorldSession::HandleBarberShopResult;
 
     //WorldPacketHandlers[CMSG_GET_MIRRORIMAGE_DATA].handler = &WorldSession::HandleMirrorImageOpcode;
 
@@ -1103,7 +1103,8 @@ void WorldSession::InitPacketHandlerTable()
 
     WorldPacketHandlers[CMSG_REQUEST_HOTFIX].handler = &WorldSession::HandleRequestHotfix;
 
-    ////Misc - Unhandled
+    ////Misc - Unhandled/HandledClientSide
+    WorldPacketHandlers[CMSG_COMPLETE_MOVIE].handler = &WorldSession::HandledClientSide;
     //WorldPacketHandlers[CMSG_FAR_SIGHT].handler = &WorldSession::Unhandled;
     //WorldPacketHandlers[CMSG_LFG_GET_STATUS].handler = &WorldSession::Unhandled;
     //WorldPacketHandlers[CMSG_VOICE_SESSION_ENABLE].handler = &WorldSession::Unhandled;
@@ -1775,7 +1776,10 @@ void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recv_data)
 //}
 
 void WorldSession::Unhandled(WorldPacket& recv_data)
-{}
+{ }
+
+void WorldSession::HandledClientSide(WorldPacket& recv_data)
+{ }
 
 //void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
 //{

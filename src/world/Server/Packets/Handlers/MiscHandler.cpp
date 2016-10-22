@@ -1432,94 +1432,94 @@ void WorldSession::HandleTogglePVPOpcode(WorldPacket& recv_data)
 
 #define OPEN_CHEST 11437
 
-//void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    LOG_DEBUG("WORLD: CMSG_ALTER_APPEARANCE ");
-//
-//    uint32 hair;
-//    uint32 haircolor;
-//    uint32 facialhairorpiercing;
-//    uint32 skincolor;
-//
-//    recv_data >> hair;
-//    recv_data >> haircolor;
-//    recv_data >> facialhairorpiercing;
-//    recv_data >> skincolor;
-//
-//    uint32 oldhair = _player->GetByte(PLAYER_BYTES, 2);
-//    uint32 oldhaircolor = _player->GetByte(PLAYER_BYTES, 3);
-//    uint32 oldfacial = _player->GetByte(PLAYER_BYTES_2, 0);
-//    uint32 oldskincolor = _player->GetByte(PLAYER_BYTES, 0);
-//
-//    uint32 newhair, newhaircolor, newfacial;
-//
-//    uint32 cost = 0;
-//
-//    auto barberShopHair = sBarberShopStyleStore.LookupEntry(hair);
-//    if (!barberShopHair)
-//        return;
-//    newhair = barberShopHair->hair_id;
-//
-//    newhaircolor = haircolor;
-//
-//    auto barberShopFacial = sBarberShopStyleStore.LookupEntry(facialhairorpiercing);
-//    if (!barberShopFacial)
-//        return;
-//    newfacial = barberShopFacial->hair_id;
-//
-//    auto barberShopSkinColor = sBarberShopStyleStore.LookupEntry(skincolor);
-//    if (barberShopSkinColor && barberShopSkinColor->race != _player->getRace())
-//        return;
-//
-//    uint32 level = _player->getLevel();
-//    if (level >= 100)
-//        level = 100;
-//    auto cutcosts = sBarberShopCostBaseStore.LookupEntry(level - 1);
-//    if (!cutcosts)
-//        return;
-//
-//    // hair style cost = cutcosts
-//    // hair color cost = cutcosts * 0.5 or free if hair style changed
-//    // facial hair cost = cutcosts * 0.75
-//    if (newhair != oldhair)
-//    {
-//        cost += (uint32)cutcosts->cost;
-//    }
-//    else if (newhaircolor != oldhaircolor)
-//    {
-//        cost += (uint32)(cutcosts->cost) >> 1;
-//    }
-//    if (newfacial != oldfacial)
-//    {
-//        cost += (uint32)(cutcosts->cost * 0.75f);
-//    }
-//
-//    if (!_player->HasGold(cost))
-//    {
-//        WorldPacket data(SMSG_BARBER_SHOP_RESULT, 4);
-//        data << uint32(1);                                  // no money
-//        SendPacket(&data);
-//        return;
-//    }
-//    WorldPacket data(SMSG_BARBER_SHOP_RESULT, 4);
-//    data << uint32(0);                                  // ok
-//    SendPacket(&data);
-//
-//    _player->SetByte(PLAYER_BYTES, 2, static_cast<uint8>(newhair));
-//    _player->SetByte(PLAYER_BYTES, 3, static_cast<uint8>(newhaircolor));
-//    _player->SetByte(PLAYER_BYTES_2, 0, static_cast<uint8>(newfacial));
-//    if (barberShopSkinColor)
-//        _player->SetByte(PLAYER_BYTES, 0, static_cast<uint8>(barberShopSkinColor->hair_id));
-//    _player->ModGold(-(int32)cost);
-//
-//    _player->SetStandState(STANDSTATE_STAND);                              // stand up
-//#ifdef ENABLE_ACHIEVEMENTS
-//    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP, 1, 0, 0);
-//    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_AT_BARBER, cost, 0, 0);
-//#endif
-//}
+void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    LOG_DEBUG("WORLD: CMSG_ALTER_APPEARANCE ");
+
+    uint32 hair;
+    uint32 haircolor;
+    uint32 facialhairorpiercing;
+    uint32 skincolor;
+
+    recv_data >> hair;
+    recv_data >> haircolor;
+    recv_data >> facialhairorpiercing;
+    recv_data >> skincolor;
+
+    uint32 oldhair = _player->GetByte(PLAYER_BYTES, 2);
+    uint32 oldhaircolor = _player->GetByte(PLAYER_BYTES, 3);
+    uint32 oldfacial = _player->GetByte(PLAYER_BYTES_2, 0);
+    uint32 oldskincolor = _player->GetByte(PLAYER_BYTES, 0);
+
+    uint32 newhair, newhaircolor, newfacial;
+
+    uint32 cost = 0;
+
+    auto barberShopHair = sBarberShopStyleStore.LookupEntry(hair);
+    if (!barberShopHair)
+        return;
+    newhair = barberShopHair->hair_id;
+
+    newhaircolor = haircolor;
+
+    auto barberShopFacial = sBarberShopStyleStore.LookupEntry(facialhairorpiercing);
+    if (!barberShopFacial)
+        return;
+    newfacial = barberShopFacial->hair_id;
+
+    auto barberShopSkinColor = sBarberShopStyleStore.LookupEntry(skincolor);
+    if (barberShopSkinColor && barberShopSkinColor->race != _player->getRace())
+        return;
+
+    uint32 level = _player->getLevel();
+    if (level >= 100)
+        level = 100;
+    auto cutcosts = sBarberShopCostBaseStore.LookupEntry(level - 1);
+    if (!cutcosts)
+        return;
+
+    // hair style cost = cutcosts
+    // hair color cost = cutcosts * 0.5 or free if hair style changed
+    // facial hair cost = cutcosts * 0.75
+    if (newhair != oldhair)
+    {
+        cost += (uint32)cutcosts->cost;
+    }
+    else if (newhaircolor != oldhaircolor)
+    {
+        cost += (uint32)(cutcosts->cost) >> 1;
+    }
+    if (newfacial != oldfacial)
+    {
+        cost += (uint32)(cutcosts->cost * 0.75f);
+    }
+
+    if (!_player->HasGold(cost))
+    {
+        WorldPacket data(SMSG_BARBER_SHOP_RESULT, 4);
+        data << uint32(1);                                  // no money
+        SendPacket(&data);
+        return;
+    }
+    WorldPacket data(SMSG_BARBER_SHOP_RESULT, 4);
+    data << uint32(0);                                  // ok
+    SendPacket(&data);
+
+    _player->SetByte(PLAYER_BYTES, 2, static_cast<uint8>(newhair));
+    _player->SetByte(PLAYER_BYTES, 3, static_cast<uint8>(newhaircolor));
+    _player->SetByte(PLAYER_BYTES_2, 0, static_cast<uint8>(newfacial));
+    if (barberShopSkinColor)
+        _player->SetByte(PLAYER_BYTES, 0, static_cast<uint8>(barberShopSkinColor->hair_id));
+    _player->ModGold(-(int32)cost);
+
+    _player->SetStandState(STANDSTATE_STAND);                              // stand up
+#ifdef ENABLE_ACHIEVEMENTS
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP, 1, 0, 0);
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_AT_BARBER, cost, 0, 0);
+#endif
+}
 
 void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
 {
