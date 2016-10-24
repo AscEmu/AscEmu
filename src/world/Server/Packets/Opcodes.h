@@ -373,10 +373,7 @@ enum Opcodes
     SMSG_FORCED_DEATH_UPDATE                        = 0x37A,
     CMSG_CHEAT_SET_HONOR_CURRENCY                   = 0x37B,
     CMSG_CHEAT_SET_ARENA_CURRENCY                   = 0x37C,
-
-    CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK              = 0x382,
     SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE             = 0x383,
-    CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK         = 0x384,
     SMSG_SPLINE_SET_FLIGHT_SPEED                    = 0x385,
     SMSG_SPLINE_SET_FLIGHT_BACK_SPEED               = 0x386,
     CMSG_MAELSTROM_INVALIDATE_CACHE                 = 0x387,
@@ -522,7 +519,7 @@ enum Opcodes
     CMSG_SET_RUNE_COUNT                             = 0x458,
     CMSG_SET_RUNE_COOLDOWN                          = 0x459,
     SMSG_FORCE_PITCH_RATE_CHANGE                    = 0x45C,
-    CMSG_FORCE_PITCH_RATE_CHANGE_ACK                = 0x45D,
+    
     SMSG_SPLINE_SET_PITCH_RATE                      = 0x45E,
     SMSG_MOVE_ABANDON_TRANSPORT                     = 0x45F,
     MSG_MOVE_ABANDON_TRANSPORT                      = 0x460,
@@ -896,13 +893,6 @@ enum Opcodes
     MSG_MOVE_TELEPORT                                   = 0x55A0,
     MSG_MOVE_STOP_SWIM                                  = 0x3802,
 
-    CMSG_FORCE_WALK_SPEED_CHANGE_ACK                    = 0x12DC,
-    CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK               = 0x12DE,
-    CMSG_FORCE_TURN_RATE_CHANGE_ACK                     = 0x12E0,
-    CMSG_FORCE_RUN_SPEED_CHANGE_ACK                     = 0x10E4,
-    CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK                = 0x10E6,
-    CMSG_FORCE_SWIM_SPEED_CHANGE_ACK                    = 0x10E8,
-
     MSG_MOVE_TELEPORT_ACK                               = 0x390C,
     MSG_MOVE_TOGGLE_FALL_LOGGING                        = 0x10C9,
     MSG_MOVE_SET_RUN_BACK_SPEED                         = 0x71B1,
@@ -911,6 +901,7 @@ enum Opcodes
     MSG_MOVE_WORLDPORT_ACK                              = 0x2411,
     SMSG_MOVE_WATER_WALK                                = 0x75B1,
     SMSG_MOVE_LAND_WALK                                 = 0x34B7,
+
     CMSG_MOVE_SET_RAW_POSITION                          = 0x10E2,
     
     SMSG_FORCE_MOVE_ROOT                                = 0x7DA0,
@@ -940,6 +931,10 @@ enum Opcodes
     MSG_MOVE_SET_RUN_SPEED                              = 0x3DB5,
     MSG_MOVE_SET_WALK_SPEED                             = 0x1DA4,
     MSG_MOVE_SET_SWIM_SPEED                             = 0x15A7,
+    CMSG_MOVE_SET_CAN_FLY_ACK                           = 0x790C,
+    CMSG_MOVE_CHNG_TRANSPORT                            = 0x3102,
+
+    // Movement spline
     SMSG_SPLINE_MOVE_SET_FLIGHT_BACK_SPEED              = 0x38B3,
     SMSG_SPLINE_MOVE_SET_FLIGHT_SPEED                   = 0x39A0,
     SMSG_SPLINE_MOVE_SET_PITCH_RATE                     = 0x14B0,
@@ -949,8 +944,17 @@ enum Opcodes
     SMSG_SPLINE_MOVE_SET_SWIM_BACK_SPEED                = 0x59A1,
     SMSG_SPLINE_MOVE_SET_TURN_RATE                      = 0x78B5,
     SMSG_SPLINE_MOVE_SET_WALK_SPEED                     = 0x34A5,
-    CMSG_MOVE_SET_CAN_FLY_ACK                           = 0x790C,
-    CMSG_MOVE_CHNG_TRANSPORT                            = 0x3102,
+
+    // Movement Forced ack
+    CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK             = 0x0333,   // unknown
+    CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK                  = 0x7314,   
+    CMSG_FORCE_PITCH_RATE_CHANGE_ACK                    = 0x0334,   // unknown
+    CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK                = 0x0335,   // unknown
+    CMSG_FORCE_RUN_SPEED_CHANGE_ACK                     = 0x7818,
+    CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK               = 0x7A16,
+    CMSG_FORCE_SWIM_SPEED_CHANGE_ACK                    = 0x7A10,
+    CMSG_FORCE_TURN_RATE_CHANGE_ACK                     = 0x7316,
+    CMSG_FORCE_WALK_SPEED_CHANGE_ACK                    = 0x7210,
 
     // LFG Check packet sending in LfgHandler.cpp
     SMSG_LFG_PLAYER_INFO                                = 0x1370,   // not updated

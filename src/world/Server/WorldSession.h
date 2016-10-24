@@ -756,6 +756,7 @@ class SERVER_DECL WorldSession
         void HandleLoadScreenOpcode(WorldPacket& recv_data);
         void HandleUITimeRequestOpcode(WorldPacket& recv_data); // empty opcode
         void HandleTimeSyncRespOpcode(WorldPacket& recv_data);
+        void HandleForceSpeedAckOpcodes(WorldPacket& recv_data);
 
         void Unhandled(WorldPacket& recv_data);
         void HandledClientSide(WorldPacket& recv_data);
