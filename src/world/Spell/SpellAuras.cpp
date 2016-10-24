@@ -4841,20 +4841,23 @@ void Aura::SpellAuraModSpellCritChance(bool apply)
 
 void Aura::SpellAuraIncreaseSwimSpeed(bool apply)
 {
+    float new_swim_speed = 0.0f;
+
     if (apply)
     {
-        if (m_target->isAlive())  SetPositive();
-        m_target->m_swimSpeed = 0.04722222f * (100 + mod->m_amount);
+        if (m_target->isAlive())
+            SetPositive();
+
+        new_swim_speed = 0.04722222f * (100 + mod->m_amount);
     }
     else
-        m_target->m_swimSpeed = playerNormalSwimSpeed;
-    if (p_target != NULL)
     {
-        WorldPacket data(SMSG_FORCE_SWIM_SPEED_CHANGE, 17);
-        data << p_target->GetNewGUID();
-        data << (uint32)2;
-        data << m_target->m_swimSpeed;
-        p_target->GetSession()->SendPacket(&data);
+        new_swim_speed = playerNormalSwimSpeed;
+    }
+
+    if (p_target != nullptr)
+    {
+        p_target->SetSpeeds(SWIM, new_swim_speed);
     }
 }
 

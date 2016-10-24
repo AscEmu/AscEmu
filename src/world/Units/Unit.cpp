@@ -6389,11 +6389,6 @@ void Unit::SetSpeeds(uint8 type, float speed, bool forced /* = false*/)
     if (speed < 0)
         speed = 0.0f;
 
-    m_walkSpeed = speed / 2;
-    m_runSpeed = speed;
-    m_swimSpeed = speed;
-    m_flySpeed = speed * 2;
-
     WorldPacket data;
     ObjectGuid guid = GetGUID();
 
@@ -6422,6 +6417,9 @@ void Unit::SetSpeeds(uint8 type, float speed, bool forced /* = false*/)
                 data.WriteByteSeq(guid[0]);
                 data.WriteByteSeq(guid[7]);
                 data.WriteByteSeq(guid[3]);
+
+                m_walkSpeed = speed;
+
                 break;
             }
             case RUN:
@@ -6445,6 +6443,9 @@ void Unit::SetSpeeds(uint8 type, float speed, bool forced /* = false*/)
                 data.WriteByteSeq(guid[0]);
                 data.WriteByteSeq(guid[7]);
                 data.WriteByteSeq(guid[2]);
+
+                m_runSpeed = speed;
+
                 break;
             }
             case RUNBACK:
@@ -6491,6 +6492,9 @@ void Unit::SetSpeeds(uint8 type, float speed, bool forced /* = false*/)
                 data.WriteByteSeq(guid[1]);
                 data.WriteByteSeq(guid[7]);
                 data.WriteByteSeq(guid[4]);
+
+                m_swimSpeed = speed;
+
                 break;
             }
             case SWIMBACK:
@@ -6560,6 +6564,9 @@ void Unit::SetSpeeds(uint8 type, float speed, bool forced /* = false*/)
                 data.WriteByteSeq(guid[6]);
                 data.WriteByteSeq(guid[3]);
                 data.WriteByteSeq(guid[4]);
+
+                m_flySpeed = speed;
+
                 break;
             }
             //case FLYBACK:

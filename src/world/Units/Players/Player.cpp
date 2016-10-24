@@ -4477,7 +4477,6 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         UpdateStats();
 }
 
-
 void Player::SetMovement(uint8 pType, uint32 flag)
 {
     WorldPacket data(13);
@@ -4523,96 +4522,6 @@ void Player::SetMovement(uint8 pType, uint32 flag)
     if (data.size() > 0)
         SendMessageToSet(&data, true);
 }
-
-//void Player::SetSpeeds(uint8 type, float speed)
-//{
-//    WorldPacket data(50);
-//
-//    if (type != SWIMBACK)
-//    {
-//        data << GetNewGUID();
-//        data << m_speedChangeCounter++;
-//        if (type == RUN)
-//            data << uint8(1);
-//
-//        data << float(speed);
-//    }
-//    else
-//    {
-//        data << GetNewGUID();
-//        data << uint32(0);
-//        data << uint8(0);
-//        data << uint32(getMSTime());
-//        data << GetPosition();
-//        data << float(m_position.o);
-//        data << uint32(0);
-//        data << float(speed);
-//    }
-//
-//    switch (type)
-//    {
-//        case WALK:{
-//            data.SetOpcode(SMSG_FORCE_WALK_SPEED_CHANGE);
-//            m_walkSpeed = speed;
-//
-//            break; }
-//
-//        case RUN:
-//        {
-//            if (speed == m_lastRunSpeed)
-//                return;
-//
-//            data.SetOpcode(SMSG_FORCE_RUN_SPEED_CHANGE);
-//            m_runSpeed = speed;
-//            m_lastRunSpeed = speed;
-//        }
-//        break;
-//        case RUNBACK:
-//        {
-//            if (speed == m_lastRunBackSpeed)
-//                return;
-//
-//            data.SetOpcode(SMSG_FORCE_RUN_BACK_SPEED_CHANGE);
-//            m_backWalkSpeed = speed;
-//            m_lastRunBackSpeed = speed;
-//        }
-//        break;
-//        case SWIM:
-//        {
-//            if (speed == m_lastSwimSpeed)
-//                return;
-//
-//            data.SetOpcode(SMSG_FORCE_SWIM_SPEED_CHANGE);
-//            m_swimSpeed = speed;
-//            m_lastSwimSpeed = speed;
-//        }
-//        break;
-//        case SWIMBACK:
-//        {
-//            if (speed == m_lastBackSwimSpeed)
-//                break;
-//
-//            data.SetOpcode(SMSG_FORCE_SWIM_BACK_SPEED_CHANGE);
-//            m_backSwimSpeed = speed;
-//            m_lastBackSwimSpeed = speed;
-//        }
-//        break;
-//        case FLY:
-//        {
-//            if (speed == m_lastFlySpeed)
-//                return;
-//
-//            data.SetOpcode(SMSG_FORCE_FLIGHT_SPEED_CHANGE);
-//            m_flySpeed = speed;
-//            m_lastFlySpeed = speed;
-//        }
-//        break;
-//        default:
-//            return;
-//    }
-//
-//    SendMessageToSet(&data, true);
-//}
 
 void Player::BuildPlayerRepop()
 {
