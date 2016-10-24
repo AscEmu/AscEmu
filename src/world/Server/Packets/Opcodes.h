@@ -627,7 +627,6 @@ enum Opcodes
     CMSG_AFK_MONITOR_INFO_REQUEST                   = 0x503,
     SMSG_AFK_MONITOR_INFO_RESPONSE                  = 0x504,
     CMSG_AFK_MONITOR_INFO_CLEAR                     = 0x505,
-    SMSG_CAMERA_SHAKE                               = 0x50A,
     SMSG_SOCKET_GEMS_RESULT                         = 0x50B,
     CMSG_SET_CHARACTER_MODEL                        = 0x50C,
     SMSG_REDIRECT_CLIENT                            = 0x50D,
@@ -886,7 +885,7 @@ enum Opcodes
     SMSG_MOVE_WATER_WALK                                = 0x75B1,
     SMSG_MOVE_LAND_WALK                                 = 0x34B7,
 
-    CMSG_MOVE_SET_RAW_POSITION                          = 0x10E2,
+    CMSG_MOVE_SET_RAW_POSITION                          = 0x0339,   // unk
     
     SMSG_FORCE_MOVE_ROOT                                = 0x7DA0,
     CMSG_FORCE_MOVE_ROOT_ACK                            = 0x701E,
@@ -969,6 +968,7 @@ enum Opcodes
     SMSG_AURA_UPDATE                                    = 0x4707,
     SMSG_ITEM_TIME_UPDATE                               = 0x2407,
     SMSG_ITEM_ENCHANT_TIME_UPDATE                       = 0x0F27,
+    SMSG_CAMERA_SHAKE                                   = 0x4214,   // e.g. kezan
 
     //Guild / Tabard
     MSG_TABARDVENDOR_ACTIVATE                           = 0x6926,
