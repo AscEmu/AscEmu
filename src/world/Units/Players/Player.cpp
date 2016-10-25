@@ -4485,17 +4485,13 @@ void Player::SetMovement(uint8 pType, uint32 flag)
     {
         case MOVE_ROOT:
         {
-            data.SetOpcode(SMSG_FORCE_MOVE_ROOT);
-            data << GetNewGUID();
-            data << flag;
+            Root();
             m_currentMovement = MOVE_ROOT;
         }
         break;
         case MOVE_UNROOT:
         {
-            data.SetOpcode(SMSG_FORCE_MOVE_UNROOT);
-            data << GetNewGUID();
-            data << flag;
+            Unroot();
             m_currentMovement = MOVE_UNROOT;
         }
         break;
