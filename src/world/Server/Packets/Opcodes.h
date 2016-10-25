@@ -295,7 +295,6 @@ enum Opcodes
     CMSG_SET_FACTION_INACTIVE                       = 0x317,
     CMSG_SET_WATCHED_FACTION                        = 0x318,
     MSG_MOVE_TIME_SKIPPED                           = 0x319,
-    SMSG_SPLINE_MOVE_ROOT                           = 0x31A,
     CMSG_SET_EXPLORATION_ALL                        = 0x31B,
     SMSG_INVALIDATE_PLAYER                          = 0x31C,
     MSG_RAID_TARGET_UPDATE                          = 0x321,
@@ -924,8 +923,9 @@ enum Opcodes
     SMSG_SPLINE_MOVE_SET_SWIM_SPEED                     = 0x39A4,
     SMSG_SPLINE_MOVE_SET_SWIM_BACK_SPEED                = 0x59A1,
     SMSG_SPLINE_MOVE_SET_TURN_RATE                      = 0x78B5,
-
     SMSG_SPLINE_MOVE_SET_WALK_SPEED                     = 0x34A5,
+
+    SMSG_SPLINE_MOVE_ROOT                               = 0x51B4,
     SMSG_SPLINE_MOVE_UNROOT                             = 0x75B6,
     SMSG_SPLINE_MOVE_FEATHER_FALL                       = 0x3DA5,
     SMSG_SPLINE_MOVE_NORMAL_FALL                        = 0x38B2,
