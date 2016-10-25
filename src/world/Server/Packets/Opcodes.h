@@ -591,8 +591,6 @@ enum Opcodes
     SMSG_MOVE_GRAVITY_ENABLE                        = 0x4D0,
     CMSG_MOVE_GRAVITY_ENABLE_ACK                    = 0x4D1,
     MSG_MOVE_GRAVITY_CHNG                           = 0x4D2,
-    SMSG_SPLINE_MOVE_GRAVITY_DISABLE                = 0x4D3,
-    SMSG_SPLINE_MOVE_GRAVITY_ENABLE                 = 0x4D4,
     CMSG_EQUIPMENT_SET_USE                          = 0x4D5,
     CMSG_FORCE_ANIM                                 = 0x4D7,
     SMSG_FORCE_ANIM                                 = 0x4D8,
@@ -939,6 +937,9 @@ enum Opcodes
     SMSG_SPLINE_MOVE_STOP_SWIM                          = 0x1DA2,
     SMSG_SPLINE_MOVE_SET_RUN_MODE                       = 0x75A7,
     SMSG_SPLINE_MOVE_SET_WALK_MODE                      = 0x54B6,
+
+    SMSG_SPLINE_MOVE_GRAVITY_DISABLE                    = 0x5DB5,   // todo send it on add MOVEFLAG_DISABLE_GRAVITY
+    SMSG_SPLINE_MOVE_GRAVITY_ENABLE                     = 0x3CA6,   // todo send it on remove MOVEFLAG_DISABLE_GRAVITY
 
     // Movement Forced ack
     CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK             = 0x0333,   // unknown
