@@ -4479,8 +4479,6 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
 
 void Player::SetMovement(uint8 pType, uint32 flag)
 {
-    WorldPacket data(13);
-
     switch (pType)
     {
         case MOVE_ROOT:
@@ -4498,25 +4496,18 @@ void Player::SetMovement(uint8 pType, uint32 flag)
         case MOVE_WATER_WALK:
         {
             m_setwaterwalk = true;
-            data.SetOpcode(SMSG_MOVE_WATER_WALK);
-            data << GetNewGUID();
-            data << flag;
+            SetWaterWalk();
         }
         break;
         case MOVE_LAND_WALK:
         {
             m_setwaterwalk = false;
-            data.SetOpcode(SMSG_MOVE_LAND_WALK);
-            data << GetNewGUID();
-            data << flag;
+            SetLandWalk();
         }
         break;
         default:
             break;
     }
-
-    if (data.size() > 0)
-        SendMessageToSet(&data, true);
 }
 
 void Player::BuildPlayerRepop()

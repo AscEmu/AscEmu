@@ -1004,6 +1004,8 @@ class SERVER_DECL Unit : public Object
 
         void EnableFlight();
         void DisableFlight();
+        void SetWaterWalk();
+        void SetLandWalk();
 
         // Escort Quests
         void MoveToWaypoint(uint32 wp_id);

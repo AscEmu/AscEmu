@@ -931,8 +931,8 @@ enum Opcodes
     SMSG_SPLINE_MOVE_NORMAL_FALL                        = 0x38B2,   // not implemented
     SMSG_SPLINE_MOVE_SET_HOVER                          = 0x14B6,   // not implemented
     SMSG_SPLINE_MOVE_UNSET_HOVER                        = 0x7DA5,   // not implemented
-    SMSG_SPLINE_MOVE_WATER_WALK                         = 0x50A2,   // not implemented
-    SMSG_SPLINE_MOVE_LAND_WALK                          = 0x3DA7,   // not implemented
+    SMSG_SPLINE_MOVE_WATER_WALK                         = 0x50A2,
+    SMSG_SPLINE_MOVE_LAND_WALK                          = 0x3DA7,
     SMSG_SPLINE_MOVE_START_SWIM                         = 0x31A5,   // not implemented
     SMSG_SPLINE_MOVE_STOP_SWIM                          = 0x1DA2,   // not implemented
     SMSG_SPLINE_MOVE_SET_RUN_MODE                       = 0x75A7,   // not implemented

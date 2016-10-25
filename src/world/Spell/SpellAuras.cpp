@@ -6081,23 +6081,12 @@ void Aura::SpellAuraModTotalThreat(bool apply)
 
 void Aura::SpellAuraWaterWalk(bool apply)
 {
-    if (p_target != NULL)
+    if (p_target != nullptr)
     {
-        WorldPacket data(12);
         if (apply)
-        {
-            SetPositive();
-            data.SetOpcode(SMSG_MOVE_WATER_WALK);
-            data << p_target->GetNewGUID();
-            data << uint32(8);
-        }
+            p_target->SetWaterWalk();
         else
-        {
-            data.SetOpcode(SMSG_MOVE_LAND_WALK);
-            data << p_target->GetNewGUID();
-            data << uint32(4);
-        }
-        p_target->GetSession()->SendPacket(&data);
+            p_target->SetLandWalk();
     }
 }
 
