@@ -6681,6 +6681,60 @@ void Unit::SetNormalFall()
     }
 }
 
+void Unit::SetStartSwim()
+{
+    // Non player only
+    ObjectGuid guid = GetGUID();
+
+    WorldPacket data(SMSG_SPLINE_MOVE_START_SWIM, 12);
+    data.WriteByteMask(guid[1]);
+    data.WriteByteMask(guid[6]);
+    data.WriteByteMask(guid[0]);
+    data.WriteByteMask(guid[7]);
+    data.WriteByteMask(guid[5]);
+    data.WriteByteMask(guid[3]);
+    data.WriteByteMask(guid[2]);
+    data.WriteByteMask(guid[4]);
+
+    data.WriteByteSeq(guid[3]);
+    data.WriteByteSeq(guid[7]);
+    data.WriteByteSeq(guid[2]);
+    data.WriteByteSeq(guid[5]);
+    data.WriteByteSeq(guid[6]);
+    data.WriteByteSeq(guid[4]);
+    data.WriteByteSeq(guid[1]);
+    data.WriteByteSeq(guid[0]);
+
+    SendMessageToSet(&data, false);
+}
+
+void Unit::SetStopSwim()
+{
+    // Non player only
+    ObjectGuid guid = GetGUID();
+
+    WorldPacket data(SMSG_SPLINE_MOVE_STOP_SWIM, 12);
+    data.WriteByteMask(guid[4]);
+    data.WriteByteMask(guid[1]);
+    data.WriteByteMask(guid[5]);
+    data.WriteByteMask(guid[3]);
+    data.WriteByteMask(guid[0]);
+    data.WriteByteMask(guid[7]);
+    data.WriteByteMask(guid[2]);
+    data.WriteByteMask(guid[6]);
+
+    data.WriteByteSeq(guid[6]);
+    data.WriteByteSeq(guid[7]);
+    data.WriteByteSeq(guid[0]);
+    data.WriteByteSeq(guid[2]);
+    data.WriteByteSeq(guid[3]);
+    data.WriteByteSeq(guid[1]);
+    data.WriteByteSeq(guid[5]);
+    data.WriteByteSeq(guid[4]);
+
+    SendMessageToSet(&data, false);
+}
+
 void Unit::SetSpeeds(uint8 type, float speed, bool forced /* = false*/)
 {
     if (speed < 0)

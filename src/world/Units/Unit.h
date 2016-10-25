@@ -1011,6 +1011,9 @@ class SERVER_DECL Unit : public Object
         void SetFeatherFall();
         void SetNormalFall();
 
+        void SetStartSwim();
+        void SetStopSwim();
+
         // Escort Quests
         void MoveToWaypoint(uint32 wp_id);
         void PlaySpellVisual(uint64 target, uint32 spellVisual);
