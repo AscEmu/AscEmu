@@ -6092,26 +6092,20 @@ void Aura::SpellAuraWaterWalk(bool apply)
 
 void Aura::SpellAuraFeatherFall(bool apply)
 {
-    ///\todo FIX ME: Find true flag for this
-    if (p_target == NULL)
+    if (p_target == nullptr)
         return;
 
-    WorldPacket data(12);
     if (apply)
     {
         SetPositive();
-        data.SetOpcode(SMSG_MOVE_FEATHER_FALL);
+        p_target->SetFeatherFall();
         p_target->m_noFallDamage = true;
     }
     else
     {
-        data.SetOpcode(SMSG_MOVE_NORMAL_FALL);
+        p_target->SetNormalFall();
         p_target->m_noFallDamage = false;
     }
-
-    data << m_target->GetNewGUID();
-    data << uint32(0);
-    p_target->SendMessageToSet(&data, true);
 }
 
 void Aura::SpellAuraHover(bool apply)

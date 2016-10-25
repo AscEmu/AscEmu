@@ -261,7 +261,6 @@ enum Opcodes
     SMSG_UPDATE_LAST_INSTANCE_CREATED               = 0x2CB,
     SMSG_RAID_INSTANCE_INFO                         = 0x2CC,
     CMSG_MOVE_FEATHER_FALL_ACK                      = 0x2CF,
-    CMSG_MOVE_WATER_WALK_ACK                        = 0x2D0,
     CMSG_MOVE_NOT_ACTIVE_MOVER                      = 0x2D1,
     SMSG_PLAY_SOUND                                 = 0x2D2,
     CMSG_BATTLEFIELD_PORT                           = 0x2D5,
@@ -879,6 +878,7 @@ enum Opcodes
     MSG_MOVE_SET_SWIM_BACK_SPEED                        = 0x5CA6,
     MSG_MOVE_SET_TURN_RATE                              = 0x30A5,
     MSG_MOVE_WORLDPORT_ACK                              = 0x2411,
+    CMSG_MOVE_WATER_WALK_ACK                            = 0x3B00,   // not implemented
     SMSG_MOVE_WATER_WALK                                = 0x75B1,
     SMSG_MOVE_LAND_WALK                                 = 0x34B7,
 
@@ -892,8 +892,8 @@ enum Opcodes
     MSG_MOVE_UNROOT                                     = 0x10EE,   // unk
     SMSG_MOVE_KNOCK_BACK                                = 0x5CB4,   // not updated
     CMSG_MOVE_KNOCK_BACK_ACK                            = 0x721C,   // not implemented
-    SMSG_MOVE_FEATHER_FALL                              = 0x79B0,   // not implemented
-    SMSG_MOVE_NORMAL_FALL                               = 0x51B6,   // not updated
+    SMSG_MOVE_FEATHER_FALL                              = 0x79B0,
+    SMSG_MOVE_NORMAL_FALL                               = 0x51B6,
     SMSG_MOVE_SET_HOVER                                 = 0x5CB3,   // not updated
     SMSG_MOVE_UNSET_HOVER                               = 0x51B3,   // not updated
     CMSG_MOVE_HOVER_ACK                                 = 0x10F7,   // not implemented
@@ -927,8 +927,8 @@ enum Opcodes
 
     SMSG_SPLINE_MOVE_ROOT                               = 0x51B4,
     SMSG_SPLINE_MOVE_UNROOT                             = 0x75B6,
-    SMSG_SPLINE_MOVE_FEATHER_FALL                       = 0x3DA5,   // not implemented
-    SMSG_SPLINE_MOVE_NORMAL_FALL                        = 0x38B2,   // not implemented
+    SMSG_SPLINE_MOVE_FEATHER_FALL                       = 0x3DA5,
+    SMSG_SPLINE_MOVE_NORMAL_FALL                        = 0x38B2,
     SMSG_SPLINE_MOVE_SET_HOVER                          = 0x14B6,   // not implemented
     SMSG_SPLINE_MOVE_UNSET_HOVER                        = 0x7DA5,   // not implemented
     SMSG_SPLINE_MOVE_WATER_WALK                         = 0x50A2,
