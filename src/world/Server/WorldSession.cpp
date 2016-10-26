@@ -625,7 +625,7 @@ void WorldSession::InitPacketHandlerTable()
     //WorldPacketHandlers[CMSG_MOVE_WATER_WALK_ACK].handler = &WorldSession::HandleAcknowledgementOpcodes;
     //WorldPacketHandlers[CMSG_MOVE_KNOCK_BACK_ACK].handler = &WorldSession::HandleAcknowledgementOpcodes;
     //WorldPacketHandlers[CMSG_MOVE_HOVER_ACK].handler = &WorldSession::HandleAcknowledgementOpcodes;
-    //WorldPacketHandlers[CMSG_MOVE_SET_CAN_FLY_ACK].handler = &WorldSession::HandleAcknowledgementOpcodes;
+    WorldPacketHandlers[CMSG_MOVE_SET_CAN_FLY_ACK].handler = &WorldSession::NothingToHandle;
     //WorldPacketHandlers[CMSG_FORCE_MOVE_ROOT_ACK].handler = &WorldSession::HandleForceSpeedOpcodes;
     //WorldPacketHandlers[CMSG_FORCE_MOVE_UNROOT_ACK].handler = &WorldSession::HandleForceSpeedOpcodes;
     WorldPacketHandlers[CMSG_MOVE_START_DESCEND].handler = &WorldSession::HandleMovementOpcodes;
@@ -1107,7 +1107,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_REQUEST_HOTFIX].handler = &WorldSession::HandleRequestHotfix;
 
     ////Misc - Unhandled/HandledClientSide
-    WorldPacketHandlers[CMSG_COMPLETE_MOVIE].handler = &WorldSession::HandledClientSide;
+    WorldPacketHandlers[CMSG_COMPLETE_MOVIE].handler = &WorldSession::NothingToHandle;
     //WorldPacketHandlers[CMSG_FAR_SIGHT].handler = &WorldSession::Unhandled;
     //WorldPacketHandlers[CMSG_LFG_GET_STATUS].handler = &WorldSession::Unhandled;
     //WorldPacketHandlers[CMSG_VOICE_SESSION_ENABLE].handler = &WorldSession::Unhandled;
@@ -1781,8 +1781,10 @@ void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recv_data)
 void WorldSession::Unhandled(WorldPacket& recv_data)
 { }
 
-void WorldSession::HandledClientSide(WorldPacket& recv_data)
-{ }
+void WorldSession::NothingToHandle(WorldPacket& recv_data)
+{
+    recv_data.rfinish();    //set end to prevent spam
+}
 
 //void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
 //{

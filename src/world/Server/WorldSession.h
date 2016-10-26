@@ -759,7 +759,7 @@ class SERVER_DECL WorldSession
         void HandleForceSpeedAckOpcodes(WorldPacket& recv_data);
 
         void Unhandled(WorldPacket& recv_data);
-        void HandledClientSide(WorldPacket& recv_data);
+        void NothingToHandle(WorldPacket& recv_data);
 
     public:
 

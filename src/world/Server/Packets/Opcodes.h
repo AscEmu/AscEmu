@@ -897,7 +897,7 @@ enum Opcodes
     SMSG_MOVE_GRAVITY_ENABLE                            = 0x30B3,   // not implemented
 
     // Movement normal ack
-    CMSG_MOVE_SET_CAN_FLY_ACK                           = 0x790C,   // not implemented
+    CMSG_MOVE_SET_CAN_FLY_ACK                           = 0x790C,
     CMSG_MOVE_KNOCK_BACK_ACK                            = 0x721C,   // not implemented
     CMSG_MOVE_HOVER_ACK                                 = 0x10F7,   // not implemented
     MSG_MOVE_WORLDPORT_ACK                              = 0x2411,
@@ -948,14 +948,14 @@ enum Opcodes
 
     // Movement force change ack
     CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK             = 0x0333,   // unknown
-    CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK                  = 0x7314,   
+    CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK                  = 0x7314,   // not implemented 
     CMSG_FORCE_PITCH_RATE_CHANGE_ACK                    = 0x0334,   // unknown
     CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK                = 0x0335,   // unknown
-    CMSG_FORCE_RUN_SPEED_CHANGE_ACK                     = 0x7818,
-    CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK               = 0x7A16,
-    CMSG_FORCE_SWIM_SPEED_CHANGE_ACK                    = 0x7A10,
-    CMSG_FORCE_TURN_RATE_CHANGE_ACK                     = 0x7316,
-    CMSG_FORCE_WALK_SPEED_CHANGE_ACK                    = 0x7210,
+    CMSG_FORCE_RUN_SPEED_CHANGE_ACK                     = 0x7818,   // not implemented
+    CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK               = 0x7A16,   // not implemented
+    CMSG_FORCE_SWIM_SPEED_CHANGE_ACK                    = 0x7A10,   // not implemented
+    CMSG_FORCE_TURN_RATE_CHANGE_ACK                     = 0x7316,   // not implemented
+    CMSG_FORCE_WALK_SPEED_CHANGE_ACK                    = 0x7210,   // not implemented
 
     // Movement force move ack
     CMSG_FORCE_MOVE_UNROOT_ACK                          = 0x7808,   // not implemented
