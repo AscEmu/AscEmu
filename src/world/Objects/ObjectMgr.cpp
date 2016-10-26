@@ -2982,7 +2982,7 @@ void ObjectMgr::ResetDailies()
 
 void ObjectMgr::LoadSpellTargetConstraints()
 {
-    enum { CREATURE_TYPE, GAMEOBJECT_TYPE };
+    enum { CREATURE_FOCUS_TYPE, GAMEOBJECT_FOCUS_TYPE , CREATURE_TYPE, GAMEOBJECT_TYPE };
 
     Log.Notice("ObjectMgr", "Loading spell target constraints...");
 
@@ -3011,16 +3011,38 @@ void ObjectMgr::LoadSpellTargetConstraints()
                 uint32 type = fields[1].GetUInt32();
                 uint32 value = fields[2].GetUInt32();
 
-                if (type == CREATURE_TYPE)
+                if (type == CREATURE_FOCUS_TYPE)
                 {
-                    if (stc != nullptr)
-                        stc->AddCreature(value);
-                }
-                else
+					if (stc != nullptr)
+					{
+						stc->AddCreature(value);
+						stc->AddFocused(value, 1);
+					}
+                }              
+				else if(type == GAMEOBJECT_FOCUS_TYPE)
                 {
-                    if (stc != nullptr)
-                        stc->AddGameobject(value);
+					if (stc != nullptr)
+					{
+						stc->AddGameobject(value);
+						stc->AddFocused(value, 1);
+					}
                 }
+				else if (type == CREATURE_TYPE)
+				{
+					if (stc != nullptr)
+					{
+						stc->AddCreature(value);
+						stc->AddFocused(value, 0);
+					}
+				}
+				else if (type == GAMEOBJECT_TYPE)
+				{
+					if (stc != nullptr)
+					{
+						stc->AddGameobject(value);
+						stc->AddFocused(value, 0);
+					}
+				}
 
                 oldspellid = spellid;
             }
