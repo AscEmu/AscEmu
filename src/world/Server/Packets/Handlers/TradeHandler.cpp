@@ -1,4 +1,124 @@
 /*
+Copyright (c) 2014-2016 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#include "StdAfx.h"
+
+void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    ObjectGuid target_guid;
+
+    target_guid[0] = recv_data.readBit();
+    target_guid[3] = recv_data.readBit();
+    target_guid[5] = recv_data.readBit();
+    target_guid[1] = recv_data.readBit();
+    target_guid[4] = recv_data.readBit();
+    target_guid[6] = recv_data.readBit();
+    target_guid[7] = recv_data.readBit();
+    target_guid[2] = recv_data.readBit();
+
+    recv_data.ReadByteSeq(target_guid[7]);
+    recv_data.ReadByteSeq(target_guid[4]);
+    recv_data.ReadByteSeq(target_guid[3]);
+    recv_data.ReadByteSeq(target_guid[5]);
+    recv_data.ReadByteSeq(target_guid[1]);
+    recv_data.ReadByteSeq(target_guid[2]);
+    recv_data.ReadByteSeq(target_guid[6]);
+    recv_data.ReadByteSeq(target_guid[0]);
+
+
+    Player* player_target = _player->GetMapMgr()->GetPlayer((uint32)target_guid);
+    uint32 trade_status = TRADE_STATUS_PROPOSED;
+    if (player_target == nullptr)
+    {
+        trade_status = TRADE_STATUS_PLAYER_NOT_FOUND;
+
+        OutPacket(SMSG_TRADE_STATUS, 4, &trade_status);
+        return;
+    }
+
+    // errors
+    if (player_target->CalcDistance(_player) > 10.0f)
+        trade_status = TRADE_STATUS_TOO_FAR_AWAY;
+    else if (player_target->IsDead())
+        trade_status = TRADE_STATUS_DEAD;
+    else if (player_target->mTradeTarget != 0)
+        trade_status = TRADE_STATUS_ALREADY_TRADING;
+    else if (player_target->GetTeam() != _player->GetTeam() && GetPermissionCount() == 0 && !sWorld.interfaction_trade)
+        trade_status = TRADE_STATUS_WRONG_FACTION;
+
+    if (trade_status == TRADE_STATUS_PROPOSED)
+    {
+        _player->ResetTradeVariables();
+        player_target->ResetTradeVariables();
+
+        player_target->mTradeTarget = _player->GetLowGUID();
+        _player->mTradeTarget = player_target->GetLowGUID();
+
+        player_target->mTradeStatus = trade_status;
+        _player->mTradeStatus = trade_status;
+    }
+
+    ObjectGuid source_guid = _player->GetGUID();
+
+    WorldPacket data(SMSG_TRADE_STATUS, 12);
+    data.writeBit(false);
+    data.writeBits(12, 5);                      // 12 = status success
+    data.WriteByteMask(source_guid[2]);
+    data.WriteByteMask(source_guid[4]);
+    data.WriteByteMask(source_guid[6]);
+    data.WriteByteMask(source_guid[0]);
+    data.WriteByteMask(source_guid[1]);
+    data.WriteByteMask(source_guid[3]);
+    data.WriteByteMask(source_guid[7]);
+    data.WriteByteMask(source_guid[5]);
+
+    data.WriteByteSeq(source_guid[4]);
+    data.WriteByteSeq(source_guid[1]);
+    data.WriteByteSeq(source_guid[2]);
+    data.WriteByteSeq(source_guid[3]);
+    data.WriteByteSeq(source_guid[0]);
+    data.WriteByteSeq(source_guid[7]);
+    data.WriteByteSeq(source_guid[6]);
+    data.WriteByteSeq(source_guid[5]);
+
+    data << uint32(0);              // unk
+
+    player_target->m_session->SendPacket(&data);
+}
+
+void WorldSession::HandleBeginTradeOpcode(WorldPacket& recv_data)
+{
+    CHECK_INWORLD_RETURN
+
+    uint32 trade_status = TRADE_STATUS_INITIATED;
+
+    Player* target_player = _player->GetTradeTarget();
+    if (_player->mTradeTarget == 0 || target_player == nullptr)
+    {
+        trade_status = TRADE_STATUS_PLAYER_NOT_FOUND;
+        OutPacket(SMSG_TRADE_STATUS, 4, &trade_status);
+        return;
+    }
+
+    if (_player->CalcDistance(objmgr.GetPlayer(_player->mTradeTarget)) > 10.0f)
+        trade_status = TRADE_STATUS_TOO_FAR_AWAY;
+
+    WorldPacket data(SMSG_TRADE_STATUS, 8);
+    data << uint32(trade_status);
+    data << uint32(0x19);
+
+    target_player->m_session->SendPacket(&data);
+    _player->SendPacket(&data);
+
+    target_player->mTradeStatus = trade_status;
+    _player->mTradeStatus = trade_status;
+}
+
+/*
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
@@ -19,88 +139,6 @@
  *
  */
 
-#include "StdAfx.h"
-
-
-//void WorldSession::HandleInitiateTrade(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    CHECK_PACKET_SIZE(recv_data, 8);
-//    uint64 guid;
-//    recv_data >> guid;
-//    Player* pTarget = _player->GetMapMgr()->GetPlayer((uint32)guid);
-//    uint32 TradeStatus = TRADE_STATUS_PROPOSED;
-//    WorldPacket data(SMSG_TRADE_STATUS, 12);
-//
-//    if (pTarget == 0)
-//    {
-//        TradeStatus = TRADE_STATUS_PLAYER_NOT_FOUND;
-//
-//        OutPacket(SMSG_TRADE_STATUS, 4, &TradeStatus);
-//        return;
-//    }
-//
-//    // Handle possible error outcomes
-//    if (pTarget->CalcDistance(_player) > 10.0f)        // This needs to be checked
-//        TradeStatus = TRADE_STATUS_TOO_FAR_AWAY;
-//    else if (pTarget->IsDead())
-//        TradeStatus = TRADE_STATUS_DEAD;
-//    else if (pTarget->mTradeTarget != 0)
-//        TradeStatus = TRADE_STATUS_ALREADY_TRADING;
-//    else if (pTarget->GetTeam() != _player->GetTeam() && GetPermissionCount() == 0 && !sWorld.interfaction_trade)
-//        TradeStatus = TRADE_STATUS_WRONG_FACTION;
-//
-//    data << TradeStatus;
-//
-//    if (TradeStatus == TRADE_STATUS_PROPOSED)
-//    {
-//        _player->ResetTradeVariables();
-//        pTarget->ResetTradeVariables();
-//
-//        pTarget->mTradeTarget = _player->GetLowGUID();
-//        _player->mTradeTarget = pTarget->GetLowGUID();
-//
-//        pTarget->mTradeStatus = TradeStatus;
-//        _player->mTradeStatus = TradeStatus;
-//
-//        data << _player->GetGUID();
-//    }
-//
-//    pTarget->m_session->SendPacket(&data);
-//}
-
-//void WorldSession::HandleBeginTrade(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    uint32 TradeStatus = TRADE_STATUS_INITIATED;
-//
-//    Player* plr = _player->GetTradeTarget();
-//    if (_player->mTradeTarget == 0 || plr == 0)
-//    {
-//        TradeStatus = TRADE_STATUS_PLAYER_NOT_FOUND;
-//
-//        OutPacket(SMSG_TRADE_STATUS, 4, &TradeStatus);
-//        return;
-//    }
-//
-//    // We're too far from target now?
-//    if (_player->CalcDistance(objmgr.GetPlayer(_player->mTradeTarget)) > 10.0f)
-//        TradeStatus = TRADE_STATUS_TOO_FAR_AWAY;
-//
-//    WorldPacket data(SMSG_TRADE_STATUS, 8);
-//
-//    data << uint32(TradeStatus);
-//    data << uint32(0x19);
-//
-//    plr->m_session->SendPacket(&data);
-//
-//    SendPacket(&data);
-//
-//    plr->mTradeStatus = TradeStatus;
-//    _player->mTradeStatus = TradeStatus;
-//}
 
 //void WorldSession::HandleBusyTrade(WorldPacket& recv_data)
 //{

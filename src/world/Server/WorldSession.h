@@ -544,8 +544,8 @@ class SERVER_DECL WorldSession
         //void HandleDuelCancelled(WorldPacket& recv_data);
 
         // Trade
-        //void HandleInitiateTrade(WorldPacket& recv_data);
-        //void HandleBeginTrade(WorldPacket& recv_data);
+        void HandleInitiateTradeOpcode(WorldPacket& recv_data);
+        void HandleBeginTradeOpcode(WorldPacket& recv_data);
         //void HandleBusyTrade(WorldPacket& recv_data);
         //void HandleIgnoreTrade(WorldPacket& recv_data);
         //void HandleAcceptTrade(WorldPacket& recv_data);

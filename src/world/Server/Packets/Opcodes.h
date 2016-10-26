@@ -95,8 +95,7 @@ enum Opcodes
     CMSG_OPENING_CINEMATIC                          = 0x0F9,
     OBSOLETE_DROP_ITEM                              = 0x110,
     SMSG_OPEN_CONTAINER                             = 0x113,
-    CMSG_INITIATE_TRADE                             = 0x116,
-    CMSG_BEGIN_TRADE                                = 0x117,
+
     CMSG_BUSY_TRADE                                 = 0x118,
     CMSG_IGNORE_TRADE                               = 0x119,
     CMSG_ACCEPT_TRADE                               = 0x11A,
@@ -723,7 +722,7 @@ enum Opcodes
     CMSG_TEXT_EMOTE                                     = 0x2E24,
     SMSG_TEXT_EMOTE                                     = 0x0B05,
     CMSG_CANCEL_TRADE                                   = 0x731E,
-    SMSG_TRADE_STATUS                                   = 0x5CA3,
+
     SMSG_TRADE_STATUS_EXTENDED                          = 0x70A2,
     SMSG_INITIALIZE_FACTIONS                            = 0x4634,
     CMSG_CHAR_CREATE                                    = 0x4A36,
@@ -1224,6 +1223,11 @@ enum Opcodes
     SMSG_FEATURE_SYSTEM_STATUS                          = 0x3DB7,
     SMSG_LEARNED_DANCE_MOVES                            = 0x0E05,
     CMSG_TOGGLE_PVP                                     = 0x6815,
+
+    //Trade
+    CMSG_INITIATE_TRADE                                 = 0x7916,
+    SMSG_TRADE_STATUS                                   = 0x5CA3,
+    CMSG_BEGIN_TRADE                                    = 0x721E,
 
     //Item
     CMSG_AUTOSTORE_LOOT_ITEM                            = 0x0E34,
