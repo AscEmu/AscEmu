@@ -582,10 +582,7 @@ enum Opcodes
     CMSG_UNKNOWN_1227                               = 0x4CB,
     SMSG_UNKNOWN_1228                               = 0x4CC,
     SMSG_MULTIPLE_PACKETS                           = 0x4CD,
-    SMSG_MOVE_GRAVITY_DISABLE                       = 0x4CE,
-    CMSG_MOVE_GRAVITY_DISABLE_ACK                   = 0x4CF,
-    SMSG_MOVE_GRAVITY_ENABLE                        = 0x4D0,
-    CMSG_MOVE_GRAVITY_ENABLE_ACK                    = 0x4D1,
+    
     MSG_MOVE_GRAVITY_CHNG                           = 0x4D2,
     CMSG_EQUIPMENT_SET_USE                          = 0x4D5,
     CMSG_FORCE_ANIM                                 = 0x4D7,
@@ -632,8 +629,6 @@ enum Opcodes
     CMSG_DROP_NEW_CONNECTION                        = 0x513,
     SMSG_SEND_ALL_COMBAT_LOG                        = 0x514,
     SMSG_OPEN_LFG_DUNGEON_FINDER                    = 0x515,
-    SMSG_MOVE_SET_COLLISION_HGT                     = 0x516,
-    CMSG_MOVE_SET_COLLISION_HGT_ACK                 = 0x517,
     MSG_MOVE_SET_COLLISION_HGT                      = 0x518,
     CMSG_CLEAR_RANDOM_BG_WIN_TIME                   = 0x519,
     CMSG_CLEAR_HOLIDAY_BG_WIN_TIME                  = 0x51A,
@@ -897,6 +892,9 @@ enum Opcodes
     SMSG_MOVE_SET_CAN_FLY                               = 0x3DA1,   // not updated
     SMSG_MOVE_UNSET_CAN_FLY                             = 0x15A2,   // not updated
     CMSG_MOVE_CHNG_TRANSPORT                            = 0x3102,
+    SMSG_MOVE_SET_COLLISION_HGT                         = 0x11B0,   // not implemented
+    SMSG_MOVE_GRAVITY_DISABLE                           = 0x75B2,   // not implemented
+    SMSG_MOVE_GRAVITY_ENABLE                            = 0x30B3,   // not implemented
 
     // Movement normal ack
     CMSG_MOVE_SET_CAN_FLY_ACK                           = 0x790C,   // not implemented
@@ -905,6 +903,9 @@ enum Opcodes
     MSG_MOVE_WORLDPORT_ACK                              = 0x2411,
     CMSG_MOVE_WATER_WALK_ACK                            = 0x3B00,   // not implemented
     MSG_MOVE_TELEPORT_ACK                               = 0x390C,
+    CMSG_MOVE_SET_COLLISION_HGT_ACK                     = 0x7114,   // not implemented
+    CMSG_MOVE_GRAVITY_DISABLE_ACK                       = 0x3118,   // not implemented - not sure
+    CMSG_MOVE_GRAVITY_ENABLE_ACK                        = 0x700A,   // not implemented - not sure
 
     // Movement speed
     SMSG_MOVE_SET_FLIGHT_SPEED                          = 0x71A6,
