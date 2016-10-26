@@ -356,8 +356,6 @@ enum Opcodes
     CMSG_CHEAT_SET_HONOR_CURRENCY                   = 0x37B,
     CMSG_CHEAT_SET_ARENA_CURRENCY                   = 0x37C,
     SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE             = 0x383,
-    SMSG_SPLINE_SET_FLIGHT_SPEED                    = 0x385,
-    SMSG_SPLINE_SET_FLIGHT_BACK_SPEED               = 0x386,
     CMSG_MAELSTROM_INVALIDATE_CACHE                 = 0x387,
     SMSG_FLIGHT_SPLINE_SYNC                         = 0x388,
     SMSG_JOINED_BATTLEGROUND_QUEUE                  = 0x38A,
@@ -846,9 +844,26 @@ enum Opcodes
     CMSG_DECLINE_CHANNEL_INVITE                         = 0x1411,
 
     // Movement
-    SMSG_MOVE_UPDATE_KNOCK_BACK                         = 0x3DB2,
-    SMSG_PLAYER_MOVE                                    = 0x79A2,
     MSG_MOVE_HEARTBEAT                                  = 0x3914,   // forward/backward
+    MSG_MOVE_TOGGLE_FALL_LOGGING                        = 0x10C9,
+    MSG_MOVE_SET_FACING                                 = 0x7914,
+    MSG_MOVE_SET_PITCH                                  = 0x7312,
+    MSG_MOVE_START_STRAFE_LEFT                          = 0x3A16,
+    MSG_MOVE_START_STRAFE_RIGHT                         = 0x3A02,
+    MSG_MOVE_TELEPORT                                   = 0x55A0,
+    MSG_MOVE_STOP_SWIM                                  = 0x3802,
+    MSG_MOVE_HOVER                                      = 0x10F8,   // unk
+    MSG_MOVE_START_PITCH_UP                             = 0x3304,
+    MSG_MOVE_START_PITCH_DOWN                           = 0x3908,
+    MSG_MOVE_STOP_PITCH                                 = 0x7216,
+    MSG_MOVE_SET_RUN_MODE                               = 0x791A,
+    MSG_MOVE_SET_WALK_MODE                              = 0x7002,
+    MSG_MOVE_TOGGLE_LOGGING                             = 0x10C5,   // unk
+    MSG_MOVE_ROOT                                       = 0x10ED,   // unk
+    MSG_MOVE_UNROOT                                     = 0x10EE,   // unk
+
+    SMSG_PLAYER_MOVE                                    = 0x79A2,
+    
     CMSG_MOVE_STOP                                      = 0x320A,
     CMSG_MOVE_START_TURN_LEFT                           = 0x700C,
     CMSG_MOVE_START_TURN_RIGHT                          = 0x7000,
@@ -865,66 +880,55 @@ enum Opcodes
     CMSG_MOVE_TIME_SKIPPED                              = 0x7A0A,   // first enter world while watching intro
     CMSG_MOVE_SPLINE_DONE                               = 0x790E,
     CMSG_MOVE_FALL_RESET                                = 0x310A,
-    MSG_MOVE_SET_FACING                                 = 0x7914,
-    MSG_MOVE_SET_PITCH                                  = 0x7312,
-    MSG_MOVE_START_STRAFE_LEFT                          = 0x3A16,
-    MSG_MOVE_START_STRAFE_RIGHT                         = 0x3A02,
-    MSG_MOVE_TELEPORT                                   = 0x55A0,
-    MSG_MOVE_STOP_SWIM                                  = 0x3802,
-
-    MSG_MOVE_TELEPORT_ACK                               = 0x390C,
-    MSG_MOVE_TOGGLE_FALL_LOGGING                        = 0x10C9,
-    MSG_MOVE_SET_RUN_BACK_SPEED                         = 0x71B1,
-    MSG_MOVE_SET_SWIM_BACK_SPEED                        = 0x5CA6,
-    MSG_MOVE_SET_TURN_RATE                              = 0x30A5,
-    MSG_MOVE_WORLDPORT_ACK                              = 0x2411,
-    CMSG_MOVE_WATER_WALK_ACK                            = 0x3B00,   // not implemented
-    SMSG_MOVE_WATER_WALK                                = 0x75B1,
-    SMSG_MOVE_LAND_WALK                                 = 0x34B7,
-
+    
     CMSG_MOVE_SET_RAW_POSITION                          = 0x0339,   // unk
     
+    SMSG_MOVE_WATER_WALK                                = 0x75B1,
+    SMSG_MOVE_LAND_WALK                                 = 0x34B7,
     SMSG_FORCE_MOVE_ROOT                                = 0x7DA0,
-    CMSG_FORCE_MOVE_ROOT_ACK                            = 0x701E,   // not implemented
     SMSG_FORCE_MOVE_UNROOT                              = 0x7DB4,
-    CMSG_FORCE_MOVE_UNROOT_ACK                          = 0x7808,   // not implemented
-    MSG_MOVE_ROOT                                       = 0x10ED,   // unk
-    MSG_MOVE_UNROOT                                     = 0x10EE,   // unk
     SMSG_MOVE_KNOCK_BACK                                = 0x5CB4,   // not updated
-    CMSG_MOVE_KNOCK_BACK_ACK                            = 0x721C,   // not implemented
+    SMSG_MOVE_UPDATE_KNOCK_BACK                         = 0x3DB2,
     SMSG_MOVE_FEATHER_FALL                              = 0x79B0,
     SMSG_MOVE_NORMAL_FALL                               = 0x51B6,
     SMSG_MOVE_SET_HOVER                                 = 0x5CB3,   // not updated
     SMSG_MOVE_UNSET_HOVER                               = 0x51B3,   // not updated
-    CMSG_MOVE_HOVER_ACK                                 = 0x10F7,   // not implemented
-    MSG_MOVE_HOVER                                      = 0x10F8,   // unk
-    MSG_MOVE_START_PITCH_UP                             = 0x3304,
-    MSG_MOVE_START_PITCH_DOWN                           = 0x3908,
-    MSG_MOVE_STOP_PITCH                                 = 0x7216,
-    MSG_MOVE_SET_RUN_MODE                               = 0x791A,
-    MSG_MOVE_SET_WALK_MODE                              = 0x7002,
-    MSG_MOVE_TOGGLE_LOGGING                             = 0x10C5,   // unk
-    MSG_MOVE_SET_FLIGHT_SPEED                           = 0x71A6,
-    MSG_MOVE_SET_FLIGHT_BACK_SPEED                      = 0x30A2,   // not implemented
+    CMSG_MOVE_SET_CAN_FLY                               = 0x720E,   // not implemented
     SMSG_MOVE_SET_CAN_FLY                               = 0x3DA1,   // not updated
     SMSG_MOVE_UNSET_CAN_FLY                             = 0x15A2,   // not updated
-    MSG_MOVE_SET_RUN_SPEED                              = 0x3DB5,
-    MSG_MOVE_SET_WALK_SPEED                             = 0x1DA4,
-    MSG_MOVE_SET_SWIM_SPEED                             = 0x15A7,
-    CMSG_MOVE_SET_CAN_FLY_ACK                           = 0x790C,   // not implemented
     CMSG_MOVE_CHNG_TRANSPORT                            = 0x3102,
 
-    // Movement spline
-    SMSG_SPLINE_MOVE_SET_FLIGHT_BACK_SPEED              = 0x38B3,   // not implemented
+    // Movement normal ack
+    CMSG_MOVE_SET_CAN_FLY_ACK                           = 0x790C,   // not implemented
+    CMSG_MOVE_KNOCK_BACK_ACK                            = 0x721C,   // not implemented
+    CMSG_MOVE_HOVER_ACK                                 = 0x10F7,   // not implemented
+    MSG_MOVE_WORLDPORT_ACK                              = 0x2411,
+    CMSG_MOVE_WATER_WALK_ACK                            = 0x3B00,   // not implemented
+    MSG_MOVE_TELEPORT_ACK                               = 0x390C,
+
+    // Movement speed
+    SMSG_MOVE_SET_FLIGHT_SPEED                          = 0x71A6,
+    SMSG_MOVE_SET_FLIGHT_BACK_SPEED                     = 0x30A2,   // not implemented
+    SMSG_MOVE_SET_PITCH_RATE                            = 0x75B0,   // not implemented
+    SMSG_MOVE_SET_RUN_SPEED                             = 0x3DB5,
+    SMSG_MOVE_SET_RUN_BACK_SPEED                        = 0x71B1,
+    SMSG_MOVE_SET_SWIM_SPEED                            = 0x15A7,
+    SMSG_MOVE_SET_SWIM_BACK_SPEED                       = 0x5CA6,
+    SMSG_MOVE_SET_TURN_RATE                             = 0x30A5,
+    SMSG_MOVE_SET_WALK_SPEED                            = 0x1DA4,
+
+    // Movement spline speed
     SMSG_SPLINE_MOVE_SET_FLIGHT_SPEED                   = 0x39A0,
+    SMSG_SPLINE_MOVE_SET_FLIGHT_BACK_SPEED              = 0x38B3,   // not implemented
     SMSG_SPLINE_MOVE_SET_PITCH_RATE                     = 0x14B0,
-    SMSG_SPLINE_MOVE_SET_RUN_BACK_SPEED                 = 0x3DB3,
     SMSG_SPLINE_MOVE_SET_RUN_SPEED                      = 0x51B7,
+    SMSG_SPLINE_MOVE_SET_RUN_BACK_SPEED                 = 0x3DB3,
     SMSG_SPLINE_MOVE_SET_SWIM_SPEED                     = 0x39A4,
     SMSG_SPLINE_MOVE_SET_SWIM_BACK_SPEED                = 0x59A1,   // not implemented
     SMSG_SPLINE_MOVE_SET_TURN_RATE                      = 0x78B5,   // not implemented
     SMSG_SPLINE_MOVE_SET_WALK_SPEED                     = 0x34A5,
 
+    // Movement spline 
     SMSG_SPLINE_MOVE_ROOT                               = 0x51B4,
     SMSG_SPLINE_MOVE_UNROOT                             = 0x75B6,
     SMSG_SPLINE_MOVE_FEATHER_FALL                       = 0x3DA5,
@@ -941,7 +945,7 @@ enum Opcodes
     SMSG_SPLINE_MOVE_GRAVITY_DISABLE                    = 0x5DB5,   // todo send it on add MOVEFLAG_DISABLE_GRAVITY
     SMSG_SPLINE_MOVE_GRAVITY_ENABLE                     = 0x3CA6,   // todo send it on remove MOVEFLAG_DISABLE_GRAVITY
 
-    // Movement Forced ack
+    // Movement force change ack
     CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK             = 0x0333,   // unknown
     CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK                  = 0x7314,   
     CMSG_FORCE_PITCH_RATE_CHANGE_ACK                    = 0x0334,   // unknown
@@ -951,6 +955,10 @@ enum Opcodes
     CMSG_FORCE_SWIM_SPEED_CHANGE_ACK                    = 0x7A10,
     CMSG_FORCE_TURN_RATE_CHANGE_ACK                     = 0x7316,
     CMSG_FORCE_WALK_SPEED_CHANGE_ACK                    = 0x7210,
+
+    // Movement force move ack
+    CMSG_FORCE_MOVE_UNROOT_ACK                          = 0x7808,   // not implemented
+    CMSG_FORCE_MOVE_ROOT_ACK                            = 0x701E,   // not implemented
 
     // LFG Check packet sending in LfgHandler.cpp
     SMSG_LFG_PLAYER_INFO                                = 0x1370,   // not updated
@@ -1280,34 +1288,23 @@ enum Opcodes
     CMSG_SET_ACTION_BUTTON                              = 0x6F06,
 
     //Cheat
-    CMSG_MOVE_START_SWIM_CHEAT                          = 0x12D9,
-    CMSG_MOVE_STOP_SWIM_CHEAT                           = 0x12DA,
-    MSG_MOVE_TELEPORT_CHEAT                             = 0x10C7,
-    MSG_MOVE_SET_RUN_SPEED_CHEAT                        = 0x10CD,
-    SMSG_MOVE_SET_RUN_SPEED                             = 0x3DB5,
-    MSG_MOVE_SET_RUN_BACK_SPEED_CHEAT                   = 0x10CF,
-    SMSG_MOVE_SET_RUN_BACK_SPEED                        = 0x71B1,
-    MSG_MOVE_SET_WALK_SPEED_CHEAT                       = 0x10D1,
-    SMSG_MOVE_SET_WALK_SPEED                            = 0x1DA4,
-    MSG_MOVE_SET_SWIM_SPEED_CHEAT                       = 0x10D3,
-    SMSG_MOVE_SET_SWIM_SPEED                            = 0x15A7,
-    MSG_MOVE_SET_SWIM_BACK_SPEED_CHEAT                  = 0x10D5,
-    SMSG_MOVE_SET_SWIM_BACK_SPEED                       = 0x5CA6,
-    MSG_MOVE_SET_ALL_SPEED_CHEAT                        = 0x10D7,
-    MSG_MOVE_SET_TURN_RATE_CHEAT                        = 0x10D8,
-    SMSG_MOVE_SET_TURN_RATE                             = 0x30A5,
-    MSG_MOVE_TOGGLE_COLLISION_CHEAT                     = 0x10DA,
-
-    MSG_MOVE_START_SWIM_CHEAT                           = 0x1342,
-    MSG_MOVE_STOP_SWIM_CHEAT                            = 0x1343,
-
-    MSG_MOVE_SET_FLIGHT_SPEED_CHEAT                     = 0x137E,
-    SMSG_MOVE_SET_FLIGHT_SPEED                          = 0x71A6,
-    MSG_MOVE_SET_FLIGHT_BACK_SPEED_CHEAT                = 0x1380,
-    SMSG_MOVE_SET_FLIGHT_BACK_SPEED                     = 0x30A2,
-
-    MSG_MOVE_SET_PITCH_RATE_CHEAT                       = 0x145B,
-    SMSG_MOVE_SET_PITCH_RATE                            = 0x75B0,
+    CMSG_MOVE_START_SWIM_CHEAT                          = 0x12D9,   // unknown
+    CMSG_MOVE_STOP_SWIM_CHEAT                           = 0x12DA,   // unknown
+    MSG_MOVE_TELEPORT_CHEAT                             = 0x10C7,   // unknown
+    MSG_MOVE_SET_RUN_SPEED_CHEAT                        = 0x10CD,   // unknown
+    MSG_MOVE_SET_RUN_BACK_SPEED_CHEAT                   = 0x10CF,   // unknown
+    MSG_MOVE_SET_WALK_SPEED_CHEAT                       = 0x10D1,   // unknown
+    MSG_MOVE_SET_SWIM_SPEED_CHEAT                       = 0x10D3,   // unknown
+    MSG_MOVE_SET_SWIM_BACK_SPEED_CHEAT                  = 0x10D5,   // unknown
+    MSG_MOVE_SET_ALL_SPEED_CHEAT                        = 0x10D7,   // unknown
+    MSG_MOVE_SET_TURN_RATE_CHEAT                        = 0x10D8,   // unknown
+    MSG_MOVE_TOGGLE_COLLISION_CHEAT                     = 0x10DA,   // unknown
+    MSG_MOVE_START_SWIM_CHEAT                           = 0x1342,   // unknown
+    MSG_MOVE_STOP_SWIM_CHEAT                            = 0x1343,   // unknown
+    MSG_MOVE_SET_FLIGHT_SPEED_CHEAT                     = 0x137E,   // unknown
+    MSG_MOVE_SET_FLIGHT_BACK_SPEED_CHEAT                = 0x1380,   // unknown
+    MSG_MOVE_SET_PITCH_RATE_CHEAT                       = 0x145B,   // unknown
+    
 
     //Achievements
     SMSG_RESPOND_INSPECT_ACHIEVEMENTS                   = 0x15B0,
@@ -1428,11 +1425,7 @@ enum Opcodes
     CMSG_VOICE_SESSION_ENABLE                           = 0x2314,
     CMSG_REQUEST_CATEGORY_COOLDOWNS                     = 0x7102,
     CMSG_REORDER_CHARACTERS                             = 0x0593,
-    CMSG_UNK_7818                                       = 0x7818,
     CMSG_UNK_7314                                       = 0x7315,
-    CMSG_UNK_7102                                       = 0x7102,
-    CMSG_UNK_3D54                                       = 0x3D54,
-    CMSG_UNK_720E                                       = 0x720E,
 
     //Unknown packet names
     CMSG_GM_SET_SECURITY_GROUP                          = 0x0000,
