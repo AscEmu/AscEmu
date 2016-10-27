@@ -207,7 +207,7 @@ void Group::Update()
             m_Looter = pNewLeader->getPlayerInfo();
     }
 
-    WorldPacket data(50 + (m_MemberCount * 20));
+    
     GroupMembersSet::iterator itr1, itr2;
 
     uint8 i = 0, j = 0;
@@ -234,7 +234,7 @@ void Group::Update()
                     continue;
                 }
 
-                data.Initialize(SMSG_GROUP_LIST);
+                WorldPacket data(SMSG_GROUP_LIST, 50 + (m_MemberCount * 20));
                 data << uint8(m_GroupType);
                 data << uint8((*itr1)->subGroup);
 
@@ -256,6 +256,7 @@ void Group::Update()
                 {
                     data << uint8(sLfgMgr.GetState(GetID()) == LFG_STATE_FINISHED_DUNGEON ? 2 : 0);
 					data << uint32(sLfgMgr.GetDungeon(GetID()));
+                    data << uint8(0);   //unk
                 }
 
                 data << uint64(GetID());            // Group guid
@@ -285,9 +286,9 @@ void Group::Update()
                                 data << (*itr2)->guid << uint32(0);	// highguid
 
                             if ((*itr2)->m_loggedInPlayer != NULL)
-                                data << uint8(1);
+                                data << uint8(1);       // 1 = online, 2 = pvp
                             else
-                                data << uint8(0);
+                                data << uint8(0);       //offline
 
                             data << uint8((*itr2)->subGroup);
 
@@ -387,7 +388,7 @@ void SubGroup::Disband()
                     data2.put(5, uint32((*itr)->m_loggedInPlayer->iInstanceType));
                     (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data2);
                     (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data);
-                    (*itr)->m_Group->SendNullUpdate((*itr)->m_loggedInPlayer);   // cebernic: panel refresh.
+                    (*itr)->m_loggedInPlayer->GetSession()->SendEmptyGroupList((*itr)->m_loggedInPlayer);
                 }
             }
 
@@ -435,7 +436,6 @@ void Group::RemovePlayer(PlayerInfo* info)
     if (info == nullptr)
         return;
 
-    WorldPacket data(50);
     Player* pPlayer = info->m_loggedInPlayer;
 
     m_groupLock.Acquire();
@@ -487,16 +487,12 @@ void Group::RemovePlayer(PlayerInfo* info)
     {
         if (pPlayer->GetSession() != NULL)
         {
-            SendNullUpdate(pPlayer);
-
-            data.SetOpcode(SMSG_GROUP_DESTROYED);
+            WorldPacket data(SMSG_GROUP_DESTROYED, 0);
             pPlayer->GetSession()->SendPacket(&data);
 
-            data.Initialize(SMSG_PARTY_COMMAND_RESULT);
-            data << uint32(2);
-            data << uint8(0);
-            data << uint32(0);  // you leave the group
-            pPlayer->GetSession()->SendPacket(&data);
+            pPlayer->GetSession()->SendPartyCommandResult(pPlayer, 2, pPlayer->GetName(), ERR_PARTY_NO_ERROR);
+
+            pPlayer->GetSession()->SendEmptyGroupList(pPlayer);
         }
 
         //Remove some party auras.
@@ -563,7 +559,7 @@ void Group::ExpandToRaid()
     m_groupLock.Acquire();
     m_SubGroupCount = 8;
 
-    for (uint8 i = 1; i < m_SubGroupCount; i++)
+    for (uint8 i = 1; i < m_SubGroupCount; ++i)
         m_SubGroups[i] = new SubGroup(this, i);
 
     m_GroupType = GROUP_TYPE_RAID;
@@ -574,13 +570,14 @@ void Group::ExpandToRaid()
 
 void Group::SetLooter(Player* pPlayer, uint8 method, uint16 threshold)
 {
-    if (pPlayer != NULL)
+    if (pPlayer != nullptr)
     {
         m_LootMethod = method;
         m_Looter = pPlayer->getPlayerInfo();
         m_LootThreshold = threshold;
         m_dirty = true;
     }
+
     Update();
 }
 
@@ -712,14 +709,6 @@ void Group::MovePlayer(PlayerInfo* info, uint8 subgroup)
 
     Update();
     m_groupLock.Release();
-}
-
-void Group::SendNullUpdate(Player* pPlayer)
-{
-    // this packet is 28 bytes long.		// AS OF 3.3
-    uint8 buffer[28];
-    memset(buffer, 0, 28);
-    pPlayer->GetSession()->OutPacket(SMSG_GROUP_LIST, 28, buffer);
 }
 
 void Group::LoadFromDB(Field* fields)

@@ -203,11 +203,14 @@ struct tempy
 
 typedef std::map<uint32, StoreLootList> LootStore;
 
-#define PARTY_LOOT_FFA 0
-#define PARTY_LOOT_MASTER 2
-#define PARTY_LOOT_RR 1
-#define PARTY_LOOT_NBG 4
-#define PARTY_LOOT_GROUP 3
+enum PartyLootMethod
+{
+    PARTY_LOOT_FFA = 0,
+    PARTY_LOOT_RR = 1,
+    PARTY_LOOT_MASTER = 2,
+    PARTY_LOOT_GROUP = 3,
+    PARTY_LOOT_NBG = 4
+};
 
 typedef std::multimap<uint32, LootCurencyStoreStruct> LootCurrencyStore;
 typedef std::pair<LootCurrencyStore::const_iterator, LootCurrencyStore::const_iterator> LootCurrencyIdBounds;

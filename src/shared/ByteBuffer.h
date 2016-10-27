@@ -409,6 +409,11 @@ public:
         return _rpos;
     };
 
+    void rfinish()
+    {
+        _rpos = wpos();
+    }
+
     size_t wpos()
     {
         return _wpos;

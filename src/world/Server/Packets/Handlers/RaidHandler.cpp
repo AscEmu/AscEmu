@@ -22,24 +22,6 @@
 #include "StdAfx.h"
 
 
-//void WorldSession::HandleConvertGroupToRaidOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//
-//    Group* pGroup = _player->GetGroup();
-//    if (!pGroup)
-//        return;
-//
-//    if (pGroup->GetLeader() != _player->m_playerInfo)      //access denied
-//    {
-//        SendPartyCommandResult(_player, 0, "", ERR_PARTY_YOU_ARE_NOT_LEADER);
-//        return;
-//    }
-//
-//    pGroup->ExpandToRaid();
-//    SendPartyCommandResult(_player, 0, "", ERR_PARTY_NO_ERROR);
-//}
-
 //void WorldSession::HandleGroupChangeSubGroup(WorldPacket& recv_data)
 //{
 //    CHECK_INWORLD_RETURN

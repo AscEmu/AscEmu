@@ -358,21 +358,28 @@ class SERVER_DECL WorldSession
         void HandleMoveTeleportAckOpcode(WorldPacket& recv_data);
 
         /// Opcodes implemented in GroupHandler.cpp:
-        //void HandleGroupInviteOpcode(WorldPacket& recvPacket);
+    public:
+        void SendPartyCommandResult(Player* pPlayer, uint32 p1, std::string name, uint32 err);
+        void SendEmptyGroupList(Player* player);
+
+    private:
+        void HandleGroupInviteOpcode(WorldPacket& recvPacket);
+        void HandleGroupInviteResponseOpcode(WorldPacket& recvPacket);
+        void HandleGroupSetRolesOpcode(WorldPacket& recvData);
+        void HandleGroupDisbandOpcode(WorldPacket& recvPacket);
+        void HandleLootMethodOpcode(WorldPacket& recvPacket);
+        void HandleConvertGroupToRaidOpcode(WorldPacket& recvPacket);
+        void HandleGroupRequestJoinUpdatesOpcode(WorldPacket& recv_data);
         //void HandleGroupCancelOpcode(WorldPacket& recvPacket);
         //void HandleGroupAcceptOpcode(WorldPacket& recvPacket);
         //void HandleGroupDeclineOpcode(WorldPacket& recvPacket);
         //void HandleGroupUninviteOpcode(WorldPacket& recvPacket);
         //void HandleGroupUninviteGuidOpcode(WorldPacket& recvPacket);
         //void HandleGroupSetLeaderOpcode(WorldPacket& recvPacket);
-        //void HandleGroupDisbandOpcode(WorldPacket& recvPacket);
-        //void HandleLootMethodOpcode(WorldPacket& recvPacket);
         //void HandleMinimapPingOpcode(WorldPacket& recvPacket);
         //void HandleSetPlayerIconOpcode(WorldPacket& recv_data);
-        void SendPartyCommandResult(Player* pPlayer, uint32 p1, std::string name, uint32 err);
 
         // Raid
-        //void HandleConvertGroupToRaidOpcode(WorldPacket& recvPacket);
         //void HandleGroupChangeSubGroup(WorldPacket& recvPacket);
         //void HandleGroupAssistantLeader(WorldPacket& recvPacket);
         void HandleRequestRaidInfoOpcode(WorldPacket& recvPacket);
@@ -540,20 +547,31 @@ class SERVER_DECL WorldSession
         void HandleChannelRosterQuery(WorldPacket& recvPacket);
 
         // Duel
-        //void HandleDuelAccepted(WorldPacket& recv_data);
-        //void HandleDuelCancelled(WorldPacket& recv_data);
+    public:
+        void SendDuelCountdown(uint32 time = 3000);
+        void SendDuelComplete(uint8 type);
+
+    protected:
+        void HandleDuelAcceptedOpcode(WorldPacket& recv_data);
+        void HandleDuelCancelledOpcode(WorldPacket& recv_data);
 
         // Trade
-        //void HandleInitiateTrade(WorldPacket& recv_data);
-        //void HandleBeginTrade(WorldPacket& recv_data);
+    public:
+        void SendTradeResult(TradeStatus result);
+        void SendTradeUpdate(bool trade_state = true);
+        void SendCancelTrade();
+
+    protected:
+        void HandleInitiateTradeOpcode(WorldPacket& recv_data);
+        void HandleBeginTradeOpcode(WorldPacket& recv_data);
+        void HandleSetTradeGoldOpcode(WorldPacket& recv_data);
+        void HandleAcceptTradeOpcode(WorldPacket& recv_data);
+        void HandleCancelTradeOpcode(WorldPacket& recv_data);
+        void HandleSetTradeItemOpcode(WorldPacket& recv_data);
+        void HandleClearTradeItemOpcode(WorldPacket& recv_data);
         //void HandleBusyTrade(WorldPacket& recv_data);
         //void HandleIgnoreTrade(WorldPacket& recv_data);
-        //void HandleAcceptTrade(WorldPacket& recv_data);
         //void HandleUnacceptTrade(WorldPacket& recv_data);
-        void HandleCancelTrade(WorldPacket& recv_data);
-        //void HandleSetTradeItem(WorldPacket& recv_data);
-        //void HandleClearTradeItem(WorldPacket& recv_data);
-        //void HandleSetTradeGold(WorldPacket& recv_data);
 
         // Guild
         void HandleGuildQueryOpcode(WorldPacket& recv_data);
@@ -756,9 +774,10 @@ class SERVER_DECL WorldSession
         void HandleLoadScreenOpcode(WorldPacket& recv_data);
         void HandleUITimeRequestOpcode(WorldPacket& recv_data); // empty opcode
         void HandleTimeSyncRespOpcode(WorldPacket& recv_data);
+        void HandleForceSpeedAckOpcodes(WorldPacket& recv_data);
 
         void Unhandled(WorldPacket& recv_data);
-        void HandledClientSide(WorldPacket& recv_data);
+        void NothingToHandle(WorldPacket& recv_data);
 
     public:
 

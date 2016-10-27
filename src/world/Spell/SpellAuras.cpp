@@ -4841,20 +4841,23 @@ void Aura::SpellAuraModSpellCritChance(bool apply)
 
 void Aura::SpellAuraIncreaseSwimSpeed(bool apply)
 {
+    float new_swim_speed = 0.0f;
+
     if (apply)
     {
-        if (m_target->isAlive())  SetPositive();
-        m_target->m_swimSpeed = 0.04722222f * (100 + mod->m_amount);
+        if (m_target->isAlive())
+            SetPositive();
+
+        new_swim_speed = 0.04722222f * (100 + mod->m_amount);
     }
     else
-        m_target->m_swimSpeed = playerNormalSwimSpeed;
-    if (p_target != NULL)
     {
-        WorldPacket data(SMSG_FORCE_SWIM_SPEED_CHANGE, 17);
-        data << p_target->GetNewGUID();
-        data << (uint32)2;
-        data << m_target->m_swimSpeed;
-        p_target->GetSession()->SendPacket(&data);
+        new_swim_speed = playerNormalSwimSpeed;
+    }
+
+    if (p_target != nullptr)
+    {
+        p_target->SetSpeeds(SWIM, new_swim_speed);
     }
 }
 
@@ -6078,48 +6081,31 @@ void Aura::SpellAuraModTotalThreat(bool apply)
 
 void Aura::SpellAuraWaterWalk(bool apply)
 {
-    if (p_target != NULL)
+    if (p_target != nullptr)
     {
-        WorldPacket data(12);
         if (apply)
-        {
-            SetPositive();
-            data.SetOpcode(SMSG_MOVE_WATER_WALK);
-            data << p_target->GetNewGUID();
-            data << uint32(8);
-        }
+            p_target->SetWaterWalk();
         else
-        {
-            data.SetOpcode(SMSG_MOVE_LAND_WALK);
-            data << p_target->GetNewGUID();
-            data << uint32(4);
-        }
-        p_target->GetSession()->SendPacket(&data);
+            p_target->SetLandWalk();
     }
 }
 
 void Aura::SpellAuraFeatherFall(bool apply)
 {
-    ///\todo FIX ME: Find true flag for this
-    if (p_target == NULL)
+    if (p_target == nullptr)
         return;
 
-    WorldPacket data(12);
     if (apply)
     {
         SetPositive();
-        data.SetOpcode(SMSG_MOVE_FEATHER_FALL);
+        p_target->SetFeatherFall();
         p_target->m_noFallDamage = true;
     }
     else
     {
-        data.SetOpcode(SMSG_MOVE_NORMAL_FALL);
+        p_target->SetNormalFall();
         p_target->m_noFallDamage = false;
     }
-
-    data << m_target->GetNewGUID();
-    data << uint32(0);
-    p_target->SendMessageToSet(&data, true);
 }
 
 void Aura::SpellAuraHover(bool apply)

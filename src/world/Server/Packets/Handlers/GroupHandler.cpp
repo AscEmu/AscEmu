@@ -1,4 +1,473 @@
 /*
+Copyright (c) 2014-2016 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#include "StdAfx.h"
+
+void WorldSession::SendPartyCommandResult(Player* pPlayer, uint32 p1, std::string name, uint32 err)
+{
+    WorldPacket data(SMSG_PARTY_COMMAND_RESULT, name.size() + 18);   //guessed
+    data << uint32(p1);     // 0 = invite, 1 = uninvite, 2 = leave, 3 = swap
+
+    if (!name.length())
+        data << uint8(0);
+    else
+        data << name.c_str();
+
+    data << uint32(err);
+    data << uint32(0);      // unk
+    data << uint64(0);      // unk
+
+    SendPacket(&data);
+}
+
+void WorldSession::SendEmptyGroupList(Player* player)
+{
+    WorldPacket data(SMSG_GROUP_LIST, 28);
+    data << uint8(0x10);
+    data << uint8(0);
+    data << uint8(0);
+    data << uint8(0);
+    data << uint64(0);
+    data << uint32(0);
+    data << uint32(0);
+    data << uint64(0);
+    player->GetSession()->SendPacket(&data);
+}
+
+void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
+{
+    std::string membername, realmname;
+    ObjectGuid unk_guid;            // unused
+
+    recv_data.read_skip<uint32>();
+    recv_data.read_skip<uint32>();
+
+    unk_guid[2] = recv_data.readBit();
+    unk_guid[7] = recv_data.readBit();
+
+    uint8 realmLen = recv_data.readBits(9);
+
+    unk_guid[3] = recv_data.readBit();
+
+    uint8 nameLen = recv_data.readBits(10);
+
+    unk_guid[5] = recv_data.readBit();
+    unk_guid[4] = recv_data.readBit();
+    unk_guid[6] = recv_data.readBit();
+    unk_guid[0] = recv_data.readBit();
+    unk_guid[1] = recv_data.readBit();
+
+    recv_data.ReadByteSeq(unk_guid[4]);
+    recv_data.ReadByteSeq(unk_guid[7]);
+    recv_data.ReadByteSeq(unk_guid[6]);
+
+    membername = recv_data.ReadString(nameLen);
+    realmname = recv_data.ReadString(realmLen);
+
+    recv_data.ReadByteSeq(unk_guid[1]);
+    recv_data.ReadByteSeq(unk_guid[0]);
+    recv_data.ReadByteSeq(unk_guid[5]);
+    recv_data.ReadByteSeq(unk_guid[3]);
+    recv_data.ReadByteSeq(unk_guid[2]);
+
+    if (_player->HasBeenInvited())
+        return;
+
+    Player* player = objmgr.GetPlayer(membername.c_str(), false);
+    if (player == nullptr)
+    {
+        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_CANNOT_FIND);
+        return;
+    }
+
+    if (_player == player)
+        return;
+
+    if (_player->InGroup() && !_player->IsGroupLeader())
+    {
+        SendPartyCommandResult(_player, 0, "", ERR_PARTY_YOU_ARE_NOT_LEADER);
+        return;
+    }
+
+    Group* group = _player->GetGroup();
+    if (group != nullptr)
+    {
+        if (group->IsFull())
+        {
+            SendPartyCommandResult(_player, 0, "", ERR_PARTY_IS_FULL);
+            return;
+        }
+    }
+
+    ObjectGuid invitedGuid = player->GetGUID();
+
+    if (player->InGroup())
+    {
+        SendPartyCommandResult(_player, player->GetGroup()->GetGroupType(), membername, ERR_PARTY_ALREADY_IN_GROUP);
+        WorldPacket data(SMSG_GROUP_INVITE, 45);
+        data.writeBit(0);
+
+        data.writeBit(invitedGuid[0]);
+        data.writeBit(invitedGuid[3]);
+        data.writeBit(invitedGuid[2]);
+
+        data.writeBit(0);               //not in group
+
+        data.writeBit(invitedGuid[6]);
+        data.writeBit(invitedGuid[5]);
+
+        data.writeBits(0, 9);
+
+        data.writeBit(invitedGuid[4]);
+
+        data.writeBits(strlen(GetPlayer()->GetName()), 7);
+
+        data.writeBits(0, 24);
+        data.writeBit(0);
+
+        data.writeBit(invitedGuid[1]);
+        data.writeBit(invitedGuid[7]);
+
+        data.flushBits();
+
+        data.WriteByteSeq(invitedGuid[1]);
+        data.WriteByteSeq(invitedGuid[4]);
+
+        data << int32(getMSTime());
+        data << int32(0);
+        data << int32(0);
+
+        data.WriteByteSeq(invitedGuid[6]);
+        data.WriteByteSeq(invitedGuid[0]);
+        data.WriteByteSeq(invitedGuid[2]);
+        data.WriteByteSeq(invitedGuid[3]);
+        data.WriteByteSeq(invitedGuid[5]);
+        data.WriteByteSeq(invitedGuid[7]);
+
+        data.WriteString(GetPlayer()->GetName());
+
+        data << int32(0);
+
+        player->GetSession()->SendPacket(&data);
+        return;
+    }
+
+    if (player->GetTeam() != _player->GetTeam() && _player->GetSession()->GetPermissionCount() == 0 && !sWorld.interfaction_group)
+    {
+        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_WRONG_FACTION);
+        return;
+    }
+
+    if (player->HasBeenInvited())
+    {
+        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_ALREADY_IN_GROUP);
+        return;
+    }
+
+    if (player->Social_IsIgnoring(_player->GetLowGUID()))
+    {
+        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_IS_IGNORING_YOU);
+        return;
+    }
+
+    if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) && !_player->GetSession()->HasPermissions())
+    {
+        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_CANNOT_FIND);
+        return;
+    }
+
+    WorldPacket data(SMSG_GROUP_INVITE, 45);
+    data.writeBit(0);
+
+    data.writeBit(invitedGuid[0]);
+    data.writeBit(invitedGuid[3]);
+    data.writeBit(invitedGuid[2]);
+
+    data.writeBit(1);               //not in group
+
+    data.writeBit(invitedGuid[6]);
+    data.writeBit(invitedGuid[5]);
+
+    data.writeBits(0, 9);
+
+    data.writeBit(invitedGuid[4]);
+
+    data.writeBits(strlen(GetPlayer()->GetName()), 7);
+    data.writeBits(0, 24);
+    data.writeBit(0);
+
+    data.writeBit(invitedGuid[1]);
+    data.writeBit(invitedGuid[7]);
+
+    data.flushBits();
+
+    data.WriteByteSeq(invitedGuid[1]);
+    data.WriteByteSeq(invitedGuid[4]);
+
+    data << int32(getMSTime());
+    data << int32(0);
+    data << int32(0);
+
+    data.WriteByteSeq(invitedGuid[6]);
+    data.WriteByteSeq(invitedGuid[0]);
+    data.WriteByteSeq(invitedGuid[2]);
+    data.WriteByteSeq(invitedGuid[3]);
+    data.WriteByteSeq(invitedGuid[5]);
+    data.WriteByteSeq(invitedGuid[7]);
+
+    data.WriteString(GetPlayer()->GetName());
+
+    data << int32(0);
+
+    player->GetSession()->SendPacket(&data);
+
+    SendPartyCommandResult(_player, 0, membername, ERR_PARTY_NO_ERROR);
+
+    player->SetInviter(_player->GetLowGUID());
+}
+
+void WorldSession::HandleGroupInviteResponseOpcode(WorldPacket& recv_data)
+{
+    bool accept_invite = false;
+
+    recv_data.readBit();                    //unk
+    accept_invite = recv_data.readBit();
+
+    if (accept_invite)
+    {
+        if (_player->GetGroup() != nullptr)
+            return;
+
+        Player* group_inviter = objmgr.GetPlayer(_player->GetInviter());
+        if (!group_inviter)
+            return;
+
+        group_inviter->SetInviter(0);
+        _player->SetInviter(0);
+
+        Group* group = group_inviter->GetGroup();
+        if (group != nullptr)
+        {
+            group->AddMember(_player->m_playerInfo);
+            _player->iInstanceType = group->m_difficulty;
+            _player->SendDungeonDifficulty();
+            return;
+        }
+        else
+        {
+            group = new Group(true);
+            group->m_difficulty = group_inviter->iInstanceType;
+            group->AddMember(group_inviter->m_playerInfo);
+            group->AddMember(_player->m_playerInfo);
+            _player->iInstanceType = group->m_difficulty;
+            _player->SendDungeonDifficulty();
+
+            Instance* instance = sInstanceMgr.GetInstanceByIds(group_inviter->GetMapId(), group_inviter->GetInstanceID());
+            if (instance != nullptr && instance->m_creatorGuid == group_inviter->GetLowGUID())
+            {
+                group->m_instanceIds[instance->m_mapId][instance->m_difficulty] = instance->m_instanceId;
+                instance->m_creatorGroup = group->GetID();
+                instance->m_creatorGuid = 0;
+                instance->SaveToDB();
+            }
+        }
+    }
+    else
+    {
+        Player* group_inviter = objmgr.GetPlayer(_player->GetInviter());
+        if (!group_inviter)
+            return;
+
+        group_inviter->SetInviter(0);
+        _player->SetInviter(0);
+
+        WorldPacket data(SMSG_GROUP_DECLINE, strlen(GetPlayer()->GetName()));
+        data << GetPlayer()->GetName();
+        group_inviter->GetSession()->SendPacket(&data);
+    }
+}
+
+void WorldSession::HandleGroupSetRolesOpcode(WorldPacket& recvData)
+{
+    LOG_DEBUG("WORLD: Received CMSG_GROUP_SET_ROLES");
+
+    uint32 newRole;
+
+    ObjectGuid target_guid; // Target GUID
+
+    ObjectGuid player_guid = GetPlayer()->GetGUID();
+
+    recvData >> newRole;
+
+    target_guid[2] = recvData.readBit();
+    target_guid[6] = recvData.readBit();
+    target_guid[3] = recvData.readBit();
+    target_guid[7] = recvData.readBit();
+    target_guid[5] = recvData.readBit();
+    target_guid[1] = recvData.readBit();
+    target_guid[0] = recvData.readBit();
+    target_guid[4] = recvData.readBit();
+
+    recvData.ReadByteSeq(target_guid[6]);
+    recvData.ReadByteSeq(target_guid[4]);
+    recvData.ReadByteSeq(target_guid[1]);
+    recvData.ReadByteSeq(target_guid[3]);
+    recvData.ReadByteSeq(target_guid[0]);
+    recvData.ReadByteSeq(target_guid[5]);
+    recvData.ReadByteSeq(target_guid[2]);
+    recvData.ReadByteSeq(target_guid[7]);
+
+    WorldPacket data(SMSG_GROUP_SET_ROLE, 24);
+
+    data.writeBit(player_guid[1]);
+
+    data.writeBit(target_guid[0]);
+    data.writeBit(target_guid[2]);
+    data.writeBit(target_guid[4]);
+    data.writeBit(target_guid[7]);
+    data.writeBit(target_guid[3]);
+
+    data.writeBit(player_guid[7]);
+
+    data.writeBit(target_guid[5]);
+
+    data.writeBit(player_guid[5]);
+    data.writeBit(player_guid[4]);
+    data.writeBit(player_guid[3]);
+
+    data.writeBit(target_guid[6]);
+
+    data.writeBit(player_guid[2]);
+    data.writeBit(player_guid[6]);
+
+    data.writeBit(target_guid[1]);
+
+    data.writeBit(player_guid[0]);
+
+    data.WriteByteSeq(player_guid[7]);
+
+    data.WriteByteSeq(target_guid[3]);
+
+    data.WriteByteSeq(player_guid[6]);
+
+    data.WriteByteSeq(target_guid[4]);
+    data.WriteByteSeq(target_guid[0]);
+
+    data << uint32(newRole);        // role
+
+    data.WriteByteSeq(target_guid[6]);
+    data.WriteByteSeq(target_guid[2]);
+
+    data.WriteByteSeq(player_guid[0]);
+    data.WriteByteSeq(player_guid[4]);
+
+    data.WriteByteSeq(target_guid[1]);
+
+    data.WriteByteSeq(player_guid[3]);
+    data.WriteByteSeq(player_guid[5]);
+    data.WriteByteSeq(player_guid[2]);
+
+    data.WriteByteSeq(target_guid[5]);
+    data.WriteByteSeq(target_guid[7]);
+
+    data.WriteByteSeq(player_guid[1]);
+
+    data << uint32(0);              // unk
+
+    if (GetPlayer()->GetGroup())
+        GetPlayer()->GetGroup()->SendPacketToAll(&data);
+    else
+        SendPacket(&data);
+}
+
+void WorldSession::HandleGroupDisbandOpcode(WorldPacket& recv_data)
+{
+    Group* group = _player->GetGroup();
+    if (group == nullptr)
+        return;
+
+    if (group->GetGroupType() & GROUP_TYPE_BG)
+        return;
+
+    group->RemovePlayer(_player->m_playerInfo);
+}
+
+void WorldSession::HandleLootMethodOpcode(WorldPacket& recv_data)
+{
+    uint32 loot_method;
+    uint64 loot_master;
+    uint32 loot_threshold;
+
+    recv_data >> loot_method;
+    recv_data >> loot_master;
+    recv_data >> loot_threshold;
+
+    Group* target_group = _player->GetGroup();
+    if (target_group == nullptr)
+        return;
+
+    if (loot_method > PARTY_LOOT_NBG)
+        return;
+
+    if (loot_threshold < ITEM_QUALITY_UNCOMMON_GREEN || loot_threshold > ITEM_QUALITY_ARTIFACT_LIGHT_YELLOW)
+        return;
+
+    if (loot_method == PARTY_LOOT_MASTER && !target_group->HasMember(objmgr.GetPlayer((uint32)loot_master)))
+        return;
+
+    if (target_group->GetLeader() != _player->getPlayerInfo())
+    {
+        SendPartyCommandResult(_player, 0, "", ERR_PARTY_YOU_ARE_NOT_LEADER);
+        return;
+    }
+
+    Player* player = objmgr.GetPlayer((uint32)loot_master);
+    if (player != nullptr)
+        target_group->SetLooter(player, static_cast<uint8>(loot_method), static_cast<uint16>(loot_threshold));
+    else
+        target_group->SetLooter(_player, static_cast<uint8>(loot_method), static_cast<uint16>(loot_threshold));
+}
+
+void WorldSession::HandleConvertGroupToRaidOpcode(WorldPacket& recv_data)
+{
+    bool convert_to_raid = false;
+    recv_data >> convert_to_raid;
+
+    Group* group = _player->GetGroup();
+    if (group == nullptr)
+        return;
+
+    if (group->GetLeader() != _player->getPlayerInfo())
+    {
+        SendPartyCommandResult(_player, 0, "", ERR_PARTY_YOU_ARE_NOT_LEADER);
+        return;
+    }
+
+    //\todo handle you should convert it back to party!
+    /*if (convert_to_raid)*/
+        group->ExpandToRaid();
+    /*else
+        group->ReduceToParty();*/
+
+    SendPartyCommandResult(_player, 0, "", ERR_PARTY_NO_ERROR);
+}
+
+void WorldSession::HandleGroupRequestJoinUpdatesOpcode(WorldPacket& recv_data)
+{
+    Group* grp = _player->GetGroup();
+    if (grp)
+    {
+        WorldPacket data(SMSG_REAL_GROUP_UPDATE, 13);
+        data << uint8(grp->GetGroupType());
+        data << uint32(grp->GetMembersCount());
+        data << uint64(0);  // unk
+        SendPacket(&data);
+    }
+}
+
+/*
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
@@ -19,7 +488,7 @@
  *
  */
 
-#include "StdAfx.h"
+//#include "StdAfx.h"
 
 //////////////////////////////////////////////////////////////
 /// This function handles CMSG_GROUP_INVITE
@@ -466,25 +935,6 @@
 //        pGroup->m_targetIcons[icon] = guid;
 //    }
 //}
-
-void WorldSession::SendPartyCommandResult(Player* pPlayer, uint32 p1, std::string name, uint32 err)
-{
-    CHECK_INWORLD_RETURN;
-    // if error message do not work, please sniff it and leave me a message
-    if (pPlayer)
-    {
-        WorldPacket data;
-        data.Initialize(SMSG_PARTY_COMMAND_RESULT);
-        data << p1;
-        if (!name.length())
-            data << uint8(0);
-        else
-            data << name.c_str();
-
-        data << err;
-        pPlayer->GetSession()->SendPacket(&data);
-    }
-}
 
 //void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket& recv_data)
 //{

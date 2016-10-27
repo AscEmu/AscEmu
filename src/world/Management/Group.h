@@ -178,8 +178,6 @@ class SERVER_DECL Group
         inline void OutPacketToAll(uint16 op, uint16 len, const void* data) { OutPacketToAllButOne(op, len, data, NULL); }
         void OutPacketToAllButOne(uint16 op, uint16 len, const void* data, Player* pSkipTarget);
 
-        void SendNullUpdate(Player* pPlayer);
-
         // Destroying/Converting
         void Disband();
         Player* FindFirstPlayer();

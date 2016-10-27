@@ -893,3 +893,7 @@ void WorldSession::HandleSetActiveMoverOpcode(WorldPacket& recv_data)
 //    _player->SafeTeleport(_player->GetMapId(), _player->GetInstanceID(), vec);
 //}
 
+void WorldSession::HandleForceSpeedAckOpcodes(WorldPacket& recv_data)
+{
+    LOG_DEBUG("WORLD : Received FORCED SPEED ACK package!");
+}

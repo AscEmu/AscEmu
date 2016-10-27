@@ -409,6 +409,9 @@ class SERVER_DECL Item : public Object
         void SetText(std::string &text){ this->text = text; }
         const std::string& GetText() const{ return this->text; }
 
+        void SetInTrade(bool inTrade = true) { isInTrade = inTrade; }
+        bool IsInTrade() const { return isInTrade; }
+
     protected:
 
         ItemProperties const* m_itemProperties;
@@ -418,6 +421,8 @@ class SERVER_DECL Item : public Object
         uint32 random_prop;
         uint32 random_suffix;
         time_t ItemExpiresOn;       /// this is for existingduration
+
+        bool isInTrade;
 
     private:
         /// Enchant type 3 spellids, like engineering gadgets appliable to items.
