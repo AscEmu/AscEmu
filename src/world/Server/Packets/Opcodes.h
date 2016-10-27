@@ -1214,10 +1214,10 @@ enum Opcodes
 
     //Duel
     SMSG_DUEL_REQUESTED                                 = 0x4504,
-    SMSG_DUEL_OUTOFBOUNDS                               = 0x168,
-    SMSG_DUEL_INBOUNDS                                  = 0x169,
+    SMSG_DUEL_OUTOFBOUNDS                               = 0x0C26,
+    SMSG_DUEL_INBOUNDS                                  = 0x0A27,
     SMSG_DUEL_COMPLETE                                  = 0x2527,
-    SMSG_DUEL_WINNER                                    = 0x16B,
+    SMSG_DUEL_WINNER                                    = 0x2D36,
     SMSG_DUEL_COUNTDOWN                                 = 0x4836,
     CMSG_DUEL_ACCEPTED                                  = 0x2136,
     CMSG_DUEL_CANCELLED                                 = 0x6624,

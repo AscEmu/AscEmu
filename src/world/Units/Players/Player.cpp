@@ -8189,7 +8189,8 @@ void Player::EndDuel(uint8 WinCondition)
     //Announce Winner
     WorldPacket data(SMSG_DUEL_WINNER, 500);
     data << uint8(WinCondition);
-    data << GetName() << DuelingWith->GetName();
+    data << GetName();
+    data << DuelingWith->GetName();
     SendMessageToSet(&data, true);
 
     data.Initialize(SMSG_DUEL_COMPLETE);

@@ -82,7 +82,7 @@ void WorldSession::HandleDuelCancelledOpcode(WorldPacket& recv_data)
     _player->SetDuelTeam(0);
     _player->m_duelState = DUEL_STATE_FINISHED;
     _player->m_duelCountdownTimer = 0;
-    player_target = nullptr;
+    _player->DuelingWith = nullptr;
 
     for (uint32 i = MAX_NEGATIVE_AURAS_EXTEDED_START; i < MAX_NEGATIVE_AURAS_EXTEDED_END; ++i)
         if (_player->m_auras[i])
