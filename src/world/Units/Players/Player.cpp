@@ -14070,7 +14070,7 @@ Item* TradeData::GetSpellCastItem() const
 
 void TradeData::SetItem(TradeSlots slot, Item* item)
 {
-    ObjectGuid itemGuid = item ? item->GetGUID() : ObjectGuid();
+    ObjectGuid itemGuid = (item ? item->GetGUID() : ObjectGuid());
 
     if (mItems[slot] == itemGuid)
         return;
@@ -14092,7 +14092,7 @@ void TradeData::SetItem(TradeSlots slot, Item* item)
 
 void TradeData::SetSpell(uint32 spell_id, Item* cast_item /*= nullptr*/)
 {
-    ObjectGuid itemGuid = cast_item ? cast_item->GetGUID() : ObjectGuid();
+    ObjectGuid itemGuid = (cast_item ? cast_item->GetGUID() : ObjectGuid());
 
     if (mSpell == spell_id && mSpellCastItem == itemGuid)
         return;
