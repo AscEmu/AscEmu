@@ -4062,52 +4062,47 @@ uint8 Spell::CanCast(bool tolerate)
 
             if (m_target_constraint != NULL)
             {
+                // target is the wrong creature
+                if (target->IsCreature() && !m_target_constraint->HasCreature(target->GetEntry()) && !m_target_constraint->IsFocused(target->GetEntry()))
+                    return SPELL_FAILED_BAD_TARGETS;
 
-					// Spell has GO and/or Creature target constraint, yet target is neither -> bad target
-					if (!target->IsCreature() && !target->IsGameObject() && m_target_constraint->IsFocused(m_target_constraint->GetCreatures()) && m_target_constraint->IsFocused(m_target_constraint->GetGameobjects()))
-						return SPELL_FAILED_BAD_TARGETS;
+                // target is the wrong GO :/
+                if (target->IsGameObject() && !m_target_constraint->HasGameobject(target->GetEntry()) && !m_target_constraint->IsFocused(target->GetEntry()))
+                    return SPELL_FAILED_BAD_TARGETS;
 
-					// target is the wrong creature
-					if (target->IsCreature() && !m_target_constraint->HasCreature(target->GetEntry()) && !m_target_constraint->IsFocused(target->GetEntry()))
-						return SPELL_FAILED_BAD_TARGETS;
+                bool Target = false;
+                Creature* pCreature = nullptr;
+                size_t creatures = m_target_constraint->GetCreatures().size();
 
-					// target is the wrong GO :/
-					if (target->IsGameObject() && !m_target_constraint->HasGameobject(target->GetEntry()) && !m_target_constraint->IsFocused(target->GetEntry()))
-						return SPELL_FAILED_BAD_TARGETS;
+                // Spells for Invisibl Creatures and or Gameobjects ( Casting Spells Near them )
+                for (size_t i = 0; i < creatures; ++i)
+                if (!m_target_constraint->IsFocused(m_target_constraint->GetCreatures()[i]))
+                {
+                    Creature* pCreature = m_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->GetCreatures()[i]);
 
-					bool Target = false;
-					Creature* pCreature = nullptr;
-					size_t creatures = m_target_constraint->GetCreatures().size();
+                    if( pCreature)
+                        if (pCreature->GetDistanceSq(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()) <= 15)
+                        {
+                            target = pCreature;
+                            Target = true;
+                        }
+                }
 
-					// Spells for Invisibl Creatures and or Gameobjects ( Casting Spells Near them )
-					for (size_t i = 0; i < creatures; ++i)
-					if (!m_target_constraint->IsFocused(m_target_constraint->GetCreatures()[i]))
-					{
-						Creature* pCreature = m_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->GetCreatures()[i]);
+                GameObject* pGameobject = nullptr;
+                size_t gameobjects = m_target_constraint->GetGameobjects().size();
 
-						if( pCreature)
-							if (pCreature->GetDistanceSq(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()) <= 15)
-							{
-								target = pCreature;
-								Target = true;
-							}
-					}
+                for (size_t i = 0; i < gameobjects; ++i)
+                if (!m_target_constraint->IsFocused(m_target_constraint->GetGameobjects()[i]))
+                {
+                    pGameobject = m_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->GetGameobjects()[i]);
 
-					GameObject* pGameobject = nullptr;
-					size_t gameobjects = m_target_constraint->GetGameobjects().size();
+                    if (pGameobject)
+                        if (pGameobject->GetDistanceSq(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()) <= 15)
+                            Target = true;
+                }
 
-					for (size_t i = 0; i < gameobjects; ++i)
-					if (!m_target_constraint->IsFocused(m_target_constraint->GetGameobjects()[i]))
-					{
-						pGameobject = m_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->GetGameobjects()[i]);
-
-						if (pGameobject)
-							if (pGameobject->GetDistanceSq(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()) <= 15)
-								Target = true;
-					}
-
-					if (!Target)
-						return SPELL_FAILED_BAD_TARGETS;
+                if (!Target)
+                    return SPELL_FAILED_BAD_TARGETS;
             }
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

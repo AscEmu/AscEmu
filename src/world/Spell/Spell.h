@@ -1815,39 +1815,38 @@ class SpellTargetConstraint
                 GameobjectTargets.push_back(id);
         }
 
-		void AddFocused(uint32 value,int type)
-		{
-			m_TargetFocus.insert(std::pair< uint32, uint32 >(value, type));
-		}
+        void AddFocused(uint32 value,int type)
+        {
+            m_TargetFocus.insert(std::pair< uint32, uint32 >(value, type));
+        }
 
-		bool IsFocused(uint32 value)
-		{
-			TargetFocusMap::const_iterator itr = m_TargetFocus.find(value);
+        bool IsFocused(uint32 value)
+        {
+            TargetFocusMap::const_iterator itr = m_TargetFocus.find(value);
 
-			if (itr != m_TargetFocus.end())
-				return itr->second;
-			else
-				return nullptr;
-		
-		}
+            if (itr != m_TargetFocus.end())
+                return itr->second;
+            else
+                return false;	
+        }
 
-		// Return Creature Map
-		std::vector<int> GetCreatures()
-		{
-			return CreatureTargets;
-		}
+        // Return Creature Map
+        std::vector<int> GetCreatures()
+        {
+            return CreatureTargets;
+        }
 
-		// Return Gameobjects Map
-		std::vector<int> GetGameobjects()
-		{
-			return GameobjectTargets;
-		}
+        // Return Gameobjects Map
+        std::vector<int> GetGameobjects()
+        {
+            return GameobjectTargets;
+        }
 
     private:
 
         std::vector< int > CreatureTargets;
         std::vector< int > GameobjectTargets;
-		TargetFocusMap m_TargetFocus;
+        TargetFocusMap m_TargetFocus;
 };
 
 // Spell instance
