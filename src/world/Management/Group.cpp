@@ -559,7 +559,7 @@ void Group::ExpandToRaid()
     m_groupLock.Acquire();
     m_SubGroupCount = 8;
 
-    for (uint8 i = 1; i < m_SubGroupCount; i++)
+    for (uint8 i = 1; i < m_SubGroupCount; ++i)
         m_SubGroups[i] = new SubGroup(this, i);
 
     m_GroupType = GROUP_TYPE_RAID;

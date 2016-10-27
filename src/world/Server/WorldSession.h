@@ -368,6 +368,8 @@ class SERVER_DECL WorldSession
         void HandleGroupSetRolesOpcode(WorldPacket& recvData);
         void HandleGroupDisbandOpcode(WorldPacket& recvPacket);
         void HandleLootMethodOpcode(WorldPacket& recvPacket);
+        void HandleConvertGroupToRaidOpcode(WorldPacket& recvPacket);
+        void HandleGroupRequestJoinUpdatesOpcode(WorldPacket& recv_data);
         //void HandleGroupCancelOpcode(WorldPacket& recvPacket);
         //void HandleGroupAcceptOpcode(WorldPacket& recvPacket);
         //void HandleGroupDeclineOpcode(WorldPacket& recvPacket);
@@ -378,7 +380,6 @@ class SERVER_DECL WorldSession
         //void HandleSetPlayerIconOpcode(WorldPacket& recv_data);
 
         // Raid
-        //void HandleConvertGroupToRaidOpcode(WorldPacket& recvPacket);
         //void HandleGroupChangeSubGroup(WorldPacket& recvPacket);
         //void HandleGroupAssistantLeader(WorldPacket& recvPacket);
         void HandleRequestRaidInfoOpcode(WorldPacket& recvPacket);

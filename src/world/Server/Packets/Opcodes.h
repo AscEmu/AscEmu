@@ -205,7 +205,6 @@ enum Opcodes
     CMSG_DEL_PVP_MEDAL_CHEAT                        = 0x28A,
     CMSG_SET_PVP_TITLE                              = 0x28B,
     SMSG_PVP_CREDIT                                 = 0x28C,
-    CMSG_GROUP_RAID_CONVERT                         = 0x28E,
     CMSG_GROUP_ASSISTANT_LEADER                     = 0x28F,
     SMSG_SERVER_MESSAGE                             = 0x291,
     CMSG_MEETINGSTONE_JOIN                          = 0x292,
@@ -1239,6 +1238,8 @@ enum Opcodes
     SMSG_GROUP_SET_ROLE                                 = 0x39A6,
     CMSG_GROUP_DISBAND                                  = 0x2804,
     SMSG_GROUP_DESTROYED                                = 0x2207,
+    CMSG_GROUP_RAID_CONVERT                             = 0x6E27,
+    CMSG_GROUP_REQUEST_JOIN_UPDATES                     = 0x2583,
 
     CMSG_LOOT_METHOD                                    = 0x2F24,
 

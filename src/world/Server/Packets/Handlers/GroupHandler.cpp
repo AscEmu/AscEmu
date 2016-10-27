@@ -430,6 +430,43 @@ void WorldSession::HandleLootMethodOpcode(WorldPacket& recv_data)
         target_group->SetLooter(_player, static_cast<uint8>(loot_method), static_cast<uint16>(loot_threshold));
 }
 
+void WorldSession::HandleConvertGroupToRaidOpcode(WorldPacket& recv_data)
+{
+    bool convert_to_raid = false;
+    recv_data >> convert_to_raid;
+
+    Group* group = _player->GetGroup();
+    if (group == nullptr)
+        return;
+
+    if (group->GetLeader() != _player->getPlayerInfo())
+    {
+        SendPartyCommandResult(_player, 0, "", ERR_PARTY_YOU_ARE_NOT_LEADER);
+        return;
+    }
+
+    //\todo handle you should convert it back to party!
+    /*if (convert_to_raid)*/
+        group->ExpandToRaid();
+    /*else
+        group->ReduceToParty();*/
+
+    SendPartyCommandResult(_player, 0, "", ERR_PARTY_NO_ERROR);
+}
+
+void WorldSession::HandleGroupRequestJoinUpdatesOpcode(WorldPacket& recv_data)
+{
+    Group* grp = _player->GetGroup();
+    if (grp)
+    {
+        WorldPacket data(SMSG_REAL_GROUP_UPDATE, 13);
+        data << uint8(grp->GetGroupType());
+        data << uint32(grp->GetMembersCount());
+        data << uint64(0);  // unk
+        SendPacket(&data);
+    }
+}
+
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
