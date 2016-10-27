@@ -1,4 +1,220 @@
 /*
+Copyright (c) 2014-2016 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#include "StdAfx.h"
+
+void WorldSession::SendPartyCommandResult(Player* pPlayer, uint32 p1, std::string name, uint32 err)
+{
+    WorldPacket data(SMSG_PARTY_COMMAND_RESULT, name.size() + 18);   //guessed
+    data << uint32(p1);     // 0 = invite, 1 = uninvite, 2 = leave, 3 = swap
+
+    if (!name.length())
+        data << uint8(0);
+    else
+        data << name.c_str();
+
+    data << uint32(err);
+    data << uint32(0);      // unk
+    data << uint64(0);      // unk
+
+    SendPacket(&data);
+}
+
+void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
+{
+    std::string membername, realmname;
+    ObjectGuid unk_guid;            // unused
+
+    recv_data.read_skip<uint32>();
+    recv_data.read_skip<uint32>();
+
+    unk_guid[2] = recv_data.readBit();
+    unk_guid[7] = recv_data.readBit();
+
+    uint8 realmLen = recv_data.readBits(9);
+
+    unk_guid[3] = recv_data.readBit();
+
+    uint8 nameLen = recv_data.readBits(10);
+
+    unk_guid[5] = recv_data.readBit();
+    unk_guid[4] = recv_data.readBit();
+    unk_guid[6] = recv_data.readBit();
+    unk_guid[0] = recv_data.readBit();
+    unk_guid[1] = recv_data.readBit();
+
+    recv_data.ReadByteSeq(unk_guid[4]);
+    recv_data.ReadByteSeq(unk_guid[7]);
+    recv_data.ReadByteSeq(unk_guid[6]);
+
+    membername = recv_data.ReadString(nameLen);
+    realmname = recv_data.ReadString(realmLen);
+
+    recv_data.ReadByteSeq(unk_guid[1]);
+    recv_data.ReadByteSeq(unk_guid[0]);
+    recv_data.ReadByteSeq(unk_guid[5]);
+    recv_data.ReadByteSeq(unk_guid[3]);
+    recv_data.ReadByteSeq(unk_guid[2]);
+
+    if (_player->HasBeenInvited())
+        return;
+
+    Player* player = objmgr.GetPlayer(membername.c_str(), false);
+    if (player == nullptr)
+    {
+        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_CANNOT_FIND);
+        return;
+    }
+
+    if (_player == player)
+        return;
+
+    if (_player->InGroup() && !_player->IsGroupLeader())
+    {
+        SendPartyCommandResult(_player, 0, "", ERR_PARTY_YOU_ARE_NOT_LEADER);
+        return;
+    }
+
+    Group* group = _player->GetGroup();
+    if (group != nullptr)
+    {
+        if (group->IsFull())
+        {
+            SendPartyCommandResult(_player, 0, "", ERR_PARTY_IS_FULL);
+            return;
+        }
+    }
+
+    ObjectGuid invitedGuid = player->GetGUID();
+
+    if (player->InGroup())
+    {
+        SendPartyCommandResult(_player, player->GetGroup()->GetGroupType(), membername, ERR_PARTY_ALREADY_IN_GROUP);
+        WorldPacket data(SMSG_GROUP_INVITE, 45);
+        data.writeBit(0);
+
+        data.writeBit(invitedGuid[0]);
+        data.writeBit(invitedGuid[3]);
+        data.writeBit(invitedGuid[2]);
+
+        data.writeBit(0);               //not in group
+
+        data.writeBit(invitedGuid[6]);
+        data.writeBit(invitedGuid[5]);
+
+        data.writeBits(0, 9);
+
+        data.writeBit(invitedGuid[4]);
+
+        data.writeBits(strlen(GetPlayer()->GetName()), 7);
+
+        data.writeBits(0, 24);
+        data.writeBit(0);
+
+        data.writeBit(invitedGuid[1]);
+        data.writeBit(invitedGuid[7]);
+
+        data.flushBits();
+
+        data.WriteByteSeq(invitedGuid[1]);
+        data.WriteByteSeq(invitedGuid[4]);
+
+        data << int32(getMSTime());
+        data << int32(0);
+        data << int32(0);
+
+        data.WriteByteSeq(invitedGuid[6]);
+        data.WriteByteSeq(invitedGuid[0]);
+        data.WriteByteSeq(invitedGuid[2]);
+        data.WriteByteSeq(invitedGuid[3]);
+        data.WriteByteSeq(invitedGuid[5]);
+        data.WriteByteSeq(invitedGuid[7]);
+
+        data.WriteString(GetPlayer()->GetName());
+
+        data << int32(0);
+
+        player->GetSession()->SendPacket(&data);
+        return;
+    }
+
+    if (player->GetTeam() != _player->GetTeam() && _player->GetSession()->GetPermissionCount() == 0 && !sWorld.interfaction_group)
+    {
+        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_WRONG_FACTION);
+        return;
+    }
+
+    if (player->HasBeenInvited())
+    {
+        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_ALREADY_IN_GROUP);
+        return;
+    }
+
+    if (player->Social_IsIgnoring(_player->GetLowGUID()))
+    {
+        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_IS_IGNORING_YOU);
+        return;
+    }
+
+    if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) && !_player->GetSession()->HasPermissions())
+    {
+        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_CANNOT_FIND);
+        return;
+    }
+
+    WorldPacket data(SMSG_GROUP_INVITE, 45);
+    data.writeBit(0);
+
+    data.writeBit(invitedGuid[0]);
+    data.writeBit(invitedGuid[3]);
+    data.writeBit(invitedGuid[2]);
+
+    data.writeBit(1);               //not in group
+
+    data.writeBit(invitedGuid[6]);
+    data.writeBit(invitedGuid[5]);
+
+    data.writeBits(0, 9);
+
+    data.writeBit(invitedGuid[4]);
+
+    data.writeBits(strlen(GetPlayer()->GetName()), 7);
+    data.writeBits(0, 24);
+    data.writeBit(0);
+
+    data.writeBit(invitedGuid[1]);
+    data.writeBit(invitedGuid[7]);
+
+    data.flushBits();
+
+    data.WriteByteSeq(invitedGuid[1]);
+    data.WriteByteSeq(invitedGuid[4]);
+
+    data << int32(getMSTime());
+    data << int32(0);
+    data << int32(0);
+
+    data.WriteByteSeq(invitedGuid[6]);
+    data.WriteByteSeq(invitedGuid[0]);
+    data.WriteByteSeq(invitedGuid[2]);
+    data.WriteByteSeq(invitedGuid[3]);
+    data.WriteByteSeq(invitedGuid[5]);
+    data.WriteByteSeq(invitedGuid[7]);
+
+    data.WriteString(GetPlayer()->GetName());
+
+    data << int32(0);
+
+    player->GetSession()->SendPacket(&data);
+
+    SendPartyCommandResult(_player, 0, membername, ERR_PARTY_NO_ERROR);
+
+    player->SetInviter(_player->GetLowGUID());
+}
+
+/*
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>
  * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
@@ -19,7 +235,7 @@
  *
  */
 
-#include "StdAfx.h"
+//#include "StdAfx.h"
 
 //////////////////////////////////////////////////////////////
 /// This function handles CMSG_GROUP_INVITE
@@ -466,25 +682,6 @@
 //        pGroup->m_targetIcons[icon] = guid;
 //    }
 //}
-
-void WorldSession::SendPartyCommandResult(Player* pPlayer, uint32 p1, std::string name, uint32 err)
-{
-    CHECK_INWORLD_RETURN;
-    // if error message do not work, please sniff it and leave me a message
-    if (pPlayer)
-    {
-        WorldPacket data;
-        data.Initialize(SMSG_PARTY_COMMAND_RESULT);
-        data << p1;
-        if (!name.length())
-            data << uint8(0);
-        else
-            data << name.c_str();
-
-        data << err;
-        pPlayer->GetSession()->SendPacket(&data);
-    }
-}
 
 //void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket& recv_data)
 //{

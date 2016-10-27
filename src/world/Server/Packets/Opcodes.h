@@ -71,8 +71,7 @@ enum Opcodes
     CMSG_ITEM_QUERY_MULTIPLE                        = 0x057,
     SMSG_ITEM_QUERY_SINGLE_RESPONSE                 = 0x058,
     SMSG_ITEM_QUERY_MULTIPLE_RESPONSE               = 0x059,
-    CMSG_GROUP_INVITE                               = 0x06E,
-    SMSG_GROUP_INVITE                               = 0x06F,
+
     CMSG_GROUP_CANCEL                               = 0x070,
     SMSG_GROUP_CANCEL                               = 0x071,
     CMSG_GROUP_ACCEPT                               = 0x072,
@@ -87,7 +86,7 @@ enum Opcodes
     SMSG_GROUP_DESTROYED                            = 0x07C,
     SMSG_GROUP_LIST                                 = 0x07D,
     SMSG_PARTY_MEMBER_STATS                         = 0x07E,
-    SMSG_PARTY_COMMAND_RESULT                       = 0x07F,
+
     UMSG_UPDATE_GROUP_MEMBERS                       = 0x080,
     CMSG_DESTROY_ITEMS                              = 0x0B2,
     SMSG_GAMEOBJECT_CUSTOM_ANIM                     = 0x0B3,
@@ -1233,6 +1232,11 @@ enum Opcodes
     CMSG_SET_TRADE_ITEM                                 = 0x7B0C,
     CMSG_CLEAR_TRADE_ITEM                               = 0x7018,
     CMSG_UNACCEPT_TRADE                                 = 0x391A,
+
+    //Group
+    CMSG_GROUP_INVITE                                   = 0x0513,
+    SMSG_GROUP_INVITE                                   = 0x31B2,
+    SMSG_PARTY_COMMAND_RESULT                           = 0x6E07,
 
     //Item
     CMSG_AUTOSTORE_LOOT_ITEM                            = 0x0E34,

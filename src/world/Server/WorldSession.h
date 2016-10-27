@@ -358,7 +358,7 @@ class SERVER_DECL WorldSession
         void HandleMoveTeleportAckOpcode(WorldPacket& recv_data);
 
         /// Opcodes implemented in GroupHandler.cpp:
-        //void HandleGroupInviteOpcode(WorldPacket& recvPacket);
+        void HandleGroupInviteOpcode(WorldPacket& recvPacket);
         //void HandleGroupCancelOpcode(WorldPacket& recvPacket);
         //void HandleGroupAcceptOpcode(WorldPacket& recvPacket);
         //void HandleGroupDeclineOpcode(WorldPacket& recvPacket);
