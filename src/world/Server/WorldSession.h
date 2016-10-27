@@ -544,16 +544,22 @@ class SERVER_DECL WorldSession
         //void HandleDuelCancelled(WorldPacket& recv_data);
 
         // Trade
+    public:
+        void SendTradeResult(TradeStatus result);
+        void SendTradeUpdate(bool trade_state = true);
+        void SendCancelTrade();
+
+    protected:
         void HandleInitiateTradeOpcode(WorldPacket& recv_data);
         void HandleBeginTradeOpcode(WorldPacket& recv_data);
+        void HandleSetTradeGoldOpcode(WorldPacket& recv_data);
+        void HandleAcceptTradeOpcode(WorldPacket& recv_data);
+        void HandleCancelTradeOpcode(WorldPacket& recv_data);
+        void HandleSetTradeItemOpcode(WorldPacket& recv_data);
+        void HandleClearTradeItemOpcode(WorldPacket& recv_data);
         //void HandleBusyTrade(WorldPacket& recv_data);
         //void HandleIgnoreTrade(WorldPacket& recv_data);
-        //void HandleAcceptTrade(WorldPacket& recv_data);
         //void HandleUnacceptTrade(WorldPacket& recv_data);
-        void HandleCancelTrade(WorldPacket& recv_data);
-        //void HandleSetTradeItem(WorldPacket& recv_data);
-        //void HandleClearTradeItem(WorldPacket& recv_data);
-        //void HandleSetTradeGold(WorldPacket& recv_data);
 
         // Guild
         void HandleGuildQueryOpcode(WorldPacket& recv_data);

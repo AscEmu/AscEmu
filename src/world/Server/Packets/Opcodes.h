@@ -98,11 +98,7 @@ enum Opcodes
 
     CMSG_BUSY_TRADE                                 = 0x118,
     CMSG_IGNORE_TRADE                               = 0x119,
-    CMSG_ACCEPT_TRADE                               = 0x11A,
-    CMSG_UNACCEPT_TRADE                             = 0x11B,
-    CMSG_SET_TRADE_ITEM                             = 0x11D,
-    CMSG_CLEAR_TRADE_ITEM                           = 0x11E,
-    CMSG_SET_TRADE_GOLD                             = 0x11F,
+
     SMSG_SET_FACTION_VISIBLE                        = 0x123,
     SMSG_SET_FACTION_STANDING                       = 0x124,
     CMSG_SET_FACTION_ATWAR                          = 0x125,
@@ -721,9 +717,7 @@ enum Opcodes
     SMSG_EMOTE                                          = 0x0A34,
     CMSG_TEXT_EMOTE                                     = 0x2E24,
     SMSG_TEXT_EMOTE                                     = 0x0B05,
-    CMSG_CANCEL_TRADE                                   = 0x731E,
 
-    SMSG_TRADE_STATUS_EXTENDED                          = 0x70A2,
     SMSG_INITIALIZE_FACTIONS                            = 0x4634,
     CMSG_CHAR_CREATE                                    = 0x4A36,
     CMSG_CHAR_ENUM                                      = 0x0502,
@@ -1228,6 +1222,13 @@ enum Opcodes
     CMSG_INITIATE_TRADE                                 = 0x7916,
     SMSG_TRADE_STATUS                                   = 0x5CA3,
     CMSG_BEGIN_TRADE                                    = 0x721E,
+    CMSG_SET_TRADE_GOLD                                 = 0x3008,
+    CMSG_ACCEPT_TRADE                                   = 0x7110,
+    CMSG_CANCEL_TRADE                                   = 0x731E,
+    SMSG_TRADE_STATUS_EXTENDED                          = 0x70A2,
+    CMSG_SET_TRADE_ITEM                                 = 0x7B0C,
+    CMSG_CLEAR_TRADE_ITEM                               = 0x7018,
+    CMSG_UNACCEPT_TRADE                                 = 0x391A,
 
     //Item
     CMSG_AUTOSTORE_LOOT_ITEM                            = 0x0E34,

@@ -2781,8 +2781,8 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
             if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
             {
                 Player* p_trader = p_caster->GetTradeTarget();
-                if (p_trader != NULL)
-                    itemTarget = p_trader->getTradeItem((uint32)m_targets.m_itemTarget);
+                if (p_trader != nullptr)
+                    itemTarget = p_trader->GetTradeData()->GetTradeItem((TradeSlots)m_targets.m_itemTarget);
             }
         }
     }
@@ -2809,7 +2809,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
             {
                 Player* plr = p_caster->GetTradeTarget();
                 if (plr)
-                    itemTarget = plr->getTradeItem((uint32)guid);
+                    itemTarget = plr->GetTradeData()->GetTradeItem((TradeSlots)guid);
             }
         }
         else
@@ -3660,7 +3660,7 @@ uint8 Spell::CanCast(bool tolerate)
                     Player* t_player = p_caster->GetTradeTarget();
                     // get the targeted trade item
                     if (t_player)
-                        i_target = t_player->getTradeItem((uint32)m_targets.m_itemTarget);
+                        i_target = t_player->GetTradeData()->GetTradeItem((TradeSlots)m_targets.m_itemTarget);
                 }
             }
         }

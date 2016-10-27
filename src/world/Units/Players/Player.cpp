@@ -177,7 +177,9 @@ Player::Player(uint32 guid)
     mCreationCount(0),
     mOutOfRangeIdCount(0),
     //Trade
-    mTradeTarget(0),
+    m_TradeData(nullptr),
+    /*mTradeTarget(0),
+    mTradeAccepted(false),*/
     info(NULL), // Playercreate info
     m_AttackMsgTimer(0),
     //PVP
@@ -265,7 +267,7 @@ Player::Player(uint32 guid)
     }
 
     //Trade
-    ResetTradeVariables();
+
 
     //Tutorials
     for (i = 0; i < 8; i++)
@@ -547,19 +549,19 @@ Player::~Player()
     }
 
     Player* pTarget;
-    if (mTradeTarget != 0)
+    /*if (mTradeTarget != 0)
     {
         pTarget = GetTradeTarget();
         if (pTarget)
             pTarget->mTradeTarget = 0;
-    }
+    }*/
 
     pTarget = objmgr.GetPlayer(GetInviter());
     if (pTarget)
         pTarget->SetInviter(0);
 
     DismissActivePets();
-    mTradeTarget = 0;
+    //mTradeTarget = 0;
 
     if (DuelingWith != NULL)
         DuelingWith->DuelingWith = NULL;
@@ -4032,7 +4034,7 @@ void Player::RemoveFromWorld()
     }
 
     // Cancel trade if it's active.
-    Player* pTarget;
+    /*Player* pTarget;
     if (mTradeTarget != 0)
     {
         pTarget = GetTradeTarget();
@@ -4040,7 +4042,7 @@ void Player::RemoveFromWorld()
             pTarget->ResetTradeVariables();
 
         ResetTradeVariables();
-    }
+    }*/
 
     //stop dueling
     if (DuelingWith != NULL)
@@ -8011,62 +8013,6 @@ void Player::UpdateChannels(uint16 AreaID)
             chn->AttemptJoin(this, NULL);
         }
     }
-}
-
-void Player::SendTradeUpdate()
-{
-    Player* pTarget = GetTradeTarget();
-    if (!pTarget)
-        return;
-
-    WorldPacket data(SMSG_TRADE_STATUS_EXTENDED, 532);
-
-    data << uint8(1);
-    data << uint32(0x19);
-    data << m_tradeSequence;
-    data << m_tradeSequence++;
-    data << mTradeGold;
-    data << uint32(0);
-
-    uint8 count = 0;
-    // Items
-    for (uint32 Index = 0; Index < 7; ++Index)
-    {
-        Item* pItem = mTradeItems[Index];
-        if (pItem != 0)
-        {
-            count++;
-            ItemProperties const* pProto = pItem->GetItemProperties();
-            ARCEMU_ASSERT(pProto != NULL);
-
-            data << uint8(Index);
-
-            data << uint32(pProto->ItemId);
-            data << uint32(pProto->DisplayInfoID);
-            data << uint32(pItem->GetStackCount());    // Amount           OK
-
-            // Enchantment stuff
-            data << uint32(0);                                            // unknown
-            data << uint64(pItem->GetGiftCreatorGUID());    // gift creator     OK
-            data << uint32(pItem->GetEnchantmentId(0));    // Item Enchantment OK
-            for (uint8 i = 2; i < 5; i++)                                // Gem enchantments
-            {
-                if (pItem->GetEnchantment(i) != NULL && pItem->GetEnchantment(i)->Enchantment != NULL)
-                    data << uint32(pItem->GetEnchantment(i)->Enchantment->Id);
-                else
-                    data << uint32(0);
-            }
-            data << uint64(pItem->GetCreatorGUID());        // item creator     OK
-            data << uint32(pItem->GetCharges(0));    // Spell Charges    OK
-            data << uint32(pItem->GetItemRandomSuffixFactor());   // seems like time stamp or something like that
-            data << uint32(pItem->GetItemRandomPropertyId());
-            data << uint32(pProto->LockId);                                        // lock ID          OK
-            data << uint32(pItem->GetDurabilityMax());
-            data << uint32(pItem->GetDurability());
-        }
-    }
-    data.resize(21 + count * 73);
-    pTarget->SendPacket(&data);
 }
 
 void Player::RequestDuel(Player* pTarget)
@@ -13845,13 +13791,6 @@ void Player::SendDismountResult(uint32 result)
     GetSession()->SendPacket(&data);
 }
 
-Player* Player::GetTradeTarget()
-{
-    if (!IsInWorld())
-        return 0;
-    return m_mapMgr->GetPlayer((uint32)mTradeTarget);
-}
-
 void Player::UpdateLastSpeeds()
 {
     m_lastRunSpeed = m_runSpeed;
@@ -14097,3 +14036,86 @@ uint32 Player::CalcTalentPointsHaveSpent(uint32 spec)
 
     return points_used_up;
 } 
+
+void Player::TradeCancel(bool sendback)
+{
+    if (m_TradeData)
+    {
+        Player* trade_target = m_TradeData->GetTradeTarget();
+
+        if (sendback || trade_target == nullptr)
+        {
+            GetSession()->SendCancelTrade();
+            delete m_TradeData;
+            m_TradeData = nullptr;
+        }
+        else
+        {
+            trade_target->GetSession()->SendCancelTrade();
+            delete trade_target->m_TradeData;
+            trade_target->m_TradeData = nullptr;
+        }
+    }
+}
+
+TradeData* TradeData::GetTargetTradeData() const
+{
+    return mTradeTarget->GetTradeData();
+}
+
+Item* TradeData::GetTradeItem(TradeSlots slot) const
+{
+    return mItems[slot] ? mPlayer->GetItemInterface()->GetItemByGUID(mItems[slot]) : nullptr;
+}
+
+bool TradeData::HasTradeItem(uint64 item_guid) const
+{
+    for (uint8 i = 0; i < TRADE_SLOT_COUNT; ++i)
+        if (mItems[i] == item_guid)
+            return true;
+    return false;
+}
+
+Item* TradeData::GetSpellCastItem() const
+{
+    return mSpellCastItem ? mPlayer->GetItemInterface()->GetItemByGUID(mSpellCastItem) : nullptr;
+}
+
+void TradeData::SetItem(TradeSlots slot, Item* item)
+{
+    ObjectGuid itemGuid = item ? item->GetGUID() : ObjectGuid();
+
+    if (mItems[slot] == itemGuid)
+        return;
+
+    mItems[slot] = itemGuid;
+
+    SetAccepted(false);
+    GetTargetTradeData()->SetAccepted(false);
+
+    UpdateTrade();
+
+    //\todo
+    /*if (slot == TRADE_SLOT_NONTRADED)
+        GetTargetTradeData()->SetSpell(0);*/
+
+    //\todo
+    //SetSpell(0);
+}
+
+void TradeData::SetSpell(uint32 spell_id, Item* cast_item /*= nullptr*/)
+{
+    ObjectGuid itemGuid = cast_item ? cast_item->GetGUID() : ObjectGuid();
+
+    if (mSpell == spell_id && mSpellCastItem == itemGuid)
+        return;
+
+    mSpell = spell_id;
+    mSpellCastItem = itemGuid;
+
+    SetAccepted(false);
+    GetTargetTradeData()->SetAccepted(false);
+
+    UpdateTrade(true);                   // spell info to owner
+    UpdateTrade(false);                  // spell info to caster
+}

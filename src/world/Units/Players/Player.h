@@ -331,6 +331,49 @@ class PlayerSpec
         uint32 tp;
 };
 
+class TradeData
+{
+    public:
+
+        TradeData(Player* player, Player* trader) :
+            mPlayer(player), mTradeTarget(trader), mAccepted(false),
+            mAcceptProccess(false), mMoney(0), mSpell(0) {}
+
+        Player* GetTradeTarget() const { return mTradeTarget; }
+        TradeData* GetTargetTradeData() const;
+
+        Item* GetTradeItem(TradeSlots slot) const;
+        bool HasTradeItem(uint64 item_guid) const;
+
+        uint32 GetSpell() const { return mSpell; }
+        Item* GetSpellCastItem() const;
+        bool HasSpellCastItem() const { return !mSpellCastItem; }
+
+        uint64 GetMoney() const { return mMoney; }
+
+        void SetAccepted(bool state, bool send_both = false);
+        bool IsAccepted() const { return mAccepted; }
+
+        void SetInAcceptProcess(bool state) { mAcceptProccess = state; }
+        bool IsInAcceptProcess() const { return mAcceptProccess; }
+
+        void SetItem(TradeSlots slot, Item* item);
+        void SetSpell(uint32 spell_id, Item* cast_item = nullptr);
+        void SetMoney(uint64 money);
+
+    private:
+
+        void UpdateTrade(bool for_trader = true);
+
+        Player* mPlayer;                // trade holder
+        Player* mTradeTarget;           // trade partner
+        bool mAccepted;
+        bool mAcceptProccess;
+        uint64 mMoney;
+        uint32 mSpell;                  // non traded slot item
+        uint64 mSpellCastItem;          // spell casted by item
+        uint64 mItems[TRADE_SLOT_COUNT];
+};
 
 typedef std::set<uint32>                            SpellSet;
 typedef std::list<classScriptOverride*>             ScriptOverrideList;
@@ -919,15 +962,9 @@ class SERVER_DECL Player : public Unit
         /////////////////////////////////////////////////////////////////////////////////////////
         // Trade
         /////////////////////////////////////////////////////////////////////////////////////////
-        void SendTradeUpdate(void);
-        void ResetTradeVariables()
-        {
-            mTradeGold = 0;
-            memset(&mTradeItems, 0, sizeof(Item*) * 8);
-            mTradeStatus = 0;
-            mTradeTarget = 0;
-            m_tradeSequence = 2;
-        }
+        Player* GetTradeTarget() const { return m_TradeData ? m_TradeData->GetTradeTarget() : nullptr; }
+        TradeData* GetTradeData() const { return m_TradeData; }
+        void TradeCancel(bool sendback);
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Pets
@@ -1720,11 +1757,6 @@ class SERVER_DECL Player : public Unit
 
         void SendAreaTriggerMessage(const char* message, ...);
 
-        // Trade Target
-        Player* GetTradeTarget();
-
-        Item* getTradeItem(uint32 slot) {return mTradeItems[slot];};
-
         // Water level related stuff (they are public because they need to be accessed fast)
         /// Nose level of the character (needed for proper breathing)
         float m_noseLevel;
@@ -1830,10 +1862,7 @@ class SERVER_DECL Player : public Unit
         /////////////////////////////////////////////////////////////////////////////////////////
         // Trade
         /////////////////////////////////////////////////////////////////////////////////////////
-        Item* mTradeItems[8];
-        uint32 mTradeGold;
-        uint32 mTradeTarget;
-        uint32 mTradeStatus;
+        TradeData* m_TradeData;
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Player Class systems, info and misc things
