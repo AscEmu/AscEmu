@@ -359,6 +359,7 @@ class SERVER_DECL WorldSession
 
         /// Opcodes implemented in GroupHandler.cpp:
         void HandleGroupInviteOpcode(WorldPacket& recvPacket);
+        void HandleGroupInviteResponseOpcode(WorldPacket& recvPacket);
         //void HandleGroupCancelOpcode(WorldPacket& recvPacket);
         //void HandleGroupAcceptOpcode(WorldPacket& recvPacket);
         //void HandleGroupDeclineOpcode(WorldPacket& recvPacket);

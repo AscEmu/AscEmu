@@ -214,6 +214,67 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
     player->SetInviter(_player->GetLowGUID());
 }
 
+void WorldSession::HandleGroupInviteResponseOpcode(WorldPacket& recv_data)
+{
+    bool accept_invite = false;
+
+    recv_data.readBit();                    //unk
+    accept_invite = recv_data.readBit();
+
+    if (accept_invite)
+    {
+        if (_player->GetGroup() != nullptr)
+            return;
+
+        Player* group_inviter = objmgr.GetPlayer(_player->GetInviter());
+        if (!group_inviter)
+            return;
+
+        group_inviter->SetInviter(0);
+        _player->SetInviter(0);
+
+        Group* group = group_inviter->GetGroup();
+        if (group != nullptr)
+        {
+            group->AddMember(_player->m_playerInfo);
+            _player->iInstanceType = group->m_difficulty;
+            _player->SendDungeonDifficulty();
+            return;
+        }
+        else
+        {
+            group = new Group(true);
+            group->m_difficulty = group_inviter->iInstanceType;
+            group->AddMember(group_inviter->m_playerInfo);
+            group->AddMember(_player->m_playerInfo);
+            _player->iInstanceType = group->m_difficulty;
+            _player->SendDungeonDifficulty();
+
+            Instance* instance = sInstanceMgr.GetInstanceByIds(group_inviter->GetMapId(), group_inviter->GetInstanceID());
+            if (instance != nullptr && instance->m_creatorGuid == group_inviter->GetLowGUID())
+            {
+                group->m_instanceIds[instance->m_mapId][instance->m_difficulty] = instance->m_instanceId;
+                instance->m_creatorGroup = group->GetID();
+                instance->m_creatorGuid = 0;
+                instance->SaveToDB();
+            }
+        }
+    }
+    else
+    {
+        Player* group_inviter = objmgr.GetPlayer(_player->GetInviter());
+        if (!group_inviter)
+            return;
+
+        group_inviter->SetInviter(0);
+        _player->SetInviter(0);
+
+        WorldPacket data(SMSG_GROUP_DECLINE, strlen(GetPlayer()->GetName()));
+        data << GetPlayer()->GetName();
+        group_inviter->GetSession()->SendPacket(&data);
+    }
+}
+
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>

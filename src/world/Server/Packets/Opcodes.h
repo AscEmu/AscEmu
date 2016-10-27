@@ -74,9 +74,6 @@ enum Opcodes
 
     CMSG_GROUP_CANCEL                               = 0x070,
     SMSG_GROUP_CANCEL                               = 0x071,
-    CMSG_GROUP_ACCEPT                               = 0x072,
-    CMSG_GROUP_DECLINE                              = 0x073,
-    SMSG_GROUP_DECLINE                              = 0x074,
     CMSG_GROUP_UNINVITE                             = 0x075,
     CMSG_GROUP_UNINVITE_GUID                        = 0x076,
     SMSG_GROUP_UNINVITE                             = 0x077,
@@ -84,7 +81,7 @@ enum Opcodes
     SMSG_GROUP_SET_LEADER                           = 0x079,
     CMSG_GROUP_DISBAND                              = 0x07B,
     SMSG_GROUP_DESTROYED                            = 0x07C,
-    SMSG_GROUP_LIST                                 = 0x07D,
+
     SMSG_PARTY_MEMBER_STATS                         = 0x07E,
 
     UMSG_UPDATE_GROUP_MEMBERS                       = 0x080,
@@ -1237,6 +1234,9 @@ enum Opcodes
     CMSG_GROUP_INVITE                                   = 0x0513,
     SMSG_GROUP_INVITE                                   = 0x31B2,
     SMSG_PARTY_COMMAND_RESULT                           = 0x6E07,
+    CMSG_GROUP_INVITE_RESPONSE                          = 0x0410,
+    SMSG_GROUP_DECLINE                                  = 0x6835,
+    SMSG_GROUP_LIST                                     = 0x4C24,
 
     //Item
     CMSG_AUTOSTORE_LOOT_ITEM                            = 0x0E34,

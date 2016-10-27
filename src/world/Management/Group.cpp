@@ -207,7 +207,7 @@ void Group::Update()
             m_Looter = pNewLeader->getPlayerInfo();
     }
 
-    WorldPacket data(50 + (m_MemberCount * 20));
+    
     GroupMembersSet::iterator itr1, itr2;
 
     uint8 i = 0, j = 0;
@@ -234,7 +234,7 @@ void Group::Update()
                     continue;
                 }
 
-                data.Initialize(SMSG_GROUP_LIST);
+                WorldPacket data(SMSG_GROUP_LIST, 50 + (m_MemberCount * 20));
                 data << uint8(m_GroupType);
                 data << uint8((*itr1)->subGroup);
 
@@ -256,6 +256,7 @@ void Group::Update()
                 {
                     data << uint8(sLfgMgr.GetState(GetID()) == LFG_STATE_FINISHED_DUNGEON ? 2 : 0);
 					data << uint32(sLfgMgr.GetDungeon(GetID()));
+                    data << uint8(0);   //unk
                 }
 
                 data << uint64(GetID());            // Group guid
@@ -285,9 +286,9 @@ void Group::Update()
                                 data << (*itr2)->guid << uint32(0);	// highguid
 
                             if ((*itr2)->m_loggedInPlayer != NULL)
-                                data << uint8(1);
+                                data << uint8(1);       // 1 = online, 2 = pvp
                             else
-                                data << uint8(0);
+                                data << uint8(0);       //offline
 
                             data << uint8((*itr2)->subGroup);
 
