@@ -22,6 +22,20 @@ void WorldSession::SendPartyCommandResult(Player* pPlayer, uint32 p1, std::strin
     SendPacket(&data);
 }
 
+void WorldSession::SendEmptyGroupList(Player* player)
+{
+    WorldPacket data(SMSG_GROUP_LIST, 28);
+    data << uint8(0x10);
+    data << uint8(0);
+    data << uint8(0);
+    data << uint8(0);
+    data << uint64(0);
+    data << uint32(0);
+    data << uint32(0);
+    data << uint64(0);
+    player->GetSession()->SendPacket(&data);
+}
+
 void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
 {
     std::string membername, realmname;
@@ -366,6 +380,54 @@ void WorldSession::HandleGroupSetRolesOpcode(WorldPacket& recvData)
         GetPlayer()->GetGroup()->SendPacketToAll(&data);
     else
         SendPacket(&data);
+}
+
+void WorldSession::HandleGroupDisbandOpcode(WorldPacket& recv_data)
+{
+    Group* group = _player->GetGroup();
+    if (group == nullptr)
+        return;
+
+    if (group->GetGroupType() & GROUP_TYPE_BG)
+        return;
+
+    group->RemovePlayer(_player->m_playerInfo);
+}
+
+void WorldSession::HandleLootMethodOpcode(WorldPacket& recv_data)
+{
+    uint32 loot_method;
+    uint64 loot_master;
+    uint32 loot_threshold;
+
+    recv_data >> loot_method;
+    recv_data >> loot_master;
+    recv_data >> loot_threshold;
+
+    Group* target_group = _player->GetGroup();
+    if (target_group == nullptr)
+        return;
+
+    if (loot_method > PARTY_LOOT_NBG)
+        return;
+
+    if (loot_threshold < ITEM_QUALITY_UNCOMMON_GREEN || loot_threshold > ITEM_QUALITY_ARTIFACT_LIGHT_YELLOW)
+        return;
+
+    if (loot_method == PARTY_LOOT_MASTER && !target_group->HasMember(objmgr.GetPlayer((uint32)loot_master)))
+        return;
+
+    if (target_group->GetLeader() != _player->getPlayerInfo())
+    {
+        SendPartyCommandResult(_player, 0, "", ERR_PARTY_YOU_ARE_NOT_LEADER);
+        return;
+    }
+
+    Player* player = objmgr.GetPlayer((uint32)loot_master);
+    if (player != nullptr)
+        target_group->SetLooter(player, static_cast<uint8>(loot_method), static_cast<uint16>(loot_threshold));
+    else
+        target_group->SetLooter(_player, static_cast<uint8>(loot_method), static_cast<uint16>(loot_threshold));
 }
 
 /*

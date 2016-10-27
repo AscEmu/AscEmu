@@ -388,7 +388,7 @@ void SubGroup::Disband()
                     data2.put(5, uint32((*itr)->m_loggedInPlayer->iInstanceType));
                     (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data2);
                     (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data);
-                    (*itr)->m_Group->SendNullUpdate((*itr)->m_loggedInPlayer);   // cebernic: panel refresh.
+                    (*itr)->m_loggedInPlayer->GetSession()->SendEmptyGroupList((*itr)->m_loggedInPlayer);
                 }
             }
 
@@ -436,7 +436,6 @@ void Group::RemovePlayer(PlayerInfo* info)
     if (info == nullptr)
         return;
 
-    WorldPacket data(50);
     Player* pPlayer = info->m_loggedInPlayer;
 
     m_groupLock.Acquire();
@@ -488,16 +487,12 @@ void Group::RemovePlayer(PlayerInfo* info)
     {
         if (pPlayer->GetSession() != NULL)
         {
-            SendNullUpdate(pPlayer);
-
-            data.SetOpcode(SMSG_GROUP_DESTROYED);
+            WorldPacket data(SMSG_GROUP_DESTROYED, 0);
             pPlayer->GetSession()->SendPacket(&data);
 
-            data.Initialize(SMSG_PARTY_COMMAND_RESULT);
-            data << uint32(2);
-            data << uint8(0);
-            data << uint32(0);  // you leave the group
-            pPlayer->GetSession()->SendPacket(&data);
+            pPlayer->GetSession()->SendPartyCommandResult(pPlayer, 2, pPlayer->GetName(), ERR_PARTY_NO_ERROR);
+
+            pPlayer->GetSession()->SendEmptyGroupList(pPlayer);
         }
 
         //Remove some party auras.
@@ -575,13 +570,14 @@ void Group::ExpandToRaid()
 
 void Group::SetLooter(Player* pPlayer, uint8 method, uint16 threshold)
 {
-    if (pPlayer != NULL)
+    if (pPlayer != nullptr)
     {
         m_LootMethod = method;
         m_Looter = pPlayer->getPlayerInfo();
         m_LootThreshold = threshold;
         m_dirty = true;
     }
+
     Update();
 }
 
@@ -713,14 +709,6 @@ void Group::MovePlayer(PlayerInfo* info, uint8 subgroup)
 
     Update();
     m_groupLock.Release();
-}
-
-void Group::SendNullUpdate(Player* pPlayer)
-{
-    // this packet is 28 bytes long.		// AS OF 3.3
-    uint8 buffer[28];
-    memset(buffer, 0, 28);
-    pPlayer->GetSession()->OutPacket(SMSG_GROUP_LIST, 28, buffer);
 }
 
 void Group::LoadFromDB(Field* fields)

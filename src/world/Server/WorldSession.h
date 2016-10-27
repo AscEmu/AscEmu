@@ -358,20 +358,24 @@ class SERVER_DECL WorldSession
         void HandleMoveTeleportAckOpcode(WorldPacket& recv_data);
 
         /// Opcodes implemented in GroupHandler.cpp:
+    public:
+        void SendPartyCommandResult(Player* pPlayer, uint32 p1, std::string name, uint32 err);
+        void SendEmptyGroupList(Player* player);
+
+    private:
         void HandleGroupInviteOpcode(WorldPacket& recvPacket);
         void HandleGroupInviteResponseOpcode(WorldPacket& recvPacket);
         void HandleGroupSetRolesOpcode(WorldPacket& recvData);
+        void HandleGroupDisbandOpcode(WorldPacket& recvPacket);
+        void HandleLootMethodOpcode(WorldPacket& recvPacket);
         //void HandleGroupCancelOpcode(WorldPacket& recvPacket);
         //void HandleGroupAcceptOpcode(WorldPacket& recvPacket);
         //void HandleGroupDeclineOpcode(WorldPacket& recvPacket);
         //void HandleGroupUninviteOpcode(WorldPacket& recvPacket);
         //void HandleGroupUninviteGuidOpcode(WorldPacket& recvPacket);
         //void HandleGroupSetLeaderOpcode(WorldPacket& recvPacket);
-        //void HandleGroupDisbandOpcode(WorldPacket& recvPacket);
-        //void HandleLootMethodOpcode(WorldPacket& recvPacket);
         //void HandleMinimapPingOpcode(WorldPacket& recvPacket);
         //void HandleSetPlayerIconOpcode(WorldPacket& recv_data);
-        void SendPartyCommandResult(Player* pPlayer, uint32 p1, std::string name, uint32 err);
 
         // Raid
         //void HandleConvertGroupToRaidOpcode(WorldPacket& recvPacket);

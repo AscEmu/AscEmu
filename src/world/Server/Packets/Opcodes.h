@@ -79,8 +79,6 @@ enum Opcodes
     SMSG_GROUP_UNINVITE                             = 0x077,
     CMSG_GROUP_SET_LEADER                           = 0x078,
     SMSG_GROUP_SET_LEADER                           = 0x079,
-    CMSG_GROUP_DISBAND                              = 0x07B,
-    SMSG_GROUP_DESTROYED                            = 0x07C,
 
     SMSG_PARTY_MEMBER_STATS                         = 0x07E,
 
@@ -1239,6 +1237,10 @@ enum Opcodes
     SMSG_GROUP_LIST                                     = 0x4C24,
     CMSG_GROUP_SET_ROLES                                = 0x25B1,
     SMSG_GROUP_SET_ROLE                                 = 0x39A6,
+    CMSG_GROUP_DISBAND                                  = 0x2804,
+    SMSG_GROUP_DESTROYED                                = 0x2207,
+
+    CMSG_LOOT_METHOD                                    = 0x2F24,
 
     //Item
     CMSG_AUTOSTORE_LOOT_ITEM                            = 0x0E34,
@@ -1280,7 +1282,6 @@ enum Opcodes
     SMSG_QUEST_POI_QUERY_RESPONSE                       = 0x6304,
 
     //Loot
-    CMSG_LOOT_METHOD                                    = 0x2F24,
     CMSG_LOOT                                           = 0x0127,
     CMSG_LOOT_MONEY                                     = 0x6227,
     CMSG_LOOT_RELEASE                                   = 0x2007,
