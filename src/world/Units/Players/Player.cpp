@@ -178,8 +178,7 @@ Player::Player(uint32 guid)
     mOutOfRangeIdCount(0),
     //Trade
     m_TradeData(nullptr),
-    /*mTradeTarget(0),
-    mTradeAccepted(false),*/
+
     info(NULL), // Playercreate info
     m_AttackMsgTimer(0),
     //PVP
@@ -265,9 +264,6 @@ Player::Player(uint32 guid)
     {
         MechanicDurationPctMod[i] = 0;
     }
-
-    //Trade
-
 
     //Tutorials
     for (i = 0; i < 8; i++)
@@ -548,20 +544,16 @@ Player::~Player()
             m_session->Disconnect();
     }
 
-    Player* pTarget;
-    /*if (mTradeTarget != 0)
+    if (m_TradeData != nullptr)
     {
-        pTarget = GetTradeTarget();
-        if (pTarget)
-            pTarget->mTradeTarget = 0;
-    }*/
+        TradeCancel(false);
+    }
 
-    pTarget = objmgr.GetPlayer(GetInviter());
+    Player* pTarget = objmgr.GetPlayer(GetInviter());
     if (pTarget)
         pTarget->SetInviter(0);
 
     DismissActivePets();
-    //mTradeTarget = 0;
 
     if (DuelingWith != NULL)
         DuelingWith->DuelingWith = NULL;
@@ -4034,15 +4026,10 @@ void Player::RemoveFromWorld()
     }
 
     // Cancel trade if it's active.
-    /*Player* pTarget;
-    if (mTradeTarget != 0)
+    if (m_TradeData != nullptr)
     {
-        pTarget = GetTradeTarget();
-        if (pTarget)
-            pTarget->ResetTradeVariables();
-
-        ResetTradeVariables();
-    }*/
+        TradeCancel(false);
+    }
 
     //stop dueling
     if (DuelingWith != NULL)
