@@ -1237,6 +1237,8 @@ enum Opcodes
     CMSG_GROUP_INVITE_RESPONSE                          = 0x0410,
     SMSG_GROUP_DECLINE                                  = 0x6835,
     SMSG_GROUP_LIST                                     = 0x4C24,
+    CMSG_GROUP_SET_ROLES                                = 0x25B1,
+    SMSG_GROUP_SET_ROLE                                 = 0x39A6,
 
     //Item
     CMSG_AUTOSTORE_LOOT_ITEM                            = 0x0E34,

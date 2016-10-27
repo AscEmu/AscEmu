@@ -275,6 +275,99 @@ void WorldSession::HandleGroupInviteResponseOpcode(WorldPacket& recv_data)
     }
 }
 
+void WorldSession::HandleGroupSetRolesOpcode(WorldPacket& recvData)
+{
+    LOG_DEBUG("WORLD: Received CMSG_GROUP_SET_ROLES");
+
+    uint32 newRole;
+
+    ObjectGuid target_guid; // Target GUID
+
+    ObjectGuid player_guid = GetPlayer()->GetGUID();
+
+    recvData >> newRole;
+
+    target_guid[2] = recvData.readBit();
+    target_guid[6] = recvData.readBit();
+    target_guid[3] = recvData.readBit();
+    target_guid[7] = recvData.readBit();
+    target_guid[5] = recvData.readBit();
+    target_guid[1] = recvData.readBit();
+    target_guid[0] = recvData.readBit();
+    target_guid[4] = recvData.readBit();
+
+    recvData.ReadByteSeq(target_guid[6]);
+    recvData.ReadByteSeq(target_guid[4]);
+    recvData.ReadByteSeq(target_guid[1]);
+    recvData.ReadByteSeq(target_guid[3]);
+    recvData.ReadByteSeq(target_guid[0]);
+    recvData.ReadByteSeq(target_guid[5]);
+    recvData.ReadByteSeq(target_guid[2]);
+    recvData.ReadByteSeq(target_guid[7]);
+
+    WorldPacket data(SMSG_GROUP_SET_ROLE, 24);
+
+    data.writeBit(player_guid[1]);
+
+    data.writeBit(target_guid[0]);
+    data.writeBit(target_guid[2]);
+    data.writeBit(target_guid[4]);
+    data.writeBit(target_guid[7]);
+    data.writeBit(target_guid[3]);
+
+    data.writeBit(player_guid[7]);
+
+    data.writeBit(target_guid[5]);
+
+    data.writeBit(player_guid[5]);
+    data.writeBit(player_guid[4]);
+    data.writeBit(player_guid[3]);
+
+    data.writeBit(target_guid[6]);
+
+    data.writeBit(player_guid[2]);
+    data.writeBit(player_guid[6]);
+
+    data.writeBit(target_guid[1]);
+
+    data.writeBit(player_guid[0]);
+
+    data.WriteByteSeq(player_guid[7]);
+
+    data.WriteByteSeq(target_guid[3]);
+
+    data.WriteByteSeq(player_guid[6]);
+
+    data.WriteByteSeq(target_guid[4]);
+    data.WriteByteSeq(target_guid[0]);
+
+    data << uint32(newRole);        // role
+
+    data.WriteByteSeq(target_guid[6]);
+    data.WriteByteSeq(target_guid[2]);
+
+    data.WriteByteSeq(player_guid[0]);
+    data.WriteByteSeq(player_guid[4]);
+
+    data.WriteByteSeq(target_guid[1]);
+
+    data.WriteByteSeq(player_guid[3]);
+    data.WriteByteSeq(player_guid[5]);
+    data.WriteByteSeq(player_guid[2]);
+
+    data.WriteByteSeq(target_guid[5]);
+    data.WriteByteSeq(target_guid[7]);
+
+    data.WriteByteSeq(player_guid[1]);
+
+    data << uint32(0);              // unk
+
+    if (GetPlayer()->GetGroup())
+        GetPlayer()->GetGroup()->SendPacketToAll(&data);
+    else
+        SendPacket(&data);
+}
+
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
  * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org/>

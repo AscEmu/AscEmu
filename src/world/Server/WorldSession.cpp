@@ -734,6 +734,7 @@ void WorldSession::InitPacketHandlerTable()
     //// Groups / Raids
     WorldPacketHandlers[CMSG_GROUP_INVITE].handler = &WorldSession::HandleGroupInviteOpcode;
     WorldPacketHandlers[CMSG_GROUP_INVITE_RESPONSE].handler = &WorldSession::HandleGroupInviteResponseOpcode;
+    WorldPacketHandlers[CMSG_GROUP_SET_ROLES].handler = &WorldSession::HandleGroupSetRolesOpcode;
     //WorldPacketHandlers[CMSG_GROUP_CANCEL].handler = &WorldSession::HandleGroupCancelOpcode;
     //WorldPacketHandlers[CMSG_GROUP_ACCEPT].handler = &WorldSession::HandleGroupAcceptOpcode;
     //WorldPacketHandlers[CMSG_GROUP_DECLINE].handler = &WorldSession::HandleGroupDeclineOpcode;
