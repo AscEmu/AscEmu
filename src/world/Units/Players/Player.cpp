@@ -8041,8 +8041,8 @@ void Player::RequestDuel(Player* pTarget)
     pGameObj->PushToWorld(m_mapMgr);
 
     WorldPacket data(SMSG_DUEL_REQUESTED, 16);
-    data << pGameObj->GetGUID();
-    data << GetGUID();
+    data << uint64(pGameObj->GetGUID());
+    data << uint64(GetGUID());
     pTarget->GetSession()->SendPacket(&data);
 }
 

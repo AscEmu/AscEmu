@@ -118,13 +118,7 @@ enum Opcodes
     
     SMSG_CLIENT_CONTROL_UPDATE                      = 0x159,
     SMSG_ITEM_PUSH_RESULT                           = 0x166,
-    SMSG_DUEL_REQUESTED                             = 0x167,
-    SMSG_DUEL_OUTOFBOUNDS                           = 0x168,
-    SMSG_DUEL_INBOUNDS                              = 0x169,
-    SMSG_DUEL_COMPLETE                              = 0x16A,
-    SMSG_DUEL_WINNER                                = 0x16B,
-    CMSG_DUEL_ACCEPTED                              = 0x16C,
-    CMSG_DUEL_CANCELLED                             = 0x16D,
+    
     SMSG_MOUNTRESULT                                = 0x16E,
     SMSG_DISMOUNTRESULT                             = 0x16F,
     SMSG_PUREMOUNT_CANCELLED_OBSOLETE               = 0x170,
@@ -242,7 +236,7 @@ enum Opcodes
     SMSG_FEIGN_DEATH_RESISTED                       = 0x2B4,
     CMSG_RUN_SCRIPT                                 = 0x2B5,
     SMSG_SCRIPT_MESSAGE                             = 0x2B6,
-    SMSG_DUEL_COUNTDOWN                             = 0x2B7,
+    
     CMSG_TOGGLE_HELM                                = 0x2B9,
     CMSG_TOGGLE_CLOAK                               = 0x2BA,
     SMSG_LFG_ROLE_CHOSEN                            = 0x2BB,
@@ -1217,6 +1211,16 @@ enum Opcodes
     SMSG_FEATURE_SYSTEM_STATUS                          = 0x3DB7,
     SMSG_LEARNED_DANCE_MOVES                            = 0x0E05,
     CMSG_TOGGLE_PVP                                     = 0x6815,
+
+    //Duel
+    SMSG_DUEL_REQUESTED                                 = 0x4504,
+    SMSG_DUEL_OUTOFBOUNDS                               = 0x168,
+    SMSG_DUEL_INBOUNDS                                  = 0x169,
+    SMSG_DUEL_COMPLETE                                  = 0x2527,
+    SMSG_DUEL_WINNER                                    = 0x16B,
+    SMSG_DUEL_COUNTDOWN                                 = 0x4836,
+    CMSG_DUEL_ACCEPTED                                  = 0x2136,
+    CMSG_DUEL_CANCELLED                                 = 0x6624,
 
     //Trade
     CMSG_INITIATE_TRADE                                 = 0x7916,
