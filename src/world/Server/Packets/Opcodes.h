@@ -1183,8 +1183,8 @@ enum Opcodes
     SMSG_CANCEL_COMBAT                                  = 0x4F04,
 
     SMSG_TALENTS_INFO                                   = 0x6F26,
-    CMSG_LEARN_PREVIEW_TALENTS                          = 0x2415,
-    CMSG_LEARN_TALENT                                   = 0x6E24,
+    
+    
     CMSG_LEARN_PREVIEW_TALENTS_PET                      = 0x0000,
     MSG_TALENT_WIPE_CONFIRM                             = 0x0107,
     CMSG_PET_LEARN_TALENT                               = 0x0000,
@@ -1204,6 +1204,10 @@ enum Opcodes
     SMSG_FEATURE_SYSTEM_STATUS                          = 0x3DB7,
     SMSG_LEARNED_DANCE_MOVES                            = 0x0E05,
     CMSG_TOGGLE_PVP                                     = 0x6815,
+
+    //Skills
+    CMSG_LEARN_TALENT                                   = 0x6E24,
+    CMSG_LEARN_PREVIEW_TALENTS                          = 0x2415,
 
     //Duel
     SMSG_DUEL_REQUESTED                                 = 0x4504,

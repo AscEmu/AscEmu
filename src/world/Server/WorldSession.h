@@ -484,9 +484,9 @@ class SERVER_DECL WorldSession
         //void HandleUpdateProjectilePosition(WorldPacket& recv_data);
 
         /// Skill opcodes (SkillHandler.spp)
-        //void HandleSkillLevelUpOpcode(WorldPacket& recvPacket);
         void HandleLearnTalentOpcode(WorldPacket& recvPacket);
-        void HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket);
+        void HandleLearnPreviewTalentsOpcode(WorldPacket& recv_data);
+        //void HandleSkillLevelUpOpcode(WorldPacket& recvPacket);
         void HandleUnlearnTalents(WorldPacket& recv_data);
 
         /// Quest opcodes (QuestHandler.cpp)
