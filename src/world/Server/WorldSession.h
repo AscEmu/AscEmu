@@ -483,11 +483,14 @@ class SERVER_DECL WorldSession
         //void HandleCancelTotem(WorldPacket& recv_data);
         //void HandleUpdateProjectilePosition(WorldPacket& recv_data);
 
-        /// Skill opcodes (SkillHandler.spp)
+        /// Skill/Talent opcodes (SkillHandler.spp)
         void HandleLearnTalentOpcode(WorldPacket& recvPacket);
         void HandleLearnPreviewTalentsOpcode(WorldPacket& recv_data);
+        void HandleTalentWipeConfirmOpcode(WorldPacket& recv_data);
+        void HandleUnlearnSkillOpcode(WorldPacket& recv_data);
         //void HandleSkillLevelUpOpcode(WorldPacket& recvPacket);
-        void HandleUnlearnTalents(WorldPacket& recv_data);
+
+        void HandlePetLearnTalentOpcode(WorldPacket& recv_data);
 
         /// Quest opcodes (QuestHandler.cpp)
         void HandleQuestgiverStatusQueryOpcode(WorldPacket& recvPacket);
@@ -657,7 +660,6 @@ class SERVER_DECL WorldSession
         //void HandlePetUnlearn(WorldPacket& recv_data);
         void HandlePetSpellAutocast(WorldPacket& recv_data);
         //void HandlePetCancelAura(WorldPacket& recv_data);
-        //void HandlePetLearnTalent(WorldPacket& recv_data);
         //void HandleDismissCritter(WorldPacket& recv_data);
 
         // Battleground
@@ -689,7 +691,6 @@ class SERVER_DECL WorldSession
         //void HandleMountSpecialAnimOpcode(WorldPacket& recv_data);
 
         //void HandleSelfResurrectOpcode(WorldPacket& recv_data);
-        //void HandleUnlearnSkillOpcode(WorldPacket& recv_data);
         //void HandleRandomRollOpcode(WorldPacket& recv_data);
         //void HandleOpenItemOpcode(WorldPacket& recv_data);
         void HandleRequestHotfix(WorldPacket& recv_data);

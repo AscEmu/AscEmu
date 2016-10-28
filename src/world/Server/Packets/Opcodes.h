@@ -150,11 +150,9 @@ enum Opcodes
     SMSG_RWHOIS                                     = 0x1FE,
     SMSG_LFG_PLAYER_REWARD                          = 0x1FF,
     SMSG_LFG_TELEPORT_DENIED                        = 0x200,
-    CMSG_UNLEARN_SKILL                              = 0x202,
     CMSG_DECHARGE                                   = 0x204,
     CMSG_REQUEST_ACCOUNT_DATA                       = 0x20A,
     SMSG_CLEAR_FAR_SIGHT_IMMEDIATE                  = 0x20D,
-    CMSG_UNLEARN_TALENTS                            = 0x213,
     SMSG_GAMEOBJECT_SPAWN_ANIM_OBSOLETE             = 0x214,
     CMSG_SET_STAT_CHEAT                             = 0x21D,
     SMSG_SET_REST_START_OBSOLETE                    = 0x21E,
@@ -1068,7 +1066,7 @@ enum Opcodes
     CMSG_NO_SPELL_VARIANCE                              = 0x1417,
     SMSG_SEND_UNLEARN_SPELLS                            = 0x4E25,
     SMSG_NOTIFY_DEST_LOC_SPELL_CAST                     = 0x148F,
-    SMSG_PET_LEARNED_SPELL                              = 0x0507, 
+     
     SMSG_PET_UNLEARNED_SPELL                            = 0x6A04,
     CMSG_LEARN_SPELL                                    = 0x1011,
     CMSG_CANCEL_TEMP_ENCHANTMENT                        = 0x6C37,
@@ -1182,13 +1180,6 @@ enum Opcodes
     SMSG_DURABILITY_DAMAGE_DEATH                        = 0x4C27,
     SMSG_CANCEL_COMBAT                                  = 0x4F04,
 
-    SMSG_TALENTS_INFO                                   = 0x6F26,
-    
-    
-    CMSG_LEARN_PREVIEW_TALENTS_PET                      = 0x0000,
-    MSG_TALENT_WIPE_CONFIRM                             = 0x0107,
-    CMSG_PET_LEARN_TALENT                               = 0x0000,
-    SMSG_TALENTS_INVOLUNTARILY_RESET                    = 0x2C27,
     CMSG_WORLD_STATE_UI_TIMER_UPDATE                    = 0x4605,
     SMSG_WORLD_STATE_UI_TIMER_UPDATE                    = 0x4A14,
     SMSG_PAUSE_MIRROR_TIMER                             = 0x4015,
@@ -1208,6 +1199,14 @@ enum Opcodes
     //Skills
     CMSG_LEARN_TALENT                                   = 0x6E24,
     CMSG_LEARN_PREVIEW_TALENTS                          = 0x2415,
+    SMSG_TALENTS_INFO                                   = 0x6F26,   // partially updated
+    MSG_TALENT_WIPE_CONFIRM                             = 0x0107,
+    SMSG_TALENTS_INVOLUNTARILY_RESET                    = 0x2C27,   // not implemented
+    CMSG_UNLEARN_SKILL                                  = 0x6106,
+
+    CMSG_PET_LEARN_TALENT                               = 0x6725,
+    SMSG_PET_LEARNED_SPELL                              = 0x0507,
+    CMSG_LEARN_PREVIEW_TALENTS_PET                      = 0x6E24,   // not implemented
 
     //Duel
     SMSG_DUEL_REQUESTED                                 = 0x4504,
@@ -1467,7 +1466,6 @@ enum Opcodes
     UMSG_DELETE_GUILD_CHARTER                           = 0x0000,
     CMSG_GUILD_SET_PUBLIC_NOTE                          = 0x0000,
     CMSG_GUILD_SET_OFFICER_NOTE                         = 0x0000,
-    CMSG_LEARN_TALENTS_MULTIPLE                         = 0x0000,
     CMSG_SET_GRANTABLE_LEVELS                           = 0x0000,
     CMSG_QUESTGIVER_QUEST_AUTOLAUNCH                    = 0x0000,
     CMSG_QUESTGIVER_CANCEL                              = 0x0000,

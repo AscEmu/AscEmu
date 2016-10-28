@@ -1220,7 +1220,11 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
     }
 
     if (showLearnSpell && m_Owner && m_Owner->GetSession() && !(sp->Attributes & ATTRIBUTES_NO_CAST))
-        m_Owner->GetSession()->OutPacket(SMSG_PET_LEARNED_SPELL, 2, &sp->Id);
+    {
+        WorldPacket data(SMSG_PET_LEARNED_SPELL, 4);
+        data << uint32(sp->Id);
+        m_Owner->GetSession()->SendPacket(&data);
+    }
 
     if (IsInWorld())
         SendSpellsToOwner();
