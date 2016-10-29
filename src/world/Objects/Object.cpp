@@ -2045,10 +2045,10 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
     if (Damage > Target->GetUInt32Value(UNIT_FIELD_MAXHEALTH))
         Overkill = Damage - Target->GetUInt32Value(UNIT_FIELD_HEALTH);
 
-    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 16 + 45);
+    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 64 * 12);
     data << uint32(HitStatus);
-    data << Caster->GetNewGUID();
-    data << Target->GetNewGUID();
+    data.appendPackGUID(Caster->GetGUID());
+    data.appendPackGUID(Target->GetGUID());
     data << uint32(Damage);                 // Realdamage
     data << uint32(Overkill);               // Overkill
     data << uint8(1);                       // Damage type counter / swing type

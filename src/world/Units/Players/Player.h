@@ -1289,6 +1289,7 @@ class SERVER_DECL Player : public Unit
         uint32* GetPlayedtime() { return m_playedtime; };
         void CalcStat(uint32 t);
         float CalcRating(uint32 t);
+        float GetRatingMultiplier(uint32 t);
         void RegenerateMana(bool is_interrupted);
         void RegenerateHealth(bool inCombat);
         void RegenerateEnergy();

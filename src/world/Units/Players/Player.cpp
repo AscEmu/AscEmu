@@ -8403,18 +8403,27 @@ void Player::BroadcastMessage(const char* Format, ...)
 
 float Player::CalcRating(uint32 index)
 {
-    uint32 relative_index = index - (PLAYER_FIELD_COMBAT_RATING_1);
-    float rating = float(m_uint32Values[index]);
+    //index = index + PLAYER_FIELD_COMBAT_RATING_1
+    return float(GetUInt32Value(index)) * GetRatingMultiplier(index);
+}
 
+float Player::GetRatingMultiplier(uint32 index)
+{
     uint32 level = getLevel();
     if (level > 100)
         level = 100;
 
-    auto combat_rating_entry = sGtCombatRatingsStore.LookupEntry(relative_index * 100 + level - 1);
-    if (combat_rating_entry == nullptr)
-        return rating;
-    else
-        return (rating / combat_rating_entry->val);
+    uint32 relative_index = index - (PLAYER_FIELD_COMBAT_RATING_1);
+
+    DBC::Structures::GtCombatRatingsEntry const* combat_rating = sGtCombatRatingsStore.LookupEntry(relative_index * 100 + level - 1);
+    DBC::Structures::GtOCTClassCombatRatingScalarEntry const* class_combat_rating_scalar = sGtOCTClassCombatRatingScalarStore.LookupEntry((getClass() - 1) * 100 + relative_index + 1);
+    if (!combat_rating || !class_combat_rating_scalar)
+        return 1.0f;
+
+    if (relative_index == 15)
+        return 1.0f;
+
+    return class_combat_rating_scalar->val / combat_rating->val;
 }
 
 bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, float X, float Y, float Z, float O)

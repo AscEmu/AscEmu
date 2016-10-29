@@ -3196,7 +3196,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         {
             case MELEE:   // melee main hand weapon
                 it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
-                self_skill = float2int32(pr->CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_MAIN_HAND_SKILL));
+                self_skill = float2int32(pr->CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_MAIN_HAND_SKILL)) + 375;
                 if (it)
                 {
                     dmg.school_type = it->GetItemProperties()->Damage[0].Type;
@@ -3206,7 +3206,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 break;
             case OFFHAND: // melee offhand weapon (dualwield)
                 it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
-                self_skill = float2int32(pr->CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_OFF_HAND_SKILL));
+                self_skill = float2int32(pr->CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_OFF_HAND_SKILL)) + 375;
                 hit_status |= HITSTATUS_DUALWIELD;//animation
                 if (it)
                 {
@@ -3217,7 +3217,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                 break;
             case RANGED:  // ranged weapon
                 it = disarmed ? NULL : pr->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-                self_skill = float2int32(pr->CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_SKILL));
+                self_skill = float2int32(pr->CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_SKILL)) + 375;
                 if (it)
                     dmg.school_type = it->GetItemProperties()->Damage[0].Type;
                 break;
