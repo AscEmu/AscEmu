@@ -1674,14 +1674,17 @@ class SERVER_DECL Spell : public EventableObject
                 return false;
         }
 
-        inline bool hasAttribute(uint32 attribute) { return ((GetSpellInfo()->Attributes & attribute) > 0); }
-        inline bool hasAttributeEx(uint32 attribute) { return ((GetSpellInfo()->AttributesEx & attribute) > 0); }
-        inline bool hasAttributeExB(uint32 attribute) { return ((GetSpellInfo()->AttributesExB & attribute) > 0); }
-        inline bool hasAttributeExC(uint32 attribute) { return ((GetSpellInfo()->AttributesExC & attribute) > 0); }
-        inline bool hasAttributeExD(uint32 attribute) { return ((GetSpellInfo()->AttributesExD & attribute) > 0); }
-        inline bool hasAttributeExE(uint32 attribute) { return ((GetSpellInfo()->AttributesExE & attribute) > 0); }
-        inline bool hasAttributeExF(uint32 attribute) { return ((GetSpellInfo()->AttributesExF & attribute) > 0); }
-        inline bool hasAttributeExG(uint32 attribute) { return ((GetSpellInfo()->AttributesExG & attribute) > 0); }
+        inline bool hasAttribute(SpellAttributes attribute) { return GetSpellInfo()->Attributes & attribute; }
+        inline bool hasAttributeEx(SpellAttributesEx attribute) { return GetSpellInfo()->AttributesEx & attribute; }
+        inline bool hasAttributeExB(SpellAttributesExB attribute) { return GetSpellInfo()->AttributesExB & attribute; }
+        inline bool hasAttributeExC(SpellAttributesExC attribute) { return GetSpellInfo()->AttributesExC & attribute; }
+        inline bool hasAttributeExD(SpellAttributesExD attribute) { return GetSpellInfo()->AttributesExD & attribute; }
+        inline bool hasAttributeExE(SpellAttributesExE attribute) { return GetSpellInfo()->AttributesExE & attribute; }
+        inline bool hasAttributeExF(SpellAttributesExF attribute) { return GetSpellInfo()->AttributesExF & attribute; }
+        inline bool hasAttributeExG(SpellAttributesExG attribute) { return GetSpellInfo()->AttributesExG & attribute; }
+        inline bool hasAttributeExH(SpellAttributesExH attribute) { return GetSpellInfo()->AttributesExH & attribute; }
+        inline bool hasAttributeExI(SpellAttributesExI attribute) { return GetSpellInfo()->AttributesExI & attribute; }
+        inline bool hasAttributeExJ(SpellAttributesExJ attribute) { return GetSpellInfo()->AttributesExJ & attribute; }
 
         // Removes reagents, ammo, and items/charges
         void RemoveItems();

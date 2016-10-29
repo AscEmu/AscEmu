@@ -4508,15 +4508,8 @@ void Spell::RemoveItems()
     // Ammo Removal
     if (p_caster != nullptr)
     {
-        //\todo danko
-        /*if (hasAttributeExB(ATTRIBUTESEXB_REQ_RANGED_WEAPON) || hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS))
-        {
-            if (!p_caster->m_requiresNoAmmo)
-                p_caster->GetItemInterface()->RemoveItemAmt_ProtectPointer(p_caster->GetUInt32Value(PLAYER_AMMO_ID), 1, &i_caster);
-        }*/
-
         // Reagent Removal
-        if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExD(ATTRIBUTESEXE_REAGENT_REMOVAL)))
+        if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExE(ATTRIBUTESEXE_REAGENT_REMOVAL)))
         {
             for (uint8 i = 0; i < 8; i++)
             {
@@ -5895,7 +5888,7 @@ uint8 Spell::GetErrorAtShapeshiftedCast(SpellInfo* spellInfo, uint32 form)
 
     if (actAsShifted)
     {
-        if (hasAttributeExB(ATTRIBUTES_NOT_SHAPESHIFT))	// not while shapeshifted
+        if (hasAttribute(ATTRIBUTES_NOT_SHAPESHIFT))	// not while shapeshifted
             return SPELL_FAILED_NOT_SHAPESHIFT;
         else //if (spellInfo->RequiredShapeShift != 0)			// needs other shapeshift
             return SPELL_FAILED_ONLY_SHAPESHIFT;
