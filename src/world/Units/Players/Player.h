@@ -1481,6 +1481,7 @@ class SERVER_DECL Player : public Unit
 
         bool m_Autojoin;
         bool m_AutoAddMem;
+        void SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, int32 regen);
         void StopMirrorTimer(MirrorTimerTypes Type);
         BGScore m_bgScore;
         uint32 m_bgTeam;

@@ -5084,16 +5084,8 @@ void Aura::SpellAuraFeignDeath(bool apply)
                 }
             }
 
-            data.SetOpcode(SMSG_START_MIRROR_TIMER);
-
-            data << uint32(TIMER_FEIGNDEATH);		// type
-            data << uint32(GetDuration());
-            data << uint32(GetDuration());
-            data << uint32(0xFFFFFFFF);
-            data << uint8(0);
-            data << uint32(m_spellProto->Id);		// ???
-
-            p_target->GetSession()->SendPacket(&data);
+            // this looks awkward!
+            p_target->SendMirrorTimer(MIRROR_TYPE_FIRE, GetDuration(), GetDuration(), 0xFFFFFFFF);
 
             data.Initialize(SMSG_CLEAR_TARGET);
             data << p_target->GetGUID();
@@ -5111,9 +5103,7 @@ void Aura::SpellAuraFeignDeath(bool apply)
             p_target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
             p_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH);
             p_target->RemoveFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
-            data.SetOpcode(SMSG_STOP_MIRROR_TIMER);
-            data << uint32(TIMER_FEIGNDEATH);
-            p_target->GetSession()->SendPacket(&data);
+            p_target->StopMirrorTimer(MIRROR_TYPE_FIRE);
         }
     }
 }
@@ -7207,10 +7197,7 @@ void Aura::SpellAuraWaterBreathing(bool apply)
         if (apply)
         {
             SetPositive();
-            WorldPacket data(4);
-            data.SetOpcode(SMSG_STOP_MIRROR_TIMER);
-            data << uint32(1);
-            p_target->GetSession()->SendPacket(&data);
+            p_target->StopMirrorTimer(MIRROR_TYPE_BREATH);
             p_target->m_UnderwaterState = 0;
         }
 

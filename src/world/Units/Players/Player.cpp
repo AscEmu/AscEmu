@@ -4865,6 +4865,7 @@ void Player::DeathDurabilityLoss(double percent)
 {
     //Message
     WorldPacket data(SMSG_DURABILITY_DAMAGE_DEATH, 0);
+    data << uint32(percent);
     GetSession()->SendPacket(&data);
 
     uint32 pDurability;
@@ -8274,9 +8275,29 @@ void Player::EndDuel(uint8 WinCondition)
     DuelingWith = NULL;
 }
 
+void Player::SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, int32 regen)
+{
+    if (int(max) == -1)
+    {
+        if (int(current) != -1)
+            StopMirrorTimer(Type);
+        return;
+    }
+    WorldPacket data(SMSG_START_MIRROR_TIMER, 21);
+    data << uint32(Type);
+    data << uint32(current);
+    data << uint32(max);
+    data << int32(regen);
+    data << uint8(0);
+    data << uint32(0);                   // spell id
+    GetSession()->SendPacket(&data);
+}
+
 void Player::StopMirrorTimer(MirrorTimerTypes Type)
 {
-    m_session->OutPacket(SMSG_STOP_MIRROR_TIMER, 4, &Type);
+    WorldPacket data(SMSG_STOP_MIRROR_TIMER, 4);
+    data << (uint32)Type;
+    GetSession()->SendPacket(&data);
 }
 
 void Player::EventTeleport(uint32 mapid, float x, float y, float z)
@@ -13880,14 +13901,8 @@ void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSessio
         if (m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
         {
             m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
-            WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
-            data << uint32(TIMER_BREATH);
-            data << m_UnderwaterTime;
-            data << m_UnderwaterMaxTime;
-            data << int32(-1);
-            data << uint32(0);
 
-            pSession->SendPacket(&data);
+            SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, -1);
         }
 
         // player is above water level
@@ -13943,14 +13958,7 @@ void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSessio
         if ((movement_info.GetPos()->z + m_noseLevel) < pSession->m_wLevel)
         {
             m_UnderwaterState |= UNDERWATERSTATE_UNDERWATER;
-            WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
-            data << uint32(TIMER_BREATH);
-            data << m_UnderwaterTime;
-            data << m_UnderwaterMaxTime;
-            data << int32(-1);
-            data << uint32(0);
-
-            pSession->SendPacket(&data);
+            SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, -1);
         }
     }
 
@@ -13961,13 +13969,7 @@ void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSessio
         if ((movement_info.GetPos()->z + m_noseLevel) > pSession->m_wLevel)
         {
             m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
-            WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
-            data << uint32(TIMER_BREATH);
-            data << m_UnderwaterTime;
-            data << m_UnderwaterMaxTime;
-            data << int32(10);
-            data << uint32(0);
-            pSession->SendPacket(&data);
+            SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, 10);
         }
     }
 
@@ -13978,13 +13980,7 @@ void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSessio
         if ((movement_info.GetPos()->z + m_noseLevel) > pSession->m_wLevel)
         {
             m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
-            WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
-            data << uint32(TIMER_BREATH);
-            data << m_UnderwaterTime;
-            data << m_UnderwaterMaxTime;
-            data << int32(10);
-            data << uint32(0);
-            pSession->SendPacket(&data);
+            SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, 10);
         }
     }
 }
