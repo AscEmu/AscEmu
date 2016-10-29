@@ -4275,7 +4275,7 @@ void Unit::AddAura(Aura* aur)
     if (aur == NULL)
         return;
 
-    if (!(isAlive() || (aur->GetSpellProto()->AttributesExC & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)))
+    if (!(isAlive() || (aur->GetSpellProto()->IsDeathPersistent())))
     {
         delete aur;
         return;
@@ -4939,7 +4939,7 @@ void Unit::RemoveNegativeAuras()
     {
         if (m_auras[x])
         {
-            if (m_auras[x]->GetSpellProto()->AttributesExC & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)
+            if (m_auras[x]->GetSpellProto()->IsDeathPersistent())
                 continue;
             else
                 m_auras[x]->Remove();
@@ -4959,7 +4959,7 @@ void Unit::RemoveAllNonPersistentAuras()
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
         if (m_auras[x])
         {
-            if (m_auras[x]->GetSpellProto()->AttributesExC & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)
+            if (m_auras[x]->GetSpellProto()->IsDeathPersistent())
                 continue;
             else
                 m_auras[x]->Remove();
@@ -5594,7 +5594,7 @@ void Unit::DropAurasOnDeath()
     for (uint32 x = MAX_REMOVABLE_AURAS_START; x < MAX_REMOVABLE_AURAS_END; x++)
         if (m_auras[x])
         {
-            if (m_auras[x] && m_auras[x]->GetSpellProto()->AttributesExC & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD)
+            if (m_auras[x] && m_auras[x]->GetSpellProto()->IsDeathPersistent())
                 continue;
             else
                 m_auras[x]->Remove();

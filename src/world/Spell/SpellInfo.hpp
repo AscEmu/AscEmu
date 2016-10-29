@@ -23,6 +23,8 @@ class SERVER_DECL SpellInfo
 
         bool IsPassive();
 
+        bool IsDeathPersistent();
+
         bool AppliesAreaAura(uint32 aura);
         uint32 GetAreaAuraEffectId();
 
