@@ -1309,8 +1309,6 @@ enum Opcodes
     CMSG_SET_ACTION_BUTTON                              = 0x6F06,
 
     //Cheat
-    CMSG_MOVE_START_SWIM_CHEAT                          = 0x12D9,   // unknown
-    CMSG_MOVE_STOP_SWIM_CHEAT                           = 0x12DA,   // unknown
     MSG_MOVE_TELEPORT_CHEAT                             = 0x10C7,   // unknown
     MSG_MOVE_SET_RUN_SPEED_CHEAT                        = 0x10CD,   // unknown
     MSG_MOVE_SET_RUN_BACK_SPEED_CHEAT                   = 0x10CF,   // unknown
@@ -1441,7 +1439,7 @@ enum Opcodes
     CMSG_REQUEST_CEMETERY_LIST                          = 0x720A,
     SMSG_REQUEST_CEMETERY_LIST_RESPONSE                 = 0x30A7,
 
-    //Unknown packet send by client to server
+    //Known packet send by client to server
     CMSG_UNREGISTER_ALL_ADDON_PREFIXES                  = 0x3D54,
     CMSG_VOICE_SESSION_ENABLE                           = 0x2314,
     CMSG_REQUEST_CATEGORY_COOLDOWNS                     = 0x7102,
