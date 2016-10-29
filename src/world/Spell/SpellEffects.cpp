@@ -1452,7 +1452,7 @@ void Spell::SpellEffectApplyAura(uint32 i)  // Apply Aura
         uint32 Duration = GetDuration();
 
         // Handle diminishing returns, if it should be resisted, it'll make duration 0 here.
-        if (!(GetProto()->Attributes & ATTRIBUTES_PASSIVE)) // Passive
+        if (!(GetProto()->IsPassive())) // Passive
             ::ApplyDiminishingReturnTimer(&Duration, unitTarget, GetProto());
 
         if (!Duration)

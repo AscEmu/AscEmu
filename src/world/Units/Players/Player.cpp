@@ -9051,7 +9051,7 @@ void Player::CompleteLoading()
         info = sSpellCustomizations.GetSpellInfo(*itr);
 
         if (info != NULL
-            && (info->Attributes & ATTRIBUTES_PASSIVE)  // passive
+            && (info->IsPassive())  // passive
             && !(info->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET))
         {
             if (info->RequiredShapeShift)
@@ -10274,7 +10274,7 @@ void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
                         removeSpell(removeSpellId, true, true, skill_line_ability->next);
                     }
                     // if passive spell, apply it now
-                    if (sp->Attributes & ATTRIBUTES_PASSIVE)
+                    if (sp->IsPassive())
                     {
                         SpellCastTargets targets;
                         targets.m_unitTarget = this->GetGUID();
@@ -12046,7 +12046,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
             int32 ss = GetShapeShiftMask();
             if (spellInfo->RequiredShapeShift == 0 || (ss & spellInfo->RequiredShapeShift) != 0)
             {
-                if ((((spellInfo->Attributes & ATTRIBUTES_PASSIVE)
+                if ((((spellInfo->IsPassive())
                     && !(spellInfo->custom_c_is_flags & SPELL_FLAG_IS_CONDITIONAL_PASSIVE_CAST)) //like health pct dependent will get autocast on health change event
                     || (spellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL ||
                             spellInfo->Effect[1] == SPELL_EFFECT_LEARN_SPELL ||

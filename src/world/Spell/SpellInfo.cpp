@@ -231,6 +231,11 @@ bool SpellInfo::HasCustomFlagForEffect(uint32 effect, uint32 flag)
         return false;
 }
 
+bool SpellInfo::IsPassive()
+{
+    return Attributes & ATTRIBUTES_PASSIVE;
+}
+
 bool SpellInfo::AppliesAreaAura(uint32 aura)
 {
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)

@@ -1040,7 +1040,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         {
             /* talents procing - don't remove stealth either */
             if (!hasAttribute(ATTRIBUTES_PASSIVE) &&
-                !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->Attributes & ATTRIBUTES_PASSIVE))
+                !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->IsPassive()))
             {
                 p_caster->RemoveAura(p_caster->m_stealth);
                 p_caster->m_stealth = 0;
@@ -1305,7 +1305,7 @@ void Spell::cast(bool check)
                 && GetProto()->Id != 1)  //check spells that get trigger spell 1 after spell loading
             {
                 /* talents procing - don't remove stealth either */
-                if (!hasAttribute(ATTRIBUTES_PASSIVE) && !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->Attributes & ATTRIBUTES_PASSIVE))
+                if (!hasAttribute(ATTRIBUTES_PASSIVE) && !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->IsPassive()))
                 {
                     p_caster->RemoveAura(p_caster->m_stealth);
                     p_caster->m_stealth = 0;

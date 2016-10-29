@@ -516,7 +516,7 @@ void Pet::InitializeSpells()
         SpellInfo* info = itr->first;
 
         // Check that the spell isn't passive
-        if (info->Attributes & ATTRIBUTES_PASSIVE)
+        if (info->IsPassive())
         {
             // Cast on self..
             Spell* sp = sSpellFactoryMgr.NewSpell(this, info, true, NULL);
@@ -1121,7 +1121,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
     if (sp == NULL)
         return;
 
-    if (sp->Attributes & ATTRIBUTES_PASSIVE)        // Cast on self if we're a passive spell
+    if (sp->IsPassive())        // Cast on self if we're a passive spell
     {
         if (IsInWorld())
         {
