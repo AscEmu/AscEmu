@@ -418,7 +418,6 @@ enum Opcodes
     SMSG_RAID_READY_CHECK_ERROR                     = 0x408,
     CMSG_REFER_A_FRIEND                             = 0x40E,
     CMSG_GROUPACTION_THROTTLED                      = 0x411,
-    SMSG_OVERRIDE_LIGHT                             = 0x412,
     SMSG_TOTEM_CREATED                              = 0x413,
     CMSG_TOTEM_DESTROYED                            = 0x414,
     CMSG_EXPIRE_RAID_INSTANCE                       = 0x415,
@@ -608,7 +607,6 @@ enum Opcodes
     CMSG_REDIRECTION_AUTH_PROOF                     = 0x512,
     CMSG_DROP_NEW_CONNECTION                        = 0x513,
     SMSG_SEND_ALL_COMBAT_LOG                        = 0x514,
-    SMSG_OPEN_LFG_DUNGEON_FINDER                    = 0x515,
     MSG_MOVE_SET_COLLISION_HGT                      = 0x518,
     CMSG_CLEAR_RANDOM_BG_WIN_TIME                   = 0x519,
     CMSG_CLEAR_HOLIDAY_BG_WIN_TIME                  = 0x51A,
@@ -623,10 +621,11 @@ enum Opcodes
     MSG_WOW_CONNECTION                                  = 0x4F57,
     CMSG_READY_FOR_ACCOUNT_DATA_TIMES                   = 0x2B16,
     CMSG_VIOLENCE_LEVEL                                 = 0x7816,   // unhandled
-    CMSG_LOG_DISCONNECT                                 = 0x446D,
+    CMSG_LOG_DISCONNECT                                 = 0x446D,   // unhandled
     CMSG_LOAD_SCREEN                                    = 0x2422,
     CMSG_UI_TIME_REQUEST                                = 0x4605,
     SMSG_UI_TIME                                        = 0x4A14,
+    SMSG_OVERRIDE_LIGHT                                 = 0x4225,
 
     SMSG_CLIENTCACHE_VERSION                            = 0x2734,
     CMSG_KEEP_ALIVE                                     = 0x0015,   // not implemented?
@@ -658,7 +657,7 @@ enum Opcodes
     SMSG_COMPRESSED_UPDATE_OBJECT                       = 0x11F7,
     MSG_RANDOM_ROLL                                     = 0x0905,
     SMSG_ACCOUNT_DATA_TIMES                             = 0x4B05,
-    CMSG_UPDATE_ACCOUNT_DATA                            = 0x4736,
+    CMSG_UPDATE_ACCOUNT_DATA                            = 0x4736,   // not updated
     SMSG_UPDATE_ACCOUNT_DATA                            = 0x6837,
     SMSG_LOGIN_VERIFY_WORLD                             = 0x2005,
     CMSG_PAGE_TEXT_QUERY                                = 0x6614,
@@ -734,7 +733,7 @@ enum Opcodes
     SMSG_CORPSE_RECLAIM_DELAY                           = 0x0D34,
     SMSG_DEATH_RELEASE_LOC                              = 0x2F07,
     SMSG_PRE_RESURRECT                                  = 0x6C36,
-    CMSG_RETURN_TO_GRAVEYARD                            = 0x301E,
+    CMSG_RETURN_TO_GRAVEYARD                            = 0x301E,   // not implemented
     CMSG_REPOP_REQUEST                                  = 0x6235,
     SMSG_RESURRECT_REQUEST                              = 0x2905,
     CMSG_RESURRECT_RESPONSE                             = 0x6827,
@@ -940,13 +939,13 @@ enum Opcodes
     CMSG_FORCE_MOVE_ROOT_ACK                            = 0x701E,   // not implemented
 
     // LFG Check packet sending in LfgHandler.cpp
-    SMSG_LFG_PLAYER_INFO                                = 0x1370,   // not updated
-    SMSG_LFG_PARTY_INFO                                 = 0x1373,   // not updated
-    SMSG_LFG_JOIN_RESULT                                = 0x1365,   // not updated
-    SMSG_LFG_UPDATE_PLAYER                              = 0x1368,   // not updated
-    SMSG_LFG_UPDATE_PARTY                               = 0x1369,   // not updated
-    SMSG_LFG_UPDATE_SEARCH                              = 0x136A,   // not updated
-    SMSG_LFG_ROLE_CHECK_UPDATE                          = 0x1364,   // not updated
+    SMSG_LFG_PLAYER_INFO                                = 0x4B36,   // not updated
+    SMSG_LFG_PARTY_INFO                                 = 0x2325,   // not updated
+    SMSG_LFG_JOIN_RESULT                                = 0x38B6,   // not updated
+    SMSG_LFG_UPDATE_PLAYER                              = 0x0000,   // unk
+    SMSG_LFG_UPDATE_PARTY                               = 0x0000,   // unk
+    SMSG_LFG_UPDATE_SEARCH                              = 0x54A1,   // not updated
+    SMSG_LFG_ROLE_CHECK_UPDATE                          = 0x0336,   // not updated
     CMSG_LFG_GET_STATUS                                 = 0x2581,   // not updated
 
     // Interface
@@ -989,7 +988,7 @@ enum Opcodes
     CMSG_REQUEST_RATED_BG_STATS                         = 0x05B3,   // not implemented
     CMSG_BATTLEMASTER_JOIN                              = 0x7902,
     CMSG_BATTLEMASTER_JOIN_ARENA                        = 0x710C,
-    CMSG_LFG_JOIN                                       = 0x2430,
+    CMSG_LFG_JOIN                                       = 0x2430,   // not updated
     CMSG_LFG_LEAVE                                      = 0x2433,
     CMSG_LFG_SET_COMMENT                                = 0x0530,   // not implemented
     SMSG_CORPSE_NOT_IN_INSTANCE                         = 0x2A14,
@@ -1445,6 +1444,10 @@ enum Opcodes
     CMSG_REQUEST_CATEGORY_COOLDOWNS                     = 0x7102,
     CMSG_REORDER_CHARACTERS                             = 0x0593,
     CMSG_UNK_7314                                       = 0x7315,
+    CMSG_SUBMIT_BUG                                     = 0x2520,
+    CMSG_SUBMIT_SUGGESTION                              = 0x2512,
+    CMSG_GUILD_ACHIEVEMENT_PROGRESS_QUERY               = 0x3235,
+    SMSG_OPEN_LFG_DUNGEON_FINDER                        = 0x0412,
 
     //Unknown packet names
     CMSG_GM_SET_SECURITY_GROUP                          = 0x0000,
