@@ -537,7 +537,7 @@ class SERVER_DECL Aura : public EventableObject
         // Area Auras
         //////////////////////////////////////////////////////////////////////////////////////////
 
-        void EventUpdateAA(float r);
+        void EventUpdateAreaAura(float r);
 
         void EventUpdateGroupAA(float r);
         void EventUpdateRaidAA(float r);

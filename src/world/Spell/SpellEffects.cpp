@@ -402,7 +402,7 @@ void Spell::SpellEffectUnused(uint32 i)
     // To prevent debugging. Useless or implemented in a different way.
 }
 
-void Spell::ApplyAA(uint32 i)   // Apply Area Aura
+void Spell::ApplyAreaAura(uint32 i)
 {
     if (!unitTarget || !unitTarget->isAlive()) return;
     if (u_caster != unitTarget) return;
@@ -440,7 +440,7 @@ void Spell::ApplyAA(uint32 i)   // Apply Area Aura
         }
 
         if (!sEventMgr.HasEvent(pAura, eventtype))      /* only add it once */
-            sEventMgr.AddEvent(pAura, &Aura::EventUpdateAA, r * r, eventtype, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(pAura, &Aura::EventUpdateAreaAura, r * r, eventtype, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
         m_pendingAuras.insert(std::make_pair(unitTarget->GetGUID(), pAura));
         AddRef();
@@ -3215,7 +3215,7 @@ void Spell::SpellEffectTransformItem(uint32 i)
 
 void Spell::SpellEffectApplyGroupAA(uint32 i)
 {
-    ApplyAA(i);
+    ApplyAreaAura(i);
 }
 
 void Spell::SpellEffectLearnSpell(uint32 i) // Learn Spell
@@ -4075,7 +4075,7 @@ void Spell::SpellEffectTriggerSpell(uint32 i) // Trigger Spell
 
 void Spell::SpellEffectApplyRaidAA(uint32 i)
 {
-    ApplyAA(i);
+    ApplyAreaAura(i);
 }
 
 void Spell::SpellEffectPowerFunnel(uint32 i) // Power Funnel
@@ -5055,7 +5055,7 @@ void Spell::SpellEffectSkill(uint32 i)
 
 void Spell::SpellEffectApplyPetAA(uint32 i)
 {
-    ApplyAA(i);
+    ApplyAreaAura(i);
 }
 
 void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
@@ -5428,12 +5428,12 @@ void Spell::SpellEffectProspecting(uint32 i)
 
 void Spell::SpellEffectApplyFriendAA(uint32 i)
 {
-    ApplyAA(i);
+    ApplyAreaAura(i);
 }
 
 void Spell::SpellEffectApplyEnemyAA(uint32 i)
 {
-    ApplyAA(i);
+    ApplyAreaAura(i);
 }
 
 void Spell::SpellEffectRedirectThreat(uint32 i)
@@ -5518,7 +5518,7 @@ void Spell::SpellEffectTriggerSpellWithValue(uint32 i)
 
 void Spell::SpellEffectApplyOwnerAA(uint32 i)
 {
-    ApplyAA(i);
+    ApplyAreaAura(i);
 }
 
 void Spell::SpellEffectCreatePet(uint32 i)

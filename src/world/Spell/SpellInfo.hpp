@@ -20,8 +20,8 @@ class SERVER_DECL SpellInfo
         // helper functions
         bool HasEffect(uint32 effect);
         bool HasCustomFlagForEffect(uint32 effect, uint32 flag);
-        bool AppliesAura(uint32 aura);
-        uint32 GetAAEffectId();
+        bool AppliesAreaAura(uint32 aura);
+        uint32 GetAreaAuraEffectId();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Applied values from DBC
