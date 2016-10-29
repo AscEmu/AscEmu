@@ -928,7 +928,7 @@ enum Opcodes
     CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK             = 0x0333,   // unknown
     CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK                  = 0x7314,   // not implemented 
     CMSG_FORCE_PITCH_RATE_CHANGE_ACK                    = 0x0334,   // unknown
-    CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK                = 0x0335,   // unknown
+    CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK                = 0x3216,   // not implemented
     CMSG_FORCE_RUN_SPEED_CHANGE_ACK                     = 0x7818,   // not implemented
     CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK               = 0x7A16,   // not implemented
     CMSG_FORCE_SWIM_SPEED_CHANGE_ACK                    = 0x7A10,   // not implemented
