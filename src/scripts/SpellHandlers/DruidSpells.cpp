@@ -134,7 +134,7 @@ bool LifeBloom(uint32 i, Aura* a, bool apply)
 
     if(expired)
     {
-        Spell* spell = sSpellFactoryMgr.NewSpell(pCaster, a->GetSpellProto(), true, NULL);
+        Spell* spell = sSpellFactoryMgr.NewSpell(pCaster, a->GetSpellInfo(), true, NULL);
         spell->SetUnitTarget(m_target);
         spell->Heal(a->GetModAmount(i));
         delete spell;

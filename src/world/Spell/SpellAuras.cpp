@@ -815,7 +815,7 @@ Object* Aura::GetCaster()
 Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary, Item* i_caster)
 {
     m_castInDuel = false;
-    m_spellProto = proto;
+    m_spellInfo = proto;
     m_duration = duration;
     m_positive = 0; //we suppose spell will have positive impact on target
     m_temporary = temporary; // Aura saving related
@@ -850,7 +850,7 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
         SetDuration((GetDuration() * (100 + DurationModifier)) / 100);
     }
 
-    if (GetDuration() > 0 && m_spellProto->ChannelInterruptFlags != 0 && caster->IsUnit())
+    if (GetDuration() > 0 && m_spellInfo->ChannelInterruptFlags != 0 && caster->IsUnit())
         SetDuration(GetDuration() * float2int32(static_cast<Unit*>(caster)->GetCastSpeedMod()));
 
     // SetCasterFaction(caster->_getFaction());
@@ -860,17 +860,17 @@ Aura::Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool 
     m_dynamicValue = 0;
     m_areaAura = false;
 
-    if (m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_FORCEDDEBUFF)
+    if (m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_FORCEDDEBUFF)
         SetNegative(100);
-    if (m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
+    if (m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
         SetPositive(100);
-    if (m_spellProto->Attributes & ATTRIBUTES_NEGATIVE)
+    if (m_spellInfo->Attributes & ATTRIBUTES_NEGATIVE)
         SetNegative(100);
 
     if (caster->IsUnit())
     {
-        if (m_spellProto->custom_BGR_one_buff_from_caster_on_self != 0)
-            static_cast< Unit* >(caster)->RemoveAllAuraFromSelfType2(m_spellProto->custom_BGR_one_buff_from_caster_on_self, m_spellProto->custom_NameHash);
+        if (m_spellInfo->custom_BGR_one_buff_from_caster_on_self != 0)
+            static_cast< Unit* >(caster)->RemoveAllAuraFromSelfType2(m_spellInfo->custom_BGR_one_buff_from_caster_on_self, m_spellInfo->custom_NameHash);
 
         if (isAttackable(caster, target))
         {
@@ -928,33 +928,33 @@ void Aura::Remove()
 
     sHookInterface.OnAuraRemove(this);
 
-    LOG_DEBUG("Removing aura %u from unit %u", m_spellProto->Id, m_target->GetGUID());
+    LOG_DEBUG("Removing aura %u from unit %u", m_spellInfo->Id, m_target->GetGUID());
 
     m_deleted = true;
 
-    if (!IsPassive() || m_spellProto->AttributesEx & ATTRIBUTES_ON_NEXT_SWING_2)
+    if (!IsPassive() || m_spellInfo->AttributesEx & ATTRIBUTES_ON_NEXT_SWING_2)
         m_target->ModVisualAuraStackCount(this, -1);
 
     ApplyModifiers(false);
 
     for (uint32 x = 0; x < 3; x++)
     {
-        if (!m_spellProto->Effect[x])
+        if (!m_spellInfo->Effect[x])
             continue;
 
-        if (m_spellProto->Effect[x] == SPELL_EFFECT_TRIGGER_SPELL && !m_spellProto->custom_always_apply)
+        if (m_spellInfo->Effect[x] == SPELL_EFFECT_TRIGGER_SPELL && !m_spellInfo->custom_always_apply)
         {
             // I'm not sure about this! FIX ME!!
-            auto spell_entry = sSpellCustomizations.GetSpellInfo(GetSpellProto()->EffectTriggerSpell[x]);
+            auto spell_entry = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[x]);
             if (spell_entry != nullptr)
-                if (spell_entry->DurationIndex < m_spellProto->DurationIndex)
-                    m_target->RemoveAura(GetSpellProto()->EffectTriggerSpell[x]);
+                if (spell_entry->DurationIndex < m_spellInfo->DurationIndex)
+                    m_target->RemoveAura(GetSpellInfo()->EffectTriggerSpell[x]);
         }
         else if (IsAreaAura() && m_casterGuid == m_target->GetGUID())
             ClearAATargets();
     }
 
-    if (m_spellProto->procCharges > 0 && m_spellProto->custom_proc_interval == 0)
+    if (m_spellInfo->procCharges > 0 && m_spellInfo->custom_proc_interval == 0)
     {
         if (m_target->m_chargeSpellsInUse)
         {
@@ -979,7 +979,7 @@ void Aura::Remove()
         m_target->m_auras[m_auraSlot] = NULL;
 
     // reset diminishing return timer if needed
-    ::UnapplyDiminishingReturnTimer(m_target, m_spellProto);
+    ::UnapplyDiminishingReturnTimer(m_target, m_spellInfo);
 
     // remove attacker
     Unit* caster = GetUnitCaster();
@@ -1001,18 +1001,18 @@ void Aura::Remove()
     * m_spellProto->Attributes == 0x2040100
     * are handled. Its possible there are more spells like this
     *************************************************************/
-    if (caster != NULL && caster->IsPlayer() && caster->IsInWorld() && m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE)
+    if (caster != NULL && caster->IsPlayer() && caster->IsInWorld() && m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE)
     {
         Player* p = static_cast< Player* >(caster);
 
-        p->SendSpellCooldownEvent(m_spellProto->Id);
+        p->SendSpellCooldownEvent(m_spellInfo->Id);
     }
 
     if (caster != NULL && caster->IsPlayer() && caster->IsInWorld() && caster->GetUInt32Value(PLAYER_FARSIGHT) != 0)
     {
         uint8 j;
         for (j = 0; j < 3; ++j)
-            if (m_spellProto->Effect[j] == SPELL_EFFECT_ADD_FARSIGHT)
+            if (m_spellInfo->Effect[j] == SPELL_EFFECT_ADD_FARSIGHT)
                 break;
 
         if (j != 3)
@@ -1022,16 +1022,16 @@ void Aura::Remove()
     }
 
     // If this aura can affect one target at a time, remove this target from the caster map
-    if (caster != NULL && GetSpellProto()->AttributesExE & ATTRIBUTESEXE_SINGLE_TARGET_AURA && m_target->GetAuraStackCount(GetSpellId()) == 1)
-        caster->RemoveCurrentUnitForSingleTargetAura(GetSpellProto());
+    if (caster != NULL && GetSpellInfo()->AttributesExE & ATTRIBUTESEXE_SINGLE_TARGET_AURA && m_target->GetAuraStackCount(GetSpellId()) == 1)
+        caster->RemoveCurrentUnitForSingleTargetAura(GetSpellInfo());
 
     /* Remove aurastates */
     uint32 flag = 0;
-    if (m_spellProto->MechanicsType == MECHANIC_ENRAGED && !--m_target->asc_enraged)
+    if (m_spellInfo->MechanicsType == MECHANIC_ENRAGED && !--m_target->asc_enraged)
         flag |= AURASTATE_FLAG_ENRAGED;
-    else if (m_spellProto->MechanicsType == MECHANIC_BLEEDING && !--m_target->asc_bleed)
+    else if (m_spellInfo->MechanicsType == MECHANIC_BLEEDING && !--m_target->asc_bleed)
         flag |= AURASTATE_FLAG_BLEED;
-    if (m_spellProto->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !--m_target->asc_seal)
+    if (m_spellInfo->custom_BGR_one_buff_on_target & SPELL_TYPE_SEAL && !--m_target->asc_seal)
         flag |= AURASTATE_FLAG_JUDGEMENT;
     if (flag != 0)
         m_target->RemoveFlag(UNIT_FIELD_AURASTATE, flag);
@@ -1045,16 +1045,16 @@ void Aura::Remove()
         m_target->m_auras[m_auraSlot] = NULL;
 
     // only remove channel stuff if caster == target, then it's not removed twice, for example, arcane missiles applies a dummy aura to target
-    if (caster != NULL && caster == m_target && m_spellProto->ChannelInterruptFlags != 0)
+    if (caster != NULL && caster == m_target && m_spellInfo->ChannelInterruptFlags != 0)
     {
         caster->SetChannelSpellTargetGUID(0);
         caster->SetChannelSpellId(0);
     }
 
-    if ((caster != NULL) && caster->IsPlayer() && m_spellProto->HasEffect(SPELL_EFFECT_SUMMON))
+    if ((caster != NULL) && caster->IsPlayer() && m_spellInfo->HasEffect(SPELL_EFFECT_SUMMON))
     {
         Unit* charm = caster->GetMapMgr()->GetUnit(caster->GetCharmedUnitGUID());
-        if ((charm != NULL) && (charm->GetCreatedBySpell() == m_spellProto->Id))
+        if ((charm != NULL) && (charm->GetCreatedBySpell() == m_spellInfo->Id))
             static_cast< Player* >(caster)->UnPossess();
     }
 }
@@ -1072,7 +1072,7 @@ void Aura::AddMod(uint32 t, int32 a, uint32 miscValue, uint32 i)
 
     if (m_modcount >= 3)
     {
-        LOG_ERROR("Tried to add >3 (%u) mods to spellid %u [%u:%u, %u:%u, %u:%u]", m_modcount + 1, this->m_spellProto->Id, m_modList[0].m_type, m_modList[0].m_amount, m_modList[1].m_type, m_modList[1].m_amount, m_modList[2].m_type, m_modList[2].m_amount);
+        LOG_ERROR("Tried to add >3 (%u) mods to spellid %u [%u:%u, %u:%u, %u:%u]", m_modcount + 1, this->m_spellInfo->Id, m_modList[0].m_type, m_modList[0].m_amount, m_modList[1].m_type, m_modList[1].m_amount, m_modList[2].m_type, m_modList[2].m_amount);
         return;
     }
     m_modList[m_modcount].m_type = t;
@@ -1091,15 +1091,15 @@ void Aura::ApplyModifiers(bool apply)
         {
             mod = &m_modList[x];
             LOG_DEBUG("WORLD: target=%u, Spell Aura id=%u (%s), SpellId=%u, i=%u, apply=%s, duration=%u, miscValue=%d, damage=%d",
-                      m_target->GetLowGUID(), mod->m_type, SpellAuraNames[mod->m_type], m_spellProto->Id, mod->i, apply ? "true" : "false", GetDuration(), mod->m_miscValue, mod->m_amount);
+                      m_target->GetLowGUID(), mod->m_type, SpellAuraNames[mod->m_type], m_spellInfo->Id, mod->i, apply ? "true" : "false", GetDuration(), mod->m_miscValue, mod->m_amount);
             (*this.*SpellAuraHandler[mod->m_type])(apply);
             if (apply)
             {
-                if (m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_FORCEDDEBUFF)
+                if (m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_FORCEDDEBUFF)
                     SetNegative(100);
-                if (m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
+                if (m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_FORCEDBUFF)
                     SetPositive(100);
-                if (m_spellProto->Attributes & ATTRIBUTES_NEGATIVE)
+                if (m_spellInfo->Attributes & ATTRIBUTES_NEGATIVE)
                     SetNegative(100);
             }
 
@@ -1118,7 +1118,7 @@ void Aura::UpdateModifiers()
         if (mod->m_type < TOTAL_SPELL_AURAS)
         {
             LOG_DEBUG("WORLD: Update Aura mods : target = %u , Spell Aura id = %u (%s), SpellId  = %u, i = %u, duration = %u, damage = %d",
-                      m_target->GetLowGUID(), mod->m_type, SpellAuraNames[mod->m_type], m_spellProto->Id, mod->i, GetDuration(), mod->m_amount);
+                      m_target->GetLowGUID(), mod->m_type, SpellAuraNames[mod->m_type], m_spellInfo->Id, mod->i, GetDuration(), mod->m_amount);
             switch (mod->m_type)
             {
                 case SPELL_AURA_MOD_DECREASE_SPEED:
@@ -1154,15 +1154,15 @@ void Aura::EventUpdateGroupAA(float r)
         {
             if ((m_target->GetDistanceSq(owner) <= r))
             {
-                if (!owner->HasAura(m_spellProto->Id))
+                if (!owner->HasAura(m_spellInfo->Id))
                     targets.insert(owner->GetGUID());
             }
             else
             {
-                if (owner->HasAura(m_spellProto->Id))
+                if (owner->HasAura(m_spellInfo->Id))
                 {
                     targets.erase(owner->GetLowGUID());
-                    owner->RemoveAura(m_spellProto->Id);
+                    owner->RemoveAura(m_spellInfo->Id);
                 }
             }
         }
@@ -1191,7 +1191,7 @@ void Aura::EventUpdateGroupAA(float r)
             if (!op->isAlive())
                 continue;
 
-            if (op->HasAura(m_spellProto->Id))
+            if (op->HasAura(m_spellInfo->Id))
                 continue;
 
             targets.insert(op->GetGUID());
@@ -1237,7 +1237,7 @@ void Aura::EventUpdateGroupAA(float r)
         if (removable)
         {
             targets.erase(itr2);
-            tp->RemoveAura(m_spellProto->Id);
+            tp->RemoveAura(m_spellInfo->Id);
         }
     }
 }
@@ -1263,15 +1263,15 @@ void Aura::EventUpdateRaidAA(float r)
         {
             if ((m_target->GetDistanceSq(owner) <= r))
             {
-                if (!owner->HasAura(m_spellProto->Id))
+                if (!owner->HasAura(m_spellInfo->Id))
                     targets.insert(owner->GetGUID());
             }
             else
             {
-                if (owner->HasAura(m_spellProto->Id))
+                if (owner->HasAura(m_spellInfo->Id))
                 {
                     targets.erase(owner->GetLowGUID());
-                    owner->RemoveAura(m_spellProto->Id);
+                    owner->RemoveAura(m_spellInfo->Id);
                 }
             }
         }
@@ -1308,7 +1308,7 @@ void Aura::EventUpdateRaidAA(float r)
                 if (!op->isAlive())
                     continue;
 
-                if (op->HasAura(m_spellProto->Id))
+                if (op->HasAura(m_spellInfo->Id))
                     continue;
 
                 targets.insert(op->GetGUID());
@@ -1345,7 +1345,7 @@ void Aura::EventUpdateRaidAA(float r)
         if (removable)
         {
             targets.erase(itr2);
-            tp->RemoveAura(m_spellProto->Id);
+            tp->RemoveAura(m_spellInfo->Id);
         }
     }
 }
@@ -1370,11 +1370,11 @@ void Aura::EventUpdatePetAA(float r)
         if (!pet->isAlive())
             continue;
 
-        if (pet->HasAura(m_spellProto->Id))
+        if (pet->HasAura(m_spellInfo->Id))
             continue;
 
         {
-            Aura* a = sSpellFactoryMgr.NewAura(m_spellProto, GetDuration(), p, pet, true);
+            Aura* a = sSpellFactoryMgr.NewAura(m_spellInfo, GetDuration(), p, pet, true);
             a->m_areaAura = true;
             a->AddMod(mod->m_type, mod->m_amount, mod->m_miscValue, mod->i);
             pet->AddAura(a);
@@ -1391,7 +1391,7 @@ void Aura::EventUpdatePetAA(float r)
         if (p->GetDistanceSq(pet) <= r)
             continue;
 
-        pet->RemoveAura(m_spellProto->Id);
+        pet->RemoveAura(m_spellInfo->Id);
     }
 }
 
@@ -1425,7 +1425,7 @@ void Aura::EventUpdateFriendAA(float r)
         if (isNeutral(u, ou))
             continue;
 
-        if (ou->HasAura(m_spellProto->Id))
+        if (ou->HasAura(m_spellInfo->Id))
             continue;
 
         targets.insert(ou->GetGUID());
@@ -1459,7 +1459,7 @@ void Aura::EventUpdateFriendAA(float r)
 
         if (removable)
         {
-            tu->RemoveAura(m_spellProto->Id);
+            tu->RemoveAura(m_spellInfo->Id);
             targets.erase(itr2);
         }
     }
@@ -1492,7 +1492,7 @@ void Aura::EventUpdateEnemyAA(float r)
         if (!isHostile(u, ou))
             continue;
 
-        if (ou->HasAura(m_spellProto->Id))
+        if (ou->HasAura(m_spellInfo->Id))
             continue;
 
         targets.insert(ou->GetGUID());
@@ -1526,7 +1526,7 @@ void Aura::EventUpdateEnemyAA(float r)
 
         if (removable)
         {
-            tu->RemoveAura(m_spellProto->Id);
+            tu->RemoveAura(m_spellInfo->Id);
             targets.erase(itr2);
         }
     }
@@ -1549,11 +1549,11 @@ void Aura::EventUpdateOwnerAA(float r)
         return;
 
     if (ou->isAlive() &&
-        !ou->HasAura(m_spellProto->Id) &&
+        !ou->HasAura(m_spellInfo->Id) &&
         (c->GetDistanceSq(ou) <= r))
     {
 
-        Aura* a = sSpellFactoryMgr.NewAura(m_spellProto, GetDuration(), c, ou, true);
+        Aura* a = sSpellFactoryMgr.NewAura(m_spellInfo, GetDuration(), c, ou, true);
         a->m_areaAura = true;
         a->AddMod(mod->m_type, mod->m_amount, mod->m_miscValue, mod->i);
         ou->AddAura(a);
@@ -1561,7 +1561,7 @@ void Aura::EventUpdateOwnerAA(float r)
 
 
     if (!ou->isAlive() || (c->GetDistanceSq(ou) > r))
-        ou->RemoveAura(m_spellProto->Id);
+        ou->RemoveAura(m_spellInfo->Id);
 }
 
 void Aura::EventUpdateAreaAura(float r)
@@ -1583,10 +1583,10 @@ void Aura::EventUpdateAreaAura(float r)
         return;
     }
 
-    uint32 AreaAuraEffectId = m_spellProto->GetAreaAuraEffectId();
+    uint32 AreaAuraEffectId = m_spellInfo->GetAreaAuraEffectId();
     if (AreaAuraEffectId == 0)
     {
-        LOG_ERROR("Spell %u (%s) has tried to update Area Aura targets but Spell has no Area Aura effect.", m_spellProto->Id, m_spellProto->Name);
+        LOG_ERROR("Spell %u (%s) has tried to update Area Aura targets but Spell has no Area Aura effect.", m_spellInfo->Id, m_spellInfo->Name);
         ARCEMU_ASSERT(false);
     }
 
@@ -1629,10 +1629,10 @@ void Aura::EventUpdateAreaAura(float r)
         if (unit == nullptr)
             return;
 
-        if (unit->HasAura(m_spellProto->Id))
+        if (unit->HasAura(m_spellInfo->Id))
             continue;
 
-        Aura* a = sSpellFactoryMgr.NewAura(m_spellProto, GetDuration(), m_target, unit, true);
+        Aura* a = sSpellFactoryMgr.NewAura(m_spellInfo, GetDuration(), m_target, unit, true);
         a->m_areaAura = true;
         a->AddMod(mod->m_type, mod->m_amount, mod->m_miscValue, mod->i);
         unit->AddAura(a);
@@ -1641,7 +1641,7 @@ void Aura::EventUpdateAreaAura(float r)
 
 void Aura::ClearAATargets()
 {
-    uint32 spellid = m_spellProto->Id;
+    uint32 spellid = m_spellInfo->Id;
 
     for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end(); ++itr)
     {
@@ -1654,7 +1654,7 @@ void Aura::ClearAATargets()
     }
     targets.clear();
 
-    if (m_target->IsPlayer() && m_spellProto->HasEffect(SPELL_EFFECT_APPLY_PET_AREA_AURA))
+    if (m_target->IsPlayer() && m_spellInfo->HasEffect(SPELL_EFFECT_APPLY_PET_AREA_AURA))
     {
         Player* p = static_cast<Player*>(m_target);
 
@@ -1667,7 +1667,7 @@ void Aura::ClearAATargets()
         }
     }
 
-    if (m_spellProto->HasEffect(SPELL_EFFECT_APPLY_OWNER_AREA_AURA))
+    if (m_spellInfo->HasEffect(SPELL_EFFECT_APPLY_OWNER_AREA_AURA))
     {
         Unit* u = m_target->GetMapMgr()->GetUnit(m_target->GetCreatedByGUID());
 
@@ -1790,14 +1790,14 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
 {
     if (apply)
     {
-        if (m_spellProto->MechanicsType == MECHANIC_BLEEDING && m_target->MechanicsDispels[MECHANIC_BLEEDING])
+        if (m_spellInfo->MechanicsType == MECHANIC_BLEEDING && m_target->MechanicsDispels[MECHANIC_BLEEDING])
         {
             m_flags |= 1 << mod->i;
             return;
         }
         int32 dmg = mod->m_amount;
         Unit* c = GetUnitCaster();
-        switch (m_spellProto->Id)
+        switch (m_spellInfo->Id)
         {
             case 703:
             case 8631:
@@ -1865,7 +1865,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
                 }
             }
         }
-        uint32* gr = GetSpellProto()->SpellGroupType;
+        uint32* gr = GetSpellInfo()->SpellGroupType;
         if (gr)
         {
             if (c != nullptr)
@@ -1880,27 +1880,27 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
 
         LOG_DEBUG("Adding periodic dmg aura, spellid: %lu", this->GetSpellId());
         sEventMgr.AddEvent(this, &Aura::EventPeriodicDamage, (uint32)dmg,
-                           EVENT_AURA_PERIODIC_DAMAGE, GetSpellProto()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                           EVENT_AURA_PERIODIC_DAMAGE, GetSpellInfo()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
         /*TO< Player* >(c)->GetSession()->SystemMessage("dot will do %u damage every %u seconds (total of %u)", dmg,m_spellProto->EffectAmplitude[mod->i],(GetDuration()/m_spellProto->EffectAmplitude[mod->i])*dmg);
         printf("dot will do %u damage every %u seconds (total of %u)\n", dmg,m_spellProto->EffectAmplitude[mod->i],(GetDuration()/m_spellProto->EffectAmplitude[mod->i])*dmg);*/
         SetNegative();
-        if (m_spellProto->custom_BGR_one_buff_on_target & SPELL_TYPE_WARLOCK_IMMOLATE)
+        if (m_spellInfo->custom_BGR_one_buff_on_target & SPELL_TYPE_WARLOCK_IMMOLATE)
         {
             m_target->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE);
         }
         //maybe poison aurastate should get triggered on other spells too ?
-        else if (m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_POISON)  //deadly poison
+        else if (m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_POISON)  //deadly poison
         {
             m_target->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_POISON);
         }
     }
     else if ((m_flags & (1 << mod->i)) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
     {
-        if (m_spellProto->custom_BGR_one_buff_on_target & SPELL_TYPE_WARLOCK_IMMOLATE)
+        if (m_spellInfo->custom_BGR_one_buff_on_target & SPELL_TYPE_WARLOCK_IMMOLATE)
             m_target->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_IMMOLATE);
         //maybe poison aurastate should get triggered on other spells too ?
-        else if (m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_POISON)  //deadly poison
+        else if (m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_POISON)  //deadly poison
         {
             m_target->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_POISON);
         }
@@ -1913,7 +1913,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
     if (!m_target->isAlive())
         return;
 
-    if (m_target->SchoolImmunityList[GetSpellProto()->School])
+    if (m_target->SchoolImmunityList[GetSpellInfo()->School])
     {
         if (GetUnitCaster() != NULL)
             SendTickImmune(m_target, GetUnitCaster());
@@ -1923,7 +1923,7 @@ void Aura::EventPeriodicDamage(uint32 amount)
     float res = static_cast<float>(amount);
     uint32 abs_dmg = 0;
     int32 bonus = 0;
-    uint32 school = GetSpellProto()->School;
+    uint32 school = GetSpellInfo()->School;
     Unit* c = GetUnitCaster();
     uint32 aproc = PROC_ON_ANY_HOSTILE_ACTION;
     uint32 vproc = PROC_ON_ANY_HOSTILE_ACTION | PROC_ON_ANY_DAMAGE_VICTIM;
@@ -1933,18 +1933,18 @@ void Aura::EventPeriodicDamage(uint32 amount)
     {
         if (c != NULL)
         {
-            uint32 amp = m_spellProto->EffectAmplitude[mod->i];
+            uint32 amp = m_spellInfo->EffectAmplitude[mod->i];
             if (!amp)
                 amp = event_GetEventPeriod(EVENT_AURA_PERIODIC_DAMAGE);
 
-            if (GetDuration() && GetSpellProto()->custom_NameHash != SPELL_HASH_IGNITE)    //static damage for Ignite. Need to be reworked when "static DoTs" will be implemented
+            if (GetDuration() && GetSpellInfo()->custom_NameHash != SPELL_HASH_IGNITE)    //static damage for Ignite. Need to be reworked when "static DoTs" will be implemented
             {
-                int32 spbon = c->GetSpellDmgBonus(m_target, m_spellProto, amount, true);
+                int32 spbon = c->GetSpellDmgBonus(m_target, m_spellInfo, amount, true);
                 bonus += (spbon * static_cast<int32>(amp) / GetDuration());
                 res += static_cast<float>(bonus);
 
                 // damage taken is reduced after bonus damage is calculated and added
-                res += c->CalcSpellDamageReduction(m_target, m_spellProto, res);
+                res += c->CalcSpellDamageReduction(m_target, m_spellInfo, res);
             }
 
             if (res < 0.0f)
@@ -1966,11 +1966,11 @@ void Aura::EventPeriodicDamage(uint32 amount)
 
             if (DotCanCrit())
             {
-                is_critical = c->IsCriticalDamageForSpell(m_target, GetSpellProto());
+                is_critical = c->IsCriticalDamageForSpell(m_target, GetSpellInfo());
 
                 if (is_critical)
                 {
-                    res = c->GetCriticalDamageBonusForSpell(m_target, GetSpellProto(), res);
+                    res = c->GetCriticalDamageBonusForSpell(m_target, GetSpellInfo(), res);
 
                     aproc |= PROC_ON_SPELL_CRIT_HIT;
                     vproc |= PROC_ON_SPELL_CRIT_HIT_VICTIM;
@@ -2000,23 +2000,23 @@ void Aura::EventPeriodicDamage(uint32 amount)
         if (res <= 0.0f)
             dmg.resisted_damage = dmg.full_damage;
 
-        if (res > 0.0f && c && m_spellProto->MechanicsType != MECHANIC_BLEEDING)
+        if (res > 0.0f && c && m_spellInfo->MechanicsType != MECHANIC_BLEEDING)
         {
-            c->CalculateResistanceReduction(m_target, &dmg, m_spellProto, 0);
+            c->CalculateResistanceReduction(m_target, &dmg, m_spellInfo, 0);
             if (static_cast<int32>(dmg.resisted_damage) > dmg.full_damage)
                 res = 0.0f;
             else
                 res = static_cast<float>(dmg.full_damage - dmg.resisted_damage);
         }
 
-        m_target->SendPeriodicAuraLog(m_casterGuid, m_target->GetNewGUID(), GetSpellProto()->Id, school, static_cast<int32>(res), abs_dmg, dmg.resisted_damage, FLAG_PERIODIC_DAMAGE, is_critical);
+        m_target->SendPeriodicAuraLog(m_casterGuid, m_target->GetNewGUID(), GetSpellInfo()->Id, school, static_cast<int32>(res), abs_dmg, dmg.resisted_damage, FLAG_PERIODIC_DAMAGE, is_critical);
     }
 
     // grep: this is hack.. some auras seem to delete this shit.
-    SpellInfo* sp = m_spellProto;
+    SpellInfo* sp = m_spellInfo;
 
     if (m_target->m_damageSplitTarget)
-        res = static_cast<float>(m_target->DoDamageSplitTarget(static_cast<uint32>(res), GetSpellProto()->School, false));
+        res = static_cast<float>(m_target->DoDamageSplitTarget(static_cast<uint32>(res), GetSpellInfo()->School, false));
 
     if (c != NULL)
         c->DealDamage(m_target, static_cast<int32>(res), 2, 0, GetSpellId());
@@ -2043,7 +2043,7 @@ void Aura::SpellAuraDummy(bool apply)
     if (sScriptMgr.CallScriptedDummyAura(GetSpellId(), mod->i, this, apply))
         return;
 
-    Log.Debug("Aura::SpellAuraDummy", "Spell %u (%s) has an apply dummy aura effect, but no handler for it. ", m_spellProto->Id, m_spellProto->Name.c_str());
+    Log.Debug("Aura::SpellAuraDummy", "Spell %u (%s) has an apply dummy aura effect, but no handler for it. ", m_spellInfo->Id, m_spellInfo->Name.c_str());
 }
 
 void Aura::SpellAuraModConfuse(bool apply)
@@ -2059,7 +2059,7 @@ void Aura::SpellAuraModConfuse(bool apply)
 
         // Check Mechanic Immunity
         if (m_target->MechanicsDispels[MECHANIC_DISORIENTED]
-            || (m_spellProto->MechanicsType == MECHANIC_POLYMORPHED && m_target->MechanicsDispels[MECHANIC_POLYMORPHED])
+            || (m_spellInfo->MechanicsType == MECHANIC_POLYMORPHED && m_target->MechanicsDispels[MECHANIC_POLYMORPHED])
             )
         {
             m_flags |= 1 << mod->i;
@@ -2167,7 +2167,7 @@ void Aura::SpellAuraModCharm(bool apply)
             data << uint32(PET_SPELL_DEFENSIVE);
             data << uint32(PET_SPELL_PASSIVE);
             caster->GetSession()->SendPacket(&data);
-            target->SetEnslaveSpell(m_spellProto->Id);
+            target->SetEnslaveSpell(m_spellInfo->Id);
         }
     }
     else
@@ -2268,15 +2268,15 @@ void Aura::SpellAuraPeriodicHeal(bool apply)
         Unit* c = GetUnitCaster();
         if (c != nullptr)
         {
-            SM_FIValue(c->SM_FMiscEffect, &val, GetSpellProto()->SpellGroupType);
-            SM_PIValue(c->SM_PMiscEffect, &val, GetSpellProto()->SpellGroupType);
+            SM_FIValue(c->SM_FMiscEffect, &val, GetSpellInfo()->SpellGroupType);
+            SM_PIValue(c->SM_PMiscEffect, &val, GetSpellInfo()->SpellGroupType);
         }
 
         if (val > 0)
         {
-            sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal, (uint32)val, EVENT_AURA_PERIODIC_HEAL, GetSpellProto()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal, (uint32)val, EVENT_AURA_PERIODIC_HEAL, GetSpellInfo()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
-            if (GetSpellProto()->custom_NameHash == SPELL_HASH_REJUVENATION || GetSpellProto()->custom_NameHash == SPELL_HASH_REGROWTH)
+            if (GetSpellInfo()->custom_NameHash == SPELL_HASH_REJUVENATION || GetSpellInfo()->custom_NameHash == SPELL_HASH_REGROWTH)
             {
                 m_target->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_REJUVENATE);
                 if (!sEventMgr.HasEvent(m_target, EVENT_REJUVENATION_FLAG_EXPIRE))
@@ -2304,27 +2304,27 @@ void Aura::EventPeriodicHeal(uint32 amount)
 
     if (c != NULL)
     {
-        bonus += c->HealDoneMod[m_spellProto->School] + m_target->HealTakenMod[m_spellProto->School];
+        bonus += c->HealDoneMod[m_spellInfo->School] + m_target->HealTakenMod[m_spellInfo->School];
         if (c->IsPlayer())
         {
             for (uint32 a = 0; a < 5; a++)
-                bonus += float2int32(static_cast< Player* >(c)->SpellHealDoneByAttribute[a][m_spellProto->School] * static_cast< Player* >(c)->GetStat(a));
+                bonus += float2int32(static_cast< Player* >(c)->SpellHealDoneByAttribute[a][m_spellInfo->School] * static_cast< Player* >(c)->GetStat(a));
         }
         //Spell Coefficient
-        if (m_spellProto->OTspell_coef_override >= 0)   //In case we have forced coefficients
-            bonus = float2int32(bonus * m_spellProto->OTspell_coef_override);
+        if (m_spellInfo->OTspell_coef_override >= 0)   //In case we have forced coefficients
+            bonus = float2int32(bonus * m_spellInfo->OTspell_coef_override);
         else
         {
             //Bonus to HoT part
-            if (m_spellProto->fixed_hotdotcoef >= 0)
+            if (m_spellInfo->fixed_hotdotcoef >= 0)
             {
-                bonus = float2int32(bonus * m_spellProto->fixed_hotdotcoef);
+                bonus = float2int32(bonus * m_spellInfo->fixed_hotdotcoef);
                 //we did most calculations in world.cpp, but talents that increase DoT spells duration
                 //must be included now.
                 if (c->IsPlayer())
                 {
                     int durmod = 0;
-                    SM_FIValue(c->SM_FDur, &durmod, m_spellProto->SpellGroupType);
+                    SM_FIValue(c->SM_FDur, &durmod, m_spellInfo->SpellGroupType);
                     bonus += bonus * durmod / 15000;
                 }
             }
@@ -2338,7 +2338,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
         SM_FIValue(c->SM_FPenalty, &penalty_flt, GetSpellProto()->SpellGroupType);
         bonus += penalty_flt;
         */
-        SM_PIValue(c->SM_PPenalty, &bonus, m_spellProto->SpellGroupType);
+        SM_PIValue(c->SM_PPenalty, &bonus, m_spellInfo->SpellGroupType);
 #ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
         int spell_flat_modifers = 0;
         int spell_pct_modifers = 0;
@@ -2349,16 +2349,16 @@ void Aura::EventPeriodicHeal(uint32 amount)
 #endif
     }
 
-    int amp = m_spellProto->EffectAmplitude[mod->i];
+    int amp = m_spellInfo->EffectAmplitude[mod->i];
     if (!amp)
         amp = event_GetEventPeriod(EVENT_AURA_PERIODIC_HEAL);
     //	if (m_spellProto->custom_NameHash != SPELL_HASH_HEALING_STREAM)// Healing Stream is not a HOT
     {
         int32 dur = GetDuration();
         //example : Citrine Pendant of Golden Healing is in AA aura that does not have duration. In this case he would have full healbonus benefit
-        if ((dur == 0 || dur == -1) && GetSpellProto()->DurationIndex)
+        if ((dur == 0 || dur == -1) && GetSpellInfo()->DurationIndex)
         {
-            auto spell_duration = sSpellDurationStore.LookupEntry(GetSpellProto()->DurationIndex);
+            auto spell_duration = sSpellDurationStore.LookupEntry(GetSpellInfo()->DurationIndex);
             if (spell_duration != nullptr)
                 dur = ::GetDuration(spell_duration);
         }
@@ -2390,14 +2390,14 @@ void Aura::EventPeriodicHeal(uint32 amount)
     int add = (bonus + amount > 0) ? bonus + amount : 0;
     if (c != NULL)
     {
-        add += float2int32(add * (m_target->HealTakenPctMod[m_spellProto->School] + c->HealDonePctMod[GetSpellProto()->School]));
-        SM_PIValue(c->SM_PDOT, &add, m_spellProto->SpellGroupType);
+        add += float2int32(add * (m_target->HealTakenPctMod[m_spellInfo->School] + c->HealDonePctMod[GetSpellInfo()->School]));
+        SM_PIValue(c->SM_PDOT, &add, m_spellInfo->SpellGroupType);
 
         if (this->DotCanCrit())
         {
-            is_critical = c->IsCriticalHealForSpell(m_target, GetSpellProto());
+            is_critical = c->IsCriticalHealForSpell(m_target, GetSpellInfo());
             if (is_critical)
-                add = float2int32(c->GetCriticalHealBonusForSpell(m_target, GetSpellProto(), (float)add));
+                add = float2int32(c->GetCriticalHealBonusForSpell(m_target, GetSpellInfo(), (float)add));
         }
     }
 
@@ -2417,7 +2417,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
 
     m_target->RemoveAurasByHeal();
 
-    if (GetSpellProto()->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP)
+    if (GetSpellInfo()->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP)
     {
         m_target->Emote(EMOTE_ONESHOT_EAT);
     }
@@ -2426,7 +2426,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
     Unit* u_caster = GetUnitCaster();
     if (u_caster != NULL)
     {
-        if (GetSpellProto()->custom_NameHash == SPELL_HASH_HEALTH_FUNNEL && add > 0)
+        if (GetSpellInfo()->custom_NameHash == SPELL_HASH_HEALTH_FUNNEL && add > 0)
         {
             dealdamage sdmg;
 
@@ -2461,7 +2461,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
 
         for (std::vector<Unit*>::iterator itr = target_threat.begin(); itr != target_threat.end(); ++itr)
         {
-            static_cast< Unit* >(*itr)->GetAIInterface()->HealReaction(u_caster, m_target, m_spellProto, add);
+            static_cast< Unit* >(*itr)->GetAIInterface()->HealReaction(u_caster, m_target, m_spellInfo, add);
         }
 
         if (m_target->IsInWorld() && u_caster->IsInWorld())
@@ -2552,12 +2552,12 @@ void Aura::SpellAuraModStun(bool apply)
     {
         // Check Mechanic Immunity
         // Stun is a tricky one... it's used for all different kinds of mechanics as a base Aura
-        if (!IsPositive() && m_spellProto->custom_NameHash != SPELL_HASH_ICE_BLOCK)    // ice block stuns you, don't want our own spells to ignore stun effects
+        if (!IsPositive() && m_spellInfo->custom_NameHash != SPELL_HASH_ICE_BLOCK)    // ice block stuns you, don't want our own spells to ignore stun effects
         {
-            if ((m_spellProto->MechanicsType == MECHANIC_CHARMED &&  m_target->MechanicsDispels[MECHANIC_CHARMED])
-                || (m_spellProto->MechanicsType == MECHANIC_INCAPACIPATED && m_target->MechanicsDispels[MECHANIC_INCAPACIPATED])
+            if ((m_spellInfo->MechanicsType == MECHANIC_CHARMED &&  m_target->MechanicsDispels[MECHANIC_CHARMED])
+                || (m_spellInfo->MechanicsType == MECHANIC_INCAPACIPATED && m_target->MechanicsDispels[MECHANIC_INCAPACIPATED])
 
-                || (m_spellProto->MechanicsType == MECHANIC_SAPPED && m_target->MechanicsDispels[MECHANIC_SAPPED])
+                || (m_spellInfo->MechanicsType == MECHANIC_SAPPED && m_target->MechanicsDispels[MECHANIC_SAPPED])
                 || (m_target->MechanicsDispels[MECHANIC_STUNNED])
                 )
             {
@@ -2778,8 +2778,8 @@ void Aura::SpellAuraDamageShield(bool apply)
         SetPositive();
         DamageProc ds;// = new DamageShield();
         ds.m_damage = mod->m_amount;
-        ds.m_spellId = GetSpellProto()->Id;
-        ds.m_school = GetSpellProto()->School;
+        ds.m_spellId = GetSpellInfo()->Id;
+        ds.m_school = GetSpellInfo()->School;
         ds.m_flags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_MISC; //maybe later we might want to add other flags too here
         ds.owner = (void*)this;
         m_target->m_damageShields.push_back(ds);
@@ -2827,10 +2827,10 @@ void Aura::SpellAuraModStealth(bool apply)
         }
 
         SetPositive();
-        if (m_spellProto->custom_NameHash != SPELL_HASH_VANISH)
+        if (m_spellInfo->custom_NameHash != SPELL_HASH_VANISH)
             m_target->SetStealth(GetSpellId());
 
-        if (m_spellProto->custom_NameHash == SPELL_HASH_STEALTH)
+        if (m_spellInfo->custom_NameHash == SPELL_HASH_STEALTH)
             m_target->SetFlag(UNIT_FIELD_BYTES_2, 0x1E000000); //sneak anim
 
         m_target->SetFlag(UNIT_FIELD_BYTES_1, 0x020000);
@@ -2841,7 +2841,7 @@ void Aura::SpellAuraModStealth(bool apply)
         m_target->m_stealthLevel += mod->m_amount;
 
         // hack fix for vanish stuff
-        if (m_spellProto->custom_NameHash == SPELL_HASH_VANISH && m_target->IsPlayer())	   // Vanish
+        if (m_spellInfo->custom_NameHash == SPELL_HASH_VANISH && m_target->IsPlayer())	   // Vanish
         {
 
             for (Object::InRangeSet::iterator iter = m_target->GetInRangeSetBegin(); iter != m_target->GetInRangeSetEnd(); ++iter)
@@ -2865,7 +2865,7 @@ void Aura::SpellAuraModStealth(bool apply)
             {
                 if (m_target->m_auras[x] != NULL)
                 {
-                    if (m_target->m_auras[x]->GetSpellProto()->MechanicsType == MECHANIC_ROOTED || m_target->m_auras[x]->GetSpellProto()->MechanicsType == MECHANIC_ENSNARED)   // Remove roots and slow spells
+                    if (m_target->m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_ROOTED || m_target->m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_ENSNARED)   // Remove roots and slow spells
                     {
                         m_target->m_auras[x]->Remove();
                     }
@@ -2873,7 +2873,7 @@ void Aura::SpellAuraModStealth(bool apply)
                     {
                         for (uint8 i = 0; i < 3; i++)
                         {
-                            uint32 AuraEntry = m_target->m_auras[x]->GetSpellProto()->EffectApplyAuraName[i];
+                            uint32 AuraEntry = m_target->m_auras[x]->GetSpellInfo()->EffectApplyAuraName[i];
                             if (AuraEntry == SPELL_AURA_MOD_DECREASE_SPEED || AuraEntry == SPELL_AURA_MOD_ROOT || AuraEntry == SPELL_AURA_MOD_STALKED)
                             {
                                 m_target->m_auras[x]->Remove();
@@ -2909,7 +2909,7 @@ void Aura::SpellAuraModStealth(bool apply)
     {
         m_target->m_stealthLevel -= mod->m_amount;
 
-        if (m_spellProto->custom_NameHash != SPELL_HASH_VANISH)
+        if (m_spellInfo->custom_NameHash != SPELL_HASH_VANISH)
         {
             m_target->SetStealth(0);
             m_target->RemoveFlag(UNIT_FIELD_BYTES_2, 0x1E000000);
@@ -2919,24 +2919,24 @@ void Aura::SpellAuraModStealth(bool apply)
             if (p_target != NULL)
             {
                 p_target->RemoveFlag(PLAYER_FIELD_BYTES2, 0x2000);
-                p_target->SendSpellCooldownEvent(m_spellProto->Id);
+                p_target->SendSpellCooldownEvent(m_spellInfo->Id);
 
                 if (p_target->m_outStealthDamageBonusPeriod && p_target->m_outStealthDamageBonusPct)
                     p_target->m_outStealthDamageBonusTimer = (uint32)UNIXTIME + p_target->m_outStealthDamageBonusPeriod;
             }
         }
 
-        if ((m_target->HasAurasWithNameHash(SPELL_HASH_MASTER_OF_SUBTLETY) || m_target->HasAurasWithNameHash(SPELL_HASH_OVERKILL)) && m_spellProto->custom_NameHash == SPELL_HASH_STEALTH)
+        if ((m_target->HasAurasWithNameHash(SPELL_HASH_MASTER_OF_SUBTLETY) || m_target->HasAurasWithNameHash(SPELL_HASH_OVERKILL)) && m_spellInfo->custom_NameHash == SPELL_HASH_STEALTH)
         {
             for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
             {
                 if (m_target->m_auras[x] &&
-                    (m_target->m_auras[x]->GetSpellProto()->custom_NameHash == SPELL_HASH_MASTER_OF_SUBTLETY ||
-                    m_target->m_auras[x]->GetSpellProto()->custom_NameHash == SPELL_HASH_OVERKILL) &&
-                    m_target->m_auras[x]->GetSpellProto()->EffectApplyAuraName[0] != SPELL_AURA_DUMMY)
+                    (m_target->m_auras[x]->GetSpellInfo()->custom_NameHash == SPELL_HASH_MASTER_OF_SUBTLETY ||
+                    m_target->m_auras[x]->GetSpellInfo()->custom_NameHash == SPELL_HASH_OVERKILL) &&
+                    m_target->m_auras[x]->GetSpellInfo()->EffectApplyAuraName[0] != SPELL_AURA_DUMMY)
                 {
                     uint32 tmp_duration = MSTIME_6SECONDS;
-                    if (m_target->m_auras[x]->GetSpellProto()->custom_NameHash == SPELL_HASH_OVERKILL)
+                    if (m_target->m_auras[x]->GetSpellInfo()->custom_NameHash == SPELL_HASH_OVERKILL)
                         tmp_duration = MSTIME_SECOND * 20;
 
                     m_target->m_auras[x]->SetDuration(tmp_duration);
@@ -2966,7 +2966,7 @@ void Aura::SpellAuraModDetect(bool apply)
 void Aura::SpellAuraModInvisibility(bool apply)
 {
     SetPositive();
-    if (m_spellProto->Effect[mod->i] == SPELL_EFFECT_APPLY_FRIEND_AREA_AURA)  ///\todo WTF is this crap? TODO clean this
+    if (m_spellInfo->Effect[mod->i] == SPELL_EFFECT_APPLY_FRIEND_AREA_AURA)  ///\todo WTF is this crap? TODO clean this
         return;
 
     if (apply)
@@ -3018,7 +3018,7 @@ void Aura::SpellAuraModTotalHealthRegenPct(bool apply)
     {
         SetPositive();
         sEventMgr.AddEvent(this, &Aura::EventPeriodicHealPct, (float)mod->m_amount,
-                           EVENT_AURA_PERIODIC_HEALPERC, GetSpellProto()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                           EVENT_AURA_PERIODIC_HEALPERC, GetSpellInfo()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
 
@@ -3036,9 +3036,9 @@ void Aura::EventPeriodicHealPct(float RegenPct)
     else
         m_target->SetHealth(m_target->GetMaxHealth());
 
-    m_target->SendPeriodicAuraLog(m_casterGuid, m_target->GetNewGUID(), m_spellProto->Id, m_spellProto->School, add, 0, 0, FLAG_PERIODIC_HEAL, false);
+    m_target->SendPeriodicAuraLog(m_casterGuid, m_target->GetNewGUID(), m_spellInfo->Id, m_spellInfo->School, add, 0, 0, FLAG_PERIODIC_HEAL, false);
 
-    if (GetSpellProto()->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP)
+    if (GetSpellInfo()->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP)
     {
         m_target->Emote(EMOTE_ONESHOT_EAT);
     }
@@ -3052,7 +3052,7 @@ void Aura::SpellAuraModTotalManaRegenPct(bool apply)
     {
         SetPositive();
         sEventMgr.AddEvent(this, &Aura::EventPeriodicManaPct, (float)mod->m_amount,
-                           EVENT_AURA_PERIOCIC_MANA, GetSpellProto()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                           EVENT_AURA_PERIOCIC_MANA, GetSpellInfo()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
 
@@ -3067,8 +3067,8 @@ void Aura::EventPeriodicManaPct(float RegenPct)
 
     if (newPower <= m_target->GetMaxPower(POWER_TYPE_MANA))
     {
-        if (GetSpellProto()->Id != 60069)
-            m_target->Energize(m_target, m_spellProto->Id, add, POWER_TYPE_MANA);
+        if (GetSpellInfo()->Id != 60069)
+            m_target->Energize(m_target, m_spellInfo->Id, add, POWER_TYPE_MANA);
         else
             m_target->Energize(m_target, 49766, add, POWER_TYPE_MANA);
     }
@@ -3078,7 +3078,7 @@ void Aura::EventPeriodicManaPct(float RegenPct)
     // CAPT
     ///\todo sniff it or disasm wow.exe to find the mana flag
 
-    if (GetSpellProto()->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP)
+    if (GetSpellInfo()->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP)
     {
         m_target->Emote(EMOTE_ONESHOT_EAT);
     }
@@ -3086,8 +3086,8 @@ void Aura::EventPeriodicManaPct(float RegenPct)
 
 void Aura::EventPeriodicTriggerDummy()
 {
-    if (!sScriptMgr.CallScriptedDummyAura(m_spellProto->Id, mod->i, this, true))
-        LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellProto->Id, m_spellProto->Name.c_str());
+    if (!sScriptMgr.CallScriptedDummyAura(m_spellInfo->Id, mod->i, this, true))
+        LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellInfo->Id, m_spellInfo->Name.c_str());
 }
 
 void Aura::SpellAuraModResistance(bool apply)
@@ -3108,11 +3108,11 @@ void Aura::SpellAuraModResistance(bool apply)
     if (!IsPositive() && caster != NULL && m_target->IsCreature())
         m_target->GetAIInterface()->AttackReaction(caster, 1, GetSpellId());
 
-    if (GetSpellProto()->custom_NameHash == SPELL_HASH_FAERIE_FIRE || GetSpellProto()->custom_NameHash == SPELL_HASH_FAERIE_FIRE__FERAL_)
+    if (GetSpellInfo()->custom_NameHash == SPELL_HASH_FAERIE_FIRE || GetSpellInfo()->custom_NameHash == SPELL_HASH_FAERIE_FIRE__FERAL_)
         m_target->m_can_stealth = !apply;
 
     Player* plr = GetPlayerCaster();
-    if (plr != NULL && GetSpellProto()->custom_NameHash == SPELL_HASH_DEVOTION_AURA)
+    if (plr != NULL && GetSpellInfo()->custom_NameHash == SPELL_HASH_DEVOTION_AURA)
     {
         // Increases the armor bonus of your Devotion Aura by %u - HACKY
         if (plr->HasSpell(20140))     // Improved Devotion Aura Rank 3
@@ -3154,18 +3154,18 @@ void Aura::SpellAuraPeriodicTriggerSpellWithValue(bool apply)
 {
     if (apply)
     {
-        SpellInfo* spe = sSpellCustomizations.GetSpellInfo(m_spellProto->EffectTriggerSpell[mod->i]);
+        SpellInfo* spe = sSpellCustomizations.GetSpellInfo(m_spellInfo->EffectTriggerSpell[mod->i]);
         if (spe == NULL)
             return;
 
-        float amptitude = static_cast<float>(GetSpellProto()->EffectAmplitude[mod->i]);
+        float amptitude = static_cast<float>(GetSpellInfo()->EffectAmplitude[mod->i]);
         Unit* caster = GetUnitCaster();
-        uint32 numticks = GetSpellDuration(m_spellProto, caster) / m_spellProto->EffectAmplitude[mod->i];
+        uint32 numticks = GetSpellDuration(m_spellInfo, caster) / m_spellInfo->EffectAmplitude[mod->i];
         if (caster != NULL)
         {
-            SM_FFValue(caster->SM_FAmptitude, &amptitude, m_spellProto->SpellGroupType);
-            SM_PFValue(caster->SM_PAmptitude, &amptitude, m_spellProto->SpellGroupType);
-            if (m_spellProto->ChannelInterruptFlags != 0)
+            SM_FFValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->SpellGroupType);
+            SM_PFValue(caster->SM_PAmptitude, &amptitude, m_spellInfo->SpellGroupType);
+            if (m_spellInfo->ChannelInterruptFlags != 0)
                 amptitude *= caster->GetCastSpeedMod();
         }
 
@@ -3176,7 +3176,7 @@ void Aura::SpellAuraPeriodicTriggerSpellWithValue(bool apply)
 
 void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
 {
-    switch (m_spellProto->Id)
+    switch (m_spellInfo->Id)
     {
         case 23493:
         case 24379:
@@ -3200,7 +3200,7 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
         }
     }
 
-    if (m_spellProto->EffectTriggerSpell[mod->i] == 0)
+    if (m_spellInfo->EffectTriggerSpell[mod->i] == 0)
         return;
 
     /*
@@ -3230,20 +3230,20 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
 
     if (apply)
     {
-        SpellInfo* trigger = sSpellCustomizations.GetSpellInfo(GetSpellProto()->EffectTriggerSpell[mod->i]);
+        SpellInfo* trigger = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[mod->i]);
 
         if (trigger == NULL)
             return;
 
 
-        float amptitude = static_cast<float>(GetSpellProto()->EffectAmplitude[mod->i]);
+        float amptitude = static_cast<float>(GetSpellInfo()->EffectAmplitude[mod->i]);
         Unit* caster = GetUnitCaster();
-        uint32 numticks = GetSpellDuration(m_spellProto, caster) / m_spellProto->EffectAmplitude[mod->i];
+        uint32 numticks = GetSpellDuration(m_spellInfo, caster) / m_spellInfo->EffectAmplitude[mod->i];
         if (caster != NULL)
         {
-            SM_FFValue(caster->SM_FAmptitude, &amptitude, m_spellProto->SpellGroupType);
-            SM_PFValue(caster->SM_PAmptitude, &amptitude, m_spellProto->SpellGroupType);
-            if (m_spellProto->ChannelInterruptFlags != 0)
+            SM_FFValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->SpellGroupType);
+            SM_PFValue(caster->SM_PAmptitude, &amptitude, m_spellInfo->SpellGroupType);
+            if (m_spellInfo->ChannelInterruptFlags != 0)
                 amptitude *= caster->GetCastSpeedMod();
         }
 
@@ -3272,7 +3272,7 @@ void Aura::SpellAuraPeriodicEnergize(bool apply)
     {
         SetPositive();
         sEventMgr.AddEvent(this, &Aura::EventPeriodicEnergize, (uint32)mod->m_amount, (uint32)mod->m_miscValue,
-                           EVENT_AURA_PERIODIC_ENERGIZE, GetSpellProto()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                           EVENT_AURA_PERIODIC_ENERGIZE, GetSpellInfo()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
 
@@ -3286,9 +3286,9 @@ void Aura::EventPeriodicEnergize(uint32 amount, uint32 type)
     if (ucaster == NULL)
         return;
 
-    ucaster->Energize(m_target, m_spellProto->Id, amount, type);
+    ucaster->Energize(m_target, m_spellInfo->Id, amount, type);
 
-    if ((GetSpellProto()->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP) && type == POWER_TYPE_MANA)
+    if ((GetSpellInfo()->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP) && type == POWER_TYPE_MANA)
     {
         m_target->Emote(EMOTE_ONESHOT_EAT);
     }
@@ -3299,7 +3299,7 @@ void Aura::SpellAuraModPacify(bool apply)
     // Can't Attack
     if (apply)
     {
-        if (m_spellProto->Id == 24937 || m_spellProto->custom_NameHash == SPELL_HASH_BLESSING_OF_PROTECTION)
+        if (m_spellInfo->Id == 24937 || m_spellInfo->custom_NameHash == SPELL_HASH_BLESSING_OF_PROTECTION)
             SetPositive();
         else
             SetNegative();
@@ -3346,7 +3346,7 @@ void Aura::SpellAuraModRoot(bool apply)
             m_target->EventStunOrImmobilize(caster, true);
         }
 
-        if (GetSpellProto()->School == SCHOOL_FROST && !m_target->asc_frozen++)
+        if (GetSpellInfo()->School == SCHOOL_FROST && !m_target->asc_frozen++)
             m_target->SetFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_FROZEN);
 
         ///\todo -Supalosa- TODO: Mobs will attack nearest enemy in range on aggro list when rooted. */
@@ -3361,7 +3361,7 @@ void Aura::SpellAuraModRoot(bool apply)
         if (m_target->IsCreature())
             m_target->GetAIInterface()->AttackReaction(GetUnitCaster(), 1, 0);
 
-        if (GetSpellProto()->School == SCHOOL_FROST && !--m_target->asc_frozen)
+        if (GetSpellInfo()->School == SCHOOL_FROST && !--m_target->asc_frozen)
             m_target->RemoveFlag(UNIT_FIELD_AURASTATE, AURASTATE_FLAG_FROZEN);
     }
 }
@@ -3400,7 +3400,7 @@ void Aura::SpellAuraReflectSpells(bool apply)
         rss->spellId = GetSpellId();
         rss->school = -1;
         rss->require_aura_hash = 0;
-        rss->charges = m_spellProto->procCharges;
+        rss->charges = m_spellInfo->procCharges;
         rss->infront = false;
 
         m_target->m_reflectSpellSchool.push_back(rss);
@@ -3560,7 +3560,7 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
             m_flags |= 1 << mod->i;
             return;
         }
-        switch (m_spellProto->custom_NameHash)
+        switch (m_spellInfo->custom_NameHash)
         {
             case SPELL_HASH_STEALTH:			// Stealth
                 SetPositive();
@@ -3578,7 +3578,7 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
         }
 
         //let's check Mage talents if we proc anything
-        if (m_spellProto->School == SCHOOL_FROST)
+        if (m_spellInfo->School == SCHOOL_FROST)
         {
             //yes we are freezing the bastard, so can we proc anything on this ?
             Unit* caster = GetUnitCaster();
@@ -3587,13 +3587,13 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
             if (m_target->IsPlayer() && caster)
                 static_cast< Unit* >(m_target)->EventChill(caster, true);
         }
-        m_target->speedReductionMap.insert(std::make_pair(m_spellProto->Id, mod->m_amount));
+        m_target->speedReductionMap.insert(std::make_pair(m_spellInfo->Id, mod->m_amount));
         //m_target->m_slowdown=this;
         //m_target->m_speedModifier += mod->m_amount;
     }
     else if ((m_flags & (1 << mod->i)) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
     {
-        std::map< uint32, int32 >::iterator itr = m_target->speedReductionMap.find(m_spellProto->Id);
+        std::map< uint32, int32 >::iterator itr = m_target->speedReductionMap.find(m_spellInfo->Id);
         if (itr != m_target->speedReductionMap.end())
             m_target->speedReductionMap.erase(itr);
         //m_target->m_speedModifier -= mod->m_amount;
@@ -3612,7 +3612,7 @@ void Aura::UpdateAuraModDecreaseSpeed()
     }
 
     //let's check Mage talents if we proc anything
-    if (m_spellProto->School == SCHOOL_FROST)
+    if (m_spellInfo->School == SCHOOL_FROST)
     {
         //yes we are freezing the bastard, so can we proc anything on this ?
         Unit* caster = GetUnitCaster();
@@ -3630,7 +3630,7 @@ void Aura::SpellAuraModIncreaseHealth(bool apply)
     if (apply)
     {
         //threat special cases. We should move these to scripted spells maybe
-        switch (m_spellProto->Id)
+        switch (m_spellInfo->Id)
         {
             case 23782:// Gift of Life
                 mod->m_amount = 1500;
@@ -3701,7 +3701,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
 {
     if (p_target != NULL)
     {
-        if (p_target->m_MountSpellId != 0 && p_target->m_MountSpellId != m_spellProto->Id)
+        if (p_target->m_MountSpellId != 0 && p_target->m_MountSpellId != m_spellInfo->Id)
         {
             switch (mod->m_miscValue)
             {
@@ -3843,7 +3843,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
         {
             if (apply)
             {
-                static_cast< Player* >(m_target)->SendSpellCooldownEvent(m_spellProto->Id);
+                static_cast< Player* >(m_target)->SendSpellCooldownEvent(m_spellInfo->Id);
             }
             spellId = 49868;
         }
@@ -3986,7 +3986,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
             {
                 if (m_target->m_auras[x] != NULL)
                 {
-                    if (m_target->m_auras[x]->GetSpellProto()->MechanicsType == MECHANIC_ROOTED || m_target->m_auras[x]->GetSpellProto()->MechanicsType == MECHANIC_ENSNARED)   // Remove roots and slow spells
+                    if (m_target->m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_ROOTED || m_target->m_auras[x]->GetSpellInfo()->MechanicsType == MECHANIC_ENSNARED)   // Remove roots and slow spells
                     {
                         m_target->m_auras[x]->Remove();
                     }
@@ -3994,7 +3994,7 @@ void Aura::SpellAuraModShapeshift(bool apply)
                     {
                         for (uint8 i = 0; i < 3; i++)
                         {
-                            if (m_target->m_auras[x]->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_MOD_DECREASE_SPEED || m_target->m_auras[x]->GetSpellProto()->EffectApplyAuraName[i] == SPELL_AURA_MOD_ROOT)
+                            if (m_target->m_auras[x]->GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_MOD_DECREASE_SPEED || m_target->m_auras[x]->GetSpellInfo()->EffectApplyAuraName[i] == SPELL_AURA_MOD_ROOT)
                             {
                                 m_target->m_auras[x]->Remove();
                                 break;
@@ -4044,12 +4044,12 @@ void Aura::SpellAuraModShapeshift(bool apply)
 
 void Aura::SpellAuraModEffectImmunity(bool apply)
 {
-    if (m_spellProto->Id == 24937)
+    if (m_spellInfo->Id == 24937)
         SetPositive();
 
     if (!apply)
     {
-        if (m_spellProto->Id == 23333 || m_spellProto->Id == 23335 || m_spellProto->Id == 34976)
+        if (m_spellInfo->Id == 23333 || m_spellInfo->Id == 23335 || m_spellInfo->Id == 34976)
         {
             Player* plr = GetPlayerCaster();
             if (plr == NULL || plr->m_bg == NULL)
@@ -4069,7 +4069,7 @@ void Aura::SpellAuraModStateImmunity(bool apply)
 
 void Aura::SpellAuraModSchoolImmunity(bool apply)
 {
-    if (apply && (m_spellProto->custom_NameHash == SPELL_HASH_DIVINE_SHIELD || m_spellProto->custom_NameHash == SPELL_HASH_ICE_BLOCK))    // Paladin - Divine Shield
+    if (apply && (m_spellInfo->custom_NameHash == SPELL_HASH_DIVINE_SHIELD || m_spellInfo->custom_NameHash == SPELL_HASH_ICE_BLOCK))    // Paladin - Divine Shield
     {
         if (!m_target->isAlive())
             return;
@@ -4078,14 +4078,14 @@ void Aura::SpellAuraModSchoolImmunity(bool apply)
         for (uint32 i = MAX_NEGATIVE_AURAS_EXTEDED_START; i < MAX_NEGATIVE_AURAS_EXTEDED_END; ++i)
         {
             pAura = m_target->m_auras[i];
-            if (pAura != this && pAura != NULL && !pAura->IsPassive() && !pAura->IsPositive() && !(pAura->GetSpellProto()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY))
+            if (pAura != this && pAura != NULL && !pAura->IsPassive() && !pAura->IsPositive() && !(pAura->GetSpellInfo()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY))
             {
                 pAura->Remove();
             }
         }
     }
 
-    if (apply && (m_spellProto->custom_NameHash == SPELL_HASH_DIVINE_SHIELD || m_spellProto->custom_NameHash == SPELL_HASH_BLESSING_OF_PROTECTION || m_spellProto->custom_NameHash == SPELL_HASH_ICE_BLOCK))
+    if (apply && (m_spellInfo->custom_NameHash == SPELL_HASH_DIVINE_SHIELD || m_spellInfo->custom_NameHash == SPELL_HASH_BLESSING_OF_PROTECTION || m_spellInfo->custom_NameHash == SPELL_HASH_ICE_BLOCK))
     {
         m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_INVINCIBLE);
     }
@@ -4145,7 +4145,7 @@ void Aura::SpellAuraModDispelImmunity(bool apply)
         {
             // HACK FIX FOR: 41425 and 25771
             if (m_target->m_auras[x] && m_target->m_auras[x]->GetSpellId() != 41425 && m_target->m_auras[x]->GetSpellId() != 25771)
-                if (m_target->m_auras[x]->GetSpellProto()->DispelType == (uint32)mod->m_miscValue)
+                if (m_target->m_auras[x]->GetSpellInfo()->DispelType == (uint32)mod->m_miscValue)
                     m_target->m_auras[x]->Remove();
         }
     }
@@ -4160,38 +4160,38 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
         uint32 spellId;
 
         // Find spell of effect to be triggered
-        spellId = GetSpellProto()->EffectTriggerSpell[mod->i];
+        spellId = GetSpellInfo()->EffectTriggerSpell[mod->i];
         if (spellId == 0)
         {
-            LOG_DEBUG("Warning! trigger spell is null for spell %u", GetSpellProto()->Id);
+            LOG_DEBUG("Warning! trigger spell is null for spell %u", GetSpellInfo()->Id);
             return;
         }
 
         // Initialize mask
-        groupRelation[0] = GetSpellProto()->EffectSpellClassMask[0];
-        groupRelation[1] = GetSpellProto()->EffectSpellClassMask[1];
-        groupRelation[2] = GetSpellProto()->EffectSpellClassMask[2];
+        groupRelation[0] = GetSpellInfo()->EffectSpellClassMask[0];
+        groupRelation[1] = GetSpellInfo()->EffectSpellClassMask[1];
+        groupRelation[2] = GetSpellInfo()->EffectSpellClassMask[2];
 
         // Initialize charges
-        charges = GetSpellProto()->procCharges;
+        charges = GetSpellInfo()->procCharges;
         Unit* ucaster = GetUnitCaster();
         if (ucaster != nullptr)
         {
-            SM_FIValue(ucaster->SM_FCharges, &charges, GetSpellProto()->SpellGroupType);
-            SM_PIValue(ucaster->SM_PCharges, &charges, GetSpellProto()->SpellGroupType);
+            SM_FIValue(ucaster->SM_FCharges, &charges, GetSpellInfo()->SpellGroupType);
+            SM_PIValue(ucaster->SM_PCharges, &charges, GetSpellInfo()->SpellGroupType);
         }
 
-        m_target->AddProcTriggerSpell(spellId, GetSpellProto()->Id, m_casterGuid, GetSpellProto()->procChance, GetSpellProto()->procFlags, charges, groupRelation, NULL);
+        m_target->AddProcTriggerSpell(spellId, GetSpellInfo()->Id, m_casterGuid, GetSpellInfo()->procChance, GetSpellInfo()->procFlags, charges, groupRelation, NULL);
 
-        LOG_DEBUG("%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellProto()->Id, spellId, GetSpellProto()->procChance, GetSpellProto()->procFlags & ~PROC_TARGET_SELF, charges, GetSpellProto()->procFlags & PROC_TARGET_SELF, GetSpellProto()->custom_proc_interval);
+        LOG_DEBUG("%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellInfo()->Id, spellId, GetSpellInfo()->procChance, GetSpellInfo()->procFlags & ~PROC_TARGET_SELF, charges, GetSpellInfo()->procFlags & PROC_TARGET_SELF, GetSpellInfo()->custom_proc_interval);
     }
     else
     {
         // Find spell of effect to be triggered
-        uint32 spellId = GetSpellProto()->EffectTriggerSpell[mod->i];
+        uint32 spellId = GetSpellInfo()->EffectTriggerSpell[mod->i];
         if (spellId == 0)
         {
-            LOG_DEBUG("Warning! trigger spell is null for spell %u", GetSpellProto()->Id);
+            LOG_DEBUG("Warning! trigger spell is null for spell %u", GetSpellInfo()->Id);
             return;
         }
 
@@ -4205,12 +4205,12 @@ void Aura::SpellAuraProcTriggerDamage(bool apply)
     {
         DamageProc ds;
         ds.m_damage = mod->m_amount;
-        ds.m_spellId = GetSpellProto()->Id;
-        ds.m_school = GetSpellProto()->School;
-        ds.m_flags = m_spellProto->procFlags;
+        ds.m_spellId = GetSpellInfo()->Id;
+        ds.m_school = GetSpellInfo()->School;
+        ds.m_flags = m_spellInfo->procFlags;
         ds.owner = (void*)this;
         m_target->m_damageShields.push_back(ds);
-        LOG_DEBUG("registering dmg proc %u, school %u, flags %u, charges at least %u", ds.m_spellId, ds.m_school, ds.m_flags, m_spellProto->procCharges);
+        LOG_DEBUG("registering dmg proc %u, school %u, flags %u, charges at least %u", ds.m_spellId, ds.m_school, ds.m_flags, m_spellInfo->procCharges);
     }
     else
     {
@@ -4346,8 +4346,8 @@ void Aura::SpellAuraModCritPerc(bool apply)
         {
             WeaponModifier md;
             md.value = float(mod->m_amount);
-            md.wclass = GetSpellProto()->EquippedItemClass;
-            md.subclass = GetSpellProto()->EquippedItemSubClass;
+            md.wclass = GetSpellInfo()->EquippedItemClass;
+            md.subclass = GetSpellInfo()->EquippedItemSubClass;
             p_target->tocritchance.insert(std::make_pair(GetSpellId(), md));
         }
         else
@@ -4375,7 +4375,7 @@ void Aura::SpellAuraPeriodicLeech(bool apply)
         SetNegative();
         uint32 amt = mod->m_amount;
         sEventMgr.AddEvent(this, &Aura::EventPeriodicLeech, amt,
-                           EVENT_AURA_PERIODIC_LEECH, GetSpellProto()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                           EVENT_AURA_PERIODIC_LEECH, GetSpellInfo()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
 
@@ -4389,7 +4389,7 @@ void Aura::EventPeriodicLeech(uint32 amount)
     if (!(m_target->isAlive() && m_caster->isAlive()))
         return;
 
-    SpellInfo* sp = GetSpellProto();
+    SpellInfo* sp = GetSpellInfo();
 
     if (m_target->SchoolImmunityList[sp->School])
     {
@@ -4452,7 +4452,7 @@ void Aura::EventPeriodicLeech(uint32 amount)
                 continue;
 
             Aura* aura = m_target->m_auras[x];
-            if (aura->GetSpellProto()->SpellFamilyName != 5)
+            if (aura->GetSpellInfo()->SpellFamilyName != 5)
                 continue;
 
             auto skill_line_ability = objmgr.GetSpellSkill(aura->GetSpellId());
@@ -4527,7 +4527,7 @@ void Aura::SendTickImmune(Unit* target, Unit* caster)
     WorldPacket data(SMSG_SPELLORDAMAGE_IMMUNE, 21);
     data << (caster ? caster->GetGUID() : target->GetGUID());
     data << target->GetGUID();
-    data << GetSpellProto()->Id;
+    data << GetSpellInfo()->Id;
     data << uint8(1);
     target->SendMessageToSet(&data, true);
 }
@@ -4541,8 +4541,8 @@ void Aura::SpellAuraModHitChance(bool apply)
     Unit* c = GetUnitCaster();
     if (c != nullptr)
     {
-        SM_FIValue(c->SM_FMiscEffect, &val, GetSpellProto()->SpellGroupType);
-        SM_PIValue(c->SM_PMiscEffect, &val, GetSpellProto()->SpellGroupType);
+        SM_FIValue(c->SM_FMiscEffect, &val, GetSpellInfo()->SpellGroupType);
+        SM_PIValue(c->SM_PMiscEffect, &val, GetSpellInfo()->SpellGroupType);
     }
 
     if (apply)
@@ -4602,7 +4602,7 @@ void Aura::SpellAuraTransform(bool apply)
         p_target->Dismount();
 
     // SetPositive();
-    switch (GetSpellProto()->Id)
+    switch (GetSpellInfo()->Id)
     {
         case 20584://wisp
             m_target->SetDisplayId(apply ? 10045 : m_target->GetNativeDisplayId());
@@ -4731,7 +4731,7 @@ void Aura::SpellAuraTransform(bool apply)
         {
             if (!displayId)
             {
-                switch (GetSpellProto()->Id)
+                switch (GetSpellInfo()->Id)
                 {
                     case 28270:	 // Cow
                         displayId = 1060;
@@ -4769,7 +4769,7 @@ void Aura::SpellAuraTransform(bool apply)
                 }
 
                 sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal1, (uint32)1000, EVENT_AURA_PERIODIC_HEAL, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-                m_target->polySpell = GetSpellProto()->Id;
+                m_target->polySpell = GetSpellInfo()->Id;
             }
             else
             {
@@ -4885,7 +4885,7 @@ void Aura::SpellAuraPacifySilence(bool apply)
     // Can't Attack or Cast Spells
     if (apply)
     {
-        if (m_spellProto->Id == 24937)
+        if (m_spellInfo->Id == 24937)
             SetPositive();
         else
             SetNegative();
@@ -4936,7 +4936,7 @@ void Aura::SpellAuraPeriodicHealthFunnel(bool apply)
     {
         uint32 amt = mod->m_amount;
         sEventMgr.AddEvent(this, &Aura::EventPeriodicHealthFunnel, amt,
-                           EVENT_AURA_PERIODIC_HEALTH_FUNNEL, GetSpellProto()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                           EVENT_AURA_PERIODIC_HEALTH_FUNNEL, GetSpellInfo()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
 
@@ -4960,7 +4960,7 @@ void Aura::EventPeriodicHealthFunnel(uint32 amount)
         else
             m_caster->SetHealth(mh);
 
-        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellProto->Id, m_spellProto->School, 1000, 0, 0, FLAG_PERIODIC_LEECH, false);
+        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->Id, m_spellInfo->School, 1000, 0, 0, FLAG_PERIODIC_LEECH, false);
 
         m_caster->RemoveAurasByHeal();
     }
@@ -4982,7 +4982,7 @@ void Aura::SpellAuraPeriodicManaLeech(bool apply)
                 amt = caster->GetMaxPower(POWER_TYPE_MANA) * (mult << 1) / 100;
         }
         sEventMgr.AddEvent(this, &Aura::EventPeriodicManaLeech, amt,
-                           EVENT_AURA_PERIODIC_LEECH, GetSpellProto()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                           EVENT_AURA_PERIODIC_LEECH, GetSpellInfo()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
 
@@ -5241,10 +5241,10 @@ void Aura::SpellAuraReflectSpellsSchool(bool apply)
         rss->require_aura_hash = 0;
         rss->infront = false;
 
-        if (m_spellProto->Attributes == 0x400D0 && m_spellProto->AttributesEx == 0)
+        if (m_spellInfo->Attributes == 0x400D0 && m_spellInfo->AttributesEx == 0)
             rss->school = (int)(log10((float)mod->m_miscValue) / log10((float)2));
         else
-            rss->school = m_spellProto->School;
+            rss->school = m_spellInfo->School;
 
         rss->charges = 0;
 
@@ -5290,7 +5290,7 @@ void Aura::SpellAuraMechanicImmunity(bool apply)
             m_target->RemoveAllAurasByMechanic((uint32)mod->m_miscValue, static_cast<uint32>(-1), false);
 
             //Insignia/Medallion of A/H			//Every Man for Himself
-            if (m_spellProto->Id == 42292 || m_spellProto->Id == 59752)
+            if (m_spellInfo->Id == 42292 || m_spellInfo->Id == 59752)
             {
                 for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
                 {
@@ -5298,7 +5298,7 @@ void Aura::SpellAuraMechanicImmunity(bool apply)
                     {
                         for (uint32 y = 0; y < 3; ++y)
                         {
-                            switch (m_target->m_auras[x]->GetSpellProto()->EffectApplyAuraName[y])
+                            switch (m_target->m_auras[x]->GetSpellInfo()->EffectApplyAuraName[y])
                             {
                                 case SPELL_AURA_MOD_STUN:
                                 case SPELL_AURA_MOD_CONFUSE:
@@ -5322,7 +5322,7 @@ void Aura::SpellAuraMechanicImmunity(bool apply)
             SetNegative();
 
         // Demonic Circle hack
-        if (m_spellProto->Id == 48020 && m_target->IsPlayer() && m_target->HasAura(62388))
+        if (m_spellInfo->Id == 48020 && m_target->IsPlayer() && m_target->HasAura(62388))
         {
             GameObject* obj = m_target->GetMapMgr()->GetGameObject(m_target->m_ObjectSlots[0]);
 
@@ -5373,12 +5373,12 @@ void Aura::SpellAuraMounted(bool apply)
         if (!displayId)
             return;
 
-        p_target->m_MountSpellId = m_spellProto->Id;
+        p_target->m_MountSpellId = m_spellInfo->Id;
         p_target->flying_aura = 0;
         m_target->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, displayId);
         //m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
 
-        if (p_target->GetShapeShift() && !(p_target->GetShapeShift() & (FORM_BATTLESTANCE | FORM_DEFENSIVESTANCE | FORM_BERSERKERSTANCE)) && p_target->m_ShapeShifted != m_spellProto->Id)
+        if (p_target->GetShapeShift() && !(p_target->GetShapeShift() & (FORM_BATTLESTANCE | FORM_DEFENSIVESTANCE | FORM_BERSERKERSTANCE)) && p_target->m_ShapeShifted != m_spellInfo->Id)
             p_target->RemoveAura(p_target->m_ShapeShifted);
 
         p_target->DismissActivePets();
@@ -5449,7 +5449,7 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
     }
     if (p_target != NULL)
     {
-        if (GetSpellProto()->EquippedItemClass == -1)  //does not depend on weapon
+        if (GetSpellInfo()->EquippedItemClass == -1)  //does not depend on weapon
         {
             for (uint8 x = 0; x < SCHOOL_COUNT; x++)
             {
@@ -5466,8 +5466,8 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
             {
                 WeaponModifier md;
                 md.value = val;
-                md.wclass = GetSpellProto()->EquippedItemClass;
-                md.subclass = GetSpellProto()->EquippedItemSubClass;
+                md.wclass = GetSpellInfo()->EquippedItemClass;
+                md.subclass = GetSpellInfo()->EquippedItemSubClass;
                 p_target->damagedone.insert(std::make_pair(GetSpellId(), md));
             }
             else
@@ -5569,7 +5569,7 @@ void Aura::SpellAuraSplitDamage(bool apply)
     Object* caster = GetCaster();
 
     // We don't want to split our damage with the owner
-    if ((m_spellProto->Effect[mod->i] == SPELL_EFFECT_APPLY_OWNER_AREA_AURA) &&
+    if ((m_spellInfo->Effect[mod->i] == SPELL_EFFECT_APPLY_OWNER_AREA_AURA) &&
         (caster != nullptr) &&
         (m_target != nullptr) &&
         caster->IsPet() &&
@@ -5600,7 +5600,7 @@ void Aura::SpellAuraSplitDamage(bool apply)
     {
         DamageSplitTarget* ds = new DamageSplitTarget;
         ds->m_flatDamageSplit = 0;
-        ds->m_spellId = GetSpellProto()->Id;
+        ds->m_spellId = GetSpellInfo()->Id;
         ds->m_pctDamageSplit = mod->m_miscValue / 100.0f;
         ds->damage_type = static_cast<uint8>(mod->m_type);
         ds->creator = (void*)this;
@@ -5620,7 +5620,7 @@ void Aura::SpellAuraModRegen(bool apply)
     if (apply)//seems like only positive
     {
         SetPositive();
-        sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal1, (uint32)((this->GetSpellProto()->EffectBasePoints[mod->i] + 1) / 5) * 3,
+        sEventMgr.AddEvent(this, &Aura::EventPeriodicHeal1, (uint32)((this->GetSpellInfo()->EffectBasePoints[mod->i] + 1) / 5) * 3,
                            EVENT_AURA_PERIODIC_REGEN, 3000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
     }
 }
@@ -5629,12 +5629,12 @@ void Aura::SpellAuraPeriodicTriggerDummy(bool apply)
 {
     if (apply)
     {
-        sEventMgr.AddEvent(this, &Aura::EventPeriodicTriggerDummy, EVENT_AURA_PERIODIC_DUMMY, m_spellProto->EffectAmplitude[mod->i], 0, 0);
+        sEventMgr.AddEvent(this, &Aura::EventPeriodicTriggerDummy, EVENT_AURA_PERIODIC_DUMMY, m_spellInfo->EffectAmplitude[mod->i], 0, 0);
     }
     else
     {
-        if (!sScriptMgr.CallScriptedDummyAura(m_spellProto->Id, mod->i, this, false))
-            LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellProto->Id, m_spellProto->Name.c_str());
+        if (!sScriptMgr.CallScriptedDummyAura(m_spellInfo->Id, mod->i, this, false))
+            LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellInfo->Id, m_spellInfo->Name.c_str());
     }
 }
 
@@ -5651,7 +5651,7 @@ void Aura::EventPeriodicEnergizeVariable(uint32 amount, uint32 type)
 
     Unit* ucaster = GetUnitCaster();
     if (ucaster != NULL)
-        ucaster->Energize(m_target, m_spellProto->Id, amount, type);
+        ucaster->Energize(m_target, m_spellInfo->Id, amount, type);
 }
 
 void Aura::EventPeriodicDrink(uint32 amount)
@@ -5678,13 +5678,13 @@ void Aura::EventPeriodicHeal1(uint32 amount)
     else
         m_target->SetHealth(ch);
 
-    if (GetSpellProto()->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP)
+    if (GetSpellInfo()->AuraInterruptFlags & AURA_INTERRUPT_ON_STAND_UP)
     {
         m_target->Emote(EMOTE_ONESHOT_EAT);
     }
     else
     {
-        if (!(m_spellProto->custom_BGR_one_buff_on_target & SPELL_TYPE_ARMOR))
+        if (!(m_spellInfo->custom_BGR_one_buff_on_target & SPELL_TYPE_ARMOR))
             m_target->SendPeriodicHealAuraLog(m_casterGuid, m_target->GetNewGUID(), GetSpellId(), amount, 0, false);
     }
 
@@ -5735,7 +5735,7 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
                 if (abs(delta)>5)
                 return;*/
 
-                uint32 itemid = GetSpellProto()->EffectItemType[mod->i];
+                uint32 itemid = GetSpellInfo()->EffectItemType[mod->i];
 
                 //Warlocks only get Soul Shards from enemies that grant XP or Honor
                 if (itemid == 6265 && (pCaster->getLevel() > m_target->getLevel()))
@@ -5782,7 +5782,7 @@ void Aura::SpellAuraModDamagePercTaken(bool apply)
         val = -mod->m_amount / 100.0f;
     }
 
-    if (m_spellProto->custom_NameHash == SPELL_HASH_ARDENT_DEFENDER)   // Ardent Defender it only applys on 20% hp :/
+    if (m_spellInfo->custom_NameHash == SPELL_HASH_ARDENT_DEFENDER)   // Ardent Defender it only applys on 20% hp :/
     {
         m_target->DamageTakenPctModOnHP35 += val;
         return;
@@ -5830,7 +5830,7 @@ void Aura::SpellAuraPeriodicDamagePercent(bool apply)
         {
             uint32 dmg = mod->m_amount;
             sEventMgr.AddEvent(this, &Aura::EventPeriodicDamagePercent, dmg,
-                               EVENT_AURA_PERIODIC_DAMAGE_PERCENT, GetSpellProto()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                               EVENT_AURA_PERIODIC_DAMAGE_PERCENT, GetSpellInfo()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         }
         SetNegative();
     }
@@ -5841,7 +5841,7 @@ void Aura::EventPeriodicDamagePercent(uint32 amount)
     //DOT
     if (!m_target->isAlive())
         return;
-    if (m_target->SchoolImmunityList[GetSpellProto()->School])
+    if (m_target->SchoolImmunityList[GetSpellInfo()->School])
         return;
 
     uint32 damage = float2int32(amount / 100.0f * m_target->GetMaxHealth());
@@ -5850,13 +5850,13 @@ void Aura::EventPeriodicDamagePercent(uint32 amount)
 
     if (m_target->m_damageSplitTarget)
     {
-        damage = m_target->DoDamageSplitTarget(damage, GetSpellProto()->School, false);
+        damage = m_target->DoDamageSplitTarget(damage, GetSpellInfo()->School, false);
     }
 
     if (c)
-        c->SpellNonMeleeDamageLog(m_target, GetSpellProto()->Id, damage, pSpellId == 0, true);
+        c->SpellNonMeleeDamageLog(m_target, GetSpellInfo()->Id, damage, pSpellId == 0, true);
     else
-        m_target->SpellNonMeleeDamageLog(m_target, GetSpellProto()->Id, damage, pSpellId == 0, true);
+        m_target->SpellNonMeleeDamageLog(m_target, GetSpellInfo()->Id, damage, pSpellId == 0, true);
 }
 
 void Aura::SpellAuraModResistChance(bool apply)
@@ -6125,7 +6125,7 @@ void Aura::SpellAuraHover(bool apply)
 void Aura::SpellAuraAddPctMod(bool apply)
 {
     int32 val = apply ? mod->m_amount : -mod->m_amount;
-    uint32* AffectedGroups = GetSpellProto()->EffectSpellClassMask;
+    uint32* AffectedGroups = GetSpellInfo()->EffectSpellClassMask;
 
     switch (mod->m_miscValue)  //let's generate warnings for unknown types of modifiers
     {
@@ -6328,17 +6328,17 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
         SpellInfo* sp;
 
         // Find spell of effect to be triggered
-        sp = sSpellCustomizations.GetSpellInfo(GetSpellProto()->EffectTriggerSpell[mod->i]);
+        sp = sSpellCustomizations.GetSpellInfo(GetSpellInfo()->EffectTriggerSpell[mod->i]);
         if (sp == NULL)
         {
-            LOG_DEBUG("Warning! class trigger spell is null for spell %u", GetSpellProto()->Id);
+            LOG_DEBUG("Warning! class trigger spell is null for spell %u", GetSpellInfo()->Id);
             return;
         }
 
         // Initialize proc class mask
-        procClassMask[0] = GetSpellProto()->EffectSpellClassMask[0];
-        procClassMask[1] = GetSpellProto()->EffectSpellClassMask[1];
-        procClassMask[2] = GetSpellProto()->EffectSpellClassMask[2];
+        procClassMask[0] = GetSpellInfo()->EffectSpellClassMask[0];
+        procClassMask[1] = GetSpellInfo()->EffectSpellClassMask[1];
+        procClassMask[2] = GetSpellInfo()->EffectSpellClassMask[2];
 
         // Initialize mask
         groupRelation[0] = sp->EffectSpellClassMask[0];
@@ -6346,25 +6346,25 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
         groupRelation[2] = sp->EffectSpellClassMask[2];
 
         // Initialize charges
-        charges = GetSpellProto()->procCharges;
+        charges = GetSpellInfo()->procCharges;
         Unit* ucaster = GetUnitCaster();
         if (ucaster != nullptr)
         {
-            SM_FIValue(ucaster->SM_FCharges, &charges, GetSpellProto()->SpellGroupType);
-            SM_PIValue(ucaster->SM_PCharges, &charges, GetSpellProto()->SpellGroupType);
+            SM_FIValue(ucaster->SM_FCharges, &charges, GetSpellInfo()->SpellGroupType);
+            SM_PIValue(ucaster->SM_PCharges, &charges, GetSpellInfo()->SpellGroupType);
         }
 
-        m_target->AddProcTriggerSpell(sp->Id, GetSpellProto()->Id, m_casterGuid, GetSpellProto()->EffectBasePoints[mod->i] + 1, PROC_ON_CAST_SPELL, charges, groupRelation, procClassMask);
+        m_target->AddProcTriggerSpell(sp->Id, GetSpellInfo()->Id, m_casterGuid, GetSpellInfo()->EffectBasePoints[mod->i] + 1, PROC_ON_CAST_SPELL, charges, groupRelation, procClassMask);
 
-        LOG_DEBUG("%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellProto()->Id, sp->Id, GetSpellProto()->procChance, PROC_ON_CAST_SPELL, charges, GetSpellProto()->procFlags & PROC_TARGET_SELF, GetSpellProto()->custom_proc_interval);
+        LOG_DEBUG("%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellInfo()->Id, sp->Id, GetSpellInfo()->procChance, PROC_ON_CAST_SPELL, charges, GetSpellInfo()->procFlags & PROC_TARGET_SELF, GetSpellInfo()->custom_proc_interval);
     }
     else
     {
         // Find spell of effect to be triggered
-        uint32 spellId = GetSpellProto()->EffectTriggerSpell[mod->i];
+        uint32 spellId = GetSpellInfo()->EffectTriggerSpell[mod->i];
         if (spellId == 0)
         {
-            LOG_DEBUG("Warning! trigger spell is null for spell %u", GetSpellProto()->Id);
+            LOG_DEBUG("Warning! trigger spell is null for spell %u", GetSpellInfo()->Id);
             return;
         }
 
@@ -6781,7 +6781,7 @@ void Aura::SpellAuraModTotalStatPerc(bool apply)
         if (p_target != NULL)
         {
             //druid hearth of the wild should add more features based on form
-            if (m_spellProto->custom_NameHash == SPELL_HASH_HEART_OF_THE_WILD)
+            if (m_spellInfo->custom_NameHash == SPELL_HASH_HEART_OF_THE_WILD)
             {
                 //we should remove effect first
                 p_target->EventTalentHearthOfWildChange(false);
@@ -6814,12 +6814,12 @@ void Aura::SpellAuraModTotalStatPerc(bool apply)
 void Aura::SpellAuraModHaste(bool apply)
 {
     //blade flurry - attack a nearby opponent
-    if (m_spellProto->custom_NameHash == SPELL_HASH_BLADE_FLURRY)
+    if (m_spellInfo->custom_NameHash == SPELL_HASH_BLADE_FLURRY)
     {
         if (apply)
-            m_target->AddExtraStrikeTarget(GetSpellProto(), 0);
+            m_target->AddExtraStrikeTarget(GetSpellInfo(), 0);
         else
-            m_target->RemoveExtraStrikeTarget(GetSpellProto());
+            m_target->RemoveExtraStrikeTarget(GetSpellInfo());
     }
 
     if (mod->m_amount < 0)
@@ -7049,7 +7049,7 @@ void Aura::SpellAuraSplitDamageFlat(bool apply)
     {
         DamageSplitTarget* ds = new DamageSplitTarget;
         ds->m_flatDamageSplit = mod->m_miscValue;
-        ds->m_spellId = GetSpellProto()->Id;
+        ds->m_spellId = GetSpellInfo()->Id;
         ds->m_pctDamageSplit = 0;
         ds->damage_type = static_cast<uint8>(mod->m_type);
         ds->creator = (void*)this;
@@ -7156,14 +7156,14 @@ void Aura::EventPeriodicBurn(uint32 amount, uint32 misc)
 
     if (m_target->isAlive() && m_caster->isAlive())
     {
-        if (m_target->SchoolImmunityList[GetSpellProto()->School])
+        if (m_target->SchoolImmunityList[GetSpellInfo()->School])
             return;
 
         uint32 Amount = (uint32)std::min(amount, m_target->GetPower(misc));
         uint32 newHealth = m_target->GetPower(misc) - Amount;
 
-        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellProto->Id, m_spellProto->School, newHealth, 0, 0, FLAG_PERIODIC_DAMAGE, false);
-        m_caster->DealDamage(m_target, Amount, 0, 0, GetSpellProto()->Id);
+        m_target->SendPeriodicAuraLog(m_target->GetNewGUID(), m_target->GetNewGUID(), m_spellInfo->Id, m_spellInfo->School, newHealth, 0, 0, FLAG_PERIODIC_DAMAGE, false);
+        m_caster->DealDamage(m_target, Amount, 0, 0, GetSpellInfo()->Id);
     }
 }
 
@@ -7171,7 +7171,7 @@ void Aura::SpellAuraPowerBurn(bool apply)
 {
     //0 mana,1 rage, 3 energy
     if (apply)
-        sEventMgr.AddEvent(this, &Aura::EventPeriodicBurn, uint32(mod->m_amount), (uint32)mod->m_miscValue, EVENT_AURA_PERIODIC_BURN, GetSpellProto()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+        sEventMgr.AddEvent(this, &Aura::EventPeriodicBurn, uint32(mod->m_amount), (uint32)mod->m_miscValue, EVENT_AURA_PERIODIC_BURN, GetSpellInfo()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void Aura::SpellAuraModCritDmgPhysical(bool apply)
@@ -7327,10 +7327,10 @@ void Aura::SpellAuraIncreaseSpellDamageByAttribute(bool apply)
     for (uint8 i = 0; i < 3; i++)
     {
         //bit hacky but it will work with all currently available spells
-        if (m_spellProto->EffectApplyAuraName[i] == SPELL_AURA_INCREASE_SPELL_HEALING_PCT)
+        if (m_spellInfo->EffectApplyAuraName[i] == SPELL_AURA_INCREASE_SPELL_HEALING_PCT)
         {
-            if (m_spellProto->EffectMiscValue[i] < 5)
-                stat = m_spellProto->EffectMiscValue[i];
+            if (m_spellInfo->EffectMiscValue[i] < 5)
+                stat = m_spellInfo->EffectMiscValue[i];
             else
                 return;
         }
@@ -7473,7 +7473,7 @@ void Aura::SpellAuraModHealingByAP(bool apply)
 void Aura::SpellAuraAddFlatModifier(bool apply)
 {
     int32 val = apply ? mod->m_amount : -mod->m_amount;
-    uint32* AffectedGroups = GetSpellProto()->EffectSpellClassMask;
+    uint32* AffectedGroups = GetSpellInfo()->EffectSpellClassMask;
 
     switch (mod->m_miscValue) //let's generate warnings for unknown types of modifiers
     {
@@ -7586,7 +7586,7 @@ void Aura::SpellAuraAddFlatModifier(bool apply)
         Pet* p = static_cast< Player* >(m_target)->GetSummon();
         if (p)
         {
-            switch (GetSpellProto()->custom_NameHash)
+            switch (GetSpellInfo()->custom_NameHash)
             {
                 case SPELL_HASH_UNLEASHED_FURY:
                     p->LoadPetAuras(0);
@@ -7709,27 +7709,27 @@ void Aura::SpellAuraModOffhandDamagePCT(bool apply)
 
 void Aura::SpellAuraModPenetration(bool apply) // armor penetration & spell penetration
 {
-    if (m_spellProto->custom_NameHash == SPELL_HASH_SERRATED_BLADES)
+    if (m_spellInfo->custom_NameHash == SPELL_HASH_SERRATED_BLADES)
     {
         if (p_target == NULL)
             return;
 
         if (apply)
         {
-            if (m_spellProto->Id == 14171)
+            if (m_spellInfo->Id == 14171)
                 p_target->PowerCostPctMod[0] += m_target->getLevel() * 2.67f;
-            else if (m_spellProto->Id == 14172)
+            else if (m_spellInfo->Id == 14172)
                 p_target->PowerCostPctMod[0] += m_target->getLevel() * 5.43f;
-            else if (m_spellProto->Id == 14173)
+            else if (m_spellInfo->Id == 14173)
                 p_target->PowerCostPctMod[0] += m_target->getLevel() * 8.0f;
         }
         else
         {
-            if (m_spellProto->Id == 14171)
+            if (m_spellInfo->Id == 14171)
                 p_target->PowerCostPctMod[0] -= m_target->getLevel() * 2.67f;
-            else if (m_spellProto->Id == 14172)
+            else if (m_spellInfo->Id == 14172)
                 p_target->PowerCostPctMod[0] -= m_target->getLevel() * 5.43f;
-            else if (m_spellProto->Id == 14173)
+            else if (m_spellInfo->Id == 14173)
                 p_target->PowerCostPctMod[0] -= m_target->getLevel() * 8.0f;
         }
         return;
@@ -8082,7 +8082,7 @@ void Aura::SpellAuraEnableFlight(bool apply)
         m_target->UpdateSpeed();
         if (m_target->IsPlayer())
         {
-            static_cast< Player* >(m_target)->flying_aura = m_spellProto->Id;
+            static_cast< Player* >(m_target)->flying_aura = m_spellInfo->Id;
         }
     }
     else
@@ -8107,7 +8107,7 @@ void Aura::SpellAuraEnableFlightWithUnmountedSpeed(bool apply)
         m_target->UpdateSpeed();
         if (m_target->IsPlayer())
         {
-            static_cast< Player* >(m_target)->flying_aura = m_spellProto->Id;
+            static_cast< Player* >(m_target)->flying_aura = m_spellInfo->Id;
         }
     }
     else
@@ -8162,7 +8162,7 @@ void Aura::SpellAuraIncreaseRating(bool apply)
     {
         std::map<uint32, uint32>::iterator i;
         for (uint32 y = 0; y < 20; y++)
-            if (m_spellProto->EquippedItemSubClass & (((uint32)1) << y))
+            if (m_spellInfo->EquippedItemSubClass & (((uint32)1) << y))
             {
                 i = static_cast< Player* >(m_target)->m_wratings.find(y);
                 if (i == static_cast< Player* >(m_target)->m_wratings.end())    //no prev
@@ -8415,14 +8415,14 @@ void Aura::SendInterrupted(uint8 result, Object* m_caster)
     if (m_caster->IsPlayer())
     {
         data << m_caster->GetNewGUID();
-        data << m_spellProto->Id;
+        data << m_spellInfo->Id;
         data << uint8(result);
         static_cast< Player* >(m_caster)->GetSession()->SendPacket(&data);
     }
 
     data.Initialize(SMSG_SPELL_FAILED_OTHER);
     data << m_caster->GetNewGUID();
-    data << m_spellProto->Id;
+    data << m_spellInfo->Id;
     m_caster->SendMessageToSet(&data, false);
 
     m_interrupted = (int16)result;
@@ -8652,14 +8652,14 @@ void Aura::SpellAuraAllowOnlyAbility(bool apply)
     {
         p_target->m_castFilterEnabled = true;
         for (uint32 x = 0; x < 3; x++)
-            p_target->m_castFilter[x] |= m_spellProto->EffectSpellClassMask[x];
+            p_target->m_castFilter[x] |= m_spellInfo->EffectSpellClassMask[x];
     }
     else
     {
         p_target->m_castFilterEnabled = false;	// check if we can turn it off
         for (uint32 x = 0; x < 3; x++)
         {
-            p_target->m_castFilter[x] &= ~m_spellProto->EffectSpellClassMask[x];
+            p_target->m_castFilter[x] &= ~m_spellInfo->EffectSpellClassMask[x];
             if (p_target->m_castFilter[x])
                 p_target->m_castFilterEnabled = true;
         }
@@ -8688,8 +8688,8 @@ void Aura::SpellAuraModSpellDamageDOTPct(bool apply)
 {
     int32 val = (apply) ? mod->m_amount : -mod->m_amount;
 
-    if (m_spellProto->custom_NameHash == SPELL_HASH_HAUNT)
-        m_target->DoTPctIncrease[m_spellProto->School] += val;
+    if (m_spellInfo->custom_NameHash == SPELL_HASH_HAUNT)
+        m_target->DoTPctIncrease[m_spellInfo->School] += val;
     else
         for (uint32 x = 0; x < 7; x++)
         {
@@ -8714,11 +8714,11 @@ void Aura::SpellAuraConsumeNoAmmo(bool apply)
         bool other = false;
 
         // we have Thori'dal too
-        if (m_spellProto->custom_NameHash != SPELL_HASH_REQUIRES_NO_AMMO && p_target->HasAurasWithNameHash(SPELL_HASH_REQUIRES_NO_AMMO))
+        if (m_spellInfo->custom_NameHash != SPELL_HASH_REQUIRES_NO_AMMO && p_target->HasAurasWithNameHash(SPELL_HASH_REQUIRES_NO_AMMO))
             other = true;
 
         // We are unequipping Thori'dal but have an aura with no ammo consumption effect
-        if (m_spellProto->custom_NameHash == SPELL_HASH_REQUIRES_NO_AMMO && p_target->HasAuraWithName(SPELL_AURA_CONSUMES_NO_AMMO))
+        if (m_spellInfo->custom_NameHash == SPELL_HASH_REQUIRES_NO_AMMO && p_target->HasAuraWithName(SPELL_AURA_CONSUMES_NO_AMMO))
             other = true;
 
         // We have more than 1 aura with no ammo consumption effect
@@ -8748,7 +8748,7 @@ void Aura::SpellAuraModIgnoreArmorPct(bool apply)
 {
     if (apply)
     {
-        if (GetSpellProto()->custom_NameHash == SPELL_HASH_MACE_SPECIALIZATION)
+        if (GetSpellInfo()->custom_NameHash == SPELL_HASH_MACE_SPECIALIZATION)
         {
             m_target->m_ignoreArmorPctMaceSpec += (mod->m_amount / 100.0f);
         }
@@ -8757,7 +8757,7 @@ void Aura::SpellAuraModIgnoreArmorPct(bool apply)
     }
     else
     {
-        if (GetSpellProto()->custom_NameHash == SPELL_HASH_MACE_SPECIALIZATION)
+        if (GetSpellInfo()->custom_NameHash == SPELL_HASH_MACE_SPECIALIZATION)
         {
             m_target->m_ignoreArmorPctMaceSpec -= (mod->m_amount / 100.0f);
         }
@@ -8827,7 +8827,7 @@ void Aura::SpellAuraPhase(bool apply)
     }
 
     if (apply)
-        m_target->Phase(PHASE_SET, m_spellProto->EffectMiscValue[mod->i]);
+        m_target->Phase(PHASE_SET, m_spellInfo->EffectMiscValue[mod->i]);
     else
         m_target->Phase(PHASE_RESET);
 
@@ -8867,7 +8867,7 @@ bool Aura::DotCanCrit()
     if (caster == NULL)
         return false;
 
-    SpellInfo* sp = this->GetSpellProto();
+    SpellInfo* sp = this->GetSpellInfo();
     uint32 index = MAX_TOTAL_AURAS_START;
     Aura* aura;
     bool found = false;
@@ -8879,7 +8879,7 @@ bool Aura::DotCanCrit()
         if (aura == NULL)
             break;
 
-        SpellInfo* aura_sp = aura->GetSpellProto();
+        SpellInfo* aura_sp = aura->GetSpellInfo();
 
         uint8 i = 0;
         if (aura_sp->EffectApplyAuraName[1] == SPELL_AURA_ALLOW_DOT_TO_CRIT)
@@ -8922,7 +8922,7 @@ bool Aura::DotCanCrit()
 
 bool Aura::IsCombatStateAffecting()
 {
-    SpellInfo* sp = m_spellProto;
+    SpellInfo* sp = m_spellInfo;
 
     if (sp->AppliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE) ||
         sp->AppliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE_PERCENT) ||
@@ -8936,7 +8936,7 @@ bool Aura::IsCombatStateAffecting()
 
 bool Aura::IsAreaAura()
 {
-    SpellInfo* sp = m_spellProto;
+    SpellInfo* sp = m_spellInfo;
 
     if (sp->HasEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA) ||
         sp->HasEffect(SPELL_EFFECT_APPLY_RAID_AREA_AURA) ||
@@ -8967,20 +8967,20 @@ void AbsorbAura::SpellAuraSchoolAbsorb(bool apply)
     Unit* caster = GetUnitCaster();
     if (caster != nullptr)
     {
-        SM_FIValue(caster->SM_FMiscEffect, &val, GetSpellProto()->SpellGroupType);
-        SM_PIValue(caster->SM_PMiscEffect, &val, GetSpellProto()->SpellGroupType);
+        SM_FIValue(caster->SM_FMiscEffect, &val, GetSpellInfo()->SpellGroupType);
+        SM_PIValue(caster->SM_PMiscEffect, &val, GetSpellInfo()->SpellGroupType);
 
         //This will fix talents that affects damage absorbed.
         int flat = 0;
-        SM_FIValue(caster->SM_FMiscEffect, &flat, GetSpellProto()->SpellGroupType);
+        SM_FIValue(caster->SM_FMiscEffect, &flat, GetSpellInfo()->SpellGroupType);
         val += val * flat / 100;
 
         //For spells Affected by Bonus Healing we use Dspell_coef_override.
-        if (GetSpellProto()->Dspell_coef_override >= 0)
-            val += float2int32(caster->HealDoneMod[GetSpellProto()->School] * GetSpellProto()->Dspell_coef_override);
+        if (GetSpellInfo()->Dspell_coef_override >= 0)
+            val += float2int32(caster->HealDoneMod[GetSpellInfo()->School] * GetSpellInfo()->Dspell_coef_override);
         //For spells Affected by Bonus Damage we use OTspell_coef_override.
-        else if (GetSpellProto()->OTspell_coef_override >= 0)
-            val += float2int32(caster->GetDamageDoneMod(GetSpellProto()->School) * GetSpellProto()->OTspell_coef_override);
+        else if (GetSpellInfo()->OTspell_coef_override >= 0)
+            val += float2int32(caster->GetDamageDoneMod(GetSpellInfo()->School) * GetSpellInfo()->OTspell_coef_override);
     }
 
     m_total_amount = val;
@@ -9030,7 +9030,7 @@ void Aura::SpellAuraConvertRune(bool apply)
         for (uint8 i = 0; i < MAX_RUNES && count; ++i)
             if (dk->GetRuneType(i) == mod->m_miscValue && !dk->GetRuneIsUsed(i))
             {
-                dk->ConvertRune(i, GetSpellProto()->EffectMiscValueB[mod->i]);
+                dk->ConvertRune(i, GetSpellInfo()->EffectMiscValueB[mod->i]);
                 --count;
             }
     }
@@ -9038,7 +9038,7 @@ void Aura::SpellAuraConvertRune(bool apply)
     {
         uint8 count = mod->m_amount;
         for (uint8 i = 0; i < MAX_RUNES && count; ++i)
-            if (dk->GetRuneType(i) == GetSpellProto()->EffectMiscValueB[mod->i])
+            if (dk->GetRuneType(i) == GetSpellInfo()->EffectMiscValueB[mod->i])
             {
                 dk->ConvertRune(i, dk->GetBaseRuneType(i));
                 --count;

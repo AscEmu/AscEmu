@@ -1720,14 +1720,14 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
                     uint32 new_dmg = 0;
                     //consume rejuvenetaion and regrowth
                     Aura* taura = unitTarget->FindAuraByNameHash(SPELL_HASH_REGROWTH);    //Regrowth
-                    if (taura && taura->GetSpellProto())
+                    if (taura && taura->GetSpellInfo())
                     {
-                        uint32 amplitude = taura->GetSpellProto()->EffectAmplitude[1] / 1000;
+                        uint32 amplitude = taura->GetSpellInfo()->EffectAmplitude[1] / 1000;
                         if (!amplitude)
                             amplitude = 3;
 
                         //our hapiness is that we did not store the aura mod amount so we have to recalc it
-                        Spell* spell = sSpellFactoryMgr.NewSpell(m_caster, taura->GetSpellProto(), false, NULL);
+                        Spell* spell = sSpellFactoryMgr.NewSpell(m_caster, taura->GetSpellInfo(), false, NULL);
                         uint32 healamount = spell->CalculateEffect(1, unitTarget);
                         delete spell;
                         spell = NULL;
@@ -1745,13 +1745,13 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
                     else
                     {
                         taura = unitTarget->FindAuraByNameHash(SPELL_HASH_REJUVENATION);  //Rejuvenation
-                        if (taura  && taura->GetSpellProto())
+                        if (taura  && taura->GetSpellInfo())
                         {
-                            uint32 amplitude = taura->GetSpellProto()->EffectAmplitude[0] / 1000;
+                            uint32 amplitude = taura->GetSpellInfo()->EffectAmplitude[0] / 1000;
                             if (!amplitude) amplitude = 3;
 
                             //our happiness is that we did not store the aura mod amount so we have to recalc it
-                            Spell* spell = sSpellFactoryMgr.NewSpell(m_caster, taura->GetSpellProto(), false, NULL);
+                            Spell* spell = sSpellFactoryMgr.NewSpell(m_caster, taura->GetSpellInfo(), false, NULL);
                             uint32 healamount = spell->CalculateEffect(0, unitTarget);
                             delete spell;
                             spell = NULL;
@@ -3391,7 +3391,7 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
         {
             bool AuraRemoved = false;
             aur = unitTarget->m_auras[x];
-            aursp = aur->GetSpellProto();
+            aursp = aur->GetSpellInfo();
 
             //Nothing can dispel resurrection sickness;
             if (!aur->IsPassive() && !(aursp->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY))
@@ -5075,10 +5075,10 @@ void Spell::SpellEffectDummyMelee(uint32 i)   // Normalized Weapon damage +
         uint32 sunder_count = 0;
         SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(7386);
         for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
-            if (unitTarget->m_auras[x] && unitTarget->m_auras[x]->GetSpellProto()->custom_NameHash == SPELL_HASH_SUNDER_ARMOR)
+            if (unitTarget->m_auras[x] && unitTarget->m_auras[x]->GetSpellInfo()->custom_NameHash == SPELL_HASH_SUNDER_ARMOR)
             {
                 sunder_count++;
-                spellInfo = unitTarget->m_auras[x]->GetSpellProto();
+                spellInfo = unitTarget->m_auras[x]->GetSpellInfo();
             }
         if (spellInfo == NULL)
             return; //omg how did this happen ?
@@ -5332,7 +5332,7 @@ void Spell::SpellEffectSpellSteal(uint32 i)
         if (unitTarget->m_auras[x] != NULL)
         {
             aur = unitTarget->m_auras[x];
-            aursp = aur->GetSpellProto();
+            aursp = aur->GetSpellInfo();
 
             if (aursp->Id != 15007 && !aur->IsPassive()
                 //              && aur->IsPositive()    // Zack : We are only checking positive auras. There is no meaning to check again
@@ -5347,25 +5347,25 @@ void Spell::SpellEffectSpellSteal(uint32 i)
                     uint32 aur_removed = unitTarget->RemoveAllAuraByNameHash(aursp->custom_NameHash);
                     for (uint8 j = 0; j < 3; j++)
                     {
-                        if (aura->GetSpellProto()->Effect[j])
+                        if (aura->GetSpellInfo()->Effect[j])
                         {
-                            aura->AddMod(aura->GetSpellProto()->EffectApplyAuraName[j], aura->GetSpellProto()->EffectBasePoints[j] + 1, aura->GetSpellProto()->EffectMiscValue[j], j);
+                            aura->AddMod(aura->GetSpellInfo()->EffectApplyAuraName[j], aura->GetSpellInfo()->EffectBasePoints[j] + 1, aura->GetSpellInfo()->EffectMiscValue[j], j);
                         }
                     }
-                    if (aura->GetSpellProto()->procCharges > 0)
+                    if (aura->GetSpellInfo()->procCharges > 0)
                     {
                         Aura* aur2;
                         for (uint32 j = 0; j < aur_removed - 1; j++)
                         {
-                            aur2 = sSpellFactoryMgr.NewAura(aura->GetSpellProto(), aurdur, u_caster, u_caster);
+                            aur2 = sSpellFactoryMgr.NewAura(aura->GetSpellInfo(), aurdur, u_caster, u_caster);
                             u_caster->AddAura(aur2);
                         }
-                        if (!(aura->GetSpellProto()->procFlags & PROC_REMOVEONUSE))
+                        if (!(aura->GetSpellInfo()->procFlags & PROC_REMOVEONUSE))
                         {
                             SpellCharge charge;
                             charge.count = aur_removed;
                             charge.spellId = aura->GetSpellId();
-                            charge.ProcFlag = aura->GetSpellProto()->procFlags;
+                            charge.ProcFlag = aura->GetSpellInfo()->procFlags;
                             charge.lastproc = 0;
                             charge.procdiff = 0;
                             u_caster->m_chargeSpells.insert(std::make_pair(aura->GetSpellId(), charge));

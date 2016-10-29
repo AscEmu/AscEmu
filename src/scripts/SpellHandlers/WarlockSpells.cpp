@@ -625,7 +625,7 @@ bool SoulStoneResurrection(uint32 i, Aura* a, bool apply)
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);
-    uint32 soulstone = a->GetSpellProto()->EffectMiscValue[ 0 ];
+    uint32 soulstone = a->GetSpellInfo()->EffectMiscValue[ 0 ];
 
     if(apply)
     {

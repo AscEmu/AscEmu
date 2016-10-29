@@ -1188,7 +1188,7 @@ void Player::Update(unsigned long time_passed)
 
                 for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
                 {
-                    if (m_auras[x] && m_auras[x]->GetSpellProto()->Attributes & ATTRIBUTES_ONLY_OUTDOORS)
+                    if (m_auras[x] && m_auras[x]->GetSpellInfo()->Attributes & ATTRIBUTES_ONLY_OUTDOORS)
                         RemoveAura(m_auras[x]);
                 }
             }
@@ -9513,7 +9513,7 @@ void Player::SaveAuras(std::stringstream & ss)
             Aura* aur = m_auras[x];
             for (uint8 i = 0; i < 3; ++i)
             {
-                if (aur->m_spellProto->Effect[i] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA || aur->m_spellProto->Effect[i] == SPELL_EFFECT_APPLY_RAID_AREA_AURA || aur->m_spellProto->Effect[i] == SPELL_EFFECT_ADD_FARSIGHT)
+                if (aur->m_spellInfo->Effect[i] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA || aur->m_spellInfo->Effect[i] == SPELL_EFFECT_APPLY_RAID_AREA_AURA || aur->m_spellInfo->Effect[i] == SPELL_EFFECT_ADD_FARSIGHT)
                 {
                     continue;
                     break;
@@ -9523,11 +9523,11 @@ void Player::SaveAuras(std::stringstream & ss)
             if (aur->pSpellId)
                 continue; //these auras were gained due to some proc. We do not save these either to avoid exploits of not removing them
 
-            if (aur->m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
+            if (aur->m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
                 continue;
 
             //we are going to cast passive spells anyway on login so no need to save auras for them
-            if (aur->IsPassive() && !(aur->GetSpellProto()->AttributesEx & 1024))
+            if (aur->IsPassive() && !(aur->GetSpellInfo()->AttributesEx & 1024))
                 continue;
 
             if (charges > 0 && aur->GetSpellId() != m_auras[prevX]->GetSpellId())
@@ -9536,7 +9536,7 @@ void Player::SaveAuras(std::stringstream & ss)
                 charges = 0;
             }
 
-            if (aur->GetSpellProto()->procCharges == 0)
+            if (aur->GetSpellInfo()->procCharges == 0)
                 ss << aur->GetSpellId() << "," << aur->GetTimeLeft() << "," << aur->IsPositive() << "," << 0 << ",";
             else
                 charges++;
@@ -9560,7 +9560,7 @@ void Player::SetShapeShift(uint8 ss)
     {
         if (m_auras[x] != NULL)
         {
-            uint32 reqss = m_auras[x]->GetSpellProto()->RequiredShapeShift;
+            uint32 reqss = m_auras[x]->GetSpellInfo()->RequiredShapeShift;
             if (reqss != 0 && m_auras[x]->IsPositive())
             {
                 if (old_ss > 0
@@ -9578,7 +9578,7 @@ void Player::SetShapeShift(uint8 ss)
 
             if (this->getClass() == DRUID)
             {
-                switch (m_auras[x]->GetSpellProto()->MechanicsType)
+                switch (m_auras[x]->GetSpellInfo()->MechanicsType)
                 {
                     case MECHANIC_ROOTED: //Rooted
                     case MECHANIC_ENSNARED: //Movement speed
@@ -10759,7 +10759,7 @@ void Player::EventSummonPet(Pet* new_pet)
     }
     //there are talents that stop working after you gain pet
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-        if (m_auras[x] && m_auras[x]->GetSpellProto()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_ON_PET)
+        if (m_auras[x] && m_auras[x]->GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_ON_PET)
             m_auras[x]->Remove();
     //pet should inherit some of the talents from caster
     //new_pet->InheritSMMods(); //not required yet. We cast full spell to have visual effect too
@@ -10771,7 +10771,7 @@ void Player::EventDismissPet()
 {
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
         if (m_auras[x])
-            if (m_auras[x]->GetSpellProto()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
+            if (m_auras[x]->GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
                 m_auras[x]->Remove();
 }
 
@@ -11688,7 +11688,7 @@ void Player::CalcExpertise()
     {
         if (m_auras[x] != NULL && m_auras[x]->HasModType(SPELL_AURA_EXPERTISE))
         {
-            entry = m_auras[x]->m_spellProto;
+            entry = m_auras[x]->m_spellInfo;
             val = m_auras[x]->GetModAmountByMod();
 
             if (entry->EquippedItemSubClass != 0)
@@ -13620,7 +13620,7 @@ void Player::CastSpellArea()
     {
         if (m_auras[i] != 0)
         {
-            if (m_auras[i]->GetSpellProto()->CheckLocation(GetMapId(), ZoneId, AreaId, this) == false)
+            if (m_auras[i]->GetSpellInfo()->CheckLocation(GetMapId(), ZoneId, AreaId, this) == false)
             {
                 SpellAreaMapBounds sab = sSpellFactoryMgr.GetSpellAreaMapBounds(m_auras[i]->GetSpellId());
                 if (sab.first != sab.second)

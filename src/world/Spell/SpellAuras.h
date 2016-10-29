@@ -495,9 +495,9 @@ class SERVER_DECL Aura : public EventableObject
         void Remove();
         void AddMod(uint32 t, int32 a, uint32 miscValue, uint32 i);
 
-        inline SpellInfo* GetSpellProto() const { return m_spellProto; }
-        inline uint32 GetSpellId() const { return m_spellProto->Id; }
-        inline bool IsPassive() { if (!m_spellProto) return false; return (m_spellProto->IsPassive() && !m_areaAura); }
+        inline SpellInfo* GetSpellInfo() const { return m_spellInfo; }
+        inline uint32 GetSpellId() const { return m_spellInfo->Id; }
+        inline bool IsPassive() { if (!m_spellInfo) return false; return (m_spellInfo->IsPassive() && !m_areaAura); }
 
         void ResetDuration();
 
@@ -840,7 +840,7 @@ class SERVER_DECL Aura : public EventableObject
 
         virtual bool IsAbsorb() { return false; }
 
-        SpellInfo* m_spellProto;
+        SpellInfo* m_spellInfo;
         AreaAuraList targets; // This is only used for AA
         uint64 m_casterGuid;
         uint16 m_auraSlot;
@@ -922,7 +922,7 @@ class AbsorbAura : public Aura
         uint32 GetSchoolMask()
         {
             for (uint8 x = 0; x < 3; ++x)
-                if (GetSpellProto()->Effect[x] == SPELL_EFFECT_APPLY_AURA && GetSpellProto()->EffectApplyAuraName[x] == SPELL_AURA_SCHOOL_ABSORB)
+                if (GetSpellInfo()->Effect[x] == SPELL_EFFECT_APPLY_AURA && GetSpellInfo()->EffectApplyAuraName[x] == SPELL_AURA_SCHOOL_ABSORB)
                     return m_modList[x].m_miscValue;
             return 0;
         }

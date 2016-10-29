@@ -30,7 +30,7 @@ bool Living_Bomb(uint32 i, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
     if(caster && !apply)
-        caster->CastSpell(pAura->GetTarget(), pAura->GetSpellProto()->EffectBasePoints[i] + 1, true);
+        caster->CastSpell(pAura->GetTarget(), pAura->GetSpellInfo()->EffectBasePoints[i] + 1, true);
     return true;
 }
 
@@ -45,7 +45,7 @@ bool HotStreak(uint32 i, Aura* pAura, bool apply)
         if(apply)
         {
             static uint32 classMask[3] = { 0x13, 0x21000, 0 };
-            caster->AddProcTriggerSpell(48108, pAura->GetSpellProto()->Id, caster->GetGUID(), pAura->GetSpellProto()->EffectBasePoints[i] + 1, PROC_ON_SPELL_CRIT_HIT | PROC_ON_SPELL_HIT, 0, pAura->GetSpellProto()->EffectSpellClassMask, classMask);
+            caster->AddProcTriggerSpell(48108, pAura->GetSpellInfo()->Id, caster->GetGUID(), pAura->GetSpellInfo()->EffectBasePoints[i] + 1, PROC_ON_SPELL_CRIT_HIT | PROC_ON_SPELL_HIT, 0, pAura->GetSpellInfo()->EffectSpellClassMask, classMask);
         }
         else
             caster->RemoveProcTriggerSpell(48108);
@@ -132,7 +132,7 @@ bool MirrorImage(uint32 i, Aura* pAura, bool apply)
     Unit* caster = pAura->GetUnitCaster();
     if(caster != NULL && apply && i == 2)
         if(caster->GetGUID() == pAura->GetTarget()->GetCreatedByGUID())
-            caster->CastSpell(pAura->GetTarget(), pAura->GetSpellProto()->EffectTriggerSpell[i], true);
+            caster->CastSpell(pAura->GetTarget(), pAura->GetSpellInfo()->EffectTriggerSpell[i], true);
 
     return true;
 }
