@@ -32,7 +32,7 @@ bool Penance(uint32 i, Spell* pSpell)
     uint32 hostileSpell[] = {0, 0};
     uint32 friendlySpell[] = {0, 0};
 
-    switch(pSpell->GetProto()->Id)
+    switch(pSpell->GetSpellInfo()->Id)
     {
         case 47540: //Rank 1
             hostileSpell[0] = 47666;

@@ -1602,7 +1602,7 @@ bool LuaHookOnResurrect(Player* pPlayer)
 bool LuaOnDummySpell(uint32 effectIndex, Spell* pSpell)
 {
     GET_LOCK
-    sLuaMgr.BeginCall(m_luaDummySpells[pSpell->GetProto()->Id]);
+    sLuaMgr.BeginCall(m_luaDummySpells[pSpell->GetSpellInfo()->Id]);
     sLuaMgr.PUSH_UINT(effectIndex);
     sLuaMgr.PushSpell(pSpell);
     sLuaMgr.ExecuteCall(2);

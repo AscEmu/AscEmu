@@ -1676,20 +1676,20 @@ class SERVER_DECL Spell : public EventableObject
 
         bool HasCustomFlag(uint32 flag)
         {
-            if ((GetProto()->CustomFlags & flag) != 0)
+            if ((GetSpellInfo()->CustomFlags & flag) != 0)
                 return true;
             else
                 return false;
         }
 
-        inline bool hasAttribute(uint32 attribute) { return ((GetProto()->Attributes & attribute) > 0); }
-        inline bool hasAttributeEx(uint32 attribute) { return ((GetProto()->AttributesEx & attribute) > 0); }
-        inline bool hasAttributeExB(uint32 attribute) { return ((GetProto()->AttributesExB & attribute) > 0); }
-        inline bool hasAttributeExC(uint32 attribute) { return ((GetProto()->AttributesExC & attribute) > 0); }
-        inline bool hasAttributeExD(uint32 attribute) { return ((GetProto()->AttributesExD & attribute) > 0); }
-        inline bool hasAttributeExE(uint32 attribute) { return ((GetProto()->AttributesExE & attribute) > 0); }
-        inline bool hasAttributeExF(uint32 attribute) { return ((GetProto()->AttributesExF & attribute) > 0); }
-        inline bool hasAttributeExG(uint32 attribute) { return ((GetProto()->AttributesExG & attribute) > 0); }
+        inline bool hasAttribute(uint32 attribute) { return ((GetSpellInfo()->Attributes & attribute) > 0); }
+        inline bool hasAttributeEx(uint32 attribute) { return ((GetSpellInfo()->AttributesEx & attribute) > 0); }
+        inline bool hasAttributeExB(uint32 attribute) { return ((GetSpellInfo()->AttributesExB & attribute) > 0); }
+        inline bool hasAttributeExC(uint32 attribute) { return ((GetSpellInfo()->AttributesExC & attribute) > 0); }
+        inline bool hasAttributeExD(uint32 attribute) { return ((GetSpellInfo()->AttributesExD & attribute) > 0); }
+        inline bool hasAttributeExE(uint32 attribute) { return ((GetSpellInfo()->AttributesExE & attribute) > 0); }
+        inline bool hasAttributeExF(uint32 attribute) { return ((GetSpellInfo()->AttributesExF & attribute) > 0); }
+        inline bool hasAttributeExG(uint32 attribute) { return ((GetSpellInfo()->AttributesExG & attribute) > 0); }
 
         // Removes reagents, ammo, and items/charges
         void RemoveItems();
@@ -1717,7 +1717,7 @@ class SERVER_DECL Spell : public EventableObject
         void SendCastResult(Player* caster, uint8 castCount, uint8 result, SpellExtraError extraError);
         void WriteCastResult(WorldPacket& data, Player* caster, uint32 spellInfo, uint8 castCount, uint8 result, SpellExtraError extraError);
         void SendCastResult(uint8 result);
-        void SetCustomCastResultMessage(SpellExtraError result);
+
         void SendSpellStart();
         void SendSpellGo();
         void SendLogExecute(uint32 damage, uint64 & targetGuid);
@@ -1878,50 +1878,6 @@ class SERVER_DECL Spell : public EventableObject
         void SpellEffectJumpTarget(uint32 i);
         void SpellEffectJumpBehindTarget(uint32 i);
 
-        // Spell Targets Handlers
-        void SpellTargetNULL(uint32 i, uint32 j);
-        void SpellTargetDefault(uint32 i, uint32 j);
-        void SpellTargetSelf(uint32 i, uint32 j);
-        void SpellTargetInvisibleAOE(uint32 i, uint32 j);
-        void SpellTargetFriendly(uint32 i, uint32 j);
-        void SpellTargetPet(uint32 i, uint32 j);
-        void SpellTargetSingleTargetEnemy(uint32 i, uint32 j);
-        void SpellTargetCustomAreaOfEffect(uint32 i, uint32 j);
-        void SpellTargetAreaOfEffect(uint32 i, uint32 j);
-        void SpellTargetLandUnderCaster(uint32 i, uint32 j);            /// I don't think this is the correct name for this one
-        void SpellTargetAllPartyMembersRangeNR(uint32 i, uint32 j);
-        void SpellTargetSingleTargetFriend(uint32 i, uint32 j);
-        void SpellTargetAoE(uint32 i, uint32 j);                        // something special
-        void SpellTargetSingleGameobjectTarget(uint32 i, uint32 j);
-        void SpellTargetInFrontOfCaster(uint32 i, uint32 j);
-        void SpellTargetSingleFriend(uint32 i, uint32 j);
-        void SpellTargetGameobject_itemTarget(uint32 i, uint32 j);
-        void SpellTargetPetOwner(uint32 i, uint32 j);
-        void SpellTargetEnemysAreaOfEffect(uint32 i, uint32 j);
-        void SpellTargetTypeTAOE(uint32 i, uint32 j);
-        void SpellTargetAllyBasedAreaEffect(uint32 i, uint32 j);
-        void SpellTargetScriptedEffects(uint32 i, uint32 j);
-        void SpellTargetSummon(uint32 i, uint32 j);
-        void SpellTargetNearbyPartyMembers(uint32 i, uint32 j);
-        void SpellTargetSingleTargetPartyMember(uint32 i, uint32 j);
-        void SpellTargetScriptedEffects2(uint32 i, uint32 j);
-        void SpellTargetPartyMember(uint32 i, uint32 j);
-        void SpellTargetDummyTarget(uint32 i, uint32 j);
-        void SpellTargetFishing(uint32 i, uint32 j);
-        void SpellTargetType40(uint32 i, uint32 j);
-        void SpellTargetTotem(uint32 i, uint32 j);
-        void SpellTargetChainTargeting(uint32 i, uint32 j);
-        void SpellTargetSimpleTargetAdd(uint32 i, uint32 j);
-        void SpellTargetAllRaid(uint32 i, uint32 j);
-        void SpellTargetTargetAreaSelectedUnit(uint32 i, uint32 j);
-        void SpellTargetInFrontOfCaster2(uint32 i, uint32 j);
-        void SpellTargetTargetPartyMember(uint32 i, uint32 j);
-        void SpellTargetSameGroupSameClass(uint32 i, uint32 j);
-        //these are custom
-        void SpellTargetSinglePartyInjured(uint32 i, uint32 j);
-        void SpellTargetMultiplePartyInjured(uint32 i, uint32 j);
-        void SpellTargetNonCombatPet(uint32 i, uint32 j);
-
         void Heal(int32 amount, bool ForceCrit = false);
 
         GameObject*     g_caster;
@@ -1934,7 +1890,7 @@ class SERVER_DECL Spell : public EventableObject
 
         // This returns SPELL_ENTRY_Spell_Dmg_Type where 0 = SPELL_DMG_TYPE_NONE, 1 = SPELL_DMG_TYPE_MAGIC, 2 = SPELL_DMG_TYPE_MELEE, 3 = SPELL_DMG_TYPE_RANGED
         // It should NOT be used for weapon_damage_type which needs: 0 = MELEE, 1 = OFFHAND, 2 = RANGED
-        inline uint32 GetType() { return (GetProto()->Spell_Dmg_Type == SPELL_DMG_TYPE_NONE ? SPELL_DMG_TYPE_MAGIC : GetProto()->Spell_Dmg_Type); }
+        inline uint32 GetType() { return (GetSpellInfo()->Spell_Dmg_Type == SPELL_DMG_TYPE_NONE ? SPELL_DMG_TYPE_MAGIC : GetSpellInfo()->Spell_Dmg_Type); }
 
         std::map<uint64, Aura*> m_pendingAuras;
         TargetsList UniqueTargets;
@@ -1952,10 +1908,10 @@ class SERVER_DECL Spell : public EventableObject
         bool IsAspect();
         bool IsSeal();
 
-        inline SpellInfo* GetProto() { return (m_spellInfo_override == NULL) ? m_spellInfo : m_spellInfo_override; }
+        inline SpellInfo* GetSpellInfo() { return (m_spellInfo_override == nullptr) ? m_spellInfo : m_spellInfo_override; }
         void InitProtoOverride()
         {
-            if (m_spellInfo_override != NULL)
+            if (m_spellInfo_override != nullptr)
                 return;
             m_spellInfo_override = sSpellCustomizations.GetSpellInfo(m_spellInfo->Id);
         }
@@ -1965,9 +1921,9 @@ class SERVER_DECL Spell : public EventableObject
             bDurSet = true;
             int32 c_dur = 0;
 
-            if (GetProto()->DurationIndex)
+            if (GetSpellInfo()->DurationIndex)
             {
-                auto spell_duration = sSpellDurationStore.LookupEntry(GetProto()->DurationIndex);
+                auto spell_duration = sSpellDurationStore.LookupEntry(GetSpellInfo()->DurationIndex);
                 if (spell_duration)
                 {
                     //check for negative and 0 durations.
@@ -2005,16 +1961,8 @@ class SERVER_DECL Spell : public EventableObject
 
                     if (u_caster != nullptr)
                     {
-                        SM_FIValue(u_caster->SM_FDur, (int32*)&this->Dur, GetProto()->SpellGroupType);
-                        SM_PIValue(u_caster->SM_PDur, (int32*)&this->Dur, GetProto()->SpellGroupType);
-    #ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
-                        int spell_flat_modifers = 0;
-                        int spell_pct_modifers = 0;
-                        SM_FIValue(u_caster->SM_FDur, &spell_flat_modifers, GetProto()->SpellGroupType);
-                        SM_FIValue(u_caster->SM_PDur, &spell_pct_modifers, GetProto()->SpellGroupType);
-                        if (spell_flat_modifers != 0 || spell_pct_modifers != 0)
-                            LOG_DEBUG("!!!!!spell duration mod flat %d , spell duration mod pct %d , spell duration %d, spell group %u", spell_flat_modifers, spell_pct_modifers, Dur, GetProto()->SpellGroupType);
-    #endif
+                        SM_FIValue(u_caster->SM_FDur, (int32*)&this->Dur, GetSpellInfo()->SpellGroupType);
+                        SM_PIValue(u_caster->SM_PDur, (int32*)&this->Dur, GetSpellInfo()->SpellGroupType);
                     }
                 }
                 else
@@ -2035,19 +1983,11 @@ class SERVER_DECL Spell : public EventableObject
             if (bRadSet[i])
                 return Rad[i];
             bRadSet[i] = true;
-            Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(GetProto()->EffectRadiusIndex[i]));
+            Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(GetSpellInfo()->EffectRadiusIndex[i]));
             if (u_caster != nullptr)
             {
-                SM_FFValue(u_caster->SM_FRadius, &Rad[i], GetProto()->SpellGroupType);
-                SM_PFValue(u_caster->SM_PRadius, &Rad[i], GetProto()->SpellGroupType);
-    #ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
-                float spell_flat_modifers = 0;
-                float spell_pct_modifers = 1;
-                SM_FFValue(u_caster->SM_FRadius, &spell_flat_modifers, GetProto()->SpellGroupType);
-                SM_PFValue(u_caster->SM_PRadius, &spell_pct_modifers, GetProto()->SpellGroupType);
-                if (spell_flat_modifers != 0 || spell_pct_modifers != 1)
-                    LOG_DEBUG("!!!!!spell radius mod flat %f , spell radius mod pct %f , spell radius %f, spell group %u", spell_flat_modifers, spell_pct_modifers, Rad[i], GetProto()->SpellGroupType);
-    #endif
+                SM_FFValue(u_caster->SM_FRadius, &Rad[i], GetSpellInfo()->SpellGroupType);
+                SM_PFValue(u_caster->SM_PRadius, &Rad[i], GetSpellInfo()->SpellGroupType);
             }
 
             return Rad[i];
@@ -2090,8 +2030,7 @@ class SERVER_DECL Spell : public EventableObject
 
         bool m_triggeredSpell;
         bool m_AreaAura;
-        //uint32 TriggerSpellId;  // used to set next spell to use
-        //uint64 TriggerSpellTarget; // used to set next spell target
+
         bool m_requiresCP;
         float m_castPositionX;
         float m_castPositionY;

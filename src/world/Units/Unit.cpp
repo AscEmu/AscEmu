@@ -5124,7 +5124,7 @@ void Unit::castSpell(Spell* pSpell)
     }
 
     m_currentSpell = pSpell;
-    pLastSpell = pSpell->GetProto();
+    pLastSpell = pSpell->GetSpellInfo();
 }
 
 int32 Unit::GetSpellDmgBonus(Unit* pVictim, SpellInfo* spellInfo, int32 base_dmg, bool isdot)
@@ -6158,7 +6158,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     case 33151:
                     {
                         //our luck. it got triggered on smite..we do not remove it just yet
-                        if (m_currentSpell && m_currentSpell->GetProto()->custom_NameHash == SPELL_HASH_SMITE)
+                        if (m_currentSpell && m_currentSpell->GetSpellInfo()->custom_NameHash == SPELL_HASH_SMITE)
                             continue;
 
                         //this spell gets removed only when casting smite
@@ -6169,9 +6169,9 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     break;
                     case 34936:	// Backlash
                     {
-                        if (m_currentSpell && m_currentSpell->GetProto()->custom_NameHash == SPELL_HASH_SHADOW_BOLT)
+                        if (m_currentSpell && m_currentSpell->GetSpellInfo()->custom_NameHash == SPELL_HASH_SHADOW_BOLT)
                             continue;
-                        if (m_currentSpell && m_currentSpell->GetProto()->custom_NameHash == SPELL_HASH_INCINERATE)
+                        if (m_currentSpell && m_currentSpell->GetSpellInfo()->custom_NameHash == SPELL_HASH_INCINERATE)
                             continue;
                         SpellInfo* spi = sSpellCustomizations.GetSpellInfo(skip);
                         if (spi && spi->custom_NameHash != SPELL_HASH_SHADOW_BOLT && spi->custom_NameHash != SPELL_HASH_INCINERATE)
@@ -6190,7 +6190,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     break;
                     case 17941: //Shadow Trance
                     {
-                        if (m_currentSpell && m_currentSpell->GetProto()->custom_NameHash == SPELL_HASH_SHADOW_BOLT)
+                        if (m_currentSpell && m_currentSpell->GetSpellInfo()->custom_NameHash == SPELL_HASH_SHADOW_BOLT)
                             continue;
                         SpellInfo* spi = sSpellCustomizations.GetSpellInfo(skip);
                         if (spi && spi->custom_NameHash != SPELL_HASH_SHADOW_BOLT)
@@ -6206,7 +6206,7 @@ void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)
                     break;
                     case 48108: // Hot Streak
                     {
-                        if (m_currentSpell && m_currentSpell->GetProto()->custom_NameHash != SPELL_HASH_PYROBLAST)
+                        if (m_currentSpell && m_currentSpell->GetSpellInfo()->custom_NameHash != SPELL_HASH_PYROBLAST)
                             continue;
                     }
                     break;

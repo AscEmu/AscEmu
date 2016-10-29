@@ -4014,8 +4014,8 @@ void Aura::SpellAuraModShapeshift(bool apply)
         if (shapeshift_form->id != FORM_STEALTH)
             m_target->RemoveAllAurasByRequiredShapeShift(DecimalToMask(mod->m_miscValue));
 
-        if (m_target->IsCasting() && m_target->m_currentSpell && m_target->m_currentSpell->GetProto()
-            && (m_target->m_currentSpell->GetProto()->RequiredShapeShift & DecimalToMask(mod->m_miscValue)))
+        if (m_target->IsCasting() && m_target->m_currentSpell && m_target->m_currentSpell->GetSpellInfo()
+            && (m_target->m_currentSpell->GetSpellInfo()->RequiredShapeShift & DecimalToMask(mod->m_miscValue)))
             m_target->InterruptSpell();
 
         //execute before changing shape back

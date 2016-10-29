@@ -73,7 +73,7 @@ bool DeathStrike(uint32 i, Spell* pSpell)
         // A deadly attack that deals $s2% weapon damage plus ${$m1*$m2/100}
         // and heals the Death Knight for $F% of $Ghis:her; maximum health for each of $Ghis:her; diseases on the target.
         // $F is dmg_multiplier.
-        float amt = static_cast< float >(pSpell->p_caster->GetMaxHealth()) * pSpell->GetProto()->dmg_multiplier[0] / 100.0f;
+        float amt = static_cast< float >(pSpell->p_caster->GetMaxHealth()) * pSpell->GetSpellInfo()->dmg_multiplier[0] / 100.0f;
 
         // Calculate heal amount with diseases on target
         uint32 val = static_cast< uint32 >(amt * count);
@@ -83,7 +83,7 @@ bool DeathStrike(uint32 i, Spell* pSpell)
             val += val * (aur->GetSpellProto()->EffectBasePoints[2] + 1) / 100;
 
         if(val > 0)
-            pSpell->u_caster->Heal(pSpell->u_caster, pSpell->GetProto()->Id, val);
+            pSpell->u_caster->Heal(pSpell->u_caster, pSpell->GetSpellInfo()->Id, val);
     }
 
     return true;
@@ -343,7 +343,7 @@ bool WillOfTheNecropolis(uint32 i, Spell* spell)
     if(plr == NULL)
         return true;
 
-    switch(spell->GetProto()->Id)
+    switch(spell->GetSpellInfo()->Id)
     {
         case 49189:
             plr->removeSpell(52285, false, false, 0);
