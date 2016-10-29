@@ -26,32 +26,32 @@ DBC::Structures::ClassFamilyMask const& DBC::Structures::SpellEntry::GetEffectSp
 
 DBC::Structures::SpellAuraOptionsEntry const* DBC::Structures::SpellEntry::GetSpellAuraOptions() const
 {
-    return SpellAuraOptionsId ? sSpellAuraOptionsStore.LookupEntry(SpellAuraOptionsId) : NULL;
+    return SpellAuraOptionsId ? sSpellAuraOptionsStore.LookupEntry(SpellAuraOptionsId) : nullptr;
 }
 
 DBC::Structures::SpellAuraRestrictionsEntry const* DBC::Structures::SpellEntry::GetSpellAuraRestrictions() const
 {
-    return SpellAuraRestrictionsId ? sSpellAuraRestrictionsStore.LookupEntry(SpellAuraRestrictionsId) : NULL;
+    return SpellAuraRestrictionsId ? sSpellAuraRestrictionsStore.LookupEntry(SpellAuraRestrictionsId) : nullptr;
 }
 
 DBC::Structures::SpellCastingRequirementsEntry const* DBC::Structures::SpellEntry::GetSpellCastingRequirements() const
 {
-    return SpellCastingRequirementsId ? sSpellCastingRequirementsStore.LookupEntry(SpellCastingRequirementsId) : NULL;
+    return SpellCastingRequirementsId ? sSpellCastingRequirementsStore.LookupEntry(SpellCastingRequirementsId) : nullptr;
 }
 
 DBC::Structures::SpellCategoriesEntry const* DBC::Structures::SpellEntry::GetSpellCategories() const
 {
-    return SpellCategoriesId ? sSpellCategoriesStore.LookupEntry(SpellCategoriesId) : NULL;
+    return SpellCategoriesId ? sSpellCategoriesStore.LookupEntry(SpellCategoriesId) : nullptr;
 }
 
 DBC::Structures::SpellClassOptionsEntry const* DBC::Structures::SpellEntry::GetSpellClassOptions() const
 {
-    return SpellClassOptionsId ? sSpellClassOptionsStore.LookupEntry(SpellClassOptionsId) : NULL;
+    return SpellClassOptionsId ? sSpellClassOptionsStore.LookupEntry(SpellClassOptionsId) : nullptr;
 }
 
 DBC::Structures::SpellCooldownsEntry const* DBC::Structures::SpellEntry::GetSpellCooldowns() const
 {
-    return SpellCooldownsId ? sSpellCooldownsStore.LookupEntry(SpellCooldownsId) : NULL;
+    return SpellCooldownsId ? sSpellCooldownsStore.LookupEntry(SpellCooldownsId) : nullptr;
 }
 
 DBC::Structures::SpellEffectEntry const* DBC::Structures::SpellEntry::GetSpellEffect(SpellEffectIndex eff) const
@@ -61,47 +61,47 @@ DBC::Structures::SpellEffectEntry const* DBC::Structures::SpellEntry::GetSpellEf
 
 DBC::Structures::SpellEquippedItemsEntry const* DBC::Structures::SpellEntry::GetSpellEquippedItems() const
 {
-    return SpellEquippedItemsId ? sSpellEquippedItemsStore.LookupEntry(SpellEquippedItemsId) : NULL;
+    return SpellEquippedItemsId ? sSpellEquippedItemsStore.LookupEntry(SpellEquippedItemsId) : nullptr;
 }
 
 DBC::Structures::SpellInterruptsEntry const* DBC::Structures::SpellEntry::GetSpellInterrupts() const
 {
-    return SpellInterruptsId ? sSpellInterruptsStore.LookupEntry(SpellInterruptsId) : NULL;
+    return SpellInterruptsId ? sSpellInterruptsStore.LookupEntry(SpellInterruptsId) : nullptr;
 }
 
 DBC::Structures::SpellLevelsEntry const* DBC::Structures::SpellEntry::GetSpellLevels() const
 {
-    return SpellLevelsId ? sSpellLevelsStore.LookupEntry(SpellLevelsId) : NULL;
+    return SpellLevelsId ? sSpellLevelsStore.LookupEntry(SpellLevelsId) : nullptr;
 }
 
 DBC::Structures::SpellPowerEntry const* DBC::Structures::SpellEntry::GetSpellPower() const
 {
-    return SpellPowerId ? sSpellPowerStore.LookupEntry(SpellPowerId) : NULL;
+    return SpellPowerId ? sSpellPowerStore.LookupEntry(SpellPowerId) : nullptr;
 }
 
 DBC::Structures::SpellReagentsEntry const* DBC::Structures::SpellEntry::GetSpellReagents() const
 {
-    return SpellReagentsId ? sSpellReagentsStore.LookupEntry(SpellReagentsId) : NULL;
+    return SpellReagentsId ? sSpellReagentsStore.LookupEntry(SpellReagentsId) : nullptr;
 }
 
 DBC::Structures::SpellScalingEntry const* DBC::Structures::SpellEntry::GetSpellScaling() const
 {
-    return SpellScalingId ? sSpellScalingStore.LookupEntry(SpellScalingId) : NULL;
+    return SpellScalingId ? sSpellScalingStore.LookupEntry(SpellScalingId) : nullptr;
 }
 
 DBC::Structures::SpellShapeshiftEntry const* DBC::Structures::SpellEntry::GetSpellShapeshift() const
 {
-    return SpellShapeshiftId ? sSpellShapeshiftStore.LookupEntry(SpellShapeshiftId) : NULL;
+    return SpellShapeshiftId ? sSpellShapeshiftStore.LookupEntry(SpellShapeshiftId) : nullptr;
 }
 
 DBC::Structures::SpellTargetRestrictionsEntry const* DBC::Structures::SpellEntry::GetSpellTargetRestrictions() const
 {
-    return SpellTargetRestrictionsId ? sSpellTargetRestrictionsStore.LookupEntry(SpellTargetRestrictionsId) : NULL;
+    return SpellTargetRestrictionsId ? sSpellTargetRestrictionsStore.LookupEntry(SpellTargetRestrictionsId) : nullptr;
 }
 
 DBC::Structures::SpellTotemsEntry const* DBC::Structures::SpellEntry::GetSpellTotems() const
 {
-    return SpellTotemsId ? sSpellTotemsStore.LookupEntry(SpellTotemsId) : NULL;
+    return SpellTotemsId ? sSpellTotemsStore.LookupEntry(SpellTotemsId) : nullptr;
 }
 
 uint32 DBC::Structures::SpellEntry::GetManaCost() const
