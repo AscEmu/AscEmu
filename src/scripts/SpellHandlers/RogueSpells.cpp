@@ -153,7 +153,7 @@ bool CheatDeath(uint32 i, Aura* a, bool apply)
 
     if(p_target != NULL)
     {
-        int32 m = (int32)(8.0f * p_target->CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_CRIT_RESILIENCE));
+        int32 m = (int32)(8.0f * p_target->CalcRating(PCR_MELEE_CRIT_RESILIENCE));
         if(m > 90)
             m = 90;
 
