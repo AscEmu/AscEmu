@@ -73,17 +73,17 @@ bool DeathStrike(uint32 i, Spell* pSpell)
         // A deadly attack that deals $s2% weapon damage plus ${$m1*$m2/100}
         // and heals the Death Knight for $F% of $Ghis:her; maximum health for each of $Ghis:her; diseases on the target.
         // $F is dmg_multiplier.
-        float amt = static_cast< float >(pSpell->p_caster->GetMaxHealth()) * pSpell->GetProto()->dmg_multiplier[0] / 100.0f;
+        float amt = static_cast< float >(pSpell->p_caster->GetMaxHealth()) * pSpell->GetSpellInfo()->dmg_multiplier[0] / 100.0f;
 
         // Calculate heal amount with diseases on target
         uint32 val = static_cast< uint32 >(amt * count);
 
         Aura* aur = pSpell->p_caster->FindAuraByNameHash(SPELL_HASH_IMPROVED_DEATH_STRIKE);
         if(aur != NULL)
-            val += val * (aur->GetSpellProto()->EffectBasePoints[2] + 1) / 100;
+            val += val * (aur->GetSpellInfo()->EffectBasePoints[2] + 1) / 100;
 
         if(val > 0)
-            pSpell->u_caster->Heal(pSpell->u_caster, pSpell->GetProto()->Id, val);
+            pSpell->u_caster->Heal(pSpell->u_caster, pSpell->GetSpellInfo()->Id, val);
     }
 
     return true;
@@ -286,7 +286,7 @@ bool Butchery(uint32 i, Aura* pAura, bool apply)
     Unit* target = pAura->GetTarget();
 
     if(apply)
-        target->AddProcTriggerSpell(50163, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_GAIN_EXPIERIENCE | PROC_TARGET_SELF, 0, NULL, NULL);
+        target->AddProcTriggerSpell(50163, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_GAIN_EXPIERIENCE | PROC_TARGET_SELF, 0, NULL, NULL);
     else
         target->RemoveProcTriggerSpell(50163, pAura->m_casterGuid);
 
@@ -300,7 +300,7 @@ bool DeathRuneMastery(uint32 i, Aura* pAura, bool apply)
     if(apply)
     {
         static uint32 classMask[3] = { 0x10, 0x20000, 0 };
-        target->AddProcTriggerSpell(50806, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
+        target->AddProcTriggerSpell(50806, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
     }
     else
         target->RemoveProcTriggerSpell(50806, pAura->m_casterGuid);
@@ -313,7 +313,7 @@ bool MarkOfBlood(uint32 i, Aura* pAura, bool apply)
     Unit* target = pAura->GetTarget();
 
     if(apply)
-        target->AddProcTriggerSpell(61607, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, pAura->GetSpellProto()->procFlags, pAura->GetSpellProto()->procCharges, NULL, NULL);
+        target->AddProcTriggerSpell(61607, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, pAura->GetSpellInfo()->procFlags, pAura->GetSpellInfo()->procCharges, NULL, NULL);
     else if(target->GetAuraStackCount(49005) <= 1)
         target->RemoveProcTriggerSpell(61607, pAura->m_casterGuid);
 
@@ -327,7 +327,7 @@ bool Hysteria(uint32 i, Aura* pAura, bool apply)
 
     Unit* target = pAura->GetTarget();
 
-    uint32 dmg = (uint32) target->GetMaxHealth() * (pAura->GetSpellProto()->EffectBasePoints[i] + 1) / 100;
+    uint32 dmg = (uint32) target->GetMaxHealth() * (pAura->GetSpellInfo()->EffectBasePoints[i] + 1) / 100;
     target->DealDamage(target, dmg, 0, 0, 0);
 
     return true;
@@ -343,7 +343,7 @@ bool WillOfTheNecropolis(uint32 i, Spell* spell)
     if(plr == NULL)
         return true;
 
-    switch(spell->GetProto()->Id)
+    switch(spell->GetSpellInfo()->Id)
     {
         case 49189:
             plr->removeSpell(52285, false, false, 0);

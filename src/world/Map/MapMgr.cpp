@@ -178,7 +178,7 @@ MapMgr::~MapMgr()
 
     MMAP::MMapFactory::createOrGetMMapManager()->unloadMapInstance(GetMapId(), m_instanceID);
 
-    Log.Notice("MapMgr", "Instance %u shut down. (%s)", m_instanceID, GetBaseMap()->GetMapName().c_str());
+    Log.DebugFlag(LF_MAP, "MapMgr : Instance %u shut down. (%s)", m_instanceID, GetBaseMap()->GetMapName().c_str());
 }
 
 void MapMgr::PushObject(Object* obj)
@@ -239,7 +239,7 @@ void MapMgr::PushObject(Object* obj)
     {
         plObj = static_cast<Player*>(obj);
 
-        LOG_DETAIL("Creating player " I64FMT " for himself.", obj->GetGUID());
+        Log.DebugFlag(LF_MAP, "Creating player " I64FMT " for himself.", obj->GetGUID());
         ByteBuffer pbuf(10000);
         count = plObj->BuildCreateUpdateBlockForPlayer(&pbuf, plObj);
         plObj->PushCreationData(&pbuf, count);
@@ -369,7 +369,7 @@ void MapMgr::PushStaticObject(Object* obj)
             break;
 
         default:
-            Log.Debug("MapMgr::PushStaticObject", "called for invalid type %u.", obj->GetTypeFromGUID());
+            Log.DebugFlag(LF_MAP, "MapMgr::PushStaticObject", "called for invalid type %u.", obj->GetTypeFromGUID());
             break;
     }
 }
@@ -443,7 +443,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         }
         default:
         {
-            Log.Debug("MapMgr::RemoveObject", "called for invalid type %u.", obj->GetTypeFromGUID());
+            Log.DebugFlag(LF_MAP, "MapMgr::RemoveObject", "called for invalid type %u.", obj->GetTypeFromGUID());
             break;
         }
     }
@@ -526,7 +526,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
         if (!InactiveMoveTime && !forced_expire && GetMapInfo()->type != INSTANCE_NULL)
         {
             InactiveMoveTime = UNIXTIME + (MAPMGR_INACTIVE_MOVE_TIME * 60);
-            Log.Debug("MapMgr", "Instance %u is now idle. (%s)", m_instanceID, GetBaseMap()->GetMapName().c_str());
+            Log.DebugFlag(LF_MAP, "MapMgr", "Instance %u is now idle. (%s)", m_instanceID, GetBaseMap()->GetMapName().c_str());
         }
     }
 }
@@ -938,14 +938,14 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
                     objCell = Create(posX, posY);
                     objCell->Init(posX, posY, this);
 
-                    Log.Map("MapMgr::UpdateCellActivity", "Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, this->_mapId, m_instanceID);
+                    Log.DebugFlag(LF_MAP_CELL, "MapMgr : Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, this->_mapId, m_instanceID);
                     objCell->SetActivity(true);
 
                     _terrain->LoadTile((int32)posX / 8, (int32)posY / 8);
 
                     ARCEMU_ASSERT(!objCell->IsLoaded());
 
-                    Log.Map("MapMgr::UpdateCellActivity", "Loading objects for Cell [%u][%u] on map %u (instance %u)...", posX, posY, this->_mapId, m_instanceID);
+                    Log.DebugFlag(LF_MAP_CELL, "MapMgr : Loading objects for Cell [%u][%u] on map %u (instance %u)...", posX, posY, this->_mapId, m_instanceID);
 
                     sp = _map->GetSpawnsList(posX, posY);
                     if (sp)
@@ -957,14 +957,14 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
                 //Cell is now active
                 if (_CellActive(posX, posY) && !objCell->IsActive())
                 {
-                    LOG_DETAIL("Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, this->_mapId, m_instanceID);
+                    Log.DebugFlag(LF_MAP_CELL, "Cell [%u,%u] on map %u (instance %u) is now active.", posX, posY, this->_mapId, m_instanceID);
 
                     _terrain->LoadTile((int32)posX / 8, (int32)posY / 8);
                     objCell->SetActivity(true);
 
                     if (!objCell->IsLoaded())
                     {
-                        LOG_DETAIL("Loading objects for Cell [%u][%u] on map %u (instance %u)...", posX, posY, this->_mapId, m_instanceID);
+                        Log.DebugFlag(LF_MAP_CELL, "Loading objects for Cell [%u][%u] on map %u (instance %u)...", posX, posY, this->_mapId, m_instanceID);
                         sp = _map->GetSpawnsList(posX, posY);
                         if (sp)
                             objCell->LoadObjects(sp);
@@ -973,7 +973,7 @@ void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)
                 //Cell is no longer active
                 else if (!_CellActive(posX, posY) && objCell->IsActive())
                 {
-                    LOG_DETAIL("Cell [%u,%u] on map %u (instance %u) is now idle.", posX, posY, _mapId, m_instanceID);
+                    Log.DebugFlag(LF_MAP_CELL, "Cell [%u,%u] on map %u (instance %u) is now idle.", posX, posY, _mapId, m_instanceID);
                     objCell->SetActivity(false);
 
                     _terrain->UnloadTile((int32)posX / 8, (int32)posY / 8);
@@ -1586,7 +1586,7 @@ void MapMgr::UnloadCell(uint32 x, uint32 y)
     if (c == nullptr || c->HasPlayers() || _CellActive(x, y) || !c->IsUnloadPending())
         return;
 
-    LOG_DETAIL("Unloading Cell [%u][%u] on map %u (instance %u)...", x, y, _mapId, m_instanceID);
+    Log.DebugFlag(LF_MAP, "Unloading Cell [%u][%u] on map %u (instance %u)...", x, y, _mapId, m_instanceID);
 
     c->Unload();
 }
@@ -1773,11 +1773,11 @@ GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, f
     auto gameobject_info = sMySQLStore.GetGameObjectProperties(entryID);
     if (gameobject_info == nullptr)
     {
-        LOG_DEBUG("Error looking up entry in CreateAndSpawnGameObject");
+        Log.DebugFlag(LF_MAP, "Error looking up entry in CreateAndSpawnGameObject");
         return nullptr;
     }
 
-    LOG_DEBUG("CreateAndSpawnGameObject: By Entry '%u'", entryID);
+    Log.DebugFlag(LF_MAP, "CreateAndSpawnGameObject: By Entry '%u'", entryID);
 
     GameObject* go = CreateGameObject(entryID);
 

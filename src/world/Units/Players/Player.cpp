@@ -1188,7 +1188,7 @@ void Player::Update(unsigned long time_passed)
 
                 for (uint32 x = MAX_POSITIVE_AURAS_EXTEDED_START; x < MAX_POSITIVE_AURAS_EXTEDED_END; x++)
                 {
-                    if (m_auras[x] && m_auras[x]->GetSpellProto()->Attributes & ATTRIBUTES_ONLY_OUTDOORS)
+                    if (m_auras[x] && m_auras[x]->GetSpellInfo()->Attributes & ATTRIBUTES_ONLY_OUTDOORS)
                         RemoveAura(m_auras[x]);
                 }
             }
@@ -1254,7 +1254,7 @@ void Player::_EventAttack(bool offhand)
 {
     if (m_currentSpell)
     {
-        if (m_currentSpell->GetProto()->ChannelInterruptFlags != 0) // this is a channeled spell - ignore the attack event
+        if (m_currentSpell->GetSpellInfo()->ChannelInterruptFlags != 0) // this is a channeled spell - ignore the attack event
             return;
         m_currentSpell->cancel();
         setAttackTimer(500, offhand);
@@ -4865,6 +4865,7 @@ void Player::DeathDurabilityLoss(double percent)
 {
     //Message
     WorldPacket data(SMSG_DURABILITY_DAMAGE_DEATH, 0);
+    data << uint32(percent);
     GetSession()->SendPacket(&data);
 
     uint32 pDurability;
@@ -5104,7 +5105,7 @@ void Player::SetTutorialInt(uint32 intId, uint32 value)
 float Player::GetDefenseChance(uint32 opLevel)
 {
     float chance = _GetSkillLineCurrent(SKILL_DEFENSE, true) - (opLevel * 5.0f);
-    chance += CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_DEFENCE);
+    chance += CalcRating(PCR_DEFENCE);
     chance = floorf(chance) * 0.04f;   // defense skill is treated as an integer on retail
 
     return chance;
@@ -5134,7 +5135,7 @@ float Player::GetDodgeChance()
     chance += tmp;
 
     // Dodge from dodge rating
-    chance += CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_DODGE);
+    chance += CalcRating(PCR_DODGE);
 
     // Dodge from spells
     chance += GetDodgeFromSpell();
@@ -5152,7 +5153,7 @@ float Player::GetBlockChance()
     chance = BASE_BLOCK_CHANCE;
 
     // Block rating
-    chance += CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK);
+    chance += CalcRating(PCR_BLOCK);
 
     // Block chance from spells
     chance += GetBlockFromSpell();
@@ -5169,7 +5170,7 @@ float Player::GetParryChance()
     chance = BASE_PARRY_CHANCE;
 
     // Parry rating
-    chance += CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_PARRY);
+    chance += CalcRating(PCR_PARRY);
 
     // Parry chance from spells
     chance += GetParryFromSpell();
@@ -5254,10 +5255,10 @@ void Player::UpdateChances()
         }
     }
 
-    float cr = tmp + CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_CRIT) + melee_bonus;
+    float cr = tmp + CalcRating(PCR_MELEE_CRIT) + melee_bonus;
     SetFloatValue(PLAYER_CRIT_PERCENTAGE, std::min(cr, 95.0f));
 
-    float rcr = tmp + CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_CRIT) + ranged_bonus;
+    float rcr = tmp + CalcRating(PCR_RANGED_CRIT) + ranged_bonus;
     SetFloatValue(PLAYER_RANGED_CRIT_PERCENTAGE, std::min(rcr, 95.0f));
 
     auto SpellCritBase = sGtChanceToSpellCritBaseStore.LookupEntry(pClass - 1);
@@ -5268,7 +5269,7 @@ void Player::UpdateChances()
 
     spellcritperc = 100 * (SpellCritBase->val + GetStat(STAT_INTELLECT) * SpellCritPerInt->val) +
         this->GetSpellCritFromSpell() +
-        this->CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_CRIT);
+        this->CalcRating(PCR_SPELL_CRIT);
     UpdateChanceFields();
 }
 
@@ -5315,14 +5316,14 @@ void Player::UpdateAttackSpeed()
             speed = weap->GetItemProperties()->Delay;
     }
     SetBaseAttackTime(MELEE,
-                      (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HASTE) / 100.0f))));
+                      (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PCR_MELEE_HASTE) / 100.0f))));
 
     weap = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (weap != nullptr && weap->GetItemProperties()->Class == ITEM_CLASS_WEAPON)
     {
         speed = weap->GetItemProperties()->Delay;
         SetBaseAttackTime(OFFHAND,
-                          (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HASTE) / 100.0f))));
+                          (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PCR_MELEE_HASTE) / 100.0f))));
     }
 
     weap = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
@@ -5330,7 +5331,7 @@ void Player::UpdateAttackSpeed()
     {
         speed = weap->GetItemProperties()->Delay;
         SetBaseAttackTime(RANGED,
-                          (uint32)((float)speed / (m_attack_speed[MOD_RANGED] * (1.0f + CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_HASTE) / 100.0f))));
+                          (uint32)((float)speed / (m_attack_speed[MOD_RANGED] * (1.0f + CalcRating(PCR_RANGED_HASTE) / 100.0f))));
     }
 }
 
@@ -5557,7 +5558,7 @@ void Player::UpdateStats()
     }
 
     // Spell haste rating
-    float haste = 1.0f + CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_HASTE) / 100.0f;
+    float haste = 1.0f + CalcRating(PCR_SPELL_HASTE) / 100.0f;
     if (haste != SpellHasteRatingBonus)
     {
         float value = GetCastSpeedMod() * SpellHasteRatingBonus / haste; // remove previous mod and apply current
@@ -8274,9 +8275,29 @@ void Player::EndDuel(uint8 WinCondition)
     DuelingWith = NULL;
 }
 
+void Player::SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, int32 regen)
+{
+    if (int(max) == -1)
+    {
+        if (int(current) != -1)
+            StopMirrorTimer(Type);
+        return;
+    }
+    WorldPacket data(SMSG_START_MIRROR_TIMER, 21);
+    data << uint32(Type);
+    data << uint32(current);
+    data << uint32(max);
+    data << int32(regen);
+    data << uint8(0);
+    data << uint32(0);                   // spell id
+    GetSession()->SendPacket(&data);
+}
+
 void Player::StopMirrorTimer(MirrorTimerTypes Type)
 {
-    m_session->OutPacket(SMSG_STOP_MIRROR_TIMER, 4, &Type);
+    WorldPacket data(SMSG_STOP_MIRROR_TIMER, 4);
+    data << (uint32)Type;
+    GetSession()->SendPacket(&data);
 }
 
 void Player::EventTeleport(uint32 mapid, float x, float y, float z)
@@ -8380,20 +8401,26 @@ void Player::BroadcastMessage(const char* Format, ...)
     delete data;
 }
 
-float Player::CalcRating(uint32 index)
+float Player::CalcRating(PlayerCombatRating index)
 {
-    uint32 relative_index = index - (PLAYER_FIELD_COMBAT_RATING_1);
-    float rating = float(m_uint32Values[index]);
+    return float(GetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + index)) * GetRatingMultiplier(index);
+}
 
+float Player::GetRatingMultiplier(PlayerCombatRating index)
+{
     uint32 level = getLevel();
     if (level > 100)
         level = 100;
 
-    auto combat_rating_entry = sGtCombatRatingsStore.LookupEntry(relative_index * 100 + level - 1);
-    if (combat_rating_entry == nullptr)
-        return rating;
-    else
-        return (rating / combat_rating_entry->val);
+    DBC::Structures::GtCombatRatingsEntry const* combat_rating = sGtCombatRatingsStore.LookupEntry(index * 100 + level - 1);
+    DBC::Structures::GtOCTClassCombatRatingScalarEntry const* class_combat_rating_scalar = sGtOCTClassCombatRatingScalarStore.LookupEntry((getClass() - 1) * 100 + index + 1);
+    if (!combat_rating || !class_combat_rating_scalar)
+        return 1.0f;
+
+    if (index == 15)
+        return 1.0f;
+
+    return class_combat_rating_scalar->val / combat_rating->val;
 }
 
 bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, float X, float Y, float Z, float O)
@@ -9051,7 +9078,7 @@ void Player::CompleteLoading()
         info = sSpellCustomizations.GetSpellInfo(*itr);
 
         if (info != NULL
-            && (info->Attributes & ATTRIBUTES_PASSIVE)  // passive
+            && (info->IsPassive())  // passive
             && !(info->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET))
         {
             if (info->RequiredShapeShift)
@@ -9492,7 +9519,7 @@ void Player::SaveAuras(std::stringstream & ss)
             Aura* aur = m_auras[x];
             for (uint8 i = 0; i < 3; ++i)
             {
-                if (aur->m_spellProto->Effect[i] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA || aur->m_spellProto->Effect[i] == SPELL_EFFECT_APPLY_RAID_AREA_AURA || aur->m_spellProto->Effect[i] == SPELL_EFFECT_ADD_FARSIGHT)
+                if (aur->m_spellInfo->Effect[i] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA || aur->m_spellInfo->Effect[i] == SPELL_EFFECT_APPLY_RAID_AREA_AURA || aur->m_spellInfo->Effect[i] == SPELL_EFFECT_ADD_FARSIGHT)
                 {
                     continue;
                     break;
@@ -9502,11 +9529,11 @@ void Player::SaveAuras(std::stringstream & ss)
             if (aur->pSpellId)
                 continue; //these auras were gained due to some proc. We do not save these either to avoid exploits of not removing them
 
-            if (aur->m_spellProto->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
+            if (aur->m_spellInfo->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
                 continue;
 
             //we are going to cast passive spells anyway on login so no need to save auras for them
-            if (aur->IsPassive() && !(aur->GetSpellProto()->AttributesEx & 1024))
+            if (aur->IsPassive() && !(aur->GetSpellInfo()->AttributesEx & 1024))
                 continue;
 
             if (charges > 0 && aur->GetSpellId() != m_auras[prevX]->GetSpellId())
@@ -9515,7 +9542,7 @@ void Player::SaveAuras(std::stringstream & ss)
                 charges = 0;
             }
 
-            if (aur->GetSpellProto()->procCharges == 0)
+            if (aur->GetSpellInfo()->procCharges == 0)
                 ss << aur->GetSpellId() << "," << aur->GetTimeLeft() << "," << aur->IsPositive() << "," << 0 << ",";
             else
                 charges++;
@@ -9539,7 +9566,7 @@ void Player::SetShapeShift(uint8 ss)
     {
         if (m_auras[x] != NULL)
         {
-            uint32 reqss = m_auras[x]->GetSpellProto()->RequiredShapeShift;
+            uint32 reqss = m_auras[x]->GetSpellInfo()->RequiredShapeShift;
             if (reqss != 0 && m_auras[x]->IsPositive())
             {
                 if (old_ss > 0
@@ -9557,7 +9584,7 @@ void Player::SetShapeShift(uint8 ss)
 
             if (this->getClass() == DRUID)
             {
-                switch (m_auras[x]->GetSpellProto()->MechanicsType)
+                switch (m_auras[x]->GetSpellInfo()->MechanicsType)
                 {
                     case MECHANIC_ROOTED: //Rooted
                     case MECHANIC_ENSNARED: //Movement speed
@@ -10274,7 +10301,7 @@ void Player::_LearnSkillSpells(uint32 SkillLine, uint32 curr_sk)
                         removeSpell(removeSpellId, true, true, skill_line_ability->next);
                     }
                     // if passive spell, apply it now
-                    if (sp->Attributes & ATTRIBUTES_PASSIVE)
+                    if (sp->IsPassive())
                     {
                         SpellCastTargets targets;
                         targets.m_unitTarget = this->GetGUID();
@@ -10738,7 +10765,7 @@ void Player::EventSummonPet(Pet* new_pet)
     }
     //there are talents that stop working after you gain pet
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-        if (m_auras[x] && m_auras[x]->GetSpellProto()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_ON_PET)
+        if (m_auras[x] && m_auras[x]->GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_ON_PET)
             m_auras[x]->Remove();
     //pet should inherit some of the talents from caster
     //new_pet->InheritSMMods(); //not required yet. We cast full spell to have visual effect too
@@ -10750,7 +10777,7 @@ void Player::EventDismissPet()
 {
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
         if (m_auras[x])
-            if (m_auras[x]->GetSpellProto()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
+            if (m_auras[x]->GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_EXPIREING_WITH_PET)
                 m_auras[x]->Remove();
 }
 
@@ -11667,7 +11694,7 @@ void Player::CalcExpertise()
     {
         if (m_auras[x] != NULL && m_auras[x]->HasModType(SPELL_AURA_EXPERTISE))
         {
-            entry = m_auras[x]->m_spellProto;
+            entry = m_auras[x]->m_spellInfo;
             val = m_auras[x]->GetModAmountByMod();
 
             if (entry->EquippedItemSubClass != 0)
@@ -11690,8 +11717,8 @@ void Player::CalcExpertise()
         }
     }
 
-    ModUnsigned32Value(PLAYER_EXPERTISE, (int32)CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_EXPERTISE) + modifier);
-    ModUnsigned32Value(PLAYER_OFFHAND_EXPERTISE, (int32)CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_EXPERTISE) + modifier);
+    ModUnsigned32Value(PLAYER_EXPERTISE, (int32)CalcRating(PCR_EXPERTISE) + modifier);
+    ModUnsigned32Value(PLAYER_OFFHAND_EXPERTISE, (int32)CalcRating(PCR_EXPERTISE) + modifier);
     UpdateStats();
 }
 
@@ -12046,7 +12073,7 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
             int32 ss = GetShapeShiftMask();
             if (spellInfo->RequiredShapeShift == 0 || (ss & spellInfo->RequiredShapeShift) != 0)
             {
-                if ((((spellInfo->Attributes & ATTRIBUTES_PASSIVE)
+                if ((((spellInfo->IsPassive())
                     && !(spellInfo->custom_c_is_flags & SPELL_FLAG_IS_CONDITIONAL_PASSIVE_CAST)) //like health pct dependent will get autocast on health change event
                     || (spellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL ||
                             spellInfo->Effect[1] == SPELL_EFFECT_LEARN_SPELL ||
@@ -12709,7 +12736,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
             for (uint8 i = 0; i < 3; i++)
             {
-                if (spl->GetProto()->Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+                if (spl->GetSpellInfo()->Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
                     uint64 guid = GetChannelSpellTargetGUID();
                     DynamicObject* dObj = GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
@@ -12720,7 +12747,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
                 }
             }
 
-            if (spl->GetProto()->ChannelInterruptFlags == 48140) spl->cancel();
+            if (spl->GetSpellInfo()->ChannelInterruptFlags == 48140) spl->cancel();
         }
     }
 
@@ -13599,7 +13626,7 @@ void Player::CastSpellArea()
     {
         if (m_auras[i] != 0)
         {
-            if (m_auras[i]->GetSpellProto()->CheckLocation(GetMapId(), ZoneId, AreaId, this) == false)
+            if (m_auras[i]->GetSpellInfo()->CheckLocation(GetMapId(), ZoneId, AreaId, this) == false)
             {
                 SpellAreaMapBounds sab = sSpellFactoryMgr.GetSpellAreaMapBounds(m_auras[i]->GetSpellId());
                 if (sab.first != sab.second)
@@ -13880,14 +13907,8 @@ void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSessio
         if (m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
         {
             m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
-            WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
-            data << uint32(TIMER_BREATH);
-            data << m_UnderwaterTime;
-            data << m_UnderwaterMaxTime;
-            data << int32(-1);
-            data << uint32(0);
 
-            pSession->SendPacket(&data);
+            SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, -1);
         }
 
         // player is above water level
@@ -13943,14 +13964,7 @@ void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSessio
         if ((movement_info.GetPos()->z + m_noseLevel) < pSession->m_wLevel)
         {
             m_UnderwaterState |= UNDERWATERSTATE_UNDERWATER;
-            WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
-            data << uint32(TIMER_BREATH);
-            data << m_UnderwaterTime;
-            data << m_UnderwaterMaxTime;
-            data << int32(-1);
-            data << uint32(0);
-
-            pSession->SendPacket(&data);
+            SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, -1);
         }
     }
 
@@ -13961,13 +13975,7 @@ void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSessio
         if ((movement_info.GetPos()->z + m_noseLevel) > pSession->m_wLevel)
         {
             m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
-            WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
-            data << uint32(TIMER_BREATH);
-            data << m_UnderwaterTime;
-            data << m_UnderwaterMaxTime;
-            data << int32(10);
-            data << uint32(0);
-            pSession->SendPacket(&data);
+            SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, 10);
         }
     }
 
@@ -13978,13 +13986,7 @@ void Player::HandleBreathing(MovementInfo & movement_info, WorldSession* pSessio
         if ((movement_info.GetPos()->z + m_noseLevel) > pSession->m_wLevel)
         {
             m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
-            WorldPacket data(SMSG_START_MIRROR_TIMER, 20);
-            data << uint32(TIMER_BREATH);
-            data << m_UnderwaterTime;
-            data << m_UnderwaterMaxTime;
-            data << int32(10);
-            data << uint32(0);
-            pSession->SendPacket(&data);
+            SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, 10);
         }
     }
 }

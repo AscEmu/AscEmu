@@ -783,34 +783,6 @@ class SERVER_DECL Player : public Unit
         bool IsSpellFitByClassAndRace(uint32 spell_id);
         uint32 GetFreePrimaryProfessionPoints() const { return GetUInt32Value(PLAYER_CHARACTER_POINTS); }
 
-        bool IsPrimaryProfession(DBC::Structures::SpellEntry const* sp) const
-        {
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            {
-                DBC::Structures::SpellEffectEntry const* spellEffect = sp->GetSpellEffect(SpellEffectIndex(i));
-                if (!spellEffect)
-                    continue;
-
-                if (spellEffect->Effect == 118)   //SPELL_EFFECT_SKILL
-                {
-                    uint32 skill = spellEffect->EffectMiscValue;
-
-                    if (IsPrimaryProfessionSkill(skill))
-                        return true;
-                }
-            }
-            return false;
-        }
-
-        bool IsPrimaryProfessionSkill(uint32 skill) const
-        {
-            DBC::Structures::SkillLineAbilityEntry const* pSkill = sSkillLineAbilityStore.LookupEntry(skill);
-            if (!pSkill)
-                return false;
-
-            return pSkill->acquireMethod == 11;    //SKILL_TYPE_PROFESSION
-        }
-
         /// PLEASE DO NOT INLINE!
         void AddOnStrikeSpell(SpellInfo* sp, uint32 delay)
         {
@@ -1316,7 +1288,8 @@ class SERVER_DECL Player : public Unit
 
         uint32* GetPlayedtime() { return m_playedtime; };
         void CalcStat(uint32 t);
-        float CalcRating(uint32 t);
+        float CalcRating(PlayerCombatRating t);
+        float GetRatingMultiplier(PlayerCombatRating t);
         void RegenerateMana(bool is_interrupted);
         void RegenerateHealth(bool inCombat);
         void RegenerateEnergy();
@@ -1481,6 +1454,7 @@ class SERVER_DECL Player : public Unit
 
         bool m_Autojoin;
         bool m_AutoAddMem;
+        void SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, int32 regen);
         void StopMirrorTimer(MirrorTimerTypes Type);
         BGScore m_bgScore;
         uint32 m_bgTeam;

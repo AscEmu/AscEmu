@@ -200,23 +200,21 @@ enum LagReportType
 //
 //    SendPacket(&data);
 //}
-//
-//
-//void WorldSession::HandleGMTicketSystemStatusOpcode(WorldPacket& recv_data)
-//{
-//    WorldPacket data(SMSG_GMTICKET_SYSTEMSTATUS, 4);
-//
-//    // no data
-//
-//    // Response - System is working Fine
-//    if (sWorld.getGMTicketStatus())
-//        data << uint32(1);
-//    else
-//        data << uint32(0);
-//
-//    SendPacket(&data);
-//}
-//
+
+
+void WorldSession::HandleGMTicketSystemStatusOpcode(WorldPacket& recv_data)
+{
+    WorldPacket data(SMSG_GMTICKET_SYSTEMSTATUS, 4);
+
+    // Response - System is working Fine
+    if (sWorld.getGMTicketStatus())
+        data << uint32(1);
+    else
+        data << uint32(0);
+
+    SendPacket(&data);
+}
+
 //void WorldSession::HandleGMTicketToggleSystemStatusOpcode(WorldPacket& recv_data)
 //{
 //    if (!HasGMPermissions())

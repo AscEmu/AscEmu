@@ -42,18 +42,18 @@ bool Execute(uint32 i, Spell* pSpell)
 
     if (rage >= 30)
     {
-        toadd = (multiple[pSpell->GetProto()->custom_RankNumber] * 30);
+        toadd = (multiple[pSpell->GetSpellInfo()->custom_RankNumber] * 30);
     }
     else
     {
-        toadd = (multiple[pSpell->GetProto()->custom_RankNumber] * rage);
+        toadd = (multiple[pSpell->GetSpellInfo()->custom_RankNumber] * rage);
     }
 
     dmg = pSpell->CalculateEffect(i, pSpell->GetUnitTarget());
     dmg += Caster->GetAttackPower() / 5;
     dmg += toadd;
 
-    Caster->Strike(Target, 0, pSpell->GetProto(), 0, 0, dmg, false, false);
+    Caster->Strike(Target, 0, pSpell->GetSpellInfo(), 0, 0, dmg, false, false);
 
     return true;
 }
@@ -76,7 +76,7 @@ bool DamageShield(uint32 i, Aura* pAura, bool apply)
 
     if (apply)
     {
-        target->AddProcTriggerSpell(59653, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_BLOCK_VICTIM, 0, NULL, NULL);
+        target->AddProcTriggerSpell(59653, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_MELEE_ATTACK_VICTIM | PROC_ON_BLOCK_VICTIM, 0, NULL, NULL);
     }
     else
     {
@@ -106,7 +106,7 @@ bool HeroicFury(uint32 i, Spell* s)
         {
             for (uint32 y = 0; y < 3; ++y)
             {
-                switch (p_caster->m_auras[x]->GetSpellProto()->EffectApplyAuraName[y])
+                switch (p_caster->m_auras[x]->GetSpellInfo()->EffectApplyAuraName[y])
                 {
                     case SPELL_AURA_MOD_ROOT:
                     case SPELL_AURA_MOD_DECREASE_SPEED:
@@ -132,7 +132,7 @@ bool Charge(uint32 i, Spell* s)
         return false;
     }
 
-    uint32 rage_to_gen = s->GetProto()->EffectBasePoints[i] + 1;
+    uint32 rage_to_gen = s->GetSpellInfo()->EffectBasePoints[i] + 1;
     if (s->p_caster)
     {
         for (std::set<uint32>::iterator itr = s->p_caster->mSpells.begin(); itr != s->p_caster->mSpells.end(); ++itr)
@@ -202,12 +202,12 @@ bool BerserkerRage(uint32 i, Aura* a, bool apply)
     {
         if (apply)
         {
-            p_target->MechanicsDispels[a->GetSpellProto()->EffectMiscValue[i]]++;
-            p_target->RemoveAllAurasByMechanic(a->GetSpellProto()->EffectMiscValue[i], static_cast<uint32>(-1), false);
+            p_target->MechanicsDispels[a->GetSpellInfo()->EffectMiscValue[i]]++;
+            p_target->RemoveAllAurasByMechanic(a->GetSpellInfo()->EffectMiscValue[i], static_cast<uint32>(-1), false);
         }
         else
         {
-            p_target->MechanicsDispels[a->GetSpellProto()->EffectMiscValue[i]]--;
+            p_target->MechanicsDispels[a->GetSpellInfo()->EffectMiscValue[i]]--;
         }
     }
 
@@ -220,11 +220,11 @@ bool SweepingStrikes(uint32 i, Aura* a, bool apply)
 
     if (apply)
     {
-        m_target->AddExtraStrikeTarget(a->GetSpellProto(), 10);
+        m_target->AddExtraStrikeTarget(a->GetSpellInfo(), 10);
     }
     else
     {
-        m_target->RemoveExtraStrikeTarget(a->GetSpellProto());
+        m_target->RemoveExtraStrikeTarget(a->GetSpellInfo());
     }
 
     return true;

@@ -279,8 +279,8 @@ class CutToTheChaseSpellProc : public SpellProc
             // Duration of 5 combo maximum
             int32 dur = 21 * MSTIME_SECOND;
 
-            SM_FIValue(mTarget->SM_FDur, &dur, aura->GetSpellProto()->SpellGroupType);
-            SM_PIValue(mTarget->SM_PDur, &dur, aura->GetSpellProto()->SpellGroupType);
+            SM_FIValue(mTarget->SM_FDur, &dur, aura->GetSpellInfo()->SpellGroupType);
+            SM_PIValue(mTarget->SM_PDur, &dur, aura->GetSpellInfo()->SpellGroupType);
 
             // Set new aura's duration, reset event timer and set client visual aura
             aura->SetDuration(dur);

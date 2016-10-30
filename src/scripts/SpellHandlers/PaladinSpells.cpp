@@ -24,7 +24,7 @@ bool EyeForAnEye(uint32 i, Aura* pAura, bool apply)
     Unit* target = pAura->GetTarget();
 
     if (apply)
-        target->AddProcTriggerSpell(25997, pAura->GetSpellProto()->Id, pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM, 0, NULL, NULL);
+        target->AddProcTriggerSpell(25997, pAura->GetSpellInfo()->Id, pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM, 0, NULL, NULL);
     else
         target->RemoveProcTriggerSpell(25997, pAura->m_casterGuid);
 
@@ -51,7 +51,7 @@ bool HolyShock(uint32 i, Spell* pSpell)
     if (isAttackable(caster, target))
     {
         // Cast offensive Holy Shock
-        switch (pSpell->GetProto()->Id)
+        switch (pSpell->GetSpellInfo()->Id)
         {
         case 20473: // Rank 1
             spell_id = 25912;
@@ -75,14 +75,14 @@ bool HolyShock(uint32 i, Spell* pSpell)
             spell_id = 48823;
             break;
         default: // Invalid case, spell handler is assigned to wrong spell
-            Log.Error("SpellHandlers\\PaladinSpells.cpp", "(Offensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetProto()->Id);
+            Log.Error("SpellHandlers\\PaladinSpells.cpp", "(Offensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
             return true;
         }
     }
     else
     {
         // Cast healing Holy Shock
-        switch (pSpell->GetProto()->Id)
+        switch (pSpell->GetSpellInfo()->Id)
         {
         case 20473: // Rank 1
             spell_id = 25914;
@@ -106,7 +106,7 @@ bool HolyShock(uint32 i, Spell* pSpell)
             spell_id = 48821;
             break;
         default: // Invalid case, spell handler is assigned to wrong spell
-            Log.Error("SpellHandlers\\PaladinSpells.cpp", "(Defensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetProto()->Id);
+            Log.Error("SpellHandlers\\PaladinSpells.cpp", "(Defensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
             return true;
         }
     }
@@ -123,7 +123,7 @@ bool SealOfRighteousness(uint32 i, Aura* pAura, bool apply)
     if (i == 0)
     {
         if (apply)
-            target->AddProcTriggerSpell(25742, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
+            target->AddProcTriggerSpell(25742, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
         else
             target->RemoveProcTriggerSpell(25742, pAura->m_casterGuid);
     }
@@ -139,8 +139,8 @@ bool SealOfCorruption(uint32 i, Aura* pAura, bool apply)
     {
         if (apply)
         {
-            target->AddProcTriggerSpell(53742, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
-            target->AddProcTriggerSpell(53739, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
+            target->AddProcTriggerSpell(53742, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
+            target->AddProcTriggerSpell(53739, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
         }
         else
         {
@@ -160,8 +160,8 @@ bool SealOfVengeance(uint32 i, Aura* pAura, bool apply)
     {
         if (apply)
         {
-            target->AddProcTriggerSpell(31803, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
-            target->AddProcTriggerSpell(42463, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
+            target->AddProcTriggerSpell(31803, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
+            target->AddProcTriggerSpell(42463, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
         }
         else
         {
@@ -223,10 +223,10 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
         id = 20187;
         break;
     case 31801:
-        id = aura->GetSpellProto()->EffectBasePoints[2];
+        id = aura->GetSpellInfo()->EffectBasePoints[2];
         break;
     case 53736:
-        id = aura->GetSpellProto()->EffectBasePoints[2];
+        id = aura->GetSpellInfo()->EffectBasePoints[2];
         break;
     case 20166:
         id = 54158;
@@ -236,7 +236,7 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
     caster->CastSpell(target, id, true);
 
     // Cast judgement spell
-    switch (pSpell->GetProto()->custom_NameHash)
+    switch (pSpell->GetSpellInfo()->custom_NameHash)
     {
     case SPELL_HASH_JUDGEMENT_OF_JUSTICE:
         id = 20184;
@@ -251,7 +251,7 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
 
     caster->CastSpell(target, id, true);
 
-    caster->SetCurrentUnitForSingleTargetAura(pSpell->GetProto(), target->GetGUID());
+    caster->SetCurrentUnitForSingleTargetAura(pSpell->GetSpellInfo(), target->GetGUID());
 
     return true;
 }
@@ -263,7 +263,7 @@ bool JudgementOfLight(uint32 i, Aura* pAura, bool apply)
         return true;
 
     if (apply)
-        caster->AddProcTriggerSpell(20267, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_MELEE_ATTACK | PROC_TARGET_SELF, 0, NULL, NULL);
+        caster->AddProcTriggerSpell(20267, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_MELEE_ATTACK | PROC_TARGET_SELF, 0, NULL, NULL);
     else
         caster->RemoveProcTriggerSpell(20267, pAura->m_casterGuid);
 
@@ -277,7 +277,7 @@ bool JudgementOfWisdom(uint32 i, Aura* pAura, bool apply)
         return true;
 
     if (apply)
-        caster->AddProcTriggerSpell(20268, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_MELEE_ATTACK | PROC_TARGET_SELF, 0, NULL, NULL);
+        caster->AddProcTriggerSpell(20268, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_MELEE_ATTACK | PROC_TARGET_SELF, 0, NULL, NULL);
     else
         caster->RemoveProcTriggerSpell(20268, pAura->m_casterGuid);
 
@@ -330,7 +330,7 @@ bool RighteousDefense(uint32 i, Spell* s)
 
 bool Illumination(uint32 i, Spell* s)
 {
-    switch (s->m_triggeredByAura == NULL ? s->GetProto()->Id : s->m_triggeredByAura->GetSpellId())
+    switch (s->m_triggeredByAura == NULL ? s->GetSpellInfo()->Id : s->m_triggeredByAura->GetSpellId())
     {
     case 20210:
     case 20212:
@@ -340,7 +340,7 @@ bool Illumination(uint32 i, Spell* s)
     {
                   if (s->p_caster == NULL)
                       return false;
-                  SpellInfo* sp = s->p_caster->last_heal_spell ? s->p_caster->last_heal_spell : s->GetProto();
+                  SpellInfo* sp = s->p_caster->last_heal_spell ? s->p_caster->last_heal_spell : s->GetSpellInfo();
                   s->p_caster->Energize(s->p_caster, 20272, 60 * s->u_caster->GetBaseMana() * sp->ManaCostPercentage / 10000, POWER_TYPE_MANA);
     }
         break;

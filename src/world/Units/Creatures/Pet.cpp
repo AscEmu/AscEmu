@@ -516,7 +516,7 @@ void Pet::InitializeSpells()
         SpellInfo* info = itr->first;
 
         // Check that the spell isn't passive
-        if (info->Attributes & ATTRIBUTES_PASSIVE)
+        if (info->IsPassive())
         {
             // Cast on self..
             Spell* sp = sSpellFactoryMgr.NewSpell(this, info, true, NULL);
@@ -1121,7 +1121,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
     if (sp == NULL)
         return;
 
-    if (sp->Attributes & ATTRIBUTES_PASSIVE)        // Cast on self if we're a passive spell
+    if (sp->IsPassive())        // Cast on self if we're a passive spell
     {
         if (IsInWorld())
         {
@@ -1220,7 +1220,11 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
     }
 
     if (showLearnSpell && m_Owner && m_Owner->GetSession() && !(sp->Attributes & ATTRIBUTES_NO_CAST))
-        m_Owner->GetSession()->OutPacket(SMSG_PET_LEARNED_SPELL, 2, &sp->Id);
+    {
+        WorldPacket data(SMSG_PET_LEARNED_SPELL, 4);
+        data << uint32(sp->Id);
+        m_Owner->GetSession()->SendPacket(&data);
+    }
 
     if (IsInWorld())
         SendSpellsToOwner();
@@ -2111,7 +2115,7 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
             for (uint8 i = 0; i < 3; i++)
             {
-                if (spl->GetProto()->Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+                if (spl->GetSpellInfo()->Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
                 {
                     uint64 guid = GetChannelSpellTargetGUID();
                     DynamicObject* dObj = GetMapMgr()->GetDynamicObject(Arcemu::Util::GUID_LOPART(guid));
@@ -2122,7 +2126,7 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
                 }
             }
 
-            if (spl->GetProto()->ChannelInterruptFlags == 48140) spl->cancel();
+            if (spl->GetSpellInfo()->ChannelInterruptFlags == 48140) spl->cancel();
         }
     }
 

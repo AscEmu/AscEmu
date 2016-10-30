@@ -1394,7 +1394,7 @@ bool HunterTamingQuest(uint32 i, Aura* a, bool apply)
     }
     else
     {
-        uint32 TamingSpellid = a->GetSpellProto()->EffectMiscValue[1];
+        uint32 TamingSpellid = a->GetSpellInfo()->EffectMiscValue[1];
 
         SpellInfo* triggerspell = sSpellCustomizations.GetSpellInfo(TamingSpellid);
         if (triggerspell == NULL)

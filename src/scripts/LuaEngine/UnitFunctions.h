@@ -2479,7 +2479,7 @@ class LuaUnit
     {
         if (!ptr) return 0;
         if (ptr->GetCurrentSpell())
-            lua_pushnumber(L, ptr->GetCurrentSpell()->GetProto()->Id);
+            lua_pushnumber(L, ptr->GetCurrentSpell()->GetSpellInfo()->Id);
         else
             lua_pushnil(L);
         return 1;
@@ -5655,7 +5655,7 @@ class LuaUnit
         TEST_UNITPLAYER_RET();
         for (uint32 x = MAX_NEGATIVE_VISUAL_AURAS_START; x < MAX_NEGATIVE_VISUAL_AURAS_END; ++x)
         {
-            if (ptr->m_auras[x] && ptr->m_auras[x]->m_spellProto)
+            if (ptr->m_auras[x] && ptr->m_auras[x]->m_spellInfo)
                 RET_BOOL(true)
         }
         RET_BOOL(false)
@@ -5666,7 +5666,7 @@ class LuaUnit
         TEST_UNITPLAYER()
             for (uint32 x = MAX_POSITIVE_VISUAL_AURAS_START; x < MAX_POSITIVE_VISUAL_AURAS_END; ++x)
             {
-                if (ptr->m_auras[x] && ptr->m_auras[x]->m_spellProto)
+                if (ptr->m_auras[x] && ptr->m_auras[x]->m_spellInfo)
                     RET_BOOL(true)
             }
         RET_BOOL(false)

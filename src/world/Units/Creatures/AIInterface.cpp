@@ -1621,7 +1621,7 @@ float AIInterface::_CalcAggroRange(Unit* target)
         {
             // If nearby miners weren't spotted already we'll give them a little surprise.
             Spell* sp = target->GetCurrentSpell();
-            if (sp->GetProto()->Effect[0] == SPELL_EFFECT_OPEN_LOCK && sp->GetProto()->EffectMiscValue[0] == LOCKTYPE_MINING)
+            if (sp->GetSpellInfo()->Effect[0] == SPELL_EFFECT_OPEN_LOCK && sp->GetSpellInfo()->EffectMiscValue[0] == LOCKTYPE_MINING)
             {
                 isMining = true;
             }
@@ -3483,8 +3483,8 @@ void AIInterface::_UpdateTotem(uint32 p_time)
         if (nextTarget == NULL ||
             (!m_Unit->GetMapMgr()->GetUnit(nextTarget->GetGUID()) ||
             !nextTarget->isAlive() ||
-            !IsInrange(m_Unit, nextTarget, pSpell->GetProto()->custom_base_range_or_radius_sqr) ||
-            !isAttackable(m_Unit, nextTarget, !(pSpell->GetProto()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED))
+            !IsInrange(m_Unit, nextTarget, pSpell->GetSpellInfo()->custom_base_range_or_radius_sqr) ||
+            !isAttackable(m_Unit, nextTarget, !(pSpell->GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED))
            )
            )
         {

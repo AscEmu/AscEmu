@@ -57,6 +57,32 @@ enum LogType
     LOGON_LOG
 };
 
+enum LogLevel
+{
+    LOG_LEVEL_NORMAL    = 0,
+    LOG_LEVEL_DETAIL    = 1,
+    LOG_LEVEL_DEBUG     = 2,
+    LOG_LEVEL_MAP       = 3
+};
+
+enum LogFlags
+{
+    LF_NONE         = 0x00,
+    LF_OPCODE       = 0x01,
+    LF_MAP          = 0x02,
+    LF_MAP_CELL     = 0x04,
+    LF_VMAP         = 0x08,
+    LF_MMAP         = 0x10,
+    LF_SPELL        = 0x20,
+    LF_AURA         = 0x40,
+    LF_SPELL_EFF    = 0x80,
+    LF_AURA_EFF     = 0x100,
+    LF_SCRIPT_MGR   = 0x200,
+    LF_DB_TABLES    = 0x400,
+
+    LF_ALL          = 0x800 - 0x01
+};
+
 extern SERVER_DECL time_t UNIXTIME;        //update this every loop to avoid the time() syscall!
 extern SERVER_DECL tm g_localTime;
 
@@ -91,17 +117,22 @@ class SERVER_DECL oLog : public Singleton< oLog >
         void Warning(const char* source, const char* format, ...);
         //log level 2
         void Debug(const char* source, const char* format, ...);
-        //log level 3
-        void Map(const char* source, const char* format, ...);
+
+
+        //Log functions
+        void DebugFlag(LogFlags log_flags, const char* format, ...);
+        int GetColorForDebugFlag(LogFlags log_flags);
 
         void SetLogging(bool enabled);
 
         void Init(int32 fileLogLevel, LogType logType);
         void SetFileLoggingLevel(int32 level);
+        void SetDebugFlags(uint32 flags);
 
         void Close();
 
         int32 m_fileLogLevel;
+        uint32 mDebugFlags;
 
     private:
 

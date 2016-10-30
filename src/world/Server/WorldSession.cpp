@@ -139,20 +139,22 @@ uint8 WorldSession::Update(uint32 InstanceID)
         ARCEMU_ASSERT(packet != NULL);
 
         if (packet->GetOpcode() >= NUM_MSG_TYPES)
-            LOG_DETAIL("[Session] Received out of range packet with opcode 0x%.4X", packet->GetOpcode());
+        {
+            Log.DebugFlag(LF_OPCODE, "[Session] Received out of range packet with opcode 0x%.4X", packet->GetOpcode());
+        }
         else
         {
             Handler = &WorldPacketHandlers[packet->GetOpcode()];
             if (Handler->status == STATUS_LOGGEDIN && !_player && Handler->handler != 0 && packet->GetOpcode() != 1282)
             {
-                LOG_DETAIL("[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)", LookupName(packet->GetOpcode(), g_worldOpcodeNames), packet->GetOpcode());
+                Log.DebugFlag(LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)", LookupName(packet->GetOpcode(), g_worldOpcodeNames), packet->GetOpcode());
             }
             else
             {
                 // Valid Packet :>
                 if (Handler->handler == 0)
                 {
-                    LOG_DETAIL("[Session] Received unhandled packet with opcode %s (0x%.4X)", LookupName(packet->GetOpcode(), g_worldOpcodeNames), packet->GetOpcode());
+                    Log.DebugFlag(LF_OPCODE, "[Session] Received unhandled packet with opcode %s (0x%.4X)", LookupName(packet->GetOpcode(), g_worldOpcodeNames), packet->GetOpcode());
                 }
                 else
                 {
@@ -823,11 +825,16 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_CANCEL_CHANNELLING].handler = &WorldSession::HandleCancelChannellingOpcode;
     WorldPacketHandlers[CMSG_CANCEL_AUTO_REPEAT_SPELL].handler = &WorldSession::HandleCancelAutoRepeatSpellOpcode;
     //WorldPacketHandlers[CMSG_TOTEM_DESTROYED].handler = &WorldSession::HandleCancelTotem;
-    WorldPacketHandlers[CMSG_LEARN_TALENT].handler = &WorldSession::HandleLearnTalentOpcode;
-    WorldPacketHandlers[CMSG_LEARN_PREVIEW_TALENTS].handler = &WorldSession::HandleLearnMultipleTalentsOpcode;
-    WorldPacketHandlers[CMSG_UNLEARN_TALENTS].handler = &WorldSession::HandleUnlearnTalents;
-    WorldPacketHandlers[MSG_TALENT_WIPE_CONFIRM].handler = &WorldSession::HandleUnlearnTalents;
+   
+    
     //WorldPacketHandlers[CMSG_UPDATE_PROJECTILE_POSITION].handler = &WorldSession::HandleUpdateProjectilePosition;
+
+    // Skills/Talents
+    WorldPacketHandlers[CMSG_LEARN_TALENT].handler = &WorldSession::HandleLearnTalentOpcode;
+    WorldPacketHandlers[CMSG_LEARN_PREVIEW_TALENTS].handler = &WorldSession::HandleLearnPreviewTalentsOpcode;
+    WorldPacketHandlers[MSG_TALENT_WIPE_CONFIRM].handler = &WorldSession::HandleTalentWipeConfirmOpcode;
+    WorldPacketHandlers[CMSG_UNLEARN_SKILL].handler = &WorldSession::HandleUnlearnSkillOpcode;
+    WorldPacketHandlers[CMSG_PET_LEARN_TALENT].handler = &WorldSession::HandlePetLearnTalentOpcode;
 
     // Attack
     WorldPacketHandlers[CMSG_ATTACKSWING].handler = &WorldSession::HandleAttackSwingOpcode;
@@ -971,7 +978,6 @@ void WorldSession::InitPacketHandlerTable()
     //WorldPacketHandlers[CMSG_PET_UNLEARN].handler = &WorldSession::HandlePetUnlearn;
     WorldPacketHandlers[CMSG_PET_SPELL_AUTOCAST].handler = &WorldSession::HandlePetSpellAutocast;
     //WorldPacketHandlers[CMSG_PET_CANCEL_AURA].handler = &WorldSession::HandlePetCancelAura;
-    //WorldPacketHandlers[CMSG_PET_LEARN_TALENT].handler = &WorldSession::HandlePetLearnTalent;
     //WorldPacketHandlers[CMSG_DISMISS_CRITTER].handler = &WorldSession::HandleDismissCritter;
 
     //// Battlegrounds
@@ -996,7 +1002,7 @@ void WorldSession::InitPacketHandlerTable()
     //WorldPacketHandlers[CMSG_GMTICKET_UPDATETEXT].handler = &WorldSession::HandleGMTicketUpdateOpcode;
     //WorldPacketHandlers[CMSG_GMTICKET_DELETETICKET].handler = &WorldSession::HandleGMTicketDeleteOpcode;
     //WorldPacketHandlers[CMSG_GMTICKET_GETTICKET].handler = &WorldSession::HandleGMTicketGetTicketOpcode;
-    //WorldPacketHandlers[CMSG_GMTICKET_SYSTEMSTATUS].handler = &WorldSession::HandleGMTicketSystemStatusOpcode;
+    WorldPacketHandlers[CMSG_GMTICKET_SYSTEMSTATUS].handler = &WorldSession::HandleGMTicketSystemStatusOpcode;
     //WorldPacketHandlers[CMSG_GMTICKETSYSTEM_TOGGLE].handler = &WorldSession::HandleGMTicketToggleSystemStatusOpcode;
 
     //// Lag report
@@ -1027,7 +1033,6 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_PET_CAST_SPELL].handler = &WorldSession::HandlePetCastSpell;
     WorldPacketHandlers[CMSG_WORLD_STATE_UI_TIMER_UPDATE].handler = &WorldSession::HandleWorldStateUITimerUpdate;
     WorldPacketHandlers[CMSG_SET_TAXI_BENCHMARK_MODE].handler = &WorldSession::HandleSetTaxiBenchmarkOpcode;
-    //WorldPacketHandlers[CMSG_UNLEARN_SKILL].handler = &WorldSession::HandleUnlearnSkillOpcode;
     WorldPacketHandlers[CMSG_REQUEST_CEMETERY_LIST].handler = &WorldSession::HandleRequestCemeteryListOpcode;
 
     //// Chat
@@ -1375,108 +1380,6 @@ void WorldSession::SendAccountDataTimes(uint32 mask)
             data << uint32(0);
         }
     SendPacket(&data);
-}
-
-void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-    
-    uint32 talent_id;
-    uint32 requested_rank;
-    uint32 unk;
-
-    recv_data >> talent_id;
-    recv_data >> requested_rank;
-    recv_data >> unk;
-
-    _player->LearnTalent(talent_id, requested_rank);
-}
-
-void WorldSession::HandleUnlearnTalents(WorldPacket& recv_data)
-{
-    CHECK_INWORLD_RETURN
-
-    uint32 price = GetPlayer()->CalcTalentResetCost(GetPlayer()->GetTalentResetTimes());
-    if (!GetPlayer()->HasGold(price))
-        return;
-
-    GetPlayer()->SetTalentResetTimes(GetPlayer()->GetTalentResetTimes() + 1);
-    GetPlayer()->ModGold(-(int32)price);
-    GetPlayer()->Reset_Talents();
-}
-
-//void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
-//{
-//    CHECK_INWORLD_RETURN
-//    
-//    uint32 skill_line_id;
-//    uint32 points_remaining = _player->GetPrimaryProfessionPoints();
-//    recv_data >> skill_line_id;
-//
-//    // Remove any spells within that line that the player has
-//    _player->RemoveSpellsFromLine(skill_line_id);
-//
-//    // Finally, remove the skill line.
-//    _player->_RemoveSkillLine(skill_line_id);
-//
-//    // added by Zack : This is probably wrong or already made elsewhere :
-//    // restore skill learnability
-//    if (points_remaining == _player->GetPrimaryProfessionPoints())
-//    {
-//        // we unlearned a skill so we enable a new one to be learned
-//        auto skill_line = sSkillLineStore.LookupEntry(skill_line_id);
-//        if (!skill_line)
-//            return;
-//
-//        if (skill_line->type == SKILL_TYPE_PROFESSION && points_remaining < 2)
-//            _player->SetPrimaryProfessionPoints(points_remaining + 1);
-//    }
-//}
-
-void WorldSession::HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
-{
-    CHECK_INWORLD_RETURN
-
-    uint32 talentcount;
-    uint32 talentid;
-    uint32 rank;
-
-    LOG_DEBUG("Recieved packet CMSG_LEARN_TALENTS_MULTIPLE.");
-
-    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // 0x04C1 CMSG_LEARN_TALENTS_MULTIPLE
-    // As of 3.2.2.10550 the client sends this packet when clicking "learn" on
-    // the talent interface (in preview talents mode)
-    // This packet tells the server which talents to learn
-    //
-    // Structure:
-    //
-    // struct talentdata{
-    // uint32 talentid; - unique numeric identifier of the talent (index of
-    // talent.dbc)
-    // uint32 talentrank; - rank of the talent
-    // };
-    //
-    // uint32 talentcount; - number of talentid-rank pairs in the packet
-    // talentdata[ talentcount ];
-    //
-    //
-    // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    uint32 learn_talents_on_tab;
-    recvPacket >> learn_talents_on_tab;	//can be 0,1,2
-
-    recvPacket >> talentcount;
-
-    for (uint32 i = 0; i < talentcount; ++i)
-    {
-        recvPacket >> talentid;
-        recvPacket >> rank;
-
-        _player->LearnTalent(talentid, rank, true);
-    }
-
-    _player->smsg_TalentsInfo(false);
 }
 
 void WorldSession::SendMOTD()

@@ -150,11 +150,9 @@ enum Opcodes
     SMSG_RWHOIS                                     = 0x1FE,
     SMSG_LFG_PLAYER_REWARD                          = 0x1FF,
     SMSG_LFG_TELEPORT_DENIED                        = 0x200,
-    CMSG_UNLEARN_SKILL                              = 0x202,
     CMSG_DECHARGE                                   = 0x204,
     CMSG_REQUEST_ACCOUNT_DATA                       = 0x20A,
     SMSG_CLEAR_FAR_SIGHT_IMMEDIATE                  = 0x20D,
-    CMSG_UNLEARN_TALENTS                            = 0x213,
     SMSG_GAMEOBJECT_SPAWN_ANIM_OBSOLETE             = 0x214,
     CMSG_SET_STAT_CHEAT                             = 0x21D,
     SMSG_SET_REST_START_OBSOLETE                    = 0x21E,
@@ -420,7 +418,6 @@ enum Opcodes
     SMSG_RAID_READY_CHECK_ERROR                     = 0x408,
     CMSG_REFER_A_FRIEND                             = 0x40E,
     CMSG_GROUPACTION_THROTTLED                      = 0x411,
-    SMSG_OVERRIDE_LIGHT                             = 0x412,
     SMSG_TOTEM_CREATED                              = 0x413,
     CMSG_TOTEM_DESTROYED                            = 0x414,
     CMSG_EXPIRE_RAID_INSTANCE                       = 0x415,
@@ -610,7 +607,6 @@ enum Opcodes
     CMSG_REDIRECTION_AUTH_PROOF                     = 0x512,
     CMSG_DROP_NEW_CONNECTION                        = 0x513,
     SMSG_SEND_ALL_COMBAT_LOG                        = 0x514,
-    SMSG_OPEN_LFG_DUNGEON_FINDER                    = 0x515,
     MSG_MOVE_SET_COLLISION_HGT                      = 0x518,
     CMSG_CLEAR_RANDOM_BG_WIN_TIME                   = 0x519,
     CMSG_CLEAR_HOLIDAY_BG_WIN_TIME                  = 0x51A,
@@ -625,10 +621,11 @@ enum Opcodes
     MSG_WOW_CONNECTION                                  = 0x4F57,
     CMSG_READY_FOR_ACCOUNT_DATA_TIMES                   = 0x2B16,
     CMSG_VIOLENCE_LEVEL                                 = 0x7816,   // unhandled
-    CMSG_LOG_DISCONNECT                                 = 0x446D,
+    CMSG_LOG_DISCONNECT                                 = 0x446D,   // unhandled
     CMSG_LOAD_SCREEN                                    = 0x2422,
     CMSG_UI_TIME_REQUEST                                = 0x4605,
     SMSG_UI_TIME                                        = 0x4A14,
+    SMSG_OVERRIDE_LIGHT                                 = 0x4225,
 
     SMSG_CLIENTCACHE_VERSION                            = 0x2734,
     CMSG_KEEP_ALIVE                                     = 0x0015,   // not implemented?
@@ -660,7 +657,7 @@ enum Opcodes
     SMSG_COMPRESSED_UPDATE_OBJECT                       = 0x11F7,
     MSG_RANDOM_ROLL                                     = 0x0905,
     SMSG_ACCOUNT_DATA_TIMES                             = 0x4B05,
-    CMSG_UPDATE_ACCOUNT_DATA                            = 0x4736,
+    CMSG_UPDATE_ACCOUNT_DATA                            = 0x4736,   // not updated
     SMSG_UPDATE_ACCOUNT_DATA                            = 0x6837,
     SMSG_LOGIN_VERIFY_WORLD                             = 0x2005,
     CMSG_PAGE_TEXT_QUERY                                = 0x6614,
@@ -736,7 +733,7 @@ enum Opcodes
     SMSG_CORPSE_RECLAIM_DELAY                           = 0x0D34,
     SMSG_DEATH_RELEASE_LOC                              = 0x2F07,
     SMSG_PRE_RESURRECT                                  = 0x6C36,
-    CMSG_RETURN_TO_GRAVEYARD                            = 0x301E,
+    CMSG_RETURN_TO_GRAVEYARD                            = 0x301E,   // not implemented
     CMSG_REPOP_REQUEST                                  = 0x6235,
     SMSG_RESURRECT_REQUEST                              = 0x2905,
     CMSG_RESURRECT_RESPONSE                             = 0x6827,
@@ -930,7 +927,7 @@ enum Opcodes
     CMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE_ACK             = 0x0333,   // unknown
     CMSG_FORCE_FLIGHT_SPEED_CHANGE_ACK                  = 0x7314,   // not implemented 
     CMSG_FORCE_PITCH_RATE_CHANGE_ACK                    = 0x0334,   // unknown
-    CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK                = 0x0335,   // unknown
+    CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK                = 0x3216,   // not implemented
     CMSG_FORCE_RUN_SPEED_CHANGE_ACK                     = 0x7818,   // not implemented
     CMSG_FORCE_SWIM_BACK_SPEED_CHANGE_ACK               = 0x7A16,   // not implemented
     CMSG_FORCE_SWIM_SPEED_CHANGE_ACK                    = 0x7A10,   // not implemented
@@ -942,13 +939,13 @@ enum Opcodes
     CMSG_FORCE_MOVE_ROOT_ACK                            = 0x701E,   // not implemented
 
     // LFG Check packet sending in LfgHandler.cpp
-    SMSG_LFG_PLAYER_INFO                                = 0x1370,   // not updated
-    SMSG_LFG_PARTY_INFO                                 = 0x1373,   // not updated
-    SMSG_LFG_JOIN_RESULT                                = 0x1365,   // not updated
-    SMSG_LFG_UPDATE_PLAYER                              = 0x1368,   // not updated
-    SMSG_LFG_UPDATE_PARTY                               = 0x1369,   // not updated
-    SMSG_LFG_UPDATE_SEARCH                              = 0x136A,   // not updated
-    SMSG_LFG_ROLE_CHECK_UPDATE                          = 0x1364,   // not updated
+    SMSG_LFG_PLAYER_INFO                                = 0x4B36,   // not updated
+    SMSG_LFG_PARTY_INFO                                 = 0x2325,   // not updated
+    SMSG_LFG_JOIN_RESULT                                = 0x38B6,   // not updated
+    SMSG_LFG_UPDATE_PLAYER                              = 0x0000,   // unk
+    SMSG_LFG_UPDATE_PARTY                               = 0x0000,   // unk
+    SMSG_LFG_UPDATE_SEARCH                              = 0x54A1,   // not updated
+    SMSG_LFG_ROLE_CHECK_UPDATE                          = 0x0336,   // not updated
     CMSG_LFG_GET_STATUS                                 = 0x2581,   // not updated
 
     // Interface
@@ -991,7 +988,7 @@ enum Opcodes
     CMSG_REQUEST_RATED_BG_STATS                         = 0x05B3,   // not implemented
     CMSG_BATTLEMASTER_JOIN                              = 0x7902,
     CMSG_BATTLEMASTER_JOIN_ARENA                        = 0x710C,
-    CMSG_LFG_JOIN                                       = 0x2430,
+    CMSG_LFG_JOIN                                       = 0x2430,   // not updated
     CMSG_LFG_LEAVE                                      = 0x2433,
     CMSG_LFG_SET_COMMENT                                = 0x0530,   // not implemented
     SMSG_CORPSE_NOT_IN_INSTANCE                         = 0x2A14,
@@ -1068,7 +1065,7 @@ enum Opcodes
     CMSG_NO_SPELL_VARIANCE                              = 0x1417,
     SMSG_SEND_UNLEARN_SPELLS                            = 0x4E25,
     SMSG_NOTIFY_DEST_LOC_SPELL_CAST                     = 0x148F,
-    SMSG_PET_LEARNED_SPELL                              = 0x0507, 
+     
     SMSG_PET_UNLEARNED_SPELL                            = 0x6A04,
     CMSG_LEARN_SPELL                                    = 0x1011,
     CMSG_CANCEL_TEMP_ENCHANTMENT                        = 0x6C37,
@@ -1182,13 +1179,6 @@ enum Opcodes
     SMSG_DURABILITY_DAMAGE_DEATH                        = 0x4C27,
     SMSG_CANCEL_COMBAT                                  = 0x4F04,
 
-    SMSG_TALENTS_INFO                                   = 0x6F26,
-    CMSG_LEARN_PREVIEW_TALENTS                          = 0x2415,
-    CMSG_LEARN_TALENT                                   = 0x6E24,
-    CMSG_LEARN_PREVIEW_TALENTS_PET                      = 0x0000,
-    MSG_TALENT_WIPE_CONFIRM                             = 0x0107,
-    CMSG_PET_LEARN_TALENT                               = 0x0000,
-    SMSG_TALENTS_INVOLUNTARILY_RESET                    = 0x2C27,
     CMSG_WORLD_STATE_UI_TIMER_UPDATE                    = 0x4605,
     SMSG_WORLD_STATE_UI_TIMER_UPDATE                    = 0x4A14,
     SMSG_PAUSE_MIRROR_TIMER                             = 0x4015,
@@ -1204,6 +1194,18 @@ enum Opcodes
     SMSG_FEATURE_SYSTEM_STATUS                          = 0x3DB7,
     SMSG_LEARNED_DANCE_MOVES                            = 0x0E05,
     CMSG_TOGGLE_PVP                                     = 0x6815,
+
+    //Skills
+    CMSG_LEARN_TALENT                                   = 0x6E24,
+    CMSG_LEARN_PREVIEW_TALENTS                          = 0x2415,
+    SMSG_TALENTS_INFO                                   = 0x6F26,   // partially updated
+    MSG_TALENT_WIPE_CONFIRM                             = 0x0107,
+    SMSG_TALENTS_INVOLUNTARILY_RESET                    = 0x2C27,   // not implemented
+    CMSG_UNLEARN_SKILL                                  = 0x6106,
+
+    CMSG_PET_LEARN_TALENT                               = 0x6725,
+    SMSG_PET_LEARNED_SPELL                              = 0x0507,
+    CMSG_LEARN_PREVIEW_TALENTS_PET                      = 0x6E24,   // not implemented
 
     //Duel
     SMSG_DUEL_REQUESTED                                 = 0x4504,
@@ -1306,8 +1308,6 @@ enum Opcodes
     CMSG_SET_ACTION_BUTTON                              = 0x6F06,
 
     //Cheat
-    CMSG_MOVE_START_SWIM_CHEAT                          = 0x12D9,   // unknown
-    CMSG_MOVE_STOP_SWIM_CHEAT                           = 0x12DA,   // unknown
     MSG_MOVE_TELEPORT_CHEAT                             = 0x10C7,   // unknown
     MSG_MOVE_SET_RUN_SPEED_CHEAT                        = 0x10CD,   // unknown
     MSG_MOVE_SET_RUN_BACK_SPEED_CHEAT                   = 0x10CF,   // unknown
@@ -1438,12 +1438,16 @@ enum Opcodes
     CMSG_REQUEST_CEMETERY_LIST                          = 0x720A,
     SMSG_REQUEST_CEMETERY_LIST_RESPONSE                 = 0x30A7,
 
-    //Unknown packet send by client to server
+    //Known packet send by client to server
     CMSG_UNREGISTER_ALL_ADDON_PREFIXES                  = 0x3D54,
     CMSG_VOICE_SESSION_ENABLE                           = 0x2314,
     CMSG_REQUEST_CATEGORY_COOLDOWNS                     = 0x7102,
     CMSG_REORDER_CHARACTERS                             = 0x0593,
     CMSG_UNK_7314                                       = 0x7315,
+    CMSG_SUBMIT_BUG                                     = 0x2520,
+    CMSG_SUBMIT_SUGGESTION                              = 0x2512,
+    CMSG_GUILD_ACHIEVEMENT_PROGRESS_QUERY               = 0x3235,
+    SMSG_OPEN_LFG_DUNGEON_FINDER                        = 0x0412,
 
     //Unknown packet names
     CMSG_GM_SET_SECURITY_GROUP                          = 0x0000,
@@ -1463,7 +1467,6 @@ enum Opcodes
     UMSG_DELETE_GUILD_CHARTER                           = 0x0000,
     CMSG_GUILD_SET_PUBLIC_NOTE                          = 0x0000,
     CMSG_GUILD_SET_OFFICER_NOTE                         = 0x0000,
-    CMSG_LEARN_TALENTS_MULTIPLE                         = 0x0000,
     CMSG_SET_GRANTABLE_LEVELS                           = 0x0000,
     CMSG_QUESTGIVER_QUEST_AUTOLAUNCH                    = 0x0000,
     CMSG_QUESTGIVER_CANCEL                              = 0x0000,

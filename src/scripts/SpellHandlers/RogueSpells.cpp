@@ -98,7 +98,7 @@ bool CutToTheChase(uint32 i, Aura* pAura, bool apply)
     if(apply)
     {
         static uint32 classMask[3] = { 0x20000, 0x8, 0 };
-        target->AddProcTriggerSpell(pAura->GetSpellProto(), pAura->GetSpellProto(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
+        target->AddProcTriggerSpell(pAura->GetSpellInfo(), pAura->GetSpellInfo(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CAST_SPELL | PROC_TARGET_SELF, 0, NULL, classMask);
     }
     else
         target->RemoveProcTriggerSpell(pAura->GetSpellId(), pAura->m_casterGuid);
@@ -113,7 +113,7 @@ bool DeadlyBrew(uint32 i, Aura* pAura, bool apply)
     if(apply)
     {
         static uint32 classMask[3] = { 0x1000A000, 0, 0 };
-        target->AddProcTriggerSpell(pAura->GetSpellProto(), pAura->GetSpellProto(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_CAST_SPELL , 0, NULL, classMask);
+        target->AddProcTriggerSpell(pAura->GetSpellInfo(), pAura->GetSpellInfo(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CAST_SPELL , 0, NULL, classMask);
     }
     else
         target->RemoveProcTriggerSpell(pAura->GetSpellId(), pAura->m_casterGuid);
@@ -134,8 +134,8 @@ bool CloakOfShadows(uint32 i, Spell* s)
         pAura = unitTarget->m_auras[j];
         if(pAura != NULL && !pAura->IsPassive()
                 && !pAura->IsPositive()
-                && !(pAura->GetSpellProto()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY)
-                && pAura->GetSpellProto()->School != 0
+                && !(pAura->GetSpellInfo()->Attributes & ATTRIBUTES_IGNORE_INVULNERABILITY)
+                && pAura->GetSpellInfo()->School != 0
           )
             pAura->Remove();
     }
@@ -153,7 +153,7 @@ bool CheatDeath(uint32 i, Aura* a, bool apply)
 
     if(p_target != NULL)
     {
-        int32 m = (int32)(8.0f * p_target->CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_CRIT_RESILIENCE));
+        int32 m = (int32)(8.0f * p_target->CalcRating(PCR_MELEE_CRIT_RESILIENCE));
         if(m > 90)
             m = 90;
 
@@ -244,7 +244,7 @@ bool KillingSpreePeriodicDummy(uint32 i, Aura* a, bool apply)
     for(std::set<Object*>::iterator itr = p_target->GetInRangeSetBegin(); itr != p_target->GetInRangeSetEnd(); ++itr)
     {
         //Get the range of 10 yards from Effect 1
-        float r = static_cast< float >( a->m_spellProto->EffectRadiusIndex[1] );
+        float r = static_cast< float >( a->m_spellInfo->EffectRadiusIndex[1] );
 
         //Get initial position of aura target (caster)
         LocationVector source = p_target->GetPosition();

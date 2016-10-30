@@ -28,14 +28,14 @@ bool FrostWarding(uint32 i, Spell* s)
     if (!unitTarget)
         return false;
 
-    uint32 spellId = s->GetProto()->Id;
+    uint32 spellId = s->GetSpellInfo()->Id;
 
     unitTarget->RemoveReflect(spellId, true);
 
     ReflectSpellSchool* rss = new ReflectSpellSchool;
 
-    rss->chance = s->GetProto()->procChance;
-    rss->spellId = s->GetProto()->Id;
+    rss->chance = s->GetSpellInfo()->procChance;
+    rss->spellId = s->GetSpellInfo()->Id;
     rss->require_aura_hash = SPELL_HASH_FROST_WARD;
     rss->school = SCHOOL_FROST;
     rss->infront = false;
@@ -53,12 +53,12 @@ bool MoltenShields(uint32 i, Spell* s)
     if (!unitTarget)
         return false;
 
-    unitTarget->RemoveReflect(s->GetProto()->Id, true);
+    unitTarget->RemoveReflect(s->GetSpellInfo()->Id, true);
 
     ReflectSpellSchool* rss = new ReflectSpellSchool;
 
-    rss->chance = s->GetProto()->EffectBasePoints[0];
-    rss->spellId = s->GetProto()->Id;
+    rss->chance = s->GetSpellInfo()->EffectBasePoints[0];
+    rss->spellId = s->GetSpellInfo()->Id;
     rss->require_aura_hash = SPELL_HASH_FIRE_WARD;
     rss->school = SCHOOL_FIRE;
     rss->infront = false;
@@ -181,7 +181,7 @@ bool NorthRendInscriptionResearch(uint32 i, Spell* s)
     if (Rand(chance))
     {
         // Type 0 = Major, 1 = Minor
-        uint32 glyphType = (s->GetProto()->Id == 61177) ? 0 : 1;
+        uint32 glyphType = (s->GetSpellInfo()->Id == 61177) ? 0 : 1;
 
         std::vector<uint32> discoverableGlyphs;
 
@@ -242,7 +242,7 @@ bool DeadlyThrowInterrupt(uint32 i, Aura* a, bool apply)
 
     if (m_target->GetCurrentSpell())
     {
-        school = m_target->GetCurrentSpell()->GetProto()->School;
+        school = m_target->GetCurrentSpell()->GetSpellInfo()->School;
     }
 
     m_target->InterruptSpell();
@@ -471,10 +471,10 @@ bool TeleportToCoordinates(uint32 i, Spell* s)
     if (s->p_caster == nullptr)
         return true;
 
-    TeleportCoords const* teleport_coord = sMySQLStore.GetTeleportCoord(s->GetProto()->Id);
+    TeleportCoords const* teleport_coord = sMySQLStore.GetTeleportCoord(s->GetSpellInfo()->Id);
     if (teleport_coord == nullptr)
     {
-        sLog.outError("Spell %u ( %s ) has a TeleportToCoordinates scripted effect, but has no coordinates to teleport to. ", s->GetProto()->Id, s->GetProto()->Name.c_str());
+        sLog.outError("Spell %u ( %s ) has a TeleportToCoordinates scripted effect, but has no coordinates to teleport to. ", s->GetSpellInfo()->Id, s->GetSpellInfo()->Name.c_str());
         return true;
     }
 

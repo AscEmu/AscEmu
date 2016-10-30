@@ -760,7 +760,7 @@ bool ChampioningTabards(uint32 i, Aura* a, bool apply)
     if (p_caster == NULL)
         return true;
 
-    uint32 Faction = a->GetSpellProto()->EffectMiscValue[0];
+    uint32 Faction = a->GetSpellInfo()->EffectMiscValue[0];
 
     if (apply)
         p_caster->SetChampioningFaction(Faction);
@@ -854,7 +854,7 @@ bool DrinkDummyAura(uint32 i, Aura* a, bool apply)
     if (!apply)
         return true;
 
-    float famount = 2.2f * (static_cast<float>(a->GetSpellProto()->EffectBasePoints[1]) / 5.0f);
+    float famount = 2.2f * (static_cast<float>(a->GetSpellInfo()->EffectBasePoints[1]) / 5.0f);
     int32 amount = static_cast<int32>(Arcemu::round(famount));
 
     a->EventPeriodicDrink(amount);

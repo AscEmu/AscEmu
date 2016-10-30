@@ -162,8 +162,8 @@ void WorldSession::SendTrainerList(Creature* pCreature)
                     break;
                 }
 
-                DBC::Structures::SpellEntry const* learnedSpellInfo = sSpellStore.LookupEntry(pSpell->learnedSpell[i]);
-                if (learnedSpellInfo && _player->IsPrimaryProfession(learnedSpellInfo))
+                SpellInfo* learnedSpellInfo = sSpellCustomizations.GetSpellInfo(pSpell->learnedSpell[i]);
+                if (learnedSpellInfo && learnedSpellInfo->IsPrimaryProfession())
                     primary_prof_first_rank = true;
             }
             if (!valid)
@@ -209,7 +209,8 @@ void WorldSession::SendTrainerList(Creature* pCreature)
                 ++maxReq;
             }
 
-            if (_player->IsPrimaryProfession(sSpellStore.LookupEntry(pSpell->spell)))
+            SpellInfo* spell = sSpellCustomizations.GetSpellInfo(pSpell->spell);
+            if (spell && spell->IsPrimaryProfession())
                 data << uint32(primary_prof_first_rank && can_learn_primary_prof ? 1 : 0);
             else
                 data << uint32(1);

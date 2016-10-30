@@ -54,24 +54,24 @@ bool LifeTap(uint32 i, Spell* s)
         return false;
 
     uint32 mod;    // spirit bonus coefficient multiplied by 2
-    if(s->GetProto()->Id == 1454) mod = 2;
-    else if(s->GetProto()->Id == 1455) mod = 3;
-    else if(s->GetProto()->Id == 1456) mod = 4;
-    else if(s->GetProto()->Id == 11687) mod = 5;
+    if(s->GetSpellInfo()->Id == 1454) mod = 2;
+    else if(s->GetSpellInfo()->Id == 1455) mod = 3;
+    else if(s->GetSpellInfo()->Id == 1456) mod = 4;
+    else if(s->GetSpellInfo()->Id == 11687) mod = 5;
     else mod = 6;
 
-    uint32 damage = s->GetProto()->EffectBasePoints[i] + 1 + mod * playerTarget->GetStat(STAT_SPIRIT) / 2;
+    uint32 damage = s->GetSpellInfo()->EffectBasePoints[i] + 1 + mod * playerTarget->GetStat(STAT_SPIRIT) / 2;
 
     if(damage >= playerTarget->GetHealth())
         return false;
 
-    s->p_caster->DealDamage(playerTarget, damage, 0, 0, s->GetProto()->Id);
+    s->p_caster->DealDamage(playerTarget, damage, 0, 0, s->GetSpellInfo()->Id);
     damage = damage * (100 + playerTarget->m_lifetapbonus) / 100;    // Apply improved life tap
     if(playerTarget->GetPower(POWER_TYPE_MANA) + damage > playerTarget->GetMaxPower(POWER_TYPE_MANA))
         playerTarget->SetPower(POWER_TYPE_MANA, playerTarget->GetMaxPower(POWER_TYPE_MANA));
     else
         playerTarget->SetPower(POWER_TYPE_MANA, playerTarget->GetPower(POWER_TYPE_MANA) + damage);
-    s->SendHealManaSpellOnPlayer(s->p_caster, playerTarget, damage, POWER_TYPE_MANA, s->GetProto()->Id);
+    s->SendHealManaSpellOnPlayer(s->p_caster, playerTarget, damage, POWER_TYPE_MANA, s->GetSpellInfo()->Id);
 
     return true;
 }
@@ -625,7 +625,7 @@ bool SoulStoneResurrection(uint32 i, Aura* a, bool apply)
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);
-    uint32 soulstone = a->GetSpellProto()->EffectMiscValue[ 0 ];
+    uint32 soulstone = a->GetSpellInfo()->EffectMiscValue[ 0 ];
 
     if(apply)
     {
