@@ -395,7 +395,7 @@ void oLog::DebugFlag(LogFlags log_flags, const char* format, ...)
     if (m_fileLogLevel < LOG_LEVEL_DEBUG || m_errorFile == NULL)
         return;
 
-    if (!(log_flags & LOG_FLAGS))
+    if (!(mDebugFlags & log_flags))
         return;
 
     char buf[32768];
@@ -536,6 +536,11 @@ void oLog::SetFileLoggingLevel(int32 level)
         level = LOG_LEVEL_NORMAL;
 
     m_fileLogLevel = level;
+}
+
+void oLog::SetDebugFlags(uint32 flags)
+{
+    mDebugFlags = flags;
 }
 
 void SessionLogWriter::write(const char* format, ...)

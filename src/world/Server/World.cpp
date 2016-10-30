@@ -208,6 +208,8 @@ World::World()
 
     gamemaster_announceKick = true;
     show_all_vendor_items = false;
+
+    debugFlags = 0;
 }
 
 void CleanupRandomNumberGenerators();
@@ -1382,7 +1384,11 @@ void World::Rehash(bool load)
     SetMotd(Config.MainConfig.GetStringDefault("Server", "Motd", "Arcemu Default MOTD").c_str());
     mQueueUpdateInterval = Config.MainConfig.GetIntDefault("Server", "QueueUpdateInterval", 5000);
     SetKickAFKPlayerTime(Config.MainConfig.GetIntDefault("Server", "KickAFKPlayers", 0));
+
     sLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
+    debugFlags = Config.MainConfig.GetIntDefault("LogLevel", "DebugFlags", 0);
+    sLog.SetDebugFlags(debugFlags);
+
     gm_skip_attunement = Config.MainConfig.GetBoolDefault("Server", "SkipAttunementsForGM", true);
 
     DisableFearMovement = Config.MainConfig.GetBoolDefault("Server", "DisableFearMovement", 0);

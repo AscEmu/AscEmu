@@ -488,6 +488,9 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         void SaveAllPlayers();
 
+        //LogLevel
+        uint32 debugFlags;
+
         std::string MapPath;
         std::string vMapPath;
         std::string mMapPath;

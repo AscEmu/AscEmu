@@ -78,9 +78,7 @@ enum LogFlags
     LF_SPELL_EFF    = 0x80,
     LF_AURA_EFF     = 0x100,
     LF_SCRIPT_MGR   = 0x200,
-    LF_DB_TABLES    = 0x400,
-
-    LOG_FLAGS       = (LF_SPELL | LF_AURA | LF_SPELL_EFF)
+    LF_DB_TABLES    = 0x400
 };
 
 extern SERVER_DECL time_t UNIXTIME;        //update this every loop to avoid the time() syscall!
@@ -128,10 +126,12 @@ class SERVER_DECL oLog : public Singleton< oLog >
 
         void Init(int32 fileLogLevel, LogType logType);
         void SetFileLoggingLevel(int32 level);
+        void SetDebugFlags(uint32 flags);
 
         void Close();
 
         int32 m_fileLogLevel;
+        uint32 mDebugFlags;
 
     private:
 

@@ -25,9 +25,6 @@
 #include "AuthCodes.h"
 
 
-/* echo send/received packets to console */
-#define ECHO_PACKET_LOG_TO_CONSOLE 1
-
 #pragma pack(push, 1)
 struct ClientPktHeader
 {
@@ -698,33 +695,33 @@ void WorldSocket::SendAuthResponseError(uint8 code)
 
 void WorldLog::LogPacket(uint32 len, uint32 opcode, const uint8* data, uint8 direction, uint32 accountid)
 {
-#ifdef ECHO_PACKET_LOG_TO_CONSOLE
-    switch (opcode)
+    if (sWorld.debugFlags & LF_OPCODE)
     {
-        //stop spaming opcodes here
-        case SMSG_MONSTER_MOVE:
-        case SMSG_PLAYER_MOVE:
-        case MSG_MOVE_HEARTBEAT:
-        case CMSG_MOVE_STOP:
-        case CMSG_MOVE_START_TURN_LEFT:
-        case CMSG_MOVE_START_TURN_RIGHT:
-        case CMSG_MOVE_STOP_TURN:
-        case CMSG_MOVE_JUMP:
-        case CMSG_MOVE_FALL_LAND:
-        case CMSG_MOVE_START_FORWARD:
-        case CMSG_MOVE_START_BACKWARD:
-        case CMSG_MOVE_STOP_STRAFE:
-        case CMSG_MOVE_START_SWIM:
-        case CMSG_MOVE_START_ASCEND:
-        case CMSG_MOVE_STOP_ASCEND:
-        case CMSG_MOVE_START_DESCEND:
-            break;
-        default:
-            sLog.outString("[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
-                LookupName(opcode, g_worldOpcodeNames), opcode, len);
+        switch (opcode)
+        {
+            //stop spaming opcodes here
+            case SMSG_MONSTER_MOVE:
+            case SMSG_PLAYER_MOVE:
+            case MSG_MOVE_HEARTBEAT:
+            case CMSG_MOVE_STOP:
+            case CMSG_MOVE_START_TURN_LEFT:
+            case CMSG_MOVE_START_TURN_RIGHT:
+            case CMSG_MOVE_STOP_TURN:
+            case CMSG_MOVE_JUMP:
+            case CMSG_MOVE_FALL_LAND:
+            case CMSG_MOVE_START_FORWARD:
+            case CMSG_MOVE_START_BACKWARD:
+            case CMSG_MOVE_STOP_STRAFE:
+            case CMSG_MOVE_START_SWIM:
+            case CMSG_MOVE_START_ASCEND:
+            case CMSG_MOVE_STOP_ASCEND:
+            case CMSG_MOVE_START_DESCEND:
+                break;
+            default:
+                Log.DebugFlag(LF_OPCODE, "[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
+                              LookupName(opcode, g_worldOpcodeNames), opcode, len);
+        }
     }
-
-#endif
 
     if (bEnabled)
     {
