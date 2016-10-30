@@ -645,13 +645,13 @@ void ObjectMgr::LoadInstanceBossInfos()
         MapInfo const* mapInfo = sMySQLStore.GetWorldMapInfo(bossInfo->mapid);
         if (mapInfo == NULL || mapInfo->type == INSTANCE_NULL)
         {
-            LOG_DETAIL("Not loading boss information for map %u! (continent or unknown map)", bossInfo->mapid);
+            Log.DebugFlag(LF_DB_TABLES, "Not loading boss information for map %u! (continent or unknown map)", bossInfo->mapid);
             delete bossInfo;
             continue;
         }
         if (bossInfo->mapid >= NUM_MAPS)
         {
-            LOG_DETAIL("Not loading boss information for map %u! (map id out of range)", bossInfo->mapid);
+            Log.DebugFlag(LF_DB_TABLES, "Not loading boss information for map %u! (map id out of range)", bossInfo->mapid);
             delete bossInfo;
             continue;
         }
@@ -747,7 +747,7 @@ void ObjectMgr::LoadAchievementRewards()
 
         if (!sAchievementStore.LookupEntry(entry))
         {
-            sLog.Error("ObjectMgr", "Achievement reward entry %u has wrong achievement, ignore", entry);
+            Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : Achievement reward entry %u has wrong achievement, ignore", entry);
             continue;
         }
 
@@ -761,7 +761,7 @@ void ObjectMgr::LoadAchievementRewards()
         reward.text = fields[7].GetString() ? fields[7].GetString() : "";
 
         if (reward.gender > 2)
-            sLog.Error("ObjectMgr", "achievement reward %u has wrong gender %u.", entry, reward.gender);
+            Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : achievement reward %u has wrong gender %u.", entry, reward.gender);
 
         bool dup = false;
         AchievementRewardsMapBounds bounds = AchievementRewards.equal_range(entry);
@@ -770,7 +770,7 @@ void ObjectMgr::LoadAchievementRewards()
             if (iter->second.gender == 2 || reward.gender == 2)
             {
                 dup = true;
-                sLog.Error("ObjectMgr", "Achievement reward %u must have single GENDER_NONE (%u), ignore duplicate case", 2, entry);
+                Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : Achievement reward %u must have single GENDER_NONE (%u), ignore duplicate case", 2, entry);
                 break;
             }
         }
@@ -781,7 +781,7 @@ void ObjectMgr::LoadAchievementRewards()
         // must be title or mail at least
         if (!reward.titel_A && !reward.titel_H && !reward.sender)
         {
-            sLog.Error("ObjectMgr", "achievement_reward %u not have title or item reward data, ignore.", entry);
+            Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have title or item reward data, ignore.", entry);
             continue;
         }
 
@@ -790,7 +790,7 @@ void ObjectMgr::LoadAchievementRewards()
             auto const* char_title_entry = sCharTitlesStore.LookupEntry(reward.titel_A);
             if (!char_title_entry)
             {
-                sLog.Error("ObjectMgr", "achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_A);
+                Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_A);
                 reward.titel_A = 0;
             }
         }
@@ -800,7 +800,7 @@ void ObjectMgr::LoadAchievementRewards()
             auto const* char_title_entry = sCharTitlesStore.LookupEntry(reward.titel_H);
             if (!char_title_entry)
             {
-                sLog.Error("ObjectMgr", "achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_H);
+                Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid title id (%u) in `title_A`, set to 0", entry, reward.titel_H);
                 reward.titel_H = 0;
             }
         }
@@ -810,27 +810,27 @@ void ObjectMgr::LoadAchievementRewards()
         {
             if (!sMySQLStore.GetCreatureProperties(reward.sender))
             {
-                sLog.Error("ObjectMgr", "achievement_reward %u has invalid creature entry %u as sender, mail reward skipped.", entry, reward.sender);
+                Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid creature entry %u as sender, mail reward skipped.", entry, reward.sender);
                 reward.sender = 0;
             }
         }
         else
         {
             if (reward.itemId)
-                sLog.Error("ObjectMgr", "achievement_reward %u not have sender data but have item reward, item will not rewarded", entry);
+                Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have item reward, item will not rewarded", entry);
 
             if (!reward.subject.empty())
-                sLog.Error("ObjectMgr", "achievement_reward %u not have sender data but have mail subject.", entry);
+                Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have mail subject.", entry);
 
             if (!reward.text.empty())
-                sLog.Error("ObjectMgr", "achievement_reward %u not have sender data but have mail text.", entry);
+                Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u not have sender data but have mail text.", entry);
         }
 
         if (reward.itemId)
         {
             if (reward.itemId == 0)
             {
-                sLog.Error("ObjectMgr", "achievement_reward %u has invalid item id %u, reward mail will be without item.", entry, reward.itemId);
+                Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid item id %u, reward mail will be without item.", entry, reward.itemId);
             }
         }
 
@@ -1196,7 +1196,7 @@ void ObjectMgr::LoadVendors()
             {
                 item_extended_cost = sItemExtendedCostStore.LookupEntry(fields[5].GetUInt32());
                 if (item_extended_cost == nullptr)
-                    Log.Error("LoadVendors", "Extendedcost for item %u references nonexistent EC %u", fields[1].GetUInt32(), fields[5].GetUInt32());
+                    Log.DebugFlag(LF_DB_TABLES, "LoadVendors : Extendedcost for item %u references nonexistent EC %u", fields[1].GetUInt32(), fields[5].GetUInt32());
             }
             else
                 item_extended_cost = NULL;
@@ -1240,7 +1240,7 @@ void ObjectMgr::LoadAIThreatToSpellId()
             sp->custom_ThreatForSpellCoef = fields[2].GetFloat();
         }
         else
-            Log.Error("AIThreatSpell", "Cannot apply to spell %u; spell is nonexistent.", fields[0].GetUInt32());
+            Log.DebugFlag(LF_DB_TABLES, "AIThreatSpell : Cannot apply to spell %u; spell is nonexistent.", fields[0].GetUInt32());
 
     }
     while (result->NextRow());
@@ -1306,7 +1306,7 @@ void ObjectMgr::LoadSpellEffectsOverride()
                 }
                 else
                 {
-                    Log.Error("ObjectMgr", "Tried to load a spell effect override for a nonexistant spell: %u", seo_SpellId);
+                    Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : Tried to load a spell effect override for a nonexistant spell: %u", seo_SpellId);
                 }
             }
 
@@ -1505,8 +1505,7 @@ void ObjectMgr::LoadSpellRequired()
 
     if (!result)
     {
-        Log.Error("ObjectMgr", "Loaded 0 spell required records. DB table `spell_required` is empty.");
-
+        Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : Loaded 0 spell required records. DB table `spell_required` is empty.");
         return;
     }
 
@@ -1522,20 +1521,20 @@ void ObjectMgr::LoadSpellRequired()
         DBC::Structures::SpellEntry const* spell = sSpellStore.LookupEntry(spell_id);
         if (!spell)
         {
-            Log.Error("ObjectMgr", "spell_id %u in `spell_required` table is not found in dbcs, skipped", spell_id);
+            Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : spell_id %u in `spell_required` table is not found in dbcs, skipped", spell_id);
             continue;
         }
 
         DBC::Structures::SpellEntry const* req_spell = sSpellStore.LookupEntry(spell_req);
         if (!req_spell)
         {
-            Log.Error("ObjectMgr", "req_spell %u in `spell_required` table is not found in dbcs, skipped", spell_req);
+            Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : req_spell %u in `spell_required` table is not found in dbcs, skipped", spell_req);
             continue;
         }
 
         if (IsSpellRequiringSpell(spell_id, spell_req))
         {
-            Log.Error("ObjectMgr", "duplicated entry of req_spell %u and spell_id %u in `spell_required`, skipped", spell_req, spell_id);
+            Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : duplicated entry of req_spell %u and spell_id %u in `spell_required`, skipped", spell_req, spell_id);
             continue;
         }
 
@@ -1632,7 +1631,7 @@ void ObjectMgr::LoadTrainers()
         QueryResult* result2 = WorldDatabase.Query("SELECT * FROM trainer_spells where entry='%u'", entry);
         if (!result2)
         {
-            Log.Error("LoadTrainers", "Trainer with no spells, entry %u.", entry);
+            Log.DebugFlag(LF_DB_TABLES, "LoadTrainers : Trainer with no spells, entry %u.", entry);
             if (tr->UIMessage != NormalTalkMessage)
                 delete[] tr->UIMessage;
 
@@ -1693,7 +1692,7 @@ void ObjectMgr::LoadTrainers()
                         effect->EffectImplicitTargetA != 25 &&
                         effect->EffectImplicitTargetA != 1)
                     {
-                        Log.Error("Trainer Spells", "Table `trainer_spels` has spell %u for trainer entry %u with learn effect which has incorrect target type, ignoring learn effect!", spell, entry);
+                        Log.DebugFlag(LF_DB_TABLES, "LoadTrainers : Table `trainer_spels` has spell %u for trainer entry %u with learn effect which has incorrect target type, ignoring learn effect!", spell, entry);
                         continue;
                     }
 
@@ -1989,7 +1988,7 @@ LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)
             LevelMap::iterator it2 = itr->second->find(Level);
             if (it2 == itr->second->end())
             {
-                Log.Error("ObjectMgr::GetLevelInfo", "No level information found for level %u!", Level);
+                Log.DebugFlag(LF_DB_TABLES, "GetLevelInfo : No level information found for level %u!", Level);
                 return nullptr;
             }
 
@@ -2549,7 +2548,7 @@ void ObjectMgr::RemoveCharter(Charter* c)
 
     if (c->CharterType >= NUM_CHARTER_TYPES)
     {
-        Log.Notice("ObjectMgr", "Charter %u cannot be destroyed as type %u is not a sane type value.", c->CharterId, c->CharterType);
+        Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : Charter %u cannot be destroyed as type %u is not a sane type value.", c->CharterId, c->CharterType);
         return;
     }
     m_charterLock.AcquireWriteLock();
@@ -2630,7 +2629,7 @@ void ObjectMgr::LoadMonsterSay()
 
         if (mMonsterSays[Event].find(Entry) != mMonsterSays[Event].end())
         {
-            LOG_ERROR("Duplicate monstersay event %u for entry %u, skipping", Event, Entry);
+            Log.DebugFlag(LF_DB_TABLES, "LoadMonsterSay : Duplicate monstersay event %u for entry %u, skipping", Event, Entry);
             continue;
         }
 
@@ -3312,7 +3311,7 @@ void ObjectMgr::LoadAreaTrigger()
     QueryResult* result = WorldDatabase.Query("SELECT entry, type, map, screen, name, position_x, position_y, position_z, orientation, required_honor_rank, required_level FROM areatriggers");
     if (!result)
     {
-        Log.Notice("AreaTrigger", "Loaded 0 area trigger teleport definitions. DB table `areatriggers` is empty.");
+        Log.DebugFlag(LF_DB_TABLES, "AreaTrigger : Loaded 0 area trigger teleport definitions. DB table `areatriggers` is empty.");
         return;
     }
 
@@ -3338,20 +3337,20 @@ void ObjectMgr::LoadAreaTrigger()
         auto area_trigger_entry = sAreaTriggerStore.LookupEntry(Trigger_ID);
         if (!area_trigger_entry)
         {
-            Log.Notice("AreaTrigger", "Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", Trigger_ID);
+            Log.DebugFlag(LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", Trigger_ID);
             continue;
         }
 
         auto map_entry = sMapStore.LookupEntry(at.Mapid);
         if (!map_entry)
         {
-            Log.Notice("AreaTrigger", "Area trigger (ID:%u) target map (ID: %u) does not exist in `Map.dbc`.", Trigger_ID, at.Mapid);
+            Log.DebugFlag(LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) target map (ID: %u) does not exist in `Map.dbc`.", Trigger_ID, at.Mapid);
             continue;
         }
 
         if (at.x == 0 && at.y == 0 && at.z == 0 && (trigger_type == 1 || trigger_type == 4))    // check target coordinates only for teleport triggers
         {
-            Log.Notice("AreaTrigger", "Area trigger (ID:%u) target coordinates not provided.", Trigger_ID);
+            Log.DebugFlag(LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) target coordinates not provided.", Trigger_ID);
             continue;
         }
 
@@ -3375,14 +3374,14 @@ void ObjectMgr::LoadEventScripts()
 
     if (!success)
     {
-        Log.Error("ObjectMgr", "Failed on Loading Queries from event_scripts.");
+        Log.DebugFlag(LF_DB_TABLES, "LoadEventScripts : Failed on Loading Queries from event_scripts.");
         return;
     }
     else
     {
         if (!result)
         {
-            Log.Notice("ObjectMgr", "Loaded 0 event_scripts. DB table `event_scripts` is empty.");
+            Log.DebugFlag(LF_DB_TABLES, "LoadEventScripts : Loaded 0 event_scripts. DB table `event_scripts` is empty.");
             return;
         }
     }
@@ -3586,7 +3585,7 @@ void ObjectMgr::LoadCreatureAIAgents()
 
                 if (spe == nullptr)
                 {
-                    Log.Error("AIAgent", "For %u has nonexistent spell %u.", fields[0].GetUInt32(), fields[6].GetUInt32());
+                    Log.DebugFlag(LF_DB_TABLES, "AIAgent : For %u has nonexistent spell %u.", fields[0].GetUInt32(), fields[6].GetUInt32());
                     continue;
                 }
 
@@ -3618,7 +3617,7 @@ void ObjectMgr::LoadCreatureAIAgents()
                 {
                     if (!sp->spell)
                     {
-                        LOG_DEBUG("SpellId %u in ai_agent for %u is invalid.", (unsigned int)fields[6].GetUInt32(), (unsigned int)sp->entryId);
+                        Log.DebugFlag(LF_DB_TABLES, "SpellId %u in ai_agent for %u is invalid.", (unsigned int)fields[6].GetUInt32(), (unsigned int)sp->entryId);
                         delete sp;
                         sp = nullptr;
                         continue;
@@ -3627,7 +3626,7 @@ void ObjectMgr::LoadCreatureAIAgents()
                     if (sp->spell->Effect[0] == SPELL_EFFECT_LEARN_SPELL || sp->spell->Effect[1] == SPELL_EFFECT_LEARN_SPELL ||
                         sp->spell->Effect[2] == SPELL_EFFECT_LEARN_SPELL)
                     {
-                        LOG_DEBUG("Teaching spell %u in ai_agent for %u", (unsigned int)fields[6].GetUInt32(), (unsigned int)sp->entryId);
+                        Log.DebugFlag(LF_DB_TABLES, "Teaching spell %u in ai_agent for %u", (unsigned int)fields[6].GetUInt32(), (unsigned int)sp->entryId);
                         delete sp;
                         sp = nullptr;
                         continue;
@@ -3721,7 +3720,7 @@ void ObjectMgr::StoreBroadCastGroupKey()
 
     if (keyGroup.empty())
     {
-        Log.Notice("ObjectMgr", "BCSystem error! worldbroadcast empty? fill it first!");
+        Log.DebugFlag(LF_DB_TABLES, "ObjectMgr : BCSystem error! worldbroadcast empty? fill it first!");
         sWorld.BCSystemEnable = false;
         return;
     }

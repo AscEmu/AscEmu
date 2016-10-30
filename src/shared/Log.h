@@ -78,6 +78,7 @@ enum LogFlags
     LF_SPELL_EFF    = 0x80,
     LF_AURA_EFF     = 0x100,
     LF_SCRIPT_MGR   = 0x200,
+    LF_DB_TABLES    = 0x400,
 
     LOG_FLAGS       = (LF_SPELL | LF_AURA | LF_SPELL_EFF)
 };
