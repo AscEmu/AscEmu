@@ -70,12 +70,13 @@ enum LogFlags
     LF_NONE         = 0x00,
     LF_OPCODE       = 0x01,
     LF_MAP          = 0x02,
-    LF_VMAP         = 0x04,
-    LF_MMAP         = 0x08,
-    LF_SPELL        = 0x10,
-    LF_AURA         = 0x20,
-    LF_SPELL_EFF    = 0x40,
-    LF_AURA_EFF     = 0x80,
+    LF_MAP_CELL     = 0x04,
+    LF_VMAP         = 0x08,
+    LF_MMAP         = 0x10,
+    LF_SPELL        = 0x20,
+    LF_AURA         = 0x40,
+    LF_SPELL_EFF    = 0x80,
+    LF_AURA_EFF     = 0x100,
 
     LOG_FLAGS       = (LF_SPELL | LF_AURA | LF_SPELL_EFF)
 };
