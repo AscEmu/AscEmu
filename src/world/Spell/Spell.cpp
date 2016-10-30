@@ -265,7 +265,7 @@ Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
         break;
 
         default:
-            LOG_DEBUG("[DEBUG][SPELL] Incompatible object type, please report this to the dev's");
+            Log.DebugFlag(LF_SPELL, "[DEBUG][SPELL] Incompatible object type, please report this to the dev's");
             break;
     }
     if (u_caster && m_spellInfo->AttributesExF & ATTRIBUTESEXF_CAST_BY_CHARMER)
@@ -922,7 +922,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
 {
     if (!m_caster->IsInWorld())
     {
-        LOG_DEBUG("Object " I64FMT " is casting Spell ID %u while not in World", m_caster->GetGUID(), GetSpellInfo()->Id);
+        Log.DebugFlag(LF_SPELL, "Object " I64FMT " is casting Spell ID %u while not in World", m_caster->GetGUID(), GetSpellInfo()->Id);
         DecRef();
         return SPELL_FAILED_DONT_REPORT;
     }
@@ -1171,7 +1171,22 @@ void Spell::cast(bool check)
         return;
     }
 
-    LOG_DEBUG("Spell::cast %u, Unit: %u", GetSpellInfo()->Id, m_caster->GetLowGUID());
+    if (m_caster->IsPlayer())
+    {
+        Player* player = static_cast<Player*>(m_caster);
+        Log.DebugFlag(LF_SPELL, "Spell::cast Id %u (%s), Players: %s (guid: %u)", 
+                      GetSpellInfo()->Id, GetSpellInfo()->Name.c_str(), player->GetName(), player->getPlayerInfo()->guid);
+    }
+    else if (m_caster->IsCreature())
+    {
+        Creature* creature = static_cast<Creature*>(m_caster);
+        Log.DebugFlag(LF_SPELL, "Spell::cast Id %u (%s), Creature: %s (spawn id: %u | entry: %u)", 
+                      GetSpellInfo()->Id, GetSpellInfo()->Name.c_str(), creature->GetCreatureProperties()->Name.c_str(), creature->spawnid, creature->GetEntry());
+    }
+    else
+    {
+        Log.DebugFlag(LF_SPELL, "Spell::cast %u, LowGuid: %u", GetSpellInfo()->Id, m_caster->GetLowGUID());
+    }
 
     if (objmgr.IsSpellDisabled(GetSpellInfo()->Id))//if it's disabled it will not be casted, even if it's triggered.
         cancastresult = uint8(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE);
@@ -1213,7 +1228,7 @@ void Spell::cast(bool check)
             {
                 if (!TakePower()) //not enough mana
                 {
-                    //LOG_DEBUG("Spell::Not Enough Mana");
+                    //Log.DebugFlag(LF_SPELL, "Spell::Not Enough Mana");
                     SendInterrupted(SPELL_FAILED_NO_POWER);
                     SendCastResult(SPELL_FAILED_NO_POWER);
                     finish(false);
@@ -2519,7 +2534,7 @@ bool Spell::HasPower()
         }
         default:
         {
-            LOG_DEBUG("unknown power type");
+            Log.DebugFlag(LF_SPELL, "unknown power type");
             // we shouldn't be here to return
             return false;
         }
@@ -2675,7 +2690,7 @@ bool Spell::TakePower()
         }
         default:
         {
-            LOG_DEBUG("unknown power type");
+            Log.DebugFlag(LF_SPELL, "unknown power type");
             // we shouldn't be here to return
             return false;
         }
@@ -3567,7 +3582,7 @@ uint8 Spell::CanCast(bool tolerate)
                 auto gameobject_info = static_cast<GameObject*>(*itr)->GetGameObjectProperties();
                 if (!gameobject_info)
                 {
-                    LOG_DEBUG("Warning: could not find info about game object %u", (*itr)->GetEntry());
+                    Log.DebugFlag(LF_SPELL, "Warning: could not find info about game object %u", (*itr)->GetEntry());
                     continue;
                 }
 
@@ -3907,7 +3922,7 @@ uint8 Spell::CanCast(bool tolerate)
         SM_FFValue(u_caster->SM_FRange, &spell_flat_modifers, GetProto()->SpellGroupType);
         SM_FFValue(u_caster->SM_PRange, &spell_pct_modifers, GetProto()->SpellGroupType);
         if (spell_flat_modifers != 0 || spell_pct_modifers != 0)
-            LOG_DEBUG("!!!!!spell range bonus mod flat %f , spell range bonus pct %f , spell range %f, spell group %u", spell_flat_modifers, spell_pct_modifers, maxRange, GetProto()->SpellGroupType);
+            Log.DebugFlag(LF_SPELL, "!!!!!spell range bonus mod flat %f , spell range bonus pct %f , spell range %f, spell group %u", spell_flat_modifers, spell_pct_modifers, maxRange, GetProto()->SpellGroupType);
 #endif
     }
 
@@ -5484,7 +5499,7 @@ void Spell::SafeAddMissedTarget(uint64 guid)
     for (SpellTargetsList::iterator i = ModeratedTargets.begin(); i != ModeratedTargets.end(); ++i)
         if ((*i).TargetGuid == guid)
         {
-            //LOG_DEBUG("[SPELL] Something goes wrong in spell target system");
+            //Log.DebugFlag(LF_SPELL, "[SPELL] Something goes wrong in spell target system");
             // this isn't actually wrong, since we only have one missed target map,
             // whereas hit targets have multiple maps per effect.
             return;
@@ -5498,7 +5513,7 @@ void Spell::SafeAddModeratedTarget(uint64 guid, uint16 type)
     for (SpellTargetsList::iterator i = ModeratedTargets.begin(); i != ModeratedTargets.end(); ++i)
         if ((*i).TargetGuid == guid)
         {
-            //LOG_DEBUG("[SPELL] Something goes wrong in spell target system");
+            //Log.DebugFlag(LF_SPELL, "[SPELL] Something goes wrong in spell target system");
             // this isn't actually wrong, since we only have one missed target map,
             // whereas hit targets have multiple maps per effect.
             return;
@@ -6216,7 +6231,7 @@ SpellInfo* CheckAndReturnSpellEntry(uint32 spellid)
 
     SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
     if (sp == NULL)
-        LOG_DEBUG("Something tried to access nonexistent spell %u", spellid);
+        Log.DebugFlag(LF_SPELL, "Something tried to access nonexistent spell %u", spellid);
 
     return sp;
 }

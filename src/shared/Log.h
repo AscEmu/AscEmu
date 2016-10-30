@@ -77,7 +77,7 @@ enum LogFlags
     LF_SPELL_EFF    = 0x40,
     LF_AURA_EFF     = 0x80,
 
-    LOG_FLAGS       = (LF_AURA | LF_SPELL)
+    LOG_FLAGS       = (LF_SPELL | LF_AURA | LF_SPELL_EFF)
 };
 
 extern SERVER_DECL time_t UNIXTIME;        //update this every loop to avoid the time() syscall!
