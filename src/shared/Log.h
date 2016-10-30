@@ -78,7 +78,9 @@ enum LogFlags
     LF_SPELL_EFF    = 0x80,
     LF_AURA_EFF     = 0x100,
     LF_SCRIPT_MGR   = 0x200,
-    LF_DB_TABLES    = 0x400
+    LF_DB_TABLES    = 0x400,
+
+    LF_ALL          = 0x800 - 0x01
 };
 
 extern SERVER_DECL time_t UNIXTIME;        //update this every loop to avoid the time() syscall!
@@ -115,12 +117,11 @@ class SERVER_DECL oLog : public Singleton< oLog >
         void Warning(const char* source, const char* format, ...);
         //log level 2
         void Debug(const char* source, const char* format, ...);
-        //log level 3
-        void Map(const char* source, const char* format, ...);
 
 
         //Log functions
         void DebugFlag(LogFlags log_flags, const char* format, ...);
+        int GetColorForDebugFlag(LogFlags log_flags);
 
         void SetLogging(bool enabled);
 

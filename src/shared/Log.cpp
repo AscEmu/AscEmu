@@ -404,26 +404,35 @@ void oLog::DebugFlag(LogFlags log_flags, const char* format, ...)
     va_start(ap, format);
     vsnprintf(buf, 32768, format, ap);
     va_end(ap);
-    SetColor(TYELLOW);
+    SetColor(GetColorForDebugFlag(log_flags));
     std::cout << buf << std::endl;
     SetColor(TNORMAL);
     outFile(m_errorFile, buf);
 }
 
-void oLog::Map(const char* source, const char* format, ...)
+int oLog::GetColorForDebugFlag(LogFlags log_flags)
 {
-    if (m_fileLogLevel < LOG_LEVEL_MAP || m_normalFile == NULL)
-        return;
+    switch (log_flags)
+    {
+        case LF_MAP:
+        case LF_MAP_CELL:
+        case LF_VMAP:
+        case LF_MMAP:
+            return TBLUE;
+        case LF_OPCODE:
+            return TWHITE;
+        case LF_SPELL:
+        case LF_AURA:
+        case LF_SPELL_EFF:
+        case LF_AURA_EFF:
+            return TPURPLE;
+        case LF_SCRIPT_MGR:
+        case LF_DB_TABLES:
+            return TYELLOW;
+        default:
+            return TNORMAL;
+    }
 
-    char buf[32768];
-    va_list ap;
-
-    va_start(ap, format);
-    vsnprintf(buf, 32768, format, ap);
-    va_end(ap);
-    SetColor(TNORMAL);
-    std::cout << source << ": " << buf << std::endl;
-    //outFile(m_normalFile, buf, source);
 }
 
 void oLog::LargeErrorMessage(const char* source, ...)
