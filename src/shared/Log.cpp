@@ -191,7 +191,7 @@ void oLog::outBasic(const char* str, ...)
 
 void oLog::outDetail(const char* str, ...)
 {
-    if(m_fileLogLevel < 1 || m_normalFile == NULL)
+    if(m_fileLogLevel < LOG_LEVEL_DETAIL || m_normalFile == NULL)
         return;
 
     char buf[32768];
@@ -208,7 +208,7 @@ void oLog::outDetail(const char* str, ...)
 
 void oLog::outDebug(const char* str, ...)
 {
-    if(m_fileLogLevel < 2 || m_errorFile == NULL)
+    if(m_fileLogLevel < LOG_LEVEL_DEBUG || m_errorFile == NULL)
         return;
 
     char buf[32768];
@@ -246,7 +246,7 @@ void oLog::logBasic(const char* file, int line, const char* fncname, const char*
 
 void oLog::logDetail(const char* file, int line, const char* fncname, const char* msg, ...)
 {
-    if((m_fileLogLevel < 1) || (m_normalFile == NULL))
+    if((m_fileLogLevel < LOG_LEVEL_DETAIL) || (m_normalFile == NULL))
         return;
 
     char buf[ 32768 ];
@@ -288,7 +288,7 @@ void oLog::logError(const char* file, int line, const char* fncname, const char*
 
 void oLog::logDebug(const char* file, int line, const char* fncname, const char* msg, ...)
 {
-    if((m_fileLogLevel < 2) || (m_errorFile == NULL))
+    if((m_fileLogLevel < LOG_LEVEL_DEBUG) || (m_errorFile == NULL))
         return;
 
     char buf[ 32768 ];
@@ -308,7 +308,7 @@ void oLog::logDebug(const char* file, int line, const char* fncname, const char*
 //old NGLog.h methods
 void oLog::Notice(const char* source, const char* format, ...)
 {
-    if(m_fileLogLevel < 1 || m_normalFile == NULL)
+    if(m_fileLogLevel < LOG_LEVEL_DETAIL || m_normalFile == NULL)
         return;
 
     char buf[32768];
@@ -325,7 +325,7 @@ void oLog::Notice(const char* source, const char* format, ...)
 
 void oLog::Warning(const char* source, const char* format, ...)
 {
-    if(m_fileLogLevel < 1 || m_normalFile == NULL)
+    if(m_fileLogLevel < LOG_LEVEL_DETAIL || m_normalFile == NULL)
         return;
 
     char buf[32768];
@@ -375,7 +375,7 @@ void oLog::Error(const char* source, const char* format, ...)
 
 void oLog::Debug(const char* source, const char* format, ...)
 {
-    if(m_fileLogLevel < 2 || m_errorFile == NULL)
+    if(m_fileLogLevel < LOG_LEVEL_DEBUG || m_errorFile == NULL)
         return;
 
     char buf[32768];
@@ -390,9 +390,29 @@ void oLog::Debug(const char* source, const char* format, ...)
     outFile(m_errorFile, buf, source);
 }
 
+void oLog::DebugFlag(LogFlags log_flags, const char* format, ...)
+{
+    if (m_fileLogLevel < LOG_LEVEL_DEBUG || m_errorFile == NULL)
+        return;
+
+    if (!(log_flags & LOG_FLAGS))
+        return;
+
+    char buf[32768];
+    va_list ap;
+
+    va_start(ap, format);
+    vsnprintf(buf, 32768, format, ap);
+    va_end(ap);
+    SetColor(TYELLOW);
+    std::cout << buf << std::endl;
+    SetColor(TNORMAL);
+    outFile(m_errorFile, buf);
+}
+
 void oLog::Map(const char* source, const char* format, ...)
 {
-    if (m_fileLogLevel < 3 || m_normalFile == NULL)
+    if (m_fileLogLevel < LOG_LEVEL_MAP || m_normalFile == NULL)
         return;
 
     char buf[32768];
@@ -512,9 +532,10 @@ void oLog::Close()
 
 void oLog::SetFileLoggingLevel(int32 level)
 {
-    //log level -1 is no more allowed
-    if(level >= 0)
-        m_fileLogLevel = level;
+    if (level < LOG_LEVEL_NORMAL)
+        level = LOG_LEVEL_NORMAL;
+
+    m_fileLogLevel = level;
 }
 
 void SessionLogWriter::write(const char* format, ...)

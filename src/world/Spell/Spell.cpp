@@ -2881,7 +2881,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 
     if (id < TOTAL_SPELL_EFFECTS)
     {
-        LOG_DEBUG("WORLD: Spell effect id = %u (%s), damage = %d", id, SpellEffectNames[id], damage);
+        Log.DebugFlag(LF_SPELL, "WORLD: Spell effect id = %u (%s), damage = %d", id, SpellEffectNames[id], damage);
         (*this.*SpellEffectsHandler[id])(i);
     }
     else

@@ -1059,7 +1059,7 @@ void Aura::Remove()
     }
 }
 
-void Aura::AddMod(uint32 t, int32 a, uint32 miscValue, uint32 i)
+void Aura::AddMod(uint32 auraType, int32 modAmount, uint32 miscValue, uint32 i)
 {
     // this is fix, when u have the same unit in target list several times
     // for (uint32 x= 0;x<m_modcount;x++)
@@ -1075,8 +1075,8 @@ void Aura::AddMod(uint32 t, int32 a, uint32 miscValue, uint32 i)
         LOG_ERROR("Tried to add >3 (%u) mods to spellid %u [%u:%u, %u:%u, %u:%u]", m_modcount + 1, this->m_spellInfo->Id, m_modList[0].m_type, m_modList[0].m_amount, m_modList[1].m_type, m_modList[1].m_amount, m_modList[2].m_type, m_modList[2].m_amount);
         return;
     }
-    m_modList[m_modcount].m_type = t;
-    m_modList[m_modcount].m_amount = a;
+    m_modList[m_modcount].m_type = auraType;
+    m_modList[m_modcount].m_amount = modAmount;
     m_modList[m_modcount].m_miscValue = miscValue;
     m_modList[m_modcount].i = i;
     m_modcount++;
