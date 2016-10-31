@@ -772,7 +772,7 @@ void ApplyNormalFixes()
             if (sp->EffectApplyAuraName[b] == SPELL_AURA_PREVENT_RESURRECTION)
 			{
 				sp->Attributes |= ATTRIBUTES_NEGATIVE;
-				sp->AttributesExC |= CAN_PERSIST_AND_CASTED_WHILE_DEAD;
+				sp->AttributesExC |= ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD;
 			}
         }
 
@@ -1227,7 +1227,7 @@ void ApplyNormalFixes()
             case 68111:
             {
                 //sp->Effect[1] = SPELL_EFFECT_DUMMY;
-                sp->AttributesExC |= FLAGS4_NO_DONE_BONUS;
+                sp->AttributesExC |= ATTRIBUTESEXC_NO_DONE_BONUS;
             } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
@@ -1274,7 +1274,7 @@ void ApplyNormalFixes()
                 // Frostbrand Weapon - 10% spd coefficient
                 sp->fixed_dddhcoef = 0.1f;
                 // Attributes addition
-                sp->AttributesExC |= FLAGS4_NO_DONE_BONUS;
+                sp->AttributesExC |= ATTRIBUTESEXC_NO_DONE_BONUS;
             } break;
 
             //////////////////////////////////////////////////////////////////////////////////////////
@@ -2357,10 +2357,10 @@ void ApplyNormalFixes()
     // Spirit of Redemption - required spells can be casted while dead
     sp = CheckAndReturnSpellEntry(27795);   // This is casted by shape shift
     if (sp != NULL)
-        sp->AttributesExC |= CAN_PERSIST_AND_CASTED_WHILE_DEAD;
+        sp->AttributesExC |= ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD;
     sp = CheckAndReturnSpellEntry(27792);   // This is casted by Apply Aura: Spirit of Redemption
     if (sp != NULL)
-        sp->AttributesExC |= CAN_PERSIST_AND_CASTED_WHILE_DEAD;
+        sp->AttributesExC |= ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD;
 
     //Priest - Wand Specialization
     sp = CheckAndReturnSpellEntry(14524);

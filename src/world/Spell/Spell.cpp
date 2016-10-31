@@ -268,7 +268,7 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
             LOG_DEBUG("[DEBUG][SPELL] Incompatible object type, please report this to the dev's");
             break;
     }
-    if (u_caster && m_spellInfo->AttributesExF & FLAGS7_CAST_BY_CHARMER)
+    if (u_caster && m_spellInfo->AttributesExF & ATTRIBUTESEXF_CAST_BY_CHARMER)
     {
         Unit* u = u_caster->GetMapMgrUnit(u_caster->GetCharmedByGUID());
         if (u)
@@ -284,7 +284,7 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
     m_castPositionX = m_castPositionY = m_castPositionZ = 0;
     //TriggerSpellId = 0;
     //TriggerSpellTarget = 0;
-    if (m_spellInfo->AttributesExD & SP_ATTR_EX_D_TRIGGERED)
+    if (m_spellInfo->AttributesExD & ATTRIBUTESEXD_TRIGGERED)
         triggered = true;
     m_triggeredSpell = triggered;
     m_AreaAura = false;
@@ -822,7 +822,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
             _type = RANGED;
         else
         {
-            if (hasAttributeExC(FLAGS4_TYPE_OFFHAND))
+            if (hasAttributeExC(ATTRIBUTESEXC_TYPE_OFFHAND))
                 _type = OFFHAND;
             else
                 _type = MELEE;
@@ -1182,7 +1182,7 @@ void Spell::cast(bool check)
 
     if (cancastresult == SPELL_CANCAST_OK)
     {
-        if (hasAttribute(ATTRIBUTE_ON_NEXT_ATTACK))
+        if (hasAttribute(ATTRIBUTES_ON_NEXT_ATTACK))
         {
             if (!m_triggeredSpell)
             {
@@ -1385,14 +1385,14 @@ void Spell::cast(bool check)
         Target->RemoveBySpecialType(sp->specialtype, p_caster->GetGUID());
         }*/
 
-        if (!(hasAttribute(ATTRIBUTE_ON_NEXT_ATTACK) && !m_triggeredSpell))  //on next attack
+        if (!(hasAttribute(ATTRIBUTES_ON_NEXT_ATTACK) && !m_triggeredSpell))  //on next attack
         {
             SendSpellGo();
 
             //******************** SHOOT SPELLS ***********************
             //* Flags are now 1,4,19,22 (4718610) //0x480012
 
-            if (hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS) && m_caster->IsPlayer() && m_caster->IsInWorld())
+            if (hasAttributeExC(ATTRIBUTESEXC_PLAYER_RANGED_SPELLS) && m_caster->IsPlayer() && m_caster->IsInWorld())
             {
                 // Part of this function contains a hack fix
                 // hack fix for shoot spells, should be some other resource for it
@@ -1900,7 +1900,7 @@ void Spell::finish(bool successful)
             ++spellidPtr;
         }
         // Don't call QuestMgr::OnPlayerCast for next-attack spells, either.  It will be called during the actual spell cast.
-        if (!(hasAttribute(ATTRIBUTE_ON_NEXT_ATTACK) && !m_triggeredSpell) && !isTamingQuestSpell)
+        if (!(hasAttribute(ATTRIBUTES_ON_NEXT_ATTACK) && !m_triggeredSpell) && !isTamingQuestSpell)
         {
             uint32 numTargets = 0;
             TargetsList::iterator itr = UniqueTargets.begin();
@@ -2099,7 +2099,7 @@ void Spell::SendSpellStart()
                 }
             }
         }
-        else if (hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS))
+        else if (hasAttributeExC(ATTRIBUTESEXC_PLAYER_RANGED_SPELLS))
         {
             if (p_caster != nullptr)
                 ip = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
@@ -3316,16 +3316,16 @@ uint8 Spell::CanCast(bool tolerate)
          */
         if (p_caster->m_bg)
         {
-            if (IS_ARENA(p_caster->m_bg->GetType()) && hasAttributeExD(SP_ATTR_EX_D_NOT_IN_ARENA))
+            if (IS_ARENA(p_caster->m_bg->GetType()) && hasAttributeExD(ATTRIBUTESEXD_NOT_IN_ARENA))
                 return SPELL_FAILED_NOT_IN_ARENA;
             if (!p_caster->m_bg->HasStarted() && (m_spellInfo->Id == 1953 || m_spellInfo->Id == 36554))  //Don't allow blink or shadowstep  if in a BG and the BG hasn't started.
                 return SPELL_FAILED_SPELL_UNAVAILABLE;
         }
-        else if (hasAttributeExC(FLAGS4_BG_ONLY))
+        else if (hasAttributeExC(ATTRIBUTESEXC_BG_ONLY))
             return SPELL_FAILED_ONLY_BATTLEGROUNDS;
 
         // only in outland check
-        if (p_caster->GetMapId() != 530 && p_caster->GetMapId() != 571 && hasAttributeExD(SP_ATTR_EX_D_ONLY_IN_OUTLANDS))
+        if (p_caster->GetMapId() != 530 && p_caster->GetMapId() != 571 && hasAttributeExD(ATTRIBUTESEXD_ONLY_IN_OUTLANDS))
             return SPELL_FAILED_INCORRECT_AREA;
         /**
          *	Cooldowns check
@@ -3537,7 +3537,7 @@ uint8 Spell::CanCast(bool tolerate)
         /**
          *	Check if we have the required reagents
          */
-        if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExE(FLAGS6_REAGENT_REMOVAL)))
+        if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExE(ATTRIBUTESEXE_REAGENT_REMOVAL)))
         {
             // Skip this with enchanting scrolls
             if (!i_caster || i_caster->GetItemProperties()->Flags != 268435520)
@@ -4425,19 +4425,19 @@ uint8 Spell::CanCast(bool tolerate)
         /**
          *	Stun check
          */
-        if (u_caster->IsStunned() && (GetProto()->AttributesExE & FLAGS6_USABLE_WHILE_STUNNED) == 0)
+        if (u_caster->IsStunned() && (GetProto()->AttributesExE & ATTRIBUTESEXE_USABLE_WHILE_STUNNED) == 0)
             return SPELL_FAILED_STUNNED;
 
         /**
          *	Fear check
          */
-        if (u_caster->IsFeared() && (GetProto()->AttributesExE & FLAGS6_USABLE_WHILE_FEARED) == 0)
+        if (u_caster->IsFeared() && (GetProto()->AttributesExE & ATTRIBUTESEXE_USABLE_WHILE_FEARED) == 0)
             return SPELL_FAILED_FLEEING;
 
         /**
          *	Confuse check
          */
-        if (u_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED) && (GetProto()->AttributesExE & FLAGS6_USABLE_WHILE_CONFUSED) == 0)
+        if (u_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED) && (GetProto()->AttributesExE & ATTRIBUTESEXE_USABLE_WHILE_CONFUSED) == 0)
             return SPELL_FAILED_CONFUSED;
 
 
@@ -4529,14 +4529,14 @@ void Spell::RemoveItems()
     // Ammo Removal
     if (p_caster != nullptr)
     {
-        if (hasAttributeExB(ATTRIBUTESEXB_REQ_RANGED_WEAPON) || hasAttributeExC(FLAGS4_PLAYER_RANGED_SPELLS))
+        if (hasAttributeExB(ATTRIBUTESEXB_REQ_RANGED_WEAPON) || hasAttributeExC(ATTRIBUTESEXC_PLAYER_RANGED_SPELLS))
         {
             if (!p_caster->m_requiresNoAmmo)
                 p_caster->GetItemInterface()->RemoveItemAmt_ProtectPointer(p_caster->GetUInt32Value(PLAYER_AMMO_ID), 1, &i_caster);
         }
 
         // Reagent Removal
-        if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExD(FLAGS6_REAGENT_REMOVAL)))
+        if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExD(ATTRIBUTESEXE_REAGENT_REMOVAL)))
         {
             for (uint8 i = 0; i < 8; i++)
             {
@@ -5159,7 +5159,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
     int32 bonus = 0;
     uint32 school = GetProto()->School;
 
-    if (u_caster != NULL && !(GetProto()->AttributesExC & FLAGS4_NO_HEALING_BONUS))
+    if (u_caster != NULL && !(GetProto()->AttributesExC & ATTRIBUTESEXC_NO_HEALING_BONUS))
     {
         //Basic bonus
         if (p_caster == NULL ||
