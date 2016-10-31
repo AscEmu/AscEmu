@@ -1598,14 +1598,14 @@ class SERVER_DECL Spell : public EventableObject
                 return false;
         }
 
-        inline bool hasAttribute(uint32 attribute) { return ((GetProto()->Attributes & attribute) > 0); }
-        inline bool hasAttributeEx(uint32 attribute) { return ((GetProto()->AttributesEx & attribute) > 0); }
-        inline bool hasAttributeExB(uint32 attribute) { return ((GetProto()->AttributesExB & attribute) > 0); }
-        inline bool hasAttributeExC(uint32 attribute) { return ((GetProto()->AttributesExC & attribute) > 0); }
-        inline bool hasAttributeExD(uint32 attribute) { return ((GetProto()->AttributesExD & attribute) > 0); }
-        inline bool hasAttributeExE(uint32 attribute) { return ((GetProto()->AttributesExE & attribute) > 0); }
-        inline bool hasAttributeExF(uint32 attribute) { return ((GetProto()->AttributesExF & attribute) > 0); }
-        inline bool hasAttributeExG(uint32 attribute) { return ((GetProto()->AttributesExG & attribute) > 0); }
+        inline bool hasAttribute(SpellAttributes attribute) { return GetProto()->Attributes & attribute; }
+        inline bool hasAttributeEx(SpellAttributesEx attribute) { return GetProto()->AttributesEx & attribute; }
+        inline bool hasAttributeExB(SpellAttributesExB attribute) { return GetProto()->AttributesExB & attribute; }
+        inline bool hasAttributeExC(SpellAttributesExC attribute) { return GetProto()->AttributesExC & attribute; }
+        inline bool hasAttributeExD(SpellAttributesExD attribute) { return GetProto()->AttributesExD & attribute; }
+        inline bool hasAttributeExE(SpellAttributesExE attribute) { return GetProto()->AttributesExE & attribute; }
+        inline bool hasAttributeExF(SpellAttributesExF attribute) { return GetProto()->AttributesExF & attribute; }
+        inline bool hasAttributeExG(SpellAttributesExG attribute) { return GetProto()->AttributesExG & attribute; }
 
         // Removes reagents, ammo, and items/charges
         void RemoveItems();

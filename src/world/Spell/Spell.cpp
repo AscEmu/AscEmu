@@ -4536,7 +4536,7 @@ void Spell::RemoveItems()
         }
 
         // Reagent Removal
-        if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExD(ATTRIBUTESEXE_REAGENT_REMOVAL)))
+        if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExE(ATTRIBUTESEXE_REAGENT_REMOVAL)))
         {
             for (uint8 i = 0; i < 8; i++)
             {
@@ -5908,7 +5908,7 @@ uint8 Spell::GetErrorAtShapeshiftedCast(SpellEntry* spellInfo, uint32 form)
 
     if (actAsShifted)
     {
-        if (hasAttributeExB(ATTRIBUTES_NOT_SHAPESHIFT))	// not while shapeshifted
+        if (hasAttribute(ATTRIBUTES_NOT_SHAPESHIFT))	// not while shapeshifted
             return SPELL_FAILED_NOT_SHAPESHIFT;
         else //if (spellInfo->RequiredShapeShift != 0)			// needs other shapeshift
             return SPELL_FAILED_ONLY_SHAPESHIFT;
