@@ -1768,85 +1768,85 @@ enum SpellDidHitResult
 // Target constraints for spells (mostly scripted stuff)
 class SpellTargetConstraint
 {
-	typedef std::map<uint32, uint32>                TargetFocusMap;
+    typedef std::map<uint32, uint32>                TargetFocusMap;
 
-    public:
+public:
 
-        SpellTargetConstraint() { }
-        ~SpellTargetConstraint()
-        {
-            CreatureTargets.clear();
-            GameobjectTargets.clear();
-        }
+    SpellTargetConstraint() { }
+    ~SpellTargetConstraint()
+    {
+        CreatureTargets.clear();
+        GameobjectTargets.clear();
+    }
 
-        bool HasCreature(int id)
-        {
-            size_t size = CreatureTargets.size();
+    bool HasCreature(int id)
+    {
+        size_t size = CreatureTargets.size();
 
-            for (size_t i = 0; i < size; ++i)
-                if (CreatureTargets[i] == id)
-                    return true;
+        for (size_t i = 0; i < size; ++i)
+            if (CreatureTargets[i] == id)
+                return true;
 
+        return false;
+    }
+
+    bool HasGameobject(int id)
+    {
+        size_t size = GameobjectTargets.size();
+
+        for (size_t i = 0; i < size; ++i)
+            if (GameobjectTargets[i] == id)
+                return true;
+
+        return false;
+    }
+
+    void AddCreature(int id)
+    {
+
+        if (!HasCreature(id))
+            CreatureTargets.push_back(id);
+    }
+
+    void AddGameobject(int id)
+    {
+
+        if (!HasGameobject(id))
+            GameobjectTargets.push_back(id);
+    }
+
+    void AddFocused(uint32 value, int type)
+    {
+        m_TargetFocus.insert(std::pair< uint32, uint32 >(value, type));
+    }
+
+    bool IsFocused(uint32 value)
+    {
+        TargetFocusMap::const_iterator itr = m_TargetFocus.find(value);
+
+        if (itr != m_TargetFocus.end())
+            return itr->second;
+        else
             return false;
-        }
+    }
 
-        bool HasGameobject(int id)
-        {
-            size_t size = GameobjectTargets.size();
+    // Return Creature Map
+    std::vector<int> GetCreatures()
+    {
+        return CreatureTargets;
+    }
 
-            for (size_t i = 0; i < size; ++i)
-                if (GameobjectTargets[i] == id)
-                    return true;
+    // Return Gameobjects Map
+    std::vector<int> GetGameobjects()
+    {
+        return GameobjectTargets;
+    }
 
-            return false;
-        }
+private:
 
-        void AddCreature(int id)
-        {
-
-            if (!HasCreature(id))
-                CreatureTargets.push_back(id);
-        }
-
-        void AddGameobject(int id)
-        {
-
-            if (!HasGameobject(id))
-                GameobjectTargets.push_back(id);
-        }
-
-        void AddFocused(uint32 value,int type)
-        {
-            m_TargetFocus.insert(std::pair< uint32, uint32 >(value, type));
-        }
-
-        bool IsFocused(uint32 value)
-        {
-            TargetFocusMap::const_iterator itr = m_TargetFocus.find(value);
-
-            if (itr != m_TargetFocus.end())
-                return itr->second;
-            else
-                return false;	
-        }
-
-        // Return Creature Map
-        std::vector<int> GetCreatures()
-        {
-            return CreatureTargets;
-        }
-
-        // Return Gameobjects Map
-        std::vector<int> GetGameobjects()
-        {
-            return GameobjectTargets;
-        }
-
-    private:
-
-        std::vector< int > CreatureTargets;
-        std::vector< int > GameobjectTargets;
-        TargetFocusMap m_TargetFocus;
+    std::vector< int > CreatureTargets;
+    std::vector< int > GameobjectTargets;
+    TargetFocusMap m_TargetFocus;
 };
 
 // Spell instance
@@ -1953,6 +1953,10 @@ class SERVER_DECL Spell : public EventableObject
 
         inline uint32 getState() { return m_spellState; }
         inline void SetUnitTarget(Unit* punit) { unitTarget = punit; }
+        inline void SetTargetConstraintCreature(Creature* pCreature) { targetConstraintCreature = pCreature; }
+        inline void SetTargetConstraintGameObject(GameObject* pGameobject) { targetConstraintGameObject = pGameobject; }
+        inline Creature* GetTargetConstraintCreature() { return targetConstraintCreature; }
+        inline GameObject* GetTargetConstraintGameObject() { return targetConstraintGameObject; }
 
         // Send Packet functions
         void SetExtraCastResult(SpellExtraError result);
@@ -2414,6 +2418,8 @@ class SERVER_DECL Spell : public EventableObject
         GameObject* gameObjTarget;
         Player* playerTarget;
         Corpse* corpseTarget;
+        Creature* targetConstraintCreature;
+        GameObject* targetConstraintGameObject;
         uint32 add_damage;
 
         uint8 cancastresult;

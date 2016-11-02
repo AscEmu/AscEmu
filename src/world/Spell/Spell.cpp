@@ -312,6 +312,8 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
     gameObjTarget = NULL;
     playerTarget = NULL;
     corpseTarget = NULL;
+    targetConstraintCreature = NULL;
+    targetConstraintGameObject = NULL;
     add_damage = 0;
     m_Delayed = false;
     pSpellId = 0;
@@ -4085,7 +4087,7 @@ uint8 Spell::CanCast(bool tolerate)
                         {
                             if (pCreature->GetDistanceSq(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()) <= 15)
                             {
-                                target = pCreature;
+                                SetTargetConstraintCreature(pCreature);
                                 foundTarget = true;
                             }
                         }
@@ -4104,7 +4106,10 @@ uint8 Spell::CanCast(bool tolerate)
                         if (pGameobject)
                         {
                             if (pGameobject->GetDistanceSq(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()) <= 15)
+                            {
+                                SetTargetConstraintGameObject(pGameobject);
                                 foundTarget = true;
+                            }
                         }
                     }
                 }

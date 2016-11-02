@@ -2982,7 +2982,7 @@ void ObjectMgr::ResetDailies()
 
 void ObjectMgr::LoadSpellTargetConstraints()
 {
-    enum { CREATURE_FOCUS_TYPE, GAMEOBJECT_FOCUS_TYPE , CREATURE_TYPE, GAMEOBJECT_TYPE };
+    enum { CREATURE_FOCUS_TYPE, GAMEOBJECT_FOCUS_TYPE, CREATURE_TYPE, GAMEOBJECT_TYPE };
 
     Log.Notice("ObjectMgr", "Loading spell target constraints...");
 
@@ -3018,8 +3018,8 @@ void ObjectMgr::LoadSpellTargetConstraints()
                         stc->AddCreature(value);
                         stc->AddFocused(value, 1);
                     }
-                }              
-                else if(type == GAMEOBJECT_FOCUS_TYPE)
+                }
+                else if (type == GAMEOBJECT_FOCUS_TYPE)
                 {
                     if (stc != nullptr)
                     {
