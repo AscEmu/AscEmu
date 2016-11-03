@@ -742,6 +742,29 @@ class VHIntroAzureSpellBreaker : VHCreatureAI
 //Boss: Moragg
 //class MoraggAI : public CreatureAIScript
 
+class MoraggAI : public MoonScriptBossAI
+{
+    MOONSCRIPT_FACTORY_FUNCTION(MoraggAI, MoonScriptBossAI);
+    MoraggAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    {
+        // Spells
+        if (IsHeroic())
+        {
+            AddSpell(MORAGG_SPELL_RAY_OF_SUFFERING_H, Target_Current, 100, 0, 0, 0, 45);
+            AddSpell(MORAGG_SPELL_RAY_OF_PAIN_H, Target_Current, 100, 0, 0, 0 , 45);
+        }
+        else
+        {
+            AddSpell(MORAGG_SPELL_RAY_OF_SUFFERING, Target_Self, 100, 0, 0, 0, 45);
+            AddSpell(MORAGG_SPELL_RAY_OF_PAIN, Target_Current, 100, 0, 0, 0, 45);
+        }
+
+        AddSpell(MORAGG_SPELL_CORROSIVE_SALIVA, Target_Current, 100, 0, 10, 0 , 5);
+        AddSpell(MORAGG_SPELL_OPTIC_LINK, Target_Current, 100, 0, 15, 0, 50);
+
+    }
+};
+
 ///////////////////////////////////////////////////////
 //Boss: Ichoron
 //class IchoronAI : public CreatureAIScript
@@ -780,7 +803,7 @@ void SetupTheVioletHold(ScriptMgr* mgr)
 
     //Bosses
     //mgr->register_creature_script(CN_EREKEM, &ErekemAI::Create);
-    //mgr->register_creature_script(CN_MORAGG, &MoraggAI::Create);
+    mgr->register_creature_script(CN_MORAGG, &MoraggAI::Create);
     //mgr->register_creature_script(CN_ICHORON, &IchoronAI::Create);
     //mgr->register_creature_script(CN_XEVOZZ, &XevozzAI::Create);
     //mgr->register_creature_script(CN_LAVANTHOR, &LavanthorAI::Create);
