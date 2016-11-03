@@ -312,8 +312,8 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
     gameObjTarget = NULL;
     playerTarget = NULL;
     corpseTarget = NULL;
-    targetConstraintCreature = NULL;
-    targetConstraintGameObject = NULL;
+    targetConstraintCreature = nullptr;
+    targetConstraintGameObject = nullptr;
     add_damage = 0;
     m_Delayed = false;
     pSpellId = 0;

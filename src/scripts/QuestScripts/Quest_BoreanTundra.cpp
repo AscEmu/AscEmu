@@ -642,42 +642,39 @@ class GuardMitchGossip : public GossipScript
 
 bool PlaceCart(uint32 i, Spell* pSpell)
 {
-
     Player* pPlayer = pSpell->p_caster;
     if (pPlayer == nullptr)
         return true;
 
-    Creature* pUnit = pSpell->GetTargetConstraintCreature();
+    Creature* pCreature = pSpell->GetTargetConstraintCreature();
     QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(11897);
     if (qle == nullptr)
         return true;
 
-    if (pUnit->GetEntry() == 26248)
+    if (pCreature->GetEntry() == 26248)
     {
         if (qle->GetMobCount(2) == 0)
         {
-            pUnit->CastSpell(pUnit, 46798, true);
-            pUnit->CastSpell(pUnit, 46799, true);
-            pUnit->CastSpell(pUnit, 46800, true);
+            pCreature->CastSpell(pCreature, 46798, true);
+            pCreature->CastSpell(pCreature, 46799, true);
+            pCreature->CastSpell(pCreature, 46800, true);
         }
 
         if (sEAS.GetQuest(pPlayer, 11897))
             sEAS.KillMobForQuest(pPlayer, 11897, 2);
-
     }
 
-    if (pUnit->GetEntry() == 26249)
+    if (pCreature->GetEntry() == 26249)
     {
         if (qle->GetMobCount(1) == 0)
         {
-            pUnit->CastSpell(pUnit, 46798, true);
-            pUnit->CastSpell(pUnit, 46799, true);
-            pUnit->CastSpell(pUnit, 46800, true);
+            pCreature->CastSpell(pCreature, 46798, true);
+            pCreature->CastSpell(pCreature, 46799, true);
+            pCreature->CastSpell(pCreature, 46800, true);
         }
 
         if (sEAS.GetQuest(pPlayer, 11897))
             sEAS.KillMobForQuest(pPlayer, 11897, 1);
-
     }
 
     return true;
