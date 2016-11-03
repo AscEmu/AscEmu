@@ -640,6 +640,60 @@ class GuardMitchGossip : public GossipScript
         }
 };
 
+bool PlaceCart(uint32 i, Spell* pSpell)
+{
+    Player* pPlayer = pSpell->p_caster;
+    if (pPlayer == nullptr)
+        return true;
+
+    Creature* pCreature = pSpell->GetTargetConstraintCreature();
+    QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(11897);
+    if (qle == nullptr)
+        return true;
+
+    if (pCreature->GetEntry() == 26248)
+    {
+        if (qle->GetMobCount(2) == 0)
+        {
+            pCreature->CastSpell(pCreature, 46798, true);
+            pCreature->CastSpell(pCreature, 46799, true);
+            pCreature->CastSpell(pCreature, 46800, true);
+        }
+
+        if (sEAS.GetQuest(pPlayer, 11897))
+            sEAS.KillMobForQuest(pPlayer, 11897, 2);
+    }
+
+    if (pCreature->GetEntry() == 26249)
+    {
+        if (qle->GetMobCount(1) == 0)
+        {
+            pCreature->CastSpell(pCreature, 46798, true);
+            pCreature->CastSpell(pCreature, 46799, true);
+            pCreature->CastSpell(pCreature, 46800, true);
+        }
+
+        if (sEAS.GetQuest(pPlayer, 11897))
+            sEAS.KillMobForQuest(pPlayer, 11897, 1);
+    }
+
+    return true;
+}
+
+class Worm : public CreatureAIScript
+{
+public:
+    ADD_CREATURE_FACTORY_FUNCTION(Worm);
+    Worm(Creature* pCreature) : CreatureAIScript(pCreature) {}
+
+    void OnLoad()
+    {
+        _unit->Root();
+        _unit->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+        _unit->Die(_unit, _unit->GetHealth(), 0);
+    }
+};
+
 void SetupBoreanTundra(ScriptMgr* mgr)
 {
     // Call to Arms!
@@ -681,4 +735,8 @@ void SetupBoreanTundra(ScriptMgr* mgr)
     mgr->register_gossip_script(25248, new SaltyJohnGossip);
     mgr->register_gossip_script(25827, new TomHeggerGossip);
     mgr->register_gossip_script(25828, new GuardMitchGossip);
+
+    // Quest: Plug the Sinkholes
+    mgr->register_dummy_spell(46797, &PlaceCart);
+    mgr->register_creature_script(26250, &Worm::Create);
 }

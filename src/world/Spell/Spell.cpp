@@ -312,6 +312,8 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
     gameObjTarget = NULL;
     playerTarget = NULL;
     corpseTarget = NULL;
+    targetConstraintCreature = nullptr;
+    targetConstraintGameObject = nullptr;
     add_damage = 0;
     m_Delayed = false;
     pSpellId = 0;
@@ -4062,16 +4064,57 @@ uint8 Spell::CanCast(bool tolerate)
 
             if (m_target_constraint != NULL)
             {
-                // Spell has GO and/or Creature target constraint, yet target is neither -> bad target
-                if (!target->IsCreature() && !target->IsGameObject())
-                    return SPELL_FAILED_BAD_TARGETS;
-
                 // target is the wrong creature
-                if (target->IsCreature() && !m_target_constraint->HasCreature(target->GetEntry()))
+                if (target->IsCreature() && !m_target_constraint->HasCreature(target->GetEntry()) && !m_target_constraint->IsFocused(target->GetEntry()))
                     return SPELL_FAILED_BAD_TARGETS;
 
                 // target is the wrong GO :/
-                if (target->IsGameObject() && !m_target_constraint->HasGameobject(target->GetEntry()))
+                if (target->IsGameObject() && !m_target_constraint->HasGameobject(target->GetEntry()) && !m_target_constraint->IsFocused(target->GetEntry()))
+                    return SPELL_FAILED_BAD_TARGETS;
+
+                bool foundTarget = false;
+                Creature* pCreature = nullptr;
+                size_t creatures = m_target_constraint->GetCreatures().size();
+
+                // Spells for Invisibl Creatures and or Gameobjects ( Casting Spells Near them )
+                for (size_t i = 0; i < creatures; ++i)
+                {
+                    if (!m_target_constraint->IsFocused(m_target_constraint->GetCreatures()[i]))
+                    {
+                        pCreature = m_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->GetCreatures()[i]);
+
+                        if (pCreature)
+                        {
+                            if (pCreature->GetDistanceSq(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()) <= 15)
+                            {
+                                SetTargetConstraintCreature(pCreature);
+                                foundTarget = true;
+                            }
+                        }
+                    }
+                }
+
+                GameObject* pGameobject = nullptr;
+                size_t gameobjects = m_target_constraint->GetGameobjects().size();
+
+                for (size_t i = 0; i < gameobjects; ++i)
+                {
+                    if (!m_target_constraint->IsFocused(m_target_constraint->GetGameobjects()[i]))
+                    {
+                        pGameobject = m_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->GetGameobjects()[i]);
+
+                        if (pGameobject)
+                        {
+                            if (pGameobject->GetDistanceSq(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()) <= 15)
+                            {
+                                SetTargetConstraintGameObject(pGameobject);
+                                foundTarget = true;
+                            }
+                        }
+                    }
+                }
+
+                if (!foundTarget)
                     return SPELL_FAILED_BAD_TARGETS;
             }
 
