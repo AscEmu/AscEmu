@@ -263,7 +263,7 @@ void ScriptMgr::register_creature_script(uint32 entry, exp_create_creature_ai ca
 	m_creaturesMutex.Acquire();
 
     if (_creatures.find(entry) != _creatures.end())
-        LOG_ERROR("ScriptMgr is trying to register a script for Creature ID: %u even if there's already one for that Creature. Remove one of those scripts.", entry);
+        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for Creature ID: %u but this creature has already one!", entry);
 
     _creatures.insert(CreatureCreateMap::value_type(entry, callback));
 
@@ -273,7 +273,7 @@ void ScriptMgr::register_creature_script(uint32 entry, exp_create_creature_ai ca
 void ScriptMgr::register_gameobject_script(uint32 entry, exp_create_gameobject_ai callback)
 {
     if (_gameobjects.find(entry) != _gameobjects.end())
-        LOG_ERROR("ScriptMgr is trying to register a script for GameObject ID: %u even if there's already one for that GameObject. Remove one of those scripts.", entry);
+        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for GameObject ID: %u but this go has already one.", entry);
 
     _gameobjects.insert(GameObjectCreateMap::value_type(entry, callback));
 }
@@ -282,18 +282,18 @@ void ScriptMgr::register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback
 {
     if (_auras.find(entry) != _auras.end())
     {
-        LOG_ERROR("ScriptMgr is trying to register a script for Aura ID: %u even if there's already one for that Aura. Remove one of those scripts.", entry);
+        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for Aura ID: %u but this aura has already one.", entry);
     }
 
     SpellEntry* sp = dbcSpell.LookupEntryForced(entry);
     if (sp == NULL)
     {
-        LOG_ERROR("ScriptMgr is trying to register a dummy aura handler for Spell ID: %u which is invalid.", entry);
+        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a dummy aura handler for invalid Spell ID: %u.", entry);
         return;
     }
 
     if (!sp->AppliesAura(SPELL_AURA_DUMMY) && !sp->AppliesAura(SPELL_AURA_PERIODIC_TRIGGER_DUMMY))
-        LOG_ERROR("ScriptMgr has registered a dummy aura handler for Spell ID: %u (%s), but spell has no dummy aura!", entry, sp->Name);
+        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr registered a dummy aura handler for Spell ID: %u (%s), but spell has no dummy aura!", entry, sp->Name);
 
     _auras.insert(HandleDummyAuraMap::value_type(entry, callback));
 }
@@ -302,19 +302,19 @@ void ScriptMgr::register_dummy_spell(uint32 entry, exp_handle_dummy_spell callba
 {
     if (_spells.find(entry) != _spells.end())
     {
-        LOG_ERROR("ScriptMgr is trying to register a script for Spell ID: %u even if there's already one for that Spell. Remove one of those scripts.", entry);
+        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for Spell ID: %u but this spell has already one", entry);
         return;
     }
 
     SpellEntry* sp = dbcSpell.LookupEntryForced(entry);
     if (sp == NULL)
     {
-        LOG_ERROR("ScriptMgr is trying to register a dummy handler for Spell ID: %u which is invalid.", entry);
+        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a dummy handler for invalid Spell ID: %u.", entry);
         return;
     }
 
     if (!sp->HasEffect(SPELL_EFFECT_DUMMY) && !sp->HasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->HasEffect(SPELL_EFFECT_SEND_EVENT))
-        LOG_ERROR("ScriptMgr has registered a dummy handler for Spell ID: %u (%s), but spell has no dummy/script/send event effect!", entry, sp->Name);
+        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr registered a dummy handler for Spell ID: %u (%s), but spell has no dummy/script/send event effect!", entry, sp->Name);
 
     _spells.insert(HandleDummySpellMap::value_type(entry, callback));
 }
@@ -335,7 +335,7 @@ void ScriptMgr::register_quest_script(uint32 entry, QuestScript* qs)
     if (q != nullptr)
     {
         if (q->pQuestScript != NULL)
-            LOG_ERROR("ScriptMgr is trying to register a script for Quest ID: %u even if there's already one for that Quest. Remove one of those scripts.", entry);
+            Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for Quest ID: %u but this quest has already one.", entry);
 
         const_cast<QuestProperties*>(q)->pQuestScript = qs;
     }
@@ -350,7 +350,7 @@ void ScriptMgr::register_event_script(uint32 entry, EventScript* es)
     {
         if (gameEvent->mEventScript != nullptr)
         {
-            LOG_ERROR("ScriptMgr is trying to register a script for Event ID: %u even though one is already registered. Remove one of these scripts.", entry);
+            Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for Event ID: %u but this event has already one.", entry);
             return;
         }
 
@@ -362,7 +362,7 @@ void ScriptMgr::register_event_script(uint32 entry, EventScript* es)
 void ScriptMgr::register_instance_script(uint32 pMapId, exp_create_instance_ai pCallback)
 {
     if (mInstances.find(pMapId) != mInstances.end())
-        LOG_ERROR("ScriptMgr is trying to register a script for Instance ID: %u even if there's already one for that Instance. Remove one of those scripts.", pMapId);
+        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for Instance ID: %u but this instance already has one.", pMapId);
 
     mInstances.insert(InstanceCreateMap::value_type(pMapId, pCallback));
 };
@@ -414,19 +414,19 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
 
     if (itr != SpellScriptEffects.end())
     {
-        LOG_ERROR("ScriptMgr tried to register more than 1 script effect handlers for Spell %u", entry);
+        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register more than 1 script effect handlers for Spell %u", entry);
         return;
     }
 
     SpellEntry* sp = dbcSpell.LookupEntryForced(entry);
     if (sp == NULL)
     {
-        LOG_ERROR("ScriptMgr tried to register a script effect handler for Spell %u, which is invalid.", entry);
+        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script effect handler for invalid Spell %u.", entry);
         return;
     }
 
     if (!sp->HasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->HasEffect(SPELL_EFFECT_SEND_EVENT))
-        LOG_ERROR("ScriptMgr has registered a script effect handler for Spell ID: %u (%s), but spell has no scripted effect!", entry, sp->Name);
+        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr registered a script effect handler for Spell ID: %u (%s), but spell has no scripted effect!", entry, sp->Name);
 
     SpellScriptEffects.insert(std::pair< uint32, exp_handle_script_effect >(entry, callback));
 }

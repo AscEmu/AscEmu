@@ -25,9 +25,6 @@
 #include "AuthCodes.h"
 
 
-/* echo send/received packets to console */
-//#define ECHO_PACKET_LOG_TO_CONSOLE 1
-
 #pragma pack(push, 1)
 struct ClientPktHeader
 {
@@ -625,10 +622,19 @@ void WorldSocket::OnRead()
 
 void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 direction, uint32 accountid)
 {
-#ifdef ECHO_PACKET_LOG_TO_CONSOLE
-    sLog.outString("[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
-                   LookupName(opcode, g_worldOpcodeNames), opcode, len);
-#endif
+    if (sWorld.debugFlags & LF_OPCODE)
+    {
+        switch (opcode)
+        {
+            //stop spaming opcodes here
+            case SMSG_MONSTER_MOVE:
+            case MSG_MOVE_HEARTBEAT:
+                break;
+            default:
+                Log.DebugFlag(LF_OPCODE, "[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
+                              LookupName(opcode, g_worldOpcodeNames), opcode, len);
+        }
+}
 
     if (bEnabled)
     {
