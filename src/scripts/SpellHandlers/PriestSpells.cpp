@@ -83,7 +83,7 @@ bool DivineAegis(uint32 i, Aura* pAura, bool apply)
     Unit* target = pAura->GetTarget();
 
     if(apply)
-        target->AddProcTriggerSpell(47753, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_SPELL_CRIT_HIT, 0, NULL, NULL);
+        target->AddProcTriggerSpell(47753, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_SPELL_CRIT_HIT, 0, NULL, NULL);
     else
         target->RemoveProcTriggerSpell(47753, pAura->m_casterGuid);
 
@@ -97,7 +97,7 @@ bool ImprovedDevouringPlague(uint32 i, Aura* pAura, bool apply)
     if(apply)
     {
         static uint32 classMask[3] = { 0x2000000, 0, 0 };
-        target->AddProcTriggerSpell(63675, pAura->GetSpellProto()->Id, pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_CAST_SPELL, 0, NULL, classMask);
+        target->AddProcTriggerSpell(63675, pAura->GetSpellInfo()->Id, pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CAST_SPELL, 0, NULL, classMask);
     }
     else
         target->RemoveProcTriggerSpell(63675, pAura->m_casterGuid);
@@ -110,7 +110,7 @@ bool VampiricEmbrace(uint32 i, Aura* pAura, bool apply)
     Unit* target = pAura->GetTarget();
 
     if(apply)
-        target->AddProcTriggerSpell(15290, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_ANY_HOSTILE_ACTION | PROC_TARGET_SELF, 0, NULL, NULL);
+        target->AddProcTriggerSpell(15290, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_ANY_HOSTILE_ACTION | PROC_TARGET_SELF, 0, NULL, NULL);
     else
         target->RemoveProcTriggerSpell(15290, pAura->m_casterGuid);
 
@@ -125,14 +125,14 @@ bool VampiricTouch(uint32 i, Aura* pAura, bool apply)
     {
         case 0:
             if(apply)
-                target->AddProcTriggerSpell(64085, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_PRE_DISPELL_AURA_VICTIM | PROC_TARGET_SELF, 0, NULL, NULL);
+                target->AddProcTriggerSpell(64085, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_PRE_DISPELL_AURA_VICTIM | PROC_TARGET_SELF, 0, NULL, NULL);
             else
                 target->RemoveProcTriggerSpell(64085, pAura->m_casterGuid);
             break;
 
         case 2:
             if(apply)
-                target->AddProcTriggerSpell(34919, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_SPELL_HIT_VICTIM, 0, NULL, NULL);
+                target->AddProcTriggerSpell(34919, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_SPELL_HIT_VICTIM, 0, NULL, NULL);
             else
                 target->RemoveProcTriggerSpell(34919, pAura->m_casterGuid);
             break;
@@ -148,7 +148,7 @@ bool EmpoweredRenew(uint32 i, Aura* pAura, bool apply)
     if(apply)
     {
         static uint32 classMask[3] = { 0x40, 0, 0 };
-        target->AddProcTriggerSpell(63544, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_CAST_SPELL, 0, NULL, classMask);
+        target->AddProcTriggerSpell(63544, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CAST_SPELL, 0, NULL, classMask);
     }
     else
         target->RemoveProcTriggerSpell(63544, pAura->m_casterGuid);
@@ -163,7 +163,7 @@ bool ImprovedMindBlast(uint32 i, Aura* pAura, bool apply)
     if(apply)
     {
         static uint32 classMask[3] = { 0x2000, 0, 0 };
-        target->AddProcTriggerSpell(48301, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_SPELL_HIT, 0, NULL, classMask);
+        target->AddProcTriggerSpell(48301, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_SPELL_HIT, 0, NULL, classMask);
     }
     else
         target->RemoveProcTriggerSpell(48301, pAura->m_casterGuid);
@@ -178,7 +178,7 @@ bool PainAndSufferingAura(uint32 i, Aura* pAura, bool apply)
     if(apply)
     {
         static uint32 classMask[3] = { 0, 0, 0x40 };
-        target->AddProcTriggerSpell(47948, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_CAST_SPELL, 0, NULL, classMask);
+        target->AddProcTriggerSpell(47948, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CAST_SPELL, 0, NULL, classMask);
     }
     else
         target->RemoveProcTriggerSpell(47948, pAura->m_casterGuid);
@@ -228,7 +228,7 @@ bool PrayerOfMendingAura(uint32 i, Aura* pAura, bool apply)
     Unit* target = pAura->GetTarget();
 
     if(apply)
-        target->AddProcTriggerSpell(pAura->GetSpellProto(), pAura->GetSpellProto(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_ANY_DAMAGE_VICTIM, pAura->GetSpellProto()->procCharges, NULL, NULL);
+        target->AddProcTriggerSpell(pAura->GetSpellInfo(), pAura->GetSpellInfo(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_ANY_DAMAGE_VICTIM, pAura->GetSpellInfo()->procCharges, NULL, NULL);
     else
     {
         int32 count = target->GetAuraStackCount(pAura->GetSpellId());

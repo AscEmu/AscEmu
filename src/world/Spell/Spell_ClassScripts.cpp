@@ -131,7 +131,7 @@ public:
             return 0;
 
         // Check for proc chance
-        if (RandomFloat(100.0f) > GetSpellProto()->EffectBasePoints[0] + 1)
+        if (RandomFloat(100.0f) > GetSpellInfo()->EffectBasePoints[0] + 1)
             return 0;
 
         // Check if damage will kill player.
@@ -294,7 +294,7 @@ class BloodStrikeSpell : public Spell
         if (aur == NULL)
             return;
 
-        if (!Rand(aur->GetSpellProto()->procChance))
+        if (!Rand(aur->GetSpellInfo()->procChance))
             return;
 
         p_caster->CastSpell(target, 47632, false);
@@ -349,14 +349,14 @@ class AntiMagicShellAura : public AbsorbAura
     {
         Player* caster = GetPlayerCaster();
         if (caster != NULL)
-            return caster->GetMaxHealth() * (GetSpellProto()->EffectBasePoints[1] + 1) / 100;
+            return caster->GetMaxHealth() * (GetSpellInfo()->EffectBasePoints[1] + 1) / 100;
         else
             return mod->m_amount;
     }
 
     int32 CalcPctDamage()
     {
-        return GetSpellProto()->EffectBasePoints[0] + 1;
+        return GetSpellInfo()->EffectBasePoints[0] + 1;
     }
 };
 
@@ -420,7 +420,7 @@ class WillOfTheNecropolisAura : public AbsorbAura
         // "Damage that would take you below $s1% health or taken while you are at $s1% health is reduced by $52284s1%."
         if ((health_pct > 35 && new_health_pct < 35) || health_pct == 35)
         {
-            uint32 dmg_absorbed = *dmg * (GetSpellProto()->EffectBasePoints[0] + 1) / 100;
+            uint32 dmg_absorbed = *dmg * (GetSpellInfo()->EffectBasePoints[0] + 1) / 100;
             *dmg -= dmg_absorbed;
 
             return dmg_absorbed;
@@ -457,7 +457,7 @@ class HeartStrikeSpell : public Spell
         if (aur == NULL)
             return;
 
-        if (!Rand(aur->GetSpellProto()->procChance))
+        if (!Rand(aur->GetSpellInfo()->procChance))
             return;
 
         p_caster->CastSpell(target, 47632, false);

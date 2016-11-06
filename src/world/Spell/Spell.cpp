@@ -3013,7 +3013,7 @@ void Spell::HandleAddAura(uint64 guid)
     else if (GetSpellInfo()->Id == 62124 && u_caster)
     {
         if (u_caster->HasAurasWithNameHash(SPELL_HASH_VINDICATION))
-            spellid = u_caster->FindAuraByNameHash(SPELL_HASH_VINDICATION)->m_spellProto->custom_RankNumber == 2 ? 26017 : 67;
+            spellid = u_caster->FindAuraByNameHash(SPELL_HASH_VINDICATION)->m_spellInfo->custom_RankNumber == 2 ? 26017 : 67;
     }
     else if (GetSpellInfo()->Id == 5229 &&
         p_caster && (
@@ -3030,7 +3030,7 @@ void Spell::HandleAddAura(uint64 guid)
         }
 
         Spell* spell = sSpellFactoryMgr.NewSpell(p_caster, spellInfo, true, NULL);
-        spell->forced_basepoints[0] = p_caster->FindAuraByNameHash(SPELL_HASH_KING_OF_THE_JUNGLE)->m_spellProto->custom_RankNumber * 5;
+        spell->forced_basepoints[0] = p_caster->FindAuraByNameHash(SPELL_HASH_KING_OF_THE_JUNGLE)->m_spellInfo->custom_RankNumber * 5;
         SpellCastTargets targets(p_caster->GetGUID());
         spell->prepare(&targets);
     }
@@ -3057,7 +3057,7 @@ void Spell::HandleAddAura(uint64 guid)
         case SPELL_HASH_PRESENCE_OF_MIND:
         {
             if (Target->HasAurasWithNameHash(SPELL_HASH_ARCANE_POTENCY))
-                spellid = Target->FindAuraByNameHash(SPELL_HASH_ARCANE_POTENCY)->m_spellProto->custom_RankNumber == 1 ? 57529 : 57531;
+                spellid = Target->FindAuraByNameHash(SPELL_HASH_ARCANE_POTENCY)->m_spellInfo->custom_RankNumber == 1 ? 57529 : 57531;
         }
         break;
     }
@@ -3075,7 +3075,7 @@ void Spell::HandleAddAura(uint64 guid)
         Spell* spell = sSpellFactoryMgr.NewSpell(u_caster, spellInfo, true, NULL);
 
         if (spellid == 31665 && Target->HasAurasWithNameHash(SPELL_HASH_MASTER_OF_SUBTLETY))
-            spell->forced_basepoints[0] = Target->FindAuraByNameHash(SPELL_HASH_MASTER_OF_SUBTLETY)->m_spellProto->EffectBasePoints[0];
+            spell->forced_basepoints[0] = Target->FindAuraByNameHash(SPELL_HASH_MASTER_OF_SUBTLETY)->m_spellInfo->EffectBasePoints[0];
 
         SpellCastTargets targets(Target->GetGUID());
         spell->prepare(&targets);
@@ -3094,20 +3094,20 @@ void Spell::HandleAddAura(uint64 guid)
     {
         if (u_caster != NULL)
         {
-            SM_FIValue(u_caster->SM_FCharges, &charges, aur->GetSpellProto()->SpellGroupType);
-            SM_PIValue(u_caster->SM_PCharges, &charges, aur->GetSpellProto()->SpellGroupType);
+            SM_FIValue(u_caster->SM_FCharges, &charges, aur->GetSpellInfo()->SpellGroupType);
+            SM_PIValue(u_caster->SM_PCharges, &charges, aur->GetSpellInfo()->SpellGroupType);
         }
         for (int i = 0; i < (charges - 1); ++i)
         {
-            Aura* staur = sSpellFactoryMgr.NewAura(aur->GetSpellProto(), aur->GetDuration(), aur->GetCaster(), aur->GetTarget(), m_triggeredSpell, i_caster);
+            Aura* staur = sSpellFactoryMgr.NewAura(aur->GetSpellInfo(), aur->GetDuration(), aur->GetCaster(), aur->GetTarget(), m_triggeredSpell, i_caster);
             Target->AddAura(staur);
         }
-        if (!(aur->GetSpellProto()->procFlags & PROC_REMOVEONUSE))
+        if (!(aur->GetSpellInfo()->procFlags & PROC_REMOVEONUSE))
         {
             SpellCharge charge;
             charge.count = charges;
             charge.spellId = aur->GetSpellId();
-            charge.ProcFlag = aur->GetSpellProto()->procFlags;
+            charge.ProcFlag = aur->GetSpellInfo()->procFlags;
             charge.lastproc = 0;
             Target->m_chargeSpells.insert(std::make_pair(aur->GetSpellId(), charge));
         }
@@ -5721,7 +5721,7 @@ void UnapplyDiminishingReturnTimer(Unit* Target, SpellInfo* spell)
     {
         if (Target->m_auras[x])
         {
-            aura_grp = Target->m_auras[x]->GetSpellProto()->custom_DiminishStatus;
+            aura_grp = Target->m_auras[x]->GetSpellInfo()->custom_DiminishStatus;
             if (aura_grp == status)
                 Target->m_diminishAuraCount[Grp]++;
         }

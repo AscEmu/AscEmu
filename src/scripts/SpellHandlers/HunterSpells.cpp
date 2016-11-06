@@ -156,7 +156,7 @@ bool ExplosiveShot(uint32 i, Aura* a, bool apply)
 class HasNameHash : public AuraCondition{
 public:
     bool operator()( Aura *aura ){
-        uint32 namehash = aura->GetSpellProto()->custom_NameHash;
+        uint32 namehash = aura->GetSpellInfo()->custom_NameHash;
         
         if( std::find( hashes.begin(), hashes.end(), namehash ) != hashes.end() )
             return true;
@@ -175,7 +175,7 @@ private:
 class ChimeraShotAction : public AuraAction{
 public:
     void operator()( Aura *a ){
-        uint32 namehash = a->GetSpellProto()->custom_NameHash;
+        uint32 namehash = a->GetSpellInfo()->custom_NameHash;
 
         Unit *caster = a->GetUnitCaster();
         Unit *target = a->GetTarget();
