@@ -1177,13 +1177,13 @@ void Spell::cast(bool check)
     {
         Player* player = static_cast<Player*>(m_caster);
         Log.DebugFlag(LF_SPELL, "Spell::cast Id %u (%s), Players: %s (guid: %u)",
-                      GetSpellInfo()->Id, GetSpellInfo()->Name, player->GetName(), player->getPlayerInfo()->guid);
+                      GetSpellInfo()->Id, GetSpellInfo()->Name.c_str(), player->GetName(), player->getPlayerInfo()->guid);
     }
     else if (m_caster->IsCreature())
     {
         Creature* creature = static_cast<Creature*>(m_caster);
         Log.DebugFlag(LF_SPELL, "Spell::cast Id %u (%s), Creature: %s (spawn id: %u | entry: %u)",
-                      GetSpellInfo()->Id, GetSpellInfo()->Name, creature->GetCreatureProperties()->Name.c_str(), creature->spawnid, creature->GetEntry());
+                      GetSpellInfo()->Id, GetSpellInfo()->Name.c_str(), creature->GetCreatureProperties()->Name.c_str(), creature->spawnid, creature->GetEntry());
     }
     else
     {

@@ -446,7 +446,7 @@ void SpellCustomizations::SetEffectAmplitude(SpellInfo* spell_entry)
             {
                 spell_entry->EffectAmplitude[y] = 1000;
 
-                Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetEffectAmplitude : EffectAmplitude applied Spell - %s (%u)", spell_entry->Name, spell_entry->Id);
+                Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetEffectAmplitude : EffectAmplitude applied Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
             }
         }
     }
@@ -475,7 +475,7 @@ void SpellCustomizations::SetAuraFactoryFunc(SpellInfo* spell_entry)
 
     if (spell_aura_factory_functions_loaded)
     {
-        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetAuraFactoryFunc : AuraFactoryFunc definitions applied to Spell - %s (%u)", spell_entry->Name, spell_entry->Id);
+        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetAuraFactoryFunc : AuraFactoryFunc definitions applied to Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
     }
 }
 
@@ -505,7 +505,7 @@ void SpellCustomizations::SetMeleeSpellBool(SpellInfo* spell_entry)
 
     if (spell_entry->custom_is_melee_spell)
     {
-        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetMeleeSpellBool : custom_is_melee_spell = true for Spell - %s (%u)", spell_entry->Name, spell_entry->Id);
+        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetMeleeSpellBool : custom_is_melee_spell = true for Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
     }
 }
 
@@ -521,7 +521,7 @@ void SpellCustomizations::SetRangedSpellBool(SpellInfo* spell_entry)
 
     if (spell_entry->custom_is_ranged_spell)
     {
-        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetRangedSpellBool : custom_is_ranged_spell = true for Spell - %s (%u)", spell_entry->Name, spell_entry->Id);
+        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetRangedSpellBool : custom_is_ranged_spell = true for Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
     }
 }
 
