@@ -289,8 +289,7 @@ bool SpellInfo::AppliesAreaAura(uint32 aura)
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
 
-        if ((Effect[i] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA ||
-             Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA ||
+        if ((Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA ||
              Effect[i] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA ||
              Effect[i] == SPELL_EFFECT_APPLY_RAID_AREA_AURA ||
              Effect[i] == SPELL_EFFECT_APPLY_PET_AREA_AURA ||
