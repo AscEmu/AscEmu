@@ -438,9 +438,7 @@ class SERVER_DECL Aura : public EventableObject
         Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
         ~Aura();
 
-        void ExpireRemove();
         void Remove();
-        void Expire();
         void AddMod(uint32 t, int32 a, uint32 miscValue, uint32 i);
 
         inline SpellInfo* GetSpellProto() const { return m_spellProto; }
@@ -475,7 +473,6 @@ class SERVER_DECL Aura : public EventableObject
         Player* GetPlayerCaster();
         inline Unit* GetTarget() { return m_target; }
 
-        Aura* StrongerThat(Aura* aur);
         void ApplyModifiers(bool apply);
         void UpdateModifiers();
 
@@ -608,7 +605,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraModBaseResistance(bool apply);
         void SpellAuraModRegen(bool apply);
         void SpellAuraModPowerRegen(bool apply);
-        void SpellAuraModHealingPct(bool apply);
         void SpellAuraChannelDeathItem(bool apply);
         void SpellAuraModDamagePercTaken(bool apply);
         void SpellAuraModRegenPercent(bool apply);
@@ -693,8 +689,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraReduceEnemyRCritChance(bool apply);
         void SpellAuraLimitSpeed(bool apply);
         void SpellAuraIncreaseTimeBetweenAttacksPCT(bool apply);
-        //	void SpellAuraIncreaseSpellDamageByInt(bool apply);
-        //	void SpellAuraIncreaseHealingByInt(bool apply);
         void SpellAuraIncreaseAllWeaponSkill(bool apply);
         void SpellAuraModAttackerCritChance(bool apply);
         void SpellAuraIncreaseHitRate(bool apply);
@@ -706,7 +700,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraIncreaseFlightSpeed(bool apply);
         void SpellAuraIncreaseMovementAndMountedSpeed(bool apply);
         void SpellAuraIncreaseRating(bool apply);
-        //void SpellAuraIncreaseCastTimePCT(bool apply);
         void SpellAuraRegenManaStatPCT(bool apply);
         void SpellAuraSpellHealingStatPCT(bool apply);
         void SpellAuraModStealthDetection(bool apply);
@@ -716,7 +709,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraIncreaseAttackerSpellCrit(bool apply);
         void SpellAuraIncreaseRepGainPct(bool apply);
         void SpellAuraIncreaseRAPbyStatPct(bool apply);
-        //void SpellAuraModRangedDamageTakenPCT(bool apply);
         void SpellAuraModBlockValue(bool apply);
         void SpellAuraAllowFlight(bool apply);
         void SpellAuraFinishingMovesCannotBeDodged(bool apply);

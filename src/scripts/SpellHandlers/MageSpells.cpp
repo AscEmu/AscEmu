@@ -22,7 +22,7 @@
 bool Cold_Snap(uint32 i, Spell* pSpell)
 {
     if(!pSpell->p_caster) return true;
-    pSpell->p_caster->ClearCooldownsOnLine(6, pSpell->GetProto()->Id);
+    pSpell->p_caster->ClearCooldownsOnLine(6, pSpell->GetSpellInfo()->Id);
     return true;
 }
 

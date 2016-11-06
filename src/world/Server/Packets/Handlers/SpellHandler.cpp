@@ -482,7 +482,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
     if (spellId == 8326 || spellId == 9036)
 		return;
 
-    if (_player->m_currentSpell && _player->m_currentSpell->GetProto()->Id == spellId)
+    if (_player->m_currentSpell && _player->m_currentSpell->GetSpellInfo()->Id == spellId)
         _player->m_currentSpell->cancel();
     else
     {

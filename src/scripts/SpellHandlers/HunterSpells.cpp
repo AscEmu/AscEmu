@@ -43,9 +43,9 @@ bool Readiness(uint32 i, Spell* pSpell)
 {
     if(!pSpell->p_caster)
         return true;
-    pSpell->p_caster->ClearCooldownsOnLine(50 , pSpell->GetProto()->Id);//Beast Mastery
-    pSpell->p_caster->ClearCooldownsOnLine(163, pSpell->GetProto()->Id);//Marksmanship
-    pSpell->p_caster->ClearCooldownsOnLine(51 , pSpell->GetProto()->Id);//Survival
+    pSpell->p_caster->ClearCooldownsOnLine(50 , pSpell->GetSpellInfo()->Id);//Beast Mastery
+    pSpell->p_caster->ClearCooldownsOnLine(163, pSpell->GetSpellInfo()->Id);//Marksmanship
+    pSpell->p_caster->ClearCooldownsOnLine(51 , pSpell->GetSpellInfo()->Id);//Survival
     return true;
 }
 

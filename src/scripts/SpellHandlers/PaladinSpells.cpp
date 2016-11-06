@@ -51,7 +51,7 @@ bool HolyShock(uint32 i, Spell* pSpell)
     if (isAttackable(caster, target))
     {
         // Cast offensive Holy Shock
-        switch (pSpell->GetProto()->Id)
+        switch (pSpell->GetSpellInfo()->Id)
         {
         case 20473: // Rank 1
             spell_id = 25912;
@@ -75,14 +75,14 @@ bool HolyShock(uint32 i, Spell* pSpell)
             spell_id = 48823;
             break;
         default: // Invalid case, spell handler is assigned to wrong spell
-            Log.Error("SpellHandlers\\PaladinSpells.cpp", "(Offensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetProto()->Id);
+            Log.Error("SpellHandlers\\PaladinSpells.cpp", "(Offensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
             return true;
         }
     }
     else
     {
         // Cast healing Holy Shock
-        switch (pSpell->GetProto()->Id)
+        switch (pSpell->GetSpellInfo()->Id)
         {
         case 20473: // Rank 1
             spell_id = 25914;
@@ -106,7 +106,7 @@ bool HolyShock(uint32 i, Spell* pSpell)
             spell_id = 48821;
             break;
         default: // Invalid case, spell handler is assigned to wrong spell
-            Log.Error("SpellHandlers\\PaladinSpells.cpp", "(Defensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetProto()->Id);
+            Log.Error("SpellHandlers\\PaladinSpells.cpp", "(Defensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
             return true;
         }
     }
@@ -236,7 +236,7 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
     caster->CastSpell(target, id, true);
 
     // Cast judgement spell
-    switch (pSpell->GetProto()->custom_NameHash)
+    switch (pSpell->GetSpellInfo()->custom_NameHash)
     {
     case SPELL_HASH_JUDGEMENT_OF_JUSTICE:
         id = 20184;
@@ -251,7 +251,7 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
 
     caster->CastSpell(target, id, true);
 
-    caster->SetCurrentUnitForSingleTargetAura(pSpell->GetProto(), target->GetGUID());
+    caster->SetCurrentUnitForSingleTargetAura(pSpell->GetSpellInfo(), target->GetGUID());
 
     return true;
 }
@@ -330,7 +330,7 @@ bool RighteousDefense(uint32 i, Spell* s)
 
 bool Illumination(uint32 i, Spell* s)
 {
-    switch (s->m_triggeredByAura == NULL ? s->GetProto()->Id : s->m_triggeredByAura->GetSpellId())
+    switch (s->m_triggeredByAura == NULL ? s->GetSpellInfo()->Id : s->m_triggeredByAura->GetSpellId())
     {
     case 20210:
     case 20212:
@@ -340,7 +340,7 @@ bool Illumination(uint32 i, Spell* s)
     {
                   if (s->p_caster == NULL)
                       return false;
-                  SpellInfo* sp = s->p_caster->last_heal_spell ? s->p_caster->last_heal_spell : s->GetProto();
+                  SpellInfo* sp = s->p_caster->last_heal_spell ? s->p_caster->last_heal_spell : s->GetSpellInfo();
                   s->p_caster->Energize(s->p_caster, 20272, 60 * s->u_caster->GetBaseMana() * sp->ManaCostPercentage / 10000, POWER_TYPE_MANA);
     }
         break;

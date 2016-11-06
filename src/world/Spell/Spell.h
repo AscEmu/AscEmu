@@ -1622,20 +1622,20 @@ class SERVER_DECL Spell : public EventableObject
 
         bool HasCustomFlag(uint32 flag)
         {
-            if ((GetProto()->CustomFlags & flag) != 0)
+            if ((GetSpellInfo()->CustomFlags & flag) != 0)
                 return true;
             else
                 return false;
         }
 
-        inline bool hasAttribute(SpellAttributes attribute) { return GetProto()->Attributes & attribute; }
-        inline bool hasAttributeEx(SpellAttributesEx attribute) { return GetProto()->AttributesEx & attribute; }
-        inline bool hasAttributeExB(SpellAttributesExB attribute) { return GetProto()->AttributesExB & attribute; }
-        inline bool hasAttributeExC(SpellAttributesExC attribute) { return GetProto()->AttributesExC & attribute; }
-        inline bool hasAttributeExD(SpellAttributesExD attribute) { return GetProto()->AttributesExD & attribute; }
-        inline bool hasAttributeExE(SpellAttributesExE attribute) { return GetProto()->AttributesExE & attribute; }
-        inline bool hasAttributeExF(SpellAttributesExF attribute) { return GetProto()->AttributesExF & attribute; }
-        inline bool hasAttributeExG(SpellAttributesExG attribute) { return GetProto()->AttributesExG & attribute; }
+        inline bool hasAttribute(SpellAttributes attribute) { return GetSpellInfo()->Attributes & attribute; }
+        inline bool hasAttributeEx(SpellAttributesEx attribute) { return GetSpellInfo()->AttributesEx & attribute; }
+        inline bool hasAttributeExB(SpellAttributesExB attribute) { return GetSpellInfo()->AttributesExB & attribute; }
+        inline bool hasAttributeExC(SpellAttributesExC attribute) { return GetSpellInfo()->AttributesExC & attribute; }
+        inline bool hasAttributeExD(SpellAttributesExD attribute) { return GetSpellInfo()->AttributesExD & attribute; }
+        inline bool hasAttributeExE(SpellAttributesExE attribute) { return GetSpellInfo()->AttributesExE & attribute; }
+        inline bool hasAttributeExF(SpellAttributesExF attribute) { return GetSpellInfo()->AttributesExF & attribute; }
+        inline bool hasAttributeExG(SpellAttributesExG attribute) { return GetSpellInfo()->AttributesExG & attribute; }
 
         // Removes reagents, ammo, and items/charges
         void RemoveItems();
@@ -1884,7 +1884,7 @@ class SERVER_DECL Spell : public EventableObject
 
         // This returns SPELL_ENTRY_Spell_Dmg_Type where 0 = SPELL_DMG_TYPE_NONE, 1 = SPELL_DMG_TYPE_MAGIC, 2 = SPELL_DMG_TYPE_MELEE, 3 = SPELL_DMG_TYPE_RANGED
         // It should NOT be used for weapon_damage_type which needs: 0 = MELEE, 1 = OFFHAND, 2 = RANGED
-        inline uint32 GetType() { return (GetProto()->Spell_Dmg_Type == SPELL_DMG_TYPE_NONE ? SPELL_DMG_TYPE_MAGIC : GetProto()->Spell_Dmg_Type); }
+        inline uint32 GetType() { return (GetSpellInfo()->Spell_Dmg_Type == SPELL_DMG_TYPE_NONE ? SPELL_DMG_TYPE_MAGIC : GetSpellInfo()->Spell_Dmg_Type); }
 
         std::map<uint64, Aura*> m_pendingAuras;
         TargetsList UniqueTargets;
@@ -1902,7 +1902,7 @@ class SERVER_DECL Spell : public EventableObject
         bool IsAspect();
         bool IsSeal();
 
-        inline SpellInfo* GetProto() { return (m_spellInfo_override == NULL) ? m_spellInfo : m_spellInfo_override; }
+        inline SpellInfo* GetSpellInfo() { return (m_spellInfo_override == NULL) ? m_spellInfo : m_spellInfo_override; }
         void InitProtoOverride()
         {
             if (m_spellInfo_override != NULL)
@@ -1915,9 +1915,9 @@ class SERVER_DECL Spell : public EventableObject
             bDurSet = true;
             int32 c_dur = 0;
 
-            if (GetProto()->DurationIndex)
+            if (GetSpellInfo()->DurationIndex)
             {
-                auto spell_duration = sSpellDurationStore.LookupEntry(GetProto()->DurationIndex);
+                auto spell_duration = sSpellDurationStore.LookupEntry(GetSpellInfo()->DurationIndex);
                 if (spell_duration)
                 {
                     //check for negative and 0 durations.
@@ -1955,8 +1955,8 @@ class SERVER_DECL Spell : public EventableObject
 
                     if (u_caster != nullptr)
                     {
-                        SM_FIValue(u_caster->SM_FDur, (int32*)&this->Dur, GetProto()->SpellGroupType);
-                        SM_PIValue(u_caster->SM_PDur, (int32*)&this->Dur, GetProto()->SpellGroupType);
+                        SM_FIValue(u_caster->SM_FDur, (int32*)&this->Dur, GetSpellInfo()->SpellGroupType);
+                        SM_PIValue(u_caster->SM_PDur, (int32*)&this->Dur, GetSpellInfo()->SpellGroupType);
     #ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
                         int spell_flat_modifers = 0;
                         int spell_pct_modifers = 0;
@@ -1985,11 +1985,11 @@ class SERVER_DECL Spell : public EventableObject
             if (bRadSet[i])
                 return Rad[i];
             bRadSet[i] = true;
-            Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(GetProto()->EffectRadiusIndex[i]));
+            Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(GetSpellInfo()->EffectRadiusIndex[i]));
             if (u_caster != nullptr)
             {
-                SM_FFValue(u_caster->SM_FRadius, &Rad[i], GetProto()->SpellGroupType);
-                SM_PFValue(u_caster->SM_PRadius, &Rad[i], GetProto()->SpellGroupType);
+                SM_FFValue(u_caster->SM_FRadius, &Rad[i], GetSpellInfo()->SpellGroupType);
+                SM_PFValue(u_caster->SM_PRadius, &Rad[i], GetSpellInfo()->SpellGroupType);
     #ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
                 float spell_flat_modifers = 0;
                 float spell_pct_modifers = 1;

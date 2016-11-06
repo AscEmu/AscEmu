@@ -2479,7 +2479,7 @@ class LuaUnit
     {
         if (!ptr) return 0;
         if (ptr->GetCurrentSpell())
-            lua_pushnumber(L, ptr->GetCurrentSpell()->GetProto()->Id);
+            lua_pushnumber(L, ptr->GetCurrentSpell()->GetSpellInfo()->Id);
         else
             lua_pushnil(L);
         return 1;

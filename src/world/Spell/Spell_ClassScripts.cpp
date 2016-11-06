@@ -104,7 +104,7 @@ class FireNova : public Spell
 
     void CastSpell(Unit* totem)
     {
-        uint32 fireNovaSpells = Spell::GetProto()->Id;
+        uint32 fireNovaSpells = Spell::GetSpellInfo()->Id;
         //Cast spell. NOTICE All ranks are linked with a extra spell in HackFixes.cpp
         totem->CastSpellAoF(totem->GetPositionX(), totem->GetPositionY(), totem->GetPositionZ(), sSpellCustomizations.GetSpellInfo(fireNovaSpells), true);
     }
@@ -278,7 +278,7 @@ class BloodStrikeSpell : public Spell
         {
             uint32 count = target->GetAuraCountWithDispelType(DISPEL_DISEASE, m_caster->GetGUID());
             if (count)
-                value += value * count * (GetProto()->EffectBasePoints[2] + 1) / 200;
+                value += value * count * (GetSpellInfo()->EffectBasePoints[2] + 1) / 200;
         }
 
         return value;
@@ -437,7 +437,7 @@ class VampiricBloodSpell : public Spell
     int32 DoCalculateEffect(uint32 i, Unit* target, int32 value)
     {
         if (i == 1 && p_caster != NULL)
-            value = p_caster->GetMaxHealth() * (GetProto()->EffectBasePoints[i] + 1) / 100;
+            value = p_caster->GetMaxHealth() * (GetSpellInfo()->EffectBasePoints[i] + 1) / 100;
 
         return value;
     }
