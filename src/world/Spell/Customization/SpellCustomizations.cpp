@@ -152,7 +152,7 @@ void SpellCustomizations::LoadSpellInfoData()
                 spellInfo.EffectPointsPerComboPoint[i] = dbc_spell_entry->EffectPointsPerComboPoint[i];
 
             for (uint8 i = 0; i < 3; ++i)
-                for (uint8 j = 0; j < 3; ++i)
+                for (uint8 j = 0; j < 3; ++j)
                     spellInfo.EffectSpellClassMask[i][j] = dbc_spell_entry->EffectSpellClassMask[i][j];
 
             spellInfo.SpellVisual = dbc_spell_entry->SpellVisual;
