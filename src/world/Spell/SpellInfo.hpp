@@ -20,6 +20,9 @@ class SERVER_DECL SpellInfo
         // helper functions
         bool HasEffect(uint32 effect);
         bool HasCustomFlagForEffect(uint32 effect, uint32 flag);
+
+        bool IsPassive();
+
         bool AppliesAreaAura(uint32 aura);
         uint32 GetAreaAuraEffectId();
 

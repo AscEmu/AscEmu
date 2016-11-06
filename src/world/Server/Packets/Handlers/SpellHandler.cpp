@@ -364,7 +364,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         LOG_DETAIL("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->GetName());
         return;
     }
-    if (spellInfo->Attributes & ATTRIBUTES_PASSIVE)
+    if (spellInfo->IsPassive())
     {
         sCheatLog.writefromsession(this, "Cast passive spell %lu.", spellId);
         LOG_DETAIL("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->GetName());

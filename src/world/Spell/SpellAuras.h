@@ -445,7 +445,7 @@ class SERVER_DECL Aura : public EventableObject
 
         inline SpellInfo* GetSpellProto() const { return m_spellProto; }
         inline uint32 GetSpellId() const { return m_spellProto->Id; }
-        inline bool IsPassive() { if (!m_spellProto) return false; return (m_spellProto->Attributes & ATTRIBUTES_PASSIVE && !m_areaAura); }
+        inline bool IsPassive() { if (!m_spellProto) return false; return (m_spellProto->IsPassive() && !m_areaAura); }
 
         void ResetDuration();
 
