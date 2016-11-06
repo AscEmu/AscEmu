@@ -8269,9 +8269,29 @@ void Player::EndDuel(uint8 WinCondition)
     DuelingWith = NULL;
 }
 
+void Player::SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, int32 regen)
+{
+    if (int(max) == -1)
+    {
+        if (int(current) != -1)
+            StopMirrorTimer(Type);
+        return;
+    }
+    WorldPacket data(SMSG_START_MIRROR_TIMER, 21);
+    data << uint32(Type);
+    data << uint32(current);
+    data << uint32(max);
+    data << int32(regen);
+    data << uint8(0);
+    data << uint32(0);                   // spell id
+    GetSession()->SendPacket(&data);
+}
+
 void Player::StopMirrorTimer(MirrorTimerTypes Type)
 {
-    m_session->OutPacket(SMSG_STOP_MIRROR_TIMER, 4, &Type);
+    WorldPacket data(SMSG_STOP_MIRROR_TIMER, 4);
+    data << (uint32)Type;
+    GetSession()->SendPacket(&data);
 }
 
 void Player::EventTeleport(uint32 mapid, float x, float y, float z)

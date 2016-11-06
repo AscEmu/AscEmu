@@ -562,14 +562,6 @@ enum LOCKTYPES
     LOCKTYPE_VEHICLE                = 21
 };
 
-enum TIMER_TYPE
-{
-    TIMER_EXHAUSTION,
-    TIMER_BREATH,
-    TIMER_FEIGNDEATH,
-    TIMER_UNKNOWN
-};
-
 enum SpellEffects
 {
     SPELL_EFFECT_NULL = 0,
