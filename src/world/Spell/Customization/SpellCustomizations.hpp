@@ -23,7 +23,7 @@
 #define _SPELL_CUSTOMIZATIONS_HPP
 
 
-class SpellCustomizations : public Singleton <SpellCustomizations>
+class SERVER_DECL SpellCustomizations : public Singleton <SpellCustomizations>
 {
     public:
 
