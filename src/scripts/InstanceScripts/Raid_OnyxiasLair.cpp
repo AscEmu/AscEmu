@@ -48,13 +48,13 @@ class OnyxiaAI : public CreatureAIScript
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, Movement::WP_MOVE_TYPE_FLY));
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(8, 0, Movement::WP_MOVE_TYPE_FLY));
 
-            infoFear = dbcSpell.LookupEntry(AOE_FEAR);
-            infoCleave = dbcSpell.LookupEntry(CLEAVE);
-            infoFBreath = dbcSpell.LookupEntry(FLAME_BREATH);
-            infoKAway = dbcSpell.LookupEntry(KNOCK_AWAY);
-            infoSFireball = dbcSpell.LookupEntry(SCRIPTABLE_FIREBALL);
-            infoWBuffet = dbcSpell.LookupEntry(WING_BUFFET);
-            infoDeepBreath = dbcSpell.LookupEntry(DEEP_BREATH);
+            infoFear = sSpellCustomizations.GetSpellInfo(AOE_FEAR);
+            infoCleave = sSpellCustomizations.GetSpellInfo(CLEAVE);
+            infoFBreath = sSpellCustomizations.GetSpellInfo(FLAME_BREATH);
+            infoKAway = sSpellCustomizations.GetSpellInfo(KNOCK_AWAY);
+            infoSFireball = sSpellCustomizations.GetSpellInfo(SCRIPTABLE_FIREBALL);
+            infoWBuffet = sSpellCustomizations.GetSpellInfo(WING_BUFFET);
+            infoDeepBreath = sSpellCustomizations.GetSpellInfo(DEEP_BREATH);
 
             if (!infoFear || !infoCleave || !infoFBreath
                     || !infoKAway || !infoSFireball || !infoWBuffet || !infoDeepBreath)
@@ -483,7 +483,7 @@ class OnyxiaAI : public CreatureAIScript
         uint32 m_aoeFearCooldown;
         uint32 m_fCastCount;
         uint32 m_currentWP;
-        SpellEntry* infoFear, *infoWBuffet, *infoCleave, *infoFBreath, *infoKAway, *infoSFireball, *infoDeepBreath;
+        SpellInfo* infoFear, *infoWBuffet, *infoCleave, *infoFBreath, *infoKAway, *infoSFireball, *infoDeepBreath;
 };
 
 void SetupOnyxiasLair(ScriptMgr* mgr)

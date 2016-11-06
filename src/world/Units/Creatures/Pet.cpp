@@ -34,7 +34,7 @@
 #define SPIRITWOLF              29264
 #define DANCINGRUNEWEAPON       27893
 
-uint32 Pet::GetAutoCastTypeForSpell(SpellEntry* ent)
+uint32 Pet::GetAutoCastTypeForSpell(SpellInfo* ent)
 {
     switch (ent->custom_NameHash)
     {
@@ -120,7 +120,7 @@ void Pet::SetNameForEntry(uint32 entry)
     }
 }
 
-bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* created_from_creature, Player* owner, SpellEntry* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec, bool dismiss_old_pet)
+bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* created_from_creature, Player* owner, SpellInfo* created_by_spell, uint32 type, uint32 expiretime, LocationVector* Vec, bool dismiss_old_pet)
 {
     if (ci == nullptr || owner == nullptr)
     {
@@ -513,7 +513,7 @@ void Pet::InitializeSpells()
 {
     for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
-        SpellEntry* info = itr->first;
+        SpellInfo* info = itr->first;
 
         // Check that the spell isn't passive
         if (info->Attributes & ATTRIBUTES_PASSIVE)
@@ -534,7 +534,7 @@ void Pet::InitializeSpells()
     }
 }
 
-AI_Spell* Pet::CreateAISpell(SpellEntry* info)
+AI_Spell* Pet::CreateAISpell(SpellInfo* info)
 {
     ARCEMU_ASSERT(info != NULL);
 
@@ -627,9 +627,9 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
                 break;
 
             ActionBar[i] = spellid;
-            //SetSpellState(dbcSpell.LookupEntry(spellid), spstate);
+            //SetSpellState(sSpellCustomizations.GetSpellInfo(spellid), spstate);
             if (!(ActionBar[i] & 0x4000000) && spellid)
-                mSpells[dbcSpell.LookupEntry(spellid)] = static_cast<unsigned short>(spstate);
+                mSpells[sSpellCustomizations.GetSpellInfo(spellid)] = static_cast<unsigned short>(spstate);
 
             i++;
 
@@ -780,7 +780,7 @@ void Pet::InitializeMe(bool first)
             do
             {
                 Field* f = query->Fetch();
-                SpellEntry* spell = dbcSpell.LookupEntryForced(f[2].GetUInt32());
+                SpellInfo* spell = sSpellCustomizations.GetSpellInfo(f[2].GetUInt32());
                 uint16 flags = f[3].GetUInt16();
                 if (spell != NULL && mSpells.find(spell) == mSpells.end())
                     mSpells.insert(std::make_pair(spell, flags));
@@ -1037,7 +1037,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
 
             if (spellid != 0)
             {
-                SpellEntry* sp = dbcSpell.LookupEntry(spellid);
+                SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
                 if (sp != NULL)
                     AddSpell(sp, true, showLearnSpells);
             }
@@ -1049,7 +1049,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
         uint32 spellid = creature_properties->AISpells[i];
         if (spellid != 0)
         {
-            SpellEntry* sp = dbcSpell.LookupEntry(spellid);
+            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
             if (sp != NULL)
                 AddSpell(sp, true, showLearnSpells);
         }
@@ -1065,7 +1065,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
             it2 = it1->second.begin();
             for (; it2 != it1->second.end(); ++it2)
             {
-                AddSpell(dbcSpell.LookupEntry(*it2), true, showLearnSpells);
+                AddSpell(sSpellCustomizations.GetSpellInfo(*it2), true, showLearnSpells);
             }
         }
         return;
@@ -1083,7 +1083,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
 
     if (s || s2)
     {
-        SpellEntry* sp;
+        SpellInfo* sp;
         for (uint32 idx = 0; idx < sSkillLineAbilityStore.GetNumRows(); ++idx)
         {
             auto skill_line_ability = sSkillLineAbilityStore.LookupEntry(idx);
@@ -1093,7 +1093,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
             // Update existing spell, or add new "automatic-acquired" spell
             if ((skill_line_ability->skilline == s || skill_line_ability->skilline == s2) && skill_line_ability->acquireMethod == 2)
             {
-                sp = dbcSpell.LookupEntryForced(skill_line_ability->spell);
+                sp = sSpellCustomizations.GetSpellInfo(skill_line_ability->spell);
                 if (sp && getLevel() >= sp->baseLevel)
                 {
                     // Pet is able to learn this spell; now check if it already has it, or a higher rank of it
@@ -1116,7 +1116,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
     }
 }
 
-void Pet::AddSpell(SpellEntry* sp, bool learning, bool showLearnSpell)
+void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
 {
     if (sp == NULL)
         return;
@@ -1226,7 +1226,7 @@ void Pet::AddSpell(SpellEntry* sp, bool learning, bool showLearnSpell)
         SendSpellsToOwner();
 }
 
-void Pet::SetSpellState(SpellEntry* sp, uint16 State)
+void Pet::SetSpellState(SpellInfo* sp, uint16 State)
 {
     PetSpellMap::iterator itr = mSpells.find(sp);
     if (itr == mSpells.end())
@@ -1248,7 +1248,7 @@ void Pet::SetSpellState(SpellEntry* sp, uint16 State)
     }
 }
 
-uint16 Pet::GetSpellState(SpellEntry* sp)
+uint16 Pet::GetSpellState(SpellInfo* sp)
 {
     PetSpellMap::iterator itr = mSpells.find(sp);
     if (itr == mSpells.end())
@@ -1296,7 +1296,7 @@ void Pet::WipeTalents()
     SendSpellsToOwner();
 }
 
-void Pet::RemoveSpell(SpellEntry* sp, bool showUnlearnSpell)
+void Pet::RemoveSpell(SpellInfo* sp, bool showUnlearnSpell)
 {
     mSpells.erase(sp);
     std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.find(sp->Id);
@@ -1645,7 +1645,7 @@ void Pet::UpdateAP()
     SetAttackPower(AP);
 }
 
-uint32 Pet::CanLearnSpell(SpellEntry* sp)
+uint32 Pet::CanLearnSpell(SpellInfo* sp)
 {
     // level requirement
     if (getLevel() < sp->spellLevel)
@@ -2087,9 +2087,9 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
     // on die and an target die proc
     {
-        SpellEntry* killerspell;
+        SpellInfo* killerspell;
         if (spellid)
-            killerspell = dbcSpell.LookupEntry(spellid);
+            killerspell = sSpellCustomizations.GetSpellInfo(spellid);
         else killerspell = NULL;
 
         HandleProc(PROC_ON_DIE, this, killerspell);

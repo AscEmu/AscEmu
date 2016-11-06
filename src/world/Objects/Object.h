@@ -36,7 +36,7 @@
 #include "Storage/DBC/DBCStructures.hpp"
 #include "../shared/StackBuffer.h"
 
-struct SpellEntry;
+struct SpellInfo;
 
 struct FactionDBC;
 
@@ -704,10 +704,10 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
 
         void EventSpellDamage(uint64 Victim, uint32 SpellID, uint32 Damage);
         void SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage, bool allowProc, bool static_damage = false, bool no_remove_auras = false);
-        virtual bool IsCriticalDamageForSpell(Object* victim, SpellEntry* spell) { return false; }
-        virtual float GetCriticalDamageBonusForSpell(Object* victim, SpellEntry* spell, float amount) { return 0; }
-        virtual bool IsCriticalHealForSpell(Object* victim, SpellEntry* spell) { return false; }
-        virtual float GetCriticalHealBonusForSpell(Object* victim, SpellEntry* spell, float amount) { return 0; }
+        virtual bool IsCriticalDamageForSpell(Object* victim, SpellInfo* spell) { return false; }
+        virtual float GetCriticalDamageBonusForSpell(Object* victim, SpellInfo* spell, float amount) { return 0; }
+        virtual bool IsCriticalHealForSpell(Object* victim, SpellInfo* spell) { return false; }
+        virtual float GetCriticalHealBonusForSpell(Object* victim, SpellInfo* spell, float amount) { return 0; }
 
         /// SpellLog packets just to keep the code cleaner and better to read
         void SendSpellLog(Object* Caster, Object* Target, uint32 Ability, uint8 SpellLogType);

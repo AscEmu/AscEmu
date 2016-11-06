@@ -1685,10 +1685,10 @@ void Creature::OnPushToWorld()
     }
 
     std::set<uint32>::iterator itr = creature_properties->start_auras.begin();
-    SpellEntry* sp;
+    SpellInfo* sp;
     for (; itr != creature_properties->start_auras.end(); ++itr)
     {
-        sp = dbcSpell.LookupEntryForced((*itr));
+        sp = sSpellCustomizations.GetSpellInfo((*itr));
         if (sp == nullptr)
             continue;
 
@@ -2380,9 +2380,9 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
     // on die and an target die proc
     {
-        SpellEntry* killerspell;
+        SpellInfo* killerspell;
         if (spellid)
-            killerspell = dbcSpell.LookupEntry(spellid);
+            killerspell = sSpellCustomizations.GetSpellInfo(spellid);
         else killerspell = NULL;
 
         HandleProc(PROC_ON_DIE, this, killerspell);

@@ -178,7 +178,7 @@ void SpellCastTargets::write(WorldPacket & data)
         data << m_strTarget.c_str();
 }
 
-Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
+Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
 {
     ARCEMU_ASSERT(Caster != NULL && info != NULL);
 
@@ -197,7 +197,7 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
 
     if ((info->SpellDifficultyID != 0) && (Caster->GetTypeId() != TYPEID_PLAYER) && (Caster->GetMapMgr() != NULL) && (Caster->GetMapMgr()->pInstance != NULL))
     {
-        SpellEntry* SpellDiffEntry = sSpellFactoryMgr.GetSpellEntryByDifficulty(info->SpellDifficultyID, Caster->GetMapMgr()->iInstanceMode);
+        SpellInfo* SpellDiffEntry = sSpellFactoryMgr.GetSpellEntryByDifficulty(info->SpellDifficultyID, Caster->GetMapMgr()->iInstanceMode);
         if (SpellDiffEntry != NULL)
             m_spellInfo = SpellDiffEntry;
         else
@@ -1042,7 +1042,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         {
             /* talents procing - don't remove stealth either */
             if (!hasAttribute(ATTRIBUTES_PASSIVE) &&
-                !(pSpellId && dbcSpell.LookupEntry(pSpellId)->Attributes & ATTRIBUTES_PASSIVE))
+                !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->Attributes & ATTRIBUTES_PASSIVE))
             {
                 p_caster->RemoveAura(p_caster->m_stealth);
                 p_caster->m_stealth = 0;
@@ -1322,7 +1322,7 @@ void Spell::cast(bool check)
                 && GetProto()->Id != 1)  //check spells that get trigger spell 1 after spell loading
             {
                 /* talents procing - don't remove stealth either */
-                if (!hasAttribute(ATTRIBUTES_PASSIVE) && !(pSpellId && dbcSpell.LookupEntry(pSpellId)->Attributes & ATTRIBUTES_PASSIVE))
+                if (!hasAttribute(ATTRIBUTES_PASSIVE) && !(pSpellId && sSpellCustomizations.GetSpellInfo(pSpellId)->Attributes & ATTRIBUTES_PASSIVE))
                 {
                     p_caster->RemoveAura(p_caster->m_stealth);
                     p_caster->m_stealth = 0;
@@ -3021,7 +3021,7 @@ void Spell::HandleAddAura(uint64 guid)
         p_caster->GetShapeShift() == FORM_DIREBEAR) &&
         p_caster->HasAurasWithNameHash(SPELL_HASH_KING_OF_THE_JUNGLE))
     {
-        SpellEntry* spellInfo = dbcSpell.LookupEntryForced(51185);
+        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(51185);
         if (!spellInfo)
         {
             delete aur;
@@ -3064,7 +3064,7 @@ void Spell::HandleAddAura(uint64 guid)
 
     if (spellid && Target)
     {
-        SpellEntry* spellInfo = dbcSpell.LookupEntryForced(spellid);
+        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellid);
         if (!spellInfo)
         {
             delete aur;
@@ -4050,7 +4050,7 @@ uint8 Spell::CanCast(bool tolerate)
                         return SPELL_FAILED_NO_PET;
 
                     // other checks
-                    SpellEntry* trig = dbcSpell.LookupEntryForced(GetProto()->EffectTriggerSpell[0]);
+                    SpellInfo* trig = sSpellCustomizations.GetSpellInfo(GetProto()->EffectTriggerSpell[0]);
                     if (trig == NULL)
                         return SPELL_FAILED_SPELL_UNAVAILABLE;
 
@@ -4501,7 +4501,7 @@ uint8 Spell::CanCast(bool tolerate)
 
         if (u_caster->GetChannelSpellTargetGUID() != 0)
         {
-            SpellEntry* t_spellInfo = (u_caster->GetCurrentSpell() ? u_caster->GetCurrentSpell()->GetProto() : NULL);
+            SpellInfo* t_spellInfo = (u_caster->GetCurrentSpell() ? u_caster->GetCurrentSpell()->GetProto() : NULL);
 
             if (!t_spellInfo || !m_triggeredSpell)
                 return SPELL_FAILED_SPELL_IN_PROGRESS;
@@ -5280,7 +5280,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         {
             case 54172: //Paladin - Divine Storm heal effect
             {
-                int dmg = (int)CalculateDamage(u_caster, unitTarget, MELEE, 0, dbcSpell.LookupEntry(53385));    //1 hit
+                int dmg = (int)CalculateDamage(u_caster, unitTarget, MELEE, 0, sSpellCustomizations.GetSpellInfo(53385));    //1 hit
                 int target = 0;
                 uint8 did_hit_result;
                 std::set<Object*>::iterator itr, itr2;
@@ -5291,7 +5291,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
                     ++itr2;
                     if ((*itr)->IsUnit() && static_cast<Unit*>(*itr)->isAlive() && IsInrange(u_caster, (*itr), 8) && (u_caster->GetPhase() & (*itr)->GetPhase()))
                     {
-                        did_hit_result = DidHit(dbcSpell.LookupEntry(53385)->Effect[0], static_cast<Unit*>(*itr));
+                        did_hit_result = DidHit(sSpellCustomizations.GetSpellInfo(53385)->Effect[0], static_cast<Unit*>(*itr));
                         if (did_hit_result == SPELL_DID_HIT_SUCCESS)
                             target++;
                     }
@@ -5587,7 +5587,7 @@ void Spell::SafeAddModeratedTarget(uint64 guid, uint16 type)
 
 bool Spell::Reflect(Unit* refunit)
 {
-    SpellEntry* refspell = NULL;
+    SpellInfo* refspell = NULL;
     bool canreflect = false;
 
     if (m_reflectedParent != NULL || refunit == NULL || m_caster == refunit)
@@ -5652,7 +5652,7 @@ bool Spell::Reflect(Unit* refunit)
     return true;
 }
 
-void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellEntry* spell)
+void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellInfo* spell)
 {
     uint32 status = spell->custom_DiminishStatus;
     uint32 Grp = status & 0xFFFF;   // other bytes are if apply to pvp
@@ -5697,7 +5697,7 @@ void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellEntry* spe
     ++Target->m_diminishCount[Grp];
 }
 
-void UnapplyDiminishingReturnTimer(Unit* Target, SpellEntry* spell)
+void UnapplyDiminishingReturnTimer(Unit* Target, SpellInfo* spell)
 {
     uint32 status = spell->custom_DiminishStatus;
     uint32 Grp = status & 0xFFFF;   // other bytes are if apply to pvp
@@ -5876,7 +5876,7 @@ uint32 GetDiminishingGroup(uint32 NameHash)
     return ret;
 }
 
-uint32 GetSpellDuration(SpellEntry* sp, Unit* caster /*= NULL*/)
+uint32 GetSpellDuration(SpellInfo* sp, Unit* caster /*= NULL*/)
 {
     auto spell_duration = sSpellDurationStore.LookupEntry(sp->DurationIndex);
     if (spell_duration == nullptr)
@@ -5924,7 +5924,7 @@ void Spell::SendCastSuccess(const uint64 & guid)
     plr->GetSession()->OutPacket(uint16(SMSG_CLEAR_EXTRA_AURA_INFO_OBSOLETE), static_cast<uint16>(c), buffer);
 }
 
-uint8 Spell::GetErrorAtShapeshiftedCast(SpellEntry* spellInfo, uint32 form)
+uint8 Spell::GetErrorAtShapeshiftedCast(SpellInfo* spellInfo, uint32 form)
 {
     uint32 stanceMask = (form ? DecimalToMask(form) : 0);
 
@@ -6286,13 +6286,13 @@ void Spell::HandleTargetNoObject()
 }
 
 //Logs if the spell doesn't exist, using Debug loglevel.
-SpellEntry* CheckAndReturnSpellEntry(uint32 spellid)
+SpellInfo* CheckAndReturnSpellEntry(uint32 spellid)
 {
     //Logging that spellid 0 or -1 don't exist is not needed.
     if (spellid == 0 || spellid == uint32(-1))
         return NULL;
 
-    SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
+    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
     if (sp == NULL)
         Log.DebugFlag(LF_SPELL, "Something tried to access nonexistent spell %u", spellid);
 
@@ -6300,7 +6300,7 @@ SpellEntry* CheckAndReturnSpellEntry(uint32 spellid)
 }
 
 
-bool IsDamagingSpell(SpellEntry* sp)
+bool IsDamagingSpell(SpellInfo* sp)
 {
 
     if (sp->HasEffect(SPELL_EFFECT_SCHOOL_DAMAGE) ||

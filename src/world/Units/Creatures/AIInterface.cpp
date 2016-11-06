@@ -733,7 +733,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                                 float his_facing = getNextTarget()->GetOrientation();
                                 if (fabs(our_facing - his_facing) < CREATURE_DAZE_TRIGGER_ANGLE && !getNextTarget()->HasAura(CREATURE_SPELL_TO_DAZE))
                                 {
-                                    SpellEntry* info = dbcSpell.LookupEntry(CREATURE_SPELL_TO_DAZE);
+                                    SpellInfo* info = sSpellCustomizations.GetSpellInfo(CREATURE_SPELL_TO_DAZE);
                                     Spell* sp = sSpellFactoryMgr.NewSpell(m_Unit, info, false, NULL);
                                     SpellCastTargets targets;
                                     targets.m_unitTarget = getNextTarget()->GetGUID();
@@ -798,7 +798,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                         if (infront)
                         {
                             m_Unit->setAttackTimer(0, false);
-                            SpellEntry* info = dbcSpell.LookupEntryForced(SPELL_RANGED_GENERAL);
+                            SpellInfo* info = sSpellCustomizations.GetSpellInfo(SPELL_RANGED_GENERAL);
                             if (info)
                             {
                                 Spell* sp = sSpellFactoryMgr.NewSpell(m_Unit, info, false, NULL);
@@ -847,7 +847,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                    )
                     || m_nextSpell->maxrange == 0))  // Target is in Range -> Attack
                 {
-                    SpellEntry* spellInfo = m_nextSpell->spell;
+                    SpellInfo* spellInfo = m_nextSpell->spell;
 
                     /* if in range stop moving so we don't interrupt the spell */
                     //do not stop for instant spells
@@ -1078,10 +1078,10 @@ void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellI
         HandleEvent(EVENT_ENTERCOMBAT, pUnit, 1);
     }
 
-    HandleEvent(EVENT_DAMAGETAKEN, pUnit, _CalcThreat(damage_dealt, spellId ? dbcSpell.LookupEntryForced(spellId) : NULL, pUnit));
+    HandleEvent(EVENT_DAMAGETAKEN, pUnit, _CalcThreat(damage_dealt, spellId ? sSpellCustomizations.GetSpellInfo(spellId) : NULL, pUnit));
 }
 
-void AIInterface::HealReaction(Unit* caster, Unit* victim, SpellEntry* sp, uint32 amount)
+void AIInterface::HealReaction(Unit* caster, Unit* victim, SpellInfo* sp, uint32 amount)
 {
     if (!caster || !victim)
         return;
@@ -2620,7 +2620,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
     }
 }
 
-void AIInterface::CastSpell(Unit* caster, SpellEntry* spellInfo, SpellCastTargets targets)
+void AIInterface::CastSpell(Unit* caster, SpellInfo* spellInfo, SpellCastTargets targets)
 {
     ARCEMU_ASSERT(spellInfo != NULL);
     if (m_AIType != AITYPE_PET && disable_spell)
@@ -2638,9 +2638,9 @@ void AIInterface::CastSpell(Unit* caster, SpellEntry* spellInfo, SpellCastTarget
     nspell->prepare(&targets);
 }
 
-SpellEntry* AIInterface::getSpellEntry(uint32 spellId)
+SpellInfo* AIInterface::getSpellEntry(uint32 spellId)
 {
-    SpellEntry* spellInfo = dbcSpell.LookupEntry(spellId);
+    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);
 
     if (!spellInfo)
     {
@@ -2651,7 +2651,7 @@ SpellEntry* AIInterface::getSpellEntry(uint32 spellId)
     return spellInfo;
 }
 
-SpellCastTargets AIInterface::setSpellTargets(SpellEntry* spellInfo, Unit* target)
+SpellCastTargets AIInterface::setSpellTargets(SpellInfo* spellInfo, Unit* target)
 {
     SpellCastTargets targets;
     targets.m_unitTarget = target ? target->GetGUID() : 0;
@@ -3268,7 +3268,7 @@ void AIInterface::CheckTarget(Unit* target)
         tauntedBy = NULL;
 }
 
-uint32 AIInterface::_CalcThreat(uint32 damage, SpellEntry* sp, Unit* Attacker)
+uint32 AIInterface::_CalcThreat(uint32 damage, SpellInfo* sp, Unit* Attacker)
 {
     if (!Attacker)
         return 0; // No attacker means no threat and we prevent crashes this way

@@ -141,7 +141,7 @@ class OverlordMokMorokk : public CreatureAIScript
             uint32 chance = RandomUInt(100);
             if(chance < 25)
             {
-                _unit->CastSpell(mAttacker, dbcSpell.LookupEntry(6749), true);
+                _unit->CastSpell(mAttacker, sSpellCustomizations.GetSpellInfo(6749), true);
             }
             if(_unit->GetUInt32Value(UNIT_FIELD_HEALTH) - fAmount <= _unit->GetUInt32Value(UNIT_FIELD_MAXHEALTH) * 0.3f)
             {

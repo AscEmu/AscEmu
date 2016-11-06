@@ -126,7 +126,7 @@ class StewardOfTime : public GossipScript
             switch(IntId)
             {
                 case 1:
-                    creat->CastSpell(plr, dbcSpell.LookupEntry(34891), true);
+                    creat->CastSpell(plr, sSpellCustomizations.GetSpellInfo(34891), true);
                     break;
             }
         }

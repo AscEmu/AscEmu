@@ -606,7 +606,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
                 creatureProperties.AISpells[i] = fields[52 + i].GetUInt32();
                 if (creatureProperties.AISpells[i] != 0)
                 {
-                    SpellEntry* sp = dbcSpell.LookupEntryForced(creatureProperties.AISpells[i]);
+                    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(creatureProperties.AISpells[i]);
                     if (sp == nullptr)
                     {
                         uint8 spell_number = i;
@@ -641,7 +641,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
                     if (creature_spell_data->Spells[i] == 0)
                         continue;
 
-                    SpellEntry* sp = dbcSpell.LookupEntryForced(creature_spell_data->Spells[i]);
+                    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(creature_spell_data->Spells[i]);
                     if (sp == nullptr)
                         continue;
 
@@ -2527,14 +2527,14 @@ void MySQLDataStore::LoadSpellOverrideTable()
         uint32 distinct_override_id = fields[0].GetUInt32();
 
         QueryResult* spellid_for_overrideid_result = WorldDatabase.Query("SELECT spellId FROM spelloverride WHERE overrideId = %u", distinct_override_id);
-        std::list<SpellEntry*>* list = new std::list < SpellEntry* >;
+        std::list<SpellInfo*>* list = new std::list < SpellInfo* >;
         if (spellid_for_overrideid_result != nullptr)
         {
             do
             {
                 Field* fieldsIn = spellid_for_overrideid_result->Fetch();
                 uint32 spellid = fieldsIn[0].GetUInt32();
-                SpellEntry* spell = dbcSpell.LookupEntryForced(spellid);
+                SpellInfo* spell = sSpellCustomizations.GetSpellInfo(spellid);
                 if (spell == nullptr)
                 {
                     Log.Error("MySQLDataStore", "Table `spelloverride` includes invalid spellId %u for overrideId %u! <skipped>", spellid, distinct_override_id);

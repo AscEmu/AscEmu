@@ -97,14 +97,14 @@ class ChronoLordAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(ARCANE_BLAST);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(ARCANE_BLAST);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].cooldown = 10;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(TIME_LAPSE);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(TIME_LAPSE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = 8;
@@ -233,14 +233,14 @@ class TemporusAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(HASTEN);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(HASTEN);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = true;
             spells[0].cooldown = 10;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(MORTAL_WOUND);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(MORTAL_WOUND);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].cooldown = 5;
@@ -369,21 +369,21 @@ class AenusAI : public CreatureAIScript
             {
                 m_spellcheck[i] = false;
             }
-            spells[0].info = dbcSpell.LookupEntry(SAND_BREATH);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(SAND_BREATH);
             spells[0].targettype = TARGET_DESTINATION;
             spells[0].instant = true;
             spells[0].cooldown = 15;
             spells[0].perctrigger = 0.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(TIME_STOP);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(TIME_STOP);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].cooldown = 15;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(FRENZY);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(FRENZY);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].cooldown = 8;
