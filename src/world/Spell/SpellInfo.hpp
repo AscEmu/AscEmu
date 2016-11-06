@@ -22,6 +22,9 @@ class SERVER_DECL SpellInfo
         bool HasCustomFlagForEffect(uint32 effect, uint32 flag);
 
         bool IsPassive();
+        bool IsProfession();
+        bool IsPrimaryProfession();
+        bool IsPrimaryProfessionSkill(uint32 skill_id);
 
         bool IsDeathPersistent();
 

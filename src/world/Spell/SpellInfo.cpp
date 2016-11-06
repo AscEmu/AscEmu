@@ -146,6 +146,49 @@ bool SpellInfo::IsPassive()
     return Attributes & ATTRIBUTES_PASSIVE;
 }
 
+bool SpellInfo::IsProfession()
+{
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (Effect[i] == SPELL_EFFECT_SKILL)
+        {
+            uint32 skill = EffectMiscValue[i];
+
+            //Profession skill
+            if (skill == SKILL_FISHING || skill == SKILL_COOKING || skill == SKILL_FIRST_AID)
+                return true;
+
+            if (IsPrimaryProfessionSkill(skill))
+                return true;
+        }
+    }
+    return false;
+}
+
+bool SpellInfo::IsPrimaryProfession()
+{
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+    {
+        if (Effect[i] == SPELL_EFFECT_SKILL)
+        {
+            uint32 skill = EffectMiscValue[i];
+
+            if (IsPrimaryProfessionSkill(skill))
+                return true;
+        }
+    }
+    return false;
+}
+
+bool SpellInfo::IsPrimaryProfessionSkill(uint32 skill_id)
+{
+    if (DBC::Structures::SkillLineEntry const* skill_line = sSkillLineStore.LookupEntry(skill_id))
+        if (skill_line && skill_line->type == SKILL_TYPE_PROFESSION)
+            return true;
+
+    return false;
+}
+
 bool SpellInfo::IsDeathPersistent()
 {
     return AttributesExC & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD;
