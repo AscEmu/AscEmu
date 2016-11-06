@@ -18,6 +18,10 @@ class SERVER_DECL SpellInfo
         ~SpellInfo();
 
         // helper functions
+        bool HasEffect(uint32 effect);
+        bool HasCustomFlagForEffect(uint32 effect, uint32 flag);
+        bool AppliesAura(uint32 aura);
+        uint32 GetAAEffectId();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Applied
@@ -157,72 +161,6 @@ class SERVER_DECL SpellInfo
 
         void* (*SpellFactoryFunc);
         void* (*AuraFactoryFunc);
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note bool HasEffect   - Tells if the Spell has a certain effect
-        bool HasEffect(uint32 effect)
-        {
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                if (Effect[i] == effect)
-                    return true;
-
-            return false;
-        }
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note bool HasCustomFlagForEffect - Tells if the Spell has this flag for this effect
-        bool HasCustomFlagForEffect(uint32 effect, uint32 flag)
-        {
-            if (effect >= MAX_SPELL_EFFECTS)
-                return false;
-
-            if ((EffectCustomFlag[effect] & flag) != 0)
-                return true;
-            else
-                return false;
-        }
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note bool AppliesAura  - Tells if the Spell applies this Aura
-        bool AppliesAura(uint32 aura)
-        {
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            {
-
-                if ((Effect[i] == 6 ||        /// SPELL_EFFECT_APPLY_GROUP_AREA_AURA
-                        Effect[i] == 27 ||    /// SPELL_EFFECT_PERSISTENT_AREA_AURA
-                        Effect[i] == 35 ||    /// SPELL_EFFECT_APPLY_GROUP_AREA_AURA
-                        Effect[i] == 65 ||    /// SPELL_EFFECT_APPLY_RAID_AREA_AURA
-                        Effect[i] == 119 ||   /// SPELL_EFFECT_APPLY_PET_AREA_AURA
-                        Effect[i] == 128 ||   /// SPELL_EFFECT_APPLY_FRIEND_AREA_AURA
-                        Effect[i] == 129 ||   /// SPELL_EFFECT_APPLY_ENEMY_AREA_AURA
-                        Effect[i] == 143) &&  /// SPELL_EFFECT_APPLY_OWNER_AREA_AURA
-                        EffectApplyAuraName[i] == aura)
-                    return true;
-            }
-
-            return false;
-        }
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// \note uint32 GetAAEffectId()  - Returns the Effect Id of the Area Aura effect if the spell has one.
-        uint32 GetAAEffectId()
-        {
-
-            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
-            {
-
-                if (Effect[i] == 35 ||        /// SPELL_EFFECT_APPLY_GROUP_AREA_AURA
-                        Effect[i] == 65 ||    /// SPELL_EFFECT_APPLY_RAID_AREA_AURA
-                        Effect[i] == 119 ||   /// SPELL_EFFECT_APPLY_PET_AREA_AURA
-                        Effect[i] == 128 ||   /// SPELL_EFFECT_APPLY_FRIEND_AREA_AURA
-                        Effect[i] == 129 ||   /// SPELL_EFFECT_APPLY_ENEMY_AREA_AURA
-                        Effect[i] == 143)     /// SPELL_EFFECT_APPLY_OWNER_AREA_AURA
-                    return Effect[i];
-            }
-
-            return 0;
-        }
 };
 
 #endif  //_SPELL_INFO_HPP
