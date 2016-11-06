@@ -146,6 +146,11 @@ bool SpellInfo::IsPassive()
     return Attributes & ATTRIBUTES_PASSIVE;
 }
 
+bool SpellInfo::IsDeathPersistent()
+{
+    return AttributesExC & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD;
+}
+
 bool SpellInfo::AppliesAreaAura(uint32 aura)
 {
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
