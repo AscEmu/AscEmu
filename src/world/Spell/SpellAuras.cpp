@@ -821,7 +821,7 @@ void Aura::Remove()
 
     sHookInterface.OnAuraRemove(this);
 
-    LOG_DEBUG("Removing aura %u from unit %u", m_spellProto->Id, m_target->GetGUID());
+    Log.DebugFlag(LF_AURA, "Removing aura %u from unit %u", m_spellProto->Id, m_target->GetGUID());
 
     m_deleted = true;
 
@@ -983,7 +983,7 @@ void Aura::ApplyModifiers(bool apply)
         if (m_modList[x].m_type < TOTAL_SPELL_AURAS)
         {
             mod = &m_modList[x];
-            LOG_DEBUG("WORLD: target=%u, Spell Aura id=%u (%s), SpellId=%u, i=%u, apply=%s, duration=%u, miscValue=%d, damage=%d",
+            Log.DebugFlag(LF_AURA, "WORLD: target=%u, Spell Aura id=%u (%s), SpellId=%u, i=%u, apply=%s, duration=%u, miscValue=%d, damage=%d",
                       m_target->GetLowGUID(), mod->m_type, SpellAuraNames[mod->m_type], m_spellProto->Id, mod->i, apply ? "true" : "false", GetDuration(), mod->m_miscValue, mod->m_amount);
             (*this.*SpellAuraHandler[mod->m_type])(apply);
             if (apply)
@@ -1010,7 +1010,7 @@ void Aura::UpdateModifiers()
 
         if (mod->m_type < TOTAL_SPELL_AURAS)
         {
-            LOG_DEBUG("WORLD: Update Aura mods : target = %u , Spell Aura id = %u (%s), SpellId  = %u, i = %u, duration = %u, damage = %d",
+            Log.DebugFlag(LF_AURA, "WORLD: Update Aura mods : target = %u , Spell Aura id = %u (%s), SpellId  = %u, i = %u, duration = %u, damage = %d",
                       m_target->GetLowGUID(), mod->m_type, SpellAuraNames[mod->m_type], m_spellProto->Id, mod->i, GetDuration(), mod->m_amount);
             switch (mod->m_type)
             {
@@ -1621,7 +1621,7 @@ void Aura::SpellAuraModBaseResistancePerc(bool apply)
 
 void Aura::SpellAuraNULL(bool apply)
 {
-    LOG_DEBUG("Unknown Aura id %d", (uint32)mod->m_type);
+    Log.DebugFlag(LF_AURA, "Unknown Aura id %d", (uint32)mod->m_type);
 }
 
 void Aura::SpellAuraBindSight(bool apply)
@@ -1771,7 +1771,7 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
         if (dmg <= 0)
             return; //who would want a negative dmg here ?
 
-        LOG_DEBUG("Adding periodic dmg aura, spellid: %lu", this->GetSpellId());
+        Log.DebugFlag(LF_AURA, "Adding periodic dmg aura, spellid: %lu", this->GetSpellId());
         sEventMgr.AddEvent(this, &Aura::EventPeriodicDamage, (uint32)dmg,
                            EVENT_AURA_PERIODIC_DAMAGE, GetSpellProto()->EffectAmplitude[mod->i], 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 
@@ -1936,7 +1936,7 @@ void Aura::SpellAuraDummy(bool apply)
     if (sScriptMgr.CallScriptedDummyAura(GetSpellId(), mod->i, this, apply))
         return;
 
-    Log.Debug("Aura::SpellAuraDummy", "Spell %u (%s) has an apply dummy aura effect, but no handler for it. ", m_spellProto->Id, m_spellProto->Name);
+    Log.DebugFlag(LF_AURA_EFF, "Aura::SpellAuraDummy : Spell %u (%s) has an apply dummy aura effect, but no handler for it. ", m_spellProto->Id, m_spellProto->Name);
 }
 
 void Aura::SpellAuraModConfuse(bool apply)
@@ -3996,7 +3996,7 @@ void Aura::SpellAuraModSchoolImmunity(bool apply)
         else
             SetPositive();
 
-        LOG_DEBUG("%s: value=%x", __FUNCTION__, mod->m_miscValue);
+        Log.DebugFlag(LF_AURA, "SpellAuraModSchoolImmunity called with misValue = %x", mod->m_miscValue);
         for (uint8 i = 0; i < SCHOOL_COUNT; i++)
         {
             if (mod->m_miscValue & (1 << i))
@@ -4056,7 +4056,7 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
         spellId = GetSpellProto()->EffectTriggerSpell[mod->i];
         if (spellId == 0)
         {
-            LOG_DEBUG("Warning! trigger spell is null for spell %u", GetSpellProto()->Id);
+            Log.DebugFlag(LF_AURA, "Warning! trigger spell is null for spell %u", GetSpellProto()->Id);
             return;
         }
 
@@ -4076,7 +4076,7 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
 
         m_target->AddProcTriggerSpell(spellId, GetSpellProto()->Id, m_casterGuid, GetSpellProto()->procChance, GetSpellProto()->procFlags, charges, groupRelation, NULL);
 
-        LOG_DEBUG("%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellProto()->Id, spellId, GetSpellProto()->procChance, GetSpellProto()->procFlags & ~PROC_TARGET_SELF, charges, GetSpellProto()->procFlags & PROC_TARGET_SELF, GetSpellProto()->custom_proc_interval);
+        Log.DebugFlag(LF_AURA, "%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellProto()->Id, spellId, GetSpellProto()->procChance, GetSpellProto()->procFlags & ~PROC_TARGET_SELF, charges, GetSpellProto()->procFlags & PROC_TARGET_SELF, GetSpellProto()->custom_proc_interval);
     }
     else
     {
@@ -4084,7 +4084,7 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
         uint32 spellId = GetSpellProto()->EffectTriggerSpell[mod->i];
         if (spellId == 0)
         {
-            LOG_DEBUG("Warning! trigger spell is null for spell %u", GetSpellProto()->Id);
+            Log.DebugFlag(LF_AURA, "Warning! trigger spell is null for spell %u", GetSpellProto()->Id);
             return;
         }
 
@@ -4103,7 +4103,7 @@ void Aura::SpellAuraProcTriggerDamage(bool apply)
         ds.m_flags = m_spellProto->procFlags;
         ds.owner = (void*)this;
         m_target->m_damageShields.push_back(ds);
-        LOG_DEBUG("registering dmg proc %u, school %u, flags %u, charges at least %u", ds.m_spellId, ds.m_school, ds.m_flags, m_spellProto->procCharges);
+        Log.DebugFlag(LF_AURA, "registering dmg proc %u, school %u, flags %u, charges at least %u", ds.m_spellId, ds.m_school, ds.m_flags, m_spellProto->procCharges);
     }
     else
     {
@@ -6248,7 +6248,7 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
         sp = dbcSpell.LookupEntryForced(GetSpellProto()->EffectTriggerSpell[mod->i]);
         if (sp == NULL)
         {
-            LOG_DEBUG("Warning! class trigger spell is null for spell %u", GetSpellProto()->Id);
+            Log.DebugFlag(LF_AURA, "Warning! class trigger spell is null for spell %u", GetSpellProto()->Id);
             return;
         }
 
@@ -6273,7 +6273,7 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
 
         m_target->AddProcTriggerSpell(sp->Id, GetSpellProto()->Id, m_casterGuid, GetSpellProto()->EffectBasePoints[mod->i] + 1, PROC_ON_CAST_SPELL, charges, groupRelation, procClassMask);
 
-        LOG_DEBUG("%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellProto()->Id, sp->Id, GetSpellProto()->procChance, PROC_ON_CAST_SPELL, charges, GetSpellProto()->procFlags & PROC_TARGET_SELF, GetSpellProto()->custom_proc_interval);
+        Log.DebugFlag(LF_AURA, "%u is registering %u chance %u flags %u charges %u triggeronself %u interval %u", GetSpellProto()->Id, sp->Id, GetSpellProto()->procChance, PROC_ON_CAST_SPELL, charges, GetSpellProto()->procFlags & PROC_TARGET_SELF, GetSpellProto()->custom_proc_interval);
     }
     else
     {
@@ -6281,7 +6281,7 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
         uint32 spellId = GetSpellProto()->EffectTriggerSpell[mod->i];
         if (spellId == 0)
         {
-            LOG_DEBUG("Warning! trigger spell is null for spell %u", GetSpellProto()->Id);
+            Log.DebugFlag(LF_AURA, "Warning! trigger spell is null for spell %u", GetSpellProto()->Id);
             return;
         }
 

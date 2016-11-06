@@ -265,7 +265,7 @@ Spell::Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur)
         break;
 
         default:
-            LOG_DEBUG("[DEBUG][SPELL] Incompatible object type, please report this to the dev's");
+            Log.DebugFlag(LF_SPELL, "[DEBUG][SPELL] Incompatible object type, please report this to the dev's");
             break;
     }
     if (u_caster && m_spellInfo->AttributesExF & ATTRIBUTESEXF_CAST_BY_CHARMER)
@@ -924,7 +924,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
 {
     if (!m_caster->IsInWorld())
     {
-        LOG_DEBUG("Object " I64FMT " is casting Spell ID %u while not in World", m_caster->GetGUID(), GetProto()->Id);
+        Log.DebugFlag(LF_SPELL, "Object " I64FMT " is casting Spell ID %u while not in World", m_caster->GetGUID(), GetProto()->Id);
         DecRef();
         return SPELL_FAILED_DONT_REPORT;
     }
@@ -1173,7 +1173,22 @@ void Spell::cast(bool check)
         return;
     }
 
-    LOG_DEBUG("Spell::cast %u, Unit: %u", GetProto()->Id, m_caster->GetLowGUID());
+    if (m_caster->IsPlayer())
+    {
+        Player* player = static_cast<Player*>(m_caster);
+        Log.DebugFlag(LF_SPELL, "Spell::cast Id %u (%s), Players: %s (guid: %u)",
+                      GetProto()->Id, GetProto()->Name, player->GetName(), player->getPlayerInfo()->guid);
+    }
+    else if (m_caster->IsCreature())
+    {
+        Creature* creature = static_cast<Creature*>(m_caster);
+        Log.DebugFlag(LF_SPELL, "Spell::cast Id %u (%s), Creature: %s (spawn id: %u | entry: %u)",
+                      GetProto()->Id, GetProto()->Name, creature->GetCreatureProperties()->Name.c_str(), creature->spawnid, creature->GetEntry());
+    }
+    else
+    {
+        Log.DebugFlag(LF_SPELL, "Spell::cast %u, LowGuid: %u", GetProto()->Id, m_caster->GetLowGUID());
+    }
 
     if (objmgr.IsSpellDisabled(GetProto()->Id))//if it's disabled it will not be casted, even if it's triggered.
         cancastresult = uint8(m_triggeredSpell ? SPELL_FAILED_DONT_REPORT : SPELL_FAILED_SPELL_UNAVAILABLE);
@@ -2542,7 +2557,7 @@ bool Spell::HasPower()
         }
         default:
         {
-            LOG_DEBUG("unknown power type");
+            Log.DebugFlag(LF_SPELL, "unknown power type");
             // we shouldn't be here to return
             return false;
         }
@@ -2698,7 +2713,7 @@ bool Spell::TakePower()
         }
         default:
         {
-            LOG_DEBUG("unknown power type");
+            Log.DebugFlag(LF_SPELL, "unknown power type");
             // we shouldn't be here to return
             return false;
         }
@@ -2904,7 +2919,7 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
 
     if (id < TOTAL_SPELL_EFFECTS)
     {
-        LOG_DEBUG("WORLD: Spell effect id = %u (%s), damage = %d", id, SpellEffectNames[id], damage);
+        Log.DebugFlag(LF_SPELL, "WORLD: Spell effect id = %u (%s), damage = %d", id, SpellEffectNames[id], damage);
         (*this.*SpellEffectsHandler[id])(i);
     }
     else
@@ -3590,7 +3605,7 @@ uint8 Spell::CanCast(bool tolerate)
                 auto gameobject_info = static_cast<GameObject*>(*itr)->GetGameObjectProperties();
                 if (!gameobject_info)
                 {
-                    LOG_DEBUG("Warning: could not find info about game object %u", (*itr)->GetEntry());
+                    Log.DebugFlag(LF_SPELL, "Warning: could not find info about game object %u", (*itr)->GetEntry());
                     continue;
                 }
 
@@ -6279,7 +6294,7 @@ SpellEntry* CheckAndReturnSpellEntry(uint32 spellid)
 
     SpellEntry* sp = dbcSpell.LookupEntryForced(spellid);
     if (sp == NULL)
-        LOG_DEBUG("Something tried to access nonexistent spell %u", spellid);
+        Log.DebugFlag(LF_SPELL, "Something tried to access nonexistent spell %u", spellid);
 
     return sp;
 }

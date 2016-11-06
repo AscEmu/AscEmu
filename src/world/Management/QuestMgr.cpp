@@ -1713,7 +1713,7 @@ void QuestMgr::SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry)
     }
 
     if (QuestID == 0)
-        Log.Error("QuestMgr","No corresponding quest was found for loot_gameobjects entryid %u quest item %d", GO_Entry, Item_Entry);
+        Log.DebugFlag(LF_DB_TABLES, "QuestMgr : No corresponding quest was found for loot_gameobjects entryid %u quest item %d", GO_Entry, Item_Entry);
 }
 
 void QuestMgr::BuildQuestFailed(WorldPacket* data, uint32 questid)
