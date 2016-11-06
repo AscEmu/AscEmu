@@ -119,7 +119,7 @@ namespace DBC
             char const spell_cast_times_format[] = "nixx";
             char const spell_difficulty_format[] = "niiii";
             char const spell_duration_format[] = "niii";
-            char const spell_entry_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifxiiiiiiiiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiiiiifffiiiiiiiiiiiiixssssssssssssssssxssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiiiiiiiiiiixfffxxxiiiiixxfffxx";
+            char const spell_entry_format[] = "niiiiiiiiiiiixixiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifiiiiiiiiiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiiiiifffiiiiiiiiiiiiiisxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxxiiiiiiiiiiiifffiiiiiiiixxxxxxi";
             char const spell_item_enchantment_format[] = "nxiiiiiiiiiiiissssssssssssssssxiiiiiii";
             char const spell_radius_format[] = "nfff";
             char const spell_range_format[] = "nffffixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
@@ -138,6 +138,418 @@ namespace DBC
         }
 
         #pragma pack(push, 1)
+        struct AchievementCategoryEntry
+        {
+            uint32 ID;                 // 0
+            uint32 parentCategory;     // 1 -1 for main category
+            const char* name;          // 2-17
+            uint32 name_flags;         // 18
+            uint32 sortOrder;          // 19
+        };
+
+        struct AchievementCriteriaEntry
+        {
+            uint32 ID;                      // 0
+            uint32 referredAchievement;     // 1
+            uint32 requiredType;            // 2
+            union
+            {
+                // ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE = 0
+                ///\todo also used for player deaths..
+                struct
+                {
+                    uint32 creatureID;                             // 3
+                    uint32 creatureCount;                          // 4
+                } kill_creature;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_WIN_BG = 1
+                ///\todo there are further criterias instead just winning
+                struct
+                {
+                    uint32 bgMapID;                                // 3
+                    uint32 winCount;                               // 4
+                } win_bg;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL = 5
+                struct
+                {
+                    uint32 unused;                                 // 3
+                    uint32 level;                                  // 4
+                } reach_level;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL = 7
+                struct
+                {
+                    uint32 skillID;                                // 3
+                    uint32 skillLevel;                             // 4
+                } reach_skill_level;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_ACHIEVEMENT = 8
+                struct
+                {
+                    uint32 linkedAchievement;                      // 3
+                } complete_achievement;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT = 9
+                struct
+                {
+                    uint32 unused;                                 // 3
+                    uint32 totalQuestCount;                        // 4
+                } complete_quest_count;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST_DAILY = 10
+                struct
+                {
+                    uint32 unused;                                 // 3
+                    uint32 numberOfDays;                           // 4
+                } complete_daily_quest_daily;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE = 11
+                struct
+                {
+                    uint32 zoneID;                                 // 3
+                    uint32 questCount;                             // 4
+                } complete_quests_in_zone;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST = 14
+                struct
+                {
+                    uint32 unused;                                 // 3
+                    uint32 questCount;                             // 4
+                } complete_daily_quest;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_BATTLEGROUND= 15
+                struct
+                {
+                    uint32 mapID;                                  // 3
+                } complete_battleground;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP= 16
+                struct
+                {
+                    uint32 mapID;                                  // 3
+                } death_at_map;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_RAID = 19
+                struct
+                {
+                    uint32 groupSize;                              // 3 can be 5, 10 or 25
+                } complete_raid;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE = 20
+                struct
+                {
+                    uint32 creatureEntry;                          // 3
+                } killed_by_creature;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING = 24
+                struct
+                {
+                    uint32 unused;                                 // 3
+                    uint32 fallHeight;                             // 4
+                } fall_without_dying;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST = 27
+                struct
+                {
+                    uint32 questID;                                // 3
+                    uint32 questCount;                             // 4
+                } complete_quest;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET = 28
+                // ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2= 69
+                struct
+                {
+                    uint32 spellID;                                // 3
+                    uint32 spellCount;                             // 4
+                } be_spell_target;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL= 29
+                struct
+                {
+                    uint32 spellID;                                // 3
+                    uint32 castCount;                              // 4
+                } cast_spell;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA = 31
+                struct
+                {
+                    uint32 areaID;                                 // 3 Reference to AreaTable.dbc
+                    uint32 killCount;                              // 4
+                } honorable_kill_at_area;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_WIN_ARENA = 32
+                struct
+                {
+                    uint32 mapID;                                  // 3 Reference to Map.dbc
+                } win_arena;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_PLAY_ARENA = 33
+                struct
+                {
+                    uint32 mapID;                                  // 3 Reference to Map.dbc
+                } play_arena;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL = 34
+                struct
+                {
+                    uint32 spellID;                                // 3 Reference to Map.dbc
+                } learn_spell;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM = 36
+                struct
+                {
+                    uint32 itemID;                                 // 3
+                    uint32 itemCount;                              // 4
+                } own_item;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA = 37
+                struct
+                {
+                    uint32 unused;                                 // 3
+                    uint32 count;                                  // 4
+                    uint32 flag;                                   // 5 4=in a row
+                } win_rated_arena;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_TEAM_RATING = 38
+                struct
+                {
+                    uint32 teamtype;                               // 3 {2,3,5}
+                } highest_team_rating;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_REACH_TEAM_RATING = 39
+                struct
+                {
+                    uint32 teamtype;                               // 3 {2,3,5}
+                    uint32 teamrating;                             // 4
+                } reach_team_rating;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL = 40
+                struct
+                {
+                    uint32 skillID;                                // 3
+                    uint32 skillLevel;                             // 4 apprentice=1, journeyman=2, expert=3, artisan=4, master=5, grand master=6
+                } learn_skill_level;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_USE_ITEM = 41
+                struct
+                {
+                    uint32 itemID;                                 // 3
+                    uint32 itemCount;                              // 4
+                } use_item;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM = 42
+                struct
+                {
+                    uint32 itemID;                                 // 3
+                    uint32 itemCount;                              // 4
+                } loot_item;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA = 43
+                struct
+                {
+                    uint32 areaReference;                          // 3 - this is an index to WorldMapOverlay
+                } explore_area;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_OWN_RANK= 44
+                struct
+                {
+                    ///\todo This rank is _NOT_ the index from CharTitles.dbc
+                    uint32 rank;                                   // 3
+                } own_rank;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT= 45
+                struct
+                {
+                    uint32 unused;                                 // 3
+                    uint32 numberOfSlots;                          // 4
+                } buy_bank_slot;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION= 46
+                struct
+                {
+                    uint32 factionID;                              // 3
+                    uint32 reputationAmount;                       // 4 Total reputation amount, so 42000 = exalted
+                } gain_reputation;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION= 47
+                struct
+                {
+                    uint32 unused;                                 // 3
+                    uint32 numberOfExaltedFactions;                // 4
+                } gain_exalted_reputation;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM = 49
+                ///\todo where is the required itemlevel stored?
+                struct
+                {
+                    uint32 itemSlot;                               // 3
+                } equip_epic_item;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT= 50
+                struct
+                {
+                    uint32 rollValue;                              // 3
+                    uint32 count;                                  // 4
+                } roll_need_on_loot;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HK_CLASS = 52
+                struct
+                {
+                    uint32 classID;                                // 3
+                    uint32 count;                                  // 4
+                } hk_class;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HK_RACE = 53
+                struct
+                {
+                    uint32 raceID;                                 // 3
+                    uint32 count;                                  // 4
+                } hk_race;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE = 54
+                ///\todo where is the information about the target stored?
+                struct
+                {
+                    uint32 emoteID;                                // 3
+                } do_emote;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HEALING_DONE = 55
+                struct
+                {
+                    uint32 unused;                                 // 3
+                    uint32 count;                                  // 4
+                    uint32 flag;                                   // 5 =3 for battleground healing
+                    uint32 mapid;                                  // 6
+                } healing_done;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM = 57
+                struct
+                {
+                    uint32 itemID;                                 // 3
+                } equip_item;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD = 62
+                struct
+                {
+                    uint32 unknown;                                 // 3
+                    uint32 goldInCopper;                            // 4
+                } quest_reward_money;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY = 67
+                struct
+                {
+                    uint32 unused;                                 // 3
+                    uint32 goldInCopper;                           // 4
+                } loot_money;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT = 68
+                struct
+                {
+                    uint32 goEntry;                                // 3
+                    uint32 useCount;                               // 4
+                } use_gameobject;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_SPECIAL_PVP_KILL= 70
+                ///\todo are those special criteria stored in the dbc or do we have to add another sql table?
+                struct
+                {
+                    uint32 unused;                                 // 3
+                    uint32 killCount;                              // 4
+                } special_pvp_kill;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_FISH_IN_GAMEOBJECT = 72
+                struct
+                {
+                    uint32 goEntry;                                // 3
+                    uint32 lootCount;                              // 4
+                } fish_in_gameobject;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS= 75
+                struct
+                {
+                    uint32 unknown;                                // 3 777=?
+                    uint32 mountCount;                             // 4
+                } number_of_mounts;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_WIN_DUEL = 76
+                struct
+                {
+                    uint32 unused;                                 // 3
+                    uint32 duelCount;                              // 4
+                } win_duel;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_POWER = 96
+                struct
+                {
+                    uint32 powerType;                              // 3 mana= 0, 1=rage, 3=energy, 6=runic power
+                } highest_power;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_STAT = 97
+                struct
+                {
+                    uint32 statType;                               // 3 4=spirit, 3=int, 2=stamina, 1=agi, 0=strength
+                } highest_stat;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_SPELLPOWER = 98
+                struct
+                {
+                    uint32 spellSchool;                            // 3
+                } highest_spellpower;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_RATING = 100
+                struct
+                {
+                    uint32 ratingType;                             // 3
+                } highest_rating;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_LOOT_TYPE = 109
+                struct
+                {
+                    uint32 lootType;                               // 3 3=fishing, 2=pickpocket, 4=disentchant
+                    uint32 lootTypeCount;                          // 4
+                } loot_type;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2 = 110
+                struct
+                {
+                    uint32 skillLine;                              // 3
+                    uint32 spellCount;                             // 4
+                } cast_spell2;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LINE= 112
+                struct
+                {
+                    uint32 skillLine;                              // 3
+                    uint32 spellCount;                             // 4
+                } learn_skill_line;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL = 113
+                struct
+                {
+                    uint32 unused;                                 // 3
+                    uint32 killCount;                              // 4
+                } honorable_kill;
+
+                struct
+                {
+                    uint32 field3;                                 // 3 main requirement
+                    uint32 field4;                                 // 4 main requirement count
+                    uint32 additionalRequirement1_type;            // 5 additional requirement 1 type
+                    uint32 additionalRequirement1_value;           // 6 additional requirement 1 value
+                    uint32 additionalRequirement2_type;            // 7 additional requirement 2 type
+                    uint32 additionalRequirement2_value;           // 8 additional requirement 1 value
+                } raw;
+            };
+            char* name[16];                 // 9-24
+                                            //uint32 name_flags;            // 25
+            uint32 completionFlag;          // 26
+            uint32 groupFlag;               // 27
+            uint32 unk1;                    // 28
+            uint32 timeLimit;               // 29 time limit in seconds
+            uint32 index;                   // 30
+        };
+
         struct AchievementEntry
         {
             uint32 ID;                      // 0
@@ -758,113 +1170,120 @@ namespace DBC
 
         struct SpellEntry_New
         {
-            uint32 Id;                                          // 0
-            uint32 Category;                                    // 1
-            uint32 Dispel;                                      // 2
-            uint32 Mechanic;                                    // 3
-            uint32 Attributes;                                  // 4
-            uint32 AttributesEx;                                // 5
-            uint32 AttributesExB;                               // 6
-            uint32 AttributesExC;                               // 7
-            uint32 AttributesExD;                               // 8
-            uint32 AttributesExE;                               // 9
-            uint32 AttributesExF;                               // 10
-            uint32 AttributesExG;                               // 11
-            uint32 Stances[2];                                  // 12
-            uint32 StancesNot[2];                               // 14
-            uint32 Targets;                                     // 16
-            uint32 TargetCreatureType;                          // 17
-            uint32 RequiresSpellFocus;                          // 18
-            uint32 FacingCasterFlags;                           // 19
-            uint32 CasterAuraState;                             // 20
-            uint32 TargetAuraState;                             // 21
-            uint32 CasterAuraStateNot;                          // 22
-            uint32 TargetAuraStateNot;                          // 23
-            uint32 casterAuraSpell;                             // 24
-            uint32 targetAuraSpell;                             // 25
-            uint32 excludeCasterAuraSpell;                      // 26
-            uint32 excludeTargetAuraSpell;                      // 27
-            uint32 CastingTimeIndex;                            // 28
-            uint32 RecoveryTime;                                // 29
-            uint32 CategoryRecoveryTime;                        // 30
-            uint32 InterruptFlags;                              // 31
-            uint32 AuraInterruptFlags;                          // 32
-            uint32 ChannelInterruptFlags;                       // 33
-            uint32 procFlags;                                   // 34
-            uint32 procChance;                                  // 35
-            uint32 procCharges;                                 // 36
-            uint32 maxLevel;                                    // 37
-            uint32 baseLevel;                                   // 38
-            uint32 spellLevel;                                  // 39
-            uint32 DurationIndex;                               // 40
-            uint32 powerType;                                   // 41
-            uint32 manaCost;                                    // 42
-            uint32 manaCostPerlevel;                            // 43
-            uint32 manaPerSecond;                               // 44
-            uint32 manaPerSecondPerLevel;                       // 45
-            uint32 rangeIndex;                                  // 46
-            float speed;                                        // 47
-            //uint32 modalNextSpell;                            // 48
-            uint32 StackAmount;                                 // 49
-            uint32 Totem[2];                                    // 50-51
-            int32 Reagent[MAX_SPELL_REAGENTS];                  // 52-59
-            uint32 ReagentCount[MAX_SPELL_REAGENTS];            // 60-67
-            int32 EquippedItemClass;                            // 68
-            int32 EquippedItemSubClassMask;                     // 69
-            int32 EquippedItemInventoryTypeMask;                // 70
-            uint32 Effect[MAX_SPELL_EFFECTS];                   // 71-73
-            int32 EffectDieSides[MAX_SPELL_EFFECTS];            // 74-76
-            float EffectRealPointsPerLevel[MAX_SPELL_EFFECTS];  // 77-79
-            int32 EffectBasePoints[MAX_SPELL_EFFECTS];          // 80-82
-            uint32 EffectMechanic[MAX_SPELL_EFFECTS];           // 83-85
-            uint32 EffectImplicitTargetA[MAX_SPELL_EFFECTS];    // 86-88
-            uint32 EffectImplicitTargetB[MAX_SPELL_EFFECTS];    // 89-91
-            uint32 EffectRadiusIndex[MAX_SPELL_EFFECTS];        // 92-94 spellradius.dbc
-            uint32 EffectApplyAuraName[MAX_SPELL_EFFECTS];      // 95-97
-            uint32 EffectAmplitude[MAX_SPELL_EFFECTS];          // 98-100
-            float EffectValueMultiplier[MAX_SPELL_EFFECTS];     // 101-103
-            uint32 EffectChainTarget[MAX_SPELL_EFFECTS];        // 104-106
-            uint32 EffectItemType[MAX_SPELL_EFFECTS];           // 107-109
-            int32 EffectMiscValue[MAX_SPELL_EFFECTS];           // 110-112
-            int32 EffectMiscValueB[MAX_SPELL_EFFECTS];          // 113-115
-            uint32 EffectTriggerSpell[MAX_SPELL_EFFECTS];       // 116-118
-            float EffectPointsPerComboPoint[MAX_SPELL_EFFECTS]; // 119-121
-            flag96 EffectSpellClassMask[MAX_SPELL_EFFECTS];     // 122-130
-            uint32 SpellVisual[2];                              // 131-132
-            uint32 SpellIconID;                                 // 133
-            uint32 activeIconID;                                // 134
-            //uint32 spellPriority;                             // 135
-            char* SpellName[16];                                // 136-151
-            //uint32 SpellNameFlag;                             // 152
-            char* Rank[16];                                     // 153-168
-            //uint32 RankFlags;                                 // 169
-            //char* Description[16];                            // 170-185
-            //uint32 DescriptionFlags;                          // 186
-            //char* ToolTip[16];                                // 187-202
-            //uint32 ToolTipFlags;                              // 203
-            uint32 ManaCostPercentage;                          // 204
-            uint32 StartRecoveryCategory;                       // 205
-            uint32 StartRecoveryTime;                           // 206
-            uint32 MaxTargetLevel;                              // 207  
-            uint32 SpellFamilyName;                             // 208
-            flag96 SpellFamilyFlags;                            // 209-211
-            uint32 MaxAffectedTargets;                          // 212
-            uint32 DmgClass;                                    // 213
-            uint32 PreventionType;                              // 214
-            //uint32 StanceBarOrder;                            // 215
-            float EffectDamageMultiplier[MAX_SPELL_EFFECTS];    // 216-218
-            //uint32 MinFactionId;                              // 219
-            //uint32 MinReputation;                             // 220
-            //uint32 RequiredAuraVision;                        // 221
-            uint32 TotemCategory[2];                            // 222-223
-            int32 AreaGroupId;                                  // 224
-            uint32 SchoolMask;                                  // 225
-            uint32 runeCostID;                                  // 226
-            //uint32 spellMissileID;                            // 227
-            //uint32 PowerDisplayId;                            // 228
-            float EffectBonusMultiplier[MAX_SPELL_EFFECTS];     // 229-231
-            //uint32 spellDescriptionVariableID;                // 232
-            //uint32 SpellDifficultyId;                         // 233
+            uint32 Id;                                                // 0
+            uint32 Category;                                          // 1
+            uint32 DispelType;                                        // 2
+            uint32 MechanicsType;                                     // 3
+            uint32 Attributes;                                        // 4
+            uint32 AttributesEx;                                      // 5
+            uint32 AttributesExB;                                     // 6
+            uint32 AttributesExC;                                     // 7
+            uint32 AttributesExD;                                     // 8
+            uint32 AttributesExE;                                     // 9
+            uint32 AttributesExF;                                     // 10
+            uint32 AttributesExG;                                     // 11 
+            uint32 RequiredShapeShift;                                // 12
+          //uint32 Unknown;                                           // 13 (12-13 Stances[2])
+            uint32 ShapeshiftExclude;                                 // 14 
+          //uint32 Unknown;                                           // 15 (14-15 StancesExcluded[2])
+            uint32 Targets;                                           // 16
+            uint32 TargetCreatureType;                                // 17
+            uint32 RequiresSpellFocus;                                // 18
+            uint32 FacingCasterFlags;                                 // 19
+            uint32 CasterAuraState;                                   // 20
+            uint32 TargetAuraState;                                   // 21
+            uint32 CasterAuraStateNot;                                // 22
+            uint32 TargetAuraStateNot;                                // 23
+            uint32 casterAuraSpell;                                   // 24
+            uint32 targetAuraSpell;                                   // 25
+            uint32 casterAuraSpellNot;                                // 26
+            uint32 targetAuraSpellNot;                                // 27
+            uint32 CastingTimeIndex;                                  // 28
+            uint32 RecoveryTime;                                      // 29
+            uint32 CategoryRecoveryTime;                              // 30
+            uint32 InterruptFlags;                                    // 31
+            uint32 AuraInterruptFlags;                                // 32
+            uint32 ChannelInterruptFlags;                             // 33
+            uint32 procFlags;                                         // 34
+            uint32 procChance;                                        // 35
+            uint32 procCharges;                                       // 36
+            uint32 maxLevel;                                          // 37
+            uint32 baseLevel;                                         // 38
+            uint32 spellLevel;                                        // 39
+            uint32 DurationIndex;                                     // 40
+            int32 powerType;                                         // 41
+            uint32 manaCost;                                          // 42
+            uint32 manaCostPerlevel;                                  // 43
+            uint32 manaPerSecond;                                     // 44
+            uint32 manaPerSecondPerLevel;                             // 45
+            uint32 rangeIndex;                                        // 46
+            float speed;                                              // 47
+            uint32 modalNextSpell;                                    // 48 comment this out
+            uint32 maxstack;                                          // 49
+            uint32 Totem[2];                                          // 50 - 51
+            uint32 Reagent[8];                                        // 52 - 59 int32
+            uint32 ReagentCount[8];                                   // 60 - 67
+            int32  EquippedItemClass;                                 // 68
+            uint32 EquippedItemSubClass;                              // 69 int32
+            uint32 RequiredItemFlags;                                 // 70 int32
+            uint32 Effect[MAX_SPELL_EFFECTS];                         // 71 - 73
+            uint32 EffectDieSides[MAX_SPELL_EFFECTS];                 // 74 - 76
+            float EffectRealPointsPerLevel[MAX_SPELL_EFFECTS];        // 77 - 79
+            int32 EffectBasePoints[MAX_SPELL_EFFECTS];                // 80 - 82
+            int32 EffectMechanic[MAX_SPELL_EFFECTS];                  // 83 - 85 uint32
+            uint32 EffectImplicitTargetA[MAX_SPELL_EFFECTS];          // 86 - 88
+            uint32 EffectImplicitTargetB[MAX_SPELL_EFFECTS];          // 89 - 91
+            uint32 EffectRadiusIndex[MAX_SPELL_EFFECTS];              // 92 - 94
+            uint32 EffectApplyAuraName[MAX_SPELL_EFFECTS];            // 95 - 97
+            uint32 EffectAmplitude[MAX_SPELL_EFFECTS];                // 98 - 100
+            float EffectMultipleValue[MAX_SPELL_EFFECTS];             // 101 - 103
+            uint32 EffectChainTarget[MAX_SPELL_EFFECTS];              // 104 - 106
+            uint32 EffectItemType[MAX_SPELL_EFFECTS];                 // 107 - 109 
+            uint32 EffectMiscValue[MAX_SPELL_EFFECTS];                // 110 - 112 int32
+            uint32 EffectMiscValueB[MAX_SPELL_EFFECTS];               // 113 - 115 int32
+            uint32 EffectTriggerSpell[MAX_SPELL_EFFECTS];             // 116 - 118
+            float EffectPointsPerComboPoint[MAX_SPELL_EFFECTS];       // 119 - 121
+            uint32 EffectSpellClassMask[3][3];                        // 122 - 130
+            uint32 SpellVisual;                                       // 131
+            uint32 field114;                                          // 132 (131-132 SpellVisual[2])
+            uint32 spellIconID;                                       // 133
+            uint32 activeIconID;                                      // 134 activeIconID;
+            uint32 spellPriority;                                     // 135
+            const char* Name;                                         // 136
+          //char* NameAlt[15];                                        // 137 - 151 (136-151 Name[16])
+          //uint32 NameFlags;                                         // 152 not used
+            const char* Rank;                                         // 153
+          //char* RankAlt[15];                                        // 154 - 168 (153-168 Rank[16])
+          //uint32 RankFlags;                                         // 169 not used
+            char* Description;                                        // 170  comment this out
+          //char* DescriptionAlt[15];                                 // 171 - 185 (170-185 Description[16])
+          //uint32 DescriptionFlags;                                  // 186 not used
+            const char* BuffDescription;                              // 187  comment this out
+          //char* BuffDescription[15];                                // 188 - 202 (187-202 BuffDescription[16])
+          //uint32 buffdescflags;                                     // 203 not used
+            uint32 ManaCostPercentage;                                // 204
+            uint32 StartRecoveryCategory;                             // 205
+            uint32 StartRecoveryTime;                                 // 206
+            uint32 MaxTargetLevel;                                    // 207
+            uint32 SpellFamilyName;                                   // 208
+            uint32 SpellGroupType[MAX_SPELL_EFFECTS];                 // 209 - 211
+            uint32 MaxTargets;                                        // 212
+            uint32 Spell_Dmg_Type;                                    // 213
+            uint32 PreventionType;                                    // 214
+            int32 StanceBarOrder;                                     // 215  comment this out
+            float dmg_multiplier[MAX_SPELL_EFFECTS];                  // 216 - 218
+            uint32 MinFactionID;                                      // 219  comment this out
+            uint32 MinReputation;                                     // 220  comment this out
+            uint32 RequiredAuraVision;                                // 221  comment this out
+            uint32 TotemCategory[2];                                  // 222 - 223
+            int32 RequiresAreaId;                                     // 224
+            uint32 School;                                            // 225
+            uint32 RuneCostID;                                        // 226
+          //uint32 SpellMissileID;                                    // 227
+          //uint32 PowerDisplayId;                                    // 228
+          //float EffectBonusMultiplier[MAX_SPELL_EFFECTS];           // 229 - 231
+          //uint32 SpellDescriptionVariable;                          // 232
+            uint32 SpellDifficultyID;                                 // 233  comment this out
         };
 
         struct SpellItemEnchantmentEntry

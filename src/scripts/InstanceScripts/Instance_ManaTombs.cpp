@@ -98,13 +98,13 @@ class EtherealDarkcasterAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(MANA_BURN);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(MANA_BURN);
             spells[0].targettype = TARGET_DESTINATION;
             spells[0].instant = true;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SHADOW_WORD_PAIN);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(SHADOW_WORD_PAIN);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 10.0f;
@@ -198,13 +198,13 @@ class EtherealPriestAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(HEAL);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(HEAL);
             spells[0].targettype = TARGET_SELF; // until function to target wounded friendly unit will be done
             spells[0].instant = false;
             spells[0].perctrigger = 7.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(POWER_WORD_SHIELD);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(POWER_WORD_SHIELD);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].perctrigger = 7.0f;
@@ -297,13 +297,13 @@ class EtherealTheurgistAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(POLYMORPH);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(POLYMORPH);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].perctrigger = 7.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(BLAST_WAVE);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(BLAST_WAVE);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].perctrigger = 10.0f;
@@ -397,7 +397,7 @@ class EtherealSorcererAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(ARCANE_MISSILES);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(ARCANE_MISSILES);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 10.0f;
@@ -490,19 +490,19 @@ class NexusStalkerAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(GOUGE);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(GOUGE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 10.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(POISON);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(POISON);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 7.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(STEALTH);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(STEALTH);
             spells[2].targettype = TARGET_SELF;
             spells[2].instant = true;
             spells[2].perctrigger = 5.0f;
@@ -595,7 +595,7 @@ class NexusTerrorAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(PSYCHIC_SCREAM);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(PSYCHIC_SCREAM);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].perctrigger = 3.0f;
@@ -689,7 +689,7 @@ class ManaLeechAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(ARCANE_EXPLOSION);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(ARCANE_EXPLOSION);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].perctrigger = 0.0f;
@@ -783,25 +783,25 @@ class EtherealSpellbinderAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(CORRUPTION);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(CORRUPTION);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 7.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(IMMOLATE);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(IMMOLATE);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 7.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(UNSTABLE_AFFLICTION);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(UNSTABLE_AFFLICTION);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].perctrigger = 7.0f;
             spells[2].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SUMMON_ETHEREAL_WRAITH);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(SUMMON_ETHEREAL_WRAITH);
             spells[2].targettype = TARGET_SELF;  // ?
             spells[2].instant = true;
             spells[2].perctrigger = 5.0f;
@@ -894,7 +894,7 @@ class EtherealWraithAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SHADOW_BOLT_VOLLEY);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(SHADOW_BOLT_VOLLEY);
             spells[0].targettype = TARGET_VARIOUS; // Haven't tested on groups, but should work correctly.
             spells[0].instant = false;
             spells[0].perctrigger = 15.0f;
@@ -991,14 +991,14 @@ class PandemoniusAI : public CreatureAIScript
 
             }
 
-            spells[0].info = dbcSpell.LookupEntry(DARK_SHELL);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(DARK_SHELL);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = false;
             spells[0].perctrigger = 20.0f;
             spells[0].attackstoptimer = 2000;
             spells[0].cooldown = 20;
 
-            spells[1].info = dbcSpell.LookupEntry(VOID_BLAST);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(VOID_BLAST);
             spells[1].targettype = TARGET_RANDOM_SINGLE;
             spells[1].instant = false;
             spells[1].perctrigger = 0.0f;
@@ -1189,14 +1189,14 @@ class TavarokAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(EARTHQUAKE);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(EARTHQUAKE);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].perctrigger = 8.0f;
             spells[0].attackstoptimer = 2000;
             spells[0].cooldown = 20;
 
-            spells[1].info = dbcSpell.LookupEntry(CRYSTAL_PRISON);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(CRYSTAL_PRISON);
             spells[1].targettype = TARGET_RANDOM_SINGLE;
             spells[1].instant = true;
             spells[1].perctrigger = 8.0f;
@@ -1205,7 +1205,7 @@ class TavarokAI : public CreatureAIScript
             spells[1].mindist2cast = 0.0f;
             spells[1].maxdist2cast = 40.0f;
 
-            spells[2].info = dbcSpell.LookupEntry(ARCING_SMASH);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(ARCING_SMASH);
             spells[2].targettype = TARGET_VARIOUS;  // Should affect only party/raid member in front of caster (I think it works, but needs tests anyway)
             spells[2].instant = true;
             spells[2].perctrigger = 12.0f;
@@ -1361,7 +1361,7 @@ class NexusPrinceShaffarAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(FIREBALL);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(FIREBALL);
             spells[0].targettype = TARGET_RANDOM_SINGLE;
             spells[0].instant = false;
             spells[0].perctrigger = 35.0f;
@@ -1370,7 +1370,7 @@ class NexusPrinceShaffarAI : public CreatureAIScript
             spells[0].mindist2cast = 0.0f;
             spells[0].maxdist2cast = 40.0f;
 
-            spells[1].info = dbcSpell.LookupEntry(FROSTBOLT);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(FROSTBOLT);
             spells[1].targettype = TARGET_RANDOM_SINGLE;
             spells[1].instant = false;
             spells[1].perctrigger = 35.0f;
@@ -1379,21 +1379,21 @@ class NexusPrinceShaffarAI : public CreatureAIScript
             spells[1].mindist2cast = 0.0f;
             spells[1].maxdist2cast = 40.0f;
 
-            spells[2].info = dbcSpell.LookupEntry(FROST_NOVA);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(FROST_NOVA);
             spells[2].targettype = TARGET_VARIOUS;
             spells[2].instant = true;
             spells[2].perctrigger = 15.0f;
             spells[2].attackstoptimer = 1000;
             spells[2].cooldown = 15;
 
-            spells[3].info = dbcSpell.LookupEntry(BLINK);
+            spells[3].info = sSpellCustomizations.GetSpellInfo(BLINK);
             spells[3].targettype = TARGET_SELF;
             spells[3].instant = true;
             spells[3].perctrigger = 5.0f;
             spells[3].attackstoptimer = 1000;
             spells[3].cooldown = 20;
 
-            spells[4].info = dbcSpell.LookupEntry(SUMMON_ETEREAL_BECON);
+            spells[4].info = sSpellCustomizations.GetSpellInfo(SUMMON_ETEREAL_BECON);
             spells[4].targettype = TARGET_SELF;
             spells[4].instant = true;
             spells[4].perctrigger = 0.0f;
@@ -1605,14 +1605,14 @@ class YorAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(DOUBLE_BREATH);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(DOUBLE_BREATH);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = true;
             spells[0].perctrigger = 20.0f;
             spells[0].attackstoptimer = 2000;
             spells[0].cooldown = 15;
 
-            spells[1].info = dbcSpell.LookupEntry(STOMP);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(STOMP);
             spells[1].targettype = TARGET_VARIOUS;
             spells[1].instant = true;
             spells[1].perctrigger = 7.0f;

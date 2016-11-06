@@ -31,7 +31,7 @@ bool FlametongueWeaponPassive(uint32 i, Aura* pAura, bool apply)
     {
         // target is always a player
         Item* item = static_cast<Player*>(target)->GetItemInterface()->GetItemByGUID(pAura->itemCasterGUID);
-        target->AddProcTriggerSpell(10444, pAura->GetSpellProto()->Id, pAura->m_casterGuid, pAura->GetSpellProto()->procChance, PROC_ON_MELEE_ATTACK, 0, NULL, NULL, item);
+        target->AddProcTriggerSpell(10444, pAura->GetSpellInfo()->Id, pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_MELEE_ATTACK, 0, NULL, NULL, item);
     }
     else
         target->RemoveProcTriggerSpell(10444, pAura->m_casterGuid, pAura->itemCasterGUID);
@@ -52,10 +52,10 @@ bool SkyShatterRegalia(uint32 i, Spell* s)
             s->p_caster->summonhandler.HasSummonInSlot(2) &&
             s->p_caster->summonhandler.HasSummonInSlot(3))
     {
-        Aura* aur = sSpellFactoryMgr.NewAura(dbcSpell.LookupEntry(38437), 5000, s->p_caster, s->p_caster, true);
+        Aura* aur = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(38437), 5000, s->p_caster, s->p_caster, true);
 
         for(uint32 j = 0; j < 3; j++)
-            aur->AddMod(aur->GetSpellProto()->EffectApplyAuraName[j], aur->GetSpellProto()->EffectBasePoints[j] + 1, aur->GetSpellProto()->EffectMiscValue[j], j);
+            aur->AddMod(aur->GetSpellInfo()->EffectApplyAuraName[j], aur->GetSpellInfo()->EffectBasePoints[j] + 1, aur->GetSpellInfo()->EffectMiscValue[j], j);
 
         s->p_caster->AddAura(aur);
     }
@@ -81,7 +81,7 @@ bool EarthShieldDummyAura(uint32 i, Aura* pAura, bool apply)
     Unit* m_target = pAura->GetTarget();
 
     if(apply)
-        m_target->AddProcTriggerSpell(379, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellProto()->procChance, pAura->GetSpellProto()->procFlags & ~PROC_ON_SPELL_LAND_VICTIM, pAura->GetSpellProto()->procCharges, NULL, NULL);
+        m_target->AddProcTriggerSpell(379, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, pAura->GetSpellInfo()->procFlags & ~PROC_ON_SPELL_LAND_VICTIM, pAura->GetSpellInfo()->procCharges, NULL, NULL);
     else if(m_target->GetAuraStackCount(pAura->GetSpellId()) == 1)
         m_target->RemoveProcTriggerSpell(379, pAura->m_casterGuid);
 

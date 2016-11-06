@@ -435,17 +435,15 @@ class SERVER_DECL Aura : public EventableObject
 {
     public:
 
-        Aura(SpellEntry* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
+        Aura(SpellInfo* proto, int32 duration, Object* caster, Unit* target, bool temporary = false, Item* i_caster = NULL);
         ~Aura();
 
-        void ExpireRemove();
         void Remove();
-        void Expire();
         void AddMod(uint32 t, int32 a, uint32 miscValue, uint32 i);
 
-        inline SpellEntry* GetSpellProto() const { return m_spellProto; }
-        inline uint32 GetSpellId() const { return m_spellProto->Id; }
-        inline bool IsPassive() { if (!m_spellProto) return false; return (m_spellProto->Attributes & ATTRIBUTES_PASSIVE && !m_areaAura); }
+        inline SpellInfo* GetSpellInfo() const { return m_spellInfo; }
+        inline uint32 GetSpellId() const { return m_spellInfo->Id; }
+        inline bool IsPassive() { if (!m_spellInfo) return false; return (m_spellInfo->IsPassive() && !m_areaAura); }
 
         void ResetDuration();
 
@@ -475,7 +473,6 @@ class SERVER_DECL Aura : public EventableObject
         Player* GetPlayerCaster();
         inline Unit* GetTarget() { return m_target; }
 
-        Aura* StrongerThat(Aura* aur);
         void ApplyModifiers(bool apply);
         void UpdateModifiers();
 
@@ -483,7 +480,7 @@ class SERVER_DECL Aura : public EventableObject
         // Area Auras
         //////////////////////////////////////////////////////////////////////////////////////////
 
-        void EventUpdateAA(float r);
+        void EventUpdateAreaAura(float r);
 
         void EventUpdateGroupAA(float r);
         void EventUpdateRaidAA(float r);
@@ -608,7 +605,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraModBaseResistance(bool apply);
         void SpellAuraModRegen(bool apply);
         void SpellAuraModPowerRegen(bool apply);
-        void SpellAuraModHealingPct(bool apply);
         void SpellAuraChannelDeathItem(bool apply);
         void SpellAuraModDamagePercTaken(bool apply);
         void SpellAuraModRegenPercent(bool apply);
@@ -693,8 +689,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraReduceEnemyRCritChance(bool apply);
         void SpellAuraLimitSpeed(bool apply);
         void SpellAuraIncreaseTimeBetweenAttacksPCT(bool apply);
-        //	void SpellAuraIncreaseSpellDamageByInt(bool apply);
-        //	void SpellAuraIncreaseHealingByInt(bool apply);
         void SpellAuraIncreaseAllWeaponSkill(bool apply);
         void SpellAuraModAttackerCritChance(bool apply);
         void SpellAuraIncreaseHitRate(bool apply);
@@ -706,7 +700,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraIncreaseFlightSpeed(bool apply);
         void SpellAuraIncreaseMovementAndMountedSpeed(bool apply);
         void SpellAuraIncreaseRating(bool apply);
-        //void SpellAuraIncreaseCastTimePCT(bool apply);
         void SpellAuraRegenManaStatPCT(bool apply);
         void SpellAuraSpellHealingStatPCT(bool apply);
         void SpellAuraModStealthDetection(bool apply);
@@ -716,7 +709,6 @@ class SERVER_DECL Aura : public EventableObject
         void SpellAuraIncreaseAttackerSpellCrit(bool apply);
         void SpellAuraIncreaseRepGainPct(bool apply);
         void SpellAuraIncreaseRAPbyStatPct(bool apply);
-        //void SpellAuraModRangedDamageTakenPCT(bool apply);
         void SpellAuraModBlockValue(bool apply);
         void SpellAuraAllowFlight(bool apply);
         void SpellAuraFinishingMovesCannotBeDodged(bool apply);
@@ -755,13 +747,13 @@ class SERVER_DECL Aura : public EventableObject
         void UpdateAuraModDecreaseSpeed();
 
         void SendModifierLog(int32** m, int32 v, uint32* mask, uint8 type, bool pct = false);
-        void SendDummyModifierLog(std::map<SpellEntry*, uint32> * m, SpellEntry* spellInfo, uint32 i, bool apply, bool pct = false);
+        void SendDummyModifierLog(std::map<SpellInfo*, uint32> * m, SpellInfo* spellInfo, uint32 i, bool apply, bool pct = false);
 
         // Events
         void EventPeriodicDamage(uint32);
         void EventPeriodicDamagePercent(uint32);
         void EventPeriodicHeal(uint32);
-        void EventPeriodicTriggerSpell(SpellEntry* spellInfo, bool overridevalues, int32 overridevalue);
+        void EventPeriodicTriggerSpell(SpellInfo* spellInfo, bool overridevalues, int32 overridevalue);
         void EventPeriodicTrigger(uint32 amount, uint32 type);
         void EventPeriodicEnergize(uint32, uint32);
         void EventPeriodicEnergizeVariable(uint32, uint32);
@@ -794,7 +786,7 @@ class SERVER_DECL Aura : public EventableObject
 
         virtual bool IsAbsorb() { return false; }
 
-        SpellEntry* m_spellProto;
+        SpellInfo* m_spellInfo;
         AreaAuraList targets; // This is only used for AA
         uint64 m_casterGuid;
         uint16 m_auraSlot;
@@ -876,7 +868,7 @@ class AbsorbAura : public Aura
         uint32 GetSchoolMask()
         {
             for (uint8 x = 0; x < 3; ++x)
-                if (GetSpellProto()->Effect[x] == SPELL_EFFECT_APPLY_AURA && GetSpellProto()->EffectApplyAuraName[x] == SPELL_AURA_SCHOOL_ABSORB)
+                if (GetSpellInfo()->Effect[x] == SPELL_EFFECT_APPLY_AURA && GetSpellInfo()->EffectApplyAuraName[x] == SPELL_AURA_SCHOOL_ABSORB)
                     return m_modList[x].m_miscValue;
             return 0;
         }

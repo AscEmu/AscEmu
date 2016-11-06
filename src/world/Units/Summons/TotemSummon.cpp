@@ -109,8 +109,8 @@ void TotemSummon::SetupSpells()
     if (GetOwner() == NULL)
         return;
 
-    SpellEntry* creatorspell = dbcSpell.LookupEntry(GetCreatedBySpell());
-    SpellEntry* TotemSpell = dbcSpell.LookupEntry(creature_properties->AISpells[0]);
+    SpellInfo* creatorspell = sSpellCustomizations.GetSpellInfo(GetCreatedBySpell());
+    SpellInfo* TotemSpell = sSpellCustomizations.GetSpellInfo(creature_properties->AISpells[0]);
 
     if (TotemSpell == NULL)
     {
@@ -125,7 +125,7 @@ void TotemSummon::SetupSpells()
         TotemSpell->HasEffect(SPELL_EFFECT_APPLY_GROUP_AREA_AURA) ||
         TotemSpell->HasEffect(SPELL_EFFECT_APPLY_RAID_AREA_AURA) ||
         TotemSpell->HasEffect(SPELL_EFFECT_PERSISTENT_AREA_AURA) ||
-        (TotemSpell->HasEffect(SPELL_EFFECT_APPLY_AURA) && TotemSpell->AppliesAura(SPELL_AURA_PERIODIC_TRIGGER_SPELL)))
+        (TotemSpell->HasEffect(SPELL_EFFECT_APPLY_AURA) && TotemSpell->AppliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_SPELL)))
         castingtotem = false;
 
     if (!castingtotem)

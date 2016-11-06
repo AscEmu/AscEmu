@@ -117,7 +117,7 @@ enum SPELL_TARGETS
 struct SP_AI_Spell
 {
     SP_AI_Spell();
-    SpellEntry* info;       // spell info
+    SpellInfo* info;       // spell info
     char targettype;        // 0-self , 1-attaking target, ....
     bool instant;           // does it is instant or not?
     float perctrigger;      // % of the cast of this spell in a total of 100% of the attacks

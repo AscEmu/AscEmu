@@ -24,8 +24,8 @@
 void CreateDummySpell(uint32 id)
 {
     const char* name = "Dummy Trigger";
-    SpellEntry* sp = new SpellEntry;
-    memset(sp, 0, sizeof(SpellEntry));
+    SpellInfo* sp = new SpellInfo;
+    memset(sp, 0, sizeof(SpellInfo));
     sp->Id = id;
     sp->Attributes = 384;
     sp->AttributesEx = 268435456;
@@ -39,11 +39,10 @@ void CreateDummySpell(uint32 id)
     sp->custom_NameHash = crc32((const unsigned char*)name, (unsigned int)strlen(name));
     sp->dmg_multiplier[0] = 1.0f;
     sp->StanceBarOrder = -1;
-    dbcSpell.SetRow(id, sp);
     sWorld.dummyspells.push_back(sp);
 }
 
-void Modify_EffectBasePoints(SpellEntry* sp)
+void Modify_EffectBasePoints(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
@@ -82,7 +81,7 @@ void Modify_EffectBasePoints(SpellEntry* sp)
         sp->EffectBasePoints[0] = 40;
 }
 
-void Set_missing_spellLevel(SpellEntry* sp)
+void Set_missing_spellLevel(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
@@ -416,7 +415,7 @@ void Set_missing_spellLevel(SpellEntry* sp)
 
             if (teachspell)
             {
-                SpellEntry* spellInfo;
+                SpellInfo* spellInfo;
                 spellInfo = CheckAndReturnSpellEntry(teachspell);
                 spellInfo->spellLevel = new_level;
                 sp->spellLevel = new_level;
@@ -425,7 +424,7 @@ void Set_missing_spellLevel(SpellEntry* sp)
     }
 }
 
-void Modify_AuraInterruptFlags(SpellEntry* sp)
+void Modify_AuraInterruptFlags(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
@@ -447,7 +446,7 @@ void Modify_AuraInterruptFlags(SpellEntry* sp)
     }
 }
 
-void Modify_RecoveryTime(SpellEntry* sp)
+void Modify_RecoveryTime(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
@@ -626,29 +625,32 @@ void ApplyNormalFixes()
 {
     //Updating spell.dbc
 
-    Log.Success("World", "Processing %u spells...", dbcSpell.GetNumRows());
+    Log.Success("World", "Processing %u spells...", sSpellCustomizations.GetSpellInfoStore()->size());
 
     //checking if the DBCs have been extracted from an english client, based on namehash of spell 4, the first with a different name in non-english DBCs
-    SpellEntry* sp = dbcSpell.LookupEntry(4);
-    if (crc32((const unsigned char*)sp->Name, (unsigned int)strlen(sp->Name)) != SPELL_HASH_WORD_OF_RECALL_OTHER)
+    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(4);
+    if (sp == nullptr)
+        return;
+
+    if (crc32((const unsigned char*)sp->Name.c_str(), (unsigned int)strlen(sp->Name.c_str())) != SPELL_HASH_WORD_OF_RECALL_OTHER)
     {
         Log.LargeErrorMessage("You are using DBCs extracted from an unsupported client.", "ArcEmu supports only enUS and enGB!!!", NULL);
         abort();
     }
 
-    uint32 cnt = dbcSpell.GetNumRows();
-
-    for (uint32 x = 0; x < cnt; x++)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
         // Read every SpellEntry row
-        sp = dbcSpell.LookupRow(x);
+        sp = sSpellCustomizations.GetSpellInfo(it->first);
+        if (sp == nullptr)
+            continue;
 
         uint32 namehash = 0;
 
 
         // hash the name
         //!!!!!!! representing all strings on 32 bits is dangerous. There is a chance to get same hash for a lot of strings ;)
-        namehash = crc32((const unsigned char*)sp->Name, (unsigned int)strlen(sp->Name));
+        namehash = crc32((const unsigned char*)sp->Name.c_str(), (unsigned int)strlen(sp->Name.c_str()));
         sp->custom_NameHash = namehash; //need these set before we start processing spells
 
         float radius = std::max(::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[0])), ::GetRadius(sSpellRadiusStore.LookupEntry(sp->EffectRadiusIndex[1])));
@@ -758,7 +760,7 @@ void ApplyNormalFixes()
 
         for (uint32 b = 0; b < 3; ++b)
         {
-            if (sp->EffectTriggerSpell[b] != 0 && dbcSpell.LookupEntryForced(sp->EffectTriggerSpell[b]) == NULL)
+            if (sp->EffectTriggerSpell[b] != 0 && sSpellCustomizations.GetSpellInfo(sp->EffectTriggerSpell[b]) == NULL)
             {
                 // proc spell referencing non-existent spell. create a dummy spell for use w/ it.
                 CreateDummySpell(sp->EffectTriggerSpell[b]);
@@ -1063,10 +1065,12 @@ void ApplyNormalFixes()
     //SPELL COEFFICIENT SETTINGS START
     //////////////////////////////////////////////////////////////////
 
-    for (uint32 x = 0; x < cnt; x++)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
         // get spellentry
-        sp = dbcSpell.LookupRow(x);
+        sp = sSpellCustomizations.GetSpellInfo(it->first);
+        if (sp == nullptr)
+            continue;
 
         //Setting Cast Time Coefficient
         auto spell_cast_time = sSpellCastTimesStore.LookupEntry(sp->CastingTimeIndex);
@@ -1485,7 +1489,7 @@ void ApplyNormalFixes()
         {
             Field* f;
             f = resultx->Fetch();
-            sp = dbcSpell.LookupEntryForced(f[0].GetUInt32());
+            sp = sSpellCustomizations.GetSpellInfo(f[0].GetUInt32());
             if (sp != NULL)
             {
                 sp->Dspell_coef_override = f[2].GetFloat();
@@ -1499,11 +1503,14 @@ void ApplyNormalFixes()
     }
 
     //Fully loaded coefficients, we must share channeled coefficient to its triggered spells
-    for (uint32 x = 0; x < cnt; x++)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
         // get spellentry
-        sp = dbcSpell.LookupRow(x);
-        SpellEntry* spz;
+        sp = sSpellCustomizations.GetSpellInfo(it->first);
+        if (sp == nullptr)
+            continue;
+
+        SpellInfo* spz;
 
         //Case SPELL_AURA_PERIODIC_TRIGGER_SPELL
         for (uint8 i = 0; i < 3; i++)
@@ -2524,8 +2531,8 @@ void ApplyNormalFixes()
 
     ////////////////////////////////////////////////////////////
     // Shamanistic Rage
-    SpellEntry*  parentsp = CheckAndReturnSpellEntry(30823);
-    SpellEntry* triggersp = CheckAndReturnSpellEntry(30824);
+    SpellInfo*  parentsp = CheckAndReturnSpellEntry(30823);
+    SpellInfo* triggersp = CheckAndReturnSpellEntry(30824);
     if (parentsp != NULL && triggersp != NULL)
         triggersp->EffectBasePoints[0] = parentsp->EffectBasePoints[0];
 
@@ -4349,28 +4356,28 @@ void ApplyNormalFixes()
     }
 
     // DEATH AND DECAY
-    sp = dbcSpell.LookupEntryForced(49937);
+    sp = sSpellCustomizations.GetSpellInfo(49937);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    sp = dbcSpell.LookupEntryForced(49936);
+    sp = sSpellCustomizations.GetSpellInfo(49936);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    sp = dbcSpell.LookupEntryForced(49938);
+    sp = sSpellCustomizations.GetSpellInfo(49938);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
         sp->Effect[0] = SPELL_EFFECT_PERSISTENT_AREA_AURA;
     }
 
-    sp = dbcSpell.LookupEntryForced(43265);
+    sp = sSpellCustomizations.GetSpellInfo(43265);
     if (sp != NULL)
     {
         sp->EffectApplyAuraName[0] = SPELL_AURA_PERIODIC_DAMAGE;
@@ -4378,7 +4385,7 @@ void ApplyNormalFixes()
     }
 
     // Runic Empowerment
-    /*sp = dbcSpell.LookupEntryForced(81229);
+    /*sp = sSpellCustomizations.GetSpellInfo(81229);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_CAST_SPELL;
@@ -4391,7 +4398,7 @@ void ApplyNormalFixes()
     }*/
 
     // Vengeance
-    sp = dbcSpell.LookupEntryForced(93099);
+    sp = sSpellCustomizations.GetSpellInfo(93099);
     if (sp != NULL)
     {
         sp->procFlags = PROC_ON_ANY_DAMAGE_VICTIM;
@@ -4572,10 +4579,10 @@ void ApplyNormalFixes()
     {
         const uint32 ritOfSummId = 62330;
         CreateDummySpell(ritOfSummId);
-        SpellEntry * ritOfSumm = dbcSpell.LookupEntryForced(ritOfSummId);
+        SpellInfo * ritOfSumm = sSpellCustomizations.GetSpellInfo(ritOfSummId);
         if (ritOfSumm != NULL)
         {
-            memcpy(ritOfSumm, sp, sizeof(SpellEntry));
+            memcpy(ritOfSumm, sp, sizeof(SpellInfo));
             ritOfSumm->Id = ritOfSummId;
         }
     }

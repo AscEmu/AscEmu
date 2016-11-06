@@ -25,7 +25,7 @@ typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*>
 
 #ifdef ENABLE_ACHIEVEMENTS
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementEntry> sAchievementStore(DBC::Structures::achievement_format);
-SERVER_DECL DBC::DBCStorage<AchievementCriteriaEntry> sAchievementCriteriaStore(DBC::Structures::achievement_criteria_format);
+SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementCriteriaEntry> sAchievementCriteriaStore(DBC::Structures::achievement_criteria_format);
 #endif
 
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaGroupEntry> sAreaGroupStore(DBC::Structures::area_group_format);
@@ -74,10 +74,6 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellCastTimesEntry> sSpellCastTime
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDifficultyEntry> sSpellDifficultyStore(DBC::Structures::spell_difficulty_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellDurationEntry> sSpellDurationStore(DBC::Structures::spell_duration_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellEntry_New> sSpellStore(DBC::Structures::spell_entry_format);
-
-///\todo remove the old spell loader
-SERVER_DECL DBCStorage<SpellEntry> dbcSpell;
-
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRadiusEntry> sSpellRadiusStore(DBC::Structures::spell_radius_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRangeEntry> sSpellRangeStore(DBC::Structures::spell_range_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRuneCostEntry> sSpellRuneCostStore(DBC::Structures::spell_rune_cost_format);
@@ -103,118 +99,6 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::LFGDungeonEntry> sLFGDungeonStore(D
 SERVER_DECL DBC::DBCStorage<DBC::Structures::LiquidTypeEntry> sLiquidTypeStore(DBC::Structures::liquid_type_entry_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleEntry> sVehicleStore(DBC::Structures::vehicle_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSeatStore(DBC::Structures::vehicle_seat_format);
-
-///\todo remove the old spell loader
-const char* spellentryFormat =
-"u" // Id
-"u" // Category
-"u" // DispelType
-"u" // MechanicsType
-"u" // Attributes
-"u" // AttributesEx
-"u" // AttributesExB
-"u" // AttributesExC
-"u" // AttributesExD
-"u" // AttributesExE
-"u" // AttributesExF
-"u" // AttributesExG
-"u" // RequiredShapeShift
-"x" // unk 3.2.0
-"u" // ShapeshiftExclude
-"x" // unk 3.2.0
-"u" // Targets
-"u" // TargetCreatureType
-"u" // RequiresSpellFocus
-"u" // FacingCasterFlags
-"u" // CasterAuraState
-"u" // TargetAuraState
-"u" // ExcludeCasterAuraState
-"u" // ExcludeTargetAuraState
-"u" // casterAuraSpell
-"u" // targetAuraSpell
-"u" // ExcludeCasterAuraState
-"u" // ExcludeTargetAuraState
-"u" // CastingTimeIndex
-"u" // RecoveryTime
-"u" // CategoryRecoveryTime
-"u" // InterruptFlags
-"u" // AuraInterruptFlags
-"u" // ChannelInterruptFlags
-"u" // procFlags
-"u" // procChance
-"u" // procCharges
-"u" // maxLevel
-"u" // baseLevel
-"u" // spellLevel
-"u" // DurationIndex
-"u" // powerType
-"u" // manaCost
-"u" // manaCostPerlevel
-"u" // manaPerSecond
-"u" // manaPerSecondPerLevel
-"u" // rangeIndex
-"f" // speed
-"u" // modalNextSpell
-"u" // maxstack
-"uu" // Totem[2]
-"uuuuuuuu" // Reagent[8]
-"uuuuuuuu" // ReagentCount[8]
-"u" // EquippedItemClass
-"u" // EquippedItemSubClass
-"u" // RequiredItemFlags
-"uuu" // Effect[3]
-"uuu" // EffectDieSides[3]
-"uuu" // EffectRealPointsPerLevel[3]
-"uuu" // EffectBasePoints[3]
-"uuu" // EffectMechanic[3]
-"uuu" // EffectImplicitTargetA[3]
-"uuu" // EffectImplicitTargetB[3]
-"uuu" // EffectRadiusIndex[3]
-"uuu" // EffectApplyAuraName[3]
-"uuu" // EffectAmplitude[3]
-"uuu" // Effectunknown[3]
-"uuu" // EffectChainTarget[3]
-"uuu" // EffectSpellGroupRelation[3]
-"uuu" // EffectMiscValue[3]
-"uuu" // EffectMiscValueB[3]
-"uuu" // EffectTriggerSpell[3]
-"uuu" // EffectPointsPerComboPoint[3]
-"uuu" // EffectUnk0[3]
-"uuu" // EffectUnk1[3]
-"uuu" // EffectUnk2[3]
-"u" // SpellVisual
-"u" // field114
-"u" // spellIconID
-"u" // activeIconID
-"u" // spellPriority
-"lxxxxxxxxxxxxxxxx" // Name
-"lxxxxxxxxxxxxxxxx" // Rank
-"lxxxxxxxxxxxxxxxx" // Description
-"lxxxxxxxxxxxxxxxx" // BuffDescription
-"u" // ManaCostPercentage
-"u" // unkflags
-"u" // StartRecoveryTime
-"u" // StartRecoveryCategory
-"u" // MaxTargetLevel
-"u" // SpellFamilyName
-"uu" // SpellGroupType
-"u" // MaxTargets
-"u" // Spell_Dmg_Type
-"u" // PreventionType
-"u" // StanceBarOrder
-"fff" // dmg_multiplier[3]
-"u" // MinFactionID
-"u" // MinReputation
-"u" // RequiredAuraVision
-"uu" // TotemCategory[2]
-"i" // RequiresAreaId
-"u" // School
-"ux"
-"x" //Added in 3.1
-"xxx" // unk 3.2.0, float!
-"x" // unk 3.2.0
-"i"
-;
 
 template<class T>
 bool loader_stub(const char* filename, const char* format, bool ind, T & l, bool loadstrs)
@@ -251,10 +135,6 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sGlyphSlotStore, dbc_path, "GlyphSlot.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSkillLineStore, dbc_path, "SkillLine.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellStore, dbc_path, "Spell.dbc");
-
-    ///\todo remove the old spell loader
-    LOAD_DBC("DBC/Spell.dbc", spellentryFormat, true, dbcSpell, true);
-
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sItemExtendedCostStore, dbc_path, "ItemExtendedCost.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentStore, dbc_path, "Talent.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentTabStore, dbc_path, "TalentTab.dbc");

@@ -319,19 +319,19 @@ class MograineAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_MORGRAINE_SHIELD);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_MORGRAINE_SHIELD);
             spells[0].targettype = TARGET_SELF;
             spells[0].instant = true;
             spells[0].perctrigger = 5.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_MORGRAINE_HAMMER);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(SP_MORGRAINE_HAMMER);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 10.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_MORGRAINE_CRUSADER);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(SP_MORGRAINE_CRUSADER);
             spells[2].targettype = TARGET_ATTACKING;
             spells[2].instant = true;
             spells[2].perctrigger = 30.0f;
@@ -469,19 +469,19 @@ class WhitemaneAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_WHITEMANE_SMITE);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_WHITEMANE_SMITE);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = false;
             spells[0].perctrigger = 15.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_WHITEMANE_SLEEP);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(SP_WHITEMANE_SLEEP);
             spells[1].targettype = TARGET_ATTACKING;
             spells[1].instant = true;
             spells[1].perctrigger = 0.0f;
             spells[1].attackstoptimer = 1000;
 
-            spells[2].info = dbcSpell.LookupEntry(SP_WHITEMANE_RESURRECTION);
+            spells[2].info = sSpellCustomizations.GetSpellInfo(SP_WHITEMANE_RESURRECTION);
             spells[2].targettype = TARGET_VARIOUS; //Can't seem to get her to cast it on Mograine...
             spells[2].instant = false;
             spells[2].perctrigger = 0.0f;
@@ -639,13 +639,13 @@ class FairbanksAI : public CreatureAIScript
                 m_spellcheck[i] = false;
             }
 
-            spells[0].info = dbcSpell.LookupEntry(SP_FAIRBANKS_BLOOD);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(SP_FAIRBANKS_BLOOD);
             spells[0].targettype = TARGET_ATTACKING;
             spells[0].instant = true;
             spells[0].perctrigger = 15.0f;
             spells[0].attackstoptimer = 1000;
 
-            spells[1].info = dbcSpell.LookupEntry(SP_FAIRBANKS_PWS);
+            spells[1].info = sSpellCustomizations.GetSpellInfo(SP_FAIRBANKS_PWS);
             spells[1].targettype = TARGET_SELF;
             spells[1].instant = true;
             spells[1].perctrigger = 15.0f;

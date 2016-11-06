@@ -199,9 +199,11 @@ void ScriptMgr::DumpUnimplementedSpells()
 
     of.open("unimplemented1.txt");
 
-    for (DBCStorage< SpellEntry >::iterator itr = dbcSpell.begin(); itr != dbcSpell.end(); ++itr)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
-        SpellEntry* sp = *itr;
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(it->first);
+        if (!sp)
+            continue;
 
         if (!sp->HasEffect(SPELL_EFFECT_DUMMY) && !sp->HasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->HasEffect(SPELL_EFFECT_SEND_EVENT))
             continue;
@@ -234,10 +236,13 @@ void ScriptMgr::DumpUnimplementedSpells()
 
     count = 0;
 
-    for (DBCStorage< SpellEntry >::iterator itr = dbcSpell.begin(); itr != dbcSpell.end(); ++itr)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
-        SpellEntry* sp = *itr;
-        if (!sp->AppliesAura(SPELL_AURA_DUMMY))
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(it->first);
+        if (!sp)
+            continue;
+
+        if (!sp->AppliesAreaAura(SPELL_AURA_DUMMY))
             continue;
 
         HandleDummyAuraMap::iterator ditr = _auras.find(sp->Id);
@@ -285,15 +290,15 @@ void ScriptMgr::register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback
         Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script for Aura ID: %u but this aura has already one.", entry);
     }
 
-    SpellEntry* sp = dbcSpell.LookupEntryForced(entry);
+    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(entry);
     if (sp == NULL)
     {
         Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a dummy aura handler for invalid Spell ID: %u.", entry);
         return;
     }
 
-    if (!sp->AppliesAura(SPELL_AURA_DUMMY) && !sp->AppliesAura(SPELL_AURA_PERIODIC_TRIGGER_DUMMY))
-        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr registered a dummy aura handler for Spell ID: %u (%s), but spell has no dummy aura!", entry, sp->Name);
+    if (!sp->AppliesAreaAura(SPELL_AURA_DUMMY) && !sp->AppliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_DUMMY))
+        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr registered a dummy aura handler for Spell ID: %u (%s), but spell has no dummy aura!", entry, sp->Name.c_str());
 
     _auras.insert(HandleDummyAuraMap::value_type(entry, callback));
 }
@@ -306,7 +311,7 @@ void ScriptMgr::register_dummy_spell(uint32 entry, exp_handle_dummy_spell callba
         return;
     }
 
-    SpellEntry* sp = dbcSpell.LookupEntryForced(entry);
+    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(entry);
     if (sp == NULL)
     {
         Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a dummy handler for invalid Spell ID: %u.", entry);
@@ -314,7 +319,7 @@ void ScriptMgr::register_dummy_spell(uint32 entry, exp_handle_dummy_spell callba
     }
 
     if (!sp->HasEffect(SPELL_EFFECT_DUMMY) && !sp->HasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->HasEffect(SPELL_EFFECT_SEND_EVENT))
-        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr registered a dummy handler for Spell ID: %u (%s), but spell has no dummy/script/send event effect!", entry, sp->Name);
+        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr registered a dummy handler for Spell ID: %u (%s), but spell has no dummy/script/send event effect!", entry, sp->Name.c_str());
 
     _spells.insert(HandleDummySpellMap::value_type(entry, callback));
 }
@@ -418,7 +423,7 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
         return;
     }
 
-    SpellEntry* sp = dbcSpell.LookupEntryForced(entry);
+    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(entry);
     if (sp == NULL)
     {
         Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr tried to register a script effect handler for invalid Spell %u.", entry);
@@ -426,7 +431,7 @@ void ScriptMgr::register_script_effect(uint32 entry, exp_handle_script_effect ca
     }
 
     if (!sp->HasEffect(SPELL_EFFECT_SCRIPT_EFFECT) && !sp->HasEffect(SPELL_EFFECT_SEND_EVENT))
-        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr registered a script effect handler for Spell ID: %u (%s), but spell has no scripted effect!", entry, sp->Name);
+        Log.DebugFlag(LF_SCRIPT_MGR, "ScriptMgr registered a script effect handler for Spell ID: %u (%s), but spell has no scripted effect!", entry, sp->Name.c_str());
 
     SpellScriptEffects.insert(std::pair< uint32, exp_handle_script_effect >(entry, callback));
 }
@@ -876,7 +881,7 @@ void HookInterface::OnEnterCombat(Player* pPlayer, Unit* pTarget)
         ((tOnEnterCombat)*itr)(pPlayer, pTarget);
 }
 
-bool HookInterface::OnCastSpell(Player* pPlayer, SpellEntry* pSpell, Spell* spell)
+bool HookInterface::OnCastSpell(Player* pPlayer, SpellInfo* pSpell, Spell* spell)
 {
     ServerHookList hookList = sScriptMgr._hooks[SERVER_HOOK_EVENT_ON_CAST_SPELL];
     bool ret_val = true;

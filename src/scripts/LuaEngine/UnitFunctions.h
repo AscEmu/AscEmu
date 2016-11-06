@@ -506,7 +506,7 @@ class LuaUnit
     {
         uint32 sp = CHECK_ULONG(L, 1);
         if (sp && ptr)
-            ptr->CastSpell(ptr, dbcSpell.LookupEntry(sp), true);
+            ptr->CastSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), true);
         return 0;
     }
 
@@ -514,7 +514,7 @@ class LuaUnit
     {
         uint32 sp = CHECK_ULONG(L, 1);
         if (sp && ptr)
-            ptr->CastSpell(ptr, dbcSpell.LookupEntry(sp), false);
+            ptr->CastSpell(ptr, sSpellCustomizations.GetSpellInfo(sp), false);
         return 0;
     }
     static int FullCastSpellOnTarget(lua_State* L, Unit* ptr)
@@ -2255,7 +2255,7 @@ class LuaUnit
         uint32 sp = CHECK_ULONG(L, 4);
         if (!sp || !ptr)
             return 0;
-        ptr->CastSpellAoF(x, y, z, dbcSpell.LookupEntry(sp), true);
+        ptr->CastSpellAoF(x, y, z, sSpellCustomizations.GetSpellInfo(sp), true);
         return 0;
     }
 
@@ -2267,7 +2267,7 @@ class LuaUnit
         uint32 sp = CHECK_ULONG(L, 4);
         if (!sp || !ptr)
             return 0;
-        ptr->CastSpellAoF(x, y, z, dbcSpell.LookupEntry(sp), false);
+        ptr->CastSpellAoF(x, y, z, sSpellCustomizations.GetSpellInfo(sp), false);
         return 0;
     }
 
@@ -2479,7 +2479,7 @@ class LuaUnit
     {
         if (!ptr) return 0;
         if (ptr->GetCurrentSpell())
-            lua_pushnumber(L, ptr->GetCurrentSpell()->GetProto()->Id);
+            lua_pushnumber(L, ptr->GetCurrentSpell()->GetSpellInfo()->Id);
         else
             lua_pushnil(L);
         return 1;
@@ -2840,7 +2840,7 @@ class LuaUnit
 
         if (!target)
             return 0;
-        ptr->Strike(target, weapon_damage_type, dbcSpell.LookupEntry(sp), adddmg, pct_dmg_mod, exclusive_damage, false, false);
+        ptr->Strike(target, weapon_damage_type, sSpellCustomizations.GetSpellInfo(sp), adddmg, pct_dmg_mod, exclusive_damage, false, false);
         return 0;
     }
 
@@ -3607,10 +3607,10 @@ class LuaUnit
             switch (ptr->GetTypeId())
             {
                 case TYPEID_PLAYER:
-                    sEventMgr.AddEvent(ptr, &Player::EventCastSpell, target, dbcSpell.LookupEntry(sp), EVENT_PLAYER_UPDATE, delay, repeats, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                    sEventMgr.AddEvent(ptr, &Player::EventCastSpell, target, sSpellCustomizations.GetSpellInfo(sp), EVENT_PLAYER_UPDATE, delay, repeats, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     break;
                 case TYPEID_UNIT:
-                    sEventMgr.AddEvent(ptr, &Unit::EventCastSpell, target, dbcSpell.LookupEntry(sp), EVENT_CREATURE_UPDATE, delay, repeats, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                    sEventMgr.AddEvent(ptr, &Unit::EventCastSpell, target, sSpellCustomizations.GetSpellInfo(sp), EVENT_CREATURE_UPDATE, delay, repeats, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                     break;
             }
         }
@@ -3884,7 +3884,7 @@ class LuaUnit
         bool temp = CHECK_BOOL(L, 3);
         if (ptr && spellid)
         {
-            Aura* aura = sSpellFactoryMgr.NewAura(dbcSpell.LookupEntry(spellid), duration, ptr, ptr, temp);
+            Aura* aura = sSpellFactoryMgr.NewAura(sSpellCustomizations.GetSpellInfo(spellid), duration, ptr, ptr, temp);
             ptr->AddAura(aura);
             lua_pushboolean(L, 1);
         }
@@ -4737,7 +4737,7 @@ class LuaUnit
         Object* target = CHECK_OBJECT(L, 2);
         if (Csp && target != NULL)
         {
-            ptr->CastSpell(target->GetGUID(), dbcSpell.LookupEntry(Csp), false);
+            ptr->CastSpell(target->GetGUID(), sSpellCustomizations.GetSpellInfo(Csp), false);
             ptr->SetChannelSpellTargetGUID(target->GetGUID());
             ptr->SetChannelSpellId(Csp);
         }
@@ -5653,7 +5653,7 @@ class LuaUnit
         TEST_UNITPLAYER_RET();
         for (uint32 x = MAX_NEGATIVE_VISUAL_AURAS_START; x < MAX_NEGATIVE_VISUAL_AURAS_END; ++x)
         {
-            if (ptr->m_auras[x] && ptr->m_auras[x]->m_spellProto)
+            if (ptr->m_auras[x] && ptr->m_auras[x]->m_spellInfo)
                 RET_BOOL(true)
         }
         RET_BOOL(false)
@@ -5664,7 +5664,7 @@ class LuaUnit
         TEST_UNITPLAYER()
             for (uint32 x = MAX_POSITIVE_VISUAL_AURAS_START; x < MAX_POSITIVE_VISUAL_AURAS_END; ++x)
             {
-                if (ptr->m_auras[x] && ptr->m_auras[x]->m_spellProto)
+                if (ptr->m_auras[x] && ptr->m_auras[x]->m_spellInfo)
                     RET_BOOL(true)
             }
         RET_BOOL(false)

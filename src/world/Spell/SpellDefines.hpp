@@ -303,4 +303,10 @@ enum SpellAttributesExG
     ATTRIBUTESEXG_UNK32                             = 0x80000000
 };
 
+#define MAX_SPELL_EFFECTS 3
+#define MAX_SPELL_TOTEMS 2
+#define MAX_SPELL_TOTEM_CATEGORIES 2
+#define MAX_SPELL_REAGENTS 8
+#define MAX_SPELL_ID 121820
+
 #endif // _SPELL_DEFINES_HPP

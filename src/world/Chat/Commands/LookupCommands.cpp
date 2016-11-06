@@ -540,9 +540,9 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
     uint32 count = 0;
     std::string recout;
     char itoabuf[12];
-    for (uint32 index = 0; index < dbcSpell.GetNumRows(); ++index)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
-        SpellEntry* spell = dbcSpell.LookupRow(index);
+        SpellInfo* spell = sSpellCustomizations.GetSpellInfo(it->first);
         std::string y = std::string(spell->Name);
         arcemu_TOLOWER(y);
         if (FindXinYString(x, y))
@@ -552,7 +552,7 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
             recout += ": |cff71d5ff|Hspell:";
             recout += (const char*)itoabuf;
             recout += "|h[";
-            recout += spell->Name;
+            recout += spell->Name.c_str();
             recout += "]|h|r";
 
             std::string::size_type pos = recout.find('%');

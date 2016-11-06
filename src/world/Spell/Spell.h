@@ -562,14 +562,6 @@ enum LOCKTYPES
     LOCKTYPE_VEHICLE                = 21
 };
 
-enum TIMER_TYPE
-{
-    TIMER_EXHAUSTION,
-    TIMER_BREATH,
-    TIMER_FEIGNDEATH,
-    TIMER_UNKNOWN
-};
-
 enum SpellEffects
 {
     SPELL_EFFECT_NULL = 0,
@@ -895,9 +887,9 @@ inline bool CanAgroHash(uint32 spellhashname)
 //  Returns false otherwise.
 //
 ////////////////////////////////////////////////////////////////////////////////
-bool IsDamagingSpell(SpellEntry* sp);
+bool IsDamagingSpell(SpellInfo* sp);
 
-inline uint32 IsHealingSpell(SpellEntry* sp)
+inline uint32 IsHealingSpell(SpellInfo* sp)
 {
     switch(sp->Effect[0])
     {
@@ -1292,7 +1284,7 @@ typedef enum
 } SpellEffectTarget;
 
 
-inline bool HasTargetType(SpellEntry* sp, uint32 ttype)
+inline bool HasTargetType(SpellInfo* sp, uint32 ttype)
 {
     if (
         sp->EffectImplicitTargetA[0] == ttype ||
@@ -1306,7 +1298,7 @@ inline bool HasTargetType(SpellEntry* sp, uint32 ttype)
     return false;
 }
 
-inline int GetAiTargetType(SpellEntry* sp)
+inline int GetAiTargetType(SpellInfo* sp)
 {
     /*  this is not good as one spell effect can target self and other one an enemy,
         maybe we should make it for each spell effect or use as flags */
@@ -1363,7 +1355,7 @@ inline int GetAiTargetType(SpellEntry* sp)
     return TTYPE_NULL;
 }
 
-inline bool IsTargetingStealthed(SpellEntry* sp)
+inline bool IsTargetingStealthed(SpellInfo* sp)
 {
     if (HasTargetType(sp, EFF_TARGET_INVISIBLE_OR_HIDDEN_ENEMIES_AT_LOCATION_RADIUS) ||
         HasTargetType(sp, EFF_TARGET_ALL_ENEMIES_AROUND_CASTER) ||
@@ -1398,7 +1390,7 @@ inline bool IsTargetingStealthed(SpellEntry* sp)
     return 0;
 }
 
-inline bool IsRequireCooldownSpell(SpellEntry* sp)
+inline bool IsRequireCooldownSpell(SpellInfo* sp)
 {
     if ((sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN && sp->AttributesEx & ATTRIBUTESEX_NOT_BREAK_STEALTH)     //rogue cold blood
         || (sp->Attributes & ATTRIBUTES_TRIGGER_COOLDOWN && (!sp->AttributesEx || sp->AttributesEx & ATTRIBUTESEX_REMAIN_OOC)))
@@ -1559,7 +1551,7 @@ class SERVER_DECL Spell : public EventableObject
     public:
 
         friend class DummySpellHandler;
-        Spell(Object* Caster, SpellEntry* info, bool triggered, Aura* aur);
+        Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur);
         ~Spell();
 
         int32 event_GetInstanceID() { return m_caster->GetInstanceID(); }
@@ -1622,20 +1614,20 @@ class SERVER_DECL Spell : public EventableObject
 
         bool HasCustomFlag(uint32 flag)
         {
-            if ((GetProto()->CustomFlags & flag) != 0)
+            if ((GetSpellInfo()->CustomFlags & flag) != 0)
                 return true;
             else
                 return false;
         }
 
-        inline bool hasAttribute(SpellAttributes attribute) { return GetProto()->Attributes & attribute; }
-        inline bool hasAttributeEx(SpellAttributesEx attribute) { return GetProto()->AttributesEx & attribute; }
-        inline bool hasAttributeExB(SpellAttributesExB attribute) { return GetProto()->AttributesExB & attribute; }
-        inline bool hasAttributeExC(SpellAttributesExC attribute) { return GetProto()->AttributesExC & attribute; }
-        inline bool hasAttributeExD(SpellAttributesExD attribute) { return GetProto()->AttributesExD & attribute; }
-        inline bool hasAttributeExE(SpellAttributesExE attribute) { return GetProto()->AttributesExE & attribute; }
-        inline bool hasAttributeExF(SpellAttributesExF attribute) { return GetProto()->AttributesExF & attribute; }
-        inline bool hasAttributeExG(SpellAttributesExG attribute) { return GetProto()->AttributesExG & attribute; }
+        inline bool hasAttribute(SpellAttributes attribute) { return GetSpellInfo()->Attributes & attribute; }
+        inline bool hasAttributeEx(SpellAttributesEx attribute) { return GetSpellInfo()->AttributesEx & attribute; }
+        inline bool hasAttributeExB(SpellAttributesExB attribute) { return GetSpellInfo()->AttributesExB & attribute; }
+        inline bool hasAttributeExC(SpellAttributesExC attribute) { return GetSpellInfo()->AttributesExC & attribute; }
+        inline bool hasAttributeExD(SpellAttributesExD attribute) { return GetSpellInfo()->AttributesExD & attribute; }
+        inline bool hasAttributeExE(SpellAttributesExE attribute) { return GetSpellInfo()->AttributesExE & attribute; }
+        inline bool hasAttributeExF(SpellAttributesExF attribute) { return GetSpellInfo()->AttributesExF & attribute; }
+        inline bool hasAttributeExG(SpellAttributesExG attribute) { return GetSpellInfo()->AttributesExG & attribute; }
 
         // Removes reagents, ammo, and items/charges
         void RemoveItems();
@@ -1650,7 +1642,7 @@ class SERVER_DECL Spell : public EventableObject
         void AddCooldown();
         void AddStartCooldown();
         //
-        uint8 GetErrorAtShapeshiftedCast(SpellEntry* spellInfo, uint32 form);
+        uint8 GetErrorAtShapeshiftedCast(SpellInfo* spellInfo, uint32 form);
 
 
         bool Reflect(Unit* refunit);
@@ -1686,7 +1678,7 @@ class SERVER_DECL Spell : public EventableObject
         // Zyres: Not called.
         //void writeAmmoToPacket(WorldPacket* data);
         uint32 pSpellId;
-        SpellEntry* ProcedOnSpell; //some spells need to know the origins of the proc too
+        SpellInfo* ProcedOnSpell; //some spells need to know the origins of the proc too
         SpellCastTargets m_targets;
         SpellExtraError m_extraError;
 
@@ -1694,7 +1686,7 @@ class SERVER_DECL Spell : public EventableObject
 
         void SpellEffectUnused(uint32 i);
 
-        void ApplyAA(uint32 i);
+        void ApplyAreaAura(uint32 i);
 
         // Effect Handlers
         void SpellEffectNULL(uint32 i);
@@ -1884,7 +1876,7 @@ class SERVER_DECL Spell : public EventableObject
 
         // This returns SPELL_ENTRY_Spell_Dmg_Type where 0 = SPELL_DMG_TYPE_NONE, 1 = SPELL_DMG_TYPE_MAGIC, 2 = SPELL_DMG_TYPE_MELEE, 3 = SPELL_DMG_TYPE_RANGED
         // It should NOT be used for weapon_damage_type which needs: 0 = MELEE, 1 = OFFHAND, 2 = RANGED
-        inline uint32 GetType() { return (GetProto()->Spell_Dmg_Type == SPELL_DMG_TYPE_NONE ? SPELL_DMG_TYPE_MAGIC : GetProto()->Spell_Dmg_Type); }
+        inline uint32 GetType() { return (GetSpellInfo()->Spell_Dmg_Type == SPELL_DMG_TYPE_NONE ? SPELL_DMG_TYPE_MAGIC : GetSpellInfo()->Spell_Dmg_Type); }
 
         std::map<uint64, Aura*> m_pendingAuras;
         TargetsList UniqueTargets;
@@ -1902,12 +1894,12 @@ class SERVER_DECL Spell : public EventableObject
         bool IsAspect();
         bool IsSeal();
 
-        inline SpellEntry* GetProto() { return (m_spellInfo_override == NULL) ? m_spellInfo : m_spellInfo_override; }
+        inline SpellInfo* GetSpellInfo() { return (m_spellInfo_override == NULL) ? m_spellInfo : m_spellInfo_override; }
         void InitProtoOverride()
         {
             if (m_spellInfo_override != NULL)
                 return;
-            m_spellInfo_override = dbcSpell.CreateCopy(m_spellInfo);
+            m_spellInfo_override = sSpellCustomizations.GetSpellInfo(m_spellInfo->Id);
         }
         uint32 GetDuration()
         {
@@ -1915,9 +1907,9 @@ class SERVER_DECL Spell : public EventableObject
             bDurSet = true;
             int32 c_dur = 0;
 
-            if (GetProto()->DurationIndex)
+            if (GetSpellInfo()->DurationIndex)
             {
-                auto spell_duration = sSpellDurationStore.LookupEntry(GetProto()->DurationIndex);
+                auto spell_duration = sSpellDurationStore.LookupEntry(GetSpellInfo()->DurationIndex);
                 if (spell_duration)
                 {
                     //check for negative and 0 durations.
@@ -1955,8 +1947,8 @@ class SERVER_DECL Spell : public EventableObject
 
                     if (u_caster != nullptr)
                     {
-                        SM_FIValue(u_caster->SM_FDur, (int32*)&this->Dur, GetProto()->SpellGroupType);
-                        SM_PIValue(u_caster->SM_PDur, (int32*)&this->Dur, GetProto()->SpellGroupType);
+                        SM_FIValue(u_caster->SM_FDur, (int32*)&this->Dur, GetSpellInfo()->SpellGroupType);
+                        SM_PIValue(u_caster->SM_PDur, (int32*)&this->Dur, GetSpellInfo()->SpellGroupType);
     #ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
                         int spell_flat_modifers = 0;
                         int spell_pct_modifers = 0;
@@ -1985,11 +1977,11 @@ class SERVER_DECL Spell : public EventableObject
             if (bRadSet[i])
                 return Rad[i];
             bRadSet[i] = true;
-            Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(GetProto()->EffectRadiusIndex[i]));
+            Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(GetSpellInfo()->EffectRadiusIndex[i]));
             if (u_caster != nullptr)
             {
-                SM_FFValue(u_caster->SM_FRadius, &Rad[i], GetProto()->SpellGroupType);
-                SM_PFValue(u_caster->SM_PRadius, &Rad[i], GetProto()->SpellGroupType);
+                SM_FFValue(u_caster->SM_FRadius, &Rad[i], GetSpellInfo()->SpellGroupType);
+                SM_PFValue(u_caster->SM_PRadius, &Rad[i], GetSpellInfo()->SpellGroupType);
     #ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
                 float spell_flat_modifers = 0;
                 float spell_pct_modifers = 1;
@@ -2017,7 +2009,7 @@ class SERVER_DECL Spell : public EventableObject
             return dmg;
         }
 
-        inline static uint32 GetMechanic(SpellEntry* sp)
+        inline static uint32 GetMechanic(SpellInfo* sp)
         {
             if (sp->MechanicsType)
                 return sp->MechanicsType;
@@ -2182,18 +2174,18 @@ class SERVER_DECL Spell : public EventableObject
 
     public:
 
-        SpellEntry* m_spellInfo;
-        SpellEntry* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
+        SpellInfo* m_spellInfo;
+        SpellInfo* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
 
 };
 
-void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellEntry* spell);
-void UnapplyDiminishingReturnTimer(Unit* Target, SpellEntry* spell);
+void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellInfo* spell);
+void UnapplyDiminishingReturnTimer(Unit* Target, SpellInfo* spell);
 
 uint32 GetDiminishingGroup(uint32 NameHash);
-uint32 GetSpellDuration(SpellEntry* sp, Unit* caster = NULL);
+uint32 GetSpellDuration(SpellInfo* sp, Unit* caster = NULL);
 
 //Logs if the spell doesn't exist, using Debug loglevel.
-SpellEntry* CheckAndReturnSpellEntry(uint32 spellid);
+SpellInfo* CheckAndReturnSpellEntry(uint32 spellid);
 
 #endif // _SPELL_H

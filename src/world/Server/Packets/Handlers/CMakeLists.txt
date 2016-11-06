@@ -34,6 +34,7 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/RaidHandler.cpp
    ${PATH_PREFIX}/ReputationHandler.cpp
    ${PATH_PREFIX}/SocialHandler.cpp
+   ${PATH_PREFIX}/SpellHandler.cpp
    ${PATH_PREFIX}/TaxiHandler.cpp
    ${PATH_PREFIX}/TradeHandler.cpp
    ${PATH_PREFIX}/VehicleHandler.cpp

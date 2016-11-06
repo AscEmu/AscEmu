@@ -335,7 +335,7 @@ typedef std::map<uint32, ScriptOverrideList* >      SpellOverrideMap;
 typedef std::map<uint32, uint32>                    SpellOverrideExtraAuraMap;
 typedef std::map<uint32, FactionReputation*>        ReputationMap;
 typedef std::map<uint32, uint64>                    SoloSpells;
-typedef std::map<SpellEntry*, std::pair<uint32, uint32> >StrikeSpellMap;
+typedef std::map<SpellInfo*, std::pair<uint32, uint32> >StrikeSpellMap;
 typedef std::map<uint32, OnHitSpell >               StrikeSpellDmgMap;
 typedef std::map<uint32, PlayerSkill>               SkillMap;
 typedef std::set<Player**>                          ReferenceSet;
@@ -441,10 +441,10 @@ class SERVER_DECL Player : public Unit
 
     public:
         void SetLastPotion(uint32 itemid) { m_lastPotionId = itemid; }
-        void Cooldown_AddStart(SpellEntry* pSpell);
-        void Cooldown_Add(SpellEntry* pSpell, Item* pItemCaster);
+        void Cooldown_AddStart(SpellInfo* pSpell);
+        void Cooldown_Add(SpellInfo* pSpell, Item* pItemCaster);
         void Cooldown_AddItem(ItemProperties const* pProto, uint32 x);
-        bool Cooldown_CanCast(SpellEntry* pSpell);
+        bool Cooldown_CanCast(SpellInfo* pSpell);
         bool Cooldown_CanCast(ItemProperties const* pProto, uint32 x);
         void UpdatePotionCooldown();
         bool HasSpellWithAuraNameAndBasePoints(uint32 auraname, uint32 basepoints);
@@ -734,11 +734,11 @@ class SERVER_DECL Player : public Unit
         void SendPreventSchoolCast(uint32 SpellSchool, uint32 unTimeMs);
 
         /// PLEASE DO NOT INLINE!
-        void AddOnStrikeSpell(SpellEntry* sp, uint32 delay)
+        void AddOnStrikeSpell(SpellInfo* sp, uint32 delay)
         {
-            m_onStrikeSpells.insert(std::map<SpellEntry*, std::pair<uint32, uint32>>::value_type(sp, std::make_pair(delay, 0)));
+            m_onStrikeSpells.insert(std::map<SpellInfo*, std::pair<uint32, uint32>>::value_type(sp, std::make_pair(delay, 0)));
         }
-        void RemoveOnStrikeSpell(SpellEntry* sp)
+        void RemoveOnStrikeSpell(SpellInfo* sp)
         {
             m_onStrikeSpells.erase(sp);
         }
@@ -1054,7 +1054,7 @@ class SERVER_DECL Player : public Unit
         uint32 GetBlockDamageReduction();
         void ApplyFeralAttackPower(bool apply, Item* item = NULL);
 
-        bool canCast(SpellEntry* m_spellInfo);
+        bool canCast(SpellInfo* m_spellInfo);
 
         float GetSpellCritFromSpell() { return m_spellcritfromspell; }
         float GetHitFromSpell() { return m_hitfromspell; }
@@ -1184,7 +1184,7 @@ class SERVER_DECL Player : public Unit
         uint32 m_AutoShotAttackTimer;
         bool m_onAutoShot;
         uint64 m_AutoShotTarget;
-        SpellEntry* m_AutoShotSpell;
+        SpellInfo* m_AutoShotSpell;
         void _InitialReputation();
         void EventActivateGameObject(GameObject* obj);
         void EventDeActivateGameObject(GameObject* obj);
@@ -1230,7 +1230,7 @@ class SERVER_DECL Player : public Unit
 
         uint32* GetPlayedtime() { return m_playedtime; };
         void CalcStat(uint32 t);
-        float CalcRating(uint32 t);
+        float CalcRating(PlayerCombatRating t);
         void RegenerateMana(bool is_interrupted);
         void RegenerateHealth(bool inCombat);
         void RegenerateEnergy();
@@ -1394,6 +1394,7 @@ class SERVER_DECL Player : public Unit
 
         bool m_Autojoin;
         bool m_AutoAddMem;
+        void SendMirrorTimer(MirrorTimerTypes Type, uint32 max, uint32 current, int32 regen);
         void StopMirrorTimer(MirrorTimerTypes Type);
         BGScore m_bgScore;
         uint32 m_bgTeam;
@@ -1418,7 +1419,7 @@ class SERVER_DECL Player : public Unit
         void ApplyLevelInfo(LevelInfo* Info, uint32 Level);
         void BroadcastMessage(const char* Format, ...);
         std::map<uint32, std::set<uint32> > SummonSpells;
-        std::map<uint32, std::map<SpellEntry*, uint16>*> PetSpells;
+        std::map<uint32, std::map<SpellInfo*, uint16>*> PetSpells;
         void AddSummonSpell(uint32 Entry, uint32 SpellID);
         void RemoveSummonSpell(uint32 Entry, uint32 SpellID);
         std::set<uint32>* GetSummonSpells(uint32 Entry);
@@ -1685,7 +1686,7 @@ class SERVER_DECL Player : public Unit
         void SummonRequest(uint32 Requestor, uint32 ZoneID, uint32 MapID, uint32 InstanceID, const LocationVector & Position);
 
         bool m_deathVision;
-        SpellEntry* last_heal_spell;
+        SpellInfo* last_heal_spell;
         LocationVector m_sentTeleportPosition;
 
         bool InBattleground() const { return m_bgQueueInstanceId != 0; }

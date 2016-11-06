@@ -562,7 +562,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
     AchievementCriteriaEntryList const & achievementCriteriaList = objmgr.GetAchievementCriteriaByType(type);
     for (AchievementCriteriaEntryList::const_iterator i = achievementCriteriaList.begin(); i != achievementCriteriaList.end(); ++i)
     {
-        AchievementCriteriaEntry const* achievementCriteria = (*i);
+        DBC::Structures::AchievementCriteriaEntry const* achievementCriteria = (*i);
 
         if (IsCompletedCriteria(achievementCriteria))
         {
@@ -1227,7 +1227,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
     AchievementCriteriaEntryList const & achievementCriteriaList = objmgr.GetAchievementCriteriaByType(type);
     for (AchievementCriteriaEntryList::const_iterator i = achievementCriteriaList.begin(); i != achievementCriteriaList.end(); ++i)
     {
-        AchievementCriteriaEntry const* achievementCriteria = (*i);
+        DBC::Structures::AchievementCriteriaEntry const* achievementCriteria = (*i);
 
         auto achievement = sAchievementStore.LookupEntry(achievementCriteria->referredAchievement);
         if (!achievement  //|| IsCompletedCriteria(achievementCriteria)
@@ -1307,7 +1307,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                 uint32 nm = 0;
                 while (sl != GetPlayer()->mSpells.end())
                 {
-                    SpellEntry* sp = dbcSpell.LookupEntryForced(*sl);
+                    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(*sl);
                     if (achievementCriteria->number_of_mounts.unknown == 777 && sp && sp->MechanicsType == MECHANIC_MOUNTED)
                     {
                         // mount spell
@@ -1316,7 +1316,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
                     else if (achievementCriteria->number_of_mounts.unknown == 778 && sp && (sp->Effect[0] == SPELL_EFFECT_SUMMON))
                     {
                         // Companion pet? Make sure it's a companion pet, not some other summon-type spell
-                        if (strncmp(sp->Description, "Right Cl", 8) == 0)
+                        if (strncmp(sp->Description.c_str(), "Right Cl", 8) == 0)
                         {
                             // "Right Click to summon and dismiss " ...
                             ++nm;
@@ -1346,7 +1346,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// \return True if the criteria has been completed otherwise false (error...)
-bool AchievementMgr::IsCompletedCriteria(AchievementCriteriaEntry const* achievementCriteria)
+bool AchievementMgr::IsCompletedCriteria(DBC::Structures::AchievementCriteriaEntry const* achievementCriteria)
 {
     if (!achievementCriteria)
     {
@@ -1482,7 +1482,7 @@ bool AchievementMgr::IsCompletedCriteria(AchievementCriteriaEntry const* achieve
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// If achievement criteria has been completed, checks whether to complete the achievement too.
-void AchievementMgr::CompletedCriteria(AchievementCriteriaEntry const* criteria)
+void AchievementMgr::CompletedCriteria(DBC::Structures::AchievementCriteriaEntry const* criteria)
 {
     if (!IsCompletedCriteria(criteria))
     {
@@ -1552,7 +1552,7 @@ AchievementCompletionState AchievementMgr::GetAchievementCompletionState(DBC::St
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Sets progress of the achievement criteria.
 /// \brief If relative argument is true, this behaves the same as UpdateCriteriaProgress
-void AchievementMgr::SetCriteriaProgress(AchievementCriteriaEntry const* entry, int32 newValue, bool relative)
+void AchievementMgr::SetCriteriaProgress(DBC::Structures::AchievementCriteriaEntry const* entry, int32 newValue, bool relative)
 {
     CriteriaProgress* progress = NULL;
 
@@ -1584,7 +1584,7 @@ void AchievementMgr::SetCriteriaProgress(AchievementCriteriaEntry const* entry, 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Updates progress of the achievement criteria.
 /// \brief updateByValue is added to the current progress counter
-void AchievementMgr::UpdateCriteriaProgress(AchievementCriteriaEntry const* entry, int32 updateByValue)
+void AchievementMgr::UpdateCriteriaProgress(DBC::Structures::AchievementCriteriaEntry const* entry, int32 updateByValue)
 {
     CriteriaProgress* progress = NULL;
 
@@ -1638,7 +1638,7 @@ void AchievementMgr::SendAllAchievementData(Player* player)
     uint32 packetSize = 18 + ((uint32)m_completedAchievements.size() * 8) + (GetCriteriaProgressCount() * 36);
     bool doneCompleted = false;
     bool doneProgress = false;
-    AchievementCriteriaEntry const* acEntry;
+    DBC::Structures::AchievementCriteriaEntry const* acEntry;
     DBC::Structures::AchievementEntry const* achievement;
 
     WorldPacket data;
@@ -1912,7 +1912,7 @@ bool AchievementMgr::GMCompleteCriteria(WorldSession* gmSession, int32 criteriaI
     if (criteriaID == -1)
     {
         uint32 nr = sAchievementCriteriaStore.GetNumRows();
-        AchievementCriteriaEntry const* crt;
+        DBC::Structures::AchievementCriteriaEntry const* crt;
         for (uint32 i = 0, j = 0; j < nr; ++i)
         {
             crt = sAchievementCriteriaStore.LookupEntry(i);

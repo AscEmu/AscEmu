@@ -18,10 +18,9 @@
 
 
 #include "StdAfx.h"
-#include "Spell/Customization/SpellCustomizations.hpp"
+
 
 initialiseSingleton(SpellCustomizations);
-
 
 ///\brief: This file includes all setted custom values and/or spell.dbc values (overwrite)
 /// Set the values you want based on spell Id (Do not set your values based on some text!)
@@ -29,8 +28,188 @@ initialiseSingleton(SpellCustomizations);
 SpellCustomizations::SpellCustomizations() {}
 SpellCustomizations::~SpellCustomizations() {}
 
+void SpellCustomizations::LoadSpellInfoData()
+{
+    for (uint32 i = 0; i < MAX_SPELL_ID; ++i)
+    {
+        DBC::Structures::SpellEntry_New const* dbc_spell_entry = sSpellStore.LookupEntry(i);
+        if (dbc_spell_entry == nullptr)
+        {
+            continue;
+        }
+        else
+        {
+            uint32 spell_id = dbc_spell_entry->Id;
+            SpellInfo& spellInfo = _spellInfoContainerStore[spell_id];
+            spellInfo.Id = spell_id;
+            spellInfo.Attributes = dbc_spell_entry->Attributes;
+            spellInfo.AttributesEx = dbc_spell_entry->AttributesEx;
+            spellInfo.AttributesExB = dbc_spell_entry->AttributesExB;
+            spellInfo.AttributesExC = dbc_spell_entry->AttributesExC;
+            spellInfo.AttributesExD = dbc_spell_entry->AttributesExD;
+            spellInfo.AttributesExE = dbc_spell_entry->AttributesExE;
+            spellInfo.AttributesExF = dbc_spell_entry->AttributesExF;
+            spellInfo.AttributesExG = dbc_spell_entry->AttributesExG;
+            spellInfo.RequiredShapeShift = dbc_spell_entry->RequiredShapeShift;
+            spellInfo.ShapeshiftExclude = dbc_spell_entry->ShapeshiftExclude;
+            spellInfo.Targets = dbc_spell_entry->Targets;
+            spellInfo.TargetCreatureType = dbc_spell_entry->TargetCreatureType;
+            spellInfo.RequiresSpellFocus = dbc_spell_entry->RequiresSpellFocus;
+            spellInfo.FacingCasterFlags = dbc_spell_entry->FacingCasterFlags;
+            spellInfo.CasterAuraState = dbc_spell_entry->CasterAuraState;
+            spellInfo.TargetAuraState = dbc_spell_entry->TargetAuraState;
+            spellInfo.CasterAuraStateNot = dbc_spell_entry->CasterAuraStateNot;
+            spellInfo.TargetAuraStateNot = dbc_spell_entry->TargetAuraStateNot;
+            spellInfo.casterAuraSpell = dbc_spell_entry->casterAuraSpell;
+            spellInfo.targetAuraSpell = dbc_spell_entry->targetAuraSpell;
+            spellInfo.casterAuraSpellNot = dbc_spell_entry->casterAuraSpellNot;
+            spellInfo.targetAuraSpellNot = dbc_spell_entry->targetAuraSpellNot;
+            spellInfo.CastingTimeIndex = dbc_spell_entry->CastingTimeIndex;
+            spellInfo.RecoveryTime = dbc_spell_entry->RecoveryTime;
+            spellInfo.CategoryRecoveryTime = dbc_spell_entry->CategoryRecoveryTime;
+            spellInfo.InterruptFlags = dbc_spell_entry->InterruptFlags;
+            spellInfo.AuraInterruptFlags = dbc_spell_entry->AuraInterruptFlags;
+            spellInfo.ChannelInterruptFlags = dbc_spell_entry->ChannelInterruptFlags;
+            spellInfo.procFlags = dbc_spell_entry->procFlags;
+            spellInfo.procChance = dbc_spell_entry->procChance;
+            spellInfo.procCharges = dbc_spell_entry->procCharges;
+            spellInfo.maxLevel = dbc_spell_entry->maxLevel;
+            spellInfo.baseLevel = dbc_spell_entry->baseLevel;
+            spellInfo.spellLevel = dbc_spell_entry->spellLevel;
+            spellInfo.DurationIndex = dbc_spell_entry->DurationIndex;
+            spellInfo.powerType = dbc_spell_entry->powerType;
+            spellInfo.manaCost = dbc_spell_entry->manaCost;
+            spellInfo.manaCostPerlevel = dbc_spell_entry->manaCostPerlevel;
+            spellInfo.manaPerSecond = dbc_spell_entry->manaPerSecond;
+            spellInfo.manaPerSecondPerLevel = dbc_spell_entry->manaPerSecondPerLevel;
+            spellInfo.rangeIndex = dbc_spell_entry->rangeIndex;
+            spellInfo.speed = dbc_spell_entry->speed;
+            spellInfo.modalNextSpell = dbc_spell_entry->modalNextSpell;
+            spellInfo.maxstack = dbc_spell_entry->maxstack;
+
+            for (uint8 i = 0; i < MAX_SPELL_TOTEMS; ++i)
+                spellInfo.Totem[i] = dbc_spell_entry->Totem[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_REAGENTS; ++i)
+                spellInfo.Reagent[i] = dbc_spell_entry->Reagent[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_REAGENTS; ++i)
+                spellInfo.ReagentCount[i] = dbc_spell_entry->ReagentCount[i];
+
+            spellInfo.EquippedItemClass = dbc_spell_entry->EquippedItemClass;
+            spellInfo.EquippedItemSubClass = dbc_spell_entry->EquippedItemSubClass;
+            spellInfo.RequiredItemFlags = dbc_spell_entry->RequiredItemFlags;
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.Effect[i] = dbc_spell_entry->Effect[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectDieSides[i] = dbc_spell_entry->EffectDieSides[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectRealPointsPerLevel[i] = dbc_spell_entry->EffectRealPointsPerLevel[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectBasePoints[i] = dbc_spell_entry->EffectBasePoints[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectMechanic[i] = dbc_spell_entry->EffectMechanic[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectImplicitTargetA[i] = dbc_spell_entry->EffectImplicitTargetA[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectImplicitTargetB[i] = dbc_spell_entry->EffectImplicitTargetB[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectRadiusIndex[i] = dbc_spell_entry->EffectRadiusIndex[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectApplyAuraName[i] = dbc_spell_entry->EffectApplyAuraName[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectAmplitude[i] = dbc_spell_entry->EffectAmplitude[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectMultipleValue[i] = dbc_spell_entry->EffectMultipleValue[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectChainTarget[i] = dbc_spell_entry->EffectChainTarget[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectItemType[i] = dbc_spell_entry->EffectItemType[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectMiscValue[i] = dbc_spell_entry->EffectMiscValue[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectMiscValueB[i] = dbc_spell_entry->EffectMiscValueB[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectTriggerSpell[i] = dbc_spell_entry->EffectTriggerSpell[i];
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.EffectPointsPerComboPoint[i] = dbc_spell_entry->EffectPointsPerComboPoint[i];
+
+            for (uint8 i = 0; i < 3; ++i)
+                for (uint8 j = 0; j < 3; ++j)
+                    spellInfo.EffectSpellClassMask[i][j] = dbc_spell_entry->EffectSpellClassMask[i][j];
+
+            spellInfo.SpellVisual = dbc_spell_entry->SpellVisual;
+            spellInfo.field114 = dbc_spell_entry->field114;
+            spellInfo.spellIconID = dbc_spell_entry->spellIconID;
+            spellInfo.activeIconID = dbc_spell_entry->activeIconID;
+            spellInfo.spellPriority = dbc_spell_entry->spellPriority;
+            spellInfo.Name = dbc_spell_entry->Name;
+            spellInfo.Rank = dbc_spell_entry->Rank;
+            spellInfo.Description = dbc_spell_entry->Description;
+            spellInfo.BuffDescription = dbc_spell_entry->BuffDescription;
+            spellInfo.ManaCostPercentage = dbc_spell_entry->ManaCostPercentage;
+            spellInfo.StartRecoveryCategory = dbc_spell_entry->StartRecoveryCategory;
+            spellInfo.StartRecoveryTime = dbc_spell_entry->StartRecoveryTime;
+            spellInfo.MaxTargetLevel = dbc_spell_entry->MaxTargetLevel;
+            spellInfo.SpellFamilyName = dbc_spell_entry->SpellFamilyName;
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.SpellGroupType[i] = dbc_spell_entry->SpellGroupType[i];
+
+            spellInfo.MaxTargets = dbc_spell_entry->MaxTargets;
+            spellInfo.Spell_Dmg_Type = dbc_spell_entry->Spell_Dmg_Type;
+            spellInfo.PreventionType = dbc_spell_entry->PreventionType;
+            spellInfo.StanceBarOrder = dbc_spell_entry->StanceBarOrder;
+
+            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+                spellInfo.dmg_multiplier[i] = dbc_spell_entry->dmg_multiplier[i];
+
+            spellInfo.MinFactionID = dbc_spell_entry->MinFactionID;
+            spellInfo.MinReputation = dbc_spell_entry->MinReputation;
+            spellInfo.RequiredAuraVision = dbc_spell_entry->RequiredAuraVision;
+
+            for (uint8 i = 0; i < MAX_SPELL_TOTEM_CATEGORIES; ++i)
+                spellInfo.TotemCategory[i] = dbc_spell_entry->TotemCategory[i];
+
+            spellInfo.RequiresAreaId = dbc_spell_entry->RequiresAreaId;
+            spellInfo.School = dbc_spell_entry->School;
+            spellInfo.RuneCostID = dbc_spell_entry->RuneCostID;
+
+            spellInfo.SpellDifficultyID = dbc_spell_entry->SpellDifficultyID;
+        }
+    }
+}
+
+SpellInfo* SpellCustomizations::GetSpellInfo(uint32 spell_id)
+{
+    SpellInfoContainer::const_iterator itr = _spellInfoContainerStore.find(spell_id);
+    if (itr != _spellInfoContainerStore.end())
+        return const_cast<SpellInfo*>(&itr->second);
+
+    return nullptr;
+}
+
 void SpellCustomizations::StartSpellCustomization()
 {
+    LoadSpellInfoData();
+
     Log.Debug("SpellCustomizations::StartSpellCustomization", "Successfull started");
 
     LoadSpellRanks();
@@ -38,11 +217,9 @@ void SpellCustomizations::StartSpellCustomization()
     LoadSpellCustomCoefFlags();
     LoadSpellProcs();
 
-    uint32 spellCount = dbcSpell.GetNumRows();
-
-    for (uint32 spell_row = 0; spell_row < spellCount; spell_row++)
+    for (auto it = sSpellCustomizations.GetSpellInfoStore()->begin(); it != sSpellCustomizations.GetSpellInfoStore()->end(); ++it)
     {
-        auto spellentry = dbcSpell.LookupEntry(spell_row);
+        auto spellentry = GetSpellInfo(it->first);
         if (spellentry != nullptr)
         {
             //Set spell overwrites (effect based)
@@ -73,7 +250,7 @@ void SpellCustomizations::LoadSpellRanks()
             uint32 spell_id = result->Fetch()[0].GetUInt32();
             uint32 pRank = result->Fetch()[1].GetUInt32();
 
-            SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
+            SpellInfo* spell_entry = GetSpellInfo(spell_id);
             if (spell_entry != nullptr)
             {
                 spell_entry->custom_RankNumber = pRank;
@@ -114,7 +291,7 @@ void SpellCustomizations::LoadSpellCustomAssign()
             bool self_cast_only = result->Fetch()[3].GetBool();
             uint32 c_is_flag = result->Fetch()[4].GetUInt32();
 
-            SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
+            SpellInfo* spell_entry = GetSpellInfo(spell_id);
             if (spell_entry != nullptr)
             {
                 spell_entry->custom_BGR_one_buff_on_target = on_target;
@@ -155,7 +332,7 @@ void SpellCustomizations::LoadSpellCustomCoefFlags()
             uint32 spell_id = result->Fetch()[0].GetUInt32();
             uint32 coef_flags = result->Fetch()[1].GetUInt32();
 
-            SpellEntry* spell_entry = dbcSpell.LookupEntry(spell_id);
+            SpellInfo* spell_entry = GetSpellInfo(spell_id);
             if (spell_entry != nullptr)
             {
                 spell_entry->custom_spell_coef_flags = coef_flags;
@@ -193,7 +370,7 @@ void SpellCustomizations::LoadSpellProcs()
             uint32 spell_id = f[0].GetUInt32();
             uint32 name_hash = f[1].GetUInt32();
 
-            auto spell_entry = dbcSpell.LookupEntry(spell_id);
+            auto spell_entry = GetSpellInfo(spell_id);
             if (spell_entry != nullptr)
             {
                 uint8 x;
@@ -255,7 +432,7 @@ void SpellCustomizations::LoadSpellProcs()
 }
 
 ///Fix if it is a periodic trigger with amplitude = 0, to avoid division by zero
-void SpellCustomizations::SetEffectAmplitude(SpellEntry* spell_entry)
+void SpellCustomizations::SetEffectAmplitude(SpellInfo* spell_entry)
 {
     for (uint8 y = 0; y < 3; y++)
     {
@@ -269,13 +446,13 @@ void SpellCustomizations::SetEffectAmplitude(SpellEntry* spell_entry)
             {
                 spell_entry->EffectAmplitude[y] = 1000;
 
-                Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetEffectAmplitude : EffectAmplitude applied Spell - %s (%u)", spell_entry->Name, spell_entry->Id);
+                Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetEffectAmplitude : EffectAmplitude applied Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
             }
         }
     }
 }
 
-void SpellCustomizations::SetAuraFactoryFunc(SpellEntry* spell_entry)
+void SpellCustomizations::SetAuraFactoryFunc(SpellInfo* spell_entry)
 {
     bool spell_aura_factory_functions_loaded = false;
 
@@ -298,11 +475,11 @@ void SpellCustomizations::SetAuraFactoryFunc(SpellEntry* spell_entry)
 
     if (spell_aura_factory_functions_loaded)
     {
-        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetAuraFactoryFunc : AuraFactoryFunc definitions applied to Spell - %s (%u)", spell_entry->Name, spell_entry->Id);
+        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetAuraFactoryFunc : AuraFactoryFunc definitions applied to Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
     }
 }
 
-void SpellCustomizations::SetMeleeSpellBool(SpellEntry* spell_entry)
+void SpellCustomizations::SetMeleeSpellBool(SpellInfo* spell_entry)
 {
     for (uint8 z = 0; z < 3; z++)
     {
@@ -328,11 +505,11 @@ void SpellCustomizations::SetMeleeSpellBool(SpellEntry* spell_entry)
 
     if (spell_entry->custom_is_melee_spell)
     {
-        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetMeleeSpellBool : custom_is_melee_spell = true for Spell - %s (%u)", spell_entry->Name, spell_entry->Id);
+        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetMeleeSpellBool : custom_is_melee_spell = true for Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
     }
 }
 
-void SpellCustomizations::SetRangedSpellBool(SpellEntry* spell_entry)
+void SpellCustomizations::SetRangedSpellBool(SpellInfo* spell_entry)
 {
     for (uint8 z = 0; z < 3; z++)
     {
@@ -344,11 +521,11 @@ void SpellCustomizations::SetRangedSpellBool(SpellEntry* spell_entry)
 
     if (spell_entry->custom_is_ranged_spell)
     {
-        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetRangedSpellBool : custom_is_ranged_spell = true for Spell - %s (%u)", spell_entry->Name, spell_entry->Id);
+        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetRangedSpellBool : custom_is_ranged_spell = true for Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
     }
 }
 
-void SpellCustomizations::SetMissingCIsFlags(SpellEntry* spell_entry)
+void SpellCustomizations::SetMissingCIsFlags(SpellInfo* spell_entry)
 {
     // Zyres: Special cases, not handled in spell_custom_assign!
     if (IsDamagingSpell(spell_entry))
@@ -361,7 +538,7 @@ void SpellCustomizations::SetMissingCIsFlags(SpellEntry* spell_entry)
         spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
 }
 
-void SpellCustomizations::SetCustomFlags(SpellEntry* spell_entry)
+void SpellCustomizations::SetCustomFlags(SpellInfo* spell_entry)
 {
     // Currently only set for 781 Disengage
     if (spell_entry->Id != 781)
@@ -374,7 +551,7 @@ void SpellCustomizations::SetCustomFlags(SpellEntry* spell_entry)
     }
 }
 
-void SpellCustomizations::SetOnShapeshiftChange(SpellEntry* spell_entry)
+void SpellCustomizations::SetOnShapeshiftChange(SpellInfo* spell_entry)
 {
     // Currently only for spell Track Humanoids
     if (spell_entry->Id != 5225 && spell_entry->Id != 19883)
@@ -387,7 +564,7 @@ void SpellCustomizations::SetOnShapeshiftChange(SpellEntry* spell_entry)
     }
 }
 
-void SpellCustomizations::SetAlwaysApply(SpellEntry* spell_entry)
+void SpellCustomizations::SetAlwaysApply(SpellInfo* spell_entry)
 {
     switch (spell_entry->Id)
     {
