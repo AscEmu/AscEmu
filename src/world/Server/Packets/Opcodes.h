@@ -633,6 +633,9 @@ enum Opcodes
     SMSG_STANDSTATE_UPDATE                              = 0x6F04,
     SMSG_ADDON_INFO                                     = 0x2C14,
     SMSG_WEATHER                                        = 0x2904,   // not updated
+
+    CMSG_RANDOM_CHAR_NAME                               = 0x2413,   // not implemented
+    SMSG_RANDOM_CHAR_NAME                               = 0x38B1,   // not implemented
     
     SMSG_MOTD                                           = 0x0A35,
     SMSG_REALM_SPLIT                                    = 0x2714,
