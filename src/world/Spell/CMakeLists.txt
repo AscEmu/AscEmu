@@ -11,7 +11,6 @@ set(SRC_SPELL_FILES
    ${PATH_PREFIX}/SpellAuras.h
    ${PATH_PREFIX}/SpellEffects.cpp
    ${PATH_PREFIX}/SpellFailure.h
-   ${PATH_PREFIX}/SpellHandler.cpp
    ${PATH_PREFIX}/SpellMgr.cpp
    ${PATH_PREFIX}/SpellMgr.h
    ${PATH_PREFIX}/SpellNameHashes.h
