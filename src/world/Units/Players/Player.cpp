@@ -5069,7 +5069,7 @@ void Player::SetTutorialInt(uint32 intId, uint32 value)
 float Player::GetDefenseChance(uint32 opLevel)
 {
     float chance = _GetSkillLineCurrent(SKILL_DEFENSE, true) - (opLevel * 5.0f);
-    chance += CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_DEFENCE);
+    chance += CalcRating(PCR_DEFENCE);
     chance = floorf(chance) * 0.04f;   // defense skill is treated as an integer on retail
 
     return chance;
@@ -5099,7 +5099,7 @@ float Player::GetDodgeChance()
     chance += tmp;
 
     // Dodge from dodge rating
-    chance += CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_DODGE);
+    chance += CalcRating(PCR_DODGE);
 
     // Dodge from spells
     chance += GetDodgeFromSpell();
@@ -5117,7 +5117,7 @@ float Player::GetBlockChance()
     chance = BASE_BLOCK_CHANCE;
 
     // Block rating
-    chance += CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK);
+    chance += CalcRating(PCR_BLOCK);
 
     // Block chance from spells
     chance += GetBlockFromSpell();
@@ -5134,7 +5134,7 @@ float Player::GetParryChance()
     chance = BASE_PARRY_CHANCE;
 
     // Parry rating
-    chance += CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_PARRY);
+    chance += CalcRating(PCR_PARRY);
 
     // Parry chance from spells
     chance += GetParryFromSpell();
@@ -5219,10 +5219,10 @@ void Player::UpdateChances()
         }
     }
 
-    float cr = tmp + CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_CRIT) + melee_bonus;
+    float cr = tmp + CalcRating(PCR_MELEE_CRIT) + melee_bonus;
     SetFloatValue(PLAYER_CRIT_PERCENTAGE, std::min(cr, 95.0f));
 
-    float rcr = tmp + CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_CRIT) + ranged_bonus;
+    float rcr = tmp + CalcRating(PCR_RANGED_CRIT) + ranged_bonus;
     SetFloatValue(PLAYER_RANGED_CRIT_PERCENTAGE, std::min(rcr, 95.0f));
 
     auto SpellCritBase = sGtChanceToSpellCritBaseStore.LookupEntry(pClass - 1);
@@ -5233,7 +5233,7 @@ void Player::UpdateChances()
 
     spellcritperc = 100 * (SpellCritBase->val + GetStat(STAT_INTELLECT) * SpellCritPerInt->val) +
         this->GetSpellCritFromSpell() +
-        this->CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_CRIT);
+        this->CalcRating(PCR_SPELL_CRIT);
     UpdateChanceFields();
 }
 
@@ -5280,14 +5280,14 @@ void Player::UpdateAttackSpeed()
             speed = weap->GetItemProperties()->Delay;
     }
     SetBaseAttackTime(MELEE,
-                      (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HASTE) / 100.0f))));
+                      (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PCR_MELEE_HASTE) / 100.0f))));
 
     weap = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
     if (weap != nullptr && weap->GetItemProperties()->Class == ITEM_CLASS_WEAPON)
     {
         speed = weap->GetItemProperties()->Delay;
         SetBaseAttackTime(OFFHAND,
-                          (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_MELEE_HASTE) / 100.0f))));
+                          (uint32)((float)speed / (m_attack_speed[MOD_MELEE] * (1.0f + CalcRating(PCR_MELEE_HASTE) / 100.0f))));
     }
 
     weap = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
@@ -5295,7 +5295,7 @@ void Player::UpdateAttackSpeed()
     {
         speed = weap->GetItemProperties()->Delay;
         SetBaseAttackTime(RANGED,
-                          (uint32)((float)speed / (m_attack_speed[MOD_RANGED] * (1.0f + CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_HASTE) / 100.0f))));
+                          (uint32)((float)speed / (m_attack_speed[MOD_RANGED] * (1.0f + CalcRating(PCR_RANGED_HASTE) / 100.0f))));
     }
 }
 
@@ -5522,7 +5522,7 @@ void Player::UpdateStats()
     }
 
     // Spell haste rating
-    float haste = 1.0f + CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_SPELL_HASTE) / 100.0f;
+    float haste = 1.0f + CalcRating(PCR_SPELL_HASTE) / 100.0f;
     if (haste != SpellHasteRatingBonus)
     {
         float value = GetCastSpeedMod() * SpellHasteRatingBonus / haste; // remove previous mod and apply current
@@ -8380,16 +8380,15 @@ void Player::BroadcastMessage(const char* Format, ...)
     delete data;
 }
 
-float Player::CalcRating(uint32 index)
+float Player::CalcRating(PlayerCombatRating index)
 {
-    uint32 relative_index = index - (PLAYER_FIELD_COMBAT_RATING_1);
-    float rating = float(m_uint32Values[index]);
-
     uint32 level = getLevel();
     if (level > 100)
         level = 100;
 
-    auto combat_rating_entry = sGtCombatRatingsStore.LookupEntry(relative_index * 100 + level - 1);
+    uint32 rating = GetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + index);
+
+    DBC::Structures::GtCombatRatingsEntry const* combat_rating_entry = sGtCombatRatingsStore.LookupEntry(index * 100 + level - 1);
     if (combat_rating_entry == nullptr)
         return rating;
     else
@@ -11576,8 +11575,8 @@ void Player::CalcExpertise()
         }
     }
 
-    ModUnsigned32Value(PLAYER_EXPERTISE, (int32)CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_EXPERTISE) + modifier);
-    ModUnsigned32Value(PLAYER_OFFHAND_EXPERTISE, (int32)CalcRating(PLAYER_FIELD_COMBAT_RATING_1 + PCR_EXPERTISE) + modifier);
+    ModUnsigned32Value(PLAYER_EXPERTISE, (int32)CalcRating(PCR_EXPERTISE) + modifier);
+    ModUnsigned32Value(PLAYER_OFFHAND_EXPERTISE, (int32)CalcRating(PCR_EXPERTISE) + modifier);
     UpdateStats();
 }
 
