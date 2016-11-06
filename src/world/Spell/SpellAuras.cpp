@@ -1457,7 +1457,7 @@ void Aura::EventUpdateOwnerAA(float r)
         ou->RemoveAura(m_spellProto->Id);
 }
 
-void Aura::EventUpdateAA(float r)
+void Aura::EventUpdateAreaAura(float r)
 {
     /* burlex: cheap hack to get this to execute in the correct context always */
     if (event_GetCurrentInstanceId() == -1)
@@ -1476,14 +1476,14 @@ void Aura::EventUpdateAA(float r)
         return;
     }
 
-    uint32 AAEffectId = m_spellProto->GetAAEffectId();
-    if (AAEffectId == 0)
+    uint32 AreaAuraEffectId = m_spellProto->GetAreaAuraEffectId();
+    if (AreaAuraEffectId == 0)
     {
         LOG_ERROR("Spell %u (%s) has tried to update Area Aura targets but Spell has no Area Aura effect.", m_spellProto->Id, m_spellProto->Name);
         ARCEMU_ASSERT(false);
     }
 
-    switch (AAEffectId)
+    switch (AreaAuraEffectId)
     {
 
         case SPELL_EFFECT_APPLY_GROUP_AREA_AURA:
@@ -8844,11 +8844,11 @@ bool Aura::IsCombatStateAffecting()
 {
     SpellInfo* sp = m_spellProto;
 
-    if (sp->AppliesAura(SPELL_AURA_PERIODIC_DAMAGE) ||
-        sp->AppliesAura(SPELL_AURA_PERIODIC_DAMAGE_PERCENT) ||
-        sp->AppliesAura(SPELL_AURA_PERIODIC_TRIGGER_SPELL) ||
-        sp->AppliesAura(SPELL_AURA_PERIODIC_LEECH) ||
-        sp->AppliesAura(SPELL_AURA_PERIODIC_MANA_LEECH))
+    if (sp->AppliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE) ||
+        sp->AppliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE_PERCENT) ||
+        sp->AppliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_SPELL) ||
+        sp->AppliesAreaAura(SPELL_AURA_PERIODIC_LEECH) ||
+        sp->AppliesAreaAura(SPELL_AURA_PERIODIC_MANA_LEECH))
         return true;
 
     return false;

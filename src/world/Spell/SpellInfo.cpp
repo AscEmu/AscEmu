@@ -141,18 +141,18 @@ bool SpellInfo::HasCustomFlagForEffect(uint32 effect, uint32 flag)
         return false;
 }
 
-bool SpellInfo::AppliesAura(uint32 aura)
+bool SpellInfo::AppliesAreaAura(uint32 aura)
 {
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if ((Effect[i] == 6 ||        /// SPELL_EFFECT_APPLY_GROUP_AREA_AURA
-             Effect[i] == 27 ||    /// SPELL_EFFECT_PERSISTENT_AREA_AURA
-             Effect[i] == 35 ||    /// SPELL_EFFECT_APPLY_GROUP_AREA_AURA
-             Effect[i] == 65 ||    /// SPELL_EFFECT_APPLY_RAID_AREA_AURA
-             Effect[i] == 119 ||   /// SPELL_EFFECT_APPLY_PET_AREA_AURA
-             Effect[i] == 128 ||   /// SPELL_EFFECT_APPLY_FRIEND_AREA_AURA
-             Effect[i] == 129 ||   /// SPELL_EFFECT_APPLY_ENEMY_AREA_AURA
-             Effect[i] == 143) &&  /// SPELL_EFFECT_APPLY_OWNER_AREA_AURA
+        if ((Effect[i] == 6 ||        /// SPELL_EFFECT_APPLY_GROUP_AREA_AURA <-wrong
+             Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA ||
+             Effect[i] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA ||
+             Effect[i] == SPELL_EFFECT_APPLY_RAID_AREA_AURA ||
+             Effect[i] == SPELL_EFFECT_APPLY_PET_AREA_AURA ||
+             Effect[i] == SPELL_EFFECT_APPLY_FRIEND_AREA_AURA ||
+             Effect[i] == SPELL_EFFECT_APPLY_ENEMY_AREA_AURA ||
+             Effect[i] == SPELL_EFFECT_APPLY_OWNER_AREA_AURA) &&
             EffectApplyAuraName[i] == aura)
             return true;
     }
@@ -160,16 +160,16 @@ bool SpellInfo::AppliesAura(uint32 aura)
     return false;
 }
 
-uint32 SpellInfo::GetAAEffectId()
+uint32 SpellInfo::GetAreaAuraEffectId()
 {
-    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
+    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if (Effect[i] == 35 ||        /// SPELL_EFFECT_APPLY_GROUP_AREA_AURA
-            Effect[i] == 65 ||    /// SPELL_EFFECT_APPLY_RAID_AREA_AURA
-            Effect[i] == 119 ||   /// SPELL_EFFECT_APPLY_PET_AREA_AURA
-            Effect[i] == 128 ||   /// SPELL_EFFECT_APPLY_FRIEND_AREA_AURA
-            Effect[i] == 129 ||   /// SPELL_EFFECT_APPLY_ENEMY_AREA_AURA
-            Effect[i] == 143)     /// SPELL_EFFECT_APPLY_OWNER_AREA_AURA
+        if (Effect[i] == SPELL_EFFECT_APPLY_GROUP_AREA_AURA ||
+            Effect[i] == SPELL_EFFECT_APPLY_RAID_AREA_AURA ||
+            Effect[i] == SPELL_EFFECT_APPLY_PET_AREA_AURA ||
+            Effect[i] == SPELL_EFFECT_APPLY_FRIEND_AREA_AURA ||
+            Effect[i] == SPELL_EFFECT_APPLY_ENEMY_AREA_AURA ||
+            Effect[i] == SPELL_EFFECT_APPLY_OWNER_AREA_AURA)
             return Effect[i];
     }
 

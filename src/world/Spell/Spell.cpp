@@ -6313,10 +6313,10 @@ bool IsDamagingSpell(SpellInfo* sp)
         sp->HasEffect(SPELL_EFFECT_ATTACK))
         return true;
 
-    if (sp->AppliesAura(SPELL_AURA_PERIODIC_DAMAGE) ||
-        sp->AppliesAura(SPELL_AURA_PROC_TRIGGER_DAMAGE) ||
-        sp->AppliesAura(SPELL_AURA_PERIODIC_DAMAGE_PERCENT) ||
-        sp->AppliesAura(SPELL_AURA_POWER_BURN))
+    if (sp->AppliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE) ||
+        sp->AppliesAreaAura(SPELL_AURA_PROC_TRIGGER_DAMAGE) ||
+        sp->AppliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE_PERCENT) ||
+        sp->AppliesAreaAura(SPELL_AURA_POWER_BURN))
         return true;
 
     return false;

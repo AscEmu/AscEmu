@@ -6117,7 +6117,7 @@ bool Unit::HasAuraWithName(uint32 name)
 
     for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {
-        if (m_auras[i] != NULL && m_auras[i]->GetSpellProto()->AppliesAura(name))
+        if (m_auras[i] != NULL && m_auras[i]->GetSpellProto()->AppliesAreaAura(name))
             return true;
     }
 
@@ -6130,7 +6130,7 @@ uint32 Unit::GetAuraCountWithName(uint32 name)
 
     for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {
-        if (m_auras[i] != NULL && m_auras[i]->GetSpellProto()->AppliesAura(name))
+        if (m_auras[i] != NULL && m_auras[i]->GetSpellProto()->AppliesAreaAura(name))
             ++count;
     }
 

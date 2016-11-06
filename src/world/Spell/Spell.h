@@ -1694,7 +1694,7 @@ class SERVER_DECL Spell : public EventableObject
 
         void SpellEffectUnused(uint32 i);
 
-        void ApplyAA(uint32 i);
+        void ApplyAreaAura(uint32 i);
 
         // Effect Handlers
         void SpellEffectNULL(uint32 i);
