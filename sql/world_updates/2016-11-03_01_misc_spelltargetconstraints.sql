@@ -1,5 +1,5 @@
 
-UPDATE 'spelltargetconstraints' SET 'TargetType' = '2' WHERE 'SpellID' = '46797';
+UPDATE `spelltargetconstraints` SET `TargetType` = 2 WHERE `SpellID` = 46797;
 --
 -- Update world_db_version
 --
