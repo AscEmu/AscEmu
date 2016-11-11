@@ -584,14 +584,14 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
             creatureProperties.Scale = fields[24].GetFloat();
             creatureProperties.NPCFLags = fields[25].GetUInt32();
             creatureProperties.AttackTime = fields[26].GetUInt32();
-            creatureProperties.AttackType = fields[27].GetUInt32();
-            if (fields[27].GetUInt32() <= SCHOOL_ARCANE)
+            uint32 attackType = fields[27].GetUInt32();
+            if (attackType <= SCHOOL_ARCANE)
             {
-                creatureProperties.AttackType = fields[27].GetUInt32();
+                creatureProperties.AttackType = attackType;
             }
             else
             {
-                Log.Error("MySQLDataLoads", "Table `%s` AttackType: %u is not a valid value! Default set to 0 for entry: %u.", table_name.c_str(), fields[10].GetUInt32(), entry);
+                Log.Error("MySQLDataLoads", "Table `%s` AttackType: %u is not a valid value! Default set to 0 for entry: %u.", table_name.c_str(), attackType, entry);
                 creatureProperties.AttackType = SCHOOL_NORMAL;
             }
 
