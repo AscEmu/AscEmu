@@ -28,7 +28,7 @@
 #include "../shared/AscemuServerDefines.hpp"
 
 static const char* REQUIRED_CHAR_DB_VERSION = "2016-09-13_01_guild";
-static const char* REQUIRED_WORLD_DB_VERSION = "2016-11-11_01_darkmoonfaire_spawns";
+static const char* REQUIRED_WORLD_DB_VERSION = "2016-11-11_02_darkmoonfaire_quest_items";
 
 class Master : public Singleton<Master>
 {
