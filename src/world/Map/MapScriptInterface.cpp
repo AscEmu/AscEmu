@@ -122,7 +122,7 @@ Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, fl
     CreatureSpawn* sp = new CreatureSpawn;
     sp->entry = Entry;
     uint32 DisplayID = 0;
-    uint8 Gender = creature_properties->GenerateModelId(&DisplayID);
+    uint8 Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&DisplayID);
     sp->displayid = DisplayID;
     sp->form = 0;
     sp->id = 0;
@@ -171,7 +171,7 @@ Creature* MapScriptInterface::SpawnCreature(CreatureSpawn* sp, bool AddToWorld)
         return 0;
     }
 
-    uint8 Gender = creature_properties->GenerateModelId(&sp->displayid);
+    uint8 Gender = creature_properties->GetGenderAndCreateRandomDisplayID(&sp->displayid);
     Creature* p = this->mapMgr.CreateCreature(sp->entry);
     ARCEMU_ASSERT(p != NULL);
     p->Load(sp, (uint32)NULL, NULL);

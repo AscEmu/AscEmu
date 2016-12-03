@@ -177,11 +177,18 @@ void Map::LoadSpawns(bool reload)
 
                     cspawn->movetype = fields[7].GetUInt8();
                     cspawn->displayid = fields[8].GetUInt32();
-                    DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(cspawn->displayid);
-                    if (creature_display == nullptr)
+                    if (cspawn->displayid != 0)
                     {
-                        Log.Error("Table %s includes invalid displayid %u for npc entry: %u, spawn_id: %u. Set to 0!", (*tableiterator).c_str(), cspawn->displayid, cspawn->entry, cspawn->id);
-                        cspawn->displayid = 0;
+                        DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(cspawn->displayid);
+                        if (creature_display == nullptr)
+                        {
+                            Log.Error("Table %s includes invalid displayid %u for npc entry: %u, spawn_id: %u. Set to a random modelid!", (*tableiterator).c_str(), cspawn->displayid, cspawn->entry, cspawn->id);
+                            cspawn->displayid = creature_properties->GetRandomModelId();
+                        }
+                    }
+                    else
+                    {
+                        cspawn->displayid = creature_properties->GetRandomModelId();
                     }
 
                     cspawn->factionid = fields[9].GetUInt32();
