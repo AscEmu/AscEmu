@@ -98,7 +98,7 @@ enum Opcodes
     CMSG_SET_FACTION_ATWAR                          = 0x125,
     CMSG_SET_FACTION_CHEAT                          = 0x126,
     CMSG_CANCEL_AURA                                = 0x136,
-    SMSG_AI_REACTION                                = 0x13C,
+    
     CMSG_EQUIPMENT_SET_DELETE                       = 0x13E,
     CMSG_UNUSED                                     = 0x13F,
     CMSG_UNUSED2                                    = 0x140,
@@ -1126,6 +1126,7 @@ enum Opcodes
     CMSG_ALTER_APPEARANCE                               = 0x0914,
     SMSG_ENABLE_BARBER_SHOP                             = 0x2D16,
     SMSG_BARBER_SHOP_RESULT                             = 0x6125,
+    SMSG_AI_REACTION                                    = 0x0637,
 
     //Taxi
     CMSG_SET_TAXI_BENCHMARK_MODE                        = 0x4314,
