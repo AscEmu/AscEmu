@@ -1802,7 +1802,8 @@ waypoint's:
 
 void AIInterface::SendMoveToPacket()
 {
-    ::Packets::Movement::SendMoveToPacket(m_Unit);
+    //Zyres: ClientCrash, seems the spline packet is incorrect
+    //::Packets::Movement::SendMoveToPacket(m_Unit);
 }
 
 bool AIInterface::StopMovement(uint32 time)
