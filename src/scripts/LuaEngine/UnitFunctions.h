@@ -2114,20 +2114,8 @@ class LuaUnit
         ptr->SetFacing(o);
         ptr->SetOrientation(o);
 
-        WorldPacket data(SMSG_MONSTER_MOVE, 50);
-        data << ptr->GetNewGUID();
-        data << uint8(0);
-        data << ptr->GetPositionX();
-        data << ptr->GetPositionY();
-        data << ptr->GetPositionZ();
-        data << getMSTime();
-        data << uint8(0x00);
-        data << uint32(256);
-        data << uint32(1);
-        data << uint32(1);
-        data << x << y << z;
+        ptr->smsg_MonsterMove(x, y, z, 1);
 
-        ptr->SendMessageToSet(&data, true);
         ptr->SetPosition(x, y, z, o, true);
         return 0;
     }
@@ -4713,20 +4701,9 @@ class LuaUnit
         ptr->SetOrientation(o);
         float distance = ptr->CalcDistance(ptr->GetPositionX(), ptr->GetPositionY(), ptr->GetPositionZ(), x, y, z);
         uint32 moveTime = uint32(distance / moveSpeed);
-        WorldPacket data(SMSG_MONSTER_MOVE, 50);
-        data << ptr->GetNewGUID();
-        data << uint8(0);
-        data << ptr->GetPositionX();
-        data << ptr->GetPositionY();
-        data << ptr->GetPositionZ();
-        data << getMSTime();
-        data << uint8(0x00);
-        data << uint32(mov_flag);
-        data << moveTime;
-        data << uint32(1);
-        data << x << y << z;
 
-        ptr->SendMessageToSet(&data, true);
+        ptr->smsg_MonsterMove(x, y, z, moveTime);
+
         ptr->SetPosition(x, y, z, o);
         return 0;
     }
@@ -5884,21 +5861,9 @@ class LuaUnit
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
         ptr->SetPosition(x, y, z, ptr->GetOrientation());
-        WorldPacket data(SMSG_MONSTER_MOVE, 50);
-        data << ptr->GetNewGUID();
-        data << uint8(0);
-        data << ptr->GetPositionX();
-        data << ptr->GetPositionY();
-        data << ptr->GetPositionZ();
-        data << getMSTime();
-        data << uint8(0x0);
-        data << uint32(0x100);
-        data << uint32(1);
-        data << uint32(1);
-        data << x;
-        data << y;
-        data << z;
-        ptr->SendMessageToSet(&data, false);
+
+        ptr->smsg_MonsterMove(x, y, z, 1);
+
         return 0;
     }
     static int IsInDungeon(lua_State* L, Unit* ptr)

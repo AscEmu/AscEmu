@@ -197,25 +197,11 @@ bool DeathGrip(uint32 i, Spell* s)
 
         uint32 time = uint32((unitTarget->CalcDistance(s->m_caster) / ((unitTarget->m_runSpeed * 3.5) * 0.001f)) + 0.5);
 
-        WorldPacket data(SMSG_MONSTER_MOVE, 60);
-        data << unitTarget->GetNewGUID();
-        data << uint8(0); //VLack: the usual change in SMSG_MONSTER_MOVE packets, initial idea from Mangos
-        data << unitTarget->GetPositionX();
-        data << unitTarget->GetPositionY();
-        data << unitTarget->GetPositionZ();
-        data << getMSTime();
-        data << uint8(0x00);
-        data << uint32(0x00001000);
-        data << time;
-        data << uint32(1);
-        data << posX;
-        data << posY;
-        data << posZ;
+        unitTarget->smsg_MonsterMove(posX, posY, posZ, time);
 
         if(unitTarget->IsCreature())
             unitTarget->GetAIInterface()->StopMovement(2000);
 
-        unitTarget->SendMessageToSet(&data, true);
         unitTarget->SetPosition(posX, posY, posZ, alpha, true);
         unitTarget->addStateFlag(UF_ATTACKING);
         unitTarget->smsg_AttackStart(unitTarget);

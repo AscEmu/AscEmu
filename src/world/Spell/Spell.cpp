@@ -5057,23 +5057,9 @@ void Spell::HandleTeleport(float x, float y, float z, uint32 mapid, Unit* Target
             return;
         }
 
-        WorldPacket data(SMSG_MONSTER_MOVE, 50);
 
-        data << Target->GetNewGUID();
-        data << uint8(0);
-        data << Target->GetPositionX();
-        data << Target->GetPositionY();
-        data << Target->GetPositionZ();
-        data << getMSTime();
-        data << uint8(0x00);
-        data << uint32(256);
-        data << uint32(1);
-        data << uint32(1);
-        data << float(x);
-        data << float(y);
-        data << float(z);
+        Target->smsg_MonsterMove(x, y, z, 1);
 
-        Target->SendMessageToSet(&data, true);
         Target->SetPosition(x, y, z, 0.5f);   // need correct orentation
     }
 }
