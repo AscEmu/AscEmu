@@ -158,7 +158,8 @@ struct CreatureProperties
     std::string lowercase_name;
     NpcMonsterSay* MonsterSay[NUM_MONSTER_SAY_EVENTS];
 
-    uint8 GenerateModelId(uint32* des) const
+    // Looks... hmmmm
+    uint8 GetGenderAndCreateRandomDisplayID(uint32* des) const
     {
         uint32 models[] = { Male_DisplayID, Male_DisplayID2, Female_DisplayID, Female_DisplayID2 };
         if (!models[0] && !models[1] && !models[2] && !models[3])
@@ -177,6 +178,27 @@ struct CreatureProperties
                 return res < 2 ? 0 : 1;
             }
         }
+    }
+
+    uint32 GetRandomModelId() const
+    {
+        uint8 counter = 0;
+        uint32 model_ids[4];
+
+        if (Male_DisplayID)
+            model_ids[counter++] = Male_DisplayID;
+        if (Male_DisplayID2)
+            model_ids[counter++] = Male_DisplayID2;
+        if (Female_DisplayID)
+            model_ids[counter++] = Female_DisplayID;
+        if (Female_DisplayID2)
+            model_ids[counter++] = Female_DisplayID2;
+
+        if (counter > 0)
+            return model_ids[RandomUInt(0, counter - 1)];
+
+        Log.Error("CreatureProperties", "No random display_id found for entry %u", Id);
+        return 0;
     }
 
     //itemslots

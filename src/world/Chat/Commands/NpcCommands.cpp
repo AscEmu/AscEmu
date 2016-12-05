@@ -654,7 +654,7 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     }
 
     auto creature_spawn = new CreatureSpawn;
-    uint8 gender = creature_properties->GenerateModelId(&creature_spawn->displayid);
+    uint8 gender = creature_properties->GetGenderAndCreateRandomDisplayID(&creature_spawn->displayid);
     creature_spawn->entry = entry;
     creature_spawn->form = 0;
     creature_spawn->id = objmgr.GenerateCreatureSpawnID();

@@ -2037,34 +2037,39 @@ void Object::SendSpellNonMeleeDamageLog(Object* Caster, Object* Target, uint32 S
 
 void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage* Dmg, uint32 Damage, uint32 Abs, uint32 BlockedDamage, uint32 HitStatus, uint32 VState)
 {
-    if (!Caster || !Target || !Dmg)
+    if (!Caster || !Target /* || !Dmg*/)
         return;
 
-    uint32 Overkill = 0;
+    uint32 TargetHealth = Target->GetUInt32Value(UNIT_FIELD_HEALTH);
+    uint32 Overkill = Damage > TargetHealth ? Damage - TargetHealth : 0;
 
-    if (Damage > Target->GetUInt32Value(UNIT_FIELD_MAXHEALTH))
-        Overkill = Damage - Target->GetUInt32Value(UNIT_FIELD_HEALTH);
+    uint8 count = 1;
 
-    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 64 * 12);
+    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, 16 + 45);
     data << uint32(HitStatus);
     data.appendPackGUID(Caster->GetGUID());
     data.appendPackGUID(Target->GetGUID());
     data << uint32(Damage);                 // Realdamage
     data << uint32(Overkill);               // Overkill
-    data << uint8(1);                       // Damage type counter / swing type
+    data << uint8(count);                   // Damage type counter / swing type
 
-    data << uint32(g_spellSchoolConversionTable[Dmg->school_type]);         // Damage school
-    data << float(Dmg->full_damage);        // Damage float
-    data << uint32(Dmg->full_damage);       // Damage amount
+    for (uint8 i = 0; i < count; ++i)
+    {
+        data << uint32(g_spellSchoolConversionTable[Dmg->school_type]);         // Damage school
+        data << float(Dmg->full_damage);        // Damage float
+        data << uint32(Dmg->full_damage);       // Damage amount
+    }
 
     if (HitStatus & HITSTATUS_ABSORBED)
     {
-        data << uint32(Abs);                // Damage absorbed
+        for (uint8 i = 0; i < count; ++i)
+            data << uint32(Abs);                // Damage absorbed
     }
 
     if (HitStatus & HITSTATUS_RESIST)
     {
-        data << uint32(Dmg->resisted_damage);   // Damage resisted
+        for (uint8 i = 0; i < count; ++i)
+            data << uint32(Dmg->resisted_damage);   // Damage resisted
     }
 
     data << uint8(VState);
@@ -2099,10 +2104,11 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
             data << float(0);
             data << float(0);
         }
+
         data << uint32(0);
     }
 
-    SendMessageToSet(&data, Caster->IsPlayer());
+    SendMessageToSet(&data, true);
 }
 
 int32 Object::event_GetInstanceID()
@@ -2516,7 +2522,7 @@ void Object::SendAIReaction(uint32 reaction)
     WorldPacket data(SMSG_AI_REACTION, 12);
     data << uint64(GetGUID());
     data << uint32(reaction);
-    SendMessageToSet(&data, false);
+    SendMessageToSet(&data, true);
 }
 
 void Object::SendDestroyObject()

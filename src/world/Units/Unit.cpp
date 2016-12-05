@@ -4239,6 +4239,32 @@ void Unit::smsg_AttackStart(Unit* pVictim)
     }
 }
 
+void Unit::smsg_MonsterMove(float new_x, float new_y, float new_z, uint32 time)
+{
+    WorldPacket data(SMSG_MONSTER_MOVE, 1 + 12 + 4 + 1 + 4 + 4 + 4 + 12 + 8);
+    data << GetNewGUID();
+
+    data << uint8(0);                                       // new in 3.1
+    data << GetPositionX();
+    data << GetPositionY();
+    data << GetPositionZ();
+    data << getMSTime();
+
+    data << uint8(0);
+    data << uint32((GetUnitMovementFlags() & MOVEFLAG_DISABLE_GRAVITY) ? MOVEFLAG_FLYING : MOVEFLAG_WALKING);
+    data << time;                                           // Time in between points
+    data << uint32(1);                                      // 1 single waypoint
+
+    data << new_x;
+    data << new_y;
+    data << new_z;                  // the single waypoint Point B
+
+    if (this->IsPlayer())
+        static_cast<Player*>(this)->GetSession()->SendPacket(&data);
+    else
+        SendMessageToSet(&data, true);
+}
+
 uint8 Unit::FindVisualSlot(uint32 SpellId, bool IsPos)
 {
     uint32 from, to;
@@ -5257,10 +5283,17 @@ void Unit::Emote(EmoteType emote)
     }
     else
     {
-        WorldPacket data(SMSG_EMOTE, 12);
-        data << uint32(emote);
-        data << this->GetGUID();
-        SendMessageToSet(&data, true);
+        if (emote_entry->EmoteType)         //EmoteType > 0 = state
+        {
+            SetUInt32Value(UNIT_NPC_EMOTESTATE, emote);
+        }
+        else
+        {
+            WorldPacket data(SMSG_EMOTE, 12);
+            data << uint32(emote);
+            data << this->GetGUID();
+            SendMessageToSet(&data, true);
+        }
     }
 }
 
@@ -7366,25 +7399,8 @@ void Unit::SetFacing(float newo)
 {
     SetOrientation(newo);
 
-    //generate smsg_monster_move
-    WorldPacket data(SMSG_MONSTER_MOVE, 100);
-
-    data << GetNewGUID();
-    data << uint8(0); //vehicle seat index
-    data << GetPositionX();
-    data << GetPositionY();
-    data << GetPositionZ();
-    data << getMSTime();
-    data << uint8(4); //set orientation
-    data << newo;
-    data << uint32(0x1000); //move flags: run
-    data << uint32(0); //movetime
-    data << uint32(1); //1 point
-    data << GetPositionX();
-    data << GetPositionY();
-    data << GetPositionZ();
-
-    SendMessageToSet(&data, true);
+    //send smsg_monster_move
+    smsg_MonsterMove(GetPositionX(), GetPositionY(), GetPositionZ(), 0);
 }
 
 float Unit::get_chance_to_daze(Unit* target)

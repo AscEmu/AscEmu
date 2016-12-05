@@ -1387,7 +1387,6 @@ class SERVER_DECL Player : public Unit
         void PushCreationData(ByteBuffer* data, uint32 updatecount);
         void PushOutOfRange(const WoWGuid & guid);
         void ProcessPendingUpdates();
-        bool CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer);
         void ClearAllPendingUpdates();
 
         uint32 GetArmorProficiency() { return armor_proficiency; }

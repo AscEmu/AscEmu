@@ -5276,23 +5276,7 @@ void Spell::SpellEffectPlayerPull(uint32 i)
 
     p_target->SetOrientation(pullO);
 
-    WorldPacket data(SMSG_MONSTER_MOVE, 60);
-    data << p_target->GetNewGUID();
-    data << uint8(0);
-    data << p_target->GetPositionX();
-    data << p_target->GetPositionY();
-    data << p_target->GetPositionZ();
-    data << getMSTime();
-    data << uint8(4);
-    data << pullO;
-    data << uint32(0x00001000);
-    data << time;
-    data << uint32(1);
-    data << pullX;
-    data << pullY;
-    data << pullZ;
-
-    p_target->SendMessageToSet(&data, true);
+    p_target->smsg_MonsterMove(pullX, pullY, pullZ, time);
 }
 
 void Spell::SpellEffectReduceThreatPercent(uint32 i)

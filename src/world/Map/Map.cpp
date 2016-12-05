@@ -177,7 +177,28 @@ void Map::LoadSpawns(bool reload)
 
                     cspawn->movetype = fields[7].GetUInt8();
                     cspawn->displayid = fields[8].GetUInt32();
+                    if (cspawn->displayid != 0)
+                    {
+                        DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(cspawn->displayid);
+                        if (creature_display == nullptr)
+                        {
+                            Log.Error("Table %s includes invalid displayid %u for npc entry: %u, spawn_id: %u. Set to a random modelid!", (*tableiterator).c_str(), cspawn->displayid, cspawn->entry, cspawn->id);
+                            cspawn->displayid = creature_properties->GetRandomModelId();
+                        }
+                    }
+                    else
+                    {
+                        cspawn->displayid = creature_properties->GetRandomModelId();
+                    }
+
                     cspawn->factionid = fields[9].GetUInt32();
+                    DBC::Structures::FactionTemplateEntry const* factionTemplate = sFactionTemplateStore.LookupEntry(cspawn->factionid);
+                    if (factionTemplate == nullptr)
+                    {
+                        Log.Error("Table %s includes invalid factionid %u for npc entry: %u, spawn_id: %u. Set to 35 (friendly)!", (*tableiterator).c_str(), cspawn->factionid, cspawn->entry, cspawn->id);
+                        cspawn->factionid = 35;
+                    }
+
                     cspawn->flags = fields[10].GetUInt32();
                     cspawn->bytes0 = fields[11].GetUInt32();
                     cspawn->bytes1 = fields[12].GetUInt32();

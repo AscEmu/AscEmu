@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace Packets
 {
+
     namespace Movement
     {
         class SmsgMonsterMove : public Packets::ManagedPacket

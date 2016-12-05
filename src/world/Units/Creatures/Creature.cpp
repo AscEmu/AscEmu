@@ -1546,7 +1546,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     SetPower(POWER_TYPE_MANA, creature_properties->Mana);
 
     uint32 model = 0;
-    uint8 gender = creature_properties->GenerateModelId(&model);
+    uint8 gender = creature_properties->GetGenderAndCreateRandomDisplayID(&model);
     setGender(gender);
 
     SetDisplayId(model);

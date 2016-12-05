@@ -514,6 +514,8 @@ class SERVER_DECL Unit : public Object
         void smsg_AttackStop(Unit* pVictim);
         void smsg_AttackStop(uint64 victimGuid);
 
+        void smsg_MonsterMove(float new_x, float new_y, float new_z, uint32 time);
+
         bool IsDazed();
         //this function is used for creatures to get chance to daze for another unit
         float get_chance_to_daze(Unit* target);

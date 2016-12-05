@@ -104,8 +104,10 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         LocalizedCreatureName* lcn = (language > 0) ? sLocalizationMgr.GetLocalizedCreatureName(entry, language) : NULL;
         data << entry;
         data << (lcn ? ci->Name : ci->Name);
+
         for (uint8 i = 0; i < 7; ++i)
             data << uint8(0);
+
         data << (lcn ? lcn->SubName : ci->SubName);
         data << ci->info_str;
         data << uint32(ci->Flags1);
@@ -115,15 +117,19 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
         data << uint32(ci->Rank);
         data << uint32(ci->killcredit[0]);
         data << uint32(ci->killcredit[1]);
+
         data << uint32(ci->Male_DisplayID);
         data << uint32(ci->Female_DisplayID);
         data << uint32(ci->Male_DisplayID2);
         data << uint32(ci->Female_DisplayID2);
+
         data << float(ci->unkfloat1);
         data << float(ci->unkfloat2);
         data << uint8(ci->Leader);
+
         for (uint32 i = 0; i < 6; ++i)
             data << uint32(ci->QuestItems[i]);
+
         data << uint32(0);      //movementtype
         data << uint32(0);
     }
