@@ -1643,8 +1643,6 @@ void AchievementMgr::SendAllAchievementData(Player* player)
     ByteBuffer completedData(numAchievements * (4 + 4 + 4 + 4 + 8));
     ObjectGuid guid = m_player->GetGUID();
     ObjectGuid counter;
-    AchievementCriteriaEntry const* acEntry;
-    AchievementEntry const* achievement;
 
     WorldPacket data(SMSG_ALL_ACHIEVEMENT_DATA, 5 + numAchievements * (1 + 4 + 4 + 4 + 4 + 8) + numCriteria * (1 + 4 + 4 + 4 + 4 + 8 + 8));
     data.writeBits(numCriteria, 21);
@@ -1756,12 +1754,12 @@ void AchievementMgr::SendAllAchievementData(Player* player)
     data << int32(-1);
     for(; progressIter != m_criteriaProgress.end() && !packetFull; ++progressIter)
     {
-    acEntry = dbcAchievementCriteriaStore.LookupEntryForced(progressIter->first);
+    AchievementCriteriaEntry const* acEntry = dbcAchievementCriteriaStore.LookupEntryForced(progressIter->first);
     if(!acEntry)
     {
     continue;
     }
-    achievement = dbcAchievementStore.LookupEntryForced(acEntry->referredAchievement);
+    AchievementEntry const* achievement = dbcAchievementStore.LookupEntryForced(acEntry->referredAchievement);
     if(!achievement)
     {
     continue;

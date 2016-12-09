@@ -221,7 +221,6 @@ void DayWatcherThread::update_arena()
 {
     Log.Notice("DayWatcherThread", "Running Weekly Arena Point Maintenance...");
     QueryResult* result = CharacterDatabase.Query("SELECT guid, arenaPoints FROM characters");  // this one is a little more intensive
-    Player* plr;
     uint32 guid, arenapoints, orig_arenapoints;
     ArenaTeam* team;
     uint32 arenapointsPerTeam[3] = { 0 };
@@ -307,7 +306,7 @@ void DayWatcherThread::update_arena()
             if (orig_arenapoints != arenapoints)
             {
                 //\todo danko
-                //plr = objmgr.GetPlayer(guid);
+                //Player* plr = objmgr.GetPlayer(guid);
                 //if (plr)
                 //{
                 //    plr->AddArenaPoints(arenapoints, false);
