@@ -192,7 +192,7 @@ struct PointOfInterest
     std::string icon_name;
 };
 
-struct SpellInfo;
+class SpellInfo;
 struct TrainerSpell
 {
     TrainerSpell() : spell(0), spellCost(0), reqSkill(0), reqSkillValue(0), reqLevel(0)
