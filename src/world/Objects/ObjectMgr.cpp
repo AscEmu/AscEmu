@@ -3750,10 +3750,10 @@ void ObjectMgr::StoreBroadCastGroupKey()
 void ObjectMgr::LoadQuestLoot(uint32 GO_Entry, uint32 Item_Entry)
 {
     // Find the quest that has that item
-    uint32 QuestID = 0;
+    /*uint32 QuestID = 0;
     uint32 i;
 
-    /*for (auto itr = sMySQLStore._questPropertiesStore.begin(); itr != sMySQLStore._questPropertiesStore.end(); ++itr)
+    for (auto itr = sMySQLStore._questPropertiesStore.begin(); itr != sMySQLStore._questPropertiesStore.end(); ++itr)
     {
         for (i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
         {

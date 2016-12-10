@@ -129,7 +129,7 @@ void WorldSession::SendTrainerList(Creature* pCreature)
         TrainerSpell* pSpell;
         uint32 Spacer = 0;
         uint32 Count = 0;
-        uint8 Status;
+        //uint8 Status;
         std::string Text;
 
         data << pCreature->GetGUID();

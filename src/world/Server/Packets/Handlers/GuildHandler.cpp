@@ -551,8 +551,10 @@ void WorldSession::HandleGuildBankSwapItems(WorldPacket& recv_data)
             recv_data >> splitedAmount;
         }
 
+        bool to_char = toChar > 0 ? true : false;
+
         // Player <-> Bank todo
-        guild->SwapItemsWithInventory(GetPlayer(), toChar, tabId, slotId, playerBag, playerSlotId, splitedAmount);
+        guild->SwapItemsWithInventory(GetPlayer(), to_char, tabId, slotId, playerBag, playerSlotId, splitedAmount);
     }
 }
 
@@ -765,7 +767,9 @@ void WorldSession::HandleAutoDeclineGuildInvites(WorldPacket& recv_data)
     uint8 enable;
     recv_data >> enable;
 
-    GetPlayer()->ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_AUTO_DECLINE_GUILD, enable);
+    bool enabled = enable > 0 ? true : false;
+
+    GetPlayer()->ApplyModFlag(PLAYER_FLAGS, PLAYER_FLAGS_AUTO_DECLINE_GUILD, enabled);
 }
 
 void WorldSession::HandleGuildRewardsQueryOpcode(WorldPacket& recv_data)
