@@ -37,7 +37,7 @@
 #include "Storage/DB2/DB2Structures.hpp"
 #include "../shared/StackBuffer.h"
 
-struct SpellInfo;
+class SpellInfo;
 
 struct FactionDBC;
 

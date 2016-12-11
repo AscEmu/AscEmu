@@ -322,7 +322,7 @@ void QuestMgr::BuildOfferReward(QuestProperties const* qst, Object* qst_giver, u
 {
     Log.Debug("BuildOfferReward", "Called SMSG_QUESTGIVER_OFFER_REWARD");
     LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : NULL;
-    ItemProperties const* it;
+    //ItemProperties const* it;
 
     std::string questGiverTextWindow = "";
     std::string questGiverTargetName = "";

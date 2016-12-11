@@ -30,7 +30,7 @@ class SpellProc;
 class AIInterface;
 class DynamicObject;
 class Object;
-struct SpellInfo;
+class SpellInfo;
 
 #include "Units/Summons/SummonHandler.h"
 

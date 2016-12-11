@@ -233,7 +233,7 @@ bool SpellInfo::HasCustomFlagForEffect(uint32 effect, uint32 flag)
 
 bool SpellInfo::IsPassive()
 {
-    return Attributes & ATTRIBUTES_PASSIVE;
+    return (Attributes & ATTRIBUTES_PASSIVE) != 0;
 }
 
 bool SpellInfo::IsProfession()
@@ -281,7 +281,7 @@ bool SpellInfo::IsPrimaryProfessionSkill(uint32 skill_id)
 
 bool SpellInfo::IsDeathPersistent()
 {
-    return AttributesExC & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD;
+    return (AttributesExC & ATTRIBUTESEXC_CAN_PERSIST_AND_CASTED_WHILE_DEAD) != 0;
 }
 
 bool SpellInfo::AppliesAreaAura(uint32 aura)
