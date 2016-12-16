@@ -15,6 +15,11 @@
 class Socket;
 class SERVER_DECL SocketMgr : public Singleton<SocketMgr>
 {
+    HANDLE m_completionPort;
+    std::set<Socket*> _sockets;
+    Mutex socketLock;
+    Arcemu::Threading::AtomicCounter socket_count;
+
     public:
 
         SocketMgr();
@@ -43,13 +48,6 @@ class SERVER_DECL SocketMgr : public Singleton<SocketMgr>
 
         void ShutdownThreads();
         long threadcount;
-
-    private:
-
-        HANDLE m_completionPort;
-        std::set<Socket*> _sockets;
-        Mutex socketLock;
-        Arcemu::Threading::AtomicCounter socket_count;
 };
 
 #define sSocketMgr SocketMgr::getSingleton()
