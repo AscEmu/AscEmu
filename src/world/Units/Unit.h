@@ -858,6 +858,9 @@ class SERVER_DECL Unit : public Object
                 return false;
         }
 
+        void SetWaterWalk();
+        void SetLandWalk();
+
         virtual bool isTrainingDummy() { return false; }
 
         void SetFacing(float newo);     //only working if creature is idle

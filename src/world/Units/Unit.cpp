@@ -5809,6 +5809,22 @@ void Unit::Unroot()
     SendMessageToSet(&data, true, false);
 }
 
+void Unit::SetWaterWalk()
+{
+    WorldPacket data(SMSG_MOVE_WATER_WALK, 12);
+    data << GetNewGUID();
+    data << uint32(0);
+    SendMessageToSet(&data, true);
+}
+
+void Unit::SetLandWalk()
+{
+    WorldPacket data(SMSG_MOVE_LAND_WALK, 12);
+    data << GetNewGUID();
+    data << uint32(0);
+    SendMessageToSet(&data, true);
+}
+
 void Unit::RemoveAurasByBuffType(uint32 buff_type, const uint64 & guid, uint32 skip)
 {
     uint64 sguid = buff_type >= SPELL_TYPE_BLESSING ? guid : 0;
