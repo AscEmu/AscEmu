@@ -5825,6 +5825,22 @@ void Unit::SetLandWalk()
     SendMessageToSet(&data, true);
 }
 
+void Unit::SetFeatherFall()
+{
+    WorldPacket data(SMSG_MOVE_FEATHER_FALL, 12);
+    data << GetNewGUID();
+    data << uint32(0);
+    SendMessageToSet(&data, true);
+}
+
+void Unit::SetNormalFall()
+{
+    WorldPacket data(SMSG_MOVE_NORMAL_FALL, 12);
+    data << GetNewGUID();
+    data << uint32(0);
+    SendMessageToSet(&data, true);
+}
+
 void Unit::RemoveAurasByBuffType(uint32 buff_type, const uint64 & guid, uint32 skip)
 {
     uint64 sguid = buff_type >= SPELL_TYPE_BLESSING ? guid : 0;
