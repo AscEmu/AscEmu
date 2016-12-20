@@ -351,8 +351,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     if (!_player->isAlive() && _player->GetShapeShift() != FORM_SPIRITOFREDEMPTION && !(spellInfo->Attributes & ATTRIBUTES_DEAD_CASTABLE)) //They're dead, not in spirit of redemption and the spell can't be cast while dead.
         return;
 
-    LOG_DETAIL("WORLD: got cast spell packet, spellId - %i (%s), data length = %i",
-               spellId, spellInfo->Name, recvPacket.size());
+    LOG_DETAIL("WORLD: got cast spell packet, spellId - %i (%s), data length = %i", spellId, spellInfo->Name.c_str(), recvPacket.size());
 
     // Cheat Detection only if player and not from an item
     // this could fuck up things but meh it's needed ALOT of the newbs are using WPE now

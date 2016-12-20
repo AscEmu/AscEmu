@@ -6038,7 +6038,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     if (spell_info == nullptr)
         return -1;
 
-    //sLog.outString("Canshootwithrangedweapon!?!? spell: [%u] %s" , spellinfo->Id , spellinfo->Name);
+    //sLog.outString("Canshootwithrangedweapon!?!? spell: [%u] %s" , spellinfo->Id , spellinfo->Name.c_str());
 
     // Check if Morphed
     if (polySpell > 0)

@@ -1479,7 +1479,7 @@ void Aura::EventUpdateAreaAura(float r)
     uint32 AreaAuraEffectId = m_spellInfo->GetAreaAuraEffectId();
     if (AreaAuraEffectId == 0)
     {
-        LOG_ERROR("Spell %u (%s) has tried to update Area Aura targets but Spell has no Area Aura effect.", m_spellInfo->Id, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has tried to update Area Aura targets but Spell has no Area Aura effect.", m_spellInfo->Id, m_spellInfo->Name.c_str());
         ARCEMU_ASSERT(false);
     }
 
@@ -2980,7 +2980,7 @@ void Aura::EventPeriodicManaPct(float RegenPct)
 void Aura::EventPeriodicTriggerDummy()
 {
     if (!sScriptMgr.CallScriptedDummyAura(m_spellInfo->Id, mod->i, this, true))
-        LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellInfo->Id, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellInfo->Id, m_spellInfo->Name.c_str());
 }
 
 void Aura::SpellAuraModResistance(bool apply)
@@ -5526,7 +5526,7 @@ void Aura::SpellAuraPeriodicTriggerDummy(bool apply)
     else
     {
         if (!sScriptMgr.CallScriptedDummyAura(m_spellInfo->Id, mod->i, this, false))
-            LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellInfo->Id, m_spellInfo->Name);
+            LOG_ERROR("Spell %u (%s) has an apply periodic trigger dummy aura effect, but no handler for it.", m_spellInfo->Id, m_spellInfo->Name.c_str());
     }
 }
 
