@@ -1586,7 +1586,7 @@ void Aura::EventUpdateAreaAura(float r)
     uint32 AreaAuraEffectId = m_spellInfo->GetAreaAuraEffectId();
     if (AreaAuraEffectId == 0)
     {
-        LOG_ERROR("Spell %u (%s) has tried to update Area Aura targets but Spell has no Area Aura effect.", m_spellInfo->Id, m_spellInfo->Name);
+        LOG_ERROR("Spell %u (%s) has tried to update Area Aura targets but Spell has no Area Aura effect.", m_spellInfo->Id, m_spellInfo->Name.c_str());
         ARCEMU_ASSERT(false);
     }
 
