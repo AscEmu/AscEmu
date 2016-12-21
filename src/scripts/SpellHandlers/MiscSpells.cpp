@@ -474,7 +474,7 @@ bool TeleportToCoordinates(uint32 i, Spell* s)
     TeleportCoords const* teleport_coord = sMySQLStore.GetTeleportCoord(s->GetSpellInfo()->Id);
     if (teleport_coord == nullptr)
     {
-        sLog.outError("Spell %u ( %s ) has a TeleportToCoordinates scripted effect, but has no coordinates to teleport to. ", s->GetSpellInfo()->Id, s->GetSpellInfo()->Name);
+        sLog.outError("Spell %u ( %s ) has a TeleportToCoordinates scripted effect, but has no coordinates to teleport to. ", s->GetSpellInfo()->Id, s->GetSpellInfo()->Name.c_str());
         return true;
     }
 
