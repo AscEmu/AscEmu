@@ -20,6 +20,8 @@
 #ifndef _ATOMICFLOAT_H
 #define _ATOMICFLOAT_H
 
+#define UNUSED(x) (void)(x)
+
 namespace Arcemu
 {
     namespace Threading
@@ -67,10 +69,10 @@ namespace Arcemu
             private:
 
                 // Disabled copy constructor
-                AtomicFloat(const AtomicFloat& other) {}
+                AtomicFloat(const AtomicFloat& other) { UNUSED(other); }
 
                 // Disabled assignment operator
-                AtomicFloat operator=(const AtomicFloat& other) { return *this; }
+                AtomicFloat operator=(const AtomicFloat& other) { UNUSED(other); return *this; }
 
                 AtomicULong Value;
         };
