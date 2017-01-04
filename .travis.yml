@@ -17,9 +17,8 @@ env:
     - secure: "Zk3bAxnp4OHPMMZYOSoM2chuMZXomp7BFcT54/Ag6C8RCqtpqQ+E6yHRp861xdWSVo9uZ/uGmD1pwPiIUK8Vs80+OwhFVvtor2MGXyQKX1oFYBg0mo5Z3Xzy+OPa3e0YBbe6SSqdUzDE1hIa7OrU8GWciIMobWQS7XIBbWg3TFU="
 
 before_install:
-  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then
-    export CC=gcc-6 CXX=g++-6;
-    fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-6" CC="gcc-6"; fi
+  - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.8" CC="clang-3.8"; fi
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
 
@@ -40,6 +39,7 @@ addons:
     - libbz2-dev
     - libmysqlclient-dev
     - libmysql++-dev
+    - clang-3.8
     - gcc-6
     - g++-6
   coverity_scan:
