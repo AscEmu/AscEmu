@@ -17,7 +17,7 @@ env:
 
 before_install:
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then
-    export CC=gcc-5 CXX=g++-5;
+    export CC=gcc-6 CXX=g++-6;
     fi
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
@@ -39,8 +39,8 @@ addons:
     - libbz2-dev
     - libmysqlclient-dev
     - libmysql++-dev
-    - gcc-5
-    - g++-5
+    - gcc-6
+    - g++-6
   coverity_scan:
     project:
       name: AscEmu/AscEmu

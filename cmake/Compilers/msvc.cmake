@@ -1,7 +1,7 @@
-# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
 
-if(MSVC_VERSION VERSION_LESS 1800)
-    message(FATAL_ERROR "This Visual studio version is not supported")
+if(MSVC_VERSION VERSION_LESS 19.0.24210) #2015 3
+    message(FATAL_ERROR "AscEmu requires at least Visual Studio 2015 update 3")
 endif()
 
 message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER_ID}")
