@@ -1,12 +1,8 @@
 sudo: false
-language: cpp
+language: c++
 
 os:
   - linux
-
-compiler:
-  - gcc
-  - clang
 
 git:
   depth: 1
