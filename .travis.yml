@@ -6,6 +6,7 @@ os:
 
 compiler:
   - gcc
+  - clang
 
 git:
   depth: 1
