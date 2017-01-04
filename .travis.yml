@@ -27,29 +27,49 @@ install:
   - cd ascemu_build
   - cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=1
 
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - cmake
-    - zlib1g-dev
-    - libssl-dev
-    - libpcre3-dev
-    - libbz2-dev
-    - libmysqlclient-dev
-    - libmysql++-dev
-    - clang-3.8
-    - gcc-6
-    - g++-6
-  coverity_scan:
-    project:
-      name: AscEmu/AscEmu
-      description: MMORPG Framework
-    notification_email: autokaori@gmail.com
-    build_command_prepend: cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=0 && cov-configure --comptype gcc --compiler /usr/bin/gcc-5 && make clean
-    build_command: make -j2
-    branch_pattern: coverity_scan_3.3.5
+  
+matrix:
+  include:
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - cmake
+            - zlib1g-dev
+            - libssl-dev
+            - libpcre3-dev
+            - libbz2-dev
+            - libmysqlclient-dev
+            - libmysql++-dev
+            - gcc-6
+            - g++-6
+          coverity_scan:
+            project:
+              name: AscEmu/AscEmu
+              description: MMORPG Framework
+            notification_email: autokaori@gmail.com
+            build_command_prepend: cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=0 && cov-configure --comptype gcc --compiler /usr/bin/gcc-5 && make clean
+            build_command: make -j2
+            branch_pattern: coverity_scan_3.3.5
+      env: COMPILER=g++-6
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+          packages:
+            - cmake
+            - zlib1g-dev
+            - libssl-dev
+            - libpcre3-dev
+            - libbz2-dev
+            - libmysqlclient-dev
+            - libmysql++-dev
+            - clang-3.8
+      env: COMPILER=clang-3.8
 
 before_script:
   - ${CXX} --version
