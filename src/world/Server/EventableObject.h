@@ -23,7 +23,7 @@
 
 #include "StdAfx.h"
 #include "EventMgr.h"
-#include "../shared/Util.h"
+#include "../shared/Util.hpp"
 #include <list>
 #include <set>
 

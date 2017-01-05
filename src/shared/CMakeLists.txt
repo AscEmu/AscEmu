@@ -9,7 +9,7 @@ set(sources
     Log.cpp
     MersenneTwister.cpp
     printStackTrace.cpp
-    Util.cpp
+    Util.Legacy.cpp
     crc32.cpp
     MapFile.cpp
     MapFileEntry.cpp
@@ -37,6 +37,8 @@ set(sources
     Database/CreateInterface.cpp
     Network/CircularBuffer.cpp
     Network/Socket.cpp
+    
+    Util.cpp
 )
 
 set(headers
@@ -79,7 +81,7 @@ set(headers
 	Timer.h
 	TLSObject.h
 	Tokenizer.h
-	Util.h
+	Util.Legacy.h
 	WorldPacket.h
 	WoWGuid.h
 	Auth/BigNumber.h
@@ -121,6 +123,7 @@ set(headers
 	Threading/ThreadStarter.h
 	
 	Common.hpp
+	Util.hpp
 )
 
 if(WIN32)

@@ -20,7 +20,7 @@
  */
 
 #include "MersenneTwister.h"
-#include "Util.h"
+#include "Util.hpp"
 #include "Timer.h"
 #include <stdexcept>
 
