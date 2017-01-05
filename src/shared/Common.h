@@ -45,12 +45,6 @@ enum MsTimeVariables
     MSTIME_DAY      = MSTIME_HOUR * 24
 };
 
-#ifdef WIN32
-    #define ARCEMU_FORCEINLINE __forceinline
-#else
-    #define ARCEMU_FORCEINLINE inline
-#endif
-
 #include "AscemuServerDefines.hpp"
 
 #include <cstdlib>
