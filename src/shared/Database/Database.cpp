@@ -26,6 +26,7 @@
  //////////////////////////////////////////////
 
 #include "DatabaseEnv.h"
+#include "Util.h"
 #include <string>
 #include <vector>
 

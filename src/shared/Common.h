@@ -266,7 +266,7 @@ inline uint32 now()
     #define TRUE  1
 #endif
 
-#include "Util.h"
+//#include "Util.h"
 #include "Timer.h"
 
 inline void reverse_array(uint8* pointer, size_t count)
