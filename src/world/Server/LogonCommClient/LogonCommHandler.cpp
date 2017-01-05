@@ -136,7 +136,7 @@ void LogonCommHandler::Startup()
             std::string acct = result->Fetch()[0].GetString();
             std::string perm = result->Fetch()[1].GetString();
 
-            arcemu_TOUPPER(acct);
+            Util::StringToUpperCase(acct);
             forced_permissions.insert(make_pair(acct, perm));
 
         }
@@ -150,7 +150,7 @@ void LogonCommHandler::AddForcedPermission(std::string acct, std::string perm)
 {
     auto account_name = acct.c_str();
     auto permission_string = perm.c_str();
-    arcemu_TOUPPER(acct);
+    Util::StringToUpperCase(acct);
 
     ForcedPermissionMap::iterator itr = forced_permissions.find(acct);
     if (itr != forced_permissions.end())
@@ -454,8 +454,8 @@ void LogonCommHandler::TestConsoleLogon(std::string & username, std::string & pa
     std::string newpass = password;
     std::string srpstr;
 
-    arcemu_TOUPPER(newuser);
-    arcemu_TOUPPER(newpass);
+    Util::StringToUpperCase(newuser);
+    Util::StringToUpperCase(newpass);
 
     srpstr = newuser + ":" + newpass;
 

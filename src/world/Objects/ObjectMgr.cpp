@@ -311,7 +311,7 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
     }
 
     std::string pnam = std::string(pl->name);
-    arcemu_TOLOWER(pnam);
+    Util::StringToLowerCase(pnam);
     i2 = m_playersInfoByName.find(pnam);
     if (i2 != m_playersInfoByName.end() && i2->second == pl)
         m_playersInfoByName.erase(i2);
@@ -342,7 +342,7 @@ void ObjectMgr::AddPlayerInfo(PlayerInfo* pn)
     playernamelock.AcquireWriteLock();
     m_playersinfo[pn->guid] = pn;
     std::string pnam = std::string(pn->name);
-    arcemu_TOLOWER(pnam);
+    Util::StringToLowerCase(pnam);
     m_playersInfoByName[pnam] = pn;
     playernamelock.ReleaseWriteLock();
 }
@@ -351,13 +351,13 @@ void ObjectMgr::RenamePlayerInfo(PlayerInfo* pn, const char* oldname, const char
 {
     playernamelock.AcquireWriteLock();
     std::string oldn = std::string(oldname);
-    arcemu_TOLOWER(oldn);
+    Util::StringToLowerCase(oldn);
 
     PlayerNameStringIndexMap::iterator itr = m_playersInfoByName.find(oldn);
     if (itr != m_playersInfoByName.end() && itr->second == pn)
     {
         std::string newn = std::string(newname);
-        arcemu_TOLOWER(newn);
+        Util::StringToLowerCase(newn);
         m_playersInfoByName.erase(itr);
         m_playersInfoByName[newn] = pn;
     }
@@ -479,7 +479,7 @@ void ObjectMgr::LoadPlayersInfo()
             }
 
             std::string lpn = std::string(pn->name);
-            arcemu_TOLOWER(lpn);
+            Util::StringToLowerCase(lpn);
             m_playersInfoByName[lpn] = pn;
 
             //this is startup -> no need in lock -> don't use addplayerinfo
@@ -496,7 +496,7 @@ void ObjectMgr::LoadPlayersInfo()
 PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
 {
     std::string lpn = std::string(name);
-    arcemu_TOLOWER(lpn);
+    Util::StringToLowerCase(lpn);
     PlayerNameStringIndexMap::iterator i;
     PlayerInfo* rv = NULL;
     playernamelock.AcquireReadLock();
@@ -1030,7 +1030,7 @@ Player* ObjectMgr::GetPlayer(const char* name, bool caseSensitive)
     if (!caseSensitive)
     {
         std::string strName = name;
-        arcemu_TOLOWER(strName);
+        Util::StringToLowerCase(strName);
         for (itr = _players.begin(); itr != _players.end(); ++itr)
         {
             if (!stricmp(itr->second->GetNameString()->c_str(), strName.c_str()))
@@ -3160,7 +3160,7 @@ PlayerCache* ObjectMgr::GetPlayerCache(const char* name, bool caseSensitive /*= 
     if (!caseSensitive)
     {
         std::string strName = name;
-        arcemu_TOLOWER(strName);
+        Util::StringToLowerCase(strName);
         for (itr = m_playerCache.begin(); itr != m_playerCache.end(); ++itr)
         {
             std::string cachename;
