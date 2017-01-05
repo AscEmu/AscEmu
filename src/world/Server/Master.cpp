@@ -593,9 +593,9 @@ void OnCrash(bool Terminate)
 
 void Master::PrintBanner()
 {
-    sLog.outBasic(WORLD_BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    sLog.outBasic("<< AscEmu %s/%s-%s (%s) :: World Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
     sLog.outBasic("========================================================");
-    sLog.outErrorSilent(WORLD_BANNER, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
+    sLog.outErrorSilent("<< AscEmu %s/%s-%s (%s) :: World Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
     sLog.outErrorSilent("========================================================"); // Echo off.
 }
 

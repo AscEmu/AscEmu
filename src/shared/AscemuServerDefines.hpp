@@ -30,8 +30,6 @@
 
 #include "../shared/ascemu_getopt.h"
 
-#define WORLD_BANNER "<< AscEmu %s/%s-%s (%s) :: World Server >>"
-#define LOGON_BANNER "<< AscEmu %s/%s-%s (%s) :: Logon Server >>"
 
 #define DEF_VALUE_NOT_SET 0xDEADBEEF
 
