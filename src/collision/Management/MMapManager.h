@@ -20,7 +20,7 @@
 #ifndef _MMAP_MANAGER_H
 #define _MMAP_MANAGER_H
 
-#include "Common.h"
+#include "Common.hpp"
 #include "DetourNavMesh.h"
 #include "DetourNavMeshQuery.h"
 

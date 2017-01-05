@@ -7,7 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define _DBC_SQL_HPP
 
 #include <string>
-#include "Common.h"
+#include "Common.hpp"
 #include "DBCLoader.hpp" // Used in constructor
 
 namespace DBC

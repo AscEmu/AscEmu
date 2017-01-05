@@ -21,7 +21,7 @@
 #define _DATABASE_ENV_H
 
 //! Other libs we depend on.
-#include "Common.h"
+#include "Common.hpp"
 #include "Singleton.h"
 #include "Log.h"
 #include "CThreads.h"

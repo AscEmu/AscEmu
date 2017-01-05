@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _MAP_MANAGEMENT_AREA_MANAGEMENT_AREA_STORAGE_H
 #define _MAP_MANAGEMENT_AREA_MANAGEMENT_AREA_STORAGE_H
 
-#include "Common.h"
+#include "Common.hpp"
 #include "Storage/DBC/DBCStorage.hpp"
 #include "Storage/DBC/DBCStructures.hpp"
 

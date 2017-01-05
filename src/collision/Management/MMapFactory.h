@@ -20,7 +20,7 @@
 #ifndef _MMAP_FACTORY_H
 #define _MMAP_FACTORY_H
 
-#include "Common.h"
+#include "Common.hpp"
 #include "MMapManager.h"
 #include "DetourAlloc.h"
 #include "DetourNavMesh.h"

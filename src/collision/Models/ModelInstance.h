@@ -25,7 +25,7 @@
 #include <G3D/AABox.h>
 #include <G3D/Ray.h>
 
-#include "Common.h"
+#include "Common.hpp"
 
 namespace VMAP
 {

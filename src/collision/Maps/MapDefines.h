@@ -20,7 +20,7 @@
 #ifndef _MAPDEFINES_H
 #define _MAPDEFINES_H
 
-#include "Common.h"
+#include "Common.hpp"
 #include "DetourNavMesh.h"
 
 const uint32 MMAP_MAGIC = 0x4d4d4150; // 'MMAP'

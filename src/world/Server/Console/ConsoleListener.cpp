@@ -21,7 +21,7 @@
 
 #include "StdAfx.h"
 
-#include <Common.h>
+#include "Common.hpp"
 #include <Network/Network.h>
 #include <Config/ConfigEnv.h>
 #include <git_version.h>

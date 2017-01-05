@@ -21,7 +21,7 @@
 #ifndef _WORLD_MASTER_H
 #define _WORLD_MASTER_H
 
-#include "Common.h"
+#include "Common.hpp"
 #include "Config/ConfigEnv.h"
 #include "Database/DatabaseEnv.h"
 #include "MainServerDefines.h"

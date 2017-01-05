@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _DBC_STRUCTURES_HPP
 #define _DBC_STRUCTURES_HPP
 
-#include "Common.h"
+#include "Common.hpp"
 #include "Spell/SpellDefines.hpp"
 
 enum AreaFlags

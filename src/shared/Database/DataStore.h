@@ -20,7 +20,7 @@
 #ifndef _DATA_STORE_H
 #define _DATA_STORE_H
 
-#include "Common.h"
+#include "Common.hpp"
 #include "Singleton.h"
 
 #endif      //_DATA_STORE_H

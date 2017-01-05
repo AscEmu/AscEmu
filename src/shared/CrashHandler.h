@@ -20,7 +20,7 @@
 #ifndef _CRASH_HANDLER_H
 #define _CRASH_HANDLER_H
 
-#include "Common.h"
+#include "Common.hpp"
 
 bool HookCrashReporter(bool logon);
 void OutputCrashLogLine(const char* format, ...);

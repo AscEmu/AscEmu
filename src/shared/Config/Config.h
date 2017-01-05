@@ -20,7 +20,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "Common.h"
+#include "Common.hpp"
 
 #ifndef EOL
 #ifdef WIN32

@@ -47,7 +47,7 @@ set(headers
 	ByteBuffer.h
 	CallBack.h
 	CircularQueue.h
-	Common.h
+	Common.Legacy.h
     CommonDefines.hpp
     CommonHelpers.hpp
     CommonTypes.hpp
@@ -119,6 +119,8 @@ set(headers
 	Threading/Threading.h
 	Threading/ThreadPool.h
 	Threading/ThreadStarter.h
+	
+	Common.hpp
 )
 
 if(WIN32)

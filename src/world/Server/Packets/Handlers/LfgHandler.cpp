@@ -18,7 +18,7 @@
  */
 
 #include "Management/LFG/LFGMgr.h"
-#include "Common.h"
+#include "Common.hpp"
 
 void BuildPlayerLockDungeonBlock(WorldPacket& data, const LfgLockMap& lock)
 {

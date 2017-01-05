@@ -21,7 +21,7 @@
 // Class CThread - Base class for all threads in the
 // server, and allows for easy management by ThreadMgr.
 
-#include "Common.h"
+#include "Common.hpp"
 #include "CThreads.h"
 
 CThread::CThread() : ThreadBase()

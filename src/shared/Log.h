@@ -20,7 +20,7 @@
 #ifndef _LOG_H
 #define _LOG_H
 
-#include "Common.h"
+#include "Common.hpp"
 #include "Singleton.h"
 
 class WorldPacket;

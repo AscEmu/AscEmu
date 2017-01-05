@@ -26,7 +26,7 @@
 #include <G3D/Ray.h>
 #include "BoundingIntervalHierarchy.h"
 
-#include "Common.h"
+#include "Common.hpp"
 
 namespace VMAP
 {

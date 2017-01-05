@@ -36,7 +36,7 @@
 #include "Map/RecastIncludes.hpp"
 
 // Shared headers
-#include "Common.h"
+#include "Common.hpp"
 #include "MersenneTwister.h"
 #include "WorldPacket.h"
 #include "Log.h"

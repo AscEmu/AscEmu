@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _DBC_STORAGE_HPP
 #define _DBC_STORAGE_HPP
 
-#include "Common.h"
+#include "Common.hpp"
 #include "DBCSQL.hpp"
 #include "DBCLoader.hpp"
 #include "Database/Field.h"

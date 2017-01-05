@@ -24,7 +24,7 @@
 #include "G3D/Ray.h"
 #include "G3D/AABox.h"
 
-#include "Common.h"
+#include "Common.hpp"
 
 #include <stdexcept>
 #include <vector>

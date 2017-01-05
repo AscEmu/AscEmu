@@ -19,7 +19,7 @@
  */
 
 #pragma once
-#include "Common.h"
+#include "Common.hpp"
 
 namespace Arcemu
 {

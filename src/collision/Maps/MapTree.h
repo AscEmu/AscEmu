@@ -20,7 +20,7 @@
 #ifndef _MAPTREE_H
 #define _MAPTREE_H
 
-#include "Common.h"
+#include "Common.hpp"
 #include "BoundingIntervalHierarchy.h"
 #include <unordered_map>
 

@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Common.h"
+#include "Common.hpp"
 #include "LFG.h"
 #include "LFGGroupData.h"
 

@@ -18,7 +18,7 @@
  *
  */
 
-#include "Common.h"
+#include "Common.hpp"
 #include "ascemu_getopt.h"
 
 int arg_counter = 1;
