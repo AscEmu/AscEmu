@@ -124,10 +124,6 @@ enum MsTimeVariables
 #define ARCH "X86"
 #endif
 
-#if PLATFORM == PLATFORM_WIN32
-#define ASYNC_NET
-#endif
-
 #ifdef USE_EPOLL
 #define CONFIG_USE_EPOLL
 #endif
@@ -196,6 +192,7 @@ enum MsTimeVariables
 #define for if (true) for
 
 #if COMPILER == COMPILER_MICROSOFT
+#define MS_FLOAT_CONTROL
 #pragma float_control(push)
 #pragma float_control(precise, on)
 #endif
@@ -252,7 +249,7 @@ static inline int long2int32(const double value)
 #endif
 }
 
-#if COMPILER == COMPILER_MICROSOFT && _MSC_VER >= 1400
+#ifdef MS_FLOAT_CONTROL
 #pragma float_control(pop)
 #endif
 
