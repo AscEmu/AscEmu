@@ -14,7 +14,6 @@
 /* Implementation Selection */
 #ifdef WIN32        // Easy
 #define CONFIG_USE_IOCP
-//#define CONFIG_USE_SELECT
 #else
 
 // unix defines

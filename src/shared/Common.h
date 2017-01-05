@@ -65,11 +65,6 @@ enum MsTimeVariables
 #  define MAX_PATH 1024
 #endif
 
-#ifdef CONFIG_USE_SELECT
-#undef FD_SETSIZE
-#define FD_SETSIZE 2048
-#endif
-
 #include "Network/NetworkIncludes.hpp"
 
 // current platform and compiler
@@ -138,9 +133,6 @@ enum MsTimeVariables
 #endif
 #ifdef USE_KQUEUE
 #define CONFIG_USE_KQUEUE
-#endif
-#ifdef USE_SELECT
-#define CONFIG_USE_SELECT
 #endif
 #ifdef USE_POLL
 #define CONFIG_USE_POLL
