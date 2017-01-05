@@ -56,13 +56,12 @@ enum MsTimeVariables
 #include <cerrno>
 
 #if defined( __WIN32__ ) || defined( WIN32 ) || defined( _WIN32 )
-#  define WIN32_LEAN_AND_MEAN
-//#  define _WIN32_WINNT 0x0500
-#  define NOMINMAX
-#  include <windows.h>
-#  undef NOMINMAX
+    #define WIN32_LEAN_AND_MEAN
+    #define NOMINMAX
+    #include <windows.h>
+    #undef NOMINMAX
 #else
-#  define MAX_PATH 1024
+    #define MAX_PATH 1024
 #endif
 
 #include "Network/NetworkIncludes.hpp"
@@ -78,28 +77,25 @@ enum MsTimeVariables
 #define UNIX_FLAVOUR_OSX 4
 
 #if defined( __WIN32__ ) || defined( WIN32 ) || defined( _WIN32 )
-#  define PLATFORM PLATFORM_WIN32
+    #define PLATFORM PLATFORM_WIN32
 #elif defined(__APPLE__)
-#  define PLATFORM PLATFORM_APPLE
+    #define PLATFORM PLATFORM_APPLE
 #else
-#  define PLATFORM PLATFORM_UNIX
+    #define PLATFORM PLATFORM_UNIX
 #endif
 
 #define COMPILER_MICROSOFT 0
 #define COMPILER_GNU       1
-#define COMPILER_BORLAND   2
 #define COMPILER_CLANG     3
 
 #ifdef _MSC_VER
-#  define COMPILER COMPILER_MICROSOFT
-#elif defined( __BORLANDC__ )
-#  define COMPILER COMPILER_BORLAND
+    #define COMPILER COMPILER_MICROSOFT
 #elif defined(__GNUC__)
-#  define COMPILER COMPILER_GNU
+    #define COMPILER COMPILER_GNU
 #elif defined(__clang__)
-#  define COMPILER COMPILER_CLANG
+    #define COMPILER COMPILER_CLANG
 #else
-#  pragma error "FATAL ERROR: Unknown compiler."
+    #pragma error "FATAL ERROR: Unknown compiler."
 #endif
 
 #if _WIN32
@@ -113,25 +109,27 @@ enum MsTimeVariables
 #endif
 
 #ifdef _DEBUG
-#define CONFIG "Debug"
+    #define CONFIG "Debug"
 #else
-#define CONFIG "Release"
+    #define CONFIG "Release"
 #endif
 
 #if defined(__x86_64__) || defined(__x86_64) || defined(__amd64__) || defined(_WIN64)
-#define ARCH "X64"
+    #define ARCH "X64"
 #else
-#define ARCH "X86"
+    #define ARCH "X86"
 #endif
 
 #ifdef USE_EPOLL
-#define CONFIG_USE_EPOLL
+    #define CONFIG_USE_EPOLL
 #endif
+
 #ifdef USE_KQUEUE
-#define CONFIG_USE_KQUEUE
+    #define CONFIG_USE_KQUEUE
 #endif
+
 #ifdef USE_POLL
-#define CONFIG_USE_POLL
+    #define CONFIG_USE_POLL
 #endif
 
 #include <cstdlib>
@@ -145,7 +143,6 @@ enum MsTimeVariables
 #include <cstring>
 #include <climits>
 
-//#include <iostream>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -167,21 +164,17 @@ enum MsTimeVariables
 #include "MersenneTwister.h"
 
 #if COMPILER == COMPILER_MICROSOFT
-
-#define I64FMT "%016I64X"
-#define I64FMTD "%I64u"
-#define SI64FMTD "%I64d"
-#define snprintf _snprintf
-#define atoll __atoi64
-
+    #define I64FMT "%016I64X"
+    #define I64FMTD "%I64u"
+    #define SI64FMTD "%I64d"
+    #define snprintf _snprintf
+    #define atoll __atoi64
 #else
-
-#define stricmp strcasecmp
-#define strnicmp strncasecmp
-#define I64FMT "%016llX"
-#define I64FMTD "%llu"
-#define SI64FMTD "%lld"
-
+    #define stricmp strcasecmp
+    #define strnicmp strncasecmp
+    #define I64FMT "%016llX"
+    #define I64FMTD "%llu"
+    #define SI64FMTD "%lld"
 #endif
 
 #define atol(a) strtoul( a, NULL, 10)
@@ -192,9 +185,9 @@ enum MsTimeVariables
 #define for if (true) for
 
 #if COMPILER == COMPILER_MICROSOFT
-#define MS_FLOAT_CONTROL
-#pragma float_control(push)
-#pragma float_control(precise, on)
+    #define MS_FLOAT_CONTROL
+    #pragma float_control(push)
+    #pragma float_control(precise, on)
 #endif
 
 // fast int abs
@@ -250,11 +243,11 @@ static inline int long2int32(const double value)
 }
 
 #ifdef MS_FLOAT_CONTROL
-#pragma float_control(pop)
+    #pragma float_control(pop)
 #endif
 
 #ifndef WIN32
-#include <sys/timeb.h>
+    #include <sys/timeb.h>
 #endif
 
 inline uint32 now()
@@ -269,8 +262,8 @@ inline uint32 now()
 }
 
 #ifndef WIN32
-#define FALSE   0
-#define TRUE    1
+    #define FALSE 0
+    #define TRUE  1
 #endif
 
 #include "Util.h"
