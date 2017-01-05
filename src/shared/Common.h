@@ -279,17 +279,6 @@ inline uint32 now()
 #include "Util.h"
 #include "Timer.h"
 
-struct spawn_timed_emotes
-{
-    uint8 type;             //1 standstate, 2 emotestate, 3 emoteoneshot
-    uint32 value;           //get yar list elsewhere
-    char* msg;              //maybe we wish to say smething while changing emote state
-    uint8 msg_type;         //yell ? say ?
-    uint8 msg_lang;         //yell ? say ?
-    uint32 expire_after;    //going to nex faze in
-};
-typedef std::list<spawn_timed_emotes*> TimedEmoteList;
-
 inline void reverse_array(uint8* pointer, size_t count)
 {
     size_t x;

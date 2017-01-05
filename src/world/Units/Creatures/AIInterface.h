@@ -23,6 +23,7 @@
 
 #include "Map/RecastIncludes.hpp"
 #include "Server/IUpdatable.h"
+#include "Units/Creatures/CreatureDefines.hpp"
 
 #include <G3D/Vector3.h>
 
