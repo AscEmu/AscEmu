@@ -18,7 +18,7 @@
  *
  */
 
-#include "../Common.h"
+#include "../Common.hpp"
 #include "Mutex.h"
 
 #ifdef WIN32

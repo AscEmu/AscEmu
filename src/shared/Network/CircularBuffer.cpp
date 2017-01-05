@@ -22,7 +22,7 @@
  *
  */
 
-#include "../Common.h"
+#include "../Common.hpp"
 #include "CircularBuffer.h"
 
 /** Constructor
