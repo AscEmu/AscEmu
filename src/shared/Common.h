@@ -58,10 +58,6 @@ enum MsTimeVariables
     #define ARCEMU_FORCEINLINE inline
 #endif
 
-#ifdef HAVE_CONFIG_H
-    #include <config.h>
-#endif
-
 #include "AscemuServerDefines.hpp"
 
 #include <cstdlib>
