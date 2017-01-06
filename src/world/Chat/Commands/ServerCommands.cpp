@@ -109,7 +109,7 @@ bool ChatHandler::HandleServerSaveCommand(const char* args, WorldSession* m_sess
 //.server saveall
 bool ChatHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldSession* m_session)
 {
-    uint32 start_time = now();
+    auto start_time = Util::TimeNow();
     uint32 online_count = 0;
 
     objmgr._playerslock.AcquireReadLock();
@@ -124,7 +124,7 @@ bool ChatHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldSession*
     objmgr._playerslock.ReleaseReadLock();
 
     char TeamAnnounce[512];
-    snprintf(TeamAnnounce, 512, MSG_COLOR_RED "[Team]" MSG_COLOR_GREEN " |Hplayer:%s|h[%s]|h:" MSG_COLOR_YELLOW " saved all online players (%u) in %u msec.", m_session->GetPlayer()->GetName(), m_session->GetPlayer()->GetName(), online_count, now() - start_time);
+    snprintf(TeamAnnounce, 512, MSG_COLOR_RED "[Team]" MSG_COLOR_GREEN " |Hplayer:%s|h[%s]|h:" MSG_COLOR_YELLOW " saved all online players (%u) in %lld msec.", m_session->GetPlayer()->GetName(), m_session->GetPlayer()->GetName(), online_count, Util::GetTimeDifferenceToNow(start_time));
     sWorld.SendGMWorldText(TeamAnnounce);
     sGMLog.writefromsession(m_session, "saved all online players");
 

@@ -695,16 +695,13 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
     // Socket loop!
     time_t curTime;
     uint32 loopcounter = 0;
-    uint32 start;
-    uint32 diff;
-    uint32 last_time = now();
-    uint32 etime;
+    auto last_time = Util::TimeNow();
     uint32 next_printout = getMSTime(), next_send = getMSTime();
 
     while (!m_stopEvent && listnersockcreate)
     {
-        start = now();
-        diff = start - last_time;
+        auto start = Util::TimeNow();
+        auto diff = Util::GetTimeDifference(last_time, start);
         if (!((++loopcounter) % 10000))        // 5mins
         {
             ThreadPool.ShowStats();
@@ -730,8 +727,8 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
         sSocketGarbageCollector.Update();
 
         /* UPDATE */
-        last_time = now();
-        etime = last_time - start;
+        last_time = Util::TimeNow();
+        auto etime = Util::GetTimeDifference(start, last_time);
         if (m_ShutdownEvent)
         {
             if (getMSTime() >= next_printout)

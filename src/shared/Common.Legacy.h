@@ -250,17 +250,6 @@ static inline int long2int32(const double value)
     #include <sys/timeb.h>
 #endif
 
-inline uint32 now()
-{
-#ifdef _WIN32
-    return GetTickCount();
-#else
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-#endif
-}
-
 #ifndef WIN32
     #define FALSE 0
     #define TRUE  1
