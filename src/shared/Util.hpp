@@ -21,10 +21,10 @@ namespace Util
     std::chrono::high_resolution_clock::time_point TimeNow();
 
     /*! \brief Returns the difference between start_time and now in milliseconds */
-    long long GetTimeDifferenceToNow(std::chrono::time_point<std::chrono::steady_clock> start_time);
+    long long GetTimeDifferenceToNow(std::chrono::high_resolution_clock::time_point start_time);
 
     /*! \brief Returns the difference between start_time and end_time in milliseconds */
-    long long GetTimeDifference(std::chrono::time_point<std::chrono::steady_clock> start_time, std::chrono::time_point<std::chrono::steady_clock> end_time);
+    long long GetTimeDifference(std::chrono::high_resolution_clock::time_point start_time, std::chrono::high_resolution_clock::time_point end_time);
 
 }
 
