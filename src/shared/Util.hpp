@@ -27,7 +27,7 @@ namespace Util
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Time calculation
+    // Time calculation/formatting
 
     /*! \brief Returns the current point in time */
     std::chrono::high_resolution_clock::time_point TimeNow();
@@ -40,6 +40,9 @@ namespace Util
 
     /*! \brief Returns the current Date Time as string */
     std::string GetCurrentTimeString();
+
+    /*! \brief Returns Date Time as string from timestamp */
+    std::string GetTimeStringFromTimeStamp(uint32_t timestamp);
 
 }
 

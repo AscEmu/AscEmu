@@ -199,38 +199,6 @@ std::string ConvertTimeStampToString(uint32 timestamp)
     return szResult;
 }
 
-std::string ConvertTimeStampToDataTime(uint32 timestamp)
-{
-    char szTempBuf[100];
-    time_t t = (time_t)timestamp;
-    tm* pTM = localtime(&t);
-
-    std::string szResult;
-    szResult += szDayNames[pTM->tm_wday];
-    szResult += ", ";
-
-    MakeIntString(szTempBuf, pTM->tm_mday);
-    szResult += szTempBuf;
-    szResult += " ";
-
-    szResult += szMonthNames[pTM->tm_mon];
-    szResult += " ";
-
-    MakeIntString(szTempBuf, pTM->tm_year + 1900);
-    szResult += szTempBuf;
-    szResult += ", ";
-    MakeIntString(szTempBuf, pTM->tm_hour);
-    szResult += szTempBuf;
-    szResult += ":";
-    MakeIntString(szTempBuf, pTM->tm_min);
-    szResult += szTempBuf;
-    szResult += ":";
-    MakeIntString(szTempBuf, pTM->tm_sec);
-    szResult += szTempBuf;
-
-    return szResult;
-}
-
 uint32 DecimalToMask(uint32 dec)
 {
     return ((uint32)1 << (dec - 1));

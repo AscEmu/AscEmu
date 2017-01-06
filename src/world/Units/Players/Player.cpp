@@ -9130,7 +9130,7 @@ void Player::OnWorldPortAck()
                 /*welcome_msg += "This instance is scheduled to reset on ";
                 welcome_msg += asctime(localtime(&m_mapMgr->pInstance->m_expiration));*/
                 welcome_msg += std::string(GetSession()->LocalizedWorldSrv(Worldstring::SS_INSTANCE_RESET_INF)) + " ";
-                welcome_msg += ConvertTimeStampToDataTime((uint32)m_mapMgr->pInstance->m_expiration);
+                welcome_msg += Util::GetTimeStringFromTimeStamp((uint32)m_mapMgr->pInstance->m_expiration);
             }
             sChatHandler.SystemMessage(m_session, welcome_msg.c_str());
         }

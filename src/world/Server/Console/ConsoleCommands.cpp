@@ -272,7 +272,7 @@ bool HandleBanAccountCommand(BaseConsole* pConsole, int argc, const char* argv[]
     sLogonCommHandler.Account_SetBanned(argv[1], banned, pReason);
 
     pConsole->Write("Account '%s' has been banned %s%s. The change will be effective immediately.\r\n", argv[1],
-                    timeperiod ? "until " : "forever", timeperiod ? ConvertTimeStampToDataTime(timeperiod + (uint32)UNIXTIME).c_str() : "");
+                    timeperiod ? "until " : "forever", timeperiod ? Util::GetTimeStringFromTimeStamp(timeperiod + (uint32)UNIXTIME).c_str() : "");
 
     return true;
 }

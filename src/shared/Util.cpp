@@ -73,5 +73,14 @@ namespace Util
         ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X");
         return ss.str();
     }
+
+    std::string GetTimeStringFromTimeStamp(uint32_t timestamp)
+    {
+        std::time_t raw_time = (std::time_t)timestamp;
+
+        std::stringstream ss;
+        ss << std::put_time(std::localtime(&raw_time), "%Y-%m-%d %X");
+        return ss.str();
+    }
 }
 
