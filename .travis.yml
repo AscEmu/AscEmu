@@ -4,6 +4,10 @@ language: c++
 os:
   - linux
 
+compiler:
+  - gcc
+  - clang
+  
 git:
   depth: 1
   submodules: false
@@ -27,6 +31,8 @@ install:
   - cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=1
 
 matrix:
+  allow_failures:
+    - compiler: clang
   include:
     - compiler: gcc
       addons:
@@ -52,7 +58,6 @@ matrix:
             build_command: make -j2
             branch_pattern: coverity_scan_3.3.5
       env: COMPILER=g++-6
-  allow_failures:
     - compiler: clang
       addons:
         apt:
