@@ -1,9 +1,6 @@
 sudo: false
 language: c++
 
-os:
-  - linux
-
 compiler:
   - gcc
   - clang
@@ -33,8 +30,35 @@ install:
 matrix:
   allow_failures:
     - compiler: clang
+    - os: osx
   include:
-    - compiler: gcc
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - cmake
+            - zlib1g-dev
+            - libssl-dev
+            - libpcre3-dev
+            - libbz2-dev
+            - libmysqlclient-dev
+            - libmysql++-dev
+            - gcc-5
+            - g++-5
+          coverity_scan:
+            project:
+              name: AscEmu/AscEmu
+              description: MMORPG Framework
+            notification_email: autokaori@gmail.com
+            build_command_prepend: cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=0 && cov-configure --comptype gcc --compiler /usr/bin/gcc-5 && make clean
+            build_command: make -j2
+            branch_pattern: coverity_scan_3.3.5
+      env: COMPILER=g++-5
+    - os: linux
+      compiler: gcc
       addons:
         apt:
           sources:
@@ -58,7 +82,42 @@ matrix:
             build_command: make -j2
             branch_pattern: coverity_scan_3.3.5
       env: COMPILER=g++-6
-    - compiler: clang
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+          packages:
+            - cmake
+            - zlib1g-dev
+            - libssl-dev
+            - libpcre3-dev
+            - libbz2-dev
+            - libmysqlclient-dev
+            - libmysql++-dev
+            - clang-3.6
+      env: COMPILER=clang++-3.6
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+          packages:
+            - cmake
+            - zlib1g-dev
+            - libssl-dev
+            - libpcre3-dev
+            - libbz2-dev
+            - libmysqlclient-dev
+            - libmysql++-dev
+            - clang-3.7
+      env: COMPILER=clang++-3.7
+    - os: linux
+      compiler: clang
       addons:
         apt:
           sources:
@@ -73,7 +132,11 @@ matrix:
             - libmysqlclient-dev
             - libmysql++-dev
             - clang-3.8
-      env: COMPILER=clang-3.8
+      env: COMPILER=clang++-3.8
+    - os: osx
+      osx_image: xcode8
+      compiler: clang
+      env: COMPILER=clang++
   exclude:
     - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
 
@@ -84,7 +147,7 @@ before_script:
 
 script:
   - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then 
-    make -j2;
+    make CXX=$COMPILER -j2;
     fi
 
 #after_script:
