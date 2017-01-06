@@ -1622,7 +1622,7 @@ uint32 QuestMgr::GenerateQuestXP(Player* plr, QuestProperties const* qst)
         {
             uint32 rawXP = xpMultiplier * pXPData->xpIndex[qst->RewXPId] / 10;
 
-            realXP = static_cast<uint32>(Arcemu::round(static_cast<double>(rawXP)));
+            realXP = static_cast<uint32>(std::round(rawXP));
         }
         return realXP;
     }

@@ -855,7 +855,7 @@ bool DrinkDummyAura(uint32 i, Aura* a, bool apply)
         return true;
 
     float famount = 2.2f * (static_cast<float>(a->GetSpellInfo()->EffectBasePoints[1]) / 5.0f);
-    int32 amount = static_cast<int32>(Arcemu::round(famount));
+    int32 amount = static_cast<int32>(std::round(famount));
 
     a->EventPeriodicDrink(amount);
 

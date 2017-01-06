@@ -427,21 +427,6 @@ volatile long Sync_Sub(volatile long* value)
 
 namespace Arcemu
 {
-    float round(float f)
-    {
-        return std::floor(f + 0.5f);
-    }
-
-    double round(double d)
-    {
-        return std::floor(d + 0.5);
-    }
-
-    long double round(long double ld)
-    {
-        return std::floor(ld + 0.5);
-    }
-
     void Sleep(unsigned long timems)
     {
 #ifdef WIN32

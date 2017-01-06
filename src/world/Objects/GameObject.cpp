@@ -1148,7 +1148,7 @@ void GameObject_Destructible::Damage(uint32 damage, uint64 AttackerGUID, uint64 
         CALL_GO_SCRIPT_EVENT(this, OnDamaged)(damage);
     }
 
-    uint8 animprogress = static_cast<uint8>(Arcemu::round(hitpoints / float(maxhitpoints)) * 255);
+    uint8 animprogress = static_cast<uint8>(std::round(hitpoints / float(maxhitpoints)) * 255);
     SetAnimProgress(animprogress);
     SendDamagePacket(damage, AttackerGUID, ControllerGUID, SpellID);
 }
