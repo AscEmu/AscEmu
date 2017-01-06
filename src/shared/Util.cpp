@@ -17,7 +17,7 @@ namespace Util
         std::transform(str.begin(), str.end(), str.begin(), ::toupper);
     }
 
-    std::chrono::time_point<std::chrono::steady_clock> TimeNow()
+    std::chrono::high_resolution_clock::time_point TimeNow()
     {
         return std::chrono::high_resolution_clock::now();
     }

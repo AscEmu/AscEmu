@@ -18,7 +18,7 @@ namespace Util
     void StringToUpperCase(std::string& str);
 
     /*! \brief Returns the current point in time */
-    std::chrono::time_point<std::chrono::steady_clock> TimeNow();
+    std::chrono::high_resolution_clock::time_point TimeNow();
 
     /*! \brief Returns the difference between start_time and now in milliseconds */
     long long GetTimeDifferenceToNow(std::chrono::time_point<std::chrono::steady_clock> start_time);
