@@ -16,6 +16,15 @@ env:
   matrix:
     - TRAVIS_EMPTY_JOB_WORKAROUND=true    
 
+before_install:
+  - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+  - git submodule update --init --recursive
+
+install:
+  - mkdir ascemu_build
+  - cd ascemu_build
+  - cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=1
+    
 matrix:
   allow_failures:
     - compiler: clang
@@ -95,14 +104,6 @@ matrix:
   exclude:
     - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
 
-before_install:
-  - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
-  - git submodule update --init --recursive
-
-install:
-  - mkdir ascemu_build
-  - cd ascemu_build
-  - cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=1
   
 before_script:
   - ${CXX} --version
