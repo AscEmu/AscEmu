@@ -40,8 +40,6 @@ std::vector<std::string> StrSplit(const std::string & src, const std::string & s
     return r;
 }
 
-
-
 time_t convTimePeriod(uint32 dLength, char dType)
 {
     time_t rawtime = 0;
@@ -390,22 +388,4 @@ volatile long Sync_Sub(volatile long* value)
 #else
     return __sync_sub_and_fetch(value, 1);
 #endif
-}
-
-namespace Arcemu
-{
-    void Sleep(unsigned long timems)
-    {
-#ifdef WIN32
-        ::Sleep(timems);
-#else
-        timespec tv;
-
-        tv.tv_sec = timems / 1000;
-        tv.tv_nsec = (timems % 1000) * 1000 * 1000;
-
-        nanosleep(&tv, NULL);
-#endif
-
-    }
 }

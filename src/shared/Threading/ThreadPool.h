@@ -27,6 +27,35 @@ void SetThreadName(const char* format, ...);
 
 #ifdef WIN32
 
+typedef struct tagTHREADNAME_INFO
+{
+    DWORD dwType; // must be 0x1000
+    LPCSTR szName; // pointer to name (in user addr space)
+    DWORD dwThreadID; // thread ID (-1=caller thread)
+    DWORD dwFlags; // reserved for future use, must be zero
+} THREADNAME_INFO;
+
+#endif
+
+namespace Arcemu
+{
+    /////////////////////////////////////////////////////////////////////////
+    //void Sleep( unsigned long timems );
+    //  Puts the calling thread to sleep for the specified miliseconds
+    //
+    //Parameter(s)
+    //  unsigned long timemes  -  time interval to put the thread to sleep for
+    //
+    //Return Value
+    //  None
+    //
+    //
+    /////////////////////////////////////////////////////////////////////////
+    void Sleep(unsigned long timems);
+}
+
+#ifdef WIN32
+
 class SERVER_DECL ThreadController
 {
     public:

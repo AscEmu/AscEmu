@@ -37,7 +37,6 @@ inline uint32 secsToTimeBitFields(time_t secs)
     return (lt->tm_year - 100) << 24 | lt->tm_mon  << 20 | (lt->tm_mday - 1) << 14 | lt->tm_wday << 11 | lt->tm_hour << 6 | lt->tm_min;
 }
 
-
 extern SERVER_DECL const char* _StringToUTF8(const char* pASCIIBuf);
 extern SERVER_DECL const char* _StringToANSI(const char* pUtf8Buf);
 extern SERVER_DECL bool _IsStringUTF8(const char* str);
@@ -45,35 +44,6 @@ extern SERVER_DECL bool _IsStringUTF8(const char* str);
 volatile long Sync_Add(volatile long* value);
 
 volatile long Sync_Sub(volatile long* value);
-
-#ifdef WIN32
-
-typedef struct tagTHREADNAME_INFO
-{
-    DWORD dwType; // must be 0x1000
-    LPCSTR szName; // pointer to name (in user addr space)
-    DWORD dwThreadID; // thread ID (-1=caller thread)
-    DWORD dwFlags; // reserved for future use, must be zero
-} THREADNAME_INFO;
-
-#endif
-
-namespace Arcemu
-{
-    /////////////////////////////////////////////////////////////////////////
-    //void Sleep( unsigned long timems );
-    //  Puts the calling thread to sleep for the specified miliseconds
-    //
-    //Parameter(s)
-    //  unsigned long timemes  -  time interval to put the thread to sleep for
-    //
-    //Return Value
-    //  None
-    //
-    //
-    /////////////////////////////////////////////////////////////////////////
-    void Sleep(unsigned long timems);
-}
 
 template <class T>
 inline T CalculatePctF(T base, float pct)

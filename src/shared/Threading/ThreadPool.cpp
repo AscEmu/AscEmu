@@ -402,3 +402,21 @@ void SetThreadName(const char* format, ...)
 
     va_end(ap);
 }
+
+namespace Arcemu
+{
+    void Sleep(unsigned long timems)
+    {
+#ifdef WIN32
+        ::Sleep(timems);
+#else
+        timespec tv;
+
+        tv.tv_sec = timems / 1000;
+        tv.tv_nsec = (timems % 1000) * 1000 * 1000;
+
+        nanosleep(&tv, NULL);
+#endif
+
+    }
+}
