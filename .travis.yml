@@ -52,6 +52,7 @@ matrix:
             build_command: make -j2
             branch_pattern: coverity_scan_3.3.5
       env: COMPILER=g++-6
+  allow_failures:
     - compiler: clang
       addons:
         apt:
