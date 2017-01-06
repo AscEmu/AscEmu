@@ -16,53 +16,17 @@ env:
   matrix:
     - TRAVIS_EMPTY_JOB_WORKAROUND=true    
 
-before_install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-6" CC="gcc-6"; fi
-  - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.8" CC="clang-3.8"; fi
-  - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
-  - git submodule update --init --recursive
-
-install:
-  - mkdir ascemu_build
-  - cd ascemu_build
-  - cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=1
-
 matrix:
   allow_failures:
     - compiler: clang
     - os: osx
-  include:
     - os: linux
       compiler: gcc
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-          packages:
-            - cmake
-            - zlib1g-dev
-            - libssl-dev
-            - libpcre3-dev
-            - libbz2-dev
-            - libmysqlclient-dev
-            - libmysql++-dev
-            - gcc-5
-            - g++-5
-          coverity_scan:
-            project:
-              name: AscEmu/AscEmu
-              description: MMORPG Framework
-            notification_email: autokaori@gmail.com
-            build_command_prepend: cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=0 && cov-configure --comptype gcc --compiler /usr/bin/gcc-5 && make clean
-            build_command: make -j2
-            branch_pattern: coverity_scan_3.3.5
-      env: COMPILER=g++-5
-    - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
+            - kalakris-cmake
           packages:
             - cmake
             - zlib1g-dev
@@ -82,23 +46,8 @@ matrix:
             build_command: make -j2
             branch_pattern: coverity_scan_3.3.5
       env: COMPILER=g++-6
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.6
-          packages:
-            - cmake
-            - zlib1g-dev
-            - libssl-dev
-            - libpcre3-dev
-            - libbz2-dev
-            - libmysqlclient-dev
-            - libmysql++-dev
-            - clang-3.6
-      env: COMPILER=clang++-3.6
+      before_install:
+        - if [ "$CXX" = "g++" ]; then export CXX="g++-6" CC="gcc-6"; fi
     - os: linux
       compiler: clang
       addons:
@@ -106,6 +55,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.7
+            - kalakris-cmake
           packages:
             - cmake
             - zlib1g-dev
@@ -116,6 +66,8 @@ matrix:
             - libmysql++-dev
             - clang-3.7
       env: COMPILER=clang++-3.7
+      before_install:
+        - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.7" CC="clang-3.7"; fi
     - os: linux
       compiler: clang
       addons:
@@ -123,6 +75,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
             - llvm-toolchain-precise-3.8
+            - kalakris-cmake
           packages:
             - cmake
             - zlib1g-dev
@@ -133,6 +86,8 @@ matrix:
             - libmysql++-dev
             - clang-3.8
       env: COMPILER=clang++-3.8
+      before_install:
+        - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.8" CC="clang-3.8"; fi
     - os: osx
       osx_image: xcode8
       compiler: clang
@@ -140,6 +95,15 @@ matrix:
   exclude:
     - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
 
+before_install:
+  - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+  - git submodule update --init --recursive
+
+install:
+  - mkdir ascemu_build
+  - cd ascemu_build
+  - cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=1
+  
 before_script:
   - ${CXX} --version
   - ${CC} --version
