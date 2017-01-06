@@ -17,6 +17,9 @@ env:
     - TRAVIS_EMPTY_JOB_WORKAROUND=true    
 
 before_install:
+  - if [ "$COMPILER" = "g++-6" ]; then export CXX="g++-6" CC="gcc-6"; fi
+  - if [ "$COMPILER" = "clang++-3.8" ]; then export CXX="clang++-3.8" CC="clang-3.8"; fi
+  - if [ "$COMPILER" = "clang++-3.7" ]; then export CXX="clang++-3.7" CC="clang-3.7"; fi
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
 
@@ -55,8 +58,6 @@ matrix:
             build_command: make -j2
             branch_pattern: coverity_scan_3.3.5
       env: COMPILER=g++-6
-      before_install:
-        - if [ "$CXX" = "g++" ]; then export CXX="g++-6" CC="gcc-6"; fi
     - os: linux
       compiler: clang
       addons:
@@ -75,8 +76,6 @@ matrix:
             - libmysql++-dev
             - clang-3.7
       env: COMPILER=clang++-3.7
-      before_install:
-        - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.7" CC="clang-3.7"; fi
     - os: linux
       compiler: clang
       addons:
@@ -95,16 +94,14 @@ matrix:
             - libmysql++-dev
             - clang-3.8
       env: COMPILER=clang++-3.8
-      before_install:
-        - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.8" CC="clang-3.8"; fi
     - os: osx
       osx_image: xcode8
       compiler: clang
-      env: COMPILER=clang++
+      env: COMPILER=clang++-3.8
   exclude:
     - env: TRAVIS_EMPTY_JOB_WORKAROUND=true
 
-  
+
 before_script:
   - ${CXX} --version
   - ${CC} --version
