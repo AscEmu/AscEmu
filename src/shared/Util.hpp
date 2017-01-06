@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Util.Legacy.h"
 #include <chrono>
+#include <iomanip>
 
 namespace Util
 {
@@ -36,6 +37,9 @@ namespace Util
 
     /*! \brief Returns the difference between start_time and end_time in milliseconds */
     long long GetTimeDifference(std::chrono::high_resolution_clock::time_point start_time, std::chrono::high_resolution_clock::time_point end_time);
+
+    /*! \brief Returns the current Date Time as string */
+    std::string GetCurrentTimeString();
 
 }
 

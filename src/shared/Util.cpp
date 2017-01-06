@@ -42,6 +42,8 @@ namespace Util
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Time calculation
+    // \note typedef high_resolution_clock system_clock
+    // for further information check out https://msdn.microsoft.com/en-us/library/hh874757.aspx
 
     std::chrono::high_resolution_clock::time_point TimeNow()
     {
@@ -60,6 +62,16 @@ namespace Util
         std::chrono::duration<float> float_diff = end_time - start_time;
         std::chrono::milliseconds time_difference = std::chrono::duration_cast<std::chrono::milliseconds>(float_diff);
         return time_difference.count();
+    }
+
+    std::string GetCurrentTimeString()
+    {
+        auto now = std::chrono::system_clock::now();
+        auto in_time_t = std::chrono::system_clock::to_time_t(now);
+
+        std::stringstream ss;
+        ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X");
+        return ss.str();
     }
 }
 
