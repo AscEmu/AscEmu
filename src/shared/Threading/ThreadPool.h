@@ -22,6 +22,9 @@
 #ifndef __THREADPOOL_H
 #define __THREADPOOL_H
 
+ // This HAS to be called outside the threads __try / __except block!
+void SetThreadName(const char* format, ...);
+
 #ifdef WIN32
 
 class SERVER_DECL ThreadController

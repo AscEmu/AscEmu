@@ -28,8 +28,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 std::vector<std::string> StrSplit(const std::string & src, const std::string & sep);
 
-// This HAS to be called outside the threads __try / __except block!
-void SetThreadName(const char* format, ...);
+
 time_t convTimePeriod(uint32 dLength, char dType);
 
 inline uint32 secsToTimeBitFields(time_t secs)
