@@ -31,8 +31,8 @@ void Channel::LoadConfSettings()
     std::string BannedChannels = Config.MainConfig.GetStringDefault("Channels", "BannedChannels", "");
     std::string MinimumLevel = Config.MainConfig.GetStringDefault("Channels", "MinimumLevel", "");
     m_confSettingLock.Acquire();
-    m_bannedChannels = StrSplit(BannedChannels, ";");
-    m_minimumChannel = StrSplit(MinimumLevel, ";");
+    m_bannedChannels = Util::SplitStringBySeperator(BannedChannels, ";");
+    m_minimumChannel = Util::SplitStringBySeperator(MinimumLevel, ";");
     m_confSettingLock.Release();
 }
 

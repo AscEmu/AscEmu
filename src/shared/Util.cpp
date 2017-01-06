@@ -4,6 +4,10 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Util.hpp"
+#include <iostream>
+#include <vector>
+#include <string>
+#include <sstream>
 
 namespace Util
 {
@@ -19,6 +23,20 @@ namespace Util
     void StringToUpperCase(std::string& str)
     {
         std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+    }
+
+    std::vector<std::string> SplitStringBySeperator(const std::string& str_src, const std::string& str_sep)
+    {
+        std::vector<std::string> string_vector;
+        std::stringstream string_stream(str_src);
+        std::string isolated_string;
+
+        std::vector<char> seperator(str_sep.c_str(), str_sep.c_str() + str_sep.size() + 1);
+
+        while (std::getline(string_stream, isolated_string, seperator[0]))
+            string_vector.push_back(isolated_string);
+
+        return string_vector;
     }
 
 

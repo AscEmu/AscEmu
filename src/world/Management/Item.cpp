@@ -200,7 +200,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
         return;
 
     std::string enchant_field = fields[15].GetString();
-    std::vector< std::string > enchants = StrSplit(enchant_field, ";");
+    std::vector< std::string > enchants = Util::SplitStringBySeperator(enchant_field, ";");
     uint32 enchant_id;
 
     uint32 time_left;

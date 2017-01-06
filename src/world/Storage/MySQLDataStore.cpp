@@ -34,7 +34,7 @@ void MySQLDataStore::LoadAdditionalTableConfig()
     if (strData.empty())
         return;
 
-    std::vector<std::string> strs = StrSplit(strData, ",");
+    std::vector<std::string> strs = Util::SplitStringBySeperator(strData, ",");
     if (strs.empty())
         return;
 
@@ -664,7 +664,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
             if (creatureProperties.aura_string.size() != 0)
             {
                 std::string auras = creatureProperties.aura_string;
-                std::vector<std::string> split_auras = StrSplit(auras, " ");
+                std::vector<std::string> split_auras = Util::SplitStringBySeperator(auras, " ");
                 for (std::vector<std::string>::iterator it = split_auras.begin(); it != split_auras.end(); ++it)
                 {
                     uint32 id = atol((*it).c_str());
@@ -2253,7 +2253,7 @@ void MySQLDataStore::LoadPlayerCreateInfoTable()
         playerCreateInfo.introid = fields[23].GetUInt32();
 
         std::string taxiMaskStr = fields[24].GetString();
-        std::vector<std::string> tokens = StrSplit(taxiMaskStr, " ");
+        std::vector<std::string> tokens = Util::SplitStringBySeperator(taxiMaskStr, " ");
 
         memset(playerCreateInfo.taximask, 0, sizeof(playerCreateInfo.taximask));
         int index;

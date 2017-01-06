@@ -5961,7 +5961,7 @@ void Player::SetDrunkValue(uint16 newDrunkenValue, uint32 itemId)
 
 void Player::LoadTaxiMask(const char* data)
 {
-    std::vector<std::string> tokens = StrSplit(data, " ");
+    std::vector<std::string> tokens = Util::SplitStringBySeperator(data, " ");
 
     int index;
     std::vector<std::string>::iterator iter;

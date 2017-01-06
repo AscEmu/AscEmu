@@ -208,7 +208,7 @@ void LocalizationMgr::Reload(bool first)
 
     /// Read Language Bindings From Config
     std::string ls = Config.MainConfig.GetStringDefault("Localization", "LocaleBindings", "");
-    std::vector<std::string> tbindings = StrSplit(ls, " ");
+    std::vector<std::string> tbindings = Util::SplitStringBySeperator(ls, " ");
     for (std::vector<std::string>::iterator ztr = tbindings.begin(); ztr != tbindings.end(); ++ztr)
     {
         char lb[MAX_LOCALIZED_CHAR];

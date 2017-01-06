@@ -21,6 +21,9 @@ namespace Util
     /*! \brief Manipulates the string to uppercase */
     void StringToUpperCase(std::string& str);
 
+    /*! \brief Seperates string by seperator (one char) returns string vecotr */
+    std::vector<std::string> SplitStringBySeperator(const std::string& str_src, const std::string& str_sep);
+
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Time calculation
