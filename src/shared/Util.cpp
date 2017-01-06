@@ -7,6 +7,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace Util
 {
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // String manipulation
+
     void StringToLowerCase(std::string& str)
     {
         std::transform(str.begin(), str.end(), str.begin(), ::tolower);
@@ -16,6 +20,10 @@ namespace Util
     {
         std::transform(str.begin(), str.end(), str.begin(), ::toupper);
     }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Time calculation
 
     std::chrono::high_resolution_clock::time_point TimeNow()
     {

@@ -11,11 +11,19 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace Util
 {
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // String manipulation
+
     /*! \brief Manipulates the string to lowercase */
     void StringToLowerCase(std::string& str);
 
     /*! \brief Manipulates the string to uppercase */
     void StringToUpperCase(std::string& str);
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Time calculation
 
     /*! \brief Returns the current point in time */
     std::chrono::high_resolution_clock::time_point TimeNow();
