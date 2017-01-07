@@ -240,6 +240,10 @@ class SERVER_DECL CThreadPool
         inline uint32 GetFreeThreadCount() { return (uint32)m_freeThreads.size(); }
 };
 
+volatile long Sync_Add(volatile long* value);
+
+volatile long Sync_Sub(volatile long* value);
+
 extern SERVER_DECL CThreadPool ThreadPool;
 
 #endif
