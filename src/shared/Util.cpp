@@ -82,5 +82,43 @@ namespace Util
         ss << std::put_time(std::localtime(&raw_time), "%Y-%m-%d %X");
         return ss.str();
     }
+
+    std::string GetDateStringFromSeconds(uint32_t seconds)
+    {
+        uint32_t in_seconds = seconds;
+        uint32_t in_minutes = 0;
+        uint32_t in_hours = 0;
+        uint32_t in_days = 0;
+        uint32_t in_months = 0;
+        uint32_t in_years = 0;
+
+        in_years = (in_seconds / 60 / 60 / 24 / 30 / 12);
+        in_months = (in_seconds / 60 / 60 / 24 / 30) % 12;
+        in_days = (in_seconds / 60 / 60 / 24) % 30;
+        in_hours = (in_seconds / 60 / 60) % 24;
+        in_minutes = (in_seconds / 60) % 60;
+        in_seconds = in_seconds % 60;
+
+        std::stringstream date_time_stream;
+        if (in_years)
+            date_time_stream << in_years << " years, ";
+
+        if (in_months)
+            date_time_stream << in_months << " months, ";
+
+        if (in_days)
+            date_time_stream << in_days << " days, ";
+
+        if (in_hours)
+            date_time_stream << in_hours << " hours, ";
+
+        if (in_minutes)
+            date_time_stream << in_minutes << " minutes, ";
+
+        if (in_seconds)
+            date_time_stream << in_seconds << " seconds, ";
+
+        return date_time_stream.str();
+    }
 }
 

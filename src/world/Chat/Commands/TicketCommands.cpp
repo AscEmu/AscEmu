@@ -22,7 +22,7 @@ bool ChatHandler::HandleTicketListCommand(const char* /*args*/, WorldSession* m_
         Field* fields = result->Fetch();
         sstext << "TicketID: " << fields[0].GetUInt16()
             << " | Player: " << fields[2].GetString()
-            << " | Opened: " << ConvertTimeStampToString((uint32)UNIXTIME - fields[9].GetUInt32())
+            << " | Opened: " << Util::GetDateStringFromSeconds((uint32)UNIXTIME - fields[9].GetUInt32())
             << '\n';
     } while (result->NextRow());
 
@@ -50,7 +50,7 @@ bool ChatHandler::HandleTicketListAllCommand(const char* /*args*/, WorldSession*
         Field* fields = result->Fetch();
         sstext << "TicketID: " << fields[0].GetUInt16()
             << " | Player: " << fields[2].GetString()
-            << " | Opened: " << ConvertTimeStampToString((uint32)UNIXTIME - fields[9].GetUInt32())
+            << " | Opened: " << Util::GetDateStringFromSeconds((uint32)UNIXTIME - fields[9].GetUInt32())
             << '\n';
     } while (result->NextRow());
 

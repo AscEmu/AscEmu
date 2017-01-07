@@ -268,7 +268,7 @@ inline void reverse_array(uint8* pointer, size_t count)
 }
 
 int32 GetTimePeriodFromString(const char* str);
-std::string ConvertTimeStampToString(uint32 timestamp);
+
 
 uint32 DecimalToMask(uint32 dec);
 

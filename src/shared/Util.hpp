@@ -44,6 +44,8 @@ namespace Util
     /*! \brief Returns Date Time as string from timestamp */
     std::string GetTimeStringFromTimeStamp(uint32_t timestamp);
 
+    /*! \brief Returns years months days hours minutes seconds as string from seconds value */
+    std::string GetDateStringFromSeconds(uint32_t seconds);
 }
 
 #endif  // UTIL_HPP
