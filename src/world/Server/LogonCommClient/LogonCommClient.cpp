@@ -149,11 +149,7 @@ void LogonCommClientSocket::HandleRegister(WorldPacket& recvData)
     recvData >> realmlid;
     recvData >> realmname;
 
-#ifdef WIN32
-    Log.Success("LogonCommClient", "Realm `%s` (UNICODE) registered as realm %u.", _StringToANSI(realmname.c_str()), realmlid);
-#else
     Log.Success("LogonCommClient", "Realm `%s` registered as realm %u.", realmname.c_str(), realmlid);
-#endif
 
     LogonCommHandler::getSingleton().AdditionAck(_id, realmlid);
     realm_ids.insert(realmlid);
