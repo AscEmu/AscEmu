@@ -71,37 +71,6 @@ int32 GetTimePeriodFromString(const char* str)
     return time_to_ban;
 }
 
-const char* szDayNames[7] =
-{
-    "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
-};
-
-const char* szMonthNames[12] =
-{
-    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
-};
-
-void MakeIntString(char* buf, int num)
-{
-    if(num < 10)
-    {
-        buf[0] = '0';
-        //itoa(num, &buf[1], 10);
-        sprintf(&buf[1], "%u", num);
-    }
-    else
-    {
-        //itoa(num,buf,10);
-        sprintf(buf, "%u", num);
-    }
-}
-
-void MakeIntStringNoZero(char* buf, int num)
-{
-    //itoa(num,buf,10);
-    sprintf(buf, "%u", num);
-}
-
 uint32 DecimalToMask(uint32 dec)
 {
     return ((uint32)1 << (dec - 1));
