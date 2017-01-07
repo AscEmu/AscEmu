@@ -32,6 +32,7 @@ matrix:
   allow_failures:
     - compiler: clang
     - os: osx
+  include:
     - os: linux
       compiler: gcc
       addons:
