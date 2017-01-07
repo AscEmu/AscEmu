@@ -11,8 +11,8 @@ message(STATUS "Applying settings for ${CMAKE_CXX_COMPILER}")
 add_definitions(-DHAS_CXX0X)
 
 # apply base flags
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -std=c11")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -std=c++14")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 if (IS_64BIT)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")

@@ -64,8 +64,8 @@ matrix:
       addons:
         apt:
           sources:
+            - llvm-toolchain-precise
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
             - kalakris-cmake
           packages:
             - cmake
@@ -82,8 +82,8 @@ matrix:
       addons:
         apt:
           sources:
+            - llvm-toolchain-precise
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.8
             - kalakris-cmake
           packages:
             - cmake
