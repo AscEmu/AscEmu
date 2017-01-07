@@ -18,6 +18,10 @@
  *
  */
 
-#include "Util.hpp"
-
-
+ /*! \brief The content of this file is succesfull rewritten/reorganized.
+ *         The legacy code (AGPL) was moved to another AGPL document.
+ *         Rewritten functions are released under MIT license.
+ *
+ *         This file can be removed from the project.
+ *         07. Jan 2017 - AscEmu (Zyres)
+ */
