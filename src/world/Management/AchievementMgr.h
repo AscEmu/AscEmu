@@ -44,6 +44,12 @@ enum AchievementFlags
 };
 
 
+inline uint32 secsToTimeBitFields(time_t secs)
+{
+    tm* lt = localtime(&secs);
+    return (lt->tm_year - 100) << 24 | lt->tm_mon << 20 | (lt->tm_mday - 1) << 14 | lt->tm_wday << 11 | lt->tm_hour << 6 | lt->tm_min;
+}
+
 /// All criteria must be completed for the achievement to be complete.
 #define ACHIEVEMENT_CRITERIA_COMPLETE_FLAG_ALL 2
 /// Some of the criteria must be completed for the achievement to be complete.

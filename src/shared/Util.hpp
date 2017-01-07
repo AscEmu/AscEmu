@@ -6,7 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
-#include "Util.Legacy.h"
+#include "Common.hpp"
 #include <chrono>
 #include <iomanip>
 

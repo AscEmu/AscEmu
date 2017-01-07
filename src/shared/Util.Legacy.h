@@ -18,19 +18,10 @@
  *
  */
 
-#ifndef _UTIL_H
-#define _UTIL_H
-
-#include "Common.hpp"
-
-///////////////////////////////////////////////////////////////////////////////
-// String Functions ///////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-inline uint32 secsToTimeBitFields(time_t secs)
-{
-    tm* lt = localtime(&secs);
-    return (lt->tm_year - 100) << 24 | lt->tm_mon  << 20 | (lt->tm_mday - 1) << 14 | lt->tm_wday << 11 | lt->tm_hour << 6 | lt->tm_min;
-}
-
-#endif
+/*! \brief The content of this file is succesfull rewritten/reorganized.
+ *         The legacy code (AGPL) was moved to another AGPL document.
+ *         Rewritten functions are released under MIT license.
+ *
+ *         This file can be removed from the project.
+ *         07. Jan 2017 - AscEmu (Zyres)
+ */
