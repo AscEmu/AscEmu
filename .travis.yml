@@ -18,6 +18,7 @@ env:
 
 before_install:
   - if [ "$COMPILER" = "g++-6" ]; then export CXX="g++-6" CC="gcc-6"; fi
+  - if [ "$COMPILER" = "clang++-3.9" ]; then export CXX="clang++-3.9" CC="clang-3.9"; fi
   - if [ "$COMPILER" = "clang++-3.8" ]; then export CXX="clang++-3.8" CC="clang-3.8"; fi
   - if [ "$COMPILER" = "clang++-3.7" ]; then export CXX="clang++-3.7" CC="clang-3.7"; fi
   - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
@@ -95,6 +96,26 @@ matrix:
             - libmysql++-dev
             - clang-3.8
       env: COMPILER=clang++-3.8
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.9
+            - kalakris-cmake
+          packages:
+            - cmake
+            - llvm-3.9
+            - libc++-dev
+            - zlib1g-dev
+            - libssl-dev
+            - libpcre3-dev
+            - libbz2-dev
+            - libmysqlclient-dev
+            - libmysql++-dev
+            - clang-3.9
+      env: COMPILER=clang++-3.9
     - os: osx
       osx_image: xcode8
       compiler: clang
