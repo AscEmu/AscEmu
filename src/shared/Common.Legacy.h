@@ -267,8 +267,6 @@ inline void reverse_array(uint8* pointer, size_t count)
     free(temp);
 }
 
-int32 GetTimePeriodFromString(const char* str);
-
 
 uint32 DecimalToMask(uint32 dec);
 

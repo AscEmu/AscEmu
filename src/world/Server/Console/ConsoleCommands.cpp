@@ -255,8 +255,8 @@ bool HandleBanAccountCommand(BaseConsole* pConsole, int argc, const char* argv[]
     if (argc < 3)
         return false;
 
-    int32 timeperiod = GetTimePeriodFromString(argv[2]);
-    if (timeperiod < 0)
+    uint32_t timeperiod = Util::GetTimePeriodFromString(argv[2]);
+    if (timeperiod == 0)
         return false;
 
     uint32 banned = (timeperiod ? (uint32)UNIXTIME + timeperiod : 1);

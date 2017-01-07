@@ -56,8 +56,8 @@ bool ChatHandler::HandleAccountMuteCommand(const char* args, WorldSession* m_ses
     *pDuration = 0;
     ++pDuration;
 
-    int32 timeperiod = GetTimePeriodFromString(pDuration);
-    if (timeperiod <= 0)
+    uint32_t timeperiod = Util::GetTimePeriodFromString(pDuration);
+    if (timeperiod == 0)
         return false;
 
     uint32 banned = (uint32)UNIXTIME + timeperiod;
@@ -133,11 +133,11 @@ bool ChatHandler::HandleAccountBannedCommand(const char* args, WorldSession* m_s
     char* pReason;
     char* pDuration;
     ParseAccBanArgs(pAccount, &pDuration, &pReason);
-    int32 timeperiod = 0;
+    uint32_t timeperiod = 0;
     if (pDuration != NULL)
     {
-        timeperiod = GetTimePeriodFromString(pDuration);
-        if (timeperiod < 0)
+        timeperiod = Util::GetTimePeriodFromString(pDuration);
+        if (timeperiod == 0)
             return false;
     }
     uint32 banned = (timeperiod ? (uint32)UNIXTIME + timeperiod : 1);

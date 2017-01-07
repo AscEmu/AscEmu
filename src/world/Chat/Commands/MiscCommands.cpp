@@ -1172,11 +1172,11 @@ bool ChatHandler::HandleIPBanCommand(const char* args, WorldSession* m_session)
     char* pDuration;
     ParseBanArgs(pIp, &pDuration, &pReason);
 
-    int32 timeperiod = 0;
+    uint32_t timeperiod = 0;
     if (pDuration != NULL)
     {
-        timeperiod = GetTimePeriodFromString(pDuration);
-        if (timeperiod < 0)
+        timeperiod = Util::GetTimePeriodFromString(pDuration);
+        if (timeperiod == 0)
             return false;
     }
 
@@ -1226,12 +1226,12 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
     PlayerInfo* pInfo = NULL;
     char* pReason;
     char* pDuration;
-    int32 BanTime = 0;
+    uint32_t BanTime = 0;
     ParseBanArgs(pCharacter, &pDuration, &pReason);
     if (pDuration != NULL)
     {
-        BanTime = GetTimePeriodFromString(pDuration);
-        if (BanTime < 0)
+        BanTime = Util::GetTimePeriodFromString(pDuration);
+        if (BanTime == 0)
             return false;
     }
 
@@ -1291,12 +1291,12 @@ bool ChatHandler::HandleBanAllCommand(const char* args, WorldSession* m_session)
     char* pReason;
     char* pDuration;
     ParseBanArgs(pCharacter, &pDuration, &pReason);
-    int32 BanTime = 0;
+    uint32_t BanTime = 0;
 
     if (pDuration != NULL)
     {
-        BanTime = GetTimePeriodFromString(pDuration);
-        if (BanTime < 0)
+        BanTime = Util::GetTimePeriodFromString(pDuration);
+        if (BanTime == 0)
             return false;
     }
 

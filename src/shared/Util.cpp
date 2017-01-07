@@ -120,5 +120,35 @@ namespace Util
 
         return date_time_stream.str();
     }
+
+    uint32_t GetTimePeriodFromString(const char* str)
+    {
+        uint32_t multiplier;
+
+        std::string time_str = str;
+
+        std::istringstream read_time_var(time_str);
+        uint32_t time_period = 0;
+        std::string time_var;
+        read_time_var >> time_period;
+        read_time_var >> time_var;
+
+        Util::StringToLowerCase(time_var);
+
+        if (time_var.compare("y") == 0)
+            multiplier = TIME_YEAR;
+        else if (time_var.compare("m") == 0)
+            multiplier = TIME_MONTH;
+        else if (time_var.compare("d") == 0)
+            multiplier = TIME_DAY;
+        else if (time_var.compare("h") == 0)
+            multiplier = TIME_HOUR;
+        else
+            multiplier = TIME_MINUTE;
+
+        time_period = (multiplier * time_period);
+
+        return time_period;
+    }
 }
 

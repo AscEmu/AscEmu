@@ -46,6 +46,9 @@ namespace Util
 
     /*! \brief Returns years months days hours minutes seconds as string from seconds value */
     std::string GetDateStringFromSeconds(uint32_t seconds);
+
+    /*! \brief Returns calculated time based on (second) values e.g. 5h will return 5 * 60 * 60 */
+    uint32_t GetTimePeriodFromString(const char* str);
 }
 
 #endif  // UTIL_HPP
