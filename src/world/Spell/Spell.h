@@ -140,6 +140,11 @@ enum SPELL_MODIFIER_TYPE
     //SMT_CROWD_DAMAGE      =29,      // Mod Crowd Damage Test, 45365 - Increases the critical strike damage bonus of your Frost spells by 100%
 };
 
+static uint32 DecimalToMask(uint32 dec)
+{
+    return ((uint32)1 << (dec - 1));
+}
+
 static void SM_FFValue(int32* m, float* v, uint32* group)
 {
     if (m == 0)

@@ -20,12 +20,4 @@
 
 #include "Util.hpp"
 
-uint32 DecimalToMask(uint32 dec)
-{
-    return ((uint32)1 << (dec - 1));
-}
-
-#ifdef WIN32
-static char _StringConversionStorage[2048];
-#endif
 

@@ -267,10 +267,6 @@ inline void reverse_array(uint8* pointer, size_t count)
     free(temp);
 }
 
-
-uint32 DecimalToMask(uint32 dec);
-
-
 // returns true if the ip hits the mask, otherwise false
 inline static bool ParseCIDRBan(unsigned int IP, unsigned int Mask, unsigned int MaskBits)
 {
