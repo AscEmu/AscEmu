@@ -181,9 +181,6 @@ enum MsTimeVariables
 
 #define STRINGIZE(a) #a
 
-// fix buggy MSVC's for variable scoping to be reliable =S
-#define for if (true) for
-
 #if COMPILER == COMPILER_MICROSOFT
     #define MS_FLOAT_CONTROL
     #pragma float_control(push)
