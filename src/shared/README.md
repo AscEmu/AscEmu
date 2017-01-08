@@ -26,7 +26,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2014 | AscemuServerDefines.hpp
 * 2008 | WoWGuid.h
 * 2008 | WorldPacket.h
-* 2008 | Tokenizer.h
 * 2008 | TLSObject.h
 * 2008 | Threading/ThreadStarter.h
 * 2008 | Threading/ThreadPool.h
@@ -137,6 +136,7 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 1996 | crc32.cpp
 
 ### Ready to remove
+* 2008 | Tokenizer.h
 
 ### Removed on 08 Jan 2017
 * 2008 | Config/ConfigEnv.h
