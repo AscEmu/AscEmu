@@ -17,10 +17,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DATA_STORE_H
-#define _DATA_STORE_H
-
-#include "Common.hpp"
-#include "Singleton.h"
-
-#endif      //_DATA_STORE_H
+ /*! \brief This file can be removed from the project.
+  *         08. Jan 2017 - AscEmu (Zyres)
+  */

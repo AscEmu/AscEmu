@@ -66,7 +66,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | DynLib.cpp
 * 2008 | Database/MySQLDatabase.h
 * 2008 | Database/Field.h
-* 2008 | Database/DataStore.h
 * 2008 | Database/DatabaseEnv.h
 * 2008 | Database/Database.h
 * 2008 | Database/Database.cpp
@@ -139,6 +138,7 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 1996 | crc32.cpp
 
 ### Ready to remove
+* 2008 | Database/DataStore.h
 * 2008 | Util.Legacy.h
 * 2008 | Util.Legacy.cpp
 
