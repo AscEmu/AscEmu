@@ -25,18 +25,12 @@
 
 bool HandleTimeDateCommand(BaseConsole* console, int argc, const char* argv[])
 {
-    time_t unixTime = UNIXTIME;
+    std::string current_time = Util::GetCurrentTimeString();
 
     std::stringstream ss;
-    ss << "Date and time according to localtime() (american style):" << std::endl;
-    ss << localtime(&unixTime)->tm_mon << "-";
-    ss << localtime(&unixTime)->tm_mday << "-";
-    ss << (localtime(&unixTime)->tm_year + 1900) << "  ";
-    ss << localtime(&unixTime)->tm_hour << ":";
-    ss << localtime(&unixTime)->tm_min << std::endl << std::endl;
+    ss << "Date and time according to localtime() (american style): " << current_time << std::endl;
 
     console->Write(ss.str().c_str());
-
     return true;
 }
 
