@@ -179,8 +179,6 @@ enum MsTimeVariables
 
 #define atol(a) strtoul( a, NULL, 10)
 
-#define STRINGIZE(a) #a
-
 #if COMPILER == COMPILER_MICROSOFT
     #define MS_FLOAT_CONTROL
     #pragma float_control(push)
