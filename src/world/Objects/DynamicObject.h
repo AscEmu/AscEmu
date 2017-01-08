@@ -21,7 +21,7 @@
 #ifndef _WOWSERVER_DYNAMICOBJECT_H
 #define _WOWSERVER_DYNAMICOBJECT_H
 
-struct SpellInfo;
+class SpellInfo;
 
 enum DynamicObjectType
 {

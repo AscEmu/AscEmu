@@ -172,7 +172,7 @@ enum CreatureState
 };
 
 
-struct SpellInfo;
+class SpellInfo;
 
 const uint32 AISPELL_ANY_DIFFICULTY = 4;
 

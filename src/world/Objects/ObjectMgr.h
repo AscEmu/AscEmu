@@ -190,7 +190,7 @@ struct PointOfInterest
     std::string icon_name;
 };
 
-struct SpellInfo;
+class SpellInfo;
 struct TrainerSpell
 {
     SpellInfo* pCastSpell;
