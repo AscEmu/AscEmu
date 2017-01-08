@@ -137,6 +137,8 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 1996 | crc32.cpp
 
 ### Ready to remove
+
+### Removed on 08 Jan 2017
 * 2008 | Config/ConfigEnv.h
 * 2008 | Database/DataStore.h
 * 2008 | Util.Legacy.h

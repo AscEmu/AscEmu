@@ -9,7 +9,6 @@ set(sources
     Log.cpp
     MersenneTwister.cpp
     printStackTrace.cpp
-    Util.Legacy.cpp
     crc32.cpp
     MapFile.cpp
     MapFileEntry.cpp
@@ -81,7 +80,6 @@ set(headers
 	Timer.h
 	TLSObject.h
 	Tokenizer.h
-	Util.Legacy.h
 	WorldPacket.h
 	WoWGuid.h
 	Auth/BigNumber.h
@@ -89,9 +87,7 @@ set(headers
 	Auth/Sha1.h
 	Auth/WowCrypt.h
 	Config/Config.h
-	Config/ConfigEnv.h
 	Database/Database.h
-	Database/DataStore.h
 	Database/Field.h
 	Database/MySQLDatabase.h
     Exceptions/Exceptions.hpp
