@@ -70,7 +70,6 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "CircularQueue.h"
 #include "Threading/RWLock.h"
 #include "TLSObject.h"
-#include "Tokenizer.h"
 
 #ifdef WIN32
 #include "printStackTrace.h"

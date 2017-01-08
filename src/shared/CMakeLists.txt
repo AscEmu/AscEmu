@@ -79,7 +79,6 @@ set(headers
 	TextFile.h
 	Timer.h
 	TLSObject.h
-	Tokenizer.h
 	WorldPacket.h
 	WoWGuid.h
 	Auth/BigNumber.h
