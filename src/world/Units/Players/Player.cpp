@@ -4296,10 +4296,13 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
             if (item->GetItemProperties()->Spells[k].Trigger == ON_EQUIP)
             {
                 SpellInfo* spells = sSpellCustomizations.GetSpellInfo(item->GetItemProperties()->Spells[k].Id);
-                if (spells->RequiredShapeShift)
-                    RemoveShapeShiftSpell(spells->Id);
-                else
-                    RemoveAura(item->GetItemProperties()->Spells[k].Id);
+                if (spells != nullptr)
+                {
+                    if (spells->RequiredShapeShift)
+                        RemoveShapeShiftSpell(spells->Id);
+                    else
+                        RemoveAura(item->GetItemProperties()->Spells[k].Id);
+                }
             }
             else if (item->GetItemProperties()->Spells[k].Trigger == CHANCE_ON_HIT)
             {
