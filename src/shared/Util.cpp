@@ -69,18 +69,32 @@ namespace Util
         auto now = std::chrono::system_clock::now();
         auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
+#if defined(__clang__)
+        char buff[20];
+        char string = strftime(buff, 20, "%Y-%m-%d %H:%M:%S", localtime(&in_time_t));
+        std::string str(buff);
+        return str;
+#else
         std::stringstream ss;
         ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X");
         return ss.str();
+#endif
     }
 
     std::string GetTimeStringFromTimeStamp(uint32_t timestamp)
     {
         std::time_t raw_time = (std::time_t)timestamp;
 
+#if defined(__clang__)
+        char buff[20];
+        char string = strftime(buff, 20, "%Y-%m-%d %H:%M:%S", localtime(&raw_time));
+        std::string str(buff);
+        return str;
+#else
         std::stringstream ss;
         ss << std::put_time(std::localtime(&raw_time), "%Y-%m-%d %X");
         return ss.str();
+#endif
     }
 
     std::string GetDateStringFromSeconds(uint32_t seconds)
