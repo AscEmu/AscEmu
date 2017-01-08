@@ -82,88 +82,33 @@ class InstanceStormwindStockadeScript : public MoonInstanceScript
 };
 
 // DeepfuryAI
-class DeepfuryAI : public CreatureAIScript
+class DeepfuryAI : public MoonScriptBossAI
 {
-    public:
-        ADD_CREATURE_FACTORY_FUNCTION(DeepfuryAI);
-        SP_AI_Spell spell;
-        bool m_spellcheck;
+    MOONSCRIPT_FACTORY_FUNCTION(DeepfuryAI, MoonScriptBossAI);
+    DeepfuryAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    {
+        AddSpell(8242, Target_Current, 100, 0, 8);   // Shield Slam
+        AddSpell(3419, Target_Self, 100, 0, 20);    // Improved Blocking
+    }
 
-        DeepfuryAI(Creature* pCreature) : CreatureAIScript(pCreature)
+    void OnCombatStart(Unit* pTarget)
+    {
+        _unit->CastSpell(_unit, 7164, false); // Defensive Stance
+        ParentClass::OnCombatStart(pTarget);
+    }
+
+    void AIUpdate()
+    {
+        if (GetHealthPercent() <= 15 && GetBehavior() != Behavior_Flee)
         {
-            m_spellcheck = false;
-            spell.info = sSpellCustomizations.GetSpellInfo(KAM_SHIELDSLAM);
-            spell.targettype = TARGET_ATTACKING;
-            spell.instant = true;
-            spell.perctrigger = 0.0f;
-            spell.cooldown = 10;
-            spell.attackstoptimer = 1000;
+            SetBehavior(Behavior_Flee);
+            SetAllowMelee(false);
+            SetAllowRanged(false);
+            SetAllowSpell(false);
+            MoveTo(105.693390, -58.426674, -34.856178, true);
         }
-
-        void OnCombatStart(Unit* mTarget)
-        {
-            CastTime();
-            RegisterAIUpdateEvent(1000);
-        }
-
-        void OnCombatStop(Unit* mTarget)
-        {
-            _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
-            RemoveAIUpdateEvent();
-        }
-
-        void OnDied(Unit* mKiller)
-        {
-            RemoveAIUpdateEvent();
-        }
-
-        void AIUpdate()
-        {
-            float val = RandomFloat(100.0f);
-            SpellCast(val);
-        }
-
-        void CastTime()
-        {
-            spell.casttime = spell.cooldown;
-        }
-
-        void SpellCast(float val)
-        {
-            if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
-            {
-                float comulativeperc = 0;
-                Unit* target = NULL;
-                spell.casttime--;
-                if (m_spellcheck)
-                {
-                    if (!spell.instant)
-                        _unit->GetAIInterface()->StopMovement(1);
-
-                    spell.casttime = spell.cooldown;
-                    target = _unit->GetAIInterface()->getNextTarget();
-                    _unit->CastSpell(target, spell.info, spell.instant);
-
-                    if (spell.speech != "")
-                    {
-                        _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spell.speech.c_str());
-                        _unit->PlaySoundToSet(spell.soundid);
-                    }
-
-                    m_spellcheck = false;
-                    return;
-                }
-
-                if ((val > comulativeperc && val <= (comulativeperc + spell.perctrigger)) || !spell.casttime)
-                {
-                    _unit->setAttackTimer(spell.attackstoptimer, false);
-                    m_spellcheck = true;
-                }
-                comulativeperc += spell.perctrigger;
-            }
-        }
-
+        ParentClass::AIUpdate();
+    }
 };
 
 // HamhockAI
