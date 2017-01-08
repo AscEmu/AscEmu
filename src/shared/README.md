@@ -74,7 +74,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | CThreads.cpp
 * 2008 | CrashHandler.h
 * 2008 | CrashHandler.cpp
-* 2008 | Config/ConfigEnv.h
 * 2008 | Config/Config.h
 * 2008 | Config/Config.cpp
 * 2008 | Common.Legacy.h
@@ -138,6 +137,7 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 1996 | crc32.cpp
 
 ### Ready to remove
+* 2008 | Config/ConfigEnv.h
 * 2008 | Database/DataStore.h
 * 2008 | Util.Legacy.h
 * 2008 | Util.Legacy.cpp

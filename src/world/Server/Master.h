@@ -22,7 +22,7 @@
 #define _WORLD_MASTER_H
 
 #include "Common.hpp"
-#include "Config/ConfigEnv.h"
+#include "Config/Config.h"
 #include "Database/DatabaseEnv.h"
 #include "MainServerDefines.h"
 #include "../shared/AscemuServerDefines.hpp"

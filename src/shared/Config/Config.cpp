@@ -18,7 +18,10 @@
  *
  */
 
-#include "ConfigEnv.h"
+#include "Common.hpp"
+#include "Config.h"
+#include "Log.h"
+
 ConfigMgr Config;
 
 //#define _CONFIG_DEBUG

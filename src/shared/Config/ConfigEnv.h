@@ -20,12 +20,10 @@
 #ifndef CONFIG_ENVIRONMENT_H
 #define CONFIG_ENVIRONMENT_H
 
-//! Other libs we depend on.
+/*
 #include "Common.hpp"
-
-//! Our own includes.
 #include "Config.h"
 #include "Log.h"
-
+*/
 
 #endif  //CONFIG_ENVIRONMENT_H
