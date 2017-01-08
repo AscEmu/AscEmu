@@ -16,57 +16,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- *
- * STL String Tokenizer from http://www.codeproject.com/KB/recipes/stringtok.aspx with a few modifications
-*/
-#pragma once
+ */
 
-#include "Common.hpp"
-namespace Arcemu
-{
-    namespace Utility
-    {
-        class IsDelimiter : public std::unary_function<char, bool>
-        {
-            public:
-                //Constructor specifying the separators
-                IsDelimiter(std::string const & rostr) : m_ostr(rostr) {}
-                bool operator()(char c) const
-                {
-                    return m_ostr.find(c) != std::string::npos;
-                }
-
-            private:
-            std::string m_ostr;
-        };
-
-        class CTokenizer
-        {
-                IsDelimiter roPred;
-            std::vector<std::string> tokens_;
-                void Tokenize(std::string const & rostr)
-                {
-                    std::string::const_iterator it, itTokenEnd;
-                    it = itTokenEnd = rostr.begin();
-                    while(it != rostr.end())
-                    {
-                        while(this->roPred(*it))
-                            ++it;
-                        //Find next token
-
-                        itTokenEnd = find_if(it, rostr.end(), roPred);
-                        //Append token to result
-
-                        if(it < itTokenEnd)
-                            tokens_.push_back(std::string(it, itTokenEnd));
-                        it = itTokenEnd;
-                    }
-                }
-            public:
-                typedef std::vector<std::string>::iterator iterator;
-                CTokenizer(std::string const & input, std::string const & delimiter) : roPred(delimiter) { Tokenize(input); }
-                iterator start() { return tokens_.begin(); }
-                iterator end() { return tokens_.end(); }
-        };
-    }
-}
+/*! \brief This file can be removed from the project.
+ *         08. Jan 2017 - AscEmu (Zyres)
+ */
