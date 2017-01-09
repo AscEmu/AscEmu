@@ -26,7 +26,7 @@
 #include "ModelInstance.h"
 #include "WorldModel.h"
 #include <G3D/Vector3.h>
-#include "Log.h"
+#include "Log.hpp"
 #include "VMapDefinitions.h"
 #include "Errors.h"
 

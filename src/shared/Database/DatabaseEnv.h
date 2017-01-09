@@ -23,7 +23,7 @@
 //! Other libs we depend on.
 #include "Common.hpp"
 #include "Singleton.h"
-#include "Log.h"
+#include "Log.hpp"
 #include "CThreads.h"
 
 //! Our own includes.

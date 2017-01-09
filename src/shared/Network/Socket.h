@@ -13,7 +13,7 @@
 #include "NetworkIncludes.hpp"
 #include "CircularBuffer.h"
 #include "Singleton.h"
-#include "Log.h"
+#include "Log.hpp"
 #include <string>
 #include <mutex>
 #include <atomic>

@@ -6,7 +6,7 @@ project(shared CXX)
 set(sources
     CThreads.cpp
     CrashHandler.cpp
-    Log.cpp
+    Log.Legacy.cpp
     MersenneTwister.cpp
     printStackTrace.cpp
     crc32.cpp
@@ -37,6 +37,7 @@ set(sources
     Network/CircularBuffer.cpp
     Network/Socket.cpp
     
+    Log.cpp
     Util.cpp
 )
 
@@ -62,7 +63,7 @@ set(headers
 	FindFiles.hpp
 	FindFilesResult.hpp
 	LocationVector.h
-	Log.h
+	Log.Legacy.h
 	MapFile.h
 	MapFileEntry.h
 	MersenneTwister.h
@@ -118,6 +119,7 @@ set(headers
 	Threading/ThreadStarter.h
 	
 	Common.hpp
+	Log.hpp
 	Util.hpp
 )
 

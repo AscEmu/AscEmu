@@ -39,7 +39,7 @@
 #include "Common.hpp"
 #include "MersenneTwister.h"
 #include "WorldPacket.h"
-#include "Log.h"
+#include "Log.hpp"
 #include "ByteBuffer.h"
 #include "StackBuffer.h"
 #include "Config/Config.h"

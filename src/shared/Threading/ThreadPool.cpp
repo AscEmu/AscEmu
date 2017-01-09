@@ -18,7 +18,7 @@
  */
 
 #include "ThreadPool.h"
-#include "../Log.h"
+#include "../Log.hpp"
 #include "Util.hpp"
 
 #ifdef WIN32

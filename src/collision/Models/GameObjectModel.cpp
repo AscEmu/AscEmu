@@ -22,7 +22,7 @@
 #include "VMapDefinitions.h"
 #include "WorldModel.h"
 #include "GameObjectModel.h"
-#include "Log.h"
+#include "Log.hpp"
 #include "Timer.h"
 
 using G3D::Vector3;

@@ -10,7 +10,7 @@
 #ifndef _NETWORK_H
 #define _NETWORK_H
 
-#include "../Log.h"
+#include "../Log.hpp"
 #include "CircularBuffer.h"
 #include "SocketDefines.h"
 #include "SocketOps.h"

@@ -20,7 +20,7 @@
 #include "DynamicTree.h"
 #include "BoundingIntervalHierarchyWrapper.h"
 
-#include "Log.h"
+#include "Log.hpp"
 #include "RegularGrid.h"
 #include "Timer.h"
 #include "GameObjectModel.h"

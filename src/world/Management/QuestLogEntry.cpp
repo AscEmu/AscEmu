@@ -17,7 +17,7 @@
 *
 */
 #include "StdAfx.h"
-#include <Log.h>
+#include <Log.hpp>
 #include "QuestLogEntry.hpp"
 #include "Server/WorldSession.h"
 #include "Server/MainServerDefines.h"

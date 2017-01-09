@@ -20,7 +20,7 @@
 
 #include "Common.hpp"
 #include "Config.h"
-#include "Log.h"
+#include "Log.hpp"
 
 ConfigMgr Config;
 

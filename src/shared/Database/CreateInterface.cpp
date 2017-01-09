@@ -19,7 +19,7 @@
  */
 
 #include "DatabaseEnv.h"
-#include "../Log.h"
+#include "../Log.hpp"
 #include "MySQLDatabase.h"
 
 

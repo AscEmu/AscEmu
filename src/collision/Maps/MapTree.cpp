@@ -21,7 +21,7 @@
 #include "ModelInstance.h"
 #include "VMapManager2.h"
 #include "VMapDefinitions.h"
-#include "Log.h"
+#include "Log.hpp"
 #include "Errors.h"
 
 #include <string>
