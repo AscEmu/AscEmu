@@ -36,6 +36,9 @@ enum CreatureEntry
     // InmateAI
     CN_DEFINMATE        = 1708,
 
+    // TargorrTheDreadAI
+    CN_TARGORR_THE_DREAD = 1696,
+
     // InsurgentAI
     CN_DEFINSURGENT     = 1715,
 
@@ -50,30 +53,37 @@ enum CreatureEntry
 enum CreatureSpells
 {
     // DeepfuryAI
-    KAM_SHIELDSLAM      = 15655,
+    SHIELD_SLAM         = 8242,
+    IMPROVED_BLOCKING   = 3419,
 
     // HamhockAI
-    CHAINLIGHT          = 12058,
-    DEMORALIZO          = 23511,
+    CHAINLIGHT          = 421,
+    BLOODLUST           = 6742,
 
     // BazilAI
-    BAZILBOMB           = 7964,
+    SMOKE_BOMB          = 7964,
+    BATTLE_SHOUT        = 9128,
 
     // DextrenAI
-    INTIMIDATING        = 38945,
+    FRIGHTENING_SHOUT   = 19134,
+    STRIKE              = 11976,
+
+    // TargorrTheDreadAI
+    ENRAGE              = 8599,
+    THRASH              = 3391,
 
     // InmateAI
-    CONVICTREND         = 13445,
+    REND                = 13445,
 
     // InsurgentAI
-    INSURGENTDEMORALIZO = 16244,
+    DEMORALIZING_SHOUT  = 13730,
 
     // PrisonerAI
-    PRISONKICK          = 27814,
-    PRISONDISARM        = 22691,
+    KICK                = 27814,
+    DISARM              = 6713,
 
     // ConvictAI
-    CONVICTBACKHAND     = 12461,
+    BACKHAND            = 12461,
 
 };
 
