@@ -18,6 +18,7 @@ people are awsome:
 - Cronicman
 - DankoDj
 - Evairfairy
+- Infield (Iny)
 - Lectro
 - master312
 - Nupper
