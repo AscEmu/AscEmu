@@ -64,20 +64,20 @@ void LogonServer::Run(int argc, char** argv)
             case 0:
                 break;
             default:
-                sLog.Init(0, LOGON_LOG);
-                sLog.outBasic("Usage: %s [--checkconf] [--fileloglevel <level>] [--conf <filename>] [--version]", argv[0]);
+                Log.Init(0, LOGON_LOG);
+                Log.outBasic("Usage: %s [--checkconf] [--fileloglevel <level>] [--conf <filename>] [--version]", argv[0]);
                 return;
         }
     }
 #endif
-    sLog.Init(0, LOGON_LOG);
+    Log.Init(0, LOGON_LOG);
 
     PrintBanner();
 
 #ifdef COMMANDLINE_OPT_ENABLE
     if (do_version)
     {
-        sLog.Close();
+        Log.Close();
         return;
     }
 
@@ -89,32 +89,32 @@ void LogonServer::Run(int argc, char** argv)
         else
             LOG_BASIC("  Encountered one or more errors.");
 
-        sLog.Close();
+        Log.Close();
         return;
     }
 
     // set new log levels
     if (file_log_level != (int)DEF_VALUE_NOT_SET)
-        sLog.SetFileLoggingLevel(file_log_level);
+        Log.SetFileLoggingLevel(file_log_level);
 #endif
 
-    sLog.outBasic("The key combination <Ctrl-C> will safely shut down the server.");
+    Log.outBasic("The key combination <Ctrl-C> will safely shut down the server.");
 
     Log.Success("Config", "Loading Config Files...");
     if (!LoadLogonConfiguration())
     {
-        sLog.Close();
+        Log.Close();
         return;
     }
 
-    sLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
+    Log.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
 
     Log.Success("ThreadMgr", "Starting...");
     ThreadPool.Startup();
 
     if (!StartDb())
     {
-        sLog.Close();
+        Log.Close();
         return;
     }
 
@@ -179,7 +179,7 @@ void LogonServer::Run(int argc, char** argv)
 
         uint32 loop_counter = 0;
 
-        sLog.outString("Success! Ready for connections");
+        Log.outString("Success! Ready for connections");
         while (mrunning.GetVal())
         {
             if (!(++loop_counter % 20))             // 20 seconds
@@ -201,7 +201,7 @@ void LogonServer::Run(int argc, char** argv)
             Arcemu::Sleep(1000);
         }
 
-        sLog.outString("Shutting down...");
+        Log.outString("Shutting down...");
 
         _UnhookSignals();
     }
@@ -222,7 +222,7 @@ void LogonServer::Run(int argc, char** argv)
     delete LogonConsole::getSingletonPtr();
 
     // kill db
-    sLog.outString("Waiting for database to close..");
+    Log.outString("Waiting for database to close..");
     sLogonSQL->EndThreads();
     sLogonSQL->Shutdown();
     delete sLogonSQL;
@@ -245,7 +245,7 @@ void LogonServer::Run(int argc, char** argv)
     delete realmlistSocket;
     delete logonServerSocket;
     LOG_BASIC("Shutdown complete.");
-    sLog.Close();
+    Log.Close();
 }
 
 void OnCrash(bool Terminate)
@@ -281,10 +281,10 @@ void LogonServer::CheckForDeadSockets()
 
 void LogonServer::PrintBanner()
 {
-    sLog.outBasic("<< AscEmu %s/%s-%s (%s) :: Logon Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
-    sLog.outBasic("========================================================");
-    sLog.outErrorSilent("<< AscEmu %s/%s-%s (%s) :: Logon Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
-    sLog.outErrorSilent("========================================================"); // Echo off.
+    Log.outBasic("<< AscEmu %s/%s-%s (%s) :: Logon Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    Log.outBasic("========================================================");
+    Log.outErrorSilent("<< AscEmu %s/%s-%s (%s) :: Logon Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
+    Log.outErrorSilent("========================================================"); // Echo off.
 }
 
 void LogonServer::WritePidFile()
@@ -305,7 +305,7 @@ void LogonServer::WritePidFile()
 
 void LogonServer::_HookSignals()
 {
-    sLog.outString("Hooking signals...");
+    Log.outString("Hooking signals...");
     signal(SIGINT, _OnSignal);
     signal(SIGTERM, _OnSignal);
     signal(SIGABRT, _OnSignal);
@@ -349,8 +349,8 @@ bool LogonServer::StartDb()
     if (!result)
     {
         //Build informative error message
-        //Built as one string and then printed rather than calling sLog.outString(...) for every line,
-        //  as experiments has seen other thread write to the console inbetween calls to sLog.outString(...)
+        //Built as one string and then printed rather than calling Log.outString(...) for every line,
+        //  as experiments has seen other thread write to the console inbetween calls to Log.outString(...)
         //  resulting in unreadable error messages.
         //If the <LogonDatabase> tag is malformed, all parameters will fail, and a different error message is given
 

@@ -1553,7 +1553,7 @@ void AlteracValley::HookOnAreaTrigger(Player* plr, uint32 trigger)
             //unmount
             break;
         default:
-            sLog.Error("AlteracValley", "Encountered unhandled areatrigger id %u", trigger);
+            Log.Error("AlteracValley", "Encountered unhandled areatrigger id %u", trigger);
             return;
             break;
     }

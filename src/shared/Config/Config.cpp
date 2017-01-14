@@ -146,7 +146,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
 
         if (!f)
         {
-            sLog.outError("Could not open %s.", file);
+            Log.outError("Could not open %s.", file);
             return false;
         }
 
@@ -167,7 +167,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
         // read the file
         if (fread(buf, length, 1, f) != 1)
         {
-            sLog.outError("Could not read %s.", file);
+            Log.outError("Could not read %s.", file);
             // delete buf and close the file before returning
             delete[] buf;
             fclose(f);
@@ -266,7 +266,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
                         // append the setting to the config block
                         if (current_block == "" || current_variable == "")
                         {
-                            sLog.outError("Quote without variable.");
+                            Log.outError("Quote without variable.");
                             return false;
                         }
 
@@ -276,7 +276,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
                         // the setting is done, append it to the current block
                         current_block_map[ahash(current_variable)] = current_setting_struct;
 #ifdef _CONFIG_DEBUG
-                        sLog.outDebug("Block: '%s', Setting: '%s', Value: '%s'", current_block.c_str(), current_variable.c_str(), current_setting_struct.AsString.c_str());
+                        Log.outDebug("Block: '%s', Setting: '%s', Value: '%s'", current_block.c_str(), current_variable.c_str(), current_setting_struct.AsString.c_str());
 #endif
                         // no longer doing this setting, or in a quote
                         current_setting = "";
@@ -328,7 +328,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
                             current_block_map[ahash(current_variable)] = current_setting_struct;
 
 #ifdef _CONFIG_DEBUG
-                            sLog.outDebug("Block: '%s', Setting: '%s', Value: '%s'", current_block.c_str(), current_variable.c_str(), current_setting_struct.AsString.c_str());
+                            Log.outDebug("Block: '%s', Setting: '%s', Value: '%s'", current_block.c_str(), current_variable.c_str(), current_setting_struct.AsString.c_str());
 #endif
                             // no longer doing this setting, or in a quote
                             current_setting = "";
@@ -389,7 +389,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
                         }
                         else
                         {
-                            sLog.outError("Block without name.");
+                            Log.outError("Block without name.");
                             return false;
                         }
 
@@ -402,26 +402,26 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
         }
         catch (...)
         {
-            sLog.outError("Exception in config parsing.");
+            Log.outError("Exception in config parsing.");
             return false;
         }
 
         // handle any errors
         if (in_block)
         {
-            sLog.outError("Unterminated block.");
+            Log.outError("Unterminated block.");
             return false;
         }
 
         if (in_multiline_comment)
         {
-            sLog.outError("Unterminated comment.");
+            Log.outError("Unterminated comment.");
             return false;
         }
 
         if (in_multiline_quote)
         {
-            sLog.outError("Unterminated quote.");
+            Log.outError("Unterminated quote.");
             return false;
         }
 

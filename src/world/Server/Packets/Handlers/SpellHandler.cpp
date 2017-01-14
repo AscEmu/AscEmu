@@ -375,7 +375,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         //autoshot 75
         if ((spellInfo->AttributesExB & ATTRIBUTESEXB_ACTIVATE_AUTO_SHOT) /*spellInfo->Attributes == 327698*/)	// auto shot..
         {
-            //sLog.outString("HandleSpellCast: Auto Shot-type spell cast (id %u, name %s)" , spellInfo->Id , spellInfo->Name);
+            //Log.outString("HandleSpellCast: Auto Shot-type spell cast (id %u, name %s)" , spellInfo->Id , spellInfo->Name);
             Item* weapon = GetPlayer()->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
             if (!weapon)
                 return;
@@ -525,7 +525,7 @@ void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-        //sLog.outString("Received CMSG_CANCEL_AUTO_REPEAT_SPELL message.");
+        //Log.outString("Received CMSG_CANCEL_AUTO_REPEAT_SPELL message.");
         //on original we automatically enter combat when creature got close to us
         //	GetPlayer()->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
         GetPlayer()->m_onAutoShot = false;

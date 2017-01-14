@@ -25,9 +25,9 @@ initialiseSingleton(LogonConsole);
 
 void LogonConsole::TranslateRehash(char* str)
 {
-    sLog.outString("rehashing config file...");
+    Log.outString("rehashing config file...");
     if (sLogonServer.LoadLogonConfiguration())
-        sLog.outString("Rehashing config file finished succesfull!");
+        Log.outString("Rehashing config file finished succesfull!");
 }
 
 void LogonConsole::Kill()

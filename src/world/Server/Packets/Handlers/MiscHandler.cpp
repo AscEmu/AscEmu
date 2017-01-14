@@ -901,7 +901,7 @@ void WorldSession::HandleWhoIsOpcode(WorldPacket& recv_data)
     WorldPacket data(SMSG_WHOIS, msg.size() + 1);
     data << msg;
     SendPacket(&data);
-    sLog.outDebug("Received WHOIS command from player %s for character %s", GetPlayer()->GetName(), charname.c_str());
+    Log.outDebug("Received WHOIS command from player %s for character %s", GetPlayer()->GetName(), charname.c_str());
 }
 
 void WorldSession::HandleLogoutRequestOpcode(WorldPacket& recv_data)
@@ -1632,7 +1632,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 entry = sMySQLStore.GetFishingZone(zone);
                 if (entry == nullptr)
                 {
-                    sLog.outError("ERROR: Fishing zone information for zone %d not found!", zone);
+                    Log.outError("ERROR: Fishing zone information for zone %d not found!", zone);
                     fn->EndFishing(true);
                     success = false;
                 }

@@ -139,7 +139,7 @@ bool Container::AddItem(int16 slot, Item* item)
     //ARCEMU_ASSERT(  m_Slot[slot] == NULL);
     if (m_Slot[slot] != NULL)
     {
-        //sLog.outString("Bad container item %u slot %d", item->GetGUID(), slot);
+        //Log.outString("Bad container item %u slot %d", item->GetGUID(), slot);
         return false;
     }
 

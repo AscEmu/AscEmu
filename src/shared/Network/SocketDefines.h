@@ -81,7 +81,7 @@ class OverlappedStruct
         {
             long val = InterlockedCompareExchange(&m_inUse, 1, 0);
             if(val != 0)
-                sLog.outError("!!!! Network: Detected double use of read/write event! Previous event was %u.", m_event);
+                Log.outError("!!!! Network: Detected double use of read/write event! Previous event was %u.", m_event);
         }
 
         void Unmark()

@@ -182,13 +182,13 @@ void LogonCommServerSocket::HandleRegister(WorldPacket & recvData)
     if (my_id == -1)
     {
         my_id = sInfoCore.GenerateRealmID();
-        sLog.outString("Registering realm `%s` under ID %u.", Name.c_str(), my_id);
+        Log.outString("Registering realm `%s` under ID %u.", Name.c_str(), my_id);
     }
     else
     {
         sInfoCore.RemoveRealm(my_id);
         int new_my_id = sInfoCore.GenerateRealmID(); //socket timout will DC old id after a while, make sure it's not the one we restarted
-        sLog.outString("Updating realm `%s` with ID %u to new ID %u.", Name.c_str(), my_id, new_my_id);
+        Log.outString("Updating realm `%s` with ID %u to new ID %u.", Name.c_str(), my_id, new_my_id);
         my_id = new_my_id;
     }
 
@@ -310,7 +310,7 @@ void LogonCommServerSocket::HandleAuthChallenge(WorldPacket & recvData)
     if (memcmp(key, LogonServer::getSingleton().sql_hash, 20))
         result = 0;
 
-    sLog.outString("Authentication request from %s, result %s.", GetRemoteIP().c_str(), result ? "OK" : "FAIL");
+    Log.outString("Authentication request from %s, result %s.", GetRemoteIP().c_str(), result ? "OK" : "FAIL");
 
     std::stringstream sstext;
     sstext << "Key: ";

@@ -26,7 +26,7 @@
 
 #include "CommonDefines.hpp"  // shared
 
-#define DEBUG_LOG(...) sLog.Debug("DEBUG_LOG", __VA_ARGS__)
+#define DEBUG_LOG(...) Log.Debug("DEBUG_LOG", __VA_ARGS__)
 #include "Server/Definitions.h"
 
 #include <vector>

@@ -626,7 +626,7 @@ void ArathiBasin::HookOnAreaTrigger(Player* plr, uint32 trigger)
         case 4021:            // Defiler's Den
             return;
         default:
-            sLog.Error("ArathiBasin", "Encountered unhandled areatrigger id %u", trigger);
+            Log.Error("ArathiBasin", "Encountered unhandled areatrigger id %u", trigger);
             return;
     }
 

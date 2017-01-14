@@ -48,7 +48,7 @@ class SocketMgr : public Singleton<SocketMgr>
             kq = kqueue();
             if(kq == -1)
             {
-                sLog.outError("Could not create a kqueue fd.");
+                Log.outError("Could not create a kqueue fd.");
                 exit(-1);
             }
 

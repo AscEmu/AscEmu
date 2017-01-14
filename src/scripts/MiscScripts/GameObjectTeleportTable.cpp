@@ -101,7 +101,7 @@ void InitializeGameObjectTeleportTable(ScriptMgr* mgr)
         // Check if the SQL table is setup correctly
         if (result->GetFieldCount() < 9)
         {
-            sLog.outError("Error: Custom portals disabled, invalid 'gameobject_teleports' table.");
+            Log.outError("Error: Custom portals disabled, invalid 'gameobject_teleports' table.");
             delete result;
             return;
         }

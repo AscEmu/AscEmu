@@ -38,7 +38,7 @@ bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_
     MapMgr* mgr = sInstanceMgr.CreateInstance(INSTANCE_NONRAID, mapid);
     if (mgr == nullptr)
     {
-        sLog.Error("CreateInstanceGMCommand", "CreateInstance() call failed for map %u", mapid);
+        Log.Error("CreateInstanceGMCommand", "CreateInstance() call failed for map %u", mapid);
         return false;
     }
     Log.Notice("CreateInstanceGMCommand", "GM created instance for map %u", mapid);

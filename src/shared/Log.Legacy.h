@@ -26,10 +26,6 @@
 class WorldPacket;
 class WorldSession;
 
-#define TIME_FORMAT "[%H:%M:%S]"
-#define TIME_FORMAT_LENGTH 100
-
-
 enum LogType
 {
     WORLD_LOG,
@@ -40,8 +36,7 @@ enum LogLevel
 {
     LOG_LEVEL_NORMAL    = 0,
     LOG_LEVEL_DETAIL    = 1,
-    LOG_LEVEL_DEBUG     = 2,
-    LOG_LEVEL_MAP       = 3
+    LOG_LEVEL_DEBUG     = 2
 };
 
 enum LogFlags
@@ -176,14 +171,13 @@ class SERVER_DECL SessionLogWriter
 };
 
 
-#define sLog oLog::getSingleton()
+#define Log oLog::getSingleton()
 
-#define LOG_BASIC(msg, ...) sLog.logBasic(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
-#define LOG_DETAIL(msg, ...) sLog.logDetail(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
-#define LOG_ERROR(msg, ...) sLog.logError(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
-#define LOG_DEBUG(msg, ...) sLog.logDebug(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
+#define LOG_BASIC(msg, ...) Log.logBasic(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
+#define LOG_DETAIL(msg, ...) Log.logDetail(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
+#define LOG_ERROR(msg, ...) Log.logError(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
+#define LOG_DEBUG(msg, ...) Log.logDebug(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
 
-#define Log sLog
 
 class WorldLog : public Singleton<WorldLog>
 {

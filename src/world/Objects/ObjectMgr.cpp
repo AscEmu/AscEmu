@@ -871,7 +871,7 @@ void ObjectMgr::LoadAchievementRewards()
 
     delete result;
 
-    sLog.Success("ObjectMgr", "Loaded %u achievement rewards", count);
+    Log.Success("ObjectMgr", "Loaded %u achievement rewards", count);
 }
 
 void ObjectMgr::SetHighestGuids()

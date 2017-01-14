@@ -150,7 +150,7 @@ void LootMgr::LoadLootProp()
             auto item_random_properties = sItemRandomPropertiesStore.LookupEntry(eid);
             if (item_random_properties == NULL)
             {
-                sLog.Error("LoadLootProp", "RandomProp group %u references non-existent randomprop %u.", id, eid);
+                Log.Error("LoadLootProp", "RandomProp group %u references non-existent randomprop %u.", id, eid);
                 continue;
             }
             itr = _randomprops.find(id);
@@ -180,7 +180,7 @@ void LootMgr::LoadLootProp()
             auto item_random_suffix = sItemRandomSuffixStore.LookupEntry(eid);
             if (item_random_suffix == NULL)
             {
-                sLog.Error("LoadLootProp", "RandomSuffix group %u references non-existent randomsuffix %u.", id, eid);
+                Log.Error("LoadLootProp", "RandomSuffix group %u references non-existent randomsuffix %u.", id, eid);
                 continue;
             }
             itr = _randomsuffix.find(id);
@@ -226,7 +226,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
     QueryResult* result = WorldDatabase.Query("SELECT * FROM %s ORDER BY entryid ASC", szTableName);
     if (!result)
     {
-        sLog.Error("LootMgr", "Loading loot from table %s failed.", szTableName);
+        Log.Error("LootMgr", "Loading loot from table %s failed.", szTableName);
         return;
     }
     uint32 entry_id = 0;
@@ -241,7 +241,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
         entry_id = fields[0].GetUInt32();
         if (entry_id < last_entry)
         {
-            sLog.Error("LootMgr", "WARNING: Out of order loot table being loaded.");
+            Log.Error("LootMgr", "WARNING: Out of order loot table being loaded.");
             return;
         }
         if (entry_id != last_entry)
@@ -315,7 +315,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
             (*LootTable)[entry_id] = list;
         }
     }
-    sLog.outString(" %d loot templates loaded from %s", db_cache.size(), szTableName);
+    Log.outString(" %d loot templates loaded from %s", db_cache.size(), szTableName);
     delete result;
 }
 

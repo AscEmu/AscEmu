@@ -76,7 +76,7 @@ bool CThreadPool::ThreadExit(Thread* t)
 
     if(itr != m_freeThreads.end())
     {
-        sLog.outError("Thread %u duplicated with thread %u", (*itr)->ControlInterface.GetId(), t->ControlInterface.GetId());
+        Log.outError("Thread %u duplicated with thread %u", (*itr)->ControlInterface.GetId(), t->ControlInterface.GetId());
     }
     m_freeThreads.insert(t);
 

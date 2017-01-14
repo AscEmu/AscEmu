@@ -42,7 +42,7 @@ void Arcemu::Util::ArcemuAssert(bool condition)
     if (!condition)
     {
         LOG_ERROR("Assertion failed. Please submit the callstack on AscEmu IssueTracker (unless you are using a repack).");
-        sLog.Close();
+        Log.Close();
 
         // bogus null function call to make sure we stop and make a core dump / crash dump
         ((void(*)())0)();

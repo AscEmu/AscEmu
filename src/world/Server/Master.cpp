@@ -135,9 +135,9 @@ bool Master::Run(int argc, char** argv)
             case 0:
                 break;
             default:
-                sLog.Init(0, WORLD_LOG);
+                Log.Init(0, WORLD_LOG);
                 printf("Usage: %s [--checkconf] [--fileloglevel <level>] [--conf <filename>] [--realmconf <filename>] [--version] [--databasecleanup] [--cheatercheck]\n", argv[0]);
-                sLog.Close();
+                Log.Close();
                 return true;
         }
     }
@@ -146,14 +146,14 @@ bool Master::Run(int argc, char** argv)
     UNIXTIME = time(NULL);
     g_localTime = *localtime(&UNIXTIME);
 
-    sLog.Init(0, WORLD_LOG);
+    Log.Init(0, WORLD_LOG);
 
     PrintBanner();
 
 #ifdef COMMANDLINE_OPT_ENABLE
     if (do_version)
     {
-        sLog.Close();
+        Log.Close();
         return true;
     }
 
@@ -177,12 +177,12 @@ bool Master::Run(int argc, char** argv)
         else
             Log.Error("Config", "Encountered one or more errors.");
 
-        sLog.Close();
+        Log.Close();
         return true;
     }
 #endif
 
-    sLog.outBasic("The key combination <Ctrl-C> will safely shut down the server.");
+    Log.outBasic("The key combination <Ctrl-C> will safely shut down the server.");
 
 #ifndef WIN32
     if (geteuid() == 0 || getegid() == 0)
@@ -204,23 +204,23 @@ bool Master::Run(int argc, char** argv)
     if (!_StartDB())
     {
         Database::CleanupLibs();
-        sLog.Close();
+        Log.Close();
         return false;
     }
 
     if (!_CheckDBVersion())
     {
-        sLog.Close();
+        Log.Close();
         return false;
     }
 #ifdef COMMANDLINE_OPT_ENABLE
     if (do_database_clean)
     {
-        sLog.outDebug("Entering database maintenance mode.");
+        Log.outDebug("Entering database maintenance mode.");
         new DatabaseCleaner;
         DatabaseCleaner::getSingleton().Run();
         delete DatabaseCleaner::getSingletonPtr();
-        sLog.outDebug("Maintenance finished.");
+        Log.outDebug("Maintenance finished.");
     }
 #endif
     new EventMgr;
@@ -234,7 +234,7 @@ bool Master::Run(int argc, char** argv)
 #ifdef COMMANDLINE_OPT_ENABLE
     /* set new log levels */
     if (file_log_level != (int)DEF_VALUE_NOT_SET)
-        sLog.SetFileLoggingLevel(file_log_level);
+        Log.SetFileLoggingLevel(file_log_level);
 #endif
 
     // Initialize Opcode Table
@@ -248,7 +248,7 @@ bool Master::Run(int argc, char** argv)
     if (!sWorld.SetInitialWorldSettings())
     {
         Log.Error("Server", "SetInitialWorldSettings() failed. Something went wrong? Exiting.");
-        sLog.Close();
+        Log.Close();
         return false;
     }
 
@@ -593,10 +593,10 @@ void OnCrash(bool Terminate)
 
 void Master::PrintBanner()
 {
-    sLog.outBasic("<< AscEmu %s/%s-%s (%s) :: World Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
-    sLog.outBasic("========================================================");
-    sLog.outErrorSilent("<< AscEmu %s/%s-%s (%s) :: World Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
-    sLog.outErrorSilent("========================================================"); // Echo off.
+    Log.outBasic("<< AscEmu %s/%s-%s (%s) :: World Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    Log.outBasic("========================================================");
+    Log.outErrorSilent("<< AscEmu %s/%s-%s (%s) :: World Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
+    Log.outErrorSilent("========================================================"); // Echo off.
 }
 
 bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_file, char* realm_config_file)
@@ -608,8 +608,8 @@ bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_fil
     }
     else
     {
-        sLog.Error("Config", ">> error occurred loading " CONFDIR "/world.conf");
-        sLog.Close();
+        Log.Error("Config", ">> error occurred loading " CONFDIR "/world.conf");
+        Log.Close();
         return false;
     }
 
@@ -619,8 +619,8 @@ bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_fil
     }
     else
     {
-        sLog.Error("Config", ">> error occurred loading " CONFDIR "/optional.conf");
-        sLog.Close();
+        Log.Error("Config", ">> error occurred loading " CONFDIR "/optional.conf");
+        Log.Close();
         return false;
     }
 
@@ -630,8 +630,8 @@ bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_fil
     }
     else
     {
-        sLog.Error("Config", ">> error occurred loading " CONFDIR "/realms.conf");
-        sLog.Close();
+        Log.Error("Config", ">> error occurred loading " CONFDIR "/realms.conf");
+        Log.Close();
         return false;
     }
 

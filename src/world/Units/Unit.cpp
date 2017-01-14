@@ -3703,7 +3703,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                     {
                         hit_status |= HITSTATUS_CRICTICAL;
                         int32 dmgbonus = dmg.full_damage;
-                        //sLog.outString("DEBUG: Critical Strike! Full_damage: %u" , dmg.full_damage);
+                        //Log.outString("DEBUG: Critical Strike! Full_damage: %u" , dmg.full_damage);
                         if (ability != nullptr)
                         {
                             int32 dmg_bonus_pct = 100;
@@ -3711,7 +3711,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                             dmgbonus = dmgbonus * dmg_bonus_pct / 100;
                         }
 
-                        //sLog.outString("DEBUG: After CritMeleeDamageTakenPctMod: %u" , dmg.full_damage);
+                        //Log.outString("DEBUG: After CritMeleeDamageTakenPctMod: %u" , dmg.full_damage);
                         if (IsPlayer())
                         {
                             if (weapon_damage_type != RANGED)
@@ -3720,7 +3720,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                             }
                             if (!pVictim->IsPlayer())
                                 dmg.full_damage += float2int32(dmg.full_damage * static_cast<Player*>(this)->IncreaseCricticalByTypePCT[static_cast<Creature*>(pVictim)->GetCreatureProperties()->Type]);
-                            //sLog.outString("DEBUG: After IncreaseCricticalByTypePCT: %u" , dmg.full_damage);
+                            //Log.outString("DEBUG: After IncreaseCricticalByTypePCT: %u" , dmg.full_damage);
                         }
 
                         dmg.full_damage += dmgbonus;
@@ -3737,7 +3737,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                             if (dmg_reduction_pct > 1.0f)
                                 dmg_reduction_pct = 1.0f; //we cannot resist more then he is criticalling us, there is no point of the critical then :P
                             dmg.full_damage = float2int32(dmg.full_damage - dmg.full_damage * dmg_reduction_pct);
-                            //sLog.outString("DEBUG: After Resilience check: %u" , dmg.full_damage);
+                            //Log.outString("DEBUG: After Resilience check: %u" , dmg.full_damage);
                         }
 
                         if (pVictim->IsCreature() && static_cast<Creature*>(pVictim)->GetCreatureProperties()->Rank != ELITE_WORLDBOSS)
@@ -7378,7 +7378,7 @@ void Unit::DispelAll(bool positive)
 //////////////////////////////////////////////////////////////////////////////////////////
 bool Unit::RemoveAllAurasByMechanic(uint32 MechanicType, uint32 MaxDispel = -1, bool HostileOnly = true)
 {
-    //sLog.outString("Unit::MechanicImmunityMassDispel called, mechanic: %u" , MechanicType);
+    //Log.outString("Unit::MechanicImmunityMassDispel called, mechanic: %u" , MechanicType);
     uint32 DispelCount = 0;
     for (uint32 x = (HostileOnly ? MAX_NEGATIVE_AURAS_EXTEDED_START : MAX_POSITIVE_AURAS_EXTEDED_START); x < MAX_REMOVABLE_AURAS_END; x++)    // If HostileOnly = 1, then we use aura slots 40-56 (hostile). Otherwise, we use 0-56 (all)
     {
@@ -7389,7 +7389,7 @@ bool Unit::RemoveAllAurasByMechanic(uint32 MechanicType, uint32 MaxDispel = -1, 
         {
             if (m_auras[x]->GetSpellInfo()->MechanicsType == MechanicType)   // Remove all mechanics of type MechanicType (my english goen boom)
             {
-                //sLog.outString("Removed aura. [AuraSlot %u, SpellId %u]" , x , m_auras[x]->GetSpellId());
+                //Log.outString("Removed aura. [AuraSlot %u, SpellId %u]" , x , m_auras[x]->GetSpellId());
                 ///\todo Stop moving if fear was removed.
                 m_auras[x]->Remove(); // EZ-Remove
                 DispelCount++;

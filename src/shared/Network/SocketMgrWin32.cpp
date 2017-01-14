@@ -32,7 +32,7 @@ void SocketMgr::SpawnWorkerThreads()
 
     threadcount = si.dwNumberOfProcessors;
 
-    sLog.outDetail("IOCP: Spawning %u worker threads.", threadcount);
+    Log.outDetail("IOCP: Spawning %u worker threads.", threadcount);
     for(long x = 0; x < threadcount; ++x)
         ThreadPool.ExecuteTask(new SocketWorkerThread());
 }
@@ -143,7 +143,7 @@ void SocketMgr::ShutdownThreads()
 
 void SocketMgr::ShowStatus()
 {
-    sLog.outString("sockets count = %u", socket_count.GetVal());
+    Log.outString("sockets count = %u", socket_count.GetVal());
 }
 
 #endif

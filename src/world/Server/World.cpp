@@ -258,7 +258,7 @@ World::~World()
     Log.Notice("InstanceMgr", "~InstanceMgr()");
     sInstanceMgr.Shutdown();
 
-    //sLog.outString("Deleting Thread Manager..");
+    //Log.outString("Deleting Thread Manager..");
     //delete ThreadMgr::getSingletonPtr();
     Log.Notice("WordFilter", "~WordFilter()");
     delete g_chatFilter;
@@ -819,7 +819,7 @@ void World::SendWorldText(const char* text, WorldSession* self)
 
     if (announce_output)
     {
-        sLog.outString("> %s", text);
+        Log.outString("> %s", text);
     }
 }
 
@@ -1072,7 +1072,7 @@ void World::SaveAllPlayers()
     if (!(ObjectMgr::getSingletonPtr()))
         return;
 
-    sLog.outString("Saving all players to database...");
+    Log.outString("Saving all players to database...");
     uint32 count = 0;
     uint32 save_start_time;
 
@@ -1090,7 +1090,7 @@ void World::SaveAllPlayers()
         }
     }
     objmgr._playerslock.ReleaseReadLock();
-    sLog.outString("Saved %u players.", count);
+    Log.outString("Saved %u players.", count);
 }
 
 WorldSession* World::FindSessionByName(const char* Name) //case insensitive
@@ -1356,9 +1356,9 @@ void World::Rehash(bool load)
     mQueueUpdateInterval = Config.MainConfig.GetIntDefault("Server", "QueueUpdateInterval", 5000);
     SetKickAFKPlayerTime(Config.MainConfig.GetIntDefault("Server", "KickAFKPlayers", 0));
 
-    sLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
+    Log.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
     debugFlags = Config.MainConfig.GetIntDefault("LogLevel", "DebugFlags", 0);
-    sLog.SetDebugFlags(debugFlags);
+    Log.SetDebugFlags(debugFlags);
 
     gm_skip_attunement = Config.MainConfig.GetBoolDefault("Server", "SkipAttunementsForGM", true);
 

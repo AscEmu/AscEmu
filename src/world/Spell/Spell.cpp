@@ -1006,7 +1006,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
     else
         cancastresult = CanCast(false);
 
-    //sLog.outString("CanCast result: %u. Refer to SpellFailure.h to work out why." , cancastresult);
+    //Log.outString("CanCast result: %u. Refer to SpellFailure.h to work out why." , cancastresult);
 
     ccr = cancastresult;
     if (cancastresult != SPELL_CANCAST_OK)
@@ -1289,7 +1289,7 @@ void Spell::cast(bool check)
 
         m_isCasting = true;
 
-        //sLog.outString("CanCastResult: %u" , cancastresult);
+        //Log.outString("CanCastResult: %u" , cancastresult);
         if (!m_triggeredSpell)
             AddCooldown();
 

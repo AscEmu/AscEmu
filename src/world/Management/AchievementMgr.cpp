@@ -1803,7 +1803,7 @@ void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry con
         Creature* pCreature = GetPlayer()->GetMapMgr()->CreateCreature(Reward->sender);
         if (pCreature == NULL)
         {
-            sLog.Error("AchievementMgr", "can not create sender for achievement %u", entry);
+            Log.Error("AchievementMgr", "can not create sender for achievement %u", entry);
             return;
         }
         
@@ -1835,7 +1835,7 @@ void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry con
         }
         else
         {
-            sLog.Error("AchievementMgr", "Can not create item for message! (nullptr)");
+            Log.Error("AchievementMgr", "Can not create item for message! (nullptr)");
             return;
         }
     }
