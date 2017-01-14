@@ -1088,11 +1088,8 @@ void SessionLogWriter::writefromsession(WorldSession* session, const char* forma
     va_start(ap, format);
     char out[32768];
 
-    time_t t = UNIXTIME;
-    tm* aTm = localtime(&t);
-    snprintf(out, 32768, "[%-4d-%02d-%02d %02d:%02d:%02d] ",
-             aTm->tm_year + 1900, aTm->tm_mon + 1, aTm->tm_mday, aTm->tm_hour,
-             aTm->tm_min, aTm->tm_sec);
+    std::string current_time = "[" + Util::GetCurrentTimeString() + "] ";
+    snprintf(out, 32768, current_time.c_str());
     size_t l = strlen(out);
 
     snprintf(&out[l], 32768 - l, "Account %u [%s], IP %s, Player %s :: ",

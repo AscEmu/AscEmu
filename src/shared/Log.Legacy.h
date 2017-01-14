@@ -123,8 +123,6 @@ class SERVER_DECL oLog : public Singleton< oLog >
         void DebugFlag(LogFlags log_flags, const char* format, ...);
         int GetColorForDebugFlag(LogFlags log_flags);
 
-        void SetLogging(bool enabled);
-
         void Init(int32 fileLogLevel, LogType logType);
         void SetFileLoggingLevel(int32 level);
         void SetDebugFlags(uint32 flags);
