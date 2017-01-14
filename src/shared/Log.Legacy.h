@@ -64,6 +64,27 @@ class SERVER_DECL oLog : public Singleton< oLog >
 {
     public:
 
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // AscEmu functions begin
+        oLog() : m_fileLogLevel(0) {}
+
+        void InitalizeLogFiles(std::string file_prefix);
+
+        void DebugFlag(LogFlags log_flags, const char* format, ...);
+
+    private:
+        /*! \brief Returns color defines for plattform */
+#ifndef _WIN32
+        void SetConsoleColor(const char* color);    //AscEmu
+#else
+        void SetConsoleColor(int color);            //AscEmu
+#endif
+        // AscEmu functions end
+        //////////////////////////////////////////////////////////////////////////////////////////
+
+
+    public:
+
         //log level 0
         void outString(const char* str, ...);
         void outError(const char* err, ...);
@@ -90,11 +111,6 @@ class SERVER_DECL oLog : public Singleton< oLog >
         //log level 2
         void Debug(const char* source, const char* format, ...);
 
-
-        //Log functions
-        void DebugFlag(LogFlags log_flags, const char* format, ...);
-
-        void Init(int32 fileLogLevel, LogType logType);
         void SetFileLoggingLevel(int32 level);
         void SetDebugFlags(uint32 flags);
 
@@ -109,12 +125,6 @@ class SERVER_DECL oLog : public Singleton< oLog >
         void outFile(FILE* file, char* msg, const char* source = NULL);
         void outFileSilent(FILE* file, char* msg, const char* source = NULL);   // Prints text to file without showing it to the user. Used for the startup banner.
 
-        /*! \brief Returns color defines for plattform */
-#ifndef _WIN32
-        void SetConsoleColor(const char* color);    //AscEmu
-#else
-        void SetConsoleColor(int color);            //AscEmu
-#endif
 
 #ifdef _WIN32
         HANDLE stdout_handle;

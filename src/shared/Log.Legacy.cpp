@@ -329,27 +329,6 @@ void oLog::Debug(const char* source, const char* format, ...)
     outFile(m_errorFile, buf, source);
 }
 
-//AscEmu
-void oLog::DebugFlag(LogFlags log_flags, const char* format, ...)
-{
-    if (m_fileLogLevel < LOG_LEVEL_DEBUG || m_errorFile == NULL)
-        return;
-
-    if (!(mDebugFlags & log_flags))
-        return;
-
-    char buf[32768];
-    va_list ap;
-
-    va_start(ap, format);
-    vsnprintf(buf, 32768, format, ap);
-    va_end(ap);
-    SetConsoleColor(AELog::GetColorForDebugFlag(log_flags));
-    std::cout << buf << std::endl;
-    SetConsoleColor(CONSOLE_COLOR_NORMAL);
-    outFile(m_errorFile, buf);
-}
-
 void oLog::LargeErrorMessage(const char* source, ...)
 {
     std::vector<char*> lines;
@@ -390,55 +369,6 @@ void oLog::LargeErrorMessage(const char* source, ...)
     }
 
     outError("*********************************************************************");
-}
-
-void oLog::Init(int32 fileLogLevel, LogType logType)
-{
-#ifdef _WIN32
-    stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-#endif
-
-    SetFileLoggingLevel(fileLogLevel);
-
-    const char* logNormalFilename = NULL, *logErrorFilename = NULL;
-    switch(logType)
-    {
-        case LOGON_LOG:
-            {
-                logNormalFilename = "logon-normal.log";
-                logErrorFilename = "logon-error.log";
-                break;
-            }
-        case WORLD_LOG:
-            {
-                logNormalFilename = "world-normal.log";
-                logErrorFilename = "world-error.log";
-                break;
-            }
-    }
-
-    std::string current_date_time = Util::GetCurrentDateTimeString();
-
-    m_normalFile = fopen(logNormalFilename, "a");
-    if (m_normalFile == nullptr)
-    {
-        fprintf(stderr, "%s: Error opening '%s': %s\n", __FUNCTION__, logNormalFilename, strerror(errno));
-    }
-    else
-    {
-        outBasic("=================[%s]=================", current_date_time.c_str());
-    }
-
-    m_errorFile = fopen(logErrorFilename, "a");
-    if (m_errorFile == nullptr)
-    {
-        fprintf(stderr, "%s: Error opening '%s': %s\n", __FUNCTION__, logErrorFilename, strerror(errno));
-    }
-    else
-    {
-        // We don't echo time and date again because outBasic above just echoed them.
-        outErrorSilent("=================[%s]=================", current_date_time.c_str());
-    }
 }
 
 void oLog::Close()

@@ -146,7 +146,7 @@ bool Master::Run(int argc, char** argv)
     UNIXTIME = time(NULL);
     g_localTime = *localtime(&UNIXTIME);
 
-    Log.Init(0, WORLD_LOG);
+    Log.InitalizeLogFiles("worldserver");
 
     PrintBanner();
 

@@ -70,7 +70,7 @@ void LogonServer::Run(int argc, char** argv)
         }
     }
 #endif
-    Log.Init(0, LOGON_LOG);
+    Log.InitalizeLogFiles("logonserver");
 
     PrintBanner();
 
