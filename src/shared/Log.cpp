@@ -43,3 +43,54 @@ void oLog::SetConsoleColor(int color)
     SetConsoleTextAttribute(stdout_handle, (WORD)color);
 }
 #endif
+
+#ifndef _WIN32
+const char* oLog::GetColorForDebugFlag(LogFlags log_flags)
+{
+    switch (log_flags)
+    {
+        case LF_MAP:
+        case LF_MAP_CELL:
+        case LF_VMAP:
+        case LF_MMAP:
+            return CONSOLE_COLOR_BLUE;
+        case LF_OPCODE:
+            return CONSOLE_COLOR_WHITE;
+        case LF_SPELL:
+        case LF_AURA:
+        case LF_SPELL_EFF:
+        case LF_AURA_EFF:
+            return CONSOLE_COLOR_PURPLE;
+        case LF_SCRIPT_MGR:
+        case LF_DB_TABLES:
+            return CONSOLE_COLOR_YELLOW;
+        default:
+            return CONSOLE_COLOR_NORMAL;
+    }
+}
+#else
+int oLog::GetColorForDebugFlag(LogFlags log_flags)
+{
+    switch (log_flags)
+    {
+        case LF_MAP:
+        case LF_MAP_CELL:
+        case LF_VMAP:
+        case LF_MMAP:
+            return CONSOLE_COLOR_BLUE;
+        case LF_OPCODE:
+            return CONSOLE_COLOR_WHITE;
+        case LF_SPELL:
+        case LF_AURA:
+        case LF_SPELL_EFF:
+        case LF_AURA_EFF:
+            return CONSOLE_COLOR_PURPLE;
+        case LF_SCRIPT_MGR:
+        case LF_DB_TABLES:
+            return CONSOLE_COLOR_YELLOW;
+        default:
+            return CONSOLE_COLOR_NORMAL;
+    }
+}
+#endif
+

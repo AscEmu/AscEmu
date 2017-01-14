@@ -98,7 +98,12 @@ class SERVER_DECL oLog : public Singleton< oLog >
 
         //Log functions
         void DebugFlag(LogFlags log_flags, const char* format, ...);
-        int GetColorForDebugFlag(LogFlags log_flags);
+
+#ifndef _WIN32
+        const char* GetColorForDebugFlag(LogFlags log_flags);   //AscEmu
+#else
+        int GetColorForDebugFlag(LogFlags log_flags);            //AscEmu
+#endif
 
         void Init(int32 fileLogLevel, LogType logType);
         void SetFileLoggingLevel(int32 level);
