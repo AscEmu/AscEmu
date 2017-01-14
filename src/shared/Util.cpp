@@ -64,7 +64,7 @@ namespace Util
         return time_difference.count();
     }
 
-    std::string GetCurrentTimeString()
+    std::string GetCurrentDateTimeString()
     {
         auto now = std::chrono::system_clock::now();
         auto in_time_t = std::chrono::system_clock::to_time_t(now);
@@ -81,7 +81,7 @@ namespace Util
 #endif
     }
 
-    std::string GetTimeStringFromTimeStamp(uint32_t timestamp)
+    std::string GetDateTimeStringFromTimeStamp(uint32_t timestamp)
     {
         std::time_t raw_time = (std::time_t)timestamp;
 

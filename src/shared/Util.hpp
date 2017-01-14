@@ -39,10 +39,10 @@ namespace Util
     long long GetTimeDifference(std::chrono::high_resolution_clock::time_point start_time, std::chrono::high_resolution_clock::time_point end_time);
 
     /*! \brief Returns the current Date Time as string */
-    std::string GetCurrentTimeString();
+    std::string GetCurrentDateTimeString();
 
     /*! \brief Returns Date Time as string from timestamp */
-    std::string GetTimeStringFromTimeStamp(uint32_t timestamp);
+    std::string GetDateTimeStringFromTimeStamp(uint32_t timestamp);
 
     /*! \brief Returns years months days hours minutes seconds as string from seconds value */
     std::string GetDateStringFromSeconds(uint32_t seconds);

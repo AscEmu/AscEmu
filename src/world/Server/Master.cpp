@@ -797,7 +797,7 @@ void Master::StartNetworkSubsystem()
 
 void Master::ShutdownLootSystem()
 {
-    Log.Success("Shutdown", "Initiated at %s", Util::GetTimeStringFromTimeStamp((uint32)UNIXTIME).c_str());
+    Log.Success("Shutdown", "Initiated at %s", Util::GetDateTimeStringFromTimeStamp((uint32)UNIXTIME).c_str());
 
     if (lootmgr.is_loading)
     {

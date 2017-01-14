@@ -1257,7 +1257,7 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
         pPlayer->SetBanned(uBanTime, sReason);
         pInfo = pPlayer->getPlayerInfo();
     }
-    SystemMessage(m_session, "This ban is due to expire %s%s.", BanTime ? "on " : "", BanTime ? Util::GetTimeStringFromTimeStamp(BanTime + (uint32)UNIXTIME).c_str() : "Never");
+    SystemMessage(m_session, "This ban is due to expire %s%s.", BanTime ? "on " : "", BanTime ? Util::GetDateTimeStringFromTimeStamp(BanTime + (uint32)UNIXTIME).c_str() : "Never");
 
     sGMLog.writefromsession(m_session, "banned %s, reason %s, for %s", pCharacter, (pReason == NULL) ? "No reason" : pReason, BanTime ? Util::GetDateStringFromSeconds(BanTime).c_str() : "ever");
     char msg[200];

@@ -1088,7 +1088,7 @@ void SessionLogWriter::writefromsession(WorldSession* session, const char* forma
     va_start(ap, format);
     char out[32768];
 
-    std::string current_time = "[" + Util::GetCurrentTimeString() + "] ";
+    std::string current_time = "[" + Util::GetCurrentDateTimeString() + "] ";
     snprintf(out, 32768, current_time.c_str());
     size_t l = strlen(out);
 
