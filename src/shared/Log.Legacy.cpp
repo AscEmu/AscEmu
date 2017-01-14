@@ -344,7 +344,7 @@ void oLog::DebugFlag(LogFlags log_flags, const char* format, ...)
     va_start(ap, format);
     vsnprintf(buf, 32768, format, ap);
     va_end(ap);
-    SetConsoleColor(GetColorForDebugFlag(log_flags));
+    SetConsoleColor(AELog::GetColorForDebugFlag(log_flags));
     std::cout << buf << std::endl;
     SetConsoleColor(CONSOLE_COLOR_NORMAL);
     outFile(m_errorFile, buf);

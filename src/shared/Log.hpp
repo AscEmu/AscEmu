@@ -32,6 +32,13 @@ namespace AELog
 {
     /*! \brief Returns formatted file name based on input */
     std::string GetFormattedFileName(std::string path_prefix, std::string file_prefix, bool use_date_time);
+
+    /*! \brief Returns cons char* (linux) or int (windows) color definition for console */
+#ifndef _WIN32
+    const char* GetColorForDebugFlag(LogFlags log_flags);
+#else
+    int GetColorForDebugFlag(LogFlags log_flags);
+#endif
 }
 
 #endif  // LOG_HPP
