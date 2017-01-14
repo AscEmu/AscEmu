@@ -41,6 +41,9 @@ namespace Util
     /*! \brief Returns the current Date Time as string */
     std::string GetCurrentDateTimeString();
 
+    /*! \brief Returns the current Time as string */
+    std::string GetCurrentTimeString();
+
     /*! \brief Returns Date Time as string from timestamp */
     std::string GetDateTimeStringFromTimeStamp(uint32_t timestamp);
 

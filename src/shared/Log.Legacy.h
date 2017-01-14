@@ -137,7 +137,7 @@ class SERVER_DECL oLog : public Singleton< oLog >
         FILE* m_normalFile, *m_errorFile;
         void outFile(FILE* file, char* msg, const char* source = NULL);
         void outFileSilent(FILE* file, char* msg, const char* source = NULL);   // Prints text to file without showing it to the user. Used for the startup banner.
-        void Time(char* buffer);
+
         void SetColor(int color);
 
 #ifdef _WIN32
