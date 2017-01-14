@@ -3,6 +3,11 @@
 # set up our project name
 project(world CXX)
 
+include(GameClassic/CMakeLists.txt)
+include(GameBC/CMakeLists.txt)
+include(GameLK/CMakeLists.txt)
+include(GameCata/CMakeLists.txt)
+
 include(Chat/CMakeLists.txt)
 include(Chat/Commands/CMakeLists.txt)
 include(Management/CMakeLists.txt)
@@ -43,6 +48,11 @@ endif()
 source_group(world FILES ${SRC_WORLD_PROJECT})
 
 set(sources
+   ${SRC_GAMECLASSIC_FILES}
+   ${SRC_GAMEBC_FILES}
+   ${SRC_GAMELK_FILES}
+   ${SRC_GAMECATA_FILES}
+
    ${SRC_CHAT_FILES}
    ${SRC_COMMAND_FILES}
    ${SRC_MANAGEMENT_FILES}
