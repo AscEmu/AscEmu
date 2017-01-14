@@ -24,21 +24,22 @@
 #include "Util.hpp"
 #include <cstdarg>
 #include <string>
+#include <algorithm>
 
 std::string FormatOutputString(const char* Prefix, const char* Description, bool useTimeStamp)
 {
-
     char p[MAX_PATH];
     p[0] = 0;
-    time_t t = time(NULL);
-    tm* a = gmtime(&t);
     strcat(p, Prefix);
     strcat(p, "/");
     strcat(p, Description);
     if(useTimeStamp)
     {
+        std::string current_date_time = Util::GetCurrentDateTimeString();
+        //replace time seperator with valid character for file name
+        std::replace(current_date_time.begin(), current_date_time.end(), ':', '-');
         char ftime[100];
-        snprintf(ftime, 100, "-%-4d-%02d-%02d %02d-%02d-%02d", a->tm_year + 1900, a->tm_mon + 1, a->tm_mday, a->tm_hour, a->tm_min, a->tm_sec);
+        snprintf(ftime, 100, "-%s", current_date_time.c_str());
         strcat(p, ftime);
     }
 
@@ -481,23 +482,27 @@ void oLog::Init(int32 fileLogLevel, LogType logType)
             }
     }
 
+    std::string current_date_time = Util::GetCurrentDateTimeString();
+
     m_normalFile = fopen(logNormalFilename, "a");
-    if(m_normalFile == NULL)
+    if (m_normalFile == nullptr)
+    {
         fprintf(stderr, "%s: Error opening '%s': %s\n", __FUNCTION__, logNormalFilename, strerror(errno));
+    }
     else
     {
-        tm* aTm = localtime(&UNIXTIME);
-        outBasic("=============[%-4d-%02d-%02d]========[%02d:%02d:%02d]=============", aTm->tm_year + 1900, aTm->tm_mon + 1, aTm->tm_mday, aTm->tm_hour, aTm->tm_min, aTm->tm_sec);
+        outBasic("=================[%s]=================", current_date_time.c_str());
     }
 
     m_errorFile = fopen(logErrorFilename, "a");
-    if(m_errorFile == NULL)
+    if (m_errorFile == nullptr)
+    {
         fprintf(stderr, "%s: Error opening '%s': %s\n", __FUNCTION__, logErrorFilename, strerror(errno));
+    }
     else
     {
-        tm* aTm = localtime(&UNIXTIME);
         // We don't echo time and date again because outBasic above just echoed them.
-        outErrorSilent("=============[%-4d-%02d-%02d]========[%02d:%02d:%02d]=============", aTm->tm_year + 1900, aTm->tm_mon + 1, aTm->tm_mday, aTm->tm_hour, aTm->tm_min, aTm->tm_sec);
+        outErrorSilent("=================[%s]=================", current_date_time.c_str());
     }
 }
 
