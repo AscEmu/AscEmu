@@ -115,7 +115,12 @@ class SERVER_DECL oLog : public Singleton< oLog >
         void outFile(FILE* file, char* msg, const char* source = NULL);
         void outFileSilent(FILE* file, char* msg, const char* source = NULL);   // Prints text to file without showing it to the user. Used for the startup banner.
 
-        void SetColor(int color);
+        /*! \brief Returns color defines for plattform */
+#ifndef _WIN32
+        void SetConsoleColor(const char* color);    //AscEmu
+#else
+        void SetConsoleColor(int color);            //AscEmu
+#endif
 
 #ifdef _WIN32
         HANDLE stdout_handle;

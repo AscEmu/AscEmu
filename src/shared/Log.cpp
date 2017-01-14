@@ -30,3 +30,16 @@ namespace AELog
         return full_name;
     }
 }
+
+#ifndef _WIN32
+void oLog::SetConsoleColor(const char* color)
+{
+    fputs(color, stdout);
+}
+
+#else
+void oLog::SetConsoleColor(int color)
+{
+    SetConsoleTextAttribute(stdout_handle, (WORD)color);
+}
+#endif
