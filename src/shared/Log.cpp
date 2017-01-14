@@ -99,13 +99,13 @@ void oLog::InitalizeLogFiles(std::string file_prefix)
 
     m_normalFile = fopen(normal_filename.c_str(), "a");
     if (m_normalFile == nullptr)
-        fprintf(stderr, "%s: Error opening '%s': %s\n", __FUNCTION__, normal_filename, strerror(errno));
+        fprintf(stderr, "%s: Error opening '%s': %s\n", __FUNCTION__, normal_filename.c_str(), strerror(errno));
     else
         outBasic("=================[%s]=================", current_date_time.c_str());
 
     m_errorFile = fopen(error_filename.c_str(), "a");
     if (m_errorFile == nullptr)
-        fprintf(stderr, "%s: Error opening '%s': %s\n", __FUNCTION__, error_filename, strerror(errno));
+        fprintf(stderr, "%s: Error opening '%s': %s\n", __FUNCTION__, error_filename.c_str(), strerror(errno));
     else
         outErrorSilent("=================[%s]=================", current_date_time.c_str());
 }

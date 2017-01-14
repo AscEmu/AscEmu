@@ -120,6 +120,7 @@ set(headers
 	
 	Common.hpp
 	Log.hpp
+	LogDefines.hpp
 	Util.hpp
 )
 
