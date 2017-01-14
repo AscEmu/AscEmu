@@ -39,7 +39,6 @@ void oLog::SetColor(int color)
     "\033[22;31m",
     "\033[22;32m",
     "\033[01;33m",
-    //"\033[22;37m",
     "\033[0m",
     "\033[01;37m",
     "\033[1;34m",
@@ -92,7 +91,7 @@ void oLog::outString(const char* str, ...)
     va_start(ap, str);
     vsnprintf(buf, 32768, str, ap);
     va_end(ap);
-    SetColor(TNORMAL);
+    SetColor(CONSOLE_COLOR_NORMAL);
     std::cout << buf << std::endl;
     outFile(m_normalFile, buf);
 }
@@ -108,9 +107,9 @@ void oLog::outError(const char* err, ...)
     va_start(ap, err);
     vsnprintf(buf, 32768, err, ap);
     va_end(ap);
-    SetColor(TRED);
+    SetColor(CONSOLE_COLOR_RED);
     std::cout << buf << std::endl;
-    SetColor(TNORMAL);
+    SetColor(CONSOLE_COLOR_NORMAL);
     outFile(m_errorFile, buf);
 }
 
@@ -141,9 +140,9 @@ void oLog::outBasic(const char* str, ...)
     va_start(ap, str);
     vsnprintf(buf, 32768, str, ap);
     va_end(ap);
-    SetColor(TBLUE);
+    SetColor(CONSOLE_COLOR_CYAN);
     std::cout << buf << std::endl;
-    SetColor(TNORMAL);
+    SetColor(CONSOLE_COLOR_NORMAL);
     outFile(m_normalFile, buf);
 }
 
@@ -158,9 +157,9 @@ void oLog::outDetail(const char* str, ...)
     va_start(ap, str);
     vsnprintf(buf, 32768, str, ap);
     va_end(ap);
-    SetColor(TWHITE);
+    SetColor(CONSOLE_COLOR_WHITE);
     std::cout << buf << std::endl;
-    SetColor(TNORMAL);
+    SetColor(CONSOLE_COLOR_NORMAL);
     outFile(m_normalFile, buf);
 }
 
@@ -175,9 +174,9 @@ void oLog::outDebug(const char* str, ...)
     va_start(ap, str);
     vsnprintf(buf, 32768, str, ap);
     va_end(ap);
-    SetColor(TYELLOW);
+    SetColor(CONSOLE_COLOR_YELLOW);
     std::cout << buf << std::endl;
-    SetColor(TNORMAL);
+    SetColor(CONSOLE_COLOR_NORMAL);
     outFile(m_errorFile, buf);
 }
 
@@ -196,9 +195,9 @@ void oLog::logBasic(const char* file, int line, const char* fncname, const char*
     va_start(ap, msg);
     vsnprintf(buf, 32768, message, ap);
     va_end(ap);
-    SetColor(TWHITE);
+    SetColor(CONSOLE_COLOR_WHITE);
     std::cout << buf << std::endl;
-    SetColor(TNORMAL);
+    SetColor(CONSOLE_COLOR_NORMAL);
     outFile(m_normalFile, buf);
 }
 
@@ -217,9 +216,9 @@ void oLog::logDetail(const char* file, int line, const char* fncname, const char
     va_start(ap, msg);
     vsnprintf(buf, 32768, message, ap);
     va_end(ap);
-    SetColor(TWHITE);
+    SetColor(CONSOLE_COLOR_WHITE);
     std::cout << buf << std::endl;
-    SetColor(TNORMAL);
+    SetColor(CONSOLE_COLOR_NORMAL);
     outFile(m_normalFile, buf);
 }
 
@@ -238,9 +237,9 @@ void oLog::logError(const char* file, int line, const char* fncname, const char*
     va_start(ap, msg);
     vsnprintf(buf, 32768, message, ap);
     va_end(ap);
-    SetColor(TRED);
+    SetColor(CONSOLE_COLOR_RED);
     std::cout << buf << std::endl;
-    SetColor(TNORMAL);
+    SetColor(CONSOLE_COLOR_NORMAL);
     outFile(m_errorFile, buf);
 }
 
@@ -275,9 +274,9 @@ void oLog::Notice(const char* source, const char* format, ...)
     va_start(ap, format);
     vsnprintf(buf, 32768, format, ap);
     va_end(ap);
-    SetColor(TGREEN);
+    SetColor(CONSOLE_COLOR_GREEN);
     std::cout << source << ": " << buf << std::endl;
-    SetColor(TNORMAL);
+    SetColor(CONSOLE_COLOR_NORMAL);
     outFile(m_normalFile, buf, source);
 }
 
@@ -292,9 +291,9 @@ void oLog::Warning(const char* source, const char* format, ...)
     va_start(ap, format);
     vsnprintf(buf, 32768, format, ap);
     va_end(ap);
-    SetColor(TWHITE);
+    SetColor(CONSOLE_COLOR_WHITE);
     std::cout << source << ": " << buf << std::endl;
-    SetColor(TNORMAL);
+    SetColor(CONSOLE_COLOR_NORMAL);
     outFile(m_normalFile, buf, source);
 }
 
@@ -309,7 +308,7 @@ void oLog::Success(const char* source, const char* format, ...)
     va_start(ap, format);
     vsnprintf(buf, 32768, format, ap);
     va_end(ap);
-    SetColor(TNORMAL);
+    SetColor(CONSOLE_COLOR_NORMAL);
     std::cout << source << ": " << buf << std::endl;
     outFile(m_normalFile, buf, source);
 }
@@ -325,9 +324,9 @@ void oLog::Error(const char* source, const char* format, ...)
     va_start(ap, format);
     vsnprintf(buf, 32768, format, ap);
     va_end(ap);
-    SetColor(TRED);
+    SetColor(CONSOLE_COLOR_RED);
     std::cout << source << ": " << buf << std::endl;
-    SetColor(TNORMAL);
+    SetColor(CONSOLE_COLOR_NORMAL);
     outFile(m_errorFile, buf, source);
 }
 
@@ -342,9 +341,9 @@ void oLog::Debug(const char* source, const char* format, ...)
     va_start(ap, format);
     vsnprintf(buf, 32768, format, ap);
     va_end(ap);
-    SetColor(TYELLOW);
+    SetColor(CONSOLE_COLOR_YELLOW);
     std::cout << source << ": " << buf << std::endl;
-    SetColor(TNORMAL);
+    SetColor(CONSOLE_COLOR_NORMAL);
     outFile(m_errorFile, buf, source);
 }
 
@@ -364,7 +363,7 @@ void oLog::DebugFlag(LogFlags log_flags, const char* format, ...)
     va_end(ap);
     SetColor(GetColorForDebugFlag(log_flags));
     std::cout << buf << std::endl;
-    SetColor(TNORMAL);
+    SetColor(CONSOLE_COLOR_NORMAL);
     outFile(m_errorFile, buf);
 }
 
@@ -376,19 +375,19 @@ int oLog::GetColorForDebugFlag(LogFlags log_flags)
         case LF_MAP_CELL:
         case LF_VMAP:
         case LF_MMAP:
-            return TBLUE;
+            return CONSOLE_COLOR_BLUE;
         case LF_OPCODE:
-            return TWHITE;
+            return CONSOLE_COLOR_WHITE;
         case LF_SPELL:
         case LF_AURA:
         case LF_SPELL_EFF:
         case LF_AURA_EFF:
-            return TPURPLE;
+            return CONSOLE_COLOR_PURPLE;
         case LF_SCRIPT_MGR:
         case LF_DB_TABLES:
-            return TYELLOW;
+            return CONSOLE_COLOR_YELLOW;
         default:
-            return TNORMAL;
+            return CONSOLE_COLOR_NORMAL;
     }
 
 }
