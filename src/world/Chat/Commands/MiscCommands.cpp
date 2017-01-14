@@ -598,7 +598,7 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
     // ".gps 1" will save gps info to file logs/gps.log - This probably isn't very multithread safe so don't have many gms spamming it!
     if (args != NULL && *args == '1')
     {
-        FILE* gpslog = fopen(FormatOutputString("logs", "gps", false).c_str(), "at");
+        FILE* gpslog = fopen(AELog::GetFormattedFileName("logs", "gps", false).c_str(), "at");
         if (gpslog)
         {
             fprintf(gpslog, "%d, %u, %u, %f, %f, %f, %f, \'%s\'", out_map_id, out_zone_id, out_area_id, out_x, out_y, out_z, out_o, out_area_name);

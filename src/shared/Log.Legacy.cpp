@@ -24,28 +24,6 @@
 #include "Util.hpp"
 #include <cstdarg>
 #include <string>
-#include <algorithm>
-
-std::string FormatOutputString(const char* Prefix, const char* Description, bool useTimeStamp)
-{
-    char p[MAX_PATH];
-    p[0] = 0;
-    strcat(p, Prefix);
-    strcat(p, "/");
-    strcat(p, Description);
-    if(useTimeStamp)
-    {
-        std::string current_date_time = Util::GetCurrentDateTimeString();
-        //replace time seperator with valid character for file name
-        std::replace(current_date_time.begin(), current_date_time.end(), ':', '-');
-        char ftime[100];
-        snprintf(ftime, 100, "-%s", current_date_time.c_str());
-        strcat(p, ftime);
-    }
-
-    strcat(p, ".log");
-    return std::string(p);
-}
 
 createFileSingleton(oLog);
 initialiseSingleton(WorldLog);

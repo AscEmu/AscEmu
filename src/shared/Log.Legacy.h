@@ -86,8 +86,6 @@ enum LogFlags
 extern SERVER_DECL time_t UNIXTIME;        //update this every loop to avoid the time() syscall!
 extern SERVER_DECL tm g_localTime;
 
-std::string FormatOutputString(const char* Prefix, const char* Description, bool useTimeStamp);
-
 class SERVER_DECL oLog : public Singleton< oLog >
 {
     public:

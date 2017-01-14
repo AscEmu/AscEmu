@@ -653,9 +653,9 @@ void Master::OpenCheatLogFiles()
 {
     bool useTimeStamp = Config.MainConfig.GetBoolDefault("log", "TimeStamp", false);
 
-    Anticheat_Log = new SessionLogWriter(FormatOutputString("logs", "cheaters", useTimeStamp).c_str(), false);
-    GMCommand_Log = new SessionLogWriter(FormatOutputString("logs", "gmcommand", useTimeStamp).c_str(), false);
-    Player_Log = new SessionLogWriter(FormatOutputString("logs", "players", useTimeStamp).c_str(), false);
+    Anticheat_Log = new SessionLogWriter(AELog::GetFormattedFileName("logs", "cheaters", useTimeStamp).c_str(), false);
+    GMCommand_Log = new SessionLogWriter(AELog::GetFormattedFileName("logs", "gmcommand", useTimeStamp).c_str(), false);
+    Player_Log = new SessionLogWriter(AELog::GetFormattedFileName("logs", "players", useTimeStamp).c_str(), false);
 }
 
 void Master::StartRemoteConsole()

@@ -25,7 +25,7 @@
 
 void OutputCrashLogLine(const char* format, ...)
 {
-    std::string s = FormatOutputString("logs", "CrashLog", false);
+    std::string s = AELog::GetFormattedFileName("logs", "CrashLog", false);
     FILE* m_file = fopen(s.c_str(), "a");
     if(!m_file) return;
 
@@ -184,7 +184,7 @@ void echo(const char* format, ...)
     va_list ap;
     va_start(ap, format);
     vprintf(format, ap);
-    std::string s = FormatOutputString("logs", "CrashLog", false);
+    std::string s = AELog::GetFormattedFileName("logs", "CrashLog", false);
     FILE* m_file = fopen(s.c_str(), "a");
     if(!m_file)
     {
@@ -258,7 +258,7 @@ void CStackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry & e
 
 void CStackWalker::OnOutput(LPCSTR szText)
 {
-    std::string s = FormatOutputString("logs", "CrashLog", false);
+    std::string s = AELog::GetFormattedFileName("logs", "CrashLog", false);
     FILE* m_file = fopen(s.c_str(), "a");
     if(!m_file) return;
 
