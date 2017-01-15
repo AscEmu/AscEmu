@@ -64,8 +64,8 @@ void LogonServer::Run(int argc, char** argv)
             case 0:
                 break;
             default:
-                Log.Init(0, LOGON_LOG);
-                Log.outBasic("Usage: %s [--checkconf] [--fileloglevel <level>] [--conf <filename>] [--version]", argv[0]);
+                //Log.Init(0, LOGON_LOG);
+                //Log.outBasic("Usage: %s [--checkconf] [--fileloglevel <level>] [--conf <filename>] [--version]", argv[0]);
                 return;
         }
     }
@@ -99,7 +99,7 @@ void LogonServer::Run(int argc, char** argv)
         Log.SetFileLoggingLevel(file_log_level);
 #endif
 
-    Log.outBasic("The key combination <Ctrl-C> will safely shut down the server.");
+    LogDefault("The key combination <Ctrl-C> will safely shut down the server.");
 
     Log.Success("Config", "Loading Config Files...");
     if (!LoadLogonConfiguration())
@@ -283,10 +283,10 @@ void LogonServer::CheckForDeadSockets()
 
 void LogonServer::PrintBanner()
 {
-    Log.outBasic("<< AscEmu %s/%s-%s (%s) :: Logon Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
-    Log.outBasic("========================================================");
-    Log.outErrorSilent("<< AscEmu %s/%s-%s (%s) :: Logon Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
-    Log.outErrorSilent("========================================================"); // Echo off.
+    AscLog.ConsoleLogDefault(false, "<< AscEmu %s/%s-%s (%s) :: Logon Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    AscLog.ConsoleLogDefault(false, "========================================================");
+    AscLog.ConsoleLogError(true, "<< AscEmu %s/%s-%s (%s) :: Logon Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
+    AscLog.ConsoleLogError(true, "========================================================"); // Echo off.
 }
 
 void LogonServer::WritePidFile()

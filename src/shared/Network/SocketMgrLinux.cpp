@@ -112,7 +112,7 @@ void SocketMgr::SpawnWorkerThreads()
 
 void SocketMgr::ShowStatus()
 {
-    Log.outString("sockets count = %u", socket_count.GetVal());
+    LogDefault("sockets count = %u", socket_count.GetVal());
 }
 
 bool SocketWorkerThread::run()

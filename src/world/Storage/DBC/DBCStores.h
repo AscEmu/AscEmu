@@ -265,14 +265,14 @@ class SERVER_DECL DBCStorage
             uint32 val;
             size_t len = strlen(format);
             if (len != cols)
-                Log.outError("!!! possible invalid format in file %s (us: %u, them: %u)", filename, len, cols);
+                LogError("!!! possible invalid format in file %s (us: %u, them: %u)", filename, len, cols);
 
             while (*t != 0)
             {
                 if ((++c) > cols)
                 {
                     ++t;
-                    Log.outError("!!! Read buffer overflow in DBC reading of file %s", filename);
+                    LogError("!!! Read buffer overflow in DBC reading of file %s", filename);
                     continue;
                 }
 

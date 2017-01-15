@@ -183,7 +183,7 @@ bool Master::Run(int argc, char** argv)
     }
 #endif
 
-    Log.outBasic("The key combination <Ctrl-C> will safely shut down the server.");
+    LogDefault("The key combination <Ctrl-C> will safely shut down the server.");
 
 #ifndef WIN32
     if (geteuid() == 0 || getegid() == 0)
@@ -594,10 +594,10 @@ void OnCrash(bool Terminate)
 
 void Master::PrintBanner()
 {
-    Log.outBasic("<< AscEmu %s/%s-%s (%s) :: World Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
-    Log.outBasic("========================================================");
-    Log.outErrorSilent("<< AscEmu %s/%s-%s (%s) :: World Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
-    Log.outErrorSilent("========================================================"); // Echo off.
+    AscLog.ConsoleLogDefault(false, "<< AscEmu %s/%s-%s (%s) :: World Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+    AscLog.ConsoleLogDefault(false, "========================================================");
+    AscLog.ConsoleLogError(true, "<< AscEmu %s/%s-%s (%s) :: World Server >>", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH); // Echo off.
+    AscLog.ConsoleLogError(true, "========================================================"); // Echo off.
 }
 
 bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_file, char* realm_config_file)

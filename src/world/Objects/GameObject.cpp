@@ -460,7 +460,7 @@ void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
     SpellInfo* sp = sSpellCustomizations.GetSpellInfo(SpellID);
     if (sp == nullptr)
     {
-        Log.outError("GameObject %u tried to cast a non-existing Spell %u.", gameobject_properties->entry, SpellID);
+        LogError("GameObject %u tried to cast a non-existing Spell %u.", gameobject_properties->entry, SpellID);
         return;
     }
 
@@ -845,13 +845,13 @@ void GameObject_SpellFocus::SpawnLinkedTrap()
     GameObject* go = m_mapMgr->CreateGameObject(trapid);
     if (go == nullptr)
     {
-        Log.outError("Failed to create linked trap (entry: %u) for GameObject %u ( %s ). Missing GOProperties!", trapid, gameobject_properties->entry, gameobject_properties->name.c_str());
+        LogError("Failed to create linked trap (entry: %u) for GameObject %u ( %s ). Missing GOProperties!", trapid, gameobject_properties->entry, gameobject_properties->name.c_str());
         return;
     }
 
     if (!go->CreateFromProto(trapid, m_mapId, m_position.x, m_position.y, m_position.z, m_position.o))
     {
-        Log.outError("Failed CreateFromProto for linked trap of GameObject %u ( %s ).", gameobject_properties->entry, gameobject_properties->name.c_str());
+        LogError("Failed CreateFromProto for linked trap of GameObject %u ( %s ).", gameobject_properties->entry, gameobject_properties->name.c_str());
         return;
     }
 
@@ -1020,7 +1020,7 @@ void GameObject_SpellCaster::InitAI()
 
     spell = sSpellCustomizations.GetSpellInfo(gameobject_properties->spell_caster.spell_id);
     if (spell == nullptr)
-        Log.outError("GameObject %u ( %s ) has a nonexistant spellID in the database.", gameobject_properties->entry, gameobject_properties->name.c_str());
+        LogError("GameObject %u ( %s ) has a nonexistant spellID in the database.", gameobject_properties->entry, gameobject_properties->name.c_str());
 }
 
 void GameObject_SpellCaster::Use(uint64 GUID)

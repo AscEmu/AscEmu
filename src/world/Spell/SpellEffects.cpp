@@ -2464,7 +2464,7 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
     CreatureProperties const* properties = sMySQLStore.GetCreatureProperties(cr_entry);
     if (properties == nullptr)
     {
-        Log.outError("Warning : Missing summon creature template %u used by spell %u!", cr_entry, GetSpellInfo()->Id);
+        LogError("Warning : Missing summon creature template %u used by spell %u!", cr_entry, GetSpellInfo()->Id);
         return;
     }
     float x, y, z;
@@ -3582,7 +3582,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
     GameObjectProperties const* info = sMySQLStore.GetGameObjectProperties(entry);
     if (info == nullptr)
     {
-        Log.outError("Spell %u ( %s ) Effect %u tried to summon a GameObject with ID %u. GameObject is not in the database.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i, entry);
+        LogError("Spell %u ( %s ) Effect %u tried to summon a GameObject with ID %u. GameObject is not in the database.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i, entry);
         return;
     }
 

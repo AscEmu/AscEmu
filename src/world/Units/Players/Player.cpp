@@ -6037,11 +6037,10 @@ uint32 Player::CalcTalentResetCost(uint32 resetnum)
 int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 {
     SpellInfo* spell_info = sSpellCustomizations.GetSpellInfo(spellid);
-
     if (spell_info == nullptr)
         return -1;
 
-    //LogDefault("Canshootwithrangedweapon!?!? spell: [%u] %s" , spellinfo->Id , spellinfo->Name.c_str());
+    LogDebugFlag(LF_SPELL, "Canshootwithrangedweapon!?!? spell: [%u] %s" , spell_info->Id , spell_info->Name.c_str());
 
     // Check if Morphed
     if (polySpell > 0)
@@ -6135,7 +6134,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 
     if (dist > maxr)
     {
-        //    LogDefault("Auto shot failed: out of range (Maxr: %f, Dist: %f)" , maxr , dist);
+        LogDebug("Auto shot failed: out of range (Maxr: %f, Dist: %f)" , maxr , dist);
         fail = SPELL_FAILED_OUT_OF_RANGE;
     }
 

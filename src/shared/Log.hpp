@@ -81,7 +81,7 @@ class SERVER_DECL AscEmuLog : public Singleton<AscEmuLog>
 #define LogError(msg, ...) AscLog.SetConsoleColor(CONSOLE_COLOR_RED); AscLog.ConsoleLogError(false, msg, ##__VA_ARGS__); AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL)
 
 /*! \brief Logging Level: Detail */
-#define LogDetail(msg, ...) AscLog.SetConsoleColor(CONSOLE_COLOR_CYAN; AscLog.ConsoleLogDetail(false, msg, ##__VA_ARGS__); AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL)
+#define LogDetail(msg, ...) AscLog.SetConsoleColor(CONSOLE_COLOR_CYAN); AscLog.ConsoleLogDetail(false, msg, ##__VA_ARGS__); AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL)
 #define LogNotice(msg, ...) AscLog.SetConsoleColor(CONSOLE_COLOR_GREEN); AscLog.ConsoleLogDetail(false, msg, ##__VA_ARGS__); AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL)
 #define LogWarning(msg, ...) AscLog.SetConsoleColor(CONSOLE_COLOR_WHITE); AscLog.ConsoleLogDetail(false, msg, ##__VA_ARGS__); AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL)
 

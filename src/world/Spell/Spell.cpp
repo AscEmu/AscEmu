@@ -1006,7 +1006,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
     else
         cancastresult = CanCast(false);
 
-    //LogDefault("CanCast result: %u. Refer to SpellFailure.h to work out why." , cancastresult);
+    LogDebugFlag(LF_SPELL, "CanCast result: %u. Refer to SpellFailure.h to work out why." , cancastresult);
 
     ccr = cancastresult;
     if (cancastresult != SPELL_CANCAST_OK)
@@ -1289,7 +1289,7 @@ void Spell::cast(bool check)
 
         m_isCasting = true;
 
-        //LogDefault("CanCastResult: %u" , cancastresult);
+        LogDebugFlag(LF_SPELL, "CanCastResult: %u" , cancastresult);
         if (!m_triggeredSpell)
             AddCooldown();
 

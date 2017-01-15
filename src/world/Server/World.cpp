@@ -819,7 +819,7 @@ void World::SendWorldText(const char* text, WorldSession* self)
 
     if (announce_output)
     {
-        LogDefault("> %s", text);
+        LogDetail("WORLD : SendWorldText %s", text);
     }
 }
 
@@ -1085,12 +1085,12 @@ void World::SaveAllPlayers()
         {
             save_start_time = getMSTime();
             itr->second->SaveToDB(false);
-            LOG_DETAIL("Saved player `%s` (level %u) in %ums.", itr->second->GetName(), itr->second->getLevel(), getMSTime() - save_start_time);
+            LogDetail("Saved player `%s` (level %u) in %ums.", itr->second->GetName(), itr->second->getLevel(), getMSTime() - save_start_time);
             ++count;
         }
     }
     objmgr._playerslock.ReleaseReadLock();
-    LogDefault("Saved %u players.", count);
+    LogDetail("Saved %u players.", count);
 }
 
 WorldSession* World::FindSessionByName(const char* Name) //case insensitive

@@ -146,7 +146,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
 
         if (!f)
         {
-            Log.outError("Could not open %s.", file);
+            LogError("Could not open %s.", file);
             return false;
         }
 
@@ -167,7 +167,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
         // read the file
         if (fread(buf, length, 1, f) != 1)
         {
-            Log.outError("Could not read %s.", file);
+            LogError("Could not read %s.", file);
             // delete buf and close the file before returning
             delete[] buf;
             fclose(f);
@@ -266,7 +266,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
                         // append the setting to the config block
                         if (current_block == "" || current_variable == "")
                         {
-                            Log.outError("Quote without variable.");
+                            LogError("Quote without variable.");
                             return false;
                         }
 
@@ -389,7 +389,7 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
                         }
                         else
                         {
-                            Log.outError("Block without name.");
+                            LogError("Block without name.");
                             return false;
                         }
 
@@ -402,26 +402,26 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
         }
         catch (...)
         {
-            Log.outError("Exception in config parsing.");
+            LogError("Exception in config parsing.");
             return false;
         }
 
         // handle any errors
         if (in_block)
         {
-            Log.outError("Unterminated block.");
+            LogError("Unterminated block.");
             return false;
         }
 
         if (in_multiline_comment)
         {
-            Log.outError("Unterminated comment.");
+            LogError("Unterminated comment.");
             return false;
         }
 
         if (in_multiline_quote)
         {
-            Log.outError("Unterminated quote.");
+            LogError("Unterminated quote.");
             return false;
         }
 

@@ -315,7 +315,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
             (*LootTable)[entry_id] = list;
         }
     }
-    LogDefault("%d loot templates loaded from %s", db_cache.size(), szTableName);
+    LogDetail("%d loot templates loaded from %s", db_cache.size(), szTableName);
     delete result;
 }
 

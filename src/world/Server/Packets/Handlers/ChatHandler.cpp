@@ -203,7 +203,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 
             GetPlayer()->SendMessageToSet(data, true, !sWorld.interfaction_chat);
 
-            LogDefault("[emote] %s: %s", _player->GetName(), msg.c_str());
+            LogDetail("[emote] %s: %s", _player->GetName(), msg.c_str());
             delete data;
 
         }
@@ -303,7 +303,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 
                 }
             }
-            LogDefault("[party] %s: %s", _player->GetName(), msg.c_str());
+            LogDetail("[party] %s: %s", _player->GetName(), msg.c_str());
             delete data;
         }
         break;

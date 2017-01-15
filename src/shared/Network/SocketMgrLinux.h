@@ -50,7 +50,7 @@ class SocketMgr : public Singleton<SocketMgr>
             epoll_fd = epoll_create(SOCKET_HOLDER_SIZE);
             if(epoll_fd == -1)
             {
-                Log.outError("Could not create epoll fd (/dev/epoll).");
+                LogError("Could not create epoll fd (/dev/epoll).");
                 exit(-1);
             }
 

@@ -231,7 +231,7 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     // 2.There is no direct path to that direction
     // 3 Not enough Money
     SendPacket(&data);
-    LOG_DEBUG("WORLD: Sent SMSG_ACTIVATETAXIREPLY");
+    LogDebugFlag(LF_OPCODE, "HandleActivateTaxiOpcode : Sent SMSG_ACTIVATETAXIREPLY");
 
     // 0x001000 seems to make a mount visible
     // 0x002000 seems to make you sit on the mount, and the mount move with you
@@ -252,7 +252,7 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-    LOG_DEBUG("WORLD: Received CMSG_ACTIVATETAXI");
+    LogDebugFlag(LF_OPCODE, "HandleMultipleActivateTaxiOpcode : Received CMSG_ACTIVATETAXI");
 
     uint64 guid;
     uint32 nodecount;
@@ -368,7 +368,7 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     // 2.There is no direct path to that direction
     // 3 Not enough Money
     SendPacket(&data);
-    LOG_DEBUG("WORLD: Sent SMSG_ACTIVATETAXIREPLY");
+    LogDebugFlag(LF_OPCODE, "HandleMultipleActivateTaxiOpcode : Sent SMSG_ACTIVATETAXIREPLY");
 
     // 0x001000 seems to make a mount visible
     // 0x002000 seems to make you sit on the mount, and the mount move with you

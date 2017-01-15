@@ -48,7 +48,7 @@ void Socket::WriteCallback()
 
             if(wsaerror != WSA_IO_PENDING)
             {
-                Log.outError("WSAGetLastError() = %d on socket %u", wsaerror, m_fd);
+                LogError("WSAGetLastError() = %d on socket %u", wsaerror, m_fd);
 
                 m_writeEvent.Unmark();
                 DecSendLock();

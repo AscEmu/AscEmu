@@ -1632,7 +1632,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 entry = sMySQLStore.GetFishingZone(zone);
                 if (entry == nullptr)
                 {
-                    Log.outError("ERROR: Fishing zone information for zone %d not found!", zone);
+                    LogError("ERROR: Fishing zone information for zone %d not found!", zone);
                     fn->EndFishing(true);
                     success = false;
                 }

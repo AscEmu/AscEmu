@@ -344,14 +344,14 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 
     if (!spellInfo)
     {
-        LOG_ERROR("WORLD: unknown spell id %i", spellId);
+        LogError("WORLD: unknown spell id %i", spellId);
         return;
     }
 
     if (!_player->isAlive() && _player->GetShapeShift() != FORM_SPIRITOFREDEMPTION && !(spellInfo->Attributes & ATTRIBUTES_DEAD_CASTABLE)) //They're dead, not in spirit of redemption and the spell can't be cast while dead.
         return;
 
-    LOG_DETAIL("WORLD: got cast spell packet, spellId - %i (%s), data length = %i", spellId, spellInfo->Name.c_str(), recvPacket.size());
+    LogDetail("WORLD: got cast spell packet, spellId - %i (%s), data length = %i", spellId, spellInfo->Name.c_str(), recvPacket.size());
 
     // Cheat Detection only if player and not from an item
     // this could fuck up things but meh it's needed ALOT of the newbs are using WPE now
@@ -360,13 +360,13 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     if (!GetPlayer()->HasSpell(spellId))
     {
         sCheatLog.writefromsession(this, "Cast spell %lu but doesn't have that spell.", spellId);
-        LOG_DETAIL("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->GetName());
+        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->GetName());
         return;
     }
     if (spellInfo->IsPassive())
     {
         sCheatLog.writefromsession(this, "Cast passive spell %lu.", spellId);
-        LOG_DETAIL("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->GetName());
+        LogDetail("WORLD: Spell isn't cast because player \'%s\' is cheating", GetPlayer()->GetName());
         return;
     }
 
@@ -375,7 +375,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         //autoshot 75
         if ((spellInfo->AttributesExB & ATTRIBUTESEXB_ACTIVATE_AUTO_SHOT) /*spellInfo->Attributes == 327698*/)	// auto shot..
         {
-            LogDefault("HandleSpellCast: Auto Shot-type spell cast (id %u, name %s)" , spellInfo->Id , spellInfo->Name);
+            LogDebugFlag(LF_SPELL, "HandleCastSpellOpcode : Auto Shot-type spell cast (id %u, name %s)" , spellInfo->Id , spellInfo->Name);
             Item* weapon = GetPlayer()->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
             if (!weapon)
                 return;
@@ -409,7 +409,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
                 SpellCastTargets targets(recvPacket, GetPlayer()->GetGUID());
                 if (!targets.m_unitTarget)
                 {
-                    LOG_DEBUG("Cancelling auto-shot cast because targets.m_unitTarget is null!");
+                    LogDebugFlag(LF_SPELL, "HandleCastSpellOpcode : Cancelling auto-shot cast because targets.m_unitTarget is null!");
                     return;
                 }
                 SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
@@ -525,10 +525,10 @@ void WorldSession::HandleCancelAutoRepeatSpellOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-        //LogDefault("Received CMSG_CANCEL_AUTO_REPEAT_SPELL message.");
-        //on original we automatically enter combat when creature got close to us
-        //	GetPlayer()->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
-        GetPlayer()->m_onAutoShot = false;
+    LogDebugFlag(LF_OPCODE, "Received CMSG_CANCEL_AUTO_REPEAT_SPELL message.");
+    //on original we automatically enter combat when creature got close to us
+    //	GetPlayer()->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
+    GetPlayer()->m_onAutoShot = false;
 }
 
 void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)

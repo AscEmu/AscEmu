@@ -153,7 +153,7 @@ void WeatherMgr::LoadFromDB()
         wi->_GenerateWeather();
     }
     while (result->NextRow());
-    Log.Notice("WeatherMgr", "Loaded weather information for %u zones.", result->GetRowCount());
+    LogDetail("WeatherMgr : Loaded weather information for %u zones.", result->GetRowCount());
 
     delete result;
 }

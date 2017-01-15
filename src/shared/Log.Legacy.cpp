@@ -62,57 +62,6 @@ void oLog::outFileSilent(FILE* file, char* msg, const char* source)
     }
 }
 
-
-void oLog::outError(const char* err, ...)
-{
-    if(m_errorFile == NULL)
-        return;
-
-    char buf[32768];
-    va_list ap;
-
-    va_start(ap, err);
-    vsnprintf(buf, 32768, err, ap);
-    va_end(ap);
-    SetConsoleColor(CONSOLE_COLOR_RED);
-    std::cout << buf << std::endl;
-    SetConsoleColor(CONSOLE_COLOR_NORMAL);
-    outFile(m_errorFile, buf);
-}
-
-/// Writes into the error log without giving console output. Used for the startup banner.
-void oLog::outErrorSilent(const char* err, ...)
-{
-    if(m_errorFile == NULL)
-        return;
-
-    char buf[32768];
-    va_list ap;
-
-    va_start(ap, err);
-    vsnprintf(buf, 32768, err, ap);
-    va_end(ap);
-
-    outFileSilent(m_errorFile, buf); // This uses a function that won't give console output.
-}
-
-void oLog::outBasic(const char* str, ...)
-{
-    if(m_normalFile == NULL)
-        return;
-
-    char buf[32768];
-    va_list ap;
-
-    va_start(ap, str);
-    vsnprintf(buf, 32768, str, ap);
-    va_end(ap);
-    SetConsoleColor(CONSOLE_COLOR_CYAN);
-    std::cout << buf << std::endl;
-    SetConsoleColor(CONSOLE_COLOR_NORMAL);
-    outFile(m_normalFile, buf);
-}
-
 void oLog::outDetail(const char* str, ...)
 {
     if(m_fileLogLevel < LOG_LEVEL_DETAIL || m_normalFile == NULL)
@@ -334,7 +283,7 @@ void oLog::LargeErrorMessage(const char* source, ...)
 
     va_end(ap);
 
-    outError("*********************************************************************");
+    /*outError("*********************************************************************");
     outError("*                        MAJOR ERROR/WARNING                        *");
     outError("*                        ===================                        *");
 
@@ -353,7 +302,7 @@ void oLog::LargeErrorMessage(const char* source, ...)
         outError(sstext.str().c_str());
     }
 
-    outError("*********************************************************************");
+    outError("*********************************************************************");*/
 }
 
 void oLog::Close()

@@ -50,14 +50,14 @@ class ListenSocket : public ListenSocketBase
             int ret = ::bind(m_socket, (const sockaddr*)&m_address, sizeof(m_address));
             if (ret != 0)
             {
-                Log.outError("Bind unsuccessful on port %u.", (unsigned int)Port);
+                LogError("Bind unsuccessful on port %u.", (unsigned int)Port);
                 return;
             }
 
             ret = listen(m_socket, 5);
             if (ret != 0)
             {
-                Log.outError("Unable to listen on port %u.", (unsigned int)Port);
+                LogError("Unable to listen on port %u.", (unsigned int)Port);
                 return;
             }
             len = sizeof(sockaddr_in);
