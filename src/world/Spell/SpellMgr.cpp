@@ -167,7 +167,7 @@ void SpellFactoryMgr::LoadSpellAreas()
 
             if (!ok)
             {
-                Log.Error("SpellArea", "Spell %u listed in `spell_area` already listed with similar requirements.", spell);
+                LOG_ERROR("Spell %u listed in `spell_area` already listed with similar requirements.", spell);
                 continue;
             }
         }
@@ -182,7 +182,7 @@ void SpellFactoryMgr::LoadSpellAreas()
 
         if (spellArea.questStart && !sMySQLStore.GetQuestProperties(spellArea.questStart))
         {
-            Log.Error("SpellArea", "Spell %u listed in `spell_area` have wrong start quest (%u) requirement.", spell, spellArea.questStart);
+            LOG_ERROR("Spell %u listed in `spell_area` have wrong start quest (%u) requirement.", spell, spellArea.questStart);
             continue;
         }
 
@@ -190,13 +190,13 @@ void SpellFactoryMgr::LoadSpellAreas()
         {
             if (!sMySQLStore.GetQuestProperties(spellArea.questEnd))
             {
-                Log.Error("SpellArea", "Spell %u listed in `spell_area` have wrong end quest (%u) requirement.", spell, spellArea.questEnd);
+                LOG_ERROR("Spell %u listed in `spell_area` have wrong end quest (%u) requirement.", spell, spellArea.questEnd);
                 continue;
             }
 
             if (spellArea.questEnd == spellArea.questStart && !spellArea.questStartCanActive)
             {
-                Log.Error("SpellArea", "Spell %u listed in `spell_area` have quest (%u) requirement for start and end in same time.", spell, spellArea.questEnd);
+                LOG_ERROR("Spell %u listed in `spell_area` have quest (%u) requirement for start and end in same time.", spell, spellArea.questEnd);
                 continue;
             }
         }
@@ -206,7 +206,7 @@ void SpellFactoryMgr::LoadSpellAreas()
             SpellInfo const* spellInfo = sSpellCustomizations.GetSpellInfo(abs(spellArea.auraSpell));
             if (!spellInfo)
             {
-                Log.Error("SpellArea", "Spell %u listed in `spell_area` have wrong aura spell (%u) requirement.", spell, abs(spellArea.auraSpell));
+                LOG_ERROR("Spell %u listed in `spell_area` have wrong aura spell (%u) requirement.", spell, abs(spellArea.auraSpell));
                 continue;
             }
 
@@ -256,13 +256,13 @@ void SpellFactoryMgr::LoadSpellAreas()
 
         if (spellArea.raceMask && (spellArea.raceMask & RACEMASK_ALL_PLAYABLE) == 0)
         {
-            Log.Error("SpellArea", "Spell %u listed in `spell_area` have wrong race mask (%u) requirement.", spell, spellArea.raceMask);
+            LOG_ERROR("Spell %u listed in `spell_area` have wrong race mask (%u) requirement.", spell, spellArea.raceMask);
             continue;
         }
 
         if (spellArea.gender != GENDER_NONE && spellArea.gender != GENDER_FEMALE && spellArea.gender != GENDER_MALE)
         {
-            Log.Error("SpellArea", "Spell %u listed in `spell_area` have wrong gender (%u) requirement.", spell, spellArea.gender);
+            LOG_ERROR("Spell %u listed in `spell_area` have wrong gender (%u) requirement.", spell, spellArea.gender);
             continue;
         }
 

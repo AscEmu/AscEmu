@@ -78,7 +78,7 @@ void LogonServer::Run(int argc, char** argv)
 #ifdef COMMANDLINE_OPT_ENABLE
     if (do_version)
     {
-        Log.Close();
+        AscLog.~AscEmuLog();
         return;
     }
 
@@ -90,7 +90,7 @@ void LogonServer::Run(int argc, char** argv)
         else
             LOG_BASIC("  Encountered one or more errors.");
 
-        Log.Close();
+        AscLog.~AscEmuLog();
         return;
     }
 
@@ -104,7 +104,7 @@ void LogonServer::Run(int argc, char** argv)
     Log.Success("Config", "Loading Config Files...");
     if (!LoadLogonConfiguration())
     {
-        Log.Close();
+        AscLog.~AscEmuLog();
         return;
     }
 
@@ -116,7 +116,7 @@ void LogonServer::Run(int argc, char** argv)
 
     if (!StartDb())
     {
-        Log.Close();
+        AscLog.~AscEmuLog();
         return;
     }
 
@@ -247,7 +247,7 @@ void LogonServer::Run(int argc, char** argv)
     delete realmlistSocket;
     delete logonServerSocket;
     LOG_BASIC("Shutdown complete.");
-    Log.Close();
+    AscLog.~AscEmuLog();
 }
 
 void OnCrash(bool Terminate)

@@ -34,7 +34,7 @@ void GameEventMgr::StartArenaEvents()
         auto gameEvent = GetEventById(i);
         if (gameEvent == nullptr)
         {
-            Log.Error("GameEventMgr", "Missing arena event (id: %u)", i);
+            LOG_ERROR("Missing arena event (id: %u)", i);
             continue;
         }
 
@@ -62,7 +62,7 @@ void GameEventMgr::LoadFromDB()
         if (!result)
         {
             //mGameEvent.clear();
-            Log.Error("GameEventMgr", "Query failed: %s", loadAllEventsQuery);
+            LOG_ERROR("Query failed: %s", loadAllEventsQuery);
             return;
         }
 
@@ -107,7 +107,7 @@ void GameEventMgr::LoadFromDB()
 
         if (!success)
         {
-            Log.Error("GameEventMgr", "Query failed: %s", loadEventSaveQuery);
+            LOG_ERROR("Query failed: %s", loadEventSaveQuery);
             return;
         }
 
@@ -122,7 +122,7 @@ void GameEventMgr::LoadFromDB()
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
                 {
-                    Log.Error("GameEventMgr", "Could not find event for event_save entry %u", event_id);
+                    LOG_ERROR("Could not find event for event_save entry %u", event_id);
                     continue;
                 }
 
@@ -150,7 +150,7 @@ void GameEventMgr::LoadFromDB()
         QueryResult* result = WorldDatabase.Query(&success, loadEventCreatureSpawnsQuery);
         if (!success)
         {
-            Log.Error("GameEventMgr", "Query failed: %s", loadEventCreatureSpawnsQuery);
+            LOG_ERROR("Query failed: %s", loadEventCreatureSpawnsQuery);
             return;
         }
 
@@ -166,7 +166,7 @@ void GameEventMgr::LoadFromDB()
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
                 {
-                    Log.Error("GameEventMgr", "Could not find event for event_creature_spawns entry %u", event_id);
+                    LOG_ERROR("Could not find event for event_creature_spawns entry %u", event_id);
                     continue;
                 }
 
@@ -177,7 +177,7 @@ void GameEventMgr::LoadFromDB()
                 auto creature_properties = sMySQLStore.GetCreatureProperties(dbResult.entry);
                 if (creature_properties == nullptr)
                 {
-                    Log.Error("GameEventMgr", "Could not create CreatureSpawn for invalid entry %u (missing in table creature_properties)", dbResult.entry);
+                    LOG_ERROR("Could not create CreatureSpawn for invalid entry %u (missing in table creature_properties)", dbResult.entry);
                     continue;
                 }
                 dbResult.map_id = field[3].GetUInt16();
@@ -229,7 +229,7 @@ void GameEventMgr::LoadFromDB()
         QueryResult* result = WorldDatabase.Query(&success, loadEventGameobjectSpawnsQuery);
         if (!success)
         {
-            Log.Error("GameEventMgr", "Query failed: %s", loadEventGameobjectSpawnsQuery);
+            LOG_ERROR("Query failed: %s", loadEventGameobjectSpawnsQuery);
             return;
         }
 
@@ -244,7 +244,7 @@ void GameEventMgr::LoadFromDB()
                 auto gameEvent = GetEventById(event_id);
                 if (gameEvent == nullptr)
                 {
-                    Log.Error("GameEventMgr", "Could not find event for event_gameobject_spawns entry %u", event_id);
+                    LOG_ERROR("ould not find event for event_gameobject_spawns entry %u", event_id);
                     continue;
                 }
 
@@ -255,7 +255,7 @@ void GameEventMgr::LoadFromDB()
                 auto gameobject_info = sMySQLStore.GetGameObjectProperties(dbResult.entry);
                 if (gameobject_info == nullptr)
                 {
-                    Log.Error("GameEventMgr", "Could not create GameobjectSpawn for invalid entry %u (missing in table gameobject_properties)", dbResult.entry);
+                    LOG_ERROR("Could not create GameobjectSpawn for invalid entry %u (missing in table gameobject_properties)", dbResult.entry);
                     continue;
                 }
                 dbResult.map_id = field[3].GetUInt32();

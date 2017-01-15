@@ -17,7 +17,7 @@ void GameEvent::CreateNPCs()
         CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(npc.entry);
         if (cp == nullptr)
         {
-            Log.Error("GameEvent", "CreateNPCs: try to create invalid creature %u!", npc.entry);
+            LOG_ERROR("try to create invalid creature %u!", npc.entry);
             continue;
         }
 

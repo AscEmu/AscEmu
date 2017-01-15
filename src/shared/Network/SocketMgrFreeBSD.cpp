@@ -23,7 +23,7 @@ void SocketMgr::AddSocket(Socket* s)
 
     if(kevent(kq, &ev, 1, 0, 0, NULL) < 0)
     {
-        Log.Error("kqueue", "Could not add initial kevent for fd %u!", s->GetFd());
+        LOG_ERROR("Could not add initial kevent for fd %u!", s->GetFd());
         return;
     }
 }
@@ -42,7 +42,7 @@ void SocketMgr::AddListenSocket(ListenSocketBase* s)
 
     if(kevent(kq, &ev, 1, 0, 0, NULL) < 0)
     {
-        Log.Error("kqueue", "Could not add initial kevent for fd %u!", s->GetFd());
+        LOG_ERROR("Could not add initial kevent for fd %u!", s->GetFd());
         return;
     }
 }

@@ -61,7 +61,7 @@ void InstanceMgr::Load(TaskList* l)
 
             if (result->Fetch()[0].GetUInt32() >= NUM_MAPS)
             {
-                Log.Error("InstanceMgr", "One or more of your creature_spawns rows specifies an invalid map: %u", result->Fetch()[0].GetUInt32());
+                LOG_ERROR("One or more of your creature_spawns rows specifies an invalid map: %u", result->Fetch()[0].GetUInt32());
                 continue;
             }
 
@@ -80,7 +80,7 @@ void InstanceMgr::Load(TaskList* l)
     {
         if (itr->second.mapid >= NUM_MAPS)
         {
-            Log.Error("InstanceMgr", "One or more of your worldmap_info rows specifies an invalid map: %u", itr->second.mapid);
+            LOG_ERROR("One or more of your worldmap_info rows specifies an invalid map: %u", itr->second.mapid);
             continue;
         }
 

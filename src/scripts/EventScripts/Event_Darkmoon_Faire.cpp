@@ -695,7 +695,7 @@ class Sayge_Gossip : public GossipScript
                         auto result = plr->GetItemInterface()->SafeAddItem(item, slotresult.ContainerSlot, slotresult.Slot);
                         if (!result)
                         {
-                            Log.Error("Event_Darkmoon_Faire", "Error while adding item %u to player %s", item->GetEntry(), plr->GetNameString());
+                            LOG_ERROR("Error while adding item %u to player %s", item->GetEntry(), plr->GetNameString());
                             item->DeleteMe();
                             return;
                         }

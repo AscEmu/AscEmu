@@ -258,7 +258,7 @@ void SpellCustomizations::LoadSpellRanks()
             }
             else
             {
-                Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellRanks : your spell_ranks table includes an invalid spell %u.", spell_id);
+                LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellRanks : your spell_ranks table includes an invalid spell %u.", spell_id);
                 continue;
             }
 
@@ -272,7 +272,7 @@ void SpellCustomizations::LoadSpellRanks()
     }
     else
     {
-        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellRanks : Your spell_ranks table is empty!");
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellRanks : Your spell_ranks table is empty!");
     }
 
 }
@@ -303,7 +303,7 @@ void SpellCustomizations::LoadSpellCustomAssign()
             }
             else
             {
-                Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellCustomAssign", "your spell_custom_assign table includes an invalid spell %u.", spell_id);
+                LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellCustomAssign", "your spell_custom_assign table includes an invalid spell %u.", spell_id);
                 continue;
             }
 
@@ -317,7 +317,7 @@ void SpellCustomizations::LoadSpellCustomAssign()
     }
     else
     {
-        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellCustomAssign", "Your spell_custom_assign table is empty!");
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellCustomAssign", "Your spell_custom_assign table is empty!");
     }
 }
 
@@ -340,7 +340,7 @@ void SpellCustomizations::LoadSpellCustomCoefFlags()
             }
             else
             {
-                Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellCustomCoefFlags : your spell_coef_flags table includes an invalid spell %u.", spell_id);
+                LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellCustomCoefFlags : your spell_coef_flags table includes an invalid spell %u.", spell_id);
                 continue;
             }
 
@@ -350,11 +350,11 @@ void SpellCustomizations::LoadSpellCustomCoefFlags()
 
     if (spell_custom_coef_flags_count > 0)
     {
-        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellCustomCoefFlags : Loaded %u attributes from spell_coef_flags table", spell_custom_coef_flags_count);
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellCustomCoefFlags : Loaded %u attributes from spell_coef_flags table", spell_custom_coef_flags_count);
     }
     else
     {
-        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellCustomCoefFlags : Your spell_coef_flags table is empty!");
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellCustomCoefFlags : Your spell_coef_flags table is empty!");
     }
 }
 
@@ -383,7 +383,7 @@ void SpellCustomizations::LoadSpellProcs()
                     spell_entry->custom_ProcOnNameHash[x] = name_hash;
                 }
                 else
-                    Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellProcs : Wrong ProcOnNameHash for Spell: %u!", spell_id);
+                    LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellProcs : Wrong ProcOnNameHash for Spell: %u!", spell_id);
 
                 if (f[2].GetInt32() >= 0)
                     spell_entry->procFlags = f[2].GetUInt32();
@@ -415,7 +415,7 @@ void SpellCustomizations::LoadSpellProcs()
             }
             else
             {
-                Log.Error("SpellCustomizations::LoadSpellProcs()", "Invalid spellID %u in table spell_proc", spell_id);
+                LOG_ERROR("Invalid spellID %u in table spell_proc", spell_id);
             }
         } while (result->NextRow());
         delete result;
@@ -423,11 +423,11 @@ void SpellCustomizations::LoadSpellProcs()
 
     if (spell_procs_count > 0)
     {
-        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellProcs : Loaded %u proc definitions from spell_proc table", spell_procs_count);
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellProcs : Loaded %u proc definitions from spell_proc table", spell_procs_count);
     }
     else
     {
-        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellProcs : Your spell_proc table is empty!");
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellProcs : Your spell_proc table is empty!");
     }
 }
 
@@ -446,7 +446,7 @@ void SpellCustomizations::SetEffectAmplitude(SpellInfo* spell_entry)
             {
                 spell_entry->EffectAmplitude[y] = 1000;
 
-                Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetEffectAmplitude : EffectAmplitude applied Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
+                LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetEffectAmplitude : EffectAmplitude applied Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
             }
         }
     }
@@ -475,7 +475,7 @@ void SpellCustomizations::SetAuraFactoryFunc(SpellInfo* spell_entry)
 
     if (spell_aura_factory_functions_loaded)
     {
-        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetAuraFactoryFunc : AuraFactoryFunc definitions applied to Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetAuraFactoryFunc : AuraFactoryFunc definitions applied to Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
     }
 }
 
@@ -505,7 +505,7 @@ void SpellCustomizations::SetMeleeSpellBool(SpellInfo* spell_entry)
 
     if (spell_entry->custom_is_melee_spell)
     {
-        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetMeleeSpellBool : custom_is_melee_spell = true for Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetMeleeSpellBool : custom_is_melee_spell = true for Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
     }
 }
 
@@ -521,7 +521,7 @@ void SpellCustomizations::SetRangedSpellBool(SpellInfo* spell_entry)
 
     if (spell_entry->custom_is_ranged_spell)
     {
-        Log.DebugFlag(LF_DB_TABLES, "SpellCustomizations::SetRangedSpellBool : custom_is_ranged_spell = true for Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
+        LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::SetRangedSpellBool : custom_is_ranged_spell = true for Spell - %s (%u)", spell_entry->Name.c_str(), spell_entry->Id);
     }
 }
 

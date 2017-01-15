@@ -243,7 +243,7 @@ class WaterBarrel : public GameObjectAIScript
                     auto result = pPlayer->GetItemInterface()->SafeAddItem(itm, slotresult.ContainerSlot, slotresult.Slot);
                     if (!result)
                     {
-                        Log.Error("Event_Hallows_End", "Error while adding item %u to player %s", itm->GetEntry(), pPlayer->GetNameString());
+                        LOG_ERROR("Error while adding item %u to player %s", itm->GetEntry(), pPlayer->GetNameString());
                         itm->DeleteMe();
                     }
                 }

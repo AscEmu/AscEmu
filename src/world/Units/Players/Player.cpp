@@ -2788,9 +2788,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     QueryResult* result = results[0].result;
     if (!result)
     {
-        Log.Error("Player::LoadFromDB",
-                  "Player login query failed! guid = %u",
-                  GetLowGUID());
+        LOG_ERROR("Player login query failed! guid = %u", GetLowGUID());
         RemovePendingPlayer();
         return;
     }
@@ -2799,9 +2797,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     if (result->GetFieldCount() != fieldcount)
     {
-        Log.Error("Player::LoadFromDB",
-                  "Expected %u fields from the database, "
-                  "but received %u!  You may need to update your character database.", fieldcount, uint32(result->GetFieldCount()));
+        LOG_ERROR("Expected %u fields from the database, but received %u!  You may need to update your character database.", fieldcount, uint32(result->GetFieldCount()));
         RemovePendingPlayer();
         return;
     }
@@ -7827,7 +7823,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
             auto chat_channels = sChatChannelsStore.LookupEntry(chn->m_id);
             if (!chat_channels)
             {
-                Log.Error("ChannelMgr", "Invalid channel entry %u for %s", chn->m_id, chn->m_name.c_str());
+                LOG_ERROR("Invalid channel entry %u for %s", chn->m_id, chn->m_name.c_str());
                 return;
             }
 
@@ -7835,7 +7831,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
             Channel* newChannel = channelmgr.GetCreateChannel(updatedName, NULL, chn->m_id);
             if (newChannel == NULL)
             {
-                Log.Error("ChannelMgr", "Could not create channel %s!", updatedName);
+                LOG_ERROR("Could not create channel %s!", updatedName);
                 return; // whoops?
             }
 

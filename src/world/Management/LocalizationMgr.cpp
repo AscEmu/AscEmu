@@ -673,7 +673,7 @@ void LocalizationMgr::Reload(bool first)
         uint32 dest_language_id = GetLanguageId(itr->first);
         if (source_language_id == 0 || dest_language_id == 0)
         {
-            Log.Error("LocalizationMgr", "Invalid locale conversion string specified: %u->%u (%s->%s)", source_language_id, dest_language_id, itr->second.c_str(), itr->first.c_str());
+            LOG_ERROR("Invalid locale conversion string specified: %u->%u (%s->%s)", source_language_id, dest_language_id, itr->second.c_str(), itr->first.c_str());
             continue;
         }
 

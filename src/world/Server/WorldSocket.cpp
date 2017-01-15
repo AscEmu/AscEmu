@@ -631,7 +631,7 @@ void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 dir
             case MSG_MOVE_HEARTBEAT:
                 break;
             default:
-                Log.DebugFlag(LF_OPCODE, "[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
+                LogDebugFlag(LF_OPCODE, "[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
                               LookupName(opcode, g_worldOpcodeNames), opcode, len);
         }
 }

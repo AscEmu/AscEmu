@@ -110,26 +110,6 @@ void oLog::InitalizeLogFiles(std::string file_prefix)
         outErrorSilent("=================[%s]=================", current_date_time.c_str());*/
 }
 
-void oLog::DebugFlag(LogFlags log_flags, const char* format, ...)
-{
-    if (m_fileLogLevel < LOG_LEVEL_DEBUG || m_errorFile == NULL)
-        return;
-
-    if (!(mDebugFlags & log_flags))
-        return;
-
-    char buf[32768];
-    va_list ap;
-
-    va_start(ap, format);
-    vsnprintf(buf, 32768, format, ap);
-    va_end(ap);
-    SetConsoleColor(AELog::GetColorForDebugFlag(log_flags));
-    std::cout << buf << std::endl;
-    SetConsoleColor(CONSOLE_COLOR_NORMAL);
-    outFile(m_errorFile, buf);
-}
-
 #ifndef _WIN32
 void oLog::SetConsoleColor(const char* color)
 {

@@ -317,7 +317,7 @@ namespace VMAP
             else
             {
                 success = false;
-                Log.Error("StaticMapTree", "InitMap() : could not acquire WorldModel pointer for '%s'", spawn.name.c_str());
+                LOG_ERROR("could not acquire WorldModel pointer for '%s'", spawn.name.c_str());
             }
         }
 
@@ -352,7 +352,7 @@ namespace VMAP
         }
         if (!iTreeValues)
         {
-            Log.Error("StaticMapTree", "LoadMapTile() : tree has not been initialized [%u, %u]", tileX, tileY);
+            LOG_ERROR("tree has not been initialized [%u, %u]", tileX, tileY);
             return false;
         }
         bool result = true;
@@ -378,7 +378,7 @@ namespace VMAP
                     // acquire model instance
                     WorldModel* model = vm->acquireModelInstance(iBasePath, spawn.name);
                     if (!model)
-                        Log.Error("StaticMapTree", "LoadMapTile() : could not acquire WorldModel pointer [%u, %u]", tileX, tileY);
+                        LOG_ERROR("could not acquire WorldModel pointer [%u, %u]", tileX, tileY);
 
                     // update tree
                     uint32 referencedVal;
@@ -389,7 +389,7 @@ namespace VMAP
                         {
                             if (referencedVal > iNTreeValues)
                             {
-                                Log.Error("StaticMapTree", "LoadMapTile() : invalid tree element (%u/%u) referenced in tile %s", referencedVal, iNTreeValues, tilefile.c_str());
+                                LOG_ERROR("invalid tree element (%u/%u) referenced in tile %s", referencedVal, iNTreeValues, tilefile.c_str());
                                 continue;
                             }
 
@@ -427,7 +427,7 @@ namespace VMAP
         loadedTileMap::iterator tile = iLoadedTiles.find(tileID);
         if (tile == iLoadedTiles.end())
         {
-            Log.Error("StaticMapTree", "UnloadMapTile() : trying to unload non-loaded tile - Map:%u X:%u Y:%u", iMapID, tileX, tileY);
+            LOG_ERROR("trying to unload non-loaded tile - Map:%u X:%u Y:%u", iMapID, tileX, tileY);
             return;
         }
         if (tile->second) // file associated with tile
@@ -461,7 +461,7 @@ namespace VMAP
                         else
                         {
                             if (!iLoadedSpawns.count(referencedNode))
-                                Log.Error("StaticMapTree", "UnloadMapTile() : trying to unload non-referenced model '%s' (ID:%u)", spawn.name.c_str(), spawn.ID);
+                                LOG_ERROR("trying to unload non-referenced model '%s' (ID:%u)", spawn.name.c_str(), spawn.ID);
                             else if (--iLoadedSpawns[referencedNode] == 0)
                             {
                                 iTreeValues[referencedNode].setUnloaded();

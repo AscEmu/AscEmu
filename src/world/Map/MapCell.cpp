@@ -264,7 +264,7 @@ void MapCell::LoadObjects(CellSpawns* sp)
             else
             {
                 CreatureSpawn* spawn = (*i);
-                Log.Error("MapCell", "Failed spawning Creature %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
+                LOG_ERROR("Failed spawning Creature %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
                 delete c;       //missing proto or something of that kind
             }
         }
@@ -284,7 +284,7 @@ void MapCell::LoadObjects(CellSpawns* sp)
             else
             {
                 GameobjectSpawn* spawn = (*i);
-                Log.Error("MapCell", "Failed spawning GameObject %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
+                LOG_ERROR("Failed spawning GameObject %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
                 delete go;          //missing proto or something of that kind
             }
         }

@@ -178,7 +178,7 @@ void MySQLDataStore::LoadItemPropertiesTable()
 
         if (basic_field_count != item_result->GetFieldCount())
         {
-            Log.Error("MySQLDataLoads", "Additional item_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), item_result->GetFieldCount(), basic_field_count);
+            LOG_ERROR("Additional item_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), item_result->GetFieldCount(), basic_field_count);
             continue;
         }
 
@@ -268,7 +268,7 @@ void MySQLDataStore::LoadItemPropertiesTable()
                 ItemPage const* item_page = GetItemPage(page_id);
                 if (item_page == nullptr)
                 {
-                    Log.Error("MySQLDataLoads", "Table `%s` entry: %u includes invalid pageId %u! pageId is set to 0.", table_name.c_str(), entry, page_id);
+                    LOG_ERROR("Table `%s` entry: %u includes invalid pageId %u! pageId is set to 0.", table_name.c_str(), entry, page_id);
                     itemProperties.PageId = 0;
                 }
                 else
@@ -504,7 +504,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
 
         if (basic_field_count != creature_properties_result->GetFieldCount())
         {
-            Log.Error("MySQLDataLoads", "Additional creature_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), creature_properties_result->GetFieldCount());
+            LOG_ERROR("Additional creature_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), creature_properties_result->GetFieldCount());
             delete creature_properties_result;
             continue;
         }
@@ -548,7 +548,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
             }
             else
             {
-                Log.Error("MySQLDataLoads", "Table `%s` MinHealth = 0 is not a valid value! Default set to 1 for entry: %u.", table_name.c_str(), entry);
+                LOG_ERROR("Table `%s` MinHealth = 0 is not a valid value! Default set to 1 for entry: %u.", table_name.c_str(), entry);
                 creatureProperties.MinHealth = 1;
             }
 
@@ -558,7 +558,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
             }
             else
             {
-                Log.Error("MySQLDataLoads", "Table `%s` MaxHealth = 0 is not a valid value! Default set to 1 for entry: %u.", table_name.c_str(), entry);
+                LOG_ERROR("Table `%s` MaxHealth = 0 is not a valid value! Default set to 1 for entry: %u.", table_name.c_str(), entry);
                 creatureProperties.MaxHealth = 1;
             }
 
@@ -573,7 +573,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
             }
             else
             {
-                Log.Error("MySQLDataLoads", "Table `%s` AttackType: %u is not a valid value! Default set to 0 for entry: %u.", table_name.c_str(), fields[10].GetUInt32(), entry);
+                LOG_ERROR("Table `%s` AttackType: %u is not a valid value! Default set to 0 for entry: %u.", table_name.c_str(), fields[10].GetUInt32(), entry);
                 creatureProperties.AttackType = SCHOOL_NORMAL;
             }
 
@@ -610,7 +610,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
                     if (sp == nullptr)
                     {
                         uint8 spell_number = i;
-                        Log.Error("MySQLDataStore", "spell %u in table %s column spell%u for creature entry: %u is not a valid spell!", creatureProperties.AISpells[i], table_name.c_str(), spell_number + 1, entry);
+                        LOG_ERROR("spell %u in table %s column spell%u for creature entry: %u is not a valid spell!", creatureProperties.AISpells[i], table_name.c_str(), spell_number + 1, entry);
                         continue;
                     }
                     else
@@ -747,7 +747,7 @@ void MySQLDataStore::LoadGameObjectPropertiesTable()
 
         if (basic_field_count != gameobject_properties_result->GetFieldCount())
         {
-            Log.Error("MySQLDataLoads", "Additional gameobject_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), gameobject_properties_result->GetFieldCount());
+            LOG_ERROR("Additional gameobject_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), gameobject_properties_result->GetFieldCount());
             delete gameobject_properties_result;
             continue;
         }
@@ -807,7 +807,7 @@ void MySQLDataStore::LoadGameObjectPropertiesTable()
                     auto quest_item_proto = GetItemProperties(quest_item_entry);
                     if (quest_item_proto == nullptr)
                     {
-                        Log.Error("MySQLDataLoads", "Table `%s` questitem%u : %u is not a valid item! Default set to 0 for entry: %u.", table_name.c_str(), i, quest_item_entry, entry);
+                        LOG_ERROR("Table `%s` questitem%u : %u is not a valid item! Default set to 0 for entry: %u.", table_name.c_str(), i, quest_item_entry, entry);
                         gameobjecProperties.QuestItems[i] = 0;
                     }
                     else
@@ -904,7 +904,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
 
         if (basic_field_count != quest_result->GetFieldCount())
         {
-            Log.Error("MySQLDataLoads", "Additional quest_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), quest_result->GetFieldCount());
+            LOG_ERROR("Additional quest_properties table `%s` has %u columns, but needs %u columns! Skipped!", table_name.c_str(), quest_result->GetFieldCount());
             delete quest_result;
             continue;
         }
@@ -1093,7 +1093,7 @@ void MySQLDataStore::LoadGameObjectQuestItemBindingTable()
             GameObjectProperties const* gameobject_properties = sMySQLStore.GetGameObjectProperties(entry);
             if (gameobject_properties == nullptr)
             {
-                Log.Error("MySQLDataLoads", "Table `gameobject_quest_item_binding` includes data for invalid gameobject_properties entry: %u. Skipped!", entry);
+                LOG_ERROR("Table `gameobject_quest_item_binding` includes data for invalid gameobject_properties entry: %u. Skipped!", entry);
                 continue;
             }
 
@@ -1101,7 +1101,7 @@ void MySQLDataStore::LoadGameObjectQuestItemBindingTable()
             QuestProperties const* quest = sMySQLStore.GetQuestProperties(quest_entry);
             if (quest == nullptr)
             {
-                Log.Error("MySQLDataLoads", "Table `gameobject_quest_item_binding` includes data for invalid quest_properties : %u. Skipped!", quest_entry);
+                LOG_ERROR("Table `gameobject_quest_item_binding` includes data for invalid quest_properties : %u. Skipped!", quest_entry);
                 continue;
             }
             else
@@ -1137,7 +1137,7 @@ void MySQLDataStore::LoadGameObjectQuestPickupBindingTable()
             GameObjectProperties const* gameobject_properties = sMySQLStore.GetGameObjectProperties(entry);
             if (gameobject_properties == nullptr)
             {
-                Log.Error("MySQLDataLoads", "Table `gameobject_quest_pickup_binding` includes data for invalid gameobject_properties entry: %u. Skipped!", entry);
+                LOG_ERROR("Table `gameobject_quest_pickup_binding` includes data for invalid gameobject_properties entry: %u. Skipped!", entry);
                 continue;
             }
 
@@ -1145,7 +1145,7 @@ void MySQLDataStore::LoadGameObjectQuestPickupBindingTable()
             QuestProperties const* quest = sMySQLStore.GetQuestProperties(quest_entry);
             if (quest == nullptr)
             {
-                Log.Error("MySQLDataLoads", "Table `gameobject_quest_pickup_binding` includes data for invalid quest_properties : %u. Skipped!", quest_entry);
+                LOG_ERROR("Table `gameobject_quest_pickup_binding` includes data for invalid quest_properties : %u. Skipped!", quest_entry);
                 continue;
             }
             else
@@ -2187,7 +2187,7 @@ void MySQLDataStore::LoadCreatureInitialEquipmentTable()
         CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(entry);
         if (creature_properties == nullptr)
         {
-            Log.Error("MySQLDataLoads", "Invalid creature_entry %u in table creature_initial_equip!", entry);
+            LOG_ERROR("Invalid creature_entry %u in table creature_initial_equip!", entry);
             continue;
         }
 
@@ -2298,7 +2298,7 @@ void MySQLDataStore::LoadPlayerCreateInfoSkillsTable()
         auto player_skill = sSkillLineStore.LookupEntry(skill_id);
         if (player_skill == nullptr)
         {
-            Log.Error("MySQLDataLoads", "Table `playercreateinfo_skills` includes invalid skill id %u for index %u", skill_id, player_info_index);
+            LOG_ERROR("Table `playercreateinfo_skills` includes invalid skill id %u for index %u", skill_id, player_info_index);
             continue;
         }
 
@@ -2346,7 +2346,7 @@ void MySQLDataStore::LoadPlayerCreateInfoSpellsTable()
         auto player_spell = sSpellStore.LookupEntry(spell_id);
         if (player_spell == nullptr)
         {
-            Log.Error("MySQLDataLoads", "Table `playercreateinfo_spells` includes invalid spell %u for index %u", spell_id, player_info_index);
+            LOG_ERROR("Table `playercreateinfo_spells` includes invalid spell %u for index %u", spell_id, player_info_index);
             continue;
         }
 
@@ -2389,7 +2389,7 @@ void MySQLDataStore::LoadPlayerCreateInfoItemsTable()
         auto player_item = sMySQLStore.GetItemProperties(item_id);
         if (player_item == nullptr)
         {
-            Log.Error("MySQLDataLoads", "Table `playercreateinfo_items` includes invalid item %u for index %u", item_id, player_info_index);
+            LOG_ERROR("Table `playercreateinfo_items` includes invalid item %u for index %u", item_id, player_info_index);
             continue;
         }
 
@@ -2486,7 +2486,7 @@ void MySQLDataStore::LoadPlayerXpToLevelTable()
 
         if (current_level >= sWorld.m_levelCap)
         {
-            Log.Error("MySQLDataStore", "Table `player_xp_for_level` includes invalid xp definitions for level %u which is higher than the defined levelcap in your config file! <skipped>", current_level);
+            LOG_ERROR("Table `player_xp_for_level` includes invalid xp definitions for level %u which is higher than the defined levelcap in your config file! <skipped>", current_level);
             continue;
         }
 
@@ -2501,7 +2501,7 @@ void MySQLDataStore::LoadPlayerXpToLevelTable()
     Log.Success("MySQLDataLoads", "Loaded %u rows from `player_xp_for_level` table in %u ms!", player_xp_to_level_count, getMSTime() - start_time);
 
     if (player_xp_to_level_count < sWorld.m_levelCap)
-        Log.Error("MySQLDataStore", "Table `player_xp_for_level` includes definitions for %u level, but your defined level cap is %u!", player_xp_to_level_count, sWorld.m_levelCap);
+        LOG_ERROR("Table `player_xp_for_level` includes definitions for %u level, but your defined level cap is %u!", player_xp_to_level_count, sWorld.m_levelCap);
 }
 
 uint32 MySQLDataStore::GetPlayerXPForLevel(uint32 level)
@@ -2537,7 +2537,7 @@ void MySQLDataStore::LoadSpellOverrideTable()
                 SpellInfo* spell = sSpellCustomizations.GetSpellInfo(spellid);
                 if (spell == nullptr)
                 {
-                    Log.Error("MySQLDataStore", "Table `spelloverride` includes invalid spellId %u for overrideId %u! <skipped>", spellid, distinct_override_id);
+                    LOG_ERROR("Table `spelloverride` includes invalid spellId %u for overrideId %u! <skipped>", spellid, distinct_override_id);
                     continue;
                 }
 
@@ -2581,7 +2581,7 @@ void MySQLDataStore::LoadNpcGossipTextIdTable()
         auto creature_properties = sMySQLStore.GetCreatureProperties(entry);
         if (creature_properties == nullptr)
         {
-            Log.Error("MySQLDataStore", "Table `npc_gossip_textid` includes invalid creatureid %u! <skipped>", entry);
+            LOG_ERROR("Table `npc_gossip_textid` includes invalid creatureid %u! <skipped>", entry);
             continue;
         }
 
@@ -2645,7 +2645,7 @@ void MySQLDataStore::LoadPetLevelAbilitiesTable()
     Log.Success("MySQLDataLoads", "Loaded %u rows from `pet_level_abilities` table in %u ms!", pet_level_abilities_count, getMSTime() - start_time);
 
     if (pet_level_abilities_count < sWorld.m_levelCap)
-        Log.Error("MySQLDataStore", "Table `pet_level_abilities` includes definitions for %u level, but your defined level cap is %u!", pet_level_abilities_count, sWorld.m_levelCap);
+        LOG_ERROR("Table `pet_level_abilities` includes definitions for %u level, but your defined level cap is %u!", pet_level_abilities_count, sWorld.m_levelCap);
 }
 
 PetAbilities const* MySQLDataStore::GetPetLevelAbilities(uint32 level)

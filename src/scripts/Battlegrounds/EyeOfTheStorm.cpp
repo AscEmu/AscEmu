@@ -307,7 +307,7 @@ void EyeOfTheStorm::HookOnAreaTrigger(Player* plr, uint32 id)
         case 5866:
             break;
         default:
-            Log.Error("EyeOfTheStorm", "Encountered unhandled areatrigger id %u", id);
+            LOG_ERROR("Encountered unhandled areatrigger id %u", id);
             return;
             break;
     }

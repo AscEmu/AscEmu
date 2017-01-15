@@ -79,23 +79,6 @@ void oLog::Success(const char* source, const char* format, ...)
     outFile(m_normalFile, buf, source);
 }
 
-void oLog::Error(const char* source, const char* format, ...)
-{
-    if(m_errorFile == NULL)
-        return;
-
-    char buf[32768];
-    va_list ap;
-
-    va_start(ap, format);
-    vsnprintf(buf, 32768, format, ap);
-    va_end(ap);
-    SetConsoleColor(CONSOLE_COLOR_RED);
-    std::cout << source << ": " << buf << std::endl;
-    SetConsoleColor(CONSOLE_COLOR_NORMAL);
-    outFile(m_errorFile, buf, source);
-}
-
 void oLog::LargeErrorMessage(const char* source, ...)
 {
     std::vector<char*> lines;
@@ -136,23 +119,6 @@ void oLog::LargeErrorMessage(const char* source, ...)
     }
 
     outError("*********************************************************************");*/
-}
-
-void oLog::Close()
-{
-    if(m_normalFile != NULL)
-    {
-        fflush(m_normalFile);
-        fclose(m_normalFile);
-        m_normalFile = NULL;
-    }
-
-    if(m_errorFile != NULL)
-    {
-        fflush(m_errorFile);
-        fclose(m_errorFile);
-        m_errorFile = NULL;
-    }
 }
 
 void oLog::SetFileLoggingLevel(int32 level)

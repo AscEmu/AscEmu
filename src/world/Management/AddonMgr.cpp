@@ -252,7 +252,7 @@ void AddonMgr::LoadFromDB()
     QueryResult* result = CharacterDatabase.Query(&success, loadClientAddons);
     if (!success)
     {
-        Log.Error("AddonMgr", "Query failed: %s", loadClientAddons);
+        LOG_ERROR("Query failed: %s", loadClientAddons);
         return;
     }
     if (!result)

@@ -1713,7 +1713,7 @@ void QuestMgr::SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry)
     }
 
     if (QuestID == 0)
-        Log.DebugFlag(LF_DB_TABLES, "QuestMgr : No corresponding quest was found for loot_gameobjects entryid %u quest item %d", GO_Entry, Item_Entry);
+        LogDebugFlag(LF_DB_TABLES, "QuestMgr : No corresponding quest was found for loot_gameobjects entryid %u quest item %d", GO_Entry, Item_Entry);
 }
 
 void QuestMgr::BuildQuestFailed(WorldPacket* data, uint32 questid)
@@ -2064,7 +2064,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.GetQuestProperties(quest);
             if (qst == nullptr)
             {
-                Log.Error("ObjectMgr", "Tried to add starter to npc %d for non-existent quest %d.", creature, quest);
+                LOG_ERROR("Tried to add starter to npc %d for non-existent quest %d.", creature, quest);
             }
             else
             {
@@ -2089,7 +2089,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.GetQuestProperties(quest);
             if (qst == nullptr)
             {
-                Log.Error("ObjectMgr", "Tried to add finisher to npc %d for non-existent quest %d.", creature, quest);
+                LOG_ERROR("Tried to add finisher to npc %d for non-existent quest %d.", creature, quest);
             }
             else
             {
@@ -2114,7 +2114,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.GetQuestProperties(quest);
             if (qst == nullptr)
             {
-                Log.Error("ObjectMgr", "Tried to add starter to go %d for non-existent quest %d.", creature, quest);
+                LOG_ERROR("Tried to add starter to go %d for non-existent quest %d.", creature, quest);
             }
             else
             {
@@ -2139,7 +2139,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.GetQuestProperties(quest);
             if (qst == nullptr)
             {
-                Log.Error("ObjectMgr", "Tried to add finisher to go %d for non-existent quest %d.", creature, quest);
+                LOG_ERROR("Tried to add finisher to go %d for non-existent quest %d.", creature, quest);
             }
             else
             {
@@ -2170,7 +2170,7 @@ void QuestMgr::LoadExtraQuestStuff()
             auto qst = sMySQLStore.GetQuestProperties(quest);
             if (qst == nullptr)
             {
-                Log.Error("ObjectMgr", "Tried to add association to item %d for non-existent quest %d.", item, quest);
+                LOG_ERROR("Tried to add association to item %d for non-existent quest %d.", item, quest);
             }
             else
             {

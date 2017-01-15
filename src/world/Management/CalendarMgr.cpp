@@ -32,7 +32,7 @@ void CalendarMgr::LoadFromDB()
         QueryResult* result = CharacterDatabase.Query(&success, loadCalendarEvents);
         if (!success)
         {
-            Log.Error("CalendarMgr", "Query failed: %s", loadCalendarEvents);
+            LOG_ERROR("Query failed: %s", loadCalendarEvents);
             return;
         }
         if (result)

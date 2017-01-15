@@ -738,7 +738,7 @@ void WorldSession::LoadPlayerFromDBProc(QueryResultVector& results)
     QueryResult* result = results[0].result;
     if (! result)
     {
-        Log.Error("WorldSession::LoadPlayerFromDBProc", "Player login query failed!");
+        LOG_ERROR("Player login query failed!");
         uint8 respons = E_CHAR_LOGIN_NO_CHARACTER;
         OutPacket(SMSG_CHARACTER_LOGIN_FAILED, 1, &respons);
         return;
@@ -787,7 +787,7 @@ void WorldSession::LoadPlayerFromDBProc(QueryResultVector& results)
 
     if (plr == NULL)
     {
-        Log.Error("WorldSession::LoadPlayerFromDBProc", "Class %u unknown!", _class);
+        LOG_ERROR("Class %u unknown!", _class);
         uint8 respons = E_CHAR_LOGIN_NO_CHARACTER;
         OutPacket(SMSG_CHARACTER_LOGIN_FAILED, 1, &respons);
         return;

@@ -54,13 +54,13 @@ Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry
     auto gameobject_info = sMySQLStore.GetGameObjectProperties(goEntry);
     if (gameobject_info == nullptr)
     {
-        Log.Error("Transport Handler", "Transport ID:%u, will not be loaded, gameobject_properties missing", goEntry);
+        LOG_ERROR("Transport ID:%u, will not be loaded, gameobject_properties missing", goEntry);
         return NULL;
     }
 
     if (gameobject_info->type != GAMEOBJECT_TYPE_MO_TRANSPORT)
     {
-        Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_properties type wrong", goEntry, gameobject_info->name.c_str());
+        LOG_ERROR("Transport ID:%u, Name: %s, will not be loaded, gameobject_properties type wrong", goEntry, gameobject_info->name.c_str());
         return NULL;
     }
 
@@ -120,7 +120,7 @@ void ObjectMgr::LoadTransports()
 
         if (!result)
         {
-            Log.Error("Transporter Handler", ">> Loaded 0 transports. DB table `transport_data` is empty!");
+            LOG_ERROR("Loaded 0 transports. DB table `transport_data` is empty!");
             return;
         }
 
@@ -135,13 +135,13 @@ void ObjectMgr::LoadTransports()
             auto gameobject_info = sMySQLStore.GetGameObjectProperties(entry);
             if (gameobject_info == nullptr)
             {
-                Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_properties missing", entry, name.c_str());
+                LOG_ERROR("Transport ID:%u, Name: %s, will not be loaded, gameobject_properties missing", entry, name.c_str());
                 continue;
             }
 
             if (gameobject_info->type != GAMEOBJECT_TYPE_MO_TRANSPORT)
             {
-                Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, will not be loaded, gameobject_properties type wrong", entry, name.c_str());
+                LOG_ERROR("Transport ID:%u, Name: %s, will not be loaded, gameobject_properties type wrong", entry, name.c_str());
                 continue;
             }
 
@@ -152,7 +152,7 @@ void ObjectMgr::LoadTransports()
             // Generate waypoints
             if (!pTransporter->GenerateWaypoints(gameobject_info->mo_transport.taxi_path_id))
             {
-                Log.Error("Transporter Handler", "Transport ID:%u, Name: %s, failed to create waypoints", entry, name.c_str());
+                LOG_ERROR("Transport ID:%u, Name: %s, failed to create waypoints", entry, name.c_str());
                 delete pTransporter;
                 continue;
             }
@@ -185,7 +185,7 @@ void ObjectMgr::LoadTransports()
 
         if (!result)
         {
-            Log.Error("Transport Handler", ">> Loaded 0 transport NPCs. DB table `transport_creatures` is empty!");
+            LOG_ERROR("Loaded 0 transport NPCs. DB table `transport_creatures` is empty!");
             return;
         }
 
@@ -266,7 +266,7 @@ void Transporter::RespawnCreaturePassengers()
     for (auto spawn : this->m_creatureSpawns)
     {
         if (this->AddNPCPassenger(spawn.transport_guid, spawn.entry, spawn.x, spawn.y, spawn.z, spawn.o, spawn.animation) == 0)
-            Log.Error("Transporter::RespawnCreaturePassengers", "Failed to add npc entry: %u to transport: %u", spawn.entry, spawn.transport_guid);
+            LOG_ERROR("Failed to add npc entry: %u to transport: %u", spawn.entry, spawn.transport_guid);
     }
 }
 
@@ -281,7 +281,7 @@ bool Transporter::Create(uint32 entry, int32 Time)
     auto gameobject_info = sMySQLStore.GetGameObjectProperties(entry);
     if (gameobject_info == nullptr)
     {
-        Log.Error("Transporter::Create", "Failed to create Transporter with go entry %u. Invalid gameobject!", entry);
+        LOG_ERROR("Failed to create Transporter with go entry %u. Invalid gameobject!", entry);
         return false;
     }
 
@@ -322,7 +322,7 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
 
     if (path.Size() == 0)
     {
-        Log.Error("Transport Handler", "path Size == 0 for path %u", pathid);
+        LOG_ERROR("path Size == 0 for path %u", pathid);
         return false;
     }
 

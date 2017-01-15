@@ -47,8 +47,6 @@ class SERVER_DECL oLog : public Singleton< oLog >
 
         void InitalizeLogFiles(std::string file_prefix);
 
-        void DebugFlag(LogFlags log_flags, const char* format, ...);
-
     private:
         /*! \brief Returns color defines for plattform */
 #ifndef _WIN32
@@ -65,13 +63,10 @@ class SERVER_DECL oLog : public Singleton< oLog >
         //old NGLog.h methods
         //log level 0
         void Success(const char* source, const char* format, ...);
-        void Error(const char* source, const char* format, ...);
         void LargeErrorMessage(const char* str, ...);
 
         void SetFileLoggingLevel(int32 level);
         void SetDebugFlags(uint32 flags);
-
-        void Close();
 
         int32 m_fileLogLevel;
         uint32 mDebugFlags;

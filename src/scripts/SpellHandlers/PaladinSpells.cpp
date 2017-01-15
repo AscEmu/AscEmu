@@ -75,7 +75,7 @@ bool HolyShock(uint32 i, Spell* pSpell)
             spell_id = 48823;
             break;
         default: // Invalid case, spell handler is assigned to wrong spell
-            Log.Error("SpellHandlers\\PaladinSpells.cpp", "(Offensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
+            LOG_ERROR("(Offensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
             return true;
         }
     }
@@ -106,7 +106,7 @@ bool HolyShock(uint32 i, Spell* pSpell)
             spell_id = 48821;
             break;
         default: // Invalid case, spell handler is assigned to wrong spell
-            Log.Error("SpellHandlers\\PaladinSpells.cpp", "(Defensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
+            LOG_ERROR("(Defensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
             return true;
         }
     }

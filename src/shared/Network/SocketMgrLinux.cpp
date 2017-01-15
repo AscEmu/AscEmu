@@ -56,7 +56,7 @@ void SocketMgr::AddSocket(Socket* s)
     ev.data.fd = s->GetFd();
 
     if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev))
-        Log.Error("epoll", "Could not add event to epoll set on fd %u", ev.data.fd);
+        LOG_ERROR("Could not add event to epoll set on fd %u", ev.data.fd);
 }
 
 void SocketMgr::AddListenSocket(ListenSocketBase* s)
@@ -72,14 +72,14 @@ void SocketMgr::AddListenSocket(ListenSocketBase* s)
     ev.data.fd = s->GetFd();
 
     if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, ev.data.fd, &ev))
-        Log.Error("epoll", "Could not add event to epoll set on fd %u", ev.data.fd);
+        LOG_ERROR("Could not add event to epoll set on fd %u", ev.data.fd);
 }
 
 void SocketMgr::RemoveSocket(Socket* s)
 {
     if(fds[s->GetFd()] != s)
     {
-        Log.Error("epoll", "Could not remove fd %u from the set due to it not existing?", s->GetFd());
+        LOG_ERROR("Could not remove fd %u from the set due to it not existing?", s->GetFd());
         return;
     }
 
@@ -93,7 +93,7 @@ void SocketMgr::RemoveSocket(Socket* s)
     ev.events = EPOLLIN | EPOLLOUT | EPOLLERR | EPOLLHUP | EPOLLONESHOT;
 
     if(epoll_ctl(epoll_fd, EPOLL_CTL_DEL, ev.data.fd, &ev))
-        Log.Error("epoll", "Could not remove fd %u from epoll set, errno %u", s->GetFd(), errno);
+        LOG_ERROR("Could not remove fd %u from epoll set, errno %u", s->GetFd(), errno);
 }
 
 void SocketMgr::CloseAll()
@@ -130,7 +130,7 @@ bool SocketWorkerThread::run()
         {
             if(events[i].data.fd >= SOCKET_HOLDER_SIZE)
             {
-                Log.Error("epoll", "Requested FD that is too high (%u)", events[i].data.fd);
+                LOG_ERROR("Requested FD that is too high (%u)", events[i].data.fd);
                 continue;
             }
 
@@ -141,7 +141,7 @@ bool SocketWorkerThread::run()
                 if((ptr = ((Socket*)mgr->listenfds[events[i].data.fd])) != NULL)
                     ((ListenSocketBase*)ptr)->OnAccept();
                 else
-                    Log.Error("epoll", "Returned invalid fd (no pointer) of FD %u", events[i].data.fd);
+                    LOG_ERROR("Returned invalid fd (no pointer) of FD %u", events[i].data.fd);
 
                 continue;
             }

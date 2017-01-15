@@ -150,7 +150,7 @@ void LootMgr::LoadLootProp()
             auto item_random_properties = sItemRandomPropertiesStore.LookupEntry(eid);
             if (item_random_properties == NULL)
             {
-                Log.Error("LoadLootProp", "RandomProp group %u references non-existent randomprop %u.", id, eid);
+                LOG_ERROR("RandomProp group %u references non-existent randomprop %u.", id, eid);
                 continue;
             }
             itr = _randomprops.find(id);
@@ -180,7 +180,7 @@ void LootMgr::LoadLootProp()
             auto item_random_suffix = sItemRandomSuffixStore.LookupEntry(eid);
             if (item_random_suffix == NULL)
             {
-                Log.Error("LoadLootProp", "RandomSuffix group %u references non-existent randomsuffix %u.", id, eid);
+                LOG_ERROR("RandomSuffix group %u references non-existent randomsuffix %u.", id, eid);
                 continue;
             }
             itr = _randomsuffix.find(id);
@@ -226,7 +226,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
     QueryResult* result = WorldDatabase.Query("SELECT * FROM %s ORDER BY entryid ASC", szTableName);
     if (!result)
     {
-        Log.Error("LootMgr", "Loading loot from table %s failed.", szTableName);
+        LOG_ERROR("Loading loot from table %s failed.", szTableName);
         return;
     }
     uint32 entry_id = 0;
@@ -241,7 +241,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
         entry_id = fields[0].GetUInt32();
         if (entry_id < last_entry)
         {
-            Log.Error("LootMgr", "WARNING: Out of order loot table being loaded.");
+            LOG_ERROR("WARNING: Out of order loot table being loaded.");
             return;
         }
         if (entry_id != last_entry)
@@ -285,7 +285,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
                 if (!proto)
                 {
                     list.items[ind].item.itemproto = NULL;
-                    Log.Error("LootMgr", "Loot for %u contains non-existant item %u . (%s)", entry_id, itemid, szTableName);
+                    LOG_ERROR("oot for %u contains non-existant item %u . (%s)", entry_id, itemid, szTableName);
                 }
                 else
                 {

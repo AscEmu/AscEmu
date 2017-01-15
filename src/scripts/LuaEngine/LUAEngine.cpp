@@ -176,7 +176,7 @@ void LuaEngine::ScriptLoadDir(char* Dirname, LUALoadScripts* pak)
         if (stat(dottedrelpath, &attributes) == -1)
         {
             err = true;
-            Log.Error("LuaEngine", "Error opening %s: %s", dottedrelpath, strerror(errno));
+            LOG_ERROR("Error opening %s: %s", dottedrelpath, strerror(errno));
         }
         else
         {
@@ -224,14 +224,14 @@ void LuaEngine::LoadScripts()
         int errorCode = luaL_loadfile(lu, filename);
         if (errorCode)
         {
-            Log.Error("LuaEngine", "loading %s failed.(could not load). Error code %i", itr->c_str(), errorCode);
+            LOG_ERROR("loading %s failed.(could not load). Error code %i", itr->c_str(), errorCode);
             report(lu);
         }
         else
         {
             if (errorCode = lua_pcall(lu, 0, 0, 0))
             {
-                Log.Error("LuaEngine", "%s failed.(could not run). Error code %i", itr->c_str(), errorCode);
+                LOG_ERROR("%s failed.(could not run). Error code %i", itr->c_str(), errorCode);
                 report(lu);
             }
             else

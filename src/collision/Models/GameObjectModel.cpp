@@ -50,7 +50,7 @@ void LoadGameObjectModelList(std::string const& dataPath)
     FILE* model_list_file = fopen((dataPath + "/" + VMAP::GAMEOBJECT_MODELS).c_str(), "rb");
     if (!model_list_file)
     {
-        Log.Error("LoadGameObjectModelList", "Unable to open '%s' file.", VMAP::GAMEOBJECT_MODELS);
+        LOG_ERROR("Unable to open '%s' file.", VMAP::GAMEOBJECT_MODELS);
         return;
     }
 
@@ -69,13 +69,13 @@ void LoadGameObjectModelList(std::string const& dataPath)
             || fread(&v1, sizeof(Vector3), 1, model_list_file) != 1
             || fread(&v2, sizeof(Vector3), 1, model_list_file) != 1)
         {
-            Log.Error("LoadGameObjectModelList", "File '%s' seems to be corrupted!", VMAP::GAMEOBJECT_MODELS);
+            LOG_ERROR("File '%s' seems to be corrupted!", VMAP::GAMEOBJECT_MODELS);
             break;
         }
 
         if (v1.isNaN() || v2.isNaN())
         {
-            Log.Error("LoadGameObjectModelList", "File '%s' Model '%s' has invalid v1%s v2%s values!", VMAP::GAMEOBJECT_MODELS, std::string(buff, name_length).c_str(), v1.toString().c_str(), v2.toString().c_str());
+            LOG_ERROR("File '%s' Model '%s' has invalid v1%s v2%s values!", VMAP::GAMEOBJECT_MODELS, std::string(buff, name_length).c_str(), v1.toString().c_str(), v2.toString().c_str());
             continue;
         }
 
@@ -105,7 +105,7 @@ bool GameObjectModel::initialize(std::unique_ptr<GameObjectModelOwnerBase> model
     // ignore models with no bounds
     if (mdl_box == G3D::AABox::zero())
     {
-        Log.Error("GameObjectModel", "GameObject model %s has zero bounds, loading skipped", it->second.name.c_str());
+        LOG_ERROR("GameObject model %s has zero bounds, loading skipped", it->second.name.c_str());
         return false;
     }
 
@@ -189,7 +189,7 @@ bool GameObjectModel::UpdatePosition()
     // ignore models with no bounds
     if (mdl_box == G3D::AABox::zero())
     {
-        Log.Error("GameObjectModel", "GameObject model %s has zero bounds, loading skipped", it->second.name.c_str());
+        LOG_ERROR("GameObject model %s has zero bounds, loading skipped", it->second.name.c_str());
         return false;
     }
 

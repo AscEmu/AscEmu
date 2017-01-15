@@ -928,7 +928,7 @@ class LuaGameObject
                 uint32 group_id = pInstance->m_creatorGroup;
                 if (group_id == 0)
                 {
-                    Log.Error("LuA:GetInstanceOwner", "Instance is not not owned by a group or a guid!");
+                    LOG_ERROR("Instance is not not owned by a group or a guid!");
                     return 0;
                 }
 

@@ -83,7 +83,7 @@ void RuinsOfLordaeron::HookOnAreaTrigger(Player* plr, uint32 trigger)
         case 4697:
             break;
         default:
-            Log.Error("RuinsOfLordaeron", "Encountered unhandled areatrigger id %u", trigger);
+            LOG_ERROR("Encountered unhandled areatrigger id %u", trigger);
             return;
             break;
     }

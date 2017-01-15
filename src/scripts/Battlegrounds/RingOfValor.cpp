@@ -74,7 +74,7 @@ void RingOfValor::HookOnAreaTrigger(Player* plr, uint32 trigger)
         case 5474:
             break;
         default:
-            Log.Error("RingOfValor", "Encountered unhandled areatrigger id %u", trigger);
+            LOG_ERROR("Encountered unhandled areatrigger id %u", trigger);
             return;
             break;
     }

@@ -128,7 +128,7 @@ PatchMgr::PatchMgr()
     filecount = scandir("./ClientPatches", &list, 0, 0);
     if (filecount <= 0 || list == NULL)
     {
-        Log.Error("PatchMgr", "No patches found.");
+        LOG_ERROR("No patches found.");
         return;
     }
 

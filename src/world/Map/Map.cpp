@@ -137,7 +137,7 @@ void Map::LoadSpawns(bool reload)
             uint32 creature_spawn_fields = creature_spawn_result->GetFieldCount();
             if (creature_spawn_fields != CREATURESPAWNSFIELDCOUNT)
             {
-                Log.Error("Map::LoadSpawns", "Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), creature_spawn_fields, CREATURESPAWNSFIELDCOUNT);
+                LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), creature_spawn_fields, CREATURESPAWNSFIELDCOUNT);
                 continue;
             }
             else
@@ -153,7 +153,7 @@ void Map::LoadSpawns(bool reload)
                     auto creature_properties = sMySQLStore.GetCreatureProperties(creature_entry);
                     if (creature_properties == nullptr)
                     {
-                        Log.Error("Map::LoadSpawns", "Creature spawn ID: %u has invalid entry: %u which is not in creature_properties table! Skipped loading.", cspawn->id, creature_entry);
+                        LOG_ERROR("Creature spawn ID: %u has invalid entry: %u which is not in creature_properties table! Skipped loading.", cspawn->id, creature_entry);
                         delete cspawn;
                         continue;
                     }
@@ -226,7 +226,7 @@ void Map::LoadSpawns(bool reload)
             uint32 gobject_spawn_fields = gobject_spawn_result->GetFieldCount();
             if (gobject_spawn_fields != GOSPAWNSFIELDCOUNT)
             {
-                Log.Error("Map::LoadSpawns", "Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), gobject_spawn_fields, GOSPAWNSFIELDCOUNT);
+                LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), gobject_spawn_fields, GOSPAWNSFIELDCOUNT);
                 continue;
             }
             else
@@ -241,7 +241,7 @@ void Map::LoadSpawns(bool reload)
                     auto gameobject_info = sMySQLStore.GetGameObjectProperties(gameobject_entry);
                     if (gameobject_info == nullptr)
                     {
-                        Log.Error("Map::LoadSpawns", "Gameobject spawn ID: %u has invalid entry: %u which is not in gameobject_properties table! Skipped loading.", go_spawn->id, gameobject_entry);
+                        LOG_ERROR("Gameobject spawn ID: %u has invalid entry: %u which is not in gameobject_properties table! Skipped loading.", go_spawn->id, gameobject_entry);
                         delete go_spawn;
                         continue;
                     }

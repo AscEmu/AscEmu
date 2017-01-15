@@ -148,21 +148,21 @@ uint8 WorldSession::Update(uint32 InstanceID)
 
         if (packet->GetOpcode() >= NUM_MSG_TYPES)
         {
-            Log.DebugFlag(LF_OPCODE, "[Session] Received out of range packet with opcode 0x%.4X", packet->GetOpcode());
+            LogDebugFlag(LF_OPCODE, "[Session] Received out of range packet with opcode 0x%.4X", packet->GetOpcode());
         }
         else
         {
             Handler = &WorldPacketHandlers[packet->GetOpcode()];
             if (Handler->status == STATUS_LOGGEDIN && !_player && Handler->handler != 0)
             {
-                Log.DebugFlag(LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)", LookupName(packet->GetOpcode(), g_worldOpcodeNames), packet->GetOpcode());
+                LogDebugFlag(LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)", LookupName(packet->GetOpcode(), g_worldOpcodeNames), packet->GetOpcode());
             }
             else
             {
                 // Valid Packet :>
                 if (Handler->handler == 0)
                 {
-                    Log.DebugFlag(LF_OPCODE, "[Session] Received unhandled packet with opcode %s (0x%.4X)", LookupName(packet->GetOpcode(), g_worldOpcodeNames), packet->GetOpcode());
+                    LogDebugFlag(LF_OPCODE, "[Session] Received unhandled packet with opcode %s (0x%.4X)", LookupName(packet->GetOpcode(), g_worldOpcodeNames), packet->GetOpcode());
                 }
                 else
                 {

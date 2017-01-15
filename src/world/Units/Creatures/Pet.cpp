@@ -1538,7 +1538,7 @@ void Pet::ApplyPetLevelAbilities()
     PetAbilities const* pet_abilities = sMySQLStore.GetPetLevelAbilities(level);
     if (pet_abilities == nullptr)
     {
-        Log.Error("Pet::ApplyPetLevelAbilities()", "No abilities for level %u in table pet_level_abilities! Auto apply abilities of level 80!", level);
+        LOG_ERROR("No abilities for level %u in table pet_level_abilities! Auto apply abilities of level 80!", level);
         pet_abilities = sMySQLStore.GetPetLevelAbilities(DBC_PLAYER_LEVEL_CAP);
     }
 

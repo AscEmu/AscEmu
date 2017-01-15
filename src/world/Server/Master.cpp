@@ -137,7 +137,7 @@ bool Master::Run(int argc, char** argv)
             default:
                 Log.Init(0, WORLD_LOG);
                 printf("Usage: %s [--checkconf] [--fileloglevel <level>] [--conf <filename>] [--realmconf <filename>] [--version] [--databasecleanup] [--cheatercheck]\n", argv[0]);
-                Log.Close();
+                AscLog.~AscEmuLog();
                 return true;
         }
     }
@@ -154,7 +154,7 @@ bool Master::Run(int argc, char** argv)
 #ifdef COMMANDLINE_OPT_ENABLE
     if (do_version)
     {
-        Log.Close();
+        AscLog.~AscEmuLog();
         return true;
     }
 
@@ -164,21 +164,21 @@ bool Master::Run(int argc, char** argv)
         if (Config.MainConfig.SetSource(config_file, true))
             Log.Success("Config", "Passed without errors.");
         else
-            Log.Error("Config", "Encountered one or more errors.");
+            LOG_ERROR("Encountered one or more errors while loading world.conf.");
 
         LogNotice("Config : Checking config file: %s", realm_config_file);
         if (Config.RealmConfig.SetSource(realm_config_file, true))
             Log.Success("Config", "Passed without errors.");
         else
-            Log.Error("Config", "Encountered one or more errors.");
+            LOG_ERROR("Encountered one or more errors while loading realm.conf.");
 
         LogNotice("Config : Checking config file:: %s", optional_config_file);
         if (Config.OptionalConfig.SetSource(optional_config_file, true))
             Log.Success("Config", "Passed without errors.");
         else
-            Log.Error("Config", "Encountered one or more errors.");
+            LOG_ERROR("Encountered one or more errors while loading optional.conf.");
 
-        Log.Close();
+        AscLog.~AscEmuLog();
         return true;
     }
 #endif
@@ -205,13 +205,13 @@ bool Master::Run(int argc, char** argv)
     if (!_StartDB())
     {
         Database::CleanupLibs();
-        Log.Close();
+        AscLog.~AscEmuLog();
         return false;
     }
 
     if (!_CheckDBVersion())
     {
-        Log.Close();
+        AscLog.~AscEmuLog();
         return false;
     }
 #ifdef COMMANDLINE_OPT_ENABLE
@@ -248,8 +248,8 @@ bool Master::Run(int argc, char** argv)
 
     if (!sWorld.SetInitialWorldSettings())
     {
-        Log.Error("Server", "SetInitialWorldSettings() failed. Something went wrong? Exiting.");
-        Log.Close();
+        LOG_ERROR("SetInitialWorldSettings() failed. Something went wrong? Exiting.");
+        AscLog.~AscEmuLog();
         return false;
     }
 
@@ -375,7 +375,7 @@ bool Master::Run(int argc, char** argv)
         LOG_DEBUG("File worldserver.pid successfully deleted");
 
     Log.Success("Shutdown", "Shutdown complete.");
-    Log.Close();
+    AscLog.~AscEmuLog();
 
 #ifdef WIN32
     WSACleanup();
@@ -395,8 +395,8 @@ bool Master::_CheckDBVersion()
     QueryResult* wqr = WorldDatabase.QueryNA("SELECT LastUpdate FROM world_db_version;");
     if (wqr == NULL)
     {
-        Log.Error("Database", "World database is missing the table `world_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
-        Log.Error("Database", "You may need to update your database");
+        LogError("Database : World database is missing the table `world_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
+        LogError("Database : You may need to update your database");
         return false;
     }
 
@@ -407,15 +407,15 @@ bool Master::_CheckDBVersion()
     int result = strcmp(WorldDBVersion, REQUIRED_WORLD_DB_VERSION);
     if (result != 0)
     {
-        Log.Error("Database", "Last world database update doesn't match the required one which is %s.", REQUIRED_WORLD_DB_VERSION);
+        LogError("Database : Last world database update doesn't match the required one which is %s.", REQUIRED_WORLD_DB_VERSION);
 
         if (result < 0)
         {
-            Log.Error("Database", "You need to apply the world update queries that are newer than %s. Exiting.", WorldDBVersion);
-            Log.Error("Database", "You can find the world update queries in the sql/world_updates sub-directory of your Arcemu source directory.");
+            LogError("Database : You need to apply the world update queries that are newer than %s. Exiting.", WorldDBVersion);
+            LogError("Database : You can find the world update queries in the sql/world_updates sub-directory of your Arcemu source directory.");
         }
         else
-            Log.Error("Database", "Your world database is probably too new for this Arcemu version, you need to update your server. Exiting.");
+            LogError("Database : Your world database is probably too new for this Arcemu version, you need to update your server. Exiting.");
 
         delete wqr;
         return false;
@@ -426,8 +426,8 @@ bool Master::_CheckDBVersion()
     QueryResult* cqr = CharacterDatabase.QueryNA("SELECT LastUpdate FROM character_db_version;");
     if (cqr == NULL)
     {
-        Log.Error("Database", "Character database is missing the table `character_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
-        Log.Error("Database", "You may need to update your database");
+        LogError("Database : Character database is missing the table `character_db_version` OR the table doesn't contain any rows. Can't validate database version. Exiting.");
+        LogError("Database : You may need to update your database");
         return false;
     }
 
@@ -438,14 +438,14 @@ bool Master::_CheckDBVersion()
     result = strcmp(CharDBVersion, REQUIRED_CHAR_DB_VERSION);
     if (result != 0)
     {
-        Log.Error("Database", "Last character database update doesn't match the required one which is %s.", REQUIRED_CHAR_DB_VERSION);
+        LogError("Database : Last character database update doesn't match the required one which is %s.", REQUIRED_CHAR_DB_VERSION);
         if (result < 0)
         {
-            Log.Error("Database", "You need to apply the character update queries that are newer than %s. Exiting.", CharDBVersion);
-            Log.Error("Database", "You can find the character update queries in the sql/character_updates sub-directory of your Arcemu source directory.");
+            LogError("Database : You need to apply the character update queries that are newer than %s. Exiting.", CharDBVersion);
+            LogError("Database : You can find the character update queries in the sql/character_updates sub-directory of your Arcemu source directory.");
         }
         else
-            Log.Error("Database", "Your character database is too new for this Arcemu version, you need to update your server. Exiting.");
+            LogError("Database : Your character database is too new for this Arcemu version, you need to update your server. Exiting.");
 
         delete cqr;
         return false;
@@ -475,7 +475,7 @@ bool Master::_StartDB()
 
     if (wdb_result == false)
     {
-        Log.Error("Configs", "One or more parameters were missing for WorldDatabase connection.");
+        LogError("Configs : One or more parameters were missing for WorldDatabase connection.");
         return false;
     }
 
@@ -483,7 +483,7 @@ bool Master::_StartDB()
     if (!WorldDatabase.Initialize(hostname.c_str(), (unsigned int)port, username.c_str(),
         password.c_str(), database.c_str(), Config.MainConfig.GetIntDefault("WorldDatabase", "ConnectionCount", 3), 16384))
     {
-        Log.Error("Configs", "Connection to WorldDatabase failed. Check your database configurations!");
+        LogError("Configs : Connection to WorldDatabase failed. Check your database configurations!");
         return false;
     }
 
@@ -497,7 +497,7 @@ bool Master::_StartDB()
 
     if (cdb_result == false)
     {
-        Log.Error("Configs", "Connection to CharacterDatabase failed. Check your database configurations!");
+        LogError("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
         return false;
     }
 
@@ -505,7 +505,7 @@ bool Master::_StartDB()
     if (!CharacterDatabase.Initialize(hostname.c_str(), (unsigned int)port, username.c_str(),
         password.c_str(), database.c_str(), Config.MainConfig.GetIntDefault("CharacterDatabase", "ConnectionCount", 5), 16384))
     {
-        Log.Error("Configs", "Connection to CharacterDatabase failed. Check your database configurations!");
+        LogError("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
         return false;
     }
 
@@ -554,7 +554,7 @@ Mutex m_crashedMutex;
 // Crash Handler
 void OnCrash(bool Terminate)
 {
-    Log.Error("Crash Handler", "Advanced crash handler initialized.");
+    LogError("Crash Handler : Advanced crash handler initialized.");
 
     if (!m_crashedMutex.AttemptAcquire())
         TerminateThread(GetCurrentThread(), 0);
@@ -573,7 +573,7 @@ void OnCrash(bool Terminate)
     }
     catch (...)
     {
-        Log.Error("sql", "Threw an exception while attempting to save all data.");
+        LogError("sql : Threw an exception while attempting to save all data.");
     }
 
     LogNotice("Server : Closing.");
@@ -609,8 +609,8 @@ bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_fil
     }
     else
     {
-        Log.Error("Config", "error occurred loading " CONFDIR "/world.conf");
-        Log.Close();
+        LogError("Config : error occurred loading " CONFDIR "/world.conf");
+        AscLog.~AscEmuLog();
         return false;
     }
 
@@ -620,8 +620,8 @@ bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_fil
     }
     else
     {
-        Log.Error("Config", "error occurred loading " CONFDIR "/optional.conf");
-        Log.Close();
+        LogError("Config : error occurred loading " CONFDIR "/optional.conf");
+        AscLog.~AscEmuLog();
         return false;
     }
 
@@ -632,7 +632,7 @@ bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_fil
     else
     {
         LogError("Config : error occurred loading " CONFDIR "/realms.conf");
-        Log.Close();
+        AscLog.~AscEmuLog();
         return false;
     }
 

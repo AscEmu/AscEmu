@@ -192,7 +192,7 @@ void LogonCommHandler::Connect(LogonServer* server)
     logons[server] = conn;
     if (conn == 0)
     {
-        Log.Error("LogonCommClient", "Connection failed. Will try again in 10 seconds.");
+        LOG_ERROR("Connection failed. Will try again in 10 seconds.");
         return;
     }
     Log.Success("LogonCommClient", "Authenticating...");
@@ -202,7 +202,7 @@ void LogonCommHandler::Connect(LogonServer* server)
     {
         if ((uint32)UNIXTIME >= tt)
         {
-            Log.Error("LogonCommClient", "Authentication timed out.");
+            LOG_ERROR("Authentication timed out.");
             conn->Disconnect();
             logons[server] = NULL;
             return;
@@ -213,7 +213,7 @@ void LogonCommHandler::Connect(LogonServer* server)
 
     if (conn->authenticated != 1)
     {
-        Log.Error("LogonCommClient", "Authentication failed.");
+        LOG_ERROR("Authentication failed.");
         logons[server] = 0;
         conn->Disconnect();
         return;
@@ -238,7 +238,7 @@ void LogonCommHandler::Connect(LogonServer* server)
         // Don't wait more than.. like 10 seconds for a registration
         if ((uint32)UNIXTIME >= st)
         {
-            Log.Error("LogonCommClient", "Realm registration timed out.");
+            LOG_ERROR("Realm registration timed out.");
             logons[server] = 0;
             conn->Disconnect();
             break;

@@ -392,7 +392,7 @@ void TileMap::Load(char* filename)
 
     if (f == NULL)
     {
-        Log.Error("TerrainMgr", "%s does not exist", filename);
+        LOG_ERROR("%s does not exist", filename);
         return;
     }
 
@@ -406,7 +406,7 @@ void TileMap::Load(char* filename)
 
     if (header.buildMagic != 12340)  //wow version
     {
-        Log.Error("TerrainMgr", "%s: from incorrect client (you: %u us: %u)", filename, header.buildMagic, 12340);
+        LOG_ERROR("%s: from incorrect client (you: %u us: %u)", filename, header.buildMagic, 12340);
         fclose(f);
         return;
     }

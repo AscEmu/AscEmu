@@ -76,7 +76,7 @@ void LfgMgr::LoadRewards()
 
     if (!result)
     {
-        Log.Error("LFGMgr", "Loaded 0 lfg dungeon rewards.DB table `lfg_dungeon_rewards` is empty!\n");
+        LOG_ERROR("Loaded 0 lfg dungeon rewards.DB table `lfg_dungeon_rewards` is empty!\n");
         return;
     }
 
@@ -1724,7 +1724,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                 ItemProperties const* proto = sMySQLStore.GetItemProperties(qReward->reward_item[i]);
                 if (!proto)
                 {
-                    Log.Error("LfgMgr", "Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
+                    LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
                 }
                 else
                 {
@@ -1815,7 +1815,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                 ItemProperties const* proto = sMySQLStore.GetItemProperties(qReward->reward_item[i]);
                 if (!proto)
                 {
-                    Log.Error("LfgMgr", "Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
+                    LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
                 }
                 else
                 {

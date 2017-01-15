@@ -46,7 +46,7 @@ void Modify_EffectBasePoints(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
-        Log.Error("Modify_EffectBasePoints", "Something tried to call with an invalid spell pointer!");
+        LOG_ERROR("Something tried to call with an invalid spell pointer!");
         return;
     }
 
@@ -85,7 +85,7 @@ void Set_missing_spellLevel(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
-        Log.Error("Set_missing_spellLevel", "Something tried to call with an invalid spell pointer!");
+        LOG_ERROR("Something tried to call with an invalid spell pointer!");
         return;
     }
 
@@ -428,7 +428,7 @@ void Modify_AuraInterruptFlags(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
-        Log.Error("Modify_AuraInterruptFlags", "Something tried to call with an invalid spell pointer!");
+        LOG_ERROR("Something tried to call with an invalid spell pointer!");
         return;
     }
 
@@ -450,7 +450,7 @@ void Modify_RecoveryTime(SpellInfo* sp)
 {
     if (sp == nullptr)
     {
-        Log.Error("Modify_RecoveryTime", "Something tried to call with an invalid spell pointer!");
+        LOG_ERROR("Something tried to call with an invalid spell pointer!");
         return;
     }
 
@@ -1496,7 +1496,7 @@ void ApplyNormalFixes()
                 sp->OTspell_coef_override = f[3].GetFloat();
             }
             else
-                Log.Error("SpellCoefOverride", "Has nonexistent spell %u.", f[0].GetUInt32());
+                LOG_ERROR("Has nonexistent spell %u.", f[0].GetUInt32());
         }
         while (resultx->NextRow());
         delete resultx;

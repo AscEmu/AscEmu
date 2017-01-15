@@ -1286,7 +1286,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
     uint32 health;
     if (creature_properties->MinHealth > creature_properties->MaxHealth)
     {
-        Log.Error("Creature::Load", "MinHealth is bigger than MaxHealt! Using MaxHealth value. You should fix this in creature_proto table for entry: %u!", creature_properties->Id);
+        LOG_ERROR("MinHealth is bigger than MaxHealt! Using MaxHealth value. You should fix this in creature_proto table for entry: %u!", creature_properties->Id);
         health = creature_properties->MaxHealth - RandomUInt(10);
     }
     else
@@ -1680,7 +1680,7 @@ void Creature::OnPushToWorld()
 {
     if (creature_properties == nullptr)
     {
-        Log.Error("Creature", "OnPushToWorld : Something tried to push Creature with entry %u with invalid creature_properties!", GetEntry());
+        LOG_ERROR("Something tried to push Creature with entry %u with invalid creature_properties!", GetEntry());
         return;
     }
 

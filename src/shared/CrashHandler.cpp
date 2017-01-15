@@ -351,7 +351,7 @@ int __cdecl HandleCrash(PEXCEPTION_POINTERS pExceptPtrs)
     SetPriorityClass(GetCurrentProcess(), BELOW_NORMAL_PRIORITY_CLASS);
     OnCrash(!ON_CRASH_BREAK_DEBUGGER);
 
-    Log.Close();
+    AscLog.~AscEmuLog();
     return EXCEPTION_CONTINUE_SEARCH;
 }
 #endif

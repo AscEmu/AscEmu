@@ -416,7 +416,7 @@ void Spell::ApplyAreaAura(uint32 i)
 
 void Spell::SpellEffectNULL(uint32 i)
 {
-    Log.DebugFlag(LF_SPELL_EFF, "Unhandled spell effect %u in spell %u.", GetSpellInfo()->Effect[i], GetSpellInfo()->Id);
+    LogDebugFlag(LF_SPELL_EFF, "Unhandled spell effect %u in spell %u.", GetSpellInfo()->Effect[i], GetSpellInfo()->Id);
 }
 
 void Spell::SpellEffectInstantKill(uint32 i)
@@ -2220,7 +2220,7 @@ void Spell::SpellEffectWeapon(uint32 i)
         default:
         {
             skill = 0;
-            Log.DebugFlag(LF_SPELL_EFF, "WARNING: Could not determine skill for spell id %d (SPELL_EFFECT_WEAPON)", this->GetSpellInfo()->Id);
+            LogDebugFlag(LF_SPELL_EFF, "WARNING: Could not determine skill for spell id %d (SPELL_EFFECT_WEAPON)", this->GetSpellInfo()->Id);
         }
         break;
     }
@@ -5424,7 +5424,7 @@ void Spell::SpellEffectForgetSpecialization(uint32 i)
     uint32 spellid = GetSpellInfo()->EffectTriggerSpell[i];
     playerTarget->removeSpell(spellid, false, false, 0);
 
-    Log.DebugFlag(LF_SPELL_EFF, "Player %u have forgot spell %u from spell %u (caster: %u)", playerTarget->GetLowGUID(), spellid, GetSpellInfo()->Id, m_caster->GetLowGUID());
+    LogDebugFlag(LF_SPELL_EFF, "Player %u have forgot spell %u from spell %u (caster: %u)", playerTarget->GetLowGUID(), spellid, GetSpellInfo()->Id, m_caster->GetLowGUID());
 }
 
 void Spell::SpellEffectKillCredit(uint32 i)
