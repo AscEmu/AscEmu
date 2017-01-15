@@ -62,14 +62,6 @@ class SERVER_DECL oLog : public Singleton< oLog >
 
     public:
 
-        //log level 2
-        void outDebug(const char* str, ...);
-
-        void logError(const char* file, int line, const char* fncname, const char* msg, ...);
-        void logDebug(const char* file, int line, const char* fncname, const char* msg, ...);
-        void logBasic(const char* file, int line, const char* fncname,  const char* msg, ...);
-        void logDetail(const char* file, int line, const char* fncname, const char* msg, ...);
-
         //old NGLog.h methods
         //log level 0
         void Success(const char* source, const char* format, ...);
@@ -146,11 +138,6 @@ class SERVER_DECL SessionLogWriter
 
 
 #define Log oLog::getSingleton()
-
-//#define LOG_BASIC(msg, ...) Log.logBasic(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
-//#define LOG_DETAIL(msg, ...) Log.logDetail(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
-//#define LOG_ERROR(msg, ...) Log.logError(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
-//#define LOG_DEBUG(msg, ...) Log.logDebug(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
 
 
 class WorldLog : public Singleton<WorldLog>
