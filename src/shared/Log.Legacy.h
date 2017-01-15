@@ -27,75 +27,37 @@
 class WorldPacket;
 class WorldSession;
 
-enum LogLevel
-{
-    LOG_LEVEL_NORMAL    = 0,
-    LOG_LEVEL_DETAIL    = 1,
-    LOG_LEVEL_DEBUG     = 2
-};
-
 extern SERVER_DECL time_t UNIXTIME;        //update this every loop to avoid the time() syscall!
 extern SERVER_DECL tm g_localTime;
 
-class SERVER_DECL oLog : public Singleton< oLog >
-{
-    public:
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        // AscEmu functions begin
-        oLog() : m_fileLogLevel(0) {}
-
-        void InitalizeLogFiles(std::string file_prefix);
-
-        // AscEmu functions end
-        //////////////////////////////////////////////////////////////////////////////////////////
-
-
-    public:
-
-        void LargeErrorMessage(const char* str, ...);
-
-        void SetFileLoggingLevel(int32 level);
-        void SetDebugFlags(uint32 flags);
-
-        int32 m_fileLogLevel;
-        uint32 mDebugFlags;
-
-    private:
-
-        FILE* m_normalFile, *m_errorFile;
-        void outFile(FILE* file, char* msg, const char* source = NULL);
-        void outFileSilent(FILE* file, char* msg, const char* source = NULL);   // Prints text to file without showing it to the user. Used for the startup banner.
-
-
-#ifdef _WIN32
-        HANDLE stdout_handle;
-#endif
-
-        inline char dcd(char in)
-        {
-            char out = in;
-            out -= 13;
-            out ^= 131;
-            return out;
-        }
-
-        void dcds(char* str)
-        {
-            unsigned long i = 0;
-            size_t len = strlen(str);
-
-            for(i = 0; i < len; ++i)
-                str[i] = dcd(str[i]);
-
-        }
-
-        void pdcds(const char* str, char* buf)
-        {
-            strcpy(buf, str);
-            dcds(buf);
-        }
-};
+//class SERVER_DECL oLog : public Singleton< oLog >
+//{
+//    private:
+//
+//        inline char dcd(char in)
+//        {
+//            char out = in;
+//            out -= 13;
+//            out ^= 131;
+//            return out;
+//        }
+//
+//        void dcds(char* str)
+//        {
+//            unsigned long i = 0;
+//            size_t len = strlen(str);
+//
+//            for(i = 0; i < len; ++i)
+//                str[i] = dcd(str[i]);
+//
+//        }
+//
+//        void pdcds(const char* str, char* buf)
+//        {
+//            strcpy(buf, str);
+//            dcds(buf);
+//        }
+//};
 
 class SERVER_DECL SessionLogWriter
 {
@@ -117,7 +79,7 @@ class SERVER_DECL SessionLogWriter
 };
 
 
-#define Log oLog::getSingleton()
+//#define Log oLog::getSingleton()
 
 
 class WorldLog : public Singleton<WorldLog>

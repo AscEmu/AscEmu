@@ -76,6 +76,8 @@ class SERVER_DECL AscEmuLog : public Singleton<AscEmuLog>
 
         void ConsoleLogDebugFlag(bool file_only, LogFlags log_flags, const char* format, ...);
         void ConsoleLogDebugFlagFunction(bool file_only, LogFlags log_flags, const char* function, const char* format, ...);
+
+        void ConsoleLogMajorError(std::string line1, std::string line2, std::string line3, std::string line4);
 };
 
 #define AscLog AscEmuLog::getSingleton()

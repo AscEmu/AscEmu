@@ -634,7 +634,7 @@ void ApplyNormalFixes()
 
     if (crc32((const unsigned char*)sp->Name.c_str(), (unsigned int)strlen(sp->Name.c_str())) != SPELL_HASH_WORD_OF_RECALL_OTHER)
     {
-        Log.LargeErrorMessage("You are using DBCs extracted from an unsupported client.", "ArcEmu supports only enUS and enGB!!!", NULL);
+        AscLog.ConsoleLogMajorError("You are using DBCs extracted from an unsupported client.", "AscEmu supports only enUS and enGB!!!", "", "");
         abort();
     }
 

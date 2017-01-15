@@ -146,8 +146,7 @@ bool Master::Run(int argc, char** argv)
     UNIXTIME = time(NULL);
     g_localTime = *localtime(&UNIXTIME);
 
-    Log.InitalizeLogFiles("worldserver");
-    AscLog.InitalizeLogFiles("new_worldserver");
+    AscLog.InitalizeLogFiles("world");
 
     PrintBanner();
 
@@ -187,7 +186,7 @@ bool Master::Run(int argc, char** argv)
 
 #ifndef WIN32
     if (geteuid() == 0 || getegid() == 0)
-        Log.LargeErrorMessage("You are running AscEmu as root.", "This is not needed, and may be a possible security risk.", "It is advised to hit CTRL+C now and", "start as a non-privileged user.", NULL);
+        AscLog.ConsoleLogMajorError("You are running AscEmu as root.", "This is not needed, and may be a possible security risk.", "It is advised to hit CTRL+C now and", "start as a non-privileged user.");
 #endif
 
     InitImplicitTargetFlags();

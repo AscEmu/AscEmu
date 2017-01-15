@@ -414,7 +414,7 @@ bool World::SetInitialWorldSettings()
     LogNotice("World : Loading DBC files...");
     if (!LoadDBCs())
     {
-        Log.LargeErrorMessage("One or more of the DBC files are missing.", "These are absolutely necessary for the server to function.", "The server will not start without them.", NULL);
+        AscLog.ConsoleLogMajorError("One or more of the DBC files are missing.", "These are absolutely necessary for the server to function.", "The server will not start without them.", "");
         return false;
     }
 
@@ -1354,11 +1354,9 @@ void World::Rehash(bool load)
     mQueueUpdateInterval = Config.MainConfig.GetIntDefault("Server", "QueueUpdateInterval", 5000);
     SetKickAFKPlayerTime(Config.MainConfig.GetIntDefault("Server", "KickAFKPlayers", 0));
 
-    Log.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
     AscLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
 
     debugFlags = Config.MainConfig.GetIntDefault("LogLevel", "DebugFlags", 0);
-    Log.SetDebugFlags(debugFlags);
     AscLog.SetDebugFlags(debugFlags);
 
     gm_skip_attunement = Config.MainConfig.GetBoolDefault("Server", "SkipAttunementsForGM", true);

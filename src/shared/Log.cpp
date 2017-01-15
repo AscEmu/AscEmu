@@ -83,33 +83,6 @@ namespace AELog
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// AscEmu oLog functions
-
-void oLog::InitalizeLogFiles(std::string file_prefix)
-{
-#ifdef _WIN32
-    stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-#endif
-
-    std::string normal_filename = file_prefix + "-normal.log";
-    std::string error_filename = file_prefix + "-error.log";
-
-    std::string current_date_time = Util::GetCurrentDateTimeString();
-
-    m_normalFile = fopen(normal_filename.c_str(), "a");
-    if (m_normalFile == nullptr)
-        fprintf(stderr, "%s: Error opening '%s': %s\n", __FUNCTION__, normal_filename.c_str(), strerror(errno));
-    /*else
-        outBasic("=================[%s]=================", current_date_time.c_str());*/
-
-    m_errorFile = fopen(error_filename.c_str(), "a");
-    if (m_errorFile == nullptr)
-        fprintf(stderr, "%s: Error opening '%s': %s\n", __FUNCTION__, error_filename.c_str(), strerror(errno));
-    /*else
-        outErrorSilent("=================[%s]=================", current_date_time.c_str());*/
-}
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // AscEmuLog functions
@@ -264,7 +237,7 @@ void AscEmuLog::ConsoleLogErrorFunction(bool file_only, const char* function, co
 
 void AscEmuLog::ConsoleLogDetail(bool file_only, const char* format, ...)
 {
-    if (aelog_file_log_level < LOG_LEVEL_DETAIL || normal_log_file == nullptr)
+    if (aelog_file_log_level < LL_DETAIL || normal_log_file == nullptr)
         return;
 
     char message_buffer[32768];
@@ -282,7 +255,7 @@ void AscEmuLog::ConsoleLogDetail(bool file_only, const char* format, ...)
 
 void AscEmuLog::ConsoleLogDetailFunction(bool file_only, const char* function, const char* format, ...)
 {
-    if (aelog_file_log_level < LOG_LEVEL_DETAIL || normal_log_file == nullptr)
+    if (aelog_file_log_level < LL_DETAIL || normal_log_file == nullptr)
         return;
 
     char function_message[32768];
@@ -307,7 +280,7 @@ void AscEmuLog::ConsoleLogDetailFunction(bool file_only, const char* function, c
 
 void AscEmuLog::ConsoleLogDebugFlag(bool file_only, LogFlags log_flags, const char* format, ...)
 {
-    if (aelog_file_log_level < LOG_LEVEL_DEBUG || error_log_file == nullptr)
+    if (aelog_file_log_level < LL_DEBUG || error_log_file == nullptr)
         return;
 
     if (!(aelog_debug_flags & log_flags))
@@ -332,7 +305,7 @@ void AscEmuLog::ConsoleLogDebugFlag(bool file_only, LogFlags log_flags, const ch
 
 void AscEmuLog::ConsoleLogDebugFlagFunction(bool file_only, LogFlags log_flags, const char* function, const char* format, ...)
 {
-    if (aelog_file_log_level < LOG_LEVEL_DEBUG || error_log_file == nullptr)
+    if (aelog_file_log_level < LL_DEBUG || error_log_file == nullptr)
         return;
 
     char function_message[32768];
@@ -355,3 +328,25 @@ void AscEmuLog::ConsoleLogDebugFlagFunction(bool file_only, LogFlags log_flags, 
     WriteFile(normal_log_file, message_buffer);
 }
 
+
+void AscEmuLog::ConsoleLogMajorError(std::string line1, std::string line2, std::string line3, std::string line4)
+{
+    std::stringstream sstream;
+    sstream << "*********************************************************************" << std::endl;
+    sstream << "*                        MAJOR ERROR/WARNING                         " << std::endl;
+    sstream << "*                        *******************                         " << std::endl;
+    sstream << "* " << line1 << std::endl;
+    if (!line2.empty())
+        sstream << "* " << line2 << std::endl;
+    if (!line3.empty())
+        sstream << "* " << line3 << std::endl;
+    if (!line4.empty())
+        sstream << "* " << line4 << std::endl;
+    sstream << "*********************************************************************" << std::endl;
+
+    SetConsoleColor(CONSOLE_COLOR_RED);
+    std::cout << sstream.str() << std::endl;
+    SetConsoleColor(CONSOLE_COLOR_NORMAL);
+
+    WriteFile(error_log_file, strdup(sstream.str().c_str()));
+}

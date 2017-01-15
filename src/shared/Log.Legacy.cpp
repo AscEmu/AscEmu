@@ -25,98 +25,11 @@
 #include <cstdarg>
 #include <string>
 
-createFileSingleton(oLog);
+//createFileSingleton(oLog);
 initialiseSingleton(WorldLog);
 
 SERVER_DECL time_t UNIXTIME;
 SERVER_DECL tm g_localTime;
-
-void oLog::outFile(FILE* file, char* msg, const char* source)
-{
-    std::string current_time = "[" + Util::GetCurrentTimeString() + "] ";
-    if(source != NULL)
-    {
-        fprintf(file, "%s %s: %s\n", current_time.c_str(), source, msg);
-        //printf("%s %s: %s\n", time_buffer, source, msg);
-    }
-    else
-    {
-        fprintf(file, "%s %s\n", current_time.c_str(), msg);
-        //printf("%s %s\n", time_buffer, msg);
-    }
-}
-
-/// Prints text to file without showing it to the user. Used for the startup banner.
-void oLog::outFileSilent(FILE* file, char* msg, const char* source)
-{
-    std::string current_time = "[" + Util::GetCurrentTimeString() + "] ";
-    if(source != NULL)
-    {
-        fprintf(file, "%s %s: %s\n", current_time.c_str(), source, msg);
-        // Don't use printf to prevent text from being shown in the console output.
-    }
-    else
-    {
-        fprintf(file, "%s %s\n", current_time.c_str(), msg);
-        // Don't use printf to prevent text from being shown in the console output.
-    }
-}
-
-//old NGLog.h methods
-void oLog::LargeErrorMessage(const char* source, ...)
-{
-    std::vector<char*> lines;
-    char* pointer;
-    va_list ap;
-    va_start(ap, source);
-
-    pointer = const_cast<char*>(source);
-    lines.push_back(pointer);
-
-    size_t i, j, k;
-    pointer = va_arg(ap, char*);
-    while(pointer != NULL)
-    {
-        lines.push_back(pointer);
-        pointer = va_arg(ap, char*);
-    }
-
-    va_end(ap);
-
-    /*outError("*********************************************************************");
-    outError("*                        MAJOR ERROR/WARNING                        *");
-    outError("*                        ===================                        *");
-
-    for(std::vector<char*>::iterator itr = lines.begin(); itr != lines.end(); ++itr)
-    {
-        std::stringstream sstext;
-        i = strlen(*itr);
-        j = (i <= 65) ? 65 - i : 0;
-        sstext << "* " << *itr;
-        for(k = 0; k < j; ++k)
-        {
-            sstext << " ";
-        }
-
-        sstext << " *";
-        outError(sstext.str().c_str());
-    }
-
-    outError("*********************************************************************");*/
-}
-
-void oLog::SetFileLoggingLevel(int32 level)
-{
-    if (level < LOG_LEVEL_NORMAL)
-        level = LOG_LEVEL_NORMAL;
-
-    m_fileLogLevel = level;
-}
-
-void oLog::SetDebugFlags(uint32 flags)
-{
-    mDebugFlags = flags;
-}
 
 void SessionLogWriter::write(const char* format, ...)
 {

@@ -64,14 +64,11 @@ void LogonServer::Run(int argc, char** argv)
             case 0:
                 break;
             default:
-                //Log.Init(0, LOGON_LOG);
-                //Log.outBasic("Usage: %s [--checkconf] [--fileloglevel <level>] [--conf <filename>] [--version]", argv[0]);
                 return;
         }
     }
 #endif
-    Log.InitalizeLogFiles("logonserver");
-    AscLog.InitalizeLogFiles("new_logonserver");
+    AscLog.InitalizeLogFiles("logon");
 
     PrintBanner();
 
@@ -96,7 +93,7 @@ void LogonServer::Run(int argc, char** argv)
 
     // set new log levels
     if (file_log_level != (int)DEF_VALUE_NOT_SET)
-        Log.SetFileLoggingLevel(file_log_level);
+        AscLog.SetFileLoggingLevel(file_log_level);
 #endif
 
     LogDefault("The key combination <Ctrl-C> will safely shut down the server.");

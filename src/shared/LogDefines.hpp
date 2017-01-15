@@ -46,4 +46,11 @@ enum LogFlags
     LF_ALL          = 0x800 - 0x001
 };
 
+enum LogLevel
+{
+    LL_NORMAL    = 0,
+    LL_DETAIL    = 1,
+    LL_DEBUG     = 2
+};
+
 #endif  // LOG_DEFINES_HPP

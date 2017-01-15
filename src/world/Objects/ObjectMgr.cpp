@@ -1605,7 +1605,7 @@ void ObjectMgr::LoadTrainers()
         }
         if (result2->GetFieldCount() != 9)
         {
-            Log.LargeErrorMessage("Trainers table format is invalid. Please update your database.", NULL);
+            LOG_ERROR("Trainers table format is invalid. Please update your database.");
             delete tr;
             delete result;
             delete result2;
@@ -2773,7 +2773,7 @@ void ObjectMgr::LoadGroups()
     {
         if (result->GetFieldCount() != 52)
         {
-            Log.LargeErrorMessage("groups table format is invalid. Please update your database.", NULL);
+            LOG_ERROR("groups table format is invalid. Please update your database.");
             return;
         }
         do
@@ -2795,7 +2795,7 @@ void ObjectMgr::LoadArenaTeams()
     {
         if (result->GetFieldCount() != 22)
         {
-            Log.LargeErrorMessage("arenateams table format is invalid. Please update your database.", NULL);
+            LOG_ERROR("arenateams table format is invalid. Please update your database.");
             return;
         }
         do
