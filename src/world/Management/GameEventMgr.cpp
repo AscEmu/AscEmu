@@ -96,7 +96,7 @@ void GameEventMgr::LoadFromDB()
             //}
         } while (result->NextRow());
         delete result;
-        Log.Success("GameEventMgr", "%u events loaded from table event_properties", pCount);
+        LogDetail("GameEventMgr : %u events loaded from table event_properties", pCount);
     }
     // Loading event_saves from CharacterDB
     LogNotice("GameEventMgr : Start loading event_save");
@@ -135,7 +135,7 @@ void GameEventMgr::LoadFromDB()
             delete result;
         }
 
-        Log.Success("GameEventMgr", "Loaded %u saved events loaded from table event_saves", pCount);
+        LogDetail("GameEventMgr : Loaded %u saved events loaded from table event_saves", pCount);
     }
     // Loading event_creature from WorldDB
     LogNotice("GameEventMgr : Start loading game event creature spawns");
@@ -216,7 +216,7 @@ void GameEventMgr::LoadFromDB()
             } while (result->NextRow());
             delete result;
         }
-        Log.Success("GameEventMgr", "%u creature spawns for %u events from table event_creature_spawns loaded.", pCount, mGameEvents.size());
+        LogDetail("GameEventMgr : %u creature spawns for %u events from table event_creature_spawns loaded.", pCount, mGameEvents.size());
     }
     // Loading event_gameobject from WorldDB
     LogNotice("GameEventMgr : Start loading game event gameobject spawns");
@@ -284,7 +284,7 @@ void GameEventMgr::LoadFromDB()
             } while (result->NextRow());
             delete result;
         }
-        Log.Success("GameEventMgr", "%u gameobject spawns for %u events from table event_gameobject_spawns loaded.", pCount, mGameEvents.size());
+        LogDetail("GameEventMgr : %u gameobject spawns for %u events from table event_gameobject_spawns loaded.", pCount, mGameEvents.size());
     }
 
     StartArenaEvents();
@@ -336,7 +336,7 @@ void GameEventMgr::GameEventMgrThread::CleanupEntities()
 {
     // DO NOT USE THIS FUNCTION UNLESS YOU KNOW WHAT YOU ARE DOING
     ARCEMU_ASSERT(FALSE);
-    Log.Success("GameEventMgr", "Cleaning up entity remnants");
+    LogNotice("GameEventMgr : Cleaning up entity remnants");
     // Better solution: don't have creatures save here in the first place
     for (auto gameEventPair : sGameEventMgr.mGameEvents)
     {
@@ -352,7 +352,7 @@ void GameEventMgr::GameEventMgrThread::CleanupEntities()
             WorldDatabase.Execute(cleanGameObjectsQuery, gameobject.entry);
         }
     }
-    Log.Success("GameEventMgr", "Entity remnants cleaned up, starting main thread");
+    LogDetail("GameEventMgr : Entity remnants cleaned up, starting main thread");
 }
 
 void GameEventMgr::GameEventMgrThread::SpawnActiveEvents()
@@ -368,7 +368,7 @@ void GameEventMgr::GameEventMgrThread::SpawnActiveEvents()
 
 bool GameEventMgr::GameEventMgrThread::run()
 {
-    Log.Success("GameEventMgr", "Started.");
+    LogNotice("GameEventMgr : Started.");
 
     // Do NOT uncomment this unless you know what you're doing, debug code
     //CleanupEntities();

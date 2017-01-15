@@ -121,7 +121,7 @@ void SpellFactoryMgr::LoadSpellAreas()
 
     if (!result)
     {
-        Log.Success("SpellArea", "Loaded 0 spell area requirements. DB table `spell_area` is empty.");
+        LOG_DETAIL("Loaded 0 spell area requirements. DB table `spell_area` is empty.");
         return;
     }
 
@@ -293,7 +293,7 @@ void SpellFactoryMgr::LoadSpellAreas()
     } while (result->NextRow());
     delete result;
 
-    Log.Success("SpellArea", "Loaded %u spell area requirements.", pCount);
+    LOG_DETAIL("Loaded %u spell area requirements.", pCount);
 }
 
 SpellAreaMapBounds SpellFactoryMgr::GetSpellAreaMapBounds(uint32 spell_id) const

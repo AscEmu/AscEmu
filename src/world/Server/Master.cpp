@@ -162,19 +162,19 @@ bool Master::Run(int argc, char** argv)
     {
         LogNotice("Config : Checking config file: %s", config_file);
         if (Config.MainConfig.SetSource(config_file, true))
-            Log.Success("Config", "Passed without errors.");
+            LogDetail("Config : Passed world.conf without errors.");
         else
             LOG_ERROR("Encountered one or more errors while loading world.conf.");
 
         LogNotice("Config : Checking config file: %s", realm_config_file);
         if (Config.RealmConfig.SetSource(realm_config_file, true))
-            Log.Success("Config", "Passed without errors.");
+            LogDetail("Config : Passed realm.conf without errors.");
         else
             LOG_ERROR("Encountered one or more errors while loading realm.conf.");
 
         LogNotice("Config : Checking config file:: %s", optional_config_file);
         if (Config.OptionalConfig.SetSource(optional_config_file, true))
-            Log.Success("Config", "Passed without errors.");
+            LogDetail("Config : Passed optional.conf without errors.");
         else
             LOG_ERROR("Encountered one or more errors while loading optional.conf.");
 
@@ -273,7 +273,7 @@ bool Master::Run(int argc, char** argv)
         sScriptMgr.DumpUnimplementedSpells();
 
     LoadingTime = getMSTime() - LoadingTime;
-    Log.Success("Server", "Ready for connections. Startup time: %ums", LoadingTime);
+    LogDetail("Server : Ready for connections. Startup time: %ums", LoadingTime);
 
     ThreadPool.ExecuteTask(new GameEventMgr::GameEventMgrThread());
 
@@ -374,7 +374,7 @@ bool Master::Run(int argc, char** argv)
     else
         LOG_DEBUG("File worldserver.pid successfully deleted");
 
-    Log.Success("Shutdown", "Shutdown complete.");
+    LogDetail("Shutdown : Shutdown complete.");
     AscLog.~AscEmuLog();
 
 #ifdef WIN32
@@ -453,7 +453,7 @@ bool Master::_CheckDBVersion()
 
     delete cqr;
 
-    Log.Success("Database", "Database successfully validated.");
+    LogDetail("Database : Database successfully validated.");
 
     return true;
 }
@@ -602,10 +602,10 @@ void Master::PrintBanner()
 
 bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_file, char* realm_config_file)
 {
-    Log.Success("Config", "Loading Config Files...");
+    LogNotice("Config : Loading Config Files...");
     if (Config.MainConfig.SetSource(config_file))
     {
-        LogNotice("Config : " CONFDIR "/world.conf loaded");
+        LogDetail("Config : " CONFDIR "/world.conf loaded");
     }
     else
     {
@@ -616,7 +616,7 @@ bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_fil
 
     if (Config.OptionalConfig.SetSource(optional_config_file))
     {
-        LogNotice("Config : " CONFDIR "/optional.conf loaded");
+        LogDetail("Config : " CONFDIR "/optional.conf loaded");
     }
     else
     {
@@ -627,7 +627,7 @@ bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_fil
 
     if (Config.RealmConfig.SetSource(realm_config_file))
     {
-        LogNotice("Config : " CONFDIR "/realms.conf loaded");
+        LogDetail("Config : " CONFDIR "/realms.conf loaded");
     }
     else
     {
@@ -791,14 +791,14 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
 
 void Master::StartNetworkSubsystem()
 {
-    Log.Success("Network", "Starting subsystem...");
+    LogNotice("Network : Starting subsystem...");
     new SocketMgr;
     new SocketGarbageCollector;
 }
 
 void Master::ShutdownLootSystem()
 {
-    Log.Success("Shutdown", "Initiated at %s", Util::GetDateTimeStringFromTimeStamp((uint32)UNIXTIME).c_str());
+    LogNotice("Shutdown : Initiated at %s", Util::GetDateTimeStringFromTimeStamp((uint32)UNIXTIME).c_str());
 
     if (lootmgr.is_loading)
     {

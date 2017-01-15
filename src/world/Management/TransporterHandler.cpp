@@ -88,7 +88,7 @@ Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry
     t->BuildStopMovePacket(instance);
     t->m_WayPoints.clear(); // Make transport stopped at server-side, movement will be handled by scripts
 
-    Log.Success("Transport Handler", "Spawned Transport Entry %u, map %u, instance id %u", goEntry, t->GetMapId(), t->GetInstanceID());
+    LogDetail("Transport Handler : Spawned Transport Entry %u, map %u, instance id %u", goEntry, t->GetMapId(), t->GetInstanceID());
     return t;
 }
 
@@ -114,7 +114,7 @@ void ObjectMgr::UnloadTransportFromInstance(Transporter *t)
 
 void ObjectMgr::LoadTransports()
 {
-    Log.Success("TransportHandler", "Starting loading transport data...");
+    LogNotice("TransportHandler : Starting loading transport data...");
     {
         QueryResult* result = WorldDatabase.Query("SELECT entry, name, period FROM transport_data");
 
@@ -177,9 +177,9 @@ void ObjectMgr::LoadTransports()
 
         delete result;
 
-        Log.Success("Transporter Handler", ">> Loaded %u transports", pCount);
+        LogDetail("Transporter Handler : Loaded %u transports", pCount);
     }
-    Log.Success("TransportHandler", "Starting loading transport creatures...");
+    LogNotice("TransportHandler : Starting loading transport creatures...");
     {
         QueryResult* result = WorldDatabase.Query("SELECT guid, npc_entry, transport_entry, TransOffsetX, TransOffsetY, TransOffsetZ, TransOffsetO, emote FROM transport_creatures");
 
@@ -221,7 +221,7 @@ void ObjectMgr::LoadTransports()
             transport->RespawnCreaturePassengers();
         }
 
-        Log.Success("Transport Handler", ">> Loaded %u Transport Npcs", pCount);
+        LogDetail("Transport Handler : Loaded %u Transport Npcs", pCount);
     }
 }
 

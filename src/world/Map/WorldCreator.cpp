@@ -706,13 +706,13 @@ void InstanceMgr::_LoadInstances()
     QueryResult* result;
 
     // clear any instances that have expired.
-    Log.Success("InstanceMgr", "Deleting Expired Instances...");
+    LogDetail("InstanceMgr : Deleting Expired Instances...");
     CharacterDatabase.WaitExecute("DELETE FROM instances WHERE expiration > 0 AND expiration <= %u", UNIXTIME);
     CharacterDatabase.Execute("DELETE FROM instanceids WHERE instanceid NOT IN (SELECT id FROM instances)");
 
     // load saved instances
     result = CharacterDatabase.Query("SELECT id, mapid, creation, expiration, killed_npc_guids, difficulty, creator_group, creator_guid, persistent FROM instances");
-    Log.Success("InstanceMgr", "Loading %u saved instances.", result ? result->GetRowCount() : 0);
+    LogDetail("InstanceMgr : Loading %u saved instances.", result ? result->GetRowCount() : 0);
 
     if (result)
     {

@@ -167,7 +167,7 @@ void LogonCommHandler::AddForcedPermission(std::string acct, std::string perm)
 
 void LogonCommHandler::ConnectAll()
 {
-    Log.Success("LogonCommClient", "Attempting to connect to logon server...");
+    LogNotice("LogonCommClient : Attempting to connect to logon server...");
     for (std::set<LogonServer*>::iterator itr = servers.begin(); itr != servers.end(); ++itr)
         Connect(*itr);
 }
@@ -195,7 +195,7 @@ void LogonCommHandler::Connect(LogonServer* server)
         LOG_ERROR("Connection failed. Will try again in 10 seconds.");
         return;
     }
-    Log.Success("LogonCommClient", "Authenticating...");
+    LogNotice("LogonCommClient : Authenticating...");
     uint32 tt = (uint32)UNIXTIME + 10;
     conn->SendChallenge();
     while (!conn->authenticated)
@@ -219,7 +219,7 @@ void LogonCommHandler::Connect(LogonServer* server)
         return;
     }
 
-    Log.Success("LogonCommClient", "Authentication OK.");
+    LogDetail("LogonCommClient : Authentication OK.");
     LogNotice("LogonCommClient : Logonserver was connected on [%s:%u].", server->Address.c_str(), server->Port);
 
     // Send the initial ping
@@ -252,7 +252,7 @@ void LogonCommHandler::Connect(LogonServer* server)
     // Wait for all realms to register
     Arcemu::Sleep(200);
 
-    Log.Success("LogonCommClient", "Logonserver latency is %ums.", conn->latency);
+    LogDetail("LogonCommClient : Logonserver latency is %ums.", conn->latency);
 }
 
 void LogonCommHandler::AdditionAck(uint32 ID, uint32 ServID)

@@ -61,7 +61,7 @@ void CalendarMgr::LoadFromDB()
             while (result->NextRow());
             delete result;
 
-            Log.Success("CalendarMgr", "%u calendar events loaded from table calendar_events", count);
+            LogDetail("CalendarMgr : %u calendar events loaded from table calendar_events", count);
         }
     }
 
@@ -98,7 +98,7 @@ void CalendarMgr::LoadFromDB()
             }
             while (result->NextRow());
             delete result;
-            Log.Success("CalendarMgr", "Loaded %u calendar invites", count);
+            LogDetail("CalendarMgr : Loaded %u calendar invites", count);
         }
     }
 }

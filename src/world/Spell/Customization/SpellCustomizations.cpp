@@ -268,7 +268,7 @@ void SpellCustomizations::LoadSpellRanks()
 
     if (spell_rank_count > 0)
     {
-        Log.Success("SpellCustomizations::LoadSpellRanks", "Loaded %u custom_RankNumbers from spell_ranks table", spell_rank_count);
+        LOG_DETAIL("Loaded %u custom_RankNumbers from spell_ranks table", spell_rank_count);
     }
     else
     {
@@ -313,7 +313,7 @@ void SpellCustomizations::LoadSpellCustomAssign()
 
     if (spell_custom_assign_count > 0)
     {
-        Log.Success("SpellCustomizations::LoadSpellCustomAssign", "Loaded %u attributes from spell_custom_assign table", spell_custom_assign_count);
+        LOG_DETAIL("Loaded %u attributes from spell_custom_assign table", spell_custom_assign_count);
     }
     else
     {

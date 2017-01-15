@@ -411,7 +411,7 @@ bool World::SetInitialWorldSettings()
     // Start
     uint32 start_time = getMSTime();
 
-    Log.Success("World", "Loading DBC files...");
+    LogNotice("World : Loading DBC files...");
     if (!LoadDBCs())
     {
         Log.LargeErrorMessage("One or more of the DBC files are missing.", "These are absolutely necessary for the server to function.", "The server will not start without them.", NULL);
@@ -436,7 +436,7 @@ bool World::SetInitialWorldSettings()
 
     ApplyNormalFixes();
 
-    Log.Success("GameObjectModel", "Loading GameObject models...");
+    LogNotice("GameObjectModel : Loading GameObject models...");
     LoadGameObjectModelList(sWorld.vMapPath);
 
     new SpellFactoryMgr;
@@ -550,16 +550,14 @@ bool World::SetInitialWorldSettings()
     sLocalizationMgr.Reload(false);
 
     CommandTableStorage::getSingleton().Load();
-    Log.Success("WordFilter", "Loading...");
+    LogNotice("WordFilter : Loading...");
 
     g_characterNameFilter = new WordFilter();
     g_chatFilter = new WordFilter();
     g_characterNameFilter->Load("wordfilter_character_names");
     g_chatFilter->Load("wordfilter_chat");
 
-    Log.Success("WordFilter", "Done.");
-
-    Log.Success("World", "Database loaded in %ums.", getMSTime() - start_time);
+    LogDetail("WordFilter : Done. Database loaded in %ums.", getMSTime() - start_time);
 
     // calling this puts all maps into our task list.
     sInstanceMgr.Load(&tl);
@@ -578,22 +576,22 @@ bool World::SetInitialWorldSettings()
     LogNotice("World : Player size: %u bytes", sizeof(Player) + sizeof(ItemInterface) + 50000 + 30000 + 1000 + sizeof(AIInterface));
     LogNotice("World : GameObject size: %u bytes", sizeof(GameObject));
 
-    Log.Success("World", "Starting Transport System...");
+    LogDetail("World : Starting Transport System...");
     objmgr.LoadTransports();
 
     //Start the Achievement system :D
 #ifdef ENABLE_ACHIEVEMENTS
-    Log.Success("World", "Starting Achievement System..");
+    LogDetail("World : Starting Achievement System..");
     objmgr.LoadAchievementCriteriaList();
 #endif
     // start mail system
     MailSystem::getSingleton().StartMailSystem();
 
-    Log.Success("World", "Starting Auction System...");
+    LogDetail("World : Starting Auction System...");
     new AuctionMgr;
     sAuctionMgr.LoadAuctionHouses();
 
-    Log.Success("LFGMgr", "Loading LFG rewards...");
+    LogDetail("World : Loading LFG rewards...");
     sLfgMgr.LoadRewards();
 
     m_queueUpdateTimer = mQueueUpdateInterval;
@@ -601,7 +599,7 @@ bool World::SetInitialWorldSettings()
     lootmgr.LoadLoot();
 
     Channel::LoadConfSettings();
-    Log.Success("BattlegroundManager", "Starting...");
+    LogDetail("World : Starting CBattlegroundManager...");
     new CBattlegroundManager;
 
     dw = new DayWatcherThread();
@@ -1211,7 +1209,7 @@ void TaskList::spawn()
     else
         threadcount = 1;
 
-    Log.Success("World", "Beginning %s server startup with %u threads.", (threadcount == 1) ? "progressive" : "parallel", threadcount);
+    LogNotice("World : Beginning %s server startup with %u threads.", (threadcount == 1) ? "progressive" : "parallel", threadcount);
 
     for (uint32 x = 0; x < threadcount; ++x)
         ThreadPool.ExecuteTask(new TaskExecutor(this));

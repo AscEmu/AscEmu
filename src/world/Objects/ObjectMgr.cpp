@@ -375,7 +375,7 @@ void ObjectMgr::LoadSpellSkills()
             mSpellSkills[skill_line_ability->spell] = skill_line_ability;
         }
     }
-    Log.Success("ObjectMgr", "%u spell skills loaded.", mSpellSkills.size());
+    LogDetail("ObjectMgr : %u spell skills loaded.", mSpellSkills.size());
 }
 
 DBC::Structures::SkillLineAbilityEntry const* ObjectMgr::GetSpellSkill(uint32 id)
@@ -489,7 +489,7 @@ void ObjectMgr::LoadPlayersInfo()
         while (result->NextRow());
         delete result;
     }
-    Log.Success("ObjectMgr", "%u players loaded.", m_playersinfo.size());
+    LogDetail("ObjectMgr : %u players loaded.", m_playersinfo.size());
     LoadGuilds();
 }
 
@@ -551,7 +551,7 @@ void ObjectMgr::LoadGuilds()
         while (result->NextRow());
         delete result;
     }
-    Log.Success("ObjectMgr", "%u guilds loaded.", mGuild.size());
+    LogDetail("ObjectMgr : %u guilds loaded.", mGuild.size());
 }
 
 Corpse* ObjectMgr::LoadCorpse(uint32 guid)
@@ -654,7 +654,7 @@ void ObjectMgr::LoadGMTickets()
     }
     while (result->NextRow());
 
-    Log.Success("ObjectMgr", "%u active GM Tickets loaded.", result->GetRowCount());
+    LogDetail("ObjectMgr : %u active GM Tickets loaded.", result->GetRowCount());
     delete result;
 }
 
@@ -710,7 +710,7 @@ void ObjectMgr::LoadInstanceBossInfos()
     while (result->NextRow());
 
     delete result;
-    Log.Success("ObjectMgr", "%u boss information loaded.", cnt);
+    LogDetail("ObjectMgr : %u boss information loaded.", cnt);
 }
 
 void ObjectMgr::SaveGMTicket(GM_Ticket* ticket, QueryBuffer* buf)
@@ -871,7 +871,7 @@ void ObjectMgr::LoadAchievementRewards()
 
     delete result;
 
-    Log.Success("ObjectMgr", "Loaded %u achievement rewards", count);
+    LogDetail("ObjectMgr : Loaded %u achievement rewards", count);
 }
 
 void ObjectMgr::SetHighestGuids()
@@ -1290,7 +1290,7 @@ void ObjectMgr::LoadVendors()
 
         delete result;
     }
-    Log.Success("ObjectMgr", "%u vendors loaded.", mVendors.size());
+    LogDetail("ObjectMgr : %u vendors loaded.", mVendors.size());
 }
 
 void ObjectMgr::ReloadVendors()
@@ -1705,7 +1705,7 @@ void ObjectMgr::LoadTrainers()
     }
     while (result->NextRow());
     delete result;
-    Log.Success("ObjectMgr", "%u trainers loaded.", mTrainers.size());
+    LogDetail("ObjectMgr : %u trainers loaded.", mTrainers.size());
 }
 
 Trainer* ObjectMgr::GetTrainer(uint32 Entry)
@@ -2328,7 +2328,7 @@ void ObjectMgr::LoadGuildCharters()
     }
     while (result->NextRow());
     delete result;
-    Log.Success("ObjectMgr", "%u charters loaded.", m_charters[0].size());
+    LogDetail("ObjectMgr : %u charters loaded.", m_charters[0].size());
 }
 
 Charter* ObjectMgr::GetCharter(uint32 CharterId, CharterTypes Type)
@@ -2649,7 +2649,7 @@ void ObjectMgr::LoadMonsterSay()
 
     }
     while (result->NextRow());
-    Log.Success("ObjectMgr", "%u monster say events loaded.", result->GetRowCount());
+    LogDetail("ObjectMgr : %u monster say events loaded.", result->GetRowCount());
     delete result;
 }
 
@@ -2694,7 +2694,7 @@ void ObjectMgr::LoadInstanceReputationModifiers()
     while (result->NextRow());
     delete result;
 
-    Log.Success("ObjectMgr", "%u instance reputation modifiers loaded.", m_reputation_instance.size());
+    LogDetail("ObjectMgr : %u instance reputation modifiers loaded.", m_reputation_instance.size());
 }
 
 bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim)
@@ -2785,7 +2785,7 @@ void ObjectMgr::LoadGroups()
         delete result;
     }
 
-    Log.Success("ObjectMgr", "%u groups loaded.", this->m_groups.size());
+    LogDetail("ObjectMgr : %u groups loaded.", this->m_groups.size());
 }
 
 void ObjectMgr::LoadArenaTeams()
@@ -3358,7 +3358,7 @@ void ObjectMgr::LoadAreaTrigger()
 
     delete result;
 
-    Log.Success("AreaTrigger", "Loaded %u area trigger teleport definitions", count);
+    LogDetail("AreaTrigger : Loaded %u area trigger teleport definitions", count);
 }
 
 void ObjectMgr::LoadEventScripts()
@@ -3419,7 +3419,7 @@ void ObjectMgr::LoadEventScripts()
 
     delete result;
 
-    Log.Success("ObjectMgr", "Loaded event_scripts for %u events...", count);
+    LogDetail("ObjectMgr : Loaded event_scripts for %u events...", count);
 }
 
 EventScriptBounds ObjectMgr::GetEventScripts(uint32 event_id) const

@@ -100,7 +100,7 @@ void MySQLDataStore::LoadItemPagesTable()
 
     delete itempages_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u pages from `item_pages` table in %u ms!", itempages_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u pages from `item_pages` table in %u ms!", itempages_count, getMSTime() - start_time);
 }
 
 ItemPage const* MySQLDataStore::GetItemPage(uint32 entry)
@@ -447,7 +447,7 @@ void MySQLDataStore::LoadItemPropertiesTable()
         delete item_result;
     }
 
-    Log.Success("MySQLDataLoads", "Loaded %u item_properties in %u ms!", item_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u item_properties in %u ms!", item_count, getMSTime() - start_time);
 }
 
 ItemProperties const* MySQLDataStore::GetItemProperties(uint32 entry)
@@ -696,7 +696,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
         delete creature_properties_result;
     }
 
-    Log.Success("MySQLDataLoads", "Loaded %u creature proto data in %u ms!", creature_properties_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u creature proto data in %u ms!", creature_properties_count, getMSTime() - start_time);
 }
 
 CreatureProperties const* MySQLDataStore::GetCreatureProperties(uint32 entry)
@@ -824,7 +824,7 @@ void MySQLDataStore::LoadGameObjectPropertiesTable()
         delete gameobject_properties_result;
     }
 
-    Log.Success("MySQLDataLoads", "Loaded %u gameobject data in %u ms!", gameobject_properties_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u gameobject data in %u ms!", gameobject_properties_count, getMSTime() - start_time);
 }
 
 GameObjectProperties const* MySQLDataStore::GetGameObjectProperties(uint32 entry)
@@ -1062,7 +1062,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
         delete quest_result;
     }
 
-    Log.Success("MySQLDataLoads", "Loaded %u quest_properties data in %u ms!", quest_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u quest_properties data in %u ms!", quest_count, getMSTime() - start_time);
 }
 
 QuestProperties const* MySQLDataStore::GetQuestProperties(uint32 entry)
@@ -1115,7 +1115,7 @@ void MySQLDataStore::LoadGameObjectQuestItemBindingTable()
         delete gameobject_quest_item_result;
     }
 
-    Log.Success("MySQLDataLoads", "Loaded %u data from `gameobject_quest_item_binding` table in %u ms!", gameobject_quest_item_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u data from `gameobject_quest_item_binding` table in %u ms!", gameobject_quest_item_count, getMSTime() - start_time);
 }
 
 void MySQLDataStore::LoadGameObjectQuestPickupBindingTable()
@@ -1161,7 +1161,7 @@ void MySQLDataStore::LoadGameObjectQuestPickupBindingTable()
         delete gameobject_quest_pickup_result;
     }
 
-    Log.Success("MySQLDataLoads", "Loaded %u data from `gameobject_quest_pickup_binding` table in %u ms!", gameobject_quest_pickup_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u data from `gameobject_quest_pickup_binding` table in %u ms!", gameobject_quest_pickup_count, getMSTime() - start_time);
 }
 
 void MySQLDataStore::LoadCreatureDifficultyTable()
@@ -1202,7 +1202,7 @@ void MySQLDataStore::LoadCreatureDifficultyTable()
 
     delete creature_difficulty_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u creature difficulties info from `creature_difficulty` table in %u ms!", creature_difficulty_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u creature difficulties info from `creature_difficulty` table in %u ms!", creature_difficulty_count, getMSTime() - start_time);
 }
 
 uint32 MySQLDataStore::GetCreatureDifficulty(uint32 entry, uint8 difficulty_type)
@@ -1278,7 +1278,7 @@ void MySQLDataStore::LoadDisplayBoundingBoxesTable()
 
     delete display_bounding_boxes_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u display bounding info from `display_bounding_boxes` table in %u ms!", display_bounding_boxes_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u display bounding info from `display_bounding_boxes` table in %u ms!", display_bounding_boxes_count, getMSTime() - start_time);
 }
 
 DisplayBounding const* MySQLDataStore::GetDisplayBounding(uint32 entry)
@@ -1332,7 +1332,7 @@ void MySQLDataStore::LoadVendorRestrictionsTable()
 
     delete vendor_restricitons_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u restrictions from `vendor_restrictions` table in %u ms!", vendor_restricitons_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u restrictions from `vendor_restrictions` table in %u ms!", vendor_restricitons_count, getMSTime() - start_time);
 }
 
 VendorRestrictionEntry const* MySQLDataStore::GetVendorRestriction(uint32 entry)
@@ -1389,7 +1389,7 @@ void MySQLDataStore::LoadAreaTriggersTable()
 
     delete area_triggers_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u areatriggers from `areatriggers` table in %u ms!", area_triggers_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u areatriggers from `areatriggers` table in %u ms!", area_triggers_count, getMSTime() - start_time);
 }
 
 AreaTrigger const* MySQLDataStore::GetAreaTrigger(uint32 entry)
@@ -1468,7 +1468,7 @@ void MySQLDataStore::LoadNpcTextTable()
 
     delete npc_text_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `npc_text` table in %u ms!", npc_text_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_text` table in %u ms!", npc_text_count, getMSTime() - start_time);
 }
 
 NpcText const* MySQLDataStore::GetNpcText(uint32 entry)
@@ -1523,7 +1523,7 @@ void MySQLDataStore::LoadNpcScriptTextTable()
 
     delete npc_script_text_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `npc_script_text` table in %u ms!", npc_script_text_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_script_text` table in %u ms!", npc_script_text_count, getMSTime() - start_time);
 }
 
 NpcScriptText const* MySQLDataStore::GetNpcScriptText(uint32 entry)
@@ -1569,7 +1569,7 @@ void MySQLDataStore::LoadGossipMenuOptionTable()
 
     delete gossip_menu_optiont_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `gossip_menu_option` table in %u ms!", gossip_menu_optiont_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu_option` table in %u ms!", gossip_menu_optiont_count, getMSTime() - start_time);
 }
 
 GossipMenuOption const* MySQLDataStore::GetGossipMenuOption(uint32 entry)
@@ -1621,7 +1621,7 @@ void MySQLDataStore::LoadGraveyardsTable()
 
     delete graveyards_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `graveyards` table in %u ms!", graveyards_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `graveyards` table in %u ms!", graveyards_count, getMSTime() - start_time);
 }
 
 GraveyardTeleport const* MySQLDataStore::GetGraveyard(uint32 entry)
@@ -1669,7 +1669,7 @@ void MySQLDataStore::LoadTeleportCoordsTable()
 
     delete teleport_coords_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `spell_teleport_coords` table in %u ms!", teleport_coords_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `spell_teleport_coords` table in %u ms!", teleport_coords_count, getMSTime() - start_time);
 }
 
 TeleportCoords const* MySQLDataStore::GetTeleportCoord(uint32 entry)
@@ -1715,7 +1715,7 @@ void MySQLDataStore::LoadFishingTable()
 
     delete fishing_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `fishing` table in %u ms!", fishing_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `fishing` table in %u ms!", fishing_count, getMSTime() - start_time);
 }
 
 FishingZoneEntry const* MySQLDataStore::GetFishingZone(uint32 entry)
@@ -1783,7 +1783,7 @@ void MySQLDataStore::LoadWorldMapInfoTable()
 
     delete worldmap_info_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `worldmap_info` table in %u ms!", world_map_info_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `worldmap_info` table in %u ms!", world_map_info_count, getMSTime() - start_time);
 }
 
 MapInfo const* MySQLDataStore::GetWorldMapInfo(uint32 entry)
@@ -1829,7 +1829,7 @@ void MySQLDataStore::LoadZoneGuardsTable()
 
     delete zone_guards_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `zoneguards` table in %u ms!", zone_guards_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `zoneguards` table in %u ms!", zone_guards_count, getMSTime() - start_time);
 }
 
 ZoneGuardEntry const* MySQLDataStore::GetZoneGuard(uint32 entry)
@@ -1874,7 +1874,7 @@ void MySQLDataStore::LoadBattleMastersTable()
 
     delete battlemasters_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `battlemasters` table in %u ms!", battlemasters_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `battlemasters` table in %u ms!", battlemasters_count, getMSTime() - start_time);
 }
 
 BGMaster const* MySQLDataStore::GetBattleMaster(uint32 entry)
@@ -1921,7 +1921,7 @@ void MySQLDataStore::LoadTotemDisplayIdsTable()
 
     delete totemdisplayids_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `totemdisplayids` table in %u ms!", totemdisplayids_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `totemdisplayids` table in %u ms!", totemdisplayids_count, getMSTime() - start_time);
 }
 
 TotemDisplayIdEntry const* MySQLDataStore::GetTotemDisplayId(uint32 entry)
@@ -1966,7 +1966,7 @@ void MySQLDataStore::LoadSpellClickSpellsTable()
 
     delete spellclickspells_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `spellclickspells` table in %u ms!", spellclickspells_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `spellclickspells` table in %u ms!", spellclickspells_count, getMSTime() - start_time);
 }
 
 SpellClickSpell const* MySQLDataStore::GetSpellClickSpell(uint32 entry)
@@ -2011,7 +2011,7 @@ void MySQLDataStore::LoadWorldStringsTable()
 
     delete worldstring_tables_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `worldstring_tables` table in %u ms!", worldstring_tables_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `worldstring_tables` table in %u ms!", worldstring_tables_count, getMSTime() - start_time);
 }
 
 WorldStringTable const* MySQLDataStore::GetWorldString(uint32 entry)
@@ -2057,7 +2057,7 @@ void MySQLDataStore::LoadWorldBroadcastTable()
 
     delete worldbroadcast_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `worldbroadcast` table in %u ms!", worldbroadcast_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `worldbroadcast` table in %u ms!", worldbroadcast_count, getMSTime() - start_time);
 }
 
 WorldBroadCast const* MySQLDataStore::GetWorldBroadcast(uint32 entry)
@@ -2107,7 +2107,7 @@ void MySQLDataStore::LoadPointOfInterestTable()
 
     delete points_of_interest_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `points_of_interest` table in %u ms!", points_of_interest_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `points_of_interest` table in %u ms!", points_of_interest_count, getMSTime() - start_time);
 }
 
 PointOfInterest const* MySQLDataStore::GetPointOfInterest(uint32 entry)
@@ -2153,7 +2153,7 @@ void MySQLDataStore::LoadItemSetLinkedSetBonusTable()
 
     delete linked_set_bonus_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `itemset_linked_itemsetbonus` table in %u ms!", linked_set_bonus_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `itemset_linked_itemsetbonus` table in %u ms!", linked_set_bonus_count, getMSTime() - start_time);
 }
 
 uint32 MySQLDataStore::GetItemSetLinkedBonus(int32 itemset)
@@ -2201,7 +2201,7 @@ void MySQLDataStore::LoadCreatureInitialEquipmentTable()
 
     delete initial_equipment_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `creature_initial_equip` table in %u ms!", initial_equipment_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `creature_initial_equip` table in %u ms!", initial_equipment_count, getMSTime() - start_time);
 }
 
 void MySQLDataStore::LoadPlayerCreateInfoTable()
@@ -2269,7 +2269,7 @@ void MySQLDataStore::LoadPlayerCreateInfoTable()
 
     delete player_create_info_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `playercreateinfo` table in %u ms!", _playerCreateInfoStore.size(), getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo` table in %u ms!", _playerCreateInfoStore.size(), getMSTime() - start_time);
 }
 
 void MySQLDataStore::LoadPlayerCreateInfoSkillsTable()
@@ -2317,7 +2317,7 @@ void MySQLDataStore::LoadPlayerCreateInfoSkillsTable()
 
     delete player_create_info_skills_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `playercreateinfo_skills` table in %u ms!", player_create_info_skills_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo_skills` table in %u ms!", player_create_info_skills_count, getMSTime() - start_time);
 }
 
 void MySQLDataStore::LoadPlayerCreateInfoSpellsTable()
@@ -2360,7 +2360,7 @@ void MySQLDataStore::LoadPlayerCreateInfoSpellsTable()
 
     delete player_create_info_spells_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `playercreateinfo_spells` table in %u ms!", player_create_info_spells_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo_spells` table in %u ms!", player_create_info_spells_count, getMSTime() - start_time);
 }
 
 void MySQLDataStore::LoadPlayerCreateInfoItemsTable()
@@ -2408,7 +2408,7 @@ void MySQLDataStore::LoadPlayerCreateInfoItemsTable()
 
     delete player_create_info_items_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `playercreateinfo_items` table in %u ms!", player_create_info_items_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `playercreateinfo_items` table in %u ms!", player_create_info_items_count, getMSTime() - start_time);
 }
 
 void MySQLDataStore::LoadPlayerCreateInfoBarsTable(uint32 player_info_index)
@@ -2498,7 +2498,7 @@ void MySQLDataStore::LoadPlayerXpToLevelTable()
 
     delete player_xp_to_level_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `player_xp_for_level` table in %u ms!", player_xp_to_level_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `player_xp_for_level` table in %u ms!", player_xp_to_level_count, getMSTime() - start_time);
 
     if (player_xp_to_level_count < sWorld.m_levelCap)
         LOG_ERROR("Table `player_xp_for_level` includes definitions for %u level, but your defined level cap is %u!", player_xp_to_level_count, sWorld.m_levelCap);
@@ -2557,7 +2557,7 @@ void MySQLDataStore::LoadSpellOverrideTable()
 
     delete spelloverride_result;
 
-    Log.Success("ObjectMgr", "%u spell overrides loaded.", _spellOverrideIdStore.size());
+    LogDetail("MySQLDataLoads : %u spell overrides loaded.", _spellOverrideIdStore.size());
 }
 
 void MySQLDataStore::LoadNpcGossipTextIdTable()
@@ -2595,7 +2595,7 @@ void MySQLDataStore::LoadNpcGossipTextIdTable()
 
     delete npc_gossip_textid_result;
     
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `npc_gossip_textid` table in %u ms!", npc_gossip_textid_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_gossip_textid` table in %u ms!", npc_gossip_textid_count, getMSTime() - start_time);
 }
 
 uint32 MySQLDataStore::GetGossipTextIdForNpc(uint32 entry)
@@ -2642,7 +2642,7 @@ void MySQLDataStore::LoadPetLevelAbilitiesTable()
 
     delete pet_level_abilities_result;
 
-    Log.Success("MySQLDataLoads", "Loaded %u rows from `pet_level_abilities` table in %u ms!", pet_level_abilities_count, getMSTime() - start_time);
+    LogDetail("MySQLDataLoads : Loaded %u rows from `pet_level_abilities` table in %u ms!", pet_level_abilities_count, getMSTime() - start_time);
 
     if (pet_level_abilities_count < sWorld.m_levelCap)
         LOG_ERROR("Table `pet_level_abilities` includes definitions for %u level, but your defined level cap is %u!", pet_level_abilities_count, sWorld.m_levelCap);

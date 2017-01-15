@@ -625,7 +625,7 @@ void ApplyNormalFixes()
 {
     //Updating spell.dbc
 
-    Log.Success("World", "Processing %u spells...", sSpellCustomizations.GetSpellInfoStore()->size());
+    LogNotice("World : Processing %u spells...", sSpellCustomizations.GetSpellInfoStore()->size());
 
     //checking if the DBCs have been extracted from an english client, based on namehash of spell 4, the first with a different name in non-english DBCs
     SpellInfo* sp = sSpellCustomizations.GetSpellInfo(4);

@@ -63,22 +63,6 @@ void oLog::outFileSilent(FILE* file, char* msg, const char* source)
 }
 
 //old NGLog.h methods
-void oLog::Success(const char* source, const char* format, ...)
-{
-    if(m_normalFile == NULL)
-        return;
-
-    char buf[32768];
-    va_list ap;
-
-    va_start(ap, format);
-    vsnprintf(buf, 32768, format, ap);
-    va_end(ap);
-    SetConsoleColor(CONSOLE_COLOR_NORMAL);
-    std::cout << source << ": " << buf << std::endl;
-    outFile(m_normalFile, buf, source);
-}
-
 void oLog::LargeErrorMessage(const char* source, ...)
 {
     std::vector<char*> lines;

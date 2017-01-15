@@ -110,19 +110,6 @@ void oLog::InitalizeLogFiles(std::string file_prefix)
         outErrorSilent("=================[%s]=================", current_date_time.c_str());*/
 }
 
-#ifndef _WIN32
-void oLog::SetConsoleColor(const char* color)
-{
-    fputs(color, stdout);
-}
-
-#else
-void oLog::SetConsoleColor(int color)
-{
-    SetConsoleTextAttribute(stdout_handle, (WORD)color);
-}
-#endif
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // AscEmuLog functions
@@ -367,5 +354,4 @@ void AscEmuLog::ConsoleLogDebugFlagFunction(bool file_only, LogFlags log_flags, 
 
     WriteFile(normal_log_file, message_buffer);
 }
-
 

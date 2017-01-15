@@ -101,17 +101,16 @@ void LogonServer::Run(int argc, char** argv)
 
     LogDefault("The key combination <Ctrl-C> will safely shut down the server.");
 
-    Log.Success("Config", "Loading Config Files...");
+    LogDetail("Config : Loading Config Files...");
     if (!LoadLogonConfiguration())
     {
         AscLog.~AscEmuLog();
         return;
     }
 
-    Log.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
     AscLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
 
-    Log.Success("ThreadMgr", "Starting...");
+    LogDetail("ThreadMgr : Starting...");
     ThreadPool.Startup();
 
     if (!StartDb())
@@ -120,17 +119,17 @@ void LogonServer::Run(int argc, char** argv)
         return;
     }
 
-    Log.Success("AccountMgr", "Starting...");
+    LogDetail("AccountMgr : Starting...");
     new AccountMgr;
     new IPBanner;
 
-    Log.Success("InfoCore", "Starting...");
+    LogDetail("InfoCore : Starting...");
     new InformationCore;
 
     new PatchMgr;
     LogNotice("AccountMgr : Precaching accounts...");
     sAccountMgr.ReloadAccounts(true);
-    Log.Success("AccountMgr", "%u accounts are loaded and ready.", sAccountMgr.GetCount());
+    LogDetail("AccountMgr : %u accounts are loaded and ready.", sAccountMgr.GetCount());
 
     // Spawn periodic function caller thread for account reload every 10mins
     uint32 accountReloadPeriod = Config.MainConfig.GetIntDefault("Rates", "AccountRefresh", 600);

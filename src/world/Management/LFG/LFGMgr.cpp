@@ -126,7 +126,7 @@ void LfgMgr::LoadRewards()
     }
     while (result->NextRow());
 
-    Log.Success("LFGMgr", "Loaded %u lfg dungeon rewards from DB", count);
+    LogDetail("LFGMgr : Loaded %u lfg dungeon rewards from DB", count);
 }
 
 void LfgMgr::Update(uint32 diff)

@@ -47,22 +47,12 @@ class SERVER_DECL oLog : public Singleton< oLog >
 
         void InitalizeLogFiles(std::string file_prefix);
 
-    private:
-        /*! \brief Returns color defines for plattform */
-#ifndef _WIN32
-        void SetConsoleColor(const char* color);    //AscEmu
-#else
-        void SetConsoleColor(int color);            //AscEmu
-#endif
         // AscEmu functions end
         //////////////////////////////////////////////////////////////////////////////////////////
 
 
     public:
 
-        //old NGLog.h methods
-        //log level 0
-        void Success(const char* source, const char* format, ...);
         void LargeErrorMessage(const char* str, ...);
 
         void SetFileLoggingLevel(int32 level);
