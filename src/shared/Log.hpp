@@ -66,11 +66,16 @@ class SERVER_DECL AscEmuLog : public Singleton<AscEmuLog>
         void SetDebugFlags(uint32_t flags);
 
         void ConsoleLogDefault(bool file_only, const char* format, ...);
+        void ConsoleLogDefaultFunction(bool file_only, const char* function, const char* format, ...);
+
         void ConsoleLogError(bool file_only, const char* format, ...);
+        void ConsoleLogErrorFunction(bool file_only, const char* function, const char* format, ...);
 
         void ConsoleLogDetail(bool file_only, const char* format, ...);
+        void ConsoleLogDetailFunction(bool file_only, const char* function, const char* format, ...);
 
         void ConsoleLogDebugFlag(bool file_only, LogFlags log_flags, const char* format, ...);
+        void ConsoleLogDebugFlagFunction(bool file_only, LogFlags log_flags, const char* function, const char* format, ...);
 
 };
 
@@ -78,7 +83,7 @@ class SERVER_DECL AscEmuLog : public Singleton<AscEmuLog>
 
 /*! \brief Logging Level: Normal */
 #define LogDefault(msg, ...) AscLog.ConsoleLogDefault(false, msg, ##__VA_ARGS__)
-#define LogError(msg, ...) AscLog.SetConsoleColor(CONSOLE_COLOR_RED); AscLog.ConsoleLogError(false, msg, ##__VA_ARGS__); AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL)
+#define LogError(msg, ...) AscLog.ConsoleLogError(false, msg, ##__VA_ARGS__)
 
 /*! \brief Logging Level: Detail */
 #define LogDetail(msg, ...) AscLog.SetConsoleColor(CONSOLE_COLOR_CYAN); AscLog.ConsoleLogDetail(false, msg, ##__VA_ARGS__); AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL)
@@ -88,5 +93,11 @@ class SERVER_DECL AscEmuLog : public Singleton<AscEmuLog>
 /*! \brief Logging Level: Debug */
 #define LogDebug(msg, ...) AscLog.ConsoleLogDebugFlag(false, LF_NONE, msg, ##__VA_ARGS__)
 #define LogDebugFlag(db_flag, msg, ...) AscLog.ConsoleLogDebugFlag(false, db_flag, msg, ##__VA_ARGS__)
+
+
+#define LOG_BASIC(msg, ...) AscLog.ConsoleLogDefaultFunction(false, __FUNCTION__, msg, ##__VA_ARGS__)
+#define LOG_DETAIL(msg, ...) AscLog.ConsoleLogDetailFunction(false, __FUNCTION__, msg, ##__VA_ARGS__)
+#define LOG_ERROR(msg, ...) AscLog.ConsoleLogErrorFunction(false, __FUNCTION__, msg, ##__VA_ARGS__)
+#define LOG_DEBUG(msg, ...) AscLog.ConsoleLogDebugFlagFunction(false, LF_NONE, __FUNCTION__, msg, ##__VA_ARGS__)
 
 #endif  // LOG_HPP

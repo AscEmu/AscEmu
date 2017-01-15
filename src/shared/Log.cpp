@@ -223,6 +223,31 @@ void AscEmuLog::ConsoleLogDefault(bool file_only, const char* format, ...)
     WriteFile(normal_log_file, message_buffer);
 }
 
+void AscEmuLog::ConsoleLogDefaultFunction(bool file_only, const char* function, const char* format, ...)
+{
+    if (normal_log_file == nullptr)
+        return;
+
+    char function_message[32768];
+    snprintf(function_message, 32768, "[BASIC] %s %s", function, format);
+
+    char message_buffer[32768];
+    va_list ap;
+
+    va_start(ap, format);
+    vsnprintf(message_buffer, 32768, function_message, ap);
+    va_end(ap);
+
+    if (!file_only)
+    {
+        SetConsoleColor(CONSOLE_COLOR_WHITE);
+        std::cout << message_buffer << std::endl;
+        SetConsoleColor(CONSOLE_COLOR_NORMAL);
+    }
+
+    WriteFile(normal_log_file, message_buffer);
+}
+
 void AscEmuLog::ConsoleLogError(bool file_only, const char* format, ...)
 {
     if (error_log_file == nullptr)
@@ -236,9 +261,38 @@ void AscEmuLog::ConsoleLogError(bool file_only, const char* format, ...)
     va_end(ap);
 
     if (!file_only)
+    {
+        SetConsoleColor(CONSOLE_COLOR_RED);
         std::cerr << message_buffer << std::endl;
+        SetConsoleColor(CONSOLE_COLOR_NORMAL);
+    }
 
     WriteFile(error_log_file, message_buffer);
+}
+
+void AscEmuLog::ConsoleLogErrorFunction(bool file_only, const char* function, const char* format, ...)
+{
+    if (normal_log_file == nullptr)
+        return;
+
+    char function_message[32768];
+    snprintf(function_message, 32768, "[ERROR] %s %s", function, format);
+
+    char message_buffer[32768];
+    va_list ap;
+
+    va_start(ap, format);
+    vsnprintf(message_buffer, 32768, function_message, ap);
+    va_end(ap);
+
+    if (!file_only)
+    {
+        SetConsoleColor(CONSOLE_COLOR_RED);
+        std::cout << message_buffer << std::endl;
+        SetConsoleColor(CONSOLE_COLOR_NORMAL);
+    }
+
+    WriteFile(normal_log_file, message_buffer);
 }
 
 void AscEmuLog::ConsoleLogDetail(bool file_only, const char* format, ...)
@@ -255,6 +309,31 @@ void AscEmuLog::ConsoleLogDetail(bool file_only, const char* format, ...)
 
     if (!file_only)
         std::cout << message_buffer << std::endl;
+
+    WriteFile(normal_log_file, message_buffer);
+}
+
+void AscEmuLog::ConsoleLogDetailFunction(bool file_only, const char* function, const char* format, ...)
+{
+    if (normal_log_file == nullptr)
+        return;
+
+    char function_message[32768];
+    snprintf(function_message, 32768, "[DETAIL] %s %s", function, format);
+
+    char message_buffer[32768];
+    va_list ap;
+
+    va_start(ap, format);
+    vsnprintf(message_buffer, 32768, function_message, ap);
+    va_end(ap);
+
+    if (!file_only)
+    {
+        SetConsoleColor(CONSOLE_COLOR_CYAN);
+        std::cout << message_buffer << std::endl;
+        SetConsoleColor(CONSOLE_COLOR_NORMAL);
+    }
 
     WriteFile(normal_log_file, message_buffer);
 }
@@ -282,6 +361,31 @@ void AscEmuLog::ConsoleLogDebugFlag(bool file_only, LogFlags log_flags, const ch
     }
 
     WriteFile(error_log_file, message_buffer);
+}
+
+void AscEmuLog::ConsoleLogDebugFlagFunction(bool file_only, LogFlags log_flags, const char* function, const char* format, ...)
+{
+    if (normal_log_file == nullptr)
+        return;
+
+    char function_message[32768];
+    snprintf(function_message, 32768, "[DEBUG] %s %s", function, format);
+
+    char message_buffer[32768];
+    va_list ap;
+
+    va_start(ap, format);
+    vsnprintf(message_buffer, 32768, function_message, ap);
+    va_end(ap);
+
+    if (!file_only)
+    {
+        SetConsoleColor(AELog::GetColorForDebugFlag(log_flags));
+        std::cout << message_buffer << std::endl;
+        SetConsoleColor(CONSOLE_COLOR_NORMAL);
+    }
+
+    WriteFile(normal_log_file, message_buffer);
 }
 
 

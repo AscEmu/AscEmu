@@ -149,10 +149,10 @@ class SERVER_DECL SessionLogWriter
 
 #define Log oLog::getSingleton()
 
-#define LOG_BASIC(msg, ...) Log.logBasic(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
-#define LOG_DETAIL(msg, ...) Log.logDetail(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
-#define LOG_ERROR(msg, ...) Log.logError(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
-#define LOG_DEBUG(msg, ...) Log.logDebug(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
+//#define LOG_BASIC(msg, ...) Log.logBasic(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
+//#define LOG_DETAIL(msg, ...) Log.logDetail(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
+//#define LOG_ERROR(msg, ...) Log.logError(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
+//#define LOG_DEBUG(msg, ...) Log.logDebug(__FILE__, __LINE__, __FUNCTION__, msg, ##__VA_ARGS__)
 
 
 class WorldLog : public Singleton<WorldLog>
