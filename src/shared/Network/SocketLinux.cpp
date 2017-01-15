@@ -20,7 +20,7 @@ void Socket::PostEvent(uint32 events)
 
     // post actual event
     if(epoll_ctl(epoll_fd, EPOLL_CTL_MOD, ev.data.fd, &ev))
-        Log.Warning("epoll", "Could not post event on fd %u", m_fd);
+        LogWarning("epoll : Could not post event on fd %u", m_fd);
 }
 
 void Socket::ReadCallback(uint32 len)
