@@ -244,7 +244,7 @@ void WorldSession::HandleReportLag(WorldPacket& recv_data)
         CharacterDatabase.Execute("INSERT INTO lag_reports (player, account, lag_type, map_id, position_x, position_y, position_z) VALUES(%u, %u, %u, %u, %f, %f, %f)", GetPlayer()->GetLowGUID(), _accountId, lagType, mapId, position_x, position_y, position_z);
     }
 
-    Log.Debug("HandleReportLag", "Player %s has reported a lagreport with Type: %u on Map: %u", GetPlayer()->GetName(), lagType, mapId);
+    LogDebugFlag(LF_OPCODE, "Player %s has reported a lagreport with Type: %u on Map: %u", GetPlayer()->GetName(), lagType, mapId);
 }
 
 void WorldSession::HandleGMSurveySubmitOpcode(WorldPacket& recv_data)
@@ -280,5 +280,5 @@ void WorldSession::HandleGMSurveySubmitOpcode(WorldPacket& recv_data)
 
     CharacterDatabase.Execute("INSERT INTO gm_survey VALUES (%u, %u, %u, \'%s\', UNIX_TIMESTAMP(NOW()))", next_survey_id, GetPlayer()->GetLowGUID(), main_survey, CharacterDatabase.EscapeString(comment).c_str());
 
-    Log.Debug("HandleGMSurveySubmitOpcode", "Player %s has submitted the gm suvey %u successfully.", GetPlayer()->GetName(), next_survey_id);
+    LogDebugFlag(LF_OPCODE, "Player %s has submitted the gm suvey %u successfully.", GetPlayer()->GetName(), next_survey_id);
 }

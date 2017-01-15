@@ -123,7 +123,7 @@ void AuctionHouse::AddAuction(Auction* auct)
     auctions.insert(std::unordered_map<uint32, Auction*>::value_type(auct->Id, auct));
     auctionLock.ReleaseWriteLock();
 
-    Log.Debug("AuctionHouse", "%u: Add auction %u, expire@ %u.", dbc->id, auct->Id, auct->ExpiryTime);
+    LOG_DEBUG("%u: Add auction %u, expire@ %u.", dbc->id, auct->Id, auct->ExpiryTime);
 }
 
 Auction* AuctionHouse::GetAuction(uint32 Id)
@@ -139,7 +139,7 @@ Auction* AuctionHouse::GetAuction(uint32 Id)
 
 void AuctionHouse::RemoveAuction(Auction* auct)
 {
-    Log.Debug("AuctionHouse", "%u: Removing auction %u, reason %u.", dbc->id, auct->Id, auct->DeletedReason);
+    LOG_DEBUG("%u: Removing auction %u, reason %u.", dbc->id, auct->Id, auct->DeletedReason);
 
     char subject[100];
     char body[200];

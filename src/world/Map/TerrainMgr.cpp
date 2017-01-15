@@ -387,7 +387,7 @@ TileMap::~TileMap()
 
 void TileMap::Load(char* filename)
 {
-    Log.Debug("TerrainMgr", "Loading %s", filename);
+    LOG_DEBUG("Loading %s", filename);
     FILE* f = fopen(filename, "rb");
 
     if (f == NULL)

@@ -127,7 +127,7 @@ void LogonCommHandler::Startup()
     // Try to connect to all logons.
     LoadRealmConfiguration();
 
-    Log.Notice("LogonCommClient", "Loading forced permission strings...");
+    LogNotice("LogonCommClient : Loading forced permission strings...");
     QueryResult* result = CharacterDatabase.Query("SELECT login, permissions FROM account_forced_permissions");
     if (result != NULL)
     {
@@ -155,11 +155,11 @@ void LogonCommHandler::AddForcedPermission(std::string acct, std::string perm)
     ForcedPermissionMap::iterator itr = forced_permissions.find(acct);
     if (itr != forced_permissions.end())
     {
-        Log.Notice("LogonCommClient", "Permission for %s already available!", account_name);
+        LogNotice("LogonCommClient : Permission for %s already available!", account_name);
         forced_permissions.erase(acct);
     }
 
-    Log.Notice("LogonCommClient", "Permission set to %s for account %s", permission_string, account_name);
+    LogNotice("LogonCommClient : Permission set to %s for account %s", permission_string, account_name);
     forced_permissions.insert(make_pair(acct, perm));
 
 }
@@ -220,12 +220,12 @@ void LogonCommHandler::Connect(LogonServer* server)
     }
 
     Log.Success("LogonCommClient", "Authentication OK.");
-    Log.Notice("LogonCommClient", "Logonserver was connected on [%s:%u].", server->Address.c_str(), server->Port);
+    LogNotice("LogonCommClient : Logonserver was connected on [%s:%u].", server->Address.c_str(), server->Port);
 
     // Send the initial ping
     conn->SendPing();
 
-    Log.Notice("LogonCommClient", "Registering Realms...");
+    LogNotice("LogonCommClient : Registering Realms...");
     conn->_id = server->ID;
 
     RequestAddition(conn);

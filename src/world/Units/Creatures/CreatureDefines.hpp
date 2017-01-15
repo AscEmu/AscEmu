@@ -173,7 +173,7 @@ struct CreatureProperties
         if (!models[0] && !models[1] && !models[2] && !models[3])
         {
             // All models are invalid.
-            Log.Notice("CreatureSpawn", "All model IDs are invalid for creature %u", Id);
+            LogNotice("CreatureSpawn : All model IDs are invalid for creature %u", Id);
             return 0;
         }
 

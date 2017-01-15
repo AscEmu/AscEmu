@@ -288,7 +288,7 @@ void ConsoleSocket::OnDisconnect()
     }
     if (m_state == STATE_LOGGED)
     {
-        Log.Notice("RemoteConsole", "User `%s` disconnected.", m_username.c_str());
+        LogNotice("RemoteConsole : User `%s` disconnected.", m_username.c_str());
     }
 }
 
@@ -314,7 +314,7 @@ void ConsoleSocket::AuthCallback(bool result)
     else
     {
         m_pConsole->Write("User `%s` authenticated.\r\n\r\n", m_username.c_str());
-        Log.Notice("RemoteConsole", "User `%s` authenticated.", m_username.c_str());
+        LogNotice("RemoteConsole : User `%s` authenticated.", m_username.c_str());
         const char* argv[1];
         HandleInfoCommand(m_pConsole, 1, argv);
         m_pConsole->Write("Type ? to see commands, quit to end session.\r\n");

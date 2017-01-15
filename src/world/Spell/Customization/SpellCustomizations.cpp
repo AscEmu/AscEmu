@@ -210,7 +210,7 @@ void SpellCustomizations::StartSpellCustomization()
 {
     LoadSpellInfoData();
 
-    Log.Debug("SpellCustomizations::StartSpellCustomization", "Successfull started");
+    LOG_DEBUG("Successfull started");
 
     LoadSpellRanks();
     LoadSpellCustomAssign();

@@ -257,7 +257,7 @@ void AddonMgr::LoadFromDB()
     }
     if (!result)
     {
-        Log.Notice("AddonMgr", "No defined ClientAddons");
+        LogNotice("AddonMgr : No defined ClientAddons");
         return;
     }
 

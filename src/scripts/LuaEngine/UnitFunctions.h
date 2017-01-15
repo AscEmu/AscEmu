@@ -1832,7 +1832,7 @@ class LuaUnit
         {
             if (mapId)
             {
-                Log.Notice("LuaEngineMgr", "LUATeleporter ERROR - Wrong Coordinates given (Map, X, Y, Z) :: Map%f%s%f%s%f%s%u", mapId, " X", posX, " Y", posY, " Z", posZ);
+                LogNotice("LuaEngineMgr : LUATeleporter ERROR - Wrong Coordinates given (Map, X, Y, Z) :: Map%f%s%f%s%f%s%u", mapId, " X", posX, " Y", posY, " Z", posZ);
                 return 0;
             }
             else
@@ -4085,7 +4085,7 @@ class LuaUnit
 
     static int GetTarget(lua_State* L, Unit* ptr)
     {
-        Log.Notice("LuaEngine", "GetTarget is outdated. Please use GetPrimaryCombatTarget.");
+        LogNotice("LuaEngine : GetTarget is outdated. Please use GetPrimaryCombatTarget.");
         TEST_PLAYER()
             Player* plr = static_cast<Player*>(ptr);
         Unit* target = plr->GetMapMgr()->GetUnit(plr->GetTarget());

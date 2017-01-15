@@ -149,7 +149,7 @@ namespace MMAP
         FILE* file = fopen(fileName, "rb");
         if (!file)
         {
-            Log.Debug("MMapManager", "MMAP:loadMap: Could not open mmtile file '%s'", fileName);
+            LOG_DEBUG("Could not open mmtile file '%s'", fileName);
             delete [] fileName;
             return false;
         }

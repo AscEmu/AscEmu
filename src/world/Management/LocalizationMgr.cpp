@@ -39,7 +39,7 @@ void LocalizationMgr::Shutdown()
             maxid = xtr->second;
 
     maxid++;
-    Log.Notice("LocalizationMgr", "Beginning pointer cleanup...");
+    LogNotice("LocalizationMgr : Beginning pointer cleanup...");
     uint32 t = getMSTime();
 
     for (i = 0; i < maxid; ++i)
@@ -142,7 +142,7 @@ void LocalizationMgr::Shutdown()
     delete[] m_MonsterSay;
     m_languages.clear();
 
-    Log.Notice("LocalizationMgr", "Pointer cleanup completed in %.4f seconds.", (getMSTime() - t) / 1000.0f);
+    LogNotice("LocalizationMgr : Pointer cleanup completed in %.4f seconds.", (getMSTime() - t) / 1000.0f);
 
 #undef SAFE_FREE_PTR
 }

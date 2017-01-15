@@ -43,7 +43,7 @@ Map::Map(uint32 mapid, MapInfo const* inf)
 
 Map::~Map()
 {
-    Log.Notice("Map", "~Map %u", this->_mapId);
+    LogNotice("Map : ~Map %u", this->_mapId);
 
     for (uint32 x = 0; x < _sizeX; x++)
     {

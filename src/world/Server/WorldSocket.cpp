@@ -419,7 +419,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
         }
     }
 
-    Log.Debug("Auth", "%s from %s:%u [%ums]", AccountName.c_str(), GetRemoteIP().c_str(), GetRemotePort(), _latency);
+    LOG_DEBUG("%s from %s:%u [%ums]", AccountName.c_str(), GetRemoteIP().c_str(), GetRemotePort(), _latency);
 #ifdef SESSION_CAP
     if (sWorld.GetSessionCount() >= SESSION_CAP)
     {
@@ -440,7 +440,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
         // Queued, sucker.
         uint32 Position = sWorld.AddQueuedSocket(this);
         mQueued = true;
-        Log.Debug("Queue", "%s added to queue in position %u", AccountName.c_str(), Position);
+        LOG_DEBUG("%s added to queue in position %u", AccountName.c_str(), Position);
 
         // Send packet so we know what we're doing
         UpdateQueuePosition(Position);

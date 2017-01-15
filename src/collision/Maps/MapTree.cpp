@@ -58,7 +58,7 @@ namespace VMAP
             void operator()(const Vector3& point, uint32 entry)
             {
 #ifdef VMAP_DEBUG
-                Log.Debug("AreaInfoCallback", "trying to intersect '%s'", prims[entry].name.c_str());
+                LogDebug("AreaInfoCallback : trying to intersect '%s'", prims[entry].name.c_str());
 #endif
                 prims[entry].intersectPoint(point, aInfo);
             }
@@ -74,7 +74,7 @@ namespace VMAP
             void operator()(const Vector3& point, uint32 entry)
             {
 #ifdef VMAP_DEBUG
-                Log.Debug("LocationInfoCallback", "trying to intersect '%s'", prims[entry].name.c_str());
+                LogDebug("LocationInfoCallback : trying to intersect '%s'", prims[entry].name.c_str());
 #endif
                 if (prims[entry].GetLocationInfo(point, locInfo))
                     result = true;
@@ -278,7 +278,7 @@ namespace VMAP
 
     bool StaticMapTree::InitMap(const std::string &fname, VMapManager2* vm)
     {
-        Log.Debug("StaticMapTree", "InitMap() : initializing StaticMapTree '%s'", fname.c_str());
+        LOG_DEBUG("initializing StaticMapTree '%s'", fname.c_str());
         bool success = false;
         std::string fullname = iBasePath + fname;
         FILE* rf = fopen(fullname.c_str(), "rb");
@@ -302,12 +302,12 @@ namespace VMAP
         // only non-tiled maps have them, and if so exactly one (so far at least...)
         ModelSpawn spawn;
 #ifdef VMAP_DEBUG
-        Log.Debug("StaticMapTree", "InitMap() : map isTiled: %u", static_cast<uint32>(iIsTiled));
+        LOG_DEBUG("map isTiled: %u", static_cast<uint32>(iIsTiled));
 #endif
         if (!iIsTiled && ModelSpawn::readFromFile(rf, spawn))
         {
             WorldModel* model = vm->acquireModelInstance(iBasePath, spawn.name);
-            Log.Debug("StaticMapTree", "InitMap() : loading %s", spawn.name.c_str());
+            LOG_DEBUG("loading %s", spawn.name.c_str());
             if (model)
             {
                 // assume that global model always is the first and only tree value (could be improved...)
@@ -401,9 +401,9 @@ namespace VMAP
                             ++iLoadedSpawns[referencedVal];
 #ifdef VMAP_DEBUG
                             if (iTreeValues[referencedVal].ID != spawn.ID)
-                                Log.Debug("StaticMapTree", "LoadMapTile() : trying to load wrong spawn in node");
+                                LOG_DEBUG("trying to load wrong spawn in node");
                             else if (iTreeValues[referencedVal].name != spawn.name)
-                                Log.Debug("StaticMapTree", "LoadMapTile() : name collision on GUID=%u", spawn.ID);
+                                LOG_DEBUG("name collision on GUID=%u", spawn.ID);
 #endif
                         }
                     }

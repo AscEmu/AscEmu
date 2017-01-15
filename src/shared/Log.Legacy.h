@@ -67,11 +67,6 @@ class SERVER_DECL oLog : public Singleton< oLog >
         void Success(const char* source, const char* format, ...);
         void Error(const char* source, const char* format, ...);
         void LargeErrorMessage(const char* str, ...);
-        //log level 1
-        void Notice(const char* source, const char* format, ...);
-        void Warning(const char* source, const char* format, ...);
-        //log level 2
-        void Debug(const char* source, const char* format, ...);
 
         void SetFileLoggingLevel(int32 level);
         void SetDebugFlags(uint32 flags);

@@ -205,13 +205,13 @@ void CleanupRandomNumberGenerators();
 
 void World::LogoutPlayers()
 {
-    Log.Notice("World", "Logging out players...");
+    LogNotice("World : Logging out players...");
     for (SessionMap::iterator i = m_sessions.begin(); i != m_sessions.end(); ++i)
     {
         (i->second)->LogoutPlayer(true);
     }
 
-    Log.Notice("World", "Deleting sessions...");
+    LogNotice("World", "Deleting sessions...");
     WorldSession* p;
     for (SessionMap::iterator i = m_sessions.begin(); i != m_sessions.end();)
     {
@@ -225,46 +225,46 @@ void World::LogoutPlayers()
 
 World::~World()
 {
-    Log.Notice("LocalizationMgr", "~LocalizationMgr()");
+    LogNotice("LocalizationMgr : ~LocalizationMgr()");
     sLocalizationMgr.Shutdown();
 
-    Log.Notice("WorldLog", "~WorldLog()");
+    LogNotice("WorldLog : ~WorldLog()");
     delete WorldLog::getSingletonPtr();
 
-    Log.Notice("ObjectMgr", "~ObjectMgr()");
+    LogNotice("ObjectMgr : ~ObjectMgr()");
     delete ObjectMgr::getSingletonPtr();
 
-    Log.Notice("LootMgr", "~LootMgr()");
+    LogNotice("LootMgr : ~LootMgr()");
     delete LootMgr::getSingletonPtr();
 
-    Log.Notice("LfgMgr", "~LfgMgr()");
+    LogNotice("LfgMgr : ~LfgMgr()");
     delete LfgMgr::getSingletonPtr();
 
-    Log.Notice("ChannelMgr", "~ChannelMgr()");
+    LogNotice("ChannelMgr : ~ChannelMgr()");
     delete ChannelMgr::getSingletonPtr();
 
-    Log.Notice("QuestMgr", "~QuestMgr()");
+    LogNotice("QuestMgr : ~QuestMgr()");
     delete QuestMgr::getSingletonPtr();
 
-    Log.Notice("WeatherMgr", "~WeatherMgr()");
+    LogNotice("WeatherMgr : ~WeatherMgr()");
     delete WeatherMgr::getSingletonPtr();
 
-    Log.Notice("TaxiMgr", "~TaxiMgr()");
+    LogNotice("TaxiMgr : ~TaxiMgr()");
     delete TaxiMgr::getSingletonPtr();
 
-    Log.Notice("BattlegroundMgr", "~BattlegroundMgr()");
+    LogNotice("BattlegroundMgr : ~BattlegroundMgr()");
     delete CBattlegroundManager::getSingletonPtr();
 
-    Log.Notice("InstanceMgr", "~InstanceMgr()");
+    LogNotice("InstanceMgr : ~InstanceMgr()");
     sInstanceMgr.Shutdown();
 
     //LogDefault("Deleting Thread Manager..");
     //delete ThreadMgr::getSingletonPtr();
-    Log.Notice("WordFilter", "~WordFilter()");
+    LogNotice("WordFilter : ~WordFilter()");
     delete g_chatFilter;
     delete g_characterNameFilter;
 
-    Log.Notice("Rnd", "~Rnd()");
+    LogNotice("Rnd : ~Rnd()");
     CleanupRandomNumberGenerators();
 
     for (AreaTriggerMap::iterator i = m_AreaTrigger.begin(); i != m_AreaTrigger.end(); ++i)
@@ -272,10 +272,10 @@ World::~World()
         delete i->second;
     }
 
-    Log.Notice("SpellProcMgr", "~SpellProcMgr()");
+    LogNotice("SpellProcMgr : ~SpellProcMgr()");
     delete SpellProcMgr::getSingletonPtr();
 
-    Log.Notice("SpellFactoryMgr", "~SpellFactoryMgr()");
+    LogNotice("SpellFactoryMgr : ~SpellFactoryMgr()");
     delete SpellFactoryMgr::getSingletonPtr();
 
     //eventholder = 0;
@@ -572,11 +572,11 @@ bool World::SetInitialWorldSettings()
     tl.waitForThreadsToExit();
     LoadNameGenData();
 
-    Log.Notice("World", "Object size: %u bytes", sizeof(Object));
-    Log.Notice("World", "Unit size: %u bytes", sizeof(Unit) + sizeof(AIInterface));
-    Log.Notice("World", "Creature size: %u bytes", sizeof(Creature) + sizeof(AIInterface));
-    Log.Notice("World", "Player size: %u bytes", sizeof(Player) + sizeof(ItemInterface) + 50000 + 30000 + 1000 + sizeof(AIInterface));
-    Log.Notice("World", "GameObject size: %u bytes", sizeof(GameObject));
+    LogNotice("World : Object size: %u bytes", sizeof(Object));
+    LogNotice("World : Unit size: %u bytes", sizeof(Unit) + sizeof(AIInterface));
+    LogNotice("World : Creature size: %u bytes", sizeof(Creature) + sizeof(AIInterface));
+    LogNotice("World : Player size: %u bytes", sizeof(Player) + sizeof(ItemInterface) + 50000 + 30000 + 1000 + sizeof(AIInterface));
+    LogNotice("World : GameObject size: %u bytes", sizeof(GameObject));
 
     Log.Success("World", "Starting Transport System...");
     objmgr.LoadTransports();
@@ -597,7 +597,7 @@ bool World::SetInitialWorldSettings()
     sLfgMgr.LoadRewards();
 
     m_queueUpdateTimer = mQueueUpdateInterval;
-    Log.Notice("World", "Loading loot data...");
+    LogNotice("World : Loading loot data...");
     lootmgr.LoadLoot();
 
     Channel::LoadConfSettings();
@@ -1113,16 +1113,16 @@ WorldSession* World::FindSessionByName(const char* Name) //case insensitive
 
 void World::ShutdownClasses()
 {
-    Log.Notice("AddonMgr", "~AddonMgr()");
+    LogNotice("AddonMgr : ~AddonMgr()");
     sAddonMgr.SaveToDB();
     delete AddonMgr::getSingletonPtr();
 
-    Log.Notice("AuctionMgr", "~AuctionMgr()");
+    LogNotice("AuctionMgr : ~AuctionMgr()");
     delete AuctionMgr::getSingletonPtr();
-    Log.Notice("LootMgr", "~LootMgr()");
+    LogNotice("LootMgr : ~LootMgr()");
     delete LootMgr::getSingletonPtr();
 
-    Log.Notice("MailSystem", "~MailSystem()");
+    LogNotice("MailSystem : ~MailSystem()");
     delete MailSystem::getSingletonPtr();
 }
 
@@ -1892,7 +1892,7 @@ void World::PollMailboxInsertQueue(DatabaseConnection* con)
     result = CharacterDatabase.FQuery("SELECT * FROM mailbox_insert_queue", con);
     if (result != NULL)
     {
-        Log.Notice("MailboxQueue", "Sending queued messages....");
+        LogNotice("MailboxQueue : Sending queued messages....");
         do
         {
             f = result->Fetch();
@@ -1917,14 +1917,14 @@ void World::PollMailboxInsertQueue(DatabaseConnection* con)
                 }
             }
 
-            Log.Notice("MailboxQueue", "Sending message to %u (item: %u)...", f[1].GetUInt32(), itemid);
+            LogNotice("MailboxQueue : Sending message to %u (item: %u)...", f[1].GetUInt32(), itemid);
             sMailSystem.SendAutomatedMessage(0, f[0].GetUInt64(), f[1].GetUInt64(), f[2].GetString(), f[3].GetString(), f[5].GetUInt32(),
                                              0, itemGuids, f[4].GetUInt32());
 
         }
         while (result->NextRow());
         delete result;
-        Log.Notice("MailboxQueue", "Done.");
+        LogNotice("MailboxQueue : Done.");
         CharacterDatabase.FWaitExecute("DELETE FROM mailbox_insert_queue", con);
     }
 }

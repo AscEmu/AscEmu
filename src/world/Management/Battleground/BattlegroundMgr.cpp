@@ -196,7 +196,7 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, World
     // Queue him!
     m_queueLock.Acquire();
     m_queuedPlayers[bgtype][lgroup].push_back(pguid);
-    Log.Notice("BattlegroundManager", "Player %u is now in battleground queue for instance %u", m_session->GetPlayer()->GetLowGUID(), (instance + 1));
+    LogNotice("BattlegroundManager : Player %u is now in battleground queue for instance %u", m_session->GetPlayer()->GetLowGUID(), (instance + 1));
 
     plr->m_bgIsQueued = true;
     plr->m_bgQueueInstanceId = instance;
@@ -897,7 +897,7 @@ void CBattlegroundManager::RemovePlayerFromQueues(Player* plr)
     {
         if ((*itr) == plr->GetLowGUID())
         {
-            Log.Debug("BattlegroundManager", "Removing player %u from queue instance %u type %u", plr->GetLowGUID(), plr->m_bgQueueInstanceId, plr->m_bgQueueType);
+            LOG_DEBUG("Removing player %u from queue instance %u type %u", plr->GetLowGUID(), plr->m_bgQueueInstanceId, plr->m_bgQueueType);
             m_queuedPlayers[plr->m_bgQueueType][lgroup].erase(itr);
             break;
         }
@@ -915,7 +915,7 @@ void CBattlegroundManager::RemovePlayerFromQueues(Player* plr)
     group = plr->GetGroup();
     if (group)
     {
-        Log.Debug("BattlegroundManager", "Player %u removed whilst in a group. Removing players group %u from queue", plr->GetLowGUID(), group->GetID());
+        LOG_DEBUG("Player %u removed whilst in a group. Removing players group %u from queue", plr->GetLowGUID(), group->GetID());
         RemoveGroupFromQueues(group);
     }
 }
@@ -1067,7 +1067,7 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
         iid = ++m_maxBattlegroundId[Type];
         bg = arenaFactory(mgr, iid, LevelGroup, Type, players_per_side);
         mgr->m_battleground = bg;
-        Log.Notice("BattlegroundManager", "Created arena battleground type %u for level group %u on map %u.", Type, LevelGroup, mapid);
+        LogNotice("BattlegroundManager : Created arena battleground type %u for level group %u on map %u.", Type, LevelGroup, mapid);
         sEventMgr.AddEvent(bg, &CBattleground::EventCreate, EVENT_BATTLEGROUND_QUEUE_UPDATE, 1, 1, 0);
         m_instanceLock.Acquire();
         m_instances[Type].insert(std::make_pair(iid, bg));
@@ -1131,7 +1131,7 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
     bg->SetIsWeekend(isWeekend);
     mgr->m_battleground = bg;
     sEventMgr.AddEvent(bg, &CBattleground::EventCreate, EVENT_BATTLEGROUND_QUEUE_UPDATE, 1, 1, 0);
-    Log.Notice("BattlegroundManager", "Created battleground type %u for level group %u.", Type, LevelGroup);
+    LogNotice("BattlegroundManager : Created battleground type %u for level group %u.", Type, LevelGroup);
 
     m_instanceLock.Acquire();
     m_instances[Type].insert(std::make_pair(iid, bg));
@@ -1386,7 +1386,7 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
             m_queueLock.Acquire();
             m_queuedGroups[BattlegroundType].push_back(pGroup->GetID());
             m_queueLock.Release();
-            Log.Notice("BattlegroundMgr", "Group %u is now in battleground queue for arena type %u", pGroup->GetID(), BattlegroundType);
+            LogNotice("BattlegroundMgr : Group %u is now in battleground queue for arena type %u", pGroup->GetID(), BattlegroundType);
 
             // send the battleground status packet
 
@@ -1398,7 +1398,7 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
     // Queue him!
     m_queueLock.Acquire();
     m_queuedPlayers[BattlegroundType][lgroup].push_back(pguid);
-    Log.Notice("BattlegroundMgr", "Player %u is now in battleground queue for {Arena %u}", m_session->GetPlayer()->GetLowGUID(), BattlegroundType);
+    LogNotice("BattlegroundMgr : Player %u is now in battleground queue for {Arena %u}", m_session->GetPlayer()->GetLowGUID(), BattlegroundType);
 
     // send the battleground status packet
     SendBattlefieldStatus(m_session->GetPlayer(), BGSTATUS_INQUEUE, BattlegroundType, 0, 0, 0, 0);

@@ -108,7 +108,7 @@ void DayWatcherThread::load_settings()
     }
     else
     {
-        Log.Notice("DayWatcherThread", "Initializing Arena Updates to zero.");
+        LogNotice("DayWatcherThread : Initializing Arena Updates to zero.");
         last_arena_time = 0;
     }
 
@@ -123,7 +123,7 @@ void DayWatcherThread::load_settings()
     }
     else
     {
-        Log.Notice("DayWatcherThread", "Initializing Daily Updates to zero.");
+        LogNotice("DayWatcherThread : Initializing Daily Updates to zero.");
         last_daily_time = 0;
     }
 }
@@ -208,7 +208,7 @@ bool DayWatcherThread::run()
 
 void DayWatcherThread::update_daily()
 {
-    Log.Notice("DayWatcherThread", "Running Daily Quest Reset...");
+    LogNotice("DayWatcherThread : Running Daily Quest Reset...");
     CharacterDatabase.WaitExecute("UPDATE characters SET finisheddailies = ''");
     CharacterDatabase.WaitExecute("UPDATE characters SET rbg_daily = '0'");     // Reset RBG
     objmgr.ResetDailies();
@@ -219,7 +219,7 @@ void DayWatcherThread::update_daily()
 
 void DayWatcherThread::update_arena()
 {
-    Log.Notice("DayWatcherThread", "Running Weekly Arena Point Maintenance...");
+    LogNotice("DayWatcherThread : Running Weekly Arena Point Maintenance...");
     QueryResult* result = CharacterDatabase.Query("SELECT guid, arenaPoints FROM characters");  // this one is a little more intensive
     Player* plr;
     uint32 guid, arenapoints, orig_arenapoints;

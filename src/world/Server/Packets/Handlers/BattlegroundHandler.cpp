@@ -139,7 +139,7 @@ void WorldSession::HandleLeaveBattlefieldOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleReadyForAccountDataTimes(WorldPacket& /*recvData*/)
 {
-    Log.Debug("HandleReadyForAccountDataTimes", "WORLD: CMSG_READY_FOR_ACCOUNT_DATA_TIMES");
+    LogDebugFlag(LF_OPCODE, "WORLD: CMSG_READY_FOR_ACCOUNT_DATA_TIMES");
 
     SendAccountDataTimes(GLOBAL_CACHE_MASK);
 }
@@ -394,7 +394,7 @@ void WorldSession::SendNotInArenaTeamPacket(uint8 type)
 
 void WorldSession::HandleBgInviteResponse(WorldPacket& recv_data)
 {
-    Log.Debug("HandleBgInviteResponse", "Recieved unknown packet: CMSG_BATTLEFIELD_MGR_ENTRY_INVITE_RESPONSE");
+    LogDebugFlag(LF_OPCODE, "Recieved unknown packet: CMSG_BATTLEFIELD_MGR_ENTRY_INVITE_RESPONSE");
 
     // uint32 ?
     // uint8  ?

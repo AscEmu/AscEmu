@@ -298,13 +298,13 @@ void MapCell::QueueUnloadPending()
         return;
 
     _unloadpending = true;
-    Log.Debug("MapCell", "Queueing pending unload of cell %u %u", _x, _y);
+    LogDebugFlag(LF_MAP_CELL, "Queueing pending unload of cell %u %u", _x, _y);
     sEventMgr.AddEvent(_mapmgr, &MapMgr::UnloadCell, (uint32)_x, (uint32)_y, MAKE_CELL_EVENT(_x, _y), sWorld.map_unload_time * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void MapCell::CancelPendingUnload()
 {
-    Log.Debug("MapCell", "Cancelling pending unload of cell %u %u", _x, _y);
+    LogDebugFlag(LF_MAP_CELL, "Cancelling pending unload of cell %u %u", _x, _y);
     if (!_unloadpending)
         return;
 
@@ -314,7 +314,7 @@ void MapCell::CancelPendingUnload()
 
 void MapCell::Unload()
 {
-    Log.Debug("MapCell", "Unloading cell %u %u", _x, _y);
+    LogDebugFlag(LF_MAP_CELL, "Unloading cell %u %u", _x, _y);
     ARCEMU_ASSERT(_unloadpending);
     if (_active)
     {

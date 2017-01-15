@@ -53,7 +53,7 @@ namespace AELog
             case LF_DB_TABLES:
                 return CONSOLE_COLOR_YELLOW;
             default:
-                return CONSOLE_COLOR_NORMAL;
+                return CONSOLE_COLOR_YELLOW;
 }
 }
 #else
@@ -77,7 +77,7 @@ namespace AELog
             case LF_DB_TABLES:
                 return CONSOLE_COLOR_YELLOW;
             default:
-                return CONSOLE_COLOR_WHITE;
+                return CONSOLE_COLOR_YELLOW;
         }
     }
 #endif
@@ -272,7 +272,7 @@ void AscEmuLog::ConsoleLogError(bool file_only, const char* format, ...)
 
 void AscEmuLog::ConsoleLogErrorFunction(bool file_only, const char* function, const char* format, ...)
 {
-    if (normal_log_file == nullptr)
+    if (error_log_file == nullptr)
         return;
 
     char function_message[32768];
@@ -292,7 +292,7 @@ void AscEmuLog::ConsoleLogErrorFunction(bool file_only, const char* function, co
         SetConsoleColor(CONSOLE_COLOR_NORMAL);
     }
 
-    WriteFile(normal_log_file, message_buffer);
+    WriteFile(error_log_file, message_buffer);
 }
 
 void AscEmuLog::ConsoleLogDetail(bool file_only, const char* format, ...)

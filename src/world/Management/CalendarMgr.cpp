@@ -25,7 +25,7 @@ CalendarMgr::~CalendarMgr() {};
 
 void CalendarMgr::LoadFromDB()
 {
-    Log.Notice("CalendarMgr", "Start loading calendar_events");
+    LogNotice("CalendarMgr : Start loading calendar_events");
     {
         const char* loadCalendarEvents = "SELECT entry, creator, title, description, type, dungeon, date, flags FROM calendar_events";
         bool success = false;
@@ -54,7 +54,7 @@ void CalendarMgr::LoadFromDB()
                 CalendarEvent* calendarEvent = new CalendarEvent(entry, creator, title, description, type, dungeon, time_t(date), flags);
                 _events.insert(calendarEvent);
 
-                Log.Debug("CalendarMgr", "Title %s loaded", calendarEvent->title.c_str()); // remove me ;-)
+                LOG_DEBUG("Title %s loaded", calendarEvent->title.c_str()); // remove me ;-)
 
                 ++count;
             }
@@ -65,14 +65,14 @@ void CalendarMgr::LoadFromDB()
         }
     }
 
-    Log.Notice("CalendarMgr", "Start loading calendar_invites");
+    LogNotice("CalendarMgr : Start loading calendar_invites");
     {
         const char* loadCalendarInvites = "SELECT id, event, invitee, sender, status, statustime, rank, text FROM calendar_invites";
         bool success = false;
         QueryResult* result = CharacterDatabase.Query(&success, loadCalendarInvites);
         if (!success)
         {
-            Log.Debug("CalendarMgr", "Query failed: %s", loadCalendarInvites);
+            LOG_ERROR("Query failed: %s", loadCalendarInvites);
             return;
         }
         if (result)

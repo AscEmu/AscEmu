@@ -47,22 +47,22 @@ m_hiPlayerGuid(1)
 
 ObjectMgr::~ObjectMgr()
 {
-    Log.Notice("ObjectMgr", "Deleting Corpses...");
+    LogNotice("ObjectMgr : Deleting Corpses...");
     CorpseCollectorUnload();
 
-    Log.Notice("ObjectMgr", "Deleting Guilds...");
+    LogNotice("ObjectMgr : Deleting Guilds...");
     for (GuildMap::iterator i = mGuild.begin(); i != mGuild.end(); ++i)
     {
         delete i->second;
     }
 
-    Log.Notice("ObjectMgr", "Deleting Vendors...");
+    LogNotice("ObjectMgr : Deleting Vendors...");
     for (VendorMap::iterator i = mVendors.begin(); i != mVendors.end(); ++i)
     {
         delete i->second;
     }
 
-    Log.Notice("ObjectMgr", "Deleting Trainers...");
+    LogNotice("ObjectMgr : Deleting Trainers...");
     for (TrainerMap::iterator i = mTrainers.begin(); i != mTrainers.end(); ++i)
     {
         Trainer* t = i->second;
@@ -71,7 +71,7 @@ ObjectMgr::~ObjectMgr()
         delete t;
     }
 
-    Log.Notice("ObjectMgr", "Deleting Level Information...");
+    LogNotice("ObjectMgr : Deleting Level Information...");
     for (LevelInfoMap::iterator i = mLevelInfo.begin(); i != mLevelInfo.end(); ++i)
     {
         LevelMap* l = i->second;
@@ -83,7 +83,7 @@ ObjectMgr::~ObjectMgr()
         delete l;
     }
 
-    Log.Notice("ObjectMgr", "Deleting Waypoint Cache...");
+    LogNotice("ObjectMgr : Deleting Waypoint Cache...");
     for (std::unordered_map<uint32, Movement::WayPointMap*>::iterator i = m_waypoints.begin(); i != m_waypoints.end(); ++i)
     {
         for (Movement::WayPointMap::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
@@ -93,7 +93,7 @@ ObjectMgr::~ObjectMgr()
         delete i->second;
     }
 
-    Log.Notice("ObjectMgr", "Deleting timed emote Cache...");
+    LogNotice("ObjectMgr : Deleting timed emote Cache...");
     for (std::unordered_map<uint32, TimedEmoteList*>::iterator i = m_timedemotes.begin(); i != m_timedemotes.end(); ++i)
     {
         for (TimedEmoteList::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
@@ -106,7 +106,7 @@ ObjectMgr::~ObjectMgr()
         delete i->second;
     }
 
-    Log.Notice("ObjectMgr", "Deleting NPC Say Texts...");
+    LogNotice("ObjectMgr : Deleting NPC Say Texts...");
     for (uint8 i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
     {
         NpcMonsterSay* p;
@@ -123,7 +123,7 @@ ObjectMgr::~ObjectMgr()
         mMonsterSays[i].clear();
     }
 
-    Log.Notice("ObjectMgr", "Deleting Charters...");
+    LogNotice("ObjectMgr", "Deleting Charters...");
     for (uint8 i = 0; i < NUM_CHARTER_TYPES; ++i)
     {
         for (std::unordered_map<uint32, Charter*>::iterator itr = m_charters[i].begin(); itr != m_charters[i].end(); ++itr)
@@ -132,7 +132,7 @@ ObjectMgr::~ObjectMgr()
         }
     }
 
-    Log.Notice("ObjectMgr", "Deleting Reputation Tables...");
+    LogNotice("ObjectMgr : Deleting Reputation Tables...");
     for (ReputationModMap::iterator itr = this->m_reputation_creature.begin(); itr != m_reputation_creature.end(); ++itr)
     {
         ReputationModifier* mod = itr->second;
@@ -153,7 +153,7 @@ ObjectMgr::~ObjectMgr()
         delete mod;
     }
 
-    Log.Notice("ObjectMgr", "Deleting Groups...");
+    LogNotice("ObjectMgr : Deleting Groups...");
     for (GroupMap::iterator itr = m_groups.begin(); itr != m_groups.end();)
     {
         Group* pGroup = itr->second;
@@ -172,7 +172,7 @@ ObjectMgr::~ObjectMgr()
         }
     }
 
-    Log.Notice("ObjectMgr", "Deleting Player Information...");
+    LogNotice("ObjectMgr : Deleting Player Information...");
     for (std::unordered_map<uint32, PlayerInfo*>::iterator itr = m_playersinfo.begin(); itr != m_playersinfo.end(); ++itr)
     {
         itr->second->m_Group = NULL;
@@ -180,11 +180,11 @@ ObjectMgr::~ObjectMgr()
         delete itr->second;
     }
 
-    Log.Notice("ObjectMgr", "Deleting GM Tickets...");
+    LogNotice("ObjectMgr : Deleting GM Tickets...");
     for (GmTicketList::iterator itr = GM_TicketList.begin(); itr != GM_TicketList.end(); ++itr)
         delete(*itr);
 
-    Log.Notice("ObjectMgr", "Deleting Boss Information...");
+    LogNotice("ObjectMgr : Deleting Boss Information...");
     for (uint32 i = 0; i < NUM_MAPS; i++)
     {
         if (this->m_InstanceBossInfoMap[i] != NULL)
@@ -196,27 +196,27 @@ ObjectMgr::~ObjectMgr()
         }
     }
 
-    Log.Notice("ObjectMgr", "Deleting Arena Teams...");
+    LogNotice("ObjectMgr : Deleting Arena Teams...");
     for (std::unordered_map<uint32, ArenaTeam*>::iterator itr = m_arenaTeams.begin(); itr != m_arenaTeams.end(); ++itr)
     {
         delete(*itr).second;
     }
 
-    Log.Notice("ObjectMgr", "Deleting Profession Discoveries...");
+    LogNotice("ObjectMgr : Deleting Profession Discoveries...");
     std::set<ProfessionDiscovery*>::iterator itr = ProfessionDiscoveryTable.begin();
     for (; itr != ProfessionDiscoveryTable.end(); ++itr)
         delete(*itr);
 
-    Log.Notice("ObjectMgr", "Cleaning up BroadCastStorages...");
+    LogNotice("ObjectMgr : Cleaning up BroadCastStorages...");
     m_BCEntryStorage.clear();
 
-    Log.Notice("ObjectMgr", "Cleaning up spell target constraints...");
+    LogNotice("ObjectMgr : Cleaning up spell target constraints...");
     for (SpellTargetConstraintMap::iterator itr = m_spelltargetconstraints.begin(); itr != m_spelltargetconstraints.end(); ++itr)
         delete itr->second;
 
     m_spelltargetconstraints.clear();
 
-    Log.Notice("ObjectMgr", "Cleaning up vehicle accessories...");
+    LogNotice("ObjectMgr", "Cleaning up vehicle accessories...");
     for (std::map< uint32, std::vector< VehicleAccessoryEntry* >* >::iterator itr = vehicle_accessories.begin(); itr != vehicle_accessories.end(); ++itr)
     {
         std::vector< VehicleAccessoryEntry* > *v = itr->second;
@@ -231,7 +231,7 @@ ObjectMgr::~ObjectMgr()
     vehicle_accessories.clear();
 
 
-    Log.Notice("ObjectMgr", "Cleaning up worldstate templates...");
+    LogNotice("ObjectMgr : Cleaning up worldstate templates...");
     for (std::map< uint32, std::multimap< uint32, WorldState >* >::iterator itr = worldstate_templates.begin(); itr != worldstate_templates.end(); ++itr)
     {
         itr->second->clear();
@@ -240,10 +240,10 @@ ObjectMgr::~ObjectMgr()
 
     worldstate_templates.clear();
 
-    Log.Notice("ObjectMgr", "Clearing up areatrigger data");
+    LogNotice("ObjectMgr : Clearing up areatrigger data");
     _areaTriggerStore.clear();
 
-    Log.Notice("ObjectMgr", "Clearing up event scripts...");
+    LogNotice("ObjectMgr : Clearing up event scripts...");
     mEventScriptMaps.clear();
     mSpellEffectMaps.clear();
 }
@@ -469,7 +469,7 @@ void ObjectMgr::LoadPlayersInfo()
                 // gotta rename him
                 char temp[300];
                 snprintf(temp, 300, "%s__%X__", pn->name, pn->guid);
-                Log.Notice("ObjectMgr", "Renaming duplicate player %s to %s. (%u)", pn->name, temp, pn->guid);
+                LogNotice("ObjectMgr : Renaming duplicate player %s to %s. (%u)", pn->name, temp, pn->guid);
                 CharacterDatabase.WaitExecute("UPDATE characters SET name = '%s', login_flags = %u WHERE guid = %u",
                                               CharacterDatabase.EscapeString(std::string(temp)).c_str(), (uint32)LOGIN_FORCED_RENAME, pn->guid);
 
@@ -961,19 +961,19 @@ void ObjectMgr::SetHighestGuids()
         delete result;
     }
 
-    Log.Notice("ObjectMgr", "HighGuid(CORPSE) = %u", m_hiCorpseGuid.GetVal());
-    Log.Notice("ObjectMgr", "HighGuid(PLAYER) = %u", m_hiPlayerGuid.GetVal());
-    Log.Notice("ObjectMgr", "HighGuid(GAMEOBJ) = %u", m_hiGameObjectSpawnId.GetVal());
-    Log.Notice("ObjectMgr", "HighGuid(UNIT) = %u", m_hiCreatureSpawnId.GetVal());
-    Log.Notice("ObjectMgr", "HighGuid(ITEM) = %u", m_hiItemGuid.GetVal());
-    Log.Notice("ObjectMgr", "HighGuid(CONTAINER) = %u", m_hiItemGuid.GetVal());
-    Log.Notice("ObjectMgr", "HighGuid(GROUP) = %u", m_hiGroupId.GetVal());
-    Log.Notice("ObjectMgr", "HighGuid(CHARTER) = %u", m_hiCharterId.GetVal());
-    Log.Notice("ObjectMgr", "HighGuid(GUILD) = %u", m_hiGuildId.GetVal());
-    Log.Notice("ObjectMgr", "HighGuid(BUGREPORT) = %u", uint32(m_reportID.GetVal() - 1));
-    Log.Notice("ObjectMgr", "HighGuid(TICKET) = %u", uint32(m_ticketid.GetVal() - 1));
-    Log.Notice("ObjectMgr", "HighGuid(MAIL) = %u", uint32(m_mailid.GetVal()));
-    Log.Notice("ObjectMgr", "HighGuid(EQUIPMENTSET) = %u", uint32(m_setGUID.GetVal() - 1));
+    LogNotice("ObjectMgr : HighGuid(CORPSE) = %u", m_hiCorpseGuid.GetVal());
+    LogNotice("ObjectMgr : HighGuid(PLAYER) = %u", m_hiPlayerGuid.GetVal());
+    LogNotice("ObjectMgr : HighGuid(GAMEOBJ) = %u", m_hiGameObjectSpawnId.GetVal());
+    LogNotice("ObjectMgr : HighGuid(UNIT) = %u", m_hiCreatureSpawnId.GetVal());
+    LogNotice("ObjectMgr : HighGuid(ITEM) = %u", m_hiItemGuid.GetVal());
+    LogNotice("ObjectMgr : HighGuid(CONTAINER) = %u", m_hiItemGuid.GetVal());
+    LogNotice("ObjectMgr : HighGuid(GROUP) = %u", m_hiGroupId.GetVal());
+    LogNotice("ObjectMgr : HighGuid(CHARTER) = %u", m_hiCharterId.GetVal());
+    LogNotice("ObjectMgr : HighGuid(GUILD) = %u", m_hiGuildId.GetVal());
+    LogNotice("ObjectMgr : HighGuid(BUGREPORT) = %u", uint32(m_reportID.GetVal() - 1));
+    LogNotice("ObjectMgr : HighGuid(TICKET) = %u", uint32(m_ticketid.GetVal() - 1));
+    LogNotice("ObjectMgr : HighGuid(MAIL) = %u", uint32(m_mailid.GetVal()));
+    LogNotice("ObjectMgr : HighGuid(EQUIPMENTSET) = %u", uint32(m_setGUID.GetVal() - 1));
 }
 
 uint32 ObjectMgr::GenerateReportID()
@@ -1243,13 +1243,13 @@ void ObjectMgr::LoadVendors()
 
         if (result->GetFieldCount() < 6)
         {
-            Log.Notice("ObjectMgr", "Invalid format in vendors (%u/6) columns, not enough data to proceed.", result->GetFieldCount());
+            LOG_ERROR("Invalid format in vendors (%u/6) columns, not enough data to proceed.", result->GetFieldCount());
             delete result;
             return;
         }
         else if (result->GetFieldCount() > 6)
         {
-            Log.Notice("ObjectMgr", "Invalid format in vendors (%u/6) columns, loading anyway because we have enough data", result->GetFieldCount());
+            LOG_ERROR("Invalid format in vendors (%u/6) columns, loading anyway because we have enough data", result->GetFieldCount());
         }
 
         DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = NULL;
@@ -1943,7 +1943,7 @@ void ObjectMgr::GenerateLevelUpInfo()
             mLevelInfo.insert(LevelInfoMap::value_type(p, lMap));
         }
     }
-    Log.Notice("ObjectMgr", "%u level up information generated.", mLevelInfo.size());
+    LogNotice("ObjectMgr : %u level up information generated.", mLevelInfo.size());
 }
 
 LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)
@@ -2102,7 +2102,7 @@ void ObjectMgr::LoadCreatureTimedEmotes()
     }
     while (result->NextRow());
 
-    Log.Notice("ObjectMgr", "%u timed emotes cached.", result->GetRowCount());
+    LogNotice("ObjectMgr : %u timed emotes cached.", result->GetRowCount());
     delete result;
 }
 
@@ -2161,7 +2161,7 @@ void ObjectMgr::LoadCreatureWaypoints()
     }
     while (result->NextRow());
 
-    Log.Notice("ObjectMgr", "%u waypoints cached.", result->GetRowCount());
+    LogNotice("ObjectMgr : %u waypoints cached.", result->GetRowCount());
     delete result;
 }
 
@@ -2561,7 +2561,7 @@ void ObjectMgr::LoadReputationModifierTable(const char* tablename, ReputationMod
         while (result->NextRow());
         delete result;
     }
-    Log.Notice("ObjectMgr", "%u reputation modifiers on %s.", dmap->size(), tablename);
+    LogNotice("ObjectMgr : %u reputation modifiers on %s.", dmap->size(), tablename);
 }
 
 void ObjectMgr::LoadReputationModifiers()
@@ -2757,7 +2757,7 @@ void ObjectMgr::LoadDisabledSpells()
         delete result;
     }
 
-    Log.Notice("ObjectMgr", "%u disabled spells.", m_disabled_spells.size());
+    LogNotice("ObjectMgr : %u disabled spells.", m_disabled_spells.size());
 }
 
 void ObjectMgr::ReloadDisabledSpells()
@@ -2984,7 +2984,7 @@ void ObjectMgr::LoadSpellTargetConstraints()
 {
     enum { CREATURE_FOCUS_TYPE, GAMEOBJECT_FOCUS_TYPE, CREATURE_TYPE, GAMEOBJECT_TYPE };
 
-    Log.Notice("ObjectMgr", "Loading spell target constraints...");
+    LogNotice("ObjectMgr : Loading spell target constraints...");
 
     // Let's try to be idiot proof :/
     QueryResult* result = WorldDatabase.Query("SELECT * FROM spelltargetconstraints WHERE SpellID > 0 ORDER BY SpellID");
@@ -3051,7 +3051,7 @@ void ObjectMgr::LoadSpellTargetConstraints()
 
     delete result;
 
-    Log.Notice("ObjectMgr", "Loaded constraints for %u spells...", m_spelltargetconstraints.size());
+    LogNotice("ObjectMgr : Loaded constraints for %u spells...", m_spelltargetconstraints.size());
 }
 
 SpellTargetConstraint* ObjectMgr::GetSpellTargetConstraintForSpell(uint32 spellid)
@@ -3363,7 +3363,7 @@ void ObjectMgr::LoadAreaTrigger()
 
 void ObjectMgr::LoadEventScripts()
 {
-    Log.Notice("ObjectMgr", "Loading Event Scripts...");
+    LogNotice("ObjectMgr : Loading Event Scripts...");
 
     bool success = false;
     const char* eventScriptsQuery = "SELECT event_id, function, script_type, data_1, data_2, data_3, data_4, data_5, x, y, z, o, delay, next_event FROM event_scripts WHERE event_id > 0 ORDER BY event_id";
@@ -3698,7 +3698,7 @@ void ObjectMgr::StoreBroadCastGroupKey()
 {
     if (!sWorld.BCSystemEnable)
     {
-        Log.Notice("ObjectMgr", "BCSystem Disabled.");
+        LogNotice("ObjectMgr : BCSystem Disabled.");
         return;
     }
 
@@ -3723,7 +3723,7 @@ void ObjectMgr::StoreBroadCastGroupKey()
     }
     else
     {
-        Log.Notice("ObjectMgr", "BCSystem Enabled with %u KeyGroups.", keyGroup.size());
+        LogNotice("ObjectMgr : BCSystem Enabled with %u KeyGroups.", keyGroup.size());
     }
 
     for (std::vector<std::string>::iterator itr = keyGroup.begin(); itr != keyGroup.end(); ++itr)

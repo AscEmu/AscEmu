@@ -1982,25 +1982,25 @@ bool AchievementMgr::UpdateAchievementCriteria(Player* player, int32 criteriaID,
     auto criteria = sAchievementCriteriaStore.LookupEntry(criteriaID);
     if (!criteria)
     {
-        Log.Debug("AchievementMgr", "Achievement ID %u is Invalid", criteriaID);
+        LOG_DEBUG("Achievement ID %u is Invalid", criteriaID);
         return false;
     }
     if (IsCompletedCriteria(criteria))
     {
-        Log.Debug("AchievementMgr", "Achievement criteria %lu already completed.", criteriaID);
+        LOG_DEBUG("Achievement criteria %lu already completed.", criteriaID);
         return false;
     }
     auto* achievement = sAchievementStore.LookupEntry(criteria->referredAchievement);
     if (!achievement)
     {
         // achievement not found
-        Log.Debug("AchievementMgr", "Referred achievement (%lu) entry not found.", criteria->referredAchievement);
+        LOG_DEBUG("Referred achievement (%lu) entry not found.", criteria->referredAchievement);
         return false;
     }
     if (achievement->flags & ACHIEVEMENT_FLAG_COUNTER)
     {
         // can't complete this type of achivement (counter)
-        Log.Debug("AchievementMgr", "Referred achievement (%lu) |Hachievement:%lu:" I64FMT ":0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
+        LogDebug("AchievementMgr Referred achievement (%lu) |Hachievement:%lu:" I64FMT ":0:0:0:-1:0:0:0:0|h[%s]|h is a counter and cannot be completed.",
             achievement->ID, achievement->ID, player->GetGUID(), achievement->name);
         return false;
     }

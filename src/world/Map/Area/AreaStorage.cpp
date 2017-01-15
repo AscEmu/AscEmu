@@ -116,7 +116,7 @@ namespace MapManagement
 
             if (wmoEntry)
             {
-                Log.Debug("AreaStorage::IsOutdoor", "Got WMOAreaTableEntry! flag %u, areaid %u", wmoEntry->flags, wmoEntry->areaId);
+                LOG_DEBUG("Got WMOAreaTableEntry! flag %u, areaid %u", wmoEntry->flags, wmoEntry->areaId);
                 atEntry = sAreaStore.LookupEntry(wmoEntry->areaId);
             }
 

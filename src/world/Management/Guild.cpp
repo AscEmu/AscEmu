@@ -256,7 +256,7 @@ GuildRank* Guild::CreateGuildRank(const char* szRankName, uint32 iPermissions, b
                                       r->iTabPermissions[4].iFlags, r->iTabPermissions[4].iStacksPerDay,
                                       r->iTabPermissions[5].iFlags, r->iTabPermissions[5].iStacksPerDay);
 
-            Log.Debug("Guild", "Created rank %u on guild %u (%s)", i, m_guildId, szRankName);
+            LOG_DEBUG("Created rank %u on guild %u (%s)", i, m_guildId, szRankName);
 
             return r;
         }
@@ -458,7 +458,7 @@ bool Guild::LoadFromDB(Field* f)
         r->iId = f2[1].GetUInt32();
         if (r->iId != sid)
         {
-            Log.Notice("Guild", "Renaming rank %u of guild %s to %u.", r->iId, m_guildName, sid);
+            LogNotice("Guild : Renaming rank %u of guild %s to %u.", r->iId, m_guildName, sid);
             CharacterDatabase.Execute("UPDATE guild_ranks SET rankId = %u WHERE guildId = %u AND rankName = \'%s\'", r->iId,
                                       m_guildId, CharacterDatabase.EscapeString(std::string(f2[2].GetString())).c_str());
 
@@ -663,7 +663,7 @@ bool Guild::LoadFromDB(Field* f)
         delete result;
     }
 
-    Log.Debug("Guild", "Loaded guild %s, %u members.", m_guildName, m_members.size());
+    LOG_DEBUG("Loaded guild %s, %u members.", m_guildName, m_members.size());
     return true;
 }
 

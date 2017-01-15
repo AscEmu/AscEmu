@@ -160,19 +160,19 @@ bool Master::Run(int argc, char** argv)
 
     if (do_check_conf)
     {
-        Log.Notice("Config", "Checking config file: %s", config_file);
+        LogNotice("Config : Checking config file: %s", config_file);
         if (Config.MainConfig.SetSource(config_file, true))
             Log.Success("Config", "Passed without errors.");
         else
             Log.Error("Config", "Encountered one or more errors.");
 
-        Log.Notice("Config", "Checking config file: %s", realm_config_file);
+        LogNotice("Config : Checking config file: %s", realm_config_file);
         if (Config.RealmConfig.SetSource(realm_config_file, true))
             Log.Success("Config", "Passed without errors.");
         else
             Log.Error("Config", "Encountered one or more errors.");
 
-        Log.Notice("Config", "Checking config file:: %s", optional_config_file);
+        LogNotice("Config : Checking config file:: %s", optional_config_file);
         if (Config.OptionalConfig.SetSource(optional_config_file, true))
             Log.Success("Config", "Passed without errors.");
         else
@@ -192,7 +192,7 @@ bool Master::Run(int argc, char** argv)
 
     InitImplicitTargetFlags();
     InitRandomNumberGenerators();
-    Log.Notice("Rnd", "Initialized Random Number Generators.");
+    LogNotice("Rnd : Initialized Random Number Generators.");
 
     ThreadPool.Startup();
     uint32 LoadingTime = getMSTime();
@@ -310,17 +310,17 @@ bool Master::Run(int argc, char** argv)
     ShutdownLootSystem();
     
     // send a query to wake it up if its inactive
-    Log.Notice("Database", "Clearing all pending queries...");
+    LogNotice("Database : Clearing all pending queries...");
 
     // kill the database thread first so we don't lose any queries/data
     CharacterDatabase.EndThreads();
     WorldDatabase.EndThreads();
 
-    Log.Notice("DayWatcherThread", "Exiting...");
+    LogNotice("DayWatcherThread : Exiting...");
     dw->terminate();
     dw = NULL;
 
-    Log.Notice("CommonScheduleThread", "Exiting...");
+    LogNotice("CommonScheduleThread : Exiting...");
     cs->terminate();
     cs = NULL;
 
@@ -329,7 +329,7 @@ bool Master::Run(int argc, char** argv)
     CloseConsoleListener();
     sWorld.SaveAllPlayers();
 
-    Log.Notice("Network", "Shutting down network subsystem.");
+    LogNotice("Network : Shutting down network subsystem.");
 #ifdef WIN32
     sSocketMgr.ShutdownThreads();
 #endif
@@ -345,22 +345,22 @@ bool Master::Run(int argc, char** argv)
     delete LogonCommHandler::getSingletonPtr();
 
     sWorld.ShutdownClasses();
-    Log.Notice("World", "~World()");
+    LogNotice("World : ~World()");
     delete World::getSingletonPtr();
 
     sScriptMgr.UnloadScripts();
     delete ScriptMgr::getSingletonPtr();
 
-    Log.Notice("ChatHandler", "~ChatHandler()");
+    LogNotice("ChatHandler : ~ChatHandler()");
     delete ChatHandler::getSingletonPtr();
 
-    Log.Notice("EventMgr", "~EventMgr()");
+    LogNotice("EventMgr : ~EventMgr()");
     delete EventMgr::getSingletonPtr();
 
-    Log.Notice("Database", "Closing Connections...");
+    LogNotice("Database : Closing Connections...");
     _StopDB();
 
-    Log.Notice("Network", "Deleting Network Subsystem...");
+    LogNotice("Network : Deleting Network Subsystem...");
     delete SocketMgr::getSingletonPtr();
     delete SocketGarbageCollector::getSingletonPtr();
 
@@ -403,7 +403,7 @@ bool Master::_CheckDBVersion()
     Field* f = wqr->Fetch();
     const char *WorldDBVersion = f->GetString();
 
-    Log.Notice("Database", "Last world database update: %s", WorldDBVersion);
+    LogNotice("Database : Last world database update: %s", WorldDBVersion);
     int result = strcmp(WorldDBVersion, REQUIRED_WORLD_DB_VERSION);
     if (result != 0)
     {
@@ -434,7 +434,7 @@ bool Master::_CheckDBVersion()
     f = cqr->Fetch();
     const char *CharDBVersion = f->GetString();
 
-    Log.Notice("Database", "Last character database update: %s", CharDBVersion);
+    LogNotice("Database : Last character database update: %s", CharDBVersion);
     result = strcmp(CharDBVersion, REQUIRED_CHAR_DB_VERSION);
     if (result != 0)
     {
@@ -563,12 +563,12 @@ void OnCrash(bool Terminate)
     {
         if (World::getSingletonPtr() != 0)
         {
-            Log.Notice("sql", "Waiting for all database queries to finish...");
+            LogNotice("sql : Waiting for all database queries to finish...");
             WorldDatabase.EndThreads();
             CharacterDatabase.EndThreads();
-            Log.Notice("sql", "All pending database operations cleared.");
+            LogNotice("sql : All pending database operations cleared.");
             sWorld.SaveAllPlayers();
-            Log.Notice("sql", "Data saved.");
+            LogNotice("sql : Data saved.");
         }
     }
     catch (...)
@@ -576,7 +576,7 @@ void OnCrash(bool Terminate)
         Log.Error("sql", "Threw an exception while attempting to save all data.");
     }
 
-    Log.Notice("Server", "Closing.");
+    LogNotice("Server : Closing.");
 
     // beep
     //printf("\x7");
@@ -605,33 +605,33 @@ bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_fil
     Log.Success("Config", "Loading Config Files...");
     if (Config.MainConfig.SetSource(config_file))
     {
-        Log.Notice("Config", ">> " CONFDIR "/world.conf loaded");
+        LogNotice("Config : " CONFDIR "/world.conf loaded");
     }
     else
     {
-        Log.Error("Config", ">> error occurred loading " CONFDIR "/world.conf");
+        Log.Error("Config", "error occurred loading " CONFDIR "/world.conf");
         Log.Close();
         return false;
     }
 
     if (Config.OptionalConfig.SetSource(optional_config_file))
     {
-        Log.Notice("Config", ">> " CONFDIR "/optional.conf loaded");
+        LogNotice("Config : " CONFDIR "/optional.conf loaded");
     }
     else
     {
-        Log.Error("Config", ">> error occurred loading " CONFDIR "/optional.conf");
+        Log.Error("Config", "error occurred loading " CONFDIR "/optional.conf");
         Log.Close();
         return false;
     }
 
     if (Config.RealmConfig.SetSource(realm_config_file))
     {
-        Log.Notice("Config", ">> " CONFDIR "/realms.conf loaded");
+        LogNotice("Config : " CONFDIR "/realms.conf loaded");
     }
     else
     {
-        Log.Error("Config", ">> error occurred loading " CONFDIR "/realms.conf");
+        LogError("Config : error occurred loading " CONFDIR "/realms.conf");
         Log.Close();
         return false;
     }
@@ -661,17 +661,17 @@ void Master::OpenCheatLogFiles()
 
 void Master::StartRemoteConsole()
 {
-    Log.Notice("RemoteConsole", "Starting...");
+    LogNotice("RemoteConsole : Starting...");
     if (StartConsoleListener())
     {
 #ifdef WIN32
         ThreadPool.ExecuteTask(GetConsoleListener());
 #endif
-        Log.Notice("RemoteConsole", "Now open.");
+        LogNotice("RemoteConsole : Now open.");
     }
     else
     {
-        Log.Warning("RemoteConsole", "Not enabled or failed listen.");
+        LogWarning("RemoteConsole : Not enabled or failed listen.");
     }
 }
 
@@ -737,10 +737,10 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
                 if (m_ShutdownTimer > 60000.0f)
                 {
                     if (!((int)(m_ShutdownTimer) % 60000))
-                        Log.Notice("Server", "Shutdown in %i minutes.", (int)(m_ShutdownTimer / 60000.0f));
+                        LogNotice("Server : Shutdown in %i minutes.", (int)(m_ShutdownTimer / 60000.0f));
                 }
                 else
-                    Log.Notice("Server", "Shutdown in %i seconds.", (int)(m_ShutdownTimer / 1000.0f));
+                    LogNotice("Server : Shutdown in %i seconds.", (int)(m_ShutdownTimer / 1000.0f));
 
                 next_printout = getMSTime() + 500;
             }
@@ -802,7 +802,7 @@ void Master::ShutdownLootSystem()
 
     if (lootmgr.is_loading)
     {
-        Log.Notice("Shutdown", "Waiting for loot to finish loading...");
+        LogNotice("Shutdown : Waiting for loot to finish loading...");
         while (lootmgr.is_loading)
             Arcemu::Sleep(100);
     }

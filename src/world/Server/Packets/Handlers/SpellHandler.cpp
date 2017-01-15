@@ -679,7 +679,7 @@ void WorldSession::HandleUpdateProjectilePosition(WorldPacket& recv_data)
     recv_data >> y;
     recv_data >> z;
 
-    Log.Debug("HandleUpdateProjectilePosition", "Recieved spell: %u, count: %i, position: x(%f) y(%f) z(%f)", spellId, castCount, x, y, z);
+    LogDebugFlag(LF_OPCODE, "Recieved spell: %u, count: %i, position: x(%f) y(%f) z(%f)", spellId, castCount, x, y, z);
 
     SpellInfo* spell = CheckAndReturnSpellEntry(spellId);
     if (!spell || spell->ai_target_type == TARGET_FLAG_DEST_LOCATION)

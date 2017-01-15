@@ -48,7 +48,7 @@ void GameEventMgr::StartArenaEvents()
 void GameEventMgr::LoadFromDB()
 {
     // Clean event_saves from CharacterDB
-    Log.Notice("GameEventMgr", "Start cleaning event_save");
+    LogNotice("GameEventMgr : Start cleaning event_save");
     {
         const char* cleanEventSaveQuery = "DELETE FROM event_save WHERE state<>4";
         CharacterDatabase.Execute(cleanEventSaveQuery);
@@ -87,19 +87,19 @@ void GameEventMgr::LoadFromDB()
             //if (gameEvent.isValid())
             //{
                 mGameEvents.insert(std::make_pair(dbResult.entry, new GameEvent(dbResult)));
-                Log.DebugFlag(LF_DB_TABLES, "GameEventMgr : %s, Entry: %u, State: %u, Holiday: %u loaded", dbResult.description.c_str(), dbResult.entry, dbResult.world_event, dbResult.holiday_id);
+                LogDebugFlag(LF_DB_TABLES, "GameEventMgr : %s, Entry: %u, State: %u, Holiday: %u loaded", dbResult.description.c_str(), dbResult.entry, dbResult.world_event, dbResult.holiday_id);
                 ++pCount;
             //}
             //else
             //{
-            //    Log.Debug("GameEventMgr", "%s game event Entry: %u isn't a world event and has length = 0, thus it can't be used.", dbResult.description.c_str(), dbResult.entry);
+            //    LOG_DEBUG("%s game event Entry: %u isn't a world event and has length = 0, thus it can't be used.", dbResult.description.c_str(), dbResult.entry);
             //}
         } while (result->NextRow());
         delete result;
         Log.Success("GameEventMgr", "%u events loaded from table event_properties", pCount);
     }
     // Loading event_saves from CharacterDB
-    Log.Notice("GameEventMgr", "Start loading event_save");
+    LogNotice("GameEventMgr : Start loading event_save");
     {
         const char* loadEventSaveQuery = "SELECT event_entry, state, next_start FROM event_save";
         bool success = false;
@@ -138,7 +138,7 @@ void GameEventMgr::LoadFromDB()
         Log.Success("GameEventMgr", "Loaded %u saved events loaded from table event_saves", pCount);
     }
     // Loading event_creature from WorldDB
-    Log.Notice("GameEventMgr", "Start loading game event creature spawns");
+    LogNotice("GameEventMgr : Start loading game event creature spawns");
     {
         const char* loadEventCreatureSpawnsQuery = "SELECT event_entry, id, entry, map, position_x, position_y, position_z, \
                                                     orientation, movetype, displayid, faction, flags, bytes0, bytes1, bytes2, \
@@ -219,7 +219,7 @@ void GameEventMgr::LoadFromDB()
         Log.Success("GameEventMgr", "%u creature spawns for %u events from table event_creature_spawns loaded.", pCount, mGameEvents.size());
     }
     // Loading event_gameobject from WorldDB
-    Log.Notice("GameEventMgr", "Start loading game event gameobject spawns");
+    LogNotice("GameEventMgr : Start loading game event gameobject spawns");
     {
         const char* loadEventGameobjectSpawnsQuery = "SELECT event_entry, id, entry, map, position_x, position_y, \
                                                       position_z, facing, orientation1, orientation2, orientation3, \
@@ -292,7 +292,7 @@ void GameEventMgr::LoadFromDB()
 
 void GameEventMgr::GameEventMgrThread::Update()
 {
-    //Log.Notice("GameEventMgr", "Tick!");
+    //LogNotice("GameEventMgr : Tick!");
     auto now = time(0);
 
     for (auto gameEventPair : sGameEventMgr.mGameEvents)
@@ -328,7 +328,7 @@ void GameEventMgr::GameEventMgrThread::Update()
 
 void GameEventMgr::GameEventMgrThread::OnShutdown()
 {
-    Log.Notice("GameEventMgr", "Shutdown!");
+    LogNotice("GameEventMgr : Shutdown!");
     ThreadState.SetVal(THREADSTATE_TERMINATE);
 }
 

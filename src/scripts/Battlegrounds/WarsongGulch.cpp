@@ -61,11 +61,11 @@ WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CB
     // dropped flags
     m_dropFlags[1] = m_mapMgr->CreateGameObject(179786);
     if (!m_dropFlags[1]->CreateFromProto(179785, 489, 0, 0, 0, 0))
-        Log.Warning("WarsongGulch", "Could not create dropped flag 1");
+        LogWarning("WarsongGulch : Could not create dropped flag 1");
 
     m_dropFlags[0] = m_mapMgr->CreateGameObject(179786);
     if (!m_dropFlags[0]->CreateFromProto(179786, 489, 0, 0, 0, 0))
-        Log.Warning("WarsongGulch", "Could not create dropped flag 0");
+        LogWarning("WarsongGulch : Could not create dropped flag 0");
 
     for (uint8 i = 0; i < 2; ++i)
     {

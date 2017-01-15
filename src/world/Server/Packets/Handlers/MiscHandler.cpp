@@ -2795,5 +2795,5 @@ void WorldSession::HandleRealmSplitOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleTimeSyncResp(WorldPacket& recv_data)
 {
-    Log.Debug("HandleTimeSyncResp", "Not handled");
+    LogDebugFlag(LF_OPCODE, "HandleTimeSyncResp : Not handled");
 }

@@ -63,40 +63,6 @@ void oLog::outFileSilent(FILE* file, char* msg, const char* source)
 }
 
 //old NGLog.h methods
-void oLog::Notice(const char* source, const char* format, ...)
-{
-    if(m_fileLogLevel < LOG_LEVEL_DETAIL || m_normalFile == NULL)
-        return;
-
-    char buf[32768];
-    va_list ap;
-
-    va_start(ap, format);
-    vsnprintf(buf, 32768, format, ap);
-    va_end(ap);
-    SetConsoleColor(CONSOLE_COLOR_GREEN);
-    std::cout << source << ": " << buf << std::endl;
-    SetConsoleColor(CONSOLE_COLOR_NORMAL);
-    outFile(m_normalFile, buf, source);
-}
-
-void oLog::Warning(const char* source, const char* format, ...)
-{
-    if(m_fileLogLevel < LOG_LEVEL_DETAIL || m_normalFile == NULL)
-        return;
-
-    char buf[32768];
-    va_list ap;
-
-    va_start(ap, format);
-    vsnprintf(buf, 32768, format, ap);
-    va_end(ap);
-    SetConsoleColor(CONSOLE_COLOR_WHITE);
-    std::cout << source << ": " << buf << std::endl;
-    SetConsoleColor(CONSOLE_COLOR_NORMAL);
-    outFile(m_normalFile, buf, source);
-}
-
 void oLog::Success(const char* source, const char* format, ...)
 {
     if(m_normalFile == NULL)
@@ -125,23 +91,6 @@ void oLog::Error(const char* source, const char* format, ...)
     vsnprintf(buf, 32768, format, ap);
     va_end(ap);
     SetConsoleColor(CONSOLE_COLOR_RED);
-    std::cout << source << ": " << buf << std::endl;
-    SetConsoleColor(CONSOLE_COLOR_NORMAL);
-    outFile(m_errorFile, buf, source);
-}
-
-void oLog::Debug(const char* source, const char* format, ...)
-{
-    if (m_fileLogLevel < LOG_LEVEL_DEBUG || m_errorFile == NULL)
-        return;
-
-    char buf[32768];
-    va_list ap;
-
-    va_start(ap, format);
-    vsnprintf(buf, 32768, format, ap);
-    va_end(ap);
-    SetConsoleColor(CONSOLE_COLOR_YELLOW);
     std::cout << source << ": " << buf << std::endl;
     SetConsoleColor(CONSOLE_COLOR_NORMAL);
     outFile(m_errorFile, buf, source);
@@ -245,7 +194,7 @@ WorldLog::WorldLog()
 
     if(Config.MainConfig.GetBoolDefault("LogLevel", "World", false))
     {
-        Log.Notice("WorldLog", "Enabling packetlog output to \"world.log\"");
+        LogNotice("WorldLog : Enabling packetlog output to \"world.log\"");
         Enable();
     }
     else

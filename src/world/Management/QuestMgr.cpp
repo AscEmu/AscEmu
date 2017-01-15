@@ -2213,7 +2213,7 @@ void QuestMgr::LoadExtraQuestStuff()
 
         delete result;
 
-        Log.Notice("QuestMgr", "Point Of Interest (POI) data loaded for %u quests.", count);
+        LogNotice("QuestMgr : Point Of Interest (POI) data loaded for %u quests.", count);
 
 
 

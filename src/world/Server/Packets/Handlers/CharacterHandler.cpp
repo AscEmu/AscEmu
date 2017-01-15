@@ -341,7 +341,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
         while(result->NextRow());
     }
 
-    Log.Debug("Character Enum", "Built in %u ms.", getMSTime() - start_time);
+    LogDebugFlag(LF_OPCODE, "Character Enum Built in %u ms.", getMSTime() - start_time);
     SendPacket(&data);
 }
 
@@ -797,14 +797,14 @@ void WorldSession::LoadPlayerFromDBProc(QueryResultVector& results)
 
     m_bIsWLevelSet = false;
 
-    Log.Debug("WorldSession", "Async loading player %u", (uint32)playerGuid);
+    LOG_DEBUG("Async loading player %u", (uint32)playerGuid);
     m_loggingInPlayer = plr;
     plr->LoadFromDB((uint32)playerGuid);
 }
 
 void WorldSession::FullLogin(Player* plr)
 {
-    Log.Debug("WorldSession", "Fully loading player %u", plr->GetLowGUID());
+    LOG_DEBUG("Fully loading player %u", plr->GetLowGUID());
 
     SetPlayer(plr);
     m_MoverWoWGuid.Init(plr->GetGUID());
@@ -994,7 +994,7 @@ void WorldSession::FullLogin(Player* plr)
         }
     }
 
-    Log.Debug("Login", "Player %s logged in.", plr->GetName());
+    LOG_DEBUG("Player %s logged in.", plr->GetName());
 
     sWorld.incrementPlayerCount(plr->GetTeam());
 

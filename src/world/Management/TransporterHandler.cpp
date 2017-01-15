@@ -589,7 +589,7 @@ bool Transporter::AddPassenger(Player* passenger)
     ARCEMU_ASSERT(passenger != nullptr);
 
     m_passengers.insert(passenger->GetLowGUID());
-    Log.Debug("Transporter", "Player %s boarded transport %u.", passenger->GetName(), this->GetGameObjectProperties()->entry);
+    LOG_DEBUG("Player %s boarded transport %u.", passenger->GetName(), this->GetGameObjectProperties()->entry);
 
     if (!passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {
@@ -604,7 +604,7 @@ bool Transporter::RemovePassenger(Player* passenger)
     ARCEMU_ASSERT(passenger != nullptr);
 
     m_passengers.erase(passenger->GetLowGUID());
-    Log.Debug("Transporter", "Player %s removed from transport %u.", passenger->GetName(), this->GetGameObjectProperties()->entry);
+    LOG_DEBUG("Player %s removed from transport %u.", passenger->GetName(), this->GetGameObjectProperties()->entry);
 
     if (passenger->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {
@@ -687,12 +687,12 @@ void Transporter::TransportGossip(uint32 route)
     {
         if (mCurrentWaypoint->second.mapid)
         {
-            Log.Debug("Transporter", "Arrived in Ratchet at %u", m_timer);
+            LOG_DEBUG("Arrived in Ratchet at %u", m_timer);
         }
 
         else
         {
-            Log.Debug("Transporter", "Arrived in Booty at %u", m_timer);
+            LOG_DEBUG("Arrived in Booty at %u", m_timer);
         }
     }
 }

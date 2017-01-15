@@ -625,7 +625,7 @@ void InformationCore::SetRealmOffline(uint32 realm_id)
     {
         itr->second->flags = REALM_FLAG_OFFLINE | REALM_FLAG_INVALID;
         itr->second->CharacterMap.clear();
-        Log.Notice("InfoCore", "Realm %u is now offline (socket close).", realm_id);
+        LogNotice("InfoCore : Realm %u is now offline (socket close).", realm_id);
     }
     realmLock.Release();
 }

@@ -59,7 +59,7 @@ bool MySQLDatabase::Initialize(const char* Hostname, unsigned int port, const ch
     mPassword = std::string(Password);
     mDatabaseName = std::string(DatabaseName);
 
-    Log.Notice("MySQLDatabase", "Connecting to `%s`, database `%s`...", Hostname, DatabaseName);
+    LogNotice("MySQLDatabase : Connecting to `%s`, database `%s`...", Hostname, DatabaseName);
 
     conns = new MySQLDatabaseConnection*[ConnectionCount];
     Connections = ((DatabaseConnection**)conns);

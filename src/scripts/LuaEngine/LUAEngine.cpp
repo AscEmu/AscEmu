@@ -100,7 +100,7 @@ void report(lua_State* L)
 void LuaEngine::ScriptLoadDir(char* Dirname, LUALoadScripts* pak)
 {
 #ifdef WIN32
-    Log.Notice("LuaEngine", "Scanning Directory %s", Dirname);
+    LogNotice("LuaEngine : Scanning Directory %s", Dirname);
     HANDLE hFile;
     WIN32_FIND_DATA FindData;
     memset(&FindData, 0, sizeof(FindData));
@@ -168,7 +168,7 @@ void LuaEngine::ScriptLoadDir(char* Dirname, LUALoadScripts* pak)
 
     struct stat attributes;
     bool err;
-    Log.Notice("LuaEngine", "Scanning Directory %s", Dirname);
+    LogNotice("LuaEngine : Scanning Directory %s", Dirname);
     while (filecount--)
     {
         char dottedrelpath[200];
@@ -206,14 +206,14 @@ void LuaEngine::ScriptLoadDir(char* Dirname, LUALoadScripts* pak)
 void LuaEngine::LoadScripts()
 {
     LUALoadScripts rtn;
-    Log.Notice("LuaEngine", "Scanning Script-Directories...");
+    LogNotice("LuaEngine : Scanning Script-Directories...");
     ScriptLoadDir((char*)"scripts", &rtn);
 
     unsigned int cnt_uncomp = 0;
 
     luaL_openlibs(lu);
     RegisterCoreFunctions();
-    Log.Notice("LuaEngine", "Loading Scripts...");
+    LogNotice("LuaEngine : Loading Scripts...");
 
     char filename[MAX_FILENAME_LENGTH];
 
@@ -236,12 +236,12 @@ void LuaEngine::LoadScripts()
             }
             else
             {
-                Log.Debug("LuaEngine", "loaded %s.", itr->c_str());
+                LogDebug("LuaEngine : loaded %s.", itr->c_str());
             }
         }
         cnt_uncomp++;
     }
-    Log.Notice("LuaEngine", "Loaded %u Lua scripts.", cnt_uncomp);
+    LogNotice("LuaEngine : Loaded %u Lua scripts.", cnt_uncomp);
 }
 
 
@@ -2756,7 +2756,7 @@ Arcemu::Gossip::Script* CreateLuaGOGossipScript(uint32 id)
 
 void LuaEngine::Startup()
 {
-    Log.Notice("LuaEngineMgr", "Ascemu Lua Engine ( ALE ) %s: Loaded", ARCH);
+    LogNotice("LuaEngineMgr : Ascemu Lua Engine ( ALE ) %s: Loaded", ARCH);
     //Create a new global state that will server as the lua universe.
     lu = luaL_newstate();
 
@@ -3158,7 +3158,7 @@ void LuaEngine::Unload()
 }
 void LuaEngine::Restart()
 {
-    Log.Notice("LuaEngineMgr", "Restarting Engine.");
+    LogNotice("LuaEngineMgr : Restarting Engine.");
     GET_LOCK
     getcoLock().Acquire();
     Unload();
@@ -3391,7 +3391,7 @@ void LuaEngine::Restart()
     }
     temp.clear();
 
-    Log.Notice("LuaEngineMgr", "Done restarting engine.");
+    LogNotice("LuaEngineMgr : Done restarting engine.");
 }
 
 void LuaEngine::ResumeLuaThread(int ref)

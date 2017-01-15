@@ -1132,7 +1132,7 @@ void Spell::SpellEffectDummy(uint32 i) // Dummy(Scripted events)
     if (sScriptMgr.CallScriptedDummySpell(m_spellInfo->Id, i, this))
         return;
 
-    Log.Debug("Spell::SpellEffectDummy", "Spell ID: %u (%s) has a dummy effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
+    LogDebugFlag(LF_SPELL_EFF, "Spell ID: %u (%s) has a dummy effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
 }
 
 void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
@@ -3953,7 +3953,7 @@ void Spell::SpellEffectSendEvent(uint32 i) //Send Event
     if (sScriptMgr.HandleScriptedSpellEffect(m_spellInfo->Id, i, this))
         return;
 
-    Log.Debug("Spell::SpellEffectSendEvent", "Spell ID: %u (%s) has a scripted effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
+    LogDebugFlag(LF_SPELL_EFF, "Spell ID: %u (%s) has a scripted effect (%u) but no handler for it.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i);
 
 }
 
@@ -4609,7 +4609,7 @@ void Spell::SpellEffectDisenchant(uint32 i)
         lootmgr.FillItemLoot(it->loot, it->GetEntry());
     }
 
-    Log.Debug("SpellEffect", "Successfully disenchanted item %d", uint32(it->GetEntry()));
+    LogDebugFlag(LF_SPELL_EFF, "Successfully disenchanted item %d", uint32(it->GetEntry()));
     p_caster->SendLoot(it->GetGUID(), LOOT_DISENCHANTING, p_caster->GetMapId());
 
     //We can increase Enchanting skill up to 60
@@ -5373,12 +5373,12 @@ void Spell::SpellEffectProspecting(uint32 i)
 
     if (itemTarget->loot->items.size() > 0)
     {
-        Log.Debug("SpellEffect", "Successfully prospected item %d", uint32(itemTarget->GetEntry()));
+        LogDebugFlag(LF_SPELL_EFF, "Successfully prospected item %d", uint32(itemTarget->GetEntry()));
         p_caster->SendLoot(itemTarget->GetGUID(), LOOT_PROSPECTING, p_caster->GetMapId());
     }
     else // this should never happen either
     {
-        Log.Debug("SpellEffect", "Prospecting failed, item %d has no loot", uint32(itemTarget->GetEntry()));
+        LogDebugFlag(LF_SPELL_EFF, "Prospecting failed, item %d has no loot", uint32(itemTarget->GetEntry()));
         SendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
     }
 }
@@ -5595,12 +5595,12 @@ void Spell::SpellEffectMilling(uint32 i)
 
     if (itemTarget->loot->items.size() > 0)
     {
-        Log.Debug("SpellEffect", "Successfully milled item %d", uint32(itemTarget->GetEntry()));
+        LogDebugFlag(LF_SPELL_EFF, "Successfully milled item %d", uint32(itemTarget->GetEntry()));
         p_caster->SendLoot(itemTarget->GetGUID(), LOOT_MILLING, p_caster->GetMapId());
     }
     else // this should never happen either
     {
-        Log.Debug("SpellEffect", "Milling failed, item %d has no loot", uint32(itemTarget->GetEntry()));
+        LogDebugFlag(LF_SPELL_EFF, "Milling failed, item %d has no loot", uint32(itemTarget->GetEntry()));
         SendCastResult(SPELL_FAILED_CANT_BE_PROSPECTED);
     }
 }

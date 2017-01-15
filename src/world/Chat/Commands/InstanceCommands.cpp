@@ -41,7 +41,7 @@ bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_
         Log.Error("CreateInstanceGMCommand", "CreateInstance() call failed for map %u", mapid);
         return false;
     }
-    Log.Notice("CreateInstanceGMCommand", "GM created instance for map %u", mapid);
+    LogNotice("CreateInstanceGMCommand : GM created instance for map %u", mapid);
 
     LocationVector vec(x, y, z);
     m_session->GetPlayer()->SafeTeleport(mgr, vec);

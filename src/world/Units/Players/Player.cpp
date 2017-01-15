@@ -1700,9 +1700,7 @@ void Player::smsg_InitialSpells()
 
         ++itemCount;
 
-#ifdef _DEBUG
-        Log.Debug("InitialSpells", "sending spell cooldown for spell %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
-#endif
+        LogDebugFlag(LF_OPCODE, "InitialSpells sending spell cooldown for spell %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
     }
 
     for (itr = m_cooldownMap[COOLDOWN_TYPE_CATEGORY].begin(); itr != m_cooldownMap[COOLDOWN_TYPE_CATEGORY].end();)
@@ -1724,9 +1722,7 @@ void Player::smsg_InitialSpells()
 
         ++itemCount;
 
-#ifdef _DEBUG
-        Log.Debug("InitialSpells", "sending category cooldown for cat %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
-#endif
+        LogDebugFlag(LF_OPCODE, "InitialSpells sending category cooldown for cat %u to %u ms", itr2->first, itr2->second.ExpireTime - mstime);
     }
 
 
@@ -5562,7 +5558,7 @@ uint32 Player::SubtractRestXP(uint32 amount)
     else
         m_restAmount = restAmount;
 
-    Log.Debug("REST", "Subtracted %d rest XP to a total of %d", amount, m_restAmount);
+    LOG_DEBUG("Subtracted %d rest XP to a total of %d", amount, m_restAmount);
     UpdateRestState();                                                                    // Update clients interface with new values.
     return amount;
 }
@@ -5601,7 +5597,7 @@ void Player::AddCalculatedRestXP(uint32 seconds)
     if (m_restAmount > xp_to_lvl + (uint32)((float)(xp_to_lvl >> 1) * bubblerate))
         m_restAmount = xp_to_lvl + (uint32)((float)(xp_to_lvl >> 1) * bubblerate);
 
-    Log.Debug("REST", "Add %d rest XP to a total of %d, RestState %d", rested_xp, m_restAmount, m_isResting);
+    LOG_DEBUG("Add %d rest XP to a total of %d, RestState %d", rested_xp, m_restAmount, m_isResting);
 
     // Update clients interface with new values.
     UpdateRestState();
@@ -10715,9 +10711,7 @@ void Player::AddCategoryCooldown(uint32 category_id, uint32 time, uint32 SpellId
         m_cooldownMap[COOLDOWN_TYPE_CATEGORY].insert(std::make_pair(category_id, cd));
     }
 
-#ifdef _DEBUG
-    Log.Debug("Player::AddCategoryCooldown", "added cooldown for COOLDOWN_TYPE_CATEGORY category_type %u time %u item %u spell %u", category_id, time - getMSTime(), ItemId, SpellId);
-#endif
+    LogDebugFlag(LF_SPELL, "Player::AddCategoryCooldown added cooldown for COOLDOWN_TYPE_CATEGORY category_type %u time %u item %u spell %u", category_id, time - getMSTime(), ItemId, SpellId);
 }
 
 void Player::_Cooldown_Add(uint32 Type, uint32 Misc, uint32 Time, uint32 SpellId, uint32 ItemId)
@@ -10742,9 +10736,7 @@ void Player::_Cooldown_Add(uint32 Type, uint32 Misc, uint32 Time, uint32 SpellId
         m_cooldownMap[Type].insert(std::make_pair(Misc, cd));
     }
 
-#ifdef _DEBUG
-    Log.Debug("Cooldown", "added cooldown for type %u misc %u time %u item %u spell %u", Type, Misc, Time - getMSTime(), ItemId, SpellId);
-#endif
+    LogDebugFlag(LF_SPELL, "Cooldown added cooldown for type %u misc %u time %u item %u spell %u", Type, Misc, Time - getMSTime(), ItemId, SpellId);
 }
 
 void Player::Cooldown_Add(SpellInfo* pSpell, Item* pItemCaster)
@@ -10798,7 +10790,7 @@ void Player::Cooldown_AddStart(SpellInfo* pSpell)
     //_Cooldown_Add(COOLDOWN_TYPE_CATEGORY, pSpell->Category, mstime + pSpell->StartRecoveryTime, pSpell->Id, 0);
     else                                    // no category, so it's a gcd
     {
-        //Log.Debug("Cooldown", "Global cooldown adding: %u ms", atime);
+        //LogDebugFlag(LF_SPELL, "Cooldown Global cooldown adding: %u ms", atime);
         m_globalCooldown = mstime + atime;
 
     }

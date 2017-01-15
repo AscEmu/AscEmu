@@ -1694,7 +1694,7 @@ void WorldSession::HandleGuildBankViewTab(WorldPacket& recv_data)
     recv_data >> guid;
     recv_data >> tabid;
 
-    //Log.Warning("HandleGuildBankViewTab", "Tab %u", (uint32)tabid);
+    //LogWarning("HandleGuildBankViewTab : Tab %u", (uint32)tabid);
 
     // maybe last uint8 is "show additional info" such as tab names? *shrug*
     if (pGuild == NULL)
@@ -1755,7 +1755,7 @@ void Guild::SendGuildBank(WorldSession* pClient, GuildBankTab* pTab, int8 update
     if (pMember == NULL || !pMember->pRank->CanPerformBankCommand(GR_RIGHT_GUILD_BANK_VIEW_TAB, pTab->iTabId))
         return;
 
-    //Log.Debug("SendGuildBank", "sending tab %u to client.", pTab->iTabId);
+    //LogDebugFlag(LF_OPCODE, "sending tab %u to client.", pTab->iTabId);
 
     data << uint64(m_bankBalance);  // amount you have deposited
     data << uint8(pTab->iTabId);

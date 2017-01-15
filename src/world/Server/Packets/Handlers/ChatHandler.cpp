@@ -746,5 +746,5 @@ void WorldSession::HandleChatChannelWatchOpcode(WorldPacket& recvPacket)
     std::string channelName;
     recvPacket >> channelName;
 
-    Log.Debug("HandleChatChannelWatchOpcode", "Unhandled... Player %s watch channel: %s", _player->GetName(), channelName.c_str());
+    LogDebugFlag(LF_OPCODE, "Unhandled... Player %s watch channel: %s", _player->GetName(), channelName.c_str());
 }

@@ -103,7 +103,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSeatStore
 template<class T>
 bool loader_stub(const char* filename, const char* format, bool ind, T & l, bool loadstrs)
 {
-    Log.Notice("DBC", "Loading %s.", filename);
+    LogNotice("DBC : Loading %s.", filename);
     return l.Load(filename, format, ind, loadstrs);
 }
 

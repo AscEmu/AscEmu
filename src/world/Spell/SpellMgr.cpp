@@ -212,7 +212,7 @@ void SpellFactoryMgr::LoadSpellAreas()
 
             if (uint32(abs(spellArea.auraSpell)) == spellArea.spellId)
             {
-                Log.Debug("SpellArea", "Spell %u listed in `spell_area` have aura spell (%u) requirement for itself.", spell, abs(spellArea.auraSpell));
+                LogDebugFlag(LF_SPELL, "Spell %u listed in `spell_area` have aura spell (%u) requirement for itself.", spell, abs(spellArea.auraSpell));
                 continue;
             }
 
@@ -232,7 +232,7 @@ void SpellFactoryMgr::LoadSpellAreas()
 
                 if (chain)
                 {
-                    Log.Debug("SpellArea", "Spell %u listed in `spell_area` have aura spell (%u) requirement that itself autocast from aura.", spell, spellArea.auraSpell);
+                    LogDebugFlag(LF_SPELL, "Spell %u listed in `spell_area` have aura spell (%u) requirement that itself autocast from aura.", spell, spellArea.auraSpell);
                     continue;
                 }
 
@@ -248,7 +248,7 @@ void SpellFactoryMgr::LoadSpellAreas()
 
                 if (chain)
                 {
-                    Log.Debug("SpellArea", "Spell %u listed in `spell_area` have aura spell (%u) requirement that itself autocast from aura.", spell, spellArea.auraSpell);
+                    LogDebugFlag(LF_SPELL, "Spell %u listed in `spell_area` have aura spell (%u) requirement that itself autocast from aura.", spell, spellArea.auraSpell);
                     continue;
                 }
             }

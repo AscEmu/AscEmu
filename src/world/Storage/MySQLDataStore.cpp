@@ -73,11 +73,11 @@ void MySQLDataStore::LoadItemPagesTable()
     QueryResult* itempages_result = WorldDatabase.Query("SELECT entry, text, next_page FROM item_pages");
     if (itempages_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `item_pages` is empty!");
+        LogNotice("MySQLDataLoads : able `item_pages` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `item_pages` has %u columns", itempages_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `item_pages` has %u columns", itempages_result->GetFieldCount());
 
     _itemPagesStore.rehash(itempages_result->GetRowCount());
 
@@ -162,7 +162,7 @@ void MySQLDataStore::LoadItemPropertiesTable()
 
         if (item_result == nullptr)
         {
-            Log.Notice("MySQLDataLoads", "Table `%s` is empty!", table_name.c_str());
+            LogNotice("MySQLDataLoads : Table `%s` is empty!", table_name.c_str());
             return;
         }
 
@@ -182,7 +182,7 @@ void MySQLDataStore::LoadItemPropertiesTable()
             continue;
         }
 
-        Log.Notice("MySQLDataLoads", "Table `%s` has %u columns", table_name.c_str(), item_result->GetFieldCount());
+        LogNotice("MySQLDataLoads : Table `%s` has %u columns", table_name.c_str(), item_result->GetFieldCount());
 
         _itemPropertiesStore.rehash(row_count + item_result->GetRowCount());
 
@@ -488,7 +488,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
 
         if (creature_properties_result == nullptr)
         {
-            Log.Notice("MySQLDataLoads", "Table `%s` is empty!", table_name.c_str());
+            LogNotice("MySQLDataLoads : Table `%s` is empty!", table_name.c_str());
             return;
         }
 
@@ -509,7 +509,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
             continue;
         }
 
-        Log.Notice("MySQLDataLoads", "Table `%s` has %u columns", table_name.c_str(), creature_properties_result->GetFieldCount());
+        LogNotice("MySQLDataLoads : Table `%s` has %u columns", table_name.c_str(), creature_properties_result->GetFieldCount());
 
         _creaturePropertiesStore.rehash(row_count + creature_properties_result->GetRowCount());
 
@@ -731,7 +731,7 @@ void MySQLDataStore::LoadGameObjectPropertiesTable()
 
         if (gameobject_properties_result == nullptr)
         {
-            Log.Notice("MySQLDataLoads", "Table `%s` is empty!", table_name.c_str());
+            LogNotice("MySQLDataLoads : Table `%s` is empty!", table_name.c_str());
             return;
         }
 
@@ -752,7 +752,7 @@ void MySQLDataStore::LoadGameObjectPropertiesTable()
             continue;
         }
 
-        Log.Notice("MySQLDataLoads", "Table `%s` has %u columns", table_name.c_str(), gameobject_properties_result->GetFieldCount());
+        LogNotice("MySQLDataLoads : Table `%s` has %u columns", table_name.c_str(), gameobject_properties_result->GetFieldCount());
 
         _gameobjectPropertiesStore.rehash(row_count + gameobject_properties_result->GetRowCount());
 
@@ -888,7 +888,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
 
         if (quest_result == nullptr)
         {
-            Log.Notice("MySQLDataLoads", "Table `%s` is empty!", table_name.c_str());
+            LogNotice("MySQLDataLoads : Table `%s` is empty!", table_name.c_str());
             return;
         }
 
@@ -909,7 +909,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
             continue;
         }
 
-        Log.Notice("MySQLDataLoads", "Table `%s` has %u columns", table_name.c_str(), quest_result->GetFieldCount());
+        LogNotice("MySQLDataLoads : Table `%s` has %u columns", table_name.c_str(), quest_result->GetFieldCount());
 
         _questPropertiesStore.rehash(row_count + quest_result->GetRowCount());
 
@@ -1173,11 +1173,11 @@ void MySQLDataStore::LoadCreatureDifficultyTable()
 
     if (creature_difficulty_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `creature_difficulty` is empty!");
+        LogNotice("MySQLDataLoads : Table `creature_difficulty` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `creature_difficulty` has %u columns", creature_difficulty_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `creature_difficulty` has %u columns", creature_difficulty_result->GetFieldCount());
 
     _creatureDifficultyStore.rehash(creature_difficulty_result->GetRowCount());
 
@@ -1245,11 +1245,11 @@ void MySQLDataStore::LoadDisplayBoundingBoxesTable()
 
     if (display_bounding_boxes_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `display_bounding_boxes` is empty!");
+        LogNotice("MySQLDataLoads : Table `display_bounding_boxes` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `display_bounding_boxes` has %u columns", display_bounding_boxes_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `display_bounding_boxes` has %u columns", display_bounding_boxes_result->GetFieldCount());
 
     _displayBoundingBoxesStore.rehash(display_bounding_boxes_result->GetRowCount());
 
@@ -1301,11 +1301,11 @@ void MySQLDataStore::LoadVendorRestrictionsTable()
 
     if (vendor_restricitons_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `vendor_restrictions` is empty!");
+        LogNotice("MySQLDataLoads : Table `vendor_restrictions` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `vendor_restrictions` has %u columns", vendor_restricitons_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `vendor_restrictions` has %u columns", vendor_restricitons_result->GetFieldCount());
 
     _vendorRestrictionsStore.rehash(vendor_restricitons_result->GetRowCount());
 
@@ -1355,11 +1355,11 @@ void MySQLDataStore::LoadAreaTriggersTable()
 
     if (area_triggers_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `areatriggers` is empty!");
+        LogNotice("MySQLDataLoads : Table `areatriggers` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `areatriggers` has %u columns", area_triggers_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `areatriggers` has %u columns", area_triggers_result->GetFieldCount());
 
     _areaTriggersStore.rehash(area_triggers_result->GetRowCount());
 
@@ -1426,11 +1426,11 @@ void MySQLDataStore::LoadNpcTextTable()
 
     if (npc_text_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `npc_text` is empty!");
+        LogNotice("MySQLDataLoads : Table `npc_text` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `npc_text` has %u columns", npc_text_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `npc_text` has %u columns", npc_text_result->GetFieldCount());
 
     _npcTextStore.rehash(npc_text_result->GetRowCount());
 
@@ -1489,11 +1489,11 @@ void MySQLDataStore::LoadNpcScriptTextTable()
 
     if (npc_script_text_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `npc_script_text` is empty!");
+        LogNotice("MySQLDataLoads : Table `npc_script_text` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `npc_script_text` has %u columns", npc_script_text_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `npc_script_text` has %u columns", npc_script_text_result->GetFieldCount());
 
     _npcScriptTextStore.rehash(npc_script_text_result->GetRowCount());
 
@@ -1544,11 +1544,11 @@ void MySQLDataStore::LoadGossipMenuOptionTable()
 
     if (gossip_menu_optiont_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `gossip_menu_option` is empty!");
+        LogNotice("MySQLDataLoads : Table `gossip_menu_option` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `gossip_menu_option` has %u columns", gossip_menu_optiont_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `gossip_menu_option` has %u columns", gossip_menu_optiont_result->GetFieldCount());
 
     _gossipMenuOptionStore.rehash(gossip_menu_optiont_result->GetRowCount());
 
@@ -1589,11 +1589,11 @@ void MySQLDataStore::LoadGraveyardsTable()
     QueryResult* graveyards_result = WorldDatabase.Query("SELECT id, position_x, position_y, position_z, orientation, zoneid, adjacentzoneid, mapid, faction FROM graveyards");
     if (graveyards_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `graveyards` is empty!");
+        LogNotice("MySQLDataLoads : Table `graveyards` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `graveyards` has %u columns", graveyards_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `graveyards` has %u columns", graveyards_result->GetFieldCount());
 
     _graveyardsStore.rehash(graveyards_result->GetRowCount());
 
@@ -1641,11 +1641,11 @@ void MySQLDataStore::LoadTeleportCoordsTable()
     QueryResult* teleport_coords_result = WorldDatabase.Query("SELECT id, mapId, position_x, position_y, position_z FROM spell_teleport_coords");
     if (teleport_coords_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `spell_teleport_coords` is empty!");
+        LogNotice("MySQLDataLoads : Table `spell_teleport_coords` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `spell_teleport_coords` has %u columns", teleport_coords_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `spell_teleport_coords` has %u columns", teleport_coords_result->GetFieldCount());
 
     _teleportCoordsStore.rehash(teleport_coords_result->GetRowCount());
 
@@ -1689,11 +1689,11 @@ void MySQLDataStore::LoadFishingTable()
     QueryResult* fishing_result = WorldDatabase.Query("SELECT zone, MinSkill, MaxSkill FROM fishing");
     if (fishing_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `fishing` is empty!");
+        LogNotice("MySQLDataLoads : Table `fishing` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `fishing` has %u columns", fishing_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `fishing` has %u columns", fishing_result->GetFieldCount());
 
     _fishingZonesStore.rehash(fishing_result->GetRowCount());
 
@@ -1739,11 +1739,11 @@ void MySQLDataStore::LoadWorldMapInfoTable()
                                                             "heroic_keyid_1, heroic_keyid_2, viewingDistance, required_checkpoint FROM worldmap_info");
     if (worldmap_info_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `worldmap_info` is empty!");
+        LogNotice("MySQLDataLoads : Table `worldmap_info` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `worldmap_info` has %u columns", worldmap_info_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `worldmap_info` has %u columns", worldmap_info_result->GetFieldCount());
 
     _worldMapInfoStore.rehash(worldmap_info_result->GetRowCount());
 
@@ -1803,11 +1803,11 @@ void MySQLDataStore::LoadZoneGuardsTable()
     QueryResult* zone_guards_result = WorldDatabase.Query("SELECT zone, horde_entry, alliance_entry FROM zoneguards");
     if (zone_guards_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `zoneguards` is empty!");
+        LogNotice("MySQLDataLoads : Table `zoneguards` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `zoneguards` has %u columns", zone_guards_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `zoneguards` has %u columns", zone_guards_result->GetFieldCount());
 
     _zoneGuardsStore.rehash(zone_guards_result->GetRowCount());
 
@@ -1849,11 +1849,11 @@ void MySQLDataStore::LoadBattleMastersTable()
     QueryResult* battlemasters_result = WorldDatabase.Query("SELECT creature_entry, battleground_id FROM battlemasters");
     if (battlemasters_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `battlemasters` is empty!");
+        LogNotice("MySQLDataLoads : Table `battlemasters` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `battlemasters` has %u columns", battlemasters_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `battlemasters` has %u columns", battlemasters_result->GetFieldCount());
 
     _battleMastersStore.rehash(battlemasters_result->GetRowCount());
 
@@ -1894,11 +1894,11 @@ void MySQLDataStore::LoadTotemDisplayIdsTable()
     QueryResult* totemdisplayids_result = WorldDatabase.Query("SELECT displayid, draeneiid, trollid, orcid FROM totemdisplayids");
     if (totemdisplayids_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `totemdisplayids` is empty!");
+        LogNotice("MySQLDataLoads : Table `totemdisplayids` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `totemdisplayids` has %u columns", totemdisplayids_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `totemdisplayids` has %u columns", totemdisplayids_result->GetFieldCount());
 
     _totemDisplayIdsStore.rehash(totemdisplayids_result->GetRowCount());
 
@@ -1941,11 +1941,11 @@ void MySQLDataStore::LoadSpellClickSpellsTable()
     QueryResult* spellclickspells_result = WorldDatabase.Query("SELECT CreatureID, SpellID FROM spellclickspells");
     if (spellclickspells_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `spellclickspells` is empty!");
+        LogNotice("MySQLDataLoads : Table `spellclickspells` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `spellclickspells` has %u columns", spellclickspells_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `spellclickspells` has %u columns", spellclickspells_result->GetFieldCount());
 
     _spellClickSpellsStore.rehash(spellclickspells_result->GetRowCount());
 
@@ -1986,11 +1986,11 @@ void MySQLDataStore::LoadWorldStringsTable()
     QueryResult* worldstring_tables_result = WorldDatabase.Query("SELECT entry, text FROM worldstring_tables");
     if (worldstring_tables_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `worldstring_tables` is empty!");
+        LogNotice("MySQLDataLoads : Table `worldstring_tables` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `worldstring_tables` has %u columns", worldstring_tables_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `worldstring_tables` has %u columns", worldstring_tables_result->GetFieldCount());
 
     _worldStringsStore.rehash(worldstring_tables_result->GetRowCount());
 
@@ -2031,11 +2031,11 @@ void MySQLDataStore::LoadWorldBroadcastTable()
     QueryResult* worldbroadcast_result = WorldDatabase.Query("SELECT entry, text, percent FROM worldbroadcast");
     if (worldbroadcast_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `worldbroadcast` is empty!");
+        LogNotice("MySQLDataLoads : Table `worldbroadcast` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `worldbroadcast` has %u columns", worldbroadcast_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `worldbroadcast` has %u columns", worldbroadcast_result->GetFieldCount());
 
     _worldBroadcastStore.rehash(worldbroadcast_result->GetRowCount());
 
@@ -2077,11 +2077,11 @@ void MySQLDataStore::LoadPointOfInterestTable()
     QueryResult* points_of_interest_result = WorldDatabase.Query("SELECT entry, x, y, icon, flags, data, icon_name FROM points_of_interest");
     if (points_of_interest_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `points_of_interest` is empty!");
+        LogNotice("MySQLDataLoads : Table `points_of_interest` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `points_of_interest` has %u columns", points_of_interest_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `points_of_interest` has %u columns", points_of_interest_result->GetFieldCount());
 
     _pointOfInterestStore.rehash(points_of_interest_result->GetRowCount());
 
@@ -2127,11 +2127,11 @@ void MySQLDataStore::LoadItemSetLinkedSetBonusTable()
     QueryResult* linked_set_bonus_result = WorldDatabase.Query("SELECT itemset, itemset_bonus FROM itemset_linked_itemsetbonus");
     if (linked_set_bonus_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `itemset_linked_itemsetbonus` is empty!");
+        LogNotice("MySQLDataLoads : Table `itemset_linked_itemsetbonus` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `itemset_linked_itemsetbonus` has %u columns", linked_set_bonus_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `itemset_linked_itemsetbonus` has %u columns", linked_set_bonus_result->GetFieldCount());
 
     _definedItemSetBonusStore.rehash(linked_set_bonus_result->GetRowCount());
 
@@ -2173,11 +2173,11 @@ void MySQLDataStore::LoadCreatureInitialEquipmentTable()
     QueryResult* initial_equipment_result = WorldDatabase.Query("SELECT creature_entry, itemslot_1, itemslot_2, itemslot_3 FROM creature_initial_equip;");
     if (initial_equipment_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `creature_initial_equip` is empty!");
+        LogNotice("MySQLDataLoads : Table `creature_initial_equip` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `creature_initial_equip` has %u columns", initial_equipment_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `creature_initial_equip` has %u columns", initial_equipment_result->GetFieldCount());
 
     uint32 initial_equipment_count = 0;
     do
@@ -2216,11 +2216,11 @@ void MySQLDataStore::LoadPlayerCreateInfoTable()
                                                                 "BaseEnergy, attackpower, mindmg, maxdmg, introid, taximask FROM playercreateinfo;");
     if (player_create_info_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `playercreateinfo` is empty!");
+        LogNotice("MySQLDataLoads : Table `playercreateinfo` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `playercreateinfo` has %u columns", player_create_info_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `playercreateinfo` has %u columns", player_create_info_result->GetFieldCount());
 
     do
     {
@@ -2281,11 +2281,11 @@ void MySQLDataStore::LoadPlayerCreateInfoSkillsTable()
 
     if (player_create_info_skills_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `playercreateinfo_skills` is empty!");
+        LogNotice("MySQLDataLoads : Table `playercreateinfo_skills` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `playercreateinfo_skills` has %u columns", player_create_info_skills_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `playercreateinfo_skills` has %u columns", player_create_info_skills_result->GetFieldCount());
 
     uint32 player_create_info_skills_count = 0;
     do
@@ -2329,11 +2329,11 @@ void MySQLDataStore::LoadPlayerCreateInfoSpellsTable()
 
     if (player_create_info_spells_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `playercreateinfo_spells` is empty!");
+        LogNotice("MySQLDataLoads : Table `playercreateinfo_spells` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `playercreateinfo_spells` has %u columns", player_create_info_spells_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `playercreateinfo_spells` has %u columns", player_create_info_spells_result->GetFieldCount());
 
     uint32 player_create_info_spells_count = 0;
     do
@@ -2372,11 +2372,11 @@ void MySQLDataStore::LoadPlayerCreateInfoItemsTable()
 
     if (player_create_info_items_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `playercreateinfo_items` is empty!");
+        LogNotice("MySQLDataLoads : Table `playercreateinfo_items` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `playercreateinfo_items` has %u columns", player_create_info_items_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `playercreateinfo_items` has %u columns", player_create_info_items_result->GetFieldCount());
 
     uint32 player_create_info_items_count = 0;
     do
@@ -2420,11 +2420,11 @@ void MySQLDataStore::LoadPlayerCreateInfoBarsTable(uint32 player_info_index)
 
     if (player_create_info_bars_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `playercreateinfo_bars` has no data for class %u", uint32(playerCreateInfo.class_));
+        LogNotice("MySQLDataLoads : Table `playercreateinfo_bars` has no data for class %u", uint32(playerCreateInfo.class_));
         return;
     }
 
-    //Log.Notice("MySQLDataLoads", "Table `playercreateinfo_bars` has %u columns", player_create_info_bars_result->GetFieldCount());
+    //LogNotice("MySQLDataLoads : Table `playercreateinfo_bars` has %u columns", player_create_info_bars_result->GetFieldCount());
 
     uint32 player_create_info_bars_count = 0;
     do
@@ -2471,11 +2471,11 @@ void MySQLDataStore::LoadPlayerXpToLevelTable()
     QueryResult* player_xp_to_level_result = WorldDatabase.Query("SELECT player_lvl, next_lvl_req_xp FROM player_xp_for_level");
     if (player_xp_to_level_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `player_xp_for_level` is empty!");
+        LogNotice("MySQLDataLoads : Table `player_xp_for_level` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `playercreateinfo_bars` has %u columns", player_xp_to_level_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `playercreateinfo_bars` has %u columns", player_xp_to_level_result->GetFieldCount());
 
     uint32 player_xp_to_level_count = 0;
     do
@@ -2517,7 +2517,7 @@ void MySQLDataStore::LoadSpellOverrideTable()
     QueryResult* spelloverride_result = WorldDatabase.Query("SELECT DISTINCT overrideId FROM spelloverride");
     if (spelloverride_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `spelloverride` is empty!");
+        LogNotice("MySQLDataLoads : Table `spelloverride` is empty!");
         return;
     }
 
@@ -2567,11 +2567,11 @@ void MySQLDataStore::LoadNpcGossipTextIdTable()
     QueryResult* npc_gossip_textid_result = WorldDatabase.Query("SELECT creatureid, textid FROM npc_gossip_textid");
     if (npc_gossip_textid_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `npc_gossip_textid` is empty!");
+        LogNotice("MySQLDataLoads : Table `npc_gossip_textid` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `npc_gossip_textid` has %u columns", npc_gossip_textid_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `npc_gossip_textid` has %u columns", npc_gossip_textid_result->GetFieldCount());
     
     uint32 npc_gossip_textid_count = 0;
     do
@@ -2610,11 +2610,11 @@ void MySQLDataStore::LoadPetLevelAbilitiesTable()
     QueryResult* pet_level_abilities_result = WorldDatabase.Query("SELECT level, health, armor, strength, agility, stamina, intellect, spirit FROM pet_level_abilities");
     if (pet_level_abilities_result == nullptr)
     {
-        Log.Notice("MySQLDataLoads", "Table `pet_level_abilities` is empty!");
+        LogNotice("MySQLDataLoads : Table `pet_level_abilities` is empty!");
         return;
     }
 
-    Log.Notice("MySQLDataLoads", "Table `pet_level_abilities` has %u columns", pet_level_abilities_result->GetFieldCount());
+    LogNotice("MySQLDataLoads : Table `pet_level_abilities` has %u columns", pet_level_abilities_result->GetFieldCount());
 
     _petAbilitiesStore.rehash(pet_level_abilities_result->GetRowCount());
 

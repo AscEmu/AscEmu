@@ -506,7 +506,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
         }
     }
     plr->SetInstanceID(in->m_instanceId);
-    Log.Debug("InstanceMgr", "Creating instance for player %u and group %u on map %u. (%u)", in->m_creatorGuid, in->m_creatorGroup, in->m_mapId, in->m_instanceId);
+    LOG_DEBUG("Creating instance for player %u and group %u on map %u. (%u)", in->m_creatorGuid, in->m_creatorGroup, in->m_mapId, in->m_instanceId);
 
     // save our new instance to the database.
     in->SaveToDB();
@@ -639,7 +639,7 @@ MapMgr* InstanceMgr::_CreateInstance(uint32 mapid, uint32 instanceid)
     ARCEMU_ASSERT(inf != nullptr && inf->type == INSTANCE_NULL);
     ARCEMU_ASSERT(mapid < NUM_MAPS && m_maps[mapid] != NULL);
 
-    Log.Notice("InstanceMgr", "Creating continent %s.", m_maps[mapid]->GetMapName().c_str());
+    LogNotice("InstanceMgr : Creating continent %s.", m_maps[mapid]->GetMapName().c_str());
 
     MapMgr* newMap = new MapMgr(m_maps[mapid], mapid, instanceid);
 
@@ -657,7 +657,7 @@ MapMgr* InstanceMgr::_CreateInstance(Instance* in)
     if (m_maps[in->m_mapId] == 0)
         return NULL;
 
-    Log.Notice("InstanceMgr", "Creating saved instance %u (%s)", in->m_instanceId, m_maps[in->m_mapId]->GetMapName().c_str());
+    LogNotice("InstanceMgr : Creating saved instance %u (%s)", in->m_instanceId, m_maps[in->m_mapId]->GetMapName().c_str());
     ARCEMU_ASSERT(in->m_mapMgr == NULL);
 
     // we don't have to check for world map info here, since the instance wouldn't have been saved if it didn't have any.

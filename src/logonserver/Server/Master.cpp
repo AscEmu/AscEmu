@@ -128,7 +128,7 @@ void LogonServer::Run(int argc, char** argv)
     new InformationCore;
 
     new PatchMgr;
-    Log.Notice("AccountMgr", "Precaching accounts...");
+    LogNotice("AccountMgr : Precaching accounts...");
     sAccountMgr.ReloadAccounts(true);
     Log.Success("AccountMgr", "%u accounts are loaded and ready.", sAccountMgr.GetCount());
 

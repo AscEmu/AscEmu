@@ -98,7 +98,7 @@ void CommonScheduleThread::BroadCastExec()
             if (entry < 0)
             {
                 sWorld.BCSystemEnable = false;
-                Log.Notice("BCSystem", "table worldbroadcast loads failed,so BCSystem disabled already.");
+                LogNotice("BCSystem : table worldbroadcast loads failed,so BCSystem disabled already.");
                 return;
             }
 

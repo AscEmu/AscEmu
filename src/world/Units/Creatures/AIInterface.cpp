@@ -3585,7 +3585,7 @@ bool AIInterface::Move(float & x, float & y, float & z, float o /*= 0*/)
     //Add new points
     if (sWorld.Pathfinding)
     {
-        //Log.Debug("AIInterface::Move", "Pathfinding is enabled");
+        //LogDebugFlag(LF_SCRIPT_MGR, "Pathfinding is enabled");
 
         if (!Flying())
         {
@@ -4577,7 +4577,7 @@ bool AIInterface::MoveCharge(float x, float y, float z)
 
     if (sWorld.Pathfinding)
     {
-        //Log.Debug("AIInterface::MoveCharge", "Pathfinding is enabled");
+        //LogDebugFlag(LF_SCRIPT_MGR, "Pathfinding is enabled");
 
         if (!Flying())
         {

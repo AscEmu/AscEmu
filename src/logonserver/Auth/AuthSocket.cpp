@@ -125,11 +125,11 @@ void AuthSocket::HandleChallenge()
         case 12340:
         case 15595:
         {
-            Log.Debug("HandleChallenge", "Client with valid build %u connected", (uint32)client_build);
+            LOG_DEBUG("lient with valid build %u connected", (uint32)client_build);
         }break;
         default:
         {
-            Log.Debug("HandleChallenge", "Client %s has unsupported game version. Clientbuild: %u", GetRemoteIP().c_str(), (uint32)client_build);
+            LOG_DEBUG("Client %s has unsupported game version. Clientbuild: %u", GetRemoteIP().c_str(), (uint32)client_build);
             SendChallengeError(CE_WRONG_BUILD_NUMBER);
         }break;
     }
@@ -153,7 +153,7 @@ void AuthSocket::HandleChallenge()
             return;
         }
 
-        Log.Debug("Patch", "Selected patch %u%s for client.", m_patch->Version, m_patch->Locality);
+        LogDebug("Patch : elected patch %u%s for client.", m_patch->Version, m_patch->Locality);
 
 
         uint8 response[119] =

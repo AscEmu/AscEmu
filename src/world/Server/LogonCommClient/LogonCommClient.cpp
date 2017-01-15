@@ -344,7 +344,7 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
 
         uncompressed.clear();
     }
-    Log.Notice("LogonCommClient", "Build character mapping in %ums. (%u)", getMSTime() - t, mapping_to_send.size());
+    LogNotice("LogonCommClient : Build character mapping in %ums. (%u)", getMSTime() - t, mapping_to_send.size());
 }
 
 void LogonCommClientSocket::CompressAndSend(ByteBuffer& uncompressed)

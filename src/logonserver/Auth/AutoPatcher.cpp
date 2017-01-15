@@ -31,7 +31,7 @@ PatchMgr::PatchMgr()
 {
     // load patches
 #ifdef WIN32
-    Log.Notice("PatchMgr", "Loading Patches...");
+    LogNotice("PatchMgr : Loading Patches...");
     char Buffer[MAX_PATH * 10];
     char Buffer2[MAX_PATH * 10];
     char Buffer3[MAX_PATH * 10];
@@ -65,7 +65,7 @@ PatchMgr::PatchMgr()
         if (hFile == INVALID_HANDLE_VALUE)
             continue;
 
-        Log.Notice("PatchMgr", "Found patch for %u locale `%s`.", srcversion, locality);
+        LogNotice("PatchMgr : Found patch for %u locale `%s`.", srcversion, locality);
         pPatch = new Patch;
         size = GetFileSize(hFile, &sizehigh);
         pPatch->FileSize = size;
@@ -106,7 +106,7 @@ PatchMgr::PatchMgr()
     /*
      *nix patch loader
      */
-    Log.Notice("PatchMgr", "Loading Patches...");
+    LogNotice("PatchMgr : Loading Patches...");
     char Buffer[MAX_PATH * 10];
     char Buffer2[MAX_PATH * 10];
     char Buffer3[MAX_PATH * 10];
@@ -152,7 +152,7 @@ PatchMgr::PatchMgr()
             continue;
         }
 
-        Log.Notice("PatchMgr", "Found patch for b%u locale `%s` (%u bytes).", srcversion, locality, sb.st_size);
+        LogNotice("PatchMgr : Found patch for b%u locale `%s` (%u bytes).", srcversion, locality, sb.st_size);
         pPatch = new Patch;
         size = sb.st_size;
         pPatch->FileSize = size;
@@ -312,7 +312,7 @@ bool PatchJob::Update()
     bool result;
     header.cmd = 0x31;
     header.chunk_size = static_cast<uint16>((m_bytesLeft > 1500) ? 1500 : m_bytesLeft);
-    //Log.Debug("PatchJob", "Sending %u byte chunk", header.chunk_size);
+    //LogDebug("PatchJob : Sending %u byte chunk", header.chunk_size);
 
     result = m_client->BurstSend((const uint8*)&header, sizeof(TransferDataPacket));
     if (result)

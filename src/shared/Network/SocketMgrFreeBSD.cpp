@@ -52,7 +52,7 @@ void SocketMgr::RemoveSocket(Socket* s)
     if(fds[s->GetFd()] != s)
     {
         /* already removed */
-        Log.Warning("kqueue", "Duplicate removal of fd %u!", s->GetFd());
+        LogWarning("kqueue : Duplicate removal of fd %u!", s->GetFd());
         return;
     }
     fds[s->GetFd()] = 0;
@@ -62,7 +62,7 @@ void SocketMgr::RemoveSocket(Socket* s)
     EV_SET(&ev, s->GetFd(), EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
     EV_SET(&ev2, s->GetFd(), EVFILT_READ, EV_DELETE, 0, 0, NULL);
     if(kevent(kq, &ev, 1, 0, 0, NULL) && kevent(kq, &ev2, 1, 0, 0, NULL))
-        Log.Warning("kqueue", "Could not remove from kqueue: fd %u", s->GetFd());
+        LogWarning("kqueue : Could not remove from kqueue: fd %u", s->GetFd());
 }
 
 void SocketMgr::CloseAll()
@@ -102,7 +102,7 @@ bool SocketWorkerThread::run()
         {
             if(events[i].ident >= SOCKET_HOLDER_SIZE)
             {
-                Log.Warning("kqueue", "Requested FD that is too high (%u)", events[i].ident);
+                LogWarning("kqueue : Requested FD that is too high (%u)", events[i].ident);
                 continue;
             }
 
@@ -116,7 +116,7 @@ bool SocketWorkerThread::run()
                 }
                 else
                 {
-                    Log.Warning("kqueue", "Returned invalid fd (no pointer) of FD %u", events[i].ident);
+                    LogWarning("kqueue : Returned invalid fd (no pointer) of FD %u", events[i].ident);
 
                     /* make sure it removes so we don't go chasing it again */
                     EV_SET(&ev, events[i].ident, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
