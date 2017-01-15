@@ -30,34 +30,6 @@ class WorldSession;
 extern SERVER_DECL time_t UNIXTIME;        //update this every loop to avoid the time() syscall!
 extern SERVER_DECL tm g_localTime;
 
-//class SERVER_DECL oLog : public Singleton< oLog >
-//{
-//    private:
-//
-//        inline char dcd(char in)
-//        {
-//            char out = in;
-//            out -= 13;
-//            out ^= 131;
-//            return out;
-//        }
-//
-//        void dcds(char* str)
-//        {
-//            unsigned long i = 0;
-//            size_t len = strlen(str);
-//
-//            for(i = 0; i < len; ++i)
-//                str[i] = dcd(str[i]);
-//
-//        }
-//
-//        void pdcds(const char* str, char* buf)
-//        {
-//            strcpy(buf, str);
-//            dcds(buf);
-//        }
-//};
 
 class SERVER_DECL SessionLogWriter
 {
@@ -77,9 +49,6 @@ class SERVER_DECL SessionLogWriter
         void Open();
         void Close();
 };
-
-
-//#define Log oLog::getSingleton()
 
 
 class WorldLog : public Singleton<WorldLog>

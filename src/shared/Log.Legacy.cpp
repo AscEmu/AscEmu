@@ -25,7 +25,6 @@
 #include <cstdarg>
 #include <string>
 
-//createFileSingleton(oLog);
 initialiseSingleton(WorldLog);
 
 SERVER_DECL time_t UNIXTIME;
