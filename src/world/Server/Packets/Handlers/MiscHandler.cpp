@@ -901,7 +901,7 @@ void WorldSession::HandleWhoIsOpcode(WorldPacket& recv_data)
     WorldPacket data(SMSG_WHOIS, msg.size() + 1);
     data << msg;
     SendPacket(&data);
-    Log.outDebug("Received WHOIS command from player %s for character %s", GetPlayer()->GetName(), charname.c_str());
+    LogDebugFlag(LF_OPCODE, "Received WHOIS command from player %s for character %s", GetPlayer()->GetName(), charname.c_str());
 }
 
 void WorldSession::HandleLogoutRequestOpcode(WorldPacket& recv_data)

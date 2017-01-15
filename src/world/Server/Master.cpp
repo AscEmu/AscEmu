@@ -217,11 +217,11 @@ bool Master::Run(int argc, char** argv)
 #ifdef COMMANDLINE_OPT_ENABLE
     if (do_database_clean)
     {
-        Log.outDebug("Entering database maintenance mode.");
+        LogDebug("Entering database maintenance mode.");
         new DatabaseCleaner;
         DatabaseCleaner::getSingleton().Run();
         delete DatabaseCleaner::getSingletonPtr();
-        Log.outDebug("Maintenance finished.");
+        LogDebug("Maintenance finished.");
     }
 #endif
     new EventMgr;

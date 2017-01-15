@@ -30,7 +30,7 @@ Socket::Socket(SOCKET fd, uint32 sendbuffersize, uint32 recvbuffersize) : m_fd(f
         m_fd = SocketOps::CreateTCPFileDescriptor();
     }
 
-    Log.outDebug("Created Socket %u", m_fd);
+    LogDebug("Created Socket %u", m_fd);
 }
 
 Socket::~Socket()
@@ -119,7 +119,7 @@ void Socket::Disconnect()
     if(!m_connected.SetVal(false))
         return;
 
-    Log.outDetail("Socket::Disconnect on socket %u", m_fd);
+    LogDetail("Socket::Disconnect on socket %u", m_fd);
 
     // remove from mgr
     sSocketMgr.RemoveSocket(this);
@@ -137,7 +137,7 @@ void Socket::Delete()
     if(m_deleted.SetVal(true))
         return;
 
-    Log.outDebug("Socket::Delete() on socket %u", m_fd);
+    LogDebug("Socket::Delete() on socket %u", m_fd);
 
     if(IsConnected()) Disconnect();
 

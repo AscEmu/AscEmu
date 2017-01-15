@@ -853,7 +853,7 @@ class LuaUnit
             pCreature->m_custom_waypoint_map->push_back(wp);
         else
         {
-            Log.outDetail("WayPoint created by a Lua script for Creature ID %u wasn't added due to an error occurred in CreateWaypoint()", pCreature->GetCreatureProperties()->Id);
+            LogDetail("WayPoint created by a Lua script for Creature ID %u wasn't added due to an error occurred in CreateWaypoint()", pCreature->GetCreatureProperties()->Id);
             delete wp;
         }
         return 0;

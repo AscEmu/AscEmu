@@ -62,23 +62,6 @@ void oLog::outFileSilent(FILE* file, char* msg, const char* source)
     }
 }
 
-void oLog::outDetail(const char* str, ...)
-{
-    if(m_fileLogLevel < LOG_LEVEL_DETAIL || m_normalFile == NULL)
-        return;
-
-    char buf[32768];
-    va_list ap;
-
-    va_start(ap, str);
-    vsnprintf(buf, 32768, str, ap);
-    va_end(ap);
-    SetConsoleColor(CONSOLE_COLOR_WHITE);
-    std::cout << buf << std::endl;
-    SetConsoleColor(CONSOLE_COLOR_NORMAL);
-    outFile(m_normalFile, buf);
-}
-
 void oLog::outDebug(const char* str, ...)
 {
     if(m_fileLogLevel < LOG_LEVEL_DEBUG || m_errorFile == NULL)

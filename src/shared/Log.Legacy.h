@@ -62,8 +62,6 @@ class SERVER_DECL oLog : public Singleton< oLog >
 
     public:
 
-        //log level 1
-        void outDetail(const char* str, ...);
         //log level 2
         void outDebug(const char* str, ...);
 

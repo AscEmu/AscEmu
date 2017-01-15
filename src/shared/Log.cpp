@@ -315,7 +315,7 @@ void AscEmuLog::ConsoleLogDetail(bool file_only, const char* format, ...)
 
 void AscEmuLog::ConsoleLogDetailFunction(bool file_only, const char* function, const char* format, ...)
 {
-    if (normal_log_file == nullptr)
+    if (aelog_file_log_level < LOG_LEVEL_DETAIL || normal_log_file == nullptr)
         return;
 
     char function_message[32768];
@@ -365,7 +365,7 @@ void AscEmuLog::ConsoleLogDebugFlag(bool file_only, LogFlags log_flags, const ch
 
 void AscEmuLog::ConsoleLogDebugFlagFunction(bool file_only, LogFlags log_flags, const char* function, const char* format, ...)
 {
-    if (normal_log_file == nullptr)
+    if (aelog_file_log_level < LOG_LEVEL_DEBUG || error_log_file == nullptr)
         return;
 
     char function_message[32768];
