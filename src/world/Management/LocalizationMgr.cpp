@@ -636,7 +636,7 @@ void LocalizationMgr::Reload(bool first)
         Field* f;
         uint32 lid;
 
-        Log.outString("Loading locales_npc_monstersay rows...");
+        LogDefault("Loading locales_npc_monstersay rows...");
         result = WorldDatabase.Query("SELECT * FROM locales_npc_monstersay");
         if (result)
         {

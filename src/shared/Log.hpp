@@ -21,4 +21,72 @@ namespace AELog
 #endif
 }
 
+class SERVER_DECL AscEmuLog : public Singleton<AscEmuLog>
+{
+    FILE* normal_log_file;
+    FILE* error_log_file;
+
+    uint32_t aelog_file_log_level;
+    uint32_t aelog_debug_flags;
+
+#ifdef _WIN32
+    HANDLE handle_stdout;
+#endif
+
+    public:
+
+        AscEmuLog() : normal_log_file(nullptr), error_log_file(nullptr), aelog_file_log_level(0), aelog_debug_flags(0) {}
+        ~AscEmuLog()
+        {
+            if (normal_log_file != nullptr)
+            {
+                fflush(normal_log_file);
+                fclose(normal_log_file);
+                normal_log_file = nullptr;
+            }
+
+            if (error_log_file != nullptr)
+            {
+                fflush(error_log_file);
+                fclose(error_log_file);
+                error_log_file = nullptr;
+            }
+        }
+
+        void InitalizeLogFiles(std::string file_prefix);
+
+        void WriteFile(FILE* file, char* msg, const char* source = NULL);
+
+#ifndef _WIN32
+        void SetConsoleColor(const char* color);
+#else
+        void SetConsoleColor(int color);
+#endif
+        void SetFileLoggingLevel(uint32_t level);
+        void SetDebugFlags(uint32_t flags);
+
+        void ConsoleLogDefault(bool file_only, const char* format, ...);
+        void ConsoleLogError(bool file_only, const char* format, ...);
+
+        void ConsoleLogDetail(bool file_only, const char* format, ...);
+
+        void ConsoleLogDebugFlag(bool file_only, LogFlags log_flags, const char* format, ...);
+
+};
+
+#define AscLog AscEmuLog::getSingleton()
+
+/*! \brief Logging Level: Normal */
+#define LogDefault(msg, ...) AscLog.ConsoleLogDefault(false, msg, ##__VA_ARGS__)
+#define LogError(msg, ...) AscLog.SetConsoleColor(CONSOLE_COLOR_RED); AscLog.ConsoleLogError(false, msg, ##__VA_ARGS__); AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL)
+
+/*! \brief Logging Level: Detail */
+#define LogDetail(msg, ...) AscLog.SetConsoleColor(CONSOLE_COLOR_CYAN; AscLog.ConsoleLogDetail(false, msg, ##__VA_ARGS__); AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL)
+#define LogNotice(msg, ...) AscLog.SetConsoleColor(CONSOLE_COLOR_GREEN); AscLog.ConsoleLogDetail(false, msg, ##__VA_ARGS__); AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL)
+#define LogWarning(msg, ...) AscLog.SetConsoleColor(CONSOLE_COLOR_WHITE); AscLog.ConsoleLogDetail(false, msg, ##__VA_ARGS__); AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL)
+
+/*! \brief Logging Level: Debug */
+#define LogDebug(msg, ...) AscLog.ConsoleLogDebugFlag(false, LF_NONE, msg, ##__VA_ARGS__)
+#define LogDebugFlag(db_flag, msg, ...) AscLog.ConsoleLogDebugFlag(false, db_flag, msg, ##__VA_ARGS__)
+
 #endif  // LOG_HPP

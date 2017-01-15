@@ -5739,7 +5739,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 
                 detectRange += GetBoundingRadius(); // adjust range for size of player
                 detectRange += pObj->GetBoundingRadius(); // adjust range for size of stealthed player
-                //Log.outString("Player::CanSee(%s): detect range = %f yards (%f ingame units), cansee = %s , distance = %f" , pObj->GetName() , detectRange , detectRange * detectRange , (GetDistance2dSq(pObj) > detectRange * detectRange) ? "yes" : "no" , GetDistanceSq(pObj));
+                //LogDefault("Player::CanSee(%s): detect range = %f yards (%f ingame units), cansee = %s , distance = %f" , pObj->GetName() , detectRange , detectRange * detectRange , (GetDistance2dSq(pObj) > detectRange * detectRange) ? "yes" : "no" , GetDistanceSq(pObj));
                 if (GetDistanceSq(pObj) > detectRange * detectRange)
                     return (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) != 0); // GM can see stealthed players
             }
@@ -6041,7 +6041,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     if (spell_info == nullptr)
         return -1;
 
-    //Log.outString("Canshootwithrangedweapon!?!? spell: [%u] %s" , spellinfo->Id , spellinfo->Name.c_str());
+    //LogDefault("Canshootwithrangedweapon!?!? spell: [%u] %s" , spellinfo->Id , spellinfo->Name.c_str());
 
     // Check if Morphed
     if (polySpell > 0)
@@ -6106,7 +6106,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     // Partha: +2.52yds to max range, this matches the range the client is calculating.
     // see extra/supalosa_range_research.txt for more info
     //bonusRange = 2.52f;
-    //Log.outString("Bonus range = %f" , bonusRange);
+    //LogDefault("Bonus range = %f" , bonusRange);
 
     // check if facing target
     if (!isInFront(target))
@@ -6135,7 +6135,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 
     if (dist > maxr)
     {
-        //    Log.outString("Auto shot failed: out of range (Maxr: %f, Dist: %f)" , maxr , dist);
+        //    LogDefault("Auto shot failed: out of range (Maxr: %f, Dist: %f)" , maxr , dist);
         fail = SPELL_FAILED_OUT_OF_RANGE;
     }
 
@@ -6154,7 +6154,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
             uint32 spellid2 = autoshot ? 75 : spellid;
             m_session->OutPacket(SMSG_CANCEL_AUTO_REPEAT, 4, &spellid2);
         }
-        //Log.outString("Result for CanShootWIthRangedWeapon: %u" , fail);
+        //LogDefault("Result for CanShootWIthRangedWeapon: %u" , fail);
         //LOG_DEBUG("Can't shoot with ranged weapon: %u (Timer: %u)" , fail , m_AutoShotAttackTimer);
         return fail;
     }

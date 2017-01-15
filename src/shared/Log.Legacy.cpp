@@ -62,21 +62,6 @@ void oLog::outFileSilent(FILE* file, char* msg, const char* source)
     }
 }
 
-void oLog::outString(const char* str, ...)
-{
-    if(m_normalFile == NULL)
-        return;
-
-    char buf[32768];
-    va_list ap;
-
-    va_start(ap, str);
-    vsnprintf(buf, 32768, str, ap);
-    va_end(ap);
-    SetConsoleColor(CONSOLE_COLOR_NORMAL);
-    std::cout << buf << std::endl;
-    outFile(m_normalFile, buf);
-}
 
 void oLog::outError(const char* err, ...)
 {

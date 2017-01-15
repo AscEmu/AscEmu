@@ -147,6 +147,7 @@ bool Master::Run(int argc, char** argv)
     g_localTime = *localtime(&UNIXTIME);
 
     Log.InitalizeLogFiles("worldserver");
+    AscLog.InitalizeLogFiles("new_worldserver");
 
     PrintBanner();
 

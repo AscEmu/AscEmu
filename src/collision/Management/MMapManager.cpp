@@ -83,6 +83,7 @@ namespace MMAP
         if (!file)
         {
             Log.DebugFlag(LF_MMAP, "MMAP:loadMapData: Error: Could not open mmap file '%s'", fileName);
+            LogDebugFlag(LF_MMAP, "MMAP:loadMapData: Error: Could not open mmap file '%s'", fileName);
             delete [] fileName;
             return false;
         }

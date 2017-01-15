@@ -418,7 +418,7 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
     }
 
     //    for (int i = 0; i < keyFrames.size(); i++) {
-    //        Log.outString("%f, %f, %f, %f, %f, %f, %f", keyFrames[i].x, keyFrames[i].y, keyFrames[i].distUntilStop, keyFrames[i].distSinceStop, keyFrames[i].distFromPrev, keyFrames[i].tFrom, keyFrames[i].tTo);
+    //        LogDefault("%f, %f, %f, %f, %f, %f, %f", keyFrames[i].x, keyFrames[i].y, keyFrames[i].distUntilStop, keyFrames[i].distSinceStop, keyFrames[i].distFromPrev, keyFrames[i].tFrom, keyFrames[i].tTo);
     //    }
 
     // Now we're completely set up; we can move along the length of each waypoint at 100 ms intervals
@@ -461,7 +461,7 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
                         cM = keyFrames[i].mapid;
                     }
 
-                    //                    Log.outString("T: %d, D: %f, x: %f, y: %f, z: %f", t, d, newX, newY, newZ);
+                    //                    LogDefault("T: %d, D: %f, x: %f, y: %f, z: %f", t, d, newX, newY, newZ);
                     TWayPoint pos(keyFrames[i].mapid, newX, newY, newZ, teleport);
                     if (teleport)
                     {
@@ -512,7 +512,7 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
 
         TWayPoint pos(keyFrames[i + 1].mapid, keyFrames[i + 1].x, keyFrames[i + 1].y, keyFrames[i + 1].z, teleport);
 
-        //        Log.outString("T: %d, x: %f, y: %f, z: %f, t:%d", t, pos.x, pos.y, pos.z, teleport);
+        //        LogDefault("T: %d, x: %f, y: %f, z: %f, t:%d", t, pos.x, pos.y, pos.z, teleport);
 
         //if (teleport)
         m_WayPoints[t] = pos;
@@ -523,7 +523,7 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
         //last_t = t;
 
         t += keyFrames[i + 1].delay * 1000;
-        //        Log.outString("------");
+        //        LogDefault("------");
     }
 
     uint32 timer = t;

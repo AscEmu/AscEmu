@@ -71,6 +71,7 @@ void LogonServer::Run(int argc, char** argv)
     }
 #endif
     Log.InitalizeLogFiles("logonserver");
+    AscLog.InitalizeLogFiles("new_logonserver");
 
     PrintBanner();
 
@@ -108,6 +109,7 @@ void LogonServer::Run(int argc, char** argv)
     }
 
     Log.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
+    AscLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
 
     Log.Success("ThreadMgr", "Starting...");
     ThreadPool.Startup();
@@ -179,7 +181,7 @@ void LogonServer::Run(int argc, char** argv)
 
         uint32 loop_counter = 0;
 
-        Log.outString("Success! Ready for connections");
+        LogDefault("Success! Ready for connections");
         while (mrunning.GetVal())
         {
             if (!(++loop_counter % 20))             // 20 seconds
@@ -201,7 +203,7 @@ void LogonServer::Run(int argc, char** argv)
             Arcemu::Sleep(1000);
         }
 
-        Log.outString("Shutting down...");
+        LogDefault("Shutting down...");
 
         _UnhookSignals();
     }
@@ -222,7 +224,7 @@ void LogonServer::Run(int argc, char** argv)
     delete LogonConsole::getSingletonPtr();
 
     // kill db
-    Log.outString("Waiting for database to close..");
+    LogDefault("Waiting for database to close..");
     sLogonSQL->EndThreads();
     sLogonSQL->Shutdown();
     delete sLogonSQL;
@@ -305,7 +307,7 @@ void LogonServer::WritePidFile()
 
 void LogonServer::_HookSignals()
 {
-    Log.outString("Hooking signals...");
+    LogDefault("Hooking signals...");
     signal(SIGINT, _OnSignal);
     signal(SIGTERM, _OnSignal);
     signal(SIGABRT, _OnSignal);

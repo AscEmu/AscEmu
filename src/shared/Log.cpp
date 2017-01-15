@@ -77,7 +77,7 @@ namespace AELog
             case LF_DB_TABLES:
                 return CONSOLE_COLOR_YELLOW;
             default:
-                return CONSOLE_COLOR_NORMAL;
+                return CONSOLE_COLOR_WHITE;
         }
     }
 #endif
@@ -142,3 +142,146 @@ void oLog::SetConsoleColor(int color)
     SetConsoleTextAttribute(stdout_handle, (WORD)color);
 }
 #endif
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// AscEmuLog functions
+createFileSingleton(AscEmuLog);
+
+void AscEmuLog::InitalizeLogFiles(std::string file_prefix)
+{
+#ifdef _WIN32
+    handle_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
+#endif
+
+    std::string normal_filename = file_prefix + "-normal.log";
+    std::string error_filename = file_prefix + "-error.log";
+
+    std::string current_date_time = Util::GetCurrentDateTimeString();
+
+    normal_log_file = fopen(normal_filename.c_str(), "a");
+    if (normal_log_file == nullptr)
+        std::cerr << __FUNCTION__ << " : Error opening file " << normal_filename << std::endl;
+    else
+        ConsoleLogDefault(false, "=================[%s]=================", current_date_time.c_str());
+
+    error_log_file = fopen(error_filename.c_str(), "a");
+    if (error_log_file == nullptr)
+        std::cerr << __FUNCTION__ << " : Error opening file " << normal_filename << std::endl;
+    else
+        ConsoleLogError(true, "=================[%s]=================", current_date_time.c_str());
+}
+
+void AscEmuLog::WriteFile(FILE* file, char* msg, const char* source)
+{
+    std::string current_time = "[" + Util::GetCurrentTimeString() + "] ";
+    if (source != NULL)
+        fprintf(file, "%s %s: %s\n", current_time.c_str(), source, msg);
+    else
+        fprintf(file, "%s %s\n", current_time.c_str(), msg);
+}
+
+#ifndef _WIN32
+void AscEmuLog::SetConsoleColor(const char* color)
+{
+    fputs(color, stdout);
+}
+
+#else
+void AscEmuLog::SetConsoleColor(int color)
+{
+    SetConsoleTextAttribute(handle_stdout, (WORD)color);
+}
+#endif
+
+void AscEmuLog::SetFileLoggingLevel(uint32_t level)
+{
+    aelog_file_log_level = level;
+}
+
+void AscEmuLog::SetDebugFlags(uint32_t flags)
+{
+    aelog_debug_flags = flags;
+}
+
+// Log types
+void AscEmuLog::ConsoleLogDefault(bool file_only, const char* format, ...)
+{
+    if (normal_log_file == nullptr)
+        return;
+
+    char message_buffer[32768];
+    va_list ap;
+
+    va_start(ap, format);
+    vsnprintf(message_buffer, 32768, format, ap);
+    va_end(ap);
+
+    if (!file_only)
+        std::cout << message_buffer << std::endl;
+
+    WriteFile(normal_log_file, message_buffer);
+}
+
+void AscEmuLog::ConsoleLogError(bool file_only, const char* format, ...)
+{
+    if (error_log_file == nullptr)
+        return;
+
+    char message_buffer[32768];
+    va_list ap;
+
+    va_start(ap, format);
+    vsnprintf(message_buffer, 32768, format, ap);
+    va_end(ap);
+
+    if (!file_only)
+        std::cerr << message_buffer << std::endl;
+
+    WriteFile(error_log_file, message_buffer);
+}
+
+void AscEmuLog::ConsoleLogDetail(bool file_only, const char* format, ...)
+{
+    if (aelog_file_log_level < LOG_LEVEL_DETAIL || normal_log_file == nullptr)
+        return;
+
+    char message_buffer[32768];
+    va_list ap;
+
+    va_start(ap, format);
+    vsnprintf(message_buffer, 32768, format, ap);
+    va_end(ap);
+
+    if (!file_only)
+        std::cout << message_buffer << std::endl;
+
+    WriteFile(normal_log_file, message_buffer);
+}
+
+void AscEmuLog::ConsoleLogDebugFlag(bool file_only, LogFlags log_flags, const char* format, ...)
+{
+    if (aelog_file_log_level < LOG_LEVEL_DEBUG || error_log_file == nullptr)
+        return;
+
+    if (!(aelog_debug_flags & log_flags))
+        return;
+
+    char message_buffer[32768];
+    va_list ap;
+
+    va_start(ap, format);
+    vsnprintf(message_buffer, 32768, format, ap);
+    va_end(ap);
+
+    if (!file_only)
+    {
+        SetConsoleColor(AELog::GetColorForDebugFlag(log_flags));
+        std::cout << message_buffer << std::endl;
+        SetConsoleColor(CONSOLE_COLOR_NORMAL);
+    }
+
+    WriteFile(error_log_file, message_buffer);
+}
+
+

@@ -63,7 +63,6 @@ class SERVER_DECL oLog : public Singleton< oLog >
     public:
 
         //log level 0
-        void outString(const char* str, ...);
         void outError(const char* err, ...);
         void outErrorSilent(const char* err, ...);      // Writes into the error log without giving console output. Used for the startup banner.
         void outBasic(const char* str, ...);

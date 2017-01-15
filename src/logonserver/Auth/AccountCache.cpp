@@ -26,7 +26,8 @@ initialiseSingleton(InformationCore);
 void AccountMgr::ReloadAccounts(bool silent)
 {
     setBusy.Acquire();
-    if (!silent) Log.outString("[AccountMgr] Reloading Accounts...");
+    if (!silent)
+        LogDefault("[AccountMgr] Reloading Accounts...");
 
     // Load *all* accounts.
     QueryResult* result = sLogonSQL->Query("SELECT acct, login, encrypted_password, gm, flags, banned, forceLanguage, muted FROM accounts");
@@ -86,7 +87,9 @@ void AccountMgr::ReloadAccounts(bool silent)
         }
     }
 
-    if (!silent) Log.outString("[AccountMgr] Found %u accounts.", AccountDatabase.size());
+    if (!silent)
+        LogDefault("[AccountMgr] Found %u accounts.", AccountDatabase.size());
+
     setBusy.Release();
 
     IPBanner::getSingleton().Reload();
