@@ -35,7 +35,7 @@ namespace Arcemu
 #if defined(__GNUC__) || defined(__clang__)
             val = __sync_add_and_fetch(&Value, 1);
 #else
-#error Your platform (architecture and compiler) is NOT supported. Arcemu requires little endian architecture, and at least GCC 4.1
+#error Your platform (architecture and compiler) is NOT supported. AscEmu requires little endian architecture, and at least GCC 4.1
 #endif
 #endif
 
@@ -52,7 +52,7 @@ namespace Arcemu
 #if defined(__GNUC__) || defined(__clang__)
             val = __sync_add_and_fetch(&Value, -1);
 #else
-#error Your platform (architecture and compiler) is NOT supported. Arcemu requires little endian architecture, and at least GCC 4.1
+#error Your platform (architecture and compiler) is NOT supported. AscEmu requires little endian architecture, and at least GCC 4.1
 #endif
 #endif
             return val;

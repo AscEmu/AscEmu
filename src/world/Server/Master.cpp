@@ -411,10 +411,10 @@ bool Master::_CheckDBVersion()
         if (result < 0)
         {
             LogError("Database : You need to apply the world update queries that are newer than %s. Exiting.", WorldDBVersion);
-            LogError("Database : You can find the world update queries in the sql/world_updates sub-directory of your Arcemu source directory.");
+            LogError("Database : You can find the world update queries in the sql/world_updates sub-directory of your AscEmu source directory.");
         }
         else
-            LogError("Database : Your world database is probably too new for this Arcemu version, you need to update your server. Exiting.");
+            LogError("Database : Your world database is probably too new for this AscEmu version, you need to update your server. Exiting.");
 
         delete wqr;
         return false;
@@ -441,10 +441,10 @@ bool Master::_CheckDBVersion()
         if (result < 0)
         {
             LogError("Database : You need to apply the character update queries that are newer than %s. Exiting.", CharDBVersion);
-            LogError("Database : You can find the character update queries in the sql/character_updates sub-directory of your Arcemu source directory.");
+            LogError("Database : You can find the character update queries in the sql/character_updates sub-directory of your AscEmu source directory.");
         }
         else
-            LogError("Database : Your character database is too new for this Arcemu version, you need to update your server. Exiting.");
+            LogError("Database : Your character database is too new for this AscEmu version, you need to update your server. Exiting.");
 
         delete cqr;
         return false;
