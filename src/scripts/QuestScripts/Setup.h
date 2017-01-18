@@ -39,7 +39,6 @@ void SetupFirstAid(ScriptMgr* mgr);
 //////////////////////////////////////////////////////////////////////////////////////////
 // Zones Quests
 void SetupArathiHighlands(ScriptMgr* mgr);
-void SetupAzshara(ScriptMgr* mgr);
 void SetupAzuremystIsle(ScriptMgr* mgr);
 void SetupBladeEdgeMountains(ScriptMgr* mgr);
 void SetupBlastedLands(ScriptMgr* mgr);
@@ -78,7 +77,6 @@ void SetupUndercity(ScriptMgr* mgr);
 void SetupUnGoro(ScriptMgr* mgr);
 void SetupWestfall(ScriptMgr* mgr);
 void SetupWetlands(ScriptMgr* mgr);
-void SetupWinterspring(ScriptMgr* mgr);
 void SetupZangarmarsh(ScriptMgr* mgr);
 void SetupBarrens(ScriptMgr* mgr);
 void SetupBoreanTundra(ScriptMgr* mgr);

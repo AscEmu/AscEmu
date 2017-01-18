@@ -12,14 +12,12 @@ SET(sources
    Setup.cpp 
    ../Common/Base.cpp 
    Quest_ArathiHighlands.cpp 
-   Quest_Azshara.cpp 
    Quest_Azuremyst_Isle.cpp 
    Quest_BladeEdge_Mountains.cpp 
    Quest_BlastedLands.cpp 
    Quest_BloodmystIsle.cpp 
    Quest_BoreanTundra.cpp 
    Quest_BurningSteppes.cpp 
-   Quest_Darkshore.cpp 
    Quest_DeathKnight.cpp 
    Quest_Desolace.cpp 
    Quest_Dragonblight.cpp 
@@ -64,7 +62,6 @@ SET(sources
    Quest_Warrior.cpp 
    Quest_Westfall.cpp 
    Quest_Wetlands.cpp
-   Quest_Winterspring.cpp 
    Quest_Zangarmarsh.cpp
    )
 
