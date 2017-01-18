@@ -27,11 +27,6 @@
 #include "LUAEngine.h"
 #include <Server/Script/ScriptSetup.h>
 
-#ifdef WIN32
-#pragma warning(disable:4129)
-#pragma warning(disable:4244)
-#endif
-
 #ifndef _WIN32
 #include <dirent.h>
 #endif

@@ -23,11 +23,6 @@
 #include "Setup.h"
 #include "Raid_SerpentshrineCavern.h"
 
-
-#ifdef WIN32
-#pragma warning(disable:4146)      //warning C4146: unary minus operator applied to unsigned type, result still unsigned
-#endif
-
 #define SP_SCALDING_WATER 37284 //This "dot" is supposed to tick whenever you get in the water, it doesnt tick anymore after u kill lurker.
 
 //------------------------------------

@@ -26,9 +26,6 @@
 // Uncomment if you want debug texts
 // #define ENABLE_DEBUG_TEXT
 
-#ifdef WIN32
-#pragma warning(disable:4267) // warning C4267: '=' : conversion from 'size_t' to 'uint32', possible loss of data
-#endif
 
 #define CREATE_GAMEOBJECT_SCRIPT(cl) &cl::Create
 #define CREATE_CREATURESCRIPT(cl) &cl::Create
