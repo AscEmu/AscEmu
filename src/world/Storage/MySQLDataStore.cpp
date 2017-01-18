@@ -314,7 +314,7 @@ void MySQLDataStore::LoadItemPropertiesTable()
 
             //lowercase
             std::string lower_case_name = itemProperties.Name;
-            std::transform(lower_case_name.begin(), lower_case_name.end(), lower_case_name.begin(), ::tolower);
+            Util::StringToLowerCase(lower_case_name);
             itemProperties.lowercase_name = lower_case_name;
 
             //forced pet entries (hacky stuff ->spells)
