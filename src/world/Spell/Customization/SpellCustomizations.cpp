@@ -373,17 +373,14 @@ void SpellCustomizations::LoadSpellProcs()
             auto spell_entry = GetSpellInfo(spell_id);
             if (spell_entry != nullptr)
             {
-                uint8 x;
-                for (x = 0; x < 3; ++x)
-                    if (spell_entry->custom_ProcOnNameHash[x] == 0)
-                        break;
-
-                if (x != 3)
+                for (uint8 x = 0; x < 3; ++x)
                 {
-                    spell_entry->custom_ProcOnNameHash[x] = name_hash;
+                    if (spell_entry->custom_ProcOnNameHash[x] == 0)
+                    {
+                        spell_entry->custom_ProcOnNameHash[x] = name_hash;
+                    }
                 }
-                else
-                    LogDebugFlag(LF_DB_TABLES, "SpellCustomizations::LoadSpellProcs : Wrong ProcOnNameHash for Spell: %u!", spell_id);
+
 
                 if (f[2].GetInt32() >= 0)
                     spell_entry->procFlags = f[2].GetUInt32();
