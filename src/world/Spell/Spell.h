@@ -1617,14 +1617,14 @@ class SERVER_DECL Spell : public EventableObject
                 return false;
         }
 
-        inline bool hasAttribute(SpellAttributes attribute) { return GetSpellInfo()->Attributes & attribute; }
-        inline bool hasAttributeEx(SpellAttributesEx attribute) { return GetSpellInfo()->AttributesEx & attribute; }
-        inline bool hasAttributeExB(SpellAttributesExB attribute) { return GetSpellInfo()->AttributesExB & attribute; }
-        inline bool hasAttributeExC(SpellAttributesExC attribute) { return GetSpellInfo()->AttributesExC & attribute; }
-        inline bool hasAttributeExD(SpellAttributesExD attribute) { return GetSpellInfo()->AttributesExD & attribute; }
-        inline bool hasAttributeExE(SpellAttributesExE attribute) { return GetSpellInfo()->AttributesExE & attribute; }
-        inline bool hasAttributeExF(SpellAttributesExF attribute) { return GetSpellInfo()->AttributesExF & attribute; }
-        inline bool hasAttributeExG(SpellAttributesExG attribute) { return GetSpellInfo()->AttributesExG & attribute; }
+        inline bool hasAttribute(SpellAttributes attribute) { return (GetSpellInfo()->Attributes & attribute) != 0; }
+        inline bool hasAttributeEx(SpellAttributesEx attribute) { return (GetSpellInfo()->AttributesEx & attribute) != 0; }
+        inline bool hasAttributeExB(SpellAttributesExB attribute) { return (GetSpellInfo()->AttributesExB & attribute) != 0; }
+        inline bool hasAttributeExC(SpellAttributesExC attribute) { return (GetSpellInfo()->AttributesExC & attribute) != 0; }
+        inline bool hasAttributeExD(SpellAttributesExD attribute) { return (GetSpellInfo()->AttributesExD & attribute) != 0; }
+        inline bool hasAttributeExE(SpellAttributesExE attribute) { return (GetSpellInfo()->AttributesExE & attribute) != 0; }
+        inline bool hasAttributeExF(SpellAttributesExF attribute) { return (GetSpellInfo()->AttributesExF & attribute) != 0; }
+        inline bool hasAttributeExG(SpellAttributesExG attribute) { return (GetSpellInfo()->AttributesExG & attribute) != 0; }
 
         // Removes reagents, ammo, and items/charges
         void RemoveItems();
