@@ -3650,7 +3650,7 @@ void AIInterface::AddSpline(float x, float y, float z)
                 break;
             default:
                 LOG_ERROR("Added a spline with unhandled spline flag: %X", m_Unit->m_movementManager.m_spline.GetSplineFlags());
-                movetime = 1.0f;
+                movetime = 1;
                 break;
         }
 
@@ -3660,7 +3660,7 @@ void AIInterface::AddSpline(float x, float y, float z)
         LOG_ERROR("Added a spline with unhandled spline flag: %X", m_Unit->m_movementManager.m_spline.GetSplineFlags());
         //setting movetime to default value of 1 second. Change if to either a return; or something more meaningful
         //but don't leave movetime uninitialized...
-        movetime = 1.0f;
+        movetime = 1;
     }
 
     p.setoff = prev.arrive;

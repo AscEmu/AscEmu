@@ -1518,7 +1518,7 @@ public:
         TargetFocusMap::const_iterator itr = m_TargetFocus.find(value);
 
         if (itr != m_TargetFocus.end())
-            return itr->second;
+            return (itr->second != 0);
         else
             return false;
     }
