@@ -872,14 +872,6 @@ enum SummonTypes
     SUMMON_TYPE_BUTLER = 12
 };
 
-inline bool CanAgroHash(uint32 spellhashname)
-{
-    if (spellhashname == SPELL_HASH_HUNTER_S_MARK)   //hunter's mark
-        return false;
-    else
-        return true;
-}
-
 /////////////////////////////////////////////////////////////////////////////////
 //bool IsDamagingSpell(SpellEntry *sp)
 //  Tells if a Spell is damaging
