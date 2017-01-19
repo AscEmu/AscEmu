@@ -75,7 +75,7 @@ namespace MMAP
 
         // load and init dtNavMesh - read parameters from file
         std::string dataDir = sWorld.mMapPath;
-        uint32 pathLen = dataDir.length() + strlen("/%03i.mmap") + 1;
+        uint32 pathLen = static_cast<uint32>(dataDir.length() + strlen("/%03i.mmap") + 1);
         char *fileName = new char[pathLen];
         snprintf(fileName, pathLen, (dataDir + "/%03i.mmap").c_str(), mapId);
 
@@ -83,13 +83,12 @@ namespace MMAP
         if (!file)
         {
             LogDebugFlag(LF_MMAP, "MMAP:loadMapData: Error: Could not open mmap file '%s'", fileName);
-            LogDebugFlag(LF_MMAP, "MMAP:loadMapData: Error: Could not open mmap file '%s'", fileName);
             delete [] fileName;
             return false;
         }
 
         dtNavMeshParams params;
-        int count = fread(&params, sizeof(dtNavMeshParams), 1, file);
+        int count = static_cast<int>(fread(&params, sizeof(dtNavMeshParams), 1, file));
         fclose(file);
         if (count != 1)
         {
@@ -141,7 +140,7 @@ namespace MMAP
             return false;
 
         // load this tile :: /MMMXXYY.mmtile
-        uint32 pathLen = basePath.length() + strlen("/%03i%02i%02i.mmtile") + 1;
+        uint32 pathLen = static_cast<uint32>(basePath.length() + strlen("/%03i%02i%02i.mmtile") + 1);
         char *fileName = new char[pathLen];
 
         snprintf(fileName, pathLen, (basePath + "/%03i%02i%02i.mmtile").c_str(), mapId, x, y);

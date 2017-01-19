@@ -96,12 +96,12 @@ void apply_setting(std::string & str, ConfigSetting & setting)
     if (str.length() > 1)
     {
         // this might be a yes/no?
-        if (str.size() >= 3 && !strnicmp("yes", str.c_str(), 3))
+        if (str.compare("yes") == 0)
         {
             setting.AsBool = true;
             setting.AsInt = 1;
         }
-        else if (str.size() >= 2 && !strnicmp("no", str.c_str(), 2))
+        else if (str.compare("no") == 0)
         {
             setting.AsBool = false;
             setting.AsInt = 0;

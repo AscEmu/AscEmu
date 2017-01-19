@@ -57,9 +57,15 @@ class DeadminesInstanceScript : public MoonInstanceScript
         {
             switch (pGameObject->GetEntry())
             {
-                case GO_FACTORY_DOOR:    mFactoryDoor_GUID = pGameObject->GetGUID(); break;
-                case GO_FACTORY_DOOR_LEVER:    mDoorLever_GUID = pGameObject->GetGUID(); break;
-                case GO_IRONCLAD_DOOR:    mIronCladDoor_GUID = pGameObject->GetGUID(); break;
+                case GO_FACTORY_DOOR:
+                    mFactoryDoor_GUID = static_cast<uint32>(pGameObject->GetGUID());
+                    break;
+                case GO_FACTORY_DOOR_LEVER:
+                    mDoorLever_GUID = static_cast<uint32>(pGameObject->GetGUID());
+                    break;
+                case GO_IRONCLAD_DOOR:
+                    mIronCladDoor_GUID = static_cast<uint32>(pGameObject->GetGUID());
+                    break;
             }
         }
 

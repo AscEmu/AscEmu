@@ -105,7 +105,7 @@ class DeepfuryAI : public MoonScriptBossAI
             SetAllowMelee(false);
             SetAllowRanged(false);
             SetAllowSpell(false);
-            MoveTo(105.693390, -58.426674, -34.856178, true);
+            MoveTo(float(105.693390), float(-58.426674), float(-34.856178), true);
         }
         ParentClass::AIUpdate();
     }

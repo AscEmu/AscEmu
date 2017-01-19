@@ -39,7 +39,7 @@ Gossip::Item::Item(size_t itemid, uint8 icon, const char* text, bool coded/*= fa
     icon_ = icon;
     text_ = (text != NULL) ? text : "";
     coded_ = coded;
-    boxmoney_ = boxmoney;
+    boxmoney_ = uint32(boxmoney);
     boxmessage_ = (boxmessage != NULL) ? boxmessage : "";
 }
 

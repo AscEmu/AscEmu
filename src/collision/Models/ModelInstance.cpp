@@ -153,7 +153,7 @@ namespace VMAP
 
     bool ModelSpawn::readFromFile(FILE* rf, ModelSpawn &spawn)
     {
-        uint32 check = 0, nameLen;
+        size_t check = 0, nameLen;
         check += fread(&spawn.flags, sizeof(uint32), 1, rf);
         // EoF?
         if (!check)
@@ -175,8 +175,8 @@ namespace VMAP
             check += fread(&bHigh, sizeof(float), 3, rf);
             spawn.iBound = G3D::AABox(bLow, bHigh);
         }
-        check += fread(&nameLen, sizeof(uint32), 1, rf);
-        if (check != uint32(has_bound ? 17 : 11))
+        check += fread(&nameLen, sizeof(size_t), 1, rf);
+        if (check != size_t(has_bound ? 17 : 11))
         {
             std::cout << "Error reading ModelSpawn!\n";
             return false;
@@ -199,7 +199,7 @@ namespace VMAP
 
     bool ModelSpawn::writeToFile(FILE* wf, const ModelSpawn &spawn)
     {
-        uint32 check=0;
+        size_t check=0;
         check += fwrite(&spawn.flags, sizeof(uint32), 1, wf);
         check += fwrite(&spawn.adtId, sizeof(uint16), 1, wf);
         check += fwrite(&spawn.ID, sizeof(uint32), 1, wf);
@@ -212,11 +212,13 @@ namespace VMAP
             check += fwrite(&spawn.iBound.low(), sizeof(float), 3, wf);
             check += fwrite(&spawn.iBound.high(), sizeof(float), 3, wf);
         }
-        uint32 nameLen = spawn.name.length();
-        check += fwrite(&nameLen, sizeof(uint32), 1, wf);
-        if (check != uint32(has_bound ? 17 : 11)) return false;
+        size_t nameLen = spawn.name.length();
+        check += fwrite(&nameLen, sizeof(size_t), 1, wf);
+        if (check != size_t(has_bound ? 17 : 11))
+            return false;
         check = fwrite(spawn.name.c_str(), sizeof(char), nameLen, wf);
-        if (check != nameLen) return false;
+        if (check != nameLen)
+            return false;
         return true;
     }
 

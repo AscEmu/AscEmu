@@ -931,7 +931,7 @@ void Aura::Remove()
 
     // We will delete this on the next update, eluding some spell crashes :|
     m_target->AddGarbageAura(this);
-    m_target->UpdateAuraForGroup(m_auraSlot);
+    m_target->UpdateAuraForGroup(static_cast<uint8>(m_auraSlot));
 
     // maybe we are removing it without even assigning it. Example when we are refreshing an aura
     if (m_auraSlot != 0xFFFF)

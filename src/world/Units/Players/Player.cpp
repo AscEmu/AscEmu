@@ -8370,7 +8370,7 @@ float Player::CalcRating(PlayerCombatRating index)
 
     DBC::Structures::GtCombatRatingsEntry const* combat_rating_entry = sGtCombatRatingsStore.LookupEntry(index * 100 + level - 1);
     if (combat_rating_entry == nullptr)
-        return rating;
+        return float(rating);
     else
         return (rating / combat_rating_entry->val);
 }
@@ -12666,7 +12666,7 @@ void Player::HandleKnockback(Object* caster, float horizontal, float vertical)
 
     float angle = calcRadAngle(caster->GetPositionX(), caster->GetPositionY(), GetPositionX(), GetPositionY());
     if (caster == this)
-        angle = GetOrientation() + M_PI;
+        angle = float(GetOrientation() + M_PI);
 
     float sin = sinf(angle);
     float cos = cosf(angle);
@@ -13521,7 +13521,7 @@ void Player::SendCinematicCamera(uint32 id)
 {
     camControle = true;
     GetMapMgr()->ChangeObjectLocation(this);
-    SetPosition(GetPositionX() + 0.01, GetPositionY() + 0.01, GetPositionZ() + 0.01, GetOrientation());
+    SetPosition(float(GetPositionX() + 0.01), float(GetPositionY() + 0.01), float(GetPositionZ() + 0.01), GetOrientation());
     GetSession()->OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &id);
 }
 

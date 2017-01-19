@@ -271,7 +271,7 @@ void GameEventMgr::LoadFromDB()
                 dbResult.flags = field[13].GetUInt32();
                 dbResult.faction = field[14].GetUInt32();
                 dbResult.scale = field[15].GetFloat();
-                dbResult.stateNpcLink = field[16].GetFloat();
+                dbResult.stateNpcLink = field[16].GetUInt32();
                 dbResult.phase = field[17].GetUInt32();
                 dbResult.overrides = field[18].GetUInt32();
 

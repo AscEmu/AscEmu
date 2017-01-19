@@ -912,7 +912,7 @@ void MapMgr::_UpdateObjects()
 
 uint32 MapMgr::GetPlayerCount()
 {
-    return m_PlayerStorage.size();
+    return static_cast<uint32>(m_PlayerStorage.size());
 }
 
 void MapMgr::UpdateCellActivity(uint32 x, uint32 y, uint32 radius)

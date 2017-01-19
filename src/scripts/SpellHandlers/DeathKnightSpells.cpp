@@ -242,7 +242,8 @@ bool DeathCoil(uint32 i, Spell* s)
     }
     else if(unitTarget->IsPlayer() && unitTarget->getRace() == RACE_UNDEAD)
     {
-        dmg *= 1.5;
+        float multiplier = 1.5f;
+        dmg = static_cast<int32>((dmg * multiplier));
         s->p_caster->CastSpell(unitTarget, 47633, dmg, true);
     }
 
@@ -273,7 +274,7 @@ bool DeathAndDecay(uint32 i, Aura* pAura, bool apply)
         if(caster == NULL)
             return true;
 
-        int32 value = pAura->GetModAmount(i) + (int32) caster->GetAP() * 0.064;
+        int32 value = int32(pAura->GetModAmount(i) + (int32) caster->GetAP() * 0.064);
 
         caster->CastSpell(pAura->GetTarget(), 52212, value, true);
     }

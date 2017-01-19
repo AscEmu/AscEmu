@@ -380,7 +380,7 @@ class LfgMgr : public Singleton < LfgMgr >, EventableObject
 template <class C> typename C::value_type const& SelectRandomContainerElement(C const& container)
 {
 	typename C::const_iterator it = container.begin();
-	std::advance(it, RandomUInt(0, container.size() - 1));
+	std::advance(it, RandomUInt(0, static_cast<uint32>(container.size() - 1)));
 	return *it;
 }
 

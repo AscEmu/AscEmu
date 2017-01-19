@@ -1837,7 +1837,7 @@ void Creature::LoadCustomWaypoint(float pX, float pY, float pZ, float pO, uint32
         this->m_custom_waypoint_map = new Movement::WayPointMap;
 
     Movement::WayPoint* wp = new Movement::WayPoint;
-    wp->id = this->m_custom_waypoint_map->size() ? this->m_custom_waypoint_map->size() : 1;
+    wp->id = (this->m_custom_waypoint_map->size() ? static_cast<uint32>(this->m_custom_waypoint_map->size()) : 1);
     wp->x = pX;
     wp->y = pY;
     wp->z = pZ;

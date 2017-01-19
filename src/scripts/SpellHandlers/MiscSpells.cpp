@@ -222,7 +222,7 @@ bool NorthRendInscriptionResearch(uint32 i, Spell* s)
 
         if (discoverableGlyphs.size() > 0)
         {
-            uint32 newGlyph = discoverableGlyphs.at(RandomUInt(discoverableGlyphs.size() - 1));
+            uint32 newGlyph = discoverableGlyphs.at(RandomUInt(static_cast<uint32>(discoverableGlyphs.size() - 1)));
             s->p_caster->addSpell(newGlyph);
         }
     }

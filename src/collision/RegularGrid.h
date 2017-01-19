@@ -90,7 +90,7 @@ public:
     }
 
     bool contains(const T& value) const { return memberTable.containsKey(&value); }
-    int size() const { return memberTable.size(); }
+    int size() const { return static_cast<int>(memberTable.size()); }
 
     struct Cell
     {

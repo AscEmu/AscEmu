@@ -408,7 +408,7 @@ bool ChatHandler::HandleWayPointGenerateCommand(const char* args, WorldSession* 
         SystemMessage(m_session, "Randomly generate wps params: waypoint count");
         return true;
     }
-    uint8 wp_count = atol(pC);
+    uint8 wp_count = static_cast<uint8>(atol(pC));
 
     for (uint8 i = 0; i < wp_count; ++i)
     {
@@ -418,10 +418,10 @@ bool ChatHandler::HandleWayPointGenerateCommand(const char* args, WorldSession* 
             return true;
         }
         float ang = RandomFloat(100.0f);
-        float ran = range < 2 ? 1 : RandomFloat(range);
-        while (ran < 1)
+        float ran = (range < 2 ? 1.0f : RandomFloat(float(range)));
+        while (ran < 1.0f)
         {
-            ran = RandomFloat(range);
+            ran = RandomFloat(float(range));
         }
 
         float x = creature_target->GetPositionX() + ran * sin(ang);

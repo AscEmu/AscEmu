@@ -577,7 +577,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
         float dy = targets.m_destY - targets.m_srcY;
 
         if ((missilepitch != M_PI / 4) && (missilepitch != -M_PI / 4)) //lets not divide by 0 lul
-            traveltime = (sqrtf(dx * dx + dy * dy) / (cosf(missilepitch) * missilespeed)) * 1000;
+            traveltime = static_cast<uint32>((sqrtf(dx * dx + dy * dy) / (cosf(missilepitch) * missilespeed)) * 1000);
     }
 
     if (spellid == 33395)	// Summoned Water Elemental's freeze

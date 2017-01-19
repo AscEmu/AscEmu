@@ -26,7 +26,7 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
 
     uint32 walk_mode = creature->GetAIInterface()->GetWalkMode();
 
-    uint32 attackerscount = creature->GetAIInterface()->getAITargetsCount();
+    uint32 attackerscount = static_cast<uint32>(creature->GetAIInterface()->getAITargetsCount());
 
     BlueSystemMessage(m_session, "Showing creature moveinfo for %s", creature->GetCreatureProperties()->Name.c_str());
     SystemMessage(m_session, "=== Facing ===");

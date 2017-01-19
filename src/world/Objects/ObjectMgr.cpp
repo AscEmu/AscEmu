@@ -3486,11 +3486,15 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                 QuestLogEntry* pQuest = plr->GetQuestLogForEntry(itr->second.data_2);
                 if (pQuest != nullptr)
                 {
-                    if (pQuest->GetMobCount(itr->second.data_5) < pQuest->GetQuest()->required_mob_or_go[itr->second.data_5])
+                    if (pQuest->GetQuest()->required_mob_or_go[itr->second.data_5] >= 0)
                     {
-                        pQuest->SetMobCount(itr->second.data_5, pQuest->GetMobCount(itr->second.data_5) + 1);
-                        pQuest->SendUpdateAddKill(itr->second.data_5);
-                        pQuest->UpdatePlayerFields();
+                        uint32 required_mob = static_cast<uint32>(pQuest->GetQuest()->required_mob_or_go[itr->second.data_5]);
+                        if (pQuest->GetMobCount(itr->second.data_5) < required_mob)
+                        {
+                            pQuest->SetMobCount(itr->second.data_5, pQuest->GetMobCount(itr->second.data_5) + 1);
+                            pQuest->SendUpdateAddKill(itr->second.data_5);
+                            pQuest->UpdatePlayerFields();
+                        }
                     }
                 }
                 break;
@@ -3521,7 +3525,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
                 }
                 else
                 {
-                    Object* target = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(itr->second.x, itr->second.y, itr->second.z, itr->second.data_1);
+                    Object* target = plr->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(float(itr->second.x), float(itr->second.y), float(itr->second.z), itr->second.data_1);
                     if (target == nullptr)
                         return;
 

@@ -205,8 +205,8 @@ class DancingRuneWeaponAI : public CreatureAIScript
                     pOwner->SetPower(POWER_TYPE_RUNIC_POWER, 0);
                 }
 
-                s->SetMinDamage(owner->GetDamageDoneMod(SCHOOL_NORMAL));
-                s->SetMaxDamage(owner->GetDamageDoneMod(SCHOOL_NORMAL));
+                s->SetMinDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));
+                s->SetMaxDamage(float(owner->GetDamageDoneMod(SCHOOL_NORMAL)));
             }
         }
 

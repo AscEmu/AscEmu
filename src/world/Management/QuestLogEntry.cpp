@@ -85,7 +85,7 @@ void QuestLogEntry::Init(QuestProperties const* quest, Player* plr, uint32 slot)
     memset(m_explored_areas, 0, 4 * 4);
 
     if (m_quest->time > 0)
-        expirytime = UNIXTIME + m_quest->time / 1000;
+        expirytime = static_cast<uint32>(UNIXTIME + m_quest->time / 1000);
     else
         expirytime = 0;
 

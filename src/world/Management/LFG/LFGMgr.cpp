@@ -737,7 +737,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
             return false;
         }
         pqInfoMap[guid] = itQueue->second;
-        numPlayers += itQueue->second->roles.size();
+        numPlayers += static_cast<uint8>(itQueue->second->roles.size());
 
         if (IS_GROUP(guid))
         {
@@ -1307,7 +1307,7 @@ void LfgMgr::UpdateProposal(uint32 proposalId, uint64 guid, bool accept)
             }
 
             m_teleport.push_back(pguid);
-            if(Player* plr = objmgr.GetPlayer(pguid))
+            if(Player* plr = objmgr.GetPlayer(static_cast<uint32>(pguid)))
 				plr->SetRoles(pProposal->players[pguid]->role);
             SetState(pguid, LFG_STATE_DUNGEON);
         }

@@ -6051,7 +6051,7 @@ void Spell::HandleCastEffects(uint64 guid, uint32 i)
             float time;
 
             if (m_missileTravelTime != 0)
-                time = m_missileTravelTime;
+                time = static_cast<float>(m_missileTravelTime);
             else
                 time = dist * 1000.0f / m_spellInfo->speed;
 
@@ -6227,7 +6227,7 @@ void Spell::SpellEffectJumpBehindTarget(uint32 i)
             return;
         Unit* un = static_cast<Unit*>(uobj);
         float rad = un->GetBoundingRadius() + u_caster->GetBoundingRadius();
-        float angle = un->GetOrientation() + M_PI; //behind
+        float angle = float(un->GetOrientation() + M_PI); //behind
         float x = un->GetPositionX() + cosf(angle) * rad;
         float y = un->GetPositionY() + sinf(angle) * rad;
         float z = un->GetPositionZ();

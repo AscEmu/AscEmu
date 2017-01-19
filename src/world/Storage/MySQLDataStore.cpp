@@ -173,7 +173,7 @@ void MySQLDataStore::LoadItemPropertiesTable()
         }
         else
         {
-            row_count = _itemPropertiesStore.size();
+            row_count = static_cast<uint32>(_itemPropertiesStore.size());
         }
 
         if (basic_field_count != item_result->GetFieldCount())
@@ -499,7 +499,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
         }
         else
         {
-            row_count = _creaturePropertiesStore.size();
+            row_count = static_cast<uint32>(_creaturePropertiesStore.size());
         }
 
         if (basic_field_count != creature_properties_result->GetFieldCount())
@@ -742,7 +742,7 @@ void MySQLDataStore::LoadGameObjectPropertiesTable()
         }
         else
         {
-            row_count = _gameobjectPropertiesStore.size();
+            row_count = static_cast<uint32>(_gameobjectPropertiesStore.size());
         }
 
         if (basic_field_count != gameobject_properties_result->GetFieldCount())
@@ -899,7 +899,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
         }
         else
         {
-            row_count = _questPropertiesStore.size();
+            row_count = static_cast<uint32>(_questPropertiesStore.size());
         }
 
         if (basic_field_count != quest_result->GetFieldCount())

@@ -98,7 +98,7 @@ bool ChatHandler::HandleGuildJoinCommand(const char* args, WorldSession* m_sessi
     if (guild != nullptr)
     {
         guild->getLock().Acquire();
-        uint32 memberCount = guild->GetNumMembers();
+        uint32 memberCount = static_cast<uint32>(guild->GetNumMembers());
         guild->getLock().Release();
 
         if (memberCount >= MAX_GUILD_MEMBERS)

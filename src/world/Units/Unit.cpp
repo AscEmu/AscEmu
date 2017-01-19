@@ -2656,7 +2656,7 @@ void Unit::RegeneratePower(bool isinterrupted)
         uint32 powertype = GetPowerType();
         float wrate = sWorld.getRate(RATE_VEHICLES_POWER_REGEN);
         float amount = wrate * 20.0f;
-        SetPower(powertype, GetPower(powertype) + amount);
+        SetPower(powertype, static_cast<int32>(GetPower(powertype) + amount));
     }
 
     //druids regen every tick, which is every 100ms, at one energy, as of 3.0.2
@@ -3818,7 +3818,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
                     else
                         hit_status |= HITSTATUS_BLOCK;
                 }
-                CALL_SCRIPT_EVENT(this, OnHit)(pVictim, realdamage);
+                CALL_SCRIPT_EVENT(this, OnHit)(pVictim, float(realdamage));
             }
             break;
     }
@@ -8265,7 +8265,7 @@ void Unit::HandleKnockback(Object* caster, float horizontal, float vertical)
         caster = this;
     float angle = calcRadAngle(caster->GetPositionX(), caster->GetPositionY(), GetPositionX(), GetPositionY());
     if (caster == this)
-        angle = GetOrientation() + M_PI;
+        angle = float(GetOrientation() + M_PI);
 
     float destx, desty, destz;
     if (GetPoint(angle, horizontal, destx, desty, destz, true))

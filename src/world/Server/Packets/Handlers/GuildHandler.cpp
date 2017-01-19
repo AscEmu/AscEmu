@@ -93,7 +93,7 @@ void WorldSession::HandleInviteToGuild(WorldPacket& recv_data)
     }
 
     pGuild->getLock().Acquire();
-    uint32 memberCount = pGuild->GetNumMembers();
+    uint32 memberCount = static_cast<uint32>(pGuild->GetNumMembers());
     pGuild->getLock().Release();
 
     if (memberCount >= MAX_GUILD_MEMBERS)
@@ -136,7 +136,7 @@ void WorldSession::HandleGuildAccept(WorldPacket& recv_data)
         return;
     }
     pGuild->getLock().Acquire();
-    uint32 memberCount = pGuild->GetNumMembers();
+    uint32 memberCount = static_cast<uint32>(pGuild->GetNumMembers());
     pGuild->getLock().Release();
 
     if (memberCount >= MAX_GUILD_MEMBERS)

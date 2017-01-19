@@ -278,44 +278,57 @@ namespace VMAP
     bool GroupModel::writeToFile(FILE* wf)
     {
         bool result = true;
-        uint32 chunkSize, count;
+        size_t chunkSize;
+        size_t count;
 
         if (result && fwrite(&iBound, sizeof(G3D::AABox), 1, wf) != 1) result = false;
         if (result && fwrite(&iMogpFlags, sizeof(uint32), 1, wf) != 1) result = false;
         if (result && fwrite(&iGroupWMOID, sizeof(uint32), 1, wf) != 1) result = false;
 
         // write vertices
-        if (result && fwrite("VERT", 1, 4, wf) != 4) result = false;
+        if (result && fwrite("VERT", 1, 4, wf) != 4)
+            result = false;
         count = vertices.size();
-        chunkSize = sizeof(uint32)+ sizeof(Vector3)*count;
-        if (result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1) result = false;
-        if (result && fwrite(&count, sizeof(uint32), 1, wf) != 1) result = false;
+        chunkSize = sizeof(size_t) + sizeof(Vector3)*count;
+        if (result && fwrite(&chunkSize, sizeof(size_t), 1, wf) != 1)
+            result = false;
+        if (result && fwrite(&count, sizeof(size_t), 1, wf) != 1)
+            result = false;
         if (!count) // models without (collision) geometry end here, unsure if they are useful
             return result;
-        if (result && fwrite(&vertices[0], sizeof(Vector3), count, wf) != count) result = false;
+        if (result && fwrite(&vertices[0], sizeof(Vector3), count, wf) != count)
+            result = false;
 
         // write triangle mesh
-        if (result && fwrite("TRIM", 1, 4, wf) != 4) result = false;
+        if (result && fwrite("TRIM", 1, 4, wf) != 4)
+            result = false;
         count = triangles.size();
-        chunkSize = sizeof(uint32)+ sizeof(MeshTriangle)*count;
-        if (result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1) result = false;
-        if (result && fwrite(&count, sizeof(uint32), 1, wf) != 1) result = false;
-        if (result && fwrite(&triangles[0], sizeof(MeshTriangle), count, wf) != count) result = false;
+        chunkSize = sizeof(size_t) + sizeof(MeshTriangle)*count;
+        if (result && fwrite(&chunkSize, sizeof(size_t), 1, wf) != 1)
+            result = false;
+        if (result && fwrite(&count, sizeof(size_t), 1, wf) != 1)
+            result = false;
+        if (result && fwrite(&triangles[0], sizeof(MeshTriangle), count, wf) != count)
+            result = false;
 
         // write mesh BIH
-        if (result && fwrite("MBIH", 1, 4, wf) != 4) result = false;
+        if (result && fwrite("MBIH", 1, 4, wf) != 4)
+            result = false;
         if (result) result = meshTree.writeToFile(wf);
 
         // write liquid data
-        if (result && fwrite("LIQU", 1, 4, wf) != 4) result = false;
+        if (result && fwrite("LIQU", 1, 4, wf) != 4)
+            result = false;
         if (!iLiquid)
         {
             chunkSize = 0;
-            if (result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1) result = false;
+            if (result && fwrite(&chunkSize, sizeof(size_t), 1, wf) != 1)
+                result = false;
             return result;
         }
         chunkSize = iLiquid->GetFileSize();
-        if (result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1) result = false;
+        if (result && fwrite(&chunkSize, sizeof(size_t), 1, wf) != 1)
+            result = false;
         if (result) result = iLiquid->writeToFile(wf);
 
         return result;
@@ -535,27 +548,34 @@ namespace VMAP
         if (!wf)
             return false;
 
-        uint32 chunkSize, count;
+        size_t chunkSize, count;
         bool result = fwrite(VMAP_MAGIC, 1, 8, wf) == 8;
-        if (result && fwrite("WMOD", 1, 4, wf) != 4) result = false;
-        chunkSize = sizeof(uint32) + sizeof(uint32);
-        if (result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1) result = false;
-        if (result && fwrite(&RootWMOID, sizeof(uint32), 1, wf) != 1) result = false;
+        if (result && fwrite("WMOD", 1, 4, wf) != 4)
+            result = false;
+        chunkSize = sizeof(size_t) + sizeof(uint32);
+        if (result && fwrite(&chunkSize, sizeof(size_t), 1, wf) != 1)
+            result = false;
+        if (result && fwrite(&RootWMOID, sizeof(uint32), 1, wf) != 1)
+            result = false;
 
         // write group models
         count=groupModels.size();
         if (count)
         {
-            if (result && fwrite("GMOD", 1, 4, wf) != 4) result = false;
+            if (result && fwrite("GMOD", 1, 4, wf) != 4)
+                result = false;
             //chunkSize = sizeof(uint32)+ sizeof(GroupModel)*count;
             //if (result && fwrite(&chunkSize, sizeof(uint32), 1, wf) != 1) result = false;
-            if (result && fwrite(&count, sizeof(uint32), 1, wf) != 1) result = false;
+            if (result && fwrite(&count, sizeof(size_t), 1, wf) != 1)
+                result = false;
             for (uint32 i=0; i<groupModels.size() && result; ++i)
                 result = groupModels[i].writeToFile(wf);
 
             // write group BIH
-            if (result && fwrite("GBIH", 1, 4, wf) != 4) result = false;
-            if (result) result = groupTree.writeToFile(wf);
+            if (result && fwrite("GBIH", 1, 4, wf) != 4)
+                result = false;
+            if (result)
+                result = groupTree.writeToFile(wf);
         }
 
         fclose(wf);

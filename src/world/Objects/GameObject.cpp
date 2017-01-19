@@ -415,7 +415,7 @@ struct QuaternionCompressed
         ARCEMU_ASSERT(w >= 0);
         w = sqrt(w);
         
-        return Quat(x, y, z, w);
+        return Quat(float(x), float(y), float(z), float(w));
     }
 
     int64 m_raw;

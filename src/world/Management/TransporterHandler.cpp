@@ -328,7 +328,7 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
 
     std::vector<keyFrame> keyFrames;
     int mapChange = 0;
-    for (size_t i = 1; i < path.Size() - 1; ++i)
+    for (int i = 1; i < int(path.Size() - 1); ++i)
     {
        if (mapChange == 0)
         {
@@ -359,7 +359,7 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
     }
 
     // find the rest of the distances between key points
-    for (size_t i = 1; i < keyFrames.size(); ++i)
+    for (int i = 1; i < int(keyFrames.size()); ++i)
     {
         if ((keyFrames[i].actionflag == 1) || (keyFrames[i].mapid != keyFrames[i - 1].mapid))
         {
@@ -384,7 +384,7 @@ bool Transporter::GenerateWaypoints(uint32 pathid)
     float tmpDist = 0;
     for (size_t i = 0; i < keyFrames.size(); ++i)
     {
-        int j = (i + lastStop) % keyFrames.size();
+        int j = int((i + lastStop) % keyFrames.size());
         if (keyFrames[j].actionflag == 2)
             tmpDist = 0;
         else
