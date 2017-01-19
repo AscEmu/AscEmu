@@ -312,7 +312,7 @@ class PlayerSpec
 
         void Reset()
         {
-            tp += talents.size();
+            tp += static_cast<uint32>(talents.size());
             talents.clear();
         }
 

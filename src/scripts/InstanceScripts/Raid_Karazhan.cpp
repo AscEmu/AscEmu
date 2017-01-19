@@ -476,7 +476,7 @@ class BigBadWolfAI : public CreatureAIScript
                                     if (!TargetTable.size())
                                         return;
 
-                                    auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                                    auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
                                     auto random_target = TargetTable[random_index];
 
                                     if (!RTarget)
@@ -1271,7 +1271,7 @@ class CuratorAI : public CreatureAIScript
             if (!Target_List.size())
                 return;
 
-            auto random_index = RandomUInt(0, Target_List.size() - 1);
+            auto random_index = RandomUInt(0, uint32(Target_List.size() - 1));
             Unit* random_target = Target_List[random_index];
 
             if (random_target == nullptr)
@@ -1899,7 +1899,7 @@ class ShadeofAranAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
                 auto random_target = TargetTable[random_index];
 
                 if (random_target == nullptr)
@@ -2238,7 +2238,7 @@ class IllhoofAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            auto random_index = RandomUInt(0, TargetTable.size() - 1);
+            auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
             auto random_target = TargetTable[random_index];
 
             if (random_target == nullptr)
@@ -2434,7 +2434,7 @@ class KilrekAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
                 auto random_target = TargetTable[random_index];
 
                 if (random_target == nullptr)
@@ -3181,7 +3181,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
                 if (!TargetTable.size())
                     return;
 
-                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
                 auto random_target = TargetTable[random_index];
 
                 if (random_target == nullptr)
@@ -3307,7 +3307,7 @@ class MAxesAI : public CreatureAIScript
             if (!TargetTable.size())
                 return;
 
-            auto random_index = RandomUInt(0, TargetTable.size() - 1);
+            auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
             auto random_target = TargetTable[random_index];
 
             if (random_target == nullptr)
@@ -3447,7 +3447,7 @@ class NetherspiteAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
                 auto random_target = TargetTable[random_index];
 
                 if (random_target == nullptr)
@@ -3951,7 +3951,7 @@ class NightbaneAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
                 auto random_target = TargetTable[random_index];
 
                 if (random_target == nullptr)
@@ -4141,7 +4141,7 @@ class DorotheeAI : public CreatureAIScript
                 if (!TargetTable.size())
                     return;
 
-                auto random_index = RandomUInt(0, TargetTable.size() - 1);
+                auto random_index = RandomUInt(0, uint32(TargetTable.size() - 1));
                 auto random_target = TargetTable[random_index];
 
                 if (random_target == nullptr)

@@ -52,6 +52,7 @@ namespace Util
 
     /*! \brief Returns calculated time based on (second) values e.g. 5h will return 5 * 60 * 60 */
     uint32_t GetTimePeriodFromString(const char* str);
+
 }
 
 #endif  // UTIL_HPP

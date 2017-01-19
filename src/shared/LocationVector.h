@@ -106,7 +106,7 @@ class SERVER_DECL LocationVector
             float dx = dest.x - x;
             float dy = dest.y - y;
             if(dy != 0.0f)
-                return atan2(dy, dx);
+                return static_cast<float>(atan2(dy, dx));
             else
                 return 0.0f;
         }
@@ -116,7 +116,7 @@ class SERVER_DECL LocationVector
             float dx = x - src.x;
             float dy = y - src.y;
             if(dy != 0.0f)
-                return atan2(dy, dx);
+                return static_cast<float>(atan2(dy, dx));
             else
                 return 0.0f;
         }

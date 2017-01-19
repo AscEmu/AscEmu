@@ -32,8 +32,8 @@ namespace luPacket
 
     int CreatePacket(lua_State* L, WorldPacket* packet)
     {
-        int opcode = luaL_checkinteger(L, 1);
-        int size = luaL_checkinteger(L, 2);
+        uint16 opcode = static_cast<uint16>(luaL_checkinteger(L, 1));
+        size_t size = static_cast<size_t>(luaL_checkinteger(L, 2));
         if (opcode >= NUM_MSG_TYPES)
             luaL_error(L, "CreatePacket got opcode %d greater than max opcode %d.", opcode, NUM_MSG_TYPES);
         else

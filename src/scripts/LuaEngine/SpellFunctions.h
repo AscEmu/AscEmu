@@ -357,7 +357,7 @@ namespace LuaSpell
         int valindex = 2;
         if (lua_gettop(L) == 3)
         {
-            subindex = luaL_optinteger(L, 2, 0);
+            subindex = static_cast<int>(luaL_optinteger(L, 2, 0));
             valindex++;
         }
         if (!sp || !var || subindex < 0)
@@ -373,7 +373,7 @@ namespace LuaSpell
         switch (l.typeId)  //0: int, 1: char*, 2: bool, 3: float
         {
             case 0:
-                GET_SPELLVAR_INT(proto, l.offset, subindex) = luaL_checkinteger(L, valindex);
+                GET_SPELLVAR_INT(proto, l.offset, subindex) = static_cast<int>(luaL_checkinteger(L, valindex));
                 lua_pushboolean(L, 1);
                 break;
             case 1:
@@ -395,7 +395,7 @@ namespace LuaSpell
     int GetVar(lua_State* L, Spell* sp)
     {
         const char* var = luaL_checkstring(L, 1);
-        int subindex = luaL_optinteger(L, 2, 0);
+        int subindex = static_cast<int>(luaL_optinteger(L, 2, 0));
         if (!sp || !var || subindex < 0)
         {
             lua_pushnil(L);
@@ -426,7 +426,7 @@ namespace LuaSpell
     int ResetVar(lua_State* L, Spell* sp)
     {
         const char* var = luaL_checkstring(L, 1);
-        int subindex = luaL_optinteger(L, 2, 0);
+        int subindex = static_cast<int>(luaL_optinteger(L, 2, 0));
         if (!sp || !var || subindex < 0)
         {
             lua_pushboolean(L, 0);

@@ -772,7 +772,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             case 23881:
             {
                 if (p_caster != NULL)
-                    dmg = p_caster->GetAP() * 0.5;
+                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.5));
             }break;
             case 5308:
             case 20658:
@@ -821,17 +821,17 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             case 30357:
             case 57823:
             {
-                if (p_caster != NULL)
-                    dmg = (p_caster->GetAP() * 0.207);
+                if (p_caster != nullptr)
+                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.207));
             }break;
             case 57755:
             {
                 if (p_caster != nullptr)
-                    dmg = (p_caster->GetAP() * 0.5);
+                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.5));
             }break;
             case 64382:
                 if (p_caster != nullptr)
-                    dmg = (p_caster->GetAP() * 0.5);
+                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.5));
                 break;
                 // Heroic Strike, commented ones don't have bonus.
                 /*case 78:
@@ -856,16 +856,16 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                             switch (m_spellInfo->Id)
                             { // This info isn't in the dbc files.....
                                 case 29707:
-                                    dmg = 81.9;
+                                    dmg = static_cast<uint32>(std::round(81.9));
                                     break;
                                 case 30324:
-                                    dmg = 110.95;
+                                    dmg = static_cast<uint32>(std::round(110.95));
                                     break;
                                 case 47449:
-                                    dmg = 151.2;
+                                    dmg = static_cast<uint32>(std::round(151.2));
                                     break;
                                 case 47450:
-                                    dmg = 173.25;
+                                    dmg = static_cast<uint32>(std::round(173.25));
                                     break;
                             }
                         }
@@ -886,13 +886,13 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                     if (item != nullptr)
                     {
                         if (p_caster->HasAura(12329))
-                            dmg = (((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.4;
+                            dmg = static_cast<uint32>(std::round((((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.4));
                         else if (p_caster->HasAura(12950))
-                            dmg = (((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.8;
+                            dmg = static_cast<uint32>(std::round((((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 0.8));
                         else if (p_caster->HasAura(20496))
-                            dmg = (((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 1.2;
+                            dmg = static_cast<uint32>(std::round((((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]) * 1.2));
                         else
-                            dmg = ((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
+                            dmg = static_cast<uint32>(std::round(((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]));
                     }
                 }
             }break;
@@ -910,7 +910,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 {
                     auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
                     if (item != nullptr)
-                        dmg = ((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
+                        dmg = static_cast<uint32>(std::round(((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]));
                 }
             }break;
             case 6343:
@@ -930,7 +930,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             case 20252:
             {
                 if (p_caster != nullptr)
-                    dmg = p_caster->GetAP() * 0.12;
+                    dmg = static_cast<uint32>(std::round(p_caster->GetAP() * 0.12));
             }break;
             case 31898:
             case 31804:
@@ -965,7 +965,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             case 25742:
             {
                 if (p_caster != nullptr)
-                    dmg = p_caster->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME) / 1000 * ((0.022 * (p_caster->GetAP()) + (0.044 * (p_caster->GetDamageDoneMod(1))))) + m_spellInfo->EffectBasePoints[i];
+                    dmg = static_cast<uint32>(std::round(p_caster->GetUInt32Value(UNIT_FIELD_BASEATTACKTIME) / 1000 * ((0.022 * (p_caster->GetAP()) + (0.044 * (p_caster->GetDamageDoneMod(1))))) + m_spellInfo->EffectBasePoints[i]));
             }break;
             case 9799:
             case 25988:
@@ -990,7 +990,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             {
                 if (p_caster != nullptr)
                 {
-                    dmg = (p_caster->GetRAP() * 0.15) + m_spellInfo->EffectBasePoints[i];
+                    dmg = static_cast<uint32>(std::round((p_caster->GetRAP() * 0.15) + m_spellInfo->EffectBasePoints[i]));
                 }
             }break;
             case 19434:
@@ -1007,7 +1007,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 {
                     auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                     if (item != nullptr)
-                        dmg = ((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i];
+                        dmg = static_cast<uint32>(std::round(((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) + m_spellInfo->EffectBasePoints[i]));
 
                 }
             }break;
@@ -1017,7 +1017,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 {
                     auto item = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
                     if (item != nullptr)
-                        dmg = ((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) * 1.25;
+                        dmg = static_cast<uint32>(std::round(((item->GetItemProperties()->Damage[0].Min + item->GetItemProperties()->Damage[0].Max) * 0.2f) * 1.25));
                 }
             }break;
             case 56641:
@@ -4578,7 +4578,7 @@ void Spell::SpellEffectKnockBack(uint32 i)
     if (unitTarget == NULL || !unitTarget->isAlive())
         return;
 
-    unitTarget->HandleKnockback(m_caster, GetSpellInfo()->EffectMiscValue[i] / 10, damage / 10);
+    unitTarget->HandleKnockback(m_caster, GetSpellInfo()->EffectMiscValue[i] / 10.0f, damage / 10.0f);
 }
 
 void Spell::SpellEffectKnockBack2(uint32 i)
@@ -4586,7 +4586,7 @@ void Spell::SpellEffectKnockBack2(uint32 i)
     if (unitTarget == NULL || !unitTarget->isAlive())
         return;
 
-    unitTarget->HandleKnockback(m_caster, GetSpellInfo()->EffectMiscValue[i] / 10, damage / 10);
+    unitTarget->HandleKnockback(m_caster, GetSpellInfo()->EffectMiscValue[i] / 10.0f, damage / 10.0f);
 }
 
 void Spell::SpellEffectDisenchant(uint32 i)

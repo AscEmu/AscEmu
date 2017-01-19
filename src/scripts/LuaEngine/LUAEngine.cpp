@@ -478,7 +478,7 @@ void LuaEngine::HyperCallFunction(const char* FuncName, int ref)  //hyper as in 
     lua_rawgeti(lu, LUA_REGISTRYINDEX, ref);
     lua_State* M = lua_tothread(lu, -1);  //repeats, args
     int thread = lua_gettop(lu);
-    int repeats = luaL_checkinteger(M, 1); //repeats, args
+    int repeats = static_cast<int>(luaL_checkinteger(M, 1)); //repeats, args
     int nargs = lua_gettop(M) - 1;
     if (nargs != 0) //if we HAVE args...
     {
@@ -522,8 +522,8 @@ This version only accepts actual Lua functions and no arguments. See LCF_Extra:C
 static int CreateLuaEvent(lua_State* L)
 {
     GET_LOCK
-        int delay = luaL_checkinteger(L, 2);
-    int repeats = luaL_checkinteger(L, 3);
+    int delay = static_cast<int>(luaL_checkinteger(L, 2));
+    int repeats = static_cast<int>(luaL_checkinteger(L, 3));
     if (!strcmp(luaL_typename(L, 1), "function") || delay > 0)
     {
         lua_settop(L, 1);
@@ -568,8 +568,8 @@ void LuaEngine::DestroyAllLuaEvents()
 static int ModifyLuaEventInterval(lua_State* L)
 {
     GET_LOCK
-        int ref = luaL_checkinteger(L, 1);
-    int newinterval = luaL_checkinteger(L, 2);
+    int ref = static_cast<int>(luaL_checkinteger(L, 1));
+    int newinterval = static_cast<int>(luaL_checkinteger(L, 2));
     ref += LUA_EVENTS_END;
     //Easy interval modification.
     sEventMgr.ModifyEventTime(World::getSingletonPtr(), ref, newinterval);
@@ -580,7 +580,7 @@ static int DestroyLuaEvent(lua_State* L)
 {
     //Simply remove the reference, CallFunctionByReference will find the reference has been freed and skip any processing.
     GET_LOCK
-        int ref = luaL_checkinteger(L, 1);
+    int ref = static_cast<int>(luaL_checkinteger(L, 1));
     luaL_unref(L, LUA_REGISTRYINDEX, ref);
     sLuaMgr.getFunctionRefs().erase(ref);
     sEventMgr.RemoveEvents(World::getSingletonPtr(), ref + LUA_EVENTS_END);
@@ -700,7 +700,7 @@ static int RegisterServerHook(lua_State* L)
     uint16 functionRef = 0;
     //Maximum passed in arguments, consider rest as garbage
     lua_settop(L, 2);
-    uint32 ev = luaL_checkinteger(L, 1);
+    uint32 ev = static_cast<uint32>(luaL_checkinteger(L, 1));
     const char* typeName = luaL_typename(L, 2);
     if (!ev || typeName == nullptr)
     {
@@ -728,7 +728,7 @@ static int RegisterServerHook(lua_State* L)
 static int RegisterDummySpell(lua_State* L)
 {
     uint16 functionRef = 0;
-    uint32 entry = luaL_checkinteger(L, 1);
+    uint32 entry = static_cast<uint32>(luaL_checkinteger(L, 1));
     const char* typeName = luaL_typename(L, 2);
     lua_settop(L, 2);
 
@@ -763,8 +763,8 @@ static int RegisterUnitEvent(lua_State* L)
 {
     lua_settop(L, 3);
     uint16 functionRef = 0;
-    int entry = luaL_checkinteger(L, 1);
-    int ev = luaL_checkinteger(L, 2);
+    int entry = static_cast<int>(luaL_checkinteger(L, 1));
+    int ev = static_cast<int>(luaL_checkinteger(L, 2));
     const char* typeName = luaL_typename(L, 3);
 
     if (!entry || !ev || typeName == nullptr)
@@ -793,8 +793,8 @@ static int RegisterInstanceEvent(lua_State* L)
 {
     lua_settop(L, 3);
     uint16 functionRef = 0;
-    int map = luaL_checkinteger(L, 1);
-    int ev = luaL_checkinteger(L, 2);
+    int map = static_cast<int>(luaL_checkinteger(L, 1));
+    int ev = static_cast<int>(luaL_checkinteger(L, 2));
     const char* typeName = luaL_typename(L, 3);
 
     if (!map || !ev || typeName == nullptr)
@@ -823,8 +823,8 @@ static int RegisterQuestEvent(lua_State* L)
 {
     lua_settop(L, 3);
     uint16 functionRef = 0;
-    int entry = luaL_checkinteger(L, 1);
-    int ev = luaL_checkinteger(L, 2);
+    int entry = static_cast<int>(luaL_checkinteger(L, 1));
+    int ev = static_cast<int>(luaL_checkinteger(L, 2));
     const char* typeName = luaL_typename(L, 3);
 
     if (!entry || !ev || typeName == nullptr)
@@ -853,8 +853,8 @@ static int RegisterGameObjectEvent(lua_State* L)
 {
     lua_settop(L, 3);
     uint16 functionRef = 0;
-    int entry = luaL_checkinteger(L, 1);
-    int ev = luaL_checkinteger(L, 2);
+    int entry = static_cast<int>(luaL_checkinteger(L, 1));
+    int ev = static_cast<int>(luaL_checkinteger(L, 2));
     const char* typeName = luaL_typename(L, 3);
 
     if (!entry || !ev || typeName == nullptr)
@@ -883,8 +883,8 @@ static int RegisterUnitGossipEvent(lua_State* L)
 {
     lua_settop(L, 3);
     uint16 functionRef = 0;
-    int entry = luaL_checkinteger(L, 1);
-    int ev = luaL_checkinteger(L, 2);
+    int entry = static_cast<int>(luaL_checkinteger(L, 1));
+    int ev = static_cast<int>(luaL_checkinteger(L, 2));
     const char* typeName = luaL_typename(L, 3);
 
     if (!entry || !ev || typeName == nullptr)
@@ -912,8 +912,8 @@ static int RegisterItemGossipEvent(lua_State* L)
 {
     lua_settop(L, 3);
     uint16 functionRef = 0;
-    int entry = luaL_checkinteger(L, 1);
-    int ev = luaL_checkinteger(L, 2);
+    int entry = static_cast<int>(luaL_checkinteger(L, 1));
+    int ev = static_cast<int>(luaL_checkinteger(L, 2));
     const char* typeName = luaL_typename(L, 3);
 
     if (!entry || !ev || typeName == nullptr)
@@ -941,8 +941,8 @@ static int RegisterGOGossipEvent(lua_State* L)
 {
     lua_settop(L, 3);
     uint16 functionRef = 0;
-    int entry = luaL_checkinteger(L, 1);
-    int ev = luaL_checkinteger(L, 2);
+    int entry = static_cast<int>(luaL_checkinteger(L, 1));
+    int ev = static_cast<int>(luaL_checkinteger(L, 2));
     const char* typeName = luaL_typename(L, 3);
 
     if (!entry || !ev || typeName == nullptr)
@@ -974,7 +974,7 @@ static int SuspendLuaThread(lua_State* L)
     {
         return luaL_error(L, "LuaEngineMgr", "SuspendLuaThread expected Lua coroutine, got nullptr. \n");
     }
-    int waitime = luaL_checkinteger(L, 2);
+    int waitime = static_cast<int>(luaL_checkinteger(L, 2));
     if (waitime <= 0)
     {
         return luaL_error(L, "LuaEngineMgr", "SuspendLuaThread expected timer > 0 instead got (%d) \n", waitime);
@@ -998,8 +998,8 @@ static int SuspendLuaThread(lua_State* L)
 static int RegisterTimedEvent(lua_State* L)  //in this case, L == lu
 {
     const char* funcName = strdup(luaL_checkstring(L, 1));
-    int delay = luaL_checkinteger(L, 2);
-    int repeats = luaL_checkinteger(L, 3);
+    int delay = static_cast<int>(luaL_checkinteger(L, 2));
+    int repeats = static_cast<int>(luaL_checkinteger(L, 3));
     if (!delay || repeats < 0 || !funcName)
     {
         lua_pushnumber(L, LUA_REFNIL);

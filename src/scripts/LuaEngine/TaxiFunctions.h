@@ -43,11 +43,11 @@ namespace LuaTaxi
     int AddPathNode(lua_State* L, TaxiPath* tp)
     {
         if (!tp) return 0;
-        uint32 mapid = luaL_checkinteger(L, 1);
+        uint32 mapid = static_cast<uint32>(luaL_checkinteger(L, 1));
         float x = CHECK_FLOAT(L, 2);
         float y = CHECK_FLOAT(L, 3);
         float z = CHECK_FLOAT(L, 4);
-        uint32 index = luaL_optnumber(L, 5, tp->GetNodeCount());
+        uint32 index = static_cast<uint32>(luaL_optnumber(L, 5, static_cast<lua_Number>(tp->GetNodeCount())));
 
         TaxiPathNode* tpn = new TaxiPathNode();
         tpn->mapid = mapid;
