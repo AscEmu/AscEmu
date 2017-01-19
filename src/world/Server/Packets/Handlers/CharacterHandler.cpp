@@ -749,39 +749,39 @@ void WorldSession::LoadPlayerFromDBProc(QueryResultVector& results)
     uint64 playerGuid = fields[0].GetUInt64();
     uint8 _class = fields[1].GetUInt8();
 
-    Player* plr = NULL;
+    Player* plr = nullptr;
 
     switch(_class)
     {
         case WARRIOR:
-            plr = new Warrior(playerGuid);
+            plr = new Warrior(static_cast<uint32>(playerGuid));
             break;
         case PALADIN:
-            plr = new Paladin(playerGuid);
+            plr = new Paladin(static_cast<uint32>(playerGuid));
             break;
         case HUNTER:
-            plr = new Hunter(playerGuid);
+            plr = new Hunter(static_cast<uint32>(playerGuid));
             break;
         case ROGUE:
-            plr = new Rogue(playerGuid);
+            plr = new Rogue(static_cast<uint32>(playerGuid));
             break;
         case PRIEST:
-            plr = new Priest(playerGuid);
+            plr = new Priest(static_cast<uint32>(playerGuid));
             break;
         case DEATHKNIGHT:
-            plr = new DeathKnight(playerGuid);
+            plr = new DeathKnight(static_cast<uint32>(playerGuid));
             break;
         case SHAMAN:
-            plr = new Shaman(playerGuid);
+            plr = new Shaman(static_cast<uint32>(playerGuid));
             break;
         case MAGE:
-            plr = new Mage(playerGuid);
+            plr = new Mage(static_cast<uint32>(playerGuid));
             break;
         case WARLOCK:
-            plr = new Warlock(playerGuid);
+            plr = new Warlock(static_cast<uint32>(playerGuid));
             break;
         case DRUID:
-            plr = new Druid(playerGuid);
+            plr = new Druid(static_cast<uint32>(playerGuid));
             break;
     }
 
@@ -1125,7 +1125,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     recv_data >> race;
 
     uint8 _class = 0;
-    PlayerInfo* info = objmgr.GetPlayerInfo(guid);
+    PlayerInfo* info = objmgr.GetPlayerInfo(static_cast<uint32>(guid));
 
     if (info)
         _class = info->cl;

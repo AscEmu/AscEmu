@@ -22,81 +22,81 @@ bool ChatHandler::HandleCharClearCooldownsCommand(const char* /*args*/, WorldSes
     {
         case WARRIOR:
         {
-            player_target->ClearCooldownsOnLine(26, guid);
-            player_target->ClearCooldownsOnLine(256, guid);
-            player_target->ClearCooldownsOnLine(257, guid);
+            player_target->ClearCooldownsOnLine(26, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(256, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(257, static_cast<uint32>(guid));
             BlueSystemMessage(m_session, "Cleared all Warrior cooldowns.");
             break;
         }
         case PALADIN:
         {
-            player_target->ClearCooldownsOnLine(594, guid);
-            player_target->ClearCooldownsOnLine(267, guid);
-            player_target->ClearCooldownsOnLine(184, guid);
+            player_target->ClearCooldownsOnLine(594, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(267, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(184, static_cast<uint32>(guid));
             BlueSystemMessage(m_session, "Cleared all Paladin cooldowns.");
             break;
         }
         case HUNTER:
         {
-            player_target->ClearCooldownsOnLine(50, guid);
-            player_target->ClearCooldownsOnLine(51, guid);
-            player_target->ClearCooldownsOnLine(163, guid);
+            player_target->ClearCooldownsOnLine(50, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(51, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(163, static_cast<uint32>(guid));
             BlueSystemMessage(m_session, "Cleared all Hunter cooldowns.");
             break;
         }
         case ROGUE:
         {
-            player_target->ClearCooldownsOnLine(253, guid);
-            player_target->ClearCooldownsOnLine(38, guid);
-            player_target->ClearCooldownsOnLine(39, guid);
+            player_target->ClearCooldownsOnLine(253, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(38, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(39, static_cast<uint32>(guid));
             BlueSystemMessage(m_session, "Cleared all Rogue cooldowns.");
             break;
         }
         case PRIEST:
         {
-            player_target->ClearCooldownsOnLine(56, guid);
-            player_target->ClearCooldownsOnLine(78, guid);
-            player_target->ClearCooldownsOnLine(613, guid);
+            player_target->ClearCooldownsOnLine(56, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(78, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(613, static_cast<uint32>(guid));
             BlueSystemMessage(m_session, "Cleared all Priest cooldowns.");
             break;
         }
         case DEATHKNIGHT:
         {
-            player_target->ClearCooldownsOnLine(770, guid);
-            player_target->ClearCooldownsOnLine(771, guid);
-            player_target->ClearCooldownsOnLine(772, guid);
+            player_target->ClearCooldownsOnLine(770, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(771, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(772, static_cast<uint32>(guid));
             BlueSystemMessage(m_session, "Cleared all Death Knight cooldowns.");
             break;
         }
         case SHAMAN:
         {
-            player_target->ClearCooldownsOnLine(373, guid);
-            player_target->ClearCooldownsOnLine(374, guid);
-            player_target->ClearCooldownsOnLine(375, guid);
+            player_target->ClearCooldownsOnLine(373, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(374, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(375, static_cast<uint32>(guid));
             BlueSystemMessage(m_session, "Cleared all Shaman cooldowns.");
             break;
         }
         case MAGE:
         {
-            player_target->ClearCooldownsOnLine(6, guid);
-            player_target->ClearCooldownsOnLine(8, guid);
-            player_target->ClearCooldownsOnLine(237, guid);
+            player_target->ClearCooldownsOnLine(6, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(8, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(237, static_cast<uint32>(guid));
             BlueSystemMessage(m_session, "Cleared all Mage cooldowns.");
             break;
         }
         case WARLOCK:
         {
-            player_target->ClearCooldownsOnLine(355, guid);
-            player_target->ClearCooldownsOnLine(354, guid);
-            player_target->ClearCooldownsOnLine(593, guid);
+            player_target->ClearCooldownsOnLine(355, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(354, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(593, static_cast<uint32>(guid));
             BlueSystemMessage(m_session, "Cleared all Warlock cooldowns.");
             break;
         }
         case DRUID:
         {
-            player_target->ClearCooldownsOnLine(573, guid);
-            player_target->ClearCooldownsOnLine(574, guid);
-            player_target->ClearCooldownsOnLine(134, guid);
+            player_target->ClearCooldownsOnLine(573, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(574, static_cast<uint32>(guid));
+            player_target->ClearCooldownsOnLine(134, static_cast<uint32>(guid));
             BlueSystemMessage(m_session, "Cleared all Druid cooldowns.");
             break;
         }
@@ -1493,7 +1493,7 @@ bool ChatHandler::HandleCharSetPhaseCommand(const char* args, WorldSession* m_se
 //.character set speed
 bool ChatHandler::HandleCharSetSpeedCommand(const char* args, WorldSession* m_session)
 {
-    float speed = atof(args);
+    float speed = float(atof(args));
     if (speed == 0.0f || speed > 255.0f || speed < 0.1f)
     {
         RedSystemMessage(m_session, "Invalid speed set. Value range 0.1f ... 255.0f Use .character set speed <speed>");

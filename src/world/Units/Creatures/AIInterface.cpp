@@ -4431,7 +4431,7 @@ void AIInterface::MoveKnockback(float x, float y, float z, float horizontal, flo
     //lets say vertical being 7.5 would give us 100% of our speed towards target
     //anything higher gets a proportional loss of speed
     //this is for spells which knock you up high, but for a short distance
-    float speedmod = vertical / 7.5;
+    float speedmod = float(vertical / 7.5);
     m_runSpeed /= speedmod;
 
 

@@ -737,13 +737,13 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
 
                         if (bgPossible.size() > 0)
                         {
-                            uint32 num = RandomUInt(0, bgPossible.size() - 1);
+                            uint32 num = RandomUInt(0, static_cast<uint32>(bgPossible.size() - 1));
                             bgToStart = bgPossible[num];
                         }
                     }
                     else
                     {
-                        uint32 num = RandomUInt(0, avalibleInRandom.size() - 1);
+                        uint32 num = RandomUInt(0, static_cast<uint32>(avalibleInRandom.size() - 1));
                         bgToStart = avalibleInRandom[num];
                     }
                 }
@@ -1043,7 +1043,7 @@ CBattleground* CBattlegroundManager::CreateInstance(uint32 Type, uint32 LevelGro
     if (IS_ARENA(Type))
     {
         // arenas follow a different procedure.
-        uint32 arenaMapCount = arenaMaps.size();
+        uint32 arenaMapCount = static_cast<uint32>(arenaMaps.size());
         if (arenaMapCount == 0)
         {
             LOG_ERROR("BattlegroundManager", "There are no Arenas registered. Cannot create Arena.");

@@ -113,7 +113,7 @@ void BIH::subdivide(int left, int right, std::vector<uint32> &tempTree, buildDat
             if (1.3f * nodeNewW < nodeBoxW)
             {
                 stats.updateBVH2();
-                int nextIndex = tempTree.size();
+                int nextIndex = static_cast<int>(tempTree.size());
                 // allocate child
                 tempTree.push_back(0);
                 tempTree.push_back(0);
@@ -177,7 +177,7 @@ void BIH::subdivide(int left, int right, std::vector<uint32> &tempTree, buildDat
             {
                 // second time through - lets create the previous split
                 // since it produced empty space
-                int nextIndex = tempTree.size();
+                int nextIndex = static_cast<int>(tempTree.size());
                 // allocate child node
                 tempTree.push_back(0);
                 tempTree.push_back(0);
@@ -207,7 +207,7 @@ void BIH::subdivide(int left, int right, std::vector<uint32> &tempTree, buildDat
         }
     }
     // compute index of child nodes
-    int nextIndex = tempTree.size();
+    int nextIndex = static_cast<int>(tempTree.size());
     // allocate left node
     int nl = right - left + 1;
     int nr = rightOrig - (right + 1) + 1;
@@ -247,8 +247,8 @@ void BIH::subdivide(int left, int right, std::vector<uint32> &tempTree, buildDat
 
 bool BIH::writeToFile(FILE* wf) const
 {
-    uint32 treeSize = tree.size();
-    uint32 check=0, count;
+    size_t treeSize = tree.size();
+    size_t check=0, count;
     check += fwrite(&bounds.low(), sizeof(float), 3, wf);
     check += fwrite(&bounds.high(), sizeof(float), 3, wf);
     check += fwrite(&treeSize, sizeof(uint32), 1, wf);
@@ -256,14 +256,14 @@ bool BIH::writeToFile(FILE* wf) const
     count = objects.size();
     check += fwrite(&count, sizeof(uint32), 1, wf);
     check += fwrite(&objects[0], sizeof(uint32), count, wf);
-    return check == (3 + 3 + 2 + treeSize + count);
+    return (check == (3 + 3 + 2 + treeSize + count));
 }
 
 bool BIH::readFromFile(FILE* rf)
 {
     uint32 treeSize;
     G3D::Vector3 lo, hi;
-    uint32 check=0, count=0;
+    size_t check=0, count=0;
     check += fread(&lo, sizeof(float), 3, rf);
     check += fread(&hi, sizeof(float), 3, rf);
     bounds = G3D::AABox(lo, hi);
@@ -273,7 +273,7 @@ bool BIH::readFromFile(FILE* rf)
     check += fread(&count, sizeof(uint32), 1, rf);
     objects.resize(count); // = new uint32[nObjects];
     check += fread(&objects[0], sizeof(uint32), count, rf);
-    return uint64(check) == uint64(3 + 3 + 1 + 1 + uint64(treeSize) + uint64(count));
+    return (uint64(check) == uint64(3 + 3 + 1 + 1 + uint64(treeSize) + uint64(count)));
 }
 
 void BIH::BuildStats::updateLeaf(int depth, int n)

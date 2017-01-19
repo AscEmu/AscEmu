@@ -51,7 +51,7 @@ void CalendarMgr::LoadFromDB()
                 time_t date = fields[6].GetUInt32();
                 uint32 flags = fields[7].GetUInt32();
 
-                CalendarEvent* calendarEvent = new CalendarEvent(entry, creator, title, description, type, dungeon, time_t(date), flags);
+                CalendarEvent* calendarEvent = new CalendarEvent(static_cast<uint32>(entry), creator, title, description, type, dungeon, time_t(date), flags);
                 _events.insert(calendarEvent);
 
                 LOG_DEBUG("Title %s loaded", calendarEvent->title.c_str()); // remove me ;-)

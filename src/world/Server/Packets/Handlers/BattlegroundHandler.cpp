@@ -199,11 +199,11 @@ void WorldSession::HandleBattlegroundPlayerPositionsOpcode(WorldPacket& recv_dat
     uint32 count1 = 0;
     uint32 count2 = 0;
 
-    Player* ap = objmgr.GetPlayer(bg->GetFlagHolderGUID(TEAM_ALLIANCE));
+    Player* ap = objmgr.GetPlayer(static_cast<uint32>(bg->GetFlagHolderGUID(TEAM_ALLIANCE)));
     if (ap != NULL)
         count2++;
 
-    Player* hp = objmgr.GetPlayer(bg->GetFlagHolderGUID(TEAM_HORDE));
+    Player* hp = objmgr.GetPlayer(static_cast<uint32>(bg->GetFlagHolderGUID(TEAM_HORDE)));
 
     // If the two are the same, then it's from a Bg that only has 1 flag like EOTS
     if ((ap != NULL) &&
