@@ -20,6 +20,9 @@
  */
 
 #include "StdAfx.h"
+
+#include "WorldConf.h"
+
 #include <CrashHandler.h>
 
 

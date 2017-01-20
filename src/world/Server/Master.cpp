@@ -20,6 +20,8 @@
 
 #include "StdAfx.h"
 
+#include "WorldConf.h"
+
 createFileSingleton(Master);
 std::string LogFileName;
 bool bLogChat;

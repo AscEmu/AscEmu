@@ -19,10 +19,11 @@
  *
  */
 
-#ifndef __STDAFX_H
-#define __STDAFX_H
+#pragma once
 
+#ifdef UNDEFINED_SYMBOL
 #include "WorldConf.h"
+#endif
 
 #include "CommonDefines.hpp"  // shared
 
@@ -214,5 +215,3 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "Units/Players/PlayerClasses.hpp"
 
 #include "Map/MapManagementGlobals.hpp"
-
-#endif  // __STDAFX_H
