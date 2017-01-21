@@ -23,6 +23,8 @@
 #ifndef _EASYFUNC_H
 #define _EASYFUNC_H
 
+#include "Units/Creatures/AIInterface.h"
+
 // Uncomment if you want debug texts
 // #define ENABLE_DEBUG_TEXT
 

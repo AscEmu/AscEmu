@@ -23,6 +23,7 @@
 
 #include "StdAfx.h"
 #include "AuthCodes.h"
+#include "Management/AddonMgr.h"
 
 
 #pragma pack(push, 1)

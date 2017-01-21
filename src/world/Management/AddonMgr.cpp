@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "AddonMgr.h"
 
 initialiseSingleton(AddonMgr);
 

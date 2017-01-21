@@ -22,6 +22,7 @@
 #include "StdAfx.h"
 
 #include "WorldConf.h"
+#include "Management/GameEvent.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include <git_version.h>
 

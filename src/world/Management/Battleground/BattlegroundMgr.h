@@ -22,6 +22,9 @@
 #ifndef _BATTLEGROUNDMGR_H
 #define _BATTLEGROUNDMGR_H
 
+#include "WorldPacket.h"
+#include "Server/EventableObject.h"
+
 #define ANTI_CHEAT
 
 #define BG_SCORE_AB_BASES_ASSAULTED 0

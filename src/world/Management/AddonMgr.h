@@ -22,6 +22,7 @@
 #define _ADDONMGR_H
 
 #include "WorldPacket.h"
+#include "Server/WorldSession.h"
 
 struct AddonEntry
 {

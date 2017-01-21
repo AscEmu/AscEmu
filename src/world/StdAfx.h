@@ -111,13 +111,13 @@
 #include "VMapFactory.h"
 #include "VMapManager2.h"
 #include "VMapDefinitions.h"
-#endif
 
 #include "Management/GameEventMgr.h"
 #include "Management/GameEvent.h"
 #include "Management/AddonMgr.h"
 #include "Units/Creatures/AIEvents.h"
 #include "Units/Creatures/AIInterface.h"
+#endif
 #include "Server/Packets/Handlers/AreaTrigger.h"
 #include "Management/CalendarMgr.h"
 #include "Management/Battleground/BattlegroundMgr.h"

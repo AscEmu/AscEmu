@@ -22,6 +22,7 @@
 #include "StdAfx.h"
 #include "Management/QuestMgr.h"
 #include "Management/Quest.h"
+#include "Management/GameEvent.h"
 
 
 Creature::Creature(uint64 guid)

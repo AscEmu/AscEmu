@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "Management/GameEvent.h"
 #include <G3D/Quat.h>
 
 GameObject::GameObject(uint64 guid)

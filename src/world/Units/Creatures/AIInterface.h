@@ -23,6 +23,7 @@
 
 #include "Map/RecastIncludes.hpp"
 #include "Server/IUpdatable.h"
+#include "Units/Creatures/AIEvents.h"
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Movement/UnitMovementManager.hpp"
 

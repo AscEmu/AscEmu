@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatDefines.hpp"
 #include "Chat/CommandTableStorage.hpp"
 #include "Management/SkillNameMgr.h"
+#include "WorldPacket.h"
 
 class WorldSession;
 class Player;

@@ -27,6 +27,11 @@
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "SpellTarget.h"
 #include "SpellFailure.h"
+#include "Units/Creatures/AIInterface.h"
+#include "Units/Creatures/Creature.h"
+#include "Units/Players/Player.h"
+#include "Units/Unit.h"
+#include "Units/Creatures/Pet.h"
 
 class WorldSession;
 class Unit;
