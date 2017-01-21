@@ -20,7 +20,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "Management/Item.h"
 
 void WorldSession::HandleRepopRequestOpcode(WorldPacket& recv_data)
 {

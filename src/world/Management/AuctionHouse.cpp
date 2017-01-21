@@ -19,6 +19,9 @@
  */
 
 #include "StdAfx.h"
+#include "Management/AuctionHouse.h"
+#include "Management/AuctionMgr.h"
+#include "Management/Item.h"
 
 void Auction::DeleteFromDB()
 {

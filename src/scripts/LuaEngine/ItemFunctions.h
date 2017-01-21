@@ -22,7 +22,8 @@
 #define ITEMFUNCTIONS_H
 
 #include "StdAfx.h"
-#include "ItemFunctions.h"
+#include "Management/Item.h"
+#include "Management/Container.h"
 
 namespace luaItem
 {

@@ -21,6 +21,8 @@
 #ifndef _CONTAINER_H
 #define _CONTAINER_H
 
+#include "Management/Item.h"
+
 class SERVER_DECL Container : public Item
 {
     public:

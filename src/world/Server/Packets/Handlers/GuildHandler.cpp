@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "Management/Item.h"
 
 void WorldSession::HandleGuildQuery(WorldPacket& recv_data)
 {

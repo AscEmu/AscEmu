@@ -31,6 +31,7 @@
 #include <dirent.h>
 #endif
 #include <Management/QuestLogEntry.hpp>
+#include "Management/Item.h"
 
 ScriptMgr* m_scriptMgr = NULL;
 LuaEngine g_luaMgr;

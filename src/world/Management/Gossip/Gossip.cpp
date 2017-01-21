@@ -20,7 +20,7 @@
 
 #include "StdAfx.h"
 
-
+#include "Management/Item.h"
 using namespace Arcemu;
 
 Gossip::Item::Item(size_t itemid, uint8 icon)

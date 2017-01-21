@@ -25,6 +25,9 @@
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 #include "Objects/DynamicObject.h"
+#include "Server/Packets/Handlers/HonorHandler.h"
+#include "Management/Item.h"
+#include "Management/Container.h"
 
 pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
 {

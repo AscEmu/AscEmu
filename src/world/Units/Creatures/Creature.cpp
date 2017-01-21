@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Objects/DynamicObject.h"
+#include "Management/AuctionMgr.h"
 #include "Management/QuestMgr.h"
 #include "Management/Quest.h"
 #include "Management/GameEvent.h"

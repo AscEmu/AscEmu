@@ -26,6 +26,7 @@
 #include "CellHandler.h"
 #include "CThreads.h"
 #include "Management/WorldStatesHandler.h"
+#include "Management/Item.h"
 #include "CrashHandler.h"
 #include "Units/Summons/Summon.h"
 #include "Units/Summons/GuardianSummon.h"

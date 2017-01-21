@@ -24,6 +24,7 @@
 #include "Units/Creatures/Vehicle.h"
 #include "Server/EventableObject.h"
 #include "Objects/DynamicObject.h"
+#include "Management/Item.h"
 
 
 static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =

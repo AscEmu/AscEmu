@@ -19,6 +19,8 @@
  */
 
 #include "StdAfx.h"
+#include "Management/AuctionHouse.h"
+#include "Management/AuctionMgr.h"
 
 initialiseSingleton(AuctionMgr);
 

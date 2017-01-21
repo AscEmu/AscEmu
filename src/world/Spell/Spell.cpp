@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "VMapFactory.h"
+#include "Management/Item.h"
 #include "Objects/DynamicObject.h"
 
 #define SPELL_CHANNEL_UPDATE_INTERVAL 1000

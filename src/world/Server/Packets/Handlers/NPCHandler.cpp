@@ -20,7 +20,9 @@
  */
 
 #include "StdAfx.h"
-
+#include "Management/Item.h"
+#include "Management/AuctionHouse.h"
+#include "Management/AuctionMgr.h"
 
 trainertype trainer_types[TRAINER_TYPE_MAX] =
 {

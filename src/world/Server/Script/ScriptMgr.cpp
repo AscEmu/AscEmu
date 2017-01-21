@@ -24,6 +24,7 @@
 #include "WorldConf.h"
 #include "Management/GameEvent.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Management/Item.h"
 #include <git_version.h>
 
 #include <fstream>

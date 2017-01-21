@@ -19,9 +19,9 @@
 *
 */
 
-#include "Storage/DBC/DBCStores.h"
 #include "StdAfx.h"
-
+#include "Storage/DBC/DBCStores.h"
+#include "Management/Item.h"
 
 initialiseSingleton(LootMgr);
 

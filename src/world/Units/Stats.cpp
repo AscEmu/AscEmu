@@ -20,7 +20,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "Management/Item.h"
 
 uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
 {

@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "Management/Container.h"
 
 Container::Container(uint32 high, uint32 low) : Item()
 {

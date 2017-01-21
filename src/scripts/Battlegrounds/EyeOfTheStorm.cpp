@@ -21,7 +21,7 @@
 
 #include "StdAfx.h"
 #include "EyeOfTheStorm.h"
-
+#include "Server/Packets/Handlers/HonorHandler.h"
 
 static float EOTSBuffCoordinates[4][4] =
 {

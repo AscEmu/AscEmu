@@ -21,6 +21,9 @@
 
 #include "StdAfx.h"
 
+#include "Management/Item.h"
+#include "Management/Container.h"
+
 Item::Item()
 {
     m_itemProperties = nullptr;

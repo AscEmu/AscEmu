@@ -18,6 +18,8 @@
 
 #include "StdAfx.h"
 
+#include "Management/Item.h"
+
 uint32 LfgDungeonTypes[MAX_DUNGEONS];
 
 initialiseSingleton(LfgMgr);

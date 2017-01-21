@@ -27,6 +27,8 @@
 #include "Units/Creatures/Vehicle.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
+#include "Management/Item.h"
+#include "Management/Container.h"
 
 class LuaUnit
 {

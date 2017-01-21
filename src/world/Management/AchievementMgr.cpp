@@ -19,6 +19,7 @@
  */
 
 #include "StdAfx.h"
+#include "Management/Item.h"
 
 #ifdef ENABLE_ACHIEVEMENTS
 

@@ -20,7 +20,7 @@
 
 #include "StdAfx.h"
 #include "WarsongGulch.h"
-
+#include "Server/Packets/Handlers/HonorHandler.h"
 
 WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBattleground(mgr, id, lgroup, t)
 {

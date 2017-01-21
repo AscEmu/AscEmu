@@ -141,6 +141,7 @@
 #include "Management/CRitual.h"
 #endif
 #include "Management/Group.h"
+#ifdef UNDEFINED_SYMBOL
 #include "Management/Guild.h"
 #include "Server/Packets/Handlers/HonorHandler.h"
 #include "Management/ItemPrototype.h"
@@ -148,6 +149,7 @@
 #include "Management/Container.h"
 #include "Management/AuctionHouse.h"
 #include "Management/AuctionMgr.h"
+#endif
 #include "Management/LFG/LFG.h"
 #include "Management/LFG/LFGMgr.h"
 #include "Management/LFG/LFGGroupData.h"

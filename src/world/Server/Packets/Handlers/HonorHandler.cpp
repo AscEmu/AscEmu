@@ -21,6 +21,9 @@
 
 #include "StdAfx.h"
 
+#include "Server/Packets/Handlers/HonorHandler.h"
+#include "Management/Item.h"
+
 void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN

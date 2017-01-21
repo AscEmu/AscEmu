@@ -20,7 +20,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "Management/Item.h"
 
 class TwinBladesOfAzzinothSpellProc : public SpellProc
 {

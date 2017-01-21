@@ -23,7 +23,9 @@
 
 #include "WorldConf.h"
 #include "Management/AddonMgr.h"
+#include "Management/AuctionMgr.h"
 #include "Management/CalendarMgr.h"
+#include "Management/Item.h"
 #include "Management/WordFilter.h"
 
 #include <CrashHandler.h>

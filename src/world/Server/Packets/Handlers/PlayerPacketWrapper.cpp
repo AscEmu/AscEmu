@@ -18,6 +18,7 @@
  */
 
 #include "StdAfx.h"
+#include "Management/Item.h"
 
 void Player::SendTalentResetConfirm()
 {
