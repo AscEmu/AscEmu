@@ -117,7 +117,6 @@
 #include "Management/AddonMgr.h"
 #include "Units/Creatures/AIEvents.h"
 #include "Units/Creatures/AIInterface.h"
-#endif
 #include "Server/Packets/Handlers/AreaTrigger.h"
 #include "Management/CalendarMgr.h"
 #include "Management/Battleground/BattlegroundMgr.h"
@@ -129,6 +128,7 @@
 #include "Units/Creatures/Corpse.h"
 #include "Management/Quest.h"
 #include "Management/QuestMgr.h"
+#endif
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 #include "Units/Summons/CompanionSummon.h"

@@ -8,7 +8,11 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Chat/ChatDefines.hpp"
 #include "Chat/CommandTableStorage.hpp"
+#include "Management/ItemPrototype.h"
 #include "Management/SkillNameMgr.h"
+#include "Units/Creatures/Creature.h"
+#include "Units/Players/Player.h"
+#include "Units/Unit.h"
 #include "WorldPacket.h"
 
 class WorldSession;

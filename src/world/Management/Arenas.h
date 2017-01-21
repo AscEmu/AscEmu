@@ -21,6 +21,8 @@
 #ifndef _ARENAS_H
 #define _ARENAS_H
 
+#include "Management/Battleground/Battleground.h"
+
 class ArenaTeam;
 
 class SERVER_DECL Arena : public CBattleground

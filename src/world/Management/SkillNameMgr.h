@@ -21,6 +21,8 @@
 #define _SKILLNAMEMGR_H
 
 #include "StdAfx.h"
+#include "Storage/DBC/DBCStores.h"
+
 
 enum SpellTreeName
 {

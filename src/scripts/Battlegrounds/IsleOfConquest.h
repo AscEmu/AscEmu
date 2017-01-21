@@ -20,6 +20,7 @@
 #ifndef _ISLE_OF_CONQUEST_H
 #define _ISLE_OF_CONQUEST_H
 
+#include "Management/Battleground/Battleground.h"
 #include "Units/Creatures/Vehicle.h"
 
 #define IOC_NUM_CONTROL_POINTS          7

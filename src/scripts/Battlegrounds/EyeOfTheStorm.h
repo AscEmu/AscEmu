@@ -21,6 +21,8 @@
 #ifndef _EYE_OF_THE_STORM_H
 #define _EYE_OF_THE_STORM_H
 
+#include "Management/Battleground/Battleground.h"
+
 //===================================================
 #define EOTS_GO_BE_TOWER            184080    // 184080 - Blood Elf Tower Cap Pt
 #define EOTS_GO_FELREAVER           184081    // 184081 - Fel Reaver Cap Pt

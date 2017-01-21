@@ -17,6 +17,7 @@
  */
 
 #include "StdAfx.h"
+#include "CalendarMgr.h"
 
 initialiseSingleton(CalendarMgr);
 

@@ -23,6 +23,7 @@
 
 #include "WorldConf.h"
 #include "Management/AddonMgr.h"
+#include "Management/CalendarMgr.h"
 #include "Management/WordFilter.h"
 
 #include <CrashHandler.h>

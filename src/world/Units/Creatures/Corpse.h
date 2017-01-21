@@ -21,6 +21,9 @@
 #ifndef _WOWSERVER_CORPSE_H
 #define _WOWSERVER_CORPSE_H
 
+#include "Objects/Object.h"
+#include "Management/LootMgr.h"
+
 enum CORPSE_STATE
 {
     CORPSE_STATE_BODY   = 0,

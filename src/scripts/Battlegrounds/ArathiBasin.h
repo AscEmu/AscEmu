@@ -21,6 +21,8 @@
 #ifndef _ARATHI_BASIN_H
 #define _ARATHI_BASIN_H
 
+#include "Management/Battleground/Battleground.h"
+
 #define AB_BUFF_RESPAWN_TIME 90000
 
 enum ABBuffs
