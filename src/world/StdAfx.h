@@ -37,11 +37,11 @@
 #include "Common.hpp"
 #include "MersenneTwister.h"
 #include "WorldPacket.h"
-#endif
 #include "Log.hpp"
 #include "ByteBuffer.h"
 #include "StackBuffer.h"
 #include "Config/Config.h"
+#endif
 #include "crc32.h"
 #include "LocationVector.h"
 #include "Database/DatabaseEnv.h" 
