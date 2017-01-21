@@ -28,6 +28,7 @@
 #include "CrashHandler.h"
 #include "Units/Summons/Summon.h"
 #include "Units/Unit.h"
+#include "VMapFactory.h"
 #include "MMapFactory.h"
 
 

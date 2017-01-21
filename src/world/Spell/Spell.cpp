@@ -20,7 +20,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "VMapFactory.h"
 
 #define SPELL_CHANNEL_UPDATE_INTERVAL 1000
 

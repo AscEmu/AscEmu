@@ -24,6 +24,7 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Server/EventableObject.h"
 #include "Server/IUpdatable.h"
+#include "VMapFactory.h"
 #include "MMapFactory.h"
 #include "TLSObject.h"
 

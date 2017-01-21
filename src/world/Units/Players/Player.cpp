@@ -24,6 +24,7 @@
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Server/Packets/Opcodes.h"
 #include "AuthCodes.h"
+#include "VMapFactory.h"
 
 
 UpdateMask Player::m_visibleUpdateMask;

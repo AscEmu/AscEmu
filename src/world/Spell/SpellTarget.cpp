@@ -18,7 +18,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "VMapFactory.h"
 
 uint32 g_spellImplicitTargetFlags[MAX_IMPLICIT_TARGET_VALUE];
 

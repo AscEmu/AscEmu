@@ -98,7 +98,6 @@
 #include "Units/Unit.h"
 #include "Management/Gossip/Gossip.h"
 #include "Management/Gossip/GossipMenu.hpp"
-#endif
 
 #ifdef ENABLE_ACHIEVEMENTS
 #include "Management/AchievementMgr.h"
@@ -112,7 +111,7 @@
 #include "VMapFactory.h"
 #include "VMapManager2.h"
 #include "VMapDefinitions.h"
-
+#endif
 
 #include "Management/GameEventMgr.h"
 #include "Management/GameEvent.h"

@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "VMapFactory.h"
 
 bool ChatHandler::HandleDebugDumpMovementCommand(const char* args, WorldSession* session)
 {
