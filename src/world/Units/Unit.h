@@ -32,6 +32,7 @@ class DynamicObject;
 class Object;
 
 #include "Units/Summons/SummonHandler.h"
+#include "Movement/UnitMovementManager.hpp"
 
 class Vehicle;
 

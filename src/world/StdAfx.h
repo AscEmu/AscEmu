@@ -61,15 +61,13 @@
 #ifdef WIN32
     #include "printStackTrace.h"
 #endif
-#endif
 //////////////////////////////////////////////////////////////////////////////////////////
-
 
 #include "Storage/DBC/DBCStores.h"
 
-
 //Movement
 #include "Movement/UnitMovementManager.hpp"
+#endif
 #include "Movement/Spline/MovementSpline.hpp"
 #include "Movement/Spline/MovementSplineDefines.hpp"
 #include "Movement/Spline/SplineFlags.hpp"
