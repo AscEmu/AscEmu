@@ -22,6 +22,7 @@
 #include "StdAfx.h"
 #include "Creature.h"
 #include "Units/Unit.h"
+#include "Objects/DynamicObject.h"
 
 #define WATER_ELEMENTAL         510
 #define WATER_ELEMENTAL_NEW     37994

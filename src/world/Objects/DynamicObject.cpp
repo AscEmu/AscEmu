@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "Objects/DynamicObject.h"
 
 DynamicObject::DynamicObject(uint32 high, uint32 low)
 {

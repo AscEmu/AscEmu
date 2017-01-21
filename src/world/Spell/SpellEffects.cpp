@@ -24,6 +24,7 @@
 #include "MMapFactory.h"
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
+#include "Objects/DynamicObject.h"
 
 pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
 {

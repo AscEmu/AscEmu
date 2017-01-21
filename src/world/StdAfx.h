@@ -135,11 +135,11 @@
 #include "Units/Summons/PossessedSummon.h"
 #include "Units/Summons/TotemSummon.h"
 #include "Units/Summons/WildSummon.h"
-#endif
 #include "Objects/DynamicObject.h"
 #include "Objects/GameObject.h"
 #include "Objects/CObjectFactory.h"
 #include "Management/CRitual.h"
+#endif
 #include "Management/Group.h"
 #include "Management/Guild.h"
 #include "Server/Packets/Handlers/HonorHandler.h"

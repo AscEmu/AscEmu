@@ -23,6 +23,7 @@
 #define __TRANSPORTERHANDLER_H
 
 #include "Management/TransportSpawn.hpp"
+#include "Objects/GameObject.h"
 
 class TransportPath
 {

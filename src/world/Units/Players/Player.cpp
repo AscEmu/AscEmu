@@ -23,6 +23,7 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Server/Packets/Opcodes.h"
+#include "Objects/DynamicObject.h"
 #include "AuthCodes.h"
 #include "VMapFactory.h"
 

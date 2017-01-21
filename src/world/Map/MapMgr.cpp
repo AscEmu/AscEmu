@@ -22,6 +22,7 @@
 #include "StdAfx.h"
 
 #include "TLSObject.h"
+#include "Objects/DynamicObject.h"
 #include "CellHandler.h"
 #include "CThreads.h"
 #include "Management/WorldStatesHandler.h"

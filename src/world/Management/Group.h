@@ -20,6 +20,8 @@
 #ifndef _GROUP_H
 #define _GROUP_H
 
+#include "Units/Players/Player.h"
+
 enum PartyErrors
 {
     ERR_PARTY_NO_ERROR              = 0,
