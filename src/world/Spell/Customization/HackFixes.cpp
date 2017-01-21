@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "crc32.h"
 
 void CreateDummySpell(uint32 id)
 {

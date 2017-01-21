@@ -25,6 +25,8 @@
 #include "FastQueue.h"
 #include "Auth/WowCrypt.h"
 #include "WorldPacket.h"
+#include "Network/Network.h"
+
 #include <string>
 
 #define WORLDSOCKET_SENDBUF_SIZE 131078

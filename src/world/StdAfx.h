@@ -41,11 +41,11 @@
 #include "ByteBuffer.h"
 #include "StackBuffer.h"
 #include "Config/Config.h"
-#endif
 #include "crc32.h"
 #include "LocationVector.h"
-#include "Database/DatabaseEnv.h" 
+#include "Database/DatabaseEnv.h"
 #include "Network/Network.h"
+#endif
 #include "Auth/MD5.h"
 #include "Auth/BigNumber.h"
 #include "Auth/Sha1.h"
@@ -60,14 +60,6 @@
 #ifdef WIN32
     #include "printStackTrace.h"
 #endif
-
-extern SERVER_DECL SessionLogWriter* Anticheat_Log;
-extern SERVER_DECL SessionLogWriter* GMCommand_Log;
-extern SERVER_DECL SessionLogWriter* Player_Log;
-
-#define sCheatLog (*Anticheat_Log)
-#define sGMLog (*GMCommand_Log)
-#define sPlrLog (*Player_Log)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 

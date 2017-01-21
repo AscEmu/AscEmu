@@ -29,4 +29,15 @@ SERVER_DECL extern Database* Database_World;
 #define WorldDatabase (*Database_World)
 #define CharacterDatabase (*Database_Character)
 
+
+class SessionLogWriter;
+
+extern SERVER_DECL SessionLogWriter* Anticheat_Log;
+extern SERVER_DECL SessionLogWriter* GMCommand_Log;
+extern SERVER_DECL SessionLogWriter* Player_Log;
+
+#define sCheatLog (*Anticheat_Log)
+#define sGMLog (*GMCommand_Log)
+#define sPlrLog (*Player_Log)
+
 #endif // _MAINSERVER_DEFINES_H
