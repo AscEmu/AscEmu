@@ -22,6 +22,8 @@
 #include "MMapManager.h"
 #include "MMapFactory.h"
 
+#include "Server/Packets/Movement/CreatureMovement.hpp"
+
 #ifndef UNIX
 #include <cmath>
 #endif

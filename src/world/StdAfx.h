@@ -73,9 +73,11 @@
 #include "Movement/Spline/SplineFlags.hpp"
 #include "Movement/MovementCommon.hpp"
 
+#ifdef UNDEFINED_SYMBOL
 #include "Server/Packets/ManagedPacket.hpp"
 #include "Server/Packets/Movement/CreatureMovement.hpp"
 #include "Server/Packets/Movement/SmsgMonsterMove.hpp"
+#endif
 
 #include "Server/IUpdatable.h"
 #include "Server/WUtil.h"

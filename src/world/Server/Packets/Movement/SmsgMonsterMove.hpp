@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 #include "Server/Packets/Opcodes.h"
 #include "Movement/UnitMovementManager.hpp"
+#include "Server/Packets/ManagedPacket.hpp"
 
 namespace Packets
 {
