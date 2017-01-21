@@ -27,6 +27,7 @@
 #include "VMapFactory.h"
 #include "MMapFactory.h"
 #include "TLSObject.h"
+#include "Spell/SpellNameHashes.h"
 
 Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
 {

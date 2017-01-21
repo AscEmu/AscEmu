@@ -18,6 +18,7 @@
  */
 
 #include "Setup.h"
+#include "Spell/SpellNameHashes.h"
 
 bool Penance(uint32 i, Spell* pSpell)
 {

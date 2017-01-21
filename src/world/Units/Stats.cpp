@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Management/Item.h"
+#include "Spell/SpellNameHashes.h"
 
 uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
 {

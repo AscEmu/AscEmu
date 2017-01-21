@@ -22,6 +22,7 @@
 #define _SPELLAURAS_H
 
 #include "SpellMgr.h"
+#include "Spell/Spell.h"
 
 /// 4-bit flag
 enum AURA_FLAGS

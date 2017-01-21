@@ -19,7 +19,9 @@
  */
 
 #include "Setup.h"
-#include <Management/QuestLogEntry.hpp>
+#include "Management/QuestLogEntry.hpp"
+#include "Spell/SpellNameHashes.h"
+#include "Management/Skill.h"
 
 bool FrostWarding(uint32 i, Spell* s)
 {

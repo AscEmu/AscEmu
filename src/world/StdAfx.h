@@ -169,13 +169,17 @@
 #include "Map/MapMgr.h"
 #endif
 #include "Map/MapScriptInterface.h"
+#ifdef UNDEFINED_SYMBOL
 #include "Units/Players/Player.h"
+#endif
 #include "Objects/Faction.h"
+#ifdef UNDEFINED_SYMBOL
 #include "Management/Skill.h"
 #include "Management/SkillNameMgr.h"
 #include "Spell/SpellNameHashes.h"
 #include "Spell/Spell.h"
 #include "Spell/SpellMgr.h"
+#endif
 #include "Spell/SpellAuras.h"
 #include "Management/TaxiMgr.h"
 #include "Management/TransporterHandler.h"

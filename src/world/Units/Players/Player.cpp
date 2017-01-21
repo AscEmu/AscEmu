@@ -30,6 +30,7 @@
 #include "VMapFactory.h"
 #include "Server/Packets/Handlers/HonorHandler.h"
 #include "Storage/WorldStrings.h"
+#include "Spell/SpellNameHashes.h"
 
 UpdateMask Player::m_visibleUpdateMask;
 

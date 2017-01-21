@@ -28,6 +28,7 @@
 #include "Server/Packets/Handlers/HonorHandler.h"
 #include "Management/Item.h"
 #include "Management/Container.h"
+#include "Spell/SpellNameHashes.h"
 
 pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
 {

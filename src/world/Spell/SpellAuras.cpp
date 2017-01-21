@@ -23,6 +23,7 @@
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 #include "Management/Item.h"
+#include "Spell/SpellNameHashes.h"
 
 pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
 {

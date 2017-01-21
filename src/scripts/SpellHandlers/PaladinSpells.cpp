@@ -18,6 +18,7 @@
  */
 
 #include "Setup.h"
+#include "Spell/SpellNameHashes.h"
 
 bool EyeForAnEye(uint32 i, Aura* pAura, bool apply)
 {

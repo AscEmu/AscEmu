@@ -18,6 +18,7 @@
  */
 
 #include "Setup.h"
+#include "Spell/SpellNameHashes.h"
 
 #define BLOOD_PLAGUE 55078
 #define FROST_FEVER 55095
