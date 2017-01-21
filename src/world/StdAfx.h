@@ -21,21 +21,22 @@
 
 #pragma once
 
-#ifdef UNDEFINED_SYMBOL
-#include "WorldConf.h"
-
-#include "CommonDefines.hpp"  // shared
-#endif
-
-#include "Server/Definitions.h"
-
 #include <vector>
 #include <fstream>
 #include <array>
 
-#include "Map/RecastIncludes.hpp"
+#ifdef UNDEFINED_SYMBOL
+#include "WorldConf.h"
 
-// Shared headers
+#include "CommonDefines.hpp"  // shared
+
+#include "Server/Definitions.h"
+
+#include "Map/RecastIncludes.hpp"
+#endif
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Shared headers/defines
 #include "Common.hpp"
 #include "MersenneTwister.h"
 #include "WorldPacket.h"
@@ -45,6 +46,22 @@
 #include "Config/Config.h"
 #include "crc32.h"
 #include "LocationVector.h"
+#include "Database/DatabaseEnv.h" 
+#include "Network/Network.h"
+#include "Auth/MD5.h"
+#include "Auth/BigNumber.h"
+#include "Auth/Sha1.h"
+#include "Auth/WowCrypt.h"
+#include "FastQueue.h"
+#include "CircularQueue.h"
+#include "Threading/RWLock.h"
+#include "TLSObject.h"
+#include "AuthCodes.h"
+#include "CallBack.h"
+
+#ifdef WIN32
+    #include "printStackTrace.h"
+#endif
 
 extern SERVER_DECL SessionLogWriter* Anticheat_Log;
 extern SERVER_DECL SessionLogWriter* GMCommand_Log;
@@ -54,26 +71,11 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #define sGMLog (*GMCommand_Log)
 #define sPlrLog (*Player_Log)
 
-//#include <zlib.h>
+//////////////////////////////////////////////////////////////////////////////////////////
 
-#include "Database/DatabaseEnv.h"   // shared
+
 #include "Storage/DBC/DBCStores.h"
 
-#include "Network/Network.h"    // shared
-
-// Shared headers
-#include "Auth/MD5.h"
-#include "Auth/BigNumber.h"
-#include "Auth/Sha1.h"
-#include "Auth/WowCrypt.h"
-#include "FastQueue.h"
-#include "CircularQueue.h"
-#include "Threading/RWLock.h"
-#include "TLSObject.h"
-
-#ifdef WIN32
-#include "printStackTrace.h"
-#endif
 
 //Movement
 #include "Movement/UnitMovementManager.hpp"
@@ -91,8 +93,7 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #include "Server/UpdateFields.h"
 #include "Server/UpdateMask.h"
 #include "Server/Packets/Opcodes.h"
-#include "AuthCodes.h"
-#include "CallBack.h"   // shared
+
 #include "Management/WordFilter.h"
 #include "Server/EventMgr.h"
 #include "Server/EventableObject.h"
