@@ -20,6 +20,8 @@
  */
 
 #include "StdAfx.h"
+#include "Units/Creatures/Creature.h"
+#include "Units/Summons/Summon.h"
 
 pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
 {

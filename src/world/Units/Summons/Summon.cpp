@@ -19,6 +19,8 @@
  */
 
 #include "../../StdAfx.h"
+#include "Units/Creatures/Creature.h"
+#include "Units/Summons/Summon.h"
 
 Summon::Summon(uint64 GUID) : Creature(GUID)
 {

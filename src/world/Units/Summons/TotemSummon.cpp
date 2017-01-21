@@ -19,7 +19,7 @@
  */
 
 #include "../../StdAfx.h"
-
+#include "Units/Summons/TotemSummon.h"
 
 TotemSummon::TotemSummon(uint64 GUID) : Summon(GUID)
 {}

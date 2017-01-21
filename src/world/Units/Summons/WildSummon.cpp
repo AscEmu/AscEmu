@@ -19,7 +19,7 @@
  */
 
 #include "../../StdAfx.h"
-
+#include "Units/Summons/WildSummon.h"
 
 WildSummon::WildSummon(uint64 GUID) : Summon(GUID)
 {}

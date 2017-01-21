@@ -128,7 +128,6 @@
 #include "Units/Creatures/Corpse.h"
 #include "Management/Quest.h"
 #include "Management/QuestMgr.h"
-#endif
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 #include "Units/Summons/CompanionSummon.h"
@@ -136,6 +135,7 @@
 #include "Units/Summons/PossessedSummon.h"
 #include "Units/Summons/TotemSummon.h"
 #include "Units/Summons/WildSummon.h"
+#endif
 #include "Objects/DynamicObject.h"
 #include "Objects/GameObject.h"
 #include "Objects/CObjectFactory.h"

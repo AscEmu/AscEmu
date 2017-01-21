@@ -18,6 +18,7 @@
  */
 
 #include "Setup.h"
+#include "Units/Summons/Summon.h"
 
 class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 {

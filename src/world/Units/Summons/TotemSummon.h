@@ -21,6 +21,9 @@
 #ifndef TOTEMSUMMON_HPP_
 #define TOTEMSUMMON_HPP_
 
+#include "Units/Creatures/Creature.h"
+#include "Units/Summons/Summon.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Class that implements Totems. Totems are stationary, and don't attack with melee,
 /// however they can cast spells

@@ -21,6 +21,9 @@
 #ifndef _WOWSERVER_DYNAMICOBJECT_H
 #define _WOWSERVER_DYNAMICOBJECT_H
 
+#include "Object.h"
+#include "Units/Unit.h"
+
 class SpellInfo;
 
 enum DynamicObjectType

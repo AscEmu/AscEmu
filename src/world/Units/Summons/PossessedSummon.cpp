@@ -19,7 +19,7 @@
  */
 
 #include "../../StdAfx.h"
-
+#include "Units/Summons/PossessedSummon.h"
 
 PossessedSummon::PossessedSummon(uint64 GUID) : Summon(GUID)
 {}

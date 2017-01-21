@@ -19,6 +19,7 @@
  */
 
 #include "../../StdAfx.h"
+#include "Units/Summons/GuardianSummon.h"
 
 GuardianSummon::GuardianSummon(uint64 GUID) : Summon(GUID)
 {}

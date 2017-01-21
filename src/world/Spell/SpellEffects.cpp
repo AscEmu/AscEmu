@@ -22,6 +22,8 @@
 #include "StdAfx.h"
 #include "Management/QuestLogEntry.hpp"
 #include "MMapFactory.h"
+#include "Units/Creatures/Creature.h"
+#include "Units/Summons/Summon.h"
 
 pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
 {

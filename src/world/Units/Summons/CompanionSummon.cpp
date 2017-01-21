@@ -20,6 +20,7 @@
 
 
 #include "../../StdAfx.h"
+#include "Units/Summons/CompanionSummon.h"
 
 CompanionSummon::CompanionSummon(uint64 GUID) : Summon(GUID)
 { }

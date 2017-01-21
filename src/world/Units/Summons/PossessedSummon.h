@@ -21,6 +21,8 @@
 #ifndef _POSSESSEDSUMMON_H
 #define _POSSESSEDSUMMON_H
 
+#include "Units/Summons/Summon.h"
+#include "Units/Creatures/CreatureDefines.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Class that implements summons that are possessed by the player after spawning.

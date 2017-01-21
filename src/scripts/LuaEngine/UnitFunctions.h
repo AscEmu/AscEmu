@@ -25,6 +25,8 @@
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Units/Summons/SummonHandler.h"
 #include "Units/Creatures/Vehicle.h"
+#include "Units/Creatures/Creature.h"
+#include "Units/Summons/Summon.h"
 
 class LuaUnit
 {

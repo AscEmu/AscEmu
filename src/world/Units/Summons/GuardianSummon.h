@@ -21,6 +21,9 @@
 #ifndef _GUARDIANSUMMON_H
 #define _GUARDIANSUMMON_H
 
+#include "Units/Summons/Summon.h"
+#include "Units/Creatures/CreatureDefines.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Class that implements guardians
 /// Guardians are summons that follow and protect their owner

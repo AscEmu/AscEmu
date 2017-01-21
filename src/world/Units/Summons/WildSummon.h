@@ -21,6 +21,9 @@
 #ifndef WILDSUMMON_HPP_
 #define WILDSUMMON_HPP_
 
+#include "Units/Creatures/Creature.h"
+#include "Units/Summons/Summon.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Class that implement wild summons. Wild summonned creatures don't follow or
 /// protect their owner, however they can be hostile, and attack (not the owner)

@@ -21,6 +21,9 @@
 #ifndef _COMPANIONSUMMON_H
 #define _COMPANIONSUMMON_H
 
+#include "Units/Summons/Summon.h"
+#include "Units/Creatures/CreatureDefines.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 /// \note   Class implementing companions/vanity pets/critterpets
 ///         These are totally passive and inattackable, they only serve iCandy purposes
