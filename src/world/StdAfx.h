@@ -21,22 +21,20 @@
 
 #pragma once
 
+#ifdef UNDEFINED_SYMBOL
 #include <vector>
 #include <fstream>
 #include <array>
 
-#ifdef UNDEFINED_SYMBOL
 #include "WorldConf.h"
-
-#include "CommonDefines.hpp"  // shared
-
 #include "Server/Definitions.h"
-
 #include "Map/RecastIncludes.hpp"
-#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Shared headers/defines
+
+#include "CommonDefines.hpp"    // QuestLogEntry.h, Object.h
+#endif
 #include "Common.hpp"
 #include "MersenneTwister.h"
 #include "WorldPacket.h"

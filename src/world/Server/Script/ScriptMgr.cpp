@@ -24,6 +24,8 @@
 #include "WorldConf.h"
 
 #include <git_version.h>
+
+#include <fstream>
 #include <mutex>
 
 
