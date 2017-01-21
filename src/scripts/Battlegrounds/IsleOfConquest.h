@@ -20,6 +20,7 @@
 #ifndef _ISLE_OF_CONQUEST_H
 #define _ISLE_OF_CONQUEST_H
 
+#include "Units/Creatures/Vehicle.h"
 
 #define IOC_NUM_CONTROL_POINTS          7
 #define IOC_NUM_TELEPORTERS             12

@@ -22,6 +22,8 @@
 #define _PET_H
 
 #include "Creature.h"
+#include "Spell/SpellInfo.hpp"
+#include "Spell/Customization/SpellCustomizations.hpp"
 
 #define PET_SPELL_SPAM_COOLDOWN 2000        /// applied only to spells that have no cooldown
 

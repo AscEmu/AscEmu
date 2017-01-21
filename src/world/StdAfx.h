@@ -89,13 +89,13 @@
 #include "Server/EventableObject.h"
 #include "Objects/Object.h"
 #include "Management/LootMgr.h"
-#endif
 #include "Spell/SpellInfo.hpp"
 #include "Spell/SpellDefines.hpp"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Spell/SpellProc.h"
 #include "Units/Summons/SummonHandler.h"
 #include "Units/Creatures/Vehicle.h"
+#endif
 #include "Units/Unit.h"
 #include "Management/Gossip/Gossip.h"
 #include "Management/Gossip/GossipMenu.hpp"

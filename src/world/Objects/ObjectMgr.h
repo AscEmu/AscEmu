@@ -24,6 +24,7 @@
 #include "Chat/ChatHandler.hpp"
 #include "Units/Creatures/Corpse.h"
 #include "Units/Players/Player.h"
+#include "Units/Creatures/Vehicle.h"
 #include "Management/Guild.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/DBC/DBCStores.h"

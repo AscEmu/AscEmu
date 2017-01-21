@@ -25,6 +25,7 @@
 #include "UnitDefines.hpp"
 
 #include "Management/LootMgr.h"
+#include "Spell/SpellProc.h"
 
 class SpellProc;
 class AIInterface;
