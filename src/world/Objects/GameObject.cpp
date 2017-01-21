@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Management/GameEvent.h"
+#include "Storage/MySQLDataStore.hpp"
 #include <G3D/Quat.h>
 
 GameObject::GameObject(uint64 guid)

@@ -19,6 +19,7 @@
 
 #include "Management/LFG/LFGMgr.h"
 #include "Common.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 void BuildPlayerLockDungeonBlock(WorldPacket& data, const LfgLockMap& lock)
 {

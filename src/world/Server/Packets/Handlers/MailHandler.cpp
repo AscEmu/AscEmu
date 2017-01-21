@@ -19,6 +19,7 @@
 #include "StdAfx.h"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
+#include "Storage/MySQLDataStore.hpp"
 
 /// \todo refactoring
 bool MailMessage::AddMessageDataToPacket(WorldPacket& data)

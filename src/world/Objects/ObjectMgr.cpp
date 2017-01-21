@@ -26,6 +26,7 @@
 #include "Exceptions/Exceptions.hpp"
 #include "Units/Stats.h"
 #include "Management/ArenaTeam.h"
+#include "Storage/MySQLDataStore.hpp"
 
 initialiseSingleton(ObjectMgr);
 

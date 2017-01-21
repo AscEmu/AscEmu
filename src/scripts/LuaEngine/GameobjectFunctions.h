@@ -24,6 +24,7 @@
 #include "StdAfx.h"
 #include "LUAEngine.h"
 #include "Map/MapMgr.h"
+#include "Storage/MySQLDataStore.hpp"
 
 class LuaGameObject
 {

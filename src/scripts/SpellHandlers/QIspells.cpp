@@ -18,6 +18,7 @@
 
 #include "Setup.h"
 #include "../Common/EasyFunctions.h"
+#include "Storage/MySQLDataStore.hpp"
 
 bool CleansingVial(uint32 i, Spell* pSpell)
 {

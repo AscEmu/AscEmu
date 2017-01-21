@@ -22,6 +22,7 @@
 
 #include "ArathiBasin.h"
 #include "Server/Packets/Handlers/HonorHandler.h"
+#include "Storage/MySQLDataStore.hpp"
 
 #define BASE_RESOURCES_GAIN 10
 #define RESOURCES_WARNING_THRESHOLD 1400

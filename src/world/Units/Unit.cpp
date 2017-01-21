@@ -27,6 +27,9 @@
 #include "Management/Item.h"
 #include "Spell/SpellNameHashes.h"
 #include "Units/Stats.h"
+#include "Server/WorldSocket.h"
+#include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
 {

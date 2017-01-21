@@ -20,7 +20,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "Storage/MySQLDataStore.hpp"
 
 initialiseSingleton(SpellFactoryMgr);
 

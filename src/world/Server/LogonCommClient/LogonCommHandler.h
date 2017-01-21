@@ -20,8 +20,10 @@
 
 #ifndef _LOGONCOMMHANDLER_H
 #define _LOGONCOMMHANDLER_H
+
 #include "CommonTypes.hpp"
 #include "Server/WorldSocket.h"
+#include "Server/LogonCommClient/LogonCommClient.h"
 #include <string>
 #include <map>
 #include <set>

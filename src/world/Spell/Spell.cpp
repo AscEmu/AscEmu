@@ -27,6 +27,8 @@
 #include "Management/ItemInterface.h"
 #include "Units/Stats.h"
 #include "Management/Battleground/Battleground.h"
+#include "Server/WorldSocket.h"
+#include "Storage/MySQLDataStore.hpp"
 
 #define SPELL_CHANNEL_UPDATE_INTERVAL 1000
 

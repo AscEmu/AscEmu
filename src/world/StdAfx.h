@@ -202,12 +202,14 @@
 #include "Management/ArenaTeam.h"
 #include "Management/Arenas.h"
 #endif
+#ifdef UNDEFINED_SYMBOL
 #include "Server/LogonCommClient/LogonCommClient.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/MainServerDefines.h"
 #include "Server/WorldRunnable.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/DatabaseCleaner.h"
+#endif
 #include "Storage/DayWatcherThread.h"
 #include "Server/CommonScheduleThread.h"
 #include "Management/LocalizationMgr.h"

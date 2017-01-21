@@ -20,6 +20,7 @@
 #include "Setup.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/TaxiMgr.h"
+#include "Storage/MySQLDataStore.hpp"
 
 class CassaCrimsonwing_Gossip : public Arcemu::Gossip::Script
 {

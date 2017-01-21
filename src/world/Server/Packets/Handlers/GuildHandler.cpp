@@ -24,6 +24,7 @@
 #include "Storage/WorldStrings.h"
 #include "Management/ItemInterface.h"
 #include "Management/ArenaTeam.h"
+#include "Storage/MySQLDataStore.hpp"
 
 void WorldSession::HandleGuildQuery(WorldPacket& recv_data)
 {

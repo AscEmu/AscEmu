@@ -20,7 +20,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "Storage/MySQLDataStore.hpp"
 #include "Management/Item.h"
 #include "Management/Container.h"
 #include "Management/ItemInterface.h"

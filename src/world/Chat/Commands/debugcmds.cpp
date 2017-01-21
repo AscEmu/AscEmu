@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "VMapFactory.h"
+#include "Storage/MySQLDataStore.hpp"
 
 bool ChatHandler::HandleDebugDumpMovementCommand(const char* args, WorldSession* session)
 {

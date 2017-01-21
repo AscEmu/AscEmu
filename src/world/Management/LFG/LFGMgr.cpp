@@ -17,7 +17,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "Storage/MySQLDataStore.hpp"
 #include "Management/Item.h"
 #include "Management/LFG/LFGMgr.h"
 #include "Management/LFG/LFGGroupData.h"

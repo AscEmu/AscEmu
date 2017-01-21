@@ -19,7 +19,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "Storage/MySQLDataStore.hpp"
 #include "Management/Item.h"
 using namespace Arcemu;
 

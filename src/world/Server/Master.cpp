@@ -19,8 +19,10 @@
  */
 
 #include "StdAfx.h"
-
 #include "WorldConf.h"
+#include "Server/LogonCommClient/LogonCommHandler.h"
+#include "Storage/MySQLDataStore.hpp"
+#include "WorldRunnable.h"
 
 createFileSingleton(Master);
 std::string LogFileName;

@@ -22,6 +22,7 @@
 #include "StdAfx.h"
 #include "EyeOfTheStorm.h"
 #include "Server/Packets/Handlers/HonorHandler.h"
+#include "Storage/MySQLDataStore.hpp"
 
 static float EOTSBuffCoordinates[4][4] =
 {

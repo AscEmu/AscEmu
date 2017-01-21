@@ -21,6 +21,7 @@
 #include "StdAfx.h"
 #include "AlteracValley.h"
 #include "Server/Packets/Handlers/HonorHandler.h"
+#include "Storage/MySQLDataStore.hpp"
 
  //////////////////////////////////////////////////////////////////////////
  // Fire Locations

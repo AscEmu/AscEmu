@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Management/TaxiMgr.h"
+#include "Storage/MySQLDataStore.hpp"
 
 void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPacket& recv_data)
 {

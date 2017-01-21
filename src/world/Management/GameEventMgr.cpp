@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 #include "Management/GameEvent.h"
 #include "CrashHandler.h"
+#include "Storage/MySQLDataStore.hpp"
 
 initialiseSingleton(GameEventMgr);
 initialiseSingleton(GameEventMgr::GameEventMgrThread);

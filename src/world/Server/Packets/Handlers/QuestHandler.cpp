@@ -23,6 +23,7 @@
 #include "Management/Item.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Management/ItemInterface.h"
+#include "Storage/MySQLDataStore.hpp"
 
 initialiseSingleton(QuestMgr);
 

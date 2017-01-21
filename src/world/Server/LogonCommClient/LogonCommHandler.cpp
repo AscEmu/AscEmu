@@ -20,7 +20,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "Server/LogonCommClient/LogonCommHandler.h"
 
 initialiseSingleton(LogonCommHandler);
 

@@ -25,6 +25,7 @@
 #include "Management/GameEvent.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Item.h"
+#include "Storage/MySQLDataStore.hpp"
 #include <git_version.h>
 
 #include <fstream>

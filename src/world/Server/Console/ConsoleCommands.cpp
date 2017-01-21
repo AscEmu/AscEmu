@@ -22,6 +22,7 @@
 #include "StdAfx.h"
 #include <git_version.h>
 #include "ConsoleCommands.h"
+#include "Server/LogonCommClient/LogonCommHandler.h"
 #include "crc32.h"
 
 bool HandleTimeDateCommand(BaseConsole* console, int argc, const char* argv[])

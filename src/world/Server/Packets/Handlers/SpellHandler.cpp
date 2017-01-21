@@ -24,6 +24,7 @@
 #include "Spell/SpellNameHashes.h"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
+#include "Storage/MySQLDataStore.hpp"
 
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {

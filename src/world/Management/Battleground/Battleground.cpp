@@ -23,6 +23,7 @@
 #include "Server/Packets/Handlers/HonorHandler.h"
 #include "Management/Battleground/Battleground.h"
 #include "Management/Arenas.h"
+#include "Storage/MySQLDataStore.hpp"
 
 uint32 CBattleground::GetId()
 {

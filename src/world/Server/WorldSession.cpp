@@ -26,6 +26,8 @@
 #include "Exceptions/PlayerExceptions.hpp"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
+#include "Server/LogonCommClient/LogonCommHandler.h"
+#include "Storage/MySQLDataStore.hpp"
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 

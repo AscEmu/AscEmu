@@ -26,6 +26,8 @@
    */
 
 #include "StdAfx.h"
+#include "Storage/MySQLDataStore.hpp"
+
 createFileSingleton(StructFactory);
 
 MapScriptInterface::MapScriptInterface(MapMgr & mgr) : mapMgr(mgr)

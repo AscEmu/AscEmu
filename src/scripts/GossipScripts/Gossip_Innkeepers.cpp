@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Storage/MySQLDataStore.hpp"
 
 #define SPELL_TRICK_OR_TREATED  24755
 #define SPELL_TREAT             24715

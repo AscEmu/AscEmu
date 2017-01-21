@@ -37,6 +37,7 @@
 #include "Units/Unit.h"
 #include "VMapFactory.h"
 #include "MMapFactory.h"
+#include "Storage/MySQLDataStore.hpp"
 
 
 Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;

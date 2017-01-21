@@ -20,6 +20,7 @@
 #include "StdAfx.h"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
+#include "Storage/MySQLDataStore.hpp"
 
 void Player::SendTalentResetConfirm()
 {

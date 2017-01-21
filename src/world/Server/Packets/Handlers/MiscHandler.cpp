@@ -24,6 +24,9 @@
 #include "Management/WeatherMgr.h"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
+#include "Server/WorldSocket.h"
+#include "Storage/MySQLDataStore.hpp"
+#include "zlib.h"
 
 void WorldSession::HandleRepopRequestOpcode(WorldPacket& recv_data)
 {

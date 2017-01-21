@@ -33,6 +33,8 @@
 #include "Management/ItemInterface.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
+#include "WorldSocket.h"
+#include "Storage/MySQLDataStore.hpp"
 #include <CrashHandler.h>
 
 

@@ -29,6 +29,8 @@
 #include "TLSObject.h"
 #include "Spell/SpellNameHashes.h"
 #include "Management/ItemInterface.h"
+#include "Server/WorldSocket.h"
+#include "Storage/MySQLDataStore.hpp"
 
 Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
 {

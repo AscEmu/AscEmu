@@ -24,6 +24,7 @@
 #include "ItemPrototype.h"
 #include "Units/Players/Player.h"
 #include "Management/ItemInterface.h"
+#include "Storage/MySQLDataStore.hpp"
 
 ItemInterface::ItemInterface(Player* pPlayer) : m_EquipmentSets(pPlayer->GetLowGUID())
 {

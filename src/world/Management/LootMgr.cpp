@@ -23,6 +23,7 @@
 #include "Storage/DBC/DBCStores.h"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
+#include "Storage/MySQLDataStore.hpp"
 
 initialiseSingleton(LootMgr);
 

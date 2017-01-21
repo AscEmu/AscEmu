@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Management/Container.h"
+#include "Storage/MySQLDataStore.hpp"
 
 Container::Container(uint32 high, uint32 low) : Item()
 {

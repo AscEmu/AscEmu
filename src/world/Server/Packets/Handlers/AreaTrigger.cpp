@@ -21,6 +21,7 @@
 #include "StdAfx.h"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
+#include "Storage/MySQLDataStore.hpp"
 
 void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
 {

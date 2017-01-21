@@ -21,6 +21,8 @@
 #include "StdAfx.h"
 #include "Management/Item.h"
 #include "Units/Stats.h"
+#include "Server/WorldSocket.h"
+#include "Storage/MySQLDataStore.hpp"
 
 #ifdef ENABLE_ACHIEVEMENTS
 

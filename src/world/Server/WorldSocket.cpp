@@ -24,7 +24,7 @@
 #include "StdAfx.h"
 #include "AuthCodes.h"
 #include "Management/AddonMgr.h"
-
+#include "Server/LogonCommClient/LogonCommHandler.h"
 
 #pragma pack(push, 1)
 struct ClientPktHeader

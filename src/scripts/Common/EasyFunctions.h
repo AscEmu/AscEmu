@@ -27,6 +27,7 @@
 #include "Management/Item.h"
 #include "Map/MapMgr.h"
 #include "Management/ItemInterface.h"
+#include "Storage/MySQLDataStore.hpp"
 
 // Uncomment if you want debug texts
 // #define ENABLE_DEBUG_TEXT

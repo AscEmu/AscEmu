@@ -19,6 +19,7 @@
 
 #include "Setup.h"
 #include "Units/Stats.h"
+#include "Storage/MySQLDataStore.hpp"
 
 //////////////////////////////////////////////////////////////
 //bool SoulLinkParent( uint32 i, Spell *s )

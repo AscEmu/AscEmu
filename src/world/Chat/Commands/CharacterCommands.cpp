@@ -9,6 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Item.h"
 #include "Management/Container.h"
 #include "Management/ItemInterface.h"
+#include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLDataStore.hpp"
 
 //.character clearcooldowns
 bool ChatHandler::HandleCharClearCooldownsCommand(const char* /*args*/, WorldSession* m_session)

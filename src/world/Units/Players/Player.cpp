@@ -39,6 +39,8 @@
 #include "Management/ChannelMgr.h"
 #include "Management/Battleground/Battleground.h"
 #include "Management/ArenaTeam.h"
+#include "Server/LogonCommClient/LogonCommHandler.h"
+#include "Storage/MySQLDataStore.hpp"
 
 UpdateMask Player::m_visibleUpdateMask;
 

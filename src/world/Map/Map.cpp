@@ -20,7 +20,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "Storage/MySQLDataStore.hpp"
 
 // Class Map
 // Holder for all instances of each mapmgr, handles transferring players between, and template holding.

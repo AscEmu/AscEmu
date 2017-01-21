@@ -24,6 +24,8 @@
 #include "Management/WordFilter.h"
 #include "Management/ArenaTeam.h"
 #include "Management/Battleground/Battleground.h"
+#include "Server/LogonCommClient/LogonCommHandler.h"
+#include "Storage/MySQLDataStore.hpp"
 
 LoginErrorCode VerifyName(const char* name, size_t nlen)
 {

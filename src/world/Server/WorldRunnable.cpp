@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "WorldRunnable.h"
 #include <CrashHandler.h>
 
 #define WORLD_UPDATE_DELAY 50

@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "Storage/DatabaseCleaner.h"
 
 initialiseSingleton(DatabaseCleaner);
 

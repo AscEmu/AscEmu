@@ -33,6 +33,7 @@
 #include "Units/Stats.h"
 #include "Management/ChannelMgr.h"
 #include "Management/Channel.h"
+#include "Storage/MySQLDataStore.hpp"
 
 class LuaUnit
 {
