@@ -45,9 +45,9 @@
 #include "LocationVector.h"
 #include "Database/DatabaseEnv.h"
 #include "Network/Network.h"
-#endif
 #include "Auth/MD5.h"
 #include "Auth/BigNumber.h"
+#endif
 #include "Auth/Sha1.h"
 #include "Auth/WowCrypt.h"
 #include "FastQueue.h"
