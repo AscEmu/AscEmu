@@ -17,6 +17,7 @@
  */
 
 #include "Setup.h"
+#include "Management/Gossip/GossipMenu.hpp"
 
 // Call to Arms!
 class BellRope : public GameObjectAIScript

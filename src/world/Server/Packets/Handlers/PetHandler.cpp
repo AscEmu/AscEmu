@@ -20,7 +20,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "Management/Gossip/GossipMenu.hpp"
 
 void WorldSession::HandlePetAction(WorldPacket& recv_data)
 {

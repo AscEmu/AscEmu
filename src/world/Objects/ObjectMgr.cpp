@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Management/QuestLogEntry.hpp"
+#include "Management/Gossip/GossipMenu.hpp"
 #include <Exceptions/Exceptions.hpp>
 
 initialiseSingleton(ObjectMgr);

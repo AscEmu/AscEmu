@@ -17,6 +17,7 @@
  */
 
 #include "Setup.h"
+#include "Management/Gossip/GossipMenu.hpp"
 
 // The Gifts of Loken
 class LokensFury : public GameObjectAIScript

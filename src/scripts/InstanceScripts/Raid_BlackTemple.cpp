@@ -22,6 +22,7 @@
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Raid_BlackTemple.h"
+#include "Management/Gossip/GossipMenu.hpp"
 
 
 class BlackTempleScript : public MoonInstanceScript

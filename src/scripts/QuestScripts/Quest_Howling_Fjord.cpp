@@ -18,7 +18,7 @@
  */
 
 #include "Setup.h"
-
+#include "Management/Gossip/GossipMenu.hpp"
 
 class NorthFleet : public CreatureAIScript
 {

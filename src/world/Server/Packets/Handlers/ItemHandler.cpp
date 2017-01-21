@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "Management/Gossip/GossipMenu.hpp"
 
 bool VerifyBagSlots(int8 ContainerSlot, int8 Slot)
 {

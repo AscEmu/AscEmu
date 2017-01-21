@@ -23,7 +23,7 @@
 Edits by : FenixGman
 **********************/
 #include "Setup.h"
-
+#include "Management/Gossip/GossipMenu.hpp"
 
 
 class Lunaclaw : public CreatureAIScript

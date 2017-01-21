@@ -20,7 +20,7 @@
  */
 
 #include "Setup.h"
-
+#include "Management/Gossip/GossipMenu.hpp"
 
 // Infiltrating Dragonmaw Fortress Quest
 class InfiltratingDragonmawFortressQAI : public CreatureAIScript

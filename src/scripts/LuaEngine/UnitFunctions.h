@@ -21,6 +21,7 @@
 #ifndef UNITFUNCTIONS_H
 #define UNITFUNCTIONS_H
 
+#include "Units/Unit.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Units/Summons/SummonHandler.h"
 #include "Units/Creatures/Vehicle.h"

@@ -20,6 +20,7 @@
  */
 
 #include "Setup.h"
+#include "Management/Gossip/GossipMenu.hpp"
 
 class Flayer : public CreatureAIScript
 {

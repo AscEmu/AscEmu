@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Management/QuestLogEntry.hpp"
+#include "Management/Gossip/GossipMenu.hpp"
 #include "Server/Packets/Opcodes.h"
 #include "AuthCodes.h"
 

@@ -18,6 +18,7 @@
  */
 
 #include "Setup.h"
+#include "Management/Gossip/GossipMenu.hpp"
 
 /*--------------------------------------------------------------------------------------------------------*/
 // Crisis at the Sunwell

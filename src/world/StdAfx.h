@@ -95,10 +95,10 @@
 #include "Spell/SpellProc.h"
 #include "Units/Summons/SummonHandler.h"
 #include "Units/Creatures/Vehicle.h"
-#endif
 #include "Units/Unit.h"
 #include "Management/Gossip/Gossip.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#endif
 
 #ifdef ENABLE_ACHIEVEMENTS
 #include "Management/AchievementMgr.h"

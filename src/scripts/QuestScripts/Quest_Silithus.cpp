@@ -19,6 +19,7 @@
  */
 
 #include "Setup.h"
+#include "Management/Gossip/GossipMenu.hpp"
 
 // quest #8304 - Dearest Natalia
 class SCRIPT_DECL DearestNatalia1 : public GossipScript

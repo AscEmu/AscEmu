@@ -5,6 +5,7 @@
 
 #include "Setup.h"
 #include "Event_Darkmoon_Faire.h"
+#include "Management/Gossip/GossipMenu.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///\details <b>Darkmoon Faire (Elwynn Forest)</b>\n

@@ -26,6 +26,7 @@
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Instance_OldHillsbradFoothills.h"
+#include "Management/Gossip/GossipMenu.hpp"
 
 static Movement::Location Fires[] =
 {

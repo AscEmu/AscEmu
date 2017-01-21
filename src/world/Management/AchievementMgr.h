@@ -20,6 +20,8 @@
 #ifndef _ACHIEVEMENTMGR_H
 #define _ACHIEVEMENTMGR_H
 
+#include "Units/Unit.h"
+
 class QueryBuffer;
 struct AchievementEntry;
 struct AchievementCriteriaEntry;

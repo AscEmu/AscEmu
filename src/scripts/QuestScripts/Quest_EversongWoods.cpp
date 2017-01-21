@@ -21,6 +21,7 @@
 
 #include "Setup.h"
 #include "../Common/EasyFunctions.h"
+#include "Management/Gossip/GossipMenu.hpp"
 
 ///////////////////////////////////////////////////////
 //Quest: The Drwarfen Spy

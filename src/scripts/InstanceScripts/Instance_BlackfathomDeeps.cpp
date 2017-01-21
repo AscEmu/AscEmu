@@ -19,6 +19,7 @@
 
 #include "Setup.h"
 #include "Instance_BlackfathomDeeps.h"
+#include "Management/Gossip/GossipMenu.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Blackfathom Deeps

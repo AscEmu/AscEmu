@@ -18,6 +18,7 @@
 
 #include "Management/Gossip/Gossip.h"
 #include "Setup.h"
+#include "Management/Gossip/GossipMenu.hpp"
 
 enum UnorderedEntry
 {

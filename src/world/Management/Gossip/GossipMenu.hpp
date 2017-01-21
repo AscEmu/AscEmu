@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Management/Gossip/GossipDefines.hpp"
+#include "Management/Gossip/Gossip.h"
 
 class SERVER_DECL GossipMenu
 {

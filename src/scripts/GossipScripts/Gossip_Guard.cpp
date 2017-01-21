@@ -20,6 +20,7 @@
 
 #include "Management/Gossip/Gossip.h"
 #include "Setup.h"
+#include "Management/Gossip/GossipMenu.hpp"
 
 
 // Covers *all* guard types, scripting their texts to guide players around.

@@ -20,6 +20,7 @@
  */
 
 #include "Setup.h"
+#include "Management/Gossip/GossipMenu.hpp"
 
 // -----------------------------------------------------------------------------
 // Quest 12532 - Flown the Coop!
