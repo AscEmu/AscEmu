@@ -23,7 +23,8 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Container.h"
-#include <Exceptions/Exceptions.hpp>
+#include "Exceptions/Exceptions.hpp"
+#include "Units/Stats.h"
 
 initialiseSingleton(ObjectMgr);
 

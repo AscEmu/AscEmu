@@ -4,8 +4,9 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "StdAfx.h"
-#include <Exceptions/PlayerExceptions.hpp>
+#include "Exceptions/PlayerExceptions.hpp"
 #include "Management/Item.h"
+#include "Management/ItemInterface.h"
 
 initialiseSingleton(ChatHandler);
 

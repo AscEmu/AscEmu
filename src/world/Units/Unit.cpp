@@ -26,6 +26,7 @@
 #include "Objects/DynamicObject.h"
 #include "Management/Item.h"
 #include "Spell/SpellNameHashes.h"
+#include "Units/Stats.h"
 
 static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
 {

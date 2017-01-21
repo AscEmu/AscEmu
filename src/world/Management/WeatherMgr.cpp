@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "Management/WeatherMgr.h"
 
 /// Weather defines
 enum WeatherTypes

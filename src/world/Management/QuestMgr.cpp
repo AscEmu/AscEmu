@@ -22,7 +22,7 @@
 #include "StdAfx.h"
 #include "Management/Item.h"
 #include "QuestLogEntry.hpp"
-
+#include "Management/ItemInterface.h"
 
 uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, QuestRelation* qst)
 {

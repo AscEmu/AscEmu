@@ -21,6 +21,8 @@
 #ifndef LUA_SPELL_H
 #define LUA_SPELL_H
 
+#include "Management/ItemInterface.h"
+
 #define GET_SPELLVAR_INT(proto,offset,subindex) *(int*)((char*)(proto) + (offset) + (subindex))
 #define GET_SPELLVAR_CHAR(proto,offset,subindex) *(char**)((char*)(proto) + (offset) + (subindex))
 #define GET_SPELLVAR_BOOL(proto,offset,subindex) *(bool*)((char*)(proto) + (offset) + (subindex))

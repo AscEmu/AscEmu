@@ -20,6 +20,7 @@
 #include "Setup.h"
 #include "Units/Summons/Summon.h"
 #include "Management/Item.h"
+#include "Management/ItemInterface.h"
 
 class ArmyOfTheDeadGhoulAI : public CreatureAIScript
 {

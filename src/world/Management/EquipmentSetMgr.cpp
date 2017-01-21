@@ -19,6 +19,7 @@
  */
 
 #include "StdAfx.h"
+#include "Management/EquipmentSetMgr.h"
 
 namespace Arcemu
 {

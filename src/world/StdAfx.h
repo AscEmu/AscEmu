@@ -181,13 +181,17 @@
 #include "Spell/SpellMgr.h"
 #endif
 #include "Spell/SpellAuras.h"
+#ifdef UNDEFINED_SYMBOL
 #include "Management/TaxiMgr.h"
 #include "Management/TransporterHandler.h"
 #include "Management/WeatherMgr.h"
+#endif
 #include "Server/World.h"
+#ifdef UNDEFINED_SYMBOL
 #include "Management/EquipmentSetMgr.h"
 #include "Management/ItemInterface.h"
 #include "Units/Stats.h"
+#endif
 #include "Map/WorldCreator.h"
 #include "Objects/ObjectMgr.h"
 #include "CThreads.h"

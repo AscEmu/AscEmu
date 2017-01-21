@@ -18,6 +18,7 @@
  */
 
 #include "Setup.h"
+#include "Units/Stats.h"
 
 //////////////////////////////////////////////////////////////
 //bool SoulLinkParent( uint32 i, Spell *s )

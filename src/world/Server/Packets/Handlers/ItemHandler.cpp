@@ -23,6 +23,7 @@
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Item.h"
 #include "Management/Container.h"
+#include "Management/ItemInterface.h"
 
 bool VerifyBagSlots(int8 ContainerSlot, int8 Slot)
 {

@@ -23,7 +23,8 @@
 #include "Threading/Mutex.h"
 #include "WorldPacket.h"
 #include "Management/Item.h"
-#include <Exceptions/PlayerExceptions.hpp>
+#include "Exceptions/PlayerExceptions.hpp"
+#include "Management/ItemInterface.h"
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 

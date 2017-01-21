@@ -26,6 +26,7 @@
 #include "Management/Quest.h"
 #include "Management/GameEvent.h"
 #include "Management/Skill.h"
+#include "Units/Stats.h"
 
 Creature::Creature(uint64 guid)
 {

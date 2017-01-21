@@ -20,6 +20,7 @@
 
 #include "StdAfx.h"
 #include "Management/Item.h"
+#include "Units/Stats.h"
 
 #ifdef ENABLE_ACHIEVEMENTS
 

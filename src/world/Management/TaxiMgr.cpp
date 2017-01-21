@@ -20,7 +20,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "Management/TaxiMgr.h"
 
 initialiseSingleton(TaxiMgr);
 

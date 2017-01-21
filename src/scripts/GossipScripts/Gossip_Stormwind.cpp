@@ -18,6 +18,7 @@
  */
 
 #include "Setup.h"
+#include "Management/TaxiMgr.h"
 
 class ArchmageMalin_Gossip : public Arcemu::Gossip::Script
 {

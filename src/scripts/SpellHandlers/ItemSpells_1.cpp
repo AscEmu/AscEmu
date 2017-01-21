@@ -19,6 +19,7 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Skill.h"
 #include "Spell/SpellNameHashes.h"
+#include "Management/ItemInterface.h"
 
 /*
     How to add a new item spell to the dummy spell handler:

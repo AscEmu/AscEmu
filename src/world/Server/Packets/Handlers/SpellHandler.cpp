@@ -22,6 +22,7 @@
 #include "StdAfx.h"
 #include "Management/Item.h"
 #include "Spell/SpellNameHashes.h"
+#include "Management/ItemInterface.h"
 
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {

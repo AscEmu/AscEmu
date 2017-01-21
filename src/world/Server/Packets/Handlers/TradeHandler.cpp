@@ -22,6 +22,7 @@
 #include "StdAfx.h"
 #include "Management/Item.h"
 #include "Management/Container.h"
+#include "Management/ItemInterface.h"
 
 void WorldSession::HandleInitiateTrade(WorldPacket& recv_data)
 {

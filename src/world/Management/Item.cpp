@@ -23,6 +23,7 @@
 
 #include "Management/Item.h"
 #include "Management/Container.h"
+#include "Management/ItemInterface.h"
 
 Item::Item()
 {

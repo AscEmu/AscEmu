@@ -25,6 +25,7 @@
 #include "Objects/DynamicObject.h"
 #include "Server/Packets/Handlers/HonorHandler.h"
 #include "Spell/SpellNameHashes.h"
+#include "Units/Stats.h"
 
 #define WATER_ELEMENTAL         510
 #define WATER_ELEMENTAL_NEW     37994

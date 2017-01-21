@@ -22,6 +22,7 @@
 #include "Management/AuctionHouse.h"
 #include "Management/AuctionMgr.h"
 #include "Management/Item.h"
+#include "Management/ItemInterface.h"
 
 void Auction::DeleteFromDB()
 {

@@ -22,7 +22,7 @@
 #include "VMapFactory.h"
 #include "MMapManager.h"
 #include "MMapFactory.h"
-
+#include "Units/Stats.h"
 #include "Server/Packets/Movement/CreatureMovement.hpp"
 
 #ifndef UNIX

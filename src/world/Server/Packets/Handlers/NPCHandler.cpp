@@ -23,6 +23,7 @@
 #include "Management/Item.h"
 #include "Management/AuctionHouse.h"
 #include "Management/AuctionMgr.h"
+#include "Management/ItemInterface.h"
 
 trainertype trainer_types[TRAINER_TYPE_MAX] =
 {

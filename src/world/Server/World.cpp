@@ -28,7 +28,9 @@
 #include "Management/Item.h"
 #include "Management/LFG/LFGMgr.h"
 #include "Management/WordFilter.h"
-
+#include "Management/WeatherMgr.h"
+#include "Management/TaxiMgr.h"
+#include "Management/ItemInterface.h"
 #include <CrashHandler.h>
 
 

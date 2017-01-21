@@ -24,6 +24,8 @@
 #include "Management/Item.h"
 #include "Objects/DynamicObject.h"
 #include "Spell/SpellNameHashes.h"
+#include "Management/ItemInterface.h"
+#include "Units/Stats.h"
 
 #define SPELL_CHANNEL_UPDATE_INTERVAL 1000
 

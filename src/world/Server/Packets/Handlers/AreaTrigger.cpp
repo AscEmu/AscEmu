@@ -19,6 +19,7 @@
  */
 
 #include "StdAfx.h"
+#include "Management/ItemInterface.h"
 
 void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
 {

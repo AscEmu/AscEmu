@@ -19,6 +19,7 @@
 
 #include "Setup.h"
 #include "Management/Item.h"
+#include "Management/ItemInterface.h"
 
 //Alice : Correct formula for Rogue - Preparation
 

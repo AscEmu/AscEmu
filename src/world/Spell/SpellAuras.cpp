@@ -24,6 +24,8 @@
 #include "Units/Summons/Summon.h"
 #include "Management/Item.h"
 #include "Spell/SpellNameHashes.h"
+#include "Management/ItemInterface.h"
+#include "Units/Stats.h"
 
 pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
 {

@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/Handlers/HonorHandler.h"
 #include "Management/Item.h"
 #include "Management/Container.h"
+#include "Management/ItemInterface.h"
 
 //.character clearcooldowns
 bool ChatHandler::HandleCharClearCooldownsCommand(const char* /*args*/, WorldSession* m_session)

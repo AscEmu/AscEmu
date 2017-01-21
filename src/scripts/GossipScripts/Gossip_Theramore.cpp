@@ -18,7 +18,8 @@
  */
 
 #include "Setup.h"
-#include <Management/QuestLogEntry.hpp>
+#include "Management/QuestLogEntry.hpp"
+#include "Management/TaxiMgr.h"
 
 class CassaCrimsonwing_Gossip : public Arcemu::Gossip::Script
 {

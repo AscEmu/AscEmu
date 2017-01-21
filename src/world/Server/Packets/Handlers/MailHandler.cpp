@@ -18,6 +18,7 @@
 
 #include "StdAfx.h"
 #include "Management/Item.h"
+#include "Management/ItemInterface.h"
 
 /// \todo refactoring
 bool MailMessage::AddMessageDataToPacket(WorldPacket& data)

@@ -27,6 +27,7 @@
 #include "Setup.h"
 #include "Instance_OldHillsbradFoothills.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Management/TaxiMgr.h"
 
 static Movement::Location Fires[] =
 {

@@ -20,7 +20,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "Management/TaxiMgr.h"
 
 void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPacket& recv_data)
 {

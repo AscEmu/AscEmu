@@ -19,6 +19,7 @@
 */
 
 #include "Setup.h"
+#include "Management/TaxiMgr.h"
 
 class GossipScourgeGryphon : public GossipScript
 {
