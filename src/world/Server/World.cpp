@@ -26,6 +26,7 @@
 #include "Management/AuctionMgr.h"
 #include "Management/CalendarMgr.h"
 #include "Management/Item.h"
+#include "Management/LFG/LFGMgr.h"
 #include "Management/WordFilter.h"
 
 #include <CrashHandler.h>

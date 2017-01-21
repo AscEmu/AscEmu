@@ -22,6 +22,7 @@
 #ifndef _MAP_SCRIPT_INTERFACE_H
 #define _MAP_SCRIPT_INTERFACE_H
 
+#include "Map/MapCell.h"
 #include "Movement/UnitMovementManager.hpp"
 
 class GameObject;

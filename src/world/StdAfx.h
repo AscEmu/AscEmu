@@ -149,7 +149,6 @@
 #include "Management/Container.h"
 #include "Management/AuctionHouse.h"
 #include "Management/AuctionMgr.h"
-#endif
 #include "Management/LFG/LFG.h"
 #include "Management/LFG/LFGMgr.h"
 #include "Management/LFG/LFGGroupData.h"
@@ -160,6 +159,7 @@
 #include "Map/TerrainMgr.h"
 #include "Server/Packets/Handlers/MiscHandler.h"
 #include "Server/Packets/Handlers/NPCHandler.h"
+#endif
 #include "Units/Creatures/Pet.h"
 #include "Server/WorldSocket.h"
 #include "Server/WorldSession.h"

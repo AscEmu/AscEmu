@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 #define MYSQL_DATA_LOADS_HPP
 
 #include "Singleton.h"
+#include "Server/Packets/Handlers/MiscHandler.h"
+#include "Server/Packets/Handlers/NPCHandler.h"
 
 extern SERVER_DECL std::set<std::string> CreatureSpawnsTables;
 extern SERVER_DECL std::set<std::string> GameObjectSpawnsTables;

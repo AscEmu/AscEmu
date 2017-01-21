@@ -22,7 +22,8 @@
 #ifndef _AUCTIONMGR_H
 #define _AUCTIONMGR_H
 
-class AuctionHouse;
+#include "AuctionHouse.h"
+
 class AuctionMgr : public Singleton <AuctionMgr>
 {
     public:

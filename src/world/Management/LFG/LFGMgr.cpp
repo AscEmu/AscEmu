@@ -19,6 +19,9 @@
 #include "StdAfx.h"
 
 #include "Management/Item.h"
+#include "Management/LFG/LFGMgr.h"
+#include "Management/LFG/LFGGroupData.h"
+#include "Management/LFG/LFGPlayerData.h"
 
 uint32 LfgDungeonTypes[MAX_DUNGEONS];
 

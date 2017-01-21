@@ -19,6 +19,7 @@
  */
 
 #include "StdAfx.h"
+#include "Management/LFG/LFGMgr.h"
 
 Group::Group(bool Assign)
 {
