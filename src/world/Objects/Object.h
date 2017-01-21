@@ -35,6 +35,7 @@
 #include "../shared/LocationVector.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "../shared/StackBuffer.h"
+#include "../shared/CommonDefines.hpp"
 
 class SpellInfo;
 

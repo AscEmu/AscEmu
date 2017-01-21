@@ -23,9 +23,9 @@
 
 #ifdef UNDEFINED_SYMBOL
 #include "WorldConf.h"
-#endif
 
 #include "CommonDefines.hpp"  // shared
+#endif
 
 #include "Server/Definitions.h"
 
