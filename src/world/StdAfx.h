@@ -212,13 +212,17 @@
 #endif
 #include "Storage/DayWatcherThread.h"
 #include "Server/CommonScheduleThread.h"
+#ifdef UNDEFINED_SYMBOL
 #include "Management/LocalizationMgr.h"
+#endif
 #include "Server/Master.h"
+#ifdef UNDEFINED_SYMBOL
 #include "Server/Console/BaseConsole.h"
 #include "Server/Console/CConsole.h"
+#endif
 #include "Server/Warden/SpeedDetector.h"
 #include "Management/WorldStates.h"
-
+#ifdef UNDEFINED_SYMBOL
 #include "Units/Players/PlayerClasses.hpp"
-
 #include "Map/MapManagementGlobals.hpp"
+#endif

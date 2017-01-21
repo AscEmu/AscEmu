@@ -23,6 +23,7 @@
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "WorldRunnable.h"
+#include "Server/Console/CConsole.h"
 
 createFileSingleton(Master);
 std::string LogFileName;

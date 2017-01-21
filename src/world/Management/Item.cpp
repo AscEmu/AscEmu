@@ -24,6 +24,7 @@
 #include "Management/Item.h"
 #include "Management/Container.h"
 #include "Management/ItemInterface.h"
+#include "Management/LocalizationMgr.h"
 
 Item::Item()
 {

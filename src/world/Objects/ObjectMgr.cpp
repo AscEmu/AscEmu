@@ -27,6 +27,7 @@
 #include "Units/Stats.h"
 #include "Management/ArenaTeam.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Units/Players/PlayerClasses.hpp"
 
 initialiseSingleton(ObjectMgr);
 

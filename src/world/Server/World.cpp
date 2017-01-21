@@ -36,7 +36,7 @@
 #include "WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include <CrashHandler.h>
-
+#include "Management/LocalizationMgr.h"
 
 initialiseSingleton(World);
 

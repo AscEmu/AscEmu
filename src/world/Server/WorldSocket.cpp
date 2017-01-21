@@ -25,6 +25,7 @@
 #include "AuthCodes.h"
 #include "Management/AddonMgr.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
+#include "Management/LocalizationMgr.h"
 
 #pragma pack(push, 1)
 struct ClientPktHeader

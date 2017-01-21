@@ -19,7 +19,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "Management/LocalizationMgr.h"
 
 LocalizationMgr sLocalizationMgr;
 

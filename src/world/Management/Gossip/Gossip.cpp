@@ -21,6 +21,8 @@
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/Item.h"
+#include "Management/LocalizationMgr.h"
+
 using namespace Arcemu;
 
 Gossip::Item::Item(size_t itemid, uint8 icon)

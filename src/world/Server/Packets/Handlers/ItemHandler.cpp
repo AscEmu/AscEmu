@@ -25,6 +25,7 @@
 #include "Management/Container.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Management/LocalizationMgr.h"
 
 bool VerifyBagSlots(int8 ContainerSlot, int8 Slot)
 {

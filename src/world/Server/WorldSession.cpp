@@ -28,6 +28,7 @@
 #include "Management/Battleground/Battleground.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Management/LocalizationMgr.h"
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 

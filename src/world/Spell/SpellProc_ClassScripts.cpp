@@ -23,6 +23,7 @@
 #include "Management/Item.h"
 #include "Spell/SpellNameHashes.h"
 #include "Management/ItemInterface.h"
+#include "Units/Players/PlayerClasses.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Warrior ProcScripts

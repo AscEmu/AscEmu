@@ -23,6 +23,7 @@
 #include <git_version.h>
 #include "ConsoleCommands.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
+#include "Server/Console/BaseConsole.h"
 #include "crc32.h"
 
 bool HandleTimeDateCommand(BaseConsole* console, int argc, const char* argv[])

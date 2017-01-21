@@ -22,6 +22,7 @@
 #include "StdAfx.h"
 #include "crc32.h"
 #include "Spell/SpellNameHashes.h"
+#include "Units/Players/PlayerClasses.hpp"
 
 void CreateDummySpell(uint32 id)
 {

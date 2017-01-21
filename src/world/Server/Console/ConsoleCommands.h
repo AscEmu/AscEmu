@@ -21,6 +21,8 @@
 #ifndef _CONSOLECOMMANDS_H
 #define _CONSOLECOMMANDS_H
 
+#include "Server/Console/BaseConsole.h"
+
 bool HandleAnnounceCommand(BaseConsole* pConsole, int argc, const char* argv[]);
 bool HandleBanAccountCommand(BaseConsole* pConsole, int argc, const char* argv[]);
 bool HandleCancelCommand(BaseConsole* pConsole, int argc, const char* argv[]);

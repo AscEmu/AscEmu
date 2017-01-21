@@ -26,6 +26,7 @@
 #include "Management/Battleground/Battleground.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Units/Players/PlayerClasses.hpp"
 
 LoginErrorCode VerifyName(const char* name, size_t nlen)
 {

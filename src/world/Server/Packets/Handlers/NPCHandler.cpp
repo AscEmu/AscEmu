@@ -25,6 +25,7 @@
 #include "Management/AuctionMgr.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Management/LocalizationMgr.h"
 
 trainertype trainer_types[TRAINER_TYPE_MAX] =
 {
