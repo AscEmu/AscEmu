@@ -22,6 +22,7 @@
 #include "StdAfx.h"
 
 #include "WorldConf.h"
+#include "Management/WordFilter.h"
 
 #include <CrashHandler.h>
 

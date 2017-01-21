@@ -77,7 +77,6 @@
 #include "Server/Packets/ManagedPacket.hpp"
 #include "Server/Packets/Movement/CreatureMovement.hpp"
 #include "Server/Packets/Movement/SmsgMonsterMove.hpp"
-#endif
 
 #include "Server/IUpdatable.h"
 #include "Server/WUtil.h"
@@ -90,6 +89,7 @@
 #include "Server/EventableObject.h"
 #include "Objects/Object.h"
 #include "Management/LootMgr.h"
+#endif
 #include "Spell/SpellInfo.hpp"
 #include "Spell/SpellDefines.hpp"
 #include "Spell/Customization/SpellCustomizations.hpp"

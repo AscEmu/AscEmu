@@ -20,6 +20,8 @@
  */
 
 #include "StdAfx.h"
+#include "Management/WordFilter.h"
+
 extern "C" {
 #include <pcre.h>
 };

@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "Management/WordFilter.h"
 
 extern std::string LogFileName;
 extern bool bLogChat;

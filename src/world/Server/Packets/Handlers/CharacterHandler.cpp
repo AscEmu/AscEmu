@@ -21,6 +21,7 @@
 #include "StdAfx.h"
 #include "git_version.h"
 #include "AuthCodes.h"
+#include "Management/WordFilter.h"
 
 LoginErrorCode VerifyName(const char* name, size_t nlen)
 {
