@@ -25,6 +25,7 @@
 #include "Server/EventableObject.h"
 #include "Server/IUpdatable.h"
 #include "MMapFactory.h"
+#include "TLSObject.h"
 
 Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
 {

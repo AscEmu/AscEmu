@@ -53,7 +53,6 @@
 #include "Auth/WowCrypt.h"
 #include "FastQueue.h"
 #include "CircularQueue.h"
-#endif
 #include "Threading/RWLock.h"
 #include "TLSObject.h"
 #include "AuthCodes.h"
@@ -62,7 +61,7 @@
 #ifdef WIN32
     #include "printStackTrace.h"
 #endif
-
+#endif
 //////////////////////////////////////////////////////////////////////////////////////////
 
 

@@ -20,6 +20,7 @@
 
 #include "StdAfx.h"
 #include "git_version.h"
+#include "AuthCodes.h"
 
 LoginErrorCode VerifyName(const char* name, size_t nlen)
 {

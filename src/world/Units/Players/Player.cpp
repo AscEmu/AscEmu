@@ -22,6 +22,7 @@
 #include "StdAfx.h"
 #include "Management/QuestLogEntry.hpp"
 #include "Server/Packets/Opcodes.h"
+#include "AuthCodes.h"
 
 
 UpdateMask Player::m_visibleUpdateMask;
