@@ -48,10 +48,12 @@
 #include "Auth/MD5.h"
 #include "Auth/BigNumber.h"
 #endif
-#include "Auth/Sha1.h"
+#include "Auth/Sha1.h"          // Mutex.h, Guard.h errors
+#ifdef UNDEFINED_SYMBOL
 #include "Auth/WowCrypt.h"
 #include "FastQueue.h"
 #include "CircularQueue.h"
+#endif
 #include "Threading/RWLock.h"
 #include "TLSObject.h"
 #include "AuthCodes.h"
