@@ -18,7 +18,7 @@
  */
 
 #include "Setup.h"
-
+#include "Storage/WorldStrings.h"
 
 //#define USE_THE_STATUS    // Decoment this is for the status
 

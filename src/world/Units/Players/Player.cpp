@@ -29,7 +29,7 @@
 #include "AuthCodes.h"
 #include "VMapFactory.h"
 #include "Server/Packets/Handlers/HonorHandler.h"
-
+#include "Storage/WorldStrings.h"
 
 UpdateMask Player::m_visibleUpdateMask;
 

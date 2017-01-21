@@ -24,6 +24,7 @@
 
 #include "Map/MapCell.h"
 #include "Movement/UnitMovementManager.hpp"
+#include "Map/MapMgr.h"
 
 class GameObject;
 class Object;

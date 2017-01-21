@@ -25,12 +25,13 @@
 #endif
 
 #include "LUAEngine.h"
-#include <Server/Script/ScriptSetup.h>
+#include "Map/MapMgr.h"
+#include "Server/Script/ScriptSetup.h"
 
 #ifndef _WIN32
 #include <dirent.h>
 #endif
-#include <Management/QuestLogEntry.hpp>
+#include "Management/QuestLogEntry.hpp"
 #include "Management/Item.h"
 
 ScriptMgr* m_scriptMgr = NULL;

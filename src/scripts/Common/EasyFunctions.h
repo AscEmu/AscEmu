@@ -25,6 +25,7 @@
 
 #include "Units/Creatures/AIInterface.h"
 #include "Management/Item.h"
+#include "Map/MapMgr.h"
 
 // Uncomment if you want debug texts
 // #define ENABLE_DEBUG_TEXT

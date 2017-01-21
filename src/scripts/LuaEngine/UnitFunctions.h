@@ -29,6 +29,7 @@
 #include "Units/Summons/Summon.h"
 #include "Management/Item.h"
 #include "Management/Container.h"
+#include "Map/MapMgr.h"
 
 class LuaUnit
 {

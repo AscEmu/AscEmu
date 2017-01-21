@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Management/Item.h"
+#include "Storage/WorldStrings.h"
 
 void WorldSession::HandleGuildQuery(WorldPacket& recv_data)
 {

@@ -23,6 +23,7 @@
 
 #include "StdAfx.h"
 #include "LUAEngine.h"
+#include "Map/MapMgr.h"
 
 class LuaGameObject
 {

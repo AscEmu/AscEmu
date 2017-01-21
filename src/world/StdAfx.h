@@ -161,11 +161,13 @@
 #include "Server/Packets/Handlers/NPCHandler.h"
 #endif
 #include "Units/Creatures/Pet.h"
+#ifdef UNDEFINED_SYMBOL
 #include "Server/WorldSocket.h"
 #include "Server/WorldSession.h"
 #include "Management/WorldStatesHandler.h"
 #include "Storage/WorldStrings.h"
 #include "Map/MapMgr.h"
+#endif
 #include "Map/MapScriptInterface.h"
 #include "Units/Players/Player.h"
 #include "Objects/Faction.h"
