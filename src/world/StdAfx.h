@@ -34,10 +34,10 @@
 // Shared headers/defines
 
 #include "CommonDefines.hpp"    // QuestLogEntry.h, Object.h
-#endif
 #include "Common.hpp"
 #include "MersenneTwister.h"
 #include "WorldPacket.h"
+#endif
 #include "Log.hpp"
 #include "ByteBuffer.h"
 #include "StackBuffer.h"
