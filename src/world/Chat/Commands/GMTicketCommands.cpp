@@ -20,6 +20,8 @@
  */
 
 #include "StdAfx.h"
+#include "Management/Channel.h"
+#include "Management/ChannelMgr.h"
 
 #define  SENDSURVEY "\x03"
 #ifdef GM_TICKET_MY_MASTER_COMPATIBLE

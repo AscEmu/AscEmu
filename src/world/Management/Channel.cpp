@@ -21,6 +21,9 @@
 
 #include "StdAfx.h"
 
+#include "Management/Channel.h"
+#include "Management/ChannelMgr.h"
+
 Mutex m_confSettingLock;
 std::vector<std::string> m_bannedChannels;
 std::vector<std::string> m_minimumChannel;

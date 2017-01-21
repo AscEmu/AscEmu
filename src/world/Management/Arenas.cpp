@@ -20,6 +20,8 @@
 
 #include "StdAfx.h"
 #include "Management/ItemInterface.h"
+#include "Management/Arenas.h"
+#include "Management/ArenaTeam.h"
 
 #define ARENA_PREPARATION 32727
 

@@ -32,6 +32,7 @@
 #include "Management/TaxiMgr.h"
 #include "Management/ItemInterface.h"
 #include "Units/Stats.h"
+#include "Management/Battleground/Battleground.h"
 
 pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
 {

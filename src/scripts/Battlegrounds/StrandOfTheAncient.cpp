@@ -67,7 +67,6 @@
 #include "StdAfx.h"
 #include "StrandOfTheAncient.h"
 
-
 const float sotaTitanRelic[4] = { 836.5f, -108.8f, 120.59f, 0.0f };
 
 const uint32 GateGOIds[6] =

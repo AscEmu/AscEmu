@@ -23,6 +23,7 @@
 #include "Management/Item.h"
 #include "Spell/SpellNameHashes.h"
 #include "Management/ItemInterface.h"
+#include "Management/Battleground/Battleground.h"
 
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {

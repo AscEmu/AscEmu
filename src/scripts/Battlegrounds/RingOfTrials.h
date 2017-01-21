@@ -22,6 +22,7 @@
 #define _RING_OF_TRIALS_H
 
 #include "StdAfx.h"
+#include "Management/Arenas.h"
 #include "Management/Battleground/Battleground.h"
 
 class RingOfTrials : public Arena

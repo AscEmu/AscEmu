@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "StdAfx.h"
+#include "Management/ArenaTeam.h"
 
 uint8 ChatHandler::GetArenaTeamInternalType(uint32 type, WorldSession* m_session)
 {

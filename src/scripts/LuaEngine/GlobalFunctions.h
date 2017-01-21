@@ -25,6 +25,8 @@
 #include "LUAEngine.h"
 #include "git_version.h"
 #include "Management/TaxiMgr.h"
+#include "Management/Channel.h"
+#include "Management/ChannelMgr.h"
 
 #define ENGINE_NAME "ALE" //You should check in your scripts that GetLuaEngine() == "ALE"
 #ifdef LUA_SVN_REVISION_H

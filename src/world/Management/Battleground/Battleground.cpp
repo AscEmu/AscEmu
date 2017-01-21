@@ -21,6 +21,8 @@
 #include "StdAfx.h"
 #include "Units/Players/PlayerDefines.hpp"
 #include "Server/Packets/Handlers/HonorHandler.h"
+#include "Management/Battleground/Battleground.h"
+#include "Management/Arenas.h"
 
 uint32 CBattleground::GetId()
 {

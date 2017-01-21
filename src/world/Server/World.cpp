@@ -31,6 +31,8 @@
 #include "Management/WeatherMgr.h"
 #include "Management/TaxiMgr.h"
 #include "Management/ItemInterface.h"
+#include "Management/Channel.h"
+#include "Management/ChannelMgr.h"
 #include <CrashHandler.h>
 
 

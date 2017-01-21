@@ -19,6 +19,7 @@
  */
 
 #include "StdAfx.h"
+#include "Management/ArenaTeam.h"
 
 static const uint32 TeamCountToId[6] =
 {

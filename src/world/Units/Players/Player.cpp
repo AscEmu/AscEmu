@@ -35,6 +35,10 @@
 #include "Management/WeatherMgr.h"
 #include "Management/ItemInterface.h"
 #include "Units/Stats.h"
+#include "Management/Channel.h"
+#include "Management/ChannelMgr.h"
+#include "Management/Battleground/Battleground.h"
+#include "Management/ArenaTeam.h"
 
 UpdateMask Player::m_visibleUpdateMask;
 

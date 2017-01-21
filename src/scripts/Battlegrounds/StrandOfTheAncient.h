@@ -21,6 +21,8 @@
 #ifndef _STRAND_OF_THE_ANCIENT_H
 #define _STRAND_OF_THE_ANCIENT_H
 
+#include "Management/Battleground/Battleground.h"
+
 #define BUFF_COUNT                      3
 #define SOTA_NPCS                       3
 #define SOTA_NUM_BOMBS                  66

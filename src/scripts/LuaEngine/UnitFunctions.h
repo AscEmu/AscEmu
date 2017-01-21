@@ -31,6 +31,8 @@
 #include "Management/Container.h"
 #include "Map/MapMgr.h"
 #include "Units/Stats.h"
+#include "Management/ChannelMgr.h"
+#include "Management/Channel.h"
 
 class LuaUnit
 {

@@ -20,6 +20,7 @@
 
 #include "StdAfx.h"
 #include "Management/ItemInterface.h"
+#include "Management/Battleground/Battleground.h"
 
 void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
 {

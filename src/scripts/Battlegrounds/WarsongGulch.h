@@ -21,6 +21,8 @@
 #ifndef _WARSONG_GULCH_H
 #define _WARSONG_GULCH_H
 
+#include "Management/Battleground/Battleground.h"
+
 #define TIME_LEFT              25
 #define TIME_FOCUSED_ASSAULT   10
 #define TIME_BRUTAL_ASSAULT    15

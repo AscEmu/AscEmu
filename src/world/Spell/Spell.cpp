@@ -26,6 +26,7 @@
 #include "Spell/SpellNameHashes.h"
 #include "Management/ItemInterface.h"
 #include "Units/Stats.h"
+#include "Management/Battleground/Battleground.h"
 
 #define SPELL_CHANNEL_UPDATE_INTERVAL 1000
 

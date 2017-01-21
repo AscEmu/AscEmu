@@ -21,6 +21,9 @@
 
 #include "StdAfx.h"
 #include "Management/WordFilter.h"
+#include "Management/Channel.h"
+#include "Management/ChannelMgr.h"
+#include "Management/Battleground/Battleground.h"
 
 extern std::string LogFileName;
 extern bool bLogChat;

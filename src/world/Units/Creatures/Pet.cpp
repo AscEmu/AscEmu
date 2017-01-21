@@ -26,6 +26,7 @@
 #include "Server/Packets/Handlers/HonorHandler.h"
 #include "Spell/SpellNameHashes.h"
 #include "Units/Stats.h"
+#include "Management/Battleground/Battleground.h"
 
 #define WATER_ELEMENTAL         510
 #define WATER_ELEMENTAL_NEW     37994

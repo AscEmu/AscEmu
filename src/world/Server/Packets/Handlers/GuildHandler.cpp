@@ -23,6 +23,7 @@
 #include "Management/Item.h"
 #include "Storage/WorldStrings.h"
 #include "Management/ItemInterface.h"
+#include "Management/ArenaTeam.h"
 
 void WorldSession::HandleGuildQuery(WorldPacket& recv_data)
 {

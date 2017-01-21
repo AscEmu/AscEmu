@@ -23,6 +23,7 @@
 #include "Management/Item.h"
 #include "Management/WeatherMgr.h"
 #include "Management/ItemInterface.h"
+#include "Management/Battleground/Battleground.h"
 
 void WorldSession::HandleRepopRequestOpcode(WorldPacket& recv_data)
 {

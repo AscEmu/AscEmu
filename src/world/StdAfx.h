@@ -196,10 +196,12 @@
 #include "Objects/ObjectMgr.h"
 #include "CThreads.h"
 #include "Server/Script/ScriptMgr.h"
+#ifdef UNDEFINED_SYMBOL
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
 #include "Management/ArenaTeam.h"
 #include "Management/Arenas.h"
+#endif
 #include "Server/LogonCommClient/LogonCommClient.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/MainServerDefines.h"

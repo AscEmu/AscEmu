@@ -33,6 +33,7 @@
 #endif
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Item.h"
+#include "Management/ArenaTeam.h"
 
 ScriptMgr* m_scriptMgr = NULL;
 LuaEngine g_luaMgr;

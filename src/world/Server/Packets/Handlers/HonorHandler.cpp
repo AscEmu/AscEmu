@@ -24,6 +24,7 @@
 #include "Server/Packets/Handlers/HonorHandler.h"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
+#include "Management/Battleground/Battleground.h"
 
 void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recv_data)
 {

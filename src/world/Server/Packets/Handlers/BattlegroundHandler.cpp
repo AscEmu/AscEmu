@@ -19,6 +19,8 @@
  */
 
 #include "StdAfx.h"
+#include "Management/Battleground/Battleground.h"
+#include "Management/ArenaTeam.h"
 
 void WorldSession::HandleBattlefieldPortOpcode(WorldPacket& recv_data)
 {

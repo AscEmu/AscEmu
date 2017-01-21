@@ -25,6 +25,7 @@
 #include "Management/Item.h"
 #include "Exceptions/PlayerExceptions.hpp"
 #include "Management/ItemInterface.h"
+#include "Management/Battleground/Battleground.h"
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 

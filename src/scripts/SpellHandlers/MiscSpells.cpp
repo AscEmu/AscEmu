@@ -23,6 +23,7 @@
 #include "Spell/SpellNameHashes.h"
 #include "Management/Skill.h"
 #include "Management/ItemInterface.h"
+#include "Management/Battleground/Battleground.h"
 
 bool FrostWarding(uint32 i, Spell* s)
 {

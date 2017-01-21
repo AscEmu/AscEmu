@@ -22,6 +22,8 @@
 #include "git_version.h"
 #include "AuthCodes.h"
 #include "Management/WordFilter.h"
+#include "Management/ArenaTeam.h"
+#include "Management/Battleground/Battleground.h"
 
 LoginErrorCode VerifyName(const char* name, size_t nlen)
 {

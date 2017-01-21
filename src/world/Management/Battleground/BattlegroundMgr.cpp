@@ -19,6 +19,10 @@
  */
 
 #include "StdAfx.h"
+#include "Management/Battleground/Battleground.h"
+#include "Management/Battleground/BattlegroundMgr.h"
+#include "Management/Arenas.h"
+#include "Management/ArenaTeam.h"
 
 initialiseSingleton(CBattlegroundManager);
 
