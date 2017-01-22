@@ -139,9 +139,7 @@
 #include "Objects/GameObject.h"
 #include "Objects/CObjectFactory.h"
 #include "Management/CRitual.h"
-#endif
 #include "Management/Group.h"
-#ifdef UNDEFINED_SYMBOL
 #include "Management/Guild.h"
 #include "Server/Packets/Handlers/HonorHandler.h"
 #include "Management/ItemPrototype.h"

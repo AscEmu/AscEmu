@@ -23,6 +23,7 @@
 #define __WORLDCREATOR_H
 
 #include "WorldCreatorDefines.hpp"
+#include "Management/Group.h"
 
 extern const char* InstanceAbortMessages[];
 

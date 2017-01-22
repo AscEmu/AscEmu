@@ -33,6 +33,7 @@
 #include "Management/Gossip/GossipDefines.hpp"
 #include "Objects/GameObject.h"
 #include "Spell/Spell.h"
+#include "Management/Group.h"
 
 #include <string>
 
