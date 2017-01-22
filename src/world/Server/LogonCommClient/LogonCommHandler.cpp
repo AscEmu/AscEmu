@@ -24,6 +24,7 @@
 #include "Server/MainServerDefines.h"
 #include "Server/Master.h"
 #include "Config/Config.h"
+#include "Auth/Sha1.h"
 
 initialiseSingleton(LogonCommHandler);
 

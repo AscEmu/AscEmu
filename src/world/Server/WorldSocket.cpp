@@ -27,6 +27,7 @@
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
+#include "Auth/Sha1.h"
 
 #pragma pack(push, 1)
 struct ClientPktHeader

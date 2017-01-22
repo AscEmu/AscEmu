@@ -47,9 +47,7 @@
 #include "Network/Network.h"
 #include "Auth/MD5.h"
 #include "Auth/BigNumber.h"
-#endif
 #include "Auth/Sha1.h"          // Mutex.h, Guard.h errors
-#ifdef UNDEFINED_SYMBOL
 #include "Auth/WowCrypt.h"
 #include "FastQueue.h"
 #include "CircularQueue.h"
@@ -67,13 +65,11 @@
 
 //Movement
 #include "Movement/UnitMovementManager.hpp"
-#endif
 #include "Movement/Spline/MovementSpline.hpp"
 #include "Movement/Spline/MovementSplineDefines.hpp"
 #include "Movement/Spline/SplineFlags.hpp"
 #include "Movement/MovementCommon.hpp"
 
-#ifdef UNDEFINED_SYMBOL
 #include "Server/Packets/ManagedPacket.hpp"
 #include "Server/Packets/Movement/CreatureMovement.hpp"
 #include "Server/Packets/Movement/SmsgMonsterMove.hpp"
