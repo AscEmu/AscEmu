@@ -191,6 +191,16 @@ void AIInterface::Init(Unit* un, AIType at, Movement::WaypointMovementScript mt,
     m_flySpeed = m_Unit->m_flySpeed * 0.001f;
 }
 
+Unit* AIInterface::GetUnit() const
+{
+    return m_Unit;
+}
+
+Unit* AIInterface::GetPetOwner() const
+{
+    return m_PetOwner;
+}
+
 void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 {
     if (m_Unit == NULL) return;
@@ -1861,6 +1871,64 @@ void AIInterface::UpdateSpeeds()
 
     m_walkSpeed = m_Unit->m_walkSpeed * 0.001f;
     m_flySpeed = m_Unit->m_flySpeed * 0.001f;
+}
+
+bool AIInterface::Flying() const
+{
+    return m_Unit->m_movementManager.IsFlying();
+}
+
+void AIInterface::SetFly() const
+{
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.flying = true;
+}
+
+void AIInterface::SetSprint()
+{
+    if (Flying()) return;
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode = true;
+    SetWalkMode(WALKMODE_SPRINT);
+    UpdateSpeeds();
+}
+
+void AIInterface::SetRun()
+{
+    if (Flying()) return;
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode = true;
+    SetWalkMode(WALKMODE_RUN);
+    UpdateSpeeds();
+}
+
+void AIInterface::SetWalk()
+{
+    if (Flying()) return;
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.walkmode = true;
+    SetWalkMode(WALKMODE_WALK);
+    UpdateSpeeds();
+}
+
+void AIInterface::SetWalkMode(uint32 mode)
+{
+    m_walkMode = mode;
+}
+
+bool AIInterface::HasWalkMode(uint32 mode) const
+{
+    return m_walkMode == mode;
+}
+
+uint32 AIInterface::GetWalkMode() const
+{
+    return m_walkMode;
+}
+
+void AIInterface::StopFlying()
+{
+    if (Flying())
+    {
+        m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.flying = false;
+        SetWalk();
+    }
 }
 
 void AIInterface::UpdateMove()
@@ -3569,6 +3637,11 @@ void AIInterface::UpdateMovementSpline()
         else
             UpdateMovementSpline();
     }
+}
+
+bool AIInterface::MoveDone() const
+{
+    return m_Unit->m_movementManager.m_spline.IsSplineMoveDone();
 }
 
 bool AIInterface::Move(float & x, float & y, float & z, float o /*= 0*/)
