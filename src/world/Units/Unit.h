@@ -26,6 +26,7 @@
 
 #include "Management/LootMgr.h"
 #include "Spell/SpellProc.h"
+#include "CombatStatus.h"
 
 class SpellProc;
 class AIInterface;
@@ -220,6 +221,8 @@ class SERVER_DECL CombatStatusHandler
 //////////////////////////////////////////////////////////////////////////////////////////
 class SERVER_DECL Unit : public Object
 {
+    AscEmu::World::Units::CombatStatus m_combatStatus;
+
     public:
 
         void CombatStatusHandler_UpdatePvPTimeout();
@@ -1221,7 +1224,7 @@ class SERVER_DECL Unit : public Object
         virtual Group* GetGroup() { return NULL; }
         bool InParty(Unit* u);
         bool InRaid(Unit* u);
-        const CombatStatusHandler* getcombatstatus() const { return &CombatStatus; }
+        AscEmu::World::Units::CombatStatus& getCombatStatus();
 
         bool m_noFallDamage;
         float z_axisposition;

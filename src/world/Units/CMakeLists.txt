@@ -3,6 +3,8 @@
 set(PATH_PREFIX Units)
 
 set(SRC_UNITS_FILES
+   ${PATH_PREFIX}/CombatStatus.h
+   ${PATH_PREFIX}/CombatStatus.cpp
    ${PATH_PREFIX}/Stats.cpp
    ${PATH_PREFIX}/Stats.h
    ${PATH_PREFIX}/Unit.cpp

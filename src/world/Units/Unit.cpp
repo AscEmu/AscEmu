@@ -116,7 +116,7 @@ static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
     0.0136512559131f    //80
 };
 
-Unit::Unit() : m_movementManager()
+Unit::Unit() : m_combatStatus(this), m_movementManager()
 {
     int i;
 
@@ -421,6 +421,11 @@ Unit::Unit() : m_movementManager()
     m_manaShieldId = 0;
     m_charmtemp = 0;
     m_auraRaidUpdateMask = 0;
+}
+
+AscEmu::World::Units::CombatStatus& Unit::getCombatStatus()
+{
+    return m_combatStatus;
 }
 
 Unit::~Unit()
