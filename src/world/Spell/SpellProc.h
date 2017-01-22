@@ -24,6 +24,8 @@
 class SpellProc;
 
 #include "Objects/Object.h"
+#include "SpellInfo.hpp"
+
 class Unit;
 
 #define SPELL_PROC_FACTORY_FUNCTION(T) \

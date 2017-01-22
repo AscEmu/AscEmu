@@ -27,6 +27,8 @@
 #include "Spell/SpellProc.h"
 #include "CombatStatus.h"
 
+#include "Objects/Object.h"
+
 class SpellProc;
 class AIInterface;
 class DynamicObject;
