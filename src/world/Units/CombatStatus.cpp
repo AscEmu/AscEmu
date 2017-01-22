@@ -48,6 +48,30 @@ namespace AscEmu { namespace World { namespace Units {
         clearAllCombatTargets();
     }
 
+    void CombatStatus::clearAttackTargets()
+    {
+        auto map_mgr = m_unit->GetMapMgr();
+        ASSERT(map_mgr);
+
+        if (m_unit->IsPlayer())
+        {
+            reinterpret_cast<Player*>(m_unit)->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP);
+        }
+
+        for (auto targetGuid: m_attackTargets)
+        {
+            auto target = map_mgr->GetUnit(targetGuid);
+            if (target == nullptr)
+            {
+                m_attackTargets.erase(targetGuid);
+                continue;
+            }
+
+            removeAttackTarget(target);
+            target->removeAttacker(m_unit);
+        }
+    }
+
     void CombatStatus::clearAllCombatTargets()
     {
         removeAllAttackersAndAttackTargets();
@@ -122,7 +146,7 @@ namespace AscEmu { namespace World { namespace Units {
     void CombatStatus::removeMyHealers()
     {
         auto map_mgr = m_unit->GetMapMgr();
-        ASSERT(map_mgr != nullptr);
+        ASSERT(map_mgr);
 
         for (auto healerGuid: m_healers)
         {
@@ -195,7 +219,53 @@ namespace AscEmu { namespace World { namespace Units {
 
     void CombatStatus::clearPrimaryAttackTarget()
     {
-        m_primaryAttackTarget = 0;
+        auto map_mgr = m_unit->GetMapMgr();
+        ASSERT(map_mgr);
+
+        if (m_primaryAttackTarget != 0)
+        {
+            auto target = map_mgr->GetUnit(m_primaryAttackTarget);
+            if (target != nullptr)
+            {
+                if (!isAttacking(target))
+                {
+                    target->removeAttacker(m_unit);
+                    m_attackTargets.erase(m_primaryAttackTarget);
+                }
+            }
+            else
+            {
+                m_attackTargets.erase(m_primaryAttackTarget);
+            }
+
+            m_primaryAttackTarget = 0;
+        }
+
+        update();
+    }
+
+    void CombatStatus::addAttackTarget(uint64_t guid)
+    {
+        ASSERT(m_unit->IsInWorld());
+
+        if (guid == m_unit->GetGUID())
+            return;
+
+        m_attackTargets.insert(guid);
+        if (m_unit->IsPlayer())
+        {
+            // Players can only have one primary attack target
+            // TODO: This should be true for creatures too...
+            if (m_primaryAttackTarget != guid)
+            {
+                if (m_primaryAttackTarget != 0)
+                    clearPrimaryAttackTarget();
+
+                m_primaryAttackTarget = guid;
+            }
+        }
+
+        update();
     }
 
     void CombatStatus::removeHealTarget(Player* target)
@@ -226,6 +296,52 @@ namespace AscEmu { namespace World { namespace Units {
         m_healers.insert(healer->GetLowGUID());
     }
 
+    void CombatStatus::addAttacker(Unit* attacker)
+    {
+        ASSERT(attacker);
+
+        auto guid = attacker->GetGUID();
+
+        if (hasAttacker(guid))
+            return;
+
+        m_attackers.insert(guid);
+        update();
+    }
+
+    bool CombatStatus::hasAttacker(uint64_t guid) const
+    {
+        return find(begin(m_attackers), end(m_attackers), guid) != end(m_attackers);
+    }
+
+    void CombatStatus::onDamageDealt(Unit* target)
+    {
+        ASSERT(target);
+
+        if (target == m_unit)
+        {
+            return;
+        }
+
+        if (!target->isAlive() || !m_unit->isAlive())
+        {
+            return;
+        }
+
+        auto attackTarget = find(begin(m_attackTargets), end(m_attackTargets), target->GetGUID());
+        if (attackTarget == end(m_attackTargets))
+        {
+            addAttackTarget(target->GetGUID());
+        }
+
+        if (!target->hasAttacker(m_unit->GetGUID()))
+        {
+            target->addAttacker(m_unit);
+        }
+
+        m_unit->CombatStatusHandler_ResetPvPTimeout();
+    }
+
     void CombatStatus::removeAttacker(Unit* attacker)
     {
         ASSERT(attacker != nullptr);
@@ -244,12 +360,19 @@ namespace AscEmu { namespace World { namespace Units {
         update();
     }
 
-    void CombatStatus::removeAttackTarget(Unit* attackTarget)
+    void CombatStatus::removeAttackTarget(Unit* target)
     {
-        ASSERT(attackTarget);
+        ASSERT(target);
 
-        m_attackTargets.erase(attackTarget->GetGUID());
-        update();
+        if (!isAttacking(target))
+        {
+            auto guid = target->GetGUID();
+            m_attackTargets.erase(guid);
+            if (m_primaryAttackTarget == guid)
+                m_primaryAttackTarget = 0;
+
+            update();
+        }
     }
 
     uint64_t CombatStatus::getPrimaryAttackTarget() const

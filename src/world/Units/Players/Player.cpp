@@ -12204,7 +12204,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
         if (!GetSession()->HasPermissions() && sWorld.m_limits.enable != 0)
             damage = CheckDamageLimits(damage, spellId);
 
-        CombatStatus.OnDamageDealt(pVictim);
+        onDamageDealt(pVictim);
 
         if (pVictim->IsPvPFlagged())
         {

@@ -1841,7 +1841,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 un
         return;
 
     if (pVictim != this)
-        CombatStatus.OnDamageDealt(pVictim);
+        onDamageDealt(pVictim);
 
     pVictim->SetStandState(STANDSTATE_STAND);
 

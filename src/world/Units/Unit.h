@@ -155,54 +155,6 @@ struct AuraCheckResponse
 
 typedef std::list<struct ProcTriggerSpellOnSpell> ProcTriggerSpellOnSpellList;
 
-
-class Unit;
-class SERVER_DECL CombatStatusHandler
-{
-    typedef std::set<uint64> AttackerMap;
-    typedef std::set<uint32> HealedSet;      // Must Be Players!
-
-    HealedSet m_healers;
-    HealedSet m_healed;
-
-    Unit* m_Unit;
-
-    bool m_lastStatus;
-
-    AttackerMap m_attackTargets;
-
-    uint64 m_primaryAttackTarget;
-
-    public:
-
-        CombatStatusHandler() : m_Unit(nullptr), m_lastStatus(false), m_primaryAttackTarget(0) {}
-
-        AttackerMap m_attackers;
-
-        void AddAttackTarget(const uint64 & guid);                      // this means we clicked attack, not actually striked yet, so they shouldn't be in combat.
-        void ClearPrimaryAttackTarget();                                // means we deselected the unit, stopped attacking it.
-
-        void OnDamageDealt(Unit* pTarget);                              // this is what puts the other person in combat.
-
-        void RemoveAttacker(Unit* pAttacker, const uint64 & guid);      // this means we stopped attacking them totally. could be because of deaggro, etc.
-        void RemoveAttackTarget(Unit* pTarget);                         // means our DoT expired.
-
-        void UpdateFlag();                                              // detects if we have changed combat state (in/out), and applies the flag.
-
-        void TryToClearAttackTargets();                                 // for pvp timeout
-        void AttackersForgetHate();                                     // used right now for Feign Death so attackers go home
-
-    protected:
-
-        bool InternalIsInCombat();                                      // called by UpdateFlag, do not call from anything else!
-        bool IsAttacking(Unit* pTarget);                                // internal function used to determine if we are still attacking target x.
-        void AddAttacker(const uint64 & guid);                          // internal function to add an attacker
-        void RemoveHealed(Unit* pHealTarget);                           // usually called only by updateflag
-        void ClearHealers();                                            // this is called on instance change.
-        void ClearAttackers();                                          // means we vanished, or died.
-        void ClearMyHealers();
-};
-
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Base class for Players and Creatures
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -217,6 +169,7 @@ public:
         
     void enterCombat();
     void leaveCombat();
+    void onDamageDealt(Unit* target);
 
     void addHealTarget(Unit* target);
     void removeHealTarget(Unit* target);
@@ -224,6 +177,8 @@ public:
     void addHealer(Unit* healer);
     void removeHealer(Unit* healer);
 
+    void addAttacker(Unit* attacker);
+    bool hasAttacker(uint64_t guid) const;
     void removeAttacker(Unit* attacker);
     void removeAttacker(uint64_t guid);
 
@@ -924,7 +879,6 @@ public:
 
         uint32 m_cTimer;
         //void EventUpdateFlag();
-        CombatStatusHandler CombatStatus;
         bool m_temp_summon;
 
         void CancelSpell(Spell* ptr);

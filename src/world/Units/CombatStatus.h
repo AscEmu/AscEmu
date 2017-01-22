@@ -38,6 +38,7 @@ namespace AscEmu { namespace World { namespace Units {
         void removeAllAttackersAndAttackTargets();
 
         void clearPrimaryAttackTarget();
+
     public:
         CombatStatus(Unit* unit);
 
@@ -46,6 +47,8 @@ namespace AscEmu { namespace World { namespace Units {
 
         // Called when the unit is being removed from the world
         void onRemoveFromWorld();
+
+        void clearAttackTargets();
 
         void clearAllCombatTargets();
 
@@ -60,10 +63,13 @@ namespace AscEmu { namespace World { namespace Units {
         void addHealer(Player* healer);
 
         void addAttacker(Unit* attacker);
+        bool hasAttacker(uint64_t guid) const;
         void removeAttacker(Unit* attacker);
         void removeAttacker(uint64_t guid);
 
-        void removeAttackTarget(Unit* attackTarget);
+        void addAttackTarget(uint64_t guid);
+        void onDamageDealt(Unit* target);
+        void removeAttackTarget(Unit* target);
 
         uint64_t getPrimaryAttackTarget() const;
     };

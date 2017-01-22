@@ -889,12 +889,12 @@ void Aura::Remove()
     {
         if (caster != m_target)
         {
-            caster->CombatStatus.RemoveAttackTarget(m_target);
-            m_target->CombatStatus.RemoveAttacker(caster, caster->GetGUID());
+            caster->removeAttackTarget(m_target);
+            m_target->removeAttacker(caster);
         }
     }
     else
-        m_target->CombatStatus.RemoveAttacker(NULL, m_casterGuid);
+        m_target->removeAttacker(m_casterGuid);
 
     /**********************Cooldown**************************
     * this is only needed for some spells

@@ -4022,7 +4022,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
             // have to set attack target here otherwise it wont be set
             // because dealdamage is not called.
             //setAttackTarget(pVictim);
-            this->CombatStatus.OnDamageDealt(pVictim);
+            this->onDamageDealt(pVictim);
         }
     }
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -4651,7 +4651,7 @@ void Unit::AddAura(Aura* aur)
         Unit* pCaster = aur->GetUnitCaster();
         if (pCaster && pCaster->isAlive() && this->isAlive())
         {
-            pCaster->CombatStatus.OnDamageDealt(this);
+            pCaster->onDamageDealt(this);
 
             if (IsCreature())
                 m_aiInterface->AttackReaction(pCaster, 1, aur->GetSpellId());
@@ -6616,21 +6616,6 @@ float Unit::get_chance_to_daze(Unit* target)
         return chance_to_daze;
 }
 
-void CombatStatusHandler::ClearMyHealers()
-{
-    // this is where we check all our healers
-    HealedSet::iterator i;
-    Player* pt;
-    for (i = m_healers.begin(); i != m_healers.end(); ++i)
-    {
-        pt = m_Unit->GetMapMgr()->GetPlayer(*i);
-        if (pt != NULL)
-            pt->CombatStatus.RemoveHealed(m_Unit);
-    }
-
-    m_healers.clear();
-}
-
 void Unit::removeHealTarget(Unit* target)
 {
     ASSERT(target != nullptr);
@@ -6671,39 +6656,6 @@ void Unit::addHealer(Unit* healer)
     }
 }
 
-void CombatStatusHandler::RemoveHealed(Unit* pHealTarget)
-{
-    m_healed.erase(pHealTarget->GetLowGUID());
-    UpdateFlag();
-}
-
-void CombatStatusHandler::UpdateFlag()
-{
-    bool n_status = InternalIsInCombat();
-    if (n_status != m_lastStatus)
-    {
-        m_lastStatus = n_status;
-        if (n_status)
-        {
-            //printf(I64FMT" is now in combat.\n", m_Unit->GetGUID());
-            m_Unit->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_COMBAT);
-            if (!m_Unit->hasStateFlag(UF_ATTACKING)) m_Unit->addStateFlag(UF_ATTACKING);
-        }
-        else
-        {
-            //printf(I64FMT" is no longer in combat.\n", m_Unit->GetGUID());
-            m_Unit->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_COMBAT);
-            if (m_Unit->hasStateFlag(UF_ATTACKING)) m_Unit->clearStateFlag(UF_ATTACKING);
-
-            // remove any of our healers from combat too, if they are able to be.
-            ClearMyHealers();
-
-            if (m_Unit->IsPlayer())
-                static_cast<Player*>(m_Unit)->UpdatePotionCooldown();
-        }
-    }
-}
-
 void Unit::enterCombat()
 {
     setCombatFlag(true);
@@ -6729,6 +6681,13 @@ void Unit::leaveCombat()
     }
 }
 
+void Unit::onDamageDealt(Unit* target)
+{
+    ASSERT(target);
+
+    m_combatStatus.onDamageDealt(target);
+}
+
 void Unit::setCombatFlag(bool enabled)
 {
     if (enabled)
@@ -6741,151 +6700,16 @@ void Unit::setCombatFlag(bool enabled)
     }
 }
 
-bool CombatStatusHandler::InternalIsInCombat()
+void Unit::addAttacker(Unit* attacker)
 {
-    if (m_Unit->IsPlayer() && m_Unit->GetMapMgr() && m_Unit->GetMapMgr()->IsCombatInProgress())
-        return true;
+    ASSERT(attacker);
 
-    if (m_healed.size() > 0)
-        return true;
-
-    if (m_attackTargets.size() > 0)
-        return true;
-
-    if (m_attackers.size() > 0)
-        return true;
-
-    return false;
+    m_combatStatus.addAttacker(attacker);
 }
 
-void CombatStatusHandler::AddAttackTarget(const uint64 & guid)
+bool Unit::hasAttacker(uint64_t guid) const
 {
-    if (guid == m_Unit->GetGUID())
-        return;
-
-    //we MUST be in world
-    ARCEMU_ASSERT(m_Unit->IsInWorld());
-
-    m_attackTargets.insert(guid);
-    //printf("Adding attack target " I64FMT " to " I64FMT "\n", guid, m_Unit->GetGUID());
-    if (m_Unit->IsPlayer() &&
-        m_primaryAttackTarget != guid)			// players can only have one attack target.
-    {
-        if (m_primaryAttackTarget)
-            ClearPrimaryAttackTarget();
-
-        m_primaryAttackTarget = guid;
-    }
-
-    UpdateFlag();
-}
-
-void CombatStatusHandler::ClearPrimaryAttackTarget()
-{
-    //printf("ClearPrimaryAttackTarget for " I64FMT "\n", m_Unit->GetGUID());
-    if (m_primaryAttackTarget != 0)
-    {
-        Unit* pt = m_Unit->GetMapMgr()->GetUnit(m_primaryAttackTarget);
-        if (pt != NULL)
-        {
-            // remove from their attacker set. (if we have no longer got any DoT's, etc)
-            if (!IsAttacking(pt))
-            {
-                pt->CombatStatus.RemoveAttacker(m_Unit, m_Unit->GetGUID());
-                m_attackTargets.erase(m_primaryAttackTarget);
-            }
-
-            m_primaryAttackTarget = 0;
-        }
-        else
-        {
-            m_attackTargets.erase(m_primaryAttackTarget);
-            m_primaryAttackTarget = 0;
-        }
-    }
-
-    UpdateFlag();
-}
-
-bool CombatStatusHandler::IsAttacking(Unit* pTarget)
-{
-    // check the target for any of our DoT's.
-    for (uint32 i = MAX_NEGATIVE_AURAS_EXTEDED_START; i < MAX_NEGATIVE_AURAS_EXTEDED_END; ++i)
-        if (pTarget->m_auras[i] != NULL)
-            if (m_Unit->GetGUID() == pTarget->m_auras[i]->m_casterGuid && pTarget->m_auras[i]->IsCombatStateAffecting())
-                return true;
-
-    // place any additional checks here
-    return false;
-}
-
-void CombatStatusHandler::RemoveAttackTarget(Unit* pTarget)
-{
-    // called on aura remove, etc.
-    AttackerMap::iterator itr = m_attackTargets.find(pTarget->GetGUID());
-    if (itr == m_attackTargets.end())
-        return;
-
-    if (!IsAttacking(pTarget))
-    {
-        //printf("Removing attack target " I64FMT " on " I64FMT "\n", pTarget->GetGUID(), m_Unit->GetGUID());
-        m_attackTargets.erase(itr);
-        if (m_primaryAttackTarget == pTarget->GetGUID())
-            m_primaryAttackTarget = 0;
-
-        UpdateFlag();
-    }
-    /*else
-        printf("Cannot remove attack target " I64FMT " from " I64FMT "\n", pTarget->GetGUID(), m_Unit->GetGUID());*/
-}
-
-void CombatStatusHandler::RemoveAttacker(Unit* pAttacker, const uint64 & guid)
-{
-    AttackerMap::iterator itr = m_attackers.find(guid);
-    if (itr == m_attackers.end())
-        return;
-
-    if ((!pAttacker) || (!pAttacker->CombatStatus.IsAttacking(m_Unit)))
-    {
-        //printf("Removing attacker " I64FMT " from " I64FMT "\n", guid, m_Unit->GetGUID());
-        m_attackers.erase(itr);
-        UpdateFlag();
-    }
-    /*else
-    {
-    printf("Cannot remove attacker " I64FMT " from " I64FMT "\n", guid, m_Unit->GetGUID());
-    }*/
-}
-
-void CombatStatusHandler::OnDamageDealt(Unit* pTarget)
-{
-    // we added an aura, or dealt some damage to a target. they need to have us as an attacker, and they need to be our attack target if not.
-    //printf("OnDamageDealt to " I64FMT " from " I64FMT "\n", pTarget->GetGUID(), m_Unit->GetGUID());
-    if (pTarget == m_Unit)
-        return;
-
-    //no need to be in combat if dead
-    if (!pTarget->isAlive() || !m_Unit->isAlive())
-        return;
-
-    AttackerMap::iterator itr = m_attackTargets.find(pTarget->GetGUID());
-    if (itr == m_attackTargets.end())
-        AddAttackTarget(pTarget->GetGUID());
-
-    itr = pTarget->CombatStatus.m_attackers.find(m_Unit->GetGUID());
-    if (itr == pTarget->CombatStatus.m_attackers.end())
-        pTarget->CombatStatus.AddAttacker(m_Unit->GetGUID());
-
-    // update the timeout
-    m_Unit->CombatStatusHandler_ResetPvPTimeout();
-}
-
-void CombatStatusHandler::AddAttacker(const uint64 & guid)
-{
-    //we MUST be in world
-    ARCEMU_ASSERT(m_Unit->IsInWorld());
-    m_attackers.insert(guid);
-    UpdateFlag();
+    return m_combatStatus.hasAttacker(guid);
 }
 
 void Unit::removeAttacker(Unit* attacker)
@@ -6907,72 +6731,6 @@ void Unit::removeAttackTarget(Unit* attackTarget)
     ASSERT(IsInWorld());
 
     m_combatStatus.removeAttackTarget(attackTarget);
-}
-
-void CombatStatusHandler::ClearAttackers()
-{
-    //If we are not in world, CombatStatusHandler::OnRemoveFromWorld() would have been already called so m_attackTargets
-    //and m_attackers should be empty. If it's not, something wrong happened.
-
-    // this is a FORCED function, only use when the reference will be destroyed.
-    AttackerMap::iterator itr = m_attackTargets.begin();
-    Unit* pt;
-    for (; itr != m_attackTargets.end(); ++itr)
-    {
-        pt = m_Unit->GetMapMgr()->GetUnit(*itr);
-        if (pt)
-        {
-            pt->CombatStatus.m_attackers.erase(m_Unit->GetGUID());
-            pt->CombatStatus.UpdateFlag();
-        }
-    }
-
-    for (itr = m_attackers.begin(); itr != m_attackers.end(); ++itr)
-    {
-        pt = m_Unit->GetMapMgr()->GetUnit(*itr);
-        if (pt)
-        {
-            pt->CombatStatus.m_attackTargets.erase(m_Unit->GetGUID());
-            pt->CombatStatus.UpdateFlag();
-        }
-    }
-
-    m_attackers.clear();
-    m_attackTargets.clear();
-    m_primaryAttackTarget = 0;
-    UpdateFlag();
-}
-
-void CombatStatusHandler::ClearHealers()
-{
-    //If we are not in world, CombatStatusHandler::OnRemoveFromWorld() would have been already called so m_healed should
-    //be empty. If it's not, something wrong happened.
-
-    HealedSet::iterator itr = m_healed.begin();
-    Player* pt;
-    for (; itr != m_healed.end(); ++itr)
-    {
-        pt = m_Unit->GetMapMgr()->GetPlayer(*itr);
-        if (pt)
-        {
-            pt->CombatStatus.m_healers.erase(m_Unit->GetLowGUID());
-            pt->CombatStatus.UpdateFlag();
-        }
-    }
-
-    for (itr = m_healers.begin(); itr != m_healers.end(); ++itr)
-    {
-        pt = m_Unit->GetMapMgr()->GetPlayer(*itr);
-        if (pt)
-        {
-            pt->CombatStatus.m_healed.erase(m_Unit->GetLowGUID());
-            pt->CombatStatus.UpdateFlag();
-        }
-    }
-
-    m_healed.clear();
-    m_healers.clear();
-    UpdateFlag();
 }
 
 void Unit::clearAllCombatTargets()
@@ -7023,7 +6781,7 @@ void Unit::CombatStatusHandler_ResetPvPTimeout()
 
 void Unit::CombatStatusHandler_UpdatePvPTimeout()
 {
-    CombatStatus.TryToClearAttackTargets();
+    m_combatStatus.clearAttackTargets();
 }
 
 void Unit::Heal(Unit* target, uint32 SpellId, uint32 amount)
@@ -7350,49 +7108,6 @@ void Unit::InheritSMMods(Unit* inherit_from)
         if (SM_PThreat == 0)
             SM_PThreat = new int32[SPELL_GROUPS];
         memcpy(SM_PThreat, inherit_from->SM_PThreat, sizeof(int)*SPELL_GROUPS);
-    }
-}
-
-void CombatStatusHandler::TryToClearAttackTargets()
-{
-    AttackerMap::iterator i, i2;
-    Unit* pt;
-
-    if (m_Unit->IsPlayer())
-        static_cast<Player*>(m_Unit)->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP);
-
-    for (i = m_attackTargets.begin(); i != m_attackTargets.end();)
-    {
-        i2 = i++;
-        pt = m_Unit->GetMapMgr()->GetUnit(*i2);
-        if (pt == NULL)
-        {
-            m_attackTargets.erase(i2);
-            continue;
-        }
-
-        RemoveAttackTarget(pt);
-        pt->CombatStatus.RemoveAttacker(m_Unit, m_Unit->GetGUID());
-    }
-}
-
-void CombatStatusHandler::AttackersForgetHate()
-{
-    AttackerMap::iterator i, i2;
-    Unit* pt;
-
-    for (i = m_attackTargets.begin(); i != m_attackTargets.end();)
-    {
-        i2 = i++;
-        pt = m_Unit->GetMapMgr()->GetUnit(*i2);
-        if (pt == NULL)
-        {
-            m_attackTargets.erase(i2);
-            continue;
-        }
-
-        if (pt->GetAIInterface())
-            pt->GetAIInterface()->RemoveThreatByPtr(m_Unit);
     }
 }
 

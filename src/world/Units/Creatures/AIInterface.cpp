@@ -3225,8 +3225,8 @@ void AIInterface::CheckTarget(Unit* target)
     TargetMap::iterator it2 = m_aiTargets.find(target->GetGUID());
     if (it2 != m_aiTargets.end() || target == getNextTarget())
     {
-        target->CombatStatus.RemoveAttacker(m_Unit, m_Unit->GetGUID());
-        m_Unit->CombatStatus.RemoveAttackTarget(target);
+        target->removeAttacker(m_Unit);
+        m_Unit->removeAttackTarget(target);
 
         if (it2 != m_aiTargets.end())
         {
@@ -4186,7 +4186,7 @@ void AIInterface::EventDamageTaken(Unit* pUnit, uint32 misc1)
     {
         m_aiTargets.insert(TargetMap::value_type(pUnit->GetGUID(), misc1));
     }
-    pUnit->CombatStatus.OnDamageDealt(m_Unit);
+    pUnit->onDamageDealt(m_Unit);
 }
 
 void AIInterface::EventFollowOwner(Unit* pUnit, uint32 misc1)

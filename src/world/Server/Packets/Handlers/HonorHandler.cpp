@@ -152,7 +152,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
 
                 bool added = false;
                 Player* plr = static_cast<Player*>(*itr);
-                if (pVictim->CombatStatus.m_attackers.find(plr->GetGUID()) != pVictim->CombatStatus.m_attackers.end())
+                if (pVictim->hasAttacker(plr->GetGUID()))
                 {
                     added = true;
                     contributors.insert(plr);
