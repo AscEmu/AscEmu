@@ -26,6 +26,8 @@
 #include "Map/Map.h"
 #include "Units/Unit.h"
 #include "Movement/UnitMovementManager.hpp"
+#include "Objects/Object.h"
+#include "Management/Group.h"
 
 class GossipScript;
 
