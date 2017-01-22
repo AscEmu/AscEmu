@@ -17,18 +17,40 @@ namespace AscEmu { namespace World { namespace Units {
         Unit* m_unit;
         uint64_t m_primaryAttackTarget;
 
-        HealerSet m_healingUs;
-        HealerSet m_healedByUs;
+        HealerSet m_healers;
+        HealerSet m_healTargets;
 
-        AttackerSet m_attackingUs;
-        AttackerSet m_attackedByUs;
+        AttackerSet m_attackers;
+        AttackerSet m_attackTargets;
 
         bool m_lastStatus;
 
+        // Checks whether we are really in combat (only used internally)
+        bool isReallyInCombat() const;
+
+        // Removes our healers from the list
+        void removeMyHealers();
+
+        // Removes all healers and heal targets, called on instance change
+        void removeAllHealersAndHealTargets();
+        // Means we either vanished or died
+        void removeAllAttackersAndAttackTargets();
     public:
         CombatStatus(Unit* unit);
 
+        // Sets us as in/out of combat and, if it changed from the last call, sets various flags based on that
+        void update();
+
+        // Checks whether we are in combat based on the last time update was called
         bool isInCombat() const;
-        void addHealer(Unit* unit);
+
+        void removeHealTarget(Player* target);
+        void addHealTarget(Player* target);
+
+        void removeHealer(Player* healer);
+        void addHealer(Player* healer);
+
+        void addAttacker(Unit* attacker);
+        void removeAttacker(Unit* attacker);
     };
 }}}

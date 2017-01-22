@@ -2347,7 +2347,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
             if (!(*itr)->IsCreature())
                 continue;
             tmp_creature = static_cast<Creature*>(*itr);
-            if (!tmp_creature->CombatStatus.IsInCombat() || (tmp_creature->GetAIInterface()->getThreatByPtr(u_caster) == 0 && tmp_creature->GetAIInterface()->getThreatByPtr(m_target) == 0))
+            if (!tmp_creature->isInCombat() || (tmp_creature->GetAIInterface()->getThreatByPtr(u_caster) == 0 && tmp_creature->GetAIInterface()->getThreatByPtr(m_target) == 0))
                 continue;
 
             if (!(u_caster->GetPhase() & tmp_creature->GetPhase()))   //Can't see, no threat
@@ -2367,7 +2367,9 @@ void Aura::EventPeriodicHeal(uint32 amount)
         }
 
         if (m_target->IsInWorld() && u_caster->IsInWorld())
-            u_caster->CombatStatus.WeHealed(m_target);
+        {
+            u_caster->addHealTarget(m_target);
+        }
     }
 }
 

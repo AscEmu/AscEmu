@@ -2638,7 +2638,7 @@ void Unit::RegenerateHealth()
     if (this->IsPlayer())
     {
         // These only NOT in combat
-        if (!CombatStatus.IsInCombat())
+        if (!isInCombat())
             static_cast<Player*>(this)->RegenerateHealth(false);
         else
             static_cast<Player*>(this)->RegenerateHealth(true);
@@ -2646,7 +2646,7 @@ void Unit::RegenerateHealth()
     else
     {
         // Only regen health out of combat
-        if (!CombatStatus.IsInCombat())
+        if (!isInCombat())
             static_cast<Creature*>(this)->RegenerateHealth();
     }
 }
@@ -2696,7 +2696,7 @@ void Unit::RegeneratePower(bool isinterrupted)
             case POWER_TYPE_RAGE:
             {
                 // These only NOT in combat
-                if (!CombatStatus.IsInCombat())
+                if (!isInCombat())
                 {
                     m_P_regenTimer = 3000;
                     if (HasAura(12296))
@@ -2732,7 +2732,7 @@ void Unit::RegeneratePower(bool isinterrupted)
 
             case POWER_TYPE_RUNIC_POWER:
             {
-                if (!CombatStatus.IsInCombat())
+                if (!isInCombat())
                 {
                     uint32 cur = GetUInt32Value(UNIT_FIELD_POWER7);
                     SetPower(POWER_TYPE_RUNIC_POWER, cur - 20);
@@ -4203,20 +4203,23 @@ void Unit::smsg_AttackStop(Unit* pVictim)
         pVictim->CombatStatusHandler_ResetPvPTimeout();
         CombatStatusHandler_ResetPvPTimeout();
     }
-    else
-    {
-        if (!IsPlayer() || getClass() == ROGUE)
-        {
-            m_cTimer = getMSTime() + 8000;
-            sEventMgr.RemoveEvents(this, EVENT_COMBAT_TIMER);
-            sEventMgr.AddEvent(this, &Unit::EventUpdateFlag, EVENT_COMBAT_TIMER, 8000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-            if (pVictim->IsUnit())   // there could be damage coming from objects/enviromental
-                sEventMgr.AddEvent(pVictim, &Unit::EventUpdateFlag, EVENT_COMBAT_TIMER, 8000, 1, 0);
-        }
-        else
-        {
-        }
-    }
+
+    // Evairfairy: None of this looks correct at all... TODO Research this
+
+    //else
+    //{
+    //    if (!IsPlayer() || getClass() == ROGUE)
+    //    {
+    //        m_cTimer = getMSTime() + 8000;
+    //        sEventMgr.RemoveEvents(this, EVENT_COMBAT_TIMER);
+    //        sEventMgr.AddEvent(this, &Unit::EventUpdateFlag, EVENT_COMBAT_TIMER, 8000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    //        if (pVictim->IsUnit())   // there could be damage coming from objects/enviromental
+    //            sEventMgr.AddEvent(pVictim, &Unit::EventUpdateFlag, EVENT_COMBAT_TIMER, 8000, 1, 0);
+    //    }
+    //    else
+    //    {
+    //    }
+    //}
 }
 
 void Unit::smsg_AttackStop(uint64 victimGuid)
@@ -6624,18 +6627,44 @@ void CombatStatusHandler::ClearMyHealers()
     m_healers.clear();
 }
 
-void CombatStatusHandler::WeHealed(Unit* pHealTarget)
+void Unit::removeHealTarget(Unit* target)
 {
-    if (!pHealTarget->IsPlayer() || !m_Unit->IsPlayer() || pHealTarget == m_Unit)
-        return;
+    ASSERT(target != nullptr);
 
-    if (pHealTarget->CombatStatus.IsInCombat())
+    if (target->IsPlayer())
     {
-        m_healed.insert(pHealTarget->GetLowGUID());
-        pHealTarget->CombatStatus.m_healers.insert(m_Unit->GetLowGUID());
+        m_combatStatus.removeHealTarget(reinterpret_cast<Player*>(target));
     }
+}
 
-    UpdateFlag();
+void Unit::removeHealer(Unit* healer)
+{
+    ASSERT(healer != nullptr);
+
+    if (healer->IsPlayer())
+    {
+        m_combatStatus.removeHealer(reinterpret_cast<Player*>(healer));
+    }
+}
+
+void Unit::addHealTarget(Unit* target)
+{
+    ASSERT(target != nullptr);
+
+    if (target->IsPlayer())
+    {
+        m_combatStatus.addHealTarget(reinterpret_cast<Player*>(target));
+    }
+}
+
+void Unit::addHealer(Unit* healer)
+{
+    ASSERT(healer != nullptr);
+
+    if (healer->IsPlayer())
+    {
+        m_combatStatus.addHealer(reinterpret_cast<Player*>(healer));
+    }
 }
 
 void CombatStatusHandler::RemoveHealed(Unit* pHealTarget)
@@ -6668,6 +6697,43 @@ void CombatStatusHandler::UpdateFlag()
             if (m_Unit->IsPlayer())
                 static_cast<Player*>(m_Unit)->UpdatePotionCooldown();
         }
+    }
+}
+
+void Unit::enterCombat()
+{
+    setCombatFlag(true);
+
+    if (!hasStateFlag(UF_ATTACKING))
+    {
+        addStateFlag(UF_ATTACKING);
+    }
+}
+
+void Unit::leaveCombat()
+{
+    setCombatFlag(false);
+
+    if (hasStateFlag(UF_ATTACKING))
+    {
+        clearStateFlag(UF_ATTACKING);
+    }
+
+    if (IsPlayer())
+    {
+        reinterpret_cast<Player*>(this)->UpdatePotionCooldown();
+    }
+}
+
+void Unit::setCombatFlag(bool enabled)
+{
+    if (enabled)
+    {
+        SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_COMBAT);
+    }
+    else
+    {
+        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_COMBAT);
     }
 }
 
@@ -6818,6 +6884,22 @@ void CombatStatusHandler::AddAttacker(const uint64 & guid)
     UpdateFlag();
 }
 
+void Unit::removeAttacker(Unit* attacker)
+{
+    ASSERT(attacker != nullptr);
+    ASSERT(IsInWorld());
+    
+    m_combatStatus.removeAttacker(attacker);
+}
+
+void Unit::removeAttackTarget(Unit* attackTarget)
+{
+    ASSERT(attackTarget != nullptr);
+    ASSERT(IsInWorld());
+
+
+}
+
 void CombatStatusHandler::ClearAttackers()
 {
     //If we are not in world, CombatStatusHandler::OnRemoveFromWorld() would have been already called so m_attackTargets
@@ -6890,39 +6972,14 @@ void CombatStatusHandler::OnRemoveFromWorld()
     ClearHealers();
 }
 
-bool CombatStatusHandler::IsInCombat() const
+bool Unit::isInCombat() const
 {
-    // If the unit doesn't exist - OR - the unit exists but is not in world
-    if (m_Unit == NULL || !m_Unit->IsInWorld())
-        return false;
+    return m_combatStatus.isInCombat();
+}
 
-    switch (m_Unit->GetTypeId())
-    {
-        case TYPEID_UNIT:
-        {
-            if (m_Unit->IsPet() && static_cast<Pet*>(m_Unit)->GetPetAction() == PET_ACTION_ATTACK)
-                return true;
-            else if (m_Unit->IsPet())
-                return m_lastStatus;
-            else
-                return m_Unit->GetAIInterface()->getAITargetsCount() == 0 ? false : true;
-        }
-        break;
-        case TYPEID_PLAYER:
-        {
-            std::list<Pet*> summons = static_cast<Player*>(m_Unit)->GetSummons();
-            for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
-            {
-                if ((*itr)->GetPetOwner() == m_Unit && (*itr)->CombatStatus.IsInCombat())
-                    return true;
-            }
-
-            return m_lastStatus;
-        }
-        break;
-        default:
-            return false;
-    }
+void Unit::updateCombatStatus()
+{
+    m_combatStatus.update();
 }
 
 void Unit::CombatStatusHandler_ResetPvPTimeout()
@@ -7471,10 +7528,10 @@ void Unit::ReplaceAIInterface(AIInterface* new_interface)
     m_aiInterface = new_interface;
 }
 
-void Unit::EventUpdateFlag()
-{
-    CombatStatus.UpdateFlag();
-}
+//void Unit::EventUpdateFlag()
+//{
+//    CombatStatus.UpdateFlag();
+//}
 
 void Unit::EventModelChange()
 {

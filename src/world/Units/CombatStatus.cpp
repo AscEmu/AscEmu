@@ -7,8 +7,40 @@ using namespace std;
 
 namespace AscEmu { namespace World { namespace Units {
 
+    bool CombatStatus::isReallyInCombat() const
+    {
+        if (m_unit->IsPlayer())
+        {
+            auto map_mgr = m_unit->GetMapMgr();
+            if (map_mgr != nullptr && map_mgr->IsCombatInProgress())
+            {
+                return true;
+            }
+        }
+
+        return m_healTargets.size() > 0 || m_attackTargets.size() > 0 || m_attackers.size() > 0;
+    }
+
     CombatStatus::CombatStatus(Unit* unit) : m_unit(unit), m_primaryAttackTarget(0), m_lastStatus(false)
     {
+    }
+
+    void CombatStatus::update()
+    {
+        auto currentStatus = isReallyInCombat();
+        if (currentStatus != m_lastStatus)
+        {
+            m_lastStatus = currentStatus;
+            if (currentStatus)
+            {
+                m_unit->enterCombat();
+            }
+            else
+            {
+                removeMyHealers();
+                m_unit->leaveCombat();
+            }
+        }
     }
 
     bool CombatStatus::isInCombat() const
@@ -45,15 +77,139 @@ namespace AscEmu { namespace World { namespace Units {
             auto summons = me->GetSummons();
             for (auto summon: summons)
             {
-                if (summon->GetPetOwner() == me && summon->getCombatStatus().isInCombat())
+                if (summon->GetPetOwner() == me && summon->isInCombat())
                 {
                     return true;
                 }
-
-                return m_lastStatus;
             }
+
+            return m_lastStatus;
         }
 
         return false;
+    }
+
+    void CombatStatus::removeMyHealers()
+    {
+        auto map_mgr = m_unit->GetMapMgr();
+        ASSERT(map_mgr != nullptr);
+
+        for (auto healerGuid: m_healers)
+        {
+            auto healer = map_mgr->GetPlayer(healerGuid);
+            if (healer != nullptr)
+            {
+                healer->removeHealTarget(m_unit);
+            }
+        }
+
+        m_healers.clear();
+    }
+
+    void CombatStatus::removeAllHealersAndHealTargets()
+    {
+        auto map_mgr = m_unit->GetMapMgr();
+        ASSERT(map_mgr != nullptr);
+
+        for (auto healTargetGuid: m_healTargets)
+        {
+            auto player = map_mgr->GetPlayer(healTargetGuid);
+            if (player != nullptr)
+            {
+                player->removeHealer(m_unit);
+            }
+        }
+
+        for (auto healerGuid: m_healers)
+        {
+            auto player = map_mgr->GetPlayer(healerGuid);
+            if (player != nullptr)
+            {
+                player->removeHealTarget(m_unit);
+            }
+        }
+
+        m_healTargets.clear();
+        m_healers.clear();
+        update();
+    }
+
+    void CombatStatus::removeAllAttackersAndAttackTargets()
+    {
+        auto map_mgr = m_unit->GetMapMgr();
+        ASSERT(map_mgr != nullptr);
+
+        for (auto attackTargetGuid: m_attackTargets)
+        {
+            auto attackTarget = map_mgr->GetUnit(attackTargetGuid);
+            if (attackTarget != nullptr)
+            {
+                attackTarget->removeAttacker(m_unit);
+            }
+        }
+
+        for (auto attackerGuid: m_attackers)
+        {
+            auto attacker = map_mgr->GetUnit(attackerGuid);
+            if (attacker != nullptr)
+            {
+                attacker->removeAttackTarget(m_unit);
+            }
+        }
+    }
+
+    void CombatStatus::removeHealTarget(Player* target)
+    {
+        ASSERT(target != nullptr);
+
+        m_healTargets.erase(target->GetLowGUID());
+        update();
+    }
+
+    void CombatStatus::removeHealer(Player* healer)
+    {
+        ASSERT(healer != nullptr);
+
+        m_healers.erase(healer->GetLowGUID());
+        update();
+    }
+
+    void CombatStatus::addHealer(Player* healer)
+    {
+        ASSERT(healer != nullptr);
+
+        if (!m_unit->IsPlayer() || m_unit == healer)
+        {
+            return;
+        }
+
+        m_healers.insert(healer->GetLowGUID());
+    }
+
+    void CombatStatus::removeAttacker(Unit* attacker)
+    {
+        ASSERT(m_unit->IsInWorld());
+        ASSERT(attacker != nullptr);
+
+        m_attackers.insert(attacker->GetGUID());
+        update();
+    }
+
+    void CombatStatus::addHealTarget(Player* target)
+    {
+        ASSERT(target != nullptr);
+
+        if (!m_unit->IsPlayer() || m_unit == target)
+        {
+            return;
+        }
+
+        if (target->isInCombat())
+        {
+            m_healTargets.insert(target->GetLowGUID());
+            target->addHealer(m_unit);
+        }
+
+        update();
     }
 }}}

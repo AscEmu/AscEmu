@@ -935,7 +935,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& recv_data)
         if (GetPermissionCount() == 0)
         {
             // Never instant logout for players while in combat or duelling
-            if (pPlayer->CombatStatus.IsInCombat() || pPlayer->DuelingWith != NULL)
+            if (pPlayer->isInCombat() || pPlayer->DuelingWith != NULL)
             {
                 data << uint32(1);
                 data << uint8(0);
@@ -2687,7 +2687,7 @@ void WorldSession::HandleSummonResponseOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (_player->CombatStatus.IsInCombat())
+    if (_player->isInCombat())
         return;
 
     _player->SafeTeleport(_player->m_summonMapId, _player->m_summonInstanceId, _player->m_summonPos);

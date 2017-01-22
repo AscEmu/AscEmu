@@ -183,14 +183,11 @@ class SERVER_DECL CombatStatusHandler
         void ClearPrimaryAttackTarget();                                // means we deselected the unit, stopped attacking it.
 
         void OnDamageDealt(Unit* pTarget);                              // this is what puts the other person in combat.
-        void WeHealed(Unit* pHealTarget);                               // called when a player heals another player, regardless of combat state.
 
         void RemoveAttacker(Unit* pAttacker, const uint64 & guid);      // this means we stopped attacking them totally. could be because of deaggro, etc.
         void RemoveAttackTarget(Unit* pTarget);                         // means our DoT expired.
 
         void UpdateFlag();                                              // detects if we have changed combat state (in/out), and applies the flag.
-
-        bool IsInCombat() const;                                                // checks if we are in combat or not.
 
         void OnRemoveFromWorld();                                       // called when we are removed from world, kills all references to us.
 
@@ -222,8 +219,26 @@ class SERVER_DECL CombatStatusHandler
 class SERVER_DECL Unit : public Object
 {
     AscEmu::World::Units::CombatStatus m_combatStatus;
+    void setCombatFlag(bool enabled);
 
-    public:
+public:
+    bool isInCombat() const;
+        
+    void enterCombat();
+    void leaveCombat();
+
+    void addHealTarget(Unit* target);
+    void removeHealTarget(Unit* target);
+
+    void addHealer(Unit* healer);
+    void removeHealer(Unit* healer);
+
+    void addAttacker(Unit* attacker);
+    void removeAttacker(Unit* attacker);
+
+    void removeAttackTarget(Unit* attackTarget);
+
+    void updateCombatStatus();
 
         void CombatStatusHandler_UpdatePvPTimeout();
         void CombatStatusHandler_ResetPvPTimeout();
@@ -914,7 +929,7 @@ class SERVER_DECL Unit : public Object
         } m_soulSiphon;
 
         uint32 m_cTimer;
-        void EventUpdateFlag();
+        //void EventUpdateFlag();
         CombatStatusHandler CombatStatus;
         bool m_temp_summon;
 

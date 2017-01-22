@@ -9101,7 +9101,7 @@ void Player::CompleteLoading()
     }
 
     sInstanceMgr.BuildSavedInstancesForPlayer(this);
-    CombatStatus.UpdateFlag();
+    updateCombatStatus();
     // add glyphs
     for (uint8 j = 0; j < GLYPHS_COUNT; ++j)
     {
@@ -10662,7 +10662,7 @@ void Player::RemoveShapeShiftSpell(uint32 id)
 // COOLDOWNS
 void Player::UpdatePotionCooldown()
 {
-    if (m_lastPotionId == 0 || CombatStatus.IsInCombat())
+    if (m_lastPotionId == 0 || isInCombat())
         return;
 
     ItemProperties const* proto = sMySQLStore.GetItemProperties(m_lastPotionId);
@@ -11657,7 +11657,7 @@ void Player::SetPvPFlag()
         (*itr)->SetPvPFlag();
     }
 
-    if (CombatStatus.IsInCombat())
+    if (isInCombat())
         SetFlag(PLAYER_FLAGS, 0x100);
 
 }
@@ -12217,7 +12217,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
 
     pVictim->SetStandState(STANDSTATE_STAND);
 
-    if (CombatStatus.IsInCombat())
+    if (isInCombat())
         sHookInterface.OnEnterCombat(this, this);
 
     ///////////////////////////////////////////////////// Hackatlon ///////////////////////////////////////////////////////////
@@ -12476,7 +12476,7 @@ void Player::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_
         }
     }
 
-    if (CombatStatus.IsInCombat())
+    if (isInCombat())
         sHookInterface.OnEnterCombat(this, pAttacker);
 
 

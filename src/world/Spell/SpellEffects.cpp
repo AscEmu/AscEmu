@@ -5664,7 +5664,7 @@ void Spell::SpellEffectActivateSpec(uint32 i)
     if (p_caster == NULL)
         return;
 
-    if (p_caster->CombatStatus.IsInCombat())
+    if (p_caster->isInCombat())
     {
         SendCastResult(SPELL_FAILED_AFFECTING_COMBAT);
         return;

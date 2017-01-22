@@ -322,7 +322,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     if (creature_target->m_faction)
         SystemMessage(m_session, "Combat Support: 0x%.3X", creature_target->m_faction->FriendlyMask);
 
-    if (creature_target->CombatStatus.IsInCombat())
+    if (creature_target->isInCombat())
         SystemMessage(m_session, "Is in combat!");
     else
         SystemMessage(m_session, "Not in combat!");

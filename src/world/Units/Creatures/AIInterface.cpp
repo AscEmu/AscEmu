@@ -401,7 +401,7 @@ void AIInterface::_UpdateTargets()
         {
             i2 = i++;
             if ((*i2) == NULL || (*i2)->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
-                !(*i2)->isAlive() || m_Unit->GetDistanceSq((*i2)) >= 2500.0f || !(*i2)->CombatStatus.IsInCombat() || !((*i2)->m_phase & m_Unit->m_phase))
+                !(*i2)->isAlive() || m_Unit->GetDistanceSq((*i2)) >= 2500.0f || !(*i2)->isInCombat() || !((*i2)->m_phase & m_Unit->m_phase))
             {
                 m_assistTargets.erase(i2);
             }

@@ -420,7 +420,7 @@ class LuaUnit
     {
         TEST_UNIT()
             // If Pointer isn't in combat skip everything
-            if (!ptr->CombatStatus.IsInCombat())
+            if (!ptr->isInCombat())
                 return 0;
 
         Unit* pTarget = ptr->GetAIInterface()->getNextTarget();
@@ -773,7 +773,7 @@ class LuaUnit
     {
         if (ptr == NULL || !ptr->IsInWorld())
             RET_NIL()
-            if (ptr->CombatStatus.IsInCombat())
+            if (ptr->isInCombat())
                 lua_pushboolean(L, 1);
             else
                 lua_pushboolean(L, 0);
@@ -1524,7 +1524,7 @@ class LuaUnit
     {
         //should use now instead of GetTarget
         TEST_PLAYER()
-            if (!ptr->CombatStatus.IsInCombat())
+            if (!ptr->isInCombat())
             {
                 lua_pushinteger(L, 0);
                 return 1;

@@ -183,7 +183,7 @@ void MoonScriptCreatureAI::SetCanEnterCombat(bool pCanEnterCombat)
 
 bool MoonScriptCreatureAI::IsInCombat()
 {
-    return _unit->CombatStatus.IsInCombat();
+    return _unit->isInCombat();
 }
 
 void MoonScriptCreatureAI::DelayNextAttack(int32 pMilliseconds)
@@ -1455,7 +1455,7 @@ bool MoonScriptCreatureAI::IsValidUnitTarget(Object* pObject, TargetFilter pFilt
         //Handle hostile/friendly
         if ((~pFilter & TargetFilter_Corpse) && (pFilter & TargetFilter_Friendly))
         {
-            if (!UnitTarget->CombatStatus.IsInCombat())
+            if (!UnitTarget->isInCombat())
                 return false; //Skip not-in-combat targets if friendly
             if (isHostile(_unit, UnitTarget) || _unit->GetAIInterface()->getThreatByPtr(UnitTarget) > 0)
                 return false;

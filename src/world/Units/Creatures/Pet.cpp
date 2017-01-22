@@ -341,7 +341,7 @@ void Pet::Update(unsigned long time_passed)
         if (m_HappinessTimer == 0)
         {
             int32 burn = 1042;          //Based on WoWWiki pet looses 50 happiness over 6 min => 1042 every 7.5 s
-            if (CombatStatus.IsInCombat())
+            if (isInCombat())
                 burn >>= 1;             //in combat reduce burn by half (guessed)
             ModPower(POWER_TYPE_HAPPINESS, -burn);
             m_HappinessTimer = PET_HAPPINESS_UPDATE_TIMER;  // reset timer
