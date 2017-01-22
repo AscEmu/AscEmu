@@ -1,5 +1,7 @@
 // License: MIT
 
+#include "Objects/Object.h"
+
 #pragma once
 
 // Prevent compiler from trying to compile duplicate class definitions

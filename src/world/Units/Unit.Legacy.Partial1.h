@@ -125,12 +125,12 @@ struct ReflectSpellSchool
     bool infront;
 };
 
-typedef struct
+struct OnHitSpell
 {
     uint32 spellid;
     uint32 mindmg;
     uint32 maxdmg;
-} OnHitSpell;
+};
 
 struct AreaAura
 {

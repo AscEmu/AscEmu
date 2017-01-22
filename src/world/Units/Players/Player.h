@@ -68,6 +68,8 @@ struct VendorRestrictionEntry;
 struct Trainer;
 class Aura;
 
+struct OnHitSpell;
+
 #pragma pack(push,1)
 struct ActionButton
 {
