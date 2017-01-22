@@ -6896,6 +6896,11 @@ void Unit::removeAttacker(Unit* attacker)
     m_combatStatus.removeAttacker(attacker);
 }
 
+void Unit::removeAttacker(uint64_t guid)
+{
+    m_combatStatus.removeAttacker(guid);
+}
+
 void Unit::removeAttackTarget(Unit* attackTarget)
 {
     ASSERT(attackTarget != nullptr);
@@ -6978,6 +6983,13 @@ void Unit::clearAllCombatTargets()
 bool Unit::isInCombat() const
 {
     return m_combatStatus.isInCombat();
+}
+
+bool Unit::isAttacking(Unit* target) const
+{
+    ASSERT(target);
+
+    return m_combatStatus.isAttacking(target);
 }
 
 void Unit::updateCombatStatus()

@@ -100,6 +100,25 @@ namespace AscEmu { namespace World { namespace Units {
         return false;
     }
 
+    bool CombatStatus::isAttacking(Unit* target) const
+    {
+        ASSERT(target);
+
+        for (uint32_t i = MAX_NEGATIVE_AURAS_EXTEDED_START; i < MAX_NEGATIVE_AURAS_EXTEDED_END; ++i)
+        {
+            auto aura = target->m_auras[i];
+            if (aura != nullptr)
+            {
+                if (m_unit->GetGUID() == aura->m_casterGuid && aura->IsCombatStateAffecting())
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     void CombatStatus::removeMyHealers()
     {
         auto map_mgr = m_unit->GetMapMgr();
@@ -209,10 +228,19 @@ namespace AscEmu { namespace World { namespace Units {
 
     void CombatStatus::removeAttacker(Unit* attacker)
     {
-        ASSERT(m_unit->IsInWorld());
         ASSERT(attacker != nullptr);
 
-        m_attackers.erase(attacker->GetGUID());
+        if (attacker->isAttacking(m_unit))
+        {
+            removeAttacker(attacker->GetGUID());
+        }
+    }
+
+    void CombatStatus::removeAttacker(uint64_t guid)
+    {
+        ASSERT(m_unit->IsInWorld());
+        
+        m_attackers.erase(guid);
         update();
     }
 

@@ -51,6 +51,7 @@ namespace AscEmu { namespace World { namespace Units {
 
         // Checks whether we are in combat based on the last time update was called
         bool isInCombat() const;
+        bool isAttacking(Unit* target) const;
 
         void removeHealTarget(Player* target);
         void addHealTarget(Player* target);
@@ -58,7 +59,9 @@ namespace AscEmu { namespace World { namespace Units {
         void removeHealer(Player* healer);
         void addHealer(Player* healer);
 
+        void addAttacker(Unit* attacker);
         void removeAttacker(Unit* attacker);
+        void removeAttacker(uint64_t guid);
 
         void removeAttackTarget(Unit* attackTarget);
 

@@ -213,6 +213,7 @@ class SERVER_DECL Unit : public Object
 
 public:
     bool isInCombat() const;
+    bool isAttacking(Unit* target) const;
         
     void enterCombat();
     void leaveCombat();
@@ -224,6 +225,7 @@ public:
     void removeHealer(Unit* healer);
 
     void removeAttacker(Unit* attacker);
+    void removeAttacker(uint64_t guid);
 
     void removeAttackTarget(Unit* attackTarget);
 
