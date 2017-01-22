@@ -21,6 +21,8 @@
 
 #include "StdAfx.h"
 #include "Management/ArenaTeam.h"
+#include "Server/MainServerDefines.h"
+#include "Config/Config.h"
 
 #define THREAD_LOOP_INTERVAL 120 // seconds
 

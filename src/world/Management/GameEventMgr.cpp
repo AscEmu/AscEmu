@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/GameEvent.h"
 #include "CrashHandler.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/MainServerDefines.h"
 
 initialiseSingleton(GameEventMgr);
 initialiseSingleton(GameEventMgr::GameEventMgrThread);

@@ -21,7 +21,7 @@
 
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Storage/MySQLDataStore.hpp"
+#include "Server/MainServerDefines.h"
 
 SERVER_DECL InstanceMgr sInstanceMgr;
 

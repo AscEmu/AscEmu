@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/MainServerDefines.h"
 
 //.gobject damage
 bool ChatHandler::HandleGODamageCommand(const char* args, WorldSession* session)

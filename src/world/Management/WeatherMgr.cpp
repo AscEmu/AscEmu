@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Management/WeatherMgr.h"
+#include "Server/MainServerDefines.h"
 
 /// Weather defines
 enum WeatherTypes

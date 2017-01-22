@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/MainServerDefines.h"
 
 bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
 {

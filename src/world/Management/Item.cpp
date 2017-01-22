@@ -25,6 +25,7 @@
 #include "Management/Container.h"
 #include "Management/ItemInterface.h"
 #include "Management/LocalizationMgr.h"
+#include "Server/MainServerDefines.h"
 
 Item::Item()
 {

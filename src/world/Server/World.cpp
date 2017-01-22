@@ -37,6 +37,8 @@
 #include "Storage/MySQLDataStore.hpp"
 #include <CrashHandler.h>
 #include "Management/LocalizationMgr.h"
+#include "Server/MainServerDefines.h"
+#include "Config/Config.h"
 
 initialiseSingleton(World);
 

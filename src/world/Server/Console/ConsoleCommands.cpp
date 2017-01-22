@@ -24,6 +24,8 @@
 #include "ConsoleCommands.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/Console/BaseConsole.h"
+#include "Server/MainServerDefines.h"
+#include "Server/Master.h"
 #include "crc32.h"
 
 bool HandleTimeDateCommand(BaseConsole* console, int argc, const char* argv[])

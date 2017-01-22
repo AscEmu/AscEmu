@@ -34,6 +34,7 @@
 #include "Management/ChannelMgr.h"
 #include "Management/Channel.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/MainServerDefines.h"
 
 class LuaUnit
 {

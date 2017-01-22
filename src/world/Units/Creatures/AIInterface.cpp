@@ -25,6 +25,7 @@
 #include "Units/Stats.h"
 #include "Server/Packets/Movement/CreatureMovement.hpp"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/MainServerDefines.h"
 
 #ifndef UNIX
 #include <cmath>

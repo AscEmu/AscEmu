@@ -20,6 +20,8 @@
 
 #include "StdAfx.h"
 #include "Management/LocalizationMgr.h"
+#include "Server/MainServerDefines.h"
+#include "Config/Config.h"
 
 LocalizationMgr sLocalizationMgr;
 

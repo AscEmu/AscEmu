@@ -18,7 +18,7 @@
  */
 
 #include "Setup.h"
-
+#include "Server/MainServerDefines.h"
 
 MoonInstanceScript::MoonInstanceScript(MapMgr* pMapMgr) : InstanceScript(pMapMgr)
 {

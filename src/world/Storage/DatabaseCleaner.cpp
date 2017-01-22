@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Storage/DatabaseCleaner.h"
+#include "Server/MainServerDefines.h"
 
 initialiseSingleton(DatabaseCleaner);
 

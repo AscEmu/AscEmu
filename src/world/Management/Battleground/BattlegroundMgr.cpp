@@ -23,6 +23,7 @@
 #include "Management/Battleground/BattlegroundMgr.h"
 #include "Management/Arenas.h"
 #include "Management/ArenaTeam.h"
+#include "Server/MainServerDefines.h"
 
 initialiseSingleton(CBattlegroundManager);
 

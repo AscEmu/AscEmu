@@ -35,6 +35,7 @@
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Players/PlayerClasses.hpp"
+#include "Server/MainServerDefines.h"
 
 pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
 {

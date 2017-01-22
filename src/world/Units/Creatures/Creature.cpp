@@ -29,6 +29,7 @@
 #include "Management/Battleground/Battleground.h"
 #include "Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/MainServerDefines.h"
 
 Creature::Creature(uint64 guid)
 {

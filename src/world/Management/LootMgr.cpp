@@ -24,6 +24,7 @@
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/MainServerDefines.h"
 
 initialiseSingleton(LootMgr);
 

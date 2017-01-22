@@ -20,6 +20,7 @@
 
 #include "StdAfx.h"
 #include "Management/LFG/LFGMgr.h"
+#include "Server/MainServerDefines.h"
 
 Group::Group(bool Assign)
 {

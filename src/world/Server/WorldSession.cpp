@@ -29,6 +29,7 @@
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/LocalizationMgr.h"
+#include "Server/MainServerDefines.h"
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 

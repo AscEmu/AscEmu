@@ -17,7 +17,7 @@
  */
 
 #include "StdAfx.h"
-
+#include "Server/MainServerDefines.h"
 
 initialiseSingleton(MailSystem);
 

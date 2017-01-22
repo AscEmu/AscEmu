@@ -19,6 +19,8 @@
  */
 
 #include "StdAfx.h"
+#include "Server/MainServerDefines.h"
+#include "Server/Master.h"
 
 #ifndef WIN32
 #include <sys/resource.h>

@@ -20,11 +20,12 @@
  */
 
 #include "StdAfx.h"
-
+#include "Config/Config.h"
 #include "Server/Packets/Handlers/HonorHandler.h"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
+#include "Server/MainServerDefines.h"
 
 void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recv_data)
 {

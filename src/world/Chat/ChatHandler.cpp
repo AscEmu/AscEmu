@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Exceptions/PlayerExceptions.hpp"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
+#include "Server/MainServerDefines.h"
 
 initialiseSingleton(ChatHandler);
 

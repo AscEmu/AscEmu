@@ -23,6 +23,7 @@
 #include "crc32.h"
 #include "Spell/SpellNameHashes.h"
 #include "Units/Players/PlayerClasses.hpp"
+#include "Server/MainServerDefines.h"
 
 void CreateDummySpell(uint32 id)
 {

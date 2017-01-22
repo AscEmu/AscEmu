@@ -25,6 +25,7 @@
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/MainServerDefines.h"
 
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {

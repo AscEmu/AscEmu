@@ -27,6 +27,8 @@
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Players/PlayerClasses.hpp"
+#include "Server/MainServerDefines.h"
+#include "Config/Config.h"
 
 LoginErrorCode VerifyName(const char* name, size_t nlen)
 {

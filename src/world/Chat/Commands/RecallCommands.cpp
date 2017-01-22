@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "Server/MainServerDefines.h"
 
 bool GetRecallLocation(const char* location, uint32 & map, LocationVector & v)
 {

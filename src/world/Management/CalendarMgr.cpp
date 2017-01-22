@@ -18,6 +18,7 @@
 
 #include "StdAfx.h"
 #include "CalendarMgr.h"
+#include "Server/MainServerDefines.h"
 
 initialiseSingleton(CalendarMgr);
 

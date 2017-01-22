@@ -21,6 +21,8 @@
 #include "StdAfx.h"
 #include "WarsongGulch.h"
 #include "Server/Packets/Handlers/HonorHandler.h"
+#include "Management/WorldStates.h"
+#include "Server/MainServerDefines.h"
 
 WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBattleground(mgr, id, lgroup, t)
 {

@@ -21,6 +21,8 @@
 
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/Warden/SpeedDetector.h"
+#include "Server/MainServerDefines.h"
 
 #define SWIMMING_TOLERANCE_LEVEL -0.08f
 #define MOVEMENT_PACKET_TIME_DELAY 500

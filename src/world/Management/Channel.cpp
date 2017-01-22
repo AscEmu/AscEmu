@@ -20,9 +20,10 @@
  */
 
 #include "StdAfx.h"
-
+#include "Server/MainServerDefines.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
+#include "Config/Config.h"
 
 Mutex m_confSettingLock;
 std::vector<std::string> m_bannedChannels;

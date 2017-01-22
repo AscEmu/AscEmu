@@ -25,6 +25,7 @@
 #include "Management/Item.h"
 #include "Management/Container.h"
 #include "Management/ItemInterface.h"
+#include "Server/MainServerDefines.h"
 
 namespace luaItem
 {

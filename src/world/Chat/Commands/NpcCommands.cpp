@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Units/Creatures/Creature.h"
 #include "Units/Summons/Summon.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/MainServerDefines.h"
 
 //.npc addagent
 bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_session)

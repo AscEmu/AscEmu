@@ -19,7 +19,8 @@
  */
 
 #include "StdAfx.h"
-
+#include "Server/Warden/SpeedDetector.h"
+#include "Server/MainServerDefines.h"
 
 SpeedCheatDetector::SpeedCheatDetector()
 {

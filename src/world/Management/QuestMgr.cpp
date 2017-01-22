@@ -25,6 +25,7 @@
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/LocalizationMgr.h"
+#include "Server/MainServerDefines.h"
 
 uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, QuestRelation* qst)
 {

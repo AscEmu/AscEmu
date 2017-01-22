@@ -26,6 +26,7 @@
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/LocalizationMgr.h"
+#include "Server/MainServerDefines.h"
 
 trainertype trainer_types[TRAINER_TYPE_MAX] =
 {

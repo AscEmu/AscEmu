@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Server/MainServerDefines.h"
 
 void WorldSession::HandlePetAction(WorldPacket& recv_data)
 {

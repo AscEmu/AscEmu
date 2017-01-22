@@ -24,6 +24,8 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "WorldRunnable.h"
 #include "Server/Console/CConsole.h"
+#include "Server/MainServerDefines.h"
+#include "Server/Master.h"
 
 createFileSingleton(Master);
 std::string LogFileName;

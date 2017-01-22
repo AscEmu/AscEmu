@@ -41,6 +41,9 @@
 #include "Management/ArenaTeam.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/Warden/SpeedDetector.h"
+#include "Server/MainServerDefines.h"
+#include "Config/Config.h"
 
 UpdateMask Player::m_visibleUpdateMask;
 

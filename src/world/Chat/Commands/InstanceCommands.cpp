@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "Server/MainServerDefines.h"
 
 //.instance create
 bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_session)

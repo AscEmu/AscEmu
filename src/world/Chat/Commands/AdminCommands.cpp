@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "StdAfx.h"
+#include "Server/MainServerDefines.h"
 
 //.admin castall
 bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_session)

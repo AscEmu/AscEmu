@@ -23,6 +23,7 @@
 #include "Units/Stats.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/MainServerDefines.h"
 
 #ifdef ENABLE_ACHIEVEMENTS
 

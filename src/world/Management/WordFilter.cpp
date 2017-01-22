@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Management/WordFilter.h"
+#include "Server/MainServerDefines.h"
 
 extern "C" {
 #include <pcre.h>

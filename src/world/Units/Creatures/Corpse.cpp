@@ -20,6 +20,7 @@
  */
 
 #include "StdAfx.h"
+#include "Server/MainServerDefines.h"
 
 Corpse::Corpse(uint32 high, uint32 low)
 {

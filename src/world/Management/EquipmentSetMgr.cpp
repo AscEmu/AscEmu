@@ -20,6 +20,7 @@
 
 #include "StdAfx.h"
 #include "Management/EquipmentSetMgr.h"
+#include "Server/MainServerDefines.h"
 
 namespace Arcemu
 {

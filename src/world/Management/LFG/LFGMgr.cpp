@@ -23,6 +23,7 @@
 #include "Management/LFG/LFGGroupData.h"
 #include "Management/LFG/LFGPlayerData.h"
 #include "Management/ItemInterface.h"
+#include "Server/MainServerDefines.h"
 
 uint32 LfgDungeonTypes[MAX_DUNGEONS];
 

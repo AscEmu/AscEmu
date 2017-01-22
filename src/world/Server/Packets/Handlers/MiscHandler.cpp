@@ -26,6 +26,7 @@
 #include "Management/Battleground/Battleground.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Server/MainServerDefines.h"
 #include "zlib.h"
 
 void WorldSession::HandleRepopRequestOpcode(WorldPacket& recv_data)
