@@ -29,8 +29,11 @@
 #include "Management/MailMgr.h"
 #include "Management/ItemPrototype.h"
 #include "Management/AchievementMgr.h"
-#include "Units//Unit.h"
+#include "Units/Unit.h"
 #include "Storage/DBC/DBCStructures.hpp"
+
+#include "Units/Unit.Legacy.Partial1.h"
+#include "Units/Creatures/AIInterface.h" //?? what?
 
 
 class QuestLogEntry;

@@ -1,6 +1,7 @@
 // License: MIT
 #pragma once
 #include "CommonTypes.hpp"
+#include "Units/Unit.h"
 #include <memory>
 #include <set>
 
