@@ -5,6 +5,7 @@
 #include <set>
 
 class Unit;
+class Player;
 
 namespace AscEmu { namespace World { namespace Units {
     class SERVER_DECL CombatStatus
@@ -60,5 +61,7 @@ namespace AscEmu { namespace World { namespace Units {
         void removeAttacker(Unit* attacker);
 
         void removeAttackTarget(Unit* attackTarget);
+
+        uint64_t getPrimaryAttackTarget() const;
     };
 }}}

@@ -3099,7 +3099,7 @@ void AIInterface::WipeTargetList()
     LockAITargets(true);
     m_aiTargets.clear();
     LockAITargets(false);
-    m_Unit->vanish();
+    m_Unit->clearAllCombatTargets();
 }
 
 bool AIInterface::taunt(Unit* caster, bool apply)
@@ -4105,7 +4105,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
     m_hasCalledForHelp = false;
     m_nextSpell = NULL;
     resetNextTarget();
-    m_Unit->vanish();
+    m_Unit->clearAllCombatTargets();
 
     if (m_AIType == AITYPE_PET)
     {

@@ -1530,7 +1530,7 @@ class LuaUnit
                 return 1;
             }
             else
-                PUSH_UNIT(L, ptr->GetMapMgr()->GetUnit(static_cast<Player*>(ptr)->CombatStatus.GetPrimaryAttackTarget()));
+                PUSH_UNIT(L, ptr->GetMapMgr()->GetUnit(static_cast<Player*>(ptr)->getPrimaryAttackTarget()));
         return 1;
     }
 

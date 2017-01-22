@@ -365,7 +365,6 @@ Unit::Unit() : m_combatStatus(this), m_movementManager()
     m_damgeShieldsInUse = false;
     //	fearSpell = 0;
     m_extraAttackCounter = false;
-    CombatStatus.SetUnit(this);
     m_chargeSpellsInUse = false;
     //	m_spellsbusy=false;
     m_interruptedRegenTime = 0;
@@ -6056,6 +6055,11 @@ void Unit::Deactivate(MapMgr* mgr)
 {
     clearAllCombatTargets();
     Object::Deactivate(mgr);
+}
+
+uint64_t Unit::getPrimaryAttackTarget() const
+{
+    return m_combatStatus.getPrimaryAttackTarget();
 }
 
 void Unit::RemoveAurasByInterruptFlagButSkip(uint32 flag, uint32 skip)

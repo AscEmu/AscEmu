@@ -224,6 +224,11 @@ namespace AscEmu { namespace World { namespace Units {
         update();
     }
 
+    uint64_t CombatStatus::getPrimaryAttackTarget() const
+    {
+        return m_primaryAttackTarget;
+    }
+
     void CombatStatus::addHealTarget(Player* target)
     {
         ASSERT(target != nullptr);

@@ -189,8 +189,6 @@ class SERVER_DECL CombatStatusHandler
 
         void UpdateFlag();                                              // detects if we have changed combat state (in/out), and applies the flag.
 
-        const uint64 & GetPrimaryAttackTarget() { return m_primaryAttackTarget; }
-        void SetUnit(Unit* p) { m_Unit = p; }
         void TryToClearAttackTargets();                                 // for pvp timeout
         void AttackersForgetHate();                                     // used right now for Feign Death so attackers go home
 
@@ -231,6 +229,8 @@ public:
 
     void updateCombatStatus();
     void clearAllCombatTargets();
+
+    uint64_t getPrimaryAttackTarget() const;
 
         void CombatStatusHandler_UpdatePvPTimeout();
         void CombatStatusHandler_ResetPvPTimeout();
