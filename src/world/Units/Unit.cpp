@@ -6007,7 +6007,7 @@ void Unit::RemoveFromWorld(bool free_guid)
 
     RemoveVehicleComponent();
 
-    CombatStatus.OnRemoveFromWorld();
+    m_combatStatus.onRemoveFromWorld();
     if (GetSummonedCritterGUID() != 0)
     {
         SetSummonedCritterGUID(0);
@@ -6054,7 +6054,7 @@ void Unit::RemoveFromWorld(bool free_guid)
 
 void Unit::Deactivate(MapMgr* mgr)
 {
-    CombatStatus.Vanished();
+    clearAllCombatTargets();
     Object::Deactivate(mgr);
 }
 
@@ -6897,7 +6897,7 @@ void Unit::removeAttackTarget(Unit* attackTarget)
     ASSERT(attackTarget != nullptr);
     ASSERT(IsInWorld());
 
-
+    m_combatStatus.removeAttackTarget(attackTarget);
 }
 
 void CombatStatusHandler::ClearAttackers()
@@ -6966,10 +6966,9 @@ void CombatStatusHandler::ClearHealers()
     UpdateFlag();
 }
 
-void CombatStatusHandler::OnRemoveFromWorld()
+void Unit::clearAllCombatTargets()
 {
-    ClearAttackers();
-    ClearHealers();
+    m_combatStatus.clearAllCombatTargets();
 }
 
 bool Unit::isInCombat() const

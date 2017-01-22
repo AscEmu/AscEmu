@@ -35,11 +35,18 @@ namespace AscEmu { namespace World { namespace Units {
         void removeAllHealersAndHealTargets();
         // Means we either vanished or died
         void removeAllAttackersAndAttackTargets();
+
+        void clearPrimaryAttackTarget();
     public:
         CombatStatus(Unit* unit);
 
         // Sets us as in/out of combat and, if it changed from the last call, sets various flags based on that
         void update();
+
+        // Called when the unit is being removed from the world
+        void onRemoveFromWorld();
+
+        void clearAllCombatTargets();
 
         // Checks whether we are in combat based on the last time update was called
         bool isInCombat() const;
@@ -50,7 +57,8 @@ namespace AscEmu { namespace World { namespace Units {
         void removeHealer(Player* healer);
         void addHealer(Player* healer);
 
-        void addAttacker(Unit* attacker);
         void removeAttacker(Unit* attacker);
+
+        void removeAttackTarget(Unit* attackTarget);
     };
 }}}

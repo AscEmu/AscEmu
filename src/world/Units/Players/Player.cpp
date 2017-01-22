@@ -8223,7 +8223,7 @@ void Player::EndDuel(uint8 WinCondition)
     std::list<Pet*> summons = GetSummons();
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
     {
-        (*itr)->CombatStatus.Vanished();
+        (*itr)->clearAllCombatTargets();
         (*itr)->GetAIInterface()->SetUnitToFollow(this);
         (*itr)->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, *itr, 0);
         (*itr)->GetAIInterface()->WipeTargetList();
@@ -8232,7 +8232,7 @@ void Player::EndDuel(uint8 WinCondition)
     std::list<Pet*> duelingWithSummons = DuelingWith->GetSummons();
     for (std::list<Pet*>::iterator itr = duelingWithSummons.begin(); itr != duelingWithSummons.end(); ++itr)
     {
-        (*itr)->CombatStatus.Vanished();
+        (*itr)->clearAllCombatTargets();
         (*itr)->GetAIInterface()->SetUnitToFollow(this);
         (*itr)->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, *itr, 0);
         (*itr)->GetAIInterface()->WipeTargetList();
@@ -12645,7 +12645,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     }
 
     // Wipe our attacker set on death
-    CombatStatus.Vanished();
+    clearAllCombatTargets();
 
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
     pAttacker->smsg_AttackStop(this);

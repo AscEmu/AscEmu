@@ -2443,7 +2443,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     SetHealth(0);
 
     // Wipe our attacker set on death
-    CombatStatus.Vanished();
+    clearAllCombatTargets();
 
     RemoveAllNonPersistentAuras();
 

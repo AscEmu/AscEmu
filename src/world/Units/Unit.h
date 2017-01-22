@@ -189,14 +189,6 @@ class SERVER_DECL CombatStatusHandler
 
         void UpdateFlag();                                              // detects if we have changed combat state (in/out), and applies the flag.
 
-        void OnRemoveFromWorld();                                       // called when we are removed from world, kills all references to us.
-
-        void Vanished()
-        {
-            ClearAttackers();
-            ClearHealers();
-        }
-
         const uint64 & GetPrimaryAttackTarget() { return m_primaryAttackTarget; }
         void SetUnit(Unit* p) { m_Unit = p; }
         void TryToClearAttackTargets();                                 // for pvp timeout
@@ -233,12 +225,12 @@ public:
     void addHealer(Unit* healer);
     void removeHealer(Unit* healer);
 
-    void addAttacker(Unit* attacker);
     void removeAttacker(Unit* attacker);
 
     void removeAttackTarget(Unit* attackTarget);
 
     void updateCombatStatus();
+    void clearAllCombatTargets();
 
         void CombatStatusHandler_UpdatePvPTimeout();
         void CombatStatusHandler_ResetPvPTimeout();

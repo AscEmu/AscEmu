@@ -43,6 +43,17 @@ namespace AscEmu { namespace World { namespace Units {
         }
     }
 
+    void CombatStatus::onRemoveFromWorld()
+    {
+        clearAllCombatTargets();
+    }
+
+    void CombatStatus::clearAllCombatTargets()
+    {
+        removeAllAttackersAndAttackTargets();
+        removeAllHealersAndHealTargets();
+    }
+
     bool CombatStatus::isInCombat() const
     {
         ASSERT(m_unit != nullptr);
@@ -156,6 +167,16 @@ namespace AscEmu { namespace World { namespace Units {
                 attacker->removeAttackTarget(m_unit);
             }
         }
+
+        m_attackers.clear();
+        m_attackTargets.clear();
+        clearPrimaryAttackTarget();
+        update();
+    }
+
+    void CombatStatus::clearPrimaryAttackTarget()
+    {
+        m_primaryAttackTarget = 0;
     }
 
     void CombatStatus::removeHealTarget(Player* target)
@@ -191,7 +212,15 @@ namespace AscEmu { namespace World { namespace Units {
         ASSERT(m_unit->IsInWorld());
         ASSERT(attacker != nullptr);
 
-        m_attackers.insert(attacker->GetGUID());
+        m_attackers.erase(attacker->GetGUID());
+        update();
+    }
+
+    void CombatStatus::removeAttackTarget(Unit* attackTarget)
+    {
+        ASSERT(attackTarget);
+
+        m_attackTargets.erase(attackTarget->GetGUID());
         update();
     }
 
