@@ -523,7 +523,7 @@ void MoonInstanceScript::BuildEncounterMap()
     if (mInstance->pInstance == NULL)
         return;
 
-    QueryResult* KillResult = WorldDatabase.Query("SELECT id, entry FROM creature_spawns WHERE map = %u AND entry IN (SELECT entry FROM creature_names WHERE encounter = 1)", mInstance->GetMapId());
+    QueryResult* KillResult = WorldDatabase.Query("SELECT id, entry FROM creature_spawns WHERE map = %u AND entry IN (SELECT entry FROM creature_properties WHERE encounter = 1)", mInstance->GetMapId());
     if (KillResult != NULL)
     {
         uint32 Id = 0, Entry = 0;
