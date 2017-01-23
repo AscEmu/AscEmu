@@ -23,7 +23,6 @@
 
 #include "ObjectDefines.h"
 
-#include "StdAfx.h"
 #include "Server/UpdateFields.h"
 #include "Server/UpdateMask.h"
 #include "CommonTypes.hpp"

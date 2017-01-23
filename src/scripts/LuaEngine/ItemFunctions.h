@@ -21,7 +21,6 @@
 #ifndef ITEMFUNCTIONS_H
 #define ITEMFUNCTIONS_H
 
-#include "StdAfx.h"
 #include "Management/Item.h"
 #include "Management/Container.h"
 #include "Management/ItemInterface.h"

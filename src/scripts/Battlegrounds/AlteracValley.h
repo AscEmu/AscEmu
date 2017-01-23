@@ -21,7 +21,6 @@
 #ifndef _ALTERAC_VALLERY_H
 #define _ALTERAC_VALLERY_H
 
-#include "StdAfx.h"
 #include "Management/Battleground/Battleground.h"
 
  // GENERAL AV DEFINES

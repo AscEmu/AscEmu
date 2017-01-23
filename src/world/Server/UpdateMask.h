@@ -21,7 +21,6 @@
 #ifndef __UPDATEMASK_H
 #define __UPDATEMASK_H
 
-#include "StdAfx.h"
 #include "WUtil.h"
 #include <cstring>
 

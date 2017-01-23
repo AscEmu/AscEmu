@@ -32,8 +32,6 @@ extern "C"
 #include "../lualib/lualib.h"
 };
 
-#include "StdAfx.h"
-
 #include <sys/stat.h>
 #include <sys/types.h>
 

@@ -21,7 +21,6 @@
 #ifndef _SPELLMGR_H
 #define _SPELLMGR_H
 
-#include "StdAfx.h"
 #include "Management/Item.h"
 #include "Units/Players/PlayerDefines.hpp"
 

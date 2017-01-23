@@ -21,7 +21,6 @@
 #ifndef GLOBALFUNCTIONS_H
 #define GLOBALFUNCTIONS_H
 
-#include "StdAfx.h"
 #include "LUAEngine.h"
 #include "git_version.h"
 #include "Management/TaxiMgr.h"

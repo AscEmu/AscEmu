@@ -20,7 +20,6 @@
 #ifndef _INSTANCE_BASE_H
 #define _INSTANCE_BASE_H
 
-#include "StdAfx.h"
 #include "Map/WorldCreatorDefines.hpp"
 
 #define INVALIDATE_TIMER -1

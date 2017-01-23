@@ -21,6 +21,5 @@
 #ifndef _BATTLEGROUNDS_SETUP_H
 #define _BATTLEGROUNDS_SETUP_H
 
-#include "StdAfx.h"
 
 #endif  // _BATTLEGROUNDS_SETUP_H

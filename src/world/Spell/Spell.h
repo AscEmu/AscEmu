@@ -21,8 +21,6 @@
 #ifndef _SPELL_H
 #define _SPELL_H
 
-#include "StdAfx.h"
-
 #include "Spell/SpellInfo.hpp"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "SpellTarget.h"

@@ -20,7 +20,6 @@
 #ifndef _BASE_H
 #define _BASE_H
 
-#include "StdAfx.h"
 #include "../Common/EasyFunctions.h"
 #include "../Common/Instance_Base.h"
 

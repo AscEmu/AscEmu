@@ -21,7 +21,6 @@
 #ifndef _RING_OF_VALOR_H
 #define _RING_OF_VALOR_H
 
-#include "StdAfx.h"
 #include "Management/Arenas.h"
 #include "Management/Battleground/Battleground.h"
 

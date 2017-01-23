@@ -21,7 +21,6 @@
 #ifndef _RUINS_OF_LORDAERON_H
 #define _RUINS_OF_LORDAERON_H
 
-#include "StdAfx.h"
 #include "Management/Arenas.h"
 #include "Management/Battleground/Battleground.h"
 

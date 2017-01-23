@@ -19,7 +19,6 @@
 #ifndef _LFGMGR_H
 #define _LFGMGR_H
 
-#include "StdAfx.h"
 #include "LFG.h"
 #include "Server/Definitions.h"
 #include <list>

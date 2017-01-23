@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include "StdAfx.h"
 #include "UnitDefines.hpp"
 
 #include "Management/LootMgr.h"

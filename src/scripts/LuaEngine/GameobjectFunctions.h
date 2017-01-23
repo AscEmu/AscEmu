@@ -21,7 +21,6 @@
 #ifndef GOFUNCTIONS_H
 #define GOFUNCTIONS_H
 
-#include "StdAfx.h"
 #include "LUAEngine.h"
 #include "Map/MapMgr.h"
 #include "Storage/MySQLDataStore.hpp"

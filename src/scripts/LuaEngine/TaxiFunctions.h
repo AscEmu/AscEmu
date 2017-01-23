@@ -21,7 +21,6 @@
 #ifndef _LUATAXI_H
 #define _LUATAXI_H
 
-#include "StdAfx.h"
 #include "LUAEngine.h"
 #include "Management/TaxiMgr.h"
 

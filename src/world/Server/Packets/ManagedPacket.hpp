@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _MANAGED_PACKET_HPP
 #define _MANAGED_PACKET_HPP
 
-#include "StdAfx.h"
 #include "WorldPacket.h"
 
 namespace Packets

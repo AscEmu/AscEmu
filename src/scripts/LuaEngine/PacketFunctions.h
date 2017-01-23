@@ -21,7 +21,6 @@
 #ifndef _LUAPACKET_H
 #define _LUAPACKET_H
 
-#include "StdAfx.h"
 #include "LUAEngine.h"
 
 namespace luPacket
