@@ -19,6 +19,11 @@ option(BUILD_LUAENGINE "Build LuaEngine." ON)
 set(ASCEMU_TOOLS_PATH "tools" CACHE PATH "The directory where you want the tools installed.")
 option(BUILD_WITH_WARNINGS "Enable/Disable warnings on compilation" OFF)
 option(USE_PCH "Enable precompiled headers - it will reduce compilation time" ON)
+
+if(NOT USE_PCH)
+    set(ASCEMU_COMMENT_PCH //)
+endif()
+
 # platform specific
 if(WIN32)
     set(VISUALSTUDIO_COMPILERHEAPLIMIT 460 CACHE STRING "Visual Studio compiler heap limit. Ignore on darwin and unix platforms.")

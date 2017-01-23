@@ -21,14 +21,16 @@
 
 #pragma once
 
-#ifdef UNDEFINED_SYMBOL
+#include "WorldConf.h"
+
+#ifdef USE_PCH_INCLUDES
 #include <vector>
 #include <fstream>
 #include <array>
 #include <set>
 #include <map>
 
-#include "WorldConf.h"
+
 #include "Server/Definitions.h"
 #include "Map/RecastIncludes.hpp"
 

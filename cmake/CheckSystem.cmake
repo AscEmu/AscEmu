@@ -9,7 +9,7 @@ set(CMAKE_MODULE_PATH
 include(${CMAKE_SOURCE_DIR}/cmake/GitRevision.cmake)
 
 # generally load PCH module
-if (USE_PCH)
+if(USE_PCH)
     include(PCHSupport)
 endif()
 

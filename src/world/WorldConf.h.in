@@ -9,6 +9,10 @@ This file is released under the MIT license. See README-MIT for more information
 #define CONFDIR "@ASCEMU_CONFIGSFILE_PATH@"
 #define PREFIX "@ASCEMU_SCRIPTLIB_PATH@"
 
+/*! \brief USE_PCH_INCLUDES is commented/uncommented by cmake option USE_PCH. */
+@ASCEMU_COMMENT_PCH@#define USE_PCH_INCLUDES
+
+/*! \brief VERSION_STRING is defined by cmake option (dropdown)*/
 #define Classic 1
 #define TBC 2
 #define WotLK 3
