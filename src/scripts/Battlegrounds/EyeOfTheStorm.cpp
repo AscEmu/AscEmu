@@ -24,6 +24,8 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/WorldStates.h"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Spell/SpellMgr.h"
 
 static float EOTSBuffCoordinates[4][4] =
 {

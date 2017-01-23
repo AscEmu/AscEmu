@@ -23,6 +23,10 @@
 #include "Management/Item.h"
 #include "Spell/SpellNameHashes.h"
 #include "Units/Stats.h"
+#include "Creatures/Creature.h"
+#include "Creatures/Pet.h"
+#include "Server/World.h"
+#include "../../scripts/Battlegrounds/AlteracValley.h"
 
 uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
 {

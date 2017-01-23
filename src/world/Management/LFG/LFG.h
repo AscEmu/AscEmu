@@ -15,9 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once
 
-#ifndef _LFG_H
-#define _LFG_H
+#include <cstdint>
+#include <set>
+#include <map>
 
 enum LfgRoles
 {
@@ -78,12 +80,10 @@ enum LfgLockStatusType
 /// Dungeon and reason why player can't join
 struct LfgLockStatus
 {
-    uint32 dungeon;                     ///< Dungeon Id
+    uint32_t dungeon;                     ///< Dungeon Id
     LfgLockStatusType lockstatus;       ///< Lock type
 };
 
-typedef std::set<uint32> LfgDungeonSet;
-typedef std::map<uint32, LfgLockStatusType> LfgLockMap;
-typedef std::map<uint64, LfgLockMap> LfgLockPartyMap;
-
-#endif      // _LFG_H
+typedef std::set<uint32_t> LfgDungeonSet;
+typedef std::map<uint32_t, LfgLockStatusType> LfgLockMap;
+typedef std::map<uint64_t, LfgLockMap> LfgLockPartyMap;

@@ -29,6 +29,9 @@
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Spell/SpellMgr.h"
+#include "Spell/SpellAuras.h"
 
 #define WATER_ELEMENTAL         510
 #define WATER_ELEMENTAL_NEW     37994

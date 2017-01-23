@@ -52,7 +52,7 @@ void LfgPlayerData::SetLockedDungeons(const LfgLockMap& lockStatus)
     m_LockedDungeons = lockStatus;
 }
 
-void LfgPlayerData::SetRoles(uint8 roles)
+void LfgPlayerData::SetRoles(uint8_t roles)
 {
     m_Roles = roles;
 }
@@ -82,7 +82,7 @@ const LfgLockMap & LfgPlayerData::GetLockedDungeons() const
     return m_LockedDungeons;
 }
 
-uint8 LfgPlayerData::GetRoles() const
+uint8_t LfgPlayerData::GetRoles() const
 {
     return m_Roles;
 }

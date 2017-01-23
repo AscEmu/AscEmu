@@ -25,6 +25,9 @@
 #include "Management/Gossip/Gossip.h"
 #include "Management/GameEventMgr.h"
 
+#include "Units/Unit.h"
+#include "Management/ArenaTeam.h"
+
 #include <mutex>
 
 #define SCRIPT_MODULE void*
@@ -126,6 +129,7 @@ class InstanceScript;
 class ScriptMgr;
 struct ItemProperties;
 class QuestLogEntry;
+class QuestScript;
 
 // Factory Imports (from script lib)
 typedef CreatureAIScript* (*exp_create_creature_ai)(Creature* pCreature);

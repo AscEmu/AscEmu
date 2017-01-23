@@ -22,6 +22,8 @@
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Objects/Faction.h"
+#include "Spell/SpellMgr.h"
 
 enum HyjalEvents
 {

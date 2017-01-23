@@ -24,6 +24,7 @@
 
 #include "WorldCreatorDefines.hpp"
 #include "Management/Group.h"
+#include "Server/World.h"
 
 extern const char* InstanceAbortMessages[];
 

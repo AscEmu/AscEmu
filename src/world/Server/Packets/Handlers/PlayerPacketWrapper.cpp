@@ -21,6 +21,7 @@
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Map/MapMgr.h"
 
 void Player::SendTalentResetConfirm()
 {

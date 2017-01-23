@@ -18,10 +18,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "StdAfx.h"
+#pragma once
 
-#ifndef GOSSIP_SCRIPTS_SETUP_H
-#define GOSSIP_SCRIPTS_SETUP_H
+class ScriptMgr;
 
 void SetupDalaranGossip(ScriptMgr* mgr);
 void SetupInnkeepers(ScriptMgr* mgr);
@@ -37,5 +36,3 @@ void SetupTeldrassilGossip(ScriptMgr* mgr);
 void SetupBoreanTundraGossip(ScriptMgr* mgr);
 void SetupWyrmrestTempleGossip(ScriptMgr* mgr);
 void SetupXpEliminatorGossip(ScriptMgr* mgr);
-
-#endif

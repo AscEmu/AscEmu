@@ -2,36 +2,30 @@
 Copyright (c) 2016 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
+#pragma once
 
-#ifndef _UNIT_MOVEMENT_MANAGER_HPP
-#define _UNIT_MOVEMENT_MANAGER_HPP
-
-#include "StdAfx.h"
 #include "Movement/Spline/MovementSpline.hpp"
 
-namespace Movement
-{
+namespace Movement {
     class UnitMovementManager
     {
-        protected:
-            // Used to limit updates to once per MapMgr tick
-            uint32 m_lastUpdateTick;
-        public:
+    protected:
+        // Used to limit updates to once per MapMgr tick
+        uint32_t m_lastUpdateTick;
+    public:
 
-            Spline::MoveSpline m_spline;
+        Spline::MoveSpline m_spline;
 
-            void ForceUpdate();
-            void Update(uint32 pLastUpdate);
-            
-            bool CanUpdate(uint32 pLastUpdate);
-            
-            bool IsMovementFinished();
+        void ForceUpdate();
+        void Update(uint32_t pLastUpdate);
 
-            bool IsFlying();
+        bool CanUpdate(uint32_t pLastUpdate);
 
-            UnitMovementManager();
-            UnitMovementManager(Spline::MoveSpline pSpline);
+        bool IsMovementFinished();
+
+        bool IsFlying();
+
+        UnitMovementManager();
+        UnitMovementManager(Spline::MoveSpline pSpline);
     };
 }
-
-#endif // _UNIT_MOVEMENT_MANAGER_HPP

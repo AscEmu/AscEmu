@@ -27,6 +27,8 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Management/Group.h"
+#include "Map/MapScriptInterface.h"
+#include "Spell/SpellMgr.h"
 
 class LuaGameObject
 {

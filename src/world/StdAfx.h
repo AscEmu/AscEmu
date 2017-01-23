@@ -25,6 +25,8 @@
 #include <vector>
 #include <fstream>
 #include <array>
+#include <set>
+#include <map>
 
 #include "WorldConf.h"
 #include "Server/Definitions.h"
@@ -153,60 +155,44 @@
 #include "Map/TerrainMgr.h"
 #include "Server/Packets/Handlers/MiscHandler.h"
 #include "Server/Packets/Handlers/NPCHandler.h"
-#endif
 #include "Units/Creatures/Pet.h"
-#ifdef UNDEFINED_SYMBOL
 #include "Server/WorldSocket.h"
 #include "Server/WorldSession.h"
 #include "Management/WorldStatesHandler.h"
 #include "Storage/WorldStrings.h"
 #include "Map/MapMgr.h"
-#endif
 #include "Map/MapScriptInterface.h"
-#ifdef UNDEFINED_SYMBOL
 #include "Units/Players/Player.h"
-#endif
 #include "Objects/Faction.h"
-#ifdef UNDEFINED_SYMBOL
 #include "Management/Skill.h"
 #include "Management/SkillNameMgr.h"
 #include "Spell/SpellNameHashes.h"
 #include "Spell/Spell.h"
 #include "Spell/SpellMgr.h"
-#endif
 #include "Spell/SpellAuras.h"
-#ifdef UNDEFINED_SYMBOL
 #include "Management/TaxiMgr.h"
 #include "Management/TransporterHandler.h"
 #include "Management/WeatherMgr.h"
-#endif
 #include "Server/World.h"
-#ifdef UNDEFINED_SYMBOL
 #include "Management/EquipmentSetMgr.h"
 #include "Management/ItemInterface.h"
 #include "Units/Stats.h"
-#endif
 #include "Map/WorldCreator.h"
 #include "Objects/ObjectMgr.h"
 #include "CThreads.h"
 #include "Server/Script/ScriptMgr.h"
-#ifdef UNDEFINED_SYMBOL
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
 #include "Management/ArenaTeam.h"
 #include "Management/Arenas.h"
-#endif
-#ifdef UNDEFINED_SYMBOL
 #include "Server/LogonCommClient/LogonCommClient.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/MainServerDefines.h"
 #include "Server/WorldRunnable.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/DatabaseCleaner.h"
-#endif
 #include "Storage/DayWatcherThread.h"
 #include "Server/CommonScheduleThread.h"
-#ifdef UNDEFINED_SYMBOL
 #include "Management/LocalizationMgr.h"
 
 #include "Server/Master.h"

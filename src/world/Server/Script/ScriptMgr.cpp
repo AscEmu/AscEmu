@@ -30,6 +30,8 @@
 
 #include <fstream>
 #include <mutex>
+#include "Map/MapMgr.h"
+#include "Spell/SpellAuras.h"
 
 
 initialiseSingleton(ScriptMgr);

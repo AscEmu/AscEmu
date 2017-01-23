@@ -1,8 +1,11 @@
 // License: MIT
 
-#include "Objects/Object.h"
-
 #pragma once
+
+#include "Objects/Object.h"
+#include "Spell/SpellDefines.hpp"
+
+#include "CombatStatus.h"
 
 // Prevent compiler from trying to compile duplicate class definitions
 #define UNIT_CLASS_PARTIAL

@@ -24,6 +24,10 @@
 #include "Management/Container.h"
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Server/WorldSession.h"
+#include "Server/World.h"
+#include "Objects/ObjectMgr.h"
 
 void WorldSession::HandleInitiateTrade(WorldPacket& recv_data)
 {

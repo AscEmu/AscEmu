@@ -20,6 +20,7 @@
 
 #ifndef _DATABASECLEANER_H
 #define _DATABASECLEANER_H
+#include "Singleton.h"
 
 class DatabaseCleaner : public Singleton<DatabaseCleaner>
 {

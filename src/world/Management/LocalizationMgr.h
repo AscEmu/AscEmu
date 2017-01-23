@@ -17,9 +17,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once 
 
-#ifndef _LOCALIZATIONMGR_H
-#define _LOCALIZATIONMGR_H
+#include <set>
+#include <unordered_map>
 
 struct LocalizedCreatureName
 {
@@ -96,63 +97,61 @@ struct LocalizedMonstersay
 
 class LocalizationMgr
 {
-    public:
+public:
 
-        void Shutdown();
-        void Reload(bool first);
-        void Lower(std::string & conv);
-        uint32 GetLanguageId(uint32 full);
+    void Shutdown();
+    void Reload(bool first);
+    void Lower(std::string& conv);
+    uint32_t GetLanguageId(uint32_t full);
 
-        uint32 GetLanguageId(std::string langstr)
-        {
-            std::string ns = langstr;
-            Lower(ns);
+    uint32_t GetLanguageId(std::string langstr)
+    {
+        std::string ns = langstr;
+        Lower(ns);
 
-            uint32 lid = *(uint32*)ns.c_str();
-            return GetLanguageId(lid);
-        }
+        uint32_t lid = *(uint32_t*)ns.c_str();
+        return GetLanguageId(lid);
+    }
 
-        void GetDistinctLanguages(std::set<std::string>& dest, const char* table);
+    void GetDistinctLanguages(std::set<std::string>& dest, const char* table);
 
-        LocalizedQuest* GetLocalizedQuest(uint32 id, uint32 language);
-        LocalizedItem* GetLocalizedItem(uint32 id, uint32 language);
-        LocalizedNpcText* GetLocalizedNpcText(uint32 id, uint32 language);
-        LocalizedCreatureName* GetLocalizedCreatureName(uint32 id, uint32 language);
-        LocalizedGameObjectName* GetLocalizedGameObjectName(uint32 id, uint32 language);
-        LocalizedItemPage* GetLocalizedItemPage(uint32 id, uint32 language);
-        LocalizedCreatureText* GetLocalizedCreatureText(uint32 id, uint32 language);
-        LocalizedGossipMenuOption* GetLocalizedGossipMenuOption(uint32 id, uint32 language);
-        LocalizedWorldStringTable* GetLocalizedWorldStringTable(uint32 id, uint32 language);
-        LocalizedWorldBroadCast* GetLocalizedWorldBroadCast(uint32 id, uint32 language);
-        LocalizedWorldMapInfo* GetLocalizedWorldMapInfo(uint32 id, uint32 language);
-        LocalizedMonstersay* GetLocalizedMonstersay(uint32 id, uint32 language);
+    LocalizedQuest* GetLocalizedQuest(uint32_t id, uint32_t language);
+    LocalizedItem* GetLocalizedItem(uint32_t id, uint32_t language);
+    LocalizedNpcText* GetLocalizedNpcText(uint32_t id, uint32_t language);
+    LocalizedCreatureName* GetLocalizedCreatureName(uint32_t id, uint32_t language);
+    LocalizedGameObjectName* GetLocalizedGameObjectName(uint32_t id, uint32_t language);
+    LocalizedItemPage* GetLocalizedItemPage(uint32_t id, uint32_t language);
+    LocalizedCreatureText* GetLocalizedCreatureText(uint32_t id, uint32_t language);
+    LocalizedGossipMenuOption* GetLocalizedGossipMenuOption(uint32_t id, uint32_t language);
+    LocalizedWorldStringTable* GetLocalizedWorldStringTable(uint32_t id, uint32_t language);
+    LocalizedWorldBroadCast* GetLocalizedWorldBroadCast(uint32_t id, uint32_t language);
+    LocalizedWorldMapInfo* GetLocalizedWorldMapInfo(uint32_t id, uint32_t language);
+    LocalizedMonstersay* GetLocalizedMonstersay(uint32_t id, uint32_t language);
 
-        template<typename T>
-        void CopyHashMap(std::unordered_map<uint32, T> * src, std::unordered_map<uint32, T> * dest)
-        {
-            for (typename std::unordered_map<uint32, T>::iterator itr = src->begin(); itr != src->end(); ++itr)
-                dest->insert(std::make_pair(itr->first, itr->second));
-        }
+    template <typename T>
+    void CopyHashMap(std::unordered_map<uint32_t, T>* src, std::unordered_map<uint32_t, T>* dest)
+    {
+        for (typename std::unordered_map<uint32_t, T>::iterator itr = src->begin(); itr != src->end(); ++itr)
+            dest->insert(std::make_pair(itr->first, itr->second));
+    }
 
-    private:
+private:
 
-        std::unordered_map<uint32, LocalizedQuest> * m_Quests;
-        std::unordered_map<uint32, LocalizedItem> * m_Items;
-        std::unordered_map<uint32, LocalizedNpcText> * m_NpcTexts;
-        std::unordered_map<uint32, LocalizedCreatureName> * m_CreatureNames;
-        std::unordered_map<uint32, LocalizedGameObjectName> * m_GameObjectNames;
-        std::unordered_map<uint32, LocalizedItemPage> * m_ItemPages;
-        std::unordered_map<uint32, LocalizedCreatureText> * m_CreatureText;
-        std::unordered_map<uint32, LocalizedGossipMenuOption> * m_GossipMenuOption;
-        std::unordered_map<uint32, LocalizedWorldStringTable> * m_WorldStrings;
-        std::unordered_map<uint32, LocalizedWorldBroadCast> * m_WorldBroadCast;
-        std::unordered_map<uint32, LocalizedWorldMapInfo> * m_WorldMapInfo;
-        std::unordered_map<uint32, LocalizedMonstersay> * m_MonsterSay;
+    std::unordered_map<uint32_t, LocalizedQuest>* m_Quests;
+    std::unordered_map<uint32_t, LocalizedItem>* m_Items;
+    std::unordered_map<uint32_t, LocalizedNpcText>* m_NpcTexts;
+    std::unordered_map<uint32_t, LocalizedCreatureName>* m_CreatureNames;
+    std::unordered_map<uint32_t, LocalizedGameObjectName>* m_GameObjectNames;
+    std::unordered_map<uint32_t, LocalizedItemPage>* m_ItemPages;
+    std::unordered_map<uint32_t, LocalizedCreatureText>* m_CreatureText;
+    std::unordered_map<uint32_t, LocalizedGossipMenuOption>* m_GossipMenuOption;
+    std::unordered_map<uint32_t, LocalizedWorldStringTable>* m_WorldStrings;
+    std::unordered_map<uint32_t, LocalizedWorldBroadCast>* m_WorldBroadCast;
+    std::unordered_map<uint32_t, LocalizedWorldMapInfo>* m_WorldMapInfo;
+    std::unordered_map<uint32_t, LocalizedMonstersay>* m_MonsterSay;
 
-    std::vector<std::pair<uint32, uint32>> m_languages;
-        bool m_disabled;
+    std::vector<std::pair<uint32_t, uint32_t>> m_languages;
+    bool m_disabled;
 };
 
 extern LocalizationMgr sLocalizationMgr;
-
-#endif // _LOCALIZATIONMGR_H

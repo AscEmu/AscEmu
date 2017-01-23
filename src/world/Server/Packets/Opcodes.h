@@ -17,12 +17,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once
 
-#ifndef _OPCODES_H
-#define _OPCODES_H
+#include <cstdint>
 
 /// NOTE: All SERVER opcodes are now uint16's, as of patch 4 (3807/0.9.0)
-///        Client opcodes are still uint32 as far as we know.
+///        Client opcodes are still uint32_t as far as we know.
 /// 3.3.5a client opcodes
 enum Opcodes
 {
@@ -1217,7 +1217,7 @@ enum Opcodes
     CMSG_QUERY_VEHICLE_STATUS                       = 0x4A4,    // not used in client
     UMSG_UNKNOWN_1189                               = 0x4A5,    ///\todo investigate, CMSG_QUERY_VEHICLE_STATUS
     SMSG_UNKNOWN_1190                               = 0x4A6,    ///\todo investigate, SMSG_BATTLEGROUND_INFO_THROTTLED
-    SMSG_PLAYER_VEHICLE_DATA                        = 0x4A7,    ///\todo investigate, smsg guid+uint32 (vehicle)
+    SMSG_PLAYER_VEHICLE_DATA                        = 0x4A7,    ///\todo investigate, smsg guid+uint32_t (vehicle)
     CMSG_PLAYER_VEHICLE_ENTER                       = 0x4A8,    ///\todo investigate, cmsg uint64
     CMSG_EJECT_PASSENGER                            = 0x4A9,    ///\todo investigate, cmsg uint64
     SMSG_PET_GUIDS                                  = 0x4AA,    ///\todo implement
@@ -1232,7 +1232,7 @@ enum Opcodes
     CMSG_ITEMREFUNDINFO                             = 0x4B3,    // implemented
     CMSG_ITEMREFUNDREQUEST                          = 0x4B4,    ///\todo investigate, implemented, CMSG_ITEM_REFUND
     SMSG_ITEMREFUNDREQUEST                          = 0x4B5,    ///\todo investigate, SMSG_ITEM_REFUND_RESULT
-    CMSG_UNKNOWN_1206                               = 0x4B6,    ///\todo investigate, CMSG_CORPSE_MAP_POSITION_QUERY, uint32
+    CMSG_UNKNOWN_1206                               = 0x4B6,    ///\todo investigate, CMSG_CORPSE_MAP_POSITION_QUERY, uint32_t
     SMSG_UNKNOWN_1207                               = 0x4B7,    ///\todo investigate, SMSG_CORPSE_MAP_POSITION_QUERY_RESPONSE, string+float
     SMSG_UNKNOWN_1208                               = 0x4B8,    ///\todo investigate, CMSG, empty, lua: SetLFGRoles
     UMSG_UNKNOWN_1209                               = 0x4B9,    ///\todo investigate
@@ -1250,7 +1250,7 @@ enum Opcodes
     UMSG_UNKNOWN_1221                               = 0x4C5,    ///\todo investigate, CMSG_GM_REMOVE_ACHIEVEMENT
     UMSG_UNKNOWN_1222                               = 0x4C6,    ///\todo investigate, CMSG_GM_SET_CRITERIA_FOR_PLAYER
     SMSG_UNKNOWN_1223                               = 0x4C7,    ///\todo investigate, SMSG_ARENA_UNIT_DESTROYED, uint64, arena pet?
-    SMSG_UNKNOWN_1224                               = 0x4C8,    ///\todo investigate, SMSG_ARENA_TEAM_CHANGE_FAILED_QUEUED, uint32 "Can't change arena team..."
+    SMSG_UNKNOWN_1224                               = 0x4C8,    ///\todo investigate, SMSG_ARENA_TEAM_CHANGE_FAILED_QUEUED, uint32_t "Can't change arena team..."
     UMSG_UNKNOWN_1225                               = 0x4C9,    ///\todo investigate, CMSG_PROFILEDATA_REQUEST
     UMSG_UNKNOWN_1226                               = 0x4CA,    ///\todo investigate, SMSG_PROFILEDATA_RESPONSE
     CMSG_UNKNOWN_1227                               = 0x4CB,    ///\todo investigate, CMSG_START_BATTLEFIELD_CHEAT
@@ -1272,24 +1272,24 @@ enum Opcodes
     CMSG_PVP_QUEUE_STATS_REQUEST                    = 0x4DB,    ///\todo Not implemented
     SMSG_PVP_QUEUE_STATS                            = 0x4DC,    ///\todo Not implemented
     CMSG_SET_PAID_SERVICE_CHEAT                     = 0x4DD,    ///\todo Not implemented
-    SMSG_BATTLEFIELD_MGR_ENTRY_INVITE               = 0x4DE,    ///\todo Not implemented, uint32
+    SMSG_BATTLEFIELD_MGR_ENTRY_INVITE               = 0x4DE,    ///\todo Not implemented, uint32_t
     CMSG_BATTLEFIELD_MGR_ENTRY_INVITE_RESPONSE      = 0x4DF,    ///\todo Not implemented
-    SMSG_BATTLEFIELD_MGR_ENTERED                    = 0x4E0,    ///\todo Not implemented, uint32,uint8,uint8
-    SMSG_BATTLEFIELD_MGR_QUEUE_INVITE               = 0x4E1,    ///\todo Not implemented, uint32
+    SMSG_BATTLEFIELD_MGR_ENTERED                    = 0x4E0,    ///\todo Not implemented, uint32_t,uint8,uint8
+    SMSG_BATTLEFIELD_MGR_QUEUE_INVITE               = 0x4E1,    ///\todo Not implemented, uint32_t
     CMSG_BATTLEFIELD_MGR_QUEUE_INVITE_RESPONSE      = 0x4E2,    ///\todo Not implemented
     CMSG_BATTLEFIELD_MGR_QUEUE_REQUEST              = 0x4E3,    ///\todo Not implemented
-    SMSG_BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE     = 0x4E4,    ///\todo Not implemented, uint32,uint8
-    SMSG_BATTLEFIELD_MGR_EJECT_PENDING              = 0x4E5,    ///\todo Not implemented, uint32
-    SMSG_BATTLEFIELD_MGR_EJECTED                    = 0x4E6,    ///\todo Not implemented, uint32,uint32,uint8
+    SMSG_BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE     = 0x4E4,    ///\todo Not implemented, uint32_t,uint8
+    SMSG_BATTLEFIELD_MGR_EJECT_PENDING              = 0x4E5,    ///\todo Not implemented, uint32_t
+    SMSG_BATTLEFIELD_MGR_EJECTED                    = 0x4E6,    ///\todo Not implemented, uint32_t,uint32_t,uint8
     CMSG_BATTLEFIELD_MGR_EXIT_REQUEST               = 0x4E7,    ///\todo Not implemented
-    SMSG_BATTLEFIELD_MGR_STATE_CHANGE               = 0x4E8,    ///\todo Not implemented, uint32,uint32
+    SMSG_BATTLEFIELD_MGR_STATE_CHANGE               = 0x4E8,    ///\todo Not implemented, uint32_t,uint32_t
     CMSG_BATTLEFIELD_MANAGER_ADVANCE_STATE          = 0x4E9,    ///\todo Not implemented
     CMSG_BATTLEFIELD_MANAGER_SET_NEXT_TRANS_TIME    = 0x4EA,    ///\todo Not implemented
     MSG_SET_RAID_DIFFICULTY                         = 0x4EB,    // implemented
     CMSG_TOGGLE_XP_GAIN                             = 0x4EC,    ///\todo Not implemented
     SMSG_TOGGLE_XP_GAIN                             = 0x4ED,    ///\todo Not implemented, enable/disableXPgainconsolemessage
     SMSG_GMRESPONSE_DB_ERROR                        = 0x4EE,    ///\todo Not implemented, empty
-    SMSG_GMRESPONSE_RECEIVED                        = 0x4EF,    ///\todo Not implemented, uint32,uint32,string[2000],string[4000][4]
+    SMSG_GMRESPONSE_RECEIVED                        = 0x4EF,    ///\todo Not implemented, uint32_t,uint32_t,string[2000],string[4000][4]
     CMSG_GMRESPONSE_RESOLVE                         = 0x4F0,    ///\todo Not implemented
     SMSG_GMRESPONSE_STATUS_UPDATE                   = 0x4F1,    ///\todo Not implemented, uint8(1-EVENT_GMSURVEY_DISPLAY,0-EVENT_UPDATE_TICKET)
     SMSG_GMRESPONSE_CREATE_TICKET                   = 0x4F2,    ///\todo Not implemented
@@ -1316,10 +1316,10 @@ enum Opcodes
     CMSG_GM_NUKE_CHARACTER                          = 0x507,    ///\todo implement
     CMSG_SET_ALLOW_LOW_LEVEL_RAID1                  = 0x508,    ///\todo implement
     CMSG_SET_ALLOW_LOW_LEVEL_RAID2                  = 0x509,    ///\todo implement
-    SMSG_CAMERA_SHAKE                               = 0x50A,    ///\todo implement uint32 SpellEffectCameraShakes.dbc index, uint32
+    SMSG_CAMERA_SHAKE                               = 0x50A,    ///\todo implement uint32_t SpellEffectCameraShakes.dbc index, uint32_t
     SMSG_SOCKET_GEMS_RESULT                         = 0x50B,    ///\todo implement
     CMSG_SET_CHARACTER_MODEL                        = 0x50C,    ///\todo implement
-    SMSG_REDIRECT_CLIENT                            = 0x50D,    ///\todo implement uint32 ip, uint16 port, uint32 unk, uint8[20] hash (ip + port, seed=sessionkey)
+    SMSG_REDIRECT_CLIENT                            = 0x50D,    ///\todo implement uint32_t ip, uint16 port, uint32_t unk, uint8[20] hash (ip + port, seed=sessionkey)
     CMSG_REDIRECTION_FAILED                         = 0x50E,    ///\todo implement something with networking
     SMSG_SUSPEND_COMMS                              = 0x50F,    ///\todo implement
     CMSG_SUSPEND_COMMS_ACK                          = 0x510,    ///\todo implement
@@ -1342,13 +1342,13 @@ enum Opcodes
 
 struct OpcodeTableEntry
 {
-    uint32 id;
+    uint32_t id;
     const char* name;
 };
 
-static inline const char* LookupName(uint32 id, OpcodeTableEntry* table)
+static inline const char* LookupName(uint32_t id, OpcodeTableEntry* table)
 {
-    for (uint32 i = 0; table[i].name != 0; i++)
+    for (uint32_t i = 0; table[i].name != 0; i++)
     {
         if (table[i].id == id)
             return table[i].name;
@@ -1358,5 +1358,3 @@ static inline const char* LookupName(uint32 id, OpcodeTableEntry* table)
 }
 
 extern OpcodeTableEntry g_worldOpcodeNames[];
-
-#endif // _OPCODES_H

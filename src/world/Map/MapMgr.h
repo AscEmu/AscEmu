@@ -22,6 +22,7 @@
 #define _MAPMGR_H
 
 #include "Map/MapManagementGlobals.hpp"
+#include "MapCell.h"
 #include "CellHandler.h"
 #include "Management/WorldStatesHandler.h"
 #include "MapMgrDefines.hpp"
@@ -29,6 +30,7 @@
 #include "CThreads.h"
 #include "Units/Summons/SummonDefines.hpp"
 #include "Objects/CObjectFactory.h"
+#include "Server/EventableObject.h"
 
 namespace Arcemu
 {
@@ -41,7 +43,6 @@ namespace Arcemu
 
 template <typename T>
 class CellHandler;
-class MapCell;
 class Map;
 class Object;
 class MapScriptInterface;
@@ -57,6 +58,8 @@ class Instance;
 class InstanceScript;
 class Transporter;
 class Summon;
+class DynamicObject;
+class Unit;
 
 extern Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
 

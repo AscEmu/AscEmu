@@ -20,6 +20,8 @@
  */
 
 #include "StdAfx.h"
+#include "Singleton.h"
+#include "EventMgr.h"
 
 initialiseSingleton(EventMgr);
 

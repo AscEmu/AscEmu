@@ -22,6 +22,10 @@
 #include "StdAfx.h"
 #include "Management/WeatherMgr.h"
 #include "Server/MainServerDefines.h"
+#include "Server/WorldSession.h"
+#include "Server/World.h"
+#include "WorldPacket.h"
+#include "Units/Players/Player.h"
 
 /// Weather defines
 enum WeatherTypes

@@ -25,6 +25,10 @@
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Map/MapMgr.h"
+#include "Map/MapScriptInterface.h"
+#include "Spell/SpellMgr.h"
+#include "Spell/SpellAuras.h"
 
 bool FrostWarding(uint32 i, Spell* s)
 {

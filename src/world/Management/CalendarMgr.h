@@ -18,6 +18,10 @@
 
 #ifndef _CALENDARMGR_H
 #define _CALENDARMGR_H
+#include <vector>
+#include <set>
+#include "Singleton.h"
+#include <map>
 
 enum CalendarFlags
 {
@@ -113,7 +117,7 @@ typedef std::vector<CalendarInvite*> CalendarInviteStore;
 typedef std::set<CalendarEvent*> CalendarEventStore;
 typedef std::map<uint64 /* eventId */, CalendarInviteStore > CalendarEventInviteStore;
 
-class CalendarMgr : public Singleton < CalendarMgr >
+class CalendarMgr : public Singleton< CalendarMgr >
 {
     public:
 

@@ -22,8 +22,7 @@
 #define _SPELL_PROC_H
 
 class SpellProc;
-
-#include "Objects/Object.h"
+class Object;
 #include "SpellInfo.hpp"
 
 class Unit;

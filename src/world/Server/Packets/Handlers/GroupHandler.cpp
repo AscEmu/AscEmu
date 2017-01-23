@@ -20,6 +20,10 @@
  */
 
 #include "StdAfx.h"
+#include "Map/MapMgr.h"
+#include "Spell/SpellAuras.h"
+#include "Map/WorldCreator.h"
+#include "Objects/ObjectMgr.h"
 
 //////////////////////////////////////////////////////////////
 /// This function handles CMSG_GROUP_INVITE

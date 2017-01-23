@@ -20,6 +20,11 @@
 #ifndef _CONDITION_VARIABLE_H
 #define _CONDITION_VARIABLE_H
 
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 namespace Arcemu
 {
     namespace Threading

@@ -24,7 +24,15 @@
 #define CHANNEL_TRADE 2
 #define CHANNEL_GUILDREC 25
 #define CHANNEL_LFG 26
+#include "Threading/Mutex.h"
+#include <set>
+#include "Server/WUtil.h"
+#include <map>
+#include "Units/Players/Player.h"
 
+
+class WorldPacket;
+class PlayerInfo;
 
 enum ChannelMemberFlags
 {

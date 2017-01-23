@@ -15,12 +15,14 @@
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+#pragma once
 
 #include "CThreads.h"
+#include <set>
+#include <map>
+#include <ctime>
 
-#ifndef __GAMEEVENTMGR_H
-#define __GAMEEVENTMGR_H
-
+#include "../../shared/Singleton.h"
 
 class GameEvent;
 
@@ -233,6 +235,3 @@ class GameEventMgr : public Singleton < GameEventMgr >
 
 #define sGameEventMgr GameEventMgr::getSingleton()
 #define sGameEventMgrThread GameEventMgr::GameEventMgrThread::getSingleton()
-
-
-#endif      //__GAMEEVENTMGR_H

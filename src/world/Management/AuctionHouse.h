@@ -22,6 +22,7 @@
 #define _AUCTIONHOUSE_H
 
 #include "Storage/DBC/DBCStructures.hpp"
+#include "Item.h"
 
 enum AuctionRemoveType
 {

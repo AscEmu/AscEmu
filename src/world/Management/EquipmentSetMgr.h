@@ -16,13 +16,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef _EQUIPMENTSETMGR_H
-#define _EQUIPMENTSETMGR_H
+#pragma once
 
 #include <array>
+#include <map>
 
 #define EQUIPMENTSET_SLOTS 10
+
+class WorldPacket;
+class QueryBuffer;
+class QueryResult;
 
 namespace Arcemu
 {
@@ -32,11 +35,11 @@ namespace Arcemu
     //////////////////////////////////////////////////////////////////////////////////////////
     struct EquipmentSet
     {
-        uint32 SetGUID;
-        uint32 SetID;
+        uint32_t SetGUID;
+        uint32_t SetID;
         std::string SetName;
         std::string IconName;
-        std::array<uint32, 19> ItemGUID;
+        std::array<uint32_t, 19> ItemGUID;
 
         EquipmentSet()
         {
@@ -45,7 +48,7 @@ namespace Arcemu
             SetName = "";
             IconName = "";
 
-            for (uint32 i = 0; i < ItemGUID.size(); ++i)
+            for (uint32_t i = 0; i < ItemGUID.size(); ++i)
                 ItemGUID[i] = 0;
         }
     };
@@ -54,11 +57,11 @@ namespace Arcemu
     //////////////////////////////////////////////////////////////////////////////////////////
     /// \note EquipmentSetStorage   - Storage for world of warcraft equipment set structures
     ///
-    /// Key     - uint32 -  GUID of the set
+    /// Key     - uint32_t -  GUID of the set
     /// Value   - EquipmentSet*  - pointer to an EquipmentSet structure
     ///
     //////////////////////////////////////////////////////////////////////////////////////////
-    typedef std::map<uint32, EquipmentSet*> EquipmentSetStorage;
+    typedef std::map<uint32_t, EquipmentSet*> EquipmentSetStorage;
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -72,41 +75,41 @@ namespace Arcemu
         public:
 
             EquipmentSetMgr() { ownerGUID = 1; }
-            EquipmentSetMgr(uint32 ownerGUID) { this->ownerGUID = ownerGUID; }
+            EquipmentSetMgr(uint32_t ownerGUID) { this->ownerGUID = ownerGUID; }
             ~EquipmentSetMgr();
 
             //////////////////////////////////////////////////////////////////////////////////////////
             /// \note EquipmentSet* GetEquipmentSet - Looks up the set in storage (if any) and returns it
             ///
-            /// \param uint32 GUID  -  GUID of the equipment set
+            /// \param uint32_t GUID  -  GUID of the equipment set
             ///
             /// \returns a pointer to an EquipmentSet structure on success, NULL on failure.
             ///
             //////////////////////////////////////////////////////////////////////////////////////////
-            EquipmentSet* GetEquipmentSet(uint32 GUID);
+            EquipmentSet* GetEquipmentSet(uint32_t GUID);
 
 
             //////////////////////////////////////////////////////////////////////////////////////////
             /// \note bool AddEquipmentSet  - Stores and equipment set in storage
             ///
-            /// \param uint32 setGUID    -  GUID of the equipment set
+            /// \param uint32_t setGUID    -  GUID of the equipment set
             /// \param EquipmentSet* set -  pointer to an equipment set structure
             ///
             /// \returns true on success, false on failure.
             ///
             //////////////////////////////////////////////////////////////////////////////////////////
-            bool AddEquipmentSet(uint32 setGUID, EquipmentSet* set);
+            bool AddEquipmentSet(uint32_t setGUID, EquipmentSet* set);
 
 
             //////////////////////////////////////////////////////////////////////////////////////////
             /// \note bool DeleteEquipmentSet- Removes an equipment set with the given GUID from storage
             ///
-            /// \param uint32 setGUID  -  GUID of the equipment set
+            /// \param uint32_t setGUID  -  GUID of the equipment set
             ///
             /// \returns true on success, false on failure.
             ///
             //////////////////////////////////////////////////////////////////////////////////////////
-            bool DeleteEquipmentSet(uint32 setGUID);
+            bool DeleteEquipmentSet(uint32_t setGUID);
 
 
             //////////////////////////////////////////////////////////////////////////////////////////
@@ -147,11 +150,9 @@ namespace Arcemu
             EquipmentSetMgr & operator=(EquipmentSetMgr & other) { return *this; }
 
             /// GUID of the owner (player) of the equipment sets
-            uint32 ownerGUID;
+            uint32_t ownerGUID;
 
             EquipmentSetStorage EquipmentSets;
     };
 
 }
-
-#endif // _EQUIPMENTSETMGR_H

@@ -18,6 +18,10 @@
  */
 
 #include "Setup.h"
+#include "Server/WorldSession.h"
+#include "Management/Gossip/Gossip.h"
+#include "Units/Players/Player.h"
+#include "Server/Script/ScriptMgr.h"
 
 // XpEleminatorGossip
 //  GossipScript subclass for turning on/off Player experience gain

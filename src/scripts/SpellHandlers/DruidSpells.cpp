@@ -18,6 +18,9 @@
  */
 
 #include "Setup.h"
+#include "Objects/Faction.h"
+#include "Spell/SpellAuras.h"
+#include "Server/Script/ScriptMgr.h"
 
 bool Starfall(uint32 i, Spell* pSpell)
 {

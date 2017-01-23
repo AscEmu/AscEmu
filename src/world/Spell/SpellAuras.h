@@ -401,16 +401,6 @@ struct ProcTriggerSpellOnSpell
     void* owner;                //mark the owner of this proc to know which one to delete
 };
 
-struct DamageProc
-{
-    uint32 m_spellId;
-    uint32 m_damage;
-    //uint64 m_caster;          //log is: some reflects x arcane/nature damage to 'attacker' no matter who casted
-    uint32 m_school;
-    uint32 m_flags;
-    void* owner;                //mark the owner of this proc to know which one to delete
-};
-
 struct DamageSplitTarget
 {
     uint64 m_target;            // we store them
@@ -419,15 +409,6 @@ struct DamageSplitTarget
     uint32 m_flatDamageSplit;   // flat damage to transfer (i.e. Blessing of Sacrifice)
     uint8 damage_type;          // bitwise 0-127 thingy
     void* creator;
-};
-
-struct SpellCharge
-{
-    uint32 spellId;
-    uint32 count;
-    uint32 ProcFlag;
-    uint32 lastproc;
-    uint32 procdiff;
 };
 
 typedef std::set< uint64 > AreaAuraList;

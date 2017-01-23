@@ -20,6 +20,8 @@
  */
 
 #include "StdAfx.h"
+#include "Map/WorldCreator.h"
+#include "Objects/ObjectMgr.h"
 
 
 void WorldSession::HandleConvertGroupToRaidOpcode(WorldPacket& recv_data)

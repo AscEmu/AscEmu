@@ -17,11 +17,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef _ITEMINTERFACE_H
-#define _ITEMINTERFACE_H
+#pragma once
 
 #include "EquipmentSetMgr.h"
+#include "ItemPrototype.h"
+#include "../Server/WUtil.h"
+
+class Creature;
 
 const uint8 INVALID_BACKPACK_SLOT = 0xFF;
 
@@ -256,5 +258,3 @@ class ItemIterator
         inline Item* Grab() { return m_currentItem; }
         inline bool End() { return m_atEnd; }
 };
-
-#endif // _ITEMINTERFACE_H

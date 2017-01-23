@@ -17,6 +17,9 @@
  */
 
 #include "StdAfx.h"
+#include "Server/WorldSession.h"
+#include "Log.hpp"
+#include "Units/Players/Player.h"
 
 /// \todo CalendarHandler
 void WorldSession::HandleCalendarGetCalendar(WorldPacket& /*recv_data*/)

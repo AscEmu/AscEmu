@@ -2,6 +2,8 @@
 #include "CombatStatus.h"
 #include "Errors.h"
 #include "Unit.h"
+#include "Map/MapMgr.h"
+#include "Spell/SpellAuras.h"
 
 using namespace std;
 

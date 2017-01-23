@@ -16,11 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once
 
-#include "StdAfx.h"
-#ifndef EXTRA_SCRIPTS_SETUP_H
-#define EXTRA_SCRIPTS_SETUP_H
+class ScriptMgr;
 
 void SetupNeutralGuards(ScriptMgr* mgr);
-
-#endif

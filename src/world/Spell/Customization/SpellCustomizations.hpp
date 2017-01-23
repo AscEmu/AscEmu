@@ -15,49 +15,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once
 
 #include "Singleton.h"
 #include "Storage/DBC/DBCStores.h"
+#include "Spell/SpellInfo.hpp"
 
-#ifndef _SPELL_CUSTOMIZATIONS_HPP
-#define _SPELL_CUSTOMIZATIONS_HPP
-
-
-class SERVER_DECL SpellCustomizations : public Singleton <SpellCustomizations>
+class SERVER_DECL SpellCustomizations : public Singleton<SpellCustomizations>
 {
-    public:
+public:
+    SpellCustomizations();
+    ~SpellCustomizations();
 
-        SpellCustomizations();
-        ~SpellCustomizations();
+    typedef std::unordered_map<uint32, SpellInfo> SpellInfoContainer;
 
-        typedef std::unordered_map<uint32, SpellInfo> SpellInfoContainer;
+    void LoadSpellInfoData();
+    SpellInfo* GetSpellInfo(uint32 spell_id);
+    SpellInfoContainer* GetSpellInfoStore();
 
-        void LoadSpellInfoData();
-        SpellInfo* GetSpellInfo(uint32 spell_id);
-        SpellInfoContainer* GetSpellInfoStore() { return &_spellInfoContainerStore; }
+    void StartSpellCustomization();
 
-        void StartSpellCustomization();
+    // functions for setting up custom vars
+    void LoadSpellRanks();
+    void LoadSpellCustomAssign();
+    void LoadSpellCustomCoefFlags();
+    void LoadSpellProcs();
 
-        // functions for setting up custom vars
-        void LoadSpellRanks();
-        void LoadSpellCustomAssign();
-        void LoadSpellCustomCoefFlags();
-        void LoadSpellProcs();
+    void SetEffectAmplitude(SpellInfo* spell_entry);
+    void SetAuraFactoryFunc(SpellInfo* spell_entry);
 
-        void SetEffectAmplitude(SpellInfo* spell_entry);
-        void SetAuraFactoryFunc(SpellInfo* spell_entry);
+    void SetMeleeSpellBool(SpellInfo* spell_entry);
+    void SetRangedSpellBool(SpellInfo* spell_entry);
 
-        void SetMeleeSpellBool(SpellInfo* spell_entry);
-        void SetRangedSpellBool(SpellInfo* spell_entry);
+    void SetMissingCIsFlags(SpellInfo* spell_entry);
+    void SetCustomFlags(SpellInfo* spell_entry);
+    void SetOnShapeshiftChange(SpellInfo* spell_entry);
+    void SetAlwaysApply(SpellInfo* spell_entry);
 
-        void SetMissingCIsFlags(SpellInfo* spell_entry);
-        void SetCustomFlags(SpellInfo* spell_entry);
-        void SetOnShapeshiftChange(SpellInfo* spell_entry);
-        void SetAlwaysApply(SpellInfo* spell_entry);
-
-        SpellInfoContainer _spellInfoContainerStore;
+    SpellInfoContainer _spellInfoContainerStore;
 };
 
 #define sSpellCustomizations SpellCustomizations::getSingleton()
-
-#endif  // _SPELL_CUSTOMIZATIONSE_HPP

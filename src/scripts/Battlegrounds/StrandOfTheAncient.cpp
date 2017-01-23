@@ -67,6 +67,9 @@
 #include "StdAfx.h"
 #include "StrandOfTheAncient.h"
 #include "Management/WorldStates.h"
+#include "Map/MapMgr.h"
+#include "Objects/GameObject.h"
+#include "Chat/ChatDefines.hpp"
 
 const float sotaTitanRelic[4] = { 836.5f, -108.8f, 120.59f, 0.0f };
 

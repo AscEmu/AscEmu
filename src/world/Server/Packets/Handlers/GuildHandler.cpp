@@ -27,6 +27,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
+#include "Map/MapMgr.h"
 
 void WorldSession::HandleGuildQuery(WorldPacket& recv_data)
 {

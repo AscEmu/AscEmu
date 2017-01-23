@@ -22,6 +22,7 @@
 #include "Management/AuctionHouse.h"
 #include "Management/AuctionMgr.h"
 #include "Server/MainServerDefines.h"
+#include "Log.hpp"
 
 initialiseSingleton(AuctionMgr);
 

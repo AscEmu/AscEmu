@@ -19,6 +19,11 @@
 
 #include "Setup.h"
 #include "Management/TaxiMgr.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Server/WorldSession.h"
+#include "Units/Creatures/Creature.h"
+#include "Management/Gossip/Gossip.h"
+#include "Server/Script/ScriptMgr.h"
 
 class ArchmageMalin_Gossip : public Arcemu::Gossip::Script
 {

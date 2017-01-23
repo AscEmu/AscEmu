@@ -21,6 +21,9 @@
 #include "StdAfx.h"
 #include "Management/ArenaTeam.h"
 #include "Server/MainServerDefines.h"
+#include "Server/WorldSession.h"
+#include "Chat/ChatHandler.hpp"
+#include "Objects/ObjectMgr.h"
 
 static const uint32 TeamCountToId[6] =
 {

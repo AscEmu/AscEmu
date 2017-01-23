@@ -20,6 +20,9 @@
 #include "Setup.h"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
+#include "Map/MapMgr.h"
+#include "Spell/SpellAuras.h"
+#include "Server/Script/ScriptMgr.h"
 
 //Alice : Correct formula for Rogue - Preparation
 

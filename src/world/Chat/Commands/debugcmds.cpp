@@ -23,6 +23,8 @@
 #include "VMapFactory.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Spell/SpellAuras.h"
 
 bool ChatHandler::HandleDebugDumpMovementCommand(const char* args, WorldSession* session)
 {

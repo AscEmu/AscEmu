@@ -23,6 +23,7 @@
 #define _C_THREADS_H
 
 #include "Threading/ThreadStarter.h"
+#include "Threading/AtomicCounter.h"
 
 class MapMgr;
 class Player;

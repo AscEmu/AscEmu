@@ -26,6 +26,9 @@
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
 #include "Server/MainServerDefines.h"
+#include "Server/WorldSession.h"
+#include "Server/World.h"
+#include "Objects/ObjectMgr.h"
 
 void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recv_data)
 {

@@ -18,6 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#pragma once
+
 // UNIT_CLASS_PARTIAL blocks are not compiled - it's just to help IDEs
 
 #ifndef UNIT_CLASS_PARTIAL

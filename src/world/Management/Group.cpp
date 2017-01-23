@@ -21,6 +21,10 @@
 #include "StdAfx.h"
 #include "Management/LFG/LFGMgr.h"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Spell/SpellAuras.h"
+#include "Map/WorldCreator.h"
+#include "Objects/ObjectMgr.h"
 
 Group::Group(bool Assign)
 {

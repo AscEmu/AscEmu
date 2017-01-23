@@ -19,6 +19,11 @@
 
 #include "Setup.h"
 #include "Spell/SpellNameHashes.h"
+#include "Map/MapMgr.h"
+#include "Objects/Faction.h"
+#include "Spell/SpellAuras.h"
+#include "Server/Packets/Opcodes.h"
+#include "Server/Script/ScriptMgr.h"
 
 #define BLOOD_PLAGUE 55078
 #define FROST_FEVER 55095

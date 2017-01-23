@@ -24,6 +24,8 @@
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Objects/ObjectMgr.h"
 
 void Auction::DeleteFromDB()
 {

@@ -22,7 +22,11 @@
 #ifndef __TAXIMGR_H
 #define __TAXIMGR_H
 
+#include <map>
+
 #define TAXI_TRAVEL_SPEED 32
+#include "Singleton.h"
+#include <unordered_map>
 
 class Player;
 
@@ -91,7 +95,7 @@ class TaxiPath
 };
 
 
-class SERVER_DECL TaxiMgr :  public Singleton < TaxiMgr >
+class SERVER_DECL TaxiMgr :  public Singleton< TaxiMgr >
 {
     public:
         TaxiMgr()

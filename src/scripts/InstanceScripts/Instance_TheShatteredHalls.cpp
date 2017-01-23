@@ -21,6 +21,7 @@
 
 #include "Setup.h"
 #include "Instance_TheShatteredHalls.h"
+#include "Objects/Faction.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Hellfire Citadel: The Shattered Halls

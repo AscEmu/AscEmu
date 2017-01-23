@@ -20,6 +20,9 @@
  */
 
 #include "StdAfx.h"
+#include "World.h"
+#include "Objects/ObjectMgr.h"
+#include "CommonScheduleThread.h"
 
 #define THREAD_LOOP_INTERVAL 10 // cebernic: don't modify it
 
@@ -31,7 +34,8 @@ CommonScheduleThread::CommonScheduleThread()
 }
 
 CommonScheduleThread::~CommonScheduleThread()
-{ }
+{
+}
 
 void CommonScheduleThread::terminate()
 {
@@ -50,7 +54,7 @@ bool CommonScheduleThread::run()
         itOrderMSGEntry = objmgr.GetBCTotalItemBegin();
 
     if (objmgr.IsBCEntryStorageEmpty())
-        sWorld.BCSystemEnable = 0;
+    sWorld.BCSystemEnable = 0;
 
     BCTimerCount = getMSTime() + ((uint32)sWorld.BCInterval * 1000);
 
@@ -91,7 +95,7 @@ void CommonScheduleThread::BroadCastExec()
 
     switch (sWorld.BCOrderMode)
     {
-        case 0:
+    case 0:
         {
             int entry = objmgr.CalcCurrentBCEntry();
 
@@ -105,10 +109,10 @@ void CommonScheduleThread::BroadCastExec()
             if (entry == 0)
                 return;
             else
-                sWorld.SendBCMessageByID(entry);
+            sWorld.SendBCMessageByID(entry);
         }
         break;
-        case 1:
+    case 1:
         {
             // re-assign
             if (itOrderMSGEntry == objmgr.GetBCTotalItemEnd())
@@ -119,7 +123,7 @@ void CommonScheduleThread::BroadCastExec()
             ++itOrderMSGEntry;
         }
         break;
-        default:
-            return;
+    default:
+        return;
     }
 }

@@ -22,6 +22,12 @@
 #include "StdAfx.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Objects/Faction.h"
+#include "Server/WorldSession.h"
+#include "Units/Creatures/Pet.h"
+#include "../../../../scripts/Battlegrounds/AlteracValley.h"
+#include "Objects/ObjectMgr.h"
 
 void WorldSession::HandlePetAction(WorldPacket& recv_data)
 {

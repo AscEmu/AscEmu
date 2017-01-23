@@ -18,7 +18,10 @@
  */
  
 #include "Setup.h"
- 
+#include "Objects/GameObject.h"
+#include "Server/Packets/Opcodes.h"
+#include "Server/WorldSession.h"
+
 enum UnorderedEntrys
 {
     GO_DEDICATION_OF_HONOR  = 202443,

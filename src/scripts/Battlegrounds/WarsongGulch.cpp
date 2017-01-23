@@ -23,6 +23,11 @@
 #include "Server/Packets/Handlers/HonorHandler.h"
 #include "Management/WorldStates.h"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Spell/SpellMgr.h"
+#include "Objects/GameObject.h"
+#include "Server/WorldSession.h"
+#include "Chat/ChatDefines.hpp"
 
 WarsongGulch::WarsongGulch(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t) : CBattleground(mgr, id, lgroup, t)
 {

@@ -22,6 +22,7 @@
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Objects/Faction.h"
 
 // Partially by Plexor (I used a spell before, but changed to his method)
 class Berthold : public GossipScript

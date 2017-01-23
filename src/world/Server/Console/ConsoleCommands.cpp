@@ -27,6 +27,8 @@
 #include "Server/MainServerDefines.h"
 #include "Server/Master.h"
 #include "crc32.h"
+#include "Server/World.h"
+#include "../../../scripts/Common/Base.h"
 
 bool HandleTimeDateCommand(BaseConsole* console, int argc, const char* argv[])
 {

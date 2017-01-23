@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "EventableObject.h"
+#include "WUtil.h"
 
 EventableObject::~EventableObject()
 {

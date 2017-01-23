@@ -21,6 +21,9 @@
 
 #include "StdAfx.h"
 #include "Management/LocalizationMgr.h"
+#include "Quest.h"
+#include "Server/WorldSession.h"
+#include "QuestMgr.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 ///Packet Building

@@ -26,6 +26,8 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Spell/SpellAuras.h"
 
 uint32 QuestMgr::CalcQuestStatus(Object* quest_giver, Player* plr, QuestRelation* qst)
 {

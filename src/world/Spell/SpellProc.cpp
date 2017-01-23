@@ -20,7 +20,8 @@
  */
 
 #include "StdAfx.h"
-
+#include "SpellMgr.h"
+#include "../../scripts/Battlegrounds/EyeOfTheStorm.h"
 
 initialiseSingleton(SpellProcMgr);
 

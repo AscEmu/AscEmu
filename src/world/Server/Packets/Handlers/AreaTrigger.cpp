@@ -22,6 +22,9 @@
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Map/MapMgrDefines.hpp"
+#include "Map/MapMgr.h"
+#include "Map/WorldCreatorDefines.hpp"
 
 void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
 {

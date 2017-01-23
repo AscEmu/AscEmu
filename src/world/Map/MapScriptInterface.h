@@ -22,6 +22,8 @@
 #ifndef _MAP_SCRIPT_INTERFACE_H
 #define _MAP_SCRIPT_INTERFACE_H
 
+#include "Objects/ObjectDefines.h"
+
 #include "Map/MapCell.h"
 #include "Movement/UnitMovementManager.hpp"
 #include "Map/MapMgr.h"

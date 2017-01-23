@@ -35,6 +35,7 @@
 #include "RuinsOfLordaeron.h"
 #include "StrandOfTheAncient.h"
 #include "WarsongGulch.h"
+#include "Server/Script/ScriptMgr.h"
 
 extern "C" SCRIPT_DECL uint32 _exp_get_script_type()
 {

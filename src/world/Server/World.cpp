@@ -39,12 +39,16 @@
 #include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
+#include "Map/MapCell.h"
+#include "Spell/SpellMgr.h"
+#include "Map/WorldCreator.h"
+#include "Storage/DayWatcherThread.h"
+#include "CommonScheduleThread.h"
 
 initialiseSingleton(World);
 
-
-DayWatcherThread* dw = NULL;
-CommonScheduleThread* cs = NULL;
+DayWatcherThread* dw = nullptr;
+CommonScheduleThread* cs = nullptr;
 
 float World::m_movementCompressThreshold;
 float World::m_movementCompressThresholdCreatures;
@@ -358,7 +362,6 @@ void World::AddGlobalSession(WorldSession* session)
 
 void World::RemoveGlobalSession(WorldSession* session)
 {
-
     ARCEMU_ASSERT(session != NULL);
 
     SessionsMutex.Acquire();
@@ -372,17 +375,17 @@ bool BasicTaskExecutor::run()
 #ifdef WIN32
     switch (priority)
     {
-        case BTE_PRIORITY_LOW:
-            ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_LOWEST);
-            break;
+    case BTE_PRIORITY_LOW:
+        ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_LOWEST);
+        break;
 
-        case BTW_PRIORITY_HIGH:
-            ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
-            break;
+    case BTW_PRIORITY_HIGH:
+        ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
+        break;
 
-        default:        // BTW_PRIORITY_MED
-            ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_NORMAL);
-            break;
+    default: // BTW_PRIORITY_MED
+        ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_NORMAL);
+        break;
     }
 #else
     struct sched_param param;
@@ -685,7 +688,7 @@ bool World::SetInitialWorldSettings()
         if (talent_class > 0 && talent_class < MAX_TALENT_CLASS)
             InspectTalentTabPages[talent_class][talent_tab->TabPage] = talent_tab->TalentTabID;
 
-        for (std::map< uint32, uint32 >::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
+        for (std::map<uint32, uint32>::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
         {
             uint32 talent_id = itr->first & 0xFFFF;
             auto talent_info = sTalentStore.LookupEntry(talent_id);
@@ -723,7 +726,7 @@ void World::SendGlobalMessage(WorldPacket* packet, WorldSession* self)
     SessionMap::iterator itr;
     for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
-        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
         {
             itr->second->SendPacket(packet);
         }
@@ -773,7 +776,7 @@ void World::SendGamemasterMessage(WorldPacket* packet, WorldSession* self)
     SessionMap::iterator itr;
     for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
-        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
         {
             if (itr->second->CanUseCommand('u'))
                 itr->second->SendPacket(packet);
@@ -789,7 +792,7 @@ void World::SendZoneMessage(WorldPacket* packet, uint32 zoneid, WorldSession* se
     SessionMap::iterator itr;
     for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
-        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
         {
             if (itr->second->GetPlayer()->GetZoneId() == zoneid)
                 itr->second->SendPacket(packet);
@@ -806,7 +809,7 @@ void World::SendInstanceMessage(WorldPacket* packet, uint32 instanceid, WorldSes
     SessionMap::iterator itr;
     for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
-        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self)  // don't send to self!
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
         {
             if (itr->second->GetPlayer()->GetInstanceID() == (int32)instanceid)
                 itr->second->SendPacket(packet);
@@ -886,7 +889,7 @@ void World::UpdateSessions(uint32 diff)
     WorldSession* session;
     int result;
 
-    std::list< WorldSession* > ErasableSessions;
+    std::list<WorldSession*> ErasableSessions;
 
     SessionsMutex.Acquire();
 
@@ -936,11 +939,11 @@ void World::DeleteSession(WorldSession* session)
     delete session;
 }
 
-void World::DeleteSessions(std::list< WorldSession* > &slist)
+void World::DeleteSessions(std::list<WorldSession*>& slist)
 {
     m_sessionlock.AcquireWriteLock();
 
-    for (std::list< WorldSession* >::iterator itr = slist.begin(); itr != slist.end(); ++itr)
+    for (std::list<WorldSession*>::iterator itr = slist.begin(); itr != slist.end(); ++itr)
     {
         WorldSession* session = *itr;
         m_sessions.erase(session->GetAccountId());
@@ -948,7 +951,7 @@ void World::DeleteSessions(std::list< WorldSession* > &slist)
 
     m_sessionlock.ReleaseWriteLock();
 
-    for (std::list< WorldSession* >::iterator itr = slist.begin(); itr != slist.end(); ++itr)
+    for (std::list<WorldSession*>::iterator itr = slist.begin(); itr != slist.end(); ++itr)
     {
         WorldSession* session = *itr;
         delete session;
@@ -1011,7 +1014,7 @@ uint32 World::GetQueuePos(WorldSocket* Socket)
     // Find socket in list
     QueueSet::iterator iter = mQueuedSessions.begin();
     uint32 QueuePos = 1;
-    for (; iter != mQueuedSessions.end(); ++iter, ++QueuePos)
+    for (; iter != mQueuedSessions.end(); ++iter , ++QueuePos)
     {
         if ((*iter) == Socket)
         {
@@ -1267,7 +1270,6 @@ bool TaskExecutor::run()
     Task* t;
 
     THREAD_TRY_EXECUTION
-
         while (starter->running)
         {
             t = starter->GetTask();
@@ -1282,9 +1284,9 @@ bool TaskExecutor::run()
                 Arcemu::Sleep(20);
         }
 
-    THREAD_HANDLE_CRASH
+        THREAD_HANDLE_CRASH
 
-        return true;
+    return true;
 }
 
 void TaskList::waitForThreadsToExit()
@@ -1601,10 +1603,10 @@ void World::Rehash(bool load)
 
     bgsettings.RBG_FIRST_WIN_HONOR = Config.MainConfig.GetIntDefault("Battleground", "RBG_FIRST_WIN_HONOR", 30);
     bgsettings.RBG_FIRST_WIN_ARENA = Config.MainConfig.GetIntDefault("Battleground", "RBG_FIRST_WIN_ARENA", 25);
-    
+
     bgsettings.RBG_WIN_HONOR = Config.MainConfig.GetIntDefault("Battleground", "RBG_WIN_HONOR", 15);
     bgsettings.RBG_WIN_ARENA = Config.MainConfig.GetIntDefault("Battleground", "RBG_WIN_ARENA", 0);
-    
+
     bgsettings.RBG_LOSE_HONOR = Config.MainConfig.GetIntDefault("Battleground", "RBG_LOSE_HONOR", 5);
     bgsettings.RBG_LOSE_ARENA = Config.MainConfig.GetIntDefault("Battleground", "RBG_LOSE_ARENA", 0);
 
@@ -1641,7 +1643,7 @@ void World::Rehash(bool load)
     m_movementCompressThresholdCreatures *= m_movementCompressThresholdCreatures;
 
     m_movementCompressThreshold = Config.MainConfig.GetFloatDefault("Movement", "CompressThreshold", 25.0f);
-    m_movementCompressThreshold *= m_movementCompressThreshold;        // square it to avoid sqrt() on checks
+    m_movementCompressThreshold *= m_movementCompressThreshold; // square it to avoid sqrt() on checks
     // ======================================
 
     if (m_banTable != NULL)
@@ -1672,7 +1674,7 @@ void World::LoadNameGenData()
     }
 }
 
-void World::CharacterEnumProc(QueryResultVector & results, uint32 AccountId)
+void World::CharacterEnumProc(QueryResultVector& results, uint32 AccountId)
 {
     WorldSession* s = FindSession(AccountId);
     if (s == NULL)
@@ -1685,140 +1687,140 @@ void World::AnnounceColorChooser(int tagcolor, int gmtagcolor, int namecolor, in
 {
     switch (tagcolor)
     {
-        case 1:
-            ann_tagcolor = "|cffff6060"; //lightred
-            break;
-        case 2:
-            ann_tagcolor = "|cff00ccff"; //lightblue
-            break;
-        case 3:
-            ann_tagcolor = "|cff0000ff"; //blue
-            break;
-        case 4:
-            ann_tagcolor = "|cff00ff00"; //green
-            break;
-        case 5:
-            ann_tagcolor = "|cffff0000"; //red
-            break;
-        case 6:
-            ann_tagcolor = "|cffffcc00"; //gold
-            break;
-        case 7:
-            ann_tagcolor = "|cff888888"; //grey
-            break;
-        case 8:
-            ann_tagcolor = "|cffffffff"; //white
-            break;
-        case 9:
-            ann_tagcolor = "|cffff00ff"; //magenta
-            break;
-        case 10:
-            ann_tagcolor = "|cffffff00"; //yellow
-            break;
+    case 1:
+        ann_tagcolor = "|cffff6060"; //lightred
+        break;
+    case 2:
+        ann_tagcolor = "|cff00ccff"; //lightblue
+        break;
+    case 3:
+        ann_tagcolor = "|cff0000ff"; //blue
+        break;
+    case 4:
+        ann_tagcolor = "|cff00ff00"; //green
+        break;
+    case 5:
+        ann_tagcolor = "|cffff0000"; //red
+        break;
+    case 6:
+        ann_tagcolor = "|cffffcc00"; //gold
+        break;
+    case 7:
+        ann_tagcolor = "|cff888888"; //grey
+        break;
+    case 8:
+        ann_tagcolor = "|cffffffff"; //white
+        break;
+    case 9:
+        ann_tagcolor = "|cffff00ff"; //magenta
+        break;
+    case 10:
+        ann_tagcolor = "|cffffff00"; //yellow
+        break;
     }
     switch (gmtagcolor)
     {
-        case 1:
-            ann_gmtagcolor = "|cffff6060"; //lightred
-            break;
-        case 2:
-            ann_gmtagcolor = "|cff00ccff"; //lightblue
-            break;
-        case 3:
-            ann_gmtagcolor = "|cff0000ff"; //blue
-            break;
-        case 4:
-            ann_gmtagcolor = "|cff00ff00"; //green
-            break;
-        case 5:
-            ann_gmtagcolor = "|cffff0000"; //red
-            break;
-        case 6:
-            ann_gmtagcolor = "|cffffcc00"; //gold
-            break;
-        case 7:
-            ann_gmtagcolor = "|cff888888"; //grey
-            break;
-        case 8:
-            ann_gmtagcolor = "|cffffffff"; //white
-            break;
-        case 9:
-            ann_gmtagcolor = "|cffff00ff"; //magenta
-            break;
-        case 10:
-            ann_gmtagcolor = "|cffffff00"; //yellow
-            break;
+    case 1:
+        ann_gmtagcolor = "|cffff6060"; //lightred
+        break;
+    case 2:
+        ann_gmtagcolor = "|cff00ccff"; //lightblue
+        break;
+    case 3:
+        ann_gmtagcolor = "|cff0000ff"; //blue
+        break;
+    case 4:
+        ann_gmtagcolor = "|cff00ff00"; //green
+        break;
+    case 5:
+        ann_gmtagcolor = "|cffff0000"; //red
+        break;
+    case 6:
+        ann_gmtagcolor = "|cffffcc00"; //gold
+        break;
+    case 7:
+        ann_gmtagcolor = "|cff888888"; //grey
+        break;
+    case 8:
+        ann_gmtagcolor = "|cffffffff"; //white
+        break;
+    case 9:
+        ann_gmtagcolor = "|cffff00ff"; //magenta
+        break;
+    case 10:
+        ann_gmtagcolor = "|cffffff00"; //yellow
+        break;
     }
     switch (namecolor)
     {
-        case 1:
-            ann_namecolor = "|cffff6060"; //lightred
-            break;
-        case 2:
-            ann_namecolor = "|cff00ccff"; //lightblue
-            break;
-        case 3:
-            ann_namecolor = "|cff0000ff"; //blue
-            break;
-        case 4:
-            ann_namecolor = "|cff00ff00"; //green
-            break;
-        case 5:
-            ann_namecolor = "|cffff0000"; //red
-            break;
-        case 6:
-            ann_namecolor = "|cffffcc00"; //gold
-            break;
-        case 7:
-            ann_namecolor = "|cff888888"; //grey
-            break;
-        case 8:
-            ann_namecolor = "|cffffffff"; //white
-            break;
-        case 9:
-            ann_namecolor = "|cffff00ff"; //magenta
-            break;
-        case 10:
-            ann_namecolor = "|cffffff00"; //yellow
-            break;
+    case 1:
+        ann_namecolor = "|cffff6060"; //lightred
+        break;
+    case 2:
+        ann_namecolor = "|cff00ccff"; //lightblue
+        break;
+    case 3:
+        ann_namecolor = "|cff0000ff"; //blue
+        break;
+    case 4:
+        ann_namecolor = "|cff00ff00"; //green
+        break;
+    case 5:
+        ann_namecolor = "|cffff0000"; //red
+        break;
+    case 6:
+        ann_namecolor = "|cffffcc00"; //gold
+        break;
+    case 7:
+        ann_namecolor = "|cff888888"; //grey
+        break;
+    case 8:
+        ann_namecolor = "|cffffffff"; //white
+        break;
+    case 9:
+        ann_namecolor = "|cffff00ff"; //magenta
+        break;
+    case 10:
+        ann_namecolor = "|cffffff00"; //yellow
+        break;
     }
     switch (msgcolor)
     {
-        case 1:
-            ann_msgcolor = "|cffff6060"; //lightred
-            break;
-        case 2:
-            ann_msgcolor = "|cff00ccff"; //lightblue
-            break;
-        case 3:
-            ann_msgcolor = "|cff0000ff"; //blue
-            break;
-        case 4:
-            ann_msgcolor = "|cff00ff00"; //green
-            break;
-        case 5:
-            ann_msgcolor = "|cffff0000"; //red
-            break;
-        case 6:
-            ann_msgcolor = "|cffffcc00"; //gold
-            break;
-        case 7:
-            ann_msgcolor = "|cff888888"; //grey
-            break;
-        case 8:
-            ann_msgcolor = "|cffffffff"; //white
-            break;
-        case 9:
-            ann_msgcolor = "|cffff00ff"; //magenta
-            break;
-        case 10:
-            ann_msgcolor = "|cffffff00"; //yellow
-            break;
+    case 1:
+        ann_msgcolor = "|cffff6060"; //lightred
+        break;
+    case 2:
+        ann_msgcolor = "|cff00ccff"; //lightblue
+        break;
+    case 3:
+        ann_msgcolor = "|cff0000ff"; //blue
+        break;
+    case 4:
+        ann_msgcolor = "|cff00ff00"; //green
+        break;
+    case 5:
+        ann_msgcolor = "|cffff0000"; //red
+        break;
+    case 6:
+        ann_msgcolor = "|cffffcc00"; //gold
+        break;
+    case 7:
+        ann_msgcolor = "|cff888888"; //grey
+        break;
+    case 8:
+        ann_msgcolor = "|cffffffff"; //white
+        break;
+    case 9:
+        ann_msgcolor = "|cffff00ff"; //magenta
+        break;
+    case 10:
+        ann_msgcolor = "|cffffff00"; //yellow
+        break;
     }
     LOG_BASIC("Announce colors initialized.");
 }
 
-void World::LoadAccountDataProc(QueryResultVector & results, uint32 AccountId)
+void World::LoadAccountDataProc(QueryResultVector& results, uint32 AccountId)
 {
     WorldSession* session = FindSession(AccountId);
     if (session == NULL)
@@ -1870,7 +1872,6 @@ CharacterLoaderThread::~CharacterLoaderThread()
 
 bool CharacterLoaderThread::run()
 {
-
     running = true;
     for (;;)
     {
@@ -1933,7 +1934,6 @@ void World::PollMailboxInsertQueue(DatabaseConnection* con)
             LogNotice("MailboxQueue : Sending message to %u (item: %u)...", f[1].GetUInt32(), itemid);
             sMailSystem.SendAutomatedMessage(0, f[0].GetUInt64(), f[1].GetUInt64(), f[2].GetString(), f[3].GetString(), f[5].GetUInt32(),
                                              0, itemGuids, f[4].GetUInt32());
-
         }
         while (result->NextRow());
         delete result;
@@ -1946,8 +1946,8 @@ void World::PollCharacterInsertQueue(DatabaseConnection* con)
 {
     // Our local stuff..
     bool has_results = false;
-    std::map<uint32, std::vector<insert_playeritem> > itemMap;
-    std::map<uint32, std::vector<insert_playeritem> >::iterator itr;
+    std::map<uint32, std::vector<insert_playeritem>> itemMap;
+    std::map<uint32, std::vector<insert_playeritem>>::iterator itr;
     Field* f;
     insert_playeritem ipi;
     static const char* characterTableFormat = "uSuuuuuussuuuuuuuuuuuuuuffffuususuufffuuuuusuuuUssuuuuuuffffuuuuufffssssssuuuuuuuu";
@@ -1990,7 +1990,6 @@ void World::PollCharacterInsertQueue(DatabaseConnection* con)
             {
                 itr->second.push_back(ipi);
             }
-
         }
         while (result->NextRow());
         delete result;
@@ -2030,15 +2029,15 @@ void World::PollCharacterInsertQueue(DatabaseConnection* con)
             {
                 switch (*p)
                 {
-                    case 's':
-                        ss << ",'" << CharacterDatabase.EscapeString(f[i].GetString(), con) << "'";
-                        break;
+                case 's':
+                    ss << ",'" << CharacterDatabase.EscapeString(f[i].GetString(), con) << "'";
+                    break;
 
-                    case 'f':
-                        ss << ",'" << f[i].GetFloat() << "'";
-                        break;
+                case 'f':
+                    ss << ",'" << f[i].GetFloat() << "'";
+                    break;
 
-                    case 'S':
+                case 'S':
                     {
                         // this is the character name, append a hex version of the guid to it to prevent name clashes.
                         char newname[100];
@@ -2048,16 +2047,16 @@ void World::PollCharacterInsertQueue(DatabaseConnection* con)
                     }
                     break;
 
-                    case 'U':
+                case 'U':
                     {
                         // this is our forced rename field. force it to one.
                         ss << ",1";
                     }
                     break;
 
-                    default:
-                        ss << "," << f[i].GetUInt32();
-                        break;
+                default:
+                    ss << "," << f[i].GetUInt32();
+                    break;
                 }
 
                 ++i;
@@ -2082,17 +2081,17 @@ void World::PollCharacterInsertQueue(DatabaseConnection* con)
             inf->subGroup = 0;
             switch (inf->race)
             {
-                case RACE_HUMAN:
-                case RACE_GNOME:
-                case RACE_DWARF:
-                case RACE_NIGHTELF:
-                case RACE_DRAENEI:
-                    inf->team = 0;
-                    break;
+            case RACE_HUMAN:
+            case RACE_GNOME:
+            case RACE_DWARF:
+            case RACE_NIGHTELF:
+            case RACE_DRAENEI:
+                inf->team = 0;
+                break;
 
-                default:
-                    inf->team = 1;
-                    break;
+            default:
+                inf->team = 1;
+                break;
             }
 
             // add playerinfo to objectmgr
@@ -2263,7 +2262,7 @@ void World::SendBCMessageByID(uint32 id)
 // cebernic:2008-10-19
 // Format as SendLocalizedWorldText("forcing english & {5}{12} %s","test");
 // 5,12 are ids from worldstring_table
-void World::SendLocalizedWorldText(bool wide, const char* format, ...)  // May not optimized,just for works.
+void World::SendLocalizedWorldText(bool wide, const char* format, ...) // May not optimized,just for works.
 {
     m_sessionlock.AcquireReadLock();
     SessionMap::iterator itr;
@@ -2300,7 +2299,7 @@ void World::SendLocalizedWorldText(bool wide, const char* format, ...)  // May n
                 data.Initialize(SMSG_MESSAGECHAT);
                 data << uint8(CHAT_MSG_SYSTEM);
                 data << uint32(LANG_UNIVERSAL);
-                data << uint64(0);   // Who cares about guid when there's no nickname displayed heh ?
+                data << uint64(0); // Who cares about guid when there's no nickname displayed heh ?
                 data << uint32(0);
                 data << uint64(0);
                 data << uint32(textLen);
@@ -2315,7 +2314,6 @@ void World::SendLocalizedWorldText(bool wide, const char* format, ...)  // May n
 
 void World::UpdateTotalTraffic()
 {
-
     unsigned long sent = 0;
     unsigned long recieved = 0;
     double TrafficIn = 0;

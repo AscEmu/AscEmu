@@ -19,6 +19,10 @@
  */
 
 #include "Setup.h"
+#include "Server/WorldSession.h"
+#include "Units/Creatures/Creature.h"
+#include "Management/Gossip/Gossip.h"
+#include "Server/Script/ScriptMgr.h"
 
 class MasterHammersmith : public Arcemu::Gossip::Script
 {
@@ -211,7 +215,7 @@ class MasterAxesmith : public Arcemu::Gossip::Script
                          textid = 20008;
                 else
                 {
-                    int32 unlearnGold;
+                    int32 unlearnGold = 0;
                     if (plr->getLevel() <= 50)
                         unlearnGold = 250000;
                     if (plr->getLevel() > 50 && plr->getLevel() <= 65)

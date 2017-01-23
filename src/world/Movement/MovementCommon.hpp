@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define _MOVEMENT_COMMON_HPP
 
 #include "StdAfx.h"
+#include <vector>
 
 namespace Movement
 {
@@ -48,7 +49,7 @@ namespace Movement
     struct LocationWithFlag
     {
         Location wp_location;
-        uint32 wp_flag;
+        uint32_t wp_flag;
     };
 
     struct WayPoint
@@ -69,19 +70,19 @@ namespace Movement
             forwardskinid = 0;
             backwardskinid = 0;
         }
-        uint32 id;
+        uint32_t id;
         float x;
         float y;
         float z;
         float o;
-        uint32 waittime; //ms
-        uint32 flags;
+        uint32_t waittime; //ms
+        uint32_t flags;
         bool forwardemoteoneshot;
-        uint32 forwardemoteid;
+        uint32_t forwardemoteid;
         bool backwardemoteoneshot;
-        uint32 backwardemoteid;
-        uint32 forwardskinid;
-        uint32 backwardskinid;
+        uint32_t backwardemoteid;
+        uint32_t forwardskinid;
+        uint32_t backwardskinid;
 
     };
 

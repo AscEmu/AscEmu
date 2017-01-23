@@ -20,6 +20,9 @@
  */
 
 #include "StdAfx.h"
+#include "Server/WorldSession.h"
+#include "Log.hpp"
+#include "Units/Players/Player.h"
 
 
 void WorldSession::HandleFriendListOpcode(WorldPacket& recv_data)

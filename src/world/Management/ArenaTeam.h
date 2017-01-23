@@ -21,6 +21,8 @@
 #ifndef _ARENATEAMS_H
 #define _ARENATEAMS_H
 
+#include "Units/Players/Player.h"
+
 struct ArenaTeamMember
 {
     PlayerInfo* Info;

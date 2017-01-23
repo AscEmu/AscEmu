@@ -36,6 +36,7 @@
 #define CREATE_GAMEOBJECT_SCRIPT(cl) &cl::Create
 #define CREATE_CREATURESCRIPT(cl) &cl::Create
 #include <Management/QuestLogEntry.hpp>
+#include "Map/MapScriptInterface.h"
 
 class SCRIPT_DECL EasyFunctions
 {

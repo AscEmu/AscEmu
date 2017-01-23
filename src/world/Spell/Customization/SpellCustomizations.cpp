@@ -18,7 +18,11 @@
 
 
 #include "StdAfx.h"
+#include "SpellCustomizations.hpp"
 #include "Server/MainServerDefines.h"
+#include "Spell/SpellAuras.h"
+#include "Singleton.h"
+#include <unordered_map>
 
 initialiseSingleton(SpellCustomizations);
 
@@ -204,6 +208,11 @@ SpellInfo* SpellCustomizations::GetSpellInfo(uint32 spell_id)
         return const_cast<SpellInfo*>(&itr->second);
 
     return nullptr;
+}
+
+SpellCustomizations::SpellInfoContainer* SpellCustomizations::GetSpellInfoStore()
+{
+    return &_spellInfoContainerStore;
 }
 
 void SpellCustomizations::StartSpellCustomization()

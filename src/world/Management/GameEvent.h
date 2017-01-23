@@ -20,6 +20,7 @@
 #define __GAMEEVENT_H
 
 #include "GameEventMgr.h"
+#include <vector>
 
 struct EventNamesQueryResult;
 struct EventCreatureSpawnsQueryResult;

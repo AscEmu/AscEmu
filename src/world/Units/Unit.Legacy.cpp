@@ -29,6 +29,10 @@
 #include "Units/Stats.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Map/MapMgr.h"
+#include "Objects/Faction.h"
+#include "Spell/SpellAuras.h"
+#include "../../scripts/Common/Base.h"
 
 static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
 {

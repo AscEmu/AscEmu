@@ -22,6 +22,7 @@
 #include "Management/Battleground/Battleground.h"
 #include "Management/ArenaTeam.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Map/MapMgr.h"
 
 void WorldSession::HandleBattlefieldPortOpcode(WorldPacket& recv_data)
 {

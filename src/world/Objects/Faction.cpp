@@ -19,6 +19,11 @@
  */
 
 #include "StdAfx.h"
+#include "Object.h"
+#include "Units/Players/PlayerDefines.hpp"
+#include "Units/Unit.h"
+#include "Units/Creatures/AIInterface.h"
+#include "Units/Players/Player.h"
 
 bool isNeutral(Object* a, Object* b)
 {
@@ -28,7 +33,7 @@ bool isNeutral(Object* a, Object* b)
     return false;
 }
 
-bool isHostile(Object* objA, Object* objB)
+SERVER_DECL bool isHostile(Object* objA, Object* objB)
 {
     if ((objA == NULL) || (objB == NULL))
         return false;
@@ -47,9 +52,9 @@ bool isHostile(Object* objA, Object* objB)
     if ((objA->m_phase & objB->m_phase) == 0)     //What you can't see, can't be hostile!
         return false;
 
-    if (objA->IsPlayer() && objA->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP) && objB->IsCreature() && static_cast< Unit* >(objB)->GetAIInterface()->m_isNeutralGuard)
+    if (objA->IsPlayer() && objA->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP) && objB->IsCreature() && reinterpret_cast<Unit*>(objB)->GetAIInterface()->m_isNeutralGuard)
         return true;
-    if (objB->IsPlayer() && objB->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP) && objA->IsCreature() && static_cast< Unit* >(objA)->GetAIInterface()->m_isNeutralGuard)
+    if (objB->IsPlayer() && objB->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP) && objA->IsCreature() && reinterpret_cast<Unit*>(objA)->GetAIInterface()->m_isNeutralGuard)
         return true;
 
     if (objB->IsUnit() && objB->HasFlag(UNIT_FIELD_FLAGS, 2 | 128 | 256 | 65536))
@@ -89,19 +94,19 @@ bool isHostile(Object* objA, Object* objB)
     // Reputation System Checks
     if (objA->IsPlayer() && !objB->IsPlayer())
         if (objB->m_factionDBC->RepListId >= 0)
-            hostile = static_cast< Player* >(objA)->IsHostileBasedOnReputation(objB->m_factionDBC);
+            hostile = reinterpret_cast< Player* >(objA)->IsHostileBasedOnReputation(objB->m_factionDBC);
 
     if (objB->IsPlayer() && !objA->IsPlayer())
         if (objA->m_factionDBC->RepListId >= 0)
-            hostile = static_cast< Player* >(objB)->IsHostileBasedOnReputation(objA->m_factionDBC);
+            hostile = reinterpret_cast< Player* >(objB)->IsHostileBasedOnReputation(objA->m_factionDBC);
 
     // PvP Flag System Checks
     // We check this after the normal isHostile test, that way if we're
     // on the opposite team we'll already know :p
     if ((objA->GetPlayerOwner() != NULL) && (objB->GetPlayerOwner() != NULL))
     {
-        Player* a = static_cast< Player* >(objA->GetPlayerOwner());
-        Player* b = static_cast< Player* >(objB->GetPlayerOwner());
+        Player* a = reinterpret_cast< Player* >(objA->GetPlayerOwner());
+        Player* b = reinterpret_cast< Player* >(objB->GetPlayerOwner());
 
         auto atA = a->GetArea();
         auto atB = b->GetArea();
@@ -124,7 +129,7 @@ bool isHostile(Object* objA, Object* objB)
 
 /// Where we check if we object A can attack object B. This is used in many feature's
 /// Including the spell class and the player class.
-bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
+SERVER_DECL bool isAttackable(Object* objA, Object* objB, bool CheckStealth)
 {
     if ((objA == NULL) || (objB == NULL))
         return false;

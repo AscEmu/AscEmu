@@ -15,6 +15,9 @@ set(SRC_OBJECTS_FILES
    ${PATH_PREFIX}/Object.h
    ${PATH_PREFIX}/ObjectMgr.cpp
    ${PATH_PREFIX}/ObjectMgr.h
+   
+   # MIT
+   ${PATH_PREFIX}/ObjectDefines.h
 )
 
 source_group(Objects FILES ${SRC_OBJECTS_FILES})

@@ -20,6 +20,7 @@
  */
 
 #include "Setup.h"
+#include "Spell/SpellAuras.h"
 
 // polymorph spells ranks 1-4
 #define SPELL_POLYMORPH_1 118
@@ -58,7 +59,7 @@ class FragmentedMagic : public CreatureAIScript
                        _unit->m_auras[i]->GetSpellId() == SPELL_POLYMORPH_3 ||
                        _unit->m_auras[i]->GetSpellId() == SPELL_POLYMORPH_4)
                     {
-                        if(p_caster = _unit->m_auras[i]->GetPlayerCaster())
+                        if(p_caster == _unit->m_auras[i]->GetPlayerCaster())
                         {
                             // wanted aura and its caster have been found.
                             break;

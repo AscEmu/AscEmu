@@ -19,6 +19,10 @@
 
 #include "Setup.h"
 #include "Spell/SpellNameHashes.h"
+#include "Map/MapMgr.h"
+#include "Objects/Faction.h"
+#include "Spell/SpellAuras.h"
+#include "Server/Script/ScriptMgr.h"
 
 bool EyeForAnEye(uint32 i, Aura* pAura, bool apply)
 {

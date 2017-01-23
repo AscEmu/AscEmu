@@ -21,6 +21,8 @@
 #ifndef _OBJECT_H
 #define _OBJECT_H
 
+#include "ObjectDefines.h"
+
 #include "StdAfx.h"
 #include "Server/UpdateFields.h"
 #include "Server/UpdateMask.h"
@@ -86,68 +88,6 @@ enum HIGHGUID_TYPE
 #define IS_PLAYER_GUID(Guid) (Arcemu::Util::GUID_HIPART((Guid)) == HIGHGUID_TYPE_PLAYER && Guid != 0)
 
 #define MAX_INTERACTION_RANGE 5.0f
-
-///\todo fix that type mess
-
-enum TYPE
-{
-    TYPE_OBJECT		    = 1,
-    TYPE_ITEM		    = 2,
-    TYPE_CONTAINER	    = 4,
-    TYPE_UNIT		    = 8,
-    TYPE_PLAYER		    = 16,
-    TYPE_GAMEOBJECT	    = 32,
-    TYPE_DYNAMICOBJECT  = 64,
-    TYPE_CORPSE		    = 128,
-    TYPE_AIGROUP		= 256,
-    TYPE_AREATRIGGER	= 512
-};
-
-enum TYPEID
-{
-    TYPEID_OBJECT		    = 0,
-    TYPEID_ITEM		        = 1,
-    TYPEID_CONTAINER	    = 2,
-    TYPEID_UNIT		        = 3,
-    TYPEID_PLAYER		    = 4,
-    TYPEID_GAMEOBJECT	    = 5,
-    TYPEID_DYNAMICOBJECT    = 6,
-    TYPEID_CORPSE		    = 7,
-    TYPEID_AIGROUP	        = 8,
-    TYPEID_AREATRIGGER      = 9
-};
-
-enum OBJECT_UPDATE_TYPE
-{
-    UPDATETYPE_VALUES = 0,
-    // 8 bytes - GUID
-    // Goto Update Block
-    UPDATETYPE_MOVEMENT = 1,
-    // 8 bytes - GUID
-    // Goto Position Update
-    UPDATETYPE_CREATE_OBJECT = 2,
-    // 8 bytes - GUID
-    // 1 byte - Object Type (*)
-    // Goto Position Update
-    // Goto Update Block
-    UPDATETYPE_CREATE_YOURSELF = 3,         /// Looks like 3 & 4 do the same thing
-    // 4 bytes - Count
-    // Loop Count Times:
-    // 8 bytes - GUID
-    UPDATETYPE_OUT_OF_RANGE_OBJECTS = 4     /// this is correct, not sure about 3
-    // 4 bytes - Count
-    // Loop Count Times:
-    // 8 bytes - GUID
-
-};
-
-enum PHASECOMMANDS
-{
-    PHASE_SET = 0,      /// overwrites the phase value with the supplied one
-    PHASE_ADD = 1,      /// adds the new bits to the current phase value
-    PHASE_DEL = 2,      /// removes the given bits from the current phase value
-    PHASE_RESET = 3     /// sets the default phase of 1, same as PHASE_SET with 1 as the new value
-};
 
 typedef struct
 {

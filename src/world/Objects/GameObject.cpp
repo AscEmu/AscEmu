@@ -24,6 +24,9 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include <G3D/Quat.h>
+#include "Map/MapCell.h"
+#include "Map/MapMgr.h"
+#include "Faction.h"
 
 GameObject::GameObject(uint64 guid)
 {

@@ -21,6 +21,9 @@
 
 #include "StdAfx.h"
 #include <iostream>
+#include "WUtil.h"
+#include "Log.hpp"
+#include "Objects/Object.h"
 
 
 uint32 Arcemu::Util::GUID_HIPART(uint64 GUID)

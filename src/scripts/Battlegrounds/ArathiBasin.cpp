@@ -26,6 +26,8 @@
 #include "Management/QuestLogEntry.hpp"
 #include "Management/WorldStates.h"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Spell/SpellMgr.h"
 
 #define BASE_RESOURCES_GAIN 10
 #define RESOURCES_WARNING_THRESHOLD 1400

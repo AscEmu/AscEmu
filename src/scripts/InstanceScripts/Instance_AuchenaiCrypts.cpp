@@ -21,6 +21,7 @@
 
 #include "Setup.h"
 #include "Instance_AuchenaiCrypts.h"
+#include "Objects/Faction.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Auchindoun: Auchenai Crypts

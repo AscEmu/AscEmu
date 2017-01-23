@@ -18,6 +18,8 @@
  */
 
 #include "Setup.h"
+#include "Spell/SpellAuras.h"
+#include "Server/Script/ScriptMgr.h"
 
 bool Execute(uint32 i, Spell* pSpell)
 {

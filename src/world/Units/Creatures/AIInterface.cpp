@@ -26,6 +26,11 @@
 #include "Server/Packets/Movement/CreatureMovement.hpp"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Objects/Faction.h"
+#include "Spell/SpellMgr.h"
+#include "Map/WorldCreatorDefines.hpp"
+#include "Map/WorldCreator.h"
 
 #ifndef UNIX
 #include <cmath>

@@ -22,6 +22,7 @@
 
 #include "Setup.h"
 #include "Instance_ShadowLabyrinth.h"
+#include "Objects/Faction.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Auchindoun: Shadow Labyrinth

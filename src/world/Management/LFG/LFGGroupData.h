@@ -15,9 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef _LFGGROUPDATA_H
-#define _LFGGROUPDATA_H
+#pragma once
 
 #include "LFG.h"
 
@@ -39,18 +37,16 @@ class LfgGroupData
         void SetState(LfgState state);
         void RestoreState();
         // Dungeon
-        void SetDungeon(uint32 dungeon);
-        // VoteKick
-        void SetVotesNeeded(uint8 votes);
+        void SetDungeon(uint32_t dungeon);
         void DecreaseKicksLeft();
 
         // General
         LfgState GetState() const;
         // Dungeon
-        uint32 GetDungeon(bool asId = true) const;
+        uint32_t GetDungeon(bool asId = true) const;
         // VoteKick
-        uint8 GetVotesNeeded() const;
-        uint8 GetKicksLeft() const;
+        uint8_t GetVotesNeeded() const;
+        uint8_t GetKicksLeft() const;
 
     private:
 
@@ -58,10 +54,8 @@ class LfgGroupData
         LfgState m_State;       ///< State if group in LFG
         LfgState m_OldState;    ///< Old State
         // Dungeon
-        uint32 m_Dungeon;       ///< Dungeon entry
+        uint32_t m_Dungeon;       ///< Dungeon entry
         // Vote Kick
-        uint8 m_VotesNeeded;    ///< Votes need to kick success
-        uint8 m_KicksLeft;      ///< Number of kicks left
+        uint8_t m_VotesNeeded;    ///< Votes need to kick success
+        uint8_t m_KicksLeft;      ///< Number of kicks left
 };
-
-#endif      // _LFGGROUPDATA_H

@@ -29,6 +29,9 @@
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Players/PlayerClasses.hpp"
+#include "Map/MapMgr.h"
+#include "Objects/Faction.h"
+#include "SpellAuras.h"
 
 pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
 {

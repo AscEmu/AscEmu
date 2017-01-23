@@ -21,6 +21,11 @@
 
 #include "StdAfx.h"
 #include "Objects/DynamicObject.h"
+#include "Map/MapMgr.h"
+#include "Faction.h"
+#include "Spell/SpellMgr.h"
+#include "Spell/SpellAuras.h"
+#include "../../scripts/Common/Base.h"
 
 DynamicObject::DynamicObject(uint32 high, uint32 low)
 {

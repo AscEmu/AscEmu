@@ -30,6 +30,12 @@
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Players/PlayerClasses.hpp"
+#include "Map/MapMgr.h"
+#include "Map/MapScriptInterface.h"
+#include "Objects/Faction.h"
+#include "SpellMgr.h"
+#include "SpellAuras.h"
+#include "Map/WorldCreatorDefines.hpp"
 
 #define SPELL_CHANNEL_UPDATE_INTERVAL 1000
 

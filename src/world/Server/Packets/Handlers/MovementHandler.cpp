@@ -23,6 +23,8 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/Warden/SpeedDetector.h"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Map/WorldCreatorDefines.hpp"
 
 #define SWIMMING_TOLERANCE_LEVEL -0.08f
 #define MOVEMENT_PACKET_TIME_DELAY 500

@@ -29,6 +29,8 @@
 #include "Units/Players/PlayerClasses.hpp"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
+#include "Map/MapMgr.h"
+#include "Map/WorldCreator.h"
 
 LoginErrorCode VerifyName(const char* name, size_t nlen)
 {

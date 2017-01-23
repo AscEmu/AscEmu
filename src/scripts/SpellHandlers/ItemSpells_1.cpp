@@ -20,6 +20,9 @@
 #include "Management/Skill.h"
 #include "Spell/SpellNameHashes.h"
 #include "Management/ItemInterface.h"
+#include "../EventScripts/Setup.h"
+#include "Objects/Faction.h"
+#include "Spell/SpellAuras.h"
 
 /*
     How to add a new item spell to the dummy spell handler:

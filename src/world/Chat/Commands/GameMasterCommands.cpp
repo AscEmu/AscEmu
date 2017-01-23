@@ -5,6 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Server/MainServerDefines.h"
+#include "Chat/ChatHandler.hpp"
+#include "Server/WorldSession.h"
+#include "Objects/ObjectMgr.h"
 
 //.gm active
 bool ChatHandler::HandleGMActiveCommand(const char* args, WorldSession* m_session)

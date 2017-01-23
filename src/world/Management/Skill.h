@@ -17,8 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SKILL_H
-#define _SKILL_H
+#pragma once
+#include <cstdint>
 
 enum PlayerSkills
 {
@@ -188,10 +188,8 @@ enum SkillTypes
 
 typedef struct
 {
-    uint8 itemclass;
-    uint32 subclass;
+    uint8_t itemclass;
+    uint32_t subclass;
 } ItemProf;
 
-const ItemProf* GetProficiencyBySkill(uint32 skill);
-
-#endif // _SKILL_H
+const ItemProf* GetProficiencyBySkill(uint32_t skill);

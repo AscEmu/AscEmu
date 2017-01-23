@@ -20,6 +20,7 @@
 // \todo move most defines to enum, text to db (use SendScriptTextChatMessage(ID))
 #include "Setup.h"
 #include "Raid_Naxxramas.h"
+#include "Spell/SpellMgr.h"
 
 /////////////////////////////////////////////////////////////////////////////////
 ////// Naxxramas Instance

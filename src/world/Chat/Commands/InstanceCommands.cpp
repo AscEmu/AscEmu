@@ -21,6 +21,11 @@
 
 #include "StdAfx.h"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Map/WorldCreatorDefines.hpp"
+#include "Map/WorldCreator.h"
+#include "Chat/ChatHandler.hpp"
+#include "Objects/ObjectMgr.h"
 
 //.instance create
 bool ChatHandler::HandleCreateInstanceCommand(const char* args, WorldSession* m_session)

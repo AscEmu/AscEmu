@@ -21,6 +21,7 @@
 #define _INSTANCE_BASE_H
 
 #include "StdAfx.h"
+#include "Map/WorldCreatorDefines.hpp"
 
 #define INVALIDATE_TIMER -1
 #define DEFAULT_UPDATE_FREQUENCY 1000       //milliseconds

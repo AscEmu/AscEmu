@@ -4,10 +4,15 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "StdAfx.h"
+#include "Map/MapMgr.h"
 #include "Exceptions/PlayerExceptions.hpp"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"
+#include "Map/WorldCreatorDefines.hpp"
+#include "ChatHandler.hpp"
+#include "Server/WorldSession.h"
+#include "Server/World.h"
 
 initialiseSingleton(ChatHandler);
 
@@ -275,7 +280,7 @@ Creature* ChatHandler::GetSelectedCreature(WorldSession* m_session, bool showerr
     switch(GET_TYPE_FROM_GUID(guid))
     {
         case HIGHGUID_TYPE_PET:
-            creature = m_session->GetPlayer()->GetMapMgr()->GetPet(GET_LOWGUID_PART(guid));
+            creature = reinterpret_cast<Creature*>(m_session->GetPlayer()->GetMapMgr()->GetPet(GET_LOWGUID_PART(guid)));
             break;
 
         case HIGHGUID_TYPE_UNIT:

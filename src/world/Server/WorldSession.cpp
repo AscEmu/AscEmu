@@ -30,6 +30,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 

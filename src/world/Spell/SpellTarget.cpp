@@ -19,6 +19,12 @@
 
 #include "StdAfx.h"
 #include "VMapFactory.h"
+#include "Map/MapMgr.h"
+#include "Objects/Faction.h"
+#include "SpellTarget.h"
+#include "Spell.h"
+#include "Objects/GameObject.h"
+#include "Server/World.h"
 
 uint32 g_spellImplicitTargetFlags[MAX_IMPLICIT_TARGET_VALUE];
 

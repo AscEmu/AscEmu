@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define _COMMAND_TABLE_STORAGE_HPP
 
 #include "Chat/ChatCommand.hpp"
+#include "Singleton.h"
 
 class SERVER_DECL CommandTableStorage : public Singleton<CommandTableStorage>
 {

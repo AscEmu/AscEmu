@@ -22,14 +22,17 @@
 #define __WEATHERMGR_H
 
 #define WEATHER_DENSITY_UPDATE 0.05f
+#include "Singleton.h"
+#include "Server/EventableObject.h"
 
+class WorldPacket;
 class WeatherInfo;
 class WeatherMgr;
 
 void BuildWeatherPacket(WorldPacket* data, uint32 Effect, float Density);
 uint32 GetSound(uint32 Effect, float Density);
 
-class WeatherMgr :  public Singleton < WeatherMgr >
+class WeatherMgr :  public Singleton< WeatherMgr >
 {
     public:
 

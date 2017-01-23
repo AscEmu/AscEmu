@@ -18,9 +18,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+#pragma once
 
-#ifndef _TERRAIN_H
-#define _TERRAIN_H
+#include "Threading/Mutex.h"
+#include "Threading/AtomicCounter.h"
+#include <cstdio>
 
 namespace VMAP
 {
@@ -48,43 +50,43 @@ class TerrainTile;
 
 struct TileMapHeader
 {
-    uint32 mapMagic;
-    uint32 versionMagic;
-    uint32 buildMagic;
-    uint32 areaMapOffset;
-    uint32 areaMapSize;
-    uint32 heightMapOffset;
-    uint32 heightMapSize;
-    uint32 liquidMapOffset;
-    uint32 liquidMapSize;
-    uint32 holesOffset;
-    uint32 holesSize;
+    uint32_t mapMagic;
+    uint32_t versionMagic;
+    uint32_t buildMagic;
+    uint32_t areaMapOffset;
+    uint32_t areaMapSize;
+    uint32_t heightMapOffset;
+    uint32_t heightMapSize;
+    uint32_t liquidMapOffset;
+    uint32_t liquidMapSize;
+    uint32_t holesOffset;
+    uint32_t holesSize;
 };
 
 struct TileMapAreaHeader
 {
-    uint32 fourcc;
-    uint16 flags;
-    uint16 gridArea;
+    uint32_t fourcc;
+    uint16_t flags;
+    uint16_t gridArea;
 };
 
 struct TileMapHeightHeader
 {
-    uint32 fourcc;
-    uint32 flags;
+    uint32_t fourcc;
+    uint32_t flags;
     float gridHeight;
     float gridMaxHeight;
 };
 
 struct TileMapLiquidHeader
 {
-    uint32 fourcc;
-    uint16 flags;
-    uint16 liquidType;
-    uint8 offsetX;
-    uint8 offsetY;
-    uint8 width;
-    uint8 height;
+    uint32_t fourcc;
+    uint16_t flags;
+    uint16_t liquidType;
+    uint8_t offsetX;
+    uint8_t offsetY;
+    uint8_t width;
+    uint8_t height;
     float liquidLevel;
 };
 
@@ -93,35 +95,35 @@ class TileMap
     public:
 
         //Area Map
-        uint16 m_area;
-        uint16* m_areaMap;
+        uint16_t m_area;
+        uint16_t* m_areaMap;
 
         //Height Map
         union
         {
             float* m_heightMap8F;
-            uint16* m_heightMap8S;
-            uint8* m_heightMap8B;
+            uint16_t* m_heightMap8S;
+            uint8_t* m_heightMap8B;
         };
         union
         {
             float* m_heightMap9F;
-            uint16* m_heightMap9S;
-            uint8* m_heightMap9B;
+            uint16_t* m_heightMap9S;
+            uint8_t* m_heightMap9B;
         };
-        uint32 m_heightMapFlags;
+        uint32_t m_heightMapFlags;
         float m_heightMapMult;
         float m_tileHeight;
 
         //Liquid Map
-        uint8* m_liquidType;
+        uint8_t* m_liquidType;
         float* m_liquidMap;
         float m_liquidLevel;
-        uint8 m_liquidOffX;
-        uint8 m_liquidOffY;
-        uint8 m_liquidHeight;
-        uint8 m_liquidWidth;
-        uint16 m_defaultLiquidType;
+        uint8_t m_liquidOffX;
+        uint8_t m_liquidOffY;
+        uint8_t m_liquidHeight;
+        uint8_t m_liquidWidth;
+        uint16_t m_defaultLiquidType;
 
         TileMap();
         ~TileMap();
@@ -138,9 +140,9 @@ class TileMap
         float GetHeightF(float x, float y, int x_int, int y_int);
 
         float GetTileLiquidHeight(float x, float y);
-        uint8 GetTileLiquidType(float x, float y);
+        uint8_t GetTileLiquidType(float x, float y);
 
-        uint32 GetTileArea(float x, float y);
+        uint32_t GetTileArea(float x, float y);
 };
 
 class TerrainTile
@@ -150,14 +152,14 @@ class TerrainTile
         Arcemu::Threading::AtomicCounter m_refs;
 
         TerrainHolder* m_parent;
-        uint32 m_mapid;
-        int32 m_tx;
-        int32 m_ty;
+        uint32_t m_mapid;
+        int32_t m_tx;
+        int32_t m_ty;
 
         //Children
         TileMap m_map;
 
-        TerrainTile(TerrainHolder* parent, uint32 mapid, int32 x, int32 y);
+        TerrainTile(TerrainHolder* parent, uint32_t mapid, int32_t x, int32_t y);
         ~TerrainTile();
 
         void AddRef() { ++m_refs; }
@@ -178,29 +180,27 @@ class TerrainHolder
     public:
 
         // This should be in AreaStorage.cpp
-        const bool GetAreaInfo(float x, float y, float z, uint32 &mogp_flags, int32 &adt_id, int32 &root_id, int32 &group_id);
+        const bool GetAreaInfo(float x, float y, float z, uint32_t &mogp_flags, int32_t &adt_id, int32_t &root_id, int32_t &group_id);
 
-        uint32 m_mapid;
+        uint32_t m_mapid;
         TerrainTile* m_tiles[TERRAIN_NUM_TILES][TERRAIN_NUM_TILES];
         FastMutex m_lock[TERRAIN_NUM_TILES][TERRAIN_NUM_TILES];
         Arcemu::Threading::AtomicCounter m_tilerefs[TERRAIN_NUM_TILES][TERRAIN_NUM_TILES];
 
-        TerrainHolder(uint32 mapid);
+        TerrainHolder(uint32_t mapid);
         ~TerrainHolder();
 
-        uint16 GetAreaFlagWithoutAdtId(float x, float y);
+        uint16_t GetAreaFlagWithoutAdtId(float x, float y);
 
         TerrainTile* GetTile(float x, float y);
-        TerrainTile* GetTile(int32 tx, int32 ty);
+        TerrainTile* GetTile(int32_t tx, int32_t ty);
 
         void LoadTile(float x, float y);
-        void LoadTile(int32 tx, int32 ty);
+        void LoadTile(int32_t tx, int32_t ty);
 
         void UnloadTile(float x, float y);
-        void UnloadTile(int32 tx, int32 ty);
+        void UnloadTile(int32_t tx, int32_t ty);
 
         //test
-        uint32 GetAreaFlag(float x, float y);
+        uint32_t GetAreaFlag(float x, float y);
 };
-
-#endif

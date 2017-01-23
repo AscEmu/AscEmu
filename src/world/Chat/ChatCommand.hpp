@@ -2,9 +2,9 @@
 Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
+#pragma once 
 
-#ifndef _CHAT_COMMAND_HPP
-#define _CHAT_COMMAND_HPP
+#include <string>
 
 class ChatHandler;
 class WorldSession;
@@ -23,11 +23,9 @@ public:
 
     ChatCommand* ChildCommands;
 
-    uint32 NormalValueField;
-    uint32 MaxValueField;
+    uint32_t NormalValueField;
+    uint32_t MaxValueField;
 
     /// ValueType: 0 = nothing, 1 = uint, 2 = float
-    uint16 ValueType;
+    uint16_t ValueType;
 };
-
-#endif // _CHAT_COMMAND_HPP

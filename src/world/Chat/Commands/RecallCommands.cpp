@@ -21,6 +21,9 @@
 
 #include "StdAfx.h"
 #include "Server/MainServerDefines.h"
+#include "Chat/ChatHandler.hpp"
+#include "Server/WorldSession.h"
+#include "Objects/ObjectMgr.h"
 
 bool GetRecallLocation(const char* location, uint32 & map, LocationVector & v)
 {

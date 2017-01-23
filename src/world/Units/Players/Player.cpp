@@ -44,6 +44,10 @@
 #include "Server/Warden/SpeedDetector.h"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
+#include "Map/MapMgr.h"
+#include "Objects/Faction.h"
+#include "Spell/SpellAuras.h"
+#include "Map/WorldCreator.h"
 
 UpdateMask Player::m_visibleUpdateMask;
 

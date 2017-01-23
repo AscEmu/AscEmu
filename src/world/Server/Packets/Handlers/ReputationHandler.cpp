@@ -20,6 +20,11 @@
  */
 
 #include "StdAfx.h"
+#include "Map/MapMgr.h"
+#include "Server/WorldSession.h"
+#include "Server/World.h"
+#include "Management/Group.h"
+#include "Objects/ObjectMgr.h"
 
 enum FactionFlags
 {

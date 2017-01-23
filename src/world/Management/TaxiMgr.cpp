@@ -21,6 +21,8 @@
 
 #include "StdAfx.h"
 #include "Management/TaxiMgr.h"
+#include "Server/Packets/Opcodes.h"
+#include "Units/Players/Player.h"
 
 initialiseSingleton(TaxiMgr);
 
@@ -220,7 +222,7 @@ void TaxiPath::SendMoveForTime(Player* riding, Player* to, uint32 time)
 
     if (itr == m_pathNodes.end())
         return;
-
+    SMSG_MONSTER_MOVE;
     WorldPacket* data = new WorldPacket(SMSG_MONSTER_MOVE, 2000);
     size_t pos;
 

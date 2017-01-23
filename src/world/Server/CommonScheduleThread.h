@@ -18,10 +18,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+#pragma once
 
-#ifndef _COMMONSCHEDULETHREAD_H
-#define _COMMONSCHEDULETHREAD_H
-
+#include <map>
 
 class CommonScheduleThread : public CThread
 {
@@ -34,15 +33,13 @@ class CommonScheduleThread : public CThread
 
     Arcemu::Threading::ConditionVariable cond;
 
-    public:
+public:
 
-        CommonScheduleThread();
-        ~CommonScheduleThread();
+    CommonScheduleThread();
+    ~CommonScheduleThread();
 
-        bool run();
-        void terminate();
+    bool run();
+    void terminate();
 
-        void BroadCastExec();
+    void BroadCastExec();
 };
-
-#endif // _COMMONSCHEDULETHREAD_H

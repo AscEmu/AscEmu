@@ -36,6 +36,10 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Units/Players/PlayerClasses.hpp"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Objects/Faction.h"
+#include "SpellMgr.h"
+#include "SpellAuras.h"
 
 pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
 {

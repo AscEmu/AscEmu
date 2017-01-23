@@ -23,6 +23,12 @@
 #include "VMapFactory.h"
 #include "MMapManager.h"
 #include "MMapFactory.h"
+#include "Map/MapCell.h"
+#include "MapMgr.h"
+#include "WorldCreator.h"
+#include "Units/Creatures/Creature.h"
+#include "Objects/GameObject.h"
+#include "../../scripts/Common/Base.h"
 
 #define MAX_MAP 800
 
@@ -158,14 +164,14 @@ void MapCell::RemoveObjects()
                 if (!(*itr)->IsPet())
                 {
                     _mapmgr->_reusable_guids_creature.push_back((*itr)->GetUIdFromGUID());
-                    static_cast< Creature* >(*itr)->m_respawnCell = NULL;
-                    delete static_cast< Creature* >(*itr);
+                    reinterpret_cast<Creature*>(*itr)->m_respawnCell = nullptr;
+                    delete static_cast<Creature*>(*itr);
                 }
                 break;
             case TYPEID_GAMEOBJECT:
                 _mapmgr->_reusable_guids_gameobject.push_back((*itr)->GetUIdFromGUID());
-                static_cast< GameObject* >(*itr)->m_respawnCell = NULL;
-                delete static_cast< GameObject* >(*itr);
+                reinterpret_cast<GameObject*>(*itr)->m_respawnCell = nullptr;
+                delete static_cast<GameObject*>(*itr);
                 break;
         }
     }

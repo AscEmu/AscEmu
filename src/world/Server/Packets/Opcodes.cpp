@@ -19,6 +19,7 @@
  */
 
 #include "StdAfx.h"
+#include "Opcodes.h"
 
 // Updated for 3.3.5a
 OpcodeTableEntry g_worldOpcodeNames[NUM_MSG_TYPES] = {

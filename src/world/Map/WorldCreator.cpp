@@ -22,6 +22,8 @@
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
+#include "MapMgr.h"
+#include "WorldCreator.h"
 
 SERVER_DECL InstanceMgr sInstanceMgr;
 

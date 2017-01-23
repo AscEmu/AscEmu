@@ -24,6 +24,7 @@
 #include "Management/Battleground/Battleground.h"
 #include "Management/Arenas.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Map/MapMgr.h"
 
 uint32 CBattleground::GetId()
 {

@@ -5,6 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Server/MainServerDefines.h"
+#include "ChatCommand.hpp"
+#include "CommandTableStorage.hpp"
+#include "ChatHandler.hpp"
 
 initialiseSingleton(CommandTableStorage);
 

@@ -20,9 +20,10 @@
 
 #ifndef _CHANNEL_MGR_H
 #define _CHANNEL_MGR_H
+#include "Singleton.h"
 
 
-class SERVER_DECL ChannelMgr : public Singleton <ChannelMgr>
+class SERVER_DECL ChannelMgr : public Singleton<ChannelMgr>
 {
     public:
 

@@ -8,6 +8,7 @@ set(SRC_MOVEMENT_SPLINE_FILES
    ${PATH_PREFIX}/MovementSplineDefines.hpp
    ${PATH_PREFIX}/SplineFlags.cpp
    ${PATH_PREFIX}/SplineFlags.hpp
+   ${PATH_PREFIX}/MonsterMoveFaceType.h
 )
 
 source_group(Movement\\Spline FILES ${SRC_MOVEMENT_SPLINE_FILES})

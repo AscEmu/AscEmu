@@ -18,6 +18,10 @@
  */
 
 #include "Setup.h"
+#include "Map/MapMgr.h"
+#include "Map/MapScriptInterface.h"
+#include "Units/Creatures/Creature.h"
+#include "Server/Script/ScriptMgr.h"
 
 class ShatteredSunSpawner : public CreatureAIScript
 {

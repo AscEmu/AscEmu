@@ -6,6 +6,24 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _SPELL_DEFINES_HPP
 #define _SPELL_DEFINES_HPP
 
+struct DamageProc
+{
+    uint32 m_spellId;
+    uint32 m_damage;
+    //uint64 m_caster;          //log is: some reflects x arcane/nature damage to 'attacker' no matter who casted
+    uint32 m_school;
+    uint32 m_flags;
+    void* owner;                //mark the owner of this proc to know which one to delete
+};
+
+struct SpellCharge
+{
+    uint32 spellId;
+    uint32 count;
+    uint32 ProcFlag;
+    uint32 lastproc;
+    uint32 procdiff;
+};
 
 enum SpellAttributes
 {

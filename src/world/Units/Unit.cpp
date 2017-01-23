@@ -1,6 +1,7 @@
 // License: MIT
 
 #include "Unit.h"
+#include "Players/Player.h"
 
 void Unit::setCombatFlag(bool enabled)
 {
@@ -47,7 +48,7 @@ void Unit::leaveCombat()
 
     if (IsPlayer())
     {
-        reinterpret_cast<Player*>(this)->UpdatePotionCooldown();
+        static_cast<Player*>(this)->UpdatePotionCooldown();
     }
 }
 

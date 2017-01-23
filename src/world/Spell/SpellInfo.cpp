@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Management/Skill.h"
+#include "../../scripts/Battlegrounds/AlteracValley.h"
 
 SpellInfo::SpellInfo()
 {

@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Management/Battleground/Battleground.h"
+#include "Chat/ChatHandler.hpp"
+#include "Server/WorldSession.h"
 
 //.battleground forceinitqueue
 bool ChatHandler::HandleBGForceInitQueueCommand(const char* /*args*/, WorldSession* m_session)

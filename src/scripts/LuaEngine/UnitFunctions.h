@@ -36,6 +36,8 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Management/Group.h"
+#include "Objects/Faction.h"
+#include "Spell/SpellAuras.h"
 
 class LuaUnit
 {

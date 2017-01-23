@@ -19,6 +19,10 @@
 
 #include "Setup.h"
 #include "Management/TaxiMgr.h"
+#include "Server/WorldSession.h"
+#include "Units/Creatures/Creature.h"
+#include "Management/Gossip/Gossip.h"
+#include "Server/Script/ScriptMgr.h"
 
 class SilvaFilnaveth_Gossip : public Arcemu::Gossip::Script
 {

@@ -17,9 +17,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once
 
-#ifndef _WORDFILTER_H
-#define _WORDFILTER_H
+#include <string>
 
 struct WordFilterMatch
 {
@@ -39,17 +39,17 @@ class WordFilter
 
     bool CompileExpression(const char* szExpression, void** pOutput, void** pExtraOutput);
 
-    public:
+public:
+    WordFilter() : m_filters(nullptr), m_filterCount(0)
+    {
+    }
 
-        WordFilter() : m_filters(NULL), m_filterCount(0) {}
-        ~WordFilter();
+    ~WordFilter();
 
-        void Load(const char* szTableName);
-        bool Parse(std::string & sMessage, bool bAllowReplace = true);
-        bool ParseEscapeCodes(char* sMessage, bool bAllowLinks);
+    void Load(const char* szTableName);
+    bool Parse(std::string& sMessage, bool bAllowReplace = true);
+    bool ParseEscapeCodes(char* sMessage, bool bAllowLinks);
 };
 
 extern WordFilter* g_characterNameFilter;
 extern WordFilter* g_chatFilter;
-
-#endif        // _WORDFILTER_H

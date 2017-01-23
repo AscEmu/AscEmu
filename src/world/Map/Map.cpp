@@ -22,6 +22,8 @@
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
+#include "CellHandler.h"
+#include "WorldCreator.h"
 
 // Class Map
 // Holder for all instances of each mapmgr, handles transferring players between, and template holding.

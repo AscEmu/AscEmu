@@ -22,6 +22,8 @@
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
 #include "Server/MainServerDefines.h"
+#include "Server/WorldSession.h"
+#include "../../../../scripts/Common/Base.h"
 
 enum GMticketType
 {

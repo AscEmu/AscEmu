@@ -21,6 +21,8 @@
 #ifndef _NPCHANDLER_H
 #define _NPCHANDLER_H
 
+#include <string>
+
 enum GOSSIP_SPECIAL
 {
     GOSSIP_NO_SPECIAL           = 0x00,

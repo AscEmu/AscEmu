@@ -17,9 +17,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once
 
-#ifndef _AREATRIGGERHANDLER_H
-#define _AREATRIGGERHANDLER_H
+#include <string>
 
 enum AreaTriggerType
 {
@@ -35,18 +35,16 @@ enum AreaTriggerType
 #pragma pack(push,1)
 typedef struct AreaTrigger
 {
-    uint32 AreaTriggerID;
-    uint8 Type;
-    uint32 Mapid;
-    uint32 PendingScreen;
+    uint32_t AreaTriggerID;
+    uint8_t Type;
+    uint32_t Mapid;
+    uint32_t PendingScreen;
     std::string Name;
     float x;
     float y;
     float z;
     float o;
-    uint32 required_honor_rank;
-    uint32 required_level;
+    uint32_t required_honor_rank;
+    uint32_t required_level;
 } AreaTrigger;
 #pragma pack(pop)
-
-#endif //_AREATRIGGERHANDLER_H

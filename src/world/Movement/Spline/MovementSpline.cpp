@@ -4,6 +4,8 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "StdAfx.h"
+#include "MovementSpline.hpp"
+#include <cstdint>
 
 namespace Movement
 {
@@ -23,7 +25,7 @@ namespace Movement
             m_splineTrajectoryTime = 0;
         }
 
-        MoveSpline::MoveSpline(uint32 pInitialFlags)
+        MoveSpline::MoveSpline(uint32_t pInitialFlags)
         {
             m_splineFlags.m_splineFlagsRaw.as_uint32() = pInitialFlags;
         }
@@ -66,7 +68,7 @@ namespace Movement
             std::vector<::Movement::Spline::SplinePoint> returnSpline;
             if (m_splinePoints.size() > 2)
             {
-                for (uint32 i = 1; i < m_splinePoints.size() - 1; ++i)
+                for (uint32_t i = 1; i < m_splinePoints.size() - 1; ++i)
                 {
                     auto splineCopy = SplinePoint(m_splinePoints[i]);
                     returnSpline.push_back(splineCopy);
@@ -88,12 +90,12 @@ namespace Movement
             return &m_splinePoints;
         }
 
-        uint32 MoveSpline::GetCurrentSplineIndex()
+        uint32_t MoveSpline::GetCurrentSplineIndex()
         {
             return m_currentSplineIndex;
         }
 
-        void MoveSpline::SetCurrentSplineIndex(uint32 pIndex)
+        void MoveSpline::SetCurrentSplineIndex(uint32_t pIndex)
         {
             m_currentSplineIndex = pIndex;
         }
@@ -108,7 +110,7 @@ namespace Movement
             --m_currentSplineIndex;
         }
 
-        ::Movement::Spline::SplinePoint* MoveSpline::GetSplinePoint(uint32 pPointIndex)
+        ::Movement::Spline::SplinePoint* MoveSpline::GetSplinePoint(uint32_t pPointIndex)
         {
             if (m_splinePoints.size() <= 0 || m_splinePoints.size() <= pPointIndex)
                 return &InvalidPoint;
@@ -169,7 +171,7 @@ namespace Movement
             m_splineFaceType.SetZ(pPoint.z);
         }
 
-        void MoveSpline::SetFacing(uint64 pGuid)
+        void MoveSpline::SetFacing(uint64_t pGuid)
         {
             m_splineFlags.SetFacingTargetFlag();
             m_splineFaceType.SetFlag(::Movement::Spline::MonsterMoveFacingTarget);

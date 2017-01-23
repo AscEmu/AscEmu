@@ -19,6 +19,7 @@
 
 // \todo Move defines to enums, cleanup this... this... thing o.O
 
+#include "Objects/Faction.h"
 class GrandWidowFaerlinaAI;
 class AnubRekhanAI;
 class DeathchargerSteedAI;

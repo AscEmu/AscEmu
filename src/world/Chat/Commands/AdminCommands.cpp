@@ -5,6 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Server/MainServerDefines.h"
+#include "Spell/SpellMgr.h"
+#include "Chat/ChatHandler.hpp"
+#include "Objects/ObjectMgr.h"
 
 //.admin castall
 bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_session)

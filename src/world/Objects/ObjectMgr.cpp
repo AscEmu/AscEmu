@@ -30,6 +30,9 @@
 #include "Units/Players/PlayerClasses.hpp"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
+#include "Map/MapMgr.h"
+#include "Map/MapScriptInterface.h"
+#include "Map/WorldCreatorDefines.hpp"
 
 initialiseSingleton(ObjectMgr);
 

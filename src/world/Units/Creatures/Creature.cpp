@@ -30,6 +30,10 @@
 #include "Units/Stats.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
+#include "Map/MapCell.h"
+#include "Map/MapMgr.h"
+#include "Map/WorldCreatorDefines.hpp"
+#include "Map/WorldCreator.h"
 
 Creature::Creature(uint64 guid)
 {

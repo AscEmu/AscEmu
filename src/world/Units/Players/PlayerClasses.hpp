@@ -25,6 +25,7 @@
 #define MAX_RUNES 6
 #define TOTAL_RUNE_TYPES 4
 #define MAX_RUNE_VALUE 1
+#include "Player.h"
 
 enum SPELL_RUNE_TYPES
 {

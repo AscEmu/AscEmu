@@ -21,6 +21,8 @@
 #ifndef _OBJECTMGR_H
 #define _OBJECTMGR_H
 
+#include "Server/Packets/Handlers/AreaTrigger.h"
+
 #include "Chat/ChatHandler.hpp"
 #include "Units/Creatures/Corpse.h"
 #include "Units/Players/Player.h"
@@ -36,6 +38,7 @@
 #include "Management/Group.h"
 
 #include <string>
+#include "Server/World.h"
 
 inline bool FindXinYString(std::string & x, std::string & y)
 {

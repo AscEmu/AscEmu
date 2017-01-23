@@ -28,6 +28,7 @@
 #include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Auth/Sha1.h"
+#include "World.h"
 
 #pragma pack(push, 1)
 struct ClientPktHeader

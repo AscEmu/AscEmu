@@ -21,6 +21,9 @@
 #include "StdAfx.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
+#include "Server/WorldSession.h"
+#include "Server/World.h"
+#include "Objects/ObjectMgr.h"
 
 initialiseSingleton(ChannelMgr);
 

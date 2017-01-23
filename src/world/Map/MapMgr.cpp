@@ -38,6 +38,10 @@
 #include "VMapFactory.h"
 #include "MMapFactory.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "MapMgr.h"
+#include "MapScriptInterface.h"
+#include "WorldCreatorDefines.hpp"
+#include "WorldCreator.h"
 
 
 Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;

@@ -18,6 +18,10 @@
  */
 
 #include "Setup.h"
+#include "Server/WorldSession.h"
+#include "Management/Gossip/Gossip.h"
+#include "Units/Players/Player.h"
+#include "Server/Script/ScriptMgr.h"
 
 class SkornWhitecloud_Gossip : public Arcemu::Gossip::Script
 {

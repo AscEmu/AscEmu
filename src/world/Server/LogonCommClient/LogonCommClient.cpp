@@ -27,6 +27,7 @@
 #include "Server/MainServerDefines.h"
 #include <set>
 #include <map>
+#include "Server/World.h"
 
 #pragma pack(push, 1)
 typedef struct

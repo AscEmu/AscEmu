@@ -18,6 +18,10 @@
  */
 
 #include "StdAfx.h"
+#include "Map/MapMgr.h"
+#include "Server/WorldSession.h"
+#include "Units/Creatures/Vehicle.h"
+#include "Units/Players/Player.h"
 
 void WorldSession::HandleDismissVehicle(WorldPacket& recv_data)
 {

@@ -1,9 +1,9 @@
 // License: MIT
 #pragma once
-#include "CommonTypes.hpp"
-#include "Units/Unit.h"
-#include <memory>
+#include <cstdint>
 #include <set>
+
+#include "CommonTypes.hpp"
 
 class Unit;
 class Player;

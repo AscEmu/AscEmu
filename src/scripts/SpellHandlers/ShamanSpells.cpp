@@ -20,6 +20,8 @@
 #include "Setup.h"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
+#include "Spell/SpellAuras.h"
+#include "Server/Script/ScriptMgr.h"
 
 /************************************************************************/
 /* Spell Defs                                                           */

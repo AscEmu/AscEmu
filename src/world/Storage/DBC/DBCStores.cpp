@@ -20,6 +20,7 @@
 
 #include "StdAfx.h"
 #include "DBCGlobals.hpp"
+#include "Map/Area/AreaStorage.hpp"
 
 typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*> WMOAreaInfoByTripple;
 

@@ -22,6 +22,9 @@
 #include "StdAfx.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
+#include "Chat/ChatHandler.hpp"
+#include "Server/World.h"
+#include "../../../scripts/Common/Base.h"
 
 #define  SENDSURVEY "\x03"
 #ifdef GM_TICKET_MY_MASTER_COMPATIBLE

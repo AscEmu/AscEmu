@@ -21,6 +21,12 @@
 #include "StdAfx.h"
 #include "Management/EquipmentSetMgr.h"
 #include "Server/MainServerDefines.h"
+#include "Database/Field.h"
+#include "Log.hpp"
+#include "Database/Database.h"
+#include "WoWGuid.h"
+#include "Server/WUtil.h"
+#include "WorldPacket.h"
 
 namespace Arcemu
 {
@@ -156,7 +162,6 @@ namespace Arcemu
 
     void EquipmentSetMgr::FillEquipmentSetListPacket(WorldPacket& data)
     {
-
         data << uint32(EquipmentSets.size());
 
         for (EquipmentSetStorage::iterator itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)

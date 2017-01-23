@@ -23,6 +23,8 @@
 #include "Setup.h"
 #include "Raid_BlackTemple.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include "Objects/Faction.h"
+#include "Spell/SpellMgr.h"
 
 
 class BlackTempleScript : public MoonInstanceScript

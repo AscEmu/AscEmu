@@ -17,18 +17,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once
 
-#ifndef _HONORHANDLER_H
-#define _HONORHANDLER_H
+#include "CommonTypes.hpp"
+#include <cstdint>
+
+class Player;
 
 class SERVER_DECL HonorHandler
 {
     public:
-
-        static int32 CalculateHonorPointsForKill(uint32 playerLevel, uint32 victimLevel);
+        static int32 CalculateHonorPointsForKill(uint32_t playerLevel, uint32_t victimLevel);
         static void RecalculateHonorFields(Player* pPlayer);
-        static void AddHonorPointsToPlayer(Player* pPlayer, uint32 uAmount);
+        static void AddHonorPointsToPlayer(Player* pPlayer, uint32_t uAmount);
         static void OnPlayerKilled(Player* pPlayer, Player* pVictim);
 };
 
-#endif // _HONORHANDLER_H

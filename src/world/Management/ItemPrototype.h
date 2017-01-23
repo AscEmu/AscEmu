@@ -21,6 +21,9 @@
 #ifndef _ITEMPROTOTYPE_H
 #define _ITEMPROTOTYPE_H
 
+#include <cstdint>
+#include <string>
+
 class Spell;
 
 #define MAX_INVENTORY_SLOT 150
@@ -573,31 +576,31 @@ enum ITEM_LIMIT_FLAGS
 #pragma pack(push,1)
 struct SocketInfo
 {
-    uint32 SocketColor;
-    uint32 Unk;
+    uint32_t SocketColor;
+    uint32_t Unk;
 };
 
 struct ItemSpell
 {
-    uint32 Id;
-    uint32 Trigger;
-    int32 Charges;
-    int32 Cooldown;
-    uint32 Category;
-    int32 CategoryCooldown;
+    uint32_t Id;
+    uint32_t Trigger;
+    int32_t Charges;
+    int32_t Cooldown;
+    uint32_t Category;
+    int32_t CategoryCooldown;
 };
 
 struct ItemDamage
 {
     float Min;
     float Max;
-    uint32 Type;
+    uint32_t Type;
 };
 
 struct ItemStat
 {
-    uint32 Type;
-    int32 Value;
+    uint32_t Type;
+    int32_t Value;
 };
 
 #define MAX_ITEM_PROTO_DAMAGES 2
@@ -607,80 +610,80 @@ struct ItemStat
 
 struct ItemProperties
 {
-    uint32 ItemId;
-    uint32 Class;
-    uint32 SubClass;
-    uint32 unknown_bc;
+    uint32_t ItemId;
+    uint32_t Class;
+    uint32_t SubClass;
+    uint32_t unknown_bc;
     std::string Name;
-    uint32 DisplayInfoID;
-    uint32 Quality;
-    uint32 Flags;
-    uint32 Flags2;
-    uint32 BuyPrice;
-    uint32 SellPrice;
-    uint32 InventoryType;
-    uint32 AllowableClass;
-    uint32 AllowableRace;
-    uint32 ItemLevel;
-    uint32 RequiredLevel;
-    uint32 RequiredSkill;
-    uint32 RequiredSkillRank;
-    uint32 RequiredSkillSubRank;    /// required spell
-    uint32 RequiredPlayerRank1;
-    uint32 RequiredPlayerRank2;
-    uint32 RequiredFaction;
-    uint32 RequiredFactionStanding;
-    uint32 Unique;
-    uint32 MaxCount;
-    uint32 ContainerSlots;
-    uint32 itemstatscount;
+    uint32_t DisplayInfoID;
+    uint32_t Quality;
+    uint32_t Flags;
+    uint32_t Flags2;
+    uint32_t BuyPrice;
+    uint32_t SellPrice;
+    uint32_t InventoryType;
+    uint32_t AllowableClass;
+    uint32_t AllowableRace;
+    uint32_t ItemLevel;
+    uint32_t RequiredLevel;
+    uint32_t RequiredSkill;
+    uint32_t RequiredSkillRank;
+    uint32_t RequiredSkillSubRank;    /// required spell
+    uint32_t RequiredPlayerRank1;
+    uint32_t RequiredPlayerRank2;
+    uint32_t RequiredFaction;
+    uint32_t RequiredFactionStanding;
+    uint32_t Unique;
+    uint32_t MaxCount;
+    uint32_t ContainerSlots;
+    uint32_t itemstatscount;
     ItemStat Stats[MAX_ITEM_PROTO_STATS];
-    uint32 ScalingStatsEntry;
-    uint32 ScalingStatsFlag;
+    uint32_t ScalingStatsEntry;
+    uint32_t ScalingStatsFlag;
     ItemDamage Damage[MAX_ITEM_PROTO_DAMAGES];
-    uint32 Armor;
-    uint32 HolyRes;
-    uint32 FireRes;
-    uint32 NatureRes;
-    uint32 FrostRes;
-    uint32 ShadowRes;
-    uint32 ArcaneRes;
-    uint32 Delay;
-    uint32 AmmoType;
+    uint32_t Armor;
+    uint32_t HolyRes;
+    uint32_t FireRes;
+    uint32_t NatureRes;
+    uint32_t FrostRes;
+    uint32_t ShadowRes;
+    uint32_t ArcaneRes;
+    uint32_t Delay;
+    uint32_t AmmoType;
     float Range;
     ItemSpell Spells[MAX_ITEM_PROTO_SPELLS];
-    uint32 Bonding;
+    uint32_t Bonding;
     std::string Description;
-    uint32 PageId;
-    uint32 PageLanguage;
-    uint32 PageMaterial;
-    uint32 QuestId;
-    uint32 LockId;
-    uint32 LockMaterial;
-    uint32 SheathID;
-    uint32 RandomPropId;
-    uint32 RandomSuffixId;
-    uint32 Block;
-    int32 ItemSet;
-    uint32 MaxDurability;
-    uint32 ZoneNameID;
-    uint32 MapID;
-    uint32 BagFamily;
-    uint32 TotemCategory;
+    uint32_t PageId;
+    uint32_t PageLanguage;
+    uint32_t PageMaterial;
+    uint32_t QuestId;
+    uint32_t LockId;
+    uint32_t LockMaterial;
+    uint32_t SheathID;
+    uint32_t RandomPropId;
+    uint32_t RandomSuffixId;
+    uint32_t Block;
+    int32_t ItemSet;
+    uint32_t MaxDurability;
+    uint32_t ZoneNameID;
+    uint32_t MapID;
+    uint32_t BagFamily;
+    uint32_t TotemCategory;
     SocketInfo Sockets[MAX_ITEM_PROTO_SOCKETS];
-    uint32 SocketBonus;
-    uint32 GemProperties;
-    int32 DisenchantReqSkill;
-    uint32 ArmorDamageModifier;
-    uint32 ExistingDuration;
-    uint32 ItemLimitCategory;
-    uint32 HolidayId;
-    uint32 FoodType;
+    uint32_t SocketBonus;
+    uint32_t GemProperties;
+    int32_t DisenchantReqSkill;
+    uint32_t ArmorDamageModifier;
+    uint32_t ExistingDuration;
+    uint32_t ItemLimitCategory;
+    uint32_t HolidayId;
+    uint32_t FoodType;
 
     std::string lowercase_name;      /// used in auctions
-    int32 ForcedPetId;
+    int32_t ForcedPetId;
 
-    bool HasFlag(uint32 flag) const
+    bool HasFlag(uint32_t flag) const
     {
         if ((Flags & flag) != 0)
             return true;
@@ -688,7 +691,7 @@ struct ItemProperties
             return false;
     }
     
-    bool HasFlag2(uint32 flag) const
+    bool HasFlag2(uint32_t flag) const
     {
         if ((Flags2 & flag) != 0)
             return true;
@@ -699,14 +702,14 @@ struct ItemProperties
 
 struct ItemSetLinkedItemSetBonus
 {
-    int32 itemset;
-    uint32 itemset_bonus;
+    int32_t itemset;
+    uint32_t itemset_bonus;
 };
 
 typedef struct
 {
-    int32 setid;
-    uint32 itemscount;
+    int32_t setid;
+    uint32_t itemscount;
     //Spell* spell[8];
 } ItemSet;
 

@@ -20,6 +20,7 @@
  */
 
 #include "Setup.h"
+#include "Spell/SpellAuras.h"
 
 class WyrmcultBlackwhelp : public CreatureAIScript
 {

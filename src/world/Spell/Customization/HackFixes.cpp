@@ -24,6 +24,8 @@
 #include "Spell/SpellNameHashes.h"
 #include "Units/Players/PlayerClasses.hpp"
 #include "Server/MainServerDefines.h"
+#include "Spell/SpellAuras.h"
+#include "Server/World.h"
 
 void CreateDummySpell(uint32 id)
 {

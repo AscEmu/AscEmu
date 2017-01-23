@@ -20,6 +20,7 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/TaxiMgr.h"
+#include "Objects/ObjectMgr.h"
 
 enum CreatureEntry
 {

@@ -21,6 +21,7 @@
 #include "MapDefines.h"
 #include "StdAfx.h"
 #include "Errors.h"
+#include "Server/World.h"
 
 namespace MMAP
 {

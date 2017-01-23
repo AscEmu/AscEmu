@@ -20,6 +20,8 @@
  */
 
 #include "StdAfx.h"
+#include "SummonHandler.h"
+#include "Units/Unit.h"
 
 
 SummonHandler::SummonHandler()

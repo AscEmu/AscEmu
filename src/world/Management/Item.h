@@ -23,6 +23,9 @@
 
 #include "Skill.h"
 #include "Management/ItemPrototype.h"
+#include "Storage/DBC/DBCStructures.hpp"
+#include "Objects/Object.h"
+#include "LootMgr.h"
 
 struct EnchantmentInstance
 {

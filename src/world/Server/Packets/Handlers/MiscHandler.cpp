@@ -28,6 +28,9 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "zlib.h"
+#include "Map/MapMgr.h"
+#include "Spell/SpellMgr.h"
+#include "Map/WorldCreator.h"
 
 void WorldSession::HandleRepopRequestOpcode(WorldPacket& recv_data)
 {

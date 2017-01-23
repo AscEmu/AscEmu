@@ -26,6 +26,8 @@
 #include "Management/ItemInterface.h"
 #include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Spell/SpellMgr.h"
 
 Item::Item()
 {

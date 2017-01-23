@@ -20,6 +20,10 @@
  */
 
 #include "StdAfx.h"
+#include "Map/MapMgr.h"
+#include "Spell/SpellAuras.h"
+#include "Server/WorldSession.h"
+#include "Objects/GameObject.h"
 
 void WorldSession::HandleDuelAccepted(WorldPacket& recv_data)
 {

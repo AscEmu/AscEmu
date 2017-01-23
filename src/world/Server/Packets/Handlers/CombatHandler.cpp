@@ -20,6 +20,11 @@
  */
 
 #include "StdAfx.h"
+#include "Map/MapMgr.h"
+#include "Objects/Faction.h"
+#include "Server/WorldSession.h"
+#include "Log.hpp"
+#include "Units/Players/Player.h"
 
 void WorldSession::HandleAttackSwingOpcode(WorldPacket& recv_data)
 {

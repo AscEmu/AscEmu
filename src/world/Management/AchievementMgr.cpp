@@ -24,6 +24,8 @@
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
+#include "Map/MapMgr.h"
+#include "Objects/Faction.h"
 
 #ifdef ENABLE_ACHIEVEMENTS
 

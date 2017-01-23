@@ -19,6 +19,11 @@
 
 #include "Setup.h"
 #include "Storage/WorldStrings.h"
+#include "Server/WorldSession.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Units/Creatures/Creature.h"
+#include "Management/Gossip/Gossip.h"
+#include "Server/Script/ScriptMgr.h"
 
 //#define USE_THE_STATUS    // Decoment this is for the status
 

@@ -22,6 +22,7 @@
 #include "IVMapManager.h"
 #include "StdAfx.h"
 #include "TerrainMgr.h"
+#include "Log.hpp"
 
 TerrainHolder::TerrainHolder(uint32 mapid)
 {

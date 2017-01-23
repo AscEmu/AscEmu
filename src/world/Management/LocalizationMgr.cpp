@@ -22,6 +22,10 @@
 #include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
+#include "Log.hpp"
+#include "Database/Database.h"
+#include "Server/WUtil.h"
+#include "../shared/Util.hpp"
 
 LocalizationMgr sLocalizationMgr;
 
