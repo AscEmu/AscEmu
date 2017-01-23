@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
-#include "StdAfx.h"
+#include <cstdint>
 #include "Movement/MovementCommon.hpp"
 #include "SplineFlags.hpp"
 #include "G3D/Vector3.h"
