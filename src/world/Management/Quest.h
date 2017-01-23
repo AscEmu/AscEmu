@@ -23,6 +23,7 @@
 #define arcemu_QUEST_REPEATABLE_DAILY 2
 #define MAX_REQUIRED_QUEST_ITEM 6
 #include <set>
+#include <string>
 
 class QuestScript;
 #pragma pack(push,1)
