@@ -1,6 +1,29 @@
-#ifndef WORLD_CONF_HPP
-#define WORLD_CONF_HPP
+/*
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
+#ifndef WORLD_CONF_H
+#define WORLD_CONF_H
 
 #define CONFDIR "@ASCEMU_CONFIGSFILE_PATH@"
 #define PREFIX "@ASCEMU_SCRIPTLIB_PATH@"
-#endif // WORLD_CONF_HPP
+
+#define Classic 1
+#define TBC 2
+#define WotLK 3
+#define Cata 4
+
+#define VERSION_STRING @ASCEMU_VERSION@
+
+#if VERSION_STRING == Classic
+    #define AE_CLASSIC
+#elif VERSION_STRING == TBC
+    #define AE_TBC
+#elif VERSION_STRING == WotLK
+    #define AE_WOTLK
+#elif VERSION_STRING == Cata
+    #define AE_CATA
+#endif
+
+#endif // WORLD_CONF_H
