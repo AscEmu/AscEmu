@@ -9,8 +9,6 @@ set(SRC_UNITS_FILES
    ${PATH_PREFIX}/Stats.h
    ${PATH_PREFIX}/Unit.cpp
    ${PATH_PREFIX}/Unit.h
-   ${PATH_PREFIX}/Unit.Legacy.Partial1.h
-   ${PATH_PREFIX}/Unit.Legacy.Partial2.h
    ${PATH_PREFIX}/Unit.Legacy.cpp
    ${PATH_PREFIX}/UnitDefines.hpp
 )
