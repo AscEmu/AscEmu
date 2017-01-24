@@ -17,9 +17,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef _PLAYER_H
-#define _PLAYER_H
+#pragma once
 
 #include "Units/Players/PlayerDefines.hpp"
 #include "Server/Packets/Handlers/PlayerCache.h"
@@ -2006,59 +2004,3 @@ class SERVER_DECL Player : public Unit
         float go_last_x_rotation;
         float go_last_y_rotation;
 };
-
-class SkillIterator
-{
-    SkillMap::iterator m_itr;
-    SkillMap::iterator m_endItr;
-    bool m_searchInProgress;
-    Player* m_target;
-
-    public:
-
-        SkillIterator(Player* target) : m_searchInProgress(false), m_target(target) {}
-        ~SkillIterator() { if (m_searchInProgress) { EndSearch(); } }
-
-        void BeginSearch()
-        {
-            ///\todo iteminterface doesn't use mutexes, maybe it should :P
-            ARCEMU_ASSERT(!m_searchInProgress);
-            m_itr = m_target->m_skills.begin();
-            m_endItr = m_target->m_skills.end();
-            m_searchInProgress = true;
-        }
-
-        void EndSearch()
-        {
-            // nothing here either
-            ARCEMU_ASSERT(m_searchInProgress);
-            m_searchInProgress = false;
-        }
-
-        PlayerSkill* operator*() const
-        {
-            return &m_itr->second;
-        }
-
-        PlayerSkill* operator->() const
-        {
-            return &m_itr->second;
-        }
-
-        void Increment()
-        {
-            if (!m_searchInProgress)
-                BeginSearch();
-
-            if (m_itr == m_endItr)
-                return;
-
-            ++m_itr;
-        }
-
-        PlayerSkill* Grab() { return &m_itr->second; }
-        bool End() { return (m_itr == m_endItr) ? true : false; }
-
-};
-
-#endif // _PLAYER_H
