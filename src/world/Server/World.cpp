@@ -134,7 +134,6 @@ World::World()
     m_reqGmForCommands = false;
     m_lfgForNonLfg = false;
     m_useAccountData = false;
-    m_AdditionalFun = false;
     m_SkipCinematics = false;
     m_InstantLogout = 1;
     m_MinDualSpecLevel = 40;
@@ -1529,7 +1528,6 @@ void World::Rehash(bool load)
     if (!flood_lines || !flood_seconds)
         flood_lines = flood_seconds = 0;
 
-    m_AdditionalFun = Config.OptionalConfig.GetBoolDefault("Optional", "AdditionalFun", false);
     MaxProfs = (uint32)Config.OptionalConfig.GetIntDefault("Optional", "MaxProfessions", 2);
     m_SkipCinematics = Config.OptionalConfig.GetBoolDefault("Optional", "SkipCinematic", false);
     m_InstantLogout = Config.OptionalConfig.GetIntDefault("Optional", "InstantLogout", 1);
