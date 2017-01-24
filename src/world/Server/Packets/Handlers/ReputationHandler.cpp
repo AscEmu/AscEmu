@@ -181,12 +181,10 @@ void Player::SetStanding(uint32 Faction, int32 Value)
             return;
 
         itr = m_reputation.find(Faction);
-#ifdef ENABLE_ACHIEVEMENTS
         if (itr->second->standing >= 42000)   // check if we are exalted now
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);   // increment # of exalted
 
         m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, f->ID, itr->second->standing, 0);
-#endif
         UpdateInrangeSetsBasedOnReputation();
         OnModStanding(f, itr->second);
     }
@@ -195,17 +193,13 @@ void Player::SetStanding(uint32 Faction, int32 Value)
         // Assign it.
         if (RankChangedFlat(itr->second->standing, newValue))
         {
-#ifdef ENABLE_ACHIEVEMENTS
             if (itr->second->standing - newValue >= exaltedReputation) // somehow we lost exalted status
                 m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, -1, 0, 0); // decrement # of exalted
             else if (newValue >= exaltedReputation) // check if we are exalted now
                 m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0); // increment # of exalted
-#endif
             itr->second->standing = newValue;
             UpdateInrangeSetsBasedOnReputation();
-#ifdef ENABLE_ACHIEVEMENTS
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, f->ID, Value, 0);
-#endif
         }
         else
             itr->second->standing = newValue;
@@ -266,12 +260,10 @@ void Player::ModStanding(uint32 Faction, int32 Value)
             return;
 
         itr = m_reputation.find(Faction);
-#ifdef ENABLE_ACHIEVEMENTS
         if (itr->second->standing >= 42000)   // check if we are exalted now
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0);   // increment # of exalted
 
         m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, f->ID, itr->second->standing, 0);
-#endif
         UpdateInrangeSetsBasedOnReputation();
         OnModStanding(f, itr->second);
     }
@@ -286,13 +278,11 @@ void Player::ModStanding(uint32 Faction, int32 Value)
         {
             itr->second->standing += newValue;
             UpdateInrangeSetsBasedOnReputation();
-#ifdef ENABLE_ACHIEVEMENTS
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION, f->ID, itr->second->standing, 0);
             if (itr->second->standing >= exaltedReputation) // check if we are exalted now
                 m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, 1, 0, 0); // increment # of exalted
             else if (itr->second->standing - newValue >= exaltedReputation) // somehow we lost exalted status
                 m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION, -1, 0, 0); // decrement # of exalted
-#endif
         }
         else
             itr->second->standing += newValue;

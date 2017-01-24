@@ -520,7 +520,6 @@ PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
     return rv;
 }
 
-#ifdef ENABLE_ACHIEVEMENTS
 void ObjectMgr::LoadCompletedAchievements()
 {
     QueryResult* result = CharacterDatabase.Query("SELECT achievement FROM character_achievement GROUP BY achievement");
@@ -539,8 +538,6 @@ void ObjectMgr::LoadCompletedAchievements()
     while (result->NextRow());
     delete result;
 }
-#endif
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // DK:LoadGuilds()
@@ -1499,7 +1496,6 @@ void ObjectMgr::LoadCorpses(MapMgr* mgr)
     }
 }
 
-#ifdef ENABLE_ACHIEVEMENTS
 AchievementCriteriaEntryList const & ObjectMgr::GetAchievementCriteriaByType(AchievementCriteriaTypes type)
 {
     return m_AchievementCriteriasByType[type];
@@ -1516,7 +1512,6 @@ void ObjectMgr::LoadAchievementCriteriaList()
         m_AchievementCriteriasByType[criteria->requiredType].push_back(criteria);
     }
 }
-#endif
 
 void ObjectMgr::CorpseAddEventDespawn(Corpse* pCorpse)
 {

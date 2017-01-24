@@ -395,7 +395,5 @@ void WorldSession::HandleAchievmentQueryOpcode(WorldPacket& recv_data)
     {
         return;
     }
-#ifdef ENABLE_ACHIEVEMENTS
     pTarget->GetAchievementMgr().SendAllAchievementData(GetPlayer());
-#endif
 }

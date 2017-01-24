@@ -79,11 +79,9 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAccountUnmuteCommand(const char* args, WorldSession* m_session);
 
         // Achievement
-#ifdef ENABLE_ACHIEVEMENTS
         bool HandleAchievementCompleteCommand(const char* args, WorldSession* m_session);
         bool HandleAchievementCriteriaCommand(const char* args, WorldSession* m_session);
         bool HandleAchievementResetCommand(const char* args, WorldSession* m_session);
-#endif
 
         // Admin commands
         bool HandleAdminCastAllCommand(const char* args, WorldSession* m_session);
@@ -299,9 +297,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleGetInstanceInfoCommand(const char* args, WorldSession* m_session);
 
         // Lookups
-#ifdef ENABLE_ACHIEVEMENTS
         bool HandleLookupAchievementCommand(const char* args, WorldSession* m_session);
-#endif
         bool HandleLookupCreatureCommand(const char* args, WorldSession* m_session);
         bool HandleLookupFactionCommand(const char* args, WorldSession* m_session);
         bool HandleLookupItemCommand(const char* args, WorldSession* m_session);

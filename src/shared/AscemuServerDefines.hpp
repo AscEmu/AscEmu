@@ -35,9 +35,4 @@
 
 #define GM_TICKET_MY_MASTER_COMPATIBLE
 
-/// Enable/Disable achievement mgr
-/// Default: Enabled
-/// To disable add // before #define below
-#define ENABLE_ACHIEVEMENTS
-
 #endif      //_ASCEMU_SERVER_DEFINES_HPP

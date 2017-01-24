@@ -5633,8 +5633,6 @@ class LuaUnit
         return 1;
     }
 
-#ifdef ENABLE_ACHIEVEMENTS
-
     static int AddAchievement(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
@@ -5662,8 +5660,6 @@ class LuaUnit
         lua_pushboolean(L, static_cast<Player*>(ptr)->GetAchievementMgr().HasCompleted(achievementID) ? 1 : 0);
         return 1;
     }
-
-#endif
 
     static int GetAreaId(lua_State* L, Unit* ptr)
     {

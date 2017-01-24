@@ -98,10 +98,7 @@
 #include "Units/Unit.h"
 #include "Management/Gossip/Gossip.h"
 #include "Management/Gossip/GossipMenu.hpp"
-
-#ifdef ENABLE_ACHIEVEMENTS
 #include "Management/AchievementMgr.h"
-#endif
 
 //VMAP
 #include "Models/ModelInstance.h"

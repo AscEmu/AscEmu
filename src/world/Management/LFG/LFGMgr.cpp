@@ -1769,7 +1769,6 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         if (qReward->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY)
             player->PushToFinishedDailies(qReward->id);
 
-#ifdef ENABLE_ACHIEVEMENTS
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
         if (qReward->reward_money > 0)
         {
@@ -1783,7 +1782,6 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         }
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->zone_id, 0, 0);
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->id, 0, 0);
-#endif
     }
     else
     {
@@ -1860,7 +1858,6 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         if (qReward->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY)
             player->PushToFinishedDailies(qReward->id);
 
-#ifdef ENABLE_ACHIEVEMENTS
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
         if (qReward->reward_money > 0)
         {
@@ -1874,7 +1871,6 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         }
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->zone_id, 0, 0);
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->id, 0, 0);
-#endif
     }
 
     // Give rewards

@@ -1360,8 +1360,6 @@ Player* Group::GetRandomPlayerInRangeButSkip(Player* plr, float range, Player* p
     return new_plr;
 }
 
-#ifdef ENABLE_ACHIEVEMENTS
-
 void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTypes type, int32 miscvalue1, int32 miscvalue2, uint32 time)
 {
     Lock();
@@ -1385,8 +1383,6 @@ void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTy
 
     Unlock();
 }
-
-#endif
 
 void Group::Teleport(WorldSession* m_session)
 {

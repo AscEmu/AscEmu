@@ -27,8 +27,6 @@
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 
-#ifdef ENABLE_ACHIEVEMENTS
-
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Takes achievementlink c-string
 /// \return c-string ID value
@@ -2113,5 +2111,3 @@ bool AchievementMgr::HasCompleted(uint32 achievementID)
 {
     return (m_completedAchievements.find(achievementID) != m_completedAchievements.end());
 }
-
-#endif

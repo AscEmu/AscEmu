@@ -257,9 +257,7 @@ class SERVER_DECL Group
         //////////////////////////////////////////////////////////////////////////////////////////
         Player* GetRandomPlayerInRangeButSkip(Player* plr, float range, Player* plr_skip);
 
-#ifdef ENABLE_ACHIEVEMENTS
         void UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTypes type, int32 miscvalue1, int32 miscvalue2, uint32 time);
-#endif
         void Teleport(WorldSession* m_session);
 		bool isLFGGroup() 
 		{ 

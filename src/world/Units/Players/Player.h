@@ -38,9 +38,7 @@
 
 class QuestLogEntry;
 struct BGScore;
-#ifdef ENABLE_ACHIEVEMENTS
 class AchievementMgr;
-#endif
 class Channel;
 class Creature;
 class Battleground;
@@ -258,10 +256,7 @@ struct classScriptOverride
     bool percent;
 };
 
-#ifdef ENABLE_ACHIEVEMENTS
 class AchievementMgr;
-#endif
-
 class Spell;
 class Item;
 class Container;
@@ -1966,10 +1961,8 @@ class SERVER_DECL Player : public Unit
         void ToggleXpGain();
         bool CanGainXp();
 
-#ifdef ENABLE_ACHIEVEMENTS
         AchievementMgr & GetAchievementMgr() { return m_achievementMgr; }
         AchievementMgr m_achievementMgr;
-#endif
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Talent Specs

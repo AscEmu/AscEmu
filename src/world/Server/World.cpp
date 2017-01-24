@@ -546,10 +546,7 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
     MAKE_TASK(ObjectMgr, LoadAreaTrigger);
 
-
-#ifdef ENABLE_ACHIEVEMENTS
     MAKE_TASK(ObjectMgr, LoadAchievementRewards);
-#endif
     //LoadMonsterSay() must have finished before calling LoadExtraCreatureProtoStuff()
     tl.wait();
 
@@ -599,10 +596,8 @@ bool World::SetInitialWorldSettings()
     objmgr.LoadTransports();
 
     //Start the Achievement system :D
-#ifdef ENABLE_ACHIEVEMENTS
     LogDetail("World : Starting Achievement System..");
     objmgr.LoadAchievementCriteriaList();
-#endif
     // start mail system
     MailSystem::getSingleton().StartMailSystem();
 
