@@ -346,7 +346,6 @@ class SERVER_DECL Player : public Unit
 {
     friend class WorldSession;
     friend class Pet;
-    friend class SkillIterator;
 
     public:
         
