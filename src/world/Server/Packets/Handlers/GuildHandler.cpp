@@ -377,7 +377,7 @@ void WorldSession::HandleGuildRank(WorldPacket& recv_data)
     GuildRank* pRank;
 
     recv_data >> rankId;
-    pRank = _player->m_playerInfo->guild->GetGuildRank(rankId);
+    pRank = _player->GetGuild()->GetGuildRank(rankId);
     if (pRank == NULL)
         return;
 
@@ -409,7 +409,7 @@ void WorldSession::HandleGuildRank(WorldPacket& recv_data)
         recv_data >> pRank->iTabPermissions[i].iStacksPerDay;
     }
 
-    uint32 guildID = _player->m_playerInfo->guild->GetGuildId();
+    uint32 guildID = _player->GetGuildId();
     uint32 rankID = pRank->iId;
 
     CharacterDatabase.Execute("DELETE FROM guild_ranks WHERE guildid = %u AND rankid = %u;", guildID, rankID);
@@ -424,7 +424,8 @@ void WorldSession::HandleGuildRank(WorldPacket& recv_data)
                               pRank->iTabPermissions[4].iFlags, pRank->iTabPermissions[4].iStacksPerDay,
                               pRank->iTabPermissions[5].iFlags, pRank->iTabPermissions[5].iStacksPerDay);
 
-    _player->m_playerInfo->guild->SendGuildRoster(this);
+    _player->GetGuild()->SendGuildQuery(NULL);
+    _player->GetGuild()->SendGuildRoster(this);
 }
 
 void WorldSession::HandleGuildAddRank(WorldPacket& recv_data)
