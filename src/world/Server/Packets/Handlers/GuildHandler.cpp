@@ -424,7 +424,7 @@ void WorldSession::HandleGuildRank(WorldPacket& recv_data)
                               pRank->iTabPermissions[4].iFlags, pRank->iTabPermissions[4].iStacksPerDay,
                               pRank->iTabPermissions[5].iFlags, pRank->iTabPermissions[5].iStacksPerDay);
 
-    _player->GetGuild()->SendGuildQuery(NULL);
+    _player->GetGuild()->SendGuildQuery(nullptr);
     _player->GetGuild()->SendGuildRoster(this);
 }
 
