@@ -4565,7 +4565,7 @@ void AIInterface::EventForceRedirected(Unit* pUnit, uint32 misc1)
         SetReturnPosition();
 }
 
-void AIInterface::MoveJump(float x, float y, float z, float o /*= 0*/, bool hugearc)
+void AIInterface::MoveJump(float x, float y, float z, float o /*= 0*/, float speedZ /*= 5.0f */, bool hugearc)
 {
     m_splinePriority = SPLINE_PRIORITY_REDIRECTION;
 
@@ -4576,9 +4576,9 @@ void AIInterface::MoveJump(float x, float y, float z, float o /*= 0*/, bool huge
 
     m_Unit->m_movementManager.m_spline.m_splineTrajectoryTime = 0;
     if (hugearc)
-        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = 250;   // weeee
+        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = 250; 
 	else
-        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = 5;
+        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = speedZ;
 
     SetRun();
     m_runSpeed *= 3;
@@ -4592,35 +4592,6 @@ void AIInterface::MoveJump(float x, float y, float z, float o /*= 0*/, bool huge
 
     //fix run speed
     UpdateSpeeds();
-}
-
-void AIInterface::MoveJumpExt(float x, float y, float z, float o, float speedZ, bool hugearc)
-{
-	m_splinePriority = SPLINE_PRIORITY_REDIRECTION;
-
-	//Clear current spline
-    m_Unit->m_movementManager.m_spline.ClearSpline();
-    m_Unit->m_movementManager.ForceUpdate();
-    m_Unit->m_movementManager.m_spline.SetFacing(o);
-
-    m_Unit->m_movementManager.m_spline.m_splineTrajectoryTime = 0;
-	if(hugearc)
-        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = 250;   // weeee
-	else
-        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = speedZ;
-
-	SetRun();
-	m_runSpeed *= 3;
-
-	AddSpline(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ());
-	AddSpline(x, y, z);
-
-    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.trajectory = true;
-
-	SendMoveToPacket();
-
-	//fix run speed
-	UpdateSpeeds();
 }
 
 void AIInterface::SetReturnPosition()
