@@ -578,8 +578,7 @@ class SERVER_DECL AIInterface : public IUpdatable
     bool MoveDone() const;
         bool CanCreatePath(float x, float y, float z) { return CreatePath(x, y, z, true); }
         void MoveKnockback(float x, float y, float z, float horizontal, float vertical);
-        void MoveJump(float x, float y, float z, float o = 0, bool hugearc = false);
-        void MoveJumpExt(float x, float y, float z, float o, float speedZ, bool hugearc);
+        void MoveJump(float x, float y, float z, float o = 0, float speedZ = 5.0f, bool hugearc = false);
         void MoveTeleport(float x, float y, float z, float o = 0);
         void MoveFalling(float x, float y, float z, float o = 0);
         bool MoveCharge(float x, float y, float z);

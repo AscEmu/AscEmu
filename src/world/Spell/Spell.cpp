@@ -6229,7 +6229,7 @@ void Spell::SpellEffectJumpTarget(uint32 i)
     if (speedZ <= 0.0f)
         u_caster->GetAIInterface()->MoveJump(x, y, z, o, GetSpellInfo()->Effect[i] == 145);
     else
-        u_caster->GetAIInterface()->MoveJumpExt(x, y, z, o, speedZ, GetSpellInfo()->Effect[i] == 145);
+        u_caster->GetAIInterface()->MoveJump(x, y, z, o, speedZ, GetSpellInfo()->Effect[i] == 145);
 }
 
 void Spell::SpellEffectJumpBehindTarget(uint32 i)
