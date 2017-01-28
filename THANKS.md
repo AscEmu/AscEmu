@@ -22,5 +22,6 @@ people are awsome:
 - Lectro
 - master312
 - Nupper
+- Sdyessdev (Taft)
 - sanctum32
 - Zyres
