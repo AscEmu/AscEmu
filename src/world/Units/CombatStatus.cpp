@@ -60,7 +60,7 @@ namespace AscEmu { namespace World { namespace Units {
             reinterpret_cast<Player*>(m_unit)->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP);
         }
 
-        for (auto targetGuid: m_attackTargets)
+        for (auto targetGuid : m_attackTargets)
         {
             auto target = map_mgr->GetUnit(targetGuid);
             if (target == nullptr)
@@ -71,6 +71,12 @@ namespace AscEmu { namespace World { namespace Units {
 
             removeAttackTarget(target);
             target->removeAttacker(m_unit);
+
+            if (m_attackTargets.empty())
+            {
+                //Zyres: If it is empty, stop the loop.
+                break;
+            }
         }
     }
 
