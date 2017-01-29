@@ -154,7 +154,7 @@ namespace VMAP
                 const ModelSpawn &spawn = map_iter->second->UniqueEntries[tile->second];
                 if (spawn.flags & MOD_WORLDSPAWN) // WDT spawn, saved as tile 65/65 currently...
                     continue;
-                uint32 nSpawns = static_cast<uint32>(tileEntries.count(tile->first));
+                uint32 nSpawns = tileEntries.count(tile->first);
                 std::stringstream tilefilename;
                 tilefilename.fill('0');
                 tilefilename << iDestDir << '/' << std::setw(3) << map_iter->first << '_';
@@ -217,8 +217,7 @@ namespace VMAP
             return false;
         }
         printf("Read coordinate mapping...\n");
-        uint32 mapID, tileX, tileY;
-        size_t check = 0;
+        uint32 mapID, tileX, tileY, check=0;
         G3D::Vector3 v1, v2;
         ModelSpawn spawn;
         while (!feof(dirf))
@@ -264,7 +263,7 @@ namespace VMAP
         if (!raw_model.Read(modelFilename.c_str()))
             return false;
 
-        uint32 groups = static_cast<uint32>(raw_model.groupsArray.size());
+        uint32 groups = raw_model.groupsArray.size();
         if (groups != 1)
             printf("Warning: '%s' does not seem to be a M2 model!\n", modelFilename.c_str());
 
@@ -281,7 +280,7 @@ namespace VMAP
                 continue;
             }
 
-            uint32 nvectors = static_cast<uint32>(vertices.size());
+            uint32 nvectors = vertices.size();
             for (uint32 i = 0; i < nvectors; ++i)
             {
                 Vector3 v = modelPosition.transform(vertices[i]);
@@ -325,7 +324,7 @@ namespace VMAP
         {
             std::vector<GroupModel> groupsArray;
 
-            uint32 groups = static_cast<uint32>(raw_model.groupsArray.size());
+            uint32 groups = raw_model.groupsArray.size();
             for (uint32 g = 0; g < groups; ++g)
             {
                 GroupModel_Raw& raw_group = raw_model.groupsArray[g];
@@ -381,7 +380,7 @@ namespace VMAP
             {
                 std::vector<Vector3>& vertices = raw_model.groupsArray[g].vertexArray;
 
-                uint32 nvectors = static_cast<uint32>(vertices.size());
+                uint32 nvectors = vertices.size();
                 for (uint32 i = 0; i < nvectors; ++i)
                 {
                     Vector3& v = vertices[i];

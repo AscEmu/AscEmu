@@ -113,7 +113,7 @@ void BIH::subdivide(int left, int right, std::vector<uint32> &tempTree, buildDat
             if (1.3f * nodeNewW < nodeBoxW)
             {
                 stats.updateBVH2();
-                int nextIndex = static_cast<int>(tempTree.size());
+                int nextIndex = tempTree.size();
                 // allocate child
                 tempTree.push_back(0);
                 tempTree.push_back(0);
@@ -177,7 +177,7 @@ void BIH::subdivide(int left, int right, std::vector<uint32> &tempTree, buildDat
             {
                 // second time through - lets create the previous split
                 // since it produced empty space
-                int nextIndex = static_cast<int>(tempTree.size());
+                int nextIndex = tempTree.size();
                 // allocate child node
                 tempTree.push_back(0);
                 tempTree.push_back(0);
@@ -207,7 +207,7 @@ void BIH::subdivide(int left, int right, std::vector<uint32> &tempTree, buildDat
         }
     }
     // compute index of child nodes
-    int nextIndex = static_cast<int>(tempTree.size());
+    int nextIndex = tempTree.size();
     // allocate left node
     int nl = right - left + 1;
     int nr = rightOrig - (right + 1) + 1;
@@ -247,8 +247,8 @@ void BIH::subdivide(int left, int right, std::vector<uint32> &tempTree, buildDat
 
 bool BIH::writeToFile(FILE* wf) const
 {
-    size_t treeSize = tree.size();
-    size_t check=0, count;
+    uint32 treeSize = tree.size();
+    uint32 check = 0, count;
     check += fwrite(&bounds.low(), sizeof(float), 3, wf);
     check += fwrite(&bounds.high(), sizeof(float), 3, wf);
     check += fwrite(&treeSize, sizeof(uint32), 1, wf);
@@ -263,7 +263,7 @@ bool BIH::readFromFile(FILE* rf)
 {
     uint32 treeSize;
     G3D::Vector3 lo, hi;
-    size_t check=0, count=0;
+    uint32 check = 0, count = 0;
     check += fread(&lo, sizeof(float), 3, rf);
     check += fread(&hi, sizeof(float), 3, rf);
     bounds = G3D::AABox(lo, hi);
