@@ -114,9 +114,11 @@ bool Unit::hasAttacker(uint64_t guid) const
 void Unit::removeAttacker(Unit* attacker)
 {
     ASSERT(attacker != nullptr);
-    ASSERT(IsInWorld());
-
-    m_combatStatus.removeAttacker(attacker);
+    //ASSERT(IsInWorld());    //Zyres: unit is not in world. remove attack target only for units in world
+    if (this->IsInWorld())
+    {
+        m_combatStatus.removeAttacker(attacker);
+    }
 }
 
 void Unit::removeAttacker(uint64_t guid)
@@ -127,9 +129,11 @@ void Unit::removeAttacker(uint64_t guid)
 void Unit::removeAttackTarget(Unit* attackTarget)
 {
     ASSERT(attackTarget != nullptr);
-    ASSERT(IsInWorld());
-
-    m_combatStatus.removeAttackTarget(attackTarget);
+    //ASSERT(IsInWorld());    //Zyres: unit is not in world. remove attack target only for units in world
+    if (this->IsInWorld())
+    {
+        m_combatStatus.removeAttackTarget(attackTarget);
+    }
 }
 
 void Unit::updateCombatStatus()
