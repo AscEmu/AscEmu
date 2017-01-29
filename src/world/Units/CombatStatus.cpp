@@ -165,58 +165,62 @@ namespace AscEmu { namespace World { namespace Units {
     void CombatStatus::removeAllHealersAndHealTargets()
     {
         auto map_mgr = m_unit->GetMapMgr();
-        ASSERT(map_mgr != nullptr);
-
-        for (auto healTargetGuid: m_healTargets)
+        //ASSERT(map_mgr != nullptr);   //Zyres: we despawn units if they are dead. map_mgr is always nullptr on despawn
+        if (map_mgr != nullptr)
         {
-            auto player = map_mgr->GetPlayer(healTargetGuid);
-            if (player != nullptr)
+            for (auto healTargetGuid : m_healTargets)
             {
-                player->removeHealer(m_unit);
+                auto player = map_mgr->GetPlayer(healTargetGuid);
+                if (player != nullptr)
+                {
+                    player->removeHealer(m_unit);
+                }
             }
-        }
 
-        for (auto healerGuid: m_healers)
-        {
-            auto player = map_mgr->GetPlayer(healerGuid);
-            if (player != nullptr)
+            for (auto healerGuid : m_healers)
             {
-                player->removeHealTarget(m_unit);
+                auto player = map_mgr->GetPlayer(healerGuid);
+                if (player != nullptr)
+                {
+                    player->removeHealTarget(m_unit);
+                }
             }
-        }
 
-        m_healTargets.clear();
-        m_healers.clear();
-        update();
+            m_healTargets.clear();
+            m_healers.clear();
+            update();
+        }
     }
 
     void CombatStatus::removeAllAttackersAndAttackTargets()
     {
         auto map_mgr = m_unit->GetMapMgr();
-        ASSERT(map_mgr != nullptr);
-
-        for (auto attackTargetGuid: m_attackTargets)
+        //ASSERT(map_mgr != nullptr);   //Zyres: we despawn units if they are dead. map_mgr is always nullptr on despawn
+        if (map_mgr != nullptr)
         {
-            auto attackTarget = map_mgr->GetUnit(attackTargetGuid);
-            if (attackTarget != nullptr)
+            for (auto attackTargetGuid : m_attackTargets)
             {
-                attackTarget->removeAttacker(m_unit);
+                auto attackTarget = map_mgr->GetUnit(attackTargetGuid);
+                if (attackTarget != nullptr)
+                {
+                    attackTarget->removeAttacker(m_unit);
+                }
             }
-        }
 
-        for (auto attackerGuid: m_attackers)
-        {
-            auto attacker = map_mgr->GetUnit(attackerGuid);
-            if (attacker != nullptr)
+            for (auto attackerGuid : m_attackers)
             {
-                attacker->removeAttackTarget(m_unit);
+                auto attacker = map_mgr->GetUnit(attackerGuid);
+                if (attacker != nullptr)
+                {
+                    attacker->removeAttackTarget(m_unit);
+                }
             }
-        }
 
-        m_attackers.clear();
-        m_attackTargets.clear();
-        clearPrimaryAttackTarget();
-        update();
+            m_attackers.clear();
+            m_attackTargets.clear();
+            clearPrimaryAttackTarget();
+            update();
+        }
     }
 
     void CombatStatus::clearPrimaryAttackTarget()
