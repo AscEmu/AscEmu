@@ -80,7 +80,7 @@ class ZephyrGossipScript : public Arcemu::Gossip::Script
                 //plr->SafeTeleport( 1, 0, -8170.441406f, -4751.321777f, 33.457771f, 5.136f);
                 static_cast<Creature*>(pObject)->CastSpell(plr, sSpellCustomizations.GetSpellInfo(37778), true);
             else
-                plr->BroadcastMessage(plr->GetSession()->LocalizedWorldSrv(Worldstring::SHATT_ZEPH_KOT)); // Dunno what the correct text is ^^
+                plr->BroadcastMessage(plr->GetSession()->LocalizedWorldSrv(ServerString::SHATT_ZEPH_KOT)); // Dunno what the correct text is ^^
             Arcemu::Gossip::Menu::Complete(plr);
         }
 

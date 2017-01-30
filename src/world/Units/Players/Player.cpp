@@ -8294,7 +8294,7 @@ void Player::EventTeleportTaxi(uint32 mapid, float x, float y, float z)
     {
         WorldPacket msg(CMSG_SERVER_BROADCAST, 50);
         msg << uint32(3);
-        msg << GetSession()->LocalizedWorldSrv(Worldstring::SS_MUST_HAVE_BC);
+        msg << GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_BC);
         msg << uint8(0);
         m_session->SendPacket(&msg);
 
@@ -8454,14 +8454,14 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     if (mi && mi->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
     {
         WorldPacket msg(SMSG_MOTD, 50); // Need to be replaced with correct one !
-        msg << uint32(3) << GetSession()->LocalizedWorldSrv(Worldstring::SS_MUST_HAVE_BC) << uint8(0);
+        msg << uint32(3) << GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_BC) << uint8(0);
         m_session->SendPacket(&msg);
         return false;
     }
     if (mi && mi->flags & WMI_INSTANCE_XPACK_02 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
     {
         WorldPacket msg(SMSG_MOTD, 50); // Need to be replaced with correct one !
-        msg << uint32(3) << GetSession()->LocalizedWorldSrv(Worldstring::SS_MUST_HAVE_WOTLK) << uint8(0);
+        msg << uint32(3) << GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_WOTLK) << uint8(0);
         m_session->SendPacket(&msg);
         return false;
     }
@@ -9069,8 +9069,8 @@ void Player::CompleteLoading()
     if (IsBanned())
     {
         Kick(10000);
-        BroadcastMessage(GetSession()->LocalizedWorldSrv(Worldstring::SS_NOT_ALLOWED_TO_PLAY));
-        BroadcastMessage(GetSession()->LocalizedWorldSrv(Worldstring::SS_BANNED_FOR_TIME), GetBanReason().c_str());
+        BroadcastMessage(GetSession()->LocalizedWorldSrv(ServerString::SS_NOT_ALLOWED_TO_PLAY));
+        BroadcastMessage(GetSession()->LocalizedWorldSrv(ServerString::SS_BANNED_FOR_TIME), GetBanReason().c_str());
     }
 
     if (m_playerInfo->m_Group)
@@ -9122,14 +9122,14 @@ void Player::OnWorldPortAck()
         if (pMapinfo->HasFlag(WMI_INSTANCE_WELCOME) && GetMapMgr())
         {
             std::string welcome_msg;
-            welcome_msg = std::string(GetSession()->LocalizedWorldSrv(Worldstring::SS_INSTANCE_WELCOME)) + " ";
+            welcome_msg = std::string(GetSession()->LocalizedWorldSrv(ServerString::SS_INSTANCE_WELCOME)) + " ";
             welcome_msg += std::string(GetSession()->LocalizedMapName(pMapinfo->mapid));
             welcome_msg += ". ";
             if (pMapinfo->type != INSTANCE_NONRAID && !(pMapinfo->type == INSTANCE_MULTIMODE && iInstanceType >= MODE_HEROIC) && m_mapMgr->pInstance)
             {
                 /*welcome_msg += "This instance is scheduled to reset on ";
                 welcome_msg += asctime(localtime(&m_mapMgr->pInstance->m_expiration));*/
-                welcome_msg += std::string(GetSession()->LocalizedWorldSrv(Worldstring::SS_INSTANCE_RESET_INF)) + " ";
+                welcome_msg += std::string(GetSession()->LocalizedWorldSrv(ServerString::SS_INSTANCE_RESET_INF)) + " ";
                 welcome_msg += Util::GetDateTimeStringFromTimeStamp((uint32)m_mapMgr->pInstance->m_expiration);
             }
             sChatHandler.SystemMessage(m_session, welcome_msg.c_str());
@@ -9964,7 +9964,7 @@ void Player::RemoveFromBattlegroundQueue()
         return;
 
     m_pendingBattleground->RemovePendingPlayer(this);
-    sChatHandler.SystemMessage(m_session, GetSession()->LocalizedWorldSrv(Worldstring::SS_BG_REMOVE_QUEUE_INF));
+    sChatHandler.SystemMessage(m_session, GetSession()->LocalizedWorldSrv(ServerString::SS_BG_REMOVE_QUEUE_INF));
 }
 
 void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)

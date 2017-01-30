@@ -1073,7 +1073,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
 
         if (_player->m_arenaTeams[pCharter->CharterType - 1] != NULL)
         {
-            sChatHandler.SystemMessage(this, LocalizedWorldSrv(Worldstring::SS_ALREADY_ARENA_TEAM));
+            sChatHandler.SystemMessage(this, LocalizedWorldSrv(ServerString::SS_ALREADY_ARENA_TEAM));
             return;
         }
 
