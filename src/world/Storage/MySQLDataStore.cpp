@@ -856,13 +856,13 @@ void MySQLDataStore::LoadQuestPropertiesTable()
                                                         "RequiredTradeskillValue, RequiredRepFaction, RequiredRepValue, LimitTime, SpecialFlags, PrevQuestId, NextQuestId, srcItem, "
         //                                                     18        19     20         21            22              23          24          25               26
                                                         "SrcItemCount, Title, Details, Objectives, CompletionText, IncompleteText, EndText, ObjectiveText1, ObjectiveText2, "
-        //                                                     26               27           28          29           30          31         32           33         34
+        //                                                     27               28           29          30           31          32         33           34         35
                                                         "ObjectiveText3, ObjectiveText4, ReqItemId1, ReqItemId2, ReqItemId3, ReqItemId4, ReqItemId5, ReqItemId6, ReqItemCount1, "
-        //                                                     35             36            37              38             39              40                 41
+        //                                                     36             37            38              39             40              41                 42
                                                         "ReqItemCount2, ReqItemCount3, ReqItemCount4, ReqItemCount5, ReqItemCount6, ReqKillMobOrGOId1, ReqKillMobOrGOId2, "
-        //                                                     42                   43                    44                  45                      46                  47
+        //                                                     43                   44                    45                  46                      47                  48
                                                         "ReqKillMobOrGOId3, ReqKillMobOrGOId4, ReqKillMobOrGOCount1, ReqKillMobOrGOCount2, ReqKillMobOrGOCount3, ReqKillMobOrGOCount4, "
-        //                                                     48                 49              50              51              52           53           54           55
+        //                                                     49                 50              51              52              53           54           55           56
                                                         "ReqCastSpellId1, ReqCastSpellId2, ReqCastSpellId3, ReqCastSpellId4, ReqEmoteId1, ReqEmoteId2, ReqEmoteId3, ReqEmoteId4, "
         //                                                     57                  58                59               60                61                 62                63
                                                         "RewChoiceItemId1, RewChoiceItemId2, RewChoiceItemId3, RewChoiceItemId4, RewChoiceItemId5, RewChoiceItemId6, RewChoiceItemCount1, "
@@ -961,16 +961,16 @@ void MySQLDataStore::LoadQuestPropertiesTable()
 
             for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
             {
-                questInfo.required_item[i] = fields[28 + i].GetUInt32();
-                questInfo.required_itemcount[i] = fields[34 + i].GetUInt32();
+                questInfo.required_item[i] = fields[29 + i].GetUInt32();
+                questInfo.required_itemcount[i] = fields[35 + i].GetUInt32();
             }
 
             for (uint8 i = 0; i < 4; ++i)
             {
-                questInfo.required_mob_or_go[i] = fields[40 + i].GetInt32();
-                questInfo.required_mob_or_go_count[i] = fields[44 + i].GetUInt32();
-                questInfo.required_spell[i] = fields[48 + i].GetUInt32();
-                questInfo.required_emote[i] = fields[52 + i].GetUInt32();
+                questInfo.required_mob_or_go[i] = fields[41 + i].GetInt32();
+                questInfo.required_mob_or_go_count[i] = fields[45 + i].GetUInt32();
+                questInfo.required_spell[i] = fields[49 + i].GetUInt32();
+                questInfo.required_emote[i] = fields[53 + i].GetUInt32();
             }
 
             for (uint8 i = 0; i < 6; ++i)
