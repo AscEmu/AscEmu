@@ -26,4 +26,4 @@ INSERT INTO `npc_script_text` (`entry`, `text`, `creature_entry`, `type`, `sound
 --
 -- Update world_db_version
 --
-UPDATE `world_db_version` SET `LastUpdate`='2017-01-29_01_scripttext' WHERE  `LastUpdate`='2017-01-30_02_misc';
+UPDATE `world_db_version` SET `LastUpdate`='2017-01-31_01_scripttext' WHERE  `LastUpdate`='2017-01-30_02_misc';
