@@ -387,15 +387,15 @@ class IckAI : MoonScriptBossAI
         {
             switch (RandomUInt(2))
             {
-            case 0:
-                mPursueTimer = AddTimer(1000);
-                break;
-            case 1:
-                mPoisonNovaTimer = AddTimer(1000);
-                break;
-            case 2:
-                mExplosionBarageTimer = AddTimer(1000);
-                break;
+                case 0:
+                    mPursueTimer = AddTimer(1000);
+                    break;
+                case 1:
+                    mPoisonNovaTimer = AddTimer(1000);
+                    break;
+                case 2:
+                    mExplosionBarageTimer = AddTimer(1000);
+                    break;
             }
             ResetTimer(mSpecialAttackTimer, 28000);
         }
@@ -417,15 +417,15 @@ class IckAI : MoonScriptBossAI
             {
                 switch (RandomUInt(2))
                 {
-                case 0:
-                    mKrickAI->Emote(8771);//Chase 1
-                    break;
-                case 1:
-                    mKrickAI->Emote(8772);//Chase 2
-                    break;
-                case 2:
-                    mKrickAI->Emote(8773);//Chase 3
-                    break;
+                    case 0:
+                        mKrickAI->Emote(8771);//Chase 1
+                        break;
+                    case 1:
+                        mKrickAI->Emote(8772);//Chase 2
+                        break;
+                    case 2:
+                        mKrickAI->Emote(8773);//Chase 3
+                        break;
                 }
             }
 
@@ -559,9 +559,9 @@ class KrickAI : MoonScriptBossAI
                 _unit->CastSpell(_unit, SPELL_STRANGULATE, true);
                 _unit->Root();
                 ClearHateList();
-                
-                //MoonScriptCreatureAI* JainaOrSylvanas = SpawnCreature(CN_SYLVANAS_WINDRUNNER, false);
-                MoonScriptCreatureAI* JainaOrSylvanas = SpawnCreature(CN_JAINA_PROUDMOORE, false);
+               
+                //JainaOrSylvanas = SpawnCreature(CN_SYLVANAS_WINDRUNNER, false);
+                JainaOrSylvanas = SpawnCreature(CN_JAINA_PROUDMOORE, false);
                 break;
             case 1:
                 Emote(8775);
@@ -632,6 +632,7 @@ class KrickAI : MoonScriptBossAI
 
     MoonInstanceScript* mInstance;
     MoonScriptCreatureAI* mIckAI;
+    MoonScriptCreatureAI* JainaOrSylvanas;
     SpellDesc* mBarrageSummon;
     uint8_t sequence;
     int32_t mOutroTimer;
@@ -642,34 +643,32 @@ class KrickAI : MoonScriptBossAI
 // Barrage Spell Creature
 class BarrageAI : public MoonScriptBossAI
 {
-public:
-
-    MOONSCRIPT_FACTORY_FUNCTION(BarrageAI, MoonScriptBossAI);
-    BarrageAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
-    {
-        _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-        _unit->CastSpell(_unit, SPELL_EXPLODING_ORB, false);
-        _unit->CastSpell(_unit, SPELL_AUTO_GROW, false);
-
-        // Invisibility Hack
-        _unit->SetDisplayId(11686);
-
-        // AIUpdate
-        RegisterAIUpdateEvent(500);
-    }
-
-    void AIUpdate()
-    {
-        if (_unit->HasAura(SPELL_HASTY_GROW))
+    public:
+        MOONSCRIPT_FACTORY_FUNCTION(BarrageAI, MoonScriptBossAI);
+        BarrageAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
         {
-            if (_unit->GetAuraStackCount(SPELL_HASTY_GROW) >= 15)
+            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
+            _unit->CastSpell(_unit, SPELL_EXPLODING_ORB, false);
+            _unit->CastSpell(_unit, SPELL_AUTO_GROW, false);
+
+            // Invisibility Hack
+            _unit->SetDisplayId(11686);
+
+            // AIUpdate
+            RegisterAIUpdateEvent(500);
+        }
+
+        void AIUpdate()
+        {
+            if (_unit->HasAura(SPELL_HASTY_GROW))
             {
-                _unit->CastSpell(_unit, SPELL_EXPLOSIVE_BARRAGE_DAMAGE, true);
-                _unit->Despawn(100, 0);
+                if (_unit->GetAuraStackCount(SPELL_HASTY_GROW) >= 15)
+                {
+                    _unit->CastSpell(_unit, SPELL_EXPLOSIVE_BARRAGE_DAMAGE, true);
+                    _unit->Despawn(100, 0);
+                }
             }
         }
-    }
-
 };
 
 // Scourgelord Tyrannus and Rimefang

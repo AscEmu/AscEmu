@@ -679,48 +679,48 @@ EmoteDesc* MoonScriptCreatureAI::AddEmote(EventType pEventType, const char* pTex
     return NewEmote;
 }
 
-EmoteDesc* MoonScriptCreatureAI::AddEmote(EventType pEventType, uint32 scripttext)
+EmoteDesc* MoonScriptCreatureAI::AddEmote(EventType pEventType, uint32_t scripttext)
 {
-    EmoteDesc* NewEmote = NULL;
+    EmoteDesc* NewEmote = nullptr;
     NpcScriptText const* ct = sMySQLStore.GetNpcScriptText(scripttext);
     TextType pType;
 
-    switch (ct->type)
-    {
-    case CHAT_MSG_SAY:
-        pType = Text_Say;
-        break;
-    case CHAT_MSG_MONSTER_YELL:
-        pType = Text_Yell;
-        break;
-    case CHAT_MSG_TEXT_EMOTE:
-        pType = Text_Emote;
-        break;
-    default:
-        LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::AddEmote() : Invalid Message Type!");
-        break;
-    }
-
     if (ct != nullptr)
     {
+        switch (ct->type)
+        {
+            case CHAT_MSG_SAY:
+                pType = Text_Say;
+                break;
+            case CHAT_MSG_MONSTER_YELL:
+                pType = Text_Yell;
+                break;
+            case CHAT_MSG_TEXT_EMOTE:
+                pType = Text_Emote;
+                break;
+            default:
+                LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::AddEmote() : Invalid Message Type: %u !", ct->type);
+                break;
+        }
+    
         NewEmote = new EmoteDesc(ct->text.c_str(), pType, ct->sound);
         switch (pEventType)
         {
-        case Event_OnCombatStart:
-            mOnCombatStartEmotes.push_back(NewEmote);
-            break;
-        case Event_OnTargetDied:
-            mOnTargetDiedEmotes.push_back(NewEmote);
-            break;
-        case Event_OnDied:
-            mOnDiedEmotes.push_back(NewEmote);
-            break;
-        case Event_OnTaunt:
-            mOnTauntEmotes.push_back(NewEmote);
-            break;
-        default:
-            LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::AddEmote() : Invalid event type!");
-            break;
+            case Event_OnCombatStart:
+                mOnCombatStartEmotes.push_back(NewEmote);
+                break;
+            case Event_OnTargetDied:
+                mOnTargetDiedEmotes.push_back(NewEmote);
+                break;
+            case Event_OnDied:
+                mOnDiedEmotes.push_back(NewEmote);
+                break;
+            case Event_OnTaunt:
+                mOnTauntEmotes.push_back(NewEmote);
+                break;
+            default:
+                LogDebugFlag(LF_SCRIPT_MGR, "MoonScriptCreatureAI::AddEmote() : Invalid event type: %u !", pEventType);
+                break;
         }
     }
     return NewEmote;
@@ -798,7 +798,7 @@ void MoonScriptCreatureAI::Emote(const char* pText, TextType pType, uint32 pSoun
     if (pSoundId > 0) _unit->PlaySoundToSet(pSoundId);
 }
 
-void MoonScriptCreatureAI::Emote(uint32 scripttext)
+void MoonScriptCreatureAI::Emote(uint32_t scripttext)
 {
     _unit->SendScriptTextChatMessage(scripttext);
 }
