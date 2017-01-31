@@ -184,7 +184,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
             if (GameObject * pObject = GetNearestGameObject(401006))	//forgemaster's anvil (TEMP)
                 _unit->SetFacing(_unit->calcRadAngle(_unit->GetPositionX(), _unit->GetPositionY(), pObject->GetPositionX(), pObject->GetPositionY()));
 
-            if(IsHeroic())
+            if (IsHeroic())
                 _unit->CastSpell(_unit, H_SPELL_FORGE_BLADE, false);
             else
                 _unit->CastSpell(_unit, SPELL_FROZEBLADE, false);
@@ -252,10 +252,10 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
     SpellDesc* mSaronite;
     SpellDesc* mChllingWave;
     SpellDesc* mDeepFreeze;
-    int32 mSaroniteTimer;
-    int32 mPermafrostTimer;
-    int32 mChllingWaveTimer;
-    int32 mDeepFreezeTimer;
+    int32_t mSaroniteTimer;
+    int32_t mPermafrostTimer;
+    int32_t mChllingWaveTimer;
+    int32_t mDeepFreezeTimer;
     MoonInstanceScript* mInstance;
 };
 
@@ -457,11 +457,11 @@ class IckAI : MoonScriptBossAI
 
             mExplosionBarageEndTimer = AddTimer(20000);
 
-            RemoveTimer(mExplosionBarageTimer);
             ResetTimer(mSpecialAttackTimer, GetTimer(mSpecialAttackTimer) + 20000);
             ResetTimer(mMightyKickTimer, GetTimer(mMightyKickTimer) + 20000);
             ResetTimer(mToxicWasteTimer, GetTimer(mToxicWasteTimer) + 20000);
             ResetTimer(mShadowBoltTimer, GetTimer(mShadowBoltTimer) + 20000);
+            RemoveTimer(mExplosionBarageTimer);
         }
 
         // Explosive Barage End
@@ -474,14 +474,14 @@ class IckAI : MoonScriptBossAI
 
     MoonInstanceScript* mInstance;
     MoonScriptCreatureAI* mKrickAI;
-    int32 mMightyKickTimer;
-    int32 mPursueTimer;
-    int32 mPoisonNovaTimer;
-    int32 mExplosionBarageTimer;
-    int32 mExplosionBarageEndTimer;
-    int32 mToxicWasteTimer;
-    int32 mShadowBoltTimer;
-    int32 mSpecialAttackTimer;
+    int32_t mMightyKickTimer;
+    int32_t mPursueTimer;
+    int32_t mPoisonNovaTimer;
+    int32_t mExplosionBarageTimer;
+    int32_t mExplosionBarageEndTimer;
+    int32_t mToxicWasteTimer;
+    int32_t mShadowBoltTimer;
+    int32_t mSpecialAttackTimer;
     SpellDesc* mMightyKick;
     SpellDesc* mPursue;
     SpellDesc* mPoisonNova;
@@ -507,11 +507,18 @@ class KrickAI : MoonScriptBossAI
 
         // Outro
         sequence = 0;
+
+        // Ick
+        mIckAI = nullptr;
     }
 
     void OnCombatStart(Unit* pTarget)
     {
+        // Set Battle
         Phase = BATTLE;
+
+        // Get Ick
+        mIckAI = static_cast<MoonScriptCreatureAI*>(GetNearestCreature(CN_ICK));
 
         // Spell Timers
         mBarrageTimer = AddTimer(2500); // Timer Quessed
@@ -520,6 +527,9 @@ class KrickAI : MoonScriptBossAI
 
     void AIUpdate()
     {
+        if (!mIckAI->IsAlive())
+            Phase = OUTRO;
+
         if (Phase == BATTLE)
         {
             if (_unit->HasAura(SPELL_EXPLOSIVE_BARRAGE_KRICK))
@@ -540,26 +550,28 @@ class KrickAI : MoonScriptBossAI
     // Only Support for Alliance need to Define which Team is in The Instance!
     void Outro()
     {
-        if(!GetTimer(mOutroTimer))
+        if (!GetTimer(mOutroTimer))
             mOutroTimer = AddTimer(2000);
-
-        if (IsTimerFinished(mOutroTimer))
-            sequence++;
-
-        //MoonScriptCreatureAI* JainaOrSylvanas = SpawnCreature(CN_SYLVANAS_WINDRUNNER, false);
-        MoonScriptCreatureAI* JainaOrSylvanas = SpawnCreature(CN_JAINA_PROUDMOORE, false);
 
         switch (sequence)
         {
+            case 0:
+                _unit->CastSpell(_unit, SPELL_STRANGULATE, true);
+                _unit->Root();
+                ClearHateList();
+                
+                //MoonScriptCreatureAI* JainaOrSylvanas = SpawnCreature(CN_SYLVANAS_WINDRUNNER, false);
+                MoonScriptCreatureAI* JainaOrSylvanas = SpawnCreature(CN_JAINA_PROUDMOORE, false);
+                break;
             case 1:
                 Emote(8775);
                 ResetTimer(mOutroTimer, 14000);
                 break;
             case 2:
                 //if ( == TEAM_ALLIANCE)
-                    Emote(8776); // SAY_JAYNA_OUTRO_2
+                    JainaOrSylvanas->Emote(8776); // SAY_JAYNA_OUTRO_2
                 //else
-                //    Emote(8777); // SAY_SYLVANAS_OUTRO_2
+                //    JainaOrSylvanas->Emote(8777); // SAY_SYLVANAS_OUTRO_2
                 
                 ResetTimer(mOutroTimer, 8500);
                 break;
@@ -570,9 +582,9 @@ class KrickAI : MoonScriptBossAI
                 break;
             case 4:
                 //if ( == TEAM_ALLIANCE)
-                    Emote(8779); // SAY_JAYNA_OUTRO_4
+                    JainaOrSylvanas->Emote(8779); // SAY_JAYNA_OUTRO_4
                 //else
-                 //   Emote(8780); // SAY_SYLVANAS_OUTRO_4
+                 //   JainaOrSylvanas->Emote(8780); // SAY_SYLVANAS_OUTRO_4
 
                 ResetTimer(mOutroTimer, 8000);
                 break;
@@ -602,9 +614,9 @@ class KrickAI : MoonScriptBossAI
                 break;
             case 10:
                 //if ( == TEAM_ALLIANCE)
-                    Emote(8785); // SAY_JAYNA_OUTRO_10
+                    JainaOrSylvanas->Emote(8785); // SAY_JAYNA_OUTRO_10
                 //else
-                //    Emote(8786); // SAY_SYLVANAS_OUTRO_10
+                //    JainaOrSylvanas->Emote(8786); // SAY_SYLVANAS_OUTRO_10
 
                 ResetTimer(mOutroTimer, 8000);
                 break;
@@ -613,13 +625,17 @@ class KrickAI : MoonScriptBossAI
                 RemoveTimer(mOutroTimer);
                 break;
         }
+
+        if (IsTimerFinished(mOutroTimer))
+            sequence++;
     }
 
     MoonInstanceScript* mInstance;
+    MoonScriptCreatureAI* mIckAI;
     SpellDesc* mBarrageSummon;
-    uint8 sequence;
-    int32 mOutroTimer;
-    int32 mBarrageTimer;
+    uint8_t sequence;
+    int32_t mOutroTimer;
+    int32_t mBarrageTimer;
     BattlePhases Phase;
 };
 
@@ -645,11 +661,13 @@ public:
     void AIUpdate()
     {
         if (_unit->HasAura(SPELL_HASTY_GROW))
+        {
             if (_unit->GetAuraStackCount(SPELL_HASTY_GROW) >= 15)
             {
                 _unit->CastSpell(_unit, SPELL_EXPLOSIVE_BARRAGE_DAMAGE, true);
                 _unit->Despawn(100, 0);
             }
+        }
     }
 
 };
