@@ -3,10 +3,15 @@
 # set up our project name
 project(world CXX)
 
-include(GameClassic/CMakeLists.txt)
-include(GameBC/CMakeLists.txt)
-include(GameLK/CMakeLists.txt)
-include(GameCata/CMakeLists.txt)
+if (ASCEMU_VERSION STREQUAL "Classic")
+   include(GameClassic/CMakeLists.txt)
+elseif (ASCEMU_VERSION STREQUAL "TBC")
+   include(GameBC/CMakeLists.txt)
+elseif (ASCEMU_VERSION STREQUAL "WotLK")
+   include(GameLK/CMakeLists.txt)
+elseif (ASCEMU_VERSION STREQUAL "Cata")
+   include(GameCata/CMakeLists.txt)
+endif()
 
 include(Chat/CMakeLists.txt)
 include(Chat/Commands/CMakeLists.txt)

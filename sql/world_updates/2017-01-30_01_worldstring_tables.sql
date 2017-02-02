@@ -1,5 +1,5 @@
 --
--- Remove spwns for map 543
+-- Add new worldstring for areatrigger
 --
 INSERT INTO worldstring_tables (entry, text) VALUES ('81', 'You must have the quest, \'%s\' completed to pass through here.');
 

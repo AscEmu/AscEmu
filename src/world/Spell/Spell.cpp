@@ -4090,6 +4090,21 @@ uint8 Spell::CanCast(bool tolerate)
                 }
             }
 
+            // \todo Replace this awful hack with a better solution
+            // Nestlewood Owlkin - Quest 9303
+            if (GetSpellInfo()->Id == 29528 && target->IsCreature() && target->GetEntry() == 16518)
+            {
+                if (target->isRooted())
+                {
+                    return SPELL_FAILED_BAD_TARGETS;
+                }
+                else
+                {
+                    target->SetTargetGUID(p_caster->GetGUID());
+                    return SPELL_FAILED_SUCCESS;
+                }
+
+            }
             ////////////////////////////////////////////////////// Target check spells that are only castable on certain creatures/gameobjects ///////////////
 
             if (m_target_constraint != NULL)
