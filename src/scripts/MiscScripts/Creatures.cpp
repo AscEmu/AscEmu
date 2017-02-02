@@ -437,8 +437,76 @@ class SotaAntiPersonnalCannon : public CreatureAIScript
         }
 };
 
+// Nestlewood Owlkin - Quest 9303
+class NestlewoodOwlkin : public CreatureAIScript
+{
+    public:
+        ADD_CREATURE_FACTORY_FUNCTION(NestlewoodOwlkin);
+        NestlewoodOwlkin(Creature* pCreature) : CreatureAIScript(pCreature)
+        { }
+
+        void AIUpdate()
+        {
+            if (!reset)
+            {
+                if (_unit->HasAura(29528) && !respawn)
+                {
+                    reset = true;
+                    _unit->Root();
+                    RemoveAIUpdateEvent();
+                    GiveKillCredit();
+                }
+            }
+            else
+            {
+                respawn = true;
+                _unit->Unroot();
+                _unit->Despawn(0, 10000);   // respawn delay 10 seconds
+            }
+        }
+
+        void GiveKillCredit()
+        {
+            if (_unit->HasAura(29528))
+            {
+                Player* player = _unit->GetMapMgr()->GetPlayer(_unit->GetTargetGUID());
+                if (player != nullptr)
+                {
+                    if (!player->HasQuest(9303) || player->HasFinishedQuest(9303))
+                        return;
+
+                    QuestLogEntry* quest_entry = player->GetQuestLogForEntry(9303);
+                    if (quest_entry == nullptr)
+                        return;
+
+                    if (quest_entry->GetMobCount(0) < 6)
+                    {
+                        quest_entry->IncrementMobCount(0);
+                        quest_entry->SendUpdateAddKill(0);
+                        quest_entry->UpdatePlayerFields();
+
+                        RegisterAIUpdateEvent(240000);  // update after 4 mins
+                    }
+                }
+            }
+        }
+
+        void OnLoad()
+        {
+            RegisterAIUpdateEvent(4000);
+            reset = false;
+            respawn = false;
+        }
+
+    private:
+
+        bool reset;
+        bool respawn;
+};
+
 void SetupMiscCreatures(ScriptMgr* mgr)
 {
+    mgr->register_creature_script(16518, &NestlewoodOwlkin::Create);
     mgr->register_creature_script(11120, &CrimsonHammersmith::Create);
     mgr->register_creature_script(5894, &Corrupt_Minor_Manifestation_Water_Dead::Create);
     mgr->register_creature_script(3425, &SavannahProwler::Create);
