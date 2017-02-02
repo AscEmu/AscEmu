@@ -561,7 +561,6 @@ class KrickAI : MoonScriptBossAI
         ParentClass::AIUpdate();
     }
 
-    // Only Support for Alliance need to Define which Team is in The Instance!
     void Outro()
     {
         if (IsTimerFinished(mOutroTimer))
@@ -569,15 +568,23 @@ class KrickAI : MoonScriptBossAI
 
         if (!mOutroTimerStarted)
         {
+            GetUnit()->SetPosition(833.19f, 115.79f, 510.0f, 3.42673f, false);
             _unit->CastSpell(_unit, SPELL_STRANGULATE, true);
             _unit->Root();
             ClearHateList();
-            SetCanMove(false);
 
+            SetCanEnterCombat(false);
+
+            // Clear Hatelist dont allow Combat and root the Unit
+            _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
+            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->WipeTargetList();
+            _unit->GetAIInterface()->WipeHateList();
+            
             if (mInstance->GetInstanceTeam() == TEAM_HORDE)
-                JainaOrSylvanas = SpawnCreature(CN_SYLVANAS_WINDRUNNER, false);
+                JainaOrSylvanas = SpawnCreature(CN_SYLVANAS_WINDRUNNER, 816.58f, 111.53f, 510.0f, 0.3825f, false);
             else
-                JainaOrSylvanas = SpawnCreature(CN_JAINA_PROUDMOORE, false);
+                JainaOrSylvanas = SpawnCreature(CN_JAINA_PROUDMOORE, 816.58f, 111.53f, 510.0f, 0.3825f, false);
 
             mOutroTimerStarted = true;
             mOutroTimer = AddTimer(2000);
@@ -588,61 +595,71 @@ class KrickAI : MoonScriptBossAI
             switch (sequence)
             {
                 case 1:              
-                        Emote(8775);
-                        ResetTimer(mOutroTimer, 14000);
+                    Emote(8775);
+                    ResetTimer(mOutroTimer, 14000);
                     break;
                 case 2:
-                    if (mInstance->GetInstanceTeam() == TEAM_ALLIANCE && JainaOrSylvanas)
-                        JainaOrSylvanas->Emote(8776); // SAY_JAYNA_OUTRO_2
-                    else
-                        JainaOrSylvanas->Emote(8777); // SAY_SYLVANAS_OUTRO_2
-                        ResetTimer(mOutroTimer, 8500);
+                    if (JainaOrSylvanas)
+                    {
+                        if (mInstance->GetInstanceTeam() == TEAM_ALLIANCE)
+                            JainaOrSylvanas->Emote(8776); // SAY_JAYNA_OUTRO_2
+                        else
+                            JainaOrSylvanas->Emote(8777); // SAY_SYLVANAS_OUTRO_2
+                    }
+                    ResetTimer(mOutroTimer, 8500);
                     break;
                 case 3:
-                        Emote(8778); // SAY_KRICK_OUTRO_3
-                        ResetTimer(mOutroTimer, 12000);
+                    Emote(8778); // SAY_KRICK_OUTRO_3
+                    ResetTimer(mOutroTimer, 12000);
                     break;
                 case 4:
-                    if (mInstance->GetInstanceTeam() == TEAM_ALLIANCE && JainaOrSylvanas)
-                        JainaOrSylvanas->Emote(8779); // SAY_JAYNA_OUTRO_4
-                    else
-                        JainaOrSylvanas->Emote(8780); // SAY_SYLVANAS_OUTRO_4
-                        ResetTimer(mOutroTimer, 8000);
+                    if (JainaOrSylvanas)
+                    {
+                        if (mInstance->GetInstanceTeam() == TEAM_ALLIANCE)
+                            JainaOrSylvanas->Emote(8779); // SAY_JAYNA_OUTRO_4
+                        else
+                            JainaOrSylvanas->Emote(8780); // SAY_SYLVANAS_OUTRO_4
+                    }
+                    ResetTimer(mOutroTimer, 8000);
                     break;
                 case 5:
-                        Emote(8781); // SAY_KRICK_OUTRO_5
-                        ResetTimer(mOutroTimer, 4000);
+                    Emote(8781); // SAY_KRICK_OUTRO_5
+                    ResetTimer(mOutroTimer, 4000);
                     break;
                 case 6:
-                        // TODO spawn Tyrannus at some distance and MovePoint near-by (flying on rimefang)
-                        // Adjust timer so tyrannus has time to come
-                        ResetTimer(mOutroTimer, 1);
+                    // TODO spawn Tyrannus at some distance and MovePoint near-by (flying on rimefang)
+                    // Adjust timer so tyrannus has time to come
+                    ResetTimer(mOutroTimer, 1);
                     break;
                 case 7:
-                        Emote(8782); // SAY_TYRANNUS_OUTRO_7
-                        ResetTimer(mOutroTimer, 7000);
+                    Emote(8782); // SAY_TYRANNUS_OUTRO_7
+                    ResetTimer(mOutroTimer, 7000);
                     break;
                 case 8:
-                        Emote(8783); // SAY_KRICK_OUTRO_8
-                        ResetTimer(mOutroTimer, 6000);
+                    Emote(8783); // SAY_KRICK_OUTRO_8
+                    ResetTimer(mOutroTimer, 6000);
                     break;
                 case 9:
-                        // tyrannus kills krick
-                        _unit->SetStandState(STANDSTATE_DEAD);
-                        _unit->SetHealth(1);
-                        Emote(8784); // SAY_TYRANNUS_OUTRO_9
-                        ResetTimer(mOutroTimer, 12000);
+                    // tyrannus kills krick
+                    _unit->SetStandState(STANDSTATE_DEAD);
+                    _unit->SetHealth(1);
+                    Emote(8784); // SAY_TYRANNUS_OUTRO_9
+                    ResetTimer(mOutroTimer, 12000);
                     break;
                 case 10:
-                    if (mInstance->GetInstanceTeam() == TEAM_ALLIANCE && JainaOrSylvanas)
-                        JainaOrSylvanas->Emote(8785); // SAY_JAYNA_OUTRO_10
-                    else
-                        JainaOrSylvanas->Emote(8786); // SAY_SYLVANAS_OUTRO_10
-                        ResetTimer(mOutroTimer, 8000);
+                    if (JainaOrSylvanas)
+                    {
+                        if (mInstance->GetInstanceTeam() == TEAM_ALLIANCE && JainaOrSylvanas)
+                            JainaOrSylvanas->Emote(8785); // SAY_JAYNA_OUTRO_10
+                        else
+                            JainaOrSylvanas->Emote(8786); // SAY_SYLVANAS_OUTRO_10
+                    }
+                    ResetTimer(mOutroTimer, 8000);
                     break;
                 case 11:
-                        _unit->Despawn(1, 0);
-                        RemoveTimer(mOutroTimer);
+                    _unit->Despawn(1, 0);
+                    JainaOrSylvanas->Despawn(1, 0);
+                    RemoveTimer(mOutroTimer);
                     break;
             }
         }
@@ -690,6 +707,24 @@ class BarrageAI : public MoonScriptBossAI
         }
 };
 
+class SylvanasAI : public MoonScriptBossAI
+{
+public:
+    MOONSCRIPT_FACTORY_FUNCTION(SylvanasAI, MoonScriptBossAI);
+    SylvanasAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    {
+    }
+};
+
+class JainaAI : public MoonScriptBossAI
+{
+public:
+    MOONSCRIPT_FACTORY_FUNCTION(JainaAI, MoonScriptBossAI);
+    JainaAI(Creature* pCreature) : MoonScriptBossAI(pCreature)
+    {
+    }
+};
+
 // Scourgelord Tyrannus and Rimefang
 
 void SetupPitOfSaron(ScriptMgr* mgr)
@@ -698,5 +733,7 @@ void SetupPitOfSaron(ScriptMgr* mgr)
     mgr->register_creature_script(CN_FORGEMASTER_GARFROST, &ForgemasterGarfrostAI::Create);
     mgr->register_creature_script(CN_ICK, &IckAI::Create);
     mgr->register_creature_script(CN_KRICK, &KrickAI::Create);
-    mgr->register_creature_script(CREATURE_EXPLODING_ORB, &BarrageAI::Create);;
+    mgr->register_creature_script(CREATURE_EXPLODING_ORB, &BarrageAI::Create);
+    mgr->register_creature_script(CN_JAINA_PROUDMOORE, &JainaAI::Create);
+    mgr->register_creature_script(CN_SYLVANAS_WINDRUNNER, &SylvanasAI::Create);
 }
