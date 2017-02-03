@@ -59,7 +59,7 @@ class LogonConsole : public Singleton < LogonConsole >
         void ProcessQuit(int delay);
         void CancelShutdown(char* str);
 
-        // help | ?
+        // Console command: help | ?
         void TranslateHelp(char* str);
         void ProcessHelp(char* command);
 
@@ -70,7 +70,7 @@ class LogonConsole : public Singleton < LogonConsole >
 
         void Info(char* str);
 
-        //AccountHandling
+        // AccountHandling
         void AccountCreate(char* str);
         void AccountDelete(char* str);
         void AccountSetGm(char* str);

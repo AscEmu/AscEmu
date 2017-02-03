@@ -22,7 +22,6 @@
 
 initialiseSingleton(LogonConsole);
 
-
 void LogonConsole::TranslateRehash(char* str)
 {
     LogDefault("rehashing config file...");
@@ -111,10 +110,10 @@ bool LogonConsoleThread::run()
     sLogonConsole._thread = NULL;
     return true;
 }
-
-//------------------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////
 // Protected methods:
-//------------------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////
+
 // Process one command
 #define MAX_CONSOLE_INPUT 80
 void LogonConsole::ProcessCmd(char* cmd)
@@ -186,8 +185,10 @@ void LogonConsole::ProcessQuit(int delay)
 {
     mrunning.SetVal(false);
 }
-//------------------------------------------------------------------------------
-// help | ?
+
+///////////////////////////////////////////////////////////////////////////////
+// Console commands - help | ?
+///////////////////////////////////////////////////////////////////////////////
 void LogonConsole::TranslateHelp(char* str)
 {
     ProcessHelp(NULL);
@@ -404,8 +405,8 @@ void LogonConsole::AccountChangePassword(char* str)
 
         if (!new_pass_query)
         {
-            //The query is already done, don't know why we are here. \todo check sLogonSQL query handling.
-            //std::cout << "Can't update the password. Abort." << std::endl;
+            // The query is already done, don't know why we are here. \todo check sLogonSQL query handling.
+            // std::cout << "Can't update the password. Abort." << std::endl;
             return;
         }
 
@@ -445,8 +446,6 @@ void LogonConsole::checkAccountName(std::string name, uint8 type)
         } break;
     }
 }
-
-//------------------------------------------------------------------------------
 
 LogonConsoleThread::LogonConsoleThread()
 {

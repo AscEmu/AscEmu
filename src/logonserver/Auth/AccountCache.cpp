@@ -46,7 +46,7 @@ void AccountMgr::ReloadAccounts(bool silent)
             // transform to uppercase
             Util::StringToUpperCase(AccountName);
 
-            //Use private __GetAccount, for locks
+            // Use private __GetAccount, for locks
             acct = __GetAccount(AccountName);
             if (acct == 0)
             {
@@ -108,10 +108,10 @@ void AccountMgr::AddAccount(Field* field)
     acct->Banned = field[5].GetUInt32();
     if ((uint32)UNIXTIME > acct->Banned && acct->Banned != 0 && acct->Banned != 1)   //1 = perm ban?
     {
-        //Accounts should be unbanned once the date is past their set expiry date.
+        // Accounts should be unbanned once the date is past their set expiry date.
         acct->Banned = 0;
-        //me go boom :(
-        //printf("Account %s's ban has expired.\n",acct->UsernamePtr->c_str());
+        // me go boom :(
+        // printf("Account %s's ban has expired.\n",acct->UsernamePtr->c_str());
         sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE acct=%u", acct->AccountId);
     }
     acct->SetGMFlags(GMFlags.c_str());
@@ -131,7 +131,7 @@ void AccountMgr::AddAccount(Field* field)
     acct->Muted = field[7].GetUInt32();
     if ((uint32)UNIXTIME > acct->Muted && acct->Muted != 0 && acct->Muted != 1)   //1 = perm ban?
     {
-        //Accounts should be unbanned once the date is past their set expiry date.
+        // Accounts should be unbanned once the date is past their set expiry date.
         acct->Muted = 0;
         //LOG_DEBUG("Account %s's mute has expired.",acct->UsernamePtr->c_str());
         sLogonSQL->Execute("UPDATE accounts SET muted = 0 WHERE acct=%u", acct->AccountId);
@@ -475,7 +475,7 @@ void InformationCore::SendRealms(AuthSocket* Socket)
     // packet header
     ByteBuffer data(m_realms.size() * 150 + 20);
     data << uint8(0x10);
-    data << uint16(0);      // Size Placeholder
+    data << uint16(0); // Size Placeholder
 
     // dunno what this is..
     data << uint32(0);
@@ -491,7 +491,7 @@ void InformationCore::SendRealms(AuthSocket* Socket)
         if (itr->second->GameBuild == Socket->GetChallenge()->build)
         {
             data << uint8(itr->second->Icon);
-            data << uint8(itr->second->Lock);        // delete when using data << itr->second->Lock;
+            data << uint8(itr->second->Lock); // delete when using data << itr->second->Lock;
             data << uint8(itr->second->flags);
 
             data << itr->second->Name;
@@ -502,12 +502,12 @@ void InformationCore::SendRealms(AuthSocket* Socket)
             it = itr->second->CharacterMap.find(Socket->GetAccountID());
             data << uint8((it == itr->second->CharacterMap.end()) ? 0 : it->second);
             data << uint8(itr->second->TimeZone);
-            data << uint8(GetRealmIdByName(itr->second->Name));        //Realm ID
+            data << uint8(GetRealmIdByName(itr->second->Name)); // Realm ID
         }
         else // send empty packet for other gameserver which not supports client_build
         {
             data << uint8(0);
-            data << uint8(0);        // delete when using data << itr->second->Lock;
+            data << uint8(0); // delete when using data << itr->second->Lock;
             data << uint8(0);
 
             data << "";
@@ -516,7 +516,7 @@ void InformationCore::SendRealms(AuthSocket* Socket)
 
             data << uint8(0);
             data << uint8(0);
-            data << uint8(GetRealmIdByName(itr->second->Name));        //Realm ID
+            data << uint8(GetRealmIdByName(itr->second->Name)); // Realm ID
         }
     }
     data << uint8(0x17);
@@ -547,7 +547,7 @@ void InformationCore::SendRealms(AuthSocket* Socket)
     std::set<LogonCommServerSocket*>::iterator itr1;
 
     // We copy the sockets to a list and call RefreshRealmsPop() from there because if the socket is dead,
-    //then calling the method deletes the socket and removes it from the set corrupting the iterator and causing a crash!
+    // then calling the method deletes the socket and removes it from the set corrupting the iterator and causing a crash!
     for (itr1 = m_serverSockets.begin(); itr1 != m_serverSockets.end(); ++itr1)
     {
         ss.push_back(*itr1);

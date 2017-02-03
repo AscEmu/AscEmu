@@ -19,7 +19,6 @@
 
 #include "LogonStdAfx.h"
 
-
 int main(int argc, char** argv)
 {
 #ifndef WIN32
