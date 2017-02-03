@@ -28,7 +28,7 @@
 #include "../shared/AscemuServerDefines.hpp"
 
 static const char* REQUIRED_CHAR_DB_VERSION = "2016-03-28_01_gm_survey";
-static const char* REQUIRED_WORLD_DB_VERSION = "2017-01-30_02_misc";
+static const char* REQUIRED_WORLD_DB_VERSION = "2017-01-31_01_npc_script_text";
 
 class Master : public Singleton<Master>
 {

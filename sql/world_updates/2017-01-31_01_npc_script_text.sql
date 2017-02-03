@@ -1,3 +1,6 @@
+--
+-- script text for pit of saron
+--
 REPLACE INTO `npc_script_text` (`entry`, `text`, `creature_entry`, `type`, `sound`) VALUES
   (8762, 'That one maybe not so good to eat now, stupied Garfrost! BAD! BAD!', 36494, 14, 16914),
   (8763, 'Will save.. for snack for.. for later!', 36494, 14, 16913),
@@ -28,4 +31,4 @@ REPLACE INTO `npc_script_text` (`entry`, `text`, `creature_entry`, `type`, `soun
 --
 -- Update world_db_version
 --
-UPDATE `world_db_version` SET `LastUpdate`='2017-01-31_01_scripttext' WHERE  `LastUpdate`='2017-01-30_02_misc';
+UPDATE `world_db_version` SET `LastUpdate`='2017-01-31_01_npc_script_text' WHERE  `LastUpdate`='2017-01-30_02_misc';
