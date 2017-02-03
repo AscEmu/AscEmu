@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
 
 # set up project name
 project(lualib C)
@@ -77,13 +77,13 @@ set(headers
 )
 
 if(NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb][Uu][Gg]")
-	add_definitions( -DLUA_USE_APICHECK)
+    add_definitions( -DLUA_USE_APICHECK)
 endif()
 
 add_library(${PROJECT_NAME} STATIC ${sources} ${headers})
 
 if(IS_64BIT AND NOT MSVC)
-   set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY COMPILE_FLAGS "-fPIC")
+    set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY COMPILE_FLAGS "-fPIC")
 endif()
 
 unset(sources)

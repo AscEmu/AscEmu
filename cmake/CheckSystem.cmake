@@ -1,9 +1,9 @@
-# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
 
 #We have our own custom modules that we use. This tells cmakes where to find them.
 set(CMAKE_MODULE_PATH 
-	${CMAKE_MODULE_PATH}
-	${CMAKE_SOURCE_DIR}/cmake/Modules)
+    ${CMAKE_MODULE_PATH}
+    ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 # get git information
 include(${CMAKE_SOURCE_DIR}/cmake/GitRevision.cmake)

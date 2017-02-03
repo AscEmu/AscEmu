@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
 
 file(GLOB_RECURSE sources_Management Management/*.cpp Management/*.h)
 file(GLOB_RECURSE sources_Maps Maps/*.cpp Maps/*.h)

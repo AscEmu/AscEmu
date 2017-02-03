@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
 
 file(GLOB spell_data_sources *.cpp *.h)
 
@@ -7,7 +7,7 @@ set(spell_SRCS
 )
 
 if(NOT WIN32 AND NOT IS_64BIT)
-	add_definitions(-D_FILE_OFFSET_BITS=64)
+    add_definitions(-D_FILE_OFFSET_BITS=64)
 endif()
 
 include_directories(

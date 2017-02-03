@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
 
 if(NOT BUILD_EVENTSCRIPTS)
   message("\tEventScripts was skipped because BUILD_EVENTSCRIPTS is unchecked.")
