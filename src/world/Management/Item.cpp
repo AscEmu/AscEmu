@@ -675,7 +675,7 @@ int32 Item::AddEnchantment(DBC::Structures::SpellItemEnchantmentEntry const* Enc
         /* Only apply the enchantment bonus if we're equipped */
         int16 slot = m_owner->GetItemInterface()->GetInventorySlotByGuid(GetGUID());
         if (slot >= EQUIPMENT_SLOT_START && slot < EQUIPMENT_SLOT_END)
-            ApplyEnchantmentBonus(Slot, APPLY);
+            ApplyEnchantmentBonus(Slot, true);
     }
 
     return Slot;
@@ -691,7 +691,7 @@ void Item::RemoveEnchantment(uint32 EnchantmentSlot)
     m_isDirty = true;
     uint32 Slot = itr->first;
     if (itr->second.BonusApplied)
-        ApplyEnchantmentBonus(EnchantmentSlot, REMOVE);
+        ApplyEnchantmentBonus(EnchantmentSlot, false);
 
     // Unset the item fields.
     SetEnchantmentId(Slot, 0);
@@ -896,7 +896,7 @@ void Item::ApplyEnchantmentBonuses()
     for (itr = Enchantments.begin(); itr != Enchantments.end();)
     {
         itr2 = itr++;
-        ApplyEnchantmentBonus(itr2->first, APPLY);
+        ApplyEnchantmentBonus(itr2->first, true);
     }
 }
 
@@ -906,7 +906,7 @@ void Item::RemoveEnchantmentBonuses()
     for (itr = Enchantments.begin(); itr != Enchantments.end();)
     {
         itr2 = itr++;
-        ApplyEnchantmentBonus(itr2->first, REMOVE);
+        ApplyEnchantmentBonus(itr2->first, false);
     }
 }
 

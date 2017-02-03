@@ -55,7 +55,7 @@ namespace Arcemu
 
 
                 //////////////////////////////////////////////////////////////////////////////////////////
-                /// bool GetVal()
+                /// float GetVal()
                 /// non-threadsafe get operation on the contained value
                 ///
                 /// \param none

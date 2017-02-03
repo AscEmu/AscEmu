@@ -38,88 +38,95 @@ struct EnchantmentInstance
     uint32 RandomSuffix;
 };
 
-const static ItemProf prof[22] = { {4, 2}, {4, 4}, {4, 8}, {4, 16}, {4, 64},
+const static ItemProf prof[22] =
+{
+    {4, 2}, {4, 4}, {4, 8}, {4, 16}, {4, 64},
     {2, 1}, {2, 2}, {2, 4}, {2, 8}, {2, 16}, {2, 32}, {2, 64}, {2, 128}, {2, 256}, {2, 1024}, {2, 8192}, {2, 32768}, {2, 65536}, {2, 131072},
     {2, 262144}, {2, 524288}, {2, 1048576}
 };
 
-const static uint32 arm_skills[7] = { 0,
-                                      SKILL_CLOTH,
-                                      SKILL_LEATHER,
-                                      SKILL_MAIL,
-                                      SKILL_PLATE_MAIL,
-                                      0,
-                                      SKILL_SHIELD
-                                    };
+const static uint32 arm_skills[7] = 
+{
+    0,
+    SKILL_CLOTH,
+    SKILL_LEATHER,
+    SKILL_MAIL,
+    SKILL_PLATE_MAIL,
+    0,
+    SKILL_SHIELD
+};
 
-const static uint32 weap_skills[21] = { SKILL_AXES,
-                                        SKILL_2H_AXES,
-                                        SKILL_BOWS,
-                                        SKILL_GUNS,
-                                        SKILL_MACES,
-                                        SKILL_2H_MACES,
-                                        SKILL_POLEARMS,
-                                        SKILL_SWORDS,
-                                        SKILL_2H_SWORDS,
-                                        0,
-                                        SKILL_STAVES,
-                                        0,
-                                        0,
-                                        SKILL_FIST_WEAPONS,
-                                        0,                      /// 13
-                                        SKILL_DAGGERS,
-                                        SKILL_THROWN,
-                                        SKILL_ASSASSINATION,
-                                        SKILL_CROSSBOWS,
-                                        SKILL_WANDS,
-                                        SKILL_FISHING
-                                      };
+const static uint32 weap_skills[21] =
+{
+    SKILL_AXES,
+    SKILL_2H_AXES,
+    SKILL_BOWS,
+    SKILL_GUNS,
+    SKILL_MACES,
+    SKILL_2H_MACES,
+    SKILL_POLEARMS,
+    SKILL_SWORDS,
+    SKILL_2H_SWORDS,
+    0,
+    SKILL_STAVES,
+    0,
+    0,
+    SKILL_FIST_WEAPONS,
+    0, // 13
+    SKILL_DAGGERS,
+    SKILL_THROWN,
+    SKILL_ASSASSINATION,
+    SKILL_CROSSBOWS,
+    SKILL_WANDS,
+    SKILL_FISHING
+};
 
-const static float pricemod[9] = { 1.0f,    // HATED
-                                   1.0f,    // HOSTILE
-                                   1.0f,    // UNFRIENDLY
-                                   1.0f,    // NEUTRAL
-                                   0.95f,   // FRIENDLY
-                                   0.90f,   // HONORED
-                                   0.85f,   // REVERED
-                                   0.80f    // EXHALTED
-                                 };
+const static float pricemod[9] =
+{
+    1.0f,        // HATED
+    1.0f,        // HOSTILE
+    1.0f,        // UNFRIENDLY
+    1.0f,        // NEUTRAL
+    0.95f,       // FRIENDLY
+    0.90f,       // HONORED
+    0.85f,       // REVERED
+    0.80f        // EXHALTED
+};
 
-const static double SuffixMods[NUM_INVENTORY_TYPES] = { 0.0,
-        0.46,        // HEAD
-        0.26,        // NECK
-        0.35,        // SHOULDERS
-        0.46,        // BODY
-        0.46,        // CHEST
-        0.35,        // WAIST
-        0.46,        // LEGS
-        0.34,        // FEET
-        0.26,        // WRISTS
-        0.35,        // HANDS
-        0.26,        // FINGER
-        0.0,         // TRINKET
-        0.19,        // WEAPON
-        0.25,        // SHEILD
-        0.14,        // RANGED
-        0.26,        // CLOAK
-        0.46,        // 2H-WEAPON
-        0.0,         // BAG
-        0.0,         // TABARD
-        0.46,        // ROBE
-        0.19,        // MAIN-HAND WEAPON
-        0.19,        // OFF-HAND WEAPON
-        0.26,        // HOLDABLE
-        0.0,         // AMMO
-        0.26,        // THROWN
-        0.14,        // RANGED
-        0.0,         // QUIVER
-        0.26,        // RELIC
-                                                      };
+const static double SuffixMods[NUM_INVENTORY_TYPES] = 
+{
+    0.0,
+    0.46,        // HEAD
+    0.26,        // NECK
+    0.35,        // SHOULDERS
+    0.46,        // BODY
+    0.46,        // CHEST
+    0.35,        // WAIST
+    0.46,        // LEGS
+    0.34,        // FEET
+    0.26,        // WRISTS
+    0.35,        // HANDS
+    0.26,        // FINGER
+    0.0,         // TRINKET
+    0.19,        // WEAPON
+    0.25,        // SHEILD
+    0.14,        // RANGED
+    0.26,        // CLOAK
+    0.46,        // 2H-WEAPON
+    0.0,         // BAG
+    0.0,         // TABARD
+    0.46,        // ROBE
+    0.19,        // MAIN-HAND WEAPON
+    0.19,        // OFF-HAND WEAPON
+    0.26,        // HOLDABLE
+    0.0,         // AMMO
+    0.26,        // THROWN
+    0.14,        // RANGED
+    0.0,         // QUIVER
+    0.26,        // RELIC
+};
 
 typedef std::map<uint32, EnchantmentInstance> EnchantmentMap;
-
-#define APPLY true
-#define REMOVE false
 
 enum scalingstatmodtypes
 {
