@@ -156,6 +156,7 @@ class MoonInstanceScript : public InstanceScript
         size_t GetPlayerCount();
         Player* GetPlayerByGuid(uint32 pGuid);
         bool IsCombatInProgress();
+        PlayerTeam GetInstanceTeam() { return mInstanceTeam; }
 
         // Timers - reimplementation from MoonScriptCreatureAI
         int32 AddTimer(int32 pDurationMillisec);
@@ -217,6 +218,8 @@ class MoonInstanceScript : public InstanceScript
         TimerArray mTimers;
         int32 mTimerIdCounter;
         bool mSpawnsCreated;
+        bool mInstanceTeamSet;
+        PlayerTeam mInstanceTeam;
 };
 
 #endif      // _INSTANCE_BASE_H
