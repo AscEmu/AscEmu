@@ -1,6 +1,7 @@
 // License: MIT
 
 #include "Unit.h"
+#include "Server/Packets/Opcodes.h"
 #include "Players/Player.h"
 
 void Unit::setCombatFlag(bool enabled)
