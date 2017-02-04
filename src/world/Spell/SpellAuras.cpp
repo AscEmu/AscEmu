@@ -6014,24 +6014,16 @@ void Aura::SpellAuraHover(bool apply)
 {
     SetPositive();
 
-    WorldPacket data;
-
     if (apply)
     {
-        data.Initialize(SMSG_MOVE_SET_HOVER);
+        m_target->SetHover(true);
         m_target->SetFloatValue(UNIT_FIELD_HOVERHEIGHT, (float(mod->m_amount) / 2));
     }
     else
     {
-        data.Initialize(SMSG_MOVE_UNSET_HOVER);
+        m_target->SetHover(false);
         m_target->SetFloatValue(UNIT_FIELD_HOVERHEIGHT, 0.0f);
     }
-
-    data << WoWGuid(m_target->GetNewGUID());
-    data << uint32(0);
-
-    m_target->SendMessageToSet(&data, true);
-
 }
 
 void Aura::SpellAuraAddPctMod(bool apply)

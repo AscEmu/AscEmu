@@ -2896,10 +2896,7 @@ class SapphironAI : public CreatureAIScript
         _unit->GetAIInterface()->m_canMove = true;
         _unit->CastSpell(_unit, IMMUNITY_FROST, true);
 
-        WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
-        data << _unit->GetNewGUID();
-        data << uint32(0);
-        _unit->SendMessageToSet(&data, false);
+        _unit->SetHover(false);
 
         ChillTarget = NULL;
         FlightActions = 0;
@@ -2920,10 +2917,7 @@ class SapphironAI : public CreatureAIScript
         _unit->GetAIInterface()->StopFlying();
         _unit->GetAIInterface()->m_canMove = true;
 
-        WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
-        data << _unit->GetNewGUID();
-        data << uint32(0);
-        _unit->SendMessageToSet(&data, false);
+        _unit->SetHover(false);
 
         GameObject* Waterfall = NULL;
         Waterfall = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(3536.852783f, -5159.951172f, 143.636139f, FROSTWYRM_WATERFALL_DOOR);
@@ -2970,10 +2964,7 @@ class SapphironAI : public CreatureAIScript
         _unit->GetAIInterface()->StopFlying();
         _unit->GetAIInterface()->m_canMove = true;
 
-        WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
-        data << _unit->GetNewGUID();
-        data << uint32(0);
-        _unit->SendMessageToSet(&data, false);
+        _unit->SetHover(false);
 
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
         _unit->GetAIInterface()->SetAIState(STATE_IDLE);
@@ -3185,10 +3176,7 @@ class SapphironAI : public CreatureAIScript
                 _unit->GetAIInterface()->StopFlying();
                 _unit->Emote(EMOTE_ONESHOT_LAND);
 
-                WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
-                data << _unit->GetNewGUID();
-                data << uint32(0);
-                _unit->SendMessageToSet(&data, false);
+                _unit->SetHover(false);
 
                 RemoveAIUpdateEvent();
                 RegisterAIUpdateEvent(3000);
@@ -3334,10 +3322,7 @@ class SapphironAI : public CreatureAIScript
             _unit->GetAIInterface()->SetFly();
             _unit->Emote(EMOTE_ONESHOT_LIFTOFF);
 
-            WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
-            data << _unit->GetNewGUID();
-            data << uint32(0);
-            _unit->SendMessageToSet(&data, false);
+            _unit->SetHover(true);
 
             RemoveAIUpdateEvent();
             RegisterAIUpdateEvent(3500);

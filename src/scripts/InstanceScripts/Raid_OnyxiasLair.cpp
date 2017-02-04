@@ -142,10 +142,8 @@ class OnyxiaAI : public CreatureAIScript
                         _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
                         _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
                         _unit->GetAIInterface()->setWaypointToMove(0);
-                        WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
-                        data << _unit->GetNewGUID();
-                        data << uint32(0);
-                        _unit->SendMessageToSet(&data, false);
+
+                        _unit->SetHover(true);
                         m_currentWP = 3;
                     }
                     break;
@@ -159,10 +157,7 @@ class OnyxiaAI : public CreatureAIScript
                         /*_unit->m_pacified--;
                         if (_unit->m_pacified > 0)
                             _unit->m_pacified--;*/
-                        WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
-                        data << _unit->GetNewGUID();
-                        data << uint32(0);
-                        _unit->SendMessageToSet(&data, false);
+                        _unit->SetHover(false);
                         Land();
                     }
                     break;
@@ -173,10 +168,8 @@ class OnyxiaAI : public CreatureAIScript
                         _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
                         _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
                         _unit->GetAIInterface()->setWaypointToMove(0);
-                        WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
-                        data << _unit->GetNewGUID();
-                        data << uint32(0);
-                        _unit->SendMessageToSet(&data, false);
+
+                        _unit->SetHover(true);
                         //_unit->m_pacified--;
                     }
                     break;
@@ -393,10 +386,7 @@ class OnyxiaAI : public CreatureAIScript
         {
             _unit->Emote(EMOTE_ONESHOT_LIFTOFF);
             //Do we need hover really? Check it :D
-            /*WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
-            data << _unit->GetNewGUID();
-            data << uint32(0);
-            _unit->SendMessageToSet(&data, false);*/
+            //_unit->SetHover(true);
             _unit->GetAIInterface()->SetFly();
         }
 
@@ -404,10 +394,7 @@ class OnyxiaAI : public CreatureAIScript
         {
             _unit->Emote(EMOTE_ONESHOT_LAND);
             //Do we need hover really? Check it :D
-            /*WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
-            data << _unit->GetNewGUID();
-            data << uint32(0);
-            _unit->SendMessageToSet(&data, false);*/
+            //_unit->SetHover(false);
             _unit->GetAIInterface()->StopFlying();
         }
 

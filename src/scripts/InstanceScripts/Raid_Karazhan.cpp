@@ -3857,10 +3857,7 @@ class NightbaneAI : public CreatureAIScript
         {
             _unit->Emote(EMOTE_ONESHOT_LIFTOFF);
 
-            WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
-            data << _unit->GetNewGUID();
-            data << uint32(0);
-            _unit->SendMessageToSet(&data, false);
+            _unit->SetHover(true);
 
             _unit->GetAIInterface()->SetFly();
         }
@@ -3869,10 +3866,7 @@ class NightbaneAI : public CreatureAIScript
         {
             _unit->Emote(EMOTE_ONESHOT_LAND);
 
-            WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
-            data << _unit->GetNewGUID();
-            data << uint32(0);
-            _unit->SendMessageToSet(&data, false);
+            _unit->SetHover(false);
 
             _unit->GetAIInterface()->StopFlying();
         }

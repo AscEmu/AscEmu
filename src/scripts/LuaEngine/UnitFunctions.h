@@ -2002,10 +2002,7 @@ class LuaUnit
         if (ptr == nullptr)
             return 0;
 
-        WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
-        data << ptr->GetNewGUID();
-        data << uint32(0);
-        ptr->SendMessageToSet(&data, true);
+        ptr->SetHover(true);
         ptr->GetAIInterface()->disable_melee = true;
         ptr->GetAIInterface()->SetFly();
         ptr->Emote(EMOTE_ONESHOT_LIFTOFF);
@@ -2017,10 +2014,7 @@ class LuaUnit
         if (ptr == nullptr)
             return 0;
 
-        WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
-        data << ptr->GetNewGUID();
-        data << uint32(0);
-        ptr->SendMessageToSet(&data, true);
+        ptr->SetHover(false);
         ptr->GetAIInterface()->StopFlying();
         ptr->GetAIInterface()->disable_melee = false;
         ptr->Emote(EMOTE_ONESHOT_LAND);

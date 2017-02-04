@@ -163,3 +163,21 @@ void Unit::PlaySpellVisual(uint64_t guid, uint32_t spell_id)
     else
         SendMessageToSet(&data, false);
 }
+
+void Unit::SetHover(bool set_hover)
+{
+    if (set_hover)
+    {
+        WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
+        data << GetNewGUID();
+        data << uint32(0);
+        SendMessageToSet(&data, false);
+    }
+    else
+    {
+        WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
+        data << GetNewGUID();
+        data << uint32(0);
+        SendMessageToSet(&data, false);
+    }
+}

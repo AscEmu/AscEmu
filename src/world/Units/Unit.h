@@ -777,6 +777,7 @@ public:
 
     void EnableFlight();
     void DisableFlight();
+    void SetHover(bool set_hover);
 
     // Escort Quests
     void MoveToWaypoint(uint32 wp_id);

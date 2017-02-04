@@ -155,18 +155,12 @@ void MoonScriptCreatureAI::SetFlyMode(bool pValue)
 {
     if (pValue && !_unit->GetAIInterface()->Flying())
     {
-        WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
-        data << _unit->GetNewGUID();
-        data << uint32(0);
-        _unit->SendMessageToSet(&data, false);
+        _unit->SetHover(true);
         _unit->GetAIInterface()->StopFlying();
     }
     else if (!pValue && _unit->GetAIInterface()->Flying())
     {
-        WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
-        data << _unit->GetNewGUID();
-        data << uint32(0);
-        _unit->SendMessageToSet(&data, false);
+        _unit->SetHover(false);
         _unit->GetAIInterface()->SetFly();
     }
 }
