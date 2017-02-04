@@ -188,6 +188,8 @@ public:
 
     uint64_t getPrimaryAttackTarget() const;
 
+    void PlaySpellVisual(uint64_t guid, uint32_t spell_id);
+
     // Do not alter anything below this line
     // -------------------------------------
 private:
@@ -778,7 +780,6 @@ public:
 
     // Escort Quests
     void MoveToWaypoint(uint32 wp_id);
-    void PlaySpellVisual(uint64 target, uint32 spellVisual);
 
     void RemoveStealth()
     {

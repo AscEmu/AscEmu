@@ -150,3 +150,15 @@ uint64_t Unit::getPrimaryAttackTarget() const
 {
     return m_combatStatus.getPrimaryAttackTarget();
 }
+
+void Unit::PlaySpellVisual(uint64_t guid, uint32_t spell_id)
+{
+    WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 12);
+    data << uint64_t(guid);
+    data << uint32_t(spell_id);
+
+    if (IsPlayer())
+        static_cast<Player*>(this)->SendMessageToSet(&data, true);
+    else
+        SendMessageToSet(&data, false);
+}

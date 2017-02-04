@@ -5776,13 +5776,6 @@ void Unit::CastSpellAoF(float x, float y, float z, SpellInfo* Sp, bool triggered
     newSpell->prepare(&targets);
 }
 
-void Unit::PlaySpellVisual(uint64 target, uint32 spellVisual)
-{
-    WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 12);
-    data << target << spellVisual;
-    SendMessageToSet(&data, true);
-}
-
 void Unit::Root()
 {
     m_special_state |= UNIT_STATE_ROOT;

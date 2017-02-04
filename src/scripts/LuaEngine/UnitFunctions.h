@@ -3846,10 +3846,7 @@ class LuaUnit
         uint32 spell = static_cast<uint32>(luaL_checkinteger(L, 2));
         if (ptr && guid && spell)
         {
-            WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 12);
-            data << guid;
-            data << uint32(spell);
-            ptr->SendMessageToSet(&data, ptr->IsPlayer());
+            ptr->PlaySpellVisual(guid, spell);
         }
         return 1;
     }

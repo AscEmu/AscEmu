@@ -230,8 +230,8 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
     else
     {
         //Showing the learning spellvisuals
-        _player->SendPlaySpellVisual(pCreature->GetGUID(), 0x5B3);
-        _player->SendPlaySpellVisual(_player->GetGUID(), 0x16A);
+        _player->PlaySpellVisual(pCreature->GetGUID(), 1459);
+        _player->PlaySpellVisual(_player->GetGUID(), 362);
 
         // add the spell itself
         _player->addSpell(pSpell->pLearnSpell->Id);
