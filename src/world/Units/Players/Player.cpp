@@ -12678,6 +12678,12 @@ void Player::RemoveIfVisible(uint64 obj)
 void Player::Phase(uint8 command, uint32 newphase)
 {
     Unit::Phase(command, newphase);
+    if (GetSession())
+    {
+        WorldPacket data(SMSG_SET_PHASE_SHIFT, 4);
+        data << newphase;
+        GetSession()->SendPacket(&data);
+    }
 
     std::list<Pet*> summons = GetSummons();
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)

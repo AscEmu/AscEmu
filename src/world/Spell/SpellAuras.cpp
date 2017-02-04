@@ -8735,15 +8735,18 @@ void Aura::SpellAuraPhase(bool apply)
     }
 
     if (apply)
-        m_target->Phase(PHASE_SET, m_spellInfo->EffectMiscValue[mod->i]);
-    else
-        m_target->Phase(PHASE_RESET);
-
-    if (m_target->IsPlayer())
     {
-        WorldPacket data(SMSG_SET_PHASE_SHIFT, 4);
-        data << uint32(m_target->m_phase);
-        static_cast< Player* >(m_target)->GetSession()->SendPacket(&data);
+        if (m_target->IsPlayer())
+            static_cast<Player*>(m_target)->Phase(PHASE_SET, m_spellInfo->EffectMiscValue[mod->i]);
+        else
+            m_target->Phase(PHASE_SET, m_spellInfo->EffectMiscValue[mod->i]);
+    }
+    else
+    {
+        if (m_target->IsPlayer())
+            static_cast<Player*>(m_target)->Phase(PHASE_RESET);
+        else
+            m_target->Phase(PHASE_RESET);
     }
 }
 

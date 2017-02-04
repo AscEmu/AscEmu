@@ -1481,13 +1481,6 @@ bool ChatHandler::HandleCharSetPhaseCommand(const char* args, WorldSession* m_se
 
     player_target->Phase(PHASE_SET, phase);
 
-    if (player_target->GetSession())
-    {
-        WorldPacket data(SMSG_SET_PHASE_SHIFT, 4);
-        data << phase;
-        player_target->GetSession()->SendPacket(&data);
-    }
-
     if (player_target != m_session->GetPlayer())
     {
         BlueSystemMessage(m_session, "Setting the phase of %s to %u.", player_target->GetName(), phase);
