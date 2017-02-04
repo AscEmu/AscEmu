@@ -772,11 +772,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
         }
         else
         {
-            // Meh...
-            WorldPacket data(SMSG_PLAY_OBJECT_SOUND, 12);
-            data << uint32(0x000019C2);
-            data << creature_guid;
-            SendPacket(&data);
+            _player->PlaySoundToPlayer(creature_guid, 6594);
 
             // Create the item and charter
             Item* i = objmgr.CreateItem(ITEM_ENTRY_GUILD_CHARTER, _player);

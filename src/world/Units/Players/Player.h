@@ -1881,6 +1881,7 @@ class SERVER_DECL Player : public Unit
         uint32 m_tradeSequence;
         bool m_changingMaps;
 
+        void PlaySoundToPlayer(uint64_t from_guid, uint32_t sound_id);
         void PlaySound(uint32 sound_id);
 
         void SendGuildMOTD();

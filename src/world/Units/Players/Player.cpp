@@ -11417,6 +11417,14 @@ void Player::RemoveTempEnchantsOnArena()
     }
 }
 
+void Player::PlaySoundToPlayer(uint64_t from_guid,  uint32_t sound_id)
+{
+    WorldPacket data(SMSG_PLAY_OBJECT_SOUND, 12);
+    data << uint32_t(sound_id);
+    data << uint64_t(from_guid);
+    SendMessageToSet(&data, true);
+}
+
 void Player::PlaySound(uint32 sound_id)
 {
     WorldPacket data(SMSG_PLAY_SOUND, 4);
