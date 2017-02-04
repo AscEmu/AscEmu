@@ -8146,14 +8146,10 @@ void Aura::SpellAuraSpellHealingStatPCT(bool apply)
 void Aura::SpellAuraAllowFlight(bool apply)
 {
     // allow fly
-    WorldPacket data;
     if (apply)
-        data.Initialize(SMSG_MOVE_SET_CAN_FLY);
+        m_target->EnableFlight();
     else
-        data.Initialize(SMSG_MOVE_UNSET_CAN_FLY);
-    //data.append(m_target->m_PackGUID);
-    data << uint32(0);                                      // unk
-    m_target->SendMessageToSet(&data, true);
+        m_target->DisableFlight();
 }
 
 void Aura::SpellAuraFinishingMovesCannotBeDodged(bool apply)

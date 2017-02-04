@@ -4849,22 +4849,14 @@ class LuaUnit
     static int EnableFlight(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            bool Switch = CHECK_BOOL(L, 1);
-        if (Switch)
+        bool enable_fly = CHECK_BOOL(L, 1);
+        if (enable_fly)
         {
-            WorldPacket fly(SMSG_MOVE_SET_CAN_FLY, 13);
             ptr->EnableFlight();
-            fly << ptr->GetNewGUID();
-            fly << uint32(2);
-            ptr->SendMessageToSet(&fly, true);
         }
         else
         {
-            WorldPacket fly(SMSG_MOVE_UNSET_CAN_FLY, 13);
             ptr->DisableFlight();
-            fly << ptr->GetNewGUID();
-            fly << uint32(5);
-            ptr->SendMessageToSet(&fly, true);
         }
         return 0;
     }

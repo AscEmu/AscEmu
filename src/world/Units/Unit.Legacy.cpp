@@ -6328,6 +6328,7 @@ void Unit::RemoveAurasOfSchool(uint32 School, bool Positive, bool Immune)
             m_auras[x]->Remove();
 }
 
+//\todo Set unit movement flag! Set spline packet if not player.
 void Unit::EnableFlight()
 {
     z_axisposition = 0.0f;
@@ -6345,13 +6346,6 @@ void Unit::EnableFlight()
         data << GetNewGUID();
         data << uint32(2);
         SendMessageToSet(&data, true);
-
-        /* Zyres: Why?
-        WorldPacket* data = new WorldPacket(SMSG_MOVE_SET_CAN_FLY, 13);
-        *data << GetNewGUID();
-        *data << uint32(2);
-        SendMessageToSet(data, false);
-        static_cast<Player*>(this)->delayedPackets.add(data);*/
     }
 }
 
@@ -6372,13 +6366,6 @@ void Unit::DisableFlight()
         data << GetNewGUID();
         data << uint32(5);
         SendMessageToSet(&data, true);
-
-        /*Zyres: Why?
-        WorldPacket* data = new WorldPacket(SMSG_MOVE_UNSET_CAN_FLY, 13);
-        *data << GetNewGUID();
-        *data << uint32(5);
-        SendMessageToSet(data, false);
-        static_cast<Player*>(this)->delayedPackets.add(data);*/
     }
 }
 
