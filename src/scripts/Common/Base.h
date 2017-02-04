@@ -548,4 +548,162 @@ template <class Type> inline void DeleteItem(std::vector<Type> pVector, Type pIt
     }
 }
 
+struct Timer
+{
+    int32_t Time;
+    uint32_t Phase;
+};
+
+class TimerMap : private std::multimap<uint32_t, Timer>
+{
+private:
+    Timer timer;
+
+public:
+    
+    // Resets all Timers
+    void Reset()
+    { 
+        clear();
+    }
+
+    // Updates All Timers for the given Phase by xx time
+    void Update(int32_t time, uint32_t phase)
+    {
+        if (!empty())
+        {
+            for (iterator itr = begin(); itr != end();)
+            {
+                // Timers with Phases
+                if (itr->second.Phase == phase)
+                {
+                    itr->second.Time = itr->second.Time - time;      
+                }
+                else if (itr->second.Phase == 0)
+                {
+                    itr->second.Time = itr->second.Time - time;
+                }
+                ++itr;
+            }
+        }
+    }
+
+    // Adds A timer with the given Id , time and phase
+    void Add(uint32_t timerId, int32_t time, uint32_t phase = 0)
+    {
+        timer.Time = time;
+        timer.Phase = phase;
+
+        // When There is already a Timer with the same id in the storage delete them and overwrite it.
+        if (!empty())
+        {
+            for (iterator itr = begin(); itr != end();)
+            {
+                if (itr->first == timerId)
+                {
+                    erase(itr);
+                }
+                ++itr;
+            }
+        }
+
+        // Insert Timers
+        insert(TimerMap::value_type(timerId, timer));
+    }
+
+    uint32_t Execute(uint32_t phase)
+    {
+        if (!empty())
+        {
+            for (iterator itr = begin(); itr != end();)
+            {
+                // Timers with Phases
+                if (itr->second.Time <= 0 && itr->second.Phase == phase)
+                {
+                    uint32_t timerId;
+                    timerId = itr->first;
+                    erase(itr);
+                    return timerId;
+                }
+                else if (itr->second.Time <= 0 && itr->second.Phase == 0)
+                {
+                    uint32_t timerId;
+                    timerId = itr->first;
+                    erase(itr);
+                    return timerId;
+                }
+                ++itr;
+            }
+        }
+        return 0;
+    }
+
+    // Get Timer 
+    int32_t GetTimer(uint32_t timerId)
+    {
+        if (!empty())
+        {
+            for (iterator itr = begin(); itr != end();)
+            {
+                // Return Current Timers Time
+                if (itr->first == timerId)
+                    return itr->second.Time;
+
+                ++itr;
+            }
+        }
+        return 0;
+    }
+
+    // Delay all Timers
+    void DelayTimers(int32_t delay, uint32 phase)
+    {
+        if (!empty())
+        {
+            for (iterator itr = begin(); itr != end();)
+            {
+                // Only Delay Timers that are not Finished and in our Current Phase
+                if (itr->second.Time > 0 && itr->second.Phase == phase)
+                    itr->second.Time = itr->second.Time + delay;
+                else if (itr->second.Time > 0 && itr->second.Phase == 0)
+                    itr->second.Time = itr->second.Time + delay;
+                
+                ++itr;
+            }
+        }
+    }
+
+    // Delete Timer with the given Id
+    void DeleteTimer(uint32_t timerId)
+    {
+        for (iterator itr = begin(); itr != end();)
+        {
+            if (timerId == itr->first)
+            {
+                erase(itr);
+                itr = begin();
+            }
+            else
+                ++itr;
+        }
+    }
+
+    // Search if a Timer is Already Existing
+    bool SearchTimer(uint32_t timerId)
+    {
+        if (!empty())
+        {
+            for (iterator itr = begin(); itr != end();)
+            {
+                if (itr->first == timerId)
+                    return true;
+
+                ++itr;
+            }
+        }
+        return false;
+    }
+
+};
+
 #endif // _BASE_H
