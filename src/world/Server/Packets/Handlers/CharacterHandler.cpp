@@ -135,7 +135,7 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
     }
 
     CharacterDatabase.EscapeString(newname).c_str();
-    CapitalizeString(newname);
+    Util::CapitalizeString(newname);
 
     CharacterDatabase.WaitExecute("UPDATE `characters` set name = '%s' WHERE guid = '%u'", newname.c_str(), (uint32)guid);
     CharacterDatabase.WaitExecute("UPDATE `characters` SET login_flags = %u WHERE guid = '%u'", (uint32)LOGIN_NO_FLAG, (uint32)guid);
@@ -153,15 +153,6 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
     data << uint8(hairColor);
     data << uint8(facialHair);
     SendPacket(&data);
-}
-
-void CapitalizeString(std::string& arg)
-{
-    if (arg.length() == 0)
-        return;
-    arg[0] = static_cast<char>(toupper(arg[0]));
-    for (uint32 x = 1; x < arg.size(); ++x)
-        arg[x] = static_cast<char>(tolower(arg[x]));
 }
 
 void WorldSession::CharacterEnumProc(QueryResult* result)
@@ -699,7 +690,7 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
     }
 
     // correct capitalization
-    CapitalizeString(name);
+    Util::CapitalizeString(name);
     objmgr.RenamePlayerInfo(pi, pi->name, name.c_str());
 
     sPlrLog.writefromsession(this, "a rename was pending. renamed character %s (GUID: %u) to %s.", pi->name, pi->guid, name.c_str());
@@ -1202,7 +1193,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     Player::CharChange_Looks(guid, gender, skin, face, hairStyle, hairColor, facialHair);
     //Player::CharChange_Language(guid, race);
 
-    CapitalizeString(newname);
+    Util::CapitalizeString(newname);
     objmgr.RenamePlayerInfo(info, info->name, newname.c_str());
     CharacterDatabase.Execute("UPDATE `characters` set name = '%s', login_flags = %u, race = %u WHERE guid = '%u'", newname.c_str(), newflags, (uint32)race, (uint32)guid);
 

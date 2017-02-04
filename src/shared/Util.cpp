@@ -25,6 +25,17 @@ namespace Util
         std::transform(str.begin(), str.end(), str.begin(), ::toupper);
     }
 
+    void CapitalizeString(std::string& str)
+    {
+        if (!str.empty())
+        {
+            str[0] = ::toupper(str[0]);
+
+            for (std::size_t i = 1; i < str.length(); ++i)
+                str[i] = ::tolower(str[i]);
+        }
+    }
+
     std::vector<std::string> SplitStringBySeperator(const std::string& str_src, const std::string& str_sep)
     {
         std::vector<std::string> string_vector;

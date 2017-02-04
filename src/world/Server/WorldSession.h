@@ -196,13 +196,7 @@ struct AccountDataEntry
     bool bIsDirty;
 };
 
-typedef struct Cords
-{
-    float x, y, z;
-} Cords;
-
 extern OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
-void CapitalizeString(std::string & arg);
 
 class SERVER_DECL WorldSession
 {

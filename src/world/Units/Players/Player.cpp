@@ -773,7 +773,7 @@ bool Player::Create(WorldPacket& data)
     data >> m_name;
 
     // correct capitalization
-    CapitalizeString(m_name);
+    Util::CapitalizeString(m_name);
 
     data >> race;
     data >> class_;
