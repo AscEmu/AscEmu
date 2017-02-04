@@ -218,15 +218,6 @@ void Player::SendLoginVerifyWorld(uint32 MapId, float X, float Y, float Z, float
     m_session->SendPacket(&data);
 }
 
-void Player::SendPlaySpellVisual(uint64 guid, uint32 visualid)
-{
-    WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 12);
-    data << uint64(guid);
-    data << uint32(visualid);
-
-    SendMessageToSet(&data, true, false);
-}
-
 void Player::SendDungeonDifficulty()
 {
     WorldPacket data(MSG_SET_DUNGEON_DIFFICULTY, 12);
