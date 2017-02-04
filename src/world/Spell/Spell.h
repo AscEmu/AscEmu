@@ -1233,7 +1233,7 @@ typedef enum
     EFF_TARGET_ALL_ENEMIES_AROUND_CASTER                            = 22,
     EFF_TARGET_GAMEOBJECT                                           = 23,
     EFF_TARGET_IN_FRONT_OF_CASTER                                   = 24,
-    EFF_TARGET_DUEL                                                 = 25,       //Don't know the real name!!!
+    EFF_TARGET_DUEL                                                 = 25, // Don't know the real name!!!
     EFF_TARGET_GAMEOBJECT_ITEM                                      = 26,
     EFF_TARGET_PET_MASTER                                           = 27,
     EFF_TARGET_ALL_ENEMY_IN_AREA_CHANNELED                          = 28,
@@ -1254,7 +1254,7 @@ typedef enum
     EFF_TARGET_TOTEM_FIRE                                           = 44,
     EFF_TARGET_CHAIN                                                = 45,
     EFF_TARGET_SCIPTED_OBJECT_LOCATION                              = 46,
-    EFF_TARGET_DYNAMIC_OBJECT                                       = 47,       //not sure exactly where is used
+    EFF_TARGET_DYNAMIC_OBJECT                                       = 47, // not sure exactly where is used
     EFF_TARGET_MULTIPLE_SUMMON_LOCATION                             = 48,
     EFF_TARGET_MULTIPLE_SUMMON_PET_LOCATION                         = 49,
     EFF_TARGET_SUMMON_LOCATION                                      = 50,
@@ -1268,7 +1268,7 @@ typedef enum
     EFF_TARGET_TARGET_FOR_VISUAL_EFFECT                             = 59,
     EFF_TARGET_SCRIPTED_TARGET2                                     = 60,
     EFF_TARGET_AREAEFFECT_PARTY_AND_CLASS                           = 61,
-    EFF_TARGET_PRIEST_CHAMPION                                      = 62,       //wtf ?
+    EFF_TARGET_PRIEST_CHAMPION                                      = 62, // wtf ?
     EFF_TARGET_NATURE_SUMMON_LOCATION                               = 63,
     EFF_TARGET_BEHIND_TARGET_LOCATION                               = 65,
     EFF_TARGET_MULTIPLE_GUARDIAN_SUMMON_LOCATION                    = 72,
@@ -1279,7 +1279,7 @@ typedef enum
     EFF_TARGET_SELECTED_ENEMY_CHANNELED                             = 77,
     EFF_TARGET_SELECTED_ENEMY_DEADLY_POISON                         = 86,
     EFF_TARGET_NON_COMBAT_PET                                       = 90,
-    //these are custom, feel free to move them further if targeting gets extended
+    // these are custom, feel free to move them further if targeting gets extended
     EFF_TARGET_CUSTOM_PARTY_INJURED_SINGLE                          = 99,
     EFF_TARGET_CUSTOM_PARTY_INJURED_MULTI                           = 100,
     EFF_TARGET_CONE_IN_FRONT                                        = 104,

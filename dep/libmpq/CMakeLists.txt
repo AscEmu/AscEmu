@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
 
 project(libmpq C)
 file(GLOB sources ${CMAKE_CURRENT_SOURCE_DIR}/libmpq/*.c ${CMAKE_CURRENT_SOURCE_DIR}/libmpq/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/libmpq/*.h)
@@ -13,7 +13,7 @@ if(WIN32)
 endif()
 
 if(UNIX AND NOT IS_64BIT)
-	add_definitions(-D_FILE_OFFSET_BITS=64)
+    add_definitions(-D_FILE_OFFSET_BITS=64)
 endif()
 
 include_directories(

@@ -183,7 +183,7 @@ class LogonCommServerSocket;
 
 class InformationCore : public Singleton<InformationCore>
 {
-    std::map<uint32, Realm*>          m_realms;
+    std::map<uint32, Realm*> m_realms;
     std::set<LogonCommServerSocket*> m_serverSockets;
     Mutex serverSocketLock;
     Mutex realmLock;

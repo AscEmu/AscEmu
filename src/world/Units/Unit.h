@@ -77,7 +77,7 @@ bool SERVER_DECL Rand(float);
 #define SPELL_GROUPS    96          // This is actually on 64 bits !
 #define DIMINISHING_GROUP_COUNT 15
 
-#define UNIT_TYPE_HUMANOID_BIT (1 << (UNIT_TYPE_HUMANOID-1))    //should get computed by precompiler ;)
+#define UNIT_TYPE_HUMANOID_BIT (1 << (UNIT_TYPE_HUMANOID-1)) // should get computed by precompiler ;)
 
 typedef std::unordered_map<uint32, uint64> UniqueAuraTargetMap;
 

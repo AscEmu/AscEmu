@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
 
 file(GLOB Detour_SRCS Source/*.cpp Include/*.h)
 

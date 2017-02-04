@@ -116,7 +116,7 @@ enum SPELL_TARGETS
 struct SP_AI_Spell
 {
     SP_AI_Spell();
-    SpellInfo* info;       // spell info
+    SpellInfo* info;        // spell info
     char targettype;        // 0-self , 1-attaking target, ....
     bool instant;           // does it is instant or not?
     float perctrigger;      // % of the cast of this spell in a total of 100% of the attacks
@@ -148,68 +148,68 @@ enum
 ///\todo create for all instance scripts for these maps... best example how encounter states work ->Raid_IceCrownCitadel.cpp
 enum InstanceMaps
 {
-    MAP_SHADOWFANG_KEEP     = 33,   //Shadowfang Keep
-    MAP_THE_STOCKADE        = 34,   //Stormwind Stockade
-    MAP_DEADMINES           = 36,   //Deadmines
-    MAP_WAILING_CAVERNS     = 43,   //Wailing Caverns
-    MAP_BLACKFATHOM_DEEPS   = 48,   //Blackfathom Deeps
-    MAP_ULDAMAN             = 70,   //Uldaman
+    MAP_SHADOWFANG_KEEP     = 33,   // Shadowfang Keep
+    MAP_THE_STOCKADE        = 34,   // Stormwind Stockade
+    MAP_DEADMINES           = 36,   // Deadmines
+    MAP_WAILING_CAVERNS     = 43,   // Wailing Caverns
+    MAP_BLACKFATHOM_DEEPS   = 48,   // Blackfathom Deeps
+    MAP_ULDAMAN             = 70,   // Uldaman
 
-    MAP_RAZORFEN_DOWNS      = 129,  //Razorfen Downs
-    MAP_SCARLET_MONASTERY   = 189,  //Scarlet Monastery
+    MAP_RAZORFEN_DOWNS      = 129,  // Razorfen Downs
+    MAP_SCARLET_MONASTERY   = 189,  // Scarlet Monastery
 
-    MAP_ZUL_FARAK           = 209,  //Zul'Farrak
-    MAP_BLACKROCK_SPIRE     = 229,  //Blackrock Spire
-    MAP_BLACKROCK_DEPTHS    = 230,  //Blackrock Depths
+    MAP_ZUL_FARAK           = 209,  // Zul'Farrak
+    MAP_BLACKROCK_SPIRE     = 229,  // Blackrock Spire
+    MAP_BLACKROCK_DEPTHS    = 230,  // Blackrock Depths
     MAP_COT_BLACK_MORASS    = 269,  // rename this Opening of the Dark Portal -> Caverns of Time: Black Morass
-    MAP_SCHOLOMANCE         = 289,  //Scholomance
-    MAP_MARAUDON            = 349,  //Maraudon
+    MAP_SCHOLOMANCE         = 289,  // Scholomance
+    MAP_MARAUDON            = 349,  // Maraudon
 
-    MAP_RAGEFIRE_CHASM      = 389,  //Ragefire Chasm
+    MAP_RAGEFIRE_CHASM      = 389,  // Ragefire Chasm
 
-    MAP_DIRE_MAUL           = 429,  //Dire Maul
-    MAP_NAXXRAMAS           = 533,  //Naxxramas
-    MAP_HYJALPAST           = 534,  //The Battle for Mount Hyjal
+    MAP_DIRE_MAUL           = 429,  // Dire Maul
+    MAP_NAXXRAMAS           = 533,  // Naxxramas
+    MAP_HYJALPAST           = 534,  // The Battle for Mount Hyjal
 
-    MAP_HC_SHATTERED_HALLS  = 540,  //Hellfire Citadel: The Shattered Halls
-    MAP_HC_BLOOD_FURNANCE   = 542,  //Hellfire Citadel: The Blood Furnace
-    MAP_HC_RAMPARTS         = 543,  //Hellfire Citadel: Ramparts
+    MAP_HC_SHATTERED_HALLS  = 540,  // Hellfire Citadel: The Shattered Halls
+    MAP_HC_BLOOD_FURNANCE   = 542,  // Hellfire Citadel: The Blood Furnace
+    MAP_HC_RAMPARTS         = 543,  // Hellfire Citadel: Ramparts
 
-    MAP_CF_STEAMVAULT       = 545,  //Coilfang: The Steamvault
-    MAP_CF_THE_UNDERBOG     = 546,  //Coilfang: The Underbog
-    MAP_CF_SLAVE_PENS       = 547,  //Coilfang: The Slave Pens
-    MAP_CF_SERPENTSHRINE_CA = 548,  //Coilfang: Serpentshrine Cavern
+    MAP_CF_STEAMVAULT       = 545,  // Coilfang: The Steamvault
+    MAP_CF_THE_UNDERBOG     = 546,  // Coilfang: The Underbog
+    MAP_CF_SLAVE_PENS       = 547,  // Coilfang: The Slave Pens
+    MAP_CF_SERPENTSHRINE_CA = 548,  // Coilfang: Serpentshrine Cavern
 
-    MAP_TK_THE_ARCATRAZ     = 552,  //Tempest Keep: The Arcatraz
-    MAP_TK_THE_BOTANICA     = 553,  //Tempest Keep: The Botanica
-    MAP_TK_THE_MECHANAR     = 554,  //Tempest Keep: The Mechanar
+    MAP_TK_THE_ARCATRAZ     = 552,  // Tempest Keep: The Arcatraz
+    MAP_TK_THE_BOTANICA     = 553,  // Tempest Keep: The Botanica
+    MAP_TK_THE_MECHANAR     = 554,  // Tempest Keep: The Mechanar
 
-    MAP_AUCHENAI_SHADOWLAB  = 555,  //Auchindoun: Shadow Labyrinth
-    MAP_AUCHENAI_SETHEKK    = 556,  //Auchindoun: Sethekk Halls
-    MAP_AUCHENAI_MANA_TOMBS = 557,  //Auchindoun: Mana-Tombs
-    MAP_AUCHENAI_CRYPT      = 558,  //Auchindoun: Auchenai Crypts
+    MAP_AUCHENAI_SHADOWLAB  = 555,  // Auchindoun: Shadow Labyrinth
+    MAP_AUCHENAI_SETHEKK    = 556,  // Auchindoun: Sethekk Halls
+    MAP_AUCHENAI_MANA_TOMBS = 557,  // Auchindoun: Mana-Tombs
+    MAP_AUCHENAI_CRYPT      = 558,  // Auchindoun: Auchenai Crypts
 
-    MAP_BLACK_TEMPLE        = 564,  //Black Temple
+    MAP_BLACK_TEMPLE        = 564,  // Black Temple
 
-    MAP_UTGARDE_KEEP        = 574,  //Utgarde Keep
-    MAP_UTGARDE_PINNACLE    = 575,  //Utgarde Pinnacle
+    MAP_UTGARDE_KEEP        = 574,  // Utgarde Keep
+    MAP_UTGARDE_PINNACLE    = 575,  // Utgarde Pinnacle
 
-    MAP_NEXUS               = 576,  //Nexus
-    MAP_MAGISTERS_TERRACE   = 585,  //Magister's Terrace
-    MAP_HALLS_OF_STONE      = 599,  //Halls of Stone
-    MAP_DRAK_THARON_KEEP    = 600,  //Drak'Tharon Keep
-    MAP_AZJOL_NERUB         = 601,  //Azjol-Nerub
-    MAP_HALLS_OF_LIGHTNING  = 602,  //Halls of Lightning
-    MAP_GUNDRAK             = 604,  //Gundrak
+    MAP_NEXUS               = 576,  // Nexus
+    MAP_MAGISTERS_TERRACE   = 585,  // Magister's Terrace
+    MAP_HALLS_OF_STONE      = 599,  // Halls of Stone
+    MAP_DRAK_THARON_KEEP    = 600,  // Drak'Tharon Keep
+    MAP_AZJOL_NERUB         = 601,  // Azjol-Nerub
+    MAP_HALLS_OF_LIGHTNING  = 602,  // Halls of Lightning
+    MAP_GUNDRAK             = 604,  // Gundrak
 
-    MAP_ULDUAR              = 603,  //Ulduar
+    MAP_ULDUAR              = 603,  // Ulduar
 
-    MAP_VIOLET_HOLD         = 608,  //The Violet Hold
-    MAP_OBSIDIAN_SANCTUM    = 615,  //ObsidianSanctum
-    MAP_ICECROWNCITADEL     = 631,  //Icecrown Citadel
-    MAP_FORGE_OF_SOULS      = 632,  //Forge of Souls
-    MAP_PIT_OF_SARON        = 658,  //Pit of Saron.
-    MAP_HALLSOFREFLECTION   = 668,  //Halls of Reflection
+    MAP_VIOLET_HOLD         = 608,  // The Violet Hold
+    MAP_OBSIDIAN_SANCTUM    = 615,  // ObsidianSanctum
+    MAP_ICECROWNCITADEL     = 631,  // Icecrown Citadel
+    MAP_FORGE_OF_SOULS      = 632,  // Forge of Souls
+    MAP_PIT_OF_SARON        = 658,  // Pit of Saron.
+    MAP_HALLSOFREFLECTION   = 668,  // Halls of Reflection
 
     /*
     30	Alterac Valley

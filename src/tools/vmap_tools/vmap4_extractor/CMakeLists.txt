@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
 
 # set up project name
 project(vmap4_extractor CXX)
@@ -9,7 +9,7 @@ set(source
 )
 
 if(UNIX AND NOT IS_64BIT)
-	add_definitions(-D_FILE_OFFSET_BITS=64)
+    add_definitions(-D_FILE_OFFSET_BITS=64)
 endif()
 
 include_directories(

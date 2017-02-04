@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
 
 # set up our project name
 project(pcre C)

@@ -16,6 +16,7 @@
  */
 
 #pragma once
+
 class ScriptMgr;
 
 // Class spell handlers

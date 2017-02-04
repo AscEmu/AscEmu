@@ -28,7 +28,6 @@ class AuthSocket;
 extern std::set<AuthSocket*> _authSockets;
 extern Mutex _authSocketLock;
 
-
 class LogonServer;
 class LogonServer : public Singleton< LogonServer >
 {

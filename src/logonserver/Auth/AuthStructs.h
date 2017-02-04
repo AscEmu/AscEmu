@@ -37,7 +37,7 @@ typedef struct
     uint32  timezone_bias;  // -419
     uint32  ip;             // client ip
     uint8   I_len;          // length of account name
-    uint8   I[50];           // account name
+    uint8   I[50];          // account name
 } sAuthLogonChallenge_C;
 
 typedef sAuthLogonChallenge_C sAuthReconnectChallenge_C;
@@ -59,7 +59,7 @@ typedef struct
 
 typedef struct
 {
-    uint8   cmd; // 0x01
+    uint8   cmd;            // 0x01
     uint8   A[32];
     uint8   M1[20];
     uint8   crc_hash[20];

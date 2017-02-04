@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
 
 #ignore the warnings for dependencies (external code)
 if(MSVC)
@@ -10,8 +10,8 @@ endif()
 # add zlib and pcre for windows compile
 if(WIN32)
     add_subdirectory(bzip2)
-	add_subdirectory(zlib)
-	add_subdirectory(pcre)
+    add_subdirectory(zlib)
+    add_subdirectory(pcre)
 endif()
 
 # add our dependecies

@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2015 AscEmu Team <http://www.ascemu.org>
+# Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
 message(STATUS "Applying settings for Linux system")
 
 set( EXTRA_LIBS ${EXTRA_LIBS} dl)

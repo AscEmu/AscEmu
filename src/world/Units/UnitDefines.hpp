@@ -506,7 +506,7 @@ typedef enum
     EMOTE_ONESHOT_ATTACKRIFLE           = 436,
     EMOTE_STATE_SWIM_IDLE               = 437,
     EMOTE_STATE_ATTACK_UNARMED          = 438,
-    //EMOTE_ONESHOT_SPELLCAST               = 439, // W/SOUND
+    // EMOTE_ONESHOT_SPELLCAST          = 439, // W/SOUND
     EMOTE_ONESHOT_DODGE                 = 440,
     EMOTE_ONESHOT_PARRY1H               = 441,
     EMOTE_ONESHOT_PARRY2H               = 442,
