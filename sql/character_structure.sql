@@ -1,7 +1,7 @@
 /*
 ********************************************************************
 AscEmu char structure
-Last update: 03/28/2016
+Last update: 02/04/2017
 *********************************************************************
 */
 
@@ -249,101 +249,6 @@ CREATE TABLE IF NOT EXISTS `characters` (
 /*!40000 ALTER TABLE `characters` ENABLE KEYS */;
 
 
--- Dumping structure for table characters_insert_queue
-CREATE TABLE IF NOT EXISTS `characters_insert_queue` (
-  `insert_temp_guid` int(10) unsigned NOT NULL DEFAULT '0',
-  `acct` int(10) unsigned NOT NULL DEFAULT '0',
-  `name` varchar(21) COLLATE utf8_unicode_ci NOT NULL,
-  `race` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `class` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `gender` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `custom_faction` int(30) NOT NULL DEFAULT '0',
-  `level` int(10) unsigned NOT NULL DEFAULT '0',
-  `xp` int(10) unsigned NOT NULL DEFAULT '0',
-  `exploration_data` longtext COLLATE utf8_unicode_ci NOT NULL,
-  `skills` longtext COLLATE utf8_unicode_ci NOT NULL,
-  `watched_faction_index` int(10) unsigned NOT NULL DEFAULT '0',
-  `selected_pvp_title` int(10) unsigned NOT NULL DEFAULT '0',
-  `available_pvp_titles` int(10) unsigned NOT NULL DEFAULT '0',
-  `gold` int(10) unsigned NOT NULL DEFAULT '0',
-  `ammo_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `available_prof_points` int(10) unsigned NOT NULL DEFAULT '0',
-  `available_talent_points` int(10) unsigned NOT NULL DEFAULT '0',
-  `current_hp` int(10) unsigned NOT NULL DEFAULT '0',
-  `current_power` int(10) unsigned NOT NULL DEFAULT '0',
-  `pvprank` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `bytes` int(10) unsigned NOT NULL DEFAULT '0',
-  `bytes2` int(10) unsigned NOT NULL DEFAULT '0',
-  `player_flags` int(10) unsigned NOT NULL DEFAULT '0',
-  `player_bytes` int(10) unsigned NOT NULL DEFAULT '0',
-  `positionX` float NOT NULL DEFAULT '0',
-  `positionY` float NOT NULL DEFAULT '0',
-  `positionZ` float NOT NULL DEFAULT '0',
-  `orientation` float NOT NULL DEFAULT '0',
-  `mapId` int(10) unsigned NOT NULL DEFAULT '0',
-  `zoneId` int(10) unsigned NOT NULL DEFAULT '0',
-  `taximask` longtext COLLATE utf8_unicode_ci NOT NULL,
-  `banned` int(40) NOT NULL,
-  `banReason` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `timestamp` int(11) NOT NULL,
-  `online` int(11) DEFAULT NULL,
-  `bindpositionX` float NOT NULL DEFAULT '0',
-  `bindpositionY` float NOT NULL DEFAULT '0',
-  `bindpositionZ` float NOT NULL DEFAULT '0',
-  `bindmapId` int(10) unsigned NOT NULL DEFAULT '0',
-  `bindzoneId` int(10) unsigned NOT NULL DEFAULT '0',
-  `isResting` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `restState` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `restTime` int(10) unsigned NOT NULL DEFAULT '0',
-  `playedtime` longtext COLLATE utf8_unicode_ci NOT NULL,
-  `deathstate` int(10) unsigned NOT NULL DEFAULT '0',
-  `TalentResetTimes` int(10) unsigned NOT NULL DEFAULT '0',
-  `first_login` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `forced_rename_pending` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `publicNote` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `officerNote` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `guildid` int(10) unsigned NOT NULL DEFAULT '0',
-  `guildRank` int(10) unsigned NOT NULL DEFAULT '0',
-  `arenaPoints` int(10) NOT NULL,
-  `totalstableslots` int(10) unsigned NOT NULL DEFAULT '0',
-  `instance_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `entrypointmap` int(10) unsigned NOT NULL DEFAULT '0',
-  `entrypointx` float NOT NULL DEFAULT '0',
-  `entrypointy` float NOT NULL DEFAULT '0',
-  `entrypointz` float NOT NULL DEFAULT '0',
-  `entrypointo` float NOT NULL DEFAULT '0',
-  `entrypointinstance` int(10) unsigned NOT NULL DEFAULT '0',
-  `taxi_path` int(10) unsigned NOT NULL DEFAULT '0',
-  `taxi_lastnode` int(10) unsigned NOT NULL DEFAULT '0',
-  `taxi_mountid` int(10) unsigned NOT NULL DEFAULT '0',
-  `transporter` int(10) unsigned NOT NULL DEFAULT '0',
-  `transporter_xdiff` float NOT NULL DEFAULT '0',
-  `transporter_ydiff` float NOT NULL DEFAULT '0',
-  `transporter_zdiff` float NOT NULL DEFAULT '0',
-  `spells` longtext COLLATE utf8_unicode_ci NOT NULL,
-  `deleted_spells` longtext COLLATE utf8_unicode_ci NOT NULL,
-  `reputation` longtext COLLATE utf8_unicode_ci NOT NULL,
-  `actions` longtext COLLATE utf8_unicode_ci NOT NULL,
-  `auras` longtext COLLATE utf8_unicode_ci NOT NULL,
-  `finished_quests` longtext COLLATE utf8_unicode_ci NOT NULL,
-  `honorPointsToAdd` int(10) NOT NULL,
-  `killsToday` int(10) unsigned NOT NULL DEFAULT '0',
-  `killsYesterday` int(10) unsigned NOT NULL DEFAULT '0',
-  `killsLifeTime` int(10) unsigned NOT NULL DEFAULT '0',
-  `honorToday` int(10) unsigned NOT NULL DEFAULT '0',
-  `honorYesterday` int(10) unsigned NOT NULL DEFAULT '0',
-  `honorPoints` int(10) unsigned NOT NULL DEFAULT '0',
-  `difficulty` int(10) unsigned NOT NULL DEFAULT '0',
-  UNIQUE KEY `guid` (`insert_temp_guid`),
-  KEY `acct` (`acct`),
-  KEY `guildid` (`guildid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- Dumping data for table characters_insert_queue: ~0 rows (approximately)
-/*!40000 ALTER TABLE `characters_insert_queue` DISABLE KEYS */;
-/*!40000 ALTER TABLE `characters_insert_queue` ENABLE KEYS */;
-
-
 -- Dumping structure for table character_achievement
 CREATE TABLE IF NOT EXISTS `character_achievement` (
   `guid` int(10) unsigned NOT NULL DEFAULT '0',
@@ -380,7 +285,7 @@ CREATE TABLE IF NOT EXISTS `character_db_version` (
 -- Dumping data for table character_db_version: ~1 rows (approximately)
 /*!40000 ALTER TABLE `character_db_version` DISABLE KEYS */;
 INSERT INTO `character_db_version` (`LastUpdate`) VALUES
-	('2016-03-28_01_gm_survey');
+	('2017-02-04_01_queue_tables');
 /*!40000 ALTER TABLE `character_db_version` ENABLE KEYS */;
 
 
@@ -849,45 +754,6 @@ CREATE TABLE IF NOT EXISTS `mailbox` (
 /*!40000 ALTER TABLE `mailbox` ENABLE KEYS */;
 
 
--- Dumping structure for table mailbox_insert_queue
-CREATE TABLE IF NOT EXISTS `mailbox_insert_queue` (
-  `sender_guid` bigint(30) NOT NULL,
-  `receiver_guid` int(30) NOT NULL,
-  `subject` varchar(200) NOT NULL,
-  `body` varchar(500) NOT NULL,
-  `stationary` int(30) NOT NULL,
-  `money` int(30) NOT NULL,
-  `item_id` int(30) NOT NULL,
-  `item_stack` int(30) NOT NULL,
-  `item_id2` int(30) NOT NULL DEFAULT '0',
-  `item_stack2` int(30) NOT NULL DEFAULT '0',
-  `item_id3` int(30) NOT NULL DEFAULT '0',
-  `item_stack3` int(30) NOT NULL DEFAULT '0',
-  `item_id4` int(30) NOT NULL DEFAULT '0',
-  `item_stack4` int(30) NOT NULL DEFAULT '0',
-  `item_id5` int(30) NOT NULL DEFAULT '0',
-  `item_stack5` int(30) NOT NULL DEFAULT '0',
-  `item_id6` int(30) NOT NULL DEFAULT '0',
-  `item_stack6` int(30) NOT NULL DEFAULT '0',
-  `item_id7` int(30) NOT NULL DEFAULT '0',
-  `item_stack7` int(30) NOT NULL DEFAULT '0',
-  `item_id8` int(30) NOT NULL DEFAULT '0',
-  `item_stack8` int(30) NOT NULL DEFAULT '0',
-  `item_id9` int(30) NOT NULL DEFAULT '0',
-  `item_stack9` int(30) NOT NULL DEFAULT '0',
-  `item_id10` int(30) NOT NULL DEFAULT '0',
-  `item_stack10` int(30) NOT NULL DEFAULT '0',
-  `item_id11` int(30) NOT NULL DEFAULT '0',
-  `item_stack11` int(30) NOT NULL DEFAULT '0',
-  `item_id12` int(30) NOT NULL DEFAULT '0',
-  `item_stack12` int(30) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- Dumping data for table mailbox_insert_queue: ~0 rows (approximately)
-/*!40000 ALTER TABLE `mailbox_insert_queue` DISABLE KEYS */;
-/*!40000 ALTER TABLE `mailbox_insert_queue` ENABLE KEYS */;
-
-
 -- Dumping structure for table playerbugreports
 CREATE TABLE IF NOT EXISTS `playerbugreports` (
   `UID` int(10) unsigned NOT NULL,
@@ -961,31 +827,6 @@ CREATE TABLE IF NOT EXISTS `playeritems` (
 -- Dumping data for table playeritems: ~0 rows (approximately)
 /*!40000 ALTER TABLE `playeritems` DISABLE KEYS */;
 /*!40000 ALTER TABLE `playeritems` ENABLE KEYS */;
-
-
--- Dumping structure for table playeritems_insert_queue
-CREATE TABLE IF NOT EXISTS `playeritems_insert_queue` (
-  `ownerguid` int(10) unsigned NOT NULL DEFAULT '0',
-  `entry` int(10) unsigned NOT NULL DEFAULT '0',
-  `wrapped_item_id` int(30) NOT NULL DEFAULT '0',
-  `wrapped_creator` int(30) NOT NULL DEFAULT '0',
-  `creator` int(10) unsigned NOT NULL DEFAULT '0',
-  `count` int(10) unsigned NOT NULL DEFAULT '0',
-  `charges` int(10) unsigned NOT NULL DEFAULT '0',
-  `flags` int(10) unsigned NOT NULL DEFAULT '0',
-  `randomprop` int(10) unsigned NOT NULL DEFAULT '0',
-  `randomsuffix` int(30) NOT NULL,
-  `itemtext` int(10) unsigned NOT NULL DEFAULT '0',
-  `durability` int(10) unsigned NOT NULL DEFAULT '0',
-  `containerslot` int(11) NOT NULL DEFAULT '-1' COMMENT 'couldnt find this being used in source',
-  `slot` tinyint(4) NOT NULL DEFAULT '0',
-  `enchantments` longtext COLLATE utf8_unicode_ci NOT NULL,
-  KEY `ownerguid` (`ownerguid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- Dumping data for table playeritems_insert_queue: ~0 rows (approximately)
-/*!40000 ALTER TABLE `playeritems_insert_queue` DISABLE KEYS */;
-/*!40000 ALTER TABLE `playeritems_insert_queue` ENABLE KEYS */;
 
 
 -- Dumping structure for table playerpets

@@ -643,8 +643,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void CharacterEnumProc(QueryResultVector & results, uint32 AccountId);
         void LoadAccountDataProc(QueryResultVector & results, uint32 AccountId);
 
-        void PollCharacterInsertQueue(DatabaseConnection* con);
-        void PollMailboxInsertQueue(DatabaseConnection* con);
         void DisconnectUsersWithAccount(const char* account, WorldSession* session);
         void DisconnectUsersWithIP(const char* ip, WorldSession* session);
         void DisconnectUsersWithPlayerName(const char* plr, WorldSession* session);
