@@ -473,6 +473,15 @@ void GameObject::CastSpell(uint64 TargetGUID, uint32 SpellID)
     CastSpell(TargetGUID, sp);
 }
 
+//MIT
+void GameObject::SetCustomAnim(uint32_t anim)
+{
+    WorldPacket data(SMSG_GAMEOBJECT_CUSTOM_ANIM, 12);
+    data << uint64_t(GetGUID());
+    data << uint32_t(anim);
+    SendMessageToSet(&data, false, false);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Class functions for GameObject_Door
 GameObject_Door::GameObject_Door(uint64 GUID) : GameObject(GUID)
@@ -971,11 +980,7 @@ void GameObject_FishingNode::EndFishing(bool abort)
 
 void GameObject_FishingNode::EventFishHooked()
 {
-    WorldPacket data(SMSG_GAMEOBJECT_CUSTOM_ANIM, 12);
-    data << uint64(GetGUID());
-    data << uint32(0);          // value < 4
-    SendMessageToSet(&data, false, false);
-
+    SetCustomAnim();
     FishHooked = true;
 }
 

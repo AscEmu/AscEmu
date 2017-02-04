@@ -508,6 +508,11 @@ class SERVER_DECL GameObject : public Object
         uint32 m_overrides;             ///See enum GAMEOBJECT_OVERRIDES!
 
         uint64 m_rotation;
+
+    //MIT
+    public:
+
+        void SetCustomAnim(uint32_t anim = 0);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

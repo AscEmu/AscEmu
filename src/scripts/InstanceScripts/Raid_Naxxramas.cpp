@@ -1880,15 +1880,7 @@ void PlagueFissureGO::SetState(uint32 pState)
 
 void PlagueFissureGO::DoErrupt()
 {
-    WorldPacket data(SMSG_GAMEOBJECT_CUSTOM_ANIM, 8 + 4);
-    data << _gameobject->GetGUID();
-    data << (uint32)0;
-
-    //send packet to inrange players
-    for (std::set<Object*>::iterator plrIter = _gameobject->GetInRangePlayerSetBegin(); plrIter != _gameobject->GetInRangePlayerSetEnd(); ++plrIter)
-    {
-        static_cast<Player*>(*plrIter)->SendPacket(&data);
-    };
+    _gameobject->SetCustomAnim();
 
     Creature* pFissureTrigger = _gameobject->GetMapMgr()->GetInterface()->SpawnCreature(15384, _gameobject->GetPositionX(), _gameobject->GetPositionY(), _gameobject->GetPositionZ(), _gameobject->GetOrientation(), true, false, 0, 0, 1);
     if (!pFissureTrigger)
