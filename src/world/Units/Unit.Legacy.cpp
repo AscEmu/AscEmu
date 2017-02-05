@@ -3125,7 +3125,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
             // not an attack from behind so we may dodge/parry/block
 
             //uint32 pClass = plr->getClass();
-            //uint32 pLevel = (getLevel()> PLAYER_LEVEL_CAP) ? PLAYER_LEVEL_CAP : getLevel();
+            //uint32 pLevel = (getLevel()> DBC_PLAYER_LEVEL_CAP) ? DBC_PLAYER_LEVEL_CAP : getLevel();
 
             if (weapon_damage_type != RANGED)
             {

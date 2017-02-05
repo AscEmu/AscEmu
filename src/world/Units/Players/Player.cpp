@@ -5075,8 +5075,8 @@ float Player::GetDodgeChance()
     float chance = 0.0f;
     uint32 level = getLevel();
 
-    if (level > sWorld.m_genLevelCap)
-        level = sWorld.m_genLevelCap;
+    if (level > sWorld.m_levelCap)
+        level = sWorld.m_levelCap;
 
     // Base dodge + dodge from agility
 
@@ -5094,7 +5094,7 @@ float Player::GetDodgeChance()
     // Dodge from spells
     chance += GetDodgeFromSpell();
 
-    return std::max(chance, 0.0f);   // Make sure we don't have a negative chance
+    return std::max(chance, 0.0f); // Make sure we don't have a negative chance
 }
 
 // Gets block chances before defense skill is applied
@@ -5496,11 +5496,14 @@ void Player::UpdateStats()
         if (GetPower(POWER_TYPE_MANA) > res)
             SetPower(POWER_TYPE_MANA, res);
 
-        //Manaregen
+        // Manaregen
         // table from http://www.wowwiki.com/Mana_regeneration
         const static float BaseRegen[80] = { 0.034965f, 0.034191f, 0.033465f, 0.032526f, 0.031661f, 0.031076f, 0.030523f, 0.029994f, 0.029307f, 0.028661f, 0.027584f, 0.026215f, 0.025381f, 0.024300f, 0.023345f, 0.022748f, 0.021958f, 0.021386f, 0.020790f, 0.020121f, 0.019733f, 0.019155f, 0.018819f, 0.018316f, 0.017936f, 0.017576f, 0.017201f, 0.016919f, 0.016581f, 0.016233f, 0.015994f, 0.015707f, 0.015464f, 0.015204f, 0.014956f, 0.014744f, 0.014495f, 0.014302f, 0.014094f, 0.013895f, 0.013724f, 0.013522f, 0.013363f, 0.013175f, 0.012996f, 0.012853f, 0.012687f, 0.012539f, 0.012384f, 0.012233f, 0.012113f, 0.011973f, 0.011859f, 0.011714f, 0.011575f, 0.011473f, 0.011342f, 0.011245f, 0.011110f, 0.010999f, 0.010700f, 0.010522f, 0.010290f, 0.010119f, 0.009968f, 0.009808f, 0.009651f, 0.009553f, 0.009445f, 0.009327f, 0.008859f, 0.008415f, 0.007993f, 0.007592f, 0.007211f, 0.006849f, 0.006506f, 0.006179f, 0.005869f, 0.005575f };
+
         uint32 level = getLevel();
-        if (level > 80) level = 80;
+        
+        if (level > 80)
+            level = 80;
         //float amt = (0.001f + sqrt((float)Intellect) * Spirit * BaseRegen[level-1])*PctPowerRegenModifier[POWER_TYPE_MANA];
 
         // Mesmer: new Manaregen formula.
@@ -5520,7 +5523,6 @@ void Player::UpdateStats()
         SetCastSpeedMod(value);
         SpellHasteRatingBonus = haste;    // keep value for next run
     }
-
 
     // Shield Block
     Item* shield = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_OFFHAND);
@@ -9974,13 +9976,9 @@ void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
         return;
 
     // force to be within limits
-#if DBC_PLAYER_LEVEL_CAP==80
-    Curr_sk = (Curr_sk > 450 ? 450 : (Curr_sk < 1 ? 1 : Curr_sk));
-    Max_sk = (Max_sk > 450 ? 450 : Max_sk);
-#else
-    Curr_sk = (Curr_sk > 375 ? 375 : (Curr_sk < 1 ? 1 : Curr_sk));
-    Max_sk = (Max_sk > 375 ? 375 : Max_sk);
-#endif
+    Curr_sk = (Curr_sk > DBC_PLAYER_SKILL_MAX ? DBC_PLAYER_SKILL_MAX : (Curr_sk < 1 ? 1 : Curr_sk));
+    Max_sk = (Max_sk > DBC_PLAYER_SKILL_MAX ? DBC_PLAYER_SKILL_MAX : Max_sk);
+ 
     ItemProf* prof;
     SkillMap::iterator itr = m_skills.find(SkillLine);
     if (itr != m_skills.end())
@@ -10204,8 +10202,8 @@ void Player::_UpdateMaxSkillCounts()
         else if (itr->second.Skill->type == SKILL_TYPE_PROFESSION || itr->second.Skill->type == SKILL_TYPE_SECONDARY)
         {
             new_max = itr->second.MaximumValue;
-            if (new_max >= 450)
-                new_max = 450;
+            if (new_max >= DBC_PLAYER_SKILL_MAX)
+                new_max = DBC_PLAYER_SKILL_MAX;
         }
         else
         {
@@ -10213,13 +10211,9 @@ void Player::_UpdateMaxSkillCounts()
         }
 
         // force to be within limits
-#if DBC_PLAYER_LEVEL_CAP==80
-        if (new_max > 450)
-            new_max = 450;
-#else
-        if (new_max > 375)
-            new_max = 375;
-#endif
+        if (new_max > DBC_PLAYER_SKILL_MAX)
+            new_max = DBC_PLAYER_SKILL_MAX;
+
         if (new_max < 1)
             new_max = 1;
 
@@ -10381,11 +10375,7 @@ void Player::_AdvanceAllSkills(uint32 count)
 void Player::_ModifySkillMaximum(uint32 SkillLine, uint32 NewMax)
 {
     // force to be within limits
-#if DBC_PLAYER_LEVEL_CAP==80
-    NewMax = (NewMax > 450 ? 450 : NewMax);
-#else
-    NewMax = (NewMax > 375 ? 375 : NewMax);
-#endif
+    NewMax = (NewMax > DBC_PLAYER_SKILL_MAX ? DBC_PLAYER_SKILL_MAX : NewMax);
 
     SkillMap::iterator itr = m_skills.find(SkillLine);
     if (itr == m_skills.end())
