@@ -53,17 +53,18 @@ UpdateMask Player::m_visibleUpdateMask;
 
 #define COLLISION_INDOOR_CHECK_INTERVAL 1000
 
-static const uint8 glyphMask[81] =
+static const uint8 glyphMask[81/*DBC_PLAYER_LEVEL_CAP+1*/] =
 {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,    //lvl 0-14, no glyphs
-    3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,    //lvl 15-29, 1 Minor 1 Major
-    11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11,     //lvl 30-49, 1 Minor 2 Major
-    15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,     //lvl 50-69, 2 Minor 2 Major
-    31, 31, 31, 31, 31, 31, 31, 31, 31, 31,     //lvl 70-79, 3 Minor 2 Major
-    63 //lvl 80, 3 Minor 3 Major
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,                                         // lvl 0-14, no glyphs
+    3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,                                         // lvl 15-29, 1 Minor 1 Major
+    11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11,      // lvl 30-49, 1 Minor 2 Major
+    15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,      // lvl 50-69, 2 Minor 2 Major
+    31, 31, 31, 31, 31, 31, 31, 31, 31, 31,                                              // lvl 70-79, 3 Minor 2 Major
+    63                                                                                   // lvl 80, 3 Minor 3 Major
 };
 
-static const float crit_to_dodge[MAX_PLAYER_CLASSES] = {
+static const float crit_to_dodge[MAX_PLAYER_CLASSES] =
+{
     0.0f,      // empty
     1.1f,      // Warrior
     1.0f,      // Paladin
@@ -4109,8 +4110,8 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         int32 col = 0;
 
         // this is needed because the heirloom items don't scale over lvl80
-        if (plrLevel > 80)
-            plrLevel = 80;
+        if (plrLevel > DBC_PLAYER_LEVEL_CAP)
+            plrLevel = DBC_PLAYER_LEVEL_CAP;
 
         for (uint32 i = 0; i < sScalingStatValuesStore.GetNumRows(); ++i)
         {
@@ -5498,12 +5499,15 @@ void Player::UpdateStats()
 
         // Manaregen
         // table from http://www.wowwiki.com/Mana_regeneration
-        const static float BaseRegen[80] = { 0.034965f, 0.034191f, 0.033465f, 0.032526f, 0.031661f, 0.031076f, 0.030523f, 0.029994f, 0.029307f, 0.028661f, 0.027584f, 0.026215f, 0.025381f, 0.024300f, 0.023345f, 0.022748f, 0.021958f, 0.021386f, 0.020790f, 0.020121f, 0.019733f, 0.019155f, 0.018819f, 0.018316f, 0.017936f, 0.017576f, 0.017201f, 0.016919f, 0.016581f, 0.016233f, 0.015994f, 0.015707f, 0.015464f, 0.015204f, 0.014956f, 0.014744f, 0.014495f, 0.014302f, 0.014094f, 0.013895f, 0.013724f, 0.013522f, 0.013363f, 0.013175f, 0.012996f, 0.012853f, 0.012687f, 0.012539f, 0.012384f, 0.012233f, 0.012113f, 0.011973f, 0.011859f, 0.011714f, 0.011575f, 0.011473f, 0.011342f, 0.011245f, 0.011110f, 0.010999f, 0.010700f, 0.010522f, 0.010290f, 0.010119f, 0.009968f, 0.009808f, 0.009651f, 0.009553f, 0.009445f, 0.009327f, 0.008859f, 0.008415f, 0.007993f, 0.007592f, 0.007211f, 0.006849f, 0.006506f, 0.006179f, 0.005869f, 0.005575f };
+        const static float BaseRegen[80/*DBC_PLAYER_LEVEL_CAP*/] = 
+        { 
+            0.034965f, 0.034191f, 0.033465f, 0.032526f, 0.031661f, 0.031076f, 0.030523f, 0.029994f, 0.029307f, 0.028661f, 0.027584f, 0.026215f, 0.025381f, 0.024300f, 0.023345f, 0.022748f, 0.021958f, 0.021386f, 0.020790f, 0.020121f, 0.019733f, 0.019155f, 0.018819f, 0.018316f, 0.017936f, 0.017576f, 0.017201f, 0.016919f, 0.016581f, 0.016233f, 0.015994f, 0.015707f, 0.015464f, 0.015204f, 0.014956f, 0.014744f, 0.014495f, 0.014302f, 0.014094f, 0.013895f, 0.013724f, 0.013522f, 0.013363f, 0.013175f, 0.012996f, 0.012853f, 0.012687f, 0.012539f, 0.012384f, 0.012233f, 0.012113f, 0.011973f, 0.011859f, 0.011714f, 0.011575f, 0.011473f, 0.011342f, 0.011245f, 0.011110f, 0.010999f, 0.010700f, 0.010522f, 0.010290f, 0.010119f, 0.009968f, 0.009808f, 0.009651f, 0.009553f, 0.009445f, 0.009327f, 0.008859f, 0.008415f, 0.007993f, 0.007592f, 0.007211f, 0.006849f, 0.006506f, 0.006179f, 0.005869f, 0.005575f 
+        };
 
         uint32 level = getLevel();
         
-        if (level > 80)
-            level = 80;
+        if (level > DBC_PLAYER_LEVEL_CAP)
+            level = DBC_PLAYER_LEVEL_CAP;
         //float amt = (0.001f + sqrt((float)Intellect) * Spirit * BaseRegen[level-1])*PctPowerRegenModifier[POWER_TYPE_MANA];
 
         // Mesmer: new Manaregen formula.
@@ -5543,8 +5547,7 @@ void Player::UpdateStats()
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
         if (m_auras[x] != NULL)
         {
-            if (m_auras[x]->HasModType(SPELL_AURA_MOD_ATTACK_POWER_BY_STAT_PCT) ||
-                m_auras[x]->HasModType(SPELL_AURA_MOD_RANGED_ATTACK_POWER_BY_STAT_PCT))
+            if (m_auras[x]->HasModType(SPELL_AURA_MOD_ATTACK_POWER_BY_STAT_PCT) || m_auras[x]->HasModType(SPELL_AURA_MOD_RANGED_ATTACK_POWER_BY_STAT_PCT))
                 m_auras[x]->UpdateModifiers();
         }
 
@@ -5554,10 +5557,10 @@ void Player::UpdateStats()
 
 uint32 Player::SubtractRestXP(uint32 amount)
 {
-    if (getLevel() >= GetMaxLevel())        // Save CPU, don't waste time on this if you've reached max_level
+    if (getLevel() >= GetMaxLevel()) // Save CPU, don't waste time on this if you've reached max_level
         amount = 0;
 
-    int32 restAmount = m_restAmount - (amount << 1);                                    // remember , we are dealing with xp without restbonus, so multiply by 2
+    int32 restAmount = m_restAmount - (amount << 1); // remember , we are dealing with xp without restbonus, so multiply by 2
 
     if (restAmount < 0)
         m_restAmount = 0;
@@ -5565,7 +5568,7 @@ uint32 Player::SubtractRestXP(uint32 amount)
         m_restAmount = restAmount;
 
     LOG_DEBUG("Subtracted %d rest XP to a total of %d", amount, m_restAmount);
-    UpdateRestState();                                                                    // Update clients interface with new values.
+    UpdateRestState(); // Update clients interface with new values.
     return amount;
 }
 
@@ -11450,8 +11453,8 @@ void Player::UpdateGlyphs()
         }
     }
 
-    if (level > 80)
-        level = 80;
+    if (level > DBC_PLAYER_LEVEL_CAP)
+        level = DBC_PLAYER_LEVEL_CAP;
 
     // Enable number of glyphs depending on level
     SetUInt32Value(PLAYER_GLYPHS_ENABLED, glyphMask[level]);
