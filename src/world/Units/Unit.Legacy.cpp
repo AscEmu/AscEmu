@@ -6575,7 +6575,7 @@ void Unit::SetFacing(float newo)
 
 float Unit::get_chance_to_daze(Unit* target)
 {
-    if (target->getLevel() < CREATURE_DAZE_MIN_LEVEL)   // since 3.3.0
+    if (target->getLevel() < CREATURE_DAZE_MIN_LEVEL) // since 3.3.0
         return 0.0f;
     float attack_skill = getLevel() * 5.0f;
     float defense_skill;

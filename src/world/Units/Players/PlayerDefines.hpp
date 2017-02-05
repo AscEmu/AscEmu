@@ -41,6 +41,7 @@ const float playerNormalFlightSpeed = 7.0f;
 ///
 /// \param level cap
 /// 
+/// Vanilla = 60
 /// The Burning Crusade = 70
 /// Wrath of the Lich King = 80
 /// Cataclysm = 85
@@ -57,6 +58,7 @@ const float playerNormalFlightSpeed = 7.0f;
 ///
 /// \param skill max
 /// 
+/// Vanilla = 300
 /// The Burning Crusade = 375
 /// Wrath of the Lich King = 450
 /// Cataclysm = 525
