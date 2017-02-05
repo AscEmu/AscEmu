@@ -40,7 +40,8 @@ const float playerNormalFlightSpeed = 7.0f;
 /// DBC_PLAYER_LEVEL_CAP
 ///
 /// \param level cap
-/// 
+///
+/// Vanilla = 60
 /// The Burning Crusade = 70
 /// Wrath of the Lich King = 80
 /// Cataclysm = 85
@@ -56,7 +57,8 @@ const float playerNormalFlightSpeed = 7.0f;
 /// DBC_PLAYER_SKILL_MAX
 ///
 /// \param skill max
-/// 
+///
+/// Vanilla = 300
 /// The Burning Crusade = 375
 /// Wrath of the Lich King = 450
 /// Cataclysm = 525
