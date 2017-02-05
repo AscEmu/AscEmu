@@ -1135,22 +1135,22 @@ class SpellCastTargets
         float m_srcX, m_srcY, m_srcZ;
         uint64 unkuint64_2;
         float m_destX, m_destY, m_destZ;
-    std::string m_strTarget;
+        std::string m_strTarget;
 
         uint32 GetTargetMask() { return m_targetMask; }
         bool HasSrc()
-		{
-			if (GetTargetMask() & TARGET_FLAG_SOURCE_LOCATION)
-				return true;
-			return false;
-		}
-		bool HasDst() 
-		{
-			if (GetTargetMask() & TARGET_FLAG_DEST_LOCATION)
-				return true;
-			return false;
-		}
-		bool HasDstOrSrc() { return (HasSrc() || HasDst()); }
+        {
+            if (GetTargetMask() & TARGET_FLAG_SOURCE_LOCATION)
+                return true;
+            return false;
+        }
+        bool HasDst() 
+        {
+            if (GetTargetMask() & TARGET_FLAG_DEST_LOCATION)
+                return true;
+            return false;
+        }
+        bool HasDstOrSrc() { return (HasSrc() || HasDst()); }
 };
 
 enum SpellState
