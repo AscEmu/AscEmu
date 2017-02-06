@@ -528,9 +528,46 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
             creatureProperties.killcredit[0] = fields[1].GetUInt32();
             creatureProperties.killcredit[1] = fields[2].GetUInt32();
             creatureProperties.Male_DisplayID = fields[3].GetUInt32();
+            if (creatureProperties.Male_DisplayID != 0)
+            {
+                DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Male_DisplayID);
+                if (creature_display == nullptr)
+                {
+                    LogError("Table %s includes invalid Male_DisplayID %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Male_DisplayID, entry);
+                    creatureProperties.Male_DisplayID = 0;
+                }
+            }
             creatureProperties.Female_DisplayID = fields[4].GetUInt32();
+            if (creatureProperties.Female_DisplayID != 0)
+            {
+                DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Female_DisplayID);
+                if (creature_display == nullptr)
+                {
+                    LogError("Table %s includes invalid Female_DisplayID %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Female_DisplayID, entry);
+                    creatureProperties.Female_DisplayID = 0;
+                }
+            }
             creatureProperties.Male_DisplayID2 = fields[5].GetUInt32();
+            if (creatureProperties.Male_DisplayID2 != 0)
+            {
+                DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Male_DisplayID2);
+                if (creature_display == nullptr)
+                {
+                    LogError("Table %s includes invalid Male_DisplayID2 %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Male_DisplayID2, entry);
+                    creatureProperties.Male_DisplayID2 = 0;
+                }
+            }
             creatureProperties.Female_DisplayID2 = fields[6].GetUInt32();
+            if (creatureProperties.Female_DisplayID2 != 0)
+            {
+                DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Female_DisplayID2);
+                if (creature_display == nullptr)
+                {
+                    LogError("Table %s includes invalid Female_DisplayID2 %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Female_DisplayID2, entry);
+                    creatureProperties.Female_DisplayID2 = 0;
+                }
+            }
+
             creatureProperties.Name = fields[7].GetString();
             creatureProperties.SubName = fields[8].GetString();
             creatureProperties.info_str = fields[9].GetString();
