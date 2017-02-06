@@ -1210,7 +1210,7 @@ void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus
     {
         if (IS_ARENA(Type))
         {
-            data << uint32(0);        // Queue Slot 0..2. Only the first slot is used in arcemu!
+            data << uint32(0);                // Queue Slot 0..2. Only the first slot is used in arcemu!
             switch (Type)
             {
                 case BATTLEGROUND_ARENA_2V2:
@@ -1228,10 +1228,10 @@ void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus
             data << uint8(0xC);
             data << uint32(6);
             data << uint16(0x1F90);
-            data << uint8(0);                // 3.3.0
-            data << uint8(0);                // 3.3.0
+            data << uint8(0);                 // 3.3.0
+            data << uint8(0);                 // 3.3.0
             data << uint32(11);
-            data << uint8(RatedMatch);       // 1 = rated match
+            data << uint8(RatedMatch);        // 1 = rated match
         }
         else
         {
@@ -1239,8 +1239,8 @@ void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus
             data << uint8(0);
             data << uint8(2);
             data << Type;
-            data << uint8(0);                // 3.3.0
-            data << uint8(0);                // 3.3.0
+            data << uint8(0);                 // 3.3.0
+            data << uint8(0);                 // 3.3.0
             data << uint16(0x1F90);
             data << InstanceID;
             data << uint8(0);
@@ -1250,11 +1250,11 @@ void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus
 
         switch (Status)
         {
-            case BGSTATUS_INQUEUE:                    // Waiting in queue
+            case BGSTATUS_INQUEUE:            // Waiting in queue
                 data << uint32(60);
-                data << uint32(0);    // Time / Elapsed time
+                data << uint32(0);            // Time / Elapsed time
                 break;
-            case BGSTATUS_READY:                    // Ready to join!
+            case BGSTATUS_READY:              // Ready to join!
                 data << MapId;
                 data << uint64(0);
                 data << Time;

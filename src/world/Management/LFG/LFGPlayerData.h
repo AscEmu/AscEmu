@@ -53,7 +53,7 @@ class LfgPlayerData
         // Player
         LfgLockMap m_LockedDungeons;                       ///< Dungeons player can't do and reason
         // Queue
-        uint8_t m_Roles;                                     ///< Roles the player selected when joined LFG
+        uint8_t m_Roles;                                   ///< Roles the player selected when joined LFG
         std::string m_Comment;                             ///< Player comment used when joined LFG
         LfgDungeonSet m_SelectedDungeons;                  ///< Selected Dungeons when joined LFG
 };

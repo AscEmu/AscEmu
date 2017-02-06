@@ -1,5 +1,4 @@
 # Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
-
 message(STATUS "Applying settings for Windows system")
 
 set(LIBS_DIR ${CMAKE_INSTALL_PREFIX}/bin)
