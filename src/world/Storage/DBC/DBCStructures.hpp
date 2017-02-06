@@ -75,6 +75,7 @@ namespace DBC
             char const chat_channels_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
             char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixii";
             char const chr_races_format[] = "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
+            char const creature_display_info_format[] = "nxxxxxxxxxxxxxxx";
             char const creature_family_format[] = "nfifiiiiixssssssssssssssssxx";
             char const creature_spell_data_format[] = "niiiiiiii";
             char const currency_types_format[] = "xnxi";
@@ -699,6 +700,16 @@ namespace DBC
             //uint32 name_neutral_flags     // 64 string flags, unused
             //uint32 unk5[3]                // 65-67 unused
             uint32 expansion;               // 68
+        };
+
+        struct CreatureDisplayInfoEntry
+        {
+            uint32_t display_id;            // 0
+            //uint32_t model;               // 1
+            //uint32_t unk0                 // 2
+            //uint32_t InfoExtra;           // 3
+            //float size;                   // 4
+                                            // 5 - 15 unk
         };
 
         struct CreatureFamilyEntry
