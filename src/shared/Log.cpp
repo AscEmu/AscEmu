@@ -235,7 +235,7 @@ void AscEmuLog::ConsoleLogErrorFunction(bool file_only, const char* function, co
     WriteFile(error_log_file, message_buffer);
 }
 
-void AscEmuLog::ConsoleLogDetail(bool file_only, const char* format, ...)
+void AscEmuLog::ConsoleLogDetail(uint8_t color, bool file_only, const char* format, ...)
 {
     if (aelog_file_log_level < LL_DETAIL || normal_log_file == nullptr)
         return;
@@ -248,7 +248,25 @@ void AscEmuLog::ConsoleLogDetail(bool file_only, const char* format, ...)
     va_end(ap);
 
     if (!file_only)
+    {
+        switch (color)
+        {
+            case 0:
+                AscLog.SetConsoleColor(CONSOLE_COLOR_CYAN);
+                break;
+            case 1:
+                AscLog.SetConsoleColor(CONSOLE_COLOR_GREEN);
+                break;
+            default:
+                AscLog.SetConsoleColor(CONSOLE_COLOR_WHITE);
+                break;
+        }
+
         std::cout << message_buffer << std::endl;
+
+        AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL);
+    }
+        
 
     WriteFile(normal_log_file, message_buffer);
 }
