@@ -31,8 +31,6 @@ class DatabaseCleaner : public Singleton<DatabaseCleaner>
     protected:
 
         void CleanCharacters();
-        void CleanWorld();
-        void Optimize();
 };
 
 #endif // _DATABASECLEANER_H

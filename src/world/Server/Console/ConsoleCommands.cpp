@@ -260,7 +260,7 @@ bool HandleBanAccountCommand(BaseConsole* pConsole, int argc, const char* argv[]
     if (timeperiod == 0)
         return false;
 
-    uint32 banned = (timeperiod ? (uint32)UNIXTIME + timeperiod : 1);
+    uint32 banned = (uint32)UNIXTIME + timeperiod;
 
     char emptystring = 0;
     char* pReason;

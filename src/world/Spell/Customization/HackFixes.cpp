@@ -421,10 +421,12 @@ void Set_missing_spellLevel(SpellInfo* sp)
 
             if (teachspell)
             {
-                SpellInfo* spellInfo;
-                spellInfo = CheckAndReturnSpellEntry(teachspell);
-                spellInfo->spellLevel = new_level;
-                sp->spellLevel = new_level;
+                SpellInfo* spellInfo = CheckAndReturnSpellEntry(teachspell);
+                if (spellInfo != nullptr)
+                {
+                    spellInfo->spellLevel = new_level;
+                    sp->spellLevel = new_level;
+                }
             }
         }
     }
