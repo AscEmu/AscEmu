@@ -14,34 +14,34 @@ struct Timer
 
 class TimerMap : private std::multimap<uint32_t, Timer>
 {
-private:
-    Timer timer;
+    private:
+        Timer timer;
 
-public:
+    public:
     
-    // Resets all Timers
-    void Reset();
+        // Resets all Timers
+        void Reset();
 
-    // Updates All Timers for the given Phase by xx time
-    void Update(int32_t time, uint32_t phase);
+        // Updates All Timers for the given Phase by xx time
+        void Update(int32_t time, uint32_t phase);
 
-    // Adds A timer with the given Id , time and phase
-    void AddTimer(uint32_t timerId, int32_t time, uint32_t phase = 0);
+        // Adds A timer with the given Id , time and phase
+        void AddTimer(uint32_t timerId, int32_t time, uint32_t phase = 0);
 
-	// Executes all Timers
-    uint32_t ExecuteTimers(uint32_t phase);
+        // Executes all Timers
+        uint32_t ExecuteTimers(uint32_t phase);
 
-    // Get Timer 
-    int32_t GetTimer(uint32_t timerId);
+        // Get Timer 
+        int32_t GetTimer(uint32_t timerId);
 
-    // Delay all Timers
-    void DelayTimers(int32_t delay, uint32 phase);
+        // Delay all Timers
+        void DelayTimers(int32_t delay, uint32 phase);
 
-    // Delete Timer with the given Id
-    void DeleteTimer(uint32_t timerId);
+        // Delete Timer with the given Id
+        void DeleteTimer(uint32_t timerId);
 
-    // Search if a Timer is Already Existing
-    bool HasTimer(uint32_t timerId);
+        // Search if a Timer is Already Existing
+        bool HasTimer(uint32_t timerId);
 };
 
 #endif // _TIMER_H
