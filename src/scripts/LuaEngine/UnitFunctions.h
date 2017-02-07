@@ -831,9 +831,6 @@ class LuaUnit
         int flags = static_cast<int>(luaL_checkinteger(L, 6));
         int modelid = static_cast<int>(luaL_checkinteger(L, 7));
 
-        if (ptr == nullptr)
-            return 0;
-
         Creature* pCreature = static_cast<Creature*>(ptr);
         if (!pCreature->m_custom_waypoint_map)
         {
