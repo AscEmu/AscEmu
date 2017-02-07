@@ -693,6 +693,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         bool m_lfgForNonLfg;
         std::list<SpellInfo*> dummyspells;
         uint32 m_levelCap;
+        uint32 m_genLevelCap;
         bool m_limitedNames;
         bool m_useAccountData;
         bool m_AdditionalFun;

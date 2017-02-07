@@ -5076,8 +5076,8 @@ float Player::GetDodgeChance()
     float chance = 0.0f;
     uint32 level = getLevel();
 
-    if (level > sWorld.m_levelCap)
-        level = sWorld.m_levelCap;
+    if (level > sWorld.m_genLevelCap)
+        level = sWorld.m_genLevelCap;
 
     // Base dodge + dodge from agility
 

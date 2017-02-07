@@ -98,6 +98,7 @@ World::World()
 
     // max level player 
     m_levelCap = DBC_PLAYER_LEVEL_CAP;
+    m_genLevelCap = DBC_PLAYER_LEVEL_CAP; //! no delete
     StartingLevel = 1;
     m_limitedNames = false;
     m_banTable = NULL;
@@ -1478,7 +1479,7 @@ void World::Rehash(bool load)
     show_all_vendor_items = Config.OptionalConfig.GetBoolDefault("Optional", "ShowAllVendorItems", false);
 
     m_levelCap = Config.OptionalConfig.GetIntDefault("Optional", "LevelCap", DBC_PLAYER_LEVEL_CAP);
-
+    m_genLevelCap = Config.OptionalConfig.GetIntDefault("Optional", "GenLevelCap", DBC_PLAYER_LEVEL_CAP); //! no delete
     StartingLevel = Config.OptionalConfig.GetIntDefault("Optional", "StartingLevel", 1);
     if (StartingLevel > static_cast<int32>(m_levelCap))
         StartingLevel = static_cast<int32>(m_levelCap);
