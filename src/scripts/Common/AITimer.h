@@ -38,7 +38,7 @@ class TimerMap : private std::multimap<uint32_t, Timer>
         int32_t GetTimer(uint32_t timerId);
 
         // Delay all Timers
-        void DelayTimers(int32_t delay, uint32 phase);
+        void DelayTimers(int32_t delay, uint32_t phase);
 
         // Delete Timer with the given Id
         void DeleteTimer(uint32_t timerId);
