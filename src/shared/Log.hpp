@@ -71,7 +71,7 @@ class SERVER_DECL AscEmuLog : public Singleton<AscEmuLog>
         void ConsoleLogError(bool file_only, const char* format, ...);
         void ConsoleLogErrorFunction(bool file_only, const char* function, const char* format, ...);
 
-        void ConsoleLogDetail(bool file_only, const char* format, ...);
+        void ConsoleLogDetail(uint8_t color, bool file_only, const char* format, ...);
         void ConsoleLogDetailFunction(bool file_only, const char* function, const char* format, ...);
 
         void ConsoleLogDebugFlag(bool file_only, LogFlags log_flags, const char* format, ...);
@@ -87,9 +87,9 @@ class SERVER_DECL AscEmuLog : public Singleton<AscEmuLog>
 #define LogError(msg, ...) AscLog.ConsoleLogError(false, msg, ##__VA_ARGS__)
 
 /*! \brief Logging Level: Detail */
-#define LogDetail(msg, ...) AscLog.SetConsoleColor(CONSOLE_COLOR_CYAN); AscLog.ConsoleLogDetail(false, msg, ##__VA_ARGS__); AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL)
-#define LogNotice(msg, ...) AscLog.SetConsoleColor(CONSOLE_COLOR_GREEN); AscLog.ConsoleLogDetail(false, msg, ##__VA_ARGS__); AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL)
-#define LogWarning(msg, ...) AscLog.SetConsoleColor(CONSOLE_COLOR_WHITE); AscLog.ConsoleLogDetail(false, msg, ##__VA_ARGS__); AscLog.SetConsoleColor(CONSOLE_COLOR_NORMAL)
+#define LogDetail(msg, ...) AscLog.ConsoleLogDetail(0, false, msg, ##__VA_ARGS__)
+#define LogNotice(msg, ...) AscLog.ConsoleLogDetail(1, false, msg, ##__VA_ARGS__)
+#define LogWarning(msg, ...) AscLog.ConsoleLogDetail(2, false, msg, ##__VA_ARGS__)
 
 /*! \brief Logging Level: Debug */
 #define LogDebug(msg, ...) AscLog.ConsoleLogDebugFlag(false, LF_NONE, msg, ##__VA_ARGS__)
