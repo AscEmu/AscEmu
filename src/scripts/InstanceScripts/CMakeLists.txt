@@ -74,7 +74,7 @@ set(sources
     Raid_ZulAman.cpp 
     ../Common/Instance_Base.cpp 
     ../Common/Base.cpp 
-	../Common/AITimer.cpp
+    ../Common/AITimer.cpp
     Setup.cpp
     )
 
@@ -143,7 +143,7 @@ set(headers
     Raid_ZulAman.h
     Setup.h
     ../Common/Base.h
-	../Common/AITimer.h
+    ../Common/AITimer.h
     ../Common/EasyFunctions.h
     ../Common/Instance_Base.h
 )
