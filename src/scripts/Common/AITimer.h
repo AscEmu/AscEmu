@@ -3,6 +3,9 @@
 *This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include <cstdint>
+#include <map>
+
 #ifndef _TIMER_H
 #define _TIMER_H
 
