@@ -95,7 +95,7 @@ int32_t TimerMap::GetTimer(uint32_t timerId)
 }
 
 // Delay all Timers
-void TimerMap::DelayTimers(int32_t delay, uint32 phase)
+void TimerMap::DelayTimers(int32_t delay, uint32_t phase)
 {
     if (!empty())
     {
