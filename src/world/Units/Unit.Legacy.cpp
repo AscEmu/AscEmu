@@ -3125,7 +3125,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
             // not an attack from behind so we may dodge/parry/block
 
             //uint32 pClass = plr->getClass();
-            //uint32 pLevel = (getLevel()> PLAYER_LEVEL_CAP) ? PLAYER_LEVEL_CAP : getLevel();
+            //uint32 pLevel = (getLevel()> DBC_PLAYER_LEVEL_CAP) ? DBC_PLAYER_LEVEL_CAP : getLevel();
 
             if (weapon_damage_type != RANGED)
             {
@@ -6575,7 +6575,7 @@ void Unit::SetFacing(float newo)
 
 float Unit::get_chance_to_daze(Unit* target)
 {
-    if (target->getLevel() < CREATURE_DAZE_MIN_LEVEL)   // since 3.3.0
+    if (target->getLevel() < CREATURE_DAZE_MIN_LEVEL) // since 3.3.0
         return 0.0f;
     float attack_skill = getLevel() * 5.0f;
     float defense_skill;

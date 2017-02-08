@@ -1,11 +1,9 @@
-
 # Find pcre
 # Find the native PCRE includes and library
 #
 # PCRE_INCLUDE_DIRS - where to find pcre.h, etc.
 # PCRE_LIBRARIES - List of libraries when using pcre.
 # PCRE_FOUND - True if pcre found.
-
 
 IF (PCRE_INCLUDE_DIRS)
   # Already in cache, be silent

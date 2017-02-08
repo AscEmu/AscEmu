@@ -30,17 +30,52 @@ enum PlayerTeam : int
     MAX_PLAYER_TEAMS
 };
 
-
 const float playerNormalRunSpeed = 7.0f;
 const float playerNormalSwimSpeed = 4.72222f;
 const float playerNormalFlightSpeed = 7.0f;
 
 #define PLAYER_HONORLESS_TARGET_SPELL 2479
 
+//////////////////////////////////////////////////////////////////////////////////////////
+/// DBC_PLAYER_LEVEL_CAP
+///
+/// \param level cap
+///
+/// Vanilla = 60
+/// The Burning Crusade = 70
+/// Wrath of the Lich King = 80
+/// Cataclysm = 85
+/// Mists of Pandaria = 90
+/// Warlords of Draenor = 100
+/// Legion = 110
+///
+//////////////////////////////////////////////////////////////////////////////////////////
+
 #define DBC_PLAYER_LEVEL_CAP 80
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// DBC_PLAYER_SKILL_MAX
+///
+/// \param skill max
+///
+/// Vanilla = 300
+/// The Burning Crusade = 375
+/// Wrath of the Lich King = 450
+/// Cataclysm = 525
+/// Mists of Pandaria = 600
+/// Warlords of Draenor = 700
+/// Legion = 800
+///
+//////////////////////////////////////////////////////////////////////////////////////////
+
+#define DBC_PLAYER_SKILL_MAX 450
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Minimum level required arena
 #define PLAYER_ARENA_MIN_LEVEL 70
 
 #define PLAYER_EXPLORED_ZONES_LENGTH 128
+
 #define ACHIEVEMENT_SEND_DELAY 1000 /// we have this delay of sending auras to other players so client will have time to create object first
 #define LOGIN_CIENT_SEND_DELAY 1000 /// we have this delay of sending auras to other players so client will have time to create object first
 

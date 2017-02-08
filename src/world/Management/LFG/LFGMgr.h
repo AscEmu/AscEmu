@@ -265,12 +265,12 @@ struct LfgPlayerBoot
 class LfgMatch;
 class LfgMgr : public Singleton < LfgMgr >, EventableObject
 {
-	public:
+    public:
 
-		LfgMgr();
-		~LfgMgr();
+        LfgMgr();
+        ~LfgMgr();
 
-		void Update(uint32 diff);
+        void Update(uint32 diff);
 
         // Reward
         void LoadRewards();
@@ -345,8 +345,8 @@ class LfgMgr : public Singleton < LfgMgr >, EventableObject
         LfgType GetDungeonType(uint32 dungeon);
         std::string ConcatenateGuids(LfgGuidList check);
 
-		// General variables
-		bool m_update;                                     ///< Doing an update?
+        // General variables
+        bool m_update;                                     ///< Doing an update?
         uint32 m_QueueTimer;                               ///< used to check interval of update
         uint32 m_lfgProposalId;                            ///< used as internal counter for proposals
         int32 m_WaitTimeAvg;                               ///< Average wait time to find a group queuing as multiple roles
@@ -373,18 +373,18 @@ class LfgMgr : public Singleton < LfgMgr >, EventableObject
         LfgPlayerDataMap m_Players;                        ///< Player data
         LfgGroupDataMap m_Groups;                          ///< Group data
 
-	protected:
+    protected:
 
-		Mutex m_lock;
+        Mutex m_lock;
 };
 
 #define sLfgMgr LfgMgr::getSingleton()
 
 template <class C> typename C::value_type const& SelectRandomContainerElement(C const& container)
 {
-	typename C::const_iterator it = container.begin();
-	std::advance(it, RandomUInt(0, static_cast<uint32>(container.size() - 1)));
-	return *it;
+    typename C::const_iterator it = container.begin();
+    std::advance(it, RandomUInt(0, static_cast<uint32>(container.size() - 1)));
+    return *it;
 }
 
 

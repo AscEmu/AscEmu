@@ -216,8 +216,8 @@ class SERVER_DECL AIInterface : public IUpdatable
         // Misc
         void Init(Unit* un, AIType at, Movement::WaypointMovementScript mt);
         void Init(Unit* un, AIType at, Movement::WaypointMovementScript mt, Unit* owner);   /// used for pets
-    Unit* GetUnit() const;
-    Unit* GetPetOwner() const;
+        Unit* GetUnit() const;
+        Unit* GetPetOwner() const;
         void DismissPet();
         void SetUnitToFollow(Unit* un);
         void SetUnitToFollow(uint64 guid) { m_UnitToFollow = guid; };

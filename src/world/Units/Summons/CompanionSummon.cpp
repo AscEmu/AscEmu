@@ -18,7 +18,6 @@
  *
  */
 
-
 #include "../../StdAfx.h"
 #include "Units/Summons/CompanionSummon.h"
 
