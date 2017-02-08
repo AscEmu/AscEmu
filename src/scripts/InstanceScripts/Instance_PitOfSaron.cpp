@@ -131,6 +131,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
 
         // Timers
         mSaroniteTimer = INVALIDATE_TIMER;
+        mPermafrostTimer = INVALIDATE_TIMER;
         mChllingWaveTimer = INVALIDATE_TIMER;
         mDeepFreezeTimer = INVALIDATE_TIMER;
 
@@ -319,6 +320,8 @@ class IckAI : MoonScriptBossAI
         // Ick Spell Announcements
         mPursue->AddAnnouncement("Ick is chasing you!");
         mPoisonNova->AddAnnouncement("Ick begins to unleash a toxic poison cloud!");
+
+        Phase = BATTLE;
     }
 
     void OnCombatStart(Unit* pTarget)
@@ -512,6 +515,8 @@ class KrickAI : MoonScriptBossAI
         mOutroTimer = INVALIDATE_TIMER;
         mBarrageTimer = INVALIDATE_TIMER;
 
+        mBarrageSummon = nullptr;
+
         // Ick
         mIckAI = nullptr;
         JainaOrSylvanas = nullptr;
@@ -521,11 +526,13 @@ class KrickAI : MoonScriptBossAI
 
         // Outro Execute only 1 time
         mOutroTimerStarted = false;
+
+        // Set Battle
+        Phase = BATTLE;
     }
 
     void OnCombatStart(Unit* pTarget)
     {
-
         // Set Battle
         Phase = BATTLE;
 
