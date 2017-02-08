@@ -29,7 +29,7 @@ initialiseSingleton(DatabaseCleaner);
 
 void DatabaseCleaner::Run()
 {
-    LogNotice("DatabaseCleaner : Stage 1 of 3: Cleaning characters...");
+    LogNotice("DatabaseCleaner : Cleaning characters...");
     CleanCharacters();
 }
 
