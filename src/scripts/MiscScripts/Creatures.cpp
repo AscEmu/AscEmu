@@ -443,7 +443,9 @@ class NestlewoodOwlkin : public CreatureAIScript
     public:
         ADD_CREATURE_FACTORY_FUNCTION(NestlewoodOwlkin);
         NestlewoodOwlkin(Creature* pCreature) : CreatureAIScript(pCreature)
-        { }
+        {
+            respawn = false;
+        }
 
         void AIUpdate()
         {
