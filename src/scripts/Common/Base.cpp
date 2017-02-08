@@ -677,7 +677,7 @@ EmoteDesc* MoonScriptCreatureAI::AddEmote(EventType pEventType, uint32_t scriptt
 {
     EmoteDesc* NewEmote = nullptr;
     NpcScriptText const* ct = sMySQLStore.GetNpcScriptText(scripttext);
-    TextType pType;
+    TextType pType = Text_Say;
 
     if (ct != nullptr)
     {
