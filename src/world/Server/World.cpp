@@ -219,6 +219,8 @@ World::World()
     gamemaster_announceKick = true;
     show_all_vendor_items = false;
 
+    m_AdditionalFun = false;
+
     debugFlags = 0;
 }
 
