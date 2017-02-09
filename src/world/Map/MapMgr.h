@@ -56,7 +56,6 @@ class Corpse;
 class CBattleground;
 class Instance;
 class InstanceScript;
-class Transporter;
 class Summon;
 class DynamicObject;
 class Unit;
