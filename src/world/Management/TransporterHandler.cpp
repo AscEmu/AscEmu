@@ -85,11 +85,6 @@ Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry
         delete t;
         return NULL;
     }
-	if (!t->Create(goEntry, period))
-    {
-        delete t;
-        return NULL;
-    }
 
     m_Transporters.insert(t);
     m_TransportersByInstanceIdMap[instance->GetInstanceID()].insert(t);
