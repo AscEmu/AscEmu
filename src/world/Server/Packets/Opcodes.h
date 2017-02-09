@@ -558,7 +558,7 @@ enum Opcodes
     CMSG_GMTICKET_GETTICKET                         = 0x211,    // implemented
     SMSG_GMTICKET_GETTICKET                         = 0x212,    // implemented
     CMSG_UNLEARN_TALENTS                            = 0x213,    // implemented
-    SMSG_GAMEOBJECT_SPAWN_ANIM_OBSOLETE             = 0x214,    // not used in client
+    SMSG_UPDATE_INSTANCE_ENCOUNTER_UNIT             = 0x214,    // implemented
     SMSG_GAMEOBJECT_DESPAWN_ANIM                    = 0x215,    /// cannot find this in client. obsolete? its implemented.
     MSG_CORPSE_QUERY                                = 0x216,    // implemented
     CMSG_GMTICKET_DELETETICKET                      = 0x217,    // implemented

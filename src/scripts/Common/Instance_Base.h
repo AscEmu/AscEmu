@@ -201,6 +201,8 @@ class MoonInstanceScript : public InstanceScript
         virtual void UpdateEvent();
         virtual void Destroy();
 
+        void SendUnitEncounter(uint32_t type, Unit* unit = nullptr, uint8_t value_a = 0, uint8_t value_b = 0);
+
     protected:
 
         // Encounter generators

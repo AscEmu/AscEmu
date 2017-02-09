@@ -319,6 +319,10 @@ class LordMarrowgarAI : public MoonScriptBossAI
         {
             _unit->SendScriptTextChatMessage(923);      // The Scourge will wash over this world as a swarm of death and destruction!
             RegisterAIUpdateEvent(60000);
+
+            // examplecode.... remove me as soon as possible.
+            //IceCrownCitadelScript* pInstance = (IceCrownCitadelScript*)_unit->GetMapMgr()->GetScript();
+            //pInstance->SendUnitEncounter(0, _unit);
         }
 
         void BoneSpike()
