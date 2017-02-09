@@ -111,7 +111,7 @@ struct TWayPoint
 
 bool FillTransporterPathVector(uint32 PathID, TransportPath & Path);
 
-class Transporter : public GameObject
+class SERVER_DECL Transporter : public GameObject
 {
 protected:
     std::vector<TransportSpawn> m_creatureSpawns;
