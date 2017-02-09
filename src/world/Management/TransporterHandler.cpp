@@ -70,6 +70,16 @@ Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry
     std::set<uint32> mapsUsed;
 
     Transporter* t = new Transporter((uint64)HIGHGUID_TYPE_TRANSPORTER << 32 | goEntry);
+
+    // Generate waypoints
+    if (!t->GenerateWaypoints(gameobject_info->mo_transport.taxi_path_id))
+    {
+        LOG_ERROR("Transport ID:%u, Name: %s, failed to create waypoints", gameobject_info->entry, gameobject_info->name.c_str());
+        delete t;
+        return NULL;
+    }
+
+    // Create Transporter
     if (!t->Create(goEntry, period))
     {
         delete t;
@@ -295,7 +305,7 @@ bool Transporter::Create(uint32 entry, int32 Time)
     y = m_WayPoints[0].y;
     z = m_WayPoints[0].z;
     mapid = m_WayPoints[0].mapid;
-    o = 1;
+    o = m_WayPoints[0].o;
 
     if (!CreateFromProto(entry, mapid, x, y, z, o))
         return false;
