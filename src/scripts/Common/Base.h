@@ -22,6 +22,7 @@
 
 #include "../Common/EasyFunctions.h"
 #include "../Common/Instance_Base.h"
+#include "../Common/AITimer.h"
 
 #define INVALIDATE_TIMER -1
 #define DEFAULT_UPDATE_FREQUENCY 1000    //milliseconds
@@ -492,6 +493,8 @@ class MoonScriptBossAI : public MoonScriptCreatureAI
 
         MoonScriptBossAI(Creature* pCreature);
         virtual ~MoonScriptBossAI();
+
+        friend class TimerMap;
 
         //Basic Interface
         SpellDesc* AddPhaseSpell(int32 pPhase, SpellDesc* pSpell);
