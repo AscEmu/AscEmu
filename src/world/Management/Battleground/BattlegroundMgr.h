@@ -27,35 +27,35 @@
 
 #define ANTI_CHEAT
 
-#define BG_SCORE_AB_BASES_ASSAULTED 0
-#define BG_SCORE_AB_BASES_CAPTURED 1
-#define BG_SCORE_AV_GRAVEYARDS_ASSAULTED 0
-#define BG_SCORE_AV_GRAVEYARDS_DEFENDED 1
-#define BG_SCORE_AV_TOWERS_ASSAULTED 2
-#define BG_SCORE_AV_TOWERS_DEFENDED 3
-#define BG_SCORE_AV_MINES_CAPTURES 4
-#define BG_SCORE_EOTS_FLAGS_CAPTURED 0
-#define BG_SCORE_WSG_FLAGS_CAPTURED 0
-#define BG_SCORE_WSG_FLAGS_RETURNED 1
-#define BG_SCORE_IOC_BASES_ASSAULTED 0
-#define BG_SCORE_IOC_BASES_DEFENDED 1
+#define BG_SCORE_AB_BASES_ASSAULTED       0
+#define BG_SCORE_AB_BASES_CAPTURED        1
+#define BG_SCORE_AV_GRAVEYARDS_ASSAULTED  0
+#define BG_SCORE_AV_GRAVEYARDS_DEFENDED   1
+#define BG_SCORE_AV_TOWERS_ASSAULTED      2
+#define BG_SCORE_AV_TOWERS_DEFENDED       3
+#define BG_SCORE_AV_MINES_CAPTURES        4
+#define BG_SCORE_EOTS_FLAGS_CAPTURED      0
+#define BG_SCORE_WSG_FLAGS_CAPTURED       0
+#define BG_SCORE_WSG_FLAGS_RETURNED       1
+#define BG_SCORE_IOC_BASES_ASSAULTED      0
+#define BG_SCORE_IOC_BASES_DEFENDED       1
 
-#define SOUND_BATTLEGROUND_BEGIN    3439
-#define SOUND_FLAG_RESPAWN          8232
-#define SOUND_HORDE_SCORES          8213
-#define SOUND_ALLIANCE_SCORES       8173
-#define SOUND_ALLIANCE_CAPTURE      8174
-#define SOUND_HORDE_CAPTURE         8212
-#define SOUND_FLAG_RETURNED         8192
-#define SOUND_HORDEWINS             8454
-#define SOUND_ALLIANCEWINS          8455
-#define SOUND_HORDE_BGALMOSTEND     8456
-#define SOUND_ALLIANCE_BGALMOSTEND  8457
+#define SOUND_BATTLEGROUND_BEGIN       3439
+#define SOUND_FLAG_RESPAWN             8232
+#define SOUND_HORDE_SCORES             8213
+#define SOUND_ALLIANCE_SCORES          8173
+#define SOUND_ALLIANCE_CAPTURE         8174
+#define SOUND_HORDE_CAPTURE            8212
+#define SOUND_FLAG_RETURNED            8192
+#define SOUND_HORDEWINS                8454
+#define SOUND_ALLIANCEWINS             8455
+#define SOUND_HORDE_BGALMOSTEND        8456
+#define SOUND_ALLIANCE_BGALMOSTEND     8457
 
-#define BG_PREPARATION          44521
-#define BG_REVIVE_PREPARATION   44535
-#define RESURRECT_SPELL         21074   /// Spirit Healer Res
-#define BG_DESERTER             26013
+#define BG_PREPARATION                44521
+#define BG_REVIVE_PREPARATION         44535
+#define RESURRECT_SPELL               21074 /// Spirit Healer Res
+#define BG_DESERTER                   26013
 
 class CBattleground;
 class MapMgr;
@@ -109,10 +109,10 @@ enum BattleGroundMasterTypes
 
 enum BattleGroundStatus
 {
-    BGSTATUS_NOFLAGS = 0,    /// wtfbbq, why aren't there any flags?
-    BGSTATUS_INQUEUE = 1,    /// Battleground has a queue, player is now in queue
-    BGSTATUS_READY = 2,    /// Battleground is ready to join
-    BGSTATUS_TIME = 3    /// Ex. Wintergrasp time remaining
+    BGSTATUS_NOFLAGS = 0, /// wtfbbq, why aren't there any flags?
+    BGSTATUS_INQUEUE = 1, /// Battleground has a queue, player is now in queue
+    BGSTATUS_READY = 2,   /// Battleground is ready to join
+    BGSTATUS_TIME = 3     /// Ex. Wintergrasp time remaining
 };
 
 
