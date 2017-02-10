@@ -572,6 +572,10 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_CHAR_RACE_CHANGE].handler = &WorldSession::HandleCharFactionOrRaceChange;
     WorldPacketHandlers[CMSG_CHAR_RACE_CHANGE].status = STATUS_AUTHED;
 
+    // declined names (Cyrillic client)
+    WorldPacketHandlers[CMSG_SET_PLAYER_DECLINED_NAMES].handler = &WorldSession::HandleDeclinedPlayerNameOpcode;
+    WorldPacketHandlers[CMSG_SET_PLAYER_DECLINED_NAMES].status = STATUS_AUTHED;
+
     /// \todo unhandled
     WorldPacketHandlers[CMSG_PLAYER_LOGIN].handler = &WorldSession::HandlePlayerLoginOpcode;
     WorldPacketHandlers[CMSG_PLAYER_LOGIN].status = STATUS_AUTHED;
