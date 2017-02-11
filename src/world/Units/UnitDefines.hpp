@@ -110,7 +110,7 @@ enum Factions
     FACTION_SHATTERED_SUN_OFFENSIVE = 80
 };
 
-typedef enum
+enum TextEmoteType
 {
     TEXTEMOTE_AGREE             = 1,
     TEXTEMOTE_AMAZE             = 2,
@@ -363,9 +363,9 @@ typedef enum
     TEXTEMOTE_LOOK              = 449,
     TEXTEMOTE_OBJECT            = 450,
     TEXTEMOTE_SWEAT             = 451,
-} TextEmoteType;
+};
 
-typedef enum
+enum EmoteType
 {
     EMOTE_ONESHOT_NONE                  = 0,
     EMOTE_ONESHOT_TALK                  = 1, // DNR
@@ -537,7 +537,7 @@ typedef enum
     EMOTE_STATE_SPELL_CHANNEL_OMNI      = 468,
     EMOTE_STATE_SPELL_CHANNEL_DIRECTED  = 469,
     EMOTE_ZZOLD_STATE_KNEEL_NO_INTERRUPT = 470,
-} EmoteType;
+};
 
 enum UnitSpecialStates
 {
@@ -768,24 +768,34 @@ enum VisualState
 enum HitStatus
 {
     HITSTATUS_NORMALSWING       = 0x00000000,
-    HITSTATUS_UNK               = 0x00000001,
+    HITSTATUS_UNK_01            = 0x00000001,
     HITSTATUS_HITANIMATION      = 0x00000002,
     HITSTATUS_DUALWIELD         = 0x00000004,
     HITSTATUS_UNK1              = 0x00000008,
     HITSTATUS_MISS              = 0x00000010,
-    HITSTATUS_ABSORBED          = 0x20 | 0x40,
-    HITSTATUS_RESIST            = 0x80 | 0x100,
+    HITSTATUS_ABSORB_FULL       = 0x00000020,
+    HITSTATUS_ABSORB_PARTIAL    = 0x00000040,
+    HITSTATUS_RESIST_FULL       = 0x00000080,
+    HITSTATUS_RESIST_PARTIAL    = 0x00000100,
     HITSTATUS_CRICTICAL         = 0x00000200,
+    HITSTATUS_UNK_02            = 0x00000400,
+    HITSTATUS_UNK_03            = 0x00000800,
+    HITSTATUS_UNK_04            = 0x00001000,
     HITSTATUS_BLOCK             = 0x00002000,
+    HITSTATUS_UNK_05            = 0x00004000,
     HITSTATUS_CRUSHINGBLOW      = 0x00008000,
     HITSTATUS_GLANCING          = 0x00010000,
     HITSTATUS_Crushing          = 0x00020000,
     HITSTATUS_NOACTION          = 0x00040000,
-    HITSTATUS_UNK2              = 0x00080000,
-    HITSTATUS_UNK3              = 0x00100000,
+    HITSTATUS_UNK_06            = 0x00080000,
+    HITSTATUS_UNK_07            = 0x00100000,
     HITSTATUS_SWINGNOHITSOUND   = 0x00200000,
-    HITSTATUS_UNK4              = 0x00200000,
-    HITSTATUS_RAGE_GAIN         = 0x00800000
+    HITSTATUS_UNK_08            = 0x00400000,
+    HITSTATUS_RAGE_GAIN         = 0x00800000,
+    HITSTATUS_UNK_09            = 0x01000000,
+
+    HITSTATUS_ABSORBED          = HITSTATUS_ABSORB_FULL | HITSTATUS_ABSORB_PARTIAL,
+    HITSTATUS_RESIST            = HITSTATUS_RESIST_FULL | HITSTATUS_RESIST_PARTIAL
 };
 
 enum INVIS_FLAG

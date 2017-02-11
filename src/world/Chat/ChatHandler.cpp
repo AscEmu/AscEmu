@@ -772,8 +772,6 @@ bool ChatHandler::ShowHelpForCommand(WorldSession* m_session, ChatCommand* table
 
 bool ChatHandler::HandleHelpCommand(const char* args, WorldSession* m_session)
 {
-    WorldPacket data;
-
     if (!*args)
         return false;
 
@@ -792,7 +790,6 @@ bool ChatHandler::HandleHelpCommand(const char* args, WorldSession* m_session)
 bool ChatHandler::HandleCommandsCommand(const char* args, WorldSession* m_session)
 {
     ChatCommand* table = sCommandTableStorag.Get();
-    WorldPacket data;
 
     std::string output;
     uint32 count = 0;
