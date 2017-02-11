@@ -1975,7 +1975,7 @@ void Object::SendAttackerStateUpdate(Object* Caster, Object* Target, dealdamage*
         data << uint32(0);              // unknown
     }
 
-    if (HitStatus & HITSTATUS_UNK)
+    if (HitStatus & HITSTATUS_UNK_00)
     {
         data << uint32(0);
         data << float(0);
