@@ -102,18 +102,18 @@ enum MovementFlags
     MOVEFLAG_TB_PENDING_FORWARD         = 0x00080000,   // (MOVEFLAG_PENDING_FORWARD)
     MOVEFLAG_TB_PENDING_BACKWARD        = 0x00100000,   // (MOVEFLAG_PENDING_BACKWARD)
     MOVEFLAG_SWIMMING                   = 0x00200000,   //  verified
-    MOVEFLAG_FLYING_PITCH_UP            = 0x00400000,   // (half confirmed)(MOVEFLAG_PENDING_STR_RGHT)
-    MOVEFLAG_CAN_FLY                    = 0x00800000,   // (half confirmed) gets called when landing (MOVEFLAG_MOVED)
+    MOVEFLAG_FLYING_PITCH_UP            = 0x00400000,   // Zyres: ascend
+    MOVEFLAG_CAN_FLY                    = 0x00800000,   // Zyres: descend
 
     // Byte 4 (Script Based Flags. Never reset, only turned on or off.)
-    MOVEFLAG_AIR_SUSPENSION             = 0x01000000,   // confirmed allow body air suspension(good name? lol).
-    MOVEFLAG_AIR_SWIMMING               = 0x02000000,   // confirmed while flying.
-    MOVEFLAG_SPLINE_MOVER               = 0x04000000,   // Unconfirmed
-    MOVEFLAG_SPLINE_ENABLED             = 0x08000000,
+    MOVEFLAG_AIR_SUSPENSION             = 0x01000000,   // Zyres: can_fly
+    MOVEFLAG_AIR_SWIMMING               = 0x02000000,   // Zyres: flying
+    MOVEFLAG_SPLINE_MOVER               = 0x04000000,   // Zyres: spl elevation
+    MOVEFLAG_SPLINE_ENABLED             = 0x08000000,   
     MOVEFLAG_WATER_WALK                 = 0x10000000,
     MOVEFLAG_FEATHER_FALL               = 0x20000000,   // Does not negate fall damage.
-    MOVEFLAG_LEVITATE                   = 0x40000000,   // used for hover
-    //MOVEFLAG_LOCAL                      = 0x80000000,   // Zyres: commented unused 2015/12/20 This flag defaults to on. (Assumption)
+    MOVEFLAG_HOVER                      = 0x40000000,
+    //MOVEFLAG_LOCAL                    = 0x80000000,   // Zyres: commented unused 2015/12/20
 
     // Masks
     MOVEFLAG_MOVING_MASK                = 0x03,

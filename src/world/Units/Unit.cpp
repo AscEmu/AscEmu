@@ -202,7 +202,7 @@ void Unit::SetMoveHover(bool set_hover)
 {
     if (set_hover)
     {
-        AddUnitMovementFlag(MOVEFLAG_LEVITATE);
+        AddUnitMovementFlag(MOVEFLAG_HOVER);
 
         WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
         data << GetNewGUID();
@@ -211,7 +211,7 @@ void Unit::SetMoveHover(bool set_hover)
     }
     else
     {
-        RemoveUnitMovementFlag(MOVEFLAG_LEVITATE);
+        RemoveUnitMovementFlag(MOVEFLAG_HOVER);
 
         WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
         data << GetNewGUID();
