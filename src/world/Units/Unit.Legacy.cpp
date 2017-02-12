@@ -5098,20 +5098,17 @@ Aura* Unit::FindAura(uint32 spellId, uint64 guid)
     return NULL;
 }
 
-Aura* Unit::FindAuraWithAuraEffect(uint32 effect, uint32* x)
+//MIT
+Aura* Unit::FindAuraWithAuraEffect(uint32 effect)
 {
-    Aura* aura;
-    for (; *x < MAX_TOTAL_AURAS_END; (*x)++)
+    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
     {
-        aura = m_auras[*x];
-        if (aura != NULL &&
-            ((aura->GetSpellInfo()->Effect[0] == SPELL_EFFECT_APPLY_AURA && aura->GetSpellInfo()->EffectApplyAuraName[0] == effect) ||
-            (aura->GetSpellInfo()->Effect[1] == SPELL_EFFECT_APPLY_AURA && aura->GetSpellInfo()->EffectApplyAuraName[1] == effect) ||
-            (aura->GetSpellInfo()->Effect[2] == SPELL_EFFECT_APPLY_AURA && aura->GetSpellInfo()->EffectApplyAuraName[2] == effect)))
+        Aura* aura = m_auras[x];
+        if (aura != nullptr && aura->GetSpellInfo()->HasEffectApplyAuraName(effect))
             return aura;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void Unit::_UpdateSpells(uint32 time)

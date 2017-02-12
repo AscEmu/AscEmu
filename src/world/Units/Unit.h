@@ -390,7 +390,7 @@ public:
     Aura* FindAura(uint32 spellId);
     Aura* FindAura(uint32* spellId);
     Aura* FindAura(uint32 spellId, uint64 guid);
-    Aura* FindAuraWithAuraEffect(uint32 effect, uint32* x);
+    Aura* FindAuraWithAuraEffect(uint32 effect);
     bool SetAurDuration(uint32 spellId, Unit* caster, uint32 duration);
     bool SetAurDuration(uint32 spellId, uint32 duration);
     void DropAurasOnDeath();

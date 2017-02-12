@@ -8764,6 +8764,7 @@ void Aura::Refresh()
     m_target->SendAuraUpdate(m_auraSlot, false);
 }
 
+//\todo this looks awful! Please check it out as soon as possible.
 bool Aura::DotCanCrit()
 {
     Unit* caster = this->GetUnitCaster();
@@ -8772,14 +8773,12 @@ bool Aura::DotCanCrit()
 
     SpellInfo* sp = this->GetSpellInfo();
     uint32 index = MAX_TOTAL_AURAS_START;
-    Aura* aura;
     bool found = false;
 
     for (;;)
     {
-        aura = caster->FindAuraWithAuraEffect(SPELL_AURA_ALLOW_DOT_TO_CRIT, &index);
-
-        if (aura == NULL)
+        Aura* aura = caster->FindAuraWithAuraEffect(SPELL_AURA_ALLOW_DOT_TO_CRIT);
+        if (aura == nullptr)
             break;
 
         SpellInfo* aura_sp = aura->GetSpellInfo();
@@ -8798,8 +8797,6 @@ bool Aura::DotCanCrit()
             found = true;
             break;
         }
-
-        index++;
     }
 
     if (found)

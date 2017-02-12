@@ -2505,7 +2505,7 @@ void MySQLDataStore::LoadPlayerXpToLevelTable()
     _playerXPperLevelStore.clear();
     _playerXPperLevelStore.resize(sWorld.m_levelCap);
 
-    for (uint8 level = 0; level < sWorld.m_levelCap; ++level)
+    for (uint32 level = 0; level < sWorld.m_levelCap; ++level)
         _playerXPperLevelStore[level] = 0;
 
     QueryResult* player_xp_to_level_result = WorldDatabase.Query("SELECT player_lvl, next_lvl_req_xp FROM player_xp_for_level");

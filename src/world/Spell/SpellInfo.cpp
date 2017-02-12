@@ -132,6 +132,15 @@ bool SpellInfo::HasEffect(uint32 effect)
     return false;
 }
 
+bool SpellInfo::HasEffectApplyAuraName(uint32_t aura_name)
+{
+    for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        if (Effect[i] == SPELL_EFFECT_APPLY_AURA && EffectApplyAuraName[i] == aura_name)
+            return true;
+
+    return false;
+}
+
 bool SpellInfo::HasCustomFlagForEffect(uint32 effect, uint32 flag)
 {
     if (effect >= MAX_SPELL_EFFECTS)
