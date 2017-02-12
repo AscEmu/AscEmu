@@ -481,7 +481,7 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
 
     if (_player->getLevel() > 10)
     {
-        Aura* aur = GetPlayer()->FindAura(15007);
+        Aura* aur = GetPlayer()->GetAuraWithId(15007);
 
         if (aur == NULL)        // If the player already have the aura, just extend it.
         {

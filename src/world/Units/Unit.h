@@ -387,10 +387,14 @@ public:
     // Find auras
     Aura* FindAuraByNameHash(uint32 namehash);
     Aura* FindAuraByNameHash(uint32 namehash, uint64 guid);
-    Aura* FindAura(uint32 spellId);
     Aura* FindAura(uint32* spellId);
-    Aura* FindAura(uint32 spellId, uint64 guid);
-    Aura* FindAuraWithAuraEffect(uint32 effect);
+
+    //MIT
+    Aura* GetAuraWithId(uint32_t spell_id);
+    Aura* GetAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid);
+    Aura* GetAuraWithAuraEffect(uint32_t aura_effect);
+    //MIT end
+
     bool SetAurDuration(uint32 spellId, Unit* caster, uint32 duration);
     bool SetAurDuration(uint32 spellId, uint32 duration);
     void DropAurasOnDeath();

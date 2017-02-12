@@ -822,7 +822,7 @@ class KazrogalAI : public CreatureAIScript
                     Unit* Target = NULL;
                     Target = static_cast<Unit*>(*itr);
 
-                    if (Target->isAlive() && Target->FindAura(MARK_OF_KAZROGAL) && (Target->GetPowerType() != POWER_TYPE_MANA || !Target->GetBaseMana()))
+                    if (Target->isAlive() && Target->GetAuraWithId(MARK_OF_KAZROGAL) && (Target->GetPowerType() != POWER_TYPE_MANA || !Target->GetBaseMana()))
                     {
                         Target->CastSpell(Target, spells[3].info, spells[3].instant);
                     }

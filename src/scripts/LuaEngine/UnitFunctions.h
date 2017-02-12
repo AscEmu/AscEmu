@@ -6008,7 +6008,7 @@ class LuaUnit
     {
         TEST_UNITPLAYER();
         uint32 id = CHECK_ULONG(L, 1);
-        PUSH_AURA(L, ptr->FindAura(id));
+        PUSH_AURA(L, ptr->GetAuraWithId(id));
         return 1;
     }
 

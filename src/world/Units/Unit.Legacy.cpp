@@ -5014,7 +5014,7 @@ void Unit::RemoveAllAurasByRequiredShapeShift(uint32 mask)
 bool Unit::SetAurDuration(uint32 spellId, Unit* caster, uint32 duration)
 {
     LOG_DEBUG("setAurDuration2");
-    Aura* aur = FindAura(spellId, caster->GetGUID());
+    Aura* aur = GetAuraWithIdForGuid(spellId, caster->GetGUID());
     if (!aur)
         return false;
     aur->SetDuration(duration);
@@ -5025,7 +5025,7 @@ bool Unit::SetAurDuration(uint32 spellId, Unit* caster, uint32 duration)
 
 bool Unit::SetAurDuration(uint32 spellId, uint32 duration)
 {
-    Aura* aur = FindAura(spellId);
+    Aura* aur = GetAuraWithId(spellId);
 
     if (!aur)
         return false;
@@ -5057,15 +5057,6 @@ Aura* Unit::FindAuraByNameHash(uint32 namehash)
     return NULL;
 }
 
-Aura* Unit::FindAura(uint32 spellId)
-{
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-        if (m_auras[x])
-            if (m_auras[x]->GetSpellId() == spellId)
-                return m_auras[x];
-    return NULL;
-}
-
 Aura* Unit::FindAura(uint32* spellId)
 {
     Aura* aura;
@@ -5089,22 +5080,45 @@ Aura* Unit::FindAura(uint32* spellId)
     return NULL;
 }
 
-Aura* Unit::FindAura(uint32 spellId, uint64 guid)
+//MIT
+Aura* Unit::GetAuraWithId(uint32_t spell_id)
 {
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
-        if (m_auras[x])
-            if (m_auras[x]->GetSpellId() == spellId && m_auras[x]->m_casterGuid == guid)
-                return m_auras[x];
-    return NULL;
+    for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    {
+        Aura* aura = m_auras[i];
+        if (aura != nullptr)
+        {
+            if (aura->GetSpellId() == spell_id)
+                return aura;
+        }
+    }
+
+    return nullptr;
 }
 
 //MIT
-Aura* Unit::FindAuraWithAuraEffect(uint32 effect)
+Aura* Unit::GetAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
 {
-    for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
+    for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {
-        Aura* aura = m_auras[x];
-        if (aura != nullptr && aura->GetSpellInfo()->HasEffectApplyAuraName(effect))
+        Aura* aura = m_auras[i];
+        if (aura != nullptr)
+        {
+            if (GetAuraWithId(spell_id) && aura->m_casterGuid == target_guid)
+                return aura;
+        }
+    }
+
+    return nullptr;
+}
+
+//MIT
+Aura* Unit::GetAuraWithAuraEffect(uint32_t aura_effect)
+{
+    for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    {
+        Aura* aura = m_auras[i];
+        if (aura != nullptr && aura->GetSpellInfo()->HasEffectApplyAuraName(aura_effect))
             return aura;
     }
 

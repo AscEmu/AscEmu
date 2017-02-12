@@ -1663,7 +1663,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
                     mPlayer->GetShapeShift() != FORM_DIREBEAR))
                     break;
                 uint32 max = mPlayer->GetUInt32Value(UNIT_FIELD_MAXHEALTH);
-                uint32 val = float2int32(((mPlayer->FindAura(34300)) ? 0.04f : 0.02f) * max);
+                uint32 val = float2int32(((mPlayer->GetAuraWithId(34300)) ? 0.04f : 0.02f) * max);
                 if (val)
                     mPlayer->Heal(mPlayer, 34299, (uint32)(val));
             }

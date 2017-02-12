@@ -41,7 +41,7 @@ class ChickenEscapee : public CreatureAIScript
         void AIUpdate()
         {
             // Let's see if we are netted
-            Aura* a = _unit->FindAura(51959);
+            Aura* a = _unit->GetAuraWithId(51959);
             if(a != NULL)
             {
                 Unit* Caster = a->GetUnitCaster();

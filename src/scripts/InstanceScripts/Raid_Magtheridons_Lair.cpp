@@ -354,7 +354,7 @@ class MagtheridonTriggerAI : public CreatureAIScript
                         Magtheridon = _unit->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-22.657900f, 2.159050f, -0.345542f, 17257);
                         if (Magtheridon)
                         {
-                            Aura* aura = Magtheridon->FindAura(BANISH);
+                            Aura* aura = Magtheridon->GetAuraWithId(BANISH);
                             if (aura)
                             {
                                 EventStarted = false;
@@ -432,7 +432,7 @@ class ManticronCubeGO : public GameObjectAIScript
         void OnActivate(Player* pPlayer)
         {
             // We check if player has aura that prevents anyone from using this GO
-            Aura* aura = pPlayer->FindAura(MIND_EXHAUSTION);
+            Aura* aura = pPlayer->GetAuraWithId(MIND_EXHAUSTION);
             if (aura)
                 return;
 
@@ -503,7 +503,7 @@ class ManticronCubeGO : public GameObjectAIScript
             // If player still exists (is in world, alive and so on) we check if he has "channeling aura"
             Aura* aura = NULL;
             if (Channeler)
-                aura = Channeler->FindAura(SHADOW_GRASP2);
+                aura = Channeler->GetAuraWithId(SHADOW_GRASP2);
 
             // If player doesn't have aura we interrupt channeling
             if (Channeler && (!aura || !Channeler->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT)))
@@ -1383,7 +1383,7 @@ class MagtheridonAI : public CreatureAIScript
 
         void PhaseTwo()
         {
-            Aura* aura = _unit->FindAura(BANISH);
+            Aura* aura = _unit->GetAuraWithId(BANISH);
 
             if (_unit->GetHealthPct() <= 30)
             {
@@ -1447,7 +1447,7 @@ class MagtheridonAI : public CreatureAIScript
 
         void PhaseThree()
         {
-            Aura* aura = _unit->FindAura(BANISH);
+            Aura* aura = _unit->GetAuraWithId(BANISH);
 
             timer_quake++;
             timer_enrage++;

@@ -2711,7 +2711,7 @@ void Aura::SpellAuraModStealth(bool apply)
         //Overkill must proc only if we aren't already stealthed, also refreshing duration.
         if (!m_target->IsStealth() && m_target->HasAura(58426))
         {
-            Aura *buff = m_target->FindAura(58427);
+            Aura *buff = m_target->GetAuraWithId(58427);
             if (buff)
             {
                 m_target->SetAurDuration(58427, -1);
@@ -8785,7 +8785,7 @@ bool Aura::DotCanCrit()
         }
     }
 
-    Aura* aura = caster->FindAuraWithAuraEffect(SPELL_AURA_ALLOW_DOT_TO_CRIT);
+    Aura* aura = caster->GetAuraWithAuraEffect(SPELL_AURA_ALLOW_DOT_TO_CRIT);
     if (aura == nullptr)
         return false;
 
