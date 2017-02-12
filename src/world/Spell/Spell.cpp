@@ -4406,7 +4406,7 @@ uint8 Spell::CanCast(bool tolerate)
                     */
                     case SPELL_HASH_WILL_OF_THE_FORSAKEN:
                     {
-                        if (u_caster->m_special_state & (UNIT_STATE_FEAR | UNIT_STATE_CHARM | UNIT_STATE_SLEEP))
+                        if (u_caster->m_special_state & (UNIT_STATE_FEAR | UNIT_STATE_CHARM))
                             break;
                     }
                     break;
@@ -4425,7 +4425,7 @@ uint8 Spell::CanCast(bool tolerate)
                     case SPELL_HASH_EVERY_MAN_FOR_HIMSELF:
                     case SPELL_HASH_DIVINE_SHIELD:
                     {
-                        if (u_caster->m_special_state & (UNIT_STATE_FEAR | UNIT_STATE_CHARM | UNIT_STATE_SLEEP | UNIT_STATE_STUN | UNIT_STATE_CONFUSE | UNIT_STATE_SNARE) || u_caster->HasUnitMovementFlag(MOVEFLAG_ROOTED))
+                        if (u_caster->m_special_state & (UNIT_STATE_FEAR | UNIT_STATE_CHARM | UNIT_STATE_STUN | UNIT_STATE_CONFUSE) || u_caster->HasUnitMovementFlag(MOVEFLAG_ROOTED))
                             break;
                     }
                     break;
@@ -4433,7 +4433,7 @@ uint8 Spell::CanCast(bool tolerate)
                     case SPELL_HASH_BARKSKIN:
                     {
                         // This spell is usable while stunned, frozen, incapacitated, feared or asleep.  Lasts 12 sec.
-                        if (u_caster->m_special_state & (UNIT_STATE_STUN | UNIT_STATE_FEAR | UNIT_STATE_SLEEP))     // Uh, what unit_state is Frozen? (freezing trap...)
+                        if (u_caster->m_special_state & (UNIT_STATE_STUN | UNIT_STATE_FEAR))     // Uh, what unit_state is Frozen? (freezing trap...)
                             break;
                     }
                     break;
@@ -4500,7 +4500,7 @@ uint8 Spell::CanCast(bool tolerate)
                 case SPELL_HASH_WILL_OF_THE_FORSAKEN: //Will of the Forsaken
                 case SPELL_HASH_EVERY_MAN_FOR_HIMSELF: // Every Man for Himself
                 {
-                    if (u_caster->m_special_state & (UNIT_STATE_FEAR | UNIT_STATE_CHARM | UNIT_STATE_SLEEP))
+                    if (u_caster->m_special_state & (UNIT_STATE_FEAR | UNIT_STATE_CHARM))
                         break;
                 }
                 break;

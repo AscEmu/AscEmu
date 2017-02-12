@@ -545,17 +545,10 @@ enum UnitSpecialStates
     UNIT_STATE_DISARMED  = 0X0001,
     UNIT_STATE_CHARM     = 0x0002,
     UNIT_STATE_FEAR      = 0x0004,
-    UNIT_STATE_SLEEP     = 0x0010,  // never set
-    UNIT_STATE_SNARE     = 0x0020,  // never set
     UNIT_STATE_STUN      = 0x0040,
-    UNIT_STATE_KNOCKOUT  = 0x0080,  // not used
-    UNIT_STATE_BLEED     = 0x0100,  // not used
-    UNIT_STATE_POLYMORPH = 0x0200,  // not used
-    UNIT_STATE_BANISH    = 0x0400,  // not used
     UNIT_STATE_CONFUSE   = 0x0800,
     UNIT_STATE_PACIFY    = 0x1000,
-    UNIT_STATE_SILENCE   = 0x2000,
-    UNIT_STATE_FROZEN    = 0x4000,
+    UNIT_STATE_SILENCE   = 0x2000
 };
 
 

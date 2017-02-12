@@ -131,7 +131,7 @@ Unit::Unit() : m_combatStatus(this), m_movementManager()
     m_ignoreArmorPct = 0;
     m_fearmodifiers = 0;
     m_state = 0;
-    m_special_state = 0;
+    m_special_state = UNIT_STATE_NORMAL;
     m_deathState = ALIVE;
     m_meleespell = 0;
     m_addDmgOnce = 0;

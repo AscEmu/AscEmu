@@ -876,7 +876,7 @@ public:
 
     //solo target auras
     uint32 polySpell;
-    uint32 m_special_state;         //flags for special states (stunned,rooted etc)
+    uint32 m_special_state;         //flags for special states (stunned etc)
 
     struct
     {
