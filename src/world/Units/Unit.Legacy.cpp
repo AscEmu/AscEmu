@@ -5837,6 +5837,8 @@ void Unit::SetLandWalk()
 
 void Unit::SetFeatherFall()
 {
+    AddUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
+
     WorldPacket data(SMSG_MOVE_FEATHER_FALL, 12);
     data << GetNewGUID();
     data << uint32(0);
@@ -5845,6 +5847,8 @@ void Unit::SetFeatherFall()
 
 void Unit::SetNormalFall()
 {
+    RemoveUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
+
     WorldPacket data(SMSG_MOVE_NORMAL_FALL, 12);
     data << GetNewGUID();
     data << uint32(0);
