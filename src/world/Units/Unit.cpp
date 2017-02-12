@@ -234,7 +234,7 @@ void Unit::SetMoveCanFly(bool set_fly)
         WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
         data << GetNewGUID();
         data << uint32(0);
-        SendMessageToSet(&data, false);
+        SendMessageToSet(&data, true);
     }
     else
     {
@@ -246,7 +246,7 @@ void Unit::SetMoveCanFly(bool set_fly)
         WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << GetNewGUID();
         data << uint32(0);
-        SendMessageToSet(&data, false);
+        SendMessageToSet(&data, true);
     }
 }
 
