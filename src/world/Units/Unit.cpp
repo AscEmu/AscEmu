@@ -4,6 +4,9 @@
 #include "Server/Packets/Opcodes.h"
 #include "Players/Player.h"
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Combat
+
 void Unit::setCombatFlag(bool enabled)
 {
     if (enabled)
@@ -152,16 +155,47 @@ uint64_t Unit::getPrimaryAttackTarget() const
     return m_combatStatus.getPrimaryAttackTarget();
 }
 
-void Unit::PlaySpellVisual(uint64_t guid, uint32_t spell_id)
-{
-    WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 12);
-    data << uint64_t(guid);
-    data << uint32_t(spell_id);
+//////////////////////////////////////////////////////////////////////////////////////////
+// Movement
 
-    if (IsPlayer())
-        static_cast<Player*>(this)->SendMessageToSet(&data, true);
-    else
-        SendMessageToSet(&data, false);
+void Unit::SetWaterWalk()
+{
+    AddUnitMovementFlag(MOVEFLAG_WATER_WALK);
+
+    WorldPacket data(SMSG_MOVE_WATER_WALK, 12);
+    data << GetNewGUID();
+    data << uint32(0);
+    SendMessageToSet(&data, true);
+}
+
+void Unit::SetLandWalk()
+{
+    RemoveUnitMovementFlag(MOVEFLAG_WATER_WALK);
+
+    WorldPacket data(SMSG_MOVE_LAND_WALK, 12);
+    data << GetNewGUID();
+    data << uint32(0);
+    SendMessageToSet(&data, true);
+}
+
+void Unit::SetFeatherFall()
+{
+    AddUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
+
+    WorldPacket data(SMSG_MOVE_FEATHER_FALL, 12);
+    data << GetNewGUID();
+    data << uint32(0);
+    SendMessageToSet(&data, true);
+}
+
+void Unit::SetNormalFall()
+{
+    RemoveUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
+
+    WorldPacket data(SMSG_MOVE_NORMAL_FALL, 12);
+    data << GetNewGUID();
+    data << uint32(0);
+    SendMessageToSet(&data, true);
 }
 
 void Unit::SetHover(bool set_hover)
@@ -180,4 +214,64 @@ void Unit::SetHover(bool set_hover)
         data << uint32(0);
         SendMessageToSet(&data, false);
     }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Spells
+
+void Unit::PlaySpellVisual(uint64_t guid, uint32_t spell_id)
+{
+    WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 12);
+    data << uint64_t(guid);
+    data << uint32_t(spell_id);
+
+    if (IsPlayer())
+        static_cast<Player*>(this)->SendMessageToSet(&data, true);
+    else
+        SendMessageToSet(&data, false);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Aura
+
+Aura* Unit::GetAuraWithId(uint32_t spell_id)
+{
+    for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    {
+        Aura* aura = m_auras[i];
+        if (aura != nullptr)
+        {
+            if (aura->GetSpellId() == spell_id)
+                return aura;
+        }
+    }
+
+    return nullptr;
+}
+
+Aura* Unit::GetAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
+{
+    for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    {
+        Aura* aura = m_auras[i];
+        if (aura != nullptr)
+        {
+            if (GetAuraWithId(spell_id) && aura->m_casterGuid == target_guid)
+                return aura;
+        }
+    }
+
+    return nullptr;
+}
+
+Aura* Unit::GetAuraWithAuraEffect(uint32_t aura_effect)
+{
+    for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
+    {
+        Aura* aura = m_auras[i];
+        if (aura != nullptr && aura->GetSpellInfo()->HasEffectApplyAuraName(aura_effect))
+            return aura;
+    }
+
+    return nullptr;
 }

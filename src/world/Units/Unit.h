@@ -163,6 +163,9 @@ class SERVER_DECL Unit : public Object
     void setCombatFlag(bool enabled);
 
 public:
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Combat
     bool isInCombat() const;
     bool isAttacking(Unit* target) const;
 
@@ -188,7 +191,24 @@ public:
 
     uint64_t getPrimaryAttackTarget() const;
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Movement
+    void SetWaterWalk();
+    void SetLandWalk();
+    void SetFeatherFall();
+    void SetNormalFall();
+    void SetHover(bool set_hover);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Spells
     void PlaySpellVisual(uint64_t guid, uint32_t spell_id);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Aura
+    Aura* GetAuraWithId(uint32_t spell_id);
+    Aura* GetAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid);
+    Aura* GetAuraWithAuraEffect(uint32_t aura_effect);
+
 
     // Do not alter anything below this line
     // -------------------------------------
@@ -388,12 +408,6 @@ public:
     Aura* FindAuraByNameHash(uint32 namehash);
     Aura* FindAuraByNameHash(uint32 namehash, uint64 guid);
     Aura* FindAura(uint32* spellId);
-
-    //MIT
-    Aura* GetAuraWithId(uint32_t spell_id);
-    Aura* GetAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid);
-    Aura* GetAuraWithAuraEffect(uint32_t aura_effect);
-    //MIT end
 
     bool SetAurDuration(uint32 spellId, Unit* caster, uint32 duration);
     bool SetAurDuration(uint32 spellId, uint32 duration);
@@ -781,7 +795,7 @@ public:
 
     void EnableFlight();
     void DisableFlight();
-    void SetHover(bool set_hover);
+    
 
     // Escort Quests
     void MoveToWaypoint(uint32 wp_id);
@@ -837,12 +851,6 @@ public:
         else
             return false;
     }
-
-    void SetWaterWalk();
-    void SetLandWalk();
-
-    void SetFeatherFall();
-    void SetNormalFall();
 
     virtual bool isTrainingDummy() { return false; }
 

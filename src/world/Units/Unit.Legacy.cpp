@@ -5080,51 +5080,6 @@ Aura* Unit::FindAura(uint32* spellId)
     return NULL;
 }
 
-//MIT
-Aura* Unit::GetAuraWithId(uint32_t spell_id)
-{
-    for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
-    {
-        Aura* aura = m_auras[i];
-        if (aura != nullptr)
-        {
-            if (aura->GetSpellId() == spell_id)
-                return aura;
-        }
-    }
-
-    return nullptr;
-}
-
-//MIT
-Aura* Unit::GetAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
-{
-    for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
-    {
-        Aura* aura = m_auras[i];
-        if (aura != nullptr)
-        {
-            if (GetAuraWithId(spell_id) && aura->m_casterGuid == target_guid)
-                return aura;
-        }
-    }
-
-    return nullptr;
-}
-
-//MIT
-Aura* Unit::GetAuraWithAuraEffect(uint32_t aura_effect)
-{
-    for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
-    {
-        Aura* aura = m_auras[i];
-        if (aura != nullptr && aura->GetSpellInfo()->HasEffectApplyAuraName(aura_effect))
-            return aura;
-    }
-
-    return nullptr;
-}
-
 void Unit::_UpdateSpells(uint32 time)
 {
     // to avoid deleting the current spell
@@ -5818,50 +5773,6 @@ void Unit::Unroot()
     data << GetNewGUID();
     data << uint32(5);
     SendMessageToSet(&data, true, false);
-}
-
-//MIT
-void Unit::SetWaterWalk()
-{
-    AddUnitMovementFlag(MOVEFLAG_WATER_WALK);
-
-    WorldPacket data(SMSG_MOVE_WATER_WALK, 12);
-    data << GetNewGUID();
-    data << uint32(0);
-    SendMessageToSet(&data, true);
-}
-
-//MIT
-void Unit::SetLandWalk()
-{
-    RemoveUnitMovementFlag(MOVEFLAG_WATER_WALK);
-
-    WorldPacket data(SMSG_MOVE_LAND_WALK, 12);
-    data << GetNewGUID();
-    data << uint32(0);
-    SendMessageToSet(&data, true);
-}
-
-//MIT
-void Unit::SetFeatherFall()
-{
-    AddUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
-
-    WorldPacket data(SMSG_MOVE_FEATHER_FALL, 12);
-    data << GetNewGUID();
-    data << uint32(0);
-    SendMessageToSet(&data, true);
-}
-
-//MIT
-void Unit::SetNormalFall()
-{
-    RemoveUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
-
-    WorldPacket data(SMSG_MOVE_NORMAL_FALL, 12);
-    data << GetNewGUID();
-    data << uint32(0);
-    SendMessageToSet(&data, true);
 }
 
 void Unit::RemoveAurasByBuffType(uint32 buff_type, const uint64 & guid, uint32 skip)
