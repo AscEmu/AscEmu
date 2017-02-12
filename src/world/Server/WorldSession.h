@@ -102,12 +102,12 @@ enum MovementFlags
     MOVEFLAG_TB_PENDING_FORWARD         = 0x00080000,   // (MOVEFLAG_PENDING_FORWARD)
     MOVEFLAG_TB_PENDING_BACKWARD        = 0x00100000,   // (MOVEFLAG_PENDING_BACKWARD)
     MOVEFLAG_SWIMMING                   = 0x00200000,   //  verified
-    MOVEFLAG_FLYING_PITCH_UP            = 0x00400000,   // Zyres: ascend
-    MOVEFLAG_CAN_FLY                    = 0x00800000,   // Zyres: descend
+    MOVEFLAG_ASCENDING                  = 0x00400000,
+    MOVEFLAG_DESCENDING                 = 0x00800000,
 
     // Byte 4 (Script Based Flags. Never reset, only turned on or off.)
-    MOVEFLAG_AIR_SUSPENSION             = 0x01000000,   // Zyres: can_fly
-    MOVEFLAG_AIR_SWIMMING               = 0x02000000,   // Zyres: flying
+    MOVEFLAG_CAN_FLY                    = 0x01000000,   // Zyres: can_fly
+    MOVEFLAG_FLYING                     = 0x02000000,   // Zyres: flying
     MOVEFLAG_SPLINE_MOVER               = 0x04000000,   // Zyres: spl elevation
     MOVEFLAG_SPLINE_ENABLED             = 0x08000000,   
     MOVEFLAG_WATER_WALK                 = 0x10000000,

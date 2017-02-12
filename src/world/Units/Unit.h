@@ -198,6 +198,7 @@ public:
     void SetMoveFeatherFall();
     void SetMoveNormalFall();
     void SetMoveHover(bool set_hover);
+    void SetMoveCanFly(bool set_fly);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells
@@ -792,10 +793,6 @@ public:
     int32 m_flyspeedModifier;
     virtual void SetSpeeds(uint8 type, float speed) {}
     void UpdateSpeed();
-
-    void EnableFlight();
-    void DisableFlight();
-    
 
     // Escort Quests
     void MoveToWaypoint(uint32 wp_id);

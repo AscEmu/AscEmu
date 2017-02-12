@@ -4819,14 +4819,7 @@ class LuaUnit
     {
         TEST_PLAYER()
         bool enable_fly = CHECK_BOOL(L, 1);
-        if (enable_fly)
-        {
-            ptr->EnableFlight();
-        }
-        else
-        {
-            ptr->DisableFlight();
-        }
+        ptr->SetMoveCanFly(enable_fly);
         return 0;
     }
 

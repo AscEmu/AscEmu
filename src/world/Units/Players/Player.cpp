@@ -3771,10 +3771,7 @@ void Player::OnPushToWorld()
     delayedPackets.add(data);
 
     // set fly if cheat is active
-    if (FlyCheat)
-        EnableFlight();
-    else
-        DisableFlight();
+    SetMoveCanFly(FlyCheat);
 
     // Update PVP Situation
     LoginPvPSetup();

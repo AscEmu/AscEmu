@@ -594,7 +594,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                     {
                         MovementInfo* mi = static_cast<Player*>(getNextTarget())->GetSession()->GetMovementInfo();
 
-                        if (mi->flags & MOVEFLAG_AIR_SWIMMING)
+                        if (mi->flags & MOVEFLAG_FLYING)
                             HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
                     }
                 }

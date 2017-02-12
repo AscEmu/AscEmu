@@ -7981,7 +7981,7 @@ void Aura::SpellAuraEnableFlight(bool apply)
 {
     if (apply)
     {
-        m_target->EnableFlight();
+        m_target->SetMoveCanFly(true);
         m_target->m_flyspeedModifier += mod->m_amount;
         m_target->UpdateSpeed();
         if (m_target->IsPlayer())
@@ -7991,7 +7991,7 @@ void Aura::SpellAuraEnableFlight(bool apply)
     }
     else
     {
-        m_target->DisableFlight();
+        m_target->SetMoveCanFly(false);
         m_target->m_flyspeedModifier -= mod->m_amount;
         m_target->UpdateSpeed();
         if (m_target->IsPlayer())
@@ -8006,7 +8006,7 @@ void Aura::SpellAuraEnableFlightWithUnmountedSpeed(bool apply)
     // Used in flight form (only so far)
     if (apply)
     {
-        m_target->EnableFlight();
+        m_target->SetMoveCanFly(true);
         m_target->m_flyspeedModifier += mod->m_amount;
         m_target->UpdateSpeed();
         if (m_target->IsPlayer())
@@ -8016,7 +8016,7 @@ void Aura::SpellAuraEnableFlightWithUnmountedSpeed(bool apply)
     }
     else
     {
-        m_target->DisableFlight();
+        m_target->SetMoveCanFly(false);
         m_target->m_flyspeedModifier -= mod->m_amount;
         m_target->UpdateSpeed();
         if (m_target->IsPlayer())
@@ -8137,11 +8137,7 @@ void Aura::SpellAuraSpellHealingStatPCT(bool apply)
 
 void Aura::SpellAuraAllowFlight(bool apply)
 {
-    // allow fly
-    if (apply)
-        m_target->EnableFlight();
-    else
-        m_target->DisableFlight();
+    m_target->SetMoveCanFly(apply);
 }
 
 void Aura::SpellAuraFinishingMovesCannotBeDodged(bool apply)

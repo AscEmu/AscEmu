@@ -287,10 +287,10 @@ static MovementFlagName MoveFlagsToNames[] =
     { MOVEFLAG_TB_PENDING_FORWARD, "MOVEFLAG_TB_PENDING_FORWARD" },
     { MOVEFLAG_TB_PENDING_BACKWARD, "MOVEFLAG_TB_PENDING_BACKWARD" },
     { MOVEFLAG_SWIMMING, "MOVEFLAG_SWIMMING" },
-    { MOVEFLAG_FLYING_PITCH_UP, "MOVEFLAG_FLYING_PITCH_UP" },
+    { MOVEFLAG_ASCENDING, "MOVEFLAG_ASCENDING" },
+    { MOVEFLAG_DESCENDING, "MOVEFLAG_DESCENDING" },
     { MOVEFLAG_CAN_FLY, "MOVEFLAG_CAN_FLY" },
-    { MOVEFLAG_AIR_SUSPENSION, "MOVEFLAG_AIR_SUSPENSION" },
-    { MOVEFLAG_AIR_SWIMMING, "MOVEFLAG_AIR_SWIMMING" },
+    { MOVEFLAG_FLYING, "MOVEFLAG_FLYING" },
     { MOVEFLAG_SPLINE_MOVER, "MOVEFLAG_SPLINE_MOVER" },
     { MOVEFLAG_SPLINE_ENABLED, "MOVEFLAG_SPLINE_ENABLED" },
     { MOVEFLAG_WATER_WALK, "MOVEFLAG_WATER_WALK" },
@@ -545,7 +545,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         SendPacket(&data);
     }
 
-    if ((movement_info.flags & MOVEFLAG_AIR_SWIMMING) && !(movement_info.flags & MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->FlyCheat))
+    if ((movement_info.flags & MOVEFLAG_FLYING) && !(movement_info.flags & MOVEFLAG_SWIMMING) && !(_player->flying_aura || _player->FlyCheat))
     {
         WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << _player->GetNewGUID();
@@ -902,7 +902,7 @@ void MovementInfo::init(WorldPacket& data)
         data >> transporter_info.time;
         data >> transporter_info.time2;
     }
-    if (flags & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING) || flags2 & MOVEFLAG2_NO_JUMPING)
+    if (flags & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING) || flags2 & MOVEFLAG2_NO_JUMPING)
     {
         data >> pitch;
     }

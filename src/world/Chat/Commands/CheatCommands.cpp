@@ -289,7 +289,6 @@ bool ChatHandler::HandleCheatFlyCommand(const char* /*args*/, WorldSession* m_se
             sGMLog.writefromsession(m_session, "has activated FlyCheat on Player: %s", player_target->GetName());
         }
 
-        player_target->EnableFlight();
         player_target->FlyCheat = true;
     }
     else
@@ -305,9 +304,10 @@ bool ChatHandler::HandleCheatFlyCommand(const char* /*args*/, WorldSession* m_se
             sGMLog.writefromsession(m_session, "has deactivated FlyCheat on Player: %s", player_target->GetName());
         }
 
-        player_target->DisableFlight();
         player_target->FlyCheat = false;
     }
+
+    player_target->SetMoveCanFly(player_target->FlyCheat);
 
     return true;
 }

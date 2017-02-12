@@ -2,6 +2,7 @@
 
 #include "Unit.h"
 #include "Server/Packets/Opcodes.h"
+#include "Server/WorldSession.h"
 #include "Players/Player.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -214,6 +215,34 @@ void Unit::SetMoveHover(bool set_hover)
         RemoveUnitMovementFlag(MOVEFLAG_HOVER);
 
         WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
+        data << GetNewGUID();
+        data << uint32(0);
+        SendMessageToSet(&data, false);
+    }
+}
+
+void Unit::SetMoveCanFly(bool set_fly)
+{
+    if (set_fly)
+    {
+        AddUnitMovementFlag(MOVEFLAG_CAN_FLY);
+
+        // Remove falling flag if set
+        RemoveUnitMovementFlag(MOVEFLAG_FALLING);
+
+        WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
+        data << GetNewGUID();
+        data << uint32(0);
+        SendMessageToSet(&data, false);
+    }
+    else
+    {
+        // Remove all fly related moveflags
+        RemoveUnitMovementFlag(MOVEFLAG_CAN_FLY);
+        RemoveUnitMovementFlag(MOVEFLAG_DESCENDING);
+        RemoveUnitMovementFlag(MOVEFLAG_ASCENDING);
+
+        WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
         data << GetNewGUID();
         data << uint32(0);
         SendMessageToSet(&data, false);
