@@ -112,7 +112,7 @@ enum MovementFlags
     MOVEFLAG_SPLINE_ENABLED             = 0x08000000,
     MOVEFLAG_WATER_WALK                 = 0x10000000,
     MOVEFLAG_FEATHER_FALL               = 0x20000000,   // Does not negate fall damage.
-    MOVEFLAG_LEVITATE                   = 0x40000000,
+    MOVEFLAG_LEVITATE                   = 0x40000000,   // used for hover
     //MOVEFLAG_LOCAL                      = 0x80000000,   // Zyres: commented unused 2015/12/20 This flag defaults to on. (Assumption)
 
     // Masks
