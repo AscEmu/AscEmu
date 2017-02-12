@@ -666,7 +666,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                 if (getNextTarget()->IsPlayer())
                 {
                     float dist = m_Unit->GetDistanceSq(getNextTarget());
-                    if (static_cast< Player* >(getNextTarget())->m_currentMovement == MOVE_ROOT || dist >= 64.0f)
+                    if (static_cast< Player* >(getNextTarget())->HasUnitMovementFlag(MOVEFLAG_ROOTED) || dist >= 64.0f)
                     {
                         agent = AGENT_RANGED;
                     }

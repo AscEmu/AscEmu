@@ -5778,6 +5778,9 @@ void Unit::CastSpellAoF(float x, float y, float z, SpellInfo* Sp, bool triggered
 
 void Unit::Root()
 {
+    AddUnitMovementFlag(MOVEFLAG_ROOTED);
+
+    // Zyres: Do we need m_special_state? We have Movementflags
     m_special_state |= UNIT_STATE_ROOT;
 
     if (!IsPlayer())
@@ -5796,6 +5799,9 @@ void Unit::Root()
 
 void Unit::Unroot()
 {
+    RemoveUnitMovementFlag(MOVEFLAG_ROOTED);
+
+    // Zyres: Do we need m_special_state? We have Movementflags
     m_special_state &= ~UNIT_STATE_ROOT;
 
     if (!IsPlayer())

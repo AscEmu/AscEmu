@@ -124,7 +124,6 @@ Player::Player(uint32 guid)
     m_currentLoot(0),
     bShouldHaveLootableOnCorpse(false),
     offhand_dmg_mod(0.5),
-    m_currentMovement(MOVE_UNROOT),
     m_isMoving(false),
     moving(false),
     strafing(false),
@@ -4334,23 +4333,23 @@ void Player::SetMovement(uint8 pType, uint32 flag)
         case MOVE_ROOT:
         {
             Root();
-            m_currentMovement = MOVE_ROOT;
         }
         break;
         case MOVE_UNROOT:
         {
             Unroot();
-            m_currentMovement = MOVE_UNROOT;
         }
         break;
         case MOVE_WATER_WALK:
         {
+            // Zyres: Do we need m_setwaterwalk? We have Movementflags
             m_setwaterwalk = true;
             SetWaterWalk();
         }
         break;
         case MOVE_LAND_WALK:
         {
+            // Zyres: Do we need m_setwaterwalk? We have Movementflags
             m_setwaterwalk = false;
             SetLandWalk();
         }
