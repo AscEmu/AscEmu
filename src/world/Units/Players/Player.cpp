@@ -4340,12 +4340,12 @@ void Player::SetMovement(uint8 pType, uint32 flag)
         break;
         case MOVE_WATER_WALK:
         {
-            SetWaterWalk();
+            SetMoveWaterWalk();
         }
         break;
         case MOVE_LAND_WALK:
         {
-            SetLandWalk();
+            SetMoveLandWalk();
         }
         break;
         default:

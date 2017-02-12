@@ -5983,11 +5983,11 @@ void Aura::SpellAuraWaterWalk(bool apply)
         if (apply)
         {
             SetPositive();
-            p_target->SetWaterWalk();
+            p_target->SetMoveWaterWalk();
         }
         else
         {
-            p_target->SetLandWalk();
+            p_target->SetMoveLandWalk();
         }
     }
 }
@@ -6000,12 +6000,12 @@ void Aura::SpellAuraFeatherFall(bool apply)
     if (apply)
     {
         SetPositive();
-        p_target->SetFeatherFall();
+        p_target->SetMoveFeatherFall();
         p_target->m_noFallDamage = true;
     }
     else
     {
-        p_target->SetNormalFall();
+        p_target->SetMoveNormalFall();
         p_target->m_noFallDamage = false;
     }
 }
@@ -6016,12 +6016,12 @@ void Aura::SpellAuraHover(bool apply)
 
     if (apply)
     {
-        m_target->SetHover(true);
+        m_target->SetMoveHover(true);
         m_target->SetFloatValue(UNIT_FIELD_HOVERHEIGHT, (float(mod->m_amount) / 2));
     }
     else
     {
-        m_target->SetHover(false);
+        m_target->SetMoveHover(false);
         m_target->SetFloatValue(UNIT_FIELD_HOVERHEIGHT, 0.0f);
     }
 }

@@ -1999,7 +1999,7 @@ class LuaUnit
         if (ptr == nullptr)
             return 0;
 
-        ptr->SetHover(true);
+        ptr->SetMoveHover(true);
         ptr->GetAIInterface()->disable_melee = true;
         ptr->GetAIInterface()->SetFly();
         ptr->Emote(EMOTE_ONESHOT_LIFTOFF);
@@ -2011,7 +2011,7 @@ class LuaUnit
         if (ptr == nullptr)
             return 0;
 
-        ptr->SetHover(false);
+        ptr->SetMoveHover(false);
         ptr->GetAIInterface()->StopFlying();
         ptr->GetAIInterface()->disable_melee = false;
         ptr->Emote(EMOTE_ONESHOT_LAND);

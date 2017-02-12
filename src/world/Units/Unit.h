@@ -193,11 +193,11 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
-    void SetWaterWalk();
-    void SetLandWalk();
-    void SetFeatherFall();
-    void SetNormalFall();
-    void SetHover(bool set_hover);
+    void SetMoveWaterWalk();
+    void SetMoveLandWalk();
+    void SetMoveFeatherFall();
+    void SetMoveNormalFall();
+    void SetMoveHover(bool set_hover);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells

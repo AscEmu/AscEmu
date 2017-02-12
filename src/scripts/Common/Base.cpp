@@ -155,12 +155,12 @@ void MoonScriptCreatureAI::SetFlyMode(bool pValue)
 {
     if (pValue && !_unit->GetAIInterface()->Flying())
     {
-        _unit->SetHover(true);
+        _unit->SetMoveHover(true);
         _unit->GetAIInterface()->StopFlying();
     }
     else if (!pValue && _unit->GetAIInterface()->Flying())
     {
-        _unit->SetHover(false);
+        _unit->SetMoveHover(false);
         _unit->GetAIInterface()->SetFly();
     }
 }

@@ -2896,7 +2896,7 @@ class SapphironAI : public CreatureAIScript
         _unit->GetAIInterface()->m_canMove = true;
         _unit->CastSpell(_unit, IMMUNITY_FROST, true);
 
-        _unit->SetHover(false);
+        _unit->SetMoveHover(false);
 
         ChillTarget = NULL;
         FlightActions = 0;
@@ -2917,7 +2917,7 @@ class SapphironAI : public CreatureAIScript
         _unit->GetAIInterface()->StopFlying();
         _unit->GetAIInterface()->m_canMove = true;
 
-        _unit->SetHover(false);
+        _unit->SetMoveHover(false);
 
         GameObject* Waterfall = NULL;
         Waterfall = _unit->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(3536.852783f, -5159.951172f, 143.636139f, FROSTWYRM_WATERFALL_DOOR);
@@ -2964,7 +2964,7 @@ class SapphironAI : public CreatureAIScript
         _unit->GetAIInterface()->StopFlying();
         _unit->GetAIInterface()->m_canMove = true;
 
-        _unit->SetHover(false);
+        _unit->SetMoveHover(false);
 
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
         _unit->GetAIInterface()->SetAIState(STATE_IDLE);
@@ -3176,7 +3176,7 @@ class SapphironAI : public CreatureAIScript
                 _unit->GetAIInterface()->StopFlying();
                 _unit->Emote(EMOTE_ONESHOT_LAND);
 
-                _unit->SetHover(false);
+                _unit->SetMoveHover(false);
 
                 RemoveAIUpdateEvent();
                 RegisterAIUpdateEvent(3000);
@@ -3322,7 +3322,7 @@ class SapphironAI : public CreatureAIScript
             _unit->GetAIInterface()->SetFly();
             _unit->Emote(EMOTE_ONESHOT_LIFTOFF);
 
-            _unit->SetHover(true);
+            _unit->SetMoveHover(true);
 
             RemoveAIUpdateEvent();
             RegisterAIUpdateEvent(3500);

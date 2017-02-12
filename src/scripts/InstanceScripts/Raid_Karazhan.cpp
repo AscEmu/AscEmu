@@ -3857,7 +3857,7 @@ class NightbaneAI : public CreatureAIScript
         {
             _unit->Emote(EMOTE_ONESHOT_LIFTOFF);
 
-            _unit->SetHover(true);
+            _unit->SetMoveHover(true);
 
             _unit->GetAIInterface()->SetFly();
         }
@@ -3866,7 +3866,7 @@ class NightbaneAI : public CreatureAIScript
         {
             _unit->Emote(EMOTE_ONESHOT_LAND);
 
-            _unit->SetHover(false);
+            _unit->SetMoveHover(false);
 
             _unit->GetAIInterface()->StopFlying();
         }

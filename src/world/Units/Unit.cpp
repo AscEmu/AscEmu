@@ -158,7 +158,7 @@ uint64_t Unit::getPrimaryAttackTarget() const
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
-void Unit::SetWaterWalk()
+void Unit::SetMoveWaterWalk()
 {
     AddUnitMovementFlag(MOVEFLAG_WATER_WALK);
 
@@ -168,7 +168,7 @@ void Unit::SetWaterWalk()
     SendMessageToSet(&data, true);
 }
 
-void Unit::SetLandWalk()
+void Unit::SetMoveLandWalk()
 {
     RemoveUnitMovementFlag(MOVEFLAG_WATER_WALK);
 
@@ -178,7 +178,7 @@ void Unit::SetLandWalk()
     SendMessageToSet(&data, true);
 }
 
-void Unit::SetFeatherFall()
+void Unit::SetMoveFeatherFall()
 {
     AddUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
 
@@ -188,7 +188,7 @@ void Unit::SetFeatherFall()
     SendMessageToSet(&data, true);
 }
 
-void Unit::SetNormalFall()
+void Unit::SetMoveNormalFall()
 {
     RemoveUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
 
@@ -198,7 +198,7 @@ void Unit::SetNormalFall()
     SendMessageToSet(&data, true);
 }
 
-void Unit::SetHover(bool set_hover)
+void Unit::SetMoveHover(bool set_hover)
 {
     if (set_hover)
     {

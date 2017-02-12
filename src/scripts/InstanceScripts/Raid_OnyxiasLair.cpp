@@ -143,7 +143,7 @@ class OnyxiaAI : public CreatureAIScript
                         _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
                         _unit->GetAIInterface()->setWaypointToMove(0);
 
-                        _unit->SetHover(true);
+                        _unit->SetMoveHover(true);
                         m_currentWP = 3;
                     }
                     break;
@@ -157,7 +157,7 @@ class OnyxiaAI : public CreatureAIScript
                         /*_unit->m_pacified--;
                         if (_unit->m_pacified > 0)
                             _unit->m_pacified--;*/
-                        _unit->SetHover(false);
+                        _unit->SetMoveHover(false);
                         Land();
                     }
                     break;
@@ -169,7 +169,7 @@ class OnyxiaAI : public CreatureAIScript
                         _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
                         _unit->GetAIInterface()->setWaypointToMove(0);
 
-                        _unit->SetHover(true);
+                        _unit->SetMoveHover(true);
                         //_unit->m_pacified--;
                     }
                     break;
