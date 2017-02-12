@@ -5817,6 +5817,8 @@ void Unit::Unroot()
 
 void Unit::SetWaterWalk()
 {
+    AddUnitMovementFlag(MOVEFLAG_WATER_WALK);
+
     WorldPacket data(SMSG_MOVE_WATER_WALK, 12);
     data << GetNewGUID();
     data << uint32(0);
@@ -5825,6 +5827,8 @@ void Unit::SetWaterWalk()
 
 void Unit::SetLandWalk()
 {
+    RemoveUnitMovementFlag(MOVEFLAG_WATER_WALK);
+
     WorldPacket data(SMSG_MOVE_LAND_WALK, 12);
     data << GetNewGUID();
     data << uint32(0);

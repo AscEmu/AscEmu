@@ -2230,7 +2230,6 @@ void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)
     switch (recv_data.GetOpcode())
     {
         case CMSG_MOVE_WATER_WALK_ACK:
-            _player->m_waterwalk = _player->m_setwaterwalk;
             break;
 
         /*case CMSG_MOVE_SET_CAN_FLY_ACK:

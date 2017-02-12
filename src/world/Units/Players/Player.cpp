@@ -453,8 +453,6 @@ Player::Player(uint32 guid)
     hearth_of_wild_pct = 0;
     raidgrouponlysent = false;
     loot.gold = 0;
-    m_waterwalk = false;
-    m_setwaterwalk = false;
     m_areaSpiritHealer_guid = 0;
     m_CurrentTaxiPath = NULL;
 
@@ -4342,15 +4340,11 @@ void Player::SetMovement(uint8 pType, uint32 flag)
         break;
         case MOVE_WATER_WALK:
         {
-            // Zyres: Do we need m_setwaterwalk? We have Movementflags
-            m_setwaterwalk = true;
             SetWaterWalk();
         }
         break;
         case MOVE_LAND_WALK:
         {
-            // Zyres: Do we need m_setwaterwalk? We have Movementflags
-            m_setwaterwalk = false;
             SetLandWalk();
         }
         break;
