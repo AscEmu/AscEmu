@@ -545,7 +545,6 @@ enum UnitSpecialStates
     UNIT_STATE_DISARMED  = 0X0001,
     UNIT_STATE_CHARM     = 0x0002,
     UNIT_STATE_FEAR      = 0x0004,
-    UNIT_STATE_ROOT      = 0x0008,
     UNIT_STATE_SLEEP     = 0x0010,  // never set
     UNIT_STATE_SNARE     = 0x0020,  // never set
     UNIT_STATE_STUN      = 0x0040,

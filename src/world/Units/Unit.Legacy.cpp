@@ -5780,9 +5780,6 @@ void Unit::Root()
 {
     AddUnitMovementFlag(MOVEFLAG_ROOTED);
 
-    // Zyres: Do we need m_special_state? We have Movementflags
-    m_special_state |= UNIT_STATE_ROOT;
-
     if (!IsPlayer())
     {
         m_aiInterface->m_canMove = false;
@@ -5800,9 +5797,6 @@ void Unit::Root()
 void Unit::Unroot()
 {
     RemoveUnitMovementFlag(MOVEFLAG_ROOTED);
-
-    // Zyres: Do we need m_special_state? We have Movementflags
-    m_special_state &= ~UNIT_STATE_ROOT;
 
     if (!IsPlayer())
         m_aiInterface->m_canMove = true;

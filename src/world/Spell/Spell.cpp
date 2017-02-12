@@ -4425,7 +4425,7 @@ uint8 Spell::CanCast(bool tolerate)
                     case SPELL_HASH_EVERY_MAN_FOR_HIMSELF:
                     case SPELL_HASH_DIVINE_SHIELD:
                     {
-                        if (u_caster->m_special_state & (UNIT_STATE_FEAR | UNIT_STATE_CHARM | UNIT_STATE_SLEEP | UNIT_STATE_ROOT | UNIT_STATE_STUN | UNIT_STATE_CONFUSE | UNIT_STATE_SNARE))
+                        if (u_caster->m_special_state & (UNIT_STATE_FEAR | UNIT_STATE_CHARM | UNIT_STATE_SLEEP | UNIT_STATE_STUN | UNIT_STATE_CONFUSE | UNIT_STATE_SNARE) || u_caster->HasUnitMovementFlag(MOVEFLAG_ROOTED))
                             break;
                     }
                     break;
