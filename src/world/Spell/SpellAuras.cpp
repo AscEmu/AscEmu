@@ -8764,56 +8764,45 @@ void Aura::Refresh()
     m_target->SendAuraUpdate(m_auraSlot, false);
 }
 
-//\todo this looks awful! Please check it out as soon as possible.
+//MIT
 bool Aura::DotCanCrit()
 {
     Unit* caster = this->GetUnitCaster();
-    if (caster == NULL)
+    if (caster == nullptr)
         return false;
 
-    SpellInfo* sp = this->GetSpellInfo();
-    uint32 index = MAX_TOTAL_AURAS_START;
-    bool found = false;
+    SpellInfo* spell_info = this->GetSpellInfo();
+    if (spell_info == nullptr)
+        return false;
 
-    for (;;)
+    // Can be critical
+    if (caster->IsPlayer())
     {
-        Aura* aura = caster->FindAuraWithAuraEffect(SPELL_AURA_ALLOW_DOT_TO_CRIT);
-        if (aura == nullptr)
-            break;
-
-        SpellInfo* aura_sp = aura->GetSpellInfo();
-
-        uint8 i = 0;
-        if (aura_sp->EffectApplyAuraName[1] == SPELL_AURA_ALLOW_DOT_TO_CRIT)
-            i = 1;
-        else if (aura_sp->EffectApplyAuraName[2] == SPELL_AURA_ALLOW_DOT_TO_CRIT)
-            i = 2;
-
-        if (aura_sp->SpellFamilyName == sp->SpellFamilyName &&
-            (aura_sp->EffectSpellClassMask[i][0] & sp->SpellGroupType[0] ||
-            aura_sp->EffectSpellClassMask[i][1] & sp->SpellGroupType[1] ||
-            aura_sp->EffectSpellClassMask[i][2] & sp->SpellGroupType[2]))
+        if (caster->getClass() == ROGUE)
         {
-            found = true;
-            break;
+            if (spell_info->custom_NameHash == SPELL_HASH_RUPTURE)
+                return true;
         }
     }
 
-    if (found)
-        return true;
+    Aura* aura = caster->FindAuraWithAuraEffect(SPELL_AURA_ALLOW_DOT_TO_CRIT);
+    if (aura == nullptr)
+        return false;
 
-    if (caster->IsPlayer())
+    SpellInfo* aura_spell_info = aura->GetSpellInfo();
+
+    uint8 i = 0;
+    if (aura_spell_info->EffectApplyAuraName[1] == SPELL_AURA_ALLOW_DOT_TO_CRIT)
+        i = 1;
+    else if (aura_spell_info->EffectApplyAuraName[2] == SPELL_AURA_ALLOW_DOT_TO_CRIT)
+        i = 2;
+
+    if (aura_spell_info->SpellFamilyName == spell_info->SpellFamilyName &&
+        (aura_spell_info->EffectSpellClassMask[i][0] & spell_info->SpellGroupType[0] ||
+         aura_spell_info->EffectSpellClassMask[i][1] & spell_info->SpellGroupType[1] ||
+         aura_spell_info->EffectSpellClassMask[i][2] & spell_info->SpellGroupType[2]))
     {
-        switch (caster->getClass())
-        {
-            case ROGUE:
-
-                // Rupture can be critical in patch 3.3.3
-                if (sp->custom_NameHash == SPELL_HASH_RUPTURE)
-                    return true;
-
-                break;
-        }
+        return true;
     }
 
     return false;
