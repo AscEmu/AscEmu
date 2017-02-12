@@ -4,6 +4,7 @@
 #include "Server/Packets/Opcodes.h"
 #include "Server/WorldSession.h"
 #include "Players/Player.h"
+#include "Spell/SpellAuras.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Combat
