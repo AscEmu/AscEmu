@@ -1205,7 +1205,7 @@ bool MoonScriptCreatureAI::CastSpellInternal(SpellDesc* pSpell, uint32 pCurrentT
 
     //We do not cast in special states such as : stunned, feared, silenced, charmed, asleep, confused and if they are not ignored
     if ((~pSpell->mTargetType.mTargetFilter & TargetFilter_IgnoreSpecialStates) && _unit->m_special_state & 
-        (UNIT_STATE_STUN | UNIT_STATE_FEAR | UNIT_STATE_SLEEP | UNIT_STATE_SILENCE | UNIT_STATE_CHARM | UNIT_STATE_CONFUSE))
+        (UNIT_STATE_STUN | UNIT_STATE_FEAR | UNIT_STATE_SILENCE | UNIT_STATE_CHARM | UNIT_STATE_CONFUSE))
         return false;
 
     //Do not cast if we are in cooldown

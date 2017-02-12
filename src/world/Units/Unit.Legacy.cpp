@@ -5809,6 +5809,7 @@ void Unit::Unroot()
     SendMessageToSet(&data, true, false);
 }
 
+//MIT
 void Unit::SetWaterWalk()
 {
     AddUnitMovementFlag(MOVEFLAG_WATER_WALK);
@@ -5819,6 +5820,7 @@ void Unit::SetWaterWalk()
     SendMessageToSet(&data, true);
 }
 
+//MIT
 void Unit::SetLandWalk()
 {
     RemoveUnitMovementFlag(MOVEFLAG_WATER_WALK);
@@ -5829,6 +5831,7 @@ void Unit::SetLandWalk()
     SendMessageToSet(&data, true);
 }
 
+//MIT
 void Unit::SetFeatherFall()
 {
     AddUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
@@ -5839,6 +5842,7 @@ void Unit::SetFeatherFall()
     SendMessageToSet(&data, true);
 }
 
+//MIT
 void Unit::SetNormalFall()
 {
     RemoveUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
