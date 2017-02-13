@@ -37,9 +37,9 @@ void Unit::enterCombat()
 {
     setCombatFlag(true);
 
-    if (!hasStateFlag(UNIT_STATE_ATTACKING))
+    if (!HasUnitStateFlag(UNIT_STATE_ATTACKING))
     {
-        addStateFlag(UNIT_STATE_ATTACKING);
+        AddUnitStateFlag(UNIT_STATE_ATTACKING);
     }
 }
 
@@ -47,9 +47,9 @@ void Unit::leaveCombat()
 {
     setCombatFlag(false);
 
-    if (hasStateFlag(UNIT_STATE_ATTACKING))
+    if (HasUnitStateFlag(UNIT_STATE_ATTACKING))
     {
-        clearStateFlag(UNIT_STATE_ATTACKING);
+        RemoveUnitStateFlag(UNIT_STATE_ATTACKING);
     }
 
     if (IsPlayer())

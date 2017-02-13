@@ -223,7 +223,7 @@ bool DeathGrip(uint32 i, Spell* s)
 
         unitTarget->SendMessageToSet(&data, true);
         unitTarget->SetPosition(posX, posY, posZ, alpha, true);
-        unitTarget->addStateFlag(UNIT_STATE_ATTACKING);
+        unitTarget->AddUnitStateFlag(UNIT_STATE_ATTACKING);
         unitTarget->smsg_AttackStart(unitTarget);
         unitTarget->setAttackTimer(time, false);
         unitTarget->setAttackTimer(time, true);

@@ -1306,7 +1306,7 @@ void Player::_EventCharmAttack()
         LOG_ERROR("WORLD: " I64FMT " doesn't exist.", m_curSelection);
         LOG_DETAIL("Player::Update:  No valid current selection to attack, stopping attack");
         this->setHRegenTimer(5000); //prevent clicking off creature for a quick heal
-        clearStateFlag(UNIT_STATE_ATTACKING);
+        RemoveUnitStateFlag(UNIT_STATE_ATTACKING);
         EventAttackStop();
     }
     else
@@ -1538,7 +1538,7 @@ void Player::_EventExploration()
 
 void Player::EventDeath()
 {
-    if (m_state & UNIT_STATE_ATTACKING)
+    if (HasUnitStateFlag(UNIT_STATE_ATTACKING))
         EventAttackStop();
 
     if (m_onTaxi)

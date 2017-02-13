@@ -75,6 +75,18 @@ bool ChatHandler::HandleDebugHover(const char* /*args*/, WorldSession* m_session
     return true;
 }
 
+//.debug states
+bool ChatHandler::HandleDebugState(const char* /*args*/, WorldSession* m_session)
+{
+    Unit* selected_unit = GetSelectedUnit(m_session);
+    if (selected_unit == nullptr)
+        return false;
+
+    GreenSystemMessage(m_session, "Display unitStateFlag: %u", selected_unit->GetUnitStateFlags());
+    
+    return true;
+}
+
 //.debug pvpcredit
 bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session)
 {

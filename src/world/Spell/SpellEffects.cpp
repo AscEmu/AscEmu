@@ -4366,7 +4366,7 @@ void Spell::SpellEffectDuel(uint32 i) // Duel
         SendCastResult(SPELL_FAILED_TARGETS_DEAD);
         return; // Target not alive
     }
-    if (playerTarget->hasStateFlag(UNIT_STATE_ATTACKING))
+    if (playerTarget->HasUnitStateFlag(UNIT_STATE_ATTACKING))
     {
         SendCastResult(SPELL_FAILED_TARGET_IN_COMBAT);
         return; // Target in combat with another unit

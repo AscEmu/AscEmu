@@ -192,10 +192,10 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
 private:
-    int32 m_rootCounter;
+
+    int32_t m_rootCounter;
 
 public:
-    uint32 m_specialState;  //\todo Zyres: move this to private. check out m_state, can be handled together.
 
     void SetMoveWaterWalk();
     void SetMoveLandWalk();
@@ -205,6 +205,20 @@ public:
     void SetMoveCanFly(bool set_fly);
     void SetMoveRoot(bool set_root);
     bool IsRooted() const;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Internal States
+private:
+
+    uint32_t m_unitState;
+
+public:
+
+    void AddUnitStateFlag(uint32_t state_flag) { m_unitState |= state_flag; };
+    bool HasUnitStateFlag(uint32_t state_flag) { return (m_unitState & state_flag ? true : false); }
+    void RemoveUnitStateFlag(uint32_t state_flag) { m_unitState &= ~state_flag; };
+    uint32_t GetUnitStateFlags() { return m_unitState; };
+
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells
@@ -259,11 +273,6 @@ public:
     void SetDualWield(bool enabled);
 
     bool  canReachWithAttack(Unit* pVictim);
-
-    /// State flags are server-only flags to help me know when to do stuff, like die, or attack
-    void addStateFlag(uint32 f) { m_state |= f; };
-    bool hasStateFlag(uint32 f) { return (m_state & f ? true : false); }
-    void clearStateFlag(uint32 f) { m_state &= ~f; };
 
     /// Stats
     uint32 getLevel() { return m_uint32Values[UNIT_FIELD_LEVEL]; };
@@ -1127,7 +1136,7 @@ protected:
     uint16 m_H_regenTimer;
     uint16 m_P_regenTimer;
     uint32 m_interruptedRegenTime;  //PowerInterruptedegenTimer.
-    uint32 m_state;                 // flags for keeping track of some states
+    
     uint32 m_attackTimer;           // timer for attack
     uint32 m_attackTimer_1;
     bool m_dualWield;

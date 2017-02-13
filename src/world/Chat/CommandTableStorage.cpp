@@ -359,6 +359,7 @@ void CommandTableStorage::Init()
         { "landwalk",           'd', &ChatHandler::HandleDebugLandWalk,             "",                                                         nullptr, 0, 0, 0 },
         { "waterwalk",          'd', &ChatHandler::HandleDebugWaterWalk,            "",                                                         nullptr, 0, 0, 0 },
         { "hover",              'd', &ChatHandler::HandleDebugHover,                "",                                                         nullptr, 0, 0, 0 },
+        { "state",              'd', &ChatHandler::HandleDebugState,                "",                                                         nullptr, 0, 0, 0 },
         { "castspell",          'd', &ChatHandler::HandleCastSpellCommand,          "Casts spell on target.",                                   nullptr, 0, 0, 0 },
         { "castself",           'd', &ChatHandler::HandleCastSelfCommand,           "Target casts spell <spellId> on itself.",                  nullptr, 0, 0, 0 },
         { "castspellne",        'd', &ChatHandler::HandleCastSpellNECommand,        "Casts spell by spellid on target (only plays animations)", nullptr, 0, 0, 0 },
