@@ -2454,9 +2454,6 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
     pAttacker->smsg_AttackStop(this);
 
-    // Tell Unit that it's target has Died
-    pAttacker->addStateFlag(UF_TARGET_DIED);
-
     GetAIInterface()->OnDeath(pAttacker);
 
     // Add Kills if Player is in Vehicle

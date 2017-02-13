@@ -1306,7 +1306,7 @@ void Player::_EventCharmAttack()
         LOG_ERROR("WORLD: " I64FMT " doesn't exist.", m_curSelection);
         LOG_DETAIL("Player::Update:  No valid current selection to attack, stopping attack");
         this->setHRegenTimer(5000); //prevent clicking off creature for a quick heal
-        clearStateFlag(UF_ATTACKING);
+        clearStateFlag(UNIT_STATE_ATTACKING);
         EventAttackStop();
     }
     else
@@ -1538,7 +1538,7 @@ void Player::_EventExploration()
 
 void Player::EventDeath()
 {
-    if (m_state & UF_ATTACKING)
+    if (m_state & UNIT_STATE_ATTACKING)
         EventAttackStop();
 
     if (m_onTaxi)
@@ -12570,9 +12570,6 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
 
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
     pAttacker->smsg_AttackStop(this);
-
-    /* Tell Unit that it's target has Died */
-    pAttacker->addStateFlag(UF_TARGET_DIED);
 
     m_UnderwaterTime = 0;
     m_UnderwaterState = 0;

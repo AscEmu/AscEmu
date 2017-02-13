@@ -5002,8 +5002,8 @@ void Aura::SpellAuraFeignDeath(bool apply)
 
             p_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_COMBAT);
 
-            if (p_target->hasStateFlag(UF_ATTACKING))
-                p_target->clearStateFlag(UF_ATTACKING);
+            if (p_target->hasStateFlag(UNIT_STATE_ATTACKING))
+                p_target->clearStateFlag(UNIT_STATE_ATTACKING);
 
             p_target->GetSession()->OutPacket(SMSG_CANCEL_COMBAT);
             p_target->GetSession()->OutPacket(SMSG_CANCEL_AUTO_REPEAT);

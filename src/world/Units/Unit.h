@@ -72,12 +72,6 @@ struct FactionDBC;
 
 bool SERVER_DECL Rand(float);
 
-//\todo Zyres: cleanup enum UnitSpecialState (UnitDefines.hpp) and add these UF defines to it.
-//             There is no reason to splitt server internal flags/states in seperated locations.
-#define UF_TARGET_DIED  1
-#define UF_ATTACKING    2           // this unit is attacking it's selection
-
-
 #define SPELL_GROUPS    96          // This is actually on 64 bits !
 #define DIMINISHING_GROUP_COUNT 15
 
