@@ -131,7 +131,7 @@ Unit::Unit() : m_combatStatus(this), m_movementManager()
     m_ignoreArmorPct = 0;
     m_fearmodifiers = 0;
     m_state = 0;
-    m_special_state = UNIT_STATE_NORMAL;
+    m_specialState = UNIT_STATE_NORMAL;
     m_deathState = ALIVE;
     m_meleespell = 0;
     m_addDmgOnce = 0;
@@ -248,7 +248,7 @@ Unit::Unit() : m_combatStatus(this), m_movementManager()
     m_extraattacks = 0;
     m_stunned = 0;
     m_manashieldamt = 0;
-    m_rooted = 0;
+    m_rootCounter = 0;
     m_triggerSpell = 0;
     m_triggerDamage = 0;
     m_canMove = 0;
@@ -7636,7 +7636,7 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellInfo* spell)
             CritChance += static_cast<float>(static_cast<Unit*>(victim)->AttackerCritChanceMod[spell->School]);
 
             //\todo Zyres: is tis relly the way this should work?
-            if (IsPlayer() && (static_cast<Unit*>(victim)->m_rooted - static_cast<Unit*>(victim)->m_stunned))
+            if (IsPlayer() && (static_cast<Unit*>(victim)->m_rootCounter - static_cast<Unit*>(victim)->m_stunned))
                 CritChance += static_cast<float>(static_cast<Player*>(this)->m_RootedCritChanceBonus);
         }
 

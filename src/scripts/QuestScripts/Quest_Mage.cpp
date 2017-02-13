@@ -39,7 +39,7 @@ class FragmentedMagic : public CreatureAIScript
 
         void SetWander(Creature* m_target, Player* p_caster)
         {
-            m_target->m_special_state |= UNIT_STATE_CONFUSE;
+            m_target->m_specialState |= UNIT_STATE_CONFUSE;
             m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
 
             m_target->EnableAI();

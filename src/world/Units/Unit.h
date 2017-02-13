@@ -72,8 +72,12 @@ struct FactionDBC;
 
 bool SERVER_DECL Rand(float);
 
+//\todo Zyres: cleanup enum UnitSpecialState (UnitDefines.hpp) and add these UF defines to it.
+//             There is no reason to splitt server internal flags/states in seperated locations.
 #define UF_TARGET_DIED  1
 #define UF_ATTACKING    2           // this unit is attacking it's selection
+
+
 #define SPELL_GROUPS    96          // This is actually on 64 bits !
 #define DIMINISHING_GROUP_COUNT 15
 
@@ -193,6 +197,12 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
+private:
+    int32 m_rootCounter;
+
+public:
+    uint32 m_specialState;  //\todo Zyres: move this to private. check out m_state, can be handled together.
+
     void SetMoveWaterWalk();
     void SetMoveLandWalk();
     void SetMoveFeatherFall();
@@ -780,7 +790,6 @@ public:
     int8 asc_bleed;
 
     uint16 m_noInterrupt;
-    int32 m_rooted;
     bool disarmed;
     uint64 m_detectRangeGUID[5];
     int32  m_detectRangeMOD[5];
@@ -877,7 +886,6 @@ public:
 
     //solo target auras
     uint32 polySpell;
-    uint32 m_special_state;         //flags for special states (stunned etc)
 
     struct
     {

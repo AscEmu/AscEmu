@@ -4567,7 +4567,7 @@ void Spell::SpellEffectCharge(uint32 i)
         return;
 
     //\todo Zyres: Check for MovementFlag instead of m_rooted?
-    if (u_caster->IsStunned() || u_caster->m_rooted || u_caster->IsPacified() || u_caster->IsFeared())
+    if (u_caster->IsStunned() || u_caster->IsRooted() || u_caster->IsPacified() || u_caster->IsFeared())
         return;
 
     float x, y, z;

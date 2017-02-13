@@ -1972,7 +1972,7 @@ void Aura::SpellAuraModConfuse(bool apply)
         }
         SetNegative();
 
-        m_target->m_special_state |= UNIT_STATE_CONFUSE;
+        m_target->m_specialState |= UNIT_STATE_CONFUSE;
         m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
 
         m_target->setAItoUse(true);
@@ -1990,7 +1990,7 @@ void Aura::SpellAuraModConfuse(bool apply)
     }
     else if ((m_flags & (1 << mod->i)) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
     {
-        m_target->m_special_state &= ~UNIT_STATE_CONFUSE;
+        m_target->m_specialState &= ~UNIT_STATE_CONFUSE;
         m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_CONFUSED);
         if (p_target)
             p_target->SpeedCheatReset();
@@ -2042,7 +2042,7 @@ void Aura::SpellAuraModCharm(bool apply)
         if (caster->GetCharmedUnitGUID() != 0)
             return;
 
-        m_target->m_special_state |= UNIT_STATE_CHARM;
+        m_target->m_specialState |= UNIT_STATE_CHARM;
         m_target->SetCharmTempVal(m_target->GetFaction());
         m_target->SetFaction(caster->GetFaction());
         m_target->UpdateOppFactionSet();
@@ -2077,7 +2077,7 @@ void Aura::SpellAuraModCharm(bool apply)
     }
     else
     {
-        m_target->m_special_state &= ~UNIT_STATE_CHARM;
+        m_target->m_specialState &= ~UNIT_STATE_CHARM;
         m_target->SetFaction(m_target->GetCharmTempVal());
         m_target->GetAIInterface()->WipeHateList();
         m_target->GetAIInterface()->WipeTargetList();
@@ -2116,7 +2116,7 @@ void Aura::SpellAuraModFear(bool apply)
 
         SetNegative();
 
-        m_target->m_special_state |= UNIT_STATE_FEAR;
+        m_target->m_specialState |= UNIT_STATE_FEAR;
         m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
 
         m_target->setAItoUse(true);
@@ -2138,7 +2138,7 @@ void Aura::SpellAuraModFear(bool apply)
 
         if (m_target->m_fearmodifiers <= 0)
         {
-            m_target->m_special_state &= ~UNIT_STATE_FEAR;
+            m_target->m_specialState &= ~UNIT_STATE_FEAR;
             m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FLEEING);
 
             m_target->GetAIInterface()->HandleEvent(EVENT_UNFEAR, NULL, 0);
@@ -2475,16 +2475,16 @@ void Aura::SpellAuraModStun(bool apply)
         SetNegative();
 
         //\todo Zyres: is tis relly the way this should work?
-        m_target->m_rooted++;
+        m_target->m_rootCounter++;
 
-        if (m_target->m_rooted == 1)
+        if (m_target->m_rootCounter == 1)
             m_target->SetMoveRoot(true);
 
         if (m_target->IsStealth())
             m_target->RemoveStealth();
 
         m_target->m_stunned++;
-        m_target->m_special_state |= UNIT_STATE_STUN;
+        m_target->m_specialState |= UNIT_STATE_STUN;
         m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
 
         if (m_target->IsCreature())
@@ -2511,16 +2511,16 @@ void Aura::SpellAuraModStun(bool apply)
     else if ((m_flags & (1 << mod->i)) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
     {
         //\todo Zyres: is tis relly the way this should work?
-        m_target->m_rooted--;
+        m_target->m_rootCounter--;
 
-        if (m_target->m_rooted == 0)
+        if (m_target->m_rootCounter == 0)
             m_target->SetMoveRoot(false);
 
         m_target->m_stunned--;
 
         if (m_target->m_stunned == 0)
         {
-            m_target->m_special_state &= ~UNIT_STATE_STUN;
+            m_target->m_specialState &= ~UNIT_STATE_STUN;
             m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED);
         }
 
@@ -3214,7 +3214,7 @@ void Aura::SpellAuraModPacify(bool apply)
             SetNegative();
 
         m_target->m_pacified++;
-        m_target->m_special_state |= UNIT_STATE_PACIFY;
+        m_target->m_specialState |= UNIT_STATE_PACIFY;
         m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
     }
     else
@@ -3223,7 +3223,7 @@ void Aura::SpellAuraModPacify(bool apply)
 
         if (m_target->m_pacified == 0)
         {
-            m_target->m_special_state &= ~UNIT_STATE_PACIFY;
+            m_target->m_specialState &= ~UNIT_STATE_PACIFY;
             m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
         }
     }
@@ -3243,9 +3243,9 @@ void Aura::SpellAuraModRoot(bool apply)
         SetNegative();
 
         //\todo Zyres: is tis relly the way this should work?
-        m_target->m_rooted++;
+        m_target->m_rootCounter++;
 
-        if (m_target->m_rooted == 1)
+        if (m_target->m_rootCounter == 1)
             m_target->SetMoveRoot(true);
 
         //warrior talent - second wind triggers on stun and immobilize. This is not used as proc to be triggered always !
@@ -3264,9 +3264,9 @@ void Aura::SpellAuraModRoot(bool apply)
     else if ((m_flags & (1 << mod->i)) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
     {
         //\todo Zyres: is tis relly the way this should work?
-        m_target->m_rooted--;
+        m_target->m_rootCounter--;
 
-        if (m_target->m_rooted == 0)
+        if (m_target->m_rootCounter == 0)
             m_target->SetMoveRoot(false);
 
         if (m_target->IsCreature())
@@ -3282,7 +3282,7 @@ void Aura::SpellAuraModSilence(bool apply)
     if (apply)
     {
         m_target->m_silenced++;
-        m_target->m_special_state |= UNIT_STATE_SILENCE;
+        m_target->m_specialState |= UNIT_STATE_SILENCE;
         m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
 
         if (m_target->GetCurrentSpell() != NULL)
@@ -3294,7 +3294,7 @@ void Aura::SpellAuraModSilence(bool apply)
 
         if (m_target->m_silenced == 0)
         {
-            m_target->m_special_state &= ~UNIT_STATE_SILENCE;
+            m_target->m_specialState &= ~UNIT_STATE_SILENCE;
             m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
         }
     }
@@ -4800,7 +4800,7 @@ void Aura::SpellAuraPacifySilence(bool apply)
 
         m_target->m_pacified++;
         m_target->m_silenced++;
-        m_target->m_special_state |= UNIT_STATE_PACIFY | UNIT_STATE_SILENCE;
+        m_target->m_specialState |= UNIT_STATE_PACIFY | UNIT_STATE_SILENCE;
         m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED | UNIT_FLAG_SILENCED);
 
         if (m_target->m_currentSpell && m_target->GetGUID() != m_casterGuid &&
@@ -4816,7 +4816,7 @@ void Aura::SpellAuraPacifySilence(bool apply)
 
         if (m_target->m_pacified == 0)
         {
-            m_target->m_special_state &= ~UNIT_STATE_PACIFY;
+            m_target->m_specialState &= ~UNIT_STATE_PACIFY;
             m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED);
         }
 
@@ -4824,7 +4824,7 @@ void Aura::SpellAuraPacifySilence(bool apply)
 
         if (m_target->m_silenced == 0)
         {
-            m_target->m_special_state &= ~UNIT_STATE_SILENCE;
+            m_target->m_specialState &= ~UNIT_STATE_SILENCE;
             m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED);
         }
     }
@@ -5047,13 +5047,13 @@ void Aura::SpellAuraModDisarm(bool apply)
         SetNegative();
 
         m_target->disarmed = true;
-        m_target->m_special_state |= UNIT_STATE_DISARMED;
+        m_target->m_specialState |= UNIT_STATE_DISARMED;
         m_target->SetFlag(field, flag);
     }
     else
     {
         m_target->disarmed = false;
-        m_target->m_special_state &= ~UNIT_STATE_DISARMED;
+        m_target->m_specialState &= ~UNIT_STATE_DISARMED;
         m_target->RemoveFlag(field, flag);
     }
 }
