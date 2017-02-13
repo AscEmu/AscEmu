@@ -199,6 +199,8 @@ public:
     void SetMoveNormalFall();
     void SetMoveHover(bool set_hover);
     void SetMoveCanFly(bool set_fly);
+    void SetMoveRoot(bool set_root);
+    bool IsRooted() const;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells
@@ -838,16 +840,6 @@ public:
     bool IsTaggable();
     uint64 GetTaggerGUID();
     bool isLootable();
-
-    void Root();
-    void Unroot();
-    bool isRooted()
-    {
-        if (m_rooted)
-            return true;
-        else
-            return false;
-    }
 
     virtual bool isTrainingDummy() { return false; }
 

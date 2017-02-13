@@ -2101,7 +2101,7 @@ void Aura::SpellAuraModFear(bool apply)
     Unit* u_caster = GetUnitCaster();
 
     if (m_target->IsCreature() &&
-        (m_target->IsTotem() || static_cast< Creature* >(m_target)->isRooted()))
+        (m_target->IsTotem() || static_cast< Creature* >(m_target)->IsRooted()))
         return;
 
     if (apply)
@@ -2474,10 +2474,11 @@ void Aura::SpellAuraModStun(bool apply)
         }
         SetNegative();
 
+        //\todo Zyres: is tis relly the way this should work?
         m_target->m_rooted++;
 
         if (m_target->m_rooted == 1)
-            m_target->Root();
+            m_target->SetMoveRoot(true);
 
         if (m_target->IsStealth())
             m_target->RemoveStealth();
@@ -2509,10 +2510,11 @@ void Aura::SpellAuraModStun(bool apply)
     }
     else if ((m_flags & (1 << mod->i)) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
     {
+        //\todo Zyres: is tis relly the way this should work?
         m_target->m_rooted--;
 
         if (m_target->m_rooted == 0)
-            m_target->Unroot();
+            m_target->SetMoveRoot(false);
 
         m_target->m_stunned--;
 
@@ -3240,10 +3242,11 @@ void Aura::SpellAuraModRoot(bool apply)
 
         SetNegative();
 
+        //\todo Zyres: is tis relly the way this should work?
         m_target->m_rooted++;
 
         if (m_target->m_rooted == 1)
-            m_target->Root();
+            m_target->SetMoveRoot(true);
 
         //warrior talent - second wind triggers on stun and immobilize. This is not used as proc to be triggered always !
         Unit* caster = GetUnitCaster();
@@ -3260,10 +3263,11 @@ void Aura::SpellAuraModRoot(bool apply)
     }
     else if ((m_flags & (1 << mod->i)) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
     {
+        //\todo Zyres: is tis relly the way this should work?
         m_target->m_rooted--;
 
         if (m_target->m_rooted == 0)
-            m_target->Unroot();
+            m_target->SetMoveRoot(false);
 
         if (m_target->IsCreature())
             m_target->GetAIInterface()->AttackReaction(GetUnitCaster(), 1, 0);

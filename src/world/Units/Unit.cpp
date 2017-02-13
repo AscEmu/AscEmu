@@ -250,6 +250,48 @@ void Unit::SetMoveCanFly(bool set_fly)
     }
 }
 
+void Unit::SetMoveRoot(bool set_root)
+{
+    // AIInterface
+    //\todo stop movement based on movement flag instead of m_canMove
+    if (!IsPlayer())
+    {
+        if (set_root)
+        {
+            m_aiInterface->m_canMove = false;
+            m_aiInterface->StopMovement(100);
+        }
+        else
+        {
+            m_aiInterface->m_canMove = true;
+        }
+    }
+
+    if (set_root)
+    {
+        AddUnitMovementFlag(MOVEFLAG_ROOTED);
+
+        WorldPacket data(SMSG_FORCE_MOVE_ROOT, 12);
+        data << GetNewGUID();
+        data << uint32(0);
+        SendMessageToSet(&data, true);
+    }
+    else
+    {
+        RemoveUnitMovementFlag(MOVEFLAG_ROOTED);
+
+        WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 12);
+        data << GetNewGUID();
+        data << uint32(0);
+        SendMessageToSet(&data, true);
+    }
+}
+
+bool Unit::IsRooted() const
+{
+    return HasUnitMovementFlag(MOVEFLAG_ROOTED);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells
 

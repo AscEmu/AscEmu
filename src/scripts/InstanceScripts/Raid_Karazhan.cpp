@@ -1217,7 +1217,7 @@ class CuratorAI : public CreatureAIScript
             {
                 if (_unit->GetManaPct() <= 10)
                 {
-                    _unit->Root();
+                    _unit->SetMoveRoot(true);
                     _unit->setAttackTimer(spells[1].attackstoptimer, false);
                     _unit->SendScriptTextChatMessage(2065);     // Your request cannot be processed.
                     _unit->CastSpell(_unit, spells[2].info, spells[2].instant);
@@ -1234,7 +1234,7 @@ class CuratorAI : public CreatureAIScript
             }
             else if (_unit->GetManaPct() > 94)
             {
-                _unit->Unroot();
+                _unit->SetMoveRoot(false);
                 evocation = false;
             }
         }
@@ -2634,7 +2634,7 @@ class DemonChains : public CreatureAIScript
         DemonChains(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             _unit->CastSpell(_unit, sSpellCustomizations.GetSpellInfo(CHAINS_VISUAL), true);
-            _unit->Root();
+            _unit->SetMoveRoot(true);
             _unit->DisableAI();
         }
 
@@ -2663,7 +2663,7 @@ class FiendPortal : public CreatureAIScript
         ADD_CREATURE_FACTORY_FUNCTION(FiendPortal);
         FiendPortal(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->Root();
+            _unit->SetMoveRoot(true);
 
             _unit->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             _unit->GetAIInterface()->disable_melee = true;
@@ -3520,7 +3520,7 @@ class VoidZoneAI : public CreatureAIScript
 
         VoidZoneAI(Creature* pCreature) : CreatureAIScript(pCreature)
         {
-            _unit->Root();
+            _unit->SetMoveRoot(true);
             _unit->DisableAI();
             _unit->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
             _unit->GetAIInterface()->disable_melee = true;

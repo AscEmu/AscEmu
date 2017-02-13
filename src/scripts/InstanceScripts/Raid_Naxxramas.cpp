@@ -213,7 +213,7 @@ void WebWrapAI::OnDied(Unit* pKiller)
         if (PlayerPtr != NULL && PlayerPtr->HasAura(MAEXXNA_WEB_WRAP))
         {
             PlayerPtr->RemoveAura(MAEXXNA_WEB_WRAP);
-            PlayerPtr->Unroot();
+            PlayerPtr->SetMoveRoot(false);
         };
 
         RemoveAIUpdateEvent();
@@ -243,7 +243,7 @@ void WebWrapAI::Destroy()
         if (PlayerPtr != NULL && PlayerPtr->HasAura(MAEXXNA_WEB_WRAP))
         {
             PlayerPtr->RemoveAura(MAEXXNA_WEB_WRAP);
-            PlayerPtr->Unroot();
+            PlayerPtr->SetMoveRoot(false);
         };
 
         mPlayerGuid = 0;

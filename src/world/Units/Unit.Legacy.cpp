@@ -5742,39 +5742,6 @@ void Unit::CastSpellAoF(float x, float y, float z, SpellInfo* Sp, bool triggered
     newSpell->prepare(&targets);
 }
 
-void Unit::Root()
-{
-    AddUnitMovementFlag(MOVEFLAG_ROOTED);
-
-    if (!IsPlayer())
-    {
-        m_aiInterface->m_canMove = false;
-        m_aiInterface->StopMovement(1);
-    }
-
-    m_rooted = 1;
-
-    WorldPacket data(SMSG_FORCE_MOVE_ROOT, 12);
-    data << GetNewGUID();
-    data << uint32(1);
-    SendMessageToSet(&data, true, false);
-}
-
-void Unit::Unroot()
-{
-    RemoveUnitMovementFlag(MOVEFLAG_ROOTED);
-
-    if (!IsPlayer())
-        m_aiInterface->m_canMove = true;
-
-    m_rooted = 0;
-
-    WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 12);
-    data << GetNewGUID();
-    data << uint32(5);
-    SendMessageToSet(&data, true, false);
-}
-
 void Unit::RemoveAurasByBuffType(uint32 buff_type, const uint64 & guid, uint32 skip)
 {
     uint64 sguid = buff_type >= SPELL_TYPE_BLESSING ? guid : 0;
@@ -7668,6 +7635,7 @@ bool Unit::IsCriticalDamageForSpell(Object* victim, SpellInfo* spell)
         {
             CritChance += static_cast<float>(static_cast<Unit*>(victim)->AttackerCritChanceMod[spell->School]);
 
+            //\todo Zyres: is tis relly the way this should work?
             if (IsPlayer() && (static_cast<Unit*>(victim)->m_rooted - static_cast<Unit*>(victim)->m_stunned))
                 CritChance += static_cast<float>(static_cast<Player*>(this)->m_RootedCritChanceBonus);
         }
@@ -8152,7 +8120,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     if (GetCharmedUnitGUID())
         return;
 
-    Root();
+    SetMoveRoot(true);
 
     if (delay != 0)
     {
@@ -8161,7 +8129,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     }
     if (pTarget == NULL)
     {
-        Unroot();
+        SetMoveRoot(false);
         return;
     }
 
@@ -8242,7 +8210,7 @@ void Unit::UnPossess()
     if (!(pTarget->IsPet() && static_cast< Pet* >(pTarget) == pThis->GetSummon()))
         pThis->SendEmptyPetSpellList();
 
-    Unroot();
+    SetMoveRoot(false);
 
     if (!pTarget->IsPet() && (pTarget->GetCreatedByGUID() == GetGUID()))
     {

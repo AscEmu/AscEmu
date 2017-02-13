@@ -1746,7 +1746,7 @@ class MurmurAI : public CreatureAIScript
 
             RegisterAIUpdateEvent(_unit->GetBaseAttackTime(MELEE));
 
-            _unit->Root();
+            _unit->SetMoveRoot(true);
         }
 
         void OnCombatStop(Unit* mTarget)

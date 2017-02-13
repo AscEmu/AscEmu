@@ -2346,14 +2346,14 @@ class LuaUnit
     static int Root(lua_State* L, Unit* ptr)
     {
         if (ptr)
-            ptr->Root();
+            ptr->SetMoveRoot(true);
         return 0;
     }
 
     static int Unroot(lua_State* L, Unit* ptr)
     {
         if (ptr)
-            ptr->Unroot();
+            ptr->SetMoveRoot(false);
         return 0;
     }
 
@@ -5663,7 +5663,7 @@ class LuaUnit
     static int IsRooted(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET();
-        if (ptr->isRooted())
+        if (ptr->IsRooted())
             RET_BOOL(true)
             RET_BOOL(false)
     }

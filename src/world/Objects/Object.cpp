@@ -369,9 +369,9 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         else if (uThis && uThis->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
             flags2 |= MOVEFLAG_TRANSPORT;
 
-        if ((pThis != NULL) && pThis->isRooted())
+        if ((pThis != NULL) && pThis->IsRooted())
             flags2 |= MOVEFLAG_ROOTED;
-        else if ((uThis != NULL) && uThis->isRooted())
+        else if ((uThis != NULL) && uThis->IsRooted())
             flags2 |= MOVEFLAG_ROOTED;
 
         if (uThis != NULL)

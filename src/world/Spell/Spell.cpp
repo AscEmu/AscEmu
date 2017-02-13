@@ -4094,7 +4094,7 @@ uint8 Spell::CanCast(bool tolerate)
             // Nestlewood Owlkin - Quest 9303
             if (GetSpellInfo()->Id == 29528 && target->IsCreature() && target->GetEntry() == 16518)
             {
-                if (target->isRooted())
+                if (target->IsRooted())
                 {
                     return SPELL_FAILED_BAD_TARGETS;
                 }

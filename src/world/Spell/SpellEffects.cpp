@@ -1863,7 +1863,7 @@ void Spell::SpellEffectResurrect(uint32 i) // Resurrect (Flat)
     playerTarget->m_resurrectMana = mana;
 
     SendResurrectRequest(playerTarget);
-    playerTarget->Unroot();
+    playerTarget->SetMoveRoot(false);
 }
 
 void Spell::SpellEffectAddExtraAttacks(uint32 i) // Add Extra Attacks
@@ -2565,7 +2565,7 @@ void Spell::SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertie
         // Lightwell
         if (spe->Type == SUMMON_TYPE_LIGHTWELL)
         {
-            s->Root();
+            s->SetMoveRoot(true);
             s->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
         }
 
@@ -4522,7 +4522,7 @@ void Spell::SpellEffectSelfResurrect(uint32 i)
     playerTarget->m_resurrectMana = mana;
 
     playerTarget->ResurrectPlayer();
-    playerTarget->Unroot();
+    playerTarget->SetMoveRoot(false);
 
     playerTarget->SetUInt32Value(PLAYER_SELF_RES_SPELL, 0);
 
@@ -4565,6 +4565,8 @@ void Spell::SpellEffectCharge(uint32 i)
 {
     if (unitTarget == NULL || !unitTarget->isAlive())
         return;
+
+    //\todo Zyres: Check for MovementFlag instead of m_rooted?
     if (u_caster->IsStunned() || u_caster->m_rooted || u_caster->IsPacified() || u_caster->IsFeared())
         return;
 

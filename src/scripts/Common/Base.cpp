@@ -115,9 +115,9 @@ bool MoonScriptCreatureAI::GetCanMove()
 void MoonScriptCreatureAI::SetCanMove(bool pCanMove)
 {
     if (pCanMove)
-        _unit->Unroot();
+        _unit->SetMoveRoot(false);
     else
-        _unit->Root();
+        _unit->SetMoveRoot(true);
 };
 
 void MoonScriptCreatureAI::MoveTo(MoonScriptCreatureAI* pCreature, RangeStatusPair pRangeStatus)

@@ -4446,7 +4446,7 @@ void Player::BuildPlayerRepop()
 
     SetFlag(PLAYER_FLAGS, PLAYER_FLAG_DEATH_WORLD_ENABLE);
 
-    Unroot();
+    SetMoveRoot(false);
     SetMoveWaterWalk();
 }
 
@@ -4625,7 +4625,7 @@ void Player::KillPlayer()
     m_session->OutPacket(SMSG_CANCEL_COMBAT);
     m_session->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
 
-    Root();
+    SetMoveRoot(true);
     StopMirrorTimer(MIRROR_TYPE_FATIGUE);
     StopMirrorTimer(MIRROR_TYPE_BREATH);
     StopMirrorTimer(MIRROR_TYPE_FIRE);
@@ -13588,7 +13588,7 @@ void Player::UpdateLastSpeeds()
 void Player::RemoteRevive()
 {
     ResurrectPlayer();
-    Unroot();
+    SetMoveRoot(false);
     SetSpeeds(RUN, playerNormalRunSpeed);
     SetSpeeds(SWIM, playerNormalSwimSpeed);
     SetMoveLandWalk();

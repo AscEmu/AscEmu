@@ -161,7 +161,7 @@ bool DeathGrip(uint32 i, Spell* s)
         return false;
 
     // rooted units can't be death gripped
-    if(unitTarget->isRooted())
+    if(unitTarget->IsRooted())
         return false;
 
     if(unitTarget->IsPlayer())

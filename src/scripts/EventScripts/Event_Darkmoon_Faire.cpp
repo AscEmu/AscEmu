@@ -49,7 +49,7 @@ class Blastenheimer5000 : public GameObjectAIScript
                 return;
 
             pPlayer->CastSpell(pPlayer, 24832, true);
-            pPlayer->Root();
+            pPlayer->SetMoveRoot(true);
             _gameobject->PlaySoundToSet(8476);
             mPlayerGuid = static_cast<uint32>(pPlayer->GetGUID());
             RegisterAIUpdateEvent(2200);
@@ -78,7 +78,7 @@ class Blastenheimer5000 : public GameObjectAIScript
                 CurrentPlayer->SafeTeleport(1, 0, -1326.711914f, 86.301125f, 133.093918f, 3.510725f);
             }
 
-            CurrentPlayer->Unroot();
+            CurrentPlayer->SetMoveRoot(false);
             CurrentPlayer->CastSpell(CurrentPlayer, 42867, true);   // 24742
             _gameobject->SetFlags(0);
             mPlayerGuid = 0;

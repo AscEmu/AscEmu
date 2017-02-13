@@ -1523,7 +1523,7 @@ bool ToLegionHold(uint32 i, Aura* pAura, bool apply)
     if (apply)
     {
 
-        pPlayer->Root();
+        pPlayer->SetMoveRoot(true);
         Creature* pJovaan = sEAS.SpawnCreature(pPlayer, 21633, -3310.743896f, 2951.929199f, 171.132538f, 5.054039f, 0);    // Spawn Jovaan
         if (pJovaan != NULL)
         {
@@ -1549,7 +1549,7 @@ bool ToLegionHold(uint32 i, Aura* pAura, bool apply)
             pQuest->UpdatePlayerFields();
         }
 
-        pPlayer->Unroot();
+        pPlayer->SetMoveRoot(false);
     }
 
     return true;
@@ -3016,7 +3016,7 @@ bool ForceofNeltharakuSpell(uint32 i, Spell* pSpell) // Becoming a Shadoweave Ta
             pQuest->UpdatePlayerFields();
             if (1)
             {
-                pTarget->Unroot();
+                pTarget->SetMoveRoot(false);
                 pTarget->GetAIInterface()->setWaypointToMove(0);
             }
         }
