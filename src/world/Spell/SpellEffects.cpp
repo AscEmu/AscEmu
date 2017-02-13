@@ -1863,7 +1863,7 @@ void Spell::SpellEffectResurrect(uint32 i) // Resurrect (Flat)
     playerTarget->m_resurrectMana = mana;
 
     SendResurrectRequest(playerTarget);
-    playerTarget->SetMovement(MOVE_UNROOT, 1);
+    playerTarget->Unroot();
 }
 
 void Spell::SpellEffectAddExtraAttacks(uint32 i) // Add Extra Attacks
@@ -4522,7 +4522,7 @@ void Spell::SpellEffectSelfResurrect(uint32 i)
     playerTarget->m_resurrectMana = mana;
 
     playerTarget->ResurrectPlayer();
-    playerTarget->SetMovement(MOVE_UNROOT, 1);
+    playerTarget->Unroot();
 
     playerTarget->SetUInt32Value(PLAYER_SELF_RES_SPELL, 0);
 

@@ -338,7 +338,7 @@ bool ChatHandler::HandleReviveCommand(const char* args, WorldSession* m_session)
 
         if (player_target->IsDead())
         {
-            player_target->SetMovement(MOVE_UNROOT, 1);
+            player_target->Unroot();
             player_target->ResurrectPlayer();
             player_target->SetHealth(player_target->GetMaxHealth());
             player_target->SetPower(POWER_TYPE_MANA, player_target->GetMaxPower(POWER_TYPE_MANA));

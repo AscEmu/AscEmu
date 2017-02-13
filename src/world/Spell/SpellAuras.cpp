@@ -5820,11 +5820,11 @@ void Aura::SpellAuraGhost(bool apply)
         if (apply)
         {
             SetNegative();
-            p_target->SetMovement(MOVE_WATER_WALK, 4);
+            p_target->SetMoveWaterWalk();
         }
         else
         {
-            p_target->SetMovement(MOVE_LAND_WALK, 7);
+            p_target->SetMoveLandWalk();
         }
     }
 }

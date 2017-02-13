@@ -53,6 +53,28 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     return true;
 }
 
+//.debug hover
+bool ChatHandler::HandleDebugHover(const char* /*args*/, WorldSession* m_session)
+{
+    uint32 guid = Arcemu::Util::GUID_LOPART(m_session->GetPlayer()->GetSelection());
+    Unit* selected_unit = GetSelectedUnit(m_session);
+    if (selected_unit == nullptr)
+        return false;
+
+    if (selected_unit->HasUnitMovementFlag(MOVEFLAG_HOVER))
+    {
+        GreenSystemMessage(m_session, "Unset Hover for target.");
+        selected_unit->SetMoveHover(false);
+    }
+    else
+    {
+        GreenSystemMessage(m_session, "Set Hover for target.");
+        selected_unit->SetMoveHover(true);
+    }
+
+    return true;
+}
+
 //.debug pvpcredit
 bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session)
 {

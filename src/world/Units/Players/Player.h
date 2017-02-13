@@ -1006,7 +1006,6 @@ class SERVER_DECL Player : public Unit
         /////////////////////////////////////////////////////////////////////////////////////////
         // Movement system
         /////////////////////////////////////////////////////////////////////////////////////////
-        void SetMovement(uint8 pType, uint32 flag);
         void SetSpeeds(uint8 type, float speed);
         float GetPlayerSpeed() { return m_runSpeed; }
 

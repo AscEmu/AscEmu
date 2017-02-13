@@ -371,7 +371,7 @@ bool ChatHandler::HandleDebugLandWalk(const char* args, WorldSession* m_session)
 
     char buf[256];
 
-    chr->SetMovement(MOVE_LAND_WALK, 8);
+    chr->SetMoveLandWalk();
     snprintf((char*)buf, 256, "Land Walk Test Ran.");
     SystemMessage(m_session, buf);
 
@@ -386,7 +386,7 @@ bool ChatHandler::HandleDebugWaterWalk(const char* args, WorldSession* m_session
 
     char buf[256];
 
-    chr->SetMovement(MOVE_WATER_WALK, 4);
+    chr->SetMoveWaterWalk();
     snprintf((char*)buf, 256, "Water Walk Test Ran.");
     SystemMessage(m_session, buf);
 

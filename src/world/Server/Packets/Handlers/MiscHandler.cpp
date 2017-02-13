@@ -985,7 +985,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& recv_data)
         SendPacket(&data);
 
         //stop player from moving
-        pPlayer->SetMovement(MOVE_ROOT, 1);
+        pPlayer->Root();
         LoggingOut = true;
         // Set the "player locked" flag, to prevent movement
         pPlayer->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
@@ -1035,7 +1035,7 @@ void WorldSession::HandleLogoutCancelOpcode(WorldPacket& recv_data)
     OutPacket(SMSG_LOGOUT_CANCEL_ACK);
 
     //unroot player
-    pPlayer->SetMovement(MOVE_UNROOT, 5);
+    pPlayer->Unroot();
 
     // Remove the "player locked" flag, to allow movement
     pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
@@ -1207,7 +1207,7 @@ void WorldSession::HandleResurrectResponseOpcode(WorldPacket& recv_data)
     }
 
     _player->ResurrectPlayer();
-    _player->SetMovement(MOVE_UNROOT, 1);
+    _player->Unroot();
 }
 
 void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)

@@ -3004,6 +3004,8 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     // Initialize 'normal' fields
     SetScale(1.0f);
+    SetFloatValue(UNIT_FIELD_HOVERHEIGHT, 1.0f);
+
     //SetUInt32Value(UNIT_FIELD_POWER2, 0);
     SetPower(POWER_TYPE_FOCUS, info->focus); // focus
     SetPower(POWER_TYPE_ENERGY, info->energy);
@@ -4320,36 +4322,6 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         UpdateStats();
 }
 
-
-void Player::SetMovement(uint8 pType, uint32 flag)
-{
-    switch (pType)
-    {
-        case MOVE_ROOT:
-        {
-            Root();
-        }
-        break;
-        case MOVE_UNROOT:
-        {
-            Unroot();
-        }
-        break;
-        case MOVE_WATER_WALK:
-        {
-            SetMoveWaterWalk();
-        }
-        break;
-        case MOVE_LAND_WALK:
-        {
-            SetMoveLandWalk();
-        }
-        break;
-        default:
-            break;
-    }
-}
-
 void Player::SetSpeeds(uint8 type, float speed)
 {
     WorldPacket data(50);
@@ -4474,8 +4446,8 @@ void Player::BuildPlayerRepop()
 
     SetFlag(PLAYER_FLAGS, PLAYER_FLAG_DEATH_WORLD_ENABLE);
 
-    SetMovement(MOVE_UNROOT, 1);
-    SetMovement(MOVE_WATER_WALK, 1);
+    Unroot();
+    SetMoveWaterWalk();
 }
 
 void Player::RepopRequestedPlayer()
@@ -4618,7 +4590,7 @@ void Player::ResurrectPlayer()
         SafeTeleport(m_resurrectMapId, m_resurrectInstanceID, m_resurrectPosition);
     }
     m_resurrecter = 0;
-    SetMovement(MOVE_LAND_WALK, 1);
+    SetMoveLandWalk();
 
     // reinit
     m_lastRunSpeed = 0;
@@ -4653,7 +4625,7 @@ void Player::KillPlayer()
     m_session->OutPacket(SMSG_CANCEL_COMBAT);
     m_session->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
 
-    SetMovement(MOVE_ROOT, 0);
+    Root();
     StopMirrorTimer(MIRROR_TYPE_FATIGUE);
     StopMirrorTimer(MIRROR_TYPE_BREATH);
     StopMirrorTimer(MIRROR_TYPE_FIRE);
@@ -13616,10 +13588,10 @@ void Player::UpdateLastSpeeds()
 void Player::RemoteRevive()
 {
     ResurrectPlayer();
-    SetMovement(MOVE_UNROOT, 5);
+    Unroot();
     SetSpeeds(RUN, playerNormalRunSpeed);
     SetSpeeds(SWIM, playerNormalSwimSpeed);
-    SetMovement(MOVE_LAND_WALK, 8);
+    SetMoveLandWalk();
     SetHealth(GetUInt32Value(UNIT_FIELD_MAXHEALTH));
 }
 
