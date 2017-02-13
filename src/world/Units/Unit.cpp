@@ -202,23 +202,51 @@ void Unit::SetMoveNormalFall()
 
 void Unit::SetMoveHover(bool set_hover)
 {
-    if (set_hover)
+    if (IsPlayer())
     {
-        AddUnitMovementFlag(MOVEFLAG_HOVER);
+        if (set_hover)
+        {
+            AddUnitMovementFlag(MOVEFLAG_HOVER);
 
-        WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
-        data << GetNewGUID();
-        data << uint32(0);
-        SendMessageToSet(&data, true);
+            WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
+            data << GetNewGUID();
+            data << uint32(0);
+            SendMessageToSet(&data, true);
+        }
+        else
+        {
+            RemoveUnitMovementFlag(MOVEFLAG_HOVER);
+
+            WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
+            data << GetNewGUID();
+            data << uint32(0);
+            SendMessageToSet(&data, true);
+        }
     }
-    else
-    {
-        RemoveUnitMovementFlag(MOVEFLAG_HOVER);
 
-        WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
-        data << GetNewGUID();
-        data << uint32(0);
-        SendMessageToSet(&data, true);
+    //\todo spline update
+    if (IsCreature())
+    {
+        if (set_hover)
+        {
+            AddUnitMovementFlag(MOVEFLAG_HOVER);
+
+            SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+
+            WorldPacket data(SMSG_SPLINE_MOVE_SET_HOVER, 10);
+            data << GetNewGUID();
+            SendMessageToSet(&data, false);
+        }
+        else
+        {
+            RemoveUnitMovementFlag(MOVEFLAG_HOVER);
+
+            RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
+
+            WorldPacket data(SMSG_SPLINE_MOVE_UNSET_HOVER, 10);
+            data << GetNewGUID();
+            SendMessageToSet(&data, false);
+        }
     }
 }
 
