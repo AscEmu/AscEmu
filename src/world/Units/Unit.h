@@ -208,6 +208,7 @@ public:
 
     void SetMoveSwim(bool set_swim);
     void SetMoveDisableGravity(bool disable_gravity);
+    void SetMoveWalk(bool set_walk);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Internal States

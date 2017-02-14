@@ -417,6 +417,31 @@ void Unit::SetMoveDisableGravity(bool disable_gravity)
     }
 }
 
+//\todo Zyres: call it if creature has MoveFlag in its movement info (set in Object::_BuildMovementUpdate)
+//             Unfortunately Movement and object update is a mess.
+void Unit::SetMoveWalk(bool set_walk)
+{
+    if (IsCreature())
+    {
+        if (set_walk)
+        {
+            AddUnitMovementFlag(MOVEFLAG_WALK);
+
+            WorldPacket data(SMSG_SPLINE_MOVE_SET_WALK_MODE, 10);
+            data << GetNewGUID();
+            SendMessageToSet(&data, false);
+        }
+        else
+        {
+            RemoveUnitMovementFlag(MOVEFLAG_WALK);
+
+            WorldPacket data(SMSG_SPLINE_MOVE_SET_RUN_MODE, 10);
+            data << GetNewGUID();
+            SendMessageToSet(&data, false);
+        }
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells
 
