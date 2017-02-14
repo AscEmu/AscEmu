@@ -206,6 +206,8 @@ public:
     void SetMoveRoot(bool set_root);
     bool IsRooted() const;
 
+    void SetMoveSwim(bool set_swim);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Internal States
 private:

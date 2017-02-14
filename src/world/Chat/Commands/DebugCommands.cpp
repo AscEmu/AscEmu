@@ -87,6 +87,27 @@ bool ChatHandler::HandleDebugState(const char* /*args*/, WorldSession* m_session
     return true;
 }
 
+//.debug swim
+bool ChatHandler::HandleDebugSwim(const char* /*args*/, WorldSession* m_session)
+{
+    Creature* selected_creature = GetSelectedCreature(m_session);
+    if (selected_creature == nullptr)
+        return false;
+
+    if (selected_creature->HasUnitMovementFlag(MOVEFLAG_SWIMMING))
+    {
+        GreenSystemMessage(m_session, "Unset Swim for creature %s.", selected_creature->GetCreatureProperties()->Name.c_str());
+        selected_creature->SetMoveSwim(false);
+    }
+    else
+    {
+        GreenSystemMessage(m_session, "Set Swim for creature %s.", selected_creature->GetCreatureProperties()->Name.c_str());
+        selected_creature->SetMoveSwim(true);
+    }
+
+    return true;
+}
+
 //.debug pvpcredit
 bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session)
 {

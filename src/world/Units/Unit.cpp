@@ -320,6 +320,29 @@ bool Unit::IsRooted() const
     return HasUnitMovementFlag(MOVEFLAG_ROOTED);
 }
 
+void Unit::SetMoveSwim(bool set_swim)
+{
+    if (IsCreature())
+    {
+        if (set_swim)
+        {
+            AddUnitMovementFlag(MOVEFLAG_SWIMMING);
+
+            WorldPacket data(SMSG_SPLINE_MOVE_START_SWIM, 10);
+            data << GetNewGUID();
+            SendMessageToSet(&data, false);
+        }
+        else
+        {
+            RemoveUnitMovementFlag(MOVEFLAG_SWIMMING);
+
+            WorldPacket data(SMSG_SPLINE_MOVE_STOP_SWIM, 10);
+            data << GetNewGUID();
+            SendMessageToSet(&data, false);
+        }
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells
 

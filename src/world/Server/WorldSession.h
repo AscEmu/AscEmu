@@ -88,7 +88,7 @@ enum MovementFlags
     // Byte 2 (Resets on Situation Change)
     MOVEFLAG_WALK                       = 0x00000100,   //verified
     MOVEFLAG_TRANSPORT                  = 0x00000200,
-    MOVEFLAG_NO_COLLISION               = 0x00000400,
+    MOVEFLAG_NO_COLLISION               = 0x00000400,   // Zyres: disable gravity
     MOVEFLAG_ROOTED                     = 0x00000800,   //verified
     MOVEFLAG_REDIRECTED                 = 0x00001000,   //Unconfirmed, should be MOVEFLAG_JUMPING
     MOVEFLAG_FALLING                    = 0x00002000,   //verified

@@ -178,6 +178,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session);
         bool HandleDebugHover(const char* /*args*/, WorldSession* m_session);
         bool HandleDebugState(const char* /*args*/, WorldSession* m_session);
+        bool HandleDebugSwim(const char* /*args*/, WorldSession* m_session);
         bool HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session);
         bool HandleSendCastFailed(const char* args, WorldSession* m_session);
         // old debugcmds.cpp
