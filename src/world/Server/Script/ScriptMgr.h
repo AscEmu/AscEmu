@@ -22,15 +22,14 @@
 #ifndef SCRIPTMGR_H
 #define SCRIPTMGR_H
 
+#include <mutex>
+
 #include "Management/Gossip/Gossip.h"
 #include "Management/GameEventMgr.h"
 
 #include "Units/Unit.h"
 #include "Management/ArenaTeam.h"
 
-#include <mutex>
-
-#define SCRIPT_MODULE void*
 #define ADD_CREATURE_FACTORY_FUNCTION(cl) static CreatureAIScript * Create(Creature* c) { return new cl(c); }
 #define ADD_INSTANCE_FACTORY_FUNCTION(ClassName) static InstanceScript* Create(MapMgr* pMapMgr) { return new ClassName(pMapMgr); };
 #define ADD_GAMEOBJECT_FACTORY_FUNCTION(ClassName) static GameObjectAIScript* Create(GameObject* GO) { return new ClassName(GO); };
@@ -68,7 +67,7 @@ enum ServerHookEvents
     SERVER_HOOK_EVENT_ON_OBJECTLOOT         = 25,
     SERVER_HOOK_EVENT_ON_AREATRIGGER        = 26,
     SERVER_HOOK_EVENT_ON_POST_LEVELUP       = 27,
-    SERVER_HOOK_EVENT_ON_PRE_DIE            = 28,    //general unit die, not only based on players
+    SERVER_HOOK_EVENT_ON_PRE_DIE            = 28, // general unit die, not only based on players
     SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE  = 29,
     SERVER_HOOK_EVENT_ON_DUEL_FINISHED      = 30,
     SERVER_HOOK_EVENT_ON_AURA_REMOVE        = 31,
@@ -82,7 +81,6 @@ enum ScriptTypes
     SCRIPT_TYPE_INFODUMPER      = 0x02,
     SCRIPT_TYPE_SCRIPT_ENGINE   = 0x20
 };
-
 
 // Hook typedefs
 typedef bool(*tOnNewCharacter)(uint32 Race, uint32 Class, WorldSession* Session, const char* Name);

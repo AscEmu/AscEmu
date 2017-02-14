@@ -1211,3 +1211,14 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     data << uint8(race);
     SendPacket(&data);
 }
+
+void WorldSession::HandleDeclinedPlayerNameOpcode(WorldPacket& recv_data)
+{
+    uint32_t error = 0;
+    uint64_t guid;
+
+    WorldPacket data(SMSG_SET_PLAYER_DECLINED_NAMES_RESULT,4+8);
+    data << uint32_t(error);
+    data << uint64_t(guid);
+    SendPacket(&data);
+}
