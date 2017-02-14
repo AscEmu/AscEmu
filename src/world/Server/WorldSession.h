@@ -332,6 +332,7 @@ class SERVER_DECL WorldSession
         void HandlePlayerLoginOpcode(WorldPacket& recvPacket);
         void HandleRealmSplitOpcode(WorldPacket& recvPacket);
         void HandleTimeSyncResp(WorldPacket& recv_data);
+        void HandleDeclinedPlayerNameOpcode(WorldPacket& recv_data); // declined names (Cyrillic client)
 
         /// Authentification and misc opcodes (MiscHandler.cpp):
         void HandlePingOpcode(WorldPacket& recvPacket);
@@ -376,7 +377,7 @@ class SERVER_DECL WorldSession
         void HandleCompleteCinematic(WorldPacket& recv_data);
         void HandleNextCinematic(WorldPacket& recv_data);
         void HandleInspectOpcode(WorldPacket& recv_data);
-        void HandleGameobjReportUseOpCode(WorldPacket& recv_data);  // CMSG_GAMEOBJ_REPORT_USE
+        void HandleGameobjReportUseOpCode(WorldPacket& recv_data); // CMSG_GAMEOBJ_REPORT_USE
 
         /// Gm Ticket System in GMTicket.cpp:
         void HandleGMTicketCreateOpcode(WorldPacket& recvPacket);
