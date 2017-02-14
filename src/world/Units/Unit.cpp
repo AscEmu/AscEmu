@@ -252,29 +252,58 @@ void Unit::SetMoveHover(bool set_hover)
 
 void Unit::SetMoveCanFly(bool set_fly)
 {
-    if (set_fly)
+    if (IsPlayer())
     {
-        AddUnitMovementFlag(MOVEFLAG_CAN_FLY);
+        if (set_fly)
+        {
+            AddUnitMovementFlag(MOVEFLAG_CAN_FLY);
 
-        // Remove falling flag if set
-        RemoveUnitMovementFlag(MOVEFLAG_FALLING);
+            // Remove falling flag if set
+            RemoveUnitMovementFlag(MOVEFLAG_FALLING);
 
-        WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
-        data << GetNewGUID();
-        data << uint32(0);
-        SendMessageToSet(&data, true);
+            WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
+            data << GetNewGUID();
+            data << uint32(0);
+            SendMessageToSet(&data, true);
+        }
+        else
+        {
+            // Remove all fly related moveflags
+            RemoveUnitMovementFlag(MOVEFLAG_CAN_FLY);
+            RemoveUnitMovementFlag(MOVEFLAG_DESCENDING);
+            RemoveUnitMovementFlag(MOVEFLAG_ASCENDING);
+
+            WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
+            data << GetNewGUID();
+            data << uint32(0);
+            SendMessageToSet(&data, true);
+        }
     }
-    else
-    {
-        // Remove all fly related moveflags
-        RemoveUnitMovementFlag(MOVEFLAG_CAN_FLY);
-        RemoveUnitMovementFlag(MOVEFLAG_DESCENDING);
-        RemoveUnitMovementFlag(MOVEFLAG_ASCENDING);
 
-        WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
-        data << GetNewGUID();
-        data << uint32(0);
-        SendMessageToSet(&data, true);
+    if (IsCreature())
+    {
+        if (set_fly)
+        {
+            AddUnitMovementFlag(MOVEFLAG_CAN_FLY);
+
+            // Remove falling flag if set
+            RemoveUnitMovementFlag(MOVEFLAG_FALLING);
+
+            WorldPacket data(SMSG_SPLINE_MOVE_SET_FLYING, 10);
+            data << GetNewGUID();
+            SendMessageToSet(&data, false);
+        }
+        else
+        {
+            // Remove all fly related moveflags
+            RemoveUnitMovementFlag(MOVEFLAG_CAN_FLY);
+            RemoveUnitMovementFlag(MOVEFLAG_DESCENDING);
+            RemoveUnitMovementFlag(MOVEFLAG_ASCENDING);
+
+            WorldPacket data(SMSG_SPLINE_MOVE_UNSET_FLYING, 10);
+            data << GetNewGUID();
+            SendMessageToSet(&data, false);
+        }
     }
 }
 

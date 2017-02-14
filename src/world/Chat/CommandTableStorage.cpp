@@ -361,6 +361,7 @@ void CommandTableStorage::Init()
         { "hover",              'd', &ChatHandler::HandleDebugHover,                "",                                                         nullptr, 0, 0, 0 },
         { "state",              'd', &ChatHandler::HandleDebugState,                "",                                                         nullptr, 0, 0, 0 },
         { "swim",               'd', &ChatHandler::HandleDebugSwim,                 "",                                                         nullptr, 0, 0, 0 },
+        { "fly",                'd', &ChatHandler::HandleDebugFly,                  "",                                                         nullptr, 0, 0, 0 },
         { "disablegravity",     'd', &ChatHandler::HandleDebugDisableGravity,       "",                                                         nullptr, 0, 0, 0 },
         { "castspell",          'd', &ChatHandler::HandleCastSpellCommand,          "Casts spell on target.",                                   nullptr, 0, 0, 0 },
         { "castself",           'd', &ChatHandler::HandleCastSelfCommand,           "Target casts spell <spellId> on itself.",                  nullptr, 0, 0, 0 },

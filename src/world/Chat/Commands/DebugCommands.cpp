@@ -108,6 +108,27 @@ bool ChatHandler::HandleDebugSwim(const char* /*args*/, WorldSession* m_session)
     return true;
 }
 
+//.debug fly
+bool ChatHandler::HandleDebugFly(const char* /*args*/, WorldSession* m_session)
+{
+    Creature* selected_creature = GetSelectedCreature(m_session);
+    if (selected_creature == nullptr)
+        return false;
+
+    if (selected_creature->HasUnitMovementFlag(MOVEFLAG_CAN_FLY))
+    {
+        GreenSystemMessage(m_session, "Unset Fly for creature %s.", selected_creature->GetCreatureProperties()->Name.c_str());
+        selected_creature->SetMoveSwim(false);
+    }
+    else
+    {
+        GreenSystemMessage(m_session, "Set Fly for creature %s.", selected_creature->GetCreatureProperties()->Name.c_str());
+        selected_creature->SetMoveSwim(true);
+    }
+
+    return true;
+}
+
 //.debug disablegravity
 bool ChatHandler::HandleDebugDisableGravity(const char* /*args*/, WorldSession* m_session)
 {
