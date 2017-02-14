@@ -142,9 +142,6 @@ void LogonServer::Run(int argc, char** argv)
     std::string host = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
     std::string shost = Config.MainConfig.GetStringDefault("Listen", "ISHost", host.c_str());
 
-    clientMinBuild = 12340;
-    clientMaxBuild = 12340;
-
     std::string logonServerPassword = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3b4d");
     Sha1Hash hash;
     hash.UpdateData(logonServerPassword);
