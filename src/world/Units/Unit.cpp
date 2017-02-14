@@ -164,40 +164,80 @@ void Unit::SetMoveWaterWalk()
 {
     AddUnitMovementFlag(MOVEFLAG_WATER_WALK);
 
-    WorldPacket data(SMSG_MOVE_WATER_WALK, 12);
-    data << GetNewGUID();
-    data << uint32(0);
-    SendMessageToSet(&data, true);
+    if (IsPlayer())
+    {
+        WorldPacket data(SMSG_MOVE_WATER_WALK, 12);
+        data << GetNewGUID();
+        data << uint32(0);
+        SendMessageToSet(&data, true);
+    }
+
+    if (IsCreature())
+    {
+        WorldPacket data(SMSG_SPLINE_MOVE_WATER_WALK, 9);
+        data << GetNewGUID();
+        SendMessageToSet(&data, false);
+    }
 }
 
 void Unit::SetMoveLandWalk()
 {
     RemoveUnitMovementFlag(MOVEFLAG_WATER_WALK);
 
-    WorldPacket data(SMSG_MOVE_LAND_WALK, 12);
-    data << GetNewGUID();
-    data << uint32(0);
-    SendMessageToSet(&data, true);
+    if (IsPlayer())
+    {
+        WorldPacket data(SMSG_MOVE_LAND_WALK, 12);
+        data << GetNewGUID();
+        data << uint32(0);
+        SendMessageToSet(&data, true);
+    }
+
+    if (IsCreature())
+    {
+        WorldPacket data(SMSG_SPLINE_MOVE_LAND_WALK, 9);
+        data << GetNewGUID();
+        SendMessageToSet(&data, false);
+    }
 }
 
 void Unit::SetMoveFeatherFall()
 {
     AddUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
 
-    WorldPacket data(SMSG_MOVE_FEATHER_FALL, 12);
-    data << GetNewGUID();
-    data << uint32(0);
-    SendMessageToSet(&data, true);
+    if (IsPlayer())
+    {
+        WorldPacket data(SMSG_MOVE_FEATHER_FALL, 12);
+        data << GetNewGUID();
+        data << uint32(0);
+        SendMessageToSet(&data, true);
+    }
+
+    if (IsCreature())
+    {
+        WorldPacket data(SMSG_SPLINE_MOVE_FEATHER_FALL, 9);
+        data << GetNewGUID();
+        SendMessageToSet(&data, false);
+    }
 }
 
 void Unit::SetMoveNormalFall()
 {
     RemoveUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
 
-    WorldPacket data(SMSG_MOVE_NORMAL_FALL, 12);
-    data << GetNewGUID();
-    data << uint32(0);
-    SendMessageToSet(&data, true);
+    if (IsPlayer())
+    {
+        WorldPacket data(SMSG_MOVE_NORMAL_FALL, 12);
+        data << GetNewGUID();
+        data << uint32(0);
+        SendMessageToSet(&data, true);
+    }
+
+    if (IsCreature())
+    {
+        WorldPacket data(SMSG_SPLINE_MOVE_NORMAL_FALL, 9);
+        data << GetNewGUID();
+        SendMessageToSet(&data, false);
+    }
 }
 
 void Unit::SetMoveHover(bool set_hover)

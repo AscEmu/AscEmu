@@ -378,21 +378,6 @@ bool ChatHandler::HandleDebugLandWalk(const char* args, WorldSession* m_session)
     return true;
 }
 
-bool ChatHandler::HandleDebugWaterWalk(const char* args, WorldSession* m_session)
-{
-    Player* chr = GetSelectedPlayer(m_session, true, true);
-    if (chr == nullptr)
-        return true;
-
-    char buf[256];
-
-    chr->SetMoveWaterWalk();
-    snprintf((char*)buf, 256, "Water Walk Test Ran.");
-    SystemMessage(m_session, buf);
-
-    return true;
-}
-
 bool ChatHandler::HandleAggroRangeCommand(const char* args, WorldSession* m_session)
 {
     Unit* unit = GetSelectedUnit(m_session, true);

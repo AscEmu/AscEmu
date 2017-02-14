@@ -150,6 +150,48 @@ bool ChatHandler::HandleDebugDisableGravity(const char* /*args*/, WorldSession* 
     return true;
 }
 
+//.debug waterwalk
+bool ChatHandler::HandleDebugWaterWalk(const char* /*args*/, WorldSession* m_session)
+{
+    Unit* selected_unit = GetSelectedUnit(m_session);
+    if (selected_unit == nullptr)
+        return false;
+
+    if (selected_unit->HasUnitMovementFlag(MOVEFLAG_WATER_WALK))
+    {
+        GreenSystemMessage(m_session, "Disable WaterWalking for target.");
+        selected_unit->SetMoveLandWalk();
+    }
+    else
+    {
+        GreenSystemMessage(m_session, "Enabled WaterWalking for target.");
+        selected_unit->SetMoveWaterWalk();
+    }
+
+    return true;
+}
+
+//.debug featherfall
+bool ChatHandler::HandleDebugFeatherFall(const char* /*args*/, WorldSession* m_session)
+{
+    Unit* selected_unit = GetSelectedUnit(m_session);
+    if (selected_unit == nullptr)
+        return false;
+
+    if (selected_unit->HasUnitMovementFlag(MOVEFLAG_FEATHER_FALL))
+    {
+        GreenSystemMessage(m_session, "Disable FeatherFall for target.");
+        selected_unit->SetMoveNormalFall();
+    }
+    else
+    {
+        GreenSystemMessage(m_session, "Enabled FeatherFall for target.");
+        selected_unit->SetMoveFeatherFall();
+    }
+
+    return true;
+}
+
 //.debug pvpcredit
 bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session)
 {
