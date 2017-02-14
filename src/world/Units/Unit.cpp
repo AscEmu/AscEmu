@@ -343,6 +343,51 @@ void Unit::SetMoveSwim(bool set_swim)
     }
 }
 
+void Unit::SetMoveDisableGravity(bool disable_gravity)
+{
+    if (IsPlayer())
+    {
+        if (disable_gravity)
+        {
+            AddUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
+
+            WorldPacket data(SMSG_MOVE_GRAVITY_DISABLE, 13);
+            data << GetNewGUID();
+            data << uint32(0);
+            SendMessageToSet(&data, true);
+        }
+        else
+        {
+            RemoveUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
+
+            WorldPacket data(SMSG_MOVE_GRAVITY_ENABLE, 13);
+            data << GetNewGUID();
+            data << uint32(0);
+            SendMessageToSet(&data, true);
+        }
+    }
+
+    if (IsCreature())
+    {
+        if (disable_gravity)
+        {
+            AddUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
+
+            WorldPacket data(SMSG_SPLINE_MOVE_GRAVITY_DISABLE, 10);
+            data << GetNewGUID();
+            SendMessageToSet(&data, false);
+        }
+        else
+        {
+            RemoveUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
+
+            WorldPacket data(SMSG_SPLINE_MOVE_GRAVITY_ENABLE, 10);
+            data << GetNewGUID();
+            SendMessageToSet(&data, false);
+        }
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells
 

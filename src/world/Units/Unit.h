@@ -207,6 +207,7 @@ public:
     bool IsRooted() const;
 
     void SetMoveSwim(bool set_swim);
+    void SetMoveDisableGravity(bool disable_gravity);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Internal States

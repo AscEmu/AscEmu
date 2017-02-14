@@ -332,7 +332,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         if (IsCreature())
         {
             if (static_cast< Unit* >(this)->HasAuraWithName(SPELL_AURA_ENABLE_FLIGHT))
-                flags2 |= (MOVEFLAG_NO_COLLISION | MOVEFLAG_FLYING);
+                flags2 |= (MOVEFLAG_DISABLEGRAVITY | MOVEFLAG_FLYING);
         }
 
     }
@@ -389,7 +389,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
             }
 
             if (uThis->GetAIInterface()->IsFlying())
-                flags2 |= MOVEFLAG_NO_COLLISION;        //0x400 Zack : Teribus the Cursed had flag 400 instead of 800 and he is flying all the time
+                flags2 |= MOVEFLAG_DISABLEGRAVITY;        //0x400 Zack : Teribus the Cursed had flag 400 instead of 800 and he is flying all the time
             if (uThis->GetAIInterface()->onGameobject)
                 flags2 |= MOVEFLAG_ROOTED;
             if (uThis->GetCreatureProperties()->extra_a9_flags)

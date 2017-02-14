@@ -108,6 +108,27 @@ bool ChatHandler::HandleDebugSwim(const char* /*args*/, WorldSession* m_session)
     return true;
 }
 
+//.debug disablegravity
+bool ChatHandler::HandleDebugDisableGravity(const char* /*args*/, WorldSession* m_session)
+{
+    Unit* selected_unit = GetSelectedUnit(m_session);
+    if (selected_unit == nullptr)
+        return false;
+
+    if (selected_unit->HasUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY))
+    {
+        GreenSystemMessage(m_session, "Enable Gravity for target.");
+        selected_unit->SetMoveDisableGravity(false);
+    }
+    else
+    {
+        GreenSystemMessage(m_session, "Disable Gravity  for target.");
+        selected_unit->SetMoveDisableGravity(true);
+    }
+
+    return true;
+}
+
 //.debug pvpcredit
 bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session)
 {
