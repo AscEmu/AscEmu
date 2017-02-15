@@ -900,12 +900,21 @@ void MovementInfo::init(WorldPacket& data)
         data >> transporter_info.position.z;
         data >> transporter_info.position.o;
         data >> transporter_info.time;
-        data >> transporter_info.time2;
+        data >> transporter_info.seat;
+
+        if (HasMovementFlag2(MOVEFLAG2_INTERPOLATED_MOVE))
+        {
+            data >> transporter_info.time2;
+        }
     }
-    if (flags & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING) || flags2 & MOVEFLAG2_NO_JUMPING)
+
+    if (flags & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING) || HasMovementFlag2(MOVEFLAG2_NO_JUMPING))
     {
         data >> pitch;
     }
+
+    data >> fall_time;
+
     if (flags & MOVEFLAG_REDIRECTED)
     {
         data >> redirectVelocity;
@@ -938,12 +947,21 @@ void MovementInfo::write(WorldPacket& data)
         data << transporter_info.position.z;
         data << transporter_info.position.o;
         data << transporter_info.time;
-        data << transporter_info.time2;
+        data << transporter_info.seat;
+
+        if (HasMovementFlag2(MOVEFLAG2_INTERPOLATED_MOVE))
+        {
+            data << transporter_info.time2;
+        }
     }
-    if (flags & MOVEFLAG_SWIMMING)
+
+    if (flags & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING) || HasMovementFlag2(MOVEFLAG2_NO_JUMPING))
     {
         data << pitch;
     }
+
+    data << fall_time;
+
     if (flags & MOVEFLAG_FALLING)
     {
         data << redirectVelocity;
@@ -951,6 +969,7 @@ void MovementInfo::write(WorldPacket& data)
         data << redirectCos;
         data << redirect2DSpeed;
     }
+
     if (flags & MOVEFLAG_SPLINE_MOVER)
     {
         data << spline_elevation;

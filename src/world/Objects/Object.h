@@ -164,6 +164,7 @@ struct MovementInfo
     void init(WorldPacket& data);
     void write(WorldPacket& data);
     bool IsOnTransport() const { return this->transporter_info.guid != 0; };
+    bool HasMovementFlag2(uint16_t move_flags2) const { return (flags2 & move_flags2) != 0; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
