@@ -98,10 +98,10 @@ typedef struct
 struct MovementInfo
 {
     WoWGuid object_guid;
-    uint32 flags;
-    uint16 flags2;
+    uint32_t flags;
+    uint16_t flags2;
     LocationVector position;
-    uint32 time;
+    uint32_t time;
 
     //pitch
     //-1.55=looking down, 0=looking forward, +1.55=looking up
@@ -113,7 +113,7 @@ struct MovementInfo
     float redirectCos;
     float redirect2DSpeed;  //9,10 changes if you are not on foot
 
-    uint32 fall_time;       //fall_time in ms
+    uint32_t fall_time;       //fall_time in ms
 
     float spline_elevation;
 
@@ -121,11 +121,11 @@ struct MovementInfo
     {
         Transporter* m_transporter;
         WoWGuid transGuid;
-        uint64 guid;        // switch to WoWGuid
+        uint64_t guid;        // switch to WoWGuid
         LocationVector position;
-        uint32 time;
-        uint32 time2;
-        uint8 seat;
+        uint32_t time;
+        uint32_t time2;
+        uint8_t seat;
 
         void Clear()
         {
@@ -164,6 +164,11 @@ struct MovementInfo
     void init(WorldPacket& data);
     void write(WorldPacket& data);
     bool IsOnTransport() const { return this->transporter_info.guid != 0; };
+
+    //flags uint32_t
+    bool HasMovementFlag(uint32_t move_flags) const { return (flags & move_flags) != 0; }
+
+    //flags2 uint16_t
     bool HasMovementFlag2(uint16_t move_flags2) const { return (flags2 & move_flags2) != 0; }
 };
 

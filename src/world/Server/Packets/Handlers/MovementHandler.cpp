@@ -892,7 +892,7 @@ void MovementInfo::init(WorldPacket& data)
     data >> position.z;
     data >> position.o;
 
-    if (flags & MOVEFLAG_TRANSPORT)
+    if (HasMovementFlag(MOVEFLAG_TRANSPORT))
     {
         data >> transporter_info.transGuid;
         data >> transporter_info.position.x;
@@ -908,21 +908,21 @@ void MovementInfo::init(WorldPacket& data)
         }
     }
 
-    if (flags & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING) || HasMovementFlag2(MOVEFLAG2_NO_JUMPING))
+    if (HasMovementFlag((MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || HasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))
     {
         data >> pitch;
     }
 
     data >> fall_time;
 
-    if (flags & MOVEFLAG_REDIRECTED)
+    if (HasMovementFlag(MOVEFLAG_REDIRECTED))
     {
         data >> redirectVelocity;
         data >> redirectSin;
         data >> redirectCos;
         data >> redirect2DSpeed;
     }
-    if (flags & MOVEFLAG_SPLINE_MOVER)
+    if (HasMovementFlag(MOVEFLAG_SPLINE_MOVER))
     {
         data >> spline_elevation;
     }
@@ -939,7 +939,7 @@ void MovementInfo::write(WorldPacket& data)
     data << position.z;
     data << position.o;
 
-    if (flags & MOVEFLAG_TRANSPORT)
+    if (HasMovementFlag(MOVEFLAG_TRANSPORT))
     {
         data << transporter_info.transGuid;
         data << transporter_info.position.x;
@@ -955,14 +955,14 @@ void MovementInfo::write(WorldPacket& data)
         }
     }
 
-    if (flags & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING) || HasMovementFlag2(MOVEFLAG2_NO_JUMPING))
+    if (HasMovementFlag((MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || HasMovementFlag2(MOVEFLAG2_ALLOW_PITCHING))
     {
         data << pitch;
     }
 
     data << fall_time;
 
-    if (flags & MOVEFLAG_FALLING)
+    if (HasMovementFlag(MOVEFLAG_FALLING))
     {
         data << redirectVelocity;
         data << redirectSin;
@@ -970,7 +970,7 @@ void MovementInfo::write(WorldPacket& data)
         data << redirect2DSpeed;
     }
 
-    if (flags & MOVEFLAG_SPLINE_MOVER)
+    if (HasMovementFlag(MOVEFLAG_SPLINE_MOVER))
     {
         data << spline_elevation;
     }
