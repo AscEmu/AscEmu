@@ -405,9 +405,9 @@ void TileMap::Load(char* filename)
         return;
     }
 
-    if (header.buildMagic != sWorld.CacheVersion) // wow version
+    if (header.buildMagic != GAME_BUILD_VERSION) // wow version
     {
-        LOG_ERROR("%s: from incorrect client (you: %u us: %u)", filename, header.buildMagic, sWorld.CacheVersion);
+        LOG_ERROR("%s: from incorrect client (you: %u us: %u)", filename, header.buildMagic, GAME_BUILD_VERSION);
         fclose(f);
         return;
     }

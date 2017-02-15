@@ -30,6 +30,10 @@ namespace VMAP
     class VMapFactory;
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// wow version
+#define BUILD_VERSION 12340
+
 #define TERRAIN_INVALID_HEIGHT -50000
 #define TERRAIN_TILE_SIZE 533.3333333f
 #define TERRAIN_NUM_TILES 64
@@ -46,7 +50,6 @@ class TerrainTile;
 
 #define MAP_LIQUID_NO_TYPE    0x0001
 #define MAP_LIQUID_NO_HEIGHT  0x0002
-
 
 struct TileMapHeader
 {
