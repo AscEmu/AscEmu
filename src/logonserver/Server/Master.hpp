@@ -48,9 +48,6 @@ class LogonServer : public Singleton< LogonServer >
 
         uint8 sql_hash[20];
 
-        uint32_t clientMinBuild;
-        uint32_t clientMaxBuild;
-
         Arcemu::PerformanceCounter perfcounter;
     private:
 
