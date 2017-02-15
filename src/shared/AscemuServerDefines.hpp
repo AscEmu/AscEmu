@@ -16,9 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ASCEMU_SERVER_DEFINES_HPP
-#define _ASCEMU_SERVER_DEFINES_HPP
-
+#pragma once
 
 #include "git_version.h"
 #include <signal.h>
@@ -30,9 +28,17 @@
 
 #include "../shared/ascemu_getopt.h"
 
+// Minimum supported version.
+#define CLIENT_MIN_BUILD 12340
 
+// Maximum supported version.
+#define CLIENT_MAX_BUILD 12340
+
+// Cache supported version.
+#define CLIENT_CACHE_VERSION 12340
+
+// Default value is not set.
 #define DEF_VALUE_NOT_SET 0xDEADBEEF
 
+// Enable improved ticket system.
 #define GM_TICKET_MY_MASTER_COMPATIBLE
-
-#endif      //_ASCEMU_SERVER_DEFINES_HPP

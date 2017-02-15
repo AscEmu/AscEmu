@@ -30,10 +30,6 @@ namespace VMAP
     class VMapFactory;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////
-// wow version
-#define BUILD_VERSION 12340
-
 #define TERRAIN_INVALID_HEIGHT -50000
 #define TERRAIN_TILE_SIZE 533.3333333f
 #define TERRAIN_NUM_TILES 64
