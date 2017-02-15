@@ -714,8 +714,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         uint32 GoldLimit;
         uint32 GoldStartAmount;
 
-        uint32 CacheVersion;
-
         char* m_banTable;
 
         static float m_movementCompressThreshold;
