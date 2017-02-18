@@ -3,7 +3,8 @@
 set(PATH_PREFIX GameWotLK)
 
 set(SRC_GAMELK_FILES
-	${PATH_PREFIX}/Network/Opcodes.cpp
+    ${PATH_PREFIX}/Network/Opcodes.cpp
+    ${PATH_PREFIX}/Network/Opcodes.h
 )
 
 source_group(GameWotLK FILES ${SRC_GAMELK_FILES})

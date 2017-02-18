@@ -3,7 +3,8 @@
 set(PATH_PREFIX GameCata)
 
 set(SRC_GAMECATA_FILES
-	${PATH_PREFIX}/Network/Opcodes.cpp
+    ${PATH_PREFIX}/Network/Opcodes.cpp
+    ${PATH_PREFIX}/Network/Opcodes.h
 )
 
 source_group(GameCata FILES ${SRC_GAMECATA_FILES})
