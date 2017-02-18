@@ -7,6 +7,8 @@
 [![Coverity Snac](https://scan.coverity.com/projects/4747/badge.svg)](https://scan.coverity.com/projects/4747) | UNK
 [![Open HUB Stats](https://www.openhub.net/p/AscEmu/widgets/project_thin_badge.gif)](https://www.openhub.net/p/AscEmu)
 
+## This branch is marked as obsolete. It will be removed as soon as it is merged into AscEmu/AscEmu branch master.
+
 ## Introduction
 AscEmu is derived from ArcEmu to keep up the Antrix-Ascent-Arcemu way of Framework.
 We focus on optimizing the codebase and improving the ingame functionality.
