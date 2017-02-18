@@ -93,27 +93,15 @@ float CONF_float_to_int16_limit = 2048.0f;   // Max accuracy = val/65536
 float CONF_flat_height_delta_limit = 0.005f; // If max - min less this value - surface is flat
 float CONF_flat_liquid_delta_limit = 0.001f; // If max - min less this value - liquid surface is flat
 
-// List MPQ for extract from
-#ifdef AE_TBC
+// List MPQ for extract from / Version 15595
 const char* CONF_mpq_list[] = {
-    "common.MPQ",
-    "expansion.MPQ",
-    "patch.MPQ",
-    "patch-2.MPQ",
+    "world.MPQ",
+    "art.MPQ",
+    "world2.MPQ",
+    "expansion1.MPQ",
+    "expansion2.MPQ",
+    "expansion3.MPQ",
 };
-#endif
-
-#ifdef AE_WOTLK
-const char* CONF_mpq_list[] = {
-    "common.MPQ",
-    "common-2.MPQ",
-    "lichking.MPQ",
-    "expansion.MPQ",
-    "patch.MPQ",
-    "patch-2.MPQ",
-    "patch-3.MPQ",
-};
-#endif
 
 static const char* const langs[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU" };
 #define LANG_COUNT 12
