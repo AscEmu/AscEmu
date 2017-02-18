@@ -150,8 +150,6 @@ World::World()
     GoldLimit = 214748;
     GoldStartAmount = 0;
 
-    CacheVersion = 0;
-
     announce_tagcolor = 2;
     announce_gmtagcolor = 1;
     announce_namecolor = 4;
@@ -1434,8 +1432,7 @@ void World::Rehash(bool load)
 
     m_reqGmForCommands = !Config.MainConfig.GetBoolDefault("Server", "AllowPlayerCommands", false);
     m_lfgForNonLfg = Config.MainConfig.GetBoolDefault("Server", "EnableLFGJoin", false);
-    CacheVersion = uint32(Config.MainConfig.GetIntDefault("Server", "CacheVersion", 12340));
-
+ 
     realmtype = Config.MainConfig.GetBoolDefault("Server", "RealmType", false);
     TimeOut = uint32(1000 * Config.MainConfig.GetIntDefault("Server", "ConnectionTimeout", 180));
     GMTTimeZone = Config.MainConfig.GetIntDefault("Server", "TimeZone", 0);
