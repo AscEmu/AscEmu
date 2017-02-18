@@ -9,8 +9,18 @@ branches:
 
 environment:
   matrix:
-  - VS_VER: Visual Studio 14 2015
-  - VS_VER: Visual Studio 14 2015 Win64
+  - ASC_VERSION: TBC
+    VS_VER: Visual Studio 14 2015
+  - ASC_VERSION: TBC
+    VS_VER: Visual Studio 14 2015 Win64
+  - ASC_VERSION: WotLK
+    VS_VER: Visual Studio 14 2015
+  - ASC_VERSION: WotLK
+    VS_VER: Visual Studio 14 2015 Win64
+  - ASC_VERSION: Cata
+    VS_VER: Visual Studio 14 2015
+  - ASC_VERSION: Cata
+    VS_VER: Visual Studio 14 2015 Win64
 
 configuration: Release
 
@@ -28,5 +38,5 @@ before_build:
 build_script:
   - cmd: mkdir ascemu_build
   - cmd: cd ascemu_build
-  - cmd: cmake ../ -G "%VS_VER%" -DBUILD_WITH_WARNINGS=1 -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1
+  - cmd: cmake ../ -G "%VS_VER%" -DBUILD_WITH_WARNINGS=0 -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBUILD_TOOLS=1 -DASCEMU_VERSION=%ASC_VERSION%
   - cmd: msbuild Ascemu.sln
