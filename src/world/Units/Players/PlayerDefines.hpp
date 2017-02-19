@@ -488,18 +488,18 @@ enum DrunkenState
 
 static const uint32 TalentTreesPerClass[DRUID + 1][3] =
 {
-        { 0, 0, 0 },        // NONE
-        { 161, 163, 164 },  // WARRIOR
-        { 382, 383, 381 },  // PALADIN
-        { 361, 363, 362 },  // HUNTER
-        { 182, 181, 183 },  // ROGUE
-        { 201, 202, 203 },  // PRIEST
-        { 398, 399, 400 },  // DEATH KNIGHT
-        { 261, 263, 262 },  // SHAMAN
-        { 81, 41, 61 },     // MAGE
-        { 302, 303, 301 },  // WARLOCK
-        { 0, 0, 0 },        // NONE
-        { 283, 281, 282 },  // DRUID
+    { 0, 0, 0 },        // NONE
+    { 161, 163, 164 },  // WARRIOR
+    { 382, 383, 381 },  // PALADIN
+    { 361, 363, 362 },  // HUNTER
+    { 182, 181, 183 },  // ROGUE
+    { 201, 202, 203 },  // PRIEST
+    { 398, 399, 400 },  // DEATH KNIGHT
+    { 261, 263, 262 },  // SHAMAN
+    { 81, 41, 61 },     // MAGE
+    { 302, 303, 301 },  // WARLOCK
+    { 0, 0, 0 },        // NONE
+    { 283, 281, 282 },  // DRUID
 };
 
 
