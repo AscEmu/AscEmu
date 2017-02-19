@@ -20,6 +20,8 @@
 #ifndef _ATOMICBOOLEAN_H
 #define _ATOMICBOOLEAN_H
 
+#define UNUSED(x) (void)(x)
+
 namespace Arcemu
 {
     namespace Threading
@@ -75,10 +77,10 @@ namespace Arcemu
             private:
 
                 // Disabled copy constructor
-                AtomicBoolean(const AtomicBoolean& other) {}
+                AtomicBoolean(const AtomicBoolean& other)  { UNUSED(other); }
 
                 // Disabled assignment operator
-                AtomicBoolean operator=(const AtomicBoolean& other) { return *this; }
+                AtomicBoolean operator=(const AtomicBoolean& other) { UNUSED(other); return *this; }
 
                 AtomicULong Value;
         };

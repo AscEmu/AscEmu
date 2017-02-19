@@ -65,10 +65,10 @@ namespace Arcemu
             private:
 
                 // Disabled copy constructor
-                AtomicCounter(const AtomicCounter& other) {}
+                AtomicCounter(const AtomicCounter& other) { UNUSED(other); }
 
                 // Disabled assignment operator
-                AtomicCounter operator=(const AtomicCounter& other) { return *this; }
+                AtomicCounter operator=(const AtomicCounter& other) { UNUSED(other); return *this; }
         };
     }
 }
