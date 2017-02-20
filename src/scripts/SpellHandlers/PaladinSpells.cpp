@@ -366,6 +366,17 @@ bool JudgementOfTheWise(uint32 i, Spell* s)
     return true;
 }
 
+bool GuardedByTheLight(uint32 i, Spell* s)
+{
+    if (!s->p_caster)
+        return false;
+
+    if (Aura* aura = s->p_caster->GetAuraWithId(54428))
+        aura->Refresh();
+
+    return true;
+}
+
 void SetupPaladinSpells(ScriptMgr* mgr)
 {
     mgr->register_dummy_aura(9799, &EyeForAnEye);
@@ -381,6 +392,8 @@ void SetupPaladinSpells(ScriptMgr* mgr)
     mgr->register_script_effect(20271, &JudgementLightWisdomJustice); //light
     mgr->register_script_effect(53408, &JudgementLightWisdomJustice);
     mgr->register_script_effect(53407, &JudgementLightWisdomJustice);
+
+    mgr->register_script_effect(63521, &GuardedByTheLight);
 
     mgr->register_dummy_aura(20185, &JudgementOfLight);
     mgr->register_dummy_aura(20186, &JudgementOfWisdom);
