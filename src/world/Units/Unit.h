@@ -812,6 +812,19 @@ public:
     virtual void SetSpeeds(uint8 type, float speed) {}
     void UpdateSpeed();
 
+    //speed members from Object.h
+    float m_walkSpeed;
+    float m_runSpeed;
+    float m_backWalkSpeed;
+    float m_swimSpeed;
+    float m_backSwimSpeed;
+    float m_turnRate;
+    float m_flySpeed;
+    float m_backFlySpeed;
+
+    float m_base_runSpeed;
+    float m_base_walkSpeed;
+
     // Escort Quests
     void MoveToWaypoint(uint32 wp_id);
 

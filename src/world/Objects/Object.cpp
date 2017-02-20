@@ -49,20 +49,6 @@ Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
     m_currentSpell = NULL;
     m_valuesCount = 0;
 
-    //official Values
-    m_walkSpeed = 2.5f;
-    m_runSpeed = 7.0f;
-    m_base_runSpeed = m_runSpeed;
-    m_base_walkSpeed = m_walkSpeed;
-
-    m_flySpeed = 7.0f;
-    m_backFlySpeed = 4.5f;
-
-    m_backWalkSpeed = 4.5f;
-    m_swimSpeed = 4.722222f;
-    m_backSwimSpeed = 2.5f;
-    m_turnRate = M_PI_FLOAT;
-
     m_phase = 1;                //Set the default phase: 00000000 00000000 00000000 00000001
 
     m_mapMgr = 0;
@@ -461,24 +447,30 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
             }
         }
 
-        if (m_walkSpeed == 0)
-            *data << float(8.0f);
-        else
-            *data << float(m_walkSpeed);   // walk speed
-        if (m_runSpeed == 0)
-            *data << float(8.0f);
-        else
-            *data << float(m_runSpeed);    // run speed
-        *data << float(m_backWalkSpeed);   // backwards walk speed
-        *data << float(m_swimSpeed);       // swim speed
-        *data << float(m_backSwimSpeed);   // backwards swim speed
-        if (m_flySpeed == 0)
-            *data << float(8.0f);
-        else
-            *data << float(m_flySpeed);    // fly speed
-        *data << float(m_backFlySpeed);    // back fly speed
-        *data << float(m_turnRate);        // turn rate
-        *data << float(7);          // pitch rate, now a constant...
+        if (Unit* unit = static_cast<Unit*>(this))
+        {
+            *data << unit->m_walkSpeed;
+            *data << unit->m_runSpeed;
+            *data << unit->m_backWalkSpeed;
+            *data << unit->m_swimSpeed;
+            *data << unit->m_backSwimSpeed;
+            *data << unit->m_flySpeed;
+            *data << unit->m_backFlySpeed;
+            *data << unit->m_turnRate;
+            *data << float(3.14f);          //\todo Zyres: add pitchRate unit->m_pitchRate;
+        }
+        else                                //\todo Zyres: this is ridiculous... only units have these types, but this function is a mess so don't breake anything.
+        {
+            *data << float(2.5f);
+            *data << float(7.0f);
+            *data << float(4.5f);
+            *data << float(4.722222f);
+            *data << float(2.5f);
+            *data << float(7.0f);
+            *data << float(4.5f);
+            *data << float(3.141594f);
+            *data << float(3.14f);
+        }
 
         if (flags2 & MOVEFLAG_SPLINE_ENABLED)   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
         {
