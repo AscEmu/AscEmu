@@ -94,10 +94,10 @@ Creature::Creature(uint64 guid)
     m_limbostate = false;
     m_corpseEvent = false;
     m_respawnCell = NULL;
-    m_walkSpeed = 2.5f;
-    m_runSpeed = creatureNormalRunSpeed;
-    m_base_runSpeed = m_runSpeed;
-    m_base_walkSpeed = m_walkSpeed;
+    m_currentSpeedWalk = 2.5f;
+    m_currentSpeedRun = creatureNormalRunSpeed;
+    m_basicSpeedRun = m_currentSpeedRun;
+    m_basicSpeedWalk = m_currentSpeedWalk;
     m_noRespawn = false;
     m_respawnTimeOverride = 0;
     m_canRegenerateHP = true;
@@ -802,8 +802,8 @@ void Creature::EnslaveExpire()
     SetCharmedByGUID(0);
     SetSummonedByGUID(0);
 
-    m_walkSpeed = m_base_walkSpeed;
-    m_runSpeed = m_base_runSpeed;
+    m_currentSpeedWalk = m_basicSpeedWalk;
+    m_currentSpeedRun = m_basicSpeedRun;
 
     switch (GetCreatureProperties()->Type)
     {
@@ -1286,9 +1286,9 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
     spawnid = spawn->id;
     m_phase = spawn->phase;
 
-    m_walkSpeed = m_base_walkSpeed = creature_properties->walk_speed; //set speeds
-    m_runSpeed = m_base_runSpeed = creature_properties->run_speed; //set speeds
-    m_flySpeed = creature_properties->fly_speed;
+    m_currentSpeedWalk = m_basicSpeedWalk = creature_properties->walk_speed; //set speeds
+    m_currentSpeedRun = m_basicSpeedRun = creature_properties->run_speed; //set speeds
+    m_currentSpeedFly = creature_properties->fly_speed;
 
     //Set fields
     SetEntry(creature_properties->Id);
@@ -1533,8 +1533,8 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         GetAIInterface()->SetAIType(AITYPE_PASSIVE);
     }
 
-    m_walkSpeed = m_base_walkSpeed = creature_properties->walk_speed; //set speeds
-    m_runSpeed = m_base_runSpeed = creature_properties->run_speed; //set speeds
+    m_currentSpeedWalk = m_basicSpeedWalk = creature_properties->walk_speed; //set speeds
+    m_currentSpeedRun = m_basicSpeedRun = creature_properties->run_speed; //set speeds
 
     //Set fields
     SetEntry(creature_properties->Id);
@@ -2114,37 +2114,37 @@ void Creature::SetSpeeds(uint8 type, float speed)
         case WALK:
         {
             data.SetOpcode(SMSG_FORCE_WALK_SPEED_CHANGE);
-            m_walkSpeed = speed;
+            m_currentSpeedWalk = speed;
             break;
         }
         case RUN:
         {
             data.SetOpcode(SMSG_FORCE_RUN_SPEED_CHANGE);
-            m_runSpeed = speed;
+            m_currentSpeedRun = speed;
             break;
         }
         case RUNBACK:
         {
             data.SetOpcode(SMSG_FORCE_RUN_BACK_SPEED_CHANGE);
-            m_backWalkSpeed = speed;
+            m_currentSpeedRunBack = speed;
             break;
         }
         case SWIM:
         {
             data.SetOpcode(SMSG_FORCE_SWIM_SPEED_CHANGE);
-            m_swimSpeed = speed;
+            m_currentSpeedSwim = speed;
             break;
         }
         case SWIMBACK:
         {
             data.SetOpcode(SMSG_FORCE_SWIM_BACK_SPEED_CHANGE);
-            m_backSwimSpeed = speed;
+            m_currentSpeedSwimBack = speed;
             break;
         }
         case FLY:
         {
             data.SetOpcode(SMSG_FORCE_FLIGHT_SPEED_CHANGE);
-            m_flySpeed = speed;
+            m_currentSpeedFly = speed;
             break;
         }
         default:

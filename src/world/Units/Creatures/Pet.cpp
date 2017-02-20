@@ -252,8 +252,8 @@ bool Pet::CreateAsSummon(uint32 entry, CreatureProperties const* ci, Creature* c
     BaseOffhandDamage[1] = 0;
     BaseRangedDamage[0] = 0;
     BaseRangedDamage[1] = 0;
-    m_base_runSpeed = m_runSpeed = owner->m_base_runSpeed;
-    m_base_walkSpeed = m_walkSpeed = owner->m_base_walkSpeed;
+    m_basicSpeedRun = m_currentSpeedRun = owner->m_basicSpeedRun;
+    m_basicSpeedWalk = m_currentSpeedWalk = owner->m_basicSpeedWalk;
 
     ApplyStatsForLevel();
 
@@ -690,8 +690,8 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     BaseOffhandDamage[1] = 0;
     BaseRangedDamage[0] = 0;
     BaseRangedDamage[1] = 0;
-    m_base_runSpeed = m_runSpeed = owner->m_base_runSpeed;
-    m_base_walkSpeed = m_walkSpeed = owner->m_base_walkSpeed;
+    m_basicSpeedRun = m_currentSpeedRun = owner->m_basicSpeedRun;
+    m_basicSpeedWalk = m_currentSpeedWalk = owner->m_basicSpeedWalk;
 
     setLevel(mPi->level);
 

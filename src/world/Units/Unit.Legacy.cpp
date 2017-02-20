@@ -119,23 +119,16 @@ static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
     0.0136512559131f    //80
 };
 
-Unit::Unit() : m_combatStatus(this), m_movementManager()
+Unit::Unit() : m_combatStatus(this), m_movementManager(),
+    m_currentSpeedWalk(2.5f), m_currentSpeedRun(7.0f), m_currentSpeedRunBack(4.5f), m_currentSpeedSwim(4.722222f),
+    m_currentSpeedSwimBack(2.5f), m_currentTurnRate(3.141594f), m_currentSpeedFly(7.0f), m_currentSpeedFlyBack(4.5f),
+    m_currentPitchRate(3.14f),
+
+    m_basicSpeedWalk(2.5f), m_basicSpeedRun(7.0f), m_basicSpeedRunBack(4.5f), m_basicSpeedSwim(4.722222f),
+    m_basicSpeedSwimBack(2.5f), m_basicTurnRate(3.141594f), m_basicSpeedFly(7.0f), m_basicSpeedFlyBack(4.5f),
+    m_basicPitchRate(3.14f)
 {
     int i;
-
-    //speed members from Object.cpp
-    m_walkSpeed = 2.5f;
-    m_runSpeed = 7.0f;
-    m_base_runSpeed = m_runSpeed;
-    m_base_walkSpeed = m_walkSpeed;
-
-    m_flySpeed = 7.0f;
-    m_backFlySpeed = 4.5f;
-
-    m_backWalkSpeed = 4.5f;
-    m_swimSpeed = 4.722222f;
-    m_backSwimSpeed = 2.5f;
-    m_turnRate = M_PI_FLOAT;
 
     m_attackTimer = 0;
     m_attackTimer_1 = 0;
@@ -879,7 +872,7 @@ bool Unit::canReachWithAttack(Unit* pVictim)
             lat = (lat > 500) ? 500 : lat;
 
             // calculate the added distance
-            attackreach += m_runSpeed * 0.001f * lat;
+            attackreach += m_currentSpeedRun * 0.001f * lat;
         }
 
         if (static_cast<Player*>(this)->m_isMoving)
@@ -891,7 +884,7 @@ bool Unit::canReachWithAttack(Unit* pVictim)
             lat = (lat > 500) ? 500 : lat;
 
             // calculate the added distance
-            attackreach += m_runSpeed * 0.001f * lat;
+            attackreach += m_currentSpeedRun * 0.001f * lat;
         }
     }
     return (distance <= attackreach);
@@ -5588,20 +5581,20 @@ void Unit::UpdateSpeed()
 {
     if (GetMount() == 0)
     {
-        m_runSpeed = m_base_runSpeed * (1.0f + ((float)m_speedModifier) / 100.0f);
+        m_currentSpeedRun = m_basicSpeedRun * (1.0f + ((float)m_speedModifier) / 100.0f);
     }
     else
     {
-        m_runSpeed = m_base_runSpeed * (1.0f + ((float)m_mountedspeedModifier) / 100.0f);
-        m_runSpeed += (m_speedModifier < 0) ? (m_base_runSpeed * ((float)m_speedModifier) / 100.0f) : 0;
+        m_currentSpeedRun = m_basicSpeedRun * (1.0f + ((float)m_mountedspeedModifier) / 100.0f);
+        m_currentSpeedRun += (m_speedModifier < 0) ? (m_basicSpeedRun * ((float)m_speedModifier) / 100.0f) : 0;
     }
 
-    m_flySpeed = playerNormalFlightSpeed * (1.0f + ((float)m_flyspeedModifier) / 100.0f);
+    m_currentSpeedFly = playerNormalFlightSpeed * (1.0f + ((float)m_flyspeedModifier) / 100.0f);
 
     // Limit speed due to effects such as http://www.wowhead.com/?spell=31896 [Judgement of Justice]
-    if (m_maxSpeed && m_runSpeed > m_maxSpeed)
+    if (m_maxSpeed && m_currentSpeedRun > m_maxSpeed)
     {
-        m_runSpeed = m_maxSpeed;
+        m_currentSpeedRun = m_maxSpeed;
     }
 
     if (IsPlayer() && static_cast<Player*>(this)->m_changingMaps)
@@ -5610,8 +5603,8 @@ void Unit::UpdateSpeed()
     }
     else
     {
-        SetSpeeds(RUN, m_runSpeed);
-        SetSpeeds(FLY, m_flySpeed);
+        SetSpeeds(RUN, m_currentSpeedRun);
+        SetSpeeds(FLY, m_currentSpeedFly);
     }
 }
 

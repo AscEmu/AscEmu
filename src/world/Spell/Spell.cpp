@@ -3943,7 +3943,7 @@ uint8 Spell::CanCast(bool tolerate)
             lat = (lat > 500) ? 500 : lat;
 
             // calculate the added distance
-            maxRange += u_caster->m_runSpeed * 0.001f * lat;
+            maxRange += u_caster->m_currentSpeedRun * 0.001f * lat;
         }
     }
 

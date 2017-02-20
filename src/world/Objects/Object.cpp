@@ -449,15 +449,15 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
         if (Unit* unit = static_cast<Unit*>(this))
         {
-            *data << unit->m_walkSpeed;
-            *data << unit->m_runSpeed;
-            *data << unit->m_backWalkSpeed;
-            *data << unit->m_swimSpeed;
-            *data << unit->m_backSwimSpeed;
-            *data << unit->m_flySpeed;
-            *data << unit->m_backFlySpeed;
-            *data << unit->m_turnRate;
-            *data << float(3.14f);          //\todo Zyres: add pitchRate unit->m_pitchRate;
+            *data << unit->m_currentSpeedWalk;
+            *data << unit->m_currentSpeedRun;
+            *data << unit->m_currentSpeedRunBack;
+            *data << unit->m_currentSpeedSwim;
+            *data << unit->m_currentSpeedSwimBack;
+            *data << unit->m_currentSpeedFly;
+            *data << unit->m_currentSpeedFlyBack;
+            *data << unit->m_currentTurnRate;
+            *data << unit->m_currentPitchRate;
         }
         else                                //\todo Zyres: this is ridiculous... only units have these types, but this function is a mess so don't breake anything.
         {

@@ -440,9 +440,9 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         /* Anti-Teleport                                                        */
         /************************************************************************/
         if (sWorld.antihack_teleport && _player->m_position.Distance2DSq(movement_info.position.x, movement_info.position.y) > 3025.0f
-            && _player->m_runSpeed < 50.0f && !_player->obj_movement_info.transporter_info.guid)
+            && _player->m_currentSpeedRun < 50.0f && !_player->obj_movement_info.transporter_info.guid)
         {
-            sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->m_runSpeed, sqrt(_player->m_position.Distance2DSq(movement_info.position.x, movement_info.position.y)));
+            sCheatLog.writefromsession(this, "Disconnected for teleport hacking. Player speed: %f, Distance traveled: %f", _player->m_currentSpeedRun, sqrt(_player->m_position.Distance2DSq(movement_info.position.x, movement_info.position.y)));
             Disconnect();
             return;
         }
@@ -452,7 +452,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     if (sWorld.antihack_speed && !_player->GetTaxiState() && _player->obj_movement_info.transporter_info.guid == 0 && !_player->GetSession()->GetPermissionCount())
     {
         // simplified: just take the fastest speed. less chance of fuckups too
-        float speed = (_player->flying_aura) ? _player->m_flySpeed : (_player->m_swimSpeed > _player->m_runSpeed) ? _player->m_swimSpeed : _player->m_runSpeed;
+        float speed = (_player->flying_aura) ? _player->m_currentSpeedFly : (_player->m_currentSpeedSwim > _player->m_currentSpeedRun) ? _player->m_currentSpeedSwim : _player->m_currentSpeedRun;
 
         _player->SDetector->AddSample(movement_info.position.x, movement_info.position.y, getMSTime(), speed);
 

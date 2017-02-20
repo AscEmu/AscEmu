@@ -5861,7 +5861,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                             _unit->GetAIInterface()->setNextTarget(pTrigger);
 
                             float Distance = pTrigger->CalcDistance(EyeBeamPaths[7 - FireWall].x, EyeBeamPaths[7 - FireWall].y, EyeBeamPaths[7 - FireWall].z);
-                            uint32 TimeToReach = (uint32)(Distance * 1000 / pTrigger->m_walkSpeed);
+                            uint32 TimeToReach = (uint32)(Distance * 1000 / pTrigger->m_currentSpeedWalk);
                             EyeBeamTriggerAI* pEyeBeamTriggerAI = static_cast< EyeBeamTriggerAI* >(pTrigger->GetScript());
                             pEyeBeamTriggerAI->mPosition = FireWall;
                             pEyeBeamTriggerAI->Despawn(TimeToReach + 1500, 0);

@@ -210,6 +210,31 @@ public:
     void SetMoveDisableGravity(bool disable_gravity);
     void SetMoveWalk(bool set_walk);
 
+    // Speed
+//private:
+
+    float m_currentSpeedWalk;
+    float m_currentSpeedRun;
+    float m_currentSpeedRunBack;
+    float m_currentSpeedSwim;
+    float m_currentSpeedSwimBack;
+    float m_currentTurnRate;
+    float m_currentSpeedFly;
+    float m_currentSpeedFlyBack;
+    float m_currentPitchRate;
+
+    float m_basicSpeedWalk;
+    float m_basicSpeedRun;
+    float m_basicSpeedRunBack;      //\todo Zyres: not used
+    float m_basicSpeedSwim;         //\todo Zyres: not used
+    float m_basicSpeedSwimBack;     //\todo Zyres: not used
+    float m_basicTurnRate;          //\todo Zyres: not used
+    float m_basicSpeedFly;          //\todo Zyres: not used
+    float m_basicSpeedFlyBack;      //\todo Zyres: not used
+    float m_basicPitchRate;         //\todo Zyres: not used
+
+//public:
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Internal States
 private:
@@ -811,19 +836,6 @@ public:
     int32 m_flyspeedModifier;
     virtual void SetSpeeds(uint8 type, float speed) {}
     void UpdateSpeed();
-
-    //speed members from Object.h
-    float m_walkSpeed;
-    float m_runSpeed;
-    float m_backWalkSpeed;
-    float m_swimSpeed;
-    float m_backSwimSpeed;
-    float m_turnRate;
-    float m_flySpeed;
-    float m_backFlySpeed;
-
-    float m_base_runSpeed;
-    float m_base_walkSpeed;
 
     // Escort Quests
     void MoveToWaypoint(uint32 wp_id);

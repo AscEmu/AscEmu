@@ -260,8 +260,8 @@ Player::Player(uint32 guid)
     //////////////////////////////////////////////////////////////////////////
 
     //These should be set in the object constructor..
-    m_runSpeed = playerNormalRunSpeed;
-    m_walkSpeed = 2.5f;
+    m_currentSpeedRun = playerNormalRunSpeed;
+    m_currentSpeedWalk = 2.5f;
     m_objectType |= TYPE_PLAYER;
     m_objectTypeId = TYPEID_PLAYER;
     m_valuesCount = PLAYER_END;
@@ -445,8 +445,8 @@ Player::Player(uint32 guid)
     m_sentTeleportPosition.ChangeCoords(999999.0f, 999999.0f, 999999.0f);
     m_speedChangeCounter = 1;
     memset(&m_bgScore, 0, sizeof(BGScore));
-    m_base_runSpeed = m_runSpeed;
-    m_base_walkSpeed = m_walkSpeed;
+    m_basicSpeedRun = m_currentSpeedRun;
+    m_basicSpeedWalk = m_currentSpeedWalk;
     m_arenateaminviteguid = 0;
     m_arenaPoints = 0;
     m_honorRolloverTime = 0;
@@ -1179,7 +1179,7 @@ void Player::EventDismount(uint32 money, float x, float y, float z)
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
 
-    SetSpeeds(RUN, m_runSpeed);
+    SetSpeeds(RUN, m_currentSpeedRun);
 
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_INTERPOLATE);
 
@@ -4351,7 +4351,7 @@ void Player::SetSpeeds(uint8 type, float speed)
     {
         case WALK:{
             data.SetOpcode(SMSG_FORCE_WALK_SPEED_CHANGE);
-            m_walkSpeed = speed;
+            m_currentSpeedWalk = speed;
 
             break; }
 
@@ -4361,7 +4361,7 @@ void Player::SetSpeeds(uint8 type, float speed)
                 return;
 
             data.SetOpcode(SMSG_FORCE_RUN_SPEED_CHANGE);
-            m_runSpeed = speed;
+            m_currentSpeedRun = speed;
             m_lastRunSpeed = speed;
         }
         break;
@@ -4371,7 +4371,7 @@ void Player::SetSpeeds(uint8 type, float speed)
                 return;
 
             data.SetOpcode(SMSG_FORCE_RUN_BACK_SPEED_CHANGE);
-            m_backWalkSpeed = speed;
+            m_currentSpeedRunBack = speed;
             m_lastRunBackSpeed = speed;
         }
         break;
@@ -4381,7 +4381,7 @@ void Player::SetSpeeds(uint8 type, float speed)
                 return;
 
             data.SetOpcode(SMSG_FORCE_SWIM_SPEED_CHANGE);
-            m_swimSpeed = speed;
+            m_currentSpeedSwim = speed;
             m_lastSwimSpeed = speed;
         }
         break;
@@ -4391,7 +4391,7 @@ void Player::SetSpeeds(uint8 type, float speed)
                 break;
 
             data.SetOpcode(SMSG_FORCE_SWIM_BACK_SPEED_CHANGE);
-            m_backSwimSpeed = speed;
+            m_currentSpeedSwimBack = speed;
             m_lastBackSwimSpeed = speed;
         }
         break;
@@ -4401,7 +4401,7 @@ void Player::SetSpeeds(uint8 type, float speed)
                 return;
 
             data.SetOpcode(SMSG_FORCE_FLIGHT_SPEED_CHANGE);
-            m_flySpeed = speed;
+            m_currentSpeedFly = speed;
             m_lastFlySpeed = speed;
         }
         break;
@@ -6845,7 +6845,7 @@ void Player::JumpToEndTaxiNode(TaxiPath* path)
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
 
-    SetSpeeds(RUN, m_runSpeed);
+    SetSpeeds(RUN, m_currentSpeedRun);
 
     SafeTeleport(pathnode->mapid, 0, LocationVector(pathnode->x, pathnode->y, pathnode->z));
 
@@ -7532,8 +7532,8 @@ void Player::ProcessPendingUpdates()
     // resend speed if needed
     if (resend_speed)
     {
-        SetSpeeds(RUN, m_runSpeed);
-        SetSpeeds(FLY, m_flySpeed);
+        SetSpeeds(RUN, m_currentSpeedRun);
+        SetSpeeds(FLY, m_currentSpeedFly);
         resend_speed = false;
     }
 }
@@ -8377,7 +8377,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
-        SetSpeeds(RUN, m_runSpeed);
+        SetSpeeds(RUN, m_currentSpeedRun);
     }
     if (obj_movement_info.transporter_info.guid)
     {
@@ -13575,11 +13575,11 @@ Player* Player::GetTradeTarget()
 
 void Player::UpdateLastSpeeds()
 {
-    m_lastRunSpeed = m_runSpeed;
-    m_lastRunBackSpeed = m_backWalkSpeed;
-    m_lastSwimSpeed = m_swimSpeed;
-    m_lastBackSwimSpeed = m_backSwimSpeed;
-    m_lastFlySpeed = m_flySpeed;
+    m_lastRunSpeed = m_currentSpeedRun;
+    m_lastRunBackSpeed = m_currentSpeedRunBack;
+    m_lastSwimSpeed = m_currentSpeedSwim;
+    m_lastBackSwimSpeed = m_currentSpeedSwimBack;
+    m_lastFlySpeed = m_currentSpeedFly;
 }
 
 void Player::RemoteRevive()
