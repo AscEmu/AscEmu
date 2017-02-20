@@ -291,7 +291,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     uint32 error;
     recvData >> error;
 
-    if (error != 0 || pAuthenticationPacket == NULL)
+    if (error != 0 || pAuthenticationPacket == nullptr)
     {
         // something happened wrong @ the logon server
         OutPacket(SMSG_AUTH_RESPONSE, 1, "\x0D");
@@ -312,7 +312,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     recvData >> AccountFlags;
 
     ForcedPermissions = sLogonCommHandler.GetForcedPermissions(AccountName);
-    if (ForcedPermissions != NULL)
+    if (ForcedPermissions != nullptr)
         GMFlags.assign(ForcedPermissions->c_str());
 
     LOG_DEBUG(" >> got information packet from logon: `%s` ID %u (request %u)", AccountName.c_str(), AccountID, mRequestID);
@@ -353,7 +353,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     pAuthenticationPacket->read(digest, 20);
 
     uint32 t = 0;
-    if (m_fullAccountName == NULL)                // should never happen !
+    if (m_fullAccountName == nullptr) // should never happen !
         sha.UpdateData(AccountName);
     else
     {
@@ -361,7 +361,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 
         // this is unused now. we may as well free up the memory.
         delete m_fullAccountName;
-        m_fullAccountName = NULL;
+        m_fullAccountName = nullptr;
     }
 
     sha.UpdateData((uint8*)&t, 4);
@@ -380,7 +380,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     // Allocate session
     WorldSession* pSession = new WorldSession(AccountID, AccountName, this);
     mSession = pSession;
-    ARCEMU_ASSERT(mSession != NULL);
+    ARCEMU_ASSERT(mSession != nullptr);
     // aquire delete mutex
     pSession->deleteMutex.Acquire();
 
@@ -394,20 +394,20 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     if (recvData.rpos() != recvData.wpos())
         recvData >> pSession->m_muted;
 
-    for (uint32 i = 0; i < 8; ++i)
-        pSession->SetAccountData(i, NULL, true, 0);
+    for (uint8_t i = 0; i < 8; ++i)
+        pSession->SetAccountData(i, nullptr, true, 0);
 
     if (sWorld.m_useAccountData)
     {
         QueryResult* pResult = CharacterDatabase.Query("SELECT * FROM account_data WHERE acct = %u", AccountID);
-        if (pResult == NULL)
+        if (pResult == nullptr)
             CharacterDatabase.Execute("INSERT INTO account_data VALUES(%u, '', '', '', '', '', '', '', '', '')", AccountID);
         else
         {
             size_t len;
             const char* data;
             char* d;
-            for (uint32 i = 0; i < 8; ++i)
+            for (uint8_t i = 0; i < 8; ++i)
             {
                 data = pResult->Fetch()[1 + i].GetString();
                 len = data ? strlen(data) : 0;
