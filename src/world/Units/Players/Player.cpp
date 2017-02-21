@@ -1171,7 +1171,7 @@ void Player::EventDismount(uint32 money, float x, float y, float z)
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
 
-    SetSpeeds(TYPE_RUN, m_currentSpeedRun);
+    SetSpeeds(TYPE_RUN, getSpeedForType(TYPE_RUN));
 
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_INTERPOLATE);
 
@@ -4314,6 +4314,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         UpdateStats();
 }
 
+//\todo Zyres: send spline packets. If npc ins controled by player, set force_ and msg_move packets!
 void Player::SetSpeeds(UnitSpeedType type, float speed)
 {
     WorldPacket data(50);
@@ -4344,37 +4345,55 @@ void Player::SetSpeeds(UnitSpeedType type, float speed)
         case TYPE_WALK:
         {
             data.SetOpcode(SMSG_FORCE_WALK_SPEED_CHANGE);
-            m_currentSpeedWalk = speed;
+            setSpeedForType(type, speed);
         }
         break;
         case TYPE_RUN:
         {
             data.SetOpcode(SMSG_FORCE_RUN_SPEED_CHANGE);
-            m_currentSpeedRun = speed;
+            setSpeedForType(type, speed);
         }
         break;
         case TYPE_RUN_BACK:
         {
             data.SetOpcode(SMSG_FORCE_RUN_BACK_SPEED_CHANGE);
-            m_currentSpeedRunBack = speed;
+            setSpeedForType(type, speed);
         }
         break;
         case TYPE_SWIM:
         {
             data.SetOpcode(SMSG_FORCE_SWIM_SPEED_CHANGE);
-            m_currentSpeedSwim = speed;
+            setSpeedForType(type, speed);
         }
         break;
         case TYPE_SWIM_BACK:
         {
             data.SetOpcode(SMSG_FORCE_SWIM_BACK_SPEED_CHANGE);
-            m_currentSpeedSwimBack = speed;
+            setSpeedForType(type, speed);
+        }
+        break;
+        case TYPE_TURN_RATE:
+        {
+            data.SetOpcode(SMSG_FORCE_TURN_RATE_CHANGE);
+            setSpeedForType(type, speed);
         }
         break;
         case TYPE_FLY:
         {
             data.SetOpcode(SMSG_FORCE_FLIGHT_SPEED_CHANGE);
-            m_currentSpeedFly = speed;
+            setSpeedForType(type, speed);
+        }
+        break;
+        case TYPE_FLY_BACK:
+        {
+            data.SetOpcode(SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE);
+            setSpeedForType(type, speed);
+        }
+        break;
+        case TYPE_PITCH_RATE:
+        {
+            data.SetOpcode(SMSG_FORCE_PITCH_RATE_CHANGE);
+            setSpeedForType(type, speed);
         }
         break;
         default:
@@ -6810,7 +6829,7 @@ void Player::JumpToEndTaxiNode(TaxiPath* path)
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
 
-    SetSpeeds(TYPE_RUN, m_currentSpeedRun);
+    SetSpeeds(TYPE_RUN, getSpeedForType(TYPE_RUN));
 
     SafeTeleport(pathnode->mapid, 0, LocationVector(pathnode->x, pathnode->y, pathnode->z));
 
@@ -7497,8 +7516,8 @@ void Player::ProcessPendingUpdates()
     // resend speed if needed
     if (resend_speed)
     {
-        SetSpeeds(TYPE_RUN, m_currentSpeedRun);
-        SetSpeeds(TYPE_FLY, m_currentSpeedFly);
+        SetSpeeds(TYPE_RUN, getSpeedForType(TYPE_RUN));
+        SetSpeeds(TYPE_FLY, getSpeedForType(TYPE_FLY));
         resend_speed = false;
     }
 }
@@ -8342,7 +8361,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
-        SetSpeeds(TYPE_RUN, m_currentSpeedRun);
+        SetSpeeds(TYPE_RUN, getSpeedForType(TYPE_RUN));
     }
     if (obj_movement_info.transporter_info.guid)
     {
@@ -13542,8 +13561,8 @@ void Player::RemoteRevive()
 {
     ResurrectPlayer();
     SetMoveRoot(false);
-    SetSpeeds(TYPE_RUN, m_basicSpeedRun);
-    SetSpeeds(TYPE_SWIM, m_basicSpeedSwim);
+    SetSpeeds(TYPE_RUN, getSpeedForType(TYPE_RUN, true));
+    SetSpeeds(TYPE_SWIM, getSpeedForType(TYPE_SWIM, true));
     SetMoveLandWalk();
     SetHealth(GetUInt32Value(UNIT_FIELD_MAXHEALTH));
 }

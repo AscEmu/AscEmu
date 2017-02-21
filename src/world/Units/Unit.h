@@ -224,7 +224,7 @@ public:
     void SetMoveWalk(bool set_walk);
 
     // Speed
-//private:
+private:
 
     float m_currentSpeedWalk;
     float m_currentSpeedRun;
@@ -246,7 +246,11 @@ public:
     float m_basicSpeedFlyBack;      //\todo Zyres: not used
     float m_basicPitchRate;         //\todo Zyres: not used
 
-//public:
+public:
+
+    float getSpeedForType(UnitSpeedType speed_type, bool get_basic = false);
+    void setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic = false);
+    void resetCurrentSpeed();
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Internal States

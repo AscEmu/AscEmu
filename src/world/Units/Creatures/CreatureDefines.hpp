@@ -37,8 +37,6 @@ const uint32 creatureMaxInventoryItems = 150;
 
 const time_t vendorItemsUpdate = 3600000;
 
-const float creatureNormalRunSpeed = 8.0f;
-
 enum creatureguardtype
 {
     GUARDTYPE_NONE,

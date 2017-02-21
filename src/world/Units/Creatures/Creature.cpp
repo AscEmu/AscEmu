@@ -94,10 +94,6 @@ Creature::Creature(uint64 guid)
     m_limbostate = false;
     m_corpseEvent = false;
     m_respawnCell = NULL;
-    m_currentSpeedWalk = 2.5f;
-    m_currentSpeedRun = creatureNormalRunSpeed;
-    m_basicSpeedRun = m_currentSpeedRun;
-    m_basicSpeedWalk = m_currentSpeedWalk;
     m_noRespawn = false;
     m_respawnTimeOverride = 0;
     m_canRegenerateHP = true;
@@ -802,8 +798,7 @@ void Creature::EnslaveExpire()
     SetCharmedByGUID(0);
     SetSummonedByGUID(0);
 
-    m_currentSpeedWalk = m_basicSpeedWalk;
-    m_currentSpeedRun = m_basicSpeedRun;
+    resetCurrentSpeed();
 
     switch (GetCreatureProperties()->Type)
     {
@@ -1286,9 +1281,10 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
     spawnid = spawn->id;
     m_phase = spawn->phase;
 
-    m_currentSpeedWalk = m_basicSpeedWalk = creature_properties->walk_speed; //set speeds
-    m_currentSpeedRun = m_basicSpeedRun = creature_properties->run_speed; //set speeds
-    m_currentSpeedFly = creature_properties->fly_speed;
+    setSpeedForType(TYPE_WALK, creature_properties->walk_speed, true);
+    setSpeedForType(TYPE_RUN, creature_properties->run_speed, true);
+    setSpeedForType(TYPE_FLY, creature_properties->fly_speed, true);
+    resetCurrentSpeed();
 
     //Set fields
     SetEntry(creature_properties->Id);
@@ -1533,8 +1529,10 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         GetAIInterface()->SetAIType(AITYPE_PASSIVE);
     }
 
-    m_currentSpeedWalk = m_basicSpeedWalk = creature_properties->walk_speed; //set speeds
-    m_currentSpeedRun = m_basicSpeedRun = creature_properties->run_speed; //set speeds
+    setSpeedForType(TYPE_WALK, creature_properties->walk_speed, true);
+    setSpeedForType(TYPE_RUN, creature_properties->run_speed, true);
+    setSpeedForType(TYPE_FLY, creature_properties->fly_speed, true);
+    resetCurrentSpeed();
 
     //Set fields
     SetEntry(creature_properties->Id);
@@ -2097,6 +2095,7 @@ void Creature::RemoveSanctuaryFlag()
     summonhandler.RemoveSanctuaryFlags();
 }
 
+//\todo Zyres: send spline packets. If npc ins controled by player, set force_ and msg_move packets!
 void Creature::SetSpeeds(UnitSpeedType type, float speed)
 {
     WorldPacket data(50);
@@ -2114,37 +2113,55 @@ void Creature::SetSpeeds(UnitSpeedType type, float speed)
         case TYPE_WALK:
         {
             data.SetOpcode(SMSG_FORCE_WALK_SPEED_CHANGE);
-            m_currentSpeedWalk = speed;
+            setSpeedForType(type, speed);
             break;
         }
         case TYPE_RUN:
         {
             data.SetOpcode(SMSG_FORCE_RUN_SPEED_CHANGE);
-            m_currentSpeedRun = speed;
+            setSpeedForType(type, speed);
             break;
         }
         case TYPE_RUN_BACK:
         {
             data.SetOpcode(SMSG_FORCE_RUN_BACK_SPEED_CHANGE);
-            m_currentSpeedRunBack = speed;
+            setSpeedForType(type, speed);
             break;
         }
         case TYPE_SWIM:
         {
             data.SetOpcode(SMSG_FORCE_SWIM_SPEED_CHANGE);
-            m_currentSpeedSwim = speed;
+            setSpeedForType(type, speed);
             break;
         }
         case TYPE_SWIM_BACK:
         {
             data.SetOpcode(SMSG_FORCE_SWIM_BACK_SPEED_CHANGE);
-            m_currentSpeedSwimBack = speed;
+            setSpeedForType(type, speed);
+            break;
+        }
+        case TYPE_TURN_RATE:
+        {
+            data.SetOpcode(SMSG_FORCE_TURN_RATE_CHANGE);
+            setSpeedForType(type, speed);
             break;
         }
         case TYPE_FLY:
         {
             data.SetOpcode(SMSG_FORCE_FLIGHT_SPEED_CHANGE);
-            m_currentSpeedFly = speed;
+            setSpeedForType(type, speed);
+            break;
+        }
+        case TYPE_FLY_BACK:
+        {
+            data.SetOpcode(SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE);
+            setSpeedForType(type, speed);
+            break;
+        }
+        case TYPE_PITCH_RATE:
+        {
+            data.SetOpcode(SMSG_FORCE_PITCH_RATE_CHANGE);
+            setSpeedForType(type, speed);
             break;
         }
         default:

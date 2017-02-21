@@ -201,7 +201,7 @@ bool DeathGrip(uint32 i, Spell* s)
         posY = d * sinf(alpha) + unitTarget->GetPositionY();
         posZ = s->u_caster->GetPositionZ();
 
-        uint32 time = uint32((unitTarget->CalcDistance(s->m_caster) / ((unitTarget->m_currentSpeedRun * 3.5) * 0.001f)) + 0.5);
+        uint32 time = uint32((unitTarget->CalcDistance(s->m_caster) / ((unitTarget->getSpeedForType(TYPE_RUN) * 3.5) * 0.001f)) + 0.5);
 
         WorldPacket data(SMSG_MONSTER_MOVE, 60);
         data << unitTarget->GetNewGUID();

@@ -1007,7 +1007,6 @@ class SERVER_DECL Player : public Unit
         // Movement system
         /////////////////////////////////////////////////////////////////////////////////////////
         void SetSpeeds(UnitSpeedType type, float speed);
-        float GetPlayerSpeed() { return m_currentSpeedRun; }
 
         bool m_isMoving;            /// moving + strafing + jumping
         bool moving;
