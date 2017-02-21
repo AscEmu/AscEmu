@@ -2097,51 +2097,51 @@ void Creature::RemoveSanctuaryFlag()
     summonhandler.RemoveSanctuaryFlags();
 }
 
-void Creature::SetSpeeds(uint8 type, float speed)
+void Creature::SetSpeeds(UnitSpeedType type, float speed)
 {
     WorldPacket data(50);
 
     data << GetNewGUID();
     data << uint32(0);
 
-    if (type == RUN)
+    if (type == TYPE_RUN)
         data << uint8(0);
 
     data << float(speed);
 
     switch (type)
     {
-        case WALK:
+        case TYPE_WALK:
         {
             data.SetOpcode(SMSG_FORCE_WALK_SPEED_CHANGE);
             m_currentSpeedWalk = speed;
             break;
         }
-        case RUN:
+        case TYPE_RUN:
         {
             data.SetOpcode(SMSG_FORCE_RUN_SPEED_CHANGE);
             m_currentSpeedRun = speed;
             break;
         }
-        case RUNBACK:
+        case TYPE_RUN_BACK:
         {
             data.SetOpcode(SMSG_FORCE_RUN_BACK_SPEED_CHANGE);
             m_currentSpeedRunBack = speed;
             break;
         }
-        case SWIM:
+        case TYPE_SWIM:
         {
             data.SetOpcode(SMSG_FORCE_SWIM_SPEED_CHANGE);
             m_currentSpeedSwim = speed;
             break;
         }
-        case SWIMBACK:
+        case TYPE_SWIM_BACK:
         {
             data.SetOpcode(SMSG_FORCE_SWIM_BACK_SPEED_CHANGE);
             m_currentSpeedSwimBack = speed;
             break;
         }
-        case FLY:
+        case TYPE_FLY:
         {
             data.SetOpcode(SMSG_FORCE_FLIGHT_SPEED_CHANGE);
             m_currentSpeedFly = speed;

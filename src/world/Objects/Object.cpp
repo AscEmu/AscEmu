@@ -332,11 +332,6 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         pThis = static_cast< Player* >(this);
         if (pThis->GetSession())
             moveinfo = pThis->GetSession()->GetMovementInfo();
-        if (target == this)
-        {
-            // Updating our last speeds.
-            pThis->UpdateLastSpeeds();
-        }
     }
     Creature* uThis = NULL;
     if (IsCreature())

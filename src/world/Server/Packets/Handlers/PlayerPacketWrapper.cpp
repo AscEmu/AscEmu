@@ -591,8 +591,6 @@ void Player::SendInitialLogonPackets()
 
     m_session->SendPacket(&data);
 
-    // cebernic for speedhack bug
-    m_lastRunSpeed = 0;
     UpdateSpeed();
 
     WorldPacket ArenaSettings(SMSG_UPDATE_WORLD_STATE, 16);

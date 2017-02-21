@@ -258,10 +258,6 @@ Player::Player(uint32 guid)
     m_H_regenTimer = 0;
     m_P_regenTimer = 0;
     //////////////////////////////////////////////////////////////////////////
-
-    //These should be set in the object constructor..
-    m_currentSpeedRun = playerNormalRunSpeed;
-    m_currentSpeedWalk = 2.5f;
     m_objectType |= TYPE_PLAYER;
     m_objectTypeId = TYPEID_PLAYER;
     m_valuesCount = PLAYER_END;
@@ -394,8 +390,6 @@ Player::Player(uint32 guid)
     SetAttackPowerMultiplier(0.0f);
     SetRangedAttackPowerMultiplier(0.0f);
 
-    UpdateLastSpeeds();
-
     m_resist_critical[0] = m_resist_critical[1] = 0;
     m_castFilterEnabled = false;
 
@@ -445,8 +439,6 @@ Player::Player(uint32 guid)
     m_sentTeleportPosition.ChangeCoords(999999.0f, 999999.0f, 999999.0f);
     m_speedChangeCounter = 1;
     memset(&m_bgScore, 0, sizeof(BGScore));
-    m_basicSpeedRun = m_currentSpeedRun;
-    m_basicSpeedWalk = m_currentSpeedWalk;
     m_arenateaminviteguid = 0;
     m_arenaPoints = 0;
     m_honorRolloverTime = 0;
@@ -1179,7 +1171,7 @@ void Player::EventDismount(uint32 money, float x, float y, float z)
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
 
-    SetSpeeds(RUN, m_currentSpeedRun);
+    SetSpeeds(TYPE_RUN, m_currentSpeedRun);
 
     sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_INTERPOLATE);
 
@@ -4322,15 +4314,15 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         UpdateStats();
 }
 
-void Player::SetSpeeds(uint8 type, float speed)
+void Player::SetSpeeds(UnitSpeedType type, float speed)
 {
     WorldPacket data(50);
 
-    if (type != SWIMBACK)
+    if (type != TYPE_SWIM_BACK)
     {
         data << GetNewGUID();
         data << m_speedChangeCounter++;
-        if (type == RUN)
+        if (type == TYPE_RUN)
             data << uint8(1);
 
         data << float(speed);
@@ -4349,60 +4341,40 @@ void Player::SetSpeeds(uint8 type, float speed)
 
     switch (type)
     {
-        case WALK:{
+        case TYPE_WALK:
+        {
             data.SetOpcode(SMSG_FORCE_WALK_SPEED_CHANGE);
             m_currentSpeedWalk = speed;
-
-            break; }
-
-        case RUN:
+        }
+        break;
+        case TYPE_RUN:
         {
-            if (speed == m_lastRunSpeed)
-                return;
-
             data.SetOpcode(SMSG_FORCE_RUN_SPEED_CHANGE);
             m_currentSpeedRun = speed;
-            m_lastRunSpeed = speed;
         }
         break;
-        case RUNBACK:
+        case TYPE_RUN_BACK:
         {
-            if (speed == m_lastRunBackSpeed)
-                return;
-
             data.SetOpcode(SMSG_FORCE_RUN_BACK_SPEED_CHANGE);
             m_currentSpeedRunBack = speed;
-            m_lastRunBackSpeed = speed;
         }
         break;
-        case SWIM:
+        case TYPE_SWIM:
         {
-            if (speed == m_lastSwimSpeed)
-                return;
-
             data.SetOpcode(SMSG_FORCE_SWIM_SPEED_CHANGE);
             m_currentSpeedSwim = speed;
-            m_lastSwimSpeed = speed;
         }
         break;
-        case SWIMBACK:
+        case TYPE_SWIM_BACK:
         {
-            if (speed == m_lastBackSwimSpeed)
-                break;
-
             data.SetOpcode(SMSG_FORCE_SWIM_BACK_SPEED_CHANGE);
             m_currentSpeedSwimBack = speed;
-            m_lastBackSwimSpeed = speed;
         }
         break;
-        case FLY:
+        case TYPE_FLY:
         {
-            if (speed == m_lastFlySpeed)
-                return;
-
             data.SetOpcode(SMSG_FORCE_FLIGHT_SPEED_CHANGE);
             m_currentSpeedFly = speed;
-            m_lastFlySpeed = speed;
         }
         break;
         default:
@@ -4591,13 +4563,6 @@ void Player::ResurrectPlayer()
     }
     m_resurrecter = 0;
     SetMoveLandWalk();
-
-    // reinit
-    m_lastRunSpeed = 0;
-    m_lastRunBackSpeed = 0;
-    m_lastSwimSpeed = 0;
-    m_lastBackSwimSpeed = 0;
-    m_lastFlySpeed = 0;
 
     // Zack : shit on grill. So auras should be removed on player death instead of making this :P
     // We can afford this bullshit atm since auras are lost upon death -> no immunities
@@ -6845,7 +6810,7 @@ void Player::JumpToEndTaxiNode(TaxiPath* path)
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
     RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
 
-    SetSpeeds(RUN, m_currentSpeedRun);
+    SetSpeeds(TYPE_RUN, m_currentSpeedRun);
 
     SafeTeleport(pathnode->mapid, 0, LocationVector(pathnode->x, pathnode->y, pathnode->z));
 
@@ -7532,8 +7497,8 @@ void Player::ProcessPendingUpdates()
     // resend speed if needed
     if (resend_speed)
     {
-        SetSpeeds(RUN, m_currentSpeedRun);
-        SetSpeeds(FLY, m_currentSpeedFly);
+        SetSpeeds(TYPE_RUN, m_currentSpeedRun);
+        SetSpeeds(TYPE_FLY, m_currentSpeedFly);
         resend_speed = false;
     }
 }
@@ -8377,7 +8342,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
-        SetSpeeds(RUN, m_currentSpeedRun);
+        SetSpeeds(TYPE_RUN, m_currentSpeedRun);
     }
     if (obj_movement_info.transporter_info.guid)
     {
@@ -11277,7 +11242,7 @@ void Player::SpeedCheatReset()
     SDetector->EventSpeedChange();
 
     /*
-    SetSpeeds(RUN, m_runSpeed);
+    SetSpeeds(TYPE_RUN, m_runSpeed);
     SetSpeeds(SWIM, m_runSpeed);
     SetSpeeds(RUNBACK, m_runSpeed / 2); // Backwards slower, it's more natural :P
     SetSpeeds(FLY, m_flySpeed);
@@ -13573,21 +13538,12 @@ Player* Player::GetTradeTarget()
     return m_mapMgr->GetPlayer((uint32)mTradeTarget);
 }
 
-void Player::UpdateLastSpeeds()
-{
-    m_lastRunSpeed = m_currentSpeedRun;
-    m_lastRunBackSpeed = m_currentSpeedRunBack;
-    m_lastSwimSpeed = m_currentSpeedSwim;
-    m_lastBackSwimSpeed = m_currentSpeedSwimBack;
-    m_lastFlySpeed = m_currentSpeedFly;
-}
-
 void Player::RemoteRevive()
 {
     ResurrectPlayer();
     SetMoveRoot(false);
-    SetSpeeds(RUN, playerNormalRunSpeed);
-    SetSpeeds(SWIM, playerNormalSwimSpeed);
+    SetSpeeds(TYPE_RUN, m_basicSpeedRun);
+    SetSpeeds(TYPE_SWIM, m_basicSpeedSwim);
     SetMoveLandWalk();
     SetHealth(GetUInt32Value(UNIT_FIELD_MAXHEALTH));
 }

@@ -1006,7 +1006,7 @@ class SERVER_DECL Player : public Unit
         /////////////////////////////////////////////////////////////////////////////////////////
         // Movement system
         /////////////////////////////////////////////////////////////////////////////////////////
-        void SetSpeeds(uint8 type, float speed);
+        void SetSpeeds(UnitSpeedType type, float speed);
         float GetPlayerSpeed() { return m_currentSpeedRun; }
 
         bool m_isMoving;            /// moving + strafing + jumping
@@ -1670,8 +1670,6 @@ class SERVER_DECL Player : public Unit
         /// Nose level of the character (needed for proper breathing)
         float m_noseLevel;
 
-        void UpdateLastSpeeds();
-
         void RemoteRevive();
 
         LocationVector m_last_group_position;
@@ -1856,11 +1854,6 @@ class SERVER_DECL Player : public Unit
         int hearth_of_wild_pct;        /// druid hearth of wild talent used on shapeshifting. We either know what is last talent level or memo on learn
 
         uint32 m_team;
-        float m_lastRunSpeed;
-        float m_lastRunBackSpeed;
-        float m_lastSwimSpeed;
-        float m_lastBackSwimSpeed;
-        float m_lastFlySpeed;
 
         uint32 m_indoorCheckTimer;
         void RemovePendingPlayer();

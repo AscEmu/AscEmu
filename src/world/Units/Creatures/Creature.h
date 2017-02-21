@@ -106,7 +106,7 @@ class SERVER_DECL Creature : public Unit
         void SetSanctuaryFlag();
         void RemoveSanctuaryFlag();
 
-        void SetSpeeds(uint8 type, float speed);
+        void SetSpeeds(UnitSpeedType type, float speed);
 
         int32 GetSlotByItemId(uint32 itemid);
 

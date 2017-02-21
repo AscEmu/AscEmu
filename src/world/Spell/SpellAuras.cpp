@@ -4758,7 +4758,7 @@ void Aura::SpellAuraIncreaseSwimSpeed(bool apply)
         m_target->m_currentSpeedSwim = 0.04722222f * (100 + mod->m_amount);
     }
     else
-        m_target->m_currentSpeedSwim = playerNormalSwimSpeed;
+        m_target->m_currentSpeedSwim = m_target->m_basicSpeedSwim;
     if (p_target != NULL)
     {
         WorldPacket data(SMSG_FORCE_SWIM_SPEED_CHANGE, 17);

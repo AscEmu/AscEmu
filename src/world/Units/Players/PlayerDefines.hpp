@@ -30,10 +30,6 @@ enum PlayerTeam : int
     MAX_PLAYER_TEAMS
 };
 
-const float playerNormalRunSpeed = 7.0f;
-const float playerNormalSwimSpeed = 4.72222f;
-const float playerNormalFlightSpeed = 7.0f;
-
 #define PLAYER_HONORLESS_TARGET_SPELL 2479
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -275,16 +271,6 @@ enum PvPAreaStatus
     AREA_HORDE          = 2,
     AREA_CONTESTED      = 3,
     AREA_PVPARENA       = 4
-};
-
-enum PlayerSpeedType
-{
-    RUN                 = 1,
-    RUNBACK             = 2,
-    SWIM                = 3,
-    SWIMBACK            = 4,
-    WALK                = 5,
-    FLY                 = 6,
 };
 
 /*

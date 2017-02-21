@@ -45,6 +45,19 @@ class Vehicle;
 
 struct FactionDBC;
 
+enum UnitSpeedType
+{
+    TYPE_WALK           = 0,
+    TYPE_RUN            = 1,
+    TYPE_RUN_BACK       = 2,
+    TYPE_SWIM           = 3,
+    TYPE_SWIM_BACK      = 4,
+    TYPE_TURN_RATE      = 5,
+    TYPE_FLY            = 6,
+    TYPE_FLY_BACK       = 7,
+    TYPE_PITCH_RATE     = 8
+};
+
 // MIT End
 // AGPL Start
 //these refer to visibility ranges. We need to store each stack of the aura and not just visible count.
@@ -226,10 +239,10 @@ public:
     float m_basicSpeedWalk;
     float m_basicSpeedRun;
     float m_basicSpeedRunBack;      //\todo Zyres: not used
-    float m_basicSpeedSwim;         //\todo Zyres: not used
+    float m_basicSpeedSwim;
     float m_basicSpeedSwimBack;     //\todo Zyres: not used
     float m_basicTurnRate;          //\todo Zyres: not used
-    float m_basicSpeedFly;          //\todo Zyres: not used
+    float m_basicSpeedFly;
     float m_basicSpeedFlyBack;      //\todo Zyres: not used
     float m_basicPitchRate;         //\todo Zyres: not used
 
@@ -834,7 +847,7 @@ public:
     bool GetSpeedDecrease();
     int32 m_mountedspeedModifier;
     int32 m_flyspeedModifier;
-    virtual void SetSpeeds(uint8 type, float speed) {}
+    virtual void SetSpeeds(UnitSpeedType type, float speed) {}
     void UpdateSpeed();
 
     // Escort Quests

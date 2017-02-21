@@ -1611,14 +1611,12 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         {
             plyr->SafeTeleport(plyr->GetMapId(), plyr->GetInstanceID(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
             plyr->SetStandState(STANDSTATE_SIT_MEDIUM_CHAIR);
-            plyr->m_lastRunSpeed = 0; //counteract mount-bug; reset speed to zero to force update SetPlayerSpeed in next line.
             plyr->UpdateSpeed();
         }
         break;
         case GAMEOBJECT_TYPE_BARBER_CHAIR:
         {
             plyr->SafeTeleport(plyr->GetMapId(), plyr->GetInstanceID(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
-            plyr->m_lastRunSpeed = 0; //counteract mount-bug; reset speed to zero to force update SetPlayerSpeed in next line.
             plyr->UpdateSpeed();
             //send barber shop menu to player
             WorldPacket data(SMSG_ENABLE_BARBER_SHOP, 0);

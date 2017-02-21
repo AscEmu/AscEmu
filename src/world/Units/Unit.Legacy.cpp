@@ -5589,7 +5589,7 @@ void Unit::UpdateSpeed()
         m_currentSpeedRun += (m_speedModifier < 0) ? (m_basicSpeedRun * ((float)m_speedModifier) / 100.0f) : 0;
     }
 
-    m_currentSpeedFly = playerNormalFlightSpeed * (1.0f + ((float)m_flyspeedModifier) / 100.0f);
+    m_currentSpeedFly = m_basicSpeedFly * (1.0f + ((float)m_flyspeedModifier) / 100.0f);
 
     // Limit speed due to effects such as http://www.wowhead.com/?spell=31896 [Judgement of Justice]
     if (m_maxSpeed && m_currentSpeedRun > m_maxSpeed)
@@ -5603,8 +5603,8 @@ void Unit::UpdateSpeed()
     }
     else
     {
-        SetSpeeds(RUN, m_currentSpeedRun);
-        SetSpeeds(FLY, m_currentSpeedFly);
+        SetSpeeds(TYPE_RUN, m_currentSpeedRun);
+        SetSpeeds(TYPE_FLY, m_currentSpeedFly);
     }
 }
 
