@@ -192,6 +192,31 @@ bool ChatHandler::HandleDebugFeatherFall(const char* /*args*/, WorldSession* m_s
     return true;
 }
 
+//.debug speed
+bool ChatHandler::HandleDebugSpeed(const char* args, WorldSession* m_session)
+{
+    float speed = float(atof(args));
+    if (speed == 0.0f || speed > 255.0f || speed < 0.1f)
+    {
+        RedSystemMessage(m_session, "Invalid speed set. Value range 0.1f ... 255.0f Use .debug speed <speed>");
+        return true;
+    }
+
+    Unit* selected_unit = GetSelectedUnit(m_session);
+    if (selected_unit == nullptr)
+        return false;
+
+    BlueSystemMessage(m_session, "Setting speeds of selected unit to %3.2f.", speed);
+
+    selected_unit->setSpeedForType(TYPE_WALK, speed);
+    selected_unit->setSpeedForType(TYPE_RUN, (speed + speed / 2));
+    selected_unit->setSpeedForType(TYPE_SWIM, speed);
+    selected_unit->setSpeedForType(TYPE_RUN_BACK, speed / 2);
+    selected_unit->setSpeedForType(TYPE_FLY, speed * 2);
+
+    return true;
+}
+
 //.debug pvpcredit
 bool ChatHandler::HandleDebugPVPCreditCommand(const char* args, WorldSession* m_session)
 {

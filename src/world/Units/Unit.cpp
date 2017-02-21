@@ -575,6 +575,24 @@ void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic
                 m_currentPitchRate = speed;
         } break;
     }
+
+    Player* player_mover = GetMapMgrPlayer(GetCharmedByGUID());
+    if (player_mover == nullptr)
+    {
+        if (IsPlayer())
+            player_mover = static_cast<Player*>(this);
+    }
+
+    if (player_mover != nullptr)
+    {
+        player_mover->sendForceMovePaket(speed_type, speed);
+        player_mover->sendMoveSetSpeedPaket(speed_type, speed);
+    }
+    else
+    {
+        sendMoveSplinePaket(speed_type);
+    }
+
 }
 
 void Unit::resetCurrentSpeed()
@@ -588,6 +606,47 @@ void Unit::resetCurrentSpeed()
     m_currentSpeedFly = m_basicSpeedFly;
     m_currentSpeedFlyBack = m_basicSpeedFlyBack;
     m_currentPitchRate = m_basicPitchRate;
+}
+
+void Unit::sendMoveSplinePaket(UnitSpeedType speed_type)
+{
+    WorldPacket data(12);
+
+    switch (speed_type)
+    {
+        case TYPE_WALK:
+            data.Initialize(SMSG_SPLINE_SET_WALK_SPEED);
+            break;
+        case TYPE_RUN:
+            data.Initialize(SMSG_SPLINE_SET_RUN_SPEED);
+            break;
+        case TYPE_RUN_BACK:
+            data.Initialize(SMSG_SPLINE_SET_RUN_BACK_SPEED);
+            break;
+        case TYPE_SWIM:
+            data.Initialize(SMSG_SPLINE_SET_SWIM_SPEED);
+            break;
+        case TYPE_SWIM_BACK:
+            data.Initialize(SMSG_SPLINE_SET_SWIM_BACK_SPEED);
+            break;
+        case TYPE_TURN_RATE:
+            data.Initialize(SMSG_SPLINE_SET_TURN_RATE);
+            break;
+        case TYPE_FLY:
+            data.Initialize(SMSG_SPLINE_SET_FLIGHT_SPEED);
+            break;
+        case TYPE_FLY_BACK:
+            data.Initialize(SMSG_SPLINE_SET_FLIGHT_BACK_SPEED);
+            break;
+        case TYPE_PITCH_RATE:
+            data.Initialize(SMSG_SPLINE_SET_PITCH_RATE);
+            break;
+    }
+
+    data << GetNewGUID();
+    data << float(getSpeedForType(speed_type));
+
+    SendMessageToSet(&data, false);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

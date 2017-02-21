@@ -5603,8 +5603,8 @@ void Unit::UpdateSpeed()
     }
     else
     {
-        SetSpeeds(TYPE_RUN, m_currentSpeedRun);
-        SetSpeeds(TYPE_FLY, m_currentSpeedFly);
+        setSpeedForType(TYPE_RUN, m_currentSpeedRun);
+        setSpeedForType(TYPE_FLY, m_currentSpeedFly);
     }
 }
 

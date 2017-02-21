@@ -1006,7 +1006,11 @@ class SERVER_DECL Player : public Unit
         /////////////////////////////////////////////////////////////////////////////////////////
         // Movement system
         /////////////////////////////////////////////////////////////////////////////////////////
-        void SetSpeeds(UnitSpeedType type, float speed);
+
+        //MIT
+        void sendForceMovePaket(UnitSpeedType speed_type, float speed);
+        void sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed);
+        //MIT end
 
         bool m_isMoving;            /// moving + strafing + jumping
         bool moving;

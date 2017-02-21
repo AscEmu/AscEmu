@@ -2382,7 +2382,7 @@ class LuaUnit
     {
         float Speed = CHECK_FLOAT(L, 1);
         if (ptr && Speed)
-            ptr->SetSpeeds(TYPE_RUN, Speed);
+            ptr->setSpeedForType(TYPE_RUN, Speed);
         return 0;
     }
 
@@ -2390,7 +2390,7 @@ class LuaUnit
     {
         float Speed = CHECK_FLOAT(L, 1);
         if (ptr && Speed)
-            ptr->SetSpeeds(TYPE_WALK, Speed);
+            ptr->setSpeedForType(TYPE_WALK, Speed);
         return 0;
     }
 
@@ -2398,7 +2398,7 @@ class LuaUnit
     {
         float Speed = CHECK_FLOAT(L, 1);
         if (ptr && Speed)
-            ptr->SetSpeeds(TYPE_FLY, Speed);
+            ptr->setSpeedForType(TYPE_FLY, Speed);
         return 0;
     }
 
@@ -3741,10 +3741,10 @@ class LuaUnit
         float Speed = CHECK_FLOAT(L, 1);
         if (Speed < 1 || Speed > 255)
             return 0;
-        plr->SetSpeeds(TYPE_RUN, Speed);
-        plr->SetSpeeds(TYPE_SWIM, Speed);
-        plr->SetSpeeds(TYPE_RUN_BACK, Speed / 2);
-        plr->SetSpeeds(TYPE_FLY, Speed * 2);
+        plr->setSpeedForType(TYPE_RUN, Speed);
+        plr->setSpeedForType(TYPE_SWIM, Speed);
+        plr->setSpeedForType(TYPE_RUN_BACK, Speed / 2);
+        plr->setSpeedForType(TYPE_FLY, Speed * 2);
         return 0;
     }
 

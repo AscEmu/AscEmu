@@ -252,6 +252,8 @@ public:
     void setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic = false);
     void resetCurrentSpeed();
 
+    void sendMoveSplinePaket(UnitSpeedType speed_type);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // Internal States
 private:
@@ -851,7 +853,7 @@ public:
     bool GetSpeedDecrease();
     int32 m_mountedspeedModifier;
     int32 m_flyspeedModifier;
-    virtual void SetSpeeds(UnitSpeedType type, float speed) {}
+
     void UpdateSpeed();
 
     // Escort Quests
