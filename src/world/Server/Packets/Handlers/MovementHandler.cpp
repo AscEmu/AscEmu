@@ -734,7 +734,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     }
     else
     {
-        if (!mover->IsRooted())
+        if (!mover->isRooted())
             mover->SetPosition(movement_info.position.x, movement_info.position.y, movement_info.position.z, movement_info.position.o);
     }
 }

@@ -1999,7 +1999,7 @@ class LuaUnit
         if (ptr == nullptr)
             return 0;
 
-        ptr->SetMoveHover(true);
+        ptr->setMoveHover(true);
         ptr->GetAIInterface()->disable_melee = true;
         ptr->GetAIInterface()->SetFly();
         ptr->Emote(EMOTE_ONESHOT_LIFTOFF);
@@ -2011,7 +2011,7 @@ class LuaUnit
         if (ptr == nullptr)
             return 0;
 
-        ptr->SetMoveHover(false);
+        ptr->setMoveHover(false);
         ptr->GetAIInterface()->StopFlying();
         ptr->GetAIInterface()->disable_melee = false;
         ptr->Emote(EMOTE_ONESHOT_LAND);
@@ -2346,14 +2346,14 @@ class LuaUnit
     static int Root(lua_State* L, Unit* ptr)
     {
         if (ptr)
-            ptr->SetMoveRoot(true);
+            ptr->setMoveRoot(true);
         return 0;
     }
 
     static int Unroot(lua_State* L, Unit* ptr)
     {
         if (ptr)
-            ptr->SetMoveRoot(false);
+            ptr->setMoveRoot(false);
         return 0;
     }
 
@@ -3815,7 +3815,7 @@ class LuaUnit
         uint32 spell = static_cast<uint32>(luaL_checkinteger(L, 2));
         if (ptr && guid && spell)
         {
-            ptr->PlaySpellVisual(guid, spell);
+            ptr->playSpellVisual(guid, spell);
         }
         return 1;
     }
@@ -4819,7 +4819,7 @@ class LuaUnit
     {
         TEST_PLAYER()
         bool enable_fly = CHECK_BOOL(L, 1);
-        ptr->SetMoveCanFly(enable_fly);
+        ptr->setMoveCanFly(enable_fly);
         return 0;
     }
 
@@ -5663,7 +5663,7 @@ class LuaUnit
     static int IsRooted(lua_State* L, Unit* ptr)
     {
         TEST_UNITPLAYER_RET();
-        if (ptr->IsRooted())
+        if (ptr->isRooted())
             RET_BOOL(true)
             RET_BOOL(false)
     }
@@ -6001,7 +6001,7 @@ class LuaUnit
     {
         TEST_UNITPLAYER();
         uint32 id = CHECK_ULONG(L, 1);
-        PUSH_AURA(L, ptr->GetAuraWithId(id));
+        PUSH_AURA(L, ptr->getAuraWithId(id));
         return 1;
     }
 

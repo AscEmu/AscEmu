@@ -210,18 +210,18 @@ private:
 
 public:
 
-    void SetMoveWaterWalk();
-    void SetMoveLandWalk();
-    void SetMoveFeatherFall();
-    void SetMoveNormalFall();
-    void SetMoveHover(bool set_hover);
-    void SetMoveCanFly(bool set_fly);
-    void SetMoveRoot(bool set_root);
-    bool IsRooted() const;
+    void setMoveWaterWalk();
+    void setMoveLandWalk();
+    void setMoveFeatherFall();
+    void setMoveNormalFall();
+    void setMoveHover(bool set_hover);
+    void setMoveCanFly(bool set_fly);
+    void setMoveRoot(bool set_root);
+    bool isRooted() const;
 
-    void SetMoveSwim(bool set_swim);
-    void SetMoveDisableGravity(bool disable_gravity);
-    void SetMoveWalk(bool set_walk);
+    void setMoveSwim(bool set_swim);
+    void setMoveDisableGravity(bool disable_gravity);
+    void setMoveWalk(bool set_walk);
 
     // Speed
 private:
@@ -238,13 +238,13 @@ private:
 
     float m_basicSpeedWalk;
     float m_basicSpeedRun;
-    float m_basicSpeedRunBack;      //\todo Zyres: not used
+    float m_basicSpeedRunBack;
     float m_basicSpeedSwim;
-    float m_basicSpeedSwimBack;     //\todo Zyres: not used
-    float m_basicTurnRate;          //\todo Zyres: not used
+    float m_basicSpeedSwimBack;
+    float m_basicTurnRate;
     float m_basicSpeedFly;
-    float m_basicSpeedFlyBack;      //\todo Zyres: not used
-    float m_basicPitchRate;         //\todo Zyres: not used
+    float m_basicSpeedFlyBack;
+    float m_basicPitchRate;
 
 public:
 
@@ -262,21 +262,21 @@ private:
 
 public:
 
-    void AddUnitStateFlag(uint32_t state_flag) { m_unitState |= state_flag; };
-    bool HasUnitStateFlag(uint32_t state_flag) { return (m_unitState & state_flag ? true : false); }
-    void RemoveUnitStateFlag(uint32_t state_flag) { m_unitState &= ~state_flag; };
-    uint32_t GetUnitStateFlags() { return m_unitState; };
+    void addUnitStateFlag(uint32_t state_flag) { m_unitState |= state_flag; };
+    bool hasUnitStateFlag(uint32_t state_flag) { return (m_unitState & state_flag ? true : false); }
+    void removeUnitStateFlag(uint32_t state_flag) { m_unitState &= ~state_flag; };
+    uint32_t getUnitStateFlags() { return m_unitState; };
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells
-    void PlaySpellVisual(uint64_t guid, uint32_t spell_id);
+    void playSpellVisual(uint64_t guid, uint32_t spell_id);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Aura
-    Aura* GetAuraWithId(uint32_t spell_id);
-    Aura* GetAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid);
-    Aura* GetAuraWithAuraEffect(uint32_t aura_effect);
+    Aura* getAuraWithId(uint32_t spell_id);
+    Aura* getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid);
+    Aura* getAuraWithAuraEffect(uint32_t aura_effect);
 
 
     // Do not alter anything below this line

@@ -115,9 +115,9 @@ bool MoonScriptCreatureAI::GetCanMove()
 void MoonScriptCreatureAI::SetCanMove(bool pCanMove)
 {
     if (pCanMove)
-        _unit->SetMoveRoot(false);
+        _unit->setMoveRoot(false);
     else
-        _unit->SetMoveRoot(true);
+        _unit->setMoveRoot(true);
 };
 
 void MoonScriptCreatureAI::MoveTo(MoonScriptCreatureAI* pCreature, RangeStatusPair pRangeStatus)
@@ -155,12 +155,12 @@ void MoonScriptCreatureAI::SetFlyMode(bool pValue)
 {
     if (pValue && !_unit->GetAIInterface()->Flying())
     {
-        _unit->SetMoveHover(true);
+        _unit->setMoveHover(true);
         _unit->GetAIInterface()->StopFlying();
     }
     else if (!pValue && _unit->GetAIInterface()->Flying())
     {
-        _unit->SetMoveHover(false);
+        _unit->setMoveHover(false);
         _unit->GetAIInterface()->SetFly();
     }
 }
@@ -1204,7 +1204,7 @@ bool MoonScriptCreatureAI::CastSpellInternal(SpellDesc* pSpell, uint32 pCurrentT
         return false;
 
     //We do not cast in special states such as : stunned, feared, silenced, charmed, asleep, confused and if they are not ignored
-    if ((~pSpell->mTargetType.mTargetFilter & TargetFilter_IgnoreSpecialStates) && _unit->HasUnitStateFlag(
+    if ((~pSpell->mTargetType.mTargetFilter & TargetFilter_IgnoreSpecialStates) && _unit->hasUnitStateFlag(
         (UNIT_STATE_STUN | UNIT_STATE_FEAR | UNIT_STATE_SILENCE | UNIT_STATE_CHARM | UNIT_STATE_CONFUSE)))
         return false;
 

@@ -2144,7 +2144,7 @@ class GurtoggAI : public CreatureAIScript
                 {
                     Unit* RageTarget = NULL;
                     RageTarget = _unit->GetAIInterface()->getNextTarget();
-                    if (RageTarget->GetAuraWithId(FEL_RAGE1) && RageTarget->GetAuraWithId(FEL_RAGE2))
+                    if (RageTarget->getAuraWithId(FEL_RAGE1) && RageTarget->getAuraWithId(FEL_RAGE2))
                     {
                         _unit->GetAIInterface()->RemoveThreatByPtr(RageTarget);
                         _unit->GetAIInterface()->AttackReaction(RageTarget, LastThreat, 0);
@@ -2158,7 +2158,7 @@ class GurtoggAI : public CreatureAIScript
                 {
                     Unit* RageTarget = NULL;
                     RageTarget = _unit->GetAIInterface()->getNextTarget();
-                    if (RageTarget->GetAuraWithId(FEL_RAGE1) || RageTarget->GetAuraWithId(FEL_RAGE2))
+                    if (RageTarget->getAuraWithId(FEL_RAGE1) || RageTarget->getAuraWithId(FEL_RAGE2))
                     {
                         _unit->setAttackTimer(spells[6].attackstoptimer, false);
 

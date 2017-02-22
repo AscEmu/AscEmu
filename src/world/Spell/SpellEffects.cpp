@@ -1663,7 +1663,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
                     mPlayer->GetShapeShift() != FORM_DIREBEAR))
                     break;
                 uint32 max = mPlayer->GetUInt32Value(UNIT_FIELD_MAXHEALTH);
-                uint32 val = float2int32(((mPlayer->GetAuraWithId(34300)) ? 0.04f : 0.02f) * max);
+                uint32 val = float2int32(((mPlayer->getAuraWithId(34300)) ? 0.04f : 0.02f) * max);
                 if (val)
                     mPlayer->Heal(mPlayer, 34299, (uint32)(val));
             }
@@ -1863,7 +1863,7 @@ void Spell::SpellEffectResurrect(uint32 i) // Resurrect (Flat)
     playerTarget->m_resurrectMana = mana;
 
     SendResurrectRequest(playerTarget);
-    playerTarget->SetMoveRoot(false);
+    playerTarget->setMoveRoot(false);
 }
 
 void Spell::SpellEffectAddExtraAttacks(uint32 i) // Add Extra Attacks
@@ -2565,7 +2565,7 @@ void Spell::SpellEffectSummonGuardian(uint32 i, DBC::Structures::SummonPropertie
         // Lightwell
         if (spe->Type == SUMMON_TYPE_LIGHTWELL)
         {
-            s->SetMoveRoot(true);
+            s->setMoveRoot(true);
             s->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_SPELLCLICK);
         }
 
@@ -4366,7 +4366,7 @@ void Spell::SpellEffectDuel(uint32 i) // Duel
         SendCastResult(SPELL_FAILED_TARGETS_DEAD);
         return; // Target not alive
     }
-    if (playerTarget->HasUnitStateFlag(UNIT_STATE_ATTACKING))
+    if (playerTarget->hasUnitStateFlag(UNIT_STATE_ATTACKING))
     {
         SendCastResult(SPELL_FAILED_TARGET_IN_COMBAT);
         return; // Target in combat with another unit
@@ -4522,7 +4522,7 @@ void Spell::SpellEffectSelfResurrect(uint32 i)
     playerTarget->m_resurrectMana = mana;
 
     playerTarget->ResurrectPlayer();
-    playerTarget->SetMoveRoot(false);
+    playerTarget->setMoveRoot(false);
 
     playerTarget->SetUInt32Value(PLAYER_SELF_RES_SPELL, 0);
 
@@ -4567,7 +4567,7 @@ void Spell::SpellEffectCharge(uint32 i)
         return;
 
     //\todo Zyres: Check for MovementFlag instead of m_rooted?
-    if (u_caster->IsStunned() || u_caster->IsRooted() || u_caster->IsPacified() || u_caster->IsFeared())
+    if (u_caster->IsStunned() || u_caster->isRooted() || u_caster->IsPacified() || u_caster->IsFeared())
         return;
 
     float x, y, z;

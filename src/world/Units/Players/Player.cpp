@@ -1298,7 +1298,7 @@ void Player::_EventCharmAttack()
         LOG_ERROR("WORLD: " I64FMT " doesn't exist.", m_curSelection);
         LOG_DETAIL("Player::Update:  No valid current selection to attack, stopping attack");
         this->setHRegenTimer(5000); //prevent clicking off creature for a quick heal
-        RemoveUnitStateFlag(UNIT_STATE_ATTACKING);
+        removeUnitStateFlag(UNIT_STATE_ATTACKING);
         EventAttackStop();
     }
     else
@@ -1530,7 +1530,7 @@ void Player::_EventExploration()
 
 void Player::EventDeath()
 {
-    if (HasUnitStateFlag(UNIT_STATE_ATTACKING))
+    if (hasUnitStateFlag(UNIT_STATE_ATTACKING))
         EventAttackStop();
 
     if (m_onTaxi)
@@ -3765,7 +3765,7 @@ void Player::OnPushToWorld()
     delayedPackets.add(data);
 
     // set fly if cheat is active
-    SetMoveCanFly(FlyCheat);
+    setMoveCanFly(FlyCheat);
 
     // Update PVP Situation
     LoginPvPSetup();
@@ -4438,8 +4438,8 @@ void Player::BuildPlayerRepop()
 
     SetFlag(PLAYER_FLAGS, PLAYER_FLAG_DEATH_WORLD_ENABLE);
 
-    SetMoveRoot(false);
-    SetMoveWaterWalk();
+    setMoveRoot(false);
+    setMoveWaterWalk();
 }
 
 void Player::RepopRequestedPlayer()
@@ -4582,7 +4582,7 @@ void Player::ResurrectPlayer()
         SafeTeleport(m_resurrectMapId, m_resurrectInstanceID, m_resurrectPosition);
     }
     m_resurrecter = 0;
-    SetMoveLandWalk();
+    setMoveLandWalk();
 
     // Zack : shit on grill. So auras should be removed on player death instead of making this :P
     // We can afford this bullshit atm since auras are lost upon death -> no immunities
@@ -4610,7 +4610,7 @@ void Player::KillPlayer()
     m_session->OutPacket(SMSG_CANCEL_COMBAT);
     m_session->OutPacket(SMSG_CANCEL_AUTO_REPEAT);
 
-    SetMoveRoot(true);
+    setMoveRoot(true);
     StopMirrorTimer(MIRROR_TYPE_FATIGUE);
     StopMirrorTimer(MIRROR_TYPE_BREATH);
     StopMirrorTimer(MIRROR_TYPE_FIRE);
@@ -13561,10 +13561,10 @@ Player* Player::GetTradeTarget()
 void Player::RemoteRevive()
 {
     ResurrectPlayer();
-    SetMoveRoot(false);
+    setMoveRoot(false);
     setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN, true));
     setSpeedForType(TYPE_SWIM, getSpeedForType(TYPE_SWIM, true));
-    SetMoveLandWalk();
+    setMoveLandWalk();
     SetHealth(GetUInt32Value(UNIT_FIELD_MAXHEALTH));
 }
 

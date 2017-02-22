@@ -134,7 +134,7 @@ class MeathookAI : public CreatureAIScript
 
         void CastScriptSpell(ScriptSpell* spell)
         {
-            _unit->SetMoveRoot(true);
+            _unit->setMoveRoot(true);
             uint32 spellid = heroic ? spell->heroic_spellid : spell->normal_spellid;
             Unit* spelltarget = NULL;
             switch (spell->target)
@@ -161,7 +161,7 @@ class MeathookAI : public CreatureAIScript
                 break;
             }
             _unit->CastSpell(spelltarget, spellid, false);
-            _unit->SetMoveRoot(false);
+            _unit->setMoveRoot(false);
         }
 
         void Destroy()
@@ -315,7 +315,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
 
         void CastScriptSpell(ScriptSpell* spell)
         {
-            _unit->SetMoveRoot(true);
+            _unit->setMoveRoot(true);
             uint32 spellid = heroic ? spell->heroic_spellid : spell->normal_spellid;
             if (spellid == 0)
                 return;
@@ -349,7 +349,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
                 break;
             }
             _unit->CastSpell(spelltarget, spellid, false);
-            _unit->SetMoveRoot(false);
+            _unit->setMoveRoot(false);
         }
 
         void Destroy()
@@ -491,7 +491,7 @@ class ChronoLordEpochAI : public CreatureAIScript
 
         void CastScriptSpell(ScriptSpell* spell)
         {
-            _unit->SetMoveRoot(true);
+            _unit->setMoveRoot(true);
             uint32 spellid = heroic ? spell->heroic_spellid : spell->normal_spellid;
             if (spellid == 0)
                 return;
@@ -520,7 +520,7 @@ class ChronoLordEpochAI : public CreatureAIScript
                 break;
             }
             _unit->CastSpell(spelltarget, spellid, false);
-            _unit->SetMoveRoot(false);
+            _unit->setMoveRoot(false);
         }
 
         void Destroy()
@@ -628,7 +628,7 @@ class InfiniteCorruptorAI : public CreatureAIScript
 
         void CastScriptSpell(ScriptSpell* spell)
         {
-            _unit->SetMoveRoot(true);
+            _unit->setMoveRoot(true);
             uint32 spellid = heroic ? spell->heroic_spellid : spell->normal_spellid;
             if (spellid == 0)
                 return;
@@ -657,7 +657,7 @@ class InfiniteCorruptorAI : public CreatureAIScript
                 break;
             }
             _unit->CastSpell(spelltarget, spellid, false);
-            _unit->SetMoveRoot(false);
+            _unit->setMoveRoot(false);
         }
 
         void Destroy()
@@ -765,7 +765,7 @@ class MalganisAI : public CreatureAIScript
             }
             if (_unit->GetHealthPct() < 2)
             {
-                _unit->SetMoveRoot(true);
+                _unit->setMoveRoot(true);
                 _unit->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
                 for (uint8 i = 0; i < 7; i++)
                     _unit->SchoolImmunityList[i] = 1;
@@ -853,7 +853,7 @@ class MalganisAI : public CreatureAIScript
 
         void CastScriptSpell(ScriptSpell* spell)
         {
-            _unit->SetMoveRoot(true);
+            _unit->setMoveRoot(true);
             uint32 spellid = heroic ? spell->heroic_spellid : spell->normal_spellid;
             if (spellid == 0)
                 return;
@@ -882,7 +882,7 @@ class MalganisAI : public CreatureAIScript
                 break;
             }
             _unit->CastSpell(spelltarget, spellid, false);
-            _unit->SetMoveRoot(false);
+            _unit->setMoveRoot(false);
         }
 
         void Destroy()

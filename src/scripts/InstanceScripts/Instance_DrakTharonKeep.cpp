@@ -217,7 +217,7 @@ class TrollgoreAI : public CreatureAIScript
 
         void CastScriptSpell(ScriptSpell* spell)
         {
-            _unit->SetMoveRoot(true);
+            _unit->setMoveRoot(true);
             uint32 spellid = heroic ? spell->heroic_spellid : spell->normal_spellid;
             Unit* spelltarget = NULL;
             switch (spell->target)
@@ -244,7 +244,7 @@ class TrollgoreAI : public CreatureAIScript
                 break;
             }
             _unit->CastSpell(spelltarget, spellid, false);
-            _unit->SetMoveRoot(false);
+            _unit->setMoveRoot(false);
         }
 
         void Destroy()
@@ -351,7 +351,7 @@ class NovosTheSummonerAI : public CreatureAIScript
         {
             //root him and disable melee for him ;)
             _unit->GetAIInterface()->disable_melee = true;
-            _unit->SetMoveRoot(true);
+            _unit->setMoveRoot(true);
         }
 
         void OnCombatStop(Unit* mTarget)
@@ -368,7 +368,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                         Crystal->Despawn(0, 0);
                 }
             }
-            _unit->SetMoveRoot(true);
+            _unit->setMoveRoot(true);
             _unit->InterruptSpell();
             _unit->RemoveAllAuras();
         }
@@ -428,7 +428,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                 {
                     _unit->InterruptSpell();
                     _unit->RemoveAllAuras();
-                    _unit->SetMoveRoot(false);
+                    _unit->setMoveRoot(false);
                     _unit->GetAIInterface()->disable_melee = false;
                     phase = 2;
                     for (uint8 i = 0; i < 7; i++)
@@ -456,7 +456,7 @@ class NovosTheSummonerAI : public CreatureAIScript
 
         void CastScriptSpell(ScriptSpell* spell)
         {
-            _unit->SetMoveRoot(true);
+            _unit->setMoveRoot(true);
             uint32 spellid = heroic ? spell->heroic_spellid : spell->normal_spellid;
             Unit* spelltarget = NULL;
             switch (spell->target)
@@ -484,7 +484,7 @@ class NovosTheSummonerAI : public CreatureAIScript
             }
             _unit->CastSpell(spelltarget, spellid, false);
             if (phase == 2)
-                _unit->SetMoveRoot(false);
+                _unit->setMoveRoot(false);
         }
         //type: 1 - normal, 0 - handler
         void SpawnInvader(uint32 type)
@@ -708,7 +708,7 @@ class CrystalHandlerAI : public CreatureAIScript
 
         void CastScriptSpell(ScriptSpell* spell)
         {
-            _unit->SetMoveRoot(true);
+            _unit->setMoveRoot(true);
             uint32 spellid = heroic ? spell->heroic_spellid : spell->normal_spellid;
             Unit* spelltarget = NULL;
             switch (spell->target)
@@ -735,7 +735,7 @@ class CrystalHandlerAI : public CreatureAIScript
                 break;
             }
             _unit->CastSpell(spelltarget, spellid, false);
-            _unit->SetMoveRoot(false);
+            _unit->setMoveRoot(false);
         }
 
         void Destroy()
@@ -861,7 +861,7 @@ class KingDreadAI : public CreatureAIScript
 
         void CastScriptSpell(ScriptSpell* spell)
         {
-            _unit->SetMoveRoot(true);
+            _unit->setMoveRoot(true);
             uint32 spellid = heroic ? spell->heroic_spellid : spell->normal_spellid;
             Unit* spelltarget = NULL;
             switch (spell->target)
@@ -888,7 +888,7 @@ class KingDreadAI : public CreatureAIScript
                 break;
             }
             _unit->CastSpell(spelltarget, spellid, false);
-            _unit->SetMoveRoot(false);
+            _unit->setMoveRoot(false);
         }
 
         void Destroy()
@@ -1084,7 +1084,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
 
         void CastScriptSpell(ScriptSpell* spell)
         {
-            _unit->SetMoveRoot(true);
+            _unit->setMoveRoot(true);
             uint32 spellid = heroic ? spell->heroic_spellid : spell->normal_spellid;
             Unit* spelltarget = NULL;
             switch (spell->target)
@@ -1111,7 +1111,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
                 break;
             }
             _unit->CastSpell(spelltarget, spellid, false);
-            _unit->SetMoveRoot(false);
+            _unit->setMoveRoot(false);
         }
 
         void Destroy()

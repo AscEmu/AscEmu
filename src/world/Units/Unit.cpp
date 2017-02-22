@@ -37,9 +37,9 @@ void Unit::enterCombat()
 {
     setCombatFlag(true);
 
-    if (!HasUnitStateFlag(UNIT_STATE_ATTACKING))
+    if (!hasUnitStateFlag(UNIT_STATE_ATTACKING))
     {
-        AddUnitStateFlag(UNIT_STATE_ATTACKING);
+        addUnitStateFlag(UNIT_STATE_ATTACKING);
     }
 }
 
@@ -47,9 +47,9 @@ void Unit::leaveCombat()
 {
     setCombatFlag(false);
 
-    if (HasUnitStateFlag(UNIT_STATE_ATTACKING))
+    if (hasUnitStateFlag(UNIT_STATE_ATTACKING))
     {
-        RemoveUnitStateFlag(UNIT_STATE_ATTACKING);
+        removeUnitStateFlag(UNIT_STATE_ATTACKING);
     }
 
     if (IsPlayer())
@@ -160,7 +160,7 @@ uint64_t Unit::getPrimaryAttackTarget() const
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
-void Unit::SetMoveWaterWalk()
+void Unit::setMoveWaterWalk()
 {
     AddUnitMovementFlag(MOVEFLAG_WATER_WALK);
 
@@ -180,7 +180,7 @@ void Unit::SetMoveWaterWalk()
     }
 }
 
-void Unit::SetMoveLandWalk()
+void Unit::setMoveLandWalk()
 {
     RemoveUnitMovementFlag(MOVEFLAG_WATER_WALK);
 
@@ -200,7 +200,7 @@ void Unit::SetMoveLandWalk()
     }
 }
 
-void Unit::SetMoveFeatherFall()
+void Unit::setMoveFeatherFall()
 {
     AddUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
 
@@ -220,7 +220,7 @@ void Unit::SetMoveFeatherFall()
     }
 }
 
-void Unit::SetMoveNormalFall()
+void Unit::setMoveNormalFall()
 {
     RemoveUnitMovementFlag(MOVEFLAG_FEATHER_FALL);
 
@@ -240,7 +240,7 @@ void Unit::SetMoveNormalFall()
     }
 }
 
-void Unit::SetMoveHover(bool set_hover)
+void Unit::setMoveHover(bool set_hover)
 {
     if (IsPlayer())
     {
@@ -290,7 +290,7 @@ void Unit::SetMoveHover(bool set_hover)
     }
 }
 
-void Unit::SetMoveCanFly(bool set_fly)
+void Unit::setMoveCanFly(bool set_fly)
 {
     if (IsPlayer())
     {
@@ -347,49 +347,64 @@ void Unit::SetMoveCanFly(bool set_fly)
     }
 }
 
-void Unit::SetMoveRoot(bool set_root)
+void Unit::setMoveRoot(bool set_root)
 {
-    // AIInterface
-    //\todo stop movement based on movement flag instead of m_canMove
-    if (!IsPlayer())
+    if (IsPlayer())
     {
         if (set_root)
         {
+            AddUnitMovementFlag(MOVEFLAG_ROOTED);
+
+            WorldPacket data(SMSG_FORCE_MOVE_ROOT, 12);
+            data << GetNewGUID();
+            data << uint32(0);
+            SendMessageToSet(&data, true);
+        }
+        else
+        {
+            RemoveUnitMovementFlag(MOVEFLAG_ROOTED);
+
+            WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 12);
+            data << GetNewGUID();
+            data << uint32(0);
+            SendMessageToSet(&data, true);
+        }
+    }
+
+    if (IsCreature())
+    {
+        if (set_root)
+        {
+            // AIInterface
+            //\todo stop movement based on movement flag instead of m_canMove
             m_aiInterface->m_canMove = false;
             m_aiInterface->StopMovement(100);
+
+            AddUnitMovementFlag(MOVEFLAG_ROOTED);
+
+            WorldPacket data(SMSG_SPLINE_MOVE_ROOT, 9);
+            data << GetNewGUID();
+            SendMessageToSet(&data, true);
         }
         else
         {
             m_aiInterface->m_canMove = true;
+
+            RemoveUnitMovementFlag(MOVEFLAG_ROOTED);
+
+            WorldPacket data(SMSG_SPLINE_MOVE_UNROOT, 9);
+            data << GetNewGUID();
+            SendMessageToSet(&data, true);
         }
-    }
-
-    if (set_root)
-    {
-        AddUnitMovementFlag(MOVEFLAG_ROOTED);
-
-        WorldPacket data(SMSG_FORCE_MOVE_ROOT, 12);
-        data << GetNewGUID();
-        data << uint32(0);
-        SendMessageToSet(&data, true);
-    }
-    else
-    {
-        RemoveUnitMovementFlag(MOVEFLAG_ROOTED);
-
-        WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 12);
-        data << GetNewGUID();
-        data << uint32(0);
-        SendMessageToSet(&data, true);
     }
 }
 
-bool Unit::IsRooted() const
+bool Unit::isRooted() const
 {
     return HasUnitMovementFlag(MOVEFLAG_ROOTED);
 }
 
-void Unit::SetMoveSwim(bool set_swim)
+void Unit::setMoveSwim(bool set_swim)
 {
     if (IsCreature())
     {
@@ -412,7 +427,7 @@ void Unit::SetMoveSwim(bool set_swim)
     }
 }
 
-void Unit::SetMoveDisableGravity(bool disable_gravity)
+void Unit::setMoveDisableGravity(bool disable_gravity)
 {
     if (IsPlayer())
     {
@@ -459,7 +474,7 @@ void Unit::SetMoveDisableGravity(bool disable_gravity)
 
 //\todo Zyres: call it if creature has MoveFlag in its movement info (set in Object::_BuildMovementUpdate)
 //             Unfortunately Movement and object update is a mess.
-void Unit::SetMoveWalk(bool set_walk)
+void Unit::setMoveWalk(bool set_walk)
 {
     if (IsCreature())
     {
@@ -652,7 +667,7 @@ void Unit::sendMoveSplinePaket(UnitSpeedType speed_type)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Spells
 
-void Unit::PlaySpellVisual(uint64_t guid, uint32_t spell_id)
+void Unit::playSpellVisual(uint64_t guid, uint32_t spell_id)
 {
     WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 12);
     data << uint64_t(guid);
@@ -667,7 +682,7 @@ void Unit::PlaySpellVisual(uint64_t guid, uint32_t spell_id)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Aura
 
-Aura* Unit::GetAuraWithId(uint32_t spell_id)
+Aura* Unit::getAuraWithId(uint32_t spell_id)
 {
     for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {
@@ -682,14 +697,14 @@ Aura* Unit::GetAuraWithId(uint32_t spell_id)
     return nullptr;
 }
 
-Aura* Unit::GetAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
+Aura* Unit::getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
 {
     for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {
         Aura* aura = m_auras[i];
         if (aura != nullptr)
         {
-            if (GetAuraWithId(spell_id) && aura->m_casterGuid == target_guid)
+            if (getAuraWithId(spell_id) && aura->m_casterGuid == target_guid)
                 return aura;
         }
     }
@@ -697,7 +712,7 @@ Aura* Unit::GetAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid)
     return nullptr;
 }
 
-Aura* Unit::GetAuraWithAuraEffect(uint32_t aura_effect)
+Aura* Unit::getAuraWithAuraEffect(uint32_t aura_effect)
 {
     for (uint32_t i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {

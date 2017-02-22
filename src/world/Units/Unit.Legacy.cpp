@@ -5020,7 +5020,7 @@ void Unit::RemoveAllAurasByRequiredShapeShift(uint32 mask)
 bool Unit::SetAurDuration(uint32 spellId, Unit* caster, uint32 duration)
 {
     LOG_DEBUG("setAurDuration2");
-    Aura* aur = GetAuraWithIdForGuid(spellId, caster->GetGUID());
+    Aura* aur = getAuraWithIdForGuid(spellId, caster->GetGUID());
     if (!aur)
         return false;
     aur->SetDuration(duration);
@@ -5031,7 +5031,7 @@ bool Unit::SetAurDuration(uint32 spellId, Unit* caster, uint32 duration)
 
 bool Unit::SetAurDuration(uint32 spellId, uint32 duration)
 {
-    Aura* aur = GetAuraWithId(spellId);
+    Aura* aur = getAuraWithId(spellId);
 
     if (!aur)
         return false;
@@ -8126,7 +8126,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     if (GetCharmedUnitGUID())
         return;
 
-    SetMoveRoot(true);
+    setMoveRoot(true);
 
     if (delay != 0)
     {
@@ -8135,7 +8135,7 @@ void Unit::Possess(Unit* pTarget, uint32 delay)
     }
     if (pTarget == NULL)
     {
-        SetMoveRoot(false);
+        setMoveRoot(false);
         return;
     }
 
@@ -8216,7 +8216,7 @@ void Unit::UnPossess()
     if (!(pTarget->IsPet() && static_cast< Pet* >(pTarget) == pThis->GetSummon()))
         pThis->SendEmptyPetSpellList();
 
-    SetMoveRoot(false);
+    setMoveRoot(false);
 
     if (!pTarget->IsPet() && (pTarget->GetCreatedByGUID() == GetGUID()))
     {

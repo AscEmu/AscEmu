@@ -2352,9 +2352,9 @@ class WarlordKalitreshAI : public CreatureAIScript
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->SetAIState(STATE_IDLE);
 
-            if (_unit->GetAuraWithId(37076))
+            if (_unit->getAuraWithId(37076))
                 _unit->RemoveAura(37076);
-            if (_unit->GetAuraWithId(36453))
+            if (_unit->getAuraWithId(36453))
                 _unit->RemoveAura(36453);
 
             Unit* pDistiller = NULL;
@@ -2398,9 +2398,9 @@ class WarlordKalitreshAI : public CreatureAIScript
                     EnrageTimer = 0;
                     RagePhase = 0;
 
-                    if (_unit->GetAuraWithId(31543))
+                    if (_unit->getAuraWithId(31543))
                         _unit->RemoveAura(31543);
-                    if (_unit->GetAuraWithId(37076))
+                    if (_unit->getAuraWithId(37076))
                         _unit->RemoveAura(37076);
                 }
 
@@ -2427,7 +2427,7 @@ class WarlordKalitreshAI : public CreatureAIScript
                             _unit->GetAIInterface()->m_canMove = false;
                             _unit->SendScriptTextChatMessage(SAY_WARLORD_KALITRESH_02);
 
-                            if (!_unit->GetAuraWithId(36453))
+                            if (!_unit->getAuraWithId(36453))
                                 _unit->CastSpell(_unit, 31543, true);
 
                             EnrageTimer = t + 3;

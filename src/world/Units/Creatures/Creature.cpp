@@ -1510,7 +1510,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
     }
 
     if (creature_properties->rooted != 0)
-        SetMoveRoot(true);
+        setMoveRoot(true);
 
     return true;
 }
@@ -1686,7 +1686,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     }
 
     if (creature_properties->rooted != 0)
-        SetMoveRoot(true);
+        setMoveRoot(true);
 }
 
 void Creature::OnPushToWorld()

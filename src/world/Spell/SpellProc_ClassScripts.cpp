@@ -569,7 +569,7 @@ class PrayerOfMendingProc : public SpellProc
 
     bool DoEffect(Unit* victim, SpellInfo* CastingSpell, uint32 flag, uint32 dmg, uint32 abs, int* dmg_overwrite, uint32 weapon_damage_type)
     {
-        Aura* aura = mTarget->GetAuraWithId(mSpell->Id);
+        Aura* aura = mTarget->getAuraWithId(mSpell->Id);
         if (aura == NULL)
             return true;
 

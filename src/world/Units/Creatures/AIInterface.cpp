@@ -4806,7 +4806,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             }
 
             if (properties_difficulty->rooted)
-                m_Unit->SetMoveRoot(true);
+                m_Unit->setMoveRoot(true);
         }
     }
 }

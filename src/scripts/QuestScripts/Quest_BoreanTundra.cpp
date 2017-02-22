@@ -691,7 +691,7 @@ public:
 
     void OnLoad()
     {
-        _unit->SetMoveRoot(true);
+        _unit->setMoveRoot(true);
         _unit->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         _unit->Die(_unit, _unit->GetHealth(), 0);
     }

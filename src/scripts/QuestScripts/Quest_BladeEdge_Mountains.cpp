@@ -37,7 +37,7 @@ class WyrmcultBlackwhelp : public CreatureAIScript
         void AIUpdate()
         {
             // Let's see if we are netted
-            Aura* a = _unit->GetAuraWithId(38177);
+            Aura* a = _unit->getAuraWithId(38177);
             if (a != nullptr)
             {
                 Unit* Caster = a->GetUnitCaster();

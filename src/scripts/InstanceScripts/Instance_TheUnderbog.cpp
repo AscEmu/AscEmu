@@ -2322,7 +2322,7 @@ class HungarfenAI : public CreatureAIScript
                 FourSpores = true;
             }
 
-            else if (!_unit->GetAuraWithId(FOUL_SPORES))
+            else if (!_unit->getAuraWithId(FOUL_SPORES))
             {
                 uint32 t = (uint32)time(NULL);
                 if (t > spells[0].casttime)
