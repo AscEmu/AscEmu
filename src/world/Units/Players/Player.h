@@ -337,13 +337,23 @@ typedef std::map<uint32, PlayerSkill>               SkillMap;
 typedef std::set<Player**>                          ReferenceSet;
 typedef std::map<uint32, PlayerCooldown>            PlayerCooldownMap;
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Class that holds every created character on the server.
-///
-///\todo Attach characters to user accounts
-//////////////////////////////////////////////////////////////////////////////////////////
+// AGPL End
+
+// MIT Start
 class SERVER_DECL Player : public Unit
 {
+
+public:
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Movement
+    void sendForceMovePaket(UnitSpeedType speed_type, float speed);
+    void sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed);
+
+private:
+    //MIT End
+    //AGPL Start
+
     friend class WorldSession;
     friend class Pet;
 
@@ -1006,11 +1016,6 @@ class SERVER_DECL Player : public Unit
         /////////////////////////////////////////////////////////////////////////////////////////
         // Movement system
         /////////////////////////////////////////////////////////////////////////////////////////
-
-        //MIT
-        void sendForceMovePaket(UnitSpeedType speed_type, float speed);
-        void sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed);
-        //MIT end
 
         bool m_isMoving;            /// moving + strafing + jumping
         bool moving;
@@ -1996,4 +2001,6 @@ class SERVER_DECL Player : public Unit
         // command
         float go_last_x_rotation;
         float go_last_y_rotation;
+
+        // AGPL End
 };
