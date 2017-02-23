@@ -1,42 +1,39 @@
 # ![logo](http://ascemu.org/style/img/logo.png)
 
-Opensource software in this folder:
-============
+# Opensource software in this folder:
 
-Folder: libmpq
-   Web: https://github.com/mbroemme/libmpq/
-   Version: d59b4cf1d107b5f6a0f67d6bc545c6c6ebef3d74 (2011/11/08)
+## zlib
+- Web: http://www.zlib.net
+- Version: 1.2.11 (2017/01/15)
 
-Folder: lualib
-   Web: http://www.lua.org
-   Version: 5.3.1 (2015/06/03)
+## lualib
+- Web: https://www.lua.org
+- Version: 5.3.4 (2017-01-12)
 
-Folder: bzip2
-   Web: http://www.bzip.org/
-   Version: 1.0.6 (2010/09/20)
+## recastnavigation
+- Web: https://github.com/memononen/recastnavigation
+- Version: 64385e9ed0822427bca5814d03a3f4c4d7a6db9f (2016/01/19)
 
-Folder: zlib
-   Web: http://www.zlib.net/
-   Version: 1.2.8 (2013/03/28)
+## libmpq
+- Web: https://github.com/mbroemme/libmpq
+- Version: d59b4cf1d107b5f6a0f67d6bc545c6c6ebef3d74 (2011/11/08)
 
-Folder: recastnavigation
-   Web: https://github.com/memononen/recastnavigation
-   Version: 1dd5cf1883d61e723fef3d4957cf758c50e7a52b (2015/06/22)   
-   
-Folder: g3dlite
-   Web: http://g3d.sourceforge.net/
-   Version: 9 (2013/03/24)
+## bzip2
+- Web: http://www.bzip.org
+- Version: 1.0.6 (2010/09/20)
 
-================= Everything below this is not updated to a newer version =================
+## g3dlite
+- Web: http://g3d.cs.williams.edu
+- Version: 9 (2013/03/24)
 
-Folder: openssl
-   Web:
-   Version:
-   
-Folder: pcre
-   Web: http://www.pcre.org
-   Version: 7.4 (2007/09/21)
+# Everything below this is not updated to a newer version
 
-Folder: mysql (dev-files)
-   Web: http://www.mysql.com/
-   Version:
+## pcre
+- Web: http://www.pcre.org
+- Version: 7.4 (2007/09/21)
+
+## mysql (dev-files)
+- Web: http://www.mysql.com
+
+## openssl
+- Web: https://www.openssl.org
