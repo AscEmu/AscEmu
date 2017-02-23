@@ -94,9 +94,6 @@ bool adt_MHDR::prepareLoadedData()
     if (offsMH2O && !getMH2O()->prepareLoadedData())
         return false;
 
-    if (offsMFBO && flags & 1 && !getMFBO()->prepareLoadedData())
-        return false;
-
     return true;
 }
 
@@ -158,9 +155,4 @@ bool adt_MCLQ::prepareLoadedData()
         return false;
 
     return true;
-}
-
-bool adt_MFBO::prepareLoadedData()
-{
-    return fcc == MFBOMagic.fcc;
 }
