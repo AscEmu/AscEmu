@@ -462,7 +462,7 @@ class IckAI : MoonScriptBossAI
                 mKrickAI->CastSpell(mExplosionBarageKrick);
             }
             
-            _unit->SetMoveRoot(true);
+            _unit->setMoveRoot(true);
             CastSpell(mExplosionBarage);
 
             mExplosionBarageEndTimer = AddTimer(20000);
@@ -477,7 +477,7 @@ class IckAI : MoonScriptBossAI
         // Explosive Barage End
         if (IsTimerFinished(mExplosionBarageEndTimer))
         {
-            _unit->SetMoveRoot(false);
+            _unit->setMoveRoot(false);
             RemoveTimer(mExplosionBarageEndTimer);
         }
     }
@@ -577,7 +577,7 @@ class KrickAI : MoonScriptBossAI
         {
             GetUnit()->SetPosition(833.19f, 115.79f, 510.0f, 3.42673f, false);
             _unit->CastSpell(_unit, SPELL_STRANGULATE, true);
-            _unit->SetMoveRoot(true);
+            _unit->setMoveRoot(true);
             ClearHateList();
 
             SetCanEnterCombat(false);

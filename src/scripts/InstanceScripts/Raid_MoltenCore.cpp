@@ -228,7 +228,7 @@ class RagnarosAI : public CreatureAIScript
             info_hammer = sSpellCustomizations.GetSpellInfo(HAMMER_OF_RAGNAROS);
             info_meltweapon = sSpellCustomizations.GetSpellInfo(MELT_WEAPON);
             info_summonsons = sSpellCustomizations.GetSpellInfo(SUMMON_SONS_OF_FLAMES);
-            _unit->SetMoveRoot(true);
+            _unit->setMoveRoot(true);
         }
 
         void OnCombatStart(Unit* mTarget)

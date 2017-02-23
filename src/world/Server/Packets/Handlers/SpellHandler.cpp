@@ -494,7 +494,7 @@ void WorldSession::HandleCancelAuraOpcode(WorldPacket& recvPacket)
         if (info == nullptr)
             return;
 
-        Aura* aura = _player->GetAuraWithId(spellId);
+        Aura* aura = _player->getAuraWithId(spellId);
         if (aura)
 		{
 			if (!aura->IsPositive())

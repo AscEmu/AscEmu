@@ -1752,7 +1752,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
                 }
             }
 
-            if (_unit->GetAuraWithId(SP_GRAND_WARLOCK_NETH_DARK_SPIN))
+            if (_unit->getAuraWithId(SP_GRAND_WARLOCK_NETH_DARK_SPIN))
             {
                 _unit->setAttackTimer(2500, false);
                 return;

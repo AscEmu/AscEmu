@@ -627,19 +627,6 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
 
         uint16 GetValuesCount() const { return m_valuesCount; }
 
-        // Blizzard seem to send those for all object types. weird.
-        float m_walkSpeed;
-        float m_runSpeed;
-        float m_backWalkSpeed;
-        float m_swimSpeed;
-        float m_backSwimSpeed;
-        float m_turnRate;
-        float m_flySpeed;
-        float m_backFlySpeed;
-
-        float m_base_runSpeed;
-        float m_base_walkSpeed;
-
         MovementInfo obj_movement_info;
         Transporter* GetTransport() const;
 

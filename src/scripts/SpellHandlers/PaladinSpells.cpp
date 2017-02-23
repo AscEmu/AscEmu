@@ -371,7 +371,7 @@ bool GuardedByTheLight(uint32 i, Spell* s)
     if (!s->p_caster)
         return false;
 
-    if (Aura* aura = s->p_caster->GetAuraWithId(54428))
+    if (Aura* aura = s->p_caster->getAuraWithId(54428))
         aura->Refresh();
 
     return true;

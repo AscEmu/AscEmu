@@ -154,7 +154,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
     // set movement info
 
     // root passenger
-    passenger->SetMoveRoot(true);
+    passenger->setMoveRoot(true);
 
     WorldPacket ack(SMSG_CONTROL_VEHICLE);
     passenger->SendPacket(&ack);
@@ -328,7 +328,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
 
     passenger->SendHopOffVehicle(owner, landposition);
     passenger->SetPosition(landposition);
-    passenger->SetMoveRoot(false);
+    passenger->setMoveRoot(false);
     seats[seatid]->RemovePassenger();
     passenger->SetCurrentVehicle(NULL);
     passenger->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_NOT_ATTACKABLE_2);

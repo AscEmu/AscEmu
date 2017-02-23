@@ -94,10 +94,6 @@ Creature::Creature(uint64 guid)
     m_limbostate = false;
     m_corpseEvent = false;
     m_respawnCell = NULL;
-    m_walkSpeed = 2.5f;
-    m_runSpeed = creatureNormalRunSpeed;
-    m_base_runSpeed = m_runSpeed;
-    m_base_walkSpeed = m_walkSpeed;
     m_noRespawn = false;
     m_respawnTimeOverride = 0;
     m_canRegenerateHP = true;
@@ -802,8 +798,7 @@ void Creature::EnslaveExpire()
     SetCharmedByGUID(0);
     SetSummonedByGUID(0);
 
-    m_walkSpeed = m_base_walkSpeed;
-    m_runSpeed = m_base_runSpeed;
+    resetCurrentSpeed();
 
     switch (GetCreatureProperties()->Type)
     {
@@ -1286,9 +1281,10 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
     spawnid = spawn->id;
     m_phase = spawn->phase;
 
-    m_walkSpeed = m_base_walkSpeed = creature_properties->walk_speed; //set speeds
-    m_runSpeed = m_base_runSpeed = creature_properties->run_speed; //set speeds
-    m_flySpeed = creature_properties->fly_speed;
+    setSpeedForType(TYPE_WALK, creature_properties->walk_speed, true);
+    setSpeedForType(TYPE_RUN, creature_properties->run_speed, true);
+    setSpeedForType(TYPE_FLY, creature_properties->fly_speed, true);
+    resetCurrentSpeed();
 
     //Set fields
     SetEntry(creature_properties->Id);
@@ -1514,7 +1510,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
     }
 
     if (creature_properties->rooted != 0)
-        SetMoveRoot(true);
+        setMoveRoot(true);
 
     return true;
 }
@@ -1533,8 +1529,10 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
         GetAIInterface()->SetAIType(AITYPE_PASSIVE);
     }
 
-    m_walkSpeed = m_base_walkSpeed = creature_properties->walk_speed; //set speeds
-    m_runSpeed = m_base_runSpeed = creature_properties->run_speed; //set speeds
+    setSpeedForType(TYPE_WALK, creature_properties->walk_speed, true);
+    setSpeedForType(TYPE_RUN, creature_properties->run_speed, true);
+    setSpeedForType(TYPE_FLY, creature_properties->fly_speed, true);
+    resetCurrentSpeed();
 
     //Set fields
     SetEntry(creature_properties->Id);
@@ -1688,7 +1686,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     }
 
     if (creature_properties->rooted != 0)
-        SetMoveRoot(true);
+        setMoveRoot(true);
 }
 
 void Creature::OnPushToWorld()
@@ -2095,63 +2093,6 @@ void Creature::RemoveSanctuaryFlag()
 {
     RemoveByteFlag(UNIT_FIELD_BYTES_2, 1, U_FIELD_BYTES_FLAG_SANCTUARY);
     summonhandler.RemoveSanctuaryFlags();
-}
-
-void Creature::SetSpeeds(uint8 type, float speed)
-{
-    WorldPacket data(50);
-
-    data << GetNewGUID();
-    data << uint32(0);
-
-    if (type == RUN)
-        data << uint8(0);
-
-    data << float(speed);
-
-    switch (type)
-    {
-        case WALK:
-        {
-            data.SetOpcode(SMSG_FORCE_WALK_SPEED_CHANGE);
-            m_walkSpeed = speed;
-            break;
-        }
-        case RUN:
-        {
-            data.SetOpcode(SMSG_FORCE_RUN_SPEED_CHANGE);
-            m_runSpeed = speed;
-            break;
-        }
-        case RUNBACK:
-        {
-            data.SetOpcode(SMSG_FORCE_RUN_BACK_SPEED_CHANGE);
-            m_backWalkSpeed = speed;
-            break;
-        }
-        case SWIM:
-        {
-            data.SetOpcode(SMSG_FORCE_SWIM_SPEED_CHANGE);
-            m_swimSpeed = speed;
-            break;
-        }
-        case SWIMBACK:
-        {
-            data.SetOpcode(SMSG_FORCE_SWIM_BACK_SPEED_CHANGE);
-            m_backSwimSpeed = speed;
-            break;
-        }
-        case FLY:
-        {
-            data.SetOpcode(SMSG_FORCE_FLIGHT_SPEED_CHANGE);
-            m_flySpeed = speed;
-            break;
-        }
-        default:
-            return;
-    }
-
-    SendMessageToSet(&data, true);
 }
 
 int32 Creature::GetSlotByItemId(uint32 itemid)

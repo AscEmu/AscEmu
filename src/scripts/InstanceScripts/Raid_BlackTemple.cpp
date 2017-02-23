@@ -2144,7 +2144,7 @@ class GurtoggAI : public CreatureAIScript
                 {
                     Unit* RageTarget = NULL;
                     RageTarget = _unit->GetAIInterface()->getNextTarget();
-                    if (RageTarget->GetAuraWithId(FEL_RAGE1) && RageTarget->GetAuraWithId(FEL_RAGE2))
+                    if (RageTarget->getAuraWithId(FEL_RAGE1) && RageTarget->getAuraWithId(FEL_RAGE2))
                     {
                         _unit->GetAIInterface()->RemoveThreatByPtr(RageTarget);
                         _unit->GetAIInterface()->AttackReaction(RageTarget, LastThreat, 0);
@@ -2158,7 +2158,7 @@ class GurtoggAI : public CreatureAIScript
                 {
                     Unit* RageTarget = NULL;
                     RageTarget = _unit->GetAIInterface()->getNextTarget();
-                    if (RageTarget->GetAuraWithId(FEL_RAGE1) || RageTarget->GetAuraWithId(FEL_RAGE2))
+                    if (RageTarget->getAuraWithId(FEL_RAGE1) || RageTarget->getAuraWithId(FEL_RAGE2))
                     {
                         _unit->setAttackTimer(spells[6].attackstoptimer, false);
 
@@ -5861,7 +5861,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                             _unit->GetAIInterface()->setNextTarget(pTrigger);
 
                             float Distance = pTrigger->CalcDistance(EyeBeamPaths[7 - FireWall].x, EyeBeamPaths[7 - FireWall].y, EyeBeamPaths[7 - FireWall].z);
-                            uint32 TimeToReach = (uint32)(Distance * 1000 / pTrigger->m_walkSpeed);
+                            uint32 TimeToReach = (uint32)(Distance * 1000 / pTrigger->getSpeedForType(TYPE_WALK));
                             EyeBeamTriggerAI* pEyeBeamTriggerAI = static_cast< EyeBeamTriggerAI* >(pTrigger->GetScript());
                             pEyeBeamTriggerAI->mPosition = FireWall;
                             pEyeBeamTriggerAI->Despawn(TimeToReach + 1500, 0);

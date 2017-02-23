@@ -230,8 +230,8 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
     else
     {
         //Showing the learning spellvisuals
-        _player->PlaySpellVisual(pCreature->GetGUID(), 1459);
-        _player->PlaySpellVisual(_player->GetGUID(), 362);
+        _player->playSpellVisual(pCreature->GetGUID(), 1459);
+        _player->playSpellVisual(_player->GetGUID(), 362);
 
         // add the spell itself
         _player->addSpell(pSpell->pLearnSpell->Id);
@@ -481,7 +481,7 @@ void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
 
     if (_player->getLevel() > 10)
     {
-        Aura* aur = GetPlayer()->GetAuraWithId(15007);
+        Aura* aur = GetPlayer()->getAuraWithId(15007);
 
         if (aur == NULL)        // If the player already have the aura, just extend it.
         {

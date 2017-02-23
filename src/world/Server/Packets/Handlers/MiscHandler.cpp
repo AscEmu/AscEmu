@@ -985,7 +985,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& recv_data)
         SendPacket(&data);
 
         //stop player from moving
-        pPlayer->SetMoveRoot(true);
+        pPlayer->setMoveRoot(true);
         LoggingOut = true;
         // Set the "player locked" flag, to prevent movement
         pPlayer->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
@@ -1035,7 +1035,7 @@ void WorldSession::HandleLogoutCancelOpcode(WorldPacket& recv_data)
     OutPacket(SMSG_LOGOUT_CANCEL_ACK);
 
     //unroot player
-    pPlayer->SetMoveRoot(false);
+    pPlayer->setMoveRoot(false);
 
     // Remove the "player locked" flag, to allow movement
     pPlayer->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
@@ -1207,7 +1207,7 @@ void WorldSession::HandleResurrectResponseOpcode(WorldPacket& recv_data)
     }
 
     _player->ResurrectPlayer();
-    _player->SetMoveRoot(false);
+    _player->setMoveRoot(false);
 }
 
 void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
@@ -1611,14 +1611,12 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
         {
             plyr->SafeTeleport(plyr->GetMapId(), plyr->GetInstanceID(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
             plyr->SetStandState(STANDSTATE_SIT_MEDIUM_CHAIR);
-            plyr->m_lastRunSpeed = 0; //counteract mount-bug; reset speed to zero to force update SetPlayerSpeed in next line.
             plyr->UpdateSpeed();
         }
         break;
         case GAMEOBJECT_TYPE_BARBER_CHAIR:
         {
             plyr->SafeTeleport(plyr->GetMapId(), plyr->GetInstanceID(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
-            plyr->m_lastRunSpeed = 0; //counteract mount-bug; reset speed to zero to force update SetPlayerSpeed in next line.
             plyr->UpdateSpeed();
             //send barber shop menu to player
             WorldPacket data(SMSG_ENABLE_BARBER_SHOP, 0);

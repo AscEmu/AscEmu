@@ -659,7 +659,7 @@ void CBattleground::RemovePlayer(Player* plr, bool logout)
     plr->RemoveAura(44535);
     plr->RemoveAura(21074);
 
-    plr->SetMoveRoot(false);
+    plr->setMoveRoot(false);
 
     /* teleport out */
     if (!logout)

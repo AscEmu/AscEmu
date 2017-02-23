@@ -433,7 +433,7 @@ class SotaAntiPersonnalCannon : public CreatureAIScript
 
         void OnLoad()
         {
-            GetUnit()->SetMoveRoot(true);
+            GetUnit()->setMoveRoot(true);
         }
 };
 
@@ -454,7 +454,7 @@ class NestlewoodOwlkin : public CreatureAIScript
                 if (_unit->HasAura(29528) && !respawn)
                 {
                     reset = true;
-                    _unit->SetMoveRoot(true);
+                    _unit->setMoveRoot(true);
                     RemoveAIUpdateEvent();
                     GiveKillCredit();
                 }
@@ -462,7 +462,7 @@ class NestlewoodOwlkin : public CreatureAIScript
             else
             {
                 respawn = true;
-                _unit->SetMoveRoot(false);
+                _unit->setMoveRoot(false);
                 _unit->Despawn(0, 10000);   // respawn delay 10 seconds
             }
         }

@@ -45,6 +45,19 @@ class Vehicle;
 
 struct FactionDBC;
 
+enum UnitSpeedType
+{
+    TYPE_WALK           = 0,
+    TYPE_RUN            = 1,
+    TYPE_RUN_BACK       = 2,
+    TYPE_SWIM           = 3,
+    TYPE_SWIM_BACK      = 4,
+    TYPE_TURN_RATE      = 5,
+    TYPE_FLY            = 6,
+    TYPE_FLY_BACK       = 7,
+    TYPE_PITCH_RATE     = 8
+};
+
 // MIT End
 // AGPL Start
 //these refer to visibility ranges. We need to store each stack of the aura and not just visible count.
@@ -197,18 +210,49 @@ private:
 
 public:
 
-    void SetMoveWaterWalk();
-    void SetMoveLandWalk();
-    void SetMoveFeatherFall();
-    void SetMoveNormalFall();
-    void SetMoveHover(bool set_hover);
-    void SetMoveCanFly(bool set_fly);
-    void SetMoveRoot(bool set_root);
-    bool IsRooted() const;
+    void setMoveWaterWalk();
+    void setMoveLandWalk();
+    void setMoveFeatherFall();
+    void setMoveNormalFall();
+    void setMoveHover(bool set_hover);
+    void setMoveCanFly(bool set_fly);
+    void setMoveRoot(bool set_root);
+    bool isRooted() const;
 
-    void SetMoveSwim(bool set_swim);
-    void SetMoveDisableGravity(bool disable_gravity);
-    void SetMoveWalk(bool set_walk);
+    void setMoveSwim(bool set_swim);
+    void setMoveDisableGravity(bool disable_gravity);
+    void setMoveWalk(bool set_walk);
+
+    // Speed
+private:
+
+    float m_currentSpeedWalk;
+    float m_currentSpeedRun;
+    float m_currentSpeedRunBack;
+    float m_currentSpeedSwim;
+    float m_currentSpeedSwimBack;
+    float m_currentTurnRate;
+    float m_currentSpeedFly;
+    float m_currentSpeedFlyBack;
+    float m_currentPitchRate;
+
+    float m_basicSpeedWalk;
+    float m_basicSpeedRun;
+    float m_basicSpeedRunBack;
+    float m_basicSpeedSwim;
+    float m_basicSpeedSwimBack;
+    float m_basicTurnRate;
+    float m_basicSpeedFly;
+    float m_basicSpeedFlyBack;
+    float m_basicPitchRate;
+
+public:
+
+    float getSpeedForType(UnitSpeedType speed_type, bool get_basic = false);
+    void setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic = false);
+    void resetCurrentSpeed();
+
+    void sendMoveSplinePaket(UnitSpeedType speed_type);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Internal States
@@ -218,21 +262,21 @@ private:
 
 public:
 
-    void AddUnitStateFlag(uint32_t state_flag) { m_unitState |= state_flag; };
-    bool HasUnitStateFlag(uint32_t state_flag) { return (m_unitState & state_flag ? true : false); }
-    void RemoveUnitStateFlag(uint32_t state_flag) { m_unitState &= ~state_flag; };
-    uint32_t GetUnitStateFlags() { return m_unitState; };
+    void addUnitStateFlag(uint32_t state_flag) { m_unitState |= state_flag; };
+    bool hasUnitStateFlag(uint32_t state_flag) { return (m_unitState & state_flag ? true : false); }
+    void removeUnitStateFlag(uint32_t state_flag) { m_unitState &= ~state_flag; };
+    uint32_t getUnitStateFlags() { return m_unitState; };
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells
-    void PlaySpellVisual(uint64_t guid, uint32_t spell_id);
+    void playSpellVisual(uint64_t guid, uint32_t spell_id);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Aura
-    Aura* GetAuraWithId(uint32_t spell_id);
-    Aura* GetAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid);
-    Aura* GetAuraWithAuraEffect(uint32_t aura_effect);
+    Aura* getAuraWithId(uint32_t spell_id);
+    Aura* getAuraWithIdForGuid(uint32_t spell_id, uint64_t target_guid);
+    Aura* getAuraWithAuraEffect(uint32_t aura_effect);
 
 
     // Do not alter anything below this line
@@ -809,7 +853,7 @@ public:
     bool GetSpeedDecrease();
     int32 m_mountedspeedModifier;
     int32 m_flyspeedModifier;
-    virtual void SetSpeeds(uint8 type, float speed) {}
+
     void UpdateSpeed();
 
     // Escort Quests
