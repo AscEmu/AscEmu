@@ -1,4 +1,7 @@
+# ![logo](http://ascemu.org/style/img/logo.png)
+
 Opensource software in this folder:
+============
 
 Folder: libmpq
    Web: https://github.com/mbroemme/libmpq/
