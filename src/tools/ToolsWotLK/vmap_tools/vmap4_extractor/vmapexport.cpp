@@ -34,15 +34,20 @@
     #include <sys/stat.h>
 #endif
 
-#undef min
-#undef max
-
 #include <cstdio>
 #include <iostream>
 #include <vector>
 #include <errno.h>
 
+#undef min
+#undef max
+
+//------------------------------------------------------------------------------
+// Defines
+
 #define MPQ_BLOCK_SIZE 0x1000
+
+//-----------------------------------------------------------------------------
 
 extern ArchiveSet gOpenArchives;
 
@@ -60,8 +65,13 @@ char input_path[1024]=".";
 bool hasInputPathParam = false;
 bool preciseVectorData = false;
 
+// Constants
+
+//static const char * szWorkDirMaps = ".\\Maps";
 const char* szWorkDirWmo = "./Buildings";
-const char* szRawVMAPMagic = "VMAP041";
+const char* szRawVMAPMagic = "VMAP042";
+
+// Local testing functions
 
 bool FileExists(const char* file)
 {
