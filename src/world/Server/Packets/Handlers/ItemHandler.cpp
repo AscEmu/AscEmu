@@ -330,6 +330,7 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recv_data)
         return;
     }
 
+#if VERSION_STRING > TBC
     if (dstitem && srcslot < INVENTORY_SLOT_BAG_END)
     {
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, dstitem->GetItemProperties()->ItemId, 0, 0);
@@ -358,6 +359,8 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recv_data)
                 _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, dstslot, srcitem->GetItemProperties()->Quality, 0);
         }
     }
+#endif
+
     _player->GetItemInterface()->SwapItemSlots(srcslot, dstslot);
 }
 
@@ -614,6 +617,7 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recv_data)
     {
         if (eitem->GetItemProperties()->Bonding == ITEM_BIND_ON_EQUIP)
             eitem->SoulBind();
+#if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM, eitem->GetItemProperties()->ItemId, 0, 0);
         // Achievement ID:556 description Equip an epic item in every slot with a minimum item level of 213.
         // "213" value not found in achievement or criteria entries, have to hard-code it here? :(
@@ -622,6 +626,7 @@ void WorldSession::HandleAutoEquipItemOpcode(WorldPacket& recv_data)
         if ((eitem->GetItemProperties()->Quality == ITEM_QUALITY_RARE_BLUE && eitem->GetItemProperties()->ItemLevel >= 187) ||
             (eitem->GetItemProperties()->Quality == ITEM_QUALITY_EPIC_PURPLE && eitem->GetItemProperties()->ItemLevel >= 213))
             _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, Slot, eitem->GetItemProperties()->Quality, 0);
+#endif
     }
     //Recalculate Expertise (for Weapon specs)
     _player->CalcExpertise();
@@ -1784,7 +1789,9 @@ void WorldSession::HandleBuyBankSlotOpcode(WorldPacket& recvPacket)
     {
         _player->SetUInt32Value(PLAYER_BYTES_2, (bytes & 0xff00ffff) | ((slots + 1) << 16));
         _player->ModGold(-price);
+#if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT, 1, 0, 0);
+#endif
     }
     else
     {
@@ -2197,6 +2204,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
     dst->SaveToDB(destitem_bagslot, destitem_slot, false, NULL);
 }
 
+#if VERSION_STRING > TBC
 void WorldSession::HandleItemRefundInfoOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -2304,4 +2312,4 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 
     LOG_DEBUG("Sent SMSG_ITEMREFUNDREQUEST.");
 }
-
+#endif

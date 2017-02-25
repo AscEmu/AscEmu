@@ -432,6 +432,7 @@ void Unit::setMoveSwim(bool set_swim)
 
 void Unit::setMoveDisableGravity(bool disable_gravity)
 {
+#if VERSION_STRING > TBC
     if (IsPlayer())
     {
         if (disable_gravity)
@@ -473,6 +474,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
             SendMessageToSet(&data, false);
         }
     }
+#endif
 }
 
 //\todo Zyres: call it if creature has MoveFlag in its movement info (set in Object::_BuildMovementUpdate)
@@ -656,9 +658,11 @@ void Unit::sendMoveSplinePaket(UnitSpeedType speed_type)
         case TYPE_FLY_BACK:
             data.Initialize(SMSG_SPLINE_SET_FLIGHT_BACK_SPEED);
             break;
+#if VERSION_STRING > TBC
         case TYPE_PITCH_RATE:
             data.Initialize(SMSG_SPLINE_SET_PITCH_RATE);
             break;
+#endif
     }
 
     data << GetNewGUID();

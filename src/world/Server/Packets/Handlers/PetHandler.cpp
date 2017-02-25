@@ -629,6 +629,7 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
     if (talentcol > 0 && talent->RankID[talentcol - 1] != 0)
         pPet->RemoveSpell(talent->RankID[talentcol - 1]);
 
+#if VERSION_STRING > TBC
     // add spell, discount talent point
     SpellInfo* sp = sSpellCustomizations.GetSpellInfo(talent->RankID[talentcol]);
     if (sp != NULL)
@@ -637,6 +638,7 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
         pPet->SetTPs(pPet->GetTPs() - 1);
         OutPacket(SMSG_PET_LEARNED_SPELL, 4, &sp->Id);
     }
+#endif
 
     // send talent update
     pPet->SendTalentsToOwner();

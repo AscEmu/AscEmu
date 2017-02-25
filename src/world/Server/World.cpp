@@ -549,7 +549,9 @@ bool World::SetInitialWorldSettings()
     MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
     MAKE_TASK(ObjectMgr, LoadAreaTrigger);
 
+#if VERSION_STRING > TBC
     MAKE_TASK(ObjectMgr, LoadAchievementRewards);
+#endif
     //LoadMonsterSay() must have finished before calling LoadExtraCreatureProtoStuff()
     tl.wait();
 
@@ -600,7 +602,9 @@ bool World::SetInitialWorldSettings()
 
     //Start the Achievement system :D
     LogDetail("World : Starting Achievement System..");
+#if VERSION_STRING > TBC
     objmgr.LoadAchievementCriteriaList();
+#endif
     // start mail system
     MailSystem::getSingleton().StartMailSystem();
 

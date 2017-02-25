@@ -19,6 +19,7 @@ This file is released under the MIT license. See README-MIT for more information
 //////////////////////////////////////////////////////////////////////////////////////////
 bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession* m_session)
 {
+#if VERSION_STRING > TBC
     if (!*args)
         return false;
 
@@ -237,6 +238,7 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
         SendMultilineMessage(m_session, recout.c_str());
     }
     BlueSystemMessage(m_session, "Search completed in %u ms.", getMSTime() - t);
+#endif
     return true;
 }
 

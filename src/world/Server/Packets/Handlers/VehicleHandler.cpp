@@ -23,6 +23,7 @@
 #include "Units/Creatures/Vehicle.h"
 #include "Units/Players/Player.h"
 
+#if VERSION_STRING > TBC
 void WorldSession::HandleDismissVehicle(WorldPacket& recv_data)
 {
     uint64 current_vehicle_guid = _player->GetCharmedUnitGUID();
@@ -192,3 +193,4 @@ void WorldSession::HandleEnterVehicle(WorldPacket& recv_data)
 
     v->GetVehicleComponent()->AddPassenger(_player);
 }
+#endif

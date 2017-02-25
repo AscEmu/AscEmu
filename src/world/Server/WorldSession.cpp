@@ -563,6 +563,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_CHAR_RENAME].handler = &WorldSession::HandleCharRenameOpcode;
     WorldPacketHandlers[CMSG_CHAR_RENAME].status = STATUS_AUTHED;
 
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_CHAR_CUSTOMIZE].handler = &WorldSession::HandleCharCustomizeLooksOpcode;
     WorldPacketHandlers[CMSG_CHAR_CUSTOMIZE].status = STATUS_AUTHED;
 
@@ -571,6 +572,7 @@ void WorldSession::InitPacketHandlerTable()
 
     WorldPacketHandlers[CMSG_CHAR_RACE_CHANGE].handler = &WorldSession::HandleCharFactionOrRaceChange;
     WorldPacketHandlers[CMSG_CHAR_RACE_CHANGE].status = STATUS_AUTHED;
+#endif
 
     // declined names (Cyrillic client)
     WorldPacketHandlers[CMSG_SET_PLAYER_DECLINED_NAMES].handler = &WorldSession::HandleDeclinedPlayerNameOpcode;
@@ -591,7 +593,9 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_GAMEOBJECT_QUERY].handler = &WorldSession::HandleGameObjectQueryOpcode;
     WorldPacketHandlers[CMSG_PAGE_TEXT_QUERY].handler = &WorldSession::HandlePageTextQueryOpcode;
     WorldPacketHandlers[CMSG_ITEM_NAME_QUERY].handler = &WorldSession::HandleItemNameQueryOpcode;
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_QUERY_INSPECT_ACHIEVEMENTS].handler = &WorldSession::HandleAchievmentQueryOpcode;
+#endif
 
     // Movement
     WorldPacketHandlers[MSG_MOVE_HEARTBEAT].handler = &WorldSession::HandleMovementOpcodes;
@@ -701,7 +705,9 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_EMOTE].handler = &WorldSession::HandleEmoteOpcode;
     WorldPacketHandlers[CMSG_TEXT_EMOTE].handler = &WorldSession::HandleTextEmoteOpcode;
     WorldPacketHandlers[CMSG_INSPECT].handler = &WorldSession::HandleInspectOpcode;
+#if VERSION_STRING > TBC
     WorldPacketHandlers[SMSG_BARBER_SHOP_RESULT].handler = &WorldSession::HandleBarberShopResult;
+#endif
 
     // Channels
     WorldPacketHandlers[CMSG_JOIN_CHANNEL].handler = &WorldSession::HandleChannelJoin;
@@ -745,6 +751,7 @@ void WorldSession::InitPacketHandlerTable()
 
     // LFG System
     WorldPacketHandlers[CMSG_SET_LFG_COMMENT].handler = &WorldSession::HandleLfgSetCommentOpcode;
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_LFG_JOIN].handler = &WorldSession::HandleLfgJoinOpcode;
     WorldPacketHandlers[CMSG_LFG_LEAVE].handler = &WorldSession::HandleLfgLeaveOpcode;
     WorldPacketHandlers[CMSG_SEARCH_LFG_JOIN].handler = &WorldSession::HandleLfrSearchOpcode;
@@ -758,6 +765,7 @@ void WorldSession::InitPacketHandlerTable()
 
     // Taxi / NPC Interaction
     WorldPacketHandlers[CMSG_ENABLETAXI].handler = &WorldSession::HandleTaxiQueryAvaibleNodesOpcode;
+#endif
     WorldPacketHandlers[CMSG_TAXINODE_STATUS_QUERY].handler = &WorldSession::HandleTaxiNodeStatusQueryOpcode;
     WorldPacketHandlers[CMSG_TAXIQUERYAVAILABLENODES].handler = &WorldSession::HandleTaxiQueryAvaibleNodesOpcode;
     WorldPacketHandlers[CMSG_ACTIVATETAXI].handler = &WorldSession::HandleActivateTaxiOpcode;
@@ -797,13 +805,16 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_CANCEL_TEMP_ENCHANTMENT].handler = &WorldSession::HandleCancelTemporaryEnchantmentOpcode;
     WorldPacketHandlers[CMSG_SOCKET_GEMS].handler = &WorldSession::HandleInsertGemOpcode;
     WorldPacketHandlers[CMSG_WRAP_ITEM].handler = &WorldSession::HandleWrapItemOpcode;
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_ITEMREFUNDINFO].handler = &WorldSession::HandleItemRefundInfoOpcode;
     WorldPacketHandlers[CMSG_ITEMREFUNDREQUEST].handler = &WorldSession::HandleItemRefundRequestOpcode;
+#endif
 
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_EQUIPMENT_SET_SAVE].handler = &WorldSession::HandleEquipmentSetSave;
     WorldPacketHandlers[CMSG_EQUIPMENT_SET_USE].handler = &WorldSession::HandleEquipmentSetUse;
     WorldPacketHandlers[CMSG_EQUIPMENT_SET_DELETE].handler = &WorldSession::HandleEquipmentSetDelete;
-
+#endif
     // Spell System / Talent System
     WorldPacketHandlers[CMSG_USE_ITEM].handler = &WorldSession::HandleUseItemOpcode;
     WorldPacketHandlers[CMSG_CAST_SPELL].handler = &WorldSession::HandleCastSpellOpcode;
@@ -814,10 +825,14 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_CANCEL_AUTO_REPEAT_SPELL].handler = &WorldSession::HandleCancelAutoRepeatSpellOpcode;
     WorldPacketHandlers[CMSG_TOTEM_DESTROYED].handler = &WorldSession::HandleCancelTotem;
     WorldPacketHandlers[CMSG_LEARN_TALENT].handler = &WorldSession::HandleLearnTalentOpcode;
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_LEARN_TALENTS_MULTIPLE].handler = &WorldSession::HandleLearnMultipleTalentsOpcode;
+#endif
     WorldPacketHandlers[CMSG_UNLEARN_TALENTS].handler = &WorldSession::HandleUnlearnTalents;
     WorldPacketHandlers[MSG_TALENT_WIPE_CONFIRM].handler = &WorldSession::HandleUnlearnTalents;
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_UPDATE_PROJECTILE_POSITION].handler = &WorldSession::HandleUpdateProjectilePosition;
+#endif
 
     // Combat / Duel
     WorldPacketHandlers[CMSG_ATTACKSWING].handler = &WorldSession::HandleAttackSwingOpcode;
@@ -853,7 +868,9 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_RESURRECT_RESPONSE].handler = &WorldSession::HandleResurrectResponseOpcode;
     WorldPacketHandlers[CMSG_PUSHQUESTTOPARTY].handler = &WorldSession::HandlePushQuestToPartyOpcode;
     WorldPacketHandlers[MSG_QUEST_PUSH_RESULT].handler = &WorldSession::HandleQuestPushResult;
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_QUEST_POI_QUERY].handler = &WorldSession::HandleQuestPOIQueryOpcode;
+#endif
 
     // Auction System
     WorldPacketHandlers[CMSG_AUCTION_LIST_ITEMS].handler = &WorldSession::HandleAuctionListItems;
@@ -862,7 +879,9 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_AUCTION_LIST_OWNER_ITEMS].handler = &WorldSession::HandleAuctionListOwnerItems;
     WorldPacketHandlers[CMSG_AUCTION_PLACE_BID].handler = &WorldSession::HandleAuctionPlaceBid;
     WorldPacketHandlers[CMSG_AUCTION_REMOVE_ITEM].handler = &WorldSession::HandleCancelAuction;
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_AUCTION_LIST_PENDING_SALES].handler = &WorldSession::HandleAuctionListPendingSales;
+#endif
 
     // Mail System
     WorldPacketHandlers[CMSG_GET_MAIL_LIST].handler = &WorldSession::HandleGetMail;
@@ -943,8 +962,10 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_PET_UNLEARN].handler = &WorldSession::HandlePetUnlearn;
     WorldPacketHandlers[CMSG_PET_SPELL_AUTOCAST].handler = &WorldSession::HandlePetSpellAutocast;
     WorldPacketHandlers[CMSG_PET_CANCEL_AURA].handler = &WorldSession::HandlePetCancelAura;
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_PET_LEARN_TALENT].handler = &WorldSession::HandlePetLearnTalent;
     WorldPacketHandlers[CMSG_DISMISS_CRITTER].handler = &WorldSession::HandleDismissCritter;
+#endif
 
     // Battlegrounds
     WorldPacketHandlers[CMSG_BATTLEFIELD_PORT].handler = &WorldSession::HandleBattlefieldPortOpcode;
@@ -961,7 +982,9 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[MSG_INSPECT_HONOR_STATS].handler = &WorldSession::HandleInspectHonorStatsOpcode;
     WorldPacketHandlers[CMSG_SET_ACTIONBAR_TOGGLES].handler = &WorldSession::HandleSetActionBarTogglesOpcode;
     WorldPacketHandlers[CMSG_MOVE_SPLINE_DONE].handler = &WorldSession::HandleMoveSplineCompleteOpcode;
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_BATTLEFIELD_MGR_ENTRY_INVITE_RESPONSE].handler = &WorldSession::HandleBgInviteResponse;
+#endif
 
     // GM Ticket System
     WorldPacketHandlers[CMSG_GMTICKET_CREATE].handler = &WorldSession::HandleGMTicketCreateOpcode;
@@ -972,8 +995,10 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_GMTICKETSYSTEM_TOGGLE].handler = &WorldSession::HandleGMTicketToggleSystemStatusOpcode;
 
     // Lag report
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_GM_REPORT_LAG].handler = &WorldSession::HandleReportLag;
     WorldPacketHandlers[CMSG_GM_REPORT_LAG].status = STATUS_LOGGEDIN;
+#endif
 
     WorldPacketHandlers[CMSG_GMSURVEY_SUBMIT].handler = &WorldSession::HandleGMSurveySubmitOpcode;
     WorldPacketHandlers[CMSG_GMSURVEY_SUBMIT].status = STATUS_LOGGEDIN;
@@ -984,7 +1009,9 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_SELF_RES].handler = &WorldSession::HandleSelfResurrectOpcode;
     WorldPacketHandlers[MSG_RANDOM_ROLL].handler = &WorldSession::HandleRandomRollOpcode;
     WorldPacketHandlers[MSG_SET_DUNGEON_DIFFICULTY].handler = &WorldSession::HandleDungeonDifficultyOpcode;
+#if VERSION_STRING > TBC
     WorldPacketHandlers[MSG_SET_RAID_DIFFICULTY].handler = &WorldSession::HandleRaidDifficultyOpcode;
+#endif
 
     // Misc
     WorldPacketHandlers[CMSG_OPEN_ITEM].handler = &WorldSession::HandleOpenItemOpcode;
@@ -995,9 +1022,13 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_TOGGLE_HELM].handler = &WorldSession::HandleToggleHelmOpcode;
     WorldPacketHandlers[CMSG_SET_TITLE].handler = &WorldSession::HandleSetVisibleRankOpcode;
     WorldPacketHandlers[CMSG_COMPLAIN].handler = &WorldSession::HandleReportSpamOpcode;
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_GAMEOBJ_REPORT_USE].handler = &WorldSession::HandleGameobjReportUseOpCode;
+#endif
     WorldPacketHandlers[CMSG_PET_CAST_SPELL].handler = &WorldSession::HandlePetCastSpell;
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_WORLD_STATE_UI_TIMER_UPDATE].handler = &WorldSession::HandleWorldStateUITimerUpdate;
+#endif
     WorldPacketHandlers[CMSG_SET_TAXI_BENCHMARK_MODE].handler = &WorldSession::HandleSetTaxiBenchmarkOpcode;
     WorldPacketHandlers[CMSG_UNLEARN_SKILL].handler = &WorldSession::HandleUnlearnSkillOpcode;
 
@@ -1023,6 +1054,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_WORLD_TELEPORT].handler = &WorldSession::HandleWorldportOpcode;
 
     // Vehicle
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_DISMISS_CONTROLLED_VEHICLE].handler = &WorldSession::HandleDismissVehicle;
     WorldPacketHandlers[CMSG_REQUEST_VEHICLE_EXIT].handler = &WorldSession::HandleLeaveVehicle;
     WorldPacketHandlers[CMSG_REQUEST_VEHICLE_PREV_SEAT].handler = &WorldSession::HandleChangeVehicleSeat;
@@ -1031,20 +1063,27 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_CHANGE_SEATS_ON_CONTROLLED_VEHICLE].handler = &WorldSession::HandleChangeVehicleSeat;
     WorldPacketHandlers[CMSG_PLAYER_VEHICLE_ENTER].handler = &WorldSession::HandleEnterVehicle;
     WorldPacketHandlers[CMSG_EJECT_PASSENGER].handler = &WorldSession::HandleRemoveVehiclePassenger;
+#endif
 
     // Unsorted
     WorldPacketHandlers[CMSG_TIME_SYNC_RESP].handler = &WorldSession::HandleTimeSyncResp;       //MiscHandler.cpp
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_READY_FOR_ACCOUNT_DATA_TIMES].handler = &WorldSession::HandleReadyForAccountDataTimes;
     WorldPacketHandlers[CMSG_READY_FOR_ACCOUNT_DATA_TIMES].status = STATUS_AUTHED;
+#endif
 
     WorldPacketHandlers[CMSG_OPT_OUT_OF_LOOT].handler = &WorldSession::HandleSetAutoLootPassOpcode;
     WorldPacketHandlers[CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY].handler = &WorldSession::HandleInrangeQuestgiverQuery;
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_REMOVE_GLYPH].handler = &WorldSession::HandleRemoveGlyph;
+#endif
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_ALTER_APPEARANCE].handler = &WorldSession::HandleBarberShopResult;
-
+#endif
     WorldPacketHandlers[CMSG_GET_MIRRORIMAGE_DATA].handler = &WorldSession::HandleMirrorImageOpcode;
 
     // Calendar - Unhandled
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_CALENDAR_GET_CALENDAR].handler = &WorldSession::HandleCalendarGetCalendar;
     WorldPacketHandlers[CMSG_CALENDAR_COMPLAIN].handler = &WorldSession::HandleCalendarComplain;
     WorldPacketHandlers[CMSG_CALENDAR_GET_NUM_PENDING].handler = &WorldSession::HandleCalendarGetNumPending;
@@ -1082,10 +1121,13 @@ void WorldSession::InitPacketHandlerTable()
 
     WorldPacketHandlers[CMSG_CALENDAR_EVENT_MODERATOR_STATUS].handler = &WorldSession::HandleCalendarEventModeratorStatus;
     WorldPacketHandlers[CMSG_CALENDAR_EVENT_MODERATOR_STATUS].status = STATUS_LOGGEDIN;
+#endif
 
     //Misc - Unhandled
     WorldPacketHandlers[CMSG_FAR_SIGHT].handler = &WorldSession::Unhandled;
+#if VERSION_STRING > TBC
     WorldPacketHandlers[CMSG_LFG_GET_STATUS].handler = &WorldSession::Unhandled;
+#endif
     WorldPacketHandlers[CMSG_VOICE_SESSION_ENABLE].handler = &WorldSession::Unhandled;
     WorldPacketHandlers[CMSG_SET_ACTIVE_VOICE_CHANNEL].handler = &WorldSession::Unhandled;
 
@@ -1254,7 +1296,7 @@ const char* WorldSession::LocalizedBroadCast(uint32 id)
         return wb->text.c_str();
 }
 
-
+#if VERSION_STRING > TBC
 void WorldSession::SendRefundInfo(uint64 GUID)
 {
     if (!_player || !_player->IsInWorld())
@@ -1344,6 +1386,7 @@ void WorldSession::SendRefundInfo(uint64 GUID)
         LOG_DEBUG("Sent SMSG_ITEMREFUNDINFO.");
     }
 }
+#endif
 
 void WorldSession::SendAccountDataTimes(uint32 mask)
 {
@@ -1484,6 +1527,7 @@ void WorldSession::SendMOTD()
         SendPacket(&data);
 }
 
+#if VERSION_STRING > TBC
 void WorldSession::HandleEquipmentSetUse(WorldPacket& data)
 {
     CHECK_INWORLD_RETURN LOG_DEBUG("Received CMSG_EQUIPMENT_SET_USE");
@@ -1631,7 +1675,9 @@ void WorldSession::HandleEquipmentSetDelete(WorldPacket& data)
     }
 
 }
+#endif
 
+#if VERSION_STRING > TBC
 void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN LOG_DEBUG("Received CMSG_QUEST_POI_QUERY");
@@ -1663,6 +1709,7 @@ void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recv_data)
 
     LOG_DEBUG("Sent SMSG_QUEST_POI_QUERY_RESPONSE");
 }
+#endif
 
 void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 {
@@ -1791,12 +1838,14 @@ void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
     _player->SetSummonedCritterGUID(0);
 }
 
+#if VERSION_STRING > TBC
 void WorldSession::SendClientCacheVersion(uint32 version)
 {
     WorldPacket data(SMSG_CLIENTCACHE_VERSION, 4);
     data << uint32(version);
     SendPacket(&data);
 }
+#endif
 
 void WorldSession::SendPacket(WorldPacket* packet) {
     if (_socket && _socket->IsConnected())

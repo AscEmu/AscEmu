@@ -483,8 +483,9 @@ void WorldSocket::Authenticate()
     sWorld.AddSession(mSession);
     sWorld.AddGlobalSession(mSession);
 
+#if VERSION_STRING > TBC
     mSession->SendClientCacheVersion(sWorld.CacheVersion);
-
+#endif
     if (mSession->HasGMPermissions())
         sWorld.gmList.insert(mSession);
 

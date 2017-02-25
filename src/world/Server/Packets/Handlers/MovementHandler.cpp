@@ -592,6 +592,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 
                 if (health_loss >= mover->GetHealth())
                     health_loss = mover->GetHealth();
+#if VERSION_STRING > TBC
                 else if ((falldistance >= 65) && (mover->GetGUID() == _player->GetGUID()))
                 {
                     // Rather than Updating achievement progress every time fall damage is taken, all criteria currently have 65 yard requirement...
@@ -599,6 +600,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
                     // Achievement 1260: Fall 65 yards without dying while completely smashed during the Brewfest Holiday.
                     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING, falldistance, Player::GetDrunkenstateByValue(_player->GetDrunkValue()), 0);
                 }
+#endif
 
                 mover->SendEnvironmentalDamageLog(mover->GetGUID(), DAMAGE_FALL, health_loss);
                 mover->DealDamage(mover, health_loss, 0, 0, 0);

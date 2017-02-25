@@ -454,7 +454,9 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                     plr->AddToFinishedQuests((*iter));
             }
 
+#if VERSION_STRING > TBC
             plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
+#endif
             if (qst->reward_money > 0)
             {
                 // Money reward
@@ -463,10 +465,14 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                 {
                     plr->ModGold(qst->reward_money);
                 }
+#if VERSION_STRING > TBC
                 plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qst->reward_money, 0, 0);
+#endif
             }
+#if VERSION_STRING > TBC
             plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qst->zone_id, 0, 0);
             plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qst->id, 0, 0);
+#endif
         }
     }
     else

@@ -230,12 +230,14 @@ void Player::SendDungeonDifficulty()
 
 void Player::SendRaidDifficulty()
 {
+#if VERSION_STRING > TBC
     WorldPacket data(MSG_SET_RAID_DIFFICULTY, 12);
     data << uint32(m_RaidDifficulty);
     data << uint32(1);
     data << uint32(InGroup());
 
     m_session->SendPacket(&data);
+#endif
 }
 
 void Player::SendInstanceDifficulty(uint32 difficulty)
@@ -709,16 +711,19 @@ void Player::SendDestroyObject(uint64 GUID)
 
 void Player::SendEquipmentSetList()
 {
+#if VERSION_STRING > TBC
     WorldPacket data(SMSG_EQUIPMENT_SET_LIST, 1000);
 
     m_ItemInterface->m_EquipmentSets.FillEquipmentSetListPacket(data);
     m_session->SendPacket(&data);
 
     LOG_DEBUG("Sent SMSG_EQUIPMENT_SET_LIST.");
+#endif
 }
 
 void Player::SendEquipmentSetSaved(uint32 setID, uint32 setGUID)
 {
+#if VERSION_STRING > TBC
     WorldPacket data(SMSG_EQUIPMENT_SET_SAVED, 12);
     data << uint32(setID);
     data << WoWGuid(uint64(setGUID));
@@ -726,16 +731,19 @@ void Player::SendEquipmentSetSaved(uint32 setID, uint32 setGUID)
     m_session->SendPacket(&data);
 
     LOG_DEBUG("Sent SMSG_EQUIPMENT_SET_SAVED.");
+#endif
 }
 
 void Player::SendEquipmentSetUseResult(uint8 result)
 {
+#if VERSION_STRING > TBC
     WorldPacket data(SMSG_EQUIPMENT_SET_USE_RESULT, 1);
     data << uint8(result);
 
     m_session->SendPacket(&data);
 
     LOG_DEBUG("SMSG_EQUIPMENT_SET_USE_RESULT sent.");
+#endif
 }
 
 void Player::SendTotemCreated(uint8 slot, uint64 GUID, uint32 duration, uint32 spellid)

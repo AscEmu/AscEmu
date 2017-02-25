@@ -7,19 +7,15 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "../world/WorldConf.h"
 
-//\todo include version opcodes here.... include WotLK opcodes for now.
-//#ifdef AE_CLASSIC
-//#include "../world/GameClassic/Network/Opcodes.h"
-//#endif
-//#ifdef AE_TBC
-//#include "../world/GameTBC/Network/Opcodes.h"
-//#endif
-//#ifdef AE_WOTLK
-#include "../world/GameWotLK/Network/Opcodes.h"
-//#endif
-//#ifdef AE_CATA
-//#include "../world/GameCata/Network/Opcodes.h"
-//#endif
+#if VERSION_STRING == Classic
+    #include "../world/GameClassic/Network/Opcodes.h"
+#elif VERSION_STRING == TBC
+    #include "../world/GameTBC/Network/Opcodes.h"
+#elif VERSION_STRING == WotLK
+    #include "../world/GameWotLK/Network/Opcodes.h"
+#elif VERSION_STRING == Cata
+    #include "../world/GameCata/Network/Opcodes.h"
+#endif
 
 #include <cstdint>
 #include <string>

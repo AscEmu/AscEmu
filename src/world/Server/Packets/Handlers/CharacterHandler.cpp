@@ -78,6 +78,7 @@ LoginErrorCode VerifyName(const char* name, size_t nlen)
     return E_CHAR_NAME_SUCCESS;
 }
 
+#if VERSION_STRING > TBC
 void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
 {
     uint64 guid;
@@ -154,6 +155,7 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
     data << uint8(facialHair);
     SendPacket(&data);
 }
+#endif
 
 void WorldSession::CharacterEnumProc(QueryResult* result)
 {
@@ -908,13 +910,14 @@ void WorldSession::FullLogin(Player* plr)
 
     SendPacket(&datab);
 
+#if VERSION_STRING > TBC
     WorldPacket dataldm(SMSG_LEARNED_DANCE_MOVES, 4 + 4);
 
     dataldm << uint32(0);
     dataldm << uint32(0);
 
     SendPacket(&dataldm);
-
+#endif
     plr->UpdateAttackSpeed();
 
     // Make sure our name exists (for premade system)
@@ -1095,6 +1098,7 @@ void WorldSession::FullLogin(Player* plr)
 
 }
 
+#if VERSION_STRING > TBC
 /// \todo port player to a main city of his new faction
 void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
 {
@@ -1211,6 +1215,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
     data << uint8(race);
     SendPacket(&data);
 }
+#endif
 
 void WorldSession::HandleDeclinedPlayerNameOpcode(WorldPacket& recv_data)
 {
