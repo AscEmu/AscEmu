@@ -1,6 +1,7 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -91,7 +92,7 @@ namespace VMAP
     {
         std::stringstream tilefilename;
         tilefilename.fill('0');
-        tilefilename << std::setw(3) << mapID << '_';
+        tilefilename << std::setw(4) << mapID << '_';
         //tilefilename << std::setw(2) << tileX << '_' << std::setw(2) << tileY << ".vmtile";
         tilefilename << std::setw(2) << tileY << '_' << std::setw(2) << tileX << ".vmtile";
         return tilefilename.str();
@@ -416,6 +417,7 @@ namespace VMAP
         }
         else
             iLoadedTiles[packTileID(tileX, tileY)] = false;
+
         return result;
     }
 
@@ -474,6 +476,7 @@ namespace VMAP
             }
         }
         iLoadedTiles.erase(tile);
+
     }
 
     void StaticMapTree::getModelInstances(ModelInstance* &models, uint32 &count)

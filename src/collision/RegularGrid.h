@@ -1,6 +1,7 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,7 +20,6 @@
 
 #ifndef _REGULAR_GRID_H
 #define _REGULAR_GRID_H
-
 
 #include <G3D/Ray.h>
 #include <G3D/Table.h>
@@ -90,7 +90,7 @@ public:
     }
 
     bool contains(const T& value) const { return memberTable.containsKey(&value); }
-    int size() const { return memberTable.size(); }
+    int size() const { return uint32(memberTable.size()); }
 
     struct Cell
     {

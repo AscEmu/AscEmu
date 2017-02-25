@@ -1,6 +1,7 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -92,7 +93,7 @@ class BIH
 
             buildData dat;
             dat.maxPrims = leafSize;
-            dat.numPrims = primitives.size();
+            dat.numPrims = uint32(primitives.size());
             dat.indices = new uint32[dat.numPrims];
             dat.primBound = new G3D::AABox[dat.numPrims];
             getBounds(primitives[0], bounds);
@@ -116,7 +117,7 @@ class BIH
             delete[] dat.primBound;
             delete[] dat.indices;
         }
-        uint32 primCount() const { return objects.size(); }
+        uint32 primCount() const { return uint32(objects.size()); }
 
         template<typename RayCallback>
         void intersectRay(const G3D::Ray &r, RayCallback& intersectCallback, float &maxDist, bool stopAtFirst=false) const
