@@ -4,7 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "Unit.h"
-#include "Server/Packets/Opcodes.h"
+#include "Server/Packets/Opcode.h"
 #include "Server/WorldSession.h"
 #include "Players/Player.h"
 #include "Spell/SpellAuras.h"

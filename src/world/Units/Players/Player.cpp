@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Player.h"
-#include "Server/Packets/Opcodes.h"
+#include "Server/Packets/Opcode.h"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -23,7 +23,7 @@
 
 
 #include <Threading/Mutex.h>
-#include "Server/Packets/Opcodes.h"
+#include "Server/Packets/Opcode.h"
 #include "Management/Quest.h"
 #include "FastQueue.h"
 #include "Units/Unit.h"

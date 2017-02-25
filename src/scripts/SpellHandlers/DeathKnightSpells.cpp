@@ -22,7 +22,7 @@
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 #include "Spell/SpellAuras.h"
-#include "Server/Packets/Opcodes.h"
+#include "Server/Packets/Opcode.h"
 #include "Server/Script/ScriptMgr.h"
 
 #define BLOOD_PLAGUE 55078

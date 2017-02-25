@@ -636,7 +636,7 @@ void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 dir
                 break;
             default:
                 LogDebugFlag(LF_OPCODE, "[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
-                              LookupName(opcode, g_worldOpcodeNames), opcode, len);
+                             getOpcodeName(opcode).c_str(), opcode, len);
         }
 }
 
@@ -649,7 +649,7 @@ void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 dir
         unsigned int count = 0;
 
         fprintf(m_file, "{%s} Packet: (0x%04X) %s PacketSize = %u stamp = %u accountid = %u\n", (direction ? "SERVER" : "CLIENT"), opcode,
-                LookupName(opcode, g_worldOpcodeNames), lenght, getMSTime(), accountid);
+                getOpcodeName(opcode).c_str(), lenght, getMSTime(), accountid);
         fprintf(m_file, "|------------------------------------------------|----------------|\n");
         fprintf(m_file, "|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|\n");
         fprintf(m_file, "|------------------------------------------------|----------------|\n");

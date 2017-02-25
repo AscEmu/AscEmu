@@ -19,7 +19,7 @@
  
 #include "Setup.h"
 #include "Objects/GameObject.h"
-#include "Server/Packets/Opcodes.h"
+#include "Server/Packets/Opcode.h"
 #include "Server/WorldSession.h"
 
 enum UnorderedEntrys

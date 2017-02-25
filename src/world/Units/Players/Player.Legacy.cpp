@@ -24,7 +24,7 @@
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Item.h"
 #include "Management/Container.h"
-#include "Server/Packets/Opcodes.h"
+#include "Server/Packets/Opcode.h"
 #include "Objects/DynamicObject.h"
 #include "AuthCodes.h"
 #include "VMapFactory.h"

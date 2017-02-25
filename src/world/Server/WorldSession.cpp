@@ -163,14 +163,14 @@ uint8 WorldSession::Update(uint32 InstanceID)
             Handler = &WorldPacketHandlers[packet->GetOpcode()];
             if (Handler->status == STATUS_LOGGEDIN && !_player && Handler->handler != 0)
             {
-                LogDebugFlag(LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)", LookupName(packet->GetOpcode(), g_worldOpcodeNames), packet->GetOpcode());
+                LogDebugFlag(LF_OPCODE, "[Session] Received unexpected/wrong state packet with opcode %s (0x%.4X)", getOpcodeName(packet->GetOpcode()).c_str(), packet->GetOpcode());
             }
             else
             {
                 // Valid Packet :>
                 if (Handler->handler == 0)
                 {
-                    LogDebugFlag(LF_OPCODE, "[Session] Received unhandled packet with opcode %s (0x%.4X)", LookupName(packet->GetOpcode(), g_worldOpcodeNames), packet->GetOpcode());
+                    LogDebugFlag(LF_OPCODE, "[Session] Received unhandled packet with opcode %s (0x%.4X)", getOpcodeName(packet->GetOpcode()).c_str(), packet->GetOpcode());
                 }
                 else
                 {

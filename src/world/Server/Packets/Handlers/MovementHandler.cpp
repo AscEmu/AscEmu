@@ -497,7 +497,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /* Orientation dumping                                                  */
     /************************************************************************/
 #if 0
-    LOG_DEBUG("Packet: 0x%03X (%s)", recv_data.GetOpcode(), LookupName(recv_data.GetOpcode(), g_worldOpcodeNames));
+    LOG_DEBUG("Packet: 0x%03X (%s)", recv_data.GetOpcode(), getOpcodeName(recv_data.GetOpcode()).c_str());
     LOG_DEBUG("Orientation: %.10f", movement_info.orientation);
 #endif
 
