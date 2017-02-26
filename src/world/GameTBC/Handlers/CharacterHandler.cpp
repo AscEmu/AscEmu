@@ -21,9 +21,9 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 {
     struct PlayerItem
     {
-        uint32 displayId;
-        uint8 inventoryType;
-        uint32 enchantmentId;
+        uint32_t displayId;
+        uint8_t inventoryType;
+        uint32_t enchantmentId;
     };
 
     PlayerItem player_items[20];
@@ -60,7 +60,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
     if (result)
         numchar = result->GetRowCount();
 
-    uint32 start_time = getMSTime();
+    uint32_t start_time = getMSTime();
 
     WorldPacket data(SMSG_CHAR_ENUM, 1 + numchar * 200);
     data << uint8_t(char_real_count);
@@ -204,7 +204,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
         } while (result->NextRow());
     }
 
-    data.put<uint8>(0, char_real_count);
+    data.put<uint8_t>(0, char_real_count);
 
     LogDebugFlag(LF_OPCODE, "Character Enum Built in %u ms.", getMSTime() - start_time);
     SendPacket(&data);

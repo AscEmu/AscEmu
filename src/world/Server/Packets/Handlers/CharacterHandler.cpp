@@ -156,6 +156,7 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
     SendPacket(&data);
 }
 
+#if VERSION_STRING > WotLK
 void WorldSession::CharacterEnumProc(QueryResult* result)
 {
     struct player_item
@@ -347,6 +348,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
     LogDebugFlag(LF_OPCODE, "Character Enum Built in %u ms.", getMSTime() - start_time);
     SendPacket(&data);
 }
+#endif
 #endif
 
 void WorldSession::HandleCharEnumOpcode(WorldPacket& recv_data)
