@@ -155,7 +155,6 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
     data << uint8(facialHair);
     SendPacket(&data);
 }
-#endif
 
 void WorldSession::CharacterEnumProc(QueryResult* result)
 {
@@ -348,6 +347,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
     LogDebugFlag(LF_OPCODE, "Character Enum Built in %u ms.", getMSTime() - start_time);
     SendPacket(&data);
 }
+#endif
 
 void WorldSession::HandleCharEnumOpcode(WorldPacket& recv_data)
 {
