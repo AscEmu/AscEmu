@@ -76,9 +76,9 @@ namespace MMAP
 
         // load and init dtNavMesh - read parameters from file
         std::string dataDir = sWorld.mMapPath;
-        uint32 pathLen = dataDir.length() + strlen("/%03i.mmap") + 1;
+        uint32 pathLen = dataDir.length() + strlen("/%04i.mmap") + 1;
         char *fileName = new char[pathLen];
-        snprintf(fileName, pathLen, (dataDir + "/%03i.mmap").c_str(), mapId);
+        snprintf(fileName, pathLen, (dataDir + "/%04i.mmap").c_str(), mapId);
 
         FILE* file = fopen(fileName, "rb");
         if (!file)
@@ -110,7 +110,7 @@ namespace MMAP
 
         delete [] fileName;
 
-        LogDebugFlag(LF_MMAP, "MMAP:loadMapData: Loaded %03i.mmap", mapId);
+        LogDebugFlag(LF_MMAP, "MMAP:loadMapData: Loaded %04i.mmap", mapId);
 
         // store inside our map list
         MMapData* mmap_data = new MMapData(mesh);
@@ -141,10 +141,10 @@ namespace MMAP
             return false;
 
         // load this tile :: /MMMXXYY.mmtile
-        uint32 pathLen = basePath.length() + strlen("/%03i%02i%02i.mmtile") + 1;
+        uint32 pathLen = basePath.length() + strlen("/%04i%02i%02i.mmtile") + 1;
         char *fileName = new char[pathLen];
 
-        snprintf(fileName, pathLen, (basePath + "/%03i%02i%02i.mmtile").c_str(), mapId, x, y);
+        snprintf(fileName, pathLen, (basePath + "/%04i%02i%02i.mmtile").c_str(), mapId, x, y);
 
         FILE* file = fopen(fileName, "rb");
         if (!file)
@@ -274,7 +274,7 @@ namespace MMAP
 
         delete mmap;
         itr->second = nullptr;
-        LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Unloaded %03i.mmap", mapId);
+        LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Unloaded %04i.mmap", mapId);
 
         return true;
     }
