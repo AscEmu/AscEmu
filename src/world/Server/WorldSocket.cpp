@@ -209,7 +209,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, size_t len, const void* 
 #if VERSION_STRING == TBC
     _crypt.encryptTbcSend((uint8*)&Header, sizeof(ServerPktHeader));
 #else
-    _crypt.EncryptSend((uint8*)&Header, sizeof(ServerPktHeader));
+    _crypt.encryptWotlkSend((uint8*)&Header, sizeof(ServerPktHeader));
 #endif
 
     // Pass the header to our send buffer
@@ -348,7 +348,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     _crypt.initTbcCrypt();
     delete[] key;
 #else
-    _crypt.Init(K);
+    _crypt.initWotlkCrypt(K);
 #endif
 
     //checking if player is already connected
@@ -602,7 +602,7 @@ void WorldSocket::OnRead()
 #if VERSION_STRING == TBC
             _crypt.decryptTbcReceive((uint8*)&Header, sizeof(ClientPktHeader));
 #else
-            _crypt.DecryptRecv((uint8*)&Header, sizeof(ClientPktHeader));
+            _crypt.decryptWotlkReceive((uint8*)&Header, sizeof(ClientPktHeader));
 #endif
 
             mRemaining = mSize = ntohs(Header.size) - 4;
