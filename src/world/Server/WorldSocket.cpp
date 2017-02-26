@@ -206,7 +206,11 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, size_t len, const void* 
     Header.cmd = opcode;
     Header.size = ntohs((uint16)len + 2);
 
+#if VERSION_STRING == TBC
+    _crypt.encryptTbcSend((uint8*)&Header, sizeof(ServerPktHeader));
+#else
     _crypt.EncryptSend((uint8*)&Header, sizeof(ServerPktHeader));
+#endif
 
     // Pass the header to our send buffer
     rv = BurstSend((const uint8*)&Header, 4);
@@ -227,6 +231,9 @@ void WorldSocket::OnConnect()
     sWorld.mAcceptedConnections++;
     _latency = getMSTime();
 
+#if VERSION_STRING == TBC
+    OutPacket(SMSG_AUTH_CHALLENGE, 4, &mSeed);
+#else
     WorldPacket wp(SMSG_AUTH_CHALLENGE, 24);
 
     wp << uint32(1);
@@ -237,7 +244,7 @@ void WorldSocket::OnConnect()
     wp << uint32(0x1234ABCD);
 
     SendPacket(&wp);
-
+#endif
 }
 
 void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
@@ -251,6 +258,12 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
 
     try
     {
+#if VERSION_STRING == TBC
+        *recvPacket >> mClientBuild;
+        *recvPacket >> unk2;
+        *recvPacket >> account;
+        *recvPacket >> mClientSeed;
+#else
         *recvPacket >> mClientBuild;
         *recvPacket >> unk2;
         *recvPacket >> account;
@@ -260,6 +273,7 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
         *recvPacket >> unk5;
         *recvPacket >> unk6;
         *recvPacket >> unk7;
+#endif
     }
     catch (ByteBuffer::error &)
     {
@@ -323,7 +337,19 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     uint8 K[40];
     recvData.read(K, 40);
 
+#if VERSION_STRING == TBC
+    BigNumber BNK;
+    BNK.SetBinary(K, 40);
+
+    uint8 *key = new uint8[20];
+    WowCrypt::generateTbcKey(key, K);
+
+    _crypt.setTbcKey(key, 20);
+    _crypt.initTbcCrypt();
+    delete[] key;
+#else
     _crypt.Init(K);
+#endif
 
     //checking if player is already connected
     //disconnect current player and login this one(blizzlike)
@@ -367,7 +393,11 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     sha.UpdateData((uint8*)&t, 4);
     sha.UpdateData((uint8*)&mClientSeed, 4);
     sha.UpdateData((uint8*)&mSeed, 4);
+#if VERSION_STRING == TBC
+    sha.UpdateBigNumbers(&BNK, NULL);
+#else
     sha.UpdateData((uint8*)&K, 40);
+#endif
     sha.Finalize();
 
     if (memcmp(sha.GetDigest(), digest, 20))
@@ -569,7 +599,11 @@ void WorldSocket::OnRead()
             readBuffer.Read((uint8*)&Header, 6);
 
             // Decrypt the header
+#if VERSION_STRING == TBC
+            _crypt.decryptTbcReceive((uint8*)&Header, sizeof(ClientPktHeader));
+#else
             _crypt.DecryptRecv((uint8*)&Header, sizeof(ClientPktHeader));
+#endif
 
             mRemaining = mSize = ntohs(Header.size) - 4;
             mOpcode = Header.cmd;

@@ -1,32 +1,19 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef _WOWCRYPT_H
-#define _WOWCRYPT_H
+#pragma once
 
 #include "BigNumber.h"
 #include "CommonTypes.hpp"
+
 #include <cstdlib>
 #include <vector>
 #include <openssl/sha.h>
 #include <openssl/rc4.h>
+
+#include "Auth/Sha1.h"
 
 class WowCrypt
 {
@@ -34,15 +21,41 @@ class WowCrypt
         WowCrypt();
         ~WowCrypt();
 
-        void Init(uint8* K);
-        inline void DecryptRecv(uint8* pData, size_t len) { if(!m_initialized) { return; } RC4(&m_clientDecrypt, (unsigned long)len, pData, pData); }
-        inline void EncryptSend(uint8* pData, size_t len) { if(!m_initialized) { return; } RC4(&m_serverEncrypt, (unsigned long)len, pData, pData); }
-        bool IsInitialized() { return m_initialized; }
+        bool isInitialized();
+
+        const static int seedLenght = 16;
 
     private:
-        RC4_KEY m_clientDecrypt;
-        RC4_KEY m_serverEncrypt;
-        bool m_initialized;
-};
+        bool m_isInitialized;
 
-#endif
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // WotLK
+    public:
+        void initWotlkCrypt(uint8_t* key);
+        void decryptWotlkReceive(uint8_t* data, size_t length);
+        void encryptWotlkSend(uint8_t* data, size_t length);
+
+    private:
+        RC4_KEY m_clientWotlkDecryptKey;
+        RC4_KEY m_serverWotlkEncryptKey;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // TBC
+    public:
+        const static size_t cryptedSendLength = 4;
+        const static size_t cryptedReceiveLength = 6;
+
+        void initTbcCrypt();
+        void decryptTbcReceive(uint8_t* data, size_t length);
+        void encryptTbcSend(uint8_t* data, size_t length);
+
+        void setTbcKey(uint8_t* key, size_t length);
+        static void generateTbcKey(uint8_t* key, uint8_t* sessionkey);
+
+    private:
+        std::vector<uint8_t> crypKeyVector;
+        uint8_t m_sendI;
+        uint8_t m_sendJ;
+        uint8_t m_recvI;
+        uint8_t m_recvJ;
+};
