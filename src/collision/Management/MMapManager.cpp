@@ -83,7 +83,7 @@ namespace MMAP
         FILE* file = fopen(fileName, "rb");
         if (!file)
         {
-            LogDebugFlag(LF_MMAP, "MMAP:loadMapData: Error: Could not open mmap file '%s'", fileName);
+            LOG_ERROR("Error : Could not open mmap file '%s'", fileName);
             delete [] fileName;
             return false;
         }
@@ -93,7 +93,7 @@ namespace MMAP
         fclose(file);
         if (count != 1)
         {
-            LOG_ERROR("Error: Could not read params from file '%s'", fileName);
+            LOG_ERROR("Error : Could not read params from file '%s'", fileName);
             delete [] fileName;
             return false;
         }
@@ -110,7 +110,7 @@ namespace MMAP
 
         delete [] fileName;
 
-        LogDebugFlag(LF_MMAP, "MMAP:loadMapData: Loaded %04i.mmap", mapId);
+        LOG_DETAIL("MMAP : Loaded %04i.mmap", mapId);
 
         // store inside our map list
         MMapData* mmap_data = new MMapData(mesh);
