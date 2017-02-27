@@ -141,10 +141,10 @@ namespace MMAP
             return false;
 
         // load this tile :: /MMMXXYY.mmtile
-        uint32 pathLen = basePath.length() + strlen("/%04i%02i%02i.mmtile") + 1;
+        uint32 pathLen = basePath.length() + strlen("/%04u%02i%02i.mmtile") + 1;
         char *fileName = new char[pathLen];
 
-        snprintf(fileName, pathLen, (basePath + "/%04i%02i%02i.mmtile").c_str(), mapId, x, y);
+        snprintf(fileName, pathLen, (basePath + "/%04u%02i%02i.mmtile").c_str(), mapId, x, y);
 
         FILE* file = fopen(fileName, "rb");
         if (!file)
@@ -159,14 +159,14 @@ namespace MMAP
         MmapTileHeader fileHeader;
         if (fread(&fileHeader, sizeof(MmapTileHeader), 1, file) != 1 || fileHeader.mmapMagic != MMAP_MAGIC)
         {
-            LOG_ERROR("Bad header in mmap %03u%02i%02i.mmtile", mapId, x, y);
+            LOG_ERROR("Bad header in mmap %04u%02i%02i.mmtile", mapId, x, y);
             fclose(file);
             return false;
         }
 
         if (fileHeader.mmapVersion != MMAP_VERSION)
         {
-            LOG_ERROR("%03u%02i%02i.mmtile was built with generator v%i, expected v%i",
+            LOG_ERROR("%04u%02i%02i.mmtile was built with generator v%i, expected v%i",
                 mapId, x, y, fileHeader.mmapVersion, MMAP_VERSION);
             fclose(file);
             return false;
@@ -178,7 +178,7 @@ namespace MMAP
         size_t result = fread(data, fileHeader.size, 1, file);
         if (!result)
         {
-            LOG_ERROR("Bad header or data in mmap %03u%02i%02i.mmtile", mapId, x, y);
+            LOG_ERROR("Bad header or data in mmap %04u%02i%02i.mmtile", mapId, x, y);
             fclose(file);
             return false;
         }
@@ -198,7 +198,7 @@ namespace MMAP
         }
         else
         {
-            LogDebugFlag(LF_MMAP, "MMAP:loadMap: Could not load %03u%02i%02i.mmtile into navmesh", mapId, x, y);
+            LogDebugFlag(LF_MMAP, "MMAP:loadMap: Could not load %04u%02i%02i.mmtile into navmesh", mapId, x, y);
             dtFree(data);
             return false;
         }
@@ -211,7 +211,7 @@ namespace MMAP
         if (itr == loadedMMaps.end())
         {
             // file may not exist, therefore not loaded
-            LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Asked to unload not loaded navmesh map. %03u%02i%02i.mmtile", mapId, x, y);
+            LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Asked to unload not loaded navmesh map. %04u%02i%02i.mmtile", mapId, x, y);
             return false;
         }
 
@@ -222,7 +222,7 @@ namespace MMAP
         if (mmap->mmapLoadedTiles.find(packedGridPos) == mmap->mmapLoadedTiles.end())
         {
             // file may not exist, therefore not loaded
-            LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Asked to unload not loaded navmesh tile. %03u%02i%02i.mmtile", mapId, x, y);
+            LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Asked to unload not loaded navmesh tile. %04u%02i%02i.mmtile", mapId, x, y);
             return false;
         }
 
@@ -234,7 +234,7 @@ namespace MMAP
             // this is technically a memory leak
             // if the grid is later reloaded, dtNavMesh::addTile will return error but no extra memory is used
             // we cannot recover from this error - assert out
-            LOG_ERROR("Could not unload %03u%02i%02i.mmtile from navmesh", mapId, x, y);
+            LOG_ERROR("Could not unload %04u%02i%02i.mmtile from navmesh", mapId, x, y);
         }
         else
         {
@@ -264,11 +264,11 @@ namespace MMAP
             uint32 x = (i->first >> 16);
             uint32 y = (i->first & 0x0000FFFF);
             if (dtStatusFailed(mmap->navMesh->removeTile(i->second, NULL, NULL)))
-                LOG_ERROR("Could not unload %03u%02i%02i.mmtile from navmesh", mapId, x, y);
+                LOG_ERROR("Could not unload %04u%02i%02i.mmtile from navmesh", mapId, x, y);
             else
             {
                 --loadedTiles;
-                LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Unloaded mmtile %03i[%02i, %02i] from %03i", mapId, x, y, mapId);
+                LogDebugFlag(LF_MMAP, "MMAP:unloadMap: Unloaded mmtile %04u[%02i, %02i] from %04u", mapId, x, y, mapId); //todo
             }
         }
 
