@@ -1,6 +1,7 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -81,7 +82,7 @@ struct map_liquidHeader
 namespace MMAP
 {
 
-    char const* MAP_VERSION_MAGIC = "v1.3";
+    char const* MAP_VERSION_MAGIC = "v1.8";
 
     TerrainBuilder::TerrainBuilder(bool skipLiquid) : m_skipLiquid (skipLiquid){ }
     TerrainBuilder::~TerrainBuilder() { }
@@ -711,7 +712,7 @@ namespace MMAP
                         uint8 type = NAV_EMPTY;
 
                         // convert liquid type to NavTerrain
-                        switch (liquid->GetType())
+                        switch (liquid->GetType() & 3)
                         {
                         case 0:
                         case 1:
@@ -765,12 +766,12 @@ namespace MMAP
                                     }
 
                                     uint32 liqOffset = meshData.liquidVerts.size() / 3;
-                                    for (uint32 i = 0; i < liqVerts.size(); ++i)
-                                        meshData.liquidVerts.append(liqVerts[i].y, liqVerts[i].z, liqVerts[i].x);
+                                    for (uint32 j = 0; j < liqVerts.size(); ++j)
+                                        meshData.liquidVerts.append(liqVerts[j].y, liqVerts[j].z, liqVerts[j].x);
 
-                                    for (uint32 i = 0; i < liqTris.size() / 3; ++i)
+                                    for (uint32 j = 0; j < liqTris.size() / 3; ++j)
                                     {
-                                        meshData.liquidTris.append(liqTris[i*3+1] + liqOffset, liqTris[i*3+2] + liqOffset, liqTris[i*3] + liqOffset);
+                                        meshData.liquidTris.append(liqTris[j*3+1] + liqOffset, liqTris[j*3+2] + liqOffset, liqTris[j*3] + liqOffset);
                                         meshData.liquidType.append(type);
                                     }
                     }

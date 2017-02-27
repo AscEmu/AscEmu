@@ -1,6 +1,7 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -88,7 +89,7 @@ namespace MMAP
             bool loadVMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData);
             void loadOffMeshConnections(uint32 mapID, uint32 tileX, uint32 tileY, MeshData &meshData, const char* offMeshFilePath);
 
-            bool usesLiquids() { return !m_skipLiquid; }
+            bool usesLiquids() const { return !m_skipLiquid; }
 
             // vert and triangle methods
             static void transform(std::vector<G3D::Vector3> &original, std::vector<G3D::Vector3> &transformed,

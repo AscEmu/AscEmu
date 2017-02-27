@@ -1,6 +1,7 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+ * Copyright (C) 2008-2017 TrinityCore <http://www.trinitycore.org/>
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,102 +25,13 @@
 
 #include "Recast.h"
 #include "DetourNavMesh.h"
+#include "ProducerConsumerQueue.h"
 
 #include <vector>
 #include <set>
 #include <list>
 #include <atomic>
 #include <thread>
-#include <condition_variable>
-#include <mutex>
-#include <queue>
-#include <type_traits>
-
-template <typename T>
-class ProducerConsumerQueue
-{
-private:
-    std::mutex _queueLock;
-    std::queue<T> _queue;
-    std::condition_variable _condition;
-    std::atomic<bool> _shutdown;
-
-public:
-
-    ProducerConsumerQueue<T>() : _shutdown(false) { }
-
-    void Push(const T& value)
-    {
-        std::lock_guard<std::mutex> lock(_queueLock);
-        _queue.push(std::move(value));
-
-        _condition.notify_one();
-    }
-
-    bool Empty()
-    {
-        std::lock_guard<std::mutex> lock(_queueLock);
-
-        return _queue.empty();
-    }
-
-    bool Pop(T& value)
-    {
-        std::lock_guard<std::mutex> lock(_queueLock);
-
-        if (_queue.empty() || _shutdown)
-            return false;
-
-        value = _queue.front();
-
-        _queue.pop();
-
-        return true;
-    }
-
-    void WaitAndPop(T& value)
-    {
-        std::unique_lock<std::mutex> lock(_queueLock);
-
-        // we could be using .wait(lock, predicate) overload here but it is broken
-        // https://connect.microsoft.com/VisualStudio/feedback/details/1098841
-        while (_queue.empty() && !_shutdown)
-            _condition.wait(lock);
-
-        if (_queue.empty() || _shutdown)
-            return;
-
-        value = _queue.front();
-
-        _queue.pop();
-    }
-
-    void Cancel()
-    {
-        std::unique_lock<std::mutex> lock(_queueLock);
-
-        while (!_queue.empty())
-        {
-            T& value = _queue.front();
-
-            DeleteQueuedObject(value);
-
-            _queue.pop();
-        }
-
-        _shutdown = true;
-
-        _condition.notify_all();
-    }
-
-private:
-    template<typename E = T>
-    typename std::enable_if<std::is_pointer<E>::value>::type DeleteQueuedObject(E& obj) { delete obj; }
-
-    template<typename E = T>
-    typename std::enable_if<!std::is_pointer<E>::value>::type DeleteQueuedObject(E const& /*packet*/) { }
-};
-
 
 using namespace VMAP;
 
@@ -214,6 +126,8 @@ namespace MMAP
             bool isTransportMap(uint32 mapID);
             bool shouldSkipTile(uint32 mapID, uint32 tileX, uint32 tileY);
 
+            uint32 percentageDone(uint32 totalTiles, uint32 totalTilesDone);
+
             TerrainBuilder* m_terrainBuilder;
             TileList m_tiles;
 
@@ -226,6 +140,9 @@ namespace MMAP
 
             float m_maxWalkableAngle;
             bool m_bigBaseUnit;
+
+            std::atomic<uint32> m_totalTiles;
+            std::atomic<uint32> m_totalTilesProcessed;
 
             // build performance - not really used for now
             rcContext* m_rcContext;

@@ -65,7 +65,7 @@ const char *libmpq__version(void) {
 const char *libmpq__strerror(int32_t return_code) {
 
 	/* check for array bounds */
-    if (-return_code < 0 || (size_t)-return_code > sizeof(__libmpq_error_strings) / sizeof(char*))
+	if (-return_code < 0 || (size_t)-return_code > sizeof(__libmpq_error_strings)/sizeof(char*))
 		return NULL;
 
 	/* return appropriate string */
@@ -912,8 +912,8 @@ int32_t libmpq__block_read(mpq_archive_s *mpq_archive, uint32_t file_number, uin
 	}
 
 	/* read block from file. */
-    if ((libmpq__off_t)fread(in_buf, 1, in_size, mpq_archive->fp) != in_size)
-    {
+	if ((libmpq__off_t)fread(in_buf, 1, in_size, mpq_archive->fp) != in_size)
+	{
 
 		/* free buffers. */
 		free(in_buf);
