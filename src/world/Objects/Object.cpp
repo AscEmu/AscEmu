@@ -2247,7 +2247,11 @@ void Object::AddInRangeObject(Object* pObj)
     m_objectsInRange.insert(pObj);
 }
 
+#if VERSION_STRING == Cata
+void Object::OutPacketToSet(uint32 Opcode, uint16 Len, const void* Data, bool self)
+#else
 void Object::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool self)
+#endif
 {
     if (!IsInWorld())
         return;

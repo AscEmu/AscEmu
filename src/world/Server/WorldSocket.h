@@ -48,6 +48,23 @@ enum OUTPACKET_RESULT
 //////////////////////////////////////////////////////////////////////////////////////////
 class SERVER_DECL WorldSocket : public Socket
 {
+    // MIT
+    private:
+        uint8_t AuthDigest[20];
+#if VERSION_STRING != Cata
+        uint32_t mClientBuild;
+#else
+        uint16_t mClientBuild;
+#endif
+
+    public:
+        void HandleWoWConnection(WorldPacket* recvPacket);
+        void SendAuthResponseError(uint8_t code);
+
+        void OnConnectTwo();
+
+    // MIT End
+    // AGPL
     public:
 
         WorldSocket(SOCKET fd);
@@ -57,8 +74,13 @@ class SERVER_DECL WorldSocket : public Socket
         inline void SendPacket(WorldPacket* packet) { if (!packet) return; OutPacket(packet->GetOpcode(), packet->size(), (packet->size() ? (const void*)packet->contents() : NULL)); }
         inline void SendPacket(StackBufferBase* packet) { if (!packet) return; OutPacket(packet->GetOpcode(), packet->GetSize(), (packet->GetSize() ? (const void*)packet->GetBufferPointer() : NULL)); }
 
-        void  OutPacket(uint16 opcode, size_t len, const void* data);
+#if VERSION_STRING != Cata
+        void OutPacket(uint16 opcode, size_t len, const void* data);
         OUTPACKET_RESULT _OutPacket(uint16 opcode, size_t len, const void* data);
+#else
+        void OutPacket(uint32 opcode, size_t len, const void* data);
+        OUTPACKET_RESULT _OutPacket(uint32 opcode, size_t len, const void* data);
+#endif
 
         inline uint32 GetLatency() { return _latency; }
 
@@ -89,7 +111,7 @@ class SERVER_DECL WorldSocket : public Socket
         uint32 mSize;
         uint32 mSeed;
         uint32 mClientSeed;
-        uint32 mClientBuild;
+        
         uint32 mRequestID;
 
         WorldSession* mSession;

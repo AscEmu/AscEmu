@@ -375,7 +375,11 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /* Update player movement state                                         */
     /************************************************************************/
 
+#if VERSION_STRING == Cata
+    uint32_t opcode = recv_data.GetOpcode();
+#else
     uint16 opcode = recv_data.GetOpcode();
+#endif
     switch (opcode)
     {
         case MSG_MOVE_START_FORWARD:

@@ -311,8 +311,14 @@ class SERVER_DECL WorldSession
         const char* LocalizedMapName(uint32 id);
         const char* LocalizedBroadCast(uint32 id);
 
-        uint32 GetClientBuild() { return client_build; }
-        void SetClientBuild(uint32 build) { client_build = build; }
+#if VERSION_STRING != Cata
+        uint32_t GetClientBuild() { return client_build; }
+        void SetClientBuild(uint32_t build) { client_build = build; }
+#else
+        uint16_t GetClientBuild() { return client_build; }
+        void SetClientBuild(uint16_t build) { client_build = build; }
+#endif
+
         bool bDeleted;
         uint32 GetInstance() { return instanceId; }
         Mutex deleteMutex;
@@ -792,6 +798,10 @@ class SERVER_DECL WorldSession
         void HandleCalendarEventStatus(WorldPacket& recv_data);
         void HandleCalendarEventModeratorStatus(WorldPacket& recv_data);
 #endif
+#if VERSION_STRING == Cata
+        void HandleReadyForAccountDataTimesOpcode(WorldPacket& recv_data);
+        void HandleLoadScreenOpcode(WorldPacket& recv_data);
+#endif
 
         void Unhandled(WorldPacket& recv_data);
 
@@ -866,7 +876,11 @@ class SERVER_DECL WorldSession
         bool LoggingOut; //Player requesting to be logged out
 
         uint32 _latency;
-        uint32 client_build;
+#if VERSION_STRING != Cata
+        uint32_t client_build;
+#else
+        uint16_t client_build;
+#endif
         uint32 instanceId;
         uint8 _updatecount;
 
