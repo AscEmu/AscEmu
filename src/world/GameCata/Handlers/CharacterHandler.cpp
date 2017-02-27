@@ -278,7 +278,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
 void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)
 {
-    uint8_t playerGuid[8];
+    ObjectGuid playerGuid;
 
     playerGuid[2] = recv_data.readBit();
     playerGuid[3] = recv_data.readBit();
@@ -298,8 +298,6 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)
     recv_data.ReadByteSeq(playerGuid[1]);
     recv_data.ReadByteSeq(playerGuid[4]);
 
-    uint64_t pGuid = *(uint64_t*)playerGuid;
-
     if (objmgr.GetPlayer((uint32_t)playerGuid) != nullptr || m_loggingInPlayer || _player)
     {
         uint8_t errorCode = E_CHAR_LOGIN_DUPLICATE_CHARACTER;
@@ -308,6 +306,6 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)
     }
 
     AsyncQuery* asyncQuery = new AsyncQuery(new SQLClassCallbackP0<WorldSession>(this, &WorldSession::LoadPlayerFromDBProc));
-    asyncQuery->AddQuery("SELECT guid,class FROM characters WHERE guid = %u AND login_flags = %u", playerGuid, (uint32_t)LOGIN_NO_FLAG);
+    asyncQuery->AddQuery("SELECT guid,class FROM characters WHERE guid = %u AND login_flags = %u", (uint32_t)playerGuid, (uint32_t)LOGIN_NO_FLAG);
     CharacterDatabase.QueueAsyncQuery(asyncQuery);
 }

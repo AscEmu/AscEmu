@@ -521,23 +521,22 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
 void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)
 {
     CHECK_PACKET_SIZE(recv_data, 8);
-    uint64 playerGuid = 0;
+    uint64_t playerGuid = 0;
 
     LOG_DEBUG("WORLD: Recvd Player Logon Message");
 
-    recv_data >> playerGuid; // this is the GUID selected by the player
+    recv_data >> playerGuid;
 
-    if (objmgr.GetPlayer((uint32)playerGuid) != NULL || m_loggingInPlayer || _player)
+    if (objmgr.GetPlayer((uint32_t)playerGuid) != nullptr || m_loggingInPlayer || _player)
     {
-        // A character with that name already exists 0x3E
         uint8 respons = E_CHAR_LOGIN_DUPLICATE_CHARACTER;
         OutPacket(SMSG_CHARACTER_LOGIN_FAILED, 1, &respons);
         return;
     }
 
-    AsyncQuery* q = new AsyncQuery(new SQLClassCallbackP0<WorldSession>(this, &WorldSession::LoadPlayerFromDBProc));
-    q->AddQuery("SELECT guid,class FROM characters WHERE guid = %u AND login_flags = %u", playerGuid, (uint32)LOGIN_NO_FLAG); // 0
-    CharacterDatabase.QueueAsyncQuery(q);
+    AsyncQuery* asyncQuery = new AsyncQuery(new SQLClassCallbackP0<WorldSession>(this, &WorldSession::LoadPlayerFromDBProc));
+    asyncQuery->AddQuery("SELECT guid,class FROM characters WHERE guid = %u AND login_flags = %u", (uint32_t)playerGuid, (uint32_t)LOGIN_NO_FLAG);
+    CharacterDatabase.QueueAsyncQuery(asyncQuery);
 }
 #endif
 
