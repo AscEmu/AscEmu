@@ -481,7 +481,10 @@ void InformationCore::SendRealms(AuthSocket* Socket)
     data << uint32(0);
 
     //sAuthLogonChallenge_C * client = Socket->GetChallenge();
-    data << uint16(m_realms.size());
+    if (Socket->GetChallenge()->build == 5875)
+        data << uint8(m_realms.size());
+    else
+        data << uint16(m_realms.size());
 
     // loop realms :/
     std::map<uint32, Realm*>::iterator itr = m_realms.begin();
@@ -490,19 +493,37 @@ void InformationCore::SendRealms(AuthSocket* Socket)
     {
         if (itr->second->GameBuild == Socket->GetChallenge()->build)
         {
-            data << uint8(itr->second->Icon);
-            data << uint8(itr->second->Lock); // delete when using data << itr->second->Lock;
-            data << uint8(itr->second->flags);
+            if (itr->second->GameBuild == 5875)
+            {
+                data << uint32(itr->second->Icon);
+                data << uint8(itr->second->flags);
 
-            data << itr->second->Name;
-            data << itr->second->Address;
-            data << float(itr->second->Population);
+                data << itr->second->Name;
+                data << itr->second->Address;
+                data << float(itr->second->Population);
 
-            // Get our character count
-            it = itr->second->CharacterMap.find(Socket->GetAccountID());
-            data << uint8((it == itr->second->CharacterMap.end()) ? 0 : it->second);
-            data << uint8(itr->second->TimeZone);
-            data << uint8(GetRealmIdByName(itr->second->Name)); // Realm ID
+                // Get our character count
+                it = itr->second->CharacterMap.find(Socket->GetAccountID());
+                data << uint8((it == itr->second->CharacterMap.end()) ? 0 : it->second);
+                data << uint8(itr->second->TimeZone);
+                data << uint8(0); // Realm ID
+            }
+            else
+            {
+                data << uint8(itr->second->Icon);
+                data << uint8(itr->second->Lock); // delete when using data << itr->second->Lock;
+                data << uint8(itr->second->flags);
+
+                data << itr->second->Name;
+                data << itr->second->Address;
+                data << float(itr->second->Population);
+
+                // Get our character count
+                it = itr->second->CharacterMap.find(Socket->GetAccountID());
+                data << uint8((it == itr->second->CharacterMap.end()) ? 0 : it->second);
+                data << uint8(itr->second->TimeZone);
+                data << uint8(GetRealmIdByName(itr->second->Name)); // Realm ID
+            }
         }
         else // send empty packet for other gameserver which not supports client_build
         {

@@ -436,7 +436,8 @@ void AuthSocket::HandleProof()
     sha.UpdateBigNumbers(&A, &M, &m_sessionkey, 0);
     sha.Finalize();
 
-    SendProofError(0, sha.GetDigest());
+    //SendProofError(0, sha.GetDigest());
+    sendAuthProof(sha);
     LOG_DEBUG("[AuthLogonProof] Authentication Success.");
 
     // we're authenticated now :)
@@ -475,6 +476,34 @@ void AuthSocket::SendProofError(uint8 Error, uint8* M2)
     buffer[22] = 0x01; //<-- ARENA TOURNAMENT ACC FLAG!
 
     Send(buffer, 32);
+}
+
+void AuthSocket::sendAuthProof(Sha1Hash sha)
+{
+    LOG_DEBUG(" called.");
+
+    if (m_challenge.build == 5875)
+    {
+        sAuthLogonProof_S proof;
+        memcpy(proof.M2, sha.GetDigest(), 20);
+        proof.cmd = 1;
+        proof.error = 0;
+        proof.unk2 = 0;
+
+        Send(reinterpret_cast<uint8*>(&proof), sizeof(sAuthLogonProof_S) - 6);
+    }
+    else
+    {
+        sAuthLogonProof_S proof;
+        memcpy(proof.M2, sha.GetDigest(), 20);
+        proof.cmd = 1;
+        proof.error = 0;
+        proof.unk2 = 0;
+        proof.unk3 = 0;
+        proof.unk203 = 0;
+
+        Send(reinterpret_cast<uint8*>(&proof), sizeof(sAuthLogonProof_S));
+    }
 }
 
 #define AUTH_CHALLENGE 0
@@ -707,12 +736,23 @@ void AuthSocket::HandleReconnectProof()
 
     if (!m_account->SessionKey)
     {
-        uint8 buffer[4];
-        buffer[0] = 3;
-        buffer[1] = 0;
-        buffer[2] = 1;
-        buffer[3] = 0;
-        Send(buffer, 4);
+        if (m_challenge.build == 5875)
+        {
+            ByteBuffer buffer;
+            buffer << uint8(3);
+            buffer << uint8(0);
+            buffer << uint16(0);
+            Send(buffer.contents(), buffer.size());
+        }
+        else
+        {
+            uint8 buffer[4];
+            buffer[0] = 3;
+            buffer[1] = 0;
+            buffer[2] = 1;
+            buffer[3] = 0;
+            Send(buffer, 4);
+        }
     }
     else
     {
