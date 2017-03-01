@@ -239,7 +239,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32 opcode, size_t len, const void* 
     Header.size = ntohs((uint16)len + 2);
 #endif
 
-#if VERSION_STRING == TBC
+#if VERSION_STRING < WotLK
     _crypt.encryptTbcSend((uint8*)&Header, sizeof(ServerPktHeader));
 #elif VERSION_STRING == WotLK
     _crypt.encryptWotlkSend((uint8*)&Header, sizeof(ServerPktHeader));
@@ -270,7 +270,7 @@ void WorldSocket::OnConnect()
     sWorld.mAcceptedConnections++;
     _latency = getMSTime();
 
-#if VERSION_STRING == TBC
+#if VERSION_STRING < WotLK
     OutPacket(SMSG_AUTH_CHALLENGE, 4, &mSeed);
 #elif VERSION_STRING == WotLK
     WorldPacket wp(SMSG_AUTH_CHALLENGE, 24);
@@ -361,7 +361,7 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
 
     try
     {
-#if VERSION_STRING == TBC
+#if VERSION_STRING < WotLK
         *recvPacket >> mClientBuild;
         *recvPacket >> unk2;
         *recvPacket >> account;
@@ -441,7 +441,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     uint8 K[40];
     recvData.read(K, 40);
 
-#if VERSION_STRING == TBC
+#if VERSION_STRING < WotLK
     BigNumber BNK;
     BNK.SetBinary(K, 40);
 
@@ -496,7 +496,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     sha.UpdateData((uint8*)&t, 4);
     sha.UpdateData((uint8*)&mClientSeed, 4);
     sha.UpdateData((uint8*)&mSeed, 4);
-#if VERSION_STRING == TBC
+#if VERSION_STRING < WotLK
     sha.UpdateBigNumbers(&BNK, NULL);
 #else
     sha.UpdateData((uint8*)&K, 40);
@@ -746,7 +746,7 @@ void WorldSocket::OnRead()
             readBuffer.Read((uint8*)&Header, 6);
 
             // Decrypt the header
-#if VERSION_STRING == TBC
+#if VERSION_STRING < WotLK
             _crypt.decryptTbcReceive((uint8*)&Header, sizeof(ClientPktHeader));
 #else
             _crypt.decryptWotlkReceive((uint8*)&Header, sizeof(ClientPktHeader));
