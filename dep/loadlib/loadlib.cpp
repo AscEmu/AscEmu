@@ -15,6 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
 #define _CRT_SECURE_NO_DEPRECATE
@@ -39,14 +40,14 @@ FileLoader::~FileLoader()
     free();
 }
 
-bool FileLoader::loadFile(char *filename, bool log)
+bool FileLoader::loadFile(std::string const& fileName, bool log)
 {
     free();
-    MPQFile mf(filename);
+    MPQFile mf(fileName.c_str());
     if(mf.isEof())
     {
         if (log)
-            printf("No such file %s\n", filename);
+            printf("No such file %s\n", fileName.c_str());
         return false;
     }
 
@@ -58,7 +59,7 @@ bool FileLoader::loadFile(char *filename, bool log)
     if (prepareLoadedData())
         return true;
 
-    printf("Error loading %s", filename);
+    printf("Error loading %s", fileName.c_str());
     mf.close();
     free();
     return false;
