@@ -1137,7 +1137,7 @@ void Creature::AddVendorItem(uint32 itemid, uint32 amount, DBC::Structures::Item
     ci.extended_cost = ec;
     if (!m_SellItems)
     {
-        m_SellItems = new std::vector < CreatureItem > ;
+        m_SellItems = new std::vector < CreatureItem >;
         objmgr.SetVendorList(GetEntry(), m_SellItems);
     }
     m_SellItems->push_back(ci);

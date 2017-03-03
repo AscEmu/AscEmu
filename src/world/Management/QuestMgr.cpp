@@ -1470,7 +1470,7 @@ template <class T> void QuestMgr::_AddQuest(uint32 entryid, QuestProperties cons
 
     if (olist.find(entryid) == olist.end())
     {
-        nlist = new std::list < QuestRelation* > ;
+        nlist = new std::list < QuestRelation* >;
 
         olist.insert(std::unordered_map<uint32, std::list<QuestRelation*>* >::value_type(entryid, nlist));
     }

@@ -110,7 +110,7 @@ template <class T> class Array
             m_cap = cap;
 
             T* data = new T[cap];
-            for (int i = 0 ; i < m_len ; ++i)
+            for (int i = 0; i < m_len; ++i)
                 data[i] = m_data[i];
             delete[] m_data;
             m_data = data;

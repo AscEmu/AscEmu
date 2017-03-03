@@ -1742,8 +1742,8 @@ class SupremusAI : public CreatureAIScript
 
             infoMoltenFlame = sSpellCustomizations.GetSpellInfo(MOLTEN_FLAME);
             infoHurtfulStrike = sSpellCustomizations.GetSpellInfo(HURTFUL_STRIKE);
-            infoMoltenPunch =  sSpellCustomizations.GetSpellInfo(MOLTEN_PUNCH);
-            infoVolcanicGazer =  sSpellCustomizations.GetSpellInfo(VOLCANIC_GAZER);
+            infoMoltenPunch = sSpellCustomizations.GetSpellInfo(MOLTEN_PUNCH);
+            infoVolcanicGazer = sSpellCustomizations.GetSpellInfo(VOLCANIC_GAZER);
 
             timer = 0;
             m_phase = 0;
@@ -5711,7 +5711,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                         }
                         break;
                     case 5:
-                        for (uint8 i = 0 ; i < 2; ++i)
+                        for (uint8 i = 0; i < 2; ++i)
                         {
                             Creature* Blade = static_cast<Creature*>(ForceCreatureFind(CN_BLADE_OF_AZZINOTH, UnitPos[i].x, UnitPos[i].y, UnitPos[i].z));
                             if (Blade != NULL)

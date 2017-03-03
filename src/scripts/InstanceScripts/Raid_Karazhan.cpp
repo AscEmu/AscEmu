@@ -3604,7 +3604,7 @@ class NightbaneAI : public CreatureAIScript
             }
 
             //ground phase spells
-            spells[0].info =  sSpellCustomizations.GetSpellInfo(BELLOWING_ROAR);
+            spells[0].info = sSpellCustomizations.GetSpellInfo(BELLOWING_ROAR);
             spells[0].targettype = TARGET_VARIOUS;
             spells[0].instant = false;
             spells[0].cooldown = 30; //confirmed

@@ -285,7 +285,6 @@ void AddonMgr::LoadFromDB()
 
     }
     while(result->NextRow());
-
     delete result;
 }
 
