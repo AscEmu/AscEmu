@@ -2561,7 +2561,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
         }
     }
 
-    for (; !m_chargeSpellRemoveQueue.empty();)
+	for (; !m_chargeSpellRemoveQueue.empty();)
     {
         std::map<uint32, struct SpellCharge>::iterator iter = m_chargeSpells.find(m_chargeSpellRemoveQueue.front());
         if (iter != m_chargeSpells.end())
@@ -2595,7 +2595,7 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
 
     for (std::list<DamageProc>::iterator i = m_damageShields.begin(); i != m_damageShields.end();) // Deal Damage to Attacker
     {
-        std::list<DamageProc>::iterator i2 = i++; //we should not proc on proc.. not get here again.. not needed.Better safe then sorry.
+        std::list<DamageProc>::iterator i2 = i++; // we should not proc on proc.. not get here again.. not needed.Better safe then sorry.
         if ((flag & (*i2).m_flags))
         {
             if (PROC_MISC & (*i2).m_flags)
@@ -3932,9 +3932,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
 
         if (IsPlayer() && static_cast<Player*>(this)->m_onStrikeSpellDmg.size())
         {
-            std::map<uint32, OnHitSpell>::iterator it2 = static_cast<Player*>(this)->m_onStrikeSpellDmg.begin();
-
-            for (; it2 != static_cast<Player*>(this)->m_onStrikeSpellDmg.end();)
+            for (std::map<uint32, OnHitSpell>::iterator it2 = static_cast<Player*>(this)->m_onStrikeSpellDmg.begin(); it2 != static_cast<Player*>(this)->m_onStrikeSpellDmg.end();)
             {
                 std::map<uint32, OnHitSpell>::iterator itr = it2;
                 ++it2;
@@ -6388,8 +6386,8 @@ bool Unit::GetSpeedDecrease()
     int32 before = m_speedModifier;
     m_speedModifier -= m_slowdown;
     m_slowdown = 0;
-    std::map<uint32, int32>::iterator itr = speedReductionMap.begin();
-    for (; itr != speedReductionMap.end(); ++itr)
+    
+    for (std::map<uint32, int32>::iterator itr = speedReductionMap.begin(); itr != speedReductionMap.end(); ++itr)
         m_slowdown = (int32)std::min(m_slowdown, itr->second);
 
     if (m_slowdown < -100)
@@ -7089,10 +7087,9 @@ void Unit::EventChill(Unit* proc_target, bool is_victim)
 
 void Unit::RemoveExtraStrikeTarget(SpellInfo* spell_info)
 {
-    ExtraStrike* es;
     for (std::list<ExtraStrike*>::iterator i = m_extraStrikeTargets.begin(); i != m_extraStrikeTargets.end(); ++i)
     {
-        es = *i;
+        ExtraStrike* es = *i;
         if (spell_info == es->spell_info)
         {
             m_extrastriketargetc--;

@@ -415,12 +415,11 @@ Realm* InformationCore::GetRealm(uint32 realm_id)
 
 int32 InformationCore::GetRealmIdByName(std::string Name)
 {
-    std::map<uint32, Realm*>::iterator itr = m_realms.begin();
-    for (; itr != m_realms.end(); ++itr)
-        if (itr->second->Name == Name)
-        {
+    for (std::map<uint32, Realm*>::iterator itr = m_realms.begin(); itr != m_realms.end(); ++itr)
+    {
+       if (itr->second->Name == Name)
             return itr->first;
-        }
+    }
     return -1;
 }
 

@@ -1724,7 +1724,7 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
     {
         if (m_autoCastSpells[AUTOCAST_EVENT_ATTACK].size() > 1)
         {
-            for (itr = m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin(); itr != m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end(); ++itr)
+            for (std::list<AI_Spell*>::iterator itr = m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin(); itr != m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end(); ++itr)
             {
                 if (itr == m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end())
                 {
@@ -1755,7 +1755,7 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
         return;
     }
 
-    for (itr = m_autoCastSpells[Type].begin(); itr != m_autoCastSpells[Type].end();)
+    for (std::list<AI_Spell*>::iterator itr = m_autoCastSpells[Type].begin(); itr != m_autoCastSpells[Type].end();)
     {
         it2 = itr++;
         sp = *it2;

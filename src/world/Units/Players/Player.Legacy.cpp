@@ -609,8 +609,7 @@ Player::~Player()
         delete pck;
     }
 
-    /*std::map<uint32,AchievementVal*>::iterator itr;
-    for (itr=m_achievements.begin();itr!=m_achievements.end();itr++)
+    /*for (std::map<uint32,AchievementVal*>::iterator itr=m_achievements.begin();itr!=m_achievements.end();itr++)
     delete itr->second;*/
 
     std::map< uint32, PlayerPet* >::iterator itr = m_Pets.begin();
@@ -1944,10 +1943,9 @@ void Player::AddSummonSpell(uint32 Entry, uint32 SpellID)
         SummonSpells[Entry].insert(SpellID);
     else
     {
-        std::set<uint32>::iterator it3;
         for (std::set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end();)
         {
-            it3 = it2++;
+            std::set<uint32>::iterator it3 = it2++;
             if (sSpellCustomizations.GetSpellInfo(*it3)->custom_NameHash == sp->custom_NameHash)
                 itr->second.erase(it3);
         }
@@ -1970,9 +1968,7 @@ std::set<uint32>* Player::GetSummonSpells(uint32 Entry)
 {
     std::map<uint32, std::set<uint32> >::iterator itr = SummonSpells.find(Entry);
     if (itr != SummonSpells.end())
-    {
         return &(itr->second);
-    }
     return 0;
 }
 
@@ -1981,7 +1977,6 @@ void Player::_LoadPet(QueryResult* result)
     m_PetNumberMax = 0;
     if (!result)
         return;
-
     do
     {
         Field* fields = result->Fetch();
@@ -2061,8 +2056,7 @@ void Player::SpawnActivePet()
     if (GetSummon() != NULL || !isAlive() || !IsInWorld())   ///\todo  only hunters for now
         return;
 
-    std::map<uint32, PlayerPet* >::iterator itr = m_Pets.begin();
-    for (; itr != m_Pets.end(); ++itr)
+    for (std::map<uint32, PlayerPet* >::iterator itr = m_Pets.begin(); itr != m_Pets.end(); ++itr)
         if (itr->second->stablestate == STABLE_STATE_ACTIVE && itr->second->active)
         {
             if (itr->second->alive)
@@ -2085,9 +2079,8 @@ void Player::DismissActivePets()
 
 void Player::_LoadPetSpells(QueryResult* result)
 {
-    std::map<uint32, std::list<uint32>* >::iterator itr;
-    uint32 entry = 0;
-    uint32 spell = 0;
+    uint32_t entry = 0;
+    uint32_t spell = 0;
 
     if (result)
     {
@@ -2555,16 +2548,15 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     ss << "','";
 
     // Add player finished quests
-    std::set<uint32>::iterator fq = m_finishedQuests.begin();
-    for (; fq != m_finishedQuests.end(); ++fq)
+    for (std::set<uint32>::iterator fq = m_finishedQuests.begin(); fq != m_finishedQuests.end(); ++fq)
     {
         ss << (*fq) << ",";
     }
 
     ss << "', '";
     DailyMutex.Acquire();
-    std::set<uint32>::iterator fdq = m_finishedDailies.begin();
-    for (; fdq != m_finishedDailies.end(); ++fdq)
+
+    for (std::set<uint32>::iterator fdq = m_finishedDailies.begin(); fdq != m_finishedDailies.end(); ++fdq)
     {
         ss << (*fdq) << ",";
     }
@@ -3930,6 +3922,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         return;
 
     ARCEMU_ASSERT(item != NULL);
+	std::list<ItemSet>::iterator i;
     ItemProperties const* proto = item->GetItemProperties();
 
     //fast check to skip mod applying if the item doesnt meat the requirements.
@@ -3975,8 +3968,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         else
         {
             ItemSet* Set = NULL;
-            std::list<ItemSet>::iterator i;
-            for (i = m_itemsets.begin(); i != m_itemsets.end(); ++i)
+            for (std::list<ItemSet>::iterator i = m_itemsets.begin(); i != m_itemsets.end(); ++i)
             {
                 if (i->setid == setid)
                 {
@@ -4779,11 +4771,9 @@ void Player::LeftChannel(Channel* c)
 
 void Player::CleanupChannels()
 {
-    std::set<Channel*>::iterator i;
-    Channel* c;
-    for (i = m_channels.begin(); i != m_channels.end();)
+    for (std::set<Channel*>::iterator i = m_channels.begin(); i != m_channels.end();)
     {
-        c = *i;
+        Channel* c = *i;
         ++i;
 
         c->Part(this);
@@ -5047,14 +5037,12 @@ void Player::UpdateChances()
 
     if (tocritchance.size() > 0)    // Crashfix by Cebernic
     {
-        std::map< uint32, WeaponModifier >::iterator itr = tocritchance.begin();
-
         Item* tItemMelee = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
         Item* tItemRanged = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
 
         //-1 = any weapon
 
-        for (; itr != tocritchance.end(); ++itr)
+        for (std::map< uint32, WeaponModifier >::iterator itr = tocritchance.begin(); itr != tocritchance.end(); ++itr)
         {
             if (itr->second.wclass == (uint32)-1 || (tItemMelee != NULL && (1 << tItemMelee->GetItemProperties()->SubClass & itr->second.subclass)))
             {
@@ -6513,8 +6501,7 @@ void Player::UpdateNearbyGameObjects()
 
                 if (go_quest_giver->HasQuests() && go_quest_giver->NumOfQuests() > 0)
                 {
-                    std::list<QuestRelation*>::iterator itr2 = go_quest_giver->QuestsBegin();
-                    for (; itr2 != go_quest_giver->QuestsEnd(); ++itr2)
+                    for (std::list<QuestRelation*>::iterator itr2 = go_quest_giver->QuestsBegin(); itr2 != go_quest_giver->QuestsEnd(); ++itr2)
                     {
                         QuestRelation* qr = (*itr2);
 
@@ -7723,10 +7710,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
 
 void Player::UpdateChannels(uint16 AreaID)
 {
-    std::set<Channel*>::iterator i;
-    Channel* c;
     std::string channelname, AreaName;
-
 
     if (GetMapId() == 450)
         AreaID = 2917;
@@ -7759,9 +7743,9 @@ void Player::UpdateChannels(uint16 AreaID)
         }
     }
 
-    for (i = m_channels.begin(); i != m_channels.end();)
+    for (std::set<Channel*>::iterator i = m_channels.begin(); i != m_channels.end();)
     {
-        c = *i;
+        Channel* c = *i;
         ++i;
 
         if (!c->m_general || c->m_name == "LookingForGroup")//Not an updatable channel.
@@ -7776,7 +7760,7 @@ void Player::UpdateChannels(uint16 AreaID)
         else if (strstr(c->m_name.c_str(), "GuildRecruitment"))
             channelname = "GuildRecruitment";
         else
-            continue;//Those 4 are the only ones we want updated.
+            continue; // Those 4 are the only ones we want updated.
         channelname += " - ";
         if ((strstr(c->m_name.c_str(), "Trade") || strstr(c->m_name.c_str(), "GuildRecruitment")) && (at2->flags & AREA_CITY || at2->flags & AREA_CITY_AREA))
         {
@@ -8837,9 +8821,7 @@ void Player::CompleteLoading()
         }
     }
 
-    std::list<LoginAura>::iterator i = loginauras.begin();
-
-    for (; i != loginauras.end(); ++i)
+    for (std::list<LoginAura>::iterator i = loginauras.begin(); i != loginauras.end(); ++i)
     {
         SpellInfo* sp = sSpellCustomizations.GetSpellInfo((*i).id);
 
@@ -9508,9 +9490,9 @@ void Player::CalcDamage()
         else speed = 2000;
 
         bonus = ap_bonus * speed;
-        std::map<uint32, WeaponModifier>::iterator i = damagedone.begin();
+
         tmp = 1;
-        for (; i != damagedone.end(); ++i)
+        for (std::map<uint32, WeaponModifier>::iterator i = damagedone.begin(); i != damagedone.end(); ++i)
         {
             if ((i->second.wclass == (uint32)-1) || //any weapon
                 (((1 << it->GetItemProperties()->SubClass) & i->second.subclass))
@@ -9538,9 +9520,8 @@ void Player::CalcDamage()
     cr = 0;
     if ((it = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)) != 0)
     {
-        std::map<uint32, WeaponModifier>::iterator i = damagedone.begin();
         tmp = 1;
-        for (; i != damagedone.end(); ++i)
+        for (std::map<uint32, WeaponModifier>::iterator i = damagedone.begin(); i != damagedone.end(); ++i)
         {
             if ((i->second.wclass == (uint32)-1) || //any weapon
                 (((1 << it->GetItemProperties()->SubClass) & i->second.subclass)))
@@ -9551,8 +9532,8 @@ void Player::CalcDamage()
 
         if (it->GetItemProperties()->SubClass != 19)//wands do not have bonuses from RAP & ammo
         {
-            //                ap_bonus = (GetRangedAttackPower()+(int32)GetRangedAttackPowerMods())/14000.0;
-            //modified by Zack : please try to use premade functions if possible to avoid forgetting stuff
+            // ap_bonus = (GetRangedAttackPower()+(int32)GetRangedAttackPowerMods())/14000.0;
+            // modified by Zack : please try to use premade functions if possible to avoid forgetting stuff
             ap_bonus = GetRAP() / 14000.0f;
             bonus = ap_bonus * it->GetItemProperties()->Delay;
 
@@ -9575,14 +9556,12 @@ void Player::CalcDamage()
         r *= tmp;
         SetMaxRangedDamage(r > 0 ? r : 0);
 
-
         if (m_wratings.size())
         {
             std::map<uint32, uint32>::iterator itr = m_wratings.find(it->GetItemProperties()->SubClass);
             if (itr != m_wratings.end())
                 cr = itr->second;
         }
-
     }
     SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_SKILL, cr);
 
@@ -13404,8 +13383,7 @@ uint32 Player::GetUnstabledPetNumber(void)
     if (m_Pets.size() == 0)
         return 0;
 
-    std::map<uint32, PlayerPet*>::iterator itr = m_Pets.begin();
-    for (; itr != m_Pets.end(); ++itr)
+    for (std::map<uint32, PlayerPet*>::iterator itr = m_Pets.begin(); itr != m_Pets.end(); ++itr)
         if (itr->second->stablestate == STABLE_STATE_ACTIVE)
             return itr->first;
     return 0;

@@ -2111,8 +2111,7 @@ void ObjectMgr::LoadCreatureTimedEmotes()
 
 TimedEmoteList* ObjectMgr::GetTimedEmoteList(uint32 spawnid)
 {
-    std::unordered_map<uint32, TimedEmoteList*>::const_iterator i;
-    i = m_timedemotes.find(spawnid);
+    std::unordered_map<uint32, TimedEmoteList*>::const_iterator i = m_timedemotes.find(spawnid);
     if (i != m_timedemotes.end())
     {
         TimedEmoteList* m = i->second;

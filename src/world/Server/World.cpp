@@ -2067,12 +2067,11 @@ void World::UpdateTotalTraffic()
     LastTrafficQuery = UNIXTIME;
     LastTotalTrafficInKB = TotalTrafficInKB;
     LastTotalTrafficOutKB = TotalTrafficOutKB;
-    WorldSocket* s = NULL;
+    WorldSocket* s = nullptr;
 
     objmgr._playerslock.AcquireReadLock();
-    std::unordered_map<uint32, Player*>::const_iterator itr;
 
-    for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+    for (std::unordered_map<uint32, Player*>::const_iterator itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
     {
         s = itr->second->GetSession()->GetSocket();
 

@@ -612,8 +612,7 @@ void Vehicle::RemoveAccessories()
 
 bool Vehicle::HasAccessoryWithGUID(uint64 guid)
 {
-    std::vector< uint64 >::iterator itr =
-        std::find(installed_accessories.begin(), installed_accessories.end(), guid);
+    std::vector< uint64 >::iterator itr = std::find(installed_accessories.begin(), installed_accessories.end(), guid);
 
     if (itr == installed_accessories.end())
         return false;

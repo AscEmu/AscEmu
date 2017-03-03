@@ -1790,7 +1790,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
             return false;
         }
 
-        for (itr = q_begin; itr != q_end; ++itr)
+        for (std::list<QuestRelation*>::const_iterator itr = q_begin; itr != q_end; ++itr)
             if (sQuestMgr.CalcQuestStatus(qst_giver, plr, *itr) >= QMGR_QUEST_CHAT)
                 break;
 
