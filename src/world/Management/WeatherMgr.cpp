@@ -122,15 +122,13 @@ uint32 GetSound(uint32 Effect, float Density)
 }
 
 WeatherMgr::WeatherMgr()
-{}
+{
+}
 
 WeatherMgr::~WeatherMgr()
 {
-    std::map<uint32, WeatherInfo*>::iterator itr;
-    for (itr = m_zoneWeathers.begin(); itr != m_zoneWeathers.end(); ++itr)
-    {
+    for (std::map<uint32, WeatherInfo*>::iterator itr = m_zoneWeathers.begin(); itr != m_zoneWeathers.end(); ++itr)
         delete itr->second;
-    }
 
     m_zoneWeathers.clear();
 }
@@ -166,8 +164,7 @@ void WeatherMgr::LoadFromDB()
 
 void WeatherMgr::SendWeather(Player* plr)  //Update weather when player has changed zone (WorldSession::HandleZoneUpdateOpcode)
 {
-    std::map<uint32, WeatherInfo*>::iterator itr;
-    itr = m_zoneWeathers.find(plr->GetZoneId());
+    std::map<uint32, WeatherInfo*>::iterator itr = m_zoneWeathers.find(plr->GetZoneId());
 
     if (itr == m_zoneWeathers.end())
     {
@@ -179,9 +176,7 @@ void WeatherMgr::SendWeather(Player* plr)  //Update weather when player has chan
         return;
     }
     else
-    {
         itr->second->SendUpdate(plr);
-    }
 }
 
 WeatherInfo::WeatherInfo()
@@ -210,8 +205,6 @@ void WeatherInfo::_GenerateWeather()
     m_totalTime = (RandomUInt(11) + 5) * 1000 * 120; //update approx. every 1-2 minutes
 
     uint32 rv = RandomUInt(100);
-
-    std::map<uint32, uint32>::iterator itr;
 
     if (rv <= m_effectValues[4])  // %chance on changing weather from sunny to m_effectValues[5]
     {
