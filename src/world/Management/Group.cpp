@@ -834,13 +834,13 @@ void Group::SaveToDB()
           group7member1, group7member2, group7member3, group7member4, group7member5,\
           group8member1, group8member2, group8member3, group8member4, group8member5,\
                     timestamp, instanceids) VALUES("
-        << m_Id << "," // group_id (1/52)
-        << uint32(m_GroupType) << "," // group_type (2/52)
-        << uint32(m_SubGroupCount) << "," // subgroup_count (3/52)
-        << uint32(m_LootMethod) << "," // loot_method (4/52)
-        << uint32(m_LootThreshold) << "," // loot_threshold (5/52)
-        << uint32(m_difficulty) << "," // difficulty (6/52)
-        << uint32(m_raiddifficulty) << ","; // raiddifficulty (7/52)
+        << m_Id << ","                            // group_id (1/52)
+        << uint32(m_GroupType) << ","             // group_type (2/52)
+        << uint32(m_SubGroupCount) << ","         // subgroup_count (3/52)
+        << uint32(m_LootMethod) << ","            // loot_method (4/52)
+        << uint32(m_LootThreshold) << ","         // loot_threshold (5/52)
+        << uint32(m_difficulty) << ","            // difficulty (6/52)
+        << uint32(m_raiddifficulty) << ",";       // raiddifficulty (7/52)
 
     // assistant_leader (8/52)
     if (m_assistantLeader)
