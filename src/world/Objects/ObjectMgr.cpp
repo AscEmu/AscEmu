@@ -263,10 +263,10 @@ ObjectMgr::~ObjectMgr()
 // Groups
 Group* ObjectMgr::GetGroupByLeader(Player* pPlayer)
 {
-    GroupMap::iterator itr;
-    Group* ret = NULL;
+    Group* ret = nullptr;
     m_groupLock.AcquireReadLock();
-    for (itr = m_groups.begin(); itr != m_groups.end(); ++itr)
+  
+    for(GroupMap::iterator itr = m_groups.begin(); itr != m_groups.end(); ++itr)
     {
         if (itr->second->GetLeader() == pPlayer->getPlayerInfo())
         {
@@ -281,10 +281,10 @@ Group* ObjectMgr::GetGroupByLeader(Player* pPlayer)
 
 Group* ObjectMgr::GetGroupById(uint32 id)
 {
-    GroupMap::iterator itr;
-    Group* ret = NULL;
+    Group* ret = nullptr;
     m_groupLock.AcquireReadLock();
-    itr = m_groups.find(id);
+
+    GroupMap::iterator itr = m_groups.find(id);
     if (itr != m_groups.end())
         ret = itr->second;
 
@@ -296,22 +296,18 @@ Group* ObjectMgr::GetGroupById(uint32 id)
 // Player names
 void ObjectMgr::DeletePlayerInfo(uint32 guid)
 {
-    PlayerInfo* pl;
-    std::unordered_map<uint32, PlayerInfo*>::iterator i;
-    PlayerNameStringIndexMap::iterator i2;
     playernamelock.AcquireWriteLock();
-    i = m_playersinfo.find(guid);
+
+    std::unordered_map<uint32, PlayerInfo*>::iterator i = m_playersinfo.find(guid);
     if (i == m_playersinfo.end())
     {
         playernamelock.ReleaseWriteLock();
         return;
     }
 
-    pl = i->second;
+    PlayerInfo* pl = i->second;
     if (pl->m_Group)
-    {
         pl->m_Group->RemovePlayer(pl);
-    }
 
     if (pl->guild)
     {
@@ -323,7 +319,8 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
 
     std::string pnam = std::string(pl->name);
     Util::StringToLowerCase(pnam);
-    i2 = m_playersInfoByName.find(pnam);
+
+    PlayerNameStringIndexMap::iterator i2 = m_playersInfoByName.find(pnam);
     if (i2 != m_playersInfoByName.end() && i2->second == pl)
         m_playersInfoByName.erase(i2);
 
@@ -336,14 +333,13 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
 
 PlayerInfo* ObjectMgr::GetPlayerInfo(uint32 guid)
 {
-    std::unordered_map<uint32, PlayerInfo*>::iterator i;
-    PlayerInfo* rv;
+    PlayerInfo* rv = nullptr;
     playernamelock.AcquireReadLock();
-    i = m_playersinfo.find(guid);
+    std::unordered_map<uint32, PlayerInfo*>::iterator i = m_playersinfo.find(guid);
     if (i != m_playersinfo.end())
         rv = i->second;
     else
-        rv = NULL;
+        rv = nullptr;
     playernamelock.ReleaseReadLock();
     return rv;
 }
@@ -506,13 +502,14 @@ void ObjectMgr::LoadPlayersInfo()
 
 PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
 {
+    PlayerInfo* rv = nullptr;
     std::string lpn = std::string(name);
     Util::StringToLowerCase(lpn);
-    PlayerNameStringIndexMap::iterator i;
-    PlayerInfo* rv = NULL;
+
     playernamelock.AcquireReadLock();
 
-    i = m_playersInfoByName.find(lpn);
+    PlayerNameStringIndexMap::iterator i = m_playersInfoByName.find(lpn);
+
     if (i != m_playersInfoByName.end())
         rv = i->second;
 
@@ -1269,7 +1266,7 @@ void ObjectMgr::LoadVendors()
 
             if (itr == mVendors.end())
             {
-                items = new std::vector < CreatureItem > ;
+                items = new std::vector < CreatureItem >;
                 mVendors[fields[0].GetUInt32()] = items;
             }
             else

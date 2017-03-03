@@ -9345,19 +9345,17 @@ void Player::SetShapeShift(uint8 ss)
     }
 
     // apply any talents/spells we have that apply only in this form.
-    std::set<uint32>::iterator itr;
-    SpellInfo* sp;
-    Spell* spe;
+
     SpellCastTargets t(GetGUID());
 
-    for (itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+    for (std::set<uint32>::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
-        sp = sSpellCustomizations.GetSpellInfo(*itr);
-        if (sp->custom_apply_on_shapeshift_change || sp->Attributes & 64)        // passive/talent
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(*itr);
+        if (sp->custom_apply_on_shapeshift_change || sp->Attributes & 64) // passive/talent
         {
             if (sp->RequiredShapeShift && ((uint32)1 << (ss - 1)) & sp->RequiredShapeShift)
             {
-                spe = sSpellFactoryMgr.NewSpell(this, sp, true, NULL);
+                Spell* spe = sSpellFactoryMgr.NewSpell(this, sp, true, NULL);
                 spe->prepare(&t);
             }
         }
@@ -9377,12 +9375,12 @@ void Player::SetShapeShift(uint8 ss)
     }
 
     // now dummy-handler stupid hacky fixed shapeshift spells (leader of the pack, etc)
-    for (itr = mShapeShiftSpells.begin(); itr != mShapeShiftSpells.end(); ++itr)
+    for (std::set<uint32>::iterator itr = mShapeShiftSpells.begin(); itr != mShapeShiftSpells.end(); ++itr)
     {
-        sp = sSpellCustomizations.GetSpellInfo(*itr);
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(*itr);
         if (sp->RequiredShapeShift && ((uint32)1 << (ss - 1)) & sp->RequiredShapeShift)
         {
-            spe = sSpellFactoryMgr.NewSpell(this, sp, true, NULL);
+            Spell* spe = sSpellFactoryMgr.NewSpell(this, sp, true, NULL);
             spe->prepare(&t);
         }
     }
@@ -9469,8 +9467,8 @@ void Player::CalcDamage()
 
     float bonus = ap_bonus * speed;
     float tmp = 1;
-    std::map<uint32, WeaponModifier>::iterator i;
-    for (i = damagedone.begin(); i != damagedone.end(); ++i)
+
+    for (std::map<uint32, WeaponModifier>::iterator i = damagedone.begin(); i != damagedone.end(); ++i)
     {
         if ((i->second.wclass == (uint32)-1) || //any weapon
             (it && ((1 << it->GetItemProperties()->SubClass) & i->second.subclass)))
@@ -9510,7 +9508,7 @@ void Player::CalcDamage()
         else speed = 2000;
 
         bonus = ap_bonus * speed;
-        i = damagedone.begin();
+        std::map<uint32, WeaponModifier>::iterator i = damagedone.begin();
         tmp = 1;
         for (; i != damagedone.end(); ++i)
         {
@@ -9540,7 +9538,7 @@ void Player::CalcDamage()
     cr = 0;
     if ((it = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)) != 0)
     {
-        i = damagedone.begin();
+        std::map<uint32, WeaponModifier>::iterator i = damagedone.begin();
         tmp = 1;
         for (; i != damagedone.end(); ++i)
         {
@@ -10831,7 +10829,6 @@ void Player::_LoadPlayerCooldowns(QueryResult* result)
 void Player::Social_AddFriend(const char* name, const char* note)
 {
     WorldPacket data(SMSG_FRIEND_STATUS, 10);
-    std::map<uint32, char*>::iterator itr;
 
     // lookup the player
     PlayerInfo* info = objmgr.GetPlayerInfoByName(name);
@@ -10879,7 +10876,7 @@ void Player::Social_AddFriend(const char* name, const char* note)
         return;
     }
 
-    if (cache != nullptr)   //hes online if he has a cache
+    if (cache != nullptr) // hes online if he has a cache
     {
         data << uint8(FRIEND_ADDED_ONLINE);
         data << uint64(cache->GetUInt32Value(CACHE_PLAYER_LOWGUID));
@@ -10907,8 +10904,7 @@ void Player::Social_AddFriend(const char* name, const char* note)
     m_session->SendPacket(&data);
 
     // dump into the db
-    CharacterDatabase.Execute("INSERT INTO social_friends VALUES(%u, %u, \'%s\')",
-                              GetLowGUID(), info->guid, note ? CharacterDatabase.EscapeString(std::string(note)).c_str() : "");
+    CharacterDatabase.Execute("INSERT INTO social_friends VALUES(%u, %u, \'%s\')", GetLowGUID(), info->guid, note ? CharacterDatabase.EscapeString(std::string(note)).c_str() : "");
 
     if (cache != nullptr)
         cache->DecRef();
@@ -11592,11 +11588,9 @@ void Player::SendExploreXP(uint32 areaid, uint32 xp)
 void Player::HandleSpellLoot(uint32 itemid)
 {
     Loot loot;
-    std::vector< __LootItem >::iterator itr;
-
     lootmgr.FillItemLoot(&loot, itemid);
 
-    for (itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    for (std::vector< __LootItem >::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
     {
         uint32 looteditemid = itr->item.itemproto->ItemId;
         uint32 count = itr->iItemsCount;
@@ -11846,9 +11840,7 @@ bool Player::CanGainXp()
 
 void Player::RemoveGarbageItems()
 {
-    std::list< Item* >::iterator itr;
-
-    for (itr = m_GarbageItems.begin(); itr != m_GarbageItems.end(); ++itr)
+    for (std::list< Item* >::iterator itr = m_GarbageItems.begin(); itr != m_GarbageItems.end(); ++itr)
     {
         Item* it = *itr;
 

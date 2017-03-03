@@ -410,9 +410,7 @@ bool LogonServer::LoadLogonConfiguration()
     m_allowedIps.clear();
     m_allowedModIps.clear();
 
-    std::vector<std::string>::iterator itr;
-
-    for (itr = vips.begin(); itr != vips.end(); ++itr)
+    for (std::vector<std::string>::iterator itr = vips.begin(); itr != vips.end(); ++itr)
     {
         std::string::size_type i = itr->find("/");
         if (i == std::string::npos)
@@ -438,7 +436,7 @@ bool LogonServer::LoadLogonConfiguration()
         m_allowedIps.push_back(tmp);
     }
 
-    for (itr = vipsmod.begin(); itr != vipsmod.end(); ++itr)
+    for (std::vector<std::string>::iterator itr = vipsmod.begin(); itr != vipsmod.end(); ++itr)
     {
         std::string::size_type i = itr->find("/");
         if (i == std::string::npos)

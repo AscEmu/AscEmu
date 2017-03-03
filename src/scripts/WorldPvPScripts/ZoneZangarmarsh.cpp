@@ -176,7 +176,7 @@ class ZangarmarshBannerAI : public GameObjectAIScript
 
             unordered_set<PlayerPointer>::iterator itr = _gameobject->GetInRangePlayerSetBegin();
             unordered_set<PlayerPointer>::iterator itrend = _gameobject->GetInRangePlayerSetEnd();
-            map<uint32, uint32>::iterator it2, it3;
+
             uint32 timeptr = (uint32)UNIXTIME;
             bool in_range;
             bool is_valid;
@@ -191,7 +191,7 @@ class ZangarmarshBannerAI : public GameObjectAIScript
 
                 in_range = (_gameobject->GetDistance2dSq((*itr)) <= BANNER_RANGE) ? true : false;
 
-                it2 = StoredPlayers.find((*itr)->GetLowGUID());
+                map<uint32, uint32>::iterator it2 = StoredPlayers.find((*itr)->GetLowGUID());
                 if(it2 == StoredPlayers.end())
                 {
                     if(in_range)
@@ -331,7 +331,7 @@ class ZangarmarshBannerAI : public GameObjectAIScript
             // send any out of range players the disable flag
             for(it2 = StoredPlayers.begin(); it2 != StoredPlayers.end();)
             {
-                it3 = it2;
+                map<uint32, uint32>::iterator it3 = it2;
                 ++it2;
 
                 if(it3->second != timeptr)

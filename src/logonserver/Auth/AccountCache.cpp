@@ -69,11 +69,10 @@ void AccountMgr::ReloadAccounts(bool silent)
 
     // check for any purged/deleted accounts
     std::map<std::string, Account*>::iterator itr = AccountDatabase.begin();
-    std::map<std::string, Account*>::iterator it2;
 
     for (; itr != AccountDatabase.end();)
     {
-        it2 = itr;
+        std::map<std::string, Account*>::iterator it2 = itr;
         ++itr;
 
         if (account_list.find(it2->first) == account_list.end())
@@ -259,14 +258,15 @@ void AccountMgr::ReloadAccountsCallback()
 {
     ReloadAccounts(true);
 }
+
 BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 {
     Guard lguard(listBusy);
-    std::list<IPBan>::iterator itr;
+
     std::list<IPBan>::iterator itr2 = banList.begin();
     for (; itr2 != banList.end();)
     {
-        itr = itr2;
+        std::list<IPBan>::iterator itr = itr2;
         ++itr2;
 
         if (ParseCIDRBan(ip_address.s_addr, itr->Mask, itr->Bytes))
@@ -485,7 +485,6 @@ void InformationCore::SendRealms(AuthSocket* Socket)
 
     // loop realms :/
     std::map<uint32, Realm*>::iterator itr = m_realms.begin();
-    std::unordered_map<uint32, uint8>::iterator it;
     for (; itr != m_realms.end(); ++itr)
     {
         if (itr->second->GameBuild == Socket->GetChallenge()->build)
@@ -499,7 +498,7 @@ void InformationCore::SendRealms(AuthSocket* Socket)
             data << float(itr->second->Population);
 
             // Get our character count
-            it = itr->second->CharacterMap.find(Socket->GetAccountID());
+            std::unordered_map<uint32, uint8>::iterator it = itr->second->CharacterMap.find(Socket->GetAccountID());
             data << uint8((it == itr->second->CharacterMap.end()) ? 0 : it->second);
             data << uint8(itr->second->TimeZone);
             data << uint8(GetRealmIdByName(itr->second->Name)); // Realm ID

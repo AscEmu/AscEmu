@@ -646,28 +646,25 @@ void EyeOfTheStorm::RespawnCPFlag(uint32 i, uint32 id)
 
 void EyeOfTheStorm::UpdateCPs()
 {
-    std::set< Object* >::iterator itr, itrend;
-    Player* plr;
-    GameObject* go;
     int32 delta = 0;
     uint32 playercounts[2];
     uint32 towers[2] = { 0, 0 };
-    EOTSCaptureDisplayList::iterator eitr, eitr2, eitrend;
-    EOTSCaptureDisplayList* disp;
 
     for (uint8 i = 0; i < EOTS_TOWER_COUNT; ++i)
     {
+        GameObject* go;
+        EOTSCaptureDisplayList* disp;
         // loop players in range, add any that aren't in the set to the set
         playercounts[0] = playercounts[1] = 0;
         go = m_CPStatusGO[i];
         disp = &m_CPDisplay[i];
 
-        itr = go->GetInRangePlayerSetBegin();
-        itrend = go->GetInRangePlayerSetEnd();
+        std::set<Object*>::iterator itr = go->GetInRangePlayerSetBegin();
+        std::set< Object* >::iterator itrend = go->GetInRangePlayerSetEnd();
 
         for (; itr != itrend; ++itr)
         {
-            plr = static_cast<Player*>(*itr);
+            Player* plr = static_cast<Player*>(*itr);
             if (plr->isAlive() && !(plr->IsStealth()) && !(plr->m_invisible) && !(plr->SchoolImmunityList[0]) && plr->GetDistance2dSq(go) <= EOTS_CAPTURE_DISTANCE)
             {
                 playercounts[plr->GetTeam()]++;
@@ -770,19 +767,19 @@ void EyeOfTheStorm::UpdateCPs()
         }
 
         // update the players with the new value
-        eitr = disp->begin();
-        eitrend = disp->end();
+        EOTSCaptureDisplayList::iterator eitr = disp->begin();
+        EOTSCaptureDisplayList::iterator eitrend = disp->end();
 
         for (; eitr != eitrend;)
         {
-            plr = *eitr;
-            eitr2 = eitr;
+            Player* plr = *eitr;
+            EOTSCaptureDisplayList::iterator eitr2 = eitr;
             ++eitr;
 
             if (plr->GetDistance2dSq(go) > EOTS_CAPTURE_DISTANCE)
             {
                 disp->erase(eitr2);
-                plr->SendWorldStateUpdate(WORLDSTATE_EOTS_DISPLAYON, 0);            // hide the cp bar
+                plr->SendWorldStateUpdate(WORLDSTATE_EOTS_DISPLAYON, 0); // hide the cp bar
             }
             else
                 plr->SendWorldStateUpdate(WORLDSTATE_EOTS_DISPLAYVALUE, m_CPStatus[i]);
