@@ -140,8 +140,8 @@ class TerokkarForestBannerAI : public GameObjectAIScript
             //   the value of the map is a timestamp of the last update, to avoid cpu time wasted
             //   doing lookups of objects that have already been updated
 
-            unordered_set<PlayerPointer>::iterator itr = _gameobject->GetInRangePlayerSetBegin();
-            unordered_set<PlayerPointer>::iterator itrend = _gameobject->GetInRangePlayerSetEnd();
+            std::unordered_set<PlayerPointer>::iterator itr = _gameobject->GetInRangePlayerSetBegin();
+            std::unordered_set<PlayerPointer>::iterator itrend = _gameobject->GetInRangePlayerSetEnd();
 
             uint32 timeptr = (uint32)UNIXTIME;
             bool in_range;
