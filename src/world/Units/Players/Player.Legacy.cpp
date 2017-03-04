@@ -3922,7 +3922,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         return;
 
     ARCEMU_ASSERT(item != NULL);
-	std::list<ItemSet>::iterator i;
+    std::list<ItemSet>::iterator i;
     ItemProperties const* proto = item->GetItemProperties();
 
     //fast check to skip mod applying if the item doesnt meat the requirements.

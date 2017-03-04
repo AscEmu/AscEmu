@@ -68,9 +68,7 @@ void AccountMgr::ReloadAccounts(bool silent)
     }
 
     // check for any purged/deleted accounts
-    std::map<std::string, Account*>::iterator itr = AccountDatabase.begin();
-
-    for (; itr != AccountDatabase.end();)
+    for ( std::map<std::string, Account*>::iterator itr = AccountDatabase.begin(); itr != AccountDatabase.end();)
     {
         std::map<std::string, Account*>::iterator it2 = itr;
         ++itr;
@@ -262,12 +260,9 @@ void AccountMgr::ReloadAccountsCallback()
 BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 {
     Guard lguard(listBusy);
-
-    std::list<IPBan>::iterator itr2 = banList.begin();
-    for (; itr2 != banList.end();)
+    for (std::list<IPBan>::iterator itr2 = banList.begin(); itr2 != banList.end();)
     {
-        std::list<IPBan>::iterator itr = itr2;
-        ++itr2;
+        std::list<IPBan>::iterator itr = ++itr2;
 
         if (ParseCIDRBan(ip_address.s_addr, itr->Mask, itr->Bytes))
         {
@@ -530,8 +525,6 @@ void InformationCore::SendRealms(AuthSocket* Socket)
     Socket->Send((const uint8*)data.contents(), uint32(data.size()));
 
     std::list< LogonCommServerSocket* > ss;
-    std::list< LogonCommServerSocket* >::iterator SSitr;
-
     ss.clear();
 
     serverSocketLock.Acquire();
@@ -553,7 +546,7 @@ void InformationCore::SendRealms(AuthSocket* Socket)
 
     serverSocketLock.Release();
 
-    for (SSitr = ss.begin(); SSitr != ss.end(); ++SSitr)
+    for (std::list< LogonCommServerSocket* >::iterator SSitr = ss.begin(); SSitr != ss.end(); ++SSitr)
         (*SSitr)->RefreshRealmsPop();
 
     ss.clear();
@@ -597,12 +590,10 @@ void InformationCore::CheckServers()
 {
     serverSocketLock.Acquire();
 
-    std::set<LogonCommServerSocket*>::iterator itr, it2;
-    LogonCommServerSocket* s;
-    for (itr = m_serverSockets.begin(); itr != m_serverSockets.end();)
+    for (std::set<LogonCommServerSocket*>::iterator itr = m_serverSockets.begin(); itr != m_serverSockets.end();)
     {
-        s = *itr;
-        it2 = itr;
+        LogonCommServerSocket* s = *itr;
+        std::set<LogonCommServerSocket*>::iterator it2 = itr;
         ++itr;
 
         if (!sLogonServer.IsServerAllowed(s->GetRemoteAddress().s_addr))

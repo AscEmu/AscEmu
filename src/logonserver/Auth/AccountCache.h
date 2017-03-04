@@ -134,8 +134,10 @@ class AccountMgr : public Singleton < AccountMgr >
 
             std::map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
 
-            if (itr == AccountDatabase.end())    pAccount = NULL;
-            else                                pAccount = itr->second;
+            if (itr == AccountDatabase.end())
+                pAccount = NULL;
+            else
+                pAccount = itr->second;
 
             setBusy.Release();
             return pAccount;
@@ -154,8 +156,10 @@ class AccountMgr : public Singleton < AccountMgr >
             // this should already be uppercase!
             std::map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
 
-            if (itr == AccountDatabase.end())    return NULL;
-            else                                return itr->second;
+            if (itr == AccountDatabase.end())
+                return NULL;
+            else
+                return itr->second;
         }
 
         std::map<std::string, Account*> AccountDatabase;

@@ -468,8 +468,8 @@ class SCRIPT_DECL ZMScouts : public GossipScript
             if(!plr)
                 return;
 
-            CreaturePointer  pCreature = NULLCREATURE;
-            pCreature = pObject->IsCreature() ? TO_CREATURE(pObject) : NULLCREATURE;
+            CreaturePointer  pCreature = nullptr;
+            pCreature = pObject->IsCreature() ? TO_CREATURE(pObject) : nullptr;
             if(!pCreature)
                 return;
 

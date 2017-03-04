@@ -256,18 +256,15 @@ void LogonServer::CheckForDeadSockets()
     _authSocketLock.Acquire();
     time_t t = time(NULL);
     time_t diff;
-    std::set<AuthSocket*>::iterator itr = _authSockets.begin();
-    std::set<AuthSocket*>::iterator it2;
-    AuthSocket* s;
 
-    for (itr = _authSockets.begin(); itr != _authSockets.end();)
+    for (std::set<AuthSocket*>::iterator itr = _authSockets.begin(); itr != _authSockets.end();)
     {
-        it2 = itr;
-        s = (*it2);
+        std::set<AuthSocket*>::iterator it2 = itr;
+        AuthSocket* s = (*it2);
         ++itr;
 
         diff = t - s->GetLastRecv();
-        if (diff > 300)           // More than 5mins
+        if (diff > 300) // More than 5mins
         {
             _authSockets.erase(it2);
             s->removedFromSet = true;
