@@ -93,7 +93,7 @@ class TerokkarForestBannerAI : public GameObjectAIScript
 
     public:
 
-        TerokkarForestBannerAI(GameObjectPointer go) : GameObjectAIScript(go)
+        TerokkarForestBannerAI(GameObject* go) : GameObjectAIScript(go)
         {
             m_bannerStatus = BANNER_STATUS_NEUTRAL;
             Status = 50;
@@ -140,13 +140,13 @@ class TerokkarForestBannerAI : public GameObjectAIScript
             //   the value of the map is a timestamp of the last update, to avoid cpu time wasted
             //   doing lookups of objects that have already been updated
 
-            std::unordered_set<PlayerPointer>::iterator itr = _gameobject->GetInRangePlayerSetBegin();
-            std::unordered_set<PlayerPointer>::iterator itrend = _gameobject->GetInRangePlayerSetEnd();
+            std::unordered_set<Player*>::iterator itr = _gameobject->GetInRangePlayerSetBegin();
+            std::unordered_set<Player*>::iterator itrend = _gameobject->GetInRangePlayerSetEnd();
 
             uint32 timeptr = (uint32)UNIXTIME;
             bool in_range;
             bool is_valid;
-            PlayerPointer plr;
+            Player* plr;
 
             for(; itr != itrend; ++itr)
             {
@@ -386,7 +386,7 @@ class TerokkarForestBannerAI : public GameObjectAIScript
 // Zone Hook
 //////////////////////////////////////////////////////////////////////////
 
-void TFZoneHook(PlayerPointer plr, uint32 Zone, uint32 OldZone)
+void TFZoneHook(Player* plr, uint32 Zone, uint32 OldZone)
 {
     if(!plr)
         return;
@@ -443,7 +443,7 @@ void TFSpawnObjects(shared_ptr<MapMgr> pmgr)
     {
         p = &godata[i];
 
-        GameObjectPointer pGo = NULLGOB;
+        GameObject* pGo = nullptr;
         pGo = pmgr->GetInterface()->SpawnGameObject(p->entry, p->posx, p->posy, p->posz, p->facing, false, 0, 0);
         if(!pGo)
             continue;

@@ -145,8 +145,8 @@ namespace SUNWELL_KALECGOS
     coords wp3(1752.924194f, 754.499634f, 181.749878f);
     class DRAGON_KALECGOS : public CreatureAIScript
     {
-            CreaturePointer sathrovar;
-            CreaturePointer darkelf;
+            Creature* sathrovar;
+            Creature* darkelf;
             bool failed;
             bool  success;
             typedef map<uint32, SoundEntryManager*> SAYMAP;
@@ -154,7 +154,7 @@ namespace SUNWELL_KALECGOS
             SAYMAP saymap;
         public:
             ADD_CREATURE_FACTORY_FUNCTION(DRAGON_KALECGOS);
-            DRAGON_KALECGOS(CreaturePointer crc) : CreatureAIScript(crc)
+            DRAGON_KALECGOS(Creature* crc) : CreatureAIScript(crc)
             {
                 success = false;
                 _unit->GetAIInterface()->addWayPoint(CreateWaypoint(1, wp1.x, wp1.y, wp1.z, _unit->GetOrientation(), 1000));
@@ -174,11 +174,11 @@ namespace SUNWELL_KALECGOS
                 tempWp->flags = 768; // fly
                 return tempWp;
             }
-            UnitPointer const GetRandomTarget(uint8 targetFlags)
+            Unit* const GetRandomTarget(uint8 targetFlags)
             {
-                vector<UnitPointer> targetMap;
-                PlayerSet::iterator itr = _unit->GetInRangePlayerSetBegin();
-                for(; itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                vector<Unit*> targetMap;
+
+                for(PlayerSet::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
                     if((*itr) && (*itr)->isAlive())
                     {
@@ -186,15 +186,15 @@ namespace SUNWELL_KALECGOS
                             continue;
                         if((*itr)->FindAura(SPECTRAL_EXHAUSTION) && (targetFlags & SCRIPTTARGETFLAG_NO_EXHAUTION))
                             continue;
-                        targetMap.push_back(static_cast<UnitPointer>((*itr)));
+                        targetMap.push_back(static_cast<Unit*>((*itr)));
                     }
                 }
                 if(targetMap.size() > 0)
                     return targetMap[(uint32)(rand() % targetMap.size())];
                 else
-                    return NULLUNIT;
+                    return nullptr;
             }
-            void const SayYell(CreaturePointer obj, uint32 id, const char* text)
+            void const SayYell(Creature* obj, uint32 id, const char* text)
             {
                 SAYMAP::iterator itr = saymap.find(id);
                 if(itr == saymap.end()) return;
@@ -208,7 +208,7 @@ namespace SUNWELL_KALECGOS
                     saymap.erase(itr);
                 }
             }
-            void OnCombatStart(UnitPointer mTarget)
+            void OnCombatStart(Unit* mTarget)
             {
                 failed = false;
                 _unit->SetStandState(STANDSTATE_STAND);
@@ -224,7 +224,7 @@ namespace SUNWELL_KALECGOS
                 darkelf->GetAIInterface()->AttackReaction(sathrovar, 1);
 
             }
-            void OnTargetDied(UnitPointer mTarget)
+            void OnTargetDied(Unit* mTarget)
             {
 
                 if(rand() % 2)
@@ -232,7 +232,7 @@ namespace SUNWELL_KALECGOS
                 else
                     SayYell(_unit, EVILKALEC_TARGETKILL2, EVILKALEC_TARGETKILL2SPEECH);
             }
-            void OnCombatStop(UnitPointer mTarget)
+            void OnCombatStop(Unit* mTarget)
             {
                 if(failed)
                 {
@@ -240,7 +240,7 @@ namespace SUNWELL_KALECGOS
                     saymap.clear();
                 }
             }
-            void OnDied(UnitPointer mKiller)
+            void OnDied(Unit* mKiller)
             {
                 _unit->SetHealthPct(3); // prevent him from dieing lololol
                 _unit->CastSpell(_unit, KALECGOS_BANISHED_AURA, false);
@@ -432,7 +432,7 @@ namespace SUNWELL_KALECGOS
                 {
                     PauseEvent(spellid, 1000);
                 }
-                UnitPointer target = NULLUNIT;
+                Unit* target = nullptr;
                 switch(spellid)
                 {
                     case KALECGOS_WILDMAGIC:
@@ -508,10 +508,10 @@ namespace SUNWELL_KALECGOS
             map<uint32, SoundEntryManager*> saymap;
         public:
             ADD_CREATURE_FACTORY_FUNCTION(SATHROVAR);
-            SATHROVAR(CreaturePointer crc) : CreatureAIScript(crc) {}
-            UnitPointer const GetRandomTarget()
+            SATHROVAR(Creature* crc) : CreatureAIScript(crc) {}
+            Unit* const GetRandomTarget()
             {
-                vector<UnitPointer> targetMap;
+                vector<Unit*> targetMap;
                 PlayerSet::iterator itr = _unit->GetInRangePlayerSetBegin();
                 for(; itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
@@ -519,7 +519,7 @@ namespace SUNWELL_KALECGOS
                     {
                         if((*itr)->FindAura(SPECTRAL_PLAYERBUFF) == NULL)
                             continue;
-                        targetMap.push_back(static_cast<UnitPointer>((*itr)));
+                        targetMap.push_back(static_cast<Unit*>((*itr)));
                     }
                 }
                 if(targetMap.size() > 0)
@@ -567,7 +567,7 @@ namespace SUNWELL_KALECGOS
             {
                 _unit->CastSpell(_unit, SPECTRAL_BOSSBUFF, false);
             }
-            void OnCombatStart(UnitPointer mTarget)
+            void OnCombatStart(Unit* mTarget)
             {
                 FillSayMap();
                 InitializeSpells();
@@ -599,9 +599,9 @@ namespace SUNWELL_KALECGOS
                 }
 
             }
-            void OnTargetDied(UnitPointer mTarget)
+            void OnTargetDied(Unit* mTarget)
             {
-                if(mTarget->IsCreature() && TO_CREATURE(mTarget)->GetEntry() == CN_DARK_ELF)
+                if(mTarget->IsCreature() && mTarget->GetEntry() == CN_DARK_ELF)
                 {
                     StopAllEvents();
                     PlayerSet::iterator itr = _unit->GetInRangePlayerSetBegin();
@@ -613,7 +613,7 @@ namespace SUNWELL_KALECGOS
                     _unit->Despawn(1000, 20000);
                 }
             }
-            void OnDied(UnitPointer mKiller)
+            void OnDied(Unit* mKiller)
             {
                 SayYell(SATHROVAR_DEATH, SATHROVAR_DEATHSPEECH);
             }
@@ -624,7 +624,7 @@ namespace SUNWELL_KALECGOS
                     PauseEvent(spellid, 1000);
                     return;
                 }
-                UnitPointer target = NULLUNIT;
+                Unit* target = nullptr;
                 switch(spellid)
                 {
                     case SATHROVAR_CORRUPTING_STRIKE:
@@ -711,11 +711,11 @@ namespace SUNWELL_KALECGOS
     {
             map<uint32, SoundEntryManager*> saymap;
             vector<CallBackManager*> cbMap;
-            CreaturePointer sathrovar;
+            Creature* sathrovar;
         public:
             ADD_CREATURE_FACTORY_FUNCTION(DARK_ELF);
-            DARK_ELF(CreaturePointer crc) : CreatureAIScript(crc) {}
-            void OnCombatStart(UnitPointer mTarget)
+            DARK_ELF(Creature* crc) : CreatureAIScript(crc) {}
+            void OnCombatStart(Unit* mTarget)
             {
                 FillSayMap();
                 InitializeSpells();
@@ -726,7 +726,7 @@ namespace SUNWELL_KALECGOS
                 }
                 else
                 {
-                    sathrovar = TO_CREATURE(mTarget);
+                    Creature* sathrovar = static_cast<Creature*>(mTarget);	
                 }
             }
             void AIUpdate()
@@ -751,7 +751,7 @@ namespace SUNWELL_KALECGOS
                 if(_unit->GetAIInterface()->GetNextTarget() != sathrovar)
                     _unit->GetAIInterface()->WipeCurrentTarget();
             }
-            void OnCombatStop(UnitPointer mTarget)
+            void OnCombatStop(Unit* mTarget)
             {
                 saymap.clear();
                 cbMap.clear();
@@ -851,7 +851,7 @@ namespace SUNWELL_KALECGOS
             }
 
     };
-    bool HandleSpectralTeleport(uint32 i, SpellPointer pSpell)
+    bool HandleSpectralTeleport(uint32 i, Spell* pSpell)
     {
         if(i) return false;
         if(pSpell->p_caster)

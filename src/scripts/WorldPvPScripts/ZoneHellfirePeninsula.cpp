@@ -94,9 +94,9 @@ class HellfirePeninsulaBannerAI : public GameObjectAIScript
         uint32 m_bannerStatus;
 
     public:
-        GameObjectPointer  pBanner;
+        GameObject*  pBanner;
 
-        HellfirePeninsulaBannerAI(GameObjectPointer go) : GameObjectAIScript(go)
+        HellfirePeninsulaBannerAI(GameObject* go) : GameObjectAIScript(go)
         {
             m_bannerStatus = BANNER_STATUS_NEUTRAL;
             Status = 50;
@@ -133,13 +133,13 @@ class HellfirePeninsulaBannerAI : public GameObjectAIScript
             //   the value of the map is a timestamp of the last update, to avoid cpu time wasted
             //   doing lookups of objects that have already been updated
 
-            std::unordered_set<PlayerPointer>::iterator itr = _gameobject->GetInRangePlayerSetBegin();
-            std::unordered_set<PlayerPointer>::iterator itrend = _gameobject->GetInRangePlayerSetEnd();
+            std::unordered_set<Player*>::iterator itr = _gameobject->GetInRangePlayerSetBegin();
+            std::unordered_set<Player*>::iterator itrend = _gameobject->GetInRangePlayerSetEnd();
 
             uint32 timeptr = (uint32)UNIXTIME;
             bool in_range;
             bool is_valid;
-            PlayerPointer plr = nullptr;
+            Player* plr = nullptr;
 
             for(; itr != itrend; ++itr)
             {
@@ -389,7 +389,7 @@ class HellfirePeninsulaBannerAI : public GameObjectAIScript
 // Zone Hook
 //////////////////////////////////////////////////////////////////////////
 
-void ZoneHook(PlayerPointer plr, uint32 Zone, uint32 OldZone)
+void ZoneHook(Player* plr, uint32 Zone, uint32 OldZone)
 {
     static uint32 spellids[2] = { HELLFIRE_SUPERORITY_ALLIANCE, HELLFIRE_SUPERORITY_HORDE };
     if(Zone == ZONE_HELLFIRE_PENINSULA)
@@ -451,11 +451,11 @@ void SpawnObjects(shared_ptr<MapMgr> pmgr)
         p = &godata[i];
         p2 = &godata_banner[i];
 
-        GameObjectPointer pGo = pmgr->GetInterface()->SpawnGameObject(p->entry, p->posx, p->posy, p->posz, p->facing, false, 0, 0);
+        GameObject* pGo = pmgr->GetInterface()->SpawnGameObject(p->entry, p->posx, p->posy, p->posz, p->facing, false, 0, 0);
         if(pGo == NULL)
             continue;
 
-        GameObjectPointer pGo2 = pmgr->GetInterface()->SpawnGameObject(p2->entry, p2->posx, p2->posy, p2->posz, p2->facing, false, 0, 0);
+        GameObject* pGo2 = pmgr->GetInterface()->SpawnGameObject(p2->entry, p2->posx, p2->posy, p2->posz, p2->facing, false, 0, 0);
         if(pGo2 == NULL)
             continue;
 
@@ -484,7 +484,6 @@ void SpawnObjects(shared_ptr<MapMgr> pmgr)
     }
 }
 
-
 void SetupPvPHellfirePeninsula(ScriptMgr* mgr)
 {
     // register instance hooker
@@ -500,5 +499,3 @@ void SetupPvPHellfirePeninsula(ScriptMgr* mgr)
     g_towerOwners[TOWER_OVERLOOK] = atoi(toverlook.c_str());
     g_towerOwners[TOWER_BROKENHILL] = atoi(tbrokenhill.c_str());
 }
-
-
