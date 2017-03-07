@@ -2420,7 +2420,7 @@ class KilrekAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit* > TargetTable;
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if ((*itr) != _unit && isHostile(_unit, (*itr)) && (*itr)->IsUnit())
                     {
@@ -2594,7 +2594,7 @@ class FiendishImpAI : public CreatureAIScript
             Unit* pUnit;
             float dist;
 
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeOppFactsSetBegin(); itr != _unit->GetInRangeOppFactsSetEnd(); ++itr)
+            for (auto itr = _unit->GetInRangeOppFactsSetBegin(); itr != _unit->GetInRangeOppFactsSetEnd(); ++itr)
             {
                 if (!(*itr)->IsUnit())
                     continue;
@@ -3772,7 +3772,7 @@ class NightbaneAI : public CreatureAIScript
 
             target = NULL;
             //fireball barrage check
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+            for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 if ((*itr)->IsPlayer())
                 {
@@ -3816,7 +3816,7 @@ class NightbaneAI : public CreatureAIScript
             if (!mTailSweepTimer)
             {
                 Unit* target = NULL;
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if ((*itr)->IsPlayer())
                     {
@@ -3929,7 +3929,7 @@ class NightbaneAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if ((*itr)->IsUnit())
                     {
@@ -4113,7 +4113,7 @@ class DorotheeAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {

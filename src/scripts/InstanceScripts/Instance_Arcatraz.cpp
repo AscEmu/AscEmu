@@ -133,6 +133,7 @@ class ZerekethAI : public MoonScriptBossAI
 
             // despawn voids
             Creature* creature = NULL;
+            for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 Object* obj = *itr;
                 if (obj->IsCreature())

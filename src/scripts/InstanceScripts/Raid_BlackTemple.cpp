@@ -1668,7 +1668,7 @@ class NajentusAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {
@@ -2187,7 +2187,7 @@ class GurtoggAI : public CreatureAIScript
                     _unit->setAttackTimer(spells[7].attackstoptimer, false);
 
                     std::vector<Unit*> TargetTable;
-                    for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                    for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                     {
                         if (isHostile(_unit, (*itr)) && (*itr) != _unit && (*itr)->IsUnit())
                         {
@@ -2304,7 +2304,7 @@ class GurtoggAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {
@@ -2685,7 +2685,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                         {
 
                             Creature* creature = NULL;
-                            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                            for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                             {
                                 if ((*itr)->IsCreature())
                                 {
@@ -2985,7 +2985,7 @@ class ShahrazAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {
@@ -3405,7 +3405,7 @@ class TeronGorefiendAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {
