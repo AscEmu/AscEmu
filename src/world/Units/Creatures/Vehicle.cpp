@@ -565,7 +565,7 @@ void Vehicle::InstallAccessories()
     if (v == nullptr)
         return;
 
-    for (std::vector< VehicleAccessoryEntry* >::iterator itr = v->begin(); itr != v->end(); ++itr)
+    for (auto itr = v->begin(); itr != v->end(); ++itr)
     {
         VehicleAccessoryEntry *accessory = *itr;
 
@@ -594,7 +594,7 @@ void Vehicle::InstallAccessories()
 
 void Vehicle::RemoveAccessories()
 {
-    for (std::vector< uint64 >::iterator itr = installed_accessories.begin(); itr != installed_accessories.end(); ++itr)
+    for (auto itr = installed_accessories.begin(); itr != installed_accessories.end(); ++itr)
     {
         Unit* u = owner->GetMapMgr()->GetUnit(*itr);
         if (u == NULL)

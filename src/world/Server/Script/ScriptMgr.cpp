@@ -169,7 +169,7 @@ void ScriptMgr::LoadScripts()
         LogDetail("ScriptMgr : Loaded %u external libraries.", count);
         LogNotice("ScriptMgr : Loading optional scripting engine(s)...");
 
-        for (std::vector< ScriptingEngine_dl >::iterator itr = Engines.begin(); itr != Engines.end(); ++itr)
+        for (auto itr = Engines.begin(); itr != Engines.end(); ++itr)
         {
             itr->InitializeCall(this);
             dynamiclibs.push_back(itr->dl);

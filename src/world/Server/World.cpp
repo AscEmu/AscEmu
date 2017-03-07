@@ -685,7 +685,7 @@ bool World::SetInitialWorldSettings()
         if (talent_class > 0 && talent_class < MAX_TALENT_CLASS)
             InspectTalentTabPages[talent_class][talent_tab->TabPage] = talent_tab->TalentTabID;
 
-        for (std::map<uint32, uint32>::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
+        for (auto itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
         {
             uint32 talent_id = itr->first & 0xFFFF;
             auto talent_info = sTalentStore.LookupEntry(talent_id);

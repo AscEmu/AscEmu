@@ -385,7 +385,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
     if (modifier != nullptr)
     {
         // Apply this data.
-        for (std::vector<ReputationMod>::iterator itr = modifier->mods.begin(); itr != modifier->mods.end(); ++itr)
+        for (auto itr = modifier->mods.begin(); itr != modifier->mods.end(); ++itr)
         {
             if (!(*itr).faction[team])
                 continue;

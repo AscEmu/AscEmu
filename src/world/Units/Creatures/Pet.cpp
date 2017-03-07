@@ -2130,8 +2130,8 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
         }
     }
 
-    //Stop players from casting
-    for (std::set< Object* >::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
+    // Stop players from casting
+    for (auto itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
     {
         Unit* attacker = static_cast< Unit* >(*itr);
 
