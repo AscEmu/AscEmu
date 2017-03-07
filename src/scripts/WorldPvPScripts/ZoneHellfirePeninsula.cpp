@@ -150,7 +150,7 @@ class HellfirePeninsulaBannerAI : public GameObjectAIScript
 
                 in_range = (_gameobject->GetDistance2dSq((*itr)) <= BANNER_RANGE) ? true : false;
 
-                 map<uint32, uint32>::iterator it2 = StoredPlayers.find((*itr)->GetLowGUID());
+                map<uint32, uint32>::iterator it2 = StoredPlayers.find((*itr)->GetLowGUID());
                 if(it2 == StoredPlayers.end())
                 {
                     // new player :)

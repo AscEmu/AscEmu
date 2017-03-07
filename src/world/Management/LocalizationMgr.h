@@ -132,7 +132,7 @@ public:
     template <typename T>
     void CopyHashMap(std::unordered_map<uint32_t, T>* src, std::unordered_map<uint32_t, T>* dest)
     {
-        for (typename std::unordered_map<uint32_t, T>::iterator itr = src->begin(); itr != src->end(); ++itr)
+        for (auto itr = src->begin(); itr != src->end(); ++itr)
             dest->insert(std::make_pair(itr->first, itr->second));
     }
 

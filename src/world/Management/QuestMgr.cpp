@@ -1790,7 +1790,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
             return false;
         }
 
-        for (std::list<QuestRelation*>::const_iterator itr = q_begin; itr != q_end; ++itr)
+        for (itr = q_begin; itr != q_end; ++itr)
             if (sQuestMgr.CalcQuestStatus(qst_giver, plr, *itr) >= QMGR_QUEST_CHAT)
                 break;
 
@@ -1803,7 +1803,7 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 
         if ((status == QMGR_QUEST_AVAILABLE) || (status == QMGR_QUEST_REPEATABLE) || (status == QMGR_QUEST_CHAT))
         {
-            sQuestMgr.BuildQuestDetails(&data, (*itr)->qst, qst_giver, 1, plr->GetSession()->language, plr);		// 1 because we have 1 quest, and we want goodbye to function
+            sQuestMgr.BuildQuestDetails(&data, (*itr)->qst, qst_giver, 1, plr->GetSession()->language, plr); // 1 because we have 1 quest, and we want goodbye to function
             plr->GetSession()->SendPacket(&data);
             LOG_DEBUG("WORLD: Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
 
@@ -1972,7 +1972,7 @@ void QuestMgr::LoadExtraQuestStuff()
             const_cast<QuestProperties*>(qst)->quest_list.clear();
             std::string quests = std::string(qst->x_or_y_quest_string);
             std::vector<std::string> qsts = Util::SplitStringBySeperator(quests, " ");
-            for (std::vector<std::string>::iterator iter = qsts.begin(); iter != qsts.end(); ++iter)
+            for (auto iter = qsts.begin(); iter != qsts.end(); ++iter)
             {
                 uint32 id = atol((*iter).c_str());
                 if (id)
@@ -1984,7 +1984,7 @@ void QuestMgr::LoadExtraQuestStuff()
         {
             std::string quests = std::string(qst->remove_quests);
             std::vector<std::string> qsts = Util::SplitStringBySeperator(quests, " ");
-            for (std::vector<std::string>::iterator iter = qsts.begin(); iter != qsts.end(); ++iter)
+            for (auto iter = qsts.begin(); iter != qsts.end(); ++iter)
             {
                 uint32 id = atol((*iter).c_str());
                 if (id)

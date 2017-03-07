@@ -1072,15 +1072,13 @@ void Instance::SaveToDB()
 
     ss.rdbuf()->str("");
 
-    std::set<uint32>::iterator itr;
-
     ss << "INSERT INTO instances VALUES("
         << m_instanceId << ","
         << m_mapId << ","
         << (uint32)m_creation << ","
         << (uint32)m_expiration << ",'";
 
-    for (itr = m_killedNpcs.begin(); itr != m_killedNpcs.end(); ++itr)
+    for (auto itr = m_killedNpcs.begin(); itr != m_killedNpcs.end(); ++itr)
         ss << (*itr) << " ";
 
     ss << "',"
