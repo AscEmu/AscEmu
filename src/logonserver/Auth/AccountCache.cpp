@@ -68,19 +68,16 @@ void AccountMgr::ReloadAccounts(bool silent)
     }
 
     // check for any purged/deleted accounts
-    for ( std::map<std::string, Account*>::iterator itr = AccountDatabase.begin(); itr != AccountDatabase.end();)
+    for (auto itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
     {
-        std::map<std::string, Account*>::iterator it2 = itr;
-        ++itr;
-
-        if (account_list.find(it2->first) == account_list.end())
+        if (account_list.find(itr->first) == account_list.end())
         {
-            delete it2->second;
-            AccountDatabase.erase(it2);
+            delete itr->second;
+            AccountDatabase.erase(itr);
         }
         else
         {
-            it2->second->UsernamePtr = (std::string*)&it2->first;
+            itr->second->UsernamePtr = (std::string*)&itr->first;
         }
     }
 
@@ -260,10 +257,8 @@ void AccountMgr::ReloadAccountsCallback()
 BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 {
     Guard lguard(listBusy);
-    for (std::list<IPBan>::iterator itr2 = banList.begin(); itr2 != banList.end();)
+    for (auto itr = banList.begin(); itr != banList.end(); ++itr)
     {
-        std::list<IPBan>::iterator itr = ++itr2;
-
         if (ParseCIDRBan(ip_address.s_addr, itr->Mask, itr->Bytes))
         {
             // ban hit
@@ -281,7 +276,6 @@ BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
             }
         }
     }
-
     return BAN_STATUS_NOT_BANNED;
 }
 
@@ -323,7 +317,7 @@ InformationCore::~InformationCore()
 bool IPBanner::Remove(const char* ip)
 {
     listBusy.Acquire();
-    for (std::list<IPBan>::iterator itr = banList.begin(); itr != banList.end(); ++itr)
+    for (auto itr = banList.begin(); itr != banList.end(); ++itr)
     {
         if (!strcmp(ip, itr->db_ip.c_str()))
         {

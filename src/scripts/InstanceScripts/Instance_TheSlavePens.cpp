@@ -1374,7 +1374,7 @@ class RokmarTheCracklerAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {
@@ -1551,7 +1551,7 @@ class QuagmirranAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;        // From M4ksiu - Big THX to Capt
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {
