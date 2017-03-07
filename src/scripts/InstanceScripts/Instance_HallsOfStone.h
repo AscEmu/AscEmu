@@ -131,7 +131,6 @@ enum CreatureSpells
 
 enum CreatureSay
 {
-
 };
 
 #endif // _INSTANCE_HALLS_OF_STONE_H

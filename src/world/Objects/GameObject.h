@@ -60,7 +60,7 @@ enum GameObjectOverrides
     GAMEOBJECT_ONMOVEWIDE = 0x08,               /// When this gameobject moves and sends updates about it's position, do so in the second range - MapMgr::ChangeObjectLocation, +/- 6 units wide instead of +/- 1.
     GAMEOBJECT_OVERRIDE_FLAGS = 0x10,           ///\todo UNIMPLEMENTED, Let the core decide about the flags sent in the A9 - example: 252 instead of 352 for Deeprun Tram.
     GAMEOBJECT_OVERRIDE_BYTES1 = 0x20,          ///\todo UNIMPLEMENTED, Let the core use the full field instead an uint8 in GAMEOBJECT_BYTES_1, if the database creator knows what to do with it.
-    GAMEOBJECT_OVERRIDE_PARENTROT = 0x40,       /// Makes it possible for the core to skip calculating these fields and use whatever was specified in the spawn.
+    GAMEOBJECT_OVERRIDE_PARENTROT = 0x40        /// Makes it possible for the core to skip calculating these fields and use whatever was specified in the spawn.
     /// Later other types might folow, or the upper bytes might get used for the AREAWIDE option in the overrides variable...
 };
 
@@ -329,7 +329,7 @@ enum GameObjectBytes
     GAMEOBJECT_BYTES_STATE          = 0,
     GAMEOBJECT_BYTES_TYPE_ID        = 1,
     GAMEOBJECT_BYTES_UNK            = 2,        ///\todo unknown atm
-    GAMEOBJECT_BYTES_ANIMPROGRESS   = 3,
+    GAMEOBJECT_BYTES_ANIMPROGRESS   = 3
 };
 
 enum GameObjectTypes

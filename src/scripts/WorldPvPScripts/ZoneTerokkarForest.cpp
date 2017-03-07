@@ -20,7 +20,7 @@ enum Towers
     TOWER_3, // North-east
     TOWER_4, // South-east
     TOWER_5, // South
-    TOWER_COUNT,
+    TOWER_COUNT
 };
 
 // Tower GameObject Ids
@@ -80,7 +80,7 @@ enum BannerStatus
 {
     BANNER_STATUS_NEUTRAL = 0,
     BANNER_STATUS_ALLIANCE = 1,
-    BANNER_STATUS_HORDE = 2,
+    BANNER_STATUS_HORDE = 2
 };
 
 class TerokkarForestBannerAI : public GameObjectAIScript

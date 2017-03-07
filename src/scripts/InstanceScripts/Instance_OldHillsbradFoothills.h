@@ -21,7 +21,7 @@
 
 enum OHF_ENTRIES
 {
-    MAP_OLD_HILSBRAD = 560,
+    MAP_OLD_HILSBRAD = 560
 };
 
 enum Data
@@ -51,23 +51,20 @@ enum CreatureEntry
     CN_BRAZEN = 18725,
     CN_LIEUTENANT_DRAKE = 17848,
     CN_THRALL = 17876
-
 };
 
 enum CreatureSpells
 {
-
 };
 
 enum CreatureSay
 {
-
 };
 
 enum GameObjectEntry
 {
     GO_LODGE_ABLAZE = 182589,
-    GO_FIRE = 183816,
+    GO_FIRE = 183816
 };
 
 enum eGossipTexts
@@ -81,7 +78,7 @@ enum eGossipTexts
     //GossipMenu
     EROZION_NEED_PACKET     = 425,
     BRAZAN_DURNHOLDE_KEEP   = 426,
-    THRALL_START_ESCORT     = 427,
+    THRALL_START_ESCORT     = 427
 };
 
 #endif // _INSTANCE_OLD_HILLSBRAD_FOOTHILLS_H

@@ -41,7 +41,6 @@ enum CreatureSpells
 
 enum CreatureSay
 {
-
 };
 
 enum DeadMinesGOIDs

@@ -28,7 +28,7 @@ enum CreatureEntry
     CN_AVATAR_OF_THE_MARTYRED   = 18478,
 
     // Exarch MaladaarAI
-    CN_EXARCH_MALADAAR          = 18373,
+    CN_EXARCH_MALADAAR          = 18373
 
 };
 
@@ -49,8 +49,8 @@ enum CreatureSpells
     SOUL_SCREAM             = 32421,
     RIBBON_OF_SOULS         = 32422,
     STOLEN_SOUL             = 32346,
-    SUMMON_AVATAR           = 32424,
-    //SOUL_CLEAVE             = 32346,
+    SUMMON_AVATAR           = 32424
+    //SOUL_CLEAVE           = 32346
 
 };
 
@@ -63,7 +63,7 @@ enum CreatureSay
     SAY_MALADAAR_04         = 4572,     // These walls will be your tomb! old: These walls will be your DOOM!
     SAY_MALADAAR_05         = 4573,     // Now you'll stay... for eternity. old: Haha, now you'll stay for eternity! Mwahahah!
     SAY_MALADAAR_06         = 4574,     // This is... where I belong.
-    SAY_MALADAAR_07         = 4566,     // You have defiled the resting place of our ancestors. For this offense, there can be but one punishment...
+    SAY_MALADAAR_07         = 4566      // You have defiled the resting place of our ancestors. For this offense, there can be but one punishment...
 
 };
 

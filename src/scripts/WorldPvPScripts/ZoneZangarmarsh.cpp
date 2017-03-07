@@ -17,7 +17,7 @@ enum Towers
 {
     TOWER_EAST,
     TOWER_WEST,
-    TOWER_COUNT,
+    TOWER_COUNT
 };
 
 // Tower GameObject Ids
@@ -129,7 +129,7 @@ enum BannerStatus
 {
     BANNER_STATUS_NEUTRAL = 0,
     BANNER_STATUS_ALLIANCE = 1,
-    BANNER_STATUS_HORDE = 2,
+    BANNER_STATUS_HORDE = 2
 };
 
 class ZangarmarshBannerAI : public GameObjectAIScript

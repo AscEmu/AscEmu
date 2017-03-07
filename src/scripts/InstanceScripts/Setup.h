@@ -101,7 +101,7 @@ struct ScriptSpell
     uint32 phase;
 };
 
-enum SPELL_TARGETS
+enum Spell_Targets
 {
     SPELL_TARGET_SELF,
     SPELL_TARGET_CURRENT_ENEMY,

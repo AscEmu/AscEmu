@@ -193,7 +193,7 @@ class Spell;
 #define CURRENCYTOKEN_SLOT_END      150
 
 /// for SMSG_INVENTORY_CHANGE_FAILURE
-enum INV_ERR
+enum Inv_Err
 {
     INV_ERR_OK,
     INV_ERR_YOU_MUST_REACH_LEVEL_N,
@@ -300,7 +300,7 @@ enum CanAffordItem
     CAN_AFFORD_ITEM_ERROR_REPUTATION                = 12
 };
 
-enum ITEM_STAT_TYPE
+enum Item_Stat_Type
 {
     POWER                                   = 0,
     HEALTH                                  = 1,
@@ -359,7 +359,7 @@ enum ITEM_SPELLTRIGGER_TYPE
     LEARNING            = 6
 };
 
-enum ITEM_BONDING_TYPE
+enum Item_Bonding_Type
 {
     ITEM_BIND_NONE          = 0,
     ITEM_BIND_ON_PICKUP     = 1,
@@ -369,7 +369,7 @@ enum ITEM_BONDING_TYPE
     ITEM_BIND_QUEST2        = 5
 };
 
-enum INVENTORY_TYPES
+enum Inventory_Types
 {
     INVTYPE_NON_EQUIP       = 0x00,
     INVTYPE_HEAD            = 0x01,
@@ -403,7 +403,7 @@ enum INVENTORY_TYPES
     NUM_INVENTORY_TYPES     = 0x1d
 };
 
-enum ITEM_CLASS
+enum Item_Class
 {
     ITEM_CLASS_CONSUMABLE           = 0,
     ITEM_CLASS_CONTAINER            = 1,
@@ -480,10 +480,10 @@ enum Item_Subclass
     ITEM_SUBCLASS_QUIVER_QUIVER             = 2,
 
     // Misc
-    ITEM_SUBCLASS_MISC_JUNK                 = 0,
+    ITEM_SUBCLASS_MISC_JUNK                 = 0
 };
 
-enum ITEM_QUALITY
+enum Item_Quality
 {
     ITEM_QUALITY_POOR_GREY              = 0,
     ITEM_QUALITY_NORMAL_WHITE           = 1,
@@ -495,7 +495,7 @@ enum ITEM_QUALITY
     ITEM_QUALITY_HEIRLOOM_LIGHT_YELLOW  = 7
 };
 
-enum ITEM_FLAG
+enum Item_Flag
 {
     ITEM_FLAG_SOULBOUND        = 0x00000001, // not used in proto
     ITEM_FLAG_CONJURED         = 0x00000002,
@@ -531,12 +531,12 @@ enum ITEM_FLAG
     ITEM_FLAG_UNKNOWN_32       = 0x80000000
 };
 
-enum ITEM_FLAGS2
+enum Item_Flags2
 {
     ITEM_FLAG2_HORDE_ONLY               = 0x00001,
     ITEM_FLAG2_ALLIANCE_ONLY            = 0x00002,
     ITEM_FLAG2_EXT_COST_REQUIRES_GOLD   = 0x00004,
-    ITEM_FLAG2_NEED_ROLL_DISABLED       = 0x00100,
+    ITEM_FLAG2_NEED_ROLL_DISABLED       = 0x00100
 };
 
 /// dictates what bag-types an item can go into
@@ -559,7 +559,7 @@ enum SPECIAL_ITEM_TYPE
     ITEM_TYPE_QUEST_ITEMS    = 0x4000       // Quest items.
 };
 
-enum SOCKET_GEM_COLOR
+enum Socket_Gem_Color
 {
     GEM_META_SOCKET         = 1,
     GEM_RED_SOCKET          = 2,
@@ -567,7 +567,7 @@ enum SOCKET_GEM_COLOR
     GEM_BLUE_SOCKET         = 8
 };
 
-enum ITEM_LIMIT_FLAGS
+enum Item_Limit_Flags
 {
     ILFLAG_NONE             = 0,
     ILFLAG_EQUIP_ONLY       = 1

@@ -1388,7 +1388,7 @@ class AstralFlareAI : public MoonScriptCreatureAI
 #define SHADOWOFARAN        18254
 #define SHADOWPYRO            29978
 
-enum SUPERSPELL
+enum SuperSpell
 {
     SUPER_FLAME = 0,
     SUPER_BLIZZARD = 1,

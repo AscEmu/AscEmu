@@ -71,7 +71,7 @@ enum ServerString
     SS_BANNED_FOR_TIME,                 // "You have been banned for: %s"
 
 
-    SS_BG_REMOVE_QUEUE_INF,             // "You were removed from the queue for the battleground for not joining after 1 minute 20 seconds."
+    SS_BG_REMOVE_QUEUE_INF              // "You were removed from the queue for the battleground for not joining after 1 minute 20 seconds."
 
 };
 

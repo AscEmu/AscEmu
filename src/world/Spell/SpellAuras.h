@@ -25,7 +25,7 @@
 #include "Spell/Spell.h"
 
 /// 4-bit flag
-enum AURA_FLAGS
+enum Aura_Flags
 {
     AFLAG_EMPTY         = 0x00,
     AFLAG_EFFECT_1      = 0x01,
@@ -39,7 +39,7 @@ enum AURA_FLAGS
     AFLAG_NEGATIVE      = 0x80
 };
 
-enum AURA_INTERNAL_USAGE_FLAGS
+enum Aura_Internal_Usage_Flags
 {
     //if all 3 mods are resisted then we can send client as a fully resisted spell.
     //don't change the value of these !
@@ -48,7 +48,7 @@ enum AURA_INTERNAL_USAGE_FLAGS
     MOD_2_RESISTED      = 4
 };
 
-enum AURA_STATE_FLAGS
+enum Aura_State_Flags
 {
     AURASTATE_NONE                      = 0x000000,     // 0
     AURASTATE_FLAG_DODGE_BLOCK          = 0x000001,     // 1
@@ -69,7 +69,7 @@ enum AURA_STATE_FLAGS
     AURASTATE_FLAG_HEALTH75             = 0x400000      // 4194304
 };
 
-enum MOD_TYPES
+enum Mod_Types
 {
     SPELL_AURA_NONE = 0,                                                // None
     SPELL_AURA_BIND_SIGHT = 1,                                          // Bind Sight
@@ -362,7 +362,7 @@ enum MOD_TYPES
     SPELL_AURA_PREVENT_RESURRECTION = 314,
     SPELL_AURA_315 = 315,
     SPELL_AURA_316 = 316,
-    TOTAL_SPELL_AURAS = 317,
+    TOTAL_SPELL_AURAS = 317
 };
 
 enum AuraTickFlags

@@ -181,11 +181,11 @@ class HallsOfLightningScript : public MoonInstanceScript
 
 #define TIMER_STANCE_CHANGE            18000
 
-enum GENERAL_STANCES
+enum General_Stances
 {
     STANCE_BATTLE = 1,
     STANCE_BERSERKER = 2,
-    STANCE_DEFENSIVE = 3,
+    STANCE_DEFENSIVE = 3
 };
 
 /////////////////////////////////////////////////////////////////////////////////

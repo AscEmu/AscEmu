@@ -35,15 +35,14 @@ enum CreatureEntry
     CN_KING_DRED            = 27483,
 
     // TheProphetTaronjaAI
-    CN_THE_PROPHET_THARONJA = 26632,
+    CN_THE_PROPHET_THARONJA = 26632
 
 };
 
 enum CreatureSpells
 {
     // NovosTheSummonerAI
-    SPELL_ARCANE_FIELD      = 47346,
-
+    SPELL_ARCANE_FIELD      = 47346
 };
 
 enum CreatureSay
@@ -67,7 +66,7 @@ enum GameObjectEntry
     GO_RITUAL_CRYSTAL_ENTRY_1   = 189299,
     GO_RITUAL_CRYSTAL_ENTRY_2   = 189300,
     GO_RITUAL_CRYSTAL_ENTRY_3   = 189301,
-    GO_RITUAL_CRYSTAL_ENTRY_4   = 189302,   //make sure that you doesn't have these on the map
+    GO_RITUAL_CRYSTAL_ENTRY_4   = 189302    //make sure that you doesn't have these on the map
 };
 
 #endif // _INSTANCE_DRAK_THARON_KEEP_H

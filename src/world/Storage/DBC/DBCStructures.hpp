@@ -1485,7 +1485,7 @@ namespace DBC
             VEHICLE_SEAT_FLAG_CAN_ATTACK                 = 0x00004000,           // Can attack, cast spells and use items from vehicle?
             VEHICLE_SEAT_FLAG_USABLE                     = 0x02000000,           // Lua_CanExitVehicle
             VEHICLE_SEAT_FLAG_CAN_SWITCH                 = 0x04000000,           // Lua_CanSwitchVehicleSeats
-            VEHICLE_SEAT_FLAG_CAN_CAST                   = 0x20000000,           // Lua_UnitHasVehicleUI
+            VEHICLE_SEAT_FLAG_CAN_CAST                   = 0x20000000            // Lua_UnitHasVehicleUI
         };
 
         enum VehicleSeatFlagsB
@@ -1493,7 +1493,7 @@ namespace DBC
             VEHICLE_SEAT_FLAG_B_NONE                     = 0x00000000,
             VEHICLE_SEAT_FLAG_B_USABLE_FORCED            = 0x00000002, 
             VEHICLE_SEAT_FLAG_B_USABLE_FORCED_2          = 0x00000040,
-            VEHICLE_SEAT_FLAG_B_USABLE_FORCED_3          = 0x00000100,
+            VEHICLE_SEAT_FLAG_B_USABLE_FORCED_3          = 0x00000100 
         };
 
         struct VehicleSeatEntry

@@ -19,16 +19,16 @@
 #ifndef __WORLDCREATOR_DEFINES_HPP
 #define __WORLDCREATOR_DEFINES_HPP
 
-enum INSTANCE_TYPE
+enum Instance_Type
 {
     INSTANCE_NULL,
     INSTANCE_RAID,
     INSTANCE_NONRAID,
     INSTANCE_BATTLEGROUND,
-    INSTANCE_MULTIMODE,
+    INSTANCE_MULTIMODE
 };
 
-enum INSTANCE_ABORT_ERROR
+enum Instance_Abort_Error
 {
     INSTANCE_OK                                 = 0x00,
     INSTANCE_ABORT_ERROR_ERROR                  = 0x01,
@@ -45,7 +45,7 @@ enum INSTANCE_ABORT_ERROR
     INSTANCE_ABORT_MAP_NOT_ALLOWED              = 0x10
 };
 
-enum INSTANCE_RESET_ERROR
+enum Instance_Reset_Error
 {
     INSTANCE_RESET_ERROR_PLAYERS_INSIDE         = 0x00,
     INSTANCE_RESET_ERROR_MEMBERS_OFFLINE        = 0x01,

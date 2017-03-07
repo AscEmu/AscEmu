@@ -91,7 +91,7 @@ enum IceCrownCitadelCNentry
    CN_COLDFLAME             = 36672,
    CN_BONE_SPIKE            = 36619,
    CN_LADY_DEATHWHISPER     = 36855,
-   CN_VALITHRIA_DREAMWALKER = 36789,
+   CN_VALITHRIA_DREAMWALKER = 36789
 };
 
 // CN ids for Encounter State ?!?

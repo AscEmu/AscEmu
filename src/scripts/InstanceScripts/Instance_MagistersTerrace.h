@@ -73,7 +73,7 @@ enum CreatureEntry
     CN_SB_MAGE_GUARD        = 24683,
 
     //Sunblade Magister
-    CN_SB_MAGISTER          = 24685,
+    CN_SB_MAGISTER          = 24685
 };
 
 enum CreatureSpells
@@ -83,7 +83,7 @@ enum CreatureSpells
     FC_MANARAGE_TRIGGER                 = 44321,
     SF_FELEXPLOSION                     = 44314,
     SF_DRAINLIFE                        = 44294,
-    SF_DRAINMANA                        = 46153,    //Heroic
+    SF_DRAINMANA                        = 46153, // Heroic
 
     // Vexallus
     VEXALLUS_CHAIN_LIGHTNING            = 44318,
@@ -175,7 +175,6 @@ enum CreatureSpells
 
 enum CreatureSay
 {
-
 };
 
 #endif // _INSTANCE_MAGISTER_TERRACE_H

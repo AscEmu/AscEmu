@@ -46,13 +46,13 @@ enum CreatureSay
     // MorriduneGossip
     MORRIDUNE_ON_HELLO      = 7247,     // need to be checked not shure. old: menu(pObject->GetGUID(), 7247);
     MORRIDUNE_OPTION_1      = 423,      // Please Teleport me to Darnassus.
-    MORRIDUNE_OPTION_2      = 424,      // I wish to leave this horrible place.
+    MORRIDUNE_OPTION_2      = 424       // I wish to leave this horrible place.
 };
 
 enum GameObjectEntry
 {
     // FathomStone
-    GO_FATHOM_STONE = 177964,
+    GO_FATHOM_STONE = 177964 
 };
 
 #endif // _INSTANCE_BLACKFATHOM_DEEPS_H

@@ -38,14 +38,13 @@ enum CreatureSpells
 
     //AntusulAI
     SP_ANTUSUL_SERVANTS         = 11894
-    //SP_ANTUSUL_HEALINGWARD      = 11889,
-    //SP_ANTUSUL_EARTHGRABWARD    = 8376
+    //SP_ANTUSUL_HEALINGWARD    = 11889
+    //SP_ANTUSUL_EARTHGRABWARD  = 8376
 
 };
 
 enum CreatureSay
 {
-
 };
 
 enum InstanceMisc

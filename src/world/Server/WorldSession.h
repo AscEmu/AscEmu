@@ -124,7 +124,7 @@ enum MovementFlags
     MOVEFLAG_PENDING_MASK               = 0x7F0000,
     MOVEFLAG_PENDING_STRAFE_MASK        = 0x600000,
     MOVEFLAG_PENDING_MOVE_MASK          = 0x180000,
-    MOVEFLAG_FULL_FALLING_MASK          = 0xE000,
+    MOVEFLAG_FULL_FALLING_MASK          = 0xE000
 };
 
 enum MovementFlags2

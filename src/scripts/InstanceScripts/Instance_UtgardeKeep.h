@@ -165,26 +165,25 @@ enum CreatureSpells
 
     // Ingvar the Plunderer
     SHADOW_AXE_SPELL                            = 42751,
-        // Phase 1 spells (Human Form)
-        INGVAR_CLEAVE           = 42724,
-        INGVAR_ENRAGE           = 59707,
-        INGVAR_SMASH            = 42669,
-        INGVAR_ROAR             = 42708,
-        INGVAR_ENRAGE_HC        = 42705,
-        INGVAR_SMASH_HC         = 59706,
-        INGVAR_ROAR_HC          = 59708,
+    // Phase 1 spells (Human Form)
+    INGVAR_CLEAVE                               = 42724,
+    INGVAR_ENRAGE                               = 59707,
+    INGVAR_SMASH                                = 42669,
+    INGVAR_ROAR                                 = 42708,
+    INGVAR_ENRAGE_HC                            = 42705,
+    INGVAR_SMASH_HC                             = 59706,
+    INGVAR_ROAR_HC                              = 59708,
 
-        // Phase 2 spells (Undead Form)
-        INGVAR_DARK_SMASH       = 42723,
-        INGVAR_DREADFUL_ROAR    = 42729,
-        INGVAR_WOE_STRIKE       = 42730,
-        INGVAR_DREADFUL_ROAR_HC = 59734,
-        INGVAR_WOE_STRIKE_HC    = 59735
+    // Phase 2 spells (Undead Form)
+    INGVAR_DARK_SMASH                           = 42723,
+    INGVAR_DREADFUL_ROAR                        = 42729,
+    INGVAR_WOE_STRIKE                           = 42730,
+    INGVAR_DREADFUL_ROAR_HC                     = 59734,
+    INGVAR_WOE_STRIKE_HC                        = 59735
 };
 
 enum CreatureSay
 {
-
 };
 
 enum GameObjectEntry

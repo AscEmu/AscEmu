@@ -43,13 +43,12 @@ enum CreatureEntry
     CN_ADAMANT          = 3849,
 
     //Rethilgore AI
-    CN_RETHILGORE       = 3914,
+    CN_RETHILGORE       = 3914
 
 };
 
 enum CreatureSpells
 {
-
 };
 
 enum CreatureSay
@@ -67,7 +66,7 @@ enum GameObjectEntry
     GO_LEFT_LEVER       = 101811,
     GO_RIGHT_CELL       = 18934,
     GO_MIDDLE_CELL      = 18936,
-    GO_LEFT_CELL        = 18935,
+    GO_LEFT_CELL        = 18935
 };
 
 #endif // _INSTANCE_SHADOWFANG_KEEP_H

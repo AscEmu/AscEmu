@@ -78,7 +78,7 @@ void SummonHandler::ExpireSummonsInSlot()
 
 void SummonHandler::RemoveAllSummons()
 {
-    for (auto itr = guardians.begin(); itr != guardians.end(); ++itr;)
+    for (auto itr = guardians.begin(); itr != guardians.end(); ++itr)
     {
         Unit* g = *itr;
         g->Delete();

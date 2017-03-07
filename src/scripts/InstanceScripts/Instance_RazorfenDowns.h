@@ -42,7 +42,6 @@ enum CreatureSpells
 
 enum CreatureSay
 {
-
 };
 
 #endif // _INSTANCE_RAZORFEN_DOWNS_H

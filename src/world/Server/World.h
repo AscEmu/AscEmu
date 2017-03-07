@@ -189,10 +189,12 @@ struct MapInfo
 
 #pragma pack(pop)
 
-enum REALM_TYPE
+enum Realm_Type
 {
     REALM_PVE = 0,
-    REALM_PVP = 1
+    REALM_PVP = 1  
+    // REALM_RPPVP
+    // REALM_RP
 };
 
 class BasicTaskExecutor : public ThreadBase

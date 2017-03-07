@@ -254,11 +254,11 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
                 db_cache.push_back(make_pair(last_entry, ttab));
             ttab.clear();
         }
-        t.itemid = fields[1].GetUInt32();
-        t.chance = fields[2].GetFloat();
+        t.itemid   = fields[1].GetUInt32();
+        t.chance   = fields[2].GetFloat();
         t.chance_2 = fields[3].GetFloat();
-        t.chance3 = fields[4].GetFloat();
-        t.chance4 = fields[5].GetFloat();
+        t.chance_3 = fields[4].GetFloat();
+        t.chance_4 = fields[5].GetFloat();
         t.mincount = fields[6].GetUInt32();
         t.maxcount = fields[7].GetUInt32();
         ttab.push_back(t);
@@ -281,10 +281,10 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
             list.count = static_cast<uint32>(itr->second.size());
             list.items = new StoreLootItem[list.count];
             uint32 ind = 0;
-            for (std::vector< tempy >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); ++itr2)
+            for (auto iter = itr->second.begin(); iter != itr->second.end(); ++iter)
             {
-                //Omit items that are not in db to prevent future bugs
-                itemid = itr2->itemid;
+                // Omit items that are not in db to prevent future bugs
+                itemid = iter->itemid;
                 ItemProperties const* proto = sMySQLStore.GetItemProperties(itemid);
                 if (!proto)
                 {
@@ -295,12 +295,12 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
                 {
                     list.items[ind].item.itemproto = proto;
                     list.items[ind].item.displayid = proto->DisplayInfoID;
-                    list.items[ind].chance = itr2->chance;
-                    list.items[ind].chance2 = itr2->chance_2;
-                    list.items[ind].chance3 = itr2->chance3;
-                    list.items[ind].chance4 = itr2->chance4;
-                    list.items[ind].mincount = itr2->mincount;
-                    list.items[ind].maxcount = itr2->maxcount;
+                    list.items[ind].chance = iter->chance;
+                    list.items[ind].chance2 = iter->chance_2;
+                    list.items[ind].chance3 = iter->chance_3;
+                    list.items[ind].chance4 = iter->chance_4;
+                    list.items[ind].mincount = iter->mincount;
+                    list.items[ind].maxcount = iter->maxcount;
                     if (proto->HasFlag(ITEM_FLAG_FREE_FOR_ALL))
                         list.items[ind].ffa_loot = 1;
                     else
@@ -672,7 +672,7 @@ void LootRoll::Finalize()
     }
     if (!highest)
     {
-        for (std::map<uint32, uint32>::iterator itr = m_GreedRolls.begin(); itr != m_GreedRolls.end(); ++itr)
+        for (auto itr = m_GreedRolls.begin(); itr != m_GreedRolls.end(); ++itr)
         {
             if (itr->second > highest)
             {

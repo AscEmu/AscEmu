@@ -29,7 +29,7 @@ enum AreaTriggerType
     ATTYPE_INN          = 3,
     ATTYPE_TELEPORT     = 4,
     ATTYPE_SPELL        = 5,
-    ATTYPE_BATTLEGROUND = 6,
+    ATTYPE_BATTLEGROUND = 6
 };
 
 #pragma pack(push,1)

@@ -119,7 +119,6 @@ class ItemIsLooted
         }
 };
 
-
 class ItemIsNotLooted
 {
     public:
@@ -135,14 +134,14 @@ class ItemIsNotLooted
 
 struct StoreLootItem
 {
-    _LootItem item;	    /// the item that drops
-    float chance;	    /// normal dungeon / normal 10men raid / old raid (10,25, or 40 men)
-    float chance2;	    /// heroic dungeon / normal 25men raid
-    float chance3;	    /// heroic 10men raid
-    float chance4;	    /// heroic 25men raid
-    uint32 mincount;	/// minimum quantity to drop
-    uint32 maxcount;	/// maximum quantity to drop
-    uint32 ffa_loot;	/// can everyone from the group loot the item?
+    _LootItem item;  /// the item that drops
+    float chance;    /// normal dungeon / normal 10men raid / old raid (10,25, or 40 men)
+    float chance2;   /// heroic dungeon / normal 25men raid
+    float chance3;   /// heroic 10men raid
+    float chance4;   /// heroic 25men raid
+    uint32 mincount; /// minimum quantity to drop
+    uint32 maxcount; /// maximum quantity to drop
+    uint32 ffa_loot; /// can everyone from the group loot the item?
 };
 
 struct StoreLootList
@@ -178,8 +177,8 @@ struct tempy
     uint32 itemid;
     float chance;
     float chance_2;
-    float chance3;
-    float chance4;
+    float chance_3;
+    float chance_4;
     uint32 mincount;
     uint32 maxcount;
 };

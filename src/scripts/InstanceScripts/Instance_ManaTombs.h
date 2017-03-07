@@ -117,7 +117,7 @@ enum CreatureSpells
 
     // YorAI
     DOUBLE_BREATH               = 38369,    // couldn't have found anything more powerful with that name
-    STOMP                       = 34716,    // not sure even more about this one
+    STOMP                       = 34716     // not sure even more about this one
 };
 
 enum CreatureSay
@@ -140,7 +140,7 @@ enum CreatureSay
     SAY_NEXUSPRINCE_05      = 4579,     // It has been... entertaining.
     SAY_NEXUSPRINCE_06      = 4580,     // And now we part company.
     SAY_NEXUSPRINCE_07      = 4581,     /// \todo unused I have such fascinating things to show you.
-    SAY_NEXUSPRINCE_08      = 4582,     // I must bid you... farewell.
+    SAY_NEXUSPRINCE_08      = 4582      // I must bid you... farewell.
 
 };
 

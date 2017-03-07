@@ -58,12 +58,10 @@ enum CreatureEntry
 
 enum CreatureSpells
 {
-
 };
 
 enum CreatureSay
 {
-
 };
 
 #endif // _INSTANCE_WAILING_CAVERNS_H

@@ -41,18 +41,16 @@ enum CreatureEntry
     CN_OKTHOR_THE_BREAKER       = 9030,   // OkThorTheBreaker
     CN_PHALANX                  = 9502,   // Phalanx
     CN_MOIRA_BRONZEBART         = 8929,   // PrincessMoiraBronzebeard
-    CN_PYROMANCER_LOREGRAIN     = 9024,   // PyromancerLoregrain
+    CN_PYROMANCER_LOREGRAIN     = 9024    // PyromancerLoregrain
 
 };
 
 enum CreatureSpells
 {
-
 };
 
 enum CreatureSay
 {
-
 };
 
 #endif // _INSTANCE_BLACKROCK_DEPTHS_H

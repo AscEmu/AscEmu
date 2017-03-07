@@ -52,7 +52,7 @@ enum CreatureEntry
     CN_LOREKEEPER_POLKELT           = 10901,
 
     // Darkmaster GandlingAI
-    CN_DARKMASTER_GANDLING          = 1853,
+    CN_DARKMASTER_GANDLING          = 1853
 
 };
 
@@ -120,13 +120,12 @@ enum CreatureSpells
     // Darkmaster GandlingAI
     SP_GANDLING_ARCANE_MISSILES = 25346,
     SP_GANDLING_COT_DARKMASTER  = 18702,    // Curse of the Darkmaster
-    SP_GANDLING_SHADOW_SHIELD   = 22417,
+    SP_GANDLING_SHADOW_SHIELD   = 22417
 
 };
 
 enum CreatureSay
 {
-
 };
 
 #endif // _INSTANCE_SCHOLOMANCE_H

@@ -262,7 +262,7 @@ struct InstanceReputationModifier
     std::vector<InstanceReputationMod> mods;
 };
 
-enum AREATABLE_FLAGS
+enum Areatable_Flags
 {
     AREA_CITY_AREA          = 0x0020,
     AREA_NEUTRAL_AREA       = 0x0040,
@@ -273,7 +273,7 @@ enum AREATABLE_FLAGS
     AREA_PVP_OBJECTIVE_AREA = 0x8000
 };
 
-enum AREATABLE_CATEGORY
+enum Areatable_Category
 {
     AREAC_CONTESTED          = 0,
     AREAC_ALLIANCE_TERRITORY = 2,

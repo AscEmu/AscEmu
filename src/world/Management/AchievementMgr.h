@@ -26,7 +26,6 @@ class QueryBuffer;
 struct AchievementEntry;
 struct AchievementCriteriaEntry;
 
-
 enum AchievementRewardTypes
 {
     ACHIEVEMENT_REWARDTYPE_NONE     = 0,
@@ -100,12 +99,11 @@ class Player;
 class WorldPacket;
 class ObjectMgr;
 
-
 enum AchievementCompletionState
 {
     ACHIEVEMENT_COMPLETED_NONE,                 ///< #0# Achievement is not completed
     ACHIEVEMENT_COMPLETED_COMPLETED_NOT_STORED, ///< #1# Achievement is completed, but not stored yet
-    ACHIEVEMENT_COMPLETED_COMPLETED_STORED,     ///< #2# Achievement is completed and has been stored
+    ACHIEVEMENT_COMPLETED_COMPLETED_STORED      ///< #2# Achievement is completed and has been stored
 };
 
 /// \note Currently these are not being used at all.
@@ -117,9 +115,8 @@ enum AchievementCriteriaCondition
     ACHIEVEMENT_CRITERIA_CONDITION_MAP       = 3,  ///< #3# requires you to be on specific map
     ACHIEVEMENT_CRITERIA_CONDITION_NO_LOOSE  = 4,  ///< #4# only used in "Win 10 arenas without losing"
     ACHIEVEMENT_CRITERIA_CONDITION_UNK2      = 9,  ///< #9# unk
-    ACHIEVEMENT_CRITERIA_CONDITION_UNK3      = 13, ///< #13# unk
+    ACHIEVEMENT_CRITERIA_CONDITION_UNK3      = 13  ///< #13# unk
 };
-
 
 enum AchievementCriteriaTypes
 {
@@ -222,7 +219,7 @@ enum AchievementCriteriaTypes
     ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL = 113,
     ACHIEVEMENT_CRITERIA_TYPE_ACCEPTED_SUMMONINGS = 114,
     ///\todo 0..114 => 124 criteria types total : Alleycat - We need to get the new Acheivements!
-    ACHIEVEMENT_CRITERIA_TYPE_TOTAL = 124,
+    ACHIEVEMENT_CRITERIA_TYPE_TOTAL = 124
 };
 
 /**

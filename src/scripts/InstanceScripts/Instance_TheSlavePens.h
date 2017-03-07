@@ -110,7 +110,7 @@ enum CreatureSpells
     // QuagmirranAI
     ACID_GEYSER                 = 38971,    // it isn't right spell (TOO POWERFUL), but I couldn't find correct one for now (as others Idk why don't want to work)
     POISON_BOLT_VOLLEY          = 39340,    // maybe be also: 40095, but it isn't dispelable
-    CLEAVE                      = 38474,    // 31345, no idea if this is correct
+    CLEAVE                      = 38474     // 31345, no idea if this is correct
 
 };
 
@@ -122,7 +122,7 @@ enum CreatureSay
     SAY_MENNU_BETRAYER_03       = 7387,     // Don't make me kill you!
     SAY_MENNU_BETRAYER_04       = 7388,     // It had to be done....
     SAY_MENNU_BETRAYER_05       = 7389,     // You should not have come....
-    SAY_MENNU_BETRAYER_06       = 7390,     // I... deserve this....
+    SAY_MENNU_BETRAYER_06       = 7390      // I... deserve this....
 
     // Rokmar the CracklerAI
     // boss without sounds

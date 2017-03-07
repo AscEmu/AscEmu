@@ -35,8 +35,7 @@ enum CreatureEntry
     CN_SWAMPLORD_MUSELEK = 17826,
 
     // The Black StalkerAI
-    CN_THE_BLACK_STALKER    = 17882,
-
+    CN_THE_BLACK_STALKER    = 17882
 };
 
 enum CreatureSpells
@@ -70,7 +69,7 @@ enum CreatureSpells
     CHAIN_LIGHTNING         = 31717,    //39066 // 28167, 39066
     LEVITATE                = 31704,    // Not sure to id
     STATIC_CHARGE           = 31715,
-    SUMMON_SPORE_STRIDER    = 38755,    // spawning adds only on Heroic! lack of core support =/
+    SUMMON_SPORE_STRIDER    = 38755     // spawning adds only on Heroic! lack of core support =/
 };
 
 enum CreatureSay
@@ -82,7 +81,7 @@ enum CreatureSay
     SAY_SWAMPLORD_MUSEL_04      = 1465,     // Acalah pek ecta!
     SAY_SWAMPLORD_MUSEL_05      = 1466,     // Krypta!
     SAY_SWAMPLORD_MUSEL_06      = 1467,     // It is finished.
-    SAY_SWAMPLORD_MUSEL_07      = 1468,     // Well... done...
+    SAY_SWAMPLORD_MUSEL_07      = 1468      // Well... done...
 
 
 };

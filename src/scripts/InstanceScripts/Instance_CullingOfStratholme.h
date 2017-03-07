@@ -43,12 +43,11 @@ enum CreatureEntry
     CN_ARTHAS                       = 26499,
 
     // Jaina
-    CN_JAINA                        = 26497,
+    CN_JAINA                        = 26497
 };
 
 enum CreatureSpells
 {
-
 };
 
 enum CreatureSay
@@ -164,7 +163,7 @@ enum CreatureSay
 
     // Jaina
     SAY_JAINA_01            = 3539,     // Arthas!You can't just--
-    SAY_JAINA_02            = 3540,     // I'm sorry, Arthas. I can't watch you do this.
+    SAY_JAINA_02            = 3540      // I'm sorry, Arthas. I can't watch you do this.
 
 
 };

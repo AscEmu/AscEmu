@@ -63,7 +63,6 @@ enum CreatureSpells
 
 enum CreatureSay
 {
-
 };
 
 enum GameObjectEntry

@@ -74,7 +74,7 @@ enum CreatureEntry
     CN_TALON_KING_IKISS         = 18473,
 
     // AnzuAI
-    CN_ANZU                     = 23035,
+    CN_ANZU                     = 23035
 
 };
 
@@ -156,30 +156,30 @@ enum CreatureSpells
     SP_ANZU_SPELL_BOMB                  = 40303,
     SP_ANZU_CYCLONE_OF_FEATHERS         = 40321,
     SP_ANZU_PARALYZING_SCREECH          = 40184,
-    SP_ANZU_BANISH                      = 40370,    // can be: 38791, 38009, 40370, 39674, 35182, 40825 // should banish for one minute
+    SP_ANZU_BANISH                      = 40370     // can be: 38791, 38009, 40370, 39674, 35182, 40825 // should banish for one minute
 
 };
 
 enum CreatureSay
 {
     // Darkweaver SythAI
-    SAY_DARKW_SYNTH_01      = 4590,     // I have pets -- ca - caw!--of my own!
-    SAY_DARKW_SYNTH_02      = 4591,     // Mmm... time to make my move!
-    SAY_DARKW_SYNTH_03      = 4592,     // Nice pets, yes... raa - a - ak!
-    SAY_DARKW_SYNTH_04      = 4593,     // Nice pets have weapons.No so -- ra - ak -- nice.
-    SAY_DARKW_SYNTH_05      = 4594,     // Yes, fleeting life is, rak - a - kak!
-    SAY_DARKW_SYNTH_06      = 4595,     // Mmmm... be free.Caw!
-    SAY_DARKW_SYNTH_07      = 4596,     // Mmm... no more life.No more pain.A - ak!
+    SAY_DARKW_SYNTH_01                  = 4590,     // I have pets -- ca - caw!--of my own!
+    SAY_DARKW_SYNTH_02                  = 4591,     // Mmm... time to make my move!
+    SAY_DARKW_SYNTH_03                  = 4592,     // Nice pets, yes... raa - a - ak!
+    SAY_DARKW_SYNTH_04                  = 4593,     // Nice pets have weapons.No so -- ra - ak -- nice.
+    SAY_DARKW_SYNTH_05                  = 4594,     // Yes, fleeting life is, rak - a - kak!
+    SAY_DARKW_SYNTH_06                  = 4595,     // Mmmm... be free.Caw!
+    SAY_DARKW_SYNTH_07                  = 4596,     // Mmm... no more life.No more pain.A - ak!
 
     // Talon King IkissAI
-    SAY_TALRON_K_IKISS_01   = 4597,     /// \todo not used Ra - ak!Trinkets, yes.Pretty trinkets!Ak!Power, great power.Ra - kaw!Power in trinkets!Ak - caw!
-    SAY_TALRON_K_IKISS_02   = 4598,     // Mmm, you make war on Ikiss ? Aa - ak!
-    SAY_TALRON_K_IKISS_03   = 4599,     // Ikiss cut you, pretty -- ak - a - ak -- slice you, yes!
-    SAY_TALRON_K_IKISS_04   = 4600,     // Ak - a - ra - k!No escape for --caw -- you!
-    SAY_TALRON_K_IKISS_05   = 4601,     // You die -- ka!Stay away from trinkets!
-    SAY_TALRON_K_IKISS_06   = 4602,     // Mmmmmm...
-    SAY_TALRON_K_IKISS_07   = 4603,     // Ikiss will not -- rak, rak -- die...
-    BROADCAST_TALRON_K_IKISS_01     = 4604,      /// \todo not used %s begins to channel arcane energy....
+    SAY_TALRON_K_IKISS_01               = 4597,     /// \todo not used Ra - ak!Trinkets, yes.Pretty trinkets!Ak!Power, great power.Ra - kaw!Power in trinkets!Ak - caw!
+    SAY_TALRON_K_IKISS_02               = 4598,     // Mmm, you make war on Ikiss ? Aa - ak!
+    SAY_TALRON_K_IKISS_03               = 4599,     // Ikiss cut you, pretty -- ak - a - ak -- slice you, yes!
+    SAY_TALRON_K_IKISS_04               = 4600,     // Ak - a - ra - k!No escape for --caw -- you!
+    SAY_TALRON_K_IKISS_05               = 4601,     // You die -- ka!Stay away from trinkets!
+    SAY_TALRON_K_IKISS_06               = 4602,     // Mmmmmm...
+    SAY_TALRON_K_IKISS_07               = 4603,     // Ikiss will not -- rak, rak -- die...
+    BROADCAST_TALRON_K_IKISS_01         = 4604      /// \todo not used %s begins to channel arcane energy....
 
 
 };

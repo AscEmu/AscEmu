@@ -31,7 +31,7 @@
 #define LOCAL_BUFFER_SIZE 2048
 #define ENABLE_REMOTE_CONSOLE 1
 
-enum STATES
+enum States
 {
     STATE_USER      = 1,
     STATE_PASSWORD  = 2,

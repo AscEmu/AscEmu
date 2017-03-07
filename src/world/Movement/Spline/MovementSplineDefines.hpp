@@ -43,7 +43,7 @@ namespace Movement { namespace Spline {
         MonsterMoveFacingLocation = 2,
         MonsterMoveFacingTarget = 3,
         MonsterMoveFacingAngle = 4,
-        MonsterMoveInvalid = 0xff,
+        MonsterMoveInvalid = 0xff
     };
 
     struct SplineAnimation

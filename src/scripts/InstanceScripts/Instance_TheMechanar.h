@@ -201,7 +201,7 @@ enum CreatureSpells
     SP_PATHALEON_SUMMON_NETHER_WRAITH1      = 35285,    // not the best way, but blizzlike :) (but they don't work for now =()
     SP_PATHALEON_SUMMON_NETHER_WRAITH2      = 35286,
     SP_PATHALEON_SUMMON_NETHER_WRAITH3      = 35287,
-    SP_PATHALEON_SUMMON_NETHER_WRAITH4      = 35288,
+    SP_PATHALEON_SUMMON_NETHER_WRAITH4      = 35288
 
 };
 
@@ -250,7 +250,7 @@ enum CreatureSay
     SAY_PATHALEON_05        = 5116,    /// \todo unused I prefer to be hands-on...
     SAY_PATHALEON_06        = 5117,    // A minor inconvenience.
     SAY_PATHALEON_07        = 5118,    // Looks like you lose.
-    SAY_PATHALEON_08        = 5119,    // The project will... continue.
+    SAY_PATHALEON_08        = 5119     // The project will... continue.
 
 };
 

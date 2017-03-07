@@ -62,7 +62,7 @@ enum SpellTreeName
 
     SPELLTREE_DRUID_BALANCE             = 574,
     SPELLTREE_DRUID_FERAL_COMBAT        = 134,
-    SPELLTREE_DRUID_RESTORATION         = 573,
+    SPELLTREE_DRUID_RESTORATION         = 573
 };
 
 class SkillNameMgr
