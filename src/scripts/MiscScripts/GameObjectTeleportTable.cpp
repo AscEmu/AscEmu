@@ -73,11 +73,13 @@ class CustomTeleport : public GameObjectAIScript // Custom Portals
                     pPlayer->BroadcastMessage("You do not have the required class to use this Portal");
                     return;
                 }
+#if VERSION_STRING > TBC
                 else if (req_achievement != 0 && pPlayer->GetAchievementMgr().HasCompleted(req_achievement))
                 {
                     pPlayer->BroadcastMessage("You do not have the required achievement to use this Portal");
                     return;
                 }
+#endif
                 else
                 {
                     mapid = gt->mapid;

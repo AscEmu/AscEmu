@@ -808,7 +808,9 @@ void LootRoll::Finalize()
         {
             _player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
             sQuestMgr.OnPlayerItemPickup(_player, item);
+#if VERSION_STRING > TBC
             _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->GetEntry(), 1, 0);
+#endif
         }
         else
             item->DeleteMe();
@@ -819,7 +821,9 @@ void LootRoll::Finalize()
         add->m_isDirty = true;
         sQuestMgr.OnPlayerItemPickup(_player, add);
         _player->SendItemPushResult(false, true, true, false, (uint8)_player->GetItemInterface()->GetBagSlotByGuid(add->GetGUID()), 0xFFFFFFFF, 1, add->GetEntry(), add->GetItemRandomSuffixFactor(), add->GetItemRandomPropertyId(), add->GetStackCount());
+#if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->GetEntry(), 1, 0);
+#endif
     }
     pLoot->items.at(_slotid).iItemsCount = 0;
     // this gets sent to all looters

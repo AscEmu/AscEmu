@@ -21,6 +21,7 @@
 #include "Log.hpp"
 #include "Units/Players/Player.h"
 
+#if VERSION_STRING > TBC
 /// \todo CalendarHandler
 void WorldSession::HandleCalendarGetCalendar(WorldPacket& /*recv_data*/)
 {
@@ -132,3 +133,4 @@ void WorldSession::HandleCalendarEventModeratorStatus(WorldPacket& recv_data)
 {
     LogDebugFlag(LF_OPCODE, "HandleCalendarEventModeratorStatus Not handled");
 }
+#endif

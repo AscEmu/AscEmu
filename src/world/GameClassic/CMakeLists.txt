@@ -3,6 +3,7 @@
 set(PATH_PREFIX GameClassic)
 
 set(SRC_GAMECLASSIC_FILES
+    ${PATH_PREFIX}/Handlers/CharacterHandler.cpp
     ${PATH_PREFIX}/Network/Opcodes.cpp
     ${PATH_PREFIX}/Network/Opcodes.h
 )

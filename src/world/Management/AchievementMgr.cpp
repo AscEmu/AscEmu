@@ -19,6 +19,7 @@
  */
 
 #include "StdAfx.h"
+#include "AchievementMgr.h"
 #include "Management/Item.h"
 #include "Units/Stats.h"
 #include "Server/WorldSocket.h"
@@ -27,6 +28,8 @@
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 
+
+#if VERSION_STRING > TBC
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Takes achievementlink c-string
 /// \return c-string ID value
@@ -2111,3 +2114,5 @@ bool AchievementMgr::HasCompleted(uint32 achievementID)
 {
     return (m_completedAchievements.find(achievementID) != m_completedAchievements.end());
 }
+
+#endif

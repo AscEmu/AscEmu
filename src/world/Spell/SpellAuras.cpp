@@ -5299,6 +5299,7 @@ void Aura::SpellAuraMounted(bool apply)
         {
             p_target->AddVehicleComponent(ci->Id, ci->vehicleid);
 
+#if VERSION_STRING > TBC
             WorldPacket data(SMSG_PLAYER_VEHICLE_DATA, 12);
             data << p_target->GetNewGUID();
             data << uint32(p_target->mountvehicleid);
@@ -5306,6 +5307,7 @@ void Aura::SpellAuraMounted(bool apply)
 
             data.Initialize(SMSG_CONTROL_VEHICLE);
             p_target->SendPacket(&data);
+#endif
 
             p_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNT);
             p_target->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_PLAYER_VEHICLE);
@@ -5324,10 +5326,12 @@ void Aura::SpellAuraMounted(bool apply)
             p_target->GetVehicleComponent()->RemoveAccessories();
             p_target->GetVehicleComponent()->EjectAllPassengers();
 
+#if VERSION_STRING > TBC
             WorldPacket data(SMSG_PLAYER_VEHICLE_DATA, 12);
             data << p_target->GetNewGUID();
             data << uint32(0);
             p_target->SendMessageToSet(&data, true);
+#endif
 
             p_target->RemoveVehicleComponent();
         }

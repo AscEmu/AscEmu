@@ -520,6 +520,7 @@ PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
     return rv;
 }
 
+#if VERSION_STRING > TBC
 void ObjectMgr::LoadCompletedAchievements()
 {
     QueryResult* result = CharacterDatabase.Query("SELECT achievement FROM character_achievement GROUP BY achievement");
@@ -538,6 +539,7 @@ void ObjectMgr::LoadCompletedAchievements()
     while (result->NextRow());
     delete result;
 }
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // DK:LoadGuilds()
@@ -763,6 +765,7 @@ void ObjectMgr::SaveGMTicket(GM_Ticket* ticket, QueryBuffer* buf)
         buf->AddQueryStr(ss.str());
 }
 
+#if VERSION_STRING > TBC
 void ObjectMgr::LoadAchievementRewards()
 {
     AchievementRewards.clear();                           // need for reload case
@@ -881,6 +884,7 @@ void ObjectMgr::LoadAchievementRewards()
 
     LogDetail("ObjectMgr : Loaded %u achievement rewards", count);
 }
+#endif
 
 void ObjectMgr::SetHighestGuids()
 {
@@ -1496,6 +1500,7 @@ void ObjectMgr::LoadCorpses(MapMgr* mgr)
     }
 }
 
+#if VERSION_STRING > TBC
 AchievementCriteriaEntryList const & ObjectMgr::GetAchievementCriteriaByType(AchievementCriteriaTypes type)
 {
     return m_AchievementCriteriasByType[type];
@@ -1512,6 +1517,7 @@ void ObjectMgr::LoadAchievementCriteriaList()
         m_AchievementCriteriasByType[criteria->requiredType].push_back(criteria);
     }
 }
+#endif
 
 void ObjectMgr::CorpseAddEventDespawn(Corpse* pCorpse)
 {

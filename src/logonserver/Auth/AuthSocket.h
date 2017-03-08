@@ -32,6 +32,10 @@ class AuthSocket : public Socket
         friend class LogonCommServerSocket;
     public:
 
+        //MIT
+        void sendAuthProof(Sha1Hash sha);
+        //MIT end
+
         // Netcore related
         AuthSocket(SOCKET fd);
         ~AuthSocket();

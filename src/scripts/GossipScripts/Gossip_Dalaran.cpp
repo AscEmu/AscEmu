@@ -19,7 +19,7 @@
  
 #include "Setup.h"
 #include "Objects/GameObject.h"
-#include "Server/Packets/Opcodes.h"
+#include "Server/Packets/Opcode.h"
 #include "Server/WorldSession.h"
 
 enum UnorderedEntrys
@@ -51,10 +51,11 @@ class DedicationOfHonorGossip : public GossipScript
 
         void OnSelectOption(Object* object, Player* player, uint32 Id, const char* enteredcode)
         {
+#if VERSION_STRING > TBC
             uint32 video_id = 16;
             player->GetSession()->OutPacket(SMSG_TRIGGER_MOVIE, sizeof(uint32), &video_id);
-
             Arcemu::Gossip::Menu::Complete(player);
+#endif
         }
 };
 

@@ -1955,8 +1955,10 @@ private:
         void ToggleXpGain();
         bool CanGainXp();
 
+#if VERSION_STRING > TBC
         AchievementMgr & GetAchievementMgr() { return m_achievementMgr; }
         AchievementMgr m_achievementMgr;
+#endif
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Talent Specs

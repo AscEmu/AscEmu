@@ -838,9 +838,11 @@ void CommandTableStorage::Init()
 
     static ChatCommand achievementCommandTable[] =
     {
+#if VERSION_STRING > TBC
         { "complete",       'm', &ChatHandler::HandleAchievementCompleteCommand,    "Completes the specified achievement.",                         nullptr, 0, 0, 0 },
         { "criteria",       'm', &ChatHandler::HandleAchievementCriteriaCommand,    "Completes the specified achievement criteria.",                nullptr, 0, 0, 0 },
         { "reset",          'm', &ChatHandler::HandleAchievementResetCommand,       "Resets achievement data from the target.",                     nullptr, 0, 0, 0 },
+#endif
         { nullptr,          '0', nullptr,                                           "",                                                             nullptr, 0, 0, 0 }
     };
     dupe_command_table(achievementCommandTable, _achievementCommandTable);

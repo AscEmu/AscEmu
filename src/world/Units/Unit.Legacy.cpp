@@ -6099,6 +6099,7 @@ bool Unit::IsPoisoned()
 
 void Unit::SendFullAuraUpdate()
 {
+#if VERSION_STRING > TBC
     WorldPacket data(SMSG_AURA_UPDATE_ALL, 200);
 
     data << WoWGuid(GetNewGUID());
@@ -6143,10 +6144,12 @@ void Unit::SendFullAuraUpdate()
     SendMessageToSet(&data, true);
 
     LOG_DEBUG("Full Aura Update: GUID: " I64FMT " - Updates: %u", GetGUID(), Updates);
+#endif
 }
 
 void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
 {
+#if VERSION_STRING > TBC
     Aura* aur = m_auras[AuraSlot];
     ARCEMU_ASSERT(aur != NULL);
 
@@ -6195,6 +6198,7 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
     }
 
     SendMessageToSet(&data, true);
+#endif
 }
 
 uint32 Unit::ModVisualAuraStackCount(Aura* aur, int32 count)
@@ -7259,6 +7263,7 @@ void Unit::SetPower(uint32 type, int32 value)
 
 void Unit::SendPowerUpdate(bool self)
 {
+#if VERSION_STRING > TBC
     uint32 amount = GetUInt32Value(UNIT_FIELD_POWER1 + GetPowerType()); //save the amount, so we send the same to the player and everyone else
 
     WorldPacket data(SMSG_POWER_UPDATE, 14);
@@ -7274,10 +7279,12 @@ void Unit::SendPowerUpdate(bool self)
     WorldPacket* pkt = BuildFieldUpdatePacket(UNIT_FIELD_POWER1 + GetPowerType(), amount);
     SendMessageToSet(pkt, false);
     delete pkt;
+#endif
 }
 
 void Unit::UpdatePowerAmm()
 {
+#if VERSION_STRING > TBC
     if (!IsPlayer())
         return;
     WorldPacket data(SMSG_POWER_UPDATE, 14);
@@ -7285,6 +7292,7 @@ void Unit::UpdatePowerAmm()
     data << uint8(GetPowerType());
     data << GetUInt32Value(UNIT_FIELD_POWER1 + GetPowerType());
     SendMessageToSet(&data, true);
+#endif
 }
 
 void Unit::SetDualWield(bool enabled)

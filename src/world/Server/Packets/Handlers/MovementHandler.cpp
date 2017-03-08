@@ -375,7 +375,11 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /* Update player movement state                                         */
     /************************************************************************/
 
+#if VERSION_STRING == Cata
+    uint32_t opcode = recv_data.GetOpcode();
+#else
     uint16 opcode = recv_data.GetOpcode();
+#endif
     switch (opcode)
     {
         case MSG_MOVE_START_FORWARD:
@@ -497,7 +501,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /* Orientation dumping                                                  */
     /************************************************************************/
 #if 0
-    LOG_DEBUG("Packet: 0x%03X (%s)", recv_data.GetOpcode(), LookupName(recv_data.GetOpcode(), g_worldOpcodeNames));
+    LOG_DEBUG("Packet: 0x%03X (%s)", recv_data.GetOpcode(), getOpcodeName(recv_data.GetOpcode()).c_str());
     LOG_DEBUG("Orientation: %.10f", movement_info.orientation);
 #endif
 
@@ -592,6 +596,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 
                 if (health_loss >= mover->GetHealth())
                     health_loss = mover->GetHealth();
+#if VERSION_STRING > TBC
                 else if ((falldistance >= 65) && (mover->GetGUID() == _player->GetGUID()))
                 {
                     // Rather than Updating achievement progress every time fall damage is taken, all criteria currently have 65 yard requirement...
@@ -599,6 +604,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
                     // Achievement 1260: Fall 65 yards without dying while completely smashed during the Brewfest Holiday.
                     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING, falldistance, Player::GetDrunkenstateByValue(_player->GetDrunkValue()), 0);
                 }
+#endif
 
                 mover->SendEnvironmentalDamageLog(mover->GetGUID(), DAMAGE_FALL, health_loss);
                 mover->DealDamage(mover, health_loss, 0, 0, 0);

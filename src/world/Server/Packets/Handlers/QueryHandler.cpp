@@ -395,5 +395,7 @@ void WorldSession::HandleAchievmentQueryOpcode(WorldPacket& recv_data)
     {
         return;
     }
+#if VERSION_STRING > TBC
     pTarget->GetAchievementMgr().SendAllAchievementData(GetPlayer());
+#endif
 }

@@ -248,7 +248,9 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     //GetPlayer()->setCurrentSpell(spell);
     spell->prepare(&targets);
 
+#if VERSION_STRING > TBC
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_ITEM, itemProto->ItemId, 0, 0);
+#endif
 }
 
 void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
@@ -690,6 +692,7 @@ void WorldSession::HandleUpdateProjectilePosition(WorldPacket& recv_data)
     if (!spell || spell->ai_target_type == TARGET_FLAG_DEST_LOCATION)
         return;
 
+#if VERSION_STRING > TBC
     WorldPacket data(SMSG_SET_PROJECTILE_POSITION, 21);
     data << uint64(casterGuid);
     data << uint8(castCount);
@@ -697,4 +700,5 @@ void WorldSession::HandleUpdateProjectilePosition(WorldPacket& recv_data)
     data << float(y);
     data << float(z);
     SendPacket(&data);
+#endif
 }
