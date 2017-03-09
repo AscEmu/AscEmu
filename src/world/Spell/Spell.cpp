@@ -49,7 +49,7 @@ enum SpellTargetSpecification
 {
     TARGET_SPECT_NONE = 0,
     TARGET_SPEC_INVISIBLE = 1,
-    TARGET_SPEC_DEAD = 2,
+    TARGET_SPEC_DEAD = 2
 };
 
 bool CanAttackCreatureType(uint32 TargetTypeMask, uint32 type)
@@ -430,7 +430,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
     float r = range * range;
     uint8 did_hit_result;
 
-    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (auto itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         // don't add objects that are not units and that are dead
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
@@ -644,7 +644,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
     }
     float srcx = m_caster->GetPositionX(), srcy = m_caster->GetPositionY(), srcz = m_caster->GetPositionZ();
 
-    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (auto itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
             continue;
@@ -698,7 +698,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
     }
     float srcx = m_caster->GetPositionX(), srcy = m_caster->GetPositionY(), srcz = m_caster->GetPositionZ();
 
-    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (auto itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
             continue;
@@ -1492,7 +1492,6 @@ void Spell::cast(bool check)
                 }
             }
 
-            std::vector<uint64>::iterator i, i2;
             // this is here to avoid double search in the unique list
             // bool canreflect = false, reflected = false;
             for (uint8 j = 0; j < 3; j++)
@@ -1514,9 +1513,9 @@ void Spell::cast(bool check)
 
             if (!IsReflected() && GetCanReflect() && m_caster->IsInWorld())
             {
-                for (i = UniqueTargets.begin(); i != UniqueTargets.end(); ++i)
+                for (auto iter = UniqueTargets.begin(); iter != UniqueTargets.end(); ++iter)
                 {
-                    Unit* Target = m_caster->GetMapMgr()->GetUnit(*i);
+                    Unit* Target = m_caster->GetMapMgr()->GetUnit(*iter);
                     if (Target)
                     {
                         SetReflected(Reflect(Target));
@@ -1531,7 +1530,7 @@ void Spell::cast(bool check)
                 SetReflected(false);
 
             bool isDuelEffect = false;
-            //uint32 spellid = GetProto()->Id;
+            // uint32 spellid = GetProto()->Id;
 
             // we're much better to remove this here, because otherwise spells that change powers etc,
             // don't get applied.
@@ -1553,11 +1552,8 @@ void Spell::cast(bool check)
 
                         if (m_targetUnits[x].size() > 0)
                         {
-                            for (i = m_targetUnits[x].begin(); i != m_targetUnits[x].end();)
-                            {
-                                i2 = i++;
-                                HandleCastEffects(*i2, x);
-                            }
+                            for (auto iter = m_targetUnits[x].begin(); iter != m_targetUnits[x].end(); ++iter)
+                                HandleCastEffects(*iter, x);
                         }
                         else
                             HandleCastEffects(0, x);
@@ -1572,12 +1568,12 @@ void Spell::cast(bool check)
                 // spells that proc on spell cast, some talents
                 if (p_caster && p_caster->IsInWorld())
                 {
-                    for (i = UniqueTargets.begin(); i != UniqueTargets.end(); ++i)
+                    for (auto iter = UniqueTargets.begin(); iter != UniqueTargets.end(); ++iter)
                     {
-                        Unit* Target = p_caster->GetMapMgr()->GetUnit(*i);
+                        Unit* Target = p_caster->GetMapMgr()->GetUnit(*iter);
 
                         if (!Target)
-                            continue; //we already made this check, so why make it again ?
+                            continue; // we already made this check, so why make it again ?
 
                         p_caster->HandleProc(PROC_ON_CAST_SPECIFIC_SPELL | PROC_ON_CAST_SPELL, Target, GetSpellInfo(), m_triggeredSpell);
                         Target->HandleProc(PROC_ON_SPELL_LAND_VICTIM, u_caster, GetSpellInfo(), m_triggeredSpell);
@@ -1761,8 +1757,6 @@ void Spell::Update(unsigned long time_passed)
                     cast(true);
                 }
             }
-
-
         }
         break;
         case SPELL_STATE_CASTING:
@@ -2051,7 +2045,7 @@ enum SpellStartFlags
     //0x04
     //0x08
     //0x10
-    SPELL_START_FLAG_RANGED = 0x20,
+    SPELL_START_FLAG_RANGED = 0x20
     //0x40
     //0x80
     //0x100
@@ -3606,7 +3600,7 @@ uint8 Spell::CanCast(bool tolerate)
         {
             bool found = false;
 
-            for (std::set<Object*>::iterator itr = p_caster->GetInRangeSetBegin(); itr != p_caster->GetInRangeSetEnd(); ++itr)
+            for (auto itr = p_caster->GetInRangeSetBegin(); itr != p_caster->GetInRangeSetEnd(); ++itr)
             {
                 if (!(*itr)->IsGameObject())
                     continue;
@@ -5394,7 +5388,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         std::vector<Unit*> target_threat;
         int count = 0;
         Creature* tmp_creature;
-        for (std::set<Object*>::iterator itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
+        for (auto itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
         {
             if (!(*itr)->IsCreature())
                 continue;
@@ -6029,7 +6023,7 @@ uint32 Spell::GetTargetType(uint32 value, uint32 i)
 
 void Spell::HandleCastEffects(uint64 guid, uint32 i)
 {
-    if (m_spellInfo->speed == 0)  //instant
+    if (m_spellInfo->speed == 0) // instant
     {
         AddRef();
         HandleEffects(guid, i);
@@ -6099,7 +6093,7 @@ void Spell::HandleCastEffects(uint64 guid, uint32 i)
 
 void Spell::HandleModeratedTarget(uint64 guid)
 {
-    if (m_spellInfo->speed == 0)  //instant
+    if (m_spellInfo->speed == 0) // instant
     {
         AddRef();
         HandleModeratedEffects(guid);
@@ -6272,7 +6266,7 @@ void Spell::SpellEffectJumpBehindTarget(uint32 i)
     {
         float x, y, z;
 
-        //this can also jump to a point
+        // this can also jump to a point
         if (m_targets.m_targetMask & TARGET_FLAG_SOURCE_LOCATION)
         {
             x = m_targets.m_srcX;
@@ -6298,12 +6292,12 @@ void Spell::HandleTargetNoObject()
     float newy = m_caster->GetPositionY() + sinf(m_caster->GetOrientation()) * dist;
     float newz = m_caster->GetPositionZ();
 
-    //clamp Z
+    // clamp Z
     newz = m_caster->GetMapMgr()->GetLandHeight(newx, newy, newz);
 
     VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
     bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ() + 2.0f, newx, newy, newz + 2.0f);
-    //if not in line of sight, or too far away we summon inside caster
+    // if not in line of sight, or too far away we summon inside caster
     if (fabs(newz - m_caster->GetPositionZ()) > 10 || !isInLOS)
     {
         newx = m_caster->GetPositionX();
@@ -6317,7 +6311,7 @@ void Spell::HandleTargetNoObject()
     m_targets.m_destZ = newz;
 }
 
-//Logs if the spell doesn't exist, using Debug loglevel.
+// Logs if the spell doesn't exist, using Debug loglevel.
 SpellInfo* CheckAndReturnSpellEntry(uint32 spellid)
 {
     //Logging that spellid 0 or -1 don't exist is not needed.
@@ -6331,10 +6325,8 @@ SpellInfo* CheckAndReturnSpellEntry(uint32 spellid)
     return sp;
 }
 
-
 bool IsDamagingSpell(SpellInfo* sp)
 {
-
     if (sp->HasEffect(SPELL_EFFECT_SCHOOL_DAMAGE) ||
         sp->HasEffect(SPELL_EFFECT_ENVIRONMENTAL_DAMAGE) ||
         sp->HasEffect(SPELL_EFFECT_HEALTH_LEECH) ||

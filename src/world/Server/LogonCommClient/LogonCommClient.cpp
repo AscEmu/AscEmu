@@ -270,9 +270,8 @@ void LogonCommClientSocket::HandleAuthResponse(WorldPacket& recvData)
 void LogonCommClientSocket::UpdateAccountCount(uint32 account_id, uint8 add)
 {
     WorldPacket data(LRCMSG_ACC_CHAR_MAPPING_UPDATE, 9);
-    std::set<uint32>::iterator itr = realm_ids.begin();
 
-    for (; itr != realm_ids.end(); ++itr)
+    for (auto itr = realm_ids.begin(); itr != realm_ids.end(); ++itr)
     {
         data.clear();
         data << (*itr);

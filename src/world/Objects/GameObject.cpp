@@ -674,12 +674,12 @@ bool GameObject_Chest::HasLoot()
     if (loot.gold > 0)
         return true;
 
-    for (std::vector< __LootItem >::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    for (auto iter : loot.items)
     {
-        if ((itr->item.itemproto->Bonding == ITEM_BIND_QUEST) || (itr->item.itemproto->Bonding == ITEM_BIND_QUEST2))
+        if ((iter.item.itemproto->Bonding == ITEM_BIND_QUEST) || (iter.item.itemproto->Bonding == ITEM_BIND_QUEST2))
             continue;
 
-        if (itr->iItemsCount > 0)
+        if (iter.iItemsCount > 0)
             return true;
     }
     return false;
@@ -785,7 +785,7 @@ void GameObject_Trap::Update(unsigned long time_passed)
         if (targetupdatetimer != 0)
             return;
 
-        for (std::set<Object*>::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+        for (auto itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
         {
             float dist;
 
@@ -986,12 +986,12 @@ void GameObject_FishingNode::EventFishHooked()
 
 bool GameObject_FishingNode::HasLoot()
 {
-    for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    for (auto iter : loot.items)
     {
-        if ((itr->item.itemproto->Bonding == ITEM_BIND_QUEST) || (itr->item.itemproto->Bonding == ITEM_BIND_QUEST2))
+        if ((iter.item.itemproto->Bonding == ITEM_BIND_QUEST) || (iter.item.itemproto->Bonding == ITEM_BIND_QUEST2))
             continue;
 
-        if (itr->iItemsCount > 0)
+        if (iter.iItemsCount > 0)
             return true;
     }
     return false;
@@ -1084,7 +1084,7 @@ void GameObject_FishingHole::CalcFishRemaining(bool force)
 
 bool GameObject_FishingHole::HasLoot()
 {
-    for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    for (auto itr = loot.items.begin(); itr != loot.items.end(); ++itr)
     {
         if (itr->item.itemproto->Bonding == ITEM_BIND_QUEST || itr->item.itemproto->Bonding == ITEM_BIND_QUEST2)
             continue;

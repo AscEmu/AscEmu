@@ -1602,15 +1602,15 @@ private:
         void PvPToggle();
 
         //////////////////////////////////////////////////////////////////////////////////////////
-        /// void HandleSpellLoot(uint32 itemid)
+        /// void HandleSpellLoot(uint32_t itemid)
         /// Generates loot for the spell loot item (clams for example) , then adds the generated loot to the Player
         ///
-        /// \param uint32 itemid   -  unique numerical identifier of the item the Player is looting
+        /// \param uint32_t itemid   -  unique numerical identifier of the item the Player is looting
         ///
         /// \return none
         ///
         //////////////////////////////////////////////////////////////////////////////////////////
-        void HandleSpellLoot(uint32 itemid);
+        void HandleSpellLoot(uint32_t itemid);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////

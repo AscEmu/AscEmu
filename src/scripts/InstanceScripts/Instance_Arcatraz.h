@@ -22,27 +22,27 @@
 enum CreatureEntry
 {
     // Zereketh the UnboundAI
-    CN_ZEREKETH                 = 20870,
-    CN_VOIDZONEARC              = 21101,
+    CN_ZEREKETH                  = 20870,
+    CN_VOIDZONEARC               = 21101,
 
     // Dalliah the DoomsayerAI
-    CN_DALLIAH_THE_DOOMSAYER    = 20885,
+    CN_DALLIAH_THE_DOOMSAYER     = 20885,
 
     // Wrath-Scryer SoccothratesAI
     CN_WRATH_SCRYER_SOCCOTHRATES = 20886,
 
     // Harbinger SkyrissAI
-    CN_HARBRINGER_SKYRISS       = 20912,
+    CN_HARBRINGER_SKYRISS        = 20912,
 
     // Warden MellicharAI
-    CN_WARDEN_MELLICHAR         = 20904,
-    CN_BLAZING_TRICKSTER        = 20905,    // ORB ONE
-    CN_WARP_STALKER             = 20906,    // ORB ONE
-    CN_MILLHOUSE_MANASTORM      = 20977,    // ORB TWO
-    CN_AKKIRIS_LIGHTNING_WAKER  = 20908,    // ORB THREE
-    CN_SULFURON_MAGMA_THROWER   = 20909,    // ORB THREE
-    CN_TWILIGHT_DRAKONAAR       = 20910,    // ORB FOUR
-    CN_BLACKWING_DRAKONAAR      = 20911     // ORB FOUR
+    CN_WARDEN_MELLICHAR          = 20904,
+    CN_BLAZING_TRICKSTER         = 20905,    // ORB ONE
+    CN_WARP_STALKER              = 20906,    // ORB ONE
+    CN_MILLHOUSE_MANASTORM       = 20977,    // ORB TWO
+    CN_AKKIRIS_LIGHTNING_WAKER   = 20908,    // ORB THREE
+    CN_SULFURON_MAGMA_THROWER    = 20909,    // ORB THREE
+    CN_TWILIGHT_DRAKONAAR        = 20910,    // ORB FOUR
+    CN_BLACKWING_DRAKONAAR       = 20911     // ORB FOUR
 
 };
 

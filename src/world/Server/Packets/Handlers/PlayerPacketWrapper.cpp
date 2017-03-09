@@ -626,11 +626,11 @@ void Player::SendLootUpdate(Object* o)
 void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, bool sendtoself)
 {
     //////////////////////////////////////////////////////////////////////////////////////////
-    ///first case we need to send to both grouped and ungrouped players in the set
+    // first case we need to send to both grouped and ungrouped players in the set
     if (groupbuf != NULL && nongroupbuf != NULL)
     {
 
-        for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+        for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
         {
             Player* p = static_cast< Player* >(*itr);
 
@@ -642,10 +642,10 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
     }
     else
         //////////////////////////////////////////////////////////////////////////////////////////
-        //second case we send to group only
+        // second case we send to group only
         if (groupbuf != NULL && nongroupbuf == NULL)
         {
-            for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+            for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
             {
                 Player* p = static_cast< Player* >(*itr);
 
@@ -655,10 +655,10 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
         }
         else
             //////////////////////////////////////////////////////////////////////////////////////////
-            //Last case we send to nongroup only
+            // Last case we send to nongroup only
             if (groupbuf == NULL && nongroupbuf != NULL)
             {
-                for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+                for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
                 {
                     Player* p = static_cast< Player* >(*itr);
 

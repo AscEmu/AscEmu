@@ -1444,7 +1444,7 @@ void WorldSession::SendInventoryList(Creature* unit)
     ItemProperties const* curItem = NULL;
     uint32 counter = 0;
 
-    for (std::vector<CreatureItem>::iterator itr = unit->GetSellItemBegin(); itr != unit->GetSellItemEnd(); ++itr)
+    for (auto itr = unit->GetSellItemBegin(); itr != unit->GetSellItemEnd(); ++itr)
     {
         if (itr->itemid && (itr->max_amount == 0 || (itr->max_amount > 0 && itr->available_amount > 0)))
         {

@@ -214,26 +214,26 @@ ObjectMgr::~ObjectMgr()
     }
 
     LogNotice("ObjectMgr : Deleting Profession Discoveries...");
-    std::set<ProfessionDiscovery*>::iterator itr = ProfessionDiscoveryTable.begin();
-    for (; itr != ProfessionDiscoveryTable.end(); ++itr)
+    
+    for (auto itr = ProfessionDiscoveryTable.begin(); itr != ProfessionDiscoveryTable.end(); ++itr)
         delete(*itr);
 
     LogNotice("ObjectMgr : Cleaning up BroadCastStorages...");
     m_BCEntryStorage.clear();
 
     LogNotice("ObjectMgr : Cleaning up spell target constraints...");
-    for (SpellTargetConstraintMap::iterator itr = m_spelltargetconstraints.begin(); itr != m_spelltargetconstraints.end(); ++itr)
+    for (auto itr = m_spelltargetconstraints.begin(); itr != m_spelltargetconstraints.end(); ++itr)
         delete itr->second;
 
     m_spelltargetconstraints.clear();
 
     LogNotice("ObjectMgr", "Cleaning up vehicle accessories...");
-    for (std::map< uint32, std::vector< VehicleAccessoryEntry* >* >::iterator itr = vehicle_accessories.begin(); itr != vehicle_accessories.end(); ++itr)
+    for (auto itr = vehicle_accessories.begin(); itr != vehicle_accessories.end(); ++itr)
     {
         std::vector< VehicleAccessoryEntry* > *v = itr->second;
 
-        for (std::vector< VehicleAccessoryEntry* >::iterator itr2 = v->begin(); itr2 != v->end(); ++itr2)
-            delete *itr2;
+        for (auto iter = v->begin(); iter != v->end(); ++iter)
+            delete *iter;
         v->clear();
 
         delete v;
@@ -243,7 +243,7 @@ ObjectMgr::~ObjectMgr()
 
 
     LogNotice("ObjectMgr : Cleaning up worldstate templates...");
-    for (std::map< uint32, std::multimap< uint32, WorldState >* >::iterator itr = worldstate_templates.begin(); itr != worldstate_templates.end(); ++itr)
+    for (auto itr = worldstate_templates.begin(); itr != worldstate_templates.end(); ++itr)
     {
         itr->second->clear();
         delete itr->second;
@@ -2718,28 +2718,28 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim
     int32 replimit;
     int32 value;
 
-    for (std::vector<InstanceReputationMod>::iterator i = itr->second->mods.begin(); i != itr->second->mods.end(); ++i)
+    for (auto iter = itr->second->mods.begin(); iter != itr->second->mods.end(); ++iter)
     {
-        if (!(*i).faction[team])
+        if (!(*iter).faction[team])
             continue;
 
         if (is_boss)
         {
-            value = i->boss_rep_reward;
-            replimit = i->boss_rep_limit;
+            value = iter->boss_rep_reward;
+            replimit = iter->boss_rep_limit;
         }
         else
         {
-            value = i->mob_rep_reward;
-            replimit = i->mob_rep_limit;
+            value = iter->mob_rep_reward;
+            replimit = iter->mob_rep_limit;
         }
 
-        if (!value || (replimit && pPlayer->GetStanding(i->faction[team]) >= replimit))
+        if (!value || (replimit && pPlayer->GetStanding(iter->faction[team]) >= replimit))
             continue;
 
-        //value *= sWorld.getRate(RATE_KILLREPUTATION);
+        // value *= sWorld.getRate(RATE_KILLREPUTATION);
         value = float2int32(value * sWorld.getRate(RATE_KILLREPUTATION));
-        pPlayer->ModStanding(i->faction[team], value);
+        pPlayer->ModStanding(iter->faction[team], value);
     }
 
     return true;
@@ -3732,7 +3732,7 @@ void ObjectMgr::StoreBroadCastGroupKey()
         LogNotice("ObjectMgr : BCSystem Enabled with %u KeyGroups.", keyGroup.size());
     }
 
-    for (std::vector<std::string>::iterator itr = keyGroup.begin(); itr != keyGroup.end(); ++itr)
+    for (auto itr = keyGroup.begin(); itr != keyGroup.end(); ++itr)
     {
         std::string curKey = (*itr);
         QueryResult* percentResult = WorldDatabase.Query("SELECT entry,percent FROM `worldbroadcast` WHERE percent='%s' ", curKey.c_str());
