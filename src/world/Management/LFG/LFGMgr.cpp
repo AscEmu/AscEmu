@@ -1685,9 +1685,11 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         return;
     }
 
+#if VERSION_STRING > TBC
     // Update achievements
     if (dungeon->difficulty == 1) // Heroic
         player->GetAchievementMgr().UpdateAchievementCriteria(player, 13029, 1); // Done LFG Dungeon with random Players
+#endif
 
     LfgReward const* reward = GetRandomDungeonReward(rDungeonId, player->getLevel());
     if (!reward)
@@ -1768,8 +1770,9 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         // if daily then append to finished dailies
         if (qReward->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY)
             player->PushToFinishedDailies(qReward->id);
-
+#if VERSION_STRING > TBC
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
+#endif
         if (qReward->reward_money > 0)
         {
             // Money reward
@@ -1778,10 +1781,14 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
             {
                 player->ModGold(qReward->reward_money);
             }
+#if VERSION_STRING > TBC
             player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->reward_money, 0, 0);
+#endif
         }
+#if VERSION_STRING > TBC
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->zone_id, 0, 0);
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->id, 0, 0);
+#endif
     }
     else
     {
@@ -1858,7 +1865,9 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         if (qReward->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY)
             player->PushToFinishedDailies(qReward->id);
 
+#if VERSION_STRING > TBC
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT, 1, 0, 0);
+#endif
         if (qReward->reward_money > 0)
         {
             // Money reward
@@ -1867,10 +1876,14 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
             {
                 player->ModGold(qReward->reward_money);
             }
+#if VERSION_STRING > TBC
             player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD, qReward->reward_money, 0, 0);
+#endif
         }
+#if VERSION_STRING > TBC
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE, qReward->zone_id, 0, 0);
         player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qReward->id, 0, 0);
+#endif
     }
 
     // Give rewards

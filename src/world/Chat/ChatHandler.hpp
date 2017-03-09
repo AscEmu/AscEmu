@@ -78,10 +78,12 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleAccountMuteCommand(const char* args, WorldSession* m_session);
         bool HandleAccountUnmuteCommand(const char* args, WorldSession* m_session);
 
+#if VERSION_STRING > TBC
         // Achievement
         bool HandleAchievementCompleteCommand(const char* args, WorldSession* m_session);
         bool HandleAchievementCriteriaCommand(const char* args, WorldSession* m_session);
         bool HandleAchievementResetCommand(const char* args, WorldSession* m_session);
+#endif
 
         // Admin commands
         bool HandleAdminCastAllCommand(const char* args, WorldSession* m_session);

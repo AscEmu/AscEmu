@@ -204,7 +204,9 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
                 item->GetItemRandomPropertyId(),
                 item->GetStackCount()
             );
+#if VERSION_STRING > TBC
             _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->GetEntry(), 1, 0);
+#endif
         }
         else
             item->DeleteMe();
@@ -228,7 +230,9 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
             add->GetItemRandomPropertyId(),
             add->GetStackCount()
         );
+#if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, add->GetEntry(), 1, 0);
+#endif
     }
 
     //in case of ffa_loot update only the player who receives it.
@@ -361,7 +365,9 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
             else
             {
                 GetPlayer()->ModGold(money);
+#if VERSION_STRING > TBC
                 GetPlayer()->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, money, 0, 0);
+#endif
             }
             sHookInterface.OnLoot(_player, pt, money, 0);
         }
@@ -409,7 +415,9 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
                 {
                     (*itr2)->ModGold(share);
                     (*itr2)->GetSession()->SendPacket(&pkt);
+#if VERSION_STRING > TBC
                     (*itr2)->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, share, 0, 0);
+#endif
                 }
             }
         }
@@ -1213,6 +1221,7 @@ void WorldSession::HandleResurrectResponseOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
 {
+#if VERSION_STRING > TBC
     //LOG_DETAIL("WORLD: Received CMSG_UPDATE_ACCOUNT_DATA");
 
     uint32 uiID;
@@ -1302,6 +1311,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
     rdata << uint32(uiID);
     rdata << uint32(0);
     SendPacket(&rdata);
+#endif
 }
 
 void WorldSession::HandleRequestAccountData(WorldPacket& recv_data)
@@ -1490,6 +1500,7 @@ void WorldSession::HandleAmmoSetOpcode(WorldPacket& recv_data)
 
 #define OPEN_CHEST 11437
 
+#if VERSION_STRING > TBC
 void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -1576,6 +1587,7 @@ void WorldSession::HandleBarberShopResult(WorldPacket& recv_data)
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_VISIT_BARBER_SHOP, 1, 0, 0);
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_GOLD_SPENT_AT_BARBER, cost, 0, 0);
 }
+#endif
 
 void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
 {
@@ -1615,6 +1627,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             plyr->UpdateSpeed();
         }
         break;
+#if VERSION_STRING > TBC
         case GAMEOBJECT_TYPE_BARBER_CHAIR:
         {
             plyr->SafeTeleport(plyr->GetMapId(), plyr->GetInstanceID(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), obj->GetOrientation());
@@ -1625,6 +1638,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             plyr->SetStandState(STANDSTATE_SIT_HIGH_CHAIR);
         }
         break;
+#endif
         case GAMEOBJECT_TYPE_CHEST:     //cast da spell
         {
             spellInfo = sSpellCustomizations.GetSpellInfo(OPEN_CHEST);
@@ -2437,7 +2451,9 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
     {
         player->SendItemPushResult(false, true, true, true, slotresult.ContainerSlot, slotresult.Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
         sQuestMgr.OnPlayerItemPickup(player, item);
+#if VERSION_STRING > TBC
         _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM, item->GetEntry(), 1, 0);
+#endif
     }
     else
         item->DeleteMe();
@@ -2766,16 +2782,20 @@ void WorldSession::HandleGameobjReportUseOpCode(WorldPacket& recv_data)    // CM
     if (gameobj == NULL)
         return;
     sQuestMgr.OnGameObjectActivate(_player, gameobj);
+#if VERSION_STRING > TBC
     _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT, gameobj->GetEntry(), 0, 0);
+#endif
 }
 
 void WorldSession::HandleWorldStateUITimerUpdate(WorldPacket& recv_data)
 {
+#if VERSION_STRING > TBC
     CHECK_INWORLD_RETURN
 
     WorldPacket data(SMSG_WORLD_STATE_UI_TIMER_UPDATE, 4);
     data << (uint32)UNIXTIME;
     SendPacket(&data);
+#endif
 }
 
 void WorldSession::HandleSetTaxiBenchmarkOpcode(WorldPacket& recv_data)

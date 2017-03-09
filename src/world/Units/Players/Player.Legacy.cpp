@@ -24,7 +24,7 @@
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Item.h"
 #include "Management/Container.h"
-#include "Server/Packets/Opcodes.h"
+#include "Server/Packets/Opcode.h"
 #include "Objects/DynamicObject.h"
 #include "AuthCodes.h"
 #include "VMapFactory.h"
@@ -247,8 +247,11 @@ Player::Player(uint32 guid)
     m_session(NULL),
     m_GroupInviter(0),
     m_SummonedObject(NULL),
-    myCorpseLocation(),
+    myCorpseLocation()
+#if VERSION_STRING > TBC
+        ,
     m_achievementMgr(this)
+#endif
 {
     m_cache = new PlayerCache;
     m_cache->SetUInt32Value(CACHE_PLAYER_LOWGUID, guid);
@@ -1511,7 +1514,9 @@ void Player::_EventExploration()
         uint32 explore_xp = at->area_level * 10;
         explore_xp *= float2int32(sWorld.getRate(RATE_EXPLOREXP));
 
+#if VERSION_STRING > TBC
         GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA);
+#endif
         uint32 maxlevel = GetMaxLevel();
 
         if (getLevel() < maxlevel && explore_xp > 0)
@@ -1650,7 +1655,9 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
                 summon->UpdateSpellList();
             }
         }
+#if VERSION_STRING > TBC
         GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
+#endif
 
         //VLack: 3.1.3, as a final step, send the player's talents, this will set the talent points right too...
         smsg_TalentsInfo(false);
@@ -1742,6 +1749,7 @@ void Player::smsg_InitialSpells()
 
 void Player::smsg_TalentsInfo(bool SendPetTalents)
 {
+#if VERSION_STRING > TBC
     WorldPacket data(SMSG_TALENTS_INFO, 1000);
     data << uint8(SendPetTalents ? 1 : 0);
     if (SendPetTalents)
@@ -1776,6 +1784,7 @@ void Player::smsg_TalentsInfo(bool SendPetTalents)
         }
     }
     GetSession()->SendPacket(&data);
+#endif
 }
 
 void Player::ActivateSpec(uint8 spec)
@@ -2148,6 +2157,7 @@ void Player::addSpell(uint32 spell_id)
         _UpdateMaxSkillCounts();
     }
 
+#if VERSION_STRING > TBC
     m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL, spell_id, 1, 0);
     if (spell->MechanicsType == MECHANIC_MOUNTED) // Mounts
     {
@@ -2163,6 +2173,7 @@ void Player::addSpell(uint32 spell_id)
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS, 778, 0, 0);
         }
     }
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -2649,7 +2660,9 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         _SavePetSpells(buf);
     }
     m_nextSave = getMSTime() + sWorld.getIntRate(INTRATE_SAVE);
+#if VERSION_STRING > TBC
     m_achievementMgr.SaveToDB(buf);
+#endif
 
     if (buf)
         CharacterDatabase.AddQueryBuffer(buf);
@@ -2870,8 +2883,10 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         return;
     }
 
+#if VERSION_STRING > TBC
     // load achievements before anything else otherwise skills would complete achievements already in the DB, leading to duplicate achievements and criterias(like achievement=126).
     m_achievementMgr.LoadFromDB(results[16].result, results[17].result);
+#endif
 
     CalculateBaseStats();
 
@@ -3463,9 +3478,11 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         _RemoveSkillLine(SKILL_DUAL_WIELD);
     }
 
+#if VERSION_STRING > TBC
     // update achievements before adding player to World, otherwise we'll get a nice race condition.
     //move CheckAllAchievementCriteria() after FullLogin(this) and i'll cut your b***s.
     m_achievementMgr.CheckAllAchievementCriteria();
+#endif
 
     m_session->FullLogin(this);
     m_session->m_loggingInPlayer = NULL;
@@ -3729,7 +3746,9 @@ void Player::AddToWorld(MapMgr* pMapMgr)
 void Player::OnPrePushToWorld()
 {
     SendInitialLogonPackets();
+#if VERSION_STRING > TBC
     m_achievementMgr.SendAllAchievementData(this);
+#endif
 }
 
 void Player::OnPushToWorld()
@@ -4304,6 +4323,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
 
 void Player::BuildPlayerRepop()
 {
+#if VERSION_STRING > TBC
     WorldPacket data(SMSG_PRE_RESURRECT, 8);
     FastGUIDPack(data, GetGUID());         // caster guid
     GetSession()->SendPacket(&data);
@@ -4338,6 +4358,7 @@ void Player::BuildPlayerRepop()
 
     setMoveRoot(false);
     setMoveWaterWalk();
+#endif
 }
 
 void Player::RepopRequestedPlayer()
@@ -8188,7 +8209,9 @@ void Player::ApplyLevelInfo(LevelInfo* Info, uint32 Level)
     //UpdateChances();
     UpdateGlyphs();
     m_playerInfo->lastLevel = Level;
+#if VERSION_STRING > TBC
     GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);
+#endif
     //VLack: 3.1.3, as a final step, send the player's talents, this will set the talent points right too...
     smsg_TalentsInfo(false);
 
@@ -9850,8 +9873,10 @@ void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
 
     // Displaying bug fix
     _UpdateSkillFields();
+#if VERSION_STRING > TBC
     m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, SkillLine, Max_sk / 75, 0);
     m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, SkillLine, Curr_sk, 0);
+#endif
 }
 
 void Player::_UpdateSkillFields()
@@ -9871,12 +9896,16 @@ void Player::_UpdateSkillFields()
         if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
         {
             SetUInt32Value(f++, itr->first | 0x10000);
+#if VERSION_STRING > TBC
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, itr->second.Skill->id, itr->second.CurrentValue, 0);
+#endif
         }
         else
         {
             SetUInt32Value(f++, itr->first);
+#if VERSION_STRING > TBC
             m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, itr->second.Skill->id, itr->second.MaximumValue / 75, 0);
+#endif
         }
 
         SetUInt32Value(f++, (itr->second.MaximumValue << 16) | itr->second.CurrentValue);
@@ -9907,8 +9936,10 @@ void Player::_AdvanceSkillLine(uint32 SkillLine, uint32 Count /* = 1 */)
         _AddSkillLine(SkillLine, Count, getLevel() * 5);
         _UpdateMaxSkillCounts();
         sHookInterface.OnAdvanceSkillLine(this, SkillLine, Count);
+#if VERSION_STRING > TBC
         m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, SkillLine, _GetSkillLineMax(SkillLine), 0);
         m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, SkillLine, Count, 0);
+#endif
     }
     else
     {
@@ -9920,8 +9951,10 @@ void Player::_AdvanceSkillLine(uint32 SkillLine, uint32 Count /* = 1 */)
             _UpdateSkillFields();
             sHookInterface.OnAdvanceSkillLine(this, SkillLine, curr_sk);
         }
+#if VERSION_STRING > TBC
         m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, SkillLine, itr->second.MaximumValue / 75, 0);
         m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, SkillLine, itr->second.CurrentValue, 0);
+#endif
     }
     _LearnSkillSpells(SkillLine, curr_sk);
 }
@@ -10220,7 +10253,9 @@ void Player::_ModifySkillMaximum(uint32 SkillLine, uint32 NewMax)
 
         itr->second.MaximumValue = NewMax;
         _UpdateSkillFields();
+#if VERSION_STRING > TBC
         m_achievementMgr.UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, SkillLine, NewMax / 75, 0);
+#endif
     }
 }
 
@@ -11254,11 +11289,13 @@ void Player::PlaySound(uint32 sound_id)
 
 void Player::UpdatePowerAmm()
 {
+#if VERSION_STRING > TBC
     WorldPacket data(SMSG_POWER_UPDATE, 5);
     FastGUIDPack(data, GetGUID());
     data << uint8(GetPowerType());
     data << GetUInt32Value(UNIT_FIELD_POWER1 + GetPowerType());
     SendMessageToSet(&data, true);
+#endif
 }
 
 // Initialize Glyphs or update them after level change
@@ -11324,8 +11361,10 @@ void Player::SetKnownTitle(RankTitles title, bool set)
 
 void Player::SendTriggerMovie(uint32 movieID)
 {
+#if VERSION_STRING > TBC
     if (m_session)
         m_session->OutPacket(SMSG_TRIGGER_MOVIE, 4, &movieID);
+#endif
 }
 
 uint32 Player::GetInitialFactionId()
@@ -12083,8 +12122,10 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
 
             if (getLevel() >= (pVictim->getLevel() - 8) && (GetGUID() != pVictim->GetGUID()))
             {
+#if VERSION_STRING > TBC
                 GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, GetAreaID(), 1, 0);
                 GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL, 1, 0, 0);
+#endif
                 HonorHandler::OnPlayerKilled(this, playerVictim);
                 setAurastateFlag = true;
             }
@@ -12106,7 +12147,9 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
             {
                 Reputation_OnKilledUnit(pVictim, false);
 
+#if VERSION_STRING > TBC
                 GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW, GetMapId(), 0, 0);
+#endif
 
                 if (pVictim->getLevel() >= (getLevel() - 8) && (GetGUID() != pVictim->GetGUID()))
                 {
@@ -12207,6 +12250,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
                     if (pVictim->IsCreature())
                     {
                         sQuestMgr.OnPlayerKill(player_tagger, static_cast<Creature*>(pVictim), true);
+#if VERSION_STRING > TBC
                         ///////////////////////////////////////////////// Kill creature/creature type Achievements /////////////////////////////////////////////////////////////////////
                         if (player_tagger->InGroup())
                         {
@@ -12221,16 +12265,19 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
                             player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
                             player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, GetHighGUID(), GetLowGUID(), 0);
                         }
+#endif
                     }
                 }
             }
         }
 
+#if VERSION_STRING > TBC
         if (pVictim->isCritter())
         {
             GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
             GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, GetHighGUID(), GetLowGUID(), 0);
         }
+#endif
     }
     else
     {
@@ -12320,6 +12367,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
         GetVehicleComponent()->EjectAllPassengers();
     }
 
+#if VERSION_STRING > TBC
     // A Player has died
     if (IsPlayer())
     {
@@ -12336,6 +12384,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
             GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE, 1, 0, 0);
         }
     }
+#endif
 
     //general hook for die
     if (!sHookInterface.OnPreUnitDie(pAttacker, this))
@@ -12498,6 +12547,7 @@ void Player::RemoveIfVisible(uint64 obj)
 void Player::Phase(uint8 command, uint32 newphase)
 {
     Unit::Phase(command, newphase);
+#if VERSION_STRING > TBC
     if (GetSession())
     {
         WorldPacket data(SMSG_SET_PHASE_SHIFT, 4);
@@ -12521,6 +12571,7 @@ void Player::Phase(uint8 command, uint32 newphase)
 
         charm->Phase(command, newphase);
     }
+#endif
 }
 
 ///\todo  Use this method all over source code

@@ -25,10 +25,12 @@
 
 void DeathKnight::SendRuneUpdate(uint8 slot)
 {
+#if VERSION_STRING > TBC
     WorldPacket data(SMSG_CONVERT_RUNE, 2);
     data << uint8(slot);
     data << uint8(m_runes[slot].type);
     GetSession()->SendPacket(&data);
+#endif
 }
 
 uint8 DeathKnight::GetBaseRuneType(uint8 slot)

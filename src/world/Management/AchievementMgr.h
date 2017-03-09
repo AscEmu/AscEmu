@@ -17,10 +17,12 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ACHIEVEMENTMGR_H
-#define _ACHIEVEMENTMGR_H
+#pragma once
 
+#include "../world/WorldConf.h"
 #include "Units/Unit.h"
+
+#if VERSION_STRING > TBC
 
 class QueryBuffer;
 struct AchievementEntry;
@@ -319,6 +321,4 @@ uint32 GetAchievementIDFromLink(const char* achievementlink);
 bool SendAchievementProgress(const CriteriaProgress* c);
 bool SaveAchievementProgressToDB(const CriteriaProgress* c);
 
-
-#endif  //_ACHIEVEMENTMGR_H
-
+#endif

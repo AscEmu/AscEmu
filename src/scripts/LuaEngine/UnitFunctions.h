@@ -5587,28 +5587,34 @@ class LuaUnit
     static int AddAchievement(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING > TBC
         int32 achievementID = static_cast<int32>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
         if(plr->GetAchievementMgr().GMCompleteAchievement(NULL, achievementID))
             lua_pushboolean(L, 1);
         else
             lua_pushboolean(L, 0);
+#endif
         return 1;
     }
 
     static int RemoveAchievement(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING > TBC
         int32 achievementID = static_cast<int32>(luaL_checkinteger(L, 1));
         static_cast<Player*>(ptr)->GetAchievementMgr().GMResetAchievement(achievementID);
+#endif
         return 0;
     }
 
     static int HasAchievement(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING > TBC
         uint32 achievementID = static_cast<uint32>(luaL_checkinteger(L, 1));
         lua_pushboolean(L, static_cast<Player*>(ptr)->GetAchievementMgr().HasCompleted(achievementID) ? 1 : 0);
+#endif
         return 1;
     }
 

@@ -20,6 +20,7 @@
 #ifndef _GROUP_H
 #define _GROUP_H
 
+#include "../world/WorldConf.h"
 #include "Units/Players/Player.h"
 
 enum PartyErrors
@@ -257,7 +258,9 @@ class SERVER_DECL Group
         //////////////////////////////////////////////////////////////////////////////////////////
         Player* GetRandomPlayerInRangeButSkip(Player* plr, float range, Player* plr_skip);
 
+#if VERSION_STRING > TBC
         void UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTypes type, int32 miscvalue1, int32 miscvalue2, uint32 time);
+#endif
         void Teleport(WorldSession* m_session);
 		bool isLFGGroup() 
 		{ 

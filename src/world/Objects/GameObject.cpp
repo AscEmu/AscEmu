@@ -1166,6 +1166,7 @@ void GameObject_Destructible::Damage(uint32 damage, uint64 AttackerGUID, uint64 
 
 void GameObject_Destructible::SendDamagePacket(uint32 damage, uint64 AttackerGUID, uint64 ControllerGUID, uint32 SpellID)
 {
+#if VERSION_STRING > TBC
     WorldPacket data(SMSG_DESTRUCTIBLE_BUILDING_DAMAGE, 29);
 
     data << WoWGuid(GetNewGUID());
@@ -1174,6 +1175,7 @@ void GameObject_Destructible::SendDamagePacket(uint32 damage, uint64 AttackerGUI
     data << uint32(damage);
     data << uint32(SpellID);
     SendMessageToSet(&data, false, false);
+#endif
 }
 
 void GameObject_Destructible::Rebuild()

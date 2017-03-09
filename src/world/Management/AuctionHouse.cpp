@@ -791,6 +791,7 @@ void WorldSession::HandleAuctionListItems(WorldPacket& recv_data)
 
 void WorldSession::HandleAuctionListPendingSales(WorldPacket& recv_data)
 {
+#if VERSION_STRING > TBC
     CHECK_INWORLD_RETURN
 
     uint64 guid;
@@ -815,6 +816,7 @@ void WorldSession::HandleAuctionListPendingSales(WorldPacket& recv_data)
     data << float(0);
     }*/
     SendPacket(&data);
+#endif
 }
 
 void AuctionHouse::LoadAuctions()
