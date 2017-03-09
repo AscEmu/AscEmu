@@ -445,6 +445,7 @@ void Pet::SendSpellsToOwner()
 
 void Pet::SendTalentsToOwner()
 {
+#if VERSION_STRING > TBC
     if (m_Owner == NULL)
         return;
 
@@ -501,6 +502,7 @@ void Pet::SendTalentsToOwner()
     // send the packet to owner
     if (m_Owner->GetSession() != NULL)
         m_Owner->GetSession()->SendPacket(&data);
+#endif
 }
 
 void Pet::SendCastFailed(uint32 spellid, uint8 fail)
@@ -1235,9 +1237,10 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
         }
     }
 
+#if VERSION_STRING > TBC
     if (showLearnSpell && m_Owner && m_Owner->GetSession() && !(sp->Attributes & ATTRIBUTES_NO_CAST))
         m_Owner->GetSession()->OutPacket(SMSG_PET_LEARNED_SPELL, 2, &sp->Id);
-
+#endif
     if (IsInWorld())
         SendSpellsToOwner();
 }
@@ -1364,8 +1367,10 @@ void Pet::RemoveSpell(SpellInfo* sp, bool showUnlearnSpell)
             ActionBar[pos] = 0;
     }
 
+#if VERSION_STRING > TBC
     if (showUnlearnSpell && m_Owner && m_Owner->GetSession())
         m_Owner->GetSession()->OutPacket(SMSG_PET_UNLEARNED_SPELL, 4, &sp->Id);
+#endif
 }
 
 void Pet::Rename(std::string NewName)
@@ -1915,8 +1920,10 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 un
 
             if (m_Owner->getLevel() >= (pVictim->getLevel() - 8) && (GetGUID() != pVictim->GetGUID()))
             {
+#if VERSION_STRING > TBC
                 m_Owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA, m_Owner->GetAreaID(), 1, 0);
                 m_Owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL, 1, 0, 0);
+#endif
                 HonorHandler::OnPlayerKilled(m_Owner, playerVictim);
                 setAurastateFlag = true;
 
@@ -1938,7 +1945,9 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 un
             if (pVictim->IsCreature())
             {
                 m_Owner->Reputation_OnKilledUnit(pVictim, false);
+#if VERSION_STRING > TBC
                 m_Owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILLING_BLOW, GetMapId(), 0, 0);
+#endif
             }
         }
 
@@ -2026,6 +2035,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 un
                         {
                             sQuestMgr.OnPlayerKill(player_tagger, static_cast<Creature*>(pVictim), true);
 
+#if VERSION_STRING > TBC
                             //////////////////////////////////////////////////////////////////////////////////////////
                             //Kill creature/creature type Achievements
                             if (player_tagger->InGroup())
@@ -2041,17 +2051,20 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 un
                                 player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
                                 player_tagger->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, GetHighGUID(), GetLowGUID(), 0);
                             }
+#endif
                         }
                     }
                 }
             }
         }
 
+#if VERSION_STRING > TBC
         if (pVictim->isCritter())
         {
             m_Owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE, pVictim->GetEntry(), 1, 0);
             m_Owner->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE_TYPE, GetHighGUID(), GetLowGUID(), 0);
         }
+#endif
     }
     else
     {

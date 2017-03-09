@@ -571,6 +571,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
 
         // Serialization
+#if VERSION_STRING > TBC
         void LoadCompletedAchievements();
         AchievementRewardsMap AchievementRewards;
         AchievementReward const * GetAchievementReward(uint32 entry, uint8 gender)
@@ -585,6 +586,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         }
 
         void LoadAchievementRewards();
+#endif
         void LoadAreaTrigger();
         void LoadPlayersInfo();
 
@@ -749,9 +751,11 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         AreaTrigger const* GetMapEntranceTrigger(uint32 Map) const;
 
+#if VERSION_STRING > TBC
         void LoadAchievementCriteriaList();
         AchievementCriteriaEntryList const & GetAchievementCriteriaByType(AchievementCriteriaTypes type);
         std::set<uint32> allCompletedAchievements;
+#endif
 
         void LoadVehicleAccessories();
         std::vector< VehicleAccessoryEntry* >* GetVehicleAccessories(uint32 creature_entry);
@@ -823,7 +827,9 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         PetDefaultSpellMap mDefaultPetSpells;
         PetSpellCooldownMap mPetSpellCooldowns;
         SpellTargetConstraintMap m_spelltargetconstraints;
+#if VERSION_STRING > TBC
         AchievementCriteriaEntryList m_AchievementCriteriasByType[ACHIEVEMENT_CRITERIA_TYPE_TOTAL];
+#endif
         std::map< uint32, std::vector<VehicleAccessoryEntry*>* > vehicle_accessories;
         std::map< uint32, std::multimap<uint32, WorldState>* > worldstate_templates;
 };

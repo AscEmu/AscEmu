@@ -136,6 +136,7 @@ void Vehicle::AddPassenger(Unit* passenger)
 
 void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
 {
+#if VERSION_STRING > TBC
     if (seats[seatid]->HasPassenger())
         return;
 
@@ -253,6 +254,7 @@ void Vehicle::AddPassengerToSeat(Unit* passenger, uint32 seatid)
                 c->GetScript()->OnVehicleFull();
         }
     }
+#endif
 }
 
 void Vehicle::EjectPassenger(Unit* passenger)

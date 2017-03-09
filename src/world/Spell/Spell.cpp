@@ -5953,7 +5953,9 @@ void Spell::SendCastSuccess(const uint64 & guid)
     *(uint32*)&buffer[c] = GetSpellInfo()->Id;
     c += 4;
 
+#if VERSION_STRING > TBC
     plr->GetSession()->OutPacket(uint16(SMSG_CLEAR_EXTRA_AURA_INFO_OBSOLETE), static_cast<uint16>(c), buffer);
+#endif
 }
 
 uint8 Spell::GetErrorAtShapeshiftedCast(SpellInfo* spellInfo, uint32 form)

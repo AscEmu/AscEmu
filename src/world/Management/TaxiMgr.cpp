@@ -21,7 +21,7 @@
 
 #include "StdAfx.h"
 #include "Management/TaxiMgr.h"
-#include "Server/Packets/Opcodes.h"
+#include "Server/Packets/Opcode.h"
 #include "Units/Players/Player.h"
 
 initialiseSingleton(TaxiMgr);

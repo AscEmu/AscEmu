@@ -37,11 +37,32 @@ struct ClientPktHeader
     uint32 cmd;
 };
 
+// MIT
 struct ServerPktHeader
 {
-    uint16 size;
-    uint16 cmd;
+#if VERSION_STRING == Cata
+    ServerPktHeader(uint32_t _size, uint16_t _cmd) : size(_size)
+    {
+        headerLength = 0;
+        if (size > 0x7FFF)
+            header[headerLength++] = 0x80 | (0xFF & (_size >> 16));
+        header[headerLength++] = 0xFF & (_size >> 8);
+        header[headerLength++] = 0xFF & _size;
+        header[headerLength++] = 0xFF & _cmd;
+        header[headerLength++] = 0xFF & (_cmd >> 8); 
+    }
+
+    uint8_t getHeaderLength() { return headerLength; }
+    bool isLargePacket() { return ((headerLength == 4) ? true : false); }
+    const uint32_t size;
+    uint8_t header[5];
+    uint8_t headerLength;
+#else
+    uint16_t size;
+    uint16_t cmd;
+#endif
 };
+// MIT End
 #pragma pack(pop)
 
 WorldSocket::WorldSocket(SOCKET fd)
@@ -112,7 +133,11 @@ void WorldSocket::OnDisconnect()
     }
 }
 
+#if VERSION_STRING != Cata
 void WorldSocket::OutPacket(uint16 opcode, size_t len, const void* data)
+#else
+void WorldSocket::OutPacket(uint32 opcode, size_t len, const void* data)
+#endif
 {
     OUTPACKET_RESULT res;
     if ((len + 10) > WORLDSOCKET_SENDBUF_SIZE)
@@ -182,7 +207,11 @@ void WorldSocket::UpdateQueuedPackets()
     queueLock.Release();
 }
 
+#if VERSION_STRING != Cata
 OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, size_t len, const void* data)
+#else
+OUTPACKET_RESULT WorldSocket::_OutPacket(uint32 opcode, size_t len, const void* data)
+#endif
 {
     bool rv;
     if (!IsConnected())
@@ -199,17 +228,31 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint16 opcode, size_t len, const void* 
     // Packet logger :)
     sWorldLog.LogPacket((uint32)len, opcode, (const uint8*)data, 1, (mSession ? mSession->GetAccountId() : 0));
 
+#if VERSION_STRING == Cata
+    ServerPktHeader Header(uint32(len + 2), opcode);
+#else
     // Encrypt the packet
     // First, create the header.
     ServerPktHeader Header;
 
     Header.cmd = opcode;
     Header.size = ntohs((uint16)len + 2);
+#endif
 
-    _crypt.EncryptSend((uint8*)&Header, sizeof(ServerPktHeader));
+#if VERSION_STRING < WotLK
+    _crypt.encryptTbcSend((uint8*)&Header, sizeof(ServerPktHeader));
+#elif VERSION_STRING == WotLK
+    _crypt.encryptWotlkSend((uint8*)&Header, sizeof(ServerPktHeader));
+#elif VERSION_STRING == Cata
+    _crypt.encryptWotlkSend(((uint8*)Header.header), Header.getHeaderLength());
+#endif
 
+#if VERSION_STRING == Cata
+    rv = BurstSend((const uint8*)&Header.header, Header.getHeaderLength());
+#else
     // Pass the header to our send buffer
     rv = BurstSend((const uint8*)&Header, 4);
+#endif
 
     // Pass the rest of the packet to our send buffer (if there is any)
     if (len > 0 && rv)
@@ -227,6 +270,9 @@ void WorldSocket::OnConnect()
     sWorld.mAcceptedConnections++;
     _latency = getMSTime();
 
+#if VERSION_STRING < WotLK
+    OutPacket(SMSG_AUTH_CHALLENGE, 4, &mSeed);
+#elif VERSION_STRING == WotLK
     WorldPacket wp(SMSG_AUTH_CHALLENGE, 24);
 
     wp << uint32(1);
@@ -237,11 +283,75 @@ void WorldSocket::OnConnect()
     wp << uint32(0x1234ABCD);
 
     SendPacket(&wp);
-
+#elif VERSION_STRING == Cata
+    WorldPacket packet(MSG_WOW_CONNECTION, 46);
+    packet << "RLD OF WARCRAFT CONNECTION - SERVER TO CLIENT";
+    SendPacket(&packet);
+#endif
 }
+
+#if VERSION_STRING == Cata
+void WorldSocket::OnConnectTwo()
+{
+    WorldPacket packet(SMSG_AUTH_CHALLENGE, 37);
+    for (int i = 0; i < 8; ++i)
+        packet << uint32(0);
+    
+    packet << mSeed;
+    packet << uint8(1);
+
+    SendPacket(&packet);
+}
+#endif
 
 void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
 {
+#if VERSION_STRING == Cata
+    std::string account;
+    uint32_t addonSize;
+
+    _latency = getMSTime() - _latency;
+
+    try
+    {
+        recvPacket->read<uint32_t>();
+        recvPacket->read<uint32_t>();
+        recvPacket->read<uint8_t>();
+        *recvPacket >> AuthDigest[10];
+        *recvPacket >> AuthDigest[18];
+        *recvPacket >> AuthDigest[12];
+        *recvPacket >> AuthDigest[5];
+        recvPacket->read<uint64_t>();
+        *recvPacket >> AuthDigest[15];
+        *recvPacket >> AuthDigest[9];
+        *recvPacket >> AuthDigest[19];
+        *recvPacket >> AuthDigest[4];
+        *recvPacket >> AuthDigest[7];
+        *recvPacket >> AuthDigest[16];
+        *recvPacket >> AuthDigest[3];
+        *recvPacket >> mClientBuild;
+        *recvPacket >> AuthDigest[8];
+        recvPacket->read<uint32_t>();
+        recvPacket->read<uint8_t>();
+        *recvPacket >> AuthDigest[17];
+        *recvPacket >> AuthDigest[6];
+        *recvPacket >> AuthDigest[0];
+        *recvPacket >> AuthDigest[1];
+        *recvPacket >> AuthDigest[11];
+        *recvPacket >> mClientSeed;
+        *recvPacket >> AuthDigest[2];
+        recvPacket->read<uint32_t>();
+        *recvPacket >> AuthDigest[14];
+        *recvPacket >> AuthDigest[13];
+
+        *recvPacket >> addonSize;
+        recvPacket->read_skip(addonSize);
+        
+        recvPacket->readBit();
+        uint32_t accountNameLength = recvPacket->readBits(12);
+        account = recvPacket->ReadString(accountNameLength);
+    }
+#else
     std::string account;
     uint32 unk2, unk3;
     uint64 unk4;
@@ -251,6 +361,12 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
 
     try
     {
+#if VERSION_STRING < WotLK
+        *recvPacket >> mClientBuild;
+        *recvPacket >> unk2;
+        *recvPacket >> account;
+        *recvPacket >> mClientSeed;
+#else
         *recvPacket >> mClientBuild;
         *recvPacket >> unk2;
         *recvPacket >> account;
@@ -260,7 +376,9 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
         *recvPacket >> unk5;
         *recvPacket >> unk6;
         *recvPacket >> unk7;
+#endif
     }
+#endif
     catch (ByteBuffer::error &)
     {
         LOG_DETAIL("Incomplete copy of AUTH_SESSION Received.");
@@ -323,11 +441,22 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     uint8 K[40];
     recvData.read(K, 40);
 
-    _crypt.Init(K);
+#if VERSION_STRING < WotLK
+    BigNumber BNK;
+    BNK.SetBinary(K, 40);
+
+    uint8 *key = new uint8[20];
+    WowCrypt::generateTbcKey(key, K);
+
+    _crypt.setTbcKey(key, 20);
+    _crypt.initTbcCrypt();
+    delete[] key;
+#else
+    _crypt.initWotlkCrypt(K);
+#endif
 
     //checking if player is already connected
     //disconnect current player and login this one(blizzlike)
-
     if (recvData.rpos() != recvData.wpos())
         recvData.read((uint8*)lang.data(), 4);
 
@@ -348,10 +477,10 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     }
 
     Sha1Hash sha;
-
+#if VERSION_STRING != Cata
     uint8 digest[20];
     pAuthenticationPacket->read(digest, 20);
-
+#endif
     uint32 t = 0;
     if (m_fullAccountName == nullptr) // should never happen !
         sha.UpdateData(AccountName);
@@ -367,10 +496,18 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     sha.UpdateData((uint8*)&t, 4);
     sha.UpdateData((uint8*)&mClientSeed, 4);
     sha.UpdateData((uint8*)&mSeed, 4);
+#if VERSION_STRING < WotLK
+    sha.UpdateBigNumbers(&BNK, NULL);
+#else
     sha.UpdateData((uint8*)&K, 40);
+#endif
     sha.Finalize();
 
+#if VERSION_STRING != Cata
     if (memcmp(sha.GetDigest(), digest, 20))
+#else
+    if (memcmp(sha.GetDigest(), AuthDigest, 20))
+#endif
     {
         // AUTH_UNKNOWN_ACCOUNT = 21
         OutPacket(SMSG_AUTH_RESPONSE, 1, "\x15");
@@ -467,6 +604,7 @@ void WorldSocket::Authenticate()
     if (mSession == NULL)
         return;
 
+#if VERSION_STRING != Cata
     if (mSession->HasFlag(ACCOUNT_FLAG_XPACK_02))
         OutPacket(SMSG_AUTH_RESPONSE, 11, "\x0C\x30\x78\x00\x00\x00\x00\x00\x00\x00\x02");
     else if (mSession->HasFlag(ACCOUNT_FLAG_XPACK_01))
@@ -475,6 +613,23 @@ void WorldSocket::Authenticate()
         OutPacket(SMSG_AUTH_RESPONSE, 11, "\x0C\x30\x78\x00\x00\x00\x00\x00\x00\x00\x00");
 
     sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket, static_cast<uint32>(pAuthenticationPacket->rpos()), mSession);
+#else
+    WorldPacket data(SMSG_AUTH_RESPONSE, 17);
+    data.writeBit(false);
+    data.writeBit(true);
+    data << uint32_t(0);                          // BillingTimeRemaining
+    data << uint8_t(3);                           // 0 - normal, 1 - TBC, 2 - WOTLK, 3 - CATA
+    data << uint32_t(0);
+    data << uint8_t(3);
+    data << uint32_t(0);                          // BillingTimeRested
+    data << uint8_t(0);                           // BillingPlanFlags
+    data << uint8_t(0x0C);                        // 0x0C = 12 (AUTH_OK)
+    SendPacket(&data);
+
+    WorldPacket cdata(SMSG_CLIENTCACHE_VERSION, 4);
+    cdata << uint32_t(15595);
+    SendPacket(&cdata);
+#endif
     mSession->_latency = _latency;
 
     delete pAuthenticationPacket;
@@ -483,8 +638,11 @@ void WorldSocket::Authenticate()
     sWorld.AddSession(mSession);
     sWorld.AddGlobalSession(mSession);
 
+#if VERSION_STRING > TBC
+#if VERSION_STRING != Cata
     mSession->SendClientCacheVersion(sWorld.CacheVersion);
-
+#endif
+#endif
     if (mSession->HasGMPermissions())
         sWorld.gmList.insert(mSession);
 
@@ -492,12 +650,27 @@ void WorldSocket::Authenticate()
 
 void WorldSocket::UpdateQueuePosition(uint32 Position)
 {
+#if VERSION_STRING != Cata
     // cebernic: Displays re-correctly until 2.4.3,there will not be always 0
     WorldPacket QueuePacket(SMSG_AUTH_RESPONSE, 16);
     QueuePacket << uint8(0x1B) << uint8(0x2C) << uint8(0x73) << uint8(0) << uint8(0);
     QueuePacket << uint32(0) << uint8(0);// << uint8(0);
     QueuePacket << Position;
     //    QueuePacket << uint8(1);
+#else
+    WorldPacket QueuePacket(SMSG_AUTH_RESPONSE, 21);    // 17 + 4 if queued
+    QueuePacket.writeBit(true);                         // has queue
+    QueuePacket.writeBit(false);                        // unk queue-related
+    QueuePacket.writeBit(true);                         // has account data
+    QueuePacket << uint32_t(0);                         // Unknown - 4.3.2
+    QueuePacket << uint8_t(3);                          // 0 - normal, 1 - TBC, 2 - WotLK, 3 - CT. must be set in database manually for each account
+    QueuePacket << uint32_t(0);                         // BillingTimeRemaining
+    QueuePacket << uint8_t(3);                          // 0 - normal, 1 - TBC, 2 - WotLK, 3 - CT. Must be set in database manually for each account.
+    QueuePacket << uint32_t(0);                         // BillingTimeRested
+    QueuePacket << uint8_t(0);                          // BillingPlanFlags
+    QueuePacket << uint8_t(0x1B);                       // Waiting in queue (AUTH_WAIT_QUEUE I think)
+    QueuePacket << uint32_t(Position);                  // position in queue
+#endif
     SendPacket(&QueuePacket);
 }
 
@@ -511,8 +684,13 @@ void WorldSocket::_HandlePing(WorldPacket* recvPacket)
         return;
     }
 
+#if VERSION_STRING != Cata
     *recvPacket >> ping;
     *recvPacket >> _latency;
+#else
+    *recvPacket >> _latency;
+    *recvPacket >> ping;
+#endif
 
     if (mSession)
     {
@@ -568,7 +746,11 @@ void WorldSocket::OnRead()
             readBuffer.Read((uint8*)&Header, 6);
 
             // Decrypt the header
-            _crypt.DecryptRecv((uint8*)&Header, sizeof(ClientPktHeader));
+#if VERSION_STRING < WotLK
+            _crypt.decryptTbcReceive((uint8*)&Header, sizeof(ClientPktHeader));
+#else
+            _crypt.decryptWotlkReceive((uint8*)&Header, sizeof(ClientPktHeader));
+#endif
 
             mRemaining = mSize = ntohs(Header.size) - 4;
             mOpcode = Header.cmd;
@@ -607,6 +789,13 @@ void WorldSocket::OnRead()
                 delete Packet;
             }
             break;
+#if VERSION_STRING == Cata
+            case MSG_WOW_CONNECTION:
+            {
+                HandleWoWConnection(Packet);
+            }
+            break;
+#endif
             case CMSG_AUTH_SESSION:
             {
                 _HandleAuthSession(Packet);
@@ -614,17 +803,41 @@ void WorldSocket::OnRead()
             break;
             default:
             {
-                if (mSession) mSession->QueuePacket(Packet);
-                else delete Packet;
+                if (mSession)
+                    mSession->QueuePacket(Packet);
+                else
+                    delete Packet;
             }
             break;
         }
     }
 }
 
+#if VERSION_STRING == Cata
+void WorldSocket::HandleWoWConnection(WorldPacket* recvPacket)
+{
+    std::string ClientToServerMsg;
+    *recvPacket >> ClientToServerMsg;
 
+    OnConnectTwo();
+}
 
+void WorldSocket::SendAuthResponseError(uint8_t code)
+{
+    WorldPacket packet(SMSG_AUTH_RESPONSE, 1);
+    packet.writeBit(0);                         // has queue info
+    packet.writeBit(0);                         // has account info
+    packet << uint8_t(code);                    // the error code
+		  
+    SendPacket(&packet);
+}
+#endif
+
+#if VERSION_STRING != Cata
 void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 direction, uint32 accountid)
+#else
+void WorldLog::LogPacket(uint32 len, uint32 opcode, const uint8* data, uint8 direction, uint32 accountid)
+#endif
 {
     if (sWorld.debugFlags & LF_OPCODE)
     {
@@ -636,7 +849,7 @@ void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 dir
                 break;
             default:
                 LogDebugFlag(LF_OPCODE, "[%s]: %s %s (0x%03X) of %u bytes.", direction ? "SERVER" : "CLIENT", direction ? "sent" : "received",
-                              LookupName(opcode, g_worldOpcodeNames), opcode, len);
+                             getOpcodeName(opcode).c_str(), opcode, len);
         }
 }
 
@@ -649,7 +862,7 @@ void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 dir
         unsigned int count = 0;
 
         fprintf(m_file, "{%s} Packet: (0x%04X) %s PacketSize = %u stamp = %u accountid = %u\n", (direction ? "SERVER" : "CLIENT"), opcode,
-                LookupName(opcode, g_worldOpcodeNames), lenght, getMSTime(), accountid);
+                getOpcodeName(opcode).c_str(), lenght, getMSTime(), accountid);
         fprintf(m_file, "|------------------------------------------------|----------------|\n");
         fprintf(m_file, "|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |0123456789ABCDEF|\n");
         fprintf(m_file, "|------------------------------------------------|----------------|\n");

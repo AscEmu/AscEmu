@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Player.h"
-#include "Server/Packets/Opcodes.h"
+#include "Server/Packets/Opcode.h"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -41,9 +41,11 @@ void Player::sendForceMovePaket(UnitSpeedType speed_type, float speed)
         case TYPE_FLY_BACK:
             data.Initialize(SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE);
             break;
+#if VERSION_STRING > TBC
         case TYPE_PITCH_RATE:
             data.Initialize(SMSG_FORCE_PITCH_RATE_CHANGE);
             break;
+#endif
     }
 
     data << GetNewGUID();
@@ -87,9 +89,11 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
         case TYPE_FLY_BACK:
             data.Initialize(MSG_MOVE_SET_FLIGHT_BACK_SPEED);
             break;
+#if VERSION_STRING > TBC
         case TYPE_PITCH_RATE:
             data.Initialize(MSG_MOVE_SET_PITCH_RATE);
             break;
+#endif
     }
 
     data << GetNewGUID();

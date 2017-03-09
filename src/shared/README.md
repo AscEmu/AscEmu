@@ -79,7 +79,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2008 | CallBack.h
 * 2008 | ByteBuffer.h
 * 2008 | AuthCodes.h
-* 2008 | Auth/WowCrypt.cpp
 * 2008 | Auth/Sha1.cpp
 * 2008 | Auth/MD5.cpp
 * 2008 | Auth/BigNumber.cpp
@@ -106,7 +105,6 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2007 | Network/ListenSocketFreeBSD.h
 * 2007 | Network/CircularBuffer.h
 * 2007 | Network/CircularBuffer.cpp
-* 2007 | Auth/WowCrypt.h
 * 2007 | Auth/Sha1.h
 * 2007 | Auth/MD5.h
 * 2007 | Auth/BigNumber.h
@@ -151,3 +149,5 @@ New code has to be placed inside a MIT file. The current max standard is C++14.
 * 2017 | LogDefines.hpp
 * 2017 | Util.cpp
 * 2017 | Util.hpp
+* 2017 | Auth/WowCrypt.cpp
+* 2017 | Auth/WowCrypt.h
