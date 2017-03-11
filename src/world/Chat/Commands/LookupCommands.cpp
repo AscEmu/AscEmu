@@ -319,16 +319,19 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
     for (uint32 index = 0; index < sFactionStore.GetNumRows(); ++index)
     {
         DBC::Structures::FactionEntry const* faction = sFactionStore.LookupEntry(index);
-        std::string y = std::string(faction->Name[0]);
-        Util::StringToLowerCase(y);
-        if (FindXinYString(x, y))
+        if (faction != nullptr)
         {
-            SendHighlightedName(m_session, "Faction", faction->Name[0], y, x, faction->ID);
-            ++count;
-            if (count == 25)
+            std::string y = std::string(faction->Name[0]);
+            Util::StringToLowerCase(y);
+            if (FindXinYString(x, y))
             {
-                RedSystemMessage(m_session, "More than 25 results returned. aborting.");
-                break;
+                SendHighlightedName(m_session, "Faction", faction->Name[0], y, x, faction->ID);
+                ++count;
+                if (count == 25)
+                {
+                    RedSystemMessage(m_session, "More than 25 results returned. aborting.");
+                    break;
+                }
             }
         }
     }
