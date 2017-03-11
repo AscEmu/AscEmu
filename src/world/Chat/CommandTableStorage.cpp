@@ -768,10 +768,10 @@ void CommandTableStorage::Init()
     static ChatCommand lookupCommandTable[] =
     {
         { "achievement",    'l', &ChatHandler::HandleLookupAchievementCommand,  "Looks up achievement string x.",                                   nullptr, 0, 0, 0 },
-        { "creature",       'l', &ChatHandler::HandleLookupCreatureCommand,     "Looks up item string x.",                                          nullptr, 0, 0, 0 },
+        { "creature",       'l', &ChatHandler::HandleLookupCreatureCommand,     "Looks up creature string x.",                                      nullptr, 0, 0, 0 },
         { "faction",        'l', &ChatHandler::HandleLookupFactionCommand,      "Looks up faction string x.",                                       nullptr, 0, 0, 0 },
         { "item",           'l', &ChatHandler::HandleLookupItemCommand,         "Looks up item string x.",                                          nullptr, 0, 0, 0 },
-        { "object",         'l', &ChatHandler::HandleLookupObjectCommand,       "Looks up gameobject string x.",                                    nullptr, 0, 0 , 0 },
+        { "object",         'l', &ChatHandler::HandleLookupObjectCommand,       "Looks up gameobject string x.",                                    nullptr, 0, 0 ,0 },
         { "quest",          'l', &ChatHandler::HandleLookupQuestCommand,        "Looks up quest string x.",                                         nullptr, 0, 0, 0 },
         { "spell",          'l', &ChatHandler::HandleLookupSpellCommand,        "Looks up spell string x.",                                         nullptr, 0, 0, 0 },
         { "skill",          'l', &ChatHandler::HandleLookupSkillCommand,        "Looks up skill string x.",                                         nullptr, 0, 0, 0 },
