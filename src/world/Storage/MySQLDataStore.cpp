@@ -569,6 +569,12 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
             }
 
             creatureProperties.Name = fields[7].GetString();
+
+            //lowercase
+            std::string lower_case_name = creatureProperties.Name;
+            Util::StringToLowerCase(lower_case_name);
+            creatureProperties.lowercase_name = lower_case_name;
+
             creatureProperties.SubName = fields[8].GetString();
             creatureProperties.info_str = fields[9].GetString();
             creatureProperties.Flags1 = fields[10].GetUInt32();
