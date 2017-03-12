@@ -445,6 +445,7 @@ class NestlewoodOwlkin : public CreatureAIScript
         NestlewoodOwlkin(Creature* pCreature) : CreatureAIScript(pCreature)
         {
             respawn = false;
+            reset = false;
         }
 
         void AIUpdate()
