@@ -1029,10 +1029,18 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
 
 void WorldSession::HandleDeclinedPlayerNameOpcode(WorldPacket& recv_data)
 {
-    uint32_t error = 0;
-    uint64_t guid;
+    uint32_t error = 0;     // 0 = success, 1 = error
 
-    WorldPacket data(SMSG_SET_PLAYER_DECLINED_NAMES_RESULT,4+8);
+    uint64_t guid;
+    std::string name;
+
+    recv_data >> guid;
+    recv_data >> name;
+
+    //\todo check utf8 and cyrillic chars
+    // check declined names
+
+    WorldPacket data(SMSG_SET_PLAYER_DECLINED_NAMES_RESULT, 4 + 8);
     data << uint32_t(error);
     data << uint64_t(guid);
     SendPacket(&data);
