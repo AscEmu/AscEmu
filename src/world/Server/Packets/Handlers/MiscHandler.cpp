@@ -1220,7 +1220,6 @@ void WorldSession::HandleResurrectResponseOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
 {
-#if VERSION_STRING > TBC
     //LOG_DETAIL("WORLD: Received CMSG_UPDATE_ACCOUNT_DATA");
 
     uint32 uiID;
@@ -1244,10 +1243,12 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
     if (uiDecompressedSize == 0)
     {
         SetAccountData(uiID, NULL, false, 0);
+#if VERSION_STRING > TBC
         WorldPacket rdata(SMSG_UPDATE_ACCOUNT_DATA_COMPLETE, 4 + 4); //VLack: seen this in a 3.1.1 packet dump as response
         rdata << uint32(uiID);
         rdata << uint32(0);
         SendPacket(&rdata);
+#endif
         return;
     }
 
@@ -1306,6 +1307,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
         SetAccountData(uiID, data, false, uiDecompressedSize);
     }
 
+#if VERSION_STRING > TBC
     WorldPacket rdata(SMSG_UPDATE_ACCOUNT_DATA_COMPLETE, 4 + 4); //VLack: seen this in a 3.1.1 packet dump as response
     rdata << uint32(uiID);
     rdata << uint32(0);

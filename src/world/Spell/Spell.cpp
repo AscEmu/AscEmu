@@ -2093,8 +2093,13 @@ void Spell::SendSpellStart()
         data << m_caster->GetNewGUID();
     }
 
+#if VERSION_STRING > TBC
     data << extra_cast_number;
     data << GetSpellInfo()->Id;
+#else
+    data << GetSpellInfo()->Id;
+    data << extra_cast_number;
+#endif
     data << cast_flags;
     data << (uint32)m_castTime;
 
@@ -2227,7 +2232,9 @@ void Spell::SendSpellGo()
         data << m_caster->GetNewGUID();
     }
 
+#if VERSION_STRING > TBC
     data << extra_cast_number; //3.0.2
+#endif
     data << GetSpellInfo()->Id;
     data << flags;
     data << getMSTime();

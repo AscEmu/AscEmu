@@ -1687,7 +1687,11 @@ void Player::smsg_InitialSpells()
     for (sitr = mSpells.begin(); sitr != mSpells.end(); ++sitr)
     {
         ///\todo check out when we should send 0x0 and when we should send 0xeeee this is not slot, values is always eeee or 0, seems to be cooldown
+#if VERSION_STRING == TBC
+        data << uint16(*sitr);                   // spell id
+#else
         data << uint32(*sitr);                   // spell id
+#endif
         data << uint16(0x0000);
     }
 
@@ -1706,7 +1710,11 @@ void Player::smsg_InitialSpells()
             continue;
         }
 
+#if VERSION_STRING == TBC
+        data << uint16(itr2->first);                        // spell id
+#else
         data << uint32(itr2->first);                        // spell id
+#endif
         data << uint16(itr2->second.ItemId);                // item id
         data << uint16(0);                                  // spell category
         data << uint32(itr2->second.ExpireTime - mstime);   // cooldown remaining in ms (for spell)
@@ -1728,7 +1736,11 @@ void Player::smsg_InitialSpells()
             continue;
         }
 
+#if VERSION_STRING == TBC
+        data << uint16(itr2->second.SpellId);                // spell id
+#else
         data << uint32(itr2->second.SpellId);                // spell id
+#endif
         data << uint16(itr2->second.ItemId);                // item id
         data << uint16(itr2->first);                        // spell category
         data << uint32(0);                                // cooldown remaining in ms (for spell)
@@ -3717,7 +3729,9 @@ void Player::AddToWorld()
     if (m_session)
         m_session->SetInstance(m_mapMgr->GetInstanceID());
 
+#if VERSION_STRING > TBC
     SendInstanceDifficulty(m_mapMgr->iInstanceMode);
+#endif
 }
 
 void Player::AddToWorld(MapMgr* pMapMgr)
@@ -3752,7 +3766,9 @@ void Player::AddToWorld(MapMgr* pMapMgr)
     if (m_session)
         m_session->SetInstance(m_mapMgr->GetInstanceID());
 
+#if VERSION_STRING > TBC
     SendInstanceDifficulty(m_mapMgr->iInstanceMode);
+#endif
 }
 
 void Player::OnPrePushToWorld()
@@ -4815,7 +4831,9 @@ void Player::SendInitialActions()
 {
     WorldPacket data(SMSG_ACTION_BUTTONS, PLAYER_ACTION_BUTTON_SIZE + 1);
 
+#if VERSION_STRING != TBC
     data << uint8(0);         // VLack: 3.1, some bool - 0 or 1. seems to work both ways
+#endif
 
     for (uint8 i = 0; i < PLAYER_ACTION_BUTTON_COUNT; ++i)
     {
@@ -11621,7 +11639,6 @@ void Player::RemoveSanctuaryFlag()
 
 void Player::SendExploreXP(uint32 areaid, uint32 xp)
 {
-
     WorldPacket data(SMSG_EXPLORATION_EXPERIENCE, 8);
     data << uint32(areaid);
     data << uint32(xp);

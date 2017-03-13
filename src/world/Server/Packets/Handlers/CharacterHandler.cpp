@@ -837,10 +837,12 @@ void WorldSession::FullLogin(Player* plr)
     // send friend list (for ignores)
     _player->Social_SendFriendList(7);
 
+#if VERSION_STRING != TBC
     plr->SendDungeonDifficulty();
     plr->SendRaidDifficulty();
 
     plr->SendEquipmentSetList();
+#endif
 
 #ifndef GM_TICKET_MY_MASTER_COMPATIBLE
     GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(_player->GetGUID());

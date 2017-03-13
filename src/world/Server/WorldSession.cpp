@@ -1398,17 +1398,40 @@ void WorldSession::SendRefundInfo(uint64 GUID)
 
 void WorldSession::SendAccountDataTimes(uint32 mask)
 {
+#if VERSION_STRING == TBC
+    StackWorldPacket<128> data(SMSG_ACCOUNT_DATA_TIMES);
+
+    MD5Hash md5hash;
+    for (int i = 0; i < 8; ++i)
+    {
+        AccountDataEntry* acct_data = GetAccountData(i);
+
+        if (!acct_data->data)
+        {
+            data << uint64(0) << uint64(0);	
+            continue;
+        }
+        md5hash.Initialize();
+        md5hash.UpdateData((const uint8*)acct_data->data, acct_data->sz);
+        md5hash.Finalize();
+
+        data.Write(md5hash.GetDigest(), MD5_DIGEST_LENGTH);
+    }
+#else
     WorldPacket data(SMSG_ACCOUNT_DATA_TIMES, 4 + 1 + 4 + 8 * 4);	// changed in WotLK
     data << uint32(UNIXTIME);	// unix time of something
     data << uint8(1);
     data << uint32(mask);		// type mask
     for (uint8 i = 0; i < NUM_ACCOUNT_DATA_TYPES; ++i)
+    {
         if (mask & (1 << i))
         {
             // data << uint32(GetAccountData(AccountDataType(i))->Time);
             // also unix time
             data << uint32(0);
         }
+    }
+#endif
     SendPacket(&data);
 }
 

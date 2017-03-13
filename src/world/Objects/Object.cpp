@@ -201,17 +201,19 @@ WorldPacket* Object::BuildFieldUpdatePacket(uint32 index, uint32 value)
     WorldPacket* packet = new WorldPacket(1500);
     packet->SetOpcode(SMSG_UPDATE_OBJECT);
 
-    *packet << (uint32)1;//number of update/create blocks
-    //	*packet << (uint8)0;//unknown //VLack: removed for 3.1
+    *packet << uint32(1);                   //number of update/create blocks
+#if VERSION_STRING == TBC
+    *packet << uint8(0);                    //unknown removed in 3.1
+#endif
 
-    *packet << (uint8)UPDATETYPE_VALUES;		// update type == update
+    *packet << uint8(UPDATETYPE_VALUES);    // update type == update
     *packet << GetNewGUID();
 
     uint32 mBlocks = index / 32 + 1;
-    *packet << (uint8)mBlocks;
+    *packet << uint8(mBlocks);
 
     for (uint32 dword_n = mBlocks - 1; dword_n; dword_n--)
-        *packet << (uint32)0;
+        *packet << uint32(0);
 
     *packet << (((uint32)(1)) << (index % 32));
     *packet << value;
@@ -226,10 +228,10 @@ void Object::BuildFieldUpdatePacket(Player* Target, uint32 Index, uint32 Value)
     buf << GetNewGUID();
 
     uint32 mBlocks = Index / 32 + 1;
-    buf << (uint8)mBlocks;
+    buf << uint8(mBlocks);
 
     for (uint32 dword_n = mBlocks - 1; dword_n; dword_n--)
-        buf << (uint32)0;
+        buf << uint32(0);
 
     buf << (((uint32)(1)) << (Index % 32));
     buf << Value;
@@ -243,10 +245,10 @@ void Object::BuildFieldUpdatePacket(ByteBuffer* buf, uint32 Index, uint32 Value)
     *buf << GetNewGUID();
 
     uint32 mBlocks = Index / 32 + 1;
-    *buf << (uint8)mBlocks;
+    *buf << uint8(mBlocks);
 
     for (uint32 dword_n = mBlocks - 1; dword_n; dword_n--)
-        *buf << (uint32)0;
+        *buf << uint32(0);
 
     *buf << (((uint32)(1)) << (Index % 32));
     *buf << Value;
@@ -261,7 +263,7 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* data, Player* target)
     {
         if (updateMask.GetBit(x))
         {
-            *data << (uint8)UPDATETYPE_VALUES;		// update type == update
+            *data << uint8(UPDATETYPE_VALUES);              // update type == update
             ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
             *data << m_wowGuid;
 
@@ -277,7 +279,7 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
 {
     // returns: update count
     // update type == update
-    *buf << (uint8)UPDATETYPE_VALUES;
+    *buf << uint8(UPDATETYPE_VALUES);
 
     ARCEMU_ASSERT(m_wowGuid.GetNewGuidLen() > 0);
     *buf << m_wowGuid;
@@ -323,7 +325,11 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
     }
 
+#if VERSION_STRING > TBC
     *data << uint16(flags);
+#else
+    *data << uint8(flags);
+#endif
 
     Player* pThis = NULL;
     MovementInfo* moveinfo = NULL;
@@ -384,7 +390,11 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
         *data << uint32(flags2);
 
+#if VERSION_STRING > TBC
         *data << uint16(moveflags2);
+#else
+        *data << uint8(moveflags2);
+#endif
 
         *data << getMSTime(); // this appears to be time in ms but can be any thing. Maybe packet serializer ?
 
@@ -452,7 +462,9 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
             *data << unit->getSpeedForType(TYPE_FLY);
             *data << unit->getSpeedForType(TYPE_FLY_BACK);
             *data << unit->getSpeedForType(TYPE_TURN_RATE);
+#if VERSION_STRING > TBC
             *data << unit->getSpeedForType(TYPE_PITCH_RATE);
+#endif
         }
         else                                //\todo Zyres: this is ridiculous... only units have these types, but this function is a mess so don't breake anything.
         {
@@ -464,7 +476,9 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
             *data << float(7.0f);
             *data << float(4.5f);
             *data << float(3.141594f);
+#if VERSION_STRING > TBC
             *data << float(3.14f);
+#endif
         }
 
         if (flags2 & MOVEFLAG_SPLINE_ENABLED)   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
@@ -533,6 +547,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
     {
         *data << getMSTime();
     }
+#if VERSION_STRING > TBC
     if (flags & UPDATEFLAG_VEHICLE)
     {
         uint32 vehicleid = 0;
@@ -546,6 +561,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         *data << uint32(vehicleid);
         *data << float(GetOrientation());
     }
+#endif
 
     if (flags & UPDATEFLAG_ROTATION)   //0x0200
     {

@@ -610,7 +610,12 @@ enum PlayerCheats
 };
 
 // action button defines
-#define PLAYER_ACTION_BUTTON_COUNT 144
+#if VERSION_STRING != TBC
+    #define PLAYER_ACTION_BUTTON_COUNT 144
+#else
+    #define PLAYER_ACTION_BUTTON_COUNT 132
+#endif
+
 #define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(ActionButton)
 
 #define MAX_SPEC_COUNT 2

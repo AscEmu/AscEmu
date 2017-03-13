@@ -570,17 +570,22 @@ void Player::SendInitialLogonPackets()
     //Tutorial Flags
     data.Initialize(SMSG_TUTORIAL_FLAGS);
 
-    for (uint8 i = 0; i < 8; i++)
+    for (uint8 i = 0; i < 8; ++i)
         data << uint32(m_Tutorials[i]);
 
     m_session->SendPacket(&data);
 
+#if VERSION_STRING > TBC
     smsg_TalentsInfo(false);
+#endif
+
     smsg_InitialSpells();
 
+#if VERSION_STRING > TBC
     data.Initialize(SMSG_SEND_UNLEARN_SPELLS);
     data << uint32(0); // count, for (count) uint32;
     GetSession()->SendPacket(&data);
+#endif
 
     SendInitialActions();
     smsg_InitialFactions();
@@ -589,12 +594,15 @@ void Player::SendInitialLogonPackets()
 
     data << uint32(Arcemu::Util::MAKE_GAME_TIME());
     data << float(0.0166666669777748f);    // Normal Game Speed
+#if VERSION_STRING > TBC
     data << uint32(0);   // 3.1.2
+#endif
 
     m_session->SendPacket(&data);
 
     UpdateSpeed();
 
+#if VERSION_STRING > TBC
     WorldPacket ArenaSettings(SMSG_UPDATE_WORLD_STATE, 16);
 
     ArenaSettings << uint32(0xC77);
@@ -603,7 +611,7 @@ void Player::SendInitialLogonPackets()
     ArenaSettings << uint32(sWorld.Arena_Season);
 
     m_session->SendPacket(&ArenaSettings);
-
+#endif
     LOG_DETAIL("WORLD: Sent initial logon packets for %s.", GetName());
 }
 

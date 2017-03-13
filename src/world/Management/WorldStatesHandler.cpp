@@ -74,10 +74,12 @@ void WorldStatesHandler::BuildInitWorldStatesForZone(uint32 zone, uint32 area, W
         data << uint16(2);
     }
 
+#if VERSION_STRING > TBC
     data << uint32(3191);
     data << uint32(sWorld.Arena_Season);
     data << uint32(3901);
     data << uint32(sWorld.Arena_Progress);
+#endif
 }
 
 void WorldStatesHandler::InitWorldStates(std::multimap< uint32, WorldState > *states)
