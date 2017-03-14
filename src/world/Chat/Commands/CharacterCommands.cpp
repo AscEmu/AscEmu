@@ -585,7 +585,7 @@ bool ChatHandler::HandleCharAddHonorKillCommand(const char* args, WorldSession* 
     player_target->m_killsToday += kill_amount;
     player_target->m_killsLifetime += kill_amount;
     player_target->SetUInt32Value(PLAYER_FIELD_KILLS, uint16(player_target->m_killsToday) | (player_target->m_killsYesterday << 16));
-    player_target->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS, player_target->m_killsLifetime);
+    player_target->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, player_target->m_killsLifetime);
 
     return true;
 }
