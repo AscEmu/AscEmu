@@ -23,7 +23,7 @@
 
 #include "ObjectDefines.h"
 
-#include "Server/UpdateFields.h"
+#include "Server/UpdateFieldInclude.h"
 #include "Server/UpdateMask.h"
 #include "CommonTypes.hpp"
 #include "Server/EventableObject.h"

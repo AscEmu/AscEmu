@@ -80,7 +80,7 @@
 
 #include "Server/IUpdatable.h"
 #include "Server/WUtil.h"
-#include "Server/UpdateFields.h"
+#include "Server/UpdateFieldInclude.h"
 #include "Server/UpdateMask.h"
 #include "Server/Packets/Opcode.h"
 

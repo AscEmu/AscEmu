@@ -2412,9 +2412,9 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     ss << m_uint32Values[PLAYER_FIELD_WATCHED_FACTION_INDEX] << ","
         << m_uint32Values[PLAYER_CHOSEN_TITLE] << ","
-        << GetUInt64Value(PLAYER__FIELD_KNOWN_TITLES) << ","
-        << GetUInt64Value(PLAYER__FIELD_KNOWN_TITLES1) << ","
-        << GetUInt64Value(PLAYER__FIELD_KNOWN_TITLES2) << ","
+        << GetUInt64Value(PLAYER_FIELD_KNOWN_TITLES) << ","
+        << GetUInt64Value(PLAYER_FIELD_KNOWN_TITLES1) << ","
+        << GetUInt64Value(PLAYER_FIELD_KNOWN_TITLES2) << ","
         << m_uint32Values[PLAYER_FIELD_COINAGE] << ",";
 
     if ((getClass() == MAGE) || (getClass() == PRIEST) || (getClass() == WARLOCK))
@@ -2982,9 +2982,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     // set the rest of the stuff
     m_uint32Values[PLAYER_FIELD_WATCHED_FACTION_INDEX] = get_next_field.GetUInt32();
     SetChosenTitle(get_next_field.GetUInt32());
-    SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES, get_next_field.GetUInt64());
-    SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES1, get_next_field.GetUInt64());
-    SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES2, get_next_field.GetUInt64());
+    SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES, get_next_field.GetUInt64());
+    SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES1, get_next_field.GetUInt64());
+    SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES2, get_next_field.GetUInt64());
     m_uint32Values[PLAYER_FIELD_COINAGE] = get_next_field.GetUInt32();
     m_uint32Values[PLAYER_AMMO_ID] = get_next_field.GetUInt32();
     m_uint32Values[PLAYER_CHARACTER_POINTS2] = get_next_field.GetUInt32();
@@ -11395,11 +11395,11 @@ void Player::SetKnownTitle(RankTitles title, bool set)
     if (!HasTitle(title) ^ set)
         return;
 
-    uint64 current = GetUInt64Value(PLAYER__FIELD_KNOWN_TITLES + ((title >> 6) << 1));
+    uint64 current = GetUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1));
     if (set)
-        SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES + ((title >> 6) << 1), current | uint64(1) << (title % 64));
+        SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1), current | uint64(1) << (title % 64));
     else
-        SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES + ((title >> 6) << 1), current & ~uint64(1) << (title % 64));
+        SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES + ((title >> 6) << 1), current & ~uint64(1) << (title % 64));
 
     WorldPacket data(SMSG_TITLE_EARNED, 8);
     data << uint32(title);

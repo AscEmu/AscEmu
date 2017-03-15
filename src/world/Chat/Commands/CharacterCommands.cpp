@@ -1618,9 +1618,9 @@ bool ChatHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_se
     }
     if (title == 0)
     {
-        player_target->SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES, 0);
-        player_target->SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES1, 0);
-        player_target->SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES2, 0);
+        player_target->SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES, 0);
+        player_target->SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES1, 0);
+        player_target->SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES2, 0);
     }
     else if (title > 0)
     {
