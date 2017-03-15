@@ -65,7 +65,9 @@
 #endif
 //////////////////////////////////////////////////////////////////////////////////////////
 
+#if VERSION_STRING == Cata
 #include "Storage/DB2/DB2Stores.h"
+#endif
 #include "Storage/DBC/DBCStores.h"
 
 //Movement
