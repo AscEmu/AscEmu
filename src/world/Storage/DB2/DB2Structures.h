@@ -53,7 +53,7 @@ namespace DB2
             //uint32_t unk;                   // 15
             uint32_t reqcur[5];               // 16-20
             uint32_t reqcurrcount[5];         // 21-25
-            //uint32_t something[5];          // 26-30
+            //uint32_t unkunk[5];             // 26-30
         };
     }
 }
