@@ -3,6 +3,8 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#pragma once
+
 // Generated for version 4.3.4 15595
 
 enum EObjectFields
@@ -417,18 +419,18 @@ enum EPlayerFields
     PLAYER_FIELD_BANKBAG_SLOT_1                      = UNIT_END + 0x01B4, // Size: 14, Type: LONG, Flags: PRIVATE
     PLAYER_FIELD_VENDORBUYBACK_SLOT_1                = UNIT_END + 0x01C2, // Size: 24, Type: LONG, Flags: PRIVATE
     PLAYER_FARSIGHT                                  = UNIT_END + 0x01DA, // Size: 2, Type: LONG, Flags: PRIVATE
-    PLAYER__FIELD_KNOWN_TITLES                       = UNIT_END + 0x01DC, // Size: 2, Type: LONG, Flags: PRIVATE
-    PLAYER__FIELD_KNOWN_TITLES1                      = UNIT_END + 0x01DE, // Size: 2, Type: LONG, Flags: PRIVATE
-    PLAYER__FIELD_KNOWN_TITLES2                      = UNIT_END + 0x01E0, // Size: 2, Type: LONG, Flags: PRIVATE
-    PLAYER__FIELD_KNOWN_TITLES3                      = UNIT_END + 0x01E2, // Size: 2, Type: LONG, Flags: PRIVATE
+    PLAYER_FIELD_KNOWN_TITLES                        = UNIT_END + 0x01DC, // Size: 2, Type: LONG, Flags: PRIVATE
+    PLAYER_FIELD_KNOWN_TITLES1                       = UNIT_END + 0x01DE, // Size: 2, Type: LONG, Flags: PRIVATE
+    PLAYER_FIELD_KNOWN_TITLES2                       = UNIT_END + 0x01E0, // Size: 2, Type: LONG, Flags: PRIVATE
+    PLAYER_FIELD_KNOWN_TITLES3                       = UNIT_END + 0x01E2, // Size: 2, Type: LONG, Flags: PRIVATE
     PLAYER_XP                                        = UNIT_END + 0x01E4, // Size: 1, Type: INT, Flags: PRIVATE
     PLAYER_NEXT_LEVEL_XP                             = UNIT_END + 0x01E5, // Size: 1, Type: INT, Flags: PRIVATE
-    PLAYER_SKILL_LINEID_0                            = UNIT_END + 0x01E6, // Size: 384, Type: TWO_SHORT, Flags: PRIVATE
-    PLAYER_SKILL_STEP_0                              = UNIT_END + 0x0226, // Size: 68, Type: INT, Flags: PRIVATE
-    PLAYER_SKILL_RANK_0                              = UNIT_END + 0x0266, // Size: 64, Type: INT, Flags: PRIVATE
-    PLAYER_SKILL_MAX_RANK_0                          = UNIT_END + 0x02A6, // Size: 64, Type: INT, Flags: PRIVATE
-    PLAYER_SKILL_MODIFIER_0                          = UNIT_END + 0x02E6, // Size: 64, Type: INT, Flags: PRIVATE
-    PLAYER_SKILL_TALENT_0                            = UNIT_END + 0x0326, // Size: 64, Type: INT, Flags: PRIVATE
+    PLAYER_SKILL_LINEID_0                            = UNIT_END + 0x01E6, // Size: 64, Type: TWO_SHORT, Flags: PRIVATE
+    PLAYER_SKILL_STEP_0                              = UNIT_END + 0x0226, // Size: 68, Type: TWO_SHORT, Flags: PRIVATE
+    PLAYER_SKILL_RANK_0                              = UNIT_END + 0x0266, // Size: 64, Type: TWO_SHORT, Flags: PRIVATE
+    PLAYER_SKILL_MAX_RANK_0                          = UNIT_END + 0x02A6, // Size: 64, Type: TWO_SHORT, Flags: PRIVATE
+    PLAYER_SKILL_MODIFIER_0                          = UNIT_END + 0x02E6, // Size: 64, Type: TWO_SHORT, Flags: PRIVATE
+    PLAYER_SKILL_TALENT_0                            = UNIT_END + 0x0326, // Size: 64, Type: TWO_SHORT, Flags: PRIVATE
     PLAYER_CHARACTER_POINTS                          = UNIT_END + 0x0366, // Size: 1, Type: INT, Flags: PRIVATE
     PLAYER_TRACK_CREATURES                           = UNIT_END + 0x0367, // Size: 1, Type: INT, Flags: PRIVATE
     PLAYER_TRACK_RESOURCES                           = UNIT_END + 0x0368, // Size: 1, Type: INT, Flags: PRIVATE
@@ -444,7 +446,7 @@ enum EPlayerFields
     PLAYER_SHIELD_BLOCK                              = UNIT_END + 0x0378, // Size: 7, Type: INT, Flags: PRIVATE
     PLAYER_SHIELD_BLOCK_CRIT_PERCENTAGE              = UNIT_END + 0x0379, // Size: 1, Type: INT, Flags: PRIVATE
     PLAYER_MASTERY                                   = UNIT_END + 0x037A, // Size: 1, Type: INT, Flags: PRIVATE
-    PLAYER_EXPLORED_ZONES_1                          = UNIT_END + 0x037B, // Size: 130, Type: BYTES, Flags: PRIVATE
+    PLAYER_EXPLORED_ZONES_1                          = UNIT_END + 0x037B, // Size: 156, Type: BYTES, Flags: PRIVATE
     PLAYER_REST_STATE_EXPERIENCE                     = UNIT_END + 0x0417, // Size: 1, Type: INT, Flags: PRIVATE
     PLAYER_FIELD_COINAGE                             = UNIT_END + 0x0418, // Size: 2, Type: INT, Flags: PRIVATE
     PLAYER_FIELD_MOD_DAMAGE_DONE_POS                 = UNIT_END + 0x041A, // Size: 7, Type: INT, Flags: PRIVATE
@@ -467,15 +469,15 @@ enum EPlayerFields
     PLAYER_FIELD_LIFETIME_HONORABLE_KILLS            = UNIT_END + 0x0455, // Size: 1, Type: INT, Flags: PRIVATE
     PLAYER_FIELD_BYTES2                              = UNIT_END + 0x0456, // Size: 1, Type: INT, Flags: PRIVATE
     PLAYER_FIELD_WATCHED_FACTION_INDEX               = UNIT_END + 0x0457, // Size: 1, Type: INT, Flags: PRIVATE
-    PLAYER_FIELD_COMBAT_RATING_1                     = UNIT_END + 0x0458, // Size: 25, Type: INT, Flags: PRIVATE
+    PLAYER_FIELD_COMBAT_RATING_1                     = UNIT_END + 0x0458, // Size: 26, Type: INT, Flags: PRIVATE
     PLAYER_FIELD_ARENA_TEAM_INFO_1_1                 = UNIT_END + 0x0472, // Size: 21, Type: INT, Flags: PRIVATE
     PLAYER_FIELD_BATTLEGROUND_RATING                 = UNIT_END + 0x0487, // Size: 1, Type: INT, Flags: PRIVATE
     PLAYER_FIELD_MAX_LEVEL                           = UNIT_END + 0x0488, // Size: 1, Type: INT, Flags: PRIVATE
     PLAYER_FIELD_DAILY_QUESTS_1                      = UNIT_END + 0x0489, // Size: 25, Type: INT, Flags: PRIVATE
     PLAYER_RUNE_REGEN_1                              = UNIT_END + 0x04A2, // Size: 4, Type: FLOAT, Flags: PRIVATE
     PLAYER_NO_REAGENT_COST_1                         = UNIT_END + 0x04A6, // Size: 3, Type: INT, Flags: PRIVATE
-    PLAYER_FIELD_GLYPH_SLOTS_1                       = UNIT_END + 0x04A9, // Size: 6, Type: INT, Flags: PRIVATE
-    PLAYER_FIELD_GLYPHS_1                            = UNIT_END + 0x04B2, // Size: 6, Type: INT, Flags: PRIVATE
+    PLAYER_FIELD_GLYPH_SLOTS_1                       = UNIT_END + 0x04A9, // Size: 9, Type: INT, Flags: PRIVATE
+    PLAYER_FIELD_GLYPHS_1                            = UNIT_END + 0x04B2, // Size: 9, Type: INT, Flags: PRIVATE
     PLAYER_GLYPHS_ENABLED                            = UNIT_END + 0x04BB, // Size: 1, Type: INT, Flags: PRIVATE
     PLAYER_PET_SPELL_POWER                           = UNIT_END + 0x04BC, // Size: 1, Type: INT, Flags: PRIVATE
     PLAYER_FIELD_RESEARCHING_1                       = UNIT_END + 0x04BD, // Size: 8, Type: INT, Flags: PRIVATE

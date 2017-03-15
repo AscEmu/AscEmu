@@ -3,6 +3,8 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#pragma once
+
 // Generated for version 3.3.5 12340
 
 enum EObjectFields
@@ -320,9 +322,9 @@ enum EPlayerFields
     PLAYER_FIELD_KEYRING_SLOT_1                      = UNIT_END + 0x015C, // Size: 64, Type: LONG, Flags: PRIVATE
     PLAYER_FIELD_CURRENCYTOKEN_SLOT_1                = UNIT_END + 0x019C, // Size: 64, Type: LONG, Flags: PRIVATE
     PLAYER_FARSIGHT                                  = UNIT_END + 0x01DC, // Size: 2, Type: LONG, Flags: PRIVATE
-    PLAYER__FIELD_KNOWN_TITLES                       = UNIT_END + 0x01DE, // Size: 2, Type: LONG, Flags: PRIVATE
-    PLAYER__FIELD_KNOWN_TITLES1                      = UNIT_END + 0x01E0, // Size: 2, Type: LONG, Flags: PRIVATE
-    PLAYER__FIELD_KNOWN_TITLES2                      = UNIT_END + 0x01E2, // Size: 2, Type: LONG, Flags: PRIVATE
+    PLAYER_FIELD_KNOWN_TITLES                        = UNIT_END + 0x01DE, // Size: 2, Type: LONG, Flags: PRIVATE
+    PLAYER_FIELD_KNOWN_TITLES1                       = UNIT_END + 0x01E0, // Size: 2, Type: LONG, Flags: PRIVATE
+    PLAYER_FIELD_KNOWN_TITLES2                       = UNIT_END + 0x01E2, // Size: 2, Type: LONG, Flags: PRIVATE
     PLAYER_FIELD_KNOWN_CURRENCIES                    = UNIT_END + 0x01E4, // Size: 2, Type: LONG, Flags: PRIVATE
     PLAYER_XP                                        = UNIT_END + 0x01E6, // Size: 1, Type: INT, Flags: PRIVATE
     PLAYER_NEXT_LEVEL_XP                             = UNIT_END + 0x01E7, // Size: 1, Type: INT, Flags: PRIVATE

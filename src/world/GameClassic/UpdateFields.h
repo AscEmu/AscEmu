@@ -3,6 +3,8 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#pragma once
+
 // Generated for version 1.12.1 5875
 
 enum EObjectFields
