@@ -13,6 +13,40 @@ This file is released under the MIT license. See README-MIT for more information
 
 namespace DBC
 {
+    enum LocaleConstant
+    {
+        LOCALE_enUS = 0,
+        LOCALE_koKR = 1,
+        LOCALE_frFR = 2,
+        LOCALE_deDE = 3,
+        LOCALE_zhCN = 4,
+        LOCALE_zhTW = 5,
+        LOCALE_esES = 6,
+        LOCALE_esMX = 7,
+        LOCALE_ruRU = 8
+    };
+
+    struct LocaleNameStr
+    {
+        char const* name;
+        LocaleConstant locale;
+    };
+
+    LocaleNameStr const fullLocaleNameList[] =
+    {
+        { "enUS", LOCALE_enUS },
+        { "enGB", LOCALE_enUS },
+        { "koKR", LOCALE_koKR },
+        { "frFR", LOCALE_frFR },
+        { "deDE", LOCALE_deDE },
+        { "zhCN", LOCALE_zhCN },
+        { "zhTW", LOCALE_zhTW },
+        { "esES", LOCALE_esES },
+        { "esMX", LOCALE_esMX },
+        { "ruRU", LOCALE_ruRU },
+        { nullptr, LOCALE_enUS }
+    };
+
     namespace
     {
         const uint8 C_TOTAL_LOCALES = 9;

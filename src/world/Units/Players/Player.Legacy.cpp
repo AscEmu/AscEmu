@@ -1848,7 +1848,9 @@ void Player::ActivateSpec(uint8 spec)
 
         addSpell(talent_info->RankID[itr->second]);
     }
+#if VERSION_STRING != Cata
     SetUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
+#endif
     smsg_TalentsInfo(false);
 }
 
@@ -2253,8 +2255,10 @@ void Player::InitVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER3);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER4);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER5);
+#if VERSION_STRING != Cata
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER6);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER7);
+#endif
 
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXHEALTH);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER1);
@@ -2262,8 +2266,10 @@ void Player::InitVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER3);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER4);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER5);
+#if VERSION_STRING != Cata
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER6);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER7);
+#endif
 
     Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID);
     Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID + 1);
@@ -2301,7 +2307,9 @@ void Player::InitVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_TEAM);
     Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_ARBITER);
     Player::m_visibleUpdateMask.SetBit(PLAYER_DUEL_ARBITER + 1);
+#if VERSION_STRING != Cata
     Player::m_visibleUpdateMask.SetBit(PLAYER_GUILDID);
+#endif
     Player::m_visibleUpdateMask.SetBit(PLAYER_GUILDRANK);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BASE_MANA);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BYTES_2);
@@ -2420,7 +2428,11 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     if ((getClass() == MAGE) || (getClass() == PRIEST) || (getClass() == WARLOCK))
         ss << (uint32)0 << ","; // make sure ammo slot is 0 for these classes, otherwise it can mess up wand shoot
     else
+#if VERSION_STRING != Cata
         ss << m_uint32Values[PLAYER_AMMO_ID] << ",";
+#else
+        ss << (uint32)0 << ",";
+#endif
     ss << GetPrimaryProfessionPoints() << ",";
 
     ss << load_health << ","
@@ -2986,8 +2998,13 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES1, get_next_field.GetUInt64());
     SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES2, get_next_field.GetUInt64());
     m_uint32Values[PLAYER_FIELD_COINAGE] = get_next_field.GetUInt32();
+#if VERSION_STRING != Cata
     m_uint32Values[PLAYER_AMMO_ID] = get_next_field.GetUInt32();
     m_uint32Values[PLAYER_CHARACTER_POINTS2] = get_next_field.GetUInt32();
+#else
+    get_next_field.GetUInt32();
+    get_next_field.GetUInt32();
+#endif
     load_health = get_next_field.GetUInt32();
     load_mana = get_next_field.GetUInt32();
     SetHealth(load_health);
@@ -3375,7 +3392,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
         m_specs[SPEC_PRIMARY].SetTP(tp1);
         m_specs[SPEC_SECONDARY].SetTP(tp2);
+#if VERSION_STRING != Cata
         SetUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
+#endif
     }
 
     m_phase = get_next_field.GetUInt32(); //Load the player's last phase
@@ -8434,6 +8453,7 @@ void Player::SafeTeleport(MapMgr* mgr, const LocationVector & vec)
 
 void Player::SetGuildId(uint32 guildId)
 {
+#if VERSION_STRING != Cata
     if (IsInWorld())
     {
         const uint32 field = PLAYER_GUILDID;
@@ -8444,6 +8464,7 @@ void Player::SetGuildId(uint32 guildId)
     {
         SetUInt32Value(PLAYER_GUILDID, guildId);
     }
+#endif
 }
 
 void Player::SetGuildRank(uint32 guildRank)
@@ -8786,8 +8807,10 @@ void Player::AddHonor(uint32 honorPoints, bool sendUpdate)
 void Player::UpdateHonor()
 {
     this->SetUInt32Value(PLAYER_FIELD_KILLS, uint16(this->m_killsToday) | (this->m_killsYesterday << 16));
+#if VERSION_STRING != Cata
     this->SetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, this->m_honorToday);
     this->SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, this->m_honorYesterday);
+#endif
     this->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, this->m_killsLifetime);
     this->SetHonorCurrency(this->m_honorPoints);
 
@@ -9927,7 +9950,11 @@ void Player::_AddSkillLine(uint32 SkillLine, uint32 Curr_sk, uint32 Max_sk)
 
 void Player::_UpdateSkillFields()
 {
+#if VERSION_STRING != Cata
     uint32 f = PLAYER_SKILL_INFO_1_1;
+#else
+    uint32 f = PLAYER_SKILL_LINEID_0;
+#endif
     /* Set the valid skills */
     for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end();)
     {
@@ -9938,7 +9965,11 @@ void Player::_UpdateSkillFields()
             continue;
         }
 
+#if VERSION_STRING != Cata
         ARCEMU_ASSERT(f <= PLAYER_CHARACTER_POINTS1);
+#else
+        ARCEMU_ASSERT(f <= PLAYER_SKILL_LINEID_0);
+#endif
         if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
         {
             SetUInt32Value(f++, itr->first | 0x10000);
@@ -9960,7 +9991,11 @@ void Player::_UpdateSkillFields()
     }
 
     /* Null out the rest of the fields */
+#if VERSION_STRING != Cata
     for (; f < PLAYER_CHARACTER_POINTS1; ++f)
+#else
+    for (; f < PLAYER_SKILL_LINEID_0; ++f)
+#endif
     {
         if (m_uint32Values[f] != 0)
             SetUInt32Value(f, 0);
@@ -11468,6 +11503,7 @@ void Player::CalcExpertise()
 
 void Player::UpdateKnownCurrencies(uint32 itemId, bool apply)
 {
+#if VERSION_STRING != Cata
     if (auto const* currency_type_entry = sCurrencyTypesStore.LookupEntry(itemId))
     {
         if (apply)
@@ -11483,6 +11519,7 @@ void Player::UpdateKnownCurrencies(uint32 itemId, bool apply)
             SetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES, newval);
         }
     }
+#endif
 }
 
 void Player::RemoveItemByGuid(uint64 GUID)

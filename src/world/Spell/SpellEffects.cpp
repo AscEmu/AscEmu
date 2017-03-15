@@ -1043,6 +1043,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             case 49051:
             case 49052:
             {
+#if VERSION_STRING != Cata
                 if (p_caster != NULL)
                 {
                     Item* pItem = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
@@ -1065,6 +1066,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
 
                     dmg = float2int32(ammodmg + bowdmg) + stundmg;
                 }
+#endif
             }break;
             case 64422: // Sonic Screech, Auriaya encounter
             case 64688:

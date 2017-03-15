@@ -2136,6 +2136,7 @@ void Spell::SendSpellStart()
                 }
             }
         }
+#if VERSION_STRING != Cata
         else if (hasAttributeExC(ATTRIBUTESEXC_PLAYER_RANGED_SPELLS))
         {
             if (p_caster != nullptr)
@@ -2143,6 +2144,7 @@ void Spell::SendSpellStart()
             else
                 ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
         }
+#endif
 
         if (ip != nullptr)
             data << ip->DisplayInfoID << ip->InventoryType;
@@ -2271,10 +2273,12 @@ void Spell::SendSpellGo()
         }
         else
         {
+#if VERSION_STRING != Cata
             if (p_caster != nullptr)
                 ip = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
             else // HACK FIX
                 ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
+#endif
         }
         if (ip != nullptr)
         {
@@ -2557,9 +2561,11 @@ bool Spell::HasPower()
         case POWER_TYPE_HAPPINESS:
         {	powerField = UNIT_FIELD_POWER5;						}
         break;
+#if VERSION_STRING != Cata
         case POWER_TYPE_RUNIC_POWER:
         {	powerField = UNIT_FIELD_POWER7;						}
         break;
+#endif
         case POWER_TYPE_RUNES:
         {
             if (GetSpellInfo()->RuneCostID && p_caster)
@@ -2704,9 +2710,11 @@ bool Spell::TakePower()
         case POWER_TYPE_HAPPINESS:
         {	powerField = UNIT_FIELD_POWER5;						}
         break;
+#if VERSION_STRING != Cata
         case POWER_TYPE_RUNIC_POWER:
         {	powerField = UNIT_FIELD_POWER7;						}
         break;
+#endif
         case POWER_TYPE_RUNES:
         {
             if (GetSpellInfo()->RuneCostID && p_caster)
@@ -4624,11 +4632,13 @@ void Spell::RemoveItems()
     // Ammo Removal
     if (p_caster != nullptr)
     {
+#if VERSION_STRING != Cata
         if (hasAttributeExB(ATTRIBUTESEXB_REQ_RANGED_WEAPON) || hasAttributeExC(ATTRIBUTESEXC_PLAYER_RANGED_SPELLS))
         {
             if (!p_caster->m_requiresNoAmmo)
                 p_caster->GetItemInterface()->RemoveItemAmt_ProtectPointer(p_caster->GetUInt32Value(PLAYER_AMMO_ID), 1, &i_caster);
         }
+#endif
 
         // Reagent Removal
         if (!(p_caster->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NO_REAGANT_COST) && hasAttributeExE(ATTRIBUTESEXE_REAGENT_REMOVAL)))

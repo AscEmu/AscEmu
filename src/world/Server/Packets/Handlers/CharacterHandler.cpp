@@ -443,6 +443,8 @@ uint8 WorldSession::DeleteCharacter(uint32 guid)
     return E_CHAR_DELETE_FAILED;
 }
 
+//\todo move this to all other versions
+#if VERSION_STRING != Cata
 void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
 {
     WorldPacket data(SMSG_CHAR_RENAME, recv_data.size() + 1);
@@ -516,6 +518,7 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
     data << name;
     SendPacket(&data);
 }
+#endif
 
 #if VERSION_STRING != Cata
 void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)

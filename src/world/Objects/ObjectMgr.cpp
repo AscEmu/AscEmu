@@ -1248,7 +1248,7 @@ GM_Ticket* ObjectMgr::GetGMTicket(uint64 ticketGuid)
 void ObjectMgr::LoadVendors()
 {
     QueryResult* result = WorldDatabase.Query("SELECT * FROM vendors");
-    if (result != NULL)
+    if (result != nullptr)
     {
         std::unordered_map<uint32, std::vector<CreatureItem>*>::const_iterator itr;
         std::vector<CreatureItem> *items;
@@ -1264,7 +1264,11 @@ void ObjectMgr::LoadVendors()
             LOG_ERROR("Invalid format in vendors (%u/6) columns, loading anyway because we have enough data", result->GetFieldCount());
         }
 
-        DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = NULL;
+#if VERSION_STRING != Cata
+        DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
+#else
+        DB2::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
+#endif
         do
         {
             Field* fields = result->Fetch();
@@ -1294,7 +1298,8 @@ void ObjectMgr::LoadVendors()
                     LogDebugFlag(LF_DB_TABLES, "LoadVendors : Extendedcost for item %u references nonexistent EC %u", fields[1].GetUInt32(), fields[5].GetUInt32());
             }
             else
-                item_extended_cost = NULL;
+                item_extended_cost = nullptr;
+
             itm.extended_cost = item_extended_cost;
             items->push_back(itm);
         }

@@ -143,22 +143,6 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             data.writeBit(guid[6]);
             data.writeBit(guildGuid[0]);
 
-            /*switch (charEnum.loginFlags)
-            {
-                case LOGIN_CUSTOMIZE_LOOKS:
-                    data << uint32_t(CHAR_CUSTOMIZE_FLAG_CUSTOMIZE);
-                    break;
-                case LOGIN_CUSTOMIZE_RACE:
-                    data << uint32_t(CHAR_CUSTOMIZE_FLAG_RACE);
-                    break;
-                case LOGIN_CUSTOMIZE_FACTION:
-                    data << uint32_t(CHAR_CUSTOMIZE_FLAG_FACTION);
-                    break;
-                default:
-                    data << uint32_t(CHAR_CUSTOMIZE_FLAG_NONE);
-            }
-
-            data << uint8_t(0);*/
 
             CreatureProperties const* petInfo = nullptr;
             uint32_t petDisplayId;
@@ -235,7 +219,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             buffer << uint8_t(hairStyle);
             buffer.WriteByteSeq(guildGuid[3]);
             buffer << uint32_t(petDisplayId);
-            buffer << uint32_t(charEnum.flags);
+            buffer << uint32_t(char_flags);
             buffer << uint8_t(hairColor);
             buffer.WriteByteSeq(guid[4]);
             buffer << uint32_t(charEnum.mapId);
@@ -245,7 +229,22 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             buffer << uint32_t(petLevel);
             buffer.WriteByteSeq(guid[3]);
             buffer << float(charEnum.y);
-            buffer << uint32_t(0x00000000); // TODO: implement customization flags
+
+            switch (charEnum.loginFlags)
+            {
+                case LOGIN_CUSTOMIZE_LOOKS:
+                    buffer << uint32_t(CHAR_CUSTOMIZE_FLAG_CUSTOMIZE);    //Character recustomization flag
+                    break;
+                case LOGIN_CUSTOMIZE_RACE:
+                    buffer << uint32_t(CHAR_CUSTOMIZE_FLAG_RACE);         //Character recustomization + race flag
+                    break;
+                case LOGIN_CUSTOMIZE_FACTION:
+                    buffer << uint32_t(CHAR_CUSTOMIZE_FLAG_FACTION);      //Character recustomization + race + faction flag
+                    break;
+                default:
+                    buffer << uint32_t(CHAR_CUSTOMIZE_FLAG_NONE);         //Character recustomization no flag set
+            }
+
             buffer << uint8_t(facialHair);
             buffer.WriteByteSeq(guid[7]);
             buffer << uint8_t(charEnum.gender);
@@ -308,4 +307,75 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)
     AsyncQuery* asyncQuery = new AsyncQuery(new SQLClassCallbackP0<WorldSession>(this, &WorldSession::LoadPlayerFromDBProc));
     asyncQuery->AddQuery("SELECT guid,class FROM characters WHERE guid = %u AND login_flags = %u", (uint32_t)playerGuid, (uint32_t)LOGIN_NO_FLAG);
     CharacterDatabase.QueueAsyncQuery(asyncQuery);
+}
+
+void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
+{
+    WorldPacket data(SMSG_CHAR_RENAME, recv_data.size() + 1);
+
+    uint64_t guid;
+    std::string name;
+    recv_data >> guid;
+    recv_data >> name;
+
+    PlayerInfo* player_info = objmgr.GetPlayerInfo((uint32_t)guid);
+    if (player_info == nullptr)
+        return;
+
+    QueryResult* result = CharacterDatabase.Query("SELECT login_flags FROM characters WHERE guid = %u AND acct = %u", (uint32_t)guid, _accountId);
+    if (result == nullptr)
+        return;
+
+    delete result;
+
+    // Check name for rule violation.
+    LoginErrorCode err = VerifyName(name.c_str(), name.length());
+    if (err != E_CHAR_NAME_SUCCESS)
+    {
+        data << uint8_t(err);
+        data << guid;
+        data << name;
+        SendPacket(&data);
+        return;
+    }
+
+    QueryResult* result2 = CharacterDatabase.Query("SELECT COUNT(*) FROM banned_names WHERE name = '%s'", CharacterDatabase.EscapeString(name).c_str());
+    if (result2)
+    {
+        if (result2->Fetch()[0].GetUInt32() > 0)
+        {
+            // That name is banned!
+            data << uint8_t(E_CHAR_NAME_PROFANE);
+            data << guid;
+            data << name;
+            SendPacket(&data);
+        }
+        delete result2;
+    }
+
+    if (objmgr.GetPlayerInfoByName(name.c_str()) != NULL)
+    {
+        data << uint8_t(E_CHAR_CREATE_NAME_IN_USE);
+        data << guid;
+        data << name;
+        SendPacket(&data);
+        return;
+    }
+
+    Util::CapitalizeString(name);
+    objmgr.RenamePlayerInfo(player_info, player_info->name, name.c_str());
+
+    sPlrLog.writefromsession(this, "a rename was pending. renamed character %s (GUID: %u) to %s.", player_info->name, player_info->guid, name.c_str());
+
+    free(player_info->name);
+
+    player_info->name = strdup(name.c_str());
+    CharacterDatabase.WaitExecute("UPDATE characters SET name = '%s' WHERE guid = %u", name.c_str(), (uint32_t)guid);
+    CharacterDatabase.WaitExecute("UPDATE characters SET login_flags = %u WHERE guid = %u", (uint32_t)LOGIN_NO_FLAG, (uint32_t)guid);
+
+    data << uint8_t(E_RESPONSE_SUCCESS);
+    data << guid;
+    data << name;
+
+    SendPacket(&data);
 }

@@ -2239,7 +2239,11 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
     uint32 error = 1;
 
     std::pair<time_t, uint32> RefundEntry;
-    DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = NULL;
+#if VERSION_STRING != Cata
+    DBC::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
+#else
+    DB2::Structures::ItemExtendedCostEntry const* item_extended_cost = nullptr;
+#endif
     ItemProperties const* item_proto = nullptr;
 
     recvPacket >> GUID;
@@ -2259,7 +2263,6 @@ void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
             if (RefundEntry.first != 0 && RefundEntry.second != 0)
             {
                 uint32* played = _player->GetPlayedtime();
-
                 if (played[1] < (RefundEntry.first + 60 * 60 * 2))
                     item_extended_cost = sItemExtendedCostStore.LookupEntry(RefundEntry.second);
             }

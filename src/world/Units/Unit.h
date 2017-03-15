@@ -1079,9 +1079,27 @@ public:
     void SetAttackPower(uint32 amt) { SetUInt32Value(UNIT_FIELD_ATTACK_POWER, amt); }
     uint32 GetAttackPower() { return GetUInt32Value(UNIT_FIELD_ATTACK_POWER); }
 
-    void SetAttackPowerMods(uint32 amt) { SetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt); }
-    uint32 GetAttackPowerMods() { return GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS); }
-    void ModAttackPowerMods(uint32 amt) { ModUnsigned32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt); }
+    //\todo fix this
+    void SetAttackPowerMods(uint32 amt)
+    {
+#if VERSION_STRING != Cata
+        SetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
+#endif
+    }
+    uint32 GetAttackPowerMods()
+    {
+#if VERSION_STRING != Cata
+        return GetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS);
+#else
+        return 0;
+#endif
+    }
+    void ModAttackPowerMods(uint32 amt)
+    {
+#if VERSION_STRING != Cata
+        ModUnsigned32Value(UNIT_FIELD_ATTACK_POWER_MODS, amt);
+#endif
+    }
 
     void SetAttackPowerMultiplier(float amt) { SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER, amt); }
     float GetAttackPowerMultiplier() { return GetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER); }
@@ -1092,9 +1110,27 @@ public:
     void SetRangedAttackPower(uint32 amt) { SetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER, amt); }
     uint32 GetRangedAttackPower() { return GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER); }
 
-    void SetRangedAttackPowerMods(uint32 amt) { SetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt); }
-    uint32 GetRangedAttackPowerMods() { return GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS); }
-    void ModRangedAttackPowerMods(uint32 amt) { ModUnsigned32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt); }
+    //\todo fix this
+    void SetRangedAttackPowerMods(uint32 amt)
+    {
+#if VERSION_STRING != Cata
+        SetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
+#endif
+    }
+    uint32 GetRangedAttackPowerMods()
+    {
+#if VERSION_STRING != Cata
+        return GetUInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS);
+#else
+        return 0;
+#endif
+    }
+    void ModRangedAttackPowerMods(uint32 amt)
+    {
+#if VERSION_STRING != Cata
+        ModUnsigned32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MODS, amt);
+#endif
+    }
 
     void SetRangedAttackPowerMultiplier(float amt) { SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, amt); }
     float GetRangedAttackPowerMultiplier() { return GetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER); }

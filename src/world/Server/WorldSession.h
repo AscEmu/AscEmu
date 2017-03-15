@@ -27,6 +27,7 @@
 #include "Management/Quest.h"
 #include "FastQueue.h"
 #include "Units/Unit.h"
+#include "AuthCodes.h"
 #include <stddef.h>
 #include <string>
 
@@ -197,6 +198,7 @@ struct AccountDataEntry
 };
 
 extern OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
+extern LoginErrorCode VerifyName(const char* name, size_t nlen);
 
 class SERVER_DECL WorldSession
 {

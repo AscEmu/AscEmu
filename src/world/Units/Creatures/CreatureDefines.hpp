@@ -23,6 +23,9 @@
 #include "CommonTypes.hpp"
 #include "Storage/DBC/DBCStores.h"
 #include "Storage/DBC/DBCStructures.hpp"
+#if VERSION_STRING == Cata
+#include "Storage/DB2/DB2Structures.h"
+#endif
 #include "Units/UnitDefines.hpp"
 
 #include <ctime>
@@ -51,7 +54,11 @@ struct CreatureItem
     uint32 available_amount;
     uint32 max_amount;
     uint32 incrtime;
+#if VERSION_STRING != Cata
     DBC::Structures::ItemExtendedCostEntry const* extended_cost;
+#else
+    DB2::Structures::ItemExtendedCostEntry const* extended_cost;
+#endif
 };
 
 enum CreatureAISpellFlags

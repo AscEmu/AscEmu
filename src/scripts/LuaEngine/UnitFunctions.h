@@ -4596,9 +4596,11 @@ class LuaUnit
         uint32 itemid = (uint32)luaL_checknumber(L, 1);
         uint32 amount = (uint32)luaL_checknumber(L, 2);
         uint32 costid = (uint32)luaL_checknumber(L, 3);
+#if VERSION_STRING != Cata
         auto item_extended_cost = (costid > 0) ? sItemExtendedCostStore.LookupEntry(costid) : NULL;
         if (itemid && amount)
             ctr->AddVendorItem(itemid, amount, item_extended_cost);
+#endif
         return 0;
     }
 
@@ -5507,6 +5509,7 @@ class LuaUnit
     static int SetTalentPoints(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
         uint32 spec = static_cast<uint32>(luaL_checkinteger(L, 1)); //0 or 1
         uint32 points = static_cast<uint32>(luaL_checkinteger(L, 2));
         static_cast<Player*>(ptr)->m_specs[spec].SetTP(points);
@@ -5515,6 +5518,7 @@ class LuaUnit
             static_cast<Player*>(ptr)->SetUInt32Value(PLAYER_CHARACTER_POINTS1, points);
 
         static_cast<Player*>(ptr)->smsg_TalentsInfo(false);
+#endif
         return 0;
     }
 

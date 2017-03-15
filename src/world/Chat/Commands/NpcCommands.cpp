@@ -773,6 +773,7 @@ bool ChatHandler::HandlePossessCommand(const char* /*args*/, WorldSession* m_ses
 //.npc vendoradditem
 bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* m_session)
 {
+#if VERSION_STRING != Cata
     char* pitem = strtok((char*)args, " ");
     if (!pitem)
         return false;
@@ -834,7 +835,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
     }
 
     sGMLog.writefromsession(m_session, "added item %u to vendor %u", item, selected_creature->GetEntry());
-
+#endif
     return true;
 }
 

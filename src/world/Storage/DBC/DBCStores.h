@@ -54,7 +54,9 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::BarberShopStyleEntry> sBarbe
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GemPropertiesEntry> sGemPropertiesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphPropertiesEntry> sGlyphPropertiesStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GlyphSlotEntry> sGlyphSlotStore;
+#if VERSION_STRING != Cata
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemEntry> sItemStore;
+#endif
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemSetEntry> sItemSetStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::LockEntry> sLockStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellEntry_New> sSpellStore;
@@ -88,7 +90,9 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChrRacesEntry> sChrRacesStor
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::MapEntry> sMapStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::HolidaysEntry> sHolidaysStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRuneCostEntry> sSpellRuneCostStore;
+#if VERSION_STRING != Cata
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemExtendedCostEntry> sItemExtendedCostStore;
+#endif
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ItemRandomSuffixEntry> sItemRandomSuffixStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::GtCombatRatingsEntry> sGtCombatRatingsStore;
 extern SERVER_DECL DBC::DBCStorage<DBC::Structures::ChatChannelsEntry> sChatChannelsStore;

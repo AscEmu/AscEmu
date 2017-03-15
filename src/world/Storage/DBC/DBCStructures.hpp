@@ -920,6 +920,7 @@ namespace DBC
             //uint32 flags;                             // 54
         };
 
+#if VERSION_STRING != Cata
         struct ItemEntry
         {
             uint32 ID;                      // 0
@@ -931,7 +932,9 @@ namespace DBC
             uint32 InventoryType;           // 6
             uint32 Sheath;                  // 7
         };
+#endif
 
+#if VERSION_STRING != Cata
         struct ItemExtendedCostEntry
         {
             uint32 costid;                  // 0
@@ -943,6 +946,7 @@ namespace DBC
             uint32 personalrating;          // 14
             //uint32 unk;                   // 15
         };
+#endif
 
         struct ItemLimitCategoryEntry
         {

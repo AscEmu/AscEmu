@@ -47,6 +47,7 @@ set(headers
     AscemuServerDefines.hpp
 	AuthCodes.h
 	ByteBuffer.h
+    ByteConverter.h
 	CallBack.h
 	CircularQueue.h
 	Common.Legacy.h

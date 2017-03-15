@@ -2742,8 +2742,10 @@ void Unit::RegeneratePower(bool isinterrupted)
             {
                 if (!isInCombat())
                 {
+#if VERSION_STRING != Cata
                     uint32 cur = GetUInt32Value(UNIT_FIELD_POWER7);
                     SetPower(POWER_TYPE_RUNIC_POWER, cur - 20);
+#endif
                 }
             }
             break;
@@ -8088,8 +8090,10 @@ void Unit::HandleUpdateFieldChange(uint32 Index)
         case UNIT_FIELD_POWER3:
         case UNIT_FIELD_POWER4:
         case UNIT_FIELD_POWER5:
+#if VERSION_STRING != Cata
         case UNIT_FIELD_POWER6:
         case UNIT_FIELD_POWER7:
+#endif
             Flags = pet ? GROUP_UPDATE_FLAG_PET_CUR_POWER : GROUP_UPDATE_FLAG_CUR_POWER;
             break;
 
@@ -8098,8 +8102,10 @@ void Unit::HandleUpdateFieldChange(uint32 Index)
         case UNIT_FIELD_MAXPOWER3:
         case UNIT_FIELD_MAXPOWER4:
         case UNIT_FIELD_MAXPOWER5:
+#if VERSION_STRING != Cata
         case UNIT_FIELD_MAXPOWER6:
         case UNIT_FIELD_MAXPOWER7:
+#endif
             Flags = pet ? GROUP_UPDATE_FLAG_PET_CUR_POWER : GROUP_UPDATE_FLAG_MAX_POWER;
             break;
 
