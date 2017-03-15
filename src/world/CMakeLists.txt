@@ -27,7 +27,9 @@ include(Server/Warden/CMakeLists.txt)
 include(Spell/CMakeLists.txt)
 include(Spell/Customization/CMakeLists.txt)
 include(Storage/CMakeLists.txt)
-include(Storage/DB2/CMakeLists.txt)
+if("${ASCEMU_VERSION}" STREQUAL "Cata")
+   include(Storage/DB2/CMakeLists.txt)
+endif()
 include(Storage/DBC/CMakeLists.txt)
 include(Units/CMakeLists.txt)
 include(Units/Creatures/CMakeLists.txt)
@@ -73,7 +75,6 @@ set(sources
    ${SRC_SPELL_FILES}
    ${SRC_SPELL_CUSTOM_FILES}
    ${SRC_STORAGE_FILES}
-   ${SRC_STORAGE_DB2_FILES}
    ${SRC_STORAGE_DBC_FILES}
    ${SRC_UNITS_FILES}
    ${SRC_UNITS_CREATURES_FILES}
@@ -81,6 +82,12 @@ set(sources
    ${SRC_UNITS_SUMMONS_FILES}
    ${SRC_WORLD_PROJECT}
 )
+
+if("${ASCEMU_VERSION}" STREQUAL "Cata")
+   set(sources
+      ${sources}
+      ${SRC_STORAGE_DB2_FILES})
+endif()
 
 include_directories(
    ${OPENSSL_INCLUDE_DIR}
