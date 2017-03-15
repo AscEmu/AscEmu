@@ -433,7 +433,9 @@ bool World::SetInitialWorldSettings()
     // Start
     uint32 start_time = getMSTime();
 
+#if VERSION_STRING == Cata
     LoadDB2Stores();
+#endif
 
     LogNotice("World : Loading DBC files...");
     if (!LoadDBCs())
