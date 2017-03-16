@@ -512,7 +512,11 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         }
         else if (flags & UPDATEFLAG_HAS_POSITION)  //0x40
         {
+#if VERSION_STRING != TBC
             if (flags & UPDATEFLAG_TRANSPORT && m_uint32Values[GAMEOBJECT_BYTES_1] == GAMEOBJECT_TYPE_MO_TRANSPORT)
+#else
+            if (flags & UPDATEFLAG_TRANSPORT && m_uint32Values[GAMEOBJECT_TYPE_ID] == GAMEOBJECT_TYPE_MO_TRANSPORT)
+#endif
             {
                 *data << float(0);
                 *data << float(0);
@@ -1062,7 +1066,7 @@ void Object::SetUInt32Value(const uint32 index, const uint32 value)
             case UNIT_FIELD_POWER1:
             case UNIT_FIELD_POWER2:
             case UNIT_FIELD_POWER4:
-#if VERSION_STRING != Cata
+#if VERSION_STRING == WotLK
             case UNIT_FIELD_POWER7:
 #endif
                 static_cast< Unit* >(this)->SendPowerUpdate(true);
@@ -1079,7 +1083,7 @@ void Object::SetUInt32Value(const uint32 index, const uint32 value)
             case UNIT_FIELD_POWER2:
             case UNIT_FIELD_POWER3:
             case UNIT_FIELD_POWER4:
-#if VERSION_STRING != Cata
+#if VERSION_STRING == WotLK
             case UNIT_FIELD_POWER7:
 #endif
                 static_cast<Creature*>(this)->SendPowerUpdate(false);
@@ -1125,7 +1129,7 @@ void Object::ModUnsigned32Value(uint32 index, int32 mod)
             case UNIT_FIELD_POWER1:
             case UNIT_FIELD_POWER2:
             case UNIT_FIELD_POWER4:
-#if VERSION_STRING != Cata
+#if VERSION_STRING == WotLK
             case UNIT_FIELD_POWER7:
 #endif
                 static_cast< Unit* >(this)->SendPowerUpdate(true);
@@ -1142,7 +1146,7 @@ void Object::ModUnsigned32Value(uint32 index, int32 mod)
             case UNIT_FIELD_POWER2:
             case UNIT_FIELD_POWER3:
             case UNIT_FIELD_POWER4:
-#if VERSION_STRING != Cata
+#if VERSION_STRING == WotLK
             case UNIT_FIELD_POWER7:
 #endif
                 static_cast<Creature*>(this)->SendPowerUpdate(false);

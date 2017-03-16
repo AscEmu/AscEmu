@@ -947,7 +947,14 @@ private:
         bool HasItemCount(uint32 item, uint32 count, bool inBankAlso = false) const;
         /// item interface variables
         ItemInterface* m_ItemInterface;
-        int32 GetVisibleBase(int16 slot) { return (PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2)); }
+        int32 GetVisibleBase(int16 slot)
+        {
+#if VERSION_STRING == TBC
+            return (PLAYER_VISIBLE_ITEM_1_0 + (slot * 16));
+#else
+            return (PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2));
+#endif
+        }
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Loot
@@ -1680,8 +1687,10 @@ private:
         void AddArenaPoints(uint32 arenaPoints, bool sendUpdate);
         void UpdateArenaPoints();
 
+#if VERSION_STRING > TBC
         void SetGlyph(uint32 slot, uint32 id) { SetUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot, id); }
         uint32 GetGlyph(uint32 slot) { return GetUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot); }
+#endif
 
         /// Do this on /pvp off
         void ResetPvPTimer();

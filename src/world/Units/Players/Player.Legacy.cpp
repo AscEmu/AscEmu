@@ -275,10 +275,12 @@ Player::Player(uint32 guid)
     SetLowGUID(guid);
     m_wowGuid.Init(GetGUID());
     SetUInt32Value(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
+#if VERSION_STRING > TBC
     SetFloatValue(PLAYER_RUNE_REGEN_1, 0.100000f);
     SetFloatValue(PLAYER_RUNE_REGEN_1 + 1, 0.100000f);
     SetFloatValue(PLAYER_RUNE_REGEN_1 + 2, 0.100000f);
     SetFloatValue(PLAYER_RUNE_REGEN_1 + 3, 0.100000f);
+#endif
 
     for (i = 0; i < 28; i++)
     {
@@ -2255,7 +2257,7 @@ void Player::InitVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER3);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER4);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER5);
-#if VERSION_STRING != Cata
+#if VERSION_STRING == WotLK
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER6);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_POWER7);
 #endif
@@ -2266,14 +2268,16 @@ void Player::InitVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER3);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER4);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER5);
-#if VERSION_STRING != Cata
+#if VERSION_STRING == WotLK
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER6);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_MAXPOWER7);
 #endif
 
+#if VERSION_STRING > TBC
     Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID);
     Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID + 1);
     Player::m_visibleUpdateMask.SetBit(UNIT_VIRTUAL_ITEM_SLOT_ID + 2);
+#endif
 
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_LEVEL);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_FACTIONTEMPLATE);
@@ -2297,7 +2301,9 @@ void Player::InitVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(UNIT_CHANNEL_SPELL);
     Player::m_visibleUpdateMask.SetBit(UNIT_DYNAMIC_FLAGS);
     Player::m_visibleUpdateMask.SetBit(UNIT_NPC_FLAGS);
+#if VERSION_STRING > TBC
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_HOVERHEIGHT);
+#endif
 
     Player::m_visibleUpdateMask.SetBit(PLAYER_FLAGS);
     Player::m_visibleUpdateMask.SetBit(PLAYER_BYTES);
@@ -2318,12 +2324,20 @@ void Player::InitVisibleUpdateBits()
     // Players visible items are not inventory stuff
     for (uint16 i = 0; i < EQUIPMENT_SLOT_END; ++i)
     {
+#if VERSION_STRING > TBC
         uint32 offset = i * 2; //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
 
         // item entry
         Player::m_visibleUpdateMask.SetBit(PLAYER_VISIBLE_ITEM_1_ENTRYID + offset);
         // enchant
         Player::m_visibleUpdateMask.SetBit(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + offset);
+#else
+        uint32 offset = i * 16;
+        // item entry
+        Player::m_visibleUpdateMask.SetBit(PLAYER_VISIBLE_ITEM_1_0 + offset);
+        // enchant
+        Player::m_visibleUpdateMask.SetBit(PLAYER_VISIBLE_ITEM_1_0 + 1 + offset);
+#endif
     }
 
     //VLack: we have to send our quest list to the members of our group all the time for quest sharing's "who's on that quest" feature to work (in the quest log this way a number will be shown before the quest's name).
@@ -2421,8 +2435,13 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     ss << m_uint32Values[PLAYER_FIELD_WATCHED_FACTION_INDEX] << ","
         << m_uint32Values[PLAYER_CHOSEN_TITLE] << ","
         << GetUInt64Value(PLAYER_FIELD_KNOWN_TITLES) << ","
+#if VERSION_STRING == TBC
+        << uint32(0) << ","
+        << uint32(0) << ","
+#else
         << GetUInt64Value(PLAYER_FIELD_KNOWN_TITLES1) << ","
         << GetUInt64Value(PLAYER_FIELD_KNOWN_TITLES2) << ","
+#endif
         << m_uint32Values[PLAYER_FIELD_COINAGE] << ",";
 
     if ((getClass() == MAGE) || (getClass() == PRIEST) || (getClass() == WARLOCK))
@@ -2995,8 +3014,13 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     m_uint32Values[PLAYER_FIELD_WATCHED_FACTION_INDEX] = get_next_field.GetUInt32();
     SetChosenTitle(get_next_field.GetUInt32());
     SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES, get_next_field.GetUInt64());
+#if VERSION_STRING != TBC
     SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES1, get_next_field.GetUInt64());
     SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES2, get_next_field.GetUInt64());
+#else
+    get_next_field.GetUInt32();
+    get_next_field.GetUInt32();
+#endif
     m_uint32Values[PLAYER_FIELD_COINAGE] = get_next_field.GetUInt32();
 #if VERSION_STRING != Cata
     m_uint32Values[PLAYER_AMMO_ID] = get_next_field.GetUInt32();
@@ -3040,7 +3064,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     // Initialize 'normal' fields
     SetScale(1.0f);
+#if VERSION_STRING != TBC
     SetFloatValue(UNIT_FIELD_HOVERHEIGHT, 1.0f);
+#endif
 
     //SetUInt32Value(UNIT_FIELD_POWER2, 0);
     SetPower(POWER_TYPE_FOCUS, info->focus); // focus
@@ -3427,13 +3453,14 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     for (uint32 x = 0; x < 5; x++)
         BaseStats[x] = GetStat(x);
 
+#if VERSION_STRING > TBC
     UpdateGlyphs();
 
     for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
     {
         SetGlyph(i, m_specs[m_talentActiveSpec].glyphs[i]);
     }
-
+#endif
     //class fixes
     switch (getClass())
     {
@@ -5429,8 +5456,10 @@ void Player::UpdateStats()
         uint32 Spirit = GetStat(STAT_SPIRIT);
         uint32 Intellect = GetStat(STAT_INTELLECT);
         float amt = (0.001f + sqrt((float)Intellect) * Spirit * BaseRegen[level - 1]) * PctPowerRegenModifier[POWER_TYPE_MANA];
+#if VERSION_STRING != TBC
         SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER, amt + m_ModInterrMRegen * 0.2f);
         SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER, amt * m_ModInterrMRegenPCT / 100.0f + m_ModInterrMRegen * 0.2f);
+#endif
     }
 
     // Spell haste rating
@@ -6873,7 +6902,11 @@ void Player::RegenerateMana(bool is_interrupted)
     if (cur >= mm)
         return;
     float wrate = sWorld.getRate(RATE_POWER1); // config file regen rate
+#if VERSION_STRING == TBC
+    float amt = (is_interrupted) ? GetFloatValue(PLAYER_FIELD_MOD_MANA_REGEN_INTERRUPT) : GetFloatValue(PLAYER_FIELD_MOD_MANA_REGEN);
+#else
     float amt = (is_interrupted) ? GetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER) : GetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER);
+#endif
     amt *= wrate * 2.0f;
 
     if ((amt <= 1.0) && (amt > 0)) //this fixes regen like 0.98
@@ -11384,6 +11417,7 @@ void Player::UpdatePowerAmm()
 // Initialize Glyphs or update them after level change
 void Player::UpdateGlyphs()
 {
+#if VERSION_STRING != TBC
     uint32 level = getLevel();
 
     if (level >= 15)
@@ -11405,6 +11439,7 @@ void Player::UpdateGlyphs()
 
     // Enable number of glyphs depending on level
     SetUInt32Value(PLAYER_GLYPHS_ENABLED, glyphMask[level]);
+#endif
 }
 
 // Fills fields from firstField to firstField+fieldsNum-1 with integers from the string
@@ -11503,7 +11538,7 @@ void Player::CalcExpertise()
 
 void Player::UpdateKnownCurrencies(uint32 itemId, bool apply)
 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING == WotLK
     if (auto const* currency_type_entry = sCurrencyTypesStore.LookupEntry(itemId))
     {
         if (apply)

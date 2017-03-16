@@ -6,6 +6,7 @@ set(SRC_GAMECLASSIC_FILES
     ${PATH_PREFIX}/Handlers/CharacterHandler.cpp
     ${PATH_PREFIX}/Network/Opcodes.cpp
     ${PATH_PREFIX}/Network/Opcodes.h
+    ${PATH_PREFIX}/UpdateFields.h
 )
 
 source_group(GameClassic FILES ${SRC_GAMECLASSIC_FILES})

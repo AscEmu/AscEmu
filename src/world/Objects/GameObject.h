@@ -440,6 +440,19 @@ class SERVER_DECL GameObject : public Object
         uint32 GetGOReqSkill();
         MapCell* m_respawnCell;
 
+#if VERSION_STRING == TBC
+        void SetState(uint8 state) { SetUInt32Value(GAMEOBJECT_STATE, state); }
+        uint8 GetState() { return GetUInt32Value(GAMEOBJECT_STATE); }
+
+        void SetType(uint8 type) { SetUInt32Value(GAMEOBJECT_TYPE_ID, type); }
+        uint32 GetType() { return this->GetGameObjectProperties()->type; }
+
+        void SetArtKit(uint8 artkit) { SetUInt32Value(GAMEOBJECT_ARTKIT, artkit); }
+        uint8 GetArtkKit() { return GetUInt32Value(GAMEOBJECT_ARTKIT); }
+
+        void SetAnimProgress(uint8 progress) { SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, progress); }
+        uint8 GetAnimProgress() { return GetUInt32Value(GAMEOBJECT_ANIMPROGRESS); }
+#else
         void SetState(uint8 state) { SetByte(GAMEOBJECT_BYTES_1, 0, state); }
         uint8 GetState() { return GetByte(GAMEOBJECT_BYTES_1, 0); }
 
@@ -451,6 +464,7 @@ class SERVER_DECL GameObject : public Object
 
         void SetAnimProgress(uint8 progress) { SetByte(GAMEOBJECT_BYTES_1, 3, progress); }
         uint8 GetAnimProgress() { return GetByte(GAMEOBJECT_BYTES_1, 3); }
+#endif
 
         void SetOverrides(uint32 go_overrides) { m_overrides = go_overrides; }
         uint32 GetOverrides() { return m_overrides; }

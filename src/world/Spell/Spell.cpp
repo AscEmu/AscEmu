@@ -2561,7 +2561,7 @@ bool Spell::HasPower()
         case POWER_TYPE_HAPPINESS:
         {	powerField = UNIT_FIELD_POWER5;						}
         break;
-#if VERSION_STRING != Cata
+#if VERSION_STRING == WotLK
         case POWER_TYPE_RUNIC_POWER:
         {	powerField = UNIT_FIELD_POWER7;						}
         break;
@@ -2710,7 +2710,7 @@ bool Spell::TakePower()
         case POWER_TYPE_HAPPINESS:
         {	powerField = UNIT_FIELD_POWER5;						}
         break;
-#if VERSION_STRING != Cata
+#if VERSION_STRING == WotLK
         case POWER_TYPE_RUNIC_POWER:
         {	powerField = UNIT_FIELD_POWER7;						}
         break;

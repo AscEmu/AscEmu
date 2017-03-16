@@ -7,6 +7,7 @@ set(SRC_GAMECATA_FILES
     ${PATH_PREFIX}/Handlers/MiscellaneousHandler.cpp
     ${PATH_PREFIX}/Network/Opcodes.cpp
     ${PATH_PREFIX}/Network/Opcodes.h
+    ${PATH_PREFIX}/UpdateFields.h
 )
 
 source_group(GameCata FILES ${SRC_GAMECATA_FILES})

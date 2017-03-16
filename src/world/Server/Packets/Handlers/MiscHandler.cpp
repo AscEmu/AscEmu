@@ -2749,6 +2749,7 @@ void WorldSession::HandleSetAutoLootPassOpcode(WorldPacket& recv_data)
     _player->m_passOnLoot = (on != 0) ? true : false;
 }
 
+#if VERSION_STRING > TBC
 void WorldSession::HandleRemoveGlyph(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -2773,6 +2774,7 @@ void WorldSession::HandleRemoveGlyph(WorldPacket& recv_data)
     _player->m_specs[_player->m_talentActiveSpec].glyphs[glyphNum] = 0;
     _player->smsg_TalentsInfo(false);
 }
+#endif
 
 void WorldSession::HandleGameobjReportUseOpCode(WorldPacket& recv_data)    // CMSG_GAMEOBJ_REPORT_USE
 {

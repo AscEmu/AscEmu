@@ -1619,8 +1619,10 @@ bool ChatHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_se
     if (title == 0)
     {
         player_target->SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES, 0);
+#if VERSION_STRING != TBC
         player_target->SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES1, 0);
         player_target->SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES2, 0);
+#endif
     }
     else if (title > 0)
     {

@@ -4202,6 +4202,7 @@ void Spell::SpellEffectAddFarsight(uint32 i) // Add Farsight
 
 void Spell::SpellEffectUseGlyph(uint32 i)
 {
+#if VERSION_STRING > TBC
     if (!p_caster)
         return;
 
@@ -4245,7 +4246,7 @@ void Spell::SpellEffectUseGlyph(uint32 i)
         p_caster->m_specs[p_caster->m_talentActiveSpec].glyphs[m_glyphslot] = static_cast<uint16>(glyph_new);
         p_caster->smsg_TalentsInfo(false);
     }
-
+#endif
 }
 
 void Spell::SpellEffectHealMechanical(uint32 i)

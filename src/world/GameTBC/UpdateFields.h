@@ -69,7 +69,7 @@ enum EUnitFields
     UNIT_FIELD_LEVEL                                 = OBJECT_END + 0x001C, // Size: 1, Type: INT, Flags: PUBLIC
     UNIT_FIELD_FACTIONTEMPLATE                       = OBJECT_END + 0x001D, // Size: 1, Type: INT, Flags: PUBLIC
     UNIT_FIELD_BYTES_0                               = OBJECT_END + 0x001E, // Size: 1, Type: BYTES, Flags: PUBLIC
-    UNIT_VIRTUAL_ITEM_SLOT_DISPLAY                   = OBJECT_END + 0x001F, // Size: 3, Type: INT, Flags: PUBLIC
+    UNIT_VIRTUAL_ITEM_SLOT_ID                        = OBJECT_END + 0x001F, // Size: 3, Type: INT, Flags: PUBLIC
     UNIT_VIRTUAL_ITEM_INFO                           = OBJECT_END + 0x0022, // Size: 6, Type: BYTES, Flags: PUBLIC
     UNIT_FIELD_FLAGS                                 = OBJECT_END + 0x0028, // Size: 1, Type: INT, Flags: PUBLIC
     UNIT_FIELD_FLAGS_2                               = OBJECT_END + 0x0029, // Size: 1, Type: INT, Flags: PUBLIC
@@ -389,13 +389,13 @@ enum EGameObjectFields
     OBJECT_FIELD_CREATED_BY                          = OBJECT_END + 0x0000, // Size: 2, Type: LONG, Flags: PUBLIC
     GAMEOBJECT_DISPLAYID                             = OBJECT_END + 0x0002, // Size: 1, Type: INT, Flags: PUBLIC
     GAMEOBJECT_FLAGS                                 = OBJECT_END + 0x0003, // Size: 1, Type: INT, Flags: PUBLIC
-    GAMEOBJECT_ROTATION                              = OBJECT_END + 0x0004, // Size: 4, Type: FLOAT, Flags: PUBLIC
+    GAMEOBJECT_PARENTROTATION                        = OBJECT_END + 0x0004, // Size: 4, Type: FLOAT, Flags: PUBLIC
     GAMEOBJECT_STATE                                 = OBJECT_END + 0x0008, // Size: 1, Type: INT, Flags: PUBLIC
     GAMEOBJECT_POS_X                                 = OBJECT_END + 0x0009, // Size: 1, Type: FLOAT, Flags: PUBLIC
     GAMEOBJECT_POS_Y                                 = OBJECT_END + 0x000A, // Size: 1, Type: FLOAT, Flags: PUBLIC
     GAMEOBJECT_POS_Z                                 = OBJECT_END + 0x000B, // Size: 1, Type: FLOAT, Flags: PUBLIC
     GAMEOBJECT_FACING                                = OBJECT_END + 0x000C, // Size: 1, Type: FLOAT, Flags: PUBLIC
-    GAMEOBJECT_DYN_FLAGS                             = OBJECT_END + 0x000D, // Size: 1, Type: INT, Flags: DYNAMIC
+    GAMEOBJECT_DYNAMIC                               = OBJECT_END + 0x000D, // Size: 1, Type: INT, Flags: DYNAMIC
     GAMEOBJECT_FACTION                               = OBJECT_END + 0x000E, // Size: 1, Type: INT, Flags: PUBLIC
     GAMEOBJECT_TYPE_ID                               = OBJECT_END + 0x000F, // Size: 1, Type: INT, Flags: PUBLIC
     GAMEOBJECT_LEVEL                                 = OBJECT_END + 0x0010, // Size: 1, Type: INT, Flags: PUBLIC

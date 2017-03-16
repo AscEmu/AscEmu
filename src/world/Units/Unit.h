@@ -980,7 +980,12 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     void SetCharmedUnitGUID(uint64 GUID) { SetUInt64Value(UNIT_FIELD_CHARM, GUID); }
     void SetSummonedUnitGUID(uint64 GUID) { SetUInt64Value(UNIT_FIELD_SUMMON, GUID); }
-    void SetSummonedCritterGUID(uint64 GUID) { SetUInt64Value(UNIT_FIELD_CRITTER, GUID); }
+    void SetSummonedCritterGUID(uint64 GUID)
+    {
+#if VERSION_STRING != TBC
+        SetUInt64Value(UNIT_FIELD_CRITTER, GUID);
+#endif
+    }
 
     void SetCharmedByGUID(uint64 GUID) { SetUInt64Value(UNIT_FIELD_CHARMEDBY, GUID); }
     void SetSummonedByGUID(uint64 GUID) { SetUInt64Value(UNIT_FIELD_SUMMONEDBY, GUID); }
@@ -989,7 +994,14 @@ public:
 
     uint64 GetCharmedUnitGUID() { return GetUInt64Value(UNIT_FIELD_CHARM); }
     uint64 GetSummonedUnitGUID() { return GetUInt64Value(UNIT_FIELD_SUMMON); }
-    uint64 GetSummonedCritterGUID() { return GetUInt64Value(UNIT_FIELD_CRITTER); }
+    uint64 GetSummonedCritterGUID()
+    {
+#if VERSION_STRING != TBC
+        return GetUInt64Value(UNIT_FIELD_CRITTER);
+#else
+        return 0;
+#endif
+    }
 
     uint64 GetCharmedByGUID() { return GetUInt64Value(UNIT_FIELD_CHARMEDBY); }
     uint64 GetSummonedByGUID() { return GetUInt64Value(UNIT_FIELD_SUMMONEDBY); }

@@ -6020,6 +6020,7 @@ void Aura::SpellAuraFeatherFall(bool apply)
 
 void Aura::SpellAuraHover(bool apply)
 {
+#if VERSION_STRING != TBC
     SetPositive();
 
     if (apply)
@@ -6032,6 +6033,7 @@ void Aura::SpellAuraHover(bool apply)
         m_target->setMoveHover(false);
         m_target->SetFloatValue(UNIT_FIELD_HOVERHEIGHT, 0.0f);
     }
+#endif
 }
 
 void Aura::SpellAuraAddPctMod(bool apply)

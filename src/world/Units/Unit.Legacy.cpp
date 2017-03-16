@@ -2742,7 +2742,7 @@ void Unit::RegeneratePower(bool isinterrupted)
             {
                 if (!isInCombat())
                 {
-#if VERSION_STRING != Cata
+#if VERSION_STRING == WotLK
                     uint32 cur = GetUInt32Value(UNIT_FIELD_POWER7);
                     SetPower(POWER_TYPE_RUNIC_POWER, cur - 20);
 #endif
@@ -8090,7 +8090,7 @@ void Unit::HandleUpdateFieldChange(uint32 Index)
         case UNIT_FIELD_POWER3:
         case UNIT_FIELD_POWER4:
         case UNIT_FIELD_POWER5:
-#if VERSION_STRING != Cata
+#if VERSION_STRING == WotLK
         case UNIT_FIELD_POWER6:
         case UNIT_FIELD_POWER7:
 #endif
@@ -8102,7 +8102,7 @@ void Unit::HandleUpdateFieldChange(uint32 Index)
         case UNIT_FIELD_MAXPOWER3:
         case UNIT_FIELD_MAXPOWER4:
         case UNIT_FIELD_MAXPOWER5:
-#if VERSION_STRING != Cata
+#if VERSION_STRING == WotLK
         case UNIT_FIELD_MAXPOWER6:
         case UNIT_FIELD_MAXPOWER7:
 #endif

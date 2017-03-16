@@ -227,6 +227,7 @@ class LegionObelisk : public GameObjectAIScript
                 }
             }
 
+#if VERSION_STRING != TBC
             if (obelisk1 != nullptr)
                 sEventMgr.AddEvent(static_cast<Object*>(obelisk1), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
             if (obelisk2 != nullptr)
@@ -237,6 +238,7 @@ class LegionObelisk : public GameObjectAIScript
                 sEventMgr.AddEvent(static_cast<Object*>(obelisk4), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
             if (obelisk5 != nullptr)
                 sEventMgr.AddEvent(static_cast<Object*>(obelisk5), &Object::SetByte, (uint32)GAMEOBJECT_BYTES_1, (uint32)GAMEOBJECT_BYTES_STATE, (uint8)1, EVENT_UNK, 10000, 0, 1);
+#endif
         }
 
 };

@@ -256,6 +256,16 @@ class SERVER_DECL Item : public Object
 
         void SetDurabilityToMax() { SetUInt32Value(ITEM_FIELD_DURABILITY, GetUInt32Value(ITEM_FIELD_MAXDURABILITY)); }
 
+#if VERSION_STRING == TBC
+        uint32 GetEnchantmentId(uint32 index) { return GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 3 * index); }
+        void SetEnchantmentId(uint32 index, uint32 value) { SetUInt32Value(ITEM_FIELD_ENCHANTMENT + 3 * index, value); }
+
+        uint32 GetEnchantmentDuration(uint32 index) { return GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 1 + 3 * index); }
+        void SetEnchantmentDuration(uint32 index, uint32 value) { SetUInt32Value(ITEM_FIELD_ENCHANTMENT + 1 + 3 * index, value); }
+
+        uint32 GetEnchantmentCharges(uint32 index) { return GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index); }
+        void SetEnchantmentCharges(uint32 index, uint32 value) { SetUInt32Value(ITEM_FIELD_ENCHANTMENT + 2 + 3 * index, value); }
+#else
         uint32 GetEnchantmentId(uint32 index) { return GetUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 3 * index); }
         void SetEnchantmentId(uint32 index, uint32 value) { SetUInt32Value(ITEM_FIELD_ENCHANTMENT_1_1 + 3 * index, value); }
 
@@ -270,6 +280,7 @@ class SERVER_DECL Item : public Object
         /////////////////////////////////////////////////////////
         void SetCreationTime(uint32 time) { SetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME, time); }
         uint32 GetCreationTime() { return GetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME); }
+#endif
 
         // DB Serialization
         void LoadFromDB(Field* fields, Player* plr, bool light);

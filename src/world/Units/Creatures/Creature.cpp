@@ -1294,7 +1294,9 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
     SetEntry(creature_properties->Id);
     SetScale(creature_properties->Scale);
 
+#if VERSION_STRING != TBC
     SetFloatValue(UNIT_FIELD_HOVERHEIGHT, creature_properties->Scale);
+#endif
 
     uint32 health;
     if (creature_properties->MinHealth > creature_properties->MaxHealth)
@@ -1542,7 +1544,9 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     SetEntry(creature_properties->Id);
     SetScale(creature_properties->Scale);
 
+#if VERSION_STRING != TBC
     SetFloatValue(UNIT_FIELD_HOVERHEIGHT, creature_properties->Scale);
+#endif
 
     uint32 health = creature_properties->MinHealth + RandomUInt(creature_properties->MaxHealth - creature_properties->MinHealth);
 
