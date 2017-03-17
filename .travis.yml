@@ -27,8 +27,45 @@ before_install:
 matrix:
   #allow_failures:
   #  - compiler: clang
-  # tbc
   include:
+  # classic
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - kalakris-cmake
+          packages:
+            - cmake
+            - zlib1g-dev
+            - libssl-dev
+            - libpcre3-dev
+            - libbz2-dev
+            - libmysqlclient-dev
+            - libmysql++-dev
+            - gcc-6
+            - g++-6
+      env: ASC_VERSION=Classic COMPILER=g++-6 
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+            - kalakris-cmake
+          packages:
+            - cmake
+            - zlib1g-dev
+            - libssl-dev
+            - libpcre3-dev
+            - libbz2-dev
+            - libmysqlclient-dev
+            - libmysql++-dev
+            - clang-3.8
+      env: ASC_VERSION=Classic COMPILER=clang++-3.8 
+  # tbc
     - os: linux
       compiler: gcc
       addons:
