@@ -268,7 +268,7 @@ AddItemResult ItemInterface::m_AddItem(Item* item, int8 ContainerSlot, int16 slo
         }
     }
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     if (slot < EQUIPMENT_SLOT_END && ContainerSlot == INVENTORY_SLOT_NOT_SET)
     {
         int VisibleBase = GetOwner()->GetVisibleBase(slot);
@@ -3109,7 +3109,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
         m_pOwner->SetInventorySlot(srcslot, 0);
     }
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     if (srcslot < INVENTORY_SLOT_BAG_END)    // source item is equipped
     {
         if (m_pItems[(int)srcslot])   // dstitem goes into here.
@@ -3188,7 +3188,7 @@ void ItemInterface::SwapItemSlots(int8 srcslot, int8 dstslot)
     }
 #endif
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     if (dstslot < INVENTORY_SLOT_BAG_END)     // source item is inside inventory
     {
         if (m_pItems[(int)dstslot] != NULL)   // srcitem goes into here.

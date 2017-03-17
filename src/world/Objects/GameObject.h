@@ -440,7 +440,7 @@ class SERVER_DECL GameObject : public Object
         uint32 GetGOReqSkill();
         MapCell* m_respawnCell;
 
-#if VERSION_STRING == TBC
+#if VERSION_STRING < WotLK
         void SetState(uint8 state) { SetUInt32Value(GAMEOBJECT_STATE, state); }
         uint8 GetState() { return GetUInt32Value(GAMEOBJECT_STATE); }
 

@@ -715,7 +715,14 @@ private:
         }
 
         uint32 GetMainMeleeDamage(uint32 AP_owerride);          /// I need this for windfury
-        uint32 GetMaxLevel() { return GetUInt32Value(PLAYER_FIELD_MAX_LEVEL); }
+        uint32 GetMaxLevel()
+        {
+#if VERSION_STRING == Classic
+            return 60;      // world levelcap!
+#else
+            return GetUInt32Value(PLAYER_FIELD_MAX_LEVEL);
+#endif
+        }
 
         const uint64 & GetSelection() const { return m_curSelection; }
         const uint64 & GetTarget() const { return m_curTarget; }
@@ -949,7 +956,7 @@ private:
         ItemInterface* m_ItemInterface;
         int32 GetVisibleBase(int16 slot)
         {
-#if VERSION_STRING == TBC
+#if VERSION_STRING < WotLK
             return (PLAYER_VISIBLE_ITEM_1_0 + (slot * 16));
 #else
             return (PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2));
@@ -1539,7 +1546,12 @@ private:
         // EASY FUNCTIONS - MISC
         /////////////////////////////////////////////////////////////////////////////////////////
 
-        void SetChosenTitle(uint32 id) { SetUInt32Value(PLAYER_CHOSEN_TITLE, id); }
+        void SetChosenTitle(uint32 id)
+        {
+#if VERSION_STRING > Classic
+            SetUInt32Value(PLAYER_CHOSEN_TITLE, id);
+#endif
+        }
 
         void SetInventorySlot(uint32 slot, uint64 guid) { SetUInt64Value(PLAYER_FIELD_INV_SLOT_HEAD + (slot * 2), guid); }
 
@@ -1619,19 +1631,31 @@ private:
         void ModNegDamageDoneMod(uint32 school, uint32 value) { ModUnsigned32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school, value); }
         uint32 GetNegDamageDoneMod(uint32 school) { return GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_NEG + school); }
 
-        void ModHealingDoneMod(uint32 value) { ModUnsigned32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS, value); }
-        uint32 GetHealingDoneMod() { return GetUInt32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS); }
+        void ModHealingDoneMod(uint32 value)
+        {
+#if VERSION_STRING > Classic
+            ModUnsigned32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS, value);
+#endif
+        }
+        uint32 GetHealingDoneMod()
+        {
+#if VERSION_STRING > Classic
+            return GetUInt32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS);
+#else
+            return 0;
+#endif
+        }
 
         //\todo fix this
         void SetAmmoId(uint32 id)
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             SetUInt32Value(PLAYER_AMMO_ID, id);
 #endif
         }
         uint32 GetAmmoId()
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING < Cata
             return GetUInt32Value(PLAYER_AMMO_ID);
 #else
             return 0;
@@ -1640,22 +1664,28 @@ private:
 
         void SetHonorCurrency(uint32 value)
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING == Cata
+#elif VERSION_STRING == Classic
+#else
             SetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, value);
 #endif
         }
         void ModHonorCurrency(uint32 value)
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING == Cata
+#elif VERSION_STRING == Classic
+#else
             ModUnsigned32Value(PLAYER_FIELD_HONOR_CURRENCY, value);
 #endif
         }
         uint32 GetHonorCurrency()
         {
-#if VERSION_STRING != Cata
-            return GetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY);
-#else
+#if VERSION_STRING == Cata
             return 0;
+#elif VERSION_STRING == Classic
+            return 0;
+#else
+            return GetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY);
 #endif
         }
 
@@ -1665,22 +1695,28 @@ private:
         //\todo fix this
         void SetArenaCurrency(uint32 value)
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING == Cata
+#elif VERSION_STRING == Classic
+#else
             SetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, value);
 #endif
         }
         void ModArenaCurrency(uint32 value)
         {
-#if VERSION_STRING != Cata
+#if VERSION_STRING == Cata
+#elif VERSION_STRING == Classic
+#else
             ModUnsigned32Value(PLAYER_FIELD_ARENA_CURRENCY, value);
 #endif
         }
         uint32 GetArenaCurrency()
         {
-#if VERSION_STRING != Cata
-            return GetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY);
-#else
+#if VERSION_STRING == Cata
             return 0;
+#elif VERSION_STRING == Classic
+            return 0;
+#else
+            return GetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY);
 #endif
         }
 

@@ -982,7 +982,7 @@ public:
     void SetSummonedUnitGUID(uint64 GUID) { SetUInt64Value(UNIT_FIELD_SUMMON, GUID); }
     void SetSummonedCritterGUID(uint64 GUID)
     {
-#if VERSION_STRING != TBC
+#if VERSION_STRING > WotLK
         SetUInt64Value(UNIT_FIELD_CRITTER, GUID);
 #endif
     }
@@ -996,7 +996,7 @@ public:
     uint64 GetSummonedUnitGUID() { return GetUInt64Value(UNIT_FIELD_SUMMON); }
     uint64 GetSummonedCritterGUID()
     {
-#if VERSION_STRING != TBC
+#if VERSION_STRING > WotLK
         return GetUInt64Value(UNIT_FIELD_CRITTER);
 #else
         return 0;

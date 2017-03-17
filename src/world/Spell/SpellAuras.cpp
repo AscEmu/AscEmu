@@ -4959,7 +4959,9 @@ void Aura::SpellAuraFeignDeath(bool apply)
             p_target->EventAttackStop();
             p_target->setDeathState(ALIVE);
 
+#if VERSION_STRING != Classic
             p_target->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
+#endif
             p_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH);
             p_target->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
 
@@ -5010,7 +5012,9 @@ void Aura::SpellAuraFeignDeath(bool apply)
         }
         else
         {
+#if VERSION_STRING != Classic
             p_target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FEIGN_DEATH);
+#endif
             p_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_FEIGN_DEATH);
             p_target->RemoveFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
             p_target->StopMirrorTimer(MIRROR_TYPE_FIRE);
@@ -5027,6 +5031,7 @@ void Aura::SpellAuraModDisarm(bool apply)
             field = UNIT_FIELD_FLAGS;
             flag = UNIT_FLAG_DISARMED;
             break;
+#if VERSION_STRING != Classic
         case SPELL_AURA_MOD_DISARM_OFFHAND:
             field = UNIT_FIELD_FLAGS_2;
             flag = UNIT_FLAG2_DISARM_OFFHAND;
@@ -5035,6 +5040,7 @@ void Aura::SpellAuraModDisarm(bool apply)
             field = UNIT_FIELD_FLAGS_2;
             flag = UNIT_FLAG2_DISARM_RANGED;
             break;
+#endif
         default:
             return;
     }
@@ -6020,7 +6026,7 @@ void Aura::SpellAuraFeatherFall(bool apply)
 
 void Aura::SpellAuraHover(bool apply)
 {
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     SetPositive();
 
     if (apply)
@@ -7663,10 +7669,12 @@ void Aura::SpellAuraModPenetration(bool apply) // armor penetration & spell pene
 
         if (p_target != NULL)
         {
+#if VERSION_STRING != Classic
             if (mod->m_miscValue & 124)
                 m_target->ModSignedInt32Value(PLAYER_FIELD_MOD_TARGET_RESISTANCE, mod->m_amount);
             if (mod->m_miscValue & 1)
                 m_target->ModSignedInt32Value(PLAYER_FIELD_MOD_TARGET_PHYSICAL_RESISTANCE, mod->m_amount);
+#endif
         }
     }
     else
@@ -7678,10 +7686,12 @@ void Aura::SpellAuraModPenetration(bool apply) // armor penetration & spell pene
         }
         if (p_target != NULL)
         {
+#if VERSION_STRING != Classic
             if (mod->m_miscValue & 124)
                 m_target->ModSignedInt32Value(PLAYER_FIELD_MOD_TARGET_RESISTANCE, -mod->m_amount);
             if (mod->m_miscValue & 1)
                 m_target->ModSignedInt32Value(PLAYER_FIELD_MOD_TARGET_PHYSICAL_RESISTANCE, -mod->m_amount);
+#endif
         }
     }
 }
@@ -8353,18 +8363,22 @@ void Aura::SpellAuraExpertise(bool apply)
 
 void Aura::SpellAuraForceMoveForward(bool apply)
 {
+#if VERSION_STRING != Classic
     if (apply)
         m_target->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FORCE_MOVE);
     else
         m_target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_FORCE_MOVE);
+#endif
 }
 
 void Aura::SpellAuraComprehendLang(bool apply)
 {
+#if VERSION_STRING != Classic
     if (apply)
         m_target->SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_COMPREHEND_LANG);
     else
         m_target->RemoveFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_COMPREHEND_LANG);
+#endif
 }
 
 void Aura::SpellAuraModPossessPet(bool apply)
@@ -8951,7 +8965,9 @@ void Aura::SpellAuraMirrorImage(bool apply)
         Summon* s = static_cast< Summon* >(m_target);
 
         s->SetDisplayId(s->GetOwner()->GetDisplayId());
+#if VERSION_STRING != Classic
         s->SetUInt32Value(UNIT_FIELD_FLAGS_2, s->GetUInt32Value(UNIT_FIELD_FLAGS_2) | UNIT_FLAG2_MIRROR_IMAGE);
+#endif
     }
 
     SpellAuraMirrorImage2(apply);

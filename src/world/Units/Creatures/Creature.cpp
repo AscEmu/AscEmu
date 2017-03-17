@@ -896,8 +896,10 @@ void Creature::CalcResistance(uint32 type)
     else
         pos += FlatResistanceMod[type];
 
+#if VERSION_STRING != Classic
     SetUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSPOSITIVE + type, pos);
     SetUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSNEGATIVE + type, neg);
+#endif
 
     int32 tot = BaseResistance[type] + pos - neg;
 
@@ -933,8 +935,10 @@ void Creature::CalcStat(uint32 type)
     else
         pos += FlatStatMod[type];
 
+#if VERSION_STRING != Classic
     SetUInt32Value(UNIT_FIELD_POSSTAT0 + type, pos);
     SetUInt32Value(UNIT_FIELD_NEGSTAT0 + type, neg);
+#endif
 
     int32 tot = BaseStats[type] + pos - neg;
     SetStat(type, tot > 0 ? tot : 0);
@@ -964,6 +968,7 @@ void Creature::CalcStat(uint32 type)
         break;
         case STAT_STAMINA:
         {
+#if VERSION_STRING != Classic
             //Health
             uint32 hp = GetBaseHealth();
             uint32 stat_bonus = GetUInt32Value(UNIT_FIELD_POSSTAT2) - GetUInt32Value(UNIT_FIELD_NEGSTAT2);
@@ -976,10 +981,12 @@ void Creature::CalcStat(uint32 type)
             SetUInt32Value(UNIT_FIELD_MAXHEALTH, res);
             if (GetUInt32Value(UNIT_FIELD_HEALTH) > GetUInt32Value(UNIT_FIELD_MAXHEALTH))
                 SetHealth(GetUInt32Value(UNIT_FIELD_MAXHEALTH));
+#endif
         }
         break;
         case STAT_INTELLECT:
         {
+#if VERSION_STRING != Classic
             if (GetPowerType() == POWER_TYPE_MANA)
             {
                 uint32 mana = GetBaseMana();
@@ -992,6 +999,7 @@ void Creature::CalcStat(uint32 type)
                 if (res < mana) res = mana;
                 SetMaxPower(POWER_TYPE_MANA, res);
             }
+#endif
         }
         break;
     }
@@ -1294,7 +1302,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
     SetEntry(creature_properties->Id);
     SetScale(creature_properties->Scale);
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     SetFloatValue(UNIT_FIELD_HOVERHEIGHT, creature_properties->Scale);
 #endif
 
@@ -1544,7 +1552,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     SetEntry(creature_properties->Id);
     SetScale(creature_properties->Scale);
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     SetFloatValue(UNIT_FIELD_HOVERHEIGHT, creature_properties->Scale);
 #endif
 

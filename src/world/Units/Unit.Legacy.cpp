@@ -3369,10 +3369,12 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         hitmodifier += (weapon_damage_type == RANGED) ? plr->CalcRating(PCR_RANGED_HIT) : plr->CalcRating(PCR_MELEE_HIT);
 
         float expertise_bonus = plr->CalcRating(PCR_EXPERTISE);
+#if VERSION_STRING != Classic
         if (weapon_damage_type == MELEE)
             expertise_bonus += plr->GetUInt32Value(PLAYER_EXPERTISE);
         else if (weapon_damage_type == OFFHAND)
             expertise_bonus += plr->GetUInt32Value(PLAYER_OFFHAND_EXPERTISE);
+#endif
 
         dodge -= expertise_bonus;
         if (dodge < 0)

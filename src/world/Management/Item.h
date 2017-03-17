@@ -256,7 +256,7 @@ class SERVER_DECL Item : public Object
 
         void SetDurabilityToMax() { SetUInt32Value(ITEM_FIELD_DURABILITY, GetUInt32Value(ITEM_FIELD_MAXDURABILITY)); }
 
-#if VERSION_STRING == TBC
+#if VERSION_STRING < WotLK
         uint32 GetEnchantmentId(uint32 index) { return GetUInt32Value(ITEM_FIELD_ENCHANTMENT + 3 * index); }
         void SetEnchantmentId(uint32 index, uint32 value) { SetUInt32Value(ITEM_FIELD_ENCHANTMENT + 3 * index, value); }
 

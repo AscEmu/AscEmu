@@ -584,8 +584,10 @@ bool ChatHandler::HandleCharAddHonorKillCommand(const char* args, WorldSession* 
 
     player_target->m_killsToday += kill_amount;
     player_target->m_killsLifetime += kill_amount;
+#if VERSION_STRING != Classic
     player_target->SetUInt32Value(PLAYER_FIELD_KILLS, uint16(player_target->m_killsToday) | (player_target->m_killsYesterday << 16));
     player_target->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, player_target->m_killsLifetime);
+#endif
 
     return true;
 }
@@ -1619,7 +1621,7 @@ bool ChatHandler::HandleCharSetTitleCommand(const char* args, WorldSession* m_se
     if (title == 0)
     {
         player_target->SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES, 0);
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
         player_target->SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES1, 0);
         player_target->SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES2, 0);
 #endif

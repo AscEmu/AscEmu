@@ -729,7 +729,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
     }
 
     // Apply the visual on the player.
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     uint32 ItemSlot = m_owner->GetItemInterface()->GetInventorySlotByGuid(GetGUID()) * 2;   //VLack: for 3.1.1 "* 18" is a bad idea, now it's "* 2"; but this could have been calculated based on UpdateFields.h! This is PLAYER_VISIBLE_ITEM_LENGTH
     uint32 VisibleBase = PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + ItemSlot;
     if (VisibleBase <= PLAYER_VISIBLE_ITEM_19_ENCHANTMENT)

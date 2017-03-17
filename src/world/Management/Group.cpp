@@ -1143,10 +1143,12 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
                     hisMask.Clear();
                     myMask.Clear();
                     u1 = u2 = false;
-#if VERSION_STRING != TBC
-                    for (uint32 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_25_5; ++j)
-#else
+#if VERSION_STRING == TBC
                     for (uint32 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_25_1; ++j)
+#elif VERSION_STRING == Classic
+                    for (uint32 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_15_4; ++j)
+#else
+                    for (uint32 j = PLAYER_QUEST_LOG_1_1; j <= PLAYER_QUEST_LOG_25_5; ++j)
 #endif
                     {
                         if (plr->GetUInt32Value(j))

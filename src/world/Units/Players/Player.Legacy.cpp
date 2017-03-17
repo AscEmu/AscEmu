@@ -274,7 +274,10 @@ Player::Player(uint32 guid)
     SetUInt32Value(OBJECT_FIELD_TYPE, TYPE_PLAYER | TYPE_UNIT | TYPE_OBJECT);
     SetLowGUID(guid);
     m_wowGuid.Init(GetGUID());
+#if VERSION_STRING != Classic
     SetUInt32Value(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ENABLE_POWER_REGEN);
+#endif
+
 #if VERSION_STRING > TBC
     SetFloatValue(PLAYER_RUNE_REGEN_1, 0.100000f);
     SetFloatValue(PLAYER_RUNE_REGEN_1 + 1, 0.100000f);
@@ -925,7 +928,9 @@ bool Player::Create(WorldPacket& data)
     SetNextLevelXp(400);
     SetUInt32Value(PLAYER_FIELD_BYTES, 0x08);
     SetCastSpeedMod(1.0f);
+#if VERSION_STRING != Classic
     SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, sWorld.m_levelCap);
+#endif
 
     // Gold Starting Amount
     SetGold(sWorld.GoldStartAmount);
@@ -2283,7 +2288,9 @@ void Player::InitVisibleUpdateBits()
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_FACTIONTEMPLATE);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BYTES_0);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_FLAGS);
+#if VERSION_STRING != Classic
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_FLAGS_2);
+#endif
 
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BASEATTACKTIME);
     Player::m_visibleUpdateMask.SetBit(UNIT_FIELD_BASEATTACKTIME + 1);
@@ -2342,12 +2349,18 @@ void Player::InitVisibleUpdateBits()
 
     //VLack: we have to send our quest list to the members of our group all the time for quest sharing's "who's on that quest" feature to work (in the quest log this way a number will be shown before the quest's name).
     //Unfortunately we don't have code for doing this only on our group's members, so everyone will receive it. The non-group member's client will do whatever it wants with it, probably wasting a few CPU cycles, but that's fine with me.
+#if VERSION_STRING == Classic
+    for (uint16 i = PLAYER_QUEST_LOG_1_1; i <= PLAYER_QUEST_LOG_15_1; i += 5)
+#else
     for (uint16 i = PLAYER_QUEST_LOG_1_1; i <= PLAYER_QUEST_LOG_25_1; i += 5)
+#endif
     {
         Player::m_visibleUpdateMask.SetBit(i);
     }
 
+#if VERSION_STRING != Classic
     Player::m_visibleUpdateMask.SetBit(PLAYER_CHOSEN_TITLE);
+#endif
 }
 
 void Player::SaveToDB(bool bNewCharacter /* =false */)
@@ -2433,9 +2446,13 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     SaveSkills(bNewCharacter, buf);
 
     ss << m_uint32Values[PLAYER_FIELD_WATCHED_FACTION_INDEX] << ","
+#if VERSION_STRING != Classic
         << m_uint32Values[PLAYER_CHOSEN_TITLE] << ","
+#else
+        << uint32(0) << ","
+#endif
         << GetUInt64Value(PLAYER_FIELD_KNOWN_TITLES) << ","
-#if VERSION_STRING == TBC
+#if VERSION_STRING < WotLK
         << uint32(0) << ","
         << uint32(0) << ","
 #else
@@ -3014,7 +3031,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     m_uint32Values[PLAYER_FIELD_WATCHED_FACTION_INDEX] = get_next_field.GetUInt32();
     SetChosenTitle(get_next_field.GetUInt32());
     SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES, get_next_field.GetUInt64());
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES1, get_next_field.GetUInt64());
     SetUInt64Value(PLAYER_FIELD_KNOWN_TITLES2, get_next_field.GetUInt64());
 #else
@@ -3056,15 +3073,17 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     //  for (uint32 x = PLAYER_SPELL_CRIT_PERCENTAGE1; x < PLAYER_SPELL_CRIT_PERCENTAGE06 + 1; ++x)
     ///    SetFloatValue(x, 0.0f);
 
+#if VERSION_STRING != Classic
     for (uint32 x = PLAYER_FIELD_MOD_DAMAGE_DONE_PCT; x < PLAYER_FIELD_MOD_HEALING_DONE_POS; ++x)
         SetFloatValue(x, 1.0f);
+#endif
 
     // Normal processing...
     UpdateStats();
 
     // Initialize 'normal' fields
     SetScale(1.0f);
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     SetFloatValue(UNIT_FIELD_HOVERHEIGHT, 1.0f);
 #endif
 
@@ -3098,7 +3117,9 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     EventModelChange();
 
     SetCastSpeedMod(1.0f);
+#if VERSION_STRING != Classic
     SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, sWorld.m_levelCap);
+#endif
     SetFaction(info->factiontemplate);
     if (cfaction)
     {
@@ -3180,11 +3201,13 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         m_arenaTeams[z] = objmgr.GetArenaTeamByGuid(GetLowGUID(), z);
         if (m_arenaTeams[z] != NULL)
         {
+#if VERSION_STRING != Classic
             SetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7), m_arenaTeams[z]->m_id);
             if (m_arenaTeams[z]->m_leader == GetLowGUID())
                 SetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7) + 1, 0);
             else
                 SetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (z * 7) + 1, 1);
+#endif
         }
     }
 
@@ -5172,11 +5195,13 @@ void Player::UpdateChances()
 
 void Player::UpdateChanceFields()
 {
+#if VERSION_STRING != Classic
     // Update spell crit values in fields
     for (uint8 i = 0; i < 7; ++i)
     {
         SetFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + i, SpellCritChanceSchool[i] + spellcritperc);
     }
+#endif
 }
 
 void Player::ModAttackSpeed(int32 mod, ModType type)
@@ -5349,7 +5374,11 @@ void Player::UpdateStats()
 
     uint32 hp = GetBaseHealth();
 
+#if VERSION_STRING != Classic
     int32 stat_bonus = GetUInt32Value(UNIT_FIELD_POSSTAT2) - GetUInt32Value(UNIT_FIELD_NEGSTAT2);
+#else
+    int32 stat_bonus = 0;
+#endif
     if (stat_bonus < 0)
         stat_bonus = 0; // Avoid of having negative health
     int32 bonus = stat_bonus * 10 + m_healthfromspell + m_healthfromitems;
@@ -5399,8 +5428,9 @@ void Player::UpdateStats()
     {
         // MP
         uint32 mana = GetBaseMana();
-
+#if VERSION_STRING != Classic
         stat_bonus = GetUInt32Value(UNIT_FIELD_POSSTAT3) - GetUInt32Value(UNIT_FIELD_NEGSTAT3);
+#endif
         if (stat_bonus < 0)
             stat_bonus = 0; // Avoid of having negative mana
         bonus = stat_bonus * 15 + m_manafromspell + m_manafromitems;
@@ -5456,7 +5486,7 @@ void Player::UpdateStats()
         uint32 Spirit = GetStat(STAT_SPIRIT);
         uint32 Intellect = GetStat(STAT_INTELLECT);
         float amt = (0.001f + sqrt((float)Intellect) * Spirit * BaseRegen[level - 1]) * PctPowerRegenModifier[POWER_TYPE_MANA];
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
         SetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER, amt + m_ModInterrMRegen * 0.2f);
         SetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER, amt * m_ModInterrMRegenPCT / 100.0f + m_ModInterrMRegen * 0.2f);
 #endif
@@ -5480,11 +5510,15 @@ void Player::UpdateStats()
         if (block_multiplier < 1.0f)block_multiplier = 1.0f;
 
         int32 blockable_damage = float2int32((shield->GetItemProperties()->Block + m_modblockvaluefromspells + GetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_BLOCK) + (str / 2.0f) - 1.0f) * block_multiplier);
+#if VERSION_STRING != Classic
         SetUInt32Value(PLAYER_SHIELD_BLOCK, blockable_damage);
+#endif
     }
     else
     {
+#if VERSION_STRING != Classic
         SetUInt32Value(PLAYER_SHIELD_BLOCK, 0);
+#endif
     }
 
     // Dynamic aura application, auras 212, 268
@@ -6515,8 +6549,10 @@ void Player::CalcResistance(uint32 type)
     if (res < 0)
         res = 1;
 
+#if VERSION_STRING != Classic
     SetUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSPOSITIVE + type, pos);
     SetUInt32Value(UNIT_FIELD_RESISTANCEBUFFMODSNEGATIVE + type, -neg);
+#endif
     SetResistance(type, res > 0 ? res : 0);
 
     std::list<Pet*> summons = GetSummons();
@@ -6874,12 +6910,14 @@ void Player::CalcStat(uint32 type)
     if (res <= 0)
         res = 1;
 
+#if VERSION_STRING != Classic
     SetUInt32Value(UNIT_FIELD_POSSTAT0 + type, pos);
 
     if (neg < 0)
         SetUInt32Value(UNIT_FIELD_NEGSTAT0 + type, -neg);
     else
         SetUInt32Value(UNIT_FIELD_NEGSTAT0 + type, neg);
+#endif
 
     SetStat(type, res);
     if (type == STAT_AGILITY)
@@ -6904,6 +6942,8 @@ void Player::RegenerateMana(bool is_interrupted)
     float wrate = sWorld.getRate(RATE_POWER1); // config file regen rate
 #if VERSION_STRING == TBC
     float amt = (is_interrupted) ? GetFloatValue(PLAYER_FIELD_MOD_MANA_REGEN_INTERRUPT) : GetFloatValue(PLAYER_FIELD_MOD_MANA_REGEN);
+#elif VERSION_STRING == Classic
+    float amt = 10;
 #else
     float amt = (is_interrupted) ? GetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER) : GetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER);
 #endif
@@ -8839,10 +8879,12 @@ void Player::AddHonor(uint32 honorPoints, bool sendUpdate)
  *  \todo Validate whether this function is unsafe to call while not in world */
 void Player::UpdateHonor()
 {
+#if VERSION_STRING != Classic
     this->SetUInt32Value(PLAYER_FIELD_KILLS, uint16(this->m_killsToday) | (this->m_killsYesterday << 16));
 #if VERSION_STRING != Cata
     this->SetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION, this->m_honorToday);
     this->SetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION, this->m_honorYesterday);
+#endif
 #endif
     this->SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, this->m_killsLifetime);
     this->SetHonorCurrency(this->m_honorPoints);
@@ -11417,7 +11459,7 @@ void Player::UpdatePowerAmm()
 // Initialize Glyphs or update them after level change
 void Player::UpdateGlyphs()
 {
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     uint32 level = getLevel();
 
     if (level >= 15)
@@ -11501,8 +11543,10 @@ void Player::CalcExpertise()
     int32 val = 0;
     SpellInfo* entry = NULL;
 
+#if VERSION_STRING != Classic
     SetUInt32Value(PLAYER_EXPERTISE, 0);
     SetUInt32Value(PLAYER_OFFHAND_EXPERTISE, 0);
+#endif
 
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; ++x)
     {
@@ -11531,8 +11575,10 @@ void Player::CalcExpertise()
         }
     }
 
+#if VERSION_STRING != Classic
     ModUnsigned32Value(PLAYER_EXPERTISE, (int32)CalcRating(PCR_EXPERTISE) + modifier);
     ModUnsigned32Value(PLAYER_OFFHAND_EXPERTISE, (int32)CalcRating(PCR_EXPERTISE) + modifier);
+#endif
     UpdateStats();
 }
 

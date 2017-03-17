@@ -335,10 +335,12 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recv_data)
 
     data << player->GetGUID();
     data << uint8(player->GetHonorCurrency());
+#if VERSION_STRING != Classic
     data << player->GetUInt32Value(PLAYER_FIELD_KILLS);
 #if VERSION_STRING != Cata
     data << player->GetUInt32Value(PLAYER_FIELD_TODAY_CONTRIBUTION);
     data << player->GetUInt32Value(PLAYER_FIELD_YESTERDAY_CONTRIBUTION);
+#endif
 #endif
     data << player->GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS);
 
@@ -347,6 +349,7 @@ void WorldSession::HandleInspectHonorStatsOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleInspectArenaStatsOpcode(WorldPacket& recv_data)
 {
+#if VERSION_STRING != Classic
     CHECK_PACKET_SIZE(recv_data, 8);
     CHECK_INWORLD_RETURN;
 
@@ -381,6 +384,7 @@ void WorldSession::HandleInspectArenaStatsOpcode(WorldPacket& recv_data)
             }
         }
     }
+#endif
 }
 
 void WorldSession::HandlePVPLogDataOpcode(WorldPacket& recv_data)

@@ -1436,7 +1436,7 @@ Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
         pItem->Create(entry, owner);
         pItem->SetStackCount(1);
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
         if (owner != NULL)
         {
             uint32* played = owner->GetPlayedtime();
