@@ -5,3 +5,9 @@ src/world/world_conf.h
 src/logonserver/LogonConf.h
 src/world/WorldConf.h
 CMakeLists.txt.user
+
+#config files
+configs/logon.conf
+configs/optional.conf
+configs/realms.conf
+configs/world.conf
