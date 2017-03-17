@@ -1,25 +1,25 @@
 ################################################################################
 # AscEmu Optional Configuration File
-# Last edited: 2/08/2017
+# Last edited: 3/17/2017
 ################################################################################
 
 ################################################################################
 # Optional Settings
 #
 #    Starting Level
-#        This controls at which level characters are created. Range is from 1-80.
+#        This controls at which level characters are created. Range is from 1-@ASC_VERSION_MAX_LEVEL@.
 #        Default: 1
 #
 #    Level Cap
 #        This variable controls the level that stats will be generated up to internally.
 #        Beyond this level players can still see a higher level visually but their stats won't
 #        increase beyond this point.
-#        Default: 80
+#        Default: @ASC_VERSION_MAX_LEVEL@
 #
 #    Generated Level Level Cap
 #        This variable controls the level at which stats will generate up to. Generally the formulas go
-#        crazy after level 80 so this way you can keep the high visual but stats at a reasonable value.
-#        Default: 80
+#        crazy after level @ASC_VERSION_MAX_LEVEL@ so this way you can keep the high visual but stats at a reasonable value.
+#        Default: @ASC_VERSION_MAX_LEVEL@
 #
 #    Allow The Burning Crusade characters
 #        This will override account settings, so you can disable TBC from your server without having to mess with accounts.
@@ -67,8 +67,8 @@
 #
 
 <Optional StartingLevel       = "1"
-          LevelCap            = "80"
-          GenLevelCap         = "80"
+          LevelCap            = "@ASC_VERSION_MAX_LEVEL@"
+          GenLevelCap         = "@ASC_VERSION_MAX_LEVEL@"
           AllowTBC            = "1"
           AntiMasterLootNinja = "0"
           AdditionalFun       = "0"
@@ -156,19 +156,6 @@
        AnnGMTagColor = "1"
        AnnNameColor  = "4"
        AnnMsgColor   = "6">
-
-################################################################################
-# Extra Scripts Configuration
-#
-#    Instant80
-#        Enables Instant80 mode.
-#
-#    Portals
-#        Spawns portals at transports and cities. For player fast travel.
-#
-
-<Extra Instant80 = "0"
-       Portals   = "0">
 
 ################################################################################
 # Game Master Configuration

@@ -66,3 +66,6 @@ elseif(UNIX)
 else()
     message(FATAL_ERROR "System is not supported." )
 endif()
+
+# apply config settings
+include(${CMAKE_SOURCE_DIR}/cmake/Modules/GenerateConfigs.cmake)
