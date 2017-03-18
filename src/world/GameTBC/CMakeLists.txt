@@ -6,6 +6,7 @@ set(SRC_GAMEBC_FILES
     ${PATH_PREFIX}/Handlers/CharacterHandler.cpp
     ${PATH_PREFIX}/Network/Opcodes.cpp
     ${PATH_PREFIX}/Network/Opcodes.h
+    ${PATH_PREFIX}/Network/WorldPacketHandlers.cpp
     ${PATH_PREFIX}/UpdateFields.h
 )
 
