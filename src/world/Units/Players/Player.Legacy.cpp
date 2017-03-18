@@ -688,7 +688,7 @@ uint32 GetSpellForLanguage(uint32 SkillID)
         case SKILL_LANG_DRAENEI:
             return 29932;
             break;
-
+#if VERSION_STRING == Cata
         case SKILL_LANG_GOBLIN:
             return 69269;
             break;
@@ -696,6 +696,7 @@ uint32 GetSpellForLanguage(uint32 SkillID)
         case SKILL_LANG_GILNEAN:
             return 69270;
             break;
+#endif
     }
 
     return 0;

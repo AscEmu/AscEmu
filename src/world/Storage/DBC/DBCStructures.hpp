@@ -6,12 +6,13 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _DBC_STRUCTURES_HPP
 #define _DBC_STRUCTURES_HPP
 
+#include "WorldConf.h"
+
 #if VERSION_STRING == Cata
     #include "../world/GameCata/Storage/DBCStructures.h"
 #else
 #include "Common.hpp"
 #include "Spell/SpellDefines.hpp"
-#include "WorldConf.h"
 
 enum AreaFlags
 {
@@ -924,7 +925,6 @@ namespace DBC
             //uint32 flags;                             // 54
         };
 
-#if VERSION_STRING != Cata
         struct ItemEntry
         {
             uint32 ID;                      // 0
@@ -936,9 +936,7 @@ namespace DBC
             uint32 InventoryType;           // 6
             uint32 Sheath;                  // 7
         };
-#endif
 
-#if VERSION_STRING != Cata
         struct ItemExtendedCostEntry
         {
             uint32 costid;                  // 0
@@ -950,7 +948,6 @@ namespace DBC
             uint32 personalrating;          // 14
             //uint32 unk;                   // 15
         };
-#endif
 
         struct ItemLimitCategoryEntry
         {

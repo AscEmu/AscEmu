@@ -747,6 +747,8 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[SMSG_BARBER_SHOP_RESULT].handler = &WorldSession::HandleBarberShopResult;
 #endif
 #endif
+
+#if VERSION_STRING == Cata
     WorldPacketHandlers[CMSG_MESSAGECHAT_SAY].handler = &WorldSession::HandleMessagechatOpcode;
     WorldPacketHandlers[CMSG_MESSAGECHAT_YELL].handler = &WorldSession::HandleMessagechatOpcode;
     WorldPacketHandlers[CMSG_MESSAGECHAT_CHANNEL].handler = &WorldSession::HandleMessagechatOpcode;
@@ -760,6 +762,7 @@ void WorldSession::InitPacketHandlerTable()
     WorldPacketHandlers[CMSG_MESSAGECHAT_RAID].handler = &WorldSession::HandleMessagechatOpcode;
     WorldPacketHandlers[CMSG_MESSAGECHAT_RAID_WARNING].handler = &WorldSession::HandleMessagechatOpcode;
     WorldPacketHandlers[CMSG_MESSAGECHAT_BATTLEGROUND].handler = &WorldSession::HandleMessagechatOpcode;
+#endif
 
     // Channels
     WorldPacketHandlers[CMSG_JOIN_CHANNEL].handler = &WorldSession::HandleChannelJoin;
