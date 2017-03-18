@@ -8,6 +8,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "../world/Storage/DBC/DBCGlobals.hpp"
 #include "Server/Definitions.h"
 
+#include "WorldConf.h"
+
+#if VERSION_STRING == Cata
 inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
 {
     if (radius == nullptr)
@@ -143,3 +146,5 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSe
 DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id);
 
 bool LoadDBCs();
+
+#endif

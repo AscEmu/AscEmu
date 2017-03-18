@@ -6,7 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 #include "../world/Storage/DBC/DBCGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
+#include "WorldConf.h"
 
+#if VERSION_STRING == Cata
 typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*> WMOAreaInfoByTripple;
 
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementEntry> sAchievementStore(DBC::Structures::achievement_format);
@@ -277,3 +279,5 @@ DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, Spe
 
     return itr->second.effects[effect];
 }
+
+#endif
