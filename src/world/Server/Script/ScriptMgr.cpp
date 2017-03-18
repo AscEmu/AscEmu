@@ -153,7 +153,7 @@ void ScriptMgr::LoadScripts()
 
                         loadmessage << "loaded";
                     }
-                    LOG_BASIC(loadmessage.str().c_str());
+                    LogDetail(loadmessage.str().c_str());
                     count++;
                 }
             }

@@ -150,7 +150,7 @@ void LogonCommClientSocket::HandleRegister(WorldPacket& recvData)
     recvData >> realmlid;
     recvData >> realmname;
 
-    LogDebugFlag(LF_OPCODE, "HandleRegister Realm `%s` registered as realm %u.", realmname.c_str(), realmlid);
+    LogDefault("Realm `%s` registered as realm %u.", realmname.c_str(), realmlid);
 
     LogonCommHandler::getSingleton().AdditionAck(_id, realmlid);
     realm_ids.insert(realmlid);

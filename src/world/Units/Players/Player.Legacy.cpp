@@ -10043,7 +10043,7 @@ void Player::_UpdateSkillFields()
 #if VERSION_STRING != Cata
         ARCEMU_ASSERT(f <= PLAYER_CHARACTER_POINTS1);
 #else
-        ARCEMU_ASSERT(f <= PLAYER_SKILL_LINEID_0);
+        ARCEMU_ASSERT(f <= PLAYER_CHARACTER_POINTS);
 #endif
         if (itr->second.Skill->type == SKILL_TYPE_PROFESSION)
         {
@@ -10069,7 +10069,7 @@ void Player::_UpdateSkillFields()
 #if VERSION_STRING != Cata
     for (; f < PLAYER_CHARACTER_POINTS1; ++f)
 #else
-    for (; f < PLAYER_SKILL_LINEID_0; ++f)
+    for (; f < PLAYER_CHARACTER_POINTS; ++f)
 #endif
     {
         if (m_uint32Values[f] != 0)

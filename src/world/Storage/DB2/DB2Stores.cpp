@@ -23,7 +23,7 @@ uint32_t DB2_Count = 0;
 
 static bool LoadDB2_assert_print(uint32_t fsize, uint32_t rsize, const std::string& filename)
 {
-    LogError("LoadDB2_assert_print", "Size of '%s' setted by format string (%u) not equal size of C++ structure (%u).", filename.c_str(), fsize, rsize);
+    LogError("LoadDB2_assert_print : Size of '%s' setted by format string (%u) not equal size of C++ structure (%u).", filename.c_str(), fsize, rsize);
 
     return false;
 }
@@ -89,7 +89,7 @@ void LoadDB2Stores()
 
     if (bad_db2_files.size() >= DB2_Count)
     {
-        LogError("LoadDB2Stores", "Incorrect DataDir value in worldserver.conf or ALL required *.db2 files (%d) not found", DB2_Count);
+        LogError("LoadDB2Stores : Incorrect DataDir value in worldserver.conf or ALL required *.db2 files (%d) not found", DB2_Count);
         exit(1);
     }
     else if (!bad_db2_files.empty())
@@ -98,15 +98,15 @@ void LoadDB2Stores()
         for (StoreProblemList1::iterator i = bad_db2_files.begin(); i != bad_db2_files.end(); ++i)
             str += *i + "\n";
 
-        LogError("LoadDB2Stores", "Some required *.db2 files (%u from %d) not found or not compatible:%s", (uint32)bad_db2_files.size(), DB2_Count, str.c_str());
+        LogError("LoadDB2Stores : Some required *.db2 files (%u from %d) not found or not compatible:%s", (uint32)bad_db2_files.size(), DB2_Count, str.c_str());
         exit(1);
     }
 
     if (!sItemStore.LookupEntry(83086) || !sItemExtendedCostStore.LookupEntry(3872))
     {
-        LogError("LoadDB2Stores", "Please extract correct db2 files from build 15595");
+        LogError("LoadDB2Stores : Please extract correct db2 files from build 15595");
         exit(1);
     }
 
-    LogNotice("LoadDB2Stores", "Initialized %u db2 stores", DB2_Count);
+    LogNotice("LoadDB2Stores : Initialized %u db2 stores", DB2_Count);
 }

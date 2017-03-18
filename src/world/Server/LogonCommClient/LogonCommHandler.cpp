@@ -224,7 +224,7 @@ void LogonCommHandler::Connect(LogonServer* server)
         return;
     }
 
-    LogDetail("LogonCommClient : Authentication OK.");
+    LogDefault("Authentication successfull.");
     LogNotice("LogonCommClient : Logonserver was connected on [%s:%u].", server->Address.c_str(), server->Port);
 
     // Send the initial ping
