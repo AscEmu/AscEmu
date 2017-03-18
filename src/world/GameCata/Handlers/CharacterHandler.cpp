@@ -104,7 +104,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
             if (_side < 0)
             {
-                static uint8_t sides[RACE_DRAENEI + 1] = { 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0 };
+                static uint8_t sides[NUM_RACES] = { 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
                 _side = sides[charEnum.race];
             }
 

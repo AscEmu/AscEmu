@@ -776,9 +776,15 @@ class BladeBarrierSpellProc : public SpellProc
     {
         mProcFlags = PROC_ON_CAST_SPELL;
 
+#if VERSION_STRING != Cata
         mProcClassMask[0] = mOrigSpell->EffectSpellClassMask[0][0];
         mProcClassMask[1] = mOrigSpell->EffectSpellClassMask[0][1];
         mProcClassMask[2] = mOrigSpell->EffectSpellClassMask[0][2];
+#else
+        mProcClassMask[0] = mOrigSpell->EffectSpellClassMask[0];
+        mProcClassMask[1] = mOrigSpell->EffectSpellClassMask[1];
+        mProcClassMask[2] = mOrigSpell->EffectSpellClassMask[2];
+#endif
 
         dk = static_cast<DeathKnight*>(mTarget);
     }

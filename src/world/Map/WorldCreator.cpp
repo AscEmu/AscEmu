@@ -967,6 +967,7 @@ void InstanceMgr::CheckForExpiredInstances()
 
 void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
 {
+#if VERSION_STRING != Cata
     WorldPacket data(4);
     Instance* in;
     InstanceMap::iterator itr;
@@ -1009,11 +1010,16 @@ void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
     data.SetOpcode(SMSG_UPDATE_INSTANCE_OWNERSHIP);
     data << uint32(0x00);
     plr->GetSession()->SendPacket(&data);
+#endif
 }
 
 void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
 {
+#if VERSION_STRING != Cata
     WorldPacket data(SMSG_RAID_INSTANCE_INFO, 200);
+#else
+    WorldPacket data(SMSG_RAID_INSTANCE_INFO, 4);
+#endif
     Instance* in;
     InstanceMap::iterator itr;
     InstanceMap* instancemap;
@@ -1044,6 +1050,10 @@ void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
                         data << uint32(in->m_expiration - UNIXTIME);
                     else
                         data << uint32(0);
+
+#if VERSION_STRING == Cata
+                    data << uint32(0);
+#endif
 
                     ++counter;
                 }

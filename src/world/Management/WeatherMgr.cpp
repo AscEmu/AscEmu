@@ -56,6 +56,7 @@ initialiseSingleton(WeatherMgr);
 
 void BuildWeatherPacket(WorldPacket* data, uint32 Effect, float Density)
 {
+#if VERSION_STRING != Cata
     data->Initialize(SMSG_WEATHER);
     if (Effect == 0)    // set all parameter to 0 for sunny.
     {
@@ -79,6 +80,7 @@ void BuildWeatherPacket(WorldPacket* data, uint32 Effect, float Density)
         *data << uint8(0);
     }
     //    LOG_DEBUG("Send Weather Update %d, Density %f, Sound %d, unint8(0)", Effect,Density,GetSound(Effect,Density));
+#endif
 }
 
 uint32 GetSound(uint32 Effect, float Density)

@@ -321,6 +321,116 @@ enum SpellAttributesExG
     ATTRIBUTESEXG_UNK32                             = 0x80000000
 };
 
+#if VERSION_STRING == Cata
+enum SpellAttributesExH
+{
+    ATTRIBUTESEXH_UNK0                              = 0x00000001,   // 0
+    ATTRIBUTESEXH_UNK1                              = 0x00000002,   // 1 
+    ATTRIBUTESEXH_UNK2                              = 0x00000004,   // 2 
+    ATTRIBUTESEXH_UNK3                              = 0x00000008,   // 3
+    ATTRIBUTESEXH_UNK4                              = 0x00000010,   // 4
+    ATTRIBUTESEXH_UNK5                              = 0x00000020,   // 5
+    ATTRIBUTESEXH_UNK6                              = 0x00000040,   // 6 
+    ATTRIBUTESEXH_UNK7                              = 0x00000080,   // 7
+    ATTRIBUTESEXH_UNK8                              = 0x00000100,   // 8 
+    ATTRIBUTESEXH_UNK9                              = 0x00000200,   // 9 
+    ATTRIBUTESEXH_UNK10                             = 0x00000400,   // 10 
+    ATTRIBUTESEXH_UNK11                             = 0x00000800,   // 11 
+    ATTRIBUTESEXH_UNK12                             = 0x00001000,   // 12
+    ATTRIBUTESEXH_UNK13                             = 0x00002000,   // 13
+    ATTRIBUTESEXH_UNK14                             = 0x00004000,   // 14 
+    ATTRIBUTESEXH_UNK15                             = 0x00008000,   // 15 
+    ATTRIBUTESEXH_UNK16                             = 0x00010000,   // 16
+    ATTRIBUTESEXH_UNK17                             = 0x00020000,   // 17
+    ATTRIBUTESEXH_UNK18                             = 0x00040000,   // 18 
+    ATTRIBUTESEXH_UNK19                             = 0x00080000,   // 19 
+    ATTRIBUTESEXH_UNK20                             = 0x00100000,   // 20
+    ATTRIBUTESEXH_UNK21                             = 0x00200000,   // 21 
+    ATTRIBUTESEXH_UNK22                             = 0x00400000,   // 22 
+    ATTRIBUTESEXH_UNK23                             = 0x00800000,   // 23 
+    ATTRIBUTESEXH_UNK24                             = 0x01000000,   // 24 
+    ATTRIBUTESEXH_UNK25                             = 0x02000000,   // 25 
+    ATTRIBUTESEXH_UNK26                             = 0x04000000,   // 26 
+    ATTRIBUTESEXH_UNK27                             = 0x08000000,   // 27
+    ATTRIBUTESEXH_UNK28                             = 0x10000000,   // 28
+    ATTRIBUTESEXH_UNK29                             = 0x20000000,   // 29
+    ATTRIBUTESEXH_UNK30                             = 0x40000000,   // 30
+    ATTRIBUTESEXH_UNK31                             = 0x80000000    // 31
+};
+
+enum SpellAttributesExI
+{
+    ATTRIBUTESEXI_UNK0                              = 0x00000001,   // 0
+    ATTRIBUTESEXI_UNK1                              = 0x00000002,   // 1
+    ATTRIBUTESEXI_UNK2                              = 0x00000004,   // 2
+    ATTRIBUTESEXI_UNK3                              = 0x00000008,   // 3
+    ATTRIBUTESEXI_UNK4                              = 0x00000010,   // 4
+    ATTRIBUTESEXI_UNK5                              = 0x00000020,   // 5
+    ATTRIBUTESEXI_UNK6                              = 0x00000040,   // 6
+    ATTRIBUTESEXI_UNK7                              = 0x00000080,   // 7
+    ATTRIBUTESEXI_UNK8                              = 0x00000100,   // 8
+    ATTRIBUTESEXI_UNK9                              = 0x00000200,   // 9
+    ATTRIBUTESEXI_UNK10                             = 0x00000400,   // 10
+    ATTRIBUTESEXI_UNK11                             = 0x00000800,   // 11
+    ATTRIBUTESEXI_UNK12                             = 0x00001000,   // 12
+    ATTRIBUTESEXI_UNK13                             = 0x00002000,   // 13
+    ATTRIBUTESEXI_UNK14                             = 0x00004000,   // 14
+    ATTRIBUTESEXI_UNK15                             = 0x00008000,   // 15
+    ATTRIBUTESEXI_UNK16                             = 0x00010000,   // 16
+    ATTRIBUTESEXI_UNK17                             = 0x00020000,   // 17
+    ATTRIBUTESEXI_UNK18                             = 0x00040000,   // 18
+    ATTRIBUTESEXI_UNK19                             = 0x00080000,   // 19
+    ATTRIBUTESEXI_UNK20                             = 0x00100000,   // 20
+    ATTRIBUTESEXI_UNK21                             = 0x00200000,   // 21
+    ATTRIBUTESEXI_UNK22                             = 0x00400000,   // 22
+    ATTRIBUTESEXI_UNK23                             = 0x00800000,   // 23
+    ATTRIBUTESEXI_UNK24                             = 0x01000000,   // 24
+    ATTRIBUTESEXI_UNK25                             = 0x02000000,   // 25
+    ATTRIBUTESEXI_UNK26                             = 0x04000000,   // 26
+    ATTRIBUTESEXI_UNK27                             = 0x08000000,   // 27
+    ATTRIBUTESEXI_UNK28                             = 0x10000000,   // 28
+    ATTRIBUTESEXI_UNK29                             = 0x20000000,   // 29
+    ATTRIBUTESEXI_UNK30                             = 0x40000000,   // 30
+    ATTRIBUTESEXI_UNK31                             = 0x80000000    // 31
+};
+
+enum SpellAttributesExJ
+{
+    ATTRIBUTESEXJ_UNK0                              = 0x00000001,   // 0
+    ATTRIBUTESEXJ_UNK1                              = 0x00000002,   // 1
+    ATTRIBUTESEXJ_UNK2                              = 0x00000004,   // 2
+    ATTRIBUTESEXJ_UNK3                              = 0x00000008,   // 3
+    ATTRIBUTESEXJ_UNK4                              = 0x00000010,   // 4
+    ATTRIBUTESEXJ_UNK5                              = 0x00000020,   // 5
+    ATTRIBUTESEXJ_UNK6                              = 0x00000040,   // 6
+    ATTRIBUTESEXJ_UNK7                              = 0x00000080,   // 7
+    ATTRIBUTESEXJ_UNK8                              = 0x00000100,   // 8
+    ATTRIBUTESEXJ_UNK9                              = 0x00000200,   // 9
+    ATTRIBUTESEXJ_UNK10                             = 0x00000400,   // 10
+    ATTRIBUTESEXJ_UNK11                             = 0x00000800,   // 11
+    ATTRIBUTESEXJ_UNK12                             = 0x00001000,   // 12
+    ATTRIBUTESEXJ_UNK13                             = 0x00002000,   // 13
+    ATTRIBUTESEXJ_UNK14                             = 0x00004000,   // 14
+    ATTRIBUTESEXJ_UNK15                             = 0x00008000,   // 15
+    ATTRIBUTESEXJ_UNK16                             = 0x00010000,   // 16
+    ATTRIBUTESEXJ_UNK17                             = 0x00020000,   // 17
+    ATTRIBUTESEXJ_UNK18                             = 0x00040000,   // 18
+    ATTRIBUTESEXJ_UNK19                             = 0x00080000,   // 19
+    ATTRIBUTESEXJ_UNK20                             = 0x00100000,   // 20
+    ATTRIBUTESEXJ_UNK21                             = 0x00200000,   // 21
+    ATTRIBUTESEXJ_UNK22                             = 0x00400000,   // 22
+    ATTRIBUTESEXJ_UNK23                             = 0x00800000,   // 23
+    ATTRIBUTESEXJ_UNK24                             = 0x01000000,   // 24
+    ATTRIBUTESEXJ_UNK25                             = 0x02000000,   // 25
+    ATTRIBUTESEXJ_UNK26                             = 0x04000000,   // 26
+    ATTRIBUTESEXJ_UNK27                             = 0x08000000,   // 27
+    ATTRIBUTESEXJ_UNK28                             = 0x10000000,   // 28
+    ATTRIBUTESEXJ_UNK29                             = 0x20000000,   // 29
+    ATTRIBUTESEXJ_UNK30                             = 0x40000000,   // 30
+    ATTRIBUTESEXJ_UNK31                             = 0x80000000    // 31
+};
+#endif
+
 #define MAX_SPELL_EFFECTS 3
 #define MAX_SPELL_TOTEMS 2
 #define MAX_SPELL_TOTEM_CATEGORIES 2

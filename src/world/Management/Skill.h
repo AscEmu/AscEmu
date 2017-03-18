@@ -171,7 +171,16 @@ enum PlayerSkills
     SKILL_PET_WASP                = 785,
     SKILL_PET_EXOTIC_RHINO        = 786,
     SKILL_PET_EXOTIC_CORE_HOUND   = 787,
+#if VERSION_STRING != Cata
     SKILL_PET_EXOTIC_SPIRIT_BEAST = 788
+#else
+    SKILL_PET_EXOTIC_SPIRIT_BEAST = 788,
+    SKILL_RACIAL_WORGEN           = 789,
+    SKILL_RACIAL_GOLBLIN          = 790,
+    SKILL_LANG_GILNEAN            = 791,
+    SKILL_LANG_GOBLIN             = 792,
+    SKILL_ARCHAEOLOGY             = 794
+#endif
 };
 
 enum SkillTypes

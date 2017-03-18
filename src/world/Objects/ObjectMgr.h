@@ -30,6 +30,10 @@
 #include "Management/Guild.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/DBC/DBCStores.h"
+#if VERSION_STRING == Cata
+    #include "Storage/DB2/DB2Stores.h"
+    #include "Storage/DB2/DB2Structures.h"
+#endif
 #include "Units/Creatures/CreatureDefines.hpp"
 #include "Management/TransporterHandler.h"
 #include "Management/Gossip/GossipDefines.hpp"

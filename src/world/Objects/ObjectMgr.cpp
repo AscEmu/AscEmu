@@ -470,7 +470,11 @@ void ObjectMgr::LoadPlayersInfo()
                 delete result2;
             }
 
+#if VERSION_STRING != Cata
             if (pn->race == RACE_HUMAN || pn->race == RACE_DWARF || pn->race == RACE_GNOME || pn->race == RACE_NIGHTELF || pn->race == RACE_DRAENEI)
+#else
+            if (pn->race == RACE_HUMAN || pn->race == RACE_DWARF || pn->race == RACE_GNOME || pn->race == RACE_NIGHTELF || pn->race == RACE_DRAENEI || pn->race == RACE_WORGEN)
+#endif
                 pn->team = 0;
             else
                 pn->team = 1;
@@ -1515,6 +1519,7 @@ AchievementCriteriaEntryList const & ObjectMgr::GetAchievementCriteriaByType(Ach
 
 void ObjectMgr::LoadAchievementCriteriaList()
 {
+#if VERSION_STRING != Cata
     for (uint32 rowId = 0; rowId < sAchievementCriteriaStore.GetNumRows(); ++rowId)
     {
         auto criteria = sAchievementCriteriaStore.LookupEntry(rowId);
@@ -1523,6 +1528,7 @@ void ObjectMgr::LoadAchievementCriteriaList()
 
         m_AchievementCriteriasByType[criteria->requiredType].push_back(criteria);
     }
+#endif
 }
 #endif
 
@@ -1570,6 +1576,7 @@ void ObjectMgr::CreateGossipMenuForPlayer(GossipMenu** Location, uint64 Guid, ui
 
 void ObjectMgr::LoadTrainers()
 {
+#if VERSION_STRING != Cata
     QueryResult* result = WorldDatabase.Query("SELECT * FROM trainer_defs");
     LoadDisabledSpells();
 
@@ -1725,6 +1732,7 @@ void ObjectMgr::LoadTrainers()
     while (result->NextRow());
     delete result;
     LogDetail("ObjectMgr : %u trainers loaded.", mTrainers.size());
+#endif
 }
 
 Trainer* ObjectMgr::GetTrainer(uint32 Entry)
@@ -1746,7 +1754,7 @@ void ObjectMgr::GenerateLevelUpInfo()
             continue;
 
         // Search for a playercreateinfo.
-        for (uint8 Race = RACE_HUMAN; Race <= RACE_DRAENEI; ++Race)
+        for (uint8 Race = RACE_HUMAN; Race <= NUM_RACES - 1; ++Race)
         {
             PlayerCreateInfo const* PCI = sMySQLStore.GetPlayerCreateInfo(static_cast<uint8>(Race), static_cast<uint8>(Class));
 

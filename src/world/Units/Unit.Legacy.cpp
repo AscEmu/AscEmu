@@ -6104,7 +6104,11 @@ bool Unit::IsPoisoned()
 void Unit::SendFullAuraUpdate()
 {
 #if VERSION_STRING > TBC
+#if VERSION_STRING != Cata
     WorldPacket data(SMSG_AURA_UPDATE_ALL, 200);
+#else
+    WorldPacket data(SMSG_AURA_UPDATE_ALL);
+#endif
 
     data << WoWGuid(GetNewGUID());
 
@@ -6157,7 +6161,11 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
     Aura* aur = m_auras[AuraSlot];
     ARCEMU_ASSERT(aur != NULL);
 
+#if VERSION_STRING != Cata
     WorldPacket data(SMSG_AURA_UPDATE, 30);
+#else
+    WorldPacket data(SMSG_AURA_UPDATE);
+#endif
 
     if (remove)
     {
@@ -7956,6 +7964,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
     *data << (uint32)GetMovementInfo()->fall_time;
 
     // 0x00001000
+#if VERSION_STRING != Cata
     if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
     {
         *data << (float)GetMovementInfo()->redirectVelocity;
@@ -7967,6 +7976,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
     // 0x04000000
     if (GetUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
         *data << (float)GetMovementInfo()->spline_elevation;
+#endif
 }
 
 
@@ -8009,6 +8019,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
     *data << (uint32)GetMovementInfo()->fall_time;
 
     // 0x00001000
+#if VERSION_STRING != Cata
     if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
     {
         *data << (float)GetMovementInfo()->redirectVelocity;
@@ -8020,6 +8031,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
     // 0x04000000
     if (GetUnitMovementFlags() & MOVEFLAG_SPLINE_MOVER)
         *data << (float)GetMovementInfo()->spline_elevation;
+#endif
 }
 
 void Unit::setLevel(uint32 level)

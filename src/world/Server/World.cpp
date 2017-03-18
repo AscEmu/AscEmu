@@ -1664,6 +1664,7 @@ void World::Rehash(bool load)
 
 void World::LoadNameGenData()
 {
+#if VERSION_STRING != Cata
     for (uint32 i = 0; i < sNameGenStore.GetNumRows(); ++i)
     {
         auto const name_gen_entry = sNameGenStore.LookupEntry(i);
@@ -1676,6 +1677,7 @@ void World::LoadNameGenData()
         data.type = name_gen_entry->type;
         _namegendata[data.type].push_back(data);
     }
+#endif
 }
 
 void World::CharacterEnumProc(QueryResultVector& results, uint32 AccountId)

@@ -90,19 +90,31 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                 foundmatch = false;
                 if (lookupname)
                 {
+#if VERSION_STRING != Cata
                     y = std::string(achievement->name[0]);
+#else
+                    y = std::string(achievement->name);
+#endif
                     Util::StringToLowerCase(y);
                     foundmatch = FindXinYString(x, y);
                 }
                 if (!foundmatch && lookupdesc)
                 {
+#if VERSION_STRING != Cata
                     y = std::string(achievement->description[0]);
+#else
+                    y = std::string(achievement->description);
+#endif
                     Util::StringToLowerCase(y);
                     foundmatch = FindXinYString(x, y);
                 }
                 if (!foundmatch && lookupreward)
                 {
+#if VERSION_STRING != Cata
                     y = std::string(achievement->rewardName[0]);
+#else
+                    y = std::string(achievement->rewardName);
+#endif
                     Util::StringToLowerCase(y);
                     foundmatch = FindXinYString(x, y);
                 }
@@ -170,7 +182,11 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                     // already listed this achievement (some achievements have multiple entries in dbc)
                     continue;
                 }
+#if VERSION_STRING != Cata
                 y = std::string(criteria->name[0]);
+#else
+                y = std::string(criteria->name);
+#endif
                 Util::StringToLowerCase(y);
                 if (!FindXinYString(x, y))
                 {
@@ -321,11 +337,19 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
         DBC::Structures::FactionEntry const* faction = sFactionStore.LookupEntry(index);
         if (faction != nullptr)
         {
+#if VERSION_STRING != Cata
             std::string y = std::string(faction->Name[0]);
+#else
+            std::string y = std::string(faction->Name);
+#endif
             Util::StringToLowerCase(y);
             if (FindXinYString(x, y))
             {
+#if VERSION_STRING != Cata
                 SendHighlightedName(m_session, "Faction", faction->Name[0], y, x, faction->ID);
+#else
+                SendHighlightedName(m_session, "Faction", faction->Name, y, x, faction->ID);
+#endif
                 ++count;
                 if (count == 25)
                 {
@@ -604,11 +628,19 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
         if (skill_line == nullptr)
             continue;
 
+#if VERSION_STRING != Cata
         std::string y = std::string(skill_line->Name[0]);
+#else
+        std::string y = std::string(skill_line->Name);
+#endif
         Util::StringToLowerCase(y);
         if (FindXinYString(x, y))
         {
+#if VERSION_STRING != Cata
             SendHighlightedName(m_session, "Skill", skill_line->Name[0], y, x, skill_line->id);
+#else
+            SendHighlightedName(m_session, "Skill", skill_line->Name, y, x, skill_line->id);
+#endif
             ++count;
             if (count == 25)
             {

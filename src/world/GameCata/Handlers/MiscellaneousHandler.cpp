@@ -29,3 +29,16 @@ void WorldSession::HandleReadyForAccountDataTimesOpcode(WorldPacket& recv_data)
 {
     SendAccountDataTimes(GLOBAL_CACHE_MASK);
 }
+
+void WorldSession::HandleUITimeRequestOpcode(WorldPacket& recv_data)
+{
+    WorldPacket data(SMSG_UI_TIME, 4);
+    data << uint32(time(NULL));
+    SendPacket(&data);
+}
+
+void WorldSession::HandleTimeSyncRespOpcode(WorldPacket& recv_data)
+{
+    uint32 counter, clientTicks;
+    recv_data >> counter >> clientTicks;
+}

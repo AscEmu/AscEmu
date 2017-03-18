@@ -6,6 +6,9 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _DBC_STRUCTURES_HPP
 #define _DBC_STRUCTURES_HPP
 
+#if VERSION_STRING == Cata
+    #include "../world/GameCata/Storage/DBCStructures.h"
+#else
 #include "Common.hpp"
 #include "Spell/SpellDefines.hpp"
 #include "WorldConf.h"
@@ -1608,5 +1611,6 @@ namespace DBC
         #pragma pack(pop)
     }
 }
+#endif
 
 #endif // _DBC_STRUCTURES_HPP

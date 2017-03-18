@@ -181,6 +181,7 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
     uint8 level = GetPlayer()->getLevel();
     uint8 expansion = GetPlayer()->GetSession()->GetFlags();
 
+#if VERSION_STRING != Cata
 	for (uint32 i = 0; i < sLFGDungeonStore.GetNumRows(); ++i)
     {
         DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(i);
@@ -188,6 +189,7 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
             randomDungeons.insert(dungeon->Entry());
  
     }
+#endif
 
     // Get player locked Dungeons
     LfgLockMap lock = sLfgMgr.GetLockedDungeons(guid);
@@ -447,6 +449,7 @@ void WorldSession::SendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
     data << uint32(pRoleCheck->state);                     // Check result
     data << uint8(pRoleCheck->state == LFG_ROLECHECK_INITIALITING);
     data << uint8(dungeons.size());                        // Number of dungeons
+#if VERSION_STRING != Cata
     if (!dungeons.empty())
     {
         for (LfgDungeonSet::iterator it = dungeons.begin(); it != dungeons.end(); ++it)
@@ -455,6 +458,7 @@ void WorldSession::SendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
             data << uint32(dungeon ? dungeon->Entry() : 0); // Dungeon
         }
     }
+#endif
 
     data << uint8(pRoleCheck->roles.size());               // Players in group
     if (!pRoleCheck->roles.empty())
@@ -623,6 +627,7 @@ void WorldSession::SendLfgUpdateProposal(uint32 proposalId, const LfgProposal* p
             dungeonId = (*playerDungeons.begin());
     }
 
+#if VERSION_STRING != Cata
     if (DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(dungeonId))
     {
         dungeonId = dungeon->Entry();
@@ -645,6 +650,7 @@ void WorldSession::SendLfgUpdateProposal(uint32 proposalId, const LfgProposal* p
             }
         }
     }
+#endif
 
     data << uint32(dungeonId);                             // Dungeon
     data << uint8(pProp->state);                           // Result state

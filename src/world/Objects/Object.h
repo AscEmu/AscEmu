@@ -35,6 +35,9 @@
 #include "WoWGuid.h"
 #include "../shared/LocationVector.h"
 #include "Storage/DBC/DBCStructures.hpp"
+#if VERSION_STRING == Cata
+    #include "Storage/DB2/DB2Structures.h"
+#endif
 #include "../shared/StackBuffer.h"
 #include "../shared/CommonDefines.hpp"
 

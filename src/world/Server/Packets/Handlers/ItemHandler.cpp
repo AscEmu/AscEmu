@@ -1440,6 +1440,7 @@ void WorldSession::SendInventoryList(Creature* unit)
         return;
     }
 
+#if VERSION_STRING != Cata
     WorldPacket data(((unit->GetSellItemCount() * 28) + 9));       // allocate
 
     data.SetOpcode(SMSG_LIST_INVENTORY);
@@ -1448,6 +1449,17 @@ void WorldSession::SendInventoryList(Creature* unit)
 
     ItemProperties const* curItem = NULL;
     uint32 counter = 0;
+#else
+    uint32 counter = 0;
+
+    WorldPacket data(((unit->GetSellItemCount()) + 12));       // allocate
+
+    ByteBuffer itemsData(32 * unit->GetSellItemCount());
+    std::vector<bool> enablers;
+    enablers.reserve(2 * unit->GetSellItemCount());
+
+    ItemProperties const* curItem = nullptr;
+#endif
 
     for (std::vector<CreatureItem>::iterator itr = unit->GetSellItemBegin(); itr != unit->GetSellItemEnd(); ++itr)
     {
@@ -1479,6 +1491,7 @@ void WorldSession::SendInventoryList(Creature* unit)
                 if ((itr->extended_cost == NULL) || curItem->HasFlag2(ITEM_FLAG2_EXT_COST_REQUIRES_GOLD))
                     price = GetBuyPriceForItem(curItem, 1, _player, unit);
 
+#if VERSION_STRING != Cata
                 data << uint32(counter + 1);    // we start from 0 but client starts from 1
                 data << uint32(curItem->ItemId);
                 data << uint32(curItem->DisplayInfoID);
@@ -1492,6 +1505,28 @@ void WorldSession::SendInventoryList(Creature* unit)
                     data << uint32(itr->extended_cost->costid);
                 else
                     data << uint32(0);
+#else
+                itemsData << uint32(counter + 1);        // client expects counting to start at 1
+                itemsData << uint32(curItem->MaxDurability);
+                if (itr->extended_cost != 0)
+                {
+                    enablers.push_back(0);
+                    itemsData << uint32(itr->extended_cost->costid);
+                }
+                else
+                {
+                    enablers.push_back(1);
+                }
+
+                enablers.push_back(1);                 // unk bit
+
+                itemsData << uint32(curItem->ItemId);
+                itemsData << uint32(1);     // 1 is items, 2 is currency
+                itemsData << uint32(price);
+                itemsData << uint32(curItem->DisplayInfoID);
+                itemsData << int32(av_am);
+                itemsData << uint32(itr->amount);
+#endif
 
                 ++counter;
                 if (counter >= creatureMaxInventoryItems) break;  // cebernic: in 2.4.3, client can't take more than 15 pages,it making crash for us:(
@@ -1499,7 +1534,43 @@ void WorldSession::SendInventoryList(Creature* unit)
         }
     }
 
+#if VERSION_STRING != Cata
     const_cast<uint8*>(data.contents())[8] = (uint8)counter;    // set count
+#else
+    ObjectGuid guid = unit->GetGUID();
+
+    data.SetOpcode(SMSG_LIST_INVENTORY);
+    data.writeBit(guid[1]);
+    data.writeBit(guid[0]);
+
+    data.writeBits(counter, 21); // item count
+
+    data.writeBit(guid[3]);
+    data.writeBit(guid[6]);
+    data.writeBit(guid[5]);
+    data.writeBit(guid[2]);
+    data.writeBit(guid[7]);
+
+    for (std::vector<bool>::const_iterator itr = enablers.begin(); itr != enablers.end(); ++itr)
+        data.writeBit(*itr);
+
+    data.writeBit(guid[4]);
+
+    data.flushBits();
+    data.append(itemsData);
+
+    data.WriteByteSeq(guid[5]);
+    data.WriteByteSeq(guid[4]);
+    data.WriteByteSeq(guid[1]);
+    data.WriteByteSeq(guid[0]);
+    data.WriteByteSeq(guid[6]);
+
+    data << uint8(counter == 0); // unk byte, item count 0: 1, item count != 0: 0 or some "random" value below 300
+
+    data.WriteByteSeq(guid[2]);
+    data.WriteByteSeq(guid[3]);
+    data.WriteByteSeq(guid[7]);
+#endif
 
     SendPacket(&data);
     LOG_DETAIL("WORLD: Sent SMSG_LIST_INVENTORY");

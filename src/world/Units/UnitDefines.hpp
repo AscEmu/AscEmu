@@ -646,7 +646,7 @@ enum ShapeshiftForm
     FORM_TEST               = 0x14,
     FORM_ZOMBIE             = 0x15,
     FORM_METAMORPHOSIS      = 0x16,
-    FORM_UNK1               = 0x17,
+    FORM_DEMON              = 0x17,
     FORM_UNK2               = 0x18,
     FORM_UNDEAD             = 0x19,
     FORM_MASTER_ANGLER      = 0x1A,

@@ -47,7 +47,15 @@ enum PlayerTeam : int
 ///
 //////////////////////////////////////////////////////////////////////////////////////////
 
-#define DBC_PLAYER_LEVEL_CAP 80
+#if VERSION_STRING == Classic
+    #define DBC_PLAYER_LEVEL_CAP 60
+#elif VERSION_STRING == TBC
+    #define DBC_PLAYER_LEVEL_CAP 70
+#elif VERSION_STRING == WotLK
+    #define DBC_PLAYER_LEVEL_CAP 80
+#elif VERSION_STRING == Cata
+    #define DBC_PLAYER_LEVEL_CAP 85
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// DBC_PLAYER_SKILL_MAX
@@ -64,7 +72,16 @@ enum PlayerTeam : int
 ///
 //////////////////////////////////////////////////////////////////////////////////////////
 
-#define DBC_PLAYER_SKILL_MAX 450
+#if VERSION_STRING == Classic
+    #define DBC_PLAYER_SKILL_MAX 300
+#elif VERSION_STRING == TBC
+    #define DBC_PLAYER_SKILL_MAX 375
+#elif VERSION_STRING == WotLK
+    #define DBC_PLAYER_SKILL_MAX 450
+#elif VERSION_STRING == Cata
+    #define DBC_PLAYER_SKILL_MAX 525
+#endif
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Minimum level required arena
@@ -107,8 +124,17 @@ enum Races
     RACE_TAUREN     = 6,
     RACE_GNOME      = 7,
     RACE_TROLL      = 8,
+#if VERSION_STRING == Cata
+    RACE_GOBLIN     = 9,
+#endif
     RACE_BLOODELF   = 10,
-    RACE_DRAENEI    = 11
+    RACE_DRAENEI    = 11,
+#if VERSION_STRING != Cata
+    NUM_RACES
+#else
+    RACE_WORGEN     = 22,
+    NUM_RACES
+#endif
 };
 
 enum PlayerStatus
@@ -472,8 +498,9 @@ enum DrunkenState
     druid - restoration - 282
 */
 
-static const uint32 TalentTreesPerClass[DRUID + 1][3] =
+static const uint32 TalentTreesPerClass[MAX_PLAYER_CLASSES][3] =
 {
+#if VERSION_STRING != Cata
     { 0, 0, 0 },        // NONE
     { 161, 163, 164 },  // WARRIOR
     { 382, 383, 381 },  // PALADIN
@@ -486,6 +513,20 @@ static const uint32 TalentTreesPerClass[DRUID + 1][3] =
     { 302, 303, 301 },  // WARLOCK
     { 0, 0, 0 },        // NONE
     { 283, 281, 282 },  // DRUID
+#else
+    { 0, 0, 0 },        // NONE
+    { 746, 815, 845 },  // WARRIOR      - arms - fury - protection -
+    { 831, 839, 855 },  // PALADIN      - holy - protection - retribution -
+    { 811, 807, 809 },  // HUNTER       - beast - marksmanship - survival -
+    { 182, 181, 183 },  // ROGUE        - assassination - combat - subelty -
+    { 760, 813, 795 },  // PRIEST       - discipline - holy - shadow -
+    { 398, 399, 400 },  // DEATH KNIGHT - blood - frost - unholy -
+    { 261, 263, 262 },  // SHAMAN       - elemental - enchantment - restoration -
+    { 799, 851, 823 },  // MAGE         - arcane - fire - frost -
+    { 871, 867, 865 },  // WARLOCK      - affliction - demonology - destruction -
+    { 0, 0, 0 },        // NONE
+    { 752, 750, 748 },  // DRUID        - balance - feral/combat - restoration -
+#endif
 };
 
 
@@ -616,9 +657,20 @@ enum PlayerCheats
     #define PLAYER_ACTION_BUTTON_COUNT 132
 #endif
 
-#define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(ActionButton)
+#if VERSION_STRING != Cata
+    #define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(ActionButton)
+#else
+    #define PLAYER_ACTION_BUTTON_SIZE PLAYER_ACTION_BUTTON_COUNT * sizeof(uint32)
+#endif
 
 #define MAX_SPEC_COUNT 2
-#define GLYPHS_COUNT 6
+
+#if VERSION_STRING == WotLK
+    #define GLYPHS_COUNT 6
+#elif VERSION_STRING == Cata
+    #define GLYPHS_COUNT 9
+#else
+    #define GLYPHS_COUNT 0
+#endif
 
 #endif // _PLAYER_DEFINES_H

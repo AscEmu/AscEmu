@@ -163,7 +163,12 @@ enum ObjectUpdateFlags
     UPDATEFLAG_HAS_POSITION = 0x0040,
     UPDATEFLAG_VEHICLE      = 0x0080,
     UPDATEFLAG_POSITION     = 0x0100,
-    UPDATEFLAG_ROTATION     = 0x0200
+    UPDATEFLAG_ROTATION     = 0x0200,
+    UPDATEFLAG_UNK1         = 0x0400,
+    UPDATEFLAG_ANIM_KITS    = 0x0800,
+    UPDATEFLAG_TRANSPORT_ARR = 0x1000,
+    UPDATEFLAG_ENABLE_PORTALS = 0x2000,
+    UPDATEFLAG_UNK2         = 0x4000
 };
 
 enum SessionStatus
@@ -803,6 +808,8 @@ class SERVER_DECL WorldSession
 #if VERSION_STRING == Cata
         void HandleReadyForAccountDataTimesOpcode(WorldPacket& recv_data);
         void HandleLoadScreenOpcode(WorldPacket& recv_data);
+        void HandleUITimeRequestOpcode(WorldPacket& recv_data);
+        void HandleTimeSyncRespOpcode(WorldPacket& recv_data);
 #endif
 
         void Unhandled(WorldPacket& recv_data);

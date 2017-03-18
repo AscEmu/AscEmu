@@ -3453,7 +3453,11 @@ void Spell::SpellEffectLanguage(uint32 i)
     if (!playerTarget || !GetSpellInfo()->EffectMiscValue[i])
         return;
 
+#if VERSION_STRING != Cata
     uint32 skills[15][2] =
+#else
+    uint32 skills[17][2] =
+#endif
     {
         { 0, 0 },
         { SKILL_LANG_ORCISH, 669 },
@@ -3470,7 +3474,12 @@ void Spell::SpellEffectLanguage(uint32 i)
         { SKILL_LANG_TROLL, 7341 },
         { SKILL_LANG_GUTTERSPEAK, 17737 },
         { SKILL_LANG_DRAENEI, 29932 },
+#if VERSION_STRING == Cata
+        { SKILL_LANG_GOBLIN, 69269 },
+        { SKILL_LANG_GILNEAN, 69270 },
+#endif
     };
+
 
     if (skills[GetSpellInfo()->EffectMiscValue[i]][0])
     {
