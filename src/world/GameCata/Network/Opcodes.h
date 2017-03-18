@@ -86,10 +86,10 @@ enum Opcodes
     CMSG_LOGOUT_REQUEST = 0x0A25,                   // new
     SMSG_LOGOUT_RESPONSE = 0x0524,                  // new
     SMSG_LOGOUT_COMPLETE = 0x2137,                  // new
-    CMSG_LOGOUT_CANCEL = 0x04E,
-    SMSG_LOGOUT_CANCEL_ACK = 0x04F,
-    CMSG_NAME_QUERY = 0x050,
-    SMSG_NAME_QUERY_RESPONSE = 0x051,
+    CMSG_LOGOUT_CANCEL = 0x2324,                    // new
+    SMSG_LOGOUT_CANCEL_ACK = 0x6514,                // new
+    CMSG_NAME_QUERY = 0x2224,                       // new
+    SMSG_NAME_QUERY_RESPONSE = 0x6E04,              // new
     CMSG_PET_NAME_QUERY = 0x052,
     SMSG_PET_NAME_QUERY_RESPONSE = 0x053,
     CMSG_GUILD_QUERY = 0x054,

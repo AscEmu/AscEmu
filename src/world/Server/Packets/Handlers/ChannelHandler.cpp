@@ -37,9 +37,17 @@ void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
     uint16 crap;        // crap = some sort of channel type?
     Channel* chn;
 
+#if VERSION_STRING == Cata
+    recvPacket >> dbc_id;
+    recvPacket.read_skip<uint8>();
+    recvPacket.read_skip<uint8>();
+    recvPacket >> pass;
+    recvPacket >> channelname;
+#else
     recvPacket >> dbc_id >> crap;
     recvPacket >> channelname;
     recvPacket >> pass;
+#endif
 
 
     if (sWorld.GmClientChannel.size() && !stricmp(sWorld.GmClientChannel.c_str(), channelname.c_str()) && !GetPermissionCount())

@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,16 +19,15 @@
 
 #ifndef WMO_H
 #define WMO_H
-
 #define TILESIZE (533.33333f)
 #define CHUNKSIZE ((TILESIZE) / 16.0f)
 
 #include <string>
 #include <set>
 #include "vec3d.h"
-#include "loadlib.h"
+#include "mpqfile.h"
 
-// MOPY flags
+ // MOPY flags
 #define WMO_MATERIAL_NOCAMCOLLIDE    0x01
 #define WMO_MATERIAL_DETAIL          0x02
 #define WMO_MATERIAL_NO_COLLISION    0x04
@@ -41,8 +40,10 @@ class WMOInstance;
 class WMOManager;
 class MPQFile;
 
-// for whatever reason a certain company just can't stick to one coordinate system
-static inline Vec3D fixCoords(const Vec3D &v){ return Vec3D(v.z, v.x, v.y); }
+/* for whatever reason a certain company just can't stick to one coordinate system... */
+static inline Vec3D fixCoords(const Vec3D &v) {
+    return Vec3D(v.z, v.x, v.y);
+}
 
 class WMORoot
 {
@@ -109,7 +110,7 @@ public:
     int mopy_size, moba_size;
     int LiquEx_size;
     unsigned int nVertices; // number when loaded
-    int nTriangles;         // number when loaded
+    int nTriangles; // number when loaded
     uint32 liquflags;
 
     WMOGroup(std::string const& filename);
@@ -132,7 +133,7 @@ public:
     Vec3D pos2, pos3, rot;
     uint32 indx, id, d2, d3;
 
-    WMOInstance(MPQFile&f , char const* WmoInstName, uint32 mapID, uint32 tileX, uint32 tileY, FILE* pDirfile);
+    WMOInstance(MPQFile&f, char const* WmoInstName, uint32 mapID, uint32 tileX, uint32 tileY, FILE* pDirfile);
 
     static void reset();
 };

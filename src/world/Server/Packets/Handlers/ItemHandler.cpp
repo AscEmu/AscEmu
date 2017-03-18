@@ -918,12 +918,21 @@ void WorldSession::HandleBuyBackOpcode(WorldPacket& recv_data)
             it->DeleteMe();
         }
 
+#if VERSION_STRING != Cata
         WorldPacket data(16);
         data.Initialize(SMSG_BUY_ITEM);
         data << uint64(guid);
         data << getMSTime(); //VLack: seen is Aspire code
         data << uint32(itemid);
         data << uint32(amount);
+#else
+        WorldPacket data(SMSG_BUY_ITEM, 8 + 4 + 4 + 4);
+        data << uint64(guid);
+        data << uint32(stuff + 1);      // numbered from 1 at client
+        data << int32(amount);
+        data << uint32(amount);
+        data << uint32(amount);
+#endif
         SendPacket(&data);
     }
 }
@@ -1218,8 +1227,13 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag &
 
     WorldPacket data(SMSG_BUY_ITEM, 22);
     data << uint64(srcguid);
+#if VERSION_STRING != Cata
     data << getMSTime();
     data << uint32(itemid);
+#else
+    data << uint32(slot + 1);       // numbered from 1 at client
+    data << int32(amount);
+#endif
     data << uint32(amount);
 
     SendPacket(&data);

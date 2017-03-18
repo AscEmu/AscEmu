@@ -19,9 +19,13 @@ add_subdirectory(recastnavigation)
 add_subdirectory(g3dlite)
 
 if(BUILD_TOOLS)
-    add_subdirectory(libmpq)
-    add_subdirectory(dbcfile)
-    add_subdirectory(loadlib)
+    if("${ASCEMU_VERSION}" STREQUAL "Cata")
+        add_subdirectory(StormLib)
+    else()
+        add_subdirectory(libmpq)
+        add_subdirectory(dbcfile)
+        add_subdirectory(loadlib)
+    endif()
 endif()
 
 # add lualib if we need it for LuaEngine

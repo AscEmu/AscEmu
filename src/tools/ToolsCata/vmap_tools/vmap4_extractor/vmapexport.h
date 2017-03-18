@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,12 +25,12 @@
 enum ModelFlags
 {
     MOD_M2 = 1,
-    MOD_WORLDSPAWN = 1<<1,
-    MOD_HAS_BOUND = 1<<2
+    MOD_WORLDSPAWN = 1 << 1,
+    MOD_HAS_BOUND = 1 << 2
 };
 
 extern const char * szWorkDirWmo;
-extern const char * szRawVMAPMagic;             // vmap magic string for extracted raw vmap data
+extern const char * szRawVMAPMagic;                         // vmap magic string for extracted raw vmap data
 
 bool FileExists(const char * file);
 void strToLower(char* str);

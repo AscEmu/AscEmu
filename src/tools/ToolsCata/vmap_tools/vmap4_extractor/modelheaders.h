@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,6 +19,8 @@
 
 #ifndef MODELHEADERS_H
 #define MODELHEADERS_H
+
+#include "mpqfile.h"    // integer typedefs
 
 #pragma pack(push,1)
 

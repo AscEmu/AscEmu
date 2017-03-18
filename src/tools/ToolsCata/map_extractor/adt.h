@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -48,13 +48,14 @@ enum LiquidType
 //
 class adt_MCVT
 {
-    union{
+    union
+    {
         uint32 fcc;
         char   fcc_txt[4];
     };
     uint32 size;
 public:
-    float height_map[(ADT_CELL_SIZE+1)*(ADT_CELL_SIZE+1)+ADT_CELL_SIZE*ADT_CELL_SIZE];
+    float height_map[(ADT_CELL_SIZE + 1)*(ADT_CELL_SIZE + 1) + ADT_CELL_SIZE*ADT_CELL_SIZE];
 
     bool  prepareLoadedData();
 };
@@ -64,18 +65,20 @@ public:
 //
 class adt_MCLQ
 {
-    union{
+    union
+    {
         uint32 fcc;
         char   fcc_txt[4];
     };
-public:
     uint32 size;
+public:
     float height1;
     float height2;
-    struct liquid_data{
+    struct liquid_data
+    {
         uint32 light;
         float  height;
-    } liquid[ADT_CELL_SIZE+1][ADT_CELL_SIZE+1];
+    } liquid[ADT_CELL_SIZE + 1][ADT_CELL_SIZE + 1];
 
     // 1<<0 - ochen
     // 1<<1 - lava/slime
@@ -93,12 +96,13 @@ public:
 //
 class adt_MCNK
 {
-    union{
+    union
+    {
         uint32 fcc;
         char   fcc_txt[4];
     };
-public:
     uint32 size;
+public:
     uint32 flags;
     uint32 ix;
     uint32 iy;
@@ -152,13 +156,15 @@ public:
 //
 class adt_MCIN
 {
-    union{
+    union
+    {
         uint32 fcc;
         char   fcc_txt[4];
     };
-public:
     uint32 size;
-    struct adt_CELLS{
+public:
+    struct adt_CELLS
+    {
         uint32 offsMCNK;
         uint32 size;
         uint32 flags;
@@ -178,7 +184,8 @@ public:
 #define ADT_LIQUID_HEADER_FULL_LIGHT   0x01
 #define ADT_LIQUID_HEADER_NO_HIGHT     0x02
 
-struct adt_liquid_header{
+struct adt_liquid_header
+{
     uint16 liquidType;             // Index from LiquidType.dbc
     uint16 formatFlags;
     float  heightLevel1;
@@ -197,13 +204,15 @@ struct adt_liquid_header{
 class adt_MH2O
 {
 public:
-    union{
+    union
+    {
         uint32 fcc;
         char   fcc_txt[4];
     };
     uint32 size;
 
-    struct adt_LIQUID{
+    struct adt_LIQUID
+    {
         uint32 offsData1;
         uint32 used;
         uint32 offsData2;
@@ -235,7 +244,7 @@ public:
         {
             if (h->formatFlags & ADT_LIQUID_HEADER_NO_HIGHT)
                 return (uint8 *)((uint8*)this + 8 + h->offsData2b);
-            return (uint8 *)((uint8*)this + 8 + h->offsData2b + (h->width+1)*(h->height+1)*4);
+            return (uint8 *)((uint8*)this + 8 + h->offsData2b + (h->width + 1)*(h->height + 1) * 4);
         }
         return 0;
     }
@@ -248,7 +257,7 @@ public:
         {
             if (h->formatFlags & ADT_LIQUID_HEADER_NO_HIGHT)
                 return (uint32 *)((uint8*)this + 8 + h->offsData2b);
-            return (uint32 *)((uint8*)this + 8 + h->offsData2b + (h->width+1)*(h->height+1)*4);
+            return (uint32 *)((uint8*)this + 8 + h->offsData2b + (h->width + 1)*(h->height + 1) * 4);
         }
         return 0;
     }
@@ -266,16 +275,19 @@ public:
 //
 // Adt file header chunk
 //
+class ADT_file;
 class adt_MHDR
 {
-    union{
+    friend class ADT_file;
+
+    union
+    {
         uint32 fcc;
         char   fcc_txt[4];
     };
-public:
     uint32 size;
 
-    uint32 pad;
+    uint32 flags;
     uint32 offsMCIN;           // MCIN
     uint32 offsTex;               // MTEX
     uint32 offsModels;           // MMDX
@@ -291,22 +303,28 @@ public:
     uint32 data3;
     uint32 data4;
     uint32 data5;
+public:
     bool prepareLoadedData();
-    adt_MCIN *getMCIN(){ return (adt_MCIN *)((uint8 *)&pad+offsMCIN);}
-    adt_MH2O *getMH2O(){ return offsMH2O ? (adt_MH2O *)((uint8 *)&pad+offsMH2O) : 0;}
-
+    adt_MCIN* getMCIN() {
+        return offsMCIN ? (adt_MCIN *)((uint8 *)&flags + offsMCIN) : NULL;
+    }
+    adt_MH2O* getMH2O() {
+        return offsMH2O ? (adt_MH2O *)((uint8 *)&flags + offsMH2O) : NULL;
+    }
 };
 
-class ADT_file : public FileLoader{
+class ADT_file : public FileLoader
+{
 public:
     bool prepareLoadedData();
     ADT_file();
     ~ADT_file();
     void free();
 
-    adt_MHDR *a_grid;
+    adt_MHDR* a_grid;
+    adt_MCNK* cells[ADT_CELLS_PER_GRID][ADT_CELLS_PER_GRID];
 };
 
 #pragma pack(pop)
 
-#endif
+#endif  //ADT_H

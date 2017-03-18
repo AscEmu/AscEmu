@@ -1,6 +1,6 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2014-2016 AscEmu Team <http://www.ascemu.org>
  * Copyright (C) 2005-2011 MaNGOS <http://getmangos.com/>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,26 +20,27 @@
 #ifndef WDTFILE_H
 #define WDTFILE_H
 
-#include "mpq_libmpq04.h"
+#include "mpqfile.h"
+#include "wmo.h"
 #include <string>
+#include "stdlib.h"
 
 class ADTFile;
 
 class WDTFile
 {
+private:
+    MPQFile WDT;
+    string filename;
 public:
     WDTFile(char* file_name, char* file_name1);
     ~WDTFile(void);
-
     bool init(char* map_id, unsigned int mapID);
-    ADTFile* GetMap(int x, int z);
 
-    std::string* gWmoInstansName;
+    string* gWmoInstansName;
     int gnWMO;
 
-private:
-    MPQFile WDT;
-    std::string filename;
+    ADTFile* GetMap(int x, int z);
 };
 
 #endif  //WDTFILE_H
