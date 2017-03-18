@@ -27,6 +27,7 @@
 #include "Creatures/Pet.h"
 #include "Server/World.h"
 #include "../../scripts/Battlegrounds/AlteracValley.h"
+#include "WorldConf.h"
 
 uint32 getConColor(uint16 AttackerLvl, uint16 VictimLvl)
 {

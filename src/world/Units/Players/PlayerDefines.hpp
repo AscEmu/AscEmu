@@ -665,12 +665,10 @@ enum PlayerCheats
 
 #define MAX_SPEC_COUNT 2
 
-#if VERSION_STRING == WotLK
-    #define GLYPHS_COUNT 6
-#elif VERSION_STRING == Cata
+#if VERSION_STRING == Cata
     #define GLYPHS_COUNT 9
 #else
-    #define GLYPHS_COUNT 0
+    #define GLYPHS_COUNT 6
 #endif
 
 #endif // _PLAYER_DEFINES_H
