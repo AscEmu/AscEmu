@@ -269,7 +269,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     if (pGO && pGO->GetEntry() == GO_FISHING_BOBBER)
     {
         int count = 0;
-        for (std::vector<__LootItem>::iterator itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
+        for (auto itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
             count += (*itr).iItemsCount;
         if (!count)
             pGO->ExpireAndDelete();
@@ -507,15 +507,17 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         pCreature->loot.looters.erase(_player->GetLowGUID());
         if (pCreature->loot.gold <= 0)
         {
-            for (std::vector<__LootItem>::iterator i = pCreature->loot.items.begin(); i != pCreature->loot.items.end(); ++i)
-                if (i->iItemsCount > 0)
+            for (auto iter = pCreature->loot.items.begin(); iter != pCreature->loot.items.end(); ++iter)
+            {
+                if (iter->iItemsCount > 0)
                 {
-                    ItemProperties const* proto = i->item.itemproto;
+                    ItemProperties const* proto = iter->item.itemproto;
                     if (proto->Class != 12)
                         return;
-                    if (_player->HasQuestForItem(i->item.itemproto->ItemId))
+                    if (_player->HasQuestForItem(iter->item.itemproto->ItemId))
                         return;
                 }
+            }
             pCreature->BuildFieldUpdatePacket(_player, UNIT_DYNAMIC_FLAGS, 0);
 
             if (!pCreature->Skinned)
@@ -655,8 +657,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         // delete current loot, so the next one can be filled
         if (item->loot != NULL)
         {
-            uint32 itemsNotLooted =
-                std::count_if (item->loot->items.begin(), item->loot->items.end(), ItemIsNotLooted());
+            uint32 itemsNotLooted = std::count_if (item->loot->items.begin(), item->loot->items.end(), ItemIsNotLooted());
 
             if ((itemsNotLooted == 0) && (item->loot->gold == 0))
             {
@@ -2113,8 +2114,8 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
     PlayerSpec *currSpec = &player->m_specs[player->m_talentActiveSpec];
     data << uint32(currSpec->GetTP());
     data << uint8(1) << uint8(0);
-    data << uint8(currSpec->talents.size()); //fake value, will be overwritten at the end
-    for (std::map<uint32, uint8>::iterator itr = currSpec->talents.begin(); itr != currSpec->talents.end(); itr++)
+    data << uint8(currSpec->talents.size()); // fake value, will be overwritten at the end
+    for (auto itr = currSpec->talents.begin(); itr != currSpec->talents.end(); ++itr)
         data << itr->first << itr->second;
     data << uint8(0); // Send Glyph info
 #else
@@ -2130,7 +2131,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
 
         uint8 talent_count = 0;
         size_t pos = data.wpos();
-        data << uint8(talent_count); //fake value, will be overwritten at the end
+        data << uint8(talent_count); // fake value, will be overwritten at the end
 
         for (uint8 i = 0; i < 3; ++i)
         {

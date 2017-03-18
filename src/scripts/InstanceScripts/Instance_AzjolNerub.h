@@ -37,7 +37,7 @@ enum CreatureEntry
     CN_SILTHIK          = 28731,
 
     //Anub'ar Shadowcaster
-    CN_ANUB_SHADOWCASTER = 28733,
+    CN_ANUB_SHADOWCASTER = 28733
 
 };
 
@@ -76,10 +76,11 @@ enum CreatureSpells
 
     //Anub'ar Shadowcaster
     SHADOWCASTER_SHADOWBOLT     = 52534,
-    SHADOWCASTER_SHADOW_NOVA    = 52535,
+    SHADOWCASTER_SHADOW_NOVA    = 52535
 };
 
 enum CreatureSay
-{ };
+{
+};
 
 #endif // _INSTANCE_AZJOL_NERUB_H

@@ -102,7 +102,7 @@ class QuestInServiceOfLichKing : public QuestScript
 };
 
 // QuestID for Praparation for the Battle
-enum QUEST_12842_ENUM
+enum Quest_Enum_ID12842
 {
     QUEST_PREPARATION = 12842,
 

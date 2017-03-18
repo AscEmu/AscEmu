@@ -30,14 +30,16 @@ enum AuctionRemoveType
     AUCTION_REMOVE_WON,
     AUCTION_REMOVE_CANCELLED
 };
-enum AUCTIONRESULT
+
+enum AuctionResult
 {
     AUCTION_CREATE,
     AUCTION_CANCEL,
     AUCTION_BID,
     AUCTION_BUYOUT
 };
-enum AUCTIONRESULTERROR
+
+enum AuctionResultError
 {
     AUCTION_ERROR_NONE              = 0,
     AUCTION_ERROR_INTERNAL          = 2,
@@ -45,6 +47,7 @@ enum AUCTIONRESULTERROR
     AUCTION_ERROR_ITEM              = 4,
     AUCTION_ERROR_BID_OWN_AUCTION   = 10
 };
+
 enum AuctionMailResult
 {
     AUCTION_OUTBID,

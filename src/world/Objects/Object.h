@@ -61,7 +61,7 @@ class UpdateMask;
 class EventableObject;
 
 
-enum HIGHGUID_TYPE
+enum HighGuid_Type
 {
     HIGHGUID_TYPE_PLAYER			= 0x00000000,
     HIGHGUID_TYPE_CORPSE			= 0x30000000,
@@ -77,7 +77,7 @@ enum HIGHGUID_TYPE
     HIGHGUID_TYPE_GROUP             = 0x1F500000,
 //===============================================
     HIGHGUID_TYPE_MASK				= 0xFFF00000,
-    LOWGUID_ENTRY_MASK				= 0x00FFFFFF,
+    LOWGUID_ENTRY_MASK				= 0x00FFFFFF 
 };
 
 #define GET_TYPE_FROM_GUID(x) (Arcemu::Util::GUID_HIPART((x)) & HIGHGUID_TYPE_MASK)

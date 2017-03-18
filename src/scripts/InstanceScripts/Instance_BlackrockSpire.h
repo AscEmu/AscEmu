@@ -147,7 +147,6 @@ enum CreatureSpells
 
 enum CreatureSay
 {
-
 };
 
 #endif // _INSTANCE_BLACKROCK_SPIRE_H

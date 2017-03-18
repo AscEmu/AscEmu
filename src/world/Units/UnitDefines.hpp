@@ -362,7 +362,7 @@ enum TextEmoteType
     TEXTEMOTE_CROSSARMS         = 448,
     TEXTEMOTE_LOOK              = 449,
     TEXTEMOTE_OBJECT            = 450,
-    TEXTEMOTE_SWEAT             = 451,
+    TEXTEMOTE_SWEAT             = 451
 };
 
 enum EmoteType
@@ -536,7 +536,7 @@ enum EmoteType
     EMOTE_ONESHOT_WORK_MINING           = 467,
     EMOTE_STATE_SPELL_CHANNEL_OMNI      = 468,
     EMOTE_STATE_SPELL_CHANNEL_DIRECTED  = 469,
-    EMOTE_ZZOLD_STATE_KNEEL_NO_INTERRUPT = 470,
+    EMOTE_ZZOLD_STATE_KNEEL_NO_INTERRUPT = 470
 };
 
 enum UnitStates
@@ -618,7 +618,7 @@ enum UnitBytes2_PvPFlags
 enum UnitBytes2_PetFlags
 {
     UNIT_CAN_BE_RENAMED     = 0x01,
-    UNIT_CAN_BE_ABANDONED   = 0x02,
+    UNIT_CAN_BE_ABANDONED   = 0x02
 };
 
 // byte value (UNIT_FIELD_BYTES_2,3)
@@ -726,7 +726,7 @@ enum UnitDynamicFlags
     U_DYN_FLAG_TAGGED_BY_OTHER      = 0x04,
     U_DYN_FLAG_TAPPED_BY_PLAYER     = 0x08,
     U_DYN_FLAG_PLAYER_INFO          = 0x10,
-    U_DYN_FLAG_DEAD                 = 0x20,
+    U_DYN_FLAG_DEAD                 = 0x20
 };
 
 enum DamageFlags
@@ -744,7 +744,7 @@ enum WeaponDamageType // this is NOT the same as SPELL_ENTRY_Spell_Dmg_Type, or 
 {
     MELEE   = 0,
     OFFHAND = 1,
-    RANGED  = 2,
+    RANGED  = 2
 };
 
 enum VisualState
@@ -809,7 +809,7 @@ enum INVIS_FLAG
     INVIS_FLAG_TOTAL
 };
 
-enum FIELD_PADDING//Since this field isn't used you can expand it for you needs
+enum FIELD_PADDING // Since this field isn't used you can expand it for you needs
 {
     PADDING_NONE
 };

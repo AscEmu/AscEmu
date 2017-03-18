@@ -55,7 +55,7 @@ void InitWorldStates(shared_ptr<MapMgr> pmgr)
     }
 }
 
-void SilithusZoneHook(PlayerPointer plr, uint32 Zone, uint32 OldZone)
+void SilithusZoneHook(Player* plr, uint32 Zone, uint32 OldZone)
 {
     if(!plr)
         return;
@@ -72,7 +72,7 @@ void SilithusZoneHook(PlayerPointer plr, uint32 Zone, uint32 OldZone)
     }
 }
 
-void AreatriggerHook(PlayerPointer pPlayer, uint32 triggerID)
+void AreatriggerHook(Player* pPlayer, uint32 triggerID)
 {
     if(!pPlayer)
         return;
@@ -114,10 +114,10 @@ void AreatriggerHook(PlayerPointer pPlayer, uint32 triggerID)
 class SilithystPickup : public GameObjectAIScript
 {
     public:
-        SilithystPickup(GameObjectPointer goinstance) : GameObjectAIScript(goinstance) {}
-        static GameObjectAIScript* Create(GameObjectPointer  GO) { return new SilithystPickup(GO); }
+        SilithystPickup(GameObject* goinstance) : GameObjectAIScript(goinstance) {}
+        static GameObjectAIScript* Create(GameObject*  GO) { return new SilithystPickup(GO); }
 
-        void OnActivate(PlayerPointer  pPlayer)
+        void OnActivate(Player*  pPlayer)
         {
             if(pPlayer && !pPlayer->HasAura(SILITHYST_SPELL))
                 pPlayer->CastSpell(pPlayer, SILITHYST_SPELL, true);
@@ -127,7 +127,7 @@ class SilithystPickup : public GameObjectAIScript
         }
 };
 
-void DropFlag(PlayerPointer  pPlayer, uint32 spellID)
+void DropFlag(Player*  pPlayer, uint32 spellID)
 {
     if(!pPlayer || spellID != SILITHYST_SPELL)
         return;
@@ -137,11 +137,11 @@ void DropFlag(PlayerPointer  pPlayer, uint32 spellID)
     if(pAreaTrigger)
         if(pPlayer->CalcDistance(pAreaTrigger->x, pAreaTrigger->y, pAreaTrigger->z) > 10.0f)
         {
-            GameObjectPointer pGo = pPlayer->GetMapMgr()->GetInterface()->SpawnGameObject(SILITHYST_MOUND, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0, true, 0, 0);
+            GameObject* pGo = pPlayer->GetMapMgr()->GetInterface()->SpawnGameObject(SILITHYST_MOUND, pPlayer->GetPositionX(), pPlayer->GetPositionY(), pPlayer->GetPositionZ(), 0, true, 0, 0);
             if(pGo == NULL)
             {
                 pGo->Destructor();
-                pGo = NULLGOB;
+                pGo = nullptr;
             }
         };
 }

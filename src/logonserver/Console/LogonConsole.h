@@ -25,8 +25,8 @@
 
 enum checkType
 {
-    CHECK_LOG_NONE = 0,
-    ACC_NAME_DO_EXIST = 1,
+    CHECK_LOG_NONE     = 0,
+    ACC_NAME_DO_EXIST  = 1,
     ACC_NAME_NOT_EXIST = 2
 };
 

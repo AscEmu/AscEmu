@@ -113,9 +113,9 @@ bool LesserHealthStone(uint32 i, Spell* s)
     if(s->p_caster == NULL)
         return false;
 
-    if(s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if(s->p_caster->HasSpell(18693))          // Improved Healthstone (2)
         s->CreateItem(19007);
-    else if(s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if(s->p_caster->HasSpell(18692))     // Improved Healthstone (1)
         s->CreateItem(19006);
     else
         s->p_caster->GetItemInterface()->AddItemById(5511, 1, 0);
@@ -127,9 +127,9 @@ bool HealthStone(uint32 i, Spell* s)
     if(s->p_caster == NULL)
         return false;
 
-    if(s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if(s->p_caster->HasSpell(18693))          // Improved Healthstone (2)
         s->CreateItem(19009);
-    else if(s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if(s->p_caster->HasSpell(18692))     // Improved Healthstone (1)
         s->CreateItem(19008);
     else
         s->CreateItem(5509);
@@ -142,9 +142,9 @@ bool GreaterHealthStone(uint32 i, Spell* s)
     if(s->p_caster == NULL)
         return false;
 
-    if(s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if(s->p_caster->HasSpell(18693))          // Improved Healthstone (2)
         s->CreateItem(19011);
-    else if(s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if(s->p_caster->HasSpell(18692))     // Improved Healthstone (1)
         s->CreateItem(19010);
     else
         s->CreateItem(5510);
@@ -157,9 +157,9 @@ bool MajorHealthStone(uint32 i, Spell* s)
     if(s->p_caster == NULL)
         return false;
 
-    if(s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
-        s->CreateItem(19013);
-    else if(s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    if(s->p_caster->HasSpell(18693))          // Improved Healthstone (2)
+        s->CreateItem(19013); 
+    else if(s->p_caster->HasSpell(18692))     // Improved Healthstone (1)
         s->CreateItem(19012);
     else
         s->CreateItem(9421);
@@ -172,9 +172,9 @@ bool MasterHealthStone(uint32 i, Spell* s)
     if(s->p_caster == NULL)
         return false;
 
-    if(s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if(s->p_caster->HasSpell(18693))          // Improved Healthstone (2)
         s->CreateItem(22105);
-    else if(s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if(s->p_caster->HasSpell(18692))     // Improved Healthstone (1)
         s->CreateItem(22104);
     else
         s->CreateItem(22103);
@@ -187,9 +187,9 @@ bool DemonicHealthStone(uint32 i, Spell* s)
     if(s->p_caster == NULL)
         return false;
 
-    if(s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if(s->p_caster->HasSpell(18693))          // Improved Healthstone (2)
         s->CreateItem(36891);
-    else if(s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if(s->p_caster->HasSpell(18692))     // Improved Healthstone (1)
         s->CreateItem(36890);
     else
         s->CreateItem(36889);
@@ -202,9 +202,9 @@ bool FelHealthStone(uint32 i, Spell* s)
     if(s->p_caster == NULL)
         return false;
 
-    if(s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if(s->p_caster->HasSpell(18693))          // Improved Healthstone (2)
         s->CreateItem(36894);
-    else if(s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if(s->p_caster->HasSpell(18692))     // Improved Healthstone (1)
         s->CreateItem(36893);
     else
         s->CreateItem(36892);
@@ -219,27 +219,27 @@ bool MasterDemonologist1(uint32 i, Spell* s)
     if(!s->p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
 
-    uint32 casted_spell_id = 0 ;
-    uint32 inc_resist_by_level = 0 ;
-    uint32 inc_resist_by_level_spell = 0 ;
+    uint32 casted_spell_id = 0;
+    uint32 inc_resist_by_level = 0;
+    uint32 inc_resist_by_level_spell = 0;
 
-    if(unitTarget->GetEntry()  == 416)    //in case it is imp
-        casted_spell_id = 23759 ;
-    else if(unitTarget->GetEntry()  == 1860)    //VoidWalker
+    if(unitTarget->GetEntry() == 416)         // in case it is imp
+        casted_spell_id = 23759;
+    else if(unitTarget->GetEntry() == 1860)   // VoidWalker
         casted_spell_id = 23760 ;
-    else if(unitTarget->GetEntry()  == 1863)    //Succubus
+    else if(unitTarget->GetEntry() == 1863)   // Succubus
         casted_spell_id = 23761 ;
-    else if(unitTarget->GetEntry()  == 417)    //Felhunter
+    else if(unitTarget->GetEntry() == 417)    // Felhunter
     {
-        casted_spell_id = 0 ;
-        inc_resist_by_level_spell = 23762 ;
-        inc_resist_by_level = 20 ;
+        casted_spell_id = 0;
+        inc_resist_by_level_spell = 23762;
+        inc_resist_by_level = 20;
     }
-    else if(unitTarget->GetEntry()  == 17252)     //Felguard
+    else if(unitTarget->GetEntry() == 17252)  // Felguard
     {
-        casted_spell_id = 35702 ;
-        inc_resist_by_level_spell = 23762 ;
-        inc_resist_by_level = 10 ;
+        casted_spell_id = 35702;
+        inc_resist_by_level_spell = 23762;
+        inc_resist_by_level = 10;
     }
     if(casted_spell_id)
     {
@@ -277,23 +277,23 @@ bool MasterDemonologist2(uint32 i, Spell* s)
     if(!p_caster  || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
 
-    uint32 casted_spell_id = 0 ;
-    uint32 inc_resist_by_level = 0 ;
-    uint32 inc_resist_by_level_spell = 0 ;
+    uint32 casted_spell_id = 0;
+    uint32 inc_resist_by_level = 0;
+    uint32 inc_resist_by_level_spell = 0;
 
-    if(unitTarget->GetEntry()  == 416)    //in case it is imp
-        casted_spell_id = 23826 ;
-    else if(unitTarget->GetEntry()  == 1860)    //VoidWalker
+    if(unitTarget->GetEntry() == 416)         // in case it is imp
+        casted_spell_id = 23826;
+    else if(unitTarget->GetEntry() == 1860)   // VoidWalker
         casted_spell_id = 23841 ;
-    else if(unitTarget->GetEntry()  == 1863)    //Succubus
+    else if(unitTarget->GetEntry() == 1863)   // Succubus
         casted_spell_id = 23833 ;
-    else if(unitTarget->GetEntry()  == 417)    //Felhunter
+    else if(unitTarget->GetEntry() == 417)    // Felhunter
     {
-        casted_spell_id = 1 ;
-        inc_resist_by_level_spell = 23837 ;
+        casted_spell_id = 1;
+        inc_resist_by_level_spell = 23837;
         inc_resist_by_level = 40 ;
     }
-    else if(unitTarget->GetEntry()  == 17252)    //Felguard
+    else if(unitTarget->GetEntry() == 17252)  // Felguard
     {
         casted_spell_id = 35703 ;
         inc_resist_by_level_spell = 23837 ;
@@ -334,27 +334,27 @@ bool MasterDemonologist3(uint32 i, Spell* s)
     if(!p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
 
-    uint32 casted_spell_id = 0 ;
-    uint32 inc_resist_by_level = 0 ;
-    uint32 inc_resist_by_level_spell = 0 ;
+    uint32 casted_spell_id = 0;
+    uint32 inc_resist_by_level = 0;
+    uint32 inc_resist_by_level_spell = 0;
 
-    if(unitTarget->GetEntry()  == 416)    //in case it is imp
-        casted_spell_id = 23827 ;
-    else if(unitTarget->GetEntry()  == 1860)    //VoidWalker
-        casted_spell_id = 23842 ;
-    else if(unitTarget->GetEntry()  == 1863)    //Succubus
-        casted_spell_id = 23834 ;
-    else if(unitTarget->GetEntry()  == 417)    //Felhunter
+    if(unitTarget->GetEntry() == 416)         // in case it is imp
+        casted_spell_id = 23827;
+    else if(unitTarget->GetEntry() == 1860)   // VoidWalker
+        casted_spell_id = 23842;
+    else if(unitTarget->GetEntry() == 1863)   // Succubus
+        casted_spell_id = 23834;
+    else if(unitTarget->GetEntry() == 417)    // Felhunter
     {
-        casted_spell_id = 0 ;
+        casted_spell_id = 0;
         inc_resist_by_level_spell = 23838 ;
-        inc_resist_by_level = 60 ;
+        inc_resist_by_level = 60;
     }
-    else if(unitTarget->GetEntry()  == 17252)    //Felguard
+    else if(unitTarget->GetEntry() == 17252)  // Felguard
     {
-        casted_spell_id = 35704 ;
-        inc_resist_by_level_spell = 23838 ;
-        inc_resist_by_level = 30 ;
+        casted_spell_id = 35704;
+        inc_resist_by_level_spell = 23838;
+        inc_resist_by_level = 30;
     }
     if(casted_spell_id)
     {
@@ -390,27 +390,27 @@ bool MasterDemonologist4(uint32 i, Spell* s)
     if(!p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
 
-    uint32 casted_spell_id = 0 ;
-    uint32 inc_resist_by_level = 0 ;
-    uint32 inc_resist_by_level_spell = 0 ;
+    uint32 casted_spell_id = 0;
+    uint32 inc_resist_by_level = 0;
+    uint32 inc_resist_by_level_spell = 0;
 
-    if(unitTarget->GetEntry()  == 416)    //in case it is imp
-        casted_spell_id = 23828 ;
-    else if(unitTarget->GetEntry()  == 1860)    //VoidWalker
-        casted_spell_id = 23843 ;
-    else if(unitTarget->GetEntry()  == 1863)    //Succubus
-        casted_spell_id = 23835 ;
-    else if(unitTarget->GetEntry()  == 417)    //Felhunter
+    if(unitTarget->GetEntry() == 416)         // in case it is imp
+        casted_spell_id = 23828;
+    else if(unitTarget->GetEntry() == 1860)   // VoidWalker
+        casted_spell_id = 23843;
+    else if(unitTarget->GetEntry() == 1863)   // Succubus
+        casted_spell_id = 23835;
+    else if(unitTarget->GetEntry() == 417)    // Felhunter
     {
-        casted_spell_id = 0 ;
-        inc_resist_by_level_spell = 23839 ;
-        inc_resist_by_level = 80 ;
+        casted_spell_id = 0;
+        inc_resist_by_level_spell = 23839;
+        inc_resist_by_level = 80;
     }
-    else if(unitTarget->GetEntry()  == 17252)    //Felguard
+    else if(unitTarget->GetEntry() == 17252)  // Felguard
     {
-        casted_spell_id = 35705 ;
-        inc_resist_by_level_spell = 23839 ;
-        inc_resist_by_level = 40 ;
+        casted_spell_id = 35705;
+        inc_resist_by_level_spell = 23839;
+        inc_resist_by_level = 40;
     }
     if(casted_spell_id)
     {
@@ -444,29 +444,29 @@ bool MasterDemonologist5(uint32 i, Spell* s)
     Unit* unitTarget = s->GetUnitTarget();
 
     if(!p_caster || !unitTarget)
-        return false; //can't imagine how this talent got to anybody else then a player casting on pet
+        return false; // can't imagine how this talent got to anybody else then a player casting on pet
 
-    uint32 casted_spell_id = 0 ;
-    uint32 inc_resist_by_level = 0 ;
-    uint32 inc_resist_by_level_spell = 0 ;
+    uint32 casted_spell_id = 0;
+    uint32 inc_resist_by_level = 0;
+    uint32 inc_resist_by_level_spell = 0;
 
-    if(unitTarget->GetEntry()  == 416)    //in case it is imp
-        casted_spell_id = 23829 ;
-    else if(unitTarget->GetEntry()  == 1860)    //VoidWalker
-        casted_spell_id = 23844 ;
-    else if(unitTarget->GetEntry()  == 1863)    //Succubus
-        casted_spell_id = 23836 ;
-    else if(unitTarget->GetEntry()  == 417)    //Felhunter
+    if(unitTarget->GetEntry() == 416)         // in case it is imp
+        casted_spell_id = 23829;
+    else if(unitTarget->GetEntry() == 1860)   // VoidWalker
+        casted_spell_id = 23844;
+    else if(unitTarget->GetEntry() == 1863)   // Succubus
+        casted_spell_id = 23836;
+    else if(unitTarget->GetEntry() == 417)    // Felhunter
     {
-        casted_spell_id = 0 ;
-        inc_resist_by_level_spell = 23840 ;
-        inc_resist_by_level = 100 ;
+        casted_spell_id = 0;
+        inc_resist_by_level_spell = 23840;
+        inc_resist_by_level = 100;
     }
-    else if(unitTarget->GetEntry()  == 17252)    //Felguard
+    else if(unitTarget->GetEntry() == 17252)  // Felguard
     {
-        casted_spell_id = 35706 ;
-        inc_resist_by_level_spell = 23840 ;
-        inc_resist_by_level = 50 ;
+        casted_spell_id = 35706;
+        inc_resist_by_level_spell = 23840;
+        inc_resist_by_level = 50;
     }
     if(casted_spell_id)
     {

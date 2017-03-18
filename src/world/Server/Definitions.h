@@ -27,13 +27,13 @@ const unsigned NUM_INSTANCE_MODES = 4;
 
 
 /// Sorry...need this enumeration in Player.*
-enum INSTANCE_MODE
+enum Instance_Mode
 {
     MODE_NORMAL = 0,
     MODE_HEROIC = 1
 };
 
-enum RAID_MODE
+enum Raid_Mode
 {
     MODE_NORMAL_10MEN    = 0,
     MODE_NORMAL_25MEN    = 1,

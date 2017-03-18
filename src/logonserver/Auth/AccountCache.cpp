@@ -68,22 +68,16 @@ void AccountMgr::ReloadAccounts(bool silent)
     }
 
     // check for any purged/deleted accounts
-    std::map<std::string, Account*>::iterator itr = AccountDatabase.begin();
-    std::map<std::string, Account*>::iterator it2;
-
-    for (; itr != AccountDatabase.end();)
+    for (auto itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
     {
-        it2 = itr;
-        ++itr;
-
-        if (account_list.find(it2->first) == account_list.end())
+        if (account_list.find(itr->first) == account_list.end())
         {
-            delete it2->second;
-            AccountDatabase.erase(it2);
+            delete itr->second;
+            AccountDatabase.erase(itr);
         }
         else
         {
-            it2->second->UsernamePtr = (std::string*)&it2->first;
+            itr->second->UsernamePtr = (std::string*)&itr->first;
         }
     }
 
@@ -259,16 +253,12 @@ void AccountMgr::ReloadAccountsCallback()
 {
     ReloadAccounts(true);
 }
+
 BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 {
     Guard lguard(listBusy);
-    std::list<IPBan>::iterator itr;
-    std::list<IPBan>::iterator itr2 = banList.begin();
-    for (; itr2 != banList.end();)
+    for (auto itr = banList.begin(); itr != banList.end(); ++itr)
     {
-        itr = itr2;
-        ++itr2;
-
         if (ParseCIDRBan(ip_address.s_addr, itr->Mask, itr->Bytes))
         {
             // ban hit
@@ -286,7 +276,6 @@ BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
             }
         }
     }
-
     return BAN_STATUS_NOT_BANNED;
 }
 
@@ -328,7 +317,7 @@ InformationCore::~InformationCore()
 bool IPBanner::Remove(const char* ip)
 {
     listBusy.Acquire();
-    for (std::list<IPBan>::iterator itr = banList.begin(); itr != banList.end(); ++itr)
+    for (auto itr = banList.begin(); itr != banList.end(); ++itr)
     {
         if (!strcmp(ip, itr->db_ip.c_str()))
         {
@@ -415,12 +404,11 @@ Realm* InformationCore::GetRealm(uint32 realm_id)
 
 int32 InformationCore::GetRealmIdByName(std::string Name)
 {
-    std::map<uint32, Realm*>::iterator itr = m_realms.begin();
-    for (; itr != m_realms.end(); ++itr)
-        if (itr->second->Name == Name)
-        {
+    for (std::map<uint32, Realm*>::iterator itr = m_realms.begin(); itr != m_realms.end(); ++itr)
+    {
+       if (itr->second->Name == Name)
             return itr->first;
-        }
+    }
     return -1;
 }
 
@@ -488,7 +476,6 @@ void InformationCore::SendRealms(AuthSocket* Socket)
 
     // loop realms :/
     std::map<uint32, Realm*>::iterator itr = m_realms.begin();
-    std::unordered_map<uint32, uint8>::iterator it;
     for (; itr != m_realms.end(); ++itr)
     {
         if (itr->second->GameBuild == Socket->GetChallenge()->build)
@@ -553,8 +540,6 @@ void InformationCore::SendRealms(AuthSocket* Socket)
     Socket->Send((const uint8*)data.contents(), uint32(data.size()));
 
     std::list< LogonCommServerSocket* > ss;
-    std::list< LogonCommServerSocket* >::iterator SSitr;
-
     ss.clear();
 
     serverSocketLock.Acquire();
@@ -576,7 +561,7 @@ void InformationCore::SendRealms(AuthSocket* Socket)
 
     serverSocketLock.Release();
 
-    for (SSitr = ss.begin(); SSitr != ss.end(); ++SSitr)
+    for (std::list< LogonCommServerSocket* >::iterator SSitr = ss.begin(); SSitr != ss.end(); ++SSitr)
         (*SSitr)->RefreshRealmsPop();
 
     ss.clear();
@@ -620,12 +605,10 @@ void InformationCore::CheckServers()
 {
     serverSocketLock.Acquire();
 
-    std::set<LogonCommServerSocket*>::iterator itr, it2;
-    LogonCommServerSocket* s;
-    for (itr = m_serverSockets.begin(); itr != m_serverSockets.end();)
+    for (std::set<LogonCommServerSocket*>::iterator itr = m_serverSockets.begin(); itr != m_serverSockets.end();)
     {
-        s = *itr;
-        it2 = itr;
+        LogonCommServerSocket* s = *itr;
+        std::set<LogonCommServerSocket*>::iterator it2 = itr;
         ++itr;
 
         if (!sLogonServer.IsServerAllowed(s->GetRemoteAddress().s_addr))

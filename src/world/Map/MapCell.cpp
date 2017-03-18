@@ -223,7 +223,7 @@ void MapCell::LoadObjects(CellSpawns* sp)
                 if (bossInfoMap != NULL && IS_PERSISTENT_INSTANCE(pInstance))
                 {
                     bool skip = false;
-                    for (std::set<uint32>::iterator killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
+                    for (auto killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
                     {
                         // Do not spawn the killed boss.
                         if ((*killedNpc) == (*i)->entry)

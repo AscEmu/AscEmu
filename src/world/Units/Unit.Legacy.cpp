@@ -1020,10 +1020,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
         return 0;
     }
 
-    std::list<SpellProc*>::iterator itr, itr2;
-    for (itr = m_procSpells.begin(); itr != m_procSpells.end();)    // Proc Trigger Spells for Victim
+    for (std::list<SpellProc*>::iterator itr = m_procSpells.begin(); itr != m_procSpells.end();)    // Proc Trigger Spells for Victim
     {
-        itr2 = itr;
+        std::list<SpellProc*>::iterator itr2 = itr;
         ++itr;
 
         SpellProc* spell_proc = *itr2;
@@ -2440,16 +2439,16 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
             }
         }
 
-        if (spellId == 17364 || spellId == 32175 || spellId == 32176)   //Stormstrike
+        if (spellId == 17364 || spellId == 32175 || spellId == 32176) // Stormstrike
             continue;
-        if (spellId == 22858 && isInBack(victim))       //retatliation needs target to be not in front. Can be cast by creatures too
+        if (spellId == 22858 && isInBack(victim)) //retatliation needs target to be not in front. Can be cast by creatures too
             continue;
 
         spell_proc->CastSpell(victim, CastingSpell, dmg_overwrite);
 
         if (origId == 39805)
         {
-            RemoveAura(39805);          // Remove lightning overload aura after procing
+            RemoveAura(39805); // Remove lightning overload aura after procing
         }
     }
 
@@ -2459,7 +2458,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
 
     while (iter != m_chargeSpells.end())
     {
-        iter2 = iter++;
+        std::map<uint32, struct SpellCharge>::iterator iter2 = iter++;
 
         if (iter2->second.count)
         {
@@ -2562,9 +2561,9 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
         }
     }
 
-    for (; !m_chargeSpellRemoveQueue.empty();)
+	for (; !m_chargeSpellRemoveQueue.empty();)
     {
-        iter = m_chargeSpells.find(m_chargeSpellRemoveQueue.front());
+        std::map<uint32, struct SpellCharge>::iterator iter = m_chargeSpells.find(m_chargeSpellRemoveQueue.front());
         if (iter != m_chargeSpells.end())
         {
             if (iter->second.count > 1)
@@ -2593,11 +2592,10 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
     m_damgeShieldsInUse = true;
     //charges are already removed in handleproc
     WorldPacket data(24);
-    std::list<DamageProc>::iterator i;
-    std::list<DamageProc>::iterator i2;
-    for (i = m_damageShields.begin(); i != m_damageShields.end();)    // Deal Damage to Attacker
+
+    for (std::list<DamageProc>::iterator i = m_damageShields.begin(); i != m_damageShields.end();) // Deal Damage to Attacker
     {
-        i2 = i++; //we should not proc on proc.. not get here again.. not needed.Better safe then sorry.
+        std::list<DamageProc>::iterator i2 = i++; // we should not proc on proc.. not get here again.. not needed.Better safe then sorry.
         if ((flag & (*i2).m_flags))
         {
             if (PROC_MISC & (*i2).m_flags)
@@ -3938,16 +3936,13 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
 
         if (IsPlayer() && static_cast<Player*>(this)->m_onStrikeSpellDmg.size())
         {
-            std::map<uint32, OnHitSpell>::iterator it2 = static_cast<Player*>(this)->m_onStrikeSpellDmg.begin();
-            std::map<uint32, OnHitSpell>::iterator itr;
-            uint32 range, dmg2;
-            for (; it2 != static_cast<Player*>(this)->m_onStrikeSpellDmg.end();)
+            for (std::map<uint32, OnHitSpell>::iterator it2 = static_cast<Player*>(this)->m_onStrikeSpellDmg.begin(); it2 != static_cast<Player*>(this)->m_onStrikeSpellDmg.end();)
             {
-                itr = it2;
+                std::map<uint32, OnHitSpell>::iterator itr = it2;
                 ++it2;
 
-                dmg2 = itr->second.mindmg;
-                range = itr->second.maxdmg - itr->second.mindmg;
+                uint32_t dmg2 = itr->second.mindmg;
+                uint32_t range = itr->second.maxdmg - itr->second.mindmg;
                 if (range != 0)
                     dmg2 += RandomUInt(range);
 
@@ -4150,10 +4145,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
     {
         m_extrastriketarget = true;
 
-        std::list<ExtraStrike*>::iterator itx, itx2;
-        for (itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end();)
+        for (std::list<ExtraStrike*>::iterator itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end();)
         {
-            itx2 = itx++;
+            std::list<ExtraStrike*>::iterator itx2 = itx++;
             ExtraStrike* ex = *itx2;
 
             for (std::set<Object*>::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
@@ -6400,8 +6394,8 @@ bool Unit::GetSpeedDecrease()
     int32 before = m_speedModifier;
     m_speedModifier -= m_slowdown;
     m_slowdown = 0;
-    std::map<uint32, int32>::iterator itr = speedReductionMap.begin();
-    for (; itr != speedReductionMap.end(); ++itr)
+    
+    for (std::map<uint32, int32>::iterator itr = speedReductionMap.begin(); itr != speedReductionMap.end(); ++itr)
         m_slowdown = (int32)std::min(m_slowdown, itr->second);
 
     if (m_slowdown < -100)
@@ -7101,10 +7095,9 @@ void Unit::EventChill(Unit* proc_target, bool is_victim)
 
 void Unit::RemoveExtraStrikeTarget(SpellInfo* spell_info)
 {
-    ExtraStrike* es;
     for (std::list<ExtraStrike*>::iterator i = m_extraStrikeTargets.begin(); i != m_extraStrikeTargets.end(); ++i)
     {
-        es = *i;
+        ExtraStrike* es = *i;
         if (spell_info == es->spell_info)
         {
             m_extrastriketargetc--;
@@ -7326,27 +7319,21 @@ void Unit::AddGarbagePet(Pet* pet)
 
 void Unit::RemoveGarbage()
 {
-    std::list<Aura*>::iterator itr1;
-    for (itr1 = m_GarbageAuras.begin(); itr1 != m_GarbageAuras.end(); ++itr1)
+    for (std::list<Aura*>::iterator itr1 = m_GarbageAuras.begin(); itr1 != m_GarbageAuras.end(); ++itr1)
     {
         Aura* aur = *itr1;
-
         delete aur;
     }
 
-    std::list<Spell*>::iterator itr2;
-    for (itr2 = m_GarbageSpells.begin(); itr2 != m_GarbageSpells.end(); ++itr2)
+    for (std::list<Spell*>::iterator itr2 = m_GarbageSpells.begin(); itr2 != m_GarbageSpells.end(); ++itr2)
     {
         Spell* sp = *itr2;
-
         delete sp;
     }
 
-    std::list<Pet*>::iterator itr3;
-    for (itr3 = m_GarbagePets.begin(); itr3 != m_GarbagePets.end(); ++itr3)
+    for (std::list<Pet*>::iterator itr3 = m_GarbagePets.begin(); itr3 != m_GarbagePets.end(); ++itr3)
     {
         Pet* pet = *itr3;
-
         delete pet;
     }
 

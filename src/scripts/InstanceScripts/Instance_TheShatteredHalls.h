@@ -74,7 +74,7 @@ enum CreatureEntry
     // HeadAI
 
     // Warchief Kargath BladefistAI
-    CN_WARCHIEF_KARGATH_BLADEFIST = 16808,
+    CN_WARCHIEF_KARGATH_BLADEFIST = 16808
 };
 
 enum CreatureSpells
@@ -157,7 +157,7 @@ enum CreatureSpells
     SP_WARBRINGER_OMROGG_BLAST_WAVE     = 30600,
 
     // Warchief Kargath BladefistAI
-    SP_WARCHIEF_LARAGATH_BLADE_DANCE    = 30739,    // should be each 30 sec, but Idk correct attktime
+    SP_WARCHIEF_LARAGATH_BLADE_DANCE    = 30739     // should be each 30 sec, but Idk correct attktime
 };
 
 enum CreatureSay

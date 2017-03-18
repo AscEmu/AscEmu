@@ -251,7 +251,7 @@ enum EventTypes
 enum EventFlags
 {
     EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT = 0x1,
-    EVENT_FLAG_DELETES_OBJECT = 0x2,
+    EVENT_FLAG_DELETES_OBJECT = 0x2
 };
 
 struct SERVER_DECL TimedEvent

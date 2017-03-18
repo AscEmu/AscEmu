@@ -201,7 +201,7 @@ class MapFile::MapFileImpl
                 while(isdigit(*entryname) || *entryname == '?' || *entryname == '$')
                     ++entryname;
                 // conv @ -> .
-                for(char* str = entryname ; *str ; ++str)
+                for(char* str = entryname; *str; ++str)
                     if(*str == '@')
                         *str = '.';
 
@@ -263,7 +263,7 @@ int MapFile::line() const
 
 int MapFile::findEntry(long addr) const
 {
-    for(int j = 0 ; j < segments() ; ++j)
+    for(int j = 0; j < segments(); ++j)
     {
         const MapFileEntry & segment = getSegment(j);
         long section = segment.section();
@@ -272,7 +272,7 @@ int MapFile::findEntry(long addr) const
 
         if(addr >= segmentBegin && addr < segmentEnd)
         {
-            for(int i = entries() - 1 ; i >= 0  ; --i)
+            for(int i = entries() - 1; i >= 0; --i)
             {
                 const MapFileEntry entry = getEntry(i);
                 if(entry.section() == section)

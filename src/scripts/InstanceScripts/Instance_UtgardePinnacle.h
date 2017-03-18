@@ -107,7 +107,7 @@ enum CreatureSay
     SAY_KING_YMIRON_KILL_02 = 4506,     //You have failed your people!
     SAY_KING_YMIRON_KILL_03 = 4507,     //There is a reason I am king!
     SAY_KING_YMIRON_KILL_04 = 4508,     //Breathe no more!
-    SAY_KING_YMIRON_DIE = 4509,         //What... awaits me... now?
+    SAY_KING_YMIRON_DIE = 4509          //What... awaits me... now?
     /*4510 Bjorn of the Black Storm! Honor me now with your presence!
     4511 Haldor of the Rocky Cliffs! Grant me your strength!
     4512 Ranulf of the Screaming Abyss!  Snuff these maggots with darkest night!

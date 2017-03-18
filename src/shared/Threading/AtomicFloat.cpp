@@ -24,6 +24,7 @@ namespace Arcemu
 {
     namespace Threading
     {
+
         float AtomicFloat::SetVal(float NewValue)
         {
             unsigned long iv = *(reinterpret_cast< unsigned long* >(&NewValue));

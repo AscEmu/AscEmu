@@ -29,13 +29,13 @@ enum
     MAX_GUILD_MEMBERS   = 500
 };
 
-enum PETITION_TURNIN_ERRORS
+enum Petition_Turnin_Errors
 {
     ERR_PETITION_OK,
     ERR_PETITION_ALREADY_SIGNED,
     ERR_PETITION_IN_GUILD,
     ERR_PETITION_CREATOR,
-    ERR_PETITION_NOT_ENOUGH_SIGNATURES,
+    ERR_PETITION_NOT_ENOUGH_SIGNATURES
 
     //ERR_PET_SPELL_DEAD
     //ERR_PETITION_DECLINED_S
@@ -44,7 +44,7 @@ enum PETITION_TURNIN_ERRORS
     //ERR_PETITION_OFFERED
 };
 
-enum GUILDEMBLEM_ERRORS
+enum Guildemblem_Errors
 {
     ERR_GUILDEMBLEM_SUCCESS,
     ERR_GUILDEMBLEM_INVALID_TABARD_COLORS,
@@ -62,7 +62,7 @@ enum GuildMessageTypes
     G_MSGTYPE_OFFICERCHAT
 };
 
-enum MONEY
+enum Money
 {
     MONEY_ONE_COPPER        = 1,
     MONEY_ONE_SILVER        = MONEY_ONE_COPPER * 100,
@@ -88,7 +88,7 @@ enum CommandErrors
 };
 
 //for uint32(0)<<name<<code
-enum GUILD_COMMAND_RESULTS
+enum Guild_Command_Results
 {
     C_R_CREATED                             = 1,
     C_R_ALREADY_IN_GUILD                    = 2,

@@ -120,7 +120,7 @@ enum AutoCastEvents
 enum PetType
 {
     HUNTERPET   = 1,
-    WARLOCKPET  = 2,
+    WARLOCKPET  = 2 
 };
 
 typedef std::map<SpellInfo*, uint16> PetSpellMap;

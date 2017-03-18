@@ -40,7 +40,7 @@ enum OUTPACKET_RESULT
     OUTPACKET_RESULT_SUCCESS = 1,
     OUTPACKET_RESULT_NO_ROOM_IN_BUFFER = 2,
     OUTPACKET_RESULT_NOT_CONNECTED = 3,
-    OUTPACKET_RESULT_SOCKET_ERROR = 4,
+    OUTPACKET_RESULT_SOCKET_ERROR = 4
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

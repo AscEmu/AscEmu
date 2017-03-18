@@ -24,7 +24,7 @@
 #include "CThreads.h"
 #include <ctime>
 
-enum DAYWATCHERSETTINGS
+enum DayWatcherSettings
 {
     WEEKLY  = 1,
     DAILY   = 2,

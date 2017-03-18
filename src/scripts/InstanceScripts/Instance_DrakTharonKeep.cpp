@@ -150,7 +150,7 @@ class TrollgoreAI : public CreatureAIScript
 
         void OnDamageTaken(Unit* mAttacker, uint32 fAmount)
         {
-            /*if (mAttacker->IsCreature() && TO_CREATURE(mAttacker)->GetProto()->Id == DRAKKARI_INVADER_ENTRY)
+            /*if (mAttacker->IsCreature() && mAttacker->GetProto()->Id == DRAKKARI_INVADER_ENTRY)
             {
             uint32 spellid = heroic ? 59809 : 49618;
             //corpse cannot have aura, cannot cast spell, so we have to change this

@@ -106,7 +106,7 @@ class ZerekethAI : public MoonScriptBossAI
 
         void OnCombatStart(Unit* mTarget)
         {
-            _unit->SendScriptTextChatMessage(5496);     // Life energy to... consume.
+            _unit->SendScriptTextChatMessage(5496); // Life energy to... consume.
 
             VoidTimer = AddTimer((RandomUInt(10) + 30) * 1000);
             SpeechTimer = AddTimer((RandomUInt(10) + 40) * 1000);
@@ -119,24 +119,23 @@ class ZerekethAI : public MoonScriptBossAI
             switch (RandomUInt(1))
             {
                 case 0:
-                    _unit->SendScriptTextChatMessage(5497);     // This vessel is empty.
+                    _unit->SendScriptTextChatMessage(5497); // This vessel is empty.
                     break;
                 case 1:
-                    _unit->SendScriptTextChatMessage(5498);     // No... more... life.
+                    _unit->SendScriptTextChatMessage(5498); // No... more... life.
                     break;
             }
         }
 
         void OnDied(Unit* mKiller)
         {
-            _unit->SendScriptTextChatMessage(5501);     // The Void... beckons.
+            _unit->SendScriptTextChatMessage(5501); // The Void... beckons.
 
-            //despawn voids
+            // despawn voids
             Creature* creature = NULL;
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd();)
+            for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 Object* obj = *itr;
-                ++itr;
                 if (obj->IsCreature())
                 {
                     creature = static_cast<Creature*>(obj);
@@ -246,7 +245,6 @@ class VoidZoneARC : public MoonScriptCreatureAI
             RemoveAIUpdateEvent();
         }
 };
-
 
 // Dalliah the DoomsayerAI
 // sounds missing related to Wrath... (look on script below this one)

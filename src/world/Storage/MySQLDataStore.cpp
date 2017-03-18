@@ -41,7 +41,7 @@ void MySQLDataStore::LoadAdditionalTableConfig()
     if (strs.empty())
         return;
 
-    for (std::vector<std::string>::iterator itr = strs.begin(); itr != strs.end(); ++itr)
+    for (auto itr = strs.begin(); itr != strs.end(); ++itr)
     {
         char additional_table[200];
         char target_table[200];
@@ -122,8 +122,7 @@ void MySQLDataStore::LoadItemPropertiesTable()
     uint32 item_count = 0;
     uint32 basic_field_count = 0;
 
-    std::set<std::string>::iterator tableiterator;
-    for (tableiterator = ItemPropertiesTables.begin(); tableiterator != ItemPropertiesTables.end(); ++tableiterator)
+    for (auto tableiterator = ItemPropertiesTables.begin(); tableiterator != ItemPropertiesTables.end(); ++tableiterator)
     {
         std::string table_name = *tableiterator;
         QueryResult* item_result = WorldDatabase.Query("SELECT * FROM %s", table_name.c_str());
@@ -468,8 +467,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
     uint32 creature_properties_count = 0;
     uint32 basic_field_count = 0;
 
-    std::set<std::string>::iterator tableiterator;
-    for (tableiterator = CreaturePropertiesTables.begin(); tableiterator != CreaturePropertiesTables.end(); ++tableiterator)
+    for (auto tableiterator = CreaturePropertiesTables.begin(); tableiterator != CreaturePropertiesTables.end(); ++tableiterator)
     {
         std::string table_name = *tableiterator;
         //                                                                 0          1           2             3                 4               5                  6
@@ -760,8 +758,7 @@ void MySQLDataStore::LoadGameObjectPropertiesTable()
     uint32 gameobject_properties_count = 0;
     uint32 basic_field_count = 0;
 
-    std::set<std::string>::iterator tableiterator;
-    for (tableiterator = GameObjectPropertiesTables.begin(); tableiterator != GameObjectPropertiesTables.end(); ++tableiterator)
+    for (auto tableiterator = GameObjectPropertiesTables.begin(); tableiterator != GameObjectPropertiesTables.end(); ++tableiterator)
     {
         std::string table_name = *tableiterator;
         //                                                                  0       1        2        3         4              5          6          7            8             9
@@ -889,8 +886,7 @@ void MySQLDataStore::LoadQuestPropertiesTable()
     uint32 quest_count = 0;
     uint32 basic_field_count = 0;
 
-    std::set<std::string>::iterator tableiterator;
-    for (tableiterator = QuestPropertiesTables.begin(); tableiterator != QuestPropertiesTables.end(); ++tableiterator)
+    for (auto tableiterator = QuestPropertiesTables.begin(); tableiterator != QuestPropertiesTables.end(); ++tableiterator)
     {
         std::string table_name = *tableiterator;
         //                                                        0       1     2      3       4          5        6          7              8                 9

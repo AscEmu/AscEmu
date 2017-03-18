@@ -227,13 +227,13 @@ enum SPELL_INFRONT_STATUS
 {
     SPELL_INFRONT_STATUS_REQUIRE_SKIPCHECK  = 0,
     SPELL_INFRONT_STATUS_REQUIRE_INFRONT    = 1,
-    SPELL_INFRONT_STATUS_REQUIRE_INBACK     = 2,
+    SPELL_INFRONT_STATUS_REQUIRE_INBACK     = 2
 };
 
 //bool IsBeneficSpell(SpellEntry *sp);
 //AI_SpellTargetType RecommandAISpellTargetType(SpellEntry *sp);
 
-enum SPELL_DMG_TYPE // SPELL_ENTRY_Spell_Dmg_Type
+enum Spell_DMG_Type // SPELL_ENTRY_Spell_Dmg_Type
 {
     SPELL_DMG_TYPE_NONE   = 0,
     SPELL_DMG_TYPE_MAGIC  = 1,
@@ -242,7 +242,7 @@ enum SPELL_DMG_TYPE // SPELL_ENTRY_Spell_Dmg_Type
 };
 
 // value's for SendSpellLog
-enum SPELL_LOG
+enum Spell_Log
 {
     SPELL_LOG_NONE,
     SPELL_LOG_MISS,
@@ -314,7 +314,7 @@ enum procFlags
     PROC_MISC                           = 0x10000000,   //268435456 our custom flag to decide if proc dmg or shield
     PROC_ON_BLOCK_VICTIM                = 0x20000000,   //536870912
     PROC_ON_SPELL_CRIT_HIT              = 0x40000000,   //1073741824
-    PROC_TARGET_SELF                    = 0x80000000,   //-2147483648 our custom flag to decide if proc target is self or victim
+    PROC_TARGET_SELF                    = 0x80000000    //-2147483648 our custom flag to decide if proc target is self or victim
 };
 
 
@@ -358,7 +358,7 @@ enum AuraInterruptFlags
     AURA_INTERRUPT_ON_UNK8                      = 0x00400000,
     AURA_INTERRUPT_ON_PVP_ENTER                 = 0x00800000, // Remove on getting PvP flag
     AURA_INTERRUPT_ON_DIRECT_DAMAGE             = 0x01000000, // Remove on taking direct damage
-    AURA_INTERRUPT_ON_AFTER_CAST_SPELL          = 0x80000000, // Custom?
+    AURA_INTERRUPT_ON_AFTER_CAST_SPELL          = 0x80000000  // Custom?
 };
 
 enum ChannelInterruptFlags
@@ -386,7 +386,7 @@ enum ChannelInterruptFlags
 
 enum SpellCustomFlags
 {
-    CUSTOM_FLAG_SPELL_REQUIRES_COMBAT       = 0x1
+    CUSTOM_FLAG_SPELL_REQUIRES_COMBAT = 0x1
 };
 
 enum SpellCastFlags
@@ -423,7 +423,7 @@ enum SpellCastFlags
     CAST_FLAG_UNK28                 = 0x10000000,
     CAST_FLAG_UNK29                 = 0x20000000,
     CAST_FLAG_UNK30                 = 0x40000000,
-    CAST_FLAG_UNK31                 = 0x80000000,
+    CAST_FLAG_UNK31                 = 0x80000000
 };
 
 /************************************************************************/
@@ -439,23 +439,23 @@ enum SpellGoFlags
     //0x04
     //0x08 //seems like all of these mean some spell anim state
     //0x10
-    SPELL_GO_FLAGS_RANGED           = 0x20, //2 functions are called on 2 values
+    SPELL_GO_FLAGS_RANGED           = 0x20,          //2 functions are called on 2 values
     //0x40
     //0x80
     SPELL_GO_FLAGS_ITEM_CASTER      = 0x100,
     SPELL_GO_FLAGS_UNK200           = 0x200,
-    SPELL_GO_FLAGS_EXTRA_MESSAGE    = 0x400, //TARGET MISSES AND OTHER MESSAGES LIKE "Resist"
-    SPELL_GO_FLAGS_POWER_UPDATE     = 0x800, //seems to work hand in hand with some visual effect of update actually
+    SPELL_GO_FLAGS_EXTRA_MESSAGE    = 0x400,         //TARGET MISSES AND OTHER MESSAGES LIKE "Resist"
+    SPELL_GO_FLAGS_POWER_UPDATE     = 0x800,         //seems to work hand in hand with some visual effect of update actually
     //0x1000
     SPELL_GO_FLAGS_UNK2000          = 0x2000,
-    SPELL_GO_FLAGS_UNK1000          = 0x1000, //no idea
+    SPELL_GO_FLAGS_UNK1000          = 0x1000,        //no idea
     //0x4000
-    SPELL_GO_FLAGS_UNK8000          = 0x8000, //seems to make server send extra 2 bytes before SPELL_GO_FLAGS_UNK1 and after SPELL_GO_FLAGS_UNK20000
-    SPELL_GO_FLAGS_UNK20000         = 0x20000, //seems to make server send an uint32 after m_targets.write
-    SPELL_GO_FLAGS_UNK40000         = 0x40000, //1 uint32. this is not confirmed but i have a feeling about it :D
-    SPELL_GO_FLAGS_UNK80000         = 0x80000, //2 functions called (same ones as for ranged but different)
-    SPELL_GO_FLAGS_RUNE_UPDATE      = 0x200000, //2 bytes for the rune cur and rune next flags
-    SPELL_GO_FLAGS_UNK400000        = 0x400000, //seems to make server send an uint32 after m_targets.write
+    SPELL_GO_FLAGS_UNK8000          = 0x8000,        //seems to make server send extra 2 bytes before SPELL_GO_FLAGS_UNK1 and after SPELL_GO_FLAGS_UNK20000
+    SPELL_GO_FLAGS_UNK20000         = 0x20000,       //seems to make server send an uint32 after m_targets.write
+    SPELL_GO_FLAGS_UNK40000         = 0x40000,       //1 uint32. this is not confirmed but i have a feeling about it :D
+    SPELL_GO_FLAGS_UNK80000         = 0x80000,       //2 functions called (same ones as for ranged but different)
+    SPELL_GO_FLAGS_RUNE_UPDATE      = 0x200000,      //2 bytes for the rune cur and rune next flags
+    SPELL_GO_FLAGS_UNK400000        = 0x400000       //seems to make server send an uint32 after m_targets.write
 };
 
 /*enum School //moved to Unit.hack for headers dependencies.
@@ -548,7 +548,7 @@ struct TotemSpells
     uint32 spellToCast[3];
 };
 
-enum LOCKTYPES
+enum LockTypes
 {
     LOCKTYPE_PICKLOCK               = 1,
     LOCKTYPE_HERBALISM              = 2,
@@ -738,7 +738,7 @@ enum SpellEffects
     SPELL_EFFECT_UNKNOWN38,                 //    160
     SPELL_EFFECT_LEARN_SPEC,                //    161
     SPELL_EFFECT_ACTIVATE_SPEC,             //    162
-    TOTAL_SPELL_EFFECTS,                    //    163
+    TOTAL_SPELL_EFFECTS                     //    163
 };
 
 // target type flags
@@ -759,7 +759,7 @@ enum SpellTargetTypes
     SPELL_TARGET_TYPE_NONE4             = 0x1000,
     SPELL_TARGET_TYPE_NONE5             = 0x2000,
     SPELL_TARGET_TYPE_GAME_OBJECTS      = 0x4000, // like chests and mining
-    SPELL_TARGET_TYPE_DEATH             = 0x8000,
+    SPELL_TARGET_TYPE_DEATH             = 0x8000
 };
 
 enum SpellTypes // SPELL_ENTRY_buffType
@@ -792,7 +792,7 @@ enum SpellTypes // SPELL_ENTRY_buffType
     SPELL_TYPE_WARRIOR_SHOUT        = 0x00400000,
     SPELL_TYPE_QUIVER_HASTE         = 0x00800000,
     SPELL_TYPE_CORRUPTION           = 0x01000000,
-    SPELL_TYPE_HAND                 = 0x02000000,
+    SPELL_TYPE_HAND                 = 0x02000000 
 };
 
 //custom stuff generated for spells that will not change in time
@@ -813,7 +813,7 @@ enum SpellIsFlags
     SPELL_FLAG_IS_FORCEDDEBUFF          = 0x00001000, // forced to be a debuff
     SPELL_FLAG_IS_FORCEDBUFF            = 0x00002000, // forced to be a buff
     SPELL_FLAG_IS_INHERITING_LEVEL      = 0x00004000, // summons to inherit caster level or not
-    SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF   = 0x00008000, // summons to inherit caster level or not
+    SPELL_FLAG_IS_MAXSTACK_FOR_DEBUFF   = 0x00008000  // summons to inherit caster level or not
 };
 
 enum SpellCoefficientsFlags
@@ -822,7 +822,7 @@ enum SpellCoefficientsFlags
     SPELL_FLAG_IS_DD_OR_DH_SPELL        = 0x00000002, //Direct Damage or Direct Healing Spells
     SPELL_FLAG_IS_DD_DH_DOT_SPELL       = SPELL_FLAG_IS_DOT_OR_HOT_SPELL | SPELL_FLAG_IS_DD_OR_DH_SPELL, //DoT+(DD|DH) Spells
     SPELL_FLAG_AOE_SPELL                = 0x00000004, //AoE Spells
-    SPELL_FLAG_ADITIONAL_EFFECT         = 0x00000008, //Spells with additional effect not DD or DoT or HoT
+    SPELL_FLAG_ADITIONAL_EFFECT         = 0x00000008  //Spells with additional effect not DD or DoT or HoT
 };
 
 enum DiminishingGroup
@@ -841,7 +841,7 @@ enum DiminishingGroup
     DIMINISHING_GROUP_BANISH            = 11,
     DIMINISHING_GROUP_NOT_DIMINISHED    = 12,
     DIMINISHING_GROUP_DISARM            = 13,
-    DIMINISHING_GROUP_SILENCE           = 14,
+    DIMINISHING_GROUP_SILENCE           = 14
 };
 
 enum TeleportEffectCustomFlags
@@ -1162,7 +1162,7 @@ enum SpellState
     SPELL_STATE_IDLE      = 4
 };
 
-enum DISPEL_TYPE
+enum Dispel_Type
 {
     DISPEL_ZGTRINKETS       = -1,
     DISPEL_NULL             = 0,
@@ -1174,7 +1174,7 @@ enum DISPEL_TYPE
     DISPEL_INVISIBILTY      = 6,
     DISPEL_ALL              = 7,
     DISPEL_SPECIAL_NPCONLY  = 8,
-    DISPEL_FRENZY           = 9,
+    DISPEL_FRENZY           = 9
 };
 
 enum SpellMechanics
@@ -1435,7 +1435,7 @@ enum PowerType
     POWER_TYPE_HEAT         = 101,
     POWER_TYPE_OOZE         = 121,
     POWER_TYPE_BLOOD        = 141,
-    POWER_TYPE_WRATH        = 142,
+    POWER_TYPE_WRATH        = 142
 };
 // we have power type 15 and 31 :S
 
@@ -1461,7 +1461,7 @@ enum SpellDidHitResult
     SPELL_DID_HIT_DEFLECT                   = 9,  // See - http://www.wowwiki.com/Deflect
     SPELL_DID_HIT_ABSORB                    = 10, // See - http://www.wowwiki.com/Absorb
     SPELL_DID_HIT_REFLECT                   = 11, // See - http://www.wowwiki.com/Reflect
-    NUM_SPELL_DID_HIT_RESULTS,
+    NUM_SPELL_DID_HIT_RESULTS 
 };
 
 // Target constraints for spells (mostly scripted stuff)

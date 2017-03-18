@@ -283,7 +283,7 @@ namespace Arcemu
         {
             SURE_TO_PURCHASE_DTS,               // ""
             PURCHASE_DTS,                       // ""
-            NOT_ENOUGH_MONEY_DTS,               // ""
+            NOT_ENOUGH_MONEY_DTS                // ""
         };
 
         enum GossipText

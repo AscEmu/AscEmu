@@ -20,7 +20,7 @@ enum Towers
     TOWER_3, // North-east
     TOWER_4, // South-east
     TOWER_5, // South
-    TOWER_COUNT,
+    TOWER_COUNT
 };
 
 // Tower GameObject Ids
@@ -80,7 +80,7 @@ enum BannerStatus
 {
     BANNER_STATUS_NEUTRAL = 0,
     BANNER_STATUS_ALLIANCE = 1,
-    BANNER_STATUS_HORDE = 2,
+    BANNER_STATUS_HORDE = 2
 };
 
 class TerokkarForestBannerAI : public GameObjectAIScript
@@ -93,7 +93,7 @@ class TerokkarForestBannerAI : public GameObjectAIScript
 
     public:
 
-        TerokkarForestBannerAI(GameObjectPointer go) : GameObjectAIScript(go)
+        TerokkarForestBannerAI(GameObject* go) : GameObjectAIScript(go)
         {
             m_bannerStatus = BANNER_STATUS_NEUTRAL;
             Status = 50;
@@ -140,13 +140,13 @@ class TerokkarForestBannerAI : public GameObjectAIScript
             //   the value of the map is a timestamp of the last update, to avoid cpu time wasted
             //   doing lookups of objects that have already been updated
 
-            unordered_set<PlayerPointer>::iterator itr = _gameobject->GetInRangePlayerSetBegin();
-            unordered_set<PlayerPointer>::iterator itrend = _gameobject->GetInRangePlayerSetEnd();
-            map<uint32, uint32>::iterator it2, it3;
+            std::unordered_set<Player*>::iterator itr = _gameobject->GetInRangePlayerSetBegin();
+            std::unordered_set<Player*>::iterator itrend = _gameobject->GetInRangePlayerSetEnd();
+
             uint32 timeptr = (uint32)UNIXTIME;
             bool in_range;
             bool is_valid;
-            PlayerPointer plr;
+            Player* plr;
 
             for(; itr != itrend; ++itr)
             {
@@ -157,7 +157,7 @@ class TerokkarForestBannerAI : public GameObjectAIScript
 
                 in_range = (_gameobject->GetDistance2dSq((*itr)) <= BANNER_RANGE) ? true : false;
 
-                it2 = StoredPlayers.find((*itr)->GetLowGUID());
+                map<uint32, uint32>::iterator it2 = StoredPlayers.find((*itr)->GetLowGUID());
                 if(it2 == StoredPlayers.end())
                 {
                     // new player :)
@@ -276,7 +276,7 @@ class TerokkarForestBannerAI : public GameObjectAIScript
             // send any out of range players the disable flag
             for(it2 = StoredPlayers.begin(); it2 != StoredPlayers.end();)
             {
-                it3 = it2;
+                map<uint32, uint32>::iterator it3 = it2;
                 ++it2;
 
                 if(it3->second != timeptr)
@@ -386,7 +386,7 @@ class TerokkarForestBannerAI : public GameObjectAIScript
 // Zone Hook
 //////////////////////////////////////////////////////////////////////////
 
-void TFZoneHook(PlayerPointer plr, uint32 Zone, uint32 OldZone)
+void TFZoneHook(Player* plr, uint32 Zone, uint32 OldZone)
 {
     if(!plr)
         return;
@@ -443,7 +443,7 @@ void TFSpawnObjects(shared_ptr<MapMgr> pmgr)
     {
         p = &godata[i];
 
-        GameObjectPointer pGo = NULLGOB;
+        GameObject* pGo = nullptr;
         pGo = pmgr->GetInterface()->SpawnGameObject(p->entry, p->posx, p->posy, p->posz, p->facing, false, 0, 0);
         if(!pGo)
             continue;

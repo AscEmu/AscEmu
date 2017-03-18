@@ -140,7 +140,7 @@ MapMgr::~MapMgr()
         }
     }
 
-    for (std::set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
+    for (auto itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
     {
         if ((*itr)->IsInWorld())
             (*itr)->RemoveFromWorld(false);
@@ -343,7 +343,7 @@ void MapMgr::PushObject(Object* obj)
             if (!buf)
                 buf = new ByteBuffer(300);
 
-            for (std::set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
+            for (auto itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
             {
                 count = (*itr)->BuildCreateUpdateBlockForPlayer(buf, plObj);
                 globalcount += count;
@@ -517,7 +517,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
     // Remove the session from our set if it is a player.
     if (obj->IsPlayer())
     {
-        for (std::set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
+        for (auto itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
         {
             plObj->PushOutOfRange((*itr)->GetNewGUID());
         }
@@ -891,7 +891,7 @@ void MapMgr::_UpdateObjects()
 
                 if (count)
                 {
-                    for (std::set<Object*>::iterator itr = pObj->GetInRangePlayerSetBegin(); itr != pObj->GetInRangePlayerSetEnd(); ++itr)
+                    for (auto itr = pObj->GetInRangePlayerSetBegin(); itr != pObj->GetInRangePlayerSetEnd(); ++itr)
                     {
                         Player* lplr = static_cast<Player*>(*itr);
 
@@ -1943,7 +1943,7 @@ GameObject* MapMgr::FindNearestGoWithType(Object* o, uint32 type)
     GameObject* go = nullptr;
     float r = FLT_MAX;
 
-    for (std::set<Object*>::iterator itr = o->GetInRangeSetBegin(); itr != o->GetInRangeSetEnd(); ++itr)
+    for (auto itr = o->GetInRangeSetBegin(); itr != o->GetInRangeSetEnd(); ++itr)
     {
         Object* iro = *itr;
         if (!iro->IsGameObject())

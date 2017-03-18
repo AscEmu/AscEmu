@@ -32,12 +32,10 @@ enum CreatureEntry
 
 enum CreatureSpells
 {
-
 };
 
 enum CreatureSay
 {
-
 };
 
 #endif // _INSTANCE_THE_ULDAMAN_H

@@ -51,7 +51,6 @@ enum CreatureSpells
 
 enum CreatureSay
 {
-
 };
 
 #endif // _INSTANCE_HELLFIRE_RAMPARTS_H

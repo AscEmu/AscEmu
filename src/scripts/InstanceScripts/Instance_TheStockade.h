@@ -46,7 +46,7 @@ enum CreatureEntry
     CN_DEFPRISONER      = 1706,
 
     // ConvictAI
-    CN_DEFCONVICT       = 1711,
+    CN_DEFCONVICT       = 1711
 
 };
 
@@ -83,13 +83,12 @@ enum CreatureSpells
     DISARM              = 6713,
 
     // ConvictAI
-    BACKHAND            = 12461,
+    BACKHAND            = 12461
 
 };
 
 enum CreatureSay
 {
-
 };
 
 #endif // _INSTANCE_THE_STOCKADE_H

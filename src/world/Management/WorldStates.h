@@ -20,7 +20,8 @@
 #ifndef __WORLDSTATES_H
 #define __WORLDSTATES_H
 
-enum WorldStates{
+enum WorldStates
+{
     WORLDSTATE_AV_STONEHEARTH_GRAVE_HORDE_CONTROLLED                     = 1301,
     WORLDSTATE_AV_STONEHEARTH_GRAVE_ALLIANCE_CONTROLLED                  = 1302,
     WORLDSTATE_AV_STONEHEARTH_GRAVE_HORDE_ASSAULTING                     = 1303,
@@ -402,8 +403,7 @@ enum WorldStates{
     WORLDSTATE_IOC_HORDE_KEEP_HORDE_ASSAULTED                            = 4348,
     WORLDSTATE_SOTA_SHOW_ALLY_ROUND                                      = 4352, // Alliance attacks, Horde defends
     WORLDSTATE_SOTA_SHOW_HORDE_ROUND                                     = 4353, // Horder attacks, Alliance defends
-    WORLDSTATE_WG_SHOW_NEXT_BATTLE                                       = 4354, // unixtime of next battle (shows it as time left in the UI)
+    WORLDSTATE_WG_SHOW_NEXT_BATTLE                                       = 4354  // unixtime of next battle (shows it as time left in the UI)
 };
-
 
 #endif         // __WORLDSTATES_H

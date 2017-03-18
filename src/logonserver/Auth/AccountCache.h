@@ -94,7 +94,7 @@ enum BAN_STATUS
 {
     BAN_STATUS_NOT_BANNED = 0,
     BAN_STATUS_TIME_LEFT_ON_BAN = 1,
-    BAN_STATUS_PERMANENT_BAN = 2,
+    BAN_STATUS_PERMANENT_BAN = 2
 };
 
 class IPBanner : public Singleton< IPBanner >
@@ -134,8 +134,10 @@ class AccountMgr : public Singleton < AccountMgr >
 
             std::map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
 
-            if (itr == AccountDatabase.end())    pAccount = NULL;
-            else                                pAccount = itr->second;
+            if (itr == AccountDatabase.end())
+                pAccount = NULL;
+            else
+                pAccount = itr->second;
 
             setBusy.Release();
             return pAccount;
@@ -154,8 +156,10 @@ class AccountMgr : public Singleton < AccountMgr >
             // this should already be uppercase!
             std::map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
 
-            if (itr == AccountDatabase.end())    return NULL;
-            else                                return itr->second;
+            if (itr == AccountDatabase.end())
+                return NULL;
+            else
+                return itr->second;
         }
 
         std::map<std::string, Account*> AccountDatabase;

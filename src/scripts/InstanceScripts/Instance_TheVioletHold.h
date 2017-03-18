@@ -82,7 +82,7 @@ enum VHTimers : int32
     VH_TIMER_GUARD_FLEE_DELAY = 5750,
 
     VH_TIMER_SPAWN_INTRO_MOB = 15000,
-    VH_TIMER_INTRO_PORTAL_DESPAWN_TIME = VH_TIMER_GUARD_FLEE_DELAY,
+    VH_TIMER_INTRO_PORTAL_DESPAWN_TIME = VH_TIMER_GUARD_FLEE_DELAY
 };
 
 enum CreatureSpells
@@ -117,7 +117,6 @@ enum GameObjects
 
 enum CreatureSay
 {
-
 };
 
 enum CreatureGossip

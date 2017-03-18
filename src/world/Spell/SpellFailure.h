@@ -337,7 +337,7 @@ enum PetTameFailure
     PETTAME_UNKNOWNERROR                                         = 13
 };
 
-enum MOUNT_FAILURE
+enum Mount_Failure
 {
     ERR_MOUNT_NOTMOUNTABLE                                       = 0,
     ERR_MOUNT_TOOFARAWAY                                         = 1,
@@ -351,7 +351,7 @@ enum MOUNT_FAILURE
     ERR_MOUNT_FORCEDDISMOUNT                                     = 9
 };
 
-enum DISMOUNT_FAILURE
+enum Dismount_Failure
 {
     ERR_DISMOUNT_NOPET                                           = 0,
     ERR_DISMOUNT_NOTMOUNTED                                      = 1,

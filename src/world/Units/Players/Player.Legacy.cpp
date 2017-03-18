@@ -617,12 +617,10 @@ Player::~Player()
         delete pck;
     }
 
-    /*std::map<uint32,AchievementVal*>::iterator itr;
-    for (itr=m_achievements.begin();itr!=m_achievements.end();itr++)
+    /*for (auto itr = m_achievements.begin(); itr! = m_achievements.end(); ++itr)
     delete itr->second;*/
 
-    std::map< uint32, PlayerPet* >::iterator itr = m_Pets.begin();
-    for (; itr != m_Pets.end(); ++itr)
+    for (auto itr = m_Pets.begin(); itr != m_Pets.end(); ++itr)
         delete itr->second;
     m_Pets.clear();
 
@@ -944,9 +942,9 @@ bool Player::Create(WorldPacket& data)
     m_StableSlotCount = 0;
     Item* item;
 
-    for (std::set<uint32>::iterator sp = info->spell_list.begin(); sp != info->spell_list.end(); ++sp)
+    for (auto iter = info->spell_list.begin(); iter != info->spell_list.end(); ++iter)
     {
-        mSpells.insert((*sp));
+        mSpells.insert((*iter));
     }
 
     m_FirstLogin = true;
@@ -1789,8 +1787,8 @@ void Player::smsg_TalentsInfo(bool SendPetTalents)
         {
             PlayerSpec spec = m_specs[s];
             data << uint8(spec.talents.size());
-            std::map<uint32, uint8>::iterator itr;
-            for (itr = spec.talents.begin(); itr != spec.talents.end(); ++itr)
+
+            for (auto itr = spec.talents.begin(); itr != spec.talents.end(); ++itr)
             {
                 data << uint32(itr->first);     // TalentId
                 data << uint8(itr->second);     // TalentRank
@@ -1827,7 +1825,7 @@ void Player::ActivateSpec(uint8 spec)
     }
 
     // remove old talents
-    for (std::map<uint32, uint8>::iterator itr = m_specs[OldSpec].talents.begin(); itr != m_specs[OldSpec].talents.end(); ++itr)
+    for (auto itr = m_specs[OldSpec].talents.begin(); itr != m_specs[OldSpec].talents.end(); ++itr)
     {
         auto talent_info = sTalentStore.LookupEntry(itr->first);
         if (talent_info == nullptr)
@@ -1847,7 +1845,7 @@ void Player::ActivateSpec(uint8 spec)
     }
 
     //add talents from new spec
-    for (std::map<uint32, uint8>::iterator itr = m_specs[m_talentActiveSpec].talents.begin(); itr != m_specs[m_talentActiveSpec].talents.end(); ++itr)
+    for (auto itr = m_specs[m_talentActiveSpec].talents.begin(); itr != m_specs[m_talentActiveSpec].talents.end(); ++itr)
     {
         auto talent_info = sTalentStore.LookupEntry(itr->first);
         if (talent_info == nullptr)
@@ -1952,16 +1950,14 @@ void Player::_SavePetSpells(QueryBuffer* buf)
         buf->AddQuery("DELETE FROM playersummonspells WHERE ownerguid=%u", GetLowGUID());
 
     // Save summon spells
-    std::map<uint32, std::set<uint32> >::iterator itr = SummonSpells.begin();
-    for (; itr != SummonSpells.end(); ++itr)
+    for (auto itr != SummonSpells.end(); ++itr)
     {
-        std::set<uint32>::iterator it = itr->second.begin();
-        for (; it != itr->second.end(); ++it)
+        for (auto itr != itr->second.end(); ++itr)
         {
             if (buf == NULL)
-                CharacterDatabase.Execute("INSERT INTO playersummonspells VALUES(%u, %u, %u)", GetLowGUID(), itr->first, (*it));
+                CharacterDatabase.Execute("INSERT INTO playersummonspells VALUES(%u, %u, %u)", GetLowGUID(), itr->first, (*itr));
             else
-                buf->AddQuery("INSERT INTO playersummonspells VALUES(%u, %u, %u)", GetLowGUID(), itr->first, (*it));
+                buf->AddQuery("INSERT INTO playersummonspells VALUES(%u, %u, %u)", GetLowGUID(), itr->first, (*itr));
         }
     }
 }
@@ -1974,12 +1970,10 @@ void Player::AddSummonSpell(uint32 Entry, uint32 SpellID)
         SummonSpells[Entry].insert(SpellID);
     else
     {
-        std::set<uint32>::iterator it3;
-        for (std::set<uint32>::iterator it2 = itr->second.begin(); it2 != itr->second.end();)
+        for (auto itr = itr->second.begin(); itr != itr->second.end(); ++itr)
         {
-            it3 = it2++;
-            if (sSpellCustomizations.GetSpellInfo(*it3)->custom_NameHash == sp->custom_NameHash)
-                itr->second.erase(it3);
+            if (sSpellCustomizations.GetSpellInfo(*itr)->custom_NameHash == sp->custom_NameHash)
+                itr->second.erase(itr);
         }
         itr->second.insert(SpellID);
     }
@@ -2000,9 +1994,7 @@ std::set<uint32>* Player::GetSummonSpells(uint32 Entry)
 {
     std::map<uint32, std::set<uint32> >::iterator itr = SummonSpells.find(Entry);
     if (itr != SummonSpells.end())
-    {
         return &(itr->second);
-    }
     return 0;
 }
 
@@ -2011,7 +2003,6 @@ void Player::_LoadPet(QueryResult* result)
     m_PetNumberMax = 0;
     if (!result)
         return;
-
     do
     {
         Field* fields = result->Fetch();
@@ -2091,8 +2082,7 @@ void Player::SpawnActivePet()
     if (GetSummon() != NULL || !isAlive() || !IsInWorld())   ///\todo  only hunters for now
         return;
 
-    std::map<uint32, PlayerPet* >::iterator itr = m_Pets.begin();
-    for (; itr != m_Pets.end(); ++itr)
+    for (auto itr = m_Pets.begin(); itr != m_Pets.end(); ++itr)
         if (itr->second->stablestate == STABLE_STATE_ACTIVE && itr->second->active)
         {
             if (itr->second->alive)
@@ -2115,9 +2105,8 @@ void Player::DismissActivePets()
 
 void Player::_LoadPetSpells(QueryResult* result)
 {
-    std::map<uint32, std::list<uint32>* >::iterator itr;
-    uint32 entry = 0;
-    uint32 spell = 0;
+    uint32_t entry = 0;
+    uint32_t spell = 0;
 
     if (result)
     {
@@ -2626,18 +2615,17 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     ss << "','";
 
     // Add player finished quests
-    std::set<uint32>::iterator fq = m_finishedQuests.begin();
-    for (; fq != m_finishedQuests.end(); ++fq)
+    for (auto iter = m_finishedQuests.begin(); iter != m_finishedQuests.end(); ++iter)
     {
-        ss << (*fq) << ",";
+        ss << (*iter) << ",";
     }
 
     ss << "', '";
     DailyMutex.Acquire();
-    std::set<uint32>::iterator fdq = m_finishedDailies.begin();
-    for (; fdq != m_finishedDailies.end(); ++fdq)
+
+    for (auto iter = m_finishedDailies.begin(); iter != m_finishedDailies.end(); ++iter)
     {
-        ss << (*fdq) << ",";
+        ss << (*iter) << ",";
     }
     DailyMutex.Release();
     ss << "', ";
@@ -2657,7 +2645,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
             ss << m_specs[s].glyphs[i] << ",";
         ss << "','";
-        for (std::map<uint32, uint8>::iterator itr = m_specs[s].talents.begin(); itr != m_specs[s].talents.end(); ++itr)
+        for (auto itr = m_specs[s].talents.begin(); itr != m_specs[s].talents.end(); ++itr)
             ss << itr->first << "," << uint32(itr->second) << ",";
         ss << "',";
     }
@@ -2742,7 +2730,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
 void Player::_SaveQuestLogEntry(QueryBuffer* buf)
 {
-    for (std::set<uint32>::iterator itr = m_removequests.begin(); itr != m_removequests.end(); ++itr)
+    for (auto itr = m_removequests.begin(); itr != m_removequests.end(); ++itr)
     {
         if (buf == NULL)
             CharacterDatabase.Execute("DELETE FROM questlog WHERE player_guid=%u AND quest_id=%u", GetLowGUID(), (*itr));
@@ -4034,6 +4022,8 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         return;
 
     ARCEMU_ASSERT(item != NULL);
+    std::list<ItemSet>::iterator i;
+
     ItemProperties const* proto = item->GetItemProperties();
 
     //fast check to skip mod applying if the item doesnt meat the requirements.
@@ -4064,7 +4054,6 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         setid = uint32(proto_setid);
     }
 
-
     ///\todo make a config for server so they can configure which season is active season
 
     // Set
@@ -4079,12 +4068,11 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         else
         {
             ItemSet* Set = NULL;
-            std::list<ItemSet>::iterator i;
-            for (i = m_itemsets.begin(); i != m_itemsets.end(); ++i)
+            for (auto iter = m_itemsets.begin(); iter != m_itemsets.end(); ++iter)
             {
-                if (i->setid == setid)
+                if (iter->setid == setid)
                 {
-                    Set = &(*i);
+                    Set = &(*iter);
                     break;
                 }
             }
@@ -4885,11 +4873,9 @@ void Player::LeftChannel(Channel* c)
 
 void Player::CleanupChannels()
 {
-    std::set<Channel*>::iterator i;
-    Channel* c;
-    for (i = m_channels.begin(); i != m_channels.end();)
+    for (std::set<Channel*>::iterator i = m_channels.begin(); i != m_channels.end();)
     {
-        c = *i;
+        Channel* c = *i;
         ++i;
 
         c->Part(this);
@@ -5155,14 +5141,12 @@ void Player::UpdateChances()
 
     if (tocritchance.size() > 0)    // Crashfix by Cebernic
     {
-        std::map< uint32, WeaponModifier >::iterator itr = tocritchance.begin();
-
         Item* tItemMelee = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_MAINHAND);
         Item* tItemRanged = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
 
         //-1 = any weapon
 
-        for (; itr != tocritchance.end(); ++itr)
+        for (auto itr = tocritchance.begin(); itr != tocritchance.end(); ++itr)
         {
             if (itr->second.wclass == (uint32)-1 || (tItemMelee != NULL && (1 << tItemMelee->GetItemProperties()->SubClass & itr->second.subclass)))
             {
@@ -5950,7 +5934,8 @@ void Player::LoadTaxiMask(const char* data)
     std::vector<std::string> tokens = Util::SplitStringBySeperator(data, " ");
 
     int index;
-    std::vector<std::string>::iterator iter;
+
+	std::vector<std::string>::iterator iter;
 
     for (iter = tokens.begin(), index = 0;
          (index < 12) && (iter != tokens.end()); ++iter, ++index)
@@ -6380,22 +6365,20 @@ void Player::Reset_Spells()
 
     std::list<uint32> spelllist;
 
-    for (SpellSet::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+    for (auto itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
         spelllist.push_back((*itr));
     }
 
-    for (std::list<uint32>::iterator itr = spelllist.begin(); itr != spelllist.end(); ++itr)
+    for (auto itr = spelllist.begin(); itr != spelllist.end(); ++itr)
     {
         removeSpell((*itr), false, false, 0);
     }
 
-    for (std::set<uint32>::iterator sp = info->spell_list.begin(); sp != info->spell_list.end(); ++sp)
+    for (auto sp = info->spell_list.begin(); sp != info->spell_list.end(); ++sp)
     {
         if (*sp)
-        {
             addSpell(*sp);
-        }
     }
 
     // cebernic ResetAll ? don't forget DeletedSpells
@@ -6636,8 +6619,7 @@ void Player::UpdateNearbyGameObjects()
 
                 if (go_quest_giver->HasQuests() && go_quest_giver->NumOfQuests() > 0)
                 {
-                    std::list<QuestRelation*>::iterator itr2 = go_quest_giver->QuestsBegin();
-                    for (; itr2 != go_quest_giver->QuestsEnd(); ++itr2)
+                    for (std::list<QuestRelation*>::iterator itr2 = go_quest_giver->QuestsBegin(); itr2 != go_quest_giver->QuestsEnd(); ++itr2)
                     {
                         QuestRelation* qr = (*itr2);
 
@@ -7854,10 +7836,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
 
 void Player::UpdateChannels(uint16 AreaID)
 {
-    std::set<Channel*>::iterator i;
-    Channel* c;
     std::string channelname, AreaName;
-
 
     if (GetMapId() == 450)
         AreaID = 2917;
@@ -7890,9 +7869,9 @@ void Player::UpdateChannels(uint16 AreaID)
         }
     }
 
-    for (i = m_channels.begin(); i != m_channels.end();)
+    for (std::set<Channel*>::iterator i = m_channels.begin(); i != m_channels.end();)
     {
-        c = *i;
+        Channel* c = *i;
         ++i;
 
         if (!c->m_general || c->m_name == "LookingForGroup")//Not an updatable channel.
@@ -7907,7 +7886,7 @@ void Player::UpdateChannels(uint16 AreaID)
         else if (strstr(c->m_name.c_str(), "GuildRecruitment"))
             channelname = "GuildRecruitment";
         else
-            continue;//Those 4 are the only ones we want updated.
+            continue; // Those 4 are the only ones we want updated.
         channelname += " - ";
         if ((strstr(c->m_name.c_str(), "Trade") || strstr(c->m_name.c_str(), "GuildRecruitment")) && (at2->flags & AREA_CITY || at2->flags & AREA_CITY_AREA))
         {
@@ -8976,9 +8955,7 @@ void Player::CompleteLoading()
         }
     }
 
-    std::list<LoginAura>::iterator i = loginauras.begin();
-
-    for (; i != loginauras.end(); ++i)
+    for (auto i = loginauras.begin(); i != loginauras.end(); ++i)
     {
         SpellInfo* sp = sSpellCustomizations.GetSpellInfo((*i).id);
 
@@ -9484,19 +9461,17 @@ void Player::SetShapeShift(uint8 ss)
     }
 
     // apply any talents/spells we have that apply only in this form.
-    std::set<uint32>::iterator itr;
-    SpellInfo* sp;
-    Spell* spe;
+
     SpellCastTargets t(GetGUID());
 
-    for (itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+    for (auto itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
-        sp = sSpellCustomizations.GetSpellInfo(*itr);
-        if (sp->custom_apply_on_shapeshift_change || sp->Attributes & 64)        // passive/talent
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(*itr);
+        if (sp->custom_apply_on_shapeshift_change || sp->Attributes & 64) // passive/talent
         {
             if (sp->RequiredShapeShift && ((uint32)1 << (ss - 1)) & sp->RequiredShapeShift)
             {
-                spe = sSpellFactoryMgr.NewSpell(this, sp, true, NULL);
+                Spell* spe = sSpellFactoryMgr.NewSpell(this, sp, true, NULL);
                 spe->prepare(&t);
             }
         }
@@ -9516,12 +9491,12 @@ void Player::SetShapeShift(uint8 ss)
     }
 
     // now dummy-handler stupid hacky fixed shapeshift spells (leader of the pack, etc)
-    for (itr = mShapeShiftSpells.begin(); itr != mShapeShiftSpells.end(); ++itr)
+    for (auto itr = mShapeShiftSpells.begin(); itr != mShapeShiftSpells.end(); ++itr)
     {
-        sp = sSpellCustomizations.GetSpellInfo(*itr);
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo(*itr);
         if (sp->RequiredShapeShift && ((uint32)1 << (ss - 1)) & sp->RequiredShapeShift)
         {
-            spe = sSpellFactoryMgr.NewSpell(this, sp, true, NULL);
+            Spell* spe = sSpellFactoryMgr.NewSpell(this, sp, true, NULL);
             spe->prepare(&t);
         }
     }
@@ -9542,7 +9517,7 @@ void Player::CalcDamage()
     if (IsInFeralForm())
     {
         float tmp = 1; // multiplicative damage modifier
-        for (std::map<uint32, WeaponModifier>::iterator i = damagedone.begin(); i != damagedone.end(); ++i)
+        for (auto i = damagedone.begin(); i != damagedone.end(); ++i)
         {
             if (i->second.wclass == (uint32)-1)  // applying only "any weapon" modifiers
                 tmp += i->second.value;
@@ -9608,8 +9583,8 @@ void Player::CalcDamage()
 
     float bonus = ap_bonus * speed;
     float tmp = 1;
-    std::map<uint32, WeaponModifier>::iterator i;
-    for (i = damagedone.begin(); i != damagedone.end(); ++i)
+
+    for (auto i = damagedone.begin(); i != damagedone.end(); ++i)
     {
         if ((i->second.wclass == (uint32)-1) || //any weapon
             (it && ((1 << it->GetItemProperties()->SubClass) & i->second.subclass)))
@@ -9649,9 +9624,9 @@ void Player::CalcDamage()
         else speed = 2000;
 
         bonus = ap_bonus * speed;
-        i = damagedone.begin();
+
         tmp = 1;
-        for (; i != damagedone.end(); ++i)
+        for (auto i = damagedone.begin(); i != damagedone.end(); ++i)
         {
             if ((i->second.wclass == (uint32)-1) || //any weapon
                 (((1 << it->GetItemProperties()->SubClass) & i->second.subclass))
@@ -9679,9 +9654,8 @@ void Player::CalcDamage()
     cr = 0;
     if ((it = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED)) != 0)
     {
-        i = damagedone.begin();
         tmp = 1;
-        for (; i != damagedone.end(); ++i)
+        for (auto i = damagedone.begin(); i != damagedone.end(); ++i)
         {
             if ((i->second.wclass == (uint32)-1) || //any weapon
                 (((1 << it->GetItemProperties()->SubClass) & i->second.subclass)))
@@ -9692,8 +9666,8 @@ void Player::CalcDamage()
 
         if (it->GetItemProperties()->SubClass != 19)//wands do not have bonuses from RAP & ammo
         {
-            //                ap_bonus = (GetRangedAttackPower()+(int32)GetRangedAttackPowerMods())/14000.0;
-            //modified by Zack : please try to use premade functions if possible to avoid forgetting stuff
+            // ap_bonus = (GetRangedAttackPower()+(int32)GetRangedAttackPowerMods())/14000.0;
+            // modified by Zack : please try to use premade functions if possible to avoid forgetting stuff
             ap_bonus = GetRAP() / 14000.0f;
             bonus = ap_bonus * it->GetItemProperties()->Delay;
 
@@ -9716,14 +9690,12 @@ void Player::CalcDamage()
         r *= tmp;
         SetMaxRangedDamage(r > 0 ? r : 0);
 
-
         if (m_wratings.size())
         {
             std::map<uint32, uint32>::iterator itr = m_wratings.find(it->GetItemProperties()->SubClass);
             if (itr != m_wratings.end())
                 cr = itr->second;
         }
-
     }
     SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + PCR_RANGED_SKILL, cr);
 
@@ -10994,7 +10966,6 @@ void Player::_LoadPlayerCooldowns(QueryResult* result)
 void Player::Social_AddFriend(const char* name, const char* note)
 {
     WorldPacket data(SMSG_FRIEND_STATUS, 10);
-    std::map<uint32, char*>::iterator itr;
 
     // lookup the player
     PlayerInfo* info = objmgr.GetPlayerInfoByName(name);
@@ -11042,7 +11013,7 @@ void Player::Social_AddFriend(const char* name, const char* note)
         return;
     }
 
-    if (cache != nullptr)   //hes online if he has a cache
+    if (cache != nullptr) // hes online if he has a cache
     {
         data << uint8(FRIEND_ADDED_ONLINE);
         data << uint64(cache->GetUInt32Value(CACHE_PLAYER_LOWGUID));
@@ -11070,8 +11041,7 @@ void Player::Social_AddFriend(const char* name, const char* note)
     m_session->SendPacket(&data);
 
     // dump into the db
-    CharacterDatabase.Execute("INSERT INTO social_friends VALUES(%u, %u, \'%s\')",
-                              GetLowGUID(), info->guid, note ? CharacterDatabase.EscapeString(std::string(note)).c_str() : "");
+    CharacterDatabase.Execute("INSERT INTO social_friends VALUES(%u, %u, \'%s\')", GetLowGUID(), info->guid, note ? CharacterDatabase.EscapeString(std::string(note)).c_str() : "");
 
     if (cache != nullptr)
         cache->DecRef();
@@ -11763,22 +11733,19 @@ void Player::SendExploreXP(uint32 areaid, uint32 xp)
     m_session->SendPacket(&data);
 }
 
-void Player::HandleSpellLoot(uint32 itemid)
+void Player::HandleSpellLoot(uint32_t itemid)
 {
     Loot loot;
-    std::vector< __LootItem >::iterator itr;
-
     lootmgr.FillItemLoot(&loot, itemid);
 
-    for (itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    for (auto iter : loot.items)
     {
-        uint32 looteditemid = itr->item.itemproto->ItemId;
-        uint32 count = itr->iItemsCount;
+        uint32_t looteditemid = iter.item.itemproto->ItemId;
+        uint32_t count = iter.iItemsCount;
 
         m_ItemInterface->AddItemById(looteditemid, count, 0);
     }
 }
-
 
 void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
 {
@@ -12020,9 +11987,7 @@ bool Player::CanGainXp()
 
 void Player::RemoveGarbageItems()
 {
-    std::list< Item* >::iterator itr;
-
-    for (itr = m_GarbageItems.begin(); itr != m_GarbageItems.end(); ++itr)
+    for (auto itr = m_GarbageItems.begin(); itr != m_GarbageItems.end(); ++itr)
     {
         Item* it = *itr;
 
@@ -12059,7 +12024,7 @@ void Player::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool se
     if (self)
         OutPacket(Opcode, Len, Data);
 
-    for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+    for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
     {
         Player* p = static_cast< Player* >(*itr);
 
@@ -12096,7 +12061,7 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
 
         if (data->GetOpcode() != SMSG_MESSAGECHAT)
         {
-            for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+            for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
             {
                 Player* p = static_cast< Player* >(*itr);
 
@@ -12111,7 +12076,7 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
         }
         else
         {
-            for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+            for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
             {
                 Player* p = static_cast< Player* >(*itr);
 
@@ -12127,7 +12092,7 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
     {
         if (data->GetOpcode() != SMSG_MESSAGECHAT)
         {
-            for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+            for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
             {
                 Player* p = static_cast< Player* >(*itr);
 
@@ -12141,7 +12106,7 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
         }
         else
         {
-            for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+            for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
             {
                 Player* p = static_cast< Player* >(*itr);
 
@@ -12603,7 +12568,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     }
 
     // Stop players from casting
-    for (std::set< Object* >::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
+    for (auto itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
     {
         Unit* attacker = static_cast< Unit* >(*itr);
 
@@ -13598,8 +13563,7 @@ uint32 Player::GetUnstabledPetNumber(void)
     if (m_Pets.size() == 0)
         return 0;
 
-    std::map<uint32, PlayerPet*>::iterator itr = m_Pets.begin();
-    for (; itr != m_Pets.end(); ++itr)
+    for (std::map<uint32, PlayerPet*>::iterator itr = m_Pets.begin(); itr != m_Pets.end(); ++itr)
         if (itr->second->stablestate == STABLE_STATE_ACTIVE)
             return itr->first;
     return 0;

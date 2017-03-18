@@ -693,7 +693,7 @@ bool World::SetInitialWorldSettings()
         if (talent_class > 0 && talent_class < MAX_TALENT_CLASS)
             InspectTalentTabPages[talent_class][talent_tab->TabPage] = talent_tab->TalentTabID;
 
-        for (std::map<uint32, uint32>::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
+        for (auto itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
         {
             uint32 talent_id = itr->first & 0xFFFF;
             auto talent_info = sTalentStore.LookupEntry(talent_id);
@@ -2075,12 +2075,11 @@ void World::UpdateTotalTraffic()
     LastTrafficQuery = UNIXTIME;
     LastTotalTrafficInKB = TotalTrafficInKB;
     LastTotalTrafficOutKB = TotalTrafficOutKB;
-    WorldSocket* s = NULL;
+    WorldSocket* s = nullptr;
 
     objmgr._playerslock.AcquireReadLock();
-    std::unordered_map<uint32, Player*>::const_iterator itr;
 
-    for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+    for (std::unordered_map<uint32, Player*>::const_iterator itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
     {
         s = itr->second->GetSession()->GetSocket();
 

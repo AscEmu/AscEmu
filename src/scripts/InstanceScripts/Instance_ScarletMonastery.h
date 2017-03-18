@@ -43,7 +43,7 @@ enum CreatureEntry
     CN_WHITEMANE    = 3977,
 
     // High Inquisitor Fairbanks
-    CN_FAIRBANKS    = 4542,
+    CN_FAIRBANKS    = 4542
 
 
 };

@@ -98,7 +98,7 @@ enum CreatureSpells
     // Warp Splinter AI
     STOMP                       = 34716,
     SUMMON_SAPLINGS             = 34727,    // DBC: 34727, 34731, 34733, 34734, 34736, 34739, 34741 (with Ancestral Life spell 34742)   // won't work (guardian summon)
-    ARCANE_VOLLEY               = 34785,    //37078, 34785  // must additional script them (because Splinter eats them after 20 sec ^)
+    ARCANE_VOLLEY               = 34785     // 37078, 34785  // must additional script them (because Splinter eats them after 20 sec ^)
     // ^ Doesn't work somehow when used by mob :O
 };
 

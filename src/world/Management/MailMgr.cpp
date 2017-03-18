@@ -131,7 +131,7 @@ void MailSystem::SendAutomatedMessage(uint32 type, uint64 sender, uint64 receive
     msg.body = body;
     msg.money = money;
     msg.cod = cod;
-    for (std::vector<uint64>::iterator itr = item_guids.begin(); itr != item_guids.end(); ++itr)
+    for (auto itr = item_guids.begin(); itr != item_guids.end(); ++itr)
         msg.items.push_back(Arcemu::Util::GUID_LOPART(*itr));
 
     msg.stationery = stationery;

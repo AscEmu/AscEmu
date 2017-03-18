@@ -23,7 +23,7 @@
 
 #include <string>
 
-enum GOSSIP_SPECIAL
+enum Gossip_Special
 {
     GOSSIP_NO_SPECIAL           = 0x00,
     GOSSIP_POI                  = 0x01,

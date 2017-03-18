@@ -1265,7 +1265,7 @@ void Aura::EventUpdatePetAA(float r)
         return;
 
     std::list< Pet* > pl = p->GetSummons();
-    for (std::list< Pet* >::iterator itr = pl.begin(); itr != pl.end(); ++itr)
+    for (auto itr = pl.begin(); itr != pl.end(); ++itr)
     {
         Pet* pet = *itr;
 
@@ -1286,13 +1286,9 @@ void Aura::EventUpdatePetAA(float r)
         }
     }
 
-    for (std::list< Pet* >::iterator itr = pl.begin(); itr != pl.end();)
+    for (auto itr = pl.begin(); itr != pl.end(); ++itr)
     {
-        std::list< Pet* >::iterator itr2 = itr;
-
-        Pet* pet = *itr2;
-        ++itr;
-
+        Pet* pet = *itr;
         if (p->GetDistanceSq(pet) <= r)
             continue;
 
@@ -1306,7 +1302,7 @@ void Aura::EventUpdateFriendAA(float r)
     if (u == NULL)
         return;
 
-    for (std::set< Object* >::iterator itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
+    for (auto itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
     {
         Object* o = *itr;
 
@@ -1376,7 +1372,7 @@ void Aura::EventUpdateEnemyAA(float r)
     if (u == NULL)
         return;
 
-    for (std::set< Object* >::iterator itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
+    for (auto itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
     {
         Object* o = *itr;
 
@@ -1564,10 +1560,9 @@ void Aura::ClearAATargets()
         Player* p = static_cast<Player*>(m_target);
 
         std::list< Pet* > pl = p->GetSummons();
-        for (std::list< Pet* >::iterator itr = pl.begin(); itr != pl.end(); ++itr)
+        for (auto itr = pl.begin(); itr != pl.end(); ++itr)
         {
             Pet* pet = *itr;
-
             pet->RemoveAura(spellid);
         }
     }
@@ -2345,7 +2340,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
         std::vector<Unit*> target_threat;
         int count = 0;
         Creature* tmp_creature = NULL;
-        for (std::set<Object*>::iterator itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
+        for (auto itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
         {
             if (!(*itr)->IsCreature())
                 continue;
@@ -2695,7 +2690,7 @@ void Aura::SpellAuraDamageShield(bool apply)
     }
     else
     {
-        for (std::list<struct DamageProc>::iterator i = m_target->m_damageShields.begin(); i != m_target->m_damageShields.end(); ++i)
+        for (auto i = m_target->m_damageShields.begin(); i != m_target->m_damageShields.end(); ++i)
         {
             if (i->owner == this)
             {
@@ -4125,7 +4120,7 @@ void Aura::SpellAuraProcTriggerDamage(bool apply)
     }
     else
     {
-        for (std::list<struct DamageProc>::iterator i = m_target->m_damageShields.begin(); i != m_target->m_damageShields.end(); ++i)
+        for (auto i = m_target->m_damageShields.begin(); i != m_target->m_damageShields.end(); ++i)
         {
             if (i->owner == this)
             {
@@ -4966,7 +4961,7 @@ void Aura::SpellAuraFeignDeath(bool apply)
             p_target->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
 
             //now get rid of mobs agro. pTarget->CombatStatus.AttackersForgetHate() - this works only for already attacking mobs
-            for (std::set<Object*>::iterator itr = p_target->GetInRangeSetBegin(); itr != p_target->GetInRangeSetEnd(); ++itr)
+            for (auto itr = p_target->GetInRangeSetBegin(); itr != p_target->GetInRangeSetEnd(); ++itr)
             {
                 if ((*itr)->IsUnit() && (static_cast< Unit* >(*itr))->isAlive())
                 {

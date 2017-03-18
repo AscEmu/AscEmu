@@ -428,8 +428,8 @@ void AIInterface::_UpdateTargets()
         m_updateTargets = false;
         /*deque<Unit*> tokill;
 
-        //modified for vs2005 compatibility
-        for (itr = m_aiTargets.begin(); itr != m_aiTargets.end();++itr)
+        ///\todo modified for vs2005 compatibility
+        for (itr = m_aiTargets.begin(); itr != m_aiTargets.end(); ++itr)
         {
         if (!itr->first->isAlive() || m_Unit->GetDistanceSq(itr->first) >= 6400.0f)
         {
@@ -1218,8 +1218,7 @@ Unit* AIInterface::FindTarget()
     Unit* target = NULL;
     Unit* critterTarget = NULL;
     float distance = 999999.0f; // that should do it.. :p
-    std::set<Object*>::iterator itr, itr2;
-    std::set< Object* >::iterator pitr, pitr2;
+
     Unit* pUnit;
     float dist;
 
@@ -1301,11 +1300,8 @@ Unit* AIInterface::FindTarget()
 
     //we have a high chance that we will agro a player
     //this is slower then oppfaction list BUT it has a lower chance that contains invalid pointers
-    for (pitr2 = m_Unit->GetInRangePlayerSetBegin(); pitr2 != m_Unit->GetInRangePlayerSetEnd();)
+    for (auto pitr = m_Unit->GetInRangePlayerSetBegin(); pitr != m_Unit->GetInRangePlayerSetEnd(); ++pitr)
     {
-        pitr = pitr2;
-        ++pitr2;
-
         pUnit = static_cast< Player* >(*pitr);
 
         if (UnsafeCanOwnerAttackUnit(pUnit) == false)
@@ -1340,30 +1336,27 @@ Unit* AIInterface::FindTarget()
     {
         m_updateTargetsTimer2 = getMSTime() + TARGET_UPDATE_INTERVAL;
 
-        for (itr2 = m_Unit->GetInRangeSetBegin(); itr2 != m_Unit->GetInRangeSetEnd();)
+        for (auto iter = m_Unit->GetInRangeSetBegin(); iter != m_Unit->GetInRangeSetEnd(); ++iter)
         {
-            itr = itr2;
-            ++itr2;
-
-            if (!(*itr)->IsUnit())
+            if (!(*iter)->IsUnit())
                 continue;
 
-            pUnit = static_cast< Unit* >(*itr);
+            pUnit = static_cast< Unit* >(*iter);
 
             if (UnsafeCanOwnerAttackUnit(pUnit) == false)
                 continue;
 
-            //on blizz there is no Z limit check
+            // on blizz there is no Z limit check
             dist = m_Unit->GetDistance2dSq(pUnit);
 
-            if (pUnit->m_faction && pUnit->m_faction->Faction == 28)// only Attack a critter if there is no other Enemy in range
+            if (pUnit->m_faction && pUnit->m_faction->Faction == 28) // only Attack a critter if there is no other Enemy in range
             {
-                if (dist < 225.0f)    // was 10
+                if (dist < 225.0f) // was 10
                     critterTarget = pUnit;
                 continue;
             }
 
-            if (dist > distance)     // we want to find the CLOSEST target
+            if (dist > distance) // we want to find the CLOSEST target
                 continue;
 
             if (dist <= _CalcAggroRange(pUnit))
@@ -1562,9 +1555,8 @@ bool AIInterface::FindFriends(float dist)
 
         uint8 spawned = 0;
 
-        for (std::set< Object* >::iterator hostileItr = m_Unit->GetInRangePlayerSetBegin(); hostileItr != m_Unit->GetInRangePlayerSetEnd(); ++hostileItr)
+        for (auto hostileItr = m_Unit->GetInRangePlayerSetBegin(); hostileItr != m_Unit->GetInRangePlayerSetEnd(); ++hostileItr)
         {
-
             Player* p = static_cast< Player* >(*hostileItr);
 
             if (spawned >= 3)
@@ -3399,7 +3391,7 @@ void AIInterface::WipeReferences()
     tauntedBy = 0;
 
     //Clear targettable
-    for (std::set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
+    for (auto itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
         if ((*itr)->IsUnit() && static_cast< Unit* >(*itr)->GetAIInterface())
             static_cast< Unit* >(*itr)->GetAIInterface()->RemoveThreatByPtr(m_Unit);
 }
@@ -3424,7 +3416,7 @@ void AIInterface::EventChangeFaction(Unit* ForceAttackersToHateThisInstead)
     //Clear targettable
     if (ForceAttackersToHateThisInstead == NULL)
     {
-        for (std::set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
+        for (auto itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
             if ((*itr)->IsUnit() && static_cast< Unit* >(*itr)->GetAIInterface())
                 static_cast< Unit* >(*itr)->GetAIInterface()->RemoveThreatByPtr(m_Unit);
 
@@ -3432,7 +3424,7 @@ void AIInterface::EventChangeFaction(Unit* ForceAttackersToHateThisInstead)
     }
     else
     {
-        for (std::set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
+        for (auto itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
             if ((*itr)->IsUnit() && static_cast< Unit* >(*itr)->GetAIInterface()
                 && static_cast< Unit* >(*itr)->GetAIInterface()->getThreatByPtr(m_Unit))   //this guy will join me in fight since I'm telling him "sorry i was controlled"
             {

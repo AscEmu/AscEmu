@@ -21,7 +21,7 @@
 
 #define MAX_QUEST_LOG_SIZE 25
 
-enum QUEST_STATUS
+enum Quest_Status
 {
     QMGR_QUEST_NOT_AVAILABLE                = 0x00,     /// There aren't any quests available.              | "No Mark"
     QMGR_QUEST_AVAILABLELOW_LEVEL           = 0x01,     /// Quest available, and your level isn't enough.   | "Gray Quotation Mark !"
@@ -33,17 +33,17 @@ enum QUEST_STATUS
     QMGR_QUEST_REPEATABLE_FINISHED          = 0x06,
     QMGR_QUEST_REPEATABLE                   = 0x07,     /// Quest repeatable                                | "Blue Question ? Mark"
     QMGR_QUEST_AVAILABLE                    = 0x08,     /// Quest available, and your level is enough       | "Yellow Quotation ! Mark"
-    QMGR_QUEST_FINISHED                     = 0x0A,     /// Quest has been finished.                        | "Yellow Question  ? Mark" (7 has no minimap icon)
+    QMGR_QUEST_FINISHED                     = 0x0A      /// Quest has been finished.                        | "Yellow Question  ? Mark" (7 has no minimap icon)
     //QUEST_ITEM_UPDATE                     = 0x06      // Yellow Question "?" Mark. //Unknown
 };
 
-enum QUESTGIVER_QUEST_TYPE
+enum Questgiver_Quest_Type
 {
     QUESTGIVER_QUEST_START  = 0x01,
     QUESTGIVER_QUEST_END    = 0x02
 };
 
-enum QUEST_TYPE
+enum Quest_Type
 {
     QUEST_GATHER    = 0x01,
     QUEST_SLAY      = 0x02
@@ -95,10 +95,10 @@ enum INVALID_REASON
     INVALID_REASON_DONT_HAVE_REQ_ITEMS      = 21,       //changed for 2.1.3
     INVALID_REASON_DONT_HAVE_REQ_MONEY      = 23,
     INVALID_REASON_REACHED_DAILY_LIMIT      = 26,       /// "you have completed xx daily quests today" confirmed :)
-    INVALID_REASON_UNKNOW27                 = 27,       /// "You cannot completed quests once you have reached tired time"
+    INVALID_REASON_UNKNOW27                 = 27        /// "You cannot completed quests once you have reached tired time"
 };
 
-enum QUEST_SHARE
+enum Quest_Share
 {
     QUEST_SHARE_MSG_SHARING_QUEST           = 0,
     QUEST_SHARE_MSG_CANT_TAKE_QUEST         = 1,
@@ -112,10 +112,10 @@ enum QUEST_SHARE
     QUEST_SHARE_MSG_CANT_BE_SHARED_TODAY    = 8,        /// The following 4 messages (from 8 to 11) are unused on ArcEmu, but for completeness I have included them here, maybe we'll need them later...
     QUEST_SHARE_MSG_SHARING_TIMER_EXPIRED   = 9,
     QUEST_SHARE_MSG_NOT_IN_PARTY            = 10,
-    QUEST_SHARE_MSG_DIFFERENT_SERVER_DAILY  = 11,
+    QUEST_SHARE_MSG_DIFFERENT_SERVER_DAILY  = 11
 };
 
-enum QUEST_MOB_TYPES
+enum Quest_Mob_Types
 {
     QUEST_MOB_TYPE_CREATURE         = 1,
     QUEST_MOB_TYPE_GAMEOBJECT       = 2

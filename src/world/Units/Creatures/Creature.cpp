@@ -215,7 +215,7 @@ void Creature::OnRespawn(MapMgr* m)
     if (bossInfoMap != NULL && pInstance != NULL)
     {
         bool skip = false;
-        for (std::set<uint32>::iterator killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
+        for (auto killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
         {
             // Is killed boss?
             if ((*killedNpc) == creature_properties->Id)
@@ -321,16 +321,16 @@ void Creature::generateLoot()
         {
             uint16 lootThreshold = looter->GetGroup()->GetThreshold();
 
-            for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+            for (auto iter : loot.items)
             {
-                if (itr->item.itemproto->Quality < lootThreshold)
+                if (iter.item.itemproto->Quality < lootThreshold)
                     continue;
 
                 // Master Loot Stuff - Let the rest of the raid know what dropped..
                 ///\todo Shouldn't we move this array to a global position? Or maybe it already exists^^ (VirtualAngel) --- I can see (dead) talking pigs...^^
                 const char* itemColours[8] = { "9d9d9d", "ffffff", "1eff00", "0070dd", "a335ee", "ff8000", "e6cc80", "e6cc80" };
                 char buffer[256];
-                sprintf(buffer, "\174cff%s\174Hitem:%u:0:0:0:0:0:0:0\174h[%s]\174h\174r", itemColours[itr->item.itemproto->Quality], itr->item.itemproto->ItemId, itr->item.itemproto->Name.c_str());
+                sprintf(buffer, "\174cff%s\174Hitem:%u:0:0:0:0:0:0:0\174h[%s]\174h\174r", itemColours[iter.item.itemproto->Quality], iter.item.itemproto->ItemId, iter.item.itemproto->Name.c_str());
                 this->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, buffer);
             }
         }
@@ -502,13 +502,12 @@ void Creature::AddQuest(QuestRelation* Q)
 
 void Creature::DeleteQuest(QuestRelation* Q)
 {
-    std::list<QuestRelation*>::iterator it;
-    for (it = m_quests->begin(); it != m_quests->end(); ++it)
+    for (auto iter = m_quests->begin(); iter != m_quests->end(); ++iter)
     {
-        if (((*it)->type == Q->type) && ((*it)->qst == Q->qst))
+        if (((*iter)->type == Q->type) && ((*iter)->qst == Q->qst))
         {
-            delete(*it);
-            m_quests->erase(it);
+            delete(*iter);
+            m_quests->erase(iter);
             break;
         }
     }
@@ -516,10 +515,9 @@ void Creature::DeleteQuest(QuestRelation* Q)
 
 QuestProperties const* Creature::FindQuest(uint32 quest_id, uint8 quest_relation)
 {
-    std::list<QuestRelation*>::iterator it;
-    for (it = m_quests->begin(); it != m_quests->end(); ++it)
+    for (auto iter = m_quests->begin(); iter != m_quests->end(); ++iter)
     {
-        QuestRelation* ptr = (*it);
+        QuestRelation* ptr = (*iter);
 
         if ((ptr->qst->id == quest_id) && (ptr->type & quest_relation))
         {
@@ -532,13 +530,12 @@ QuestProperties const* Creature::FindQuest(uint32 quest_id, uint8 quest_relation
 uint16 Creature::GetQuestRelation(uint32 quest_id)
 {
     uint16 quest_relation = 0;
-    std::list<QuestRelation*>::iterator it;
 
-    for (it = m_quests->begin(); it != m_quests->end(); ++it)
+    for (auto iter = m_quests->begin(); iter != m_quests->end(); ++iter)
     {
-        if ((*it)->qst->id == quest_id)
+        if ((*iter)->qst->id == quest_id)
         {
-            quest_relation |= (*it)->type;
+            quest_relation |= (*iter)->type;
         }
     }
     return quest_relation;
@@ -1149,7 +1146,7 @@ void Creature::AddVendorItem(uint32 itemid, uint32 amount, DB2::Structures::Item
     ci.extended_cost = ec;
     if (!m_SellItems)
     {
-        m_SellItems = new std::vector < CreatureItem > ;
+        m_SellItems = new std::vector < CreatureItem >;
         objmgr.SetVendorList(GetEntry(), m_SellItems);
     }
     m_SellItems->push_back(ci);
@@ -1157,7 +1154,7 @@ void Creature::AddVendorItem(uint32 itemid, uint32 amount, DB2::Structures::Item
 
 void Creature::ModAvItemAmount(uint32 itemid, uint32 value)
 {
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
     {
         if (itr->itemid == itemid)
         {
@@ -1181,7 +1178,7 @@ void Creature::ModAvItemAmount(uint32 itemid, uint32 value)
 
 void Creature::UpdateItemAmount(uint32 itemid)
 {
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
     {
         if (itr->itemid == itemid)
         {
@@ -1713,18 +1710,16 @@ void Creature::OnPushToWorld()
         return;
     }
 
-    std::set<uint32>::iterator itr = creature_properties->start_auras.begin();
-    SpellInfo* sp;
-    for (; itr != creature_properties->start_auras.end(); ++itr)
+    for (auto itr = creature_properties->start_auras.begin(); itr != creature_properties->start_auras.end(); ++itr)
     {
-        sp = sSpellCustomizations.GetSpellInfo((*itr));
+        SpellInfo* sp = sSpellCustomizations.GetSpellInfo((*itr));
         if (sp == nullptr)
             continue;
 
         CastSpell(this, sp, 0);
     }
 
-    if (GetScript() == NULL)
+    if (GetScript() == nullptr)
     {
         LoadScript();
     }
@@ -1739,31 +1734,30 @@ void Creature::OnPushToWorld()
         if (m_aiInterface->m_formationLinkSqlId)
         {
             // add event
-            sEventMgr.AddEvent(this, &Creature::FormationLinkUp, m_aiInterface->m_formationLinkSqlId,
-                               EVENT_CREATURE_FORMATION_LINKUP, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+            sEventMgr.AddEvent(this, &Creature::FormationLinkUp, m_aiInterface->m_formationLinkSqlId, EVENT_CREATURE_FORMATION_LINKUP, 1000, 0, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
             haslinkupevent = true;
         }
 
         if (m_spawn->channel_target_creature)
         {
-            sEventMgr.AddEvent(this, &Creature::ChannelLinkUpCreature, m_spawn->channel_target_creature, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);    // only 5 attempts
+            sEventMgr.AddEvent(this, &Creature::ChannelLinkUpCreature, m_spawn->channel_target_creature, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT); // only 5 attempts
         }
 
         if (m_spawn->channel_target_go)
         {
-            sEventMgr.AddEvent(this, &Creature::ChannelLinkUpGO, m_spawn->channel_target_go, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);    // only 5 attempts
+            sEventMgr.AddEvent(this, &Creature::ChannelLinkUpGO, m_spawn->channel_target_go, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);             // only 5 attempts
         }
     }
 
     m_aiInterface->m_is_in_instance = (m_mapMgr->GetMapInfo()->type != INSTANCE_NULL) ? true : false;
     if (this->HasItems())
     {
-        for (std::vector<CreatureItem>::iterator itr2 = m_SellItems->begin(); itr2 != m_SellItems->end(); ++itr2)
+        for (auto iter = m_SellItems->begin(); iter != m_SellItems->end(); ++iter)
         {
-            if (itr2->max_amount == 0)
-                itr2->available_amount = 0;
-            else if (itr2->available_amount < itr2->max_amount)
-                sEventMgr.AddEvent(this, &Creature::UpdateItemAmount, itr2->itemid, EVENT_ITEM_UPDATE, vendorItemsUpdate, 1, 0);
+            if (iter->max_amount == 0)
+                iter->available_amount = 0;
+            else if (iter->available_amount < iter->max_amount)
+                sEventMgr.AddEvent(this, &Creature::UpdateItemAmount, iter->itemid, EVENT_ITEM_UPDATE, vendorItemsUpdate, 1, 0);
         }
 
     }
@@ -2016,9 +2010,9 @@ bool Creature::HasLootForPlayer(Player* plr)
     if (loot.gold > 0)
         return true;
 
-    for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    for (auto iter : loot.items)
     {
-        ItemProperties const* proto = itr->item.itemproto;
+        ItemProperties const* proto = iter.item.itemproto;
         if (proto != nullptr)
         {
             if (proto->Bonding == ITEM_BIND_QUEST || proto->Bonding == ITEM_BIND_QUEST2)
@@ -2026,7 +2020,7 @@ bool Creature::HasLootForPlayer(Player* plr)
                 if (plr->HasQuestForItem(proto->ItemId))
                     return true;
             }
-            else if (itr->iItemsCount > 0)
+            else if (iter.iItemsCount > 0)
                 return true;
         }
     }
@@ -2114,7 +2108,7 @@ void Creature::RemoveSanctuaryFlag()
 int32 Creature::GetSlotByItemId(uint32 itemid)
 {
     uint32 slot = 0;
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
         {
             if (itr->itemid == itemid)
                 return slot;
@@ -2126,7 +2120,7 @@ int32 Creature::GetSlotByItemId(uint32 itemid)
 
 uint32 Creature::GetItemAmountByItemId(uint32 itemid)
 {
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
         {
             if (itr->itemid == itemid)
                 return ((itr->amount < 1) ? 1 : itr->amount);
@@ -2141,7 +2135,7 @@ void Creature::GetSellItemBySlot(uint32 slot, CreatureItem& ci)
 
 void Creature::GetSellItemByItemId(uint32 itemid, CreatureItem& ci)
 {
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
         {
             if (itr->itemid == itemid)
             {
@@ -2162,7 +2156,7 @@ DBC::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByIte
 DB2::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByItemId(uint32 itemid)
 #endif
 {
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
         {
             if (itr->itemid == itemid)
                 return itr->extended_cost;
@@ -2187,7 +2181,7 @@ size_t Creature::GetSellItemCount()
 
 void Creature::RemoveVendorItem(uint32 itemid)
 {
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
         {
             if (itr->itemid == itemid)
             {
@@ -2397,7 +2391,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     }
 
     // Stop players from casting
-    for (std::set< Object* >::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
+    for (auto itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
     {
         Unit* attacker = static_cast< Unit* >(*itr);
 

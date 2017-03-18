@@ -2130,11 +2130,11 @@ class LuaGameObjectScript : public GameObjectAIScript
 
             std::map< uint64, std::set<int> >& objRefs = sLuaMgr.getObjectFunctionRefs();
             std::map< uint64, std::set<int> >::iterator itr2 = objRefs.find(_gameobject->GetGUID());
-            std::set<int>::iterator it2;
+
             if (itr2 != objRefs.end())
             {
                 std::set<int>& refs = itr2->second;
-                for (it2 = refs.begin(); it2 != refs.end(); ++it2)
+                for (std::set<int>::iterator it2 = refs.begin(); it2 != refs.end(); ++it2)
                 {
                     luaL_unref(sLuaMgr.getluState(), LUA_REGISTRYINDEX, (*it2));
                 }

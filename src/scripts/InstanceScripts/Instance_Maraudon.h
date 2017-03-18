@@ -45,12 +45,10 @@ enum CreatureEntry
 
 enum CreatureSpells
 {
-
 };
 
 enum CreatureSay
 {
-
 };
 
 #endif // _INSTANCE_MAURADON_H

@@ -42,26 +42,26 @@ enum CreatureEntry
 enum CreatureSpells
 {
     //Marwyn
-        // Normal Mode Spells
-        N_SPELL_OBLITERATE      = 72360,
-        N_SPELL_WELL            = 72362,
-        N_SPELL_CORRUPTFLESH    = 72363,
-        N_SPELL_SHARED          = 72368,
-        // Heroic Mode Spells
-        H_SPELL_OBLITERATE      = 72434,
-        H_SPELL_WELL            = 72362,
-        H_SPELL_CORRUPTFLESH    = 72436,
-        H_SPELL_SHARED          = 72369,
+    // Normal Mode Spells
+    N_SPELL_OBLITERATE      = 72360,
+    N_SPELL_WELL            = 72362,
+    N_SPELL_CORRUPTFLESH    = 72363,
+    N_SPELL_SHARED          = 72368,
+    // Heroic Mode Spells
+    H_SPELL_OBLITERATE      = 72434,
+    H_SPELL_WELL            = 72362,
+    H_SPELL_CORRUPTFLESH    = 72436,
+    H_SPELL_SHARED          = 72369,
 
     //Falric
-        // Normal Mode Spells
-        N_SPELL_QSTRIKE     = 72422,
-        N_SPELL_IMPEND      = 72426,
-        N_SPELL_HORROR      = 72435,
-        // Heroic Mode Spells
-        H_SPELL_QSTRIKE     = 72453,
-        H_SPELL_IMPEND      = 72426,
-        H_SPELL_HORROR      = 72452,
+    // Normal Mode Spells
+    N_SPELL_QSTRIKE         = 72422,
+    N_SPELL_IMPEND          = 72426,
+    N_SPELL_HORROR          = 72435,
+    // Heroic Mode Spells
+    H_SPELL_QSTRIKE         = 72453,
+    H_SPELL_IMPEND          = 72426,
+    H_SPELL_HORROR          = 72452
 };
 
 enum CreatureSay

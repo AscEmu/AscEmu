@@ -619,7 +619,7 @@ void MoonInstanceScript::BuildEncounterMapWithIds(IdVector pIds)
     uint32 CurrentId = 0;
     EncounterState State = State_NotStarted;
     Creature* Boss = NULL;
-    std::set< uint32 >::iterator Iter;
+
     EncounterMap::iterator EncounterIter;
     for (size_t i = 0; i < pIds.size(); ++i)
     {
@@ -627,7 +627,7 @@ void MoonInstanceScript::BuildEncounterMapWithIds(IdVector pIds)
         if (CurrentId == 0)
             continue;
 
-        Iter = mInstance->pInstance->m_killedNpcs.find(CurrentId);
+        std::set< uint32 >::iterator Iter = mInstance->pInstance->m_killedNpcs.find(CurrentId);
         if (Iter != mInstance->pInstance->m_killedNpcs.end())
             State = State_Finished;
 

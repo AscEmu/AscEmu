@@ -73,7 +73,7 @@ enum CreatureSay
     SAY_AENUS_01        = 3569,     // Let us see what fate has in store....
     SAY_AENUS_02        = 3572,     // No one will stop us! old:No one can stop us! No one!
     SAY_AENUS_03        = 3571,     // One less obstacle in our way!
-    SAY_AENUS_04        = 3573,     // It is only a matter...of time.
+    SAY_AENUS_04        = 3573      // It is only a matter...of time.
                                     // ID: 3568 "The time has come to shatter this clockwork universe forever! Let us no longer be slaves of the hourglass! I warn you: those who do not embrace this greater path shall become victims of its passing!"
                                     // ID: 3569 "Let us see what fate has in store...."
                                     // BROADCAST ID: 3574 "%s goes into a frenzy!"

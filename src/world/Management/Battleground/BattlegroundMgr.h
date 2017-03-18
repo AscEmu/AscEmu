@@ -80,7 +80,7 @@ enum BattlegroundDbcIndex
     BGDBC_DALARAN_SEWERS = 10,
     BGDBC_RING_OF_VALOR = 11,
     BGDBC_ISLE_OF_CONQUEST = 30,
-    BGDBC_ROWS = 30,
+    BGDBC_ROWS = 30
 };
 
 enum BattleGroundTypes
