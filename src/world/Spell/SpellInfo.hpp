@@ -188,7 +188,7 @@ class SERVER_DECL SpellInfo
         uint32 AttributesExJ;
         uint32 CastingTimeIndex;
         uint32 DurationIndex;
-        uint32 powerType;
+        int32 powerType;            // uint32  error: case value evaluates to -2, which cannot be narrowed to type 'uint32' (aka 'unsigned int') [-Wc++11-narrowing]
         uint32 rangeIndex;
         float speed;
         uint32 SpellVisual;

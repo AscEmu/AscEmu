@@ -1833,7 +1833,7 @@ namespace DBC
             uint32_t AttributesExJ;                               // 11
             uint32_t CastingTimeIndex;                            // 12
             uint32_t DurationIndex;                               // 13
-            uint32_t powerType;                                   // 14
+            int32_t powerType;                                    // 14
             uint32_t rangeIndex;                                  // 15
             float speed;                                          // 16
             uint32_t SpellVisual[2];                              // 17-18
