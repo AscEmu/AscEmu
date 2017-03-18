@@ -899,6 +899,7 @@ class SERVER_DECL WorldSession
 
         const MovementInfo* GetMovementInfo() const { return &movement_info; }
         static void InitPacketHandlerTable();
+        static void loadSpecificHandlers();
 
         uint32 floodLines;
         time_t floodTime;

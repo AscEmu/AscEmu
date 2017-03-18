@@ -7,6 +7,7 @@ set(SRC_GAMECATA_FILES
     ${PATH_PREFIX}/Handlers/MiscellaneousHandler.cpp
     ${PATH_PREFIX}/Network/Opcodes.cpp
     ${PATH_PREFIX}/Network/Opcodes.h
+    ${PATH_PREFIX}/Network/WorldPacketHandlers.cpp
     ${PATH_PREFIX}/Storage/DBCStores.cpp
     ${PATH_PREFIX}/Storage/DBCStores.h
     ${PATH_PREFIX}/Storage/DBCStructures.cpp
