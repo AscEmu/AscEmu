@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #define _SPELL_INFO_HPP
 
 #include "SpellDefines.hpp"
+#include "WorldConf.h"
 
 class Player;
 
@@ -356,9 +357,9 @@ class SERVER_DECL SpellInfo
         uint32 custom_SchoolMask;
         uint32 CustomFlags;
         uint32 EffectCustomFlag[MAX_SPELL_EFFECTS];
-#endif
         void* (*SpellFactoryFunc);
         void* (*AuraFactoryFunc);
+#endif
 };
 
 #endif  //_SPELL_INFO_HPP

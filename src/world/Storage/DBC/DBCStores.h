@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #ifndef _DBC_STORES_H
 #define _DBC_STORES_H
 
+#include "WorldConf.h"
+
 #if VERSION_STRING != Cata
 #include "DBCGlobals.hpp"
 #include "Server/Definitions.h"
