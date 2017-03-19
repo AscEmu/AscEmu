@@ -63,6 +63,7 @@ WorldSession::WorldSession(uint32 id, std::string Name, WorldSocket* sock) :
     has_dk(false),
     _latency(0),
     client_build(0),
+    m_MoverGuid(0),
     m_muted(0)
 {
     memset(movement_packet, 0, sizeof(movement_packet));

@@ -134,6 +134,7 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(QuestProperties const* qst)
         *data << qst->required_itemcount[i];        // Collect item count [i]
     }
 
+#if VERSION_STRING != Cata
     if (lci)
     {
         *data << lci->ObjectiveText[0];
@@ -148,6 +149,19 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(QuestProperties const* qst)
         *data << qst->objectivetexts[2];            // Objective 3 - Used as text if mob not set
         *data << qst->objectivetexts[3];            // Objective 4 - Used as text if mob not set
     }
+#else
+    *data << uint32(0);         // unk
+    for (i = 0; i < 4; ++i)     // objectives
+        *data << (lci ? lci->ObjectiveText[i] : qst->objectivetexts[i]);
+
+    *data << "";
+    *data << "";
+    *data << "";
+    *data << "";
+
+    *data << uint32(0);
+    *data << uint32(0);
+#endif
 
     return data;
 }

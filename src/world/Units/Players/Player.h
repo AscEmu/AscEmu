@@ -30,6 +30,7 @@
 #include "Units/Unit.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Units/Creatures/AIInterface.h" //?? what?
+#include "WorldConf.h"
 
 
 class QuestLogEntry;
@@ -349,6 +350,10 @@ public:
     // Movement
     void sendForceMovePaket(UnitSpeedType speed_type, float speed);
     void sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed);
+
+    void handleFall(MovementInfo const& movement_info);
+    bool isPlayerJumping(MovementInfo const& movement_info, uint16_t opcode);
+    void handleBreathing(MovementInfo& movement_info, WorldSession* session);
 
 private:
     //MIT End

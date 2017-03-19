@@ -94,6 +94,7 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recv_data)
         // Used when switching from controlling seat to accessory, or from accessory to accessory
         case CMSG_CHANGE_SEATS_ON_CONTROLLED_VEHICLE:
         {
+#if VERSION_STRING != Cata
             WoWGuid src_guid;
             WoWGuid dst_guid;
             uint8 seat = 0;
@@ -136,6 +137,7 @@ void WorldSession::HandleChangeVehicleSeat(WorldPacket& recv_data)
             }
 
             break;
+#endif
         }
     }
 }

@@ -1821,8 +1821,10 @@ void Player::smsg_InitialSpells()
 
     GetSession()->SendPacket(&data);
 
+#if VERSION_STRING != TBC
     uint32 v = 0;
     GetSession()->OutPacket(0x041d, 4, &v);
+#endif
     //Log::getSingleton().outDetail("CHARACTER: Sent Initial Spells");
 }
 

@@ -304,9 +304,31 @@ void Unit::setMoveCanFly(bool set_fly)
             // Remove falling flag if set
             RemoveUnitMovementFlag(MOVEFLAG_FALLING);
 
+#if VERSION_STRING != Cata
             WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
             data << GetNewGUID();
             data << uint32(0);
+#else
+            WorldPacket data(SMSG_MOVE_SET_CAN_FLY, 13);
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[3]);
+            data << uint32(2);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[5]);
+#endif
             SendMessageToSet(&data, true);
         }
         else
@@ -316,9 +338,31 @@ void Unit::setMoveCanFly(bool set_fly)
             RemoveUnitMovementFlag(MOVEFLAG_DESCENDING);
             RemoveUnitMovementFlag(MOVEFLAG_ASCENDING);
 
+#if VERSION_STRING != Cata
             WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
             data << GetNewGUID();
             data << uint32(0);
+#else
+            WorldPacket data(SMSG_MOVE_UNSET_CAN_FLY, 13);
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[6]);
+            data << uint32(5);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[7]);
+#endif
             SendMessageToSet(&data, true);
         }
     }
@@ -358,18 +402,64 @@ void Unit::setMoveRoot(bool set_root)
         {
             AddUnitMovementFlag(MOVEFLAG_ROOTED);
 
+#if VERSION_STRING != Cata
             WorldPacket data(SMSG_FORCE_MOVE_ROOT, 12);
             data << GetNewGUID();
             data << uint32(0);
+#else
+            ObjectGuid guid = GetGUID();
+            WorldPacket data(SMSG_FORCE_MOVE_ROOT, 13);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[3]);
+
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[5]);
+            data << uint32(0);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[6]);
+#endif
             SendMessageToSet(&data, true);
         }
         else
         {
             RemoveUnitMovementFlag(MOVEFLAG_ROOTED);
 
+#if VERSION_STRING != Cata
             WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 12);
             data << GetNewGUID();
             data << uint32(0);
+#else
+            ObjectGuid guid = GetGUID();
+            WorldPacket data(SMSG_FORCE_MOVE_UNROOT, 13);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[6]);
+
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[1]);
+            data << uint32(0);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[5]);
+#endif
             SendMessageToSet(&data, true);
         }
     }

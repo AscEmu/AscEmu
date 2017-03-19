@@ -37,6 +37,8 @@ struct ObjectGuid
         ObjectGuid(uint64_t guid) { _data.u64 = guid; }
         ObjectGuid(ObjectGuid const& other) { _data.u64 = other._data.u64; }
 
+        bool IsEmpty() const { return _data.u64 == 0; }
+
         uint8_t& operator[](uint32_t index)
         {
             ASSERT(index < sizeof(uint64_t));

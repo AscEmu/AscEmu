@@ -752,9 +752,9 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 void WorldSession::HandleMoveTimeSkippedOpcode(WorldPacket& recv_data)
 {}
 
-#if VERSION_STRING != Cata
 void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recv_data)
 {
+#if VERSION_STRING != Cata
     CHECK_INWORLD_RETURN
 
     WoWGuid guid;
@@ -773,8 +773,8 @@ void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recv_data)
     // set up to the movement packet
     movement_packet[0] = m_MoverWoWGuid.GetNewGuidMask();
     memcpy(&movement_packet[1], m_MoverWoWGuid.GetNewGuid(), m_MoverWoWGuid.GetNewGuidLen());
-}
 #endif
+}
 
 void WorldSession::HandleSetActiveMoverOpcode(WorldPacket& recv_data)
 {

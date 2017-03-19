@@ -370,6 +370,7 @@ class SERVER_DECL WorldSession
         void HandleCharCreateOpcode(WorldPacket& recvPacket);
         void HandlePlayerLoginOpcode(WorldPacket& recvPacket);
         void HandleRealmSplitOpcode(WorldPacket& recvPacket);
+        void HandleObjectUpdateFailedOpcode(WorldPacket& recv_data);
         void HandleTimeSyncResp(WorldPacket& recv_data);
         void HandleDeclinedPlayerNameOpcode(WorldPacket& recv_data); // declined names (Cyrillic client)
 
@@ -896,6 +897,7 @@ class SERVER_DECL WorldSession
         int8 _side;
 
         WoWGuid m_MoverWoWGuid;
+        uint64 m_MoverGuid;
 
         uint32 _logoutTime; // time we received a logout request -- wait 20 seconds, and quit
 

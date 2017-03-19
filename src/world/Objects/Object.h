@@ -40,6 +40,7 @@
 #endif
 #include "../shared/StackBuffer.h"
 #include "../shared/CommonDefines.hpp"
+#include "WorldPacket.h"
 
 class SpellInfo;
 
@@ -100,6 +101,35 @@ typedef struct
 
 struct MovementInfo
 {
+#if VERSION_STRING == Cata
+    ObjectGuid guid;
+    ObjectGuid guid2;
+    ObjectGuid t_guid;
+
+    struct StatusInfo
+    {
+        StatusInfo() : hasFallData(false), hasFallDirection(false), hasOrientation(false),
+            hasPitch(false), hasSpline(false), hasSplineElevation(false),
+            hasTimeStamp(false), hasTransportTime2(false), hasTransportTime3(false)
+        {}
+        bool hasFallData : 1;
+        bool hasFallDirection : 1;
+        bool hasOrientation : 1;
+        bool hasPitch : 1;
+        bool hasSpline : 1;
+        bool hasSplineElevation : 1;
+        bool hasTimeStamp : 1;
+        bool hasTransportTime2 : 1;
+        bool hasTransportTime3 : 1;
+    };
+
+    StatusInfo si;
+
+    uint32_t fall_time2;
+    int8 byteParam;
+    uint32_t time2;
+#endif
+
     WoWGuid object_guid;
     uint32_t flags;
     uint16_t flags2;
@@ -164,8 +194,14 @@ struct MovementInfo
         transporter_info.Clear();
     }
 
+#if VERSION_STRING != Cata
     void init(WorldPacket& data);
     void write(WorldPacket& data);
+#else
+    void Read(ByteBuffer& data, uint32 opcode);
+    void Write(ByteBuffer& data, uint32 opcode) const;
+#endif
+
     bool IsOnTransport() const { return this->transporter_info.guid != 0; };
 
     //flags uint32_t
@@ -174,6 +210,32 @@ struct MovementInfo
     //flags2 uint16_t
     bool HasMovementFlag2(uint16_t move_flags2) const { return (flags2 & move_flags2) != 0; }
 };
+
+#if VERSION_STRING == Cata
+inline WorldPacket& operator<< (WorldPacket& buf, MovementInfo const& mi)
+{
+    mi.Write(buf, (uint32)buf.GetOpcode());
+    return buf;
+}
+
+inline WorldPacket& operator >> (WorldPacket& buf, MovementInfo& mi)
+{
+    mi.Read(buf, (uint32)buf.GetOpcode());
+    return buf;
+}
+
+static float NormalizeOrientation(float o)
+{
+    if (o < 0)
+    {
+        float mod = o *-1;
+        mod = fmod(mod, 2.0f * static_cast<float>(M_PI));
+        mod = -mod + 2.0f * static_cast<float>(M_PI);
+        return mod;
+    }
+    return fmod(o, 2.0f * static_cast<float>(M_PI));
+}
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// class Object:Base object for every item, unit, player, corpse, container, etc

@@ -612,7 +612,6 @@ void WorldSocket::Authenticate()
     else
         OutPacket(SMSG_AUTH_RESPONSE, 11, "\x0C\x30\x78\x00\x00\x00\x00\x00\x00\x00\x00");
 
-    sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket, static_cast<uint32>(pAuthenticationPacket->rpos()), mSession);
 #else
     WorldPacket data(SMSG_AUTH_RESPONSE, 17);
     data.writeBit(false);
@@ -630,6 +629,9 @@ void WorldSocket::Authenticate()
     cdata << uint32_t(15595);
     SendPacket(&cdata);
 #endif
+
+    sAddonMgr.SendAddonInfoPacket(pAuthenticationPacket, static_cast<uint32>(pAuthenticationPacket->rpos()), mSession);
+
     mSession->_latency = _latency;
 
     delete pAuthenticationPacket;

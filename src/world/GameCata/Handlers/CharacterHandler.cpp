@@ -379,3 +379,255 @@ void WorldSession::HandleCharRenameOpcode(WorldPacket& recv_data)
 
     SendPacket(&data);
 }
+
+void WorldSession::FullLogin(Player* plr)
+{
+    LogDebug("WorldSession : Fully loading player %u", plr->GetLowGUID());
+
+    SetPlayer(plr);
+
+    m_MoverGuid = plr->GetGUID();
+    m_MoverWoWGuid.Init(plr->GetGUID());
+
+    MapMgr* mapMgr = sInstanceMgr.GetInstance(plr);
+    if (mapMgr && mapMgr->m_battleground)
+    {
+        if (mapMgr->m_battleground->HasEnded() == true ||
+            mapMgr->m_battleground->HasFreeSlots(plr->GetTeamInitial(), mapMgr->m_battleground->GetType() == false))
+        {
+            mapMgr = nullptr;
+        }
+    }
+
+    if (!mapMgr)
+    {
+        if (!IS_INSTANCE(plr->m_bgEntryPointMap))
+        {
+            plr->m_position.x = plr->m_bgEntryPointX;
+            plr->m_position.y = plr->m_bgEntryPointY;
+            plr->m_position.z = plr->m_bgEntryPointZ;
+            plr->m_position.o = plr->m_bgEntryPointO;
+            plr->m_mapId = plr->m_bgEntryPointMap;
+        }
+        else
+        {
+            plr->m_position.x = plr->GetBindPositionX();
+            plr->m_position.y = plr->GetBindPositionY();
+            plr->m_position.z = plr->GetBindPositionZ();
+            plr->m_position.o = 0;
+            plr->m_mapId = plr->GetBindMapId();
+        }
+    }
+
+    uint32 VMapId;
+    float VO;
+    float VX;
+    float VY;
+    float VZ;
+
+    if (HasGMPermissions() && plr->m_FirstLogin && sWorld.gamemaster_startonGMIsland)
+    {
+        VMapId = 1;
+        VO = 0;
+        VX = 16222.6f;
+        VY = 16265.9f;
+        VZ = 14.2085f;
+
+        plr->m_position.x = VX;
+        plr->m_position.y = VY;
+        plr->m_position.z = VZ;
+        plr->m_position.o = VO;
+        plr->m_mapId = VMapId;
+
+        plr->SetBindPoint(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetMapId(), plr->GetZoneId());
+    }
+    else
+    {
+        VMapId = plr->GetMapId();
+        VO = plr->GetOrientation();
+        VX = plr->GetPositionX();
+        VY = plr->GetPositionY();
+        VZ = plr->GetPositionZ();
+    }
+
+    plr->SendLoginVerifyWorld(VMapId, VX, VY, VZ, VO);
+
+    WorldPacket datab(SMSG_FEATURE_SYSTEM_STATUS, 7);
+    datab << uint8(2);
+    datab << uint32(1);
+    datab << uint32(1);
+    datab << uint32(2);
+    datab << uint32(0);
+    datab.writeBit(true);
+    datab.writeBit(true);
+    datab.writeBit(false);
+    datab.writeBit(true);
+    datab.writeBit(false);
+    datab.writeBit(false);
+    datab.flushBits();
+    datab << uint32(1);
+    datab << uint32(0);
+    datab << uint32(10);
+    datab << uint32(60);
+    SendPacket(&datab);
+
+    WorldPacket dataldm(SMSG_LEARNED_DANCE_MOVES, 4 + 4);
+    dataldm << uint64(0);
+    SendPacket(&dataldm);
+
+    plr->UpdateAttackSpeed();
+
+    PlayerInfo* info = objmgr.GetPlayerInfo(plr->GetLowGUID());
+    if (info == nullptr)
+    {
+        info = new PlayerInfo;
+        info->cl = plr->getClass();
+        info->gender = plr->getGender();
+        info->guid = plr->GetLowGUID();
+        info->name = strdup(plr->GetName());
+        info->lastLevel = plr->getLevel();
+        info->lastOnline = UNIXTIME;
+        info->lastZone = plr->GetZoneId();
+        info->race = plr->getRace();
+        info->team = plr->GetTeam();
+        info->guild = nullptr;
+        info->guildRank = nullptr;
+        info->guildMember = nullptr;
+        info->m_Group = nullptr;
+        info->subGroup = 0;
+        objmgr.AddPlayerInfo(info);
+    }
+    plr->m_playerInfo = info;
+
+    info->m_loggedInPlayer = plr;
+
+    SendAccountDataTimes(PER_CHARACTER_CACHE_MASK);
+
+    CharacterDatabase.Execute("UPDATE characters SET online = 1 WHERE guid = %u", plr->GetLowGUID());
+
+    bool enter_world = true;
+
+    if (plr->obj_movement_info.transporter_info.guid != 0)
+    {
+        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(plr->obj_movement_info.transporter_info.guid));
+        if (pTrans)
+        {
+            if (plr->IsDead())
+            {
+                plr->ResurrectPlayer();
+                plr->SetHealth(plr->GetMaxHealth());
+                plr->SetPower(POWER_TYPE_MANA, plr->GetMaxPower(POWER_TYPE_MANA));
+            }
+
+            float c_tposx = pTrans->GetPositionX() + plr->GetTransPositionX();
+            float c_tposy = pTrans->GetPositionY() + plr->GetTransPositionY();
+            float c_tposz = pTrans->GetPositionZ() + plr->GetTransPositionZ();
+
+            if (plr->GetMapId() != pTrans->GetMapId())       // loaded wrong map
+            {
+                plr->SetMapId(pTrans->GetMapId());
+
+                WorldPacket dataw(SMSG_NEW_WORLD, 4 + 4 + 4 + 4 + 4);
+                dataw << c_tposx;
+                dataw << plr->GetOrientation();
+                dataw << c_tposz;
+                dataw << pTrans->GetMapId();
+                dataw << c_tposy;
+                SendPacket(&dataw);
+
+                enter_world = false;
+            }
+
+            plr->SetPosition(c_tposx, c_tposy, c_tposz, plr->GetOrientation(), false);
+            pTrans->AddPassenger(plr);
+        }
+    }
+
+    LOG_DEBUG("Player %s logged in.", plr->GetName());
+
+    sWorld.incrementPlayerCount(plr->GetTeam());
+
+    if (plr->m_FirstLogin && !sWorld.m_SkipCinematics)
+    {
+        uint32 introid = plr->info->introid;
+        OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &introid);
+
+        if (sWorld.m_AdditionalFun)
+        {
+            const int classtext[] = { 0, 5, 6, 8, 9, 11, 0, 4, 3, 7, 0, 10 };
+            sWorld.SendLocalizedWorldText(true, "{65}", classtext[(uint32)plr->getClass()], plr->GetName(), (plr->IsTeamHorde() ? "{63}" : "{64}"));
+        }
+    }
+
+    LOG_DETAIL("Created new player for existing players (%s)", plr->GetName());
+
+    // Login time, will be used for played time calc
+    plr->m_playedtime[2] = uint32(UNIXTIME);
+
+    // Send online status to people having this char in friendlist
+    _player->Social_TellFriendsOnline();
+    // send friend list (for ignores)
+    _player->Social_SendFriendList(7);
+
+    plr->SendDungeonDifficulty();
+    plr->SendRaidDifficulty();
+
+    //plr->SendEquipmentSetList();
+
+    //\todo danko
+#ifndef GM_TICKET_MY_MASTER_COMPATIBLE
+    GM_Ticket* ticket = objmgr.GetGMTicketByPlayer(_player->GetGUID());
+    if (ticket != NULL)
+    {
+        //Send status change to gm_sync_channel
+        Channel* chn = channelmgr.GetChannel(sWorld.getGmClientChannel().c_str(), _player);
+        if (chn)
+        {
+            std::stringstream ss;
+            ss << "GmTicket:" << GM_TICKET_CHAT_OPCODE_ONLINESTATE;
+            ss << ":" << ticket->guid;
+            ss << ":1";
+            chn->Say(_player, ss.str().c_str(), NULL, true);
+        }
+    }
+#endif
+
+    if (Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", false))
+    {
+#ifdef WIN32
+        _player->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
+#else
+        _player->BroadcastMessage("Server: %sAscEmu - %s-%s", MSG_COLOR_WHITE, PLATFORM_TEXT, ARCH);
+#endif
+
+        _player->BroadcastMessage("Build hash: %s%s", MSG_COLOR_CYAN, BUILD_HASH_STR);
+        _player->BroadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
+                                  MSG_COLOR_SEXGREEN, sWorld.GetSessionCount(), MSG_COLOR_SEXBLUE, sWorld.PeakSessionCount, MSG_COLOR_SEXBLUE, sWorld.mAcceptedConnections);
+
+        _player->BroadcastMessage("Server Uptime: |r%s", sWorld.GetUptimeString().c_str());
+    }
+
+    SendMOTD();
+
+    if (plr->m_isResting)
+        plr->ApplyPlayerRestState(true);
+
+    if (plr->m_timeLogoff > 0 && plr->getLevel() < plr->GetMaxLevel())
+    {
+        uint32 currenttime = uint32(UNIXTIME);
+        uint32 timediff = currenttime - plr->m_timeLogoff;
+
+        if (timediff > 0)
+            plr->AddCalculatedRestXP(timediff);
+    }
+
+    if (info->m_Group)
+        info->m_Group->Update();
+
+    if (enter_world && !_player->GetMapMgr())
+        plr->AddToWorld();
+
+    sHookInterface.OnFullLogin(_player);
+
+    objmgr.AddPlayer(_player);
+}
