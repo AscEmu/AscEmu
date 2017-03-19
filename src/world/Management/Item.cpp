@@ -40,7 +40,11 @@ Item::Item()
     m_objectType |= TYPE_ITEM;
     m_objectTypeId = TYPEID_ITEM;
 
+#if VERSION_STRING != Cata
     m_updateFlag = UPDATEFLAG_HIGHGUID;
+#else
+    m_updateFlag = UPDATEFLAG_NONE;
+#endif
 
     m_valuesCount = ITEM_END;
     m_uint32Values = _fields;

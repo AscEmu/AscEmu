@@ -568,12 +568,10 @@ void Player::SendInitialLogonPackets()
     SendSetProficiency(2, weapon_proficiency);
 
     //Tutorial Flags
-    data.Initialize(SMSG_TUTORIAL_FLAGS);
-
-    for (uint8 i = 0; i < 8; ++i)
-        data << uint32(m_Tutorials[i]);
-
-    m_session->SendPacket(&data);
+    WorldPacket datab(SMSG_TUTORIAL_FLAGS, 4 * 8);
+    for (int i = 0; i < 8; ++i)
+        datab << uint32_t(m_Tutorials[i]);
+    m_session->SendPacket(&datab);
 
 #if VERSION_STRING > TBC
     smsg_TalentsInfo(false);

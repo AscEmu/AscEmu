@@ -331,10 +331,11 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
 ///\todo rewrite this stuff, document unknown fields and flags
 uint32 TimeStamp();
 
+#if VERSION_STRING != Cata
 void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 {
     uint32 flags2 = 0;
-#if VERSION_STRING != Cata
+
     ByteBuffer* splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->GetAndRemoveSplinePacket(GetGUID()) : 0;
 
     if (splinebuf != NULL)
@@ -346,10 +347,9 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
                 flags2 |= MOVEFLAG_WALK;
         }
     }
-#endif
 
     uint16 moveflags2 = 0;      // mostly seem to be used by vehicles to control what kind of movement is allowed
-#if VERSION_STRING != Cata
+#if VERSION_STRING == WotLK
     if (IsVehicle())
     {
         Unit* u = static_cast< Unit* >(this);
@@ -369,35 +369,6 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
     *data << uint16(flags);
 #elif VERSION_STRING == TBC
     *data << uint8(flags);
-#endif
-
-#if VERSION_STRING == Cata
-    ObjectGuid Guid = GetGUID();
-
-    bool hasTransport = obj_movement_info.transporter_info.guid;
-    bool isSplineEnabled = false; // spline not supported
-                                  //bool hasPitch = (flags2 & (0x00100000) || (moveflags2 & 0x0010));
-    bool hasPitch = (flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING); // (hasPitch == swimming) flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING)
-    bool haveFallData = flags2 & MOVEFLAG2_INTERPOLATED_TURN;
-    bool hasFallDirection = flags & MOVEFLAG_FALLING;
-    bool hasElevation = false; //flags & 0x02000000; // MOVEFLAG_SPLINE_ELEVATION, I think flags(1); 2: spline not supported/enabled
-    bool hasOrientation = GetTypeId() != TYPEID_ITEM && GetTypeId() != TYPEID_CONTAINER;
-
-    data->writeBit(false);
-    data->writeBit(false);
-    data->writeBit(flags & UPDATEFLAG_ROTATION);
-    data->writeBit(flags & UPDATEFLAG_ANIM_KITS);
-    data->writeBit(flags & UPDATEFLAG_HAS_TARGET);
-    data->writeBit(flags & UPDATEFLAG_SELF);
-    data->writeBit(flags & UPDATEFLAG_VEHICLE);
-    data->writeBit(flags & UPDATEFLAG_LIVING);
-    data->writeBits(0, 24);
-    data->writeBit(false);
-    data->writeBit(flags & UPDATEFLAG_POSITION);
-    data->writeBit(flags & UPDATEFLAG_HAS_POSITION);
-    data->writeBit(flags & UPDATEFLAG_TRANSPORT_ARR);
-    data->writeBit(false);
-    data->writeBit(flags & UPDATEFLAG_TRANSPORT);
 #endif
 
     Player* pThis = NULL;
@@ -430,7 +401,6 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         else if ((uThis != NULL) && uThis->isRooted())
             flags2 |= MOVEFLAG_ROOTED;
 
-#if VERSION_STRING != Cata
         if (uThis != NULL)
         {
             // Don't know what this is, but I've only seen it applied to spirit healers. maybe some sort of invisibility flag? :/
@@ -642,7 +612,71 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         if (IsGameObject())
             *data << static_cast< GameObject* >(this)->GetRotation();
     }
+}
+
 #else
+void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
+{
+    uint32 flags2 = 0;
+    uint16 moveflags2 = 0;      // mostly seem to be used by vehicles to control what kind of movement is allowed
+
+    ObjectGuid Guid = GetGUID();
+
+    bool hasTransport = obj_movement_info.transporter_info.guid;
+    bool isSplineEnabled = false; // spline not supported
+                                  //bool hasPitch = (flags2 & (0x00100000) || (moveflags2 & 0x0010));
+    bool hasPitch = (flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING); // (hasPitch == swimming) flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_AIR_SWIMMING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING)
+    bool haveFallData = flags2 & MOVEFLAG2_INTERPOLATED_TURN;
+    bool hasFallDirection = flags & MOVEFLAG_FALLING;
+    bool hasElevation = false; //flags & 0x02000000; // MOVEFLAG_SPLINE_ELEVATION, I think flags(1); 2: spline not supported/enabled
+    bool hasOrientation = GetTypeId() != TYPEID_ITEM && GetTypeId() != TYPEID_CONTAINER;
+
+    data->writeBit(false);
+    data->writeBit(false);
+    data->writeBit(flags & UPDATEFLAG_ROTATION);
+    data->writeBit(flags & UPDATEFLAG_ANIM_KITS);
+    data->writeBit(flags & UPDATEFLAG_HAS_TARGET);
+    data->writeBit(flags & UPDATEFLAG_SELF);
+    data->writeBit(flags & UPDATEFLAG_VEHICLE);
+    data->writeBit(flags & UPDATEFLAG_LIVING);
+    data->writeBits(0, 24);
+    data->writeBit(false);
+    data->writeBit(flags & UPDATEFLAG_POSITION);
+    data->writeBit(flags & UPDATEFLAG_HAS_POSITION);
+    data->writeBit(flags & UPDATEFLAG_TRANSPORT_ARR);
+    data->writeBit(false);
+    data->writeBit(flags & UPDATEFLAG_TRANSPORT);
+
+    Player* pThis = NULL;
+    MovementInfo* moveinfo = NULL;
+    if (IsPlayer())
+    {
+        pThis = static_cast< Player* >(this);
+        if (pThis->GetSession())
+            moveinfo = pThis->GetSession()->GetMovementInfo();
+    }
+    Creature* uThis = NULL;
+    if (IsCreature())
+        uThis = static_cast< Creature* >(this);
+
+    if (flags & UPDATEFLAG_LIVING)  //0x20
+    {
+        /*if (pThis && pThis->obj_movement_info.transporter_info.guid != 0)
+        flags2 |= MOVEFLAG_TRANSPORT; //0x200
+        else if (uThis != NULL && obj_movement_info.transporter_info.guid != 0 && uThis->obj_movement_info.transporter_info.guid != 0)
+        flags2 |= MOVEFLAG_TRANSPORT; //0x200*/
+
+        // Zyres: If a unit has this flag, add it to the update packet, otherwise not.
+        /*if (pThis && pThis->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+            flags2 |= MOVEFLAG_TRANSPORT;
+        else if (uThis && uThis->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+            flags2 |= MOVEFLAG_TRANSPORT;
+
+        if ((pThis != NULL) && pThis->isRooted())
+            flags2 |= MOVEFLAG_ROOTED;
+        else if ((uThis != NULL) && uThis->isRooted())
+            flags2 |= MOVEFLAG_ROOTED;*/
+
         Unit const* unit = (Unit const*)this;
 
         data->writeBit(!flags2); // movement flags
@@ -664,7 +698,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         data->writeBit(flags2 & MOVEFLAG_TRANSPORT);
         data->writeBit(0);
 
-        if (flags2 & MOVEFLAG_TRANSPORT) 
+        if (flags2 & MOVEFLAG_TRANSPORT)
         {
             ObjectGuid tGuid = obj_movement_info.transporter_info.guid;
 
@@ -700,7 +734,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         if (moveflags2)
             data->writeBits(moveflags2, 12);
 
-    }
+}
 
     if (flags & UPDATEFLAG_POSITION) // UPDATEFLAG_HAS_GO_POSITION
     {
@@ -949,9 +983,8 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
     {
         *data << uint32(getMSTime());
     }
-#endif
 }
-
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Creates an update block with the values of this object as determined by the updateMask.

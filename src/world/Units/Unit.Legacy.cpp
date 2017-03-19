@@ -388,7 +388,11 @@ Unit::Unit() : m_combatStatus(this), m_movementManager(),
     m_objectType |= TYPE_UNIT;
     m_objectTypeId = TYPEID_UNIT;
 
+#if VERSION_STRING != Cata
     m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_LIVING | UPDATEFLAG_HAS_POSITION);
+#else
+    m_updateFlag = UPDATEFLAG_LIVING;
+#endif
 
     //DK:modifiers
     PctRegenModifier = 0;
@@ -8166,6 +8170,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
     *data << GetPositionZ();
     *data << GetOrientation();
 
+#if VERSION_STRING != Cata
     // 0x00000200
     if (HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {
@@ -8198,7 +8203,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data)
         *data << (float)GetMovementInfo()->pitch;
 
     *data << (uint32)GetMovementInfo()->fall_time;
-
+#endif
     // 0x00001000
 #if VERSION_STRING != Cata
     if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)
@@ -8226,6 +8231,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
     *data << z;
     *data << o;
 
+#if VERSION_STRING != Cata
     // 0x00000200
     if (HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
     {
@@ -8253,7 +8259,7 @@ void Unit::BuildMovementPacket(ByteBuffer* data, float x, float y, float z, floa
         *data << (float)GetMovementInfo()->pitch;
 
     *data << (uint32)GetMovementInfo()->fall_time;
-
+#endif
     // 0x00001000
 #if VERSION_STRING != Cata
     if (GetUnitMovementFlags() & MOVEFLAG_REDIRECTED)

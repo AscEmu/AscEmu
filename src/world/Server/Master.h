@@ -27,9 +27,6 @@
 #include "MainServerDefines.h"
 #include "../shared/AscemuServerDefines.hpp"
 
-static const char* REQUIRED_CHAR_DB_VERSION = "2017-02-04_01_queue_tables";
-static const char* REQUIRED_WORLD_DB_VERSION = "2017-02-25_01_gameobject_spawns";
-
 class Master : public Singleton<Master>
 {
     public:

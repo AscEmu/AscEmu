@@ -32,7 +32,11 @@ DynamicObject::DynamicObject(uint32 high, uint32 low)
     m_objectType |= TYPE_DYNAMICOBJECT;
     m_objectTypeId = TYPEID_DYNAMICOBJECT;
 
+#if VERSION_STRING != Cata
     m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_POSITION);
+#else
+    m_updateFlag = UPDATEFLAG_POSITION;
+#endif
 
     m_valuesCount = DYNAMICOBJECT_END;
     m_uint32Values = _fields;

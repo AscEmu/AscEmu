@@ -240,7 +240,12 @@ void ObjectMgr::LoadTransports()
 
 Transporter::Transporter(uint64 guid) : GameObject(guid), currenttguid(0)
 {
+
+#if VERSION_STRING != Cata
     m_updateFlag = (UPDATEFLAG_TRANSPORT | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
+#else
+    m_updateFlag = UPDATEFLAG_TRANSPORT;
+#endif
 
     m_pathTime = 0;
     m_timer = 0;

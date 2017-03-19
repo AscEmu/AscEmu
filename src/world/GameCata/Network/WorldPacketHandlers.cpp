@@ -196,8 +196,8 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_CHANNEL_UNBAN].handler = &WorldSession::HandleChannelUnban;
     WorldPacketHandlers[CMSG_CHANNEL_ANNOUNCEMENTS].handler = &WorldSession::HandleChannelAnnounce;
     WorldPacketHandlers[CMSG_CHANNEL_MODERATE].handler = &WorldSession::HandleChannelModerate;
-    //WorldPacketHandlers[CMSG_GET_CHANNEL_MEMBER_COUNT].handler = &WorldSession::HandleChannelNumMembersQuery;
-    //WorldPacketHandlers[CMSG_CHANNEL_DISPLAY_LIST].handler = &WorldSession::HandleChannelRosterQuery;
+    WorldPacketHandlers[CMSG_GET_CHANNEL_MEMBER_COUNT].handler = &WorldSession::HandleChannelNumMembersQuery;
+    WorldPacketHandlers[CMSG_CHANNEL_DISPLAY_LIST].handler = &WorldSession::HandleChannelRosterQuery;
 
     // Groups / Raids
     //WorldPacketHandlers[CMSG_GROUP_INVITE].handler = &WorldSession::HandleGroupInviteOpcode;
@@ -282,11 +282,11 @@ void WorldSession::loadSpecificHandlers()
     // Spell System / Talent System
     WorldPacketHandlers[CMSG_USE_ITEM].handler = &WorldSession::HandleUseItemOpcode;
     WorldPacketHandlers[CMSG_CAST_SPELL].handler = &WorldSession::HandleCastSpellOpcode;
-    //WorldPacketHandlers[CMSG_SPELLCLICK].handler = &WorldSession::HandleSpellClick;
+    WorldPacketHandlers[CMSG_SPELLCLICK].handler = &WorldSession::HandleSpellClick;
     //WorldPacketHandlers[CMSG_CANCEL_CAST].handler = &WorldSession::HandleCancelCastOpcode;
     //WorldPacketHandlers[CMSG_CANCEL_AURA].handler = &WorldSession::HandleCancelAuraOpcode;
-    //WorldPacketHandlers[CMSG_CANCEL_CHANNELLING].handler = &WorldSession::HandleCancelChannellingOpcode;
-    //WorldPacketHandlers[CMSG_CANCEL_AUTO_REPEAT_SPELL].handler = &WorldSession::HandleCancelAutoRepeatSpellOpcode;
+    WorldPacketHandlers[CMSG_CANCEL_CHANNELLING].handler = &WorldSession::HandleCancelChannellingOpcode;
+    WorldPacketHandlers[CMSG_CANCEL_AUTO_REPEAT_SPELL].handler = &WorldSession::HandleCancelAutoRepeatSpellOpcode;
     //WorldPacketHandlers[CMSG_TOTEM_DESTROYED].handler = &WorldSession::HandleCancelTotem;
     //WorldPacketHandlers[CMSG_LEARN_TALENT].handler = &WorldSession::HandleLearnTalentOpcode;
     //WorldPacketHandlers[CMSG_LEARN_TALENTS_MULTIPLE].handler = &WorldSession::HandleLearnMultipleTalentsOpcode;
@@ -414,7 +414,7 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_PET_RENAME].handler = &WorldSession::HandlePetRename;
     //WorldPacketHandlers[CMSG_PET_ABANDON].handler = &WorldSession::HandlePetAbandon;
     //WorldPacketHandlers[CMSG_PET_UNLEARN].handler = &WorldSession::HandlePetUnlearn;
-    //WorldPacketHandlers[CMSG_PET_SPELL_AUTOCAST].handler = &WorldSession::HandlePetSpellAutocast;
+    WorldPacketHandlers[CMSG_PET_SPELL_AUTOCAST].handler = &WorldSession::HandlePetSpellAutocast;
     //WorldPacketHandlers[CMSG_PET_CANCEL_AURA].handler = &WorldSession::HandlePetCancelAura;
     //WorldPacketHandlers[CMSG_PET_LEARN_TALENT].handler = &WorldSession::HandlePetLearnTalent;
     //WorldPacketHandlers[CMSG_DISMISS_CRITTER].handler = &WorldSession::HandleDismissCritter;
@@ -469,14 +469,14 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_SET_TITLE].handler = &WorldSession::HandleSetVisibleRankOpcode;
     //WorldPacketHandlers[CMSG_COMPLAIN].handler = &WorldSession::HandleReportSpamOpcode;
     //WorldPacketHandlers[CMSG_GAMEOBJ_REPORT_USE].handler = &WorldSession::HandleGameobjReportUseOpCode;
-    //WorldPacketHandlers[CMSG_PET_CAST_SPELL].handler = &WorldSession::HandlePetCastSpell;
+    WorldPacketHandlers[CMSG_PET_CAST_SPELL].handler = &WorldSession::HandlePetCastSpell;
     //WorldPacketHandlers[CMSG_WORLD_STATE_UI_TIMER_UPDATE].handler = &WorldSession::HandleWorldStateUITimerUpdate;
     //WorldPacketHandlers[CMSG_SET_TAXI_BENCHMARK_MODE].handler = &WorldSession::HandleSetTaxiBenchmarkOpcode;
     //WorldPacketHandlers[CMSG_UNLEARN_SKILL].handler = &WorldSession::HandleUnlearnSkillOpcode;
 
     // Chat
     //WorldPacketHandlers[CMSG_CHAT_IGNORED].handler = &WorldSession::HandleChatIgnoredOpcode;
-    //WorldPacketHandlers[CMSG_SET_CHANNEL_WATCH].handler = &WorldSession::HandleChatChannelWatchOpcode;
+    WorldPacketHandlers[CMSG_SET_CHANNEL_WATCH].handler = &WorldSession::HandleChatChannelWatchOpcode;
 
     // Arenas
     //WorldPacketHandlers[CMSG_ARENA_TEAM_QUERY].handler = &WorldSession::HandleArenaTeamQueryOpcode;
