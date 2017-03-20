@@ -853,27 +853,18 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         data->WriteByteSeq(Guid[1]);
         data->WriteByteSeq(Guid[2]);
 
-        if (unit->getSpeedForType(TYPE_WALK) == 0)
-            *data << 8.0f;
-        else
-            *data << unit->getSpeedForType(TYPE_WALK);
+        *data << unit->getSpeedForType(TYPE_WALK);
 
         *data << uint32(getMSTime());
         *data << unit->getSpeedForType(TYPE_TURN_RATE);
         data->WriteByteSeq(Guid[6]);
 
-        if (unit->getSpeedForType(TYPE_FLY) == 0)
-            *data << 8.0f;
-        else
-            *data << unit->getSpeedForType(TYPE_FLY);
+        *data << unit->getSpeedForType(TYPE_FLY);
 
         if (!hasOrientation) // do we need this check here?
             *data << m_position.o;
 
-        if (unit->getSpeedForType(TYPE_RUN) == 0)
-            *data << 8.0f;
-        else
-            *data << unit->getSpeedForType(TYPE_RUN);
+        *data << unit->getSpeedForType(TYPE_RUN);
 
         if (hasPitch) // this ok? // and this check here?
             *data << moveinfo->pitch;

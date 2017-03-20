@@ -106,28 +106,10 @@ struct MovementInfo
     ObjectGuid guid2;
     ObjectGuid t_guid;
 
-    struct StatusInfo
-    {
-        StatusInfo() : hasFallData(false), hasFallDirection(false), hasOrientation(false),
-            hasPitch(false), hasSpline(false), hasSplineElevation(false),
-            hasTimeStamp(false), hasTransportTime2(false), hasTransportTime3(false)
-        {}
-        bool hasFallData : 1;
-        bool hasFallDirection : 1;
-        bool hasOrientation : 1;
-        bool hasPitch : 1;
-        bool hasSpline : 1;
-        bool hasSplineElevation : 1;
-        bool hasTimeStamp : 1;
-        bool hasTransportTime2 : 1;
-        bool hasTransportTime3 : 1;
-    };
-
-    StatusInfo si;
-
     uint32_t fall_time2;
     int8 byteParam;
     uint32_t time2;
+    uint32_t vehicle_id;
 #endif
 
     WoWGuid object_guid;
@@ -199,13 +181,14 @@ struct MovementInfo
     void write(WorldPacket& data);
 #else
     void Read(ByteBuffer& data, uint32 opcode);
-    void Write(ByteBuffer& data, uint32 opcode) const;
+    void Write(ByteBuffer& data, uint32 opcode, float extra = 0.0f) const;
 #endif
 
     bool IsOnTransport() const { return this->transporter_info.guid != 0; };
 
     //flags uint32_t
     bool HasMovementFlag(uint32_t move_flags) const { return (flags & move_flags) != 0; }
+    void RemoveMovementFlag(uint32_t move_flags) { flags &= ~move_flags; }
 
     //flags2 uint16_t
     bool HasMovementFlag2(uint16_t move_flags2) const { return (flags2 & move_flags2) != 0; }

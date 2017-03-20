@@ -170,15 +170,56 @@ void Unit::setMoveWaterWalk()
     if (IsPlayer())
     {
         WorldPacket data(SMSG_MOVE_WATER_WALK, 12);
+#if VERSION_STRING != Cata
         data << GetNewGUID();
         data << uint32(0);
+#else
+        ObjectGuid guid = GetGUID();
+        data.WriteByteMask(guid[4]);
+        data.WriteByteMask(guid[7]);
+        data.WriteByteMask(guid[6]);
+        data.WriteByteMask(guid[0]);
+        data.WriteByteMask(guid[1]);
+        data.WriteByteMask(guid[3]);
+        data.WriteByteMask(guid[5]);
+        data.WriteByteMask(guid[2]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[8]);
+        data << uint32(0);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[6]);
+#endif
         SendMessageToSet(&data, true);
     }
 
     if (IsCreature())
     {
         WorldPacket data(SMSG_SPLINE_MOVE_WATER_WALK, 9);
+#if VERSION_STRING != Cata
         data << GetNewGUID();
+#else
+        ObjectGuid guid = GetGUID();
+        data.WriteByteMask(guid[6]);
+        data.WriteByteMask(guid[1]);
+        data.WriteByteMask(guid[4]);
+        data.WriteByteMask(guid[2]);
+        data.WriteByteMask(guid[3]);
+        data.WriteByteMask(guid[7]);
+        data.WriteByteMask(guid[5]);
+        data.WriteByteMask(guid[0]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[1]);
+#endif
         SendMessageToSet(&data, false);
     }
 }
@@ -190,15 +231,56 @@ void Unit::setMoveLandWalk()
     if (IsPlayer())
     {
         WorldPacket data(SMSG_MOVE_LAND_WALK, 12);
+#if VERSION_STRING != Cata
         data << GetNewGUID();
         data << uint32(0);
+#else
+        ObjectGuid guid = GetGUID();
+        data.WriteByteMask(guid[5]);
+        data.WriteByteMask(guid[1]);
+        data.WriteByteMask(guid[6]);
+        data.WriteByteMask(guid[2]);
+        data.WriteByteMask(guid[3]);
+        data.WriteByteMask(guid[4]);
+        data.WriteByteMask(guid[0]);
+        data.WriteByteMask(guid[7]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[2]);
+        data << uint32(0);
+#endif
         SendMessageToSet(&data, true);
     }
 
     if (IsCreature())
     {
         WorldPacket data(SMSG_SPLINE_MOVE_LAND_WALK, 9);
+#if VERSION_STRING != Cata
         data << GetNewGUID();
+#else
+        ObjectGuid guid = GetGUID();
+        data.WriteByteMask(guid[5]);
+        data.WriteByteMask(guid[0]);
+        data.WriteByteMask(guid[4]);
+        data.WriteByteMask(guid[6]);
+        data.WriteByteMask(guid[7]);
+        data.WriteByteMask(guid[2]);
+        data.WriteByteMask(guid[3]);
+        data.WriteByteMask(guid[1]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[6]);
+#endif
         SendMessageToSet(&data, false);
     }
 }
@@ -210,15 +292,56 @@ void Unit::setMoveFeatherFall()
     if (IsPlayer())
     {
         WorldPacket data(SMSG_MOVE_FEATHER_FALL, 12);
+#if VERSION_STRING != Cata
         data << GetNewGUID();
         data << uint32(0);
+#else
+        ObjectGuid guid = GetGUID();
+        data.WriteByteMask(guid[3]);
+        data.WriteByteMask(guid[1]);
+        data.WriteByteMask(guid[7]);
+        data.WriteByteMask(guid[0]);
+        data.WriteByteMask(guid[4]);
+        data.WriteByteMask(guid[2]);
+        data.WriteByteMask(guid[5]);
+        data.WriteByteMask(guid[6]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[2]);
+        data << uint32(0);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[6]);
+#endif
         SendMessageToSet(&data, true);
     }
 
     if (IsCreature())
     {
         WorldPacket data(SMSG_SPLINE_MOVE_FEATHER_FALL, 9);
+#if VERSION_STRING != Cata
         data << GetNewGUID();
+#else
+        ObjectGuid guid = GetGUID();
+        data.WriteByteMask(guid[3]);
+        data.WriteByteMask(guid[2]);
+        data.WriteByteMask(guid[7]);
+        data.WriteByteMask(guid[5]);
+        data.WriteByteMask(guid[4]);
+        data.WriteByteMask(guid[6]);
+        data.WriteByteMask(guid[1]);
+        data.WriteByteMask(guid[0]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[3]);
+#endif
         SendMessageToSet(&data, false);
     }
 }
@@ -230,15 +353,56 @@ void Unit::setMoveNormalFall()
     if (IsPlayer())
     {
         WorldPacket data(SMSG_MOVE_NORMAL_FALL, 12);
+#if VERSION_STRING != Cata
         data << GetNewGUID();
         data << uint32(0);
+#else
+        ObjectGuid guid = GetGUID();
+        data << uint32(0);
+        data.WriteByteMask(guid[3]);
+        data.WriteByteMask(guid[0]);
+        data.WriteByteMask(guid[1]);
+        data.WriteByteMask(guid[5]);
+        data.WriteByteMask(guid[7]);
+        data.WriteByteMask(guid[4]);
+        data.WriteByteMask(guid[6]);
+        data.WriteByteMask(guid[2]);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[6]);
+#endif
         SendMessageToSet(&data, true);
     }
 
     if (IsCreature())
     {
         WorldPacket data(SMSG_SPLINE_MOVE_NORMAL_FALL, 9);
+#if VERSION_STRING != Cata
         data << GetNewGUID();
+#else
+        ObjectGuid guid = GetGUID();
+        data.WriteByteMask(guid[3]);
+        data.WriteByteMask(guid[5]);
+        data.WriteByteMask(guid[1]);
+        data.WriteByteMask(guid[0]);
+        data.WriteByteMask(guid[7]);
+        data.WriteByteMask(guid[6]);
+        data.WriteByteMask(guid[2]);
+        data.WriteByteMask(guid[4]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[1]);
+#endif
         SendMessageToSet(&data, false);
     }
 }
@@ -252,8 +416,29 @@ void Unit::setMoveHover(bool set_hover)
             AddUnitMovementFlag(MOVEFLAG_HOVER);
 
             WorldPacket data(SMSG_MOVE_SET_HOVER, 13);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
             data << uint32(0);
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[7]);
+            data << uint32(0);
+#endif
             SendMessageToSet(&data, true);
         }
         else
@@ -261,8 +446,29 @@ void Unit::setMoveHover(bool set_hover)
             RemoveUnitMovementFlag(MOVEFLAG_HOVER);
 
             WorldPacket data(SMSG_MOVE_UNSET_HOVER, 13);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
             data << uint32(0);
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[0]);
+            data << uint32(0);
+#endif
             SendMessageToSet(&data, true);
         }
     }
@@ -277,7 +483,27 @@ void Unit::setMoveHover(bool set_hover)
             SetByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
 
             WorldPacket data(SMSG_SPLINE_MOVE_SET_HOVER, 10);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[6]);
+#endif
             SendMessageToSet(&data, false);
         }
         else
@@ -287,7 +513,27 @@ void Unit::setMoveHover(bool set_hover)
             RemoveByteFlag(UNIT_FIELD_BYTES_1, 3, UNIT_BYTE1_FLAG_HOVER);
 
             WorldPacket data(SMSG_SPLINE_MOVE_UNSET_HOVER, 10);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[6]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[1]);
+#endif
             SendMessageToSet(&data, false);
         }
     }
@@ -377,7 +623,27 @@ void Unit::setMoveCanFly(bool set_fly)
             RemoveUnitMovementFlag(MOVEFLAG_FALLING);
 
             WorldPacket data(SMSG_SPLINE_MOVE_SET_FLYING, 10);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[2]);
+#endif
             SendMessageToSet(&data, false);
         }
         else
@@ -388,7 +654,27 @@ void Unit::setMoveCanFly(bool set_fly)
             RemoveUnitMovementFlag(MOVEFLAG_ASCENDING);
 
             WorldPacket data(SMSG_SPLINE_MOVE_UNSET_FLYING, 10);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[0]);
+#endif
             SendMessageToSet(&data, false);
         }
     }
@@ -417,7 +703,6 @@ void Unit::setMoveRoot(bool set_root)
             data.WriteByteMask(guid[4]);
             data.WriteByteMask(guid[1]);
             data.WriteByteMask(guid[3]);
-
             data.WriteByteSeq(guid[1]);
             data.WriteByteSeq(guid[0]);
             data.WriteByteSeq(guid[2]);
@@ -449,7 +734,6 @@ void Unit::setMoveRoot(bool set_root)
             data.WriteByteMask(guid[2]);
             data.WriteByteMask(guid[4]);
             data.WriteByteMask(guid[6]);
-
             data.WriteByteSeq(guid[3]);
             data.WriteByteSeq(guid[6]);
             data.WriteByteSeq(guid[1]);
@@ -476,7 +760,27 @@ void Unit::setMoveRoot(bool set_root)
             AddUnitMovementFlag(MOVEFLAG_ROOTED);
 
             WorldPacket data(SMSG_SPLINE_MOVE_ROOT, 9);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[4]);
+#endif
             SendMessageToSet(&data, true);
         }
         else
@@ -486,7 +790,27 @@ void Unit::setMoveRoot(bool set_root)
             RemoveUnitMovementFlag(MOVEFLAG_ROOTED);
 
             WorldPacket data(SMSG_SPLINE_MOVE_UNROOT, 9);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[4]);
+#endif
             SendMessageToSet(&data, true);
         }
     }
@@ -506,7 +830,27 @@ void Unit::setMoveSwim(bool set_swim)
             AddUnitMovementFlag(MOVEFLAG_SWIMMING);
 
             WorldPacket data(SMSG_SPLINE_MOVE_START_SWIM, 10);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[0]);
+#endif
             SendMessageToSet(&data, false);
         }
         else
@@ -514,7 +858,27 @@ void Unit::setMoveSwim(bool set_swim)
             RemoveUnitMovementFlag(MOVEFLAG_SWIMMING);
 
             WorldPacket data(SMSG_SPLINE_MOVE_STOP_SWIM, 10);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[4]);
+#endif
             SendMessageToSet(&data, false);
         }
     }
@@ -530,8 +894,29 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
             AddUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
 
             WorldPacket data(SMSG_MOVE_GRAVITY_DISABLE, 13);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
             data << uint32(0);
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteSeq(guid[3]);
+            data << uint32(0);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[2]);
+#endif
             SendMessageToSet(&data, true);
         }
         else
@@ -539,8 +924,29 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
             RemoveUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
 
             WorldPacket data(SMSG_MOVE_GRAVITY_ENABLE, 13);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
             data << uint32(0);
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[0]);
+            data << uint32(0);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[6]);
+#endif
             SendMessageToSet(&data, true);
         }
     }
@@ -552,7 +958,27 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
             AddUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
 
             WorldPacket data(SMSG_SPLINE_MOVE_GRAVITY_DISABLE, 10);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[0]);
+#endif
             SendMessageToSet(&data, false);
         }
         else
@@ -560,7 +986,27 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
             RemoveUnitMovementFlag(MOVEFLAG_DISABLEGRAVITY);
 
             WorldPacket data(SMSG_SPLINE_MOVE_GRAVITY_ENABLE, 10);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[3]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[5]);
+#endif
             SendMessageToSet(&data, false);
         }
     }
@@ -578,7 +1024,27 @@ void Unit::setMoveWalk(bool set_walk)
             AddUnitMovementFlag(MOVEFLAG_WALK);
 
             WorldPacket data(SMSG_SPLINE_MOVE_SET_WALK_MODE, 10);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[1]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[3]);
+#endif
             SendMessageToSet(&data, false);
         }
         else
@@ -586,7 +1052,27 @@ void Unit::setMoveWalk(bool set_walk)
             RemoveUnitMovementFlag(MOVEFLAG_WALK);
 
             WorldPacket data(SMSG_SPLINE_MOVE_SET_RUN_MODE, 10);
+#if VERSION_STRING != Cata
             data << GetNewGUID();
+#else
+            ObjectGuid guid = GetGUID();
+            data.WriteByteMask(guid[5]);
+            data.WriteByteMask(guid[6]);
+            data.WriteByteMask(guid[3]);
+            data.WriteByteMask(guid[7]);
+            data.WriteByteMask(guid[2]);
+            data.WriteByteMask(guid[0]);
+            data.WriteByteMask(guid[4]);
+            data.WriteByteMask(guid[1]);
+            data.WriteByteSeq(guid[7]);
+            data.WriteByteSeq(guid[0]);
+            data.WriteByteSeq(guid[4]);
+            data.WriteByteSeq(guid[6]);
+            data.WriteByteSeq(guid[5]);
+            data.WriteByteSeq(guid[1]);
+            data.WriteByteSeq(guid[2]);
+            data.WriteByteSeq(guid[3]);
+#endif
             SendMessageToSet(&data, false);
         }
     }
@@ -695,7 +1181,9 @@ void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic
 
     if (player_mover != nullptr)
     {
+#if VERSION_STRING != Cata
         player_mover->sendForceMovePaket(speed_type, speed);
+#endif
         player_mover->sendMoveSetSpeedPaket(speed_type, speed);
     }
     else

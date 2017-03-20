@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
+#if VERSION_STRING != Cata
 void Player::sendForceMovePaket(UnitSpeedType speed_type, float speed)
 {
     WorldPacket data(50);
@@ -58,6 +59,62 @@ void Player::sendForceMovePaket(UnitSpeedType speed_type, float speed)
 
     SendMessageToSet(&data, true);
 }
+#else
+void Player::sendForceMovePaket(UnitSpeedType speed_type, float speed)
+{
+    WorldPacket data(60);
+    switch (speed_type)
+    {
+        case TYPE_WALK:
+        {
+            data.Initialize(SMSG_FORCE_WALK_SPEED_CHANGE);
+            movement_info.Write(data, SMSG_FORCE_WALK_SPEED_CHANGE, speed);
+        } break;
+        case TYPE_RUN:
+        {
+            data.Initialize(SMSG_FORCE_RUN_SPEED_CHANGE);
+            movement_info.Write(data, SMSG_FORCE_RUN_SPEED_CHANGE, speed);
+        } break;
+        case TYPE_RUN_BACK:
+        {
+            data.Initialize(SMSG_FORCE_RUN_BACK_SPEED_CHANGE);
+            movement_info.Write(data, SMSG_FORCE_RUN_BACK_SPEED_CHANGE, speed);
+        } break;
+        case TYPE_SWIM:
+        {
+            data.Initialize(SMSG_FORCE_SWIM_SPEED_CHANGE);
+            movement_info.Write(data, SMSG_FORCE_SWIM_SPEED_CHANGE, speed);
+        } break;
+        case TYPE_SWIM_BACK:
+        {
+            data.Initialize(SMSG_FORCE_SWIM_BACK_SPEED_CHANGE);
+            movement_info.Write(data, SMSG_FORCE_SWIM_BACK_SPEED_CHANGE, speed);
+        } break;
+        case TYPE_TURN_RATE:
+        {
+            data.Initialize(SMSG_FORCE_TURN_RATE_CHANGE);
+            //movement_info.Write(data, SMSG_FORCE_TURN_RATE_CHANGE, speed);
+        } break;
+        case TYPE_FLY:
+        {
+            data.Initialize(SMSG_FORCE_FLIGHT_SPEED_CHANGE);
+            movement_info.Write(data, SMSG_FORCE_FLIGHT_SPEED_CHANGE, speed);
+        } break;
+        case TYPE_FLY_BACK:
+        {
+            data.Initialize(SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE);
+            //movement_info.Write(data, SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE, speed);
+        } break;
+        case TYPE_PITCH_RATE:
+        {
+            data.Initialize(SMSG_FORCE_PITCH_RATE_CHANGE);
+            //movement_info.Write(data, SMSG_FORCE_PITCH_RATE_CHANGE, speed);
+        } break;
+    }
+
+    SendMessageToSet(&data, true);
+}
+#endif
 
 #if VERSION_STRING != Cata
 void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
@@ -317,6 +374,7 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
 
 void Player::handleFall(MovementInfo const& movement_info)
 {
+#if VERSION_STRING == Cata
     if (!z_axisposition)
         z_axisposition = movement_info.position.z;
 
@@ -345,10 +403,12 @@ void Player::handleFall(MovementInfo const& movement_info)
         DealDamage(this, health_loss, 0, 0, 0);
     }
     z_axisposition = 0.0f;
+#endif
 }
 
 bool Player::isPlayerJumping(MovementInfo const& movement_info, uint16_t opcode)
 {
+#if VERSION_STRING == Cata
     if (opcode == MSG_MOVE_FALL_LAND || movement_info.HasMovementFlag(MOVEFLAG_SWIMMING))
     {
         jumping = false;
@@ -360,12 +420,13 @@ bool Player::isPlayerJumping(MovementInfo const& movement_info, uint16_t opcode)
         jumping = true;
         return true;
     }
-
+#endif
     return false;
 }
 
 void Player::handleBreathing(MovementInfo& movement_info, WorldSession* session)
 {
+#if VERSION_STRING == Cata
     if (!sWorld.BreathingEnabled || FlyCheat || m_bUnlimitedBreath || !isAlive() || GodModeCheat)
     {
         if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING)
@@ -442,4 +503,5 @@ void Player::handleBreathing(MovementInfo& movement_info, WorldSession* session)
             SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, 10);
         }
     }
+#endif
 }
