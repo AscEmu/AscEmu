@@ -73,5 +73,53 @@ void WorldSession::HandleObjectUpdateFailedOpcode(WorldPacket& recv_data)
         LogoutPlayer(true);
         return;
     }
+}
 
+void WorldSession::HandleRequestHotfix(WorldPacket& recv_data)
+{
+    uint32 type;
+    recv_data >> type;
+
+    uint32 count = recv_data.readBits(23);
+
+    ObjectGuid* guids = new ObjectGuid[count];
+    for (uint32 i = 0; i < count; ++i)
+    {
+        guids[i][0] = recv_data.readBit();
+        guids[i][4] = recv_data.readBit();
+        guids[i][7] = recv_data.readBit();
+        guids[i][2] = recv_data.readBit();
+        guids[i][5] = recv_data.readBit();
+        guids[i][3] = recv_data.readBit();
+        guids[i][6] = recv_data.readBit();
+        guids[i][1] = recv_data.readBit();
+    }
+
+    uint32 entry;
+    for (uint32 i = 0; i < count; ++i)
+    {
+        recv_data.ReadByteSeq(guids[i][5]);
+        recv_data.ReadByteSeq(guids[i][6]);
+        recv_data.ReadByteSeq(guids[i][7]);
+        recv_data.ReadByteSeq(guids[i][0]);
+        recv_data.ReadByteSeq(guids[i][1]);
+        recv_data.ReadByteSeq(guids[i][3]);
+        recv_data.ReadByteSeq(guids[i][4]);
+        recv_data >> entry;
+        recv_data.ReadByteSeq(guids[i][2]);
+
+        /*switch (type)
+        {
+            case DB2_REPLY_ITEM:
+                SendItemDb2Reply(entry);
+                break;
+            case DB2_REPLY_SPARSE:
+                SendItemSparseDb2Reply(entry);
+                break;
+            default:
+                LogDebug("WorldSession::HandleRequestHotfix : Received unknown hotfix type %u", type);
+                recv_data.clear();
+                break;
+        }*/
+    }
 }

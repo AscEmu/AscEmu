@@ -255,7 +255,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_GOSSIP_HELLO].handler = &WorldSession::HandleGossipHelloOpcode;
     WorldPacketHandlers[CMSG_GOSSIP_SELECT_OPTION].handler = &WorldSession::HandleGossipSelectOptionOpcode;
     WorldPacketHandlers[CMSG_SPIRIT_HEALER_ACTIVATE].handler = &WorldSession::HandleSpiritHealerActivateOpcode;
-    //WorldPacketHandlers[CMSG_NPC_TEXT_QUERY].handler = &WorldSession::HandleNpcTextQueryOpcode;
+    WorldPacketHandlers[CMSG_NPC_TEXT_QUERY].handler = &WorldSession::HandleNpcTextQueryOpcode;
     //WorldPacketHandlers[CMSG_BINDER_ACTIVATE].handler = &WorldSession::HandleBinderActivateOpcode;
     //WorldPacketHandlers[CMSG_ACTIVATETAXIEXPRESS].handler = &WorldSession::HandleMultipleActivateTaxiOpcode;
 
@@ -272,10 +272,10 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_LIST_INVENTORY].handler = &WorldSession::HandleListInventoryOpcode;
     WorldPacketHandlers[CMSG_AUTOSTORE_BAG_ITEM].handler = &WorldSession::HandleAutoStoreBagItemOpcode;
     //WorldPacketHandlers[CMSG_SET_AMMO].handler = &WorldSession::HandleAmmoSetOpcode;
-    //WorldPacketHandlers[CMSG_BUYBACK_ITEM].handler = &WorldSession::HandleBuyBackOpcode;
+    WorldPacketHandlers[CMSG_BUYBACK_ITEM].handler = &WorldSession::HandleBuyBackOpcode;
     //WorldPacketHandlers[CMSG_SPLIT_ITEM].handler = &WorldSession::HandleSplitOpcode;
     //WorldPacketHandlers[CMSG_READ_ITEM].handler = &WorldSession::HandleReadItemOpcode;
-    //WorldPacketHandlers[CMSG_REPAIR_ITEM].handler = &WorldSession::HandleRepairItemOpcode;
+    WorldPacketHandlers[CMSG_REPAIR_ITEM].handler = &WorldSession::HandleRepairItemOpcode;
     //WorldPacketHandlers[CMSG_AUTOBANK_ITEM].handler = &WorldSession::HandleAutoBankItemOpcode;
     //WorldPacketHandlers[CMSG_AUTOSTORE_BANK_ITEM].handler = &WorldSession::HandleAutoStoreBankItemOpcode;
     //WorldPacketHandlers[CMSG_CANCEL_TEMP_ENCHANTMENT].handler = &WorldSession::HandleCancelTemporaryEnchantmentOpcode;
@@ -314,7 +314,7 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_IGNORE_TRADE].handler = &WorldSession::HandleIgnoreTrade;
     //WorldPacketHandlers[CMSG_ACCEPT_TRADE].handler = &WorldSession::HandleAcceptTrade;
     //WorldPacketHandlers[CMSG_UNACCEPT_TRADE].handler = &WorldSession::HandleUnacceptTrade;
-    //WorldPacketHandlers[CMSG_CANCEL_TRADE].handler = &WorldSession::HandleCancelTrade;
+    WorldPacketHandlers[CMSG_CANCEL_TRADE].handler = &WorldSession::HandleCancelTrade;
     //WorldPacketHandlers[CMSG_SET_TRADE_ITEM].handler = &WorldSession::HandleSetTradeItem;
     //WorldPacketHandlers[CMSG_CLEAR_TRADE_ITEM].handler = &WorldSession::HandleClearTradeItem;
     //WorldPacketHandlers[CMSG_SET_TRADE_GOLD].handler = &WorldSession::HandleSetTradeGold;
@@ -481,6 +481,8 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_WORLD_STATE_UI_TIMER_UPDATE].handler = &WorldSession::HandleWorldStateUITimerUpdate;
     //WorldPacketHandlers[CMSG_SET_TAXI_BENCHMARK_MODE].handler = &WorldSession::HandleSetTaxiBenchmarkOpcode;
     //WorldPacketHandlers[CMSG_UNLEARN_SKILL].handler = &WorldSession::HandleUnlearnSkillOpcode;
+
+    WorldPacketHandlers[CMSG_REQUEST_HOTFIX].handler = &WorldSession::HandleRequestHotfix;
 
     // Chat
     WorldPacketHandlers[CMSG_CHAT_IGNORED].handler = &WorldSession::HandleChatIgnoredOpcode;

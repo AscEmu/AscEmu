@@ -296,8 +296,8 @@ enum Opcodes
     CMSG_SET_TRADE_ITEM = 0x11D,
     CMSG_CLEAR_TRADE_ITEM = 0x11E,
     CMSG_SET_TRADE_GOLD = 0x11F,
-    SMSG_TRADE_STATUS = 0x120,
-    SMSG_TRADE_STATUS_EXTENDED = 0x121,
+    SMSG_TRADE_STATUS = 0x5CA3,                     // new
+    SMSG_TRADE_STATUS_EXTENDED = 0x70A2,            // new
     SMSG_INITIALIZE_FACTIONS = 0x4634,              // new
     SMSG_SET_FACTION_VISIBLE = 0x123,
     SMSG_SET_FACTION_STANDING = 0x124,
@@ -512,7 +512,7 @@ enum Opcodes
     SMSG_PARTYKILLLOG = 0x1F5,
     SMSG_COMPRESSED_UPDATE_OBJECT = 0x11F7,         // new
     SMSG_PLAY_SPELL_IMPACT = 0x1F7,
-    SMSG_EXPLORATION_EXPERIENCE = 0x1F8,
+    SMSG_EXPLORATION_EXPERIENCE = 0x6716,           // new
     CMSG_GM_SET_SECURITY_GROUP = 0x0000,            // new
     CMSG_GM_NUKE = 0x0000,                          // new
     MSG_RANDOM_ROLL = 0x0905,                       // new
@@ -556,7 +556,7 @@ enum Opcodes
     CMSG_XP_CHEAT = 0x221,
     SMSG_SPIRIT_HEALER_CONFIRM = 0x4917,            // new
     CMSG_CHARACTER_POINT_CHEAT = 0x223,
-    SMSG_GOSSIP_POI = 0x224,
+    SMSG_GOSSIP_POI = 0x4316,                       // new
     CMSG_CHAT_IGNORED = 0x225,
     CMSG_GM_VISION = 0x226,
     CMSG_SERVER_COMMAND = 0x227,
@@ -845,7 +845,7 @@ enum Opcodes
     MSG_MOVE_STOP_SWIM_CHEAT = 0x1343,                  // new
     SMSG_MOVE_SET_CAN_FLY = 0x3DA1,                     // new
     SMSG_MOVE_UNSET_CAN_FLY = 0x15A2,                   // new
-    CMSG_MOVE_SET_CAN_FLY_ACK = 0x345,
+    CMSG_MOVE_SET_CAN_FLY_ACK = 0x790C,                 // new
     CMSG_MOVE_SET_FLY = 0x346,
     CMSG_SOCKET_GEMS = 0x347,
     CMSG_ARENA_TEAM_CREATE = 0x348,
@@ -1006,7 +1006,7 @@ enum Opcodes
     SMSG_VOICE_CHAT_STATUS = 0x3E3,
     CMSG_REPORT_PVP_AFK = 0x3E4,
     CMSG_REPORT_PVP_AFK_RESULT = 0x3E5,
-    CMSG_GUILD_BANKER_ACTIVATE = 0x3E6,
+    CMSG_GUILD_BANKER_ACTIVATE = 0x2E37,        // new
     CMSG_GUILD_BANK_QUERY_TAB = 0x3E7,
     SMSG_GUILD_BANK_LIST = 0x3E8,
     CMSG_GUILD_BANK_SWAP_ITEMS = 0x3E9,

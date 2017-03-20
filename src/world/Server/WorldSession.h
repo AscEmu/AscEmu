@@ -835,6 +835,7 @@ class SERVER_DECL WorldSession
         void HandleLoadScreenOpcode(WorldPacket& recv_data);
         void HandleUITimeRequestOpcode(WorldPacket& recv_data);
         void HandleTimeSyncRespOpcode(WorldPacket& recv_data);
+        void HandleRequestHotfix(WorldPacket& recv_data);
 #endif
 
         void Unhandled(WorldPacket& recv_data);
