@@ -506,6 +506,9 @@ void Player::handleBreathing(MovementInfo& movement_info, WorldSession* session)
 #endif
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Spells
+
 bool Player::isSpellFitByClassAndRace(uint32_t spell_id)
 {
 #if VERSION_STRING == Cata
@@ -530,4 +533,33 @@ bool Player::isSpellFitByClassAndRace(uint32_t spell_id)
     }
 #endif
     return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Auction
+
+void Player::sendAuctionCommandResult(Auction* auction, uint32_t action, uint32_t errorCode, uint32_t bidError)
+{
+    WorldPacket data(SMSG_AUCTION_COMMAND_RESULT);
+    data << uint32_t(auction ? auction->Id : 0);
+    data << uint32_t(action);
+    data << uint32_t(errorCode);
+
+    switch (errorCode)
+    {
+        case AUCTION_ERR_NONE:
+            if (action == AUCTION_BID)
+                data << uint64_t(auction->HighestBid ? auction->GetAuctionOutBid() : 0);
+            break;
+        case AUCTION_ERR_INVENTORY:
+            data << uint32_t(bidError);
+            break;
+        case AUCTION_ERR_HIGHER_BID:
+            data << uint64_t(auction->HighestBidder);
+            data << uint64_t(auction->HighestBid);
+            data << uint64_t(auction->HighestBid ? auction->GetAuctionOutBid() : 0);
+            break;
+    }
+
+    SendPacket(&data);
 }

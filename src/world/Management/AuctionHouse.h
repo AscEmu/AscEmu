@@ -22,6 +22,7 @@
 #define _AUCTIONHOUSE_H
 
 #include "Storage/DBC/DBCStructures.hpp"
+#include "WorldConf.h"
 #include "Item.h"
 
 enum AuctionRemoveType
@@ -30,6 +31,8 @@ enum AuctionRemoveType
     AUCTION_REMOVE_WON,
     AUCTION_REMOVE_CANCELLED
 };
+
+#if VERSION_STRING != Cata
 enum AUCTIONRESULT
 {
     AUCTION_CREATE,
@@ -45,6 +48,32 @@ enum AUCTIONRESULTERROR
     AUCTION_ERROR_ITEM              = 4,
     AUCTION_ERROR_BID_OWN_AUCTION   = 10
 };
+#else
+
+#define MIN_AUCTION_TIME (12 * HOUR)
+#define MAX_AUCTION_ITEMS 160
+
+enum AuctionResult
+{
+    AUCTION_CREATE,
+    AUCTION_CANCEL,
+    AUCTION_BID,
+    AUCTION_BUYOUT
+};
+
+enum AuctionResultError
+{
+    AUCTION_ERR_NONE = 0,
+    AUCTION_ERR_INVENTORY = 1,
+    AUCTION_ERR_INTERNAL_DB = 2,
+    AUCTION_ERR_NOT_ENOUGH_MONEY = 3,
+    AUCTION_ERR_ITEM_NOT_FOUND = 4,
+    AUCTION_ERR_HIGHER_BID = 5,
+    AUCTION_ERR_BID_INCREMENT = 7,
+    AUCTION_ERR_BID_OWN_AUCTION = 10,
+    AUCTION_ERR_RESTRICTED_ACCOUNT = 13
+};
+#endif
 enum AuctionMailResult
 {
     AUCTION_OUTBID,
@@ -72,7 +101,12 @@ struct Auction
     void DeleteFromDB();
     void SaveToDB(uint32 AuctionHouseId);
     void UpdateInDB();
+#if VERSION_STRING != Cata
     void AddToPacket(WorldPacket& data);
+#else
+    uint32 GetAuctionOutBid();
+    bool BuildAuctionInfo(WorldPacket & data);
+#endif
     bool Deleted;
     uint32 DeletedReason;
 };

@@ -31,6 +31,7 @@
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Units/Creatures/AIInterface.h" //?? what?
 #include "WorldConf.h"
+#include "Management/AuctionHouse.h"
 
 
 class QuestLogEntry;
@@ -361,6 +362,10 @@ public:
 #if VERSION_STRING == Cata
     uint32_t getFreePrimaryProfessionPoints() const { return GetUInt32Value(PLAYER_CHARACTER_POINTS); }
 #endif
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Auction
+    void sendAuctionCommandResult(Auction* auction, uint32_t Action, uint32_t ErrorCode, uint32_t bidError = 0);
 
 private:
     //MIT End
