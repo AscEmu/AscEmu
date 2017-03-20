@@ -540,6 +540,7 @@ bool Player::isSpellFitByClassAndRace(uint32_t spell_id)
 
 void Player::sendAuctionCommandResult(Auction* auction, uint32_t action, uint32_t errorCode, uint32_t bidError)
 {
+#if VERSION_STRING == Cata
     WorldPacket data(SMSG_AUCTION_COMMAND_RESULT);
     data << uint32_t(auction ? auction->Id : 0);
     data << uint32_t(action);
@@ -562,4 +563,5 @@ void Player::sendAuctionCommandResult(Auction* auction, uint32_t action, uint32_
     }
 
     SendPacket(&data);
+#endif
 }
