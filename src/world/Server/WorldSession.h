@@ -166,6 +166,13 @@ enum ObjectUpdateFlags
 };
 
 #else
+enum TrainerSpellState
+{
+    TRAINER_SPELL_GRAY = 0,
+    TRAINER_SPELL_GREEN = 1,
+    TRAINER_SPELL_RED = 2,
+    TRAINER_SPELL_GREEN_DISABLED = 10
+};
 
 #include "GameCata/Movement/MovementDefines.h"
 
@@ -765,7 +772,11 @@ class SERVER_DECL WorldSession
         void HandleDungeonDifficultyOpcode(WorldPacket& recv_data);
         void HandleRaidDifficultyOpcode(WorldPacket& recv_data);
 
+#if VERSION_STRING != Cata
         uint8 TrainerGetSpellStatus(TrainerSpell* pSpell);
+#else
+        TrainerSpellState TrainerGetSpellStatus(TrainerSpell* pSpell);
+#endif
         void SendMailError(uint32 error);
 
         // At Login

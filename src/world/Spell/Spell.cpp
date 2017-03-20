@@ -2486,6 +2486,10 @@ void Spell::SendChannelStart(uint32 duration)
         data << WoWGuid(m_caster->GetNewGUID());
         data << uint32(m_spellInfo->Id);
         data << uint32(duration);
+#if VERSION_STRING == Cata
+        data << uint8(0);
+        data << uint8(0);
+#endif
         m_caster->SendMessageToSet(&data, true);
     }
 

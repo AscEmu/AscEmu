@@ -101,17 +101,26 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
     if (creature_target == nullptr)
         return true;
 
-    uint32 spellid;
-    uint32 cost;
-    uint32 reqspell;
-    uint32 reqlevel;
-    uint32 delspell;
+    uint32_t spellid;
+    uint32_t cost;
+    uint32_t reqlevel;
+#if VERSION_STRING != Cata
+    uint32_t reqspell;
+    uint32_t delspell;
 
     if (sscanf(args, "%u %u %u %u %u", &spellid, &cost, &reqspell, &reqlevel, &delspell) != 5)
     {
         RedSystemMessage(m_session, "Command must be in format: .npc add trainerspell <spell_id> <cost> <required_spell> <required_player_level> <delete_spell_id>.");
         return true;
     }
+#else
+
+    if (sscanf(args, "%u %u %u", &spellid, &cost, &reqlevel) != 3)
+    {
+        RedSystemMessage(m_session, "Command must be in format: .npc add trainerspell <spell_id> <cost> <required_player_level>.");
+        return true;
+    }
+#endif
 
     auto creature_trainer = creature_target->GetTrainer();
     if (creature_trainer == nullptr)
@@ -134,6 +143,7 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
     }
 
     TrainerSpell sp;
+#if VERSION_STRING != Cata
     sp.Cost = cost;
     sp.IsProfession = false;
     sp.pLearnSpell = learn_spell;
@@ -150,6 +160,19 @@ bool ChatHandler::HandleNpcAddTrainerSpellCommand(const char* args, WorldSession
     sGMLog.writefromsession(m_session, "added spell  %s (%u) to trainer %s (%u)", learn_spell->Name.c_str(), learn_spell->Id, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
     WorldDatabase.Execute("REPLACE INTO trainer_spells VALUES(%u, %u, %u, %u, %u, %u, %u, %u, %u, %u)",
         creature_target->GetEntry(), (int)0, learn_spell->Id, cost, reqspell, (int)0, (int)0, reqlevel, delspell, (int)0);
+#else
+    sp.spellCost = cost;
+    sp.spell = learn_spell->Id;
+    sp.reqLevel = reqlevel;
+
+    creature_trainer->Spells.push_back(sp);
+    creature_trainer->SpellCount++;
+
+    SystemMessage(m_session, "Added spell %s (%u) to trainer %s (%u).", learn_spell->Name.c_str(), learn_spell->Id, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
+    sGMLog.writefromsession(m_session, "added spell  %s (%u) to trainer %s (%u)", learn_spell->Name.c_str(), learn_spell->Id, creature_target->GetCreatureProperties()->Name.c_str(), creature_target->GetEntry());
+    WorldDatabase.Execute("REPLACE INTO trainer_spells VALUES(%u, %u, %u, %u, %u, %u)",
+                          creature_target->GetEntry(), learn_spell->Id, cost, (int)0, (int)0, reqlevel);
+#endif
 
     return true;
 }

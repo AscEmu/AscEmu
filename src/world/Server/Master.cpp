@@ -54,7 +54,7 @@ static const char* REQUIRED_CHAR_DB_VERSION = "2017-02-04_01_queue_tables";
 static const char* REQUIRED_WORLD_DB_VERSION = "2017-02-25_01_gameobject_spawns";
 #else
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-02-04_01_queue_tables";
-static const char* REQUIRED_WORLD_DB_VERSION = "2017-03-19_01_player_create";
+static const char* REQUIRED_WORLD_DB_VERSION = "2017-03-20_01_trainer_spells";
 #endif
 
 void Master::_OnSignal(int s)

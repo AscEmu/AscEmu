@@ -200,6 +200,29 @@ struct PointOfInterest
 };
 
 class SpellInfo;
+#if VERSION_STRING == Cata
+struct TrainerSpell
+{
+    TrainerSpell() : spell(0), spellCost(0), reqSkill(0), reqSkillValue(0), reqLevel(0)
+    {
+        for (uint8_t i = 0; i < MAX_SPELL_EFFECTS; ++i)
+            learnedSpell[i] = 0;
+    }
+
+    uint32_t spell;
+    uint32_t spellCost;
+    uint32_t reqSkill;
+    uint32_t reqSkillValue;
+    uint32_t reqLevel;
+    uint32_t learnedSpell[3];
+
+    // helpers
+    bool IsCastable() const
+    {
+        return learnedSpell[0] != spell;
+    }
+};
+#else
 struct TrainerSpell
 {
     SpellInfo* pCastSpell;
@@ -213,6 +236,7 @@ struct TrainerSpell
     uint32 Cost;
     uint32 RequiredLevel;
 };
+#endif
 
 struct Trainer
 {
@@ -433,6 +457,20 @@ typedef std::map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
 typedef std::unordered_map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
 #endif
 
+#if VERSION_STRING == Cata
+// spell_id  req_spell
+typedef std::multimap<uint32_t, uint32_t> SpellRequiredMap;
+typedef std::pair<SpellRequiredMap::const_iterator, SpellRequiredMap::const_iterator> SpellRequiredMapBounds;
+
+// req_spell spell_id
+typedef std::multimap<uint32_t, uint32_t> SpellsRequiringSpellMap;
+typedef std::pair<SpellsRequiringSpellMap::const_iterator, SpellsRequiringSpellMap::const_iterator> SpellsRequiringSpellMapBounds;
+
+// skill line ability
+typedef std::multimap<uint32_t, DBC::Structures::SkillLineAbilityEntry const*> SkillLineAbilityMap;
+typedef std::pair<SkillLineAbilityMap::const_iterator, SkillLineAbilityMap::const_iterator> SkillLineAbilityMapBounds;
+#endif
+
 
 class PlayerCache;
 class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableObject
@@ -640,6 +678,19 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         TransporterMap m_TransportersByMap;
         TransporterMap m_TransportersByInstanceIdMap;
 
+#if VERSION_STRING == Cata
+        // Spell Required table
+        SpellRequiredMapBounds GetSpellsRequiredForSpellBounds(uint32_t spell_id) const;
+        SpellsRequiringSpellMapBounds GetSpellsRequiringSpellBounds(uint32_t spell_id) const;
+        bool IsSpellRequiringSpell(uint32_t spellid, uint32_t req_spellid) const;
+        const SpellsRequiringSpellMap GetSpellsRequiringSpell();
+        uint32_t GetSpellRequired(uint32_t spell_id) const;
+        void LoadSpellRequired();
+
+        void LoadSkillLineAbilityMap();
+        SkillLineAbilityMapBounds GetSkillLineAbilityMapBounds(uint32_t spell_id) const;
+#endif
+
         void LoadTrainers();
         Trainer* GetTrainer(uint32 Entry);
 
@@ -771,6 +822,11 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         EventScriptMaps mEventScriptMaps;
         SpellEffectMaps mSpellEffectMaps;
+#if VERSION_STRING == Cata
+        SpellsRequiringSpellMap mSpellsReqSpell;
+        SpellRequiredMap mSpellReq;
+        SkillLineAbilityMap mSkillLineAbilityMap;
+#endif
 
     protected:
 

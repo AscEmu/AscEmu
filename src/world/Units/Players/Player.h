@@ -355,6 +355,11 @@ public:
     bool isPlayerJumping(MovementInfo const& movement_info, uint16_t opcode);
     void handleBreathing(MovementInfo& movement_info, WorldSession* session);
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Spells
+    bool isSpellFitByClassAndRace(uint32_t spell_id);
+    uint32_t getFreePrimaryProfessionPoints() const { return GetUInt32Value(PLAYER_CHARACTER_POINTS); }
+
 private:
     //MIT End
     //AGPL Start

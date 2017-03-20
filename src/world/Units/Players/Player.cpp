@@ -505,3 +505,28 @@ void Player::handleBreathing(MovementInfo& movement_info, WorldSession* session)
     }
 #endif
 }
+
+bool Player::isSpellFitByClassAndRace(uint32_t spell_id)
+{
+    uint32_t racemask = getRaceMask();
+    uint32_t classmask = getClassMask();
+
+    SkillLineAbilityMapBounds bounds = objmgr.GetSkillLineAbilityMapBounds(spell_id);
+    if (bounds.first == bounds.second)
+        return true;
+
+    for (SkillLineAbilityMap::const_iterator _spell_idx = bounds.first; _spell_idx != bounds.second; ++_spell_idx)
+    {
+        // skip wrong race skills
+        if (_spell_idx->second->race_mask && (_spell_idx->second->race_mask & racemask) == 0)
+            continue;
+
+        // skip wrong class skills
+        if (_spell_idx->second->class_mask && (_spell_idx->second->class_mask & classmask) == 0)
+            continue;
+
+        return true;
+    }
+
+    return false;
+}
