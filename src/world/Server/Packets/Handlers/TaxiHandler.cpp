@@ -24,6 +24,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleTaxiNodeStatusQueryOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -249,6 +250,7 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
 
     //LogDefault("TAXI: Starting taxi trip. Next update in %d msec.", first_node_time);
 }
+#endif
 
 void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
 {

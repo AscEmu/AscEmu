@@ -358,7 +358,9 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells
     bool isSpellFitByClassAndRace(uint32_t spell_id);
+#if VERSION_STRING == Cata
     uint32_t getFreePrimaryProfessionPoints() const { return GetUInt32Value(PLAYER_CHARACTER_POINTS); }
+#endif
 
 private:
     //MIT End
