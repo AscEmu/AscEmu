@@ -508,6 +508,7 @@ void Player::handleBreathing(MovementInfo& movement_info, WorldSession* session)
 
 bool Player::isSpellFitByClassAndRace(uint32_t spell_id)
 {
+#if VERSION_STRING == Cata
     uint32_t racemask = getRaceMask();
     uint32_t classmask = getClassMask();
 
@@ -527,6 +528,6 @@ bool Player::isSpellFitByClassAndRace(uint32_t spell_id)
 
         return true;
     }
-
+#endif
     return false;
 }

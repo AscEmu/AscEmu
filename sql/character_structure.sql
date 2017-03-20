@@ -285,7 +285,7 @@ CREATE TABLE IF NOT EXISTS `character_db_version` (
 -- Dumping data for table character_db_version: ~1 rows (approximately)
 /*!40000 ALTER TABLE `character_db_version` DISABLE KEYS */;
 INSERT INTO `character_db_version` (`LastUpdate`) VALUES
-	('2017-02-04_01_queue_tables');
+	('2017-03-20_01_mailbox');
 /*!40000 ALTER TABLE `character_db_version` ENABLE KEYS */;
 
 
@@ -740,7 +740,7 @@ CREATE TABLE IF NOT EXISTS `mailbox` (
   `money` int(30) NOT NULL DEFAULT '0',
   `attached_item_guids` varchar(200) NOT NULL DEFAULT '',
   `cod` int(30) NOT NULL DEFAULT '0',
-  `stationary` int(30) NOT NULL DEFAULT '0',
+  `stationary` bigint(30) unsigned NOT NULL DEFAULT '0',
   `expiry_time` int(30) NOT NULL DEFAULT '0',
   `delivery_time` int(30) NOT NULL DEFAULT '0',
   `checked_flag` int(30) unsigned NOT NULL DEFAULT '0',

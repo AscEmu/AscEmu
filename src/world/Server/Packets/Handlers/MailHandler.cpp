@@ -22,6 +22,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 
+#if VERSION_STRING != Cata
 /// \todo refactoring
 bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
 {
@@ -709,3 +710,4 @@ void WorldSession::SendMailError(uint32 error)
     data << error;
     SendPacket(&data);
 }
+#endif

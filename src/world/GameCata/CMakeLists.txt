@@ -5,6 +5,7 @@ set(PATH_PREFIX GameCata)
 set(SRC_GAMECATA_FILES
     ${PATH_PREFIX}/Handlers/ChannelHandler.cpp
     ${PATH_PREFIX}/Handlers/CharacterHandler.cpp
+    ${PATH_PREFIX}/Handlers/MailHandler.cpp
     ${PATH_PREFIX}/Handlers/MiscellaneousHandler.cpp
     ${PATH_PREFIX}/Handlers/MovementHandler.cpp
     ${PATH_PREFIX}/Handlers/NPCHandler.cpp
