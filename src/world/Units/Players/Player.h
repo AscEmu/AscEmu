@@ -1583,42 +1583,48 @@ private:
         //\todo fix this
         void SetTalentPointsForAllSpec(uint32 amt)
         {
-#if VERSION_STRING != Cata
             m_specs[0].SetTP(amt);
             m_specs[1].SetTP(amt);
+#if VERSION_STRING != Cata
             SetUInt32Value(PLAYER_CHARACTER_POINTS1, amt);
-            smsg_TalentsInfo(false);
+#else
+            SetUInt32Value(PLAYER_CHARACTER_POINTS, amt);
 #endif
+            smsg_TalentsInfo(false);
         }
 
         void AddTalentPointsToAllSpec(uint32 amt)
         {
-#if VERSION_STRING != Cata
             m_specs[0].SetTP(m_specs[0].GetTP() + amt);
             m_specs[1].SetTP(m_specs[1].GetTP() + amt);
+#if VERSION_STRING != Cata
             SetUInt32Value(PLAYER_CHARACTER_POINTS1, GetUInt32Value(PLAYER_CHARACTER_POINTS1) + amt);
-            smsg_TalentsInfo(false);
+#else
+            SetUInt32Value(PLAYER_CHARACTER_POINTS, GetUInt32Value(PLAYER_CHARACTER_POINTS) + amt);
 #endif
+            smsg_TalentsInfo(false);
         }
 
         void SetCurrentTalentPoints(uint32 points)
         {
-#if VERSION_STRING != Cata
             m_specs[m_talentActiveSpec].SetTP(points);
+#if VERSION_STRING != Cata
             SetUInt32Value(PLAYER_CHARACTER_POINTS1, points);
-            smsg_TalentsInfo(false);
+#else
+            SetUInt32Value(PLAYER_CHARACTER_POINTS, points);
 #endif
+            smsg_TalentsInfo(false);
         }
 
         uint32 GetCurrentTalentPoints()
         {
 #if VERSION_STRING != Cata
             uint32 points = GetUInt32Value(PLAYER_CHARACTER_POINTS1);
+#else
+            uint32 points = GetUInt32Value(PLAYER_CHARACTER_POINTS);
+#endif
             Arcemu::Util::ArcemuAssert(points == m_specs[m_talentActiveSpec].GetTP());
             return points;
-#else
-            return 0;
-#endif
         }
 
         void SetPrimaryProfessionPoints(uint32 amt)
@@ -2122,6 +2128,10 @@ private:
         uint16 m_maxTalentPoints;
         uint8 m_talentSpecsCount;
         uint8 m_talentActiveSpec;
+#if VERSION_STRING == Cata
+        uint32 m_FirstTalentTreeLock;
+        uint32 CalcTalentPointsHaveSpent(uint32 spec);
+#endif
 
         PlayerSpec m_specs[MAX_SPEC_COUNT];
 

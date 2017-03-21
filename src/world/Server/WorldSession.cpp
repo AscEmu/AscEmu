@@ -849,6 +849,7 @@ void WorldSession::SendAccountDataTimes(uint32 mask)
     SendPacket(&data);
 }
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -942,6 +943,7 @@ void WorldSession::HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
         _player->LearnTalent(talentid, rank, true);
     }
 }
+#endif
 
 void WorldSession::SendMOTD()
 {

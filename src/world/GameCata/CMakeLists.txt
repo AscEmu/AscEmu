@@ -10,6 +10,7 @@ set(SRC_GAMECATA_FILES
     ${PATH_PREFIX}/Handlers/MiscellaneousHandler.cpp
     ${PATH_PREFIX}/Handlers/MovementHandler.cpp
     ${PATH_PREFIX}/Handlers/NPCHandler.cpp
+    ${PATH_PREFIX}/Handlers/SkillHandler.cpp
     ${PATH_PREFIX}/Handlers/TaxiHandler.cpp
     ${PATH_PREFIX}/Movement/MovementDefines.h
     ${PATH_PREFIX}/Movement/MovementStructures.h

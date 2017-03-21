@@ -416,6 +416,10 @@ Player::Player(uint32 guid)
     m_maxTalentPoints = 0; //VLack: 3 Aspire values initialized
     m_talentActiveSpec = 0;
     m_talentSpecsCount = 1;
+#if VERSION_STRING == Cata
+    m_FirstTalentTreeLock = 0;
+#endif
+
     for (uint8 s = 0; s < MAX_SPEC_COUNT; ++s)
     {
         m_specs[s].talents.clear();
@@ -1828,6 +1832,7 @@ void Player::smsg_InitialSpells()
     //Log::getSingleton().outDetail("CHARACTER: Sent Initial Spells");
 }
 
+#if VERSION_STRING != Cata
 void Player::smsg_TalentsInfo(bool SendPetTalents)
 {
 #if VERSION_STRING > TBC
@@ -1867,6 +1872,48 @@ void Player::smsg_TalentsInfo(bool SendPetTalents)
     GetSession()->SendPacket(&data);
 #endif
 }
+#else
+void Player::smsg_TalentsInfo(bool SendPetTalents)
+{
+    WorldPacket data(SMSG_TALENTS_INFO, 1000);
+    data << uint8(SendPetTalents ? 1 : 0);
+    if (SendPetTalents)
+    {
+        if (GetSummon())
+            GetSummon()->SendTalentsToOwner();
+        return;
+    }
+    else
+    {
+        data << uint32(GetCurrentTalentPoints());
+        data << uint8(m_talentSpecsCount);
+        data << uint8(m_talentActiveSpec);
+        for (uint8 s = 0; s < m_talentSpecsCount; ++s)
+        {
+            PlayerSpec spec = m_specs[s];
+            data << uint32(m_FirstTalentTreeLock);
+
+            //Send Talent
+            data << uint8(spec.talents.size());
+
+            std::map<uint32, uint8>::iterator itr;
+            for (itr = spec.talents.begin(); itr != spec.talents.end(); ++itr)
+            {
+                data << uint32(itr->first);     // TalentId
+                data << uint8(itr->second);     // TalentRank
+            }
+
+            // Send Glyph info
+            data << uint8(GLYPHS_COUNT);
+            for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
+            {
+                data << uint16(spec.glyphs[i]);
+            }
+        }
+    }
+    GetSession()->SendPacket(&data);
+}
+#endif
 
 void Player::ActivateSpec(uint8 spec)
 {
@@ -1917,6 +1964,8 @@ void Player::ActivateSpec(uint8 spec)
     }
 #if VERSION_STRING != Cata
     SetUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
+#else
+    SetUInt32Value(PLAYER_CHARACTER_POINTS, m_specs[m_talentActiveSpec].GetTP());
 #endif
     smsg_TalentsInfo(false);
 }
@@ -2730,6 +2779,14 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     ss << uint32(m_specs[SPEC_PRIMARY].GetTP()) << " " << uint32(m_specs[SPEC_SECONDARY].GetTP());
     ss << "', ";
 
+#if VERSION_STRING != Cata
+    ss << "'" << uint32(0);
+    ss << "', ";
+#else
+    ss << "'" << uint32(m_FirstTalentTreeLock);
+    ss << "', ";
+#endif
+
     ss << "'" << m_phase << "','";
 
     uint32 xpfield;
@@ -2934,7 +2991,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         return;
     }
 
-    const uint32 fieldcount = 94;
+    const uint32 fieldcount = 95;
 
     if (result->GetFieldCount() != fieldcount)
     {
@@ -3507,8 +3564,16 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         m_specs[SPEC_SECONDARY].SetTP(tp2);
 #if VERSION_STRING != Cata
         SetUInt32Value(PLAYER_CHARACTER_POINTS1, m_specs[m_talentActiveSpec].GetTP());
+#else
+        SetUInt32Value(PLAYER_CHARACTER_POINTS, m_specs[m_talentActiveSpec].GetTP());
 #endif
     }
+
+#if VERSION_STRING != Cata
+    get_next_field.GetUInt32();
+#else
+    m_FirstTalentTreeLock = get_next_field.GetUInt32(); // Load First Set Talent Tree
+#endif
 
     m_phase = get_next_field.GetUInt32(); //Load the player's last phase
 
@@ -6571,6 +6636,9 @@ void Player::Reset_Talents()
     }
 
     m_specs[m_talentActiveSpec].talents.clear();
+#if VERSION_STRING == Cata
+    m_FirstTalentTreeLock = 0;
+#endif
     smsg_TalentsInfo(false); //VLack: should we send this as Aspire? Yes...
 }
 
@@ -11921,7 +11989,7 @@ void Player::HandleSpellLoot(uint32 itemid)
     }
 }
 
-
+#if VERSION_STRING != Cata
 void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
 {
     uint32 CurTalentPoints = m_specs[m_talentActiveSpec].GetTP();   // Calculate free points in active spec
@@ -12092,6 +12160,192 @@ void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
         }
     }
 }
+#else
+void Player::LearnTalent(uint32 talentid, uint32 rank, bool isPreviewed)
+{
+    uint32 CurTalentPoints = m_specs[m_talentActiveSpec].GetTP();   // Calculate free points in active spec
+
+    int32 TP_needed;
+    if (isPreviewed == false)
+        TP_needed = 1;
+    else
+        TP_needed = rank + 1;
+
+    if ((int32)CurTalentPoints < TP_needed)
+    {
+        LogDebug("LearnTalent: Have not enough talentpoints to spend");
+        return;
+    }
+
+    if (rank > 4)
+    {
+        LogDebug("LearnTalent: Requested rank is greater then 4");
+        return;
+    }
+
+    auto talent_info = sTalentStore.LookupEntry(talentid);
+    if (talent_info == nullptr)
+        return;
+
+    if (objmgr.IsSpellDisabled(talent_info->RankID[rank]))
+    {
+        if (IsInWorld())
+            SendCastResult(talent_info->RankID[rank], SPELL_FAILED_SPELL_UNAVAILABLE, 0, 0);
+
+        return;
+    }
+
+    DBC::Structures::TalentTabEntry const* talentTabInfo = sTalentTabStore.LookupEntry(talent_info->TalentTree);
+
+    if (!talentTabInfo)
+    {
+        LogDebug("Could not find talent tab %u in talent DBC \n", talent_info->TalentTree);
+        return;
+    }
+
+    if (m_FirstTalentTreeLock == 0)
+    {
+        m_FirstTalentTreeLock = talent_info->TalentTree;
+        //TODO Mastery Spells
+
+    }
+
+    //tree is locked until we have 31 points in it
+    if (talentTabInfo->TalentTabID != m_FirstTalentTreeLock && CalcTalentPointsHaveSpent(m_talentActiveSpec) < 31)
+    {
+        LogDebug("Trying to learn non primary tab spell before we have full tab spec \n");
+        return;
+    }
+
+    // Check if it requires another talent
+    if (talent_info->DependsOn > 0)
+    {
+        auto depends_talent = sTalentStore.LookupEntry(talent_info->DependsOn);
+        if (depends_talent)
+        {
+            bool hasEnoughRank = false;
+            for (int32 i = (int32)talent_info->DependsOnRank - 1; i < 5; ++i)
+            {
+                if (depends_talent->RankID[i] != 0)
+                {
+                    if (HasSpell(depends_talent->RankID[i]))
+                    {
+                        hasEnoughRank = true;
+                        break;
+                    }
+                }
+            }
+            if (!hasEnoughRank)
+                return;
+        }
+        else
+        {
+            LogDebug("Could not find talent dependency %u for talent %u \n", talent_info->DependsOn, talentid);
+            return;
+        }
+    }
+
+    if ((talentTabInfo->ClassMask & (1 << (getClass() - 1))) == 0)
+    {
+        SoftDisconnect();
+        LogDebug("LearnTalent: Talent is not for our class");
+        return;
+    }
+
+    uint32 spellid = talent_info->RankID[rank];
+    if (spellid == 0)
+    {
+        LogDetail("Talent: %u Rank: %u = 0", talentid, rank);
+    }
+    else
+    {
+        if (rank > 0)
+        {
+            if (talent_info->RankID[rank - 1] && !HasSpell(talent_info->RankID[rank - 1]) && !isPreviewed)
+            {
+                // cheater
+                LogDebug("LearnTalent: Missing required rank");
+                return;
+            }
+        }
+
+        for (uint8 i = rank; i < 5; ++i)
+        {
+            if (talent_info->RankID[i] != 0 && HasSpell(talent_info->RankID[i]))
+            {
+                LogDebug("LearnTalent: Has rank %u higher already higher or equal.Spell id %u", i, talent_info->RankID[i]);
+                //return; // cheater
+            }
+        }
+
+
+        if (!HasSpell(spellid))
+        {
+            addSpell(spellid);
+
+            SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellid);
+            if (spellInfo == nullptr)
+            {
+                LOG_ERROR("Your table `spells` miss skill spell %u!", spellid);
+                return;
+            }
+            //make sure pets that get bonus from owner do not stack it up
+            if (getClass() == HUNTER && GetSummon())
+                GetSummon()->RemoveAura(spellInfo->Id);
+
+            if (rank > 0)
+            {
+                uint32 respellid = talent_info->RankID[rank - 1];
+                if (respellid)
+                {
+                    removeSpell(respellid, false, false, 0);
+                    RemoveAura(respellid);
+
+                    SpellInfo* spellInfoReq = sSpellCustomizations.GetSpellInfo(respellid);
+                    if (spellInfoReq == nullptr)
+                    {
+                        LOG_ERROR("Your table `spells` miss skill spell %u!", spellid);
+                        return;
+                    }
+                    if (getClass() == HUNTER && GetSummon())
+                        GetSummon()->RemoveAura(spellInfoReq->Id);
+                }
+            }
+
+            int32 ss = GetShapeShiftMask();
+            if (spellInfo->RequiredShapeShift == 0 || (ss & spellInfo->RequiredShapeShift) != 0)
+            {
+                if (spellInfo->IsPassive()
+                     || (spellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL ||
+                         spellInfo->Effect[1] == SPELL_EFFECT_LEARN_SPELL ||
+                         spellInfo->Effect[2] == SPELL_EFFECT_LEARN_SPELL))
+                {
+                    Spell* sp = sSpellFactoryMgr.NewSpell(this, spellInfo, true, NULL);
+                    SpellCastTargets tgt;
+                    tgt.m_unitTarget = this->GetGUID();
+                    sp->prepare(&tgt);
+                }
+            }
+
+            m_specs[m_talentActiveSpec].AddTalent(talentid, uint8(rank));
+            SetCurrentTalentPoints(CurTalentPoints - static_cast<uint32>(TP_needed));
+            if (isPreviewed == false)
+                smsg_TalentsInfo(false);
+        }
+    }
+}
+
+uint32 Player::CalcTalentPointsHaveSpent(uint32 spec)
+{
+    std::map<uint32, uint8>::iterator treeitr;
+    int32 points_used_up = 0;
+
+    for (treeitr = m_specs[spec].talents.begin(); treeitr != m_specs[spec].talents.end(); treeitr++)
+        points_used_up += treeitr->second + 1;
+
+    return points_used_up;
+} 
+#endif
 
 void Player::SetDungeonDifficulty(uint8 diff)
 {

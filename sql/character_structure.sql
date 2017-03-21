@@ -1,7 +1,7 @@
 /*
 ********************************************************************
 AscEmu char structure
-Last update: 02/04/2017
+Last update: 03/21/2017
 *********************************************************************
 */
 
@@ -230,6 +230,7 @@ CREATE TABLE IF NOT EXISTS `characters` (
   `numspecs` int(10) NOT NULL DEFAULT '1',
   `currentspec` int(10) NOT NULL DEFAULT '0',
   `talentpoints` longtext NOT NULL,
+  `firsttalenttree` int(11) DEFAULT NULL,
   `phase` int(10) unsigned NOT NULL DEFAULT '1',
   `CanGainXp` int(10) unsigned NOT NULL DEFAULT '1',
   `data` longtext,
@@ -285,7 +286,7 @@ CREATE TABLE IF NOT EXISTS `character_db_version` (
 -- Dumping data for table character_db_version: ~1 rows (approximately)
 /*!40000 ALTER TABLE `character_db_version` DISABLE KEYS */;
 INSERT INTO `character_db_version` (`LastUpdate`) VALUES
-	('2017-03-20_01_mailbox');
+	('2017-03-21_01_characters');
 /*!40000 ALTER TABLE `character_db_version` ENABLE KEYS */;
 
 
