@@ -23,7 +23,7 @@
 - Version: d59b4cf1d107b5f6a0f67d6bc545c6c6ebef3d74 (2011/11/08)
 
 ## Folder: StormLib
-- Web: UNK
+- Web: http://www.zezula.net/en/mpq/stormlib.html
 - Version: (2012/06/05)
 
 ## Folder: bzip2
