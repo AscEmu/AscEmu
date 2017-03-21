@@ -34,7 +34,7 @@
 #include "Spell/SpellAuras.h"
 #include "../../scripts/Common/Base.h"
 
-#if VERSION_STRING == Classic
+#ifdef AE_CLASSIC
 static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
 {
     0.0f,               // 0              
@@ -100,8 +100,7 @@ static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
     0.0162619254091f   //60
 };
 #endif
-
-#if VERSION_STRING == TBC
+#ifdef AE_TBC
 static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
 {
     0.0f,               // 0              
@@ -177,7 +176,7 @@ static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
     0.0136512559131f    //70
 };
 #endif
-#if VERSION_STRING == WotLK
+#ifdef AE_WOTLK
 static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
 {
     0.0f,               // 0              
@@ -263,7 +262,7 @@ static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
     0.0136512559131f     //80
 };
 #endif
-#if VERSION_STRING == Cata
+#ifdef AE_CATA
 static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
 {
     0.0f,               // 0              
@@ -355,14 +354,14 @@ static float AttackToRageConversionTable[DBC_PLAYER_LEVEL_CAP + 1] =
 };
 #endif
 
-Unit::Unit() : m_combatStatus(this), m_movementManager(),
-    m_currentSpeedWalk(2.5f), m_currentSpeedRun(7.0f), m_currentSpeedRunBack(4.5f), m_currentSpeedSwim(4.722222f),
-    m_currentSpeedSwimBack(2.5f), m_currentTurnRate(3.141594f), m_currentSpeedFly(7.0f), m_currentSpeedFlyBack(4.5f),
-    m_currentPitchRate(3.14f),
+Unit::Unit() : m_combatStatus(this), m_currentSpeedWalk(2.5f),
+    m_currentSpeedRun(7.0f), m_currentSpeedRunBack(4.5f), m_currentSpeedSwim(4.722222f), m_currentSpeedSwimBack(2.5f),
+    m_currentTurnRate(3.141594f), m_currentSpeedFly(7.0f), m_currentSpeedFlyBack(4.5f), m_currentPitchRate(3.14f),
+    m_basicSpeedWalk(2.5f),
 
-    m_basicSpeedWalk(2.5f), m_basicSpeedRun(7.0f), m_basicSpeedRunBack(4.5f), m_basicSpeedSwim(4.722222f),
-    m_basicSpeedSwimBack(2.5f), m_basicTurnRate(3.141594f), m_basicSpeedFly(7.0f), m_basicSpeedFlyBack(4.5f),
-    m_basicPitchRate(3.14f)
+    m_basicSpeedRun(7.0f), m_basicSpeedRunBack(4.5f), m_basicSpeedSwim(4.722222f), m_basicSpeedSwimBack(2.5f),
+    m_basicTurnRate(3.141594f), m_basicSpeedFly(7.0f), m_basicSpeedFlyBack(4.5f), m_basicPitchRate(3.14f),
+    m_movementManager()
 {
     int i;
 
