@@ -14,7 +14,6 @@
 #ifndef _MAPFILE_ENTRY_H
 #define _MAPFILE_ENTRY_H
 
-
 /// An entry in the map file.
 class MapFileEntry
 {

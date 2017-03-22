@@ -6,7 +6,6 @@
  *
  */
 
-
 #ifndef SOCKETMGR_H_WIN32
 #define SOCKETMGR_H_WIN32
 

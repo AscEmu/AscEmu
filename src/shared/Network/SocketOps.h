@@ -6,7 +6,6 @@
  *
  */
 
-
 #ifndef SOCKET_OPS_H
 #define SOCKET_OPS_H
 

@@ -19,13 +19,11 @@
  *
  */
 
-
 #include "PerformanceCounter.hpp"
 #include "SysInfo.hpp"
 
 namespace Arcemu
 {
-
     PerformanceCounter::PerformanceCounter()
     {
         cpu_count = Arcemu::SysInfo::GetCPUCount();
