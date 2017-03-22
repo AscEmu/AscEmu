@@ -692,6 +692,7 @@ void AuthSocket::HandleReconnectChallenge()
 void AuthSocket::HandleReconnectProof()
 {
     /*
+    LOG_DEBUG("Len: %u", this->GetReadBufferSize());
     ByteBuffer buf(58);
     buf.resize(58);
     Read(58, const_cast<uint8*>(buf.contents()));
