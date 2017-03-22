@@ -259,7 +259,7 @@ void LogonServer::CheckForDeadSockets()
 
     AuthSocket* s;
 
-    for (std::set<AuthSocket*>::iterator itr = _authSockets.begin(); itr != _authSockets.end(); ++itr)
+    for (auto itr = _authSockets.begin(); itr != _authSockets.end(); ++itr)
     {
         s = (*itr);
 

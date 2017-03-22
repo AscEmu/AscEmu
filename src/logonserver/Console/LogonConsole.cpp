@@ -423,7 +423,7 @@ void LogonConsole::checkAccountName(std::string name, uint8 type)
 {
     std::string aname(name);
 
-    for (std::string::iterator itr = aname.begin(); itr != aname.end(); ++itr)
+    for (auto itr = aname.begin(); itr != aname.end(); ++itr)
         *itr = toupper(*itr);
 
     switch (type)

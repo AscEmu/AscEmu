@@ -68,8 +68,7 @@ void AccountMgr::ReloadAccounts(bool silent)
     }
 
     // check for any purged/deleted accounts
-
-    for (std::map<std::string, Account*>::iterator itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
+    for (auto itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
     {
         if (account_list.find(itr->first) == account_list.end())
         {
@@ -313,7 +312,7 @@ bool IPBanner::Add(const char* ip, uint32 dur)
 
 InformationCore::~InformationCore()
 {
-    for (std::map<uint32, Realm*>::iterator itr = m_realms.begin(); itr != m_realms.end(); ++itr)
+    for (auto itr = m_realms.begin(); itr != m_realms.end(); ++itr)
         delete itr->second;
 }
 
@@ -406,7 +405,7 @@ Realm* InformationCore::GetRealm(uint32 realm_id)
 
 int32 InformationCore::GetRealmIdByName(std::string Name)
 {
-    for (std::map<uint32, Realm*>::iterator itr = m_realms.begin(); itr != m_realms.end(); ++itr)
+    for (auto itr = m_realms.begin(); itr != m_realms.end(); ++itr)
     {
         if (itr->second->Name == Name)
             return itr->first;
@@ -556,14 +555,14 @@ void InformationCore::SendRealms(AuthSocket* Socket)
 
     // We copy the sockets to a list and call RefreshRealmsPop() from there because if the socket is dead,
     // then calling the method deletes the socket and removes it from the set corrupting the iterator and causing a crash!
-    for (std::set<LogonCommServerSocket*>::iterator iter = m_serverSockets.begin(); iter != m_serverSockets.end(); ++iter)
+    for (auto iter = m_serverSockets.begin(); iter != m_serverSockets.end(); ++iter)
     {
         ss.push_back(*iter);
     }
 
     serverSocketLock.Release();
 
-    for (std::list< LogonCommServerSocket*>::iterator SSitr = ss.begin(); SSitr != ss.end(); ++SSitr)
+    for (auto SSitr = ss.begin(); SSitr != ss.end(); ++SSitr)
         (*SSitr)->RefreshRealmsPop();
 
     ss.clear();
@@ -579,7 +578,7 @@ void InformationCore::TimeoutSockets()
     /* burlex: this is vulnerable to race conditions, adding a mutex to it. */
     serverSocketLock.Acquire();
 
-    for (std::set< LogonCommServerSocket*>::iterator itr = m_serverSockets.begin(); itr != m_serverSockets.end(); ++itr)
+    for (auto itr = m_serverSockets.begin(); itr != m_serverSockets.end(); ++itr)
     {
         LogonCommServerSocket* s = *itr;
         uint32 last_ping = s->last_ping.GetVal();
@@ -604,7 +603,7 @@ void InformationCore::CheckServers()
 {
     serverSocketLock.Acquire();
 
-    for (std::set<LogonCommServerSocket*>::iterator itr = m_serverSockets.begin(); itr != m_serverSockets.end(); ++itr)
+    for (auto itr = m_serverSockets.begin(); itr != m_serverSockets.end(); ++itr)
     {
         LogonCommServerSocket* s;
         if (!sLogonServer.IsServerAllowed(s->GetRemoteAddress().s_addr))

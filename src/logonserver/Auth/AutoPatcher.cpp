@@ -205,7 +205,7 @@ Patch* PatchMgr::FindPatchForClient(uint32 Version, const char* Locality)
     tmplocality[4] = 0;
     ulocality = *(uint32*)tmplocality;
 
-    for (std::vector<Patch*>::iterator itr = m_patches.begin(); itr != m_patches.end(); ++itr)
+    for (auto itr = m_patches.begin(); itr != m_patches.end(); ++itr)
     {
         // since localities are always 4 bytes we can do a simple int compare,
         // saving a string compare ;)
@@ -236,7 +236,7 @@ void PatchMgr::BeginPatchJob(Patch* pPatch, AuthSocket* pClient, uint32 Skip)
 void PatchMgr::UpdateJobs()
 {
     m_patchJobLock.Acquire();
-    for (std::list<PatchJob*>::iterator itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
+    for (auto itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
     {
         if (!(*itr)->Update())
         {
@@ -251,7 +251,7 @@ void PatchMgr::UpdateJobs()
 void PatchMgr::AbortPatchJob(PatchJob* pJob)
 {
     m_patchJobLock.Acquire();
-    for (std::list<PatchJob*>::iterator itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
+    for (auto itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
     {
         if ((*itr) == pJob)
         {
