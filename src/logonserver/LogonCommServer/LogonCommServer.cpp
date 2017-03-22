@@ -55,7 +55,7 @@ void LogonCommServerSocket::OnDisconnect()
     // if we're registered -> Set offline
     if (!removed)
     {
-        for (std::set<uint32>::iterator itr = server_ids.begin(); itr != server_ids.end(); ++itr)
+        for (auto itr = server_ids.begin(); itr != server_ids.end(); ++itr)
             sInfoCore.SetRealmOffline((*itr));
 
         sInfoCore.RemoveServerSocket(this);

@@ -407,7 +407,7 @@ bool LogonServer::LoadLogonConfiguration()
     m_allowedIps.clear();
     m_allowedModIps.clear();
 
-    for (std::vector<std::string>::iterator itr = vips.begin(); itr != vips.end(); ++itr)
+    for (auto itr = vips.begin(); itr != vips.end(); ++itr)
     {
         std::string::size_type i = itr->find("/");
         if (i == std::string::npos)
@@ -433,7 +433,7 @@ bool LogonServer::LoadLogonConfiguration()
         m_allowedIps.push_back(tmp);
     }
 
-    for (std::vector<std::string>::iterator itr = vipsmod.begin(); itr != vipsmod.end(); ++itr)
+    for (auto itr = vipsmod.begin(); itr != vipsmod.end(); ++itr)
     {
         std::string::size_type i = itr->find("/");
         if (i == std::string::npos)
@@ -470,7 +470,7 @@ bool LogonServer::LoadLogonConfiguration()
 bool LogonServer::IsServerAllowed(unsigned int IP)
 {
     m_allowedIpLock.Acquire();
-    for (std::vector<AllowedIP>::iterator itr = m_allowedIps.begin(); itr != m_allowedIps.end(); ++itr)
+    for (auto itr = m_allowedIps.begin(); itr != m_allowedIps.end(); ++itr)
     {
         if (ParseCIDRBan(IP, itr->IP, itr->Bytes))
         {
@@ -485,7 +485,7 @@ bool LogonServer::IsServerAllowed(unsigned int IP)
 bool LogonServer::IsServerAllowedMod(unsigned int IP)
 {
     m_allowedIpLock.Acquire();
-    for (std::vector<AllowedIP>::iterator itr = m_allowedModIps.begin(); itr != m_allowedModIps.end(); ++itr)
+    for (auto itr = m_allowedModIps.begin(); itr != m_allowedModIps.end(); ++itr)
     {
         if (ParseCIDRBan(IP, itr->IP, itr->Bytes))
         {

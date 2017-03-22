@@ -259,7 +259,7 @@ BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 {
     Guard lguard(listBusy);
 
-    for (std::list<IPBan>::iterator itr = banList.begin(); itr != banList.end(); ++itr)
+    for (auto itr = banList.begin(); itr != banList.end(); ++itr)
     {
         if (ParseCIDRBan(ip_address.s_addr, itr->Mask, itr->Bytes))
         {
@@ -320,7 +320,7 @@ InformationCore::~InformationCore()
 bool IPBanner::Remove(const char* ip)
 {
     listBusy.Acquire();
-    for (std::list<IPBan>::iterator itr = banList.begin(); itr != banList.end(); ++itr)
+    for (auto itr = banList.begin(); itr != banList.end(); ++itr)
     {
         if (!strcmp(ip, itr->db_ip.c_str()))
         {
@@ -479,7 +479,7 @@ void InformationCore::SendRealms(AuthSocket* Socket)
 
     // loop realms :/
     std::unordered_map<uint32, uint8>::iterator it;
-    for (std::map<uint32, Realm*>::iterator itr = m_realms.begin(); itr != m_realms.end(); ++itr)
+    for (auto itr = m_realms.begin(); itr != m_realms.end(); ++itr)
     {
         if (itr->second->GameBuild == Socket->GetChallenge()->build)
         {
@@ -585,7 +585,7 @@ void InformationCore::TimeoutSockets()
         uint32 last_ping = s->last_ping.GetVal();
         if (last_ping < now && ((now - last_ping) > 300))
         {
-            for (std::set< uint32 >::iterator RealmITR = s->server_ids.begin(); RealmITR != s->server_ids.end(); ++RealmITR)
+            for (auto RealmITR = s->server_ids.begin(); RealmITR != s->server_ids.end(); ++RealmITR)
             {
                 uint32 RealmID = *RealmITR;
                 SetRealmOffline(RealmID);
