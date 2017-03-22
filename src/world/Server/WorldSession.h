@@ -28,6 +28,9 @@
 #include "FastQueue.h"
 #include "Units/Unit.h"
 #include "AuthCodes.h"
+#if VERSION_STRING == Cata
+    #include "Management/AddonMgr.h"
+#endif
 #include <stddef.h>
 #include <string>
 
@@ -847,6 +850,14 @@ class SERVER_DECL WorldSession
         void HandleUITimeRequestOpcode(WorldPacket& recv_data);
         void HandleTimeSyncRespOpcode(WorldPacket& recv_data);
         void HandleRequestHotfix(WorldPacket& recv_data);
+
+    private:
+        typedef std::list<AddonEntry> AddonsList;
+        AddonsList m_addonList;
+
+    public:
+        void readAddonInfoPacket(ByteBuffer& recv_data);
+        void sendAddonInfo();
 #endif
 
         void Unhandled(WorldPacket& recv_data);

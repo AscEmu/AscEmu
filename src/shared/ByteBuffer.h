@@ -447,6 +447,11 @@ class SERVER_DECL ByteBuffer
             return *this;
         }
 
+        uint8_t* contents()
+        {
+            return _storage.data();
+        }
+
         const uint8_t* contents() const
         {
             return &_storage[0];
