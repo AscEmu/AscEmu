@@ -280,7 +280,7 @@ double CRandomMersenne::Random()
 #endif
 
 
-    convert.i[0] =  r << 20;
+    convert.i[0] = r << 20;
     convert.i[1] = (r >> 12) | 0x3FF00000;
     return convert.f - 1.0;
 
