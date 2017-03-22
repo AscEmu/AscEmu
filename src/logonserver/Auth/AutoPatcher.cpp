@@ -44,7 +44,6 @@ PatchMgr::PatchMgr()
     HANDLE hFile;
     uint32 srcversion;
     char locality[5];
-    uint32 i;
 
     if (!GetCurrentDirectory(MAX_PATH * 10, Buffer))
         return;
@@ -71,7 +70,7 @@ PatchMgr::PatchMgr()
         pPatch->FileSize = size;
         pPatch->Data = new uint8[size];
         pPatch->Version = srcversion;
-        for (i = 0; i < 4; ++i)
+        for (uint8_t i = 0; i < 4; ++i)
             pPatch->Locality[i] = static_cast<char>(tolower(locality[i]));
         pPatch->Locality[4] = 0;
         pPatch->uLocality = *(uint32*)pPatch->Locality;
@@ -103,9 +102,7 @@ PatchMgr::PatchMgr()
     } while (FindNextFile(fHandle, &fd));
     FindClose(fHandle);
 #else
-    /*
-     *nix patch loader
-     */
+    /* nix patch loader */
     LogNotice("PatchMgr : Loading Patches...");
     char Buffer[MAX_PATH * 10];
     char Buffer2[MAX_PATH * 10];
@@ -193,22 +190,22 @@ PatchMgr::PatchMgr()
 
 PatchMgr::~PatchMgr()
 {
-
 }
 
 Patch* PatchMgr::FindPatchForClient(uint32 Version, const char* Locality)
 {
     char tmplocality[5];
     uint32 ulocality;
-    uint32 i;
-    std::vector<Patch*>::iterator itr;
+
     Patch* fallbackPatch = NULL;
-    for (i = 0; i < 4; ++i)
+
+    for (uint8_t i = 0; i < 4; ++i)
         tmplocality[i] = static_cast<char>(tolower(Locality[i]));
+
     tmplocality[4] = 0;
     ulocality = *(uint32*)tmplocality;
 
-    for (itr = m_patches.begin(); itr != m_patches.end(); ++itr)
+    for (std::vector<Patch*>::iterator itr = m_patches.begin(); itr != m_patches.end(); ++itr)
     {
         // since localities are always 4 bytes we can do a simple int compare,
         // saving a string compare ;)
@@ -238,18 +235,14 @@ void PatchMgr::BeginPatchJob(Patch* pPatch, AuthSocket* pClient, uint32 Skip)
 
 void PatchMgr::UpdateJobs()
 {
-    std::list<PatchJob*>::iterator itr, itr2;
     m_patchJobLock.Acquire();
-    for (itr = m_patchJobs.begin(); itr != m_patchJobs.end();)
+    for (std::list<PatchJob*>::iterator itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
     {
-        itr2 = itr;
-        ++itr;
-
-        if (!(*itr2)->Update())
+        if (!(*itr)->Update())
         {
-            (*itr2)->GetClient()->m_patchJob = NULL;
-            delete(*itr2);
-            m_patchJobs.erase(itr2);
+            (*itr)->GetClient()->m_patchJob = NULL;
+            delete(*itr);
+            m_patchJobs.erase(itr);
         }
     }
     m_patchJobLock.Release();
@@ -257,9 +250,8 @@ void PatchMgr::UpdateJobs()
 
 void PatchMgr::AbortPatchJob(PatchJob* pJob)
 {
-    std::list<PatchJob*>::iterator itr;
     m_patchJobLock.Acquire();
-    for (itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
+    for (std::list<PatchJob*>::iterator itr = m_patchJobs.begin(); itr != m_patchJobs.end(); ++itr)
     {
         if ((*itr) == pJob)
         {

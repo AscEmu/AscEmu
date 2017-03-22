@@ -110,9 +110,8 @@ bool LogonConsoleThread::run()
     sLogonConsole._thread = NULL;
     return true;
 }
-///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 // Protected methods:
-///////////////////////////////////////////////////////////////////////////////
 
 // Process one command
 #define MAX_CONSOLE_INPUT 80
@@ -181,41 +180,45 @@ void LogonConsole::TranslateQuit(char* str)
 
     ProcessQuit(delay);
 }
+
 void LogonConsole::ProcessQuit(int delay)
 {
     mrunning.SetVal(false);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Console commands - help | ?
-///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+// Console commands.
 void LogonConsole::TranslateHelp(char* str)
 {
     ProcessHelp(NULL);
 }
+
 void LogonConsole::ProcessHelp(char* command)
 {
     if (command == NULL)
     {
-        printf("Console:--------help--------\n");
-        printf("    Help, ?: Prints this help text.\n");
-        printf("    Account create: Creates a new account\n");
-        printf("    Account delete: Deletes an account\n");
-        printf("    Account set gm: Sets gm access to account\n");
-        printf("    Account set password: Sets a new password for an account\n");
-        printf("    Account change password: Change the current password for an account\n");
-        printf("    Info:  shows some information about the server.\n");
-        printf("    Netstatus: Shows network status.\n");
-        printf("    Rehash: Rehashing config file.\n");
-        printf("    Reload: Reloads accounts.\n");
-        printf("    Shutdown, exit: Closes the logonserver.\n");
+        std::cout << "========================================================" << std::endl;
+        std::cout << "Console commands:" << std::endl;
+        std::cout << "========================================================" << std::endl;
+        std::cout << "Help, ?: Prints this help text." << std::endl;
+        std::cout << "Account create: Creates a new account" << std::endl;
+        std::cout << "Account delete: Deletes an account" << std::endl;
+        std::cout << "Account set gm: Sets gm access to account" << std::endl;
+        std::cout << "Account set password: Sets a new password for an account" << std::endl;
+        std::cout << "Account change password: Change the current password for an account" << std::endl;
+        std::cout << "Info:  shows some information about the server." << std::endl;
+        std::cout << "Netstatus: Shows network status." << std::endl;
+        std::cout << "Rehash: Rehashing config file." << std::endl;
+        std::cout << "Reload: Reloads accounts." << std::endl;
+        std::cout << "Shutdown, exit: Closes the logonserver." << std::endl;
     }
 }
 
 void LogonConsole::Info(char* str)
 {
-    std::cout << "LogonServer information" << std::endl;
-    std::cout << "-----------------------" << std::endl;
+    std::cout << "========================================================" << std::endl;
+    std::cout << "LogonServer information:" << std::endl;
+    std::cout << "========================================================" << std::endl;
     std::cout << "CPU Usage: " << LogonServer::getSingleton().perfcounter.GetCurrentCPUUsage() << " %" << std::endl;
     std::cout << "RAM Usage: " << LogonServer::getSingleton().perfcounter.GetCurrentRAMUsage() << " MB" << std::endl;
 }
@@ -409,7 +412,6 @@ void LogonConsole::AccountChangePassword(char* str)
             // std::cout << "Can't update the password. Abort." << std::endl;
             return;
         }
-
     }
 
     AccountMgr::getSingleton().ReloadAccounts(true);
