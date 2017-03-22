@@ -1,6 +1,7 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2005-2012 <http://www.ArcEmu.org/>
+ * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,7 +33,6 @@ MySQLDatabase::~MySQLDatabase()
 
 MySQLDatabase::MySQLDatabase() : Database()
 {
-
 }
 
 void MySQLDatabase::_BeginTransaction(DatabaseConnection* conn)
@@ -141,7 +141,7 @@ void MySQLDatabase::Shutdown()
 
 bool MySQLDatabase::_SendQuery(DatabaseConnection* con, const char* Sql, bool Self)
 {
-    //dunno what it does ...leaving untouched
+    // dunno what it does ...leaving untouched
     int result = mysql_query(static_cast<MySQLDatabaseConnection*>(con)->MySql, Sql);
     if(result > 0)
     {

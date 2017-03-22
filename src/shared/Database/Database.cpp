@@ -32,7 +32,6 @@
 
 SQLCallbackBase::~SQLCallbackBase()
 {
-
 }
 
 Database::Database() : CThread()
@@ -47,7 +46,6 @@ Database::Database() : CThread()
 
 Database::~Database()
 {
-
 }
 
 void Database::_Initialize()
@@ -353,7 +351,7 @@ AsyncQuery::~AsyncQuery()
 
 void Database::EndThreads()
 {
-    //these 2 loops spin until theres nothing left
+    // these 2 loops spin until theres nothing left
     while (true)
     {
         QueryBuffer* buf = query_buffer.pop();

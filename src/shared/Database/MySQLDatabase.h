@@ -23,12 +23,10 @@
 #include <string>
 #include <mysql.h>
 
-
 struct MySQLDatabaseConnection : public DatabaseConnection
 {
     MYSQL* MySql;
 };
-
 
 class SERVER_DECL MySQLDatabase : public Database
 {
@@ -40,9 +38,7 @@ class SERVER_DECL MySQLDatabase : public Database
         MySQLDatabase();
         ~MySQLDatabase();
 
-        bool Initialize(const char* Hostname, unsigned int port,
-                        const char* Username, const char* Password, const char* DatabaseName,
-                        uint32 ConnectionCount, uint32 BufferSize);
+        bool Initialize(const char* Hostname, unsigned int port, const char* Username, const char* Password, const char* DatabaseName, uint32 ConnectionCount, uint32 BufferSize);
 
         void Shutdown();
 

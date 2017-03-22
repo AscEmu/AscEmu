@@ -27,11 +27,12 @@ ConfigMgr Config;
 //#define _CONFIG_DEBUG
 
 ConfigFile::ConfigFile()
-{ }
-
+{
+}
 
 ConfigFile::~ConfigFile()
-{ }
+{
+}
 
 void remove_spaces(std::string & str)
 {
@@ -460,13 +461,11 @@ bool ConfigFile::GetString(const char* block, const char* name, std::string* val
     return true;
 }
 
-
 std::string ConfigFile::GetStringDefault(const char* block, const char* name, const char* def)
 {
     std::string ret;
     return GetString(block, name, &ret) ? ret : def;
 }
-
 
 bool ConfigFile::GetBool(const char* block, const char* name, bool* value)
 {
@@ -477,7 +476,6 @@ bool ConfigFile::GetBool(const char* block, const char* name, bool* value)
     *value = Setting->AsBool;
     return true;
 }
-
 
 bool ConfigFile::GetBoolDefault(const char* block, const char* name, const bool def /* = false */)
 {
