@@ -826,7 +826,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
             data->WriteByteSeq(tGuid[5]);
             data->WriteByteSeq(tGuid[7]);
             *data << (uint32)0; // transport time
-            *data << obj_movement_info.transporter_info.position.o;
+            *data << NormalizeOrientation(obj_movement_info.transporter_info.position.o);
             //*data << (uint32)0;
             // if (hasTransportTime2) *data << (uint32)0;
             *data << obj_movement_info.transporter_info.position.y;
@@ -861,8 +861,8 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
         *data << unit->getSpeedForType(TYPE_FLY);
 
-        if (!hasOrientation) // do we need this check here?
-            *data << m_position.o;
+        if (!hasOrientation)
+            *data << NormalizeOrientation(m_position.o);
 
         *data << unit->getSpeedForType(TYPE_RUN);
 
@@ -883,7 +883,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
             if (IsPlayer())
                 vehicleid = static_cast< Player* >(this)->mountvehicleid;
 
-        *data << float(GetOrientation());
+        *data << float(NormalizeOrientation(GetOrientation()));
         *data << uint32(vehicleid);
     }
 
@@ -908,7 +908,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         data->WriteByteSeq(transGuid[7]);
         *data << float(obj_movement_info.transporter_info.position.z);
         *data << int8(obj_movement_info.transporter_info.seat);
-        *data << float(obj_movement_info.transporter_info.position.o);
+        *data << float(NormalizeOrientation(obj_movement_info.transporter_info.position.o));
         // if has transport time 2
         //*data << uint32(0);
         //*data << uint32(0);
@@ -943,7 +943,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
     if (flags & UPDATEFLAG_HAS_POSITION) // UPDATEFLAG_HAS_STATIONARY_POSITION
     {
-        *data << (float)m_position.o;
+        *data << (float)NormalizeOrientation(m_position.o);
         *data << (float)m_position.x;
         *data << (float)m_position.y;
         *data << (float)m_position.z;

@@ -587,8 +587,8 @@ enum Opcodes
     SMSG_BATTLEFIELD_LOSE_OBSOLETE = 0x240,
     CMSG_TAXICLEARNODE = 0x241,
     CMSG_TAXIENABLENODE = 0x242,
-    CMSG_ITEM_TEXT_QUERY = 0x243,
-    SMSG_ITEM_TEXT_QUERY_RESPONSE = 0x244,
+    CMSG_ITEM_TEXT_QUERY = 0x2406,                  // new
+    SMSG_ITEM_TEXT_QUERY_RESPONSE = 0x2725,         // new
     CMSG_MAIL_TAKE_MONEY = 0x4034,                  // new
     CMSG_MAIL_TAKE_ITEM = 0x2B06,                   // new
     CMSG_MAIL_MARK_AS_READ = 0x0C07,                // new
@@ -1156,7 +1156,7 @@ enum Opcodes
     CMSG_REQUEST_VEHICLE_SWITCH_SEAT = 0x479,
     CMSG_PET_LEARN_TALENT = 0x0000,                 // new
     CMSG_PET_UNLEARN_TALENTS = 0x47B,
-    SMSG_SET_PHASE_SHIFT = 0x47C,
+    SMSG_SET_PHASE_SHIFT = 0x70A0,                  // new
     SMSG_ALL_ACHIEVEMENT_DATA = 0x58B1,             // new
     CMSG_FORCE_SAY_CHEAT = 0x47E,
     SMSG_HEALTH_UPDATE = 0x47F,

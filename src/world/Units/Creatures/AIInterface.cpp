@@ -4522,7 +4522,11 @@ void AIInterface::MoveKnockback(float x, float y, float z, float horizontal, flo
     AddSpline(x, y, z);
 
     m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.trajectory = true;
+#if VERSION_STRING != Cata
     m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.knockback = true;
+#else
+    m_Unit->m_movementManager.m_spline.GetSplineFlags()->m_splineFlagsRaw.falling = true;
+#endif
 
     SendMoveToPacket();
 
@@ -4537,7 +4541,11 @@ void AIInterface::OnMoveCompleted()
     //remove flags that are temporary
     splineFlags.done = false;
     splineFlags.trajectory = false;
+#if VERSION_STRING != Cata
     splineFlags.knockback = false;
+#else
+    splineFlags.falling = false;
+#endif
 
     //reset spline priority so other movements can happen
     m_splinePriority = SPLINE_PRIORITY_MOVEMENT;

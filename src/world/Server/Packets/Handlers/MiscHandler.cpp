@@ -51,6 +51,7 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket& recv_data)
     GetPlayer()->RepopRequestedPlayer();
 }
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -672,6 +673,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
     else
         LOG_DEBUG("Unhandled loot source object type in HandleLootReleaseOpcode");
 }
+#endif
 
 void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
 {
@@ -2306,6 +2308,7 @@ void WorldSession::HandleRandomRollOpcode(WorldPacket& recv_data)
         SendPacket(&data);
 }
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -2534,6 +2537,7 @@ void WorldSession::HandleLootRollOpcode(WorldPacket& recv_data)
 
     li->PlayerRolled(_player, choice);
 }
+#endif
 
 void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
 {

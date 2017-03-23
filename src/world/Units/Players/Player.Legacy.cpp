@@ -13113,11 +13113,78 @@ void Player::RemoveIfVisible(uint64 obj)
 void Player::Phase(uint8 command, uint32 newphase)
 {
     Unit::Phase(command, newphase);
-#if VERSION_STRING > TBC
+#if VERSION_STRING == WotLK
     if (GetSession())
     {
         WorldPacket data(SMSG_SET_PHASE_SHIFT, 4);
         data << newphase;
+        GetSession()->SendPacket(&data);
+    }
+
+    std::list<Pet*> summons = GetSummons();
+    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    {
+        Pet* p = *itr;
+        p->Phase(command, newphase);
+    }
+    //We should phase other, non-combat "pets" too...
+
+    if (m_CurrentCharm != 0)
+    {
+        Unit* charm = m_mapMgr->GetUnit(m_CurrentCharm);
+        if (charm == NULL)
+            return;
+
+        charm->Phase(command, newphase);
+    }
+#elif VERSION_STRING == Cata
+    if (GetSession())
+    {
+        ObjectGuid guid = GetGUID();
+        uint32 phaseFlags = 0;
+
+        for (uint32 i = 0; i < sPhaseStore.GetNumRows(); ++i)
+        {
+            if (DBC::Structures::PhaseEntry const* phase = sPhaseStore.LookupEntry(i))
+            {
+                if (phase->PhaseShift == newphase)
+                {
+                    phaseFlags = phase->Flags;
+                    break;
+                }
+            }
+        }
+
+        WorldPacket data(SMSG_SET_PHASE_SHIFT, 30);
+        data.WriteByteMask(guid[2]);
+        data.WriteByteMask(guid[3]);
+        data.WriteByteMask(guid[1]);
+        data.WriteByteMask(guid[6]);
+        data.WriteByteMask(guid[4]);
+        data.WriteByteMask(guid[5]);
+        data.WriteByteMask(guid[0]);
+        data.WriteByteMask(guid[7]);
+
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[4]);
+        data << uint32(0);                          //unk
+        data.WriteByteSeq(guid[1]);
+        data << uint32(newphase ? phaseFlags : 8);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[6]);
+        data << uint32(0);                          //unk
+        data << uint32(newphase ? 2 : 0);           //unk
+
+        if (newphase)
+            data << uint16(newphase);
+
+        data.WriteByteSeq(guid[3]);
+        data.WriteByteSeq(guid[0]);
+        data << uint32(GetMapId() ? 2 : 0);
+
+        data << uint16(GetMapId());
+
+        data.WriteByteSeq(guid[5]);
         GetSession()->SendPacket(&data);
     }
 

@@ -394,6 +394,9 @@ class SERVER_DECL WorldSession
         void HandleLootReleaseOpcode(WorldPacket& recvPacket);
         void HandleLootMasterGiveOpcode(WorldPacket& recv_data);
         void HandleLootRollOpcode(WorldPacket& recv_data);
+#if VERSION_STRING == Cata
+        Loot* getLootFromHighGuidType(uint32_t highGuid);
+#endif
         void HandleWhoOpcode(WorldPacket& recvPacket);
         void HandleWhoIsOpcode(WorldPacket& recvPacket);
         void HandleLogoutRequestOpcode(WorldPacket& recvPacket);
