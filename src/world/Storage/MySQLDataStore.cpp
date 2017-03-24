@@ -2456,7 +2456,11 @@ void MySQLDataStore::LoadPlayerCreateInfoItemsTable()
         uint32 player_info_index = fields[0].GetUInt32();
         uint32 item_id = fields[1].GetUInt32();
 
+#if VERSION_STRING != Cata
         auto player_item = sMySQLStore.GetItemProperties(item_id);
+#else
+        DB2::Structures::ItemEntry const* player_item = sItemStore.LookupEntry(item_id);
+#endif
         if (player_item == nullptr)
         {
             LOG_ERROR("Table `playercreateinfo_items` includes invalid item %u for index %u", item_id, player_info_index);
