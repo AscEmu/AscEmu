@@ -342,7 +342,7 @@ enum Opcodes
     SMSG_VICTIMSTATEUPDATE_OBSOLETE = 0x14B,
     SMSG_DAMAGE_DONE_OBSOLETE = 0x14C,
     SMSG_DAMAGE_TAKEN_OBSOLETE = 0x14D,
-    SMSG_CANCEL_COMBAT = 0x14E,
+    SMSG_CANCEL_COMBAT = 0x4F04,                    // new
     SMSG_SPELLBREAKLOG = 0x6B17,                    // new
     SMSG_SPELLHEALLOG = 0x2816,                     // new
     SMSG_SPELLENERGIZELOG = 0x0414,                 // new
@@ -471,7 +471,7 @@ enum Opcodes
     CMSG_PLAYED_TIME = 0x0804,                      // new
     SMSG_PLAYED_TIME = 0x6037,                      // new
     CMSG_QUERY_TIME = 0x0A36,                       // new
-    SMSG_QUERY_TIME_RESPONSE = 0x1CF,
+    SMSG_QUERY_TIME_RESPONSE = 0x2124,              // new
     SMSG_LOG_XPGAIN = 0x1D0,
     SMSG_AURACASTLOG_OBSOLETE = 0x1D1,
     CMSG_RECLAIM_CORPSE = 0x4036,                   // new
@@ -479,7 +479,7 @@ enum Opcodes
     SMSG_LEVELUP_INFO = 0x0435,                     // new
     MSG_MINIMAP_PING = 0x1D5,
     SMSG_RESISTLOG = 0x1D6,
-    SMSG_ENCHANTMENTLOG = 0x1D7,
+    SMSG_ENCHANTMENTLOG = 0x6035,                   // new
     CMSG_SET_SKILL_CHEAT = 0x1D8,
     SMSG_START_MIRROR_TIMER = 0x6824,               // new
     SMSG_PAUSE_MIRROR_TIMER = 0x4015,               // new
@@ -499,7 +499,7 @@ enum Opcodes
     MSG_GM_BIND_OTHER = 0x0000,                     // new
     MSG_GM_SUMMON = 0x0000,                         // new
     SMSG_ITEM_TIME_UPDATE = 0x2407,                 // new
-    SMSG_ITEM_ENCHANT_TIME_UPDATE = 0x1EB,
+    SMSG_ITEM_ENCHANT_TIME_UPDATE = 0x0F27,         // new
     SMSG_AUTH_CHALLENGE = 0x4542,                   // new
     CMSG_AUTH_SESSION = 0x0449,                     // new
     SMSG_AUTH_RESPONSE = 0x5DB6,                    // new
@@ -516,7 +516,7 @@ enum Opcodes
     CMSG_GM_SET_SECURITY_GROUP = 0x0000,            // new
     CMSG_GM_NUKE = 0x0000,                          // new
     MSG_RANDOM_ROLL = 0x0905,                       // new
-    SMSG_ENVIRONMENTALDAMAGELOG = 0x1FC,
+    SMSG_ENVIRONMENTALDAMAGELOG = 0x6C05,           // new
     CMSG_RWHOIS_OBSOLETE = 0x1FD,
     SMSG_RWHOIS = 0x1FE,
     SMSG_LFG_PLAYER_REWARD = 0x1FF,
@@ -541,7 +541,7 @@ enum Opcodes
     SMSG_GMTICKET_GETTICKET = 0x2C15,               // new
     CMSG_UNLEARN_TALENTS = 0x213,
     SMSG_UPDATE_INSTANCE_ENCOUNTER_UNIT = 0x214,
-    SMSG_GAMEOBJECT_DESPAWN_ANIM = 0x215,
+    SMSG_GAMEOBJECT_DESPAWN_ANIM = 0x6735,          // new
     MSG_CORPSE_QUERY = 0x4336,                      // new
     CMSG_GMTICKET_DELETETICKET = 0x6B14,            // new
     SMSG_GMTICKET_DELETETICKET = 0x6D17,            // new
@@ -598,7 +598,7 @@ enum Opcodes
     SMSG_SPELLLOGMISS = 0x0625,                     // new
     SMSG_SPELLLOGEXECUTE = 0x0626,                  // new
     SMSG_DEBUGAURAPROC = 0x24D,
-    SMSG_PERIODICAURALOG = 0x24E,
+    SMSG_PERIODICAURALOG = 0x0416,                  // new
     SMSG_SPELLDAMAGESHIELD = 0x2927,                // new
     SMSG_SPELLNONMELEEDAMAGELOG = 0x4315,           // new
     CMSG_LEARN_TALENT = 0x6E24,                     // new
@@ -709,7 +709,7 @@ enum Opcodes
     CMSG_TOGGLE_CLOAK = 0x2BA,
     SMSG_LFG_ROLE_CHOSEN = 0x2BB,
     SMSG_PLAYER_SKINNED = 0x2BC,
-    SMSG_DURABILITY_DAMAGE_DEATH = 0x2BD,
+    SMSG_DURABILITY_DAMAGE_DEATH = 0x4C27,          // new
     CMSG_SET_EXPLORATION = 0x2BE,
     CMSG_SET_ACTIONBAR_TOGGLES = 0x2506,            // new
     UMSG_DELETE_GUILD_CHARTER = 0x2C0,
@@ -897,7 +897,7 @@ enum Opcodes
     SMSG_ARENA_ERROR = 0x376,
     MSG_INSPECT_ARENA_TEAMS = 0x377,
     SMSG_DEATH_RELEASE_LOC = 0x2F07,                // new
-    CMSG_CANCEL_TEMP_ENCHANTMENT = 0x379,
+    CMSG_CANCEL_TEMP_ENCHANTMENT = 0x6C37,          // new
     SMSG_FORCED_DEATH_UPDATE = 0x37A,
     CMSG_CHEAT_SET_HONOR_CURRENCY = 0x37B,
     CMSG_CHEAT_SET_ARENA_CURRENCY = 0x37C,
@@ -1344,6 +1344,7 @@ enum Opcodes
     CMSG_REQUEST_CATEGORY_COOLDOWNS = 0x7102,           // new
     CMSG_REQUEST_HOTFIX = 0x2401,                       // new
     CMSG_REQUEST_CEMETERY_LIST = 0x720A,                // new
+    SMSG_REQUEST_CEMETERY_LIST_RESPONSE = 0x30A7,       // new
     CMSG_REORDER_CHARACTERS = 0x0593,                   // new
     SMSG_MOVE_UPDATE_KNOCK_BACK = 0x3DB2,               // new
     SMSG_PLAYER_MOVE = 0x79A2,                          // new

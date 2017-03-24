@@ -853,6 +853,7 @@ class SERVER_DECL WorldSession
         void HandleUITimeRequestOpcode(WorldPacket& recv_data);
         void HandleTimeSyncRespOpcode(WorldPacket& recv_data);
         void HandleRequestHotfix(WorldPacket& recv_data);
+        void HandleRequestCemeteryListOpcode(WorldPacket& recv_data);
 
     private:
         typedef std::list<AddonEntry> AddonsList;

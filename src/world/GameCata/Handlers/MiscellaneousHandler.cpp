@@ -123,3 +123,27 @@ void WorldSession::HandleRequestHotfix(WorldPacket& recv_data)
         }*/
     }
 }
+
+void WorldSession::HandleRequestCemeteryListOpcode(WorldPacket& recv_data)
+{
+    LOG_DEBUG("Received CMSG_REQUEST_CEMETERY_LIST");
+
+    QueryResult* result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->GetTeam());
+    if (result)
+    {
+        WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE);
+        data.writeBit(false);               //unk bit
+        data.flushBits();
+        data.writeBits(result->GetRowCount(), 24);
+        data.flushBits();
+
+        do
+        {
+            Field* field = result->Fetch();
+            data << uint32(field[0].GetUInt32());
+        } while (result->NextRow());
+        delete result;
+
+        SendPacket(&data);
+    }
+}
