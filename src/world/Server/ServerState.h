@@ -4,6 +4,9 @@
 */
 #pragma once
 
+#include <chrono>
+#include <atomic>
+
 class ServerState
 {
     friend class Master;
