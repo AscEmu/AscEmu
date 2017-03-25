@@ -994,6 +994,7 @@ BOOL StackWalker::ShowCallstack(HANDLE hThread, const CONTEXT* context, PReadPro
     memset(&Module, 0, sizeof(Module));
     Module.SizeOfStruct = sizeof(Module);
 
+    for (frameNum = 0; ; ++frameNum)
     {
         // get next stack frame (StackWalk64(), SymFunctionTableAccess64(), SymGetModuleBase64())
         // if this returns ERROR_INVALID_ADDRESS (487) or ERROR_NOACCESS (998), you can

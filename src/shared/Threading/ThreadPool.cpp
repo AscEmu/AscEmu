@@ -231,6 +231,7 @@ void CThreadPool::Shutdown()
     }
     _mutex.Release();
 
+    for (int i = 0; ; i++)
     {
         _mutex.Acquire();
         if(m_activeThreads.size() || m_freeThreads.size())
