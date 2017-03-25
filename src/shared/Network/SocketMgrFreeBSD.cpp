@@ -67,7 +67,7 @@ void SocketMgr::RemoveSocket(Socket* s)
 
 void SocketMgr::CloseAll()
 {
-    for(uint32 i = 0; i < SOCKET_HOLDER_SIZE; ++i)
+    for (uint32 i = 0; i < SOCKET_HOLDER_SIZE; ++i)
         if(fds[i] != NULL)
             fds[i]->Delete();
 }
@@ -75,7 +75,7 @@ void SocketMgr::CloseAll()
 void SocketMgr::SpawnWorkerThreads()
 {
     uint32 count = 1;
-    for(uint32 i = 0; i < count; ++i)
+    for (uint32 i = 0; i < count; ++i)
         ThreadPool.ExecuteTask(new SocketWorkerThread());
 }
 
@@ -98,7 +98,7 @@ bool SocketWorkerThread::run()
     while(running)
     {
         fd_count = kevent(kq, NULL, 0, &events[0], THREAD_EVENT_SIZE, &ts);
-        for(i = 0; i < fd_count; ++i)
+        for (i = 0; i < fd_count; ++i)
         {
             if(events[i].ident >= SOCKET_HOLDER_SIZE)
             {

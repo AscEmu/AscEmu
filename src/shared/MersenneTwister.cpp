@@ -45,7 +45,7 @@ uint32 generate_seed()
 void InitRandomNumberGenerators()
 {
     srand(getMSTime());
-    for(uint32 i = 0; i < NUMBER_OF_GENERATORS; ++i)
+    for (uint32 i = 0; i < NUMBER_OF_GENERATORS; ++i)
     {
         m_generators[i] = new CRandomMersenne(generate_seed());
         m_locks[i] = new Mutex();
@@ -55,7 +55,7 @@ void InitRandomNumberGenerators()
 void CleanupRandomNumberGenerators()
 {
     srand(getMSTime());
-    for(uint32 i = 0; i < NUMBER_OF_GENERATORS; ++i)
+    for (uint32 i = 0; i < NUMBER_OF_GENERATORS; ++i)
     {
         delete m_generators[i];
         delete m_locks[i];
@@ -163,7 +163,7 @@ void CRandomMersenne::Init0(uint32 seed)
 
     // Seed generator
     mt[0] = seed;
-    for(mti = 1; mti < MERS_N; mti++)
+    for (mti = 1; mti < MERS_N; mti++)
     {
         mt[mti] = (1812433253UL * (mt[mti - 1] ^ (mt[mti - 1] >> 30)) + mti);
     }
@@ -175,7 +175,7 @@ void CRandomMersenne::RandomInit(uint32 seed)
     Init0(seed);
 
     // Randomize some more
-    for(int i = 0; i < 37; i++) BRandom();
+    for (int i = 0; i < 37; i++) BRandom();
 }
 
 
@@ -201,7 +201,7 @@ void CRandomMersenne::RandomInitByArray(uint32 seeds[], int length)
         if(i >= MERS_N) {mt[0] = mt[MERS_N - 1]; i = 1;}
         if(j >= length) j = 0;
     }
-    for(k = MERS_N - 1; k; k--)
+    for (k = MERS_N - 1; k; k--)
     {
         mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 30)) * 1566083941UL)) - i;
         if(++i >= MERS_N) {mt[0] = mt[MERS_N - 1]; i = 1;}
@@ -210,7 +210,7 @@ void CRandomMersenne::RandomInitByArray(uint32 seeds[], int length)
 
     // Randomize some more
     mti = 0;
-    for(int i = 0; i <= MERS_N; i++) BRandom();
+    for (int i = 0; i <= MERS_N; i++) BRandom();
 }
 
 
@@ -227,7 +227,7 @@ uint32 CRandomMersenne::BRandom()
         static const uint32 mag01[2] = {0, MERS_A};
 
         int kk;
-        for(kk = 0; kk < MERS_N - MERS_M; kk++)
+        for (kk = 0; kk < MERS_N - MERS_M; kk++)
         {
             y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
             mt[kk] = mt[kk + MERS_M] ^ (y >> 1) ^ mag01[y & 1];

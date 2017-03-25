@@ -23,7 +23,7 @@
 
 MySQLDatabase::~MySQLDatabase()
 {
-    for(int32 i = 0; i < mConnectionCount; ++i)
+    for (int32 i = 0; i < mConnectionCount; ++i)
     {
         mysql_close(((MySQLDatabaseConnection*)Connections[i])->MySql);
         delete Connections[i];
@@ -63,7 +63,7 @@ bool MySQLDatabase::Initialize(const char* Hostname, unsigned int port, const ch
 
     conns = new MySQLDatabaseConnection*[ConnectionCount];
     Connections = ((DatabaseConnection**)conns);
-    for(i = 0; i < ConnectionCount; ++i)
+    for (i = 0; i < ConnectionCount; ++i)
     {
         temp = mysql_init(NULL);
         if(temp == NULL)
@@ -195,7 +195,7 @@ bool MySQLQueryResult::NextRow()
     if(row == NULL)
         return false;
 
-    for(uint32 i = 0; i < mFieldCount; ++i)
+    for (uint32 i = 0; i < mFieldCount; ++i)
         mCurrentRow[i].SetValue(row[i]);
 
     return true;

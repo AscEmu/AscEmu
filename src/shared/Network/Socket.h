@@ -241,7 +241,7 @@ class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
         ~SocketGarbageCollector()
         {
             std::map<Socket*, time_t>::iterator i;
-            for(i = deletionQueue.begin(); i != deletionQueue.end(); ++i)
+            for (i = deletionQueue.begin(); i != deletionQueue.end(); ++i)
                 delete i->first;
         }
 
@@ -250,7 +250,7 @@ class SocketGarbageCollector : public Singleton<SocketGarbageCollector>
             std::map<Socket*, time_t>::iterator i, i2;
             time_t t = UNIXTIME;
             lock.Acquire();
-            for(i = deletionQueue.begin(); i != deletionQueue.end();)
+            for (i = deletionQueue.begin(); i != deletionQueue.end();)
             {
                 i2 = i++;
                 if(i2->second <= t)

@@ -172,7 +172,7 @@ static const TCHAR* GetExceptionDescription(DWORD ExceptionCode)
         {0xe06d7363, _T("a Microsoft C++ Exception")},
     };
 
-    for(int i = 0; i < sizeof(ExceptionMap) / sizeof(ExceptionMap[0]); i++)
+    for (int i = 0; i < sizeof(ExceptionMap) / sizeof(ExceptionMap[0]); i++)
         if(ExceptionCode == ExceptionMap[i].ExceptionCode)
             return ExceptionMap[i].ExceptionName;
 
