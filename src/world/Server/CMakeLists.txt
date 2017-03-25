@@ -13,10 +13,14 @@ set(SRC_SERVER_FILES
    ${PATH_PREFIX}/IUpdatable.h
    ${PATH_PREFIX}/UpdateFieldInclude.h
    ${PATH_PREFIX}/UpdateMask.h
+   ${PATH_PREFIX}/LazyTimer.cpp
+   ${PATH_PREFIX}/LazyTimer.h
    ${PATH_PREFIX}/Main.cpp
    ${PATH_PREFIX}/MainServerDefines.h
    ${PATH_PREFIX}/Master.cpp
    ${PATH_PREFIX}/Master.h
+   ${PATH_PREFIX}/ServerState.cpp
+   ${PATH_PREFIX}/ServerState.h
    ${PATH_PREFIX}/World.cpp
    ${PATH_PREFIX}/World.h
    ${PATH_PREFIX}/WorldRunnable.cpp

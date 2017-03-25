@@ -26,6 +26,7 @@
 #include <sys/resource.h>
 #endif
 #include "CrashHandler.h"
+#include "ServerState.h"
 
 
 uint8 loglevel = 0;
@@ -74,6 +75,9 @@ int win32_main(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
+    // Init this asap to set initTime correctly
+    ServerState::instance();
+
 #ifdef WIN32
     win32_main(argc, argv);
 #else
