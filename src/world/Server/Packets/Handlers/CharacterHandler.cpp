@@ -102,8 +102,10 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
     recv_data >> hairStyle;
     recv_data >> facialHair;
     recv_data >> face;
+#if VERSION_STRING != Cata
     recv_data >> race;
     recv_data >> faction;
+#endif
 
     LoginErrorCode res = VerifyName(newname.c_str(), newname.length());
     if (res != E_CHAR_NAME_SUCCESS)

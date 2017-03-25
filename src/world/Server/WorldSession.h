@@ -338,7 +338,7 @@ class SERVER_DECL WorldSession
         void SendNotification(const char* message, ...);
         void SendAuctionPlaceBidResultPacket(uint32 itemId, uint32 error);
 #if VERSION_STRING > TBC
-        void SendRefundInfo(uint64 GUID);
+        void SendRefundInfo(uint64_t guid);
 #endif
         void SendNotInArenaTeamPacket(uint8 type);
 
@@ -663,8 +663,8 @@ class SERVER_DECL WorldSession
         void HandleDuelCancelled(WorldPacket& recv_data);
 
         // Trade
-        void HandleInitiateTrade(WorldPacket& recv_data);
-        void HandleBeginTrade(WorldPacket& recv_data);
+        void HandleInitiateTradeOpcode(WorldPacket& recv_data);
+        void HandleBeginTradeOpcode(WorldPacket& recv_data);
         void HandleBusyTrade(WorldPacket& recv_data);
         void HandleIgnoreTrade(WorldPacket& recv_data);
         void HandleAcceptTrade(WorldPacket& recv_data);
@@ -854,6 +854,7 @@ class SERVER_DECL WorldSession
         void HandleTimeSyncRespOpcode(WorldPacket& recv_data);
         void HandleRequestHotfix(WorldPacket& recv_data);
         void HandleRequestCemeteryListOpcode(WorldPacket& recv_data);
+        void HandleForceSpeedAckOpcodes(WorldPacket& recv_data);
 
     private:
         typedef std::list<AddonEntry> AddonsList;

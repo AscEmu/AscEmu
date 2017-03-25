@@ -718,7 +718,7 @@ const char* WorldSession::LocalizedBroadCast(uint32 id)
         return wb->text.c_str();
 }
 
-#if VERSION_STRING > TBC
+#if VERSION_STRING == WotLK
 void WorldSession::SendRefundInfo(uint64 GUID)
 {
     if (!_player || !_player->IsInWorld())

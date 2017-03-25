@@ -1141,6 +1141,7 @@ void WorldSession::HandleBugOpcode(WorldPacket& recv_data)
     CharacterDatabase.ExecuteNA(ss.str().c_str());
 }
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -1187,6 +1188,7 @@ void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
     GetPlayer()->ResurrectPlayer();
     GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);
 }
+#endif
 
 void WorldSession::HandleResurrectResponseOpcode(WorldPacket& recv_data)
 {

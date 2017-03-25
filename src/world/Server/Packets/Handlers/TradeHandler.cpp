@@ -29,7 +29,8 @@
 #include "Server/World.h"
 #include "Objects/ObjectMgr.h"
 
-void WorldSession::HandleInitiateTrade(WorldPacket& recv_data)
+#if VERSION_STRING != Cata
+void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
@@ -77,7 +78,7 @@ void WorldSession::HandleInitiateTrade(WorldPacket& recv_data)
     pTarget->m_session->SendPacket(&data);
 }
 
-void WorldSession::HandleBeginTrade(WorldPacket& recv_data)
+void WorldSession::HandleBeginTradeOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
@@ -108,6 +109,7 @@ void WorldSession::HandleBeginTrade(WorldPacket& recv_data)
     plr->mTradeStatus = TradeStatus;
     _player->mTradeStatus = TradeStatus;
 }
+#endif
 
 void WorldSession::HandleBusyTrade(WorldPacket& recv_data)
 {

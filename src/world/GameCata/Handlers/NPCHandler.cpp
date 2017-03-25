@@ -239,3 +239,36 @@ TrainerSpellState WorldSession::TrainerGetSpellStatus(TrainerSpell* pSpell)
 
     return TRAINER_SPELL_GREEN;
 }
+
+void WorldSession::SendInnkeeperBind(Creature* pCreature)
+{
+    uint32_t current_zone = _player->GetZoneId();
+    if (_player->m_bind_zoneid == current_zone)
+    {
+        OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
+
+        WorldPacket data(SMSG_PLAYERBINDERROR, 1);
+        data << uint32_t(1);                          // already bound here!
+        SendPacket(&data);
+        return;
+    }
+
+    if (!_player->bHasBindDialogOpen)
+    {
+        OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
+
+        WorldPacket data(SMSG_BINDER_CONFIRM, 12);
+        data << uint64_t(pCreature->GetGUID());
+        data << uint32_t(_player->GetZoneId());
+        SendPacket(&data);
+
+        _player->bHasBindDialogOpen = true;
+        return;
+    }
+
+    _player->bHasBindDialogOpen = false;
+
+    OutPacket(SMSG_GOSSIP_COMPLETE, 0, NULL);
+    uint64_t player_guid = _player->GetGUID();
+    pCreature->CastSpell(player_guid, 3286, true);
+}

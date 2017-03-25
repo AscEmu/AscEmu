@@ -13085,6 +13085,7 @@ void Player::HandleKnockback(Object* caster, float horizontal, float vertical)
     float sin = sinf(angle);
     float cos = cosf(angle);
 
+#if VERSION_STRING != Cata
     WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
 
     data << GetNewGUID();
@@ -13095,6 +13096,32 @@ void Player::HandleKnockback(Object* caster, float horizontal, float vertical)
     data << float(-vertical);
 
     GetSession()->SendPacket(&data);
+#else
+    ObjectGuid guid = GetGUID();
+
+    WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
+    data.WriteByteMask(guid[0]);
+    data.WriteByteMask(guid[3]);
+    data.WriteByteMask(guid[6]);
+    data.WriteByteMask(guid[7]);
+    data.WriteByteMask(guid[2]);
+    data.WriteByteMask(guid[5]);
+    data.WriteByteMask(guid[1]);
+    data.WriteByteMask(guid[4]);
+
+    data.WriteByteSeq(guid[1]);
+    data << float(sin);
+    data << uint32(0);
+    data.WriteByteSeq(guid[6]);
+    data.WriteByteSeq(guid[7]);
+    data << float(horizontal);
+    data.WriteByteSeq(guid[4]);
+    data.WriteByteSeq(guid[5]);
+    data.WriteByteSeq(guid[3]);
+    data << float(-vertical);
+    data.WriteByteSeq(guid[2]);
+    data.WriteByteSeq(guid[0]);
+#endif
 
     blinked = true;
     SpeedCheatDelay(10000);
