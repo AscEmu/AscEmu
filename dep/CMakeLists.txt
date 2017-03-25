@@ -18,6 +18,8 @@ endif()
 add_subdirectory(recastnavigation)
 add_subdirectory(g3dlite)
 
+add_subdirectory(lualib/src)
+
 if(BUILD_TOOLS)
     if("${ASCEMU_VERSION}" STREQUAL "Cata")
         add_subdirectory(StormLib)
@@ -26,9 +28,4 @@ if(BUILD_TOOLS)
         add_subdirectory(dbcfile)
         add_subdirectory(loadlib)
     endif()
-endif()
-
-# add lualib if we need it for LuaEngine
-if(BUILD_LUAENGINE)
-    add_subdirectory(lualib)
 endif()

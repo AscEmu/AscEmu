@@ -1095,7 +1095,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         u_caster->castSpell(this);
     }
     else
-        cast(false);
+        castMe(false);
 
     return ccr;
 }
@@ -1178,7 +1178,7 @@ void Spell::AddStartCooldown()
         p_caster->Cooldown_AddStart(GetSpellInfo());
 }
 
-void Spell::cast(bool check)
+void Spell::castMe(bool check)
 {
     if (DuelSpellNoMoreValid())
     {
@@ -1751,14 +1751,14 @@ void Spell::Update(unsigned long time_passed)
         case SPELL_STATE_PREPARING:
         {
             if (static_cast<int32>(time_passed) >= m_timer)
-                cast(true);
+                castMe(true);
             else
             {
                 m_timer -= time_passed;
                 if (static_cast<int32>(time_passed) >= m_timer)
                 {
                     m_timer = 0;
-                    cast(true);
+                    castMe(true);
                 }
             }
 
