@@ -127,7 +127,7 @@ void CThreadPool::Startup()
     int i;
     int tcount = THREAD_RESERVE;
 
-    for(i = 0; i < tcount; ++i)
+    for (i = 0; i < tcount; ++i)
         StartThread(NULL);
 
     LOG_DEBUG("launched %u threads.", tcount);
@@ -157,7 +157,7 @@ void CThreadPool::IntegrityCheck()
         uint32 new_threads = abs(gobbled) + THREAD_RESERVE;
         _threadsEaten = 0;
 
-        for(uint32 i = 0; i < new_threads; ++i)
+        for (uint32 i = 0; i < new_threads; ++i)
             StartThread(NULL);
 
         LOG_DEBUG("(gobbled < 0) Spawning %u threads.", new_threads);
@@ -167,7 +167,7 @@ void CThreadPool::IntegrityCheck()
         // this means while we didn't run out of threads, we were getting damn low.
         // spawn enough threads to keep the reserve amount up.
         uint32 new_threads = (THREAD_RESERVE - gobbled);
-        for(uint32 i = 0; i < new_threads; ++i)
+        for (uint32 i = 0; i < new_threads; ++i)
             StartThread(NULL);
 
         LOG_DEBUG("(gobbled <= 5) Spawning %u threads.", new_threads);
@@ -201,7 +201,7 @@ void CThreadPool::KillFreeThreads(uint32 count)
     Thread* t;
     ThreadSet::iterator itr;
     uint32 i;
-    for(i = 0, itr = m_freeThreads.begin(); i < count && itr != m_freeThreads.end(); ++i, ++itr)
+    for (i = 0, itr = m_freeThreads.begin(); i < count && itr != m_freeThreads.end(); ++i, ++itr)
     {
         t = *itr;
         t->ExecutionTarget = NULL;
@@ -215,14 +215,13 @@ void CThreadPool::KillFreeThreads(uint32 count)
 void CThreadPool::Shutdown()
 {
     _mutex.Acquire();
-    size_t tcount = m_activeThreads.size() + m_freeThreads.size();        // exit all
+    size_t tcount = m_activeThreads.size() + m_freeThreads.size(); // exit all
     LOG_DEBUG("Shutting down %u threads.", tcount);
     KillFreeThreads((uint32)m_freeThreads.size());
     _threadsToExit += (uint32)m_activeThreads.size();
 
-    for(std::set< Thread* >::iterator itr = m_activeThreads.begin(); itr != m_activeThreads.end(); ++itr)
+    for (auto itr = m_activeThreads.begin(); itr != m_activeThreads.end(); ++itr)
     {
-
         Thread* t = *itr;
 
         if(t->ExecutionTarget)
@@ -232,7 +231,7 @@ void CThreadPool::Shutdown()
     }
     _mutex.Release();
 
-    for(int i = 0;; i++)
+    for (int i = 0;; i++)
     {
         _mutex.Acquire();
         if(m_activeThreads.size() || m_freeThreads.size())
@@ -242,8 +241,8 @@ void CThreadPool::Shutdown()
                 /*if we are here then a thread in the free pool checked if it was being shut down just before CThreadPool::Shutdown() was called,
                 but called Suspend() just after KillFreeThreads(). All we need to do is to resume it.*/
                 Thread* t;
-                ThreadSet::iterator itr;
-                for(itr = m_freeThreads.begin(); itr != m_freeThreads.end(); ++itr)
+
+                for (auto itr = m_freeThreads.begin(); itr != m_freeThreads.end(); ++itr)
                 {
                     t = *itr;
                     t->ControlInterface.Resume();
