@@ -342,6 +342,49 @@ typedef std::map<uint32, PlayerCooldown>            PlayerCooldownMap;
 // AGPL End
 
 // MIT Start
+#if VERSION_STRING == Cata
+class TradeData
+{
+    void updateTrade(bool for_trader = true);
+
+    Player* m_player;
+    Player* m_tradeTarget;
+    bool m_accepted;
+    bool m_acceptProccess;
+    uint64_t m_money;
+    uint32_t m_spell;
+    uint64_t m_spellCastItem;
+    uint64_t m_items[TRADE_SLOT_COUNT];
+
+    public:
+
+        TradeData(Player* player, Player* trader) : m_player(player), m_tradeTarget(trader), m_accepted(false), m_acceptProccess(false), m_money(0), m_spell(0) {}
+
+        Player* getTradeTarget() const { return m_tradeTarget; }
+        TradeData* getTargetTradeData() const;
+
+        Item* getTradeItem(TradeSlots slot) const;
+        bool hasTradeItem(uint64 item_guid) const;
+
+        uint32_t getSpell() const { return m_spell; }
+        Item* getSpellCastItem() const;
+        bool hasSpellCastItem() const { return !m_spellCastItem; }
+
+        uint64_t getMoney() const { return m_money; }
+
+        void setAccepted(bool state, bool send_both = false);
+        bool isAccepted() const { return m_accepted; }
+
+        void setInAcceptProcess(bool state) { m_acceptProccess = state; }
+        bool isInAcceptProcess() const { return m_acceptProccess; }
+
+        void setItem(TradeSlots slot, Item* item);
+        void setSpell(uint32_t spell_id, Item* cast_item = nullptr);
+        void setMoney(uint64_t money);
+
+};
+#endif
+
 class SERVER_DECL Player : public Unit
 {
 
@@ -367,6 +410,20 @@ public:
     // Auction
     void sendAuctionCommandResult(Auction* auction, uint32_t Action, uint32_t ErrorCode, uint32_t bidError = 0);
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Trade
+#if VERSION_STRING == Cata
+private:
+
+    TradeData* m_TradeData;
+
+public:
+
+    Player* getTradeTarget() const { return m_TradeData ? m_TradeData->getTradeTarget() : nullptr; }
+    TradeData* getTradeData() const { return m_TradeData; }
+    void cancelTrade(bool sendback);
+
+#endif
 private:
     //MIT End
     //AGPL Start
@@ -917,6 +974,7 @@ private:
         /////////////////////////////////////////////////////////////////////////////////////////
         // Trade
         /////////////////////////////////////////////////////////////////////////////////////////
+#if VERSION_STRING != Cata
         void SendTradeUpdate(void);
         void ResetTradeVariables()
         {
@@ -926,6 +984,7 @@ private:
             mTradeTarget = 0;
             m_tradeSequence = 2;
         }
+#endif
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Pets
@@ -1832,9 +1891,11 @@ private:
         void SendAreaTriggerMessage(const char* message, ...);
 
         // Trade Target
+#if VERSION_STRING != Cata
         Player* GetTradeTarget();
 
         Item* getTradeItem(uint32 slot) {return mTradeItems[slot];};
+#endif
 
         // Water level related stuff (they are public because they need to be accessed fast)
         /// Nose level of the character (needed for proper breathing)
@@ -1935,10 +1996,12 @@ private:
         /////////////////////////////////////////////////////////////////////////////////////////
         // Trade
         /////////////////////////////////////////////////////////////////////////////////////////
+#if VERSION_STRING != Cata
         Item* mTradeItems[8];
         uint32 mTradeGold;
         uint32 mTradeTarget;
         uint32 mTradeStatus;
+#endif
 
         /////////////////////////////////////////////////////////////////////////////////////////
         // Player Class systems, info and misc things

@@ -551,6 +551,50 @@ enum UnderwaterState
     UNDERWATERSTATE_SLIME           = 64
 };
 
+#if VERSION_STRING == Cata
+enum TradeStatus
+{
+    TRADE_STATUS_OPEN_WINDOW            = 0,
+    TRADE_STATUS_INITIATED              = 1,
+    TRADE_STATUS_NOT_ON_TAPLIST         = 2,
+    TRADE_STATUS_YOU_LOGOUT             = 3,
+    TRADE_STATUS_IGNORE_YOU             = 4,
+    TRADE_STATUS_TARGET_DEAD            = 5,
+    TRADE_STATUS_TRADE_ACCEPT           = 6,
+    TRADE_STATUS_TARGET_LOGOUT          = 7,
+    TRADE_STATUS_UNK8                   = 8,
+    TRADE_STATUS_TRADE_COMPLETE         = 9,
+    TRADE_STATUS_UNK10                  = 10,
+    TRADE_STATUS_UNK11                  = 11,
+    TRADE_STATUS_BEGIN_TRADE            = 12,
+    TRADE_STATUS_YOU_DEAD               = 13,
+    TRADE_STATUS_UNK14                  = 14,
+    TRADE_STATUS_UNK15                  = 15,
+    TRADE_STATUS_TARGET_TO_FAR          = 16,
+    TRADE_STATUS_NO_TARGET              = 17,
+    TRADE_STATUS_UNK18                  = 18,
+    TRADE_STATUS_CURRENCY_NOT_TRADEABLE = 19,
+    TRADE_STATUS_WRONG_FACTION          = 20,
+    TRADE_STATUS_BUSY                   = 21,
+    TRADE_STATUS_UNK22                  = 22,
+    TRADE_STATUS_TRADE_CANCELED         = 23,
+    TRADE_STATUS_CURRENCY               = 24,
+    TRADE_STATUS_BACK_TO_TRADE          = 25,
+    TRADE_STATUS_ONLY_CONJURED          = 26,
+    TRADE_STATUS_YOU_STUNNED            = 27,
+    TRADE_STATUS_UNK28                  = 28,
+    TRADE_STATUS_TARGET_STUNNED         = 29,
+    TRADE_STATUS_UNK30                  = 30,
+    TRADE_STATUS_CLOSE_WINDOW           = 31
+};
+
+enum TradeSlots
+{
+    TRADE_SLOT_COUNT            = 7,
+    TRADE_SLOT_TRADED_COUNT     = 6,
+    TRADE_SLOT_NONTRADED        = 6
+};
+#else
 enum TradeStatus
 {
     TRADE_STATUS_PLAYER_BUSY        = 0x00,
@@ -576,6 +620,7 @@ enum TradeData
     TRADE_GIVE        = 0x00,
     TRADE_RECEIVE     = 0x01
 };
+#endif
 
 enum DuelStatus
 {

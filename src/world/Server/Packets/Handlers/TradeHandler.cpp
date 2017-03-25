@@ -109,7 +109,6 @@ void WorldSession::HandleBeginTradeOpcode(WorldPacket& recv_data)
     plr->mTradeStatus = TradeStatus;
     _player->mTradeStatus = TradeStatus;
 }
-#endif
 
 void WorldSession::HandleBusyTrade(WorldPacket& recv_data)
 {
@@ -531,3 +530,4 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
         _player->SaveToDB(false);
     }
 }
+#endif

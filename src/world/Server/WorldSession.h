@@ -30,6 +30,7 @@
 #include "AuthCodes.h"
 #if VERSION_STRING == Cata
     #include "Management/AddonMgr.h"
+    #include "Units/Players/PlayerDefines.hpp"
 #endif
 #include <stddef.h>
 #include <string>
@@ -663,6 +664,15 @@ class SERVER_DECL WorldSession
         void HandleDuelCancelled(WorldPacket& recv_data);
 
         // Trade
+#if VERSION_STRING == Cata
+    public:
+        void sendTradeResult(TradeStatus result);
+        void sendTradeUpdate(bool trade_state = true);
+        void sendTradeCancel();
+
+    protected:
+#endif
+
         void HandleInitiateTradeOpcode(WorldPacket& recv_data);
         void HandleBeginTradeOpcode(WorldPacket& recv_data);
         void HandleBusyTrade(WorldPacket& recv_data);

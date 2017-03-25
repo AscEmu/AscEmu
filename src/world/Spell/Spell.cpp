@@ -2852,9 +2852,15 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
                 itemTarget = p_caster->GetItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
             if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
             {
+#if VERSION_STRING == Cata
+                Player* p_trader = p_caster->getTradeTarget();
+                if (p_trader != nullptr)
+                    itemTarget = p_trader->getTradeData()->getTradeItem((TradeSlots)m_targets.m_itemTarget);
+#else
                 Player* p_trader = p_caster->GetTradeTarget();
                 if (p_trader != NULL)
                     itemTarget = p_trader->getTradeItem((uint32)m_targets.m_itemTarget);
+#endif
             }
         }
     }
@@ -2879,9 +2885,15 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
         {
             if (p_caster != NULL)
             {
+#if VERSION_STRING == Cata
+                Player* plr = p_caster->getTradeTarget();
+                if (plr != nullptr)
+                    itemTarget = plr->getTradeData()->getTradeItem((TradeSlots)guid);
+#else
                 Player* plr = p_caster->GetTradeTarget();
                 if (plr)
                     itemTarget = plr->getTradeItem((uint32)guid);
+#endif
             }
         }
         else
@@ -3729,10 +3741,15 @@ uint8 Spell::CanCast(bool tolerate)
                         return SPELL_FAILED_BAD_TARGETS;
 
                     // get the player we are trading with
+#if VERSION_STRING == Cata
+                    Player* t_player = p_caster->getTradeTarget();
+                    if (t_player != nullptr)
+                        i_target = t_player->getTradeData()->getTradeItem((TradeSlots)m_targets.m_itemTarget);
+#else
                     Player* t_player = p_caster->GetTradeTarget();
-                    // get the targeted trade item
                     if (t_player)
                         i_target = t_player->getTradeItem((uint32)m_targets.m_itemTarget);
+#endif
                 }
             }
         }

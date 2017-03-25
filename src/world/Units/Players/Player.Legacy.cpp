@@ -201,7 +201,11 @@ Player::Player(uint32 guid)
     mCreationCount(0),
     mOutOfRangeIdCount(0),
     //Trade
+#if VERSION_STRING == Cata
+    m_TradeData(nullptr),
+#else
     mTradeTarget(0),
+#endif
     info(NULL), // Playercreate info
     m_AttackMsgTimer(0),
     //PVP
@@ -291,7 +295,9 @@ Player::Player(uint32 guid)
     }
 
     //Trade
+#if VERSION_STRING != Cata
     ResetTradeVariables();
+#endif
 
     //Tutorials
     for (i = 0; i < 8; i++)
@@ -566,19 +572,26 @@ Player::~Player()
     }
 
     Player* pTarget;
+#if VERSION_STRING != Cata
     if (mTradeTarget != 0)
     {
         pTarget = GetTradeTarget();
         if (pTarget)
             pTarget->mTradeTarget = 0;
     }
+#else
+    if (m_TradeData != nullptr)
+        cancelTrade(false);
+#endif
 
     pTarget = objmgr.GetPlayer(GetInviter());
     if (pTarget)
         pTarget->SetInviter(0);
 
     DismissActivePets();
+#if VERSION_STRING != Cata
     mTradeTarget = 0;
+#endif
 
     if (DuelingWith != NULL)
         DuelingWith->DuelingWith = NULL;
@@ -4098,6 +4111,7 @@ void Player::RemoveFromWorld()
         m_bg->RemovePlayer(this, true);
     }
 
+#if VERSION_STRING != Cata
     // Cancel trade if it's active.
     Player* pTarget;
     if (mTradeTarget != 0)
@@ -4108,6 +4122,10 @@ void Player::RemoveFromWorld()
 
         ResetTradeVariables();
     }
+#else
+    if (m_TradeData != nullptr)
+        cancelTrade(false);
+#endif
 
     //stop dueling
     if (DuelingWith != NULL)
@@ -8099,6 +8117,7 @@ void Player::UpdateChannels(uint16 AreaID)
     }
 }
 
+#if VERSION_STRING != Cata
 void Player::SendTradeUpdate()
 {
     Player* pTarget = GetTradeTarget();
@@ -8154,6 +8173,7 @@ void Player::SendTradeUpdate()
     data.resize(21 + count * 73);
     pTarget->SendPacket(&data);
 }
+#endif
 
 void Player::RequestDuel(Player* pTarget)
 {
@@ -14137,12 +14157,14 @@ void Player::SendDismountResult(uint32 result)
     GetSession()->SendPacket(&data);
 }
 
+#if VERSION_STRING != Cata
 Player* Player::GetTradeTarget()
 {
     if (!IsInWorld())
         return 0;
     return m_mapMgr->GetPlayer((uint32)mTradeTarget);
 }
+#endif
 
 void Player::RemoteRevive()
 {
