@@ -22,7 +22,7 @@ int AITimerCollection::unsafeCreateTimer(long long durationMs)
 
 std::unique_ptr<LazyTimer>& AITimerCollection::unsafeGetTimer(int id)
 {
-    ASSERT(id > m_timers.size() || id < 0);
+    //ARCEMU_ASSERT(id > m_timers.size() || id < 0);
 
     return m_timers[id];
 }
