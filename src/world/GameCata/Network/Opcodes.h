@@ -367,13 +367,13 @@ enum Opcodes
     SMSG_LOOT_ITEM_NOTIFY = 0x6D15,                 // new
     SMSG_LOOT_CLEAR_MONEY = 0x2B37,                 // new
     SMSG_ITEM_PUSH_RESULT = 0x166,
-    SMSG_DUEL_REQUESTED = 0x167,
+    SMSG_DUEL_REQUESTED = 0x4504,                   // new
     SMSG_DUEL_OUTOFBOUNDS = 0x168,
     SMSG_DUEL_INBOUNDS = 0x169,
-    SMSG_DUEL_COMPLETE = 0x16A,
+    SMSG_DUEL_COMPLETE = 0x2527,                    // new
     SMSG_DUEL_WINNER = 0x16B,
-    CMSG_DUEL_ACCEPTED = 0x16C,
-    CMSG_DUEL_CANCELLED = 0x16D,
+    CMSG_DUEL_ACCEPTED = 0x2136,                    // new
+    CMSG_DUEL_CANCELLED = 0x6624,                   // new
     SMSG_MOUNTRESULT = 0x16E,
     SMSG_DISMOUNTRESULT = 0x16F,
     SMSG_PUREMOUNT_CANCELLED_OBSOLETE = 0x170,
@@ -703,7 +703,7 @@ enum Opcodes
     SMSG_FEIGN_DEATH_RESISTED = 0x2B4,
     CMSG_RUN_SCRIPT = 0x2B5,
     SMSG_SCRIPT_MESSAGE = 0x2B6,
-    SMSG_DUEL_COUNTDOWN = 0x2B7,
+    SMSG_DUEL_COUNTDOWN = 0x4836,                   // new
     SMSG_AREA_TRIGGER_MESSAGE = 0x4505,             // new
     CMSG_TOGGLE_HELM = 0x2B9,
     CMSG_TOGGLE_CLOAK = 0x2BA,

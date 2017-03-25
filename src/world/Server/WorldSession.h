@@ -660,6 +660,13 @@ class SERVER_DECL WorldSession
         void HandleChannelRosterQuery(WorldPacket& recvPacket);
 
         // Duel
+#if VERSION_STRING == Cata
+    public:
+        void SendDuelCountdown(uint32_t time = 3000);
+        void SendDuelComplete(uint8_t type);
+
+    protected:
+#endif
         void HandleDuelAccepted(WorldPacket& recv_data);
         void HandleDuelCancelled(WorldPacket& recv_data);
 
