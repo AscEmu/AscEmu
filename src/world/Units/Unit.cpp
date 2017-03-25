@@ -1100,6 +1100,8 @@ float Unit::getSpeedForType(UnitSpeedType speed_type, bool get_basic)
             return (get_basic ? m_basicSpeedFlyBack : m_currentSpeedFlyBack);
         case TYPE_PITCH_RATE:
             return (get_basic ? m_basicPitchRate : m_currentPitchRate);
+        default:
+            return m_basicSpeedWalk;
     }
 }
 
