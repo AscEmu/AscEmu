@@ -14,18 +14,21 @@ set(SRCS
 )
 
 set(HEADERS
-   AuraFunctions.h
-   FunctionTables.h
-   GameobjectFunctions.h
-   GlobalFunctions.h
-   ItemFunctions.h
-   LUAEngine.h
-   LUAFunctions.h
-   LuaSqlApi.h
-   PacketFunctions.h
-   SpellFunctions.h
-   TaxiFunctions.h
-   UnitFunctions.h
+    AuraFunctions.h
+    FunctionTables.h
+    GameobjectFunctions.h
+    GlobalFunctions.h
+    ItemFunctions.h
+    LUAEngine.h
+    LUAFunctions.h
+    LuaSqlApi.h
+    PacketFunctions.h
+    SpellFunctions.h
+    TaxiFunctions.h
+    UnitFunctions.h
+    # Required for linker
+    ../../world/Server/LazyTimer.cpp
+    ../../world/Server/ServerState.cpp
 )
 
 include_directories(

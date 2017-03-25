@@ -10,8 +10,11 @@ project(ExtraScripts CXX)
 
 #sources -contains source files for our library.
 set(sources
-   Setup.cpp
-   NeutralGuards.cpp
+    Setup.cpp
+    NeutralGuards.cpp
+    # Required for linker
+    ../../world/Server/LazyTimer.cpp
+    ../../world/Server/ServerState.cpp
 )
 
 set(headers

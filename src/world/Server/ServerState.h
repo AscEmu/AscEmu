@@ -24,7 +24,7 @@ public:
 
     ServerState();
 private:
-    static std::unique_ptr<ServerState> singletonPtr;
+    static ServerState* singletonPtr;
 public:
-    static std::unique_ptr<ServerState>& instance();
+    static ServerState* instance(ServerState* existingPtr = nullptr);
 };

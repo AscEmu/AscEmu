@@ -16,6 +16,9 @@ set(sources
     StrandOfTheAncient.cpp
     WarsongGulch.cpp
     Setup.cpp
+    # Required for linker
+    ../../world/Server/LazyTimer.cpp
+    ../../world/Server/ServerState.cpp
 )
 
 set(headers

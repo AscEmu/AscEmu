@@ -20,78 +20,85 @@
 #define SKIP_ALLOCATOR_SHARING 1
 #include <Server/Script/ScriptSetup.h>
 
-extern "C" SCRIPT_DECL uint32 _exp_get_script_type()
-{
-    return SCRIPT_TYPE_MISC;
-}
+extern "C" {
+    SCRIPT_DECL void _exp_set_serverstate_singleton(ServerState* state)
+    {
+        ServerState::instance(state);
+    }
 
-extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment any script to disable it
-{
-    //Instances
-    SetupArcatraz(mgr);
-    SetupAuchenaiCrypts(mgr);
-    SetupAzjolNerub(mgr);
-    SetupTheBlackMorass(mgr);
-    SetupBlackfathomDeeps(mgr);
-    SetupBlackrockDepths(mgr);
-    SetupBlackrockSpire(mgr);
-    SetupBloodFurnace(mgr);
-    SetupBotanica(mgr);
-    SetupCullingOfStratholme(mgr);
-    SetupDrakTharonKeep(mgr);
-    SetupDeadmines(mgr);
-    SetupDireMaul(mgr);
-    SetupForgeOfSouls(mgr);
-    SetupGundrak(mgr);
-    SetupHellfireRamparts(mgr);
-    SetupHallsOfStone(mgr);
-    SetupHallsOfReflection(mgr);
-    SetupHallsOfLightning(mgr);
-    SetupManaTombs(mgr);
-    SetupMaraudon(mgr);
-    SetupNexus(mgr);
-    SetupOldHillsbradFoothills(mgr);
-    SetupPitOfSaron(mgr);
-    SetupRagefireChasm(mgr);
-    SetupRazorfenDowns(mgr);
-    SetupScarletMonastery(mgr);
-    SetupScholomance(mgr);
-    SetupSethekkHalls(mgr);
-    SetupShadowfangKeep(mgr);
-    SetupShadowLabyrinth(mgr);
-    SetupTheMechanar(mgr);
-    SetupTheShatteredHalls(mgr);
-    SetupTheSlavePens(mgr);
-    SetupTheSteamvault(mgr);
-    SetupTheUnderbog(mgr);
-    SetupUldaman(mgr);
-    SetupUtgardeKeep(mgr);
-    SetupUtgardePinnacle(mgr);
-    SetupTheStockade(mgr);
-    SetupTheVioletHold(mgr);
-    SetupWailingCaverns(mgr);
-    SetupMagistersTerrace(mgr);
+    SCRIPT_DECL uint32 _exp_get_script_type()
+    {
+        return SCRIPT_TYPE_MISC;
+    }
 
-    //Raids
-    SetupBlackTemple(mgr);
-    SetupBlackwingLair(mgr);
-    SetupBattleOfMountHyjal(mgr);
-    SetupGruulsLair(mgr);
-    SetupICC(mgr);
-    SetupKarazhan(mgr);
-    SetupMoltenCore(mgr);
-    SetupNaxxramas(mgr);
-    SetupOnyxiasLair(mgr);
-    SetupTheEye(mgr);
-    SetupTheObsidianSanctum(mgr);
-    SetupUlduar(mgr);
-    SetupZulFarrak(mgr);
-    SetupZulGurub(mgr);
-    SetupSerpentshrineCavern(mgr);
-    SetupMagtheridonsLair(mgr);
-    SetupSunwellPlateau(mgr);
-    SetupWorldBosses(mgr);
-    SetupZulAman(mgr);
+    SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)    // Comment any script to disable it
+    {
+        //Instances
+        SetupArcatraz(mgr);
+        SetupAuchenaiCrypts(mgr);
+        SetupAzjolNerub(mgr);
+        SetupTheBlackMorass(mgr);
+        SetupBlackfathomDeeps(mgr);
+        SetupBlackrockDepths(mgr);
+        SetupBlackrockSpire(mgr);
+        SetupBloodFurnace(mgr);
+        SetupBotanica(mgr);
+        SetupCullingOfStratholme(mgr);
+        SetupDrakTharonKeep(mgr);
+        SetupDeadmines(mgr);
+        SetupDireMaul(mgr);
+        SetupForgeOfSouls(mgr);
+        SetupGundrak(mgr);
+        SetupHellfireRamparts(mgr);
+        SetupHallsOfStone(mgr);
+        SetupHallsOfReflection(mgr);
+        SetupHallsOfLightning(mgr);
+        SetupManaTombs(mgr);
+        SetupMaraudon(mgr);
+        SetupNexus(mgr);
+        SetupOldHillsbradFoothills(mgr);
+        SetupPitOfSaron(mgr);
+        SetupRagefireChasm(mgr);
+        SetupRazorfenDowns(mgr);
+        SetupScarletMonastery(mgr);
+        SetupScholomance(mgr);
+        SetupSethekkHalls(mgr);
+        SetupShadowfangKeep(mgr);
+        SetupShadowLabyrinth(mgr);
+        SetupTheMechanar(mgr);
+        SetupTheShatteredHalls(mgr);
+        SetupTheSlavePens(mgr);
+        SetupTheSteamvault(mgr);
+        SetupTheUnderbog(mgr);
+        SetupUldaman(mgr);
+        SetupUtgardeKeep(mgr);
+        SetupUtgardePinnacle(mgr);
+        SetupTheStockade(mgr);
+        SetupTheVioletHold(mgr);
+        SetupWailingCaverns(mgr);
+        SetupMagistersTerrace(mgr);
+
+        //Raids
+        SetupBlackTemple(mgr);
+        SetupBlackwingLair(mgr);
+        SetupBattleOfMountHyjal(mgr);
+        SetupGruulsLair(mgr);
+        SetupICC(mgr);
+        SetupKarazhan(mgr);
+        SetupMoltenCore(mgr);
+        SetupNaxxramas(mgr);
+        SetupOnyxiasLair(mgr);
+        SetupTheEye(mgr);
+        SetupTheObsidianSanctum(mgr);
+        SetupUlduar(mgr);
+        SetupZulFarrak(mgr);
+        SetupZulGurub(mgr);
+        SetupSerpentshrineCavern(mgr);
+        SetupMagtheridonsLair(mgr);
+        SetupSunwellPlateau(mgr);
+        SetupWorldBosses(mgr);
+        SetupZulAman(mgr);
+    }
 }
 
 #ifdef WIN32
