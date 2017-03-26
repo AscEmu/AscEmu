@@ -72,7 +72,7 @@ namespace VMAP
             return false;
 
         // export Map data
-        for (MapData::iterator map_iter = mapData.begin(); map_iter != mapData.end() && success; ++map_iter)
+        for (auto map_iter = mapData.begin(); map_iter != mapData.end() && success; ++map_iter)
         {
             // build global map tree
             std::vector<ModelSpawn*> mapSpawns;
@@ -137,7 +137,7 @@ namespace VMAP
             // global map spawns (WDT), if any (most instances)
             if (success && fwrite("GOBJ", 4, 1, mapfile) != 1) success = false;
 
-            for (TileMap::iterator glob=globalRange.first; glob != globalRange.second && success; ++glob)
+            for (auto glob=globalRange.first; glob != globalRange.second && success; ++glob)
             {
                 success = ModelSpawn::writeToFile(mapfile, map_iter->second->UniqueEntries[glob->second]);
             }
@@ -188,7 +188,7 @@ namespace VMAP
         exportGameobjectModels();
         // export objects
         std::cout << "\nConverting Model Files" << std::endl;
-        for (std::set<std::string>::iterator mfile = spawnedModelFiles.begin(); mfile != spawnedModelFiles.end(); ++mfile)
+        for (auto mfile = spawnedModelFiles.begin(); mfile != spawnedModelFiles.end(); ++mfile)
         {
             std::cout << "Converting " << *mfile << std::endl;
             if (!convertRawFile(*mfile))
@@ -200,7 +200,7 @@ namespace VMAP
         }
 
         //cleanup:
-        for (MapData::iterator map_iter = mapData.begin(); map_iter != mapData.end(); ++map_iter)
+        for (auto map_iter = mapData.begin(); map_iter != mapData.end(); ++map_iter)
         {
             delete map_iter->second;
         }
