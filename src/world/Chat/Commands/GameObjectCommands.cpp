@@ -81,7 +81,7 @@ bool ChatHandler::HandleGODeleteCommand(const char* /*args*/, WorldSession* m_se
             CellSpawns* cell_spawns = selected_gobject->GetMapMgr()->GetBaseMap()->GetSpawnsList(cellx, celly);
             if (cell_spawns != nullptr)
             {
-                for (GameobjectSpawnList::iterator itr = cell_spawns->GameobjectSpawns.begin(); itr != cell_spawns->GameobjectSpawns.end(); ++itr)
+                for (auto itr = cell_spawns->GameobjectSpawns.begin(); itr != cell_spawns->GameobjectSpawns.end(); ++itr)
                 {
                     if ((*itr) == selected_gobject->m_spawn)
                     {

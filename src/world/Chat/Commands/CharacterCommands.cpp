@@ -164,7 +164,7 @@ bool ChatHandler::HandleCharLevelUpCommand(const char* args, WorldSession* m_ses
     if (player_target->getClass() == WARLOCK)
     {
         std::list<Pet*> summons = player_target->GetSummons();
-        for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+        for (auto itr = summons.begin(); itr != summons.end(); ++itr)
         {
             if ((*itr)->IsInWorld() && (*itr)->isAlive())
             {
@@ -1473,7 +1473,7 @@ bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_se
     if (player_target->getClass() == WARLOCK)
     {
         std::list<Pet*> player_summons = player_target->GetSummons();
-        for (std::list<Pet*>::iterator itr = player_summons.begin(); itr != player_summons.end(); ++itr)
+        for (auto itr = player_summons.begin(); itr != player_summons.end(); ++itr)
         {
             Pet* single_summon = *itr;
             if (single_summon->IsInWorld() && single_summon->isAlive())
@@ -1985,7 +1985,7 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
     player_target->getPlayerInfo()->savedInstanceIdsLock.Acquire();
     for (uint32 difficulty = 0; difficulty < NUM_INSTANCE_MODES; difficulty++)
     {
-        for (PlayerInstanceMap::iterator itr = player_target->getPlayerInfo()->savedInstanceIds[difficulty].begin(); itr != player_target->getPlayerInfo()->savedInstanceIds[difficulty].end(); ++itr)
+        for (auto itr = player_target->getPlayerInfo()->savedInstanceIds[difficulty].begin(); itr != player_target->getPlayerInfo()->savedInstanceIds[difficulty].end(); ++itr)
         {
             count++;
             ss << " - " << MSG_COLOR_CYAN << (*itr).second << "|r";

@@ -485,8 +485,8 @@ bool ChatHandler::HandleThreatListCommand(const char* args, WorldSession* m_sess
 
     std::stringstream sstext;
     sstext << "threatlist of creature: " << Arcemu::Util::GUID_LOPART(m_session->GetPlayer()->GetSelection()) << " " << Arcemu::Util::GUID_HIPART(m_session->GetPlayer()->GetSelection()) << '\n';
-    TargetMap::iterator itr;
-    for (itr = target->GetAIInterface()->GetAITargets()->begin(); itr != target->GetAIInterface()->GetAITargets()->end();)
+    
+    for (auto itr = target->GetAIInterface()->GetAITargets()->begin(); itr != target->GetAIInterface()->GetAITargets()->end();)
     {
         Unit* ai_t = target->GetMapMgr()->GetUnit(itr->first);
         if (!ai_t || !itr->second)
@@ -1240,7 +1240,7 @@ bool ChatHandler::HandleAIAgentDebugBegin(const char* args, WorldSession* m_sess
     } while (result->NextRow());
     delete result;
 
-    for (std::list<SpellInfo*>::iterator itr = aiagent_spells.begin(); itr != aiagent_spells.end(); ++itr)
+    for (auto itr = aiagent_spells.begin(); itr != aiagent_spells.end(); ++itr)
     {
         result = WorldDatabase.Query("SELECT * FROM ai_agents WHERE spell = %u", (*itr)->Id);
         ARCEMU_ASSERT(result != NULL);

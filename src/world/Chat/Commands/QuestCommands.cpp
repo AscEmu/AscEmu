@@ -447,8 +447,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             if (qst->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY)
                 plr->PushToFinishedDailies(qst->id);
             // Remove quests that are listed to be removed on quest complete.
-            std::set<uint32>::iterator iter = qst->remove_quest_list.begin();
-            for (; iter != qst->remove_quest_list.end(); ++iter)
+            for (auto iter = qst->remove_quest_list.begin(); iter != qst->remove_quest_list.end(); ++iter)
             {
                 if (!plr->HasFinishedQuest((*iter)))
                     plr->AddToFinishedQuests((*iter));

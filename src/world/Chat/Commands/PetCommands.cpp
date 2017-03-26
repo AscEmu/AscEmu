@@ -165,7 +165,7 @@ bool ChatHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_ses
     }
 
     std::list<Pet*> summons = selected_player->GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    for (auto itr = summons.begin(); itr != summons.end(); ++itr)
     {
         (*itr)->AddSpell(spell_entry, true);
     }
@@ -200,7 +200,7 @@ bool ChatHandler::HandlePetRemoveSpellCommand(const char* args, WorldSession* m_
     }
 
     std::list<Pet*> summons = selected_player->GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    for (auto itr = summons.begin(); itr != summons.end(); ++itr)
     {
         (*itr)->RemoveSpell(SpellId);
     }
