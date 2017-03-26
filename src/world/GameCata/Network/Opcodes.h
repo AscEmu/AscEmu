@@ -118,24 +118,24 @@ enum Opcodes
     CMSG_SET_CONTACT_NOTES = 0x6135,                // new
     CMSG_ADD_IGNORE = 0x4726,                       // new
     CMSG_DEL_IGNORE = 0x6D26,                       // new
-    CMSG_GROUP_INVITE = 0x06E,
-    SMSG_GROUP_INVITE = 0x06F,
+    CMSG_GROUP_INVITE = 0x0513,                     // new
+    SMSG_GROUP_INVITE = 0x31B2,                     // new
     CMSG_GROUP_CANCEL = 0x070,
     SMSG_GROUP_CANCEL = 0x071,
     CMSG_GROUP_ACCEPT = 0x072,
     CMSG_GROUP_DECLINE = 0x073,
-    SMSG_GROUP_DECLINE = 0x074,
+    SMSG_GROUP_DECLINE = 0x6835,                    // new
     CMSG_GROUP_UNINVITE = 0x075,
     CMSG_GROUP_UNINVITE_GUID = 0x076,
     SMSG_GROUP_UNINVITE = 0x077,
     CMSG_GROUP_SET_LEADER = 0x078,
     SMSG_GROUP_SET_LEADER = 0x079,
     CMSG_LOOT_METHOD = 0x2F24,                      // new
-    CMSG_GROUP_DISBAND = 0x07B,
-    SMSG_GROUP_DESTROYED = 0x07C,
-    SMSG_GROUP_LIST = 0x07D,
+    CMSG_GROUP_DISBAND = 0x2804,                    // new
+    SMSG_GROUP_DESTROYED = 0x2207,                  // new
+    SMSG_GROUP_LIST = 0x4C24,                       // new
     SMSG_PARTY_MEMBER_STATS = 0x07E,
-    SMSG_PARTY_COMMAND_RESULT = 0x07F,
+    SMSG_PARTY_COMMAND_RESULT = 0x6E07,             // new
     UMSG_UPDATE_GROUP_MEMBERS = 0x080,
     CMSG_GUILD_CREATE = 0x081,
     CMSG_GUILD_INVITE = 0x082,
@@ -368,10 +368,10 @@ enum Opcodes
     SMSG_LOOT_CLEAR_MONEY = 0x2B37,                 // new
     SMSG_ITEM_PUSH_RESULT = 0x166,
     SMSG_DUEL_REQUESTED = 0x4504,                   // new
-    SMSG_DUEL_OUTOFBOUNDS = 0x168,
-    SMSG_DUEL_INBOUNDS = 0x169,
+    SMSG_DUEL_OUTOFBOUNDS = 0x0C26,                 // new
+    SMSG_DUEL_INBOUNDS = 0x0A27,                    // new
     SMSG_DUEL_COMPLETE = 0x2527,                    // new
-    SMSG_DUEL_WINNER = 0x16B,
+    SMSG_DUEL_WINNER = 0x2D36,                      // new
     CMSG_DUEL_ACCEPTED = 0x2136,                    // new
     CMSG_DUEL_CANCELLED = 0x6624,                   // new
     SMSG_MOUNTRESULT = 0x16E,
@@ -662,7 +662,7 @@ enum Opcodes
     CMSG_SET_PVP_TITLE = 0x28B,
     SMSG_PVP_CREDIT = 0x28C,
     SMSG_AUCTION_REMOVED_NOTIFICATION = 0x2334,         // new
-    CMSG_GROUP_RAID_CONVERT = 0x28E,
+    CMSG_GROUP_RAID_CONVERT = 0x6E27,
     CMSG_GROUP_ASSISTANT_LEADER = 0x28F,
     CMSG_BUYBACK_ITEM = 0x6C17,                         // new
     SMSG_SERVER_MESSAGE = 0x291,
@@ -1351,7 +1351,11 @@ enum Opcodes
     SMSG_SPELLOGDAMAGE_IMMUNE = 0x4507,                 // new
     SMSG_LOOT_UPDATE = 0x14FE,                          // new
     CMSG_OBJECT_UPDATE_FAILED = 0x3808,                 // new
-    
+    CMSG_GROUP_INVITE_RESPONSE = 0x0410,                // new
+    CMSG_GROUP_SET_ROLES = 0x25B1,                      // new
+    SMSG_GROUP_SET_ROLE= 0x39A6,                        // new
+    CMSG_GROUP_REQUEST_JOIN_UPDATES = 0x2583,           // new
+
     MSG_WOW_CONNECTION = 0x4F57,
         
     NUM_MSG_TYPES = 0xFFFF

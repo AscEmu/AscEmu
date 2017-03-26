@@ -466,6 +466,18 @@ class SERVER_DECL WorldSession
         void HandleMoveTeleportAckOpcode(WorldPacket& recv_data);
 
         /// Opcodes implemented in GroupHandler.cpp:
+#if VERSION_STRING == Cata
+    public:
+        void SendPartyCommandResult(Player* pPlayer, uint32_t p1, std::string name, uint32_t err);
+        void SendEmptyGroupList(Player* player);
+
+    private:
+        void HandleGroupInviteResponseOpcode(WorldPacket& recvPacket);
+        void HandleGroupSetRolesOpcode(WorldPacket& recvPacket);
+        void HandleGroupRequestJoinUpdatesOpcode(WorldPacket& recvPacket);
+#else
+        void SendPartyCommandResult(Player* pPlayer, uint32 p1, std::string name, uint32 err);
+#endif
         void HandleGroupInviteOpcode(WorldPacket& recvPacket);
         void HandleGroupCancelOpcode(WorldPacket& recvPacket);
         void HandleGroupAcceptOpcode(WorldPacket& recvPacket);
@@ -477,7 +489,7 @@ class SERVER_DECL WorldSession
         void HandleLootMethodOpcode(WorldPacket& recvPacket);
         void HandleMinimapPingOpcode(WorldPacket& recvPacket);
         void HandleSetPlayerIconOpcode(WorldPacket& recv_data);
-        void SendPartyCommandResult(Player* pPlayer, uint32 p1, std::string name, uint32 err);
+
 
         // Raid
         void HandleConvertGroupToRaidOpcode(WorldPacket& recvPacket);

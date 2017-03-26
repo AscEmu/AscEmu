@@ -110,6 +110,12 @@ class SERVER_DECL ByteBuffer
                 writeBit((value >> i) & 1);
         }
 
+        void WriteString(std::string const& str)
+        {
+            if (size_t len = str.length())
+                append(str.c_str(), len);
+        }
+
         std::string ReadString(uint32_t length)
         {
             if (!length)
