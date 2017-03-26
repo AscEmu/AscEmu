@@ -732,14 +732,14 @@ void StrandOfTheAncient::PrepareRound()
 
         // Teleport players to their place and cast preparation on them
 
-        for (std::set< Player* >::iterator itr = m_players[Attackers].begin(); itr != m_players[Attackers].end(); ++itr)
+        for (auto itr = m_players[Attackers].begin(); itr != m_players[Attackers].end(); ++itr)
         {
             Player *p = *itr;
             p->SafeTeleport(p->GetMapId(), p->GetInstanceID(), sotaAttackerStartingPosition[0]);
             p->CastSpell(p, BG_PREPARATION, true);
         }
 
-        for (std::set< Player* >::iterator itr = m_players[Defenders].begin(); itr != m_players[Defenders].end(); ++itr)
+        for (auto itr = m_players[Defenders].begin(); itr != m_players[Defenders].end(); ++itr)
         {
             Player *p = *itr;
             p->SafeTeleport(p->GetMapId(), p->GetInstanceID(), sotaDefenderStartingPosition);
@@ -756,7 +756,7 @@ void StrandOfTheAncient::StartRound()
 
     roundprogress = SOTA_ROUND_STARTED;
 
-    for (std::set< Player* >::iterator itr = m_players[Attackers].begin(); itr != m_players[Attackers].end(); ++itr)
+    for (auto itr = m_players[Attackers].begin(); itr != m_players[Attackers].end(); ++itr)
     {
         Player *p = *itr;
 

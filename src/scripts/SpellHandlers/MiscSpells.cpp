@@ -87,7 +87,7 @@ bool Cannibalize(uint32 i, Spell* s)
     float rad = s->GetRadius(i);
     rad *= rad;
 
-    for (Object::InRangeSet::iterator itr = s->p_caster->GetInRangeSetBegin(); itr != s->p_caster->GetInRangeSetEnd(); ++itr)
+    for (auto itr = s->p_caster->GetInRangeSetBegin(); itr != s->p_caster->GetInRangeSetEnd(); ++itr)
     {
         if ((*itr)->IsCreature())
         {

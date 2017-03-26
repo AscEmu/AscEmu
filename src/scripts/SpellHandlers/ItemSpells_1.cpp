@@ -142,7 +142,7 @@ bool HolidayCheer(uint32 i, Spell* pSpell)
     Unit* target;
     float dist = pSpell->GetRadius(i);
 
-    for (ObjectSet::iterator itr = pSpell->m_caster->GetInRangeSetBegin(); itr != pSpell->m_caster->GetInRangeSetEnd(); ++itr)
+    for (auto itr = pSpell->m_caster->GetInRangeSetBegin(); itr != pSpell->m_caster->GetInRangeSetEnd(); ++itr)
     {
         if ((*itr)->IsUnit())
             target = static_cast<Unit*>(*itr);
@@ -553,7 +553,7 @@ bool ExtractGas(uint32 i, Spell* s)
     if (!s->p_caster)
         return false;
 
-    for (Object::InRangeSet::iterator itr = s->p_caster->GetInRangeSetBegin(); itr != s->p_caster->GetInRangeSetEnd(); ++itr)
+    for (auto itr = s->p_caster->GetInRangeSetBegin(); itr != s->p_caster->GetInRangeSetEnd(); ++itr)
     {
         if ((*itr)->IsCreature())
         {
@@ -699,7 +699,7 @@ bool ShrinkRay(uint32 i, Spell* s)
 
             case 2:  // our party
             {
-                for (std::set< Object* >::iterator itr = s->p_caster->GetInRangePlayerSetBegin(); itr != s->p_caster->GetInRangePlayerSetEnd(); ++itr)
+                for (auto itr = s->p_caster->GetInRangePlayerSetBegin(); itr != s->p_caster->GetInRangePlayerSetEnd(); ++itr)
                 {
                     Player* p = static_cast<Player*>(*itr);
 
@@ -716,7 +716,7 @@ bool ShrinkRay(uint32 i, Spell* s)
 
             case 3:  // every attacking enemy
             {
-                for (std::set< Object* >::iterator itr = s->p_caster->GetInRangeOppFactsSetBegin(); itr != s->p_caster->GetInRangeOppFactsSetEnd(); ++itr)
+                for (auto itr = s->p_caster->GetInRangeOppFactsSetBegin(); itr != s->p_caster->GetInRangeOppFactsSetEnd(); ++itr)
                 {
                     Object* o = *itr;
 

@@ -399,7 +399,7 @@ class HydrossTheUnstableAI : public CreatureAIScript
 
             Unit* RandomTarget = NULL;
             std::vector<Unit*> TargetTable;
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+            for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 if (isHostile(_unit, (*itr)) && (*itr)->IsUnit())
                 {
@@ -638,7 +638,7 @@ class LeotherasAI : public CreatureAIScript
         {
             //count greyheart spellbinders
             Creature* creature = NULL;
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+            for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 if ((*itr)->IsCreature())
                 {
@@ -1024,7 +1024,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
                     //attack nearest player
                     Player* NearestPlayer = NULL;
                     float NearestDist = 0;
-                    for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                    for (auto itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                     {
                         if (isHostile(_unit, (*itr)) && ((*itr)->GetDistance2dSq(_unit) < NearestDist || !NearestDist))
                         {
@@ -1089,7 +1089,7 @@ class GreyheartSpellbinderAI : public CreatureAIScript
 
             Unit* RandomTarget = NULL;
             std::vector<Unit*> TargetTable;
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+            for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 if (isHostile(_unit, (*itr)) && (*itr)->IsUnit() && isAttackable(_unit, (*itr)))
                 {
@@ -1249,7 +1249,7 @@ class KarathressAI : public CreatureAIScript
                 CataclysmicBoltTimer = 10;
                 Unit* RandomTarget = NULL;
                 std::vector<Unit*> TargetTable;
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (isHostile(_unit, (*itr)) && (*itr)->IsUnit())
                     {
@@ -1446,7 +1446,7 @@ class FathomGuardCaribdisAI : public MoonScriptCreatureAI
             if (!HealingWaveTimer)
             {
                 vector<Unit*> TargetTable;
-                for (set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if ((*itr)->GetTypeId() == TYPEID_UNIT && isFriendly(_unit, (*itr)))
                         TargetTable.push_back(TO_UNIT(*itr));
@@ -1663,7 +1663,7 @@ class TidewalkerLurkerAI : public CreatureAIScript
             Unit* pUnit;
             float dist;
 
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeOppFactsSetBegin(); itr != _unit->GetInRangeOppFactsSetEnd(); ++itr)
+            for (auto itr = _unit->GetInRangeOppFactsSetBegin(); itr != _unit->GetInRangeOppFactsSetEnd(); ++itr)
             {
                 if (!(*itr)->IsUnit())
                     continue;
@@ -1874,7 +1874,7 @@ class VashjAI : public CreatureAIScript
         {
             //despawn enchanted elemental, tainted elemental, coilfang elite, coilfang strider
             Creature* creature = NULL;
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+            for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 if ((*itr)->IsCreature())
                 {
@@ -1954,7 +1954,7 @@ class VashjAI : public CreatureAIScript
 
             //if nobody is in range, shot or multishot
             bool InRange = false;
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+            for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 if (isHostile(_unit, (*itr)) && _unit->GetDistance2dSq((*itr)) < 100) //10 yards
                 {
@@ -2037,7 +2037,7 @@ class VashjAI : public CreatureAIScript
                     //attack nearest target
                     Unit* nearest = NULL;
                     float nearestdist = 0;
-                    for (std::set<Object*>::iterator itr = summoned->GetInRangeSetBegin(); itr != summoned->GetInRangeSetEnd(); ++itr)
+                    for (auto itr = summoned->GetInRangeSetBegin(); itr != summoned->GetInRangeSetEnd(); ++itr)
                     {
                         if ((*itr)->IsUnit() && isHostile(summoned, (*itr)) && (summoned->GetDistance2dSq((*itr)) < nearestdist || !nearestdist))
                         {
@@ -2061,7 +2061,7 @@ class VashjAI : public CreatureAIScript
                     //attack nearest target
                     Unit* nearest = NULL;
                     float nearestdist = 0;
-                    for (std::set<Object*>::iterator itr = summoned->GetInRangeSetBegin(); itr != summoned->GetInRangeSetEnd(); ++itr)
+                    for (auto itr = summoned->GetInRangeSetBegin(); itr != summoned->GetInRangeSetEnd(); ++itr)
                     {
                         if ((*itr)->IsUnit() && isHostile(summoned, (*itr)) && (summoned->GetDistance2dSq((*itr)) < nearestdist || !nearestdist))
                         {
@@ -2086,7 +2086,7 @@ class VashjAI : public CreatureAIScript
             {
                 //despawn enchanted elementals
                 Creature* creature = NULL;
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if ((*itr)->IsCreature())
                     {
@@ -2209,7 +2209,7 @@ class VashjAI : public CreatureAIScript
 
             Unit* RandomTarget = NULL;
             std::vector<Unit*> TargetTable;
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+            for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
             {
                 if (isHostile(_unit, (*itr)) && (*itr)->IsUnit())
                 {

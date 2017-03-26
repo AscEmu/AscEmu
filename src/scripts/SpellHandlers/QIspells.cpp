@@ -2556,7 +2556,7 @@ bool OrbOfMurlocControl(uint32 i, Spell* pSpell)
 
     Creature* pTarget;
 
-    for (ObjectSet::iterator itr = pSpell->m_caster->GetInRangeSetBegin(); itr != pSpell->m_caster->GetInRangeSetEnd(); ++itr)
+    for (auto itr = pSpell->m_caster->GetInRangeSetBegin(); itr != pSpell->m_caster->GetInRangeSetEnd(); ++itr)
     {
         if ((*itr)->IsUnit() && static_cast<Unit*>(*itr)->IsCreature())
             pTarget = static_cast<Creature*>(*itr);

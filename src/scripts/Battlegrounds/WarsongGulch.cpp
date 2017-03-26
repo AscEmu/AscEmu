@@ -101,7 +101,7 @@ WarsongGulch::~WarsongGulch()
             delete m_homeFlags[i];
     }
 
-    for (std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for (auto itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         if ((*itr) != NULL)
         {
@@ -224,7 +224,7 @@ void WarsongGulch::HookOnAreaTrigger(Player* plr, uint32 id)
         uint32 honorToAdd = 2 * m_honorPerKill;
         uint32 repToAdd = m_isWeekend ? 45 : 35;
         uint32 fact = plr->IsTeamHorde() ? 889 : 890;   //Warsong Outriders : Sliverwing Sentinels
-        for (std::set<Player*>::iterator itr = m_players[plr->GetTeam()].begin(); itr != m_players[plr->GetTeam()].end(); ++itr)
+        for (auto itr = m_players[plr->GetTeam()].begin(); itr != m_players[plr->GetTeam()].end(); ++itr)
         {
             (*itr)->m_bgScore.BonusHonor += honorToAdd;
             HonorHandler::AddHonorPointsToPlayer((*itr), honorToAdd);
@@ -597,14 +597,14 @@ void WarsongGulch::OnStart()
 {
     for (uint8 i = 0; i < 2; ++i)
     {
-        for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+        for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
             (*itr)->RemoveAura(BG_PREPARATION);
         }
     }
 
     // open the gates
-    for (std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for (auto itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         (*itr)->SetFlags(GO_FLAG_TRIGGERED);
         (*itr)->SetState(GO_STATE_OPEN);
@@ -654,7 +654,7 @@ void WarsongGulch::DespawnGates(uint32 delay)
         sEventMgr.AddEvent(this, &WarsongGulch::DespawnGates, (uint32)0, EVENT_GAMEOBJECT_EXPIRE, delay, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
         return;
     }
-    for (std::list<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for (auto itr = m_gates.begin(); itr != m_gates.end(); ++itr)
     {
         (*itr)->Despawn(0, 0);
     }

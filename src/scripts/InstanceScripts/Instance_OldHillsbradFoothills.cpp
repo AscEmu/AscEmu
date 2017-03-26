@@ -148,7 +148,7 @@ class OldHilsbradInstance : public MoonInstanceScript
 
             SetData(OHF_PHASE_1, OHF_DATA_DONE);
 
-            for (PlayerStorageMap::iterator itr = mInstance->m_PlayerStorage.begin(); itr != mInstance->m_PlayerStorage.end(); ++itr)
+            for (auto itr = mInstance->m_PlayerStorage.begin(); itr != mInstance->m_PlayerStorage.end(); ++itr)
             {
                 pPlayer = itr->second;
 

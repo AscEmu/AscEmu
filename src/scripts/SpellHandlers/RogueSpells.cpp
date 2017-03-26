@@ -246,7 +246,7 @@ bool KillingSpreePeriodicDummy(uint32 i, Aura* a, bool apply)
 
     //Find targets around aura's target in range of 10 yards.
     //It can hit same target multiple times.
-    for(std::set<Object*>::iterator itr = p_target->GetInRangeSetBegin(); itr != p_target->GetInRangeSetEnd(); ++itr)
+    for(auto itr = p_target->GetInRangeSetBegin(); itr != p_target->GetInRangeSetEnd(); ++itr)
     {
         //Get the range of 10 yards from Effect 1
         float r = static_cast< float >( a->m_spellInfo->EffectRadiusIndex[1] );

@@ -28,7 +28,7 @@ bool Starfall(uint32 i, Spell* pSpell)
     if(m_caster == NULL)
         return true;
     uint8 am = 0;
-    for(Object::InRangeSet::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for(auto itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         if(!(*itr)->IsUnit())
             continue;

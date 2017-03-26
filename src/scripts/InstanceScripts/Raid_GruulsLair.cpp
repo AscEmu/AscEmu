@@ -524,7 +524,7 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
                     if (pCurrentTarget != NULL)
                     {
                         Unit* pTarget = pCurrentTarget;
-                        for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                        for (auto itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                         {
                             Player* pPlayer = static_cast< Player* >(*itr);
                             if (!pPlayer->isAlive())
@@ -557,7 +557,7 @@ class GruulTheDragonkillerAI : public MoonScriptCreatureAI
         UnitArray GetInRangePlayers()
         {
             UnitArray TargetArray;
-            for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+            for (auto itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
             {
                 if (IsValidUnitTarget(*itr, TargetFilter_None))
                 {

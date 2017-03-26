@@ -35,7 +35,7 @@ class InstanceHallsOfStoneScript : public MoonInstanceScript
             if (mEncounters.size() == 0)
                 return;
 
-            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
+            for (auto Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
             {
                 if ((*Iter).second.mState != State_Finished)
                     continue;
