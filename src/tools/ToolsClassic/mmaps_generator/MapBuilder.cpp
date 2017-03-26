@@ -68,7 +68,7 @@ namespace MMAP
     /**************************************************************************/
     MapBuilder::~MapBuilder()
     {
-        for (TileList::iterator it = m_tiles.begin(); it != m_tiles.end(); ++it)
+        for (auto it = m_tiles.begin(); it != m_tiles.end(); ++it)
         {
             (*it).m_tiles->clear();
             delete (*it).m_tiles;
@@ -112,7 +112,7 @@ namespace MMAP
 
         count = 0;
         printf("Discovering tiles... ");
-        for (TileList::iterator itr = m_tiles.begin(); itr != m_tiles.end(); ++itr)
+        for (auto itr = m_tiles.begin(); itr != m_tiles.end(); ++itr)
         {
             std::set<uint32>* tiles = (*itr).m_tiles;
             mapID = (*itr).m_mapId;
@@ -187,7 +187,7 @@ namespace MMAP
             return a.m_tiles->size() > b.m_tiles->size();
         });
 
-        for (TileList::iterator it = m_tiles.begin(); it != m_tiles.end(); ++it)
+        for (auto it = m_tiles.begin(); it != m_tiles.end(); ++it)
         {
             uint32 mapId = it->m_mapId;
             if (!shouldSkipMap(mapId))
@@ -391,8 +391,8 @@ namespace MMAP
             }
 
             // now start building mmtiles for each tile
-            printf("[Map %03i] We have %u tiles.                          \n", mapID, (unsigned int)tiles->size());
-            for (std::set<uint32>::iterator it = tiles->begin(); it != tiles->end(); ++it)
+            printf("[Map %03i] We have %u tiles. \n", mapID, (unsigned int)tiles->size());
+            for (auto it = tiles->begin(); it != tiles->end(); ++it)
             {
                 uint32 tileX, tileY;
 
@@ -469,7 +469,7 @@ namespace MMAP
         /***          calculate bounds of map         ***/
 
         uint32 tileXMin = 64, tileYMin = 64, tileXMax = 0, tileYMax = 0, tileX, tileY;
-        for (std::set<uint32>::iterator it = tiles->begin(); it != tiles->end(); ++it)
+        for (auto it = tiles->begin(); it != tiles->end(); ++it)
         {
             StaticMapTree::unpackTileID(*it, tileX, tileY);
 

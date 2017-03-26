@@ -1034,11 +1034,11 @@ void ExtractDBCFiles(int locale, bool basicLocale)
     std::set<std::string> dbcfiles;
 
     // get DBC file list
-    for(ArchiveSet::iterator i = gOpenArchives.begin(); i != gOpenArchives.end();++i)
+    for(auto i = gOpenArchives.begin(); i != gOpenArchives.end();++i)
     {
         std::vector<std::string> files;
         (*i)->GetFileListTo(files);
-        for (std::vector<std::string>::iterator iter = files.begin(); iter != files.end(); ++iter)
+        for (auto iter = files.begin(); iter != files.end(); ++iter)
             if (iter->rfind(".dbc") == iter->length() - strlen(".dbc"))
                     dbcfiles.insert(*iter);
     }
@@ -1063,7 +1063,7 @@ void ExtractDBCFiles(int locale, bool basicLocale)
 
     // extract DBCs
     uint32 count = 0;
-    for (std::set<std::string>::iterator iter = dbcfiles.begin(); iter != dbcfiles.end(); ++iter)
+    for (auto iter = dbcfiles.begin(); iter != dbcfiles.end(); ++iter)
     {
         std::string filename = path;
         filename += (iter->c_str() + strlen("DBFilesClient\\"));
@@ -1110,7 +1110,7 @@ void LoadCommonMPQFiles()
 
 inline void CloseMPQFiles()
 {
-    for(ArchiveSet::iterator j = gOpenArchives.begin(); j != gOpenArchives.end();++j) (*j)->close();
+    for(auto j = gOpenArchives.begin(); j != gOpenArchives.end();++j) (*j)->close();
         gOpenArchives.clear();
 }
 

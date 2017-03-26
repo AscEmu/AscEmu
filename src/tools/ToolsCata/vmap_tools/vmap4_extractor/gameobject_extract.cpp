@@ -77,7 +77,7 @@ void ExtractGameobjectModels()
         return;
     }
 
-    for (DBCFile::Iterator it = dbc.begin(); it != dbc.end(); ++it)
+    for (auto it = dbc.begin(); it != dbc.end(); ++it)
     {
         path = it->getString(1);
 
