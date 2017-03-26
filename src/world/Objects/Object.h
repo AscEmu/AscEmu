@@ -188,10 +188,12 @@ struct MovementInfo
 
     //flags uint32_t
     bool HasMovementFlag(uint32_t move_flags) const { return (flags & move_flags) != 0; }
+    uint32_t GetMovementFlags() const { return flags; }
     void RemoveMovementFlag(uint32_t move_flags) { flags &= ~move_flags; }
 
     //flags2 uint16_t
     bool HasMovementFlag2(uint16_t move_flags2) const { return (flags2 & move_flags2) != 0; }
+    uint16_t GetMovementFlags2() const { return flags2; }
 };
 
 #if VERSION_STRING == Cata

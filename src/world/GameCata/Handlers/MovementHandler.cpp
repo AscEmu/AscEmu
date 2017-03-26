@@ -807,7 +807,7 @@ void MovementInfo::Write(ByteBuffer& data, uint32 opcode, float extra) const
                 break;
             case MSEOrientation:
                 if (hasOrientation)
-                    data << position.o;
+                    data << float(NormalizeOrientation(position.o));
                 break;
             case MSETransportPositionX:
                 if (hasTransportData)
@@ -823,7 +823,7 @@ void MovementInfo::Write(ByteBuffer& data, uint32 opcode, float extra) const
                 break;
             case MSETransportOrientation:
                 if (hasTransportData)
-                    data << transporter_info.position.o;
+                    data << float(NormalizeOrientation(transporter_info.position.o));
                 break;
             case MSETransportSeat:
                 if (hasTransportData)
