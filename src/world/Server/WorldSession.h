@@ -604,6 +604,9 @@ class SERVER_DECL WorldSession
         void HandleUpdateProjectilePosition(WorldPacket& recv_data);
 
         /// Skill opcodes (SkillHandler.spp)
+#if VERSION_STRING == Cata
+        void HandleLearnPreviewTalentsOpcode(WorldPacket& recvPacket);
+#endif
         //void HandleSkillLevelUpOpcode(WorldPacket& recvPacket);
         void HandleLearnTalentOpcode(WorldPacket& recvPacket);
         void HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket);

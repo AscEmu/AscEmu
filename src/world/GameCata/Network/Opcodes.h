@@ -237,7 +237,7 @@ enum Opcodes
     SMSG_FORCE_RUN_SPEED_CHANGE = 0x14A6,       // new
     CMSG_FORCE_RUN_SPEED_CHANGE_ACK = 0x7818,   // new
     SMSG_FORCE_RUN_BACK_SPEED_CHANGE = 0x3DA6,  // new
-    CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK = 0x0335,  // new
+    CMSG_FORCE_RUN_BACK_SPEED_CHANGE_ACK = 0x3216,  // new
     SMSG_FORCE_SWIM_SPEED_CHANGE = 0x59B5,      // new
     CMSG_FORCE_SWIM_SPEED_CHANGE_ACK = 0x7A10,  // new
     SMSG_FORCE_MOVE_ROOT = 0x7DA0,              // new
@@ -522,7 +522,7 @@ enum Opcodes
     SMSG_LFG_PLAYER_REWARD = 0x1FF,
     SMSG_LFG_TELEPORT_DENIED = 0x200,
     CMSG_UNLEARN_SPELL = 0x1202,                    // new
-    CMSG_UNLEARN_SKILL = 0x202,
+    CMSG_UNLEARN_SKILL = 0x6106,                    // new
     SMSG_REMOVED_SPELL = 0x4804,                    // new
     CMSG_DECHARGE = 0x204,
     CMSG_GMTICKET_CREATE = 0x0137,                  // new
@@ -1154,7 +1154,7 @@ enum Opcodes
     CMSG_REQUEST_VEHICLE_PREV_SEAT = 0x477,
     CMSG_REQUEST_VEHICLE_NEXT_SEAT = 0x478,
     CMSG_REQUEST_VEHICLE_SWITCH_SEAT = 0x479,
-    CMSG_PET_LEARN_TALENT = 0x0000,                 // new
+    CMSG_PET_LEARN_TALENT = 0x6725,                 // new
     CMSG_PET_UNLEARN_TALENTS = 0x47B,
     SMSG_SET_PHASE_SHIFT = 0x70A0,                  // new
     SMSG_ALL_ACHIEVEMENT_DATA = 0x58B1,             // new
@@ -1226,7 +1226,7 @@ enum Opcodes
     SMSG_SET_PROJECTILE_POSITION = 0x4BF,
     SMSG_TALENTS_INFO = 0x6F26,                     // new
     CMSG_LEARN_TALENTS_MULTIPLE = 0x4C1,
-    CMSG_LEARN_PREVIEW_TALENTS_PET = 0x0000,        // new
+    CMSG_LEARN_PREVIEW_TALENTS_PET = 0x6E24,        // new
     UMSG_UNKNOWN_1219 = 0x4C3,
     UMSG_UNKNOWN_1220 = 0x4C4,
     UMSG_UNKNOWN_1221 = 0x4C5,
@@ -1355,6 +1355,7 @@ enum Opcodes
     CMSG_GROUP_SET_ROLES = 0x25B1,                      // new
     SMSG_GROUP_SET_ROLE= 0x39A6,                        // new
     CMSG_GROUP_REQUEST_JOIN_UPDATES = 0x2583,           // new
+    CMSG_LEARN_PREVIEW_TALENTS = 0x2415,                // new
 
     MSG_WOW_CONNECTION = 0x4F57,
         
