@@ -87,7 +87,7 @@ void WorldStatesHandler::InitWorldStates(std::multimap< uint32, WorldState > *st
     if (states == NULL)
         return;
 
-    for (std::multimap< uint32, WorldState >::iterator itr = states->begin(); itr != states->end(); ++itr)
+    for (auto itr = states->begin(); itr != states->end(); ++itr)
     {
         uint32 zone = itr->first;
         worldstates[zone];

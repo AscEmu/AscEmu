@@ -77,13 +77,13 @@ T* RandomChoiceVector(std::vector<std::pair<T*, float> > & variant)
 {
     float totalChance = 0;
     float val;
-    typename std::vector<std::pair<T*, float> >::iterator itr;
+
     if (variant.size() == 0)
         return NULL;
-    for (itr = variant.begin(); itr != variant.end(); ++itr)
+    for (auto itr = variant.begin(); itr != variant.end(); ++itr)
         totalChance += itr->second;
     val = RandomFloat(totalChance);
-    for (itr = variant.begin(); itr != variant.end(); ++itr)
+    for (auto itr = variant.begin(); itr != variant.end(); ++itr)
     {
         val -= itr->second;
         if (val <= 0) return itr->first;
@@ -207,17 +207,17 @@ void LootMgr::LoadLootProp()
 LootMgr::~LootMgr()
 {
     LOG_DETAIL(" Deleting Loot Tables...");
-    for (LootStore::iterator iter = CreatureLoot.begin(); iter != CreatureLoot.end(); ++iter)
+    for (auto iter = CreatureLoot.begin(); iter != CreatureLoot.end(); ++iter)
         delete[] iter->second.items;
-    for (LootStore::iterator iter = FishingLoot.begin(); iter != FishingLoot.end(); ++iter)
+    for (auto iter = FishingLoot.begin(); iter != FishingLoot.end(); ++iter)
         delete[] iter->second.items;
-    for (LootStore::iterator iter = SkinningLoot.begin(); iter != SkinningLoot.end(); ++iter)
+    for (auto iter = SkinningLoot.begin(); iter != SkinningLoot.end(); ++iter)
         delete[] iter->second.items;
-    for (LootStore::iterator iter = GOLoot.begin(); iter != GOLoot.end(); ++iter)
+    for (auto iter = GOLoot.begin(); iter != GOLoot.end(); ++iter)
         delete[] iter->second.items;
-    for (LootStore::iterator iter = ItemLoot.begin(); iter != ItemLoot.end(); ++iter)
+    for (auto iter = ItemLoot.begin(); iter != ItemLoot.end(); ++iter)
         delete[] iter->second.items;
-    for (LootStore::iterator iter = PickpocketingLoot.begin(); iter != PickpocketingLoot.end(); ++iter)
+    for (auto iter = PickpocketingLoot.begin(); iter != PickpocketingLoot.end(); ++iter)
         delete[] iter->second.items;
 }
 
@@ -281,7 +281,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
             list.count = static_cast<uint32>(itr->second.size());
             list.items = new StoreLootItem[list.count];
             uint32 ind = 0;
-            for (std::vector< tempy >::iterator itr2 = itr->second.begin(); itr2 != itr->second.end(); ++itr2)
+            for (auto itr2 = itr->second.begin(); itr2 != itr->second.end(); ++itr2)
             {
                 //Omit items that are not in db to prevent future bugs
                 itemid = itr2->itemid;
@@ -485,7 +485,7 @@ void LootMgr::AddLoot(Loot* loot, uint32 itemid, uint32 mincount, uint32 maxcoun
     if (loot->items.size() > 16)
     {
         std::vector<__LootItem>::iterator item_to_remove;
-        std::vector<__LootItem>::iterator itr;
+
         uint32 item_quality;
         bool quest_item;
         while (loot->items.size() > 16)
@@ -493,7 +493,7 @@ void LootMgr::AddLoot(Loot* loot, uint32 itemid, uint32 mincount, uint32 maxcoun
             item_to_remove = loot->items.begin();
             item_quality = 0;
             quest_item = false;
-            for (itr = loot->items.begin(); itr != loot->items.end(); ++itr)
+            for (auto itr = loot->items.begin(); itr != loot->items.end(); ++itr)
             {
                 item_quality = (*itr).item.itemproto->Quality;
                 quest_item = (*itr).item.itemproto->Class == ITEM_CLASS_QUEST;
@@ -639,21 +639,21 @@ void LootRoll::Finalize()
     WorldPacket data(34);
     /*
     Player*  gplr = NULL;
-    for (std::map<uint64, uint32>::iterator itr = NeedRolls.begin(); itr != NeedRolls.end(); ++itr)
+    for (auto itr = NeedRolls.begin(); itr != NeedRolls.end(); ++itr)
     {
     gplr = _mgr->GetPlayer((uint32)itr->first);
     if (gplr) break;
     }
     if (!gplr)
     {
-    for (std::map<uint64, uint32>::iterator itr = GreedRolls.begin(); itr != GreedRolls.end(); ++itr)
+    for (auto itr = GreedRolls.begin(); itr != GreedRolls.end(); ++itr)
     {
     gplr = _mgr->GetPlayer((uint32)itr->first);
     if (gplr) break;
     }
     }
     */
-    for (std::map<uint32, uint32>::iterator itr = m_NeedRolls.begin(); itr != m_NeedRolls.end(); ++itr)
+    for (auto itr = m_NeedRolls.begin(); itr != m_NeedRolls.end(); ++itr)
     {
         if (itr->second > highest)
         {
@@ -672,7 +672,7 @@ void LootRoll::Finalize()
     }
     if (!highest)
     {
-        for (std::map<uint32, uint32>::iterator itr = m_GreedRolls.begin(); itr != m_GreedRolls.end(); ++itr)
+        for (auto itr = m_GreedRolls.begin(); itr != m_GreedRolls.end(); ++itr)
         {
             if (itr->second > highest)
             {

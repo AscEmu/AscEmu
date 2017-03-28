@@ -108,7 +108,7 @@ Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry
 void ObjectMgr::UnloadTransportFromInstance(Transporter *t)
 {
     m_creatureSetMutex.Acquire();
-    for (Transporter::CreatureSet::iterator itr = t->m_NPCPassengerSet.begin(); itr != t->m_NPCPassengerSet.end();)
+    for (auto itr = t->m_NPCPassengerSet.begin(); itr != t->m_NPCPassengerSet.end();)
     {
         if (Creature* npc = *itr)
         {
@@ -215,7 +215,7 @@ void ObjectMgr::LoadTransports()
             float tO = fields[6].GetFloat();
             uint32 anim = fields[7].GetInt32();
 
-            for (ObjectMgr::TransporterSet::iterator itr = m_Transporters.begin(); itr != m_Transporters.end(); ++itr)
+            for (auto itr = m_Transporters.begin(); itr != m_Transporters.end(); ++itr)
             {
                 if ((*itr)->GetEntry() == transportEntry)
                 {
@@ -638,7 +638,7 @@ uint32 Transporter::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* ta
 
     // add all the npcs to the packet
     m_creatureSetMutex.Acquire();
-    for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
+    for (auto itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
     {
         Creature* npc = *itr;
         cnt += npc->BuildCreateUpdateBlockForPlayer(data, target);
@@ -823,7 +823,7 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
 void Transporter::UpdateNPCPositions(float x, float y, float z, float o)
 {
     m_creatureSetMutex.Acquire();
-    for (CreatureSet::iterator itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
+    for (auto itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
     {
         Creature* npc = *itr;
         npc->SetPosition(x + npc->obj_movement_info.transporter_info.position.x, y + npc->obj_movement_info.transporter_info.position.y, z + npc->obj_movement_info.transporter_info.position.z, o + npc->obj_movement_info.transporter_info.position.o, false);

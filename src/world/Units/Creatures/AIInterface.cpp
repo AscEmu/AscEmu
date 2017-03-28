@@ -171,7 +171,7 @@ void AIInterface::Init(Unit* un, AIType at, Movement::WaypointMovementScript mt)
 
 AIInterface::~AIInterface()
 {
-    for (std::list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
+    for (auto itr = m_spells.begin(); itr != m_spells.end(); ++itr)
         delete(*itr);
     m_spells.clear();
 
@@ -398,19 +398,6 @@ void AIInterface::_UpdateTargets()
     if (m_updateAssist)
     {
         m_updateAssist = false;
-        /*    deque<Unit*> tokill;
-
-            //modified for vs2005 compatibility
-            for (i = m_assistTargets.begin(); i != m_assistTargets.end(); ++i)
-            {
-            if (m_Unit->GetDistanceSq((*i)) > 2500.0f|| !(*i)->isAlive() || !(*i)->CombatStatus.IsInCombat())
-            {
-            tokill.push_back(*i);
-            }
-            }
-
-            for (deque<Unit*>::iterator i2 = tokill.begin(); i2 != tokill.end(); ++i2)
-            m_assistTargets.erase(*i2);*/
 
         for (i = m_assistTargets.begin(); i != m_assistTargets.end();)
         {
@@ -426,20 +413,7 @@ void AIInterface::_UpdateTargets()
     if (m_updateTargets)
     {
         m_updateTargets = false;
-        /*deque<Unit*> tokill;
-
-        //modified for vs2005 compatibility
-        for (itr = m_aiTargets.begin(); itr != m_aiTargets.end();++itr)
-        {
-        if (!itr->first->isAlive() || m_Unit->GetDistanceSq(itr->first) >= 6400.0f)
-        {
-        tokill.push_back(itr->first);
-        }
-        }
-        for (deque<Unit*>::iterator itr = tokill.begin(); itr != tokill.end(); ++itr)
-        m_aiTargets.erase((*itr));
-        tokill.clear();*/
-
+ 
         LockAITargets(true);
 
         for (itr = m_aiTargets.begin(); itr != m_aiTargets.end();)
@@ -1242,7 +1216,7 @@ Unit* AIInterface::FindTarget()
     if (m_isNeutralGuard)
     {
         Player* tmpPlr;
-        for (std::set< Object*>::iterator itrPlr = m_Unit->GetInRangePlayerSetBegin(); itrPlr != m_Unit->GetInRangePlayerSetEnd(); ++itrPlr)
+        for (auto itrPlr = m_Unit->GetInRangePlayerSetBegin(); itrPlr != m_Unit->GetInRangePlayerSetEnd(); ++itrPlr)
         {
             tmpPlr = static_cast< Player* >(*itrPlr);
 
@@ -1438,7 +1412,7 @@ Unit* AIInterface::FindTargetForSpell(AI_Spell* sp)
                 m_Unit->SetTargetGUID(0);
                 return m_Unit;
             }
-            for (AssistTargetSet::iterator i = m_assistTargets.begin(); i != m_assistTargets.end(); ++i)
+            for (auto i = m_assistTargets.begin(); i != m_assistTargets.end(); ++i)
             {
                 if (!(*i)->isAlive())
                 {
@@ -1470,10 +1444,9 @@ bool AIInterface::FindFriends(float dist)
     bool result = false;
     TargetMap::iterator it;
 
-    std::set<Object*>::iterator itr;
     Unit* pUnit;
 
-    for (itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
+    for (auto itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
     {
         if (!(*itr)->IsUnit())
             continue;
@@ -1562,7 +1535,7 @@ bool AIInterface::FindFriends(float dist)
 
         uint8 spawned = 0;
 
-        for (std::set< Object* >::iterator hostileItr = m_Unit->GetInRangePlayerSetBegin(); hostileItr != m_Unit->GetInRangePlayerSetEnd(); ++hostileItr)
+        for (auto hostileItr = m_Unit->GetInRangePlayerSetBegin(); hostileItr != m_Unit->GetInRangePlayerSetEnd(); ++hostileItr)
         {
 
             Player* p = static_cast< Player* >(*hostileItr);
@@ -2085,7 +2058,7 @@ void AIInterface::deleteWayPoint(uint32 wpid)
 
     Movement::WayPointMap new_waypoints;
     uint32 newpid = 1;
-    for (Movement::WayPointMap::iterator itr = m_waypoints->begin(); itr != m_waypoints->end(); ++itr)
+    for (auto itr = m_waypoints->begin(); itr != m_waypoints->end(); ++itr)
     {
         if ((*itr) == NULL || (*itr)->id == wpid)
         {
@@ -2100,7 +2073,7 @@ void AIInterface::deleteWayPoint(uint32 wpid)
 
     m_waypoints->clear();
     m_waypoints->push_back((Movement::WayPoint*)NULL);        // waypoint 0
-    for (Movement::WayPointMap::iterator itr = new_waypoints.begin(); itr != new_waypoints.end(); ++itr)
+    for (auto itr = new_waypoints.begin(); itr != new_waypoints.end(); ++itr)
     {
         (*itr)->id = newpid++;
         m_waypoints->push_back(*itr);
@@ -2246,7 +2219,7 @@ void AIInterface::deleteWaypoints()
     if (!m_waypoints || m_waypointsLoadedFromDB)
         return;
 
-    for (Movement::WayPointMap::iterator itr = m_waypoints->begin(); itr != m_waypoints->end(); ++itr)
+    for (auto itr = m_waypoints->begin(); itr != m_waypoints->end(); ++itr)
     {
         delete(*itr);
     }
@@ -2794,14 +2767,14 @@ AI_Spell* AIInterface::getSpell()
     }
     else
     {
-        for (std::list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end();)
+        for (auto itr = m_spells.begin(); itr != m_spells.end();)
         {
             sp = *itr;
             ++itr;
             if (
-                //                sp->cooldowntime && //Zack : no need for this double check here
+                // sp->cooldowntime && //Zack : no need for this double check here
                 nowtime < sp->cooldowntime
-                //                && sp->procChance >= 100 //Zack: why was this put here ? It makes mobs spam spells like no tomorrow
+                // && sp->procChance >= 100 //Zack: why was this put here ? It makes mobs spam spells like no tomorrow
                )
             {
                 cool_time2 = sp->cooldowntime - nowtime;
@@ -2955,9 +2928,8 @@ Unit* AIInterface::GetMostHated()
 
     LockAITargets(true);
 
-    TargetMap::iterator it2 = m_aiTargets.begin();
     TargetMap::iterator itr;
-    for (; it2 != m_aiTargets.end();)
+    for (auto it2 = m_aiTargets.begin(); it2 != m_aiTargets.end();)
     {
         itr = it2;
         ++it2;
@@ -3002,9 +2974,8 @@ Unit* AIInterface::GetSecondHated()
 
     LockAITargets(true);
 
-    TargetMap::iterator it2 = m_aiTargets.begin();
     TargetMap::iterator itr;
-    for (; it2 != m_aiTargets.end();)
+    for (auto it2 = m_aiTargets.begin(); it2 != m_aiTargets.end();)
     {
         itr = it2;
         ++it2;
@@ -3152,13 +3123,14 @@ void AIInterface::addAssistTargets(Unit* Friend)
 
 void AIInterface::WipeHateList()
 {
-    for (TargetMap::iterator itr = m_aiTargets.begin(); itr != m_aiTargets.end(); ++itr)
+    for (auto itr = m_aiTargets.begin(); itr != m_aiTargets.end(); ++itr)
         itr->second = 0;
     m_currentHighestThreat = 0;
 }
-void AIInterface::ClearHateList() //without leaving combat
+
+void AIInterface::ClearHateList() // without leaving combat
 {
-    for (TargetMap::iterator itr = m_aiTargets.begin(); itr != m_aiTargets.end(); ++itr)
+    for (auto itr = m_aiTargets.begin(); itr != m_aiTargets.end(); ++itr)
         itr->second = 1;
     m_currentHighestThreat = 1;
 }
@@ -3398,15 +3370,15 @@ void AIInterface::WipeReferences()
     m_UnitToFollow = 0;
     tauntedBy = 0;
 
-    //Clear targettable
-    for (std::set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
+    // Clear targettable
+    for (auto itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
         if ((*itr)->IsUnit() && static_cast< Unit* >(*itr)->GetAIInterface())
             static_cast< Unit* >(*itr)->GetAIInterface()->RemoveThreatByPtr(m_Unit);
 }
 
 void AIInterface::ResetProcCounts()
 {
-    for (std::list<AI_Spell*>::iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
+    for (auto itr = m_spells.begin(); itr != m_spells.end(); ++itr)
         if ((*itr)->procCount)
             (*itr)->procCounter = 0;
 }
@@ -3415,16 +3387,16 @@ void AIInterface::EventChangeFaction(Unit* ForceAttackersToHateThisInstead)
 {
     m_nextSpell = 0;
     m_currentHighestThreat = 0;
-    //we need a new hatred list
+    // we need a new hatred list
     LockAITargets(true);
     m_aiTargets.clear();
     LockAITargets(false);
-    //we need a new assist list
+    // we need a new assist list
     m_assistTargets.clear();
-    //Clear targettable
+    // Clear targettable
     if (ForceAttackersToHateThisInstead == NULL)
     {
-        for (std::set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
+        for (auto itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
             if ((*itr)->IsUnit() && static_cast< Unit* >(*itr)->GetAIInterface())
                 static_cast< Unit* >(*itr)->GetAIInterface()->RemoveThreatByPtr(m_Unit);
 
@@ -3432,7 +3404,7 @@ void AIInterface::EventChangeFaction(Unit* ForceAttackersToHateThisInstead)
     }
     else
     {
-        for (std::set<Object*>::iterator itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
+        for (auto itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
             if ((*itr)->IsUnit() && static_cast< Unit* >(*itr)->GetAIInterface()
                 && static_cast< Unit* >(*itr)->GetAIInterface()->getThreatByPtr(m_Unit))   //this guy will join me in fight since I'm telling him "sorry i was controlled"
             {
@@ -4074,11 +4046,10 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
         Group* pGroup = static_cast< Player* >(pUnit)->GetGroup();
 
         Player* pGroupGuy;
-        GroupMembersSet::iterator itr;
         pGroup->Lock();
         for (uint32 i = 0; i < pGroup->GetSubGroupCount(); i++)
         {
-            for (itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
+            for (auto itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
             {
                 pGroupGuy = (*itr)->m_loggedInPlayer;
                 if (pGroupGuy && pGroupGuy->isAlive() && m_Unit->GetMapMgr() == pGroupGuy->GetMapMgr() && pGroupGuy->GetDistanceSq(pUnit) <= 40 * 40) //50 yards for now. lets see if it works
@@ -4089,7 +4060,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
         }
         pGroup->Unlock();
     }
-    //Zack : Put mob into combat animation. Take out weapons and start to look serious :P
+    // Zack : Put mob into combat animation. Take out weapons and start to look serious :P
     m_Unit->smsg_AttackStart(pUnit);
 }
 
@@ -4447,7 +4418,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 misc1)
                 found = true;
                 m_Unit->GetMapMgr()->pInstance->m_killedNpcs.insert(npcGuid);
                 m_Unit->GetMapMgr()->pInstance->SaveToDB();
-                for (InstanceBossTrashList::iterator trash = bossInfo->second->trash.begin(); trash != bossInfo->second->trash.end(); ++trash)
+                for (auto trash = bossInfo->second->trash.begin(); trash != bossInfo->second->trash.end(); ++trash)
                 {
                     Creature* c = m_Unit->GetMapMgr()->GetSqlIdCreature((*trash));
                     if (c != NULL)
@@ -4457,7 +4428,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 misc1)
                 {
                     pInstance->m_persistent = true;
                     pInstance->SaveToDB();
-                    for (PlayerStorageMap::iterator itr = m_Unit->GetMapMgr()->m_PlayerStorage.begin(); itr != m_Unit->GetMapMgr()->m_PlayerStorage.end(); ++itr)
+                    for (auto itr = m_Unit->GetMapMgr()->m_PlayerStorage.begin(); itr != m_Unit->GetMapMgr()->m_PlayerStorage.end(); ++itr)
                     {
                         (*itr).second->SetPersistentInstanceId(pInstance);
                     }

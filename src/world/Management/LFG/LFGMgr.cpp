@@ -55,19 +55,19 @@ m_NumWaitTimeAvg(0), m_NumWaitTimeTank(0), m_NumWaitTimeHealer(0), m_NumWaitTime
 
 LfgMgr::~LfgMgr()
 {
-    for (LfgRewardMap::iterator itr = m_RewardMap.begin(); itr != m_RewardMap.end(); ++itr)
+    for (auto itr = m_RewardMap.begin(); itr != m_RewardMap.end(); ++itr)
         delete itr->second;
 
     for (LfgQueueInfoMap::iterator it = m_QueueInfoMap.begin(); it != m_QueueInfoMap.end(); ++it)
         delete it->second;
 
-    for (LfgProposalMap::iterator it = m_Proposals.begin(); it != m_Proposals.end(); ++it)
+    for (auto it = m_Proposals.begin(); it != m_Proposals.end(); ++it)
         delete it->second;
 
-    for (LfgPlayerBootMap::iterator it = m_Boots.begin(); it != m_Boots.end(); ++it)
+    for (auto it = m_Boots.begin(); it != m_Boots.end(); ++it)
         delete it->second;
 
-    for (LfgRoleCheckMap::iterator it = m_RoleChecks.begin(); it != m_RoleChecks.end(); ++it)
+    for (auto it = m_RoleChecks.begin(); it != m_RoleChecks.end(); ++it)
         delete it->second;
 }
 
@@ -76,7 +76,7 @@ void LfgMgr::LoadRewards()
 {
     uint32 oldMSTime = getMSTime();
 
-    for (LfgRewardMap::iterator itr = m_RewardMap.begin(); itr != m_RewardMap.end(); ++itr)
+    for (auto itr = m_RewardMap.begin(); itr != m_RewardMap.end(); ++itr)
         delete itr->second;
     m_RewardMap.clear();
 
@@ -150,7 +150,7 @@ void LfgMgr::Update(uint32 diff)
     time_t currTime = time(NULL);
 
     // Remove obsolete role checks
-    for (LfgRoleCheckMap::iterator it = m_RoleChecks.begin(); it != m_RoleChecks.end();)
+    for (auto it = m_RoleChecks.begin(); it != m_RoleChecks.end();)
     {
         LfgRoleCheckMap::iterator itRoleCheck = it++;
         LfgRoleCheck* roleCheck = itRoleCheck->second;
@@ -175,7 +175,7 @@ void LfgMgr::Update(uint32 diff)
     }
 
     // Remove obsolete proposals
-    for (LfgProposalMap::iterator it = m_Proposals.begin(); it != m_Proposals.end();)
+    for (auto it = m_Proposals.begin(); it != m_Proposals.end();)
     {
         LfgProposalMap::iterator itRemove = it++;
         if (itRemove->second->cancelTime < currTime)
@@ -183,7 +183,7 @@ void LfgMgr::Update(uint32 diff)
     }
 
     // Remove obsolete kicks
-    for (LfgPlayerBootMap::iterator it = m_Boots.begin(); it != m_Boots.end();)
+    for (auto it = m_Boots.begin(); it != m_Boots.end();)
     {
         LfgPlayerBootMap::iterator itBoot = it++;
         LfgPlayerBoot* pBoot = itBoot->second;
@@ -200,7 +200,7 @@ void LfgMgr::Update(uint32 diff)
     }
 
     // Check if a proposal can be formed with the new groups being added
-    for (LfgGuidListMap::iterator it = m_newToQueue.begin(); it != m_newToQueue.end(); ++it)
+    for (auto it = m_newToQueue.begin(); it != m_newToQueue.end(); ++it)
     {
         uint8 queueId = it->first;
         LfgGuidList& newToQueue = it->second;
@@ -320,10 +320,10 @@ void LfgMgr::AddToQueue(uint64 guid, uint8 queueId)
 
 bool LfgMgr::RemoveFromQueue(uint64 guid)
 {
-    for (LfgGuidListMap::iterator it = m_currentQueue.begin(); it != m_currentQueue.end(); ++it)
+    for (auto it = m_currentQueue.begin(); it != m_currentQueue.end(); ++it)
         it->second.remove(guid);
 
-    for (LfgGuidListMap::iterator it = m_newToQueue.begin(); it != m_newToQueue.end(); ++it)
+    for (auto it = m_newToQueue.begin(); it != m_newToQueue.end(); ++it)
         it->second.remove(guid);
 
     RemoveFromCompatibles(guid);

@@ -1306,7 +1306,7 @@ void Aura::EventUpdateFriendAA(float r)
     if (u == NULL)
         return;
 
-    for (std::set< Object* >::iterator itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
+    for (auto itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
     {
         Object* o = *itr;
 
@@ -1376,7 +1376,7 @@ void Aura::EventUpdateEnemyAA(float r)
     if (u == NULL)
         return;
 
-    for (std::set< Object* >::iterator itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
+    for (auto itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
     {
         Object* o = *itr;
 

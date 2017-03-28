@@ -92,7 +92,7 @@ Channel::Channel(const char* name, uint32 team, uint32 type_id)
     else
         m_flags = CHANNEL_FLAGS_CUSTOM;         // old 0x01;
 
-    for (std::vector<std::string>::iterator itr = m_minimumChannel.begin(); itr != m_minimumChannel.end(); ++itr)
+    for (auto itr = m_minimumChannel.begin(); itr != m_minimumChannel.end(); ++itr)
     {
         if (stricmp(name, itr->c_str()))
         {
@@ -987,7 +987,7 @@ Channel* ChannelMgr::GetCreateChannel(const char* name, Player* p, uint32 type_i
 
     // make sure the name isn't banned
     m_confSettingLock.Acquire();
-    for (std::vector<std::string>::iterator itr2 = m_bannedChannels.begin(); itr2 != m_bannedChannels.end(); ++itr2)
+    for (auto itr2 = m_bannedChannels.begin(); itr2 != m_bannedChannels.end(); ++itr2)
     {
         if (!strnicmp(name, itr2->c_str(), itr2->size()))
         {

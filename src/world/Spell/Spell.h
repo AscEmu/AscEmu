@@ -2133,7 +2133,7 @@ class SERVER_DECL Spell : public EventableObject
 
         inline bool HasTarget(const uint64 & guid, TargetsList* tmpMap)
         {
-            for (TargetsList::iterator itr = tmpMap->begin(); itr != tmpMap->end(); ++itr)
+            for (auto itr = tmpMap->begin(); itr != tmpMap->end(); ++itr)
             {
                 if (*itr == guid)
                     return true;

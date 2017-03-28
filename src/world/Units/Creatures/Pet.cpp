@@ -320,7 +320,7 @@ Pet::Pet(uint64 guid) : Creature(guid)
 
 Pet::~Pet()
 {
-    for (std::map<uint32, AI_Spell*>::iterator itr = m_AISpellStore.begin(); itr != m_AISpellStore.end(); ++itr)
+    for (auto itr = m_AISpellStore.begin(); itr != m_AISpellStore.end(); ++itr)
         delete itr->second;
     m_AISpellStore.clear();
 
@@ -419,7 +419,7 @@ void Pet::BuildPetSpellList(WorldPacket& data)
     {
         // Send the rest of the spells.
         data << uint8(mSpells.size());
-        for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+        for (auto itr = mSpells.begin(); itr != mSpells.end(); ++itr)
         {
             data << uint16(itr->first->Id);
             data << uint16(itr->second);
@@ -923,10 +923,9 @@ void Pet::RemoveFromWorld(bool free_guid)
 void Pet::OnRemoveFromWorld()
 {
     std::list<Pet*> ownerSummons = m_Owner->GetSummons();
-    std::list<Pet*>::iterator itr;
-    for (itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
+    for (auto itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
     {
-        //m_Owner MUST NOT have a reference to us anymore
+        // m_Owner MUST NOT have a reference to us anymore
         ARCEMU_ASSERT((*itr)->GetGUID() != GetGUID());
     }
 }
@@ -1120,7 +1119,7 @@ void Pet::UpdateSpellList(bool showLearnSpells)
                 {
                     // Pet is able to learn this spell; now check if it already has it, or a higher rank of it
                     bool addThisSpell = true;
-                    for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+                    for (auto itr = mSpells.begin(); itr != mSpells.end(); ++itr)
                     {
                         if ((itr->first->custom_NameHash == sp->custom_NameHash) && (itr->first->custom_RankNumber >= sp->custom_RankNumber))
                         {
@@ -1155,12 +1154,12 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
     }
     else
     {
-        bool ab_replace = false;                    // Active spell add to the actionbar.
+        bool ab_replace = false; // Active spell add to the actionbar.
 
         bool done = false;
         if (learning)
         {
-            for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+            for (auto itr = mSpells.begin(); itr != mSpells.end(); ++itr)
             {
                 if (sp->custom_NameHash == itr->first->custom_NameHash)
                 {
@@ -1290,9 +1289,8 @@ void Pet::SetDefaultActionbar()
     // Fill up 4 slots with our spells
     if (mSpells.size() > 0)
     {
-        PetSpellMap::iterator itr = mSpells.begin();
         uint32 pos = 0;
-        for (; itr != mSpells.end() && pos < 4; ++itr, ++pos)
+        for (auto itr = mSpells.begin(); itr != mSpells.end() && pos < 4; ++itr, ++pos)
             ActionBar[3 + pos] = itr->first->Id;
     }
 
@@ -1328,7 +1326,7 @@ void Pet::RemoveSpell(SpellInfo* sp, bool showUnlearnSpell)
         if (itr->second->autocast_type != AUTOCAST_EVENT_NONE)
         {
             std::list<AI_Spell*>::iterator it3;
-            for (std::list<AI_Spell*>::iterator it2 = m_autoCastSpells[itr->second->autocast_type].begin(); it2 != m_autoCastSpells[itr->second->autocast_type].end();)
+            for (auto it2 = m_autoCastSpells[itr->second->autocast_type].begin(); it2 != m_autoCastSpells[itr->second->autocast_type].end();)
             {
                 it3 = it2++;
                 if ((*it3) == itr->second)
@@ -1352,7 +1350,7 @@ void Pet::RemoveSpell(SpellInfo* sp, bool showUnlearnSpell)
     }
     else
     {
-        for (std::list<AI_Spell*>::iterator it = m_aiInterface->m_spells.begin(); it != m_aiInterface->m_spells.end(); ++it)
+        for (auto it = m_aiInterface->m_spells.begin(); it != m_aiInterface->m_spells.end(); ++it)
         {
             if ((*it)->spell == sp)
             {
@@ -1733,7 +1731,7 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
     {
         if (m_autoCastSpells[AUTOCAST_EVENT_ATTACK].size() > 1)
         {
-            for (itr = m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin(); itr != m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end(); ++itr)
+            for (auto itr = m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin(); itr != m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end(); ++itr)
             {
                 if (itr == m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end())
                 {
@@ -1764,7 +1762,7 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
         return;
     }
 
-    for (itr = m_autoCastSpells[Type].begin(); itr != m_autoCastSpells[Type].end();)
+    for (auto itr = m_autoCastSpells[Type].begin(); itr != m_autoCastSpells[Type].end();)
     {
         it2 = itr++;
         sp = *it2;
@@ -1802,7 +1800,7 @@ void Pet::SetAutoCast(AI_Spell* sp, bool on)
     {
         if (!on)
         {
-            for (std::list<AI_Spell*>::iterator itr = m_autoCastSpells[sp->autocast_type].begin(); itr != m_autoCastSpells[sp->autocast_type].end(); ++itr)
+            for (auto itr = m_autoCastSpells[sp->autocast_type].begin(); itr != m_autoCastSpells[sp->autocast_type].end(); ++itr)
             {
                 if ((*itr) == sp)
                 {
@@ -1813,7 +1811,7 @@ void Pet::SetAutoCast(AI_Spell* sp, bool on)
         }
         else
         {
-            for (std::list<AI_Spell*>::iterator itr = m_autoCastSpells[sp->autocast_type].begin(); itr != m_autoCastSpells[sp->autocast_type].end(); ++itr)
+            for (auto itr = m_autoCastSpells[sp->autocast_type].begin(); itr != m_autoCastSpells[sp->autocast_type].end(); ++itr)
             {
                 if ((*itr) == sp)
                     return;
@@ -2147,8 +2145,8 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
         }
     }
 
-    //Stop players from casting
-    for (std::set< Object* >::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
+    // Stop players from casting
+    for (auto itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
     {
         Unit* attacker = static_cast< Unit* >(*itr);
 

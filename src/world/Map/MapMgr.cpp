@@ -1150,7 +1150,7 @@ void MapMgr::ChangeFarsightLocation(Player* plr, DynamicObject* farsight)
     if (farsight == 0)
     {
         // We're clearing.
-        for (ObjectSet::iterator itr = plr->m_visibleFarsightObjects.begin(); itr != plr->m_visibleFarsightObjects.end(); ++itr)
+        for (auto itr = plr->m_visibleFarsightObjects.begin(); itr != plr->m_visibleFarsightObjects.end(); ++itr)
         {
             if (plr->IsVisible((*itr)->GetGUID()) && !plr->CanSee((*itr)))
             {
@@ -1261,7 +1261,7 @@ bool MapMgr::Do()
 
         if (m_objectinsertpool.size())
         {
-            for (ObjectSet::iterator i = m_objectinsertpool.begin(); i != m_objectinsertpool.end(); ++i)
+            for (auto i = m_objectinsertpool.begin(); i != m_objectinsertpool.end(); ++i)
             {
                 Object* o = *i;
 

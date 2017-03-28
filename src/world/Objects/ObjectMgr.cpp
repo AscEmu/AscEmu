@@ -97,7 +97,7 @@ ObjectMgr::~ObjectMgr()
     LogNotice("ObjectMgr : Deleting Waypoint Cache...");
     for (std::unordered_map<uint32, Movement::WayPointMap*>::iterator i = m_waypoints.begin(); i != m_waypoints.end(); ++i)
     {
-        for (Movement::WayPointMap::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
+        for (auto i2 = i->second->begin(); i2 != i->second->end(); ++i2)
             if ((*i2))
                 delete(*i2);
 

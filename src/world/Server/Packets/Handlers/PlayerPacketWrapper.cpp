@@ -638,7 +638,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
     if (groupbuf != NULL && nongroupbuf != NULL)
     {
 
-        for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+        for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
         {
             Player* p = static_cast< Player* >(*itr);
 
@@ -653,7 +653,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
         //second case we send to group only
         if (groupbuf != NULL && nongroupbuf == NULL)
         {
-            for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+            for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
             {
                 Player* p = static_cast< Player* >(*itr);
 
@@ -666,7 +666,7 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
             //Last case we send to nongroup only
             if (groupbuf == NULL && nongroupbuf != NULL)
             {
-                for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+                for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
                 {
                     Player* p = static_cast< Player* >(*itr);
 

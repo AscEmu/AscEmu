@@ -5610,7 +5610,7 @@ void Spell::SafeAddTarget(TargetsList* tgt, uint64 guid)
     if (guid == 0)
         return;
 
-    for (TargetsList::iterator i = tgt->begin(); i != tgt->end(); ++i)
+    for (auto i = tgt->begin(); i != tgt->end(); ++i)
     {
         if (*i == guid)
         {

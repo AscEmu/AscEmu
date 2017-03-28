@@ -218,7 +218,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     uint32 time_left;
     uint32 enchslot;
 
-    for (std::vector<std::string>::iterator itr = enchants.begin(); itr != enchants.end(); ++itr)
+    for (auto itr = enchants.begin(); itr != enchants.end(); ++itr)
     {
         if (sscanf((*itr).c_str(), "%u,%u,%u", (unsigned int*)&enchant_id, (unsigned int*)&time_left, (unsigned int*)&enchslot) == 3)
         {
@@ -905,21 +905,21 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 
 void Item::ApplyEnchantmentBonuses()
 {
-    EnchantmentMap::iterator itr, itr2;
-    for (itr = Enchantments.begin(); itr != Enchantments.end();)
+    EnchantmentMap::iterator iter;
+    for (auto itr = Enchantments.begin(); itr != Enchantments.end();)
     {
-        itr2 = itr++;
-        ApplyEnchantmentBonus(itr2->first, true);
+        iter = itr++;
+        ApplyEnchantmentBonus(iter->first, true);
     }
 }
 
 void Item::RemoveEnchantmentBonuses()
 {
-    EnchantmentMap::iterator itr, itr2;
-    for (itr = Enchantments.begin(); itr != Enchantments.end();)
+    EnchantmentMap::iterator iter;
+    for (auto itr = Enchantments.begin(); itr != Enchantments.end();)
     {
-        itr2 = itr++;
-        ApplyEnchantmentBonus(itr2->first, false);
+        iter = itr++;
+        ApplyEnchantmentBonus(iter->first, false);
     }
 }
 
@@ -1021,38 +1021,37 @@ void Item::SendEnchantTimeUpdate(uint32 Slot, uint32 Duration)
 
 void Item::RemoveAllEnchantments(bool OnlyTemporary)
 {
-    EnchantmentMap::iterator itr, it2;
-    for (itr = Enchantments.begin(); itr != Enchantments.end();)
+    EnchantmentMap::iterator iter;
+    for (auto itr = Enchantments.begin(); itr != Enchantments.end();)
     {
-        it2 = itr++;
+        iter = itr++;
 
-        if (OnlyTemporary && it2->second.Duration == 0)
+        if (OnlyTemporary && iter->second.Duration == 0)
             continue;
 
-        RemoveEnchantment(it2->first);
+        RemoveEnchantment(iter->first);
     }
 }
 
 void Item::RemoveRelatedEnchants(DBC::Structures::SpellItemEnchantmentEntry const* newEnchant)
 {
-    EnchantmentMap::iterator itr, itr2;
-    for (itr = Enchantments.begin(); itr != Enchantments.end();)
+    EnchantmentMap::iterator iter;
+    for (auto itr = Enchantments.begin(); itr != Enchantments.end();)
     {
-        itr2 = itr++;
+        iter = itr++;
 
-        if (itr2->second.Enchantment->Id == newEnchant->Id || (itr2->second.Enchantment->EnchantGroups > 1 && newEnchant->EnchantGroups > 1))
+        if (iter->second.Enchantment->Id == newEnchant->Id || (iter->second.Enchantment->EnchantGroups > 1 && newEnchant->EnchantGroups > 1))
         {
-            RemoveEnchantment(itr2->first);
+            RemoveEnchantment(iter->first);
         }
     }
 }
 
 void Item::RemoveProfessionEnchant()
 {
-    EnchantmentMap::iterator itr;
-    for (itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
+    for (auto itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
     {
-        if (itr->second.Duration != 0)  // not perm
+        if (itr->second.Duration != 0) // not perm
             continue;
         if (IsGemRelated(itr->second.Enchantment))
             continue;
@@ -1064,9 +1063,7 @@ void Item::RemoveProfessionEnchant()
 
 void Item::RemoveSocketBonusEnchant()
 {
-    EnchantmentMap::iterator itr;
-
-    for (itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
+    for (auto itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
     {
         if (itr->second.Enchantment->Id == GetItemProperties()->SocketBonus)
         {

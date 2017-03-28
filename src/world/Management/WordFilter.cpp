@@ -107,7 +107,6 @@ void WordFilter::Load(const char* szTableName)
     WordFilterMatch* pMatch;
     size_t i;
     std::list<WordFilterMatch*> lItems;
-    std::list<WordFilterMatch*>::iterator itr;
     QueryResult* pResult = WorldDatabase.Query("SELECT * FROM %s", szTableName);
     if (pResult == NULL)
         return;
@@ -162,7 +161,7 @@ void WordFilter::Load(const char* szTableName)
 
     m_filters = new WordFilterMatch*[lItems.size()];
     i = 0;
-    for (itr = lItems.begin(); itr != lItems.end(); ++itr)
+    for (auto itr = lItems.begin(); itr != lItems.end(); ++itr)
         m_filters[i++] = (*itr);
 
     m_filterCount = i;

@@ -215,7 +215,7 @@ void Creature::OnRespawn(MapMgr* m)
     if (bossInfoMap != NULL && pInstance != NULL)
     {
         bool skip = false;
-        for (std::set<uint32>::iterator killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
+        for (auto killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
         {
             // Is killed boss?
             if ((*killedNpc) == creature_properties->Id)
@@ -321,7 +321,7 @@ void Creature::generateLoot()
         {
             uint16 lootThreshold = looter->GetGroup()->GetThreshold();
 
-            for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+            for (auto itr = loot.items.begin(); itr != loot.items.end(); ++itr)
             {
                 if (itr->item.itemproto->Quality < lootThreshold)
                     continue;
@@ -502,8 +502,7 @@ void Creature::AddQuest(QuestRelation* Q)
 
 void Creature::DeleteQuest(QuestRelation* Q)
 {
-    std::list<QuestRelation*>::iterator it;
-    for (it = m_quests->begin(); it != m_quests->end(); ++it)
+    for (auto it = m_quests->begin(); it != m_quests->end(); ++it)
     {
         if (((*it)->type == Q->type) && ((*it)->qst == Q->qst))
         {
@@ -516,8 +515,7 @@ void Creature::DeleteQuest(QuestRelation* Q)
 
 QuestProperties const* Creature::FindQuest(uint32 quest_id, uint8 quest_relation)
 {
-    std::list<QuestRelation*>::iterator it;
-    for (it = m_quests->begin(); it != m_quests->end(); ++it)
+    for (auto it = m_quests->begin(); it != m_quests->end(); ++it)
     {
         QuestRelation* ptr = (*it);
 
@@ -532,9 +530,8 @@ QuestProperties const* Creature::FindQuest(uint32 quest_id, uint8 quest_relation
 uint16 Creature::GetQuestRelation(uint32 quest_id)
 {
     uint16 quest_relation = 0;
-    std::list<QuestRelation*>::iterator it;
 
-    for (it = m_quests->begin(); it != m_quests->end(); ++it)
+    for (auto it = m_quests->begin(); it != m_quests->end(); ++it)
     {
         if ((*it)->qst->id == quest_id)
         {
@@ -672,11 +669,11 @@ bool Creature::HasQuests()
 bool Creature::HasQuest(uint32 id, uint32 type)
 {
     if (!m_quests) return false;
-    for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
-        {
-            if ((*itr)->qst->id == id && (*itr)->type & type)
-                return true;
-        }
+    for (auto itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+    {
+        if ((*itr)->qst->id == id && (*itr)->type & type)
+            return true;
+    }
     return false;
 }
 
@@ -1157,7 +1154,7 @@ void Creature::AddVendorItem(uint32 itemid, uint32 amount, DB2::Structures::Item
 
 void Creature::ModAvItemAmount(uint32 itemid, uint32 value)
 {
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
     {
         if (itr->itemid == itemid)
         {
@@ -1181,11 +1178,11 @@ void Creature::ModAvItemAmount(uint32 itemid, uint32 value)
 
 void Creature::UpdateItemAmount(uint32 itemid)
 {
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
     {
         if (itr->itemid == itemid)
         {
-            if (itr->max_amount == 0)        // shouldn't happen
+            if (itr->max_amount == 0) // shouldn't happen
                 itr->available_amount = 0;
             else
             {
@@ -1713,9 +1710,8 @@ void Creature::OnPushToWorld()
         return;
     }
 
-    std::set<uint32>::iterator itr = creature_properties->start_auras.begin();
     SpellInfo* sp;
-    for (; itr != creature_properties->start_auras.end(); ++itr)
+    for (auto itr = creature_properties->start_auras.begin(); itr != creature_properties->start_auras.end(); ++itr)
     {
         sp = sSpellCustomizations.GetSpellInfo((*itr));
         if (sp == nullptr)
@@ -1758,7 +1754,7 @@ void Creature::OnPushToWorld()
     m_aiInterface->m_is_in_instance = (m_mapMgr->GetMapInfo()->type != INSTANCE_NULL) ? true : false;
     if (this->HasItems())
     {
-        for (std::vector<CreatureItem>::iterator itr2 = m_SellItems->begin(); itr2 != m_SellItems->end(); ++itr2)
+        for (auto itr2 = m_SellItems->begin(); itr2 != m_SellItems->end(); ++itr2)
         {
             if (itr2->max_amount == 0)
                 itr2->available_amount = 0;
@@ -2016,7 +2012,7 @@ bool Creature::HasLootForPlayer(Player* plr)
     if (loot.gold > 0)
         return true;
 
-    for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    for (auto itr = loot.items.begin(); itr != loot.items.end(); ++itr)
     {
         ItemProperties const* proto = itr->item.itemproto;
         if (proto != nullptr)
@@ -2114,23 +2110,23 @@ void Creature::RemoveSanctuaryFlag()
 int32 Creature::GetSlotByItemId(uint32 itemid)
 {
     uint32 slot = 0;
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
-        {
-            if (itr->itemid == itemid)
-                return slot;
-            else
-                ++slot;
-        }
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    {
+        if (itr->itemid == itemid)
+            return slot;
+        else
+            ++slot;
+    }
     return -1;
 }
 
 uint32 Creature::GetItemAmountByItemId(uint32 itemid)
 {
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
-        {
-            if (itr->itemid == itemid)
-                return ((itr->amount < 1) ? 1 : itr->amount);
-        }
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    {
+        if (itr->itemid == itemid)
+            return ((itr->amount < 1) ? 1 : itr->amount);
+    }
     return 0;
 }
 
@@ -2141,14 +2137,14 @@ void Creature::GetSellItemBySlot(uint32 slot, CreatureItem& ci)
 
 void Creature::GetSellItemByItemId(uint32 itemid, CreatureItem& ci)
 {
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    {
+        if (itr->itemid == itemid)
         {
-            if (itr->itemid == itemid)
-            {
-                ci = (*itr);
-                return;
-            }
+            ci = (*itr);
+            return;
         }
+    }
     ci.amount = 0;
     ci.max_amount = 0;
     ci.available_amount = 0;
@@ -2162,7 +2158,7 @@ DBC::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByIte
 DB2::Structures::ItemExtendedCostEntry const* Creature::GetItemExtendedCostByItemId(uint32 itemid)
 #endif
 {
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
         {
             if (itr->itemid == itemid)
                 return itr->extended_cost;
@@ -2187,14 +2183,14 @@ size_t Creature::GetSellItemCount()
 
 void Creature::RemoveVendorItem(uint32 itemid)
 {
-    for (std::vector<CreatureItem>::iterator itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    for (auto itr = m_SellItems->begin(); itr != m_SellItems->end(); ++itr)
+    {
+        if (itr->itemid == itemid)
         {
-            if (itr->itemid == itemid)
-            {
-                m_SellItems->erase(itr);
-                return;
-            }
+            m_SellItems->erase(itr);
+            return;
         }
+    }
 }
 
 void Creature::PrepareForRemove()
@@ -2397,7 +2393,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     }
 
     // Stop players from casting
-    for (std::set< Object* >::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
+    for (auto itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
     {
         Unit* attacker = static_cast< Unit* >(*itr);
 

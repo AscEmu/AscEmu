@@ -174,7 +174,7 @@ void Spell::FillTargetMap(uint32 i)
 
 void Spell::AddScriptedOrSpellFocusTargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets)
 {
-    for (std::set< Object* >::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (auto itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         Object* o = *itr;
 
@@ -261,8 +261,7 @@ void Spell::AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
     if (jumps <= 1 || list->size() == 0) //1 because we've added the first target, 0 size if spell is resisted
         return;
 
-    ObjectSet::iterator itr;
-    for (itr = firstTarget->GetInRangeSetBegin(); itr != firstTarget->GetInRangeSetEnd(); ++itr)
+    for (auto itr = firstTarget->GetInRangeSetBegin(); itr != firstTarget->GetInRangeSetEnd(); ++itr)
     {
         if (!(*itr)->IsUnit() || !static_cast<Unit*>((*itr))->isAlive())
             continue;
@@ -298,8 +297,7 @@ void Spell::AddPartyTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
 
     AddTarget(i, TargetType, p);
 
-    ObjectSet::iterator itr;
-    for (itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
+    for (auto itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
     {
         if (!(*itr)->IsUnit() || !static_cast<Unit*>(*itr)->isAlive())
             continue;
@@ -330,8 +328,8 @@ void Spell::AddRaidTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarge
 
     AddTarget(i, TargetType, p);
 
-    ObjectSet::iterator itr;
-    for (itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
+    
+    for (auto itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
     {
         if (!(*itr)->IsUnit() || !static_cast<Unit*>(*itr)->isAlive())
             continue;
@@ -378,7 +376,7 @@ void Spell::AddAOETargets(uint32 i, uint32 TargetType, float r, uint32 maxtarget
 
     TargetsList* t = &m_targetUnits[i];
 
-    for (ObjectSet::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (auto itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         if (maxtargets != 0 && t->size() >= maxtargets)
             break;
@@ -443,8 +441,8 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
     }
     else
     {
-        //check target isnt already in
-        for (TargetsList::iterator itr = m_targetUnits[i].begin(); itr != m_targetUnits[i].end(); ++itr)
+        // check target isnt already in
+        for (auto itr = m_targetUnits[i].begin(); itr != m_targetUnits[i].end(); ++itr)
         {
             if (obj->GetGUID() == *itr)
                 return false;
@@ -452,7 +450,7 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
         t->push_back(obj->GetGUID());
     }
 
-    //final checks, require line of sight unless range/radius is 50000 yards
+    // final checks, require line of sight unless range/radius is 50000 yards
     auto spell_range = sSpellRangeStore.LookupEntry(m_spellInfo->rangeIndex);
     if (spell_range != nullptr)
     {

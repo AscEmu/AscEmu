@@ -92,7 +92,7 @@ void MapCell::SetActivity(bool state)
     if (!_active && state)
     {
         // Move all objects to active set.
-        for (ObjectSet::iterator itr = _objects.begin(); itr != _objects.end(); ++itr)
+        for (auto itr = _objects.begin(); itr != _objects.end(); ++itr)
         {
             if (!(*itr)->IsActive() && (*itr)->CanActivate())
                 (*itr)->Activate(_mapmgr);
@@ -118,7 +118,7 @@ void MapCell::SetActivity(bool state)
     else if (_active && !state)
     {
         // Move all objects from active set.
-        for (ObjectSet::iterator itr = _objects.begin(); itr != _objects.end(); ++itr)
+        for (auto itr = _objects.begin(); itr != _objects.end(); ++itr)
         {
             if ((*itr)->IsActive())
                 (*itr)->Deactivate(_mapmgr);

@@ -4875,7 +4875,7 @@ void Spell::SpellEffectDestroyAllTotems(uint32 i)
 
     p_caster->summonhandler.GetSummonSlotSpellIDs(spellids);
 
-    for (std::vector< uint32 >::iterator itr = spellids.begin(); itr != spellids.end(); ++itr)
+    for (auto itr = spellids.begin(); itr != spellids.end(); ++itr)
     {
         uint32 spellid = *itr;
         SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
