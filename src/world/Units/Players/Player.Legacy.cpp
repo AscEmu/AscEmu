@@ -6014,8 +6014,8 @@ void Player::LoadTaxiMask(const char* data)
     std::vector<std::string> tokens = Util::SplitStringBySeperator(data, " ");
 
     int index;
-    for (auto iter = tokens.begin(), index = 0;
-         (index < 12) && (iter != tokens.end()); ++iter, ++index)
+    std::vector<std::string>::iterator iter;
+    for (iter = tokens.begin(), index = 0; (index < 12) && (iter != tokens.end()); ++iter, ++index)
     {
         m_taximask[index] = atol((*iter).c_str());
     }
@@ -7895,7 +7895,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
     if (!m_channels.empty() && at)
     {
         // change to zone name, not area name
-        for (auto itr = m_channels.begin(), nextitr; itr != m_channels.end(); itr = nextitr)
+		for (std::set<Channel*>::iterator itr = m_channels.begin(), nextitr; itr != m_channels.end(); itr = nextitr)
         {
             nextitr = itr;
             ++nextitr;
