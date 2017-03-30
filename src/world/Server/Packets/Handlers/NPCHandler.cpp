@@ -143,7 +143,7 @@ void WorldSession::SendTrainerList(Creature* pCreature)
         data << pTrainer->TrainerType;
 
         data << uint32(0);
-        for (std::vector<TrainerSpell>::iterator itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
+        for (auto itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
         {
             pSpell = &(*itr);
             Status = TrainerGetSpellStatus(pSpell);
@@ -197,7 +197,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
 
     // Check if the trainer offers that spell
     TrainerSpell* pSpell = NULL;
-    for (std::vector<TrainerSpell>::iterator itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
+    for (auto itr = pTrainer->Spells.begin(); itr != pTrainer->Spells.end(); ++itr)
     {
         if ((itr->pCastSpell && itr->pCastSpell->Id == TeachingSpellID) ||
             (itr->pLearnSpell && itr->pLearnSpell->Id == TeachingSpellID))
@@ -642,7 +642,7 @@ void WorldSession::SendStabledPetList(uint64 npcguid)
 
     data << uint8(_player->m_Pets.size());
     data << uint8(_player->m_StableSlotCount);
-    for (std::map<uint32, PlayerPet*>::iterator itr = _player->m_Pets.begin(); itr != _player->m_Pets.end(); ++itr)
+    for (auto itr = _player->m_Pets.begin(); itr != _player->m_Pets.end(); ++itr)
     {
         data << uint32(itr->first);             // pet no
         data << uint32(itr->second->entry);     // entryid

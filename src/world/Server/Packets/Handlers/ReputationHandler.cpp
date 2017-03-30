@@ -340,11 +340,10 @@ void WorldSession::HandleSetAtWarOpcode(WorldPacket& recv_data)
 void Player::UpdateInrangeSetsBasedOnReputation()
 {
     // This function assumes that the opp faction set for player = the opp faction set for the unit.
-    InRangeSet::iterator itr;
     Unit* pUnit;
     bool rep_value;
     bool enemy_current;
-    for (itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+    for (auto itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
     {
         if (!(*itr)->IsUnit())
             continue;
@@ -377,10 +376,9 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
     {
         /* loop the rep for group members */
         m_Group->getLock().Acquire();
-        GroupMembersSet::iterator it;
         for (uint32 i = 0; i < m_Group->GetSubGroupCount(); i++)
         {
-            for (it = m_Group->GetSubGroup(i)->GetGroupMembersBegin(); it != m_Group->GetSubGroup(i)->GetGroupMembersEnd(); ++it)
+            for (auto it = m_Group->GetSubGroup(i)->GetGroupMembersBegin(); it != m_Group->GetSubGroup(i)->GetGroupMembersEnd(); ++it)
             {
                 if ((*it)->m_loggedInPlayer && (*it)->m_loggedInPlayer->isInRange(this, 100.0f))
                     (*it)->m_loggedInPlayer->Reputation_OnKilledUnit(pUnit, true);
@@ -395,7 +393,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
     if (modifier != nullptr)
     {
         // Apply this data.
-        for (std::vector<ReputationMod>::iterator itr = modifier->mods.begin(); itr != modifier->mods.end(); ++itr)
+        for (auto itr = modifier->mods.begin(); itr != modifier->mods.end(); ++itr)
         {
             if (!(*itr).faction[team])
                 continue;

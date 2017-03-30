@@ -595,8 +595,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
             if (sgr)
             {
                 _player->GetGroup()->Lock();
-                GroupMembersSet::iterator itr;
-                for (itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
+                for (auto itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
                 {
                     Player* pPlayer = (*itr)->m_loggedInPlayer;
                     if (pPlayer && pPlayer->GetGUID() != pguid)

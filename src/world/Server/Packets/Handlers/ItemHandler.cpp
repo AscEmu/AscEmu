@@ -1445,7 +1445,6 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket& recv_data)
 
 void WorldSession::SendInventoryList(Creature* unit)
 {
-
     if (!unit->HasItems())
     {
         sChatHandler.BlueSystemMessage(_player->GetSession(), "No sell template found. Report this to database's devs: %d (%s)", unit->GetEntry(), unit->GetCreatureProperties()->Name.c_str());
@@ -1455,7 +1454,7 @@ void WorldSession::SendInventoryList(Creature* unit)
     }
 
 #if VERSION_STRING != Cata
-    WorldPacket data(((unit->GetSellItemCount() * 28) + 9));       // allocate
+    WorldPacket data(((unit->GetSellItemCount() * 28) + 9)); // allocate
 
     data.SetOpcode(SMSG_LIST_INVENTORY);
     data << unit->GetGUID();
@@ -1466,7 +1465,7 @@ void WorldSession::SendInventoryList(Creature* unit)
 #else
     uint32 counter = 0;
 
-    WorldPacket data(((unit->GetSellItemCount()) + 12));       // allocate
+    WorldPacket data(((unit->GetSellItemCount()) + 12));     // allocate
 
     ByteBuffer itemsData(32 * unit->GetSellItemCount());
     std::vector<bool> enablers;
@@ -1475,7 +1474,7 @@ void WorldSession::SendInventoryList(Creature* unit)
     ItemProperties const* curItem = nullptr;
 #endif
 
-    for (std::vector<CreatureItem>::iterator itr = unit->GetSellItemBegin(); itr != unit->GetSellItemEnd(); ++itr)
+    for (auto itr = unit->GetSellItemBegin(); itr != unit->GetSellItemEnd(); ++itr)
     {
         if (itr->itemid && (itr->max_amount == 0 || (itr->max_amount > 0 && itr->available_amount > 0)))
         {

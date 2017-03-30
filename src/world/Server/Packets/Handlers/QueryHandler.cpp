@@ -364,7 +364,7 @@ void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN;
 
     WorldPacket data(SMSG_QUESTGIVER_STATUS_MULTIPLE, 1000);
-    Object::InRangeSet::iterator itr;
+    
     Creature* pCreature;
     uint32 count = 0;
     data << count;
@@ -374,7 +374,7 @@ void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
     //    64 guid
     //    8 status
 
-    for (itr = _player->m_objectsInRange.begin(); itr != _player->m_objectsInRange.end(); ++itr)
+    for (auto itr = _player->m_objectsInRange.begin(); itr != _player->m_objectsInRange.end(); ++itr)
     {
         if (!(*itr)->IsCreature())
             continue;
@@ -397,7 +397,7 @@ void WorldSession::HandleAchievmentQueryOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN;
 
-    uint64 guid = recv_data.unpackGUID();               // Get the inspectee's GUID
+    uint64 guid = recv_data.unpackGUID(); // Get the inspectee's GUID
     Player* pTarget = objmgr.GetPlayer((uint32)guid);
     if (!pTarget)
     {

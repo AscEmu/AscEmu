@@ -147,7 +147,7 @@ void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recv_data)
         _player->SpeedCheatReset();
 
         std::list<Pet*> summons = _player->GetSummons();
-        for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+        for (auto itr = summons.begin(); itr != summons.end(); ++itr)
         {
             // move pet too
             (*itr)->SetPosition((GetPlayer()->GetPositionX() + 2), (GetPlayer()->GetPositionY() + 2), GetPlayer()->GetPositionZ(), M_PI_FLOAT);
@@ -529,7 +529,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         /************************************************************************/
         /* Distribute to all inrange players.                                   */
         /************************************************************************/
-        for (std::set<Object*>::iterator itr = _player->m_inRangePlayers.begin(); itr != _player->m_inRangePlayers.end(); ++itr)
+        for (auto itr = _player->m_inRangePlayers.begin(); itr != _player->m_inRangePlayers.end(); ++itr)
         {
 
             Player* p = static_cast< Player* >((*itr));

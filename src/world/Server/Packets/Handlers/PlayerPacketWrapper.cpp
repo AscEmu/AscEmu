@@ -516,7 +516,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
                     pGroup->Lock();
                     for (uint32 i = 0; i < pGroup->GetSubGroupCount(); ++i)
                     {
-                        for (GroupMembersSet::iterator itr2 = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr2 != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr2)
+                        for (auto itr2 = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr2 != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr2)
                         {
 
                             PlayerInfo* pinfo = *itr2;
@@ -524,7 +524,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
                             if (pinfo->m_loggedInPlayer && pinfo->m_loggedInPlayer->GetItemInterface()->CanReceiveItem(itemProto, iter->iItemsCount) == 0)
                             {
                                 if (pinfo->m_loggedInPlayer->m_passOnLoot)
-                                    iter->roll->PlayerRolled(pinfo->m_loggedInPlayer, 3);		// passed
+                                    iter->roll->PlayerRolled(pinfo->m_loggedInPlayer, 3); // passed
                                 else
                                     pinfo->m_loggedInPlayer->SendPacket(&data2);
                             }

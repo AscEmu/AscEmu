@@ -91,7 +91,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
 
     std::list<Pet*> summons = _player->GetSummons();
     bool alive_summon = false;
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end();)
+    for (auto itr = summons.begin(); itr != summons.end();)
     {
         pPet = (*itr);
         ++itr;
@@ -455,7 +455,7 @@ void WorldSession::HandlePetRename(WorldPacket& recv_data)
 
     Pet* pet = NULL;
     std::list<Pet*> summons = _player->GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    for (auto itr = summons.begin(); itr != summons.end(); ++itr)
     {
         if ((*itr)->GetGUID() == guid)
         {
@@ -550,7 +550,7 @@ void WorldSession::HandlePetSpellAutocast(WorldPacket& recvPacket)
         return;
 
     std::list<Pet*> summons = _player->GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    for (auto itr = summons.begin(); itr != summons.end(); ++itr)
     {
         // do we have the spell? if not don't set it (exploit fix)
         PetSpellMap::iterator itr2 = (*itr)->GetSpells()->find(spe);

@@ -272,8 +272,7 @@ void WorldSession::HandleLfgPartyLockInfoRequestOpcode(WorldPacket& recv_data)
 
     // Get the locked dungeons of the other party members
     LfgLockPartyMap lockMap;
-    GroupMembersSet::iterator itx;
-    for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+    for (auto itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
     {
         Player* plrg = (*itx)->m_loggedInPlayer;
         if (!plrg)
@@ -425,9 +424,9 @@ void WorldSession::SendLfgRoleChosen(uint64 guid, uint8 roles)
 
     WorldPacket data(SMSG_LFG_ROLE_CHOSEN, 8 + 1 + 4);
 
-    data << uint64(guid);                                  // Guid
-    data << uint8(roles > 0);                              // Ready
-    data << uint32(roles);                                 // Roles
+    data << uint64(guid);     // Guid
+    data << uint8(roles > 0); // Ready
+    data << uint32(roles);    // Roles
     SendPacket(&data);
 #endif
 }
@@ -446,13 +445,13 @@ void WorldSession::SendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
 
     WorldPacket data(SMSG_LFG_ROLE_CHECK_UPDATE, 4 + 1 + 1 + dungeons.size() * 4 + 1 + pRoleCheck->roles.size() * (8 + 1 + 4 + 1));
 
-    data << uint32(pRoleCheck->state);                     // Check result
+    data << uint32(pRoleCheck->state); // Check result
     data << uint8(pRoleCheck->state == LFG_ROLECHECK_INITIALITING);
-    data << uint8(dungeons.size());                        // Number of dungeons
+    data << uint8(dungeons.size()); // Number of dungeons
 #if VERSION_STRING != Cata
     if (!dungeons.empty())
     {
-        for (LfgDungeonSet::iterator it = dungeons.begin(); it != dungeons.end(); ++it)
+        for (auto it = dungeons.begin(); it != dungeons.end(); ++it)
         {
             DBC::Structures::LFGDungeonEntry const* dungeon = sLFGDungeonStore.LookupEntry(*it);
             data << uint32(dungeon ? dungeon->Entry() : 0); // Dungeon
@@ -460,18 +459,18 @@ void WorldSession::SendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
     }
 #endif
 
-    data << uint8(pRoleCheck->roles.size());               // Players in group
+    data << uint8(pRoleCheck->roles.size());                       // Players in group
     if (!pRoleCheck->roles.empty())
     {
         // Leader info MUST be sent 1st :S
         uint64 guid = pRoleCheck->leader;
         uint8 roles = pRoleCheck->roles.find(guid)->second;
-        data << uint64(guid);                              // Guid
-        data << uint8(roles > 0);                          // Ready
-        data << uint32(roles);                             // Roles
+        data << uint64(guid);                                      // Guid
+        data << uint8(roles > 0);                                  // Ready
+        data << uint32(roles);                                     // Roles
 
         Player* player = objmgr.GetPlayer(GET_LOWGUID_PART(guid));
-        data << uint8(player ? player->getLevel() : 0);    // Level
+        data << uint8(player ? player->getLevel() : 0);            // Level
 
         for (LfgRolesMap::const_iterator it = pRoleCheck->roles.begin(); it != pRoleCheck->roles.end(); ++it)
         {
@@ -480,12 +479,12 @@ void WorldSession::SendLfgRoleCheckUpdate(const LfgRoleCheck* pRoleCheck)
 
             guid = it->first;
             roles = it->second;
-            data << uint64(guid);                          // Guid
-            data << uint8(roles > 0);                      // Ready
-            data << uint32(roles);                         // Roles
+            data << uint64(guid);                                  // Guid
+            data << uint8(roles > 0);                              // Ready
+            data << uint32(roles);                                 // Roles
 
             player = objmgr.GetPlayer(GET_LOWGUID_PART(guid));
-            data << uint8(player ? player->getLevel() : 0);     // Level
+            data << uint8(player ? player->getLevel() : 0);        // Level
         }
     }
     SendPacket(&data);
@@ -499,16 +498,16 @@ void WorldSession::SendLfgQueueStatus(uint32 dungeon, int32 waitTime, int32 avgW
 
     WorldPacket data(SMSG_LFG_QUEUE_STATUS, 4 + 4 + 4 + 4 + 4 + 4 + 1 + 1 + 1 + 4);
 
-    data << uint32(dungeon);                               // Dungeon
-    data << int32(avgWaitTime);                            // Average Wait time
-    data << int32(waitTime);                               // Wait Time
-    data << int32(waitTimeTanks);                          // Wait Tanks
-    data << int32(waitTimeHealer);                         // Wait Healers
-    data << int32(waitTimeDps);                            // Wait Dps
-    data << uint8(tanks);                                  // Tanks needed
-    data << uint8(healers);                                // Healers needed
-    data << uint8(dps);                                    // Dps needed
-    data << uint32(queuedTime);                            // Player wait time in queue
+    data << uint32(dungeon);       // Dungeon
+    data << int32(avgWaitTime);    // Average Wait time
+    data << int32(waitTime);       // Wait Time
+    data << int32(waitTimeTanks);  // Wait Tanks
+    data << int32(waitTimeHealer); // Wait Healers
+    data << int32(waitTimeDps);    // Wait Dps
+    data << uint8(tanks);          // Tanks needed
+    data << uint8(healers);        // Healers needed
+    data << uint8(dps);            // Dps needed
+    data << uint32(queuedTime);    // Player wait time in queue
     SendPacket(&data);
 #endif
 }
@@ -525,8 +524,8 @@ void WorldSession::SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 Dungeon
 
     WorldPacket data(SMSG_LFG_PLAYER_REWARD, 4 + 4 + 1 + 4 + 4 + 4 + 4 + 4 + 1 + itemNum * (4 + 4 + 4));
 
-    data << uint32(RandomDungeonEntry);                         // Random Dungeon Finished
-    data << uint32(DungeonEntry);                         // Dungeon Finished
+    data << uint32(RandomDungeonEntry); // Random Dungeon Finished
+    data << uint32(DungeonEntry);       // Dungeon Finished
     data << uint8(done);
     data << uint32(1);
     data << uint32(qReward->reward_money);
@@ -635,8 +634,7 @@ void WorldSession::SendLfgUpdateProposal(uint32 proposalId, const LfgProposal* p
         // Select a player inside to be get completed encounters from
         if (grp)
         {
-            GroupMembersSet::iterator itx;
-            for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+            for (auto itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
             {
                 Player* groupMember = (*itx)->m_loggedInPlayer;
                 if (groupMember && groupMember->GetMapId() == uint32(dungeon->map))

@@ -245,7 +245,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         data.SetOpcode(SMSG_LOOT_REMOVED);
         data << lootSlot;
         Player* plr;
-        for (LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
+        for (auto itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
         {
             if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
                 plr->GetSession()->SendPacket(&data);
@@ -269,7 +269,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     if (pGO && pGO->GetEntry() == GO_FISHING_BOBBER)
     {
         int count = 0;
-        for (std::vector<__LootItem>::iterator itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
+        for (auto itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
             count += (*itr).iItemsCount;
         if (!count)
             pGO->ExpireAndDelete();
@@ -347,7 +347,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
     data.SetOpcode(SMSG_LOOT_CLEAR_MONEY);
     // send to all looters
     Player* plr;
-    for (LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
+    for (auto itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
     {
         if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
             plr->GetSession()->SendPacket(&data);
@@ -382,13 +382,12 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
             std::vector<Player*> targets;
             targets.reserve(party->MemberCount());
 
-            GroupMembersSet::iterator itr;
             SubGroup* sgrp;
             party->getLock().Acquire();
             for (uint32 i = 0; i < party->GetSubGroupCount(); i++)
             {
                 sgrp = party->GetSubGroup(i);
-                for (itr = sgrp->GetGroupMembersBegin(); itr != sgrp->GetGroupMembersEnd(); ++itr)
+                for (auto itr = sgrp->GetGroupMembersBegin(); itr != sgrp->GetGroupMembersEnd(); ++itr)
                 {
                     if ((*itr)->m_loggedInPlayer && (*itr)->m_loggedInPlayer->GetZoneId() == _player->GetZoneId() && _player->GetInstanceID() == (*itr)->m_loggedInPlayer->GetInstanceID())
                         targets.push_back((*itr)->m_loggedInPlayer);
@@ -404,7 +403,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
             pkt.SetOpcode(SMSG_LOOT_MONEY_NOTIFY);
             pkt << share;
 
-            for (std::vector<Player*>::iterator itr2 = targets.begin(); itr2 != targets.end(); ++itr2)
+            for (auto itr2 = targets.begin(); itr2 != targets.end(); ++itr2)
             {
                 // Check they don't have more than the max gold
                 if (sWorld.GoldCapEnabled && ((*itr2)->GetGold() + share) > sWorld.GoldLimit)
@@ -454,16 +453,15 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
         {
             if (party->GetMethod() == PARTY_LOOT_MASTER)
             {
-                WorldPacket data(SMSG_LOOT_MASTER_LIST, 330);  // wont be any larger
+                WorldPacket data(SMSG_LOOT_MASTER_LIST, 330); // wont be any larger
                 data << (uint8)party->MemberCount();
                 uint32 real_count = 0;
                 SubGroup* s;
-                GroupMembersSet::iterator itr;
                 party->Lock();
                 for (uint32 i = 0; i < party->GetSubGroupCount(); ++i)
                 {
                     s = party->GetSubGroup(i);
-                    for (itr = s->GetGroupMembersBegin(); itr != s->GetGroupMembersEnd(); ++itr)
+                    for (auto itr = s->GetGroupMembersBegin(); itr != s->GetGroupMembersEnd(); ++itr)
                     {
                         if ((*itr)->m_loggedInPlayer && _player->GetZoneId() == (*itr)->m_loggedInPlayer->GetZoneId())
                         {
@@ -507,7 +505,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         pCreature->loot.looters.erase(_player->GetLowGUID());
         if (pCreature->loot.gold <= 0)
         {
-            for (std::vector<__LootItem>::iterator i = pCreature->loot.items.begin(); i != pCreature->loot.items.end(); ++i)
+            for (auto i = pCreature->loot.items.begin(); i != pCreature->loot.items.end(); ++i)
                 if (i->iItemsCount > 0)
                 {
                     ItemProperties const* proto = i->item.itemproto;
@@ -2109,12 +2107,13 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
     //data.appendPackGUID(guid);
     //data.appendPackGUID(player->GetGUID());
     //data << player->GetNewGUID();
+
 #ifdef SAVE_BANDWIDTH
     PlayerSpec *currSpec = &player->m_specs[player->m_talentActiveSpec];
     data << uint32(currSpec->GetTP());
     data << uint8(1) << uint8(0);
-    data << uint8(currSpec->talents.size()); //fake value, will be overwritten at the end
-    for (std::map<uint32, uint8>::iterator itr = currSpec->talents.begin(); itr != currSpec->talents.end(); itr++)
+    data << uint8(currSpec->talents.size()); // fake value, will be overwritten at the end
+    for (auto itr = currSpec->talents.begin(); itr != currSpec->talents.end(); itr++)
         data << itr->first << itr->second;
     data << uint8(0); // Send Glyph info
 #else
@@ -2130,7 +2129,7 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
 
         uint8 talent_count = 0;
         size_t pos = data.wpos();
-        data << uint8(talent_count); //fake value, will be overwritten at the end
+        data << uint8(talent_count); // fake value, will be overwritten at the end
 
         for (uint8 i = 0; i < 3; ++i)
         {
@@ -2385,8 +2384,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
 
     if (slotid >= pLoot->items.size())
     {
-        LOG_DEBUG("AutoLootItem: Player %s might be using a hack! (slot %d, size %d)",
-                  GetPlayer()->GetName(), slotid, pLoot->items.size());
+        LOG_DEBUG("AutoLootItem: Player %s might be using a hack! (slot %d, size %d)", GetPlayer()->GetName(), slotid, pLoot->items.size());
         return;
     }
 
@@ -2471,7 +2469,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recv_data)
         data.SetOpcode(SMSG_LOOT_REMOVED);
         data << slotid;
         Player* plr;
-        for (LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
+        for (auto itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
         {
             if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
                 plr->GetSession()->SendPacket(&data);

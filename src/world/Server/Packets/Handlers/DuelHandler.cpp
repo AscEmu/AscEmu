@@ -101,7 +101,7 @@ void WorldSession::HandleDuelCancelled(WorldPacket& recv_data)
         }
     }
     std::list<Pet*> summons = _player->GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    for (auto itr = summons.begin(); itr != summons.end(); ++itr)
     {
         if ((*itr)->isAlive())
         {

@@ -423,7 +423,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 if (sgr)
                 {
                     _player->GetGroup()->Lock();
-                    for (GroupMembersSet::iterator itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
+                    for (auto itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
                     {
                         if ((*itr)->m_loggedInPlayer)
                             (*itr)->m_loggedInPlayer->GetSession()->SendChatPacket(data, 1, lang, this);
@@ -438,7 +438,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 {
                     sgr = _player->GetGroup()->GetSubGroup(i);
                     _player->GetGroup()->Lock();
-                    for (GroupMembersSet::iterator itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
+                    for (auto itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
                     {
                         if ((*itr)->m_loggedInPlayer)
                             (*itr)->m_loggedInPlayer->GetSession()->SendChatPacket(data, 1, lang, this);
