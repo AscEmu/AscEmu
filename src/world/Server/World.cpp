@@ -1150,16 +1150,15 @@ void World::GetStats(uint32* GMCount, float* AverageLatency)
     int gm = 0;
     int count = 0;
     int avg = 0;
-    PlayerStorageMap::const_iterator itr;
     objmgr._playerslock.AcquireReadLock();
-    for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+    for (auto itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
     {
         if (itr->second->GetSession())
         {
-            count++;
+            ++count;
             avg += itr->second->GetSession()->GetLatency();
             if (itr->second->GetSession()->GetPermissionCount())
-                gm++;
+                ++gm;
         }
     }
     objmgr._playerslock.ReleaseReadLock();
