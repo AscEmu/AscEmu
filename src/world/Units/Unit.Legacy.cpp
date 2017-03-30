@@ -2833,11 +2833,10 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
     m_damgeShieldsInUse = true;
     //charges are already removed in handleproc
     WorldPacket data(24);
-    std::list<DamageProc>::iterator i;
     std::list<DamageProc>::iterator i2;
-    for (i = m_damageShields.begin(); i != m_damageShields.end();)    // Deal Damage to Attacker
+    for (auto i = m_damageShields.begin(); i != m_damageShields.end();) // Deal Damage to Attacker
     {
-        i2 = i++; //we should not proc on proc.. not get here again.. not needed.Better safe then sorry.
+        i2 = ++i; //we should not proc on proc.. not get here again.. not needed.Better safe then sorry.
         if ((flag & (*i2).m_flags))
         {
             if (PROC_MISC & (*i2).m_flags)
@@ -7574,8 +7573,7 @@ void Unit::AddGarbagePet(Pet* pet)
 
 void Unit::RemoveGarbage()
 {
-    std::list<Aura*>::iterator itr1;
-    for (itr1 = m_GarbageAuras.begin(); itr1 != m_GarbageAuras.end(); ++itr1)
+    for (auto itr1 = m_GarbageAuras.begin(); itr1 != m_GarbageAuras.end(); ++itr1)
     {
         Aura* aur = *itr1;
 
@@ -7777,7 +7775,7 @@ uint64 Unit::GetCurrentUnitForSingleTargetAura(SpellInfo* spell)
 uint64 Unit::GetCurrentUnitForSingleTargetAura(uint32* name_hashes, uint32* index)
 {
     UniqueAuraTargetMap::iterator itr;
-    for (uint8 i = 0;; i++)
+    for (uint8 i = 0; ; i++)
     {
         if (!name_hashes[i])
             return 0;

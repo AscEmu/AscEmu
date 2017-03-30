@@ -2139,7 +2139,7 @@ class SERVER_DECL Spell : public EventableObject
                     return true;
             }
 
-            for (SpellTargetsList::iterator itr = ModeratedTargets.begin(); itr != ModeratedTargets.end(); ++itr)
+            for (auto itr = ModeratedTargets.begin(); itr != ModeratedTargets.end(); ++itr)
                 if ((*itr).TargetGuid == guid)
                     return true;
 

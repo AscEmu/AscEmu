@@ -390,9 +390,7 @@ Spell::~Spell()
     {
         m_targetUnits[i].clear();
     }
-
-    std::map<uint64, Aura*>::iterator itr;
-    for (itr = m_pendingAuras.begin(); itr != m_pendingAuras.end(); ++itr)
+    for (auto itr = m_pendingAuras.begin(); itr != m_pendingAuras.end(); ++itr)
     {
         if (itr->second != NULL)
             delete itr->second;
@@ -430,7 +428,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
     float r = range * range;
     uint8 did_hit_result;
 
-    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (auto itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         // don't add objects that are not units and that are dead
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
@@ -644,7 +642,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
     }
     float srcx = m_caster->GetPositionX(), srcy = m_caster->GetPositionY(), srcz = m_caster->GetPositionZ();
 
-    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (auto itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
             continue;
@@ -698,7 +696,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
     }
     float srcx = m_caster->GetPositionX(), srcy = m_caster->GetPositionY(), srcz = m_caster->GetPositionZ();
 
-    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (auto itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
             continue;
@@ -1564,7 +1562,7 @@ void Spell::cast(bool check)
                     }
                 }
 
-                for (SpellTargetsList::iterator itr = ModeratedTargets.begin(); itr != ModeratedTargets.end(); ++itr)
+                for (auto itr = ModeratedTargets.begin(); itr != ModeratedTargets.end(); ++itr)
                 {
                     HandleModeratedTarget(itr->TargetGuid);
                 }
@@ -1935,8 +1933,7 @@ void Spell::finish(bool successful)
         if (!(hasAttribute(ATTRIBUTES_ON_NEXT_ATTACK) && !m_triggeredSpell) && !isTamingQuestSpell)
         {
             uint32 numTargets = 0;
-            TargetsList::iterator itr = UniqueTargets.begin();
-            for (; itr != UniqueTargets.end(); ++itr)
+            for (auto itr = UniqueTargets.begin(); itr != UniqueTargets.end(); ++itr)
             {
                 if (GET_TYPE_FROM_GUID(*itr) == HIGHGUID_TYPE_UNIT)
                 {
@@ -2157,16 +2154,15 @@ void Spell::SendSpellStart()
 void Spell::SendSpellGo()
 {
     // Fill UniqueTargets
-    TargetsList::iterator i, j;
-    for (uint8 x = 0; x < 3; x++)
+    for (uint8_t x = 0; x < 3; ++x)
     {
         if (GetSpellInfo()->Effect[x])
         {
             bool add = true;
-            for (i = m_targetUnits[x].begin(); i != m_targetUnits[x].end(); ++i)
+            for (auto i = m_targetUnits[x].begin(); i != m_targetUnits[x].end(); ++i)
             {
                 add = true;
-                for (j = UniqueTargets.begin(); j != UniqueTargets.end(); ++j)
+                for (auto j = UniqueTargets.begin(); j != UniqueTargets.end(); ++j)
                 {
                     if ((*j) == (*i))
                     {
@@ -2336,8 +2332,7 @@ void Spell::SendSpellGo()
 
 void Spell::writeSpellGoTargets(WorldPacket* data)
 {
-    TargetsList::iterator i;
-    for (i = UniqueTargets.begin(); i != UniqueTargets.end(); ++i)
+    for (auto i = UniqueTargets.begin(); i != UniqueTargets.end(); ++i)
     {
         //		SendCastSuccess(*i);
         *data << *i;
@@ -2356,10 +2351,10 @@ void Spell::writeSpellMissedTargets(WorldPacket* data)
      * 6 = Evade
      * 7 = Immune
      */
-    SpellTargetsList::iterator i;
+
     if (u_caster && u_caster->isAlive())
     {
-        for (i = ModeratedTargets.begin(); i != ModeratedTargets.end(); ++i)
+        for (auto  i = ModeratedTargets.begin(); i != ModeratedTargets.end(); ++i)
         {
             *data << (*i).TargetGuid;       // uint64
             *data << (*i).TargetModType;    // uint8
@@ -2374,7 +2369,7 @@ void Spell::writeSpellMissedTargets(WorldPacket* data)
         }
     }
     else
-        for (i = ModeratedTargets.begin(); i != ModeratedTargets.end(); ++i)
+        for (auto i = ModeratedTargets.begin(); i != ModeratedTargets.end(); ++i)
         {
             *data << (*i).TargetGuid;       // uint64
             *data << (*i).TargetModType;    // uint8
@@ -3616,16 +3611,14 @@ uint8 Spell::CanCast(bool tolerate)
             }
         }
 
-        /**
-         *	check if we have the required gameobject focus
-         */
+        /* check if we have the required gameobject focus */
         float focusRange;
 
         if (GetSpellInfo()->RequiresSpellFocus)
         {
             bool found = false;
 
-            for (std::set<Object*>::iterator itr = p_caster->GetInRangeSetBegin(); itr != p_caster->GetInRangeSetEnd(); ++itr)
+            for (auto itr = p_caster->GetInRangeSetBegin(); itr != p_caster->GetInRangeSetEnd(); ++itr)
             {
                 if (!(*itr)->IsGameObject())
                     continue;
@@ -4758,8 +4751,7 @@ exit:
         SpellOverrideMap::iterator itr = p_caster->mSpellOverrideMap.find(GetSpellInfo()->Id);
         if (itr != p_caster->mSpellOverrideMap.end())
         {
-            ScriptOverrideList::iterator itrSO;
-            for (itrSO = itr->second->begin(); itrSO != itr->second->end(); ++itrSO)
+            for (auto itrSO = itr->second->begin(); itrSO != itr->second->end(); ++itrSO)
             {
                 value += RandomUInt((*itrSO)->damage);
             }
@@ -5333,15 +5325,12 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         {
             case 54172: //Paladin - Divine Storm heal effect
             {
-                int dmg = (int)CalculateDamage(u_caster, unitTarget, MELEE, 0, sSpellCustomizations.GetSpellInfo(53385));    //1 hit
+                int dmg = (int)CalculateDamage(u_caster, unitTarget, MELEE, 0, sSpellCustomizations.GetSpellInfo(53385)); // 1 hit
                 int target = 0;
                 uint8 did_hit_result;
-                std::set<Object*>::iterator itr, itr2;
 
-                for (itr2 = u_caster->GetInRangeSetBegin(); itr2 != u_caster->GetInRangeSetEnd();)
+                for (auto itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
                 {
-                    itr = itr2;
-                    ++itr2;
                     if ((*itr)->IsUnit() && static_cast<Unit*>(*itr)->isAlive() && IsInrange(u_caster, (*itr), 8) && (u_caster->GetPhase() & (*itr)->GetPhase()))
                     {
                         did_hit_result = DidHit(sSpellCustomizations.GetSpellInfo(53385)->Effect[0], static_cast<Unit*>(*itr));
@@ -5417,7 +5406,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
         std::vector<Unit*> target_threat;
         int count = 0;
         Creature* tmp_creature;
-        for (std::set<Object*>::iterator itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
+        for (auto itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
         {
             if (!(*itr)->IsCreature())
                 continue;
@@ -5427,7 +5416,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
             if (!tmp_creature->isInCombat() || (tmp_creature->GetAIInterface()->getThreatByPtr(u_caster) == 0 && tmp_creature->GetAIInterface()->getThreatByPtr(unitTarget) == 0))
                 continue;
 
-            if (!(u_caster->GetPhase() & (*itr)->GetPhase()))     //Can't see, can't be a threat
+            if (!(u_caster->GetPhase() & (*itr)->GetPhase())) // Can't see, can't be a threat
                 continue;
 
             target_threat.push_back(tmp_creature);
@@ -5438,7 +5427,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
 
         amount = amount / count;
 
-        for (std::vector<Unit*>::iterator itr = target_threat.begin(); itr != target_threat.end(); ++itr)
+        for (auto itr = target_threat.begin(); itr != target_threat.end(); ++itr)
         {
             (*itr)->GetAIInterface()->HealReaction(u_caster, unitTarget, m_spellInfo, amount);
         }
@@ -5623,7 +5612,7 @@ void Spell::SafeAddTarget(TargetsList* tgt, uint64 guid)
 
 void Spell::SafeAddMissedTarget(uint64 guid)
 {
-    for (SpellTargetsList::iterator i = ModeratedTargets.begin(); i != ModeratedTargets.end(); ++i)
+    for (auto i = ModeratedTargets.begin(); i != ModeratedTargets.end(); ++i)
         if ((*i).TargetGuid == guid)
         {
             //LOG_DEBUG("[SPELL] Something goes wrong in spell target system");
@@ -5637,7 +5626,7 @@ void Spell::SafeAddMissedTarget(uint64 guid)
 
 void Spell::SafeAddModeratedTarget(uint64 guid, uint16 type)
 {
-    for (SpellTargetsList::iterator i = ModeratedTargets.begin(); i != ModeratedTargets.end(); ++i)
+    for (auto i = ModeratedTargets.begin(); i != ModeratedTargets.end(); ++i)
         if ((*i).TargetGuid == guid)
         {
             //LOG_DEBUG("[SPELL] Something goes wrong in spell target system");
@@ -5665,13 +5654,13 @@ bool Spell::Reflect(Unit* refunit)
             return false;
     }
 
-    for (std::list<struct ReflectSpellSchool*>::iterator i = refunit->m_reflectSpellSchool.begin(); i != refunit->m_reflectSpellSchool.end(); ++i)
+    for (auto i = refunit->m_reflectSpellSchool.begin(); i != refunit->m_reflectSpellSchool.end(); ++i)
     {
         if ((*i)->school == -1 || (*i)->school == (int32)GetSpellInfo()->School)
         {
             if (Rand((float)(*i)->chance))
             {
-                //the god blessed special case : mage - Frost Warding = is an augmentation to frost warding
+                // the god blessed special case : mage - Frost Warding = is an augmentation to frost warding
                 if ((*i)->require_aura_hash && !refunit->HasAurasWithNameHash((*i)->require_aura_hash))
                     continue;
 

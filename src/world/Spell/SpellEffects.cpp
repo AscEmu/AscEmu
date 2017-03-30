@@ -620,7 +620,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             case SPELL_HASH_METEOR_SLASH:
             {
                 uint32 splitCount = 0;
-                for (std::set<Object*>::iterator itr = u_caster->GetInRangeOppFactsSetBegin(); itr != u_caster->GetInRangeOppFactsSetEnd(); ++itr)
+                for (auto itr = u_caster->GetInRangeOppFactsSetBegin(); itr != u_caster->GetInRangeOppFactsSetEnd(); ++itr)
                 {
                     if ((*itr)->isInFront(u_caster) && u_caster->CalcDistance((*itr)) <= 65)
                         splitCount++;
@@ -1078,7 +1078,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 if (u_caster != nullptr)
                 {
                     int splitCount = 0;
-                    for (std::set<Object*>::iterator itr = u_caster->GetInRangeOppFactsSetBegin(); itr != u_caster->GetInRangeOppFactsSetEnd(); ++itr)
+                    for (auto itr = u_caster->GetInRangeOppFactsSetBegin(); itr != u_caster->GetInRangeOppFactsSetEnd(); ++itr)
                     {
                         if ((*itr)->isInFront(u_caster))
                             splitCount++;
@@ -2103,7 +2103,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
 
             uint32 discovered_recipe = 0;
 
-            for (std::set<ProfessionDiscovery*>::iterator itr = objmgr.ProfessionDiscoveryTable.begin(); itr != objmgr.ProfessionDiscoveryTable.end(); ++itr)
+            for (auto itr = objmgr.ProfessionDiscoveryTable.begin(); itr != objmgr.ProfessionDiscoveryTable.end(); ++itr)
             {
                 ProfessionDiscovery* pf = *itr;
                 if (spellid == pf->SpellId && p_caster->_GetSkillLineCurrent(skill_line_ability->skilline) >= pf->SkillValue && !p_caster->HasSpell(pf->SpellToDiscover) && Rand(pf->Chance))
@@ -2912,7 +2912,7 @@ void Spell::SpellEffectTriggerMissile(uint32 i) // Trigger Missile
     float spellRadius = GetRadius(i);
 
     ///\todo Following should be / is probably in SpellTarget code
-    for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+    for (auto itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         if (!((*itr)->IsUnit()) || !static_cast< Unit* >((*itr))->isAlive())
             continue;
@@ -3438,7 +3438,7 @@ void Spell::SpellEffectDispel(uint32 i) // Dispel
         data << GetSpellInfo()->Id;
         data << uint8(0);               // unused
         data << uint32(dispelledSpells.size());
-        for (std::list< uint32 >::iterator itr = dispelledSpells.begin(); itr != dispelledSpells.end(); ++itr)
+        for (auto itr = dispelledSpells.begin(); itr != dispelledSpells.end(); ++itr)
         {
             data << uint32(*itr);       // dispelled spell id
             data << uint8(0);           // 0 = dispelled, else cleansed
@@ -5379,7 +5379,8 @@ void Spell::SpellEffectSpellSteal(uint32 i)
         data << GetSpellInfo()->Id;
         data << uint8(0);               // unused
         data << uint32(stealedSpells.size());
-        for (std::list< uint32 >::iterator itr = stealedSpells.begin(); itr != stealedSpells.end(); ++itr)
+
+        for (auto itr = stealedSpells.begin(); itr != stealedSpells.end(); ++itr)
         {
             data << uint32(*itr);       // stealed spell id
             data << uint8(1);           // 0 = dispelled, else cleansed

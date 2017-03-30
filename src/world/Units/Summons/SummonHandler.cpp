@@ -67,7 +67,7 @@ void SummonHandler::RemoveSummonFromSlot(uint8 slot, bool del)
 
 void SummonHandler::ExpireSummonsInSlot()
 {
-    for (std::array< Unit*, SUMMON_SLOTS >::iterator itr = summonslots.begin(); itr != summonslots.end(); ++itr)
+    for (auto itr = summonslots.begin(); itr != summonslots.end(); ++itr)
     {
         Unit* u = *itr;
 

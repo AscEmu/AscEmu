@@ -382,9 +382,6 @@ void AIInterface::_UpdateTargets()
     if (m_Unit->GetMapMgr() == NULL)
         return;
 
-    AssistTargetSet::iterator i, i2;
-    TargetMap::iterator itr, it2;
-
     // Find new Assist Targets and remove old ones
     if (m_AIState == STATE_FLEEING)
     {
@@ -399,13 +396,12 @@ void AIInterface::_UpdateTargets()
     {
         m_updateAssist = false;
 
-        for (i = m_assistTargets.begin(); i != m_assistTargets.end();)
+        for (auto i = m_assistTargets.begin(); i != m_assistTargets.end(); ++i)
         {
-            i2 = i++;
-            if ((*i2) == NULL || (*i2)->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
-                !(*i2)->isAlive() || m_Unit->GetDistanceSq((*i2)) >= 2500.0f || !(*i2)->isInCombat() || !((*i2)->m_phase & m_Unit->m_phase))
+            if ((*i) == NULL || (*i)->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
+                !(*i)->isAlive() || m_Unit->GetDistanceSq((*i)) >= 2500.0f || !(*i)->isInCombat() || !((*i)->m_phase & m_Unit->m_phase))
             {
-                m_assistTargets.erase(i2);
+                m_assistTargets.erase(i);
             }
         }
     }
@@ -416,14 +412,12 @@ void AIInterface::_UpdateTargets()
  
         LockAITargets(true);
 
-        for (itr = m_aiTargets.begin(); itr != m_aiTargets.end();)
+        for (auto itr = m_aiTargets.begin(); itr != m_aiTargets.end(); ++itr)
         {
-            it2 = itr++;
-
-            Unit* ai_t = m_Unit->GetMapMgr()->GetUnit(it2->first);
+            Unit* ai_t = m_Unit->GetMapMgr()->GetUnit(itr->first);
             if (ai_t == NULL)
             {
-                m_aiTargets.erase(it2);
+                m_aiTargets.erase(itr);
             }
             else
             {
@@ -442,7 +436,7 @@ void AIInterface::_UpdateTargets()
 
                 if (ai_t->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() || !ai_t->isAlive() || ((!instance && m_Unit->GetDistanceSq(ai_t) >= 6400.0f) || !(ai_t->m_phase & m_Unit->m_phase)))
                 {
-                    m_aiTargets.erase(it2);
+                    m_aiTargets.erase(itr);
                 }
             }
         }
@@ -1232,9 +1226,9 @@ Unit* AIInterface::FindTarget()
                 continue;
             if (tmpPlr->m_invisible)
                 continue;
-            if (!tmpPlr->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP))    //PvP Guard Attackable.
+            if (!tmpPlr->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_CONT_PVP)) // PvP Guard Attackable.
                 continue;
-            if (!(tmpPlr->m_phase & m_Unit->m_phase))   //Not in the same phase, skip this target
+            if (!(tmpPlr->m_phase & m_Unit->m_phase)) // Not in the same phase, skip this target
                 continue;
 
             dist = m_Unit->GetDistanceSq(tmpPlr);
@@ -1275,11 +1269,8 @@ Unit* AIInterface::FindTarget()
 
     //we have a high chance that we will agro a player
     //this is slower then oppfaction list BUT it has a lower chance that contains invalid pointers
-    for (pitr2 = m_Unit->GetInRangePlayerSetBegin(); pitr2 != m_Unit->GetInRangePlayerSetEnd();)
+    for (auto pitr2 = m_Unit->GetInRangePlayerSetBegin(); pitr2 != m_Unit->GetInRangePlayerSetEnd(); ++pitr2)
     {
-        pitr = pitr2;
-        ++pitr2;
-
         pUnit = static_cast< Player* >(*pitr);
 
         if (UnsafeCanOwnerAttackUnit(pUnit) == false)
@@ -1288,7 +1279,7 @@ Unit* AIInterface::FindTarget()
         //on blizz there is no Z limit check
         dist = m_Unit->GetDistance2dSq(pUnit);
 
-        if (dist > distance)     // we want to find the CLOSEST target
+        if (dist > distance) // we want to find the CLOSEST target
             continue;
 
         if (dist <= _CalcAggroRange(pUnit))
@@ -1314,30 +1305,27 @@ Unit* AIInterface::FindTarget()
     {
         m_updateTargetsTimer2 = getMSTime() + TARGET_UPDATE_INTERVAL;
 
-        for (itr2 = m_Unit->GetInRangeSetBegin(); itr2 != m_Unit->GetInRangeSetEnd();)
+        for (itr2 = m_Unit->GetInRangeSetBegin(); itr2 != m_Unit->GetInRangeSetEnd(); ++itr2)
         {
-            itr = itr2;
-            ++itr2;
-
-            if (!(*itr)->IsUnit())
+            if (!(*itr2)->IsUnit())
                 continue;
 
-            pUnit = static_cast< Unit* >(*itr);
+            pUnit = static_cast< Unit* >(*itr2);
 
             if (UnsafeCanOwnerAttackUnit(pUnit) == false)
                 continue;
 
-            //on blizz there is no Z limit check
+            // on blizz there is no Z limit check
             dist = m_Unit->GetDistance2dSq(pUnit);
 
-            if (pUnit->m_faction && pUnit->m_faction->Faction == 28)// only Attack a critter if there is no other Enemy in range
+            if (pUnit->m_faction && pUnit->m_faction->Faction == 28) // only Attack a critter if there is no other Enemy in range
             {
-                if (dist < 225.0f)    // was 10
+                if (dist < 225.0f) // was 10
                     critterTarget = pUnit;
                 continue;
             }
 
-            if (dist > distance)     // we want to find the CLOSEST target
+            if (dist > distance) // we want to find the CLOSEST target
                 continue;
 
             if (dist <= _CalcAggroRange(pUnit))
@@ -1366,11 +1354,11 @@ Unit* AIInterface::FindTarget()
 
     if (target)
     {
-        /*        if (m_isGuard)
-                {
-                m_Unit->m_runSpeed = m_Unit->m_base_runSpeed * 2.0f;
-                m_fastMove = true;
-                }*/
+        /*if (m_isGuard)
+          {
+              m_Unit->m_runSpeed = m_Unit->m_base_runSpeed * 2.0f;
+              m_fastMove = true;
+          }*/
 
         AttackReaction(target, 1, 0);
 
@@ -1437,13 +1425,10 @@ Unit* AIInterface::FindTargetForSpell(AI_Spell* sp)
 
 bool AIInterface::FindFriends(float dist)
 {
-
     if (m_Unit->GetMapMgr() == NULL)
         return false;
 
     bool result = false;
-    TargetMap::iterator it;
-
     Unit* pUnit;
 
     for (auto itr = m_Unit->GetInRangeSetBegin(); itr != m_Unit->GetInRangeSetEnd(); ++itr)
@@ -1464,7 +1449,7 @@ bool AIInterface::FindFriends(float dist)
             continue;
         }
 
-        if (!(pUnit->m_phase & m_Unit->m_phase))   //We can't help a friendly unit if it is not in our phase
+        if (!(pUnit->m_phase & m_Unit->m_phase)) // We can't help a friendly unit if it is not in our phase
             continue;
 
         if (isCombatSupport(m_Unit, pUnit) && (pUnit->GetAIInterface()->getAIState() == STATE_IDLE || pUnit->GetAIInterface()->getAIState() == STATE_SCRIPTIDLE))      //Not sure
@@ -1479,7 +1464,7 @@ bool AIInterface::FindFriends(float dist)
 
                 LockAITargets(true);
 
-                for (it = m_aiTargets.begin(); it != m_aiTargets.end(); ++it)
+                for (auto it = m_aiTargets.begin(); it != m_aiTargets.end(); ++it)
                 {
                     Unit* ai_t = m_Unit->GetMapMgr()->GetUnit(it->first);
                     if (ai_t && pUnit->GetAIInterface() && isHostile(ai_t, pUnit))
@@ -2974,26 +2959,22 @@ Unit* AIInterface::GetSecondHated()
 
     LockAITargets(true);
 
-    TargetMap::iterator itr;
-    for (auto it2 = m_aiTargets.begin(); it2 != m_aiTargets.end();)
+    for (auto iter = m_aiTargets.begin(); iter != m_aiTargets.end();++iter)
     {
-        itr = it2;
-        ++it2;
-
         /* check the target is valid */
-        Unit* ai_t = m_Unit->GetMapMgr()->GetUnit(itr->first);
+        Unit* ai_t = m_Unit->GetMapMgr()->GetUnit(iter->first);
         if (!ai_t || ai_t->GetInstanceID() != m_Unit->GetInstanceID() || !ai_t->isAlive() || !isAttackable(m_Unit, ai_t))
         {
-            m_aiTargets.erase(itr);
+            m_aiTargets.erase(iter);
             continue;
         }
 
-        if ((itr->second + ai_t->GetThreatModifyer()) > currentTarget.second &&
+        if ((iter->second + ai_t->GetThreatModifyer()) > currentTarget.second &&
             ai_t != ResultUnit)
         {
             /* new target */
             currentTarget.first = ai_t;
-            currentTarget.second = itr->second + ai_t->GetThreatModifyer();
+            currentTarget.second = iter->second + ai_t->GetThreatModifyer();
             m_currentHighestThreat = currentTarget.second;
         }
     }

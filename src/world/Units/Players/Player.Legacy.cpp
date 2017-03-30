@@ -1885,7 +1885,7 @@ void Player::ActivateSpec(uint8 spec)
     }
 
     // remove old talents
-    for (std::map<uint32, uint8>::iterator itr = m_specs[OldSpec].talents.begin(); itr != m_specs[OldSpec].talents.end(); ++itr)
+    for (auto itr = m_specs[OldSpec].talents.begin(); itr != m_specs[OldSpec].talents.end(); ++itr)
     {
         auto talent_info = sTalentStore.LookupEntry(itr->first);
         if (talent_info == nullptr)
@@ -1905,7 +1905,7 @@ void Player::ActivateSpec(uint8 spec)
     }
 
     //add talents from new spec
-    for (std::map<uint32, uint8>::iterator itr = m_specs[m_talentActiveSpec].talents.begin(); itr != m_specs[m_talentActiveSpec].talents.end(); ++itr)
+    for (auto itr = m_specs[m_talentActiveSpec].talents.begin(); itr != m_specs[m_talentActiveSpec].talents.end(); ++itr)
     {
         auto talent_info = sTalentStore.LookupEntry(itr->first);
         if (talent_info == nullptr)
@@ -1937,14 +1937,14 @@ void Player::_SavePet(QueryBuffer* buf)
         buf->AddQuery("DELETE FROM playerpets WHERE ownerguid = %u", GetLowGUID());
 
     Pet* summon = GetSummon();
-    if (summon && summon->IsInWorld() && summon->GetPetOwner() == this)    // update PlayerPets array with current pet's info
+    if (summon && summon->IsInWorld() && summon->GetPetOwner() == this) // update PlayerPets array with current pet's info
     {
         PlayerPet* pPet = GetPlayerPet(summon->m_PetNumber);
         if (!pPet || pPet->active == false)
             summon->UpdatePetInfo(true);
         else summon->UpdatePetInfo(false);
 
-        if (!summon->Summon)       // is a pet
+        if (!summon->Summon) // is a pet
         {
             // save pet spellz
             PetSpellMap::iterator itr = summon->mSpells.begin();
@@ -1968,7 +1968,7 @@ void Player::_SavePet(QueryBuffer* buf)
 
     ss.rdbuf()->str("");
 
-    for (std::map<uint32, PlayerPet*>::iterator itr = m_Pets.begin(); itr != m_Pets.end(); ++itr)
+    for (auto itr = m_Pets.begin(); itr != m_Pets.end(); ++itr)
     {
         ss.rdbuf()->str("");
 
@@ -2030,12 +2030,10 @@ void Player::AddSummonSpell(uint32 Entry, uint32 SpellID)
         SummonSpells[Entry].insert(SpellID);
     else
     {
-        std::set<uint32>::iterator it3;
-        for (auto it2 = itr->second.begin(); it2 != itr->second.end();)
+        for (auto it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
         {
-            it3 = it2++;
-            if (sSpellCustomizations.GetSpellInfo(*it3)->custom_NameHash == sp->custom_NameHash)
-                itr->second.erase(it3);
+            if (sSpellCustomizations.GetSpellInfo(*it2)->custom_NameHash == sp->custom_NameHash)
+                itr->second.erase(it2);
         }
         itr->second.insert(SpellID);
     }
@@ -5923,7 +5921,7 @@ void Player::OnRemoveInRangeObject(Object* pObj)
 
     // We've just gone out of range of our pet :(
     std::list<Pet*> summons = GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end();)
+    for (auto itr = summons.begin(); itr != summons.end();)
     {
         Pet* summon = (*itr);
         ++itr;
@@ -6016,9 +6014,7 @@ void Player::LoadTaxiMask(const char* data)
     std::vector<std::string> tokens = Util::SplitStringBySeperator(data, " ");
 
     int index;
-    std::vector<std::string>::iterator iter;
-
-    for (iter = tokens.begin(), index = 0;
+    for (auto iter = tokens.begin(), index = 0;
          (index < 12) && (iter != tokens.end()); ++iter, ++index)
     {
         m_taximask[index] = atol((*iter).c_str());
@@ -6456,7 +6452,7 @@ void Player::Reset_Spells()
         removeSpell((*itr), false, false, 0);
     }
 
-    for (std::set<uint32>::iterator sp = info->spell_list.begin(); sp != info->spell_list.end(); ++sp)
+    for (auto sp = info->spell_list.begin(); sp != info->spell_list.end(); ++sp)
     {
         if (*sp)
         {
@@ -7759,13 +7755,10 @@ ByteBuffer* Player::GetAndRemoveSplinePacket(uint64 guid)
 
 void Player::ClearSplinePackets()
 {
-    SplineMap::iterator it2;
-    for (SplineMap::iterator itr = _splineMap.begin(); itr != _splineMap.end();)
+    for (auto itr = _splineMap.begin(); itr != _splineMap.end();++itr)
     {
-        it2 = itr;
-        ++itr;
-        delete it2->second;
-        _splineMap.erase(it2);
+        delete itr->second;
+        _splineMap.erase(itr);
     }
     _splineMap.clear();
 }
@@ -7902,7 +7895,7 @@ void Player::ZoneUpdate(uint32 ZoneId)
     if (!m_channels.empty() && at)
     {
         // change to zone name, not area name
-        for (std::set<Channel*>::iterator itr = m_channels.begin(), nextitr; itr != m_channels.end(); itr = nextitr)
+        for (auto itr = m_channels.begin(), nextitr; itr != m_channels.end(); itr = nextitr)
         {
             nextitr = itr;
             ++nextitr;
@@ -7990,7 +7983,7 @@ void Player::UpdateChannels(uint16 AreaID)
         }
     }
 
-    for (i = m_channels.begin(); i != m_channels.end();)
+    for (auto i = m_channels.begin(); i != m_channels.end();)
     {
         c = *i;
         ++i;
@@ -8302,7 +8295,7 @@ void Player::EndDuel(uint8 WinCondition)
 
     // Call off pet
     std::list<Pet*> summons = GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    for (auto itr = summons.begin(); itr != summons.end(); ++itr)
     {
         (*itr)->clearAllCombatTargets();
         (*itr)->GetAIInterface()->SetUnitToFollow(this);
@@ -8311,7 +8304,7 @@ void Player::EndDuel(uint8 WinCondition)
     }
 
     std::list<Pet*> duelingWithSummons = DuelingWith->GetSummons();
-    for (std::list<Pet*>::iterator itr = duelingWithSummons.begin(); itr != duelingWithSummons.end(); ++itr)
+    for (auto itr = duelingWithSummons.begin(); itr != duelingWithSummons.end(); ++itr)
     {
         (*itr)->clearAllCombatTargets();
         (*itr)->GetAIInterface()->SetUnitToFollow(this);
@@ -8779,7 +8772,7 @@ void Player::UpdatePvPArea()
 void Player::BuildFlagUpdateForNonGroupSet(uint32 index, uint32 flag)
 {
     Object* curObj;
-    for (Object::InRangeSet::iterator iter = m_objectsInRange.begin(); iter != m_objectsInRange.end();)
+    for (auto iter = m_objectsInRange.begin(); iter != m_objectsInRange.end();)
     {
         curObj = *iter;
         ++iter;
@@ -9044,7 +9037,6 @@ void Player::CalculateBaseStats()
 void Player::CompleteLoading()
 {
     // cast passive initial spells      -- grep note: these shouldn't require plyr to be in world
-    SpellSet::iterator itr;
     SpellInfo* info;
     SpellCastTargets targets;
     targets.m_unitTarget = this->GetGUID();
@@ -9057,7 +9049,7 @@ void Player::CompleteLoading()
         CastSpell(this, sSpellCustomizations.GetSpellInfo(2457), true);
     }
 
-    for (itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+    for (auto itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
         info = sSpellCustomizations.GetSpellInfo(*itr);
 
@@ -12852,7 +12844,7 @@ void Player::Phase(uint8 command, uint32 newphase)
     }
 
     std::list<Pet*> summons = GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    for (auto itr = summons.begin(); itr != summons.end(); ++itr)
     {
         Pet* p = *itr;
         p->Phase(command, newphase);

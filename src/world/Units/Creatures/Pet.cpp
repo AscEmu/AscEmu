@@ -530,7 +530,7 @@ void Pet::SendActionFeedback(PetActionFeedback value)
 
 void Pet::InitializeSpells()
 {
-    for (PetSpellMap::iterator itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+    for (auto itr = mSpells.begin(); itr != mSpells.end(); ++itr)
     {
         SpellInfo* info = itr->first;
 
@@ -1335,7 +1335,7 @@ void Pet::RemoveSpell(SpellInfo* sp, bool showUnlearnSpell)
                 }
             }
         }
-        for (std::list<AI_Spell*>::iterator it = m_aiInterface->m_spells.begin(); it != m_aiInterface->m_spells.end(); ++it)
+        for (auto it = m_aiInterface->m_spells.begin(); it != m_aiInterface->m_spells.end(); ++it)
         {
             if ((*it) == itr->second)
             {

@@ -200,8 +200,8 @@ void Spell::AddScriptedOrSpellFocusTargets(uint32 i, uint32 TargetType, float r,
 void Spell::AddConeTargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets)
 {
     TargetsList* list = &m_targetUnits[i];
-    ObjectSet::iterator itr;
-    for (itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
+
+    for (auto itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>((*itr))->isAlive())
             continue;
