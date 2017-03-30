@@ -57,9 +57,9 @@ Map::~Map()
                 if (spawns[x][y])
                 {
                     CellSpawns* sp = spawns[x][y];
-                    for (CreatureSpawnList::iterator i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
+                    for (auto i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
                         delete(*i);
-                    for (GameobjectSpawnList::iterator it = sp->GameobjectSpawns.begin(); it != sp->GameobjectSpawns.end(); ++it)
+                    for (auto it = sp->GameobjectSpawns.begin(); it != sp->GameobjectSpawns.end(); ++it)
                         delete(*it);
 
                     delete sp;
@@ -70,9 +70,9 @@ Map::~Map()
         }
     }
 
-    for (CreatureSpawnList::iterator i = staticSpawns.CreatureSpawns.begin(); i != staticSpawns.CreatureSpawns.end(); ++i)
+    for (auto i = staticSpawns.CreatureSpawns.begin(); i != staticSpawns.CreatureSpawns.end(); ++i)
         delete *i;
-    for (GameobjectSpawnList::iterator i = staticSpawns.GameobjectSpawns.begin(); i != staticSpawns.GameobjectSpawns.end(); ++i)
+    for (auto i = staticSpawns.GameobjectSpawns.begin(); i != staticSpawns.GameobjectSpawns.end(); ++i)
         delete *i;
 }
 
@@ -119,9 +119,9 @@ void Map::LoadSpawns(bool reload)
                 if (spawns[x][y])
                 {
                     CellSpawns* sp = spawns[x][y];
-                    for (CreatureSpawnList::iterator i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
+                    for (auto i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
                         delete(*i);
-                    for (GameobjectSpawnList::iterator it = sp->GameobjectSpawns.begin(); it != sp->GameobjectSpawns.end(); ++it)
+                    for (auto it = sp->GameobjectSpawns.begin(); it != sp->GameobjectSpawns.end(); ++it)
                         delete(*it);
 
                     delete sp;
@@ -132,7 +132,7 @@ void Map::LoadSpawns(bool reload)
     }
 
     CreatureSpawnCount = 0;
-    for (std::set<std::string>::iterator tableiterator = CreatureSpawnsTables.begin(); tableiterator != CreatureSpawnsTables.end(); ++tableiterator)
+    for (auto tableiterator = CreatureSpawnsTables.begin(); tableiterator != CreatureSpawnsTables.end(); ++tableiterator)
     {
         QueryResult* creature_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE Map = %u", (*tableiterator).c_str(), this->_mapId);
         if (creature_spawn_result)
@@ -200,7 +200,7 @@ void Map::LoadSpawns(bool reload)
                     cspawn->bytes1 = fields[12].GetUInt32();
                     cspawn->bytes2 = fields[13].GetUInt32();
                     cspawn->emote_state = fields[14].GetUInt32();
-                    //cspawn->respawnNpcLink = fields[15].GetUInt32();
+                    //cspawn->respawnNpcLink = fields[15].GetUInt32(); // sch:
                     cspawn->channel_spell = fields[16].GetUInt16();
                     cspawn->channel_target_go = fields[17].GetUInt32();
                     cspawn->channel_target_creature = fields[18].GetUInt32();
@@ -235,7 +235,7 @@ void Map::LoadSpawns(bool reload)
     }
 
     GameObjectSpawnCount = 0;
-    for (std::set<std::string>::iterator tableiterator = GameObjectSpawnsTables.begin(); tableiterator != GameObjectSpawnsTables.end(); ++tableiterator)
+    for (auto tableiterator = GameObjectSpawnsTables.begin(); tableiterator != GameObjectSpawnsTables.end(); ++tableiterator)
     {
         QueryResult* gobject_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE map = %u", (*tableiterator).c_str(), this->_mapId);
         if (gobject_spawn_result)

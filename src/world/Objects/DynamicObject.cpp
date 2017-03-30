@@ -222,7 +222,7 @@ void DynamicObject::Remove()
         return;
     }
 
-    for (std::set< uint64 >::iterator itr = targets.begin(); itr != targets.end(); ++itr)
+    for (auto itr = targets.begin(); itr != targets.end(); ++itr)
     {
 
         uint64 TargetGUID = *itr;

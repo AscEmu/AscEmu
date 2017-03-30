@@ -143,12 +143,10 @@ void MapCell::SetActivity(bool state)
     }
 
     _active = state;
-
 }
 
 void MapCell::RemoveObjects()
 {
-    ObjectSet::iterator itr;
     //uint32 ltime = getMSTime();
 
     //Zack : we are delaying cell removal so transports can see objects far away. We are waiting for the event to remove us
@@ -156,7 +154,7 @@ void MapCell::RemoveObjects()
         return;
 
     /* delete objects in pending respawn state */
-    for (itr = _respawnObjects.begin(); itr != _respawnObjects.end(); ++itr)
+    for (auto itr = _respawnObjects.begin(); itr != _respawnObjects.end(); ++itr)
     {
         switch ((*itr)->GetTypeId())
         {
@@ -177,14 +175,14 @@ void MapCell::RemoveObjects()
     }
     _respawnObjects.clear();
 
-    //This time it's simpler! We just remove everything :)
-    for (objects_iterator = _objects.begin(); objects_iterator != _objects.end();)
+    // This time it's simpler! We just remove everything :)
+    for (auto objects_iterator = _objects.begin(); objects_iterator != _objects.end();)
     {
         Object* obj = (*objects_iterator);
 
         ++objects_iterator;
 
-        //If MapUnloadTime is non-zero, a transport could get deleted here (when it arrives to a cell that's scheduled to be unloaded because players left from it), so don't delete it! - By: VLack aka. VLsoft
+        // If MapUnloadTime is non-zero, a transport could get deleted here (when it arrives to a cell that's scheduled to be unloaded because players left from it), so don't delete it! - By: VLack aka. VLsoft
         if (!bServerShutdown && obj->IsGameObject() && static_cast< GameObject* >(obj)->GetGameObjectProperties()->type == GAMEOBJECT_TYPE_MO_TRANSPORT)
             continue;
 
@@ -205,7 +203,7 @@ void MapCell::RemoveObjects()
 
 void MapCell::LoadObjects(CellSpawns* sp)
 {
-    //we still have mobs loaded on cell. There is no point of loading them again
+    // we still have mobs loaded on cell. There is no point of loading them again
     if (_loaded == true)
         return;
 
@@ -213,9 +211,9 @@ void MapCell::LoadObjects(CellSpawns* sp)
     Instance* pInstance = _mapmgr->pInstance;
     InstanceBossInfoMap* bossInfoMap = objmgr.m_InstanceBossInfoMap[_mapmgr->GetMapId()];
 
-    if (sp->CreatureSpawns.size())      //got creatures
+    if (sp->CreatureSpawns.size()) // got creatures
     {
-        for (CreatureSpawnList::iterator i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
+        for (auto i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
         {
             uint32 respawnTimeOverride = 0;
             if (pInstance)
@@ -223,7 +221,7 @@ void MapCell::LoadObjects(CellSpawns* sp)
                 if (bossInfoMap != NULL && IS_PERSISTENT_INSTANCE(pInstance))
                 {
                     bool skip = false;
-                    for (std::set<uint32>::iterator killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
+                    for (auto killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
                     {
                         // Do not spawn the killed boss.
                         if ((*killedNpc) == (*i)->entry)
@@ -242,7 +240,7 @@ void MapCell::LoadObjects(CellSpawns* sp)
                     if (skip)
                         continue;
 
-                    for (InstanceBossInfoMap::iterator bossInfo = bossInfoMap->begin(); bossInfo != bossInfoMap->end(); ++bossInfo)
+                    for (auto bossInfo = bossInfoMap->begin(); bossInfo != bossInfoMap->end(); ++bossInfo)
                     {
                         if (pInstance->m_killedNpcs.find(bossInfo->second->creatureid) == pInstance->m_killedNpcs.end() && bossInfo->second->trash.find((*i)->id) != bossInfo->second->trash.end())
                         {
@@ -272,14 +270,14 @@ void MapCell::LoadObjects(CellSpawns* sp)
             {
                 CreatureSpawn* spawn = (*i);
                 LOG_ERROR("Failed spawning Creature %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
-                delete c;       //missing proto or something of that kind
+                delete c; // missing proto or something of that kind
             }
         }
     }
 
-    if (sp->GameobjectSpawns.size())    //got GOs
+    if (sp->GameobjectSpawns.size()) // got GOs
     {
-        for (GameobjectSpawnList::iterator i = sp->GameobjectSpawns.begin(); i != sp->GameobjectSpawns.end(); ++i)
+        for (auto i = sp->GameobjectSpawns.begin(); i != sp->GameobjectSpawns.end(); ++i)
         {
             GameObject* go = _mapmgr->CreateGameObject((*i)->entry);
 
@@ -292,7 +290,7 @@ void MapCell::LoadObjects(CellSpawns* sp)
             {
                 GameobjectSpawn* spawn = (*i);
                 LOG_ERROR("Failed spawning GameObject %u with spawnId %u MapId %u", spawn->entry, spawn->id, _mapmgr->GetMapId());
-                delete go;          //missing proto or something of that kind
+                delete go; // missing proto or something of that kind
             }
         }
     }

@@ -1040,8 +1040,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
 
             if (go_quest_giver != nullptr && go_quest_giver->HasQuests())
             {
-                std::list<QuestRelation*>::iterator itr;
-                for (itr = go_quest_giver->QuestsBegin(); itr != go_quest_giver->QuestsEnd(); ++itr)
+                for (auto itr = go_quest_giver->QuestsBegin(); itr != go_quest_giver->QuestsEnd(); ++itr)
                 {
                     QuestRelation* qr = (*itr);
                     if (qr != NULL)

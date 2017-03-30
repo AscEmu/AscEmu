@@ -26,8 +26,7 @@
 EventableObject::~EventableObject()
 {
     /* decrement event count on all events */
-    EventMap::iterator itr = m_events.begin();
-    for (; itr != m_events.end(); ++itr)
+    for (auto itr = m_events.begin(); itr != m_events.end(); ++itr)
     {
         itr->second->deleted = true;
         itr->second->DecRef();
@@ -314,15 +313,14 @@ EventableObjectHolder::~EventableObjectHolder()
     sEventMgr.RemoveEventHolder(this);
 
     m_insertPoolLock.Acquire();
-    EventList::iterator insertPoolItr = m_insertPool.begin();
-    for (; insertPoolItr != m_insertPool.end(); ++insertPoolItr)
+    for (auto insertPoolItr = m_insertPool.begin(); insertPoolItr != m_insertPool.end(); ++insertPoolItr)
         (*insertPoolItr)->DecRef();
     m_insertPoolLock.Release();
 
     /* decrement events reference count */
     m_lock.Acquire();
-    EventList::iterator itr = m_events.begin();
-    for (; itr != m_events.end(); ++itr)
+
+    for (auto itr = m_events.begin(); itr != m_events.end(); ++itr)
         (*itr)->DecRef();
     m_lock.Release();
 }
@@ -436,7 +434,7 @@ void EventableObject::event_Relocate()
         if (nh == NULL)
         {
             //set instaceId to 0 to each event of this EventableObject, so EventableObjectHolder::Update() will remove them from its EventList.
-            for (EventMap::iterator itr = m_events.begin(); itr != m_events.end(); ++itr)
+            for (auto itr = m_events.begin(); itr != m_events.end(); ++itr)
             {
                 itr->second->instanceId = 0;
             }
@@ -494,15 +492,13 @@ void EventableObjectHolder::AddObject(EventableObject* obj)
         // The other thread is obviously occupied. We have to use an insert pool here, otherwise
         // if 2 threads relocate at once we'll hit a deadlock situation.
         m_insertPoolLock.Acquire();
-        EventMap::iterator it2;
 
-        for (EventMap::iterator itr = obj->m_events.begin(); itr != obj->m_events.end(); ++itr)
+        for (auto itr = obj->m_events.begin(); itr != obj->m_events.end(); ++itr)
         {
             // ignore deleted events (shouldn't be any in here, actually)
             if (itr->second->deleted)
             {
-                /*it2 = itr++;
-                itr->second->DecRef();
+                /*itr->second->DecRef();
                 obj->m_events.erase(it2);*/
                 continue;
             }
@@ -520,7 +516,7 @@ void EventableObjectHolder::AddObject(EventableObject* obj)
     }
     else
     {
-        for (EventMap::iterator itr = obj->m_events.begin(); itr != obj->m_events.end(); ++itr)
+        for (auto itr = obj->m_events.begin(); itr != obj->m_events.end(); ++itr)
         {
             // ignore deleted events
             if (itr->second->deleted)

@@ -60,15 +60,13 @@ void Mailbox::DeleteMessage(uint32 MessageId, bool sql)
 
 void Mailbox::CleanupExpiredMessages()
 {
-    MessageMap::iterator it2;
     uint32 curtime = (uint32)UNIXTIME;
 
-    for (auto itr = Messages.begin(); itr != Messages.end();)
+    for (auto itr = Messages.begin(); itr != Messages.end(); ++itr)
     {
-        it2 = itr++;
-        if (it2->second.expire_time && it2->second.expire_time < curtime)
+        if (itr->second.expire_time && itr->second.expire_time < curtime)
         {
-            Messages.erase(it2);
+            Messages.erase(itr);
         }
     }
 }

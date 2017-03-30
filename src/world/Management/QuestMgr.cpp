@@ -109,7 +109,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
                 }
             }
         }
-        if (!questscompleted)   // If none of listed quests is done, next part isn't available.
+        if (!questscompleted) // If none of listed quests is done, next part isn't available.
             return QMGR_QUEST_NOT_AVAILABLE;
     }
 

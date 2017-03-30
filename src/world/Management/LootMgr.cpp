@@ -224,7 +224,6 @@ LootMgr::~LootMgr()
 void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
 {
     std::vector< std::pair< uint32, std::vector< tempy > > > db_cache;
-    std::vector< std::pair< uint32, std::vector< tempy > > >::iterator itr;
     db_cache.reserve(10000);
     LootStore::iterator tab;
     QueryResult* result = WorldDatabase.Query("SELECT * FROM %s ORDER BY entryid ASC", szTableName);
@@ -272,7 +271,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
     total = (uint32)db_cache.size();
 
     uint32 itemid;
-    for (itr = db_cache.begin(); itr != db_cache.end(); ++itr)
+    for (auto itr = db_cache.begin(); itr != db_cache.end(); ++itr)
     {
         entry_id = (*itr).first;
         if (LootTable->end() == LootTable->find(entry_id))
@@ -830,7 +829,7 @@ void LootRoll::Finalize()
     data.Initialize(SMSG_LOOT_REMOVED);
     data << uint8(_slotid);
     Player* plr;
-    for (LooterSet::iterator itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
+    for (auto itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
     {
         if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
             plr->GetSession()->SendPacket(&data);
