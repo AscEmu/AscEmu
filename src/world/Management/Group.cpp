@@ -98,7 +98,7 @@ bool SubGroup::AddPlayer(PlayerInfo* info)
 
 bool SubGroup::HasMember(uint32 guid)
 {
-    for (GroupMembersSet::iterator itr = m_GroupMembers.begin(); itr != m_GroupMembers.end(); ++itr)
+    for (auto itr = m_GroupMembers.begin(); itr != m_GroupMembers.end(); ++itr)
         if ((*itr) != NULL)
             if ((*itr)->guid == guid)
                 return true;
@@ -214,7 +214,6 @@ void Group::Update()
     }
 
     WorldPacket data(50 + (m_MemberCount * 20));
-    GroupMembersSet::iterator itr1, itr2;
 
     uint8 i = 0, j = 0;
     uint8 flags;
@@ -228,7 +227,7 @@ void Group::Update()
 
         if (sg1 != NULL)
         {
-            for (itr1 = sg1->GetGroupMembersBegin(); itr1 != sg1->GetGroupMembersEnd(); ++itr1)
+            for (auto itr1 = sg1->GetGroupMembersBegin(); itr1 != sg1->GetGroupMembersEnd(); ++itr1)
             {
                 // should never happen but just in case
                 if ((*itr1) == NULL)
@@ -274,7 +273,7 @@ void Group::Update()
 
                     if (sg2 != NULL)
                     {
-                        for (itr2 = sg2->GetGroupMembersBegin(); itr2 != sg2->GetGroupMembersEnd(); ++itr2)
+                        for (auto itr2 = sg2->GetGroupMembersBegin(); itr2 != sg2->GetGroupMembersEnd(); ++itr2)
                         {
                             if ((*itr1) == (*itr2))   // skip self
                                 continue;
@@ -382,7 +381,7 @@ void SubGroup::Disband()
     data2 << uint8(0);
     data2 << uint32(m_Parent->m_difficulty);	// you leave the group
 
-    for (GroupMembersSet::iterator itr = m_GroupMembers.begin(); itr != m_GroupMembers.end();)
+    for (auto itr = m_GroupMembers.begin(); itr != m_GroupMembers.end();)
     {
         if ((*itr) != nullptr)
         {
@@ -411,14 +410,13 @@ void SubGroup::Disband()
 
 Player* Group::FindFirstPlayer()
 {
-    GroupMembersSet::iterator itr;
     m_groupLock.Acquire();
 
     for (uint8 i = 0; i < m_SubGroupCount; i++)
     {
         if (m_SubGroups[i] != NULL)
         {
-            for (itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
+            for (auto itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
             {
                 if ((*itr) != NULL)
                 {
@@ -592,12 +590,11 @@ void Group::SetLooter(Player* pPlayer, uint8 method, uint16 threshold)
 
 void Group::SendPacketToAllButOne(WorldPacket* packet, Player* pSkipTarget)
 {
-    GroupMembersSet::iterator itr;
     uint8 i = 0;
     m_groupLock.Acquire();
     for (; i < m_SubGroupCount; i++)
     {
-        for (itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
+        for (auto itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
         {
             if ((*itr)->m_loggedInPlayer != NULL && (*itr)->m_loggedInPlayer != pSkipTarget && (*itr)->m_loggedInPlayer->GetSession())
                 (*itr)->m_loggedInPlayer->GetSession()->SendPacket(packet);
@@ -614,7 +611,7 @@ void Group::OutPacketToAllButOne(uint16 op, uint16 len, const void* data, Player
     m_groupLock.Acquire();
     for (; i < m_SubGroupCount; i++)
     {
-        for (itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
+        for (auto itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
         {
             if ((*itr)->m_loggedInPlayer != NULL && (*itr)->m_loggedInPlayer != pSkipTarget)
                 (*itr)->m_loggedInPlayer->GetSession()->OutPacket(op, len, data);
@@ -868,7 +865,7 @@ void Group::SaveToDB()
         uint8 j = 0;
 
         // For each member in the group, while membercount is less than 5 (guard clause), add their ID to query
-        for (GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); j < 5 && itr != m_SubGroups[i]->GetGroupMembersEnd(); ++j, ++itr)
+        for (auto itr = m_SubGroups[i]->GetGroupMembersBegin(); j < 5 && itr != m_SubGroups[i]->GetGroupMembersEnd(); ++j, ++itr)
         {
             ss << (*itr)->guid << ",";
         }
@@ -1081,7 +1078,7 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
             if (m_SubGroups[i] == NULL)
                 continue;
 
-            for (GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd();)
+            for (auto itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd();)
             {
                 plr = (*itr)->m_loggedInPlayer;
                 ++itr;
@@ -1125,7 +1122,7 @@ void Group::UpdateAllOutOfRangePlayersFor(Player* pPlayer)
         if (m_SubGroups[i] == NULL)
             continue;
 
-        for (GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
+        for (auto itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd(); ++itr)
         {
             plr = (*itr)->m_loggedInPlayer;
             if (!plr || plr == pPlayer) continue;
@@ -1227,7 +1224,7 @@ void Group::SetDungeonDifficulty(uint8 diff)
     Lock();
     for (uint8 i = 0; i < GetSubGroupCount(); ++i)
     {
-        for (GroupMembersSet::iterator itr = GetSubGroup(i)->GetGroupMembersBegin(); itr != GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
+        for (auto itr = GetSubGroup(i)->GetGroupMembersBegin(); itr != GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
         {
             if ((*itr)->m_loggedInPlayer)
             {
@@ -1247,7 +1244,7 @@ void Group::SetRaidDifficulty(uint8 diff)
 
     for (uint8 i = 0; i < GetSubGroupCount(); ++i)
     {
-        for (GroupMembersSet::iterator itr = GetSubGroup(i)->GetGroupMembersBegin(); itr != GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
+        for (auto itr = GetSubGroup(i)->GetGroupMembersBegin(); itr != GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
         {
             if ((*itr)->m_loggedInPlayer)
             {
@@ -1335,7 +1332,7 @@ Player* Group::GetRandomPlayerInRangeButSkip(Player* plr, float range, Player* p
         if (s_grp == NULL)
             continue;
 
-        for (GroupMembersSet::iterator itr = s_grp->GetGroupMembersBegin(); itr != s_grp->GetGroupMembersEnd(); ++itr)
+        for (auto itr = s_grp->GetGroupMembersBegin(); itr != s_grp->GetGroupMembersEnd(); ++itr)
         {
             // Skip NULLs and not alive players
             if (!((*itr)->m_loggedInPlayer != NULL && (*itr)->m_loggedInPlayer->isAlive()))
@@ -1394,7 +1391,6 @@ void Group::UpdateAchievementCriteriaForInrange(Object* o, AchievementCriteriaTy
 
 void Group::Teleport(WorldSession* m_session)
 {
-	GroupMembersSet::iterator itr1, itr2;
 	uint8 i = 0;
 	SubGroup* sg1 = NULL;
 	SubGroup* sg2 = NULL;
@@ -1406,7 +1402,7 @@ void Group::Teleport(WorldSession* m_session)
 
 		if(sg1 != NULL)
 		{
-			for(itr1 = sg1->GetGroupMembersBegin(); itr1 != sg1->GetGroupMembersEnd(); ++itr1)
+			for(auto itr1 = sg1->GetGroupMembersBegin(); itr1 != sg1->GetGroupMembersEnd(); ++itr1)
 			{
 				if((*itr1) == NULL)
 					continue;
@@ -1415,7 +1411,7 @@ void Group::Teleport(WorldSession* m_session)
 				if(member == NULL || !member->IsInWorld())
 					continue;
 				sChatHandler.HandleSummonCommand(member->GetName(), m_session);
-				//member->SafeTeleport(map, instanceid, x, y, z, o);
+				// member->SafeTeleport(map, instanceid, x, y, z, o);
 			}
 		}
 	}
@@ -1463,7 +1459,7 @@ void Group::GoOffline(Player* p)
             if (m_SubGroups[i] == NULL)
                 continue;
 
-            for (GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd();)
+            for (auto itr = m_SubGroups[i]->GetGroupMembersBegin(); itr != m_SubGroups[i]->GetGroupMembersEnd();)
             {
                 Player* plr = (*itr)->m_loggedInPlayer;
                 ++itr;

@@ -398,8 +398,7 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* 
     // Pack together enchantment fields
     if (Enchantments.size() > 0)
     {
-        EnchantmentMap::iterator itr = Enchantments.begin();
-        for (; itr != Enchantments.end(); ++itr)
+        for (auto itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
         {
             if (itr->second.RemoveAtLogout)
                 continue;
@@ -905,21 +904,17 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 
 void Item::ApplyEnchantmentBonuses()
 {
-    EnchantmentMap::iterator iter;
-    for (auto itr = Enchantments.begin(); itr != Enchantments.end();)
+    for (auto itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
     {
-        iter = itr++;
-        ApplyEnchantmentBonus(iter->first, true);
+        ApplyEnchantmentBonus(itr->first, true);
     }
 }
 
 void Item::RemoveEnchantmentBonuses()
 {
-    EnchantmentMap::iterator iter;
-    for (auto itr = Enchantments.begin(); itr != Enchantments.end();)
+    for (auto itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
     {
-        iter = itr++;
-        ApplyEnchantmentBonus(iter->first, false);
+        ApplyEnchantmentBonus(itr->first, false);
     }
 }
 
@@ -935,13 +930,13 @@ int32 Item::FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const
     if (GetItemProperties()->SocketBonus)
         GemSlotsReserve++;
 
-    if (random_type == RANDOMPROPERTY)        // random prop
+    if (random_type == RANDOMPROPERTY)    // random prop
     {
         for (uint32 Slot = PROP_ENCHANTMENT_SLOT_2; Slot < MAX_ENCHANTMENT_SLOT; ++Slot)
             if (GetEnchantmentId(Slot) == 0)
                 return Slot;
     }
-    else if (random_type == RANDOMSUFFIX)    // random suffix
+    else if (random_type == RANDOMSUFFIX) // random suffix
     {
         for (uint32 Slot = PROP_ENCHANTMENT_SLOT_0; Slot < MAX_ENCHANTMENT_SLOT; ++Slot)
             if (GetEnchantmentId(Slot) == 0)
@@ -1021,28 +1016,22 @@ void Item::SendEnchantTimeUpdate(uint32 Slot, uint32 Duration)
 
 void Item::RemoveAllEnchantments(bool OnlyTemporary)
 {
-    EnchantmentMap::iterator iter;
-    for (auto itr = Enchantments.begin(); itr != Enchantments.end();)
+    for (auto itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
     {
-        iter = itr++;
-
-        if (OnlyTemporary && iter->second.Duration == 0)
+        if (OnlyTemporary && itr->second.Duration == 0)
             continue;
 
-        RemoveEnchantment(iter->first);
+        RemoveEnchantment(itr->first);
     }
 }
 
 void Item::RemoveRelatedEnchants(DBC::Structures::SpellItemEnchantmentEntry const* newEnchant)
 {
-    EnchantmentMap::iterator iter;
-    for (auto itr = Enchantments.begin(); itr != Enchantments.end();)
+    for (auto itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
     {
-        iter = itr++;
-
-        if (iter->second.Enchantment->Id == newEnchant->Id || (iter->second.Enchantment->EnchantGroups > 1 && newEnchant->EnchantGroups > 1))
+        if (itr->second.Enchantment->Id == newEnchant->Id || (itr->second.Enchantment->EnchantGroups > 1 && newEnchant->EnchantGroups > 1))
         {
-            RemoveEnchantment(iter->first);
+            RemoveEnchantment(itr->first);
         }
     }
 }
@@ -1278,8 +1267,6 @@ void Item::SendDurationUpdate()
     m_owner->SendPacket(&durationupdate);
 
 }
-
-
 
 // "Stackable items (such as Frozen Orbs and gems) and
 // charged items that can be purchased with an alternate currency are not eligible. "

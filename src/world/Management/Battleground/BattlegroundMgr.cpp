@@ -141,7 +141,7 @@ void CBattlegroundManager::HandleBattlegroundListPacket(WorldSession* m_session,
 
     // Append the battlegrounds
     m_instanceLock.Acquire();
-    for (std::map<uint32, CBattleground*>::iterator itr = m_instances[BattlegroundType].begin(); itr != m_instances[BattlegroundType].end(); ++itr)
+    for (auto itr = m_instances[BattlegroundType].begin(); itr != m_instances[BattlegroundType].end(); ++itr)
     {
         if (itr->second->CanPlayerJoin(m_session->GetPlayer(), BattlegroundType) && !itr->second->HasEnded())
         {
@@ -225,7 +225,7 @@ void CBattlegroundManager::HandleBattlegroundJoin(WorldSession* m_session, World
 
 void ErasePlayerFromList(uint32 guid, std::list<uint32>* l)
 {
-    for (std::list<uint32>::iterator itr = l->begin(); itr != l->end(); ++itr)
+    for (auto itr = l->begin(); itr != l->end(); ++itr)
     {
         if ((*itr) == guid)
         {
@@ -934,7 +934,7 @@ void CBattlegroundManager::RemoveGroupFromQueues(Group* grp)
     m_queueLock.Acquire();
     for (uint32 i = BATTLEGROUND_ARENA_2V2; i < BATTLEGROUND_ARENA_5V5 + 1; ++i)
     {
-        for (std::list<uint32>::iterator itr = m_queuedGroups[i].begin(); itr != m_queuedGroups[i].end();)
+        for (auto itr = m_queuedGroups[i].begin(); itr != m_queuedGroups[i].end();)
         {
             if ((*itr) == grp->GetID())
                 itr = m_queuedGroups[i].erase(itr);
@@ -943,7 +943,7 @@ void CBattlegroundManager::RemoveGroupFromQueues(Group* grp)
         }
     }
 
-    for (GroupMembersSet::iterator itr = grp->GetSubGroup(0)->GetGroupMembersBegin(); itr != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itr)
+    for (auto itr = grp->GetSubGroup(0)->GetGroupMembersBegin(); itr != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itr)
         if ((*itr)->m_loggedInPlayer)
             SendBattlefieldStatus((*itr)->m_loggedInPlayer, BGSTATUS_NOFLAGS, 0, 0, 0, 0, 0);
 
@@ -954,7 +954,7 @@ void CBattlegroundManager::RemoveGroupFromQueues(Group* grp)
 bool CBattlegroundManager::CanCreateInstance(uint32 Type, uint32 LevelGroup)
 {
     /*uint32 lc = 0;
-    for (map<uint32, CBattleground*>::iterator itr = m_instances[Type].begin(); itr != m_instances[Type].end(); ++itr)
+    for (auto itr = m_instances[Type].begin(); itr != m_instances[Type].end(); ++itr)
     {
     if (itr->second->GetLevelGroup() == LevelGroup)
     {
@@ -1162,9 +1162,8 @@ void CBattlegroundManager::DeleteBattleground(CBattleground* bg)
         m_instances[i].erase(bg->GetId());
 
         // erase any queued players
-        std::list<uint32>::iterator itr = m_queuedPlayers[i][j].begin();
         std::list<uint32>::iterator it2;
-        for (; itr != m_queuedPlayers[i][j].end();)
+        for (auto itr = m_queuedPlayers[i][j].begin(); itr != m_queuedPlayers[i][j].end();)
         {
             it2 = itr++;
             plr = objmgr.GetPlayer(*it2);
@@ -1296,12 +1295,11 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
             return;
         }
 
-        GroupMembersSet::iterator itx;
         if (!rated_match)
         {
             // add all players normally.. bleh ;P
             pGroup->Lock();
-            for (itx = pGroup->GetSubGroup(0)->GetGroupMembersBegin(); itx != pGroup->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+            for (auto itx = pGroup->GetSubGroup(0)->GetGroupMembersBegin(); itx != pGroup->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
             {
                 if ((*itx)->m_loggedInPlayer && !(*itx)->m_loggedInPlayer->m_bgIsQueued && !(*itx)->m_loggedInPlayer->m_bg)
                     HandleArenaJoin((*itx)->m_loggedInPlayer->GetSession(), BattlegroundType, 0, 0);
@@ -1337,7 +1335,7 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
             }
 
             pGroup->Lock();
-            for (itx = pGroup->GetSubGroup(0)->GetGroupMembersBegin(); itx != pGroup->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+            for (auto itx = pGroup->GetSubGroup(0)->GetGroupMembersBegin(); itx != pGroup->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
             {
                 if (maxplayers == 0)
                 {
@@ -1372,9 +1370,9 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
                 }
             }
             WorldPacket data(SMSG_GROUP_JOINED_BATTLEGROUND, 4);
-            data << uint32(6);      // all arenas
+            data << uint32(6); // all arenas
 
-            for (itx = pGroup->GetSubGroup(0)->GetGroupMembersBegin(); itx != pGroup->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+            for (auto itx = pGroup->GetSubGroup(0)->GetGroupMembersBegin(); itx != pGroup->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
             {
                 if ((*itx)->m_loggedInPlayer)
                 {

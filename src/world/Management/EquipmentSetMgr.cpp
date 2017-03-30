@@ -33,7 +33,7 @@ namespace Arcemu
 
     EquipmentSetMgr::~EquipmentSetMgr()
     {
-        for (EquipmentSetStorage::iterator itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
+        for (auto itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
             delete itr->second;
 
         EquipmentSets.clear();
@@ -132,7 +132,7 @@ namespace Arcemu
 
         buf->AddQueryNA(ds.str().c_str());
 
-        for (EquipmentSetStorage::iterator itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
+        for (auto itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
         {
             EquipmentSet* set = itr->second;
 
@@ -164,7 +164,7 @@ namespace Arcemu
     {
         data << uint32(EquipmentSets.size());
 
-        for (EquipmentSetStorage::iterator itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
+        for (auto itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
         {
             EquipmentSet* set = itr->second;
 

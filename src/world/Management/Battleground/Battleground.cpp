@@ -71,7 +71,7 @@ CBattleground::~CBattleground()
         PlayerInfo* inf;
         for (uint32 j = 0; j < m_groups[i]->GetSubGroupCount(); ++j)
         {
-            for (GroupMembersSet::iterator itr = m_groups[i]->GetSubGroup(j)->GetGroupMembersBegin(); itr != m_groups[i]->GetSubGroup(j)->GetGroupMembersEnd();)
+            for (auto itr = m_groups[i]->GetSubGroup(j)->GetGroupMembersBegin(); itr != m_groups[i]->GetSubGroup(j)->GetGroupMembersEnd();)
             {
                 inf = (*itr);
                 ++itr;
@@ -188,7 +188,7 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         *data << uint32((m_players[0].size() + m_players[1].size()) - m_invisGMs);
         for (uint8 i = 0; i < 2; ++i)
         {
-            for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+            for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
             {
                 if ((*itr)->m_isGmInvisible)
                     continue;
@@ -220,7 +220,7 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         uint32 FieldCount = GetFieldCount(GetType());
         for (uint8 i = 0; i < 2; ++i)
         {
-            for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+            for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
             {
                 ARCEMU_ASSERT(*itr != NULL);
                 if ((*itr)->m_isGmInvisible)
@@ -521,7 +521,7 @@ void CBattleground::AddHonorToTeam(uint32 team, uint32 amount)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    for (std::set< Player* >::iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
+    for (auto itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
     {
         Player* p = *itr;
         HonorHandler::AddHonorPointsToPlayer(p, amount);
@@ -532,7 +532,7 @@ void CBattleground::CastSpellOnTeam(uint32 team, uint32 spell)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    for (std::set< Player* >::iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
+    for (auto itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
     {
         Player* p = *itr;
         p->CastSpell(p, spell, false);
@@ -543,7 +543,7 @@ void CBattleground::RemoveAuraFromTeam(uint32 team, uint32 aura)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    for (std::set< Player* >::iterator itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
+    for (auto itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
     {
         Player* p = *itr;
         p->RemoveAura(aura);
@@ -583,7 +583,7 @@ void CBattleground::DistributePacketToAll(WorldPacket* packet)
 
     for (uint8 i = 0; i < 2; ++i)
     {
-        for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+        for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
             if ((*itr) && (*itr)->GetSession())
                 (*itr)->GetSession()->SendPacket(packet);
     }
@@ -593,7 +593,7 @@ void CBattleground::DistributePacketToTeam(WorldPacket* packet, uint32 Team)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    for (std::set<Player*>::iterator itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
+    for (auto itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
     {
         if ((*itr) && (*itr)->GetSession())
             (*itr)->GetSession()->SendPacket(packet);
@@ -728,7 +728,7 @@ void CBattleground::EventCountdown()
 
         for (uint8 i = 0; i < 2; ++i)
         {
-            for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+            for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
                 {
                     (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(46), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
@@ -745,7 +745,7 @@ void CBattleground::EventCountdown()
 
         for (uint8 i = 0; i < 2; ++i)
         {
-            for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+            for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
                 {
                     (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(47), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
@@ -762,7 +762,7 @@ void CBattleground::EventCountdown()
 
         for (uint8 i = 0; i < 2; ++i)
         {
-            for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+            for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
                 {
                     (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(48), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
@@ -778,7 +778,7 @@ void CBattleground::EventCountdown()
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         for (uint8 i = 0; i < 2; ++i)
         {
-            for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+            for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
                 if ((*itr) && (*itr)->GetSession())
                 {
                     (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(49), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
@@ -811,18 +811,16 @@ void CBattleground::Close()
     m_ended = true;
     for (uint8 i = 0; i < 2; ++i)
     {
-        std::set<Player*>::iterator itr;
-        std::set<uint32>::iterator it2;
         uint32 guid;
         Player* plr;
-        for (itr = m_players[i].begin(); itr != m_players[i].end();)
+        for (auto itr = m_players[i].begin(); itr != m_players[i].end();)
         {
             plr = *itr;
             ++itr;
             RemovePlayer(plr, false);
         }
 
-        for (it2 = m_pendPlayers[i].begin(); it2 != m_pendPlayers[i].end();)
+        for (auto it2 = m_pendPlayers[i].begin(); it2 != m_pendPlayers[i].end();)
         {
             guid = *it2;
             ++it2;
@@ -963,12 +961,11 @@ void CBattleground::EventResurrectPlayers()
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
     Player* plr;
-    std::set<uint32>::iterator itr;
     std::map<Creature*, std::set<uint32> >::iterator i;
     WorldPacket data(50);
     for (i = m_resurrectMap.begin(); i != m_resurrectMap.end(); ++i)
     {
-        for (itr = i->second.begin(); itr != i->second.end(); ++itr)
+        for (auto itr = i->second.begin(); itr != i->second.end(); ++itr)
         {
             plr = m_mapMgr->GetPlayer(*itr);
             if (plr && plr->IsDead())
@@ -1036,8 +1033,8 @@ void CBattleground::QueueAtNearestSpiritGuide(Player* plr, Creature* old)
     Creature* cl = nullptr;
     std::set<uint32> *closest = nullptr;
     m_lock.Acquire();
-    std::map<Creature*, std::set<uint32> >::iterator itr = m_resurrectMap.begin();
-    for (; itr != m_resurrectMap.end(); ++itr)
+
+    for (auto itr = m_resurrectMap.begin(); itr != m_resurrectMap.end(); ++itr)
     {
         if (itr->first == old)
             continue;

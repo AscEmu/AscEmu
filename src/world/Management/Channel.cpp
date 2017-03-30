@@ -258,7 +258,7 @@ void Channel::SetOwner(Player* oldpl, Player* plr)
 
     if (plr == NULL)
     {
-        for (MemberMap::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
+        for (auto itr = m_members.begin(); itr != m_members.end(); ++itr)
         {
             if (itr->second & CHANNEL_MEMBER_FLAG_OWNER)
             {
@@ -285,7 +285,7 @@ void Channel::SetOwner(Player* oldpl, Player* plr)
     }
     else
     {
-        for (MemberMap::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
+        for (auto itr = m_members.begin(); itr != m_members.end(); ++itr)
         {
             if (itr->second & CHANNEL_MEMBER_FLAG_OWNER)
             {
@@ -917,7 +917,7 @@ void Channel::GetOwner(Player* plr)
         return;
     }
 
-    for (itr = m_members.begin(); itr != m_members.end(); ++itr)
+    for (auto itr = m_members.begin(); itr != m_members.end(); ++itr)
     {
         if (itr->second & CHANNEL_MEMBER_FLAG_OWNER)
         {
@@ -933,8 +933,7 @@ ChannelMgr::~ChannelMgr()
 {
     for (uint8 i = 0; i < 2; ++i)
     {
-        ChannelList::iterator itr = this->Channels[i].begin();
-        for (; itr != this->Channels[i].end(); ++itr)
+        for (auto itr = this->Channels[i].begin(); itr != this->Channels[i].end(); ++itr)
         {
             delete itr->second;
         }
@@ -945,7 +944,7 @@ ChannelMgr::~ChannelMgr()
 Channel::~Channel()
 {
     m_lock.Acquire();
-    for (MemberMap::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
+    for (auto itr = m_members.begin(); itr != m_members.end(); ++itr)
         itr->first->LeftChannel(this);
     m_lock.Release();
 }
@@ -953,14 +952,14 @@ Channel::~Channel()
 void Channel::SendToAll(WorldPacket* data)
 {
     Guard guard(m_lock);
-    for (MemberMap::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
+    for (auto itr = m_members.begin(); itr != m_members.end(); ++itr)
         itr->first->GetSession()->SendPacket(data);
 }
 
 void Channel::SendToAll(WorldPacket* data, Player* plr)
 {
     Guard guard(m_lock);
-    for (MemberMap::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
+    for (auto itr = m_members.begin(); itr != m_members.end(); ++itr)
     {
         if (itr->first != plr)
             itr->first->GetSession()->SendPacket(data);
@@ -1006,13 +1005,12 @@ Channel* ChannelMgr::GetCreateChannel(const char* name, Player* p, uint32 type_i
 
 Channel* ChannelMgr::GetChannel(const char* name, Player* p)
 {
-    ChannelList::iterator itr;
     ChannelList* cl = &Channels[0];
     if (seperatechannels && stricmp(name, sWorld.getGmClientChannel().c_str()))
         cl = &Channels[p->GetTeam()];
 
     lock.Acquire();
-    for (itr = cl->begin(); itr != cl->end(); ++itr)
+    for (auto itr = cl->begin(); itr != cl->end(); ++itr)
     {
         if (!stricmp(name, itr->first.c_str()))
         {
@@ -1027,13 +1025,12 @@ Channel* ChannelMgr::GetChannel(const char* name, Player* p)
 
 Channel* ChannelMgr::GetChannel(const char* name, uint32 team)
 {
-    ChannelList::iterator itr;
     ChannelList* cl = &Channels[0];
     if (seperatechannels && stricmp(name, sWorld.getGmClientChannel().c_str()))
         cl = &Channels[team];
 
     lock.Acquire();
-    for (itr = cl->begin(); itr != cl->end(); ++itr)
+    for (auto itr = cl->begin(); itr != cl->end(); ++itr)
     {
         if (!stricmp(name, itr->first.c_str()))
         {
@@ -1048,13 +1045,12 @@ Channel* ChannelMgr::GetChannel(const char* name, uint32 team)
 
 void ChannelMgr::RemoveChannel(Channel* chn)
 {
-    ChannelList::iterator itr;
     ChannelList* cl = &Channels[0];
     if (seperatechannels)
         cl = &Channels[chn->m_team];
 
     lock.Acquire();
-    for (itr = cl->begin(); itr != cl->end(); ++itr)
+    for (auto itr = cl->begin(); itr != cl->end(); ++itr)
     {
         if (itr->second == chn)
         {
@@ -1066,6 +1062,7 @@ void ChannelMgr::RemoveChannel(Channel* chn)
     }
 
     lock.Release();
+    // return NULL;
 }
 
 ChannelMgr::ChannelMgr()

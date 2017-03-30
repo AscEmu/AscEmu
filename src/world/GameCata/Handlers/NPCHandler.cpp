@@ -43,7 +43,7 @@ void WorldSession::SendTrainerList(Creature* pCreature)
         bool can_learn_primary_prof = GetPlayer()->getFreePrimaryProfessionPoints() < 2;
 
         uint32_t count = 0;
-        for (std::vector<TrainerSpell>::iterator itr = trainer->Spells.begin(); itr != trainer->Spells.end(); ++itr)
+        for (auto itr = trainer->Spells.begin(); itr != trainer->Spells.end(); ++itr)
         {
             pSpell = &(*itr);
 
@@ -149,7 +149,7 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
         return;
 
     TrainerSpell* pSpell = nullptr;
-    for (std::vector<TrainerSpell>::iterator itr = trainer->Spells.begin(); itr != trainer->Spells.end(); ++itr)
+    for (auto itr = trainer->Spells.begin(); itr != trainer->Spells.end(); ++itr)
     {
         if (itr->spell == TeachingSpellID)
         {
