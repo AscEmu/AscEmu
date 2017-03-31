@@ -49,7 +49,7 @@ bool ChatHandler::HandleGMTicketListCommand(const char* args, WorldSession* m_se
         if (plr == NULL)
             continue;
 
-        //        Player* aplr = ((*itr)->assignedToPlayer == 0 ? NULL : objmgr.GetPlayer((uint32)(*itr)->assignedToPlayer));
+        // Player* aplr = ((*itr)->assignedToPlayer == 0 ? NULL : objmgr.GetPlayer((uint32)(*itr)->assignedToPlayer));
 
         std::stringstream ss;
 

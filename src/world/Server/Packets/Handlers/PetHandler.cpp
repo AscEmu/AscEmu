@@ -44,7 +44,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
     recv_data >> action;
     //recv_data.hexlike();
 
-    //printf("Pet_Action: 0x%.4X 0x%.4X\n", misc, action);
+    // printf("Pet_Action: 0x%.4X 0x%.4X\n", misc, action);
 
     if (GET_TYPE_FROM_GUID(petGuid) == HIGHGUID_TYPE_UNIT)
     {
@@ -82,28 +82,27 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
 
     Unit* pTarget = NULL;
 
-    if (action == PET_ACTION_SPELL || action == PET_ACTION_SPELL_1 || action == PET_ACTION_SPELL_2 || (action == PET_ACTION_ACTION && misc == PET_ACTION_ATTACK))  // >> target
+    if (action == PET_ACTION_SPELL || action == PET_ACTION_SPELL_1 || action == PET_ACTION_SPELL_2 || (action == PET_ACTION_ACTION && misc == PET_ACTION_ATTACK)) // >> target
     {
         recv_data >> targetguid;
         pTarget = _player->GetMapMgr()->GetUnit(targetguid);
-        if (!pTarget) pTarget = pPet;    // target self
+        if (!pTarget) pTarget = pPet; // target self
     }
 
     std::list<Pet*> summons = _player->GetSummons();
     bool alive_summon = false;
-    for (auto itr = summons.begin(); itr != summons.end();)
+    for (auto itr = summons.begin(); itr != summons.end(); ++itr)
     {
         pPet = (*itr);
-        ++itr;
         if (!pPet->isAlive())
             continue;
-        alive_summon = true;//we found a an alive summon
+        alive_summon = true; // we found a an alive summon
         uint64 GUID = pPet->GetGUID();
         switch (action)
         {
             case PET_ACTION_ACTION:
             {
-                pPet->SetPetAction(misc);       // set current action
+                pPet->SetPetAction(misc); // set current action
                 switch (misc)
                 {
                     case PET_ACTION_ATTACK:
@@ -211,7 +210,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
             break;
             case PET_ACTION_STATE:
             {
-                if (misc == PET_ACTION_STAY)        // PET_STATE_PASSIVE
+                if (misc == PET_ACTION_STAY) // PET_STATE_PASSIVE
                 {
                     // stop attacking and run to owner
                     pPet->GetAIInterface()->WipeTargetList();
@@ -232,7 +231,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
 
         // Send pet action sound - WHEE THEY TALK
         WorldPacket actionp(SMSG_PET_ACTION_SOUND, 12);
-        actionp << GUID << uint32(1);                       //should we send only 1 sound for all the pets?
+        actionp << GUID << uint32(1); // should we send only 1 sound for all the pets?
         SendPacket(&actionp);
     }
     if (!alive_summon)
@@ -287,7 +286,7 @@ void WorldSession::HandleStablePet(WorldPacket& recv_data)
         return;
     pet->stablestate = STABLE_STATE_PASSIVE;
 
-    if (pPet != NULL)       //if pPet is NULL here then the pet is dead and we relogged.
+    if (pPet != NULL)       // if pPet is NULL here then the pet is dead and we relogged.
         pPet->Remove(true, true);
 
     WorldPacket data(1);

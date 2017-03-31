@@ -262,7 +262,6 @@ void LogonServer::CheckForDeadSockets()
     for (auto itr = _authSockets.begin(); itr != _authSockets.end(); ++itr)
     {
         s = (*itr);
-
         diff = t - s->GetLastRecv();
         if (diff > 300) // More than 5mins
         {

@@ -1439,7 +1439,7 @@ void MapMgr::_PerformObjectDuties()
 
     // Update creatures.
     {
-        for (creature_iterator = activeCreatures.begin(); creature_iterator != activeCreatures.end();)
+        for (auto creature_iterator = activeCreatures.begin(); creature_iterator != activeCreatures.end();)
         {
             Creature* ptr = *creature_iterator;
             ++creature_iterator;

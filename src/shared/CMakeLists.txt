@@ -4,6 +4,7 @@
 project(shared CXX)
 
 set(sources
+    ascemu_getopt.cpp
     CThreads.cpp
     CrashHandler.cpp
     Log.Legacy.cpp
@@ -25,7 +26,6 @@ set(sources
     Threading/AtomicCounter.cpp
     Threading/AtomicBoolean.cpp
     Threading/ConditionVariable.cpp
-    ascemu_getopt.cpp
     Auth/BigNumber.cpp
     Auth/MD5.cpp
     Auth/Sha1.cpp
@@ -42,87 +42,87 @@ set(sources
 )
 
 set(headers
-	Array.h
-	ascemu_getopt.h
+    ascemu_getopt.h
+    Array.h
     AscemuServerDefines.hpp
-	AuthCodes.h
-	ByteBuffer.h
+    AuthCodes.h
+    ByteBuffer.h
     ByteConverter.h
-	CallBack.h
-	CircularQueue.h
-	Common.Legacy.h
+    CallBack.h
+    CircularQueue.h
+    Common.Legacy.h
     CommonDefines.hpp
     CommonHelpers.hpp
     CommonTypes.hpp
-	CrashHandler.h
-	crc32.h
-	CRefcounter.h
-	CThreads.h
+    CrashHandler.h
+    crc32.h
+    CRefcounter.h
+    CThreads.h
     DynLib.hpp
-	Errors.h
-	FastQueue.h
-	FindFiles.hpp
-	FindFilesResult.hpp
-	LocationVector.h
-	Log.Legacy.h
-	MapFile.h
-	MapFileEntry.h
-	MersenneTwister.h
-	PerformanceCounter.hpp
-	PreallocatedQueue.h
-	printStackTrace.h
-	Database/DatabaseEnv.h
-	RC4Engine.h
-	Singleton.h
-	SysInfo.hpp
-	StackBuffer.h
-	StackTrace.h
-	StackWalker.h
-	TextFile.h
-	Timer.h
-	TLSObject.h
-	WorldPacket.h
-	WoWGuid.h
-	Auth/BigNumber.h
-	Auth/MD5.h
-	Auth/Sha1.h
-	Auth/WowCrypt.h
-	Config/Config.h
-	Database/Database.h
-	Database/Field.h
-	Database/MySQLDatabase.h
+    Errors.h
+    FastQueue.h
+    FindFiles.hpp
+    FindFilesResult.hpp
+    LocationVector.h
+    Log.Legacy.h
+    MapFile.h
+    MapFileEntry.h
+    MersenneTwister.h
+    PerformanceCounter.hpp
+    PreallocatedQueue.h
+    printStackTrace.h
+    Database/DatabaseEnv.h
+    RC4Engine.h
+    Singleton.h
+    SysInfo.hpp
+    StackBuffer.h
+    StackTrace.h
+    StackWalker.h
+    TextFile.h
+    Timer.h
+    TLSObject.h
+    WorldPacket.h
+    WoWGuid.h
+    Auth/BigNumber.h
+    Auth/MD5.h
+    Auth/Sha1.h
+    Auth/WowCrypt.h
+    Config/Config.h
+    Database/Database.h
+    Database/Field.h
+    Database/MySQLDatabase.h
     Exceptions/Exceptions.hpp
     Exceptions/PlayerExceptions.hpp
-	Network/CircularBuffer.h
-	Network/ListenSocketFreeBSD.h
-	Network/ListenSocketLinux.h
-	Network/ListenSocketWin32.h
-	Network/Network.h
+    Network/CircularBuffer.h
+    Network/ListenSocketFreeBSD.h
+    Network/ListenSocketLinux.h
+    Network/ListenSocketWin32.h
+    Network/Network.h
     Network/NetworkIncludes.hpp
-	Network/Socket.h
-	Network/SocketMgrFreeBSD.h
-	Network/SocketMgrLinux.h
-	Network/SocketMgrWin32.h
-	Network/SocketOps.h
-	Network/SocketDefines.h
-	Threading/AtomicBoolean.h
-	Threading/AtomicCounter.h
-	Threading/AtomicFloat.h
-	Threading/AtomicULong.h
-	Threading/ConditionVariable.h
-	Threading/Guard.h
-	Threading/LockedQueue.h
-	Threading/Mutex.h
-	Threading/Queue.h
-	Threading/RWLock.h
-	Threading/Threading.h
-	Threading/ThreadPool.h
-	Threading/ThreadStarter.h
-	
-	Common.hpp
-	Log.hpp
-	LogDefines.hpp
-	Util.hpp
+    Network/Socket.h
+    Network/SocketMgrFreeBSD.h
+    Network/SocketMgrLinux.h
+    Network/SocketMgrWin32.h
+    Network/SocketOps.h
+    Network/SocketDefines.h
+    Threading/AtomicBoolean.h
+    Threading/AtomicCounter.h
+    Threading/AtomicFloat.h
+    Threading/AtomicULong.h
+    Threading/ConditionVariable.h
+    Threading/Guard.h
+    Threading/LockedQueue.h
+    Threading/Mutex.h
+    Threading/Queue.h
+    Threading/RWLock.h
+    Threading/Threading.h
+    Threading/ThreadPool.h
+    Threading/ThreadStarter.h
+    
+    Common.hpp
+    Log.hpp
+    LogDefines.hpp
+    Util.hpp
 )
 
 if(WIN32)

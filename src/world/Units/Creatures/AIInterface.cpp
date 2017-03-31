@@ -1186,9 +1186,6 @@ Unit* AIInterface::FindTarget()
     Unit* target = NULL;
     Unit* critterTarget = NULL;
     float distance = 999999.0f; // that should do it.. :p
-    std::set<Object*>::iterator itr, itr2;
-    std::set< Object* >::iterator pitr, pitr2;
-    Unit* pUnit;
     float dist;
 
     // Don't remove this please! - dfighter
@@ -1269,10 +1266,9 @@ Unit* AIInterface::FindTarget()
 
     //we have a high chance that we will agro a player
     //this is slower then oppfaction list BUT it has a lower chance that contains invalid pointers
-    for (auto pitr2 = m_Unit->GetInRangePlayerSetBegin(); pitr2 != m_Unit->GetInRangePlayerSetEnd(); ++pitr2)
+    for (auto pitr = m_Unit->GetInRangePlayerSetBegin(); pitr != m_Unit->GetInRangePlayerSetEnd(); ++pitr)
     {
-        pUnit = static_cast< Player* >(*pitr);
-
+        Unit* pUnit = static_cast< Player* >(*pitr);
         if (UnsafeCanOwnerAttackUnit(pUnit) == false)
             continue;
 
@@ -1305,13 +1301,12 @@ Unit* AIInterface::FindTarget()
     {
         m_updateTargetsTimer2 = getMSTime() + TARGET_UPDATE_INTERVAL;
 
-        for (itr2 = m_Unit->GetInRangeSetBegin(); itr2 != m_Unit->GetInRangeSetEnd(); ++itr2)
+        for (auto itr2 = m_Unit->GetInRangeSetBegin(); itr2 != m_Unit->GetInRangeSetEnd(); ++itr2)
         {
             if (!(*itr2)->IsUnit())
                 continue;
 
-            pUnit = static_cast< Unit* >(*itr2);
-
+            Unit* pUnit = static_cast< Unit* >(*itr2);
             if (UnsafeCanOwnerAttackUnit(pUnit) == false)
                 continue;
 

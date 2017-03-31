@@ -376,8 +376,7 @@ void IPBanner::Reload()
 Realm* InformationCore::AddRealm(uint32 realm_id, Realm* rlm)
 {
     realmLock.Acquire();
-    std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
-
+    auto itr = m_realms.find(realm_id);
     if (itr == m_realms.end())
         m_realms.insert(std::make_pair(realm_id, rlm));
     else
@@ -394,7 +393,7 @@ Realm* InformationCore::GetRealm(uint32 realm_id)
     Realm* ret = NULL;
 
     realmLock.Acquire();
-    std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+    auto itr = m_realms.find(realm_id);
     if (itr != m_realms.end())
     {
         ret = itr->second;
@@ -416,7 +415,7 @@ int32 InformationCore::GetRealmIdByName(std::string Name)
 void InformationCore::RemoveRealm(uint32 realm_id)
 {
     realmLock.Acquire();
-    std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+    auto itr = m_realms.find(realm_id);
     if (itr != m_realms.end())
     {
         delete itr->second;
@@ -428,7 +427,7 @@ void InformationCore::RemoveRealm(uint32 realm_id)
 void InformationCore::UpdateRealmStatus(uint32 realm_id, uint8 flags)
 {
     realmLock.Acquire();
-    std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+    auto itr = m_realms.find(realm_id);
     if (itr != m_realms.end())
     {
         itr->second->flags = flags;
@@ -439,7 +438,7 @@ void InformationCore::UpdateRealmStatus(uint32 realm_id, uint8 flags)
 void InformationCore::UpdateRealmPop(uint32 realm_id, float pop)
 {
     realmLock.Acquire();
-    std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+    auto itr = m_realms.find(realm_id);
     if (itr != m_realms.end())
     {
         uint8 flags;
@@ -470,14 +469,13 @@ void InformationCore::SendRealms(AuthSocket* Socket)
     // dunno what this is..
     data << uint32(0);
 
-    //sAuthLogonChallenge_C * client = Socket->GetChallenge();
+    // sAuthLogonChallenge_C * client = Socket->GetChallenge();
     if (Socket->GetChallenge()->build == 5875)
         data << uint8(m_realms.size());
     else
         data << uint16(m_realms.size());
 
     // loop realms :/
-    std::unordered_map<uint32, uint8>::iterator it;
     for (auto itr = m_realms.begin(); itr != m_realms.end(); ++itr)
     {
         if (itr->second->GameBuild == Socket->GetChallenge()->build)
@@ -492,7 +490,7 @@ void InformationCore::SendRealms(AuthSocket* Socket)
                 data << float(itr->second->Population);
 
                 // Get our character count
-                it = itr->second->CharacterMap.find(Socket->GetAccountID());
+                auto it = itr->second->CharacterMap.find(Socket->GetAccountID());
                 data << uint8((it == itr->second->CharacterMap.end()) ? 0 : it->second);
                 data << uint8(itr->second->TimeZone);
                 data << uint8(0); // Realm ID
@@ -508,7 +506,7 @@ void InformationCore::SendRealms(AuthSocket* Socket)
                 data << float(itr->second->Population);
 
                 // Get our character count
-                it = itr->second->CharacterMap.find(Socket->GetAccountID());
+                auto it = itr->second->CharacterMap.find(Socket->GetAccountID());
                 data << uint8((it == itr->second->CharacterMap.end()) ? 0 : it->second);
                 data << uint8(itr->second->TimeZone);
                 data << uint8(GetRealmIdByName(itr->second->Name)); // Realm ID
@@ -602,10 +600,12 @@ void InformationCore::TimeoutSockets()
 void InformationCore::CheckServers()
 {
     serverSocketLock.Acquire();
+    LogonCommServerSocket* s;
+	for(auto itr = m_serverSockets.begin(); itr != m_serverSockets.end();)
+	{
+		s = *itr;
+		++itr;	
 
-    for (auto itr = m_serverSockets.begin(); itr != m_serverSockets.end(); ++itr)
-    {
-        LogonCommServerSocket* s;
         if (!sLogonServer.IsServerAllowed(s->GetRemoteAddress().s_addr))
         {
             LOG_DETAIL("Disconnecting socket: %s due to it no longer being on an allowed IP.", s->GetRemoteIP().c_str());
@@ -619,7 +619,7 @@ void InformationCore::CheckServers()
 void InformationCore::SetRealmOffline(uint32 realm_id)
 {
     realmLock.Acquire();
-    std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+    auto itr = m_realms.find(realm_id);
     if (itr != m_realms.end())
     {
         itr->second->flags = REALM_FLAG_OFFLINE | REALM_FLAG_INVALID;

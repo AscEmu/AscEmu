@@ -118,7 +118,7 @@ class AccountMgr : public Singleton < AccountMgr >
 
         ~AccountMgr()
         {
-            for (auto itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
+            for (std::map<std::string, Account*>::iterator itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
             {
                 delete itr->second;
             }
@@ -134,8 +134,10 @@ class AccountMgr : public Singleton < AccountMgr >
 
             std::map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
 
-            if (itr == AccountDatabase.end())    pAccount = NULL;
-            else                                pAccount = itr->second;
+            if (itr == AccountDatabase.end())
+                pAccount = NULL;
+            else
+                pAccount = itr->second;
 
             setBusy.Release();
             return pAccount;

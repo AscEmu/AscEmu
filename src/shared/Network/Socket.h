@@ -224,7 +224,6 @@ T* ConnectTCPSocket(const char* hostname, u_short port)
     if(!s->Connect(hostname, port))
     {
         s->Delete();
-        delete s;
         return 0;
     }
     return s;

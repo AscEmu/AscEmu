@@ -179,7 +179,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
         {
             pItem = *itr;
             if (_player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(pItem->GetGUID(), false) != pItem)
-                continue;        // should never be hit.
+                continue; // should never be hit.
 
             pItem->RemoveFromWorld();
             pItem->SetOwner(NULL);

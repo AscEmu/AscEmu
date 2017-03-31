@@ -1032,7 +1032,7 @@ void Unit::Update(unsigned long time_passed)
         {
             if (m_useAI)
                 m_aiInterface->Update(time_passed);
-            else if (!m_aiInterface->MoveDone())            //pending move
+            else if (!m_aiInterface->MoveDone()) // pending move
                 m_aiInterface->UpdateMovementSpline();
         }
 
@@ -7576,22 +7576,18 @@ void Unit::RemoveGarbage()
     for (auto itr1 = m_GarbageAuras.begin(); itr1 != m_GarbageAuras.end(); ++itr1)
     {
         Aura* aur = *itr1;
-
         delete aur;
     }
 
-    std::list<Spell*>::iterator itr2;
-    for (itr2 = m_GarbageSpells.begin(); itr2 != m_GarbageSpells.end(); ++itr2)
+    for (auto itr2 = m_GarbageSpells.begin(); itr2 != m_GarbageSpells.end(); ++itr2)
     {
         Spell* sp = *itr2;
-
         delete sp;
     }
 
     for (auto itr3 = m_GarbagePets.begin(); itr3 != m_GarbagePets.end(); ++itr3)
     {
         Pet* pet = *itr3;
-
         delete pet;
     }
 
