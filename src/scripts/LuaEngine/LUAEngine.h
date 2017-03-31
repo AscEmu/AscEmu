@@ -27,9 +27,9 @@
 extern "C"
 {
     // we're C++, and LUA is C, so the compiler needs to know to use C function names.
-#include "../lualib/lua.h"
-#include "../lualib/lauxlib.h"
-#include "../lualib/lualib.h"
+    #include <lua/lua.h>
+    #include <lua/lauxlib.h>
+    #include <lua/lualib.h>
 };
 
 #include <sys/stat.h>

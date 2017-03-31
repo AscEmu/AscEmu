@@ -3,14 +3,22 @@
 set(PATH_PREFIX GameCata)
 
 set(SRC_GAMECATA_FILES
+    ${PATH_PREFIX}/Handlers/AddonHandler.cpp
     ${PATH_PREFIX}/Handlers/AuctionHandler.cpp
     ${PATH_PREFIX}/Handlers/ChannelHandler.cpp
     ${PATH_PREFIX}/Handlers/CharacterHandler.cpp
+    ${PATH_PREFIX}/Handlers/DuelHandler.cpp
+    ${PATH_PREFIX}/Handlers/GroupHandler.cpp
+    ${PATH_PREFIX}/Handlers/ItemHandler.cpp
+    ${PATH_PREFIX}/Handlers/LootHandler.cpp
     ${PATH_PREFIX}/Handlers/MailHandler.cpp
     ${PATH_PREFIX}/Handlers/MiscellaneousHandler.cpp
     ${PATH_PREFIX}/Handlers/MovementHandler.cpp
     ${PATH_PREFIX}/Handlers/NPCHandler.cpp
+    ${PATH_PREFIX}/Handlers/QueryHandler.cpp
+    ${PATH_PREFIX}/Handlers/SkillHandler.cpp
     ${PATH_PREFIX}/Handlers/TaxiHandler.cpp
+    ${PATH_PREFIX}/Handlers/TradeHandler.cpp
     ${PATH_PREFIX}/Movement/MovementDefines.h
     ${PATH_PREFIX}/Movement/MovementStructures.h
     ${PATH_PREFIX}/Network/Opcodes.cpp

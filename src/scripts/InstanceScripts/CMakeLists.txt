@@ -73,8 +73,12 @@ set(sources
     Raid_WorldBosses.cpp 
     Raid_ZulAman.cpp 
     ../Common/Instance_Base.cpp 
-    ../Common/Base.cpp 
+    ../Common/Base.cpp
+    ../Common/AITimerCollection.cpp
     Setup.cpp
+    # Required for linker
+    ../../world/Server/LazyTimer.cpp
+    ../../world/Server/ServerState.cpp
     )
 
 set(headers
@@ -144,6 +148,7 @@ set(headers
     ../Common/Base.h
     ../Common/EasyFunctions.h
     ../Common/Instance_Base.h
+    ../Common/AITimerCollection.h
 )
 
 include_directories(

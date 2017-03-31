@@ -14,18 +14,21 @@ set(SRCS
 )
 
 set(HEADERS
-   AuraFunctions.h
-   FunctionTables.h
-   GameobjectFunctions.h
-   GlobalFunctions.h
-   ItemFunctions.h
-   LUAEngine.h
-   LUAFunctions.h
-   LuaSqlApi.h
-   PacketFunctions.h
-   SpellFunctions.h
-   TaxiFunctions.h
-   UnitFunctions.h
+    AuraFunctions.h
+    FunctionTables.h
+    GameobjectFunctions.h
+    GlobalFunctions.h
+    ItemFunctions.h
+    LUAEngine.h
+    LUAFunctions.h
+    LuaSqlApi.h
+    PacketFunctions.h
+    SpellFunctions.h
+    TaxiFunctions.h
+    UnitFunctions.h
+    # Required for linker
+    ../../world/Server/LazyTimer.cpp
+    ../../world/Server/ServerState.cpp
 )
 
 include_directories(
@@ -39,7 +42,7 @@ include_directories(
    ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
    ${CMAKE_SOURCE_DIR}/src/shared
    ${CMAKE_SOURCE_DIR}/src/world
-   ${CMAKE_SOURCE_DIR}/dep/lualib
+   ${CMAKE_SOURCE_DIR}/dep/lualib/src
    ${CMAKE_CURRENT_SOURCE_DIR}
    ${ZLIB_INCLUDE_DIRS}
 )

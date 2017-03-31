@@ -2288,7 +2288,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
     dst->SaveToDB(destitem_bagslot, destitem_slot, false, NULL);
 }
 
-#if VERSION_STRING > TBC
+#if VERSION_STRING == WotLK
 void WorldSession::HandleItemRefundInfoOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -2313,7 +2313,9 @@ void WorldSession::HandleItemRefundInfoOpcode(WorldPacket& recvPacket)
     this->SendRefundInfo(GUID);
 
 }
+#endif
 
+#if VERSION_STRING > TBC
 void WorldSession::HandleItemRefundRequestOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN

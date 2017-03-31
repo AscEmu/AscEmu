@@ -23,6 +23,7 @@
 #include "WorldRunnable.h"
 #include <CrashHandler.h>
 #include "World.h"
+#include "ServerState.h"
 
 #define WORLD_UPDATE_DELAY 50
 
@@ -51,6 +52,8 @@ bool WorldRunnable::run()
                 break;
 
             ThreadState.SetVal(THREADSTATE_BUSY);
+
+            ServerState::instance()->update();
 
             uint32 diff;
             //calc time passed

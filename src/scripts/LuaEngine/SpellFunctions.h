@@ -263,7 +263,7 @@ namespace LuaSpell
     {
         if (!sp) return 0;
         bool check = CHECK_BOOL(L, 1);
-        sp->cast(check);
+        sp->castMe(check);
         return 0;
     }
 

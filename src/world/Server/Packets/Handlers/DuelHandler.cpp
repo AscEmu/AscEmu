@@ -25,6 +25,7 @@
 #include "Server/WorldSession.h"
 #include "Objects/GameObject.h"
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleDuelAccepted(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -110,3 +111,4 @@ void WorldSession::HandleDuelCancelled(WorldPacket& recv_data)
         }
     }
 }
+#endif

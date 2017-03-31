@@ -10,13 +10,16 @@ project(MiscScripts CXX)
 
 #sources -contains source files for our library.
 set(sources
-   City_Dalaran.cpp
-   Creatures.cpp
-   GameObjects.cpp
-   GameObjectTeleportTable.cpp
-   RandomScripts.cpp
-   Setup.cpp
-   ../Common/Base.cpp
+    City_Dalaran.cpp
+    Creatures.cpp
+    GameObjects.cpp
+    GameObjectTeleportTable.cpp
+    RandomScripts.cpp
+    Setup.cpp
+    ../Common/Base.cpp
+    # Required for linker
+    ../../world/Server/LazyTimer.cpp
+    ../../world/Server/ServerState.cpp
 )
 
 set(headers

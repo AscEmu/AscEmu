@@ -7,6 +7,14 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Server/WorldSession.h"
 #include "Spell/SpellFailure.h"
+#include "Server/ServerState.h"
+
+bool ChatHandler::HandleDebugDumpState(const char* /*args*/, WorldSession* session)
+{
+    auto state = ServerState::instance();
+    SystemMessage(session, "Delta: %u", state->getDelta());
+    return true;
+}
 
 bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session)
 {

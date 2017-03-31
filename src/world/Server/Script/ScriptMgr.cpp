@@ -33,10 +33,8 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
 
-
 initialiseSingleton(ScriptMgr);
 initialiseSingleton(HookInterface);
-
 
 ScriptMgr::ScriptMgr()
 {}
@@ -108,8 +106,20 @@ void ScriptMgr::LoadScripts()
             exp_get_version vcall = reinterpret_cast<exp_get_version>(dl->GetAddressForSymbol("_exp_get_version"));
             exp_script_register rcall = reinterpret_cast<exp_script_register>(dl->GetAddressForSymbol("_exp_script_register"));
             exp_get_script_type scall = reinterpret_cast<exp_get_script_type>(dl->GetAddressForSymbol("_exp_get_script_type"));
+            exp_set_serverstate_singleton set_serverstate_call = reinterpret_cast<exp_set_serverstate_singleton>(dl->GetAddressForSymbol("_exp_set_serverstate_singleton"));
 
-            if ((vcall == NULL) || (rcall == NULL) || (scall == NULL))
+            if (!set_serverstate_call)
+            {
+                loadmessage << "ERROR: Cannot find set_serverstate_call function.";
+                LOG_ERROR(loadmessage.str().c_str());
+                delete dl;
+                continue;
+            }
+            
+            // Make sure we use the same ServerState singleton
+            set_serverstate_call(ServerState::instance());
+
+            if (!vcall || !rcall || !scall)
             {
                 loadmessage << "ERROR: Cannot find version functions.";
                 LOG_ERROR(loadmessage.str().c_str());

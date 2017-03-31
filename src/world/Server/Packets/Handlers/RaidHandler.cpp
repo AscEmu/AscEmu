@@ -23,7 +23,7 @@
 #include "Map/WorldCreator.h"
 #include "Objects/ObjectMgr.h"
 
-
+#if VERSION_STRING != Cata
 void WorldSession::HandleConvertGroupToRaidOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -41,6 +41,7 @@ void WorldSession::HandleConvertGroupToRaidOpcode(WorldPacket& recv_data)
     pGroup->ExpandToRaid();
     SendPartyCommandResult(_player, 0, "", ERR_PARTY_NO_ERROR);
 }
+#endif
 
 void WorldSession::HandleGroupChangeSubGroup(WorldPacket& recv_data)
 {

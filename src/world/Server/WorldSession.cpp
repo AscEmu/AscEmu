@@ -718,7 +718,7 @@ const char* WorldSession::LocalizedBroadCast(uint32 id)
         return wb->text.c_str();
 }
 
-#if VERSION_STRING > TBC
+#if VERSION_STRING == WotLK
 void WorldSession::SendRefundInfo(uint64 GUID)
 {
     if (!_player || !_player->IsInWorld())
@@ -849,6 +849,7 @@ void WorldSession::SendAccountDataTimes(uint32 mask)
     SendPacket(&data);
 }
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -942,6 +943,7 @@ void WorldSession::HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket)
         _player->LearnTalent(talentid, rank, true);
     }
 }
+#endif
 
 void WorldSession::SendMOTD()
 {

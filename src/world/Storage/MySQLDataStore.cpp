@@ -1007,7 +1007,31 @@ void MySQLDataStore::LoadQuestPropertiesTable()
             for (uint8 i = 0; i < 4; ++i)
             {
                 questInfo.required_mob_or_go[i] = fields[41 + i].GetInt32();
+                if (questInfo.required_mob_or_go[i] != 0)
+                {
+                    if (questInfo.required_mob_or_go[i] > 0)
+                    {
+                        if (!GetCreatureProperties(questInfo.required_mob_or_go[i]))
+                        {
+                            LogError("Quest %u has `ReqCreatureOrGOId%d` = %i but creature with entry %u does not exist in creature_properties table!",
+                                     entry, i, questInfo.required_mob_or_go[i], questInfo.required_mob_or_go[i]);
+                        }
+                    }
+                    else
+                    {
+                        if (!GetGameObjectProperties(-questInfo.required_mob_or_go[i]))
+                        {
+                            LogError("Quest %u has `ReqCreatureOrGOId%d` = %i but gameobject %u does not exist in gameobject_properties table!",
+                                     entry, i, questInfo.required_mob_or_go[i], -questInfo.required_mob_or_go[i]);
+                        }
+                    }
+                }
+
                 questInfo.required_mob_or_go_count[i] = fields[45 + i].GetUInt32();
+            }
+
+            for (uint8 i = 0; i < 4; ++i)
+            {
                 questInfo.required_spell[i] = fields[49 + i].GetUInt32();
                 questInfo.required_emote[i] = fields[53 + i].GetUInt32();
             }
@@ -2428,7 +2452,11 @@ void MySQLDataStore::LoadPlayerCreateInfoItemsTable()
         uint32 player_info_index = fields[0].GetUInt32();
         uint32 item_id = fields[1].GetUInt32();
 
+#if VERSION_STRING != Cata
         auto player_item = sMySQLStore.GetItemProperties(item_id);
+#else
+        DB2::Structures::ItemEntry const* player_item = sItemStore.LookupEntry(item_id);
+#endif
         if (player_item == nullptr)
         {
             LOG_ERROR("Table `playercreateinfo_items` includes invalid item %u for index %u", item_id, player_info_index);

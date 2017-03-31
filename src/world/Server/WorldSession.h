@@ -28,6 +28,10 @@
 #include "FastQueue.h"
 #include "Units/Unit.h"
 #include "AuthCodes.h"
+#if VERSION_STRING == Cata
+    #include "Management/AddonMgr.h"
+    #include "Units/Players/PlayerDefines.hpp"
+#endif
 #include <stddef.h>
 #include <string>
 
@@ -335,7 +339,7 @@ class SERVER_DECL WorldSession
         void SendNotification(const char* message, ...);
         void SendAuctionPlaceBidResultPacket(uint32 itemId, uint32 error);
 #if VERSION_STRING > TBC
-        void SendRefundInfo(uint64 GUID);
+        void SendRefundInfo(uint64_t guid);
 #endif
         void SendNotInArenaTeamPacket(uint8 type);
 
@@ -391,6 +395,9 @@ class SERVER_DECL WorldSession
         void HandleLootReleaseOpcode(WorldPacket& recvPacket);
         void HandleLootMasterGiveOpcode(WorldPacket& recv_data);
         void HandleLootRollOpcode(WorldPacket& recv_data);
+#if VERSION_STRING == Cata
+        Loot* getLootFromHighGuidType(uint32_t highGuid);
+#endif
         void HandleWhoOpcode(WorldPacket& recvPacket);
         void HandleWhoIsOpcode(WorldPacket& recvPacket);
         void HandleLogoutRequestOpcode(WorldPacket& recvPacket);
@@ -459,6 +466,18 @@ class SERVER_DECL WorldSession
         void HandleMoveTeleportAckOpcode(WorldPacket& recv_data);
 
         /// Opcodes implemented in GroupHandler.cpp:
+#if VERSION_STRING == Cata
+    public:
+        void SendPartyCommandResult(Player* pPlayer, uint32_t p1, std::string name, uint32_t err);
+        void SendEmptyGroupList(Player* player);
+
+    private:
+        void HandleGroupInviteResponseOpcode(WorldPacket& recvPacket);
+        void HandleGroupSetRolesOpcode(WorldPacket& recvPacket);
+        void HandleGroupRequestJoinUpdatesOpcode(WorldPacket& recvPacket);
+#else
+        void SendPartyCommandResult(Player* pPlayer, uint32 p1, std::string name, uint32 err);
+#endif
         void HandleGroupInviteOpcode(WorldPacket& recvPacket);
         void HandleGroupCancelOpcode(WorldPacket& recvPacket);
         void HandleGroupAcceptOpcode(WorldPacket& recvPacket);
@@ -470,7 +489,7 @@ class SERVER_DECL WorldSession
         void HandleLootMethodOpcode(WorldPacket& recvPacket);
         void HandleMinimapPingOpcode(WorldPacket& recvPacket);
         void HandleSetPlayerIconOpcode(WorldPacket& recv_data);
-        void SendPartyCommandResult(Player* pPlayer, uint32 p1, std::string name, uint32 err);
+
 
         // Raid
         void HandleConvertGroupToRaidOpcode(WorldPacket& recvPacket);
@@ -585,6 +604,9 @@ class SERVER_DECL WorldSession
         void HandleUpdateProjectilePosition(WorldPacket& recv_data);
 
         /// Skill opcodes (SkillHandler.spp)
+#if VERSION_STRING == Cata
+        void HandleLearnPreviewTalentsOpcode(WorldPacket& recvPacket);
+#endif
         //void HandleSkillLevelUpOpcode(WorldPacket& recvPacket);
         void HandleLearnTalentOpcode(WorldPacket& recvPacket);
         void HandleLearnMultipleTalentsOpcode(WorldPacket& recvPacket);
@@ -653,12 +675,28 @@ class SERVER_DECL WorldSession
         void HandleChannelRosterQuery(WorldPacket& recvPacket);
 
         // Duel
+#if VERSION_STRING == Cata
+    public:
+        void SendDuelCountdown(uint32_t time = 3000);
+        void SendDuelComplete(uint8_t type);
+
+    protected:
+#endif
         void HandleDuelAccepted(WorldPacket& recv_data);
         void HandleDuelCancelled(WorldPacket& recv_data);
 
         // Trade
-        void HandleInitiateTrade(WorldPacket& recv_data);
-        void HandleBeginTrade(WorldPacket& recv_data);
+#if VERSION_STRING == Cata
+    public:
+        void sendTradeResult(TradeStatus result);
+        void sendTradeUpdate(bool trade_state = true);
+        void sendTradeCancel();
+
+    protected:
+#endif
+
+        void HandleInitiateTradeOpcode(WorldPacket& recv_data);
+        void HandleBeginTradeOpcode(WorldPacket& recv_data);
         void HandleBusyTrade(WorldPacket& recv_data);
         void HandleIgnoreTrade(WorldPacket& recv_data);
         void HandleAcceptTrade(WorldPacket& recv_data);
@@ -847,6 +885,16 @@ class SERVER_DECL WorldSession
         void HandleUITimeRequestOpcode(WorldPacket& recv_data);
         void HandleTimeSyncRespOpcode(WorldPacket& recv_data);
         void HandleRequestHotfix(WorldPacket& recv_data);
+        void HandleRequestCemeteryListOpcode(WorldPacket& recv_data);
+        void HandleForceSpeedAckOpcodes(WorldPacket& recv_data);
+
+    private:
+        typedef std::list<AddonEntry> AddonsList;
+        AddonsList m_addonList;
+
+    public:
+        void readAddonInfoPacket(ByteBuffer& recv_data);
+        void sendAddonInfo();
 #endif
 
         void Unhandled(WorldPacket& recv_data);

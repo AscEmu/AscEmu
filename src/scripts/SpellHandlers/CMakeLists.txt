@@ -4,21 +4,24 @@ project(SpellHandlers CXX)
 
 #sources -contains source files for our library.
 set(sources
-   DeathKnightSpells.cpp
-   DruidSpells.cpp
-   HunterSpells.cpp
-   ItemSpells_1.cpp
-   MageSpells.cpp
-   PaladinSpells.cpp
-   PetAISpells.cpp
-   PriestSpells.cpp
-   QIspells.cpp
-   RogueSpells.cpp
-   Setup.cpp
-   ShamanSpells.cpp
-   WarlockSpells.cpp
-   WarriorSpells.cpp
-   MiscSpells.cpp
+    DeathKnightSpells.cpp
+    DruidSpells.cpp
+    HunterSpells.cpp
+    ItemSpells_1.cpp
+    MageSpells.cpp
+    PaladinSpells.cpp
+    PetAISpells.cpp
+    PriestSpells.cpp
+    QIspells.cpp
+    RogueSpells.cpp
+    Setup.cpp
+    ShamanSpells.cpp
+    WarlockSpells.cpp
+    WarriorSpells.cpp
+    MiscSpells.cpp
+    # Required for linker
+    ../../world/Server/LazyTimer.cpp
+    ../../world/Server/ServerState.cpp
 )
 
 set(headers

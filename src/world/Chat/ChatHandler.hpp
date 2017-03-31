@@ -177,6 +177,7 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
         bool HandleCharListInstanceCommand(const char* /*args*/, WorldSession* m_session);
 
         // Debug
+        bool HandleDebugDumpState(const char* args, WorldSession* session);
         bool HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_session);
         bool HandleDebugHover(const char* /*args*/, WorldSession* m_session);
         bool HandleDebugState(const char* /*args*/, WorldSession* m_session);

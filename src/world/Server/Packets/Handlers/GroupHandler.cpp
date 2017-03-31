@@ -25,6 +25,7 @@
 #include "Map/WorldCreator.h"
 #include "Objects/ObjectMgr.h"
 
+#if VERSION_STRING != Cata
 //////////////////////////////////////////////////////////////
 /// This function handles CMSG_GROUP_INVITE
 //////////////////////////////////////////////////////////////
@@ -587,3 +588,4 @@ void WorldSession::HandlePartyMemberStatsOpcode(WorldPacket& recv_data)
 
     SendPacket(&data);
 }
+#endif

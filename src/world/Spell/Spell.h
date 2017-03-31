@@ -1594,7 +1594,7 @@ class SERVER_DECL Spell : public EventableObject
         // Update spell state based on time difference
         void Update(unsigned long time_passed);
         // Casts the spell
-        void cast(bool);
+        void castMe(bool);
         // Finishes the casted spell
         void finish(bool successful = true);
         // Handle the Effects of the Spell

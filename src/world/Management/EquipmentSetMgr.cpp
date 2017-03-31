@@ -162,6 +162,11 @@ namespace Arcemu
 
     void EquipmentSetMgr::FillEquipmentSetListPacket(WorldPacket& data)
     {
+#if VERSION_STRING == Cata
+        uint32 count = 0;
+        size_t count_pos = data.wpos();
+        data << uint32(count);
+#endif
         data << uint32(EquipmentSets.size());
 
         for (auto itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
@@ -177,6 +182,12 @@ namespace Arcemu
             {
                 data << WoWGuid(uint64(Arcemu::Util::MAKE_ITEM_GUID(set->ItemGUID[i])));
             }
+#if VERSION_STRING == Cata
+            ++count;
+#endif
         }
+#if VERSION_STRING == Cata
+        data.put<uint32>(count_pos, count);
+#endif
     }
 }

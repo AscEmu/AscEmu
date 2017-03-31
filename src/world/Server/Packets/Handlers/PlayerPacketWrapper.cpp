@@ -344,6 +344,9 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     data << uint8(loot_type);  //loot_type;
     data << uint32(pLoot->gold);
     data << uint8(0);   //loot size reserve
+#if VERSION_STRING == Cata
+    data << uint8(0);
+#endif
 
     std::vector<__LootItem>::iterator iter = pLoot->items.begin();
     uint32 count = 0;

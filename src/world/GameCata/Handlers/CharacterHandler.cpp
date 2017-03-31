@@ -175,31 +175,44 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
             buffer << uint8_t(charEnum.Class);
 
-            QueryResult* item_db_result = CharacterDatabase.Query("SELECT slot, entry, enchantments FROM playeritems WHERE ownerguid=%u AND containerslot = '-1' AND slot BETWEEN '0' AND '20'", Arcemu::Util::GUID_LOPART(charEnum.guid));
-            memset(player_items, 0, sizeof(PlayerItem) * INVENTORY_SLOT_BAG_END);
+            QueryResult* item_db_result = CharacterDatabase.Query("SELECT containerslot, slot, entry, enchantments FROM playeritems WHERE ownerguid=%u AND containerslot = '-1' AND slot < 23", Arcemu::Util::GUID_LOPART(charEnum.guid));
+            memset(player_items, 0, sizeof(player_items));
 
             if (item_db_result)
             {
                 do
                 {
                     uint32_t enchantid;
-
-                    int8_t item_slot = item_db_result->Fetch()[0].GetInt8();
-                    ItemProperties const* itemProperties = sMySQLStore.GetItemProperties(item_db_result->Fetch()[1].GetUInt32());
-                    if (itemProperties)
+                    uint32_t container_slot = item_db_result->Fetch()[0].GetInt32();
+                    int8_t item_slot = item_db_result->Fetch()[1].GetInt8();
+                    if (container_slot == -1 && item_slot < INVENTORY_SLOT_BAG_END && item_slot >= EQUIPMENT_SLOT_START)
                     {
-                        player_items[item_slot].displayId = itemProperties->DisplayInfoID;
-                        player_items[item_slot].inventoryType = static_cast<uint8>(itemProperties->InventoryType);
-
-                        if (item_slot == EQUIPMENT_SLOT_MAINHAND || item_slot == EQUIPMENT_SLOT_OFFHAND)
+                        ItemProperties const* itemProperties = sMySQLStore.GetItemProperties(item_db_result->Fetch()[1].GetUInt32());
+                        if (itemProperties)
                         {
-                            const char* enchant_field = item_db_result->Fetch()[2].GetString();
-                            if (sscanf(enchant_field, "%u,0,0;", (unsigned int*)&enchantid) == 1 && enchantid > 0)
+                            if (!(item_slot == EQUIPMENT_SLOT_HEAD && (charEnum.flags & (uint32_t)PLAYER_FLAG_NOHELM) != 0) &&
+                                !(item_slot == EQUIPMENT_SLOT_BACK && (charEnum.flags & (uint32_t)PLAYER_FLAG_NOCLOAK) != 0))
                             {
-                                DBC::Structures::SpellItemEnchantmentEntry const* spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchantid);
-                                if (spell_item_enchant != nullptr)
-                                    player_items[item_slot].enchantmentId = spell_item_enchant->visual;
+                                player_items[item_slot].displayId = itemProperties->DisplayInfoID;
+                                player_items[item_slot].inventoryType = static_cast<uint8>(itemProperties->InventoryType);
+
+                                if (item_slot == EQUIPMENT_SLOT_MAINHAND || item_slot == EQUIPMENT_SLOT_OFFHAND)
+                                {
+                                    const char* enchant_field = item_db_result->Fetch()[3].GetString();
+                                    if (sscanf(enchant_field, "%u,0,0;", (unsigned int*)&enchantid) == 1 && enchantid > 0)
+                                    {
+                                        DBC::Structures::SpellItemEnchantmentEntry const* spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchantid);
+                                        if (spell_item_enchant != nullptr)
+                                            player_items[item_slot].enchantmentId = spell_item_enchant->visual;
+                                        else
+                                            player_items[item_slot].enchantmentId = 0;
+                                    }
+                                }
                             }
+                        }
+                        else
+                        {
+                            LOG_ERROR("Table player_items includes invalid item entry %u!", item_db_result->Fetch()[1].GetUInt32());
                         }
                     }
                 } while (item_db_result->NextRow());
@@ -208,8 +221,8 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
             for (uint8_t i = 0; i < INVENTORY_SLOT_BAG_END; ++i)
             {
-                buffer << uint32_t(player_items[i].displayId);
                 buffer << uint8_t(player_items[i].inventoryType);
+                buffer << uint32_t(player_items[i].displayId);
                 buffer << uint32_t(player_items[i].enchantmentId);
             }
 

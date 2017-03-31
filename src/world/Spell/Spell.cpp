@@ -1093,7 +1093,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
         u_caster->castSpell(this);
     }
     else
-        cast(false);
+        castMe(false);
 
     return ccr;
 }
@@ -1176,7 +1176,7 @@ void Spell::AddStartCooldown()
         p_caster->Cooldown_AddStart(GetSpellInfo());
 }
 
-void Spell::cast(bool check)
+void Spell::castMe(bool check)
 {
     if (DuelSpellNoMoreValid())
     {
@@ -1749,14 +1749,14 @@ void Spell::Update(unsigned long time_passed)
         case SPELL_STATE_PREPARING:
         {
             if (static_cast<int32>(time_passed) >= m_timer)
-                cast(true);
+                castMe(true);
             else
             {
                 m_timer -= time_passed;
                 if (static_cast<int32>(time_passed) >= m_timer)
                 {
                     m_timer = 0;
-                    cast(true);
+                    castMe(true);
                 }
             }
 
@@ -2847,9 +2847,15 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
                 itemTarget = p_caster->GetItemInterface()->GetItemByGUID(m_targets.m_itemTarget);
             if (m_targets.m_targetMask & TARGET_FLAG_TRADE_ITEM)
             {
+#if VERSION_STRING == Cata
+                Player* p_trader = p_caster->getTradeTarget();
+                if (p_trader != nullptr)
+                    itemTarget = p_trader->getTradeData()->getTradeItem((TradeSlots)m_targets.m_itemTarget);
+#else
                 Player* p_trader = p_caster->GetTradeTarget();
                 if (p_trader != NULL)
                     itemTarget = p_trader->getTradeItem((uint32)m_targets.m_itemTarget);
+#endif
             }
         }
     }
@@ -2874,9 +2880,15 @@ void Spell::HandleEffects(uint64 guid, uint32 i)
         {
             if (p_caster != NULL)
             {
+#if VERSION_STRING == Cata
+                Player* plr = p_caster->getTradeTarget();
+                if (plr != nullptr)
+                    itemTarget = plr->getTradeData()->getTradeItem((TradeSlots)guid);
+#else
                 Player* plr = p_caster->GetTradeTarget();
                 if (plr)
                     itemTarget = plr->getTradeItem((uint32)guid);
+#endif
             }
         }
         else
@@ -3722,10 +3734,15 @@ uint8 Spell::CanCast(bool tolerate)
                         return SPELL_FAILED_BAD_TARGETS;
 
                     // get the player we are trading with
+#if VERSION_STRING == Cata
+                    Player* t_player = p_caster->getTradeTarget();
+                    if (t_player != nullptr)
+                        i_target = t_player->getTradeData()->getTradeItem((TradeSlots)m_targets.m_itemTarget);
+#else
                     Player* t_player = p_caster->GetTradeTarget();
-                    // get the targeted trade item
                     if (t_player)
                         i_target = t_player->getTradeItem((uint32)m_targets.m_itemTarget);
+#endif
                 }
             }
         }

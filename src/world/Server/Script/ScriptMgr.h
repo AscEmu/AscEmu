@@ -29,6 +29,7 @@
 
 #include "Units/Unit.h"
 #include "Management/ArenaTeam.h"
+#include "Server/ServerState.h"
 
 #define ADD_CREATURE_FACTORY_FUNCTION(cl) static CreatureAIScript * Create(Creature* c) { return new cl(c); }
 #define ADD_INSTANCE_FACTORY_FUNCTION(ClassName) static InstanceScript* Create(MapMgr* pMapMgr) { return new ClassName(pMapMgr); };
@@ -141,6 +142,7 @@ typedef void(*exp_engine_reload)();
 typedef void(*exp_engine_unload)();
 typedef uint32(*exp_get_script_type)();
 typedef const char*(*exp_get_version)();
+typedef void(*exp_set_serverstate_singleton)(ServerState* state);
 
 // Hashmap typedefs
 typedef std::unordered_map<uint32, exp_create_creature_ai> CreatureCreateMap;
@@ -163,7 +165,6 @@ typedef std::list< Arcemu::DynLib* > DynamicLibraryMap;
 class SERVER_DECL ScriptMgr : public Singleton<ScriptMgr>
 {
     public:
-
         ScriptMgr();
         ~ScriptMgr();
 
