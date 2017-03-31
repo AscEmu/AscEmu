@@ -18,6 +18,7 @@
  *
  */
 
+#include <atlbase.h> // schnek: fix warning lnk4221
 #include "Common.hpp"
 #include "ascemu_getopt.h"
 
