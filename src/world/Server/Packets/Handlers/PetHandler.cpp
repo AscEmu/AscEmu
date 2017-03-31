@@ -577,6 +577,7 @@ void WorldSession::HandlePetCancelAura(WorldPacket& recvPacket)
         pet->RemoveAura(spellid);
 }
 
+#if VERSION_STRING != Cata
 void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -645,3 +646,4 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
     // send talent update
     pPet->SendTalentsToOwner();
 }
+#endif

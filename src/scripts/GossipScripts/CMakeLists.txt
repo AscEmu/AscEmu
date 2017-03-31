@@ -10,21 +10,24 @@ project(GossipScripts CXX)
 
 #sources -contains source files for our library.
 set(sources
-   Gossip_Dalaran.cpp
-   Gossip_Innkeepers.cpp
-   Gossip_Guard.cpp
-   Gossip_Trainer.cpp
-   Gossip_Mulgore.cpp
-   Gossip_Shattrath.cpp
-   Gossip_Tanaris.cpp
-   Gossip_Stormwind.cpp
-   Gossip_Moonglade.cpp
-   Gossip_Theramore.cpp
-   Gossip_Teldrassil.cpp
-   Gossip_BoreanTundra.cpp
-   Gossip_WyrmrestTemple.cpp
-   Gossip_XpEliminator.cpp
-   Setup.cpp
+    Gossip_Dalaran.cpp
+    Gossip_Innkeepers.cpp
+    Gossip_Guard.cpp
+    Gossip_Trainer.cpp
+    Gossip_Mulgore.cpp
+    Gossip_Shattrath.cpp
+    Gossip_Tanaris.cpp
+    Gossip_Stormwind.cpp
+    Gossip_Moonglade.cpp
+    Gossip_Theramore.cpp
+    Gossip_Teldrassil.cpp
+    Gossip_BoreanTundra.cpp
+    Gossip_WyrmrestTemple.cpp
+    Gossip_XpEliminator.cpp
+    Setup.cpp
+    # Required for linker
+    ../../world/Server/LazyTimer.cpp
+    ../../world/Server/ServerState.cpp
 )
 
 set(headers

@@ -33,19 +33,21 @@ void WorldSession::HandleReadyForAccountDataTimesOpcode(WorldPacket& recv_data)
 void WorldSession::HandleUITimeRequestOpcode(WorldPacket& recv_data)
 {
     WorldPacket data(SMSG_UI_TIME, 4);
-    data << uint32(time(NULL));
+    data << uint32_t(time(nullptr));
     SendPacket(&data);
 }
 
 void WorldSession::HandleTimeSyncRespOpcode(WorldPacket& recv_data)
 {
-    uint32 counter, clientTicks;
-    recv_data >> counter >> clientTicks;
+    uint32_t counter;
+    uint32_t clientTicks;
+    recv_data >> counter;
+    recv_data >> clientTicks;
 }
 
 void WorldSession::HandleObjectUpdateFailedOpcode(WorldPacket& recv_data)
 {
-    uint8 guid[8];
+    uint8_t guid[8];
     guid[6] = recv_data.readBit();
     guid[7] = recv_data.readBit();
     guid[4] = recv_data.readBit();
@@ -64,10 +66,9 @@ void WorldSession::HandleObjectUpdateFailedOpcode(WorldPacket& recv_data)
     recv_data.ReadByteSeq(guid[0]);
     recv_data.ReadByteSeq(guid[5]);
 
-    uint64 playerguid = *(uint64*)guid;
+    uint64_t playerguid = *(uint64_t*)guid;
     LogError("HandleObjectUpdateFailedOpcode : Object update failed for playerguid %u", Arcemu::Util::GUID_LOPART(playerguid));
 
-    // logout
     if (_player->GetGUID() == playerguid)
     {
         LogoutPlayer(true);
@@ -77,13 +78,13 @@ void WorldSession::HandleObjectUpdateFailedOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleRequestHotfix(WorldPacket& recv_data)
 {
-    uint32 type;
+    uint32_t type;
     recv_data >> type;
 
-    uint32 count = recv_data.readBits(23);
+    uint32_t count = recv_data.readBits(23);
 
     ObjectGuid* guids = new ObjectGuid[count];
-    for (uint32 i = 0; i < count; ++i)
+    for (uint32_t i = 0; i < count; ++i)
     {
         guids[i][0] = recv_data.readBit();
         guids[i][4] = recv_data.readBit();
@@ -95,8 +96,8 @@ void WorldSession::HandleRequestHotfix(WorldPacket& recv_data)
         guids[i][1] = recv_data.readBit();
     }
 
-    uint32 entry;
-    for (uint32 i = 0; i < count; ++i)
+    uint32_t entry;
+    for (uint32_t i = 0; i < count; ++i)
     {
         recv_data.ReadByteSeq(guids[i][5]);
         recv_data.ReadByteSeq(guids[i][6]);
@@ -122,4 +123,41 @@ void WorldSession::HandleRequestHotfix(WorldPacket& recv_data)
                 break;
         }*/
     }
+}
+
+void WorldSession::HandleRequestCemeteryListOpcode(WorldPacket& recv_data)
+{
+    LOG_DEBUG("Received CMSG_REQUEST_CEMETERY_LIST");
+
+    QueryResult* result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->GetTeam());
+    if (result)
+    {
+        WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE);
+        data.writeBit(false);               //unk bit
+        data.flushBits();
+        data.writeBits(result->GetRowCount(), 24);
+        data.flushBits();
+
+        do
+        {
+            Field* field = result->Fetch();
+            data << uint32_t(field[0].GetUInt32());
+        } while (result->NextRow());
+        delete result;
+
+        SendPacket(&data);
+    }
+}
+
+void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
+{
+    uint64_t guid;
+    recv_data >> guid;
+
+    Corpse* pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
+    if (pCorpse == nullptr)
+        return;
+
+    GetPlayer()->ResurrectPlayer();
+    GetPlayer()->SetHealth(GetPlayer()->GetMaxHealth() / 2);
 }

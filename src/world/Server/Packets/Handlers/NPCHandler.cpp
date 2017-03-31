@@ -602,6 +602,7 @@ void WorldSession::HandleBinderActivateOpcode(WorldPacket& recv_data)
 
 #define BIND_SPELL_ID 3286
 
+#if VERSION_STRING != Cata
 void WorldSession::SendInnkeeperBind(Creature* pCreature)
 {
     WorldPacket data(45);
@@ -623,6 +624,7 @@ void WorldSession::SendInnkeeperBind(Creature* pCreature)
 
     pCreature->CastSpell(_player->GetGUID(), BIND_SPELL_ID, true);
 }
+#endif
 
 #undef BIND_SPELL_ID
 

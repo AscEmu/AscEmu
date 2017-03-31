@@ -22,6 +22,7 @@
 
 #include "Setup.h"
 #include "Instance_Deadmines.h"
+#include "Server/LazyTimer.h"
 
 
 static Movement::Location Doors[] =
@@ -147,8 +148,11 @@ class DeadminesInstanceScript : public MoonInstanceScript
 
 class RhahkZorAI : public MoonScriptCreatureAI
 {
+    // Just for testing
+    LazyTimer debugTimer;
+
     MOONSCRIPT_FACTORY_FUNCTION(RhahkZorAI, MoonScriptCreatureAI);
-    RhahkZorAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
+    RhahkZorAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature), debugTimer(1500)
     {
         AddSpell(6304, Target_Current, 8, 0, 3);    // Rhahk'Zor Slam
     }
@@ -156,6 +160,10 @@ class RhahkZorAI : public MoonScriptCreatureAI
     void OnCombatStart(Unit* pTarget)
     {
         _unit->SendScriptTextChatMessage(5495);     // VanCleef pay big for you heads!
+
+        std::stringstream ss;
+        ss << "Timer Init Value: " << debugTimer.getRealDelta();
+        _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, ss.str().c_str());
     }
 };
 

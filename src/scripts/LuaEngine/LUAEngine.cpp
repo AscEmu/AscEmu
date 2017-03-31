@@ -44,6 +44,10 @@
 ScriptMgr* m_scriptMgr = NULL;
 LuaEngine g_luaMgr;
 
+extern "C" SCRIPT_DECL void _exp_set_serverstate_singleton(ServerState* state)
+{
+    ServerState::instance(state);
+}
 
 extern "C" SCRIPT_DECL uint32 _exp_get_script_type()
 {
