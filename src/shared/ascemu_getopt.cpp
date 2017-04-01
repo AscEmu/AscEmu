@@ -18,7 +18,10 @@
  *
  */
 
+#ifdef _WIN32
 #include <atlbase.h> // schnek: fix warning lnk4221
+#endif // <atlbase.h>
+
 #include "Common.hpp"
 #include "ascemu_getopt.h"
 
