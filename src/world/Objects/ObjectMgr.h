@@ -485,33 +485,27 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         TimedEmoteList* GetTimedEmoteList(uint32 spawnid);
 
-        // other objects
-        typedef std::unordered_map<uint32, AreaTrigger>                 AreaTriggerContainer;
-
-        // Set typedef's
-        typedef std::unordered_map<uint32, Group*>                      GroupMap;
-
-        // HashMap typedef's
-        typedef std::unordered_map<uint32, Guild*>                      GuildMap;
+        typedef std::unordered_map<uint32, AreaTrigger>                                               AreaTriggerContainer;
+        typedef std::unordered_map<uint32, Group*>                                                    GroupMap;
+        typedef std::unordered_map<uint32, Guild*>                                                    GuildMap;
         typedef std::unordered_map<uint32, DBC::Structures::SkillLineAbilityEntry const*>             SLMap;
-        typedef std::unordered_map<uint32, std::vector<CreatureItem>*>  VendorMap;
-        typedef std::unordered_map<uint32, Trainer*>                    TrainerMap;
-        typedef std::unordered_map<uint32, ReputationModifier*>         ReputationModMap;
-        typedef std::unordered_map<uint32, Corpse*>                     CorpseMap;
-        typedef std::unordered_map<uint32, PlayerCache*>                PlayerCacheMap;
+        typedef std::unordered_map<uint32, std::vector<CreatureItem>*>                                VendorMap;
+        typedef std::unordered_map<uint32, Trainer*>                                                  TrainerMap;
+        typedef std::unordered_map<uint32, ReputationModifier*>                                       ReputationModMap;
+        typedef std::unordered_map<uint32, Corpse*>                                                   CorpseMap;
+        typedef std::unordered_map<uint32, PlayerCache*>                                              PlayerCacheMap;
 
         // Map typedef's
-        typedef std::map<uint32, LevelInfo*>                            LevelMap;
-        typedef std::map<std::pair<uint32, uint32>, LevelMap*>          LevelInfoMap;
-        
-        typedef std::map<uint32, std::set<SpellInfo*> >                PetDefaultSpellMap;
-        typedef std::map<uint32, uint32>                                PetSpellCooldownMap;
-        typedef std::multimap <uint32, uint32>                          BCEntryStorage;
-        typedef std::map<uint32, SpellTargetConstraint*>                SpellTargetConstraintMap;
+        typedef std::map<uint32, LevelInfo*>                                                          LevelMap;
+        typedef std::map<std::pair<uint32, uint32>, LevelMap*>                                        LevelInfoMap;
+        typedef std::map<uint32, std::set<SpellInfo*> >                                               PetDefaultSpellMap;
+        typedef std::map<uint32, uint32>                                                              PetSpellCooldownMap;
+        typedef std::multimap <uint32, uint32>                                                        BCEntryStorage;
+        typedef std::map<uint32, SpellTargetConstraint*>                                              SpellTargetConstraintMap;
 
-        typedef std::unordered_map<uint32, Transporter*>                TransportMap;
-        typedef std::set<Transporter*>                                  TransporterSet;
-        typedef std::map<uint32, TransporterSet>                        TransporterMap;
+        typedef std::unordered_map<uint32, Transporter*>                                              TransportMap;
+        typedef std::set<Transporter*>                                                                TransporterSet;
+        typedef std::map<uint32, TransporterSet>                                                      TransporterMap;
 
         // object holders
         GmTicketList GM_TicketList;
@@ -830,7 +824,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
     protected:
 
-        BCEntryStorage m_BCEntryStorage;        /// broadcast system.
+        BCEntryStorage m_BCEntryStorage; /// broadcast system.
         RWLock playernamelock;
 
         // highest GUIDs, used for creating new objects
@@ -863,7 +857,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         std::unordered_map<uint32, PlayerInfo*> m_playersinfo;
         PlayerNameStringIndexMap m_playersInfoByName;
 
-        std::unordered_map<uint32, Movement::WayPointMap*> m_waypoints;           /// stored by spawnid
+        std::unordered_map<uint32, Movement::WayPointMap*> m_waypoints; /// stored by spawnid
         std::unordered_map<uint32, TimedEmoteList*> m_timedemotes;      /// stored by spawnid
 
         AreaTriggerContainer _areaTriggerStore;

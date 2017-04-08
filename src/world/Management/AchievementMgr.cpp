@@ -191,8 +191,8 @@ AchievementMgr::AchievementMgr(Player* player) : m_player(player), isCharacterLo
 /// AchievementMgr destructor
 AchievementMgr::~AchievementMgr()
 {
-    for (auto iter = m_criteriaProgress.begin(); iter != m_criteriaProgress.end(); ++iter)
-        delete iter->second;
+    for (auto iter : m_criteriaProgress)
+        delete iter.second;
 
     m_criteriaProgress.clear();
     m_completedAchievements.clear();
@@ -221,7 +221,7 @@ void AchievementMgr::SaveToDB(QueryBuffer* buf)
 
         ss << "INSERT INTO character_achievement VALUES ";
         bool first = true;
-        for (auto iter = m_completedAchievements.begin(); iter != m_completedAchievements.end(); ++iter)
+        for (auto iter : m_completedAchievements)
         {
             if (ss.str().length() >= 16000)
             {
@@ -236,14 +236,11 @@ void AchievementMgr::SaveToDB(QueryBuffer* buf)
             }
 
             if (!first)
-            {
                 ss << ", ";
-            }
             else
-            {
                 first = false;
-            }
-            ss << "(" << m_player->GetLowGUID() << ", " << iter->first << ", " << iter->second << ")";
+
+            ss << "(" << m_player->GetLowGUID() << ", " << iter.first << ", " << iter.second << ")";
         }
         if (buf == NULL)
             CharacterDatabase.ExecuteNA(ss.str().c_str());
@@ -268,9 +265,9 @@ void AchievementMgr::SaveToDB(QueryBuffer* buf)
 
         ss << "INSERT INTO character_achievement_progress VALUES ";
         bool first = true;
-        for (auto iter = m_criteriaProgress.begin(); iter != m_criteriaProgress.end(); ++iter)
+        for (auto iter : m_criteriaProgress)
         {
-            if (SaveAchievementProgressToDB(iter->second))
+            if (SaveAchievementProgressToDB(iter.second))
             {
                 // only save some progresses, others will be updated when character logs in
                 if (ss.str().length() >= 16000)
@@ -285,14 +282,11 @@ void AchievementMgr::SaveToDB(QueryBuffer* buf)
                     first = true;
                 }
                 if (!first)
-                {
                     ss << ", ";
-                }
                 else
-                {
                     first = false;
-                }
-                ss << "(" << m_player->GetLowGUID() << ", " << iter->first << ", " << iter->second->counter << ", " << iter->second->date << ")";
+
+                ss << "(" << m_player->GetLowGUID() << ", " << iter.first << ", " << iter.second->counter << ", " << iter.second->date << ")";
             }
         }
         if (!first)
@@ -389,7 +383,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
             data << msg;
             data << uint8(0);
             data << uint32(achievement->ID);
-            //            guild->SendPacket(&data);
+            // guild->SendPacket(&data);
             GuildMemberMap::iterator guildItr = guild->GetGuildMembersBegin();
             GuildMemberMap::iterator guildItrLast = guild->GetGuildMembersEnd();
             while (guildItr != guildItrLast)
@@ -460,8 +454,8 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
             grp->Unlock();
         }
         // Send Achievement message to nearby players
-        auto inRangeItr = GetPlayer()->GetInRangePlayerSetBegin();
-        auto inRangeItrLast = GetPlayer()->GetInRangePlayerSetEnd();
+        std::set<Object*>::iterator inRangeItr = GetPlayer()->GetInRangePlayerSetBegin();
+        std::set<Object*>::iterator inRangeItrLast = GetPlayer()->GetInRangePlayerSetEnd();
         for (; inRangeItr != inRangeItrLast; ++inRangeItr)
         {
 
@@ -520,9 +514,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
 void AchievementMgr::SendCriteriaUpdate(CriteriaProgress* progress)
 {
     if (progress == NULL || isCharacterLoading)
-    {
         return;
-    }
 
     WorldPacket data(SMSG_CRITERIA_UPDATE, 32);
     data << uint32(progress->id);
@@ -532,9 +524,9 @@ void AchievementMgr::SendCriteriaUpdate(CriteriaProgress* progress)
     data << GetPlayer()->GetNewGUID();
     data << uint32(0);
     data << uint32(secsToTimeBitFields(progress->date));
-    data << uint32(0);          // timer 1
-    data << uint32(0);          // timer 2
-    if (!GetPlayer()->IsInWorld())   //VLack: maybe we should NOT send these delayed, for 3.1.1, but seems logical
+    data << uint32(0);                                     // timer 1
+    data << uint32(0);                                     // timer 2
+    if (!GetPlayer()->IsInWorld())                         // VLack: maybe we should NOT send these delayed, for 3.1.1, but seems logical
         GetPlayer()->CopyAndSendDelayedPacket(&data);
     else
         GetPlayer()->GetSession()->SendPacket(&data);
@@ -1723,8 +1715,7 @@ void AchievementMgr::SendAllAchievementData(Player* player)
                     data << uint32(0);
                 }
             }
-            // achievement progress to send to other players (inspect)
-            else
+            else // achievement progress to send to other players (inspect)
             {
                 // only send statistics, no other unfinished achievement progress, since client only displays them as completed or not completed
                 if ((progressIter->second->counter > 0) && (achievement->flags & ACHIEVEMENT_FLAG_COUNTER))
@@ -1761,13 +1752,11 @@ void AchievementMgr::SendAllAchievementData(Player* player)
 uint32 AchievementMgr::GetCriteriaProgressCount()
 {
     uint32 criteriapc = 0;
-    for (auto iter = m_criteriaProgress.begin(); iter != m_criteriaProgress.end(); ++iter)
+    for (auto iter : m_criteriaProgress)
     {
-        //AchievementEntry const *achievement = dbcAchievementStore.LookupEntry(iter->second->id);
-        if (SendAchievementProgress(iter->second))
-        {
+        // AchievementEntry const *achievement = dbcAchievementStore.LookupEntry(iter.second->id);
+        if (SendAchievementProgress(iter.second))
             ++criteriapc;
-        }
     }
     return criteriapc;
 }
@@ -2041,11 +2030,11 @@ void AchievementMgr::GMResetAchievement(int32 achievementID)
     if (achievementID == -1)
     {
         // reset all achievements
-        CompletedAchievementMap::iterator itr = m_completedAchievements.begin();
-        for (; itr != m_completedAchievements.end(); ++itr)
+
+        for (auto itr : m_completedAchievements)
         {
             WorldPacket resetData(SMSG_ACHIEVEMENT_DELETED, 4);
-            resetData << uint32(itr->first);
+            resetData << uint32(itr.first);
             GetPlayer()->GetSession()->SendPacket(&resetData);
         }
         m_completedAchievements.clear();
@@ -2072,12 +2061,12 @@ void AchievementMgr::GMResetCriteria(int32 criteriaID)
     if (criteriaID == -1)
     {
         // reset all achievement criteria
-        for (auto iter = m_criteriaProgress.begin(); iter != m_criteriaProgress.end(); ++iter)
+        for (auto iter : m_criteriaProgress)
         {
             WorldPacket resetData(SMSG_CRITERIA_DELETED, 4);
-            resetData << uint32(iter->first);
+            resetData << uint32(iter.first);
             GetPlayer()->GetSession()->SendPacket(&resetData);
-            delete iter->second;
+            delete iter.second;
         }
         m_criteriaProgress.clear();
         ss << "DELETE FROM character_achievement_progress WHERE guid = " << m_player->GetLowGUID();
