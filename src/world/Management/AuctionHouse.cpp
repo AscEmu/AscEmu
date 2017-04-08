@@ -56,9 +56,8 @@ AuctionHouse::AuctionHouse(uint32 ID)
 
 AuctionHouse::~AuctionHouse()
 {
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
-    for (; itr != auctions.end(); ++itr)
-        delete itr->second;
+    for (auto itr : auctions)
+        delete itr.second;
 }
 
 void AuctionHouse::QueueDeletion(Auction* auct, uint32 Reason)
@@ -76,12 +75,10 @@ void AuctionHouse::QueueDeletion(Auction* auct, uint32 Reason)
 void AuctionHouse::UpdateDeletionQueue()
 {
     removalLock.Acquire();
-    Auction* auct;
 
-    std::list<Auction*>::iterator it = removalList.begin();
-    for (; it != removalList.end(); ++it)
+    for (auto it : removalList)
     {
-        auct = *it;
+        Auction* auct = it;
         ARCEMU_ASSERT(auct->Deleted);
         RemoveAuction(auct);
     }
@@ -96,12 +93,10 @@ void AuctionHouse::UpdateAuctions()
     removalLock.Acquire();
 
     uint32 t = (uint32)UNIXTIME;
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
-    Auction* auct;
-    for (; itr != auctions.end();)
+
+    for (auto itr : auctions)
     {
-        auct = itr->second;
-        ++itr;
+        Auction* auct = itr.second;
 
         if (t >= auct->ExpiryTime)
         {
@@ -136,11 +131,9 @@ void AuctionHouse::AddAuction(Auction* auct)
 
 Auction* AuctionHouse::GetAuction(uint32 Id)
 {
-    Auction* ret;
-    std::unordered_map<uint32, Auction*>::iterator itr;
     auctionLock.AcquireReadLock();
-    itr = auctions.find(Id);
-    ret = (itr == auctions.end()) ? 0 : itr->second;
+    auto itr = auctions.find(Id);
+    Auction* ret = (itr == auctions.end()) ? 0 : itr->second;
     auctionLock.ReleaseReadLock();
     return ret;
 }
@@ -184,7 +177,7 @@ void AuctionHouse::RemoveAuction(Auction* auct)
             snprintf(subject, 100, "%u:0:2", (unsigned int)auct->pItem->GetEntry());
 
             // <hex player guid>:bid:0:deposit:cut
-            if (auct->HighestBid == auct->BuyoutPrice)       // Buyout
+            if (auct->HighestBid == auct->BuyoutPrice) // Buyout
                 snprintf(body, 200, "%X:%u:%u:%u:%u", (unsigned int)auct->HighestBidder, (unsigned int)auct->HighestBid, (unsigned int)auct->BuyoutPrice, (unsigned int)auct->DepositAmount, (unsigned int)auction_cut);
             else
                 snprintf(body, 200, "%X:%u:0:%u:%u", (unsigned int)auct->HighestBidder, (unsigned int)auct->HighestBid, (unsigned int)auct->DepositAmount, (unsigned int)auction_cut);
@@ -276,33 +269,30 @@ void Auction::AddToPacket(WorldPacket& data)
     * (Modifier / 10000) * enchantmentvalue = EnchantmentGain;
     */
 
-    data << pItem->GetStackCount();                     // Amount
-    data << pItem->GetChargesLeft();                    // Charges Left
-    data << uint32(0);                                  // Unknown
-    data << uint64(Owner);                              // Owner guid
-    data << uint32(StartingPrice);                      // Starting bid
-                                                        // If there's no bid yet, we should start at starting bid
-    data << uint32((HighestBid > 0 ? 50 : 0));          // Next bid value modifier, like current bid + this value
-    data << uint32(BuyoutPrice);                        // Buyout
-    data << uint32((ExpiryTime - UNIXTIME) * 1000);     // Time left
-    data << uint64(HighestBidder);                      // Last bidder
-    data << uint32(HighestBid);                         // The bid of the last bidder
+    data << pItem->GetStackCount();                             // Amount
+    data << pItem->GetChargesLeft();                            // Charges Left
+    data << uint32(0);                                          // Unknown
+    data << uint64(Owner);                                      // Owner guid
+    data << uint32(StartingPrice);                              // Starting bid
+                                                                // If there's no bid yet, we should start at starting bid
+    data << uint32((HighestBid > 0 ? 50 : 0));                  // Next bid value modifier, like current bid + this value
+    data << uint32(BuyoutPrice);                                // Buyout
+    data << uint32((ExpiryTime - UNIXTIME) * 1000);             // Time left
+    data << uint64(HighestBidder);                              // Last bidder
+    data << uint32(HighestBid);                                 // The bid of the last bidder
 
 }
 
 void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* packet)
 {
     uint32 count = 0;
-
     WorldPacket data(SMSG_AUCTION_BIDDER_LIST_RESULT, 1024);
-    data << uint32(0);                                  // Placeholder
 
-    Auction* auct;
     auctionLock.AcquireReadLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
-    for (; itr != auctions.end(); ++itr)
+    
+    for (auto itr : auctions)
     {
-        auct = itr->second;
+        Auction* auct = itr.second;
         if (auct->HighestBidder == plr->GetGUID())
         {
             if (auct->Deleted) continue;
@@ -321,11 +311,10 @@ void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* packet)
 void AuctionHouse::UpdateOwner(uint32 oldGuid, uint32 newGuid)
 {
     auctionLock.AcquireWriteLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
-    Auction* auction;
-    for (; itr != auctions.end(); ++itr)
+
+    for (auto itr : auctions)
     {
-        auction = itr->second;
+        Auction* auction = itr.second;
         if (auction->Owner == oldGuid)
             auction->Owner = newGuid;
         if (auction->HighestBidder == oldGuid)
@@ -340,16 +329,14 @@ void AuctionHouse::UpdateOwner(uint32 oldGuid, uint32 newGuid)
 void AuctionHouse::SendOwnerListPacket(Player* plr, WorldPacket* packet)
 {
     uint32 count = 0;
-
     WorldPacket data(SMSG_AUCTION_OWNER_LIST_RESULT, 1024);
-    data << uint32(0);                                          // Placeholder
+    data << uint32(0); // Placeholder
 
-    Auction* auct;
     auctionLock.AcquireReadLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
-    for (; itr != auctions.end(); ++itr)
+
+    for (auto itr : auctions)
     {
-        auct = itr->second;
+        Auction* auct = itr.second;
         if (auct->Owner == plr->GetGUID())
         {
             if (auct->Deleted) continue;
@@ -578,7 +565,7 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recv_data)
 
     Creature* pCreature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
     if (!pCreature || !pCreature->auctionHouse)
-        return;        // NPC doesn't exist or isn't an auctioneer
+        return; // NPC doesn't exist or isn't an auctioneer
 
     // Get item
     Item* pItem = _player->GetItemInterface()->GetItemByGUID(item);
@@ -695,12 +682,12 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
     data << uint32(0); // count of items
 
     auctionLock.AcquireReadLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
+
     ItemProperties const* proto;
-    for (; itr != auctions.end(); ++itr)
+    for (auto itr : auctions)
     {
-        if (itr->second->Deleted) continue;
-        proto = itr->second->pItem->GetItemProperties();
+        if (itr.second->Deleted) continue;
+        proto = itr.second->pItem->GetItemProperties();
 
         // Check the auction for parameters
 
@@ -764,7 +751,7 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
         if (start_index && current_index < start_index) continue;
 
         // all checks passed -> add to packet.
-        itr->second->AddToPacket(data);
+        itr.second->AddToPacket(data);
         (*(uint32*)&data.contents()[0])++;
     }
 
@@ -807,11 +794,11 @@ void WorldSession::HandleAuctionListPendingSales(WorldPacket& recv_data)
     uint32 count = 0;
 
     WorldPacket data(SMSG_AUCTION_LIST_PENDING_SALES, 4);
-    data << uint32(count);                                  // count
+    data << uint32(count);                                 // count
     /*for (uint32 i = 0; i < count; ++i)
     {
-    data << "";                                         // string
-    data << "";                                         // string
+    data << "";                                            // string
+    data << "";                                            // string
     data << uint32(0);
     data << uint32(0);
     data << float(0);
@@ -890,9 +877,9 @@ AuctionHouse::AuctionHouse(uint32 ID)
 
 AuctionHouse::~AuctionHouse()
 {
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
-    for (; itr != auctions.end(); ++itr)
-        delete itr->second;
+    
+    for (auto itr : auctions)
+        delete itr.second;
 }
 
 void AuctionHouse::QueueDeletion(Auction* auct, uint32 Reason)
@@ -910,12 +897,10 @@ void AuctionHouse::QueueDeletion(Auction* auct, uint32 Reason)
 void AuctionHouse::UpdateDeletionQueue()
 {
     removalLock.Acquire();
-    Auction* auct;
 
-    std::list<Auction*>::iterator it = removalList.begin();
-    for (; it != removalList.end(); ++it)
+    for (auto it : removalList)
     {
-        auct = *it;
+        Auction* auct = it;
         ARCEMU_ASSERT(auct->Deleted);
         RemoveAuction(auct);
     }
@@ -930,13 +915,11 @@ void AuctionHouse::UpdateAuctions()
     removalLock.Acquire();
 
     uint32 t = (uint32)UNIXTIME;
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
-    Auction* auct;
-    for (; itr != auctions.end();)
-    {
-        auct = itr->second;
-        ++itr;
 
+    for (auto itr : auctions)
+    {
+        Auction* auct = itr.second;
+ 
         if (t >= auct->ExpiryTime)
         {
             if (auct->HighestBidder == 0)
@@ -970,11 +953,9 @@ void AuctionHouse::AddAuction(Auction* auct)
 
 Auction* AuctionHouse::GetAuction(uint32 Id)
 {
-    Auction* ret;
-    std::unordered_map<uint32, Auction*>::iterator itr;
     auctionLock.AcquireReadLock();
-    itr = auctions.find(Id);
-    ret = (itr == auctions.end()) ? 0 : itr->second;
+    auto itr = auctions.find(Id);
+    Auction* ret = (itr == auctions.end()) ? 0 : itr->second;
     auctionLock.ReleaseReadLock();
     return ret;
 }
@@ -1076,10 +1057,10 @@ void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* packet)
     data << uint32(0); // Placeholder
 
     auctionLock.AcquireReadLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
-    for (; itr != auctions.end(); ++itr)
+    
+    for (auto itr : auctions)
     {
-        Auction* auct = itr->second;
+        Auction* auct = itr.second;
         if (auct->HighestBidder == plr->GetGUID())
         {
             if (auct->Deleted) continue;
@@ -1102,11 +1083,10 @@ void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* packet)
 void AuctionHouse::UpdateOwner(uint32 oldGuid, uint32 newGuid)
 {
     auctionLock.AcquireWriteLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
-    Auction* auction;
-    for (; itr != auctions.end(); ++itr)
+
+    for (auto itr : auctions)
     {
-        auction = itr->second;
+        Auction* auction = itr.second;
         if (auction->Owner == oldGuid)
             auction->Owner = newGuid;
         if (auction->HighestBidder == oldGuid)
@@ -1126,12 +1106,11 @@ void AuctionHouse::SendOwnerListPacket(Player* plr, WorldPacket* packet)
     WorldPacket data(SMSG_AUCTION_OWNER_LIST_RESULT, 4 + 4 + 4);
     data << uint32(0); // Placeholder
 
-    Auction* auct;
     auctionLock.AcquireReadLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
-    for (; itr != auctions.end(); ++itr)
+    
+    for (auto itr : auctions)
     {
-        auct = itr->second;
+        Auction* auct = itr.second;
         if (auct->Owner == plr->GetGUID())
         {
             if (auct->Deleted)
@@ -1161,7 +1140,7 @@ bool Auction::BuildAuctionInfo(WorldPacket& data)
     data << uint32(Id);
     data << uint32(pItem->GetEntry());
 
-    for (uint8 i = 0; i < PROP_ENCHANTMENT_SLOT_0; ++i) // PROP_ENCHANTMENT_SLOT_0 = 10
+    for (uint8 i = 0; i < PROP_ENCHANTMENT_SLOT_0; ++i)             // PROP_ENCHANTMENT_SLOT_0 = 10
     {
         data << uint32(pItem->GetEnchantmentId(EnchantmentSlot(i)));
         data << uint32(pItem->GetEnchantmentDuration(EnchantmentSlot(i)));
@@ -1310,12 +1289,11 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
     }
 
     auctionLock.AcquireReadLock();
-    std::unordered_map<uint32, Auction*>::iterator itr = auctions.begin();
-    ItemProperties const* proto;
-    for (; itr != auctions.end(); ++itr)
+
+    for (auto itr : auctions)
     {
-        if (itr->second->Deleted) continue;
-        proto = itr->second->pItem->GetItemProperties();
+        if (itr.second->Deleted) continue;
+        ItemProperties const* proto = itr.second->pItem->GetItemProperties();
 
         // Check the auction for parameters
 
@@ -1397,13 +1375,10 @@ void AuctionHouse::LoadAuctions()
     if (!result)
         return;
 
-    Auction* auct;
-    Field* fields;
-
     do
     {
-        fields = result->Fetch();
-        auct = new Auction;
+        Field* fields = result->Fetch();
+        Auction* auct = new Auction;
         auct->Id = fields[0].GetUInt32();
 
         Item* pItem = objmgr.LoadItem(fields[2].GetUInt32());

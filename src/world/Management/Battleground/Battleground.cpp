@@ -68,12 +68,11 @@ CBattleground::~CBattleground()
     sEventMgr.RemoveEvents(this);
     for (uint8 i = 0; i < 2; ++i)
     {
-        PlayerInfo* inf;
         for (uint32 j = 0; j < m_groups[i]->GetSubGroupCount(); ++j)
         {
             for (auto itr = m_groups[i]->GetSubGroup(j)->GetGroupMembersBegin(); itr != m_groups[i]->GetSubGroup(j)->GetGroupMembersEnd();)
             {
-                inf = (*itr);
+                PlayerInfo* inf = (*itr);
                 ++itr;
                 m_groups[i]->RemovePlayer(inf);
             }
@@ -125,7 +124,6 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
     data->Initialize(MSG_PVP_LOG_DATA);
     data->reserve(10 * (m_players[0].size() + m_players[1].size()) + 50);
 
-    BGScore* bs;
     if (IS_ARENA(m_type))
     {
         if (!m_ended)
@@ -188,15 +186,15 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         *data << uint32((m_players[0].size() + m_players[1].size()) - m_invisGMs);
         for (uint8 i = 0; i < 2; ++i)
         {
-            for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+            for (auto itr : m_players[i])
             {
-                if ((*itr)->m_isGmInvisible)
+                if (itr->m_isGmInvisible)
                     continue;
-                *data << (*itr)->GetGUID();
-                bs = &(*itr)->m_bgScore;
+                *data << itr->GetGUID();
+                BGScore* bs = &itr->m_bgScore;
                 *data << bs->KillingBlows;
 
-                *data << uint8((*itr)->m_bgTeam);
+                *data << uint8(itr->m_bgTeam);
 
                 *data << bs->DamageDone;
                 *data << bs->HealingDone;
@@ -213,20 +211,20 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
             *data << uint8(m_winningteam ? 0 : 1);
         }
         else
-            *data << uint8(0);      // If the game has ended - this will be 1
+            *data << uint8(0); // If the game has ended - this will be 1
 
         *data << uint32((m_players[0].size() + m_players[1].size()) - m_invisGMs);
 
         uint32 FieldCount = GetFieldCount(GetType());
         for (uint8 i = 0; i < 2; ++i)
         {
-            for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+            for (auto itr : m_players[i])
             {
-                ARCEMU_ASSERT(*itr != NULL);
-                if ((*itr)->m_isGmInvisible)
+                ARCEMU_ASSERT(itr != nullptr);
+                if ((itr)->m_isGmInvisible)
                     continue;
-                *data << (*itr)->GetGUID();
-                bs = &(*itr)->m_bgScore;
+                *data << (itr)->GetGUID();
+				BGScore* bs = &(itr)->m_bgScore;
 
                 *data << bs->KillingBlows;
                 *data << bs->HonorableKills;
@@ -241,7 +239,6 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
             }
         }
     }
-
 }
 
 uint8 CBattleground::Rated()
@@ -258,7 +255,7 @@ void CBattleground::AddPlayer(Player* plr, uint32 team)
 
     /* Send a packet telling them that they can enter */
     plr->m_pendingBattleground = this;
-    BattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_READY, m_type, m_id, 80000, m_mapMgr->GetMapId(), Rated());        // You will be removed from the queue in 2 minutes.
+    BattlegroundManager.SendBattlefieldStatus(plr, BGSTATUS_READY, m_type, m_id, 80000, m_mapMgr->GetMapId(), Rated()); // You will be removed from the queue in 2 minutes.
 
     /* Add an event to remove them in 1 minute 20 seconds time. */
     sEventMgr.AddEvent(plr, &Player::RemoveFromBattlegroundQueue, EVENT_BATTLEGROUND_QUEUE_UPDATE, 80000, 1, 0);
@@ -292,7 +289,6 @@ void CBattleground::OnPlayerPushed(Player* plr)
 
 void CBattleground::SetIsWeekend(bool /*isweekend*/)
 {
-    
 }
 
 void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
@@ -487,9 +483,7 @@ void CBattleground::EndBattleground(PlayerTeam winningTeam)
         for (auto losingPlr : m_players[losingTeam])
         {
             if (losingPlr->QueuedForRbg())
-            {
                 losingPlr->ApplyRandomBattlegroundReward(false);
-            }
 
             losingPlr->SaveToDB(false);
         }
@@ -521,9 +515,9 @@ void CBattleground::AddHonorToTeam(uint32 team, uint32 amount)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    for (auto itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
+    for (auto itr : m_players[team])
     {
-        Player* p = *itr;
+        Player* p = itr;
         HonorHandler::AddHonorPointsToPlayer(p, amount);
     }
 }
@@ -532,9 +526,9 @@ void CBattleground::CastSpellOnTeam(uint32 team, uint32 spell)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    for (auto itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
+    for (auto itr : m_players[team])
     {
-        Player* p = *itr;
+        Player* p = itr;
         p->CastSpell(p, spell, false);
     }
 }
@@ -543,9 +537,9 @@ void CBattleground::RemoveAuraFromTeam(uint32 team, uint32 aura)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    for (auto itr = m_players[team].begin(); itr != m_players[team].end(); ++itr)
+    for (auto itr : m_players[team])
     {
-        Player* p = *itr;
+        Player* p = itr;
         p->RemoveAura(aura);
     }
 }
@@ -583,9 +577,9 @@ void CBattleground::DistributePacketToAll(WorldPacket* packet)
 
     for (uint8 i = 0; i < 2; ++i)
     {
-        for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
-            if ((*itr) && (*itr)->GetSession())
-                (*itr)->GetSession()->SendPacket(packet);
+        for (auto itr : m_players[i])
+            if ((itr) && (itr)->GetSession())
+                (itr)->GetSession()->SendPacket(packet);
     }
 }
 
@@ -593,10 +587,10 @@ void CBattleground::DistributePacketToTeam(WorldPacket* packet, uint32 Team)
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    for (auto itr = m_players[Team].begin(); itr != m_players[Team].end(); ++itr)
+    for (auto itr : m_players[Team])
     {
-        if ((*itr) && (*itr)->GetSession())
-            (*itr)->GetSession()->SendPacket(packet);
+        if (itr && itr->GetSession())
+            itr->GetSession()->SendPacket(packet);
     }
 }
 
@@ -728,13 +722,10 @@ void CBattleground::EventCountdown()
 
         for (uint8 i = 0; i < 2; ++i)
         {
-            for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
-                if ((*itr) && (*itr)->GetSession())
-                {
-                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(46), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
-                }
+            for (auto itr : m_players[i])
+                if (itr && itr->GetSession())
+                    itr->GetSession()->SystemMessage(itr->GetSession()->LocalizedWorldSrv(46), itr->GetSession()->LocalizedWorldSrv(GetNameID()));
         }
-
         // SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "One minute until the battle for %s begins!", GetName());
     }
     else if (m_countdownStage == 2)
@@ -745,14 +736,13 @@ void CBattleground::EventCountdown()
 
         for (uint8 i = 0; i < 2; ++i)
         {
-            for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
-                if ((*itr) && (*itr)->GetSession())
-                {
-                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(47), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
-                }
+            for (auto itr : m_players[i])
+                if (itr && itr->GetSession())
+                    itr->GetSession()->SystemMessage(itr->GetSession()->LocalizedWorldSrv(47), itr->GetSession()->LocalizedWorldSrv(GetNameID()));
+
         }
 
-        //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Thirty seconds until the battle for %s begins!", GetName());
+        // SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Thirty seconds until the battle for %s begins!", GetName());
     }
     else if (m_countdownStage == 3)
     {
@@ -762,14 +752,13 @@ void CBattleground::EventCountdown()
 
         for (uint8 i = 0; i < 2; ++i)
         {
-            for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
-                if ((*itr) && (*itr)->GetSession())
-                {
-                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(48), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
-                }
+            for (auto itr : m_players[i])
+                if (itr && itr->GetSession())
+                    itr->GetSession()->SystemMessage(itr->GetSession()->LocalizedWorldSrv(48), itr->GetSession()->LocalizedWorldSrv(GetNameID()));
+
         }
 
-        //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Fifteen seconds until the battle for %s begins!", GetName());
+        // SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "Fifteen seconds until the battle for %s begins!", GetName());
         sEventMgr.ModifyEventTime(this, EVENT_BATTLEGROUND_COUNTDOWN, 150);
         sEventMgr.ModifyEventTimeLeft(this, EVENT_BATTLEGROUND_COUNTDOWN, 15000);
     }
@@ -778,13 +767,13 @@ void CBattleground::EventCountdown()
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         for (uint8 i = 0; i < 2; ++i)
         {
-            for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
-                if ((*itr) && (*itr)->GetSession())
+            for (auto itr : m_players[i])
+                if (itr && itr->GetSession())
                 {
-                    (*itr)->GetSession()->SystemMessage((*itr)->GetSession()->LocalizedWorldSrv(49), (*itr)->GetSession()->LocalizedWorldSrv(GetNameID()));
+                    itr->GetSession()->SystemMessage(itr->GetSession()->LocalizedWorldSrv(49), itr->GetSession()->LocalizedWorldSrv(GetNameID()));
                 }
         }
-        //SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The battle for %s has begun!", GetName());
+        // SendChatMessage(CHAT_MSG_BG_EVENT_NEUTRAL, 0, "The battle for %s has begun!", GetName());
         sEventMgr.RemoveEvents(this, EVENT_BATTLEGROUND_COUNTDOWN);
         this->StartBattleground();
     }
@@ -792,7 +781,6 @@ void CBattleground::EventCountdown()
 
 void CBattleground::OnStart()
 {
-    
 }
 
 void CBattleground::SetWorldState(uint32 Index, uint32 Value)
@@ -811,20 +799,16 @@ void CBattleground::Close()
     m_ended = true;
     for (uint8 i = 0; i < 2; ++i)
     {
-        uint32 guid;
-        Player* plr;
-        for (auto itr = m_players[i].begin(); itr != m_players[i].end();)
+        for (auto itr : m_players[i])
         {
-            plr = *itr;
-            ++itr;
+            Player* plr = itr;
             RemovePlayer(plr, false);
         }
 
-        for (auto it2 = m_pendPlayers[i].begin(); it2 != m_pendPlayers[i].end();)
+        for (auto it2 : m_pendPlayers[i])
         {
-            guid = *it2;
-            ++it2;
-            plr = objmgr.GetPlayer(guid);
+            uint32_t guid = it2;
+            Player* plr = objmgr.GetPlayer(guid);
 
             if (plr)
                 RemovePendingPlayer(plr);
@@ -842,7 +826,6 @@ void CBattleground::Close()
 
 void CBattleground::OnClose()
 {
-    
 }
 
 Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, uint32 horde)
@@ -960,14 +943,12 @@ void CBattleground::EventResurrectPlayers()
 {
     std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
-    Player* plr;
-    std::map<Creature*, std::set<uint32> >::iterator i;
     WorldPacket data(50);
-    for (i = m_resurrectMap.begin(); i != m_resurrectMap.end(); ++i)
+    for (auto iter : m_resurrectMap)
     {
-        for (auto itr = i->second.begin(); itr != i->second.end(); ++itr)
+        for (auto itr : iter.second)
         {
-            plr = m_mapMgr->GetPlayer(*itr);
+            Player* plr = m_mapMgr->GetPlayer(itr);
             if (plr && plr->IsDead())
             {
                 data.Initialize(SMSG_SPELL_START);
@@ -1001,7 +982,7 @@ void CBattleground::EventResurrectPlayers()
                 plr->CastSpell(plr, BG_REVIVE_PREPARATION, true);
             }
         }
-        i->second.clear();
+        iter.second.clear();
     }
     m_lastResurrect = static_cast<uint32>(UNIXTIME);
 }
@@ -1034,27 +1015,25 @@ void CBattleground::QueueAtNearestSpiritGuide(Player* plr, Creature* old)
     std::set<uint32> *closest = nullptr;
     m_lock.Acquire();
 
-    for (auto itr = m_resurrectMap.begin(); itr != m_resurrectMap.end(); ++itr)
+    for (auto itr : m_resurrectMap)
     {
-        if (itr->first == old)
+        if (itr.first == old)
             continue;
 
-        dd = plr->GetDistance2dSq(itr->first) < dist;
+        dd = plr->GetDistance2dSq(itr.first) < dist;
         if (dd < dist)
         {
-            cl = itr->first;
-            closest = &itr->second;
+            cl = itr.first;
+            closest = &itr.second;
             dist = dd;
         }
     }
-
     if (closest != nullptr)
     {
         closest->insert(plr->GetLowGUID());
         plr->m_areaSpiritHealer_guid = cl->GetGUID();
         plr->CastSpell(plr, 2584, true);
     }
-
     m_lock.Release();
 }
 

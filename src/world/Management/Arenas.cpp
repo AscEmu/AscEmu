@@ -35,7 +35,6 @@
 
 Arena::Arena(MapMgr* mgr, uint32 id, uint32 lgroup, uint32 t, uint32 players_per_side) : CBattleground(mgr, id, lgroup, t)
 {
-
     for (uint8 i = 0; i < 2; i++)
     {
         m_players[i].clear();
@@ -100,15 +99,14 @@ Arena::~Arena()
             delete m_buffs[i];
     }
 
-    for (std::set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for (auto itr : m_gates)
     {
-        if ((*itr) != NULL)
+        if ( itr != NULL)
         {
-            if (!(*itr)->IsInWorld())
-                delete(*itr);
+            if (!itr->IsInWorld())
+                delete itr;
         }
     }
-
 }
 
 /// \todo Rewrite this function entirely
@@ -137,9 +135,9 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
             m_teams[i]->m_stat_rating += m_deltaRating[i];
             if (static_cast<int32>(m_teams[i]->m_stat_rating) < 0) m_teams[i]->m_stat_rating = 0;
 
-            for (std::set<uint32>::iterator itr = m_players2[i].begin(); itr != m_players2[i].end(); ++itr)
+            for (auto itr : m_players2[i])
             {
-                PlayerInfo* info = objmgr.GetPlayerInfo(*itr);
+                PlayerInfo* info = objmgr.GetPlayerInfo(itr);
                 if (info)
                 {
                     ArenaTeamMember* tp = m_teams[i]->GetMember(info);
@@ -175,10 +173,10 @@ bool Arena::HandleFinishBattlegroundRewardCalculation(PlayerTeam winningTeam)
     for (uint8 i = 0; i < 2; i++)
     {
         bool victorious = (i == winningTeam);
-        std::set<Player*>::iterator itr = m_players[i].begin();
-        for (; itr != m_players[i].end(); ++itr)
+        
+        for (auto itr : m_players[i])
         {
-            Player* plr = (Player*)(*itr);
+            Player* plr = (Player*)(itr);
             if (plr != NULL)
             {
                 sHookInterface.OnArenaFinish(plr, plr->m_arenaTeams[m_arenateamtype], victorious, rated_match);
@@ -299,8 +297,8 @@ void Arena::HookOnPlayerDeath(Player* plr)
 void Arena::OnCreate()
 {
     // push gates into world
-    for (std::set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
-        (*itr)->PushToWorld(m_mapMgr);
+    for (auto itr : m_gates)
+        itr->PushToWorld(m_mapMgr);
 }
 
 void Arena::HookOnShadowSight()
@@ -311,9 +309,9 @@ void Arena::OnStart()
     // remove arena readiness buff
     for (uint8 i = 0; i < 2; ++i)
     {
-        for (std::set<Player*>::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+        for (auto itr : m_players[i])
         {
-            Player* plr = *itr;
+            Player* plr = itr;
             plr->RemoveAura(ARENA_PREPARATION);
             m_players2[i].insert(plr->GetLowGUID());
 
@@ -342,10 +340,10 @@ void Arena::OnStart()
     }
 
     // open gates
-    for (std::set<GameObject*>::iterator itr = m_gates.begin(); itr != m_gates.end(); ++itr)
+    for (auto itr : m_gates)
     {
-        (*itr)->SetFlags(GO_FLAG_TRIGGERED);
-        (*itr)->SetState(GO_STATE_CLOSED);
+        itr->SetFlags(GO_FLAG_TRIGGERED);
+        itr->SetState(GO_STATE_CLOSED);
     }
 
     m_started = true;
@@ -453,11 +451,15 @@ void Arena::HookOnAreaTrigger(Player* plr, uint32 id)
     }
 }
 
-void Arena::HookGenerateLoot(Player* plr, Object* pCorpse)    // Not Used
-{}
+void Arena::HookGenerateLoot(Player* /*plr*/, Object* /*pCorpse*/)
+{
+// not used
+}
 
-void Arena::HookOnUnitKill(Player* plr, Unit* pVictim)
-{}
+void Arena::HookOnUnitKill(Player* /*plr*/, Unit* /*pVictim*/)
+{
+}
 
-void Arena::HookOnFlagDrop(Player* plr)
-{}
+void Arena::HookOnFlagDrop(Player* /*plr*/)
+{
+}
