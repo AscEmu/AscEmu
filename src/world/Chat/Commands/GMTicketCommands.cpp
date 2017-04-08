@@ -26,7 +26,7 @@
 #include "Server/World.h"
 #include "../../../scripts/Common/Base.h"
 
-#define  SENDSURVEY "\x03"
+// #define  SENDSURVEY "\x03"
 #ifdef GM_TICKET_MY_MASTER_COMPATIBLE
 
 bool ChatHandler::HandleGMTicketListCommand(const char* args, WorldSession* m_session)
@@ -39,29 +39,27 @@ bool ChatHandler::HandleGMTicketListCommand(const char* args, WorldSession* m_se
 
     chn->Say(cplr, "GmTicket 2", cplr, true);
 
-    for (auto itr = objmgr.GM_TicketList.begin(); itr != objmgr.GM_TicketList.end(); ++itr)
+    for (auto itr : objmgr.GM_TicketList)
     {
-        if ((*itr)->deleted)
+        if (itr->deleted)
             continue;
 
-        Player* plr = objmgr.GetPlayer((uint32)(*itr)->playerGuid);
+        Player* plr = objmgr.GetPlayer((uint32) itr->playerGuid);
 
         if (plr == NULL)
             continue;
 
-        // Player* aplr = ((*itr)->assignedToPlayer == 0 ? NULL : objmgr.GetPlayer((uint32)(*itr)->assignedToPlayer));
-
-        std::stringstream ss;
+        // Player* aplr = ((itr->assignedToPlayer == 0 ? NULL : objmgr.GetPlayer((uint32) itr->assignedToPlayer));
 
         uint32 zone = 0;
         if (plr->IsInWorld())
-        {
             zone = plr->GetZoneId();
-        }
-        ss << "GmTicket 0," << (*itr)->name << "," << (*itr)->level << ",0," << zone;
+
+        std::stringstream ss;
+
+        ss << "GmTicket 0," << itr->name << "," << itr->level << ",0," << zone;
         chn->Say(cplr, ss.str().c_str(), cplr, true);
     }
-
     return true;
 }
 
@@ -166,7 +164,8 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
 #else
 
 void ChatHandler::SendGMSurvey()
-{}
+{
+}
 
 bool ChatHandler::HandleGMTicketListCommand(const char* args, WorldSession* m_session)
 {
@@ -180,33 +179,32 @@ bool ChatHandler::HandleGMTicketListCommand(const char* args, WorldSession* m_se
     ss0 << "GmTicket:" << GM_TICKET_CHAT_OPCODE_LISTSTART;
     chn->Say(cplr, ss0.str().c_str(), cplr, true);
 
-    for (auto itr = objmgr.GM_TicketList.begin(); itr != objmgr.GM_TicketList.end(); itr++)
+    for (auto itr : objmgr.GM_TicketList)
     {
-        if ((*itr)->deleted)
+        if (itr.deleted)
             continue;
 
-        Player* plr = objmgr.GetPlayer((uint32)(*itr)->playerGuid);
+        Player* plr = objmgr.GetPlayer((uint32)itr->playerGuid);
 
         Player* aplr = NULL;
         PlayerInfo* aplri = NULL;
-        if ((*itr)->assignedToPlayer != 0)
+        if (itr.assignedToPlayer != 0)
         {
-            aplr = objmgr.GetPlayer((uint32)(*itr)->assignedToPlayer);
+            aplr = objmgr.GetPlayer((uint32)itr.assignedToPlayer);
             if (aplr == NULL)
-                aplri = objmgr.GetPlayerInfo((uint32)(*itr)->assignedToPlayer);
+                aplri = objmgr.GetPlayerInfo((uint32)itr.assignedToPlayer);
         }
 
         std::stringstream ss;
         ss << "GmTicket:" << GM_TICKET_CHAT_OPCODE_LISTENTRY;
-        ss << ":" << (*itr)->guid;
-        ss << ":" << (plr == NULL ? (*itr)->level : plr->getLevel());
+        ss << ":" << itr.guid;
+        ss << ":" << (plr == NULL ? itr.level : plr->getLevel());
         ss << ":" << (plr == NULL ? 0 : plr->IsInWorld());
         ss << ":" << (aplr == NULL ? (aplri == NULL ? "" : aplri->name) : aplr->GetName());
-        ss << ":" << (plr == NULL ? (*itr)->name : plr->GetName());
-        ss << ":" << (*itr)->comment;
+        ss << ":" << (plr == NULL ? itr.name : plr->GetName());
+        ss << ":" << itr.comment;
         chn->Say(cplr, ss.str().c_str(), cplr, true);
     }
-
     return true;
 }
 
@@ -315,7 +313,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
     WorldPacket datab(SMSG_GM_TICKET_STATUS_UPDATE, 1);
     datab << uint32(3);
     plr->GetSession()->SendPacket(&datab);
-    //plr->GetSession()->GetPlayer()->OutPacketToSet(SMSG_GM_TICKET_STATUS_UPDATE, 1, SENDSURVEY,true);
+    // plr->GetSession()->GetPlayer()->OutPacketToSet(SMSG_GM_TICKET_STATUS_UPDATE, 1, SENDSURVEY,true);
     SystemMessageToPlr(plr, "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");
     return true;
 }
@@ -555,7 +553,7 @@ bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSe
         WorldPacket datab(SMSG_GM_TICKET_STATUS_UPDATE, 1);
         datab << uint32(3);
         plr->GetSession()->SendPacket(&datab);
-        //plr->GetSession()->GetPlayer()->OutPacketToSet(SMSG_GM_TICKET_STATUS_UPDATE, 1, SENDSURVEY,true);
+        // plr->GetSession()->GetPlayer()->OutPacketToSet(SMSG_GM_TICKET_STATUS_UPDATE, 1, SENDSURVEY,true);
         SystemMessageToPlr(plr, "You have been selected to fill out a GM Performance Survey. Please respond truthfully to the questions that you are asked and include the Game Masters name to your comment.");
     }
 

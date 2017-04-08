@@ -19,6 +19,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     std::string receiver, subject, body;
 
     std::vector< Item* > items;
+    std::vector< Item* >::iterator itr;
     Item* pItem;
 
     recv_data >> unk1;
@@ -175,7 +176,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     // Check for the item, and required item.
     if (!items.empty())
     {
-        for (auto itr = items.begin(); itr != items.end(); ++itr)
+        for (itr = items.begin(); itr != items.end(); ++itr)
         {
             pItem = *itr;
             if (_player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(pItem->GetGUID(), false) != pItem)

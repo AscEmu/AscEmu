@@ -446,11 +446,12 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             // if daily then append to finished dailies
             if (qst->is_repeatable == arcemu_QUEST_REPEATABLE_DAILY)
                 plr->PushToFinishedDailies(qst->id);
+
             // Remove quests that are listed to be removed on quest complete.
-            for (auto iter = qst->remove_quest_list.begin(); iter != qst->remove_quest_list.end(); ++iter)
+            for (auto iter : qst->remove_quest_list)
             {
-                if (!plr->HasFinishedQuest((*iter)))
-                    plr->AddToFinishedQuests((*iter));
+                if (!plr->HasFinishedQuest(iter))
+                    plr->AddToFinishedQuests(iter);
             }
 
 #if VERSION_STRING > TBC

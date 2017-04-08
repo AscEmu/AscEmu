@@ -473,7 +473,7 @@ bool ChatHandler::HandleCalcThreatCommand(const char* args, WorldSession* m_sess
     return true;
 }
 
-bool ChatHandler::HandleThreatListCommand(const char* args, WorldSession* m_session)
+bool ChatHandler::HandleThreatListCommand(const char* /*args*/, WorldSession* m_session)
 {
     Unit* target = NULL;
     target = m_session->GetPlayer()->GetMapMgr()->GetUnit(m_session->GetPlayer()->GetSelection());
@@ -485,8 +485,8 @@ bool ChatHandler::HandleThreatListCommand(const char* args, WorldSession* m_sess
 
     std::stringstream sstext;
     sstext << "threatlist of creature: " << Arcemu::Util::GUID_LOPART(m_session->GetPlayer()->GetSelection()) << " " << Arcemu::Util::GUID_HIPART(m_session->GetPlayer()->GetSelection()) << '\n';
-    
-    for (auto itr = target->GetAIInterface()->GetAITargets()->begin(); itr != target->GetAIInterface()->GetAITargets()->end();)
+    TargetMap::iterator itr;
+    for (itr = target->GetAIInterface()->GetAITargets()->begin(); itr != target->GetAIInterface()->GetAITargets()->end();)
     {
         Unit* ai_t = target->GetMapMgr()->GetUnit(itr->first);
         if (!ai_t || !itr->second)
@@ -518,23 +518,22 @@ bool ChatHandler::HandleSendItemPushResult(const char* args, WorldSession* m_ses
     for (; i < 7; i++)
         uint_args[i] = 0;
 
-    if (uint_args[0] == 0)   // null itemid
+    if (uint_args[0] == 0)                     // null itemid
         return false;
 
     WorldPacket data;
     data.SetOpcode(SMSG_ITEM_PUSH_RESULT);
-    data << m_session->GetPlayer()->GetGUID();    // recivee_guid
-    data << uint_args[2];   // type
-    data << uint32(1);      // unk
-    data << uint_args[1];   // count
-    data << uint8(0xFF);    // uint8 unk const 0xFF
-    data << uint_args[3];   // unk1
-    data << uint_args[0];   // item id
-    data << uint_args[4];   // unk2
-    data << uint_args[5];   // random prop
-    data << uint_args[6];   // unk3
+    data << m_session->GetPlayer()->GetGUID(); // recivee_guid
+    data << uint_args[2];                      // type
+    data << uint32(1);                         // unk
+    data << uint_args[1];                      // count
+    data << uint8(0xFF);                       // uint8 unk const 0xFF
+    data << uint_args[3];                      // unk1
+    data << uint_args[0];                      // item id
+    data << uint_args[4];                      // unk2
+    data << uint_args[5];                      // random prop
+    data << uint_args[6];                      // unk3
     m_session->SendPacket(&data);
-
     return true;
 }
 
@@ -1222,8 +1221,7 @@ bool ChatHandler::HandleAIAgentDebugContinue(const char* args, WorldSession* m_s
 
     if (!aiagent_spells.size())
         RedSystemMessage(m_session, "Finished.");
-    /*else
-    BlueSystemMessage(m_session, "Got %u remaining.", aiagent_spells.size());*/
+    /*else BlueSystemMessage(m_session, "Got %u remaining.", aiagent_spells.size());*/
     return true;
 }
 
@@ -1240,15 +1238,15 @@ bool ChatHandler::HandleAIAgentDebugBegin(const char* args, WorldSession* m_sess
     } while (result->NextRow());
     delete result;
 
-    for (auto itr = aiagent_spells.begin(); itr != aiagent_spells.end(); ++itr)
+    for (auto itr : aiagent_spells)
     {
-        result = WorldDatabase.Query("SELECT * FROM ai_agents WHERE spell = %u", (*itr)->Id);
+        result = WorldDatabase.Query("SELECT * FROM ai_agents WHERE spell = %u", itr->Id);
         ARCEMU_ASSERT(result != NULL);
         spell_thingo t;
         t.type = result->Fetch()[6].GetUInt32();
         t.target = result->Fetch()[7].GetUInt32();
         delete result;
-        aiagent_extra[(*itr)->Id] = t;
+        aiagent_extra[itr->Id] = t;
     }
 
     GreenSystemMessage(m_session, "Loaded %u spells for testing.", aiagent_spells.size());

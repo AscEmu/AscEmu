@@ -139,7 +139,7 @@ bool ChatHandler::HandleGuildListMembersCommand(const char* /*args*/, WorldSessi
     GreenSystemMessage(m_session, "Now showing guild members for %s", selected_player->GetGuild()->GetGuildName());
 
     selected_player->GetGuild()->Lock();
-    for (auto itr = selected_player->GetGuild()->GetGuildMembersBegin(); itr != selected_player->GetGuild()->GetGuildMembersEnd(); ++itr)
+    for (GuildMemberMap::iterator itr = selected_player->GetGuild()->GetGuildMembersBegin(); itr != selected_player->GetGuild()->GetGuildMembersEnd(); ++itr)
     {
         GuildMember* member = itr->second;
         if (!member || !member->pPlayer)
