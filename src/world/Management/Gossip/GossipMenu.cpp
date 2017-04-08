@@ -80,14 +80,14 @@ void GossipMenu::BuildPacket(WorldPacket& Packet)
     Packet << TextId;
     Packet << uint32(Menu.size());
 
-    for (auto iter = Menu.begin(); iter != Menu.end(); ++iter)
+    for (auto iter : Menu)
     {
-        Packet << iter->Id;
-        Packet << iter->Icon;
-        Packet << iter->Extra;
-        Packet << uint32(iter->m_gBoxMoney);    // money required to open menu, 2.0.3
-        Packet << iter->Text;
-        Packet << iter->m_gBoxMessage;          // accept text (related to money) pop up box, 2.0.3
+        Packet << iter.Id;
+        Packet << iter.Icon;
+        Packet << iter.Extra;
+        Packet << uint32(iter.m_gBoxMoney);     // money required to open menu, 2.0.3
+        Packet << iter.Text;
+        Packet << iter.m_gBoxMessage;           // accept text (related to money) pop up box, 2.0.3
     }
 }
 

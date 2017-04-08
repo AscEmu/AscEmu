@@ -33,8 +33,8 @@ namespace Arcemu
 
     EquipmentSetMgr::~EquipmentSetMgr()
     {
-        for (auto itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
-            delete itr->second;
+        for (auto itr : EquipmentSets)
+            delete itr.second;
 
         EquipmentSets.clear();
     }
@@ -132,9 +132,9 @@ namespace Arcemu
 
         buf->AddQueryNA(ds.str().c_str());
 
-        for (auto itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
+        for (auto itr : EquipmentSets)
         {
-            EquipmentSet* set = itr->second;
+            EquipmentSet* set = itr.second;
 
             std::stringstream ss;
 
@@ -169,9 +169,9 @@ namespace Arcemu
 #endif
         data << uint32(EquipmentSets.size());
 
-        for (auto itr = EquipmentSets.begin(); itr != EquipmentSets.end(); ++itr)
+        for (auto itr : EquipmentSets)
         {
-            EquipmentSet* set = itr->second;
+            EquipmentSet* set = itr.second;
 
             data << WoWGuid(uint64(set->SetGUID));
             data << uint32(set->SetID);

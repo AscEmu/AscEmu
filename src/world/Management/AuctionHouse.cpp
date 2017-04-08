@@ -287,6 +287,7 @@ void AuctionHouse::SendBidListPacket(Player* plr, WorldPacket* packet)
 {
     uint32 count = 0;
     WorldPacket data(SMSG_AUCTION_BIDDER_LIST_RESULT, 1024);
+    data << uint32(0); // Placeholder
 
     auctionLock.AcquireReadLock();
     
@@ -1353,7 +1354,7 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
         if (count < 50 && totalcount >= listfrom)
         {
             ++count;
-            itr->second->BuildAuctionInfo(data);
+            itr.second->BuildAuctionInfo(data);
         }
 
         ++totalcount;

@@ -95,7 +95,7 @@ void Gossip::Menu::AddItem(uint8 icon, const char* itemtext, uint32 itemid, uint
 
 void Gossip::Menu::RemoveItem(uint32 id)
 {
-    for (auto itr = itemlist_.begin(); itr != itemlist_.end(); ++itr)
+    for (Gossip::ItemList::iterator itr = itemlist_.begin(); itr != itemlist_.end(); ++itr)
     {
         if ((*itr).id_ == id)
         {
