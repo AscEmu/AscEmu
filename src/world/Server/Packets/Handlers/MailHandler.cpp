@@ -28,6 +28,7 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
 {
     uint8 i = 0;
     uint32 j;
+    std::vector<uint32>::iterator itr;
     Item* pItem;
 
     // add stuff
@@ -62,21 +63,21 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
             break;
     }
 
-    data << uint32(cod);          // cod
+    data << uint32(cod); // cod
     data << uint32(0);
     data << uint32(stationery);
-    data << uint32(money);        // money
+    data << uint32(money); // money
     data << uint32(checked_flag); // "checked" flag
     data << float((expire_time - uint32(UNIXTIME)) / 86400.0f);
-    data << uint32(0);            // mail template
+    data << uint32(0); // mail template
     data << subject;
     data << body;
 
-    data << uint8(items.size());  // item count
+    data << uint8(items.size()); // item count
 
     if (!items.empty())
     {
-        for (auto itr = items.begin(); itr != items.end(); ++itr)
+        for (itr = items.begin(); itr != items.end(); ++itr)
         {
             pItem = objmgr.LoadItem(*itr);
             if (pItem == NULL)
@@ -103,6 +104,7 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
 
             delete pItem;
         }
+
     }
 
     return true;
@@ -120,6 +122,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     uint8 i;
     uint64 itemguid;
     std::vector< Item* > items;
+    std::vector< Item* >::iterator itr;
     std::string recepient;
     Item* pItem;
     //uint32 err = MAIL_OK;
@@ -230,7 +233,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     // Check for the item, and required item.
     if (!items.empty())
     {
-        for (auto itr = items.begin(); itr != items.end(); ++itr)
+        for (itr = items.begin(); itr != items.end(); ++itr)
         {
             pItem = *itr;
             if (_player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(pItem->GetGUID(), false) != pItem)
@@ -341,7 +344,8 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
     uint64 mailbox;
     uint32 message_id;
     uint32 lowguid;
-	std::vector<uint32>::iterator itr;
+    std::vector< uint32 >::iterator itr;
+
     recv_data >> mailbox;
     recv_data >> message_id;
     recv_data >> lowguid;
@@ -358,7 +362,7 @@ void WorldSession::HandleTakeItem(WorldPacket& recv_data)
         return;
     }
 
-    for (auto itr = message->items.begin(); itr != message->items.end(); ++itr)
+    for (itr = message->items.begin(); itr != message->items.end(); ++itr)
     {
         if ((*itr) == lowguid)
             break;

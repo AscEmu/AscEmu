@@ -3,7 +3,6 @@ Copyright (c) 2014-2016 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-
 #include "StdAfx.h"
 
 #include "DB2Stores.h"
@@ -95,8 +94,8 @@ void LoadDB2Stores()
     else if (!bad_db2_files.empty())
     {
         std::string str;
-        for (auto i = bad_db2_files.begin(); i != bad_db2_files.end(); ++i)
-            str += *i + "\n";
+        for (auto i : bad_db2_files)
+            str += i + "\n";
 
         LogError("LoadDB2Stores : Some required *.db2 files (%u from %d) not found or not compatible:%s", (uint32)bad_db2_files.size(), DB2_Count, str.c_str());
         exit(1);

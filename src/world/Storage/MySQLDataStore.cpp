@@ -41,12 +41,12 @@ void MySQLDataStore::LoadAdditionalTableConfig()
     if (strs.empty())
         return;
 
-    for (auto itr = strs.begin(); itr != strs.end(); ++itr)
+    for (auto itr : strs)
     {
         char additional_table[200];
         char target_table[200];
 
-        if (sscanf((*itr).c_str(), "%s %s", additional_table, target_table) != 2)
+        if (sscanf(itr.c_str(), "%s %s", additional_table, target_table) != 2)
             continue;
 
         if (!stricmp(target_table, "creature_spawns"))
@@ -122,9 +122,9 @@ void MySQLDataStore::LoadItemPropertiesTable()
     uint32 item_count = 0;
     uint32 basic_field_count = 0;
 
-    for (auto tableiterator = ItemPropertiesTables.begin(); tableiterator != ItemPropertiesTables.end(); ++tableiterator)
+    for (auto tableiterator : ItemPropertiesTables)
     {
-        std::string table_name = *tableiterator;
+        std::string table_name = tableiterator;
         QueryResult* item_result = WorldDatabase.Query("SELECT * FROM %s", table_name.c_str());
 
         //                                                         0      1       2        3       4        5         6       7       8       9          10
@@ -314,12 +314,12 @@ void MySQLDataStore::LoadItemPropertiesTable()
             itemProperties.HolidayId = fields[125].GetUInt32();
             itemProperties.FoodType = fields[126].GetUInt32();
 
-            //lowercase
+            // lowercase
             std::string lower_case_name = itemProperties.Name;
             Util::StringToLowerCase(lower_case_name);
             itemProperties.lowercase_name = lower_case_name;
 
-            //forced pet entries (hacky stuff ->spells)
+            // forced pet entries (hacky stuff ->spells)
             switch (itemProperties.ItemId)
             {
                 case 28071: //Grimoire of Anguish (Rank 1)
@@ -440,7 +440,6 @@ void MySQLDataStore::LoadItemPropertiesTable()
                     break;
             }
 
-
             // Check the data with itemdbc, spelldbc, factiondbc....
 
             ++item_count;
@@ -467,9 +466,9 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
     uint32 creature_properties_count = 0;
     uint32 basic_field_count = 0;
 
-    for (auto tableiterator = CreaturePropertiesTables.begin(); tableiterator != CreaturePropertiesTables.end(); ++tableiterator)
+    for (auto tableiterator : CreaturePropertiesTables)
     {
-        std::string table_name = *tableiterator;
+        std::string table_name = tableiterator;
         //                                                                 0          1           2             3                 4               5                  6
         QueryResult* creature_properties_result = WorldDatabase.Query("SELECT entry, killcredit1, killcredit2, male_displayid, female_displayid, male_displayid2, female_displayid2, "
         //                                                         7      8         9       10     11     12     13       14           15             16           17
@@ -531,7 +530,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
                 DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Male_DisplayID);
                 if (creature_display == nullptr)
                 {
-                    LogError("Table %s includes invalid Male_DisplayID %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Male_DisplayID, entry);
+                    LogError("Table %s includes invalid Male_DisplayID %u for npc entry: %u. Set to 0!", tableiterator.c_str(), creatureProperties.Male_DisplayID, entry);
                     creatureProperties.Male_DisplayID = 0;
                 }
             }
@@ -541,7 +540,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
                 DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Female_DisplayID);
                 if (creature_display == nullptr)
                 {
-                    LogError("Table %s includes invalid Female_DisplayID %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Female_DisplayID, entry);
+                    LogError("Table %s includes invalid Female_DisplayID %u for npc entry: %u. Set to 0!", tableiterator.c_str(), creatureProperties.Female_DisplayID, entry);
                     creatureProperties.Female_DisplayID = 0;
                 }
             }
@@ -551,7 +550,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
                 DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Male_DisplayID2);
                 if (creature_display == nullptr)
                 {
-                    LogError("Table %s includes invalid Male_DisplayID2 %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Male_DisplayID2, entry);
+                    LogError("Table %s includes invalid Male_DisplayID2 %u for npc entry: %u. Set to 0!", tableiterator.c_str(), creatureProperties.Male_DisplayID2, entry);
                     creatureProperties.Male_DisplayID2 = 0;
                 }
             }
@@ -561,7 +560,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
                 DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(creatureProperties.Female_DisplayID2);
                 if (creature_display == nullptr)
                 {
-                    LogError("Table %s includes invalid Female_DisplayID2 %u for npc entry: %u. Set to 0!", (*tableiterator).c_str(), creatureProperties.Female_DisplayID2, entry);
+                    LogError("Table %s includes invalid Female_DisplayID2 %u for npc entry: %u. Set to 0!", tableiterator.c_str(), creatureProperties.Female_DisplayID2, entry);
                     creatureProperties.Female_DisplayID2 = 0;
                 }
             }
@@ -704,14 +703,15 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
 
             creatureProperties.waypointid = fields[74].GetUInt32();
 
-            //process aura string
+            // process aura string
             if (creatureProperties.aura_string.size() != 0)
             {
                 std::string auras = creatureProperties.aura_string;
-                std::vector<std::string> split_auras = Util::SplitStringBySeperator(auras, " ");
-                for (auto it = split_auras.begin(); it != split_auras.end(); ++it)
+				std::vector<std::string> split_auras = Util::SplitStringBySeperator(auras, " ");
+
+                for (auto it : split_auras)
                 {
-                    uint32 id = atol((*it).c_str());
+                    uint32 id = atol(it.c_str());
                     if (id)
                         creatureProperties.start_auras.insert(id);
                 }
@@ -758,9 +758,9 @@ void MySQLDataStore::LoadGameObjectPropertiesTable()
     uint32 gameobject_properties_count = 0;
     uint32 basic_field_count = 0;
 
-    for (auto tableiterator = GameObjectPropertiesTables.begin(); tableiterator != GameObjectPropertiesTables.end(); ++tableiterator)
+    for (auto tableiterator : GameObjectPropertiesTables)
     {
-        std::string table_name = *tableiterator;
+        std::string table_name = tableiterator;
         //                                                                  0       1        2        3         4              5          6          7            8             9
         QueryResult* gameobject_properties_result = WorldDatabase.Query("SELECT entry, type, display_id, name, category_name, cast_bar_text, UnkStr, parameter_0, parameter_1, parameter_2, "
         //                                                                10           11          12           13           14            15           16           17           18
@@ -879,16 +879,16 @@ GameObjectProperties const* MySQLDataStore::GetGameObjectProperties(uint32 entry
     return nullptr;
 }
 
-//quests
+// quests
 void MySQLDataStore::LoadQuestPropertiesTable()
 {
     uint32 start_time = getMSTime();
     uint32 quest_count = 0;
     uint32 basic_field_count = 0;
 
-    for (auto tableiterator = QuestPropertiesTables.begin(); tableiterator != QuestPropertiesTables.end(); ++tableiterator)
+    for (auto tableiterator : QuestPropertiesTables)
     {
-        std::string table_name = *tableiterator;
+        std::string table_name = tableiterator;
         //                                                        0       1     2      3       4          5        6          7              8                 9
         QueryResult* quest_result = WorldDatabase.Query("SELECT entry, ZoneId, sort, flags, MinLevel, questlevel, Type, RequiredRaces, RequiredClass, RequiredTradeskill, "
         //                                                          10                    11                 12             13          14            15           16         17
@@ -1273,26 +1273,26 @@ void MySQLDataStore::LoadCreatureDifficultyTable()
 
 uint32 MySQLDataStore::GetCreatureDifficulty(uint32 entry, uint8 difficulty_type)
 {
-    for (auto itr = _creatureDifficultyStore.begin(); itr != _creatureDifficultyStore.end(); ++itr)
+    for (auto itr : _creatureDifficultyStore)
     {
         switch (difficulty_type)
         {
             case 1:
             {
-                if (itr->first == entry && itr->second.difficulty_entry_1 != 0)
-                    return itr->second.difficulty_entry_1;
+                if (itr.first == entry && itr.second.difficulty_entry_1 != 0)
+                    return itr.second.difficulty_entry_1;
             }
             break;
             case 2:
             {
-                if (itr->first == entry && itr->second.difficulty_entry_2 != 0)
-                    return itr->second.difficulty_entry_2;
+                if (itr.first == entry && itr.second.difficulty_entry_2 != 0)
+                    return itr.second.difficulty_entry_2;
             }
             break;
             case 3:
             {
-                if (itr->first == entry && itr->second.difficulty_entry_3 != 0)
-                    return itr->second.difficulty_entry_3;
+                if (itr.first == entry && itr.second.difficulty_entry_3 != 0)
+                    return itr.second.difficulty_entry_3;
             }
             break;
             default:
@@ -2323,8 +2323,8 @@ void MySQLDataStore::LoadPlayerCreateInfoTable()
 
         memset(playerCreateInfo.taximask, 0, sizeof(playerCreateInfo.taximask));
         int index;
-		std::vector<std::string>::iterator iter;
-		for (iter = tokens.begin(), index = 0; (index < 12) && (iter != tokens.end()); ++iter, ++index)
+        std::vector<std::string>::iterator iter;
+        for (iter = tokens.begin(), index = 0; (index < 12) && (iter != tokens.end()); ++iter, ++index)
         {
             playerCreateInfo.taximask[index] = atol((*iter).c_str());
         }
@@ -2494,7 +2494,7 @@ void MySQLDataStore::LoadPlayerCreateInfoBarsTable(uint32 player_info_index)
         return;
     }
 
-    //LogNotice("MySQLDataLoads : Table `playercreateinfo_bars` has %u columns", player_create_info_bars_result->GetFieldCount());
+    // LogNotice("MySQLDataLoads : Table `playercreateinfo_bars` has %u columns", player_create_info_bars_result->GetFieldCount());
 
     uint32 player_create_info_bars_count = 0;
     do
