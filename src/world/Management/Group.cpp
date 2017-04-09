@@ -409,7 +409,7 @@ void SubGroup::Disband()
         }
 
         --m_Parent->m_MemberCount;
-		GroupMembersSet::iterator itr = m_GroupMembers.erase(itr);
+        m_GroupMembers.erase(itr);
     }
 
     m_Parent->m_SubGroups[m_Id] = nullptr;

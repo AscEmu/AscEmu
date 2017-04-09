@@ -684,11 +684,12 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
 
     auctionLock.AcquireReadLock();
 
-    ItemProperties const* proto;
     for (auto itr : auctions)
     {
-        if (itr.second->Deleted) continue;
-        proto = itr.second->pItem->GetItemProperties();
+        if (itr.second->Deleted)
+            continue;
+
+        ItemProperties const* proto = itr.second->pItem->GetItemProperties();
 
         // Check the auction for parameters
 
