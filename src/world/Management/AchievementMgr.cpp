@@ -2030,7 +2030,6 @@ void AchievementMgr::GMResetAchievement(int32 achievementID)
     if (achievementID == -1)
     {
         // reset all achievements
-
         for (auto itr : m_completedAchievements)
         {
             WorldPacket resetData(SMSG_ACHIEVEMENT_DELETED, 4);

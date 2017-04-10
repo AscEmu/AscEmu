@@ -33,7 +33,7 @@ void WorldSession::HandleQuestgiverStatusQueryOpcode(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
 
     if (_player->IsInBg())
-        return;         //Added in 3.0.2, quests can be shared anywhere besides a BG
+        return; // Added in 3.0.2, quests can be shared anywhere besides a BG
 
     uint64 guid;
     WorldPacket data(SMSG_QUESTGIVER_STATUS, 12);
@@ -103,7 +103,8 @@ void WorldSession::HandleQuestgiverHelloOpcode(WorldPacket& recv_data)
         return;
     }
 
-    /*if (qst_giver->GetAIInterface()) // NPC Stops moving for 3 minutes
+    /* // schnek: test 
+	if (qst_giver->GetAIInterface()) // NPC Stops moving for 3 minutes
         qst_giver->GetAIInterface()->StopMovement(180000);*/
 
     //qst_giver->Emote(EMOTE_ONESHOT_TALK); // this doesn't work
@@ -167,7 +168,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
     else if (guidtype == HIGHGUID_TYPE_ITEM)
     {
         Item* quest_giver = GetPlayer()->GetItemInterface()->GetItemByGUID(guid);
-        //added it for script engine
+        // added it for script engine
         if (quest_giver)
             qst_giver = quest_giver;
         else
@@ -175,7 +176,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
 
         ItemProperties const* itemProto = quest_giver->GetItemProperties();
 
-        if (itemProto->Bonding != ITEM_BIND_ON_USE || quest_giver->IsSoulbound())     // SoulBind item will be used after SoulBind()
+        if (itemProto->Bonding != ITEM_BIND_ON_USE || quest_giver->IsSoulbound()) // SoulBind item will be used after SoulBind()
         {
             if (sScriptMgr.CallScriptedItem(quest_giver, GetPlayer()))
                 return;
@@ -202,7 +203,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
 
     if ((status == QMGR_QUEST_AVAILABLE) || (status == QMGR_QUEST_REPEATABLE) || (status == QMGR_QUEST_CHAT))
     {
-        sQuestMgr.BuildQuestDetails(&data, qst, qst_giver, 1, language, _player);	 // 0 because we want goodbye to function
+        sQuestMgr.BuildQuestDetails(&data, qst, qst_giver, 1, language, _player); // 0 because we want goodbye to function
         SendPacket(&data);
         LOG_DEBUG("WORLD: Sent SMSG_QUESTGIVER_QUEST_DETAILS.");
 
@@ -272,7 +273,7 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
             if (itemProto->QuestId != qPtr->id)
                 _player->GetItemInterface()->RemoveItemAmt(qPtr->srcitem, qPtr->srcitemcount ? qPtr->srcitemcount : 1);
     }
-    //remove all quest items (but not trade goods) collected and required only by this quest
+    // remove all quest items (but not trade goods) collected and required only by this quest
     for (uint8 i = 0; i < MAX_REQUIRED_QUEST_ITEM; ++i)
     {
         if (qPtr->required_item[i] != 0)
@@ -534,8 +535,8 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    //FIX ME: Some Quest givers talk in the end of the quest.
-    //   qst_giver->SendChatMessage(CHAT_MSG_MONSTER_SAY,LANG_UNIVERSAL,qst->GetQuestEndMessage().c_str());
+    // FIX ME: Some Quest givers talk in the end of the quest.
+    // qst_giver->SendChatMessage(CHAT_MSG_MONSTER_SAY,LANG_UNIVERSAL,qst->GetQuestEndMessage().c_str());
     QuestLogEntry* qle = _player->GetQuestLogForEntry(quest_id);
     if (!qle && !qst->is_repeatable)
     {
@@ -563,7 +564,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
     }
 
     sQuestMgr.OnQuestFinished(GetPlayer(), qst, qst_giver, reward_slot);
-    //if (qst_giver->GetTypeId() == TYPEID_UNIT) qst->LUA_SendEvent(TO< Creature* >(qst_giver),GetPlayer(),ON_QUEST_COMPLETEQUEST);
+    // if (qst_giver->GetTypeId() == TYPEID_UNIT) qst->LUA_SendEvent(TO< Creature* >(qst_giver),GetPlayer(),ON_QUEST_COMPLETEQUEST);
 
     if (qst->next_quest_id)
     {
@@ -595,7 +596,8 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
             if (sgr)
             {
                 _player->GetGroup()->Lock();
-                for (auto itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
+                GroupMembersSet::iterator itr;
+                for (itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
                 {
                     Player* pPlayer = (*itr)->m_loggedInPlayer;
                     if (pPlayer && pPlayer->GetGUID() != pguid)
@@ -629,16 +631,16 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
                             response = QUEST_SHARE_MSG_LOG_FULL;
                         }
                         // Checks if the player is dueling
-                        else if (pPlayer->DuelingWith)   // || pPlayer->GetQuestSharer()) //VLack: A possible lock up can occur if we don't zero out questsharer, because sometimes the client does not send the reply packet.. This of course eliminates the check on it, so it is possible to spam group members with quest sharing, but hey, they are YOUR FRIENDS, and better than not being able to receive quest sharing requests at all!
+                        else if (pPlayer->DuelingWith)   // || pPlayer->GetQuestSharer()) // VLack: A possible lock up can occur if we don't zero out questsharer, because sometimes the client does not send the reply packet.. This of course eliminates the check on it, so it is possible to spam group members with quest sharing, but hey, they are YOUR FRIENDS, and better than not being able to receive quest sharing requests at all!
                         {
                             response = QUEST_SHARE_MSG_BUSY;
                         }
 
-                        //VLack: The quest giver player has to be visible for pPlayer, or else the client will show a non-functional "complete quest" panel instead of the "accept quest" one!
-                        //We could either push a full player create for pPlayer that would cause problems later (because they are still out of range and this would have to be handled somehow),
-                        //or create a fake bad response, as we no longer have an out of range response. I'll go with the latter option and send that the other player is busy...
-                        //Also, pPlayer's client can send a busy response automatically even if the players see each other, but they are still too far away.
-                        //But sometimes nothing happens on pPlayer's client (near the end of mutual visibility line), no quest window and no busy response either. This has to be solved later, maybe a distance check here...
+                        // VLack: The quest giver player has to be visible for pPlayer, or else the client will show a non-functional "complete quest" panel instead of the "accept quest" one!
+                        // We could either push a full player create for pPlayer that would cause problems later (because they are still out of range and this would have to be handled somehow),
+                        // or create a fake bad response, as we no longer have an out of range response. I'll go with the latter option and send that the other player is busy...
+                        // Also, pPlayer's client can send a busy response automatically even if the players see each other, but they are still too far away.
+                        // But sometimes nothing happens on pPlayer's client (near the end of mutual visibility line), no quest window and no busy response either. This has to be solved later, maybe a distance check here...
                         if (response == QUEST_SHARE_MSG_SHARING_QUEST && !pPlayer->IsVisible(_player->GetGUID()))
                         {
                             response = QUEST_SHARE_MSG_BUSY;
@@ -652,7 +654,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
 
                         data.clear();
                         sQuestMgr.BuildQuestDetails(&data, pQuest, _player, 1, pPlayer->GetSession()->language, pPlayer);
-                        pPlayer->SetQuestSharer(pguid); //VLack: better to set this _before_ sending out the packet, so no race conditions can happen on heavily loaded servers.
+                        pPlayer->SetQuestSharer(pguid); // VLack: better to set this _before_ sending out the packet, so no race conditions can happen on heavily loaded servers.
                         pPlayer->GetSession()->SendPacket(&data);
                     }
                 }
@@ -670,7 +672,7 @@ void WorldSession::HandleQuestPushResult(WorldPacket& recvPacket)
     uint8 msg;
     recvPacket >> guid;
     uint32 questid = 0;
-    if (recvPacket.size() >= 13)  //VLack: The client can send a 13 byte packet, where the result message is the 13th byte, and we have some data before it... Usually it is the quest id, but I have seen this as uint32(0) too.
+    if (recvPacket.size() >= 13) // VLack: The client can send a 13 byte packet, where the result message is the 13th byte, and we have some data before it... Usually it is the quest id, but I have seen this as uint32(0) too.
         recvPacket >> questid;
     recvPacket >> msg;
 
@@ -682,7 +684,7 @@ void WorldSession::HandleQuestPushResult(WorldPacket& recvPacket)
         if (pPlayer)
         {
             WorldPacket data(MSG_QUEST_PUSH_RESULT, 9);
-            if (recvPacket.size() >= 13)  //VLack: In case the packet was the longer one, its guid is the quest giver player, thus in the response we have to tell him that _this_ player reported the particular state. I think this type of response could also eliminate our SetQuestSharer/GetQuestSharer mess and its possible lock up conditions...
+            if (recvPacket.size() >= 13) // VLack: In case the packet was the longer one, its guid is the quest giver player, thus in the response we have to tell him that _this_ player reported the particular state. I think this type of response could also eliminate our SetQuestSharer/GetQuestSharer mess and its possible lock up conditions...
                 data << uint64(_player->GetGUID());
             else
                 data << uint64(guid);

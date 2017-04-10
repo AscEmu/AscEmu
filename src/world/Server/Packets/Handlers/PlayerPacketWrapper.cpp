@@ -117,7 +117,7 @@ void Player::SendLogXPGain(uint64 guid, uint32 NormalXP, uint32 RestedXP, bool t
     }
     else if (type == true)
     {
-        data << uint64(0);            // does not need to be set for questxp
+        data << uint64(0); // does not need to be set for questxp
         data << uint32(NormalXP);
         data << uint8(1);
 
@@ -149,7 +149,6 @@ void Player::SendSpellCooldownEvent(uint32 SpellId)
 
     m_session->SendPacket(&data);
 }
-
 
 void Player::SendSpellModifier(uint8 spellgroup, uint8 spelltype, int32 v, bool is_pct)
 {
@@ -194,7 +193,6 @@ void Player::SendItemPushResult(bool created, bool recieved, bool sendtoset, boo
         GetGroup()->SendPacketToAll(&data);
     else
         m_session->SendPacket(&data);
-
 }
 
 void Player::SendSetProficiency(uint8 ItemClass, uint32 Proficiency)
@@ -341,9 +339,9 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
     m_lootGuid = guid;
 
     data << uint64(guid);
-    data << uint8(loot_type);  //loot_type;
+    data << uint8(loot_type); // loot_type;
     data << uint32(pLoot->gold);
-    data << uint8(0);   //loot size reserve
+    data << uint8(0); // loot size reserve
 #if VERSION_STRING == Cata
     data << uint8(0);
 #endif
@@ -378,14 +376,14 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         if (itemProto->HasFlag2(ITEM_FLAG2_ALLIANCE_ONLY) && IsTeamHorde())
             continue;
 
-        //quest items check. type 4/5
-        //quest items that don't start quests.
+        // quest items check. type 4/5
+        // quest items that don't start quests.
         if ((itemProto->Bonding == ITEM_BIND_QUEST) && !(itemProto->QuestId) && !HasQuestForItem(itemProto->ItemId))
             continue;
         if ((itemProto->Bonding == ITEM_BIND_QUEST2) && !(itemProto->QuestId) && !HasQuestForItem(itemProto->ItemId))
             continue;
 
-        //quest items that start quests need special check to avoid drops all the time.
+        // quest items that start quests need special check to avoid drops all the time.
         if ((itemProto->Bonding == ITEM_BIND_QUEST) && (itemProto->QuestId) && HasQuest(itemProto->QuestId))
             continue;
         if ((itemProto->Bonding == ITEM_BIND_QUEST2) && (itemProto->QuestId) && HasQuest(itemProto->QuestId))
@@ -396,7 +394,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
         if ((itemProto->Bonding == ITEM_BIND_QUEST2) && (itemProto->QuestId) && HasFinishedQuest(itemProto->QuestId))
             continue;
 
-        //check for starting item quests that need questlines.
+        // check for starting item quests that need questlines.
         if ((itemProto->QuestId && itemProto->Bonding != ITEM_BIND_QUEST && itemProto->Bonding != ITEM_BIND_QUEST2))
         {
             QuestProperties const* pQuest = sMySQLStore.GetQuestProperties(itemProto->QuestId);
@@ -404,7 +402,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
             {
                 uint32 finishedCount = 0;
 
-                //check if its a questline.
+                // check if its a questline.
                 for (uint32 i = 0; i < pQuest->count_requiredquests; ++i)
                 {
                     if (pQuest->required_quests[i])
@@ -447,16 +445,16 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
 
             // if all people passed anyone can loot it? :P
             if (iter->passed)
-                slottype = 0;					// All players passed on the loot
+                slottype = 0; // All players passed on the loot
 
-            //if it is ffa loot and not an masterlooter
+            // if it is ffa loot and not an masterlooter
             if (iter->ffa_loot)
                 slottype = 0;
         }
 
         data << uint8(x);
         data << uint32(itemProto->ItemId);
-        data << uint32(iter->iItemsCount);  //nr of items of this type
+        data << uint32(iter->iItemsCount); // nr of items of this type
         data << uint32(iter->item.displayid);
 
         if (iter->iRandomSuffix)
@@ -475,7 +473,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
             data << uint32(0);
         }
 
-        data << slottype;   // "still being rolled for" flag
+        data << slottype; // "still being rolled for" flag
 
         if (slottype == 1)
         {
@@ -519,9 +517,8 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
                     pGroup->Lock();
                     for (uint32 i = 0; i < pGroup->GetSubGroupCount(); ++i)
                     {
-                        for (auto itr2 = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr2 != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr2)
+                        for (GroupMembersSet::iterator itr2 = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr2 != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr2)
                         {
-
                             PlayerInfo* pinfo = *itr2;
 
                             if (pinfo->m_loggedInPlayer && pinfo->m_loggedInPlayer->GetItemInterface()->CanReceiveItem(itemProto, iter->iItemsCount) == 0)
@@ -554,7 +551,7 @@ void Player::SendLoot(uint64 guid, uint8 loot_type, uint32 mapid)
 void Player::SendInitialLogonPackets()
 {
     // Initial Packets... they seem to be re-sent on port.
-    //m_session->OutPacket(SMSG_SET_REST_START_OBSOLETE, 4, &m_timeLogoff); // Seem to be unused by client
+    // m_session->OutPacket(SMSG_SET_REST_START_OBSOLETE, 4, &m_timeLogoff); // Seem to be unused by client
 
     StackWorldPacket<32> data(SMSG_BINDPOINTUPDATE);
 
@@ -566,11 +563,11 @@ void Player::SendInitialLogonPackets()
 
     m_session->SendPacket(&data);
 
-    //Proficiencies
+    // Proficiencies
     SendSetProficiency(4, armor_proficiency);
     SendSetProficiency(2, weapon_proficiency);
 
-    //Tutorial Flags
+    // Tutorial Flags
     WorldPacket datab(SMSG_TUTORIAL_FLAGS, 4 * 8);
     for (int i = 0; i < 8; ++i)
         datab << uint32_t(m_Tutorials[i]);
@@ -594,9 +591,9 @@ void Player::SendInitialLogonPackets()
     data.Initialize(SMSG_LOGIN_SETTIMESPEED);
 
     data << uint32(Arcemu::Util::MAKE_GAME_TIME());
-    data << float(0.0166666669777748f);    // Normal Game Speed
+    data << float(0.0166666669777748f); // Normal Game Speed
 #if VERSION_STRING > TBC
-    data << uint32(0);   // 3.1.2
+    data << uint32(0); // 3.1.2
 #endif
 
     m_session->SendPacket(&data);
@@ -637,11 +634,11 @@ void Player::SendLootUpdate(Object* o)
 void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, bool sendtoself)
 {
     //////////////////////////////////////////////////////////////////////////////////////////
-    ///first case we need to send to both grouped and ungrouped players in the set
+    /// first case we need to send to both grouped and ungrouped players in the set
     if (groupbuf != NULL && nongroupbuf != NULL)
     {
 
-        for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+        for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
         {
             Player* p = static_cast< Player* >(*itr);
 
@@ -653,10 +650,10 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
     }
     else
         //////////////////////////////////////////////////////////////////////////////////////////
-        //second case we send to group only
+        // second case we send to group only
         if (groupbuf != NULL && nongroupbuf == NULL)
         {
-            for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+            for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
             {
                 Player* p = static_cast< Player* >(*itr);
 
@@ -666,10 +663,10 @@ void Player::SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, 
         }
         else
             //////////////////////////////////////////////////////////////////////////////////////////
-            //Last case we send to nongroup only
+            // Last case we send to nongroup only
             if (groupbuf == NULL && nongroupbuf != NULL)
             {
-                for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+                for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
                 {
                     Player* p = static_cast< Player* >(*itr);
 
@@ -712,11 +709,10 @@ void Player::SendDestroyObject(uint64 GUID)
 {
     WorldPacket data(SMSG_DESTROY_OBJECT, 9);
     data << GUID;
-    data << uint8(0);   //TODO: unk bool
+    data << uint8(0); // TODO: unk bool
 
     m_session->SendPacket(&data);
 }
-
 
 void Player::SendEquipmentSetList()
 {

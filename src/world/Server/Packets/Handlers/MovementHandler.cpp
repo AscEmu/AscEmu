@@ -146,11 +146,11 @@ void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recv_data)
         GetPlayer()->SetPlayerStatus(NONE);
         _player->SpeedCheatReset();
 
-        std::list<Pet*> summons = _player->GetSummons();
-        for (auto itr = summons.begin(); itr != summons.end(); ++itr)
+        auto summons = _player->GetSummons();
+        for (auto itr : summons)
         {
             // move pet too
-            (*itr)->SetPosition((GetPlayer()->GetPositionX() + 2), (GetPlayer()->GetPositionY() + 2), GetPlayer()->GetPositionZ(), M_PI_FLOAT);
+            itr->SetPosition((GetPlayer()->GetPositionX() + 2), (GetPlayer()->GetPositionY() + 2), GetPlayer()->GetPositionZ(), M_PI_FLOAT);
         }
         if (_player->m_sentTeleportPosition.x != 999999.0f)
         {
@@ -529,10 +529,9 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
         /************************************************************************/
         /* Distribute to all inrange players.                                   */
         /************************************************************************/
-        for (auto itr = _player->m_inRangePlayers.begin(); itr != _player->m_inRangePlayers.end(); ++itr)
+        for (auto itr : _player->m_inRangePlayers)
         {
-
-            Player* p = static_cast< Player* >((*itr));
+            Player* p = static_cast< Player* >(itr);
 
             *(uint32*)&movement_packet[pos + 6] = uint32(move_time + p->GetSession()->m_moveDelayTime);
 
@@ -750,7 +749,8 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 #endif
 
 void WorldSession::HandleMoveTimeSkippedOpcode(WorldPacket& recv_data)
-{}
+{
+}
 
 void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recv_data)
 {

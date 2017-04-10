@@ -214,12 +214,12 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
         return;
 
     std::string enchant_field = fields[15].GetString();
-    std::vector< std::string > enchants = Util::SplitStringBySeperator(enchant_field, ";");
-    uint32 enchant_id;
 
+    uint32 enchant_id;
     uint32 time_left;
     uint32 enchslot;
 
+    auto enchants = Util::SplitStringBySeperator(enchant_field, ";");
     for (auto itr : enchants)
     {
         if (sscanf(itr.c_str(), "%u,%u,%u", (unsigned int*)&enchant_id, (unsigned int*)&time_left, (unsigned int*)&enchslot) == 3)
