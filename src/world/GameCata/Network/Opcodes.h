@@ -846,7 +846,7 @@ enum Opcodes
     SMSG_MOVE_SET_CAN_FLY = 0x3DA1,                     // new
     SMSG_MOVE_UNSET_CAN_FLY = 0x15A2,                   // new
     CMSG_MOVE_SET_CAN_FLY_ACK = 0x790C,                 // new
-    CMSG_MOVE_SET_FLY = 0x346,
+    CMSG_MOVE_SET_CAN_FLY = 0x720E,                     // new
     CMSG_SOCKET_GEMS = 0x2F04,                          // new
     CMSG_ARENA_TEAM_CREATE = 0x348,
     SMSG_ARENA_TEAM_COMMAND_RESULT = 0x349,

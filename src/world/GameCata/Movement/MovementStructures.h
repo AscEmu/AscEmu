@@ -3270,6 +3270,298 @@ MovementStatusElements MoveSetPitchRateSequence[] =
     MSEEnd,
 };
 
+MovementStatusElements MovementSetCanFlySequence[] =
+{
+    MSEPositionZ,
+    MSEPositionX,
+    MSEPositionY,
+    MSEHasTransportData,
+    MSEGuidBit1,
+    MSEGuidBit6,
+    MSEGuidBit4,
+    MSEGuidBit2,
+    MSEHasFallData,
+    MSEGuidBit0,
+    MSEHasMovementFlags,
+    MSEGuidBit3,
+    MSEHasMovementFlags2,
+    MSEGuidBit5,
+    MSEHasTimestamp,
+    MSEHasSplineElevation,
+    MSEHasSpline,
+    MSEHasOrientation,
+    MSEGuidBit7,
+    MSEHasUnknownBit,
+    MSEHasPitch,
+    MSETransportGuidBit3,
+    MSEHasTransportTime2,
+    MSETransportGuidBit6,
+    MSETransportGuidBit0,
+    MSETransportGuidBit7,
+    MSETransportGuidBit4,
+    MSEHasTransportTime3,
+    MSETransportGuidBit1,
+    MSETransportGuidBit2,
+    MSETransportGuidBit5,
+    MSEFlags2,
+    MSEHasFallDirection,
+    MSEFlags,
+    MSEGuidByte2,
+    MSEGuidByte0,
+    MSEGuidByte4,
+    MSEGuidByte7,
+    MSEGuidByte5,
+    MSEGuidByte1,
+    MSEGuidByte3,
+    MSEGuidByte6,
+    MSETransportPositionZ,
+    MSETransportGuidByte3,
+    MSETransportGuidByte5,
+    MSETransportGuidByte4,
+    MSETransportSeat,
+    MSETransportPositionX,
+    MSETransportGuidByte2,
+    MSETransportTime2,
+    MSETransportPositionY,
+    MSETransportGuidByte1,
+    MSETransportTime,
+    MSETransportGuidByte7,
+    MSETransportGuidByte0,
+    MSETransportPositionO,
+    MSETransportGuidByte6,
+    MSETransportTime3,
+    MSESplineElevation,
+    MSEFallSinAngle,
+    MSEFallCosAngle,
+    MSEFallHorizontalSpeed,
+    MSEFallVerticalSpeed,
+    MSEFallTime,
+    MSEPitch,
+    MSETimestamp,
+    MSEPositionO,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSetCanFlySequence[] =
+{
+    MSEGuidBit1,
+    MSEGuidBit6,
+    MSEGuidBit5,
+    MSEGuidBit0,
+    MSEGuidBit7,
+    MSEGuidBit4,
+    MSEGuidBit2,
+    MSEGuidBit3,
+    MSEGuidByte6,
+    MSEGuidByte3,
+    MSEMovementCounter,
+    MSEGuidByte2,
+    MSEGuidByte1,
+    MSEGuidByte4,
+    MSEGuidByte7,
+    MSEGuidByte0,
+    MSEGuidByte5,
+    MSEEnd,
+};
+
+MovementStatusElements MoveUnsetCanFlySequence[] =
+{
+    MSEGuidBit1,
+    MSEGuidBit4,
+    MSEGuidBit2,
+    MSEGuidBit5,
+    MSEGuidBit0,
+    MSEGuidBit3,
+    MSEGuidBit6,
+    MSEGuidBit7,
+    MSEGuidByte4,
+    MSEGuidByte6,
+    MSEMovementCounter,
+    MSEGuidByte1,
+    MSEGuidByte0,
+    MSEGuidByte2,
+    MSEGuidByte3,
+    MSEGuidByte5,
+    MSEGuidByte7,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSetHoverSequence[] =
+{
+    MSEGuidBit1,
+    MSEGuidBit4,
+    MSEGuidBit2,
+    MSEGuidBit3,
+    MSEGuidBit0,
+    MSEGuidBit5,
+    MSEGuidBit6,
+    MSEGuidBit7,
+    MSEGuidByte5,
+    MSEGuidByte4,
+    MSEGuidByte1,
+    MSEGuidByte2,
+    MSEGuidByte3,
+    MSEGuidByte6,
+    MSEGuidByte0,
+    MSEGuidByte7,
+    MSEMovementCounter,
+    MSEEnd,
+};
+
+MovementStatusElements MoveUnsetHoverSequence[] =
+{
+    MSEGuidBit4,
+    MSEGuidBit6,
+    MSEGuidBit3,
+    MSEGuidBit1,
+    MSEGuidBit2,
+    MSEGuidBit7,
+    MSEGuidBit5,
+    MSEGuidBit0,
+    MSEGuidByte4,
+    MSEGuidByte5,
+    MSEGuidByte3,
+    MSEGuidByte6,
+    MSEGuidByte7,
+    MSEGuidByte1,
+    MSEGuidByte2,
+    MSEGuidByte0,
+    MSEMovementCounter,
+    MSEEnd,
+};
+
+MovementStatusElements MoveWaterWalkSequence[] =
+{
+    MSEGuidBit4,
+    MSEGuidBit7,
+    MSEGuidBit6,
+    MSEGuidBit0,
+    MSEGuidBit1,
+    MSEGuidBit3,
+    MSEGuidBit5,
+    MSEGuidBit2,
+    MSEGuidByte0,
+    MSEGuidByte5,
+    MSEGuidByte2,
+    MSEMovementCounter,
+    MSEGuidByte7,
+    MSEGuidByte3,
+    MSEGuidByte4,
+    MSEGuidByte1,
+    MSEGuidByte6,
+    MSEEnd,
+};
+
+MovementStatusElements MoveLandWalkSequence[] =
+{
+    MSEGuidBit5,
+    MSEGuidBit1,
+    MSEGuidBit6,
+    MSEGuidBit2,
+    MSEGuidBit3,
+    MSEGuidBit4,
+    MSEGuidBit0,
+    MSEGuidBit7,
+    MSEGuidByte6,
+    MSEGuidByte1,
+    MSEGuidByte7,
+    MSEGuidByte5,
+    MSEGuidByte4,
+    MSEGuidByte0,
+    MSEGuidByte3,
+    MSEGuidByte2,
+    MSEMovementCounter,
+    MSEEnd,
+};
+
+MovementStatusElements MoveFeatherFallSequence[] =
+{
+    MSEGuidBit3,
+    MSEGuidBit1,
+    MSEGuidBit7,
+    MSEGuidBit0,
+    MSEGuidBit4,
+    MSEGuidBit2,
+    MSEGuidBit5,
+    MSEGuidBit6,
+    MSEGuidByte5,
+    MSEGuidByte7,
+    MSEGuidByte2,
+    MSEMovementCounter,
+    MSEGuidByte0,
+    MSEGuidByte3,
+    MSEGuidByte4,
+    MSEGuidByte1,
+    MSEGuidByte6,
+    MSEEnd,
+};
+
+MovementStatusElements MoveNormalFallSequence[] =
+{
+    MSEMovementCounter,
+    MSEGuidBit3,
+    MSEGuidBit0,
+    MSEGuidBit1,
+    MSEGuidBit5,
+    MSEGuidBit7,
+    MSEGuidBit4,
+    MSEGuidBit6,
+    MSEGuidBit2,
+    MSEGuidByte2,
+    MSEGuidByte7,
+    MSEGuidByte1,
+    MSEGuidByte4,
+    MSEGuidByte5,
+    MSEGuidByte0,
+    MSEGuidByte3,
+    MSEGuidByte6,
+    MSEEnd,
+};
+
+MovementStatusElements MoveForceRootSequence[] =
+{
+    MSEGuidBit2,
+    MSEGuidBit7,
+    MSEGuidBit6,
+    MSEGuidBit0,
+    MSEGuidBit5,
+    MSEGuidBit4,
+    MSEGuidBit1,
+    MSEGuidBit3,
+    MSEGuidByte1,
+    MSEGuidByte0,
+    MSEGuidByte2,
+    MSEGuidByte5,
+    MSEMovementCounter,
+    MSEGuidByte3,
+    MSEGuidByte4,
+    MSEGuidByte7,
+    MSEGuidByte6,
+    MSEEnd,
+};
+
+MovementStatusElements MoveForceUnrootSequence[] =
+{
+    MSEGuidBit0,
+    MSEGuidBit1,
+    MSEGuidBit3,
+    MSEGuidBit7,
+    MSEGuidBit5,
+    MSEGuidBit2,
+    MSEGuidBit4,
+    MSEGuidBit6,
+    MSEGuidByte3,
+    MSEGuidByte6,
+    MSEGuidByte1,
+    MSEMovementCounter,
+    MSEGuidByte2,
+    MSEGuidByte0,
+    MSEGuidByte7,
+    MSEGuidByte4,
+    MSEGuidByte5,
+    MSEEnd,
+};
+
 MovementStatusElements* GetMovementStatusElementsSequence(uint32 opcode)
 {
     switch (opcode)
@@ -3379,6 +3671,28 @@ MovementStatusElements* GetMovementStatusElementsSequence(uint32 opcode)
             return MoveSetFlightBackSpeedSequence;
         case MSG_MOVE_SET_PITCH_RATE:
             return MoveSetPitchRateSequence;
+        case CMSG_MOVE_SET_CAN_FLY:
+            return MovementSetCanFlySequence;
+        case SMSG_MOVE_SET_CAN_FLY:
+            return MoveSetCanFlySequence;
+        case SMSG_MOVE_UNSET_CAN_FLY:
+            return MoveUnsetCanFlySequence;
+        case SMSG_MOVE_SET_HOVER:
+            return MoveSetHoverSequence;
+        case SMSG_MOVE_UNSET_HOVER:
+            return MoveUnsetHoverSequence;
+        case SMSG_MOVE_WATER_WALK:
+            return MoveWaterWalkSequence;
+        case SMSG_MOVE_LAND_WALK:
+            return MoveLandWalkSequence;
+        case SMSG_MOVE_FEATHER_FALL:
+            return MoveFeatherFallSequence;
+        case SMSG_MOVE_NORMAL_FALL:
+            return MoveNormalFallSequence;
+        case SMSG_FORCE_MOVE_ROOT:
+            return MoveForceRootSequence;
+        case SMSG_FORCE_MOVE_UNROOT:
+            return MoveForceUnrootSequence;
         default:
             return nullptr;
     }
