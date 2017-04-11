@@ -168,8 +168,13 @@ bool DeathGrip(uint32 i, Spell* s)
     {
         Player* playerTarget = static_cast< Player* >(unitTarget);
 
+#if VERSION_STRING != Cata
         if(playerTarget->obj_movement_info.IsOnTransport()) // Blizzard screwed this up, so we won't.
             return false;
+#else
+        if (!playerTarget->obj_movement_info.getTransportGuid().IsEmpty())
+            return false;
+#endif
 
         s->SpellEffectPlayerPull(i);
 

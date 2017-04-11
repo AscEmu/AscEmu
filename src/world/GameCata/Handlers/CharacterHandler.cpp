@@ -520,9 +520,17 @@ void WorldSession::FullLogin(Player* plr)
 
     bool enter_world = true;
 
+#if VERSION_STRING != Cata
     if (plr->obj_movement_info.transporter_info.guid != 0)
+#else
+    if (!plr->obj_movement_info.getTransportGuid().IsEmpty())
+#endif
     {
+#if VERSION_STRING != Cata
         Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(plr->obj_movement_info.transporter_info.guid));
+#else
+        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(static_cast<uint32>(plr->obj_movement_info.getTransportGuid())));
+#endif
         if (pTrans)
         {
             if (plr->IsDead())

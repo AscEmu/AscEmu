@@ -39,7 +39,11 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket& recv_data)
     LOG_DEBUG("WORLD: Recvd CMSG_REPOP_REQUEST Message");
     if (_player->getDeathState() != JUST_DIED)
         return;
+#if VERSION_STRING != Cata
     if (_player->obj_movement_info.IsOnTransport())
+#else
+    if (!_player->obj_movement_info.getTransportGuid().IsEmpty())
+#endif
     {
         auto transport = _player->GetTransport();
         if (transport != nullptr)

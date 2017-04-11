@@ -1585,7 +1585,11 @@ void Player::_EventExploration()
             ApplyPlayerRestState(false);
     }
 
+#if VERSION_STRING != Cata
     if (!(currFields & val) && !GetTaxiState() && !obj_movement_info.transporter_info.guid) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
+#else
+    if (!(currFields & val) && !GetTaxiState() && !obj_movement_info.getTransportGuid().IsEmpty()) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
+#endif
     {
         SetUInt32Value(offset, (uint32)(currFields | val));
 
@@ -3375,6 +3379,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         field_index++;
     }
 
+#if VERSION_STRING != Cata
     obj_movement_info.transporter_info.guid = get_next_field.GetUInt32();
     if (obj_movement_info.transporter_info.guid)
     {
@@ -3386,6 +3391,15 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     obj_movement_info.transporter_info.position.y = get_next_field.GetFloat();
     obj_movement_info.transporter_info.position.z = get_next_field.GetFloat();
     obj_movement_info.transporter_info.position.o = get_next_field.GetFloat();
+#else
+    uint32_t transportGuid = get_next_field.GetUInt32();
+    float transportX = get_next_field.GetFloat();
+    float transportY = get_next_field.GetFloat();
+    float transportZ = get_next_field.GetFloat();
+    float transportO = get_next_field.GetFloat();
+
+    obj_movement_info.setTransportData(transportGuid, transportX, transportY, transportZ, transportO, 0, 0);
+#endif
 
     LoadSpells(results[13].result);
 
@@ -4628,7 +4642,11 @@ void Player::RepopRequestedPlayer()
     if (transport != nullptr)
     {
         transport->RemovePassenger(this);
+#if VERSION_STRING != Cata
         this->obj_movement_info.transporter_info.guid = 0;
+#else
+        this->obj_movement_info.clearTransportData();
+#endif
 
         //ResurrectPlayer();
         RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
@@ -8601,13 +8619,26 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
         setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
     }
+
+#if VERSION_STRING != Cata
     if (obj_movement_info.transporter_info.guid)
+#else
+    if (!obj_movement_info.getTransportGuid().IsEmpty())
+#endif
     {
+#if VERSION_STRING != Cata
         Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
+#else
+        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.getTransportGuid()));
+#endif
         if (pTrans)
         {
             pTrans->RemovePassenger(this);
+#if VERSION_STRING != Cata
             obj_movement_info.transporter_info.guid = 0;
+#else
+            obj_movement_info.clearTransportData();
+#endif
         }
     }
 

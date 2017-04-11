@@ -68,27 +68,27 @@ void Player::sendForceMovePaket(UnitSpeedType speed_type, float speed)
         case TYPE_WALK:
         {
             data.Initialize(SMSG_FORCE_WALK_SPEED_CHANGE);
-            movement_info.Write(data, SMSG_FORCE_WALK_SPEED_CHANGE, speed);
+            movement_info.writeMovementInfo(data, SMSG_FORCE_WALK_SPEED_CHANGE, speed);
         } break;
         case TYPE_RUN:
         {
             data.Initialize(SMSG_FORCE_RUN_SPEED_CHANGE);
-            movement_info.Write(data, SMSG_FORCE_RUN_SPEED_CHANGE, speed);
+            movement_info.writeMovementInfo(data, SMSG_FORCE_RUN_SPEED_CHANGE, speed);
         } break;
         case TYPE_RUN_BACK:
         {
             data.Initialize(SMSG_FORCE_RUN_BACK_SPEED_CHANGE);
-            movement_info.Write(data, SMSG_FORCE_RUN_BACK_SPEED_CHANGE, speed);
+            movement_info.writeMovementInfo(data, SMSG_FORCE_RUN_BACK_SPEED_CHANGE, speed);
         } break;
         case TYPE_SWIM:
         {
             data.Initialize(SMSG_FORCE_SWIM_SPEED_CHANGE);
-            movement_info.Write(data, SMSG_FORCE_SWIM_SPEED_CHANGE, speed);
+            movement_info.writeMovementInfo(data, SMSG_FORCE_SWIM_SPEED_CHANGE, speed);
         } break;
         case TYPE_SWIM_BACK:
         {
             data.Initialize(SMSG_FORCE_SWIM_BACK_SPEED_CHANGE);
-            movement_info.Write(data, SMSG_FORCE_SWIM_BACK_SPEED_CHANGE, speed);
+            movement_info.writeMovementInfo(data, SMSG_FORCE_SWIM_BACK_SPEED_CHANGE, speed);
         } break;
         case TYPE_TURN_RATE:
         {
@@ -98,7 +98,7 @@ void Player::sendForceMovePaket(UnitSpeedType speed_type, float speed)
         case TYPE_FLY:
         {
             data.Initialize(SMSG_FORCE_FLIGHT_SPEED_CHANGE);
-            movement_info.Write(data, SMSG_FORCE_FLIGHT_SPEED_CHANGE, speed);
+            movement_info.writeMovementInfo(data, SMSG_FORCE_FLIGHT_SPEED_CHANGE, speed);
         } break;
         case TYPE_FLY_BACK:
         {
@@ -368,7 +368,7 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
         } break;
     }
 
-    SendMessageToSet(&data, false);
+    SendMessageToSet(&data, true);
 }
 #endif
 
@@ -376,10 +376,10 @@ void Player::handleFall(MovementInfo const& movement_info)
 {
 #if VERSION_STRING == Cata
     if (!z_axisposition)
-        z_axisposition = movement_info.position.z;
+        z_axisposition = movement_info.getPosition()->z;
 
-    uint32 falldistance = float2int32(z_axisposition - movement_info.position.z);
-    if (z_axisposition <= movement_info.position.z)
+    uint32 falldistance = float2int32(z_axisposition - movement_info.getPosition()->z);
+    if (z_axisposition <= movement_info.getPosition()->z)
         falldistance = 1;
 
     if ((int)falldistance > m_safeFall)
@@ -409,13 +409,13 @@ void Player::handleFall(MovementInfo const& movement_info)
 bool Player::isPlayerJumping(MovementInfo const& movement_info, uint16_t opcode)
 {
 #if VERSION_STRING == Cata
-    if (opcode == MSG_MOVE_FALL_LAND || movement_info.HasMovementFlag(MOVEFLAG_SWIMMING))
+    if (opcode == MSG_MOVE_FALL_LAND || movement_info.hasMovementFlag(MOVEFLAG_SWIMMING))
     {
         jumping = false;
         return false;
     }
 
-    if (!jumping && (opcode == MSG_MOVE_JUMP || movement_info.HasMovementFlag(MOVEFLAG_FALLING)))
+    if (!jumping && (opcode == MSG_MOVE_JUMP || movement_info.hasMovementFlag(MOVEFLAG_FALLING)))
     {
         jumping = true;
         return true;
@@ -441,7 +441,7 @@ void Player::handleBreathing(MovementInfo& movement_info, WorldSession* session)
 
         if (session->m_bIsWLevelSet)
         {
-            if ((movement_info.position.z + m_noseLevel) > session->m_wLevel)
+            if ((movement_info.getPosition()->z + m_noseLevel) > session->m_wLevel)
             {
                 RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
 
@@ -452,22 +452,22 @@ void Player::handleBreathing(MovementInfo& movement_info, WorldSession* session)
         return;
     }
 
-    if (movement_info.HasMovementFlag(MOVEFLAG_SWIMMING) && !(m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
+    if (movement_info.hasMovementFlag(MOVEFLAG_SWIMMING) && !(m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
     {
         RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_ENTER_WATER);
 
         if (!session->m_bIsWLevelSet)
         {
-            session->m_wLevel = movement_info.position.z + m_noseLevel * 0.95f;
+            session->m_wLevel = movement_info.getPosition()->z + m_noseLevel * 0.95f;
             session->m_bIsWLevelSet = true;
         }
 
         m_UnderwaterState |= UNDERWATERSTATE_SWIMMING;
     }
 
-    if (!(movement_info.HasMovementFlag(MOVEFLAG_SWIMMING)) && (movement_info.HasMovementFlag(MOVEFLAG_NONE)) && (m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
+    if (!(movement_info.hasMovementFlag(MOVEFLAG_SWIMMING)) && (movement_info.hasMovementFlag(MOVEFLAG_NONE)) && (m_UnderwaterState & UNDERWATERSTATE_SWIMMING))
     {
-        if ((movement_info.position.z + m_noseLevel) > session->m_wLevel)
+        if ((movement_info.getPosition()->z + m_noseLevel) > session->m_wLevel)
         {
             RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_LEAVE_WATER);
 
@@ -479,7 +479,7 @@ void Player::handleBreathing(MovementInfo& movement_info, WorldSession* session)
 
     if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING && !(m_UnderwaterState & UNDERWATERSTATE_UNDERWATER))
     {
-        if ((movement_info.position.z + m_noseLevel) < session->m_wLevel)
+        if ((movement_info.getPosition()->z + m_noseLevel) < session->m_wLevel)
         {
             m_UnderwaterState |= UNDERWATERSTATE_UNDERWATER;
             SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, -1);
@@ -488,7 +488,7 @@ void Player::handleBreathing(MovementInfo& movement_info, WorldSession* session)
 
     if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING && m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
     {
-        if ((movement_info.position.z + m_noseLevel) > session->m_wLevel)
+        if ((movement_info.getPosition()->z + m_noseLevel) > session->m_wLevel)
         {
             m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
             SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, 10);
@@ -497,7 +497,7 @@ void Player::handleBreathing(MovementInfo& movement_info, WorldSession* session)
 
     if (!(m_UnderwaterState & UNDERWATERSTATE_SWIMMING) && m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
     {
-        if ((movement_info.position.z + m_noseLevel) > session->m_wLevel)
+        if ((movement_info.getPosition()->z + m_noseLevel) > session->m_wLevel)
         {
             m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
             SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, 10);

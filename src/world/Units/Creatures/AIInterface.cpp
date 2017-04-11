@@ -594,8 +594,13 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                     {
                         MovementInfo* mi = static_cast<Player*>(getNextTarget())->GetSession()->GetMovementInfo();
 
+#if VERSION_STRING != Cata
                         if (mi->flags & MOVEFLAG_FLYING)
                             HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
+#else
+                        if (mi->hasMovementFlag(MOVEFLAG_FLYING))
+                            HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
+#endif
                     }
                 }
             }
@@ -1070,8 +1075,13 @@ void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellI
                     {
                         MovementInfo* mi = static_cast< Player* >(pUnit)->GetSession()->GetMovementInfo();
 
+#if VERSION_STRING != Cata
                         if (mi != NULL && !(mi->flags & MOVEFLAG_FALLING) && !(mi->flags & MOVEFLAG_SWIMMING) && !(mi->flags & MOVEFLAG_HOVER))
                             return;
+#else
+                        if (mi != NULL && !(mi->hasMovementFlag(MOVEFLAG_FALLING)) && !(mi->hasMovementFlag(MOVEFLAG_SWIMMING)) && !(mi->hasMovementFlag(MOVEFLAG_HOVER)))
+                            return;
+#endif
                     }
                 }
             }
