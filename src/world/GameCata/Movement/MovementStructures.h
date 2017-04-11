@@ -3063,6 +3063,213 @@ MovementStatusElements MovementUpdateFlightSpeedSequence[] =
     MSEEnd,
 };
 
+MovementStatusElements MoveSetWalkSpeedSequence[] =
+{
+    MSEGuidBit0,
+    MSEGuidBit4,
+    MSEGuidBit5,
+    MSEGuidBit2,
+    MSEGuidBit3,
+    MSEGuidBit1,
+    MSEGuidBit6,
+    MSEGuidBit7,
+    MSEGuidByte6,
+    MSEGuidByte1,
+    MSEGuidByte5,
+    MSECustomSpeed,
+    MSEGuidByte2,
+    MSEMovementCounter,
+    MSEGuidByte4,
+    MSEGuidByte0,
+    MSEGuidByte7,
+    MSEGuidByte3,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSetRunSpeedSequence[] =
+{
+    MSEGuidBit6,
+    MSEGuidBit1,
+    MSEGuidBit5,
+    MSEGuidBit2,
+    MSEGuidBit7,
+    MSEGuidBit0,
+    MSEGuidBit3,
+    MSEGuidBit4,
+    MSEGuidByte5,
+    MSEGuidByte3,
+    MSEGuidByte1,
+    MSEGuidByte4,
+    MSEMovementCounter,
+    MSECustomSpeed,
+    MSEGuidByte6,
+    MSEGuidByte0,
+    MSEGuidByte7,
+    MSEGuidByte2,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSetRunBackSpeedSequence[] =
+{
+    MSEGuidBit0,
+    MSEGuidBit6,
+    MSEGuidBit2,
+    MSEGuidBit1,
+    MSEGuidBit3,
+    MSEGuidBit4,
+    MSEGuidBit5,
+    MSEGuidBit7,
+    MSEGuidByte5,
+    MSEMovementCounter,
+    MSECustomSpeed,
+    MSEGuidByte0,
+    MSEGuidByte4,
+    MSEGuidByte7,
+    MSEGuidByte3,
+    MSEGuidByte1,
+    MSEGuidByte2,
+    MSEGuidByte6,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSetSwimSpeedSequence[] =
+{
+    MSEGuidBit5,
+    MSEGuidBit4,
+    MSEGuidBit7,
+    MSEGuidBit3,
+    MSEGuidBit2,
+    MSEGuidBit0,
+    MSEGuidBit1,
+    MSEGuidBit6,
+    MSEGuidByte0,
+    MSEMovementCounter,
+    MSEGuidByte6,
+    MSEGuidByte3,
+    MSEGuidByte5,
+    MSEGuidByte2,
+    MSECustomSpeed,
+    MSEGuidByte1,
+    MSEGuidByte7,
+    MSEGuidByte4,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSetSwimBackSpeedSequence[] =
+{
+    MSEGuidBit4,
+    MSEGuidBit2,
+    MSEGuidBit3,
+    MSEGuidBit6,
+    MSEGuidBit5,
+    MSEGuidBit1,
+    MSEGuidBit0,
+    MSEGuidBit7,
+    MSEMovementCounter,
+    MSEGuidByte0,
+    MSEGuidByte3,
+    MSEGuidByte4,
+    MSEGuidByte6,
+    MSEGuidByte5,
+    MSEGuidByte1,
+    MSECustomSpeed,
+    MSEGuidByte7,
+    MSEGuidByte2,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSetTurnRateSequence[] =
+{
+    MSEGuidBit7,
+    MSEGuidBit2,
+    MSEGuidBit1,
+    MSEGuidBit0,
+    MSEGuidBit4,
+    MSEGuidBit5,
+    MSEGuidBit6,
+    MSEGuidBit3,
+    MSEGuidByte5,
+    MSEGuidByte7,
+    MSEGuidByte2,
+    MSECustomSpeed,
+    MSEGuidByte3,
+    MSEGuidByte1,
+    MSEGuidByte0,
+    MSEMovementCounter,
+    MSEGuidByte6,
+    MSEGuidByte4,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSetFlightSpeedSequence[] =
+{
+    MSEGuidBit0,
+    MSEGuidBit5,
+    MSEGuidBit1,
+    MSEGuidBit6,
+    MSEGuidBit3,
+    MSEGuidBit2,
+    MSEGuidBit7,
+    MSEGuidBit4,
+    MSEGuidByte0,
+    MSEGuidByte1,
+    MSEGuidByte7,
+    MSEGuidByte5,
+    MSECustomSpeed,
+    MSEMovementCounter,
+    MSEGuidByte2,
+    MSEGuidByte6,
+    MSEGuidByte3,
+    MSEGuidByte4,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSetFlightBackSpeedSequence[] =
+{
+    MSEGuidBit1,
+    MSEGuidBit2,
+    MSEGuidBit6,
+    MSEGuidBit4,
+    MSEGuidBit7,
+    MSEGuidBit3,
+    MSEGuidBit0,
+    MSEGuidBit5,
+    MSEGuidByte3,
+    MSEMovementCounter,
+    MSEGuidByte6,
+    MSECustomSpeed,
+    MSEGuidByte1,
+    MSEGuidByte2,
+    MSEGuidByte4,
+    MSEGuidByte0,
+    MSEGuidByte5,
+    MSEGuidByte7,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSetPitchRateSequence[] =
+{
+    MSEGuidBit1,
+    MSEGuidBit2,
+    MSEGuidBit6,
+    MSEGuidBit7,
+    MSEGuidBit0,
+    MSEGuidBit3,
+    MSEGuidBit5,
+    MSEGuidBit4,
+    MSECustomSpeed,
+    MSEGuidByte6,
+    MSEGuidByte4,
+    MSEGuidByte0,
+    MSEMovementCounter,
+    MSEGuidByte1,
+    MSEGuidByte2,
+    MSEGuidByte7,
+    MSEGuidByte3,
+    MSEGuidByte5,
+    MSEEnd,
+};
+
 MovementStatusElements* GetMovementStatusElementsSequence(uint32 opcode)
 {
     switch (opcode)
@@ -3154,6 +3361,24 @@ MovementStatusElements* GetMovementStatusElementsSequence(uint32 opcode)
             return MovementUpdateFlightSpeedSequence;
         //case SMSG_FORCE_FLIGHT_BACK_SPEED_CHANGE:
         //case SMSG_FORCE_PITCH_RATE_CHANGE:
+        case MSG_MOVE_SET_WALK_SPEED:
+            return MoveSetWalkSpeedSequence;
+        case MSG_MOVE_SET_RUN_SPEED:
+            return MoveSetRunSpeedSequence;
+        case MSG_MOVE_SET_RUN_BACK_SPEED:
+            return MoveSetRunBackSpeedSequence;
+        case MSG_MOVE_SET_SWIM_SPEED:
+            return MoveSetSwimSpeedSequence;
+        case MSG_MOVE_SET_SWIM_BACK_SPEED:
+            return MoveSetSwimBackSpeedSequence;
+        case MSG_MOVE_SET_TURN_RATE:
+            return MoveSetTurnRateSequence;
+        case MSG_MOVE_SET_FLIGHT_SPEED:
+            return MoveSetFlightSpeedSequence;
+        case MSG_MOVE_SET_FLIGHT_BACK_SPEED:
+            return MoveSetFlightBackSpeedSequence;
+        case MSG_MOVE_SET_PITCH_RATE:
+            return MoveSetPitchRateSequence;
         default:
             return nullptr;
     }
