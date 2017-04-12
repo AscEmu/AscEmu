@@ -1,5 +1,10 @@
-// License: MIT
+/*
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
+
 #pragma once
+
 #include <cstdint>
 #include <set>
 
@@ -8,70 +13,78 @@
 class Unit;
 class Player;
 
-namespace AscEmu { namespace World { namespace Units {
-    class SERVER_DECL CombatStatus
+namespace AscEmu
+{
+    namespace World
     {
-        // Attackers can be anything, but healers can only be players
-        // TODO: Check this, it sounds wrong
-        typedef std::set<uint64_t> AttackerSet;
-        typedef std::set<uint32_t> HealerSet;
+        namespace Units
+        {
+            class SERVER_DECL CombatStatus
+            {
+                // Attackers can be anything, but healers can only be players
+                // TODO: Check this, it sounds wrong
+                typedef std::set<uint64_t> AttackerSet;
+                typedef std::set<uint32_t> HealerSet;
 
-        Unit* m_unit;
-        uint64_t m_primaryAttackTarget;
+                Unit* m_unit;
+                uint64_t m_primaryAttackTarget;
 
-        HealerSet m_healers;
-        HealerSet m_healTargets;
+                HealerSet m_healers;
+                HealerSet m_healTargets;
 
-        AttackerSet m_attackers;
-        AttackerSet m_attackTargets;
+                AttackerSet m_attackers;
+                AttackerSet m_attackTargets;
 
-        bool m_lastStatus;
+                bool m_lastStatus;
 
-        // Checks whether we are really in combat (only used internally)
-        bool isReallyInCombat() const;
+                // Checks whether we are really in combat (only used internally)
+                bool isReallyInCombat() const;
 
-        // Removes our healers from the list
-        void removeMyHealers();
+                // Removes our healers from the list
+                void removeMyHealers();
 
-        // Removes all healers and heal targets, called on instance change
-        void removeAllHealersAndHealTargets();
-        // Means we either vanished or died
-        void removeAllAttackersAndAttackTargets();
+                // Removes all healers and heal targets, called on instance change
+                void removeAllHealersAndHealTargets();
+                // Means we either vanished or died
+                void removeAllAttackersAndAttackTargets();
 
-        void clearPrimaryAttackTarget();
+                void clearPrimaryAttackTarget();
 
-    public:
-        CombatStatus(Unit* unit);
+            public:
 
-        // Sets us as in/out of combat and, if it changed from the last call, sets various flags based on that
-        void update();
+                CombatStatus(Unit* unit);
 
-        // Called when the unit is being removed from the world
-        void onRemoveFromWorld();
+                // Sets us as in/out of combat and, if it changed from the last call, sets various flags based on that
+                void update();
 
-        void clearAttackTargets();
+                // Called when the unit is being removed from the world
+                void onRemoveFromWorld();
 
-        void clearAllCombatTargets();
+                void clearAttackTargets();
 
-        // Checks whether we are in combat based on the last time update was called
-        bool isInCombat() const;
-        bool isAttacking(Unit* target) const;
+                void clearAllCombatTargets();
 
-        void removeHealTarget(Player* target);
-        void addHealTarget(Player* target);
+                // Checks whether we are in combat based on the last time update was called
+                bool isInCombat() const;
+                bool isAttacking(Unit* target) const;
 
-        void removeHealer(Player* healer);
-        void addHealer(Player* healer);
+                void removeHealTarget(Player* target);
+                void addHealTarget(Player* target);
 
-        void addAttacker(Unit* attacker);
-        bool hasAttacker(uint64_t guid) const;
-        void removeAttacker(Unit* attacker);
-        void removeAttacker(uint64_t guid);
+                void removeHealer(Player* healer);
+                void addHealer(Player* healer);
 
-        void addAttackTarget(uint64_t guid);
-        void onDamageDealt(Unit* target);
-        void removeAttackTarget(Unit* target);
+                void addAttacker(Unit* attacker);
+                bool hasAttacker(uint64_t guid) const;
+                void removeAttacker(Unit* attacker);
+                void removeAttacker(uint64_t guid);
 
-        uint64_t getPrimaryAttackTarget() const;
-    };
-}}}
+                void addAttackTarget(uint64_t guid);
+                void onDamageDealt(Unit* target);
+                void removeAttackTarget(Unit* target);
+
+                uint64_t getPrimaryAttackTarget() const;
+            };
+        }
+    }
+}
