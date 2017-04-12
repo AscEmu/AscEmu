@@ -3562,6 +3562,386 @@ MovementStatusElements MoveForceUnrootSequence[] =
     MSEEnd,
 };
 
+MovementStatusElements MoveGravityDisableSequence[] =
+{
+    MSEGuidBit1,
+    MSEGuidBit4,
+    MSEGuidBit7,
+    MSEGuidBit5,
+    MSEGuidBit2,
+    MSEGuidBit0,
+    MSEGuidBit3,
+    MSEGuidBit6,
+    MSEGuidByte3,
+    MSEMovementCounter,
+    MSEGuidByte7,
+    MSEGuidByte6,
+    MSEGuidByte4,
+    MSEGuidByte0,
+    MSEGuidByte1,
+    MSEGuidByte5,
+    MSEGuidByte2,
+    MSEEnd,
+};
+
+MovementStatusElements MoveGravityEnableSequence[] =
+{
+    MSEGuidBit0,
+    MSEGuidBit1,
+    MSEGuidBit5,
+    MSEGuidBit7,
+    MSEGuidBit6,
+    MSEGuidBit4,
+    MSEGuidBit3,
+    MSEGuidBit2,
+    MSEGuidByte7,
+    MSEGuidByte2,
+    MSEGuidByte0,
+    MSEMovementCounter,
+    MSEGuidByte5,
+    MSEGuidByte1,
+    MSEGuidByte3,
+    MSEGuidByte4,
+    MSEGuidByte6,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineWaterWalkSequence[] =
+{
+    MSEGuidBit6,
+    MSEGuidBit1,
+    MSEGuidBit4,
+    MSEGuidBit2,
+    MSEGuidBit3,
+    MSEGuidBit7,
+    MSEGuidBit5,
+    MSEGuidBit0,
+    MSEGuidByte0,
+    MSEGuidByte6,
+    MSEGuidByte3,
+    MSEGuidByte7,
+    MSEGuidByte4,
+    MSEGuidByte2,
+    MSEGuidByte5,
+    MSEGuidByte1,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineLandWalkSequence[] =
+{
+    MSEGuidBit5,
+    MSEGuidBit0,
+    MSEGuidBit4,
+    MSEGuidBit6,
+    MSEGuidBit7,
+    MSEGuidBit2,
+    MSEGuidBit3,
+    MSEGuidBit1,
+    MSEGuidByte5,
+    MSEGuidByte7,
+    MSEGuidByte3,
+    MSEGuidByte4,
+    MSEGuidByte1,
+    MSEGuidByte2,
+    MSEGuidByte0,
+    MSEGuidByte6,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineFeatherFallSequence[] =
+{
+    MSEGuidBit3,
+    MSEGuidBit2,
+    MSEGuidBit7,
+    MSEGuidBit5,
+    MSEGuidBit4,
+    MSEGuidBit6,
+    MSEGuidBit1,
+    MSEGuidBit0,
+    MSEGuidByte1,
+    MSEGuidByte4,
+    MSEGuidByte7,
+    MSEGuidByte6,
+    MSEGuidByte2,
+    MSEGuidByte0,
+    MSEGuidByte5,
+    MSEGuidByte3,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineNormalFallSequence[] =
+{
+    MSEGuidBit3,
+    MSEGuidBit5,
+    MSEGuidBit1,
+    MSEGuidBit0,
+    MSEGuidBit7,
+    MSEGuidBit6,
+    MSEGuidBit2,
+    MSEGuidBit4,
+    MSEGuidByte7,
+    MSEGuidByte6,
+    MSEGuidByte2,
+    MSEGuidByte0,
+    MSEGuidByte5,
+    MSEGuidByte4,
+    MSEGuidByte3,
+    MSEGuidByte1,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineSetHoverSequence[] =
+{
+    MSEGuidBit3,
+    MSEGuidBit7,
+    MSEGuidBit0,
+    MSEGuidBit1,
+    MSEGuidBit4,
+    MSEGuidBit6,
+    MSEGuidBit2,
+    MSEGuidBit5,
+    MSEGuidByte2,
+    MSEGuidByte4,
+    MSEGuidByte3,
+    MSEGuidByte1,
+    MSEGuidByte7,
+    MSEGuidByte0,
+    MSEGuidByte5,
+    MSEGuidByte6,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineUnsetHoverSequence[] =
+{
+    MSEGuidBit6,
+    MSEGuidBit7,
+    MSEGuidBit4,
+    MSEGuidBit0,
+    MSEGuidBit3,
+    MSEGuidBit1,
+    MSEGuidBit5,
+    MSEGuidBit2,
+    MSEGuidByte4,
+    MSEGuidByte5,
+    MSEGuidByte3,
+    MSEGuidByte0,
+    MSEGuidByte2,
+    MSEGuidByte7,
+    MSEGuidByte6,
+    MSEGuidByte1,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineSetFlyingSequence[] =
+{
+    MSEGuidBit0,
+    MSEGuidBit4,
+    MSEGuidBit1,
+    MSEGuidBit6,
+    MSEGuidBit7,
+    MSEGuidBit2,
+    MSEGuidBit3,
+    MSEGuidBit5,
+    MSEGuidByte7,
+    MSEGuidByte0,
+    MSEGuidByte5,
+    MSEGuidByte6,
+    MSEGuidByte4,
+    MSEGuidByte1,
+    MSEGuidByte3,
+    MSEGuidByte2,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineUnsetFlyingSequence[] =
+{
+    MSEGuidBit5,
+    MSEGuidBit0,
+    MSEGuidBit4,
+    MSEGuidBit7,
+    MSEGuidBit2,
+    MSEGuidBit3,
+    MSEGuidBit1,
+    MSEGuidBit6,
+    MSEGuidByte7,
+    MSEGuidByte2,
+    MSEGuidByte3,
+    MSEGuidByte4,
+    MSEGuidByte5,
+    MSEGuidByte1,
+    MSEGuidByte6,
+    MSEGuidByte0,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineRootSequence[] =
+{
+    MSEGuidBit5,
+    MSEGuidBit4,
+    MSEGuidBit6,
+    MSEGuidBit1,
+    MSEGuidBit3,
+    MSEGuidBit7,
+    MSEGuidBit2,
+    MSEGuidBit0,
+    MSEGuidByte2,
+    MSEGuidByte1,
+    MSEGuidByte7,
+    MSEGuidByte3,
+    MSEGuidByte5,
+    MSEGuidByte0,
+    MSEGuidByte6,
+    MSEGuidByte4,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineUnrootSequence[] =
+{
+    MSEGuidBit0,
+    MSEGuidBit1,
+    MSEGuidBit6,
+    MSEGuidBit5,
+    MSEGuidBit3,
+    MSEGuidBit2,
+    MSEGuidBit7,
+    MSEGuidBit4,
+    MSEGuidByte6,
+    MSEGuidByte3,
+    MSEGuidByte1,
+    MSEGuidByte5,
+    MSEGuidByte2,
+    MSEGuidByte0,
+    MSEGuidByte7,
+    MSEGuidByte4,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineStartSwimSequence[] =
+{
+    MSEGuidBit1,
+    MSEGuidBit6,
+    MSEGuidBit0,
+    MSEGuidBit7,
+    MSEGuidBit3,
+    MSEGuidBit5,
+    MSEGuidBit2,
+    MSEGuidBit4,
+    MSEGuidByte3,
+    MSEGuidByte7,
+    MSEGuidByte2,
+    MSEGuidByte5,
+    MSEGuidByte6,
+    MSEGuidByte4,
+    MSEGuidByte1,
+    MSEGuidByte0,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineStopSwimSequence[] =
+{
+    MSEGuidBit4,
+    MSEGuidBit1,
+    MSEGuidBit5,
+    MSEGuidBit3,
+    MSEGuidBit0,
+    MSEGuidBit7,
+    MSEGuidBit2,
+    MSEGuidBit6,
+    MSEGuidByte6,
+    MSEGuidByte0,
+    MSEGuidByte7,
+    MSEGuidByte2,
+    MSEGuidByte3,
+    MSEGuidByte1,
+    MSEGuidByte5,
+    MSEGuidByte4,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineDisableGravitySequence[] =
+{
+    MSEGuidBit7,
+    MSEGuidBit3,
+    MSEGuidBit4,
+    MSEGuidBit2,
+    MSEGuidBit5,
+    MSEGuidBit1,
+    MSEGuidBit0,
+    MSEGuidBit6,
+    MSEGuidByte7,
+    MSEGuidByte1,
+    MSEGuidByte3,
+    MSEGuidByte4,
+    MSEGuidByte6,
+    MSEGuidByte2,
+    MSEGuidByte5,
+    MSEGuidByte0,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineEnableGravitySequence[] =
+{
+    MSEGuidBit5,
+    MSEGuidBit4,
+    MSEGuidBit7,
+    MSEGuidBit1,
+    MSEGuidBit3,
+    MSEGuidBit6,
+    MSEGuidBit2,
+    MSEGuidBit0,
+    MSEGuidByte7,
+    MSEGuidByte3,
+    MSEGuidByte4,
+    MSEGuidByte2,
+    MSEGuidByte1,
+    MSEGuidByte6,
+    MSEGuidByte0,
+    MSEGuidByte5,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineSetWalkModeSequence[] =
+{
+    MSEGuidBit7,
+    MSEGuidBit6,
+    MSEGuidBit5,
+    MSEGuidBit1,
+    MSEGuidBit3,
+    MSEGuidBit4,
+    MSEGuidBit2,
+    MSEGuidBit0,
+    MSEGuidByte4,
+    MSEGuidByte2,
+    MSEGuidByte1,
+    MSEGuidByte6,
+    MSEGuidByte5,
+    MSEGuidByte0,
+    MSEGuidByte7,
+    MSEGuidByte3,
+    MSEEnd,
+};
+
+MovementStatusElements MoveSplineSetRunModeSequence[] =
+{
+    MSEGuidBit5,
+    MSEGuidBit6,
+    MSEGuidBit3,
+    MSEGuidBit7,
+    MSEGuidBit2,
+    MSEGuidBit0,
+    MSEGuidBit4,
+    MSEGuidBit1,
+    MSEGuidByte7,
+    MSEGuidByte0,
+    MSEGuidByte4,
+    MSEGuidByte6,
+    MSEGuidByte5,
+    MSEGuidByte1,
+    MSEGuidByte2,
+    MSEGuidByte3,
+    MSEEnd,
+};
+
 MovementStatusElements* GetMovementStatusElementsSequence(uint32 opcode)
 {
     switch (opcode)
@@ -3693,6 +4073,42 @@ MovementStatusElements* GetMovementStatusElementsSequence(uint32 opcode)
             return MoveForceRootSequence;
         case SMSG_FORCE_MOVE_UNROOT:
             return MoveForceUnrootSequence;
+        case SMSG_MOVE_GRAVITY_DISABLE:
+            return MoveGravityDisableSequence;
+        case SMSG_MOVE_GRAVITY_ENABLE:
+            return MoveGravityEnableSequence;
+        case SMSG_SPLINE_MOVE_WATER_WALK:
+            return MoveSplineWaterWalkSequence;
+        case SMSG_SPLINE_MOVE_LAND_WALK:
+            return MoveSplineLandWalkSequence;
+        case SMSG_SPLINE_MOVE_FEATHER_FALL:
+            return MoveSplineFeatherFallSequence;
+        case SMSG_SPLINE_MOVE_NORMAL_FALL:
+            return MoveSplineNormalFallSequence;
+        case SMSG_SPLINE_MOVE_SET_HOVER:
+            return MoveSplineSetHoverSequence;
+        case SMSG_SPLINE_MOVE_UNSET_HOVER:
+            return MoveSplineUnsetHoverSequence;
+        case SMSG_SPLINE_MOVE_SET_FLYING:
+            return MoveSplineSetFlyingSequence;
+        case SMSG_SPLINE_MOVE_UNSET_FLYING:
+            return MoveSplineUnsetFlyingSequence;
+        case SMSG_SPLINE_MOVE_ROOT:
+            return MoveSplineRootSequence;
+        case SMSG_SPLINE_MOVE_UNROOT:
+            return MoveSplineUnrootSequence;
+        case SMSG_SPLINE_MOVE_START_SWIM:
+            return MoveSplineStartSwimSequence;
+        case SMSG_SPLINE_MOVE_STOP_SWIM:
+            return MoveSplineStopSwimSequence;
+        case SMSG_SPLINE_MOVE_GRAVITY_DISABLE:
+            return MoveSplineDisableGravitySequence;
+        case SMSG_SPLINE_MOVE_GRAVITY_ENABLE:
+            return MoveSplineEnableGravitySequence;
+        case SMSG_SPLINE_MOVE_SET_WALK_MODE:
+            return MoveSplineSetWalkModeSequence;
+        case SMSG_SPLINE_MOVE_SET_RUN_MODE:
+            return MoveSplineSetRunModeSequence;
         default:
             return nullptr;
     }

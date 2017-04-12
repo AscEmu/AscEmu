@@ -185,23 +185,7 @@ void Unit::setMoveWaterWalk()
 #if VERSION_STRING != Cata
         data << GetNewGUID();
 #else
-        ObjectGuid guid = GetGUID();
-        data.WriteByteMask(guid[6]);
-        data.WriteByteMask(guid[1]);
-        data.WriteByteMask(guid[4]);
-        data.WriteByteMask(guid[2]);
-        data.WriteByteMask(guid[3]);
-        data.WriteByteMask(guid[7]);
-        data.WriteByteMask(guid[5]);
-        data.WriteByteMask(guid[0]);
-        data.WriteByteSeq(guid[0]);
-        data.WriteByteSeq(guid[6]);
-        data.WriteByteSeq(guid[3]);
-        data.WriteByteSeq(guid[7]);
-        data.WriteByteSeq(guid[4]);
-        data.WriteByteSeq(guid[2]);
-        data.WriteByteSeq(guid[5]);
-        data.WriteByteSeq(guid[1]);
+        movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_WATER_WALK);
 #endif
         SendMessageToSet(&data, false);
     }
@@ -229,23 +213,7 @@ void Unit::setMoveLandWalk()
 #if VERSION_STRING != Cata
         data << GetNewGUID();
 #else
-        ObjectGuid guid = GetGUID();
-        data.WriteByteMask(guid[5]);
-        data.WriteByteMask(guid[0]);
-        data.WriteByteMask(guid[4]);
-        data.WriteByteMask(guid[6]);
-        data.WriteByteMask(guid[7]);
-        data.WriteByteMask(guid[2]);
-        data.WriteByteMask(guid[3]);
-        data.WriteByteMask(guid[1]);
-        data.WriteByteSeq(guid[5]);
-        data.WriteByteSeq(guid[7]);
-        data.WriteByteSeq(guid[3]);
-        data.WriteByteSeq(guid[4]);
-        data.WriteByteSeq(guid[1]);
-        data.WriteByteSeq(guid[2]);
-        data.WriteByteSeq(guid[0]);
-        data.WriteByteSeq(guid[6]);
+        movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_LAND_WALK);
 #endif
         SendMessageToSet(&data, false);
     }
@@ -273,23 +241,7 @@ void Unit::setMoveFeatherFall()
 #if VERSION_STRING != Cata
         data << GetNewGUID();
 #else
-        ObjectGuid guid = GetGUID();
-        data.WriteByteMask(guid[3]);
-        data.WriteByteMask(guid[2]);
-        data.WriteByteMask(guid[7]);
-        data.WriteByteMask(guid[5]);
-        data.WriteByteMask(guid[4]);
-        data.WriteByteMask(guid[6]);
-        data.WriteByteMask(guid[1]);
-        data.WriteByteMask(guid[0]);
-        data.WriteByteSeq(guid[1]);
-        data.WriteByteSeq(guid[4]);
-        data.WriteByteSeq(guid[7]);
-        data.WriteByteSeq(guid[6]);
-        data.WriteByteSeq(guid[2]);
-        data.WriteByteSeq(guid[0]);
-        data.WriteByteSeq(guid[5]);
-        data.WriteByteSeq(guid[3]);
+        movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_FEATHER_FALL);
 #endif
         SendMessageToSet(&data, false);
     }
@@ -317,23 +269,7 @@ void Unit::setMoveNormalFall()
 #if VERSION_STRING != Cata
         data << GetNewGUID();
 #else
-        ObjectGuid guid = GetGUID();
-        data.WriteByteMask(guid[3]);
-        data.WriteByteMask(guid[5]);
-        data.WriteByteMask(guid[1]);
-        data.WriteByteMask(guid[0]);
-        data.WriteByteMask(guid[7]);
-        data.WriteByteMask(guid[6]);
-        data.WriteByteMask(guid[2]);
-        data.WriteByteMask(guid[4]);
-        data.WriteByteSeq(guid[7]);
-        data.WriteByteSeq(guid[6]);
-        data.WriteByteSeq(guid[2]);
-        data.WriteByteSeq(guid[0]);
-        data.WriteByteSeq(guid[5]);
-        data.WriteByteSeq(guid[4]);
-        data.WriteByteSeq(guid[3]);
-        data.WriteByteSeq(guid[1]);
+        movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_NORMAL_FALL);
 #endif
         SendMessageToSet(&data, false);
     }
@@ -384,23 +320,7 @@ void Unit::setMoveHover(bool set_hover)
 #if VERSION_STRING != Cata
             data << GetNewGUID();
 #else
-            ObjectGuid guid = GetGUID();
-            data.WriteByteMask(guid[3]);
-            data.WriteByteMask(guid[7]);
-            data.WriteByteMask(guid[0]);
-            data.WriteByteMask(guid[1]);
-            data.WriteByteMask(guid[4]);
-            data.WriteByteMask(guid[6]);
-            data.WriteByteMask(guid[2]);
-            data.WriteByteMask(guid[5]);
-            data.WriteByteSeq(guid[2]);
-            data.WriteByteSeq(guid[4]);
-            data.WriteByteSeq(guid[3]);
-            data.WriteByteSeq(guid[1]);
-            data.WriteByteSeq(guid[7]);
-            data.WriteByteSeq(guid[0]);
-            data.WriteByteSeq(guid[5]);
-            data.WriteByteSeq(guid[6]);
+            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_HOVER);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -414,23 +334,7 @@ void Unit::setMoveHover(bool set_hover)
 #if VERSION_STRING != Cata
             data << GetNewGUID();
 #else
-            ObjectGuid guid = GetGUID();
-            data.WriteByteMask(guid[6]);
-            data.WriteByteMask(guid[7]);
-            data.WriteByteMask(guid[4]);
-            data.WriteByteMask(guid[0]);
-            data.WriteByteMask(guid[3]);
-            data.WriteByteMask(guid[1]);
-            data.WriteByteMask(guid[5]);
-            data.WriteByteMask(guid[2]);
-            data.WriteByteSeq(guid[4]);
-            data.WriteByteSeq(guid[5]);
-            data.WriteByteSeq(guid[3]);
-            data.WriteByteSeq(guid[0]);
-            data.WriteByteSeq(guid[2]);
-            data.WriteByteSeq(guid[7]);
-            data.WriteByteSeq(guid[6]);
-            data.WriteByteSeq(guid[1]);
+            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_UNSET_HOVER);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -488,23 +392,7 @@ void Unit::setMoveCanFly(bool set_fly)
 #if VERSION_STRING != Cata
             data << GetNewGUID();
 #else
-            ObjectGuid guid = GetGUID();
-            data.WriteByteMask(guid[0]);
-            data.WriteByteMask(guid[4]);
-            data.WriteByteMask(guid[1]);
-            data.WriteByteMask(guid[6]);
-            data.WriteByteMask(guid[7]);
-            data.WriteByteMask(guid[2]);
-            data.WriteByteMask(guid[3]);
-            data.WriteByteMask(guid[5]);
-            data.WriteByteSeq(guid[7]);
-            data.WriteByteSeq(guid[0]);
-            data.WriteByteSeq(guid[5]);
-            data.WriteByteSeq(guid[6]);
-            data.WriteByteSeq(guid[4]);
-            data.WriteByteSeq(guid[1]);
-            data.WriteByteSeq(guid[3]);
-            data.WriteByteSeq(guid[2]);
+            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_FLYING);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -519,23 +407,7 @@ void Unit::setMoveCanFly(bool set_fly)
 #if VERSION_STRING != Cata
             data << GetNewGUID();
 #else
-            ObjectGuid guid = GetGUID();
-            data.WriteByteMask(guid[5]);
-            data.WriteByteMask(guid[0]);
-            data.WriteByteMask(guid[4]);
-            data.WriteByteMask(guid[7]);
-            data.WriteByteMask(guid[2]);
-            data.WriteByteMask(guid[3]);
-            data.WriteByteMask(guid[1]);
-            data.WriteByteMask(guid[6]);
-            data.WriteByteSeq(guid[7]);
-            data.WriteByteSeq(guid[2]);
-            data.WriteByteSeq(guid[3]);
-            data.WriteByteSeq(guid[4]);
-            data.WriteByteSeq(guid[5]);
-            data.WriteByteSeq(guid[1]);
-            data.WriteByteSeq(guid[6]);
-            data.WriteByteSeq(guid[0]);
+            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_UNSET_FLYING);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -589,23 +461,7 @@ void Unit::setMoveRoot(bool set_root)
 #if VERSION_STRING != Cata
             data << GetNewGUID();
 #else
-            ObjectGuid guid = GetGUID();
-            data.WriteByteMask(guid[5]);
-            data.WriteByteMask(guid[4]);
-            data.WriteByteMask(guid[6]);
-            data.WriteByteMask(guid[1]);
-            data.WriteByteMask(guid[3]);
-            data.WriteByteMask(guid[7]);
-            data.WriteByteMask(guid[2]);
-            data.WriteByteMask(guid[0]);
-            data.WriteByteSeq(guid[2]);
-            data.WriteByteSeq(guid[1]);
-            data.WriteByteSeq(guid[7]);
-            data.WriteByteSeq(guid[3]);
-            data.WriteByteSeq(guid[5]);
-            data.WriteByteSeq(guid[0]);
-            data.WriteByteSeq(guid[6]);
-            data.WriteByteSeq(guid[4]);
+            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_ROOT);
 #endif
             SendMessageToSet(&data, true);
         }
@@ -619,23 +475,7 @@ void Unit::setMoveRoot(bool set_root)
 #if VERSION_STRING != Cata
             data << GetNewGUID();
 #else
-            ObjectGuid guid = GetGUID();
-            data.WriteByteMask(guid[0]);
-            data.WriteByteMask(guid[1]);
-            data.WriteByteMask(guid[6]);
-            data.WriteByteMask(guid[5]);
-            data.WriteByteMask(guid[3]);
-            data.WriteByteMask(guid[2]);
-            data.WriteByteMask(guid[7]);
-            data.WriteByteMask(guid[4]);
-            data.WriteByteSeq(guid[6]);
-            data.WriteByteSeq(guid[2]);
-            data.WriteByteSeq(guid[1]);
-            data.WriteByteSeq(guid[5]);
-            data.WriteByteSeq(guid[2]);
-            data.WriteByteSeq(guid[0]);
-            data.WriteByteSeq(guid[7]);
-            data.WriteByteSeq(guid[4]);
+            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_UNROOT);
 #endif
             SendMessageToSet(&data, true);
         }
@@ -659,23 +499,7 @@ void Unit::setMoveSwim(bool set_swim)
 #if VERSION_STRING != Cata
             data << GetNewGUID();
 #else
-            ObjectGuid guid = GetGUID();
-            data.WriteByteMask(guid[1]);
-            data.WriteByteMask(guid[6]);
-            data.WriteByteMask(guid[0]);
-            data.WriteByteMask(guid[7]);
-            data.WriteByteMask(guid[3]);
-            data.WriteByteMask(guid[5]);
-            data.WriteByteMask(guid[2]);
-            data.WriteByteMask(guid[4]);
-            data.WriteByteSeq(guid[3]);
-            data.WriteByteSeq(guid[7]);
-            data.WriteByteSeq(guid[2]);
-            data.WriteByteSeq(guid[5]);
-            data.WriteByteSeq(guid[6]);
-            data.WriteByteSeq(guid[4]);
-            data.WriteByteSeq(guid[1]);
-            data.WriteByteSeq(guid[0]);
+            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_START_SWIM);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -687,23 +511,7 @@ void Unit::setMoveSwim(bool set_swim)
 #if VERSION_STRING != Cata
             data << GetNewGUID();
 #else
-            ObjectGuid guid = GetGUID();
-            data.WriteByteMask(guid[4]);
-            data.WriteByteMask(guid[1]);
-            data.WriteByteMask(guid[5]);
-            data.WriteByteMask(guid[3]);
-            data.WriteByteMask(guid[0]);
-            data.WriteByteMask(guid[7]);
-            data.WriteByteMask(guid[2]);
-            data.WriteByteMask(guid[6]);
-            data.WriteByteSeq(guid[6]);
-            data.WriteByteSeq(guid[0]);
-            data.WriteByteSeq(guid[7]);
-            data.WriteByteSeq(guid[2]);
-            data.WriteByteSeq(guid[3]);
-            data.WriteByteSeq(guid[1]);
-            data.WriteByteSeq(guid[5]);
-            data.WriteByteSeq(guid[4]);
+            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_STOP_SWIM);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -724,24 +532,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
             data << GetNewGUID();
             data << uint32(0);
 #else
-            ObjectGuid guid = GetGUID();
-            data.WriteByteMask(guid[1]);
-            data.WriteByteMask(guid[4]);
-            data.WriteByteMask(guid[7]);
-            data.WriteByteMask(guid[5]);
-            data.WriteByteMask(guid[2]);
-            data.WriteByteMask(guid[0]);
-            data.WriteByteMask(guid[3]);
-            data.WriteByteMask(guid[6]);
-            data.WriteByteSeq(guid[3]);
-            data << uint32(0);
-            data.WriteByteSeq(guid[7]);
-            data.WriteByteSeq(guid[6]);
-            data.WriteByteSeq(guid[4]);
-            data.WriteByteSeq(guid[0]);
-            data.WriteByteSeq(guid[1]);
-            data.WriteByteSeq(guid[5]);
-            data.WriteByteSeq(guid[2]);
+            movement_info.writeMovementInfo(data, SMSG_MOVE_GRAVITY_DISABLE);
 #endif
             SendMessageToSet(&data, true);
         }
@@ -754,24 +545,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
             data << GetNewGUID();
             data << uint32(0);
 #else
-            ObjectGuid guid = GetGUID();
-            data.WriteByteMask(guid[0]);
-            data.WriteByteMask(guid[1]);
-            data.WriteByteMask(guid[5]);
-            data.WriteByteMask(guid[7]);
-            data.WriteByteMask(guid[6]);
-            data.WriteByteMask(guid[4]);
-            data.WriteByteMask(guid[3]);
-            data.WriteByteMask(guid[2]);
-            data.WriteByteSeq(guid[7]);
-            data.WriteByteSeq(guid[2]);
-            data.WriteByteSeq(guid[0]);
-            data << uint32(0);
-            data.WriteByteSeq(guid[5]);
-            data.WriteByteSeq(guid[1]);
-            data.WriteByteSeq(guid[3]);
-            data.WriteByteSeq(guid[4]);
-            data.WriteByteSeq(guid[6]);
+            movement_info.writeMovementInfo(data, SMSG_MOVE_GRAVITY_ENABLE);
 #endif
             SendMessageToSet(&data, true);
         }
@@ -787,23 +561,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
 #if VERSION_STRING != Cata
             data << GetNewGUID();
 #else
-            ObjectGuid guid = GetGUID();
-            data.WriteByteMask(guid[7]);
-            data.WriteByteMask(guid[3]);
-            data.WriteByteMask(guid[4]);
-            data.WriteByteMask(guid[2]);
-            data.WriteByteMask(guid[5]);
-            data.WriteByteMask(guid[1]);
-            data.WriteByteMask(guid[0]);
-            data.WriteByteMask(guid[6]);
-            data.WriteByteSeq(guid[7]);
-            data.WriteByteSeq(guid[1]);
-            data.WriteByteSeq(guid[3]);
-            data.WriteByteSeq(guid[4]);
-            data.WriteByteSeq(guid[6]);
-            data.WriteByteSeq(guid[2]);
-            data.WriteByteSeq(guid[5]);
-            data.WriteByteSeq(guid[0]);
+            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_GRAVITY_DISABLE);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -815,23 +573,7 @@ void Unit::setMoveDisableGravity(bool disable_gravity)
 #if VERSION_STRING != Cata
             data << GetNewGUID();
 #else
-            ObjectGuid guid = GetGUID();
-            data.WriteByteMask(guid[5]);
-            data.WriteByteMask(guid[4]);
-            data.WriteByteMask(guid[7]);
-            data.WriteByteMask(guid[1]);
-            data.WriteByteMask(guid[3]);
-            data.WriteByteMask(guid[6]);
-            data.WriteByteMask(guid[2]);
-            data.WriteByteMask(guid[0]);
-            data.WriteByteSeq(guid[7]);
-            data.WriteByteSeq(guid[3]);
-            data.WriteByteSeq(guid[4]);
-            data.WriteByteSeq(guid[2]);
-            data.WriteByteSeq(guid[1]);
-            data.WriteByteSeq(guid[6]);
-            data.WriteByteSeq(guid[0]);
-            data.WriteByteSeq(guid[5]);
+            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_GRAVITY_ENABLE);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -853,23 +595,7 @@ void Unit::setMoveWalk(bool set_walk)
 #if VERSION_STRING != Cata
             data << GetNewGUID();
 #else
-            ObjectGuid guid = GetGUID();
-            data.WriteByteMask(guid[7]);
-            data.WriteByteMask(guid[6]);
-            data.WriteByteMask(guid[5]);
-            data.WriteByteMask(guid[1]);
-            data.WriteByteMask(guid[3]);
-            data.WriteByteMask(guid[4]);
-            data.WriteByteMask(guid[2]);
-            data.WriteByteMask(guid[0]);
-            data.WriteByteSeq(guid[4]);
-            data.WriteByteSeq(guid[2]);
-            data.WriteByteSeq(guid[1]);
-            data.WriteByteSeq(guid[6]);
-            data.WriteByteSeq(guid[5]);
-            data.WriteByteSeq(guid[0]);
-            data.WriteByteSeq(guid[7]);
-            data.WriteByteSeq(guid[3]);
+            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_WALK_MODE);
 #endif
             SendMessageToSet(&data, false);
         }
@@ -881,23 +607,7 @@ void Unit::setMoveWalk(bool set_walk)
 #if VERSION_STRING != Cata
             data << GetNewGUID();
 #else
-            ObjectGuid guid = GetGUID();
-            data.WriteByteMask(guid[5]);
-            data.WriteByteMask(guid[6]);
-            data.WriteByteMask(guid[3]);
-            data.WriteByteMask(guid[7]);
-            data.WriteByteMask(guid[2]);
-            data.WriteByteMask(guid[0]);
-            data.WriteByteMask(guid[4]);
-            data.WriteByteMask(guid[1]);
-            data.WriteByteSeq(guid[7]);
-            data.WriteByteSeq(guid[0]);
-            data.WriteByteSeq(guid[4]);
-            data.WriteByteSeq(guid[6]);
-            data.WriteByteSeq(guid[5]);
-            data.WriteByteSeq(guid[1]);
-            data.WriteByteSeq(guid[2]);
-            data.WriteByteSeq(guid[3]);
+            movement_info.writeMovementInfo(data, SMSG_SPLINE_MOVE_SET_RUN_MODE);
 #endif
             SendMessageToSet(&data, false);
         }

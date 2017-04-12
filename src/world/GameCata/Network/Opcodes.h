@@ -353,7 +353,7 @@ enum Opcodes
     CMSG_GETDEATHBINDZONE = 0x156,
     SMSG_BINDZONEREPLY = 0x157,
     SMSG_PLAYERBOUND = 0x2516,                      // new
-    SMSG_CLIENT_CONTROL_UPDATE = 0x159,
+    SMSG_CLIENT_CONTROL_UPDATE = 0x2837,            // new
     CMSG_REPOP_REQUEST = 0x6235,                    // new
     SMSG_RESURRECT_REQUEST = 0x2905,                // new
     CMSG_RESURRECT_RESPONSE = 0x6827,               // new
