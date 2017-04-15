@@ -8416,7 +8416,7 @@ void Player::EndDuel(uint8 WinCondition)
     std::list<Pet*> summons = GetSummons();
     for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
     {
-        (*itr)->clearAllCombatTargets();
+        (*itr)->CombatStatus.Vanished();
         (*itr)->GetAIInterface()->SetUnitToFollow(this);
         (*itr)->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, *itr, 0);
         (*itr)->GetAIInterface()->WipeTargetList();
@@ -8425,7 +8425,7 @@ void Player::EndDuel(uint8 WinCondition)
     std::list<Pet*> duelingWithSummons = DuelingWith->GetSummons();
     for (std::list<Pet*>::iterator itr = duelingWithSummons.begin(); itr != duelingWithSummons.end(); ++itr)
     {
-        (*itr)->clearAllCombatTargets();
+        (*itr)->CombatStatus.Vanished();
         (*itr)->GetAIInterface()->SetUnitToFollow(this);
         (*itr)->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, *itr, 0);
         (*itr)->GetAIInterface()->WipeTargetList();
@@ -9313,7 +9313,7 @@ void Player::CompleteLoading()
     }
 
     sInstanceMgr.BuildSavedInstancesForPlayer(this);
-    updateCombatStatus();
+    CombatStatus.UpdateFlag();
     // add glyphs
     for (uint8 j = 0; j < GLYPHS_COUNT; ++j)
     {
@@ -10910,7 +10910,7 @@ void Player::RemoveShapeShiftSpell(uint32 id)
 // COOLDOWNS
 void Player::UpdatePotionCooldown()
 {
-    if (m_lastPotionId == 0 || isInCombat())
+    if (m_lastPotionId == 0 || CombatStatus.IsInCombat())
         return;
 
     ItemProperties const* proto = sMySQLStore.GetItemProperties(m_lastPotionId);
@@ -11925,7 +11925,7 @@ void Player::SetPvPFlag()
         (*itr)->SetPvPFlag();
     }
 
-    if (isInCombat())
+    if (CombatStatus.IsInCombat())
         SetFlag(PLAYER_FLAGS, 0x100);
 
 }
@@ -12657,7 +12657,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
         if (!GetSession()->HasPermissions() && sWorld.m_limits.enable != 0)
             damage = CheckDamageLimits(damage, spellId);
 
-        onDamageDealt(pVictim);
+        CombatStatus.OnDamageDealt(pVictim);
 
         if (pVictim->IsPvPFlagged())
         {
@@ -12670,7 +12670,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
 
     pVictim->SetStandState(STANDSTATE_STAND);
 
-    if (isInCombat())
+    if (CombatStatus.IsInCombat())
         sHookInterface.OnEnterCombat(this, this);
 
     ///////////////////////////////////////////////////// Hackatlon ///////////////////////////////////////////////////////////
@@ -12923,7 +12923,7 @@ void Player::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_
         }
     }
 
-    if (isInCombat())
+    if (CombatStatus.IsInCombat())
         sHookInterface.OnEnterCombat(this, pAttacker);
 
 
@@ -13092,7 +13092,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     }
 
     // Wipe our attacker set on death
-    clearAllCombatTargets();
+    CombatStatus.Vanished();
 
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
     pAttacker->smsg_AttackStop(this);

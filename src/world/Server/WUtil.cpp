@@ -48,7 +48,7 @@ void Arcemu::Util::ArcemuAssert(bool condition)
         AscLog.~AscEmuLog();
 
         // bogus null function call to make sure we stop and make a core dump / crash dump
-        static_cast<void(*)()>(nullptr)();
+        ((void(*)())0)();
     }
 }
 
