@@ -267,11 +267,13 @@ bool ChatHandler::HandleNpcDeleteCommand(const char* args, WorldSession* m_sessi
                 if (sp != nullptr)
                 {
                     for (CreatureSpawnList::iterator itr = sp->CreatureSpawns.begin(); itr != sp->CreatureSpawns.end(); ++itr)
+                    {
                         if ((*itr) == creature_target->m_spawn)
                         {
                             sp->CreatureSpawns.erase(itr);
                             break;
                         }
+                    }
                 }
                 delete creature_target->m_spawn;
                 creature_target->m_spawn = NULL;
@@ -650,13 +652,14 @@ bool ChatHandler::HandleNpcSayCommand(const char* args, WorldSession* m_session)
 bool ChatHandler::HandleNpcSelectCommand(const char* /*args*/, WorldSession* m_session)
 {
     Creature* near_creature = nullptr;
-    float dist = 999999.0f;
-    float dist2;
-
     auto player = m_session->GetPlayer();
     std::set<Object*>::iterator itr;
+
     for (itr = player->GetInRangeSetBegin(); itr != player->GetInRangeSetEnd(); ++itr)
     {
+        float dist = 999999.0f;
+        float dist2;
+
         if ((dist2 = player->GetDistance2dSq(*itr)) < dist && (*itr)->IsCreature())
         {
             near_creature = static_cast<Creature*>(*itr);

@@ -304,7 +304,7 @@ namespace luaGlobalFunctions
     lua_newtable(L);
 
     InstanceMap * instancemap = sInstanceMgr.GetInstanceMap(mapid);
-    for(InstanceMap::iterator itr = instancemap->begin(); itr != instancemap->end(); ++itr)
+    for(auto itr = instancemap->begin(); itr != instancemap->end(); ++itr)
     {
     count++,
     ret = itr->second->m_instanceId;
@@ -340,7 +340,7 @@ namespace luaGlobalFunctions
         MapMgr* mgr = sInstanceMgr.GetMapMgr(mapid);
         if (!mgr)
             return 0;
-        for (PlayerStorageMap::iterator itr = mgr->m_PlayerStorage.begin(); itr != mgr->m_PlayerStorage.end(); ++itr)
+        for (auto itr = mgr->m_PlayerStorage.begin(); itr != mgr->m_PlayerStorage.end(); ++itr)
         {
             count++,
                 ret = (*itr).second;
@@ -684,7 +684,7 @@ namespace luaGlobalFunctions
         if (!mgr)
             RET_NIL();
 
-        for (PlayerStorageMap::iterator itr = mgr->m_PlayerStorage.begin(); itr != mgr->m_PlayerStorage.end(); ++itr)
+        for (auto itr = mgr->m_PlayerStorage.begin(); itr != mgr->m_PlayerStorage.end(); ++itr)
         {
             count++,
                 ret = (*itr).second;

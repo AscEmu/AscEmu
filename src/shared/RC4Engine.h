@@ -52,7 +52,7 @@ class RC4Engine
             index1 = index2 = 0;
 
             // Randomize the permutation
-            for(j = 0, i = 0; i < 256; ++i)
+            for (j = 0, i = 0; i < 256; ++i)
             {
                 j += perm[i] + keybytes[i % keylen];
                 k = perm[i];

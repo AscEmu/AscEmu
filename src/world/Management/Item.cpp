@@ -71,11 +71,11 @@ Item::Item()
 
 void Item::Init(uint32 high, uint32 low)
 {
-    ///////////////////////////// from virtual_constructor ///////////////
+    // from virtual_constructor
     memset(m_uint32Values, 0, (ITEM_END)* sizeof(uint32));
     SetUInt32Value(OBJECT_FIELD_TYPE, TYPE_ITEM | TYPE_OBJECT);
-    SetScale(1);   //always 1
-    SetScale(1);   //always 1
+    SetScale(1); // always 1
+    SetScale(1); // always 1
 
     m_itemProperties = nullptr;
 
@@ -105,21 +105,20 @@ void Item::Init(uint32 high, uint32 low)
 
 Item::~Item()
 {
-    if (loot != NULL)
+    if (loot != nullptr)
     {
         delete loot;
-        loot = NULL;
+        loot = nullptr;
     }
 
     sEventMgr.RemoveEvents(this);
 
-    EnchantmentMap::iterator itr;
-    for (itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
+    for (auto itr : Enchantments)
     {
-        if (itr->second.Slot == 0 && itr->second.ApplyTime == 0 && itr->second.Duration == 0)
+        if (itr.second.Slot == 0 && itr.second.ApplyTime == 0 && itr.second.Duration == 0)
         {
-            delete itr->second.Enchantment;
-            itr->second.Enchantment = NULL;
+            delete itr.second.Enchantment;
+            itr.second.Enchantment = nullptr;
         }
     }
     Enchantments.clear();
@@ -127,7 +126,7 @@ Item::~Item()
     if (IsInWorld())
         RemoveFromWorld();
 
-    m_owner = NULL;
+    m_owner = nullptr;
 }
 
 void Item::Create(uint32 itemid, Player* owner)
@@ -215,15 +214,15 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
         return;
 
     std::string enchant_field = fields[15].GetString();
-    std::vector< std::string > enchants = Util::SplitStringBySeperator(enchant_field, ";");
-    uint32 enchant_id;
 
+    uint32 enchant_id;
     uint32 time_left;
     uint32 enchslot;
 
-    for (std::vector<std::string>::iterator itr = enchants.begin(); itr != enchants.end(); ++itr)
+    auto enchants = Util::SplitStringBySeperator(enchant_field, ";");
+    for (auto itr : enchants)
     {
-        if (sscanf((*itr).c_str(), "%u,%u,%u", (unsigned int*)&enchant_id, (unsigned int*)&time_left, (unsigned int*)&enchslot) == 3)
+        if (sscanf(itr.c_str(), "%u,%u,%u", (unsigned int*)&enchant_id, (unsigned int*)&time_left, (unsigned int*)&enchslot) == 3)
         {
             auto spell_item_enchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
             if (spell_item_enchant == nullptr)
@@ -401,23 +400,22 @@ void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* 
     // Pack together enchantment fields
     if (Enchantments.size() > 0)
     {
-        EnchantmentMap::iterator itr = Enchantments.begin();
-        for (; itr != Enchantments.end(); ++itr)
+        for (auto itr : Enchantments)
         {
-            if (itr->second.RemoveAtLogout)
+            if (itr.second.RemoveAtLogout)
                 continue;
 
-            uint32 elapsed_duration = uint32(UNIXTIME - itr->second.ApplyTime);
-            int32 remaining_duration = itr->second.Duration - elapsed_duration;
+            uint32 elapsed_duration = uint32(UNIXTIME - itr.second.ApplyTime);
+            int32 remaining_duration = itr.second.Duration - elapsed_duration;
             if (remaining_duration < 0)
                 remaining_duration = 0;
 
 
-            if (itr->second.Enchantment && (remaining_duration > 5 || itr->second.Duration == 0))
+            if (itr.second.Enchantment && (remaining_duration > 5 || itr.second.Duration == 0))
             {
-                ss << itr->second.Enchantment->Id << ",";
+                ss << itr.second.Enchantment->Id << ",";
                 ss << remaining_duration << ",";
-                ss << itr->second.Slot << ";";
+                ss << itr.second.Slot << ";";
             }
         }
     }
@@ -763,7 +761,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
             // Depending on the enchantment type, take the appropriate course of action.
             switch (Entry->type[c])
             {
-                case 1:         // Trigger spell on melee attack.
+                case 1: // Trigger spell on melee attack.
                 {
                     if (Apply)
                     {
@@ -777,7 +775,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 }
                 break;
 
-                case 2:         // Mod damage done.
+                case 2: // Mod damage done.
                 {
                     int32 val = Entry->min[c];
                     if (RandomSuffixAmount)
@@ -791,7 +789,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 }
                 break;
 
-                case 3:         // Cast spell (usually means apply aura)
+                case 3: // Cast spell (usually means apply aura)
                 {
                     if (Apply)
                     {
@@ -819,7 +817,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 }
                 break;
 
-                case 4:         // Modify physical resistance
+                case 4: // Modify physical resistance
                 {
                     int32 val = Entry->min[c];
                     if (RandomSuffixAmount)
@@ -837,7 +835,7 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 }
                 break;
 
-                case 5:     //Modify rating ...order is PLAYER_FIELD_COMBAT_RATING_1 and above
+                case 5: // Modify rating ...order is PLAYER_FIELD_COMBAT_RATING_1 and above
                 {
                     //spellid is enum ITEM_STAT_TYPE
                     //min=max is amount
@@ -850,12 +848,12 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
                 }
                 break;
 
-                case 6:     // Rockbiter weapon (increase damage per second... how the hell do you calc that)
+                case 6: // Rockbiter weapon (increase damage per second... how the hell do you calc that)
                 {
                     if (Apply)
                     {
-                        //m_owner->ModUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS, Entry->min[c]);
-                        //if I'm not wrong then we should apply DMPS formula for this. This will have somewhat a larger value 28->34
+                        // m_owner->ModUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS, Entry->min[c]);
+                        // if I'm not wrong then we should apply DMPS formula for this. This will have somewhat a larger value 28->34
                         int32 val = Entry->min[c];
                         if (RandomSuffixAmount)
                             val = RANDOM_SUFFIX_MAGIC_CALCULATION(RandomSuffixAmount, GetItemRandomSuffixFactor());
@@ -910,27 +908,18 @@ void Item::ApplyEnchantmentBonus(uint32 Slot, bool Apply)
 
 void Item::ApplyEnchantmentBonuses()
 {
-    EnchantmentMap::iterator itr, itr2;
-    for (itr = Enchantments.begin(); itr != Enchantments.end();)
-    {
-        itr2 = itr++;
-        ApplyEnchantmentBonus(itr2->first, true);
-    }
+    for (auto itr : Enchantments)
+        ApplyEnchantmentBonus(itr.first, true);
 }
 
 void Item::RemoveEnchantmentBonuses()
 {
-    EnchantmentMap::iterator itr, itr2;
-    for (itr = Enchantments.begin(); itr != Enchantments.end();)
-    {
-        itr2 = itr++;
-        ApplyEnchantmentBonus(itr2->first, false);
-    }
+    for (auto itr : Enchantments)
+        ApplyEnchantmentBonus(itr.first, false);
 }
 
 void Item::EventRemoveEnchantment(uint32 Slot)
 {
-    // Remove the enchantment.
     RemoveEnchantment(Slot);
 }
 
@@ -946,7 +935,7 @@ int32 Item::FindFreeEnchantSlot(DBC::Structures::SpellItemEnchantmentEntry const
             if (GetEnchantmentId(Slot) == 0)
                 return Slot;
     }
-    else if (random_type == RANDOMSUFFIX)    // random suffix
+    else if (random_type == RANDOMSUFFIX)     // random suffix
     {
         for (uint32 Slot = PROP_ENCHANTMENT_SLOT_0; Slot < MAX_ENCHANTMENT_SLOT; ++Slot)
             if (GetEnchantmentId(Slot) == 0)
@@ -1026,56 +1015,45 @@ void Item::SendEnchantTimeUpdate(uint32 Slot, uint32 Duration)
 
 void Item::RemoveAllEnchantments(bool OnlyTemporary)
 {
-    EnchantmentMap::iterator itr, it2;
-    for (itr = Enchantments.begin(); itr != Enchantments.end();)
+    for (auto itr : Enchantments)
     {
-        it2 = itr++;
-
-        if (OnlyTemporary && it2->second.Duration == 0)
+        if (OnlyTemporary && itr.second.Duration == 0)
             continue;
 
-        RemoveEnchantment(it2->first);
+        RemoveEnchantment(itr.first);
     }
 }
 
 void Item::RemoveRelatedEnchants(DBC::Structures::SpellItemEnchantmentEntry const* newEnchant)
 {
-    EnchantmentMap::iterator itr, itr2;
-    for (itr = Enchantments.begin(); itr != Enchantments.end();)
+    for (auto itr : Enchantments)
     {
-        itr2 = itr++;
-
-        if (itr2->second.Enchantment->Id == newEnchant->Id || (itr2->second.Enchantment->EnchantGroups > 1 && newEnchant->EnchantGroups > 1))
-        {
-            RemoveEnchantment(itr2->first);
-        }
+        if (itr.second.Enchantment->Id == newEnchant->Id || (itr.second.Enchantment->EnchantGroups > 1 && newEnchant->EnchantGroups > 1))
+            RemoveEnchantment(itr.first);
     }
 }
 
 void Item::RemoveProfessionEnchant()
 {
-    EnchantmentMap::iterator itr;
-    for (itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
+    for (auto itr : Enchantments)
     {
-        if (itr->second.Duration != 0)  // not perm
+        if (itr.second.Duration != 0) // not perm
             continue;
-        if (IsGemRelated(itr->second.Enchantment))
+        if (IsGemRelated(itr.second.Enchantment))
             continue;
 
-        RemoveEnchantment(itr->first);
+        RemoveEnchantment(itr.first);
         return;
     }
 }
 
 void Item::RemoveSocketBonusEnchant()
 {
-    EnchantmentMap::iterator itr;
-
-    for (itr = Enchantments.begin(); itr != Enchantments.end(); ++itr)
+    for (auto itr : Enchantments)
     {
-        if (itr->second.Enchantment->Id == GetItemProperties()->SocketBonus)
+        if (itr.second.Enchantment->Id == GetItemProperties()->SocketBonus)
         {
-            RemoveEnchantment(itr->first);
+            RemoveEnchantment(itr.first);
             return;
         }
     }
@@ -1107,7 +1085,7 @@ uint32 Item::GetSocketsCount()
     for (uint32 x = 0; x < 3; ++x)
         if (GetItemProperties()->Sockets[x].SocketColor)
             c++;
-    //prismatic socket
+    // prismatic socket
     if (GetEnchantment(PRISMATIC_ENCHANTMENT_SLOT) != NULL)
         c++;
     return c;
@@ -1287,8 +1265,6 @@ void Item::SendDurationUpdate()
 
 }
 
-
-
 // "Stackable items (such as Frozen Orbs and gems) and
 // charged items that can be purchased with an alternate currency are not eligible. "
 bool Item::IsEligibleForRefund()
@@ -1311,7 +1287,6 @@ bool Item::IsEligibleForRefund()
 
     return true;
 }
-
 
 void Item::RemoveFromRefundableMap()
 {
@@ -1346,20 +1321,20 @@ uint32 Item::RepairItemCost()
     return cost;
 }
 
-bool Item::RepairItem(Player* pPlayer, bool guildmoney, int32* pCost)   //pCost is needed for the guild log
+bool Item::RepairItem(Player* pPlayer, bool guildmoney, int32* pCost) // pCost is needed for the guild log
 {
-    //int32 cost = (int32)pItem->GetUInt32Value(ITEM_FIELD_MAXDURABILITY) - (int32)pItem->GetUInt32Value(ITEM_FIELD_DURABILITY);
+    // int32 cost = (int32)pItem->GetUInt32Value(ITEM_FIELD_MAXDURABILITY) - (int32)pItem->GetUInt32Value(ITEM_FIELD_DURABILITY);
     int32 cost = RepairItemCost();
     if (cost <= 0)
         return false;
     if (guildmoney && pPlayer->IsInGuild())
     {
         if (!pPlayer->GetGuildMember()->RepairItem((uint32)cost))
-            return false;//we should tell the client that he can't repair with the guild gold.
+            return false; // we should tell the client that he can't repair with the guild gold.
         if (pCost != NULL)
             *pCost += cost;
     }
-    else//we pay with our gold
+    else // we pay with our gold
     {
         if (!pPlayer->HasGold(cost))
             return false;

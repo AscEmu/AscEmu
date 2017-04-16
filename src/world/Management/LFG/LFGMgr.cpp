@@ -55,19 +55,19 @@ m_NumWaitTimeAvg(0), m_NumWaitTimeTank(0), m_NumWaitTimeHealer(0), m_NumWaitTime
 
 LfgMgr::~LfgMgr()
 {
-    for (LfgRewardMap::iterator itr = m_RewardMap.begin(); itr != m_RewardMap.end(); ++itr)
+    for (auto itr = m_RewardMap.begin(); itr != m_RewardMap.end(); ++itr)
         delete itr->second;
 
-    for (LfgQueueInfoMap::iterator it = m_QueueInfoMap.begin(); it != m_QueueInfoMap.end(); ++it)
+    for (auto it = m_QueueInfoMap.begin(); it != m_QueueInfoMap.end(); ++it)
         delete it->second;
 
-    for (LfgProposalMap::iterator it = m_Proposals.begin(); it != m_Proposals.end(); ++it)
+    for (auto it = m_Proposals.begin(); it != m_Proposals.end(); ++it)
         delete it->second;
 
-    for (LfgPlayerBootMap::iterator it = m_Boots.begin(); it != m_Boots.end(); ++it)
+    for (auto it = m_Boots.begin(); it != m_Boots.end(); ++it)
         delete it->second;
 
-    for (LfgRoleCheckMap::iterator it = m_RoleChecks.begin(); it != m_RoleChecks.end(); ++it)
+    for (auto it = m_RoleChecks.begin(); it != m_RoleChecks.end(); ++it)
         delete it->second;
 }
 
@@ -76,7 +76,7 @@ void LfgMgr::LoadRewards()
 {
     uint32 oldMSTime = getMSTime();
 
-    for (LfgRewardMap::iterator itr = m_RewardMap.begin(); itr != m_RewardMap.end(); ++itr)
+    for (auto itr = m_RewardMap.begin(); itr != m_RewardMap.end(); ++itr)
         delete itr->second;
     m_RewardMap.clear();
 
@@ -150,7 +150,7 @@ void LfgMgr::Update(uint32 diff)
     time_t currTime = time(NULL);
 
     // Remove obsolete role checks
-    for (LfgRoleCheckMap::iterator it = m_RoleChecks.begin(); it != m_RoleChecks.end();)
+    for (auto it = m_RoleChecks.begin(); it != m_RoleChecks.end();)
     {
         LfgRoleCheckMap::iterator itRoleCheck = it++;
         LfgRoleCheck* roleCheck = itRoleCheck->second;
@@ -175,7 +175,7 @@ void LfgMgr::Update(uint32 diff)
     }
 
     // Remove obsolete proposals
-    for (LfgProposalMap::iterator it = m_Proposals.begin(); it != m_Proposals.end();)
+    for (auto it = m_Proposals.begin(); it != m_Proposals.end();)
     {
         LfgProposalMap::iterator itRemove = it++;
         if (itRemove->second->cancelTime < currTime)
@@ -183,7 +183,7 @@ void LfgMgr::Update(uint32 diff)
     }
 
     // Remove obsolete kicks
-    for (LfgPlayerBootMap::iterator it = m_Boots.begin(); it != m_Boots.end();)
+    for (auto it = m_Boots.begin(); it != m_Boots.end();)
     {
         LfgPlayerBootMap::iterator itBoot = it++;
         LfgPlayerBoot* pBoot = itBoot->second;
@@ -200,7 +200,7 @@ void LfgMgr::Update(uint32 diff)
     }
 
     // Check if a proposal can be formed with the new groups being added
-    for (LfgGuidListMap::iterator it = m_newToQueue.begin(); it != m_newToQueue.end(); ++it)
+    for (auto it = m_newToQueue.begin(); it != m_newToQueue.end(); ++it)
     {
         uint8 queueId = it->first;
         LfgGuidList& newToQueue = it->second;
@@ -320,10 +320,10 @@ void LfgMgr::AddToQueue(uint64 guid, uint8 queueId)
 
 bool LfgMgr::RemoveFromQueue(uint64 guid)
 {
-    for (LfgGuidListMap::iterator it = m_currentQueue.begin(); it != m_currentQueue.end(); ++it)
+    for (auto it = m_currentQueue.begin(); it != m_currentQueue.end(); ++it)
         it->second.remove(guid);
 
-    for (LfgGuidListMap::iterator it = m_newToQueue.begin(); it != m_newToQueue.end(); ++it)
+    for (auto it = m_newToQueue.begin(); it != m_newToQueue.end(); ++it)
         it->second.remove(guid);
 
     RemoveFromCompatibles(guid);
@@ -409,8 +409,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
             player->GetSession()->SendLfgJoinResult(joinData); // Default value of joinData.result = LFG_JOIN_OK
             if (grp)
             {
-                GroupMembersSet::iterator itx;
-                for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+                for (auto itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
                     plr = (*itx)->m_loggedInPlayer;
                 if (plr)
                 {
@@ -440,8 +439,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
         else
         {
             uint8 memberCount = 0;
-            GroupMembersSet::iterator itx;
-            for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+            for (auto itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
             {
                 if (Player* plrg = (*itx)->m_loggedInPlayer)
                     if (joinData.result == LFG_JOIN_OK)
@@ -474,7 +472,7 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
             switch (GetDungeonType(*it))
             {
                 case LFG_TYPE_RANDOM:
-                    if (dungeons.size() > 1)                            // Only allow 1 random dungeon
+                    if (dungeons.size() > 1) // Only allow 1 random dungeon
                         joinData.result = LFG_JOIN_DUNGEON_INVALID;
                     else
                         rDungeonId = (*dungeons.begin());
@@ -549,8 +547,8 @@ void LfgMgr::Join(Player* player, uint8 roles, const LfgDungeonSet& selectedDung
         SetState(gguid, LFG_STATE_ROLECHECK);
         // Send update to player
         LfgUpdateData updateData = LfgUpdateData(LFG_UPDATETYPE_JOIN_PROPOSAL, dungeons, comment);
-        GroupMembersSet::iterator itx;
-        for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+
+        for (auto itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
         {
             if (Player* plrg = (*itx)->m_loggedInPlayer)
             {
@@ -617,8 +615,7 @@ void LfgMgr::Leave(Player* player, Group* grp /* = NULL*/)
             if (grp)
             {
                 RestoreState(guid);
-                GroupMembersSet::iterator itx;
-                for (itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
+                for (auto itx = grp->GetSubGroup(0)->GetGroupMembersBegin(); itx != grp->GetSubGroup(0)->GetGroupMembersEnd(); ++itx)
                     if (Player* plrg = (*itx)->m_loggedInPlayer)
                     {
                         plrg->GetSession()->SendLfgUpdateParty(updateData);
@@ -635,7 +632,7 @@ void LfgMgr::Leave(Player* player, Group* grp /* = NULL*/)
         break;
         case LFG_STATE_ROLECHECK:
             if (grp)
-                UpdateRoleCheck(guid);                     // No player to update role = LFG_ROLECHECK_ABORTED
+                UpdateRoleCheck(guid); // No player to update role = LFG_ROLECHECK_ABORTED
             break;
         case LFG_STATE_PROPOSAL:
         {
@@ -673,7 +670,6 @@ void LfgMgr::OfferContinue(Group* grp)
 
         LOG_DEBUG("player %u ", objmgr.GetPlayer(GET_LOWGUID_PART(grp->GetLeader()->guid)));
     }
-
 }
 
 LfgProposal* LfgMgr::FindNewGroups(LfgGuidList& check, LfgGuidList& all)
@@ -697,7 +693,7 @@ LfgProposal* LfgMgr::FindNewGroups(LfgGuidList& check, LfgGuidList& all)
 
 bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
 {
-    if (pProposal)                                         // Do not check anything if we already have a proposal
+    if (pProposal) // Do not check anything if we already have a proposal
         return false;
 
     std::string strGuids = ConcatenateGuids(check);
@@ -726,7 +722,7 @@ bool LfgMgr::CheckCompatibility(LfgGuidList check, LfgProposal*& pProposal)
         check.pop_front();
 
         // Check all-but-new compatibilities (New, A, B, C, D) --> check(A, B, C, D)
-        if (!CheckCompatibility(check, pProposal))          // Group not compatible
+        if (!CheckCompatibility(check, pProposal)) // Group not compatible
         {
             LOG_DEBUG("(%s) not compatibles (%s not compatibles)", strGuids.c_str(), ConcatenateGuids(check).c_str());
             SetCompatibles(strGuids, false);
@@ -1061,7 +1057,7 @@ void LfgMgr::RemoveFromCompatibles(uint64 guid)
     std::string strGuid = out.str();
 
     LOG_DEBUG("Removing %u", guid);
-    for (LfgCompatibleMap::iterator itNext = m_CompatibleMap.begin(); itNext != m_CompatibleMap.end();)
+    for (auto itNext = m_CompatibleMap.begin(); itNext != m_CompatibleMap.end();)
     {
         LfgCompatibleMap::iterator it = itNext++;
         if (it->first.find(strGuid) != std::string::npos)  // Found, remove it
@@ -1116,10 +1112,10 @@ bool LfgMgr::CheckGroupRoles(LfgRolesMap& groles, bool removeLeaderFlag /*= true
     uint8 healer = 0;
 
     if (removeLeaderFlag)
-        for (LfgRolesMap::iterator it = groles.begin(); it != groles.end(); ++it)
+        for (auto it = groles.begin(); it != groles.end(); ++it)
             it->second &= ~ROLE_LEADER;
 
-    for (LfgRolesMap::iterator it = groles.begin(); it != groles.end(); ++it)
+    for (auto it = groles.begin(); it != groles.end(); ++it)
     {
         if (it->second == ROLE_NONE)
             return false;

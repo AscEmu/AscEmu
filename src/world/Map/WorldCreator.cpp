@@ -123,13 +123,11 @@ InstanceMgr::~InstanceMgr()
 
 void InstanceMgr::Shutdown()
 {
-    uint32 i;
-    InstanceMap::iterator itr;
-    for (i = 0; i < NUM_MAPS; ++i)
+    for (uint32 i = 0; i < NUM_MAPS; ++i)
     {
         if (m_instances[i] != NULL)
         {
-            for (itr = m_instances[i]->begin(); itr != m_instances[i]->end(); ++itr)
+            for (auto itr = m_instances[i]->begin(); itr != m_instances[i]->end(); ++itr)
             {
                 if (itr->second->m_mapMgr)
                     itr->second->m_mapMgr->KillThread();
@@ -804,7 +802,7 @@ void InstanceMgr::ResetSavedInstances(Player* plr)
         if (m_instances[i] != NULL)
         {
             instancemap = m_instances[i];
-            for (itr = instancemap->begin(); itr != instancemap->end();)
+            for (auto itr = instancemap->begin(); itr != instancemap->end();)
             {
                 in = itr->second;
                 ++itr;
@@ -835,7 +833,6 @@ void InstanceMgr::OnGroupDestruction(Group* pGroup)
     // this means a group has been deleted, so lets clear out all instances that they owned.
     // (instances don't transfer to the group leader, or anything)
     Instance* in;
-    InstanceMap::iterator itr;
     InstanceMap* instancemap;
     uint32 i;
 
@@ -845,7 +842,7 @@ void InstanceMgr::OnGroupDestruction(Group* pGroup)
         instancemap = m_instances[i];
         if (instancemap)
         {
-            for (itr = instancemap->begin(); itr != instancemap->end();)
+            for (auto itr = instancemap->begin(); itr != instancemap->end();)
             {
                 in = itr->second;
                 ++itr;
@@ -862,7 +859,7 @@ void InstanceMgr::OnGroupDestruction(Group* pGroup)
                         data << uint32(60000);
                         data << uint32(1);
 
-                        for (PlayerStorageMap::iterator mitr = in->m_mapMgr->m_PlayerStorage.begin(); mitr != in->m_mapMgr->m_PlayerStorage.end(); ++mitr)
+                        for (auto mitr = in->m_mapMgr->m_PlayerStorage.begin(); mitr != in->m_mapMgr->m_PlayerStorage.end(); ++mitr)
                         {
                             if ((*mitr).second->IsInWorld() && !(*mitr).second->raidgrouponlysent && (*mitr).second->GetInstanceID() == (int32)in->m_instanceId)
                             {
@@ -940,7 +937,6 @@ void InstanceMgr::CheckForExpiredInstances()
 {
     // checking for any expired instances.
     Instance* in;
-    InstanceMap::iterator itr;
     InstanceMap* instancemap;
     uint32 i;
 
@@ -950,7 +946,7 @@ void InstanceMgr::CheckForExpiredInstances()
         instancemap = m_instances[i];
         if (instancemap)
         {
-            for (itr = instancemap->begin(); itr != instancemap->end();)
+            for (auto itr = instancemap->begin(); itr != instancemap->end();)
             {
                 in = itr->second;
                 ++itr;
@@ -970,7 +966,6 @@ void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
 #if VERSION_STRING != Cata
     WorldPacket data(4);
     Instance* in;
-    InstanceMap::iterator itr;
     InstanceMap* instancemap;
     uint32 i;
 
@@ -982,7 +977,7 @@ void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
             if (m_instances[i] != NULL)
             {
                 instancemap = m_instances[i];
-                for (itr = instancemap->begin(); itr != instancemap->end();)
+                for (auto itr = instancemap->begin(); itr != instancemap->end();)
                 {
                     in = itr->second;
                     ++itr;
@@ -1267,7 +1262,6 @@ FormationMgr::FormationMgr()
 
 FormationMgr::~FormationMgr()
 {
-    FormationMap::iterator itr;
-    for (itr = m_formations.begin(); itr != m_formations.end(); ++itr)
+    for (auto itr = m_formations.begin(); itr != m_formations.end(); ++itr)
         delete itr->second;
 }

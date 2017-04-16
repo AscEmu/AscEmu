@@ -118,7 +118,7 @@ class MeathookAI : public CreatureAIScript
         Player* GetRandomPlayerTarget()
         {
             std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
+            for (auto iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
             {
                 Player* p = static_cast< Player* >(*iter);
                 if (p->isAlive())
@@ -298,7 +298,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
         Player* GetRandomPlayerTarget()
         {
             std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
+            for (auto iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
             {
                 Player* p = static_cast< Player* >(*iter);
 
@@ -475,7 +475,7 @@ class ChronoLordEpochAI : public CreatureAIScript
         Player* GetRandomPlayerTarget()
         {
             std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
+            for (auto iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
             {
                 Player* p = static_cast< Player* >(*iter);
                 if (p->isAlive())
@@ -612,7 +612,7 @@ class InfiniteCorruptorAI : public CreatureAIScript
         Player* GetRandomPlayerTarget()
         {
             std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
+            for (auto iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
             {
                 Player* p = static_cast< Player* >(*iter);
                 if (p->isAlive())
@@ -837,7 +837,7 @@ class MalganisAI : public CreatureAIScript
         Player* GetRandomPlayerTarget()
         {
             std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
+            for (auto iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
             {
                 Player* p = static_cast< Player* >(*iter);
                 if (p->isAlive())

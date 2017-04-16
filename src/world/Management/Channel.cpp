@@ -77,24 +77,25 @@ Channel::Channel(const char* name, uint32 team, uint32 type_id)
         m_general = true;
         m_announce = false;
 
-        m_flags |= CHANNEL_FLAGS_GENERAL;       // old 0x10;            // general flag
         // flags (0x01 = custom?, 0x04 = trade?, 0x20 = city?, 0x40 = lfg?, , 0x80 = voice?,
 
+        m_flags |= CHANNEL_FLAGS_GENERAL;                                                                               // old 0x10; // general flag
+
         if (chat_channels->flags & CHANNEL_DBC_TRADE)
-            m_flags |= CHANNEL_FLAGS_TRADE;     // old 0x08;        // trade
+            m_flags |= CHANNEL_FLAGS_TRADE;                                                                             // old 0x08; // trade
 
         if (chat_channels->flags & CHANNEL_DBC_CITY_ONLY_1 || chat_channels->flags & CHANNEL_DBC_CITY_ONLY_2)
-            m_flags |= CHANNEL_FLAGS_CITY;      // old 0x20;        // city flag
+            m_flags |= CHANNEL_FLAGS_CITY;                                                                              // old 0x20; // city flag
 
         if (chat_channels->flags & CHANNEL_DBC_LFG)
-            m_flags |= CHANNEL_FLAGS_LFG;       // old 0x40;        // lfg flag
+            m_flags |= CHANNEL_FLAGS_LFG;                                                                               // old 0x40; // lfg flag
     }
     else
-        m_flags = CHANNEL_FLAGS_CUSTOM;         // old 0x01;
+        m_flags = CHANNEL_FLAGS_CUSTOM;                                                                                 // old 0x01;
 
-    for (std::vector<std::string>::iterator itr = m_minimumChannel.begin(); itr != m_minimumChannel.end(); ++itr)
+    for (auto itr : m_minimumChannel)
     {
-        if (stricmp(name, itr->c_str()))
+        if (stricmp(name, itr.c_str()))
         {
             m_minimumLevel = 10;
             m_general = true;
@@ -258,61 +259,61 @@ void Channel::SetOwner(Player* oldpl, Player* plr)
 
     if (plr == NULL)
     {
-        for (MemberMap::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
+        for (auto itr : m_members)
         {
-            if (itr->second & CHANNEL_MEMBER_FLAG_OWNER)
+            if (itr.second & CHANNEL_MEMBER_FLAG_OWNER)
             {
                 // remove the old owner
-                oldflags2 = itr->second;
-                itr->second &= ~CHANNEL_MEMBER_FLAG_OWNER;
+                oldflags2 = itr.second;
+                itr.second &= ~CHANNEL_MEMBER_FLAG_OWNER;
                 data << uint8(CHANNEL_NOTIFY_FLAG_MODE_CHG);
                 data << m_name;
-                data << itr->first->GetGUID();
+                data << itr.first->GetGUID();
                 data << uint8(oldflags2);
-                data << uint8(itr->second);
+                data << uint8(itr.second);
                 SendToAll(&data);
             }
             else
             {
                 if (pOwner == NULL)
                 {
-                    pOwner = itr->first;
-                    oldflags = itr->second;
-                    itr->second |= CHANNEL_MEMBER_FLAG_OWNER;
+                    pOwner = itr.first;
+                    oldflags = itr.second;
+                    itr.second |= CHANNEL_MEMBER_FLAG_OWNER;
                 }
             }
         }
     }
     else
     {
-        for (MemberMap::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
+        for (auto itr : m_members)
         {
-            if (itr->second & CHANNEL_MEMBER_FLAG_OWNER)
+            if (itr.second & CHANNEL_MEMBER_FLAG_OWNER)
             {
                 // remove the old owner
-                oldflags2 = itr->second;
-                itr->second &= ~CHANNEL_MEMBER_FLAG_OWNER;
+                oldflags2 = itr.second;
+                itr.second &= ~CHANNEL_MEMBER_FLAG_OWNER;
                 data << uint8(CHANNEL_NOTIFY_FLAG_MODE_CHG);
                 data << m_name;
-                data << itr->first->GetGUID();
+                data << itr.first->GetGUID();
                 data << uint8(oldflags2);
-                data << uint8(itr->second);
+                data << uint8(itr.second);
                 SendToAll(&data);
             }
             else
             {
-                if (plr == itr->first)
+                if (plr == itr.first)
                 {
-                    pOwner = itr->first;
-                    oldflags = itr->second;
-                    itr->second |= CHANNEL_MEMBER_FLAG_OWNER;
+                    pOwner = itr.first;
+                    oldflags = itr.second;
+                    itr.second |= CHANNEL_MEMBER_FLAG_OWNER;
                 }
             }
         }
     }
 
     if (pOwner == NULL)
-        return;        // obviously no members
+        return; // obviously no members
 
     data.clear();
     data << uint8(CHANNEL_NOTIFY_FLAG_CHGOWNER);
@@ -427,11 +428,11 @@ void Channel::Say(Player* plr, const char* message, Player* for_gm_client, bool 
 
     data.SetOpcode(SMSG_MESSAGECHAT);
     data << uint8(CHAT_MSG_CHANNEL);
-    data << uint32(0);        // language
-    data << plr->GetGUID();    // guid
-    data << uint32(0);        // rank?
-    data << m_name;            // channel name
-    data << plr->GetGUID();    // guid again?
+    data << uint32(0);                       // language
+    data << plr->GetGUID();                  // guid
+    data << uint32(0);                       // rank?
+    data << m_name;                          // channel name
+    data << plr->GetGUID();                  // guid again?
     data << uint32(strlen(message) + 1);
     data << message;
     data << (uint8)(plr->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
@@ -882,17 +883,18 @@ void Channel::List(Player* plr)
     data << m_name;
     data << uint8(m_flags);
     data << uint32(m_members.size());
-    for (itr = m_members.begin(); itr != m_members.end(); ++itr)
+
+    for (auto itr : m_members)
     {
-        data << itr->first->GetGUID();
+        data << itr.first->GetGUID();
         flags = 0;
-        if (!(itr->second & CHANNEL_MEMBER_FLAG_MUTED))
+        if (!(itr.second & CHANNEL_MEMBER_FLAG_MUTED))
             flags |= CHANNEL_MEMBER_FLAG_VOICED;
 
-        if (itr->second & CHANNEL_MEMBER_FLAG_OWNER)
+        if (itr.second & CHANNEL_MEMBER_FLAG_OWNER)
             flags |= CHANNEL_MEMBER_FLAG_OWNER;
 
-        if (itr->second & CHANNEL_MEMBER_FLAG_MODERATOR)
+        if (itr.second & CHANNEL_MEMBER_FLAG_MODERATOR)
             flags |= CHANNEL_MEMBER_FLAG_MODERATOR;
 
         if (!m_general)
@@ -917,13 +919,13 @@ void Channel::GetOwner(Player* plr)
         return;
     }
 
-    for (itr = m_members.begin(); itr != m_members.end(); ++itr)
+    for (auto itr : m_members)
     {
-        if (itr->second & CHANNEL_MEMBER_FLAG_OWNER)
+        if (itr.second & CHANNEL_MEMBER_FLAG_OWNER)
         {
             data << uint8(CHANNEL_NOTIFY_FLAG_WHO_OWNER);
             data << m_name;
-            data << itr->first->GetGUID();
+            data << itr.first->GetGUID();
             plr->GetSession()->SendPacket(&data);
             return;
         }
@@ -933,10 +935,9 @@ ChannelMgr::~ChannelMgr()
 {
     for (uint8 i = 0; i < 2; ++i)
     {
-        ChannelList::iterator itr = this->Channels[i].begin();
-        for (; itr != this->Channels[i].end(); ++itr)
+        for (auto itr : this->Channels[i])
         {
-            delete itr->second;
+            delete itr.second;
         }
         Channels[i].clear();
     }
@@ -945,38 +946,37 @@ ChannelMgr::~ChannelMgr()
 Channel::~Channel()
 {
     m_lock.Acquire();
-    for (MemberMap::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
-        itr->first->LeftChannel(this);
+    for (auto itr : m_members)
+        itr.first->LeftChannel(this);
     m_lock.Release();
 }
 
 void Channel::SendToAll(WorldPacket* data)
 {
     Guard guard(m_lock);
-    for (MemberMap::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
-        itr->first->GetSession()->SendPacket(data);
+    for (auto itr : m_members)
+        itr.first->GetSession()->SendPacket(data);
 }
 
 void Channel::SendToAll(WorldPacket* data, Player* plr)
 {
     Guard guard(m_lock);
-    for (MemberMap::iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
+    for (auto itr : m_members)
     {
-        if (itr->first != plr)
-            itr->first->GetSession()->SendPacket(data);
+        if (itr.first != plr)
+            itr.first->GetSession()->SendPacket(data);
     }
 }
 
 Channel* ChannelMgr::GetCreateChannel(const char* name, Player* p, uint32 type_id)
 {
-    ChannelList::iterator itr;
     ChannelList* cl = &Channels[0];
-    Channel* chn;
+
     if (seperatechannels && p != NULL && stricmp(name, sWorld.getGmClientChannel().c_str()))
         cl = &Channels[p->GetTeam()];
 
     lock.Acquire();
-    for (itr = cl->begin(); itr != cl->end(); ++itr)
+    for (ChannelList::iterator itr = cl->begin(); itr != cl->end(); ++itr)
     {
         if (!stricmp(name, itr->first.c_str()))
         {
@@ -987,9 +987,9 @@ Channel* ChannelMgr::GetCreateChannel(const char* name, Player* p, uint32 type_i
 
     // make sure the name isn't banned
     m_confSettingLock.Acquire();
-    for (std::vector<std::string>::iterator itr2 = m_bannedChannels.begin(); itr2 != m_bannedChannels.end(); ++itr2)
+    for (auto itr2 : m_bannedChannels)
     {
-        if (!strnicmp(name, itr2->c_str(), itr2->size()))
+        if (!strnicmp(name, itr2.c_str(), itr2.size()))
         {
             lock.Release();
             m_confSettingLock.Release();
@@ -997,8 +997,8 @@ Channel* ChannelMgr::GetCreateChannel(const char* name, Player* p, uint32 type_i
         }
     }
 
-    chn = new Channel(name, (seperatechannels && p != NULL) ? p->GetTeam() : 0, type_id);
-    m_confSettingLock.Release();//Channel::Channel() reads configs so we release the lock after we create the Channel.
+    Channel* chn = new Channel(name, (seperatechannels && p != NULL) ? p->GetTeam() : 0, type_id);
+    m_confSettingLock.Release(); // Channel::Channel() reads configs so we release the lock after we create the Channel.
     cl->insert(make_pair(chn->m_name, chn));
     lock.Release();
     return chn;
@@ -1006,13 +1006,12 @@ Channel* ChannelMgr::GetCreateChannel(const char* name, Player* p, uint32 type_i
 
 Channel* ChannelMgr::GetChannel(const char* name, Player* p)
 {
-    ChannelList::iterator itr;
     ChannelList* cl = &Channels[0];
     if (seperatechannels && stricmp(name, sWorld.getGmClientChannel().c_str()))
         cl = &Channels[p->GetTeam()];
 
     lock.Acquire();
-    for (itr = cl->begin(); itr != cl->end(); ++itr)
+    for (ChannelList::iterator itr = cl->begin(); itr != cl->end(); ++itr)
     {
         if (!stricmp(name, itr->first.c_str()))
         {
@@ -1027,13 +1026,12 @@ Channel* ChannelMgr::GetChannel(const char* name, Player* p)
 
 Channel* ChannelMgr::GetChannel(const char* name, uint32 team)
 {
-    ChannelList::iterator itr;
     ChannelList* cl = &Channels[0];
     if (seperatechannels && stricmp(name, sWorld.getGmClientChannel().c_str()))
         cl = &Channels[team];
 
     lock.Acquire();
-    for (itr = cl->begin(); itr != cl->end(); ++itr)
+    for (ChannelList::iterator itr = cl->begin(); itr != cl->end(); ++itr)
     {
         if (!stricmp(name, itr->first.c_str()))
         {
@@ -1048,13 +1046,12 @@ Channel* ChannelMgr::GetChannel(const char* name, uint32 team)
 
 void ChannelMgr::RemoveChannel(Channel* chn)
 {
-    ChannelList::iterator itr;
     ChannelList* cl = &Channels[0];
     if (seperatechannels)
         cl = &Channels[chn->m_team];
 
     lock.Acquire();
-    for (itr = cl->begin(); itr != cl->end(); ++itr)
+    for (ChannelList::iterator itr = cl->begin(); itr != cl->end(); ++itr)
     {
         if (itr->second == chn)
         {

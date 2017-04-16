@@ -1077,7 +1077,7 @@ void Aura::EventUpdateGroupAA(float r)
         owner->GetGroup()->Lock();
 
         SubGroup* sg = owner->GetGroup()->GetSubGroup(owner->GetSubGroup());
-        for (GroupMembersSet::iterator itr = sg->GetGroupMembersBegin(); itr != sg->GetGroupMembersEnd(); ++itr)
+        for (auto itr = sg->GetGroupMembersBegin(); itr != sg->GetGroupMembersEnd(); ++itr)
         {
             Player* op = (*itr)->m_loggedInPlayer;
 
@@ -1105,7 +1105,7 @@ void Aura::EventUpdateGroupAA(float r)
         owner->GetGroup()->Unlock();
     }
 
-    for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end();)
+    for (auto itr = targets.begin(); itr != targets.end();)
     {
         AreaAuraList::iterator itr2 = itr;
         ++itr;
@@ -1193,7 +1193,7 @@ void Aura::EventUpdateRaidAA(float r)
         {
             SubGroup* sg = g->GetSubGroup(i);
 
-            for (GroupMembersSet::iterator itr = sg->GetGroupMembersBegin(); itr != sg->GetGroupMembersEnd(); ++itr)
+            for (auto itr = sg->GetGroupMembersBegin(); itr != sg->GetGroupMembersEnd(); ++itr)
             {
                 PlayerInfo* pi = *itr;
                 Player* op = pi->m_loggedInPlayer;
@@ -1224,7 +1224,7 @@ void Aura::EventUpdateRaidAA(float r)
     }
 
     // Check for targets that should be no longer affected
-    for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end();)
+    for (auto itr = targets.begin(); itr != targets.end();)
     {
         AreaAuraList::iterator itr2 = itr;
         ++itr;
@@ -1265,7 +1265,7 @@ void Aura::EventUpdatePetAA(float r)
         return;
 
     std::list< Pet* > pl = p->GetSummons();
-    for (std::list< Pet* >::iterator itr = pl.begin(); itr != pl.end(); ++itr)
+    for (auto itr = pl.begin(); itr != pl.end(); ++itr)
     {
         Pet* pet = *itr;
 
@@ -1286,7 +1286,7 @@ void Aura::EventUpdatePetAA(float r)
         }
     }
 
-    for (std::list< Pet* >::iterator itr = pl.begin(); itr != pl.end();)
+    for (auto itr = pl.begin(); itr != pl.end();)
     {
         std::list< Pet* >::iterator itr2 = itr;
 
@@ -1306,7 +1306,7 @@ void Aura::EventUpdateFriendAA(float r)
     if (u == NULL)
         return;
 
-    for (std::set< Object* >::iterator itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
+    for (auto itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
     {
         Object* o = *itr;
 
@@ -1336,7 +1336,7 @@ void Aura::EventUpdateFriendAA(float r)
         targets.insert(ou->GetGUID());
     }
 
-    for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end();)
+    for (auto itr = targets.begin(); itr != targets.end();)
     {
         AreaAuraList::iterator itr2 = itr;
         ++itr;
@@ -1376,7 +1376,7 @@ void Aura::EventUpdateEnemyAA(float r)
     if (u == NULL)
         return;
 
-    for (std::set< Object* >::iterator itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
+    for (auto itr = u->GetInRangeSetBegin(); itr != u->GetInRangeSetEnd(); ++itr)
     {
         Object* o = *itr;
 
@@ -1403,7 +1403,7 @@ void Aura::EventUpdateEnemyAA(float r)
         targets.insert(ou->GetGUID());
     }
 
-    for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end();)
+    for (auto itr = targets.begin(); itr != targets.end();)
     {
         AreaAuraList::iterator itr2 = itr;
         ++itr;
@@ -1527,8 +1527,7 @@ void Aura::EventUpdateAreaAura(float r)
             break;
     }
 
-
-    for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end(); ++itr)
+    for (auto itr = targets.begin(); itr != targets.end(); ++itr)
     {
         auto unit = m_target->GetMapMgr()->GetUnit(*itr);
         if (unit == nullptr)
@@ -1548,7 +1547,7 @@ void Aura::ClearAATargets()
 {
     uint32 spellid = m_spellInfo->Id;
 
-    for (AreaAuraList::iterator itr = targets.begin(); itr != targets.end(); ++itr)
+    for (auto itr = targets.begin(); itr != targets.end(); ++itr)
     {
         Unit* tu = m_target->GetMapMgr()->GetUnit(*itr);
 
@@ -1564,7 +1563,7 @@ void Aura::ClearAATargets()
         Player* p = static_cast<Player*>(m_target);
 
         std::list< Pet* > pl = p->GetSummons();
-        for (std::list< Pet* >::iterator itr = pl.begin(); itr != pl.end(); ++itr)
+        for (auto itr = pl.begin(); itr != pl.end(); ++itr)
         {
             Pet* pet = *itr;
 
@@ -2345,7 +2344,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
         std::vector<Unit*> target_threat;
         int count = 0;
         Creature* tmp_creature = NULL;
-        for (std::set<Object*>::iterator itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
+        for (auto itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
         {
             if (!(*itr)->IsCreature())
                 continue;
@@ -2364,7 +2363,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
 
         add = add / count;
 
-        for (std::vector<Unit*>::iterator itr = target_threat.begin(); itr != target_threat.end(); ++itr)
+        for (auto itr = target_threat.begin(); itr != target_threat.end(); ++itr)
         {
             static_cast< Unit* >(*itr)->GetAIInterface()->HealReaction(u_caster, m_target, m_spellInfo, add);
         }
@@ -2683,17 +2682,17 @@ void Aura::SpellAuraDamageShield(bool apply)
     if (apply)
     {
         SetPositive();
-        DamageProc ds;// = new DamageShield();
+        DamageProc ds; // = new DamageShield();
         ds.m_damage = mod->m_amount;
         ds.m_spellId = GetSpellInfo()->Id;
         ds.m_school = GetSpellInfo()->School;
-        ds.m_flags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_MISC; //maybe later we might want to add other flags too here
+        ds.m_flags = PROC_ON_MELEE_ATTACK_VICTIM | PROC_MISC; // maybe later we might want to add other flags too here
         ds.owner = (void*)this;
         m_target->m_damageShields.push_back(ds);
     }
     else
     {
-        for (std::list<struct DamageProc>::iterator i = m_target->m_damageShields.begin(); i != m_target->m_damageShields.end(); ++i)
+        for (auto i = m_target->m_damageShields.begin(); i != m_target->m_damageShields.end(); ++i)
         {
             if (i->owner == this)
             {
@@ -2751,7 +2750,7 @@ void Aura::SpellAuraModStealth(bool apply)
         if (m_spellInfo->custom_NameHash == SPELL_HASH_VANISH && m_target->IsPlayer())	   // Vanish
         {
 
-            for (Object::InRangeSet::iterator iter = m_target->GetInRangeSetBegin(); iter != m_target->GetInRangeSetEnd(); ++iter)
+            for (auto iter = m_target->GetInRangeSetBegin(); iter != m_target->GetInRangeSetEnd(); ++iter)
             {
                 if ((*iter) == NULL || !(*iter)->IsUnit())
                     continue;
@@ -3500,7 +3499,7 @@ void Aura::SpellAuraModDecreaseSpeed(bool apply)
         //m_target->m_slowdown=this;
         //m_target->m_speedModifier += mod->m_amount;
     }
-    else if ((m_flags & (1 << mod->i)) == 0)   //add these checks to mods where immunity can cancel only 1 mod and not whole spell
+    else if ((m_flags & (1 << mod->i)) == 0) // add these checks to mods where immunity can cancel only 1 mod and not whole spell
     {
         std::map< uint32, int32 >::iterator itr = m_target->speedReductionMap.find(m_spellInfo->Id);
         if (itr != m_target->speedReductionMap.end())
@@ -4129,7 +4128,7 @@ void Aura::SpellAuraProcTriggerDamage(bool apply)
     }
     else
     {
-        for (std::list<struct DamageProc>::iterator i = m_target->m_damageShields.begin(); i != m_target->m_damageShields.end(); ++i)
+        for (auto i = m_target->m_damageShields.begin(); i != m_target->m_damageShields.end(); ++i)
         {
             if (i->owner == this)
             {
@@ -4267,9 +4266,8 @@ void Aura::SpellAuraModCritPerc(bool apply)
         }
         else
         {
-            /*std::list<WeaponModifier>::iterator i = TO< Player* >(m_target)->tocritchance.begin();
-
-            for (;i!=TO< Player* >(m_target)->tocritchance.end();i++)
+            /*
+            for (auto i = TO< Player* >(m_target)->tocritchance.begin(); i!=TO< Player* >(m_target)->tocritchance.end();i++)
             {
             if ((*i).spellid==GetSpellId())
             {
@@ -4970,7 +4968,7 @@ void Aura::SpellAuraFeignDeath(bool apply)
             p_target->SetFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
 
             //now get rid of mobs agro. pTarget->CombatStatus.AttackersForgetHate() - this works only for already attacking mobs
-            for (std::set<Object*>::iterator itr = p_target->GetInRangeSetBegin(); itr != p_target->GetInRangeSetEnd(); ++itr)
+            for (auto itr = p_target->GetInRangeSetBegin(); itr != p_target->GetInRangeSetEnd(); ++itr)
             {
                 if ((*itr)->IsUnit() && (static_cast< Unit* >(*itr))->isAlive())
                 {
@@ -5396,9 +5394,7 @@ void Aura::SpellAuraModDamagePercDone(bool apply)
             }
             else
             {
-                std::map< uint32, WeaponModifier >::iterator i = p_target->damagedone.begin();
-
-                for (; i != p_target->damagedone.end(); ++i)
+                for (auto i = p_target->damagedone.begin(); i != p_target->damagedone.end(); ++i)
                 {
                     if ((*i).first == GetSpellId())
                     {
@@ -6380,8 +6376,7 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
 
                 if (itr != plr->mSpellOverrideMap.end())
                 {
-                    ScriptOverrideList::iterator itrSO;
-                    for (itrSO = itr->second->begin(); itrSO != itr->second->end(); ++itrSO)
+                    for (auto itrSO = itr->second->begin(); itrSO != itr->second->end(); ++itrSO)
                     {
                         if ((*itrSO)->id == (uint32)mod->m_miscValue)
                         {
@@ -6424,7 +6419,7 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
                 while (itr != plr->mSpellOverrideMap.end())
                 {
                     std::list<SpellInfo*>::iterator itrSE = itermap->second->begin();
-                    for (; itrSE != itermap->second->end(); ++itrSE)
+                    for (auto itrSE = itermap->second->begin(); itrSE != itermap->second->end(); ++itrSE)
                     {
                         if (itr->first == (*itrSE)->Id)
                         {
@@ -6434,8 +6429,8 @@ void Aura::SpellAuraOverrideClassScripts(bool apply)
                         }
                     }
                     // Check if the loop above got to the end, if so it means the item wasn't found
-                    // and the itr wasn't incremented so increment it now.
-                    if (itrSE == itermap->second->end())
+					// and the itr wasn't incremented so increment it now.
+					if (itrSE == itermap->second->end())
                         ++itr;
                 }
             }
@@ -8419,7 +8414,7 @@ void Aura::SpellAuraModPossessPet(bool apply)
         return;
 
     std::list<Pet*> summons = pCaster->GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    for (auto itr = summons.begin(); itr != summons.end(); ++itr)
     {
         if (*itr == m_target)
         {

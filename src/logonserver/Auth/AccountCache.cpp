@@ -68,22 +68,16 @@ void AccountMgr::ReloadAccounts(bool silent)
     }
 
     // check for any purged/deleted accounts
-    std::map<std::string, Account*>::iterator itr = AccountDatabase.begin();
-    std::map<std::string, Account*>::iterator it2;
-
-    for (; itr != AccountDatabase.end();)
+    for (auto itr = AccountDatabase.begin(); itr != AccountDatabase.end(); ++itr)
     {
-        it2 = itr;
-        ++itr;
-
-        if (account_list.find(it2->first) == account_list.end())
+        if (account_list.find(itr->first) == account_list.end())
         {
-            delete it2->second;
-            AccountDatabase.erase(it2);
+            delete itr->second;
+            AccountDatabase.erase(itr);
         }
         else
         {
-            it2->second->UsernamePtr = (std::string*)&it2->first;
+            itr->second->UsernamePtr = (std::string*)&itr->first;
         }
     }
 
@@ -106,12 +100,12 @@ void AccountMgr::AddAccount(Field* field)
     acct->AccountId = field[0].GetUInt32();
     acct->AccountFlags = field[4].GetUInt8();
     acct->Banned = field[5].GetUInt32();
-    if ((uint32)UNIXTIME > acct->Banned && acct->Banned != 0 && acct->Banned != 1)   //1 = perm ban?
+    if ((uint32)UNIXTIME > acct->Banned && acct->Banned != 0 && acct->Banned != 1) // 1 = perm ban?
     {
         // Accounts should be unbanned once the date is past their set expiry date.
         acct->Banned = 0;
         // me go boom :(
-        // printf("Account %s's ban has expired.\n",acct->UsernamePtr->c_str());
+        // LOG_DEBUG("Account %s's ban has expired.",acct->UsernamePtr->c_str());
         sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE acct=%u", acct->AccountId);
     }
     acct->SetGMFlags(GMFlags.c_str());
@@ -129,7 +123,7 @@ void AccountMgr::AddAccount(Field* field)
         acct->forcedLocale = false;
 
     acct->Muted = field[7].GetUInt32();
-    if ((uint32)UNIXTIME > acct->Muted && acct->Muted != 0 && acct->Muted != 1)   //1 = perm ban?
+    if ((uint32)UNIXTIME > acct->Muted && acct->Muted != 0 && acct->Muted != 1) // 1 = perm ban?
     {
         // Accounts should be unbanned once the date is past their set expiry date.
         acct->Muted = 0;
@@ -193,9 +187,9 @@ void AccountMgr::UpdateAccount(Account* acct, Field* field)
     acct->AccountId = field[0].GetUInt32();
     acct->AccountFlags = field[4].GetUInt8();
     acct->Banned = field[5].GetUInt32();
-    if ((uint32)UNIXTIME > acct->Banned && acct->Banned != 0 && acct->Banned != 1)  //1 = perm ban?
+    if ((uint32)UNIXTIME > acct->Banned && acct->Banned != 0 && acct->Banned != 1) // 1 = perm ban?
     {
-        //Accounts should be unbanned once the date is past their set expiry date.
+        // Accounts should be unbanned once the date is past their set expiry date.
         acct->Banned = 0;
         LOG_DEBUG("Account %s's ban has expired.", acct->UsernamePtr->c_str());
         sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE acct=%u", acct->AccountId);
@@ -213,7 +207,7 @@ void AccountMgr::UpdateAccount(Account* acct, Field* field)
     acct->Muted = field[7].GetUInt32();
     if ((uint32)UNIXTIME > acct->Muted && acct->Muted != 0 && acct->Muted != 1)  //1 = perm ban?
     {
-        //Accounts should be unbanned once the date is past their set expiry date.
+        // Accounts should be unbanned once the date is past their set expiry date.
         acct->Muted = 0;
         LOG_DEBUG("Account %s's mute has expired.", acct->UsernamePtr->c_str());
         sLogonSQL->Execute("UPDATE accounts SET muted = 0 WHERE acct=%u", acct->AccountId);
@@ -259,16 +253,13 @@ void AccountMgr::ReloadAccountsCallback()
 {
     ReloadAccounts(true);
 }
+
 BAN_STATUS IPBanner::CalculateBanStatus(in_addr ip_address)
 {
     Guard lguard(listBusy);
-    std::list<IPBan>::iterator itr;
-    std::list<IPBan>::iterator itr2 = banList.begin();
-    for (; itr2 != banList.end();)
-    {
-        itr = itr2;
-        ++itr2;
 
+    for (auto itr = banList.begin(); itr != banList.end(); ++itr)
+    {
         if (ParseCIDRBan(ip_address.s_addr, itr->Mask, itr->Bytes))
         {
             // ban hit
@@ -321,14 +312,14 @@ bool IPBanner::Add(const char* ip, uint32 dur)
 
 InformationCore::~InformationCore()
 {
-    for (std::map<uint32, Realm*>::iterator itr = m_realms.begin(); itr != m_realms.end(); ++itr)
+    for (auto itr = m_realms.begin(); itr != m_realms.end(); ++itr)
         delete itr->second;
 }
 
 bool IPBanner::Remove(const char* ip)
 {
     listBusy.Acquire();
-    for (std::list<IPBan>::iterator itr = banList.begin(); itr != banList.end(); ++itr)
+    for (auto itr = banList.begin(); itr != banList.end(); ++itr)
     {
         if (!strcmp(ip, itr->db_ip.c_str()))
         {
@@ -343,7 +334,6 @@ bool IPBanner::Remove(const char* ip)
 
 void IPBanner::Reload()
 {
-
     listBusy.Acquire();
     banList.clear();
     QueryResult* result = sLogonSQL->Query("SELECT ip, expire FROM ipbans");
@@ -405,6 +395,7 @@ Realm* InformationCore::GetRealm(uint32 realm_id)
 
     realmLock.Acquire();
     std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+
     if (itr != m_realms.end())
     {
         ret = itr->second;
@@ -415,12 +406,11 @@ Realm* InformationCore::GetRealm(uint32 realm_id)
 
 int32 InformationCore::GetRealmIdByName(std::string Name)
 {
-    std::map<uint32, Realm*>::iterator itr = m_realms.begin();
-    for (; itr != m_realms.end(); ++itr)
-        if (itr->second->Name == Name)
-        {
-            return itr->first;
-        }
+    for (auto itr : m_realms)
+    {
+        if (itr.second->Name == Name)
+            return itr.first;
+    }
     return -1;
 }
 
@@ -428,6 +418,7 @@ void InformationCore::RemoveRealm(uint32 realm_id)
 {
     realmLock.Acquire();
     std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+
     if (itr != m_realms.end())
     {
         delete itr->second;
@@ -440,6 +431,7 @@ void InformationCore::UpdateRealmStatus(uint32 realm_id, uint8 flags)
 {
     realmLock.Acquire();
     std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+
     if (itr != m_realms.end())
     {
         itr->second->flags = flags;
@@ -451,6 +443,7 @@ void InformationCore::UpdateRealmPop(uint32 realm_id, float pop)
 {
     realmLock.Acquire();
     std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+
     if (itr != m_realms.end())
     {
         uint8 flags;
@@ -468,6 +461,7 @@ void InformationCore::UpdateRealmPop(uint32 realm_id, float pop)
     }
     realmLock.Release();
 }
+
 void InformationCore::SendRealms(AuthSocket* Socket)
 {
     realmLock.Acquire();
@@ -480,16 +474,14 @@ void InformationCore::SendRealms(AuthSocket* Socket)
     // dunno what this is..
     data << uint32(0);
 
-    //sAuthLogonChallenge_C * client = Socket->GetChallenge();
+    // sAuthLogonChallenge_C * client = Socket->GetChallenge();
     if (Socket->GetChallenge()->build == 5875)
         data << uint8(m_realms.size());
     else
         data << uint16(m_realms.size());
 
     // loop realms :/
-    std::map<uint32, Realm*>::iterator itr = m_realms.begin();
-    std::unordered_map<uint32, uint8>::iterator it;
-    for (; itr != m_realms.end(); ++itr)
+    for (auto itr = m_realms.begin(); itr != m_realms.end(); ++itr)
     {
         if (itr->second->GameBuild == Socket->GetChallenge()->build)
         {
@@ -503,6 +495,7 @@ void InformationCore::SendRealms(AuthSocket* Socket)
                 data << float(itr->second->Population);
 
                 // Get our character count
+                std::unordered_map<uint32, uint8>::iterator it;
                 it = itr->second->CharacterMap.find(Socket->GetAccountID());
                 data << uint8((it == itr->second->CharacterMap.end()) ? 0 : it->second);
                 data << uint8(itr->second->TimeZone);
@@ -519,6 +512,7 @@ void InformationCore::SendRealms(AuthSocket* Socket)
                 data << float(itr->second->Population);
 
                 // Get our character count
+                std::unordered_map<uint32, uint8>::iterator it;
                 it = itr->second->CharacterMap.find(Socket->GetAccountID());
                 data << uint8((it == itr->second->CharacterMap.end()) ? 0 : it->second);
                 data << uint8(itr->second->TimeZone);
@@ -553,7 +547,6 @@ void InformationCore::SendRealms(AuthSocket* Socket)
     Socket->Send((const uint8*)data.contents(), uint32(data.size()));
 
     std::list< LogonCommServerSocket* > ss;
-    std::list< LogonCommServerSocket* >::iterator SSitr;
 
     ss.clear();
 
@@ -565,18 +558,16 @@ void InformationCore::SendRealms(AuthSocket* Socket)
         return;
     }
 
-    std::set<LogonCommServerSocket*>::iterator itr1;
-
     // We copy the sockets to a list and call RefreshRealmsPop() from there because if the socket is dead,
     // then calling the method deletes the socket and removes it from the set corrupting the iterator and causing a crash!
-    for (itr1 = m_serverSockets.begin(); itr1 != m_serverSockets.end(); ++itr1)
+    for (auto iter = m_serverSockets.begin(); iter != m_serverSockets.end(); ++iter)
     {
-        ss.push_back(*itr1);
+        ss.push_back(*iter);
     }
 
     serverSocketLock.Release();
 
-    for (SSitr = ss.begin(); SSitr != ss.end(); ++SSitr)
+    for (auto SSitr = ss.begin(); SSitr != ss.end(); ++SSitr)
         (*SSitr)->RefreshRealmsPop();
 
     ss.clear();
@@ -587,7 +578,7 @@ void InformationCore::TimeoutSockets()
     if (!usepings)
         return;
 
-    uint32 now = uint32(time(NULL));
+    uint32 now = uint32(time(nullptr));
 
     /* burlex: this is vulnerable to race conditions, adding a mutex to it. */
     serverSocketLock.Acquire();
@@ -598,12 +589,12 @@ void InformationCore::TimeoutSockets()
         ++itr;
 
         uint32 last_ping = s->last_ping.GetVal();
+
         if (last_ping < now && ((now - last_ping) > 300))
         {
             for (std::set< uint32 >::iterator RealmITR = s->server_ids.begin(); RealmITR != s->server_ids.end(); ++RealmITR)
             {
                 uint32 RealmID = *RealmITR;
-
                 SetRealmOffline(RealmID);
             }
 
@@ -620,18 +611,14 @@ void InformationCore::CheckServers()
 {
     serverSocketLock.Acquire();
 
-    std::set<LogonCommServerSocket*>::iterator itr, it2;
-    LogonCommServerSocket* s;
-    for (itr = m_serverSockets.begin(); itr != m_serverSockets.end();)
+    for (std::set<LogonCommServerSocket*>::iterator itr = m_serverSockets.begin(); itr != m_serverSockets.end(); ++itr)
     {
-        s = *itr;
-        it2 = itr;
-        ++itr;
+        LogonCommServerSocket* pSockect = *itr;
 
-        if (!sLogonServer.IsServerAllowed(s->GetRemoteAddress().s_addr))
+        if (!sLogonServer.IsServerAllowed(pSockect->GetRemoteAddress().s_addr))
         {
-            LOG_DETAIL("Disconnecting socket: %s due to it no longer being on an allowed IP.", s->GetRemoteIP().c_str());
-            s->Disconnect();
+            LOG_DETAIL("Disconnecting socket: %s due to it no longer being on an allowed IP.", pSockect->GetRemoteIP().c_str());
+            pSockect->Disconnect();
         }
     }
 
@@ -642,11 +629,13 @@ void InformationCore::SetRealmOffline(uint32 realm_id)
 {
     realmLock.Acquire();
     std::map<uint32, Realm*>::iterator itr = m_realms.find(realm_id);
+
     if (itr != m_realms.end())
     {
         itr->second->flags = REALM_FLAG_OFFLINE | REALM_FLAG_INVALID;
         itr->second->CharacterMap.clear();
         LogNotice("InfoCore : Realm %u is now offline (socket close).", realm_id);
     }
+
     realmLock.Release();
 }

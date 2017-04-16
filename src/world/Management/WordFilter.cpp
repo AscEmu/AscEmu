@@ -37,15 +37,12 @@ WordFilter* g_chatFilter;
 
 WordFilter::~WordFilter()
 {
-    size_t i;
-    WordFilterMatch* p;
-
     if (!m_filters)
         return;
 
-    for (i = 0; i < m_filterCount; ++i)
+    for (size_t i = 0; i < m_filterCount; ++i)
     {
-        p = m_filters[i];
+        WordFilterMatch* p = m_filters[i];
         if (p == NULL)
             continue;
 
@@ -65,7 +62,6 @@ WordFilter::~WordFilter()
 
             free(p->szIgnoreMatch);
         }
-
         delete p;
     }
 
@@ -74,13 +70,12 @@ WordFilter::~WordFilter()
 
 bool WordFilter::CompileExpression(const char* szExpression, void** pOutput, void** pExtraOutput)
 {
-    pcre* re;
     pcre_extra* ee = 0;
     const char* error;
     const char* error2 = 0;
     int erroffset;
 
-    re = pcre_compile(szExpression, 0, &error, &erroffset, NULL);
+    pcre* re = pcre_compile(szExpression, 0, &error, &erroffset, NULL);
     if (re != NULL)
         ee = pcre_study(re, 0, &error2);
 
@@ -104,17 +99,16 @@ bool WordFilter::CompileExpression(const char* szExpression, void** pOutput, voi
 
 void WordFilter::Load(const char* szTableName)
 {
-    WordFilterMatch* pMatch;
-    size_t i;
     std::list<WordFilterMatch*> lItems;
-    std::list<WordFilterMatch*>::iterator itr;
+
     QueryResult* pResult = WorldDatabase.Query("SELECT * FROM %s", szTableName);
+
     if (pResult == NULL)
         return;
 
     do
     {
-        pMatch = new WordFilterMatch;
+        WordFilterMatch* pMatch = new WordFilterMatch;
         pMatch->szMatch = (strlen(pResult->Fetch()[0].GetString()) > 1) ? strdup(pResult->Fetch()[0].GetString()) : NULL;
         if (pMatch->szMatch == NULL)
         {
@@ -161,18 +155,18 @@ void WordFilter::Load(const char* szTableName)
         return;
 
     m_filters = new WordFilterMatch*[lItems.size()];
-    i = 0;
-    for (itr = lItems.begin(); itr != lItems.end(); ++itr)
-        m_filters[i++] = (*itr);
+
+    size_t i = 0;
+    for (auto itr : lItems)
+        m_filters[i++] = itr;
 
     m_filterCount = i;
 }
 
-bool WordFilter::Parse(std::string & sMessage, bool bAllowReplace /* = true */)
-{
 #define N 10
 #define NC (N*3)
-    size_t i;
+bool WordFilter::Parse(std::string & sMessage, bool bAllowReplace /* = true */)
+{
     int ovec[N * 3];
     int n;
     WordFilterMatch* pFilter;
@@ -180,7 +174,7 @@ bool WordFilter::Parse(std::string & sMessage, bool bAllowReplace /* = true */)
     size_t iLen = sMessage.length();
     //char
 
-    for (i = 0; i < m_filterCount; ++i)
+    for (size_t i = 0; i < m_filterCount; ++i)
     {
         pFilter = m_filters[i];
         if ((n = pcre_exec((const pcre*)pFilter->pCompiledExpression,
@@ -272,7 +266,7 @@ bool WordFilter::ParseEscapeCodes(char* sMsg, bool bAllowLinks)
         if (((std::string)sMsg).at(j) != char('|'))
             continue;
 
-        //Myth fix server crashes, unhandled null pointers ftw
+        // Myth fix server crashes, unhandled null pointers ftw
         if (j + 1 >= (((std::string)sMsg).length()))
             return true;
 
@@ -286,13 +280,15 @@ bool WordFilter::ParseEscapeCodes(char* sMsg, bool bAllowLinks)
                     sMsg[j] = '\0';
                     break;
                 }
-                           i = sMsg + j + 10;
-                           if (strncmp(i, "|H", 2) == 0 && bAllowLinks)
-                               continue;
-                           newstr = ((std::string)sMsg).replace(j, 10, "");
-                           strcpy(sMsg, newstr.c_str());
-                           j = 0;
-                           break;
+                i = sMsg + j + 10;
+                if (strncmp(i, "|H", 2) == 0 && bAllowLinks)
+                    continue;
+
+                newstr = ((std::string)sMsg).replace(j, 10, "");
+                strcpy(sMsg, newstr.c_str());
+                j = 0;
+                break;
+
             case char('r') :
                 i = (sMsg + j) - 2;
                 if (strncmp(i, "|h", 2) == 0 && bAllowLinks)

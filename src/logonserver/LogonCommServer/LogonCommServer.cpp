@@ -46,7 +46,6 @@ LogonCommServerSocket::LogonCommServerSocket(SOCKET fd) : Socket(fd, 65536, 5242
 
 LogonCommServerSocket::~LogonCommServerSocket()
 {
-
 }
 
 void LogonCommServerSocket::OnDisconnect()
@@ -56,10 +55,8 @@ void LogonCommServerSocket::OnDisconnect()
     // if we're registered -> Set offline
     if (!removed)
     {
-        std::set<uint32>::iterator itr = server_ids.begin();
-
-        for (; itr != server_ids.end(); ++itr)
-            sInfoCore.SetRealmOffline((*itr));
+        for (auto itr : server_ids)
+            sInfoCore.SetRealmOffline(itr);
 
         sInfoCore.RemoveServerSocket(this);
     }
@@ -85,7 +82,7 @@ void LogonCommServerSocket::OnRead()
         if (!remaining)
         {
             if (readBuffer.GetSize() < 6)
-                return;     // no header
+                return; // no header
 
             // read header
             readBuffer.Read((uint8*)&opcode, 2);
@@ -239,7 +236,7 @@ void LogonCommServerSocket::HandleSessionRequest(WorldPacket & recvData)
     uint32 error = 0;
     Account* acct = sAccountMgr.GetAccount(account_name);
     if (acct == NULL || acct->SessionKey == NULL)
-        error = 1;          // Unauthorized user.
+        error = 1; // Unauthorized user.
 
     // build response packet
     WorldPacket data(LRSMSG_ACC_SESSION_RESULT, 150);
@@ -365,12 +362,12 @@ void LogonCommServerSocket::HandleMappingReply(WorldPacket & recvData)
 
     sInfoCore.getRealmLock().Acquire();
 
-    std::unordered_map<uint32, uint8>::iterator itr;
     buf >> count;
     LOG_BASIC("Got mapping packet for realm %u, total of %u entries.", (unsigned int)realm_id, (unsigned int)count);
     for (uint32 i = 0; i < count; ++i)
     {
         buf >> account_id >> number_of_characters;
+        std::unordered_map<uint32, uint8>::iterator itr;
         itr = realm->CharacterMap.find(account_id);
         if (itr != realm->CharacterMap.end())
             itr->second = number_of_characters;
@@ -624,7 +621,7 @@ void LogonCommServerSocket::HandleDatabaseModify(WorldPacket & recvData)
             recvData >> password;
             recvData >> account_name;
 
-            std::string name_save = name;  // save original name to check
+            std::string name_save = name; // save original name to check
 
             // remember we expect this in uppercase
             Util::StringToUpperCase(name);
@@ -672,14 +669,14 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
 
     switch (method)
     {
-        case 1:            // account exist?
+        case 1: // account exist?
         {
             // Prepare our "send-back" packet
             WorldPacket data(LRSMSG_ACCOUNT_RESULT, 300);
 
-            std::string account_name;           // account to check
-            std::string request_name;           // account request the check
-            std::string additional;             // additional data
+            std::string account_name;       // account to check
+            std::string request_name;       // account request the check
+            std::string additional;         // additional data
 
             recvData >> account_name;
             recvData >> request_name;
@@ -687,7 +684,7 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
 
             const char* additional_data = additional.c_str();
 
-            std::string account_name_save = account_name;  // save original account_name to check
+            std::string account_name_save = account_name; // save original account_name to check
 
             // remember we expect this in uppercase
             Util::StringToUpperCase(account_name);
@@ -737,8 +734,8 @@ void LogonCommServerSocket::RefreshRealmsPop()
         return;
 
     WorldPacket data(LRSMSG_REALM_POPULATION_REQUEST, 4);
-    std::set<uint32>::iterator itr = server_ids.begin();
-    for (; itr != server_ids.end(); ++itr)
+
+    for (auto itr = server_ids.begin(); itr != server_ids.end(); ++itr)
     {
         data.clear();
         data << (*itr);

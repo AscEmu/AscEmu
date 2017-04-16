@@ -318,6 +318,7 @@ bool Master::Run(int argc, char** argv)
 
     wr->SetThreadState(THREADSTATE_TERMINATE);
     ThreadPool.ShowStats();
+
     /* Shut down console system */
     console->terminate();
     delete console;
@@ -745,7 +746,7 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
         sSocketGarbageCollector.Update();
 
         /* UPDATE */
-        last_time = Util::TimeNow();
+        auto last_time = Util::TimeNow();
         auto etime = Util::GetTimeDifference(start, last_time);
         if (m_ShutdownEvent)
         {

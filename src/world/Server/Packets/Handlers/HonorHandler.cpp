@@ -113,7 +113,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
             toadd.reserve(15);        // shouldn't have more than this
             std::set<Player*> * s = &pPlayer->m_bg->m_players[t];
 
-            for (std::set<Player*>::iterator itr = s->begin(); itr != s->end(); ++itr)
+            for (auto itr = s->begin(); itr != s->end(); ++itr)
             {
                 // Also check that the player is in range, and the player is alive.
                 if ((*itr) == pPlayer || ((*itr)->isAlive() && (*itr)->isInRange(pPlayer, 100.0f)))
@@ -123,7 +123,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
             if (toadd.size() > 0)
             {
                 uint32 pts = Points / (uint32)toadd.size();
-                for (std::vector<Player*>::iterator vtr = toadd.begin(); vtr != toadd.end(); ++vtr)
+                for (auto vtr = toadd.begin(); vtr != toadd.end(); ++vtr)
                 {
                     AddHonorPointsToPlayer(*vtr, pts);
 
@@ -148,7 +148,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
             std::set<Player*> contributors;
             // First loop: Get all the people in the attackermap.
             pVictim->UpdateOppFactionSet();
-            for (std::set<Object*>::iterator itr = pVictim->GetInRangeOppFactsSetBegin(); itr != pVictim->GetInRangeOppFactsSetEnd(); ++itr)
+            for (auto itr = pVictim->GetInRangeOppFactsSetBegin(); itr != pVictim->GetInRangeOppFactsSetEnd(); ++itr)
             {
                 if (!(*itr)->IsPlayer())
                     continue;
@@ -170,7 +170,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                         SubGroup* sg = pGroup->GetSubGroup(i);
                         if (!sg) continue;
 
-                        for (GroupMembersSet::iterator itr2 = sg->GetGroupMembersBegin(); itr2 != sg->GetGroupMembersEnd(); ++itr2)
+                        for (auto itr2 = sg->GetGroupMembersBegin(); itr2 != sg->GetGroupMembersEnd(); ++itr2)
                         {
                             PlayerInfo* pi = (*itr2);
                             Player* gm = objmgr.GetPlayer(pi->guid);
@@ -183,7 +183,7 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                 }
             }
 
-            for (std::set<Player*>::iterator itr = contributors.begin(); itr != contributors.end(); ++itr)
+            for (auto itr = contributors.begin(); itr != contributors.end(); ++itr)
             {
                 Player* pAffectedPlayer = (*itr);
                 if (!pAffectedPlayer) continue;

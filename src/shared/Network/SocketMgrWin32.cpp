@@ -33,7 +33,7 @@ void SocketMgr::SpawnWorkerThreads()
     threadcount = si.dwNumberOfProcessors;
 
     LogDetail("IOCP: Spawning %u worker threads.", threadcount);
-    for(long x = 0; x < threadcount; ++x)
+    for (long x = 0; x < threadcount; ++x)
         ThreadPool.ExecuteTask(new SocketWorkerThread());
 }
 
@@ -115,11 +115,11 @@ void SocketMgr::CloseAll()
     std::list<Socket*> tokill;
 
     socketLock.Acquire();
-    for(std::set<Socket*>::iterator itr = _sockets.begin(); itr != _sockets.end(); ++itr)
+    for (auto itr = _sockets.begin(); itr != _sockets.end(); ++itr)
         tokill.push_back(*itr);
     socketLock.Release();
 
-    for(std::list<Socket*>::iterator itr = tokill.begin(); itr != tokill.end(); ++itr)
+    for (auto itr = tokill.begin(); itr != tokill.end(); ++itr)
         (*itr)->Disconnect();
 
     size_t size;
@@ -134,7 +134,7 @@ void SocketMgr::CloseAll()
 
 void SocketMgr::ShutdownThreads()
 {
-    for(int i = 0; i < threadcount; ++i)
+    for (int i = 0; i < threadcount; ++i)
     {
         OverlappedStruct* ov = new OverlappedStruct(SOCKET_IO_THREAD_SHUTDOWN);
         PostQueuedCompletionStatus(m_completionPort, 0, (ULONG_PTR)0, &ov->m_overlap);

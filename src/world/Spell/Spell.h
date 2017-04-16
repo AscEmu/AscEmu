@@ -2133,13 +2133,13 @@ class SERVER_DECL Spell : public EventableObject
 
         inline bool HasTarget(const uint64 & guid, TargetsList* tmpMap)
         {
-            for (TargetsList::iterator itr = tmpMap->begin(); itr != tmpMap->end(); ++itr)
+            for (auto itr = tmpMap->begin(); itr != tmpMap->end(); ++itr)
             {
                 if (*itr == guid)
                     return true;
             }
 
-            for (SpellTargetsList::iterator itr = ModeratedTargets.begin(); itr != ModeratedTargets.end(); ++itr)
+            for (auto itr = ModeratedTargets.begin(); itr != ModeratedTargets.end(); ++itr)
                 if ((*itr).TargetGuid == guid)
                     return true;
 

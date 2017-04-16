@@ -58,7 +58,7 @@ typedef std::vector<QuestDefinition> QuestCreature;
         void OnQuestComplete(Player* pPlayer, QuestLogEntry* pQuest)
         {
             uint64 PlayerGuid = pPlayer->GetGUID();
-            for (QuestCreature::iterator itr = mAkidas.begin(); itr != mAkidas.end(); ++itr)
+            for (auto itr = mAkidas.begin(); itr != mAkidas.end(); ++itr)
             {
                 if (itr->first == PlayerGuid)
                 {
@@ -77,7 +77,7 @@ typedef std::vector<QuestDefinition> QuestCreature;
         void OnQuestCancel(Player* pPlayer)
         {
             uint64 PlayerGuid = pPlayer->GetGUID();
-            for (QuestCreature::iterator itr = mAkidas.begin(); itr != mAkidas.end(); ++itr)
+            for (auto itr = mAkidas.begin(); itr != mAkidas.end(); ++itr)
             {
                 if (itr->first == PlayerGuid)
                 {

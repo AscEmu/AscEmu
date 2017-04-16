@@ -39,7 +39,7 @@ class BlackTempleScript : public MoonInstanceScript
             if (mEncounters.size() == 0)
                 return;
 
-            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
+            for (auto Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
             {
                 if ((*Iter).second.mState != State_Finished)
                     continue;
@@ -903,13 +903,13 @@ class IllidariArchonAI : public MoonScriptCreatureAI
                     pCurrentSpell->cancel();
                 }
                 if (!mQueuedSpells.empty())
-                    for (SpellDescList::iterator itr = mQueuedSpells.begin(); itr != mQueuedSpells.end(); ++itr)
+                    for (auto itr = mQueuedSpells.begin(); itr != mQueuedSpells.end(); ++itr)
                     {
                         if ((*itr)->mInfo->Id == pDeath->mInfo->Id)
                             itr = mQueuedSpells.erase(itr);
                     }
                 if (!mScheduledSpells.empty())
-                    for (SpellDescList::iterator itr = mScheduledSpells.begin(); itr != mScheduledSpells.end(); ++itr)
+                    for (auto itr = mScheduledSpells.begin(); itr != mScheduledSpells.end(); ++itr)
                     {
                         if ((*itr)->mInfo->Id == pDeath->mInfo->Id)
                             itr = mScheduledSpells.erase(itr);
@@ -1668,7 +1668,7 @@ class NajentusAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {
@@ -2187,7 +2187,7 @@ class GurtoggAI : public CreatureAIScript
                     _unit->setAttackTimer(spells[7].attackstoptimer, false);
 
                     std::vector<Unit*> TargetTable;
-                    for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                    for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                     {
                         if (isHostile(_unit, (*itr)) && (*itr) != _unit && (*itr)->IsUnit())
                         {
@@ -2304,7 +2304,7 @@ class GurtoggAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {
@@ -2685,7 +2685,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                         {
 
                             Creature* creature = NULL;
-                            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                            for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                             {
                                 if ((*itr)->IsCreature())
                                 {
@@ -2985,7 +2985,7 @@ class ShahrazAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {
@@ -3088,7 +3088,7 @@ class GathiosAI : public MoonScriptCreatureAI
 
         void DealDamageToFriends(uint32 val, uint32 pCreatureEntry)
         {
-            for (std::vector<Creature*>::iterator itr = mEncounterVector.begin(); itr != mEncounterVector.end(); ++itr)
+            for (auto itr = mEncounterVector.begin(); itr != mEncounterVector.end(); ++itr)
             {
                 if ((*itr) && (*itr)->isAlive() && (*itr)->GetEntry() != pCreatureEntry)
                 {
@@ -3405,7 +3405,7 @@ class TeronGorefiendAI : public CreatureAIScript
             if (_unit->GetCurrentSpell() == NULL && _unit->GetAIInterface()->getNextTarget())
             {
                 std::vector<Unit*> TargetTable;
-                for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd(); ++itr)
                 {
                     if (((spells[i].targettype == TARGET_RANDOM_FRIEND && isFriendly(_unit, (*itr))) || (spells[i].targettype != TARGET_RANDOM_FRIEND && isHostile(_unit, (*itr)) && (*itr) != _unit)) && (*itr)->IsUnit())  // isAttackable(_unit, (*itr)) &&
                     {
@@ -4845,7 +4845,7 @@ class AkamaAI : public MoonScriptBossAI
             Unit* pUnit;
             float dist;
 
-            for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+            for (auto itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
             {
                 pUnit = static_cast< Unit* >(*itr);
 
@@ -6284,7 +6284,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     if (mFlameBurstTimer <= 0)
                     {
                         CastSpellNowNoScheduling(mFlameBurst);
-                        for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                        for (auto itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                         {
                             Unit* pUnit = static_cast< Unit* >(*itr);
                             MoonScriptCreatureAI* pAI = SpawnCreature(CN_FLAME_BURST, (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ(), 0, true);
@@ -6770,7 +6770,7 @@ class FlameOfAzzinothAI : public MoonScriptCreatureAI
             Unit* pBlade2 = ForceCreatureFind(22996, UnitPos[1].x, UnitPos[1].y, UnitPos[1].z);
             if (pBlade1 != NULL && pBlade2 != NULL && mChargeSpellFunc->mLastCastTime + mChargeSpellFunc->mCooldown <= (uint32)time(NULL))
             {
-                for (std::set< Object* >::iterator itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                for (auto itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
                     // && or || ? - not sure about details too
                     if ((*itr)->CalcDistance(pBlade1) > 40.0f || (*itr)->CalcDistance(pBlade2) > 40.0f)

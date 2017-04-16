@@ -962,11 +962,11 @@ Unit::~Unit()
     }
 
     // reflects not created by auras need to be deleted manually
-    for (std::list<struct ReflectSpellSchool*>::iterator i = m_reflectSpellSchool.begin(); i != m_reflectSpellSchool.end(); ++i)
+    for (auto i = m_reflectSpellSchool.begin(); i != m_reflectSpellSchool.end(); ++i)
         delete *i;
     m_reflectSpellSchool.clear();
 
-    for (std::list<ExtraStrike*>::iterator itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end(); ++itx)
+    for (auto itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end(); ++itx)
     {
         ExtraStrike* es = *itx;
         LOG_ERROR("ExtraStrike added to Unit %u by Spell ID %u wasn't removed when removing the Aura", GetGUID(), es->spell_info->Id);
@@ -975,11 +975,11 @@ Unit::~Unit()
     m_extraStrikeTargets.clear();
 
     // delete auras which did not get added to unit yet
-    for (std::map<uint32, Aura*>::iterator i = tmpAura.begin(); i != tmpAura.end(); ++i)
+    for (auto i = tmpAura.begin(); i != tmpAura.end(); ++i)
         delete i->second;
     tmpAura.clear();
 
-    for (std::list<SpellProc*>::iterator itr = m_procSpells.begin(); itr != m_procSpells.end(); ++itr)
+    for (auto itr = m_procSpells.begin(); itr != m_procSpells.end(); ++itr)
         delete *itr;
     m_procSpells.clear();
 
@@ -1027,7 +1027,7 @@ void Unit::Update(unsigned long time_passed)
         {
             if (m_useAI)
                 m_aiInterface->Update(time_passed);
-            else if (!m_aiInterface->MoveDone())            //pending move
+            else if (!m_aiInterface->MoveDone()) // pending move
                 m_aiInterface->UpdateMovementSpline();
         }
 
@@ -2828,11 +2828,10 @@ void Unit::HandleProcDmgShield(uint32 flag, Unit* attacker)
     m_damgeShieldsInUse = true;
     //charges are already removed in handleproc
     WorldPacket data(24);
-    std::list<DamageProc>::iterator i;
     std::list<DamageProc>::iterator i2;
-    for (i = m_damageShields.begin(); i != m_damageShields.end();)    // Deal Damage to Attacker
+    for (auto i = m_damageShields.begin(); i != m_damageShields.end();) // Deal Damage to Attacker
     {
-        i2 = i++; //we should not proc on proc.. not get here again.. not needed.Better safe then sorry.
+        i2 = ++i; //we should not proc on proc.. not get here again.. not needed.Better safe then sorry.
         if ((flag & (*i2).m_flags))
         {
             if (PROC_MISC & (*i2).m_flags)
@@ -4146,7 +4145,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
             Spell* cspell;
 
             // Loop on hit spells, and strike with those.
-            for (std::map<SpellInfo*, std::pair<uint32, uint32>>::iterator itr = static_cast<Player*>(this)->m_onStrikeSpells.begin();
+            for (auto itr = static_cast<Player*>(this)->m_onStrikeSpells.begin();
                  itr != static_cast<Player*>(this)->m_onStrikeSpells.end(); ++itr)
             {
                 if (itr->second.first)
@@ -4385,13 +4384,13 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
     {
         m_extrastriketarget = true;
 
-        std::list<ExtraStrike*>::iterator itx, itx2;
-        for (itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end();)
+        std::list<ExtraStrike*>::iterator itx2;
+        for (auto itx = m_extraStrikeTargets.begin(); itx != m_extraStrikeTargets.end();)
         {
             itx2 = itx++;
             ExtraStrike* ex = *itx2;
 
-            for (std::set<Object*>::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+            for (auto itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
             {
                 if ((*itr) == pVictim || !(*itr)->IsUnit())
                     continue;
@@ -6521,7 +6520,7 @@ void Unit::UpdateVisibility()
     if (IsPlayer())
     {
         plr = static_cast<Player*>(this);
-        for (Object::InRangeSet::iterator itr2 = m_objectsInRange.begin(); itr2 != m_objectsInRange.end();)
+        for (auto itr2 = m_objectsInRange.begin(); itr2 != m_objectsInRange.end();)
         {
             pObj = (*itr2);
             ++itr2;
@@ -6573,9 +6572,9 @@ void Unit::UpdateVisibility()
             }
         }
     }
-    else			// For units we can save a lot of work
+    else // For units we can save a lot of work
     {
-        for (std::set<Object*>::iterator it2 = GetInRangePlayerSetBegin(); it2 != GetInRangePlayerSetEnd(); ++it2)
+        for (auto it2 = GetInRangePlayerSetBegin(); it2 != GetInRangePlayerSetEnd(); ++it2)
         {
 
             Player* p = static_cast<Player*>(*it2);
@@ -6648,12 +6647,12 @@ bool Unit::GetSpeedDecrease()
     int32 before = m_speedModifier;
     m_speedModifier -= m_slowdown;
     m_slowdown = 0;
-    std::map<uint32, int32>::iterator itr = speedReductionMap.begin();
-    for (; itr != speedReductionMap.end(); ++itr)
+    
+    for (auto itr = speedReductionMap.begin(); itr != speedReductionMap.end(); ++itr)
         m_slowdown = (int32)std::min(m_slowdown, itr->second);
 
     if (m_slowdown < -100)
-        m_slowdown = 100; //do not walk backwards !
+        m_slowdown = 100; // do not walk backwards !
 
     m_speedModifier += m_slowdown;
     //save bandwidth :P
@@ -7611,7 +7610,7 @@ void Unit::RemoveFieldSummon()
 void Unit::AggroPvPGuards()
 {
     Unit* tmpUnit;
-    for (Object::InRangeSet::iterator i = GetInRangeSetBegin(); i != GetInRangeSetEnd(); ++i)
+    for (auto i = GetInRangeSetBegin(); i != GetInRangeSetEnd(); ++i)
     {
         if ((*i)->IsCreature())
         {
@@ -7709,7 +7708,7 @@ void Unit::EventChill(Unit* proc_target, bool is_victim)
 void Unit::RemoveExtraStrikeTarget(SpellInfo* spell_info)
 {
     ExtraStrike* es;
-    for (std::list<ExtraStrike*>::iterator i = m_extraStrikeTargets.begin(); i != m_extraStrikeTargets.end(); ++i)
+    for (auto i = m_extraStrikeTargets.begin(); i != m_extraStrikeTargets.end(); ++i)
     {
         es = *i;
         if (spell_info == es->spell_info)
@@ -7724,7 +7723,7 @@ void Unit::RemoveExtraStrikeTarget(SpellInfo* spell_info)
 
 void Unit::AddExtraStrikeTarget(SpellInfo* spell_info, uint32 charges)
 {
-    for (std::list<ExtraStrike*>::iterator i = m_extraStrikeTargets.begin(); i != m_extraStrikeTargets.end(); ++i)
+    for (auto i = m_extraStrikeTargets.begin(); i != m_extraStrikeTargets.end(); ++i)
     {
         //a pointer check or id check ...should be the same
         if (spell_info == (*i)->spell_info)
@@ -7793,7 +7792,7 @@ uint32 Unit::DoDamageSplitTarget(uint32 res, uint32 school_type, bool melee_dmg)
 //////////////////////////////////////////////////////////////////////////////////////////
 void Unit::RemoveReflect(uint32 spellid, bool apply)
 {
-    for (std::list<struct ReflectSpellSchool*>::iterator i = m_reflectSpellSchool.begin(); i != m_reflectSpellSchool.end();)
+    for (auto i = m_reflectSpellSchool.begin(); i != m_reflectSpellSchool.end();)
         if (spellid == (*i)->spellId)
         {
             delete *i;
@@ -7820,7 +7819,7 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
             for (uint32 i = 0; i < pGroup->GetSubGroupCount(); ++i)
             {
                 SubGroup* subGroup = pGroup->GetSubGroup(i);
-                for (GroupMembersSet::iterator itr = subGroup->GetGroupMembersBegin(); itr != subGroup->GetGroupMembersEnd() && targets > 0; ++itr)
+                for (auto itr = subGroup->GetGroupMembersBegin(); itr != subGroup->GetGroupMembersEnd() && targets > 0; ++itr)
                 {
                     Player* member = (*itr)->m_loggedInPlayer;
                     if (member == NULL || member == pPlayer || !member->IsInWorld() || !member->isAlive() || member->HasAura(59725))
@@ -7846,7 +7845,7 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
             pGroup->Lock();
             for (uint32 i = 0; i < pGroup->GetSubGroupCount(); ++i)
             {
-                for (GroupMembersSet::iterator itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
+                for (auto itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
                 {
                     Player* member = (*itr)->m_loggedInPlayer;
                     if (member == NULL)
@@ -7933,27 +7932,21 @@ void Unit::AddGarbagePet(Pet* pet)
 
 void Unit::RemoveGarbage()
 {
-    std::list<Aura*>::iterator itr1;
-    for (itr1 = m_GarbageAuras.begin(); itr1 != m_GarbageAuras.end(); ++itr1)
+    for (auto itr1 = m_GarbageAuras.begin(); itr1 != m_GarbageAuras.end(); ++itr1)
     {
         Aura* aur = *itr1;
-
         delete aur;
     }
 
-    std::list<Spell*>::iterator itr2;
-    for (itr2 = m_GarbageSpells.begin(); itr2 != m_GarbageSpells.end(); ++itr2)
+    for (auto itr2 = m_GarbageSpells.begin(); itr2 != m_GarbageSpells.end(); ++itr2)
     {
         Spell* sp = *itr2;
-
         delete sp;
     }
 
-    std::list<Pet*>::iterator itr3;
-    for (itr3 = m_GarbagePets.begin(); itr3 != m_GarbagePets.end(); ++itr3)
+    for (auto itr3 = m_GarbagePets.begin(); itr3 != m_GarbagePets.end(); ++itr3)
     {
         Pet* pet = *itr3;
-
         delete pet;
     }
 
@@ -8042,7 +8035,7 @@ SpellProc* Unit::AddProcTriggerSpell(SpellInfo* sp, uint64 caster, uint32* group
 
 SpellProc* Unit::GetProcTriggerSpell(uint32 spellId, uint64 casterGuid)
 {
-    for (std::list<SpellProc*>::iterator itr = m_procSpells.begin(); itr != m_procSpells.end(); ++itr)
+    for (auto itr = m_procSpells.begin(); itr != m_procSpells.end(); ++itr)
     {
         SpellProc* sp = *itr;
         if (sp->mSpell->Id == spellId && (casterGuid == 0 || sp->mCaster == casterGuid))
@@ -8054,7 +8047,7 @@ SpellProc* Unit::GetProcTriggerSpell(uint32 spellId, uint64 casterGuid)
 
 void Unit::RemoveProcTriggerSpell(uint32 spellId, uint64 casterGuid, uint64 misc)
 {
-    for (std::list<SpellProc*>::iterator itr = m_procSpells.begin(); itr != m_procSpells.end(); ++itr)
+    for (auto itr = m_procSpells.begin(); itr != m_procSpells.end(); ++itr)
     {
         SpellProc* sp = *itr;
         if (sp->CanDelete(spellId, casterGuid, misc))
@@ -8113,7 +8106,7 @@ void Unit::Phase(uint8 command, uint32 newphase)
 {
     Object::Phase(command, newphase);
 
-    for (std::set<Object*>::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+    for (auto itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
     {
         if ((*itr)->IsUnit())
             static_cast<Unit*>(*itr)->UpdateVisibility();
@@ -8137,7 +8130,7 @@ uint64 Unit::GetCurrentUnitForSingleTargetAura(SpellInfo* spell)
 uint64 Unit::GetCurrentUnitForSingleTargetAura(uint32* name_hashes, uint32* index)
 {
     UniqueAuraTargetMap::iterator itr;
-    for (uint8 i = 0;; i++)
+    for (uint8 i = 0; ; i++)
     {
         if (!name_hashes[i])
             return 0;

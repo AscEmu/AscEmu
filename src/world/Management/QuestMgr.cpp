@@ -97,8 +97,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
     bool questscompleted = false;
     if (!qst->quest_list.empty())
     {
-        std::set<uint32>::iterator iter = qst->quest_list.begin();
-        for (; iter != qst->quest_list.end(); ++iter)
+        for (auto iter = qst->quest_list.begin(); iter != qst->quest_list.end(); ++iter)
         {
             QuestProperties const* questcheck = sMySQLStore.GetQuestProperties((*iter));
             if (questcheck)
@@ -110,7 +109,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
                 }
             }
         }
-        if (!questscompleted)   // If none of listed quests is done, next part isn't available.
+        if (!questscompleted) // If none of listed quests is done, next part isn't available.
             return QMGR_QUEST_NOT_AVAILABLE;
     }
 
@@ -623,7 +622,6 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
 {
     if (!plr || !plr->GetSession()) return;
     uint32 status;
-    std::list<QuestRelation*>::iterator it;
     std::list<QuestRelation*>::iterator st;
     std::list<QuestRelation*>::iterator ed;
     std::map<uint32, uint8> tmp_map;
@@ -670,7 +668,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
 
     *data << uint8(sQuestMgr.ActiveQuestsCount(qst_giver, plr));
 
-    for (it = st; it != ed; ++it)
+    for (auto it = st; it != ed; ++it)
     {
         status = sQuestMgr.CalcQuestStatus(qst_giver, plr, *it);
         if (status >= QMGR_QUEST_CHAT)
@@ -851,11 +849,10 @@ void QuestMgr::_OnPlayerKill(Player* plr, uint32 entry, bool IsGroupKill)
         {
             if (Group* pGroup = plr->GetGroup())
             {
-                GroupMembersSet::iterator gitr;
                 pGroup->Lock();
                 for (uint32 k = 0; k < pGroup->GetSubGroupCount(); k++)
                 {
-                    for (gitr = pGroup->GetSubGroup(k)->GetGroupMembersBegin(); gitr != pGroup->GetSubGroup(k)->GetGroupMembersEnd(); ++gitr)
+                    for (auto gitr = pGroup->GetSubGroup(k)->GetGroupMembersBegin(); gitr != pGroup->GetSubGroup(k)->GetGroupMembersEnd(); ++gitr)
                     {
                         gplr = (*gitr)->m_loggedInPlayer;
                         if (gplr && gplr != plr && plr->isInRange(gplr, 300) && gplr->HasQuestMob(entry)) // don't double kills also don't give kills to party members at another side of the world
@@ -1392,8 +1389,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qst->id, 0, 0);
 #endif
         // Remove quests that are listed to be removed on quest complete.
-        std::set<uint32>::iterator iter = qst->remove_quest_list.begin();
-        for (; iter != qst->remove_quest_list.end(); ++iter)
+        for (auto iter = qst->remove_quest_list.begin(); iter != qst->remove_quest_list.end(); ++iter)
         {
             if (!plr->HasFinishedQuest((*iter)))
                 plr->AddToFinishedQuests((*iter));
@@ -1480,8 +1476,7 @@ template <class T> void QuestMgr::_AddQuest(uint32 entryid, QuestProperties cons
         nlist = olist.find(entryid)->second;
     }
 
-    std::list<QuestRelation*>::iterator it;
-    for (it = nlist->begin(); it != nlist->end(); ++it)
+    for (auto it = nlist->begin(); it != nlist->end(); ++it)
     {
         if ((*it)->qst == qst)
         {
@@ -1837,19 +1832,14 @@ bool QuestMgr::OnActivateQuestGiver(Object* qst_giver, Player* plr)
 QuestMgr::~QuestMgr()
 {
     std::unordered_map<uint32, QuestProperties*>::iterator itr1;
-    std::unordered_map<uint32, std::list<QuestRelation*>* >::iterator itr2;
-    std::list<QuestRelation*>::iterator itr3;
-    std::unordered_map<uint32, std::list<QuestAssociation*>* >::iterator itr4;
-    std::list<QuestAssociation*>::iterator itr5;
 
     // clear relations
-    for (itr2 = m_obj_quests.begin(); itr2 != m_obj_quests.end(); ++itr2)
+    for (auto itr2 = m_obj_quests.begin(); itr2 != m_obj_quests.end(); ++itr2)
     {
         if (!itr2->second)
             continue;
 
-        itr3 = itr2->second->begin();
-        for (; itr3 != itr2->second->end(); ++itr3)
+        for (auto itr3 = itr2->second->begin(); itr3 != itr2->second->end(); ++itr3)
         {
             delete(*itr3);
         }
@@ -1859,13 +1849,12 @@ QuestMgr::~QuestMgr()
 
     m_obj_quests.clear();
 
-    for (itr2 = m_npc_quests.begin(); itr2 != m_npc_quests.end(); ++itr2)
+    for (auto itr2 = m_npc_quests.begin(); itr2 != m_npc_quests.end(); ++itr2)
     {
         if (!itr2->second)
             continue;
 
-        itr3 = itr2->second->begin();
-        for (; itr3 != itr2->second->end(); ++itr3)
+        for (auto itr3 = itr2->second->begin(); itr3 != itr2->second->end(); ++itr3)
         {
             delete(*itr3);
         }
@@ -1875,13 +1864,12 @@ QuestMgr::~QuestMgr()
 
     m_npc_quests.clear();
 
-    for (itr2 = m_itm_quests.begin(); itr2 != m_itm_quests.end(); ++itr2)
+    for (auto itr2 = m_itm_quests.begin(); itr2 != m_itm_quests.end(); ++itr2)
     {
         if (!itr2->second)
             continue;
 
-        itr3 = itr2->second->begin();
-        for (; itr3 != itr2->second->end(); ++itr3)
+        for (auto itr3 = itr2->second->begin(); itr3 != itr2->second->end(); ++itr3)
         {
             delete(*itr3);
         }
@@ -1889,13 +1877,12 @@ QuestMgr::~QuestMgr()
         delete itr2->second;
     }
     m_itm_quests.clear();
-    for (itr4 = m_quest_associations.begin(); itr4 != m_quest_associations.end(); ++itr4)
+    for (auto itr4 = m_quest_associations.begin(); itr4 != m_quest_associations.end(); ++itr4)
     {
         if (!itr4->second)
             continue;
 
-        itr5 = itr4->second->begin();
-        for (; itr5 != itr4->second->end(); ++itr5)
+        for (auto itr5 = itr4->second->begin(); itr5 != itr4->second->end(); ++itr5)
         {
             delete(*itr5);
         }
@@ -1905,7 +1892,6 @@ QuestMgr::~QuestMgr()
     // NTY.
     m_quest_associations.clear();
 }
-
 
 bool QuestMgr::CanStoreReward(Player* plyr, QuestProperties const* qst, uint32 reward_slot)
 {
@@ -1973,7 +1959,7 @@ void QuestMgr::LoadExtraQuestStuff()
             const_cast<QuestProperties*>(qst)->quest_list.clear();
             std::string quests = std::string(qst->x_or_y_quest_string);
             std::vector<std::string> qsts = Util::SplitStringBySeperator(quests, " ");
-            for (std::vector<std::string>::iterator iter = qsts.begin(); iter != qsts.end(); ++iter)
+            for (auto iter = qsts.begin(); iter != qsts.end(); ++iter)
             {
                 uint32 id = atol((*iter).c_str());
                 if (id)
@@ -1985,7 +1971,7 @@ void QuestMgr::LoadExtraQuestStuff()
         {
             std::string quests = std::string(qst->remove_quests);
             std::vector<std::string> qsts = Util::SplitStringBySeperator(quests, " ");
-            for (std::vector<std::string>::iterator iter = qsts.begin(); iter != qsts.end(); ++iter)
+            for (auto iter = qsts.begin(); iter != qsts.end(); ++iter)
             {
                 uint32 id = atol((*iter).c_str());
                 if (id)
@@ -2240,7 +2226,7 @@ void QuestMgr::LoadExtraQuestStuff()
 
                 QuestPOIVector & vect = m_QuestPOIMap[questId];
 
-                for (QuestPOIVector::iterator itr = vect.begin(); itr != vect.end(); ++itr)
+                for (auto itr = vect.begin(); itr != vect.end(); ++itr)
                 {
 
                     if (itr->PoiId != poiId)
@@ -2286,8 +2272,7 @@ void QuestMgr::AddItemQuestAssociation(uint32 itemId, QuestProperties const* qst
     }
 
     // look through this item's QuestAssociationList for a matching quest entry
-    std::list<QuestAssociation*>::iterator it;
-    for (it = tempList->begin(); it != tempList->end(); ++it)
+    for (auto it = tempList->begin(); it != tempList->end(); ++it)
     {
         if ((*it)->qst == qst)
         {
@@ -2444,7 +2429,7 @@ void QuestMgr::FillQuestMenu(Creature* giver, Player* plr, Arcemu::Gossip::Menu 
     uint8 icon;
     if (giver->isQuestGiver() && giver->HasQuests())
     {
-        for (std::list<QuestRelation*>::iterator itr = giver->QuestsBegin(); itr != giver->QuestsEnd(); ++itr)
+        for (auto itr = giver->QuestsBegin(); itr != giver->QuestsEnd(); ++itr)
         {
             status = sQuestMgr.CalcQuestStatus(giver, plr, *itr);
             if (status >= QMGR_QUEST_CHAT)

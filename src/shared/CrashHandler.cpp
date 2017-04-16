@@ -172,7 +172,7 @@ static const TCHAR* GetExceptionDescription(DWORD ExceptionCode)
         {0xe06d7363, _T("a Microsoft C++ Exception")},
     };
 
-    for(int i = 0; i < sizeof(ExceptionMap) / sizeof(ExceptionMap[0]); i++)
+    for (int i = 0; i < sizeof(ExceptionMap) / sizeof(ExceptionMap[0]); i++)
         if(ExceptionCode == ExceptionMap[i].ExceptionCode)
             return ExceptionMap[i].ExceptionName;
 
@@ -201,8 +201,7 @@ void PrintCrashInformation(PEXCEPTION_POINTERS except)
 {
     echo("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
     echo("Server has crashed. Reason was:\n");
-    echo("   %s at 0x%08X\n", GetExceptionDescription(except->ExceptionRecord->ExceptionCode),
-         except->ExceptionRecord->ExceptionAddress);
+    echo("   %s at 0x%08X\n", GetExceptionDescription(except->ExceptionRecord->ExceptionCode),/*(unsigned long)*/except->ExceptionRecord->ExceptionAddress);
 #ifdef REPACK
     echo("%s repack by %s has crashed. Visit %s for support.", REPACK, REPACK_AUTHOR, REPACK_WEBSITE);
 #endif

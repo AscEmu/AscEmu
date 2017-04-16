@@ -19,7 +19,6 @@
 #ifndef _ASCEMU_SERVER_DEFINES_HPP
 #define _ASCEMU_SERVER_DEFINES_HPP
 
-
 #include "git_version.h"
 #include <signal.h>
 

@@ -115,10 +115,10 @@ void Player::smsg_InitialFactions()
 {
     WorldPacket data(SMSG_INITIALIZE_FACTIONS, 764);
     data << uint32(128);
-    FactionReputation* rep;
+
     for (uint8 i = 0; i < 128; ++i)
     {
-        rep = reputationByListId[i];
+        FactionReputation* rep = reputationByListId[i];
         if (rep == NULL)
         {
             data << uint8(0);
@@ -135,10 +135,9 @@ void Player::smsg_InitialFactions()
 
 void Player::_InitialReputation()
 {
-    DBC::Structures::FactionEntry const* f;
     for (uint32 i = 0; i < sFactionStore.GetNumRows(); i++)
     {
-        f = sFactionStore.LookupEntry(i);
+        DBC::Structures::FactionEntry const* f = sFactionStore.LookupEntry(i);
         AddNewFaction(f, 0, true);
     }
 }
@@ -340,23 +339,22 @@ void WorldSession::HandleSetAtWarOpcode(WorldPacket& recv_data)
 void Player::UpdateInrangeSetsBasedOnReputation()
 {
     // This function assumes that the opp faction set for player = the opp faction set for the unit.
-    InRangeSet::iterator itr;
-    Unit* pUnit;
+
     bool rep_value;
     bool enemy_current;
-    for (itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+    for (auto itr : m_objectsInRange)
     {
-        if (!(*itr)->IsUnit())
+        if (!itr->IsUnit())
             continue;
 
-        pUnit = static_cast< Unit* >(*itr);
+        Unit* pUnit = static_cast< Unit* >(itr);
         if (pUnit->m_factionDBC == NULL || pUnit->m_factionDBC->RepListId < 0)
             continue;
 
         rep_value = IsHostileBasedOnReputation(pUnit->m_factionDBC);
         enemy_current = IsInRangeOppFactSet(pUnit);
 
-        if (rep_value && !enemy_current)   // We are now enemies.
+        if (rep_value && !enemy_current) // We are now enemies.
             m_oppFactsInRange.insert(pUnit);
         else if (!rep_value && enemy_current)
             m_oppFactsInRange.erase(pUnit);
@@ -365,7 +363,6 @@ void Player::UpdateInrangeSetsBasedOnReputation()
 
 void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
 {
-
     // add rep for on kill
     if (!pUnit->IsCreature() || pUnit->IsPet() || pUnit->isCritter())
         return;
@@ -395,21 +392,21 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
     if (modifier != nullptr)
     {
         // Apply this data.
-        for (std::vector<ReputationMod>::iterator itr = modifier->mods.begin(); itr != modifier->mods.end(); ++itr)
+        for (auto itr : modifier->mods)
         {
-            if (!(*itr).faction[team])
+            if (!itr.faction[team])
                 continue;
 
             /* rep limit? */
             if (!IS_INSTANCE(GetMapId()) || (IS_INSTANCE(GetMapId()) && this->iInstanceType != MODE_HEROIC))
             {
-                if ((*itr).replimit)
+                if (itr.replimit)
                 {
-                    if (GetStanding((*itr).faction[team]) >= (int32)(*itr).replimit)
+                    if (GetStanding(itr.faction[team]) >= (int32)itr.replimit)
                         continue;
                 }
             }
-            ModStanding(itr->faction[team], float2int32(itr->value * sWorld.getRate(RATE_KILLREPUTATION)));
+            ModStanding(itr.faction[team], float2int32(itr.value * sWorld.getRate(RATE_KILLREPUTATION)));
         }
     }
     else

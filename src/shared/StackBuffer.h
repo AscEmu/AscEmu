@@ -204,7 +204,7 @@ class SERVER_DECL StackBuffer : public StackBufferBase
         {
             uint8 mask = Read<uint8>();
             value.Init(mask);
-            for(uint32 i = 0; i < BitCount8(mask); ++i)
+            for (uint32 i = 0; i < BitCount8(mask); ++i)
                 value.AppendField(Read<uint8>());
             return *this;
         }

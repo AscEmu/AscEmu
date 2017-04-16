@@ -58,18 +58,15 @@ void Mailbox::DeleteMessage(uint32 MessageId, bool sql)
         CharacterDatabase.WaitExecute("DELETE FROM mailbox WHERE message_id = %u", MessageId);
 }
 
-
 void Mailbox::CleanupExpiredMessages()
 {
-    MessageMap::iterator itr, it2;
     uint32 curtime = (uint32)UNIXTIME;
 
-    for (itr = Messages.begin(); itr != Messages.end();)
+    for (auto itr = Messages.begin(); itr != Messages.end(); ++itr)
     {
-        it2 = itr++;
-        if (it2->second.expire_time && it2->second.expire_time < curtime)
+        if (itr->second.expire_time && itr->second.expire_time < curtime)
         {
-            Messages.erase(it2);
+            Messages.erase(itr);
         }
     }
 }
@@ -86,7 +83,6 @@ void MailSystem::SaveMessageToSQL(MailMessage* message)
 
     ss.rdbuf()->str("");
 
-    std::vector< uint32 >::iterator itr;
     ss << "INSERT INTO mailbox VALUES("
         << message->message_id << ","
         << message->message_type << ","
@@ -96,7 +92,7 @@ void MailSystem::SaveMessageToSQL(MailMessage* message)
         << CharacterDatabase.EscapeString(message->body) << "\',"
         << message->money << ",'";
 
-    for (itr = message->items.begin(); itr != message->items.end(); ++itr)
+    for (auto itr = message->items.begin(); itr != message->items.end(); ++itr)
         ss << (*itr) << ",";
 
     ss << "',"
@@ -131,7 +127,7 @@ void MailSystem::SendAutomatedMessage(uint32 type, uint64 sender, uint64 receive
     msg.body = body;
     msg.money = money;
     msg.cod = cod;
-    for (std::vector<uint64>::iterator itr = item_guids.begin(); itr != item_guids.end(); ++itr)
+    for (auto itr = item_guids.begin(); itr != item_guids.end(); ++itr)
         msg.items.push_back(Arcemu::Util::GUID_LOPART(*itr));
 
     msg.stationery = stationery;

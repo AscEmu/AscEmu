@@ -468,7 +468,7 @@ void IsleOfConquest::OnStart()
 
     for (uint8 i = 0; i < 2; ++i)
     {
-        for (std::set<Player* >::iterator itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
+        for (auto itr = m_players[i].begin(); itr != m_players[i].end(); ++itr)
         {
             (*itr)->RemoveAura(BG_PREPARATION);
         }

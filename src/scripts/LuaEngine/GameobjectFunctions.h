@@ -237,7 +237,7 @@ class LuaGameObject
             float dist = 0;
             Player* ret = NULL;
 
-            for (std::set<Object*>::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
+            for (auto itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
             {
                 d2 = (static_cast< Player* >(*itr))->GetDistanceSq(ptr);
                 if (!ret || d2 < dist)
@@ -476,7 +476,7 @@ class LuaGameObject
             TEST_GO_RET();
             uint32 count = 0;
             lua_newtable(L);
-            for (std::set<Object*>::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
+            for (auto itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
             {
                 if ((*itr)->IsUnit())
                 {
@@ -494,7 +494,7 @@ class LuaGameObject
             TEST_GO_RET();
             uint32 count = 0;
             lua_newtable(L);
-            for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
+            for (auto itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
             {
                 if ((*itr)->IsGameObject())
                 {
@@ -512,7 +512,7 @@ class LuaGameObject
             TEST_GO();
             uint32 count = 0;
             lua_newtable(L);
-            for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
+            for (auto itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
             {
                 if ((*itr)->IsUnit())
                 {
@@ -1198,7 +1198,7 @@ class LuaGameObject
             if (itr != objRefs.end())
             {
                 std::set<int> & refs = itr->second;
-                for (std::set<int>::iterator it = refs.begin(); it != refs.end(); ++it)
+                for (auto it = refs.begin(); it != refs.end(); ++it)
                     luaL_unref(L, LUA_REGISTRYINDEX, (*it));
                 refs.clear();
             }
@@ -1225,7 +1225,7 @@ class LuaGameObject
             float current_dist = 0;
             Object* closest_unit = NULL;
             Unit* ret = NULL;
-            for (std::set<Object*>::iterator itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
+            for (auto itr = ptr->GetInRangeSetBegin(); itr != ptr->GetInRangeSetEnd(); ++itr)
             {
                 closest_unit = (*itr);
                 if (!closest_unit->IsUnit())

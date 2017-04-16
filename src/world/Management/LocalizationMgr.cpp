@@ -243,7 +243,7 @@ void LocalizationMgr::Reload(bool first)
     /// Generate Language IDs
     uint32 langid = 1;
     std::pair<uint32, uint32> dpr;
-    for (std::set<std::string>::iterator sitr = languages.begin(); sitr != languages.end(); ++sitr)
+    for (auto sitr = languages.begin(); sitr != languages.end(); ++sitr)
     {
         if ((*sitr) == "enus")        // Default
         {

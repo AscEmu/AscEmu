@@ -1,20 +1,20 @@
 /*
-* AscEmu Framework based on ArcEmu MMORPG Server
-* Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * AscEmu Framework based on ArcEmu MMORPG Server
+ * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "LogonStdAfx.h"
 
@@ -142,6 +142,7 @@ void LogonServer::Run(int argc, char** argv)
     std::string host = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
     std::string shost = Config.MainConfig.GetStringDefault("Listen", "ISHost", host.c_str());
 
+    // Client Build
     clientMinBuild = 5875;
     clientMaxBuild = 15595;
 
@@ -248,7 +249,6 @@ void LogonServer::Run(int argc, char** argv)
 
 void OnCrash(bool Terminate)
 {
-
 }
 
 void LogonServer::CheckForDeadSockets()
@@ -256,20 +256,16 @@ void LogonServer::CheckForDeadSockets()
     _authSocketLock.Acquire();
     time_t t = time(NULL);
     time_t diff;
-    std::set<AuthSocket*>::iterator itr = _authSockets.begin();
-    std::set<AuthSocket*>::iterator it2;
+
     AuthSocket* s;
 
-    for (itr = _authSockets.begin(); itr != _authSockets.end();)
+    for (auto itr = _authSockets.begin(); itr != _authSockets.end(); ++itr)
     {
-        it2 = itr;
-        s = (*it2);
-        ++itr;
-
+        s = (*itr);
         diff = t - s->GetLastRecv();
-        if (diff > 300)           // More than 5mins
+        if (diff > 300) // More than 5mins
         {
-            _authSockets.erase(it2);
+            _authSockets.erase(itr);
             s->removedFromSet = true;
             s->Disconnect();
         }
@@ -410,9 +406,7 @@ bool LogonServer::LoadLogonConfiguration()
     m_allowedIps.clear();
     m_allowedModIps.clear();
 
-    std::vector<std::string>::iterator itr;
-
-    for (itr = vips.begin(); itr != vips.end(); ++itr)
+    for (auto itr = vips.begin(); itr != vips.end(); ++itr)
     {
         std::string::size_type i = itr->find("/");
         if (i == std::string::npos)
@@ -438,7 +432,7 @@ bool LogonServer::LoadLogonConfiguration()
         m_allowedIps.push_back(tmp);
     }
 
-    for (itr = vipsmod.begin(); itr != vipsmod.end(); ++itr)
+    for (auto itr = vipsmod.begin(); itr != vipsmod.end(); ++itr)
     {
         std::string::size_type i = itr->find("/");
         if (i == std::string::npos)
@@ -475,7 +469,7 @@ bool LogonServer::LoadLogonConfiguration()
 bool LogonServer::IsServerAllowed(unsigned int IP)
 {
     m_allowedIpLock.Acquire();
-    for (std::vector<AllowedIP>::iterator itr = m_allowedIps.begin(); itr != m_allowedIps.end(); ++itr)
+    for (auto itr = m_allowedIps.begin(); itr != m_allowedIps.end(); ++itr)
     {
         if (ParseCIDRBan(IP, itr->IP, itr->Bytes))
         {
@@ -490,7 +484,7 @@ bool LogonServer::IsServerAllowed(unsigned int IP)
 bool LogonServer::IsServerAllowedMod(unsigned int IP)
 {
     m_allowedIpLock.Acquire();
-    for (std::vector<AllowedIP>::iterator itr = m_allowedModIps.begin(); itr != m_allowedModIps.end(); ++itr)
+    for (auto itr = m_allowedModIps.begin(); itr != m_allowedModIps.end(); ++itr)
     {
         if (ParseCIDRBan(IP, itr->IP, itr->Bytes))
         {

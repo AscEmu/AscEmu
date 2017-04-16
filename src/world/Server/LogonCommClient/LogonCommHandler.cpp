@@ -58,10 +58,10 @@ LogonCommHandler::LogonCommHandler()
 
 LogonCommHandler::~LogonCommHandler()
 {
-    for (std::set<LogonServer*>::iterator i = servers.begin(); i != servers.end(); ++i)
+    for (auto i = servers.begin(); i != servers.end(); ++i)
         delete(*i);
 
-    for (std::set<Realm*>::iterator i = realms.begin(); i != realms.end(); ++i)
+    for (auto i = realms.begin(); i != realms.end(); ++i)
         delete(*i);
 }
 
@@ -73,9 +73,7 @@ LogonCommClientSocket* LogonCommHandler::ConnectToLogon(std::string Address, uin
 
 void LogonCommHandler::RequestAddition(LogonCommClientSocket* Socket)
 {
-    std::set<Realm*>::iterator itr = realms.begin();
-
-    for (; itr != realms.end(); ++itr)
+    for (auto itr = realms.begin(); itr != realms.end(); ++itr)
     {
         WorldPacket data(LRCMSG_REALM_REGISTER_REQUEST, 100);
 
@@ -173,7 +171,7 @@ void LogonCommHandler::AddForcedPermission(std::string acct, std::string perm)
 void LogonCommHandler::ConnectAll()
 {
     LogNotice("LogonCommClient : Attempting to connect to logon server...");
-    for (std::set<LogonServer*>::iterator itr = servers.begin(); itr != servers.end(); ++itr)
+    for (auto itr = servers.begin(); itr != servers.end(); ++itr)
         Connect(*itr);
 }
 
@@ -262,8 +260,7 @@ void LogonCommHandler::Connect(LogonServer* server)
 
 void LogonCommHandler::AdditionAck(uint32 ID, uint32 ServID)
 {
-    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
-    for (; itr != logons.end(); ++itr)
+    for (auto itr = logons.begin(); itr != logons.end(); ++itr)
     {
         if (itr->first->ID == ID)
         {

@@ -602,7 +602,7 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
         if (nc)
         {
             bool check = false;
-            for (std::list<AI_Spell*>::iterator itr = nc->GetAIInterface()->m_spells.begin(); itr != nc->GetAIInterface()->m_spells.end(); ++itr)//.......meh. this is a crappy way of doing this, I bet.
+            for (auto itr = nc->GetAIInterface()->m_spells.begin(); itr != nc->GetAIInterface()->m_spells.end(); ++itr)//.......meh. this is a crappy way of doing this, I bet.
             {
                 if ((*itr)->spell->Id == spellid)
                 {

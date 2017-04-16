@@ -37,7 +37,7 @@ class InstanceTheArcatrazScript : public MoonInstanceScript
             if (mEncounters.size() == 0)
                 return;
 
-            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
+            for (auto Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
             {
                 if ((*Iter).second.mState != State_Finished)
                     continue;
@@ -133,7 +133,7 @@ class ZerekethAI : public MoonScriptBossAI
 
             //despawn voids
             Creature* creature = NULL;
-            for (std::set<Object*>::iterator itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd();)
+            for (auto itr = _unit->GetInRangeSetBegin(); itr != _unit->GetInRangeSetEnd();)
             {
                 Object* obj = *itr;
                 ++itr;
@@ -170,8 +170,8 @@ class ZerekethAI : public MoonScriptBossAI
             ResetTimer(VoidTimer, (RandomUInt(10) + 30) * 1000);
 
             std::vector<Player*> TargetTable;
-            std::set< Object* >::iterator Itr = _unit->GetInRangePlayerSetBegin();
-            for (; Itr != _unit->GetInRangePlayerSetEnd(); ++Itr)
+            
+            for (auto Itr = _unit->GetInRangePlayerSetBegin(); Itr != _unit->GetInRangePlayerSetEnd(); ++Itr)
             {
                 Player* RandomTarget = NULL;
                 if (!(*Itr)->IsPlayer())

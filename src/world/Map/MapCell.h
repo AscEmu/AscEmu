@@ -43,7 +43,7 @@ class SERVER_DECL MapCell
         //Init
         void Init(uint32 x, uint32 y, MapMgr* mapmgr);
 
-        //Object Managing
+        // Object Managing
         void AddObject(Object* obj);
         void RemoveObject(Object* obj);
         bool HasObject(Object* obj) { return (_objects.find(obj) != _objects.end()); }
@@ -60,7 +60,7 @@ class SERVER_DECL MapCell
         inline bool IsLoaded() { return _loaded; }
         inline void SetLoaded(bool Loaded = true) { _loaded = Loaded; }
 
-        //Object Loading Managing
+        // Object Loading Managing
         void LoadObjects(CellSpawns* sp);
         inline uint32 GetPlayerCount() { return _playerCount; }
 
@@ -73,7 +73,7 @@ class SERVER_DECL MapCell
         inline uint16 GetPositionY() { return _y; }
 
         ObjectSet _respawnObjects;
-        ObjectSet::iterator objects_iterator;           /// required by MapCell::RemoveObjects() removing Creatures which will remove their guardians and corrupt itr.
+        ObjectSet::iterator objects_iterator; /// required by MapCell::RemoveObjects() removing Creatures which will remove their guardians and corrupt itr.
 
         /// the corpse has no more an owner (like if he resurrected) so it can be despawned and
         /// the MapCell can be unloaded(if CanUnload() returns true)

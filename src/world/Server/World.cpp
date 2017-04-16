@@ -229,14 +229,14 @@ void CleanupRandomNumberGenerators();
 void World::LogoutPlayers()
 {
     LogNotice("World : Logging out players...");
-    for (SessionMap::iterator i = m_sessions.begin(); i != m_sessions.end(); ++i)
+    for (auto i = m_sessions.begin(); i != m_sessions.end(); ++i)
     {
         (i->second)->LogoutPlayer(true);
     }
 
     LogNotice("World", "Deleting sessions...");
     WorldSession* p;
-    for (SessionMap::iterator i = m_sessions.begin(); i != m_sessions.end();)
+    for (auto i = m_sessions.begin(); i != m_sessions.end();)
     {
         p = i->second;
         ++i;
@@ -290,7 +290,7 @@ World::~World()
     LogNotice("Rnd : ~Rnd()");
     CleanupRandomNumberGenerators();
 
-    for (AreaTriggerMap::iterator i = m_AreaTrigger.begin(); i != m_AreaTrigger.end(); ++i)
+    for (auto i = m_AreaTrigger.begin(); i != m_AreaTrigger.end(); ++i)
     {
         delete i->second;
     }
@@ -304,7 +304,7 @@ World::~World()
     //eventholder = 0;
     delete eventholder;
 
-    for (std::list<SpellInfo*>::iterator itr = dummyspells.begin(); itr != dummyspells.end(); ++itr)
+    for (auto itr = dummyspells.begin(); itr != dummyspells.end(); ++itr)
         delete *itr;
 }
 
@@ -697,7 +697,7 @@ bool World::SetInitialWorldSettings()
         if (talent_class > 0 && talent_class < MAX_TALENT_CLASS)
             InspectTalentTabPages[talent_class][talent_tab->TabPage] = talent_tab->TalentTabID;
 
-        for (std::map<uint32, uint32>::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
+        for (auto itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
         {
             uint32 talent_id = itr->first & 0xFFFF;
             auto talent_info = sTalentStore.LookupEntry(talent_id);
@@ -732,8 +732,7 @@ void World::SendGlobalMessage(WorldPacket* packet, WorldSession* self)
 {
     m_sessionlock.AcquireReadLock();
 
-    SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    for (auto itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
         {
@@ -751,7 +750,7 @@ void World::PlaySoundToAll(uint32 soundid)
 
     m_sessionlock.AcquireWriteLock();
 
-    for (SessionMap::iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    for (auto itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         WorldSession* session = itr->second;
 
@@ -765,9 +764,8 @@ void World::PlaySoundToAll(uint32 soundid)
 void World::SendFactionMessage(WorldPacket* packet, uint8 teamId)
 {
     m_sessionlock.AcquireReadLock();
-    SessionMap::iterator itr;
     Player* plr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    for (auto itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         plr = itr->second->GetPlayer();
         if (!plr || !plr->IsInWorld())
@@ -782,8 +780,7 @@ void World::SendFactionMessage(WorldPacket* packet, uint8 teamId)
 void World::SendGamemasterMessage(WorldPacket* packet, WorldSession* self)
 {
     m_sessionlock.AcquireReadLock();
-    SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    for (auto itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
         {
@@ -797,9 +794,7 @@ void World::SendGamemasterMessage(WorldPacket* packet, WorldSession* self)
 void World::SendZoneMessage(WorldPacket* packet, uint32 zoneid, WorldSession* self)
 {
     m_sessionlock.AcquireReadLock();
-
-    SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    for (auto itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
         {
@@ -814,9 +809,7 @@ void World::SendZoneMessage(WorldPacket* packet, uint32 zoneid, WorldSession* se
 void World::SendInstanceMessage(WorldPacket* packet, uint32 instanceid, WorldSession* self)
 {
     m_sessionlock.AcquireReadLock();
-
-    SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    for (auto itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
         {
@@ -894,7 +887,7 @@ void World::SendWorldWideScreenText(const char* text, WorldSession* self)
 
 void World::UpdateSessions(uint32 diff)
 {
-    SessionSet::iterator itr, it2;
+    SessionSet::iterator it2;
     WorldSession* session;
     int result;
 
@@ -902,7 +895,7 @@ void World::UpdateSessions(uint32 diff)
 
     SessionsMutex.Acquire();
 
-    for (itr = Sessions.begin(); itr != Sessions.end();)
+    for (auto itr = Sessions.begin(); itr != Sessions.end();)
     {
         session = (*itr);
         it2 = itr;
@@ -952,7 +945,7 @@ void World::DeleteSessions(std::list<WorldSession*>& slist)
 {
     m_sessionlock.AcquireWriteLock();
 
-    for (std::list<WorldSession*>::iterator itr = slist.begin(); itr != slist.end(); ++itr)
+    for (auto itr = slist.begin(); itr != slist.end(); ++itr)
     {
         WorldSession* session = *itr;
         m_sessions.erase(session->GetAccountId());
@@ -960,7 +953,7 @@ void World::DeleteSessions(std::list<WorldSession*>& slist)
 
     m_sessionlock.ReleaseWriteLock();
 
-    for (std::list<WorldSession*>::iterator itr = slist.begin(); itr != slist.end(); ++itr)
+    for (auto itr = slist.begin(); itr != slist.end(); ++itr)
     {
         WorldSession* session = *itr;
         delete session;
@@ -973,8 +966,7 @@ uint32 World::GetNonGmSessionCount()
 
     uint32 total = (uint32)m_sessions.size();
 
-    SessionMap::const_iterator itr = m_sessions.begin();
-    for (; itr != m_sessions.end(); ++itr)
+    for (SessionMap::const_iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
     {
         if ((itr->second)->HasGMPermissions())
             total--;
@@ -1158,16 +1150,15 @@ void World::GetStats(uint32* GMCount, float* AverageLatency)
     int gm = 0;
     int count = 0;
     int avg = 0;
-    PlayerStorageMap::const_iterator itr;
     objmgr._playerslock.AcquireReadLock();
-    for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+    for (auto itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
     {
         if (itr->second->GetSession())
         {
-            count++;
+            ++count;
             avg += itr->second->GetSession()->GetLatency();
             if (itr->second->GetSession()->GetPermissionCount())
-                gm++;
+                ++gm;
         }
     }
     objmgr._playerslock.ReleaseReadLock();
@@ -1189,7 +1180,7 @@ Task* TaskList::GetTask()
 
     Task* t = 0;
 
-    for (std::set<Task*>::iterator itr = tasks.begin(); itr != tasks.end(); ++itr)
+    for (auto itr = tasks.begin(); itr != tasks.end(); ++itr)
     {
         if (!(*itr)->in_progress)
         {
@@ -1251,7 +1242,7 @@ void TaskList::wait()
     {
         queueLock.Acquire();
         has_tasks = false;
-        for (std::set<Task*>::iterator itr = tasks.begin(); itr != tasks.end(); ++itr)
+        for (auto itr = tasks.begin(); itr != tasks.end(); ++itr)
         {
             if (!(*itr)->completed)
             {

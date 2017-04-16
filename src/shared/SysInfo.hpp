@@ -19,7 +19,6 @@
  *
  */
 
-
 #ifndef ARCEMU_SYSINFO_HPP
 #define ARCEMU_SYSINFO_HPP
 

@@ -140,7 +140,7 @@ void DynamicObject::UpdateTargets()
         float radius = GetFloatValue(DYNAMICOBJECT_RADIUS) * GetFloatValue(DYNAMICOBJECT_RADIUS);
 
         // Looking for targets in the Object set
-        for (std::set< Object* >::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+        for (auto itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
         {
             Object* o = *itr;
 
@@ -222,7 +222,7 @@ void DynamicObject::Remove()
         return;
     }
 
-    for (std::set< uint64 >::iterator itr = targets.begin(); itr != targets.end(); ++itr)
+    for (auto itr = targets.begin(); itr != targets.end(); ++itr)
     {
 
         uint64 TargetGUID = *itr;

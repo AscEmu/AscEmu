@@ -38,11 +38,10 @@ bool ChatHandler::HandleAdminCastAllCommand(const char* args, WorldSession* m_se
 
     sGMLog.writefromsession(m_session, "used castall command, spellid %u", spell_id);
 
-    PlayerStorageMap::const_iterator itr;
     objmgr._playerslock.AcquireReadLock();
-    for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+    for (auto itr : objmgr._players)
     {
-        Player* player = itr->second;
+        Player* player = itr.second;
         if (player->GetSession() && player->IsInWorld())
         {
             if (player->GetMapMgr() != m_session->GetPlayer()->GetMapMgr())

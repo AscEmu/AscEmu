@@ -76,19 +76,18 @@ void GossipMenu::AddItem(GossipMenuItem* GossipItem)
 void GossipMenu::BuildPacket(WorldPacket& Packet)
 {
     Packet << CreatureGuid;
-    Packet << uint32(0);            // some new menu type in 2.4?
+    Packet << uint32(0);                        // some new menu type in 2.4?
     Packet << TextId;
     Packet << uint32(Menu.size());
 
-    for (std::vector<GossipMenuItem>::iterator iter = Menu.begin();
-        iter != Menu.end(); ++iter)
+    for (auto iter : Menu)
     {
-        Packet << iter->Id;
-        Packet << iter->Icon;
-        Packet << iter->Extra;
-        Packet << uint32(iter->m_gBoxMoney);    // money required to open menu, 2.0.3
-        Packet << iter->Text;
-        Packet << iter->m_gBoxMessage;          // accept text (related to money) pop up box, 2.0.3
+        Packet << iter.Id;
+        Packet << iter.Icon;
+        Packet << iter.Extra;
+        Packet << uint32(iter.m_gBoxMoney);     // money required to open menu, 2.0.3
+        Packet << iter.Text;
+        Packet << iter.m_gBoxMessage;           // accept text (related to money) pop up box, 2.0.3
     }
 }
 

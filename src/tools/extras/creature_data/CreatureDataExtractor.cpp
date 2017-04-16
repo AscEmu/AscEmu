@@ -133,13 +133,13 @@ int main()
     std::map<uint32, DBCFile::Record> modelInfoEntries;
     std::map<std::string, ModelCache> modelCache;
 
-    for (DBCFile::Iterator itr = modelInfo.begin(); itr != modelInfo.end(); ++itr)
+    for (auto itr = modelInfo.begin(); itr != modelInfo.end(); ++itr)
     {
         unsigned int entry = itr->getInt(0);
         modelInfoEntries.insert(std::make_pair(entry, *itr));
     }
 
-    for (DBCFile::Iterator itr = displayInfo.begin(); itr != displayInfo.end(); ++itr)
+    for (auto itr = displayInfo.begin(); itr != displayInfo.end(); ++itr)
     {
         unsigned int displayid = itr->getInt(0);
         unsigned int modelentry = itr->getInt(1);

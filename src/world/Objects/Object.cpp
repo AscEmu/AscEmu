@@ -1055,8 +1055,7 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
 
             if (go_quest_giver != nullptr && go_quest_giver->HasQuests())
             {
-                std::list<QuestRelation*>::iterator itr;
-                for (itr = go_quest_giver->QuestsBegin(); itr != go_quest_giver->QuestsEnd(); ++itr)
+                for (auto itr = go_quest_giver->QuestsBegin(); itr != go_quest_giver->QuestsEnd(); ++itr)
                 {
                     QuestRelation* qr = (*itr);
                     if (qr != NULL)
@@ -1989,7 +1988,7 @@ void Object::UpdateOppFactionSet()
 {
     m_oppFactsInRange.clear();
 
-    for (std::set< Object* >::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+    for (auto itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
     {
         Object* i = *itr;
 
@@ -2019,7 +2018,7 @@ void Object::UpdateSameFactionSet()
     m_sameFactsInRange.clear();
 
 
-    for (std::set< Object* >::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+    for (auto itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
     {
         Object* i = *itr;
 
@@ -2706,7 +2705,7 @@ void Object::OutPacketToSet(uint16 Opcode, uint16 Len, const void* Data, bool se
         return;
 
     // We are on Object level, which means we can't send it to ourselves so we only send to Players inrange
-    for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+    for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
     {
         Object* o = *itr;
 
@@ -2720,7 +2719,7 @@ void Object::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
         return;
 
     uint32 myphase = GetPhase();
-    for (std::set< Object* >::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+    for (auto itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
     {
         Object* o = *itr;
         if ((o->GetPhase() & myphase) != 0)

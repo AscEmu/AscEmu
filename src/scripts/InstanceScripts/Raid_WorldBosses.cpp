@@ -1025,8 +1025,7 @@ class LethonAI : public CreatureAIScript
                 }break;
             }
             // Summon a spirit for each player
-            std::list<Player*>::iterator itr = mTargets.begin();
-            for (; itr != mTargets.end(); ++itr)
+            for (auto itr = mTargets.begin(); itr != mTargets.end(); ++itr)
             {
                 _unit->CastSpellAoF((*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ(), spells[4].info, spells[4].instant);
             }

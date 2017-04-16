@@ -31,7 +31,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
     bodyLength = recv_data.readBits(12);
     subjectLength = recv_data.readBits(9);
 
-    uint8_t items_count = recv_data.readBits(5);              // attached items count
+    uint8_t items_count = recv_data.readBits(5); // attached items count
 
     if (items_count > MAIL_MAX_ITEM_SLOT)
     {
@@ -180,7 +180,7 @@ void WorldSession::HandleSendMail(WorldPacket& recv_data)
         {
             pItem = *itr;
             if (_player->GetItemInterface()->SafeRemoveAndRetreiveItemByGuid(pItem->GetGUID(), false) != pItem)
-                continue;        // should never be hit.
+                continue; // should never be hit.
 
             pItem->RemoveFromWorld();
             pItem->SetOwner(NULL);
@@ -251,8 +251,7 @@ void WorldSession::HandleMarkAsRead(WorldPacket& recv_data)
         message->expire_time = (uint32_t)UNIXTIME + (TIME_DAY * 30);
 
     // update it in sql
-    CharacterDatabase.WaitExecute("UPDATE mailbox SET checked_flag = %u, expiry_time = %u WHERE message_id = %u",
-                                  message->checked_flag, message->expire_time, message->message_id);
+    CharacterDatabase.WaitExecute("UPDATE mailbox SET checked_flag = %u, expiry_time = %u WHERE message_id = %u", message->checked_flag, message->expire_time, message->message_id);
 }
 
 void WorldSession::HandleMailDelete(WorldPacket& recv_data)

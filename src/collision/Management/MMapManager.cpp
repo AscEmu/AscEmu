@@ -28,7 +28,7 @@ namespace MMAP
     // ######################## MMapManager ########################
     MMapManager::~MMapManager()
     {
-        for (MMapDataSet::iterator i = loadedMMaps.begin(); i != loadedMMaps.end(); ++i)
+        for (auto i = loadedMMaps.begin(); i != loadedMMaps.end(); ++i)
             delete i->second;
 
         // by now we should not have maps loaded
@@ -259,7 +259,7 @@ namespace MMAP
 
         // unload all tiles from given map
         MMapData* mmap = itr->second;
-        for (MMapTileSet::iterator i = mmap->mmapLoadedTiles.begin(); i != mmap->mmapLoadedTiles.end(); ++i)
+        for (auto i = mmap->mmapLoadedTiles.begin(); i != mmap->mmapLoadedTiles.end(); ++i)
         {
             uint32 x = (i->first >> 16);
             uint32 y = (i->first & 0x0000FFFF);

@@ -48,7 +48,7 @@ class CircularQueue
         void print()
         {
             printf("Elements of CircularQueue[%u]: ", ELEMENTCOUNT);
-            for(int i = 0; i < ELEMENTCOUNT; ++i)
+            for (int i = 0; i < ELEMENTCOUNT; ++i)
                 printf("%u ", (int)m_elements[i]);
             printf("\n");
         }

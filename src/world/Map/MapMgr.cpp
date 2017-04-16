@@ -140,7 +140,7 @@ MapMgr::~MapMgr()
         }
     }
 
-    for (std::set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
+    for (auto itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
     {
         if ((*itr)->IsInWorld())
             (*itr)->RemoveFromWorld(false);
@@ -152,7 +152,7 @@ MapMgr::~MapMgr()
     CreatureStorage.clear();
 
     Corpse* pCorpse;
-    for (std::set<Corpse*>::iterator itr = m_corpses.begin(); itr != m_corpses.end();)
+    for (auto itr = m_corpses.begin(); itr != m_corpses.end();)
     {
         pCorpse = *itr;
         ++itr;
@@ -343,7 +343,7 @@ void MapMgr::PushObject(Object* obj)
             if (!buf)
                 buf = new ByteBuffer(300);
 
-            for (std::set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
+            for (auto itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
             {
                 count = (*itr)->BuildCreateUpdateBlockForPlayer(buf, plObj);
                 globalcount += count;
@@ -517,7 +517,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
     // Remove the session from our set if it is a player.
     if (obj->IsPlayer())
     {
-        for (std::set<Object*>::iterator itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
+        for (auto itr = _mapWideStaticObjects.begin(); itr != _mapWideStaticObjects.end(); ++itr)
         {
             plObj->PushOutOfRange((*itr)->GetNewGUID());
         }
@@ -567,7 +567,7 @@ void MapMgr::ChangeObjectLocation(Object* obj)
     // Update in-range data for old objects
     if (obj->HasInRangeObjects())
     {
-        for (Object::InRangeSet::iterator iter = obj->GetInRangeSetBegin(); iter != obj->GetInRangeSetEnd();)
+        for (auto iter = obj->GetInRangeSetBegin(); iter != obj->GetInRangeSetEnd();)
         {
             curObj = *iter;
             ++iter;
@@ -850,7 +850,7 @@ void MapMgr::_UpdateObjects()
 
     m_updateMutex.Acquire();
 
-    for (UpdateQueue::iterator iter = _updates.begin(); iter != _updates.end(); ++iter)
+    for (auto iter = _updates.begin(); iter != _updates.end(); ++iter)
     {
         Object* pObj = *iter;
         if (pObj == nullptr)
@@ -895,7 +895,7 @@ void MapMgr::_UpdateObjects()
 
                 if (count)
                 {
-                    for (std::set<Object*>::iterator itr = pObj->GetInRangePlayerSetBegin(); itr != pObj->GetInRangePlayerSetEnd(); ++itr)
+                    for (auto itr = pObj->GetInRangePlayerSetBegin(); itr != pObj->GetInRangePlayerSetEnd(); ++itr)
                     {
                         Player* lplr = static_cast<Player*>(*itr);
 
@@ -913,7 +913,7 @@ void MapMgr::_UpdateObjects()
     m_updateMutex.Release();
 
     // generate pending a9packets and send to clients.
-    for (PUpdateQueue::iterator it = _processQueue.begin(); it != _processQueue.end();)
+    for (auto it = _processQueue.begin(); it != _processQueue.end();)
     {
         Player* player = *it;
 
@@ -1154,7 +1154,7 @@ void MapMgr::ChangeFarsightLocation(Player* plr, DynamicObject* farsight)
     if (farsight == 0)
     {
         // We're clearing.
-        for (ObjectSet::iterator itr = plr->m_visibleFarsightObjects.begin(); itr != plr->m_visibleFarsightObjects.end(); ++itr)
+        for (auto itr = plr->m_visibleFarsightObjects.begin(); itr != plr->m_visibleFarsightObjects.end(); ++itr)
         {
             if (plr->IsVisible((*itr)->GetGUID()) && !plr->CanSee((*itr)))
             {
@@ -1179,7 +1179,7 @@ void MapMgr::ChangeFarsightLocation(Player* plr, DynamicObject* farsight)
                 MapCell* cell = GetCell(posX, posY);
                 if (cell != nullptr)
                 {
-                    for (MapCell::ObjectSet::iterator iter = cell->Begin(); iter != cell->End(); ++iter)
+                    for (auto iter = cell->Begin(); iter != cell->End(); ++iter)
                     {
                         Object* obj = (*iter);
                         if (obj == nullptr)
@@ -1228,7 +1228,7 @@ bool MapMgr::Do()
     LoadInstanceScript();
 
     // create static objects
-    for (GameobjectSpawnList::iterator itr = _map->staticSpawns.GameobjectSpawns.begin(); itr != _map->staticSpawns.GameobjectSpawns.end(); ++itr)
+    for (auto itr = _map->staticSpawns.GameobjectSpawns.begin(); itr != _map->staticSpawns.GameobjectSpawns.end(); ++itr)
     {
         GameObject* obj = CreateGameObject((*itr)->entry);
         obj->Load((*itr));
@@ -1238,7 +1238,7 @@ bool MapMgr::Do()
     // Call script OnLoad virtual procedure
     CALL_INSTANCE_SCRIPT_EVENT(this, OnLoad)();
 
-    for (CreatureSpawnList::iterator itr = _map->staticSpawns.CreatureSpawns.begin(); itr != _map->staticSpawns.CreatureSpawns.end(); ++itr)
+    for (auto itr = _map->staticSpawns.CreatureSpawns.begin(); itr != _map->staticSpawns.CreatureSpawns.end(); ++itr)
     {
         Creature* obj = CreateCreature((*itr)->entry);
         obj->Load(*itr, 0, pMapInfo);
@@ -1265,7 +1265,7 @@ bool MapMgr::Do()
 
         if (m_objectinsertpool.size())
         {
-            for (ObjectSet::iterator i = m_objectinsertpool.begin(); i != m_objectinsertpool.end(); ++i)
+            for (auto i = m_objectinsertpool.begin(); i != m_objectinsertpool.end(); ++i)
             {
                 Object* o = *i;
 
@@ -1343,7 +1343,7 @@ void MapMgr::BeginInstanceExpireCountdown()
     // send our sexy packet
     data << uint32(60000);
     data << uint32(1);
-    for (PlayerStorageMap::iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
+    for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end(); ++itr)
     {
         if (!itr->second->raidgrouponlysent)
             itr->second->GetSession()->SendPacket(&data);
@@ -1443,7 +1443,7 @@ void MapMgr::_PerformObjectDuties()
 
     // Update creatures.
     {
-        for (creature_iterator = activeCreatures.begin(); creature_iterator != activeCreatures.end();)
+        for (auto creature_iterator = activeCreatures.begin(); creature_iterator != activeCreatures.end();)
         {
             Creature* ptr = *creature_iterator;
             ++creature_iterator;
@@ -1460,7 +1460,7 @@ void MapMgr::_PerformObjectDuties()
 
     // Update players.
     {
-        for (PlayerStorageMap::iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
+        for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
         {
             Player* ptr = itr->second;
             ++itr;
@@ -1474,7 +1474,7 @@ void MapMgr::_PerformObjectDuties()
     // We take the pointer, increment, and update in this order because during the update the DynamicObject might get deleted,
     // rendering the iterator unincrementable. Which causes a crash!
     {
-        for (DynamicObjectStorageMap::iterator itr = m_DynamicObjectStorage.begin(); itr != m_DynamicObjectStorage.end();)
+        for (auto itr = m_DynamicObjectStorage.begin(); itr != m_DynamicObjectStorage.end();)
         {
             DynamicObject* o = itr->second;
             ++itr;
@@ -1488,7 +1488,7 @@ void MapMgr::_PerformObjectDuties()
     {
         difftime = mstime - lastGameobjectUpdate;
 
-        for (std::vector<GameObject*>::iterator itr = GOStorage.begin(); itr != GOStorage.end(); )
+        for (auto itr = GOStorage.begin(); itr != GOStorage.end(); )
         {
             GameObject* gameobject = *itr;
             ++itr;
@@ -1501,7 +1501,7 @@ void MapMgr::_PerformObjectDuties()
 
     // Sessions are updated every loop.
     {
-        for (SessionSet::iterator itr = Sessions.begin(); itr != Sessions.end();)
+        for (auto itr = Sessions.begin(); itr != Sessions.end();)
         {
             WorldSession* session = (*itr);
             SessionSet::iterator it2 = itr;
@@ -1555,7 +1555,7 @@ void MapMgr::EventCorpseDespawn(uint64 guid)
 
 void MapMgr::TeleportPlayers()
 {
-    for (PlayerStorageMap::iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
+    for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
     {
         Player* p = itr->second;
         ++itr;
@@ -1644,7 +1644,6 @@ void MapMgr::SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint
     uint32 startX = cellX > cell_radius ? cellX - cell_radius : 0;
     uint32 startY = cellY > cell_radius ? cellY - cell_radius : 0;
 
-    MapCell::ObjectSet::iterator iter, iend;
     for (uint32 posX = startX; posX <= endX; ++posX)
     {
         for (uint32 posY = startY; posY <= endY; ++posY)
@@ -1652,8 +1651,8 @@ void MapMgr::SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint
             MapCell* cell = GetCell(posX, posY);
             if (cell && cell->HasPlayers())
             {
-                iter = cell->Begin();
-                iend = cell->End();
+                auto iter = cell->Begin();
+                auto iend = cell->End();
                 for (; iter != iend; ++iter)
                 {
                     if ((*iter)->IsPlayer())
@@ -1947,7 +1946,7 @@ GameObject* MapMgr::FindNearestGoWithType(Object* o, uint32 type)
     GameObject* go = nullptr;
     float r = FLT_MAX;
 
-    for (std::set<Object*>::iterator itr = o->GetInRangeSetBegin(); itr != o->GetInRangeSetEnd(); ++itr)
+    for (auto itr = o->GetInRangeSetBegin(); itr != o->GetInRangeSetEnd(); ++itr)
     {
         Object* iro = *itr;
         if (!iro->IsGameObject())
@@ -1987,7 +1986,7 @@ void MapMgr::SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Me
     data << uint32(strlen(msgbuf) + 1);
     data << msgbuf;
 
-    for (PlayerStorageMap::iterator itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
+    for (auto itr = m_PlayerStorage.begin(); itr != m_PlayerStorage.end();)
     {
         Player* plr = itr->second;
         ++itr;

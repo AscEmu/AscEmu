@@ -43,7 +43,7 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
 
     size_t msize = 2 + 4 + 1 + guidsize + 4 * 8 + (subject.size() + 1) + (body.size() + 1) + 1 + (items.size() * (1 + 2 * 4 + 7 * (3 * 4) + 6 * 4 + 1));
 
-    data << uint16(msize);     // message size
+    data << uint16(msize); // message size
     data << uint32(message_id);
     data << uint8(message_type);
 
@@ -63,17 +63,17 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
             break;
     }
 
-    data << uint32(cod);            // cod
+    data << uint32(cod); // cod
     data << uint32(0);
     data << uint32(stationery);
-    data << uint32(money);        // money
-    data << uint32(checked_flag);           // "checked" flag
+    data << uint32(money); // money
+    data << uint32(checked_flag); // "checked" flag
     data << float((expire_time - uint32(UNIXTIME)) / 86400.0f);
-    data << uint32(0);    // mail template
+    data << uint32(0); // mail template
     data << subject;
     data << body;
 
-    data << uint8(items.size());        // item count
+    data << uint8(items.size()); // item count
 
     if (!items.empty())
     {
@@ -100,7 +100,7 @@ bool MailMessage::AddMessageDataToPacket(WorldPacket& data)
             data << uint32(pItem->GetChargesLeft());
             data << uint32(pItem->GetDurabilityMax());
             data << uint32(pItem->GetDurability());
-            data << uint8(0);   // unknown
+            data << uint8(0); // unknown
 
             delete pItem;
         }

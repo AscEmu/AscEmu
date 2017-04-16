@@ -42,7 +42,7 @@ bool Pestilence(uint32 i, Spell* pSpell)
         bool blood = Main->HasAura(BLOOD_PLAGUE);
         bool frost = Main->HasAura(FROST_FEVER);
         int inc = (u_caster->HasAura(59309) ? 10 : 5);
-        for(Object::InRangeSet::iterator itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
+        for(auto itr = u_caster->GetInRangeSetBegin(); itr != u_caster->GetInRangeSetEnd(); ++itr)
         {
             if(!(*itr)->IsUnit())
                 continue;

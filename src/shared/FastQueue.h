@@ -20,7 +20,6 @@
 #ifndef _FASTQUEUE_H
 #define _FASTQUEUE_H
 
-
 /// dummy lock to use a non-locked queue.
 class DummyLock
 {

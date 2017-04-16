@@ -73,7 +73,7 @@ class IceCrownCitadelScript : public MoonInstanceScript
             if (mEncounters.size() == 0)
                 return;
 
-            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
+            for (auto Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
             {
                 if ((*Iter).second.mState != State_Finished)
                     continue;
@@ -341,9 +341,8 @@ class LordMarrowgarAI : public MoonScriptBossAI
             }
 
             std::vector<Player*> TargetTable;
-            std::set<Object*>::iterator itr = _unit->GetInRangePlayerSetBegin();
 
-            for (; itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+            for (auto itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
             {
                 if (isHostile(_unit, (*itr)))
                 {

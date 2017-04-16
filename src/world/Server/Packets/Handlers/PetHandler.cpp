@@ -33,7 +33,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    //WorldPacket data;
+    // WorldPacket data;
     uint64 petGuid = 0;
     uint16 misc = 0;
     uint16 action = 0;
@@ -42,9 +42,9 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
     recv_data >> petGuid;
     recv_data >> misc;
     recv_data >> action;
-    //recv_data.hexlike();
+    // recv_data.hexlike();
 
-    //printf("Pet_Action: 0x%.4X 0x%.4X\n", misc, action);
+    // LOG_DEBUG("Pet_Action: 0x%.4X 0x%.4X", misc, action);
 
     if (GET_TYPE_FROM_GUID(petGuid) == HIGHGUID_TYPE_UNIT)
     {
@@ -86,24 +86,23 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
     {
         recv_data >> targetguid;
         pTarget = _player->GetMapMgr()->GetUnit(targetguid);
-        if (!pTarget) pTarget = pPet;    // target self
+        if (!pTarget) pTarget = pPet; // target self
     }
-
-    std::list<Pet*> summons = _player->GetSummons();
+ 
     bool alive_summon = false;
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end();)
+    auto summons = _player->GetSummons();
+    for (auto itr : summons)
     {
-        pPet = (*itr);
-        ++itr;
+        pPet = itr;
         if (!pPet->isAlive())
             continue;
-        alive_summon = true;//we found a an alive summon
+        alive_summon = true; // we found a an alive summon
         uint64 GUID = pPet->GetGUID();
         switch (action)
         {
             case PET_ACTION_ACTION:
             {
-                pPet->SetPetAction(misc);       // set current action
+                pPet->SetPetAction(misc); // set current action
                 switch (misc)
                 {
                     case PET_ACTION_ATTACK:
@@ -211,7 +210,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
             break;
             case PET_ACTION_STATE:
             {
-                if (misc == PET_ACTION_STAY)        // PET_STATE_PASSIVE
+                if (misc == PET_ACTION_STAY) // PET_STATE_PASSIVE
                 {
                     // stop attacking and run to owner
                     pPet->GetAIInterface()->WipeTargetList();
@@ -232,7 +231,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
 
         // Send pet action sound - WHEE THEY TALK
         WorldPacket actionp(SMSG_PET_ACTION_SOUND, 12);
-        actionp << GUID << uint32(1);                       //should we send only 1 sound for all the pets?
+        actionp << GUID << uint32(1); // should we send only 1 sound for all the pets?
         SendPacket(&actionp);
     }
     if (!alive_summon)
@@ -246,7 +245,7 @@ void WorldSession::HandlePetInfo(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
 
-    //nothing
+    // nothing
     LOG_DEBUG("HandlePetInfo is called");
 }
 
@@ -287,12 +286,12 @@ void WorldSession::HandleStablePet(WorldPacket& recv_data)
         return;
     pet->stablestate = STABLE_STATE_PASSIVE;
 
-    if (pPet != NULL)       //if pPet is NULL here then the pet is dead and we relogged.
+    if (pPet != NULL) // if pPet is NULL here then the pet is dead and we relogged.
         pPet->Remove(true, true);
 
     WorldPacket data(1);
     data.SetOpcode(SMSG_STABLE_RESULT);
-    data << uint8(0x8);     // success
+    data << uint8(0x8); // success
     SendPacket(&data);
 }
 
@@ -312,14 +311,14 @@ void WorldSession::HandleUnstablePet(WorldPacket& recv_data)
         LOG_ERROR("PET SYSTEM: Player " I64FMT " tried to unstable non-existent pet %d", _player->GetGUID(), petnumber);
         return;
     }
-    //unstable selected pet but spawn it only if it's alive
+    // unstable selected pet but spawn it only if it's alive
     if (pet->alive)
         _player->SpawnPet(petnumber);
     pet->stablestate = STABLE_STATE_ACTIVE;
 
     WorldPacket data(1);
     data.SetOpcode(SMSG_STABLE_RESULT);
-    data << uint8(0x9);     // success?
+    data << uint8(0x9); // success?
     SendPacket(&data);
 }
 
@@ -343,16 +342,16 @@ void WorldSession::HandleStableSwapPet(WorldPacket& recv_data)
     if (pPet != NULL && pPet->IsSummonedPet())
         return;
 
-    //stable current pet
+    // stable current pet
     PlayerPet* pet2 = _player->GetPlayerPet(_player->GetUnstabledPetNumber());
     if (!pet2)
         return;
 
-    if (pPet != NULL)       //if pPet is NULL here then the pet is dead and we relogged.
+    if (pPet != NULL) // if pPet is NULL here then the pet is dead and we relogged.
         pPet->Remove(true, true);
     pet2->stablestate = STABLE_STATE_PASSIVE;
 
-    //unstable selected pet but spawn it only if it's alive
+    // unstable selected pet but spawn it only if it's alive
     if (pet->alive)
         _player->SpawnPet(petnumber);
     pet->stablestate = STABLE_STATE_ACTIVE;
@@ -395,12 +394,11 @@ void WorldSession::HandleBuyStableSlot(WorldPacket& recv_data)
         stable_cost = 99999999;
 #endif
 
-
     WorldPacket data(SMSG_STABLE_RESULT, 1);
 
     if (!_player->HasGold(stable_cost))
     {
-        data << uint8(1);       // not enough money
+        data << uint8(1); // not enough money
         SendPacket(&data);
         return;
     }
@@ -454,12 +452,12 @@ void WorldSession::HandlePetRename(WorldPacket& recv_data)
     recv_data >> name;
 
     Pet* pet = NULL;
-    std::list<Pet*> summons = _player->GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    auto summons = _player->GetSummons();
+    for (auto itr : summons)
     {
-        if ((*itr)->GetGUID() == guid)
+        if (itr->GetGUID() == guid)
         {
-            pet = (*itr);
+            Pet* pet = itr;
             break;
         }
     }
@@ -498,7 +496,8 @@ void WorldSession::HandlePetAbandon(WorldPacket& recv_data)
     CHECK_INWORLD_RETURN
 
     Pet* pet = _player->GetSummon();
-    if (!pet) return;
+    if (!pet)
+        return;
 
     pet->Dismiss();
 }
@@ -523,7 +522,7 @@ void WorldSession::HandlePetUnlearn(WorldPacket& recv_data)
         WorldPacket data(SMSG_BUY_FAILED, 12);
         data << uint64(_player->GetGUID());
         data << uint32(0);
-        data << uint8(2);        //not enough money
+        data << uint8(2); // not enough money
         SendPacket(&data);
         return;
     }
@@ -549,17 +548,18 @@ void WorldSession::HandlePetSpellAutocast(WorldPacket& recvPacket)
     if (spe == NULL)
         return;
 
-    std::list<Pet*> summons = _player->GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    auto summons = _player->GetSummons();
+    for (auto itr : summons)
     {
         // do we have the spell? if not don't set it (exploit fix)
-        PetSpellMap::iterator itr2 = (*itr)->GetSpells()->find(spe);
-        if (itr2 == (*itr)->GetSpells()->end())
+        PetSpellMap::iterator itr2 = itr->GetSpells()->find(spe);
+        if (itr2 == itr->GetSpells()->end())
             continue;
 
-        (*itr)->SetSpellState(spellid, state > 0 ? AUTOCAST_SPELL_STATE : DEFAULT_SPELL_STATE);
+        itr->SetSpellState(spellid, state > 0 ? AUTOCAST_SPELL_STATE : DEFAULT_SPELL_STATE);
     }
 }
+
 void WorldSession::HandlePetCancelAura(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -642,7 +642,6 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvPacket)
         OutPacket(SMSG_PET_LEARNED_SPELL, 4, &sp->Id);
     }
 #endif
-
     // send talent update
     pPet->SendTalentsToOwner();
 }

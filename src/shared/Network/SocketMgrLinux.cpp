@@ -20,7 +20,7 @@ void SocketMgr::AddSocket(Socket* s)
 
     // Check how many connections we already have from that ip
     saddr = s->GetRemoteAddress().s_addr;
-    for(i = 0, count = 0; i <= max_fd; i++)
+    for (i = 0, count = 0; i <= max_fd; i++)
     {
         if(fds[i])
         {
@@ -98,7 +98,7 @@ void SocketMgr::RemoveSocket(Socket* s)
 
 void SocketMgr::CloseAll()
 {
-    for(uint32 i = 0; i < SOCKET_HOLDER_SIZE; ++i)
+    for (uint32 i = 0; i < SOCKET_HOLDER_SIZE; ++i)
         if(fds[i] != NULL)
             fds[i]->Delete();
 }
@@ -106,7 +106,7 @@ void SocketMgr::CloseAll()
 void SocketMgr::SpawnWorkerThreads()
 {
     uint32 count = 1;
-    for(uint32 i = 0; i < count; ++i)
+    for (uint32 i = 0; i < count; ++i)
         ThreadPool.ExecuteTask(new SocketWorkerThread());
 }
 
@@ -126,7 +126,7 @@ bool SocketWorkerThread::run()
     while(running)
     {
         fd_count = epoll_wait(mgr->epoll_fd, events, THREAD_EVENT_SIZE, 5000);
-        for(i = 0; i < fd_count; ++i)
+        for (i = 0; i < fd_count; ++i)
         {
             if(events[i].data.fd >= SOCKET_HOLDER_SIZE)
             {

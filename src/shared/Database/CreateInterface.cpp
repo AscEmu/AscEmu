@@ -22,12 +22,10 @@
 #include "../Log.hpp"
 #include "MySQLDatabase.h"
 
-
 void Database::CleanupLibs()
 {
     mysql_library_end();
 }
-
 
 Database* Database::CreateDatabaseInterface()
 {

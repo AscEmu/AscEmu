@@ -605,7 +605,7 @@ void GameObject_QuestGiver::InitAI()
 
 void GameObject_QuestGiver::DeleteQuest(QuestRelation* Q)
 {
-    for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+    for (auto itr = m_quests->begin(); itr != m_quests->end(); ++itr)
     {
         QuestRelation* qr = *itr;
 
@@ -620,7 +620,7 @@ void GameObject_QuestGiver::DeleteQuest(QuestRelation* Q)
 
 QuestProperties const* GameObject_QuestGiver::FindQuest(uint32 quest_id, uint8 quest_relation)
 {
-    for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+    for (auto itr = m_quests->begin(); itr != m_quests->end(); ++itr)
     {
         QuestRelation* qr = *itr;
 
@@ -636,7 +636,7 @@ uint16 GameObject_QuestGiver::GetQuestRelation(uint32 quest_id)
 {
     uint16 quest_relation = 0;
 
-    for (std::list<QuestRelation*>::iterator itr = m_quests->begin(); itr != m_quests->end(); ++itr)
+    for (auto itr = m_quests->begin(); itr != m_quests->end(); ++itr)
     {
         QuestRelation* qr = *itr;
 
@@ -678,7 +678,7 @@ bool GameObject_Chest::HasLoot()
     if (loot.gold > 0)
         return true;
 
-    for (std::vector< __LootItem >::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    for (auto itr = loot.items.begin(); itr != loot.items.end(); ++itr)
     {
         if ((itr->item.itemproto->Bonding == ITEM_BIND_QUEST) || (itr->item.itemproto->Bonding == ITEM_BIND_QUEST2))
             continue;
@@ -789,7 +789,7 @@ void GameObject_Trap::Update(unsigned long time_passed)
         if (targetupdatetimer != 0)
             return;
 
-        for (std::set<Object*>::iterator itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+        for (auto itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
         {
             float dist;
 
@@ -990,7 +990,7 @@ void GameObject_FishingNode::EventFishHooked()
 
 bool GameObject_FishingNode::HasLoot()
 {
-    for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    for (auto itr = loot.items.begin(); itr != loot.items.end(); ++itr)
     {
         if ((itr->item.itemproto->Bonding == ITEM_BIND_QUEST) || (itr->item.itemproto->Bonding == ITEM_BIND_QUEST2))
             continue;
@@ -1088,7 +1088,7 @@ void GameObject_FishingHole::CalcFishRemaining(bool force)
 
 bool GameObject_FishingHole::HasLoot()
 {
-    for (std::vector<__LootItem>::iterator itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+    for (auto itr = loot.items.begin(); itr != loot.items.end(); ++itr)
     {
         if (itr->item.itemproto->Bonding == ITEM_BIND_QUEST || itr->item.itemproto->Bonding == ITEM_BIND_QUEST2)
             continue;

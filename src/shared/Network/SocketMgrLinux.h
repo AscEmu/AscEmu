@@ -6,7 +6,6 @@
  *
  */
 
-
 #ifndef SOCKETMGR_LINUX_H
 #define SOCKETMGR_LINUX_H
 

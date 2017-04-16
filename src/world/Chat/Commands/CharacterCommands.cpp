@@ -163,14 +163,14 @@ bool ChatHandler::HandleCharLevelUpCommand(const char* args, WorldSession* m_ses
 
     if (player_target->getClass() == WARLOCK)
     {
-        std::list<Pet*> summons = player_target->GetSummons();
-        for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+        auto summons = player_target->GetSummons();
+        for (auto itr : summons)
         {
-            if ((*itr)->IsInWorld() && (*itr)->isAlive())
+            if (itr->IsInWorld() && itr->isAlive())
             {
-                (*itr)->setLevel(levels);
-                (*itr)->ApplyStatsForLevel();
-                (*itr)->UpdateSpellList();
+                itr->setLevel(levels);
+                itr->ApplyStatsForLevel();
+                itr->UpdateSpellList();
             }
         }
     }
@@ -810,7 +810,6 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
                 player->SendItemPushResult(false, true, false, true, le->ContainerSlot, le->Slot, 1, item->GetEntry(), item->GetItemRandomSuffixFactor(), item->GetItemRandomPropertyId(), item->GetStackCount());
                 ++itemset_items_count;
             }
-
         }
     }
 
@@ -1472,10 +1471,11 @@ bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_se
 
     if (player_target->getClass() == WARLOCK)
     {
-        std::list<Pet*> player_summons = player_target->GetSummons();
-        for (std::list<Pet*>::iterator itr = player_summons.begin(); itr != player_summons.end(); ++itr)
+        auto player_summons = player_target->GetSummons();
+        for (auto itr : player_summons)
         {
-            Pet* single_summon = *itr;
+            Pet* single_summon = itr;
+
             if (single_summon->IsInWorld() && single_summon->isAlive())
             {
                 single_summon->setLevel(new_level);
@@ -1484,7 +1484,6 @@ bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_se
             }
         }
     }
-
     return true;
 }
 
@@ -1982,17 +1981,19 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
     uint32 count = 0;
     std::stringstream ss;
     ss << "Show persistent instances of " << MSG_COLOR_CYAN << player_target->GetName() << "|r\n";
+ 
     player_target->getPlayerInfo()->savedInstanceIdsLock.Acquire();
+
     for (uint32 difficulty = 0; difficulty < NUM_INSTANCE_MODES; difficulty++)
     {
-        for (PlayerInstanceMap::iterator itr = player_target->getPlayerInfo()->savedInstanceIds[difficulty].begin(); itr != player_target->getPlayerInfo()->savedInstanceIds[difficulty].end(); ++itr)
+        for (auto itr : player_target->getPlayerInfo()->savedInstanceIds[difficulty])
         {
             count++;
-            ss << " - " << MSG_COLOR_CYAN << (*itr).second << "|r";
-            MapInfo const* mapInfo = sMySQLStore.GetWorldMapInfo((*itr).first);
+            ss << " - " << MSG_COLOR_CYAN << itr.second << "|r";
+            MapInfo const* mapInfo = sMySQLStore.GetWorldMapInfo(itr.first);
             if (mapInfo != NULL)
                 ss << " (" << MSG_COLOR_CYAN << mapInfo->name << "|r)";
-            Instance* pInstance = sInstanceMgr.GetInstanceByIds((*itr).first, (*itr).second);
+            Instance* pInstance = sInstanceMgr.GetInstanceByIds(itr.first, itr.second);
             if (pInstance == NULL)
                 ss << " - " << MSG_COLOR_RED << "Expired!|r";
             else

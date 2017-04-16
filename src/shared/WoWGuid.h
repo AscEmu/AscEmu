@@ -146,7 +146,7 @@ class SERVER_DECL WoWGuid
             if(!BitCount8(guidmask))
                 return;
 
-            for(int i = 0; i < BitCount8(guidmask); i++)
+            for (int i = 0; i < BitCount8(guidmask); i++)
                 guidfields[i] = (fields[i]);
 
             fieldcount = BitCount8(guidmask);
@@ -194,7 +194,7 @@ class SERVER_DECL WoWGuid
 
             fieldcount = 0;
 
-            for(uint32 x = 0; x < 8; x++)
+            for (uint32 x = 0; x < 8; x++)
             {
 
                 uint8 p = ((uint8*)&oldguid)[x];

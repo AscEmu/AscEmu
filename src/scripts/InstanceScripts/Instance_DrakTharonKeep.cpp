@@ -35,7 +35,7 @@ class InstanceDrakTharonKeepScript : public MoonInstanceScript
             if (mEncounters.size() == 0)
                 return;
 
-            for (EncounterMap::iterator Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
+            for (auto Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
             {
                 if ((*Iter).second.mState != State_Finished)
                     continue;
@@ -202,7 +202,7 @@ class TrollgoreAI : public CreatureAIScript
         Player* GetRandomPlayerTarget()
         {
             std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
+            for (auto iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
             {
                 if ((*iter) && (static_cast< Player* >(*iter))->isAlive())
                     possible_targets.push_back((uint32)(*iter)->GetGUID());
@@ -441,7 +441,7 @@ class NovosTheSummonerAI : public CreatureAIScript
         {
 
             std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
+            for (auto iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
             {
                 if ((*iter) && (static_cast< Player* >(*iter))->isAlive())
                     possible_targets.push_back((uint32)(*iter)->GetGUID());
@@ -693,7 +693,7 @@ class CrystalHandlerAI : public CreatureAIScript
         {
 
             std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
+            for (auto iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
             {
                 if ((*iter) && (static_cast< Player* >(*iter))->isAlive())
                     possible_targets.push_back((uint32)(*iter)->GetGUID());
@@ -846,7 +846,7 @@ class KingDreadAI : public CreatureAIScript
         {
 
             std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
+            for (auto iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
             {
                 if ((*iter) && (static_cast< Player* >(*iter))->isAlive())
                     possible_targets.push_back((uint32)(*iter)->GetGUID());
@@ -1069,7 +1069,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
         {
 
             std::vector< uint32 > possible_targets;
-            for (std::set< Object* >::iterator iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
+            for (auto iter = _unit->GetInRangePlayerSetBegin(); iter != _unit->GetInRangePlayerSetEnd(); ++iter)
             {
                 if ((*iter) && (static_cast< Player* >(*iter))->isAlive())
                     possible_targets.push_back((uint32)(*iter)->GetGUID());

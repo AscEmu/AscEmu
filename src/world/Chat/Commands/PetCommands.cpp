@@ -164,10 +164,10 @@ bool ChatHandler::HandlePetAddSpellCommand(const char* args, WorldSession* m_ses
         return true;
     }
 
-    std::list<Pet*> summons = selected_player->GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    auto summons = selected_player->GetSummons();
+    for (auto itr : summons)
     {
-        (*itr)->AddSpell(spell_entry, true);
+        itr->AddSpell(spell_entry, true);
     }
 
     GreenSystemMessage(m_session, "Added spell %u to %s's pet.", SpellId, selected_player->GetName());
@@ -199,10 +199,10 @@ bool ChatHandler::HandlePetRemoveSpellCommand(const char* args, WorldSession* m_
         return true;
     }
 
-    std::list<Pet*> summons = selected_player->GetSummons();
-    for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+    auto summons = selected_player->GetSummons();
+    for (auto itr : summons)
     {
-        (*itr)->RemoveSpell(SpellId);
+        itr->RemoveSpell(SpellId);
     }
 
     GreenSystemMessage(m_session, "Removed spell %u from %s's pet.", SpellId, selected_player->GetName());

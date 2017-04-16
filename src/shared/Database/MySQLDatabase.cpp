@@ -1,6 +1,7 @@
 /*
  * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2005-2012 <http://www.ArcEmu.org/>
+ * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
+ * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,7 +23,7 @@
 
 MySQLDatabase::~MySQLDatabase()
 {
-    for(int32 i = 0; i < mConnectionCount; ++i)
+    for (int32 i = 0; i < mConnectionCount; ++i)
     {
         mysql_close(((MySQLDatabaseConnection*)Connections[i])->MySql);
         delete Connections[i];
@@ -32,7 +33,6 @@ MySQLDatabase::~MySQLDatabase()
 
 MySQLDatabase::MySQLDatabase() : Database()
 {
-
 }
 
 void MySQLDatabase::_BeginTransaction(DatabaseConnection* conn)
@@ -63,7 +63,7 @@ bool MySQLDatabase::Initialize(const char* Hostname, unsigned int port, const ch
 
     conns = new MySQLDatabaseConnection*[ConnectionCount];
     Connections = ((DatabaseConnection**)conns);
-    for(i = 0; i < ConnectionCount; ++i)
+    for (i = 0; i < ConnectionCount; ++i)
     {
         temp = mysql_init(NULL);
         if(temp == NULL)
@@ -141,7 +141,7 @@ void MySQLDatabase::Shutdown()
 
 bool MySQLDatabase::_SendQuery(DatabaseConnection* con, const char* Sql, bool Self)
 {
-    //dunno what it does ...leaving untouched
+    // dunno what it does ...leaving untouched
     int result = mysql_query(static_cast<MySQLDatabaseConnection*>(con)->MySql, Sql);
     if(result > 0)
     {
@@ -195,7 +195,7 @@ bool MySQLQueryResult::NextRow()
     if(row == NULL)
         return false;
 
-    for(uint32 i = 0; i < mFieldCount; ++i)
+    for (uint32 i = 0; i < mFieldCount; ++i)
         mCurrentRow[i].SetValue(row[i]);
 
     return true;

@@ -177,8 +177,8 @@ namespace SUNWELL_KALECGOS
             UnitPointer const GetRandomTarget(uint8 targetFlags)
             {
                 vector<UnitPointer> targetMap;
-                PlayerSet::iterator itr = _unit->GetInRangePlayerSetBegin();
-                for(; itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+
+                for(auto itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
                     if((*itr) && (*itr)->isAlive())
                     {
@@ -421,7 +421,7 @@ namespace SUNWELL_KALECGOS
                 range[1] = 0x00;
                 cbm = new CallBackManager(KALECGOS_ARCANE_BUFFET, new CallbackP1<DRAGON_KALECGOS, uint32>(this, &DRAGON_KALECGOS::CastScriptSpell, KALECGOS_ARCANE_BUFFET), 9000, 0, false, range);
                 buffer.insert(cbm);
-                for(set<CallBackManager*>::iterator itr = buffer.begin(); itr != buffer.end(); ++itr)
+                for(auto itr = buffer.begin(); itr != buffer.end(); ++itr)
                 {
                     cbMap.push_back((*itr));
                 }
@@ -512,8 +512,8 @@ namespace SUNWELL_KALECGOS
             UnitPointer const GetRandomTarget()
             {
                 vector<UnitPointer> targetMap;
-                PlayerSet::iterator itr = _unit->GetInRangePlayerSetBegin();
-                for(; itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                
+                for(auto itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                 {
                     if((*itr) && (*itr)->isAlive())
                     {
@@ -604,8 +604,8 @@ namespace SUNWELL_KALECGOS
                 if(mTarget->IsCreature() && TO_CREATURE(mTarget)->GetEntry() == CN_DARK_ELF)
                 {
                     StopAllEvents();
-                    PlayerSet::iterator itr = _unit->GetInRangePlayerSetBegin();
-                    for(; itr != _unit->GetInRangePlayerSetEnd(); ++itr)
+                    
+                    for(auto itr = _unit->GetInRangePlayerSetBegin(); itr != _unit->GetInRangePlayerSetEnd(); ++itr)
                     {
                         if((*itr)->HasAura(SPECTRAL_PLAYERBUFF))
                             (*itr)->RemoveAura(SPECTRAL_PLAYERBUFF);

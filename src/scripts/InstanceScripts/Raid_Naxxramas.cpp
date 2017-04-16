@@ -414,7 +414,7 @@ void NaxxramasWorshipperAI::OnDied(Unit* pKiller)
     {
         if (GetRange(static_cast< MoonScriptCreatureAI* >(mGrandWidow)) <= 15.0f)
         {
-            for (std::set< NaxxramasWorshipperAI* >::iterator Iter = mGrandWidow->mWorshippers.begin(); Iter != mGrandWidow->mWorshippers.end(); ++Iter)
+            for (auto Iter = mGrandWidow->mWorshippers.begin(); Iter != mGrandWidow->mWorshippers.end(); ++Iter)
             {
                 if (!(*Iter)->IsAlive())
                     continue;
@@ -629,12 +629,12 @@ void GrandWidowFaerlinaAI::OnCombatStart(Unit* pTarget)
     if (WebGate != NULL)
         WebGate->SetState(GO_STATE_CLOSED);
 
-    for (std::set< NaxxramasWorshipperAI* >::iterator Iter = mWorshippers.begin(); Iter != mWorshippers.end(); ++Iter)
+    for (auto Iter = mWorshippers.begin(); Iter != mWorshippers.end(); ++Iter)
     {
         (*Iter)->AggroNearestPlayer(200);
     };
 
-    for (std::set< NaxxramasFollowerAI* >::iterator Iter = mFollowers.begin(); Iter != mFollowers.end(); ++Iter)
+    for (auto Iter = mFollowers.begin(); Iter != mFollowers.end(); ++Iter)
     {
         (*Iter)->AggroNearestPlayer(200);
     };
@@ -649,7 +649,7 @@ void GrandWidowFaerlinaAI::OnCombatStop(Unit* pTarget)
     if (WebGate != NULL)
         WebGate->SetState(GO_STATE_OPEN);
 
-    for (std::set< NaxxramasWorshipperAI* >::iterator Iter = mWorshippers.begin(); Iter != mWorshippers.end(); ++Iter)
+    for (auto Iter = mWorshippers.begin(); Iter != mWorshippers.end(); ++Iter)
     {
         (*Iter)->mGrandWidow = NULL;
         if (IsAlive())
@@ -658,7 +658,7 @@ void GrandWidowFaerlinaAI::OnCombatStop(Unit* pTarget)
 
     mWorshippers.clear();
 
-    for (std::set< NaxxramasFollowerAI* >::iterator Iter = mFollowers.begin(); Iter != mFollowers.end(); ++Iter)
+    for (auto Iter = mFollowers.begin(); Iter != mFollowers.end(); ++Iter)
     {
         (*Iter)->mGrandWidow = NULL;
         if (IsAlive())
@@ -718,7 +718,7 @@ void GrandWidowFaerlinaAI::AIUpdate()
 
 void GrandWidowFaerlinaAI::Destroy()
 {
-    for (std::set< NaxxramasWorshipperAI* >::iterator Iter = mWorshippers.begin(); Iter != mWorshippers.end(); ++Iter)
+    for (auto Iter = mWorshippers.begin(); Iter != mWorshippers.end(); ++Iter)
     {
         (*Iter)->mGrandWidow = NULL;
         (*Iter)->Despawn();
@@ -726,7 +726,7 @@ void GrandWidowFaerlinaAI::Destroy()
 
     mWorshippers.clear();
 
-    for (std::set< NaxxramasFollowerAI* >::iterator Iter = mFollowers.begin(); Iter != mFollowers.end(); ++Iter)
+    for (auto Iter = mFollowers.begin(); Iter != mFollowers.end(); ++Iter)
     {
         (*Iter)->mGrandWidow = NULL;
         (*Iter)->Despawn();
@@ -852,7 +852,7 @@ void AnubRekhanAI::OnCombatStart(Unit* pTarget)
 
     if (IsHeroic())
     {
-        for (std::set< CryptGuardAI* >::iterator Iter = mCryptGuards.begin(); Iter != mCryptGuards.end(); ++Iter)
+        for (auto Iter = mCryptGuards.begin(); Iter != mCryptGuards.end(); ++Iter)
         {
             (*Iter)->AggroRandomPlayer(200);
         };
@@ -866,7 +866,7 @@ void AnubRekhanAI::OnCombatStop(Unit* pTarget)
     ParentClass::OnCombatStop(pTarget);
     mLocustSwarmTimer = mCryptSpawnTimer = INVALIDATE_TIMER;
 
-    for (std::set< CryptGuardAI* >::iterator Iter = mCryptGuards.begin(); Iter != mCryptGuards.end(); ++Iter)
+    for (auto Iter = mCryptGuards.begin(); Iter != mCryptGuards.end(); ++Iter)
     {
         (*Iter)->mAnubRekhanAI = NULL;
         if (IsAlive())
@@ -875,7 +875,7 @@ void AnubRekhanAI::OnCombatStop(Unit* pTarget)
 
     mCryptGuards.clear();
 
-    for (std::set< CorpseScarabAI* >::iterator Iter = mScarabs.begin(); Iter != mScarabs.end(); ++Iter)
+    for (auto Iter = mScarabs.begin(); Iter != mScarabs.end(); ++Iter)
     {
         (*Iter)->mAnubRekhanAI = NULL;
         if (IsAlive())
@@ -938,7 +938,7 @@ void AnubRekhanAI::AIUpdate()
 
 void AnubRekhanAI::Destroy()
 {
-    for (std::set< CryptGuardAI* >::iterator Iter = mCryptGuards.begin(); Iter != mCryptGuards.end(); ++Iter)
+    for (auto Iter = mCryptGuards.begin(); Iter != mCryptGuards.end(); ++Iter)
     {
         (*Iter)->mAnubRekhanAI = NULL;
         (*Iter)->Despawn();
@@ -946,7 +946,7 @@ void AnubRekhanAI::Destroy()
 
     mCryptGuards.clear();
 
-    for (std::set< CorpseScarabAI* >::iterator Iter = mScarabs.begin(); Iter != mScarabs.end(); ++Iter)
+    for (auto Iter = mScarabs.begin(); Iter != mScarabs.end(); ++Iter)
     {
         (*Iter)->mAnubRekhanAI = NULL;
         (*Iter)->Despawn();
@@ -965,7 +965,7 @@ void SpellFunc_AnubRekhanCorpseScarabsPlayer(SpellDesc* pThis, MoonScriptCreatur
         std::vector<std::pair< Player* , Movement::Location > > PlayerCorpses;
         Player* PlayerPtr = NULL;
         LocationVector spawnLocation;
-        for (std::set< Object* >::iterator Iter = AnubRekhan->GetUnit()->GetInRangePlayerSetBegin(); Iter != AnubRekhan->GetUnit()->GetInRangePlayerSetEnd(); ++Iter)
+        for (auto Iter = AnubRekhan->GetUnit()->GetInRangePlayerSetBegin(); Iter != AnubRekhan->GetUnit()->GetInRangePlayerSetEnd(); ++Iter)
         {
             if ((*Iter) == NULL)
                 continue;
@@ -1036,7 +1036,7 @@ void SpellFunc_AnubRekhanCorpseScarabsCryptGuard(SpellDesc* pThis, MoonScriptCre
     {
         std::vector< Creature* > CryptCorpses;
         Creature* CreaturePtr = NULL;
-        for (std::set< Object* >::iterator Iter = AnubRekhan->GetUnit()->GetInRangeSetBegin(); Iter != AnubRekhan->GetUnit()->GetInRangeSetEnd(); ++Iter)
+        for (auto Iter = AnubRekhan->GetUnit()->GetInRangeSetBegin(); Iter != AnubRekhan->GetUnit()->GetInRangeSetEnd(); ++Iter)
         {
             if ((*Iter) == NULL || !(*Iter)->IsCreature())
                 continue;
@@ -1314,7 +1314,7 @@ void NothThePlaguebringerAI::OnCombatStop(Unit* pTarget)
 
     mWarriors.clear();
 
-    for (std::set< PlaguedChampionAI* >::iterator Iter = mChampions.begin(); Iter != mChampions.end(); ++Iter)
+    for (auto Iter = mChampions.begin(); Iter != mChampions.end(); ++Iter)
     {
         (*Iter)->mNothAI = NULL;
         (*Iter)->Despawn();
@@ -1322,7 +1322,7 @@ void NothThePlaguebringerAI::OnCombatStop(Unit* pTarget)
 
     mChampions.clear();
 
-    for (std::set< PlaguedGuardianAI* >::iterator Iter = mGuardians.begin(); Iter != mGuardians.end(); ++Iter)
+    for (auto Iter = mGuardians.begin(); Iter != mGuardians.end(); ++Iter)
     {
         (*Iter)->mNothAI = NULL;
         (*Iter)->Despawn();
@@ -1513,7 +1513,7 @@ void NothThePlaguebringerAI::Destroy()
 
     mWarriors.clear();
 
-    for (std::set< PlaguedChampionAI* >::iterator Iter = mChampions.begin(); Iter != mChampions.end(); ++Iter)
+    for (auto Iter = mChampions.begin(); Iter != mChampions.end(); ++Iter)
     {
         (*Iter)->mNothAI = NULL;
         (*Iter)->Despawn();
@@ -1521,7 +1521,7 @@ void NothThePlaguebringerAI::Destroy()
 
     mChampions.clear();
 
-    for (std::set< PlaguedGuardianAI* >::iterator Iter = mGuardians.begin(); Iter != mGuardians.end(); ++Iter)
+    for (auto Iter = mGuardians.begin(); Iter != mGuardians.end(); ++Iter)
     {
         (*Iter)->mNothAI = NULL;
         (*Iter)->Despawn();
@@ -1717,7 +1717,7 @@ void HeiganTheUncleanAI::CallEruptionEvent(int32 pTimerId, int32 pNewTime)
     if (pTimerId < 0)
         return;
 
-    for (std::set< std::pair< uint32, PlagueFissureGO* > >::iterator Iter = mFissures.begin(); Iter != mFissures.end(); ++Iter)
+    for (auto Iter = mFissures.begin(); Iter != mFissures.end(); ++Iter)
     {
         if ((int)(*Iter).first != mEruptionPhase)
         {
@@ -1759,7 +1759,7 @@ void HeiganTheUncleanAI::OnCombatStart(Unit* pTarget)
         {
             GameObject* Fissure = NULL;
             PlagueFissureGO* FissureGO = NULL;
-            for (std::set< Object* >::iterator Iter = _unit->GetInRangeSetBegin(); Iter != _unit->GetInRangeSetEnd(); ++Iter)
+            for (auto Iter = _unit->GetInRangeSetBegin(); Iter != _unit->GetInRangeSetEnd(); ++Iter)
             {
                 if ((*Iter) == NULL || !(*Iter)->IsGameObject())
                     continue;
@@ -1853,7 +1853,7 @@ void HeiganTheUncleanAI::AIUpdate()
 
 void HeiganTheUncleanAI::Destroy()
 {
-    for (std::set< std::pair< uint32, PlagueFissureGO* > >::iterator itr = mFissures.begin(); itr != mFissures.end(); ++itr)
+    for (auto itr = mFissures.begin(); itr != mFissures.end(); ++itr)
     {
         (*itr).second->ResetHeiganAI();
     };
@@ -1894,7 +1894,7 @@ void PlagueFissureGO::Destroy()
 {
     if (mHeiganAI != NULL)
     {
-        for (std::set< std::pair< uint32, PlagueFissureGO* > >::iterator Iter = mHeiganAI->mFissures.begin(); Iter != mHeiganAI->mFissures.end(); ++Iter)
+        for (auto Iter = mHeiganAI->mFissures.begin(); Iter != mHeiganAI->mFissures.end(); ++Iter)
         {
             if ((*Iter).second == this)
             {
@@ -1937,7 +1937,7 @@ void LoathebAI::OnCombatStart(Unit* pTarget)
 void LoathebAI::OnCombatStop(Unit* pTarget)
 {
     ParentClass::OnCombatStop(pTarget);
-    for (std::set< SporeAI* >::iterator Iter = mSpores.begin(); Iter != mSpores.end(); ++Iter)
+    for (auto Iter = mSpores.begin(); Iter != mSpores.end(); ++Iter)
     {
         (*Iter)->mLoathebAI = NULL;
         (*Iter)->Despawn();
@@ -2011,7 +2011,7 @@ void LoathebAI::AIUpdate()
             if (mDeathbloomDamagePhase)
             {
                 Player* PlayerPtr = NULL;
-                for (std::set< Object* >::iterator Iter = _unit->GetInRangePlayerSetBegin(); Iter != _unit->GetInRangePlayerSetEnd(); ++Iter)
+                for (auto Iter = _unit->GetInRangePlayerSetBegin(); Iter != _unit->GetInRangePlayerSetEnd(); ++Iter)
                 {
                     if ((*Iter) == NULL)
                         continue;
@@ -2050,7 +2050,7 @@ void LoathebAI::AIUpdate()
 
 void LoathebAI::Destroy()
 {
-    for (std::set< SporeAI* >::iterator Iter = mSpores.begin(); Iter != mSpores.end(); ++Iter)
+    for (auto Iter = mSpores.begin(); Iter != mSpores.end(); ++Iter)
     {
         (*Iter)->mLoathebAI = NULL;
         (*Iter)->Despawn();
@@ -2162,7 +2162,7 @@ void ShadeOfNaxxramasAI::OnDied(Unit* pKiller)
         Ghost->AggroNearestPlayer(200);
     };
 
-    for (std::set< PortalOfShadowsAI* >::iterator Iter = mPortals.begin(); Iter != mPortals.end(); ++Iter)
+    for (auto Iter = mPortals.begin(); Iter != mPortals.end(); ++Iter)
     {
         (*Iter)->mShadeAI = NULL;
         (*Iter)->Despawn();
@@ -2173,7 +2173,7 @@ void ShadeOfNaxxramasAI::OnDied(Unit* pKiller)
 
 void ShadeOfNaxxramasAI::Destroy()
 {
-    for (std::set< PortalOfShadowsAI* >::iterator Iter = mPortals.begin(); Iter != mPortals.end(); ++Iter)
+    for (auto Iter = mPortals.begin(); Iter != mPortals.end(); ++Iter)
     {
         (*Iter)->mShadeAI = NULL;
         (*Iter)->Despawn();
@@ -2700,7 +2700,7 @@ void SpellFunc_PatchwerkHatefulStrike(SpellDesc* pThis, MoonScriptCreatureAI* pC
     uint32 _mostHP = 0;
     Player* pBestTarget = NULL;
 
-    for (std::set< Object* >::iterator PlayerIter = pCreatureAI->GetUnit()->GetInRangePlayerSetBegin();
+    for (auto PlayerIter = pCreatureAI->GetUnit()->GetInRangePlayerSetBegin();
             PlayerIter != pCreatureAI->GetUnit()->GetInRangePlayerSetEnd(); ++PlayerIter)
     {
         if ((*PlayerIter) && (static_cast< Player* >(*PlayerIter))->isAlive() && (*PlayerIter)->GetDistance2dSq(pCreatureAI->GetUnit()) <= 5.0f

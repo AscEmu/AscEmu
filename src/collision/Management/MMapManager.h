@@ -40,7 +40,7 @@ namespace MMAP
         MMapData(dtNavMesh* mesh) : navMesh(mesh) { }
         ~MMapData()
         {
-            for (NavMeshQuerySet::iterator i = navMeshQueries.begin(); i != navMeshQueries.end(); ++i)
+            for (auto i = navMeshQueries.begin(); i != navMeshQueries.end(); ++i)
                 dtFreeNavMeshQuery(i->second);
 
             if (navMesh)

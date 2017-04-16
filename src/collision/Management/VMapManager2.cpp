@@ -43,11 +43,11 @@ namespace VMAP
 
     VMapManager2::~VMapManager2(void)
     {
-        for (InstanceTreeMap::iterator i = iInstanceMapTrees.begin(); i != iInstanceMapTrees.end(); ++i)
+        for (auto i = iInstanceMapTrees.begin(); i != iInstanceMapTrees.end(); ++i)
         {
             delete i->second;
         }
-        for (ModelFileMap::iterator i = iLoadedModelFiles.begin(); i != iLoadedModelFiles.end(); ++i)
+        for (auto i = iLoadedModelFiles.begin(); i != iLoadedModelFiles.end(); ++i)
         {
             delete i->second.getModel();
         }

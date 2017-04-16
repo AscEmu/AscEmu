@@ -27,7 +27,6 @@ MD5Hash::MD5Hash()
 
 MD5Hash::~MD5Hash()
 {
-
 }
 
 void MD5Hash::UpdateData(const std::string & str)

@@ -479,7 +479,7 @@ class __declspec(dllexport) StackWalkerInternal
             BOOL keepGoing;
             size_t i;
 
-            for(i = 0; i < (sizeof(dllname) / sizeof(dllname[0])); i++)
+            for (i = 0; i < (sizeof(dllname) / sizeof(dllname[0])); i++)
             {
                 hToolhelp = LoadLibrary(dllname[i]);
                 if(hToolhelp == NULL)
@@ -583,7 +583,7 @@ class __declspec(dllexport) StackWalkerInternal
                 goto cleanup;
             }
 
-            for(i = 0; i < cbNeeded / sizeof hMods[0]; i++)
+            for (i = 0; i < cbNeeded / sizeof hMods[0]; i++)
             {
                 // base address, size
                 pGMI(hProcess, hMods[i], &mi, sizeof mi);
@@ -826,7 +826,7 @@ BOOL StackWalker::LoadModules()
         if(GetModuleFileNameA(NULL, szTemp, nTempLen) > 0)
         {
             szTemp[nTempLen - 1] = 0;
-            for(char* p = (szTemp + strlen(szTemp) - 1); p >= szTemp; --p)
+            for (char* p = (szTemp + strlen(szTemp) - 1); p >= szTemp; --p)
             {
                 // locate the rightmost path separator
                 if((*p == '\\') || (*p == '/') || (*p == ':'))
@@ -994,7 +994,7 @@ BOOL StackWalker::ShowCallstack(HANDLE hThread, const CONTEXT* context, PReadPro
     memset(&Module, 0, sizeof(Module));
     Module.SizeOfStruct = sizeof(Module);
 
-    for(frameNum = 0; ; ++frameNum)
+    for (frameNum = 0; ; ++frameNum)
     {
         // get next stack frame (StackWalk64(), SymFunctionTableAccess64(), SymGetModuleBase64())
         // if this returns ERROR_INVALID_ADDRESS (487) or ERROR_NOACCESS (998), you can

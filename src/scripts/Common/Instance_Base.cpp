@@ -61,7 +61,7 @@ Creature* MoonInstanceScript::FindClosestCreatureOnMap(uint32 pEntry, float pX, 
 
     Creature* NearestCreature = NULL;
     float Distance, NearestDistance = 99999;
-    for (CreatureSet::iterator Iter = Creatures.begin(); Iter != Creatures.end(); ++Iter)
+    for (auto Iter = Creatures.begin(); Iter != Creatures.end(); ++Iter)
     {
         Distance = GetRangeToObject(*Iter, pX, pY, pZ);
         if (Distance < NearestDistance)
@@ -120,7 +120,7 @@ CreatureSet MoonInstanceScript::FindCreaturesOnMap(std::vector<uint32> pEntries)
 {
     Creature* CurrentCreature = NULL;
     CreatureSet ReturnSet;
-    for (std::vector< Creature* >::iterator CreatureIter = mInstance->CreatureStorage.begin(); CreatureIter != mInstance->CreatureStorage.end(); ++CreatureIter)
+    for (auto CreatureIter = mInstance->CreatureStorage.begin(); CreatureIter != mInstance->CreatureStorage.end(); ++CreatureIter)
     {
         CurrentCreature = (*CreatureIter);
         if (CurrentCreature != NULL)
@@ -152,7 +152,7 @@ GameObject* MoonInstanceScript::FindClosestGameObjectOnMap(uint32 pEntry, float 
 
     GameObject* NearestObject = NULL;
     float Distance, NearestDistance = 99999;
-    for (GameObjectSet::iterator Iter = GameObjects.begin(); Iter != GameObjects.end(); ++Iter)
+    for (auto Iter = GameObjects.begin(); Iter != GameObjects.end(); ++Iter)
     {
         Distance = GetRangeToObject(*Iter, pX, pY, pZ);
         if (Distance < NearestDistance)
@@ -175,7 +175,7 @@ GameObjectSet MoonInstanceScript::FindGameObjectsOnMap(uint32 pEntry)
 {
     GameObject* CurrentObject = NULL;
     GameObjectSet ReturnSet;
-    for (std::vector< GameObject* >::iterator GOIter = mInstance->GOStorage.begin(); GOIter != mInstance->GOStorage.end(); ++GOIter)
+    for (auto GOIter = mInstance->GOStorage.begin(); GOIter != mInstance->GOStorage.end(); ++GOIter)
     {
         CurrentObject = (*GOIter);
         if (CurrentObject != NULL)
@@ -218,7 +218,7 @@ void MoonInstanceScript::AddGameObjectStateByEntry(uint32 pEntry, GameObjectStat
     GameObject* CurrentObject = NULL;
     if (!pUseQuery)
     {
-        for (std::vector< GameObject* >::iterator GOIter = mInstance->GOStorage.begin(); GOIter != mInstance->GOStorage.end(); ++GOIter)
+        for (auto GOIter = mInstance->GOStorage.begin(); GOIter != mInstance->GOStorage.end(); ++GOIter)
         {
             CurrentObject = (*GOIter);
             if (CurrentObject != NULL)
@@ -336,7 +336,7 @@ int32 MoonInstanceScript::AddTimer(int32 pDurationMillisec)
 
 int32 MoonInstanceScript::GetTimer(int32 pTimerId)
 {
-    for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
+    for (auto TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
     {
         if (TimerIter->first == pTimerId)
             return TimerIter->second;
@@ -347,7 +347,7 @@ int32 MoonInstanceScript::GetTimer(int32 pTimerId)
 
 void MoonInstanceScript::RemoveTimer(int32 & pTimerId)
 {
-    for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
+    for (auto TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
     {
         if (TimerIter->first == pTimerId)
         {
@@ -360,7 +360,7 @@ void MoonInstanceScript::RemoveTimer(int32 & pTimerId)
 
 void MoonInstanceScript::ResetTimer(int32 pTimerId, int32 pDurationMillisec)
 {
-    for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
+    for (auto TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
     {
         if (TimerIter->first == pTimerId)
         {
@@ -372,7 +372,7 @@ void MoonInstanceScript::ResetTimer(int32 pTimerId, int32 pDurationMillisec)
 
 bool MoonInstanceScript::IsTimerFinished(int32 pTimerId)
 {
-    for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
+    for (auto TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
     {
         if (TimerIter->first == pTimerId)
             return (TimerIter->second <= 0) ? true : false;
@@ -509,7 +509,7 @@ void MoonInstanceScript::OnLoad()
 void MoonInstanceScript::UpdateEvent()
 {
     //uint32 CurrentTime = static_cast< uint32 >(time(NULL));
-    for (TimerArray::iterator TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
+    for (auto TimerIter = mTimers.begin(); TimerIter != mTimers.end(); ++TimerIter)
     {
         TimerIter->second -= mUpdateFrequency;
     };

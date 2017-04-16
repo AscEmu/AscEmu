@@ -294,7 +294,7 @@ void TaxiMgr::_LoadTaxiPaths()
             p->id = taxi_path->id;
             p->price = taxi_path->price;
 
-            //Load Nodes
+            // Load Nodes
             for (uint32 j = 0; j < sTaxiPathNodeStore.GetNumRows(); j++)
             {
                 auto taxi_path_node = sTaxiPathNodeStore.LookupEntry(j);
@@ -330,9 +330,7 @@ TaxiPath* TaxiMgr::GetTaxiPath(uint32 path)
 
 TaxiPath* TaxiMgr::GetTaxiPath(uint32 from, uint32 to)
 {
-    std::unordered_map<uint32, TaxiPath*>::iterator itr;
-
-    for (itr = m_taxiPaths.begin(); itr != m_taxiPaths.end(); ++itr)
+    for (auto itr = m_taxiPaths.begin(); itr != m_taxiPaths.end(); ++itr)
         if ((itr->second->to == to) && (itr->second->from == from))
             return itr->second;
 
@@ -357,9 +355,7 @@ uint32 TaxiMgr::GetNearestTaxiNode(float x, float y, float z, uint32 mapid)
     float distance = -1;
     float nx, ny, nz, nd;
 
-    std::unordered_map<uint32, TaxiNode*>::iterator itr;
-
-    for (itr = m_taxiNodes.begin(); itr != m_taxiNodes.end(); ++itr)
+    for (auto itr = m_taxiNodes.begin(); itr != m_taxiNodes.end(); ++itr)
     {
         if (itr->second->mapid == mapid)
         {
@@ -379,10 +375,9 @@ uint32 TaxiMgr::GetNearestTaxiNode(float x, float y, float z, uint32 mapid)
 
 bool TaxiMgr::GetGlobalTaxiNodeMask(uint32 curloc, uint32* Mask)
 {
-    std::unordered_map<uint32, TaxiPath*>::iterator itr;
     uint8 field;
 
-    for (itr = m_taxiPaths.begin(); itr != m_taxiPaths.end(); ++itr)
+    for (auto itr = m_taxiPaths.begin(); itr != m_taxiPaths.end(); ++itr)
     {
         /*if (itr->second->from == curloc)
         {*/

@@ -98,9 +98,9 @@ bool SubGroup::AddPlayer(PlayerInfo* info)
 
 bool SubGroup::HasMember(uint32 guid)
 {
-    for (GroupMembersSet::iterator itr = m_GroupMembers.begin(); itr != m_GroupMembers.end(); ++itr)
-        if ((*itr) != NULL)
-            if ((*itr)->guid == guid)
+    for (auto itr : m_GroupMembers)
+        if (itr != nullptr)
+            if (itr->guid == guid)
                 return true;
 
     return false;
@@ -213,6 +213,7 @@ void Group::Update()
             m_Looter = pNewLeader->getPlayerInfo();
     }
 
+    WorldPacket data(50 + (m_MemberCount * 20));
     GroupMembersSet::iterator itr1, itr2;
 
     uint8 i = 0, j = 0;
@@ -233,7 +234,7 @@ void Group::Update()
                 if ((*itr1) == NULL)
                     continue;
 
-                /* skip offline players */
+                // skip offline players
                 if ((*itr1)->m_loggedInPlayer == NULL)
                 {
                     continue;
@@ -253,7 +254,7 @@ void Group::Update()
                 data << uint8(flags);
 
                 if (m_Leader != NULL && m_Leader->m_loggedInPlayer != NULL && m_Leader->m_loggedInPlayer->IsInBg())
-                    data << uint8(1);   //if the leader is in a BG, then the group is a BG group
+                    data << uint8(1); // if the leader is in a BG, then the group is a BG group
                 else
                     data << uint8(0);
 
@@ -262,7 +263,7 @@ void Group::Update()
                     data << uint8(sLfgMgr.GetState(GetID()) == LFG_STATE_FINISHED_DUNGEON ? 2 : 0);
 					data << uint32(sLfgMgr.GetDungeon(GetID()));
 #if VERSION_STRING == Cata
-                    data << uint8(0);   //unk
+                    data << uint8(0); // unk
 #endif
                 }
 
@@ -278,7 +279,7 @@ void Group::Update()
                     {
                         for (itr2 = sg2->GetGroupMembersBegin(); itr2 != sg2->GetGroupMembersEnd(); ++itr2)
                         {
-                            if ((*itr1) == (*itr2))   // skip self
+                            if ((*itr1) == (*itr2)) // skip self
                                 continue;
 
                             // should never happen but just in case
@@ -309,7 +310,7 @@ void Group::Update()
                                 flags |= 4;
 
                             data << uint8(flags);
-                            data << uint8(plr ? plr->GetRoles() : 0);   // Player roles
+                            data << uint8(plr ? plr->GetRoles() : 0); // Player roles
                         }
                     }
                 }
@@ -329,7 +330,7 @@ void Group::Update()
                 data << uint8(m_LootThreshold);
                 data << uint8(m_difficulty);
                 data << uint8(m_raiddifficulty);
-                data << uint8(0);   // 3.3 - unk
+                data << uint8(0); // 3.3 - unk
 
                 if (!(*itr1)->m_loggedInPlayer->IsInWorld())
                     (*itr1)->m_loggedInPlayer->CopyAndSendDelayedPacket(&data);
@@ -373,7 +374,7 @@ void Group::Disband()
     m_groupLock.Release();
     CharacterDatabase.Execute("DELETE FROM groups WHERE group_id = %u", m_Id);
     sInstanceMgr.OnGroupDestruction(this);
-    delete this;	// destroy ourselves, the destructor removes from eventmgr and objectmgr.
+    delete this; // destroy ourselves, the destructor removes from eventmgr and objectmgr.
 }
 
 void SubGroup::Disband()
@@ -382,33 +383,33 @@ void SubGroup::Disband()
     WorldPacket data2(SMSG_PARTY_COMMAND_RESULT, 12);
     data2 << uint32(2);
     data2 << uint8(0);
-    data2 << uint32(m_Parent->m_difficulty);	// you leave the group
+    data2 << uint32(m_Parent->m_difficulty); // you leave the group
 
-    for (GroupMembersSet::iterator itr = m_GroupMembers.begin(); itr != m_GroupMembers.end();)
+    for (auto itr : m_GroupMembers)
     {
-        if ((*itr) != nullptr)
+        if (itr != nullptr)
         {
-            if ((*itr)->m_loggedInPlayer)
+            if (itr->m_loggedInPlayer)
             {
-                if ((*itr)->m_loggedInPlayer->GetSession() != nullptr)
+                if (itr->m_loggedInPlayer->GetSession() != nullptr)
                 {
-                    data2.put(5, uint32((*itr)->m_loggedInPlayer->iInstanceType));
-                    (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data2);
-                    (*itr)->m_loggedInPlayer->GetSession()->SendPacket(&data);
+                    data2.put(5, uint32(itr->m_loggedInPlayer->iInstanceType));
+                    itr->m_loggedInPlayer->GetSession()->SendPacket(&data2);
+                    itr->m_loggedInPlayer->GetSession()->SendPacket(&data);
 #if VERSION_STRING == Cata
-                    (*itr)->m_loggedInPlayer->GetSession()->SendEmptyGroupList((*itr)->m_loggedInPlayer);
+                    itr->m_loggedInPlayer->GetSession()->SendEmptyGroupList(itr->m_loggedInPlayer);
 #else
-                    (*itr)->m_Group->SendNullUpdate((*itr)->m_loggedInPlayer);   // cebernic: panel refresh.
+                    itr->m_Group->SendNullUpdate(itr->m_loggedInPlayer); // cebernic: panel refresh.
 #endif
                 }
             }
 
-            (*itr)->m_Group = nullptr;
-            (*itr)->subGroup = -1;
+            itr->m_Group = nullptr;
+            itr->subGroup = -1;
         }
 
         --m_Parent->m_MemberCount;
-        itr = m_GroupMembers.erase(itr);
+        m_GroupMembers.erase(itr);
     }
 
     m_Parent->m_SubGroups[m_Id] = nullptr;
@@ -821,13 +822,12 @@ void Group::LoadFromDB(Field* fields)
 
 void Group::SaveToDB()
 {
-    if (!m_disbandOnNoMembers)	/* don't save bg groups */
+    if (!m_disbandOnNoMembers) // don't save bg groups
         return;
 
     std::stringstream ss;
-    //uint32 i = 0;
-    uint32 fillers = 8 - m_SubGroupCount;
 
+    uint32 fillers = 8 - m_SubGroupCount;
 
     ss << "DELETE FROM groups WHERE group_id = ";
     ss << m_Id;
@@ -847,13 +847,13 @@ void Group::SaveToDB()
           group7member1, group7member2, group7member3, group7member4, group7member5,\
           group8member1, group8member2, group8member3, group8member4, group8member5,\
                     timestamp, instanceids) VALUES("
-        << m_Id << "," // group_id (1/52)
-        << uint32(m_GroupType) << "," // group_type (2/52)
-        << uint32(m_SubGroupCount) << "," // subgroup_count (3/52)
-        << uint32(m_LootMethod) << "," // loot_method (4/52)
-        << uint32(m_LootThreshold) << "," // loot_threshold (5/52)
-        << uint32(m_difficulty) << "," // difficulty (6/52)
-        << uint32(m_raiddifficulty) << ","; // raiddifficulty (7/52)
+        << m_Id << ","                                    // group_id (1/52)
+        << uint32(m_GroupType) << ","                     // group_type (2/52)
+        << uint32(m_SubGroupCount) << ","                 // subgroup_count (3/52)
+        << uint32(m_LootMethod) << ","                    // loot_method (4/52)
+        << uint32(m_LootThreshold) << ","                 // loot_threshold (5/52)
+        << uint32(m_difficulty) << ","                    // difficulty (6/52)
+        << uint32(m_raiddifficulty) << ",";               // raiddifficulty (7/52)
 
     // assistant_leader (8/52)
     if (m_assistantLeader)
@@ -882,9 +882,7 @@ void Group::SaveToDB()
 
         // For each member in the group, while membercount is less than 5 (guard clause), add their ID to query
         for (GroupMembersSet::iterator itr = m_SubGroups[i]->GetGroupMembersBegin(); j < 5 && itr != m_SubGroups[i]->GetGroupMembersEnd(); ++j, ++itr)
-        {
             ss << (*itr)->guid << ",";
-        }
 
         // Add 0 to query until we reach 5 (fill empty slots)
         for (; j < 5; ++j)
@@ -909,9 +907,7 @@ void Group::SaveToDB()
         for (uint32 j = 0; j < NUM_INSTANCE_MODES; j++)
         {
             if (m_instanceIds[i][j] > 0)
-            {
                 ss << i << ":" << j << ":" << m_instanceIds[i][j] << " ";
-            }
         }
     }
     ss << "')";
@@ -1430,7 +1426,7 @@ void Group::Teleport(WorldSession* m_session)
 				if(member == NULL || !member->IsInWorld())
 					continue;
 				sChatHandler.HandleSummonCommand(member->GetName(), m_session);
-				//member->SafeTeleport(map, instanceid, x, y, z, o);
+				// member->SafeTeleport(map, instanceid, x, y, z, o);
 			}
 		}
 	}
