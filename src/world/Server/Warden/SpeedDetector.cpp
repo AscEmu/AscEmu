@@ -96,7 +96,7 @@ void SpeedCheatDetector::AddSample(float x, float y, int stamp, float player_spe
 
 void SpeedCheatDetector::ReportCheater(Player* _player)
 {
-    if ((sWorld.no_antihack_on_gm && _player->GetSession()->HasGMPermissions()))
+    if ((sWorld.antiHackSettings.isAntiHackCheckDisabledForGm && _player->GetSession()->HasGMPermissions()))
         return; // do not check GMs speed been the config tells us not to.
 
     //toshik is wonderful and i can't understand how he managed to make this happen

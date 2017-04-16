@@ -139,9 +139,9 @@ bool StartConsoleListener()
 #ifndef ENABLE_REMOTE_CONSOLE
     return false;
 #else
-    std::string lhost = Config.MainConfig.GetStringDefault("RemoteConsole", "Host", "0.0.0.0");
-    uint32 lport = Config.MainConfig.GetIntDefault("RemoteConsole", "Port", 8092);
-    bool enabled = Config.MainConfig.GetBoolDefault("RemoteConsole", "Enabled", false);
+    std::string lhost = sWorld.remoteConsoleSettings.host;
+    uint32 lport = sWorld.remoteConsoleSettings.port;
+    bool enabled = sWorld.remoteConsoleSettings.isEnabled;
 
     if (!enabled)
         return false;

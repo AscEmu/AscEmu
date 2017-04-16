@@ -522,7 +522,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
         }
         if (IsInrange(srcx, srcy, srcz, (*itr), r))
         {
-            if (sWorld.Collision)
+            if (sWorld.terrainCollisionSettings.isCollisionEnabled)
             {
                 VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
                 bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ());
@@ -588,7 +588,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
 
         if (IsInrange(srcx, srcy, srcz, (*itr), r))
         {
-            if (sWorld.Collision)
+            if (sWorld.terrainCollisionSettings.isCollisionEnabled)
             {
                 VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
                 bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ());
@@ -3360,7 +3360,7 @@ uint8 Spell::CanCast(bool tolerate)
         /**
          *	Indoor/Outdoor check
          */
-        if (sWorld.Collision)
+        if (sWorld.terrainCollisionSettings.isCollisionEnabled)
         {
             if (GetSpellInfo()->MechanicsType == MECHANIC_MOUNTED)
             {
@@ -4049,7 +4049,7 @@ uint8 Spell::CanCast(bool tolerate)
                         return SPELL_FAILED_NO_AMMO;
                 }
 
-                if (sWorld.Collision)
+                if (sWorld.terrainCollisionSettings.isCollisionEnabled)
                 {
                     if (p_caster->GetMapId() == target->GetMapId() && !p_caster->GetMapMgr()->isInLineOfSight(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ() + 2, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ() + 2))
                         return SPELL_FAILED_LINE_OF_SIGHT;

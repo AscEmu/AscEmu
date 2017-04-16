@@ -438,7 +438,7 @@ void WorldSession::FullLogin(Player* plr)
     float VY;
     float VZ;
 
-    if (HasGMPermissions() && plr->m_FirstLogin && sWorld.gamemaster_startonGMIsland)
+    if (HasGMPermissions() && plr->m_FirstLogin && sWorld.gmSettings.isStartOnGmIslandEnabled)
     {
         VMapId = 1;
         VO = 0;
@@ -568,12 +568,12 @@ void WorldSession::FullLogin(Player* plr)
 
     sWorld.incrementPlayerCount(plr->GetTeam());
 
-    if (plr->m_FirstLogin && !sWorld.m_SkipCinematics)
+    if (plr->m_FirstLogin && !sWorld.optionalSettings.skipCinematics)
     {
         uint32 introid = plr->info->introid;
         OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &introid);
 
-        if (sWorld.m_AdditionalFun)
+        if (sWorld.optionalSettings.loadAdditionalFunScripts)
         {
             const int classtext[] = { 0, 5, 6, 8, 9, 11, 0, 4, 3, 7, 0, 10 };
             sWorld.SendLocalizedWorldText(true, "{65}", classtext[(uint32)plr->getClass()], plr->GetName(), (plr->IsTeamHorde() ? "{63}" : "{64}"));

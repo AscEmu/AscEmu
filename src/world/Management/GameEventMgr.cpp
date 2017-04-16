@@ -45,7 +45,7 @@ void GameEventMgr::StartArenaEvents()
             continue;
         }
 
-        if (i - 52 == sWorld.Arena_Season && sWorld.Arena_Progress == 1)
+        if (i - 52 == sWorld.arenaSettings.arenaSeason && sWorld.arenaSettings.arenaProgress == 1)
             gameEvent->SetState(GAMEEVENT_ACTIVE_FORCED);
         else
             gameEvent->SetState(GAMEEVENT_INACTIVE_FORCED);

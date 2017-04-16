@@ -363,7 +363,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
         if (money)
         {
             // Check they don't have more than the max gold
-            if (sWorld.GoldCapEnabled && (GetPlayer()->GetGold() + money) > sWorld.GoldLimit)
+            if (sWorld.goldSettings.isCapEnabled && (GetPlayer()->GetGold() + money) > sWorld.goldSettings.limitAmount)
             {
                 GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
             }
@@ -412,7 +412,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
             for (std::vector<Player*>::iterator itr2 = targets.begin(); itr2 != targets.end(); ++itr2)
             {
                 // Check they don't have more than the max gold
-                if (sWorld.GoldCapEnabled && ((*itr2)->GetGold() + share) > sWorld.GoldLimit)
+                if (sWorld.goldSettings.isCapEnabled && ((*itr2)->GetGold() + share) > sWorld.goldSettings.limitAmount)
                 {
                     (*itr2)->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
                 }
@@ -765,14 +765,14 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
         if (!plr->GetSession() || !plr->IsInWorld())
             continue;
 
-        if (!sWorld.show_gm_in_who_list && !HasGMPermissions())
+        if (!sWorld.serverSettings.showGmInWhoList && !HasGMPermissions())
         {
             if (plr->GetSession()->HasGMPermissions())
                 continue;
         }
 
         // Team check
-        if (!gm && plr->GetTeam() != team && !plr->GetSession()->HasGMPermissions() && !sWorld.interfaction_misc)
+        if (!gm && plr->GetTeam() != team && !plr->GetSession()->HasGMPermissions() && !sWorld.interfactionSettings.isInterfactionMiscEnabled)
             continue;
 
         ++total_count;
@@ -976,7 +976,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& recv_data)
                 return;
             }
 
-            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || sWorld.m_InstantLogout == 2)
+            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || sWorld.optionalSettings.enableInstantLogoutForAccessType == 2)
             {
                 //Logout on NEXT sessionupdate to preserve processing of dead packets (all pending ones should be processed)
                 SetLogoutTimer(1);
@@ -985,7 +985,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& recv_data)
         }
         if (GetPermissionCount() > 0)
         {
-            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || sWorld.m_InstantLogout > 0)
+            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || sWorld.optionalSettings.enableInstantLogoutForAccessType > 0)
             {
                 //Logout on NEXT sessionupdate to preserve processing of dead packets (all pending ones should be processed)
                 SetLogoutTimer(1);
@@ -1231,7 +1231,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
     //LOG_DETAIL("WORLD: Received CMSG_UPDATE_ACCOUNT_DATA");
 
     uint32 uiID;
-    if (!sWorld.m_useAccountData)
+    if (!sWorld.serverSettings.useAccountData)
         return;
 
     recv_data >> uiID;
@@ -1328,7 +1328,7 @@ void WorldSession::HandleRequestAccountData(WorldPacket& recv_data)
     LOG_DETAIL("WORLD: Received CMSG_REQUEST_ACCOUNT_DATA");
 
     uint32 id;
-    if (!sWorld.m_useAccountData)
+    if (!sWorld.serverSettings.useAccountData)
         return;
     recv_data >> id;
 

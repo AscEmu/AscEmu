@@ -50,11 +50,6 @@ initialiseSingleton(World);
 DayWatcherThread* dw = nullptr;
 CommonScheduleThread* cs = nullptr;
 
-float World::m_movementCompressThreshold;
-float World::m_movementCompressThresholdCreatures;
-uint32 World::m_movementCompressRate;
-uint32 World::m_movementCompressInterval;
-
 World::World()
 {
     resetPlayerCount();
@@ -62,166 +57,253 @@ World::World()
     m_allowMovement = true;
     m_gmTicketSystem = true;
 
-    GmClientChannel = "";
-
     m_StartTime = 0;
     eventholder = new EventableObjectHolder(WORLD_INSTANCE);
     m_holder = eventholder;
     m_event_Instanceid = eventholder->GetInstanceID();
 
-    mQueueUpdateInterval = 10000;
     PeakSessionCount = 0;
     mAcceptedConnections = 0;
-    gm_skip_attunement = false;
-    show_gm_in_who_list = true;
-    interfaction_chat = false;
-    interfaction_group = false;
-    interfaction_guild = false;
-    interfaction_trade = false;
-    interfaction_friend = false;
-    interfaction_misc = false;
-    crossover_chars = true;
-    gamemaster_listOnlyActiveGMs = false;
-    gamemaster_hidePermissions = false;
-    gamemaster_startonGMIsland = true;
-    gamemaster_disableachievements = false;
-    GMAdminTag = true;
-    NameinAnnounce = false;
-    NameinWAnnounce = false;
-    announce_output = true;
-    map_unload_time = 0;
-    map_cell_number = 0;
-    antiMasterLootNinja = false;
-
-    SocketSendBufSize = WORLDSOCKET_SENDBUF_SIZE;
-    SocketRecvBufSize = WORLDSOCKET_RECVBUF_SIZE;
-
-    // max level player 
-    m_levelCap = DBC_PLAYER_LEVEL_CAP;
-    m_genLevelCap = DBC_PLAYER_LEVEL_CAP; //! no delete
-    StartingLevel = 1;
-    m_limitedNames = false;
+    
     m_banTable = NULL;
-    DKStartTalentPoints = 0;
 
     TotalTrafficInKB = 0.0;
     TotalTrafficOutKB = 0.0;
     LastTotalTrafficInKB = 0.0;
     LastTotalTrafficOutKB = 0.0;
     LastTrafficQuery = 0;
-
-    arenaSettings.A2V2_MIN = 2;
-    arenaSettings.A2V2_MAX = 2;
-    arenaSettings.A3V3_MAX = 3;
-    arenaSettings.A3V3_MIN = 3;
-    arenaSettings.A5V5_MAX = 5;
-    arenaSettings.A5V5_MIN = 5;
-
-    m_limits.enable = true;
-    m_limits.autoattackDamageCap = 10000;
-    m_limits.spellDamageCap = 30000;
-    m_limits.healthCap = 100000;
-    m_limits.manaCap = 80000;
-    m_limits.honorpoints = 75000;
-    m_limits.arenapoints = 5000;
-    m_limits.disconnect = false;
-    m_limits.broadcast = true;
-
-    GMTTimeZone = 0;
-    realmtype = 1;
-    TimeOut = 180;
     m_queueUpdateTimer = 5000;
-    m_KickAFKPlayers = false;
-    m_reqGmForCommands = false;
-    m_lfgForNonLfg = false;
-    m_useAccountData = false;
-    m_SkipCinematics = false;
-    m_InstantLogout = 1;
-    m_MinDualSpecLevel = 40;
-    m_MinTalentResetLevel = 10;
+    m_KickAFKPlayers = 0;
 
-    m_DecayNormal = 60000;
-    m_DecayRare = 300000;
-    m_DecayElite = 300000;
-    m_DecayRareElite = 300000;
-    m_DecayWorldboss = 3600000;
+    // world.conf - Mysql Database Section
+    worldDbSettings.port = 3306;
+    worldDbSettings.connections = 3;
 
-    GoldCapEnabled = true;
-    GoldLimit = 214748;
-    GoldStartAmount = 0;
+    charDbSettings.port = 3306;
+    charDbSettings.connections = 5;
 
-    CacheVersion = 0;
+    // world.conf - Listen Config
+    listenSettings.listenPort = 8129;
 
-    announce_tagcolor = 2;
-    announce_gmtagcolor = 1;
-    announce_namecolor = 4;
-    announce_msgcolor = 6;
+    // world.conf - Log Level Setup
+    logLevelSettings.fileLogLevel = 0;
+    logLevelSettings.debugFlags = 0;
+    logLevelSettings.logWorldPacket = false;
+    logLevelSettings.disableCrashdump = false;
 
-    antihack_teleport = false;
-    antihack_speed = false;
-    antihack_flight = false;
-    flyhack_threshold = 0;
-    no_antihack_on_gm = true;
+    // world.conf - Server Settings
+    serverSettings.playerLimit = 1000;
+    serverSettings.messageOfTheDay = "AscEmu Default MOTD";
+    serverSettings.sendStatsOnJoin = true;
+    serverSettings.enableBreathing = true;
+    serverSettings.seperateChatChannels = false;
+    serverSettings.compressionThreshold = 1000;
+    serverSettings.queueUpdateInterval = 5000;
+    serverSettings.secondsBeforeKickAFKPlayers = 0;
+    serverSettings.secondsBeforeTimeOut = 180;
+    serverSettings.realmType = false;
+    serverSettings.enableAdjustPriority = false;
+    serverSettings.requireAllSignatures = false;
+    serverSettings.showGmInWhoList = true;
+    serverSettings.mapUnloadTime = MAP_CELL_DEFAULT_UNLOAD_TIME;
+    serverSettings.mapCellNumber = 1;
+    serverSettings.enableLimitedNames = true;
+    serverSettings.useAccountData = false;
+    serverSettings.requireGmForCommands = false;
+    serverSettings.enableLfgJoinForNonLfg = false;
+    serverSettings.gmtTimeZone = 0;
+    serverSettings.disableFearMovement = 0;
+    serverSettings.saveExtendedCharData = false;
+    serverSettings.skipAttunementForGm = true;
+    serverSettings.clientCacheVersion = 12340;
+    serverSettings.banTable = "";
 
-    instance_TakeGroupLeaderID = false;
-    instance_SlidingExpiration = false;
-    instance_DailyHeroicInstanceResetHour = 5;
-    instance_CheckTriggerPrerequisites = true;
+    // world.conf - Announce Configuration
+    announceSettings.enableGmAdminTag = true;
+    announceSettings.showNameInAnnounce = false;
+    announceSettings.showNameInWAnnounce = false;
+    announceSettings.showAnnounceInConsoleOutput = true;
 
-    bgsettings.AV_MIN = 10;
-    bgsettings.AV_MAX = 40;
-    bgsettings.AB_MIN = 5;
-    bgsettings.AB_MAX = 15;
-    bgsettings.WSG_MIN = 5;
-    bgsettings.WSG_MAX = 10;
-    bgsettings.EOTS_MIN = 5;
-    bgsettings.EOTS_MAX = 15;
-    bgsettings.SOTA_MIN = 5;
-    bgsettings.SOTA_MAX = 15;
-    bgsettings.IOC_MIN = 10;
-    bgsettings.IOC_MAX = 40;
-    bgsettings.RBG_FIRST_WIN_HONOR = 30;
-    bgsettings.RBG_FIRST_WIN_ARENA = 25;
-    bgsettings.RBG_WIN_HONOR = 15;
-    bgsettings.RBG_WIN_ARENA = 0;
-    bgsettings.RBG_LOSE_HONOR = 5;
-    bgsettings.RBG_LOSE_ARENA = 0;
+    // world.conf - Power regeneration multiplier setup
+    rateSettings.arenaQueueDiff = 150;
 
-    Arena_Season = 8;
-    Arena_Progress = 1;
-    ArenaQueueDiff = 150;
+    // world.conf - GM Client Channel
+    gmClientSettings.gmClientChannelName = "";
 
-    m_useIrc = false;
-    UnloadMapFiles = false;
-    BreathingEnabled = false;
-    SpeedhackProtection = false;
-    ExtraTalents = false;
-    MaxProfs = 0;
+    // world.conf - Terrain & Collision Settings
+    terrainCollisionSettings.unloadMapFiles = false;
+    terrainCollisionSettings.isCollisionEnabled = false;
+    terrainCollisionSettings.isPathfindingEnabled = false;
 
-    SendStatsOnJoin = false;
+    // world.conf - Log Settings
+    logSettings.logCheaters = false;
+    logSettings.logGmCommands = false;
+    logSettings.logPlayers = false;
+    logSettings.addTimeStampToFileName = false;
 
-    Collision = false;
-    DisableFearMovement = false;
-    compression_threshold = false;
+    // world.conf - Mail System Setup
+    mailSettings.reloadDelayInSeconds = 0;
+    mailSettings.isCostsForGmDisabled = false;
+    mailSettings.isCostsForEveryoneDisabled = false;
+    mailSettings.isDelayItemsDisabled = false;
+    mailSettings.isMessageExpiryDisabled = false;
+    mailSettings.isInterfactionMailEnabled = false;
+    mailSettings.isInterfactionMailForGmEnabled = false;
 
-    flood_lines = 0;
-    flood_seconds = 0;
-    flood_message = false;
+    // world.conf - Startup Options
+    startupSettings.isPreloadingCompleteWorldEnabled = false;
+    startupSettings.isBackgroundLootLoadingEnabled = false;
+    startupSettings.enableMultithreadedLoading = false;
+    startupSettings.enableSpellIdDump = false;
 
-    BCSystemEnable = false;
-    BCInterval = 10;
-    BCTriggerPercentCap = 2;
-    BCOrderMode = 0;
+    // world.conf - Flood Protection Setup
+    floodProtectionSettings.linesBeforeProtection = 0;
+    floodProtectionSettings.secondsBeforeProtectionReset = 0;
+    floodProtectionSettings.enableSendFloodProtectionMessage = false;
 
-    realmAllowTBCcharacters = true;
-    Pathfinding = false;
+    // world.conf - LogonServer Setup
+    logonServerSettings.disablePings = false;
 
-    gamemaster_announceKick = true;
-    show_all_vendor_items = false;
+    // world.conf - AntiHack Setup
+    antiHackSettings.isTeleportHackCheckEnabled = false;
+    antiHackSettings.isSpeedHackCkeckEnabled = false;
+    antiHackSettings.isFallDamageHackCkeckEnabled = false;
+    antiHackSettings.isFlyHackCkeckEnabled = false;
+    antiHackSettings.flyHackThreshold = 0;
+    antiHackSettings.isAntiHackCheckDisabledForGm = true;
 
-    m_AdditionalFun = false;
+    // world.conf - Period Setup
+    // world.conf - Channels Setup
+    // world.conf - Remote Console Setup
+    remoteConsoleSettings.isEnabled = false;
+    remoteConsoleSettings.port = 8092;
 
-    debugFlags = 0;
+    // world.conf - Movement Setup
+    movementSettings.compressIntervalInMs = 1000;             // not used by core
+    movementSettings.compressRate = 1;                    // not used by core
+    movementSettings.compressThresholdCreatures = 15.0f;  // not used by core
+    movementSettings.compressThresholdPlayers = 25.0f;           // not used by core
+
+    // world.conf - Localization Setup
+    // world.conf - Dungeon / Instance Setup
+    instanceSettings.useGroupLeaderInstanceId = false;
+    instanceSettings.isRelativeExpirationEnabled = false;
+    instanceSettings.relativeDailyHeroicInstanceResetHour = 5;
+    instanceSettings.checkTriggerPrerequisitesOnEnter = true;
+
+    // world.conf - BattleGround settings
+    bgSettings.minPlayerCountAlteracValley = 10;
+    bgSettings.maxPlayerCountAlteracValley = 40;
+    bgSettings.minPlayerCountArathiBasin = 5;
+    bgSettings.maxPlayerCountArathiBasin = 15;
+    bgSettings.minPlayerCountWarsongGulch = 5;
+    bgSettings.maxPlayerCountWarsongGulch = 10;
+    bgSettings.minPlayerCountEyeOfTheStorm = 5;
+    bgSettings.maxPlayerCountEyeOfTheStorm = 15;
+    bgSettings.minPlayerCountStrandOfTheAncients = 5;
+    bgSettings.maxPlayerCountStrandOfTheAncients = 15;
+    bgSettings.minPlayerCountIsleOfConquest = 10;
+    bgSettings.maxPlayerCountIsleOfConquest = 40;
+    bgSettings.firstRbgHonorValueToday = 30;
+    bgSettings.firstRbgArenaHonorValueToday = 25;
+    bgSettings.honorableKillsRbg = 15;
+    bgSettings.honorableArenaWinRbg = 0;
+    bgSettings.honorByLosingRbg = 5;
+    bgSettings.honorByLosingArenaRbg = 0;
+
+    // world.conf - Arena Settings
+    arenaSettings.arenaSeason = 8;
+    arenaSettings.arenaProgress = 1;
+    arenaSettings.minPlayerCount2V2 = 2;
+    arenaSettings.maxPlayerCount2V2 = 2;
+    arenaSettings.maxPlayerCount3V3 = 3;
+    arenaSettings.minPlayerCount3V3 = 3;
+    arenaSettings.maxPlayerCount5V5 = 5;
+    arenaSettings.minPlayerCount5V5 = 5;
+
+    // world.conf - Limits settings
+    limitSettings.isLimitSystemEnabled = true;
+    limitSettings.maxAutoAttackDamageCap = 10000;
+    limitSettings.maxSpellDamageCap = 30000;
+    limitSettings.maxHealthCap = 100000;
+    limitSettings.maxManaCap = 80000;
+    limitSettings.maxHonorPoints = 75000;
+    limitSettings.maxArenaPoints = 5000;
+    limitSettings.disconnectPlayerForExceedingLimits = false;
+    limitSettings.broadcastMessageToGmOnExceeding = true;
+
+    // world.conf - MISSING in CONFIG!
+    worldSocketSettings.maxSocketSendBufSize = WORLDSOCKET_SENDBUF_SIZE;
+    worldSocketSettings.maxSocketRecvBufSize = WORLDSOCKET_RECVBUF_SIZE;
+
+    // optional.conf - Optional Settings
+    optionalSettings.playerStartingLevel = 1;
+    optionalSettings.playerLevelCap = DBC_PLAYER_LEVEL_CAP;
+    optionalSettings.playerGeneratedInformationByLevelCap = DBC_PLAYER_LEVEL_CAP; //! no delete
+    optionalSettings.allowTbcCharacters = true;
+    optionalSettings.deactivateMasterLootNinja = false;
+    optionalSettings.loadAdditionalFunScripts = false;
+    optionalSettings.deathKnightStartTalentPoints = 0;
+    //unstuck - Not loaded by core
+    //unstuckcooldown - Not loaded by core
+    //unstucktobind - Not loaded by core
+    optionalSettings.maxProfessions = 0;
+    optionalSettings.skipCinematics = false;
+    optionalSettings.enableInstantLogoutForAccessType = 1;
+    optionalSettings.minDualSpecLevel = 40;
+    optionalSettings.minTalentResetLevel = 10;
+    optionalSettings.showAllVendorItems = false;
+
+    // optional.conf - Inter-faction Options
+    interfactionSettings.isInterfactionChatEnabled = false;
+    interfactionSettings.isInterfactionGroupEnabled = false;
+    interfactionSettings.isInterfactionGuildEnabled = false;
+    interfactionSettings.isInterfactionTradeEnabled = false;
+    interfactionSettings.isInterfactionFriendsEnabled = false;
+    interfactionSettings.isInterfactionMiscEnabled = false;
+    interfactionSettings.isCrossoverCharsCreationEnabled = true;
+
+    // optional.conf - Color Configuration
+    colorSettings.tagColor = 2;
+    colorSettings.tagGmColor = 1;
+    colorSettings.nameColor = 4;
+    colorSettings.msgColor = 6;
+
+    // optional.conf - Game Master Configuration
+    gmSettings.isStartOnGmIslandEnabled = true;
+    gmSettings.disableAchievements = false;
+    gmSettings.listOnlyActiveGms = false;
+    gmSettings.hidePermissions = false;
+    gmSettings.worldAnnounceOnKickPlayer = true;
+
+    // optional.conf - Common Schedule Configuration
+    broadcastSettings.isSystemEnabled = false;
+    broadcastSettings.interval = 10;
+    broadcastSettings.triggerPercentCap = 2;
+    broadcastSettings.orderMode = 0;
+
+    // optional.conf - Extra Class Configurations
+    extraClassSettings.deathKnightPreReq = false;
+    extraClassSettings.deathKnightLimit = false;
+
+    // optional.conf - Gold Settings Configuration
+    goldSettings.isCapEnabled = true;
+    goldSettings.limitAmount = 214748;
+    goldSettings.startAmount = 0;
+
+    // optional.conf - Corpse Decay Settings
+    corpseDecaySettings.normalTimeInSeconds = 60000;
+    corpseDecaySettings.rareTimeInSeconds = 300000;
+    corpseDecaySettings.eliteTimeInSeconds = 300000;
+    corpseDecaySettings.rareEliteTimeInSeconds = 300000;
+    corpseDecaySettings.worldbossTimeInSeconds = 3600000;
+
+    // realms.conf - LogonServer Section
+    logonServerSettings2.port = 8093;
+    logonServerSettings2.realmCount = 1;
+
+    // realms.conf - Realm Section
+    // handled in LogonCommHandler::LoadRealmConfiguration()
 }
 
 void CleanupRandomNumberGenerators();
@@ -463,7 +545,7 @@ bool World::SetInitialWorldSettings()
     ApplyNormalFixes();
 
     LogNotice("GameObjectModel : Loading GameObject models...");
-    LoadGameObjectModelList(sWorld.vMapPath);
+    LoadGameObjectModelList(sWorld.terrainCollisionSettings.vMapPath);
 
     new SpellFactoryMgr;
 
@@ -623,7 +705,7 @@ bool World::SetInitialWorldSettings()
     LogDetail("World : Loading LFG rewards...");
     sLfgMgr.LoadRewards();
 
-    m_queueUpdateTimer = mQueueUpdateInterval;
+    m_queueUpdateTimer = serverSettings.queueUpdateInterval;
     LogNotice("World : Loading loot data...");
     lootmgr.LoadLoot();
 
@@ -844,7 +926,7 @@ void World::SendWorldText(const char* text, WorldSession* self)
     data << uint8(0);
     SendGlobalMessage(&data, self);
 
-    if (announce_output)
+    if (announceSettings.showAnnounceInConsoleOutput)
     {
         LogDetail("WORLD : SendWorldText %s", text);
     }
@@ -1041,7 +1123,7 @@ void World::UpdateQueuedSessions(uint32 diff)
 {
     if (diff >= m_queueUpdateTimer)
     {
-        m_queueUpdateTimer = mQueueUpdateInterval;
+        m_queueUpdateTimer = serverSettings.queueUpdateInterval;
         queueMutex.Acquire();
 
         if (mQueuedSessions.size() == 0)
@@ -1210,7 +1292,7 @@ void TaskList::spawn()
     thread_count.SetVal(0);
 
     uint32 threadcount;
-    if (Config.MainConfig.GetBoolDefault("Startup", "EnableMultithreadedLoading", true))
+    if (sWorld.startupSettings.enableMultithreadedLoading)
     {
         // get processor count
 #ifndef WIN32
@@ -1327,25 +1409,118 @@ void World::Rehash(bool load)
             return;
         }
     }
+
     if (!ChannelMgr::getSingletonPtr())
         new ChannelMgr;
 
     if (!MailSystem::getSingletonPtr())
-        new MailSystem;
+        new MailSystem;  
 
-    channelmgr.seperatechannels = Config.MainConfig.GetBoolDefault("Server", "SeperateChatChannels", false);
-    MapPath = Config.MainConfig.GetStringDefault("Terrain", "MapPath", "maps");
-    vMapPath = Config.MainConfig.GetStringDefault("Terrain", "vMapPath", "vmaps");
-    mMapPath = Config.MainConfig.GetStringDefault("Terrain", "mMapPath", "mmaps");
-    UnloadMapFiles = Config.MainConfig.GetBoolDefault("Terrain", "UnloadMapFiles", true);
-    Collision = Config.MainConfig.GetBoolDefault("Terrain", "Collision", false);
-    Pathfinding = Config.MainConfig.GetBoolDefault("Terrain", "Pathfinding", false);
+    // world.conf - Mysql Database Section
+    worldDbSettings.host = Config.MainConfig.GetStringDefault("WorldDatabase", "Hostname", "");
+    worldDbSettings.user = Config.MainConfig.GetStringDefault("WorldDatabase", "Username", "");
+    worldDbSettings.password = Config.MainConfig.GetStringDefault("WorldDatabase", "Password", "");
+    worldDbSettings.dbName = Config.MainConfig.GetStringDefault("WorldDatabase", "Name", "");
+    worldDbSettings.port = Config.MainConfig.GetIntDefault("WorldDatabase", "Port", 3306);
+    worldDbSettings.connections = Config.MainConfig.GetIntDefault("WorldDatabase", "ConnectionCount", 3);
 
-    BreathingEnabled = Config.MainConfig.GetBoolDefault("Server", "EnableBreathing", true);
-    SendStatsOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", true);
-    compression_threshold = Config.MainConfig.GetIntDefault("Server", "CompressionThreshold", 1000);
+    charDbSettings.host = Config.MainConfig.GetStringDefault("CharacterDatabase", "Hostname", "");
+    charDbSettings.user = Config.MainConfig.GetStringDefault("CharacterDatabase", "Username", "");
+    charDbSettings.password = Config.MainConfig.GetStringDefault("CharacterDatabase", "Password", "");
+    charDbSettings.dbName = Config.MainConfig.GetStringDefault("CharacterDatabase", "Name", "");
+    charDbSettings.port = Config.MainConfig.GetIntDefault("CharacterDatabase", "Port", 3306);
+    charDbSettings.connections = Config.MainConfig.GetIntDefault("CharacterDatabase", "ConnectionCount", 5);
 
-    // load regeneration rates.
+    // world.conf - Listen Config
+    listenSettings.listenHost = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
+    listenSettings.listenPort = Config.MainConfig.GetIntDefault("Listen", "WorldServerPort", 8129);
+
+    // world.conf - Log Level Setup
+    logLevelSettings.fileLogLevel = Config.MainConfig.GetIntDefault("LogLevel", "File", 0);
+    logLevelSettings.debugFlags = Config.MainConfig.GetIntDefault("LogLevel", "DebugFlags", 0);
+    logLevelSettings.logWorldPacket = Config.MainConfig.GetBoolDefault("LogLevel", "World", false);
+    logLevelSettings.disableCrashdump = Config.MainConfig.GetBoolDefault("LogLevel", "DisableCrashdumpReport", false);
+
+    AscLog.SetFileLoggingLevel(logLevelSettings.fileLogLevel);
+    AscLog.SetDebugFlags(logLevelSettings.debugFlags);
+
+    // world.conf - Server Settings
+    serverSettings.playerLimit = Config.MainConfig.GetIntDefault("Server", "PlayerLimit", 1000);
+    serverSettings.messageOfTheDay = Config.MainConfig.GetStringDefault("Server", "Motd", "AscEmu Default MOTD");
+    serverSettings.sendStatsOnJoin = Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", true);
+    serverSettings.enableBreathing = Config.MainConfig.GetBoolDefault("Server", "EnableBreathing", true);
+    serverSettings.seperateChatChannels = Config.MainConfig.GetBoolDefault("Server", "SeperateChatChannels", false);
+    serverSettings.compressionThreshold = Config.MainConfig.GetIntDefault("Server", "CompressionThreshold", 1000);
+    serverSettings.queueUpdateInterval = Config.MainConfig.GetIntDefault("Server", "QueueUpdateInterval", 5000);
+    serverSettings.secondsBeforeKickAFKPlayers = Config.MainConfig.GetIntDefault("Server", "KickAFKPlayers", 0);
+    serverSettings.secondsBeforeTimeOut = uint32(1000 * Config.MainConfig.GetIntDefault("Server", "ConnectionTimeout", 180));
+    serverSettings.realmType = Config.MainConfig.GetBoolDefault("Server", "RealmType", false);
+    serverSettings.enableAdjustPriority = Config.MainConfig.GetBoolDefault("Server", "AdjustPriority", false);
+    serverSettings.requireAllSignatures = Config.MainConfig.GetBoolDefault("Server", "RequireAllSignatures", false);
+    serverSettings.showGmInWhoList = Config.MainConfig.GetBoolDefault("Server", "ShowGMInWhoList", true);
+    serverSettings.mapUnloadTime = Config.MainConfig.GetIntDefault("Server", "MapUnloadTime", MAP_CELL_DEFAULT_UNLOAD_TIME);
+    serverSettings.mapCellNumber = Config.MainConfig.GetIntDefault("Server", "MapCellNumber", 1);
+    serverSettings.enableLimitedNames = Config.MainConfig.GetBoolDefault("Server", "LimitedNames", true);
+    serverSettings.useAccountData = Config.MainConfig.GetBoolDefault("Server", "UseAccountData", false);
+    serverSettings.requireGmForCommands = !Config.MainConfig.GetBoolDefault("Server", "AllowPlayerCommands", false);
+    serverSettings.enableLfgJoinForNonLfg = Config.MainConfig.GetBoolDefault("Server", "EnableLFGJoin", false);
+    serverSettings.gmtTimeZone = Config.MainConfig.GetIntDefault("Server", "TimeZone", 0);
+    serverSettings.disableFearMovement = Config.MainConfig.GetBoolDefault("Server", "DisableFearMovement", 0);
+    serverSettings.saveExtendedCharData = Config.MainConfig.GetBoolDefault("Server", "SaveExtendedCharData", false);
+    serverSettings.skipAttunementForGm = Config.MainConfig.GetBoolDefault("Server", "SkipAttunementsForGM", true);
+    serverSettings.clientCacheVersion = uint32(Config.MainConfig.GetIntDefault("Server", "CacheVersion", 12340));
+    serverSettings.banTable = Config.MainConfig.GetStringDefault("Server", "BanTable", "");
+
+    SetPlayerLimit(serverSettings.playerLimit);
+    SetMotd(serverSettings.messageOfTheDay.c_str());
+    SetKickAFKPlayerTime(serverSettings.secondsBeforeKickAFKPlayers);
+
+    if (m_banTable != NULL)
+        free(m_banTable);
+
+    m_banTable = NULL;
+    std::string s = serverSettings.banTable;
+    if (!s.empty())
+        m_banTable = strdup(s.c_str());
+
+    if (serverSettings.mapUnloadTime == 0)
+    {
+        LOG_ERROR("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of %u", MAP_CELL_DEFAULT_UNLOAD_TIME);
+        serverSettings.mapUnloadTime = MAP_CELL_DEFAULT_UNLOAD_TIME;
+    }
+
+    if (serverSettings.mapCellNumber == 0)
+    {
+        LOG_ERROR("MapCellNumber is set to 0. Congrats, no MapCells will be loaded. Overriding it to default value of 1");
+        serverSettings.mapCellNumber = 1;
+    }
+
+#ifdef WIN32
+    DWORD current_priority_class = GetPriorityClass(GetCurrentProcess());
+    bool high = serverSettings.enableAdjustPriority;
+
+    if (high)
+    {
+        if (current_priority_class != HIGH_PRIORITY_CLASS)
+            SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
+    }
+    else
+    {
+        if (current_priority_class != NORMAL_PRIORITY_CLASS)
+            SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+    }
+#endif
+
+    channelmgr.seperatechannels = serverSettings.seperateChatChannels;
+
+    // world.conf - Announce Configuration
+    announceSettings.announceTag = Config.MainConfig.GetStringDefault("Announce", "Tag", "Staff");
+    announceSettings.enableGmAdminTag = Config.MainConfig.GetBoolDefault("Announce", "GMAdminTag", false);
+    announceSettings.showNameInAnnounce = Config.MainConfig.GetBoolDefault("Announce", "NameinAnnounce", true);
+    announceSettings.showNameInWAnnounce = Config.MainConfig.GetBoolDefault("Announce", "NameinWAnnounce", true);
+    announceSettings.showAnnounceInConsoleOutput = Config.MainConfig.GetBoolDefault("Announce", "ShowInConsole", true);
+
+    // world.conf - Power regeneration multiplier setup
     setRate(RATE_HEALTH, Config.MainConfig.GetFloatDefault("Rates", "Health", 1)); // health
     setRate(RATE_POWER1, Config.MainConfig.GetFloatDefault("Rates", "Power1", 1)); // mana
     setRate(RATE_POWER2, Config.MainConfig.GetFloatDefault("Rates", "Power2", 1)); // rage
@@ -1373,294 +1548,261 @@ void World::Rehash(bool load)
     setRate(RATE_SKILLRATE, Config.MainConfig.GetFloatDefault("Rates", "SkillRate", 1.0f));
     setIntRate(INTRATE_COMPRESSION, Config.MainConfig.GetIntDefault("Rates", "Compression", 1));
     setIntRate(INTRATE_PVPTIMER, Config.MainConfig.GetIntDefault("Rates", "PvPTimer", 300000));
-    ArenaQueueDiff = Config.MainConfig.GetIntDefault("Rates", "ArenaQueueDiff", 150);
+    rateSettings.arenaQueueDiff = Config.MainConfig.GetIntDefault("Rates", "ArenaQueueDiff", 150);
     setRate(RATE_ARENAPOINTMULTIPLIER2X, Config.MainConfig.GetFloatDefault("Rates", "ArenaMultiplier2x", 1.0f));
     setRate(RATE_ARENAPOINTMULTIPLIER3X, Config.MainConfig.GetFloatDefault("Rates", "ArenaMultiplier3x", 1.0f));
     setRate(RATE_ARENAPOINTMULTIPLIER5X, Config.MainConfig.GetFloatDefault("Rates", "ArenaMultiplier5x", 1.0f));
-    SetPlayerLimit(Config.MainConfig.GetIntDefault("Server", "PlayerLimit", 1000));
-    SetMotd(Config.MainConfig.GetStringDefault("Server", "Motd", "Arcemu Default MOTD").c_str());
-    mQueueUpdateInterval = Config.MainConfig.GetIntDefault("Server", "QueueUpdateInterval", 5000);
-    SetKickAFKPlayerTime(Config.MainConfig.GetIntDefault("Server", "KickAFKPlayers", 0));
 
-    AscLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
+    // world.conf - GM Client Channel
+    gmClientSettings.gmClientChannelName = Config.MainConfig.GetStringDefault("GMClient", "GmClientChannel", "");
 
-    debugFlags = Config.MainConfig.GetIntDefault("LogLevel", "DebugFlags", 0);
-    AscLog.SetDebugFlags(debugFlags);
+    // world.conf - Terrain & Collision Settings
+    terrainCollisionSettings.MapPath = Config.MainConfig.GetStringDefault("Terrain", "MapPath", "maps");
+    terrainCollisionSettings.vMapPath = Config.MainConfig.GetStringDefault("Terrain", "vMapPath", "vmaps");
+    terrainCollisionSettings.mMapPath = Config.MainConfig.GetStringDefault("Terrain", "mMapPath", "mmaps");
+    terrainCollisionSettings.unloadMapFiles = Config.MainConfig.GetBoolDefault("Terrain", "UnloadMapFiles", true);
+    terrainCollisionSettings.isCollisionEnabled = Config.MainConfig.GetBoolDefault("Terrain", "Collision", false);
+    terrainCollisionSettings.isPathfindingEnabled = Config.MainConfig.GetBoolDefault("Terrain", "Pathfinding", false);
 
-    gm_skip_attunement = Config.MainConfig.GetBoolDefault("Server", "SkipAttunementsForGM", true);
+    // world.conf - Log Settings
+    logSettings.logCheaters = Config.MainConfig.GetBoolDefault("Log", "Cheaters", false);
+    logSettings.logGmCommands = Config.MainConfig.GetBoolDefault("Log", "GMCommands", false);
+    logSettings.logPlayers = Config.MainConfig.GetBoolDefault("Log", "Player", false);
+    logSettings.addTimeStampToFileName = Config.MainConfig.GetBoolDefault("log", "TimeStamp", false);
 
-    DisableFearMovement = Config.MainConfig.GetBoolDefault("Server", "DisableFearMovement", 0);
-    SocketRecvBufSize = Config.MainConfig.GetIntDefault("WorldSocket", "RecvBufSize", WORLDSOCKET_RECVBUF_SIZE);
-    SocketSendBufSize = Config.MainConfig.GetIntDefault("WorldSocket", "SendBufSize", WORLDSOCKET_SENDBUF_SIZE);
-
-    bool log_enabled = Config.MainConfig.GetBoolDefault("Log", "Cheaters", false);
-    if (Anticheat_Log->IsOpen())
-    {
-        if (!log_enabled)
-            Anticheat_Log->Close();
-    }
-    else if (log_enabled)
-        Anticheat_Log->Open();
-
-    log_enabled = Config.MainConfig.GetBoolDefault("Log", "GMCommands", false);
-    if (GMCommand_Log->IsOpen())
-    {
-        if (!log_enabled)
-            GMCommand_Log->Close();
-    }
-    else if (log_enabled)
-        GMCommand_Log->Open();
-
-    log_enabled = Config.MainConfig.GetBoolDefault("Log", "Player", false);
-    if (Player_Log->IsOpen())
-    {
-        if (!log_enabled)
-            Player_Log->Close();
-    }
-    else
-    {
-        if (log_enabled)
-            Player_Log->Open();
-    }
-
-#ifdef WIN32
-    DWORD current_priority_class = GetPriorityClass(GetCurrentProcess());
-    bool high = Config.MainConfig.GetBoolDefault("Server", "AdjustPriority", false);
-
-    if (high)
-    {
-        if (current_priority_class != HIGH_PRIORITY_CLASS)
-            SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
-    }
-    else
-    {
-        if (current_priority_class != NORMAL_PRIORITY_CLASS)
-            SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
-    }
-#endif
-
-    if (!Config.MainConfig.GetString("GMClient", "GmClientChannel", &GmClientChannel))
-    {
-        GmClientChannel = "";
-    }
-
-    m_reqGmForCommands = !Config.MainConfig.GetBoolDefault("Server", "AllowPlayerCommands", false);
-    m_lfgForNonLfg = Config.MainConfig.GetBoolDefault("Server", "EnableLFGJoin", false);
-    CacheVersion = uint32(Config.MainConfig.GetIntDefault("Server", "CacheVersion", 12340));
-
-    realmtype = Config.MainConfig.GetBoolDefault("Server", "RealmType", false);
-    TimeOut = uint32(1000 * Config.MainConfig.GetIntDefault("Server", "ConnectionTimeout", 180));
-    GMTTimeZone = Config.MainConfig.GetIntDefault("Server", "TimeZone", 0);
+    // world.conf - Mail System Setup
+    mailSettings.reloadDelayInSeconds = Config.MainConfig.GetIntDefault("Mail", "ReloadDelay", 0);
+    mailSettings.isCostsForGmDisabled = Config.MainConfig.GetBoolDefault("Mail", "DisablePostageCostsForGM", true);
+    mailSettings.isCostsForEveryoneDisabled = Config.MainConfig.GetBoolDefault("Mail", "DisablePostageCosts", false);
+    mailSettings.isDelayItemsDisabled = Config.MainConfig.GetBoolDefault("Mail", "DisablePostageDelayItems", true);
+    mailSettings.isMessageExpiryDisabled = Config.MainConfig.GetBoolDefault("Mail", "DisableMessageExpiry", false);
+    mailSettings.isInterfactionMailEnabled = Config.MainConfig.GetBoolDefault("Mail", "EnableInterfactionMail", true);
+    mailSettings.isInterfactionMailForGmEnabled = Config.MainConfig.GetBoolDefault("Mail", "EnableInterfactionForGM", true);
 
     uint32 config_flags = 0;
-    if (Config.MainConfig.GetBoolDefault("Mail", "DisablePostageCostsForGM", true))
+
+    if (mailSettings.isCostsForGmDisabled)
         config_flags |= MAIL_FLAG_NO_COST_FOR_GM;
 
-    if (Config.MainConfig.GetBoolDefault("Mail", "DisablePostageCosts", false))
+    if (mailSettings.isCostsForEveryoneDisabled)
         config_flags |= MAIL_FLAG_DISABLE_POSTAGE_COSTS;
 
-    if (Config.MainConfig.GetBoolDefault("Mail", "DisablePostageDelayItems", true))
+    if (mailSettings.isDelayItemsDisabled)
         config_flags |= MAIL_FLAG_DISABLE_HOUR_DELAY_FOR_ITEMS;
 
-    if (Config.MainConfig.GetBoolDefault("Mail", "DisableMessageExpiry", false))
+    if (mailSettings.isMessageExpiryDisabled)
         config_flags |= MAIL_FLAG_NO_EXPIRY;
 
-    if (Config.MainConfig.GetBoolDefault("Mail", "EnableInterfactionMail", true))
+    if (mailSettings.isInterfactionMailEnabled)
         config_flags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION;
 
-    if (Config.MainConfig.GetBoolDefault("Mail", "EnableInterfactionForGM", true))
+    if (mailSettings.isInterfactionMailForGmEnabled)
         config_flags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION_GM;
 
     sMailSystem.config_flags = config_flags;
-    flood_lines = Config.MainConfig.GetIntDefault("FloodProtection", "Lines", 0);
-    flood_seconds = Config.MainConfig.GetIntDefault("FloodProtection", "Seconds", 0);
-    flood_message = Config.MainConfig.GetBoolDefault("FloodProtection", "SendMessage", false);
-    show_gm_in_who_list = Config.MainConfig.GetBoolDefault("Server", "ShowGMInWhoList", true);
-    interfaction_chat = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionChat", false);
-    interfaction_group = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionGroup", false);
-    interfaction_guild = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionGuild", false);
-    interfaction_trade = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionTrade", false);
-    interfaction_friend = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionFriends", false);
-    interfaction_misc = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionMisc", false);
-    crossover_chars = Config.OptionalConfig.GetBoolDefault("Interfaction", "CrossOverCharacters", false);
 
-    gamemaster_startonGMIsland = Config.OptionalConfig.GetBoolDefault("GameMaster", "StartOnGMIsland", false);
-    gamemaster_disableachievements = Config.OptionalConfig.GetBoolDefault("GameMaster", "DisableAchievements", false);
-    gamemaster_listOnlyActiveGMs = Config.OptionalConfig.GetBoolDefault("GameMaster", "ListOnlyActiveGMs", false);
-    gamemaster_hidePermissions = Config.OptionalConfig.GetBoolDefault("GameMaster", "HidePermissions", false);
-    gamemaster_announceKick = Config.OptionalConfig.GetBoolDefault("GameMaster", "AnnounceKick", true);
+    // world.conf - Startup Options
+    //startupSettings.Preloading;                    // not used
+    //startupSettings.BackgroundLootLoading;         // not used, not in config
+    startupSettings.enableMultithreadedLoading = Config.MainConfig.GetBoolDefault("Startup", "EnableMultithreadedLoading", true);
+    startupSettings.enableSpellIdDump = Config.MainConfig.GetBoolDefault("Startup", "EnableSpellIDDump", false);
+    startupSettings.additionalTableLoads = Config.MainConfig.GetStringDefault("Startup", "LoadAdditionalTables", "");
 
-    show_all_vendor_items = Config.OptionalConfig.GetBoolDefault("Optional", "ShowAllVendorItems", false);
+    // world.conf - Flood Protection Setup
+    floodProtectionSettings.linesBeforeProtection = Config.MainConfig.GetIntDefault("FloodProtection", "Lines", 0);
+    floodProtectionSettings.secondsBeforeProtectionReset = Config.MainConfig.GetIntDefault("FloodProtection", "Seconds", 0);
+    floodProtectionSettings.enableSendFloodProtectionMessage = Config.MainConfig.GetBoolDefault("FloodProtection", "SendMessage", false);
 
-    m_levelCap = Config.OptionalConfig.GetIntDefault("Optional", "LevelCap", DBC_PLAYER_LEVEL_CAP);
-    m_genLevelCap = Config.OptionalConfig.GetIntDefault("Optional", "GenLevelCap", DBC_PLAYER_LEVEL_CAP); //! no delete
-    StartingLevel = Config.OptionalConfig.GetIntDefault("Optional", "StartingLevel", 1);
-    if (StartingLevel > static_cast<int32>(m_levelCap))
-        StartingLevel = static_cast<int32>(m_levelCap);
+    if (!floodProtectionSettings.linesBeforeProtection || !floodProtectionSettings.secondsBeforeProtectionReset)
+        floodProtectionSettings.linesBeforeProtection = floodProtectionSettings.secondsBeforeProtectionReset = 0;
 
-    antiMasterLootNinja = Config.OptionalConfig.GetBoolDefault("Optional", "AntiMasterLootNinja", false);
-    realmAllowTBCcharacters = Config.OptionalConfig.GetBoolDefault("Optional", "AllowTBC", true);
+    // world.conf - LogonServer Setup
+    logonServerSettings.disablePings = Config.MainConfig.GetBoolDefault("LogonServer", "DisablePings", false);
+    logonServerSettings.remotePassword = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3");
 
-    Arena_Season = Config.MainConfig.GetIntDefault("Arena", "Season", 1);
-    Arena_Progress = Config.MainConfig.GetIntDefault("Arena", "Progress", 1);
+    // world.conf - AntiHack Setup
+    antiHackSettings.isTeleportHackCheckEnabled = Config.MainConfig.GetBoolDefault("AntiHack", "Teleport", true);
+    antiHackSettings.isSpeedHackCkeckEnabled = Config.MainConfig.GetBoolDefault("AntiHack", "Speed", true);
+    antiHackSettings.isFallDamageHackCkeckEnabled = Config.MainConfig.GetBoolDefault("AntiHack", "FallDamage", true);
+    antiHackSettings.isFlyHackCkeckEnabled = Config.MainConfig.GetBoolDefault("AntiHack", "Flight", true);
+    antiHackSettings.flyHackThreshold = Config.MainConfig.GetIntDefault("AntiHack", "FlightThreshold", 8);
+    antiHackSettings.isAntiHackCheckDisabledForGm = Config.MainConfig.GetBoolDefault("AntiHack", "DisableOnGM", true);
 
-    announce_tag = Config.MainConfig.GetStringDefault("Announce", "Tag", "Staff");
-    GMAdminTag = Config.MainConfig.GetBoolDefault("Announce", "GMAdminTag", false);
-    NameinAnnounce = Config.MainConfig.GetBoolDefault("Announce", "NameinAnnounce", true);
-    NameinWAnnounce = Config.MainConfig.GetBoolDefault("Announce", "NameinWAnnounce", true);
-    announce_output = Config.MainConfig.GetBoolDefault("Announce", "ShowInConsole", true);
-    announce_tagcolor = Config.OptionalConfig.GetIntDefault("Color", "AnnTagColor", 2);
-    announce_gmtagcolor = Config.OptionalConfig.GetIntDefault("Color", "AnnGMTagColor", 1);
-    announce_namecolor = Config.OptionalConfig.GetIntDefault("Color", "AnnNameColor", 4);
-    announce_msgcolor = Config.OptionalConfig.GetIntDefault("Color", "AnnMsgColor", 10);
-    AnnounceColorChooser(announce_tagcolor, announce_gmtagcolor, announce_namecolor, announce_msgcolor);
+    // world.conf - Period Setup
+    periodSettings.honorUpdate = Config.MainConfig.GetStringDefault("Periods", "HonorUpdate", "daily");
+    periodSettings.arenaUpdate = Config.MainConfig.GetStringDefault("Periods", "ArenaUpdate", "weekly");
+    periodSettings.dailyUpdate = Config.MainConfig.GetStringDefault("Periods", "DailyUpdate", "daily");
 
-    // broadcast system
-    BCTriggerPercentCap = Config.OptionalConfig.GetIntDefault("CommonSchedule", "BroadCastTriggerPercentCap", 100);
-    BCInterval = Config.OptionalConfig.GetIntDefault("CommonSchedule", "BroadCastInterval", 1);
-    BCSystemEnable = Config.OptionalConfig.GetBoolDefault("CommonSchedule", "AutoBroadCast", false);
-    BCOrderMode = Config.OptionalConfig.GetIntDefault("CommonSchedule", "BroadCastOrderMode", 0);
+    // world.conf - Channels Setup
+    channelSettings.bannedChannels = Config.MainConfig.GetStringDefault("Channels", "BannedChannels", "");
+    channelSettings.minimumTalkLevel = Config.MainConfig.GetStringDefault("Channels", "MinimumLevel", "");
 
-    if (BCInterval < 10)
-        BCInterval = 10;
-    else if (BCInterval > 1440)
-        BCInterval = 1440;
-    if (BCTriggerPercentCap >= 99)
-        BCTriggerPercentCap = 98;
-    else if (BCTriggerPercentCap <= 1)
-        BCTriggerPercentCap = 0;
-    if (BCOrderMode < 0)
-        BCOrderMode = 0;
-    else if (BCOrderMode > 1)
-        BCOrderMode = 1;
+    // world.conf - Remote Console Setup
+    remoteConsoleSettings.isEnabled = Config.MainConfig.GetBoolDefault("RemoteConsole", "Enabled", false);
+    remoteConsoleSettings.host = Config.MainConfig.GetStringDefault("RemoteConsole", "Host", "0.0.0.0");
+    remoteConsoleSettings.port = Config.MainConfig.GetIntDefault("RemoteConsole", "Port", 8092);
 
+    // world.conf - Movement Setup
+    movementSettings.compressIntervalInMs = Config.MainConfig.GetIntDefault("Movement", "FlushInterval", 1000);
+    movementSettings.compressRate = Config.MainConfig.GetIntDefault("Movement", "CompressRate", 1);
 
-    if (!flood_lines || !flood_seconds)
-        flood_lines = flood_seconds = 0;
+    movementSettings.compressThresholdCreatures = Config.MainConfig.GetFloatDefault("Movement", "CompressThresholdCreatures", 15.0f);
+    movementSettings.compressThresholdCreatures *= movementSettings.compressThresholdCreatures;
 
-    MaxProfs = (uint32)Config.OptionalConfig.GetIntDefault("Optional", "MaxProfessions", 2);
-    m_SkipCinematics = Config.OptionalConfig.GetBoolDefault("Optional", "SkipCinematic", false);
-    m_InstantLogout = Config.OptionalConfig.GetIntDefault("Optional", "InstantLogout", 1);
-    m_MinDualSpecLevel = Config.OptionalConfig.GetIntDefault("Optional", "MinDualSpecLevel", 40);
-    m_MinTalentResetLevel = Config.OptionalConfig.GetIntDefault("Optional", "MinTalentResetLevel", 10);
+    movementSettings.compressThresholdPlayers = Config.MainConfig.GetFloatDefault("Movement", "CompressThreshold", 25.0f);
+    movementSettings.compressThresholdPlayers *= movementSettings.compressThresholdPlayers; // square it to avoid sqrt() on checks
 
-    //CorpseDecaySettings
-    m_DecayNormal = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayNormal", 60)));
-    m_DecayRare = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayRare", 300)));
-    m_DecayElite = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayElite", 300)));
-    m_DecayRareElite = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayRareElite", 300)));
-    m_DecayWorldboss = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayWorldboss", 3600)));
+    // world.conf - Localization Setup
+    localizationSettings.localizedBindings = Config.MainConfig.GetStringDefault("Localization", "LocaleBindings", "");
 
-    // Max Gold Settings
-    GoldCapEnabled = Config.OptionalConfig.GetBoolDefault("GoldSettings", "EnableGoldCap", true);
-    GoldLimit = Config.OptionalConfig.GetIntDefault("GoldSettings", "MaximumGold", 214000);
-    if (GoldLimit)
-        GoldLimit *= 10000; // Convert into gsc (gold, silver, copper)
-    GoldStartAmount = Config.OptionalConfig.GetIntDefault("GoldSettings", "StartingGold", 0);
-    if (GoldStartAmount)
-        GoldStartAmount *= 10000;
+    // world.conf - Dungeon / Instance Setup
+    instanceSettings.useGroupLeaderInstanceId = Config.MainConfig.GetBoolDefault("InstanceHandling", "TakeGroupLeaderID", true);
+    instanceSettings.isRelativeExpirationEnabled = Config.MainConfig.GetBoolDefault("InstanceHandling", "SlidingExpiration", false);
+    instanceSettings.relativeDailyHeroicInstanceResetHour = Config.MainConfig.GetIntDefault("InstanceHandling", "DailyHeroicInstanceResetHour", 5);
+    instanceSettings.checkTriggerPrerequisitesOnEnter = Config.MainConfig.GetBoolDefault("InstanceHandling", "CheckTriggerPrerequisites", true);
 
-    DKStartTalentPoints = Config.OptionalConfig.GetIntDefault("Optional", "DKStartingTalents", 0);
+    if (instanceSettings.relativeDailyHeroicInstanceResetHour < 0)
+        instanceSettings.relativeDailyHeroicInstanceResetHour = 0;
+    if (instanceSettings.relativeDailyHeroicInstanceResetHour > 23)
+        instanceSettings.relativeDailyHeroicInstanceResetHour = 23;
 
-    map_unload_time = Config.MainConfig.GetIntDefault("Server", "MapUnloadTime", MAP_CELL_DEFAULT_UNLOAD_TIME);
-    if (map_unload_time == 0)
-    {
-        LOG_ERROR("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of %u", MAP_CELL_DEFAULT_UNLOAD_TIME);
-        map_unload_time = MAP_CELL_DEFAULT_UNLOAD_TIME;
-    }
+    // world.conf - BattleGround settings
+    bgSettings.minPlayerCountAlteracValley = Config.MainConfig.GetIntDefault("Battleground", "AV_MIN", 10);
+    bgSettings.maxPlayerCountAlteracValley = Config.MainConfig.GetIntDefault("Battleground", "AV_MAX", 40);
+    bgSettings.minPlayerCountArathiBasin = Config.MainConfig.GetIntDefault("Battleground", "AB_MIN", 4);
+    bgSettings.maxPlayerCountArathiBasin = Config.MainConfig.GetIntDefault("Battleground", "AB_MAX", 15);
+    bgSettings.minPlayerCountWarsongGulch = Config.MainConfig.GetIntDefault("Battleground", "WSG_MIN", 2);
+    bgSettings.maxPlayerCountWarsongGulch = Config.MainConfig.GetIntDefault("Battleground", "WSG_MAX", 10);
+    bgSettings.minPlayerCountEyeOfTheStorm = Config.MainConfig.GetIntDefault("Battleground", "EOTS_MIN", 4);
+    bgSettings.maxPlayerCountEyeOfTheStorm = Config.MainConfig.GetIntDefault("Battleground", "EOTS_MAX", 15);
+    bgSettings.minPlayerCountStrandOfTheAncients = Config.MainConfig.GetIntDefault("Battleground", "SOTA_MIN", 10);
+    bgSettings.maxPlayerCountStrandOfTheAncients = Config.MainConfig.GetIntDefault("Battleground", "SOTA_MAX", 15);
+    bgSettings.minPlayerCountIsleOfConquest = Config.MainConfig.GetIntDefault("Battleground", "IOC_MIN", 10);
+    bgSettings.maxPlayerCountIsleOfConquest = Config.MainConfig.GetIntDefault("Battleground", "IOC_MAX", 15);
+    bgSettings.firstRbgHonorValueToday = Config.MainConfig.GetIntDefault("Battleground", "RBG_FIRST_WIN_HONOR", 30);
+    bgSettings.firstRbgArenaHonorValueToday = Config.MainConfig.GetIntDefault("Battleground", "RBG_FIRST_WIN_ARENA", 25);
+    bgSettings.honorableKillsRbg = Config.MainConfig.GetIntDefault("Battleground", "RBG_WIN_HONOR", 15);
+    bgSettings.honorableArenaWinRbg = Config.MainConfig.GetIntDefault("Battleground", "RBG_WIN_ARENA", 0);
+    bgSettings.honorByLosingRbg = Config.MainConfig.GetIntDefault("Battleground", "RBG_LOSE_HONOR", 5);
+    bgSettings.honorByLosingArenaRbg = Config.MainConfig.GetIntDefault("Battleground", "RBG_LOSE_ARENA", 0);
 
-    map_cell_number = Config.MainConfig.GetIntDefault("Server", "MapCellNumber", 1);
-    if (map_cell_number == 0)
-    {
-        LOG_ERROR("MapCellNumber is set to 0. Congrats, no MapCells will be loaded. Overriding it to default value of 1");
-        map_cell_number = 1;
-    }
+    // world.conf - Arena Settings
+    arenaSettings.arenaSeason = Config.MainConfig.GetIntDefault("Arena", "Season", 1);
+    arenaSettings.arenaProgress = Config.MainConfig.GetIntDefault("Arena", "Progress", 1);
+    arenaSettings.minPlayerCount2V2 = Config.MainConfig.GetIntDefault("Arena", "2V2_MIN", 2);
+    arenaSettings.maxPlayerCount2V2 = Config.MainConfig.GetIntDefault("Arena", "2V2_MAX", 2);
+    arenaSettings.minPlayerCount3V3 = Config.MainConfig.GetIntDefault("Arena", "3V3_MIN", 3);
+    arenaSettings.maxPlayerCount3V3 = Config.MainConfig.GetIntDefault("Arena", "3V3_MAX", 3);
+    arenaSettings.minPlayerCount5V5 = Config.MainConfig.GetIntDefault("Arena", "5V5_MIN", 5);
+    arenaSettings.maxPlayerCount5V5 = Config.MainConfig.GetIntDefault("Arena", "5V5_MAX", 5);
 
-    antihack_teleport = Config.MainConfig.GetBoolDefault("AntiHack", "Teleport", true);
-    antihack_speed = Config.MainConfig.GetBoolDefault("AntiHack", "Speed", true);
-    antihack_flight = Config.MainConfig.GetBoolDefault("AntiHack", "Flight", true);
-    flyhack_threshold = Config.MainConfig.GetIntDefault("AntiHack", "FlightThreshold", 8);
-    no_antihack_on_gm = Config.MainConfig.GetBoolDefault("AntiHack", "DisableOnGM", true);
-    SpeedhackProtection = antihack_speed;
-    m_limitedNames = Config.MainConfig.GetBoolDefault("Server", "LimitedNames", true);
-    m_useAccountData = Config.MainConfig.GetBoolDefault("Server", "UseAccountData", false);
+    // world.conf - Limits settings
+    limitSettings.isLimitSystemEnabled = Config.MainConfig.GetBoolDefault("Limits", "Enable", true);
+    limitSettings.maxAutoAttackDamageCap = (uint32)Config.MainConfig.GetIntDefault("Limits", "AutoAttackDmg", 10000);
+    limitSettings.maxSpellDamageCap = (uint32)Config.MainConfig.GetIntDefault("Limits", "SpellDmg", 30000);
+    limitSettings.maxHealthCap = (uint32)Config.MainConfig.GetIntDefault("Limits", "Health", 80000);
+    limitSettings.maxManaCap = (uint32)Config.MainConfig.GetIntDefault("Limits", "Mana", 80000);
+    limitSettings.maxHonorPoints = (uint32)Config.MainConfig.GetIntDefault("Limits", "Honor", 75000);
+    limitSettings.maxArenaPoints = (uint32)Config.MainConfig.GetIntDefault("Limits", "Arena", 5000);
+    limitSettings.disconnectPlayerForExceedingLimits = Config.MainConfig.GetBoolDefault("Limits", "Disconnect", false);
+    limitSettings.broadcastMessageToGmOnExceeding = Config.MainConfig.GetBoolDefault("Limits", "BroadcastGMs", true);
 
-    instance_TakeGroupLeaderID = Config.MainConfig.GetBoolDefault("InstanceHandling", "TakeGroupLeaderID", true);
-    instance_SlidingExpiration = Config.MainConfig.GetBoolDefault("InstanceHandling", "SlidingExpiration", false);
-    instance_DailyHeroicInstanceResetHour = Config.MainConfig.GetIntDefault("InstanceHandling", "DailyHeroicInstanceResetHour", 5);
-    // cebernic: wanna no attunement xD?
-    instance_CheckTriggerPrerequisites = Config.MainConfig.GetBoolDefault("InstanceHandling", "CheckTriggerPrerequisites", true);
+    // world.conf - MISSING in CONFIG!
+    worldSocketSettings.maxSocketRecvBufSize = Config.MainConfig.GetIntDefault("WorldSocket", "RecvBufSize", WORLDSOCKET_RECVBUF_SIZE);
+    worldSocketSettings.maxSocketSendBufSize = Config.MainConfig.GetIntDefault("WorldSocket", "SendBufSize", WORLDSOCKET_SENDBUF_SIZE);
 
-    bgsettings.AV_MIN = Config.MainConfig.GetIntDefault("Battleground", "AV_MIN", 10);
-    bgsettings.AV_MAX = Config.MainConfig.GetIntDefault("Battleground", "AV_MAX", 40);
+    // optional.conf - Optional Settings
+    optionalSettings.playerStartingLevel = Config.OptionalConfig.GetIntDefault("Optional", "StartingLevel", 1);
+    optionalSettings.playerLevelCap = Config.OptionalConfig.GetIntDefault("Optional", "LevelCap", DBC_PLAYER_LEVEL_CAP);
+    optionalSettings.playerGeneratedInformationByLevelCap = Config.OptionalConfig.GetIntDefault("Optional", "GenLevelCap", DBC_PLAYER_LEVEL_CAP); //! no delete
+    if (optionalSettings.playerStartingLevel > static_cast<int32>(optionalSettings.playerLevelCap))
+        optionalSettings.playerStartingLevel = static_cast<int32>(optionalSettings.playerLevelCap);
 
-    bgsettings.AB_MIN = Config.MainConfig.GetIntDefault("Battleground", "AB_MIN", 4);
-    bgsettings.AB_MAX = Config.MainConfig.GetIntDefault("Battleground", "AB_MAX", 15);
+    optionalSettings.allowTbcCharacters = Config.OptionalConfig.GetBoolDefault("Optional", "AllowTBC", true);
+    optionalSettings.deactivateMasterLootNinja = Config.OptionalConfig.GetBoolDefault("Optional", "AntiMasterLootNinja", false);
+    optionalSettings.deathKnightStartTalentPoints = Config.OptionalConfig.GetIntDefault("Optional", "DKStartingTalents", 0);
+    optionalSettings.maxProfessions = (uint32)Config.OptionalConfig.GetIntDefault("Optional", "MaxProfessions", 2);
+    //unstuck - Not loaded by core
+    //unstuckcooldown - Not loaded by core
+    //unstucktobind - Not loaded by core
+    optionalSettings.skipCinematics = Config.OptionalConfig.GetBoolDefault("Optional", "SkipCinematic", false);
+    optionalSettings.enableInstantLogoutForAccessType = Config.OptionalConfig.GetIntDefault("Optional", "InstantLogout", 1);
+    optionalSettings.minDualSpecLevel = Config.OptionalConfig.GetIntDefault("Optional", "MinDualSpecLevel", 40);
+    optionalSettings.minTalentResetLevel = Config.OptionalConfig.GetIntDefault("Optional", "MinTalentResetLevel", 10);
+    optionalSettings.showAllVendorItems = Config.OptionalConfig.GetBoolDefault("Optional", "ShowAllVendorItems", false);
 
-    bgsettings.WSG_MIN = Config.MainConfig.GetIntDefault("Battleground", "WSG_MIN", 2);
-    bgsettings.WSG_MAX = Config.MainConfig.GetIntDefault("Battleground", "WSG_MAX", 10);
+    // optional.conf - Inter-faction Options
+    interfactionSettings.isInterfactionChatEnabled = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionChat", false);
+    interfactionSettings.isInterfactionGroupEnabled = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionGroup", false);
+    interfactionSettings.isInterfactionGuildEnabled = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionGuild", false);
+    interfactionSettings.isInterfactionTradeEnabled = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionTrade", false);
+    interfactionSettings.isInterfactionFriendsEnabled = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionFriends", false);
+    interfactionSettings.isInterfactionMiscEnabled = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionMisc", false);
+    interfactionSettings.isCrossoverCharsCreationEnabled = Config.OptionalConfig.GetBoolDefault("Interfaction", "CrossOverCharacters", false);
 
-    bgsettings.EOTS_MIN = Config.MainConfig.GetIntDefault("Battleground", "EOTS_MIN", 4);
-    bgsettings.EOTS_MAX = Config.MainConfig.GetIntDefault("Battleground", "EOTS_MAX", 15);
+    // optional.conf - Color Configuration
+    colorSettings.tagColor = Config.OptionalConfig.GetIntDefault("Color", "AnnTagColor", 2);
+    colorSettings.tagGmColor = Config.OptionalConfig.GetIntDefault("Color", "AnnGMTagColor", 1);
+    colorSettings.nameColor = Config.OptionalConfig.GetIntDefault("Color", "AnnNameColor", 4);
+    colorSettings.msgColor = Config.OptionalConfig.GetIntDefault("Color", "AnnMsgColor", 10);
+    AnnounceColorChooser(colorSettings.tagColor, colorSettings.tagGmColor, colorSettings.nameColor, colorSettings.msgColor);
 
-    bgsettings.SOTA_MIN = Config.MainConfig.GetIntDefault("Battleground", "SOTA_MIN", 10);
-    bgsettings.SOTA_MAX = Config.MainConfig.GetIntDefault("Battleground", "SOTA_MAX", 15);
+    // optional.conf - Game Master Configuration
+    gmSettings.isStartOnGmIslandEnabled = Config.OptionalConfig.GetBoolDefault("GameMaster", "StartOnGMIsland", false);
+    gmSettings.disableAchievements = Config.OptionalConfig.GetBoolDefault("GameMaster", "DisableAchievements", false);
+    gmSettings.listOnlyActiveGms = Config.OptionalConfig.GetBoolDefault("GameMaster", "ListOnlyActiveGMs", false);
+    gmSettings.hidePermissions = Config.OptionalConfig.GetBoolDefault("GameMaster", "HidePermissions", false);
+    gmSettings.worldAnnounceOnKickPlayer = Config.OptionalConfig.GetBoolDefault("GameMaster", "AnnounceKick", true);
 
-    bgsettings.IOC_MIN = Config.MainConfig.GetIntDefault("Battleground", "IOC_MIN", 10);
-    bgsettings.IOC_MAX = Config.MainConfig.GetIntDefault("Battleground", "IOC_MAX", 15);
+    // optional.conf - Common Schedule Configuration
+    broadcastSettings.triggerPercentCap = Config.OptionalConfig.GetIntDefault("CommonSchedule", "BroadCastTriggerPercentCap", 100);
+    broadcastSettings.interval = Config.OptionalConfig.GetIntDefault("CommonSchedule", "BroadCastInterval", 1);
+    broadcastSettings.isSystemEnabled = Config.OptionalConfig.GetBoolDefault("CommonSchedule", "AutoBroadCast", false);
+    broadcastSettings.orderMode = Config.OptionalConfig.GetIntDefault("CommonSchedule", "BroadCastOrderMode", 0);
 
-    bgsettings.RBG_FIRST_WIN_HONOR = Config.MainConfig.GetIntDefault("Battleground", "RBG_FIRST_WIN_HONOR", 30);
-    bgsettings.RBG_FIRST_WIN_ARENA = Config.MainConfig.GetIntDefault("Battleground", "RBG_FIRST_WIN_ARENA", 25);
+    if (broadcastSettings.interval < 10)
+        broadcastSettings.interval = 10;
+    else if (broadcastSettings.interval > 1440)
+        broadcastSettings.interval = 1440;
 
-    bgsettings.RBG_WIN_HONOR = Config.MainConfig.GetIntDefault("Battleground", "RBG_WIN_HONOR", 15);
-    bgsettings.RBG_WIN_ARENA = Config.MainConfig.GetIntDefault("Battleground", "RBG_WIN_ARENA", 0);
+    if (broadcastSettings.triggerPercentCap >= 99)
+        broadcastSettings.triggerPercentCap = 98;
+    else if (broadcastSettings.triggerPercentCap <= 1)
+        broadcastSettings.triggerPercentCap = 0;
 
-    bgsettings.RBG_LOSE_HONOR = Config.MainConfig.GetIntDefault("Battleground", "RBG_LOSE_HONOR", 5);
-    bgsettings.RBG_LOSE_ARENA = Config.MainConfig.GetIntDefault("Battleground", "RBG_LOSE_ARENA", 0);
+    if (broadcastSettings.orderMode < 0)
+        broadcastSettings.orderMode = 0;
+    else if (broadcastSettings.orderMode > 1)
+        broadcastSettings.orderMode = 1;
 
-    arenaSettings.A2V2_MIN = Config.MainConfig.GetIntDefault("Arena", "2V2_MIN", 2);
-    arenaSettings.A2V2_MAX = Config.MainConfig.GetIntDefault("Arena", "2V2_MAX", 2);
+    // optional.conf - Extra Class Configurations
+    extraClassSettings.deathKnightPreReq = Config.OptionalConfig.GetBoolDefault("ClassOptions", "DeathKnightPreReq", false);
+    extraClassSettings.deathKnightLimit = Config.OptionalConfig.GetBoolDefault("ClassOptions", "DeathKnightLimit", true);
 
-    arenaSettings.A3V3_MIN = Config.MainConfig.GetIntDefault("Arena", "3V3_MIN", 3);
-    arenaSettings.A3V3_MAX = Config.MainConfig.GetIntDefault("Arena", "3V3_MAX", 3);
+    // optional.conf - Gold Settings Configuration
+    goldSettings.isCapEnabled = Config.OptionalConfig.GetBoolDefault("GoldSettings", "EnableGoldCap", true);
+    goldSettings.limitAmount = Config.OptionalConfig.GetIntDefault("GoldSettings", "MaximumGold", 214000);
+    if (goldSettings.limitAmount)
+        goldSettings.limitAmount *= 10000; // Convert into gsc (gold, silver, copper)
+    goldSettings.startAmount = Config.OptionalConfig.GetIntDefault("GoldSettings", "StartingGold", 0);
+    if (goldSettings.startAmount)
+        goldSettings.startAmount *= 10000;
 
-    arenaSettings.A5V5_MIN = Config.MainConfig.GetIntDefault("Arena", "5V5_MIN", 5);
-    arenaSettings.A5V5_MAX = Config.MainConfig.GetIntDefault("Arena", "5V5_MAX", 5);
+    // optional.conf - Corpse Decay Settings
+    corpseDecaySettings.normalTimeInSeconds = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayNormal", 60)));
+    corpseDecaySettings.rareTimeInSeconds = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayRare", 300)));
+    corpseDecaySettings.eliteTimeInSeconds = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayElite", 300)));
+    corpseDecaySettings.rareEliteTimeInSeconds = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayRareElite", 300)));
+    corpseDecaySettings.worldbossTimeInSeconds = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayWorldboss", 3600)));
 
-    // damage/hp/mp cap settings
-    m_limits.enable = Config.MainConfig.GetBoolDefault("Limits", "Enable", true);
-    m_limits.autoattackDamageCap = (uint32)Config.MainConfig.GetIntDefault("Limits", "AutoAttackDmg", 10000);
-    m_limits.spellDamageCap = (uint32)Config.MainConfig.GetIntDefault("Limits", "SpellDmg", 30000);
-    m_limits.healthCap = (uint32)Config.MainConfig.GetIntDefault("Limits", "Health", 80000);
-    m_limits.manaCap = (uint32)Config.MainConfig.GetIntDefault("Limits", "Mana", 80000);
-    m_limits.honorpoints = (uint32)Config.MainConfig.GetIntDefault("Limits", "Honor", 75000);
-    m_limits.arenapoints = (uint32)Config.MainConfig.GetIntDefault("Limits", "Arena", 5000);
-    m_limits.disconnect = Config.MainConfig.GetBoolDefault("Limits", "Disconnect", false);
-    m_limits.broadcast = Config.MainConfig.GetBoolDefault("Limits", "BroadcastGMs", true);
+    // realms.conf - LogonServer Section
+    logonServerSettings2.address = Config.RealmConfig.GetStringDefault("LogonServer", "Address", "127.0.0.1");
+    logonServerSettings2.port = Config.RealmConfig.GetIntDefault("LogonServer", "Port", 8093);
+    logonServerSettings2.name = Config.RealmConfig.GetStringDefault("LogonServer", "Name", "UnkLogon");
+    logonServerSettings2.realmCount = Config.RealmConfig.GetIntDefault("LogonServer", "RealmCount", 1);
 
-    if (instance_DailyHeroicInstanceResetHour < 0)
-        instance_DailyHeroicInstanceResetHour = 0;
-    if (instance_DailyHeroicInstanceResetHour > 23)
-        instance_DailyHeroicInstanceResetHour = 23;
-
-    // ======================================
-    m_movementCompressInterval = Config.MainConfig.GetIntDefault("Movement", "FlushInterval", 1000);
-    m_movementCompressRate = Config.MainConfig.GetIntDefault("Movement", "CompressRate", 1);
-
-    m_movementCompressThresholdCreatures = Config.MainConfig.GetFloatDefault("Movement", "CompressThresholdCreatures", 15.0f);
-    m_movementCompressThresholdCreatures *= m_movementCompressThresholdCreatures;
-
-    m_movementCompressThreshold = Config.MainConfig.GetFloatDefault("Movement", "CompressThreshold", 25.0f);
-    m_movementCompressThreshold *= m_movementCompressThreshold; // square it to avoid sqrt() on checks
-    // ======================================
-
-    if (m_banTable != NULL)
-        free(m_banTable);
-
-    m_banTable = NULL;
-    std::string s = Config.MainConfig.GetStringDefault("Server", "BanTable", "");
-    if (!s.empty())
-        m_banTable = strdup(s.c_str());
+    // realms.conf - Realm Section
+    // handled in LogonCommHandler::LoadRealmConfiguration()
 
     if (load)
         Channel::LoadConfSettings();

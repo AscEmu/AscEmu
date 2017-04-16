@@ -50,13 +50,13 @@ bool CommonScheduleThread::run()
     LogNotice("CommonScheduleThread : Started.");
     m_busy = false;
 
-    if (sWorld.BCSystemEnable && sWorld.BCOrderMode == 1)
+    if (sWorld.broadcastSettings.isSystemEnabled && sWorld.broadcastSettings.orderMode == 1)
         itOrderMSGEntry = objmgr.GetBCTotalItemBegin();
 
     if (objmgr.IsBCEntryStorageEmpty())
-    sWorld.BCSystemEnable = 0;
+        sWorld.broadcastSettings.isSystemEnabled = 0;
 
-    BCTimerCount = getMSTime() + ((uint32)sWorld.BCInterval * 1000);
+    BCTimerCount = getMSTime() + ((uint32)sWorld.broadcastSettings.interval * 1000);
 
     while (GetThreadState() != THREADSTATE_TERMINATE)
     {
@@ -78,10 +78,10 @@ bool CommonScheduleThread::run()
 
 void CommonScheduleThread::BroadCastExec()
 {
-    if (!sWorld.BCSystemEnable)
+    if (!sWorld.broadcastSettings.isSystemEnabled)
         return;
 
-    if ((uint32)sWorld.BCInterval > THREAD_LOOP_INTERVAL)
+    if ((uint32)sWorld.broadcastSettings.interval > THREAD_LOOP_INTERVAL)
     {
         if (getMSTime() <= BCTimerCount)
         {
@@ -89,11 +89,11 @@ void CommonScheduleThread::BroadCastExec()
         }
         else
         {
-            BCTimerCount = getMSTime() + ((uint32)sWorld.BCInterval * 1000);
+            BCTimerCount = getMSTime() + ((uint32)sWorld.broadcastSettings.interval * 1000);
         }
     }
 
-    switch (sWorld.BCOrderMode)
+    switch (sWorld.broadcastSettings.orderMode)
     {
     case 0:
         {
@@ -101,7 +101,7 @@ void CommonScheduleThread::BroadCastExec()
 
             if (entry < 0)
             {
-                sWorld.BCSystemEnable = false;
+                sWorld.broadcastSettings.isSystemEnabled = false;
                 LogNotice("BCSystem : table worldbroadcast loads failed,so BCSystem disabled already.");
                 return;
             }

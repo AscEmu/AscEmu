@@ -790,7 +790,7 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         {
             if (m_BCEntryStorage.empty())
                 return -1;
-            uint32 RandomCap = (uint32)sWorld.BCTriggerPercentCap;
+            uint32 RandomCap = (uint32)sWorld.broadcastSettings.triggerPercentCap;
 
             std::vector<uint32> Entries;
             BCEntryStorage::iterator it = m_BCEntryStorage.upper_bound(RandomUInt(RandomCap) + 1);

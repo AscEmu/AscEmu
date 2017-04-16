@@ -1793,7 +1793,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         {
             // Money reward
             // Check they don't have more than the max gold
-            if (sWorld.GoldCapEnabled && (player->GetGold() + qReward->reward_money) <= sWorld.GoldLimit)
+            if (sWorld.goldSettings.isCapEnabled && (player->GetGold() + qReward->reward_money) <= sWorld.goldSettings.limitAmount)
             {
                 player->ModGold(qReward->reward_money);
             }
@@ -1888,7 +1888,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         {
             // Money reward
             // Check they don't have more than the max gold
-            if (sWorld.GoldCapEnabled && (player->GetGold() + qReward->reward_money) <= sWorld.GoldLimit)
+            if (sWorld.goldSettings.isCapEnabled && (player->GetGold() + qReward->reward_money) <= sWorld.goldSettings.limitAmount)
             {
                 player->ModGold(qReward->reward_money);
             }

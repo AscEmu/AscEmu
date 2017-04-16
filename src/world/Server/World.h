@@ -286,9 +286,387 @@ class WorldSocket;
 typedef std::list<WorldSocket*> QueueSet;
 typedef std::set<WorldSession*> SessionSet;
 
+// AGPL End
+// MIT Start
+
 class SERVER_DECL World : public Singleton<World>, public EventableObject, public IUpdatable
 {
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Config values
+    public:
+
+        // world.conf - Mysql Database Section
+        struct WorldDatabaseSettings
+        {
+            std::string host;
+            std::string user;
+            std::string password;
+            std::string dbName;
+            int port;
+            //\todo add it to config or remove it from core
+            int connections;        // not in configs
+        } worldDbSettings;
+
+        struct CharacterDatabaseSettings
+        {
+            std::string host;
+            std::string user;
+            std::string password;
+            std::string dbName;
+            int port;
+            //\todo add it to config or remove it from core
+            int connections;        // not in configs
+        } charDbSettings;
+
+        // world.conf - Listen Config
+        struct ListenSettings
+        {
+            std::string listenHost;
+            int listenPort;
+        } listenSettings;
+
+        // world.conf - Log Level Setup
+        struct LogLevelSettings
+        {
+            int fileLogLevel;
+            int debugFlags;
+            bool logWorldPacket;
+            bool disableCrashdump;
+        } logLevelSettings;
+
+        // world.conf - Server Settings
+        struct ServerSettings
+        {
+            uint32 playerLimit;
+            std::string messageOfTheDay;
+            bool sendStatsOnJoin;
+            bool enableBreathing;
+            bool seperateChatChannels;
+            uint32 compressionThreshold;
+            uint32 queueUpdateInterval;
+            uint32 secondsBeforeKickAFKPlayers;
+            uint32 secondsBeforeTimeOut;
+            uint32 realmType;
+            bool enableAdjustPriority;
+            bool requireAllSignatures;
+            bool showGmInWhoList;
+            uint32 mapUnloadTime;
+            uint8 mapCellNumber;
+            bool enableLimitedNames;
+            bool useAccountData;
+            bool requireGmForCommands;
+            bool enableLfgJoinForNonLfg;
+            int gmtTimeZone;
+            bool disableFearMovement;
+            bool saveExtendedCharData;
+            //\todo add it to config or remove it from core
+            bool skipAttunementForGm;           //not in config file!
+            uint32 clientCacheVersion;          //not in config file!
+            std::string banTable;               //not in config file!
+        } serverSettings;
+
+        // world.conf - Announce Configuration
+        struct AnnounceSettings
+        {
+            std::string announceTag;
+            bool enableGmAdminTag;
+            bool showNameInAnnounce;
+            bool showNameInWAnnounce;
+            bool showAnnounceInConsoleOutput;
+        } announceSettings;
+
+        // world.conf - Power regeneration multiplier setup
+        struct RateSettings
+        {
+            uint32 arenaQueueDiff;
+        } rateSettings;
+
+        // world.conf - GM Client Channel
+        struct GMClientSettings
+        {
+            std::string gmClientChannelName;
+        } gmClientSettings;
+
+        // world.conf - Terrain & Collision Settings
+        struct TerrainCollisionSettings
+        {
+            std::string MapPath;
+            std::string vMapPath;
+            std::string mMapPath;
+            bool unloadMapFiles;
+            bool isCollisionEnabled;
+            bool isPathfindingEnabled;
+        } terrainCollisionSettings;
+
+        // world.conf - Log Settings
+        struct LogSettings
+        {
+            bool logCheaters;
+            bool logGmCommands;
+            //\todo remove it from core or add it to config
+            bool logPlayers;       // not in config
+            bool addTimeStampToFileName;
+        } logSettings;
+
+        // world.conf - Mail System Setup
+        struct MailSettings
+        {
+            //\todo remove it from config or implement it
+            int reloadDelayInSeconds;                // not used by core
+            bool isCostsForGmDisabled;
+            bool isCostsForEveryoneDisabled;
+            bool isDelayItemsDisabled;
+            bool isMessageExpiryDisabled;
+            bool isInterfactionMailEnabled;
+            bool isInterfactionMailForGmEnabled;
+        } mailSettings;
+
+        // world.conf - Startup Options
+        struct StartupSettings
+        {
+            //\todo remove it from config or implement it
+            bool isPreloadingCompleteWorldEnabled;  // not used by core
+            bool isBackgroundLootLoadingEnabled;    // not used by core, not in config
+            bool enableMultithreadedLoading;
+            bool enableSpellIdDump;
+            std::string additionalTableLoads;
+        } startupSettings;
+
+        // world.conf - Flood Protection Setup
+        struct FloodProtectionSettings
+        {
+            uint32 linesBeforeProtection;
+            uint32 secondsBeforeProtectionReset;
+            bool enableSendFloodProtectionMessage;
+        } floodProtectionSettings;
+
+        // world.conf - LogonServer Setup
+        struct LogonServerSettings          // in realms.conf we have the same section...
+        {
+            bool disablePings;
+            std::string remotePassword;
+        } logonServerSettings;
+
+        // world.conf - AntiHack Setup
+        struct AntiHackSettings
+        {
+            bool isTeleportHackCheckEnabled;
+            bool isSpeedHackCkeckEnabled;
+            bool isFallDamageHackCkeckEnabled;
+            bool isFlyHackCkeckEnabled;
+            uint32 flyHackThreshold;
+            bool isAntiHackCheckDisabledForGm;
+        } antiHackSettings;
+
+        // world.conf - Period Setup
+        struct PeriodSettings
+        {
+            //\todo implement it
+            std::string honorUpdate;        // not used by core
+            std::string arenaUpdate;
+            std::string dailyUpdate;
+        } periodSettings;
+
+        // world.conf - Channels Setup
+        struct ChannelSettings
+        {
+            std::string bannedChannels;
+            std::string minimumTalkLevel;
+        } channelSettings;
+
+        // world.conf - Remote Console Setup
+        struct RemoteConsoleSettings
+        {
+            bool isEnabled;
+            std::string host;
+            int port;
+        } remoteConsoleSettings;
+
+        // world.conf - Movement Setup
+        struct MovementSettings
+        {
+            uint32 compressIntervalInMs;
+            uint32 compressRate;
+            float compressThresholdPlayers;
+            float compressThresholdCreatures;
+        } movementSettings;
+
+        // world.conf - Localization Setup
+        struct LocalizationSettings
+        {
+            std::string localizedBindings;
+        } localizationSettings;
+
+        // world.conf - Dungeon / Instance Setup
+        struct InstanceSettings
+        {
+            bool useGroupLeaderInstanceId;
+            bool isRelativeExpirationEnabled;
+            int relativeDailyHeroicInstanceResetHour;
+            bool checkTriggerPrerequisitesOnEnter;
+        } instanceSettings;
+
+        // world.conf - BattleGround settings
+        struct BattleGroundSettings
+        {
+            uint32 minPlayerCountAlteracValley;
+            uint32 maxPlayerCountAlteracValley;
+            uint32 minPlayerCountArathiBasin;
+            uint32 maxPlayerCountArathiBasin;
+            uint32 minPlayerCountWarsongGulch;
+            uint32 maxPlayerCountWarsongGulch;
+            uint32 minPlayerCountEyeOfTheStorm;
+            uint32 maxPlayerCountEyeOfTheStorm;
+            uint32 minPlayerCountStrandOfTheAncients;
+            uint32 maxPlayerCountStrandOfTheAncients;
+            uint32 minPlayerCountIsleOfConquest;
+            uint32 maxPlayerCountIsleOfConquest;
+            uint32 firstRbgHonorValueToday;
+            uint32 firstRbgArenaHonorValueToday;
+            uint32 honorableKillsRbg;
+            uint32 honorableArenaWinRbg;
+            uint32 honorByLosingRbg;
+            uint32 honorByLosingArenaRbg;
+        } bgSettings;
+
+        // world.conf - Arena Settings
+        struct ArenaSettings
+        {
+            int arenaSeason;
+            int arenaProgress;
+            uint32 minPlayerCount2V2;
+            uint32 maxPlayerCount2V2;
+            uint32 minPlayerCount3V3;
+            uint32 maxPlayerCount3V3;
+            uint32 minPlayerCount5V5;
+            uint32 maxPlayerCount5V5;
+        } arenaSettings;
+
+        // world.conf - Limits settings
+        struct LimitSettings
+        {
+            bool isLimitSystemEnabled;
+            uint32 maxAutoAttackDamageCap;
+            uint32 maxSpellDamageCap;
+            uint32 maxHealthCap;
+            uint32 maxManaCap;
+            uint32 maxHonorPoints;
+            uint32 maxArenaPoints;
+            bool disconnectPlayerForExceedingLimits;
+            bool broadcastMessageToGmOnExceeding;
+        } limitSettings;
+
+        // world.conf - MISSING in CONFIG!
+        struct WorldSocketSettings
+        {
+            //\todo add it to config
+            uint32 maxSocketSendBufSize;       // Section WorldSocket SendBuffSize
+            uint32 maxSocketRecvBufSize;       // Section WorldSocket RecvBufSize
+        } worldSocketSettings;
+
+        // optional.conf - Optional Settings
+        struct OptionalSettings
+        {
+            int32 playerStartingLevel;
+            uint32 playerLevelCap;
+            uint32 playerGeneratedInformationByLevelCap;
+            bool allowTbcCharacters;
+            bool deactivateMasterLootNinja;
+            bool loadAdditionalFunScripts;
+            uint32 deathKnightStartTalentPoints;
+            //\todo remove it from config or implement in core
+            //unstuck - Not loaded by core
+            //unstuckcooldown - Not loaded by core
+            //unstucktobind - Not loaded by core
+            uint32 maxProfessions;
+            bool skipCinematics;
+            uint8 enableInstantLogoutForAccessType;
+            uint32 minDualSpecLevel;
+            uint32 minTalentResetLevel;
+            bool showAllVendorItems;
+        } optionalSettings;
+
+        // optional.conf - Inter-faction Options
+        struct InterfactionSettings
+        {
+            bool isInterfactionChatEnabled;
+            bool isInterfactionGroupEnabled;
+            bool isInterfactionGuildEnabled;
+            bool isInterfactionTradeEnabled;
+            bool isInterfactionFriendsEnabled;
+            bool isInterfactionMiscEnabled;
+            bool isCrossoverCharsCreationEnabled;
+        } interfactionSettings;
+
+        // optional.conf - Color Configuration
+        struct ColorSettings
+        {
+            int tagColor;
+            int tagGmColor;
+            int nameColor;
+            int msgColor;
+        } colorSettings;
+
+        // optional.conf - Game Master Configuration
+        struct GameMasterSettings
+        {
+            bool isStartOnGmIslandEnabled;
+            bool disableAchievements;
+            bool listOnlyActiveGms;
+            bool hidePermissions;
+            bool worldAnnounceOnKickPlayer;
+        } gmSettings;
+
+        // optional.conf - Common Schedule Configuration
+        struct BroadcastSettings
+        {
+            bool isSystemEnabled;
+            int interval;
+            int triggerPercentCap;
+            int orderMode;
+        } broadcastSettings;
+
+        // optional.conf - Extra Class Configurations
+        struct ExtraClassSettings
+        {
+            bool deathKnightPreReq;
+            bool deathKnightLimit;
+        } extraClassSettings;
+
+        // optional.conf - Gold Settings Configuration
+        struct GoldSettings
+        {
+            bool isCapEnabled;
+            uint32 limitAmount;
+            uint32 startAmount;
+        } goldSettings;
+
+        // optional.conf - Corpse Decay Settings
+        struct CorpseDecaySettings
+        {
+            uint32 normalTimeInSeconds;
+            uint32 rareTimeInSeconds;
+            uint32 eliteTimeInSeconds;
+            uint32 rareEliteTimeInSeconds;
+            uint32 worldbossTimeInSeconds;
+        } corpseDecaySettings;
+
+        //\todo move to one config file (world.conf)
+        // realms.conf - LogonServer Section
+        struct LogonServerSettings2
+        {
+            std::string address;
+            int port;
+            std::string name;
+            int realmCount;
+        } logonServerSettings2;
+
+        // realms.conf - Realm Section
+        // handled in LogonCommHandler::LoadRealmConfiguration()
+
     private:
+    //MIT End
+    //AGPL Start
 
         uint32 HordePlayers;
         uint32 AlliancePlayers;
@@ -359,10 +737,10 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
             return m_gmTicketSystem;
         }
 
-        inline std::string getGmClientChannel() { return GmClientChannel; }
+        inline std::string getGmClientChannel() { return gmClientSettings.gmClientChannelName; }
 
-        void SetMotd(const char* motd) { m_motd = motd; }
-        inline const char* GetMotd() const { return m_motd.c_str(); }
+        void SetMotd(const char* motd) { serverSettings.messageOfTheDay = motd; }
+        inline const char* GetMotd() const { return serverSettings.messageOfTheDay.c_str(); }
 
         bool SetInitialWorldSettings();
 
@@ -464,7 +842,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         uint32 InspectTalentTabPages[12][3];
 
 
-        inline uint32 GetTimeOut() {return TimeOut;}
+        inline uint32 GetTimeOut() {return serverSettings.secondsBeforeTimeOut;}
 
         struct NameGenData
         {
@@ -483,163 +861,27 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         Mutex queueMutex;
 
-        uint32 mQueueUpdateInterval;
-        bool m_useIrc;
-
         void SaveAllPlayers();
 
-        //LogLevel
-        uint32 debugFlags;
-
-        std::string MapPath;
-        std::string vMapPath;
-        std::string mMapPath;
-        bool UnloadMapFiles;
-        bool Collision;
-        bool Pathfinding;
-
-        bool BreathingEnabled;
-        bool SpeedhackProtection;
         uint32 mAcceptedConnections;
-        uint32 SocketSendBufSize;
-        uint32 SocketRecvBufSize;
-
-        int32 StartingLevel;
-        uint32 ExtraTalents;
-        uint32 MaxProfs;
-        uint32 DKStartTalentPoints;
-
+        
         uint32 PeakSessionCount;
-        uint32 ArenaQueueDiff;
-        bool SendStatsOnJoin;
+        
         SessionSet gmList;
-        bool DisableFearMovement;
-
+        
         void ShutdownClasses();
         void DeleteObject(Object* obj);
-
-        uint32 compression_threshold;
 
         void    SetKickAFKPlayerTime(uint32 idletimer) {m_KickAFKPlayers = idletimer;}
         uint32    GetKickAFKPlayerTime() {return m_KickAFKPlayers;}
 
-        uint32 GetRealmType() { return realmtype; }
+        uint32 GetRealmType() { return serverSettings.realmType; }
 
-        uint32 flood_lines;
-        uint32 flood_seconds;
-        bool flood_message;
-        bool gm_skip_attunement;
-
-        bool show_gm_in_who_list;
-        uint32 map_unload_time;
-        uint8 map_cell_number;
-
-        bool interfaction_chat;
-        bool interfaction_group;
-        bool interfaction_guild;
-        bool interfaction_trade;
-        bool interfaction_friend;
-        bool interfaction_misc;
-        bool crossover_chars;
-        bool antiMasterLootNinja;
-        bool gamemaster_listOnlyActiveGMs;
-        bool gamemaster_hidePermissions;
-        bool gamemaster_startonGMIsland;
-        bool gamemaster_disableachievements;
-        bool gamemaster_announceKick;
-
-        bool show_all_vendor_items;
-
-        //Arena Settings
-        int Arena_Season;
-        int Arena_Progress;
-
-        // broadcast system config
-        bool BCSystemEnable;
-        int BCInterval;
-        int BCTriggerPercentCap;
-        int BCOrderMode;
-
-        bool realmAllowTBCcharacters;
-
-        std::string announce_tag;
-        bool GMAdminTag;
-        bool NameinAnnounce;
-        bool NameinWAnnounce;
-        bool announce_output;
-
-        int announce_tagcolor;
-        int announce_gmtagcolor;
-        int announce_namecolor;
-        int announce_msgcolor;
         std::string ann_namecolor;
         std::string ann_gmtagcolor;
         std::string ann_tagcolor;
         std::string ann_msgcolor;
         void AnnounceColorChooser(int tagcolor, int gmtagcolor, int namecolor, int msgcolor);
-
-        bool antihack_teleport;
-        bool antihack_speed;
-        bool antihack_flight;
-        uint32 flyhack_threshold;
-        bool no_antihack_on_gm;
-
-        bool instance_TakeGroupLeaderID;
-        bool instance_SlidingExpiration;
-        int instance_DailyHeroicInstanceResetHour;
-        bool instance_CheckTriggerPrerequisites;
-
-        // battleground settings
-        struct BGSettings
-        {
-            uint32 AV_MIN;
-            uint32 AV_MAX;
-            uint32 AB_MIN;
-            uint32 AB_MAX;
-            uint32 WSG_MIN;
-            uint32 WSG_MAX;
-            uint32 EOTS_MIN;
-            uint32 EOTS_MAX;
-            uint32 SOTA_MIN;
-            uint32 SOTA_MAX;
-            uint32 IOC_MIN;
-            uint32 IOC_MAX;
-            uint32 RBG_FIRST_WIN_HONOR;
-            uint32 RBG_FIRST_WIN_ARENA;
-            uint32 RBG_WIN_HONOR;
-            uint32 RBG_WIN_ARENA;
-            uint32 RBG_LOSE_HONOR;
-            uint32 RBG_LOSE_ARENA;
-        }bgsettings;
-
-        struct ArenaSettings
-        {
-            // Min/Max players per side for the arenas
-
-            uint32 A2V2_MIN;
-            uint32 A2V2_MAX;
-            uint32 A3V3_MIN;
-            uint32 A3V3_MAX;
-            uint32 A5V5_MIN;
-            uint32 A5V5_MAX;
-        }arenaSettings;
-
-
-        // damage/hp/mp cap settings
-        struct
-        {
-            bool enable;
-            uint32 autoattackDamageCap;
-            uint32 spellDamageCap;
-            uint32 healthCap;
-            uint32 manaCap;
-            uint32 honorpoints;    
-            uint32 arenapoints;
-            bool disconnect;
-            bool broadcast;
-        } m_limits;
-
-        int GMTTimeZone;
 
         void CharacterEnumProc(QueryResultVector & results, uint32 AccountId);
         void LoadAccountDataProc(QueryResultVector & results, uint32 AccountId);
@@ -674,55 +916,19 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         uint32 m_playerLimit;
         bool m_allowMovement;
         bool m_gmTicketSystem;
-        std::string m_motd;
-
-        uint32 realmtype;
-
-        uint32 TimeOut;
 
         uint32 m_StartTime;
         uint32 m_queueUpdateTimer;
 
         QueueSet mQueuedSessions;
 
-        uint32 m_KickAFKPlayers;//don't lag the server if you are useless anyway :P
+        uint32 m_KickAFKPlayers;
 
     public:
 
-        std::string GmClientChannel;
-        bool m_reqGmForCommands;
-        bool m_lfgForNonLfg;
         std::list<SpellInfo*> dummyspells;
-        uint32 m_levelCap;
-        uint32 m_genLevelCap;
-        bool m_limitedNames;
-        bool m_useAccountData;
-        bool m_AdditionalFun;
-        bool m_SkipCinematics;
-        uint8 m_InstantLogout;
-        uint32 m_MinDualSpecLevel;
-        uint32 m_MinTalentResetLevel;
-
-        //CorpseDecaySettings
-        uint32 m_DecayNormal;
-        uint32 m_DecayRare;
-        uint32 m_DecayElite;
-        uint32 m_DecayRareElite;
-        uint32 m_DecayWorldboss;
-
-        // Gold Cap
-        bool GoldCapEnabled;
-        uint32 GoldLimit;
-        uint32 GoldStartAmount;
-
-        uint32 CacheVersion;
 
         char* m_banTable;
-
-        static float m_movementCompressThreshold;
-        static float m_movementCompressThresholdCreatures;
-        static uint32 m_movementCompressRate;
-        static uint32 m_movementCompressInterval;
 
     protected:
 
@@ -762,7 +968,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         {
             return perfcounter.GetCurrentRAMUsage();
         }
-
 };
 
 #define sWorld World::getSingleton()

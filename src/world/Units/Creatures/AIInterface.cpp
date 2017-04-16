@@ -575,7 +575,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
         }
     }
 
-    if (sWorld.Collision)
+    if (sWorld.terrainCollisionSettings.isCollisionEnabled)
     {
         if (m_Unit->GetMapMgr() != NULL && getNextTarget() != NULL)
         {
@@ -861,7 +861,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                 float distance = m_Unit->CalcDistance(getNextTarget());
                 bool los = true;
 
-                if (sWorld.Collision)
+                if (sWorld.terrainCollisionSettings.isCollisionEnabled)
                 {
                     VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
                     los = mgr->isInLineOfSight(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ(), getNextTarget()->GetPositionX(), getNextTarget()->GetPositionY(), getNextTarget()->GetPositionZ());
@@ -1059,7 +1059,7 @@ void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellI
     if (m_AIState == STATE_EVADE || !pUnit || !pUnit->isAlive() || m_Unit->IsDead() || (m_Unit == pUnit) || (m_AIType == AITYPE_PASSIVE) || disable_combat)
         return;
 
-    if (sWorld.Collision && pUnit->IsPlayer())
+    if (sWorld.terrainCollisionSettings.isCollisionEnabled && pUnit->IsPlayer())
     {
         if (m_Unit->GetMapMgr() != NULL)
         {
@@ -1279,7 +1279,7 @@ Unit* AIInterface::FindTarget()
                 continue;
             if (distance > dist)
             {
-                if (sWorld.Collision)
+                if (sWorld.terrainCollisionSettings.isCollisionEnabled)
                 {
                     VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
                     bool los = mgr->isInLineOfSight(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ(), tmpPlr->GetPositionX(), tmpPlr->GetPositionY(), tmpPlr->GetPositionZ());
@@ -1329,7 +1329,7 @@ Unit* AIInterface::FindTarget()
 
         if (dist <= _CalcAggroRange(pUnit))
         {
-            if (sWorld.Collision)
+            if (sWorld.terrainCollisionSettings.isCollisionEnabled)
             {
                 if (m_Unit->GetMapMgr()->isInLineOfSight(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2, pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ() + 2))
                 {
@@ -1378,7 +1378,7 @@ Unit* AIInterface::FindTarget()
 
             if (dist <= _CalcAggroRange(pUnit))
             {
-                if (sWorld.Collision)
+                if (sWorld.terrainCollisionSettings.isCollisionEnabled)
                 {
                     if (m_Unit->GetMapMgr()->isInLineOfSight(m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2, pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ() + 2))
                     {
@@ -2542,7 +2542,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
             float Fy;
             float Fz;
 
-            if (sWorld.DisableFearMovement)
+            if (sWorld.serverSettings.disableFearMovement)
             {
                 if (m_Unit->GetMapId() == 529 || m_Unit->GetMapId() == 566 ||
                     m_Unit->GetMapId() == 489 || m_Unit->GetMapId() == 572 ||
@@ -2580,7 +2580,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
             float wl = m_Unit->GetMapMgr()->GetLiquidHeight(Fx, Fy);
             //            uint8 wt = m_Unit->GetMapMgr()->GetWaterType(Fx, Fy);
 
-            if (sWorld.Collision)
+            if (sWorld.terrainCollisionSettings.isCollisionEnabled)
             {
                 VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
                 Fz = mgr->getHeight(m_Unit->GetMapId(), Fx, Fy, m_Unit->GetPositionZ() + 2.0f, 10000.0f);
@@ -3676,7 +3676,7 @@ bool AIInterface::Move(float & x, float & y, float & z, float o /*= 0*/)
     //m_Unit->m_movementManager.m_spline.m_splineFaceType.SetZ(z);
 
     //Add new points
-    if (sWorld.Pathfinding)
+    if (sWorld.terrainCollisionSettings.isPathfindingEnabled)
     {
         //LogDebugFlag(LF_SCRIPT_MGR, "Pathfinding is enabled");
 
@@ -4647,7 +4647,7 @@ bool AIInterface::MoveCharge(float x, float y, float z)
 
     m_runSpeed *= 3.5f;
 
-    if (sWorld.Pathfinding)
+    if (sWorld.terrainCollisionSettings.isPathfindingEnabled)
     {
         //LogDebugFlag(LF_SCRIPT_MGR, "Pathfinding is enabled");
 

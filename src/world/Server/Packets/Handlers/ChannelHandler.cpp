@@ -42,7 +42,7 @@ void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
     recvPacket >> channelname;
     recvPacket >> pass;
 
-    if (sWorld.GmClientChannel.size() && !stricmp(sWorld.GmClientChannel.c_str(), channelname.c_str()) && !GetPermissionCount())
+    if (sWorld.gmClientSettings.gmClientChannelName.size() && !stricmp(sWorld.gmClientSettings.gmClientChannelName.c_str(), channelname.c_str()) && !GetPermissionCount())
         return;
 
     chn = channelmgr.GetCreateChannel(channelname.c_str(), _player, dbc_id);

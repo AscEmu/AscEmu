@@ -2026,7 +2026,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                 continue;   // Class not valid for this race.
 
             // Generate each level's information
-            uint32 MaxLevel = sWorld.m_levelCap + 1;
+            uint32 MaxLevel = sWorld.optionalSettings.playerLevelCap + 1;
             LevelInfo* lvl = 0, lastlvl;
             lastlvl.HP = PCI->health;
             lastlvl.Mana = PCI->mana;
@@ -2247,8 +2247,8 @@ LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)
         {
             // We got a match.
             // Let's check that our level is valid first.
-            if (Level > sWorld.m_levelCap)
-                Level = sWorld.m_levelCap;
+            if (Level > sWorld.optionalSettings.playerLevelCap)
+                Level = sWorld.optionalSettings.playerLevelCap;
 
             // Pull the level information from the second map.
             LevelMap::iterator it2 = itr->second->find(Level);
@@ -3991,7 +3991,7 @@ void ObjectMgr::LoadCreatureAIAgents()
 
 void ObjectMgr::StoreBroadCastGroupKey()
 {
-    if (!sWorld.BCSystemEnable)
+    if (!sWorld.broadcastSettings.isSystemEnabled)
     {
         LogNotice("ObjectMgr : BCSystem Disabled.");
         return;
@@ -4013,7 +4013,7 @@ void ObjectMgr::StoreBroadCastGroupKey()
     if (keyGroup.empty())
     {
         LogDebugFlag(LF_DB_TABLES, "ObjectMgr : BCSystem error! worldbroadcast empty? fill it first!");
-        sWorld.BCSystemEnable = false;
+        sWorld.broadcastSettings.isSystemEnabled = false;
         return;
     }
     else

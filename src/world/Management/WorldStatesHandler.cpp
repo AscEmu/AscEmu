@@ -76,9 +76,9 @@ void WorldStatesHandler::BuildInitWorldStatesForZone(uint32 zone, uint32 area, W
 
 #if VERSION_STRING > TBC
     data << uint32(3191);
-    data << uint32(sWorld.Arena_Season);
+    data << uint32(sWorld.arenaSettings.arenaSeason);
     data << uint32(3901);
-    data << uint32(sWorld.Arena_Progress);
+    data << uint32(sWorld.arenaSettings.arenaProgress);
 #endif
 }
 

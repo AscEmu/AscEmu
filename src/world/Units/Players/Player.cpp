@@ -274,7 +274,7 @@ bool Player::isPlayerJumping(MovementInfo const& movement_info, uint16_t opcode)
 void Player::handleBreathing(MovementInfo& movement_info, WorldSession* session)
 {
 #if VERSION_STRING == Cata
-    if (!sWorld.BreathingEnabled || FlyCheat || m_bUnlimitedBreath || !isAlive() || GodModeCheat)
+    if (!sWorld.serverSettings.enableBreathing || FlyCheat || m_bUnlimitedBreath || !isAlive() || GodModeCheat)
     {
         if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING)
             m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;

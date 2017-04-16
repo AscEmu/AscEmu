@@ -94,7 +94,7 @@ void WorldSession::HandleInviteToGuild(WorldPacket& recv_data)
         Guild::SendGuildCommandResult(this, GUILD_INVITE_S, "", GUILD_PERMISSIONS);
         return;
     }
-    else if (plyr->GetTeam() != _player->GetTeam() && _player->GetSession()->GetPermissionCount() == 0 && !sWorld.interfaction_guild)
+    else if (plyr->GetTeam() != _player->GetTeam() && _player->GetSession()->GetPermissionCount() == 0 && !sWorld.interfactionSettings.isInterfactionGuildEnabled)
     {
         Guild::SendGuildCommandResult(this, GUILD_INVITE_S, "", GUILD_NOT_ALLIED);
         return;
@@ -920,7 +920,7 @@ void WorldSession::HandleCharterOffer(WorldPacket& recv_data)
         return;
     }
 
-    if (pTarget == nullptr || pTarget->GetTeam() != _player->GetTeam() || (pTarget == _player && !sWorld.interfaction_guild))
+    if (pTarget == nullptr || pTarget->GetTeam() != _player->GetTeam() || (pTarget == _player && !sWorld.interfactionSettings.isInterfactionGuildEnabled))
     {
         SendNotification(_player->GetSession()->LocalizedWorldSrv(77));
         return;
@@ -1011,7 +1011,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
         Charter* gc = _player->m_charters[CHARTER_TYPE_GUILD];
         if (gc == nullptr)
             return;
-        if (gc->SignatureCount < 9 && Config.MainConfig.GetBoolDefault("Server", "RequireAllSignatures", false))
+        if (gc->SignatureCount < 9 && sWorld.serverSettings.requireAllSignatures)
         {
             Guild::SendTurnInPetitionResult(this, ERR_PETITION_NOT_ENOUGH_SIGNATURES);
             return;
@@ -1073,7 +1073,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
             return;
         }
 
-        if (pCharter->SignatureCount < pCharter->GetNumberOfSlotsByType() && Config.MainConfig.GetBoolDefault("Server", "RequireAllSignatures", false))
+        if (pCharter->SignatureCount < pCharter->GetNumberOfSlotsByType() && sWorld.serverSettings.requireAllSignatures)
         {
             Guild::SendTurnInPetitionResult(this, ERR_PETITION_NOT_ENOUGH_SIGNATURES);
             return;

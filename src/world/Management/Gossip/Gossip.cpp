@@ -652,11 +652,11 @@ void Arcemu::Gossip::ClassTrainer::OnHello(Object* pObject, Player* Plr)
             menu.AddItem(GOSSIP_ICON_TRAINER, itemname.c_str(), 1);
 
             //talent reset option.
-            if (trainer->getLevel() > TrainerTalentResetMinLevel && Plr->getLevel() > sWorld.m_MinTalentResetLevel && trainer->GetTrainer()->RequiredClass == playerclass)
+            if (trainer->getLevel() > TrainerTalentResetMinLevel && Plr->getLevel() > sWorld.optionalSettings.minTalentResetLevel && trainer->GetTrainer()->RequiredClass == playerclass)
             {
                 menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(CLASSTRAINER_TALENTRESET), 2);
                 //dual speciliazation option.
-                if (Plr->getLevel() >= sWorld.m_MinDualSpecLevel && Plr->m_talentSpecsCount < 2)
+                if (Plr->getLevel() >= sWorld.optionalSettings.minDualSpecLevel && Plr->m_talentSpecsCount < 2)
                     menu.AddItem(GOSSIP_ICON_CHAT, Plr->GetSession()->LocalizedGossipOption(LEARN_DUAL_TS), 4);
             }
         }

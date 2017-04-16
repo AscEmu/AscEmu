@@ -213,7 +213,7 @@ void LocalizationMgr::Reload(bool first)
     GetDistinctLanguages(languages, "locales_npc_monstersay");
 
     /// Read Language Bindings From Config
-    std::string ls = Config.MainConfig.GetStringDefault("Localization", "LocaleBindings", "");
+    std::string ls = sWorld.localizationSettings.localizedBindings;
     std::vector<std::string> tbindings = Util::SplitStringBySeperator(ls, " ");
     for (std::vector<std::string>::iterator ztr = tbindings.begin(); ztr != tbindings.end(); ++ztr)
     {

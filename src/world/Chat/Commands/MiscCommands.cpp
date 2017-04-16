@@ -477,7 +477,7 @@ bool ChatHandler::HandleKickByNameCommand(const char* args, WorldSession* m_sess
             return true;
         }
 
-        if (sWorld.gamemaster_announceKick)
+        if (sWorld.gmSettings.worldAnnounceOnKickPlayer)
         {
             char msg[200];
             snprintf(msg, 200, "%sGM: %s was kicked from the server by %s. Reason: %s", MSG_COLOR_RED, player_target->GetName(), m_session->GetPlayer()->GetName(), kickreason.c_str());
@@ -746,11 +746,11 @@ bool ChatHandler::HandleAnnounceCommand(const char* args, WorldSession* m_sessio
     std::string colored_text;
     colored_text = sWorld.ann_tagcolor;
     colored_text += "[";
-    colored_text += sWorld.announce_tag;
+    colored_text += sWorld.announceSettings.announceTag;
     colored_text += "]";
     colored_text += sWorld.ann_gmtagcolor;
 
-    if (sWorld.GMAdminTag)
+    if (sWorld.announceSettings.enableGmAdminTag)
     {
         if (m_session->CanUseCommand('z'))
             colored_text += "<Admin>";
@@ -758,7 +758,7 @@ bool ChatHandler::HandleAnnounceCommand(const char* args, WorldSession* m_sessio
             colored_text += "<GM>";
     }
 
-    if (sWorld.NameinAnnounce)
+    if (sWorld.announceSettings.showNameInAnnounce)
     {
         colored_text += "|r" + sWorld.ann_namecolor + "|Hplayer:";
         colored_text += m_session->GetPlayer()->GetName();
@@ -766,7 +766,7 @@ bool ChatHandler::HandleAnnounceCommand(const char* args, WorldSession* m_sessio
         colored_text += m_session->GetPlayer()->GetName();
         colored_text += "]|h:|r " + sWorld.ann_msgcolor;
     }
-    else if (!sWorld.NameinAnnounce)
+    else if (!sWorld.announceSettings.showNameInAnnounce)
     {
         colored_text += ": "; colored_text += sWorld.ann_msgcolor;
     }
@@ -790,11 +790,11 @@ bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession* m_sessi
     std::string colored_widescreen_text;
     colored_widescreen_text = sWorld.ann_tagcolor;
     colored_widescreen_text += "[";
-    colored_widescreen_text += sWorld.announce_tag;
+    colored_widescreen_text += sWorld.announceSettings.announceTag;
     colored_widescreen_text += "]";
     colored_widescreen_text += sWorld.ann_gmtagcolor;
 
-    if (sWorld.GMAdminTag)
+    if (sWorld.announceSettings.enableGmAdminTag)
     {
         if (m_session->CanUseCommand('z'))
             colored_widescreen_text += "<Admin>";
@@ -802,13 +802,13 @@ bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession* m_sessi
             colored_widescreen_text += "<GM>";
     }
 
-    if (sWorld.NameinWAnnounce)
+    if (sWorld.announceSettings.showNameInWAnnounce)
     {
         colored_widescreen_text += "|r" + sWorld.ann_namecolor + "[";
         colored_widescreen_text += m_session->GetPlayer()->GetName();
         colored_widescreen_text += "]:|r " + sWorld.ann_msgcolor;
     }
-    else if (!sWorld.NameinWAnnounce)
+    else if (!sWorld.announceSettings.showNameInWAnnounce)
     {
         colored_widescreen_text += ": "; colored_widescreen_text += sWorld.ann_msgcolor;
     }
