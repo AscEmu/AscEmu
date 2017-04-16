@@ -1596,7 +1596,7 @@ class KazzakAI : public CreatureAIScript
 
         void AIUpdate()
         {
-            if (_unit->isInCombat())
+            if (_unit->CombatStatus.IsInCombat())
             {
                 if (enrage == 180)
                 {

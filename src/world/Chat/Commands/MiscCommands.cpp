@@ -611,7 +611,11 @@ bool ChatHandler::HandleGPSCommand(const char* args, WorldSession* m_session)
         out_map_id, out_zone_id, out_area_id, out_phase, out_x, out_y, out_z, out_o, out_area_name);
     SystemMessage(m_session, buf);
 
+#if VERSION_STRING != Cata
     if (obj->obj_movement_info.IsOnTransport())
+#else
+    if (!obj->obj_movement_info.getTransportGuid().IsEmpty())
+#endif
     {
         SystemMessage(m_session, "Position on Transport:");
         SystemMessage(m_session, "  tX: %f  tY: %f  tZ: %f  tO: %f", obj->GetTransPositionX(), obj->GetTransPositionY(), obj->GetTransPositionZ(), obj->GetTransPositionO());

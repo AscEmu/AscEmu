@@ -99,19 +99,162 @@ typedef struct
 	uint32 resisted_damage;
 } dealdamage;
 
+#if VERSION_STRING == Cata
+#include "GameCata/Movement/MovementDefines.h"
+
+class MovementInfo
+{
+    public:
+
+        MovementInfo() : move_flags(MOVEFLAG_NONE), move_flags2(MOVEFLAG2_NONE), update_time(0),
+            transport_time(0), transport_seat(-1), transport_time2(0), pitch_rate(0.0f), fall_time(0), spline_elevation(0.0f), byte_parameter(0) {}
+
+        ObjectGuid const& getGuid() const { return guid; }
+        ObjectGuid const& getGuid2() const { return guid2; }
+
+        MovementFlags getMovementFlags() const { return MovementFlags(move_flags); }
+        void addMovementFlag(MovementFlags flags) { move_flags |= flags; }
+        void setMovementFlags(MovementFlags flags) { move_flags = flags; }
+        bool hasMovementFlag(MovementFlags flags) const { return (move_flags & flags) != 0; }
+        void removeMovementFlag(MovementFlags flags) { move_flags &= ~flags; }
+
+        MovementFlags2 getMovementFlags2() const { return MovementFlags2(move_flags2); }
+        void addMovementFlags2(MovementFlags2 flags2) { move_flags2 |= flags2; }
+        bool hasMovementFlag2(MovementFlags2 flags2) const { return (move_flags2 & flags2) != 0; }
+
+        void setUpdateTime(uint32_t time) { update_time = time; }
+        uint32_t getUpdateTime() { return update_time; }
+
+        LocationVector const* getPosition() const { return &position; }
+        void changeOrientation(float o) { position.o = o; }
+        void changePosition(float x, float y, float z, float o) { position.x = x; position.y = y; position.z = z; position.o = o; }
+
+        float getPitch() const { return pitch_rate; }
+        uint32_t fetFallTime() const { return fall_time; }
+        float getSplineElevation() const { return spline_elevation; }
+        int8_t fetByteParam() const { return byte_parameter; }
+        
+        struct JumpInfo
+        {
+            JumpInfo() : velocity(0.f), sinAngle(0.f), cosAngle(0.f), xyspeed(0.f) { }
+
+            float velocity;
+            float sinAngle;
+            float cosAngle;
+            float xyspeed;
+        };
+        JumpInfo const& getJumpInfo() const { return jump_info; }
+
+        struct StatusInfo
+        {
+            StatusInfo() : hasFallData(false), hasFallDirection(false), hasOrientation(false),
+                hasPitch(false), hasSpline(false), hasSplineElevation(false),
+                hasTimeStamp(false), hasTransportTime2(false), hasTransportTime3(false) { }
+
+            bool hasFallData : 1;
+            bool hasFallDirection : 1;
+            bool hasOrientation : 1;
+            bool hasPitch : 1;
+            bool hasSpline : 1;
+            bool hasSplineElevation : 1;
+            bool hasTimeStamp : 1;
+            bool hasTransportTime2 : 1;
+            bool hasTransportTime3 : 1;
+        };
+        StatusInfo const& getMovementStatusInfo() const { return status_info; }
+
+        // transport
+        ObjectGuid& getTransportGuid() { return transport_guid; }
+
+        LocationVector const* getTransportPosition() const { return &transport_position; }
+
+        int8_t getTransportSeat() const { return transport_seat; }
+
+        uint32_t getTransportTime() const { return transport_time; }
+        uint32_t getTransportTime2() const { return transport_time2; }
+
+        void setTransportData(ObjectGuid guid, float x, float y, float z, float o, uint32_t time, int8_t seat)
+        {
+            transport_guid = guid;
+            transport_position.x = x;
+            transport_position.y = y;
+            transport_position.z = z;
+            transport_position.o = o;
+            transport_time = time;
+            transport_seat = seat;
+        }
+
+        void clearTransportData()
+        {
+            transport_guid = ObjectGuid();
+            transport_position.x = 0.0f;
+            transport_position.y = 0.0f;
+            transport_position.z = 0.0f;
+            transport_position.o = 0.0f;
+            transport_time = 0;
+            transport_seat = -1;
+        }
+
+        void readMovementInfo(ByteBuffer& data, uint32_t opcode);
+        void writeMovementInfo(ByteBuffer& data, uint32_t opcode, float custom_speed = 0.f) const;
+
+    private:
+
+        ObjectGuid guid;
+        ObjectGuid guid2;
+
+        uint32_t move_flags;
+        uint16_t move_flags2;
+
+        uint32_t update_time;
+
+        LocationVector position;
+
+        float pitch_rate;
+        uint32_t fall_time;
+        float spline_elevation;
+        int8_t byte_parameter;
+
+        JumpInfo jump_info;
+
+        StatusInfo status_info;
+
+        // transport
+        ObjectGuid transport_guid;
+
+        LocationVector transport_position;
+        uint32_t transport_time;
+        int8_t transport_seat;
+        uint32_t transport_time2;
+};
+
+inline WorldPacket& operator<< (WorldPacket& buf, MovementInfo const& mi)
+{
+    mi.writeMovementInfo(buf, buf.GetOpcode());
+    return buf;
+}
+
+inline WorldPacket& operator>> (WorldPacket& buf, MovementInfo& mi)
+{
+    mi.readMovementInfo(buf, buf.GetOpcode());
+    return buf;
+}
+
+static float normalizeOrientation(float orientation)
+{
+    if (orientation < 0)
+    {
+        float mod = orientation *-1;
+        mod = fmod(mod, 2.0f * static_cast<float>(M_PI));
+        mod = -mod + 2.0f * static_cast<float>(M_PI);
+        return mod;
+    }
+
+    return fmod(orientation, 2.0f * static_cast<float>(M_PI));
+}
+#else
 struct MovementInfo
 {
-#if VERSION_STRING == Cata
-    ObjectGuid guid;
-    ObjectGuid guid2;
-    ObjectGuid t_guid;
-
-    uint32_t fall_time2;
-    int8 byteParam;
-    uint32_t time2;
-    uint32_t vehicle_id;
-#endif
-
     WoWGuid object_guid;
     uint32_t flags;
     uint16_t flags2;
@@ -176,13 +319,8 @@ struct MovementInfo
         transporter_info.Clear();
     }
 
-#if VERSION_STRING != Cata
     void init(WorldPacket& data);
     void write(WorldPacket& data);
-#else
-    void Read(ByteBuffer& data, uint32 opcode);
-    void Write(ByteBuffer& data, uint32 opcode, float extra = 0.0f) const;
-#endif
 
     bool IsOnTransport() const { return this->transporter_info.guid != 0; };
 
@@ -195,31 +333,6 @@ struct MovementInfo
     bool HasMovementFlag2(uint16_t move_flags2) const { return (flags2 & move_flags2) != 0; }
     uint16_t GetMovementFlags2() const { return flags2; }
 };
-
-#if VERSION_STRING == Cata
-inline WorldPacket& operator<< (WorldPacket& buf, MovementInfo const& mi)
-{
-    mi.Write(buf, (uint32)buf.GetOpcode());
-    return buf;
-}
-
-inline WorldPacket& operator >> (WorldPacket& buf, MovementInfo& mi)
-{
-    mi.Read(buf, (uint32)buf.GetOpcode());
-    return buf;
-}
-
-static float NormalizeOrientation(float o)
-{
-    if (o < 0)
-    {
-        float mod = o *-1;
-        mod = fmod(mod, 2.0f * static_cast<float>(M_PI));
-        mod = -mod + 2.0f * static_cast<float>(M_PI);
-        return mod;
-    }
-    return fmod(o, 2.0f * static_cast<float>(M_PI));
-}
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -357,6 +470,7 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         LocationVector & GetPositionNC() { return m_position; }
         LocationVector* GetPositionV() { return &m_position; }
 
+#if VERSION_STRING != Cata
         // TransporterInfo
         float GetTransPositionX() const { return obj_movement_info.transporter_info.position.x; }
         float GetTransPositionY() const { return obj_movement_info.transporter_info.position.y; }
@@ -364,6 +478,14 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         float GetTransPositionO() const { return obj_movement_info.transporter_info.position.o; }
         uint32 GetTransTime() const { return obj_movement_info.transporter_info.time; }
         uint8 GetTransSeat() const { return obj_movement_info.transporter_info.seat; }
+#else
+        float GetTransPositionX() const { return obj_movement_info.getTransportPosition()->x; }
+        float GetTransPositionY() const { return obj_movement_info.getTransportPosition()->y; }
+        float GetTransPositionZ() const { return obj_movement_info.getTransportPosition()->z; }
+        float GetTransPositionO() const { return obj_movement_info.getTransportPosition()->o; }
+        uint32 GetTransTime() const { return obj_movement_info.getTransportTime(); }
+        uint8 GetTransSeat() const { return obj_movement_info.getTransportSeat(); }
+#endif
 
         /// Distance Calculation
         float CalcDistance(Object* Ob);

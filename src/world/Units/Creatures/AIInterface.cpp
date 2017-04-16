@@ -396,16 +396,16 @@ void AIInterface::_UpdateTargets()
     {
         m_updateAssist = false;
 
-        for (auto i = m_assistTargets.begin(); i != m_assistTargets.end(); ++i)
+        for (auto iter : m_assistTargets)
         {
-            if ((*i) == NULL || (*i)->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
-                !(*i)->isAlive() || m_Unit->GetDistanceSq((*i)) >= 2500.0f || !(*i)->isInCombat() || !((*i)->m_phase & m_Unit->m_phase))
+            if (iter == NULL || iter->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
+                !iter->isAlive() || m_Unit->GetDistanceSq(iter) >= 2500.0f || !iter->isInCombat() || !(iter->m_phase & m_Unit->m_phase))
             {
-                m_assistTargets.erase(i);
+                m_assistTargets.erase(iter);
             }
         }
     }
-
+  
     if (m_updateTargets)
     {
         m_updateTargets = false;
@@ -562,8 +562,13 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                     {
                         MovementInfo* mi = static_cast<Player*>(getNextTarget())->GetSession()->GetMovementInfo();
 
+#if VERSION_STRING != Cata
                         if (mi->flags & MOVEFLAG_FLYING)
                             HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
+#else
+                        if (mi->hasMovementFlag(MOVEFLAG_FLYING))
+                            HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
+#endif
                     }
                 }
             }
@@ -1038,8 +1043,13 @@ void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellI
                     {
                         MovementInfo* mi = static_cast< Player* >(pUnit)->GetSession()->GetMovementInfo();
 
+#if VERSION_STRING != Cata
                         if (mi != NULL && !(mi->flags & MOVEFLAG_FALLING) && !(mi->flags & MOVEFLAG_SWIMMING) && !(mi->flags & MOVEFLAG_HOVER))
                             return;
+#else
+                        if (mi != NULL && !(mi->hasMovementFlag(MOVEFLAG_FALLING)) && !(mi->hasMovementFlag(MOVEFLAG_SWIMMING)) && !(mi->hasMovementFlag(MOVEFLAG_HOVER)))
+                            return;
+#endif
                     }
                 }
             }
@@ -3120,7 +3130,7 @@ void AIInterface::WipeTargetList()
     LockAITargets(true);
     m_aiTargets.clear();
     LockAITargets(false);
-    m_Unit->clearAllCombatTargets();
+    m_Unit->CombatStatus.Vanished();
 }
 
 bool AIInterface::taunt(Unit* caster, bool apply)
@@ -3246,8 +3256,8 @@ void AIInterface::CheckTarget(Unit* target)
     TargetMap::iterator it2 = m_aiTargets.find(target->GetGUID());
     if (it2 != m_aiTargets.end() || target == getNextTarget())
     {
-        target->removeAttacker(m_Unit);
-        m_Unit->removeAttackTarget(target);
+        target->CombatStatus.RemoveAttacker(m_Unit, m_Unit->GetGUID());
+        m_Unit->CombatStatus.RemoveAttackTarget(target);
 
         if (it2 != m_aiTargets.end())
         {
@@ -4130,7 +4140,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
     m_hasCalledForHelp = false;
     m_nextSpell = NULL;
     resetNextTarget();
-    m_Unit->clearAllCombatTargets();
+    m_Unit->CombatStatus.Vanished();
 
     if (m_AIType == AITYPE_PET)
     {
@@ -4211,7 +4221,7 @@ void AIInterface::EventDamageTaken(Unit* pUnit, uint32 misc1)
     {
         m_aiTargets.insert(TargetMap::value_type(pUnit->GetGUID(), misc1));
     }
-    pUnit->onDamageDealt(m_Unit);
+    pUnit->CombatStatus.OnDamageDealt(m_Unit);
 }
 
 void AIInterface::EventFollowOwner(Unit* pUnit, uint32 misc1)

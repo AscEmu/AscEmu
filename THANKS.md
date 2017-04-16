@@ -13,6 +13,7 @@ Not everyone can handle this source (or can invest so much effort) so these
 people are awsome:
 
 - aaron02
+- Appled
 - AriDEV
 - armm77
 - Cronicman

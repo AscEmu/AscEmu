@@ -1583,7 +1583,11 @@ void Player::_EventExploration()
             ApplyPlayerRestState(false);
     }
 
+#if VERSION_STRING != Cata
     if (!(currFields & val) && !GetTaxiState() && !obj_movement_info.transporter_info.guid) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
+#else
+    if (!(currFields & val) && !GetTaxiState() && !obj_movement_info.getTransportGuid().IsEmpty()) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
+#endif
     {
         SetUInt32Value(offset, (uint32)(currFields | val));
 
@@ -3368,6 +3372,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         field_index++;
     }
 
+#if VERSION_STRING != Cata
     obj_movement_info.transporter_info.guid = get_next_field.GetUInt32();
     if (obj_movement_info.transporter_info.guid)
     {
@@ -3379,6 +3384,15 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     obj_movement_info.transporter_info.position.y = get_next_field.GetFloat();
     obj_movement_info.transporter_info.position.z = get_next_field.GetFloat();
     obj_movement_info.transporter_info.position.o = get_next_field.GetFloat();
+#else
+    uint32_t transportGuid = get_next_field.GetUInt32();
+    float transportX = get_next_field.GetFloat();
+    float transportY = get_next_field.GetFloat();
+    float transportZ = get_next_field.GetFloat();
+    float transportO = get_next_field.GetFloat();
+
+    obj_movement_info.setTransportData(transportGuid, transportX, transportY, transportZ, transportO, 0, 0);
+#endif
 
     LoadSpells(results[13].result);
 
@@ -4621,7 +4635,11 @@ void Player::RepopRequestedPlayer()
     if (transport != nullptr)
     {
         transport->RemovePassenger(this);
+#if VERSION_STRING != Cata
         this->obj_movement_info.transporter_info.guid = 0;
+#else
+        this->obj_movement_info.clearTransportData();
+#endif
 
         //ResurrectPlayer();
         RepopAtGraveyard(GetPositionX(), GetPositionY(), GetPositionZ(), GetMapId());
@@ -8385,7 +8403,7 @@ void Player::EndDuel(uint8 WinCondition)
     std::list<Pet*> summons = GetSummons();
     for (auto itr = summons.begin(); itr != summons.end(); ++itr)
     {
-        (*itr)->clearAllCombatTargets();
+        (*itr)->CombatStatus.Vanished();
         (*itr)->GetAIInterface()->SetUnitToFollow(this);
         (*itr)->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, *itr, 0);
         (*itr)->GetAIInterface()->WipeTargetList();
@@ -8394,7 +8412,7 @@ void Player::EndDuel(uint8 WinCondition)
     std::list<Pet*> duelingWithSummons = DuelingWith->GetSummons();
     for (auto itr = duelingWithSummons.begin(); itr != duelingWithSummons.end(); ++itr)
     {
-        (*itr)->clearAllCombatTargets();
+        (*itr)->CombatStatus.Vanished();
         (*itr)->GetAIInterface()->SetUnitToFollow(this);
         (*itr)->GetAIInterface()->HandleEvent(EVENT_FOLLOWOWNER, *itr, 0);
         (*itr)->GetAIInterface()->WipeTargetList();
@@ -8588,13 +8606,26 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
         setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
     }
+
+#if VERSION_STRING != Cata
     if (obj_movement_info.transporter_info.guid)
+#else
+    if (!obj_movement_info.getTransportGuid().IsEmpty())
+#endif
     {
+#if VERSION_STRING != Cata
         Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
+#else
+        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.getTransportGuid()));
+#endif
         if (pTrans)
         {
             pTrans->RemovePassenger(this);
+#if VERSION_STRING != Cata
             obj_movement_info.transporter_info.guid = 0;
+#else
+            obj_movement_info.clearTransportData();
+#endif
         }
     }
 
@@ -9266,7 +9297,7 @@ void Player::CompleteLoading()
     }
 
     sInstanceMgr.BuildSavedInstancesForPlayer(this);
-    updateCombatStatus();
+    CombatStatus.UpdateFlag();
     // add glyphs
     for (uint8 j = 0; j < GLYPHS_COUNT; ++j)
     {
@@ -10860,7 +10891,7 @@ void Player::RemoveShapeShiftSpell(uint32 id)
 // COOLDOWNS
 void Player::UpdatePotionCooldown()
 {
-    if (m_lastPotionId == 0 || isInCombat())
+    if (m_lastPotionId == 0 || CombatStatus.IsInCombat())
         return;
 
     ItemProperties const* proto = sMySQLStore.GetItemProperties(m_lastPotionId);
@@ -11874,7 +11905,7 @@ void Player::SetPvPFlag()
         (*itr)->SetPvPFlag();
     }
 
-    if (isInCombat())
+    if (CombatStatus.IsInCombat())
         SetFlag(PLAYER_FLAGS, 0x100);
 
 }
@@ -12602,7 +12633,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
         if (!GetSession()->HasPermissions() && sWorld.m_limits.enable != 0)
             damage = CheckDamageLimits(damage, spellId);
 
-        onDamageDealt(pVictim);
+        CombatStatus.OnDamageDealt(pVictim);
 
         if (pVictim->IsPvPFlagged())
         {
@@ -12615,7 +12646,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
 
     pVictim->SetStandState(STANDSTATE_STAND);
 
-    if (isInCombat())
+    if (CombatStatus.IsInCombat())
         sHookInterface.OnEnterCombat(this, this);
 
     ///////////////////////////////////////////////////// Hackatlon ///////////////////////////////////////////////////////////
@@ -12868,7 +12899,7 @@ void Player::TakeDamage(Unit* pAttacker, uint32 damage, uint32 spellid, bool no_
         }
     }
 
-    if (isInCombat())
+    if (CombatStatus.IsInCombat())
         sHookInterface.OnEnterCombat(this, pAttacker);
 
 
@@ -13037,7 +13068,7 @@ void Player::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     }
 
     // Wipe our attacker set on death
-    clearAllCombatTargets();
+    CombatStatus.Vanished();
 
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
     pAttacker->smsg_AttackStop(this);
@@ -14022,7 +14053,8 @@ void Player::SendGuildMOTD()
 void Player::SetClientControl(Unit* target, uint8 allowMove)
 {
     WorldPacket ack(SMSG_CLIENT_CONTROL_UPDATE, 200);
-    ack << target->GetNewGUID() << uint8(allowMove);
+    ack << target->GetNewGUID();
+    ack << uint8(allowMove);
     SendPacket(&ack);
 
     if (target == this)

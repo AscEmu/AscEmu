@@ -1057,8 +1057,10 @@ void Group::UpdateOutOfRangePlayer(Player* pPlayer, bool Distribute, WorldPacket
 
     if (mask & GROUP_UPDATE_FLAG_VEHICLE_SEAT)
     {
+#if VERSION_STRING != Cata
         if (Vehicle* veh = pPlayer->GetCurrentVehicle())
             *data << uint32(veh->GetVehicleInfo()->seatID[pPlayer->GetMovementInfo()->transporter_info.seat]);
+#endif
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_AURAS)

@@ -2261,7 +2261,7 @@ void Creature::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint
         return;
 
     if (pVictim != this)
-        onDamageDealt(pVictim);
+        CombatStatus.OnDamageDealt(pVictim);
 
     pVictim->SetStandState(STANDSTATE_STAND);
 
@@ -2408,7 +2408,7 @@ void Creature::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     SetHealth(0);
 
     // Wipe our attacker set on death
-    clearAllCombatTargets();
+    CombatStatus.Vanished();
 
     RemoveAllNonPersistentAuras();
 

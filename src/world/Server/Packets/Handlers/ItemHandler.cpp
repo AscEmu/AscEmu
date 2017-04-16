@@ -231,7 +231,7 @@ void WorldSession::HandleSwapInvItemOpcode(WorldPacket& recv_data)
     bool skip_combat = false;
     if (srcslot < EQUIPMENT_SLOT_END || dstslot < EQUIPMENT_SLOT_END)        // We're doing an equip swap.
     {
-        if (_player->isInCombat())
+        if (_player->CombatStatus.IsInCombat())
         {
             if (srcslot < EQUIPMENT_SLOT_MAINHAND || dstslot < EQUIPMENT_SLOT_MAINHAND)    // These can't be swapped
             {
@@ -1424,9 +1424,15 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket& recv_data)
     VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(unit->GetCreatureProperties()->Id);
 
     //this is a blizzlike check
+#if VERSION_STRING != Cata
     if (!_player->obj_movement_info.IsOnTransport())
+#else
+    if (_player->obj_movement_info.getTransportGuid().IsEmpty())
+#endif
+    {
         if (_player->GetDistanceSq(unit) > 100)
             return; //avoid talking to anyone by guid hacking. Like sell farmed items anytime ? Low chance hack
+    }
 
     if (unit->GetAIInterface())
         unit->GetAIInterface()->StopMovement(180000);
