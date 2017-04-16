@@ -353,7 +353,7 @@ enum Opcodes
     CMSG_GETDEATHBINDZONE = 0x156,
     SMSG_BINDZONEREPLY = 0x157,
     SMSG_PLAYERBOUND = 0x2516,                      // new
-    SMSG_CLIENT_CONTROL_UPDATE = 0x159,
+    SMSG_CLIENT_CONTROL_UPDATE = 0x2837,            // new
     CMSG_REPOP_REQUEST = 0x6235,                    // new
     SMSG_RESURRECT_REQUEST = 0x2905,                // new
     CMSG_RESURRECT_RESPONSE = 0x6827,               // new
@@ -846,7 +846,7 @@ enum Opcodes
     SMSG_MOVE_SET_CAN_FLY = 0x3DA1,                     // new
     SMSG_MOVE_UNSET_CAN_FLY = 0x15A2,                   // new
     CMSG_MOVE_SET_CAN_FLY_ACK = 0x790C,                 // new
-    CMSG_MOVE_SET_FLY = 0x346,
+    CMSG_MOVE_SET_CAN_FLY = 0x720E,                     // new
     CMSG_SOCKET_GEMS = 0x2F04,                          // new
     CMSG_ARENA_TEAM_CREATE = 0x348,
     SMSG_ARENA_TEAM_COMMAND_RESULT = 0x349,

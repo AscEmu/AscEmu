@@ -404,7 +404,7 @@ class LuaUnit
     {
         TEST_UNIT()
             // If Pointer isn't in combat skip everything
-            if (!ptr->isInCombat())
+            if (!ptr->CombatStatus.IsInCombat())
                 return 0;
 
         Unit* pTarget = ptr->GetAIInterface()->getNextTarget();
@@ -757,7 +757,7 @@ class LuaUnit
     {
         if (ptr == NULL || !ptr->IsInWorld())
             RET_NIL()
-            if (ptr->isInCombat())
+            if (ptr->CombatStatus.IsInCombat())
                 lua_pushboolean(L, 1);
             else
                 lua_pushboolean(L, 0);
@@ -1501,13 +1501,13 @@ class LuaUnit
     {
         //should use now instead of GetTarget
         TEST_PLAYER()
-            if (!ptr->isInCombat())
+            if (!ptr->CombatStatus.IsInCombat())
             {
                 lua_pushinteger(L, 0);
                 return 1;
             }
             else
-                PUSH_UNIT(L, ptr->GetMapMgr()->GetUnit(static_cast<Player*>(ptr)->getPrimaryAttackTarget()));
+                PUSH_UNIT(L, ptr->GetMapMgr()->GetUnit(static_cast<Player*>(ptr)->CombatStatus.GetPrimaryAttackTarget()));
         return 1;
     }
 
@@ -5433,6 +5433,7 @@ class LuaUnit
         if (movement_info != NULL)
         {
             lua_newtable(L);
+#if VERSION_STRING != Cata
             lua_pushstring(L, "x");
             lua_pushnumber(L, movement_info->position.x);
             lua_rawset(L, -3);
@@ -5445,6 +5446,20 @@ class LuaUnit
             lua_pushstring(L, "o");
             lua_pushnumber(L, movement_info->position.o);
             lua_rawset(L, -3);
+#else
+            lua_pushstring(L, "x");
+            lua_pushnumber(L, movement_info->getPosition()->x);
+            lua_rawset(L, -3);
+            lua_pushstring(L, "y");
+            lua_pushnumber(L, movement_info->getPosition()->y);
+            lua_rawset(L, -3);
+            lua_pushstring(L, "z");
+            lua_pushnumber(L, movement_info->getPosition()->z);
+            lua_rawset(L, -3);
+            lua_pushstring(L, "o");
+            lua_pushnumber(L, movement_info->getPosition()->o);
+            lua_rawset(L, -3);
+#endif
         }
         else
             lua_pushnil(L);
@@ -5456,7 +5471,11 @@ class LuaUnit
         TEST_PLAYER()
             MovementInfo* move_info = static_cast<Player*>(ptr)->GetSession()->GetMovementInfo();
         if (move_info != NULL)
+#if VERSION_STRING != Cata
             lua_pushnumber(L, move_info->flags);
+#else
+            lua_pushnumber(L, move_info->getMovementFlags());
+#endif
         else
             RET_NIL()
             return 1;

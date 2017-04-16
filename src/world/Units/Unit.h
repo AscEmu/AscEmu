@@ -23,11 +23,9 @@
 #include "Objects/Object.h"
 #include "Spell/SpellDefines.hpp"
 
-#include "CombatStatus.h"
 #include "UnitDefines.hpp"
 #include "Management/LootMgr.h"
 #include "Spell/SpellProc.h"
-#include "CombatStatus.h"
 #include "Objects/Object.h"
 #include "Units/Summons/SummonHandler.h"
 #include "Movement/UnitMovementManager.hpp"
@@ -165,43 +163,69 @@ struct AuraCheckResponse
 #define UNIT_SUMMON_SLOTS 6
 
 typedef std::list<struct ProcTriggerSpellOnSpell> ProcTriggerSpellOnSpellList;
+
+class Unit;		
+class SERVER_DECL CombatStatusHandler		
+{		
+    typedef std::set<uint64> AttackerMap;		
+    typedef std::set<uint32> HealedSet;      // Must Be Players!		
+		
+    HealedSet m_healers;		
+    HealedSet m_healed;		
+		
+    Unit* m_Unit;		
+		
+    bool m_lastStatus;		
+		
+    AttackerMap m_attackTargets;		
+		
+    uint64 m_primaryAttackTarget;		
+		
+    public:		
+		
+        CombatStatusHandler() : m_Unit(nullptr), m_lastStatus(false), m_primaryAttackTarget(0) {}		
+		
+        AttackerMap m_attackers;		
+		
+        void AddAttackTarget(const uint64 & guid);                      // this means we clicked attack, not actually striked yet, so they shouldn't be in combat.		
+        void ClearPrimaryAttackTarget();                                // means we deselected the unit, stopped attacking it.		
+		
+        void OnDamageDealt(Unit* pTarget);                              // this is what puts the other person in combat.	
+        void WeHealed(Unit* pHealTarget);                               // called when a player heals another player, regardless of combat state.
+		
+        void RemoveAttacker(Unit* pAttacker, const uint64 & guid);      // this means we stopped attacking them totally. could be because of deaggro, etc.		
+        void RemoveAttackTarget(Unit* pTarget);                         // means our DoT expired.		
+		
+        void UpdateFlag();                                              // detects if we have changed combat state (in/out), and applies the flag.
+        bool IsInCombat() const;                                        // checks if we are in combat or not.
+        void OnRemoveFromWorld();                                       // called when we are removed from world, kills all references to us.
+
+        void Vanished()
+        {
+            ClearAttackers();
+            ClearHealers();
+        }
+		
+        const uint64 & GetPrimaryAttackTarget() { return m_primaryAttackTarget; }
+        void SetUnit(Unit* p) { m_Unit = p; }
+        void TryToClearAttackTargets();                                 // for pvp timeout		
+        void AttackersForgetHate();                                     // used right now for Feign Death so attackers go home		
+		
+    protected:		
+		
+        bool InternalIsInCombat();                                      // called by UpdateFlag, do not call from anything else!		
+        bool IsAttacking(Unit* pTarget);                                // internal function used to determine if we are still attacking target x.		
+        void AddAttacker(const uint64 & guid);                          // internal function to add an attacker		
+        void RemoveHealed(Unit* pHealTarget);                           // usually called only by updateflag		
+        void ClearHealers();                                            // this is called on instance change.		
+        void ClearAttackers();                                          // means we vanished, or died.		
+        void ClearMyHealers();		
+};
 // AGPL End
 
 // MIT Start
 class SERVER_DECL Unit : public Object
 {
-    AscEmu::World::Units::CombatStatus m_combatStatus;
-    void setCombatFlag(bool enabled);
-
-public:
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Combat
-    bool isInCombat() const;
-    bool isAttacking(Unit* target) const;
-
-    void enterCombat();
-    void leaveCombat();
-    void onDamageDealt(Unit* target);
-
-    void addHealTarget(Unit* target);
-    void removeHealTarget(Unit* target);
-
-    void addHealer(Unit* healer);
-    void removeHealer(Unit* healer);
-
-    void addAttacker(Unit* attacker);
-    bool hasAttacker(uint64_t guid) const;
-    void removeAttacker(Unit* attacker);
-    void removeAttacker(uint64_t guid);
-
-    void removeAttackTarget(Unit* attackTarget);
-
-    void updateCombatStatus();
-    void clearAllCombatTargets();
-
-    uint64_t getPrimaryAttackTarget() const;
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
 private:
@@ -945,7 +969,8 @@ public:
     } m_soulSiphon;
 
     uint32 m_cTimer;
-    //void EventUpdateFlag();
+    void EventUpdateFlag();
+    CombatStatusHandler CombatStatus;
     bool m_temp_summon;
 
     void CancelSpell(Spell* ptr);
@@ -1302,7 +1327,7 @@ public:
     virtual Group* GetGroup() { return NULL; }
     bool InParty(Unit* u);
     bool InRaid(Unit* u);
-    AscEmu::World::Units::CombatStatus& getCombatStatus();
+    const CombatStatusHandler* getcombatstatus() const { return &CombatStatus; }
 
     bool m_noFallDamage;
     float z_axisposition;
@@ -1317,6 +1342,7 @@ public:
 
     MovementInfo* GetMovementInfo() { return &movement_info; }
 
+#if VERSION_STRING != Cata
     uint32 GetUnitMovementFlags() const { return movement_info.flags; }   //checked
     void SetUnitMovementFlags(uint32 f) { movement_info.flags = f; }
     void AddUnitMovementFlag(uint32 f) { movement_info.flags |= f; }
@@ -1326,6 +1352,17 @@ public:
     uint16 GetExtraUnitMovementFlags() const { return movement_info.flags2; }
     void AddExtraUnitMovementFlag(uint16 f2) { movement_info.flags2 |= f2; }
     bool HasExtraUnitMovementFlag(uint16 f2) const { return (movement_info.flags2 & f2) != 0; }
+#else
+    MovementFlags GetUnitMovementFlags() const { return movement_info.getMovementFlags(); }   //checked
+    void SetUnitMovementFlags(MovementFlags f) { movement_info.setMovementFlags(f); }
+    void AddUnitMovementFlag(MovementFlags f) { movement_info.addMovementFlag(f); }
+    void RemoveUnitMovementFlag(MovementFlags f) { movement_info.removeMovementFlag(f); }
+    bool HasUnitMovementFlag(MovementFlags f) const { return (movement_info.getMovementFlags() & f) != 0; }
+
+    MovementFlags2 GetExtraUnitMovementFlags() const { return movement_info.getMovementFlags2(); }
+    void AddExtraUnitMovementFlag(MovementFlags2 f2) { movement_info.addMovementFlags2(f2); }
+    bool HasExtraUnitMovementFlag(MovementFlags2 f2) const { return (movement_info.getMovementFlags2() & f2) != 0; }
+#endif
 
     MovementInfo movement_info;
     // AGPL End

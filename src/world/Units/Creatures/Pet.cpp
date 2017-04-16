@@ -351,7 +351,7 @@ void Pet::Update(unsigned long time_passed)
         if (m_HappinessTimer == 0)
         {
             int32 burn = 1042;          //Based on WoWWiki pet looses 50 happiness over 6 min => 1042 every 7.5 s
-            if (isInCombat())
+            if (CombatStatus.IsInCombat())
                 burn >>= 1;             //in combat reduce burn by half (guessed)
             ModPower(POWER_TYPE_HAPPINESS, -burn);
             m_HappinessTimer = PET_HAPPINESS_UPDATE_TIMER;  // reset timer
@@ -1859,7 +1859,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 un
         return;
 
     if (pVictim != this)
-        onDamageDealt(pVictim);
+        CombatStatus.OnDamageDealt(pVictim);
 
     pVictim->SetStandState(STANDSTATE_STAND);
 
@@ -2163,7 +2163,7 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     SetHealth(0);
 
     // Wipe our attacker set on death
-    clearAllCombatTargets();
+    CombatStatus.Vanished();
 
     CALL_SCRIPT_EVENT(pAttacker, OnTargetDied)(this);
     pAttacker->smsg_AttackStop(this);

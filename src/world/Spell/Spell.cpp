@@ -1887,7 +1887,7 @@ void Spell::finish(bool successful)
         if (i_caster->GetItemProperties()->Class == ITEM_CLASS_CONSUMABLE && i_caster->GetItemProperties()->SubClass == 1)
         {
             i_caster->GetOwner()->SetLastPotion(i_caster->GetItemProperties()->ItemId);
-            if (!i_caster->GetOwner()->isInCombat())
+            if (!i_caster->GetOwner()->CombatStatus.IsInCombat())
                 i_caster->GetOwner()->UpdatePotionCooldown();
         }
         else
@@ -3246,7 +3246,7 @@ uint8 Spell::CanCast(bool tolerate)
         return SPELL_FAILED_MOVING;
 
     // Check if spell requires caster to be in combat to be casted.
-    if (p_caster != NULL && HasCustomFlag(CUSTOM_FLAG_SPELL_REQUIRES_COMBAT) && !p_caster->isInCombat())
+    if (p_caster != NULL && HasCustomFlag(CUSTOM_FLAG_SPELL_REQUIRES_COMBAT) && !p_caster->CombatStatus.IsInCombat())
         return SPELL_FAILED_SPELL_UNAVAILABLE;
 
     /**
@@ -3337,7 +3337,7 @@ uint8 Spell::CanCast(bool tolerate)
         if (u_caster->HasAurasWithNameHash(SPELL_HASH_BLADESTORM) && GetSpellInfo()->custom_NameHash != SPELL_HASH_WHIRLWIND)
             return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
 
-        if (hasAttribute(ATTRIBUTES_REQ_OOC) && u_caster->isInCombat())
+        if (hasAttribute(ATTRIBUTES_REQ_OOC) && u_caster->CombatStatus.IsInCombat())
         {
             // Warbringer (Warrior 51Prot Talent effect)
             if ((GetSpellInfo()->Id != 100 && GetSpellInfo()->Id != 6178 && GetSpellInfo()->Id != 11578)
@@ -4034,7 +4034,7 @@ uint8 Spell::CanCast(bool tolerate)
             }
 
             /* Target OOC check */
-            if (hasAttributeEx(ATTRIBUTESEX_REQ_OOC_TARGET) && target->isInCombat())
+            if (hasAttributeEx(ATTRIBUTESEX_REQ_OOC_TARGET) && target->CombatStatus.IsInCombat())
                 return SPELL_FAILED_TARGET_IN_COMBAT;
 
             if (p_caster != NULL)
@@ -5441,7 +5441,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
 
             tmp_creature = static_cast<Creature*>(*itr);
 
-            if (!tmp_creature->isInCombat() || (tmp_creature->GetAIInterface()->getThreatByPtr(u_caster) == 0 && tmp_creature->GetAIInterface()->getThreatByPtr(unitTarget) == 0))
+            if (!tmp_creature->CombatStatus.IsInCombat() || (tmp_creature->GetAIInterface()->getThreatByPtr(u_caster) == 0 && tmp_creature->GetAIInterface()->getThreatByPtr(unitTarget) == 0))
                 continue;
 
             if (!(u_caster->GetPhase() & (*itr)->GetPhase()))     //Can't see, can't be a threat
@@ -5462,9 +5462,7 @@ void Spell::Heal(int32 amount, bool ForceCrit)
 
         // remember that we healed (for combat status)
         if (unitTarget->IsInWorld() && u_caster->IsInWorld())
-        {
-            u_caster->addHealTarget(unitTarget);
-        }
+            u_caster->CombatStatus.WeHealed(unitTarget);
     }
 }
 
