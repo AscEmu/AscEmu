@@ -881,7 +881,7 @@ void WorldSession::FullLogin(Player* plr)
             MSG_COLOR_SEXGREEN, sWorld.GetSessionCount(), MSG_COLOR_SEXBLUE, sWorld.PeakSessionCount, MSG_COLOR_SEXBLUE, sWorld.mAcceptedConnections);
 
         // Shows Server uptime
-        _player->BroadcastMessage("Server Uptime: |r%s", sWorld.GetUptimeString().c_str());
+        _player->BroadcastMessage("Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
     }
 
     // server Message Of The Day

@@ -65,13 +65,13 @@ bool HandleInfoCommand(BaseConsole* pConsole, int argc, const char* argv[])
     pConsole->Write("Server Information: \r\n");
     pConsole->Write("======================================================================\r\n");
     pConsole->Write("Server Revision: AscEmu %s/%s-%s-%s (www.ascemu.org)\r\n", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
-    pConsole->Write("Server Uptime: %s\r\n", sWorld.GetUptimeString().c_str());
+    pConsole->Write("Server Uptime: %s\r\n", sWorld.getWorldUptimeString().c_str());
     pConsole->Write("Current Players: %d (%d GMs, %d queued)\r\n", clientsNum, gm, 0);
     pConsole->Write("Active Thread Count: %u\r\n", ThreadPool.GetActiveThreadCount());
     pConsole->Write("Free Thread Count: %u\r\n", ThreadPool.GetFreeThreadCount());
     pConsole->Write("Average Latency: %.3fms\r\n", count ? ((float)((float)avg / (float)count)) : 0.0f);
-    pConsole->Write("CPU Usage: %3.2f %%\r\n", sWorld.GetCPUUsage());
-    pConsole->Write("RAM Usage: %4.2f MB\r\n", sWorld.GetRAMUsage());
+    pConsole->Write("CPU Usage: %3.2f %%\r\n", sWorld.getCPUUsage());
+    pConsole->Write("RAM Usage: %4.2f MB\r\n", sWorld.getRAMUsage());
     pConsole->Write("SQL Query Cache Size (World): %u queries delayed\r\n", WorldDatabase.GetQueueSize());
     pConsole->Write("SQL Query Cache Size (Character): %u queries delayed\r\n", CharacterDatabase.GetQueueSize());
     sSocketMgr.ShowStatus();
@@ -293,7 +293,7 @@ bool HandleMOTDCommand(BaseConsole* pConsole, int argc, const char* argv[])
 {
     if (argc < 2)
     {
-        pConsole->Write("The current message of the day is: '%s'.\r\n", sWorld.GetMotd());
+        pConsole->Write("The current message of the day is: '%s'.\r\n", sWorld.getMessageOfTheDay());
     }
     else
     {
@@ -302,8 +302,8 @@ bool HandleMOTDCommand(BaseConsole* pConsole, int argc, const char* argv[])
         ConcatArgs(outstr, argc, 0, argv);
         snprintf(set_motd, 1024, "%s", outstr.c_str());
 
-        sWorld.SetMotd(set_motd);
-        pConsole->Write("The message of the day has been set to: '%s'.\r\n", sWorld.GetMotd());
+        sWorld.setMessageOfTheDay(set_motd);
+        pConsole->Write("The message of the day has been set to: '%s'.\r\n", sWorld.getMessageOfTheDay());
     }
     return true;
 }
@@ -362,7 +362,7 @@ bool HandleRevivePlayer(BaseConsole* pConsole, int argc, const char* argv[])
 bool HandleRehashCommand(BaseConsole* pConsole, int argc, const char* argv[])
 {
     pConsole->Write("Config file re-parsed.");
-    sWorld.Rehash(true);
+    sWorld.loadWorldConfigValues(true);
     return true;
 }
 
@@ -374,7 +374,7 @@ bool HandleNameHashCommand(BaseConsole* pConsole, int argc, const char* argv[])
     std::string spname;
     ConcatArgs(spname, argc, 0, argv);
     pConsole->Write("Name Hash for %s is 0x%X", spname.c_str(), crc32((const unsigned char*)spname.c_str(), (unsigned int)spname.length()));
-    sWorld.Rehash(true);
+    sWorld.loadWorldConfigValues(true);
     return true;
 }
 

@@ -1690,7 +1690,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 uint32 minskill = entry->MinSkill;
 
                 if (plyr->_GetSkillLineCurrent(SKILL_FISHING, false) < maxskill)
-                    plyr->_AdvanceSkillLine(SKILL_FISHING, float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE)));
+                    plyr->_AdvanceSkillLine(SKILL_FISHING, float2int32(1.0f * sWorld.getFloatRate(RATE_SKILLRATE)));
 
                 GameObject* go = nullptr;
                 GameObject_FishingHole* school = nullptr;

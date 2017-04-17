@@ -288,16 +288,16 @@ void DayWatcherThread::update_arena()
                     if (team->m_type == ARENA_TEAM_TYPE_2V2)
                     {
                         Y *= 0.76;
-                        Y *= sWorld.getRate(RATE_ARENAPOINTMULTIPLIER2X);
+                        Y *= sWorld.getFloatRate(RATE_ARENAPOINTMULTIPLIER2X);
                     }
                     else if (team->m_type == ARENA_TEAM_TYPE_3V3)
                     {
                         Y *= 0.88;
-                        Y *= sWorld.getRate(RATE_ARENAPOINTMULTIPLIER3X);
+                        Y *= sWorld.getFloatRate(RATE_ARENAPOINTMULTIPLIER3X);
                     }
                     else
                     {
-                        Y *= sWorld.getRate(RATE_ARENAPOINTMULTIPLIER5X);
+                        Y *= sWorld.getFloatRate(RATE_ARENAPOINTMULTIPLIER5X);
                     }
 
                     if (Y > 1.0)

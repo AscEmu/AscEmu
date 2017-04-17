@@ -286,7 +286,7 @@ namespace luaGlobalFunctions
 
     static int Rehash(lua_State* L)
     {
-        sWorld.Rehash(true);
+        sWorld.loadWorldConfigValues(true);
         return 0;
     }
 

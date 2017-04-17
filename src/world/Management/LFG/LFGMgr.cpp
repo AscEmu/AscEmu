@@ -1737,7 +1737,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                 {
                     continue;
                 }
-                amt = float2int32(amt * sWorld.getRate(RATE_QUESTREPUTATION));
+                amt = float2int32(amt * sWorld.getFloatRate(RATE_QUESTREPUTATION));
                 player->ModStanding(fact, amt);
             }
         }
@@ -1831,7 +1831,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                 {
                     continue;
                 }
-                amt = float2int32(amt * sWorld.getRate(RATE_QUESTREPUTATION));
+                amt = float2int32(amt * sWorld.getFloatRate(RATE_QUESTREPUTATION));
                 player->ModStanding(fact, amt);
             }
         }

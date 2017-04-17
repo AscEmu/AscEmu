@@ -1594,7 +1594,7 @@ void Player::_EventExploration()
         SetUInt32Value(offset, (uint32)(currFields | val));
 
         uint32 explore_xp = at->area_level * 10;
-        explore_xp *= float2int32(sWorld.getRate(RATE_EXPLOREXP));
+        explore_xp *= float2int32(sWorld.getFloatRate(RATE_EXPLOREXP));
 
 #if VERSION_STRING > TBC
         GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA);
@@ -5739,7 +5739,7 @@ void Player::AddCalculatedRestXP(uint32 seconds)
     uint32 xp_to_lvl = GetXpToLevel();
 
     // get RestXP multiplier from config.
-    float bubblerate = sWorld.getRate(RATE_RESTXP);
+    float bubblerate = sWorld.getFloatRate(RATE_RESTXP);
 
     // One bubble (5% of xp_to_level) for every 8 hours logged out.
     // if multiplier RestXP (from ascent.config) is f.e 2, you only need 4hrs/bubble.
@@ -7120,7 +7120,7 @@ void Player::RegenerateMana(bool is_interrupted)
     uint32 mm = GetMaxPower(POWER_TYPE_MANA);
     if (cur >= mm)
         return;
-    float wrate = sWorld.getRate(RATE_POWER1); // config file regen rate
+    float wrate = sWorld.getFloatRate(RATE_POWER1); // config file regen rate
 #if VERSION_STRING == TBC
     float amt = (is_interrupted) ? GetFloatValue(PLAYER_FIELD_MOD_MANA_REGEN_INTERRUPT) : GetFloatValue(PLAYER_FIELD_MOD_MANA_REGEN);
 #elif VERSION_STRING == Classic
@@ -7189,7 +7189,7 @@ void Player::RegenerateHealth(bool inCombat)
     if (PctRegenModifier)
         amt += (amt * PctRegenModifier) / 100;
 
-    amt *= sWorld.getRate(RATE_HEALTH);//Apply conf file rate
+    amt *= sWorld.getFloatRate(RATE_HEALTH);//Apply conf file rate
     //Near values from official
     // wowwiki: Health Regeneration is increased by 33% while sitting.
     if (m_isResting)
@@ -7236,7 +7236,7 @@ void Player::RegenerateEnergy()
     if (cur >= mh)
         return;
 
-    float wrate = sWorld.getRate(RATE_POWER4);
+    float wrate = sWorld.getFloatRate(RATE_POWER4);
     float amt = PctPowerRegenModifier[POWER_TYPE_ENERGY];
     amt *= wrate * 20.0f;
 
@@ -8865,7 +8865,7 @@ void Player::UpdatePvPArea()
             RemoveSanctuaryFlag();
 
             //contested territory
-            if (sWorld.GetRealmType() == REALM_PVP)
+            if (sWorld.getRealmType() == REALM_PVP)
             {
                 //automatically sets pvp flag on contested territories.
                 if (!IsPvPFlagged())
@@ -8874,7 +8874,7 @@ void Player::UpdatePvPArea()
                     StopPvPTimer();
             }
 
-            if (sWorld.GetRealmType() == REALM_PVE)
+            if (sWorld.getRealmType() == REALM_PVE)
             {
                 if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
                 {
@@ -8933,7 +8933,7 @@ void Player::LoginPvPSetup()
 
 void Player::PvPToggle()
 {
-    if (sWorld.GetRealmType() == REALM_PVE)
+    if (sWorld.getRealmType() == REALM_PVE)
     {
         if (m_pvpTimer > 0)
         {
@@ -8981,7 +8981,7 @@ void Player::PvPToggle()
             }
         }
     }
-    else if (sWorld.GetRealmType() == REALM_PVP)
+    else if (sWorld.getRealmType() == REALM_PVP)
     {
         auto at = this->GetArea();
         if (at == NULL)

@@ -222,8 +222,7 @@ bool Master::Run(int argc, char** argv)
         return false;
     }
 
-    /* load the config file */
-    sWorld.Rehash(false);
+    sWorld.loadWorldConfigValues();
 
     OpenCheatLogFiles();
 
@@ -266,7 +265,7 @@ bool Master::Run(int argc, char** argv)
         return false;
     }
 
-    sWorld.SetStartTime((uint32)UNIXTIME);
+    sWorld.setWorldStartTime((uint32)UNIXTIME);
 
     WorldRunnable* wr = new WorldRunnable();
     ThreadPool.ExecuteTask(wr);

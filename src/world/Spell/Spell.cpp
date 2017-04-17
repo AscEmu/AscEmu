@@ -3218,8 +3218,8 @@ void Spell::DetermineSkillUp()
         else //brown
             chance = 100.0f;
     }
-    if (Rand(chance * sWorld.getRate(RATE_SKILLCHANCE)))
-        p_caster->_AdvanceSkillLine(skill_line_ability->skilline, float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE)));
+    if (Rand(chance * sWorld.getFloatRate(RATE_SKILLCHANCE)))
+        p_caster->_AdvanceSkillLine(skill_line_ability->skilline, float2int32(1.0f * sWorld.getFloatRate(RATE_SKILLRATE)));
 }
 
 bool Spell::IsAspect()
@@ -5492,9 +5492,9 @@ void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multipli
     if (multiplicator == 0)
         multiplicator = 1;
 
-    if (Rand((chance * sWorld.getRate(RATE_SKILLCHANCE)) * multiplicator))
+    if (Rand((chance * sWorld.getFloatRate(RATE_SKILLCHANCE)) * multiplicator))
     {
-        p_caster->_AdvanceSkillLine(skillid, float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE)));
+        p_caster->_AdvanceSkillLine(skillid, float2int32(1.0f * sWorld.getFloatRate(RATE_SKILLRATE)));
 
         uint32 value = p_caster->_GetSkillLineCurrent(skillid, true);
         uint32 spellid = 0;
@@ -5616,8 +5616,8 @@ void Spell::DetermineSkillUp(uint32 skillid)
         else //brown
             chance = 100.0f;
     }
-    if (Rand(chance * sWorld.getRate(RATE_SKILLCHANCE)))
-        p_caster->_AdvanceSkillLine(skillid, float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE)));
+    if (Rand(chance * sWorld.getFloatRate(RATE_SKILLCHANCE)))
+        p_caster->_AdvanceSkillLine(skillid, float2int32(1.0f * sWorld.getFloatRate(RATE_SKILLRATE)));
 }
 
 void Spell::SafeAddTarget(TargetsList* tgt, uint64 guid)

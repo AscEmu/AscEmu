@@ -409,7 +409,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
                         continue;
                 }
             }
-            ModStanding(itr->faction[team], float2int32(itr->value * sWorld.getRate(RATE_KILLREPUTATION)));
+            ModStanding(itr->faction[team], float2int32(itr->value * sWorld.getFloatRate(RATE_KILLREPUTATION)));
         }
     }
     else
@@ -420,7 +420,7 @@ void Player::Reputation_OnKilledUnit(Unit* pUnit, bool InnerLoop)
         if (pUnit->m_factionDBC->RepListId < 0)
             return;
 
-        int32 change = int32(-5.0f * sWorld.getRate(RATE_KILLREPUTATION));
+        int32 change = int32(-5.0f * sWorld.getFloatRate(RATE_KILLREPUTATION));
         ModStanding(pUnit->m_factionDBC->ID, change);
     }
 }

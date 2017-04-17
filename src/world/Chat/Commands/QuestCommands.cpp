@@ -360,7 +360,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                     {
                         continue;
                     }
-                    amt = float2int32(amt * sWorld.getRate(RATE_QUESTREPUTATION));
+                    amt = float2int32(amt * sWorld.getFloatRate(RATE_QUESTREPUTATION));
                     plr->ModStanding(fact, amt);
                 }
             }

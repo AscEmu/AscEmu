@@ -291,10 +291,13 @@ typedef std::set<WorldSession*> SessionSet;
 
 class SERVER_DECL World : public Singleton<World>, public EventableObject, public IUpdatable
 {
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Config values
     public:
 
+        World();
+        ~World();
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Config values
         // world.conf - Mysql Database Section
         struct WorldDatabaseSettings
         {
@@ -664,45 +667,82 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         // realms.conf - Realm Section
         // handled in LogonCommHandler::LoadRealmConfiguration()
 
-    private:
-    //MIT End
-    //AGPL Start
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Config functions
+        void loadWorldConfigValues(bool reload = false);
 
-        uint32 HordePlayers;
-        uint32 AlliancePlayers;
+        std::string getGmClientChannelName();
+
+        void setMessageOfTheDay(std::string motd);
+        std::string getMessageOfTheDay();
+
+    protected:
+
+        float mFloatRates[MAX_RATES];
+        uint32_t mIntRates[MAX_INTRATES];
 
     public:
 
-        inline uint32 getHordePlayerCount() { return HordePlayers; }
-        inline uint32 getAlliancePlayerCount() { return AlliancePlayers; }
-        inline uint32 getPlayerCount() { return (HordePlayers + AlliancePlayers); }
-        inline void resetPlayerCount() { HordePlayers = AlliancePlayers = 0; }
-        inline void incrementPlayerCount(uint32 faction)
-        {
-            if (faction == 1)
-                HordePlayers++;
-            else
-                AlliancePlayers++;
-        }
-        inline void decrementPlayerCount(uint32 faction)
-        {
-            if (faction == 1)
-                HordePlayers--;
-            else
-                AlliancePlayers--;
-        }
+        void setFloatRate(Rates index, float value);
+        float getFloatRate(Rates index);
 
+        void setIntRate(IntRates index, uint32_t value);
+        uint32_t getIntRate(IntRates index);
+
+        uint32_t getRealmType();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Player statistic
+    private:
+    
+        uint32_t mHordePlayersCount;
+        uint32_t mAlliancePlayersCount;
+
+    public:
+
+        uint32_t getPlayerCount();
+        void resetPlayerCount();
+        void incrementPlayerCount(uint32_t team);
+        void decrementPlayerCount(uint32_t team);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Uptime
+    private:
+
+        uint32_t mStartTime;
+
+    public:
+
+        void setWorldStartTime(uint32_t start_time);
+        uint32_t getWorldStartTime();
+        uint32_t getWorldUptime();
+        std::string getWorldUptimeString();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Traffic InfoCore
+    private:
+
+        double mTotalTrafficInKB;
+        double mTotalTrafficOutKB;
+        double mLastTotalTrafficInKB;
+        double mLastTotalTrafficOutKB;
+        time_t mLastTrafficQuery;
+
+        void updateAllTrafficTotals();
+
+    public:
+
+        void setTotalTraffic(double* totalin, double* totalout);
+        void setLastTotalTraffic(double* totalin, double* totalout);
+        float getCPUUsage();
+        float getRAMUsage();
+
+    //MIT End
+    //AGPL Start
         ///\todo Encapsulate below this point
     public:
 
-        World();
-        ~World();
-
-#define DAMAGE(sp)     sp->OTspell_coef_override = sp->fixed_dddhcoef = sp->fixed_hotdotcoef = 0
-
-        // Reloads the config and sets all of the setting variables
-        void Rehash(bool load);
-
+        //session
         WorldSession* FindSession(uint32 id);
         WorldSession* FindSessionByName(const char*);
         void AddSession(WorldSession* s);
@@ -722,14 +762,20 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
             return ssize;
         }
         uint32 GetNonGmSessionCount();
+
+        // queue
         inline size_t GetQueueCount() { return mQueuedSessions.size(); }
         void GetStats(uint32* GMCount, float* AverageLatency);
 
+        //limit
         inline uint32 GetPlayerLimit() const { return m_playerLimit; }
         void SetPlayerLimit(uint32 limit) { m_playerLimit = limit; }
 
+        //movement
         inline bool getAllowMovement() const { return m_allowMovement; }
         void SetAllowMovement(bool allow) { m_allowMovement = allow; }
+
+        //tickets
         inline bool getGMTicketStatus() { return m_gmTicketSystem; }
         bool toggleGMTicketStatus()
         {
@@ -737,25 +783,14 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
             return m_gmTicketSystem;
         }
 
-        inline std::string getGmClientChannel() { return gmClientSettings.gmClientChannelName; }
-
-        void SetMotd(const char* motd) { serverSettings.messageOfTheDay = motd; }
-        inline const char* GetMotd() const { return serverSettings.messageOfTheDay.c_str(); }
-
+        // world settings
         bool SetInitialWorldSettings();
 
+        //messages
         void SendWorldText(const char* text, WorldSession* self = 0);
         void SendWorldWideScreenText(const char* text, WorldSession* self = 0);
         void SendGlobalMessage(WorldPacket* packet, WorldSession* self = 0);
-
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-        /// Plays the sound to everyone logged in and in the world
-        /// \param uint32 soundid  -  Identifier of the sound to play
-        /// \return none
-        //////////////////////////////////////////////////////////////////////////////////////////
         void PlaySoundToAll(uint32 soundid);
-
         void SendZoneMessage(WorldPacket* packet, uint32 zoneid, WorldSession* self = 0);
         void SendInstanceMessage(WorldPacket* packet, uint32 instanceid, WorldSession* self = 0);
         void SendFactionMessage(WorldPacket* packet, uint8 teamId);
@@ -764,13 +799,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void SendDamageLimitTextToGM(const char* playername, const char* dmglog);
         void SendBCMessageByID(uint32 id);
         void SendLocalizedWorldText(bool wide, const char* format, ...);
-
         void SendZoneUnderAttackMsg(uint32 areaid, uint8 team);
-
-        inline void SetStartTime(uint32 val) { m_StartTime = val; }
-        inline uint32 GetUptime(void) { return (uint32)UNIXTIME - m_StartTime; }
-        inline uint32 GetStartTime(void) { return m_StartTime; }
-        std::string GetUptimeString();
 
         // cebernic: textfilter,no fast,but works:D ...
         inline std::string SessionLocalizedTextFilter(WorldSession* _session, const char* text)
@@ -808,32 +837,12 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
             return temp;
         }
 
+
         // update the world server every frame
         void Update(unsigned long time_passed);
         void CheckForExpiredInstances();
-
-
         void UpdateSessions(uint32 diff);
 
-        inline void setRate(int index, float value)
-        {
-            regen_values[index] = value;
-        }
-
-        inline float getRate(int index)
-        {
-            return regen_values[index];
-        }
-
-        inline uint32 getIntRate(int index)
-        {
-            return int_rates[index];
-        }
-
-        inline void setIntRate(int index, uint32 value)
-        {
-            int_rates[index] = value;
-        }
 
         // talent inspection lookup tables
         std::map< uint32, uint32 > InspectTalentTabPos;
@@ -841,9 +850,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         std::map< uint32, uint32 > InspectTalentTabBit;
         uint32 InspectTalentTabPages[12][3];
 
-
-        inline uint32 GetTimeOut() {return serverSettings.secondsBeforeTimeOut;}
-
+        //namegen
         struct NameGenData
         {
             std::string name;
@@ -851,14 +858,13 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         };
         std::vector<NameGenData> _namegendata[3];
         void LoadNameGenData();
-
         std::string GenerateName(uint32 type = 0);
 
+        //queue
         uint32 AddQueuedSocket(WorldSocket* Socket);
         void RemoveQueuedSocket(WorldSocket* Socket);
         uint32 GetQueuePos(WorldSocket* Socket);
         void UpdateQueuedSessions(uint32 diff);
-
         Mutex queueMutex;
 
         void SaveAllPlayers();
@@ -875,7 +881,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void    SetKickAFKPlayerTime(uint32 idletimer) {m_KickAFKPlayers = idletimer;}
         uint32    GetKickAFKPlayerTime() {return m_KickAFKPlayers;}
 
-        uint32 GetRealmType() { return serverSettings.realmType; }
+        
 
         std::string ann_namecolor;
         std::string ann_gmtagcolor;
@@ -910,14 +916,11 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         Mutex SessionsMutex;    //FOR GLOBAL !
         SessionSet Sessions;
 
-        float regen_values[MAX_RATES];
-        uint32 int_rates[MAX_INTRATES];
-
         uint32 m_playerLimit;
         bool m_allowMovement;
         bool m_gmTicketSystem;
 
-        uint32 m_StartTime;
+        
         uint32 m_queueUpdateTimer;
 
         QueueSet mQueuedSessions;
@@ -929,45 +932,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         std::list<SpellInfo*> dummyspells;
 
         char* m_banTable;
-
-    protected:
-
-        //Traffic meter stuff
-        double TotalTrafficInKB;
-        double TotalTrafficOutKB;
-        double LastTotalTrafficInKB;
-        double LastTotalTrafficOutKB;
-        time_t LastTrafficQuery;
-
-        void UpdateTotalTraffic();
-
-    public:
-
-        void QueryTotalTraffic(double* totalin, double* totalout)
-        {
-            // We don't want to spam this
-            if (LastTrafficQuery == 0 || LastTrafficQuery <= (UNIXTIME - 10))
-                UpdateTotalTraffic();
-
-            *totalin = TotalTrafficInKB;
-            *totalout = TotalTrafficOutKB;
-        }
-
-        void QueryLastTotalTraffic(double* totalin, double* totalout)
-        {
-            *totalin = LastTotalTrafficInKB;
-            *totalout = LastTotalTrafficOutKB;
-        }
-
-        float GetCPUUsage()
-        {
-            return perfcounter.GetCurrentCPUUsage();
-        }
-
-        float GetRAMUsage()
-        {
-            return perfcounter.GetCurrentRAMUsage();
-        }
 };
 
 #define sWorld World::getSingleton()

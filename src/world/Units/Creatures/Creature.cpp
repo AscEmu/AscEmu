@@ -377,7 +377,7 @@ void Creature::generateLoot()
         loot.gold = static_cast<uint32>(0.5 + gold_fp);
     }
 
-    loot.gold = static_cast<uint32>(loot.gold * sWorld.getRate(RATE_MONEY));
+    loot.gold = static_cast<uint32>(loot.gold * sWorld.getFloatRate(RATE_MONEY));
 }
 
 void Creature::SaveToDB()
@@ -1024,7 +1024,7 @@ void Creature::RegenerateHealth()
     if (GetCreatureProperties()->Rank == 3)
         amt *= 10000.0f;
     //Apply shit from conf file
-    amt *= sWorld.getRate(RATE_HEALTH);
+    amt *= sWorld.getFloatRate(RATE_HEALTH);
 
     if (amt <= 1.0f) //this fixes regen like 0.98
         cur++;
@@ -1045,7 +1045,7 @@ void Creature::RegenerateMana()
     amt = (getLevel() + 10) * PctPowerRegenModifier[POWER_TYPE_MANA];
 
 
-    amt *= sWorld.getRate(RATE_POWER1);
+    amt *= sWorld.getFloatRate(RATE_POWER1);
     if (amt <= 1.0)  //this fixes regen like 0.98
         cur++;
     else
@@ -1104,7 +1104,7 @@ void Creature::RegenerateFocus()
     uint32 cur = GetPower(POWER_TYPE_FOCUS);
     uint32 mm = GetMaxPower(POWER_TYPE_FOCUS);
     if (cur >= mm)return;
-    float regenrate = sWorld.getRate(RATE_POWER3);
+    float regenrate = sWorld.getFloatRate(RATE_POWER3);
     float amt = 25.0f * PctPowerRegenModifier[POWER_TYPE_FOCUS] * regenrate;
     cur += (uint32)amt;
     SetPower(POWER_TYPE_FOCUS, (cur >= mm) ? mm : cur);

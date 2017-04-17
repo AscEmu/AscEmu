@@ -42,15 +42,15 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
     uint32 active_sessions = uint32(sWorld.GetSessionCount());
 
     GreenSystemMessage(m_session, "Server Revision: |r%sAscEmu %s/%s-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH, MSG_COLOR_LIGHTBLUE);
-    GreenSystemMessage(m_session, "Server Uptime: |r%s", sWorld.GetUptimeString().c_str());
+    GreenSystemMessage(m_session, "Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
     GreenSystemMessage(m_session, "Active Sessions: |r%u", active_sessions);
     GreenSystemMessage(m_session, "Current GMs: |r%u GMs", online_gm);
     GreenSystemMessage(m_session, "Current Players: |r%u (%u Peak)", online_gm > 0 ? (online_count - online_gm) : online_count, sWorld.PeakSessionCount);
     GreenSystemMessage(m_session, "Active Thread Count: |r%u", ThreadPool.GetActiveThreadCount());
     GreenSystemMessage(m_session, "Free Thread Count: |r%u", ThreadPool.GetFreeThreadCount());
     GreenSystemMessage(m_session, "Average Latency: |r%.3fms", online_count > 0 ? (latency_avg / online_count) : latency_avg);
-    GreenSystemMessage(m_session, "CPU Usage: %3.2f %%", sWorld.GetCPUUsage());
-    GreenSystemMessage(m_session, "RAM Usage: %6.2f MB", sWorld.GetRAMUsage());
+    GreenSystemMessage(m_session, "CPU Usage: %3.2f %%", sWorld.getCPUUsage());
+    GreenSystemMessage(m_session, "RAM Usage: %6.2f MB", sWorld.getRAMUsage());
     GreenSystemMessage(m_session, "SQL Query Cache Size (World): |r%u queries delayed", WorldDatabase.GetQueueSize());
     GreenSystemMessage(m_session, "SQL Query Cache Size (Character): |r%u queries delayed", CharacterDatabase.GetQueueSize());
     GreenSystemMessage(m_session, "Socket Count: |r%u", sSocketMgr.GetSocketCount());
@@ -65,7 +65,7 @@ bool ChatHandler::HandleServerRehashCommand(const char* /*args*/, WorldSession* 
     snprintf(TeamAnnounce, 512, MSG_COLOR_RED "[Team]" MSG_COLOR_GREEN " |Hplayer:%s|h[%s]|h:" MSG_COLOR_YELLOW " is rehashing config file.", m_session->GetPlayer()->GetName(), m_session->GetPlayer()->GetName());
     sWorld.SendGMWorldText(TeamAnnounce);
 
-    sWorld.Rehash(true);
+    sWorld.loadWorldConfigValues(true);
 
     return true;
 }
@@ -147,7 +147,7 @@ bool ChatHandler::HandleServerSetMotdCommand(const char* args, WorldSession* m_s
 
     GreenSystemMessage(m_session, "Motd has been set to: %s", args);
     sGMLog.writefromsession(m_session, "Set MOTD to %s", args);
-    sWorld.SetMotd(args);
+    sWorld.setMessageOfTheDay(args);
 
     return true;
 }
