@@ -21,6 +21,7 @@
 #include "StdAfx.h"
 #include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
+#include "Server/World.h"
 #include "Config/Config.h"
 #include "Log.hpp"
 #include "Database/Database.h"

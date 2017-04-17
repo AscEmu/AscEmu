@@ -150,6 +150,25 @@ World::~World()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+// WorldConfig
+void World::loadWorldConfigValues(bool reload /*false*/)
+{
+    settings.loadWorldConfigValues(reload);
+
+    if (m_banTable != NULL)
+        free(m_banTable);
+
+    m_banTable = NULL;
+    std::string s = settings.server.banTable;
+    if (!s.empty())
+        m_banTable = strdup(s.c_str());
+
+    if (reload)
+        Channel::LoadConfSettings();
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
 // Player statistic
 uint32_t World::getPlayerCount()
 {
@@ -262,11 +281,6 @@ float World::getRAMUsage()
 {
     return perfcounter.GetCurrentRAMUsage();
 }
-
-
-
-
-
 
 void CleanupRandomNumberGenerators();
 

@@ -28,6 +28,8 @@
 #include "Server/Master.h"
 #include "CommonScheduleThread.h"
 #include "Storage/DayWatcherThread.h"
+#include "Management/Channel.h"
+#include "Management/ChannelMgr.h"
 
 createFileSingleton(Master);
 std::string LogFileName;
@@ -224,6 +226,9 @@ bool Master::Run(int argc, char** argv)
 
     sWorld.loadWorldConfigValues();
 
+    AscLog.SetFileLoggingLevel(sWorld.settings.logLevel.fileLogLevel);
+    AscLog.SetDebugFlags(sWorld.settings.logLevel.debugFlags);
+
     OpenCheatLogFiles();
 
     if (!_StartDB())
@@ -292,6 +297,36 @@ bool Master::Run(int argc, char** argv)
     StartRemoteConsole();
 
     WritePidFile();
+
+    if (!ChannelMgr::getSingletonPtr())
+        new ChannelMgr;
+
+    channelmgr.seperatechannels = sWorld.settings.server.seperateChatChannels;
+
+    if (!MailSystem::getSingletonPtr())
+        new MailSystem;
+
+    uint32_t mailFlags = 0;
+
+    if (sWorld.settings.mail.isCostsForGmDisabled)
+        mailFlags |= MAIL_FLAG_NO_COST_FOR_GM;
+
+    if (sWorld.settings.mail.isCostsForEveryoneDisabled)
+        mailFlags |= MAIL_FLAG_DISABLE_POSTAGE_COSTS;
+
+    if (sWorld.settings.mail.isDelayItemsDisabled)
+        mailFlags |= MAIL_FLAG_DISABLE_HOUR_DELAY_FOR_ITEMS;
+
+    if (sWorld.settings.mail.isMessageExpiryDisabled)
+        mailFlags |= MAIL_FLAG_NO_EXPIRY;
+
+    if (sWorld.settings.mail.isInterfactionMailEnabled)
+        mailFlags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION;
+
+    if (sWorld.settings.mail.isInterfactionMailForGmEnabled)
+        mailFlags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION_GM;
+
+    sMailSystem.config_flags = mailFlags;
 
     //ThreadPool.Gobble();
 

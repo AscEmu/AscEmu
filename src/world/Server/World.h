@@ -259,7 +259,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         WorldConfig settings;
 
-        void loadWorldConfigValues(bool reload = false) { settings.loadWorldConfigValues(reload); }
+        void loadWorldConfigValues(bool reload = false);
 
         std::string getGmClientChannelName() { return settings.getGmClientChannelName(); }
 

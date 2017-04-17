@@ -7,24 +7,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WorldConfig.h"
 #include "WorldConf.h"
-#include "Management/AddonMgr.h"
-#include "Management/AuctionMgr.h"
-#include "Management/CalendarMgr.h"
-#include "Management/Item.h"
-#include "Management/LFG/LFGMgr.h"
-#include "Management/WordFilter.h"
-#include "Management/WeatherMgr.h"
-#include "Management/TaxiMgr.h"
-#include "Management/ItemInterface.h"
-#include "Management/Channel.h"
-#include "Management/ChannelMgr.h"
-#include "WorldSocket.h"
-#include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
 #include "Map/MapCell.h"
-#include "Spell/SpellMgr.h"
-#include "Map/WorldCreator.h"
+#include "Server/WorldSocket.h"
+#include "Units/Players/PlayerDefines.hpp"
+#include "shared/Log.hpp"
+
 
 WorldConfig::WorldConfig()
 {
@@ -280,12 +269,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
         }
     }
 
-    if (!ChannelMgr::getSingletonPtr())
-        new ChannelMgr;
-
-    if (!MailSystem::getSingletonPtr())
-        new MailSystem;
-
     // world.conf - Mysql Database Section
     worldDb.host = Config.MainConfig.GetStringDefault("WorldDatabase", "Hostname", "");
     worldDb.user = Config.MainConfig.GetStringDefault("WorldDatabase", "Username", "");
@@ -310,9 +293,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     logLevel.debugFlags = Config.MainConfig.GetIntDefault("LogLevel", "DebugFlags", 0);
     logLevel.logWorldPacket = Config.MainConfig.GetBoolDefault("LogLevel", "World", false);
     logLevel.disableCrashdump = Config.MainConfig.GetBoolDefault("LogLevel", "DisableCrashdumpReport", false);
-
-    AscLog.SetFileLoggingLevel(logLevel.fileLogLevel);
-    AscLog.SetDebugFlags(logLevel.debugFlags);
 
     // world.conf - Server Settings
     server.playerLimit = Config.MainConfig.GetIntDefault("Server", "PlayerLimit", 1000);
@@ -341,15 +321,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     server.clientCacheVersion = uint32_t(Config.MainConfig.GetIntDefault("Server", "CacheVersion", 12340));
     server.banTable = Config.MainConfig.GetStringDefault("Server", "BanTable", "");
 
-
-    /*if (m_banTable != NULL)
-        free(m_banTable);
-
-    m_banTable = NULL;
-    std::string s = server.banTable;
-    if (!s.empty())
-        m_banTable = strdup(s.c_str());*/
-
     if (server.mapUnloadTime == 0)
     {
         LOG_ERROR("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of %u", MAP_CELL_DEFAULT_UNLOAD_TIME);
@@ -377,8 +348,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
             SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
     }
 #endif
-
-    channelmgr.seperatechannels = server.seperateChatChannels;
 
     // world.conf - Announce Configuration
     announce.announceTag = Config.MainConfig.GetStringDefault("Announce", "Tag", "Staff");
@@ -445,28 +414,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     mail.isMessageExpiryDisabled = Config.MainConfig.GetBoolDefault("Mail", "DisableMessageExpiry", false);
     mail.isInterfactionMailEnabled = Config.MainConfig.GetBoolDefault("Mail", "EnableInterfactionMail", true);
     mail.isInterfactionMailForGmEnabled = Config.MainConfig.GetBoolDefault("Mail", "EnableInterfactionForGM", true);
-
-    uint32_t mailFlags = 0;
-
-    if (mail.isCostsForGmDisabled)
-        mailFlags |= MAIL_FLAG_NO_COST_FOR_GM;
-
-    if (mail.isCostsForEveryoneDisabled)
-        mailFlags |= MAIL_FLAG_DISABLE_POSTAGE_COSTS;
-
-    if (mail.isDelayItemsDisabled)
-        mailFlags |= MAIL_FLAG_DISABLE_HOUR_DELAY_FOR_ITEMS;
-
-    if (mail.isMessageExpiryDisabled)
-        mailFlags |= MAIL_FLAG_NO_EXPIRY;
-
-    if (mail.isInterfactionMailEnabled)
-        mailFlags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION;
-
-    if (mail.isInterfactionMailForGmEnabled)
-        mailFlags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION_GM;
-
-    sMailSystem.config_flags = mailFlags;
 
     // world.conf - Startup Options
     //startupSettings.Preloading;                    // not used
@@ -651,6 +598,7 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     gold.limitAmount = Config.OptionalConfig.GetIntDefault("GoldSettings", "MaximumGold", 214000);
     if (gold.limitAmount)
         gold.limitAmount *= 10000; // Convert into gsc (gold, silver, copper)
+
     gold.startAmount = Config.OptionalConfig.GetIntDefault("GoldSettings", "StartingGold", 0);
     if (gold.startAmount)
         gold.startAmount *= 10000;
@@ -670,9 +618,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
 
     // realms.conf - Realm Section
     // handled in LogonCommHandler::LoadRealmConfiguration()
-
-    if (reload)
-        Channel::LoadConfSettings();
 }
 
 std::string WorldConfig::getGmClientChannelName()
