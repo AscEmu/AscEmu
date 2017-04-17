@@ -140,19 +140,19 @@ void Creature::Update(unsigned long time_passed)
         switch (this->creature_properties->Rank)
         {
             case ELITE_ELITE:
-                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, sWorld.settings.corpseDecay.eliteTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.eliteTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 break;
             case ELITE_RAREELITE:
-                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, sWorld.settings.corpseDecay.rareEliteTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.rareEliteTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 break;
             case ELITE_WORLDBOSS:
-                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, sWorld.settings.corpseDecay.worldbossTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.worldbossTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 break;
             case ELITE_RARE:
-                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, sWorld.settings.corpseDecay.rareTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.rareTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 break;
             default:
-                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, sWorld.settings.corpseDecay.normalTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.normalTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 break;
         }
 
@@ -314,7 +314,7 @@ void Creature::generateLoot()
     }
 
     // Master Looting Ninja Checker
-    if (sWorld.settings.optional.deactivateMasterLootNinja)
+    if (worldConfig.optional.deactivateMasterLootNinja)
     {
         Player* looter = objmgr.GetPlayer((uint32)this->TaggerGuid);
         if (looter && looter->GetGroup() && looter->GetGroup()->GetMethod() == PARTY_LOOT_MASTER)
@@ -377,7 +377,7 @@ void Creature::generateLoot()
         loot.gold = static_cast<uint32>(0.5 + gold_fp);
     }
 
-    loot.gold = static_cast<uint32>(loot.gold * sWorld.settings.getFloatRate(RATE_MONEY));
+    loot.gold = static_cast<uint32>(loot.gold * worldConfig.getFloatRate(RATE_MONEY));
 }
 
 void Creature::SaveToDB()
@@ -1024,7 +1024,7 @@ void Creature::RegenerateHealth()
     if (GetCreatureProperties()->Rank == 3)
         amt *= 10000.0f;
     //Apply shit from conf file
-    amt *= sWorld.settings.getFloatRate(RATE_HEALTH);
+    amt *= worldConfig.getFloatRate(RATE_HEALTH);
 
     if (amt <= 1.0f) //this fixes regen like 0.98
         cur++;
@@ -1045,7 +1045,7 @@ void Creature::RegenerateMana()
     amt = (getLevel() + 10) * PctPowerRegenModifier[POWER_TYPE_MANA];
 
 
-    amt *= sWorld.settings.getFloatRate(RATE_POWER1);
+    amt *= worldConfig.getFloatRate(RATE_POWER1);
     if (amt <= 1.0)  //this fixes regen like 0.98
         cur++;
     else
@@ -1104,7 +1104,7 @@ void Creature::RegenerateFocus()
     uint32 cur = GetPower(POWER_TYPE_FOCUS);
     uint32 mm = GetMaxPower(POWER_TYPE_FOCUS);
     if (cur >= mm)return;
-    float regenrate = sWorld.settings.getFloatRate(RATE_POWER3);
+    float regenrate = worldConfig.getFloatRate(RATE_POWER3);
     float amt = 25.0f * PctPowerRegenModifier[POWER_TYPE_FOCUS] * regenrate;
     cur += (uint32)amt;
     SetPower(POWER_TYPE_FOCUS, (cur >= mm) ? mm : cur);

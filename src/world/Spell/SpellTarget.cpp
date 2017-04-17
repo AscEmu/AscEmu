@@ -456,7 +456,7 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
     auto spell_range = sSpellRangeStore.LookupEntry(m_spellInfo->rangeIndex);
     if (spell_range != nullptr)
     {
-        if (sWorld.settings.terrainCollision.isCollisionEnabled && spell_range->maxRange < 50000 && GetRadius(i) < 50000 && !obj->IsItem())
+        if (worldConfig.terrainCollision.isCollisionEnabled && spell_range->maxRange < 50000 && GetRadius(i) < 50000 && !obj->IsItem())
         {
             float x = m_caster->GetPositionX(), y = m_caster->GetPositionY(), z = m_caster->GetPositionZ() + 0.5f;
 
@@ -647,7 +647,7 @@ bool Spell::GenerateTargets(SpellCastTargets* t)
                 VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
                 isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), t->m_destX, t->m_destY, t->m_destZ);
             }
-            while (sWorld.settings.terrainCollision.isCollisionEnabled && !isInLOS);
+            while (worldConfig.terrainCollision.isCollisionEnabled && !isInLOS);
             result = true;
         }
         else if (TargetType & SPELL_TARGET_AREA)  //targetted aoe

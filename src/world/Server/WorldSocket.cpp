@@ -67,7 +67,7 @@ struct ServerPktHeader
 
 WorldSocket::WorldSocket(SOCKET fd)
     :
-    Socket(fd, sWorld.settings.worldSocket.maxSocketSendBufSize, sWorld.settings.worldSocket.maxSocketRecvBufSize),
+    Socket(fd, worldConfig.worldSocket.maxSocketSendBufSize, worldConfig.worldSocket.maxSocketRecvBufSize),
     Authed(false),
     mOpcode(0),
     mRemaining(0),
@@ -534,7 +534,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     for (uint8_t i = 0; i < 8; ++i)
         pSession->SetAccountData(i, nullptr, true, 0);
 
-    if (sWorld.settings.server.useAccountData)
+    if (worldConfig.server.useAccountData)
     {
         QueryResult* pResult = CharacterDatabase.Query("SELECT * FROM account_data WHERE acct = %u", AccountID);
         if (pResult == nullptr)
@@ -571,7 +571,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 #endif
 
     // Check for queue.
-    uint32 playerLimit = sWorld.getPlayerLimit();
+    uint32 playerLimit = worldConfig.getPlayerLimit();
     if ((sWorld.GetSessionCount() < playerLimit) || pSession->HasGMPermissions())
     {
         Authenticate();
@@ -645,7 +645,7 @@ void WorldSocket::Authenticate()
 
 #if VERSION_STRING > TBC
 #if VERSION_STRING != Cata
-    mSession->SendClientCacheVersion(sWorld.settings.server.clientCacheVersion);
+    mSession->SendClientCacheVersion(worldConfig.server.clientCacheVersion);
 #endif
 #endif
     if (mSession->HasGMPermissions())
@@ -844,7 +844,7 @@ void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 dir
 void WorldLog::LogPacket(uint32 len, uint32 opcode, const uint8* data, uint8 direction, uint32 accountid)
 #endif
 {
-    if (sWorld.settings.logLevel.debugFlags & LF_OPCODE)
+    if (worldConfig.logLevel.debugFlags & LF_OPCODE)
     {
         switch (opcode)
         {

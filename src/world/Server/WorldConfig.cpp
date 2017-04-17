@@ -620,52 +620,19 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     // handled in LogonCommHandler::LoadRealmConfiguration()
 }
 
-std::string WorldConfig::getGmClientChannelName()
-{
-    return gmClient.gmClientChannelName;
-}
 
-void WorldConfig::setMessageOfTheDay(std::string motd)
-{
-    server.messageOfTheDay = motd;
-}
+uint32_t WorldConfig::getRealmType() { return server.realmType; }
+uint32_t WorldConfig::getPlayerLimit() { return server.playerLimit; }
+uint32_t WorldConfig::getKickAFKPlayerTime() { return server.secondsBeforeKickAFKPlayers; }
 
-std::string WorldConfig::getMessageOfTheDay()
-{
-    return server.messageOfTheDay;
-}
+void WorldConfig::setMessageOfTheDay(std::string motd) { server.messageOfTheDay = motd; }
+std::string WorldConfig::getMessageOfTheDay() { return server.messageOfTheDay; }
 
-void WorldConfig::setFloatRate(WorldConfigRates index, float value)
-{
-    mFloatRates[index] = value;
-}
+void WorldConfig::setFloatRate(uint32_t index, float value) { mFloatRates[index] = value; }
+float WorldConfig::getFloatRate(uint32_t index) { return mFloatRates[index]; }
 
-float WorldConfig::getFloatRate(WorldConfigRates index)
-{
-    return mFloatRates[index];
-}
+void WorldConfig::setIntRate(uint32_t index, uint32_t value) { mIntRates[index] = value; }
+uint32_t WorldConfig::getIntRate(uint32_t index) { return mIntRates[index]; }
 
-void WorldConfig::setIntRate(WorldConfigIntRates index, uint32_t value)
-{
-    mIntRates[index] = value;
-}
+std::string WorldConfig::getGmClientChannelName() { return gmClient.gmClientChannelName; }
 
-uint32_t WorldConfig::getIntRate(WorldConfigIntRates index)
-{
-    return mIntRates[index];
-}
-
-uint32_t WorldConfig::getRealmType()
-{
-    return server.realmType;
-}
-
-uint32_t WorldConfig::getPlayerLimit()
-{
-    return server.playerLimit;
-}
-
-uint32_t WorldConfig::getKickAFKPlayerTime()
-{
-    return server.secondsBeforeKickAFKPlayers;
-}

@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "CommonTypes.hpp"
+
 #include <string>
 #include <cstdint>
 
@@ -56,7 +58,7 @@ enum WorldConfigRealmTypes
     REALM_PVP = 1
 };
 
-class WorldConfig
+class SERVER_DECL WorldConfig
 {
     public:
 
@@ -64,30 +66,6 @@ class WorldConfig
         ~WorldConfig();
 
         void loadWorldConfigValues(bool reload = false);
-
-        std::string getGmClientChannelName();
-
-        void setMessageOfTheDay(std::string motd);
-        std::string getMessageOfTheDay();
-
-    private:
-
-        float mFloatRates[MAX_RATES];
-        uint32_t mIntRates[MAX_INTRATES];
-
-    public:
-
-        void setFloatRate(WorldConfigRates index, float value);
-        float getFloatRate(WorldConfigRates index);
-
-        void setIntRate(WorldConfigIntRates index, uint32_t value);
-        uint32_t getIntRate(WorldConfigIntRates index);
-
-        uint32_t getRealmType();
-
-        uint32_t getPlayerLimit();
-
-        uint32_t getKickAFKPlayerTime();
 
         // world.conf - Mysql Database Section
         struct WorldDatabaseSettings
@@ -155,9 +133,18 @@ class WorldConfig
             bool saveExtendedCharData;
             //\todo add it to config or remove it from core
             bool skipAttunementForGm;           //not in config file!
-            uint32_t clientCacheVersion;          //not in config file!
+            uint32_t clientCacheVersion;        //not in config file!
             std::string banTable;               //not in config file!
         } server;
+
+        uint32_t getPlayerLimit();
+
+        void setMessageOfTheDay(std::string motd);
+        std::string getMessageOfTheDay();
+
+        uint32_t getKickAFKPlayerTime();
+
+        uint32_t getRealmType();
 
         // world.conf - Announce Configuration
         struct AnnounceSettings
@@ -175,11 +162,22 @@ class WorldConfig
             uint32_t arenaQueueDiff;
         } rate;
 
+        float mFloatRates[MAX_RATES];
+        uint32_t mIntRates[MAX_INTRATES];
+
+        void setFloatRate(uint32_t index, float value);
+        float getFloatRate(uint32_t index);
+
+        void setIntRate(uint32_t index, uint32_t value);
+        uint32_t getIntRate(uint32_t index);
+
         // world.conf - GM Client Channel
         struct GMClientSettings
         {
             std::string gmClientChannelName;
         } gmClient;
+
+        std::string getGmClientChannelName();
 
         // world.conf - Terrain & Collision Settings
         struct TerrainCollisionSettings

@@ -1737,7 +1737,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                 {
                     continue;
                 }
-                amt = float2int32(amt * sWorld.settings.getFloatRate(RATE_QUESTREPUTATION));
+                amt = float2int32(amt * worldConfig.getFloatRate(RATE_QUESTREPUTATION));
                 player->ModStanding(fact, amt);
             }
         }
@@ -1793,7 +1793,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         {
             // Money reward
             // Check they don't have more than the max gold
-            if (sWorld.settings.gold.isCapEnabled && (player->GetGold() + qReward->reward_money) <= sWorld.settings.gold.limitAmount)
+            if (worldConfig.gold.isCapEnabled && (player->GetGold() + qReward->reward_money) <= worldConfig.gold.limitAmount)
             {
                 player->ModGold(qReward->reward_money);
             }
@@ -1831,7 +1831,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
                 {
                     continue;
                 }
-                amt = float2int32(amt * sWorld.settings.getFloatRate(RATE_QUESTREPUTATION));
+                amt = float2int32(amt * worldConfig.getFloatRate(RATE_QUESTREPUTATION));
                 player->ModStanding(fact, amt);
             }
         }
@@ -1888,7 +1888,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         {
             // Money reward
             // Check they don't have more than the max gold
-            if (sWorld.settings.gold.isCapEnabled && (player->GetGold() + qReward->reward_money) <= sWorld.settings.gold.limitAmount)
+            if (worldConfig.gold.isCapEnabled && (player->GetGold() + qReward->reward_money) <= worldConfig.gold.limitAmount)
             {
                 player->ModGold(qReward->reward_money);
             }

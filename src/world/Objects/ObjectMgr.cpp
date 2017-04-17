@@ -2026,7 +2026,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                 continue;   // Class not valid for this race.
 
             // Generate each level's information
-            uint32 MaxLevel = sWorld.settings.optional.playerLevelCap + 1;
+            uint32 MaxLevel = worldConfig.optional.playerLevelCap + 1;
             LevelInfo* lvl = 0, lastlvl;
             lastlvl.HP = PCI->health;
             lastlvl.Mana = PCI->mana;
@@ -2247,8 +2247,8 @@ LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)
         {
             // We got a match.
             // Let's check that our level is valid first.
-            if (Level > sWorld.settings.optional.playerLevelCap)
-                Level = sWorld.settings.optional.playerLevelCap;
+            if (Level > worldConfig.optional.playerLevelCap)
+                Level = worldConfig.optional.playerLevelCap;
 
             // Pull the level information from the second map.
             LevelMap::iterator it2 = itr->second->find(Level);
@@ -3027,7 +3027,7 @@ bool ObjectMgr::HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim
             continue;
 
         //value *= sWorld.getRate(RATE_KILLREPUTATION);
-        value = float2int32(value * sWorld.settings.getFloatRate(RATE_KILLREPUTATION));
+        value = float2int32(value * worldConfig.getFloatRate(RATE_KILLREPUTATION));
         pPlayer->ModStanding(i->faction[team], value);
     }
 
@@ -3991,7 +3991,7 @@ void ObjectMgr::LoadCreatureAIAgents()
 
 void ObjectMgr::StoreBroadCastGroupKey()
 {
-    if (!sWorld.settings.broadcast.isSystemEnabled)
+    if (!worldConfig.broadcast.isSystemEnabled)
     {
         LogNotice("ObjectMgr : BCSystem Disabled.");
         return;
@@ -4013,7 +4013,7 @@ void ObjectMgr::StoreBroadCastGroupKey()
     if (keyGroup.empty())
     {
         LogDebugFlag(LF_DB_TABLES, "ObjectMgr : BCSystem error! worldbroadcast empty? fill it first!");
-        sWorld.settings.broadcast.isSystemEnabled = false;
+        worldConfig.broadcast.isSystemEnabled = false;
         return;
     }
     else

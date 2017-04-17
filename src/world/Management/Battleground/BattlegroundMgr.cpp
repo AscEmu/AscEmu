@@ -851,7 +851,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                 {
                     teamids[1] = GetArenaGroupQInfo(group2, i, &avgRating[1]);
                     uint32 delta = abs((int32)avgRating[0] - (int32)avgRating[1]);
-                    if (teamids[0] != teamids[1] && delta <= sWorld.settings.rate.arenaQueueDiff)
+                    if (teamids[0] != teamids[1] && delta <= worldConfig.rate.arenaQueueDiff)
                     {
                         possibleGroups.push_back(group2->GetID());
                     }
@@ -973,23 +973,23 @@ uint32 CBattlegroundManager::GetMinimumPlayers(uint32 dbcIndex)
     switch (dbcIndex)
     {
         case BATTLEGROUND_ALTERAC_VALLEY:
-            return sWorld.settings.bg.minPlayerCountAlteracValley;
+            return worldConfig.bg.minPlayerCountAlteracValley;
         case BATTLEGROUND_WARSONG_GULCH:
-            return sWorld.settings.bg.minPlayerCountWarsongGulch;
+            return worldConfig.bg.minPlayerCountWarsongGulch;
         case BATTLEGROUND_ARATHI_BASIN:
-            return sWorld.settings.bg.minPlayerCountArathiBasin;
+            return worldConfig.bg.minPlayerCountArathiBasin;
         case BATTLEGROUND_EYE_OF_THE_STORM:
-            return sWorld.settings.bg.minPlayerCountEyeOfTheStorm;
+            return worldConfig.bg.minPlayerCountEyeOfTheStorm;
         case BATTLEGROUND_ARENA_2V2:
-            return sWorld.settings.arena.minPlayerCount2V2;
+            return worldConfig.arena.minPlayerCount2V2;
         case BATTLEGROUND_ARENA_3V3:
-            return sWorld.settings.arena.minPlayerCount3V3;
+            return worldConfig.arena.minPlayerCount3V3;
         case BATTLEGROUND_ARENA_5V5:
-            return sWorld.settings.arena.minPlayerCount5V5;
+            return worldConfig.arena.minPlayerCount5V5;
         case BATTLEGROUND_STRAND_OF_THE_ANCIENT:
-            return sWorld.settings.bg.minPlayerCountStrandOfTheAncients;
+            return worldConfig.bg.minPlayerCountStrandOfTheAncients;
         case BATTLEGROUND_ISLE_OF_CONQUEST:
-            return sWorld.settings.bg.minPlayerCountIsleOfConquest;
+            return worldConfig.bg.minPlayerCountIsleOfConquest;
         default:
             return 1;
     }
@@ -1001,23 +1001,23 @@ uint32 CBattlegroundManager::GetMaximumPlayers(uint32 dbcIndex)
     switch (dbcIndex)
     {
         case BATTLEGROUND_ALTERAC_VALLEY:
-            return sWorld.settings.bg.maxPlayerCountAlteracValley;
+            return worldConfig.bg.maxPlayerCountAlteracValley;
         case BATTLEGROUND_WARSONG_GULCH:
-            return sWorld.settings.bg.maxPlayerCountWarsongGulch;
+            return worldConfig.bg.maxPlayerCountWarsongGulch;
         case BATTLEGROUND_ARATHI_BASIN:
-            return sWorld.settings.bg.maxPlayerCountArathiBasin;
+            return worldConfig.bg.maxPlayerCountArathiBasin;
         case BATTLEGROUND_EYE_OF_THE_STORM:
-            return sWorld.settings.bg.maxPlayerCountEyeOfTheStorm;
+            return worldConfig.bg.maxPlayerCountEyeOfTheStorm;
         case BATTLEGROUND_ARENA_2V2:
-            return sWorld.settings.arena.maxPlayerCount2V2;
+            return worldConfig.arena.maxPlayerCount2V2;
         case BATTLEGROUND_ARENA_3V3:
-            return sWorld.settings.arena.maxPlayerCount3V3;
+            return worldConfig.arena.maxPlayerCount3V3;
         case BATTLEGROUND_ARENA_5V5:
-            return sWorld.settings.arena.maxPlayerCount5V5;
+            return worldConfig.arena.maxPlayerCount5V5;
         case BATTLEGROUND_STRAND_OF_THE_ANCIENT:
-            return sWorld.settings.bg.maxPlayerCountStrandOfTheAncients;
+            return worldConfig.bg.maxPlayerCountStrandOfTheAncients;
         case BATTLEGROUND_ISLE_OF_CONQUEST:
-            return sWorld.settings.bg.maxPlayerCountIsleOfConquest;
+            return worldConfig.bg.maxPlayerCountIsleOfConquest;
         default:
             return 1;
     }

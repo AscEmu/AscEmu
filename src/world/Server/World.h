@@ -261,20 +261,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         void loadWorldConfigValues(bool reload = false);
 
-        std::string getGmClientChannelName() { return settings.getGmClientChannelName(); }
-
-        void setMessageOfTheDay(std::string motd) { settings.setMessageOfTheDay(motd); }
-        std::string getMessageOfTheDay() { return settings.getMessageOfTheDay(); }
-
-        void setFloatRate(uint32_t index, float value) { settings.setFloatRate((WorldConfigRates)index, value); }
-        float getFloatRate(uint32_t index) { return settings.getFloatRate((WorldConfigRates)index); }
-        void setIntRate(uint32_t index, uint32_t value) { settings.setIntRate((WorldConfigIntRates)index, value); }
-        uint32_t getIntRate(uint32_t index) { return settings.getIntRate((WorldConfigIntRates)index); }
-
-        uint32_t getRealmType() { return settings.getRealmType(); }
-        uint32_t getPlayerLimit(){ return settings.getPlayerLimit(); }
-        uint32_t getKickAFKPlayerTime() { return settings.getKickAFKPlayerTime(); }
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // Player statistic
     private:
@@ -508,5 +494,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 };
 
 #define sWorld World::getSingleton()
+#define worldConfig sWorld.settings
 
 #endif      //__WORLD_H

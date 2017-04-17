@@ -33,7 +33,7 @@ void MySQLDataStore::LoadAdditionalTableConfig()
     QuestPropertiesTables.insert(std::string("quest_properties"));
 
     // get config
-    std::string strData = sWorld.settings.startup.additionalTableLoads;
+    std::string strData = worldConfig.startup.additionalTableLoads;
     if (strData.empty())
         return;
 
@@ -2537,9 +2537,9 @@ void MySQLDataStore::LoadPlayerXpToLevelTable()
     uint32 start_time = getMSTime();
 
     _playerXPperLevelStore.clear();
-    _playerXPperLevelStore.resize(sWorld.settings.optional.playerLevelCap);
+    _playerXPperLevelStore.resize(worldConfig.optional.playerLevelCap);
 
-    for (uint32 level = 0; level < sWorld.settings.optional.playerLevelCap; ++level)
+    for (uint32 level = 0; level < worldConfig.optional.playerLevelCap; ++level)
         _playerXPperLevelStore[level] = 0;
 
     QueryResult* player_xp_to_level_result = WorldDatabase.Query("SELECT player_lvl, next_lvl_req_xp FROM player_xp_for_level");
@@ -2558,7 +2558,7 @@ void MySQLDataStore::LoadPlayerXpToLevelTable()
         uint32 current_level = fields[0].GetUInt8();
         uint32 current_xp = fields[1].GetUInt32();
 
-        if (current_level >= sWorld.settings.optional.playerLevelCap)
+        if (current_level >= worldConfig.optional.playerLevelCap)
         {
             LOG_ERROR("Table `player_xp_for_level` includes invalid xp definitions for level %u which is higher than the defined levelcap in your config file! <skipped>", current_level);
             continue;
@@ -2574,8 +2574,8 @@ void MySQLDataStore::LoadPlayerXpToLevelTable()
 
     LogDetail("MySQLDataLoads : Loaded %u rows from `player_xp_for_level` table in %u ms!", player_xp_to_level_count, getMSTime() - start_time);
 
-    if (player_xp_to_level_count < (sWorld.settings.optional.playerLevelCap - 1))
-        LOG_ERROR("Table `player_xp_for_level` includes definitions for %u level, but your defined level cap is %u!", player_xp_to_level_count, sWorld.settings.optional.playerLevelCap);
+    if (player_xp_to_level_count < (worldConfig.optional.playerLevelCap - 1))
+        LOG_ERROR("Table `player_xp_for_level` includes definitions for %u level, but your defined level cap is %u!", player_xp_to_level_count, worldConfig.optional.playerLevelCap);
 }
 
 uint32 MySQLDataStore::GetPlayerXPForLevel(uint32 level)
@@ -2718,8 +2718,8 @@ void MySQLDataStore::LoadPetLevelAbilitiesTable()
 
     LogDetail("MySQLDataLoads : Loaded %u rows from `pet_level_abilities` table in %u ms!", pet_level_abilities_count, getMSTime() - start_time);
 
-    if (pet_level_abilities_count < sWorld.settings.optional.playerLevelCap)
-        LOG_ERROR("Table `pet_level_abilities` includes definitions for %u level, but your defined level cap is %u!", pet_level_abilities_count, sWorld.settings.optional.playerLevelCap);
+    if (pet_level_abilities_count < worldConfig.optional.playerLevelCap)
+        LOG_ERROR("Table `pet_level_abilities` includes definitions for %u level, but your defined level cap is %u!", pet_level_abilities_count, worldConfig.optional.playerLevelCap);
 }
 
 PetAbilities const* MySQLDataStore::GetPetLevelAbilities(uint32 level)

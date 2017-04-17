@@ -33,7 +33,7 @@ bool ChatHandler::HandleGMTicketListCommand(const char* args, WorldSession* m_se
 {
     Player* cplr = m_session->GetPlayer();
 
-    Channel* chn = channelmgr.GetChannel(sWorld.settings.getGmClientChannelName().c_str(), cplr);
+    Channel* chn = channelmgr.GetChannel(worldConfig.getGmClientChannelName().c_str(), cplr);
     if (!chn)
         return false;
 
@@ -71,7 +71,7 @@ bool ChatHandler::HandleGMTicketGetByIdCommand(const char* args, WorldSession* m
         return false;
 
     Player* cplr = m_session->GetPlayer();
-    Channel* chn = channelmgr.GetChannel(sWorld.settings.getGmClientChannelName().c_str(), cplr);
+    Channel* chn = channelmgr.GetChannel(worldConfig.getGmClientChannelName().c_str(), cplr);
     if (!chn)
         return false;
 
@@ -125,7 +125,7 @@ bool ChatHandler::HandleGMTicketRemoveByIdCommand(const char* args, WorldSession
         return false;
 
     Player* cplr = m_session->GetPlayer();
-    Channel* chn = channelmgr.GetChannel(sWorld.settings.getGmClientChannelName().c_str(), cplr);
+    Channel* chn = channelmgr.GetChannel(worldConfig.getGmClientChannelName().c_str(), cplr);
     if (!chn)
         return false;
 

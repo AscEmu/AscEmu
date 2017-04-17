@@ -1542,8 +1542,8 @@ void Pet::ApplyPetLevelAbilities()
     uint32 pet_family = GetCreatureProperties()->Family;
     uint32 level = getLevel();
 
-    if (level > sWorld.settings.optional.playerLevelCap)
-        level = sWorld.settings.optional.playerLevelCap;
+    if (level > worldConfig.optional.playerLevelCap)
+        level = worldConfig.optional.playerLevelCap;
     else if (level < 1)
         level = 1;
 

@@ -101,15 +101,15 @@ void MapCell::SetActivity(bool state)
         if (_unloadpending)
             CancelPendingUnload();
 
-        if (sWorld.settings.terrainCollision.isCollisionEnabled)
+        if (worldConfig.terrainCollision.isCollisionEnabled)
         {
             VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
             MMAP::MMapManager* mmgr = MMAP::MMapFactory::createOrGetMMapManager();
             m_cellloadLock.Acquire();
             if (m_celltilesLoaded[mapId][tileX][tileY] == 0)
             {
-                mgr->loadMap(sWorld.settings.terrainCollision.vMapPath.c_str(), mapId, tileX, tileY);
-                mmgr->loadMap(sWorld.settings.terrainCollision.mMapPath.c_str(), mapId, tileX, tileY);
+                mgr->loadMap(worldConfig.terrainCollision.vMapPath.c_str(), mapId, tileX, tileY);
+                mmgr->loadMap(worldConfig.terrainCollision.mMapPath.c_str(), mapId, tileX, tileY);
             }
             ++m_celltilesLoaded[mapId][tileX][tileY];
             m_cellloadLock.Release();
@@ -127,7 +127,7 @@ void MapCell::SetActivity(bool state)
         if (!_unloadpending && CanUnload())
             QueueUnloadPending();
 
-        if (sWorld.settings.terrainCollision.isCollisionEnabled)
+        if (worldConfig.terrainCollision.isCollisionEnabled)
         {
             VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
             MMAP::MMapManager* mmgr = MMAP::MMapFactory::createOrGetMMapManager();
@@ -306,7 +306,7 @@ void MapCell::QueueUnloadPending()
 
     _unloadpending = true;
     LogDebugFlag(LF_MAP_CELL, "Queueing pending unload of cell %u %u", _x, _y);
-    sEventMgr.AddEvent(_mapmgr, &MapMgr::UnloadCell, (uint32)_x, (uint32)_y, MAKE_CELL_EVENT(_x, _y), sWorld.settings.server.mapUnloadTime * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+    sEventMgr.AddEvent(_mapmgr, &MapMgr::UnloadCell, (uint32)_x, (uint32)_y, MAKE_CELL_EVENT(_x, _y), worldConfig.server.mapUnloadTime * 1000, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
 
 void MapCell::CancelPendingUnload()

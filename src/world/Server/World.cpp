@@ -459,7 +459,7 @@ bool World::SetInitialWorldSettings()
     ApplyNormalFixes();
 
     LogNotice("GameObjectModel : Loading GameObject models...");
-    LoadGameObjectModelList(sWorld.settings.terrainCollision.vMapPath);
+    LoadGameObjectModelList(worldConfig.terrainCollision.vMapPath);
 
     new SpellFactoryMgr;
 
@@ -1046,7 +1046,7 @@ void World::UpdateQueuedSessions(uint32 diff)
             return;
         }
 
-        while (m_sessions.size() < getPlayerLimit() && mQueuedSessions.size())
+        while (m_sessions.size() < settings.getPlayerLimit() && mQueuedSessions.size())
         {
             // Yay. We can let another player in now.
             // Grab the first fucker from the queue, but guard of course, since
@@ -1206,7 +1206,7 @@ void TaskList::spawn()
     thread_count.SetVal(0);
 
     uint32 threadcount;
-    if (sWorld.settings.startup.enableMultithreadedLoading)
+    if (worldConfig.startup.enableMultithreadedLoading)
     {
         // get processor count
 #ifndef WIN32

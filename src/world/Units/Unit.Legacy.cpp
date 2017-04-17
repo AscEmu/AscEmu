@@ -2908,7 +2908,7 @@ void Unit::RegeneratePower(bool isinterrupted)
     if (!IsPlayer() && IsVehicle())
     {
         uint32 powertype = GetPowerType();
-        float wrate = sWorld.settings.getFloatRate(RATE_VEHICLES_POWER_REGEN);
+        float wrate = worldConfig.getFloatRate(RATE_VEHICLES_POWER_REGEN);
         float amount = wrate * 20.0f;
         SetPower(powertype, static_cast<int32>(GetPower(powertype) + amount));
     }
@@ -4283,9 +4283,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         if (!this->IsPlayer())
         {
             Player* pr = static_cast<Player*>(pVictim);
-            if (Rand(pr->GetSkillUpChance(SKILL_DEFENSE) * sWorld.settings.getFloatRate(RATE_SKILLCHANCE)))
+            if (Rand(pr->GetSkillUpChance(SKILL_DEFENSE) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
             {
-                pr->_AdvanceSkillLine(SKILL_DEFENSE, float2int32(1.0f * sWorld.settings.getFloatRate(RATE_SKILLRATE)));
+                pr->_AdvanceSkillLine(SKILL_DEFENSE, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
                 pr->UpdateChances();
             }
         }
@@ -4300,9 +4300,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         {
             static_cast<Player*>(this)->GetItemInterface()->ReduceItemDurability();
             Player* pr = static_cast<Player*>(this);
-            if (Rand(pr->GetSkillUpChance(SubClassSkill) * sWorld.settings.getFloatRate(RATE_SKILLCHANCE)))
+            if (Rand(pr->GetSkillUpChance(SubClassSkill) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
             {
-                pr->_AdvanceSkillLine(SubClassSkill, float2int32(1.0f * sWorld.settings.getFloatRate(RATE_SKILLRATE)));
+                pr->_AdvanceSkillLine(SubClassSkill, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
                 //pr->UpdateChances();
             }
         }
@@ -4350,7 +4350,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
 
         val = conv * dmg.full_damage + f * s / 2.0f;
         val *= (1 + (static_cast<Player*>(this)->rageFromDamageDealt / 100.0f));
-        float ragerate = sWorld.settings.getFloatRate(RATE_POWER2);
+        float ragerate = worldConfig.getFloatRate(RATE_POWER2);
         val *= 10 * ragerate;
 
         //float r = (7.5f * dmg.full_damage / c + f * s) / 2.0f;
@@ -6435,7 +6435,7 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
         if (caster != NULL)
             data << uint8(caster->getLevel());
         else
-            data << uint8(sWorld.settings.optional.playerLevelCap);
+            data << uint8(worldConfig.optional.playerLevelCap);
 
         data << uint8(m_auraStackCount[aur->m_visualSlot]);
 

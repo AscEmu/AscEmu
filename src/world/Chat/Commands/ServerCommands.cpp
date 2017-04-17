@@ -25,7 +25,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
             latency_avg += itr->second->GetSession()->GetLatency();
             if (itr->second->GetSession()->GetPermissionCount())
             {
-                if (!sWorld.settings.gm.listOnlyActiveGms)
+                if (!worldConfig.gm.listOnlyActiveGms)
                 {
                     online_gm++;
                 }
@@ -147,7 +147,7 @@ bool ChatHandler::HandleServerSetMotdCommand(const char* args, WorldSession* m_s
 
     GreenSystemMessage(m_session, "Motd has been set to: %s", args);
     sGMLog.writefromsession(m_session, "Set MOTD to %s", args);
-    sWorld.settings.setMessageOfTheDay(args);
+    worldConfig.setMessageOfTheDay(args);
 
     return true;
 }

@@ -40,7 +40,7 @@ LoginErrorCode VerifyName(const char* name, size_t nlen)
     static const char* bannedCharacters = "\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
     static const char* allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    if (sWorld.settings.server.enableLimitedNames)
+    if (worldConfig.server.enableLimitedNames)
     {
         if (nlen == 0)
             return E_CHAR_NAME_NO_NAME;
@@ -247,7 +247,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     }
 
     // Check if player got Death Knight already on this realm.
-    if (sWorld.settings.extraClass.deathKnightLimit && has_dk && (class_ == DEATHKNIGHT))
+    if (worldConfig.extraClass.deathKnightLimit && has_dk && (class_ == DEATHKNIGHT))
     {
         LoginErrorCode login_error = E_CHAR_CREATE_UNIQUE_CLASS_LIMIT;
         OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
@@ -288,7 +288,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
 
     //Same Faction limitation only applies to PVP and RPPVP realms :)
     uint32 realmType = sLogonCommHandler.GetRealmType();
-    if (!HasGMPermissions() && realmType == REALMTYPE_PVP && _side >= 0 && !sWorld.settings.interfaction.isCrossoverCharsCreationEnabled)  // ceberwow fixed bug
+    if (!HasGMPermissions() && realmType == REALMTYPE_PVP && _side >= 0 && !worldConfig.interfaction.isCrossoverCharsCreationEnabled)  // ceberwow fixed bug
     {
         if ((pNewChar->IsTeamAlliance() && (_side == 1)) || (pNewChar->IsTeamHorde() && (_side == 0)))
         {
@@ -303,7 +303,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
 
     //Check if player has a level 55 or higher character on this realm and allow him to create DK.
     //This check can be turned off in optional.conf
-    if (sWorld.settings.extraClass.deathKnightPreReq && !has_level_55_char && (class_ == DEATHKNIGHT))
+    if (worldConfig.extraClass.deathKnightPreReq && !has_level_55_char && (class_ == DEATHKNIGHT))
     {
         pNewChar->ok_to_remove = true;
         delete pNewChar;
@@ -672,7 +672,7 @@ void WorldSession::FullLogin(Player* plr)
     float VZ;
 
     // GMs should start on GM Island and be bound there
-    if (HasGMPermissions() && plr->m_FirstLogin && sWorld.settings.gm.isStartOnGmIslandEnabled)
+    if (HasGMPermissions() && plr->m_FirstLogin && worldConfig.gm.isStartOnGmIslandEnabled)
     {
         VMapId = 1;
         VO = 0;
@@ -818,7 +818,7 @@ void WorldSession::FullLogin(Player* plr)
 
     sWorld.incrementPlayerCount(plr->GetTeam());
 
-    if (plr->m_FirstLogin && !sWorld.settings.optional.skipCinematics)
+    if (plr->m_FirstLogin && !worldConfig.optional.skipCinematics)
     {
         uint32 introid = plr->info->introid;
 

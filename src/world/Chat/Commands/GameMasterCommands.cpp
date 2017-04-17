@@ -152,26 +152,26 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
     {
         if (itr->second->GetSession()->GetPermissionCount())
         {
-            if (!sWorld.settings.gm.listOnlyActiveGms)
+            if (!worldConfig.gm.listOnlyActiveGms)
             {
                 if (print_headline)
                     GreenSystemMessage(m_session, "The following GMs are on this server:");
 
-                if (sWorld.settings.gm.hidePermissions && !is_gamemaster)
+                if (worldConfig.gm.hidePermissions && !is_gamemaster)
                     SystemMessage(m_session, " - %s", itr->second->GetName());
                 else
                     SystemMessage(m_session, " - %s [%s]", itr->second->GetName(), itr->second->GetSession()->GetPermissions());
 
                 print_headline = false;
             }
-            else if (sWorld.settings.gm.listOnlyActiveGms && itr->second->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+            else if (worldConfig.gm.listOnlyActiveGms && itr->second->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
             {
                 if (itr->second->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
                 {
                     if (print_headline)
                         GreenSystemMessage(m_session, "The following GMs are active on this server:");
 
-                    if (sWorld.settings.gm.hidePermissions && !is_gamemaster)
+                    if (worldConfig.gm.hidePermissions && !is_gamemaster)
                         SystemMessage(m_session, " - %s", itr->second->GetName());
                     else
                         SystemMessage(m_session, " - %s [%s]", itr->second->GetName(), itr->second->GetSession()->GetPermissions());
@@ -190,7 +190,7 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
 
     if (print_headline)
     {
-        if (!sWorld.settings.gm.listOnlyActiveGms)
+        if (!worldConfig.gm.listOnlyActiveGms)
             SystemMessage(m_session, "No GMs are currently logged in on this server.");
         else
             SystemMessage(m_session, "No GMs are currently active on this server.");

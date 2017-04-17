@@ -133,7 +133,7 @@ Player::Player(uint32 guid)
     m_furorChance(0),
     //WayPoint
     waypointunit(NULL),
-    m_nextSave(getMSTime() + sWorld.settings.getIntRate(INTRATE_SAVE)),
+    m_nextSave(getMSTime() + worldConfig.getIntRate(INTRATE_SAVE)),
     m_lifetapbonus(0),
     PlayerTalkClass(NULL),
     m_bUnlimitedBreath(false),
@@ -909,14 +909,14 @@ bool Player::Create(WorldPacket& data)
     SetFaction(info->factiontemplate);
 
     if (class_ == DEATHKNIGHT)
-        SetTalentPointsForAllSpec(sWorld.settings.optional.deathKnightStartTalentPoints); // Default is 0 in case you do not want to modify it
+        SetTalentPointsForAllSpec(worldConfig.optional.deathKnightStartTalentPoints); // Default is 0 in case you do not want to modify it
     else
         SetTalentPointsForAllSpec(0);
-    if (class_ != DEATHKNIGHT || sWorld.settings.optional.playerStartingLevel > 55)
+    if (class_ != DEATHKNIGHT || worldConfig.optional.playerStartingLevel > 55)
     {
-        setLevel(sWorld.settings.optional.playerStartingLevel);
-        if (sWorld.settings.optional.playerStartingLevel >= 10 && class_ != DEATHKNIGHT)
-            SetTalentPointsForAllSpec(sWorld.settings.optional.playerStartingLevel - 9);
+        setLevel(worldConfig.optional.playerStartingLevel);
+        if (worldConfig.optional.playerStartingLevel >= 10 && class_ != DEATHKNIGHT)
+            SetTalentPointsForAllSpec(worldConfig.optional.playerStartingLevel - 9);
     }
     else
     {
@@ -925,7 +925,7 @@ bool Player::Create(WorldPacket& data)
     }
     UpdateGlyphs();
 
-    SetPrimaryProfessionPoints(sWorld.settings.optional.maxProfessions);
+    SetPrimaryProfessionPoints(worldConfig.optional.maxProfessions);
 
     setRace(race);
     setClass(class_);
@@ -998,11 +998,11 @@ bool Player::Create(WorldPacket& data)
     SetUInt32Value(PLAYER_FIELD_BYTES, 0x08);
     SetCastSpeedMod(1.0f);
 #if VERSION_STRING != Classic
-    SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, sWorld.settings.optional.playerLevelCap);
+    SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.optional.playerLevelCap);
 #endif
 
     // Gold Starting Amount
-    SetGold(sWorld.settings.gold.startAmount);
+    SetGold(worldConfig.gold.startAmount);
 
 
     for (uint32 x = 0; x < 7; x++)
@@ -1193,7 +1193,7 @@ void Player::Update(unsigned long time_passed)
             m_pvpTimer -= time_passed;
     }
 
-    if (sWorld.settings.terrainCollision.isCollisionEnabled)
+    if (worldConfig.terrainCollision.isCollisionEnabled)
     {
         if (mstime >= m_indoorCheckTimer)
         {
@@ -1594,7 +1594,7 @@ void Player::_EventExploration()
         SetUInt32Value(offset, (uint32)(currFields | val));
 
         uint32 explore_xp = at->area_level * 10;
-        explore_xp *= float2int32(sWorld.settings.getFloatRate(RATE_EXPLOREXP));
+        explore_xp *= float2int32(worldConfig.getFloatRate(RATE_EXPLOREXP));
 
 #if VERSION_STRING > TBC
         GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA);
@@ -2503,8 +2503,8 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     if (m_bg != NULL && IS_ARENA(m_bg->GetType()))
         in_arena = true;
 
-    if (GetPrimaryProfessionPoints() > sWorld.settings.optional.maxProfessions)
-        SetPrimaryProfessionPoints(sWorld.settings.optional.maxProfessions);
+    if (GetPrimaryProfessionPoints() > worldConfig.optional.maxProfessions)
+        SetPrimaryProfessionPoints(worldConfig.optional.maxProfessions);
 
     //Calc played times
     uint32 playedt = (uint32)UNIXTIME - m_playedtime[2];
@@ -2815,7 +2815,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
 
     ss << xpfield << "'" << ", '";
 
-    bool saveData = sWorld.settings.server.saveExtendedCharData;
+    bool saveData = worldConfig.server.saveExtendedCharData;
     if (saveData)
     {
         for (uint32 offset = OBJECT_END; offset < PLAYER_END; offset++)
@@ -2869,7 +2869,7 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
         _SavePet(buf);
         _SavePetSpells(buf);
     }
-    m_nextSave = getMSTime() + sWorld.settings.getIntRate(INTRATE_SAVE);
+    m_nextSave = getMSTime() + worldConfig.getIntRate(INTRATE_SAVE);
 #if VERSION_STRING > TBC
     m_achievementMgr.SaveToDB(buf);
 #endif
@@ -3256,7 +3256,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     SetCastSpeedMod(1.0f);
 #if VERSION_STRING != Classic
-    SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, sWorld.settings.optional.playerLevelCap);
+    SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.optional.playerLevelCap);
 #endif
     SetFaction(info->factiontemplate);
     if (cfaction)
@@ -3309,12 +3309,12 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     m_FirstLogin = get_next_field.GetBool();
     login_flags = get_next_field.GetUInt32();
     m_arenaPoints = get_next_field.GetUInt32();
-    if (m_arenaPoints > sWorld.settings.limit.maxArenaPoints)
+    if (m_arenaPoints > worldConfig.limit.maxArenaPoints)
     {
         char hlogmsg[256];
-        snprintf(hlogmsg, 256, "has over %u arena points (%u)", sWorld.settings.limit.maxArenaPoints, m_arenaPoints);
+        snprintf(hlogmsg, 256, "has over %u arena points (%u)", worldConfig.limit.maxArenaPoints, m_arenaPoints);
         sCheatLog.writefromsession(m_session, hlogmsg);
-        if (sWorld.settings.limit.broadcastMessageToGmOnExceeding)          // report to online GMs    
+        if (worldConfig.limit.broadcastMessageToGmOnExceeding)          // report to online GMs    
         {
             std::string gm_ann = MSG_COLOR_GREEN;
             gm_ann += "|Hplayer:";
@@ -3326,11 +3326,11 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             gm_ann += hlogmsg;
             sWorld.SendGMWorldText(gm_ann.c_str());
         }
-        if (sWorld.settings.limit.disconnectPlayerForExceedingLimits)
+        if (worldConfig.limit.disconnectPlayerForExceedingLimits)
         {
             m_session->Disconnect();
         }
-        m_arenaPoints = sWorld.settings.limit.maxArenaPoints;
+        m_arenaPoints = worldConfig.limit.maxArenaPoints;
     }
     for (uint32 z = 0; z < NUM_CHARTER_TYPES; ++z)
         m_charters[z] = objmgr.GetCharterByGuid(GetGUID(), (CharterTypes)z);
@@ -3505,12 +3505,12 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     m_honorToday = get_next_field.GetUInt32();
     m_honorYesterday = get_next_field.GetUInt32();
     m_honorPoints = get_next_field.GetUInt32();
-    if (m_honorPoints > sWorld.settings.limit.maxHonorPoints)
+    if (m_honorPoints > worldConfig.limit.maxHonorPoints)
     {
         char hlogmsg[256];
-        snprintf(hlogmsg, 256, "has over %u honor points (%u)", sWorld.settings.limit.maxHonorPoints, m_honorPoints);
+        snprintf(hlogmsg, 256, "has over %u honor points (%u)", worldConfig.limit.maxHonorPoints, m_honorPoints);
         sCheatLog.writefromsession(m_session, hlogmsg);
-        if (sWorld.settings.limit.broadcastMessageToGmOnExceeding) // report to online GMs    
+        if (worldConfig.limit.broadcastMessageToGmOnExceeding) // report to online GMs    
         {
             std::string gm_ann = MSG_COLOR_GREEN;
             gm_ann += "|Hplayer:";
@@ -3522,11 +3522,11 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             gm_ann += hlogmsg;
             sWorld.SendGMWorldText(gm_ann.c_str());
         }
-        if (sWorld.settings.limit.disconnectPlayerForExceedingLimits)
+        if (worldConfig.limit.disconnectPlayerForExceedingLimits)
         {
             m_session->Disconnect();
         }
-        m_honorPoints = sWorld.settings.limit.maxHonorPoints;
+        m_honorPoints = worldConfig.limit.maxHonorPoints;
     }
 
     RolloverHonor();
@@ -4039,8 +4039,8 @@ void Player::OnPushToWorld()
     if (m_FirstLogin)
     {
         if (class_ == DEATHKNIGHT)
-            startlevel = static_cast<uint8>(std::max(55, sWorld.settings.optional.playerStartingLevel));
-        else startlevel = static_cast<uint8>(sWorld.settings.optional.playerStartingLevel);
+            startlevel = static_cast<uint8>(std::max(55, worldConfig.optional.playerStartingLevel));
+        else startlevel = static_cast<uint8>(worldConfig.optional.playerStartingLevel);
 
         sHookInterface.OnFirstEnterWorld(this);
         LevelInfo* Info = objmgr.GetLevelInfo(getRace(), getClass(), startlevel);
@@ -5213,8 +5213,8 @@ float Player::GetDodgeChance()
     float chance = 0.0f;
     uint32 level = getLevel();
 
-    if (level > sWorld.settings.optional.playerGeneratedInformationByLevelCap)
-        level = sWorld.settings.optional.playerGeneratedInformationByLevelCap;
+    if (level > worldConfig.optional.playerGeneratedInformationByLevelCap)
+        level = worldConfig.optional.playerGeneratedInformationByLevelCap;
 
     // Base dodge + dodge from agility
 
@@ -5560,12 +5560,12 @@ void Player::UpdateStats()
 
     if (res < hp)
         res = hp;
-    if (sWorld.settings.limit.isLimitSystemEnabled && (sWorld.settings.limit.maxHealthCap > 0) && (res > sWorld.settings.limit.maxHealthCap) && GetSession()->GetPermissionCount() <= 0)   //hacker?
+    if (worldConfig.limit.isLimitSystemEnabled && (worldConfig.limit.maxHealthCap > 0) && (res > worldConfig.limit.maxHealthCap) && GetSession()->GetPermissionCount() <= 0)   //hacker?
     {
         char logmsg[256];
-        snprintf(logmsg, 256, "has over %u health (%i)", sWorld.settings.limit.maxHealthCap, res);
+        snprintf(logmsg, 256, "has over %u health (%i)", worldConfig.limit.maxHealthCap, res);
         sCheatLog.writefromsession(GetSession(), logmsg);
-        if (sWorld.settings.limit.broadcastMessageToGmOnExceeding) // send info to online GM
+        if (worldConfig.limit.broadcastMessageToGmOnExceeding) // send info to online GM
         {
             std::string gm_ann = MSG_COLOR_GREEN;
             gm_ann += "|Hplayer:";
@@ -5577,13 +5577,13 @@ void Player::UpdateStats()
             gm_ann += logmsg;
             sWorld.SendGMWorldText(gm_ann.c_str());
         }
-        if (sWorld.settings.limit.disconnectPlayerForExceedingLimits)
+        if (worldConfig.limit.disconnectPlayerForExceedingLimits)
         {
             GetSession()->Disconnect();
         }
         else // no disconnect, set it to the cap instead
         {
-            res = sWorld.settings.limit.maxHealthCap;
+            res = worldConfig.limit.maxHealthCap;
         }
     }
     SetUInt32Value(UNIT_FIELD_MAXHEALTH, res);
@@ -5610,12 +5610,12 @@ void Player::UpdateStats()
         res = mana + bonus + manadelta;
         if (res < mana)
             res = mana;
-        if (sWorld.settings.limit.isLimitSystemEnabled && (sWorld.settings.limit.maxManaCap > 0) && (res > sWorld.settings.limit.maxManaCap) && GetSession()->GetPermissionCount() <= 0)   //hacker?
+        if (worldConfig.limit.isLimitSystemEnabled && (worldConfig.limit.maxManaCap > 0) && (res > worldConfig.limit.maxManaCap) && GetSession()->GetPermissionCount() <= 0)   //hacker?
         {
             char logmsg[256];
-            snprintf(logmsg, 256, "has over %u mana (%i)", sWorld.settings.limit.maxManaCap, res);
+            snprintf(logmsg, 256, "has over %u mana (%i)", worldConfig.limit.maxManaCap, res);
             sCheatLog.writefromsession(GetSession(), logmsg);
-            if (sWorld.settings.limit.broadcastMessageToGmOnExceeding) // send info to online GM
+            if (worldConfig.limit.broadcastMessageToGmOnExceeding) // send info to online GM
             {
                 std::string gm_ann = MSG_COLOR_GREEN;
                 gm_ann += "|Hplayer:";
@@ -5627,13 +5627,13 @@ void Player::UpdateStats()
                 gm_ann += logmsg;
                 sWorld.SendGMWorldText(gm_ann.c_str());
             }
-            if (sWorld.settings.limit.disconnectPlayerForExceedingLimits)
+            if (worldConfig.limit.disconnectPlayerForExceedingLimits)
             {
                 GetSession()->Disconnect();
             }
             else // no disconnect, set it to the cap instead
             {
-                res = sWorld.settings.limit.maxManaCap;
+                res = worldConfig.limit.maxManaCap;
             }
         }
         SetMaxPower(POWER_TYPE_MANA, res);
@@ -5739,7 +5739,7 @@ void Player::AddCalculatedRestXP(uint32 seconds)
     uint32 xp_to_lvl = GetXpToLevel();
 
     // get RestXP multiplier from config.
-    float bubblerate = sWorld.settings.getFloatRate(RATE_RESTXP);
+    float bubblerate = worldConfig.getFloatRate(RATE_RESTXP);
 
     // One bubble (5% of xp_to_level) for every 8 hours logged out.
     // if multiplier RestXP (from ascent.config) is f.e 2, you only need 4hrs/bubble.
@@ -6228,7 +6228,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
         return SPELL_FAILED_TARGETS_DEAD;
 
     // Check if in line of sight (need collision detection).
-    if (sWorld.settings.terrainCollision.isCollisionEnabled)
+    if (worldConfig.terrainCollision.isCollisionEnabled)
     {
         VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
         bool isInLOS = mgr->isInLineOfSight(GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ());
@@ -6284,7 +6284,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
     VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
     bool isInLOS = mgr->isInLineOfSight(GetMapId(), GetPositionX(), GetPositionY(), GetPositionZ(), target->GetPositionX(), target->GetPositionY(), target->GetPositionZ());
 
-    if (sWorld.settings.terrainCollision.isCollisionEnabled && GetMapId() == target->GetMapId() && !isInLOS)
+    if (worldConfig.terrainCollision.isCollisionEnabled && GetMapId() == target->GetMapId() && !isInLOS)
         fail = SPELL_FAILED_LINE_OF_SIGHT;
 
     if (dist > maxr)
@@ -7120,7 +7120,7 @@ void Player::RegenerateMana(bool is_interrupted)
     uint32 mm = GetMaxPower(POWER_TYPE_MANA);
     if (cur >= mm)
         return;
-    float wrate = sWorld.settings.getFloatRate(RATE_POWER1); // config file regen rate
+    float wrate = worldConfig.getFloatRate(RATE_POWER1); // config file regen rate
 #if VERSION_STRING == TBC
     float amt = (is_interrupted) ? GetFloatValue(PLAYER_FIELD_MOD_MANA_REGEN_INTERRUPT) : GetFloatValue(PLAYER_FIELD_MOD_MANA_REGEN);
 #elif VERSION_STRING == Classic
@@ -7189,7 +7189,7 @@ void Player::RegenerateHealth(bool inCombat)
     if (PctRegenModifier)
         amt += (amt * PctRegenModifier) / 100;
 
-    amt *= sWorld.settings.getFloatRate(RATE_HEALTH);//Apply conf file rate
+    amt *= worldConfig.getFloatRate(RATE_HEALTH);//Apply conf file rate
     //Near values from official
     // wowwiki: Health Regeneration is increased by 33% while sitting.
     if (m_isResting)
@@ -7236,7 +7236,7 @@ void Player::RegenerateEnergy()
     if (cur >= mh)
         return;
 
-    float wrate = sWorld.settings.getFloatRate(RATE_POWER4);
+    float wrate = worldConfig.getFloatRate(RATE_POWER4);
     float amt = PctPowerRegenModifier[POWER_TYPE_ENERGY];
     amt *= wrate * 20.0f;
 
@@ -7703,7 +7703,7 @@ void Player::ProcessPendingUpdates()
         // compress update packet
         // while we said 350 before, I'm gonna make it 500 :D
 #if VERSION_STRING != Cata
-        if (c < (size_t)sWorld.settings.server.compressionThreshold || !CompressAndSendUpdateBuffer((uint32)c, update_buffer))
+        if (c < (size_t)worldConfig.server.compressionThreshold || !CompressAndSendUpdateBuffer((uint32)c, update_buffer))
 #endif
         {
             // send uncompressed packet -> because we failed
@@ -7735,7 +7735,7 @@ void Player::ProcessPendingUpdates()
         // compress update packet
         // while we said 350 before, I'm gonna make it 500 :D
 #if VERSION_STRING != Cata
-        if (c < (size_t)sWorld.settings.server.compressionThreshold || !CompressAndSendUpdateBuffer((uint32)c, update_buffer))
+        if (c < (size_t)worldConfig.server.compressionThreshold || !CompressAndSendUpdateBuffer((uint32)c, update_buffer))
 #endif
         {
             // send uncompressed packet -> because we failed
@@ -7769,7 +7769,7 @@ void Player::ProcessPendingUpdates()
 bool Player::CompressAndSendUpdateBuffer(uint32 size, const uint8* update_buffer)
 {
     uint32 destsize = size + size / 10 + 16;
-    int rate = sWorld.settings.getIntRate(INTRATE_COMPRESSION);
+    int rate = worldConfig.getIntRate(INTRATE_COMPRESSION);
     if (size >= 40000 && rate < 6)
         rate = 6;
 
@@ -8865,7 +8865,7 @@ void Player::UpdatePvPArea()
             RemoveSanctuaryFlag();
 
             //contested territory
-            if (sWorld.getRealmType() == REALM_PVP)
+            if (worldConfig.getRealmType() == REALM_PVP)
             {
                 //automatically sets pvp flag on contested territories.
                 if (!IsPvPFlagged())
@@ -8874,7 +8874,7 @@ void Player::UpdatePvPArea()
                     StopPvPTimer();
             }
 
-            if (sWorld.getRealmType() == REALM_PVE)
+            if (worldConfig.getRealmType() == REALM_PVE)
             {
                 if (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_PVP_TOGGLE))
                 {
@@ -8933,7 +8933,7 @@ void Player::LoginPvPSetup()
 
 void Player::PvPToggle()
 {
-    if (sWorld.getRealmType() == REALM_PVE)
+    if (worldConfig.getRealmType() == REALM_PVE)
     {
         if (m_pvpTimer > 0)
         {
@@ -8981,7 +8981,7 @@ void Player::PvPToggle()
             }
         }
     }
-    else if (sWorld.getRealmType() == REALM_PVP)
+    else if (worldConfig.getRealmType() == REALM_PVP)
     {
         auto at = this->GetArea();
         if (at == NULL)
@@ -9093,8 +9093,8 @@ void Player::AddHonor(uint32 honorPoints, bool sendUpdate)
 
     this->m_honorPoints += honorPoints;
     this->m_honorToday += honorPoints;
-    if (this->m_honorPoints > sWorld.settings.limit.maxHonorPoints)
-        this->m_honorPoints = sWorld.settings.limit.maxHonorPoints;
+    if (this->m_honorPoints > worldConfig.limit.maxHonorPoints)
+        this->m_honorPoints = worldConfig.limit.maxHonorPoints;
 
     if (sendUpdate)
         this->UpdateHonor();
@@ -9123,8 +9123,8 @@ void Player::UpdateHonor()
 void Player::AddArenaPoints(uint32 arenaPoints, bool sendUpdate)
 {
     this->m_arenaPoints += arenaPoints;
-    if (this->m_arenaPoints > sWorld.settings.limit.maxArenaPoints)
-        this->m_arenaPoints = sWorld.settings.limit.maxArenaPoints;
+    if (this->m_arenaPoints > worldConfig.limit.maxArenaPoints)
+        this->m_arenaPoints = worldConfig.limit.maxArenaPoints;
 
     if (sendUpdate)
         this->UpdateArenaPoints();
@@ -9141,7 +9141,7 @@ void Player::UpdateArenaPoints()
 
 void Player::ResetPvPTimer()
 {
-    m_pvpTimer = sWorld.settings.getIntRate(INTRATE_PVPTIMER);
+    m_pvpTimer = worldConfig.getIntRate(INTRATE_PVPTIMER);
 }
 
 void Player::CalculateBaseStats()
@@ -10696,19 +10696,19 @@ void Player::FillRandomBattlegroundReward(bool wonBattleground, uint32& honorPoi
     {
         if (this->m_bgIsRbgWon)
         {
-            honorPoints = sWorld.settings.bg.honorableKillsRbg * honorForSingleKill;
-            arenaPoints = sWorld.settings.bg.honorableArenaWinRbg;
+            honorPoints = worldConfig.bg.honorableKillsRbg * honorForSingleKill;
+            arenaPoints = worldConfig.bg.honorableArenaWinRbg;
         }
         else
         {
-            honorPoints = sWorld.settings.bg.firstRbgHonorValueToday * honorForSingleKill;
-            arenaPoints = sWorld.settings.bg.firstRbgArenaHonorValueToday;
+            honorPoints = worldConfig.bg.firstRbgHonorValueToday * honorForSingleKill;
+            arenaPoints = worldConfig.bg.firstRbgArenaHonorValueToday;
         }
     }
     else
     {
-        honorPoints = sWorld.settings.bg.honorByLosingRbg * honorForSingleKill;
-        arenaPoints = sWorld.settings.bg.honorByLosingArenaRbg;
+        honorPoints = worldConfig.bg.honorByLosingRbg * honorForSingleKill;
+        arenaPoints = worldConfig.bg.honorByLosingArenaRbg;
     }
 }
 
@@ -11272,7 +11272,7 @@ void Player::Social_AddFriend(const char* name, const char* note)
     }
 
     // team check
-    if (info->team != GetTeamInitial() && m_session->permissioncount == 0 && !sWorld.settings.interfaction.isInterfactionFriendsEnabled)
+    if (info->team != GetTeamInitial() && m_session->permissioncount == 0 && !worldConfig.interfaction.isInterfactionFriendsEnabled)
     {
         data << uint8(FRIEND_ENEMY);
         data << uint64(info->guid);
@@ -12603,39 +12603,39 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
 
 uint32 Player::CheckDamageLimits(uint32 dmg, uint32 spellid)
 {
-    if ((spellid != 0) && (sWorld.settings.limit.maxSpellDamageCap > 0))
+    if ((spellid != 0) && (worldConfig.limit.maxSpellDamageCap > 0))
     {
-        if (dmg > sWorld.settings.limit.maxSpellDamageCap)
+        if (dmg > worldConfig.limit.maxSpellDamageCap)
         {
             std::stringstream dmglog;
             dmglog << "Dealt " << dmg << " with spell " << spellid;
 
             sCheatLog.writefromsession(m_session, dmglog.str().c_str());
 
-            if (sWorld.settings.limit.broadcastMessageToGmOnExceeding != 0)
+            if (worldConfig.limit.broadcastMessageToGmOnExceeding != 0)
                 sWorld.SendDamageLimitTextToGM(GetName(), dmglog.str().c_str());
 
-            if (sWorld.settings.limit.disconnectPlayerForExceedingLimits != 0)
+            if (worldConfig.limit.disconnectPlayerForExceedingLimits != 0)
                 m_session->Disconnect();
 
-            dmg = sWorld.settings.limit.maxSpellDamageCap;
+            dmg = worldConfig.limit.maxSpellDamageCap;
         }
     }
 
-    else if ((sWorld.settings.limit.maxAutoAttackDamageCap > 0) && (dmg > sWorld.settings.limit.maxAutoAttackDamageCap))
+    else if ((worldConfig.limit.maxAutoAttackDamageCap > 0) && (dmg > worldConfig.limit.maxAutoAttackDamageCap))
     {
         std::stringstream dmglog;
 
         dmglog << "Dealt " << dmg << " with auto attack";
         sCheatLog.writefromsession(m_session, dmglog.str().c_str());
 
-        if (sWorld.settings.limit.broadcastMessageToGmOnExceeding != 0)
+        if (worldConfig.limit.broadcastMessageToGmOnExceeding != 0)
             sWorld.SendDamageLimitTextToGM(GetName(), dmglog.str().c_str());
 
-        if (sWorld.settings.limit.disconnectPlayerForExceedingLimits != 0)
+        if (worldConfig.limit.disconnectPlayerForExceedingLimits != 0)
             m_session->Disconnect();
 
-        dmg = sWorld.settings.limit.maxAutoAttackDamageCap;
+        dmg = worldConfig.limit.maxAutoAttackDamageCap;
     }
 
     return dmg;
@@ -12654,7 +12654,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
 
     if (this != pVictim)
     {
-        if (!GetSession()->HasPermissions() && sWorld.settings.limit.isLimitSystemEnabled != 0)
+        if (!GetSession()->HasPermissions() && worldConfig.limit.isLimitSystemEnabled != 0)
             damage = CheckDamageLimits(damage, spellId);
 
         CombatStatus.OnDamageDealt(pVictim);

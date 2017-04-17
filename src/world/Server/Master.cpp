@@ -226,8 +226,8 @@ bool Master::Run(int argc, char** argv)
 
     sWorld.loadWorldConfigValues();
 
-    AscLog.SetFileLoggingLevel(sWorld.settings.logLevel.fileLogLevel);
-    AscLog.SetDebugFlags(sWorld.settings.logLevel.debugFlags);
+    AscLog.SetFileLoggingLevel(worldConfig.logLevel.fileLogLevel);
+    AscLog.SetDebugFlags(worldConfig.logLevel.debugFlags);
 
     OpenCheatLogFiles();
 
@@ -286,7 +286,7 @@ bool Master::Run(int argc, char** argv)
 
     sScriptMgr.LoadScripts();
 
-    if (sWorld.settings.startup.enableSpellIdDump)
+    if (worldConfig.startup.enableSpellIdDump)
         sScriptMgr.DumpUnimplementedSpells();
 
     LoadingTime = getMSTime() - LoadingTime;
@@ -301,29 +301,29 @@ bool Master::Run(int argc, char** argv)
     if (!ChannelMgr::getSingletonPtr())
         new ChannelMgr;
 
-    channelmgr.seperatechannels = sWorld.settings.server.seperateChatChannels;
+    channelmgr.seperatechannels = worldConfig.server.seperateChatChannels;
 
     if (!MailSystem::getSingletonPtr())
         new MailSystem;
 
     uint32_t mailFlags = 0;
 
-    if (sWorld.settings.mail.isCostsForGmDisabled)
+    if (worldConfig.mail.isCostsForGmDisabled)
         mailFlags |= MAIL_FLAG_NO_COST_FOR_GM;
 
-    if (sWorld.settings.mail.isCostsForEveryoneDisabled)
+    if (worldConfig.mail.isCostsForEveryoneDisabled)
         mailFlags |= MAIL_FLAG_DISABLE_POSTAGE_COSTS;
 
-    if (sWorld.settings.mail.isDelayItemsDisabled)
+    if (worldConfig.mail.isDelayItemsDisabled)
         mailFlags |= MAIL_FLAG_DISABLE_HOUR_DELAY_FOR_ITEMS;
 
-    if (sWorld.settings.mail.isMessageExpiryDisabled)
+    if (worldConfig.mail.isMessageExpiryDisabled)
         mailFlags |= MAIL_FLAG_NO_EXPIRY;
 
-    if (sWorld.settings.mail.isInterfactionMailEnabled)
+    if (worldConfig.mail.isInterfactionMailEnabled)
         mailFlags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION;
 
-    if (sWorld.settings.mail.isInterfactionMailForGmEnabled)
+    if (worldConfig.mail.isInterfactionMailForGmEnabled)
         mailFlags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION_GM;
 
     sMailSystem.config_flags = mailFlags;
@@ -335,7 +335,7 @@ bool Master::Run(int argc, char** argv)
     sLogonCommHandler.Startup();
 
     // Create listener
-    ListenSocket<WorldSocket> * ls = new ListenSocket<WorldSocket>(sWorld.settings.listen.listenHost.c_str(), sWorld.settings.listen.listenPort);
+    ListenSocket<WorldSocket> * ls = new ListenSocket<WorldSocket>(worldConfig.listen.listenHost.c_str(), worldConfig.listen.listenPort);
     bool listnersockcreate = ls->IsOpen();
 #ifdef WIN32
     if (listnersockcreate)
@@ -510,11 +510,11 @@ bool Master::_StartDB()
     Database_World = nullptr;
     Database_Character = nullptr;
 
-    bool wdb_result = !sWorld.settings.worldDb.user.empty();
-    wdb_result = !wdb_result ? wdb_result : !sWorld.settings.worldDb.password.empty();
-    wdb_result = !wdb_result ? wdb_result : !sWorld.settings.worldDb.host.empty();
-    wdb_result = !wdb_result ? wdb_result : !sWorld.settings.worldDb.dbName.empty();
-    wdb_result = !wdb_result ? wdb_result : sWorld.settings.worldDb.port;
+    bool wdb_result = !worldConfig.worldDb.user.empty();
+    wdb_result = !wdb_result ? wdb_result : !worldConfig.worldDb.password.empty();
+    wdb_result = !wdb_result ? wdb_result : !worldConfig.worldDb.host.empty();
+    wdb_result = !wdb_result ? wdb_result : !worldConfig.worldDb.dbName.empty();
+    wdb_result = !wdb_result ? wdb_result : worldConfig.worldDb.port;
 
     Database_World = Database::CreateDatabaseInterface();
 
@@ -525,18 +525,18 @@ bool Master::_StartDB()
     }
 
     // Initialize it
-    if (!WorldDatabase.Initialize(sWorld.settings.worldDb.host.c_str(), (unsigned int)sWorld.settings.worldDb.port, sWorld.settings.worldDb.user.c_str(),
-        sWorld.settings.worldDb.password.c_str(), sWorld.settings.worldDb.dbName.c_str(), sWorld.settings.worldDb.connections, 16384))
+    if (!WorldDatabase.Initialize(worldConfig.worldDb.host.c_str(), (unsigned int)worldConfig.worldDb.port, worldConfig.worldDb.user.c_str(),
+        worldConfig.worldDb.password.c_str(), worldConfig.worldDb.dbName.c_str(), worldConfig.worldDb.connections, 16384))
     {
         LogError("Configs : Connection to WorldDatabase failed. Check your database configurations!");
         return false;
     }
 
-    bool cdb_result = !sWorld.settings.charDb.user.empty();
-    cdb_result = !cdb_result ? cdb_result : !sWorld.settings.charDb.password.empty();
-    cdb_result = !cdb_result ? cdb_result : !sWorld.settings.charDb.host.empty();
-    cdb_result = !cdb_result ? cdb_result : !sWorld.settings.charDb.dbName.empty();
-    cdb_result = !cdb_result ? cdb_result : sWorld.settings.charDb.port;
+    bool cdb_result = !worldConfig.charDb.user.empty();
+    cdb_result = !cdb_result ? cdb_result : !worldConfig.charDb.password.empty();
+    cdb_result = !cdb_result ? cdb_result : !worldConfig.charDb.host.empty();
+    cdb_result = !cdb_result ? cdb_result : !worldConfig.charDb.dbName.empty();
+    cdb_result = !cdb_result ? cdb_result : worldConfig.charDb.port;
 
     Database_Character = Database::CreateDatabaseInterface();
 
@@ -547,8 +547,8 @@ bool Master::_StartDB()
     }
 
     // Initialize it
-    if (!CharacterDatabase.Initialize(sWorld.settings.charDb.host.c_str(), (unsigned int)sWorld.settings.charDb.port, sWorld.settings.charDb.user.c_str(),
-        sWorld.settings.charDb.password.c_str(), sWorld.settings.charDb.dbName.c_str(), sWorld.settings.charDb.connections, 16384))
+    if (!CharacterDatabase.Initialize(worldConfig.charDb.host.c_str(), (unsigned int)worldConfig.charDb.port, worldConfig.charDb.user.c_str(),
+        worldConfig.charDb.password.c_str(), worldConfig.charDb.dbName.c_str(), worldConfig.charDb.connections, 16384))
     {
         LogError("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
         return false;
@@ -697,7 +697,7 @@ bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_fil
 
 void Master::OpenCheatLogFiles()
 {
-    bool useTimeStamp = sWorld.settings.log.addTimeStampToFileName;
+    bool useTimeStamp = worldConfig.log.addTimeStampToFileName;
 
     Anticheat_Log = new SessionLogWriter(AELog::GetFormattedFileName("logs", "cheaters", useTimeStamp).c_str(), false);
     GMCommand_Log = new SessionLogWriter(AELog::GetFormattedFileName("logs", "gmcommand", useTimeStamp).c_str(), false);
@@ -705,26 +705,26 @@ void Master::OpenCheatLogFiles()
 
     if (Anticheat_Log->IsOpen())
     {
-        if (!sWorld.settings.log.logCheaters)
+        if (!worldConfig.log.logCheaters)
             Anticheat_Log->Close();
     }
-    else if (sWorld.settings.log.logCheaters)
+    else if (worldConfig.log.logCheaters)
         Anticheat_Log->Open();
 
     if (GMCommand_Log->IsOpen())
     {
-        if (!sWorld.settings.log.logGmCommands)
+        if (!worldConfig.log.logGmCommands)
             GMCommand_Log->Close();
     }
-    else if (sWorld.settings.log.logGmCommands)
+    else if (worldConfig.log.logGmCommands)
         GMCommand_Log->Open();
 
     if (Player_Log->IsOpen())
     {
-        if (!sWorld.settings.log.logPlayers)
+        if (!worldConfig.log.logPlayers)
             Player_Log->Close();
     }
-    else if (sWorld.settings.log.logPlayers)
+    else if (worldConfig.log.logPlayers)
             Player_Log->Open();
 }
 
