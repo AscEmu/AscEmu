@@ -271,7 +271,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void setIntRate(uint32_t index, uint32_t value) { settings.setIntRate((WorldConfigIntRates)index, value); }
         uint32_t getIntRate(uint32_t index) { return settings.getIntRate((WorldConfigIntRates)index); }
 
-        uint32_t World::getRealmType() { return settings.getRealmType(); }
+        uint32_t getRealmType() { return settings.getRealmType(); }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Player statistic
