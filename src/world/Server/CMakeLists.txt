@@ -23,6 +23,8 @@ set(SRC_SERVER_FILES
    ${PATH_PREFIX}/ServerState.h
    ${PATH_PREFIX}/World.cpp
    ${PATH_PREFIX}/World.h
+   ${PATH_PREFIX}/WorldConfig.cpp
+   ${PATH_PREFIX}/WorldConfig.h
    ${PATH_PREFIX}/WorldRunnable.cpp
    ${PATH_PREFIX}/WorldRunnable.h
    ${PATH_PREFIX}/WorldSession.cpp

@@ -813,22 +813,22 @@ std::string World::getMessageOfTheDay()
     return serverSettings.messageOfTheDay;
 }
 
-void World::setFloatRate(Rates index, float value)
+void World::setFloatRate(WorldConfigRates index, float value)
 {
     mFloatRates[index] = value;
 }
 
-float World::getFloatRate(Rates index)
+float World::getFloatRate(WorldConfigRates index)
 {
     return mFloatRates[index];
 }
 
-void World::setIntRate(IntRates index, uint32_t value)
+void World::setIntRate(WorldConfigIntRates index, uint32_t value)
 {
     mIntRates[index] = value;
 }
 
-uint32_t World::getIntRate(IntRates index)
+uint32_t World::getIntRate(WorldConfigIntRates index)
 {
     return mIntRates[index];
 }
@@ -892,19 +892,6 @@ std::string World::getWorldUptimeString()
     snprintf(str, 300, "%u days, %u hours, %u minutes, %u seconds.", tmv->tm_yday, tmv->tm_hour, tmv->tm_min, tmv->tm_sec);
     return std::string(str);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Traffic InfoCore

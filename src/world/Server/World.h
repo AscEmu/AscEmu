@@ -27,6 +27,8 @@
 #include "Storage/DBC/DBCStores.h"
 #include "Server/Packets/Handlers/AreaTrigger.h"
 #include "WorldSession.h"
+#include "WorldConfig.h"
+
 #include <set>
 #include <string>
 #include <vector>
@@ -45,48 +47,6 @@ class EventableObjectHolder;
 class MapMgr;
 class Battleground;
 struct DatabaseConnection;
-
-enum Rates
-{
-    RATE_HEALTH = 0, // hp regen
-    RATE_POWER1,  // mp regen
-    RATE_POWER2,  // rage (rate unused)
-    RATE_POWER3,  // focus regen (pets)
-    RATE_POWER4,  // energy regen
-//    RATE_POWER5,  // happiness (pets; rate unused)
-//    RATE_POWER6,  // what is this? (rate unused)
-    RATE_POWER7,  // runic power (rate unused)
-    RATE_DROP0, // separate rates for each quality level
-    RATE_DROP1,
-    RATE_DROP2,
-    RATE_DROP3,
-    RATE_DROP4,
-    RATE_DROP5,
-    RATE_DROP6,
-    RATE_MONEY,
-    RATE_XP,
-    RATE_RESTXP,
-    RATE_QUESTXP,
-    RATE_EXPLOREXP,
-    RATE_HONOR,
-    RATE_QUESTREPUTATION,
-    RATE_KILLREPUTATION,
-    RATE_SKILLCHANCE,
-    RATE_SKILLRATE,
-    RATE_ARENAPOINTMULTIPLIER2X,
-    RATE_ARENAPOINTMULTIPLIER3X,
-    RATE_ARENAPOINTMULTIPLIER5X,
-    RATE_VEHICLES_POWER_REGEN,
-    MAX_RATES
-};
-
-enum IntRates
-{
-    INTRATE_SAVE = 0,
-    INTRATE_COMPRESSION,
-    INTRATE_PVPTIMER,
-    MAX_INTRATES
-};
 
 enum EnviromentalDamage
 {
@@ -190,11 +150,6 @@ struct MapInfo
 
 #pragma pack(pop)
 
-enum REALM_TYPE
-{
-    REALM_PVE = 0,
-    REALM_PVP = 1
-};
 
 class BasicTaskExecutor : public ThreadBase
 {
@@ -683,11 +638,11 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
     public:
 
-        void setFloatRate(Rates index, float value);
-        float getFloatRate(Rates index);
+        void setFloatRate(WorldConfigRates index, float value);
+        float getFloatRate(WorldConfigRates index);
 
-        void setIntRate(IntRates index, uint32_t value);
-        uint32_t getIntRate(IntRates index);
+        void setIntRate(WorldConfigIntRates index, uint32_t value);
+        uint32_t getIntRate(WorldConfigIntRates index);
 
         uint32_t getRealmType();
 

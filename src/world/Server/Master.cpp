@@ -63,7 +63,7 @@ void Master::_OnSignal(int s)
     {
 #ifndef WIN32
         case SIGHUP:
-            sWorld.Rehash(true);
+            sWorld.loadWorldConfigValues(true);
             break;
 #endif
         case SIGINT:
