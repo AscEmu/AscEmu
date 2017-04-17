@@ -33,8 +33,8 @@ LogonCommHandler::LogonCommHandler()
 {
     idhigh = 1;
     next_request = 1;
-    pings = !sWorld.logonServerSettings.disablePings;
-    std::string logon_pass = sWorld.logonServerSettings.remotePassword;
+    pings = !sWorld.settings.logonServerSettings.disablePings;
+    std::string logon_pass = sWorld.settings.logonServerSettings.remotePassword;
 
     // sha1 hash it
     Sha1Hash hash;
@@ -393,12 +393,12 @@ void LogonCommHandler::LoadRealmConfiguration()
 {
     LogonServer* ls = new LogonServer;
     ls->ID = idhigh++;
-    ls->Name = sWorld.logonServerSettings2.name;
-    ls->Address = sWorld.logonServerSettings2.address;
-    ls->Port = (uint32)sWorld.logonServerSettings2.port;
+    ls->Name = sWorld.settings.logonServerSettings2.name;
+    ls->Address = sWorld.settings.logonServerSettings2.address;
+    ls->Port = (uint32)sWorld.settings.logonServerSettings2.port;
     servers.insert(ls);
 
-    uint32 realmcount = (uint32)sWorld.logonServerSettings2.realmCount;
+    uint32 realmcount = (uint32)sWorld.settings.logonServerSettings2.realmCount;
     if (realmcount == 0)
     {
         LOG_ERROR("   >> no realms found. this server will not be online anywhere!");

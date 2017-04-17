@@ -261,7 +261,7 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     if (xp == 0.0f)
         return 0;
 
-    xp *= sWorld.getFloatRate(RATE_XP);
+    xp *= sWorld.settings.getFloatRate(RATE_XP);
 
     // elite boss multiplier
     if (victimI)

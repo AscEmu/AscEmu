@@ -151,7 +151,7 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
     if (!*text)
         return 0;
 
-    if (session->GetPermissionCount() == 0 && sWorld.serverSettings.requireGmForCommands)
+    if (session->GetPermissionCount() == 0 && sWorld.settings.serverSettings.requireGmForCommands)
         return 0;
 
     if (text[0] != '!' && text[0] != '.') // let's not confuse users

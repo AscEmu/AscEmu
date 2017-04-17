@@ -360,7 +360,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
                     {
                         continue;
                     }
-                    amt = float2int32(amt * sWorld.getFloatRate(RATE_QUESTREPUTATION));
+                    amt = float2int32(amt * sWorld.settings.getFloatRate(RATE_QUESTREPUTATION));
                     plr->ModStanding(fact, amt);
                 }
             }
@@ -461,7 +461,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             {
                 // Money reward
                 // Check they don't have more than the max gold
-                if (sWorld.goldSettings.isCapEnabled && (plr->GetGold() + qst->reward_money) <= sWorld.goldSettings.limitAmount)
+                if (sWorld.settings.goldSettings.isCapEnabled && (plr->GetGold() + qst->reward_money) <= sWorld.settings.goldSettings.limitAmount)
                 {
                     plr->ModGold(qst->reward_money);
                 }

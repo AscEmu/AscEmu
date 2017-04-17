@@ -438,7 +438,7 @@ void WorldSession::FullLogin(Player* plr)
     float VY;
     float VZ;
 
-    if (HasGMPermissions() && plr->m_FirstLogin && sWorld.gmSettings.isStartOnGmIslandEnabled)
+    if (HasGMPermissions() && plr->m_FirstLogin && sWorld.settings.gmSettings.isStartOnGmIslandEnabled)
     {
         VMapId = 1;
         VO = 0;
@@ -568,12 +568,12 @@ void WorldSession::FullLogin(Player* plr)
 
     sWorld.incrementPlayerCount(plr->GetTeam());
 
-    if (plr->m_FirstLogin && !sWorld.optionalSettings.skipCinematics)
+    if (plr->m_FirstLogin && !sWorld.settings.optionalSettings.skipCinematics)
     {
         uint32 introid = plr->info->introid;
         OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &introid);
 
-        if (sWorld.optionalSettings.loadAdditionalFunScripts)
+        if (sWorld.settings.optionalSettings.loadAdditionalFunScripts)
         {
             const int classtext[] = { 0, 5, 6, 8, 9, 11, 0, 4, 3, 7, 0, 10 };
             sWorld.SendLocalizedWorldText(true, "{65}", classtext[(uint32)plr->getClass()], plr->GetName(), (plr->IsTeamHorde() ? "{63}" : "{64}"));
@@ -625,7 +625,7 @@ void WorldSession::FullLogin(Player* plr)
         _player->BroadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
                                   MSG_COLOR_SEXGREEN, sWorld.GetSessionCount(), MSG_COLOR_SEXBLUE, sWorld.PeakSessionCount, MSG_COLOR_SEXBLUE, sWorld.mAcceptedConnections);
 
-        _player->BroadcastMessage("Server Uptime: |r%s", sWorld.GetUptimeString().c_str());
+        _player->BroadcastMessage("Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
     }
 
     SendMOTD();

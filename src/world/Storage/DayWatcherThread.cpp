@@ -102,7 +102,7 @@ void DayWatcherThread::update_settings()
 
 void DayWatcherThread::load_settings()
 {
-    std::string arena_timeout = sWorld.periodSettings.arenaUpdate;
+    std::string arena_timeout = sWorld.settings.periodSettings.arenaUpdate;
     arena_period = get_timeout_from_string(arena_timeout.c_str(), WEEKLY);
 
     QueryResult* result = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_arena_update_time\'");
@@ -117,7 +117,7 @@ void DayWatcherThread::load_settings()
         last_arena_time = 0;
     }
 
-    std::string daily_timeout = sWorld.periodSettings.dailyUpdate;
+    std::string daily_timeout = sWorld.settings.periodSettings.dailyUpdate;
     daily_period = get_timeout_from_string(daily_timeout.c_str(), DAILY);
 
     QueryResult* result2 = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_daily_update_time\'");
@@ -288,16 +288,16 @@ void DayWatcherThread::update_arena()
                     if (team->m_type == ARENA_TEAM_TYPE_2V2)
                     {
                         Y *= 0.76;
-                        Y *= sWorld.getFloatRate(RATE_ARENAPOINTMULTIPLIER2X);
+                        Y *= sWorld.settings.getFloatRate(RATE_ARENAPOINTMULTIPLIER2X);
                     }
                     else if (team->m_type == ARENA_TEAM_TYPE_3V3)
                     {
                         Y *= 0.88;
-                        Y *= sWorld.getFloatRate(RATE_ARENAPOINTMULTIPLIER3X);
+                        Y *= sWorld.settings.getFloatRate(RATE_ARENAPOINTMULTIPLIER3X);
                     }
                     else
                     {
-                        Y *= sWorld.getFloatRate(RATE_ARENAPOINTMULTIPLIER5X);
+                        Y *= sWorld.settings.getFloatRate(RATE_ARENAPOINTMULTIPLIER5X);
                     }
 
                     if (Y > 1.0)

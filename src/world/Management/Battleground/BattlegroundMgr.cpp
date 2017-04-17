@@ -851,7 +851,7 @@ void CBattlegroundManager::EventQueueUpdate(bool forceStart)
                 {
                     teamids[1] = GetArenaGroupQInfo(group2, i, &avgRating[1]);
                     uint32 delta = abs((int32)avgRating[0] - (int32)avgRating[1]);
-                    if (teamids[0] != teamids[1] && delta <= sWorld.rateSettings.arenaQueueDiff)
+                    if (teamids[0] != teamids[1] && delta <= sWorld.settings.rateSettings.arenaQueueDiff)
                     {
                         possibleGroups.push_back(group2->GetID());
                     }
@@ -973,23 +973,23 @@ uint32 CBattlegroundManager::GetMinimumPlayers(uint32 dbcIndex)
     switch (dbcIndex)
     {
         case BATTLEGROUND_ALTERAC_VALLEY:
-            return sWorld.bgSettings.minPlayerCountAlteracValley;
+            return sWorld.settings.bgSettings.minPlayerCountAlteracValley;
         case BATTLEGROUND_WARSONG_GULCH:
-            return sWorld.bgSettings.minPlayerCountWarsongGulch;
+            return sWorld.settings.bgSettings.minPlayerCountWarsongGulch;
         case BATTLEGROUND_ARATHI_BASIN:
-            return sWorld.bgSettings.minPlayerCountArathiBasin;
+            return sWorld.settings.bgSettings.minPlayerCountArathiBasin;
         case BATTLEGROUND_EYE_OF_THE_STORM:
-            return sWorld.bgSettings.minPlayerCountEyeOfTheStorm;
+            return sWorld.settings.bgSettings.minPlayerCountEyeOfTheStorm;
         case BATTLEGROUND_ARENA_2V2:
-            return sWorld.arenaSettings.minPlayerCount2V2;
+            return sWorld.settings.arenaSettings.minPlayerCount2V2;
         case BATTLEGROUND_ARENA_3V3:
-            return sWorld.arenaSettings.minPlayerCount3V3;
+            return sWorld.settings.arenaSettings.minPlayerCount3V3;
         case BATTLEGROUND_ARENA_5V5:
-            return sWorld.arenaSettings.minPlayerCount5V5;
+            return sWorld.settings.arenaSettings.minPlayerCount5V5;
         case BATTLEGROUND_STRAND_OF_THE_ANCIENT:
-            return sWorld.bgSettings.minPlayerCountStrandOfTheAncients;
+            return sWorld.settings.bgSettings.minPlayerCountStrandOfTheAncients;
         case BATTLEGROUND_ISLE_OF_CONQUEST:
-            return sWorld.bgSettings.minPlayerCountIsleOfConquest;
+            return sWorld.settings.bgSettings.minPlayerCountIsleOfConquest;
         default:
             return 1;
     }
@@ -1001,23 +1001,23 @@ uint32 CBattlegroundManager::GetMaximumPlayers(uint32 dbcIndex)
     switch (dbcIndex)
     {
         case BATTLEGROUND_ALTERAC_VALLEY:
-            return sWorld.bgSettings.maxPlayerCountAlteracValley;
+            return sWorld.settings.bgSettings.maxPlayerCountAlteracValley;
         case BATTLEGROUND_WARSONG_GULCH:
-            return sWorld.bgSettings.maxPlayerCountWarsongGulch;
+            return sWorld.settings.bgSettings.maxPlayerCountWarsongGulch;
         case BATTLEGROUND_ARATHI_BASIN:
-            return sWorld.bgSettings.maxPlayerCountArathiBasin;
+            return sWorld.settings.bgSettings.maxPlayerCountArathiBasin;
         case BATTLEGROUND_EYE_OF_THE_STORM:
-            return sWorld.bgSettings.maxPlayerCountEyeOfTheStorm;
+            return sWorld.settings.bgSettings.maxPlayerCountEyeOfTheStorm;
         case BATTLEGROUND_ARENA_2V2:
-            return sWorld.arenaSettings.maxPlayerCount2V2;
+            return sWorld.settings.arenaSettings.maxPlayerCount2V2;
         case BATTLEGROUND_ARENA_3V3:
-            return sWorld.arenaSettings.maxPlayerCount3V3;
+            return sWorld.settings.arenaSettings.maxPlayerCount3V3;
         case BATTLEGROUND_ARENA_5V5:
-            return sWorld.arenaSettings.maxPlayerCount5V5;
+            return sWorld.settings.arenaSettings.maxPlayerCount5V5;
         case BATTLEGROUND_STRAND_OF_THE_ANCIENT:
-            return sWorld.bgSettings.maxPlayerCountStrandOfTheAncients;
+            return sWorld.settings.bgSettings.maxPlayerCountStrandOfTheAncients;
         case BATTLEGROUND_ISLE_OF_CONQUEST:
-            return sWorld.bgSettings.maxPlayerCountIsleOfConquest;
+            return sWorld.settings.bgSettings.maxPlayerCountIsleOfConquest;
         default:
             return 1;
     }

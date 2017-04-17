@@ -1040,7 +1040,7 @@ bool ChatHandler::HandleRangeCheckCommand(const char* args, WorldSession* m_sess
 
 bool ChatHandler::HandleCollisionTestIndoor(const char* args, WorldSession* m_session)
 {
-    if (sWorld.terrainCollisionSettings.isCollisionEnabled)
+    if (sWorld.settings.terrainCollisionSettings.isCollisionEnabled)
     {
         Player* plr = m_session->GetPlayer();
         const LocationVector & loc = plr->GetPosition();
@@ -1057,7 +1057,7 @@ bool ChatHandler::HandleCollisionTestIndoor(const char* args, WorldSession* m_se
 
 bool ChatHandler::HandleCollisionTestLOS(const char* args, WorldSession* m_session)
 {
-    if (sWorld.terrainCollisionSettings.isCollisionEnabled)
+    if (sWorld.settings.terrainCollisionSettings.isCollisionEnabled)
     {
         Object* pObj = NULL;
         Creature* pCreature = GetSelectedCreature(m_session, false);
@@ -1091,7 +1091,7 @@ bool ChatHandler::HandleCollisionTestLOS(const char* args, WorldSession* m_sessi
 
 bool ChatHandler::HandleCollisionGetHeight(const char* args, WorldSession* m_session)
 {
-    if (sWorld.terrainCollisionSettings.isCollisionEnabled)
+    if (sWorld.settings.terrainCollisionSettings.isCollisionEnabled)
     {
         Player* plr = m_session->GetPlayer();
         float radius = 5.0f;

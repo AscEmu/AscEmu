@@ -278,7 +278,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
     {
         if (money)
         {
-            if (sWorld.goldSettings.isCapEnabled && (GetPlayer()->GetGold() + money) > sWorld.goldSettings.limitAmount)
+            if (sWorld.settings.goldSettings.isCapEnabled && (GetPlayer()->GetGold() + money) > sWorld.settings.goldSettings.limitAmount)
             {
                 GetPlayer()->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             }
@@ -322,7 +322,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
 
             for (std::vector<Player*>::iterator itr2 = targets.begin(); itr2 != targets.end(); ++itr2)
             {
-                if (sWorld.goldSettings.isCapEnabled && ((*itr2)->GetGold() + share) > sWorld.goldSettings.limitAmount)
+                if (sWorld.settings.goldSettings.isCapEnabled && ((*itr2)->GetGold() + share) > sWorld.settings.goldSettings.limitAmount)
                 {
                     (*itr2)->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
                 }

@@ -259,7 +259,7 @@ void MapMgr::PushObject(Object* obj)
     }
 
     // Build in-range data
-    uint8 cellNumber = sWorld.serverSettings.mapCellNumber;
+    uint8 cellNumber = sWorld.settings.serverSettings.mapCellNumber;
 
     uint32 endX = (x <= _sizeX) ? x + cellNumber : (_sizeX - cellNumber);
     uint32 endY = (y <= _sizeY) ? y + cellNumber : (_sizeY - cellNumber);
@@ -499,7 +499,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
     obj->RemoveSelfFromInrangeSets();
     obj->ClearInRangeSet();             // Clear object's in-range set
 
-    uint8 cellNumber = sWorld.serverSettings.mapCellNumber;
+    uint8 cellNumber = sWorld.settings.serverSettings.mapCellNumber;
 
     // If it's a player - update his nearby cells
     if (!_shutdown && obj->IsPlayer())
@@ -622,7 +622,7 @@ void MapMgr::ChangeObjectLocation(Object* obj)
 
     ARCEMU_ASSERT(objCell != nullptr);
 
-    uint8 cellNumber = sWorld.serverSettings.mapCellNumber;
+    uint8 cellNumber = sWorld.settings.serverSettings.mapCellNumber;
 
     // If object moved cell
     if (objCell != pOldCell)
@@ -1099,7 +1099,7 @@ uint32 MapMgr::GetMapId()
 
 bool MapMgr::_CellActive(uint32 x, uint32 y)
 {
-    uint8 cellNumber = sWorld.serverSettings.mapCellNumber;
+    uint8 cellNumber = sWorld.settings.serverSettings.mapCellNumber;
 
     uint32 endX = ((x + cellNumber) <= _sizeX) ? x + cellNumber : (_sizeX - cellNumber);
     uint32 endY = ((y + cellNumber) <= _sizeY) ? y + cellNumber : (_sizeY - cellNumber);
@@ -1149,7 +1149,7 @@ bool MapMgr::IsCombatInProgress()
 
 void MapMgr::ChangeFarsightLocation(Player* plr, DynamicObject* farsight)
 {
-    uint8 cellNumber = sWorld.serverSettings.mapCellNumber;
+    uint8 cellNumber = sWorld.settings.serverSettings.mapCellNumber;
 
     if (farsight == 0)
     {
@@ -1911,7 +1911,7 @@ void MapMgr::RemoveCombatInProgress(uint64 guid)
 
 void MapMgr::AddForcedCell(MapCell* c)
 {
-    uint8 cellNumber = sWorld.serverSettings.mapCellNumber;
+    uint8 cellNumber = sWorld.settings.serverSettings.mapCellNumber;
 
     m_forcedcells.insert(c);
     UpdateCellActivity(c->GetPositionX(), c->GetPositionY(), cellNumber);
@@ -1919,7 +1919,7 @@ void MapMgr::AddForcedCell(MapCell* c)
 
 void MapMgr::RemoveForcedCell(MapCell* c)
 {
-    uint8 cellNumber = sWorld.serverSettings.mapCellNumber;
+    uint8 cellNumber = sWorld.settings.serverSettings.mapCellNumber;
 
     m_forcedcells.erase(c);
     UpdateCellActivity(c->GetPositionX(), c->GetPositionY(), cellNumber);
@@ -1927,7 +1927,7 @@ void MapMgr::RemoveForcedCell(MapCell* c)
 
 float MapMgr::GetFirstZWithCPZ(float x, float y, float z)
 {
-    if (!sWorld.terrainCollisionSettings.isCollisionEnabled)
+    if (!sWorld.settings.terrainCollisionSettings.isCollisionEnabled)
         return NO_WMO_HEIGHT;
 
     float posZ = NO_WMO_HEIGHT;

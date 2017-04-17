@@ -522,7 +522,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
         }
         if (IsInrange(srcx, srcy, srcz, (*itr), r))
         {
-            if (sWorld.terrainCollisionSettings.isCollisionEnabled)
+            if (sWorld.settings.terrainCollisionSettings.isCollisionEnabled)
             {
                 VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
                 bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ());
@@ -588,7 +588,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
 
         if (IsInrange(srcx, srcy, srcz, (*itr), r))
         {
-            if (sWorld.terrainCollisionSettings.isCollisionEnabled)
+            if (sWorld.settings.terrainCollisionSettings.isCollisionEnabled)
             {
                 VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
                 bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ());
@@ -3218,8 +3218,8 @@ void Spell::DetermineSkillUp()
         else //brown
             chance = 100.0f;
     }
-    if (Rand(chance * sWorld.getFloatRate(RATE_SKILLCHANCE)))
-        p_caster->_AdvanceSkillLine(skill_line_ability->skilline, float2int32(1.0f * sWorld.getFloatRate(RATE_SKILLRATE)));
+    if (Rand(chance * sWorld.settings.getFloatRate(RATE_SKILLCHANCE)))
+        p_caster->_AdvanceSkillLine(skill_line_ability->skilline, float2int32(1.0f * sWorld.settings.getFloatRate(RATE_SKILLRATE)));
 }
 
 bool Spell::IsAspect()
@@ -3360,7 +3360,7 @@ uint8 Spell::CanCast(bool tolerate)
         /**
          *	Indoor/Outdoor check
          */
-        if (sWorld.terrainCollisionSettings.isCollisionEnabled)
+        if (sWorld.settings.terrainCollisionSettings.isCollisionEnabled)
         {
             if (GetSpellInfo()->MechanicsType == MECHANIC_MOUNTED)
             {
@@ -4049,7 +4049,7 @@ uint8 Spell::CanCast(bool tolerate)
                         return SPELL_FAILED_NO_AMMO;
                 }
 
-                if (sWorld.terrainCollisionSettings.isCollisionEnabled)
+                if (sWorld.settings.terrainCollisionSettings.isCollisionEnabled)
                 {
                     if (p_caster->GetMapId() == target->GetMapId() && !p_caster->GetMapMgr()->isInLineOfSight(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ() + 2, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ() + 2))
                         return SPELL_FAILED_LINE_OF_SIGHT;
@@ -5492,9 +5492,9 @@ void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multipli
     if (multiplicator == 0)
         multiplicator = 1;
 
-    if (Rand((chance * sWorld.getFloatRate(RATE_SKILLCHANCE)) * multiplicator))
+    if (Rand((chance * sWorld.settings.getFloatRate(RATE_SKILLCHANCE)) * multiplicator))
     {
-        p_caster->_AdvanceSkillLine(skillid, float2int32(1.0f * sWorld.getFloatRate(RATE_SKILLRATE)));
+        p_caster->_AdvanceSkillLine(skillid, float2int32(1.0f * sWorld.settings.getFloatRate(RATE_SKILLRATE)));
 
         uint32 value = p_caster->_GetSkillLineCurrent(skillid, true);
         uint32 spellid = 0;
@@ -5616,8 +5616,8 @@ void Spell::DetermineSkillUp(uint32 skillid)
         else //brown
             chance = 100.0f;
     }
-    if (Rand(chance * sWorld.getFloatRate(RATE_SKILLCHANCE)))
-        p_caster->_AdvanceSkillLine(skillid, float2int32(1.0f * sWorld.getFloatRate(RATE_SKILLRATE)));
+    if (Rand(chance * sWorld.settings.getFloatRate(RATE_SKILLCHANCE)))
+        p_caster->_AdvanceSkillLine(skillid, float2int32(1.0f * sWorld.settings.getFloatRate(RATE_SKILLRATE)));
 }
 
 void Spell::SafeAddTarget(TargetsList* tgt, uint64 guid)

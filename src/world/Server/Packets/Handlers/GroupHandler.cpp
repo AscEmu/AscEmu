@@ -80,7 +80,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (player->GetTeam() != _player->GetTeam() && _player->GetSession()->GetPermissionCount() == 0 && !sWorld.interfactionSettings.isInterfactionGroupEnabled)
+    if (player->GetTeam() != _player->GetTeam() && _player->GetSession()->GetPermissionCount() == 0 && !sWorld.settings.interfactionSettings.isInterfactionGroupEnabled)
     {
         SendPartyCommandResult(_player, 0, membername, ERR_PARTY_WRONG_FACTION);
         return;
