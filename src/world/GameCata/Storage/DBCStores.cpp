@@ -11,6 +11,14 @@ This file is released under the MIT license. See README-MIT for more information
 #if VERSION_STRING == Cata
 typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*> WMOAreaInfoByTripple;
 
+struct NameGenData
+{
+    std::string name;
+    uint32 type;
+};
+
+std::vector<NameGenData> _namegenData[3];
+
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementEntry> sAchievementStore(DBC::Structures::achievement_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementCriteriaEntry> sAchievementCriteriaStore(DBC::Structures::achievement_criteria_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaGroupEntry> sAreaGroupStore(DBC::Structures::area_group_format);
@@ -83,6 +91,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRangeEntry> sSpellRangeStore(D
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRuneCostEntry> sSpellRuneCostStore(DBC::Structures::spell_rune_cost_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentEntry> sTalentStore(DBC::Structures::talent_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentTabEntry> sTalentTabStore(DBC::Structures::talent_tab_format);
+static uint32 InspectTalentTabPages[12][3];
 SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentTreePrimarySpells> sTalentTreePrimarySpellsStore(DBC::Structures::talent_tree_primary_spells_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::WorldMapOverlayEntry> sWorldMapOverlayStore(DBC::Structures::world_map_overlay_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore(DBC::Structures::gt_barber_shop_cost_format);
@@ -133,6 +142,79 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellStore, dbc_path, "Spell.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentStore, dbc_path, "Talent.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentTabStore, dbc_path, "TalentTab.dbc");
+    {
+        std::map< uint32, uint32 > InspectTalentTabPos;
+        std::map< uint32, uint32 > InspectTalentTabSize;
+        std::map< uint32, uint32 > InspectTalentTabBit;
+
+        uint32 talent_max_rank;
+        uint32 talent_pos;
+        uint32 talent_class;
+
+        for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)
+        {
+            auto talent_info = sTalentStore.LookupEntry(i);
+            if (talent_info == nullptr)
+                continue;
+
+            // Don't add invalid talents or Hunter Pet talents (trees 409, 410 and 411) to the inspect table
+            if (talent_info->TalentTree == 409 || talent_info->TalentTree == 410 || talent_info->TalentTree == 411)
+                continue;
+
+            auto talent_tab = sTalentTabStore.LookupEntry(talent_info->TalentTree);
+            if (talent_tab == nullptr)
+                continue;
+
+            talent_max_rank = 0;
+            for (uint32 j = 5; j > 0; --j)
+            {
+                if (talent_info->RankID[j - 1])
+                {
+                    talent_max_rank = j;
+                    break;
+                }
+            }
+
+            InspectTalentTabBit[(talent_info->Row << 24) + (talent_info->Col << 16) + talent_info->TalentID] = talent_max_rank;
+            InspectTalentTabSize[talent_info->TalentTree] += talent_max_rank;
+        }
+
+        for (uint32 i = 0; i < sTalentTabStore.GetNumRows(); ++i)
+        {
+            auto talent_tab = sTalentTabStore.LookupEntry(i);
+            if (talent_tab == nullptr)
+                continue;
+
+            if (talent_tab->ClassMask == 0)
+                continue;
+
+            talent_pos = 0;
+
+            for (talent_class = 0; talent_class < 12; ++talent_class)
+            {
+                if (talent_tab->ClassMask & (1 << talent_class))
+                    break;
+            }
+
+            if (talent_class > 0 && talent_class < 12)
+                InspectTalentTabPages[talent_class][talent_tab->TabPage] = talent_tab->TalentTabID;
+
+            for (std::map<uint32, uint32>::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
+            {
+                uint32 talent_id = itr->first & 0xFFFF;
+                auto talent_info = sTalentStore.LookupEntry(talent_id);
+                if (talent_info == nullptr)
+                    continue;
+
+                if (talent_info->TalentTree != talent_tab->TalentTabID)
+                    continue;
+
+                InspectTalentTabPos[talent_id] = talent_pos;
+                talent_pos += itr->second;
+            }
+        }
+    }
+
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentTreePrimarySpellsStore, dbc_path, "TalentTreePrimarySpells.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellCastTimesStore, dbc_path, "SpellCastTimes.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSpellDifficultyStore, dbc_path, "SpellDifficulty.dbc");
@@ -278,6 +360,21 @@ DBC::Structures::SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, Spe
         return nullptr;
 
     return itr->second.effects[effect];
+}
+
+
+std::string generateName(uint32 type)
+{
+    if (_namegenData[type].size() == 0)
+        return "ERR";
+
+    uint32 ent = RandomUInt((uint32)_namegenData[type].size() - 1);
+    return _namegenData[type].at(ent).name;
+}
+
+uint32 const* getTalentTabPages(uint8 playerClass)
+{
+    return InspectTalentTabPages[playerClass];
 }
 
 #endif

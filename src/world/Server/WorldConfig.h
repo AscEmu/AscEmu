@@ -398,6 +398,8 @@ class SERVER_DECL WorldConfig
             int msgColor;
         } color;
 
+        std::string getColorStringForNumber(int color);
+
         // optional.conf - Game Master Configuration
         struct GameMasterSettings
         {

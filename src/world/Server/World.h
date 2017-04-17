@@ -426,13 +426,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         
         void ShutdownClasses();
         void DeleteObject(Object* obj);
-        
-
-        std::string ann_namecolor;
-        std::string ann_gmtagcolor;
-        std::string ann_tagcolor;
-        std::string ann_msgcolor;
-        void AnnounceColorChooser(int tagcolor, int gmtagcolor, int namecolor, int msgcolor);
 
         void CharacterEnumProc(QueryResultVector & results, uint32 AccountId);
         void LoadAccountDataProc(QueryResultVector & results, uint32 AccountId);

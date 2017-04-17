@@ -642,3 +642,32 @@ uint32_t WorldConfig::getIntRate(uint32_t index) { return mIntRates[index]; }
 
 std::string WorldConfig::getGmClientChannelName() { return gmClient.gmClientChannelName; }
 
+std::string WorldConfig::getColorStringForNumber(int color)
+{
+    switch (color)
+    {
+        case 1:
+            return "|cffff6060"; //lightred
+        case 2:
+            return "|cff00ccff"; //lightblue
+        case 3:
+            return "|cff0000ff"; //blue
+        case 4:
+            return "|cff00ff00"; //green
+        case 5:
+            return "|cffff0000"; //red
+        case 6:
+            return "|cffffcc00"; //gold
+        case 7:
+            return "|cff888888"; //grey
+        case 8:
+            return "|cffffffff"; //white
+        case 9:
+            return "|cffff00ff"; //magenta
+        case 10:
+            return "|cffffff00"; //yellow
+        default:
+            return "|cffffffff"; //white
+    }
+}
+
