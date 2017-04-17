@@ -293,7 +293,7 @@ bool HandleMOTDCommand(BaseConsole* pConsole, int argc, const char* argv[])
 {
     if (argc < 2)
     {
-        pConsole->Write("The current message of the day is: '%s'.\r\n", sWorld.getMessageOfTheDay());
+        pConsole->Write("The current message of the day is: '%s'.\r\n", sWorld.getMessageOfTheDay().c_str());
     }
     else
     {
@@ -303,7 +303,7 @@ bool HandleMOTDCommand(BaseConsole* pConsole, int argc, const char* argv[])
         snprintf(set_motd, 1024, "%s", outstr.c_str());
 
         sWorld.setMessageOfTheDay(set_motd);
-        pConsole->Write("The message of the day has been set to: '%s'.\r\n", sWorld.getMessageOfTheDay());
+        pConsole->Write("The message of the day has been set to: '%s'.\r\n", sWorld.getMessageOfTheDay().c_str());
     }
     return true;
 }
