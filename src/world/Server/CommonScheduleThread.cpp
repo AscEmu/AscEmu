@@ -50,13 +50,13 @@ bool CommonScheduleThread::run()
     LogNotice("CommonScheduleThread : Started.");
     m_busy = false;
 
-    if (sWorld.settings.broadcastSettings.isSystemEnabled && sWorld.settings.broadcastSettings.orderMode == 1)
+    if (sWorld.settings.broadcast.isSystemEnabled && sWorld.settings.broadcast.orderMode == 1)
         itOrderMSGEntry = objmgr.GetBCTotalItemBegin();
 
     if (objmgr.IsBCEntryStorageEmpty())
-        sWorld.settings.broadcastSettings.isSystemEnabled = 0;
+        sWorld.settings.broadcast.isSystemEnabled = 0;
 
-    BCTimerCount = getMSTime() + ((uint32)sWorld.settings.broadcastSettings.interval * 1000);
+    BCTimerCount = getMSTime() + ((uint32)sWorld.settings.broadcast.interval * 1000);
 
     while (GetThreadState() != THREADSTATE_TERMINATE)
     {
@@ -78,10 +78,10 @@ bool CommonScheduleThread::run()
 
 void CommonScheduleThread::BroadCastExec()
 {
-    if (!sWorld.settings.broadcastSettings.isSystemEnabled)
+    if (!sWorld.settings.broadcast.isSystemEnabled)
         return;
 
-    if ((uint32)sWorld.settings.broadcastSettings.interval > THREAD_LOOP_INTERVAL)
+    if ((uint32)sWorld.settings.broadcast.interval > THREAD_LOOP_INTERVAL)
     {
         if (getMSTime() <= BCTimerCount)
         {
@@ -89,11 +89,11 @@ void CommonScheduleThread::BroadCastExec()
         }
         else
         {
-            BCTimerCount = getMSTime() + ((uint32)sWorld.settings.broadcastSettings.interval * 1000);
+            BCTimerCount = getMSTime() + ((uint32)sWorld.settings.broadcast.interval * 1000);
         }
     }
 
-    switch (sWorld.settings.broadcastSettings.orderMode)
+    switch (sWorld.settings.broadcast.orderMode)
     {
     case 0:
         {
@@ -101,7 +101,7 @@ void CommonScheduleThread::BroadCastExec()
 
             if (entry < 0)
             {
-                sWorld.settings.broadcastSettings.isSystemEnabled = false;
+                sWorld.settings.broadcast.isSystemEnabled = false;
                 LogNotice("BCSystem : table worldbroadcast loads failed,so BCSystem disabled already.");
                 return;
             }

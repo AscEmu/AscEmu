@@ -254,22 +254,22 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
     private:
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Player statistic
+    // WorldConfig
     public:
 
         WorldConfig settings;
 
         void loadWorldConfigValues(bool reload = false) { settings.loadWorldConfigValues(reload); }
 
-        std::string World::getGmClientChannelName() { return settings.getGmClientChannelName(); }
+        std::string getGmClientChannelName() { return settings.getGmClientChannelName(); }
 
-        void World::setMessageOfTheDay(std::string motd) { settings.setMessageOfTheDay(motd); }
-        std::string World::getMessageOfTheDay() { return settings.getMessageOfTheDay(); }
+        void setMessageOfTheDay(std::string motd) { settings.setMessageOfTheDay(motd); }
+        std::string getMessageOfTheDay() { return settings.getMessageOfTheDay(); }
 
-        void World::setFloatRate(uint32_t index, float value) { settings.setFloatRate((WorldConfigRates)index, value); }
-        float World::getFloatRate(uint32_t index) { return settings.getFloatRate((WorldConfigRates)index); }
-        void World::setIntRate(uint32_t index, uint32_t value) { settings.setIntRate((WorldConfigIntRates)index, value); }
-        uint32_t World::getIntRate(uint32_t index) { return settings.getIntRate((WorldConfigIntRates)index); }
+        void setFloatRate(uint32_t index, float value) { settings.setFloatRate((WorldConfigRates)index, value); }
+        float getFloatRate(uint32_t index) { return settings.getFloatRate((WorldConfigRates)index); }
+        void setIntRate(uint32_t index, uint32_t value) { settings.setIntRate((WorldConfigIntRates)index, value); }
+        uint32_t getIntRate(uint32_t index) { return settings.getIntRate((WorldConfigIntRates)index); }
 
         uint32_t World::getRealmType() { return settings.getRealmType(); }
 

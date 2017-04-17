@@ -396,7 +396,7 @@ void WorldSession::LogoutPlayer(bool Save)
         // Update any dirty account_data fields.
         bool dirty = false;
 
-        if (sWorld.settings.serverSettings.useAccountData)
+        if (sWorld.settings.server.useAccountData)
         {
             std::stringstream ss;
             ss << "UPDATE account_data SET ";

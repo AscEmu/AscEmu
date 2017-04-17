@@ -92,7 +92,7 @@ class WorldConfig
             int port;
             //\todo add it to config or remove it from core
             int connections;        // not in configs
-        } worldDbSettings;
+        } worldDb;
 
         struct CharacterDatabaseSettings
         {
@@ -103,14 +103,14 @@ class WorldConfig
             int port;
             //\todo add it to config or remove it from core
             int connections;        // not in configs
-        } charDbSettings;
+        } charDb;
 
         // world.conf - Listen Config
         struct ListenSettings
         {
             std::string listenHost;
             int listenPort;
-        } listenSettings;
+        } listen;
 
         // world.conf - Log Level Setup
         struct LogLevelSettings
@@ -119,7 +119,7 @@ class WorldConfig
             int debugFlags;
             bool logWorldPacket;
             bool disableCrashdump;
-        } logLevelSettings;
+        } logLevel;
 
         // world.conf - Server Settings
         struct ServerSettings
@@ -150,7 +150,7 @@ class WorldConfig
             bool skipAttunementForGm;           //not in config file!
             uint32 clientCacheVersion;          //not in config file!
             std::string banTable;               //not in config file!
-        } serverSettings;
+        } server;
 
         // world.conf - Announce Configuration
         struct AnnounceSettings
@@ -160,19 +160,19 @@ class WorldConfig
             bool showNameInAnnounce;
             bool showNameInWAnnounce;
             bool showAnnounceInConsoleOutput;
-        } announceSettings;
+        } announce;
 
         // world.conf - Power regeneration multiplier setup
         struct RateSettings
         {
             uint32 arenaQueueDiff;
-        } rateSettings;
+        } rate;
 
         // world.conf - GM Client Channel
         struct GMClientSettings
         {
             std::string gmClientChannelName;
-        } gmClientSettings;
+        } gmClient;
 
         // world.conf - Terrain & Collision Settings
         struct TerrainCollisionSettings
@@ -183,7 +183,7 @@ class WorldConfig
             bool unloadMapFiles;
             bool isCollisionEnabled;
             bool isPathfindingEnabled;
-        } terrainCollisionSettings;
+        } terrainCollision;
 
         // world.conf - Log Settings
         struct LogSettings
@@ -193,7 +193,7 @@ class WorldConfig
             //\todo remove it from core or add it to config
             bool logPlayers;       // not in config
             bool addTimeStampToFileName;
-        } logSettings;
+        } log;
 
         // world.conf - Mail System Setup
         struct MailSettings
@@ -206,7 +206,7 @@ class WorldConfig
             bool isMessageExpiryDisabled;
             bool isInterfactionMailEnabled;
             bool isInterfactionMailForGmEnabled;
-        } mailSettings;
+        } mail;
 
         // world.conf - Startup Options
         struct StartupSettings
@@ -217,7 +217,7 @@ class WorldConfig
             bool enableMultithreadedLoading;
             bool enableSpellIdDump;
             std::string additionalTableLoads;
-        } startupSettings;
+        } startup;
 
         // world.conf - Flood Protection Setup
         struct FloodProtectionSettings
@@ -225,14 +225,14 @@ class WorldConfig
             uint32 linesBeforeProtection;
             uint32 secondsBeforeProtectionReset;
             bool enableSendFloodProtectionMessage;
-        } floodProtectionSettings;
+        } floodProtection;
 
         // world.conf - LogonServer Setup
         struct LogonServerSettings          // in realms.conf we have the same section...
         {
             bool disablePings;
             std::string remotePassword;
-        } logonServerSettings;
+        } logonServer;
 
         // world.conf - AntiHack Setup
         struct AntiHackSettings
@@ -243,7 +243,7 @@ class WorldConfig
             bool isFlyHackCkeckEnabled;
             uint32 flyHackThreshold;
             bool isAntiHackCheckDisabledForGm;
-        } antiHackSettings;
+        } antiHack;
 
         // world.conf - Period Setup
         struct PeriodSettings
@@ -252,14 +252,14 @@ class WorldConfig
             std::string honorUpdate;        // not used by core
             std::string arenaUpdate;
             std::string dailyUpdate;
-        } periodSettings;
+        } period;
 
         // world.conf - Channels Setup
         struct ChannelSettings
         {
             std::string bannedChannels;
             std::string minimumTalkLevel;
-        } channelSettings;
+        } channel;
 
         // world.conf - Remote Console Setup
         struct RemoteConsoleSettings
@@ -267,7 +267,7 @@ class WorldConfig
             bool isEnabled;
             std::string host;
             int port;
-        } remoteConsoleSettings;
+        } remoteConsole;
 
         // world.conf - Movement Setup
         struct MovementSettings
@@ -276,13 +276,13 @@ class WorldConfig
             uint32 compressRate;
             float compressThresholdPlayers;
             float compressThresholdCreatures;
-        } movementSettings;
+        } movement;
 
         // world.conf - Localization Setup
         struct LocalizationSettings
         {
             std::string localizedBindings;
-        } localizationSettings;
+        } localization;
 
         // world.conf - Dungeon / Instance Setup
         struct InstanceSettings
@@ -291,7 +291,7 @@ class WorldConfig
             bool isRelativeExpirationEnabled;
             int relativeDailyHeroicInstanceResetHour;
             bool checkTriggerPrerequisitesOnEnter;
-        } instanceSettings;
+        } instance;
 
         // world.conf - BattleGround settings
         struct BattleGroundSettings
@@ -314,7 +314,7 @@ class WorldConfig
             uint32 honorableArenaWinRbg;
             uint32 honorByLosingRbg;
             uint32 honorByLosingArenaRbg;
-        } bgSettings;
+        } bg;
 
         // world.conf - Arena Settings
         struct ArenaSettings
@@ -327,7 +327,7 @@ class WorldConfig
             uint32 maxPlayerCount3V3;
             uint32 minPlayerCount5V5;
             uint32 maxPlayerCount5V5;
-        } arenaSettings;
+        } arena;
 
         // world.conf - Limits settings
         struct LimitSettings
@@ -341,7 +341,7 @@ class WorldConfig
             uint32 maxArenaPoints;
             bool disconnectPlayerForExceedingLimits;
             bool broadcastMessageToGmOnExceeding;
-        } limitSettings;
+        } limit;
 
         // world.conf - MISSING in CONFIG!
         struct WorldSocketSettings
@@ -349,7 +349,7 @@ class WorldConfig
             //\todo add it to config
             uint32 maxSocketSendBufSize;       // Section WorldSocket SendBuffSize
             uint32 maxSocketRecvBufSize;       // Section WorldSocket RecvBufSize
-        } worldSocketSettings;
+        } worldSocket;
 
         // optional.conf - Optional Settings
         struct OptionalSettings
@@ -371,7 +371,7 @@ class WorldConfig
             uint32 minDualSpecLevel;
             uint32 minTalentResetLevel;
             bool showAllVendorItems;
-        } optionalSettings;
+        } optional;
 
         // optional.conf - Inter-faction Options
         struct InterfactionSettings
@@ -383,7 +383,7 @@ class WorldConfig
             bool isInterfactionFriendsEnabled;
             bool isInterfactionMiscEnabled;
             bool isCrossoverCharsCreationEnabled;
-        } interfactionSettings;
+        } interfaction;
 
         // optional.conf - Color Configuration
         struct ColorSettings
@@ -392,7 +392,7 @@ class WorldConfig
             int tagGmColor;
             int nameColor;
             int msgColor;
-        } colorSettings;
+        } color;
 
         // optional.conf - Game Master Configuration
         struct GameMasterSettings
@@ -402,7 +402,7 @@ class WorldConfig
             bool listOnlyActiveGms;
             bool hidePermissions;
             bool worldAnnounceOnKickPlayer;
-        } gmSettings;
+        } gm;
 
         // optional.conf - Common Schedule Configuration
         struct BroadcastSettings
@@ -411,14 +411,14 @@ class WorldConfig
             int interval;
             int triggerPercentCap;
             int orderMode;
-        } broadcastSettings;
+        } broadcast;
 
         // optional.conf - Extra Class Configurations
         struct ExtraClassSettings
         {
             bool deathKnightPreReq;
             bool deathKnightLimit;
-        } extraClassSettings;
+        } extraClass;
 
         // optional.conf - Gold Settings Configuration
         struct GoldSettings
@@ -426,7 +426,7 @@ class WorldConfig
             bool isCapEnabled;
             uint32 limitAmount;
             uint32 startAmount;
-        } goldSettings;
+        } gold;
 
         // optional.conf - Corpse Decay Settings
         struct CorpseDecaySettings
@@ -436,7 +436,7 @@ class WorldConfig
             uint32 eliteTimeInSeconds;
             uint32 rareEliteTimeInSeconds;
             uint32 worldbossTimeInSeconds;
-        } corpseDecaySettings;
+        } corpseDecay;
 
         //\todo move to one config file (world.conf)
         // realms.conf - LogonServer Section
@@ -446,7 +446,7 @@ class WorldConfig
             int port;
             std::string name;
             int realmCount;
-        } logonServerSettings2;
+        } logonServer2;
 
         // realms.conf - Realm Section
         // handled in LogonCommHandler::LoadRealmConfiguration()

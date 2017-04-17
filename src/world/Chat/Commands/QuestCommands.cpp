@@ -461,7 +461,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             {
                 // Money reward
                 // Check they don't have more than the max gold
-                if (sWorld.settings.goldSettings.isCapEnabled && (plr->GetGold() + qst->reward_money) <= sWorld.settings.goldSettings.limitAmount)
+                if (sWorld.settings.gold.isCapEnabled && (plr->GetGold() + qst->reward_money) <= sWorld.settings.gold.limitAmount)
                 {
                     plr->ModGold(qst->reward_money);
                 }

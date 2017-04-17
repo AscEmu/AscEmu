@@ -6435,7 +6435,7 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
         if (caster != NULL)
             data << uint8(caster->getLevel());
         else
-            data << uint8(sWorld.settings.optionalSettings.playerLevelCap);
+            data << uint8(sWorld.settings.optional.playerLevelCap);
 
         data << uint8(m_auraStackCount[aur->m_visualSlot]);
 

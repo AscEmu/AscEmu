@@ -1749,7 +1749,7 @@ bool Object::IsWithinLOS(LocationVector location)
     LocationVector location2;
     location2 = GetPosition();
 
-    if (sWorld.settings.terrainCollisionSettings.isCollisionEnabled)
+    if (sWorld.settings.terrainCollision.isCollisionEnabled)
     {
         VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
         return mgr->isInLineOfSight(GetMapId(), location2.x, location2.y, location2.z + 2.0f, location.x, location.y, location.z + 2.0f);

@@ -37,8 +37,8 @@ uint64 voicechannelhigh = 0;
 
 void Channel::LoadConfSettings()
 {
-    std::string BannedChannels = sWorld.settings.channelSettings.bannedChannels;
-    std::string MinimumLevel = sWorld.settings.channelSettings.minimumTalkLevel;
+    std::string BannedChannels = sWorld.settings.channel.bannedChannels;
+    std::string MinimumLevel = sWorld.settings.channel.minimumTalkLevel;
     m_confSettingLock.Acquire();
     m_bannedChannels = Util::SplitStringBySeperator(BannedChannels, ";");
     m_minimumChannel = Util::SplitStringBySeperator(MinimumLevel, ";");

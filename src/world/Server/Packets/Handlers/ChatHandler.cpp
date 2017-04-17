@@ -198,18 +198,18 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
     }
 
     // Flood protection
-    if (lang != -1 && !GetPermissionCount() && sWorld.settings.floodProtectionSettings.linesBeforeProtection != 0)
+    if (lang != -1 && !GetPermissionCount() && sWorld.settings.floodProtection.linesBeforeProtection != 0)
     {
         /* flood detection, wheeee! */
         if (UNIXTIME >= floodTime)
         {
             floodLines = 0;
-            floodTime = UNIXTIME + sWorld.settings.floodProtectionSettings.secondsBeforeProtectionReset;
+            floodTime = UNIXTIME + sWorld.settings.floodProtection.secondsBeforeProtectionReset;
         }
 
-        if ((++floodLines) > sWorld.settings.floodProtectionSettings.linesBeforeProtection)
+        if ((++floodLines) > sWorld.settings.floodProtection.linesBeforeProtection)
         {
-            if (sWorld.settings.floodProtectionSettings.enableSendFloodProtectionMessage)
+            if (sWorld.settings.floodProtection.enableSendFloodProtectionMessage)
                 _player->BroadcastMessage("Your message has triggered serverside flood protection. You can speak again in %u seconds.", floodTime - UNIXTIME);
 
             return;
@@ -329,7 +329,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
     {
         case CHAT_MSG_EMOTE:
         {
-            if (sWorld.settings.interfactionSettings.isInterfactionChatEnabled && lang > 0)
+            if (sWorld.settings.interfaction.isInterfactionChatEnabled && lang > 0)
                 lang = 0;
 
             if (g_chatFilter->Parse(msg))
@@ -340,12 +340,12 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 
             if (GetPlayer()->m_modlanguage >= 0)
                 data = sChatHandler.FillMessageData(CHAT_MSG_EMOTE, GetPlayer()->m_modlanguage, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
-            else if (lang == 0 && sWorld.settings.interfactionSettings.isInterfactionChatEnabled)
+            else if (lang == 0 && sWorld.settings.interfaction.isInterfactionChatEnabled)
                 data = sChatHandler.FillMessageData(CHAT_MSG_EMOTE, CanUseCommand('0') ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
             else
                 data = sChatHandler.FillMessageData(CHAT_MSG_EMOTE, CanUseCommand('c') ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
 
-            GetPlayer()->SendMessageToSet(data, true, !sWorld.settings.interfactionSettings.isInterfactionChatEnabled);
+            GetPlayer()->SendMessageToSet(data, true, !sWorld.settings.interfaction.isInterfactionChatEnabled);
 
             LogDetail("[emote] %s: %s", _player->GetName(), msg.c_str());
             delete data;
@@ -354,7 +354,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         break;
         case CHAT_MSG_SAY:
         {
-            if (sWorld.settings.interfactionSettings.isInterfactionChatEnabled && lang > 0)
+            if (sWorld.settings.interfaction.isInterfactionChatEnabled && lang > 0)
                 lang = 0;
 
             if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
@@ -376,7 +376,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 if (lang > 0 && LanguageSkills[lang] && !_player->_HasSkillLine(LanguageSkills[lang]))
                     return;
 
-                if (lang == 0 && !CanUseCommand('c') && !sWorld.settings.interfactionSettings.isInterfactionChatEnabled)
+                if (lang == 0 && !CanUseCommand('c') && !sWorld.settings.interfaction.isInterfactionChatEnabled)
                     return;
 
                 data = sChatHandler.FillMessageData(CHAT_MSG_SAY, lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
@@ -396,7 +396,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
                 break;
 
-            if (sWorld.settings.interfactionSettings.isInterfactionChatEnabled && lang > 0)
+            if (sWorld.settings.interfaction.isInterfactionChatEnabled && lang > 0)
                 lang = 0;
 
             if (g_chatFilter->Parse(msg) == true)
@@ -410,7 +410,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 
             if (GetPlayer()->m_modlanguage >= 0)
                 data = sChatHandler.FillMessageData(type, GetPlayer()->m_modlanguage, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
-            else if (lang == 0 && sWorld.settings.interfactionSettings.isInterfactionChatEnabled)
+            else if (lang == 0 && sWorld.settings.interfaction.isInterfactionChatEnabled)
                 data = sChatHandler.FillMessageData(type, (CanUseCommand('0') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
             else
                 data = sChatHandler.FillMessageData(type, (CanUseCommand('c') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
@@ -487,7 +487,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         break;
         case CHAT_MSG_YELL:
         {
-            if (sWorld.settings.interfactionSettings.isInterfactionChatEnabled && lang > 0)
+            if (sWorld.settings.interfaction.isInterfactionChatEnabled && lang > 0)
                 lang = 0;
 
             if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
@@ -501,7 +501,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (lang > 0 && LanguageSkills[lang] && _player->_HasSkillLine(LanguageSkills[lang]) == false)
                 return;
 
-            if (lang == 0 && sWorld.settings.interfactionSettings.isInterfactionChatEnabled)
+            if (lang == 0 && sWorld.settings.interfaction.isInterfactionChatEnabled)
                 data = sChatHandler.FillMessageData(CHAT_MSG_YELL, (CanUseCommand('0') && lang != -1) ? LANG_UNIVERSAL : lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
 
             else if (GetPlayer()->m_modlanguage >= 0)
@@ -533,7 +533,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 break;
             }
 
-            if (_player->GetTeamInitial() != playercache->GetUInt32Value(CACHE_PLAYER_INITIALTEAM) && !sWorld.settings.interfactionSettings.isInterfactionChatEnabled && !playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) && !_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+            if (_player->GetTeamInitial() != playercache->GetUInt32Value(CACHE_PLAYER_INITIALTEAM) && !sWorld.settings.interfaction.isInterfactionChatEnabled && !playercache->HasFlag(CACHE_PLAYER_FLAGS, PLAYER_FLAG_GM) && !_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
             {
                 WorldPacket response(SMSG_CHAT_PLAYER_NOT_FOUND, to.length() + 1);
                 response << to;
@@ -739,16 +739,16 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (!GetPermissionCount() && sWorld.settings.floodProtectionSettings.linesBeforeProtection)
+    if (!GetPermissionCount() && sWorld.settings.floodProtection.linesBeforeProtection)
     {
         /* flood detection, wheeee! */
         if (UNIXTIME >= floodTime)
         {
             floodLines = 0;
-            floodTime = UNIXTIME + sWorld.settings.floodProtectionSettings.secondsBeforeProtectionReset;
+            floodTime = UNIXTIME + sWorld.settings.floodProtection.secondsBeforeProtectionReset;
         }
 
-        if ((++floodLines) > sWorld.settings.floodProtectionSettings.linesBeforeProtection)
+        if ((++floodLines) > sWorld.settings.floodProtection.linesBeforeProtection)
         {
             return;
         }

@@ -607,9 +607,9 @@ void Player::SendInitialLogonPackets()
     WorldPacket ArenaSettings(SMSG_UPDATE_WORLD_STATE, 16);
 
     ArenaSettings << uint32(0xC77);
-    ArenaSettings << uint32(sWorld.settings.arenaSettings.arenaProgress);
+    ArenaSettings << uint32(sWorld.settings.arena.arenaProgress);
     ArenaSettings << uint32(0xF3D);
-    ArenaSettings << uint32(sWorld.settings.arenaSettings.arenaSeason);
+    ArenaSettings << uint32(sWorld.settings.arena.arenaSeason);
 
     m_session->SendPacket(&ArenaSettings);
 #endif

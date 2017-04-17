@@ -281,7 +281,7 @@ bool Master::Run(int argc, char** argv)
 
     sScriptMgr.LoadScripts();
 
-    if (sWorld.settings.startupSettings.enableSpellIdDump)
+    if (sWorld.settings.startup.enableSpellIdDump)
         sScriptMgr.DumpUnimplementedSpells();
 
     LoadingTime = getMSTime() - LoadingTime;
@@ -300,7 +300,7 @@ bool Master::Run(int argc, char** argv)
     sLogonCommHandler.Startup();
 
     // Create listener
-    ListenSocket<WorldSocket> * ls = new ListenSocket<WorldSocket>(sWorld.settings.listenSettings.listenHost.c_str(), sWorld.settings.listenSettings.listenPort);
+    ListenSocket<WorldSocket> * ls = new ListenSocket<WorldSocket>(sWorld.settings.listen.listenHost.c_str(), sWorld.settings.listen.listenPort);
     bool listnersockcreate = ls->IsOpen();
 #ifdef WIN32
     if (listnersockcreate)
@@ -475,11 +475,11 @@ bool Master::_StartDB()
     Database_World = nullptr;
     Database_Character = nullptr;
 
-    bool wdb_result = !sWorld.settings.worldDbSettings.user.empty();
-    wdb_result = !wdb_result ? wdb_result : !sWorld.settings.worldDbSettings.password.empty();
-    wdb_result = !wdb_result ? wdb_result : !sWorld.settings.worldDbSettings.host.empty();
-    wdb_result = !wdb_result ? wdb_result : !sWorld.settings.worldDbSettings.dbName.empty();
-    wdb_result = !wdb_result ? wdb_result : sWorld.settings.worldDbSettings.port;
+    bool wdb_result = !sWorld.settings.worldDb.user.empty();
+    wdb_result = !wdb_result ? wdb_result : !sWorld.settings.worldDb.password.empty();
+    wdb_result = !wdb_result ? wdb_result : !sWorld.settings.worldDb.host.empty();
+    wdb_result = !wdb_result ? wdb_result : !sWorld.settings.worldDb.dbName.empty();
+    wdb_result = !wdb_result ? wdb_result : sWorld.settings.worldDb.port;
 
     Database_World = Database::CreateDatabaseInterface();
 
@@ -490,18 +490,18 @@ bool Master::_StartDB()
     }
 
     // Initialize it
-    if (!WorldDatabase.Initialize(sWorld.settings.worldDbSettings.host.c_str(), (unsigned int)sWorld.settings.worldDbSettings.port, sWorld.settings.worldDbSettings.user.c_str(),
-        sWorld.settings.worldDbSettings.password.c_str(), sWorld.settings.worldDbSettings.dbName.c_str(), sWorld.settings.worldDbSettings.connections, 16384))
+    if (!WorldDatabase.Initialize(sWorld.settings.worldDb.host.c_str(), (unsigned int)sWorld.settings.worldDb.port, sWorld.settings.worldDb.user.c_str(),
+        sWorld.settings.worldDb.password.c_str(), sWorld.settings.worldDb.dbName.c_str(), sWorld.settings.worldDb.connections, 16384))
     {
         LogError("Configs : Connection to WorldDatabase failed. Check your database configurations!");
         return false;
     }
 
-    bool cdb_result = !sWorld.settings.charDbSettings.user.empty();
-    cdb_result = !cdb_result ? cdb_result : !sWorld.settings.charDbSettings.password.empty();
-    cdb_result = !cdb_result ? cdb_result : !sWorld.settings.charDbSettings.host.empty();
-    cdb_result = !cdb_result ? cdb_result : !sWorld.settings.charDbSettings.dbName.empty();
-    cdb_result = !cdb_result ? cdb_result : sWorld.settings.charDbSettings.port;
+    bool cdb_result = !sWorld.settings.charDb.user.empty();
+    cdb_result = !cdb_result ? cdb_result : !sWorld.settings.charDb.password.empty();
+    cdb_result = !cdb_result ? cdb_result : !sWorld.settings.charDb.host.empty();
+    cdb_result = !cdb_result ? cdb_result : !sWorld.settings.charDb.dbName.empty();
+    cdb_result = !cdb_result ? cdb_result : sWorld.settings.charDb.port;
 
     Database_Character = Database::CreateDatabaseInterface();
 
@@ -512,8 +512,8 @@ bool Master::_StartDB()
     }
 
     // Initialize it
-    if (!CharacterDatabase.Initialize(sWorld.settings.charDbSettings.host.c_str(), (unsigned int)sWorld.settings.charDbSettings.port, sWorld.settings.charDbSettings.user.c_str(),
-        sWorld.settings.charDbSettings.password.c_str(), sWorld.settings.charDbSettings.dbName.c_str(), sWorld.settings.charDbSettings.connections, 16384))
+    if (!CharacterDatabase.Initialize(sWorld.settings.charDb.host.c_str(), (unsigned int)sWorld.settings.charDb.port, sWorld.settings.charDb.user.c_str(),
+        sWorld.settings.charDb.password.c_str(), sWorld.settings.charDb.dbName.c_str(), sWorld.settings.charDb.connections, 16384))
     {
         LogError("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
         return false;
@@ -662,7 +662,7 @@ bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_fil
 
 void Master::OpenCheatLogFiles()
 {
-    bool useTimeStamp = sWorld.settings.logSettings.addTimeStampToFileName;
+    bool useTimeStamp = sWorld.settings.log.addTimeStampToFileName;
 
     Anticheat_Log = new SessionLogWriter(AELog::GetFormattedFileName("logs", "cheaters", useTimeStamp).c_str(), false);
     GMCommand_Log = new SessionLogWriter(AELog::GetFormattedFileName("logs", "gmcommand", useTimeStamp).c_str(), false);
@@ -670,26 +670,26 @@ void Master::OpenCheatLogFiles()
 
     if (Anticheat_Log->IsOpen())
     {
-        if (!sWorld.settings.logSettings.logCheaters)
+        if (!sWorld.settings.log.logCheaters)
             Anticheat_Log->Close();
     }
-    else if (sWorld.settings.logSettings.logCheaters)
+    else if (sWorld.settings.log.logCheaters)
         Anticheat_Log->Open();
 
     if (GMCommand_Log->IsOpen())
     {
-        if (!sWorld.settings.logSettings.logGmCommands)
+        if (!sWorld.settings.log.logGmCommands)
             GMCommand_Log->Close();
     }
-    else if (sWorld.settings.logSettings.logGmCommands)
+    else if (sWorld.settings.log.logGmCommands)
         GMCommand_Log->Open();
 
     if (Player_Log->IsOpen())
     {
-        if (!sWorld.settings.logSettings.logPlayers)
+        if (!sWorld.settings.log.logPlayers)
             Player_Log->Close();
     }
-    else if (sWorld.settings.logSettings.logPlayers)
+    else if (sWorld.settings.log.logPlayers)
             Player_Log->Open();
 }
 

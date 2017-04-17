@@ -102,7 +102,7 @@ void DayWatcherThread::update_settings()
 
 void DayWatcherThread::load_settings()
 {
-    std::string arena_timeout = sWorld.settings.periodSettings.arenaUpdate;
+    std::string arena_timeout = sWorld.settings.period.arenaUpdate;
     arena_period = get_timeout_from_string(arena_timeout.c_str(), WEEKLY);
 
     QueryResult* result = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_arena_update_time\'");
@@ -117,7 +117,7 @@ void DayWatcherThread::load_settings()
         last_arena_time = 0;
     }
 
-    std::string daily_timeout = sWorld.settings.periodSettings.dailyUpdate;
+    std::string daily_timeout = sWorld.settings.period.dailyUpdate;
     daily_period = get_timeout_from_string(daily_timeout.c_str(), DAILY);
 
     QueryResult* result2 = CharacterDatabase.Query("SELECT setting_value FROM server_settings WHERE setting_id = \'last_daily_update_time\'");

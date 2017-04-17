@@ -559,7 +559,7 @@ void AchievementMgr::CheckAllAchievementCriteria()
 /// item ID, faction ID, etc.), and miscvalue2 is the amount to increase the progress.
 void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, int32 miscvalue1, int32 miscvalue2, uint32 time)
 {
-    if (m_player->GetSession()->HasGMPermissions() && sWorld.settings.gmSettings.disableAchievements)
+    if (m_player->GetSession()->HasGMPermissions() && sWorld.settings.gm.disableAchievements)
         return;
 
     uint64 selectedGUID;
@@ -1229,7 +1229,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
 /// \brief This is only called from CheckAllAchievementCriteria(), during player login
 void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
 {
-    if (m_player->GetSession()->HasGMPermissions() && sWorld.settings.gmSettings.disableAchievements)
+    if (m_player->GetSession()->HasGMPermissions() && sWorld.settings.gm.disableAchievements)
         return;
 
     AchievementCriteriaEntryList const & achievementCriteriaList = objmgr.GetAchievementCriteriaByType(type);

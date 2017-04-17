@@ -151,46 +151,6 @@ World::~World()
         delete *itr;
 }
 
-//std::string World::getGmClientChannelName()
-//{
-//    return gmClientSettings.gmClientChannelName;
-//}
-//
-//void World::setMessageOfTheDay(std::string motd)
-//{
-//    serverSettings.messageOfTheDay = motd;
-//}
-//
-//std::string World::getMessageOfTheDay()
-//{
-//    return serverSettings.messageOfTheDay;
-//}
-//
-//void World::setFloatRate(WorldConfigRates index, float value)
-//{
-//    mFloatRates[index] = value;
-//}
-//
-//float World::getFloatRate(WorldConfigRates index)
-//{
-//    return mFloatRates[index];
-//}
-//
-//void World::setIntRate(WorldConfigIntRates index, uint32_t value)
-//{
-//    mIntRates[index] = value;
-//}
-//
-//uint32_t World::getIntRate(WorldConfigIntRates index)
-//{
-//    return mIntRates[index];
-//}
-//
-//uint32_t World::getRealmType()
-//{
-//    return serverSettings.realmType;
-//}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Player statistic
 uint32_t World::getPlayerCount()
@@ -487,7 +447,7 @@ bool World::SetInitialWorldSettings()
     ApplyNormalFixes();
 
     LogNotice("GameObjectModel : Loading GameObject models...");
-    LoadGameObjectModelList(sWorld.settings.terrainCollisionSettings.vMapPath);
+    LoadGameObjectModelList(sWorld.settings.terrainCollision.vMapPath);
 
     new SpellFactoryMgr;
 
@@ -647,7 +607,7 @@ bool World::SetInitialWorldSettings()
     LogDetail("World : Loading LFG rewards...");
     sLfgMgr.LoadRewards();
 
-    m_queueUpdateTimer = settings.serverSettings.queueUpdateInterval;
+    m_queueUpdateTimer = settings.server.queueUpdateInterval;
     LogNotice("World : Loading loot data...");
     lootmgr.LoadLoot();
 
@@ -868,7 +828,7 @@ void World::SendWorldText(const char* text, WorldSession* self)
     data << uint8(0);
     SendGlobalMessage(&data, self);
 
-    if (settings.announceSettings.showAnnounceInConsoleOutput)
+    if (settings.announce.showAnnounceInConsoleOutput)
     {
         LogDetail("WORLD : SendWorldText %s", text);
     }
@@ -1065,7 +1025,7 @@ void World::UpdateQueuedSessions(uint32 diff)
 {
     if (diff >= m_queueUpdateTimer)
     {
-        m_queueUpdateTimer = settings.serverSettings.queueUpdateInterval;
+        m_queueUpdateTimer = settings.server.queueUpdateInterval;
         queueMutex.Acquire();
 
         if (mQueuedSessions.size() == 0)
@@ -1234,7 +1194,7 @@ void TaskList::spawn()
     thread_count.SetVal(0);
 
     uint32 threadcount;
-    if (sWorld.settings.startupSettings.enableMultithreadedLoading)
+    if (sWorld.settings.startup.enableMultithreadedLoading)
     {
         // get processor count
 #ifndef WIN32

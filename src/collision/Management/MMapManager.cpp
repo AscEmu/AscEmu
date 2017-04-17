@@ -75,7 +75,7 @@ namespace MMAP
         }
 
         // load and init dtNavMesh - read parameters from file
-        std::string dataDir = sWorld.settings.terrainCollisionSettings.mMapPath;
+        std::string dataDir = sWorld.settings.terrainCollision.mMapPath;
         uint32 pathLen = dataDir.length() + strlen("/%03i.mmap") + 1;
         char *fileName = new char[pathLen];
         snprintf(fileName, pathLen, (dataDir + "/%03i.mmap").c_str(), mapId);

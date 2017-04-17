@@ -25,7 +25,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
             latency_avg += itr->second->GetSession()->GetLatency();
             if (itr->second->GetSession()->GetPermissionCount())
             {
-                if (!sWorld.settings.gmSettings.listOnlyActiveGms)
+                if (!sWorld.settings.gm.listOnlyActiveGms)
                 {
                     online_gm++;
                 }
