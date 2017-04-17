@@ -165,6 +165,8 @@ void World::loadWorldConfigValues(bool reload /*false*/)
 
     if (reload)
         Channel::LoadConfSettings();
+
+    AnnounceColorChooser(settings.color.tagColor, settings.color.tagGmColor, settings.color.nameColor, settings.color.msgColor);
 }
 
 
@@ -609,8 +611,10 @@ bool World::SetInitialWorldSettings()
 #if VERSION_STRING > TBC
     objmgr.LoadAchievementCriteriaList();
 #endif
-    // start mail system
-    MailSystem::getSingleton().StartMailSystem();
+    
+    LogDetail("World : Starting Mail System...");
+    new MailSystem;
+    sMailSystem.StartMailSystem();
 
     LogDetail("World : Starting Auction System...");
     new AuctionMgr;

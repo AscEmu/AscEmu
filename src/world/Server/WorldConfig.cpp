@@ -257,12 +257,21 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     if (reload)
     {
         // This will only happen if someone deleted/renamed the con-files after the server started...
-        if (!Config.MainConfig.SetSource(CONFDIR "/world.conf", true))
+        if (Config.MainConfig.SetSource(CONFDIR "/world.conf"))
         {
-            LOG_ERROR("Rehash: file world.conf not available o.O !");
+            LogDetail("Config : " CONFDIR "/world.conf reloaded");
+        }
+        else
+        {
+            LogError("Config : error occurred loading " CONFDIR "/world.conf");
             return;
         }
-        if (!Config.OptionalConfig.SetSource(CONFDIR "/optional.conf", true))
+
+        if (Config.OptionalConfig.SetSource(CONFDIR "/optional.conf"))
+        {
+            LogDetail("Config : " CONFDIR "/optional.conf reloaded");
+        }
+        else
         {
             LOG_ERROR("Rehash: file optional.conf not available o.O !");
             return;
