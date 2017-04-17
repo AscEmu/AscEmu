@@ -409,13 +409,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void UpdateSessions(uint32 diff);
 
 
-        // talent inspection lookup tables
-        void LoadInspectTalentTab();
-        std::map< uint32, uint32 > InspectTalentTabPos;
-        std::map< uint32, uint32 > InspectTalentTabSize;
-        std::map< uint32, uint32 > InspectTalentTabBit;
-        uint32 InspectTalentTabPages[12][3];
-
         //queue
         uint32 AddQueuedSocket(WorldSocket* Socket);
         void RemoveQueuedSocket(WorldSocket* Socket);

@@ -125,6 +125,8 @@ DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 roo
 
 std::string generateName(uint32 type = 0);
 
+uint32 const* getTalentTabPages(uint8 playerClass);
+
 bool LoadDBCs();
 #endif
 

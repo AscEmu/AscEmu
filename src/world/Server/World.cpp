@@ -639,85 +639,10 @@ bool World::SetInitialWorldSettings()
 
     ThreadPool.ExecuteTask(new CharacterLoaderThread());
 
-    LoadInspectTalentTab();
-
     sEventMgr.AddEvent(this, &World::CheckForExpiredInstances, EVENT_WORLD_UPDATEAUCTIONS, 120000, 0, 0);
     return true;
 }
 
-void World::LoadInspectTalentTab()
-{
-    // Preload and compile talent and talent tab data to speed up talent inspect
-    // Zyres: It looks like missplaced and should be moved right after dbc loading
-#define MAX_TALENT_CLASS 12
-    uint32 talent_max_rank;
-    uint32 talent_pos;
-    uint32 talent_class;
-
-    for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)
-    {
-        auto talent_info = sTalentStore.LookupEntry(i);
-        if (talent_info == nullptr)
-            continue;
-
-        // Don't add invalid talents or Hunter Pet talents (trees 409, 410 and 411) to the inspect table
-        if (talent_info->TalentTree == 409 || talent_info->TalentTree == 410 || talent_info->TalentTree == 411)
-            continue;
-
-        auto talent_tab = sTalentTabStore.LookupEntry(talent_info->TalentTree);
-        if (talent_tab == nullptr)
-            continue;
-
-        talent_max_rank = 0;
-        for (uint32 j = 5; j > 0; --j)
-        {
-            if (talent_info->RankID[j - 1])
-            {
-                talent_max_rank = j;
-                break;
-            }
-        }
-
-        InspectTalentTabBit[(talent_info->Row << 24) + (talent_info->Col << 16) + talent_info->TalentID] = talent_max_rank;
-        InspectTalentTabSize[talent_info->TalentTree] += talent_max_rank;
-    }
-
-    for (uint32 i = 0; i < sTalentTabStore.GetNumRows(); ++i)
-    {
-        auto talent_tab = sTalentTabStore.LookupEntry(i);
-        if (talent_tab == nullptr)
-            continue;
-
-        // Don't add Hunter Pet TalentTabs (ClassMask == 0) to the InspectTalentTabPages
-        if (talent_tab->ClassMask == 0)
-            continue;
-
-        talent_pos = 0;
-
-        for (talent_class = 0; talent_class < MAX_TALENT_CLASS; ++talent_class)
-        {
-            if (talent_tab->ClassMask & (1 << talent_class))
-                break;
-        }
-        // Zyres: prevent Out-of-bounds read
-        if (talent_class > 0 && talent_class < MAX_TALENT_CLASS)
-            InspectTalentTabPages[talent_class][talent_tab->TabPage] = talent_tab->TalentTabID;
-
-        for (std::map<uint32, uint32>::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
-        {
-            uint32 talent_id = itr->first & 0xFFFF;
-            auto talent_info = sTalentStore.LookupEntry(talent_id);
-            if (talent_info == nullptr)
-                continue;
-
-            if (talent_info->TalentTree != talent_tab->TalentTabID)
-                continue;
-
-            InspectTalentTabPos[talent_id] = talent_pos;
-            talent_pos += itr->second;
-        }
-    }
-}
 
 void World::Update(unsigned long time_passed)
 {

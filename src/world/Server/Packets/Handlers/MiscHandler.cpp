@@ -2134,15 +2134,17 @@ void WorldSession::HandleInspectOpcode(WorldPacket& recv_data)
         PlayerSpec spec = player->m_specs[s];
 
         int32 talent_max_rank;
-        uint32 talent_tab_id;
+        uint32 const* talent_tab_ids;
 
         uint8 talent_count = 0;
         size_t pos = data.wpos();
         data << uint8(talent_count); //fake value, will be overwritten at the end
 
+        talent_tab_ids = getTalentTabPages(player->getClass());
+
         for (uint8 i = 0; i < 3; ++i)
         {
-            talent_tab_id = sWorld.InspectTalentTabPages[player->getClass()][i];
+            uint32 talent_tab_id = talent_tab_ids[i];
 
             for (uint32 j = 0; j < sTalentStore.GetNumRows(); ++j)
             {
