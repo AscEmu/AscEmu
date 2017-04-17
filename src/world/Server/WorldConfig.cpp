@@ -3,7 +3,28 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
+#include "StdAfx.h"
+
 #include "WorldConfig.h"
+#include "WorldConf.h"
+#include "Management/AddonMgr.h"
+#include "Management/AuctionMgr.h"
+#include "Management/CalendarMgr.h"
+#include "Management/Item.h"
+#include "Management/LFG/LFGMgr.h"
+#include "Management/WordFilter.h"
+#include "Management/WeatherMgr.h"
+#include "Management/TaxiMgr.h"
+#include "Management/ItemInterface.h"
+#include "Management/Channel.h"
+#include "Management/ChannelMgr.h"
+#include "WorldSocket.h"
+#include "Management/LocalizationMgr.h"
+#include "Server/MainServerDefines.h"
+#include "Config/Config.h"
+#include "Map/MapCell.h"
+#include "Spell/SpellMgr.h"
+#include "Map/WorldCreator.h"
 
 WorldConfig::WorldConfig()
 {
