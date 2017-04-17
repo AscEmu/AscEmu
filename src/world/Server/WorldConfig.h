@@ -132,7 +132,6 @@ class SERVER_DECL WorldConfig
             bool disableFearMovement;
             bool saveExtendedCharData;
             //\todo add it to config or remove it from core
-            bool skipAttunementForGm;           //not in config file!
             uint32_t clientCacheVersion;        //not in config file!
             std::string banTable;               //not in config file!
         } server;

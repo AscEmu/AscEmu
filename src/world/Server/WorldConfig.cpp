@@ -56,7 +56,6 @@ WorldConfig::WorldConfig()
     server.gmtTimeZone = 0;
     server.disableFearMovement = 0;
     server.saveExtendedCharData = false;
-    server.skipAttunementForGm = true;
     server.clientCacheVersion = 12340;
     server.banTable = "";
 
@@ -326,7 +325,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     server.gmtTimeZone = Config.MainConfig.GetIntDefault("Server", "TimeZone", 0);
     server.disableFearMovement = Config.MainConfig.GetBoolDefault("Server", "DisableFearMovement", 0);
     server.saveExtendedCharData = Config.MainConfig.GetBoolDefault("Server", "SaveExtendedCharData", false);
-    server.skipAttunementForGm = Config.MainConfig.GetBoolDefault("Server", "SkipAttunementsForGM", true);
     server.clientCacheVersion = uint32_t(Config.MainConfig.GetIntDefault("Server", "CacheVersion", 12340));
     server.banTable = Config.MainConfig.GetStringDefault("Server", "BanTable", "");
 
@@ -473,9 +471,9 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     movement.compressThresholdCreatures *= movement.compressThresholdCreatures;
 
     movement.compressThresholdPlayers = Config.MainConfig.GetFloatDefault("Movement", "CompressThreshold", 25.0f);
-    movement.compressThresholdPlayers *= movement.compressThresholdPlayers; // square it to avoid sqrt() on checks
+    movement.compressThresholdPlayers *= movement.compressThresholdPlayers;
 
-                                                                                            // world.conf - Localization Setup
+    // world.conf - Localization Setup
     localization.localizedBindings = Config.MainConfig.GetStringDefault("Localization", "LocaleBindings", "");
 
     // world.conf - Dungeon / Instance Setup
@@ -568,7 +566,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     color.tagGmColor = Config.OptionalConfig.GetIntDefault("Color", "AnnGMTagColor", 1);
     color.nameColor = Config.OptionalConfig.GetIntDefault("Color", "AnnNameColor", 4);
     color.msgColor = Config.OptionalConfig.GetIntDefault("Color", "AnnMsgColor", 10);
-    //AnnounceColorChooser(colorSettings.tagColor, colorSettings.tagGmColor, colorSettings.nameColor, colorSettings.msgColor);
 
     // optional.conf - Game Master Configuration
     gm.isStartOnGmIslandEnabled = Config.OptionalConfig.GetBoolDefault("GameMaster", "StartOnGMIsland", false);
@@ -606,7 +603,7 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     gold.isCapEnabled = Config.OptionalConfig.GetBoolDefault("GoldSettings", "EnableGoldCap", true);
     gold.limitAmount = Config.OptionalConfig.GetIntDefault("GoldSettings", "MaximumGold", 214000);
     if (gold.limitAmount)
-        gold.limitAmount *= 10000; // Convert into gsc (gold, silver, copper)
+        gold.limitAmount *= 10000;
 
     gold.startAmount = Config.OptionalConfig.GetIntDefault("GoldSettings", "StartingGold", 0);
     if (gold.startAmount)

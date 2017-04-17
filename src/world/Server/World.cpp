@@ -595,7 +595,6 @@ bool World::SetInitialWorldSettings()
     // wait for them to exit, now.
     tl.kill();
     tl.waitForThreadsToExit();
-    LoadNameGenData();
 
     LogNotice("World : Object size: %u bytes", sizeof(Object));
     LogNotice("World : Unit size: %u bytes", sizeof(Unit) + sizeof(AIInterface));
@@ -638,9 +637,16 @@ bool World::SetInitialWorldSettings()
     cs = new CommonScheduleThread();
     ThreadPool.ExecuteTask(cs);
 
-
     ThreadPool.ExecuteTask(new CharacterLoaderThread());
 
+    LoadInspectTalentTab();
+
+    sEventMgr.AddEvent(this, &World::CheckForExpiredInstances, EVENT_WORLD_UPDATEAUCTIONS, 120000, 0, 0);
+    return true;
+}
+
+void World::LoadInspectTalentTab()
+{
     // Preload and compile talent and talent tab data to speed up talent inspect
     // Zyres: It looks like missplaced and should be moved right after dbc loading
 #define MAX_TALENT_CLASS 12
@@ -711,9 +717,6 @@ bool World::SetInitialWorldSettings()
             talent_pos += itr->second;
         }
     }
-
-    sEventMgr.AddEvent(this, &World::CheckForExpiredInstances, EVENT_WORLD_UPDATEAUCTIONS, 120000, 0, 0);
-    return true;
 }
 
 void World::Update(unsigned long time_passed)
@@ -931,15 +934,6 @@ void World::UpdateSessions(uint32 diff)
     ErasableSessions.clear();
 }
 
-std::string World::GenerateName(uint32 type)
-{
-    if (_namegendata[type].size() == 0)
-        return "ERR";
-
-    uint32 ent = RandomUInt((uint32)_namegendata[type].size() - 1);
-    return _namegendata[type].at(ent).name;
-}
-
 void World::DeleteSession(WorldSession* session)
 {
     m_sessionlock.AcquireWriteLock();
@@ -965,24 +959,6 @@ void World::DeleteSessions(std::list<WorldSession*>& slist)
         WorldSession* session = *itr;
         delete session;
     }
-}
-
-uint32 World::GetNonGmSessionCount()
-{
-    m_sessionlock.AcquireReadLock();
-
-    uint32 total = (uint32)m_sessions.size();
-
-    SessionMap::const_iterator itr = m_sessions.begin();
-    for (; itr != m_sessions.end(); ++itr)
-    {
-        if ((itr->second)->HasGMPermissions())
-            total--;
-    }
-
-    m_sessionlock.ReleaseReadLock();
-
-    return total;
 }
 
 uint32 World::AddQueuedSocket(WorldSocket* Socket)
@@ -1309,24 +1285,6 @@ void TaskList::waitForThreadsToExit()
 void World::DeleteObject(Object* obj)
 {
     delete obj;
-}
-
-void World::LoadNameGenData()
-{
-#if VERSION_STRING != Cata
-    for (uint32 i = 0; i < sNameGenStore.GetNumRows(); ++i)
-    {
-        auto const name_gen_entry = sNameGenStore.LookupEntry(i);
-        if (name_gen_entry == nullptr)
-            continue;
-
-        NameGenData data;
-
-        data.name = std::string(name_gen_entry->Name);
-        data.type = name_gen_entry->type;
-        _namegendata[data.type].push_back(data);
-    }
-#endif
 }
 
 void World::CharacterEnumProc(QueryResultVector& results, uint32 AccountId)

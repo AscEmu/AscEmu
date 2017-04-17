@@ -331,7 +331,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
             return ssize;
         }
-        uint32 GetNonGmSessionCount();
 
         // queue
         inline size_t GetQueueCount() { return mQueuedSessions.size(); }
@@ -411,20 +410,11 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
 
         // talent inspection lookup tables
+        void LoadInspectTalentTab();
         std::map< uint32, uint32 > InspectTalentTabPos;
         std::map< uint32, uint32 > InspectTalentTabSize;
         std::map< uint32, uint32 > InspectTalentTabBit;
         uint32 InspectTalentTabPages[12][3];
-
-        //namegen
-        struct NameGenData
-        {
-            std::string name;
-            uint32 type;
-        };
-        std::vector<NameGenData> _namegendata[3];
-        void LoadNameGenData();
-        std::string GenerateName(uint32 type = 0);
 
         //queue
         uint32 AddQueuedSocket(WorldSocket* Socket);

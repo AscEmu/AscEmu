@@ -13,6 +13,14 @@ This file is released under the MIT license. See README-MIT for more information
 
 typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*> WMOAreaInfoByTripple;
 
+struct NameGenData
+{
+    std::string name;
+    uint32 type;
+};
+
+std::vector<NameGenData> _namegenData[3];
+
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementEntry> sAchievementStore(DBC::Structures::achievement_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AchievementCriteriaEntry> sAchievementCriteriaStore(DBC::Structures::achievement_criteria_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::AreaGroupEntry> sAreaGroupStore(DBC::Structures::area_group_format);
@@ -163,6 +171,18 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sWMOAreaTableStore, dbc_path, "WMOAreaTable.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSummonPropertiesStore, dbc_path, "SummonProperties.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sNameGenStore, dbc_path, "NameGen.dbc");
+    for (uint32 i = 0; i < sNameGenStore.GetNumRows(); ++i)
+    {
+        auto name_gen_entry = sNameGenStore.LookupEntry(i);
+        if (name_gen_entry == nullptr)
+            continue;
+
+        NameGenData nameGenData;
+        nameGenData.name = std::string(name_gen_entry->Name);
+        nameGenData.type = name_gen_entry->type;
+        _namegenData[nameGenData.type].push_back(nameGenData);
+    }
+
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sLFGDungeonStore, dbc_path, "LFGDungeons.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sLiquidTypeStore, dbc_path, "LiquidType.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sVehicleStore, dbc_path, "Vehicle.dbc");
@@ -196,6 +216,15 @@ DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 roo
     if (iter == sWMOAreaInfoByTripple.end())
         return nullptr;
     return iter->second;
+}
+
+std::string generateName(uint32 type)
+{
+    if (_namegenData[type].size() == 0)
+        return "ERR";
+
+    uint32 ent = RandomUInt((uint32)_namegenData[type].size() - 1);
+    return _namegenData[type].at(ent).name;
 }
 
 #endif

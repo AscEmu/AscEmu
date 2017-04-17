@@ -123,6 +123,8 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSe
 
 DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id);
 
+std::string generateName(uint32 type = 0);
+
 bool LoadDBCs();
 #endif
 

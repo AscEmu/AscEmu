@@ -120,13 +120,13 @@ void Pet::SetNameForEntry(uint32 entry)
             }
             else // no name found, generate one and save it
             {
-                m_name = sWorld.GenerateName();
+                m_name = generateName();
                 CharacterDatabase.Execute("INSERT INTO playersummons VALUES(%u, %u, '%s')", m_Owner->GetLowGUID(), entry, m_name.data());
             }
         }
         break;
         default:
-            m_name = sWorld.GenerateName();
+            m_name = generateName();
     }
 }
 
