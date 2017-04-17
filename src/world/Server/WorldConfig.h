@@ -5,6 +5,9 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include <string>
+#include <cstdint>
+
 enum WorldConfigRates
 {
     RATE_HEALTH = 0,    // hp
@@ -82,6 +85,10 @@ class WorldConfig
 
         uint32_t getRealmType();
 
+        uint32_t getPlayerLimit();
+
+        uint32_t getKickAFKPlayerTime();
+
         // world.conf - Mysql Database Section
         struct WorldDatabaseSettings
         {
@@ -124,21 +131,21 @@ class WorldConfig
         // world.conf - Server Settings
         struct ServerSettings
         {
-            uint32 playerLimit;
+            uint32_t playerLimit;
             std::string messageOfTheDay;
             bool sendStatsOnJoin;
             bool enableBreathing;
             bool seperateChatChannels;
-            uint32 compressionThreshold;
-            uint32 queueUpdateInterval;
-            uint32 secondsBeforeKickAFKPlayers;
-            uint32 secondsBeforeTimeOut;
-            uint32 realmType;
+            uint32_t compressionThreshold;
+            uint32_t queueUpdateInterval;
+            uint32_t secondsBeforeKickAFKPlayers;
+            uint32_t secondsBeforeTimeOut;
+            uint32_t realmType;
             bool enableAdjustPriority;
             bool requireAllSignatures;
             bool showGmInWhoList;
-            uint32 mapUnloadTime;
-            uint8 mapCellNumber;
+            uint32_t mapUnloadTime;
+            uint8_t mapCellNumber;
             bool enableLimitedNames;
             bool useAccountData;
             bool requireGmForCommands;
@@ -148,7 +155,7 @@ class WorldConfig
             bool saveExtendedCharData;
             //\todo add it to config or remove it from core
             bool skipAttunementForGm;           //not in config file!
-            uint32 clientCacheVersion;          //not in config file!
+            uint32_t clientCacheVersion;          //not in config file!
             std::string banTable;               //not in config file!
         } server;
 
@@ -165,7 +172,7 @@ class WorldConfig
         // world.conf - Power regeneration multiplier setup
         struct RateSettings
         {
-            uint32 arenaQueueDiff;
+            uint32_t arenaQueueDiff;
         } rate;
 
         // world.conf - GM Client Channel
@@ -222,8 +229,8 @@ class WorldConfig
         // world.conf - Flood Protection Setup
         struct FloodProtectionSettings
         {
-            uint32 linesBeforeProtection;
-            uint32 secondsBeforeProtectionReset;
+            uint32_t linesBeforeProtection;
+            uint32_t secondsBeforeProtectionReset;
             bool enableSendFloodProtectionMessage;
         } floodProtection;
 
@@ -241,7 +248,7 @@ class WorldConfig
             bool isSpeedHackCkeckEnabled;
             bool isFallDamageHackCkeckEnabled;
             bool isFlyHackCkeckEnabled;
-            uint32 flyHackThreshold;
+            uint32_t flyHackThreshold;
             bool isAntiHackCheckDisabledForGm;
         } antiHack;
 
@@ -272,8 +279,8 @@ class WorldConfig
         // world.conf - Movement Setup
         struct MovementSettings
         {
-            uint32 compressIntervalInMs;
-            uint32 compressRate;
+            uint32_t compressIntervalInMs;
+            uint32_t compressRate;
             float compressThresholdPlayers;
             float compressThresholdCreatures;
         } movement;
@@ -296,24 +303,24 @@ class WorldConfig
         // world.conf - BattleGround settings
         struct BattleGroundSettings
         {
-            uint32 minPlayerCountAlteracValley;
-            uint32 maxPlayerCountAlteracValley;
-            uint32 minPlayerCountArathiBasin;
-            uint32 maxPlayerCountArathiBasin;
-            uint32 minPlayerCountWarsongGulch;
-            uint32 maxPlayerCountWarsongGulch;
-            uint32 minPlayerCountEyeOfTheStorm;
-            uint32 maxPlayerCountEyeOfTheStorm;
-            uint32 minPlayerCountStrandOfTheAncients;
-            uint32 maxPlayerCountStrandOfTheAncients;
-            uint32 minPlayerCountIsleOfConquest;
-            uint32 maxPlayerCountIsleOfConquest;
-            uint32 firstRbgHonorValueToday;
-            uint32 firstRbgArenaHonorValueToday;
-            uint32 honorableKillsRbg;
-            uint32 honorableArenaWinRbg;
-            uint32 honorByLosingRbg;
-            uint32 honorByLosingArenaRbg;
+            uint32_t minPlayerCountAlteracValley;
+            uint32_t maxPlayerCountAlteracValley;
+            uint32_t minPlayerCountArathiBasin;
+            uint32_t maxPlayerCountArathiBasin;
+            uint32_t minPlayerCountWarsongGulch;
+            uint32_t maxPlayerCountWarsongGulch;
+            uint32_t minPlayerCountEyeOfTheStorm;
+            uint32_t maxPlayerCountEyeOfTheStorm;
+            uint32_t minPlayerCountStrandOfTheAncients;
+            uint32_t maxPlayerCountStrandOfTheAncients;
+            uint32_t minPlayerCountIsleOfConquest;
+            uint32_t maxPlayerCountIsleOfConquest;
+            uint32_t firstRbgHonorValueToday;
+            uint32_t firstRbgArenaHonorValueToday;
+            uint32_t honorableKillsRbg;
+            uint32_t honorableArenaWinRbg;
+            uint32_t honorByLosingRbg;
+            uint32_t honorByLosingArenaRbg;
         } bg;
 
         // world.conf - Arena Settings
@@ -321,24 +328,24 @@ class WorldConfig
         {
             int arenaSeason;
             int arenaProgress;
-            uint32 minPlayerCount2V2;
-            uint32 maxPlayerCount2V2;
-            uint32 minPlayerCount3V3;
-            uint32 maxPlayerCount3V3;
-            uint32 minPlayerCount5V5;
-            uint32 maxPlayerCount5V5;
+            uint32_t minPlayerCount2V2;
+            uint32_t maxPlayerCount2V2;
+            uint32_t minPlayerCount3V3;
+            uint32_t maxPlayerCount3V3;
+            uint32_t minPlayerCount5V5;
+            uint32_t maxPlayerCount5V5;
         } arena;
 
         // world.conf - Limits settings
         struct LimitSettings
         {
             bool isLimitSystemEnabled;
-            uint32 maxAutoAttackDamageCap;
-            uint32 maxSpellDamageCap;
-            uint32 maxHealthCap;
-            uint32 maxManaCap;
-            uint32 maxHonorPoints;
-            uint32 maxArenaPoints;
+            uint32_t maxAutoAttackDamageCap;
+            uint32_t maxSpellDamageCap;
+            uint32_t maxHealthCap;
+            uint32_t maxManaCap;
+            uint32_t maxHonorPoints;
+            uint32_t maxArenaPoints;
             bool disconnectPlayerForExceedingLimits;
             bool broadcastMessageToGmOnExceeding;
         } limit;
@@ -347,29 +354,29 @@ class WorldConfig
         struct WorldSocketSettings
         {
             //\todo add it to config
-            uint32 maxSocketSendBufSize;       // Section WorldSocket SendBuffSize
-            uint32 maxSocketRecvBufSize;       // Section WorldSocket RecvBufSize
+            uint32_t maxSocketSendBufSize;       // Section WorldSocket SendBuffSize
+            uint32_t maxSocketRecvBufSize;       // Section WorldSocket RecvBufSize
         } worldSocket;
 
         // optional.conf - Optional Settings
         struct OptionalSettings
         {
-            int32 playerStartingLevel;
-            uint32 playerLevelCap;
-            uint32 playerGeneratedInformationByLevelCap;
+            int32_t playerStartingLevel;
+            uint32_t playerLevelCap;
+            uint32_t playerGeneratedInformationByLevelCap;
             bool allowTbcCharacters;
             bool deactivateMasterLootNinja;
             bool loadAdditionalFunScripts;
-            uint32 deathKnightStartTalentPoints;
+            uint32_t deathKnightStartTalentPoints;
             //\todo remove it from config or implement in core
             //unstuck - Not loaded by core
             //unstuckcooldown - Not loaded by core
             //unstucktobind - Not loaded by core
-            uint32 maxProfessions;
+            uint32_t maxProfessions;
             bool skipCinematics;
-            uint8 enableInstantLogoutForAccessType;
-            uint32 minDualSpecLevel;
-            uint32 minTalentResetLevel;
+            uint8_t enableInstantLogoutForAccessType;
+            uint32_t minDualSpecLevel;
+            uint32_t minTalentResetLevel;
             bool showAllVendorItems;
         } optional;
 
@@ -424,18 +431,18 @@ class WorldConfig
         struct GoldSettings
         {
             bool isCapEnabled;
-            uint32 limitAmount;
-            uint32 startAmount;
+            uint32_t limitAmount;
+            uint32_t startAmount;
         } gold;
 
         // optional.conf - Corpse Decay Settings
         struct CorpseDecaySettings
         {
-            uint32 normalTimeInSeconds;
-            uint32 rareTimeInSeconds;
-            uint32 eliteTimeInSeconds;
-            uint32 rareEliteTimeInSeconds;
-            uint32 worldbossTimeInSeconds;
+            uint32_t normalTimeInSeconds;
+            uint32_t rareTimeInSeconds;
+            uint32_t eliteTimeInSeconds;
+            uint32_t rareEliteTimeInSeconds;
+            uint32_t worldbossTimeInSeconds;
         } corpseDecay;
 
         //\todo move to one config file (world.conf)

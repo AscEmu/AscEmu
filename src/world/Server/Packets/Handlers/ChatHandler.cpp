@@ -639,7 +639,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK))
             {
                 GetPlayer()->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAG_AFK);
-                if (sWorld.GetKickAFKPlayerTime())
+                if (sWorld.getKickAFKPlayerTime())
                     sEventMgr.RemoveEvents(GetPlayer(), EVENT_PLAYER_SOFT_DISCONNECT);
             }
             else
@@ -649,8 +649,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 if (GetPlayer()->m_bg)
                     GetPlayer()->m_bg->RemovePlayer(GetPlayer(), false);
 
-                if (sWorld.GetKickAFKPlayerTime())
-                    sEventMgr.AddEvent(GetPlayer(), &Player::SoftDisconnect, EVENT_PLAYER_SOFT_DISCONNECT, sWorld.GetKickAFKPlayerTime(), 1, 0);
+                if (sWorld.getKickAFKPlayerTime())
+                    sEventMgr.AddEvent(GetPlayer(), &Player::SoftDisconnect, EVENT_PLAYER_SOFT_DISCONNECT, sWorld.getKickAFKPlayerTime(), 1, 0);
             }
         }
         break;

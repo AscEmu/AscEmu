@@ -272,6 +272,8 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         uint32_t getIntRate(uint32_t index) { return settings.getIntRate((WorldConfigIntRates)index); }
 
         uint32_t getRealmType() { return settings.getRealmType(); }
+        uint32_t getPlayerLimit(){ return settings.getPlayerLimit(); }
+        uint32_t getKickAFKPlayerTime() { return settings.getKickAFKPlayerTime(); }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Player statistic
@@ -348,10 +350,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         // queue
         inline size_t GetQueueCount() { return mQueuedSessions.size(); }
         void GetStats(uint32* GMCount, float* AverageLatency);
-
-        //limit
-        inline uint32 GetPlayerLimit() const { return m_playerLimit; }
-        void SetPlayerLimit(uint32 limit) { m_playerLimit = limit; }
 
         //movement
         inline bool getAllowMovement() const { return m_allowMovement; }
@@ -459,10 +457,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         
         void ShutdownClasses();
         void DeleteObject(Object* obj);
-
-        void    SetKickAFKPlayerTime(uint32 idletimer) {m_KickAFKPlayers = idletimer;}
-        uint32    GetKickAFKPlayerTime() {return m_KickAFKPlayers;}
-
         
 
         std::string ann_namecolor;
@@ -498,7 +492,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         Mutex SessionsMutex;    //FOR GLOBAL !
         SessionSet Sessions;
 
-        uint32 m_playerLimit;
         bool m_allowMovement;
         bool m_gmTicketSystem;
 
@@ -506,8 +499,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         uint32 m_queueUpdateTimer;
 
         QueueSet mQueuedSessions;
-
-        uint32 m_KickAFKPlayers;
 
     public:
 

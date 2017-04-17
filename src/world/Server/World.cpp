@@ -53,7 +53,6 @@ CommonScheduleThread* cs = nullptr;
 World::World()
 {
     resetPlayerCount();
-    m_playerLimit = 0;
     m_allowMovement = true;
     m_gmTicketSystem = true;
 
@@ -68,7 +67,6 @@ World::World()
     m_banTable = NULL;
 
     m_queueUpdateTimer = 5000;
-    m_KickAFKPlayers = 0;
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -1034,7 +1032,7 @@ void World::UpdateQueuedSessions(uint32 diff)
             return;
         }
 
-        while (m_sessions.size() < m_playerLimit && mQueuedSessions.size())
+        while (m_sessions.size() < getPlayerLimit() && mQueuedSessions.size())
         {
             // Yay. We can let another player in now.
             // Grab the first fucker from the queue, but guard of course, since

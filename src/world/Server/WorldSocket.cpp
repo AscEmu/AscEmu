@@ -571,7 +571,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 #endif
 
     // Check for queue.
-    uint32 playerLimit = sWorld.GetPlayerLimit();
+    uint32 playerLimit = sWorld.getPlayerLimit();
     if ((sWorld.GetSessionCount() < playerLimit) || pSession->HasGMPermissions())
     {
         Authenticate();

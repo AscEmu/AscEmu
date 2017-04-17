@@ -111,13 +111,13 @@ WorldConfig::WorldConfig()
     remoteConsole.port = 8092;
 
     // world.conf - Movement Setup
-    movement.compressIntervalInMs = 1000;             // not used by core
-    movement.compressRate = 1;                    // not used by core
-    movement.compressThresholdCreatures = 15.0f;  // not used by core
-    movement.compressThresholdPlayers = 25.0f;           // not used by core
+    movement.compressIntervalInMs = 1000;               // not used by core
+    movement.compressRate = 1;                          // not used by core
+    movement.compressThresholdCreatures = 15.0f;        // not used by core
+    movement.compressThresholdPlayers = 25.0f;          // not used by core
 
-                                                                 // world.conf - Localization Setup
-                                                                 // world.conf - Dungeon / Instance Setup
+    // world.conf - Localization Setup
+    // world.conf - Dungeon / Instance Setup
     instance.useGroupLeaderInstanceId = false;
     instance.isRelativeExpirationEnabled = false;
     instance.relativeDailyHeroicInstanceResetHour = 5;
@@ -302,7 +302,7 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     server.compressionThreshold = Config.MainConfig.GetIntDefault("Server", "CompressionThreshold", 1000);
     server.queueUpdateInterval = Config.MainConfig.GetIntDefault("Server", "QueueUpdateInterval", 5000);
     server.secondsBeforeKickAFKPlayers = Config.MainConfig.GetIntDefault("Server", "KickAFKPlayers", 0);
-    server.secondsBeforeTimeOut = uint32(1000 * Config.MainConfig.GetIntDefault("Server", "ConnectionTimeout", 180));
+    server.secondsBeforeTimeOut = uint32_t(1000 * Config.MainConfig.GetIntDefault("Server", "ConnectionTimeout", 180));
     server.realmType = Config.MainConfig.GetBoolDefault("Server", "RealmType", false);
     server.enableAdjustPriority = Config.MainConfig.GetBoolDefault("Server", "AdjustPriority", false);
     server.requireAllSignatures = Config.MainConfig.GetBoolDefault("Server", "RequireAllSignatures", false);
@@ -317,17 +317,15 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     server.disableFearMovement = Config.MainConfig.GetBoolDefault("Server", "DisableFearMovement", 0);
     server.saveExtendedCharData = Config.MainConfig.GetBoolDefault("Server", "SaveExtendedCharData", false);
     server.skipAttunementForGm = Config.MainConfig.GetBoolDefault("Server", "SkipAttunementsForGM", true);
-    server.clientCacheVersion = uint32(Config.MainConfig.GetIntDefault("Server", "CacheVersion", 12340));
+    server.clientCacheVersion = uint32_t(Config.MainConfig.GetIntDefault("Server", "CacheVersion", 12340));
     server.banTable = Config.MainConfig.GetStringDefault("Server", "BanTable", "");
 
-    /*SetPlayerLimit(serverSettings.playerLimit);
-    SetKickAFKPlayerTime(serverSettings.secondsBeforeKickAFKPlayers);
 
-    if (m_banTable != NULL)
+    /*if (m_banTable != NULL)
         free(m_banTable);
 
     m_banTable = NULL;
-    std::string s = serverSettings.banTable;
+    std::string s = server.banTable;
     if (!s.empty())
         m_banTable = strdup(s.c_str());*/
 
@@ -427,27 +425,27 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     mail.isInterfactionMailEnabled = Config.MainConfig.GetBoolDefault("Mail", "EnableInterfactionMail", true);
     mail.isInterfactionMailForGmEnabled = Config.MainConfig.GetBoolDefault("Mail", "EnableInterfactionForGM", true);
 
-    uint32 config_flags = 0;
+    uint32_t mailFlags = 0;
 
     if (mail.isCostsForGmDisabled)
-        config_flags |= MAIL_FLAG_NO_COST_FOR_GM;
+        mailFlags |= MAIL_FLAG_NO_COST_FOR_GM;
 
     if (mail.isCostsForEveryoneDisabled)
-        config_flags |= MAIL_FLAG_DISABLE_POSTAGE_COSTS;
+        mailFlags |= MAIL_FLAG_DISABLE_POSTAGE_COSTS;
 
     if (mail.isDelayItemsDisabled)
-        config_flags |= MAIL_FLAG_DISABLE_HOUR_DELAY_FOR_ITEMS;
+        mailFlags |= MAIL_FLAG_DISABLE_HOUR_DELAY_FOR_ITEMS;
 
     if (mail.isMessageExpiryDisabled)
-        config_flags |= MAIL_FLAG_NO_EXPIRY;
+        mailFlags |= MAIL_FLAG_NO_EXPIRY;
 
     if (mail.isInterfactionMailEnabled)
-        config_flags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION;
+        mailFlags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION;
 
     if (mail.isInterfactionMailForGmEnabled)
-        config_flags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION_GM;
+        mailFlags |= MAIL_FLAG_CAN_SEND_TO_OPPOSITE_FACTION_GM;
 
-    sMailSystem.config_flags = config_flags;
+    sMailSystem.config_flags = mailFlags;
 
     // world.conf - Startup Options
     //startupSettings.Preloading;                    // not used
@@ -546,12 +544,12 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
 
     // world.conf - Limits settings
     limit.isLimitSystemEnabled = Config.MainConfig.GetBoolDefault("Limits", "Enable", true);
-    limit.maxAutoAttackDamageCap = (uint32)Config.MainConfig.GetIntDefault("Limits", "AutoAttackDmg", 10000);
-    limit.maxSpellDamageCap = (uint32)Config.MainConfig.GetIntDefault("Limits", "SpellDmg", 30000);
-    limit.maxHealthCap = (uint32)Config.MainConfig.GetIntDefault("Limits", "Health", 80000);
-    limit.maxManaCap = (uint32)Config.MainConfig.GetIntDefault("Limits", "Mana", 80000);
-    limit.maxHonorPoints = (uint32)Config.MainConfig.GetIntDefault("Limits", "Honor", 75000);
-    limit.maxArenaPoints = (uint32)Config.MainConfig.GetIntDefault("Limits", "Arena", 5000);
+    limit.maxAutoAttackDamageCap = (uint32_t)Config.MainConfig.GetIntDefault("Limits", "AutoAttackDmg", 10000);
+    limit.maxSpellDamageCap = (uint32_t)Config.MainConfig.GetIntDefault("Limits", "SpellDmg", 30000);
+    limit.maxHealthCap = (uint32_t)Config.MainConfig.GetIntDefault("Limits", "Health", 80000);
+    limit.maxManaCap = (uint32_t)Config.MainConfig.GetIntDefault("Limits", "Mana", 80000);
+    limit.maxHonorPoints = (uint32_t)Config.MainConfig.GetIntDefault("Limits", "Honor", 75000);
+    limit.maxArenaPoints = (uint32_t)Config.MainConfig.GetIntDefault("Limits", "Arena", 5000);
     limit.disconnectPlayerForExceedingLimits = Config.MainConfig.GetBoolDefault("Limits", "Disconnect", false);
     limit.broadcastMessageToGmOnExceeding = Config.MainConfig.GetBoolDefault("Limits", "BroadcastGMs", true);
 
@@ -563,13 +561,13 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     optional.playerStartingLevel = Config.OptionalConfig.GetIntDefault("Optional", "StartingLevel", 1);
     optional.playerLevelCap = Config.OptionalConfig.GetIntDefault("Optional", "LevelCap", DBC_PLAYER_LEVEL_CAP);
     optional.playerGeneratedInformationByLevelCap = Config.OptionalConfig.GetIntDefault("Optional", "GenLevelCap", DBC_PLAYER_LEVEL_CAP); //! no delete
-    if (optional.playerStartingLevel > static_cast<int32>(optional.playerLevelCap))
-        optional.playerStartingLevel = static_cast<int32>(optional.playerLevelCap);
+    if (optional.playerStartingLevel > static_cast<int32_t>(optional.playerLevelCap))
+        optional.playerStartingLevel = static_cast<int32_t>(optional.playerLevelCap);
 
     optional.allowTbcCharacters = Config.OptionalConfig.GetBoolDefault("Optional", "AllowTBC", true);
     optional.deactivateMasterLootNinja = Config.OptionalConfig.GetBoolDefault("Optional", "AntiMasterLootNinja", false);
     optional.deathKnightStartTalentPoints = Config.OptionalConfig.GetIntDefault("Optional", "DKStartingTalents", 0);
-    optional.maxProfessions = (uint32)Config.OptionalConfig.GetIntDefault("Optional", "MaxProfessions", 2);
+    optional.maxProfessions = (uint32_t)Config.OptionalConfig.GetIntDefault("Optional", "MaxProfessions", 2);
     //unstuck - Not loaded by core
     //unstuckcooldown - Not loaded by core
     //unstucktobind - Not loaded by core
@@ -696,3 +694,12 @@ uint32_t WorldConfig::getRealmType()
     return server.realmType;
 }
 
+uint32_t WorldConfig::getPlayerLimit()
+{
+    return server.playerLimit;
+}
+
+uint32_t WorldConfig::getKickAFKPlayerTime()
+{
+    return server.secondsBeforeKickAFKPlayers;
+}
