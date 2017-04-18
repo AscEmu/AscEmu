@@ -336,10 +336,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         inline size_t GetQueueCount() { return mQueuedSessions.size(); }
         void GetStats(uint32* GMCount, float* AverageLatency);
 
-        //movement
-        inline bool getAllowMovement() const { return m_allowMovement; }
-        void SetAllowMovement(bool allow) { m_allowMovement = allow; }
-
         //tickets
         inline bool getGMTicketStatus() { return m_gmTicketSystem; }
         bool toggleGMTicketStatus()
@@ -454,7 +450,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         Mutex SessionsMutex;    //FOR GLOBAL !
         SessionSet Sessions;
 
-        bool m_allowMovement;
         bool m_gmTicketSystem;
 
         

@@ -53,9 +53,7 @@ CommonScheduleThread* cs = nullptr;
 World::World()
 {
     resetPlayerCount();
-    m_allowMovement = true;
     m_gmTicketSystem = true;
-
     
     eventholder = new EventableObjectHolder(WORLD_INSTANCE);
     m_holder = eventholder;
