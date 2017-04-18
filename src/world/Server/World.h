@@ -315,11 +315,11 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         //session
         WorldSession* FindSession(uint32 id);
         WorldSession* FindSessionByName(const char*);
+
         void AddSession(WorldSession* s);
-        void RemoveSession(uint32 id);
 
         void AddGlobalSession(WorldSession* session);
-        void RemoveGlobalSession(WorldSession* session);
+
         void DeleteSession(WorldSession* session);
         void DeleteSessions(std::list< WorldSession* > &slist);
 
@@ -332,9 +332,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
             return ssize;
         }
 
-        // queue
         inline size_t GetQueueCount() { return mQueuedSessions.size(); }
-        void GetStats(uint32* GMCount, float* AverageLatency);
 
         //tickets
         inline bool getGMTicketStatus() { return m_gmTicketSystem; }
@@ -353,51 +351,55 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void SendGlobalMessage(WorldPacket* packet, WorldSession* self = 0);
         void PlaySoundToAll(uint32 soundid);
         void SendZoneMessage(WorldPacket* packet, uint32 zoneid, WorldSession* self = 0);
+
+        //\todo : called in luaengine only
         void SendInstanceMessage(WorldPacket* packet, uint32 instanceid, WorldSession* self = 0);
+
         void SendFactionMessage(WorldPacket* packet, uint8 teamId);
         void SendGamemasterMessage(WorldPacket* packet, WorldSession* self = 0);
         void SendGMWorldText(const char* text, WorldSession* self = 0);
         void SendDamageLimitTextToGM(const char* playername, const char* dmglog);
         void SendBCMessageByID(uint32 id);
-        void SendLocalizedWorldText(bool wide, const char* format, ...);
+
+        //void SendLocalizedWorldText(bool wide, const char* format, ...);
         void SendZoneUnderAttackMsg(uint32 areaid, uint8 team);
 
         // cebernic: textfilter,no fast,but works:D ...
-        inline std::string SessionLocalizedTextFilter(WorldSession* _session, const char* text)
-        {
-            std::string opstr = std::string(text);
-            std::string::iterator t = opstr.begin();
-            std::string temp;
-            int found = 0;
-            std::string num;
-            while(t != opstr.end())
-            {
-                if ((char)(*t) == '{' && strlen((char*) & (*t)) > 1)    // find and no end :D
-                {
-                    found++;
-                    ++t;
-                    continue;
-                }
-                if (found == 1)
-                {
-                    if ((char)(*t) == '}') found++;
-                    else num.push_back(*t);
-                }
-                if (found)    // get the flag and doing my work and skip pushback.
-                {
-                    if (found == 2)
-                    {
-                        temp += _session->LocalizedWorldSrv((uint32) atoi((char*)num.c_str()));
-                        found = 0;
-                        num.clear();
-                    }
-                }
-                else temp.push_back(*t);
-                ++t;
-            }
-            return temp;
-        }
-
+        //\todo Zyres: not called! (SendLocalizedWorldText is not called too)
+        //inline std::string SessionLocalizedTextFilter(WorldSession* _session, const char* text)
+        //{
+        //    std::string opstr = std::string(text);
+        //    std::string::iterator t = opstr.begin();
+        //    std::string temp;
+        //    int found = 0;
+        //    std::string num;
+        //    while(t != opstr.end())
+        //    {
+        //        if ((char)(*t) == '{' && strlen((char*) & (*t)) > 1)    // find and no end :D
+        //        {
+        //            found++;
+        //            ++t;
+        //            continue;
+        //        }
+        //        if (found == 1)
+        //        {
+        //            if ((char)(*t) == '}') found++;
+        //            else num.push_back(*t);
+        //        }
+        //        if (found)    // get the flag and doing my work and skip pushback.
+        //        {
+        //            if (found == 2)
+        //            {
+        //                temp += _session->LocalizedWorldSrv((uint32) atoi((char*)num.c_str()));
+        //                found = 0;
+        //                num.clear();
+        //            }
+        //        }
+        //        else temp.push_back(*t);
+        //        ++t;
+        //    }
+        //    return temp;
+        //}
 
         // update the world server every frame
         void Update(unsigned long time_passed);
@@ -408,7 +410,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         //queue
         uint32 AddQueuedSocket(WorldSocket* Socket);
         void RemoveQueuedSocket(WorldSocket* Socket);
-        uint32 GetQueuePos(WorldSocket* Socket);
+
         void UpdateQueuedSessions(uint32 diff);
         Mutex queueMutex;
 
@@ -420,7 +422,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         
         SessionSet gmList;
         
-        void ShutdownClasses();
         void DeleteObject(Object* obj);
 
         void CharacterEnumProc(QueryResultVector & results, uint32 AccountId);

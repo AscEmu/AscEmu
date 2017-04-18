@@ -316,21 +316,6 @@ WorldSession* World::FindSession(uint32 id)
     return ret;
 }
 
-void World::RemoveSession(uint32 id)
-{
-    m_sessionlock.AcquireWriteLock();
-
-    SessionMap::iterator itr = m_sessions.find(id);
-
-    if (itr != m_sessions.end())
-    {
-        delete itr->second;
-        m_sessions.erase(itr);
-    }
-
-    m_sessionlock.ReleaseWriteLock();
-}
-
 void World::AddSession(WorldSession* s)
 {
     ARCEMU_ASSERT(s != NULL);
@@ -353,15 +338,6 @@ void World::AddGlobalSession(WorldSession* session)
 
     SessionsMutex.Acquire();
     Sessions.insert(session);
-    SessionsMutex.Release();
-}
-
-void World::RemoveGlobalSession(WorldSession* session)
-{
-    ARCEMU_ASSERT(session != NULL);
-
-    SessionsMutex.Acquire();
-    Sessions.erase(session);
     SessionsMutex.Release();
 }
 
@@ -913,27 +889,6 @@ void World::RemoveQueuedSocket(WorldSocket* Socket)
     queueMutex.Release();
 }
 
-uint32 World::GetQueuePos(WorldSocket* Socket)
-{
-    queueMutex.Acquire();
-
-    // Find socket in list
-    QueueSet::iterator iter = mQueuedSessions.begin();
-    uint32 QueuePos = 1;
-    for (; iter != mQueuedSessions.end(); ++iter , ++QueuePos)
-    {
-        if ((*iter) == Socket)
-        {
-            queueMutex.Release();
-            // Return our queue position.
-            return QueuePos;
-        }
-    }
-    queueMutex.Release();
-    // We shouldn't get here..
-    return 1;
-}
-
 void World::UpdateQueuedSessions(uint32 diff)
 {
     if (diff >= m_queueUpdateTimer)
@@ -1033,44 +988,6 @@ WorldSession* World::FindSessionByName(const char* Name) //case insensitive
     }
     m_sessionlock.ReleaseReadLock();
     return 0;
-}
-
-void World::ShutdownClasses()
-{
-    LogNotice("AddonMgr : ~AddonMgr()");
-    sAddonMgr.SaveToDB();
-    delete AddonMgr::getSingletonPtr();
-
-    LogNotice("AuctionMgr : ~AuctionMgr()");
-    delete AuctionMgr::getSingletonPtr();
-    LogNotice("LootMgr : ~LootMgr()");
-    delete LootMgr::getSingletonPtr();
-
-    LogNotice("MailSystem : ~MailSystem()");
-    delete MailSystem::getSingletonPtr();
-}
-
-void World::GetStats(uint32* GMCount, float* AverageLatency)
-{
-    int gm = 0;
-    int count = 0;
-    int avg = 0;
-    PlayerStorageMap::const_iterator itr;
-    objmgr._playerslock.AcquireReadLock();
-    for (itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
-    {
-        if (itr->second->GetSession())
-        {
-            count++;
-            avg += itr->second->GetSession()->GetLatency();
-            if (itr->second->GetSession()->GetPermissionCount())
-                gm++;
-        }
-    }
-    objmgr._playerslock.ReleaseReadLock();
-
-    *AverageLatency = count ? ((float)avg / (float)count) : 0;
-    *GMCount = gm;
 }
 
 void TaskList::AddTask(Task* task)
@@ -1398,55 +1315,56 @@ void World::SendBCMessageByID(uint32 id)
 // cebernic:2008-10-19
 // Format as SendLocalizedWorldText("forcing english & {5}{12} %s","test");
 // 5,12 are ids from worldstring_table
-void World::SendLocalizedWorldText(bool wide, const char* format, ...) // May not optimized,just for works.
-{
-    m_sessionlock.AcquireReadLock();
-    SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
-    {
-        if (itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld())
-        {
-            std::string temp = SessionLocalizedTextFilter(itr->second, format);
-            // parsing
-            format = (char*)temp.c_str();
-            char buffer[1024];
-            va_list ap;
-            va_start(ap, format);
-            vsnprintf(buffer, 1024, format, ap);
-            va_end(ap);
-            // again,we need parse args
-            temp = SessionLocalizedTextFilter(itr->second, buffer);
-            memset(buffer, 0, temp.length() + 1);
-            memcpy(buffer, temp.c_str(), temp.length() + 1); // full done
-
-            uint32 textLen = (uint32)strlen(buffer) + 1;
-            WorldPacket data(textLen + 40);
-
-            if (wide)
-            {
-                data.Initialize(SMSG_AREA_TRIGGER_MESSAGE);
-                data << uint32(0);
-                data << (char*)buffer;
-                data << uint8(0);
-            }
-            else
-            {
-                data.Initialize(SMSG_MESSAGECHAT);
-                data << uint8(CHAT_MSG_SYSTEM);
-                data << uint32(LANG_UNIVERSAL);
-                data << uint64(0); // Who cares about guid when there's no nickname displayed heh ?
-                data << uint32(0);
-                data << uint64(0);
-                data << uint32(textLen);
-                data << buffer;
-                data << uint8(0);
-            }
-            itr->second->SendPacket(&data);
-        }
-    }
-    m_sessionlock.ReleaseReadLock();
-}
+//\todo Zyres: Not called! 2017-04-18
+//void World::SendLocalizedWorldText(bool wide, const char* format, ...) // May not optimized,just for works.
+//{
+//    m_sessionlock.AcquireReadLock();
+//    SessionMap::iterator itr;
+//    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+//    {
+//        if (itr->second->GetPlayer() &&
+//            itr->second->GetPlayer()->IsInWorld())
+//        {
+//            std::string temp = SessionLocalizedTextFilter(itr->second, format);
+//            // parsing
+//            format = (char*)temp.c_str();
+//            char buffer[1024];
+//            va_list ap;
+//            va_start(ap, format);
+//            vsnprintf(buffer, 1024, format, ap);
+//            va_end(ap);
+//            // again,we need parse args
+//            temp = SessionLocalizedTextFilter(itr->second, buffer);
+//            memset(buffer, 0, temp.length() + 1);
+//            memcpy(buffer, temp.c_str(), temp.length() + 1); // full done
+//
+//            uint32 textLen = (uint32)strlen(buffer) + 1;
+//            WorldPacket data(textLen + 40);
+//
+//            if (wide)
+//            {
+//                data.Initialize(SMSG_AREA_TRIGGER_MESSAGE);
+//                data << uint32(0);
+//                data << (char*)buffer;
+//                data << uint8(0);
+//            }
+//            else
+//            {
+//                data.Initialize(SMSG_MESSAGECHAT);
+//                data << uint8(CHAT_MSG_SYSTEM);
+//                data << uint32(LANG_UNIVERSAL);
+//                data << uint64(0); // Who cares about guid when there's no nickname displayed heh ?
+//                data << uint32(0);
+//                data << uint64(0);
+//                data << uint32(textLen);
+//                data << buffer;
+//                data << uint8(0);
+//            }
+//            itr->second->SendPacket(&data);
+//        }
+//    }
+//    m_sessionlock.ReleaseReadLock();
+//}
 
 void World::SendZoneUnderAttackMsg(uint32 areaid, uint8 team)
 {

@@ -391,7 +391,18 @@ bool Master::Run(int argc, char** argv)
 
     delete LogonCommHandler::getSingletonPtr();
 
-    sWorld.ShutdownClasses();
+    LogNotice("AddonMgr : ~AddonMgr()");
+    sAddonMgr.SaveToDB();
+    delete AddonMgr::getSingletonPtr();
+
+    LogNotice("AuctionMgr : ~AuctionMgr()");
+    delete AuctionMgr::getSingletonPtr();
+    LogNotice("LootMgr : ~LootMgr()");
+    delete LootMgr::getSingletonPtr();
+
+    LogNotice("MailSystem : ~MailSystem()");
+    delete MailSystem::getSingletonPtr();
+
     LogNotice("World : ~World()");
     delete World::getSingletonPtr();
 
