@@ -1001,6 +1001,4 @@ class SERVER_DECL WorldSession
 
 };
 
-typedef std::set<WorldSession*> SessionSet;
-
 #endif // _WORLDSESSION_H
