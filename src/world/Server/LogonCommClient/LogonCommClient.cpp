@@ -407,7 +407,7 @@ void LogonCommClientSocket::HandleDisconnectAccount(WorldPacket& recvData)
     uint32 id;
     recvData >> id;
 
-    WorldSession* sess = sWorld.FindSession(id);
+    WorldSession* sess = sWorld.getSessionByAccountId(id);
     if (sess != NULL)
         sess->Disconnect();
 }
@@ -453,7 +453,7 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
             recvData >> account_name;
             const char* account_string = account_name.c_str();
 
-            WorldSession* pSession = sWorld.FindSessionByName(account_string);
+            WorldSession* pSession = sWorld.getSessionByAccountName(account_string);
             if (pSession == nullptr)
             {
                 LOG_ERROR("No session found!");
@@ -489,7 +489,7 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
             const char* account_string = account_name.c_str();
             const char* created_string = created_name.c_str();
 
-            WorldSession* pSession = sWorld.FindSessionByName(account_string);
+            WorldSession* pSession = sWorld.getSessionByAccountName(account_string);
             if (pSession == nullptr)
             {
                 LOG_ERROR("No session found!");
@@ -527,7 +527,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
     const char* request_string = request_name.c_str();
     const char* account_string = account_name.c_str();
 
-    auto session_name = sWorld.FindSessionByName(request_string);
+    auto session_name = sWorld.getSessionByAccountName(request_string);
     if (session_name == nullptr)
     {
         LOG_ERROR("Receiver %s not found!", request_string);
@@ -564,7 +564,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
             sGMLog.writefromsession(session_name, "set account %s forced_permissions to %s", account_string, gmlevel_string);
 
             //Send information to updated account
-            auto updated_account_session = sWorld.FindSessionByName(account_string);
+            auto updated_account_session = sWorld.getSessionByAccountName(account_string);
             if (updated_account_session != nullptr)
             {
                 updated_account_session->SystemMessage("Your permissions has been updated! Please reconnect your account.");

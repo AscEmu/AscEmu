@@ -527,7 +527,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
 
         // Add it to the global session set. Don't "re-add" to session if it is being deleted.
         if (!plObj->GetSession()->bDeleted)
-            sWorld.AddGlobalSession(plObj->GetSession());
+            sWorld.addGlobalSession(plObj->GetSession());
     }
 
     if (!HasPlayers())
@@ -1529,7 +1529,7 @@ void MapMgr::_PerformObjectDuties()
                 if (result == 1)
                 {
                     // complete deletion
-                    sWorld.DeleteSession(session);
+                    sWorld.deleteSession(session);
                 }
                 Sessions.erase(it2);
             }

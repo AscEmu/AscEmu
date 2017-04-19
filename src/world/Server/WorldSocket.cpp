@@ -460,7 +460,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     if (recvData.rpos() != recvData.wpos())
         recvData.read((uint8*)lang.data(), 4);
 
-    WorldSession* session = sWorld.FindSession(AccountID);
+    WorldSession* session = sWorld.getSessionByAccountId(AccountID);
     if (session)
     {
         // AUTH_FAILED = 0x0D
@@ -572,7 +572,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 
     // Check for queue.
     uint32 playerLimit = worldConfig.getPlayerLimit();
-    if ((sWorld.GetSessionCount() < playerLimit) || pSession->HasGMPermissions())
+    if ((sWorld.getSessionCount() < playerLimit) || pSession->HasGMPermissions())
     {
         Authenticate();
     }
@@ -640,8 +640,8 @@ void WorldSocket::Authenticate()
     delete pAuthenticationPacket;
     pAuthenticationPacket = NULL;
 
-    sWorld.AddSession(mSession);
-    sWorld.AddGlobalSession(mSession);
+    sWorld.addSession(mSession);
+    sWorld.addGlobalSession(mSession);
 
 #if VERSION_STRING > TBC
 #if VERSION_STRING != Cata

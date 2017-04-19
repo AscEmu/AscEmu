@@ -73,7 +73,7 @@ bool ChatHandler::HandleAccountMuteCommand(const char* args, WorldSession* m_ses
 
     sGMLog.writefromsession(m_session, "mutex account %s until %s", pAccount, Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32)UNIXTIME).c_str());
 
-    WorldSession* pSession = sWorld.FindSessionByName(pAccount);
+    WorldSession* pSession = sWorld.getSessionByAccountName(pAccount);
     if (pSession != NULL)
     {
         pSession->m_muted = banned;
@@ -89,7 +89,7 @@ bool ChatHandler::HandleAccountUnmuteCommand(const char* args, WorldSession* m_s
 
     GreenSystemMessage(m_session, "Account '%s' has been unmuted.", args);
     sGMLog.writefromsession(m_session, "unmuted account %s", args);
-    WorldSession* pSession = sWorld.FindSessionByName(args);
+    WorldSession* pSession = sWorld.getSessionByAccountName(args);
     if (pSession != NULL)
     {
         pSession->m_muted = 0;

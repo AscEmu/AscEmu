@@ -43,7 +43,7 @@ bool HandleTimeDateCommand(BaseConsole* console, int argc, const char* argv[])
 
 bool HandleInfoCommand(BaseConsole* pConsole, int argc, const char* argv[])
 {
-    uint32 clientsNum = (uint32)sWorld.GetSessionCount();
+    uint32 clientsNum = (uint32)sWorld.getSessionCount();
     int gm = 0;
     int count = 0;
     int avg = 0;

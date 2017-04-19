@@ -280,65 +280,178 @@ float World::getRAMUsage()
     return perfcounter.GetCurrentRAMUsage();
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Session functions
+void World::addSession(WorldSession* worldSession)
+{
+    ARCEMU_ASSERT(worldSession != NULL);
+
+    mSessionLock.AcquireWriteLock();
+
+    mActiveSessionMapStore[worldSession->GetAccountId()] = worldSession;
+
+    if (mActiveSessionMapStore.size() > PeakSessionCount)
+        PeakSessionCount = (uint32)mActiveSessionMapStore.size();
+
+    worldSession->SendAccountDataTimes(GLOBAL_CACHE_MASK);
+
+    mSessionLock.ReleaseWriteLock();
+}
+
+WorldSession* World::getSessionByAccountId(uint32_t accountId)
+{
+    mSessionLock.AcquireReadLock();
+
+    WorldSession* worldSession = nullptr;
+
+    activeSessionMap::const_iterator itr = mActiveSessionMapStore.find(accountId);
+    if (itr != mActiveSessionMapStore.end())
+        worldSession = itr->second;
+
+    mSessionLock.ReleaseReadLock();
+
+    return worldSession;
+}
+
+WorldSession* World::getSessionByAccountName(const char* Name)
+{
+    mSessionLock.AcquireReadLock();
+
+    WorldSession* worldSession = nullptr;
+
+    activeSessionMap::iterator itr = mActiveSessionMapStore.begin();
+    for (; itr != mActiveSessionMapStore.end(); ++itr)
+    {
+        if (!stricmp(itr->second->GetAccountName().c_str(), Name))
+        {
+            worldSession = itr->second;
+            break;
+        }
+    }
+
+    mSessionLock.ReleaseReadLock();
+
+    return worldSession;
+}
+
+size_t World::getSessionCount()
+{
+    mSessionLock.AcquireReadLock();
+    size_t ssize = mActiveSessionMapStore.size();
+    mSessionLock.ReleaseReadLock();
+
+    return ssize;
+}
+
+void World::deleteSession(WorldSession* worldSession)
+{
+    mSessionLock.AcquireWriteLock();
+    mActiveSessionMapStore.erase(worldSession->GetAccountId());
+    mSessionLock.ReleaseWriteLock();
+    delete worldSession;
+}
+
+void World::deleteSessions(std::list<WorldSession*>& slist)
+{
+    mSessionLock.AcquireWriteLock();
+
+    for (std::list<WorldSession*>::iterator itr = slist.begin(); itr != slist.end(); ++itr)
+    {
+        WorldSession* session = *itr;
+        mActiveSessionMapStore.erase(session->GetAccountId());
+    }
+
+    mSessionLock.ReleaseWriteLock();
+
+    for (std::list<WorldSession*>::iterator itr = slist.begin(); itr != slist.end(); ++itr)
+    {
+        WorldSession* session = *itr;
+        delete session;
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// GlobalSession functions - not used?
+void World::addGlobalSession(WorldSession* worldSession)
+{
+    ARCEMU_ASSERT(worldSession != NULL);
+
+    globalSessionMutex.Acquire();
+    globalSessionSet.insert(worldSession);
+    globalSessionMutex.Release();
+}
+
+void World::updateGlobalSession(uint32_t diff)
+{
+    SessionSet::iterator itr, it2;
+    WorldSession* session;
+    int result;
+
+    std::list<WorldSession*> ErasableSessions;
+
+    globalSessionMutex.Acquire();
+
+    for (itr = globalSessionSet.begin(); itr != globalSessionSet.end();)
+    {
+        session = (*itr);
+        it2 = itr;
+        ++itr;
+        if (!session || session->GetInstance() != 0)
+        {
+            globalSessionSet.erase(it2);
+            continue;
+        }
+
+        if ((result = session->Update(0)) != 0)
+        {
+            if (result == 1)
+            {
+                // complete deletion after relinquishing SessionMutex!
+                // Otherwise Valgrind (probably falsely) reports a possible deadlock!
+                ErasableSessions.push_back(session);
+            }
+            globalSessionSet.erase(it2);
+        }
+    }
+
+    globalSessionMutex.Release();
+
+    deleteSessions(ErasableSessions);
+    ErasableSessions.clear();
+}
+
+
+
+
+
+
+
+
+
+
+
+
 void CleanupRandomNumberGenerators();
 
 void World::LogoutPlayers()
 {
     LogNotice("World : Logging out players...");
-    for (SessionMap::iterator i = m_sessions.begin(); i != m_sessions.end(); ++i)
+    for (activeSessionMap::iterator i = mActiveSessionMapStore.begin(); i != mActiveSessionMapStore.end(); ++i)
     {
         (i->second)->LogoutPlayer(true);
     }
 
     LogNotice("World", "Deleting sessions...");
     WorldSession* p;
-    for (SessionMap::iterator i = m_sessions.begin(); i != m_sessions.end();)
+    for (activeSessionMap::iterator i = mActiveSessionMapStore.begin(); i != mActiveSessionMapStore.end();)
     {
         p = i->second;
         ++i;
 
-        DeleteSession(p);
+        deleteSession(p);
         //delete p;
     }
-}
-
-WorldSession* World::FindSession(uint32 id)
-{
-    m_sessionlock.AcquireReadLock();
-    WorldSession* ret = 0;
-    SessionMap::const_iterator itr = m_sessions.find(id);
-
-    if (itr != m_sessions.end())
-        ret = itr->second;
-
-    m_sessionlock.ReleaseReadLock();
-
-    return ret;
-}
-
-void World::AddSession(WorldSession* s)
-{
-    ARCEMU_ASSERT(s != NULL);
-
-    m_sessionlock.AcquireWriteLock();
-
-    m_sessions[s->GetAccountId()] = s;
-
-    if (m_sessions.size() > PeakSessionCount)
-        PeakSessionCount = (uint32)m_sessions.size();
-
-    s->SendAccountDataTimes(GLOBAL_CACHE_MASK);
-
-    m_sessionlock.ReleaseWriteLock();
-}
-
-void World::AddGlobalSession(WorldSession* session)
-{
-    ARCEMU_ASSERT(session != NULL);
-
-    SessionsMutex.Acquire();
-    Sessions.insert(session);
-    SessionsMutex.Release();
 }
 
 bool BasicTaskExecutor::run()
@@ -630,10 +743,10 @@ void World::Update(unsigned long time_passed)
 
 void World::SendGlobalMessage(WorldPacket* packet, WorldSession* self)
 {
-    m_sessionlock.AcquireReadLock();
+    mSessionLock.AcquireReadLock();
 
-    SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    activeSessionMap::iterator itr;
+    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
     {
         if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
         {
@@ -641,7 +754,7 @@ void World::SendGlobalMessage(WorldPacket* packet, WorldSession* self)
         }
     }
 
-    m_sessionlock.ReleaseReadLock();
+    mSessionLock.ReleaseReadLock();
 }
 
 void World::PlaySoundToAll(uint32 soundid)
@@ -649,9 +762,9 @@ void World::PlaySoundToAll(uint32 soundid)
     WorldPacket data(SMSG_PLAY_SOUND, 4);
     data << uint32(soundid);
 
-    m_sessionlock.AcquireWriteLock();
+    mSessionLock.AcquireWriteLock();
 
-    for (SessionMap::iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
     {
         WorldSession* session = itr->second;
 
@@ -659,15 +772,15 @@ void World::PlaySoundToAll(uint32 soundid)
             session->SendPacket(&data);
     }
 
-    m_sessionlock.ReleaseWriteLock();
+    mSessionLock.ReleaseWriteLock();
 }
 
 void World::SendFactionMessage(WorldPacket* packet, uint8 teamId)
 {
-    m_sessionlock.AcquireReadLock();
-    SessionMap::iterator itr;
+    mSessionLock.AcquireReadLock();
+    activeSessionMap::iterator itr;
     Player* plr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
     {
         plr = itr->second->GetPlayer();
         if (!plr || !plr->IsInWorld())
@@ -676,14 +789,14 @@ void World::SendFactionMessage(WorldPacket* packet, uint8 teamId)
         if (plr->GetTeam() == teamId)
             itr->second->SendPacket(packet);
     }
-    m_sessionlock.ReleaseReadLock();
+    mSessionLock.ReleaseReadLock();
 }
 
 void World::SendGamemasterMessage(WorldPacket* packet, WorldSession* self)
 {
-    m_sessionlock.AcquireReadLock();
-    SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    mSessionLock.AcquireReadLock();
+    activeSessionMap::iterator itr;
+    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
     {
         if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
         {
@@ -691,15 +804,15 @@ void World::SendGamemasterMessage(WorldPacket* packet, WorldSession* self)
                 itr->second->SendPacket(packet);
         }
     }
-    m_sessionlock.ReleaseReadLock();
+    mSessionLock.ReleaseReadLock();
 }
 
 void World::SendZoneMessage(WorldPacket* packet, uint32 zoneid, WorldSession* self)
 {
-    m_sessionlock.AcquireReadLock();
+    mSessionLock.AcquireReadLock();
 
-    SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    activeSessionMap::iterator itr;
+    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
     {
         if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
         {
@@ -708,15 +821,15 @@ void World::SendZoneMessage(WorldPacket* packet, uint32 zoneid, WorldSession* se
         }
     }
 
-    m_sessionlock.ReleaseReadLock();
+    mSessionLock.ReleaseReadLock();
 }
 
 void World::SendInstanceMessage(WorldPacket* packet, uint32 instanceid, WorldSession* self)
 {
-    m_sessionlock.AcquireReadLock();
+    mSessionLock.AcquireReadLock();
 
-    SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    activeSessionMap::iterator itr;
+    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
     {
         if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
         {
@@ -725,7 +838,7 @@ void World::SendInstanceMessage(WorldPacket* packet, uint32 instanceid, WorldSes
         }
     }
 
-    m_sessionlock.ReleaseReadLock();
+    mSessionLock.ReleaseReadLock();
 }
 
 void World::SendWorldText(const char* text, WorldSession* self)
@@ -792,72 +905,6 @@ void World::SendWorldWideScreenText(const char* text, WorldSession* self)
     SendGlobalMessage(&data, self);
 }
 
-void World::UpdateSessions(uint32 diff)
-{
-    SessionSet::iterator itr, it2;
-    WorldSession* session;
-    int result;
-
-    std::list<WorldSession*> ErasableSessions;
-
-    SessionsMutex.Acquire();
-
-    for (itr = Sessions.begin(); itr != Sessions.end();)
-    {
-        session = (*itr);
-        it2 = itr;
-        ++itr;
-        if (!session || session->GetInstance() != 0)
-        {
-            Sessions.erase(it2);
-            continue;
-        }
-
-        if ((result = session->Update(0)) != 0)
-        {
-            if (result == 1)
-            {
-                // complete deletion after relinquishing SessionMutex!
-                // Otherwise Valgrind (probably falsely) reports a possible deadlock!
-                ErasableSessions.push_back(session);
-            }
-            Sessions.erase(it2);
-        }
-    }
-
-    SessionsMutex.Release();
-
-    DeleteSessions(ErasableSessions);
-    ErasableSessions.clear();
-}
-
-void World::DeleteSession(WorldSession* session)
-{
-    m_sessionlock.AcquireWriteLock();
-    m_sessions.erase(session->GetAccountId());
-    m_sessionlock.ReleaseWriteLock();
-    delete session;
-}
-
-void World::DeleteSessions(std::list<WorldSession*>& slist)
-{
-    m_sessionlock.AcquireWriteLock();
-
-    for (std::list<WorldSession*>::iterator itr = slist.begin(); itr != slist.end(); ++itr)
-    {
-        WorldSession* session = *itr;
-        m_sessions.erase(session->GetAccountId());
-    }
-
-    m_sessionlock.ReleaseWriteLock();
-
-    for (std::list<WorldSession*>::iterator itr = slist.begin(); itr != slist.end(); ++itr)
-    {
-        WorldSession* session = *itr;
-        delete session;
-    }
-}
-
 uint32 World::AddQueuedSocket(WorldSocket* Socket)
 {
     queueMutex.Acquire();
@@ -902,7 +949,7 @@ void World::UpdateQueuedSessions(uint32 diff)
             return;
         }
 
-        while (m_sessions.size() < settings.getPlayerLimit() && mQueuedSessions.size())
+        while (mActiveSessionMapStore.size() < settings.getPlayerLimit() && mQueuedSessions.size())
         {
             // Yay. We can let another player in now.
             // Grab the first fucker from the queue, but guard of course, since
@@ -970,24 +1017,6 @@ void World::SaveAllPlayers()
     }
     objmgr._playerslock.ReleaseReadLock();
     LogDetail("Saved %u players.", count);
-}
-
-WorldSession* World::FindSessionByName(const char* Name) //case insensitive
-{
-    m_sessionlock.AcquireReadLock();
-
-    // loop sessions, see if we can find him
-    SessionMap::iterator itr = m_sessions.begin();
-    for (; itr != m_sessions.end(); ++itr)
-    {
-        if (!stricmp(itr->second->GetAccountName().c_str(), Name))
-        {
-            m_sessionlock.ReleaseReadLock();
-            return itr->second;
-        }
-    }
-    m_sessionlock.ReleaseReadLock();
-    return 0;
 }
 
 void TaskList::AddTask(Task* task)
@@ -1127,7 +1156,7 @@ void World::DeleteObject(Object* obj)
 
 void World::CharacterEnumProc(QueryResultVector& results, uint32 AccountId)
 {
-    WorldSession* s = FindSession(AccountId);
+    WorldSession* s = getSessionByAccountId(AccountId);
     if (s == NULL)
         return;
 
@@ -1136,7 +1165,7 @@ void World::CharacterEnumProc(QueryResultVector& results, uint32 AccountId)
 
 void World::LoadAccountDataProc(QueryResultVector& results, uint32 AccountId)
 {
-    WorldSession* session = FindSession(AccountId);
+    WorldSession* session = getSessionByAccountId(AccountId);
     if (session == NULL)
         return;
 
@@ -1205,11 +1234,11 @@ bool CharacterLoaderThread::run()
 
 void World::DisconnectUsersWithAccount(const char* account, WorldSession* m_session)
 {
-    SessionMap::iterator itr;
+    activeSessionMap::iterator itr;
     WorldSession* session;
-    m_sessionlock.AcquireReadLock();
+    mSessionLock.AcquireReadLock();
     bool FoundUser = false;
-    for (itr = m_sessions.begin(); itr != m_sessions.end();)
+    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end();)
     {
         session = itr->second;
         ++itr;
@@ -1223,18 +1252,18 @@ void World::DisconnectUsersWithAccount(const char* account, WorldSession* m_sess
             session->Disconnect();
         }
     }
-    m_sessionlock.ReleaseReadLock();
+    mSessionLock.ReleaseReadLock();
     if (FoundUser == false)
         m_session->SystemMessage("There is nobody online with account [%s]", account);
 }
 
 void World::DisconnectUsersWithIP(const char* ip, WorldSession* m_session)
 {
-    SessionMap::iterator itr;
+    activeSessionMap::iterator itr;
     WorldSession* session;
-    m_sessionlock.AcquireReadLock();
+    mSessionLock.AcquireReadLock();
     bool FoundUser = false;
-    for (itr = m_sessions.begin(); itr != m_sessions.end();)
+    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end();)
     {
         session = itr->second;
         ++itr;
@@ -1254,16 +1283,16 @@ void World::DisconnectUsersWithIP(const char* ip, WorldSession* m_session)
     }
     if (FoundUser == false)
         m_session->SystemMessage("There is nobody online with ip [%s]", ip);
-    m_sessionlock.ReleaseReadLock();
+    mSessionLock.ReleaseReadLock();
 }
 
 void World::DisconnectUsersWithPlayerName(const char* plr, WorldSession* m_session)
 {
-    SessionMap::iterator itr;
+    activeSessionMap::iterator itr;
     WorldSession* session;
-    m_sessionlock.AcquireReadLock();
+    mSessionLock.AcquireReadLock();
     bool FoundUser = false;
-    for (itr = m_sessions.begin(); itr != m_sessions.end();)
+    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end();)
     {
         session = itr->second;
         ++itr;
@@ -1282,14 +1311,14 @@ void World::DisconnectUsersWithPlayerName(const char* plr, WorldSession* m_sessi
     }
     if (FoundUser == false)
         m_session->SystemMessage("There is no body online with the name [%s]", plr);
-    m_sessionlock.ReleaseReadLock();
+    mSessionLock.ReleaseReadLock();
 }
 
 void World::SendBCMessageByID(uint32 id)
 {
-    m_sessionlock.AcquireReadLock();
-    SessionMap::iterator itr;
-    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    mSessionLock.AcquireReadLock();
+    activeSessionMap::iterator itr;
+    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
     {
         if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld())
         {
@@ -1309,7 +1338,7 @@ void World::SendBCMessageByID(uint32 id)
             itr->second->SendPacket(&data);
         }
     }
-    m_sessionlock.ReleaseReadLock();
+    mSessionLock.ReleaseReadLock();
 }
 
 // cebernic:2008-10-19

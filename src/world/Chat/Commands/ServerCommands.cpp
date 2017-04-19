@@ -39,7 +39,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
     }
     objmgr._playerslock.ReleaseReadLock();
 
-    uint32 active_sessions = uint32(sWorld.GetSessionCount());
+    uint32 active_sessions = uint32(sWorld.getSessionCount());
 
     GreenSystemMessage(m_session, "Server Revision: |r%sAscEmu %s/%s-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH, MSG_COLOR_LIGHTBLUE);
     GreenSystemMessage(m_session, "Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());

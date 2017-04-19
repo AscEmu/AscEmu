@@ -77,7 +77,7 @@ bool WorldRunnable::run()
                 diff = now - LastSessionsUpdate;
 
             LastSessionsUpdate = now;
-            sWorld.UpdateSessions(diff);
+            sWorld.updateGlobalSession(diff);
 
             now = getMSTime();
             //we have to wait now

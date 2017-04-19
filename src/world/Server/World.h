@@ -307,30 +307,44 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         float getCPUUsage();
         float getRAMUsage();
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Session functions
+    private:
+
+    public:
+
+        typedef std::unordered_map<uint32_t, WorldSession*> activeSessionMap;
+        activeSessionMap mActiveSessionMapStore;
+        RWLock mSessionLock;
+
+        void addSession(WorldSession* worldSession);
+
+        WorldSession* getSessionByAccountId(uint32_t accountId);
+        WorldSession* getSessionByAccountName(const char*);
+
+        size_t getSessionCount();
+
+        void deleteSession(WorldSession* worldSession);
+        void deleteSessions(std::list<WorldSession*> &slist);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // GlobalSession functions - not used?
+    private:
+
+        SessionSet globalSessionSet;
+        Mutex globalSessionMutex;
+
+    public:
+
+        void addGlobalSession(WorldSession* worldSession);
+        void updateGlobalSession(uint32_t diff);
+
     //MIT End
     //AGPL Start
         ///\todo Encapsulate below this point
     public:
 
         //session
-        WorldSession* FindSession(uint32 id);
-        WorldSession* FindSessionByName(const char*);
-
-        void AddSession(WorldSession* s);
-
-        void AddGlobalSession(WorldSession* session);
-
-        void DeleteSession(WorldSession* session);
-        void DeleteSessions(std::list< WorldSession* > &slist);
-
-        size_t GetSessionCount()
-        {
-            m_sessionlock.AcquireReadLock();
-            size_t ssize = m_sessions.size();
-            m_sessionlock.ReleaseReadLock();
-
-            return ssize;
-        }
 
         inline size_t GetQueueCount() { return mQueuedSessions.size(); }
 
@@ -404,8 +418,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         // update the world server every frame
         void Update(unsigned long time_passed);
         void CheckForExpiredInstances();
-        void UpdateSessions(uint32 diff);
-
 
         //queue
         uint32 AddQueuedSocket(WorldSocket* Socket);
@@ -424,6 +436,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         
         void DeleteObject(Object* obj);
 
+        //\todo Zyres misplaced
         void CharacterEnumProc(QueryResultVector & results, uint32 AccountId);
         void LoadAccountDataProc(QueryResultVector & results, uint32 AccountId);
 
@@ -432,10 +445,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void DisconnectUsersWithPlayerName(const char* plr, WorldSession* session);
 
         void LogoutPlayers();
-
-        typedef std::unordered_map<uint32, WorldSession*> SessionMap;
-        SessionMap m_sessions;
-        RWLock m_sessionlock;
 
     private:
 
@@ -446,14 +455,10 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         Arcemu::PerformanceCounter perfcounter;
 
-    protected:
-
-        Mutex SessionsMutex;    //FOR GLOBAL !
-        SessionSet Sessions;
+    protected:      
 
         bool m_gmTicketSystem;
 
-        
         uint32 m_queueUpdateTimer;
 
         QueueSet mQueuedSessions;

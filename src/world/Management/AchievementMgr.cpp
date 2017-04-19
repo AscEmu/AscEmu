@@ -374,7 +374,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
     else
     {
         // allocate enough space
-        guidList = new uint32[sWorld.GetSessionCount() + 256];
+        guidList = new uint32[sWorld.getSessionCount() + 256];
         // Send Achievement message to every guild member currently on the server
         if (GetPlayer()->IsInGuild())
         {
