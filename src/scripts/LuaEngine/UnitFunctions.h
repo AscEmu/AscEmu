@@ -1319,7 +1319,7 @@ class LuaUnit
             data << uint8(0);
         }
 
-        sWorld.SendZoneMessage(&data, zone_id, 0);
+        sWorld.sendZoneMessage(&data, zone_id);
 
         return 0;
     }

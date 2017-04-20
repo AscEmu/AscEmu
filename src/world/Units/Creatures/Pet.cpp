@@ -1965,7 +1965,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 un
                 team = TEAM_ALLIANCE;
 
             auto area = pVictim->GetArea();
-            sWorld.SendZoneUnderAttackMsg(area ? area->id : GetZoneId(), static_cast<uint8>(team));
+            sWorld.sendZoneUnderAttackMessage(area ? area->id : GetZoneId(), static_cast<uint8>(team));
         }
 
         pVictim->Die(this, damage, spellId);

@@ -369,7 +369,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
         data << uint64(GetPlayer()->GetGUID());
         data << uint32(achievement->ID);
         data << uint32(0);
-        sWorld.SendGlobalMessage(&data);
+        sWorld.sendGlobalMessage(&data);
     }
     else
     {

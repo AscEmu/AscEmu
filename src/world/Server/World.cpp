@@ -421,9 +421,159 @@ void World::updateGlobalSession(uint32_t diff)
     ErasableSessions.clear();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Send Messages
+void World::sendMessageToOnlineGms(std::string message, WorldSession* sendToSelf /*nullptr*/)
+{
+    uint32_t textLength = (uint32_t)message.size() + 1;
 
+    WorldPacket data(SMSG_MESSAGECHAT, textLength + 40);
+    data << uint8_t(CHAT_MSG_SYSTEM);
+    data << uint32_t(LANG_UNIVERSAL);
+    data << uint64_t(0);
+    data << uint32_t(0);
+    data << uint64_t(0);
+    data << textLength;
+    data << message.c_str();
+    data << uint8_t(0);
 
+    mSessionLock.AcquireReadLock();
+    activeSessionMap::iterator itr;
+    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
+    {
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != sendToSelf)
+        {
+            if (itr->second->CanUseCommand('u'))
+                itr->second->SendPacket(&data);
+        }
+    }
+    mSessionLock.ReleaseReadLock();
+}
 
+void World::sendMessageToAll(std::string message, WorldSession* sendToSelf /*nullptr*/)
+{
+    uint32_t textLength = (uint32_t)message.size() + 1;
+
+    WorldPacket data(SMSG_MESSAGECHAT, textLength + 40);
+    data << uint8_t(CHAT_MSG_SYSTEM);
+    data << uint32_t(LANG_UNIVERSAL);
+    data << uint64_t(0);
+    data << uint32_t(0);
+    data << uint64_t(0);
+    data << textLength;
+    data << message.c_str();
+    data << uint8_t(0);
+
+    sendGlobalMessage(&data, sendToSelf);
+
+    if (settings.announce.showAnnounceInConsoleOutput)
+    {
+        LogDetail("WORLD : SendWorldText %s", message.c_str());
+    }
+}
+
+void World::sendAreaTriggerMessage(std::string message, WorldSession* sendToSelf /*nullptr*/)
+{
+    WorldPacket data(SMSG_AREA_TRIGGER_MESSAGE, 256);
+    data << uint32_t(0);
+    data << message.c_str();
+    data << uint8_t(0);
+
+    sendGlobalMessage(&data, sendToSelf);
+}
+
+void World::sendGlobalMessage(WorldPacket* worldPacket, WorldSession* sendToSelf /*nullptr*/)
+{
+    mSessionLock.AcquireReadLock();
+
+    for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
+    {
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != sendToSelf)
+            itr->second->SendPacket(worldPacket);
+    }
+
+    mSessionLock.ReleaseReadLock();
+}
+
+void World::sendZoneMessage(WorldPacket* worldPacket, uint32_t zoneId, WorldSession* sendToSelf /*nullptr*/)
+{
+    mSessionLock.AcquireReadLock();
+
+    for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
+    {
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != sendToSelf)
+        {
+            if (itr->second->GetPlayer()->GetZoneId() == zoneId)
+                itr->second->SendPacket(worldPacket);
+        }
+    }
+
+    mSessionLock.ReleaseReadLock();
+}
+
+void World::sendInstanceMessage(WorldPacket* worldPacket, uint32_t instanceId, WorldSession* sendToSelf /*nullptr*/)
+{
+    mSessionLock.AcquireReadLock();
+
+    for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
+    {
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != sendToSelf) // don't send to self!
+        {
+            if (itr->second->GetPlayer()->GetInstanceID() == (int32)instanceId)
+                itr->second->SendPacket(worldPacket);
+        }
+    }
+
+    mSessionLock.ReleaseReadLock();
+}
+
+void World::sendZoneUnderAttackMessage(uint32_t areaId, uint8_t teamId)
+{
+    WorldPacket data(SMSG_ZONE_UNDER_ATTACK, 4);
+    data << uint32(areaId);
+
+    mSessionLock.AcquireReadLock();
+
+    for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
+    {
+        Player* plr = itr->second->GetPlayer();
+        if (plr != nullptr && plr->IsInWorld())
+        {
+            if (plr->GetTeam() == teamId)
+                itr->second->SendPacket(&data);
+        }
+    }
+
+    mSessionLock.ReleaseReadLock();
+}
+
+void World::sendBroadcastMessageById(uint32_t broadcastId)
+{
+    mSessionLock.AcquireReadLock();
+
+    for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
+    {
+        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld())
+        {
+            const char* text = itr->second->LocalizedBroadCast(broadcastId);
+            uint32_t textLen = (uint32_t)strlen(text) + 1;
+
+            WorldPacket data(SMSG_MESSAGECHAT, textLen + 40);
+            data << uint8_t(CHAT_MSG_SYSTEM);
+            data << uint32_t(LANG_UNIVERSAL);
+            data << uint64_t(0);
+            data << uint32_t(0);
+            data << uint64_t(0);
+            data << textLen;
+            data << text;
+            data << uint8_t(0);
+
+            itr->second->SendPacket(&data);
+        }
+    }
+
+    mSessionLock.ReleaseReadLock();
+}
 
 
 
@@ -741,22 +891,6 @@ void World::Update(unsigned long time_passed)
 #endif
 }
 
-void World::SendGlobalMessage(WorldPacket* packet, WorldSession* self)
-{
-    mSessionLock.AcquireReadLock();
-
-    activeSessionMap::iterator itr;
-    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
-    {
-        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
-        {
-            itr->second->SendPacket(packet);
-        }
-    }
-
-    mSessionLock.ReleaseReadLock();
-}
-
 void World::PlaySoundToAll(uint32 soundid)
 {
     WorldPacket data(SMSG_PLAY_SOUND, 4);
@@ -773,136 +907,6 @@ void World::PlaySoundToAll(uint32 soundid)
     }
 
     mSessionLock.ReleaseWriteLock();
-}
-
-void World::SendFactionMessage(WorldPacket* packet, uint8 teamId)
-{
-    mSessionLock.AcquireReadLock();
-    activeSessionMap::iterator itr;
-    Player* plr;
-    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
-    {
-        plr = itr->second->GetPlayer();
-        if (!plr || !plr->IsInWorld())
-            continue;
-
-        if (plr->GetTeam() == teamId)
-            itr->second->SendPacket(packet);
-    }
-    mSessionLock.ReleaseReadLock();
-}
-
-void World::SendGamemasterMessage(WorldPacket* packet, WorldSession* self)
-{
-    mSessionLock.AcquireReadLock();
-    activeSessionMap::iterator itr;
-    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
-    {
-        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
-        {
-            if (itr->second->CanUseCommand('u'))
-                itr->second->SendPacket(packet);
-        }
-    }
-    mSessionLock.ReleaseReadLock();
-}
-
-void World::SendZoneMessage(WorldPacket* packet, uint32 zoneid, WorldSession* self)
-{
-    mSessionLock.AcquireReadLock();
-
-    activeSessionMap::iterator itr;
-    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
-    {
-        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
-        {
-            if (itr->second->GetPlayer()->GetZoneId() == zoneid)
-                itr->second->SendPacket(packet);
-        }
-    }
-
-    mSessionLock.ReleaseReadLock();
-}
-
-void World::SendInstanceMessage(WorldPacket* packet, uint32 instanceid, WorldSession* self)
-{
-    mSessionLock.AcquireReadLock();
-
-    activeSessionMap::iterator itr;
-    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
-    {
-        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != self) // don't send to self!
-        {
-            if (itr->second->GetPlayer()->GetInstanceID() == (int32)instanceid)
-                itr->second->SendPacket(packet);
-        }
-    }
-
-    mSessionLock.ReleaseReadLock();
-}
-
-void World::SendWorldText(const char* text, WorldSession* self)
-{
-    uint32 textLen = (uint32)strlen((char*)text) + 1;
-
-    WorldPacket data(textLen + 40);
-    data.Initialize(SMSG_MESSAGECHAT);
-    data << uint8(CHAT_MSG_SYSTEM);
-    data << uint32(LANG_UNIVERSAL);
-    data << uint64(0); // Who cares about guid when there's no nickname displayed heh ?
-    data << uint32(0);
-    data << uint64(0);
-    data << textLen;
-    data << text;
-    data << uint8(0);
-    SendGlobalMessage(&data, self);
-
-    if (settings.announce.showAnnounceInConsoleOutput)
-    {
-        LogDetail("WORLD : SendWorldText %s", text);
-    }
-}
-
-void World::SendGMWorldText(const char* text, WorldSession* self)
-{
-    uint32 textLen = (uint32)strlen((char*)text) + 1;
-
-    WorldPacket data(textLen + 40);
-    data.Initialize(SMSG_MESSAGECHAT);
-    data << uint8(CHAT_MSG_SYSTEM);
-    data << uint32(LANG_UNIVERSAL);
-    data << uint64(0);
-    data << uint32(0);
-    data << uint64(0);
-    data << textLen;
-    data << text;
-    data << uint8(0);
-    SendGamemasterMessage(&data, self);
-}
-
-void World::SendDamageLimitTextToGM(const char* playername, const char* dmglog)
-{
-    std::string gm_ann(MSG_COLOR_GREEN);
-
-    gm_ann += "|Hplayer:";
-    gm_ann += playername;
-    gm_ann += "|h[";
-    gm_ann += playername;
-    gm_ann += "]|h: ";
-    gm_ann += MSG_COLOR_YELLOW;
-    gm_ann += dmglog;
-
-    sWorld.SendGMWorldText(gm_ann.c_str());
-}
-
-void World::SendWorldWideScreenText(const char* text, WorldSession* self)
-{
-    WorldPacket data(256);
-    data.Initialize(SMSG_AREA_TRIGGER_MESSAGE);
-    data << uint32(0);
-    data << text;
-    data << uint8(0x00);
-    SendGlobalMessage(&data, self);
 }
 
 uint32 World::AddQueuedSocket(WorldSocket* Socket)
@@ -1314,33 +1318,6 @@ void World::DisconnectUsersWithPlayerName(const char* plr, WorldSession* m_sessi
     mSessionLock.ReleaseReadLock();
 }
 
-void World::SendBCMessageByID(uint32 id)
-{
-    mSessionLock.AcquireReadLock();
-    activeSessionMap::iterator itr;
-    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
-    {
-        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld())
-        {
-            const char* text = itr->second->LocalizedBroadCast(id);
-            uint32 textLen = (uint32)strlen(text) + 1;
-
-            WorldPacket data(textLen + 40);
-            data.Initialize(SMSG_MESSAGECHAT);
-            data << uint8(CHAT_MSG_SYSTEM);
-            data << uint32(LANG_UNIVERSAL);
-            data << uint64(0); // Who cares about guid when there's no nickname displayed heh ?
-            data << uint32(0);
-            data << uint64(0);
-            data << textLen;
-            data << text;
-            data << uint8(0);
-            itr->second->SendPacket(&data);
-        }
-    }
-    mSessionLock.ReleaseReadLock();
-}
-
 // cebernic:2008-10-19
 // Format as SendLocalizedWorldText("forcing english & {5}{12} %s","test");
 // 5,12 are ids from worldstring_table
@@ -1395,10 +1372,3 @@ void World::SendBCMessageByID(uint32 id)
 //    m_sessionlock.ReleaseReadLock();
 //}
 
-void World::SendZoneUnderAttackMsg(uint32 areaid, uint8 team)
-{
-    WorldPacket data(SMSG_ZONE_UNDER_ATTACK, 4);
-    data << uint32(areaid);
-
-    SendFactionMessage(&data, team);
-}

@@ -849,7 +849,7 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
                         char str[20];
                         snprintf(str, 20, "%02u:%02u", mins, secs);
                         data << str;
-                        sWorld.SendGlobalMessage(&data, NULL);
+                        sWorld.sendGlobalMessage(&data);
                     }
                 }
                 next_send = getMSTime() + 1000;

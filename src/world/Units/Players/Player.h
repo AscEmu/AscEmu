@@ -424,6 +424,13 @@ public:
     void cancelTrade(bool sendback);
 
 #endif
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Messages
+public:
+
+    void sendReportToGmMessage(std::string playerName, std::string damageLog);
+
+
 private:
     //MIT End
     //AGPL Start

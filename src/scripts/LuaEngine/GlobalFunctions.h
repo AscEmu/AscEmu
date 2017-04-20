@@ -209,10 +209,12 @@ namespace luaGlobalFunctions
             lua_pushnil(L);
             return 1;
         }
+
         if (MsgType == 1)
-            sWorld.SendWorldWideScreenText(message);
+            sWorld.sendAreaTriggerMessage(message);
         else if (MsgType == 2)
-            sWorld.SendWorldText(message);
+            sWorld.sendMessageToAll(message);
+
         return 0;
     }
 
@@ -596,7 +598,7 @@ namespace luaGlobalFunctions
         WorldPacket* data = CHECK_PACKET(L, 1);
         uint32 zone_id = CHECK_ULONG(L, 2);
         if (data && zone_id)
-            sWorld.SendZoneMessage(data, zone_id);
+            sWorld.sendZoneMessage(data, zone_id);
         return 0;
     }
 
@@ -605,7 +607,7 @@ namespace luaGlobalFunctions
         WorldPacket* data = CHECK_PACKET(L, 1);
         uint32 instance_id = CHECK_ULONG(L, 2);
         if (data && instance_id)
-            sWorld.SendInstanceMessage(data, instance_id);
+            sWorld.sendInstanceMessage(data, instance_id);
         return 0;
     }
 
@@ -613,7 +615,7 @@ namespace luaGlobalFunctions
     {
         WorldPacket* data = CHECK_PACKET(L, 1);
         if (data)
-            sWorld.SendGlobalMessage(data);
+            sWorld.sendGlobalMessage(data);
         return 0;
     }
 

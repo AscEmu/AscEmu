@@ -84,18 +84,14 @@ void CommonScheduleThread::BroadCastExec()
     if ((uint32)worldConfig.broadcast.interval > THREAD_LOOP_INTERVAL)
     {
         if (getMSTime() <= BCTimerCount)
-        {
             return;
-        }
         else
-        {
             BCTimerCount = getMSTime() + ((uint32)worldConfig.broadcast.interval * 1000);
-        }
     }
 
     switch (worldConfig.broadcast.orderMode)
     {
-    case 0:
+        case 0:
         {
             int entry = objmgr.CalcCurrentBCEntry();
 
@@ -109,21 +105,20 @@ void CommonScheduleThread::BroadCastExec()
             if (entry == 0)
                 return;
             else
-            sWorld.SendBCMessageByID(entry);
+                sWorld.sendBroadcastMessageById(entry);
         }
         break;
-    case 1:
+        case 1:
         {
-            // re-assign
             if (itOrderMSGEntry == objmgr.GetBCTotalItemEnd())
                 itOrderMSGEntry = objmgr.GetBCTotalItemBegin();
 
-            sWorld.SendBCMessageByID((uint32)itOrderMSGEntry->second);
+            sWorld.sendBroadcastMessageById(itOrderMSGEntry->second);
 
             ++itOrderMSGEntry;
         }
         break;
-    default:
-        return;
+        default:
+            return;
     }
 }

@@ -3311,21 +3311,13 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     m_arenaPoints = get_next_field.GetUInt32();
     if (m_arenaPoints > worldConfig.limit.maxArenaPoints)
     {
-        char hlogmsg[256];
-        snprintf(hlogmsg, 256, "has over %u arena points (%u)", worldConfig.limit.maxArenaPoints, m_arenaPoints);
-        sCheatLog.writefromsession(m_session, hlogmsg);
+        std::stringstream dmgLog;
+        dmgLog << "has over " << worldConfig.limit.maxArenaPoints << " arena points " << m_arenaPoints;
+        sCheatLog.writefromsession(m_session, dmgLog.str().c_str());
+
         if (worldConfig.limit.broadcastMessageToGmOnExceeding)          // report to online GMs    
-        {
-            std::string gm_ann = MSG_COLOR_GREEN;
-            gm_ann += "|Hplayer:";
-            gm_ann += GetName();
-            gm_ann += "|h[";
-            gm_ann += GetName();
-            gm_ann += "]|h: ";
-            gm_ann += MSG_COLOR_YELLOW;
-            gm_ann += hlogmsg;
-            sWorld.SendGMWorldText(gm_ann.c_str());
-        }
+            sendReportToGmMessage(GetName(), dmgLog.str());
+
         if (worldConfig.limit.disconnectPlayerForExceedingLimits)
         {
             m_session->Disconnect();
@@ -3507,21 +3499,14 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     m_honorPoints = get_next_field.GetUInt32();
     if (m_honorPoints > worldConfig.limit.maxHonorPoints)
     {
-        char hlogmsg[256];
-        snprintf(hlogmsg, 256, "has over %u honor points (%u)", worldConfig.limit.maxHonorPoints, m_honorPoints);
-        sCheatLog.writefromsession(m_session, hlogmsg);
-        if (worldConfig.limit.broadcastMessageToGmOnExceeding) // report to online GMs    
-        {
-            std::string gm_ann = MSG_COLOR_GREEN;
-            gm_ann += "|Hplayer:";
-            gm_ann += GetName();
-            gm_ann += "|h[";
-            gm_ann += GetName();
-            gm_ann += "]|h: ";
-            gm_ann += MSG_COLOR_YELLOW;
-            gm_ann += hlogmsg;
-            sWorld.SendGMWorldText(gm_ann.c_str());
-        }
+        std::stringstream dmgLog;
+        dmgLog << "has over " << worldConfig.limit.maxArenaPoints << " honor points " << m_honorPoints;
+
+        sCheatLog.writefromsession(m_session, dmgLog.str().c_str());
+
+        if (worldConfig.limit.broadcastMessageToGmOnExceeding)  
+            sendReportToGmMessage(GetName(), dmgLog.str());
+
         if (worldConfig.limit.disconnectPlayerForExceedingLimits)
         {
             m_session->Disconnect();
@@ -5560,23 +5545,17 @@ void Player::UpdateStats()
 
     if (res < hp)
         res = hp;
+
     if (worldConfig.limit.isLimitSystemEnabled && (worldConfig.limit.maxHealthCap > 0) && (res > worldConfig.limit.maxHealthCap) && GetSession()->GetPermissionCount() <= 0)   //hacker?
     {
-        char logmsg[256];
-        snprintf(logmsg, 256, "has over %u health (%i)", worldConfig.limit.maxHealthCap, res);
-        sCheatLog.writefromsession(GetSession(), logmsg);
-        if (worldConfig.limit.broadcastMessageToGmOnExceeding) // send info to online GM
-        {
-            std::string gm_ann = MSG_COLOR_GREEN;
-            gm_ann += "|Hplayer:";
-            gm_ann += GetName();
-            gm_ann += "|h[";
-            gm_ann += GetName();
-            gm_ann += "]|h: ";
-            gm_ann += MSG_COLOR_YELLOW;
-            gm_ann += logmsg;
-            sWorld.SendGMWorldText(gm_ann.c_str());
-        }
+        std::stringstream dmgLog;
+        dmgLog << "has over " << worldConfig.limit.maxArenaPoints << " health " << res;
+
+        sCheatLog.writefromsession(GetSession(), dmgLog.str().c_str());
+
+        if (worldConfig.limit.broadcastMessageToGmOnExceeding)
+            sendReportToGmMessage(GetName(), dmgLog.str());
+
         if (worldConfig.limit.disconnectPlayerForExceedingLimits)
         {
             GetSession()->Disconnect();
@@ -5615,18 +5594,10 @@ void Player::UpdateStats()
             char logmsg[256];
             snprintf(logmsg, 256, "has over %u mana (%i)", worldConfig.limit.maxManaCap, res);
             sCheatLog.writefromsession(GetSession(), logmsg);
+
             if (worldConfig.limit.broadcastMessageToGmOnExceeding) // send info to online GM
-            {
-                std::string gm_ann = MSG_COLOR_GREEN;
-                gm_ann += "|Hplayer:";
-                gm_ann += GetName();
-                gm_ann += "|h[";
-                gm_ann += GetName();
-                gm_ann += "]|h: ";
-                gm_ann += MSG_COLOR_YELLOW;
-                gm_ann += logmsg;
-                sWorld.SendGMWorldText(gm_ann.c_str());
-            }
+                sendReportToGmMessage(GetName(), logmsg);
+
             if (worldConfig.limit.disconnectPlayerForExceedingLimits)
             {
                 GetSession()->Disconnect();
@@ -12603,17 +12574,15 @@ void Player::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
 
 uint32 Player::CheckDamageLimits(uint32 dmg, uint32 spellid)
 {
+    std::stringstream dmglog;
+
     if ((spellid != 0) && (worldConfig.limit.maxSpellDamageCap > 0))
     {
         if (dmg > worldConfig.limit.maxSpellDamageCap)
         {
-            std::stringstream dmglog;
             dmglog << "Dealt " << dmg << " with spell " << spellid;
 
             sCheatLog.writefromsession(m_session, dmglog.str().c_str());
-
-            if (worldConfig.limit.broadcastMessageToGmOnExceeding != 0)
-                sWorld.SendDamageLimitTextToGM(GetName(), dmglog.str().c_str());
 
             if (worldConfig.limit.disconnectPlayerForExceedingLimits != 0)
                 m_session->Disconnect();
@@ -12621,22 +12590,19 @@ uint32 Player::CheckDamageLimits(uint32 dmg, uint32 spellid)
             dmg = worldConfig.limit.maxSpellDamageCap;
         }
     }
-
     else if ((worldConfig.limit.maxAutoAttackDamageCap > 0) && (dmg > worldConfig.limit.maxAutoAttackDamageCap))
     {
-        std::stringstream dmglog;
-
         dmglog << "Dealt " << dmg << " with auto attack";
         sCheatLog.writefromsession(m_session, dmglog.str().c_str());
-
-        if (worldConfig.limit.broadcastMessageToGmOnExceeding != 0)
-            sWorld.SendDamageLimitTextToGM(GetName(), dmglog.str().c_str());
 
         if (worldConfig.limit.disconnectPlayerForExceedingLimits != 0)
             m_session->Disconnect();
 
         dmg = worldConfig.limit.maxAutoAttackDamageCap;
     }
+
+    if (worldConfig.limit.broadcastMessageToGmOnExceeding != 0)
+        sendReportToGmMessage(GetName(), dmglog.str());
 
     return dmg;
 }
@@ -12790,7 +12756,7 @@ void Player::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32
                 team = TEAM_ALLIANCE;
 
             auto area = pVictim->GetArea();
-            sWorld.SendZoneUnderAttackMsg(area ? area->id : GetZoneId(), static_cast<uint8>(team));
+            sWorld.sendZoneUnderAttackMessage(area ? area->id : GetZoneId(), static_cast<uint8>(team));
         }
 
         pVictim->Die(this, damage, spellId);

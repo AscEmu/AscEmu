@@ -80,9 +80,6 @@ WorldSession::~WorldSession()
 {
     deleteMutex.Acquire();
 
-    if (HasGMPermissions())
-        sWorld.gmList.erase(this);
-
     if (_player)
     {
         LOG_ERROR("warning: logged out player in worldsession destructor");

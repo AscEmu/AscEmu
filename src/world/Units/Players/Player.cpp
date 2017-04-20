@@ -509,3 +509,19 @@ void TradeData::setSpell(uint32_t spell_id, Item* cast_item /*= nullptr*/)
 }
 #endif
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Messages
+void Player::sendReportToGmMessage(std::string playerName, std::string damageLog)
+{
+    std::string gm_ann(MSG_COLOR_GREEN);
+
+    gm_ann += "|HPlayer:";
+    gm_ann += playerName;
+    gm_ann += "|h[";
+    gm_ann += playerName;
+    gm_ann += "]|h: ";
+    gm_ann += MSG_COLOR_YELLOW;
+    gm_ann += damageLog;
+
+    sWorld.sendMessageToOnlineGms(gm_ann.c_str());
+}

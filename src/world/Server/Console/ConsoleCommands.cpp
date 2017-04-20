@@ -138,14 +138,16 @@ void ConcatArgs(std::string & outstr, int argc, int startoffset, const char* arg
 }
 bool HandleAnnounceCommand(BaseConsole* pConsole, int argc, const char* argv[])
 {
-    char pAnnounce[1024];
     std::string outstr;
     if (argc < 2)
         return false;
 
     ConcatArgs(outstr, argc, 0, argv);
-    snprintf(pAnnounce, 1024, "%sConsole: |r%s", MSG_COLOR_LIGHTBLUE, outstr.c_str());
-    sWorld.SendWorldText(pAnnounce); // send message
+
+    std::stringstream worldAnnounce;
+    worldAnnounce << MSG_COLOR_LIGHTBLUE << "Console: |r" << outstr;
+
+    sWorld.sendMessageToAll(worldAnnounce.str());
     pConsole->Write("Message sent.\r\n");
     return true;
 }
@@ -159,8 +161,11 @@ bool HandleWAnnounceCommand(BaseConsole* pConsole, int argc, const char* argv[])
         return false;
 
     ConcatArgs(outstr, argc, 0, argv);
-    snprintf(pAnnounce, 1024, "%sConsole: |r%s", MSG_COLOR_LIGHTBLUE, outstr.c_str());
-    sWorld.SendWorldWideScreenText(pAnnounce); // send message
+
+    std::stringstream areaMessage;
+    areaMessage << MSG_COLOR_LIGHTBLUE << "Console: |r" << outstr;
+
+    sWorld.sendAreaTriggerMessage(areaMessage.str());
     pConsole->Write("Message sent.\r\n");
     return true;
 }
@@ -194,7 +199,6 @@ bool HandleKickCommand(BaseConsole* pConsole, int argc, const char* argv[])
     if (argc < 3)
         return false;
 
-    char pAnnounce[1024];
     Player* pPlayer;
     std::string outstr;
 
@@ -204,10 +208,15 @@ bool HandleKickCommand(BaseConsole* pConsole, int argc, const char* argv[])
         pConsole->Write("Could not find player, %s.\r\n", argv[1]);
         return true;
     }
+
     ConcatArgs(outstr, argc, 1, argv);
-    snprintf(pAnnounce, 1024, "%sConsole:|r %s was removed from the server. Reason: %s.", MSG_COLOR_LIGHTBLUE, pPlayer->GetName(), outstr.c_str());
+
+    std::stringstream worldAnnounce;
+    worldAnnounce << MSG_COLOR_LIGHTBLUE << "Console:|r " << pPlayer->GetName() << " was removed from the server. Reason: " << outstr;
+
+    sWorld.sendMessageToAll(worldAnnounce.str());
+
     pPlayer->BroadcastMessage("You are now being removed by the game by an administrator via the console. Reason: %s", outstr.c_str());
-    sWorld.SendWorldText(pAnnounce, NULL);
     pPlayer->Kick(5000);
     pConsole->Write("Kicked player %s.\r\n", pPlayer->GetName());
     return true;

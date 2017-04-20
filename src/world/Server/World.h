@@ -328,7 +328,7 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void deleteSessions(std::list<WorldSession*> &slist);
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // GlobalSession functions - not used?
+    // GlobalSession functions
     private:
 
         SessionSet globalSessionSet;
@@ -339,6 +339,24 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void addGlobalSession(WorldSession* worldSession);
         void updateGlobalSession(uint32_t diff);
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Send Messages
+    private:
+
+    public:
+
+        void sendMessageToOnlineGms(std::string message, WorldSession* sendToSelf = nullptr);
+
+        void sendMessageToAll(std::string message, WorldSession* sendToSelf = nullptr);
+        void sendAreaTriggerMessage(std::string message, WorldSession* sendToSelf = nullptr);
+        void sendGlobalMessage(WorldPacket* worldPacket, WorldSession* sendToSelf = nullptr);
+
+        void sendZoneMessage(WorldPacket* worldPacket, uint32_t zoneId, WorldSession* sendToSelf = nullptr);
+        void sendInstanceMessage(WorldPacket* worldPacket, uint32_t instanceId, WorldSession* sendToSelf = nullptr);
+        void sendZoneUnderAttackMessage(uint32_t areaId, uint8_t teamId);
+
+        void sendBroadcastMessageById(uint32_t id);
+        
     //MIT End
     //AGPL Start
         ///\todo Encapsulate below this point
@@ -359,24 +377,10 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         // world settings
         bool SetInitialWorldSettings();
 
-        //messages
-        void SendWorldText(const char* text, WorldSession* self = 0);
-        void SendWorldWideScreenText(const char* text, WorldSession* self = 0);
-        void SendGlobalMessage(WorldPacket* packet, WorldSession* self = 0);
+
         void PlaySoundToAll(uint32 soundid);
-        void SendZoneMessage(WorldPacket* packet, uint32 zoneid, WorldSession* self = 0);
-
-        //\todo : called in luaengine only
-        void SendInstanceMessage(WorldPacket* packet, uint32 instanceid, WorldSession* self = 0);
-
-        void SendFactionMessage(WorldPacket* packet, uint8 teamId);
-        void SendGamemasterMessage(WorldPacket* packet, WorldSession* self = 0);
-        void SendGMWorldText(const char* text, WorldSession* self = 0);
-        void SendDamageLimitTextToGM(const char* playername, const char* dmglog);
-        void SendBCMessageByID(uint32 id);
 
         //void SendLocalizedWorldText(bool wide, const char* format, ...);
-        void SendZoneUnderAttackMsg(uint32 areaid, uint8 team);
 
         // cebernic: textfilter,no fast,but works:D ...
         //\todo Zyres: not called! (SendLocalizedWorldText is not called too)
@@ -431,8 +435,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         uint32 mAcceptedConnections;
         
         uint32 PeakSessionCount;
-        
-        SessionSet gmList;
         
         void DeleteObject(Object* obj);
 

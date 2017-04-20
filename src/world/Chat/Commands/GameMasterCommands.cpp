@@ -77,9 +77,11 @@ bool ChatHandler::HandleGMAnnounceCommand(const char* args, WorldSession* m_sess
         return true;
     }
 
-    char TeamAnnounce[1024];
-    snprintf(TeamAnnounce, 1024, MSG_COLOR_RED "[Team]" MSG_COLOR_GREEN " |Hplayer:%s|h[%s]|h:" MSG_COLOR_YELLOW " %s", m_session->GetPlayer()->GetName(), m_session->GetPlayer()->GetName(), args);
-    sWorld.SendGMWorldText(TeamAnnounce);
+    std::stringstream teamAnnounce;
+    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->GetName();
+    teamAnnounce << "|h[" << m_session->GetPlayer()->GetName() << "]|h:" << MSG_COLOR_YELLOW << " " << args;
+
+    sWorld.sendMessageToOnlineGms(teamAnnounce.str());
 
     sGMLog.writefromsession(m_session, "used .gm annouince command: [%s]", args);
 

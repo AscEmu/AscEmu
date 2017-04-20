@@ -648,8 +648,6 @@ void WorldSocket::Authenticate()
     mSession->SendClientCacheVersion(worldConfig.server.clientCacheVersion);
 #endif
 #endif
-    if (mSession->HasGMPermissions())
-        sWorld.gmList.insert(mSession);
 
 }
 
