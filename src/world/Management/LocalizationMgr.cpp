@@ -22,6 +22,7 @@
 #include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 #include "Config/Config.h"
 #include "Log.hpp"
 #include "Database/Database.h"

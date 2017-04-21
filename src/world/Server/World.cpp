@@ -1,23 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "StdAfx.h"
 
@@ -44,20 +28,19 @@
 #include "Map/WorldCreator.h"
 #include "Storage/DayWatcherThread.h"
 #include "CommonScheduleThread.h"
+#include "World.Legacy.h"
 
 initialiseSingleton(World);
 
 DayWatcherThread* dw = nullptr;
 CommonScheduleThread* cs = nullptr;
 
-void ApplyNormalFixes();
+extern void ApplyNormalFixes();
 extern void LoadGameObjectModelList(std::string const& dataPath);
 void CleanupRandomNumberGenerators();
 
 World::World()
 {
-    resetPlayerCount();
-
     //////////////////////////////////////////////////////////////////////////////////////////
     // Uptime
     mStartTime = 0;
@@ -127,8 +110,6 @@ World::~World()
     LogNotice("InstanceMgr : ~InstanceMgr()");
     sInstanceMgr.Shutdown();
 
-    //LogDefault("Deleting Thread Manager..");
-    //delete ThreadMgr::getSingletonPtr();
     LogNotice("WordFilter : ~WordFilter()");
     delete g_chatFilter;
     delete g_characterNameFilter;
@@ -137,9 +118,7 @@ World::~World()
     CleanupRandomNumberGenerators();
 
     for (AreaTriggerMap::iterator i = mAreaTriggerMap.begin(); i != mAreaTriggerMap.end(); ++i)
-    {
         delete i->second;
-    }
 
     LogNotice("SpellProcMgr : ~SpellProcMgr()");
     delete SpellProcMgr::getSingletonPtr();
@@ -147,7 +126,6 @@ World::~World()
     LogNotice("SpellFactoryMgr : ~SpellFactoryMgr()");
     delete SpellFactoryMgr::getSingletonPtr();
 
-    //eventholder = 0;
     delete mEventableObjectHolder;
 
     for (std::list<SpellInfo*>::iterator itr = dummySpellList.begin(); itr != dummySpellList.end(); ++itr)
@@ -163,7 +141,6 @@ void World::loadWorldConfigValues(bool reload /*false*/)
     if (reload)
         Channel::LoadConfSettings();
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Player statistic
@@ -212,12 +189,13 @@ uint32_t World::getWorldUptime()
 
 std::string World::getWorldUptimeString()
 {
-    char str[300];
     time_t pTime = (time_t)UNIXTIME - mStartTime;
     tm* tmv = gmtime(&pTime);
 
-    snprintf(str, 300, "%u days, %u hours, %u minutes, %u seconds.", tmv->tm_yday, tmv->tm_hour, tmv->tm_min, tmv->tm_sec);
-    return std::string(str);
+    std::stringstream uptimeStream;
+    uptimeStream << tmv->tm_yday << " days, " << tmv->tm_hour << " hours, " << tmv->tm_min << " minutes, " << tmv->tm_sec << " seconds.";
+
+    return uptimeStream.str();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -236,9 +214,9 @@ void World::updateAllTrafficTotals()
 
     objmgr._playerslock.AcquireReadLock();
 
-    for (std::unordered_map<uint32, Player*>::const_iterator itr = objmgr._players.begin(); itr != objmgr._players.end(); ++itr)
+    for (auto playerStorage = objmgr._players.begin(); playerStorage != objmgr._players.end(); ++playerStorage)
     {
-        WorldSocket* socket = itr->second->GetSession()->GetSocket();
+        WorldSocket* socket = playerStorage->second->GetSession()->GetSocket();
         if (!socket || !socket->IsConnected() || socket->IsDeleted())
             continue;
 
@@ -304,27 +282,26 @@ WorldSession* World::getSessionByAccountId(uint32_t accountId)
 
     WorldSession* worldSession = nullptr;
 
-    activeSessionMap::const_iterator itr = mActiveSessionMapStore.find(accountId);
-    if (itr != mActiveSessionMapStore.end())
-        worldSession = itr->second;
+    auto activeSessions = mActiveSessionMapStore.find(accountId);
+    if (activeSessions != mActiveSessionMapStore.end())
+        worldSession = activeSessions->second;
 
     mSessionLock.ReleaseReadLock();
 
     return worldSession;
 }
 
-WorldSession* World::getSessionByAccountName(const char* Name)
+WorldSession* World::getSessionByAccountName(std::string accountName)
 {
     mSessionLock.AcquireReadLock();
 
     WorldSession* worldSession = nullptr;
 
-    activeSessionMap::iterator itr = mActiveSessionMapStore.begin();
-    for (; itr != mActiveSessionMapStore.end(); ++itr)
+    for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        if (!stricmp(itr->second->GetAccountName().c_str(), Name))
+        if (accountName.compare(activeSessions->second->GetAccountName()) == 0)
         {
-            worldSession = itr->second;
+            worldSession = activeSessions->second;
             break;
         }
     }
@@ -332,6 +309,20 @@ WorldSession* World::getSessionByAccountName(const char* Name)
     mSessionLock.ReleaseReadLock();
 
     return worldSession;
+}
+
+void World::sendCharacterEnumToAccountSession(QueryResultVector& results, uint32_t accountId)
+{
+    WorldSession* worldSession = getSessionByAccountId(accountId);
+    if (worldSession != nullptr)
+        worldSession->CharacterEnumProc(results[0].result);
+}
+
+void World::loadAccountDataProcForId(QueryResultVector& results, uint32_t accountId)
+{
+    WorldSession* worldSession = getSessionByAccountId(accountId);
+    if (worldSession != nullptr)
+        worldSession->LoadAccountDataProc(results[0].result);
 }
 
 size_t World::getSessionCount()
@@ -355,17 +346,17 @@ void World::deleteSessions(std::list<WorldSession*>& slist)
 {
     mSessionLock.AcquireWriteLock();
 
-    for (std::list<WorldSession*>::iterator itr = slist.begin(); itr != slist.end(); ++itr)
+    for (auto sessionList = slist.begin(); sessionList != slist.end(); ++sessionList)
     {
-        WorldSession* session = *itr;
+        WorldSession* session = *sessionList;
         mActiveSessionMapStore.erase(session->GetAccountId());
     }
 
     mSessionLock.ReleaseWriteLock();
 
-    for (std::list<WorldSession*>::iterator itr = slist.begin(); itr != slist.end(); ++itr)
+    for (auto sessionList = slist.begin(); sessionList != slist.end(); ++sessionList)
     {
-        WorldSession* session = *itr;
+        WorldSession* session = *sessionList;
         delete session;
     }
 }
@@ -376,11 +367,9 @@ void World::disconnectSessionByAccountName(std::string accountName, WorldSession
 
     mSessionLock.AcquireReadLock();
 
-    for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end();)
+    for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        WorldSession* session = itr->second;
-        ++itr;
-
+        WorldSession* session = activeSessions->second;
         if (accountName.compare(session->GetAccountName()) == 0)
         {
             isUserFound = true;
@@ -403,11 +392,9 @@ void World::disconnectSessionByIp(std::string ipString, WorldSession* worldSessi
 
     mSessionLock.AcquireReadLock();
 
-    for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end();)
+    for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        WorldSession* session = itr->second;
-        ++itr;
-
+        WorldSession* session = activeSessions->second;
         if (!session->GetSocket())
             continue;
 
@@ -434,11 +421,9 @@ void World::disconnectSessionByPlayerName(std::string playerName, WorldSession* 
 
     mSessionLock.AcquireReadLock();
 
-    for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end();)
+    for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        WorldSession* session = itr->second;
-        ++itr;
-
+        WorldSession* session = activeSessions->second;
         if (!session->GetPlayer())
             continue;
 
@@ -471,18 +456,14 @@ void World::addGlobalSession(WorldSession* worldSession)
 
 void World::updateGlobalSession(uint32_t diff)
 {
-    SessionSet::iterator itr, it2;
-    WorldSession* session;
-    int result;
-
     std::list<WorldSession*> ErasableSessions;
 
     globalSessionMutex.Acquire();
 
-    for (itr = globalSessionSet.begin(); itr != globalSessionSet.end();)
+    for (SessionSet::iterator itr = globalSessionSet.begin(); itr != globalSessionSet.end();)
     {
-        session = (*itr);
-        it2 = itr;
+        WorldSession* session = (*itr);
+        SessionSet::iterator it2 = itr;
         ++itr;
         if (!session || session->GetInstance() != 0)
         {
@@ -490,14 +471,11 @@ void World::updateGlobalSession(uint32_t diff)
             continue;
         }
 
-        if ((result = session->Update(0)) != 0)
+        if (int result = session->Update(0))
         {
             if (result == 1)
-            {
-                // complete deletion after relinquishing SessionMutex!
-                // Otherwise Valgrind (probably falsely) reports a possible deadlock!
                 ErasableSessions.push_back(session);
-            }
+
             globalSessionSet.erase(it2);
         }
     }
@@ -512,7 +490,7 @@ void World::updateGlobalSession(uint32_t diff)
 // Session queue
 void World::updateQueuedSessions(uint32_t diff)
 {
-    if (diff >= mQueueUpdateTimer)
+    if (diff >= getQueueUpdateTimer())
     {
         mQueueUpdateTimer = settings.server.queueUpdateInterval;
         queueMutex.Acquire();
@@ -544,10 +522,10 @@ void World::updateQueuedSessions(uint32_t diff)
         }
 
         QueuedWorldSocketList::iterator iter = mQueuedSessions.begin();
-        uint32 Position = 1;
+        uint32_t queuPosition = 1;
         while (iter != mQueuedSessions.end())
         {
-            (*iter)->UpdateQueuePosition(Position++);
+            (*iter)->UpdateQueuePosition(queuPosition++);
             if (iter == mQueuedSessions.end())
                 break;
             else
@@ -583,6 +561,7 @@ void World::removeQueuedSocket(WorldSocket* Socket)
             return;
         }
     }
+
     queueMutex.Release();
 }
 
@@ -603,13 +582,13 @@ void World::sendMessageToOnlineGms(std::string message, WorldSession* sendToSelf
     data << uint8_t(0);
 
     mSessionLock.AcquireReadLock();
-    activeSessionMap::iterator itr;
-    for (itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
+
+    for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != sendToSelf)
+        if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second != sendToSelf)
         {
-            if (itr->second->CanUseCommand('u'))
-                itr->second->SendPacket(&data);
+            if (activeSessions->second->CanUseCommand('u'))
+                activeSessions->second->SendPacket(&data);
         }
     }
     mSessionLock.ReleaseReadLock();
@@ -651,10 +630,10 @@ void World::sendGlobalMessage(WorldPacket* worldPacket, WorldSession* sendToSelf
 {
     mSessionLock.AcquireReadLock();
 
-    for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
+    for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != sendToSelf)
-            itr->second->SendPacket(worldPacket);
+        if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second != sendToSelf)
+            activeSessions->second->SendPacket(worldPacket);
     }
 
     mSessionLock.ReleaseReadLock();
@@ -664,12 +643,12 @@ void World::sendZoneMessage(WorldPacket* worldPacket, uint32_t zoneId, WorldSess
 {
     mSessionLock.AcquireReadLock();
 
-    for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
+    for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != sendToSelf)
+        if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second != sendToSelf)
         {
-            if (itr->second->GetPlayer()->GetZoneId() == zoneId)
-                itr->second->SendPacket(worldPacket);
+            if (activeSessions->second->GetPlayer()->GetZoneId() == zoneId)
+                activeSessions->second->SendPacket(worldPacket);
         }
     }
 
@@ -680,12 +659,12 @@ void World::sendInstanceMessage(WorldPacket* worldPacket, uint32_t instanceId, W
 {
     mSessionLock.AcquireReadLock();
 
-    for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
+    for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld() && itr->second != sendToSelf) // don't send to self!
+        if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld() && activeSessions->second != sendToSelf)
         {
-            if (itr->second->GetPlayer()->GetInstanceID() == (int32)instanceId)
-                itr->second->SendPacket(worldPacket);
+            if (activeSessions->second->GetPlayer()->GetInstanceID() == (int32)instanceId)
+                activeSessions->second->SendPacket(worldPacket);
         }
     }
 
@@ -699,13 +678,13 @@ void World::sendZoneUnderAttackMessage(uint32_t areaId, uint8_t teamId)
 
     mSessionLock.AcquireReadLock();
 
-    for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
+    for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        Player* plr = itr->second->GetPlayer();
-        if (plr != nullptr && plr->IsInWorld())
+        Player* player = activeSessions->second->GetPlayer();
+        if (player != nullptr && player->IsInWorld())
         {
-            if (plr->GetTeam() == teamId)
-                itr->second->SendPacket(&data);
+            if (player->GetTeam() == teamId)
+                activeSessions->second->SendPacket(&data);
         }
     }
 
@@ -716,11 +695,11 @@ void World::sendBroadcastMessageById(uint32_t broadcastId)
 {
     mSessionLock.AcquireReadLock();
 
-    for (activeSessionMap::iterator itr = mActiveSessionMapStore.begin(); itr != mActiveSessionMapStore.end(); ++itr)
+    for (auto activeSessions = mActiveSessionMapStore.begin(); activeSessions != mActiveSessionMapStore.end(); ++activeSessions)
     {
-        if (itr->second->GetPlayer() && itr->second->GetPlayer()->IsInWorld())
+        if (activeSessions->second->GetPlayer() && activeSessions->second->GetPlayer()->IsInWorld())
         {
-            const char* text = itr->second->LocalizedBroadCast(broadcastId);
+            const char* text = activeSessions->second->LocalizedBroadCast(broadcastId);
             uint32_t textLen = (uint32_t)strlen(text) + 1;
 
             WorldPacket data(SMSG_MESSAGECHAT, textLen + 40);
@@ -733,7 +712,7 @@ void World::sendBroadcastMessageById(uint32_t broadcastId)
             data << text;
             data << uint8_t(0);
 
-            itr->second->SendPacket(&data);
+            activeSessions->second->SendPacket(&data);
         }
     }
 
@@ -744,14 +723,84 @@ void World::sendBroadcastMessageById(uint32_t broadcastId)
 // General Functions
 bool World::setInitialWorldSettings()
 {
-    Player::InitVisibleUpdateBits();
-
-    CharacterDatabase.WaitExecute("UPDATE characters SET online = 0 WHERE online = 1");
-    CharacterDatabase.WaitExecute("UPDATE characters SET banned= 0,banReason='' WHERE banned > 100 AND banned < %u", UNIXTIME);
-
-    // Start
     uint32_t start_time = getMSTime();
 
+    Player::InitVisibleUpdateBits();
+
+    resetCharacterLoginBannState();
+
+    if (!loadDbcDb2Stores())
+        return false;
+
+    new TaxiMgr;
+    new WorldLog;
+    new ChatHandler;
+    new SpellProcMgr;
+
+    new SpellCustomizations;
+    sSpellCustomizations.StartSpellCustomization();
+
+    ApplyNormalFixes();
+
+    LogNotice("GameObjectModel : Loading GameObject models...");
+    LoadGameObjectModelList(worldConfig.terrainCollision.vMapPath);
+
+    loadMySQLStores();
+    loadMySQLTablesByTask(start_time);
+    logEntitySize();
+
+#if VERSION_STRING > TBC
+    LogDetail("World : Starting Achievement System..");
+    objmgr.LoadAchievementCriteriaList();
+#endif
+
+    LogDetail("World : Starting Transport System...");
+    objmgr.LoadTransports();
+
+    LogDetail("World : Starting Mail System...");
+    new MailSystem;
+    sMailSystem.StartMailSystem();
+
+    LogDetail("World : Starting Auction System...");
+    new AuctionMgr;
+    sAuctionMgr.LoadAuctionHouses();
+
+    LogDetail("World : Loading LFG rewards...");
+    new LfgMgr;
+    sLfgMgr.LoadRewards();
+
+    mQueueUpdateTimer = settings.server.queueUpdateInterval;
+
+    LogNotice("World : Loading loot data...");
+    new LootMgr;
+    lootmgr.LoadLoot();
+
+    Channel::LoadConfSettings();
+
+    LogDetail("World : Starting CBattlegroundManager...");
+    new CBattlegroundManager;
+
+    dw = new DayWatcherThread();
+    ThreadPool.ExecuteTask(dw);
+
+    // commonschedule sys
+    cs = new CommonScheduleThread();
+    ThreadPool.ExecuteTask(cs);
+
+    ThreadPool.ExecuteTask(new CharacterLoaderThread());
+
+    sEventMgr.AddEvent(this, &World::checkForExpiredInstances, EVENT_WORLD_UPDATEAUCTIONS, 120000, 0, 0);
+    return true;
+}
+
+void World::resetCharacterLoginBannState()
+{
+    CharacterDatabase.WaitExecute("UPDATE characters SET online = 0 WHERE online = 1");
+    CharacterDatabase.WaitExecute("UPDATE characters SET banned= 0,banReason='' WHERE banned > 100 AND banned < %u", UNIXTIME);
+}
+
+bool World::loadDbcDb2Stores()
+{
 #if VERSION_STRING == Cata
     LoadDB2Stores();
 #endif
@@ -762,31 +811,10 @@ bool World::setInitialWorldSettings()
         AscLog.ConsoleLogMajorError("One or more of the DBC files are missing.", "These are absolutely necessary for the server to function.", "The server will not start without them.", "");
         return false;
     }
+}
 
-    new ObjectMgr;
-    new QuestMgr;
-    new LootMgr;
-    new LfgMgr;
-    new WeatherMgr;
-    new TaxiMgr;
-    new AddonMgr;
-    new GameEventMgr;
-    new CalendarMgr;
-    new WorldLog;
-    new ChatHandler;
-    new SpellCustomizations;
-    new SpellProcMgr;
-
-    sSpellCustomizations.StartSpellCustomization();
-
-    ApplyNormalFixes();
-
-    LogNotice("GameObjectModel : Loading GameObject models...");
-    LoadGameObjectModelList(worldConfig.terrainCollision.vMapPath);
-
-    new SpellFactoryMgr;
-
-    //Load tables
+void World::loadMySQLStores()
+{
     new MySQLDataStore;
 
     sMySQLStore.LoadAdditionalTableConfig();
@@ -831,7 +859,17 @@ bool World::setInitialWorldSettings()
 
     sMySQLStore.LoadNpcGossipTextIdTable();
     sMySQLStore.LoadPetLevelAbilitiesTable();
+}
 
+void World::loadMySQLTablesByTask(uint32_t start_time)
+{
+    new ObjectMgr;
+    new QuestMgr;
+    new SpellFactoryMgr;
+    new WeatherMgr;
+    new AddonMgr;
+    new GameEventMgr;
+    new CalendarMgr;
 
 #define MAKE_TASK(sp, ptr) tl.AddTask(new Task(new CallbackP0<sp>(sp::getSingletonPtr(), &sp::ptr)))
     // Fill the task list with jobs to do.
@@ -879,7 +917,7 @@ bool World::setInitialWorldSettings()
 #if VERSION_STRING > TBC
     MAKE_TASK(ObjectMgr, LoadAchievementRewards);
 #endif
-    //LoadMonsterSay() must have finished before calling LoadExtraCreatureProtoStuff()
+
     tl.wait();
 
     MAKE_TASK(QuestMgr, LoadExtraQuestStuff);
@@ -892,7 +930,6 @@ bool World::setInitialWorldSettings()
 
 #undef MAKE_TASK
 
-    // wait for all loading to complete.
     tl.wait();
 
     sLocalizationMgr.Reload(false);
@@ -916,52 +953,15 @@ bool World::setInitialWorldSettings()
     // wait for them to exit, now.
     tl.kill();
     tl.waitForThreadsToExit();
+}
 
+void World::logEntitySize()
+{
     LogNotice("World : Object size: %u bytes", sizeof(Object));
     LogNotice("World : Unit size: %u bytes", sizeof(Unit) + sizeof(AIInterface));
     LogNotice("World : Creature size: %u bytes", sizeof(Creature) + sizeof(AIInterface));
     LogNotice("World : Player size: %u bytes", sizeof(Player) + sizeof(ItemInterface) + 50000 + 30000 + 1000 + sizeof(AIInterface));
     LogNotice("World : GameObject size: %u bytes", sizeof(GameObject));
-
-    LogDetail("World : Starting Transport System...");
-    objmgr.LoadTransports();
-
-    //Start the Achievement system :D
-    LogDetail("World : Starting Achievement System..");
-#if VERSION_STRING > TBC
-    objmgr.LoadAchievementCriteriaList();
-#endif
-
-    LogDetail("World : Starting Mail System...");
-    new MailSystem;
-    sMailSystem.StartMailSystem();
-
-    LogDetail("World : Starting Auction System...");
-    new AuctionMgr;
-    sAuctionMgr.LoadAuctionHouses();
-
-    LogDetail("World : Loading LFG rewards...");
-    sLfgMgr.LoadRewards();
-
-    mQueueUpdateTimer = settings.server.queueUpdateInterval;
-    LogNotice("World : Loading loot data...");
-    lootmgr.LoadLoot();
-
-    Channel::LoadConfSettings();
-    LogDetail("World : Starting CBattlegroundManager...");
-    new CBattlegroundManager;
-
-    dw = new DayWatcherThread();
-    ThreadPool.ExecuteTask(dw);
-
-    // commonschedule sys
-    cs = new CommonScheduleThread();
-    ThreadPool.ExecuteTask(cs);
-
-    ThreadPool.ExecuteTask(new CharacterLoaderThread());
-
-    sEventMgr.AddEvent(this, &World::checkForExpiredInstances, EVENT_WORLD_UPDATEAUCTIONS, 120000, 0, 0);
-    return true;
 }
 
 void World::Update(unsigned long time_passed)
@@ -1027,11 +1027,9 @@ void World::logoutAllPlayers()
         (i->second)->LogoutPlayer(true);
 
     LogNotice("World", "Deleting sessions...");
-    for (activeSessionMap::iterator i = mActiveSessionMapStore.begin(); i != mActiveSessionMapStore.end();)
+    for (activeSessionMap::iterator i = mActiveSessionMapStore.begin(); i != mActiveSessionMapStore.end(); ++i)
     {
         WorldSession* worldSession = i->second;
-        ++i;
-
         deleteSession(worldSession);
     }
 }
@@ -1057,260 +1055,3 @@ void World::toggleGmTicketStatus()
 {
     mGmTicketSystemEnabled = !mGmTicketSystemEnabled;
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// MySQL Query helpers
-void World::CharacterEnumProc(QueryResultVector& results, uint32_t accountId)
-{
-    WorldSession* worldSession = getSessionByAccountId(accountId);
-    if (worldSession != nullptr)
-        worldSession->CharacterEnumProc(results[0].result);
-}
-
-void World::LoadAccountDataProc(QueryResultVector& results, uint32_t accountId)
-{
-    WorldSession* worldSession = getSessionByAccountId(accountId);
-    if (worldSession != nullptr)
-        worldSession->LoadAccountDataProc(results[0].result);
-}
-
-
-
-
-
-
-
-bool BasicTaskExecutor::run()
-{
-    /* Set thread priority, this is a bitch for multiplatform :P */
-#ifdef WIN32
-    switch (priority)
-    {
-    case BTE_PRIORITY_LOW:
-        ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_LOWEST);
-        break;
-
-    case BTW_PRIORITY_HIGH:
-        ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
-        break;
-
-    default: // BTW_PRIORITY_MED
-        ::SetThreadPriority(::GetCurrentThread(), THREAD_PRIORITY_NORMAL);
-        break;
-    }
-#else
-    struct sched_param param;
-    switch(priority)
-    {
-        case BTE_PRIORITY_LOW:
-            param.sched_priority = 0;
-            break;
-
-        case BTW_PRIORITY_HIGH:
-            param.sched_priority = 10;
-            break;
-
-        default:        // BTW_PRIORITY_MED
-            param.sched_priority = 5;
-            break;
-    }
-    pthread_setschedparam(pthread_self(), SCHED_OTHER, &param);
-#endif
-
-    // Execute the task in our new context.
-    cb->execute();
-#ifdef WIN32
-    ::SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
-#else
-    param.sched_priority = 5;
-    pthread_setschedparam(pthread_self(), SCHED_OTHER, &param);
-#endif
-
-    return true;
-}
-
-void TaskList::AddTask(Task* task)
-{
-    queueLock.Acquire();
-    tasks.insert(task);
-    queueLock.Release();
-}
-
-Task* TaskList::GetTask()
-{
-    queueLock.Acquire();
-
-    Task* t = 0;
-
-    for (std::set<Task*>::iterator itr = tasks.begin(); itr != tasks.end(); ++itr)
-    {
-        if (!(*itr)->in_progress)
-        {
-            t = (*itr);
-            t->in_progress = true;
-            break;
-        }
-    }
-
-    queueLock.Release();
-
-    return t;
-}
-
-void TaskList::spawn()
-{
-    running = true;
-    thread_count.SetVal(0);
-
-    uint32 threadcount;
-    if (worldConfig.startup.enableMultithreadedLoading)
-    {
-        // get processor count
-#ifndef WIN32
-#if UNIX_FLAVOUR == UNIX_FLAVOUR_LINUX
-#if defined(__x86_64__) || defined(__x86_64) || defined(__amd64__)
-        threadcount = 2;
-#else
-        long affmask;
-        sched_getaffinity(0, 4, (cpu_set_t*)&affmask);
-        threadcount = (BitCount8(affmask)) * 2;
-        if (threadcount > 8) threadcount = 8;
-        else if (threadcount <= 0) threadcount = 1;
-#endif
-#else
-        threadcount = 2;
-#endif
-#else
-        SYSTEM_INFO s;
-        GetSystemInfo(&s);
-        threadcount = s.dwNumberOfProcessors * 2;
-        if (threadcount > 8)
-            threadcount = 8;
-#endif
-    }
-    else
-        threadcount = 1;
-
-    LogNotice("World : Beginning %s server startup with %u threads.", (threadcount == 1) ? "progressive" : "parallel", threadcount);
-
-    for (uint32 x = 0; x < threadcount; ++x)
-        ThreadPool.ExecuteTask(new TaskExecutor(this));
-}
-
-void TaskList::wait()
-{
-    bool has_tasks = true;
-    while (has_tasks)
-    {
-        queueLock.Acquire();
-        has_tasks = false;
-        for (std::set<Task*>::iterator itr = tasks.begin(); itr != tasks.end(); ++itr)
-        {
-            if (!(*itr)->completed)
-            {
-                has_tasks = true;
-                break;
-            }
-        }
-        queueLock.Release();
-        Arcemu::Sleep(20);
-    }
-}
-
-void TaskList::kill()
-{
-    running = false;
-}
-
-void Task::execute()
-{
-    _cb->execute();
-}
-
-bool TaskExecutor::run()
-{
-    Task* t;
-
-    THREAD_TRY_EXECUTION
-        while (starter->running)
-        {
-            t = starter->GetTask();
-            if (t)
-            {
-                t->execute();
-                t->completed = true;
-                starter->RemoveTask(t);
-                delete t;
-            }
-            else
-                Arcemu::Sleep(20);
-        }
-
-        THREAD_HANDLE_CRASH
-
-    return true;
-}
-
-void TaskList::waitForThreadsToExit()
-{
-    while (thread_count.GetVal())
-    {
-        Arcemu::Sleep(20);
-    }
-}
-
-struct insert_playeritem
-{
-    uint32 ownerguid;
-    uint32 entry;
-    uint32 wrapped_item_id;
-    uint32 wrapped_creator;
-    uint32 creator;
-    uint32 count;
-    uint32 charges;
-    uint32 flags;
-    uint32 randomprop;
-    uint32 randomsuffix;
-    uint32 itemtext;
-    uint32 durability;
-    int32 containerslot;
-    int32 slot;
-    std::string enchantments;
-};
-
-#define LOAD_THREAD_SLEEP 180
-
-void CharacterLoaderThread::OnShutdown()
-{
-    running = false;
-    cond.Signal();
-}
-
-CharacterLoaderThread::CharacterLoaderThread()
-{
-    running = false;
-}
-
-CharacterLoaderThread::~CharacterLoaderThread()
-{
-}
-
-bool CharacterLoaderThread::run()
-{
-    running = true;
-    for (;;)
-    {
-        // Get a single connection to maintain for the whole process.
-        DatabaseConnection* con = CharacterDatabase.GetFreeConnection();
-
-        con->Busy.Release();
-
-        cond.Wait(LOAD_THREAD_SLEEP * 1000);
-
-        if (!running)
-            break;
-    }
-
-    return true;
-}
-

@@ -29,6 +29,8 @@
 #include "BaseConsole.h"
 #include "ConsoleCommands.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
+
 #define LOCAL_BUFFER_SIZE 2048
 #define ENABLE_REMOTE_CONSOLE 1
 

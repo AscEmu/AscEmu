@@ -22,6 +22,7 @@
 #include "Server/Warden/SpeedDetector.h"
 #include "Server/MainServerDefines.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 #include "Units/Players/Player.h"
 
 SpeedCheatDetector::SpeedCheatDetector()

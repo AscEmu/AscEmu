@@ -24,6 +24,7 @@
 #include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 #include "WorldPacket.h"
 #include "Units/Players/Player.h"
 

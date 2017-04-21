@@ -26,6 +26,7 @@
 #include "Creatures/Creature.h"
 #include "Creatures/Pet.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 #include "../../scripts/Battlegrounds/AlteracValley.h"
 #include "WorldConf.h"
 

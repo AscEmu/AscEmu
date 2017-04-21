@@ -23,6 +23,7 @@
 #include "Map/MapMgr.h"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 #include "Management/Group.h"
 #include "Objects/ObjectMgr.h"
 

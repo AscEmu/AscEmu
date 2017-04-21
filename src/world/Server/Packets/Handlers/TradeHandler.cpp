@@ -27,6 +27,7 @@
 #include "Map/MapMgr.h"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
 
 #if VERSION_STRING != Cata

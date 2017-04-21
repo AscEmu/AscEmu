@@ -28,6 +28,7 @@
 #include <set>
 #include <map>
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 
 #pragma pack(push, 1)
 typedef struct
@@ -564,7 +565,7 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
             sGMLog.writefromsession(session_name, "set account %s forced_permissions to %s", account_string, gmlevel_string);
 
             //Send information to updated account
-            auto updated_account_session = sWorld.getSessionByAccountName(account_string);
+            WorldSession* updated_account_session = sWorld.getSessionByAccountName(account_string);
             if (updated_account_session != nullptr)
             {
                 updated_account_session->SystemMessage("Your permissions has been updated! Please reconnect your account.");

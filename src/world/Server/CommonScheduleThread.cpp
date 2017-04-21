@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "World.h"
+#include "World.Legacy.h"
 #include "Objects/ObjectMgr.h"
 #include "CommonScheduleThread.h"
 

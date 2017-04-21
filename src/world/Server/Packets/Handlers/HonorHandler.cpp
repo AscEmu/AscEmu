@@ -28,6 +28,7 @@
 #include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
 
 void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recv_data)

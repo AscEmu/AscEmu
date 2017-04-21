@@ -26,6 +26,7 @@
 #include "Server/MainServerDefines.h"
 #include "Spell/SpellAuras.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 
 void CreateDummySpell(uint32 id)
 {
