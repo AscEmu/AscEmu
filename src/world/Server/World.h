@@ -238,7 +238,6 @@ class TaskExecutor : public ThreadBase
 class WorldSocket;
 
 // Slow for remove in middle, oh well, wont get done much.
-typedef std::list<WorldSocket*> QueueSet;
 typedef std::set<WorldSession*> SessionSet;
 
 // AGPL End
@@ -289,8 +288,10 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         std::string getWorldUptimeString();
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Traffic InfoCore
+    // InfoCore
     private:
+
+        Arcemu::PerformanceCounter perfcounter;
 
         double mTotalTrafficInKB;
         double mTotalTrafficOutKB;
@@ -300,12 +301,22 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         void updateAllTrafficTotals();
 
+        uint32_t mAcceptedConnections;
+        uint32_t mPeakSessionCount;
+
     public:
 
         void setTotalTraffic(double* totalin, double* totalout);
         void setLastTotalTraffic(double* totalin, double* totalout);
+
         float getCPUUsage();
         float getRAMUsage();
+
+        uint32_t getAcceptedConnections() { return mAcceptedConnections; };
+        void increaseAcceptedConnections() { ++mAcceptedConnections; }
+
+        uint32_t getPeakSessionCount() { return mPeakSessionCount; };
+        void setNewPeakSessionCount(uint32_t newCount) { mPeakSessionCount = newCount; }
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Session functions
@@ -327,6 +338,10 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
         void deleteSession(WorldSession* worldSession);
         void deleteSessions(std::list<WorldSession*> &slist);
 
+        void disconnectSessionByAccountName(std::string accountName, WorldSession* worldSession);
+        void disconnectSessionByIp(std::string ipString, WorldSession* worldSession);
+        void disconnectSessionByPlayerName(std::string playerName, WorldSession* worldSession);
+
     //////////////////////////////////////////////////////////////////////////////////////////
     // GlobalSession functions
     private:
@@ -338,6 +353,24 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         void addGlobalSession(WorldSession* worldSession);
         void updateGlobalSession(uint32_t diff);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Session queue
+    private:
+
+        typedef std::list<WorldSocket*> QueuedWorldSocketList;
+        QueuedWorldSocketList mQueuedSessions;
+        uint32_t mQueueUpdateTimer;
+
+    public:
+
+        void updateQueuedSessions(uint32_t diff);
+        uint32_t getQueuedSessions() { return (uint32_t)mQueuedSessions.size(); };
+
+        uint32_t addQueuedSocket(WorldSocket* Socket);
+        void removeQueuedSocket(WorldSocket* Socket);
+
+        Mutex queueMutex;
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Send Messages
@@ -357,117 +390,57 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
 
         void sendBroadcastMessageById(uint32_t id);
         
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // General Functions
+    private:
+
+        EventableObjectHolder* mEventableObjectHolder;
+
+        typedef std::unordered_map<uint32, AreaTrigger*> AreaTriggerMap;
+        AreaTriggerMap mAreaTriggerMap;
+
+    public:
+
+        std::list<SpellInfo*> dummySpellList;
+
+
+        bool setInitialWorldSettings();
+        void Update(unsigned long time_passed);
+
+        void saveAllPlayersToDb();
+        void playSoundToAllPlayers(uint32_t soundId);
+        void logoutAllPlayers();
+
+        void checkForExpiredInstances();
+
+        void deleteObject(Object* object);
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // GM Ticket System
+    private:
+
+        bool mGmTicketSystemEnabled;
+
+    public:
+
+        bool getGmTicketStatus();
+        void toggleGmTicketStatus();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // MySQL Query helpers
+    private:
+
+    public:
+
+        //\todo Zyres misplaced
+        void CharacterEnumProc(QueryResultVector& results, uint32_t accountId);
+        void LoadAccountDataProc(QueryResultVector& results, uint32_t accountId);
+
     //MIT End
     //AGPL Start
         ///\todo Encapsulate below this point
-    public:
-
-        //session
-
-        inline size_t GetQueueCount() { return mQueuedSessions.size(); }
-
-        //tickets
-        inline bool getGMTicketStatus() { return m_gmTicketSystem; }
-        bool toggleGMTicketStatus()
-        {
-            m_gmTicketSystem = !m_gmTicketSystem;
-            return m_gmTicketSystem;
-        }
-
-        // world settings
-        bool SetInitialWorldSettings();
-
-
-        void PlaySoundToAll(uint32 soundid);
-
-        //void SendLocalizedWorldText(bool wide, const char* format, ...);
-
-        // cebernic: textfilter,no fast,but works:D ...
-        //\todo Zyres: not called! (SendLocalizedWorldText is not called too)
-        //inline std::string SessionLocalizedTextFilter(WorldSession* _session, const char* text)
-        //{
-        //    std::string opstr = std::string(text);
-        //    std::string::iterator t = opstr.begin();
-        //    std::string temp;
-        //    int found = 0;
-        //    std::string num;
-        //    while(t != opstr.end())
-        //    {
-        //        if ((char)(*t) == '{' && strlen((char*) & (*t)) > 1)    // find and no end :D
-        //        {
-        //            found++;
-        //            ++t;
-        //            continue;
-        //        }
-        //        if (found == 1)
-        //        {
-        //            if ((char)(*t) == '}') found++;
-        //            else num.push_back(*t);
-        //        }
-        //        if (found)    // get the flag and doing my work and skip pushback.
-        //        {
-        //            if (found == 2)
-        //            {
-        //                temp += _session->LocalizedWorldSrv((uint32) atoi((char*)num.c_str()));
-        //                found = 0;
-        //                num.clear();
-        //            }
-        //        }
-        //        else temp.push_back(*t);
-        //        ++t;
-        //    }
-        //    return temp;
-        //}
-
-        // update the world server every frame
-        void Update(unsigned long time_passed);
-        void CheckForExpiredInstances();
-
-        //queue
-        uint32 AddQueuedSocket(WorldSocket* Socket);
-        void RemoveQueuedSocket(WorldSocket* Socket);
-
-        void UpdateQueuedSessions(uint32 diff);
-        Mutex queueMutex;
-
-        void SaveAllPlayers();
-
-        uint32 mAcceptedConnections;
-        
-        uint32 PeakSessionCount;
-        
-        void DeleteObject(Object* obj);
-
-        //\todo Zyres misplaced
-        void CharacterEnumProc(QueryResultVector & results, uint32 AccountId);
-        void LoadAccountDataProc(QueryResultVector & results, uint32 AccountId);
-
-        void DisconnectUsersWithAccount(const char* account, WorldSession* session);
-        void DisconnectUsersWithIP(const char* ip, WorldSession* session);
-        void DisconnectUsersWithPlayerName(const char* plr, WorldSession* session);
-
-        void LogoutPlayers();
-
-    private:
-
-        EventableObjectHolder* eventholder;
-        //! Timers
-        typedef std::unordered_map<uint32, AreaTrigger*> AreaTriggerMap;
-        AreaTriggerMap m_AreaTrigger;
-
-        Arcemu::PerformanceCounter perfcounter;
-
-    protected:      
-
-        bool m_gmTicketSystem;
-
-        uint32 m_queueUpdateTimer;
-
-        QueueSet mQueuedSessions;
 
     public:
-
-        std::list<SpellInfo*> dummyspells;
 
         char* m_banTable;
 };

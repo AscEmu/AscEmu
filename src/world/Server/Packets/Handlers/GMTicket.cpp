@@ -214,7 +214,7 @@ void WorldSession::HandleGMTicketSystemStatusOpcode(WorldPacket& recv_data)
     // no data
 
     // Response - System is working Fine
-    if (sWorld.getGMTicketStatus())
+    if (sWorld.getGmTicketStatus())
         data << uint32(1);
     else
         data << uint32(0);
@@ -227,7 +227,7 @@ void WorldSession::HandleGMTicketToggleSystemStatusOpcode(WorldPacket& recv_data
     if (!HasGMPermissions())
         return;
 
-    sWorld.toggleGMTicketStatus();
+    sWorld.toggleGmTicketStatus();
 }
 
 void WorldSession::HandleReportLag(WorldPacket& recv_data)

@@ -516,7 +516,7 @@ bool ChatHandler::HandleKKickBySessionCommand(const char* args, WorldSession* m_
             return true;
         }
 
-        sWorld.DisconnectUsersWithAccount(args, m_session);
+        sWorld.disconnectSessionByAccountName(args, m_session);
         sGMLog.writefromsession(m_session, "kicked player with account %s", args);
     }
     else
@@ -537,7 +537,7 @@ bool ChatHandler::HandleKickByIPCommand(const char* args, WorldSession* m_sessio
         return true;
     }
 
-    sWorld.DisconnectUsersWithIP(args, m_session);
+    sWorld.disconnectSessionByIp(args, m_session);
     sGMLog.writefromsession(m_session, "kicked players with IP %s", args);
 
     return true;
@@ -1236,7 +1236,7 @@ bool ChatHandler::HandleIPBanCommand(const char* args, WorldSession* m_session)
 
     SystemMessage(m_session, "Adding [%s] to IP ban table, expires %s.Reason is :%s", pIp, (expire_time == 0) ? "Never" : ctime(&expire_time), pReason);
     sLogonCommHandler.IPBan_Add(IP.c_str(), (uint32)expire_time, pReason);
-    sWorld.DisconnectUsersWithIP(IP.substr(0, IP.find("/")).c_str(), m_session);
+    sWorld.disconnectSessionByIp(IP.substr(0, IP.find("/")).c_str(), m_session);
     sGMLog.writefromsession(m_session, "banned ip address %s, expires %s", pIp, (expire_time == 0) ? "Never" : ctime(&expire_time));
 
     return true;
@@ -1292,9 +1292,9 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
     worldAnnounce << (BanTime ? Util::GetDateStringFromSeconds(BanTime) : "ever") << " Reason: " << ((pReason == NULL) ? "No reason." : pReason);
     sWorld.sendMessageToAll(worldAnnounce.str());
 
-    if (sWorld.m_banTable && pInfo)
+    if (!sWorld.settings.server.banTable.empty() && pInfo)
     {
-        CharacterDatabase.Execute("INSERT INTO %s VALUES('%s', '%s', %u, %u, '%s')", sWorld.m_banTable, m_session->GetPlayer()->GetName(), pInfo->name, (uint32)UNIXTIME, (uint32)UNIXTIME + BanTime, (pReason == NULL) ? "No reason." : CharacterDatabase.EscapeString(std::string(pReason)).c_str());
+        CharacterDatabase.Execute("INSERT INTO %s VALUES('%s', '%s', %u, %u, '%s')", sWorld.settings.server.banTable.c_str(), m_session->GetPlayer()->GetName(), pInfo->name, (uint32)UNIXTIME, (uint32)UNIXTIME + BanTime, (pReason == NULL) ? "No reason." : CharacterDatabase.EscapeString(std::string(pReason)).c_str());
     }
 
     if (pPlayer)

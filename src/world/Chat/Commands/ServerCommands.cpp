@@ -45,7 +45,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
     GreenSystemMessage(m_session, "Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
     GreenSystemMessage(m_session, "Active Sessions: |r%u", active_sessions);
     GreenSystemMessage(m_session, "Current GMs: |r%u GMs", online_gm);
-    GreenSystemMessage(m_session, "Current Players: |r%u (%u Peak)", online_gm > 0 ? (online_count - online_gm) : online_count, sWorld.PeakSessionCount);
+    GreenSystemMessage(m_session, "Current Players: |r%u (%u Peak)", online_gm > 0 ? (online_count - online_gm) : online_count, sWorld.getPeakSessionCount());
     GreenSystemMessage(m_session, "Active Thread Count: |r%u", ThreadPool.GetActiveThreadCount());
     GreenSystemMessage(m_session, "Free Thread Count: |r%u", ThreadPool.GetFreeThreadCount());
     GreenSystemMessage(m_session, "Average Latency: |r%.3fms", online_count > 0 ? (latency_avg / online_count) : latency_avg);

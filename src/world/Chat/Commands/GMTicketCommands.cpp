@@ -566,9 +566,12 @@ bool ChatHandler::HandleGMTicketDeletePermanentCommand(const char* args, WorldSe
 
 bool ChatHandler::HandleGMTicketToggleTicketSystemStatusCommand(const char* args, WorldSession* m_session)
 {
-    if (sWorld.toggleGMTicketStatus())
+    sWorld.toggleGmTicketStatus();
+
+    if (sWorld.getGmTicketStatus())
         GreenSystemMessage(m_session, "TicketSystem enabled.");
     else
         GreenSystemMessage(m_session, "TicketSystem disabled.");
+
     return true;
 }

@@ -47,7 +47,7 @@ void CreateDummySpell(uint32 id)
 #if VERSION_STRING != Cata
     sp->StanceBarOrder = -1;
 #endif
-    sWorld.dummyspells.push_back(sp);
+    sWorld.dummySpellList.push_back(sp);
 }
 
 void Modify_EffectBasePoints(SpellInfo* sp)

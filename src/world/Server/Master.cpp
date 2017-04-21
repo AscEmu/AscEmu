@@ -263,7 +263,7 @@ bool Master::Run(int argc, char** argv)
 
     new ScriptMgr;
 
-    if (!sWorld.SetInitialWorldSettings())
+    if (!sWorld.setInitialWorldSettings())
     {
         LOG_ERROR("SetInitialWorldSettings() failed. Something went wrong? Exiting.");
         AscLog.~AscEmuLog();
@@ -374,7 +374,7 @@ bool Master::Run(int argc, char** argv)
     ls->Close();
 
     CloseConsoleListener();
-    sWorld.SaveAllPlayers();
+    sWorld.saveAllPlayersToDb();
 
     LogNotice("Network : Shutting down network subsystem.");
 #ifdef WIN32
@@ -387,7 +387,7 @@ bool Master::Run(int argc, char** argv)
 
     delete ls;
 
-    sWorld.LogoutPlayers();
+    sWorld.logoutAllPlayers();
 
     delete LogonCommHandler::getSingletonPtr();
 
@@ -623,7 +623,7 @@ void OnCrash(bool Terminate)
             WorldDatabase.EndThreads();
             CharacterDatabase.EndThreads();
             LogNotice("sql : All pending database operations cleared.");
-            sWorld.SaveAllPlayers();
+            sWorld.saveAllPlayersToDb();
             LogNotice("sql : Data saved.");
         }
     }
@@ -791,7 +791,7 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
             FILE* f = fopen("worldserver.uptime", "w");
             if (f)
             {
-                fprintf(f, "%u %u %u %u", sWorld.GetUptime(), sWorld.GetSessionCount(), sWorld.PeakSessionCount, sWorld.mAcceptedConnections);
+                fprintf(f, "%u %u %u %u", sWorld.GetUptime(), sWorld.GetSessionCount(), sWorld.getPeakSessionCount(), sWorld.getAcceptedConnections());
                 fclose(f);
             }
 #endif

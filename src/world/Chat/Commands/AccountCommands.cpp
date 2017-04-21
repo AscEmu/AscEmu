@@ -154,7 +154,7 @@ bool ChatHandler::HandleAccountBannedCommand(const char* args, WorldSession* m_s
     GreenSystemMessage(m_session, "Account '%s' has been banned %s%s for reason : %s. The change will be effective immediately.", pAccount,
                        timeperiod ? "until " : "forever", timeperiod ? Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32)UNIXTIME).c_str() : "", pReason);
 
-    sWorld.DisconnectUsersWithAccount(pAccount, m_session);
+    sWorld.disconnectSessionByAccountName(pAccount, m_session);
     sGMLog.writefromsession(m_session, "banned account %s until %s", pAccount, timeperiod ? Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32)UNIXTIME).c_str() : "permanent");
     return true;
 }

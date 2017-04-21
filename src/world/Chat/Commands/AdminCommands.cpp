@@ -160,7 +160,7 @@ bool ChatHandler::HandleAdminPlayGlobalSoundCommand(const char* args, WorldSessi
     if (sound_id == 0)
         return false;
 
-    sWorld.PlaySoundToAll(sound_id);
+    sWorld.playSoundToAllPlayers(sound_id);
 
     BlueSystemMessage(m_session, "Broadcasted sound %u to server.", sound_id);
 

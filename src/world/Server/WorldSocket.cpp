@@ -128,7 +128,7 @@ void WorldSocket::OnDisconnect()
 
     if (mQueued)
     {
-        sWorld.RemoveQueuedSocket(this);    // Remove from queued sockets.
+        sWorld.removeQueuedSocket(this);    // Remove from queued sockets.
         mQueued = false;
     }
 }
@@ -267,7 +267,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32 opcode, size_t len, const void* 
 
 void WorldSocket::OnConnect()
 {
-    sWorld.mAcceptedConnections++;
+    sWorld.increaseAcceptedConnections();
     _latency = getMSTime();
 
 #if VERSION_STRING < WotLK
@@ -579,7 +579,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     else if (playerLimit > 0)
     {
         // Queued, sucker.
-        uint32 Position = sWorld.AddQueuedSocket(this);
+        uint32 Position = sWorld.addQueuedSocket(this);
         mQueued = true;
         LOG_DEBUG("%s added to queue in position %u", AccountName.c_str(), Position);
 
