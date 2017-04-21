@@ -26,7 +26,6 @@
 
 initialiseSingleton(TaxiMgr);
 
-
 void TaxiPath::ComputeLen()
 {
     m_length1 = 0;
@@ -330,9 +329,9 @@ TaxiPath* TaxiMgr::GetTaxiPath(uint32 path)
 
 TaxiPath* TaxiMgr::GetTaxiPath(uint32 from, uint32 to)
 {
-    for (auto itr = m_taxiPaths.begin(); itr != m_taxiPaths.end(); ++itr)
-        if ((itr->second->to == to) && (itr->second->from == from))
-            return itr->second;
+    for (auto itr : m_taxiPaths)
+        if ((itr.second->to == to) && (itr.second->from == from))
+            return itr.second;
 
     return NULL;
 }
@@ -355,18 +354,18 @@ uint32 TaxiMgr::GetNearestTaxiNode(float x, float y, float z, uint32 mapid)
     float distance = -1;
     float nx, ny, nz, nd;
 
-    for (auto itr = m_taxiNodes.begin(); itr != m_taxiNodes.end(); ++itr)
+    for (auto itr : m_taxiNodes)
     {
-        if (itr->second->mapid == mapid)
+        if (itr.second->mapid == mapid)
         {
-            nx = itr->second->x - x;
-            ny = itr->second->y - y;
-            nz = itr->second->z - z;
+            nx = itr.second->x - x;
+            ny = itr.second->y - y;
+            nz = itr.second->z - z;
             nd = nx * nx + ny * ny + nz * nz;
             if (nd < distance || distance < 0)
             {
                 distance = nd;
-                nearest = itr->second->id;
+                nearest = itr.second->id;
             }
         }
     }
@@ -375,16 +374,14 @@ uint32 TaxiMgr::GetNearestTaxiNode(float x, float y, float z, uint32 mapid)
 
 bool TaxiMgr::GetGlobalTaxiNodeMask(uint32 curloc, uint32* Mask)
 {
-    uint8 field;
-
-    for (auto itr = m_taxiPaths.begin(); itr != m_taxiPaths.end(); ++itr)
+    for (auto itr : m_taxiPaths)
     {
         /*if (itr->second->from == curloc)
         {*/
-        field = (uint8)((itr->second->to - 1) / 32);
-        if (field >= 12)    //The DBC can contain negative TO values??? That'll be 255 here (because we store everything unsigned), skip them!
+        uint8 field = (uint8)((itr.second->to - 1) / 32);
+        if (field >= 12) // The DBC can contain negative TO values??? That'll be 255 here (because we store everything unsigned), skip them!
             continue;
-        Mask[field] |= 1 << ((itr->second->to - 1) % 32);
+        Mask[field] |= 1 << ((itr.second->to - 1) % 32);
         //}
     }
     return true;

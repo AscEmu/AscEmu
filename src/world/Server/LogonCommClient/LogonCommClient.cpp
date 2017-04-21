@@ -166,7 +166,7 @@ void LogonCommClientSocket::HandleSessionInfo(WorldPacket& recvData)
 
     // find the socket with this request
     WorldSocket* sock = sLogonCommHandler.GetSocketByRequest(request_id);
-    if (sock == 0 || sock->Authed || !sock->IsConnected())       // Expired/Client disconnected
+    if (sock == 0 || sock->Authed || !sock->IsConnected()) // Expired/Client disconnected
     {
         m.Release();
         return;
@@ -197,14 +197,14 @@ void LogonCommClientSocket::SendPing()
 void LogonCommClientSocket::SendPacket(WorldPacket* data, bool no_crypto)
 {
     logonpacket header;
-    bool rv;
+
     if (!IsConnected() || IsDeleted())
         return;
 
     BurstBegin();
 
     header.opcode = data->GetOpcode();
-    //header.size   = ntohl((u_long)data->size());
+    // header.size = ntohl((u_long)data->size());
     header.size = (uint32)data->size();
     swap32(&header.size);
 
@@ -212,7 +212,7 @@ void LogonCommClientSocket::SendPacket(WorldPacket* data, bool no_crypto)
     if (use_crypto && !no_crypto)
         _sendCrypto.Process((unsigned char*)&header, (unsigned char*)&header, 6);
 
-    rv = BurstSend((const uint8*)&header, 6);
+    bool rv = BurstSend((const uint8*)&header, 6);
 
     if (data->size() > 0 && rv)
     {
@@ -236,7 +236,8 @@ void LogonCommClientSocket::OnDisconnect()
 }
 
 LogonCommClientSocket::~LogonCommClientSocket()
-{}
+{
+}
 
 void LogonCommClientSocket::SendChallenge()
 {
@@ -257,24 +258,21 @@ void LogonCommClientSocket::HandleAuthResponse(WorldPacket& recvData)
 {
     uint8 result;
     recvData >> result;
+
     if (result != 1)
-    {
         authenticated = 0xFFFFFFFF;
-    }
     else
-    {
         authenticated = 1;
-    }
 }
 
 void LogonCommClientSocket::UpdateAccountCount(uint32 account_id, uint8 add)
 {
     WorldPacket data(LRCMSG_ACC_CHAR_MAPPING_UPDATE, 9);
 
-    for (auto itr = realm_ids.begin(); itr != realm_ids.end(); ++itr)
+    for (auto itr : realm_ids)
     {
         data.clear();
-        data << (*itr);
+        data << itr;
         data << account_id;
         data << add;
         SendPacket(&data, false);
@@ -285,8 +283,6 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
 {
     uint32 t = getMSTime();
     uint32 realm_id;
-    uint32 account_id;
-    QueryResult* result;
     std::map<uint32, uint8> mapping_to_send;
     std::map<uint32, uint8>::iterator itr;
 
@@ -294,14 +290,14 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
     recvData >> realm_id;
 
     // fetch the character mapping
-    result = CharacterDatabase.Query("SELECT acct FROM characters");
+    QueryResult* result = CharacterDatabase.Query("SELECT acct FROM characters");
 
     if (result)
     {
         do
         {
-            account_id = result->Fetch()[0].GetUInt32();
-            itr = mapping_to_send.find(account_id);
+            uint32 account_id = result->Fetch()[0].GetUInt32();
+            auto itr = mapping_to_send.find(account_id);
             if (itr != mapping_to_send.end())
                 itr->second++;
             else
@@ -318,7 +314,7 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
     }
 
     ByteBuffer uncompressed(40000 * 5 + 8);
-    //uint32 Count = 0;
+
     uint32 Remaining = (uint32)mapping_to_send.size();
     itr = mapping_to_send.begin();
     for (;;)
@@ -331,7 +327,7 @@ void LogonCommClientSocket::HandleRequestAccountMapping(WorldPacket& recvData)
         else
             uncompressed << Remaining;
 
-        for (uint32 i = 0; i < 40000; ++i, ++itr)
+        for (uint32_t i = 0; i < 40000; ++i, ++itr)
         {
             uncompressed << uint32(itr->first) << uint8(itr->second);
             if (!--Remaining)
@@ -440,7 +436,7 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
 {
     uint32 method_id;
     uint8 result_id;
-    //Get the result/method id for further processing
+    // Get the result/method id for further processing
     recvData >> method_id;
     recvData >> result_id;
 
@@ -460,21 +456,13 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
             }
 
             if (result_id == Result_Account_PW_wrong)
-            {
                 pSession->SystemMessage("Your entered old password did not match database password!");
-            }
             else if (result_id == Result_Account_SQL_error)
-            {
                 pSession->SystemMessage("Something went wrong by updating mysql data!");
-            }
             else if (result_id == Result_Account_Finished)
-            {
                 pSession->SystemMessage("Your password is now updated");
-            }
             else
-            {
                 LOG_ERROR("HandleModifyDatabaseResult: Unknown logon result in Method_Account_Change_PW");
-            }
 
         }break;
         case Method_Account_Create:
@@ -496,17 +484,11 @@ void LogonCommClientSocket::HandleModifyDatabaseResult(WorldPacket& recvData)
             }
 
             if (result_id == Result_Account_Exists)
-            {
                 pSession->SystemMessage("Account name: '%s' already in use!", created_string);
-            }
             else if (result_id == Result_Account_Finished)
-            {
                 pSession->SystemMessage("Account: '%s' created", created_string);
-            }
             else
-            {
                 LOG_ERROR("HandleModifyDatabaseResult: Unknown logon result in Method_Account_Create");
-            }
 
         }break;
     }
@@ -518,11 +500,11 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
     std::string account_name;
     std::string request_name;
 
-    recvData >> result_id;      //Get the result id for further processing
+    recvData >> result_id;    // Get the result id for further processing
     recvData >> account_name;
     recvData >> request_name;
 
-    //transform std::string to const char
+    // transform std::string to const char
     const char* request_string = request_name.c_str();
     const char* account_string = account_name.c_str();
 
@@ -535,39 +517,37 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
 
     switch (result_id)
     {
-        case 1:     // Account not available
+        case 1: // Account not available
         {
             session_name->SystemMessage("Account: %s not found in database!", account_string);
         }
         break;
-        case 2:     // No additional data set
+        case 2: // No additional data set
         {
             session_name->SystemMessage("No gmlevel set for account: %s !", account_string);
         }
         break;
-        case 3:     // Everything is okay
+        case 3: // Everything is okay
         {
             std::string gmlevel;
             recvData >> gmlevel;
 
             const char* gmlevel_string = gmlevel.c_str();
 
-            //Update account_forced_permissions
+            // Update account_forced_permissions
             CharacterDatabase.Execute("REPLACE INTO account_forced_permissions (`login`, `permissions`) VALUES ('%s', '%s')", account_string, gmlevel_string);
             session_name->SystemMessage("Forced permissions Account has been updated to '%s' for account '%s'. The change will be effective immediately.", gmlevel_string, account_string);
 
-            //Update forcedpermission map
+            // Update forcedpermission map
             sLogonCommHandler.AddForcedPermission(account_string, gmlevel_string);
 
-            //Write info to gmlog
+            // Write info to gmlog
             sGMLog.writefromsession(session_name, "set account %s forced_permissions to %s", account_string, gmlevel_string);
 
-            //Send information to updated account
+            // Send information to updated account
             auto updated_account_session = sWorld.FindSessionByName(account_string);
             if (updated_account_session != nullptr)
-            {
                 updated_account_session->SystemMessage("Your permissions has been updated! Please reconnect your account.");
-            }
         }
         break;
     }

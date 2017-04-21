@@ -70,7 +70,7 @@ void WorldSession::HandleDuelCancelled(WorldPacket& recv_data)
     }
 
     WorldPacket data(SMSG_DUEL_COMPLETE, 1);
-    data << uint8(1);   //bool 1 = true
+    data << uint8(1); // bool 1 = true
 
     SendPacket(&data);
     _player->DuelingWith->m_session->SendPacket(&data);
@@ -97,17 +97,15 @@ void WorldSession::HandleDuelCancelled(WorldPacket& recv_data)
     for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; x++)
     {
         if (_player->m_auras[x])
-        {
             _player->m_auras[x]->Remove();
-        }
     }
     std::list<Pet*> summons = _player->GetSummons();
-    for (auto itr = summons.begin(); itr != summons.end(); ++itr)
+    for (auto itr : summons)
     {
-        if ((*itr)->isAlive())
+        if (itr->isAlive())
         {
-            (*itr)->SetPetAction(PET_ACTION_STAY);
-            (*itr)->SetPetAction(PET_ACTION_FOLLOW);
+            itr->SetPetAction(PET_ACTION_STAY);
+            itr->SetPetAction(PET_ACTION_FOLLOW);
         }
     }
 }
