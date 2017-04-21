@@ -191,8 +191,8 @@ void WorldSession::HandleTrainerBuySpellOpcode(WorldPacket & recvPacket)
         return;
 
     // Check if the trainer offers that spell
-    TrainerSpell* pSpell = NULL;
-    for (auto itr : pTrainer->Spells)
+    TrainerSpell* pSpell = nullptr;
+    for (auto &itr : pTrainer->Spells)
     {
         if ((itr.pCastSpell && itr.pCastSpell->Id == TeachingSpellID) || (itr.pLearnSpell && itr.pLearnSpell->Id == TeachingSpellID))
         {
