@@ -156,6 +156,47 @@
              RemotePassword = "change_me_logon">
 
 ################################################################################
+# Realm Section
+#
+#    Name:
+#        The name of the realm. (e.g.: Silvermoon)
+#
+#    Address:
+#        The address (and port) of that realm. (e.g.: uber.server.org:8192)
+#
+#    Icon:
+#        The type of realm (PVP, Normal, RPPVP, RP)
+#
+#    Population:
+#        (0 = low, 1 = medium, 2 = high)
+#
+#    TimeZone:
+#        The location of the server.
+#        0 = Korean          10 = French       21 = CN5
+#        1 = Development     11 = Spanish      22 = CN6
+#        2 = United States   12 = Russian      23 = CN7
+#        3 = Oceanic         13 = Tournament   24 = CN8
+#        4 = Latin America   14 = Taiwan       25 = Tournament
+#        5 = Tournament      15 = Tournament   26 = Test Server
+#        6 = Korean          16 = China        27 = Tournament
+#        8 = English         17 = CN1          28 = QA Server
+#        9 = German          18 = CN2          29 = CN9
+#        10 = French         19 = CN3          30 = TestServer2
+#                            20 = CN4
+#
+#    GameBuild:
+#        5875  = 1.12.1 (Classic)    12340 = 3.3.5a (WotLK)
+#        8606  = 2.4.3  (TBC)        15595 = 4.3.4  (Cataclysm)
+#
+
+<Realm1 Name       = "AscEmu"
+        Address    = "127.0.0.1:8129" 
+        Icon       = "Normal"
+        Population = "1.0"
+        TimeZone   = "1"
+        GameBuild  = "@ASC_GAME_BUILD@">
+
+################################################################################
 # Server Settings
 #
 #    PlayerLimit

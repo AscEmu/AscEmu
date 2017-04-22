@@ -16,5 +16,4 @@ endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/configs/logon.conf.in ${CMAKE_SOURCE_DIR}/configs/logon.conf)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/configs/optional.conf.in ${CMAKE_SOURCE_DIR}/configs/optional.conf)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/configs/realms.conf.in ${CMAKE_SOURCE_DIR}/configs/realms.conf)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/configs/world.conf.in ${CMAKE_SOURCE_DIR}/configs/world.conf)

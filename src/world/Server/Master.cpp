@@ -111,7 +111,6 @@ bool Master::Run(int argc, char** argv)
 {
     char* config_file = (char*)CONFDIR "/world.conf";
     char* optional_config_file = (char*)CONFDIR "/optional.conf";
-    char* realm_config_file = (char*)CONFDIR "/realms.conf";
 
     int file_log_level = DEF_VALUE_NOT_SET;
     int screen_log_level = DEF_VALUE_NOT_SET;
@@ -147,11 +146,6 @@ bool Master::Run(int argc, char** argv)
                 strcpy(config_file, arcemu_optarg);
                 break;
 
-            case 'r':
-                realm_config_file = new char[strlen(arcemu_optarg) + 1];
-                strcpy(realm_config_file, arcemu_optarg);
-                break;
-
             case 0:
                 break;
             default:
@@ -185,12 +179,6 @@ bool Master::Run(int argc, char** argv)
         else
             LOG_ERROR("Encountered one or more errors while loading world.conf.");
 
-        LogNotice("Config : Checking config file: %s", realm_config_file);
-        if (Config.RealmConfig.SetSource(realm_config_file, true))
-            LogDetail("Config : Passed realm.conf without errors.");
-        else
-            LOG_ERROR("Encountered one or more errors while loading realm.conf.");
-
         LogNotice("Config : Checking config file:: %s", optional_config_file);
         if (Config.OptionalConfig.SetSource(optional_config_file, true))
             LogDetail("Config : Passed optional.conf without errors.");
@@ -219,7 +207,7 @@ bool Master::Run(int argc, char** argv)
     new EventMgr;
     new World;
 
-    if (!LoadWorldConfiguration(config_file, optional_config_file, realm_config_file))
+    if (!LoadWorldConfiguration(config_file, optional_config_file))
     {
         return false;
     }
@@ -656,7 +644,7 @@ void Master::PrintBanner()
     AscLog.ConsoleLogError(true, "========================================================"); // Echo off.
 }
 
-bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_file, char* realm_config_file)
+bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_file)
 {
     LogNotice("Config : Loading Config Files...");
     if (Config.MainConfig.SetSource(config_file))
@@ -677,17 +665,6 @@ bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_fil
     else
     {
         LogError("Config : error occurred loading " CONFDIR "/optional.conf");
-        AscLog.~AscEmuLog();
-        return false;
-    }
-
-    if (Config.RealmConfig.SetSource(realm_config_file))
-    {
-        LogDetail("Config : " CONFDIR "/realms.conf loaded");
-    }
-    else
-    {
-        LogError("Config : error occurred loading " CONFDIR "/realms.conf");
         AscLog.~AscEmuLog();
         return false;
     }

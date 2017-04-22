@@ -86,7 +86,6 @@ class SERVER_DECL ConfigMgr
     public:
 
         ConfigFile MainConfig;
-        ConfigFile RealmConfig;
         ConfigFile ClusterConfig;
         ConfigFile OptionalConfig;
 };

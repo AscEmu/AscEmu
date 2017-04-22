@@ -409,20 +409,20 @@ void LogonCommHandler::LoadRealmConfiguration()
         for (uint32 i = 1; i < realmcount + 1; ++i)
         {
             Realm* realm = new Realm;
-            realm->Name = Config.RealmConfig.GetStringVA("Name", "SomeRealm", "Realm%u", i);
-            realm->Address = Config.RealmConfig.GetStringVA("Address", "127.0.0.1:8129", "Realm%u", i);
+            realm->Name = Config.MainConfig.GetStringVA("Name", "AscEmu", "Realm%u", i);
+            realm->Address = Config.MainConfig.GetStringVA("Address", "127.0.0.1:8129", "Realm%u", i);
             realm->flags = 0;
-            realm->TimeZone = Config.RealmConfig.GetIntVA("TimeZone", 1, "Realm%u", i);
-            realm->Population = Config.RealmConfig.GetFloatVA("Population", 0, "Realm%u", i);
-            realm->Lock = static_cast<uint8>(Config.RealmConfig.GetIntVA("Lock", 0, "Realm%u", i));
-            realm->GameBuild = Config.RealmConfig.GetIntVA("GameBuild", 0, "Realm%u", i);
+            realm->TimeZone = Config.MainConfig.GetIntVA("TimeZone", 1, "Realm%u", i);
+            realm->Population = Config.MainConfig.GetFloatVA("Population", 0, "Realm%u", i);
+            realm->Lock = static_cast<uint8>(Config.MainConfig.GetIntVA("Lock", 0, "Realm%u", i));
+            realm->GameBuild = Config.MainConfig.GetIntVA("GameBuild", 0, "Realm%u", i);
             if (realm->GameBuild == 0)
             {
-                LOG_ERROR("   >> supported client build not found in realms.config. Update your configs!");
+                LOG_ERROR("   >> supported client build not found in world.config. Update your configs!");
                 delete realm;
                 return;
             }
-            std::string rt = Config.RealmConfig.GetStringVA("Icon", "Normal", "Realm%u", i);
+            std::string rt = Config.MainConfig.GetStringVA("Icon", "Normal", "Realm%u", i);
             uint32 type;
 
             // process realm type
