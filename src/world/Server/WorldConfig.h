@@ -131,6 +131,7 @@ class SERVER_DECL WorldConfig
             int gmtTimeZone;
             bool disableFearMovement;
             bool saveExtendedCharData;
+            std::string dataDir;
             //\todo add it to config or remove it from core
             uint32_t clientCacheVersion;        //not in config file!
             std::string banTable;               //not in config file!
@@ -181,9 +182,6 @@ class SERVER_DECL WorldConfig
         // world.conf - Terrain & Collision Settings
         struct TerrainCollisionSettings
         {
-            std::string MapPath;
-            std::string vMapPath;
-            std::string mMapPath;
             bool unloadMapFiles;
             bool isCollisionEnabled;
             bool isPathfindingEnabled;

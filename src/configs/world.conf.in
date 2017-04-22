@@ -1,28 +1,31 @@
 ################################################################################
 # AscEmu World Configuration File
-# Last edited: 3/17/2017
+# Last edited: 4/22/2017
 ################################################################################
 
 ################################################################################
 # Mysql Database Section
 #
-#    Database.Host      - The hostname that the database is located on
-#    Database.Username  - The username used for the mysql connection
-#    Database.Password  - The password used for the mysql connection
-#    Database.Name      - The database name
-#    Database.Port      - Port that MySQL listens on. Usually 3306.
+#    Database.Host        - The hostname that the database is located on
+#    Database.Username    - The username used for the mysql connection
+#    Database.Password    - The password used for the mysql connection
+#    Database.Name        - The database name
+#    Database.Port        - Port that MySQL listens on. Usually 3306.
+#    Database.Connections - Parallel connections for database.
 
-<WorldDatabase Hostname = "localhost"
-               Username = "root"
-               Password = "root"
-               Name     = "ascemu_world"
-               Port     = "3306">
+<WorldDatabase Hostname    = "localhost"
+               Username    = "root"
+               Password    = "root"
+               Name        = "ascemu_world"
+               Port        = "3306"
+               Connections = "3">
 
-<CharacterDatabase Hostname = "localhost" 
-                   Username = "root" 
-                   Password = "root" 
-                   Name     = "ascemu_char" 
-                   Port     = "3306">
+<CharacterDatabase Hostname    = "localhost" 
+                   Username    = "root" 
+                   Password    = "root" 
+                   Name        = "ascemu_char" 
+                   Port        = "3306"
+                   Connections = "5">
 
 ################################################################################
 # Listen Config
@@ -195,6 +198,10 @@
 #        Recommended for armory type services.
 #        Default: 0 (off)
 #
+#    DataDir
+#        Set up the data dir for dbc, maps, vmaps and mmaps.
+#        Default: empty
+#
 
 <Server PlayerLimit          = "100"
         Motd                 = "Welcome to the World of Warcraft!"
@@ -217,7 +224,8 @@
         EnableLFGJoin        = "0"
         TimeZone             = "0"
         DisableFearMovement  = "0"
-        SaveExtendedCharData = "0">
+        SaveExtendedCharData = "0"
+        DataDir              = "">
 
 ################################################################################
 # Announce Configuration
@@ -351,17 +359,6 @@
 ################################################################################
 # Terrain & Collision Settings
 #
-#    Set the path to the map_xx.bin files and whether unloading should be enabled
-#    for the main world maps here. Unloading the main world maps when they go idle
-#    can save a great amount of memory if the cells aren't being activated/idled
-#    often. Instance/Non-main maps will not be unloaded ever.
-#
-#    Default:
-#        MapPath = "maps"
-#        vMapPath = "vmaps"
-#        mMapPath = "mmaps"
-#        UnloadMaps = 1
-#
 #    Collision
 #        Enable collision system (LoS checks).
 #        Make sure you have extracted vmaps.
@@ -373,10 +370,7 @@
 #        Default: 0 (boolean 0 = false and 1 = true)
 #
 
-<Terrain MapPath     = "maps"
-         vMapPath    = "vmaps"
-         mMapPath    = "mmaps"
-         UnloadMaps  = "1"
+<Terrain UnloadMaps  = "1"
          Collision   = "0"
          Pathfinding = "0">
 
@@ -387,12 +381,16 @@
 #        settings working. The files will be written to this directory.
 # 
 #    Cheaters:
-#        This directive sets up the cheater logging file, if turned on any
+#        This directive sets up the cheater logging file. If turned on any
 #        cheat / packet exploit / speedhack attempts will be logged here.
 #
 #    GMCommands:
-#        These two directives set up the GM command logging fie. If turned on,
-#        most gm commands will be logged for this file for abuse investigation, etc.
+#        This directive sets up the GM command logging fie. If turned on, most
+#        GM commands will be logged for abuse investigation, etc.
+#
+#    Players:
+#        This directive sets up the Player logging fie. If turned on, most player
+#        interactions will be logged for abuse investigation, etc.
 #
 #    TimeStamp:
 #        Enables timestamps in logs.
@@ -400,6 +398,7 @@
 
 <Log Cheaters   = "0"
      GMCommands = "0"
+     Players    = "0"
      TimeStamp  = "0">
 
 ################################################################################

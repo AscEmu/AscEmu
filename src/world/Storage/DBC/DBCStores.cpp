@@ -101,7 +101,7 @@ bool LoadDBCs()
 {
     uint32 available_dbc_locales = 0xFFFFFFFF;
     DBC::StoreProblemList bad_dbc_files;
-    std::string dbc_path = "./DBC/";
+    std::string dbc_path = sWorld.settings.server.dataDir + "dbc/";
 
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sWorldMapOverlayStore, dbc_path, "WorldMapOverlay.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sAchievementCriteriaStore, dbc_path, "Achievement_Criteria.dbc");

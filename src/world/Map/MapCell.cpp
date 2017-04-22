@@ -105,11 +105,15 @@ void MapCell::SetActivity(bool state)
         {
             VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
             MMAP::MMapManager* mmgr = MMAP::MMapFactory::createOrGetMMapManager();
+
+            std::string vmapPath = worldConfig.server.dataDir + "vmaps";
+            std::string mmapPath = worldConfig.server.dataDir + "mmaps";
+
             m_cellloadLock.Acquire();
             if (m_celltilesLoaded[mapId][tileX][tileY] == 0)
             {
-                mgr->loadMap(worldConfig.terrainCollision.vMapPath.c_str(), mapId, tileX, tileY);
-                mmgr->loadMap(worldConfig.terrainCollision.mMapPath.c_str(), mapId, tileX, tileY);
+                mgr->loadMap(vmapPath.c_str(), mapId, tileX, tileY);
+                mmgr->loadMap(mmapPath.c_str(), mapId, tileX, tileY);
             }
             ++m_celltilesLoaded[mapId][tileX][tileY];
             m_cellloadLock.Release();

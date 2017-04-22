@@ -56,6 +56,7 @@ WorldConfig::WorldConfig()
     server.gmtTimeZone = 0;
     server.disableFearMovement = 0;
     server.saveExtendedCharData = false;
+    server.dataDir = "./";
     server.clientCacheVersion = 12340;
     server.banTable = "";
 
@@ -283,14 +284,14 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     worldDb.password = Config.MainConfig.GetStringDefault("WorldDatabase", "Password", "");
     worldDb.dbName = Config.MainConfig.GetStringDefault("WorldDatabase", "Name", "");
     worldDb.port = Config.MainConfig.GetIntDefault("WorldDatabase", "Port", 3306);
-    worldDb.connections = Config.MainConfig.GetIntDefault("WorldDatabase", "ConnectionCount", 3);
+    worldDb.connections = Config.MainConfig.GetIntDefault("WorldDatabase", "Connections", 3);
 
     charDb.host = Config.MainConfig.GetStringDefault("CharacterDatabase", "Hostname", "");
     charDb.user = Config.MainConfig.GetStringDefault("CharacterDatabase", "Username", "");
     charDb.password = Config.MainConfig.GetStringDefault("CharacterDatabase", "Password", "");
     charDb.dbName = Config.MainConfig.GetStringDefault("CharacterDatabase", "Name", "");
     charDb.port = Config.MainConfig.GetIntDefault("CharacterDatabase", "Port", 3306);
-    charDb.connections = Config.MainConfig.GetIntDefault("CharacterDatabase", "ConnectionCount", 5);
+    charDb.connections = Config.MainConfig.GetIntDefault("CharacterDatabase", "Connections", 5);
 
     // world.conf - Listen Config
     listen.listenHost = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
@@ -325,6 +326,10 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     server.gmtTimeZone = Config.MainConfig.GetIntDefault("Server", "TimeZone", 0);
     server.disableFearMovement = Config.MainConfig.GetBoolDefault("Server", "DisableFearMovement", 0);
     server.saveExtendedCharData = Config.MainConfig.GetBoolDefault("Server", "SaveExtendedCharData", false);
+    server.dataDir = Config.MainConfig.GetStringDefault("Server", "DataDir", "./");
+    if (server.dataDir.compare("./") != 0)
+        server.dataDir = "./" + server.dataDir + "/";
+
     server.clientCacheVersion = uint32_t(Config.MainConfig.GetIntDefault("Server", "CacheVersion", 12340));
     server.banTable = Config.MainConfig.GetStringDefault("Server", "BanTable", "");
 
@@ -400,9 +405,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     gmClient.gmClientChannelName = Config.MainConfig.GetStringDefault("GMClient", "GmClientChannel", "");
 
     // world.conf - Terrain & Collision Settings
-    terrainCollision.MapPath = Config.MainConfig.GetStringDefault("Terrain", "MapPath", "maps");
-    terrainCollision.vMapPath = Config.MainConfig.GetStringDefault("Terrain", "vMapPath", "vmaps");
-    terrainCollision.mMapPath = Config.MainConfig.GetStringDefault("Terrain", "mMapPath", "mmaps");
     terrainCollision.unloadMapFiles = Config.MainConfig.GetBoolDefault("Terrain", "UnloadMapFiles", true);
     terrainCollision.isCollisionEnabled = Config.MainConfig.GetBoolDefault("Terrain", "Collision", false);
     terrainCollision.isPathfindingEnabled = Config.MainConfig.GetBoolDefault("Terrain", "Pathfinding", false);
@@ -410,7 +412,7 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     // world.conf - Log Settings
     log.logCheaters = Config.MainConfig.GetBoolDefault("Log", "Cheaters", false);
     log.logGmCommands = Config.MainConfig.GetBoolDefault("Log", "GMCommands", false);
-    log.logPlayers = Config.MainConfig.GetBoolDefault("Log", "Player", false);
+    log.logPlayers = Config.MainConfig.GetBoolDefault("Log", "Players", false);
     log.addTimeStampToFileName = Config.MainConfig.GetBoolDefault("log", "TimeStamp", false);
 
     // world.conf - Mail System Setup

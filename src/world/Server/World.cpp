@@ -743,7 +743,8 @@ bool World::setInitialWorldSettings()
     ApplyNormalFixes();
 
     LogNotice("GameObjectModel : Loading GameObject models...");
-    LoadGameObjectModelList(worldConfig.terrainCollision.vMapPath);
+    std::string vmapPath = worldConfig.server.dataDir + "vmaps";
+    LoadGameObjectModelList(vmapPath);
 
     loadMySQLStores();
     loadMySQLTablesByTask(start_time);
