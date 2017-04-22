@@ -57,7 +57,6 @@ WorldConfig::WorldConfig()
     server.disableFearMovement = 0;
     server.saveExtendedCharData = false;
     server.dataDir = "./";
-    server.banTable = "";
 
     // world.conf - Announce Configuration
     announce.enableGmAdminTag = true;
@@ -81,6 +80,7 @@ WorldConfig::WorldConfig()
     log.logGmCommands = false;
     log.logPlayers = false;
     log.addTimeStampToFileName = false;
+    log.enableSqlBanLog = false;
 
     // world.conf - Mail System Setup
     mail.reloadDelayInSeconds = 0;
@@ -329,8 +329,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     if (server.dataDir.compare("./") != 0)
         server.dataDir = "./" + server.dataDir + "/";
 
-    server.banTable = Config.MainConfig.GetStringDefault("Server", "BanTable", "");
-
     if (server.mapUnloadTime == 0)
     {
         LOG_ERROR("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of %u", MAP_CELL_DEFAULT_UNLOAD_TIME);
@@ -411,7 +409,8 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     log.logCheaters = Config.MainConfig.GetBoolDefault("Log", "Cheaters", false);
     log.logGmCommands = Config.MainConfig.GetBoolDefault("Log", "GMCommands", false);
     log.logPlayers = Config.MainConfig.GetBoolDefault("Log", "Players", false);
-    log.addTimeStampToFileName = Config.MainConfig.GetBoolDefault("log", "TimeStamp", false);
+    log.addTimeStampToFileName = Config.MainConfig.GetBoolDefault("Log", "TimeStamp", false);
+    log.enableSqlBanLog = Config.MainConfig.GetBoolDefault("Log", "SqlBanLog", false);
 
     // world.conf - Mail System Setup
     mail.reloadDelayInSeconds = Config.MainConfig.GetIntDefault("Mail", "ReloadDelay", 0);

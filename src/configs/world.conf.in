@@ -395,11 +395,16 @@
 #    TimeStamp:
 #        Enables timestamps in logs.
 #
+#    SqlBanLog:
+#        Turn on/off extended ban logs for characters in character database
+#        (table banned_char_log).
+#
 
 <Log Cheaters   = "0"
      GMCommands = "0"
      Players    = "0"
-     TimeStamp  = "0">
+     TimeStamp  = "0"
+     SqlBanLog  = "0">
 
 ################################################################################
 # Mail System Setup

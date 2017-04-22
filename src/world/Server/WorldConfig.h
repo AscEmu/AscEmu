@@ -132,8 +132,6 @@ class SERVER_DECL WorldConfig
             bool disableFearMovement;
             bool saveExtendedCharData;
             std::string dataDir;
-            //\todo add it to config or remove it from core
-            std::string banTable;               //not in config file!
         } server;
 
         uint32_t getPlayerLimit();
@@ -191,9 +189,9 @@ class SERVER_DECL WorldConfig
         {
             bool logCheaters;
             bool logGmCommands;
-            //\todo remove it from core or add it to config
-            bool logPlayers;       // not in config
+            bool logPlayers;
             bool addTimeStampToFileName;
+            bool enableSqlBanLog;
         } log;
 
         // world.conf - Mail System Setup
