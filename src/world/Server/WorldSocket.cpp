@@ -627,9 +627,7 @@ void WorldSocket::Authenticate()
     data << uint8_t(0x0C);                        // 0x0C = 12 (AUTH_OK)
     SendPacket(&data);
 
-    WorldPacket cdata(SMSG_CLIENTCACHE_VERSION, 4);
-    cdata << uint32_t(15595);
-    SendPacket(&cdata);
+    mSession->SendClientCacheVersion(15595);
 
     // send addon info here
     mSession->sendAddonInfo();
@@ -646,7 +644,7 @@ void WorldSocket::Authenticate()
 
 #if VERSION_STRING > TBC
 #if VERSION_STRING != Cata
-    mSession->SendClientCacheVersion(worldConfig.server.clientCacheVersion);
+    mSession->SendClientCacheVersion(12340);
 #endif
 #endif
 

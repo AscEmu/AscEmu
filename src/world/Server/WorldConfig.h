@@ -133,7 +133,6 @@ class SERVER_DECL WorldConfig
             bool saveExtendedCharData;
             std::string dataDir;
             //\todo add it to config or remove it from core
-            uint32_t clientCacheVersion;        //not in config file!
             std::string banTable;               //not in config file!
         } server;
 

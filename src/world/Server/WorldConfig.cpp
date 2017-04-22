@@ -57,7 +57,6 @@ WorldConfig::WorldConfig()
     server.disableFearMovement = 0;
     server.saveExtendedCharData = false;
     server.dataDir = "./";
-    server.clientCacheVersion = 12340;
     server.banTable = "";
 
     // world.conf - Announce Configuration
@@ -330,7 +329,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     if (server.dataDir.compare("./") != 0)
         server.dataDir = "./" + server.dataDir + "/";
 
-    server.clientCacheVersion = uint32_t(Config.MainConfig.GetIntDefault("Server", "CacheVersion", 12340));
     server.banTable = Config.MainConfig.GetStringDefault("Server", "BanTable", "");
 
     if (server.mapUnloadTime == 0)
