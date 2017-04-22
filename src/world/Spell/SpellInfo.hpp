@@ -48,9 +48,6 @@ class SERVER_DECL SpellInfo
         uint32 AttributesExE;
         uint32 AttributesExF;
         uint32 AttributesExG;
-        uint32 AttributesExH;
-        uint32 AttributesExI;
-        uint32 AttributesExJ;
         uint32 RequiredShapeShift;          // (12-13 Stances[2])
         uint32 ShapeshiftExclude;           // (14-15 StancesExcluded[2])
         uint32 Targets;
