@@ -1,6 +1,6 @@
 ################################################################################
 # AscEmu Realms Configuration File
-# Last edited: 3/17/2017
+# Last edited: 4/22/2017
 ################################################################################
 
 ################################################################################
@@ -18,7 +18,8 @@
 #    RealmCount:
 #        The number of realms in the next section.
 #
-# To add more realms, increase this - and also fill out more realms below depending on the configuration you need to connect to them.
+# To add more realms, increase this - and also fill out more realms below
+# depending on the configuration you need to connect to them.
 #
 
 <LogonServer Address    = "127.0.0.1" 

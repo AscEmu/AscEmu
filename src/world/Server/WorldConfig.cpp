@@ -92,8 +92,6 @@ WorldConfig::WorldConfig()
     mail.isInterfactionMailForGmEnabled = false;
 
     // world.conf - Startup Options
-    startup.isPreloadingCompleteWorldEnabled = false;
-    startup.isBackgroundLootLoadingEnabled = false;
     startup.enableMultithreadedLoading = false;
     startup.enableSpellIdDump = false;
 
@@ -176,10 +174,9 @@ WorldConfig::WorldConfig()
     // optional.conf - Optional Settings
     optional.playerStartingLevel = 1;
     optional.playerLevelCap = DBC_PLAYER_LEVEL_CAP;
-    optional.playerGeneratedInformationByLevelCap = DBC_PLAYER_LEVEL_CAP; //! no delete
+    optional.playerGeneratedInformationByLevelCap = DBC_PLAYER_LEVEL_CAP;
     optional.allowTbcCharacters = true;
     optional.deactivateMasterLootNinja = false;
-    optional.loadAdditionalFunScripts = false;
     optional.deathKnightStartTalentPoints = 0;
     optional.maxProfessions = 0;
     optional.skipCinematics = false;
@@ -442,7 +439,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     antiHack.isAntiHackCheckDisabledForGm = Config.MainConfig.GetBoolDefault("AntiHack", "DisableOnGM", true);
 
     // world.conf - Period Setup
-    period.honorUpdate = Config.MainConfig.GetStringDefault("Periods", "HonorUpdate", "daily");
     period.arenaUpdate = Config.MainConfig.GetStringDefault("Periods", "ArenaUpdate", "weekly");
     period.dailyUpdate = Config.MainConfig.GetStringDefault("Periods", "DailyUpdate", "daily");
 

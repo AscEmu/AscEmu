@@ -379,7 +379,6 @@ Player::Player(uint32 guid)
     linkTarget = NULL;
     m_pvpTimer = 0;
     m_globalCooldown = 0;
-    m_unstuckCooldown = 0;
     m_lastHonorResetTime = 0;
     tutorialsDirty = true;
     m_TeleportState = 1;

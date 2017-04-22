@@ -60,24 +60,26 @@
 # WorldServer Setup
 #
 #    RemotePassword
-#        This directive controls the password used to authenticate with the worldserver.
-#        It must be the same between the two configs. If it is not, your server will
-#        not register.
+#        This directive controls the password used to authenticate with the
+#        worldserver. It must be the same between the two configs. If it is not,
+#        your server will not register.
 #        Default: "change_me_logon"
 #
 #    AllowedIPs
-#        This section MUST be completed, otherwise all attempts to link your servers will fail.
-#        These "Allowed" fields are a space-separated list of CIDR-form IP addresses that are allowed
-#        to make server connections to your logonserver, and register realms.
+#        This section MUST be completed, otherwise all attempts to link your
+#        servers will fail. These "Allowed" fields are a space-separated list of
+#        CIDR-form IP addresses that are allowed to make server connections to
+#        your logonserver, and register realms.
 #        For example, everything in the 127.0.0.* range would be:
 #        127.0.0.0/24, as 24 of the bits must match the 127.0.0.0
 #
 #        To allow a single IP,
-#        1.3.3.7/32, would allow only 1.3.3.7 to connect as 32 of the bits must match.
+#        1.3.3.7/32, would allow only 1.3.3.7 to connect as 32 of the bits must
+#        match.
 #
 #    AllowedModIPs
-#        In the same form as AllowedIPs, these are the IPs that are allowed to modify the database
-#        (adding bans, GMs, account permissions, etc)
+#        In the same form as AllowedIPs, these are the IPs that are allowed to
+#        modify the database (adding bans, GMs, account permissions, etc)
 #
 
 <LogonServer RemotePassword = "change_me_logon" 

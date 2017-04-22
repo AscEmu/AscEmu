@@ -210,9 +210,6 @@ class SERVER_DECL WorldConfig
         // world.conf - Startup Options
         struct StartupSettings
         {
-            //\todo remove it from config or implement it
-            bool isPreloadingCompleteWorldEnabled;  // not used by core
-            bool isBackgroundLootLoadingEnabled;    // not used by core, not in config
             bool enableMultithreadedLoading;
             bool enableSpellIdDump;
             std::string additionalTableLoads;
@@ -247,8 +244,6 @@ class SERVER_DECL WorldConfig
         // world.conf - Period Setup
         struct PeriodSettings
         {
-            //\todo implement it
-            std::string honorUpdate;        // not used by core
             std::string arenaUpdate;
             std::string dailyUpdate;
         } period;
@@ -350,7 +345,6 @@ class SERVER_DECL WorldConfig
             uint32_t playerGeneratedInformationByLevelCap;
             bool allowTbcCharacters;
             bool deactivateMasterLootNinja;
-            bool loadAdditionalFunScripts;
             uint32_t deathKnightStartTalentPoints;
             uint32_t maxProfessions;
             bool skipCinematics;
