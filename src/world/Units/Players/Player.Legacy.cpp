@@ -3499,7 +3499,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     if (m_honorPoints > worldConfig.limit.maxHonorPoints)
     {
         std::stringstream dmgLog;
-        dmgLog << "has over " << worldConfig.limit.maxArenaPoints << " honor points " << m_honorPoints;
+        dmgLog << "has over " << worldConfig.limit.maxHonorPoints << " honor points " << m_honorPoints;
 
         sCheatLog.writefromsession(m_session, dmgLog.str().c_str());
 
