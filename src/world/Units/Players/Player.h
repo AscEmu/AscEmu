@@ -496,10 +496,6 @@ private:
         void DisableAppear(bool disable) { disableAppear = disable; }
         bool IsAppearDisabled() { return disableAppear; }
 
-        // Unstuck Cooldown, used in ExtraScripts
-        time_t GetLastUnstuckTime() { return m_unstuckCooldown; }
-        void SetLastUnstuckTime(time_t t) { m_unstuckCooldown = t; }
-
         // Scripting
         void SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 delay = 0);
         void SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg, Player* plr);
@@ -517,7 +513,6 @@ private:
         uint32 m_lastPotionId;
         PlayerCooldownMap m_cooldownMap[NUM_COOLDOWN_TYPES];
         uint32 m_globalCooldown;
-        time_t m_unstuckCooldown;       /// For the Unstuck Script in ExtraScripts module
 
         /***********************************************************************************
             AFTER THIS POINT, public and private ARE PASSED AROUND LIKE A CHEAP WH*RE :P

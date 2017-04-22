@@ -342,14 +342,6 @@ class SERVER_DECL WorldConfig
             bool broadcastMessageToGmOnExceeding;
         } limit;
 
-        // world.conf - MISSING in CONFIG!
-        struct WorldSocketSettings
-        {
-            //\todo add it to config
-            uint32_t maxSocketSendBufSize;       // Section WorldSocket SendBuffSize
-            uint32_t maxSocketRecvBufSize;       // Section WorldSocket RecvBufSize
-        } worldSocket;
-
         // optional.conf - Optional Settings
         struct OptionalSettings
         {
@@ -360,10 +352,6 @@ class SERVER_DECL WorldConfig
             bool deactivateMasterLootNinja;
             bool loadAdditionalFunScripts;
             uint32_t deathKnightStartTalentPoints;
-            //\todo remove it from config or implement in core
-            //unstuck - Not loaded by core
-            //unstuckcooldown - Not loaded by core
-            //unstucktobind - Not loaded by core
             uint32_t maxProfessions;
             bool skipCinematics;
             uint8_t enableInstantLogoutForAccessType;

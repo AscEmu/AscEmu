@@ -68,7 +68,7 @@ struct ServerPktHeader
 
 WorldSocket::WorldSocket(SOCKET fd)
     :
-    Socket(fd, worldConfig.worldSocket.maxSocketSendBufSize, worldConfig.worldSocket.maxSocketRecvBufSize),
+    Socket(fd, WORLDSOCKET_SENDBUF_SIZE, WORLDSOCKET_RECVBUF_SIZE),
     Authed(false),
     mOpcode(0),
     mRemaining(0),

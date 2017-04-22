@@ -173,10 +173,6 @@ WorldConfig::WorldConfig()
     limit.disconnectPlayerForExceedingLimits = false;
     limit.broadcastMessageToGmOnExceeding = true;
 
-    // world.conf - MISSING in CONFIG!
-    worldSocket.maxSocketSendBufSize = WORLDSOCKET_SENDBUF_SIZE;
-    worldSocket.maxSocketRecvBufSize = WORLDSOCKET_RECVBUF_SIZE;
-
     // optional.conf - Optional Settings
     optional.playerStartingLevel = 1;
     optional.playerLevelCap = DBC_PLAYER_LEVEL_CAP;
@@ -185,9 +181,6 @@ WorldConfig::WorldConfig()
     optional.deactivateMasterLootNinja = false;
     optional.loadAdditionalFunScripts = false;
     optional.deathKnightStartTalentPoints = 0;
-    //unstuck - Not loaded by core
-    //unstuckcooldown - Not loaded by core
-    //unstucktobind - Not loaded by core
     optional.maxProfessions = 0;
     optional.skipCinematics = false;
     optional.enableInstantLogoutForAccessType = 1;
@@ -527,10 +520,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     limit.disconnectPlayerForExceedingLimits = Config.MainConfig.GetBoolDefault("Limits", "Disconnect", false);
     limit.broadcastMessageToGmOnExceeding = Config.MainConfig.GetBoolDefault("Limits", "BroadcastGMs", true);
 
-    // world.conf - MISSING in CONFIG!
-    worldSocket.maxSocketRecvBufSize = Config.MainConfig.GetIntDefault("WorldSocket", "RecvBufSize", WORLDSOCKET_RECVBUF_SIZE);
-    worldSocket.maxSocketSendBufSize = Config.MainConfig.GetIntDefault("WorldSocket", "SendBufSize", WORLDSOCKET_SENDBUF_SIZE);
-
     // optional.conf - Optional Settings
     optional.playerStartingLevel = Config.OptionalConfig.GetIntDefault("Optional", "StartingLevel", 1);
     optional.playerLevelCap = Config.OptionalConfig.GetIntDefault("Optional", "LevelCap", DBC_PLAYER_LEVEL_CAP);
@@ -542,9 +531,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     optional.deactivateMasterLootNinja = Config.OptionalConfig.GetBoolDefault("Optional", "AntiMasterLootNinja", false);
     optional.deathKnightStartTalentPoints = Config.OptionalConfig.GetIntDefault("Optional", "DKStartingTalents", 0);
     optional.maxProfessions = (uint32_t)Config.OptionalConfig.GetIntDefault("Optional", "MaxProfessions", 2);
-    //unstuck - Not loaded by core
-    //unstuckcooldown - Not loaded by core
-    //unstucktobind - Not loaded by core
     optional.skipCinematics = Config.OptionalConfig.GetBoolDefault("Optional", "SkipCinematic", false);
     optional.enableInstantLogoutForAccessType = Config.OptionalConfig.GetIntDefault("Optional", "InstantLogout", 1);
     optional.minDualSpecLevel = Config.OptionalConfig.GetIntDefault("Optional", "MinDualSpecLevel", 40);
