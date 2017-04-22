@@ -4,30 +4,6 @@
 ################################################################################
 
 ################################################################################
-# LogonServer Section
-#
-#    Address:
-#        The address (no port) of the server.
-#
-#    Port:
-#        The port on which the logon server listens. (*** NOT 3724 ***)
-#
-#    Name:
-#        Not really relevant, but name the logon.
-#
-#    RealmCount:
-#        The number of realms in the next section.
-#
-# To add more realms, increase this - and also fill out more realms below
-# depending on the configuration you need to connect to them.
-#
-
-<LogonServer Address    = "127.0.0.1" 
-             Port       = "8093"
-             Name       = "Default Logon"
-             RealmCount = "1">
-
-################################################################################
 # Realm Section
 #
 #    Name:

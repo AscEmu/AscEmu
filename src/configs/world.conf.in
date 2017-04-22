@@ -118,34 +118,42 @@
      EnablePlayerLog        = "0"
      EnableTimeStamp        = "0"
      EnableSqlBanLog        = "0">
-     
+
 ################################################################################
-# Log Settings
-#    Cheaters:
-#        This directive sets up the cheater logging file. If turned on any
-#        cheat / packet exploit / speedhack attempts will be logged here.
+# LogonServer Settings
 #
-#    GMCommands:
-#        This directive sets up the GM command logging fie. If turned on, most
-#        GM commands will be logged for abuse investigation, etc.
+#    Address:
+#        The address (no port) of the server.
 #
-#    Players:
-#        This directive sets up the Player logging fie. If turned on, most player
-#        interactions will be logged for abuse investigation, etc.
+#    Port:
+#        The port on which the logon server listens. (*** NOT 3724 ***)
 #
-#    TimeStamp:
-#        Enables timestamps in logs.
+#    Name:
+#        Not really relevant, but name the logon.
 #
-#    SqlBanLog:
-#        Turn on/off extended ban logs for characters in character database
-#        (table banned_char_log).
+#    RealmCount:
+#        The number of realms in section <Realm>. To add more realms, increase
+#        this - and also fill out more realms below depending on the
+#        configuration you need to connect to them.
+#
+#    DisablePings   
+#        This directive controls whether pings will be sent to the logonserver
+#        to check if the connection is still "alive". Expect problems if it is
+#        disabled.
+#        Default: 0
+#
+#    RemotePassword
+#        This directive controls the password used to authenticate with the
+#        logonserver. It must be the same between the two configs. If it is not,
+#        your server will not register.
 #
 
-<Log Cheaters   = "0"
-     GMCommands = "0"
-     Players    = "0"
-     TimeStamp  = "0"
-     SqlBanLog  = "0">
+<LogonServer Address        = "127.0.0.1" 
+             Port           = "8093"
+             Name           = "Default Logon"
+             RealmCount     = "1"
+             DisablePings   = "0"
+             RemotePassword = "change_me_logon">
 
 ################################################################################
 # Server Settings
@@ -562,24 +570,6 @@
 <FloodProtection Lines       = "0" 
                  Seconds     = "0" 
                  SendMessage = "0">
-
-################################################################################
-# LogonServer Setup
-#
-#    DisablePings   
-#        This directive controls whether pings will be sent to the logonserver
-#        to check if the connection is still "alive". Expect problems if it is
-#        disabled.
-#        Default: 0
-#
-#    RemotePassword
-#        This directive controls the password used to authenticate with the
-#        logonserver. It must be the same between the two configs. If it is not,
-#        your server will not register.
-#
-
-<LogonServer DisablePings   = "0"
-             RemotePassword = "change_me_logon">
 
 ################################################################################
 # AntiHack Setup

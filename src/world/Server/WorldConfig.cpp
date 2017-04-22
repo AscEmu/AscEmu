@@ -39,6 +39,13 @@ WorldConfig::WorldConfig()
     log.enableTimeStamp = false;
     log.enableSqlBanLog = false;
 
+    // world.conf - LogonServer Settings
+    logonServer.address = "127.0.0.1";
+    logonServer.port = 8093;
+    logonServer.name = "Default Logon";
+    logonServer.realmCount = 1;
+    logonServer.disablePings = false;
+
     // world.conf - Server Settings
     server.playerLimit = 1000;
     server.messageOfTheDay = "AscEmu Default MOTD";
@@ -98,9 +105,6 @@ WorldConfig::WorldConfig()
     floodProtection.linesBeforeProtection = 0;
     floodProtection.secondsBeforeProtectionReset = 0;
     floodProtection.enableSendFloodProtectionMessage = false;
-
-    // world.conf - LogonServer Setup
-    logonServer.disablePings = false;
 
     // world.conf - AntiHack Setup
     antiHack.isTeleportHackCheckEnabled = false;
@@ -228,10 +232,6 @@ WorldConfig::WorldConfig()
     corpseDecay.rareEliteTimeInSeconds = 300000;
     corpseDecay.worldbossTimeInSeconds = 3600000;
 
-    // realms.conf - LogonServer Section
-    logonServer2.port = 8093;
-    logonServer2.realmCount = 1;
-
     // realms.conf - Realm Section
     // handled in LogonCommHandler::LoadRealmConfiguration()
 }
@@ -299,6 +299,14 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     log.enablePlayerLog = Config.MainConfig.GetBoolDefault("Log", "EnablePlayerLog", false);
     log.enableTimeStamp = Config.MainConfig.GetBoolDefault("Log", "EnableTimeStamp", false);
     log.enableSqlBanLog = Config.MainConfig.GetBoolDefault("Log", "EnableSqlBanLog", false);
+
+    // world.conf - LogonServer Settings
+    logonServer.address = Config.MainConfig.GetStringDefault("LogonServer", "Address", "127.0.0.1");
+    logonServer.port = Config.MainConfig.GetIntDefault("LogonServer", "Port", 8093);
+    logonServer.name = Config.MainConfig.GetStringDefault("LogonServer", "Name", "Default Logon");
+    logonServer.realmCount = Config.MainConfig.GetIntDefault("LogonServer", "RealmCount", 1);
+    logonServer.disablePings = Config.MainConfig.GetBoolDefault("LogonServer", "DisablePings", false);
+    logonServer.remotePassword = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3");
 
     // world.conf - Server Settings
     server.playerLimit = Config.MainConfig.GetIntDefault("Server", "PlayerLimit", 1000);
@@ -426,10 +434,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
 
     if (!floodProtection.linesBeforeProtection || !floodProtection.secondsBeforeProtectionReset)
         floodProtection.linesBeforeProtection = floodProtection.secondsBeforeProtectionReset = 0;
-
-    // world.conf - LogonServer Setup
-    logonServer.disablePings = Config.MainConfig.GetBoolDefault("LogonServer", "DisablePings", false);
-    logonServer.remotePassword = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3");
 
     // world.conf - AntiHack Setup
     antiHack.isTeleportHackCheckEnabled = Config.MainConfig.GetBoolDefault("AntiHack", "Teleport", true);
@@ -597,12 +601,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     corpseDecay.eliteTimeInSeconds = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayElite", 300)));
     corpseDecay.rareEliteTimeInSeconds = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayRareElite", 300)));
     corpseDecay.worldbossTimeInSeconds = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayWorldboss", 3600)));
-
-    // realms.conf - LogonServer Section
-    logonServer2.address = Config.RealmConfig.GetStringDefault("LogonServer", "Address", "127.0.0.1");
-    logonServer2.port = Config.RealmConfig.GetIntDefault("LogonServer", "Port", 8093);
-    logonServer2.name = Config.RealmConfig.GetStringDefault("LogonServer", "Name", "UnkLogon");
-    logonServer2.realmCount = Config.RealmConfig.GetIntDefault("LogonServer", "RealmCount", 1);
 
     // realms.conf - Realm Section
     // handled in LogonCommHandler::LoadRealmConfiguration()

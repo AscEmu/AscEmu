@@ -110,6 +110,17 @@ class SERVER_DECL WorldConfig
             bool enableSqlBanLog;
         } log;
 
+        // world.conf - LogonServer Settings
+        struct LogonServerSettings
+        {
+            std::string address;
+            int port;
+            std::string name;
+            int realmCount;
+            bool disablePings;
+            std::string remotePassword;
+        } logonServer;
+
         // world.conf - Server Settings
         struct ServerSettings
         {
@@ -216,13 +227,6 @@ class SERVER_DECL WorldConfig
             uint32_t secondsBeforeProtectionReset;
             bool enableSendFloodProtectionMessage;
         } floodProtection;
-
-        // world.conf - LogonServer Setup
-        struct LogonServerSettings          // in realms.conf we have the same section...
-        {
-            bool disablePings;
-            std::string remotePassword;
-        } logonServer;
 
         // world.conf - AntiHack Setup
         struct AntiHackSettings
@@ -414,16 +418,6 @@ class SERVER_DECL WorldConfig
             uint32_t rareEliteTimeInSeconds;
             uint32_t worldbossTimeInSeconds;
         } corpseDecay;
-
-        //\todo move to one config file (world.conf)
-        // realms.conf - LogonServer Section
-        struct LogonServerSettings2
-        {
-            std::string address;
-            int port;
-            std::string name;
-            int realmCount;
-        } logonServer2;
 
         // realms.conf - Realm Section
         // handled in LogonCommHandler::LoadRealmConfiguration()
