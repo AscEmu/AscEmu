@@ -54,7 +54,7 @@ WorldLog::WorldLog()
     bEnabled = false;
     m_file = NULL;
 
-    if(Config.MainConfig.GetBoolDefault("LogLevel", "World", false))
+    if(Config.MainConfig.GetBoolDefault("Log", "EnableWorldPacketLog", false))
     {
         LogNotice("WorldLog : Enabling packetlog output to \"world.log\"");
         Enable();
@@ -76,7 +76,7 @@ void WorldLog::Enable()
         Disable();
         bEnabled = true;
     }
-    m_file = fopen("world.log", "a");
+    m_file = fopen("world-packet.log", "a");
 }
 
 void WorldLog::Disable()

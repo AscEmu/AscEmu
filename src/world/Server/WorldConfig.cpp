@@ -27,11 +27,17 @@ WorldConfig::WorldConfig()
     // world.conf - Listen Config
     listen.listenPort = 8129;
 
-    // world.conf - Log Level Setup
-    logLevel.fileLogLevel = 0;
-    logLevel.debugFlags = 0;
-    logLevel.logWorldPacket = false;
-    logLevel.disableCrashdump = false;
+    // world.conf - Log Settings
+    log.extendedLogsDir = "./";
+    log.worldFileLogLevel = 0;
+    log.worldDebugFlags = 0;
+    log.enableWorldPacketLog = false;
+    log.disableCrashdump = false;
+    log.enableCheaterLog = false;
+    log.enableGmCommandLog = false;
+    log.enablePlayerLog = false;
+    log.enableTimeStamp = false;
+    log.enableSqlBanLog = false;
 
     // world.conf - Server Settings
     server.playerLimit = 1000;
@@ -74,13 +80,6 @@ WorldConfig::WorldConfig()
     terrainCollision.unloadMapFiles = false;
     terrainCollision.isCollisionEnabled = false;
     terrainCollision.isPathfindingEnabled = false;
-
-    // world.conf - Log Settings
-    log.logCheaters = false;
-    log.logGmCommands = false;
-    log.logPlayers = false;
-    log.addTimeStampToFileName = false;
-    log.enableSqlBanLog = false;
 
     // world.conf - Mail System Setup
     mail.reloadDelayInSeconds = 0;
@@ -286,11 +285,20 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     listen.listenHost = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
     listen.listenPort = Config.MainConfig.GetIntDefault("Listen", "WorldServerPort", 8129);
 
-    // world.conf - Log Level Setup
-    logLevel.fileLogLevel = Config.MainConfig.GetIntDefault("LogLevel", "File", 0);
-    logLevel.debugFlags = Config.MainConfig.GetIntDefault("LogLevel", "DebugFlags", 0);
-    logLevel.logWorldPacket = Config.MainConfig.GetBoolDefault("LogLevel", "World", false);
-    logLevel.disableCrashdump = Config.MainConfig.GetBoolDefault("LogLevel", "DisableCrashdumpReport", false);
+    // world.conf - Log Settings
+    log.worldFileLogLevel = Config.MainConfig.GetIntDefault("Log", "WorldFileLogLevel", 0);
+    log.worldDebugFlags = Config.MainConfig.GetIntDefault("Log", "WorldDebugFlags", 0);
+    log.enableWorldPacketLog = Config.MainConfig.GetBoolDefault("Log", "EnableWorldPacketLog", false);
+    log.disableCrashdump = Config.MainConfig.GetBoolDefault("Log", "DisableCrashdumpReport", false);
+
+    log.extendedLogsDir = Config.MainConfig.GetStringDefault("Log", "ExtendedLogDir", "./");
+    if (log.extendedLogsDir.compare("./") != 0)
+        log.extendedLogsDir = "./" + log.extendedLogsDir + "/";
+    log.enableCheaterLog = Config.MainConfig.GetBoolDefault("Log", "EnableCheaterLog", false);
+    log.enableGmCommandLog = Config.MainConfig.GetBoolDefault("Log", "EnableGMCommandLog", false);
+    log.enablePlayerLog = Config.MainConfig.GetBoolDefault("Log", "EnablePlayerLog", false);
+    log.enableTimeStamp = Config.MainConfig.GetBoolDefault("Log", "EnableTimeStamp", false);
+    log.enableSqlBanLog = Config.MainConfig.GetBoolDefault("Log", "EnableSqlBanLog", false);
 
     // world.conf - Server Settings
     server.playerLimit = Config.MainConfig.GetIntDefault("Server", "PlayerLimit", 1000);
@@ -394,13 +402,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     terrainCollision.unloadMapFiles = Config.MainConfig.GetBoolDefault("Terrain", "UnloadMapFiles", true);
     terrainCollision.isCollisionEnabled = Config.MainConfig.GetBoolDefault("Terrain", "Collision", false);
     terrainCollision.isPathfindingEnabled = Config.MainConfig.GetBoolDefault("Terrain", "Pathfinding", false);
-
-    // world.conf - Log Settings
-    log.logCheaters = Config.MainConfig.GetBoolDefault("Log", "Cheaters", false);
-    log.logGmCommands = Config.MainConfig.GetBoolDefault("Log", "GMCommands", false);
-    log.logPlayers = Config.MainConfig.GetBoolDefault("Log", "Players", false);
-    log.addTimeStampToFileName = Config.MainConfig.GetBoolDefault("Log", "TimeStamp", false);
-    log.enableSqlBanLog = Config.MainConfig.GetBoolDefault("Log", "SqlBanLog", false);
 
     // world.conf - Mail System Setup
     mail.reloadDelayInSeconds = Config.MainConfig.GetIntDefault("Mail", "ReloadDelay", 0);

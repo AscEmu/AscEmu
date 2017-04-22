@@ -75,8 +75,7 @@ class SERVER_DECL WorldConfig
             std::string password;
             std::string dbName;
             int port;
-            //\todo add it to config or remove it from core
-            int connections;        // not in configs
+            int connections;
         } worldDb;
 
         struct CharacterDatabaseSettings
@@ -86,8 +85,7 @@ class SERVER_DECL WorldConfig
             std::string password;
             std::string dbName;
             int port;
-            //\todo add it to config or remove it from core
-            int connections;        // not in configs
+            int connections;
         } charDb;
 
         // world.conf - Listen Config
@@ -97,14 +95,20 @@ class SERVER_DECL WorldConfig
             int listenPort;
         } listen;
 
-        // world.conf - Log Level Setup
-        struct LogLevelSettings
+        // world.conf - Log Settings
+        struct LogSettings
         {
-            int fileLogLevel;
-            int debugFlags;
-            bool logWorldPacket;
+            int worldFileLogLevel;
+            int worldDebugFlags;
+            bool enableWorldPacketLog;
             bool disableCrashdump;
-        } logLevel;
+            std::string extendedLogsDir;
+            bool enableCheaterLog;
+            bool enableGmCommandLog;
+            bool enablePlayerLog;
+            bool enableTimeStamp;
+            bool enableSqlBanLog;
+        } log;
 
         // world.conf - Server Settings
         struct ServerSettings
@@ -183,16 +187,6 @@ class SERVER_DECL WorldConfig
             bool isCollisionEnabled;
             bool isPathfindingEnabled;
         } terrainCollision;
-
-        // world.conf - Log Settings
-        struct LogSettings
-        {
-            bool logCheaters;
-            bool logGmCommands;
-            bool logPlayers;
-            bool addTimeStampToFileName;
-            bool enableSqlBanLog;
-        } log;
 
         // world.conf - Mail System Setup
         struct MailSettings

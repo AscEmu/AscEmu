@@ -226,8 +226,8 @@ bool Master::Run(int argc, char** argv)
 
     sWorld.loadWorldConfigValues();
 
-    AscLog.SetFileLoggingLevel(worldConfig.logLevel.fileLogLevel);
-    AscLog.SetDebugFlags(worldConfig.logLevel.debugFlags);
+    AscLog.SetFileLoggingLevel(worldConfig.log.worldFileLogLevel);
+    AscLog.SetDebugFlags(worldConfig.log.worldDebugFlags);
 
     OpenCheatLogFiles();
 
@@ -708,34 +708,35 @@ bool Master::LoadWorldConfiguration(char* config_file, char* optional_config_fil
 
 void Master::OpenCheatLogFiles()
 {
-    bool useTimeStamp = worldConfig.log.addTimeStampToFileName;
+    bool useTimeStamp = worldConfig.log.enableTimeStamp;
+    std::string logDir = worldConfig.log.extendedLogsDir;
 
-    Anticheat_Log = new SessionLogWriter(AELog::GetFormattedFileName("logs", "cheaters", useTimeStamp).c_str(), false);
-    GMCommand_Log = new SessionLogWriter(AELog::GetFormattedFileName("logs", "gmcommand", useTimeStamp).c_str(), false);
-    Player_Log = new SessionLogWriter(AELog::GetFormattedFileName("logs", "players", useTimeStamp).c_str(), false);
+    Anticheat_Log = new SessionLogWriter(AELog::GetFormattedFileName(logDir.c_str(), "cheaters", useTimeStamp).c_str(), false);
+    GMCommand_Log = new SessionLogWriter(AELog::GetFormattedFileName(logDir.c_str(), "gmcommands", useTimeStamp).c_str(), false);
+    Player_Log = new SessionLogWriter(AELog::GetFormattedFileName(logDir.c_str(), "players", useTimeStamp).c_str(), false);
 
     if (Anticheat_Log->IsOpen())
     {
-        if (!worldConfig.log.logCheaters)
+        if (!worldConfig.log.enableCheaterLog)
             Anticheat_Log->Close();
     }
-    else if (worldConfig.log.logCheaters)
+    else if (worldConfig.log.enableCheaterLog)
         Anticheat_Log->Open();
 
     if (GMCommand_Log->IsOpen())
     {
-        if (!worldConfig.log.logGmCommands)
+        if (!worldConfig.log.enableGmCommandLog)
             GMCommand_Log->Close();
     }
-    else if (worldConfig.log.logGmCommands)
+    else if (worldConfig.log.enableGmCommandLog)
         GMCommand_Log->Open();
 
     if (Player_Log->IsOpen())
     {
-        if (!worldConfig.log.logPlayers)
+        if (!worldConfig.log.enablePlayerLog)
             Player_Log->Close();
     }
-    else if (worldConfig.log.logPlayers)
+    else if (worldConfig.log.enablePlayerLog)
             Player_Log->Open();
 }
 

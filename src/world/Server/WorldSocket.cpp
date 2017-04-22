@@ -841,7 +841,7 @@ void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 dir
 void WorldLog::LogPacket(uint32 len, uint32 opcode, const uint8* data, uint8 direction, uint32 accountid)
 #endif
 {
-    if (worldConfig.logLevel.debugFlags & LF_OPCODE)
+    if (worldConfig.log.worldDebugFlags & LF_OPCODE)
     {
         switch (opcode)
         {
