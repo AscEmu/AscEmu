@@ -812,6 +812,8 @@ bool World::loadDbcDb2Stores()
         AscLog.ConsoleLogMajorError("One or more of the DBC files are missing.", "These are absolutely necessary for the server to function.", "The server will not start without them.", "");
         return false;
     }
+
+    return true;
 }
 
 void World::loadMySQLStores()
