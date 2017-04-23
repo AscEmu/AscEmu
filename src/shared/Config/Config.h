@@ -56,20 +56,20 @@ class SERVER_DECL ConfigFile
         ~ConfigFile();
 
         bool SetSource(const char* file, bool ignorecase = true);
-        ConfigSetting* GetSetting(const char* Block, const char* Setting);
+        ConfigSetting* GetSetting(std::string Block, std::string Setting);
 
-        bool GetString(const char* block, const char* name, std::string* value);
-        std::string GetStringDefault(const char* block, const char* name, const char* def);
+        bool GetString(std::string block, std::string name, std::string* value);
+        std::string GetStringDefault(std::string block, std::string name, const char* def);
         bool GetString(const char* block, char* buffer, const char* name, const char* def, uint32 len);
 
         bool GetBool(const char* block, const char* name, bool* value);
         bool GetBoolDefault(const char* block, const char* name, const bool def);
 
-        bool GetInt(const char* block, const char* name, int* value);
-        int GetIntDefault(const char* block, const char* name, const int def);
+        bool GetInt(std::string block, std::string name, int* value);
+        int GetIntDefault(std::string block, std::string name, const int def);
 
-        bool GetFloat(const char* block, const char* name, float* value);
-        float GetFloatDefault(const char* block, const char* name, const float def);
+        bool GetFloat(std::string block, std::string name, float* value);
+        float GetFloatDefault(std::string block, std::string name, const float def);
 
     private:
 

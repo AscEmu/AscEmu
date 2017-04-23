@@ -270,6 +270,7 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     log.extendedLogsDir = Config.MainConfig.GetStringDefault("Log", "ExtendedLogDir", "./");
     if (log.extendedLogsDir.compare("./") != 0)
         log.extendedLogsDir = "./" + log.extendedLogsDir + "/";
+
     log.enableCheaterLog = Config.MainConfig.GetBoolDefault("Log", "EnableCheaterLog", false);
     log.enableGmCommandLog = Config.MainConfig.GetBoolDefault("Log", "EnableGMCommandLog", false);
     log.enablePlayerLog = Config.MainConfig.GetBoolDefault("Log", "EnablePlayerLog", false);
@@ -284,6 +285,8 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     logonServer.disablePings = Config.MainConfig.GetBoolDefault("LogonServer", "DisablePings", false);
     logonServer.remotePassword = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3");
 
+    // world.conf - Realm Section
+
     // world.conf - Server Settings
     server.playerLimit = Config.MainConfig.GetIntDefault("Server", "PlayerLimit", 1000);
     server.messageOfTheDay = Config.MainConfig.GetStringDefault("Server", "Motd", "AscEmu Default MOTD");
@@ -296,33 +299,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     server.secondsBeforeTimeOut = uint32_t(1000 * Config.MainConfig.GetIntDefault("Server", "ConnectionTimeout", 180));
     server.realmType = Config.MainConfig.GetBoolDefault("Server", "RealmType", false);
     server.enableAdjustPriority = Config.MainConfig.GetBoolDefault("Server", "AdjustPriority", false);
-    server.requireAllSignatures = Config.MainConfig.GetBoolDefault("Server", "RequireAllSignatures", false);
-    server.showGmInWhoList = Config.MainConfig.GetBoolDefault("Server", "ShowGMInWhoList", true);
-    server.mapUnloadTime = Config.MainConfig.GetIntDefault("Server", "MapUnloadTime", MAP_CELL_DEFAULT_UNLOAD_TIME);
-    server.mapCellNumber = Config.MainConfig.GetIntDefault("Server", "MapCellNumber", 1);
-    server.enableLimitedNames = Config.MainConfig.GetBoolDefault("Server", "LimitedNames", true);
-    server.useAccountData = Config.MainConfig.GetBoolDefault("Server", "UseAccountData", false);
-    server.requireGmForCommands = !Config.MainConfig.GetBoolDefault("Server", "AllowPlayerCommands", false);
-    server.enableLfgJoinForNonLfg = Config.MainConfig.GetBoolDefault("Server", "EnableLFGJoin", false);
-    server.gmtTimeZone = Config.MainConfig.GetIntDefault("Server", "TimeZone", 0);
-    server.disableFearMovement = Config.MainConfig.GetBoolDefault("Server", "DisableFearMovement", 0);
-    server.saveExtendedCharData = Config.MainConfig.GetBoolDefault("Server", "SaveExtendedCharData", false);
-    server.dataDir = Config.MainConfig.GetStringDefault("Server", "DataDir", "./");
-    if (server.dataDir.compare("./") != 0)
-        server.dataDir = "./" + server.dataDir + "/";
-
-    if (server.mapUnloadTime == 0)
-    {
-        LOG_ERROR("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of %u", MAP_CELL_DEFAULT_UNLOAD_TIME);
-        server.mapUnloadTime = MAP_CELL_DEFAULT_UNLOAD_TIME;
-    }
-
-    if (server.mapCellNumber == 0)
-    {
-        LOG_ERROR("MapCellNumber is set to 0. Congrats, no MapCells will be loaded. Overriding it to default value of 1");
-        server.mapCellNumber = 1;
-    }
-
 #ifdef WIN32
     DWORD current_priority_class = GetPriorityClass(GetCurrentProcess());
     bool high = server.enableAdjustPriority;
@@ -338,6 +314,33 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
             SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
     }
 #endif
+
+    server.requireAllSignatures = Config.MainConfig.GetBoolDefault("Server", "RequireAllSignatures", false);
+    server.showGmInWhoList = Config.MainConfig.GetBoolDefault("Server", "ShowGMInWhoList", true);
+    server.mapUnloadTime = Config.MainConfig.GetIntDefault("Server", "MapUnloadTime", MAP_CELL_DEFAULT_UNLOAD_TIME);
+    if (server.mapUnloadTime == 0)
+    {
+        LOG_ERROR("MapUnloadTime is set to 0. This will NEVER unload MapCells!!! Overriding it to default value of %u", MAP_CELL_DEFAULT_UNLOAD_TIME);
+        server.mapUnloadTime = MAP_CELL_DEFAULT_UNLOAD_TIME;
+    }
+
+    server.mapCellNumber = Config.MainConfig.GetIntDefault("Server", "MapCellNumber", 1);
+    if (server.mapCellNumber == 0)
+    {
+        LOG_ERROR("MapCellNumber is set to 0. Congrats, no MapCells will be loaded. Overriding it to default value of 1");
+        server.mapCellNumber = 1;
+    }
+
+    server.enableLimitedNames = Config.MainConfig.GetBoolDefault("Server", "LimitedNames", true);
+    server.useAccountData = Config.MainConfig.GetBoolDefault("Server", "UseAccountData", false);
+    server.requireGmForCommands = !Config.MainConfig.GetBoolDefault("Server", "AllowPlayerCommands", false);
+    server.enableLfgJoinForNonLfg = Config.MainConfig.GetBoolDefault("Server", "EnableLFGJoin", false);
+    server.gmtTimeZone = Config.MainConfig.GetIntDefault("Server", "TimeZone", 0);
+    server.disableFearMovement = Config.MainConfig.GetBoolDefault("Server", "DisableFearMovement", 0);
+    server.saveExtendedCharData = Config.MainConfig.GetBoolDefault("Server", "SaveExtendedCharData", false);
+    server.dataDir = Config.MainConfig.GetStringDefault("Server", "DataDir", "./");
+    if (server.dataDir.compare("./") != 0)
+        server.dataDir = "./" + server.dataDir + "/";
 
     // world.conf - Player Settings
     player.playerStartingLevel = Config.MainConfig.GetIntDefault("Player", "StartingLevel", 1);
@@ -395,19 +398,18 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     // world.conf - Broadcast Settings
     broadcast.isSystemEnabled = Config.MainConfig.GetBoolDefault("Broadcast", "EnableSystem", false);
     broadcast.interval = Config.MainConfig.GetIntDefault("Broadcast", "Interval", 1);
-    broadcast.triggerPercentCap = Config.MainConfig.GetIntDefault("Broadcast", "TriggerPercentCap", 100);
-    broadcast.orderMode = Config.MainConfig.GetIntDefault("Broadcast", "OrderMode", 0);
-
     if (broadcast.interval < 10)
         broadcast.interval = 10;
     else if (broadcast.interval > 1440)
         broadcast.interval = 1440;
 
+    broadcast.triggerPercentCap = Config.MainConfig.GetIntDefault("Broadcast", "TriggerPercentCap", 100);
     if (broadcast.triggerPercentCap >= 99)
         broadcast.triggerPercentCap = 98;
     else if (broadcast.triggerPercentCap <= 1)
         broadcast.triggerPercentCap = 0;
 
+    broadcast.orderMode = Config.MainConfig.GetIntDefault("Broadcast", "OrderMode", 0);
     if (broadcast.orderMode < 0)
         broadcast.orderMode = 0;
     else if (broadcast.orderMode > 1)
@@ -480,11 +482,11 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     chat.bannedChannels = Config.MainConfig.GetStringDefault("Chat", "BannedChannels", "");
     chat.minimumTalkLevel = Config.MainConfig.GetStringDefault("Chat", "MinimumLevel", "");
     chat.linesBeforeProtection = Config.MainConfig.GetIntDefault("Chat", "FloodLines", 0);
-    chat.secondsBeforeProtectionReset = Config.MainConfig.GetIntDefault("Chat", "FloodSeconds", 0);
-    chat.enableSendFloodProtectionMessage = Config.MainConfig.GetBoolDefault("Chat", "FloodSendMessage", false);
-
     if (!chat.linesBeforeProtection || !chat.secondsBeforeProtectionReset)
         chat.linesBeforeProtection = chat.secondsBeforeProtectionReset = 0;
+
+    chat.secondsBeforeProtectionReset = Config.MainConfig.GetIntDefault("Chat", "FloodSeconds", 0);
+    chat.enableSendFloodProtectionMessage = Config.MainConfig.GetBoolDefault("Chat", "FloodSendMessage", false);
 
     // world.conf - Remote Console Setup
     remoteConsole.isEnabled = Config.MainConfig.GetBoolDefault("RemoteConsole", "Enabled", false);
@@ -508,12 +510,12 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     instance.useGroupLeaderInstanceId = Config.MainConfig.GetBoolDefault("InstanceHandling", "TakeGroupLeaderID", true);
     instance.isRelativeExpirationEnabled = Config.MainConfig.GetBoolDefault("InstanceHandling", "SlidingExpiration", false);
     instance.relativeDailyHeroicInstanceResetHour = Config.MainConfig.GetIntDefault("InstanceHandling", "DailyHeroicInstanceResetHour", 5);
-    instance.checkTriggerPrerequisitesOnEnter = Config.MainConfig.GetBoolDefault("InstanceHandling", "CheckTriggerPrerequisites", true);
-
     if (instance.relativeDailyHeroicInstanceResetHour < 0)
         instance.relativeDailyHeroicInstanceResetHour = 0;
     if (instance.relativeDailyHeroicInstanceResetHour > 23)
         instance.relativeDailyHeroicInstanceResetHour = 23;
+
+    instance.checkTriggerPrerequisitesOnEnter = Config.MainConfig.GetBoolDefault("InstanceHandling", "CheckTriggerPrerequisites", true);
 
     // world.conf - BattleGround settings
     bg.minPlayerCountAlteracValley = Config.MainConfig.GetIntDefault("Battleground", "AV_MIN", 10);
@@ -565,20 +567,55 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
 }
 
 
-uint32_t WorldConfig::getRealmType() { return server.realmType; }
-uint32_t WorldConfig::getPlayerLimit() { return server.playerLimit; }
-uint32_t WorldConfig::getKickAFKPlayerTime() { return server.secondsBeforeKickAFKPlayers; }
+uint32_t WorldConfig::getRealmType()
+{
+    return server.realmType;
+}
 
-void WorldConfig::setMessageOfTheDay(std::string motd) { server.messageOfTheDay = motd; }
-std::string WorldConfig::getMessageOfTheDay() { return server.messageOfTheDay; }
+uint32_t WorldConfig::getPlayerLimit()
+{
+    return server.playerLimit;
+}
 
-void WorldConfig::setFloatRate(uint32_t index, float value) { mFloatRates[index] = value; }
-float WorldConfig::getFloatRate(uint32_t index) { return mFloatRates[index]; }
+uint32_t WorldConfig::getKickAFKPlayerTime()
+{
+    return server.secondsBeforeKickAFKPlayers;
+}
 
-void WorldConfig::setIntRate(uint32_t index, uint32_t value) { mIntRates[index] = value; }
-uint32_t WorldConfig::getIntRate(uint32_t index) { return mIntRates[index]; }
+void WorldConfig::setMessageOfTheDay(std::string motd)
+{
+    server.messageOfTheDay = motd;
+}
 
-std::string WorldConfig::getGmClientChannelName() { return gm.gmClientChannelName; }
+std::string WorldConfig::getMessageOfTheDay()
+{
+    return server.messageOfTheDay;
+}
+
+void WorldConfig::setFloatRate(uint32_t index, float value)
+{
+    mFloatRates[index] = value;
+}
+
+float WorldConfig::getFloatRate(uint32_t index)
+{
+    return mFloatRates[index];
+}
+
+void WorldConfig::setIntRate(uint32_t index, uint32_t value)
+{
+    mIntRates[index] = value;
+}
+
+uint32_t WorldConfig::getIntRate(uint32_t index)
+{
+    return mIntRates[index];
+}
+
+std::string WorldConfig::getGmClientChannelName()
+{
+    return gm.gmClientChannelName;
+}
 
 std::string WorldConfig::getColorStringForNumber(int color)
 {

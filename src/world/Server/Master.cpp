@@ -192,7 +192,6 @@ bool Master::Run(int argc, char** argv)
 
     InitImplicitTargetFlags();
     InitRandomNumberGenerators();
-    LogNotice("Rnd : Initialized Random Number Generators.");
 
     ThreadPool.Startup();
     uint32 LoadingTime = getMSTime();
@@ -378,6 +377,7 @@ bool Master::Run(int argc, char** argv)
 
     LogNotice("AuctionMgr : ~AuctionMgr()");
     delete AuctionMgr::getSingletonPtr();
+
     LogNotice("LootMgr : ~LootMgr()");
     delete LootMgr::getSingletonPtr();
 

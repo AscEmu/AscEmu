@@ -73,7 +73,7 @@ bool is_comment(std::string & str, bool* in_multiline_quote)
             *in_multiline_quote = true;
             return true;
         }
-        else if (stemp[2] == '/')
+        else if (stemp[1] == '/')
         {
             return true;
         }
@@ -231,11 +231,16 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
                 // handle our cases
                 if (in_multiline_comment)
                 {
-                    // we need to find a "*/".
                     offset = line.find("*/", 0);
+                    if (offset == std::string::npos)    // skip entire line
+                        continue;
 
-                    // skip this entire line, eh? 
-                    if (offset == std::string::npos)
+                    offset = line.find("//", 0);
+                    if (offset == std::string::npos)    // skip entire line
+                        continue;
+
+                    offset = line.find("#", 0);
+                    if (offset == std::string::npos)    // skip entire line
                         continue;
 
                     // remove up to the end of the comment block
@@ -372,7 +377,6 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
                 {
                     // we're not in a block. look for the start of one
                     offset = line.find("<");
-
                     if (offset != std::string::npos)
                     {
                         in_block = true;
@@ -431,10 +435,10 @@ bool ConfigFile::SetSource(const char* file, bool ignorecase)
     return false;
 }
 
-ConfigSetting* ConfigFile::GetSetting(const char* Block, const char* Setting)
+ConfigSetting* ConfigFile::GetSetting(std::string Block, std::string Setting)
 {
-    uint32 block_hash = ahash(Block);
-    uint32 setting_hash = ahash(Setting);
+    uint32 block_hash = ahash(Block.c_str());
+    uint32 setting_hash = ahash(Setting.c_str());
 
     // find it in the big map
     std::map<uint32, ConfigBlock>::iterator itr = m_settings.find(block_hash);
@@ -450,7 +454,7 @@ ConfigSetting* ConfigFile::GetSetting(const char* Block, const char* Setting)
     return 0;
 }
 
-bool ConfigFile::GetString(const char* block, const char* name, std::string* value)
+bool ConfigFile::GetString(std::string block, std::string name, std::string* value)
 {
     ConfigSetting* Setting = GetSetting(block, name);
     if (Setting == 0)
@@ -460,7 +464,7 @@ bool ConfigFile::GetString(const char* block, const char* name, std::string* val
     return true;
 }
 
-std::string ConfigFile::GetStringDefault(const char* block, const char* name, const char* def)
+std::string ConfigFile::GetStringDefault(std::string block, std::string name, const char* def)
 {
     std::string ret;
     return GetString(block, name, &ret) ? ret : def;
@@ -482,7 +486,7 @@ bool ConfigFile::GetBoolDefault(const char* block, const char* name, const bool 
     return GetBool(block, name, &val) ? val : def;
 }
 
-bool ConfigFile::GetInt(const char* block, const char* name, int* value)
+bool ConfigFile::GetInt(std::string block, std::string name, int* value)
 {
     ConfigSetting* Setting = GetSetting(block, name);
     if (Setting == 0)
@@ -492,7 +496,7 @@ bool ConfigFile::GetInt(const char* block, const char* name, int* value)
     return true;
 }
 
-bool ConfigFile::GetFloat(const char* block, const char* name, float* value)
+bool ConfigFile::GetFloat(std::string block, std::string name, float* value)
 {
     ConfigSetting* Setting = GetSetting(block, name);
     if (Setting == 0)
@@ -502,13 +506,13 @@ bool ConfigFile::GetFloat(const char* block, const char* name, float* value)
     return true;
 }
 
-int ConfigFile::GetIntDefault(const char* block, const char* name, const int def)
+int ConfigFile::GetIntDefault(std::string block, std::string name, const int def)
 {
     int val;
     return GetInt(block, name, &val) ? val : def;
 }
 
-float ConfigFile::GetFloatDefault(const char* block, const char* name, const float def)
+float ConfigFile::GetFloatDefault(std::string block, std::string name, const float def)
 {
     float val;
     return (GetFloat(block, name, &val) ? val : def);
