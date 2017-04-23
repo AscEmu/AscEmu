@@ -408,29 +408,35 @@ void LogonCommHandler::LoadRealmConfiguration()
     {
         for (uint32 i = 1; i < realmcount + 1; ++i)
         {
+            std::stringstream realmString;
+            realmString << "Realm" << i;
+
             Realm* realm = new Realm;
-            realm->Name = Config.MainConfig.GetStringVA("Name", "AscEmu", "Realm%u", i);
-            realm->Address = Config.MainConfig.GetStringVA("Address", "127.0.0.1:8129", "Realm%u", i);
+            realm->Name = Config.MainConfig.GetStringDefault(realmString.str().c_str(), "Name", "AscEmu");
+            realm->Address = Config.MainConfig.GetStringDefault(realmString.str().c_str(), "Address", "127.0.0.1:8129");
             realm->flags = 0;
-            realm->TimeZone = Config.MainConfig.GetIntVA("TimeZone", 1, "Realm%u", i);
-            realm->Population = Config.MainConfig.GetFloatVA("Population", 0, "Realm%u", i);
-            realm->Lock = static_cast<uint8>(Config.MainConfig.GetIntVA("Lock", 0, "Realm%u", i));
-            realm->GameBuild = Config.MainConfig.GetIntVA("GameBuild", 0, "Realm%u", i);
+            realm->TimeZone = Config.MainConfig.GetIntDefault(realmString.str().c_str(), "TimeZone", 1);
+            realm->Population = Config.MainConfig.GetFloatDefault(realmString.str().c_str(), "Population", 0.0f);
+            realm->Lock = static_cast<uint8>(Config.MainConfig.GetIntDefault(realmString.str().c_str(), "Lock", 0));
+            realm->GameBuild = Config.MainConfig.GetIntDefault(realmString.str().c_str(), "GameBuild", 0);
             if (realm->GameBuild == 0)
             {
-                LOG_ERROR("   >> supported client build not found in world.config. Update your configs!");
+                LOG_ERROR("Supported client build not found in world.config!");
                 delete realm;
                 return;
             }
-            std::string rt = Config.MainConfig.GetStringVA("Icon", "Normal", "Realm%u", i);
+
+            std::string rt = Config.MainConfig.GetStringDefault(realmString.str().c_str(), "Icon", "Normal");
+            Util::StringToLowerCase(rt);
+
             uint32 type;
 
             // process realm type
-            if (stricmp(rt.c_str(), "pvp") == 0)
+            if (rt.compare("pvp") == 0)
                 type = REALMTYPE_PVP;
-            else if (stricmp(rt.c_str(), "rp") == 0)
+            else if (rt.compare("rp") == 0)
                 type = REALMTYPE_RP;
-            else if (stricmp(rt.c_str(), "rppvp") == 0)
+            else if (rt.compare("rppvp") == 0)
                 type = REALMTYPE_RPPVP;
             else
                 type = REALMTYPE_NORMAL;

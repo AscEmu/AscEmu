@@ -460,13 +460,11 @@ bool ConfigFile::GetString(const char* block, const char* name, std::string* val
     return true;
 }
 
-
 std::string ConfigFile::GetStringDefault(const char* block, const char* name, const char* def)
 {
     std::string ret;
     return GetString(block, name, &ret) ? ret : def;
 }
-
 
 bool ConfigFile::GetBool(const char* block, const char* name, bool* value)
 {
@@ -477,7 +475,6 @@ bool ConfigFile::GetBool(const char* block, const char* name, bool* value)
     *value = Setting->AsBool;
     return true;
 }
-
 
 bool ConfigFile::GetBoolDefault(const char* block, const char* name, const bool def /* = false */)
 {
@@ -515,39 +512,6 @@ float ConfigFile::GetFloatDefault(const char* block, const char* name, const flo
 {
     float val;
     return (GetFloat(block, name, &val) ? val : def);
-}
-
-int ConfigFile::GetIntVA(const char* block, int def, const char* name, ...)
-{
-    va_list ap;
-    va_start(ap, name);
-    char str[150];
-    vsnprintf(str, 150, name, ap);
-    va_end(ap);
-    int val;
-    return GetInt(str, block, &val) ? val : def;
-}
-
-float ConfigFile::GetFloatVA(const char* block, float def, const char* name, ...)
-{
-    va_list ap;
-    va_start(ap, name);
-    char str[150];
-    vsnprintf(str, 150, name, ap);
-    va_end(ap);
-    float val;
-    return GetFloat(str, block, &val) ? val : def;
-}
-
-std::string ConfigFile::GetStringVA(const char* block, const char* def, const char* name, ...)
-{
-    va_list ap;
-    va_start(ap, name);
-    char str[150];
-    vsnprintf(str, 150, name, ap);
-    va_end(ap);
-
-    return GetStringDefault(str, block, def);
 }
 
 bool ConfigFile::GetString(const char* block, char* buffer, const char* name, const char* def, uint32 len)

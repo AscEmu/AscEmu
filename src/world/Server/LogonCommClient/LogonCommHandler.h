@@ -28,7 +28,7 @@
 #include <map>
 #include <set>
 
-typedef struct
+struct LogonServer
 {
     uint32 ID;
     std::string Name;
@@ -37,9 +37,9 @@ typedef struct
     uint32 ServerID;
     uint32 RetryTime;
     bool Registered;
-} LogonServer;
+};
 
-typedef struct
+struct Realm
 {
     std::string Name;
     std::string Address;
@@ -49,7 +49,7 @@ typedef struct
     float Population;
     uint8 Lock;
     uint32 GameBuild;
-} Realm;
+};
 
 enum RealmType
 {
