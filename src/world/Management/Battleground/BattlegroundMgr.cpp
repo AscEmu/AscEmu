@@ -67,8 +67,7 @@ void CBattlegroundManager::RegisterBgFactory(uint32 map, BattlegroundFactoryMeth
 
 void CBattlegroundManager::RegisterArenaFactory(uint32 map, ArenaFactoryMethod method)
 {
-    std::vector< uint32 >::iterator itr =
-        std::find(arenaMaps.begin(), arenaMaps.end(), map);
+    std::vector< uint32 >::iterator itr = std::find(arenaMaps.begin(), arenaMaps.end(), map);
     if (itr != arenaMaps.end())
         return;
     arenaMaps.push_back(map);

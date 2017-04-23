@@ -38,7 +38,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     Player* p_User = GetPlayer();
     LOG_DETAIL("WORLD: got use Item packet, data length = %i", recvPacket.size());
     int8 tmp1, slot;
-    uint8 unk; //Alice : added in 3.0.2
+    uint8 unk; // Alice : added in 3.0.2
     uint64 item_guid;
     uint8 cn;
     uint32 spellId = 0;
@@ -257,7 +257,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
 
-        LOG_DETAIL("WORLD: got CMSG_SPELLCLICK packet, data length = %i", recvPacket.size());
+    LOG_DETAIL("WORLD: got CMSG_SPELLCLICK packet, data length = %i", recvPacket.size());
 
     if (_player->getDeathState() == CORPSE)
         return;
@@ -602,9 +602,9 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
         if (nc)
         {
             bool check = false;
-            for (auto itr = nc->GetAIInterface()->m_spells.begin(); itr != nc->GetAIInterface()->m_spells.end(); ++itr)//.......meh. this is a crappy way of doing this, I bet.
+            for (auto itr : nc->GetAIInterface()->m_spells) //.......meh. this is a crappy way of doing this, I bet.
             {
-                if ((*itr)->spell->Id == spellid)
+                if (itr->spell->Id == spellid)
                 {
                     check = true;
                     break;
