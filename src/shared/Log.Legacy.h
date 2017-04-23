@@ -23,6 +23,7 @@
 #include "Common.hpp"
 #include "LogDefines.hpp"
 #include "Singleton.h"
+#include "Config/Config.h"
 
 class WorldPacket;
 class WorldSession;
@@ -57,6 +58,8 @@ class WorldLog : public Singleton<WorldLog>
 
         WorldLog();
         ~WorldLog();
+
+        void InitWorldLog(bool enablePacketLog);
 
 #if VERSION_STRING != Cata
         void LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 direction, uint32 accountid = 0);

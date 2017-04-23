@@ -732,10 +732,12 @@ bool World::setInitialWorldSettings()
     if (!loadDbcDb2Stores())
         return false;
 
-    new TaxiMgr;
-    new WorldLog;
+    new TaxiMgr; 
     new ChatHandler;
     new SpellProcMgr;
+
+    new WorldLog;
+    sWorldLog.InitWorldLog(worldConfig.log.enableWorldPacketLog);
 
     new SpellCustomizations;
     sSpellCustomizations.StartSpellCustomization();

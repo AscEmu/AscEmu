@@ -866,7 +866,7 @@ void WorldSession::FullLogin(Player* plr)
     }
 #endif
 
-    if (Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", false))
+    if (Config.MainConfig.getBoolDefault("Server", "SendStatsOnJoin", false))
     {
 #ifdef WIN32
         _player->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);

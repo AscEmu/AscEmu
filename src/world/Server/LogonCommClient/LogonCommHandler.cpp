@@ -46,7 +46,7 @@ LogonCommHandler::LogonCommHandler()
     memcpy(sql_passhash, hash.GetDigest(), 20);
 
     // player limit
-    pLimit = Config.MainConfig.GetIntDefault("Server", "PlayerLimit", 500);
+    pLimit = Config.MainConfig.getIntDefault("Server", "PlayerLimit", 500);
     if (pLimit == 0) pLimit = 1;
     server_population = 0;
 
@@ -412,13 +412,13 @@ void LogonCommHandler::LoadRealmConfiguration()
             realmString << "Realm" << i;
 
             Realm* realm = new Realm;
-            realm->Name = Config.MainConfig.GetStringDefault(realmString.str(), "Name", "AscEmu");
-            realm->Address = Config.MainConfig.GetStringDefault(realmString.str(), "Address", "127.0.0.1:8129");
+            realm->Name = Config.MainConfig.getStringDefault(realmString.str(), "Name", "AscEmu");
+            realm->Address = Config.MainConfig.getStringDefault(realmString.str(), "Address", "127.0.0.1:8129");
             realm->flags = 0;
-            realm->TimeZone = Config.MainConfig.GetIntDefault(realmString.str(), "TimeZone", 1);
-            realm->Population = Config.MainConfig.GetFloatDefault(realmString.str(), "Population", 0.0f);
-            realm->Lock = static_cast<uint8>(Config.MainConfig.GetIntDefault(realmString.str(), "Lock", 0));
-            realm->GameBuild = Config.MainConfig.GetIntDefault(realmString.str(), "GameBuild", 0);
+            realm->TimeZone = Config.MainConfig.getIntDefault(realmString.str(), "TimeZone", 1);
+            realm->Population = Config.MainConfig.getFloatDefault(realmString.str(), "Population", 0.0f);
+            realm->Lock = static_cast<uint8>(Config.MainConfig.getIntDefault(realmString.str(), "Lock", 0));
+            realm->GameBuild = Config.MainConfig.getIntDefault(realmString.str(), "GameBuild", 0);
             if (realm->GameBuild == 0)
             {
                 LOG_ERROR("Supported client build not found in world.config!");
@@ -426,7 +426,7 @@ void LogonCommHandler::LoadRealmConfiguration()
                 return;
             }
 
-            std::string rt = Config.MainConfig.GetStringDefault(realmString.str(), "Icon", "Normal");
+            std::string rt = Config.MainConfig.getStringDefault(realmString.str(), "Icon", "Normal");
             Util::StringToLowerCase(rt);
 
             uint32 type;

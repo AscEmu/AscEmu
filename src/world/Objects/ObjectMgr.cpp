@@ -3863,7 +3863,7 @@ void ObjectMgr::LoadProfessionDiscoveries()
 void ObjectMgr::LoadCreatureAIAgents()
 {
     // Load AI Agents
-    if (Config.MainConfig.GetBoolDefault("Server", "LoadAIAgents", true))
+    if (Config.MainConfig.getBoolDefault("Server", "LoadAIAgents", true))
     {
         QueryResult* result = WorldDatabase.Query("SELECT * FROM ai_agents");
         if (result != nullptr)

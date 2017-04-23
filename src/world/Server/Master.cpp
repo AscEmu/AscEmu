@@ -50,6 +50,8 @@ SERVER_DECL SessionLogWriter* Player_Log;
 extern DayWatcherThread* dw;
 extern CommonScheduleThread* cs;
 
+ConfigMgr Config;
+
 // DB version
 #if VERSION_STRING != Cata
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-04-22_01_banned_char_log";
@@ -640,7 +642,7 @@ void Master::PrintBanner()
 bool Master::LoadWorldConfiguration(char* config_file)
 {
     LogNotice("Config : Loading Config Files...");
-    if (Config.MainConfig.SetSource(config_file))
+    if (Config.MainConfig.openAndLoadConfigFile(config_file))
     {
         LogDetail("Config : " CONFDIR "/world.conf loaded");
     }

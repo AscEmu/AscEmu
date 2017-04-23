@@ -52,6 +52,7 @@
 #include "Console/LogonConsole.h"
 #include "WorldPacket.h"
 #include "Server/Master.hpp"
+#include "Server/LogonServerDefines.hpp"
 
 // database decl
 extern Database* sLogonSQL;

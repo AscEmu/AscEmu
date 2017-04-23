@@ -25,6 +25,8 @@ Arcemu::Threading::AtomicBoolean mrunning(true);
 Mutex _authSocketLock;
 std::set<AuthSocket*> _authSockets;
 
+ConfigMgr Config;
+
 void LogonServer::Run(int argc, char** argv)
 {
     UNIXTIME = time(NULL);
@@ -105,7 +107,7 @@ void LogonServer::Run(int argc, char** argv)
         return;
     }
 
-    AscLog.SetFileLoggingLevel(Config.MainConfig.GetIntDefault("LogLevel", "File", 0));
+    AscLog.SetFileLoggingLevel(Config.MainConfig.getIntDefault("LogLevel", "File", 0));
 
     LogDetail("ThreadMgr : Starting...");
     ThreadPool.Startup();
@@ -129,23 +131,23 @@ void LogonServer::Run(int argc, char** argv)
     LogDetail("AccountMgr : %u accounts are loaded and ready.", sAccountMgr.GetCount());
 
     // Spawn periodic function caller thread for account reload every 10mins
-    uint32 accountReloadPeriod = Config.MainConfig.GetIntDefault("Rates", "AccountRefresh", 600);
+    uint32 accountReloadPeriod = Config.MainConfig.getIntDefault("Rates", "AccountRefresh", 600);
     accountReloadPeriod *= 1000;
 
     PeriodicFunctionCaller<AccountMgr> * periodicReloadAccounts = new PeriodicFunctionCaller<AccountMgr>(AccountMgr::getSingletonPtr(), &AccountMgr::ReloadAccountsCallback, accountReloadPeriod);
     ThreadPool.ExecuteTask(periodicReloadAccounts);
 
     // Load conf settings..
-    uint32 realmlistPort = Config.MainConfig.GetIntDefault("Listen", "RealmListPort", 3724);
-    uint32 logonServerPort = Config.MainConfig.GetIntDefault("Listen", "ServerPort", 8093);
+    uint32 realmlistPort = Config.MainConfig.getIntDefault("Listen", "RealmListPort", 3724);
+    uint32 logonServerPort = Config.MainConfig.getIntDefault("Listen", "ServerPort", 8093);
 
-    std::string host = Config.MainConfig.GetStringDefault("Listen", "Host", "0.0.0.0");
-    std::string shost = Config.MainConfig.GetStringDefault("Listen", "ISHost", host.c_str());
+    std::string host = Config.MainConfig.getStringDefault("Listen", "Host", "0.0.0.0");
+    std::string shost = Config.MainConfig.getStringDefault("Listen", "ISHost", host.c_str());
 
     clientMinBuild = 5875;
     clientMaxBuild = 15595;
 
-    std::string logonServerPassword = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3b4d");
+    std::string logonServerPassword = Config.MainConfig.getStringDefault("LogonServer", "RemotePassword", "r3m0t3b4d");
     Sha1Hash hash;
     hash.UpdateData(logonServerPassword);
     hash.Finalize();
@@ -328,21 +330,20 @@ void LogonServer::_UnhookSignals()
 
 bool LogonServer::StartDb()
 {
-    std::string dbHostname;
-    std::string dbUsername;
-    std::string dbPassword;
-    std::string dbDatabase;
+    std::string dbHostname = Config.MainConfig.getStringDefault("LogonDatabase", "Hostname", "");
+    std::string dbUsername = Config.MainConfig.getStringDefault("LogonDatabase", "Username", "");
+    std::string dbPassword = Config.MainConfig.getStringDefault("LogonDatabase", "Password", "");
+    std::string dbDatabase = Config.MainConfig.getStringDefault("LogonDatabase", "Name", "");
 
-    int dbPort = 0;
+    int dbPort = Config.MainConfig.getIntDefault("LogonDatabase", "Port", 3306);
 
     // Configure Main Database
-    bool existsUsername = Config.MainConfig.GetString("LogonDatabase", "Username", &dbUsername);
-    bool existsPassword = Config.MainConfig.GetString("LogonDatabase", "Password", &dbPassword);
-    bool existsHostname = Config.MainConfig.GetString("LogonDatabase", "Hostname", &dbHostname);
-    bool existsName = Config.MainConfig.GetString("LogonDatabase", "Name", &dbDatabase);
-    bool existsPort = Config.MainConfig.GetInt("LogonDatabase", "Port", &dbPort);
+    bool existsUsername = !dbUsername.empty();
+    bool existsPassword = !dbPassword.empty();
+    bool existsHostname = !dbHostname.empty();
+    bool existsName = !dbDatabase.empty();
 
-    bool result = existsUsername && existsPassword && existsHostname && existsName && existsPort;
+    bool result = existsUsername && existsPassword && existsHostname && existsName;
 
     if (!result)
     {
@@ -353,7 +354,7 @@ bool LogonServer::StartDb()
         //If the <LogonDatabase> tag is malformed, all parameters will fail, and a different error message is given
 
         std::string errorMessage = "sql: Certain <LogonDatabase> parameters not found in " CONFDIR "\\logon.conf \r\n";
-        if (!(existsHostname || existsUsername || existsPassword || existsName || existsPort))
+        if (!(existsHostname || existsUsername || existsPassword || existsName))
         {
             errorMessage += "  Double check that you have remembered the entire <LogonDatabase> tag.\r\n";
             errorMessage += "  All parameters missing. It is possible you forgot the first '<' character.\r\n";
@@ -365,7 +366,6 @@ bool LogonServer::StartDb()
             if (!existsUsername) { errorMessage += "    Username\r\n"; }
             if (!existsPassword) { errorMessage += "    Password\r\n"; }
             if (!existsName) { errorMessage += "    Name\r\n"; }
-            if (!existsPort) { errorMessage += "    Port\r\n"; }
         }
 
         LOG_ERROR(errorMessage.c_str());
@@ -376,7 +376,7 @@ bool LogonServer::StartDb()
 
     // Initialize it
     if (!sLogonSQL->Initialize(dbHostname.c_str(), (unsigned int)dbPort, dbUsername.c_str(),
-        dbPassword.c_str(), dbDatabase.c_str(), Config.MainConfig.GetIntDefault("LogonDatabase", "ConnectionCount", 5),
+        dbPassword.c_str(), dbDatabase.c_str(), Config.MainConfig.getIntDefault("LogonDatabase", "ConnectionCount", 5),
         16384))
     {
         LOG_ERROR("sql: Logon database initialization failed. Exiting.");
@@ -393,17 +393,17 @@ std::vector<AllowedIP> m_allowedModIps;
 bool LogonServer::LoadLogonConfiguration()
 {
     char* config_file = (char*)CONFDIR "/logon.conf";
-    if (!Config.MainConfig.SetSource(config_file))
+    if (!Config.MainConfig.openAndLoadConfigFile(config_file))
     {
         LOG_ERROR("Config file could not be rehashed.");
         return false;
     }
 
     // re-set the allowed server IP's
-    std::string allowedIps = Config.MainConfig.GetStringDefault("LogonServer", "AllowedIPs", "");
+    std::string allowedIps = Config.MainConfig.getStringDefault("LogonServer", "AllowedIPs", "");
     std::vector<std::string> vips = Util::SplitStringBySeperator(allowedIps, " ");
 
-    std::string allowedModIps = Config.MainConfig.GetStringDefault("LogonServer", "AllowedModIPs", "");
+    std::string allowedModIps = Config.MainConfig.getStringDefault("LogonServer", "AllowedModIPs", "");
     std::vector<std::string> vipsmod = Util::SplitStringBySeperator(allowedModIps, " ");
 
     m_allowedIpLock.Acquire();

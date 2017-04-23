@@ -21,7 +21,7 @@
 #define __ACCOUNTCACHE_H
 
 #include "Common.hpp"
-#include "../shared/Config/Config.h"
+#include "Server/LogonServerDefines.hpp"
 #include "../shared/Database/DatabaseEnv.h"
 
 struct Account
@@ -201,7 +201,7 @@ class InformationCore : public Singleton<InformationCore>
         InformationCore()
         {
             realmhigh = 0;
-            usepings = !Config.MainConfig.GetBoolDefault("LogonServer", "DisablePings", false);
+            usepings = !Config.MainConfig.getBoolDefault("LogonServer", "DisablePings", false);
             m_realms.clear();
         }
 
