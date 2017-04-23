@@ -1084,7 +1084,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         return;
 
     // Check they don't have more than the max gold
-    if (worldConfig.gold.isCapEnabled && (plr->GetGold() + qst->reward_money) > worldConfig.gold.limitAmount)
+    if (worldConfig.player.isGoldCapEnabled && (plr->GetGold() + qst->reward_money) > worldConfig.player.limitGoldAmount)
     {
         plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
         return;

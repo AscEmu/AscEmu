@@ -314,7 +314,7 @@ void Creature::generateLoot()
     }
 
     // Master Looting Ninja Checker
-    if (worldConfig.optional.deactivateMasterLootNinja)
+    if (worldConfig.player.deactivateMasterLootNinja)
     {
         Player* looter = objmgr.GetPlayer((uint32)this->TaggerGuid);
         if (looter && looter->GetGroup() && looter->GetGroup()->GetMethod() == PARTY_LOOT_MASTER)

@@ -87,7 +87,6 @@ class SERVER_DECL ConfigMgr
 
         ConfigFile MainConfig;
         ConfigFile ClusterConfig;
-        ConfigFile OptionalConfig;
 };
 
 extern SERVER_DECL ConfigMgr Config;

@@ -71,25 +71,65 @@ WorldConfig::WorldConfig()
     server.saveExtendedCharData = false;
     server.dataDir = "./";
 
-    // world.conf - Announce Configuration
+    // world.conf - Player Settings
+    player.playerStartingLevel = 1;
+    player.playerLevelCap = DBC_PLAYER_LEVEL_CAP;
+    player.playerGeneratedInformationByLevelCap = DBC_PLAYER_LEVEL_CAP;
+    player.allowTbcCharacters = true;
+    player.deactivateMasterLootNinja = false;
+    player.deathKnightStartTalentPoints = 0;
+    player.deathKnightPreReq = false;
+    player.deathKnightLimit = false;
+    player.maxProfessions = 0;
+    player.skipCinematics = false;
+    player.enableInstantLogoutForAccessType = 1;
+    player.minDualSpecLevel = 40;
+    player.minTalentResetLevel = 10;
+    player.showAllVendorItems = false;
+    player.isInterfactionChatEnabled = false;
+    player.isInterfactionGroupEnabled = false;
+    player.isInterfactionGuildEnabled = false;
+    player.isInterfactionTradeEnabled = false;
+    player.isInterfactionFriendsEnabled = false;
+    player.isInterfactionMiscEnabled = false;
+    player.isCrossoverCharsCreationEnabled = true;
+    player.isGoldCapEnabled = true;
+    player.limitGoldAmount = 214748;
+    player.startGoldAmount = 0;
+
+    // world.conf - Announce Settings
     announce.enableGmAdminTag = true;
     announce.showNameInAnnounce = false;
     announce.showNameInWAnnounce = false;
     announce.showAnnounceInConsoleOutput = true;
+    announce.tagColor = 2;
+    announce.tagGmColor = 1;
+    announce.nameColor = 4;
+    announce.msgColor = 6;
 
-    // world.conf - Power regeneration multiplier setup
+    // world.conf - GameMaster Settings
+    gm.isStartOnGmIslandEnabled = true;
+    gm.disableAchievements = false;
+    gm.listOnlyActiveGms = false;
+    gm.hidePermissions = false;
+    gm.worldAnnounceOnKickPlayer = true;
+    gm.gmClientChannelName = "";
+
+    // world.conf - Broadcast Settings
+    broadcast.isSystemEnabled = false;
+    broadcast.interval = 10;
+    broadcast.triggerPercentCap = 2;
+    broadcast.orderMode = 0;
+
+    // world.conf - Rate Settings
     rate.arenaQueueDiff = 150;
-
-    // world.conf - GM Client Channel
-    gmClient.gmClientChannelName = "";
 
     // world.conf - Terrain & Collision Settings
     terrainCollision.unloadMapFiles = false;
     terrainCollision.isCollisionEnabled = false;
     terrainCollision.isPathfindingEnabled = false;
 
-    // world.conf - Mail System Setup
-    mail.reloadDelayInSeconds = 0;
+    // world.conf - Mail Settings
     mail.isCostsForGmDisabled = false;
     mail.isCostsForEveryoneDisabled = false;
     mail.isDelayItemsDisabled = false;
@@ -101,11 +141,6 @@ WorldConfig::WorldConfig()
     startup.enableMultithreadedLoading = false;
     startup.enableSpellIdDump = false;
 
-    // world.conf - Flood Protection Setup
-    floodProtection.linesBeforeProtection = 0;
-    floodProtection.secondsBeforeProtectionReset = 0;
-    floodProtection.enableSendFloodProtectionMessage = false;
-
     // world.conf - AntiHack Setup
     antiHack.isTeleportHackCheckEnabled = false;
     antiHack.isSpeedHackCkeckEnabled = false;
@@ -115,7 +150,11 @@ WorldConfig::WorldConfig()
     antiHack.isAntiHackCheckDisabledForGm = true;
 
     // world.conf - Period Setup
-    // world.conf - Channels Setup
+    // world.conf - Chat Setttings
+    chat.linesBeforeProtection = 0;
+    chat.secondsBeforeProtectionReset = 0;
+    chat.enableSendFloodProtectionMessage = false;
+
     // world.conf - Remote Console Setup
     remoteConsole.isEnabled = false;
     remoteConsole.port = 8092;
@@ -174,66 +213,13 @@ WorldConfig::WorldConfig()
     limit.disconnectPlayerForExceedingLimits = false;
     limit.broadcastMessageToGmOnExceeding = true;
 
-    // optional.conf - Optional Settings
-    optional.playerStartingLevel = 1;
-    optional.playerLevelCap = DBC_PLAYER_LEVEL_CAP;
-    optional.playerGeneratedInformationByLevelCap = DBC_PLAYER_LEVEL_CAP;
-    optional.allowTbcCharacters = true;
-    optional.deactivateMasterLootNinja = false;
-    optional.deathKnightStartTalentPoints = 0;
-    optional.maxProfessions = 0;
-    optional.skipCinematics = false;
-    optional.enableInstantLogoutForAccessType = 1;
-    optional.minDualSpecLevel = 40;
-    optional.minTalentResetLevel = 10;
-    optional.showAllVendorItems = false;
-
-    // optional.conf - Inter-faction Options
-    interfaction.isInterfactionChatEnabled = false;
-    interfaction.isInterfactionGroupEnabled = false;
-    interfaction.isInterfactionGuildEnabled = false;
-    interfaction.isInterfactionTradeEnabled = false;
-    interfaction.isInterfactionFriendsEnabled = false;
-    interfaction.isInterfactionMiscEnabled = false;
-    interfaction.isCrossoverCharsCreationEnabled = true;
-
-    // optional.conf - Color Configuration
-    color.tagColor = 2;
-    color.tagGmColor = 1;
-    color.nameColor = 4;
-    color.msgColor = 6;
-
-    // optional.conf - Game Master Configuration
-    gm.isStartOnGmIslandEnabled = true;
-    gm.disableAchievements = false;
-    gm.listOnlyActiveGms = false;
-    gm.hidePermissions = false;
-    gm.worldAnnounceOnKickPlayer = true;
-
-    // optional.conf - Common Schedule Configuration
-    broadcast.isSystemEnabled = false;
-    broadcast.interval = 10;
-    broadcast.triggerPercentCap = 2;
-    broadcast.orderMode = 0;
-
-    // optional.conf - Extra Class Configurations
-    extraClass.deathKnightPreReq = false;
-    extraClass.deathKnightLimit = false;
-
-    // optional.conf - Gold Settings Configuration
-    gold.isCapEnabled = true;
-    gold.limitAmount = 214748;
-    gold.startAmount = 0;
-
-    // optional.conf - Corpse Decay Settings
+    // world.conf - Corpse Decay Settings
     corpseDecay.normalTimeInSeconds = 60000;
     corpseDecay.rareTimeInSeconds = 300000;
     corpseDecay.eliteTimeInSeconds = 300000;
     corpseDecay.rareEliteTimeInSeconds = 300000;
     corpseDecay.worldbossTimeInSeconds = 3600000;
 
-    // realms.conf - Realm Section
-    // handled in LogonCommHandler::LoadRealmConfiguration()
 }
 
 WorldConfig::~WorldConfig() {}
@@ -244,7 +230,7 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
 {
     if (reload)
     {
-        // This will only happen if someone deleted/renamed the con-files after the server started...
+        // This will only happen if someone deleted/renamed the conf after the server started...
         if (Config.MainConfig.SetSource(CONFDIR "/world.conf"))
         {
             LogDetail("Config : " CONFDIR "/world.conf reloaded");
@@ -252,16 +238,6 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
         else
         {
             LogError("Config : error occurred loading " CONFDIR "/world.conf");
-            return;
-        }
-
-        if (Config.OptionalConfig.SetSource(CONFDIR "/optional.conf"))
-        {
-            LogDetail("Config : " CONFDIR "/optional.conf reloaded");
-        }
-        else
-        {
-            LOG_ERROR("Rehash: file optional.conf not available o.O !");
             return;
         }
     }
@@ -363,14 +339,81 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     }
 #endif
 
-    // world.conf - Announce Configuration
+    // world.conf - Player Settings
+    player.playerStartingLevel = Config.MainConfig.GetIntDefault("Player", "StartingLevel", 1);
+    player.playerLevelCap = Config.MainConfig.GetIntDefault("Player", "LevelCap", DBC_PLAYER_LEVEL_CAP);
+    player.playerGeneratedInformationByLevelCap = Config.MainConfig.GetIntDefault("Player", "GenLevelCap", DBC_PLAYER_LEVEL_CAP); //! no delete
+    if (player.playerStartingLevel > static_cast<int32_t>(player.playerLevelCap))
+        player.playerStartingLevel = static_cast<int32_t>(player.playerLevelCap);
+
+    player.allowTbcCharacters = Config.MainConfig.GetBoolDefault("Player", "AllowTBC", true);
+    player.deactivateMasterLootNinja = Config.MainConfig.GetBoolDefault("Player", "AntiMasterLootNinja", false);
+    player.deathKnightStartTalentPoints = Config.MainConfig.GetIntDefault("Player", "DKStartingTalents", 0);
+    player.deathKnightPreReq = Config.MainConfig.GetBoolDefault("Player", "DKPreReq", false);
+    player.deathKnightLimit = Config.MainConfig.GetBoolDefault("Player", "DKLimit", true);
+    player.maxProfessions = (uint32_t)Config.MainConfig.GetIntDefault("Player", "MaxProfessions", 2);
+    player.skipCinematics = Config.MainConfig.GetBoolDefault("Player", "SkipCinematic", false);
+    player.enableInstantLogoutForAccessType = Config.MainConfig.GetIntDefault("Player", "InstantLogout", 1);
+    player.minDualSpecLevel = Config.MainConfig.GetIntDefault("Player", "MinDualSpecLevel", 40);
+    player.minTalentResetLevel = Config.MainConfig.GetIntDefault("Player", "MinTalentResetLevel", 10);
+    player.showAllVendorItems = Config.MainConfig.GetBoolDefault("Player", "ShowAllVendorItems", false);
+    player.isInterfactionChatEnabled = Config.MainConfig.GetBoolDefault("Player", "InterfactionChat", false);
+    player.isInterfactionGroupEnabled = Config.MainConfig.GetBoolDefault("Player", "InterfactionGroup", false);
+    player.isInterfactionGuildEnabled = Config.MainConfig.GetBoolDefault("Player", "InterfactionGuild", false);
+    player.isInterfactionTradeEnabled = Config.MainConfig.GetBoolDefault("Player", "InterfactionTrade", false);
+    player.isInterfactionFriendsEnabled = Config.MainConfig.GetBoolDefault("Player", "InterfactionFriends", false);
+    player.isInterfactionMiscEnabled = Config.MainConfig.GetBoolDefault("Player", "InterfactionMisc", false);
+    player.isCrossoverCharsCreationEnabled = Config.MainConfig.GetBoolDefault("Player", "CrossOverCharacters", false);
+    player.isGoldCapEnabled = Config.MainConfig.GetBoolDefault("Player", "EnableGoldCap", true);
+    player.limitGoldAmount = Config.MainConfig.GetIntDefault("Player", "MaximumGold", 214000);
+    if (player.limitGoldAmount)
+        player.limitGoldAmount *= 10000;
+
+    player.startGoldAmount = Config.MainConfig.GetIntDefault("Player", "StartingGold", 0);
+    if (player.startGoldAmount)
+        player.startGoldAmount *= 10000;
+
+    // world.conf - Announce Settings
     announce.announceTag = Config.MainConfig.GetStringDefault("Announce", "Tag", "Staff");
     announce.enableGmAdminTag = Config.MainConfig.GetBoolDefault("Announce", "GMAdminTag", false);
     announce.showNameInAnnounce = Config.MainConfig.GetBoolDefault("Announce", "NameinAnnounce", true);
     announce.showNameInWAnnounce = Config.MainConfig.GetBoolDefault("Announce", "NameinWAnnounce", true);
     announce.showAnnounceInConsoleOutput = Config.MainConfig.GetBoolDefault("Announce", "ShowInConsole", true);
+    announce.tagColor = Config.MainConfig.GetIntDefault("Announce", "AnnTagColor", 2);
+    announce.tagGmColor = Config.MainConfig.GetIntDefault("Announce", "AnnGMTagColor", 1);
+    announce.nameColor = Config.MainConfig.GetIntDefault("Announce", "AnnNameColor", 4);
+    announce.msgColor = Config.MainConfig.GetIntDefault("Announce", "AnnMsgColor", 10);
 
-    // world.conf - Power regeneration multiplier setup
+    // world.conf - GameMaster Settings
+    gm.isStartOnGmIslandEnabled = Config.MainConfig.GetBoolDefault("GameMaster", "StartOnGMIsland", false);
+    gm.disableAchievements = Config.MainConfig.GetBoolDefault("GameMaster", "DisableAchievements", false);
+    gm.listOnlyActiveGms = Config.MainConfig.GetBoolDefault("GameMaster", "ListOnlyActiveGMs", false);
+    gm.hidePermissions = Config.MainConfig.GetBoolDefault("GameMaster", "HidePermissions", false);
+    gm.worldAnnounceOnKickPlayer = Config.MainConfig.GetBoolDefault("GameMaster", "AnnounceKick", true);
+    gm.gmClientChannelName = Config.MainConfig.GetStringDefault("GameMaster", "GmClientChannel", "");
+
+    // world.conf - Broadcast Settings
+    broadcast.isSystemEnabled = Config.MainConfig.GetBoolDefault("Broadcast", "EnableSystem", false);
+    broadcast.interval = Config.MainConfig.GetIntDefault("Broadcast", "Interval", 1);
+    broadcast.triggerPercentCap = Config.MainConfig.GetIntDefault("Broadcast", "TriggerPercentCap", 100);
+    broadcast.orderMode = Config.MainConfig.GetIntDefault("Broadcast", "OrderMode", 0);
+
+    if (broadcast.interval < 10)
+        broadcast.interval = 10;
+    else if (broadcast.interval > 1440)
+        broadcast.interval = 1440;
+
+    if (broadcast.triggerPercentCap >= 99)
+        broadcast.triggerPercentCap = 98;
+    else if (broadcast.triggerPercentCap <= 1)
+        broadcast.triggerPercentCap = 0;
+
+    if (broadcast.orderMode < 0)
+        broadcast.orderMode = 0;
+    else if (broadcast.orderMode > 1)
+        broadcast.orderMode = 1;
+
+    // world.conf - Rate Settings
     setFloatRate(RATE_HEALTH, Config.MainConfig.GetFloatDefault("Rates", "Health", 1)); // health
     setFloatRate(RATE_POWER1, Config.MainConfig.GetFloatDefault("Rates", "Power1", 1)); // mana
     setFloatRate(RATE_POWER2, Config.MainConfig.GetFloatDefault("Rates", "Power2", 1)); // rage
@@ -403,16 +446,12 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     setFloatRate(RATE_ARENAPOINTMULTIPLIER3X, Config.MainConfig.GetFloatDefault("Rates", "ArenaMultiplier3x", 1.0f));
     setFloatRate(RATE_ARENAPOINTMULTIPLIER5X, Config.MainConfig.GetFloatDefault("Rates", "ArenaMultiplier5x", 1.0f));
 
-    // world.conf - GM Client Channel
-    gmClient.gmClientChannelName = Config.MainConfig.GetStringDefault("GMClient", "GmClientChannel", "");
-
     // world.conf - Terrain & Collision Settings
     terrainCollision.unloadMapFiles = Config.MainConfig.GetBoolDefault("Terrain", "UnloadMapFiles", true);
     terrainCollision.isCollisionEnabled = Config.MainConfig.GetBoolDefault("Terrain", "Collision", false);
     terrainCollision.isPathfindingEnabled = Config.MainConfig.GetBoolDefault("Terrain", "Pathfinding", false);
 
-    // world.conf - Mail System Setup
-    mail.reloadDelayInSeconds = Config.MainConfig.GetIntDefault("Mail", "ReloadDelay", 0);
+    // world.conf - Mail Settings
     mail.isCostsForGmDisabled = Config.MainConfig.GetBoolDefault("Mail", "DisablePostageCostsForGM", true);
     mail.isCostsForEveryoneDisabled = Config.MainConfig.GetBoolDefault("Mail", "DisablePostageCosts", false);
     mail.isDelayItemsDisabled = Config.MainConfig.GetBoolDefault("Mail", "DisablePostageDelayItems", true);
@@ -421,19 +460,9 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     mail.isInterfactionMailForGmEnabled = Config.MainConfig.GetBoolDefault("Mail", "EnableInterfactionForGM", true);
 
     // world.conf - Startup Options
-    //startupSettings.Preloading;                    // not used
-    //startupSettings.BackgroundLootLoading;         // not used, not in config
     startup.enableMultithreadedLoading = Config.MainConfig.GetBoolDefault("Startup", "EnableMultithreadedLoading", true);
     startup.enableSpellIdDump = Config.MainConfig.GetBoolDefault("Startup", "EnableSpellIDDump", false);
     startup.additionalTableLoads = Config.MainConfig.GetStringDefault("Startup", "LoadAdditionalTables", "");
-
-    // world.conf - Flood Protection Setup
-    floodProtection.linesBeforeProtection = Config.MainConfig.GetIntDefault("FloodProtection", "Lines", 0);
-    floodProtection.secondsBeforeProtectionReset = Config.MainConfig.GetIntDefault("FloodProtection", "Seconds", 0);
-    floodProtection.enableSendFloodProtectionMessage = Config.MainConfig.GetBoolDefault("FloodProtection", "SendMessage", false);
-
-    if (!floodProtection.linesBeforeProtection || !floodProtection.secondsBeforeProtectionReset)
-        floodProtection.linesBeforeProtection = floodProtection.secondsBeforeProtectionReset = 0;
 
     // world.conf - AntiHack Setup
     antiHack.isTeleportHackCheckEnabled = Config.MainConfig.GetBoolDefault("AntiHack", "Teleport", true);
@@ -447,9 +476,15 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     period.arenaUpdate = Config.MainConfig.GetStringDefault("Periods", "ArenaUpdate", "weekly");
     period.dailyUpdate = Config.MainConfig.GetStringDefault("Periods", "DailyUpdate", "daily");
 
-    // world.conf - Channels Setup
-    channel.bannedChannels = Config.MainConfig.GetStringDefault("Channels", "BannedChannels", "");
-    channel.minimumTalkLevel = Config.MainConfig.GetStringDefault("Channels", "MinimumLevel", "");
+    // world.conf - Chat Settings
+    chat.bannedChannels = Config.MainConfig.GetStringDefault("Chat", "BannedChannels", "");
+    chat.minimumTalkLevel = Config.MainConfig.GetStringDefault("Chat", "MinimumLevel", "");
+    chat.linesBeforeProtection = Config.MainConfig.GetIntDefault("Chat", "FloodLines", 0);
+    chat.secondsBeforeProtectionReset = Config.MainConfig.GetIntDefault("Chat", "FloodSeconds", 0);
+    chat.enableSendFloodProtectionMessage = Config.MainConfig.GetBoolDefault("Chat", "FloodSendMessage", false);
+
+    if (!chat.linesBeforeProtection || !chat.secondsBeforeProtectionReset)
+        chat.linesBeforeProtection = chat.secondsBeforeProtectionReset = 0;
 
     // world.conf - Remote Console Setup
     remoteConsole.isEnabled = Config.MainConfig.GetBoolDefault("RemoteConsole", "Enabled", false);
@@ -521,89 +556,12 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     limit.disconnectPlayerForExceedingLimits = Config.MainConfig.GetBoolDefault("Limits", "Disconnect", false);
     limit.broadcastMessageToGmOnExceeding = Config.MainConfig.GetBoolDefault("Limits", "BroadcastGMs", true);
 
-    // optional.conf - Optional Settings
-    optional.playerStartingLevel = Config.OptionalConfig.GetIntDefault("Optional", "StartingLevel", 1);
-    optional.playerLevelCap = Config.OptionalConfig.GetIntDefault("Optional", "LevelCap", DBC_PLAYER_LEVEL_CAP);
-    optional.playerGeneratedInformationByLevelCap = Config.OptionalConfig.GetIntDefault("Optional", "GenLevelCap", DBC_PLAYER_LEVEL_CAP); //! no delete
-    if (optional.playerStartingLevel > static_cast<int32_t>(optional.playerLevelCap))
-        optional.playerStartingLevel = static_cast<int32_t>(optional.playerLevelCap);
-
-    optional.allowTbcCharacters = Config.OptionalConfig.GetBoolDefault("Optional", "AllowTBC", true);
-    optional.deactivateMasterLootNinja = Config.OptionalConfig.GetBoolDefault("Optional", "AntiMasterLootNinja", false);
-    optional.deathKnightStartTalentPoints = Config.OptionalConfig.GetIntDefault("Optional", "DKStartingTalents", 0);
-    optional.maxProfessions = (uint32_t)Config.OptionalConfig.GetIntDefault("Optional", "MaxProfessions", 2);
-    optional.skipCinematics = Config.OptionalConfig.GetBoolDefault("Optional", "SkipCinematic", false);
-    optional.enableInstantLogoutForAccessType = Config.OptionalConfig.GetIntDefault("Optional", "InstantLogout", 1);
-    optional.minDualSpecLevel = Config.OptionalConfig.GetIntDefault("Optional", "MinDualSpecLevel", 40);
-    optional.minTalentResetLevel = Config.OptionalConfig.GetIntDefault("Optional", "MinTalentResetLevel", 10);
-    optional.showAllVendorItems = Config.OptionalConfig.GetBoolDefault("Optional", "ShowAllVendorItems", false);
-
-    // optional.conf - Inter-faction Options
-    interfaction.isInterfactionChatEnabled = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionChat", false);
-    interfaction.isInterfactionGroupEnabled = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionGroup", false);
-    interfaction.isInterfactionGuildEnabled = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionGuild", false);
-    interfaction.isInterfactionTradeEnabled = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionTrade", false);
-    interfaction.isInterfactionFriendsEnabled = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionFriends", false);
-    interfaction.isInterfactionMiscEnabled = Config.OptionalConfig.GetBoolDefault("Interfaction", "InterfactionMisc", false);
-    interfaction.isCrossoverCharsCreationEnabled = Config.OptionalConfig.GetBoolDefault("Interfaction", "CrossOverCharacters", false);
-
-    // optional.conf - Color Configuration
-    color.tagColor = Config.OptionalConfig.GetIntDefault("Color", "AnnTagColor", 2);
-    color.tagGmColor = Config.OptionalConfig.GetIntDefault("Color", "AnnGMTagColor", 1);
-    color.nameColor = Config.OptionalConfig.GetIntDefault("Color", "AnnNameColor", 4);
-    color.msgColor = Config.OptionalConfig.GetIntDefault("Color", "AnnMsgColor", 10);
-
-    // optional.conf - Game Master Configuration
-    gm.isStartOnGmIslandEnabled = Config.OptionalConfig.GetBoolDefault("GameMaster", "StartOnGMIsland", false);
-    gm.disableAchievements = Config.OptionalConfig.GetBoolDefault("GameMaster", "DisableAchievements", false);
-    gm.listOnlyActiveGms = Config.OptionalConfig.GetBoolDefault("GameMaster", "ListOnlyActiveGMs", false);
-    gm.hidePermissions = Config.OptionalConfig.GetBoolDefault("GameMaster", "HidePermissions", false);
-    gm.worldAnnounceOnKickPlayer = Config.OptionalConfig.GetBoolDefault("GameMaster", "AnnounceKick", true);
-
-    // optional.conf - Common Schedule Configuration
-    broadcast.triggerPercentCap = Config.OptionalConfig.GetIntDefault("CommonSchedule", "BroadCastTriggerPercentCap", 100);
-    broadcast.interval = Config.OptionalConfig.GetIntDefault("CommonSchedule", "BroadCastInterval", 1);
-    broadcast.isSystemEnabled = Config.OptionalConfig.GetBoolDefault("CommonSchedule", "AutoBroadCast", false);
-    broadcast.orderMode = Config.OptionalConfig.GetIntDefault("CommonSchedule", "BroadCastOrderMode", 0);
-
-    if (broadcast.interval < 10)
-        broadcast.interval = 10;
-    else if (broadcast.interval > 1440)
-        broadcast.interval = 1440;
-
-    if (broadcast.triggerPercentCap >= 99)
-        broadcast.triggerPercentCap = 98;
-    else if (broadcast.triggerPercentCap <= 1)
-        broadcast.triggerPercentCap = 0;
-
-    if (broadcast.orderMode < 0)
-        broadcast.orderMode = 0;
-    else if (broadcast.orderMode > 1)
-        broadcast.orderMode = 1;
-
-    // optional.conf - Extra Class Configurations
-    extraClass.deathKnightPreReq = Config.OptionalConfig.GetBoolDefault("ClassOptions", "DeathKnightPreReq", false);
-    extraClass.deathKnightLimit = Config.OptionalConfig.GetBoolDefault("ClassOptions", "DeathKnightLimit", true);
-
-    // optional.conf - Gold Settings Configuration
-    gold.isCapEnabled = Config.OptionalConfig.GetBoolDefault("GoldSettings", "EnableGoldCap", true);
-    gold.limitAmount = Config.OptionalConfig.GetIntDefault("GoldSettings", "MaximumGold", 214000);
-    if (gold.limitAmount)
-        gold.limitAmount *= 10000;
-
-    gold.startAmount = Config.OptionalConfig.GetIntDefault("GoldSettings", "StartingGold", 0);
-    if (gold.startAmount)
-        gold.startAmount *= 10000;
-
-    // optional.conf - Corpse Decay Settings
-    corpseDecay.normalTimeInSeconds = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayNormal", 60)));
-    corpseDecay.rareTimeInSeconds = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayRare", 300)));
-    corpseDecay.eliteTimeInSeconds = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayElite", 300)));
-    corpseDecay.rareEliteTimeInSeconds = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayRareElite", 300)));
-    corpseDecay.worldbossTimeInSeconds = (1000 * (Config.OptionalConfig.GetIntDefault("CorpseDecaySettings", "DecayWorldboss", 3600)));
-
-    // realms.conf - Realm Section
-    // handled in LogonCommHandler::LoadRealmConfiguration()
+    // world.conf - Corpse Decay Settings
+    corpseDecay.normalTimeInSeconds = (1000 * (Config.MainConfig.GetIntDefault("CorpseDecaySettings", "DecayNormal", 60)));
+    corpseDecay.rareTimeInSeconds = (1000 * (Config.MainConfig.GetIntDefault("CorpseDecaySettings", "DecayRare", 300)));
+    corpseDecay.eliteTimeInSeconds = (1000 * (Config.MainConfig.GetIntDefault("CorpseDecaySettings", "DecayElite", 300)));
+    corpseDecay.rareEliteTimeInSeconds = (1000 * (Config.MainConfig.GetIntDefault("CorpseDecaySettings", "DecayRareElite", 300)));
+    corpseDecay.worldbossTimeInSeconds = (1000 * (Config.MainConfig.GetIntDefault("CorpseDecaySettings", "DecayWorldboss", 3600)));
 }
 
 
@@ -620,7 +578,7 @@ float WorldConfig::getFloatRate(uint32_t index) { return mFloatRates[index]; }
 void WorldConfig::setIntRate(uint32_t index, uint32_t value) { mIntRates[index] = value; }
 uint32_t WorldConfig::getIntRate(uint32_t index) { return mIntRates[index]; }
 
-std::string WorldConfig::getGmClientChannelName() { return gmClient.gmClientChannelName; }
+std::string WorldConfig::getGmClientChannelName() { return gm.gmClientChannelName; }
 
 std::string WorldConfig::getColorStringForNumber(int color)
 {

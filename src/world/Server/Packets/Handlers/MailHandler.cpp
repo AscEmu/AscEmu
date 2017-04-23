@@ -472,9 +472,9 @@ void WorldSession::HandleTakeMoney(WorldPacket& recv_data)
     }
 
     // Check they don't have more than the max gold
-    if (worldConfig.gold.isCapEnabled)
+    if (worldConfig.player.isGoldCapEnabled)
     {
-        if ((_player->GetGold() + message->money) > worldConfig.gold.limitAmount)
+        if ((_player->GetGold() + message->money) > worldConfig.player.limitGoldAmount)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
             return;

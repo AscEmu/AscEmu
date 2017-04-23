@@ -274,7 +274,7 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (player_target->GetTeam() != _player->GetTeam() && GetPermissionCount() == 0 && !sWorld.settings.interfaction.isInterfactionTradeEnabled)
+    if (player_target->GetTeam() != _player->GetTeam() && GetPermissionCount() == 0 && !sWorld.settings.player.isInterfactionTradeEnabled)
     {
         sendTradeResult(TRADE_STATUS_WRONG_FACTION);
         return;
@@ -520,7 +520,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
         // Trade Gold
         if (target_trade_data->getMoney())
         {
-            if (sWorld.settings.gold.isCapEnabled && (_player->GetGold() + target_trade_data->getMoney()) > sWorld.settings.gold.limitAmount)
+            if (sWorld.settings.player.isGoldCapEnabled && (_player->GetGold() + target_trade_data->getMoney()) > sWorld.settings.player.limitGoldAmount)
             {
                 _player->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             }
@@ -534,7 +534,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
         if (trade_data->getMoney())
         {
             // Check they don't have more than the max gold
-            if (sWorld.settings.gold.isCapEnabled && (trade_target->GetGold() + trade_data->getMoney()) > sWorld.settings.gold.limitAmount)
+            if (sWorld.settings.player.isGoldCapEnabled && (trade_target->GetGold() + trade_data->getMoney()) > sWorld.settings.player.limitGoldAmount)
             {
                 trade_target->GetItemInterface()->BuildInventoryChangeError(nullptr, nullptr, INV_ERR_TOO_MUCH_GOLD);
             }

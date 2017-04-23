@@ -1,6 +1,6 @@
 ################################################################################
 # AscEmu World Configuration File
-# Last edited: 4/22/2017
+# Last edited: 4/23/2017
 ################################################################################
 
 ################################################################################
@@ -343,7 +343,151 @@
         DataDir              = "">
 
 ################################################################################
-# Announce Configuration
+# Player Settings
+#
+#    Starting Level
+#        This controls at which level characters are created. Range is from
+#        1-@ASC_VERSION_MAX_LEVEL@.
+#        Default: 1
+#
+#    Level Cap
+#        This variable controls the level that stats will be generated up to
+#        internally. Beyond this level players can still see a higher level
+#        visually but their stats won't increase beyond this point.
+#        Default: @ASC_VERSION_MAX_LEVEL@
+#
+#    Generated Level Level Cap
+#        This variable controls the level at which stats will generate up to.
+#        Generally the formulas go crazy after level @ASC_VERSION_MAX_LEVEL@ so
+#        this way you can keep the high visual but stats at a reasonable value.
+#        Default: @ASC_VERSION_MAX_LEVEL@
+#
+#    Allow The Burning Crusade characters
+#        This will override account settings, so you can disable TBC from your
+#        server without having to mess with accounts.
+#        Default: 1
+#
+#    DKPreReq
+#        Enable/Disable requirement to have a level 55 character on your account
+#        before allowing creation of a Death Knight hero class.
+#        1 = level 55      0 = Any level
+#
+#    DKLimit
+#        Enable/Disable limit to have a more than one Death Knight Hero Class
+#        per realm.
+#        1 = Enabled (Only one Death Knight per realm)
+#        0 = Disabled (You can create a 10 DK per realm)
+#
+#    MaxProfessions
+#        The maximum number of professions a player can have at a time.
+#        Default: 2
+#
+#    SkipCinematic
+#        Disables intro cinematic at first login. Prevents wrong intros
+#        for custom start areas.
+#        Default: 0 (0 = show cinematics, 1 skip cinematics)
+#
+#    InstantLogout
+#        Requires command acces for instantly logging out everywhere.
+#        0 = No one    1 = GMs (default)    2 = Everyone
+#
+#    MinDualSpecLevel
+#        Player required level for Dual Talent Specialization
+#        Default: 40
+#
+#    MinTalentResetLevel
+#        Player required level for talent reset
+#        Default: 10
+#
+#    ShowAllVendorItems
+#        Show all vendor items
+#        Default: 0 (disabled)
+#
+#    InterfactionChat
+#        This directive controls whether horde and alliance players can talk to
+#        each other.
+#        Default: 0 (disabled)
+#
+#    InterfactionGroup
+#        This directive controls whether horde and alliance players are able to
+#        create a group together.
+#        Default: 0 (disabled)
+#
+#    InterfactionGuild
+#        This directive controls whether horde and alliance players are able to
+#        create cross-faction guilds
+#        Default: 0 (disabled)
+#
+#    InterfactionTrade
+#        This directive controls whether horde and alliance players can trade
+#        with each other.
+#        Default: 0 (disabled)
+#
+#    InterfactionFriends
+#        If this is enabled players can add other players from the opposite
+#        faction to their friends list
+#        Default: 0 (disabled)
+#
+#    InterfactionMisc
+#        This directive controls whether horde and alliance players are able to
+#        use different functions on players of the opposite faction. This
+#        includes e.g. using the /who command.
+#        Default: 0 (disabled)
+#
+#    CrossOverCharacters
+#        If this is enabled players are able to create both, horde and alliance
+#        characters on a PVP realm.
+#        Default: 1 (enabled)(Blizzlike)
+#
+#    EnableGoldCap
+#        Enable/Disable Maximum Gold.
+#        Default: 0(Disable) 1(Enable)
+#
+#    StartingGold
+#        On Creating a character they will start with this amount in Gold
+#        Default: 0
+#
+#    MaximumGold
+#        Maximum amount of Gold a character can hold
+#        Default: 214748 (214k gold)
+#        Note: Client Max is 214748 Gold (2^31, signed int32)
+#
+#    EnablePvPToken
+#        Enable PVPTokenSystem (Adds token to player)
+#
+#    PvPTokenID
+#        Set PVPToken (Item Id)
+#
+
+<Player StartingLevel       = "1"
+        LevelCap            = "@ASC_VERSION_MAX_LEVEL@"
+        GenLevelCap         = "@ASC_VERSION_MAX_LEVEL@"
+        AllowTBC            = "1"
+        AntiMasterLootNinja = "0"
+        DKStartingTalents   = "0"
+        DKPreReq            = "1"
+        DKLimit             = "1"
+        MaxProfessions      = "2"
+        SkipCinematic       = "0"
+        InstantLogout       = "1"
+        MinDualSpecLevel    = "40"
+        MinTalentResetLevel = "10"
+        ShowAllVendorItems  = "0"
+        InterfactionChat    = "0"
+        InterfactionGroup   = "0"
+        InterfactionGuild   = "0"
+        InterfactionTrade   = "0"
+        InterfactionFriends = "0"
+        InterfactionMisc    = "0"
+        CrossOverCharacters = "1"
+        EnableGoldCap       = "1"
+        StartingGold        = "0"
+        MaximumGold         = "214748"
+        EnablePvPToken      = "0"
+        PvPTokenID          = "0">
+
+################################################################################
+# Announce Settings
 #
 #    Tag
 #        Configure what is shown in front of your announces in the [] brackets.
@@ -368,15 +512,117 @@
 #        or not. This does not apply for the team-internal GM announce.
 #        Default: 1 (enabled)
 #
+#    AnnTagColor
+#        This controls which color the [] tag in front of announces has.
+#        Default: 2 (Light Blue)
+#
+#    AnnGMTagColor
+#        This controls the color of the GM/Admin tag in announces. Only enabled
+#        if GMAdminTag is set to 1.
+#        Default: 1 (Light red)
+#
+#    AnnNameColor
+#        This controls the color of the game master's name in announces.
+#        Default: 4 (Green)
+#
+#    AnnMsgColor
+#        This controls the color of message in announces.
+#        Default: 6 (Gold)
+#
+#
+#    You can choose one of the colors below.
+#        LightRed    = 1      Gold        = 6
+#        LightBlue   = 2      Grey        = 7
+#        Blue        = 3      White       = 8
+#        Green       = 4      Magenta     = 9
+#        Red         = 5      Yellow      = 10
+#
 
 <Announce Tag             = "Staff"
           GMAdminTag      = "0"
           NameinAnnounce  = "1"
           NameinWAnnounce = "1"
-          ShowInConsole   = "1">
+          ShowInConsole   = "1"
+          AnnTagColor     = "2"
+          AnnGMTagColor   = "1"
+          AnnNameColor    = "4"
+          AnnMsgColor     = "6">
 
 ################################################################################
-# Power regeneration multiplier setup
+# GameMaster Settings
+#
+#    StartOnGMIsland
+#        Makes GM Characters start on GM Island
+#        Also sets their bind location to GM Island
+#        Default: 0
+#
+#    DisableAchievements
+#        Disables achievements for GameMasters.
+#        Default: 0
+#
+#    ListOnlyActiveGMs
+#        List only game masters with enabled GMFlag to players without any
+#        permissions.
+#        Default: 0
+#
+#    HidePermissions
+#        Hides permission flags from players without any permissions.
+#        Default: 0
+#
+#    AnnounceKick
+#        Announce the kick of an player in an global message.
+#        Default: 1
+#
+#    GmClientChannel
+#        This should be set to 'gm_sync_channel' for various Game Master ticket
+#        addons to work. In ArcGM you can set this to be any channel you wish,
+#        however it is good to announce if you change this to anything other then
+#        default to your staff to avoid confusion.
+#        Default: gm_sync_channel
+#
+
+<GameMaster StartOnGMIsland     = "0"
+            DisableAchievements = "0"
+            ListOnlyActiveGMs   = "0"
+            HidePermissions     = "0"
+            AnnounceKick        = "1"
+            GmClientChannel     = "gm_sync_channel">
+
+################################################################################
+# Broadcast Settings
+#
+#    EnableSystem (Multi-Languages supported)
+#        Enable/Disable new broadcast system.
+#        Default: 0(Disable) 1(Enable)
+#
+#    Interval
+#        Contents sending on interval by second
+#        Default:(Min:10 Max:1440)
+#
+#    TriggerPercentCap
+#        Setup the cap of chance in condition with contents sending in each
+#        BroadCastInterval's value. Notice: OP can setup any of message's
+#        priority, this could be adjustment in field `percent` of table
+#        `worldbroadcast`. Default:99 (min:1 max:99, 99 only displaying message
+#        on priority 100 set.) i.e : If set 50 ,it means all of messages 100%
+#        selected(but may not displayed) by higher than '50' priority with each
+#        broadcastinterval. The total selected messages(>51 priority) chosen at
+#        random with send to all players.
+#
+#    OrderMode [0-1]
+#        0 = RandomMode - By Triggering & Conditions
+#        1 = SerialMode - [ignored both ->field `percent` from table
+#        `worldbroadcast` & TriggerPercentCap parameters.]
+#        Default:0
+#
+
+<Broadcast EnableSystem      = "0"
+           Interval          = "10"
+           TriggerPercentCap = "2"
+           OrderMode         = "0">
+
+################################################################################
+# Rate Settings
 # 
 #    These directives set up the multiplier in which regen values will be
 #    multiplied by every 2 seconds.
@@ -466,18 +712,6 @@
        ArenaMultiplier5x = "1">
 
 ################################################################################
-# GM Client Channel
-#
-#    This should be set to 'gm_sync_channel' for various Game Master ticket
-#    addons to work. In ArcGM you can set this to be any channel you wish,
-#    however it is good to announce if you change this to anything other then
-#    default to your staff to avoid confusion.
-#        Default: gm_sync_channel
-#
-
-<GMClient GmClientChannel = "gm_sync_channel">
-
-################################################################################
 # Terrain & Collision Settings
 #
 #    Collision
@@ -495,16 +729,10 @@
          Pathfinding = "0">
 
 ################################################################################
-# Mail System Setup
+# Mail Settings
 #
 #    These directives control the limits and behaviour of the ingame mail
 #    system. All options must have Mail prefixed before them.
-#   
-#    ReloadDelay                 
-#        Controls the delay at which the database is "refreshed". Use it if
-#        you're inserting mail from an external source, such as a web-based
-#        interface. 0 turns it off.
-#        Default: 0
 #
 #    DisablePostageCostsForGM 
 #        Enables/disables the postage costs for GM's. DisablePostageCosts
@@ -536,8 +764,7 @@
 #        Default: 1
 #
 
-<Mail ReloadDelay                 = "0"
-      DisablePostageCostsForGM    = "1"
+<Mail DisablePostageCostsForGM    = "1"
       DisablePostageCosts         = "0"
       DisablePostageDelayItems    = "1"
       DisableMessageExpiry        = "0"
@@ -547,26 +774,14 @@
 ################################################################################
 # Startup Options
 #
-#    Preloading
-#        This directive controls whether the entire world will be spawned at
-#        server startup or on demand. It is advised to leave it disabled unless
-#        you are a developer doing testing.
-#        Default: off
-#
-#    Background Loot Loading
-#        This directive controls whether loot will be loaded progressively
-#        during startup or in the background in a separate thread. Turning it on
-#        will result in much faster startup times.
-#        Default: on
-#
-#    Multithreaded Startup
+#    EnableMultithreadedLoading
 #        This controls whether the server will spawn multiple worker threads to
 #        use for loading the database and starting the server. Turning it on
 #        increases the speed at which it starts up for each additional CPU in
 #        your computer.
 #        Default: on
 #
-#    Unimplemented Spell ID Dump
+#    EnableSpellIDDump
 #        This directive controls whether to dump the IDs of spells with
 #        unimplemented dummy/scripted effect or apply dummy aura effect. You
 #        need to load the spellhandlers library for this to actually produce a
@@ -574,7 +789,7 @@
 #        Default: off
 #        
 #
-#    Additional Table Binding
+#    LoadAdditionalTables
 #        You can load static item/creature/etc data into the server using this
 #        directive. This way throughout database updates your custom data can be
 #        preserved.
@@ -583,34 +798,9 @@
 #        Default: ""
 #
 
-<Startup Preloading                 = "0"
-         EnableMultithreadedLoading = "1"
+<Startup EnableMultithreadedLoading = "1"
          EnableSpellIDDump          = "0"
          LoadAdditionalTables       = "">
-
-################################################################################
-# Flood Protection Setup
-#
-#    Lines
-#        This is the number of "messages" or lines that it will allow before
-#        stopping messages from being sent. This counter is reset every
-#        "Seconds" seconds.
-#        Default: 0 (disabled)
-#
-#    Seconds
-#        This is the number of seconds in between the Line counter being reset.
-#        Default: 0 (disabled)
-#
-#    SendMessage
-#        If this is enabled, a "Your message has triggered serverside flood
-#        protection. You can speak again in %u seconds." message will be sent
-#        upon flood triggering.
-#        Default: 0
-#
-
-<FloodProtection Lines       = "0" 
-                 Seconds     = "0" 
-                 SendMessage = "0">
 
 ################################################################################
 # AntiHack Setup
@@ -672,9 +862,7 @@
          DailyUpdate = "daily">
 
 ################################################################################
-# Channels Setup
-#
-#    These directives control some of the aspects in the channel system.
+# Chat Settings
 #
 #    BannedChannels
 #        If you would like to ban users from creating or joining a channel
@@ -686,14 +874,31 @@
 #        names by ; seperated.
 #        Default: ""
 #
+#    FloodLines
+#        This is the number of "messages" or lines that it will allow before
+#        stopping messages from being sent. This counter is reset every
+#        "Seconds" seconds.
+#        Default: 0 (disabled)
+#
+#    FloodSeconds
+#        This is the number of seconds in between the Line counter being reset.
+#        Default: 0 (disabled)
+#
+#    FloodSendMessage
+#        If this is enabled, a "Your message has triggered serverside flood
+#        protection. You can speak again in %u seconds." message will be sent
+#        upon flood triggering.
+#        Default: 0
+#
 
-<Channels BannedChannels = ""
-          MinimumLevel   = "">
+<Chat BannedChannels   = ""
+      MinimumLevel     = ""
+      FloodLines       = "0" 
+      FloodSeconds     = "0" 
+      FloodSendMessage = "0">
 
 ################################################################################
 # Remote Console Setup
-#
-#    These directives control the remote administration console.
 #
 #    Enabled
 #        If you want to enable the remote administration console, set this.
@@ -791,7 +996,7 @@
 <InstanceHandling TakeGroupLeaderID            = "1" 
                   SlidingExpiration            = "0" 
                   DailyHeroicInstanceResetHour = "5" 
-                  CheckTriggerPrerequisites    = "1" >
+                  CheckTriggerPrerequisites    = "1">
 
 ################################################################################
 # BattleGround settings
@@ -932,3 +1137,22 @@
         Arena          = "5000"
         Disconnect     = "0"
         BroadcastGMs   = "1">
+        
+################################################################################
+# Corpse Decay Settings
+#
+#    Time in seconds until creature corpse will decay if not skinned or looted.
+#
+#    Default:
+#    DecayNormal    = "60"      (1 Minute)
+#    DecayRare      = "300"     (5 Minutes)
+#    DecayElite     = "300"     (5 Minutes)
+#    DecayRareElite = "300"     (5 Minutes)
+#    DecayWorldboss = "3600"    (1 Hour)
+#
+
+<CorpseDecaySettings DecayNormal     = "60"
+                     DecayRare       = "300"
+                     DecayElite      = "300"
+                     DecayRareElite  = "300"
+                     DecayWorldboss  = "3600">

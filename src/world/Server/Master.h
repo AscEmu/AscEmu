@@ -36,7 +36,7 @@ class Master : public Singleton<Master>
 
         bool Run(int argc, char** argv);
         void PrintBanner();
-        bool LoadWorldConfiguration(char* config_file, char* optional_config_file);
+        bool LoadWorldConfiguration(char* config_file);
         void OpenCheatLogFiles();
         void StartNetworkSubsystem();
         void StartRemoteConsole();

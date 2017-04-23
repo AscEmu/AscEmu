@@ -743,11 +743,11 @@ bool ChatHandler::HandleAnnounceCommand(const char* args, WorldSession* m_sessio
     }
 
     std::stringstream worldAnnounce;
-    worldAnnounce << worldConfig.getColorStringForNumber(worldConfig.color.tagColor);
+    worldAnnounce << worldConfig.getColorStringForNumber(worldConfig.announce.tagColor);
     worldAnnounce << "[";
     worldAnnounce << worldConfig.announce.announceTag;
     worldAnnounce << "]";
-    worldAnnounce << worldConfig.getColorStringForNumber(worldConfig.color.tagGmColor);
+    worldAnnounce << worldConfig.getColorStringForNumber(worldConfig.announce.tagGmColor);
 
     if (worldConfig.announce.enableGmAdminTag)
     {
@@ -759,16 +759,16 @@ bool ChatHandler::HandleAnnounceCommand(const char* args, WorldSession* m_sessio
 
     if (worldConfig.announce.showNameInAnnounce)
     {
-        worldAnnounce << "|r" << worldConfig.getColorStringForNumber(worldConfig.color.tagColor) << "|Hplayer:";
+        worldAnnounce << "|r" << worldConfig.getColorStringForNumber(worldConfig.announce.tagColor) << "|Hplayer:";
         worldAnnounce << m_session->GetPlayer()->GetName();
         worldAnnounce << "|h[";
         worldAnnounce << m_session->GetPlayer()->GetName();
-        worldAnnounce << "]|h:|r " << worldConfig.getColorStringForNumber(worldConfig.color.msgColor);
+        worldAnnounce << "]|h:|r " << worldConfig.getColorStringForNumber(worldConfig.announce.msgColor);
     }
     else if (!worldConfig.announce.showNameInAnnounce)
     {
         worldAnnounce << ": ";
-        worldAnnounce << worldConfig.getColorStringForNumber(worldConfig.color.msgColor);
+        worldAnnounce << worldConfig.getColorStringForNumber(worldConfig.announce.msgColor);
     }
 
     sWorld.sendMessageToAll(worldAnnounce.str());
@@ -785,11 +785,11 @@ bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession* m_sessi
         return false;
 
     std::string colored_widescreen_text;
-    colored_widescreen_text = worldConfig.getColorStringForNumber(worldConfig.color.tagColor);
+    colored_widescreen_text = worldConfig.getColorStringForNumber(worldConfig.announce.tagColor);
     colored_widescreen_text += "[";
     colored_widescreen_text += worldConfig.announce.announceTag;
     colored_widescreen_text += "]";
-    colored_widescreen_text += worldConfig.getColorStringForNumber(worldConfig.color.tagGmColor);
+    colored_widescreen_text += worldConfig.getColorStringForNumber(worldConfig.announce.tagGmColor);
 
     if (worldConfig.announce.enableGmAdminTag)
     {
@@ -801,13 +801,13 @@ bool ChatHandler::HandleWAnnounceCommand(const char* args, WorldSession* m_sessi
 
     if (worldConfig.announce.showNameInWAnnounce)
     {
-        colored_widescreen_text += "|r" + worldConfig.getColorStringForNumber(worldConfig.color.tagColor) + "[";
+        colored_widescreen_text += "|r" + worldConfig.getColorStringForNumber(worldConfig.announce.tagColor) + "[";
         colored_widescreen_text += m_session->GetPlayer()->GetName();
-        colored_widescreen_text += "]:|r " + worldConfig.getColorStringForNumber(worldConfig.color.msgColor);
+        colored_widescreen_text += "]:|r " + worldConfig.getColorStringForNumber(worldConfig.announce.msgColor);
     }
     else if (!worldConfig.announce.showNameInWAnnounce)
     {
-        colored_widescreen_text += ": "; colored_widescreen_text += worldConfig.getColorStringForNumber(worldConfig.color.msgColor);
+        colored_widescreen_text += ": "; colored_widescreen_text += worldConfig.getColorStringForNumber(worldConfig.announce.msgColor);
     }
 
     sWorld.sendAreaTriggerMessage(colored_widescreen_text);

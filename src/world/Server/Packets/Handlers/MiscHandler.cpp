@@ -363,7 +363,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
         if (money)
         {
             // Check they don't have more than the max gold
-            if (worldConfig.gold.isCapEnabled && (GetPlayer()->GetGold() + money) > worldConfig.gold.limitAmount)
+            if (worldConfig.player.isGoldCapEnabled && (GetPlayer()->GetGold() + money) > worldConfig.player.limitGoldAmount)
             {
                 GetPlayer()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
             }
@@ -412,7 +412,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
             for (std::vector<Player*>::iterator itr2 = targets.begin(); itr2 != targets.end(); ++itr2)
             {
                 // Check they don't have more than the max gold
-                if (worldConfig.gold.isCapEnabled && ((*itr2)->GetGold() + share) > worldConfig.gold.limitAmount)
+                if (worldConfig.player.isGoldCapEnabled && ((*itr2)->GetGold() + share) > worldConfig.player.limitGoldAmount)
                 {
                     (*itr2)->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
                 }
@@ -772,7 +772,7 @@ void WorldSession::HandleWhoOpcode(WorldPacket& recv_data)
         }
 
         // Team check
-        if (!gm && plr->GetTeam() != team && !plr->GetSession()->HasGMPermissions() && !worldConfig.interfaction.isInterfactionMiscEnabled)
+        if (!gm && plr->GetTeam() != team && !plr->GetSession()->HasGMPermissions() && !worldConfig.player.isInterfactionMiscEnabled)
             continue;
 
         ++total_count;
@@ -976,7 +976,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& recv_data)
                 return;
             }
 
-            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || worldConfig.optional.enableInstantLogoutForAccessType == 2)
+            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || worldConfig.player.enableInstantLogoutForAccessType == 2)
             {
                 //Logout on NEXT sessionupdate to preserve processing of dead packets (all pending ones should be processed)
                 SetLogoutTimer(1);
@@ -985,7 +985,7 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPacket& recv_data)
         }
         if (GetPermissionCount() > 0)
         {
-            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || worldConfig.optional.enableInstantLogoutForAccessType > 0)
+            if (pPlayer->m_isResting || pPlayer->GetTaxiState() || worldConfig.player.enableInstantLogoutForAccessType > 0)
             {
                 //Logout on NEXT sessionupdate to preserve processing of dead packets (all pending ones should be processed)
                 SetLogoutTimer(1);

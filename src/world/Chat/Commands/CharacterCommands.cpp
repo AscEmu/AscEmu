@@ -149,8 +149,8 @@ bool ChatHandler::HandleCharLevelUpCommand(const char* args, WorldSession* m_ses
 
     levels += player_target->getLevel();
 
-    if (levels > worldConfig.optional.playerLevelCap)
-        levels = worldConfig.optional.playerLevelCap;
+    if (levels > worldConfig.player.playerLevelCap)
+        levels = worldConfig.player.playerLevelCap;
 
     auto level_info = objmgr.GetLevelInfo(player_target->getRace(), player_target->getClass(), levels);
     if (level_info == nullptr)
@@ -853,11 +853,11 @@ bool ChatHandler::HandleCharAddCopperCommand(const char* args, WorldSession* m_s
     {
         if (total >= 0)
         {
-            if (worldConfig.gold.isCapEnabled)
+            if (worldConfig.player.isGoldCapEnabled)
             {
-                if ((player_target->GetGold() + newgold) > worldConfig.gold.limitAmount)
+                if ((player_target->GetGold() + newgold) > worldConfig.player.limitGoldAmount)
                 {
-                    RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (worldConfig.gold.limitAmount / 10000), player_target->GetName(), (player_target->GetGold() / 10000));
+                    RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (worldConfig.player.limitGoldAmount / 10000), player_target->GetName(), (player_target->GetGold() / 10000));
                     return true;
                 }
             }
@@ -909,11 +909,11 @@ bool ChatHandler::HandleCharAddSilverCommand(const char* args, WorldSession* m_s
     {
         if (total >= 0)
         {
-            if (worldConfig.gold.isCapEnabled)
+            if (worldConfig.player.isGoldCapEnabled)
             {
-                if ((player_target->GetGold() + newgold) > worldConfig.gold.limitAmount)
+                if ((player_target->GetGold() + newgold) > worldConfig.player.limitGoldAmount)
                 {
-                    RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (worldConfig.gold.limitAmount / 10000), player_target->GetName(), (player_target->GetGold() / 10000));
+                    RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (worldConfig.player.limitGoldAmount / 10000), player_target->GetName(), (player_target->GetGold() / 10000));
                     return true;
                 }
             }
@@ -964,11 +964,11 @@ bool ChatHandler::HandleCharAddGoldCommand(const char* args, WorldSession* m_ses
     {
         if (total >= 0)
         {
-            if (worldConfig.gold.isCapEnabled)
+            if (worldConfig.player.isGoldCapEnabled)
             {
-                if ((player_target->GetGold() + newgold) > worldConfig.gold.limitAmount)
+                if ((player_target->GetGold() + newgold) > worldConfig.player.limitGoldAmount)
                 {
-                    RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (worldConfig.gold.limitAmount / 10000), player_target->GetName(), (player_target->GetGold() / 10000));
+                    RedSystemMessage(m_session, "Maximum amount of gold is %u and %s already has %u", (worldConfig.player.limitGoldAmount / 10000), player_target->GetName(), (player_target->GetGold() / 10000));
                     return true;
                 }
             }
@@ -1444,7 +1444,7 @@ bool ChatHandler::HandleCharSetLevelCommand(const char* args, WorldSession* m_se
         return true;
 
     uint32 new_level = args ? atol(args) : 0;
-    if (new_level == 0 || new_level > worldConfig.optional.playerLevelCap)
+    if (new_level == 0 || new_level > worldConfig.player.playerLevelCap)
     {
         RedSystemMessage(m_session, "Level %u is not a valid level! Check out your world.conf!", new_level);
         return true;

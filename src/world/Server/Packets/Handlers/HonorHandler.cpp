@@ -207,11 +207,11 @@ void HonorHandler::OnPlayerKilled(Player* pPlayer, Player* pVictim)
                 pAffectedPlayer->GetSession()->SendPacket(&data);
 
                 int PvPToken = 0;
-                Config.OptionalConfig.GetInt("Extra", "PvPToken", &PvPToken);
+                Config.MainConfig.GetInt("Player", "EnablePvPToken", &PvPToken);
                 if (PvPToken > 0)
                 {
                     int PvPTokenID = 0;
-                    Config.OptionalConfig.GetInt("Extra", "PvPTokenID", &PvPTokenID);
+                    Config.MainConfig.GetInt("Player", "PvPTokenID", &PvPTokenID);
                     if (PvPTokenID > 0)
                     {
                         Item* PvPTokenItem = objmgr.CreateItem(PvPTokenID, pAffectedPlayer);

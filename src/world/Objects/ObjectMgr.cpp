@@ -2026,7 +2026,7 @@ void ObjectMgr::GenerateLevelUpInfo()
                 continue;   // Class not valid for this race.
 
             // Generate each level's information
-            uint32 MaxLevel = worldConfig.optional.playerLevelCap + 1;
+            uint32 MaxLevel = worldConfig.player.playerLevelCap + 1;
             LevelInfo* lvl = 0, lastlvl;
             lastlvl.HP = PCI->health;
             lastlvl.Mana = PCI->mana;
@@ -2247,8 +2247,8 @@ LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)
         {
             // We got a match.
             // Let's check that our level is valid first.
-            if (Level > worldConfig.optional.playerLevelCap)
-                Level = worldConfig.optional.playerLevelCap;
+            if (Level > worldConfig.player.playerLevelCap)
+                Level = worldConfig.player.playerLevelCap;
 
             // Pull the level information from the second map.
             LevelMap::iterator it2 = itr->second->find(Level);

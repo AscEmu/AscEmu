@@ -908,14 +908,14 @@ bool Player::Create(WorldPacket& data)
     SetFaction(info->factiontemplate);
 
     if (class_ == DEATHKNIGHT)
-        SetTalentPointsForAllSpec(worldConfig.optional.deathKnightStartTalentPoints); // Default is 0 in case you do not want to modify it
+        SetTalentPointsForAllSpec(worldConfig.player.deathKnightStartTalentPoints); // Default is 0 in case you do not want to modify it
     else
         SetTalentPointsForAllSpec(0);
-    if (class_ != DEATHKNIGHT || worldConfig.optional.playerStartingLevel > 55)
+    if (class_ != DEATHKNIGHT || worldConfig.player.playerStartingLevel > 55)
     {
-        setLevel(worldConfig.optional.playerStartingLevel);
-        if (worldConfig.optional.playerStartingLevel >= 10 && class_ != DEATHKNIGHT)
-            SetTalentPointsForAllSpec(worldConfig.optional.playerStartingLevel - 9);
+        setLevel(worldConfig.player.playerStartingLevel);
+        if (worldConfig.player.playerStartingLevel >= 10 && class_ != DEATHKNIGHT)
+            SetTalentPointsForAllSpec(worldConfig.player.playerStartingLevel - 9);
     }
     else
     {
@@ -924,7 +924,7 @@ bool Player::Create(WorldPacket& data)
     }
     UpdateGlyphs();
 
-    SetPrimaryProfessionPoints(worldConfig.optional.maxProfessions);
+    SetPrimaryProfessionPoints(worldConfig.player.maxProfessions);
 
     setRace(race);
     setClass(class_);
@@ -997,11 +997,11 @@ bool Player::Create(WorldPacket& data)
     SetUInt32Value(PLAYER_FIELD_BYTES, 0x08);
     SetCastSpeedMod(1.0f);
 #if VERSION_STRING != Classic
-    SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.optional.playerLevelCap);
+    SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
 #endif
 
     // Gold Starting Amount
-    SetGold(worldConfig.gold.startAmount);
+    SetGold(worldConfig.player.startGoldAmount);
 
 
     for (uint32 x = 0; x < 7; x++)
@@ -2502,8 +2502,8 @@ void Player::SaveToDB(bool bNewCharacter /* =false */)
     if (m_bg != NULL && IS_ARENA(m_bg->GetType()))
         in_arena = true;
 
-    if (GetPrimaryProfessionPoints() > worldConfig.optional.maxProfessions)
-        SetPrimaryProfessionPoints(worldConfig.optional.maxProfessions);
+    if (GetPrimaryProfessionPoints() > worldConfig.player.maxProfessions)
+        SetPrimaryProfessionPoints(worldConfig.player.maxProfessions);
 
     //Calc played times
     uint32 playedt = (uint32)UNIXTIME - m_playedtime[2];
@@ -3255,7 +3255,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
     SetCastSpeedMod(1.0f);
 #if VERSION_STRING != Classic
-    SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.optional.playerLevelCap);
+    SetUInt32Value(PLAYER_FIELD_MAX_LEVEL, worldConfig.player.playerLevelCap);
 #endif
     SetFaction(info->factiontemplate);
     if (cfaction)
@@ -4023,8 +4023,8 @@ void Player::OnPushToWorld()
     if (m_FirstLogin)
     {
         if (class_ == DEATHKNIGHT)
-            startlevel = static_cast<uint8>(std::max(55, worldConfig.optional.playerStartingLevel));
-        else startlevel = static_cast<uint8>(worldConfig.optional.playerStartingLevel);
+            startlevel = static_cast<uint8>(std::max(55, worldConfig.player.playerStartingLevel));
+        else startlevel = static_cast<uint8>(worldConfig.player.playerStartingLevel);
 
         sHookInterface.OnFirstEnterWorld(this);
         LevelInfo* Info = objmgr.GetLevelInfo(getRace(), getClass(), startlevel);
@@ -5197,8 +5197,8 @@ float Player::GetDodgeChance()
     float chance = 0.0f;
     uint32 level = getLevel();
 
-    if (level > worldConfig.optional.playerGeneratedInformationByLevelCap)
-        level = worldConfig.optional.playerGeneratedInformationByLevelCap;
+    if (level > worldConfig.player.playerGeneratedInformationByLevelCap)
+        level = worldConfig.player.playerGeneratedInformationByLevelCap;
 
     // Base dodge + dodge from agility
 
@@ -11242,7 +11242,7 @@ void Player::Social_AddFriend(const char* name, const char* note)
     }
 
     // team check
-    if (info->team != GetTeamInitial() && m_session->permissioncount == 0 && !worldConfig.interfaction.isInterfactionFriendsEnabled)
+    if (info->team != GetTeamInitial() && m_session->permissioncount == 0 && !worldConfig.player.isInterfactionFriendsEnabled)
     {
         data << uint8(FRIEND_ENEMY);
         data << uint64(info->guid);

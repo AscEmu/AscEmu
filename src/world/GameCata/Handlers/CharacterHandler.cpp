@@ -568,7 +568,7 @@ void WorldSession::FullLogin(Player* plr)
 
     sWorld.incrementPlayerCount(plr->GetTeam());
 
-    if (plr->m_FirstLogin && !sWorld.settings.optional.skipCinematics)
+    if (plr->m_FirstLogin && !sWorld.settings.player.skipCinematics)
     {
         uint32 introid = plr->info->introid;
         OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &introid);

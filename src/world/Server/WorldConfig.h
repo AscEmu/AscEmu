@@ -158,7 +158,36 @@ class SERVER_DECL WorldConfig
 
         uint32_t getRealmType();
 
-        // world.conf - Announce Configuration
+        // world.conf - Player Settings
+        struct PlayerSettings
+        {
+            int32_t playerStartingLevel;
+            uint32_t playerLevelCap;
+            uint32_t playerGeneratedInformationByLevelCap;
+            bool allowTbcCharacters;
+            bool deactivateMasterLootNinja;
+            uint32_t deathKnightStartTalentPoints;
+            bool deathKnightPreReq;
+            bool deathKnightLimit;
+            uint32_t maxProfessions;
+            bool skipCinematics;
+            uint8_t enableInstantLogoutForAccessType;
+            uint32_t minDualSpecLevel;
+            uint32_t minTalentResetLevel;
+            bool showAllVendorItems;
+            bool isInterfactionChatEnabled;
+            bool isInterfactionGroupEnabled;
+            bool isInterfactionGuildEnabled;
+            bool isInterfactionTradeEnabled;
+            bool isInterfactionFriendsEnabled;
+            bool isInterfactionMiscEnabled;
+            bool isCrossoverCharsCreationEnabled;
+            bool isGoldCapEnabled;
+            uint32_t limitGoldAmount;
+            uint32_t startGoldAmount;
+        } player;
+
+        // world.conf - Announce Settings
         struct AnnounceSettings
         {
             std::string announceTag;
@@ -166,9 +195,37 @@ class SERVER_DECL WorldConfig
             bool showNameInAnnounce;
             bool showNameInWAnnounce;
             bool showAnnounceInConsoleOutput;
+            int tagColor;
+            int tagGmColor;
+            int nameColor;
+            int msgColor;
         } announce;
 
-        // world.conf - Power regeneration multiplier setup
+        std::string getColorStringForNumber(int color);
+
+        // world.conf - GameMaster Settings
+        struct GameMasterSettings
+        {
+            bool isStartOnGmIslandEnabled;
+            bool disableAchievements;
+            bool listOnlyActiveGms;
+            bool hidePermissions;
+            bool worldAnnounceOnKickPlayer;
+            std::string gmClientChannelName;
+        } gm;
+
+        std::string getGmClientChannelName();
+
+        // world.conf - Broadcast Settings
+        struct BroadcastSettings
+        {
+            bool isSystemEnabled;
+            int interval;
+            int triggerPercentCap;
+            int orderMode;
+        } broadcast;
+
+        // world.conf - Rate Settings
         struct RateSettings
         {
             uint32_t arenaQueueDiff;
@@ -183,14 +240,6 @@ class SERVER_DECL WorldConfig
         void setIntRate(uint32_t index, uint32_t value);
         uint32_t getIntRate(uint32_t index);
 
-        // world.conf - GM Client Channel
-        struct GMClientSettings
-        {
-            std::string gmClientChannelName;
-        } gmClient;
-
-        std::string getGmClientChannelName();
-
         // world.conf - Terrain & Collision Settings
         struct TerrainCollisionSettings
         {
@@ -199,11 +248,9 @@ class SERVER_DECL WorldConfig
             bool isPathfindingEnabled;
         } terrainCollision;
 
-        // world.conf - Mail System Setup
+        // world.conf - Mail Settings
         struct MailSettings
         {
-            //\todo remove it from config or implement it
-            int reloadDelayInSeconds;                // not used by core
             bool isCostsForGmDisabled;
             bool isCostsForEveryoneDisabled;
             bool isDelayItemsDisabled;
@@ -219,14 +266,6 @@ class SERVER_DECL WorldConfig
             bool enableSpellIdDump;
             std::string additionalTableLoads;
         } startup;
-
-        // world.conf - Flood Protection Setup
-        struct FloodProtectionSettings
-        {
-            uint32_t linesBeforeProtection;
-            uint32_t secondsBeforeProtectionReset;
-            bool enableSendFloodProtectionMessage;
-        } floodProtection;
 
         // world.conf - AntiHack Setup
         struct AntiHackSettings
@@ -246,12 +285,15 @@ class SERVER_DECL WorldConfig
             std::string dailyUpdate;
         } period;
 
-        // world.conf - Channels Setup
-        struct ChannelSettings
+        // world.conf - Chat Settings
+        struct ChatSettings
         {
             std::string bannedChannels;
             std::string minimumTalkLevel;
-        } channel;
+            uint32_t linesBeforeProtection;
+            uint32_t secondsBeforeProtectionReset;
+            bool enableSendFloodProtectionMessage;
+        } chat;
 
         // world.conf - Remote Console Setup
         struct RemoteConsoleSettings
@@ -335,81 +377,7 @@ class SERVER_DECL WorldConfig
             bool broadcastMessageToGmOnExceeding;
         } limit;
 
-        // optional.conf - Optional Settings
-        struct OptionalSettings
-        {
-            int32_t playerStartingLevel;
-            uint32_t playerLevelCap;
-            uint32_t playerGeneratedInformationByLevelCap;
-            bool allowTbcCharacters;
-            bool deactivateMasterLootNinja;
-            uint32_t deathKnightStartTalentPoints;
-            uint32_t maxProfessions;
-            bool skipCinematics;
-            uint8_t enableInstantLogoutForAccessType;
-            uint32_t minDualSpecLevel;
-            uint32_t minTalentResetLevel;
-            bool showAllVendorItems;
-        } optional;
-
-        // optional.conf - Inter-faction Options
-        struct InterfactionSettings
-        {
-            bool isInterfactionChatEnabled;
-            bool isInterfactionGroupEnabled;
-            bool isInterfactionGuildEnabled;
-            bool isInterfactionTradeEnabled;
-            bool isInterfactionFriendsEnabled;
-            bool isInterfactionMiscEnabled;
-            bool isCrossoverCharsCreationEnabled;
-        } interfaction;
-
-        // optional.conf - Color Configuration
-        struct ColorSettings
-        {
-            int tagColor;
-            int tagGmColor;
-            int nameColor;
-            int msgColor;
-        } color;
-
-        std::string getColorStringForNumber(int color);
-
-        // optional.conf - Game Master Configuration
-        struct GameMasterSettings
-        {
-            bool isStartOnGmIslandEnabled;
-            bool disableAchievements;
-            bool listOnlyActiveGms;
-            bool hidePermissions;
-            bool worldAnnounceOnKickPlayer;
-        } gm;
-
-        // optional.conf - Common Schedule Configuration
-        struct BroadcastSettings
-        {
-            bool isSystemEnabled;
-            int interval;
-            int triggerPercentCap;
-            int orderMode;
-        } broadcast;
-
-        // optional.conf - Extra Class Configurations
-        struct ExtraClassSettings
-        {
-            bool deathKnightPreReq;
-            bool deathKnightLimit;
-        } extraClass;
-
-        // optional.conf - Gold Settings Configuration
-        struct GoldSettings
-        {
-            bool isCapEnabled;
-            uint32_t limitAmount;
-            uint32_t startAmount;
-        } gold;
-
-        // optional.conf - Corpse Decay Settings
+        // world.conf - Corpse Decay Settings
         struct CorpseDecaySettings
         {
             uint32_t normalTimeInSeconds;
@@ -419,6 +387,4 @@ class SERVER_DECL WorldConfig
             uint32_t worldbossTimeInSeconds;
         } corpseDecay;
 
-        // realms.conf - Realm Section
-        // handled in LogonCommHandler::LoadRealmConfiguration()
 };
