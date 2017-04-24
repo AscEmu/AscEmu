@@ -3594,8 +3594,10 @@ AreaTrigger const* ObjectMgr::GetMapEntranceTrigger(uint32 Map) const
 
 void ObjectMgr::LoadAreaTrigger()
 {
-    _areaTriggerStore.clear();                                  // need for reload case
-    //													0		1	2		3		4	5			6			7			8				9					10
+    // need for reload case
+    _areaTriggerStore.clear();
+
+    //                                                  0      1    2     3       4       5           6          7             8               9                  10
     QueryResult* result = WorldDatabase.Query("SELECT entry, type, map, screen, name, position_x, position_y, position_z, orientation, required_honor_rank, required_level FROM areatriggers");
     if (!result)
     {
@@ -3603,46 +3605,45 @@ void ObjectMgr::LoadAreaTrigger()
         return;
     }
 
-    uint32 count = 0;
+    uint32_t count = 0;
     do
     {
         Field* fields = result->Fetch();
 
-        uint32 Trigger_ID = fields[0].GetUInt32();
-        uint8 trigger_type = fields[1].GetUInt8();
-
         AreaTrigger at;
-        at.AreaTriggerID = Trigger_ID;
-        at.Type = trigger_type;
-        at.PendingScreen = 0;
-
+        at.AreaTriggerID = fields[0].GetUInt32();
+        at.Type = fields[1].GetUInt8();
         at.Mapid = fields[2].GetUInt16();
+        at.PendingScreen = fields[3].GetUInt32();
+        at.Name = fields[4].GetString();
         at.x = fields[5].GetFloat();
         at.y = fields[6].GetFloat();
         at.z = fields[7].GetFloat();
         at.o = fields[8].GetFloat();
+        at.required_honor_rank = fields[9].GetUInt32();
+        at.required_level = fields[10].GetUInt32();
 
-        auto area_trigger_entry = sAreaTriggerStore.LookupEntry(Trigger_ID);
+        DBC::Structures::AreaTriggerEntry const* area_trigger_entry = sAreaTriggerStore.LookupEntry(at.AreaTriggerID);
         if (!area_trigger_entry)
         {
-            LogDebugFlag(LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", Trigger_ID);
+            LogDebugFlag(LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", at.AreaTriggerID);
             continue;
         }
 
-        auto map_entry = sMapStore.LookupEntry(at.Mapid);
+        DBC::Structures::MapEntry const* map_entry = sMapStore.LookupEntry(at.Mapid);
         if (!map_entry)
         {
-            LogDebugFlag(LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) target map (ID: %u) does not exist in `Map.dbc`.", Trigger_ID, at.Mapid);
+            LogDebugFlag(LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) target map (ID: %u) does not exist in `Map.dbc`.", at.AreaTriggerID, at.Mapid);
             continue;
         }
 
-        if (at.x == 0 && at.y == 0 && at.z == 0 && (trigger_type == 1 || trigger_type == 4))    // check target coordinates only for teleport triggers
+        if (at.x == 0 && at.y == 0 && at.z == 0 && (at.Type == 1 || at.Type == 4))    // check target coordinates only for teleport triggers
         {
-            LogDebugFlag(LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) target coordinates not provided.", Trigger_ID);
+            LogDebugFlag(LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) target coordinates not provided.", at.AreaTriggerID);
             continue;
         }
 
-        _areaTriggerStore[Trigger_ID] = at;
+        _areaTriggerStore[at.AreaTriggerID] = at;
         ++count;
 
     } while (result->NextRow());
