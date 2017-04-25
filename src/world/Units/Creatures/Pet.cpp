@@ -320,8 +320,8 @@ Pet::Pet(uint64 guid) : Creature(guid)
 
 Pet::~Pet()
 {
-    for (auto itr = m_AISpellStore.begin(); itr != m_AISpellStore.end(); ++itr)
-        delete itr->second;
+    for (auto itr : m_AISpellStore)
+        delete itr.second;
     m_AISpellStore.clear();
 
     for (uint8 i = 0; i < AUTOCAST_EVENT_COUNT; i++)
@@ -336,7 +336,7 @@ void Pet::Update(unsigned long time_passed)
         Creature::Update(time_passed);  // passthrough
     else
     {
-        Unit::Update(time_passed);      //Dead Hunter's Pets should be despawned only if the Owner logs out or goes out of range.
+        Unit::Update(time_passed);      // Dead Hunter's Pets should be despawned only if the Owner logs out or goes out of range.
         if (m_corpseEvent)
         {
             sEventMgr.RemoveEvents(this);
@@ -419,10 +419,10 @@ void Pet::BuildPetSpellList(WorldPacket& data)
     {
         // Send the rest of the spells.
         data << uint8(mSpells.size());
-        for (auto itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+        for (auto itr : mSpells)
         {
-            data << uint16(itr->first->Id);
-            data << uint16(itr->second);
+            data << uint16(itr.first->Id);
+            data << uint16(itr.second);
         }
     }
 
@@ -530,9 +530,9 @@ void Pet::SendActionFeedback(PetActionFeedback value)
 
 void Pet::InitializeSpells()
 {
-    for (auto itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+    for (auto itr : mSpells)
     {
-        SpellInfo* info = itr->first;
+        SpellInfo* info = itr.first;
 
         // Check that the spell isn't passive
         if (info->IsPassive())
@@ -546,7 +546,7 @@ void Pet::InitializeSpells()
         }
 
         AI_Spell* sp = CreateAISpell(info);
-        if (itr->second == AUTOCAST_SPELL_STATE)
+        if (itr.second == AUTOCAST_SPELL_STATE)
             SetAutoCast(sp, true);
         else
             SetAutoCast(sp, false);
@@ -923,10 +923,11 @@ void Pet::RemoveFromWorld(bool free_guid)
 void Pet::OnRemoveFromWorld()
 {
     std::list<Pet*> ownerSummons = m_Owner->GetSummons();
-    for (auto itr = ownerSummons.begin(); itr != ownerSummons.end(); ++itr)
+
+    for (auto itr : ownerSummons)
     {
         // m_Owner MUST NOT have a reference to us anymore
-        ARCEMU_ASSERT((*itr)->GetGUID() != GetGUID());
+        ARCEMU_ASSERT(itr->GetGUID() != GetGUID());
     }
 }
 
@@ -1078,16 +1079,11 @@ void Pet::UpdateSpellList(bool showLearnSpells)
 
     if (GetCreatureProperties()->Family == 0 && Summon)
     {
-        std::map<uint32, std::set<uint32> >::iterator it1;
-        std::set<uint32>::iterator it2;
-        it1 = m_Owner->SummonSpells.find(GetEntry());       // Get spells from the owner
+        auto it1 = m_Owner->SummonSpells.find(GetEntry()); // Get spells from the owner
         if (it1 != m_Owner->SummonSpells.end())
         {
-            it2 = it1->second.begin();
-            for (; it2 != it1->second.end(); ++it2)
-            {
-                AddSpell(sSpellCustomizations.GetSpellInfo(*it2), true, showLearnSpells);
-            }
+            for (auto it2 : it1->second)
+                AddSpell(sSpellCustomizations.GetSpellInfo(it2), true, showLearnSpells);
         }
         return;
     }
@@ -1119,18 +1115,16 @@ void Pet::UpdateSpellList(bool showLearnSpells)
                 {
                     // Pet is able to learn this spell; now check if it already has it, or a higher rank of it
                     bool addThisSpell = true;
-                    for (auto itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+                    for (auto itr : mSpells)
                     {
-                        if ((itr->first->custom_NameHash == sp->custom_NameHash) && (itr->first->custom_RankNumber >= sp->custom_RankNumber))
+                        if ((itr.first->custom_NameHash == sp->custom_NameHash) && (itr.first->custom_RankNumber >= sp->custom_RankNumber))
                         {
                             // Pet already has this spell, or a higher rank. Don't add it.
                             addThisSpell = false;
                         }
                     }
                     if (addThisSpell)
-                    {
                         AddSpell(sp, true, showLearnSpells);
-                    }
                 }
             }
         }
@@ -1142,7 +1136,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
     if (sp == NULL)
         return;
 
-    if (sp->IsPassive())        // Cast on self if we're a passive spell
+    if (sp->IsPassive()) // Cast on self if we're a passive spell
     {
         if (IsInWorld())
         {
@@ -1159,14 +1153,14 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
         bool done = false;
         if (learning)
         {
-            for (auto itr = mSpells.begin(); itr != mSpells.end(); ++itr)
+            for (auto itr : mSpells)
             {
-                if (sp->custom_NameHash == itr->first->custom_NameHash)
+                if (sp->custom_NameHash == itr.first->custom_NameHash)
                 {
                     // replace the action bar
                     for (uint8 i = 0; i < 10; ++i)
                     {
-                        if (ActionBar[i] == itr->first->Id)
+                        if (ActionBar[i] == itr.first->Id)
                         {
                             ActionBar[i] = sp->Id;
                             ab_replace = true;
@@ -1178,7 +1172,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
                     AI_Spell* asp = CreateAISpell(sp);
 
                     // apply the spell state
-                    uint16 ss = GetSpellState(itr->first);
+                    uint16 ss = GetSpellState(itr.first);
                     mSpells[sp] = ss;
                     if (ss == AUTOCAST_SPELL_STATE)
                         SetAutoCast(asp, true);
@@ -1186,7 +1180,7 @@ void Pet::AddSpell(SpellInfo* sp, bool learning, bool showLearnSpell)
                     if (asp->autocast_type == AUTOCAST_EVENT_ON_SPAWN)
                         CastSpell(this, sp, false);
 
-                    RemoveSpell(itr->first, showLearnSpell);
+                    RemoveSpell(itr.first, showLearnSpell);
                     done = true;
                     break;
                 }
@@ -1289,8 +1283,9 @@ void Pet::SetDefaultActionbar()
     // Fill up 4 slots with our spells
     if (mSpells.size() > 0)
     {
+        PetSpellMap::iterator itr = mSpells.begin();
         uint32 pos = 0;
-        for (auto itr = mSpells.begin(); itr != mSpells.end() && pos < 4; ++itr, ++pos)
+        for (; itr != mSpells.end() && pos < 4; ++itr, ++pos)
             ActionBar[3 + pos] = itr->first->Id;
     }
 
@@ -1326,7 +1321,7 @@ void Pet::RemoveSpell(SpellInfo* sp, bool showUnlearnSpell)
         if (itr->second->autocast_type != AUTOCAST_EVENT_NONE)
         {
             std::list<AI_Spell*>::iterator it3;
-            for (auto it2 = m_autoCastSpells[itr->second->autocast_type].begin(); it2 != m_autoCastSpells[itr->second->autocast_type].end();)
+            for (std::list<AI_Spell*>::iterator it2 = m_autoCastSpells[itr->second->autocast_type].begin(); it2 != m_autoCastSpells[itr->second->autocast_type].end();)
             {
                 it3 = it2++;
                 if ((*it3) == itr->second)
@@ -1335,7 +1330,7 @@ void Pet::RemoveSpell(SpellInfo* sp, bool showUnlearnSpell)
                 }
             }
         }
-        for (auto it = m_aiInterface->m_spells.begin(); it != m_aiInterface->m_spells.end(); ++it)
+        for (std::list<AI_Spell*>::iterator it = m_aiInterface->m_spells.begin(); it != m_aiInterface->m_spells.end(); ++it)
         {
             if ((*it) == itr->second)
             {
@@ -1350,7 +1345,7 @@ void Pet::RemoveSpell(SpellInfo* sp, bool showUnlearnSpell)
     }
     else
     {
-        for (auto it = m_aiInterface->m_spells.begin(); it != m_aiInterface->m_spells.end(); ++it)
+        for (std::list<AI_Spell*>::iterator it = m_aiInterface->m_spells.begin(); it != m_aiInterface->m_spells.end(); ++it)
         {
             if ((*it)->spell == sp)
             {
@@ -1699,6 +1694,7 @@ AI_Spell* Pet::HandleAutoCastEvent()
         itr = itr2;
         ++itr2;
         size = (uint32)m_autoCastSpells[AUTOCAST_EVENT_ATTACK].size();
+
         if (size > 1)
             chance = Rand(100.0f / size);
 
@@ -1710,14 +1706,14 @@ AI_Spell* Pet::HandleAutoCastEvent()
                 return *itr;
             }
         }
-        else    // bad pointers somehow end up here :S
+        else // bad pointers somehow end up here :S
         {
             LOG_ERROR("Bad AI_Spell detected in AutoCastEvent!");
             m_autoCastSpells[AUTOCAST_EVENT_ATTACK].erase(itr);
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void Pet::HandleAutoCastEvent(AutoCastEvents Type)
@@ -1731,7 +1727,7 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
     {
         if (m_autoCastSpells[AUTOCAST_EVENT_ATTACK].size() > 1)
         {
-            for (auto itr = m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin(); itr != m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end(); ++itr)
+            for (itr = m_autoCastSpells[AUTOCAST_EVENT_ATTACK].begin(); itr != m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end(); ++itr)
             {
                 if (itr == m_autoCastSpells[AUTOCAST_EVENT_ATTACK].end())
                 {
@@ -1762,7 +1758,7 @@ void Pet::HandleAutoCastEvent(AutoCastEvents Type)
         return;
     }
 
-    for (auto itr = m_autoCastSpells[Type].begin(); itr != m_autoCastSpells[Type].end();)
+    for (itr = m_autoCastSpells[Type].begin(); itr != m_autoCastSpells[Type].end();)
     {
         it2 = itr++;
         sp = *it2;
@@ -1800,7 +1796,7 @@ void Pet::SetAutoCast(AI_Spell* sp, bool on)
     {
         if (!on)
         {
-            for (auto itr = m_autoCastSpells[sp->autocast_type].begin(); itr != m_autoCastSpells[sp->autocast_type].end(); ++itr)
+            for (std::list<AI_Spell*>::iterator itr = m_autoCastSpells[sp->autocast_type].begin(); itr != m_autoCastSpells[sp->autocast_type].end(); ++itr)
             {
                 if ((*itr) == sp)
                 {
@@ -1811,7 +1807,7 @@ void Pet::SetAutoCast(AI_Spell* sp, bool on)
         }
         else
         {
-            for (auto itr = m_autoCastSpells[sp->autocast_type].begin(); itr != m_autoCastSpells[sp->autocast_type].end(); ++itr)
+            for (std::list<AI_Spell*>::iterator itr = m_autoCastSpells[sp->autocast_type].begin(); itr != m_autoCastSpells[sp->autocast_type].end(); ++itr)
             {
                 if ((*itr) == sp)
                     return;
@@ -2146,7 +2142,7 @@ void Pet::Die(Unit* pAttacker, uint32 damage, uint32 spellid)
     }
 
     // Stop players from casting
-    for (auto itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
+    for (std::set< Object* >::iterator itr = GetInRangePlayerSetBegin(); itr != GetInRangePlayerSetEnd(); ++itr)
     {
         Unit* attacker = static_cast< Unit* >(*itr);
 

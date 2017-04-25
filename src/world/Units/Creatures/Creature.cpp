@@ -215,16 +215,16 @@ void Creature::OnRespawn(MapMgr* m)
     if (bossInfoMap != NULL && pInstance != NULL)
     {
         bool skip = false;
-        for (auto killedNpc = pInstance->m_killedNpcs.begin(); killedNpc != pInstance->m_killedNpcs.end(); ++killedNpc)
+        for (auto killedNpc : pInstance->m_killedNpcs)
         {
             // Is killed boss?
-            if ((*killedNpc) == creature_properties->Id)
+            if (killedNpc == creature_properties->Id)
             {
                 skip = true;
                 break;
             }
             // Is add from killed boss?
-            InstanceBossInfoMap::const_iterator bossInfo = bossInfoMap->find((*killedNpc));
+            InstanceBossInfoMap::const_iterator bossInfo = bossInfoMap->find(killedNpc);
             if (bossInfo != bossInfoMap->end() && bossInfo->second->trash.find(this->spawnid) != bossInfo->second->trash.end())
             {
                 skip = true;
@@ -251,7 +251,7 @@ void Creature::OnRespawn(MapMgr* m)
         if (m_spawn->death_state == CREATURE_STATE_APPEAR_DEAD)
         {
             m_limbostate = true;
-            setDeathState(ALIVE);   // we are not actually dead, we just appear dead
+            setDeathState(ALIVE); // we are not actually dead, we just appear dead
             SetUInt32Value(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_DEAD);
         }
         else if (m_spawn->death_state == CREATURE_STATE_DEAD)
@@ -321,16 +321,16 @@ void Creature::generateLoot()
         {
             uint16 lootThreshold = looter->GetGroup()->GetThreshold();
 
-            for (auto itr = loot.items.begin(); itr != loot.items.end(); ++itr)
+            for (auto itr : loot.items)
             {
-                if (itr->item.itemproto->Quality < lootThreshold)
+                if (itr.item.itemproto->Quality < lootThreshold)
                     continue;
 
                 // Master Loot Stuff - Let the rest of the raid know what dropped..
                 ///\todo Shouldn't we move this array to a global position? Or maybe it already exists^^ (VirtualAngel) --- I can see (dead) talking pigs...^^
                 const char* itemColours[8] = { "9d9d9d", "ffffff", "1eff00", "0070dd", "a335ee", "ff8000", "e6cc80", "e6cc80" };
                 char buffer[256];
-                sprintf(buffer, "\174cff%s\174Hitem:%u:0:0:0:0:0:0:0\174h[%s]\174h\174r", itemColours[itr->item.itemproto->Quality], itr->item.itemproto->ItemId, itr->item.itemproto->Name.c_str());
+                sprintf(buffer, "\174cff%s\174Hitem:%u:0:0:0:0:0:0:0\174h[%s]\174h\174r", itemColours[itr.item.itemproto->Quality], itr.item.itemproto->ItemId, itr.item.itemproto->Name.c_str());
                 this->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, buffer);
             }
         }
@@ -699,8 +699,6 @@ void Creature::setDeathState(DeathState s)
         // if it's not a Pet, and not a summon and it has skinningloot then we will allow skinning
         if ((GetCreatedByGUID() == 0) && (GetSummonedByGUID() == 0) && lootmgr.IsSkinnable(creature_properties->Id))
             SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
-
-
     }
 
     else m_deathState = s;
