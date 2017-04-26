@@ -63,8 +63,8 @@ LfgMgr::~LfgMgr()
     for (auto it : m_Proposals)
         delete it.second;
 
-	for (auto it : m_Boots)
-		delete it.second;
+    for (auto it : m_Boots)
+        delete it.second;
 
     for (auto it : m_RoleChecks)
         delete it.second;
