@@ -57,23 +57,23 @@ Map::~Map()
                 if (spawns[x][y])
                 {
                     CellSpawns* sp = spawns[x][y];
-                    for (auto i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
-                        delete(*i);
-                    for (auto it = sp->GameobjectSpawns.begin(); it != sp->GameobjectSpawns.end(); ++it)
-                        delete(*it);
+                    for (auto i : sp->CreatureSpawns)
+                        delete i;
+                    for (auto it : sp->GameobjectSpawns)
+                        delete it;
 
                     delete sp;
-                    spawns[x][y] = NULL;
+                    spawns[x][y] = nullptr;
                 }
             }
             delete[] spawns[x];
         }
     }
 
-    for (auto i = staticSpawns.CreatureSpawns.begin(); i != staticSpawns.CreatureSpawns.end(); ++i)
-        delete *i;
-    for (auto i = staticSpawns.GameobjectSpawns.begin(); i != staticSpawns.GameobjectSpawns.end(); ++i)
-        delete *i;
+    for (auto i : staticSpawns.CreatureSpawns)
+        delete i;
+    for (auto i : staticSpawns.GameobjectSpawns)
+        delete i;
 }
 
 std::string Map::GetMapName()
@@ -110,7 +110,7 @@ CellSpawns* Map::GetSpawnsListAndCreate(uint32 cellx, uint32 celly)
 
 void Map::LoadSpawns(bool reload)
 {
-    if (reload)   //perform cleanup
+    if (reload) // perform cleanup
     { 
         for (uint32 x = 0; x < _sizeX; x++)
         {
@@ -119,28 +119,28 @@ void Map::LoadSpawns(bool reload)
                 if (spawns[x][y])
                 {
                     CellSpawns* sp = spawns[x][y];
-                    for (auto i = sp->CreatureSpawns.begin(); i != sp->CreatureSpawns.end(); ++i)
-                        delete(*i);
-                    for (auto it = sp->GameobjectSpawns.begin(); it != sp->GameobjectSpawns.end(); ++it)
-                        delete(*it);
+                    for (auto i : sp->CreatureSpawns)
+                        delete i;
+                    for (auto it : sp->GameobjectSpawns)
+                        delete it;
 
                     delete sp;
-                    spawns[x][y] = NULL;
+                    spawns[x][y] = nullptr;
                 }
             }
         }
     }
 
     CreatureSpawnCount = 0;
-    for (auto tableiterator = CreatureSpawnsTables.begin(); tableiterator != CreatureSpawnsTables.end(); ++tableiterator)
+    for (auto tableiterator : CreatureSpawnsTables)
     {
-        QueryResult* creature_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE Map = %u", (*tableiterator).c_str(), this->_mapId);
+        QueryResult* creature_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE Map = %u", tableiterator.c_str(), this->_mapId);
         if (creature_spawn_result)
         {
             uint32 creature_spawn_fields = creature_spawn_result->GetFieldCount();
             if (creature_spawn_fields != CREATURESPAWNSFIELDCOUNT)
             {
-                LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), creature_spawn_fields, CREATURESPAWNSFIELDCOUNT);
+                LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", tableiterator.c_str(), creature_spawn_fields, CREATURESPAWNSFIELDCOUNT);
                 continue;
             }
             else
@@ -185,7 +185,7 @@ void Map::LoadSpawns(bool reload)
                         DBC::Structures::CreatureDisplayInfoEntry const* creature_display = sCreatureDisplayInfoStore.LookupEntry(cspawn->displayid);
                         if (creature_display == nullptr)
                         {
-                            LogError("Table %s includes invalid displayid %u for npc entry: %u, spawn_id: %u. Set to a random modelid!", (*tableiterator).c_str(), cspawn->displayid, cspawn->entry, cspawn->id);
+                            LogError("Table %s includes invalid displayid %u for npc entry: %u, spawn_id: %u. Set to a random modelid!", tableiterator.c_str(), cspawn->displayid, cspawn->entry, cspawn->id);
                             cspawn->displayid = creature_properties->GetRandomModelId();
                         }
                     }
@@ -200,7 +200,7 @@ void Map::LoadSpawns(bool reload)
                     cspawn->bytes1 = fields[12].GetUInt32();
                     cspawn->bytes2 = fields[13].GetUInt32();
                     cspawn->emote_state = fields[14].GetUInt32();
-                    //cspawn->respawnNpcLink = fields[15].GetUInt32(); // sch:
+                    // cspawn->respawnNpcLink = fields[15].GetUInt32();
                     cspawn->channel_spell = fields[16].GetUInt16();
                     cspawn->channel_target_go = fields[17].GetUInt32();
                     cspawn->channel_target_creature = fields[18].GetUInt32();
@@ -216,7 +216,7 @@ void Map::LoadSpawns(bool reload)
                     if (cspawn->phase == 0)
                         cspawn->phase = 0xFFFFFFFF;
 
-                    if (!stricmp((*tableiterator).c_str(), "creature_staticspawns"))
+                    if (!stricmp(tableiterator.c_str(), "creature_staticspawns"))
                     {
                         staticSpawns.CreatureSpawns.push_back(cspawn);
                         ++CreatureSpawnCount;
@@ -235,15 +235,15 @@ void Map::LoadSpawns(bool reload)
     }
 
     GameObjectSpawnCount = 0;
-    for (auto tableiterator = GameObjectSpawnsTables.begin(); tableiterator != GameObjectSpawnsTables.end(); ++tableiterator)
+    for (auto tableiterator : GameObjectSpawnsTables)
     {
-        QueryResult* gobject_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE map = %u", (*tableiterator).c_str(), this->_mapId);
+        QueryResult* gobject_spawn_result = WorldDatabase.Query("SELECT * FROM %s WHERE map = %u", tableiterator.c_str(), this->_mapId);
         if (gobject_spawn_result)
         {
             uint32 gobject_spawn_fields = gobject_spawn_result->GetFieldCount();
             if (gobject_spawn_fields != GOSPAWNSFIELDCOUNT)
             {
-                LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", (*tableiterator).c_str(), gobject_spawn_fields, GOSPAWNSFIELDCOUNT);
+                LOG_ERROR("Table `%s` has %u columns, but needs %u columns! Skipped!", tableiterator.c_str(), gobject_spawn_fields, GOSPAWNSFIELDCOUNT);
                 continue;
             }
             else
@@ -285,9 +285,9 @@ void Map::LoadSpawns(bool reload)
 
                     go_spawn->overrides = fields[17].GetUInt32();
 
-                    if (go_spawn->overrides & GAMEOBJECT_MAPWIDE || !stricmp((*tableiterator).c_str(), "gameobject_staticspawns"))
+                    if (go_spawn->overrides & GAMEOBJECT_MAPWIDE || !stricmp(tableiterator.c_str(), "gameobject_staticspawns"))
                     {
-                        staticSpawns.GameobjectSpawns.push_back(go_spawn); //We already have a staticSpawns in the Map class, and it does just the right thing
+                        staticSpawns.GameobjectSpawns.push_back(go_spawn); // We already have a staticSpawns in the Map class, and it does just the right thing
                         ++GameObjectSpawnCount;
                     }
                     else

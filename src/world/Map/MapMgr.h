@@ -96,87 +96,86 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
         void AddObject(Object*);
 
         // Local (mapmgr) storage/generation of GameObjects
-		uint32 m_GOHighGuid;
-		std::vector<GameObject*> GOStorage;
-		GameObject* CreateGameObject(uint32 entry);
-		GameObject* CreateAndSpawnGameObject(uint32 entryID, float x, float y, float z, float o, float scale);
+        uint32 m_GOHighGuid;
+        std::vector<GameObject*> GOStorage;
+        GameObject* CreateGameObject(uint32 entry);
+        GameObject* CreateAndSpawnGameObject(uint32 entryID, float x, float y, float z, float o, float scale);
 
-		uint32 GenerateGameobjectGuid() { return ++m_GOHighGuid; }
+        uint32 GenerateGameobjectGuid() { return ++m_GOHighGuid; }
 
         GameObject* GetGameObject(uint32 guid);
 
         // Local (mapmgr) storage/generation of Creatures
-		uint32 m_CreatureHighGuid;
-		std::vector<Creature*> CreatureStorage;
-		CreatureSet::iterator creature_iterator;        /// required by owners despawning creatures and deleting *(++itr)
-		uint64 GenerateCreatureGUID(uint32 entry);
-		Creature* CreateCreature(uint32 entry);
+        uint32 m_CreatureHighGuid;
+        std::vector<Creature*> CreatureStorage;
+        CreatureSet::iterator creature_iterator;        /// required by owners despawning creatures and deleting *(++itr)
+        uint64 GenerateCreatureGUID(uint32 entry);
+        Creature* CreateCreature(uint32 entry);
         Creature* CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO);
 
         Creature* GetCreature(uint32 guid);
 
-
         //////////////////////////////////////////////////////////////////////////////////////////
-		/// Summon* CreateSummon(uint32 entry, SummonType type)
-		/// Summon factory function, creates and returns the appropriate summon subclass.
-		///
-		/// \param uint32 entry     -  entry of the summon (NPC id)
+        /// Summon* CreateSummon(uint32 entry, SummonType type)
+        /// Summon factory function, creates and returns the appropriate summon subclass.
+        ///
+        /// \param uint32 entry     -  entry of the summon (NPC id)
         /// \param SummonType type  -  Type of the summon
-		///
-		/// \return pointer to a summon
-		///
+        ///
+        /// \return pointer to a summon
+        ///
         //////////////////////////////////////////////////////////////////////////////////////////
-		Summon* CreateSummon(uint32 entry, SummonType type);
+        Summon* CreateSummon(uint32 entry, SummonType type);
 
 
         // Local (mapmgr) storage/generation of DynamicObjects
-		uint32 m_DynamicObjectHighGuid;
-		typedef std::unordered_map<uint32, DynamicObject*> DynamicObjectStorageMap;
-		DynamicObjectStorageMap m_DynamicObjectStorage;
-		DynamicObject* CreateDynamicObject();
+        uint32 m_DynamicObjectHighGuid;
+        typedef std::unordered_map<uint32, DynamicObject*> DynamicObjectStorageMap;
+        DynamicObjectStorageMap m_DynamicObjectStorage;
+        DynamicObject* CreateDynamicObject();
 
         DynamicObject* GetDynamicObject(uint32 guid);
 
         // Local (mapmgr) storage of pets
-		typedef std::unordered_map<uint32, Pet*> PetStorageMap;
-		PetStorageMap m_PetStorage;
-		PetStorageMap::iterator pet_iterator;
+        typedef std::unordered_map<uint32, Pet*> PetStorageMap;
+        PetStorageMap m_PetStorage;
+        PetStorageMap::iterator pet_iterator;
         Pet* GetPet(uint32 guid);
 
 
         // Local (mapmgr) storage of players for faster lookup
-		// double typedef lolz// a compile breaker..
-		typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
-		PlayerStorageMap m_PlayerStorage;
+        // double typedef lolz// a compile breaker..
+        typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
+        PlayerStorageMap m_PlayerStorage;
         Player* GetPlayer(uint32 guid);
 
         // Local (mapmgr) storage of combats in progress
-		CombatProgressMap _combatProgress;
+        CombatProgressMap _combatProgress;
         void AddCombatInProgress(uint64 guid);
 
         void RemoveCombatInProgress(uint64 guid);
 
         // Lookup Wrappers
-		Unit* GetUnit(const uint64 & guid);
-		Object* _GetObject(const uint64 & guid);
+        Unit* GetUnit(const uint64 & guid);
+        Object* _GetObject(const uint64 & guid);
 
-		bool run();
-		bool Do();
+        bool run();
+        bool Do();
 
-		MapMgr(Map* map, uint32 mapid, uint32 instanceid);
-		~MapMgr();
+        MapMgr(Map* map, uint32 mapid, uint32 instanceid);
+        ~MapMgr();
 
-		void PushObject(Object* obj);
-		void PushStaticObject(Object* obj);
-		void RemoveObject(Object* obj, bool free_guid);
-		void ChangeObjectLocation(Object* obj);                 /// update inrange lists
-		void ChangeFarsightLocation(Player* plr, DynamicObject* farsight);
+        void PushObject(Object* obj);
+        void PushStaticObject(Object* obj);
+        void RemoveObject(Object* obj, bool free_guid);
+        void ChangeObjectLocation(Object* obj);                 /// update inrange lists
+        void ChangeFarsightLocation(Player* plr, DynamicObject* farsight);
 
-		/// Mark object as updated
-		void ObjectUpdated(Object* obj);
-		void UpdateCellActivity(uint32 x, uint32 y, uint32 radius);
+        /// Mark object as updated
+        void ObjectUpdated(Object* obj);
+        void UpdateCellActivity(uint32 x, uint32 y, uint32 radius);
 
-		// Terrain Functions
+        // Terrain Functions
         float GetLandHeight(float x, float y, float z);
 
         float GetADTLandHeight(float x, float y);
@@ -214,27 +213,27 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 
         uint32 GetPlayerCount();
 
-		void _PerformObjectDuties();
-		uint32 mLoopCounter;
-		uint32 lastGameobjectUpdate;
-		uint32 lastUnitUpdate;
-		void EventCorpseDespawn(uint64 guid);
+        void _PerformObjectDuties();
+        uint32 mLoopCounter;
+        uint32 lastGameobjectUpdate;
+        uint32 lastUnitUpdate;
+        void EventCorpseDespawn(uint64 guid);
 
-		time_t InactiveMoveTime;
-		uint32 iInstanceMode;
+        time_t InactiveMoveTime;
+        uint32 iInstanceMode;
 
-		void UnloadCell(uint32 x, uint32 y);
-		void EventRespawnCreature(Creature* c, uint16 x, uint16 y);
-		void EventRespawnGameObject(GameObject* o, uint16 x, uint16 y);
-		void SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint32 cell_radius, uint32 langpos, int32 lang, WorldSession* originator);
-		void SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Message, ...);
-		void SendPacketToAllPlayers(WorldPacket* packet) const;
-		void SendPacketToPlayersInZone(uint32 zone, WorldPacket* packet) const;
+        void UnloadCell(uint32 x, uint32 y);
+        void EventRespawnCreature(Creature* c, uint16 x, uint16 y);
+        void EventRespawnGameObject(GameObject* o, uint16 x, uint16 y);
+        void SendChatMessageToCellPlayers(Object* obj, WorldPacket* packet, uint32 cell_radius, uint32 langpos, int32 lang, WorldSession* originator);
+        void SendPvPCaptureMessage(int32 ZoneMask, uint32 ZoneId, const char* Message, ...);
+        void SendPacketToAllPlayers(WorldPacket* packet) const;
+        void SendPacketToPlayersInZone(uint32 zone, WorldPacket* packet) const;
 
-		Instance* pInstance;
-		void BeginInstanceExpireCountdown();
+        Instance* pInstance;
+        void BeginInstanceExpireCountdown();
 
-		/// better hope to clear any references to us when calling this :P
+        /// better hope to clear any references to us when calling this :P
         void InstanceShutdown();
 
         /// kill the worker thread only
@@ -250,85 +249,85 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
         //////////////////////////////////////////////////////////////////////////////////////////
         GameObject* FindNearestGoWithType(Object* o, uint32 type);
 
-	protected:
+    protected:
 
-		/// Collect and send updates to clients
-		void _UpdateObjects();
+        /// Collect and send updates to clients
+        void _UpdateObjects();
 
-	private:
+    private:
 
-		/// Objects that exist on map
-		uint32 _mapId;
-		std::set<Object*> _mapWideStaticObjects;
+        /// Objects that exist on map
+        uint32 _mapId;
+        std::set<Object*> _mapWideStaticObjects;
 
-		bool _CellActive(uint32 x, uint32 y);
-		void UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuffer** buf);
+        bool _CellActive(uint32 x, uint32 y);
+        void UpdateInRangeSet(Object* obj, Player* plObj, MapCell* cell, ByteBuffer** buf);
 
         //Zyres: Refactoring 05/04/2016
         float GetUpdateDistance(Object* curObj, Object* obj, Player* plObj);
         void OutOfMapBoundariesTeleport(Object* object);
 
-	public:
+    public:
 
-		/// Distance a Player can "see" other objects and receive updates from them (!! ALREADY dist*dist !!)
-		float m_UpdateDistance;
+        /// Distance a Player can "see" other objects and receive updates from them (!! ALREADY dist*dist !!)
+        float m_UpdateDistance;
 
-	private:
+    private:
 
-		// Update System
-		Mutex m_updateMutex;
-		UpdateQueue _updates;
-		PUpdateQueue _processQueue;
+        // Update System
+        Mutex m_updateMutex;
+        UpdateQueue _updates;
+        PUpdateQueue _processQueue;
 
-		// Sessions
-		std::set<WorldSession*> Sessions;
+        // Sessions
+        std::set<WorldSession*> Sessions;
 
-		// Map Information
-		MapInfo const* pMapInfo;
-		uint32 m_instanceID;
+        // Map Information
+        MapInfo const* pMapInfo;
+        uint32 m_instanceID;
 
-		MapScriptInterface* ScriptInterface;
+        MapScriptInterface* ScriptInterface;
 
-		TerrainHolder* _terrain;
+        TerrainHolder* _terrain;
 
-	public:
+    public:
 
 #ifdef WIN32
-		DWORD threadid;
+        DWORD threadid;
 #endif
-		GameObjectSet activeGameObjects;
-		CreatureSet activeCreatures;
-		EventableObjectHolder eventHolder;
-		CBattleground* m_battleground;
-		std::set<Corpse*> m_corpses;
-		CreatureSqlIdMap _sqlids_creatures;
-		GameObjectSqlIdMap _sqlids_gameobjects;
+        GameObjectSet activeGameObjects;
+        CreatureSet activeCreatures;
+        EventableObjectHolder eventHolder;
+        CBattleground* m_battleground;
+        std::set<Corpse*> m_corpses;
+        CreatureSqlIdMap _sqlids_creatures;
+        GameObjectSqlIdMap _sqlids_gameobjects;
 
-		// Script related
+        // Script related
         InstanceScript* GetScript();
-		void LoadInstanceScript();
-		void CallScriptUpdate();
+        void LoadInstanceScript();
+        void CallScriptUpdate();
 
-		Creature* GetSqlIdCreature(uint32 sqlid);
-		GameObject* GetSqlIdGameObject(uint32 sqlid);
+        Creature* GetSqlIdCreature(uint32 sqlid);
+        GameObject* GetSqlIdGameObject(uint32 sqlid);
         std::deque<uint32> _reusable_guids_gameobject;
         std::deque<uint32> _reusable_guids_creature;
 
-		bool forced_expire;
-		bool thread_kill_only;
-		bool thread_running;
+        bool forced_expire;
+        bool thread_kill_only;
+        bool thread_running;
 
         WorldStatesHandler& GetWorldStatesHandler();
 
         void onWorldStateUpdate(uint32 zone, uint32 field, uint32 value) override;
 
-	protected:
+    protected:
 
-		InstanceScript* mInstanceScript;
+        InstanceScript* mInstanceScript;
 
-	private:
+    private:
 
-		WorldStatesHandler worldstateshandler;
+        WorldStatesHandler worldstateshandler;
 };
 
 #endif // _MAPMGR_H

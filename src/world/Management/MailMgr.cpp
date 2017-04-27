@@ -61,8 +61,8 @@ void Mailbox::DeleteMessage(uint32 MessageId, bool sql)
 void Mailbox::CleanupExpiredMessages()
 {
     uint32 curtime = (uint32)UNIXTIME;
-	
-    for (auto itr = std::begin(Messages); itr  != std::end(Messages); ++itr) 
+
+    for (auto itr = std::begin(Messages); itr  != std::end(Messages); ++itr)
     {
         if (itr->second.expire_time && itr->second.expire_time < curtime)
         {
