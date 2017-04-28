@@ -60,12 +60,9 @@ uint32 MapScriptInterface::GetPlayerCountInRadius(float x, float y, float z /* =
             if (pCell == 0 || pCell->GetPlayerCount() == 0)
                 continue;
 
-            auto iter = pCell->Begin();
-            auto iter_end = pCell->End();
-            for (; iter != iter_end; ++iter)
+            for (ObjectSet::iterator iter = pCell->Begin(); iter != pCell->End(); ++iter)
             {
-                if ((*iter)->IsPlayer() &&
-                    (*iter)->CalcDistance(x, y, (z == 0.0f ? (*iter)->GetPositionZ() : z)) < radius)
+                if ((*iter)->IsPlayer() && (*iter)->CalcDistance(x, y, (z == 0.0f ? (*iter)->GetPositionZ() : z)) < radius)
                 {
                     ++PlayerCount;
                 }
