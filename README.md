@@ -1,4 +1,4 @@
-﻿# ![logo](http://ascemu.org/style/img/logo.png)
+﻿# ![logo](http://ascemu.org/images/logo.png)
 
 master | development
 :------------: | :------------:
@@ -6,6 +6,8 @@ master | development
 [![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu) | [![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu)
 
 [![Coverity Snac](https://scan.coverity.com/projects/4747/badge.svg)](https://scan.coverity.com/projects/4747)
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/842741b177dc4a798487729e110f6d2b)](https://www.codacy.com/app/mr/AscEmu?utm_source=github.com&utm_medium=referral&utm_content=AscEmu/AscEmu&utm_campaign=badger)
 
 [![Open HUB Stats](https://www.openhub.net/p/AscEmu/widgets/project_thin_badge.gif)](https://www.openhub.net/p/AscEmu)
 
