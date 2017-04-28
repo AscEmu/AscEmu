@@ -250,9 +250,9 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         data.SetOpcode(SMSG_LOOT_REMOVED);
         data << lootSlot;
         Player* plr;
-        for (auto itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
+        for (auto itr : pLoot->looters)
         {
-            if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
+            if ((plr = _player->GetMapMgr()->GetPlayer(itr) != 0)
                 plr->GetSession()->SendPacket(&data);
         }
     }
@@ -274,8 +274,8 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     if (pGO && pGO->GetEntry() == GO_FISHING_BOBBER)
     {
         int count = 0;
-        for (auto itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
-            count += (*itr).iItemsCount;
+        for (auto itr : pLoot->items)
+            count += itr.iItemsCount;
         if (!count)
             pGO->ExpireAndDelete();
     }
@@ -352,9 +352,9 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
     data.SetOpcode(SMSG_LOOT_CLEAR_MONEY);
     // send to all looters
     Player* plr;
-    for (auto itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
+    for (auto itr : pLoot->looters)
     {
-        if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
+        if ((plr = _player->GetMapMgr()->GetPlayer(itr) != 0)
             plr->GetSession()->SendPacket(&data);
     }
 
@@ -408,19 +408,19 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
             pkt.SetOpcode(SMSG_LOOT_MONEY_NOTIFY);
             pkt << share;
 
-            for (auto itr2 = targets.begin(); itr2 != targets.end(); ++itr2)
+            for (auto itr2 : targets)
             {
                 // Check they don't have more than the max gold
-                if (sWorld.GoldCapEnabled && ((*itr2)->GetGold() + share) > sWorld.GoldLimit)
+                if (sWorld.GoldCapEnabled && (itr2.GetGold() + share) > sWorld.GoldLimit)
                 {
-                    (*itr2)->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
+                    itr2.GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
                 }
                 else
                 {
-                    (*itr2)->ModGold(share);
-                    (*itr2)->GetSession()->SendPacket(&pkt);
+                    itr2.ModGold(share);
+                    itr2.GetSession()->SendPacket(&pkt);
 #if VERSION_STRING > TBC
-                    (*itr2)->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, share, 0, 0);
+                    itr2.GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, share, 0, 0);
 #endif
                 }
             }
@@ -510,13 +510,13 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         pCreature->loot.looters.erase(_player->GetLowGUID());
         if (pCreature->loot.gold <= 0)
         {
-            for (auto i = pCreature->loot.items.begin(); i != pCreature->loot.items.end(); ++i)
-                if (i->iItemsCount > 0)
+            for (auto i : pCreature->loot.items)
+                if (i.iItemsCount > 0)
                 {
-                    ItemProperties const* proto = i->item.itemproto;
+                    ItemProperties const* proto = i.item.itemproto;
                     if (proto->Class != 12)
                         return;
-                    if (_player->HasQuestForItem(i->item.itemproto->ItemId))
+                    if (_player->HasQuestForItem(i.item.itemproto->ItemId))
                         return;
                 }
             pCreature->BuildFieldUpdatePacket(_player, UNIT_DYNAMIC_FLAGS, 0);
@@ -604,7 +604,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                 return;
                             }
                         }
-                        else //other type of locks that i don't bother to split atm ;P
+                        else // other type of locks that i don't bother to split atm ;P
                         {
                             if (pLGO->HasLoot())
                             {
