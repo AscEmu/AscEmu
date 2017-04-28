@@ -240,7 +240,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 #endif
     }
 
-    //in case of ffa_loot update only the player who receives it.
+    // in case of ffa_loot update only the player who receives it.
     if (!pLoot->items.at(lootSlot).ffa_loot)
     {
         pLoot->items.at(lootSlot).iItemsCount = 0;
@@ -252,7 +252,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         Player* plr;
         for (auto itr : pLoot->looters)
         {
-            if ((plr = _player->GetMapMgr()->GetPlayer(itr) != 0)
+            if ((plr = _player->GetMapMgr()->GetPlayer(itr)) != 0)
                 plr->GetSession()->SendPacket(&data);
         }
     }
@@ -354,7 +354,7 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
     Player* plr;
     for (auto itr : pLoot->looters)
     {
-        if ((plr = _player->GetMapMgr()->GetPlayer(itr) != 0)
+        if ((plr = _player->GetMapMgr()->GetPlayer(itr)) != 0)
             plr->GetSession()->SendPacket(&data);
     }
 
@@ -411,16 +411,16 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
             for (auto itr2 : targets)
             {
                 // Check they don't have more than the max gold
-                if (sWorld.GoldCapEnabled && (itr2.GetGold() + share) > sWorld.GoldLimit)
+                if (sWorld.GoldCapEnabled && (itr2->GetGold() + share) > sWorld.GoldLimit)
                 {
-                    itr2.GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
+                    itr2->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
                 }
                 else
                 {
-                    itr2.ModGold(share);
-                    itr2.GetSession()->SendPacket(&pkt);
+                    itr2->ModGold(share);
+                    itr2->GetSession()->SendPacket(&pkt);
 #if VERSION_STRING > TBC
-                    itr2.GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, share, 0, 0);
+                    itr2->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, share, 0, 0);
 #endif
                 }
             }
@@ -438,16 +438,16 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
     if (guid == 0)
         return;
 
-    if (_player->IsDead())    // If the player is dead they can't loot!
+    if (_player->IsDead())             // If the player is dead they can't loot!
         return;
 
-    if (_player->IsStealth())    // Check if the player is stealthed
-        _player->RemoveStealth(); // cebernic:RemoveStealth on looting. Blizzlike
+    if (_player->IsStealth())          // Check if the player is stealthed
+        _player->RemoveStealth();      // cebernic: RemoveStealth on looting. Blizzlike
 
-    if (_player->IsCasting())    // Check if the player is casting
-        _player->InterruptSpell(); // Cancel spell casting
+    if (_player->IsCasting())          // Check if the player is casting
+        _player->InterruptSpell();     // Cancel spell casting
 
-    if (_player->IsInvisible())    // Check if the player is invisible for what ever reason
+    if (_player->IsInvisible())        // Check if the player is invisible for what ever reason
         _player->RemoveInvisibility(); // Remove all invisibility
 
 
@@ -649,7 +649,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
             plr->RemoveFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_LOOTABLE);
         }
     }
-    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_ITEM)     // Loot from items, eg. sacks, milling, prospecting...
+    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_ITEM) // Loot from items, eg. sacks, milling, prospecting...
     {
         Item* item = _player->GetItemInterface()->GetItemByGUID(guid);
         if (item == NULL)
