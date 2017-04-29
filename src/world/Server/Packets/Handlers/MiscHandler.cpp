@@ -658,8 +658,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         // delete current loot, so the next one can be filled
         if (item->loot != NULL)
         {
-            uint32 itemsNotLooted =
-                std::count_if (item->loot->items.begin(), item->loot->items.end(), ItemIsNotLooted());
+            uint32 itemsNotLooted = std::count_if (item->loot->items.begin(), item->loot->items.end(), ItemIsNotLooted());
 
             if ((itemsNotLooted == 0) && (item->loot->gold == 0))
             {

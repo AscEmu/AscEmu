@@ -100,12 +100,11 @@ void EventableObject::event_RemoveByPointer(TimedEvent* ev)
 {
     m_lock.Acquire();
     EventMap::iterator itr = m_events.find(ev->eventType);
-    EventMap::iterator it2;
     if (itr != m_events.end())
     {
         do
         {
-            it2 = itr++;
+            EventMap::iterator it2 = itr++;
 
             if (it2->second == ev)
             {
@@ -143,12 +142,11 @@ void EventableObject::event_RemoveEvents(uint32 EventType)
     else
     {
         EventMap::iterator itr = m_events.find(EventType);
-        EventMap::iterator it2;
         if (itr != m_events.end())
         {
             do
             {
-                it2 = itr++;
+                EventMap::iterator it2 = itr++;
 
                 it2->second->deleted = true;
                 it2->second->DecRef();
@@ -346,12 +344,9 @@ void EventableObjectHolder::Update(time_t time_difference)
 
     /* Now we can proceed normally. */
     EventList::iterator itr = m_events.begin();
-    EventList::iterator it2;
-    TimedEvent* ev;
-
     while (itr != m_events.end())
     {
-        it2 = itr++;
+        EventList::iterator it2 = itr++;
 
         if ((*it2)->instanceId != mInstanceId || (*it2)->deleted)
         {
@@ -365,7 +360,7 @@ void EventableObjectHolder::Update(time_t time_difference)
         }
 
         // Event Update Procedure
-        ev = *it2;
+        TimedEvent* ev = *it2;
 
         if (ev->currTime <= time_difference)
         {
