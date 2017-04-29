@@ -495,7 +495,7 @@ void WorldSession::LoadSecurity(std::string securitystring)
     permissioncount = (uint32)tmp.size();
     int k = 0;
 
-    for (auto itr = tmp.begin(); itr != tmp.end(); ++itr)
+    for (auto itr = std::begin(tmp); itr  != std::end(tmp); ++itr)
         permissions[k++] = (*itr);
 
     if (permissions[tmp.size()] != 0)

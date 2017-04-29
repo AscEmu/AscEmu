@@ -390,7 +390,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
                 else
                     diff = plr->GetDungeonDifficulty();
 
-                for (auto& itr = instancemap->begin(); itr != instancemap->end();)
+                for (auto itr = instancemap->begin(); itr != instancemap->end();)
                 {
                     in = itr->second;
                     ++itr;
@@ -562,7 +562,7 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
             }
 
             // iterate over our instances, and see if any of them are owned/joinable by him.
-            for (auto& itr = instancemap->begin(); itr != instancemap->end();)
+            for (auto itr = instancemap->begin(); itr != instancemap->end();)
             {
                 Instance* in = itr->second;
                 ++itr;
@@ -797,7 +797,7 @@ void InstanceMgr::ResetSavedInstances(Player* plr)
         if (m_instances[i] != NULL)
         {
             InstanceMap* instancemap = m_instances[i];
-            for (auto& itr = instancemap->begin(); itr != instancemap->end();)
+            for (auto itr = instancemap->begin(); itr != instancemap->end();)
             {
                 Instance* in = itr->second;
                 ++itr;
@@ -836,7 +836,7 @@ void InstanceMgr::OnGroupDestruction(Group* pGroup)
         InstanceMap* instancemap = m_instances[i];
         if (instancemap)
         {
-            for (auto& itr = instancemap->begin(); itr != instancemap->end();)
+            for (auto itr = instancemap->begin(); itr != instancemap->end();)
             {
                 Instance* in = itr->second;
                 ++itr;
@@ -937,7 +937,7 @@ void InstanceMgr::CheckForExpiredInstances()
         InstanceMap* instancemap = m_instances[i];
         if (instancemap)
         {
-            for (auto& itr = instancemap->begin(); itr != instancemap->end();)
+            for (auto itr = instancemap->begin(); itr != instancemap->end();)
             {
                 Instance* in = itr->second;
                 ++itr;
@@ -966,7 +966,7 @@ void InstanceMgr::BuildSavedInstancesForPlayer(Player* plr)
             if (m_instances[i] != NULL)
             {
                 InstanceMap* instancemap = m_instances[i];
-                for (auto& itr = instancemap->begin(); itr != instancemap->end();)
+                for (auto itr = instancemap->begin(); itr != instancemap->end();)
                 {
                     Instance* in = itr->second;
                     ++itr;
@@ -1014,7 +1014,7 @@ void InstanceMgr::BuildRaidSavedInstancesForPlayer(Player* plr)
         if (m_instances[i] != NULL)
         {
             InstanceMap* instancemap = m_instances[i];
-            for (auto& itr = instancemap->begin(); itr != instancemap->end();)
+            for (auto itr = instancemap->begin(); itr != instancemap->end();)
             {
                 Instance* in = itr->second;
                 ++itr;
@@ -1093,7 +1093,7 @@ void InstanceMgr::PlayerLeftGroup(Group* pGroup, Player* pPlayer)
         InstanceMap* instancemap = m_instances[i];
         if (instancemap)
         {
-            for (auto& itr = instancemap->begin(); itr != instancemap->end();)
+            for (auto itr = instancemap->begin(); itr != instancemap->end();)
             {
                 Instance* in = itr->second;
                 ++itr;
@@ -1227,10 +1227,9 @@ FormationMgr::FormationMgr()
     QueryResult* res = WorldDatabase.Query("SELECT * FROM creature_formations");
     if (res)
     {
-        Formation* f;
         do
         {
-            f = new Formation;
+            Formation* f = new Formation;
             f->fol = res->Fetch()[1].GetUInt32();
             f->ang = res->Fetch()[2].GetFloat();
             f->dist = res->Fetch()[3].GetFloat();
