@@ -42,7 +42,6 @@ void OnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
     }
 }
 
-
 void SetupDayOfTheDead(ScriptMgr* mgr)
 {
     mgr->register_hook(SERVER_HOOK_EVENT_ON_EMOTE, (void*)&OnEmote);

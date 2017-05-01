@@ -17,8 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _FINDFILES_HPP
-#define _FINDFILES_HPP
+#pragma once
 
 #include "FindFilesResult.hpp"
 
@@ -38,5 +37,3 @@ namespace Arcemu
     //////////////////////////////////////////////////////////////////////////////////////////
     bool FindFiles(const char* where, const char* filename, FindFilesResult& r);
 }
-
-#endif      //_FINDFILES_HPPP

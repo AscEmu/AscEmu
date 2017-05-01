@@ -16,8 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _UNIT_DEFINES_H
-#define _UNIT_DEFINES_H
+#pragma once
 
 #include "CommonTypes.hpp"
 #include "LocationVector.h"
@@ -972,5 +971,3 @@ static const PetFlagNames PetFlagToName[] =
 };
 
 static const uint32 numpetflags = sizeof(PetFlagToName) / sizeof(PetFlagNames);
-
-#endif      // _UNIT_DEFINES_H

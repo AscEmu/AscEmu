@@ -813,6 +813,4 @@ void SetupTheVioletHold(ScriptMgr* mgr)
 
     GossipScript* GSinclari = new SinclariGossip;
     mgr->register_gossip_script(CN_LIEUTNANT_SINCLARI, GSinclari);
-
-
 }

@@ -3,8 +3,7 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _CHAT_HANDLER_HPP
-#define _CHAT_HANDLER_HPP
+#pragma once
 
 #include "Chat/ChatDefines.hpp"
 #include "Chat/CommandTableStorage.hpp"
@@ -496,6 +495,3 @@ class SERVER_DECL ChatHandler : public Singleton<ChatHandler>
 };
 
 #define sChatHandler ChatHandler::getSingleton()
-
-
-#endif // _CHAT_HANDLER_HPP
