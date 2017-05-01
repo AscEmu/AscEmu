@@ -343,7 +343,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     CHECK_INWORLD_RETURN
 
     uint32 spellId;
-    uint8 cn, unk; //Alice : Added to 3.0.2
+    uint8 cn, unk; //schnek : cn: Cast count. 3.0.2 unk
 
     recvPacket >> cn >> spellId >> unk;
     // check for spell id
