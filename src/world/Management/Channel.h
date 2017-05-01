@@ -30,7 +30,6 @@
 #include <map>
 #include "Units/Players/Player.h"
 
-
 class WorldPacket;
 class PlayerInfo;
 

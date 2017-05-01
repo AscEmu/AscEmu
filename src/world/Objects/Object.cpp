@@ -1101,13 +1101,9 @@ void Object::_BuildValuesUpdate(ByteBuffer* data, UpdateMask* updateMask, Player
 
                     if (!activate_quest_object)
                     {
-                        for (GameObjectItemMap::const_iterator itr = gameobject_info->itemMap.begin();
-                             itr != go->GetGameObjectProperties()->itemMap.end();
-                             ++itr)
+                        for (GameObjectItemMap::const_iterator itr = gameobject_info->itemMap.begin(); itr != go->GetGameObjectProperties()->itemMap.end(); ++itr)
                         {
-                            for (std::map<uint32, uint32>::const_iterator it2 = itr->second.begin();
-                                 it2 != itr->second.end();
-                                 ++it2)
+                            for (std::map<uint32, uint32>::const_iterator it2 = itr->second.begin(); it2 != itr->second.end(); ++it2)
                             {
                                 if ((qle = target->GetQuestLogForEntry(itr->first->id)) != 0)
                                 {
@@ -1288,10 +1284,8 @@ void Object::_SetUpdateBits(UpdateMask* updateMask, Player* target) const
     *updateMask = m_updateMask;
 }
 
-
 void Object::_SetCreateBits(UpdateMask* updateMask, Player* target) const
 {
-
     for (uint32 i = 0; i < m_valuesCount; ++i)
         if (m_uint32Values[i] != 0)
             updateMask->SetBit(i);
@@ -1419,11 +1413,11 @@ void Object::RemoveFromWorld(bool free_guid)
     OnRemoveFromWorld();
 
     std::set<Spell*>::iterator itr, itr2;
-    Spell* sp;
+
     for (itr = m_pendingSpells.begin(); itr != m_pendingSpells.end();)
     {
         itr2 = itr++;
-        sp = *itr2;
+        Spell* sp = *itr2;
         //if the spell being deleted is the same being casted, Spell::cancel will take care of deleting the spell
         //if it's not the same removing us from world. Otherwise finish() will delete the spell once all SpellEffects are handled.
         if (sp == m_currentSpell)

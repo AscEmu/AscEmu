@@ -67,8 +67,7 @@ void CBattlegroundManager::RegisterBgFactory(uint32 map, BattlegroundFactoryMeth
 
 void CBattlegroundManager::RegisterArenaFactory(uint32 map, ArenaFactoryMethod method)
 {
-    std::vector< uint32 >::iterator itr =
-        std::find(arenaMaps.begin(), arenaMaps.end(), map);
+    std::vector< uint32 >::iterator itr = std::find(arenaMaps.begin(), arenaMaps.end(), map);
     if (itr != arenaMaps.end())
         return;
     arenaMaps.push_back(map);
@@ -1264,6 +1263,8 @@ void CBattlegroundManager::SendBattlefieldStatus(Player* plr, BattleGroundStatus
 
 void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 BattlegroundType, uint8 as_group, uint8 rated_match)
 {
+    GroupMembersSet::iterator itx;
+
     uint32 pguid = m_session->GetPlayer()->GetLowGUID();
     uint32 lgroup = GetLevelGrouping(m_session->GetPlayer()->getLevel());
 
@@ -1285,8 +1286,6 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
             m_session->SystemMessage(m_session->LocalizedWorldSrv(56));
             return;
         }
-
-        GroupMembersSet::iterator itx;
 
         if (!rated_match)
         {
@@ -1397,7 +1396,6 @@ void CBattlegroundManager::HandleArenaJoin(WorldSession* m_session, uint32 Battl
             return;
         }
     }
-
 
     // Queue him!
     m_queueLock.Acquire();

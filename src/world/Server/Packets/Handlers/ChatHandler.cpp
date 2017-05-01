@@ -34,20 +34,20 @@ extern bool bLogChat;
 static const uint32 LanguageSkills[NUM_LANGUAGES] =
 {
     0,                // UNIVERSAL        0x00
-    109,            // ORCISH            0x01
-    113,            // DARNASSIAN        0x02
-    115,            // TAURAHE            0x03
+    109,              // ORCISH           0x01
+    113,              // DARNASSIAN       0x02
+    115,              // TAURAHE          0x03
     0,                // -                0x04
     0,                // -                0x05
-    111,            // DWARVISH            0x06
-    98,                // COMMON            0x07
-    139,            // DEMON TONGUE        0x08
-    140,            // TITAN            0x09
-    137,            // THALSSIAN        0x0A
-    138,            // DRACONIC            0x0B
-    0,                // KALIMAG            0x0C
-    313,            // GNOMISH            0x0D
-    315,            // TROLL            0x0E
+    111,              // DWARVISH         0x06
+    98,               // COMMON           0x07
+    139,              // DEMON TONGUE     0x08
+    140,              // TITAN            0x09
+    137,              // THALSSIAN        0x0A
+    138,              // DRACONIC         0x0B
+    0,                // KALIMAG          0x0C
+    313,              // GNOMISH          0x0D
+    315,              // TROLL            0x0E
     0,                // -                0x0F
     0,                // -                0x10
     0,                // -                0x11
@@ -66,28 +66,28 @@ static const uint32 LanguageSkills[NUM_LANGUAGES] =
     0,                // -                0x1E
     0,                // -                0x1F
     0,                // -                0x20
-    673,            // -                0x21
+    673,              // -                0x21
     0,                // -                0x22
-    759,            // -                0x23
+    759,              // -                0x23
 };
 #else
 static const uint32 LanguageSkills[NUM_LANGUAGES] =
 {
-    0,              // UNIVERSAL          0x00
-    109,            // ORCISH             0x01
-    113,            // DARNASSIAN         0x02
-    115,            // TAURAHE            0x03
+    0,                // UNIVERSAL        0x00
+    109,              // ORCISH           0x01
+    113,              // DARNASSIAN       0x02
+    115,              // TAURAHE          0x03
     0,                // -                0x04
     0,                // -                0x05
-    111,            // DWARVISH           0x06
-    98,             // COMMON             0x07
-    139,            // DEMON TONGUE       0x08
-    140,            // TITAN              0x09
-    137,            // THALSSIAN          0x0A
-    138,            // DRACONIC           0x0B
-    0,              // KALIMAG            0x0C
-    313,            // GNOMISH            0x0D
-    315,            // TROLL              0x0E
+    111,              // DWARVISH         0x06
+    98,               // COMMON           0x07
+    139,              // DEMON TONGUE     0x08
+    140,              // TITAN            0x09
+    137,              // THALSSIAN        0x0A
+    138,              // DRACONIC         0x0B
+    0,                // KALIMAG          0x0C
+    313,              // GNOMISH          0x0D
+    315,              // TROLL            0x0E
     0,                // -                0x0F
     0,                // -                0x10
     0,                // -                0x11
@@ -106,14 +106,14 @@ static const uint32 LanguageSkills[NUM_LANGUAGES] =
     0,                // -                0x1E
     0,                // -                0x1F
     0,                // -                0x20
-    673,            // GUTTERSPEAK        0x21
+    673,              // GUTTERSPEAK      0x21
     0,                // -                0x22
-    759,            // DRAENEI            0x23
-    0,              // ZOMBIE             0x24
-    0,              // GNOMISH_BINAR      0x25
-    0,              // GOBLIN_BINARY      0x26
-    791,            // WORGEN             0x27
-    792,            // GOBLIN             0x28
+    759,              // DRAENEI          0x23
+    0,                // ZOMBIE           0x24
+    0,                // GNOMISH_BINAR    0x25
+    0,                // GOBLIN_BINARY    0x26
+    791,              // WORGEN           0x27
+    792,              // GOBLIN           0x28
 };
 #endif
 
@@ -423,7 +423,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 if (sgr)
                 {
                     _player->GetGroup()->Lock();
-                    for (auto itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
+                    for (GroupMembersSet::iterator itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
                     {
                         if ((*itr)->m_loggedInPlayer)
                             (*itr)->m_loggedInPlayer->GetSession()->SendChatPacket(data, 1, lang, this);
@@ -433,12 +433,11 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             }
             else
             {
-                SubGroup* sgr;
                 for (uint32 i = 0; i < _player->GetGroup()->GetSubGroupCount(); ++i)
                 {
-                    sgr = _player->GetGroup()->GetSubGroup(i);
+                    SubGroup* sgr = _player->GetGroup()->GetSubGroup(i);
                     _player->GetGroup()->Lock();
-                    for (auto itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
+                    for (GroupMembersSet::iterator itr = sgr->GetGroupMembersBegin(); itr != sgr->GetGroupMembersEnd(); ++itr)
                     {
                         if ((*itr)->m_loggedInPlayer)
                             (*itr)->m_loggedInPlayer->GetSession()->SendChatPacket(data, 1, lang, this);
@@ -816,7 +815,6 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
         sQuestMgr.OnPlayerEmote(_player, text_emote, guid);
     }
 }
-
 
 ///\todo remove these unk unk unk nighrmare!
 void WorldSession::HandleReportSpamOpcode(WorldPacket& recv_data)

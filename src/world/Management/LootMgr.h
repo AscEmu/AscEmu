@@ -167,9 +167,9 @@ struct Loot
 
     bool HasRoll()
     {
-        for (auto itr = items.begin(); itr != items.end(); ++itr)
+        for (auto itr : items)
         {
-            if (itr->roll != NULL)
+            if (itr.roll != nullptr)
                 return true;
         }
         return false;

@@ -58,11 +58,11 @@ LogonCommHandler::LogonCommHandler()
 
 LogonCommHandler::~LogonCommHandler()
 {
-    for (auto i = servers.begin(); i != servers.end(); ++i)
-        delete(*i);
+    for (auto i : servers)
+        delete i;
 
-    for (auto i = realms.begin(); i != realms.end(); ++i)
-        delete(*i);
+    for (auto i : realms)
+        delete i;
 }
 
 LogonCommClientSocket* LogonCommHandler::ConnectToLogon(std::string Address, uint32 Port)
@@ -73,12 +73,12 @@ LogonCommClientSocket* LogonCommHandler::ConnectToLogon(std::string Address, uin
 
 void LogonCommHandler::RequestAddition(LogonCommClientSocket* Socket)
 {
-    for (auto itr = realms.begin(); itr != realms.end(); ++itr)
+    for (auto itr : realms)
     {
         WorldPacket data(LRCMSG_REALM_REGISTER_REQUEST, 100);
 
         // Add realm to the packet
-        Realm* realm = *itr;
+        Realm* realm = itr;
         data << realm->Name;
         data << realm->Address;
         data << realm->flags;
@@ -171,13 +171,13 @@ void LogonCommHandler::AddForcedPermission(std::string acct, std::string perm)
 void LogonCommHandler::ConnectAll()
 {
     LogNotice("LogonCommClient : Attempting to connect to logon server...");
-    for (auto itr = servers.begin(); itr != servers.end(); ++itr)
-        Connect(*itr);
+    for (auto itr : servers)
+        Connect(itr);
 }
 
 const std::string* LogonCommHandler::GetForcedPermissions(std::string & username)
 {
-    ForcedPermissionMap::iterator itr = forced_permissions.find(username);
+    auto itr = forced_permissions.find(username);
     if (itr == forced_permissions.end())
         return NULL;
 
@@ -260,12 +260,12 @@ void LogonCommHandler::Connect(LogonServer* server)
 
 void LogonCommHandler::AdditionAck(uint32 ID, uint32 ServID)
 {
-    for (auto itr = logons.begin(); itr != logons.end(); ++itr)
+    for (auto itr : logons)
     {
-        if (itr->first->ID == ID)
+        if (itr.first->ID == ID)
         {
-            itr->first->ServerID = ServID;
-            itr->first->Registered = true;
+            itr.first->ServerID = ServID;
+            itr.first->Registered = true;
             return;
         }
     }
@@ -275,12 +275,10 @@ void LogonCommHandler::UpdateSockets()
 {
     mapLock.Acquire();
 
-    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
-    LogonCommClientSocket* cs;
     uint32 t = (uint32)UNIXTIME;
-    for (; itr != logons.end(); ++itr)
+    for (auto itr : logons)
     {
-        cs = itr->second;
+        LogonCommClientSocket* cs = itr.second;
         if (cs != 0)
         {
             if (!pings) continue;
@@ -288,17 +286,17 @@ void LogonCommHandler::UpdateSockets()
             if (cs->IsDeleted() || !cs->IsConnected())
             {
                 cs->_id = 0;
-                itr->second = 0;
+                itr.second = 0;
                 continue;
             }
 
             if (cs->last_pong < t && ((t - cs->last_pong) > 60))
             {
                 // no pong for 60 seconds -> remove the socket
-                LOG_DETAIL(" >> realm id %u connection dropped due to pong timeout.", (unsigned int)itr->first->ID);
+                LOG_DETAIL(" >> realm id %u connection dropped due to pong timeout.", (unsigned int)itr.first->ID);
                 cs->_id = 0;
                 cs->Disconnect();
-                itr->second = 0;
+                itr.second = 0;
                 continue;
             }
 
@@ -311,9 +309,9 @@ void LogonCommHandler::UpdateSockets()
         else
         {
             // check retry time
-            if (t >= itr->first->RetryTime)
+            if (t >= itr.first->RetryTime)
             {
-                Connect(itr->first);
+                Connect(itr.first);
             }
         }
     }
@@ -323,13 +321,13 @@ void LogonCommHandler::UpdateSockets()
 void LogonCommHandler::ConnectionDropped(uint32 ID)
 {
     mapLock.Acquire();
-    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
-    for (; itr != logons.end(); ++itr)
+
+    for (auto itr : logons)
     {
-        if (itr->first->ID == ID && itr->second != 0)
+        if (itr.first->ID == ID && itr.second != 0)
         {
             LOG_ERROR(" >> realm id %u connection was dropped unexpectedly. reconnecting next loop.", ID);
-            itr->second = 0;
+            itr.second = 0;
             break;
         }
     }
@@ -344,7 +342,7 @@ uint32 LogonCommHandler::ClientConnected(std::string AccountName, WorldSocket* S
     LOG_DEBUG(" >> sending request for account information: `%s` (request %u).", AccountName.c_str(), request_id);
 
     // Send request packet to server.
-    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    auto itr = logons.begin();
     if (logons.size() == 0)
     {
         // No valid logonserver is connected.

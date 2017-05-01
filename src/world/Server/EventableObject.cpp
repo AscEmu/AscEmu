@@ -26,10 +26,10 @@
 EventableObject::~EventableObject()
 {
     /* decrement event count on all events */
-    for (auto itr = m_events.begin(); itr != m_events.end(); ++itr)
+    for (auto itr : m_events)
     {
-        itr->second->deleted = true;
-        itr->second->DecRef();
+        itr.second->deleted = true;
+        itr.second->DecRef();
     }
 
     m_events.clear();
@@ -100,12 +100,11 @@ void EventableObject::event_RemoveByPointer(TimedEvent* ev)
 {
     m_lock.Acquire();
     EventMap::iterator itr = m_events.find(ev->eventType);
-    EventMap::iterator it2;
     if (itr != m_events.end())
     {
         do
         {
-            it2 = itr++;
+            EventMap::iterator it2 = itr++;
 
             if (it2->second == ev)
             {
@@ -133,23 +132,21 @@ void EventableObject::event_RemoveEvents(uint32 EventType)
 
     if (EventType == EVENT_REMOVAL_FLAG_ALL)
     {
-        EventMap::iterator itr = m_events.begin();
-        for (; itr != m_events.end(); ++itr)
+        for (auto itr : m_events)
         {
-            itr->second->deleted = true;
-            itr->second->DecRef();
+            itr.second->deleted = true;
+            itr.second->DecRef();
         }
         m_events.clear();
     }
     else
     {
         EventMap::iterator itr = m_events.find(EventType);
-        EventMap::iterator it2;
         if (itr != m_events.end())
         {
             do
             {
-                it2 = itr++;
+                EventMap::iterator it2 = itr++;
 
                 it2->second->deleted = true;
                 it2->second->DecRef();
@@ -313,15 +310,15 @@ EventableObjectHolder::~EventableObjectHolder()
     sEventMgr.RemoveEventHolder(this);
 
     m_insertPoolLock.Acquire();
-    for (auto insertPoolItr = m_insertPool.begin(); insertPoolItr != m_insertPool.end(); ++insertPoolItr)
-        (*insertPoolItr)->DecRef();
+    for (auto insertPoolItr : m_insertPool)
+        insertPoolItr->DecRef();
     m_insertPoolLock.Release();
 
     /* decrement events reference count */
     m_lock.Acquire();
 
-    for (auto itr = m_events.begin(); itr != m_events.end(); ++itr)
-        (*itr)->DecRef();
+    for (auto itr : m_events)
+        itr->DecRef();
     m_lock.Release();
 }
 
@@ -347,12 +344,9 @@ void EventableObjectHolder::Update(time_t time_difference)
 
     /* Now we can proceed normally. */
     EventList::iterator itr = m_events.begin();
-    EventList::iterator it2;
-    TimedEvent* ev;
-
     while (itr != m_events.end())
     {
-        it2 = itr++;
+        EventList::iterator it2 = itr++;
 
         if ((*it2)->instanceId != mInstanceId || (*it2)->deleted)
         {
@@ -366,7 +360,7 @@ void EventableObjectHolder::Update(time_t time_difference)
         }
 
         // Event Update Procedure
-        ev = *it2;
+        TimedEvent* ev = *it2;
 
         if (ev->currTime <= time_difference)
         {
@@ -434,9 +428,9 @@ void EventableObject::event_Relocate()
         if (nh == NULL)
         {
             //set instaceId to 0 to each event of this EventableObject, so EventableObjectHolder::Update() will remove them from its EventList.
-            for (auto itr = m_events.begin(); itr != m_events.end(); ++itr)
+            for (auto itr : m_events)
             {
-                itr->second->instanceId = 0;
+                itr.second->instanceId = 0;
             }
             // reset our instance id.
             m_event_Instanceid = 0;
@@ -493,19 +487,19 @@ void EventableObjectHolder::AddObject(EventableObject* obj)
         // if 2 threads relocate at once we'll hit a deadlock situation.
         m_insertPoolLock.Acquire();
 
-        for (auto itr = obj->m_events.begin(); itr != obj->m_events.end(); ++itr)
+        for (auto itr : obj->m_events)
         {
             // ignore deleted events (shouldn't be any in here, actually)
-            if (itr->second->deleted)
+            if (itr.second->deleted)
             {
                 /*itr->second->DecRef();
                 obj->m_events.erase(it2);*/
                 continue;
             }
 
-            itr->second->IncRef();
-            itr->second->instanceId = mInstanceId;
-            m_insertPool.push_back(itr->second);
+            itr.second->IncRef();
+            itr.second->instanceId = mInstanceId;
+            m_insertPool.push_back(itr.second);
         }
 
         // Release the insert pool.
@@ -516,15 +510,15 @@ void EventableObjectHolder::AddObject(EventableObject* obj)
     }
     else
     {
-        for (auto itr = obj->m_events.begin(); itr != obj->m_events.end(); ++itr)
+        for (auto itr : obj->m_events)
         {
             // ignore deleted events
-            if (itr->second->deleted)
+            if (itr.second->deleted)
                 continue;
 
-            itr->second->IncRef();
-            itr->second->instanceId = mInstanceId;
-            m_events.push_back(itr->second);
+            itr.second->IncRef();
+            itr.second->instanceId = mInstanceId;
+            m_events.push_back(itr.second);
         }
         m_lock.Release();
     }

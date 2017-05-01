@@ -62,7 +62,7 @@ void Mailbox::CleanupExpiredMessages()
 {
     uint32 curtime = (uint32)UNIXTIME;
 
-    for (auto itr = Messages.begin(); itr != Messages.end(); ++itr)
+    for (auto itr = std::begin(Messages); itr  != std::end(Messages); ++itr)
     {
         if (itr->second.expire_time && itr->second.expire_time < curtime)
         {
@@ -92,8 +92,8 @@ void MailSystem::SaveMessageToSQL(MailMessage* message)
         << CharacterDatabase.EscapeString(message->body) << "\',"
         << message->money << ",'";
 
-    for (auto itr = message->items.begin(); itr != message->items.end(); ++itr)
-        ss << (*itr) << ",";
+    for (auto itr : message->items)
+        ss << itr << ",";
 
     ss << "',"
         << message->cod << ","
@@ -127,8 +127,9 @@ void MailSystem::SendAutomatedMessage(uint32 type, uint64 sender, uint64 receive
     msg.body = body;
     msg.money = money;
     msg.cod = cod;
-    for (auto itr = item_guids.begin(); itr != item_guids.end(); ++itr)
-        msg.items.push_back(Arcemu::Util::GUID_LOPART(*itr));
+
+    for (auto itr : item_guids)
+        msg.items.push_back(Arcemu::Util::GUID_LOPART(itr));
 
     msg.stationery = stationery;
     msg.delivery_time = (uint32)UNIXTIME + deliverdelay;

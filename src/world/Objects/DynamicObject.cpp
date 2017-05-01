@@ -140,9 +140,9 @@ void DynamicObject::UpdateTargets()
         float radius = GetFloatValue(DYNAMICOBJECT_RADIUS) * GetFloatValue(DYNAMICOBJECT_RADIUS);
 
         // Looking for targets in the Object set
-        for (auto itr = m_objectsInRange.begin(); itr != m_objectsInRange.end(); ++itr)
+        for (auto itr : m_objectsInRange)
         {
-            Object* o = *itr;
+            Object* o = itr;
 
             if (!o->IsUnit() || !static_cast< Unit* >(o)->isAlive())
                 continue;
@@ -222,10 +222,10 @@ void DynamicObject::Remove()
         return;
     }
 
-    for (auto itr = targets.begin(); itr != targets.end(); ++itr)
+    for (auto itr : targets)
     {
 
-        uint64 TargetGUID = *itr;
+        uint64 TargetGUID = itr;
 
         target = m_mapMgr->GetUnit(TargetGUID);
 

@@ -240,7 +240,7 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
 #endif
     }
 
-    //in case of ffa_loot update only the player who receives it.
+    // in case of ffa_loot update only the player who receives it.
     if (!pLoot->items.at(lootSlot).ffa_loot)
     {
         pLoot->items.at(lootSlot).iItemsCount = 0;
@@ -250,9 +250,9 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         data.SetOpcode(SMSG_LOOT_REMOVED);
         data << lootSlot;
         Player* plr;
-        for (auto itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
+        for (auto itr : pLoot->looters)
         {
-            if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
+            if ((plr = _player->GetMapMgr()->GetPlayer(itr)) != 0)
                 plr->GetSession()->SendPacket(&data);
         }
     }
@@ -274,8 +274,8 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
     if (pGO && pGO->GetEntry() == GO_FISHING_BOBBER)
     {
         int count = 0;
-        for (auto itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
-            count += (*itr).iItemsCount;
+        for (auto itr : pLoot->items)
+            count += itr.iItemsCount;
         if (!count)
             pGO->ExpireAndDelete();
     }
@@ -352,9 +352,9 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
     data.SetOpcode(SMSG_LOOT_CLEAR_MONEY);
     // send to all looters
     Player* plr;
-    for (auto itr = pLoot->looters.begin(); itr != pLoot->looters.end(); ++itr)
+    for (auto itr : pLoot->looters)
     {
-        if ((plr = _player->GetMapMgr()->GetPlayer(*itr)) != 0)
+        if ((plr = _player->GetMapMgr()->GetPlayer(itr)) != 0)
             plr->GetSession()->SendPacket(&data);
     }
 
@@ -408,19 +408,19 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& recv_data)
             pkt.SetOpcode(SMSG_LOOT_MONEY_NOTIFY);
             pkt << share;
 
-            for (auto itr2 = targets.begin(); itr2 != targets.end(); ++itr2)
+            for (auto itr2 : targets)
             {
                 // Check they don't have more than the max gold
-                if (sWorld.GoldCapEnabled && ((*itr2)->GetGold() + share) > sWorld.GoldLimit)
+                if (sWorld.GoldCapEnabled && (itr2->GetGold() + share) > sWorld.GoldLimit)
                 {
-                    (*itr2)->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
+                    itr2->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
                 }
                 else
                 {
-                    (*itr2)->ModGold(share);
-                    (*itr2)->GetSession()->SendPacket(&pkt);
+                    itr2->ModGold(share);
+                    itr2->GetSession()->SendPacket(&pkt);
 #if VERSION_STRING > TBC
-                    (*itr2)->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, share, 0, 0);
+                    itr2->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY, share, 0, 0);
 #endif
                 }
             }
@@ -438,16 +438,16 @@ void WorldSession::HandleLootOpcode(WorldPacket& recv_data)
     if (guid == 0)
         return;
 
-    if (_player->IsDead())    // If the player is dead they can't loot!
+    if (_player->IsDead())             // If the player is dead they can't loot!
         return;
 
-    if (_player->IsStealth())    // Check if the player is stealthed
-        _player->RemoveStealth(); // cebernic:RemoveStealth on looting. Blizzlike
+    if (_player->IsStealth())          // Check if the player is stealthed
+        _player->RemoveStealth();      // cebernic: RemoveStealth on looting. Blizzlike
 
-    if (_player->IsCasting())    // Check if the player is casting
-        _player->InterruptSpell(); // Cancel spell casting
+    if (_player->IsCasting())          // Check if the player is casting
+        _player->InterruptSpell();     // Cancel spell casting
 
-    if (_player->IsInvisible())    // Check if the player is invisible for what ever reason
+    if (_player->IsInvisible())        // Check if the player is invisible for what ever reason
         _player->RemoveInvisibility(); // Remove all invisibility
 
 
@@ -510,13 +510,13 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         pCreature->loot.looters.erase(_player->GetLowGUID());
         if (pCreature->loot.gold <= 0)
         {
-            for (auto i = pCreature->loot.items.begin(); i != pCreature->loot.items.end(); ++i)
-                if (i->iItemsCount > 0)
+            for (auto i : pCreature->loot.items)
+                if (i.iItemsCount > 0)
                 {
-                    ItemProperties const* proto = i->item.itemproto;
+                    ItemProperties const* proto = i.item.itemproto;
                     if (proto->Class != 12)
                         return;
-                    if (_player->HasQuestForItem(i->item.itemproto->ItemId))
+                    if (_player->HasQuestForItem(i.item.itemproto->ItemId))
                         return;
                 }
             pCreature->BuildFieldUpdatePacket(_player, UNIT_DYNAMIC_FLAGS, 0);
@@ -604,7 +604,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
                                 return;
                             }
                         }
-                        else //other type of locks that i don't bother to split atm ;P
+                        else // other type of locks that i don't bother to split atm ;P
                         {
                             if (pLGO->HasLoot())
                             {
@@ -649,7 +649,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
             plr->RemoveFlag(UNIT_DYNAMIC_FLAGS, U_DYN_FLAG_LOOTABLE);
         }
     }
-    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_ITEM)     // Loot from items, eg. sacks, milling, prospecting...
+    else if (GET_TYPE_FROM_GUID(guid) == HIGHGUID_TYPE_ITEM) // Loot from items, eg. sacks, milling, prospecting...
     {
         Item* item = _player->GetItemInterface()->GetItemByGUID(guid);
         if (item == NULL)
@@ -658,8 +658,7 @@ void WorldSession::HandleLootReleaseOpcode(WorldPacket& recv_data)
         // delete current loot, so the next one can be filled
         if (item->loot != NULL)
         {
-            uint32 itemsNotLooted =
-                std::count_if (item->loot->items.begin(), item->loot->items.end(), ItemIsNotLooted());
+            uint32 itemsNotLooted = std::count_if (item->loot->items.begin(), item->loot->items.end(), ItemIsNotLooted());
 
             if ((itemsNotLooted == 0) && (item->loot->gold == 0))
             {

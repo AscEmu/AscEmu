@@ -97,12 +97,12 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
     bool questscompleted = false;
     if (!qst->quest_list.empty())
     {
-        for (auto iter = qst->quest_list.begin(); iter != qst->quest_list.end(); ++iter)
+        for (auto iter : qst->quest_list)
         {
-            QuestProperties const* questcheck = sMySQLStore.GetQuestProperties((*iter));
+            QuestProperties const* questcheck = sMySQLStore.GetQuestProperties(iter);
             if (questcheck)
             {
-                if (plr->HasFinishedQuest((*iter)))
+                if (plr->HasFinishedQuest(iter))
                 {
                     questscompleted = true;
                     break;
@@ -418,9 +418,9 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 
     data->SetOpcode(SMSG_QUESTGIVER_QUEST_DETAILS);
 
-    *data << qst_giver->GetGUID();			// npc guid
-    *data << uint64(qst_giver->IsPlayer() ? qst_giver->GetGUID() : 0);						// (questsharer?) guid
-    *data << qst->id;						// quest id
+    *data << qst_giver->GetGUID();                                      // npc guid
+    *data << uint64(qst_giver->IsPlayer() ? qst_giver->GetGUID() : 0);  // (questsharer?) guid
+    *data << qst->id;                                                   // quest id
 
     if (lq)
     {
@@ -467,10 +467,10 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
         *data << (ip ? ip->DisplayInfoID : uint32(0));
     }
 
-    *data << GenerateRewardMoney(plr, qst);	// Money reward
-    *data << uint32(0); //New 3.3 - this is the XP you'll see on the quest reward panel too, but I think it is fine not to show it, because it can change if the player levels up before completing the quest.
-    *data << (qst->bonushonor * 10);					// Honor reward
-    *data << float(0); //New 3.3
+    *data << GenerateRewardMoney(plr, qst);     // Money reward
+    *data << uint32(0);                         // New 3.3 - this is the XP you'll see on the quest reward panel too, but I think it is fine not to show it, because it can change if the player levels up before completing the quest.
+    *data << (qst->bonushonor * 10);            // Honor reward
+    *data << float(0);                          // New 3.3
     *data << qst->reward_spell;					// this is the spell (id) the quest finisher teaches you, or the icon of the spell if effect_on_player is not 0
     *data << qst->effect_on_player;				// this is the spell (id) the quest finisher casts on you as a reward
     *data << qst->rewardtitleid;				// Title reward (ID)
@@ -523,7 +523,7 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
     *data << uint32(0);
     *data << qst->quest_flags;
     *data << qst->suggestedplayers;
-    *data << uint32(qst->reward_money < 0 ? -qst->reward_money : 0);	     // Required Money
+    *data << uint32(qst->reward_money < 0 ? -qst->reward_money : 0); // Required Money
 
     // item count
     *data << qst->count_required_item;
@@ -605,7 +605,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
     data << uint32(qst->bonushonor * 10);
     data << uint32(rewardtalents);
     data << uint32(qst->bonusarenapoints);
-    data << uint32(qst->count_reward_item);   //Reward item count
+    data << uint32(qst->count_reward_item); // Reward item count
 
     for (uint8 i = 0; i < 4; ++i)
     {
@@ -629,9 +629,9 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
     data->Initialize(SMSG_QUESTGIVER_QUEST_LIST);
 
     *data << qst_giver->GetGUID();
-    *data << plr->GetSession()->LocalizedWorldSrv(70);//"How can I help you?"; //Hello line
-    *data << uint32(1);//Emote Delay
-    *data << uint32(1);//Emote
+    *data << plr->GetSession()->LocalizedWorldSrv(70); // "How can I help you?"; //Hello line
+    *data << uint32(1);                                // Emote Delay
+    *data << uint32(1);                                // Emote
 
     bool bValid = false;
     if (qst_giver->IsGameObject())
@@ -1374,7 +1374,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
             }
         }
 
-        //Add to finished quests
+        // Add to finished quests
         plr->AddToFinishedQuests(qst->id);
         if (qst->bonusarenapoints != 0)
         {
@@ -1389,10 +1389,10 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         plr->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST, qst->id, 0, 0);
 #endif
         // Remove quests that are listed to be removed on quest complete.
-        for (auto iter = qst->remove_quest_list.begin(); iter != qst->remove_quest_list.end(); ++iter)
+        for (auto iter : qst->remove_quest_list)
         {
-            if (!plr->HasFinishedQuest((*iter)))
-                plr->AddToFinishedQuests((*iter));
+            if (!plr->HasFinishedQuest(iter))
+                plr->AddToFinishedQuests(iter);
         }
     }
 
@@ -1494,9 +1494,7 @@ template <class T> void QuestMgr::_AddQuest(uint32 entryid, QuestProperties cons
         nlist->push_back(ptr);
     }
     else
-    {
         ptr->type |= type;
-    }
 }
 
 void QuestMgr::_CleanLine(std::string* str)
@@ -1959,9 +1957,9 @@ void QuestMgr::LoadExtraQuestStuff()
             const_cast<QuestProperties*>(qst)->quest_list.clear();
             std::string quests = std::string(qst->x_or_y_quest_string);
             std::vector<std::string> qsts = Util::SplitStringBySeperator(quests, " ");
-            for (auto iter = qsts.begin(); iter != qsts.end(); ++iter)
+            for (auto iter : qsts)
             {
-                uint32 id = atol((*iter).c_str());
+                uint32 id = atol(iter.c_str());
                 if (id)
                     const_cast<QuestProperties*>(qst)->quest_list.insert(id);
             }
@@ -1971,9 +1969,9 @@ void QuestMgr::LoadExtraQuestStuff()
         {
             std::string quests = std::string(qst->remove_quests);
             std::vector<std::string> qsts = Util::SplitStringBySeperator(quests, " ");
-            for (auto iter = qsts.begin(); iter != qsts.end(); ++iter)
+            for (auto iter : qsts)
             {
-                uint32 id = atol((*iter).c_str());
+                uint32 id = atol(iter.c_str());
                 if (id)
                     const_cast<QuestProperties*>(qst)->remove_quest_list.insert(id);
             }
@@ -2226,15 +2224,15 @@ void QuestMgr::LoadExtraQuestStuff()
 
                 QuestPOIVector & vect = m_QuestPOIMap[questId];
 
-                for (auto itr = vect.begin(); itr != vect.end(); ++itr)
+                for (auto itr : vect)
                 {
 
-                    if (itr->PoiId != poiId)
+                    if (itr.PoiId != poiId)
                         continue;
 
                     QuestPOIPoint point(x, y);
 
-                    itr->points.push_back(point);
+                    itr.points.push_back(point);
 
                     break;
                 }

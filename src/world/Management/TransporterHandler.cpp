@@ -108,14 +108,12 @@ Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry
 void ObjectMgr::UnloadTransportFromInstance(Transporter *t)
 {
     m_creatureSetMutex.Acquire();
-    for (auto itr = t->m_NPCPassengerSet.begin(); itr != t->m_NPCPassengerSet.end();)
+    for (auto itr : t->m_NPCPassengerSet)
     {
-        if (Creature* npc = *itr)
-        {
+        if (Creature* npc = itr)
             npc->RemoveFromWorld(true);
-        }
-        ++itr;
-    }
+        // ++itr;
+    }       
 
     t->m_NPCPassengerSet.clear();
     m_creatureSetMutex.Release();
@@ -182,8 +180,8 @@ void ObjectMgr::LoadTransports()
             m_Transporters.insert(pTransporter);
             AddTransport(pTransporter);
 
-            for (std::set<uint32>::const_iterator i = mapsUsed.begin(); i != mapsUsed.end(); ++i)
-                m_TransportersByMap[*i].insert(pTransporter);
+            for (auto i : mapsUsed)
+                m_TransportersByMap[i].insert(pTransporter);
 
             ++pCount;
         } while (result->NextRow());
@@ -215,12 +213,12 @@ void ObjectMgr::LoadTransports()
             float tO = fields[6].GetFloat();
             uint32 anim = fields[7].GetInt32();
 
-            for (auto itr = m_Transporters.begin(); itr != m_Transporters.end(); ++itr)
+            for (auto itr : m_Transporters)
             {
-                if ((*itr)->GetEntry() == transportEntry)
+                if (itr->GetEntry() == transportEntry)
                 {
                     TransportSpawn spawn{ guid, entry, transportEntry, tX, tY, tZ, tO, anim };
-                    (*itr)->AddCreature(spawn);
+                    itr->AddCreature(spawn);
                     break;
                 }
             }
@@ -230,9 +228,7 @@ void ObjectMgr::LoadTransports()
         delete result;
 
         for (auto transport : m_Transporters)
-        {
             transport->RespawnCreaturePassengers();
-        }
 
         LogDetail("Transport Handler : Loaded %u Transport Npcs", pCount);
     }
@@ -638,9 +634,9 @@ uint32 Transporter::BuildCreateUpdateBlockForPlayer(ByteBuffer* data, Player* ta
 
     // add all the npcs to the packet
     m_creatureSetMutex.Acquire();
-    for (auto itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
+    for (auto itr : m_NPCPassengerSet)
     {
-        Creature* npc = *itr;
+        Creature* npc = itr;
         cnt += npc->BuildCreateUpdateBlockForPlayer(data, target);
     }
     m_creatureSetMutex.Release();
@@ -847,9 +843,9 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
 void Transporter::UpdateNPCPositions(float x, float y, float z, float o)
 {
     m_creatureSetMutex.Acquire();
-    for (auto itr = m_NPCPassengerSet.begin(); itr != m_NPCPassengerSet.end(); ++itr)
+    for (auto itr : m_NPCPassengerSet)
     {
-        Creature* npc = *itr;
+        Creature* npc = itr;
 #if VERSION_STRING != Cata
         npc->SetPosition(x + npc->obj_movement_info.transporter_info.position.x, y + npc->obj_movement_info.transporter_info.position.y, z + npc->obj_movement_info.transporter_info.position.z, o + npc->obj_movement_info.transporter_info.position.o, false);
 #else
