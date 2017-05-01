@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __WORLDSOCKET_H
-#define __WORLDSOCKET_H
+#ifndef WORLDSOCKET_H
+#define WORLDSOCKET_H
 
 #include "StackBuffer.h"
 #include "FastQueue.h"
@@ -252,4 +252,4 @@ static inline unsigned int FastGUIDPack(const uint64 & oldguid, unsigned char* b
     return (j - pos);
 }
 
-#endif      //__WORLDSOCKET_H
+#endif      //WORLDSOCKET_H

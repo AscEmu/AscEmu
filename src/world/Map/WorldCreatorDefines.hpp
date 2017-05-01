@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __WORLDCREATOR_DEFINES_HPP
-#define __WORLDCREATOR_DEFINES_HPP
+#ifndef WORLDCREATOR_DEFINES_HPP
+#define WORLDCREATOR_DEFINES_HPP
 
 enum INSTANCE_TYPE
 {
@@ -52,4 +52,4 @@ enum INSTANCE_RESET_ERROR
     INSTANCE_RESET_ERROR_PLAYERS_ENTERING       = 0x02
 };
 
-#endif      //__WORLDCREATOR_DEFINES_HPP
+#endif      //WORLDCREATOR_DEFINES_HPP

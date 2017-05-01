@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MAILMGR_H
-#define _MAILMGR_H
+#ifndef MAILMGR_H
+#define MAILMGR_H
 
 /// \todo refactoring
 struct AuctionEntry;
@@ -177,4 +177,4 @@ class SERVER_DECL MailSystem : public Singleton<MailSystem>, public EventableObj
 
 #define MAIL_DEFAULT_EXPIRATION_TIME 30
 
-#endif // _MAILMGR_H
+#endif // MAILMGR_H

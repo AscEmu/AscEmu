@@ -16,8 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CALENDARMGR_H
-#define _CALENDARMGR_H
+#ifndef CALENDARMGR_H
+#define CALENDARMGR_H
+
 #include <vector>
 #include <set>
 #include "Singleton.h"
@@ -133,4 +134,4 @@ class CalendarMgr : public Singleton< CalendarMgr >
 
 #define sCalendarMgr CalendarMgr::getSingleton()
 
-#endif // _CALENDARMGR_H
+#endif // CALENDARMGR_H

@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LOGON_COMM_CLIENT_H
-#define _LOGON_COMM_CLIENT_H
+#ifndef LOGON_COMM_CLIENT_H
+#define LOGON_COMM_CLIENT_H
 
 #include "CommonTypes.hpp"
 #include "ByteBuffer.h"
@@ -78,4 +78,4 @@ class LogonCommClientSocket : public Socket
 
 typedef void (LogonCommClientSocket::*logonpacket_handler)(WorldPacket&);
 
-#endif // _LOGON_COMM_CLIENT_H
+#endif // LOGON_COMM_CLIENT_H

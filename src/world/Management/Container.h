@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONTAINER_H
-#define _CONTAINER_H
+#ifndef CONTAINER_H
+#define CONTAINER_H
 
 #include "Management/Item.h"
 
@@ -64,4 +64,4 @@ class SERVER_DECL Container : public Item
         uint32 __fields[CONTAINER_END];
 };
 
-#endif // _CONTAINER_H
+#endif // CONTAINER_H

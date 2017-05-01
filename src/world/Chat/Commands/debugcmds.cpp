@@ -666,11 +666,11 @@ bool ChatHandler::HandleDebugDumpCoordsCommmand(const char* args, WorldSession* 
 //As requested by WaRxHeAd for database development.
 //This should really only be available in special cases and NEVER on real servers... -DGM
 
-//#define _ONLY_FOOLS_TRY_THIS_
+//#define ONLY_FOOLS_TRY_THIS_
 
 bool ChatHandler::HandleSQLQueryCommand(const char* args, WorldSession* m_session)
 {
-#ifdef _ONLY_FOOLS_TRY_THIS_
+#ifdef ONLY_FOOLS_TRY_THIS_
     if (!*args)
     {
         RedSystemMessage(m_session, "No query given.");
@@ -734,7 +734,7 @@ bool ChatHandler::HandleSQLQueryCommand(const char* args, WorldSession* m_sessio
 
 bool ChatHandler::HandleSendpacket(const char* args, WorldSession* m_session)
 {
-#ifdef _ONLY_FOOLS_TRY_THIS_
+#ifdef ONLY_FOOLS_TRY_THIS_
 
     uint32 arg_len = strlen(args);
     char* xstring = new char[arg_len];

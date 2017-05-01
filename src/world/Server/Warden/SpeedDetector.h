@@ -17,8 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SPEEDDETECTOR_H
-#define _SPEEDDETECTOR_H
+#ifndef SPEEDDETECTOR_H
+#define SPEEDDETECTOR_H
 
 #define SPDT_SAMPLINGRATE 1000              /// there is no point flooding calculations    
 #define SPDT_DETECTION_ERROR 0.70f          /// ex: 10% for a speed=7 => 0.7 max speed cheat
@@ -68,4 +68,4 @@ class SpeedCheatDetector
         float bigest_hacked_speed_dif;
 };
 
-#endif // _SPEEDDETECTOR_H
+#endif // SPEEDDETECTOR_H

@@ -17,8 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _GOSSIP_H
-#define _GOSSIP_H
+#ifndef GOSSIP_H
+#define GOSSIP_H
 
 #include "Management/Gossip/GossipDefines.hpp"
 #include "WorldPacket.h"
@@ -574,4 +574,4 @@ namespace Arcemu
     }
 }
 
-#endif      //_GOSSIP_H
+#endif      //GOSSIP_H

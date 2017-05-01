@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _WOWSERVER_ITEM_H
-#define _WOWSERVER_ITEM_H
+#ifndef WOWSERVER_ITEM_H
+#define WOWSERVER_ITEM_H
 
 #include "Skill.h"
 #include "Management/ItemPrototype.h"
@@ -482,4 +482,4 @@ std::string GetItemLinkByProto(ItemProperties const* iProto, uint32 language);
 
 int32 GetStatScalingStatValueColumn(ItemProperties const* proto, uint32 type);
 
-#endif // _WOWSERVER_ITEM_H
+#endif // WOWSERVER_ITEM_H

@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CREATURE_DEFINES_HPP
-#define _CREATURE_DEFINES_HPP
+#ifndef CREATURE_DEFINES_HPP
+#define CREATURE_DEFINES_HPP
 
 
 #include "CommonTypes.hpp"

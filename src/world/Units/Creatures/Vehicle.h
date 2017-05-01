@@ -18,8 +18,8 @@
  */
 
 
-#ifndef _VEHICLE_H
-#define _VEHICLE_H
+#ifndef VEHICLE_H
+#define VEHICLE_H
 
 #include "Storage/DBC/DBCStores.h"
 #include "Units/Summons/SummonHandler.h"

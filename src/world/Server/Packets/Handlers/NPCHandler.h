@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _NPCHANDLER_H
-#define _NPCHANDLER_H
+#ifndef NPCHANDLER_H
+#define NPCHANDLER_H
 
 #include <string>
 
@@ -123,4 +123,4 @@ extern trainertype trainer_types[TRAINER_TYPE_MAX];
 #define TRAINER_STATUS_NOT_LEARNABLE 1
 #define TRAINER_STATUS_ALREADY_HAVE 2
 
-#endif // _NPCHANDLER_H
+#endif // NPCHANDLER_H

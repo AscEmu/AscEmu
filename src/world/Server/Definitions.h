@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _WOWSERVER_DEFINITION_H
-#define _WOWSERVER_DEFINITION_H
+#ifndef WOWSERVER_DEFINITION_H
+#define WOWSERVER_DEFINITION_H
 
 
 const unsigned NUM_MAPS = 800;
@@ -85,4 +85,4 @@ enum TimeConstants
 
 #define MAKE_PAIR32(l, h)  uint32(uint16(l) | (uint32(h) << 16))
 
-#endif // _WOWSERVER_DEFINITION_H
+#endif // WOWSERVER_DEFINITION_H

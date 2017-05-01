@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _QUEST_DEFINES_HPP
-#define _QUEST_DEFINES_HPP
+#ifndef QUEST_DEFINES_HPP
+#define QUEST_DEFINES_HPP
 
 #define MAX_QUEST_LOG_SIZE 25
 
@@ -128,4 +128,4 @@ enum QuestCompletionStatus
 	QUEST_FAILED     = 2
 };
 
-#endif // _QUEST_DEFINES_HPP
+#endif // QUEST_DEFINES_HPP

@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _BASECONSOLE_H
-#define _BASECONSOLE_H
+#ifndef BASECONSOLE_H
+#define BASECONSOLE_H
 
 class ConsoleSocket;
 
@@ -46,4 +46,4 @@ class LocalConsole : public BaseConsole
 
 void HandleConsoleInput(BaseConsole* pConsole, const char* szInput);
 
-#endif // _BASECONSOLE_H
+#endif // BASECONSOLE_H

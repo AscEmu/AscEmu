@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ARENAS_H
-#define _ARENAS_H
+#ifndef ARENAS_H
+#define ARENAS_H
 
 #include "Management/Battleground/Battleground.h"
 
@@ -96,4 +96,4 @@ class SERVER_DECL Arena : public CBattleground
 };
 
 
-#endif //_ARENAS_H
+#endif //ARENAS_H

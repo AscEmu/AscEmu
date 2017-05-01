@@ -18,8 +18,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DAYWATCHERTHREAD_H
-#define _DAYWATCHERTHREAD_H
+#ifndef DAYWATCHERTHREAD_H
+#define DAYWATCHERTHREAD_H
+
 #include "Threading/ConditionVariable.h"
 #include "CThreads.h"
 #include <ctime>

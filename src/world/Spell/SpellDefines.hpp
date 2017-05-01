@@ -3,8 +3,7 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _SPELL_DEFINES_HPP
-#define _SPELL_DEFINES_HPP
+#pragma once
 
 struct DamageProc
 {
@@ -436,5 +435,3 @@ enum SpellAttributesExJ
 #define MAX_SPELL_TOTEM_CATEGORIES 2
 #define MAX_SPELL_REAGENTS 8
 #define MAX_SPELL_ID 121820
-
-#endif // _SPELL_DEFINES_HPP

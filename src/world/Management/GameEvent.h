@@ -16,8 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __GAMEEVENT_H
-#define __GAMEEVENT_H
+#ifndef GAMEEVENT_H
+#define GAMEEVENT_H
 
 #include "GameEventMgr.h"
 #include <vector>
@@ -95,4 +95,4 @@ class GameEvent
         void DestroyAllEntities();
 };
 
-#endif  //__GAMEEVENT_H
+#endif  // GAMEEVENT_H

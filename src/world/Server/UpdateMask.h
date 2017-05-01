@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __UPDATEMASK_H
-#define __UPDATEMASK_H
+#ifndef UPDATEMASK_H
+#define UPDATEMASK_H
 
 #include "WUtil.h"
 #include <cstring>
@@ -142,4 +142,4 @@ class UpdateMask
         }
 };
 
-#endif      //__UPDATEMASK_H
+#endif      //UPDATEMASK_H

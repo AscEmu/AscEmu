@@ -3,8 +3,7 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _DBC_GLOBALS_HPP
-#define _DBC_GLOBALS_HPP
+#pragma once
 
 #include "DBCStorage.hpp"
 #include "DBCLoader.hpp"
@@ -132,5 +131,3 @@ namespace DBC
         delete sql;
     }
 }
-
-#endif // _DBC_GLOBALS_HPP

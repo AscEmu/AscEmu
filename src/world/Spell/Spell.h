@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SPELL_H
-#define _SPELL_H
+#ifndef SPELL_H
+#define SPELL_H
 
 #include "Spell/SpellInfo.hpp"
 #include "Spell/Customization/SpellCustomizations.hpp"
@@ -2191,4 +2191,4 @@ uint32 GetSpellDuration(SpellInfo* sp, Unit* caster = NULL);
 //Logs if the spell doesn't exist, using Debug loglevel.
 SpellInfo* CheckAndReturnSpellEntry(uint32 spellid);
 
-#endif // _SPELL_H
+#endif // SPELL_H
