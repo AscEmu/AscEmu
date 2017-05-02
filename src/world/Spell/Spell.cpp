@@ -6243,10 +6243,10 @@ void Spell::SpellEffectJumpTarget(uint32 i)
     {
         Object* uobj = m_caster->GetMapMgr()->_GetObject(m_targets.m_unitTarget);
 
-        if (uobj == NULL || !uobj->IsUnit())
+        if (uobj == nullptr || !uobj->IsUnit())
+        {
             return;
-
-        Unit* un = static_cast<Unit*>(uobj);
+        }
 
         float rad = unitTarget->GetBoundingRadius() - u_caster->GetBoundingRadius();
 
@@ -6254,11 +6254,15 @@ void Spell::SpellEffectJumpTarget(uint32 i)
         float dy = m_caster->GetPositionY() - unitTarget->GetPositionY();
 
         if (dx == 0.0f || dy == 0.0f)
+        {
             return;
+        }
 
         float alpha = atanf(dy / dx);
         if (dx < 0)
+        {
             alpha += M_PI_FLOAT;
+        }
 
         x = rad * cosf(alpha) + unitTarget->GetPositionX();
         y = rad * sinf(alpha) + unitTarget->GetPositionY();

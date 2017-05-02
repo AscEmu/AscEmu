@@ -633,7 +633,7 @@ bool Showdown(uint32 i, Spell* pSpell)
         return true;
     }
 
-    if (p_caster->HasQuest(10742) && !p_caster->HasQuest(10806) == false)
+    if (p_caster->HasQuest(10742) && p_caster->HasQuest(10806) == false)
     {
         return true;
     }

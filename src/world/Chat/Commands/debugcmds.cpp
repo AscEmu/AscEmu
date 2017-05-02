@@ -775,7 +775,6 @@ bool ChatHandler::HandleSendpacket(const char* args, WorldSession* m_session)
 
 
     int j = 3;
-    int x = 0;
     do
     {
         if (xstring[j] == '\0')
@@ -791,8 +790,7 @@ bool ChatHandler::HandleSendpacket(const char* args, WorldSession* m_session)
             //j++;
         }
         j++;
-    }
-    while (j < arg_len);
+    } while (j < arg_len);
 
     data.hexlike();
 
@@ -810,22 +808,32 @@ bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_s
 
     // takes 2 or 3 arguments: npcid, count, (health)
     if (sscanf(args, "%u %u %u", &npcid, &count, &health) != 3)
+    {
         if (sscanf(args, "%u %u", &count, &npcid) != 2)
+        {
             return false;
+        }
+    }
 
     if (!count || !npcid)
+    {
         return false;
+    }
 
     CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(npcid);
     if (cp == nullptr)
+    {
         return false;
+    }
 
     MapMgr* m = m_session->GetPlayer()->GetMapMgr();
 
     // if we have selected unit, use its position
     Unit* unit = m->GetUnit(m_session->GetPlayer()->GetSelection());
-    if (unit == NULL)
+    if (unit == nullptr)
+    {
         unit = m_session->GetPlayer(); // otherwise ours
+    }
 
     float bx = unit->GetPositionX();
     float by = unit->GetPositionY();
