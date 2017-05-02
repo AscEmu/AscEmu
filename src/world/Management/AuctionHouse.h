@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AUCTIONHOUSE_H
-#define _AUCTIONHOUSE_H
+#ifndef AUCTIONHOUSE_H
+#define AUCTIONHOUSE_H
 
 #include "Storage/DBC/DBCStructures.hpp"
 #include "WorldConf.h"
@@ -154,4 +154,4 @@ class AuctionHouse
         bool enabled;
 };
 
-#endif // _AUCTIONHOUSE_H
+#endif // AUCTIONHOUSE_H

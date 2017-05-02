@@ -3,8 +3,7 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _DBC_STRUCTURES_HPP
-#define _DBC_STRUCTURES_HPP
+#pragma once
 
 #include "WorldConf.h"
 
@@ -1609,5 +1608,3 @@ namespace DBC
     }
 }
 #endif
-
-#endif // _DBC_STRUCTURES_HPP

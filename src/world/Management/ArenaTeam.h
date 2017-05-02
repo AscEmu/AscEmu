@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ARENATEAMS_H
-#define _ARENATEAMS_H
+#ifndef ARENATEAMS_H
+#define ARENATEAMS_H
 
 #include "Units/Players/Player.h"
 
@@ -115,4 +115,4 @@ class SERVER_DECL ArenaTeam
         }
 };
 
-#endif //_ARENATEAMS_H
+#endif //ARENATEAMS_H

@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _QUESTMGR_H
-#define _QUESTMGR_H
+#ifndef QUESTMGR_H
+#define QUESTMGR_H
 
 #include "QuestDefines.hpp"
 #include "CommonTypes.hpp"
@@ -227,4 +227,4 @@ template<> inline std::unordered_map<uint32, std::list<QuestRelation*>* >& Quest
 
 #define sQuestMgr QuestMgr::getSingleton()
 
-#endif // _QUESTMGR_H
+#endif // QUESTMGR_H

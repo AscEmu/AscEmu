@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EVENTABLEOBJECT_H
-#define _EVENTABLEOBJECT_H
+#ifndef EVENTABLEOBJECT_H
+#define EVENTABLEOBJECT_H
 
 #include "EventMgr.h"
 #include "../shared/Util.hpp"
@@ -117,4 +117,4 @@ class EventableObjectHolder
         InsertableQueue m_insertPool;
 };
 
-#endif // _EVENTABLEOBJECT_H
+#endif // EVENTABLEOBJECT_H

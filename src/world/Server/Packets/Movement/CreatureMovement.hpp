@@ -1,10 +1,9 @@
 /*
-Copyright (c) 2016 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _PACKET_CREATURE_MOVEMENT_HPP
-#define _PACKET_CREATURE_MOVEMENT_HPP
+#pragma once
 
 #include "Objects/Object.h"
 #include "Units/Unit.h"
@@ -16,5 +15,3 @@ namespace Packets
         void SendMoveToPacket(Unit* pUnit);
     }
 }
-
-#endif // _PACKET_CREATURE_MOVEMENT_HPP

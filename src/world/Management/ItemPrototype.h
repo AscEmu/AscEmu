@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ITEMPROTOTYPE_H
-#define _ITEMPROTOTYPE_H
+#ifndef ITEMPROTOTYPE_H
+#define ITEMPROTOTYPE_H
 
 #include <cstdint>
 #include <string>
@@ -715,4 +715,4 @@ typedef struct
 
 #pragma pack(pop)
 
-#endif // _ITEMPROTOTYPE_H
+#endif // ITEMPROTOTYPE_H

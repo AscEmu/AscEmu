@@ -18,10 +18,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MAP_CELL_H
-#define _MAP_CELL_H
+#ifndef MAP_CELL_H
+#define MAP_CELL_H
 
 #include "Map/Map.h"
+
 class Object;
 class Map;
 
@@ -104,4 +105,4 @@ class SERVER_DECL MapCell
         Mutex m_objectlock;
 };
 
-#endif // _MAP_CELL_H
+#endif // MAP_CELL_H

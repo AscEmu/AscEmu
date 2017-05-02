@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _GUILD_H
-#define _GUILD_H
+#ifndef GUILD_H
+#define GUILD_H
 
 class PlayerInfo;
 
@@ -529,4 +529,4 @@ class SERVER_DECL Guild
 };
 
 
-#endif // _GUILD_H
+#endif // GUILD_H

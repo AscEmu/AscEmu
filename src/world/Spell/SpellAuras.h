@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SPELLAURAS_H
-#define _SPELLAURAS_H
+#ifndef SPELLAURAS_H
+#define SPELLAURAS_H
 
 #include "SpellMgr.h"
 #include "Spell/Spell.h"

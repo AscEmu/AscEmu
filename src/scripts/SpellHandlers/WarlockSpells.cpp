@@ -578,17 +578,6 @@ bool DemonicKnowledge(uint32 i, Aura* a, bool apply)
     return true;
 }
 
-bool EyeOfKilrog(uint32 i, Aura* a, bool apply)
-{
-    Unit* m_target = a->GetTarget();
-
-    if(!apply)
-    {
-    }
-
-    return true;
-}
-
 bool ImprovedLifeTap(uint32 i, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
@@ -732,8 +721,6 @@ void SetupWarlockSpells(ScriptMgr* mgr)
     mgr->register_script_effect(8712, &SummonFelHunterQuest);
 
     mgr->register_dummy_aura(35696, &DemonicKnowledge);
-
-    mgr->register_dummy_aura(126, &EyeOfKilrog);
 
     uint32 improvedlifetapids[] =
     {

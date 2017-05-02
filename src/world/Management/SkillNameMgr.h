@@ -17,8 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SKILLNAMEMGR_H
-#define _SKILLNAMEMGR_H
+#ifndef SKILLNAMEMGR_H
+#define SKILLNAMEMGR_H
 
 #include "Storage/DBC/DBCStores.h"
 
@@ -111,4 +111,4 @@ class SkillNameMgr
         }
 };
 
-#endif // _SKILLNAMEMGR_H
+#endif // SKILLNAMEMGR_H

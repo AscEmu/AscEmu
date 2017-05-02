@@ -327,7 +327,9 @@ bool ChatHandler::HandleGOMoveHereCommand(const char* args, WorldSession* m_sess
     auto go_spawn = gameobject->m_spawn;
 
     if (m_session->GetPlayer()->SaveAllChangesCommand)
+    {
         save = 1;
+    }
 
     if (save == 1)
     {

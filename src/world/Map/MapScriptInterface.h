@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef _MAP_SCRIPT_INTERFACE_H
-#define _MAP_SCRIPT_INTERFACE_H
+#ifndef MAP_SCRIPT_INTERFACE_H
+#define MAP_SCRIPT_INTERFACE_H
 
 #include "Objects/ObjectDefines.h"
 #include "Objects/Object.h"
@@ -124,4 +124,4 @@ class SERVER_DECL StructFactory : public Singleton<StructFactory>
 
 #define sStructFactory StructFactory::getSingleton()
 
-#endif // _MAP_SCRIPT_INTERFACE_H
+#endif // MAP_SCRIPT_INTERFACE_H

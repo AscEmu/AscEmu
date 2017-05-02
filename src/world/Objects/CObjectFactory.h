@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef _COBJECT_FACTORY_H
-#define _COBJECT_FACTORY_H
+#ifndef COBJECT_FACTORY_H
+#define COBJECT_FACTORY_H
 
 class Object;
 class GameObject;
@@ -53,4 +53,4 @@ class CObjectFactory
         void DisposeOf(Object* obj);
 };
 
-#endif      //_COBJECT_FACTORY_H
+#endif      //COBJECT_FACTORY_H

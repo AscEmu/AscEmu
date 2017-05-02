@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __STATS_H
-#define __STATS_H
+#ifndef STATS_H
+#define STATS_H
 
 #include "Units/Unit.h"
 #include "Server/UpdateMask.h"
@@ -42,4 +42,4 @@ SERVER_DECL uint32 CalculateDamage(Unit* pAttacker, Unit* pVictim, uint32 weapon
 SERVER_DECL uint32 GainStat(uint16 level, uint8 playerclass, uint8 Stat);
 SERVER_DECL bool isEven(int num);
 
-#endif      //__STATS_H
+#endif      //STATS_H

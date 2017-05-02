@@ -17,8 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __WORLDSTATES_H
-#define __WORLDSTATES_H
+#ifndef WORLDSTATES_H
+#define WORLDSTATES_H
 
 enum WorldStates{
     WORLDSTATE_AV_STONEHEARTH_GRAVE_HORDE_CONTROLLED                     = 1301,
@@ -406,4 +406,4 @@ enum WorldStates{
 };
 
 
-#endif         // __WORLDSTATES_H
+#endif         // WORLDSTATES_H

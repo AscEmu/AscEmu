@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CRITUAL_H
-#define _CRITUAL_H
+#ifndef CRITUAL_H
+#define CRITUAL_H
 
 #include <vector>
 
@@ -169,4 +169,4 @@ class CRitual
         std::vector<unsigned long> Members;
 };
 
-#endif // _CRITUAL_H
+#endif // CRITUAL_H

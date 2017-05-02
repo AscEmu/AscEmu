@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MAP_H
-#define _MAP_H
+#ifndef MAP_H
+#define MAP_H
 
 #include "TerrainMgr.h"
 #include "CellHandlerDefines.hpp"
@@ -141,4 +141,4 @@ class SERVER_DECL Map
         CellSpawns staticSpawns;
 };
 
-#endif // _MAP_H
+#endif // MAP_H

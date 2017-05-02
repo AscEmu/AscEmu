@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SPELLMGR_H
-#define _SPELLMGR_H
+#ifndef SPELLMGR_H
+#define SPELLMGR_H
 
 #include "Management/Item.h"
 #include "Units/Players/PlayerDefines.hpp"
@@ -115,4 +115,4 @@ class SERVER_DECL SpellFactoryMgr: public Singleton < SpellFactoryMgr >
 
 #define sSpellFactoryMgr SpellFactoryMgr::getSingleton()
 
-#endif // _SPELLMGR_H
+#endif // SPELLMGR_H

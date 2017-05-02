@@ -90,6 +90,7 @@ ObjectMgr::~ObjectMgr()
         {
             delete i2->second;
         }
+
         l->clear();
         delete l;
     }
@@ -98,8 +99,12 @@ ObjectMgr::~ObjectMgr()
     for (std::unordered_map<uint32, Movement::WayPointMap*>::iterator i = m_waypoints.begin(); i != m_waypoints.end(); ++i)
     {
         for (Movement::WayPointMap::iterator i2 = i->second->begin(); i2 != i->second->end(); ++i2)
+        {
             if ((*i2))
+            {
                 delete(*i2);
+            }
+        }
 
         delete i->second;
     }
@@ -125,7 +130,10 @@ ObjectMgr::~ObjectMgr()
         {
             p = itr->second;
             for (uint32 j = 0; j < p->TextCount; ++j)
+            {
                 free((char*)p->Texts[j]);
+            }
+
             delete[] p->Texts;
             free((char*)p->MonsterName);
             delete p;
@@ -201,7 +209,10 @@ ObjectMgr::~ObjectMgr()
         if (this->m_InstanceBossInfoMap[i] != NULL)
         {
             for (InstanceBossInfoMap::iterator itr = this->m_InstanceBossInfoMap[i]->begin(); itr != m_InstanceBossInfoMap[i]->end(); ++itr)
+            {
                 delete(*itr).second;
+            }
+
             delete this->m_InstanceBossInfoMap[i];
             this->m_InstanceBossInfoMap[i] = NULL;
         }
@@ -296,18 +307,17 @@ Group* ObjectMgr::GetGroupById(uint32 id)
 // Player names
 void ObjectMgr::DeletePlayerInfo(uint32 guid)
 {
-    PlayerInfo* pl;
-    std::unordered_map<uint32, PlayerInfo*>::iterator i;
-    PlayerNameStringIndexMap::iterator i2;
+
     playernamelock.AcquireWriteLock();
-    i = m_playersinfo.find(guid);
+
+    std::unordered_map<uint32, PlayerInfo*>::iterator i = m_playersinfo.find(guid);
     if (i == m_playersinfo.end())
     {
         playernamelock.ReleaseWriteLock();
         return;
     }
 
-    pl = i->second;
+    PlayerInfo* pl = i->second;
     if (pl->m_Group)
     {
         pl->m_Group->RemovePlayer(pl);
@@ -316,16 +326,22 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
     if (pl->guild)
     {
         if (pl->guild->GetGuildLeader() == pl->guid)
+        {
             pl->guild->Disband();
+        }
         else
-            pl->guild->RemoveGuildMember(pl, NULL);
+        {
+            pl->guild->RemoveGuildMember(pl, nullptr);
+        }
     }
 
     std::string pnam = std::string(pl->name);
     Util::StringToLowerCase(pnam);
-    i2 = m_playersInfoByName.find(pnam);
+    PlayerNameStringIndexMap::iterator i2 = m_playersInfoByName.find(pnam);
     if (i2 != m_playersInfoByName.end() && i2->second == pl)
+    {
         m_playersInfoByName.erase(i2);
+    }
 
     free(pl->name);
     delete i->second;
@@ -336,14 +352,15 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
 
 PlayerInfo* ObjectMgr::GetPlayerInfo(uint32 guid)
 {
-    std::unordered_map<uint32, PlayerInfo*>::iterator i;
-    PlayerInfo* rv;
     playernamelock.AcquireReadLock();
-    i = m_playersinfo.find(guid);
+
+    std::unordered_map<uint32, PlayerInfo*>::iterator i = m_playersinfo.find(guid);
+    PlayerInfo* rv = nullptr;
     if (i != m_playersinfo.end())
+    {
         rv = i->second;
-    else
-        rv = NULL;
+    }
+
     playernamelock.ReleaseReadLock();
     return rv;
 }
@@ -398,14 +415,18 @@ SpellInfo* ObjectMgr::GetNextSpellRank(SpellInfo* sp, uint32 level)
 {
     // Looks for next spell rank
     if (sp == nullptr)
-        return NULL;
+    {
+        return nullptr;
+    }
 
     auto skill_line_ability = GetSpellSkill(sp->Id);
     if (skill_line_ability != nullptr && skill_line_ability->next > 0)
     {
         SpellInfo* sp1 = sSpellCustomizations.GetSpellInfo(skill_line_ability->next);
         if (sp1 && sp1->baseLevel <= level)   // check level
+        {
             return GetNextSpellRank(sp1, level);   // recursive for higher ranks
+        }
     }
     return sp;
 }
@@ -448,14 +469,20 @@ void ObjectMgr::LoadPlayersInfo()
                     uint32 mode = result2->Fetch()[1].GetUInt32();
                     uint32 mapId = result2->Fetch()[2].GetUInt32();
                     if (mode >= NUM_INSTANCE_MODES || mapId >= NUM_MAPS)
+                    {
                         continue;
+                    }
 
                     pn->savedInstanceIdsLock.Acquire();
                     itr = pn->savedInstanceIds[mode].find(mapId);
                     if (itr == pn->savedInstanceIds[mode].end())
+                    {
                         pn->savedInstanceIds[mode].insert(PlayerInstanceMap::value_type(mapId, instanceId));
+                    }
                     else
+                    {
                         (*itr).second = instanceId;
+                    }
 
                     ///\todo Instances not loaded yet ~.~
                     //if (!sInstanceMgr.InstanceExists(mapId, pn->m_savedInstanceIds[mapId][mode]))
@@ -465,8 +492,7 @@ void ObjectMgr::LoadPlayersInfo()
                     //}
 
                     pn->savedInstanceIdsLock.Release();
-                }
-                while (result2->NextRow());
+                } while (result2->NextRow());
                 delete result2;
             }
 
@@ -512,13 +538,15 @@ PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
 {
     std::string lpn = std::string(name);
     Util::StringToLowerCase(lpn);
-    PlayerNameStringIndexMap::iterator i;
-    PlayerInfo* rv = NULL;
+
+    PlayerInfo* rv = nullptr;
     playernamelock.AcquireReadLock();
 
-    i = m_playersInfoByName.find(lpn);
+    PlayerNameStringIndexMap::iterator i = m_playersInfoByName.find(lpn);
     if (i != m_playersInfoByName.end())
+    {
         rv = i->second;
+    }
 
     playernamelock.ReleaseReadLock();
     return rv;

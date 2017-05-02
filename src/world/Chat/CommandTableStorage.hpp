@@ -3,8 +3,7 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _COMMAND_TABLE_STORAGE_HPP
-#define _COMMAND_TABLE_STORAGE_HPP
+#pragma once
 
 #include "Chat/ChatCommand.hpp"
 #include "Singleton.h"
@@ -63,5 +62,3 @@ public:
 };
 
 #define sCommandTableStorag CommandTableStorage::getSingleton()
-
-#endif // _COMMAND_TABLE_STORAGE_HPP

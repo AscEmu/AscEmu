@@ -3,8 +3,7 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _DBC_SQL_HPP
-#define _DBC_SQL_HPP
+#pragma once
 
 #include <string>
 #include "Common.hpp"
@@ -32,5 +31,3 @@ namespace DBC
         };
     }
 }
-
-#endif // _DBC_SQL_HPP

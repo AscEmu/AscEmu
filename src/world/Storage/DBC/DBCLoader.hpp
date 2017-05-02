@@ -3,8 +3,7 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _DBC_LOADER_HPP
-#define _DBC_LOADER_HPP
+#pragma once
 
 #include "DBCRecord.hpp"
 
@@ -59,5 +58,3 @@ namespace DBC
             DBCLoader& operator=(DBCLoader const& right) = delete;
     };
 }
-
-#endif // _DBC_LOADER_HPP

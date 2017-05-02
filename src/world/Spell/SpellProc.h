@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SPELL_PROC_H
-#define _SPELL_PROC_H
+#ifndef SPELL_PROC_H
+#define SPELL_PROC_H
 
 class SpellProc;
 class Object;

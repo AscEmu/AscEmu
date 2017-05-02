@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _WORLDUTILS_H
-#define _WORLDUTILS_H
+#ifndef WORLDUTILS_H
+#define WORLDUTILS_H
 
 #include "Errors.h"
 
@@ -43,4 +43,4 @@ namespace Arcemu
 
 #define ARCEMU_ASSERT(EXPR) Arcemu::Util::ArcemuAssert(EXPR); ANALYSIS_ASSUME(EXPR)
 
-#endif  // _WORLDUTILS_H
+#endif  // WORLDUTILS_H

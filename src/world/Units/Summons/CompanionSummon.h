@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _COMPANIONSUMMON_H
-#define _COMPANIONSUMMON_H
+#ifndef COMPANIONSUMMON_H
+#define COMPANIONSUMMON_H
 
 #include "Units/Summons/Summon.h"
 #include "Units/Creatures/CreatureDefines.hpp"
@@ -42,4 +42,4 @@ class CompanionSummon : public Summon
 
 };
 
-#endif // _COMPANIONSUMMON_H
+#endif // COMPANIONSUMMON_H

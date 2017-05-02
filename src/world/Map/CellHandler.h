@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CELLHANDLER_H
-#define _CELLHANDLER_H
+#ifndef CELLHANDLER_H
+#define CELLHANDLER_H
 
 #include "CellHandlerDefines.hpp"
 #include "Server/WUtil.h"
@@ -165,4 +165,4 @@ uint32 CellHandler<Class>::GetPosY(float y)
 
 }
 
-#endif // _CELLHANDLER_H
+#endif // CELLHANDLER_H

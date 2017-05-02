@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _OBJECTMGR_H
-#define _OBJECTMGR_H
+#ifndef OBJECTMGR_H
+#define OBJECTMGR_H
 
 #include "Server/Packets/Handlers/AreaTrigger.h"
 
@@ -898,4 +898,4 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
 #define objmgr ObjectMgr::getSingleton()
 
-#endif // _OBJECTMGR_H
+#endif // OBJECTMGR_H

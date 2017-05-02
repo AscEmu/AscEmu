@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CONSOLECOMMANDS_H
-#define _CONSOLECOMMANDS_H
+#ifndef CONSOLECOMMANDS_H
+#define CONSOLECOMMANDS_H
 
 #include "Server/Console/BaseConsole.h"
 
@@ -43,4 +43,4 @@ bool HandleClearConsoleCommand(BaseConsole* pConsole, int argc, const char* argv
 bool HandleScriptEngineReloadCommand(BaseConsole*, int argc, const char* []);
 bool HandleTimeDateCommand(BaseConsole* console, int argc, const char* argv[]);
 
-#endif // _CONSOLECOMMANDS_H
+#endif // CONSOLECOMMANDS_H
