@@ -2037,9 +2037,9 @@ class LuaUnit
     {
 
 		if (ptr == nullptr)
-		{
-			return 0;
-		}
+        {
+            return 0;
+        }
 
         float x = ptr->GetSpawnX();
         float y = ptr->GetSpawnY();
@@ -2047,8 +2047,9 @@ class LuaUnit
         float o = ptr->GetSpawnO();
 
 		if (ptr->IsCreature())
-		{
-			ptr->GetAIInterface()->MoveTo(x, y, z);
+        {
+            ptr->GetAIInterface()->MoveTo(x, y, z);
+            ptr->SetOrientation(o);
         }
     
         return 0;
