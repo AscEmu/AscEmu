@@ -335,7 +335,7 @@ bool EatenRecently(uint32 i, Aura* pAura, bool apply)
     {
         NetherDrake->GetAIInterface()->SetAllowedToEnterCombat(true);
         NetherDrake->GetAIInterface()->SetFly();
-        NetherDrake->GetAIInterface()->MoveTo(NetherDrake->GetSpawnX(), NetherDrake->GetSpawnY(), NetherDrake->GetSpawnZ(), NetherDrake->GetSpawnO());
+        NetherDrake->GetAIInterface()->MoveTo(NetherDrake->GetSpawnX(), NetherDrake->GetSpawnY(), NetherDrake->GetSpawnZ());
     }
     return true;
 }

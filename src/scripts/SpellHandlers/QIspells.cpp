@@ -2983,7 +2983,7 @@ bool Carcass(uint32 i, Spell* pSpell) // Becoming a Shadoweave Tailor
     {
         NetherDrake->CastSpell(NetherDrake, sSpellCustomizations.GetSpellInfo(38502), true);
         NetherDrake->GetAIInterface()->SetFly();
-        NetherDrake->GetAIInterface()->MoveTo(pPlayer->GetPositionX(), pPlayer->GetPositionY() + 2, pPlayer->GetPositionZ(), 0);
+        NetherDrake->GetAIInterface()->MoveTo(pPlayer->GetPositionX(), pPlayer->GetPositionY() + 2, pPlayer->GetPositionZ());
         pQuest->SetMobCount(0, pQuest->GetMobCount(0) + 1);
         pQuest->SendUpdateAddKill(0);
         pQuest->UpdatePlayerFields();

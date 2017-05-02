@@ -313,7 +313,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         // Movement
         void SendMoveToPacket();
         //void SendMoveToSplinesPacket(std::list<Waypoint> wp, bool run);
-        bool MoveTo(float x, float y, float z, float o);
+        bool MoveTo(float x, float y, float z);
         void UpdateSpeeds();
 
         //Move flag updating
@@ -462,7 +462,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         void _UpdateMovement(uint32 p_time);
         void _UpdateTimer(uint32 p_time);
         void AddSpline(float x, float y, float z);
-        bool Move(float & x, float & y, float & z, float o = 0);
+        bool Move(float & x, float & y, float & z);
         void OnMoveCompleted();
 
         void MoveEvadeReturn();

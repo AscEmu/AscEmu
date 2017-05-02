@@ -212,7 +212,7 @@ bool ChatHandler::HandleNpcComeCommand(const char* /*args*/, WorldSession* m_ses
         return true;
 
     auto player = m_session->GetPlayer();
-    creature_target->GetAIInterface()->MoveTo(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ(), player->GetOrientation());
+    creature_target->GetAIInterface()->MoveTo(player->GetPositionX(), player->GetPositionY(), player->GetPositionZ());
     sGMLog.writefromsession(m_session, "used .npc come on %s spawn ID: %u", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
     return true;
 }
@@ -616,12 +616,11 @@ bool ChatHandler::HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_s
     float x = creature_target->m_spawn->x;
     float y = creature_target->m_spawn->y;
     float z = creature_target->m_spawn->z;
-    float o = creature_target->m_spawn->o;
 
     creature_target->GetAIInterface()->SetAIState(STATE_IDLE);
     creature_target->GetAIInterface()->WipeHateList();
     creature_target->GetAIInterface()->WipeTargetList();
-    creature_target->GetAIInterface()->MoveTo(x, y, z, o);
+    creature_target->GetAIInterface()->MoveTo(x, y, z);
 
     sGMLog.writefromsession(m_session, "returned NPC %s (%u)", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
 

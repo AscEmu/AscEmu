@@ -67,7 +67,7 @@ class StrFever : public GossipScript
                         if(!plr || !plr->GetMapMgr() || !plr->GetMapMgr()->GetInterface())
                             return;
                         Creature* firstenemy = sEAS.SpawnCreature(plr, 1511, -13770.5f, -6.79f, 42.8f, 5.7f , 0);
-                        firstenemy->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f, 4.07f);
+                        firstenemy->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
                         firstenemy->Despawn(10 * 60 * 1000, 0);
                     }
                     break;
@@ -88,7 +88,8 @@ class Beka : public CreatureAIScript
             {
                 Player* mPlayer = static_cast<Player*>(mKiller);
                 Creature* beka1 = sEAS.SpawnCreature(mPlayer, 1516, -13770.5f, -6.79f, 42.8f, 5.7f , 0);
-                beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f, 4.07f);
+                beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
+				beka1->SetOrientation(4.07f);
                 beka1->Despawn(10 * 60 * 1000, 0);
             }
             else
@@ -97,7 +98,7 @@ class Beka : public CreatureAIScript
                 if(mPlayer)
                 {
                     Creature* beka1 = sEAS.SpawnCreature(mPlayer, 1516, -13770.5f, -6.79f, 42.8f, 5.7f , 0);
-                    beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f, 4.07f);
+                    beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
                     beka1->Despawn(10 * 60 * 1000, 0);
                 }
             }
@@ -116,7 +117,8 @@ class Beka1 : public CreatureAIScript
             {
                 Player* mPlayer = static_cast<Player*>(mKiller);
                 Creature* beka1 = sEAS.SpawnCreature(mPlayer, 1514, -13770.5f, -6.79f, 42.8f, 5.7f, 0);
-                beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f, 4.07f);
+                beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
+				beka1->SetOrientation(4.07f);
                 beka1->Despawn(10 * 60 * 1000, 0);
             }
             else
@@ -125,7 +127,7 @@ class Beka1 : public CreatureAIScript
                 if(mPlayer)
                 {
                     Creature* beka1 = sEAS.SpawnCreature(mPlayer, 1514, -13770.5f, -6.79f, 42.8f, 5.7f, 0);
-                    beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f, 4.07f);
+                    beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
                     beka1->Despawn(10 * 60 * 1000, 0);
                 }
             }
@@ -283,7 +285,7 @@ class FacingNegolash : public QuestScript
             }
 
             Creature* Negolash = sEAS.SpawnCreature(pPlayer, 1494, -14657.400391f, 155.115997f, 4.081050f, 0.353429f);
-            Negolash->GetAIInterface()->MoveTo(-14647.526367f, 143.710052f, 1.164550f, 1.909f);
+            Negolash->GetAIInterface()->MoveTo(-14647.526367f, 143.710052f, 1.164550f);
         }
 };
 

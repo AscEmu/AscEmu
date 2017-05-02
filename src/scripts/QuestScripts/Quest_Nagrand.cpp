@@ -52,7 +52,8 @@ class Quest_The_Ring_of_Blood_The_Final_Challenge : public QuestScript
 
                 pMogor->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
                 pMogor->GetAIInterface()->SetAllowedToEnterCombat(true);
-                pMogor->GetAIInterface()->MoveTo(-704.669f, 7871.08f, 45.0387f, 1.59531f);
+				pMogor->GetAIInterface()->MoveTo(-704.669f, 7871.08f, 45.0387f);
+				pMogor->SetOrientation(1.59531f);
                 pMogor->SetFacing(1.908516f);
                 pMogor->SetFaction(14);
             }

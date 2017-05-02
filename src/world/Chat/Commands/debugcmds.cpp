@@ -237,11 +237,11 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
             y = (static_cast< Creature* >(obj)->GetPositionY() + y * q) / (1 + q);
             z = (static_cast< Creature* >(obj)->GetPositionZ() + z * q) / (1 + q);
         }
-        static_cast< Creature* >(obj)->GetAIInterface()->MoveTo(x, y, z, 0);
+        static_cast< Creature* >(obj)->GetAIInterface()->MoveTo(x, y, z);
     }
     else
     {
-        static_cast<Creature*>(obj)->GetAIInterface()->MoveTo(x, y, z, o);
+        static_cast<Creature*>(obj)->GetAIInterface()->MoveTo(x, y, z);
     }
 
     return true;
