@@ -439,9 +439,9 @@ class LuaUnit
             float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
-        float o = CHECK_FLOAT(L, 4);
+        //float o = CHECK_FLOAT(L, 4);
 
-        ptr->GetAIInterface()->MoveTo(x, y, z, o);
+        ptr->GetAIInterface()->MoveTo(x, y, z);
         return 0;
     }
 
@@ -454,9 +454,9 @@ class LuaUnit
         float x2 = CHECK_FLOAT(L, 4);
         float y2 = CHECK_FLOAT(L, 5);
         float z2 = CHECK_FLOAT(L, 6);
-        float o2 = CHECK_FLOAT(L, 7);
+        //float o2 = CHECK_FLOAT(L, 7);
 
-        ptr->GetAIInterface()->MoveTo(x1 + (RandomFloat(x2 - x1)), y1 + (RandomFloat(y2 - y1)), z1 + (RandomFloat(z2 - z1)), o2);
+        ptr->GetAIInterface()->MoveTo(x1 + (RandomFloat(x2 - x1)), y1 + (RandomFloat(y2 - y1)), z1 + (RandomFloat(z2 - z1)));
         return 0;
     }
 
@@ -2035,15 +2035,22 @@ class LuaUnit
 
     static int ReturnToSpawnPoint(lua_State* L, Unit* ptr)
     {
-        if (ptr == nullptr)
-            return 0;
+
+		if (ptr == nullptr)
+		{
+			return 0;
+		}
 
         float x = ptr->GetSpawnX();
         float y = ptr->GetSpawnY();
         float z = ptr->GetSpawnZ();
         float o = ptr->GetSpawnO();
-        if (ptr->IsCreature())
-            ptr->GetAIInterface()->MoveTo(x, y, z, o);
+
+		if (ptr->IsCreature())
+		{
+			ptr->GetAIInterface()->MoveTo(x, y, z);
+        }
+    
         return 0;
     }
 
