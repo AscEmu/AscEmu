@@ -318,25 +318,34 @@ StrandOfTheAncient::StrandOfTheAncient(MapMgr* mgr, uint32 id, uint32 lgroup, ui
     roundprogress = SOTA_ROUND_PREPARATION;
 
     for (uint8 i = 0; i < BUFF_COUNT; ++i)
-        m_buffs[i] = NULL;
+    {
+        m_buffs[i] = nullptr;
+    }
 
     for (uint8 i = 0; i < 4; ++i)
-        m_boats[i] = NULL;
+    {
+        m_boats[i] = nullptr;
+    }
 
     for (uint8 i = 0; i < SOTA_NPCS; ++i)
-        npc[i] = NULL;
+    {
+        npc[i] = nullptr;
+    }
 
     for (uint8 i = 0; i < GATE_COUNT; ++i)
     {
-        m_gates[i] = NULL;
-        m_gateSigils[i] = NULL;
-        m_gateTransporters[i] = NULL;
+        m_gates[i] = nullptr;
+        m_gateSigils[i] = nullptr;
+        m_gateTransporters[i] = nullptr;
     }
 
-    m_relic = NULL;
-    m_endgate = NULL;
-    for (uint8 i = 0; i < SOTA_NORTH_BOMBS; i++)
-        m_bomb[i] = NULL;
+    m_relic = nullptr;
+    m_endgate = nullptr;
+
+    for (uint8 i = 0; i < SOTA_NORTH_BOMBS; ++i)
+    {
+        m_bomb[i] = nullptr;
+    }
 
 }
 
@@ -368,21 +377,29 @@ void StrandOfTheAncient::OnPlatformTeleport(Player* plr)
 void StrandOfTheAncient::OnAddPlayer(Player* plr)
 {
     if (!m_started)
+    {
         plr->CastSpell(plr, BG_PREPARATION, true);
+    }
 }
 
 void StrandOfTheAncient::OnRemovePlayer(Player* plr)
 {
     if (!m_started)
+    {
         plr->RemoveAura(BG_PREPARATION);
+    }
 }
 
 LocationVector StrandOfTheAncient::GetStartingCoords(uint32 team)
 {
     if (team == Attackers)
+    {
         return sotaAttackerStartingPosition[roundprogress];
+    }
     else
+    {
         return sotaDefenderStartingPosition;
+    }
 }
 
 /*! Handles end of battleground rewards (marks etc)
@@ -490,15 +507,18 @@ void StrandOfTheAncient::HookOnUnitDied(Unit* victim)
 {
     if (victim->IsCreature())
     {
-        for (uint8 i = 0; i < SOTA_NUM_DEMOLISHERS; i++)
+        for (uint8 i = 0; i < SOTA_NUM_DEMOLISHERS; ++i)
         {
             Creature *c = demolisher[i];
-
             if (c == nullptr)
+            {
                 continue;
+            }
 
             if (victim->GetGUID() != c->GetGUID())
+            {
                 continue;
+            }
 
             demolisher[i] = SpawnCreature(SOTA_DEMOLISHER, DemolisherLocations[i], TeamFactions[Attackers]);
             c->Despawn(1, 0);
@@ -507,10 +527,14 @@ void StrandOfTheAncient::HookOnUnitDied(Unit* victim)
         for (uint8 i = 0; i < SOTA_NUM_CANONS; i++)
         {
             if (canon[i] == nullptr)
+            {
                 continue;
+            }
 
             if (victim->GetGUID() != canon[i]->GetGUID())
+            {
                 continue;
+            }
 
             canon[i]->Despawn(1, 0);
             canon[i] = nullptr;
@@ -532,30 +556,33 @@ bool StrandOfTheAncient::HookSlowLockOpen(GameObject* go, Player* player, Spell*
     {
         case 191305:
         case 191306:
+        {
             CaptureControlPoint(SOTA_CONTROL_POINT_EAST_GY);
             return true;
-            break;
-
+        }
         case 191307:
         case 191308:
+        {
             CaptureControlPoint(SOTA_CONTROL_POINT_WEST_GY);
             return true;
-            break;
-
+        }
         case 191309:
         case 191310:
+        {
             CaptureControlPoint(SOTA_CONTROL_POINT_SOUTH_GY);
             return true;
-            break;
+        }
+        default:
+        {
+            LOG_DEBUG("HookSlowLockOpen called for invalid go entry: %u", goentry);
+            return true;
+        }
     }
-
-    return true;
 }
 
 bool StrandOfTheAncient::HookQuickLockOpen(GameObject* go, Player* player, Spell* spell)
 {
     uint32 entry = go->GetEntry();
-
     if (entry == GO_RELIC)
     {
         PlaySoundToAll(Attackers == TEAM_ALLIANCE ? SOTA_SOUND_VICTORY_ALLIANCE : SOTA_SOUND_VICTORY_HORDE);
@@ -627,42 +654,52 @@ void StrandOfTheAncient::PrepareRound()
         uint32 boatId = 0;
         switch (i)
         {
-        case SOTA_BOAT_WEST:
-            boatId = Attackers ? SOTA_BOAT_HORDER_W : SOTA_BOAT_ALLIANCE_W;
-            break;
-        case SOTA_BOAT_EAST:
-            boatId = Attackers ? SOTA_BOAT_HORDER_E : SOTA_BOAT_ALLIANCE_E;
-            break;
+            case SOTA_BOAT_WEST:
+                boatId = Attackers ? SOTA_BOAT_HORDER_W : SOTA_BOAT_ALLIANCE_W;
+                break;
+            case SOTA_BOAT_EAST:
+                boatId = Attackers ? SOTA_BOAT_HORDER_E : SOTA_BOAT_ALLIANCE_E;
+                break;
         }
         if (m_boats[i] != nullptr)
+        {
             m_boats[i]->Despawn(0, 0);
+        }
+
         m_boats[i] = m_mapMgr->CreateAndSpawnGameObject(boatId, sotaBoats[i][0], sotaBoats[i][1], sotaBoats[i][2], sotaBoats[i][3], 1.0f);
     }
 
-    for (uint8 i = 0; i < GATE_COUNT; i++)
+    for (uint8 i = 0; i < GATE_COUNT; ++i)
+    {
         m_gateTransporters[i]->SetFaction(TeamFactions[Defenders]);
+    }
 
-    for (uint8 i = 0; i < SOTA_NORTH_BOMBS; i++)
+    for (uint8 i = 0; i < SOTA_NORTH_BOMBS; ++i)
     {
         m_bomb[i] = m_mapMgr->CreateAndSpawnGameObject(SOTA_BOMBS, sotaBombsLocations[i][0], sotaBombsLocations[i][1], sotaBombsLocations[i][2], sotaBombsLocations[i][3], 1.5f);
     }
 
-    for (uint8 i = 0; i < SOTA_NUM_CANONS; i++)
+    for (uint8 i = 0; i < SOTA_NUM_CANONS; ++i)
     {
         if (canon[i] != nullptr)
+        {
             canon[i]->Despawn(0, 0);
+        }
+
         canon[i] = SpawnCreature(SOTA_ANTI_PERSONNAL_CANNON, CanonLocations[i], TeamFactions[Defenders]);
     }
 
-    for (uint8 i = 0; i < SOTA_NORTH_DEMOLISHERS; i++)
+    for (uint8 i = 0; i < SOTA_NORTH_DEMOLISHERS; ++i)
     {
-        Creature *c = demolisher[i];
+        Creature* c = demolisher[i];
         demolisher[i] = SpawnCreature(SOTA_DEMOLISHER, DemolisherLocations[i], TeamFactions[Attackers]);
         if (c != nullptr)
+        {
             c->Despawn(0, 0);
+        }
     }
 
-    for (uint8 i = 0; i < SOTA_NPCS; i++)
+    for (uint8 i = 0; i < SOTA_NPCS; ++i)
     {
         if (npc[i] != nullptr)
         {
@@ -671,7 +708,7 @@ void StrandOfTheAncient::PrepareRound()
         }
     }
 
-    for (uint8 i = SOTA_WEST_WS_DEMOLISHER_INDEX; i < SOTA_EAST_WS_DEMOLISHER_INDEX; i++)
+    for (uint8 i = SOTA_WEST_WS_DEMOLISHER_INDEX; i < SOTA_EAST_WS_DEMOLISHER_INDEX; ++i)
     {
         if (demolisher[i] != nullptr)
         {
@@ -680,7 +717,7 @@ void StrandOfTheAncient::PrepareRound()
         }
     }
 
-    for (uint8 i = SOTA_EAST_WS_DEMOLISHER_INDEX; i < SOTA_NUM_DEMOLISHERS; i++)
+    for (uint8 i = SOTA_EAST_WS_DEMOLISHER_INDEX; i < SOTA_NUM_DEMOLISHERS; ++i)
     {
         if (demolisher[i] != nullptr)
         {
@@ -734,14 +771,14 @@ void StrandOfTheAncient::PrepareRound()
 
         for (std::set< Player* >::iterator itr = m_players[Attackers].begin(); itr != m_players[Attackers].end(); ++itr)
         {
-            Player *p = *itr;
+            Player* p = *itr;
             p->SafeTeleport(p->GetMapId(), p->GetInstanceID(), sotaAttackerStartingPosition[0]);
             p->CastSpell(p, BG_PREPARATION, true);
         }
 
-        for (std::set< Player* >::iterator itr = m_players[Defenders].begin(); itr != m_players[Defenders].end(); ++itr)
+        for (std::set<Player*>::iterator itr = m_players[Defenders].begin(); itr != m_players[Defenders].end(); ++itr)
         {
-            Player *p = *itr;
+            Player* p = *itr;
             p->SafeTeleport(p->GetMapId(), p->GetInstanceID(), sotaDefenderStartingPosition);
             p->CastSpell(p, BG_PREPARATION, true);
         }
@@ -756,9 +793,9 @@ void StrandOfTheAncient::StartRound()
 
     roundprogress = SOTA_ROUND_STARTED;
 
-    for (std::set< Player* >::iterator itr = m_players[Attackers].begin(); itr != m_players[Attackers].end(); ++itr)
+    for (std::set<Player*>::iterator itr = m_players[Attackers].begin(); itr != m_players[Attackers].end(); ++itr)
     {
-        Player *p = *itr;
+        Player* p = *itr;
 
         p->SafeTeleport(p->GetMapId(), p->GetInstanceID(), sotaAttackerStartingPosition[SOTA_ROUND_STARTED]);
         p->RemoveAura(BG_PREPARATION);

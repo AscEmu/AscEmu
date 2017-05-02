@@ -155,24 +155,27 @@ bool ArenaTeam::AddMember(PlayerInfo* info)
     uint32 base_field;
     Player* plr = info->m_loggedInPlayer;
     if (m_memberCount >= m_slots)
+    {
         return false;
+    }
 
     memset(&m_members[m_memberCount], 0, sizeof(ArenaTeamMember));
     m_members[m_memberCount].PersonalRating = 1500;
     m_members[m_memberCount++].Info = info;
     SaveToDB();
 
+#if VERSION_STRING != Classic
     if (plr)
     {
-#if VERSION_STRING != Classic
         base_field = (m_type * 7) + PLAYER_FIELD_ARENA_TEAM_INFO_1_1;
         plr->SetUInt32Value(base_field, m_id);
         plr->SetUInt32Value(base_field + 1, m_leader);
 
         plr->m_arenaTeams[m_type] = this;
         plr->GetSession()->SystemMessage("You are now a member of the arena team, '%s'.", m_name.c_str());
-#endif
     }
+#endif
+
     return true;
 }
 
@@ -184,18 +187,21 @@ bool ArenaTeam::RemoveMember(PlayerInfo* info)
         {
             /* memcpy all the blocks in front of him back (so we only loop O(members) instead of O(slots) */
             for (uint32 j = (i + 1); j < m_memberCount; ++j)
+            {
                 memcpy(&m_members[j - 1], &m_members[j], sizeof(ArenaTeamMember));
+            }
 
             --m_memberCount;
             SaveToDB();
 
+#if VERSION_STRING != Classic
             if (info->m_loggedInPlayer)
             {
-#if VERSION_STRING != Classic
                 info->m_loggedInPlayer->SetUInt32Value(PLAYER_FIELD_ARENA_TEAM_INFO_1_1 + (m_type * 7), 0);
                 info->m_loggedInPlayer->m_arenaTeams[m_type] = 0;
-#endif
             }
+#endif
+
             return true;
         }
     }

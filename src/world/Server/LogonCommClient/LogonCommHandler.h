@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LOGONCOMMHANDLER_H
-#define _LOGONCOMMHANDLER_H
+#ifndef LOGONCOMMHANDLER_H
+#define LOGONCOMMHANDLER_H
 
 #include "CommonTypes.hpp"
 #include "Server/WorldSocket.h"
@@ -146,4 +146,4 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
 
 #define sLogonCommHandler LogonCommHandler::getSingleton()
 
-#endif // _LOGONCOMMHANDLER_H
+#endif // LOGONCOMMHANDLER_H

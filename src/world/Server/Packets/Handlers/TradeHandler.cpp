@@ -52,13 +52,21 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recv_data)
 
     // Handle possible error outcomes
     if (pTarget->CalcDistance(_player) > 10.0f)        // This needs to be checked
+    {
         TradeStatus = TRADE_STATUS_TOO_FAR_AWAY;
+    }
     else if (pTarget->IsDead())
+    {
         TradeStatus = TRADE_STATUS_DEAD;
+    }
     else if (pTarget->mTradeTarget != 0)
+    {
         TradeStatus = TRADE_STATUS_ALREADY_TRADING;
+    }
     else if (pTarget->GetTeam() != _player->GetTeam() && GetPermissionCount() == 0 && !worldConfig.player.isInterfactionTradeEnabled)
+    {
         TradeStatus = TRADE_STATUS_WRONG_FACTION;
+    }
 
     data << TradeStatus;
 

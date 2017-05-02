@@ -3,8 +3,7 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _DBC_STORES_H
-#define _DBC_STORES_H
+#pragma once
 
 #include "WorldConf.h"
 
@@ -133,5 +132,3 @@ bool LoadDBCs();
 #if VERSION_STRING == Cata
     #include "../world/GameCata/Storage/DBCStores.h"
 #endif
-
-#endif // _DBC_STORES_H

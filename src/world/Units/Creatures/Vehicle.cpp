@@ -641,14 +641,17 @@ VehicleSeat::VehicleSeat(DBC::Structures::VehicleSeatEntry const* info)
     seat_info = info;
 }
 
-bool VehicleSeat::Controller() const {
+bool VehicleSeat::Controller() const
+{
     return seat_info->IsController();
 }
 
-bool VehicleSeat::Usable() const {
+bool VehicleSeat::Usable() const
+{
     return seat_info->IsUsable();
 }
 
-bool VehicleSeat::HidesPassenger() const {
+bool VehicleSeat::HidesPassenger() const
+{
     return seat_info->HidesPassenger();
 }

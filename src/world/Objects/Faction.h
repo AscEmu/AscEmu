@@ -19,8 +19,8 @@
  */
 
 
-#ifndef _FACTION_H
-#define _FACTION_H
+#ifndef FACTION_H
+#define FACTION_H
 
 #include "Units/Unit.h"
 
@@ -54,4 +54,4 @@ inline bool isSameFaction(Object* objA, Object* objB)
     return (objB->m_faction->Faction == objA->m_faction->Faction);
 }
 
-#endif // _FACTION_H
+#endif // FACTION_H

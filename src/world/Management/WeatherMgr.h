@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __WEATHERMGR_H
-#define __WEATHERMGR_H
+#ifndef WEATHERMGR_H
+#define WEATHERMGR_H
 
 #define WEATHER_DENSITY_UPDATE 0.05f
 #include "Singleton.h"
@@ -79,4 +79,4 @@ class WeatherInfo : public EventableObject
 
 #define sWeatherMgr WeatherMgr::getSingleton()
 
-#endif      //__WEATHERMGR_H
+#endif      // WEATHERMGR_H

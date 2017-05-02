@@ -3,8 +3,7 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _CHAT_DEFINES_HPP
-#define _CHAT_DEFINES_HPP
+#pragma once
 
 enum ChatMsg
 {
@@ -117,5 +116,3 @@ enum Languages
 #define MSG_COLOR_SEXPINK           "|cffC67171"
 #define MSG_COLOR_SEXBLUE           "|cff00E5EE"
 #define MSG_COLOR_SEXHOTPINK        "|cffFF6EB4"
-
-#endif // _CHAT_DEFINES_HPP

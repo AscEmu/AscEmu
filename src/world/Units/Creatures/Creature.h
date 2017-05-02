@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _WOWSERVER_CREATURE_H
-#define _WOWSERVER_CREATURE_H
+#ifndef WOWSERVER_CREATURE_H
+#define WOWSERVER_CREATURE_H
 
 #include "CreatureDefines.hpp"
 #include "Units/UnitDefines.hpp"

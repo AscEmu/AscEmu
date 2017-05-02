@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CConsole_H
-#define _CConsole_H
+#ifndef CConsole_H
+#define CConsole_H
 
 #include "Common.hpp"
 
@@ -36,4 +36,4 @@ class ConsoleThread : public ThreadBase
         void terminate();
 };
 
-#endif // _CConsole_H
+#endif // CConsole_H

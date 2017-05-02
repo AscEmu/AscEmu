@@ -18,8 +18,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CHANNEL_MGR_H
-#define _CHANNEL_MGR_H
+#ifndef CHANNEL_MGR_H
+#define CHANNEL_MGR_H
+
 #include "Singleton.h"
 
 
@@ -48,4 +49,4 @@ class SERVER_DECL ChannelMgr : public Singleton<ChannelMgr>
 #define channelmgr ChannelMgr::getSingleton()
 
 
-#endif  //_CHANNEL_MGR_H
+#endif  // CHANNEL_MGR_H

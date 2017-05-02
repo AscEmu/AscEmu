@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _GAMEOBJECT_H
-#define _GAMEOBJECT_H
+#ifndef GAMEOBJECT_H
+#define GAMEOBJECT_H
 
 #include "Management/CRitual.h"
 #include "Management/QuestMgr.h"
@@ -878,4 +878,4 @@ class SERVER_DECL GameObject_Destructible : public GameObject
         uint32 maxhitpoints;
 };
 
-#endif // _GAMEOBJECT_H
+#endif // GAMEOBJECT_H

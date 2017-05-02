@@ -17,14 +17,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _PLAYER_CLASSES_HPP
-#define _PLAYER_CLASSES_HPP
+#ifndef PLAYER_CLASSES_HPP
+#define PLAYER_CLASSES_HPP
 
 #define TOTAL_NORMAL_RUNE_TYPES 3
 #define TOTAL_USED_RUNES (TOTAL_NORMAL_RUNE_TYPES * 2)
 #define MAX_RUNES 6
 #define TOTAL_RUNE_TYPES 4
 #define MAX_RUNE_VALUE 1
+
 #include "Player.h"
 
 enum SPELL_RUNE_TYPES
@@ -166,4 +167,4 @@ class Shaman : public Player
         bool IsShaman() { return true; }
 };
 
-#endif  // _PLAYER_CLASSES_HPP
+#endif  // PLAYER_CLASSES_HPP

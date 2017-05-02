@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _WOWSERVER_DYNAMICOBJECT_H
-#define _WOWSERVER_DYNAMICOBJECT_H
+#ifndef WOWSERVER_DYNAMICOBJECT_H
+#define WOWSERVER_DYNAMICOBJECT_H
 
 #include "Object.h"
 #include "Units/Unit.h"
@@ -61,4 +61,4 @@ class SERVER_DECL DynamicObject : public Object
         uint32 _fields[DYNAMICOBJECT_END];
 };
 
-#endif // _WOWSERVER_DYNAMICOBJECT_H
+#endif // WOWSERVER_DYNAMICOBJECT_H

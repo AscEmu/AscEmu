@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _EVENTMGR_H
-#define _EVENTMGR_H
+#ifndef EVENTMGR_H
+#define EVENTMGR_H
 
 #include "Threading/RWLock.h"
 #include "Threading/AtomicCounter.h"
@@ -429,4 +429,4 @@ class SERVER_DECL EventMgr : public Singleton < EventMgr >
 
 #define sEventMgr EventMgr::getSingleton()
 
-#endif // _EVENTMGR_H
+#endif // EVENTMGR_H

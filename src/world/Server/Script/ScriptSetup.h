@@ -18,8 +18,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SCRIPTSETUP_H
-#define _SCRIPTSETUP_H
+#ifndef SCRIPTSETUP_H
+#define SCRIPTSETUP_H
+
 #include "CommonTypes.hpp"
 
 #ifdef SCRIPTLIB
@@ -37,4 +38,4 @@ extern "C" inline SCRIPT_DECL const char* _exp_get_version()
 
 #endif
 
-#endif // _SCRIPTSETUP_H
+#endif // SCRIPTSETUP_H

@@ -22,8 +22,8 @@
  *         spell name hash is obsolete. DO NOT ADD MORE spell name hashs here!
  */
 
-#ifndef _SPELLHASHES_H
-#define _SPELLHASHES_H
+#ifndef SPELLHASHES_H
+#define SPELLHASHES_H
 
 #define SPELL_HASH_PROWL 0x9ED4E983
 #define SPELL_HASH_SHADOWMELD 0x60B7F08B

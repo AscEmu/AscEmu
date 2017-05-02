@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SPELLFAILURE_H
-#define _SPELLFAILURE_H
+#ifndef SPELLFAILURE_H
+#define SPELLFAILURE_H
 
 enum SpellCastResult
 {
@@ -358,4 +358,4 @@ enum DISMOUNT_FAILURE
     ERR_DISMOUNT_NOTYOURPET                                      = 2
 };
 
-#endif // _SPELLFAILURE_H
+#endif //SPELLFAILURE_H

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __TAXIMGR_H
-#define __TAXIMGR_H
+#ifndef TAXIMGR_H
+#define TAXIMGR_H
 
 #include <map>
 
@@ -138,4 +138,4 @@ class SERVER_DECL TaxiMgr :  public Singleton< TaxiMgr >
 
 #define sTaxiMgr TaxiMgr::getSingleton()
 
-#endif
+#endif 

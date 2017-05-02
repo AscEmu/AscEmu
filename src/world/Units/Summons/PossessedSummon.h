@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _POSSESSEDSUMMON_H
-#define _POSSESSEDSUMMON_H
+#ifndef POSSESSEDSUMMON_H
+#define POSSESSEDSUMMON_H
 
 #include "Units/Summons/Summon.h"
 #include "Units/Creatures/CreatureDefines.hpp"

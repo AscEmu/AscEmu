@@ -3,8 +3,7 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _SPELL_INFO_HPP
-#define _SPELL_INFO_HPP
+#pragma once
 
 #include "SpellDefines.hpp"
 #include "WorldConf.h"
@@ -358,5 +357,3 @@ class SERVER_DECL SpellInfo
         void* (*SpellFactoryFunc);
         void* (*AuraFactoryFunc);
 };
-
-#endif  //_SPELL_INFO_HPP

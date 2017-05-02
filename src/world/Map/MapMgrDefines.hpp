@@ -18,8 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MAPMGR_DEFINES_H
-#define _MAPMGR_DEFINES_H
+#pragma once
 
 #define IS_PERSISTENT_INSTANCE(p) (((p)->m_mapInfo->type == INSTANCE_MULTIMODE && (p)->m_difficulty >= MODE_HEROIC) || (p)->m_mapInfo->type == INSTANCE_RAID)
 #define IS_RESETABLE_INSTANCE(p) (!(p)->m_persistent && ((p)->m_mapInfo->type == INSTANCE_NONRAID || ((p)->m_mapInfo->type == INSTANCE_MULTIMODE && (p)->m_difficulty == MODE_NORMAL)))
@@ -53,5 +52,3 @@ enum ObjectActiveState
 #define MAX_TRANSPORTERS_PER_MAP 25
 #define RESERVE_EXPAND_SIZE 1024
 #define CALL_INSTANCE_SCRIPT_EVENT(Mgr, Func) if (Mgr != NULL && Mgr->GetScript() != NULL) Mgr->GetScript()->Func
-
-#endif // _MAPMGR_DEFINES_H

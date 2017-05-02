@@ -436,9 +436,13 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 
     // Rotating your character with a hold down right click mouse button
     if (_player->GetOrientation() != movement_info.position.o)
+    {
         _player->isTurning = true;
+    }
     else
+    {
         _player->isTurning = false;
+    }
 
 
     if (!(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm) && !_player->GetCharmedUnitGUID())

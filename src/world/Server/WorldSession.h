@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __WORLDSESSION_H
-#define __WORLDSESSION_H
+#ifndef WORLDSESSION_H
+#define WORLDSESSION_H
 
 
 #include <Threading/Mutex.h>
@@ -1001,4 +1001,4 @@ class SERVER_DECL WorldSession
 
 };
 
-#endif // _WORLDSESSION_H
+#endif // WORLDSESSION_H

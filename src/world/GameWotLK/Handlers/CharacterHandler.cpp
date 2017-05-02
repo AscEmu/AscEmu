@@ -59,7 +59,9 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
     uint8_t char_real_count = 0;
 
     if (result)
+    {
         numchar = result->GetRowCount();
+    }
 
     uint32_t start_time = getMSTime();
 
