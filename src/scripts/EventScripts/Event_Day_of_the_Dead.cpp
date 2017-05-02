@@ -17,18 +17,24 @@
 
 void Catrina(Player* pPlayer, Unit* pUnit)
 {
-    if (pPlayer == NULL || pUnit == NULL)
+    if (pPlayer == nullptr || pUnit == nullptr)
+    {
         return;
+    }
 
     if (pPlayer->HasAura(SPELL_HONOR_THE_DEAD) == false)
     {
         if (pPlayer->IsDead() == false)
+        {
             pUnit->CastSpell(pPlayer, SPELL_HONOR_THE_DEAD, true);
+        }
     }
 
 #if VERSION_STRING > TBC
     if (pPlayer->GetAchievementMgr().HasCompleted(ACHIEVEMRNT_DEAD_MANS_PARTY) == false)
+    {
         pPlayer->GetAchievementMgr().GMCompleteAchievement(NULL, ACHIEVEMRNT_DEAD_MANS_PARTY);
+    }
 #endif
 }
 

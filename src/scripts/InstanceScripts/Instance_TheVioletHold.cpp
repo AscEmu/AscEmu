@@ -85,7 +85,9 @@ class TheVioletHoldScript : public MoonInstanceScript
             for (auto guard : guards)
             {
                 if (guard == nullptr || guard->isAlive())
+                {
                     continue;
+                }
 
                 guard->Despawn(VH_TIMER_GUARD_DESPAWN_TIME, VH_TIMER_GUARD_RESPAWN_TIME);
             }

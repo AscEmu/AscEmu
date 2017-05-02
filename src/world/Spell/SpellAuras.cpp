@@ -683,15 +683,23 @@ Player* Aura::GetPlayerCaster()
     if (m_casterGuid == m_target->GetGUID())
     {
         if (m_target->IsPlayer())
+        {
             return static_cast<Player*>(m_target);
-        else//caster is not a player
-            return NULL;
+        }
+        else //caster is not a player
+        {
+            return nullptr;
+        }
     }
 
     if (m_target->GetMapMgr())
+    {
         return m_target->GetMapMgr()->GetPlayer(Arcemu::Util::GUID_LOPART(m_casterGuid));
+    }
     else
-        return NULL;
+    {
+        return nullptr;
+    }
 }
 
 Unit* Aura::GetUnitCaster()
