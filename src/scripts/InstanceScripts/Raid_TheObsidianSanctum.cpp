@@ -267,7 +267,7 @@ class SartharionAI : public MoonScriptBossAI
             {
                 _unit->SendScriptTextChatMessage(3982);     //Tenebron!The eggs are yours to protect as well!
                 m_cDrakes[DRAKE_TENEBRON]->GetAIInterface()->MoveTo(3254.606689f, 531.867859f, 66.898163f);
-				m_cDrakes[DRAKE_TENEBRON]->SetOrientation(4.215994f);
+                m_cDrakes[DRAKE_TENEBRON]->SetOrientation(4.215994f);
             };
             m_bDrakes[DRAKE_TENEBRON] = false;
         };
@@ -278,7 +278,7 @@ class SartharionAI : public MoonScriptBossAI
             {
                 _unit->SendScriptTextChatMessage(3981);     //Shadron! Come to me! All is at risk!
                 m_cDrakes[DRAKE_SHADRON]->GetAIInterface()->MoveTo(3254.606689f, 531.867859f, 66.898163f);
-				m_cDrakes[DRAKE_SHADRON]->SetOrientation(4.215994f);
+                m_cDrakes[DRAKE_SHADRON]->SetOrientation(4.215994f);
             };
             m_bDrakes[DRAKE_SHADRON] = false;
         };
@@ -289,7 +289,7 @@ class SartharionAI : public MoonScriptBossAI
             {
                 _unit->SendScriptTextChatMessage(3983);     //Vesperon, the clutch is in danger! Assist me!
                 m_cDrakes[DRAKE_VESPERON]->GetAIInterface()->MoveTo(3254.606689f, 531.867859f, 66.898163f);
-				m_cDrakes[DRAKE_VESPERON]->SetOrientation(4.215994f);
+                m_cDrakes[DRAKE_VESPERON]->SetOrientation(4.215994f);
             };
             m_bDrakes[DRAKE_VESPERON] = false;
         };

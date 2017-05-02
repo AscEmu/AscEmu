@@ -304,7 +304,7 @@ class OnyxiaAI : public CreatureAIScript
                     if (cre)
                     {
                         cre->GetAIInterface()->MoveTo(14.161f, -177.874f, -85.649f);
-						cre->SetOrientation(0.23f);
+                        cre->SetOrientation(0.23f);
                         cre->GetAIInterface()->setOutOfCombatRange(100000);
                     }
                     cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(11262,
@@ -314,7 +314,7 @@ class OnyxiaAI : public CreatureAIScript
                     if (cre)
                     {
                         cre->GetAIInterface()->MoveTo(27.133f, -232.030f, -84.188f);
-						cre->SetOrientation(0.44f);
+                        cre->SetOrientation(0.44f);
                         cre->GetAIInterface()->setOutOfCombatRange(100000);
                     }
                 }
@@ -346,7 +346,7 @@ class OnyxiaAI : public CreatureAIScript
                     if (cre)
                     {
                         cre->GetAIInterface()->MoveTo(14.161f, -177.874f, -85.649f);
-						cre->SetOrientation(0.23f);
+                        cre->SetOrientation(0.23f);
                         cre->GetAIInterface()->setOutOfCombatRange(100000);
                     }
                     cre = _unit->GetMapMgr()->GetInterface()->SpawnCreature(11262,
@@ -356,7 +356,7 @@ class OnyxiaAI : public CreatureAIScript
                     if (cre)
                     {
                         cre->GetAIInterface()->MoveTo(27.133f, -232.030f, -84.188f);
-						cre->SetOrientation(0.23f);
+                        cre->SetOrientation(0.23f);
                         cre->GetAIInterface()->setOutOfCombatRange(100000);
                     }
                 }
