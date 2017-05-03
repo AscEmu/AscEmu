@@ -2518,10 +2518,10 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 
                         if (wp->flags & 512) //Zyres: why 512?
                             SetFly();
-                        else //if (wp->flags & Movement::WP_MOVE_TYPE_RUN)
+                        else if (wp->flags & Movement::WP_MOVE_TYPE_RUN)
                             SetRun();
-                        //else
-                            //SetWalk();
+                        else
+                            SetWalk();
                         MoveTo(wp->x, wp->y, wp->z);
                     }
                 }
@@ -3644,9 +3644,12 @@ void AIInterface::UpdateMovementSpline()
     //current spline is finished, attempt to move along next
     if (m_Unit->m_movementManager.IsMovementFinished())
     {
-        //if (MoveDone())
-        //    OnMoveCompleted();
-        //else
+        if (MoveDone())
+        {
+            UpdateMovementSpline();
+            OnMoveCompleted();
+        }
+        else
             UpdateMovementSpline();
     }
 }
