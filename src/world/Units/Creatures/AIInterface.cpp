@@ -1843,7 +1843,7 @@ bool AIInterface::StopMovement(uint32 time)
     m_splinePriority = SPLINE_PRIORITY_MOVEMENT;
     if (m_Unit->GetMapMgr() != NULL)
         UpdateMovementSpline();
-    m_moveTimer = 0; //set pause after stopping
+    m_moveTimer = time; //set pause after stopping
 
     //Clear current spline
     m_Unit->m_movementManager.m_spline.ClearSpline();
@@ -2279,7 +2279,6 @@ Movement::WayPoint* AIInterface::getWayPoint(uint32 wpid)
 
 void AIInterface::_UpdateMovement(uint32 p_time)
 {
-    
     if (!m_Unit->isAlive())
     {
         StopMovement(0);
@@ -2307,7 +2306,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
     {
         m_timeMoved = m_timeToMove <= p_time + m_timeMoved ? m_timeToMove : p_time + m_timeMoved;
     }
-    
+
     if (m_creatureState == MOVING)
     {
         if (!m_moveTimer)
@@ -2405,7 +2404,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
         {
             // no formation, use waypoints
             int destpoint = -1;
-            
+
             // If creature has no waypoints just wander aimlessly around spawnpoint
             if (GetWayPointsCount() == 0) //no waypoints
             {
@@ -2465,7 +2464,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                     if (m_currentWaypoint > GetWayPointsCount())
                     {
                         //hmm maybe we should stop being path walker since we are waiting here anyway
-                        //destpoint = -1;
+                        destpoint = -1;
                     }
                     else
                         destpoint = m_currentWaypoint;
@@ -2476,7 +2475,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                     if (m_currentWaypoint > GetWayPointsCount())
                     {
                         //hmm maybe we should stop being path walker since we are waiting here anyway
-                        //destpoint = -1;
+                        destpoint = -1;
                     }
                     else
                         destpoint = m_currentWaypoint;
@@ -2519,10 +2518,10 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 
                         if (wp->flags & 512) //Zyres: why 512?
                             SetFly();
-                        else if (wp->flags & Movement::WP_MOVE_TYPE_RUN)
+                        else //if (wp->flags & Movement::WP_MOVE_TYPE_RUN)
                             SetRun();
-                        else
-                            SetWalk();
+                        //else
+                            //SetWalk();
                         MoveTo(wp->x, wp->y, wp->z);
                     }
                 }
