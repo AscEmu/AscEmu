@@ -2036,7 +2036,7 @@ class LuaUnit
     static int ReturnToSpawnPoint(lua_State* L, Unit* ptr)
     {
 
-		if (ptr == nullptr)
+        if (ptr == nullptr)
         {
             return 0;
         }
