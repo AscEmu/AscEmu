@@ -5457,7 +5457,6 @@ void Unit::InterruptSpell()
 
 void Unit::DeMorph()
 {
-    // hope it solves it :)
     uint32 displayid = this->GetNativeDisplayId();
     this->SetDisplayId(displayid);
     EventModelChange();
