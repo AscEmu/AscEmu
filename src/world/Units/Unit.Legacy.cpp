@@ -1027,8 +1027,8 @@ void Unit::Update(unsigned long time_passed)
         {
             if (m_useAI)
                 m_aiInterface->Update(time_passed);
-            else if (!m_aiInterface->MoveDone())            //pending move
-                m_aiInterface->UpdateMovementSpline();
+            //else if (!m_aiInterface->MoveDone())            //pending move
+                //m_aiInterface->UpdateMovementSpline();
         }
 
         if (m_diminishActive)
