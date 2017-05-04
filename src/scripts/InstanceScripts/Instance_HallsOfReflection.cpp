@@ -182,7 +182,8 @@ class JainaAI : public MoonScriptCreatureAI
                 return;
 
             Lich->SetDisplayId(30721);
-            Lich->GetAIInterface()->MoveTo(5312.09f, 2009.14f, 709.341f, 3.93f);
+            Lich->GetAIInterface()->MoveTo(5312.09f, 2009.14f, 709.341f);
+            Lich->SetOrientation(3.93f);
             RemoveAIUpdateEvent();
         }
 };

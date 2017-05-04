@@ -138,7 +138,7 @@ void MoonScriptCreatureAI::MoveTo(float pX, float pY, float pZ, bool pRun)
     if (pRun)
         _unit->GetAIInterface()->SetRun();
 
-    _unit->GetAIInterface()->MoveTo(pX, pY, pZ, 0);
+    _unit->GetAIInterface()->MoveTo(pX, pY, pZ);
 };
 
 void MoonScriptCreatureAI::MoveToSpawnOrigin()

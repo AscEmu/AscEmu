@@ -2414,7 +2414,7 @@ class WarlordKalitreshAI : public CreatureAIScript
 
                         _unit->GetAIInterface()->StopMovement(0);
                         _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
-                        _unit->GetAIInterface()->MoveTo(DistillerMoveTo[DistillerNumber].x, DistillerMoveTo[DistillerNumber].y, DistillerMoveTo[DistillerNumber].z, DistillerMoveTo[DistillerNumber].o);
+                        _unit->GetAIInterface()->MoveTo(DistillerMoveTo[DistillerNumber].x, DistillerMoveTo[DistillerNumber].y, DistillerMoveTo[DistillerNumber].z);
 
                         if (_unit->GetDistance2dSq(pDistiller) <= 100.0f)
                         {

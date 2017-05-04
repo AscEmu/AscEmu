@@ -1854,14 +1854,14 @@ bool AIInterface::StopMovement(uint32 time)
     return true;
 }
 
-bool AIInterface::MoveTo(float x, float y, float z, float o)
+bool AIInterface::MoveTo(float x, float y, float z)
 {
     if (!m_canMove || m_Unit->IsStunned())
     {
         StopMovement(0); //Just Stop
         return false;
     }
-    if (!Move(x, y, z, o))
+    if (!Move(x, y, z))
         return false;
     if (m_creatureState != MOVING)
         UpdateMove();
@@ -2522,7 +2522,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                             SetRun();
                         else
                             SetWalk();
-                        MoveTo(wp->x, wp->y, wp->z, 0);
+                        MoveTo(wp->x, wp->y, wp->z);
                     }
                 }
             }
@@ -2600,7 +2600,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                 }
                 else if (los)
                 {
-                    MoveTo(Fx, Fy, Fz, Fo);
+                    MoveTo(Fx, Fy, Fz);
                     m_FearTimer = m_totalMoveTime + getMSTime() + 400;
                 }
                 else
@@ -2616,7 +2616,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                 else
                 {
                     SetRun(); //fear = run bitch run
-                    MoveTo(Fx, Fy, Fz, Fo);
+                    MoveTo(Fx, Fy, Fz);
                     m_FearTimer = m_totalMoveTime + getMSTime() + 200;
                 }
             }
@@ -2638,7 +2638,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 
         VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
         bool isHittingObject = mgr->getObjectHitPos(m_Unit->GetMapId(), m_Unit->GetPositionX(), m_Unit->GetPositionY(), m_Unit->GetPositionZ() + 2, wanderX, wanderY, wanderZ, wanderX, wanderY, wanderZ, -1);
-        MoveTo(wanderX, wanderY, wanderZ, wanderO);
+        MoveTo(wanderX, wanderY, wanderZ);
         m_WanderTimer = getMSTime() + m_totalMoveTime + 300; // time till next move (+ pause)
     }
 
@@ -2693,7 +2693,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 
                         MoveTo(delta_x + (d * (cosf(m_fallowAngle + unitToFollow->GetOrientation()))),
                                delta_y + (d * (sinf(m_fallowAngle + unitToFollow->GetOrientation()))),
-                               unitToFollow->GetPositionZ(), unitToFollow->GetOrientation());
+                               unitToFollow->GetPositionZ());
                     }
                     else
                     {
@@ -3645,7 +3645,10 @@ void AIInterface::UpdateMovementSpline()
     if (m_Unit->m_movementManager.IsMovementFinished())
     {
         if (MoveDone())
+        {
+            UpdateMovementSpline();
             OnMoveCompleted();
+        }
         else
             UpdateMovementSpline();
     }
@@ -3656,7 +3659,7 @@ bool AIInterface::MoveDone() const
     return m_Unit->m_movementManager.m_spline.IsSplineMoveDone();
 }
 
-bool AIInterface::Move(float & x, float & y, float & z, float o /*= 0*/)
+bool AIInterface::Move(float & x, float & y, float & z)
 {
     if (m_splinePriority > SPLINE_PRIORITY_MOVEMENT)
         return false;
@@ -3666,7 +3669,7 @@ bool AIInterface::Move(float & x, float & y, float & z, float o /*= 0*/)
     //Clear current spline
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
-    m_Unit->m_movementManager.m_spline.SetFacing(o);
+    //m_Unit->m_movementManager.m_spline.SetFacing(o);
     //m_Unit->m_movementManager.m_spline.m_splineFaceType.SetFlag(Movement::Spline::MonsterMoveFacingLocation);
     //m_Unit->m_movementManager.m_spline.m_splineFaceType.SetX(x);
     //m_Unit->m_movementManager.m_spline.m_splineFaceType.SetY(y);
@@ -4567,7 +4570,7 @@ void AIInterface::OnMoveCompleted()
 
 void AIInterface::MoveEvadeReturn()
 {
-    if (!MoveTo(m_returnX, m_returnY, m_returnZ, m_Unit->GetSpawnO()) && m_splinePriority == SPLINE_PRIORITY_MOVEMENT)
+    if (!MoveTo(m_returnX, m_returnY, m_returnZ) && m_splinePriority == SPLINE_PRIORITY_MOVEMENT)
     {
         m_Unit->SetPosition(m_returnX, m_returnY, m_returnZ, m_Unit->GetSpawnO());
         StopMovement(0);

@@ -5575,9 +5575,13 @@ void Unit::MoveToWaypoint(uint32 wp_id)
         }
 
         ai->m_currentWaypoint = wp_id;
+
         if (wp->flags != 0)
+        {
             ai->SetRun();
-        ai->MoveTo(wp->x, wp->y, wp->z, 0);
+        }
+        
+        ai->MoveTo(wp->x, wp->y, wp->z);
     }
 }
 
