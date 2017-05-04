@@ -99,7 +99,7 @@ class Beka : public CreatureAIScript
                 {
                     Creature* beka1 = sEAS.SpawnCreature(mPlayer, 1516, -13770.5f, -6.79f, 42.8f, 5.7f , 0);
                     beka1->GetAIInterface()->MoveTo(-13727.8f, -26.2f, 46.15f);
-					beka1->SetOrientation(4.07f);
+                    beka1->SetOrientation(4.07f);
                     beka1->Despawn(10 * 60 * 1000, 0);
                 }
             }
