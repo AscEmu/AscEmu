@@ -1837,20 +1837,29 @@ void AIInterface::SendMoveToPacket()
 
 bool AIInterface::StopMovement(uint32 time)
 {
-    if (m_Unit->GetCurrentVehicle() != NULL)
+    if (m_Unit->GetCurrentVehicle() != nullptr)
+    {
         return true;
+    }
 
     m_splinePriority = SPLINE_PRIORITY_MOVEMENT;
-    if (m_Unit->GetMapMgr() != NULL)
+
+    if (m_Unit->GetMapMgr() != nullptr)
+    {
         UpdateMovementSpline();
+    }
+
     m_moveTimer = time; //set pause after stopping
 
     //Clear current spline
     m_Unit->m_movementManager.m_spline.ClearSpline();
     m_Unit->m_movementManager.ForceUpdate();
 
-    if (m_Unit->GetMapMgr() != NULL)
+    if (m_Unit->GetMapMgr() != nullptr)
+    {
         SendMoveToPacket();
+    }
+
     return true;
 }
 
@@ -2442,7 +2451,9 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                 {
                     // 1 -> 10 then 1 -> 10
                     m_currentWaypoint++;
-                    if (m_currentWaypoint > GetWayPointsCount()) m_currentWaypoint = 1;  //Happens when you delete last wp seems to continue ticking
+                    if (m_currentWaypoint > GetWayPointsCount())
+                        m_currentWaypoint = 1;  //Happens when you delete last wp seems to continue ticking
+
                     destpoint = m_currentWaypoint;
                     m_moveBackward = false;
                 }
@@ -2483,11 +2494,15 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                 else if (m_wpScriptType != Movement::WP_MOVEMENT_SCRIPT_QUEST && m_wpScriptType != Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP)//4 Unused
                 {
                     // 1 -> 10 then 10 -> 1
-                    if (m_currentWaypoint > GetWayPointsCount()) m_currentWaypoint = 1;  //Happens when you delete last wp seems to continue ticking
+                    if (m_currentWaypoint > GetWayPointsCount())
+                        m_currentWaypoint = 1;  //Happens when you delete last wp seems to continue ticking
+
                     if (m_currentWaypoint == GetWayPointsCount())  // Are we on the last waypoint? if so walk back
                         m_moveBackward = true;
+
                     if (m_currentWaypoint == 1)  // Are we on the first waypoint? if so lets goto the second waypoint
                         m_moveBackward = false;
+
                     if (!m_moveBackward)  // going 1..n
                         destpoint = ++m_currentWaypoint;
                     else                // going n..1
@@ -3644,13 +3659,24 @@ void AIInterface::UpdateMovementSpline()
     //current spline is finished, attempt to move along next
     if (m_Unit->m_movementManager.IsMovementFinished())
     {
-        if (MoveDone())
+        if (MoveDone() && m_wpScriptType == Movement::WP_MOVEMENT_SCRIPT_RANDOMWP)
         {
-            UpdateMovementSpline();
-            OnMoveCompleted();
+            // If it is a random wp dont update spline movement immediately
+            if (m_wpScriptType == Movement::WP_MOVEMENT_SCRIPT_RANDOMWP)
+            {
+                OnMoveCompleted();
+                return;
+            }
+            else
+            {
+                UpdateMovementSpline();
+                OnMoveCompleted();
+            }
         }
         else
+        {
             UpdateMovementSpline();
+        }
     }
 }
 
