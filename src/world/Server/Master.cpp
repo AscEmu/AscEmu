@@ -55,7 +55,7 @@ ConfigMgr Config;
 // DB version
 #if VERSION_STRING != Cata
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-04-22_01_banned_char_log";
-static const char* REQUIRED_WORLD_DB_VERSION = "2017-05-05_01_playercreateinfo";
+static const char* REQUIRED_WORLD_DB_VERSION = "2017-05-05_02_areatriggers";
 #else
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-04-22_01_banned_char_log";
 static const char* REQUIRED_WORLD_DB_VERSION = "2017-05-05_01_playercreateinfo";
