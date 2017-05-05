@@ -851,7 +851,7 @@ bool Player::Create(WorldPacket& data)
 
     m_mapId = info->mapId;
     SetZoneId(info->zoneId);
-    m_position.ChangeCoords(info->positionX, info->positionY, info->positionZ);
+    m_position.ChangeCoords(info->positionX, info->positionY, info->positionZ, info->orientation);
     m_bind_pos_x = info->positionX;
     m_bind_pos_y = info->positionY;
     m_bind_pos_z = info->positionZ;

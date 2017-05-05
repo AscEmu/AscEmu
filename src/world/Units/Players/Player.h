@@ -108,6 +108,7 @@ struct PlayerCreateInfo
     float positionX;
     float positionY;
     float positionZ;
+    float orientation;
     uint16 displayId;
     uint8 strength;
     uint8 ability;

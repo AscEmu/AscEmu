@@ -2278,11 +2278,11 @@ void MySQLDataStore::LoadPlayerCreateInfoTable()
 {
     uint32 start_time = getMSTime();
 
-    //                                                                     0       1           2           3      4       5        6          7          8          9
-    QueryResult* player_create_info_result = WorldDatabase.Query("SELECT `Index`, race, factiontemplate, class, mapID, zoneID, positionX, positionY, positionZ, displayID, "
-    //                                                                10            11           12           13           14           15         16        17        18
+    //                                                                     0       1           2           3      4       5        6          7          8          9            10
+    QueryResult* player_create_info_result = WorldDatabase.Query("SELECT `Index`, race, factiontemplate, class, mapID, zoneID, positionX, positionY, positionZ, orientation, displayID, "
+    //                                                                11            12           13           14           15           16         17        18        19
                                                                 "BaseStrength, BaseAgility, BaseStamina, BaseIntellect, BaseSpirit, BaseHealth, BaseMana, BaseRage, BaseFocus, "
-    //                                                                19         20         21      22       23       24   
+    //                                                                20         21         22      23       24       25   
                                                                 "BaseEnergy, attackpower, mindmg, maxdmg, introid, taximask FROM playercreateinfo;");
     if (player_create_info_result == nullptr)
     {
@@ -2306,23 +2306,24 @@ void MySQLDataStore::LoadPlayerCreateInfoTable()
         playerCreateInfo.positionX = fields[6].GetFloat();
         playerCreateInfo.positionY = fields[7].GetFloat();
         playerCreateInfo.positionZ = fields[8].GetFloat();
-        playerCreateInfo.displayId = fields[9].GetUInt16();
-        playerCreateInfo.strength = fields[10].GetUInt8();
-        playerCreateInfo.ability = fields[11].GetUInt8();
-        playerCreateInfo.stamina = fields[12].GetUInt8();
-        playerCreateInfo.intellect = fields[13].GetUInt8();
-        playerCreateInfo.spirit = fields[14].GetUInt8();
-        playerCreateInfo.health = fields[15].GetUInt32();
-        playerCreateInfo.mana = fields[16].GetUInt32();
-        playerCreateInfo.rage = fields[17].GetUInt32();
-        playerCreateInfo.focus = fields[18].GetUInt32();
-        playerCreateInfo.energy = fields[19].GetUInt32();
-        playerCreateInfo.attackpower = fields[20].GetUInt32();
-        playerCreateInfo.mindmg = fields[21].GetFloat();
-        playerCreateInfo.maxdmg = fields[22].GetFloat();
-        playerCreateInfo.introid = fields[23].GetUInt32();
+        playerCreateInfo.orientation = fields[9].GetFloat();
+        playerCreateInfo.displayId = fields[10].GetUInt16();
+        playerCreateInfo.strength = fields[11].GetUInt8();
+        playerCreateInfo.ability = fields[12].GetUInt8();
+        playerCreateInfo.stamina = fields[13].GetUInt8();
+        playerCreateInfo.intellect = fields[14].GetUInt8();
+        playerCreateInfo.spirit = fields[15].GetUInt8();
+        playerCreateInfo.health = fields[16].GetUInt32();
+        playerCreateInfo.mana = fields[17].GetUInt32();
+        playerCreateInfo.rage = fields[18].GetUInt32();
+        playerCreateInfo.focus = fields[19].GetUInt32();
+        playerCreateInfo.energy = fields[20].GetUInt32();
+        playerCreateInfo.attackpower = fields[21].GetUInt32();
+        playerCreateInfo.mindmg = fields[22].GetFloat();
+        playerCreateInfo.maxdmg = fields[23].GetFloat();
+        playerCreateInfo.introid = fields[24].GetUInt32();
 
-        std::string taxiMaskStr = fields[24].GetString();
+        std::string taxiMaskStr = fields[25].GetString();
         std::vector<std::string> tokens = Util::SplitStringBySeperator(taxiMaskStr, " ");
 
         memset(playerCreateInfo.taximask, 0, sizeof(playerCreateInfo.taximask));
