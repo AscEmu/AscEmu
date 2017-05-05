@@ -206,8 +206,19 @@ typedef std::unordered_map<uint64, int32> TargetMap;
 typedef std::set<Unit*> AssistTargetSet;
 typedef std::map<uint32, AI_Spell*> SpellMap;
 
+//MIT start
 class SERVER_DECL AIInterface : public IUpdatable
 {
+    private:
+
+        Movement::WaypointMovementScript mWaypointScriptType;
+
+    public:
+
+        void setWaypointScriptType(Movement::WaypointMovementScript wp_script) { mWaypointScriptType = wp_script; }
+        Movement::WaypointMovementScript getWaypointScriptType() { return mWaypointScriptType; }
+
+// MIT end
     public:
 
         AIInterface();
@@ -354,11 +365,6 @@ class SERVER_DECL AIInterface : public IUpdatable
         void setWaypointToMove(uint32 id) { m_currentWaypoint = id; }
         bool IsFlying();
 
-        //Zyres: New functions
-        void SetWaypointScriptType(Movement::WaypointMovementScript wp_script) { m_wpScriptType = wp_script; }
-        Movement::WaypointMovementScript GetWaypointScriptType() { return m_wpScriptType; }
-
-
         // Calculation
         float _CalcAggroRange(Unit* target);
         void _CalcDestinationAndMove(Unit* target, float dist);
@@ -381,9 +387,6 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         //visibility
         uint32 faction_visibility;
-
-        //uint32 m_moveType;
-        Movement::WaypointMovementScript m_wpScriptType;
 
         bool onGameobject;
         CreatureState m_creatureState;

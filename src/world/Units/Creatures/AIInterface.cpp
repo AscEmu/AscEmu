@@ -43,7 +43,7 @@ AIInterface::AIInterface()
     m_WayPointsShowBackwards(false),
     m_currentWaypoint(0),
     m_moveBackward(false),
-    m_wpScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE),
+    mWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE),
     onGameobject(false),
     m_creatureState(STOPPED),
     m_canFlee(false),
@@ -148,7 +148,7 @@ void AIInterface::Init(Unit* un, AIType at, Movement::WaypointMovementScript mt)
     ARCEMU_ASSERT(at != AITYPE_PET);
 
     m_AIType = at;
-    m_wpScriptType = mt;
+    mWaypointScriptType = mt;
 
     m_AIState = STATE_IDLE;
     m_MovementState = MOVEMENTSTATE_STOP;
@@ -183,7 +183,7 @@ void AIInterface::Init(Unit* un, AIType at, Movement::WaypointMovementScript mt,
     ARCEMU_ASSERT(at == AITYPE_PET || at == AITYPE_TOTEM);
 
     m_AIType = at;
-    m_wpScriptType = mt;
+    mWaypointScriptType = mt;
 
     m_AIState = STATE_IDLE;
     m_MovementState = MOVEMENTSTATE_STOP;
@@ -2322,8 +2322,8 @@ void AIInterface::_UpdateMovement(uint32 p_time)
         {
             if (MoveDone())
             {
-                if (m_wpScriptType == Movement::WP_MOVEMENT_SCRIPT_WANTEDWP)//We reached wanted wp stop now
-                    m_wpScriptType = Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP;
+                if (mWaypointScriptType == Movement::WP_MOVEMENT_SCRIPT_WANTEDWP)//We reached wanted wp stop now
+                    mWaypointScriptType = Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP;
 
                 float wayO = 0.0f;
 
@@ -2374,7 +2374,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                 m_creatureState = STOPPED;
                 SetWalk();
 
-                if (m_wpScriptType == Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP)
+                if (mWaypointScriptType == Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP)
                     m_Unit->SetOrientation(wayO);
 
                 m_timeMoved = 0;
@@ -2442,12 +2442,12 @@ void AIInterface::_UpdateMovement(uint32 p_time)
             }
             else //we do have waypoints
             {
-                if (m_wpScriptType == Movement::WP_MOVEMENT_SCRIPT_RANDOMWP) //is random move on if so move to a random waypoint
+                if (mWaypointScriptType == Movement::WP_MOVEMENT_SCRIPT_RANDOMWP) //is random move on if so move to a random waypoint
                 {
                     if (GetWayPointsCount() > 1)
                         destpoint = RandomUInt((uint32)GetWayPointsCount());
                 }
-                else if (m_wpScriptType == Movement::WP_MOVEMENT_SCRIPT_CIRCLEWP)  //random move is not on lets follow the path in circles
+                else if (mWaypointScriptType == Movement::WP_MOVEMENT_SCRIPT_CIRCLEWP)  //random move is not on lets follow the path in circles
                 {
                     // 1 -> 10 then 1 -> 10
                     m_currentWaypoint++;
@@ -2457,7 +2457,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                     destpoint = m_currentWaypoint;
                     m_moveBackward = false;
                 }
-                else if (m_wpScriptType == Movement::WP_MOVEMENT_SCRIPT_WANTEDWP)//Move to wanted wp
+                else if (mWaypointScriptType == Movement::WP_MOVEMENT_SCRIPT_WANTEDWP)//Move to wanted wp
                 {
                     if (m_currentWaypoint)
                     {
@@ -2469,7 +2469,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                             destpoint = -1;
                     }
                 }
-                else if (m_wpScriptType == Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP)// move to end, then stop
+                else if (mWaypointScriptType == Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP)// move to end, then stop
                 {
                     ++m_currentWaypoint;
                     if (m_currentWaypoint > GetWayPointsCount())
@@ -2480,7 +2480,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                     else
                         destpoint = m_currentWaypoint;
                 }
-                else if (m_wpScriptType == Movement::WP_MOVEMENT_SCRIPT_QUEST)// move to end, then stop
+                else if (mWaypointScriptType == Movement::WP_MOVEMENT_SCRIPT_QUEST)// move to end, then stop
                 {
                     ++m_currentWaypoint;
                     if (m_currentWaypoint > GetWayPointsCount())
@@ -2491,7 +2491,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                     else
                         destpoint = m_currentWaypoint;
                 }
-                else if (m_wpScriptType != Movement::WP_MOVEMENT_SCRIPT_QUEST && m_wpScriptType != Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP)//4 Unused
+                else if (mWaypointScriptType != Movement::WP_MOVEMENT_SCRIPT_QUEST && mWaypointScriptType != Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP)//4 Unused
                 {
                     // 1 -> 10 then 10 -> 1
                     if (m_currentWaypoint > GetWayPointsCount())
@@ -3659,10 +3659,10 @@ void AIInterface::UpdateMovementSpline()
     //current spline is finished, attempt to move along next
     if (m_Unit->m_movementManager.IsMovementFinished())
     {
-        if (MoveDone() && m_wpScriptType == Movement::WP_MOVEMENT_SCRIPT_RANDOMWP)
+        if (MoveDone() && mWaypointScriptType == Movement::WP_MOVEMENT_SCRIPT_RANDOMWP)
         {
             // If it is a random wp dont update spline movement immediately
-            if (m_wpScriptType == Movement::WP_MOVEMENT_SCRIPT_RANDOMWP)
+            if (mWaypointScriptType == Movement::WP_MOVEMENT_SCRIPT_RANDOMWP)
             {
                 OnMoveCompleted();
                 return;
@@ -4192,7 +4192,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
                 sEventMgr.AddEvent(creature, &Creature::ChannelLinkUpCreature, creature->m_spawn->channel_target_creature, EVENT_CREATURE_CHANNEL_LINKUP, 1000, 5, 0);
         }
 
-        if (m_wpScriptType == Movement::WP_MOVEMENT_SCRIPT_QUEST)
+        if (mWaypointScriptType == Movement::WP_MOVEMENT_SCRIPT_QUEST)
         {
             auto waypoint = getWayPoint(getCurrentWaypoint());
             if (waypoint != nullptr)
@@ -4206,7 +4206,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
 
     //reset ProcCount
     //ResetProcCounts();
-    if (m_wpScriptType == Movement::WP_MOVEMENT_SCRIPT_QUEST)
+    if (mWaypointScriptType == Movement::WP_MOVEMENT_SCRIPT_QUEST)
         SetWalk();
     else
         SetSprint();
@@ -4643,7 +4643,7 @@ void AIInterface::SetReturnPosition()
     if (m_returnX != 0.0f && m_returnY != 0.0f && m_returnZ != 0.0f)  //already returning somewhere
         return;
 
-    if (m_wpScriptType == Movement::WP_MOVEMENT_SCRIPT_QUEST)
+    if (mWaypointScriptType == Movement::WP_MOVEMENT_SCRIPT_QUEST)
     {
         auto waypoint = getWayPoint(getCurrentWaypoint());
         if (waypoint != nullptr)

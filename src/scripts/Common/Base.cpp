@@ -1009,7 +1009,7 @@ void MoonScriptCreatureAI::StopWaypointMovement()
 
 void MoonScriptCreatureAI::SetWaypointMoveType(Movement::WaypointMovementScript wp_move_script_type)
 {
-    _unit->GetAIInterface()->SetWaypointScriptType(wp_move_script_type);
+    _unit->GetAIInterface()->setWaypointScriptType(wp_move_script_type);
 
 }
 

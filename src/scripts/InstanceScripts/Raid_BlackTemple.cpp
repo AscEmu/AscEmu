@@ -4826,7 +4826,7 @@ class AkamaAI : public MoonScriptBossAI
                     break;
                 default:
                     {
-                        _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                         _unit->GetAIInterface()->setWaypointToMove(iWaypointId + 1);
                     }
             }
@@ -5800,7 +5800,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     mFoA2 = NULL;
                 }
             }
-            if (_unit->GetAIInterface()->GetWaypointScriptType() != Movement::WP_MOVEMENT_SCRIPT_WANTEDWP && !IsCasting())
+            if (_unit->GetAIInterface()->getWaypointScriptType() != Movement::WP_MOVEMENT_SCRIPT_WANTEDWP && !IsCasting())
             {
                 if (_unit->GetChannelSpellId() == 0)
                 {

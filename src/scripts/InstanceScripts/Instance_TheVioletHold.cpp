@@ -145,7 +145,7 @@ class TheVioletHoldScript : public MoonInstanceScript
                 if (!guard->IsInWorld())
                     continue;
 
-                guard->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+                guard->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
             }
         }
 
@@ -300,7 +300,7 @@ class SinclariAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(SinclariAI, MoonScriptCreatureAI);
         SinclariAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
         }
 
         void OnReachWP(uint32 iWaypointId, bool bForwards)
@@ -330,7 +330,7 @@ class SinclariAI : public MoonScriptCreatureAI
         void OnRescuePrisonGuards()
         {
             _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, SINCLARI_SAY_1);
-            _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
 
         }
 };
@@ -400,7 +400,7 @@ class SinclariGossip : public GossipScript
                 case 2:
                 {
                     static_cast<Creature*>(pObject)->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
-                    pCreature->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+                    pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
                     //pCreature->MoveToWaypoint(1);
                     pCreature->GetAIInterface()->StopMovement(10);
 
@@ -427,7 +427,7 @@ class VHGuardsAI : public MoonScriptCreatureAI
         MOONSCRIPT_FACTORY_FUNCTION(VHGuardsAI, MoonScriptCreatureAI);
         VHGuardsAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
-            _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
         }
 
         //WPs inserted in db.
@@ -465,7 +465,7 @@ class VHCreatureAI : public MoonScriptCreatureAI
             {
                 AddWaypoint(CreateWaypoint(i, 0, AttackerWP[i]));
             }
-            _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
             _unit->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "I am alive!");
             _unit->GetAIInterface()->UpdateMove();
         }

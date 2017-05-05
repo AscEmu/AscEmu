@@ -388,7 +388,7 @@ void Creature::SaveToDB()
         m_spawn->entry = GetEntry();
         m_spawn->form = 0;
         m_spawn->id = spawnid = objmgr.GenerateCreatureSpawnID();
-        m_spawn->movetype = (uint8)m_aiInterface->GetWaypointScriptType();
+        m_spawn->movetype = (uint8)m_aiInterface->getWaypointScriptType();
         m_spawn->displayid = m_uint32Values[UNIT_FIELD_DISPLAYID];
         m_spawn->x = m_position.x;
         m_spawn->y = m_position.y;
@@ -442,7 +442,7 @@ void Creature::SaveToDB()
         << m_position.y << ","
         << m_position.z << ","
         << m_position.o << ","
-        << uint32(m_aiInterface->GetWaypointScriptType()) << ","
+        << uint32(m_aiInterface->getWaypointScriptType()) << ","
         << m_uint32Values[UNIT_FIELD_DISPLAYID] << ","
         << GetFaction() << ","
         << m_uint32Values[UNIT_FIELD_FLAGS] << ","
@@ -853,7 +853,7 @@ void Creature::OnRemoveInRangeObject(Object* pObj)
         // we lost our escorter, return to the spawn.
         m_aiInterface->StopMovement(10000);
         m_escorter = NULL;
-        GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
         //DestroyCustomWaypointMap(); //function not needed at all, crashing on delete(*int)
         //GetAIInterface()->deleteWaypoints();//this can repleace DestroyCustomWaypointMap, but it's crashing on delete too
         Despawn(1000, 1000);
@@ -1363,7 +1363,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
     // set position
     m_position.ChangeCoords(spawn->x, spawn->y, spawn->z, spawn->o);
     m_spawnLocation.ChangeCoords(spawn->x, spawn->y, spawn->z, spawn->o);
-    m_aiInterface->SetWaypointScriptType((Movement::WaypointMovementScript)spawn->movetype);
+    m_aiInterface->setWaypointScriptType((Movement::WaypointMovementScript)spawn->movetype);
     m_aiInterface->LoadWaypointMapFromDB(spawn->id);
 
     m_aiInterface->timed_emotes = objmgr.GetTimedEmoteList(spawn->id);
@@ -1654,7 +1654,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     m_aiInterface->m_FleeHealth = creature_properties->m_fleeHealth;
     m_aiInterface->m_FleeDuration = creature_properties->m_fleeDuration;
 
-    GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+    GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     GetAIInterface()->SetWalk();
 
     // load formation data
@@ -1933,7 +1933,7 @@ void Creature::SetGuardWaypoints()
     if (!GetMapMgr())
         return;
 
-    GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_RANDOMWP);
+    GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_RANDOMWP);
     for (uint8 i = 1; i <= 4; i++)
     {
         float ang = RandomFloat(100.0f) / 100.0f;

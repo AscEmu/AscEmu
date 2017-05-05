@@ -2890,7 +2890,7 @@ class SapphironAI : public CreatureAIScript
         spells[3].cooldown = 900;
         spells[3].attackstoptimer = 1000;
 
-        _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
         _unit->GetAIInterface()->StopFlying();
         _unit->GetAIInterface()->m_canMove = true;
@@ -2912,7 +2912,7 @@ class SapphironAI : public CreatureAIScript
 
         spells[3].casttime = (uint32)time(NULL) + spells[3].cooldown;
 
-        _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
         _unit->GetAIInterface()->StopFlying();
         _unit->GetAIInterface()->m_canMove = true;
@@ -2959,7 +2959,7 @@ class SapphironAI : public CreatureAIScript
             Waterfall->SetState(GO_STATE_OPEN);
         }
 
-        _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
         _unit->GetAIInterface()->StopFlying();
         _unit->GetAIInterface()->m_canMove = true;
@@ -3011,7 +3011,7 @@ class SapphironAI : public CreatureAIScript
     {
         _unit->CastSpell(_unit, FROST_AURA, true);
 
-        if (_unit->GetAIInterface()->GetWaypointScriptType() == Movement::WP_MOVEMENT_SCRIPT_WANTEDWP)
+        if (_unit->GetAIInterface()->getWaypointScriptType() == Movement::WP_MOVEMENT_SCRIPT_WANTEDWP)
             return;
 
         if (_unit->GetHealthPct() > 10)
@@ -3025,7 +3025,7 @@ class SapphironAI : public CreatureAIScript
                 _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
                 _unit->GetAIInterface()->StopMovement(0);
                 _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
-                _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                 _unit->GetAIInterface()->setWaypointToMove(1);
 
                 return;
@@ -3058,7 +3058,7 @@ class SapphironAI : public CreatureAIScript
             _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
             _unit->GetAIInterface()->setCurrentAgent(AGENT_SPELL);
             _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
-            _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
             _unit->GetAIInterface()->setWaypointToMove(0);
         }
 
@@ -3188,7 +3188,7 @@ class SapphironAI : public CreatureAIScript
                 _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
                 _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
                 _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
-                _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
                 _unit->GetAIInterface()->setWaypointToMove(0);
 
                 RemoveAIUpdateEvent();

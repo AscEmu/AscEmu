@@ -1102,7 +1102,7 @@ class ArthasAI : public CreatureAIScript
 
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
             _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
-            _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
             phase = 0;
         }
 
@@ -1113,13 +1113,13 @@ class ArthasAI : public CreatureAIScript
                 case 1:
                 {
                     _unit->SendScriptTextChatMessage(SAY_ARTHAS_10);
-                    _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                    _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                     _unit->GetAIInterface()->setWaypointToMove(2);
                 }
                 break;
                 case 7:
                 {
-                    _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                    _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
                     _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
                     _unit->GetAIInterface()->m_canMove = false;
                     _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
@@ -1136,7 +1136,7 @@ class ArthasAI : public CreatureAIScript
                 {
                     if (i > 1 && i < 7)
                     {
-                        _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                         _unit->GetAIInterface()->setWaypointToMove(i + 1);
                     }
                 }
@@ -1152,7 +1152,7 @@ class ArthasAI : public CreatureAIScript
                 {
                     _unit->GetAIInterface()->StopMovement(0);
                     _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
-                    _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                    _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                     _unit->GetAIInterface()->setWaypointToMove(1);
                 }
                 break;

@@ -452,7 +452,7 @@ bool ChatHandler::HandleWayPointGenerateCommand(const char* args, WorldSession* 
     if (creature_target->m_spawn && creature_target->m_spawn->movetype != 1)
     {
         creature_target->m_spawn->movetype = 1;
-        creature_target->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_RANDOMWP);
+        creature_target->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_RANDOMWP);
         WorldDatabase.Execute("UPDATE creature_spawns SET movetype = 1 WHERE id = %u", creature_target->GetSQL_id());
     }
 
@@ -598,7 +598,7 @@ bool ChatHandler::HandleWayPointMoveTypeCommand(const char* args, WorldSession* 
 
     WorldDatabase.Execute("UPDATE creature_spawns SET movetype = '%u' WHERE id = '%u'", option, creature_target->spawnid);
 
-    creature_target->GetAIInterface()->SetWaypointScriptType((Movement::WaypointMovementScript)option);
+    creature_target->GetAIInterface()->setWaypointScriptType((Movement::WaypointMovementScript)option);
 
     SystemMessage(m_session, "Value saved to database.");
 

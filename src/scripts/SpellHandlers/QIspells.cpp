@@ -3602,7 +3602,7 @@ bool InducingVision(uint32 i, Spell* pSpell)
         return true;
 
     Creature* creature = mTarget->GetMapMgr()->GetInterface()->SpawnCreature(2983, -2238.994873f, -408.009552f, -9.424423f, 5.753043f, true, false, 0, 0);
-    creature->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
+    creature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_FORWARDTHENSTOP);
 
     creature->LoadWaypointGroup(17);
     creature->SwitchToCustomWaypoints();

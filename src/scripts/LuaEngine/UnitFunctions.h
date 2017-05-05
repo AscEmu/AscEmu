@@ -464,7 +464,7 @@ class LuaUnit
     {
         TEST_UNIT()
             uint32 typ = CHECK_ULONG(L, 1);
-        ptr->GetAIInterface()->SetWaypointScriptType((Movement::WaypointMovementScript)typ);
+        ptr->GetAIInterface()->setWaypointScriptType((Movement::WaypointMovementScript)typ);
         return 0;
     }
 
@@ -904,7 +904,7 @@ class LuaUnit
         int id = static_cast<int>(luaL_checkinteger(L, 1));
         if (id)
         {
-            ptr->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+            ptr->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
             ptr->GetAIInterface()->setWaypointToMove(id);
         }
         return 0;
@@ -6004,7 +6004,7 @@ class LuaUnit
     static int GetMovementType(lua_State* L, Unit* ptr)
     {
         TEST_UNIT();
-        RET_NUMBER((uint32)ptr->GetAIInterface()->GetWaypointScriptType());
+        RET_NUMBER((uint32)ptr->GetAIInterface()->getWaypointScriptType());
         return 1;
     }
     static int GetQuestLogSlot(lua_State* L, Unit* ptr)
