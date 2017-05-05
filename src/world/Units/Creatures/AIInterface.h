@@ -217,6 +217,7 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         void setWaypointScriptType(Movement::WaypointMovementScript wp_script) { mWaypointScriptType = wp_script; }
         Movement::WaypointMovementScript getWaypointScriptType() { return mWaypointScriptType; }
+        bool isWaypointScriptType(Movement::WaypointMovementScript wp_script) { return wp_script == mWaypointScriptType; }
 
 // MIT end
     public:
