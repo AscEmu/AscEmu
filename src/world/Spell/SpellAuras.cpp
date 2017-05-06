@@ -2054,7 +2054,7 @@ void Aura::SpellAuraModCharm(bool apply)
         m_target->SetCharmTempVal(m_target->GetFaction());
         m_target->SetFaction(caster->GetFaction());
         m_target->UpdateOppFactionSet();
-        m_target->GetAIInterface()->Init(m_target, AITYPE_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, caster);
+        m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, caster);
         m_target->SetCharmedByGUID(caster->GetGUID());
         caster->SetCharmedUnitGUID(target->GetGUID());
         //damn it, the other effects of enslave demon will agro him on us anyway :S
@@ -2090,7 +2090,7 @@ void Aura::SpellAuraModCharm(bool apply)
         m_target->GetAIInterface()->WipeHateList();
         m_target->GetAIInterface()->WipeTargetList();
         m_target->UpdateOppFactionSet();
-        m_target->GetAIInterface()->Init(m_target, AITYPE_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
+        m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
         m_target->SetCharmedByGUID(0);
 
         if (caster->GetSession() != NULL)   // crashfix

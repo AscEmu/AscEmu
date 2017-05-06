@@ -33,7 +33,7 @@ void CompanionSummon::Load(CreatureProperties const* properties_, Unit* owner, L
 
     SetFaction(35);
     setLevel(1);
-    m_aiInterface->Init(this, AITYPE_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, owner);
+    m_aiInterface->Init(this, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, owner);
     m_aiInterface->SetUnitToFollow(owner);
     m_aiInterface->SetUnitToFollowAngle(-M_PI_FLOAT / 2);
     m_aiInterface->SetFollowDistance(3.0f);

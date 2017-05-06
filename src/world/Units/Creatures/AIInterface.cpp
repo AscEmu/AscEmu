@@ -125,7 +125,7 @@ AIInterface::AIInterface()
 
     m_walkMode(0),
     FollowDistance_backup(0),
-    m_AIType(AITYPE_LONER),
+    mAiScriptType(AI_SCRIPT_LONER),
     m_walkSpeed(0),
     m_guardTimer(0)
 {
@@ -143,11 +143,11 @@ void AIInterface::EventAiInterfaceParamsetFinish()
     }
 }
 
-void AIInterface::Init(Unit* un, AIType at, Movement::WaypointMovementScript mt)
+void AIInterface::Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScript mt)
 {
-    ARCEMU_ASSERT(at != AITYPE_PET);
+    ARCEMU_ASSERT(at != AI_SCRIPT_PET);
 
-    m_AIType = at;
+    setAiScriptType(at);
     setWaypointScriptType(mt);
 
     m_AIState = STATE_IDLE;
@@ -174,11 +174,11 @@ AIInterface::~AIInterface()
     deleteWaypoints();
 }
 
-void AIInterface::Init(Unit* un, AIType at, Movement::WaypointMovementScript mt, Unit* owner)
+void AIInterface::Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScript mt, Unit* owner)
 {
-    ARCEMU_ASSERT(at == AITYPE_PET || at == AITYPE_TOTEM);
+    ARCEMU_ASSERT(at == AI_SCRIPT_PET || at == AI_SCRIPT_TOTEM);
 
-    m_AIType = at;
+    setAiScriptType(at);
     setWaypointScriptType(mt);
 
     m_AIState = STATE_IDLE;
@@ -208,7 +208,7 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
         return;
 
     // Passive NPCs (like target dummies) shouldn't do anything.
-    if (m_AIType == AITYPE_PASSIVE)
+    if (isAiScriptType(AI_SCRIPT_PASSIVE))
         return;
 
     if (event < NUM_AI_EVENTS && AIEventHandlers[event] != NULL)
@@ -218,7 +218,7 @@ void AIInterface::HandleEvent(uint32 event, Unit* pUnit, uint32 misc1)
 void AIInterface::Update(unsigned long time_passed)
 {
     float tdist;
-    if (m_AIType == AITYPE_TOTEM)
+    if (isAiScriptType(AI_SCRIPT_TOTEM))
     {
         _UpdateTotem(time_passed);
         return;
@@ -231,7 +231,7 @@ void AIInterface::Update(unsigned long time_passed)
         && m_AIState != STATE_FOLLOWING && m_AIState != STATE_FEAR
         && m_AIState != STATE_WANDER && m_AIState != STATE_SCRIPTMOVE)
     {
-        if (m_AIType == AITYPE_PET)
+        if (isAiScriptType(AI_SCRIPT_PET))
         {
             if (!m_Unit->bInvincible && m_Unit->IsPet())
             {
@@ -265,7 +265,7 @@ void AIInterface::Update(unsigned long time_passed)
             m_combatResetX = m_combatResetY = m_combatResetZ = 0.0f;
             SetWalk();
 
-            if (m_AIType != AITYPE_PET && !skip_reset_hp)
+            if (!isAiScriptType(AI_SCRIPT_PET) && !skip_reset_hp)
                 m_Unit->SetHealth(m_Unit->GetMaxHealth());
         }
         else
@@ -357,7 +357,7 @@ void AIInterface::_UpdateTimer(uint32 p_time)
 
 void AIInterface::_UpdateTargets()
 {
-    if (m_Unit->IsPlayer() || (m_AIType != AITYPE_PET && disable_targeting))
+    if (m_Unit->IsPlayer() || (!isAiScriptType(AI_SCRIPT_PET) && disable_targeting))
         return;
 
     if (static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Type == UNIT_TYPE_CRITTER && static_cast<Creature*>(m_Unit)->GetType() != CREATURE_TYPE_GUARDIAN)
@@ -459,7 +459,7 @@ void AIInterface::_UpdateTargets()
                     AttackReaction(target, 1, 0);
             }
         }
-        else if (m_aiTargets.size() == 0 && ((m_AIType == AITYPE_PET && (m_Unit->IsPet() && static_cast< Pet* >(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE)) || (!m_Unit->IsPet() && disable_melee == false)))
+        else if (m_aiTargets.size() == 0 && ((isAiScriptType(AI_SCRIPT_PET) && (m_Unit->IsPet() && static_cast< Pet* >(m_Unit)->GetPetState() == PET_STATE_AGGRESSIVE)) || (!m_Unit->IsPet() && disable_melee == false)))
         {
             Unit* target = FindTarget();
             if (target)
@@ -483,7 +483,7 @@ void AIInterface::_UpdateTargets()
 /// Updates Combat Status of m_Unit
 void AIInterface::_UpdateCombat(uint32 p_time)
 {
-    if (m_AIType != AITYPE_PET && disable_combat)
+    if (!isAiScriptType(AI_SCRIPT_PET) && disable_combat)
         return;
 
     //just make sure we are not hitting self.
@@ -497,7 +497,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
     // If at instance don't return -- this is wrong ... instance creatures always returns to spawnpoint, dunno how do you got this idea.
     // If at instance returns to spawnpoint after empty agrolist
     Unit* nextTarget = getNextTarget();
-    if (m_AIType != AITYPE_PET
+    if (!isAiScriptType(AI_SCRIPT_PET)
         && m_AIState != STATE_EVADE
         && m_AIState != STATE_SCRIPTMOVE
         && !m_is_in_instance
@@ -584,7 +584,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
 
     if (cansee && getNextTarget() && getNextTarget()->isAlive() && m_AIState != STATE_EVADE && !m_Unit->IsCasting())
     {
-        if (agent == AGENT_NULL || (m_AIType == AITYPE_PET && !m_nextSpell))     // allow pets autocast
+        if (agent == AGENT_NULL || (isAiScriptType(AI_SCRIPT_PET) && !m_nextSpell))     // allow pets autocast
         {
             if (!m_nextSpell)
                 m_nextSpell = this->getSpell();
@@ -970,7 +970,7 @@ void AIInterface::SetUnitToFollowBackup(Unit* un)
 
 void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellId)
 {
-    if (m_AIState == STATE_EVADE || !pUnit || !pUnit->isAlive() || m_Unit->IsDead() || (m_Unit == pUnit) || (m_AIType == AITYPE_PASSIVE) || disable_combat)
+    if (m_AIState == STATE_EVADE || !pUnit || !pUnit->isAlive() || m_Unit->IsDead() || (m_Unit == pUnit) || isAiScriptType(AI_SCRIPT_PASSIVE) || disable_combat)
         return;
 
     if (worldConfig.terrainCollision.isCollisionEnabled && pUnit->IsPlayer())
@@ -1677,7 +1677,7 @@ float AIInterface::_CalcCombatRange(Unit* target, bool ranged)
 
 float AIInterface::_CalcDistanceFromHome()
 {
-    if (m_AIType == AITYPE_PET)
+    if (isAiScriptType(AI_SCRIPT_PET))
     {
         return m_Unit->GetDistanceSq(m_PetOwner);
     }
@@ -2614,7 +2614,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
                     else
                         SetWalk();
 
-                    if (m_AIType == AITYPE_PET || (m_UnitToFollow == m_formationLinkTarget)) //Unit is Pet/formation
+                    if (isAiScriptType(AI_SCRIPT_PET) || (m_UnitToFollow == m_formationLinkTarget)) //Unit is Pet/formation
                     {
                         if (dist > 900.0f/*30*/)
                             SetSprint();
@@ -2642,7 +2642,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 void AIInterface::CastSpell(Unit* caster, SpellInfo* spellInfo, SpellCastTargets targets)
 {
     ARCEMU_ASSERT(spellInfo != NULL);
-    if (m_AIType != AITYPE_PET && disable_spell)
+    if (!isAiScriptType(AI_SCRIPT_PET) && disable_spell)
         return;
 
     // Stop movement while casting.
@@ -4174,7 +4174,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
     resetNextTarget();
     m_Unit->CombatStatus.Vanished();
 
-    if (m_AIType == AITYPE_PET)
+    if (isAiScriptType(AI_SCRIPT_PET))
     {
         m_AIState = STATE_FOLLOWING;
         SetUnitToFollow(m_PetOwner);
@@ -4697,7 +4697,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             else
             {
                 m_Unit->GetAIInterface()->SetAllowedToEnterCombat(false);
-                m_Unit->GetAIInterface()->SetAIType(AITYPE_PASSIVE);
+                m_Unit->GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
             }
 
             m_walkSpeed = m_Unit->m_basicSpeedWalk = properties_difficulty->walk_speed;

@@ -823,7 +823,7 @@ bool FloraoftheEcoDomes(uint32 i, Spell* pSpell)
     normal->Despawn(1, 6 * 60 * 1000);
     mutant->Despawn(5 * 60 * 1000, 0);
 
-    mutant->GetAIInterface()->Init(mutant, AITYPE_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
+    mutant->GetAIInterface()->Init(mutant, AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
     mutant->GetAIInterface()->taunt(pPlayer, true);
 
     QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(10426);

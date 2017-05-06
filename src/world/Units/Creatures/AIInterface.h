@@ -95,15 +95,15 @@ enum SplinePriority
     SPLINE_PRIORITY_REDIRECTION
 };
 
-enum AIType
+enum AiScriptTypes
 {
-    AITYPE_LONER,
-    AITYPE_AGRO,
-    AITYPE_SOCIAL,
-    AITYPE_PET,
-    AITYPE_TOTEM,
-    AITYPE_GUARDIAN, //we got a master but he cannot control us, we follow and battle opposite factions
-    AITYPE_PASSIVE
+    AI_SCRIPT_LONER,
+    AI_SCRIPT_AGRO,
+    AI_SCRIPT_SOCIAL,
+    AI_SCRIPT_PET,
+    AI_SCRIPT_TOTEM,
+    AI_SCRIPT_GUARDIAN, //we got a master but he cannot control us, we follow and battle opposite factions
+    AI_SCRIPT_PASSIVE
 };
 
 enum AI_Agent
@@ -209,6 +209,8 @@ typedef std::map<uint32, AI_Spell*> SpellMap;
 //MIT start
 class SERVER_DECL AIInterface : public IUpdatable
 {
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Waypoint functions
     private:
 
         Movement::WaypointMovementScript mWaypointScriptType;
@@ -219,6 +221,17 @@ class SERVER_DECL AIInterface : public IUpdatable
         Movement::WaypointMovementScript getWaypointScriptType() { return mWaypointScriptType; }
         bool isWaypointScriptType(Movement::WaypointMovementScript wp_script) { return wp_script == mWaypointScriptType; }
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // AI Script functions
+    private:
+
+        AiScriptTypes mAiScriptType;
+
+    public:
+
+        void setAiScriptType(AiScriptTypes ai_type) { mAiScriptType = ai_type; }
+        bool isAiScriptType(AiScriptTypes ai_type) { return ai_type == mAiScriptType; }
+
 // MIT end
     public:
 
@@ -226,8 +239,8 @@ class SERVER_DECL AIInterface : public IUpdatable
         virtual ~AIInterface();
 
         // Misc
-        void Init(Unit* un, AIType at, Movement::WaypointMovementScript mt);
-        void Init(Unit* un, AIType at, Movement::WaypointMovementScript mt, Unit* owner);   /// used for pets
+        void Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScript mt);
+        void Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScript mt, Unit* owner);   /// used for pets
         Unit* GetUnit() const;
         Unit* GetPetOwner() const;
         void DismissPet();
@@ -253,8 +266,8 @@ class SERVER_DECL AIInterface : public IUpdatable
         Creature* getFormationLinkTarget();
         void setCreatureState(CreatureState state) { m_creatureState = state; }
         inline uint8 getAIState() { return static_cast<uint8>(m_AIState); }
-        inline uint8 getAIType() { return static_cast<uint8>(m_AIType); }
-        void SetAIType(AIType at) { m_AIType = at; }
+        inline uint8 getAIType() { return static_cast<uint8>(mAiScriptType); }
+
         inline uint8 getCurrentAgent() { return static_cast<uint8>(m_aiCurrentAgent); }
         void setCurrentAgent(AI_Agent agent) { m_aiCurrentAgent = agent; }
         uint32 getThreatByGUID(uint64 guid);
@@ -504,7 +517,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         Mutex m_aiTargetsLock;
         TargetMap m_aiTargets;
         AssistTargetSet m_assistTargets;
-        AIType m_AIType;
+        
         AI_State m_AIState;
         AI_Agent m_aiCurrentAgent;
 

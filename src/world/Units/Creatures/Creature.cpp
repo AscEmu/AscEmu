@@ -810,7 +810,7 @@ void Creature::EnslaveExpire()
             break;
     };
 
-    GetAIInterface()->Init(((Unit*)this), AITYPE_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
+    GetAIInterface()->Init(((Unit*)this), AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
 
     UpdateOppFactionSet();
     UpdateSameFactionSet();
@@ -1439,7 +1439,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
     else
     {
         GetAIInterface()->SetAllowedToEnterCombat(false);
-        GetAIInterface()->SetAIType(AITYPE_PASSIVE);
+        GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
     }
 
     // load formation data
@@ -1540,7 +1540,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     else
     {
         GetAIInterface()->SetAllowedToEnterCombat(false);
-        GetAIInterface()->SetAIType(AITYPE_PASSIVE);
+        GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
     }
 
     setSpeedForType(TYPE_WALK, creature_properties->walk_speed, true);
