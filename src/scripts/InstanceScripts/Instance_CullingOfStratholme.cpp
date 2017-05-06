@@ -70,7 +70,7 @@ class MeathookAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             _unit->RemoveAllAuras();
         }
@@ -250,7 +250,7 @@ class SalramTheFleshcrafterAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             _unit->RemoveAllAuras();
         }
@@ -428,7 +428,7 @@ class ChronoLordEpochAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             _unit->RemoveAllAuras();
         }
@@ -580,7 +580,7 @@ class InfiniteCorruptorAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             _unit->RemoveAllAuras();
         }
@@ -736,7 +736,7 @@ class MalganisAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             _unit->RemoveAllAuras();
         }
@@ -1101,7 +1101,7 @@ class ArthasAI : public CreatureAIScript
             _unit->GetAIInterface()->addWayPoint(CreateWaypoint(7, 0, Movement::WP_MOVE_TYPE_RUN));
 
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_SCRIPTIDLE);
             _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
             phase = 0;
         }
@@ -1120,7 +1120,7 @@ class ArthasAI : public CreatureAIScript
                 case 7:
                 {
                     _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
-                    _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
+                    _unit->GetAIInterface()->setAIState(AI_STATE_SCRIPTIDLE);
                     _unit->GetAIInterface()->m_canMove = false;
                     _unit->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
                 }
@@ -1151,7 +1151,7 @@ class ArthasAI : public CreatureAIScript
                 case 0:
                 {
                     _unit->GetAIInterface()->StopMovement(0);
-                    _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
+                    _unit->GetAIInterface()->setAIState(AI_STATE_SCRIPTMOVE);
                     _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                     _unit->GetAIInterface()->setWaypointToMove(1);
                 }

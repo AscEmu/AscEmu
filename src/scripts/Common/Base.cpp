@@ -989,7 +989,7 @@ void MoonScriptCreatureAI::ForceWaypointMove(uint32 pWaypointId)
         SetCanMove(true);
 
     StopMovement();
-    _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
+    _unit->GetAIInterface()->setAIState(AI_STATE_SCRIPTMOVE);
     SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
     SetWaypointToMove(pWaypointId);
 }
@@ -1002,7 +1002,7 @@ void MoonScriptCreatureAI::SetWaypointToMove(uint32 pWaypointId)
 void MoonScriptCreatureAI::StopWaypointMovement()
 {
     SetBehavior(Behavior_Default);
-    _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
+    _unit->GetAIInterface()->setAIState(AI_STATE_SCRIPTIDLE);
     SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
     SetWaypointToMove(0);
 }

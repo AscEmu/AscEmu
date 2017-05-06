@@ -1557,7 +1557,7 @@ class NajentusAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
         }
@@ -1759,7 +1759,7 @@ class SupremusAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -2052,7 +2052,7 @@ class GurtoggAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
 
             if (_unit->isAlive())
                 _unit->SendScriptTextChatMessage(4648);     //I'll rip the meat from your bones!
@@ -2820,7 +2820,7 @@ class ShahrazAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
         }
@@ -3314,7 +3314,7 @@ class TeronGorefiendAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
         }
@@ -3512,7 +3512,7 @@ class ShadeofakamaAI : public CreatureAIScript
         {
             hm = 100;
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -4046,7 +4046,7 @@ class EyeBeamTriggerAI : public MoonScriptCreatureAI
         EyeBeamTriggerAI(Creature* pCreature) : MoonScriptCreatureAI(pCreature)
         {
             _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
-            _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_SCRIPTMOVE);
             _unit->m_noRespawn = true;
 
             SetAllowMelee(false);
@@ -4058,7 +4058,7 @@ class EyeBeamTriggerAI : public MoonScriptCreatureAI
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
         }
 
         void AIUpdate()
@@ -4362,7 +4362,7 @@ class AkamaAI : public MoonScriptBossAI
         void OnCombatStop(Unit* pTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             SetWieldWeapon(false);
         }
 
@@ -4612,7 +4612,7 @@ class AkamaAI : public MoonScriptBossAI
                     SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
                     SetWaypointToMove(0);
                     RemoveAIUpdateEvent();
-                    _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+                    _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
 
                     _unit->GetAIInterface()->AttackReaction(mIllidanAI->GetUnit(), 1, 0);
 
@@ -4677,7 +4677,7 @@ class AkamaAI : public MoonScriptBossAI
                 else if (mIllidanAI->GetUnit()->GetAIInterface()->Flying())
                 {
                     SetCanEnterCombat(false);
-                    _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+                    _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
                     // azolex to prevent compile error
                     uint32 nullfix = 0;
                     _unit->GetAIInterface()->setNextTarget(nullfix);
@@ -4713,7 +4713,7 @@ class AkamaAI : public MoonScriptBossAI
                         if (GetCanEnterCombat())
                         {
                             SetCanEnterCombat(false);
-                            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+                            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
                             // ugly code, trows compile error if left just null, this should do it ~ azolex
                             uint32 nullfix = 0;
                             _unit->GetAIInterface()->setNextTarget(nullfix);
@@ -5466,7 +5466,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                 ApplyAura(ILLIDAN_DEATH2);
 
                 pMaiev->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
-                pMaiev->GetAIInterface()->SetAIState(STATE_IDLE);
+                pMaiev->GetAIInterface()->setAIState(AI_STATE_IDLE);
                 pMaiev->GetAIInterface()->WipeTargetList();
                 pMaiev->GetAIInterface()->WipeHateList();
             }
@@ -5606,7 +5606,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     if (pAkamaAI->mScenePart <= 2 && pAkamaAI->GetCanEnterCombat())
                     {
                         pAkamaAI->SetCanEnterCombat(false);
-                        pAkamaAI->GetUnit()->GetAIInterface()->SetAIState(STATE_IDLE);
+                        pAkamaAI->GetUnit()->GetAIInterface()->setAIState(AI_STATE_IDLE);
                         // ugly code, trows compile error if left just null, this should do it ~ azolex
                         uint32 nullfix = 0;
                         pAkamaAI->GetUnit()->GetAIInterface()->setNextTarget(nullfix);
@@ -6132,7 +6132,7 @@ class IllidanStormrageAI : public MoonScriptBossAI
                     pMaievAI->GetUnit()->SetEmoteState(EMOTE_ONESHOT_READY1H);
                     pMaievAI->SetCanEnterCombat(true);
                     pMaievAI->GetUnit()->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-                    pMaievAI->GetUnit()->GetAIInterface()->SetAIState(STATE_IDLE);
+                    pMaievAI->GetUnit()->GetAIInterface()->setAIState(AI_STATE_IDLE);
                     pMaievAI->SetCanMove(true);
                     pMaievAI->GetUnit()->GetAIInterface()->AttackReaction(_unit, 1, 0);
                     pMaievAI->GetUnit()->SetEmoteState(EMOTE_ONESHOT_READY1H);
@@ -6541,7 +6541,7 @@ class CageTrapTriggerAI : public MoonScriptCreatureAI
         void OnCombatStop(Unit* pTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
         }
 
         void AIUpdate()

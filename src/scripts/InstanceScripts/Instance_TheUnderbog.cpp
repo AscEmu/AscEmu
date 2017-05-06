@@ -149,7 +149,7 @@ class BOGGIANTAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -281,7 +281,7 @@ class CLAWAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -408,7 +408,7 @@ class UNDERBATAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -520,7 +520,7 @@ class FENRAYAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -640,7 +640,7 @@ class LYKULSTINGERAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -778,7 +778,7 @@ class LYKULWASPAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -925,7 +925,7 @@ class WRATHFINWARRIORAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1053,7 +1053,7 @@ class WRATHFINSENTRYAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1165,7 +1165,7 @@ class WRATHFINMYRMIDONAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1284,7 +1284,7 @@ class UNDERBOGLORDAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1418,7 +1418,7 @@ class MURKBLOODSPEARMANAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1586,7 +1586,7 @@ class MURKBLOODORACLEAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1722,7 +1722,7 @@ class MURKBLOODHEALERAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1849,7 +1849,7 @@ class MURKBLOODTRIBESMANAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1992,7 +1992,7 @@ class UNDERBOGSHAMBLERAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -2105,7 +2105,7 @@ class UNDERBOGFRENZYAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -2198,7 +2198,7 @@ class UNDERBOGLURKERAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -2298,7 +2298,7 @@ class HungarfenAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
         }
@@ -2438,7 +2438,7 @@ class GhazanAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
         }
@@ -2576,7 +2576,7 @@ class ClawAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
         }
@@ -2805,7 +2805,7 @@ class SwamplordMuselekAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
         }
@@ -2987,7 +2987,7 @@ class TheBlackStalkerAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
         }

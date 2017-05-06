@@ -146,7 +146,7 @@ class ChronoLordAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -282,7 +282,7 @@ class TemporusAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -424,7 +424,7 @@ class AenusAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 

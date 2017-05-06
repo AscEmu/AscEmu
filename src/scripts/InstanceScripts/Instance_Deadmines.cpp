@@ -211,7 +211,7 @@ class MrSmiteAI : public MoonScriptBossAI
             {
                 if (NearChest())
                     SwitchWeapons();
-                else if (_unit->GetAIInterface()->getAIState() != STATE_SCRIPTMOVE)
+                else if (_unit->GetAIInterface()->getAIState() != AI_STATE_SCRIPTMOVE)
                 {
                     MoveToChest();
                 }
@@ -229,21 +229,21 @@ class MrSmiteAI : public MoonScriptBossAI
                 _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
 
             StopMovement();
-            _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_SCRIPTMOVE);
             MoveTo(1.100060f, -780.026367f, 9.811194f);
         }
 
         void MoveToPlayer()
         {
             _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
-            _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
+            _unit->GetAIInterface()->setAIState(AI_STATE_SCRIPTIDLE);
         }
 
         bool NearChest()
         {
             if (_unit->GetPositionX() == 1.100060f && _unit->GetPositionY() == -780.026367f)
                 return true;
-            else if (_unit->GetAIInterface()->getAIState() != STATE_SCRIPTMOVE)
+            else if (_unit->GetAIInterface()->getAIState() != AI_STATE_SCRIPTMOVE)
             {
                 // Too small distance - let's prevent from blocking
                 float XDiff, YDiff;

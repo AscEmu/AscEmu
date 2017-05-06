@@ -3948,40 +3948,40 @@ class LuaUnit
             switch (state)
             {
                 case 0:
-                    ptr->GetAIInterface()->SetAIState(STATE_IDLE);
+                    ptr->GetAIInterface()->setAIState(AI_STATE_IDLE);
                     break;
                 case 1:
-                    ptr->GetAIInterface()->SetAIState(STATE_ATTACKING);
+                    ptr->GetAIInterface()->setAIState(AI_STATE_ATTACKING);
                     break;
                 case 2:
-                    ptr->GetAIInterface()->SetAIState(STATE_CASTING);
+                    ptr->GetAIInterface()->setAIState(AI_STATE_CASTING);
                     break;
                 case 3:
-                    ptr->GetAIInterface()->SetAIState(STATE_FLEEING);
+                    ptr->GetAIInterface()->setAIState(AI_STATE_FLEEING);
                     break;
                 case 4:
-                    ptr->GetAIInterface()->SetAIState(STATE_FOLLOWING);
+                    ptr->GetAIInterface()->setAIState(AI_STATE_FOLLOWING);
                     break;
                 case 5:
-                    ptr->GetAIInterface()->SetAIState(STATE_EVADE);
+                    ptr->GetAIInterface()->setAIState(AI_STATE_EVADE);
                     break;
                 case 6:
-                    ptr->GetAIInterface()->SetAIState(STATE_MOVEWP);
+                    ptr->GetAIInterface()->setAIState(AI_STATE_MOVEWP);
                     break;
                 case 7:
-                    ptr->GetAIInterface()->SetAIState(STATE_FEAR);
+                    ptr->GetAIInterface()->setAIState(AI_STATE_FEAR);
                     break;
                 case 8:
-                    ptr->GetAIInterface()->SetAIState(STATE_WANDER);
+                    ptr->GetAIInterface()->setAIState(AI_STATE_WANDER);
                     break;
                 case 9:
-                    ptr->GetAIInterface()->SetAIState(STATE_STOPPED);
+                    ptr->GetAIInterface()->setAIState(AI_STATE_STOPPED);
                     break;
                 case 10:
-                    ptr->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
+                    ptr->GetAIInterface()->setAIState(AI_STATE_SCRIPTMOVE);
                     break;
                 case 11:
-                    ptr->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
+                    ptr->GetAIInterface()->setAIState(AI_STATE_SCRIPTIDLE);
                     break;
             }
         }

@@ -394,7 +394,7 @@ class DofNaralexGossip : public GossipScript
                 {
                     pCreature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
                     pCreature->GetAIInterface()->StopMovement(0);
-                    pCreature->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
+                    pCreature->GetAIInterface()->setAIState(AI_STATE_SCRIPTMOVE);
                     pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                     pCreature->GetAIInterface()->setWaypointToMove(2);
                 } break;

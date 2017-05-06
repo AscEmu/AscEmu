@@ -144,19 +144,19 @@ enum AI_SpellTargetType
 
 enum AI_State
 {
-    STATE_IDLE,
-    STATE_ATTACKING,
-    STATE_CASTING,
-    STATE_FLEEING,
-    STATE_FOLLOWING,
-    STATE_EVADE,
-    STATE_MOVEWP,
-    STATE_FEAR,
-    STATE_UNFEARED,
-    STATE_WANDER,
-    STATE_STOPPED,
-    STATE_SCRIPTMOVE,
-    STATE_SCRIPTIDLE
+    AI_STATE_IDLE,
+    AI_STATE_ATTACKING,
+    AI_STATE_CASTING,
+    AI_STATE_FLEEING,
+    AI_STATE_FOLLOWING,
+    AI_STATE_EVADE,
+    AI_STATE_MOVEWP,
+    AI_STATE_FEAR,
+    AI_STATE_UNFEARED,
+    AI_STATE_WANDER,
+    AI_STATE_STOPPED,
+    AI_STATE_SCRIPTMOVE,
+    AI_STATE_SCRIPTIDLE
 };
 
 enum MovementState
@@ -232,6 +232,15 @@ class SERVER_DECL AIInterface : public IUpdatable
         void setAiScriptType(AiScriptTypes ai_type) { mAiScriptType = ai_type; }
         bool isAiScriptType(AiScriptTypes ai_type) { return ai_type == mAiScriptType; }
 
+    private:
+
+        AI_State mAIState;
+
+    public:
+
+        void setAIState(AI_State ai_state) { mAIState = ai_state; }
+        bool isAIState(AI_State ai_state) { return ai_state == mAIState; }
+
 // MIT end
     public:
 
@@ -265,7 +274,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         uint64 getUnitToFearGUID() { return m_UnitToFear; }
         Creature* getFormationLinkTarget();
         void setCreatureState(CreatureState state) { m_creatureState = state; }
-        inline uint8 getAIState() { return static_cast<uint8>(m_AIState); }
+        inline uint8 getAIState() { return static_cast<uint8>(mAIState); }
         inline uint8 getAIType() { return static_cast<uint8>(mAiScriptType); }
 
         inline uint8 getCurrentAgent() { return static_cast<uint8>(m_aiCurrentAgent); }
@@ -390,7 +399,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         inline bool GetAllowedToEnterCombat(void) { return m_AllowedToEnterCombat; }
 
         void CheckTarget(Unit* target);
-        inline void SetAIState(AI_State newstate) { m_AIState = newstate; }
+        
 
         // Movement
         bool m_canMove;
@@ -518,7 +527,6 @@ class SERVER_DECL AIInterface : public IUpdatable
         TargetMap m_aiTargets;
         AssistTargetSet m_assistTargets;
         
-        AI_State m_AIState;
         AI_Agent m_aiCurrentAgent;
 
         Unit* tauntedBy;        /// This mob will hit only tauntedBy mob.

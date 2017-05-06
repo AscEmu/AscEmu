@@ -764,7 +764,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /************************************************************************/
     /* Check if the unit is evading                                         */
     /************************************************************************/
-    if (u_victim->IsCreature() && u_victim->GetAIInterface()->getAIState() == STATE_EVADE)
+    if (u_victim->IsCreature() && u_victim->GetAIInterface()->getAIState() == AI_STATE_EVADE)
         return SPELL_DID_HIT_EVADE;
 
     /************************************************************************/
@@ -950,7 +950,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
     if (!p_caster && u_caster && u_caster->GetAIInterface())
     {
         AIInterface* ai = u_caster->GetAIInterface();
-        if (ai->getAIState() == STATE_FEAR || ai->getAIState() == STATE_WANDER)
+        if (ai->getAIState() == AI_STATE_FEAR || ai->getAIState() == AI_STATE_WANDER)
         {
             DecRef();
             return SPELL_FAILED_NOT_READY;

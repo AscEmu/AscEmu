@@ -4095,7 +4095,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
     //special states processing
     if (pVictim->IsCreature())
     {
-        if (pVictim->GetAIInterface() && (pVictim->GetAIInterface()->getAIState() == STATE_EVADE ||
+        if (pVictim->GetAIInterface() && (pVictim->GetAIInterface()->getAIState() == AI_STATE_EVADE ||
             (pVictim->GetAIInterface()->GetIsSoulLinked() && pVictim->GetAIInterface()->getSoullinkedWith() != this)))
         {
             vstate = EVADE;

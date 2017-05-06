@@ -86,7 +86,7 @@ AIInterface::AIInterface()
     m_PetOwner(nullptr),
     FollowDistance(0.0f),
     m_fallowAngle(M_PI_FLOAT / 2),
-    m_AIState(STATE_IDLE),
+    mAIState(AI_STATE_IDLE),
     m_aiCurrentAgent(AGENT_NULL),
     tauntedBy(nullptr),
     isTaunted(false),
@@ -150,7 +150,7 @@ void AIInterface::Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScr
     setAiScriptType(at);
     setWaypointScriptType(mt);
 
-    m_AIState = STATE_IDLE;
+    setAIState(AI_STATE_IDLE);
     m_MovementState = MOVEMENTSTATE_STOP;
 
     m_Unit = un;
@@ -181,7 +181,7 @@ void AIInterface::Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScr
     setAiScriptType(at);
     setWaypointScriptType(mt);
 
-    m_AIState = STATE_IDLE;
+    setAIState(AI_STATE_IDLE);
     m_MovementState = MOVEMENTSTATE_STOP;
 
     m_Unit = un;
@@ -227,9 +227,9 @@ void AIInterface::Update(unsigned long time_passed)
     _UpdateTimer(time_passed);
     _UpdateTargets();
 
-    if (m_Unit->isAlive() && m_AIState != STATE_IDLE
-        && m_AIState != STATE_FOLLOWING && m_AIState != STATE_FEAR
-        && m_AIState != STATE_WANDER && m_AIState != STATE_SCRIPTMOVE)
+    if (m_Unit->isAlive() && !isAIState(AI_STATE_IDLE)
+        && !isAIState(AI_STATE_FOLLOWING) && !isAIState(AI_STATE_FEAR)
+        && !isAIState(AI_STATE_WANDER) && !isAIState(AI_STATE_SCRIPTMOVE))
     {
         if (isAiScriptType(AI_SCRIPT_PET))
         {
@@ -255,12 +255,12 @@ void AIInterface::Update(unsigned long time_passed)
     UpdateMovementSpline();
     _UpdateMovement(time_passed);
 
-    if (m_AIState == STATE_EVADE)
+    if (isAIState(AI_STATE_EVADE))
     {
         tdist = m_Unit->GetDistanceSq(m_returnX, m_returnY, m_returnZ);
         if (tdist <= 4.0f)
         {
-            m_AIState = STATE_IDLE;
+            setAIState(AI_STATE_IDLE);
             m_returnX = m_returnY = m_returnZ = 0.0f;
             m_combatResetX = m_combatResetY = m_combatResetZ = 0.0f;
             SetWalk();
@@ -297,7 +297,7 @@ void AIInterface::Update(unsigned long time_passed)
         }
     }
 
-    if (!getNextTarget() && !m_fleeTimer && m_creatureState == STOPPED && m_AIState == STATE_IDLE && m_Unit->isAlive())
+    if (!getNextTarget() && !m_fleeTimer && m_creatureState == STOPPED && isAIState(AI_STATE_IDLE) && m_Unit->isAlive())
     {
         if (timed_emote_expire <= time_passed)    // note that creature might go idle and time_passed might get big next time ...We do not skip emotes because of lost time
         {
@@ -367,11 +367,11 @@ void AIInterface::_UpdateTargets()
         return;
 
     // Find new Assist Targets and remove old ones
-    if (m_AIState == STATE_FLEEING)
+    if (isAIState(AI_STATE_FLEEING))
     {
         FindFriends(100.0f/*10.0*/);
     }
-    else if (m_AIState != STATE_IDLE && m_AIState != STATE_SCRIPTIDLE)
+    else if (!isAIState(AI_STATE_IDLE) && !isAIState(AI_STATE_SCRIPTIDLE))
     {
         FindFriends(64.0f/*8.0f*/);
     }
@@ -434,9 +434,9 @@ void AIInterface::_UpdateTargets()
             return;
 
         if (m_aiTargets.size() == 0
-            && m_AIState != STATE_IDLE && m_AIState != STATE_FOLLOWING
-            && m_AIState != STATE_EVADE && m_AIState != STATE_FEAR
-            && m_AIState != STATE_WANDER && m_AIState != STATE_SCRIPTIDLE)
+            && !isAIState(AI_STATE_IDLE) && !isAIState(AI_STATE_FOLLOWING)
+            && !isAIState(AI_STATE_EVADE) && !isAIState(AI_STATE_FEAR)
+            && !isAIState(AI_STATE_WANDER) && !isAIState(AI_STATE_SCRIPTIDLE))
         {
             if (m_Unit->GetMapMgr() && m_Unit->GetMapMgr()->GetMapInfo())
             {
@@ -469,7 +469,7 @@ void AIInterface::_UpdateTargets()
         }
     }
     // Find new Targets when we are ooc
-    if ((m_AIState == STATE_IDLE || m_AIState == STATE_SCRIPTIDLE) && m_assistTargets.size() == 0)
+    if ((isAIState(AI_STATE_IDLE) || isAIState(AI_STATE_SCRIPTIDLE)) && m_assistTargets.size() == 0)
     {
         Unit* target = FindTarget();
         if (target)
@@ -498,14 +498,14 @@ void AIInterface::_UpdateCombat(uint32 p_time)
     // If at instance returns to spawnpoint after empty agrolist
     Unit* nextTarget = getNextTarget();
     if (!isAiScriptType(AI_SCRIPT_PET)
-        && m_AIState != STATE_EVADE
-        && m_AIState != STATE_SCRIPTMOVE
+        && !isAIState(AI_STATE_EVADE)
+        && !isAIState(AI_STATE_SCRIPTMOVE)
         && !m_is_in_instance
         && (m_outOfCombatRange && m_Unit->GetDistanceSq(m_combatResetX, m_combatResetY, m_combatResetZ) > m_outOfCombatRange))
     {
         HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
     }
-    else if (nextTarget == NULL && m_AIState != STATE_FOLLOWING && m_AIState != STATE_SCRIPTMOVE)
+    else if (nextTarget == NULL && !isAIState(AI_STATE_FOLLOWING) && !isAIState(AI_STATE_SCRIPTMOVE))
     {
         //        SetNextTarget(FindTargetForSpell(m_nextSpell));
         if (m_is_in_instance)
@@ -563,7 +563,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
         }
     }
 
-    if (getNextTarget() != NULL && getNextTarget()->IsCreature() && m_AIState == STATE_EVADE)
+    if (getNextTarget() != NULL && getNextTarget()->IsCreature() && isAIState(AI_STATE_EVADE))
         HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
 
     bool cansee = false;
@@ -582,7 +582,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
         }
     }
 
-    if (cansee && getNextTarget() && getNextTarget()->isAlive() && m_AIState != STATE_EVADE && !m_Unit->IsCasting())
+    if (cansee && getNextTarget() && getNextTarget()->isAlive() && !isAIState(AI_STATE_EVADE) && !m_Unit->IsCasting())
     {
         if (agent == AGENT_NULL || (isAiScriptType(AI_SCRIPT_PET) && !m_nextSpell))     // allow pets autocast
         {
@@ -871,7 +871,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                 if (!m_hasFleed)
                     CALL_SCRIPT_EVENT(m_Unit, OnFlee)(getNextTarget());
 
-                m_AIState = STATE_FLEEING;
+                setAIState(AI_STATE_FLEEING);
                 resetNextTarget();
 
                 WorldPacket data(SMSG_MESSAGECHAT, 100);
@@ -970,7 +970,7 @@ void AIInterface::SetUnitToFollowBackup(Unit* un)
 
 void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellId)
 {
-    if (m_AIState == STATE_EVADE || !pUnit || !pUnit->isAlive() || m_Unit->IsDead() || (m_Unit == pUnit) || isAiScriptType(AI_SCRIPT_PASSIVE) || disable_combat)
+    if (isAIState(AI_STATE_EVADE) || !pUnit || !pUnit->isAlive() || m_Unit->IsDead() || (m_Unit == pUnit) || isAiScriptType(AI_SCRIPT_PASSIVE) || disable_combat)
         return;
 
     if (worldConfig.terrainCollision.isCollisionEnabled && pUnit->IsPlayer())
@@ -1011,14 +1011,14 @@ void AIInterface::AttackReaction(Unit* pUnit, uint32 damage_dealt, uint32 spellI
             pUnit = mTarget;
     }
 
-    if ((m_AIState == STATE_IDLE || m_AIState == STATE_FOLLOWING) && m_Unit->GetAIInterface()->GetAllowedToEnterCombat())
+    if ((isAIState(AI_STATE_IDLE) || isAIState(AI_STATE_FOLLOWING)) && m_Unit->GetAIInterface()->GetAllowedToEnterCombat())
     {
         WipeTargetList();
 
         HandleEvent(EVENT_ENTERCOMBAT, pUnit, 0);
     }
 
-    if (m_AIState == STATE_UNFEARED)
+    if (isAIState(AI_STATE_UNFEARED))
     {
         //we're unfeared resume combat
         HandleEvent(EVENT_ENTERCOMBAT, pUnit, 1);
@@ -1400,7 +1400,7 @@ bool AIInterface::FindFriends(float dist)
         if (!(pUnit->m_phase & m_Unit->m_phase))   //We can't help a friendly unit if it is not in our phase
             continue;
 
-        if (isCombatSupport(m_Unit, pUnit) && (pUnit->GetAIInterface()->getAIState() == STATE_IDLE || pUnit->GetAIInterface()->getAIState() == STATE_SCRIPTIDLE))      //Not sure
+        if (isCombatSupport(m_Unit, pUnit) && (pUnit->GetAIInterface()->getAIState() == AI_STATE_IDLE || pUnit->GetAIInterface()->getAIState() == AI_STATE_SCRIPTIDLE))      //Not sure
         {
             if (m_Unit->GetDistanceSq(pUnit) < dist)
             {
@@ -2246,7 +2246,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 
                 float wayO = 0.0f;
 
-                if ((GetWayPointsCount() != 0) && (m_AIState == STATE_IDLE || m_AIState == STATE_SCRIPTMOVE)) //if we attacking don't use wps
+                if ((GetWayPointsCount() != 0) && (isAIState(AI_STATE_IDLE) || isAIState(AI_STATE_SCRIPTMOVE))) //if we attacking don't use wps
                 {
                     Movement::WayPoint* wp = getWayPoint(getCurrentWaypoint());
                     if (wp)
@@ -2301,7 +2301,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
             }
         }
     }
-    else if (m_creatureState == STOPPED && (m_AIState == STATE_IDLE || m_AIState == STATE_SCRIPTMOVE) && !m_moveTimer && !m_timeToMove && getUnitToFollow() == NULL) //creature is stopped and out of Combat
+    else if (m_creatureState == STOPPED && (isAIState(AI_STATE_IDLE) || isAIState(AI_STATE_SCRIPTMOVE)) && !m_moveTimer && !m_timeToMove && getUnitToFollow() == NULL) //creature is stopped and out of Combat
     {
         if (m_Unit->GetDisplayId() == 5233) //if Spirit Healer don't move
             return;
@@ -2465,7 +2465,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 
     //Fear Code
     Unit* unitToFear = getUnitToFear();
-    if (m_AIState == STATE_FEAR && unitToFear != NULL && m_creatureState == STOPPED)
+    if (isAIState(AI_STATE_FEAR) && unitToFear != NULL && m_creatureState == STOPPED)
     {
         if (getMSTime() > m_FearTimer)   // Wait at point for x ms ;)
         {
@@ -2558,7 +2558,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
     }
 
     // Wander AI movement code
-    if (m_AIState == STATE_WANDER && m_creatureState == STOPPED)
+    if (isAIState(AI_STATE_WANDER) && m_creatureState == STOPPED)
     {
         if (getMSTime() < m_WanderTimer) // is it time to move again?
             return;
@@ -2586,7 +2586,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
         }
         else
         {
-            if (m_AIState == STATE_IDLE || m_AIState == STATE_FOLLOWING)
+            if (isAIState(AI_STATE_IDLE) || isAIState(AI_STATE_FOLLOWING))
             {
                 float dist = m_Unit->GetDistanceSq(unitToFollow);
 
@@ -2607,7 +2607,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
 
                 if (dist > (FollowDistance * FollowDistance)) //if out of range
                 {
-                    m_AIState = STATE_FOLLOWING;
+                    setAIState(AI_STATE_FOLLOWING);
 
                     if (dist > 25.0f) //25 yard away lets run else we will loose the them
                         SetRun();
@@ -2646,7 +2646,7 @@ void AIInterface::CastSpell(Unit* caster, SpellInfo* spellInfo, SpellCastTargets
         return;
 
     // Stop movement while casting.
-    m_AIState = STATE_CASTING;
+    setAIState(AI_STATE_CASTING);
 #ifdef _AI_DEBUG
     LOG_DEBUG("AI DEBUG: Unit %u casting spell %s on target " I64FMT " ", caster->GetEntry(),
               sSpellStore.LookupString(spellInfo->Name), targets.m_unitTarget);
@@ -3998,7 +3998,7 @@ uint32 AIInterface::fixupCorridor(dtPolyRef* path, const uint32 npath, const uin
 
 void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
 {
-    if (m_AIState == STATE_EVADE)
+    if (isAIState(AI_STATE_EVADE))
         return;
 
     if (pUnit == nullptr || pUnit->IsDead() || m_Unit->IsDead())
@@ -4042,10 +4042,10 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
     if (m_Unit->IsCreature() && !(static_cast<Creature*>(m_Unit)->GetCreatureProperties()->Flags1 & CREATURE_FLAG1_FIGHT_MOUNTED))
         m_Unit->SetMount(0);
 
-    if (m_AIState != STATE_ATTACKING)
+    if (!isAIState(AI_STATE_ATTACKING))
         StopMovement(0);
 
-    m_AIState = STATE_ATTACKING;
+    setAIState(AI_STATE_ATTACKING);
     if (m_Unit->GetMapMgr() && m_Unit->GetMapMgr()->GetMapInfo() && m_Unit->GetMapMgr()->GetMapInfo()->type == INSTANCE_RAID)
     {
         if (m_Unit->IsCreature())
@@ -4084,7 +4084,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
 
 void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
 {
-    if (m_AIState == STATE_EVADE)
+    if (isAIState(AI_STATE_EVADE))
         return;
 
     if (pUnit == nullptr)
@@ -4176,7 +4176,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
 
     if (isAiScriptType(AI_SCRIPT_PET))
     {
-        m_AIState = STATE_FOLLOWING;
+        setAIState(AI_STATE_FOLLOWING);
         SetUnitToFollow(m_PetOwner);
         FollowDistance = 3.0f;
         m_lastFollowX = m_lastFollowY = 0;
@@ -4192,7 +4192,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
     }
     else
     {
-        m_AIState = STATE_EVADE;
+        setAIState(AI_STATE_EVADE);
 
         Unit* SavedFollow = getUnitToFollow();
 
@@ -4204,7 +4204,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
                 MoveEvadeReturn();
             }
             else
-                m_AIState = STATE_FOLLOWING;
+                setAIState(AI_STATE_FOLLOWING);
 
             Creature* aiowner = static_cast< Creature* >(m_Unit);
             //clear tagger.
@@ -4238,7 +4238,7 @@ void AIInterface::EventLeaveCombat(Unit* pUnit, uint32 misc1)
 
 void AIInterface::EventDamageTaken(Unit* pUnit, uint32 misc1)
 {
-    if (m_AIState == STATE_EVADE)
+    if (isAIState(AI_STATE_EVADE))
         return;
 
     if (pUnit == nullptr)
@@ -4259,10 +4259,10 @@ void AIInterface::EventDamageTaken(Unit* pUnit, uint32 misc1)
 
 void AIInterface::EventFollowOwner(Unit* pUnit, uint32 misc1)
 {
-    if (m_AIState == STATE_EVADE)
+    if (isAIState(AI_STATE_EVADE))
         return;
 
-    m_AIState = STATE_FOLLOWING;
+    setAIState(AI_STATE_FOLLOWING);
     if (m_Unit->IsPet())
         static_cast< Pet* >(m_Unit)->SetPetAction(PET_ACTION_FOLLOW);
 
@@ -4290,7 +4290,7 @@ void AIInterface::EventFear(Unit* pUnit, uint32 misc1)
     SetUnitToFear(pUnit);
 
     CALL_SCRIPT_EVENT(m_Unit, OnFear)(pUnit, 0);
-    m_AIState = STATE_FEAR;
+    setAIState(AI_STATE_FEAR);
     StopMovement(1);
 
     m_UnitToFollow_backup = m_UnitToFollow;
@@ -4314,12 +4314,12 @@ void AIInterface::EventFear(Unit* pUnit, uint32 misc1)
 
 void AIInterface::EventUnfear(Unit* pUnit, uint32 misc1)
 {
-    if (m_AIState == STATE_EVADE)
+    if (isAIState(AI_STATE_EVADE))
         return;
 
     m_UnitToFollow = m_UnitToFollow_backup;
     FollowDistance = FollowDistance_backup;
-    m_AIState = STATE_UNFEARED; // let future reactions put us back into combat without bugging return positions
+    setAIState(AI_STATE_UNFEARED); // let future reactions put us back into combat without bugging return positions
 
     m_UnitToFear = 0;
     StopMovement(1);
@@ -4327,7 +4327,7 @@ void AIInterface::EventUnfear(Unit* pUnit, uint32 misc1)
 
 void AIInterface::EventWander(Unit* pUnit, uint32 misc1)
 {
-    if (m_AIState == STATE_EVADE)
+    if (isAIState(AI_STATE_EVADE))
         return;
 
     if (pUnit == nullptr)
@@ -4336,7 +4336,7 @@ void AIInterface::EventWander(Unit* pUnit, uint32 misc1)
     m_WanderTimer = 0;
 
     //CALL_SCRIPT_EVENT(m_Unit, OnWander)(pUnit, 0); FIX ME
-    m_AIState = STATE_WANDER;
+    setAIState(AI_STATE_WANDER);
     StopMovement(1);
 
     m_UnitToFollow_backup = m_UnitToFollow;
@@ -4361,12 +4361,12 @@ void AIInterface::EventWander(Unit* pUnit, uint32 misc1)
 
 void AIInterface::EventUnwander(Unit* pUnit, uint32 misc1)
 {
-    if (m_AIState == STATE_EVADE)
+    if (isAIState(AI_STATE_EVADE))
         return;
 
     m_UnitToFollow = m_UnitToFollow_backup;
     FollowDistance = FollowDistance_backup;
-    m_AIState = STATE_IDLE; // we need this to prevent permanent fear, wander, and other problems
+    setAIState(AI_STATE_IDLE); // we need this to prevent permanent fear, wander, and other problems
 
     StopMovement(1);
 }
@@ -4383,7 +4383,7 @@ void AIInterface::EventUnitDied(Unit* pUnit, uint32 misc1)
     if (m_Unit->IsCreature())
         CALL_INSTANCE_SCRIPT_EVENT(m_Unit->GetMapMgr(), OnCreatureDeath)(static_cast<Creature*>(m_Unit), pUnit);
 
-    m_AIState = STATE_IDLE;
+    setAIState(AI_STATE_IDLE);
 
     StopMovement(0);
     LockAITargets(true);
@@ -4528,9 +4528,9 @@ void AIInterface::OnMoveCompleted()
     m_splinePriority = SPLINE_PRIORITY_MOVEMENT;
 
     //we've been knocked somewhere without entering combat, move back
-    if (m_AIState == STATE_IDLE && m_returnX != 0.0f && m_returnY != 0.0f && m_returnZ != 0.0f)
+    if (isAIState(AI_STATE_IDLE) && m_returnX != 0.0f && m_returnY != 0.0f && m_returnZ != 0.0f)
     {
-        m_AIState = STATE_EVADE;
+        setAIState(AI_STATE_EVADE);
         MoveEvadeReturn();
     }
 }
@@ -4546,7 +4546,7 @@ void AIInterface::MoveEvadeReturn()
 
 void AIInterface::EventForceRedirected(Unit* pUnit, uint32 misc1)
 {
-    if (m_AIState == STATE_IDLE)
+    if (isAIState(AI_STATE_IDLE))
         SetReturnPosition();
 }
 
