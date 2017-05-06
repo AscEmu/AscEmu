@@ -124,7 +124,7 @@ void WorldSession::HandlePetAction(WorldPacket& recv_data)
                             pPet->GetAIInterface()->SetUnitToFollow(_player);
 
                         // EVENT_PET_ATTACK
-                        pPet->GetAIInterface()->setAIState(AI_STATE_ATTACKING);
+                        pPet->GetAIInterface()->setAiState(AI_STATE_ATTACKING);
                         pPet->GetAIInterface()->AttackReaction(pTarget, 1, 0);
                     }
                     break;

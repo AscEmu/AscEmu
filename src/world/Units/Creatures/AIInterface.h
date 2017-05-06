@@ -142,7 +142,7 @@ enum AI_SpellTargetType
     TTYPE_OWNER
 };
 
-enum AI_State
+enum AiState
 {
     AI_STATE_IDLE,
     AI_STATE_ATTACKING,
@@ -230,16 +230,20 @@ class SERVER_DECL AIInterface : public IUpdatable
     public:
 
         void setAiScriptType(AiScriptTypes ai_type) { mAiScriptType = ai_type; }
+        uint32_t getAiScriptType() { return mAiScriptType; }
         bool isAiScriptType(AiScriptTypes ai_type) { return ai_type == mAiScriptType; }
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // AI State functions
     private:
 
-        AI_State mAIState;
+        AiState mAiState;
 
     public:
 
-        void setAIState(AI_State ai_state) { mAIState = ai_state; }
-        bool isAIState(AI_State ai_state) { return ai_state == mAIState; }
+        void setAiState(AiState ai_state) { mAiState = ai_state; }
+        uint32_t getAiState() { return mAiState; }
+        bool isAiState(AiState ai_state) { return ai_state == mAiState; }
 
 // MIT end
     public:
@@ -274,8 +278,8 @@ class SERVER_DECL AIInterface : public IUpdatable
         uint64 getUnitToFearGUID() { return m_UnitToFear; }
         Creature* getFormationLinkTarget();
         void setCreatureState(CreatureState state) { m_creatureState = state; }
-        inline uint8 getAIState() { return static_cast<uint8>(mAIState); }
-        inline uint8 getAIType() { return static_cast<uint8>(mAiScriptType); }
+        
+        
 
         inline uint8 getCurrentAgent() { return static_cast<uint8>(m_aiCurrentAgent); }
         void setCurrentAgent(AI_Agent agent) { m_aiCurrentAgent = agent; }

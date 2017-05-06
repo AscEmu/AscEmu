@@ -160,7 +160,7 @@ class ForgemasterGarfrostAI : MoonScriptBossAI
     {
         // Clear Agent and Ai State
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
         if (mInstance)
             mInstance->SetInstanceData(Data_EncounterState, _unit->GetEntry(), State_Performed);
@@ -584,7 +584,7 @@ class KrickAI : MoonScriptBossAI
 
             // Clear Hatelist dont allow Combat and root the Unit
             _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_9);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             _unit->GetAIInterface()->WipeTargetList();
             _unit->GetAIInterface()->WipeHateList();
             

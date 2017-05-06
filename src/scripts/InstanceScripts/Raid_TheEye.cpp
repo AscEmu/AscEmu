@@ -80,7 +80,7 @@ class AStarScryerAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -244,7 +244,7 @@ class StarScryerAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -474,7 +474,7 @@ class AstromancerLordAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -646,7 +646,7 @@ class BloodVindicatorAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -818,7 +818,7 @@ class BloodLegionnareAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -990,7 +990,7 @@ class BloodMarshalAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1164,7 +1164,7 @@ class PhoenixHawkAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1336,7 +1336,7 @@ class CrystalSentinelAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1501,7 +1501,7 @@ class CrystalMechanicAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -2019,7 +2019,7 @@ class AlarAI : public CreatureAIScript
 
             _unit->GetAIInterface()->SetFly();
             _unit->GetAIInterface()->StopMovement(0);
-            _unit->GetAIInterface()->setAIState(AI_STATE_SCRIPTMOVE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
             _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
             _unit->GetAIInterface()->setWaypointToMove(1);
             Flying = true;
@@ -2185,7 +2185,7 @@ class AlarAI : public CreatureAIScript
                 _unit->GetAIInterface()->StopMovement(0);
                 _unit->GetAIInterface()->m_canMove = true;
 
-                _unit->GetAIInterface()->setAIState(AI_STATE_SCRIPTMOVE);
+                _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                 _unit->GetAIInterface()->setWaypointToMove(NextWP);
                 // ugly code, trows compile error if left just null, this should do it ~ azolex
@@ -2271,7 +2271,7 @@ class AlarAI : public CreatureAIScript
 
         void SetNextWP(uint32 wp)
         {
-            _unit->GetAIInterface()->setAIState(AI_STATE_ATTACKING);//STATE_IDLE
+            _unit->GetAIInterface()->setAiState(AI_STATE_ATTACKING);//STATE_IDLE
             NextWP = wp;
             Flying = false;
             _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
@@ -2286,7 +2286,7 @@ class AlarAI : public CreatureAIScript
             {
                 if (NextWP == 6) Phase = 1;
                 else NextWP = iWaypointId % 5 + 1;
-                _unit->GetAIInterface()->setAIState(AI_STATE_SCRIPTMOVE);
+                _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                 _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                 _unit->GetAIInterface()->setWaypointToMove(NextWP);
             }
@@ -2423,7 +2423,7 @@ class EmberAlarAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -2523,7 +2523,7 @@ class PatchAlarAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 

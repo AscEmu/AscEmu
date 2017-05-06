@@ -293,7 +293,7 @@ class RageWinterchillAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
         }
@@ -514,7 +514,7 @@ class AnetheronAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
         }
@@ -739,7 +739,7 @@ class KazrogalAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
         }
@@ -980,7 +980,7 @@ class AzgalorAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             RemoveAIUpdateEvent();
         }
@@ -1430,7 +1430,7 @@ class ArchimondeAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             if (Trigger && Trigger->IsInWorld() && _unit->isAlive())
             {

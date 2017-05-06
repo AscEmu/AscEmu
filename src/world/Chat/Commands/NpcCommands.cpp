@@ -572,7 +572,7 @@ bool ChatHandler::HandleNpcStopFollowCommand(const char* /*args*/, WorldSession*
     if (creature_target == nullptr)
         return true;
 
-    creature_target->GetAIInterface()->setAIState(AI_STATE_IDLE);
+    creature_target->GetAIInterface()->setAiState(AI_STATE_IDLE);
     creature_target->GetAIInterface()->ResetUnitToFollow();
 
     sGMLog.writefromsession(m_session, "cancelled npc follow command on %s, sqlid %u", creature_target->GetCreatureProperties()->Name.c_str(), creature_target->spawnid);
@@ -617,7 +617,7 @@ bool ChatHandler::HandleNpcReturnCommand(const char* /*args*/, WorldSession* m_s
     float y = creature_target->m_spawn->y;
     float z = creature_target->m_spawn->z;
 
-    creature_target->GetAIInterface()->setAIState(AI_STATE_IDLE);
+    creature_target->GetAIInterface()->setAiState(AI_STATE_IDLE);
     creature_target->GetAIInterface()->WipeHateList();
     creature_target->GetAIInterface()->WipeTargetList();
     creature_target->GetAIInterface()->MoveTo(x, y, z);

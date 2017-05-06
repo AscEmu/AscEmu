@@ -139,7 +139,7 @@ class TrollgoreAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -357,7 +357,7 @@ class NovosTheSummonerAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             for (uint8 i = 0; i < 4; i++)
             {
@@ -650,7 +650,7 @@ class CrystalHandlerAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -815,7 +815,7 @@ class KingDreadAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1007,7 +1007,7 @@ class TheProphetTaronjaAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
             phase = 1;
             phase_timer = 0;

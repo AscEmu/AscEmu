@@ -123,7 +123,7 @@ class FelOrcConvertAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -242,7 +242,7 @@ class ShatteredHandHeathenAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -366,7 +366,7 @@ class ShatteredHandLegionnaireAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -491,7 +491,7 @@ class ShatteredHandSavageAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -628,7 +628,7 @@ class ShadowmoonAcolyteAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -758,7 +758,7 @@ class ShatteredHandAssassinAI : public CreatureAIScript
             CastTime();
             _unit->CastSpell(_unit, spells[1].info, spells[1].instant);
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -868,7 +868,7 @@ class ShatteredHandGladiatorAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -979,7 +979,7 @@ class ShatteredHandHoundmasterAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1106,7 +1106,7 @@ class ShatteredHandReaverAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1223,7 +1223,7 @@ class ShatteredHandSentryAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1357,7 +1357,7 @@ class ShatteredHandSharpshooterAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1458,7 +1458,7 @@ class ShatteredHandBrawlerAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -1582,7 +1582,7 @@ class ShadowmoonDarkcasterAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         }
 
         void OnDied(Creature* mKiller)
@@ -1718,7 +1718,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
             if (Started)
                 RemoveAIUpdateEvent();
@@ -1739,7 +1739,7 @@ class GrandWarlockNethekurseAI : public CreatureAIScript
                 _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
 
                 _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-                _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+                _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
                 RemoveAIUpdateEvent();
 
                 Started = true;
@@ -1957,7 +1957,7 @@ class BloodGuardPorungAI : public CreatureAIScript
         {
             CastTime();
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 
@@ -2356,7 +2356,7 @@ class WarchiefKargathBladefistAI : public CreatureAIScript
         void OnCombatStop(Unit* mTarget)
         {
             _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-            _unit->GetAIInterface()->setAIState(AI_STATE_IDLE);
+            _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
             RemoveAIUpdateEvent();
         }
 

@@ -28,8 +28,8 @@ bool ChatHandler::HandleDebugMoveInfo(const char* /*args*/, WorldSession* m_sess
     float distance_to_creature = m_session->GetPlayer()->CalcDistance(selected_unit);
 
     uint32 creature_state = selected_unit->GetAIInterface()->m_creatureState;
-    uint32 ai_state = selected_unit->GetAIInterface()->getAIState();
-    uint32 ai_type = selected_unit->GetAIInterface()->getAIType();
+    uint32 ai_state = selected_unit->GetAIInterface()->getAiState();
+    uint32 ai_type = selected_unit->GetAIInterface()->getAiScriptType();
     uint32 ai_agent = selected_unit->GetAIInterface()->getCurrentAgent();
 
     uint32 current_wp = selected_unit->GetAIInterface()->getCurrentWaypoint();

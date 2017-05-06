@@ -2521,7 +2521,7 @@ class LuaUnit
     static int GetAIState(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-            lua_pushnumber(L, ptr->GetAIInterface()->getAIState());
+            lua_pushnumber(L, ptr->GetAIInterface()->getAiState());
         return 1;
     }
 
@@ -3948,40 +3948,40 @@ class LuaUnit
             switch (state)
             {
                 case 0:
-                    ptr->GetAIInterface()->setAIState(AI_STATE_IDLE);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_IDLE);
                     break;
                 case 1:
-                    ptr->GetAIInterface()->setAIState(AI_STATE_ATTACKING);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_ATTACKING);
                     break;
                 case 2:
-                    ptr->GetAIInterface()->setAIState(AI_STATE_CASTING);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_CASTING);
                     break;
                 case 3:
-                    ptr->GetAIInterface()->setAIState(AI_STATE_FLEEING);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_FLEEING);
                     break;
                 case 4:
-                    ptr->GetAIInterface()->setAIState(AI_STATE_FOLLOWING);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_FOLLOWING);
                     break;
                 case 5:
-                    ptr->GetAIInterface()->setAIState(AI_STATE_EVADE);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_EVADE);
                     break;
                 case 6:
-                    ptr->GetAIInterface()->setAIState(AI_STATE_MOVEWP);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_MOVEWP);
                     break;
                 case 7:
-                    ptr->GetAIInterface()->setAIState(AI_STATE_FEAR);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_FEAR);
                     break;
                 case 8:
-                    ptr->GetAIInterface()->setAIState(AI_STATE_WANDER);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_WANDER);
                     break;
                 case 9:
-                    ptr->GetAIInterface()->setAIState(AI_STATE_STOPPED);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_STOPPED);
                     break;
                 case 10:
-                    ptr->GetAIInterface()->setAIState(AI_STATE_SCRIPTMOVE);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                     break;
                 case 11:
-                    ptr->GetAIInterface()->setAIState(AI_STATE_SCRIPTIDLE);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     break;
             }
         }
