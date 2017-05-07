@@ -18,6 +18,9 @@ This file is released under the MIT license. See README-MIT for more information
 #define WotLK 3
 #define Cata 4
 
+// Use legacy spell system
+@ASCEMU_COMMENT_WITH_NEW_SPELL_SYSTEM@#define USE_EXPERIMENTAL_SPELL_SYSTEM
+
 #define VERSION_STRING @ASCEMU_VERSION@
 
 #if VERSION_STRING == Classic

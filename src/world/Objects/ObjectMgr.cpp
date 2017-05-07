@@ -3334,32 +3334,32 @@ void ObjectMgr::LoadSpellTargetConstraints()
                 {
                     if (stc != nullptr)
                     {
-                        stc->AddCreature(value);
-                        stc->AddFocused(value, 1);
+                        stc->addCreature(value);
+                        stc->addFocused(value, 1);
                     }
                 }
                 else if (type == GAMEOBJECT_FOCUS_TYPE)
                 {
                     if (stc != nullptr)
                     {
-                        stc->AddGameobject(value);
-                        stc->AddFocused(value, 1);
+                        stc->addGameObject(value);
+                        stc->addFocused(value, 1);
                     }
                 }
                 else if (type == CREATURE_TYPE)
                 {
                     if (stc != nullptr)
                     {
-                        stc->AddCreature(value);
-                        stc->AddFocused(value, 0);
+                        stc->addCreature(value);
+                        stc->addFocused(value, 0);
                     }
                 }
                 else if (type == GAMEOBJECT_TYPE)
                 {
                     if (stc != nullptr)
                     {
-                        stc->AddGameobject(value);
-                        stc->AddFocused(value, 0);
+                        stc->addCreature(value);
+                        stc->addFocused(value, 0);
                     }
                 }
 

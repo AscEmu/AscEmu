@@ -19,6 +19,8 @@
  *
  */
 
+#include "Spell.Legacy.h"
+#ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 #include "StdAfx.h"
 #include "VMapFactory.h"
 #include "Management/Item.h"
@@ -4148,23 +4150,23 @@ uint8 Spell::CanCast(bool tolerate)
             if (m_target_constraint != NULL)
             {
                 // target is the wrong creature
-                if (target->IsCreature() && !m_target_constraint->HasCreature(target->GetEntry()) && !m_target_constraint->IsFocused(target->GetEntry()))
+                if (target->IsCreature() && !m_target_constraint->hasCreature(target->GetEntry()) && !m_target_constraint->isFocused(target->GetEntry()))
                     return SPELL_FAILED_BAD_TARGETS;
 
                 // target is the wrong GO :/
-                if (target->IsGameObject() && !m_target_constraint->HasGameobject(target->GetEntry()) && !m_target_constraint->IsFocused(target->GetEntry()))
+                if (target->IsGameObject() && !m_target_constraint->hasGameObject(target->GetEntry()) && !m_target_constraint->isFocused(target->GetEntry()))
                     return SPELL_FAILED_BAD_TARGETS;
 
                 bool foundTarget = false;
                 Creature* pCreature = nullptr;
-                size_t creatures = m_target_constraint->GetCreatures().size();
+                size_t creatures = m_target_constraint->getCreatures().size();
 
                 // Spells for Invisibl Creatures and or Gameobjects ( Casting Spells Near them )
                 for (size_t i = 0; i < creatures; ++i)
                 {
-                    if (!m_target_constraint->IsFocused(m_target_constraint->GetCreatures()[i]))
+                    if (!m_target_constraint->isFocused(m_target_constraint->getCreatures()[i]))
                     {
-                        pCreature = m_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->GetCreatures()[i]);
+                        pCreature = m_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->getCreatures()[i]);
 
                         if (pCreature)
                         {
@@ -4178,13 +4180,13 @@ uint8 Spell::CanCast(bool tolerate)
                 }
 
                 GameObject* pGameobject = nullptr;
-                size_t gameobjects = m_target_constraint->GetGameobjects().size();
+                size_t gameobjects = m_target_constraint->getGameObjects().size();
 
                 for (size_t i = 0; i < gameobjects; ++i)
                 {
-                    if (!m_target_constraint->IsFocused(m_target_constraint->GetGameobjects()[i]))
+                    if (!m_target_constraint->isFocused(m_target_constraint->getGameObjects()[i]))
                     {
-                        pGameobject = m_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->GetGameobjects()[i]);
+                        pGameobject = m_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->getGameObjects()[i]);
 
                         if (pGameobject)
                         {
@@ -6406,3 +6408,4 @@ bool IsDamagingSpell(SpellInfo* sp)
 
     return false;
 }
+#endif

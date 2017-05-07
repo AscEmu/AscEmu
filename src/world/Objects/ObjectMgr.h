@@ -44,6 +44,7 @@
 #include <string>
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
+#include "Spell/SpellTargetConstraint.h"
 
 inline bool FindXinYString(std::string & x, std::string & y)
 {
