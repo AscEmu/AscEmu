@@ -31,7 +31,7 @@
 #include "CoreMemoryAllocator.cpp"
 #endif
 
-extern "C" inline SCRIPT_DECL const char* _exp_get_version()
+extern "C" SCRIPT_DECL const char* _exp_get_version()
 {
     return BUILD_HASH_STR;
 }
