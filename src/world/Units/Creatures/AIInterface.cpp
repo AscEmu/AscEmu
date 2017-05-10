@@ -31,6 +31,7 @@
 #include "Spell/SpellMgr.h"
 #include "Map/WorldCreatorDefines.hpp"
 #include "Map/WorldCreator.h"
+#include "scripts/Battlegrounds/AlteracValley.h"
 
 #ifndef UNIX
 #include <cmath>
@@ -1148,7 +1149,7 @@ Unit* AIInterface::FindTarget()
         return nullptr;
 
     Unit* target = nullptr;
-    
+
     float distance = 999999.0f; // that should do it.. :p
 
     //target is immune to all form of attacks, cant attack either.
@@ -3302,8 +3303,8 @@ uint32 AIInterface::_CalcThreat(uint32 damage, SpellInfo* sp, Unit* Attacker)
 
     if (sp != nullptr)
     {
-        SM_FIValue(Attacker->SM_FThreat, &mod, sp->SpellGroupType);
-        SM_PIValue(Attacker->SM_PThreat, &mod, sp->SpellGroupType);
+        ascemu::World::Spell::Helpers::spellModFlatIntValue(Attacker->SM_FThreat, &mod, sp->SpellGroupType);
+        ascemu::World::Spell::Helpers::spellModPercentageIntValue(Attacker->SM_PThreat, &mod, sp->SpellGroupType);
     }
 
     if (Attacker->getClass() == ROGUE)
@@ -3737,7 +3738,7 @@ bool AIInterface::CreatePath(float x, float y, float z, bool onlytest /*= false*
     dtNavMesh* nav = const_cast<dtNavMesh*>(mmap->GetNavMesh(m_Unit->GetMapId()));
     dtNavMeshQuery* nav_query = const_cast<dtNavMeshQuery*>(mmap->GetNavMeshQuery(m_Unit->GetMapId(), m_Unit->GetInstanceID()));
     //NavMeshData* nav = CollideInterface.GetNavMesh(m_Unit->GetMapId());
-    
+
     if (nav == nullptr)
         return false;
 
@@ -4562,7 +4563,7 @@ void AIInterface::MoveJump(float x, float y, float z, float o /*= 0*/, float spe
     m_Unit->m_movementManager.m_spline.m_splineTrajectoryTime = 0;
 
     if (hugearc)
-        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = 250; 
+        m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = 250;
 	else
         m_Unit->m_movementManager.m_spline.m_splineTrajectoryVertical = speedZ;
 
@@ -4703,7 +4704,7 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
             m_walkSpeed = m_Unit->m_basicSpeedWalk = properties_difficulty->walk_speed;
             m_runSpeed = m_Unit->m_basicSpeedRun = properties_difficulty->run_speed;
             m_flySpeed = properties_difficulty->fly_speed;
-            
+
             m_Unit->SetScale(properties_difficulty->Scale);
 
             uint32 health = properties_difficulty->MinHealth + RandomUInt(properties_difficulty->MaxHealth - properties_difficulty->MinHealth);

@@ -13,6 +13,7 @@ set(SRC_SPELL_FILES
    ${PATH_PREFIX}/SpellEffects.cpp
    ${PATH_PREFIX}/SpellEffects.h
    ${PATH_PREFIX}/SpellFailure.h
+   ${PATH_PREFIX}/SpellHelpers.h
    ${PATH_PREFIX}/SpellInfo.cpp
    ${PATH_PREFIX}/SpellInfo.hpp
    ${PATH_PREFIX}/SpellMgr.cpp

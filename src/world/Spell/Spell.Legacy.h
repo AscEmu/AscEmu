@@ -33,6 +33,7 @@
 #include "Units/Creatures/Pet.h"
 #include "SpellEffects.h"
 #include "SpellTargetConstraint.h"
+#include "Spell/SpellHelpers.h"
 
 class WorldSession;
 class Unit;
@@ -41,145 +42,6 @@ class Player;
 class Item;
 class Group;
 class Aura;
-
-/* Spell Ranges:(for 1.10.2)
-Range ID|Range|Description
-1       0-0     Self Only
-2       0-5     Combat Range
-3       0-20    Short Range
-4       0-30    Medium Range
-5       0-40    Long Range
-6       0-100   Vision Range
-7       0-10    Very Short Range
-8       10-20   Short Range
-9       10-30   Medium Range
-10      10-40   Long Range
-11      0-15    Shorter Range
-12      0-5     Interact Range
-13      0-50000 Anywhere
-14      0-60    Extra Long Range
-34      0-25    Medium-Short Range
-35      0-35    Medium-Long Range
-36      0-45    Longer Range
-37      0-50    Extended Range
-38      10-25   Extra Medium Range
-54      5-30    Geoff Monster Shoot
-74      8-30    Ranged Weapon
-94      8-40    Sting
-95      8-25    Charge
-96      0-2     Trap
-114     8-35    Hunter Range Hunter
-134     0-80    Tower 80 Tower
-135     0-100   Tower 100 Tower
-*/
-
-/*FLAT PCT
-0    x    x
-1    x    x
-2    x    x
-3         x
-4    x
-5    x    x
-6    x    x
-7    x =  x//both add % to crit
-8    x    x
-9         x
-10   x    x
-11   x    x
-12   x
-13
-14   x    x
-15        x
-16   x
-17   x
-18   x    x
-19   x
-20        x
-21
-22   x    x
-23   x(enslave dem)
-24
-25
-26   x(obsolete)
-27        x
-*/
-
-static uint32 DecimalToMask(uint32 dec)
-{
-    return ((uint32)1 << (dec - 1));
-}
-
-static void SM_FFValue(int32* m, float* v, uint32* group)
-{
-    if (m == 0)
-        return;
-
-    uint32 intbit = 0, groupnum = 0;
-    for (uint32 bit = 0; bit < SPELL_GROUPS; ++bit, ++intbit)
-    {
-        if (intbit == 32)
-        {
-            ++groupnum;
-            intbit = 0;
-        }
-        if ((1 << intbit) & group[groupnum])
-            (*v) += m[bit];
-    }
-}
-
-static void SM_FIValue(int32* m, int32* v, uint32* group)
-{
-    if (m == 0)
-        return;
-
-    uint32 intbit = 0, groupnum = 0;
-    for (uint32 bit = 0; bit < SPELL_GROUPS; ++bit, ++intbit)
-    {
-        if (intbit == 32)
-        {
-            ++groupnum;
-            intbit = 0;
-        }
-        if ((1 << intbit) & group[groupnum])
-            (*v) += m[bit];
-    }
-}
-
-static void SM_PIValue(int32* m, int32* v, uint32* group)
-{
-    if (m == 0)
-        return;
-
-    uint32 intbit = 0, groupnum = 0;
-    for (uint32 bit = 0; bit < SPELL_GROUPS; ++bit, ++intbit)
-    {
-        if (intbit == 32)
-        {
-            ++groupnum;
-            intbit = 0;
-        }
-        if ((1 << intbit) & group[groupnum])
-            (*v) += ((*v) * m[bit]) / 100;
-    }
-}
-
-static void SM_PFValue(int32* m, float* v, uint32* group)
-{
-    if (m == 0)
-        return;
-
-    uint32 intbit = 0, groupnum = 0;
-    for (uint32 bit = 0; bit < SPELL_GROUPS; ++bit, ++intbit)
-    {
-        if (intbit == 32)
-        {
-            ++groupnum;
-            intbit = 0;
-        }
-        if ((1 << intbit) & group[groupnum])
-            (*v) += ((*v) * m[bit]) / 100.0f;
-    }
-}
 
 enum SPELL_INFRONT_STATUS
 {
@@ -1656,13 +1518,13 @@ class SERVER_DECL Spell : public EventableObject
 
                     if (u_caster != nullptr)
                     {
-                        SM_FIValue(u_caster->SM_FDur, (int32*)&this->Dur, GetSpellInfo()->SpellGroupType);
-                        SM_PIValue(u_caster->SM_PDur, (int32*)&this->Dur, GetSpellInfo()->SpellGroupType);
+                        ascemu::World::Spell::Helpers::spellModFlatIntValue(u_caster->SM_FDur, (int32*)&this->Dur, GetSpellInfo()->SpellGroupType);
+                        ascemu::World::Spell::Helpers::spellModPercentageIntValue(u_caster->SM_PDur, (int32*)&this->Dur, GetSpellInfo()->SpellGroupType);
     #ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
                         int spell_flat_modifers = 0;
                         int spell_pct_modifers = 0;
-                        SM_FIValue(u_caster->SM_FDur, &spell_flat_modifers, GetProto()->SpellGroupType);
-                        SM_FIValue(u_caster->SM_PDur, &spell_pct_modifers, GetProto()->SpellGroupType);
+                        spellModFlatIntValue(u_caster->SM_FDur, &spell_flat_modifers, GetProto()->SpellGroupType);
+                        spellModFlatIntValue(u_caster->SM_PDur, &spell_pct_modifers, GetProto()->SpellGroupType);
                         if (spell_flat_modifers != 0 || spell_pct_modifers != 0)
                             LOG_DEBUG("!!!!!spell duration mod flat %d , spell duration mod pct %d , spell duration %d, spell group %u", spell_flat_modifers, spell_pct_modifers, Dur, GetProto()->SpellGroupType);
     #endif
@@ -1689,13 +1551,13 @@ class SERVER_DECL Spell : public EventableObject
             Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(GetSpellInfo()->EffectRadiusIndex[i]));
             if (u_caster != nullptr)
             {
-                SM_FFValue(u_caster->SM_FRadius, &Rad[i], GetSpellInfo()->SpellGroupType);
-                SM_PFValue(u_caster->SM_PRadius, &Rad[i], GetSpellInfo()->SpellGroupType);
+                ascemu::World::Spell::Helpers::spellModFlatFloatValue(u_caster->SM_FRadius, &Rad[i], GetSpellInfo()->SpellGroupType);
+                ascemu::World::Spell::Helpers::spellModPercentageFloatValue(u_caster->SM_PRadius, &Rad[i], GetSpellInfo()->SpellGroupType);
     #ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
                 float spell_flat_modifers = 0;
                 float spell_pct_modifers = 1;
-                SM_FFValue(u_caster->SM_FRadius, &spell_flat_modifers, GetProto()->SpellGroupType);
-                SM_PFValue(u_caster->SM_PRadius, &spell_pct_modifers, GetProto()->SpellGroupType);
+                spellModFlatFloatValue(u_caster->SM_FRadius, &spell_flat_modifers, GetProto()->SpellGroupType);
+                spellModPercentageFloatValue(u_caster->SM_PRadius, &spell_pct_modifers, GetProto()->SpellGroupType);
                 if (spell_flat_modifers != 0 || spell_pct_modifers != 1)
                     LOG_DEBUG("!!!!!spell radius mod flat %f , spell radius mod pct %f , spell radius %f, spell group %u", spell_flat_modifers, spell_pct_modifers, Rad[i], GetProto()->SpellGroupType);
     #endif

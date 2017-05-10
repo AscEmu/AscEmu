@@ -41,6 +41,11 @@
 #include "SpellMgr.h"
 #include "SpellAuras.h"
 
+using ascemu::World::Spell::Helpers::spellModFlatIntValue;
+using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
+using ascemu::World::Spell::Helpers::spellModFlatFloatValue;
+using ascemu::World::Spell::Helpers::spellModPercentageFloatValue;
+
 pSpellEffect SpellEffectsHandler[TOTAL_SPELL_EFFECTS] =
 {
     &Spell::SpellEffectNULL,                    //   0 SPELL_EFFECT_NULL
@@ -583,7 +588,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             {
                 if (u_caster != nullptr)
                 {
-                    SM_FIValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->SpellGroupType);
+                    spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->SpellGroupType);
                 }
                 chaindamage += ((GetSpellInfo()->EffectBasePoints[i] + 51) * reduce / 100);
             }
@@ -601,7 +606,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
             {
                 if (u_caster != nullptr)
                 {
-                    SM_FIValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->SpellGroupType);
+                    spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->SpellGroupType);
                 }
                 chaindamage = chaindamage * reduce / 100;
             }
@@ -1612,7 +1617,7 @@ void Spell::SpellEffectHeal(uint32 i) // Heal
             int32 reduce = GetSpellInfo()->EffectDieSides[i] + 1;
             if (u_caster != nullptr)
             {
-                SM_FIValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->SpellGroupType);
+                spellModFlatIntValue(u_caster->SM_PJumpReduce, &reduce, GetSpellInfo()->SpellGroupType);
             }
             chaindamage -= (reduce * chaindamage) / 100;
             Heal((int32)chaindamage);
@@ -3676,7 +3681,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
             posy = m_targets.m_destY;
             pz = m_targets.m_destZ;
         }
-        
+
         go = m_caster->GetMapMgr()->CreateGameObject(entry);
 
         go->CreateFromProto(entry, mapid, posx, posy, pz, orient);
@@ -4027,8 +4032,8 @@ void Spell::SpellEffectThreat(uint32 i) // Threat
 
     int32 amount = GetSpellInfo()->EffectBasePoints[i];
 
-    SM_FIValue(u_caster->SM_FMiscEffect, &amount, GetSpellInfo()->SpellGroupType);
-    SM_PIValue(u_caster->SM_PMiscEffect, &amount, GetSpellInfo()->SpellGroupType);
+    spellModFlatIntValue(u_caster->SM_FMiscEffect, &amount, GetSpellInfo()->SpellGroupType);
+    spellModPercentageIntValue(u_caster->SM_PMiscEffect, &amount, GetSpellInfo()->SpellGroupType);
 
 
     bool chck = unitTarget->GetAIInterface()->modThreatByPtr(u_caster, amount);
@@ -4516,8 +4521,8 @@ void Spell::SpellEffectSelfResurrect(uint32 i)
         case 21169: //Reincarnation. Resurrect with 20% health and mana
         {
             int32 amt = 20;
-            SM_FIValue(unitTarget->SM_FMiscEffect, &amt, GetSpellInfo()->SpellGroupType);
-            SM_PIValue(unitTarget->SM_PMiscEffect, &amt, GetSpellInfo()->SpellGroupType);
+            spellModFlatIntValue(unitTarget->SM_FMiscEffect, &amt, GetSpellInfo()->SpellGroupType);
+            spellModPercentageIntValue(unitTarget->SM_PMiscEffect, &amt, GetSpellInfo()->SpellGroupType);
             health = uint32((unitTarget->GetMaxHealth() * amt) / 100);
             mana = uint32((unitTarget->GetMaxPower(POWER_TYPE_MANA) * amt) / 100);
         }
@@ -4830,8 +4835,8 @@ void Spell::SpellEffectSummonDeadPet(uint32 i)
     Pet* pPet = p_caster->GetSummon();
     if (pPet)
     {
-        SM_FIValue(p_caster->SM_FMiscEffect, &damage, GetSpellInfo()->SpellGroupType);
-        SM_PIValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->SpellGroupType);
+        spellModFlatIntValue(p_caster->SM_FMiscEffect, &damage, GetSpellInfo()->SpellGroupType);
+        spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->SpellGroupType);
 
         pPet->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
         pPet->SetHealth((uint32)((pPet->GetMaxHealth() * damage) / 100));
@@ -4848,8 +4853,8 @@ void Spell::SpellEffectSummonDeadPet(uint32 i)
         if (pPet == NULL)//no pets to Revive
             return;
 
-        SM_FIValue(p_caster->SM_FMiscEffect, &damage, GetSpellInfo()->SpellGroupType);
-        SM_PIValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->SpellGroupType);
+        spellModFlatIntValue(p_caster->SM_FMiscEffect, &damage, GetSpellInfo()->SpellGroupType);
+        spellModPercentageIntValue(p_caster->SM_PMiscEffect, &damage, GetSpellInfo()->SpellGroupType);
 
         pPet->SetHealth((uint32)((pPet->GetMaxHealth() * damage) / 100));
     }

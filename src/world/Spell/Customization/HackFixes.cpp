@@ -29,6 +29,8 @@
 #include "Server/World.Legacy.h"
 #include "Spell/Definitions/SpellModifierType.h"
 
+using ascemu::World::Spell::Helpers::decimalToMask;
+
 void CreateDummySpell(uint32 id)
 {
     const char* name = "Dummy Trigger";
@@ -9528,7 +9530,7 @@ void ApplyNormalFixes()
         sp->RequiredShapeShift = 0;
 
     // Druid - Predatory Strikes
-    uint32 mm = DecimalToMask(FORM_BEAR) | DecimalToMask(FORM_DIREBEAR) | DecimalToMask(FORM_MOONKIN) | DecimalToMask(FORM_CAT);
+    uint32 mm = decimalToMask(FORM_BEAR) | decimalToMask(FORM_DIREBEAR) | decimalToMask(FORM_MOONKIN) | decimalToMask(FORM_CAT);
 
     sp = CheckAndReturnSpellEntry(16972);
     if (sp != nullptr)

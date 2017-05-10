@@ -33,6 +33,13 @@
 #include "Objects/Faction.h"
 #include "SpellAuras.h"
 #include "Definitions/SpellModifierType.h"
+#include "SpellHelpers.h"
+
+using ascemu::World::Spell::Helpers::decimalToMask;
+using ascemu::World::Spell::Helpers::spellModFlatFloatValue;
+using ascemu::World::Spell::Helpers::spellModFlatIntValue;
+using ascemu::World::Spell::Helpers::spellModPercentageFloatValue;
+using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
 
 pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
 {
@@ -1784,8 +1791,8 @@ void Aura::SpellAuraPeriodicDamage(bool apply)
         {
             if (c != nullptr)
             {
-                SM_FIValue(c->SM_FDOT, (int32*)&dmg, gr);
-                SM_PIValue(c->SM_PDOT, (int32*)&dmg, gr);
+                spellModFlatIntValue(c->SM_FDOT, (int32*)&dmg, gr);
+                spellModPercentageIntValue(c->SM_PDOT, (int32*)&dmg, gr);
             }
         }
 
@@ -2182,8 +2189,8 @@ void Aura::SpellAuraPeriodicHeal(bool apply)
         Unit* c = GetUnitCaster();
         if (c != nullptr)
         {
-            SM_FIValue(c->SM_FMiscEffect, &val, GetSpellInfo()->SpellGroupType);
-            SM_PIValue(c->SM_PMiscEffect, &val, GetSpellInfo()->SpellGroupType);
+            spellModFlatIntValue(c->SM_FMiscEffect, &val, GetSpellInfo()->SpellGroupType);
+            spellModPercentageIntValue(c->SM_PMiscEffect, &val, GetSpellInfo()->SpellGroupType);
         }
 
         if (val > 0)
@@ -2238,7 +2245,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
                 if (c->IsPlayer())
                 {
                     int durmod = 0;
-                    SM_FIValue(c->SM_FDur, &durmod, m_spellInfo->SpellGroupType);
+                    spellModFlatIntValue(c->SM_FDur, &durmod, m_spellInfo->SpellGroupType);
                     bonus += bonus * durmod / 15000;
                 }
             }
@@ -2247,17 +2254,17 @@ void Aura::EventPeriodicHeal(uint32 amount)
         /*
         int penalty_pct = 0;
         int penalty_flt = 0;
-        SM_FIValue(c->SM_PPenalty, &penalty_pct, GetSpellProto()->SpellGroupType);
+        spellModFlatIntValue(c->SM_PPenalty, &penalty_pct, GetSpellProto()->SpellGroupType);
         bonus += bonus * (penalty_pct / 100);
-        SM_FIValue(c->SM_FPenalty, &penalty_flt, GetSpellProto()->SpellGroupType);
+        spellModFlatIntValue(c->SM_FPenalty, &penalty_flt, GetSpellProto()->SpellGroupType);
         bonus += penalty_flt;
         */
-        SM_PIValue(c->SM_PPenalty, &bonus, m_spellInfo->SpellGroupType);
+        spellModPercentageIntValue(c->SM_PPenalty, &bonus, m_spellInfo->SpellGroupType);
 #ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
         int spell_flat_modifers = 0;
         int spell_pct_modifers = 0;
-        SM_FIValue(c->SM_FPenalty, &spell_flat_modifers, GetSpellProto()->SpellGroupType);
-        SM_FIValue(c->SM_PPenalty, &spell_pct_modifers, GetSpellProto()->SpellGroupType);
+        spellModFlatIntValue(c->SM_FPenalty, &spell_flat_modifers, GetSpellProto()->SpellGroupType);
+        spellModFlatIntValue(c->SM_PPenalty, &spell_pct_modifers, GetSpellProto()->SpellGroupType);
         if (spell_flat_modifers != 0 || spell_pct_modifers != 0)
             LOG_DEBUG("!!!!!HEAL : spell dmg bonus(p=24) mod flat %d , spell dmg bonus(p=24) pct %d , spell dmg bonus %d, spell group %u", spell_flat_modifers, spell_pct_modifers, bonus, GetSpellProto()->SpellGroupType);
 #endif
@@ -2305,7 +2312,7 @@ void Aura::EventPeriodicHeal(uint32 amount)
     if (c != NULL)
     {
         add += float2int32(add * (m_target->HealTakenPctMod[m_spellInfo->School] + c->HealDonePctMod[GetSpellInfo()->School]));
-        SM_PIValue(c->SM_PDOT, &add, m_spellInfo->SpellGroupType);
+        spellModPercentageIntValue(c->SM_PDOT, &add, m_spellInfo->SpellGroupType);
 
         if (this->DotCanCrit())
         {
@@ -3079,8 +3086,8 @@ void Aura::SpellAuraPeriodicTriggerSpellWithValue(bool apply)
         uint32 numticks = GetSpellDuration(m_spellInfo, caster) / m_spellInfo->EffectAmplitude[mod->i];
         if (caster != NULL)
         {
-            SM_FFValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->SpellGroupType);
-            SM_PFValue(caster->SM_PAmptitude, &amptitude, m_spellInfo->SpellGroupType);
+            spellModFlatFloatValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->SpellGroupType);
+            spellModPercentageFloatValue(caster->SM_PAmptitude, &amptitude, m_spellInfo->SpellGroupType);
             if (m_spellInfo->ChannelInterruptFlags != 0)
                 amptitude *= caster->GetCastSpeedMod();
         }
@@ -3157,8 +3164,8 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
         uint32 numticks = GetSpellDuration(m_spellInfo, caster) / m_spellInfo->EffectAmplitude[mod->i];
         if (caster != NULL)
         {
-            SM_FFValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->SpellGroupType);
-            SM_PFValue(caster->SM_PAmptitude, &amptitude, m_spellInfo->SpellGroupType);
+            spellModFlatFloatValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->SpellGroupType);
+            spellModPercentageFloatValue(caster->SM_PAmptitude, &amptitude, m_spellInfo->SpellGroupType);
             if (m_spellInfo->ChannelInterruptFlags != 0)
                 amptitude *= caster->GetCastSpeedMod();
         }
@@ -3930,10 +3937,10 @@ void Aura::SpellAuraModShapeshift(bool apply)
     else
     {
         if (shapeshift_form->id != FORM_STEALTH)
-            m_target->RemoveAllAurasByRequiredShapeShift(DecimalToMask(mod->m_miscValue));
+            m_target->RemoveAllAurasByRequiredShapeShift(ascemu::World::Spell::Helpers::decimalToMask(mod->m_miscValue));
 
         if (m_target->IsCasting() && m_target->m_currentSpell && m_target->m_currentSpell->GetSpellInfo()
-            && (m_target->m_currentSpell->GetSpellInfo()->RequiredShapeShift & DecimalToMask(mod->m_miscValue)))
+            && (m_target->m_currentSpell->GetSpellInfo()->RequiredShapeShift & decimalToMask(mod->m_miscValue)))
             m_target->InterruptSpell();
 
         //execute before changing shape back
@@ -4101,8 +4108,8 @@ void Aura::SpellAuraProcTriggerSpell(bool apply)
         Unit* ucaster = GetUnitCaster();
         if (ucaster != nullptr)
         {
-            SM_FIValue(ucaster->SM_FCharges, &charges, GetSpellInfo()->SpellGroupType);
-            SM_PIValue(ucaster->SM_PCharges, &charges, GetSpellInfo()->SpellGroupType);
+            spellModFlatIntValue(ucaster->SM_FCharges, &charges, GetSpellInfo()->SpellGroupType);
+            spellModPercentageIntValue(ucaster->SM_PCharges, &charges, GetSpellInfo()->SpellGroupType);
         }
 
         m_target->AddProcTriggerSpell(spellId, GetSpellInfo()->Id, m_casterGuid, GetSpellInfo()->procChance, GetSpellInfo()->procFlags, charges, groupRelation, NULL);
@@ -4219,7 +4226,7 @@ void Aura::SpellAuraModDodgePerc(bool apply)
     //if (m_target->GetTypeId() == TYPEID_PLAYER)
     {
         int32 amt = mod->m_amount;
-        //		SM_FIValue(m_target->SM_FSPELL_VALUE, &amt, GetSpellProto()->SpellGroupType);
+        //		spellModFlatIntValue(m_target->SM_FSPELL_VALUE, &amt, GetSpellProto()->SpellGroupType);
         if (apply)
         {
             if (amt < 0)
@@ -4341,8 +4348,8 @@ void Aura::EventPeriodicLeech(uint32 amount)
 
     amount += bonus;
 
-    SM_FIValue(m_caster->SM_FDOT, (int32*)&amount, sp->SpellGroupType);
-    SM_PIValue(m_caster->SM_PDOT, (int32*)&amount, sp->SpellGroupType);
+    spellModFlatIntValue(m_caster->SM_FDOT, (int32*)&amount, sp->SpellGroupType);
+    spellModPercentageIntValue(m_caster->SM_PDOT, (int32*)&amount, sp->SpellGroupType);
 
 
     if (DotCanCrit())
@@ -4465,8 +4472,8 @@ void Aura::SpellAuraModHitChance(bool apply)
     Unit* c = GetUnitCaster();
     if (c != nullptr)
     {
-        SM_FIValue(c->SM_FMiscEffect, &val, GetSpellInfo()->SpellGroupType);
-        SM_PIValue(c->SM_PMiscEffect, &val, GetSpellInfo()->SpellGroupType);
+        spellModFlatIntValue(c->SM_FMiscEffect, &val, GetSpellInfo()->SpellGroupType);
+        spellModPercentageIntValue(c->SM_PMiscEffect, &val, GetSpellInfo()->SpellGroupType);
     }
 
     if (apply)
@@ -5748,8 +5755,8 @@ void Aura::SpellAuraPeriodicDamagePercent(bool apply)
         //	Unit*c=GetUnitCaster();
         //	if (c)
         //	{
-        //		SM_FIValue(c->SM_FDOT,(int32*)&dmg,gr);
-        //		SM_PIValue(c->SM_PDOT,(int32*)&dmg,gr);
+        //		spellModFlatIntValue(c->SM_FDOT,(int32*)&dmg,gr);
+        //		spellModPercentageIntValue(c->SM_PDOT,(int32*)&dmg,gr);
         //	}
         //}
 
@@ -6303,8 +6310,8 @@ void Aura::SpellAuraAddClassTargetTrigger(bool apply)
         Unit* ucaster = GetUnitCaster();
         if (ucaster != nullptr)
         {
-            SM_FIValue(ucaster->SM_FCharges, &charges, GetSpellInfo()->SpellGroupType);
-            SM_PIValue(ucaster->SM_PCharges, &charges, GetSpellInfo()->SpellGroupType);
+            spellModFlatIntValue(ucaster->SM_FCharges, &charges, GetSpellInfo()->SpellGroupType);
+            spellModPercentageIntValue(ucaster->SM_PCharges, &charges, GetSpellInfo()->SpellGroupType);
         }
 
         m_target->AddProcTriggerSpell(sp->Id, GetSpellInfo()->Id, m_casterGuid, GetSpellInfo()->EffectBasePoints[mod->i] + 1, PROC_ON_CAST_SPELL, charges, groupRelation, procClassMask);
@@ -6864,7 +6871,7 @@ void Aura::SpellAuraModRangedHaste(bool apply)
         //		{
         //			Unit* pCaster = GetUnitCaster();
         //			if (pCaster)
-        //				SM_FIValue(pCaster->SM_FSPELL_VALUE,&amount,0x100000);
+        //				spellModFlatIntValue(pCaster->SM_FSPELL_VALUE,&amount,0x100000);
         //		}
 
         if (apply)
@@ -8977,12 +8984,12 @@ void AbsorbAura::SpellAuraSchoolAbsorb(bool apply)
     Unit* caster = GetUnitCaster();
     if (caster != nullptr)
     {
-        SM_FIValue(caster->SM_FMiscEffect, &val, GetSpellInfo()->SpellGroupType);
-        SM_PIValue(caster->SM_PMiscEffect, &val, GetSpellInfo()->SpellGroupType);
+        spellModFlatIntValue(caster->SM_FMiscEffect, &val, GetSpellInfo()->SpellGroupType);
+        spellModPercentageIntValue(caster->SM_PMiscEffect, &val, GetSpellInfo()->SpellGroupType);
 
         //This will fix talents that affects damage absorbed.
         int flat = 0;
-        SM_FIValue(caster->SM_FMiscEffect, &flat, GetSpellInfo()->SpellGroupType);
+        spellModFlatIntValue(caster->SM_FMiscEffect, &flat, GetSpellInfo()->SpellGroupType);
         val += val * flat / 100;
 
         //For spells Affected by Bonus Healing we use Dspell_coef_override.
