@@ -32,6 +32,7 @@
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 #include "SpellAuras.h"
+#include "Definitions/SpellModifierType.h"
 
 pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
 {
@@ -41,30 +42,30 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraPeriodicDamage,                                         //   3 SPELL_AURA_PERIODIC_DAMAGE
     &Aura::SpellAuraDummy,                                                  //   4 SPELL_AURA_DUMMY
     &Aura::SpellAuraModConfuse,                                             //   5 SPELL_AURA_MOD_CONFUSE
-    &Aura::SpellAuraModCharm,                                               //   6 SPELL_AURA_MOD_CHARM 
-    &Aura::SpellAuraModFear,                                                //   7 SPELL_AURA_MOD_FEAR 
-    &Aura::SpellAuraPeriodicHeal,                                           //   8 SPELL_AURA_PERIODIC_HEAL 
-    &Aura::SpellAuraModAttackSpeed,                                         //   9 SPELL_AURA_MOD_ATTACKSPEED 
+    &Aura::SpellAuraModCharm,                                               //   6 SPELL_AURA_MOD_CHARM
+    &Aura::SpellAuraModFear,                                                //   7 SPELL_AURA_MOD_FEAR
+    &Aura::SpellAuraPeriodicHeal,                                           //   8 SPELL_AURA_PERIODIC_HEAL
+    &Aura::SpellAuraModAttackSpeed,                                         //   9 SPELL_AURA_MOD_ATTACKSPEED
     &Aura::SpellAuraModThreatGenerated,                                     //  10 SPELL_AURA_MOD_THREAT
-    &Aura::SpellAuraModTaunt,                                               //  11 SPELL_AURA_MOD_TAUNT 
-    &Aura::SpellAuraModStun,                                                //  12 SPELL_AURA_MOD_STUN 
-    &Aura::SpellAuraModDamageDone,                                          //  13 SPELL_AURA_MOD_DAMAGE_DONE 
-    &Aura::SpellAuraModDamageTaken,                                         //  14 SPELL_AURA_MOD_DAMAGE_TAKEN 
-    &Aura::SpellAuraDamageShield,                                           //  15 SPELL_AURA_DAMAGE_SHIELD 
+    &Aura::SpellAuraModTaunt,                                               //  11 SPELL_AURA_MOD_TAUNT
+    &Aura::SpellAuraModStun,                                                //  12 SPELL_AURA_MOD_STUN
+    &Aura::SpellAuraModDamageDone,                                          //  13 SPELL_AURA_MOD_DAMAGE_DONE
+    &Aura::SpellAuraModDamageTaken,                                         //  14 SPELL_AURA_MOD_DAMAGE_TAKEN
+    &Aura::SpellAuraDamageShield,                                           //  15 SPELL_AURA_DAMAGE_SHIELD
     &Aura::SpellAuraModStealth,                                             //  16 SPELL_AURA_MOD_STEALTH
     &Aura::SpellAuraModDetect,                                              //  17 SPELL_AURA_MOD_DETECT
-    &Aura::SpellAuraModInvisibility,                                        //  18 SPELL_AURA_MOD_INVISIBILITY 
+    &Aura::SpellAuraModInvisibility,                                        //  18 SPELL_AURA_MOD_INVISIBILITY
     &Aura::SpellAuraModInvisibilityDetection,                               //  19 SPELL_AURA_MOD_INVISIBILITY_DETECTION
     &Aura::SpellAuraModTotalHealthRegenPct,                                 //  20 SPELL_AURA_MOD_TOTAL_HEALTH_REGEN_PCT
     &Aura::SpellAuraModTotalManaRegenPct,                                   //  21 SPELL_AURA_MOD_TOTAL_MANA_REGEN_PCT
     &Aura::SpellAuraModResistance,                                          //  22 SPELL_AURA_MOD_RESISTANCE
     &Aura::SpellAuraPeriodicTriggerSpell,                                   //  23 SPELL_AURA_PERIODIC_TRIGGER_SPELL
     &Aura::SpellAuraPeriodicEnergize,                                       //  24 SPELL_AURA_PERIODIC_ENERGIZE
-    &Aura::SpellAuraModPacify,                                              //  25 SPELL_AURA_MOD_PACIFY 
-    &Aura::SpellAuraModRoot,                                                //  26 SPELL_AURA_MOD_ROOT 
-    &Aura::SpellAuraModSilence,                                             //  27 SPELL_AURA_MOD_SILENCE 
-    &Aura::SpellAuraReflectSpells,                                          //  28 SPELL_AURA_REFLECT_SPELLS 
-    &Aura::SpellAuraModStat,                                                //  29 SPELL_AURA_MOD_STAT 
+    &Aura::SpellAuraModPacify,                                              //  25 SPELL_AURA_MOD_PACIFY
+    &Aura::SpellAuraModRoot,                                                //  26 SPELL_AURA_MOD_ROOT
+    &Aura::SpellAuraModSilence,                                             //  27 SPELL_AURA_MOD_SILENCE
+    &Aura::SpellAuraReflectSpells,                                          //  28 SPELL_AURA_REFLECT_SPELLS
+    &Aura::SpellAuraModStat,                                                //  29 SPELL_AURA_MOD_STAT
     &Aura::SpellAuraModSkill,                                               //  30 SPELL_AURA_MOD_SKILL
     &Aura::SpellAuraModIncreaseSpeed,                                       //  31 SPELL_AURA_MOD_INCREASE_SPEED
     &Aura::SpellAuraModIncreaseMountedSpeed,                                //  32 SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED
@@ -80,11 +81,11 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraProcTriggerSpell,                                       //  42 SPELL_AURA_PROC_TRIGGER_SPELL
     &Aura::SpellAuraProcTriggerDamage,                                      //  43 SPELL_AURA_PROC_TRIGGER_DAMAGE
     &Aura::SpellAuraTrackCreatures,                                         //  44 SPELL_AURA_TRACK_CREATURES
-    &Aura::SpellAuraTrackResources,                                         //  45 SPELL_AURA_TRACK_RESOURCES 
+    &Aura::SpellAuraTrackResources,                                         //  45 SPELL_AURA_TRACK_RESOURCES
     &Aura::SpellAuraNULL,                                                   //  46 SPELL_AURA_MOD_PARRY_SKILL, obsolete? not used in 1.12.1 spell.dbc
     &Aura::SpellAuraModParryPerc,                                           //  47 SPELL_AURA_MOD_PARRY_PERCENT
     &Aura::SpellAuraNULL,                                                   //  48 SPELL_AURA_MOD_DODGE_SKILL obsolete?
-    &Aura::SpellAuraModDodgePerc,                                           //  49 SPELL_AURA_MOD_DODGE_PERCENT 
+    &Aura::SpellAuraModDodgePerc,                                           //  49 SPELL_AURA_MOD_DODGE_PERCENT
     &Aura::SpellAuraNULL,                                                   //  50 SPELL_AURA_MOD_BLOCK_SKILL obsolete?,
     &Aura::SpellAuraModBlockPerc,                                           //  51 SPELL_AURA_MOD_BLOCK_PERCENT
     &Aura::SpellAuraModCritPerc,                                            //  52 SPELL_AURA_MOD_CRIT_PERCENT
@@ -103,8 +104,8 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraModCastingSpeed,                                        //  65 SPELL_AURA_MOD_CASTING_SPEED
     &Aura::SpellAuraFeignDeath,                                             //  66 SPELL_AURA_FEIGN_DEATH
     &Aura::SpellAuraModDisarm,                                              //  67 SPELL_AURA_MOD_DISARM
-    &Aura::SpellAuraModStalked,                                             //  68 SPELL_AURA_MOD_STALKED 
-    &Aura::SpellAuraSchoolAbsorb,                                           //  69 SPELL_AURA_SCHOOL_ABSORB 
+    &Aura::SpellAuraModStalked,                                             //  68 SPELL_AURA_MOD_STALKED
+    &Aura::SpellAuraSchoolAbsorb,                                           //  69 SPELL_AURA_SCHOOL_ABSORB
     &Aura::SpellAuraNULL,                                                   //  70 SPELL_AURA_EXTRA_ATTACKS obsolete?
     &Aura::SpellAuraModSpellCritChanceSchool,                               //  71 SPELL_AURA_MOD_SPELL_CRIT_CHANCE_SCHOOL
     &Aura::SpellAuraModPowerCost,                                           //  72 SPELL_AURA_MOD_POWER_COST
@@ -112,12 +113,12 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraReflectSpellsSchool,                                    //  74 SPELL_AURA_REFLECT_SPELLS_SCHOOL
     &Aura::SpellAuraModLanguage,                                            //  75 SPELL_AURA_MOD_LANGUAGE
     &Aura::SpellAuraAddFarSight,                                            //  76 SPELL_AURA_FAR_SIGHT
-    &Aura::SpellAuraMechanicImmunity,                                       //  77 SPELL_AURA_MECHANIC_IMMUNITY 
+    &Aura::SpellAuraMechanicImmunity,                                       //  77 SPELL_AURA_MECHANIC_IMMUNITY
     &Aura::SpellAuraMounted,                                                //  78 SPELL_AURA_MOUNTED
     &Aura::SpellAuraModDamagePercDone,                                      //  79 SPELL_AURA_MOD_DAMAGE_PERCENT_DONE
     &Aura::SpellAuraModPercStat,                                            //  80 SPELL_AURA_MOD_PERCENT_STAT
     &Aura::SpellAuraSplitDamage,                                            //  81 SPELL_AURA_SPLIT_DAMAGE
-    &Aura::SpellAuraWaterBreathing,                                         //  82 SPELL_AURA_WATER_BREATHING 
+    &Aura::SpellAuraWaterBreathing,                                         //  82 SPELL_AURA_WATER_BREATHING
     &Aura::SpellAuraModBaseResistance,                                      //  83 SPELL_AURA_MOD_BASE_RESISTANCE
     &Aura::SpellAuraModRegen,                                               //  84 SPELL_AURA_MOD_REGEN
     &Aura::SpellAuraModPowerRegen,                                          //  85 SPELL_AURA_MOD_POWER_REGEN
@@ -183,7 +184,7 @@ pSpellAura SpellAuraHandler[TOTAL_SPELL_AURAS] =
     &Aura::SpellAuraNULL,                                                   // 145 SPELL_AURA_CHARISMA obsolete?
     &Aura::SpellAuraNULL,                                                   // 146 SPELL_AURA_PERSUADED obsolete
     &Aura::SpellAuraNULL,                                                   // 147 SPELL_AURA_ADD_CREATURE_IMMUNITY http://wow.allakhazam.com/db/spell.html?wspell=36798
-    &Aura::SpellAuraRetainComboPoints,                                      // 148 SPELL_AURA_RETAIN_COMBO_POINTS 
+    &Aura::SpellAuraRetainComboPoints,                                      // 148 SPELL_AURA_RETAIN_COMBO_POINTS
     &Aura::SpellAuraResistPushback,                                         // 149 SPELL_AURA_RESIST_PUSHBACK Resist Pushback //Simply resist spell casting delay
     &Aura::SpellAuraModShieldBlockPCT,                                      // 150 SPELL_AURA_MOD_SHIELD_BLOCK_PCT Mod Shield Absorbed dmg %
     &Aura::SpellAuraTrackStealthed,                                         // 151 SPELL_AURA_TRACK_STEALTHED Track Stealthed

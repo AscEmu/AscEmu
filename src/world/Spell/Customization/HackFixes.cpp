@@ -27,6 +27,7 @@
 #include "Spell/SpellAuras.h"
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
+#include "Spell/Definitions/SpellModifierType.h"
 
 void CreateDummySpell(uint32 id)
 {
@@ -1651,55 +1652,55 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 41189:
         case 59242:
         {
-            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON; 
+            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON;
             break;
         }
         case 8685:
         case 8686:
         {
-            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_II; 
+            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_II;
             break;
         }
         case 8688:
         case 8689:
         {
-            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_III; 
+            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_III;
             break;
         }
         case 11335:
         case 11338:
         {
-            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_IV; 
+            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_IV;
             break;
         }
         case 57965:
         case 57968:
         {
-            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_IX; 
+            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_IX;
             break;
         }
         case 11336:
         case 11339:
         {
-            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_V; 
+            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_V;
             break;
         }
         case 11337:
         case 11340:
         {
-            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_VI; 
+            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_VI;
             break;
         }
         case 26890:
         case 26891:
         {
-            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_VII; 
+            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_VII;
             break;
         }
         case 57964:
         case 57967:
         {
-            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_VIII; 
+            sp->custom_NameHash = SPELL_HASH_INSTANT_POISON_VIII;
             break;
         }
         case 2818:
@@ -1734,55 +1735,55 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 72329:
         case 72330:
         {
-            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON; 
+            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON;
             break;
         }
         case 2819:
         case 2824:
         {
-            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_II; 
+            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_II;
             break;
         }
         case 11353:
         case 11355:
         {
-            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_III; 
+            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_III;
             break;
         }
         case 11354:
         case 11356:
         {
-            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_IV; 
+            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_IV;
             break;
         }
         case 57970:
         case 57973:
         {
-            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_IX; 
+            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_IX;
             break;
         }
         case 25349:
         case 25351:
         {
-            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_V; 
+            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_V;
             break;
         }
         case 26967:
         case 26968:
         {
-            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_VI; 
+            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_VI;
             break;
         }
         case 27186:
         case 27187:
         {
-            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_VII; 
+            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_VII;
             break;
         }
         case 57969:
         case 57972:
         {
-            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_VIII; 
+            sp->custom_NameHash = SPELL_HASH_DEADLY_POISON_VIII;
             break;
         }
 
@@ -1792,7 +1793,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 30981:
         case 44289:
         {
-            sp->custom_NameHash = SPELL_HASH_CRIPPLING_POISON; 
+            sp->custom_NameHash = SPELL_HASH_CRIPPLING_POISON;
             break;
         }
 
@@ -1802,7 +1803,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 34615:
         case 41190:
         {
-            sp->custom_NameHash = SPELL_HASH_MIND_NUMBING_POISON; 
+            sp->custom_NameHash = SPELL_HASH_MIND_NUMBING_POISON;
             break;
         }
 
@@ -1812,14 +1813,14 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 51668:
         case 51669:
         {
-            sp->custom_NameHash = SPELL_HASH_CUT_TO_THE_CHASE; 
+            sp->custom_NameHash = SPELL_HASH_CUT_TO_THE_CHASE;
             break;
         }
 
         case 51625:
         case 51626:
         {
-            sp->custom_NameHash = SPELL_HASH_DEADLY_BREW; 
+            sp->custom_NameHash = SPELL_HASH_DEADLY_BREW;
             break;
         }
 
@@ -1827,7 +1828,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 51693:
         case 51696:
         {
-            sp->custom_NameHash = SPELL_HASH_WAYLAY; 
+            sp->custom_NameHash = SPELL_HASH_WAYLAY;
             break;
         }
 
@@ -1836,7 +1837,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 49694:
         case 59000:
         {
-            sp->custom_NameHash = SPELL_HASH_IMPROVED_SPIRIT_TAP; 
+            sp->custom_NameHash = SPELL_HASH_IMPROVED_SPIRIT_TAP;
             break;
         }
 
@@ -1847,7 +1848,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 63724:
         case 63725:
         {
-            sp->custom_NameHash = SPELL_HASH_HOLY_CONCENTRATION; 
+            sp->custom_NameHash = SPELL_HASH_HOLY_CONCENTRATION;
             break;
         }
 
@@ -1857,7 +1858,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 47753:
         case 54704:
         {
-            sp->custom_NameHash = SPELL_HASH_DIVINE_AEGIS; 
+            sp->custom_NameHash = SPELL_HASH_DIVINE_AEGIS;
             break;
         }
 
@@ -1867,7 +1868,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 63675:
         case 75999:
         {
-            sp->custom_NameHash = SPELL_HASH_IMPROVED_DEVOURING_PLAGUE; 
+            sp->custom_NameHash = SPELL_HASH_IMPROVED_DEVOURING_PLAGUE;
             break;
         }
 
@@ -1875,7 +1876,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 15290:
         case 71269:
         {
-            sp->custom_NameHash = SPELL_HASH_VAMPIRIC_EMBRACE; 
+            sp->custom_NameHash = SPELL_HASH_VAMPIRIC_EMBRACE;
             break;
         }
 
@@ -1884,7 +1885,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 63543:
         case 63544:
         {
-            sp->custom_NameHash = SPELL_HASH_EMPOWERED_RENEW; 
+            sp->custom_NameHash = SPELL_HASH_EMPOWERED_RENEW;
             break;
         }
 
@@ -1895,7 +1896,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 33197:
         case 33198:
         {
-            sp->custom_NameHash = SPELL_HASH_MISERY; 
+            sp->custom_NameHash = SPELL_HASH_MISERY;
             break;
         }
 
@@ -1911,7 +1912,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 48112:
         case 48113:
         {
-            sp->custom_NameHash = SPELL_HASH_PRAYER_OF_MENDING; 
+            sp->custom_NameHash = SPELL_HASH_PRAYER_OF_MENDING;
             break;
         }
 
@@ -1920,7 +1921,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 15335:
         case 15336:
         {
-            sp->custom_NameHash = SPELL_HASH_SPIRIT_TAP; 
+            sp->custom_NameHash = SPELL_HASH_SPIRIT_TAP;
             break;
         }
 
@@ -1938,7 +1939,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 68022:
         case 69403:
         {
-            sp->custom_NameHash = SPELL_HASH_SEAL_OF_COMMAND; 
+            sp->custom_NameHash = SPELL_HASH_SEAL_OF_COMMAND;
             break;
         }
 
@@ -1946,13 +1947,13 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 25988:
         case 25997:
         {
-            sp->custom_NameHash = SPELL_HASH_EYE_FOR_AN_EYE; 
+            sp->custom_NameHash = SPELL_HASH_EYE_FOR_AN_EYE;
             break;
         }
 
         case 43742:
         {
-            sp->custom_NameHash = SPELL_HASH_GRACE_OF_THE_NAARU; 
+            sp->custom_NameHash = SPELL_HASH_GRACE_OF_THE_NAARU;
             break;
         }
 
@@ -1960,7 +1961,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 31786:
         case 33776:
         {
-            sp->custom_NameHash = SPELL_HASH_SPIRITUAL_ATTUNEMENT; 
+            sp->custom_NameHash = SPELL_HASH_SPIRITUAL_ATTUNEMENT;
             break;
         }
 
@@ -1975,14 +1976,14 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 64858:
         case 64859:
         {
-            sp->custom_NameHash = SPELL_HASH_BLADE_BARRIER; 
+            sp->custom_NameHash = SPELL_HASH_BLADE_BARRIER;
             break;
         }
 
         case 41434:
         case 41435:
         {
-            sp->custom_NameHash = SPELL_HASH_THE_TWIN_BLADES_OF_AZZINOTH; 
+            sp->custom_NameHash = SPELL_HASH_THE_TWIN_BLADES_OF_AZZINOTH;
             break;
         }
 
@@ -1994,7 +1995,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 27268:
         case 47982:
         {
-            sp->custom_NameHash = SPELL_HASH_BLOOD_PACT; 
+            sp->custom_NameHash = SPELL_HASH_BLOOD_PACT;
             break;
         }
 
@@ -2004,7 +2005,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 57566:
         case 57567:
         {
-            sp->custom_NameHash = SPELL_HASH_FEL_INTELLIGENCE; 
+            sp->custom_NameHash = SPELL_HASH_FEL_INTELLIGENCE;
             break;
         }
 
@@ -2015,7 +2016,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 63623:
         case 65220:
         {
-            sp->custom_NameHash = SPELL_HASH_AVOIDANCE; 
+            sp->custom_NameHash = SPELL_HASH_AVOIDANCE;
             break;
         }
 
@@ -2023,7 +2024,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 20435:
         case 41002:
         {
-            sp->custom_NameHash = SPELL_HASH_PARANOIA; 
+            sp->custom_NameHash = SPELL_HASH_PARANOIA;
             break;
         }
 
@@ -2079,7 +2080,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 71514:
         case 71515:
         {
-            sp->custom_NameHash = SPELL_HASH_FIRE_SHIELD; 
+            sp->custom_NameHash = SPELL_HASH_FIRE_SHIELD;
             break;
         }
 
@@ -2091,7 +2092,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 29309:
         case 29315:
         {
-            sp->custom_NameHash = SPELL_HASH_PHASE_SHIFT; 
+            sp->custom_NameHash = SPELL_HASH_PHASE_SHIFT;
             break;
         }
 
@@ -2242,7 +2243,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 44531:
         case 61684:
         {
-            sp->custom_NameHash = SPELL_HASH_DASH; 
+            sp->custom_NameHash = SPELL_HASH_DASH;
             break;
         }
 
@@ -2256,7 +2257,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 40279:
         case 43187:
         {
-            sp->custom_NameHash = SPELL_HASH_DIVE; 
+            sp->custom_NameHash = SPELL_HASH_DIVE;
             break;
         }
 
@@ -2265,27 +2266,27 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 40087:
         case 46327:
         {
-            sp->custom_NameHash = SPELL_HASH_SHELL_SHIELD; 
+            sp->custom_NameHash = SPELL_HASH_SHELL_SHIELD;
             break;
         }
 
         case 31707:
         case 72898:
         {
-            sp->custom_NameHash = SPELL_HASH_WATERBOLT; 
+            sp->custom_NameHash = SPELL_HASH_WATERBOLT;
             break;
         }
 
         case 58877:
         case 58879:
         {
-            sp->custom_NameHash = SPELL_HASH_SPIRIT_HUNT; 
+            sp->custom_NameHash = SPELL_HASH_SPIRIT_HUNT;
             break;
         }
 
         case 58857:
         {
-            sp->custom_NameHash = SPELL_HASH_TWIN_HOWL; 
+            sp->custom_NameHash = SPELL_HASH_TWIN_HOWL;
             break;
         }
 
@@ -2297,7 +2298,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 57094:
         case 58861:
         {
-            sp->custom_NameHash = SPELL_HASH_BASH; 
+            sp->custom_NameHash = SPELL_HASH_BASH;
             break;
         }
 
@@ -2313,7 +2314,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 58790:
         case 65979:
         {
-            sp->custom_NameHash = SPELL_HASH_FLAMETONGUE_WEAPON; 
+            sp->custom_NameHash = SPELL_HASH_FLAMETONGUE_WEAPON;
             break;
         }
 
@@ -2332,7 +2333,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 52026:
         case 67028:
         {
-            sp->custom_NameHash = SPELL_HASH_SLAM; 
+            sp->custom_NameHash = SPELL_HASH_SLAM;
             break;
         }
 
@@ -2409,7 +2410,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 70421:
         case 71118:
         {
-            sp->custom_NameHash = SPELL_HASH_BLIZZARD; 
+            sp->custom_NameHash = SPELL_HASH_BLIZZARD;
             break;
         }
 
@@ -2450,7 +2451,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 71780:
         case 71781:
         {
-            sp->custom_NameHash = SPELL_HASH_POWER_WORD__SHIELD; 
+            sp->custom_NameHash = SPELL_HASH_POWER_WORD__SHIELD;
             break;
         }
 
@@ -2471,7 +2472,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 52093:
         case 52847:
         {
-            sp->custom_NameHash = SPELL_HASH_STUN; 
+            sp->custom_NameHash = SPELL_HASH_STUN;
             break;
         }
 
@@ -2500,7 +2501,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 71410:
         case 72427:
         {
-            sp->custom_NameHash = SPELL_HASH_BACKSTAB; 
+            sp->custom_NameHash = SPELL_HASH_BACKSTAB;
             break;
         }
 
@@ -2510,7 +2511,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 26017:
         case 36002:
         {
-            sp->custom_NameHash = SPELL_HASH_VINDICATION; 
+            sp->custom_NameHash = SPELL_HASH_VINDICATION;
             break;
         }
 
@@ -2529,7 +2530,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 72194:
         case 72196:
         {
-            sp->custom_NameHash = SPELL_HASH_SHIELD_BASH; 
+            sp->custom_NameHash = SPELL_HASH_SHIELD_BASH;
             break;
         }
 
@@ -2561,7 +2562,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 62444:
         case 69566:
         {
-            sp->custom_NameHash = SPELL_HASH_HEROIC_STRIKE; 
+            sp->custom_NameHash = SPELL_HASH_HEROIC_STRIKE;
             break;
         }
 
@@ -2677,7 +2678,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 72501:
         case 72502:
         {
-            sp->custom_NameHash = SPELL_HASH_FROSTBOLT; 
+            sp->custom_NameHash = SPELL_HASH_FROSTBOLT;
             break;
         }
 
@@ -2712,7 +2713,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 68311:
         case 71319:
         {
-            sp->custom_NameHash = SPELL_HASH_POLYMORPH; 
+            sp->custom_NameHash = SPELL_HASH_POLYMORPH;
             break;
         }
 
@@ -2768,7 +2769,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 71320:
         case 71929:
         {
-            sp->custom_NameHash = SPELL_HASH_FROST_NOVA; 
+            sp->custom_NameHash = SPELL_HASH_FROST_NOVA;
             break;
         }
 
@@ -2918,7 +2919,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 72163:
         case 72164:
         {
-            sp->custom_NameHash = SPELL_HASH_FIREBALL; 
+            sp->custom_NameHash = SPELL_HASH_FIREBALL;
             break;
         }
 
@@ -6391,15 +6392,15 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 63808:
         case 65510:
         case 67037:
-        case 67716: 
+        case 67716:
         {
-            sp->custom_NameHash = SPELL_HASH_WHIRLWIND; 
-            break; 
+            sp->custom_NameHash = SPELL_HASH_WHIRLWIND;
+            break;
         }
-        case 7744: 
+        case 7744:
         {
-            sp->custom_NameHash = SPELL_HASH_WILL_OF_THE_FORSAKEN; 
-            break; 
+            sp->custom_NameHash = SPELL_HASH_WILL_OF_THE_FORSAKEN;
+            break;
         }
         case 8232:
         case 8235:
@@ -6412,8 +6413,8 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 58803:
         case 58804:
         {
-            sp->custom_NameHash = SPELL_HASH_WINDFURY_WEAPON; 
-            break; 
+            sp->custom_NameHash = SPELL_HASH_WINDFURY_WEAPON;
+            break;
         }
         case 5176:
         case 5177:
@@ -6449,7 +6450,7 @@ void ApplyObsoleteNameHash(SpellInfo* sp)
         case 71148:
         case 75327:
         {
-            sp->custom_NameHash = SPELL_HASH_WRATH; 
+            sp->custom_NameHash = SPELL_HASH_WRATH;
             break;
         }
         default:
@@ -6608,7 +6609,7 @@ void ApplyNormalFixes()
         sp->fixed_dddhcoef = -1;
         sp->fixed_hotdotcoef = -1;
 
-        
+
         // DankoDJ: Refactoring session 16/02/2016 new functions
         Modify_EffectBasePoints(sp);
         Set_missing_spellLevel(sp);
@@ -7008,7 +7009,7 @@ void ApplyNormalFixes()
                 sp->School = SCHOOL_HOLY; //Consecration is a holy redirected spell.
                 sp->Spell_Dmg_Type = SPELL_DMG_TYPE_MAGIC; //Speaks for itself.
             } break;
-            
+
             //////////////////////////////////////////////////////////////////////////////////////////
             // SPELL_HASH_SEALS_OF_THE_PURE
 #if VERSION_STRING != Cata
@@ -7404,7 +7405,7 @@ void ApplyNormalFixes()
     if (sp != nullptr)
         sp->Spell_Dmg_Type = SPELL_DMG_TYPE_RANGED;
 
-    
+
     //////////////////////////////////////////////////////
     // CLASS-SPECIFIC SPELL FIXES                        //
     //////////////////////////////////////////////////////
@@ -7952,7 +7953,7 @@ void ApplyNormalFixes()
     {
         sp->procFlags = PROC_ON_GAIN_EXPIERIENCE | static_cast<uint32>(PROC_TARGET_SELF);
     }
-    
+
     /* Zyres: Same procFlags are already in the dbcs!
     //Hunter : Entrapment
     sp = CheckAndReturnSpellEntry(19184);
@@ -8993,7 +8994,7 @@ void ApplyNormalFixes()
     {
         sp->Effect[0] = SPELL_EFFECT_NULL; //disable this. This is just blizz crap. Pure proof that they suck :P
         sp->EffectImplicitTargetB[1] = EFF_TARGET_PET;
-        //sp->EffectApplyAuraName[2] = SPELL_AURA_MOD_SPELL_CRIT_CHANCE; //lvl 1 has it fucked up :O 
+        //sp->EffectApplyAuraName[2] = SPELL_AURA_MOD_SPELL_CRIT_CHANCE; //lvl 1 has it fucked up :O
                                                                         // Zyres: No you fukced it up. This spell was defined few lines below.
         sp->EffectImplicitTargetB[2] = EFF_TARGET_PET;
     }

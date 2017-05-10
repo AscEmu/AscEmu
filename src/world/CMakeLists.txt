@@ -26,6 +26,7 @@ include(Server/Script/CMakeLists.txt)
 include(Server/Warden/CMakeLists.txt)
 include(Spell/CMakeLists.txt)
 include(Spell/Customization/CMakeLists.txt)
+include(Spell/Definitions/CMakeLists.txt)
 include(Storage/CMakeLists.txt)
 if("${ASCEMU_VERSION}" STREQUAL "Cata")
    include(Storage/DB2/CMakeLists.txt)
@@ -74,6 +75,7 @@ set(sources
    ${SRC_LOGON_COMMUNICATION_CLIENT_FILES}
    ${SRC_SPELL_FILES}
    ${SRC_SPELL_CUSTOM_FILES}
+   ${SRC_SPELL_DEFINITIONS_FILES}
    ${SRC_STORAGE_FILES}
    ${SRC_STORAGE_DBC_FILES}
    ${SRC_UNITS_FILES}
