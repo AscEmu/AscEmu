@@ -28,6 +28,7 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
+#include "Spell/Definitions/ProcFlags.h"
 
 Item::Item()
 {

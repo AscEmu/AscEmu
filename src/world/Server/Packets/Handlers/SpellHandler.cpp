@@ -28,6 +28,7 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/Definitions/SpellCastTargetFlags.h"
 
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {

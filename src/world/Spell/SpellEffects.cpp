@@ -40,6 +40,10 @@
 #include "Objects/Faction.h"
 #include "SpellMgr.h"
 #include "SpellAuras.h"
+#include "Definitions/SpellCastTargetFlags.h"
+#include "Definitions/SpellDamageType.h"
+#include "Definitions/ProcFlags.h"
+#include "Definitions/CastInterruptFlags.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;

@@ -21,6 +21,10 @@
 
 #include "Spell.Legacy.h"
 #include "Definitions/SpellInFrontStatus.h"
+#include "Definitions/SpellCastTargetFlags.h"
+#include "Definitions/SpellDamageType.h"
+#include "Definitions/ProcFlags.h"
+#include "Definitions/CastInterruptFlags.h"
 #ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 #include "StdAfx.h"
 #include "VMapFactory.h"
@@ -200,6 +204,20 @@ void SpellCastTargets::write(WorldPacket & data)
 
     if (m_targetMask & TARGET_FLAG_STRING)
         data << m_strTarget.c_str();
+}
+
+bool SpellCastTargets::HasSrc()
+{
+    if (GetTargetMask() & TARGET_FLAG_SOURCE_LOCATION)
+        return true;
+    return false;
+}
+
+bool SpellCastTargets::HasDst()
+{
+    if (GetTargetMask() & TARGET_FLAG_DEST_LOCATION)
+        return true;
+    return false;
 }
 
 Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
@@ -5474,6 +5492,8 @@ void Spell::Heal(int32 amount, bool ForceCrit)
             u_caster->CombatStatus.WeHealed(unitTarget);
     }
 }
+
+uint32 Spell::GetType() { return (GetSpellInfo()->Spell_Dmg_Type == SPELL_DMG_TYPE_NONE ? SPELL_DMG_TYPE_MAGIC : GetSpellInfo()->Spell_Dmg_Type); }
 
 void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multiplicator)
 {

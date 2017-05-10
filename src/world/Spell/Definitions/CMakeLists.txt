@@ -3,6 +3,9 @@
 set(PATH_PREFIX Spell/Definitions)
 
 set(SRC_SPELL_DEFINITIONS_FILES
+    ${PATH_PREFIX}/CastInterruptFlags.h
+    ${PATH_PREFIX}/ProcFlags.h
+    ${PATH_PREFIX}/SpellCastTargetFlags.h
     ${PATH_PREFIX}/SpellClickSpell.h
     ${PATH_PREFIX}/SpellDamageType.h
     ${PATH_PREFIX}/SpellInFrontStatus.h

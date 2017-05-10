@@ -29,6 +29,9 @@
 #include "Server/World.Legacy.h"
 #include "Spell/Definitions/SpellModifierType.h"
 #include "Spell/Definitions/SpellInFrontStatus.h"
+#include "Spell/Definitions/SpellDamageType.h"
+#include "Spell/Definitions/ProcFlags.h"
+#include "Spell/Definitions/CastInterruptFlags.h"
 
 using ascemu::World::Spell::Helpers::decimalToMask;
 

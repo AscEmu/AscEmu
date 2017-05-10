@@ -20,7 +20,6 @@
 
 #ifndef _SPELL_H
 #define _SPELL_H
-#include "Definitions/SpellDamageType.h"
 #ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 
 #include "Spell/SpellInfo.hpp"
@@ -43,78 +42,6 @@ class Player;
 class Item;
 class Group;
 class Aura;
-
-enum SpellCastTargetFlags
-{
-    TARGET_FLAG_SELF                = 0x00000, // they are checked in following order
-    TARGET_FLAG_UNK1                = 0x00001,
-    TARGET_FLAG_UNIT                = 0x00002,
-    TARGET_FLAG_UNK2                = 0x00004,
-    TARGET_FLAG_UNK3                = 0x00008,
-    TARGET_FLAG_ITEM                = 0x00010,
-    TARGET_FLAG_SOURCE_LOCATION     = 0x00020,
-    TARGET_FLAG_DEST_LOCATION       = 0x00040,
-    TARGET_FLAG_OBJECT_CASTER       = 0x00080,
-    TARGET_FLAG_UNIT_CASTER         = 0x00100,
-    TARGET_FLAG_CORPSE              = 0x00200, // PvP Corpse
-    TARGET_FLAG_UNIT_CORPSE         = 0x00400, // Gathering professions
-    TARGET_FLAG_OBJECT              = 0x00800,
-    TARGET_FLAG_TRADE_ITEM          = 0x01000,
-    TARGET_FLAG_STRING              = 0x02000,
-    TARGET_FLAG_OPEN_LOCK           = 0x04000, // opening object/lock
-    TARGET_FLAG_CORPSE2             = 0x08000, // for resurrection spells
-    TARGET_FLAG_GLYPH               = 0x20000
-};
-
-enum procFlags
-{
-    PROC_NULL                           = 0x0,          //0
-    PROC_ON_ANY_HOSTILE_ACTION          = 0x1,          //1
-    PROC_ON_GAIN_EXPIERIENCE            = 0x2,          //2
-    PROC_ON_MELEE_ATTACK                = 0x4,          //4
-    PROC_ON_CRIT_HIT_VICTIM             = 0x8,          //8
-    PROC_ON_CAST_SPELL                  = 0x10,         //16
-    PROC_ON_PHYSICAL_ATTACK_VICTIM      = 0x20,         //32
-    PROC_ON_RANGED_ATTACK               = 0x40,         //64
-    PROC_ON_RANGED_CRIT_ATTACK          = 0x80,         //128
-    PROC_ON_PHYSICAL_ATTACK             = 0x100,        //256
-    PROC_ON_MELEE_ATTACK_VICTIM         = 0x200,        //512
-    PROC_ON_SPELL_HIT                   = 0x400,        //1024
-    PROC_ON_RANGED_CRIT_ATTACK_VICTIM   = 0x800,        //2048
-    PROC_ON_CRIT_ATTACK                 = 0x1000,       //4096
-    PROC_ON_RANGED_ATTACK_VICTIM        = 0x2000,       //8192
-    PROC_ON_PRE_DISPELL_AURA_VICTIM     = 0x4000,       //16384
-    PROC_ON_SPELL_LAND_VICTIM           = 0x8000,       //32768
-    PROC_ON_CAST_SPECIFIC_SPELL         = 0x10000,      //65536
-    PROC_ON_SPELL_HIT_VICTIM            = 0x20000,      //131072
-    PROC_ON_SPELL_CRIT_HIT_VICTIM       = 0x40000,      //262144
-    PROC_ON_TARGET_DIE                  = 0x80000,      //524288
-    PROC_ON_ANY_DAMAGE_VICTIM           = 0x100000,     //1048576
-    PROC_ON_TRAP_TRIGGER                = 0x200000,     //2097152 triggers on trap activation)
-    PROC_ON_AUTO_SHOT_HIT               = 0x400000,     //4194304
-    PROC_ON_ABSORB                      = 0x800000,     //8388608
-    PROC_ON_RESIST_VICTIM               = 0x1000000,    //16777216
-    PROC_ON_DODGE_VICTIM                = 0x2000000,    //33554432
-    PROC_ON_DIE                         = 0x4000000,    //67108864
-    PROC_REMOVEONUSE                    = 0x8000000,    //134217728 remove prochcharge only when it is used
-    PROC_MISC                           = 0x10000000,   //268435456 our custom flag to decide if proc dmg or shield
-    PROC_ON_BLOCK_VICTIM                = 0x20000000,   //536870912
-    PROC_ON_SPELL_CRIT_HIT              = 0x40000000,   //1073741824
-    PROC_TARGET_SELF                    = 0x80000000,   //-2147483648 our custom flag to decide if proc target is self or victim
-};
-
-
-enum CastInterruptFlags
-{
-    CAST_INTERRUPT_NULL                 = 0x0,
-    CAST_INTERRUPT_ON_MOVEMENT          = 0x1,
-    CAST_INTERRUPT_PUSHBACK             = 0x2, // seems to be whether or not the spell is pushed back on dmg
-    CAST_INTERRUPT_ON_INTERRUPT_CAST    = 0x4, // ? probably interrupt only cast
-    CAST_INTERRUPT_ON_INTERRUPT_SCHOOL  = 0x8, // seems that on 3.2.0 spell with this interrupts only 1 school, like counterspell
-    CAST_INTERRUPT_ON_DAMAGE_TAKEN      = 0x10,
-    CAST_INTERRUPT_ON_INTERRUPT_ALL     = 0x20 // guessed
-
-};
 
 enum AuraInterruptFlags
 {
@@ -756,18 +683,9 @@ class SpellCastTargets
         std::string m_strTarget;
 
         uint32 GetTargetMask() { return m_targetMask; }
-        bool HasSrc()
-        {
-            if (GetTargetMask() & TARGET_FLAG_SOURCE_LOCATION)
-                return true;
-            return false;
-        }
-        bool HasDst()
-        {
-            if (GetTargetMask() & TARGET_FLAG_DEST_LOCATION)
-                return true;
-            return false;
-        }
+    bool HasSrc();
+
+    bool HasDst();
         bool HasDstOrSrc() { return (HasSrc() || HasDst()); }
 };
 
@@ -1413,7 +1331,7 @@ class SERVER_DECL Spell : public EventableObject
 
         // This returns SPELL_ENTRY_Spell_Dmg_Type where 0 = SPELL_DMG_TYPE_NONE, 1 = SPELL_DMG_TYPE_MAGIC, 2 = SPELL_DMG_TYPE_MELEE, 3 = SPELL_DMG_TYPE_RANGED
         // It should NOT be used for weapon_damage_type which needs: 0 = MELEE, 1 = OFFHAND, 2 = RANGED
-        inline uint32 GetType() { return (GetSpellInfo()->Spell_Dmg_Type == SPELL_DMG_TYPE_NONE ? SPELL_DMG_TYPE_MAGIC : GetSpellInfo()->Spell_Dmg_Type); }
+    inline uint32 GetType();
 
         std::map<uint64, Aura*> m_pendingAuras;
         TargetsList UniqueTargets;

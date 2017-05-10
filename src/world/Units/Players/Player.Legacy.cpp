@@ -48,6 +48,8 @@
 #include "Objects/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Map/WorldCreator.h"
+#include "Spell/Definitions/SpellCastTargetFlags.h"
+#include "Spell/Definitions/ProcFlags.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;

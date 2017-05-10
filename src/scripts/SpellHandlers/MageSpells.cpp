@@ -20,6 +20,7 @@
 #include "Setup.h"
 #include "Spell/SpellAuras.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Spell/Definitions/ProcFlags.h"
 
 bool Cold_Snap(uint32 i, Spell* pSpell)
 {

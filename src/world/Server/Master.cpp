@@ -271,7 +271,9 @@ bool Master::Run(int argc, char** argv)
     sScriptMgr.LoadScripts();
 
     if (worldConfig.startup.enableSpellIdDump)
-    sScriptMgr.DumpUnimplementedSpells();
+    {
+        sScriptMgr.DumpUnimplementedSpells();
+    }
 
     LoadingTime = getMSTime() - LoadingTime;
     LogDetail("Server : Ready for connections. Startup time: %ums", LoadingTime);
@@ -413,9 +415,13 @@ bool Master::Run(int argc, char** argv)
 
     // remove pid
     if (remove("worldserver.pid") != 0)
-    LOG_ERROR("Error deleting file worldserver.pid");
+    {
+        LOG_ERROR("Error deleting file worldserver.pid");
+    }
     else
-    LOG_DEBUG("File worldserver.pid successfully deleted");
+    {
+        LOG_DEBUG("File worldserver.pid successfully deleted");
+    }
 
     LogDetail("Shutdown : Shutdown complete.");
     AscLog.~AscEmuLog();
@@ -458,7 +464,9 @@ bool Master::_CheckDBVersion()
             LogError("Database : You can find the world update queries in the sql/world_updates sub-directory of your AscEmu source directory.");
         }
         else
-        LogError("Database : Your world database is probably too new for this AscEmu version, you need to update your server. Exiting.");
+        {
+            LogError("Database : Your world database is probably too new for this AscEmu version, you need to update your server. Exiting.");
+        }
 
         delete wqr;
         return false;
@@ -681,26 +689,38 @@ void Master::OpenCheatLogFiles()
     if (Anticheat_Log->IsOpen())
     {
         if (!worldConfig.log.enableCheaterLog)
+        {
             Anticheat_Log->Close();
+        }
     }
     else if (worldConfig.log.enableCheaterLog)
+    {
         Anticheat_Log->Open();
+    }
 
     if (GMCommand_Log->IsOpen())
     {
         if (!worldConfig.log.enableGmCommandLog)
+        {
             GMCommand_Log->Close();
+        }
     }
     else if (worldConfig.log.enableGmCommandLog)
+    {
         GMCommand_Log->Open();
+    }
 
     if (Player_Log->IsOpen())
     {
         if (!worldConfig.log.enablePlayerLog)
+        {
             Player_Log->Close();
+        }
     }
     else if (worldConfig.log.enablePlayerLog)
+    {
         Player_Log->Open();
+    }
 }
 
 void Master::StartRemoteConsole()

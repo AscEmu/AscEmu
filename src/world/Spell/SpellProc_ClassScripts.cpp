@@ -27,6 +27,7 @@
 #include "Map/MapMgr.h"
 #include "SpellMgr.h"
 #include "SpellAuras.h"
+#include "Definitions/ProcFlags.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;

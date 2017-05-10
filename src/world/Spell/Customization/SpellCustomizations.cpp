@@ -23,6 +23,8 @@
 #include "Spell/SpellAuras.h"
 #include "Singleton.h"
 #include <unordered_map>
+#include "Spell/Definitions/ProcFlags.h"
+#include "Spell/Definitions/SpellDamageType.h"
 
 initialiseSingleton(SpellCustomizations);
 

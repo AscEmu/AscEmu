@@ -34,6 +34,7 @@
 #include "SpellAuras.h"
 #include "Definitions/SpellModifierType.h"
 #include "SpellHelpers.h"
+#include "Definitions/ProcFlags.h"
 
 using ascemu::World::Spell::Helpers::decimalToMask;
 using ascemu::World::Spell::Helpers::spellModFlatFloatValue;

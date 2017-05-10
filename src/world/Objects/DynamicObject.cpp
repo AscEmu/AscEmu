@@ -26,6 +26,7 @@
 #include "Spell/SpellMgr.h"
 #include "Spell/SpellAuras.h"
 #include "../../scripts/Common/Base.h"
+#include "Spell/Definitions/ProcFlags.h"
 
 DynamicObject::DynamicObject(uint32 high, uint32 low)
 {

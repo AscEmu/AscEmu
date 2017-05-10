@@ -25,6 +25,7 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/Definitions/SpellCastTargetFlags.h"
 
 bool ChatHandler::HandleDebugDumpMovementCommand(const char* args, WorldSession* session)
 {
@@ -327,11 +328,11 @@ bool ChatHandler::HandleSetBytesCommand(const char* args, WorldSession* m_sessio
     uint8 Value4 = static_cast<uint8>(atol(pValue4));
 
     std::stringstream sstext;
-    sstext << "Set Field " << BytesIndex 
-        << " bytes to " << uint16((uint8)Value1) 
-        << " " << uint16((uint8)Value2) 
-        << " " << uint16((uint8)Value3) 
-        << " " << uint16((uint8)Value4) 
+    sstext << "Set Field " << BytesIndex
+        << " bytes to " << uint16((uint8)Value1)
+        << " " << uint16((uint8)Value2)
+        << " " << uint16((uint8)Value3)
+        << " " << uint16((uint8)Value4)
         << '\0';
     obj->SetUInt32Value(BytesIndex, ((Value1) | (Value2 << 8) | (Value3 << 16) | (Value4 << 24)));
     SystemMessage(m_session, sstext.str().c_str());

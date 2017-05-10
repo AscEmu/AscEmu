@@ -22,6 +22,7 @@
 #include "Objects/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Spell/Definitions/ProcFlags.h"
 
 bool Penance(uint32 i, Spell* pSpell)
 {

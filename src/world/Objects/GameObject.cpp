@@ -27,6 +27,7 @@
 #include "Map/MapCell.h"
 #include "Map/MapMgr.h"
 #include "Faction.h"
+#include "Spell/Definitions/ProcFlags.h"
 
 GameObject::GameObject(uint64 guid)
 {
@@ -424,7 +425,7 @@ struct QuaternionCompressed
         double w = 1 - (x * x + y * y + z * z);
         ARCEMU_ASSERT(w >= 0);
         w = sqrt(w);
-        
+
         return Quat(float(x), float(y), float(z), float(w));
     }
 

@@ -37,6 +37,8 @@
 #include "Faction.h"
 #include "Spell/SpellAuras.h"
 #include "Map/WorldCreator.h"
+#include "Spell/Definitions/ProcFlags.h"
+#include "Spell/Definitions/SpellDamageType.h"
 
 Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
 {
@@ -1366,7 +1368,7 @@ void Object::AddToWorld(MapMgr* pMapMgr)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Unlike addtoworld it pushes it directly ignoring add pool this can 
+/// Unlike addtoworld it pushes it directly ignoring add pool this can
 /// only be called from the thread of mapmgr!
 //////////////////////////////////////////////////////////////////////////////////////////
 void Object::PushToWorld(MapMgr* mgr)
@@ -2159,7 +2161,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
     //damage reduction
     if (this->IsUnit())
         res += static_cast< Unit* >(this)->CalcSpellDamageReduction(pVictim, spellInfo, res);
-    
+
     //absorption
     uint32 ress = static_cast< uint32 >(res);
     uint32 abs_dmg = pVictim->AbsorbDamage(spellInfo->School, &ress);
@@ -2224,7 +2226,7 @@ void Object::SpellNonMeleeDamageLog(Unit* pVictim, uint32 spellID, uint32 damage
         else
             res = static_cast< float >(dmg.full_damage - dmg.resisted_damage);
     }
-    
+
     //special states
     if (pVictim->IsPlayer() && static_cast< Player* >(pVictim)->GodModeCheat == true)
     {
@@ -2656,7 +2658,7 @@ Transporter* Object::GetTransport() const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-/// Manipulates the phase value, see "enum PHASECOMMANDS" in 
+/// Manipulates the phase value, see "enum PHASECOMMANDS" in
 /// Object.h for a longer explanation!
 //////////////////////////////////////////////////////////////////////////////////////////
 void Object::Phase(uint8 command, uint32 newphase)

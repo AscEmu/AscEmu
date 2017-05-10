@@ -32,6 +32,7 @@
 #include "Map/WorldCreatorDefines.hpp"
 #include "Map/WorldCreator.h"
 #include "scripts/Battlegrounds/AlteracValley.h"
+#include "Spell/Definitions/SpellCastTargetFlags.h"
 
 #ifndef UNIX
 #include <cmath>

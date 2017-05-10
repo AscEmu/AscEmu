@@ -24,6 +24,7 @@
 #include "Spell/SpellAuras.h"
 #include "Server/Packets/Opcode.h"
 #include "Server/Script/ScriptMgr.h"
+#include "Spell/Definitions/ProcFlags.h"
 
 #define BLOOD_PLAGUE 55078
 #define FROST_FEVER 55095

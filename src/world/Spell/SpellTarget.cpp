@@ -26,6 +26,7 @@
 #include "Objects/GameObject.h"
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
+#include "Definitions/SpellCastTargetFlags.h"
 
 uint32 g_spellImplicitTargetFlags[MAX_IMPLICIT_TARGET_VALUE];
 

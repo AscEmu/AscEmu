@@ -34,6 +34,7 @@
 #include "Map/MapMgr.h"
 #include "Map/WorldCreatorDefines.hpp"
 #include "Map/WorldCreator.h"
+#include "Spell/Definitions/ProcFlags.h"
 
 Creature::Creature(uint64 guid)
 {
@@ -356,7 +357,7 @@ void Creature::generateLoot()
         gold_fp = 0.0;
         while (random_bits != 0)
         {
-            // If last bit is one .. 
+            // If last bit is one ..
             if ((random_bits & 0x01) == 1)
                 // .. increase loot by 1/12th of expected value
                 gold_fp += chunk_size;
@@ -451,8 +452,8 @@ void Creature::SaveToDB()
         << m_uint32Values[UNIT_FIELD_BYTES_2] << ","
         << m_uint32Values[UNIT_NPC_EMOTESTATE] << ",0,";
 
-    ss << m_spawn->channel_spell << "," 
-        << m_spawn->channel_target_go << "," 
+    ss << m_spawn->channel_spell << ","
+        << m_spawn->channel_target_go << ","
         << m_spawn->channel_target_creature << ",";
 
     ss << uint32(GetStandState()) << ",";
