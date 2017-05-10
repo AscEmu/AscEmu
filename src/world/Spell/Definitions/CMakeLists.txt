@@ -6,6 +6,7 @@ set(SRC_SPELL_DEFINITIONS_FILES
     ${PATH_PREFIX}/SpellClickSpell.h
     ${PATH_PREFIX}/SpellDamageType.h
     ${PATH_PREFIX}/SpellInFrontStatus.h
+    ${PATH_PREFIX}/SpellLog.h
     ${PATH_PREFIX}/SpellModifierType.h
 )
 

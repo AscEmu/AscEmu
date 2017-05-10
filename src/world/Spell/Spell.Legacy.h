@@ -44,23 +44,6 @@ class Item;
 class Group;
 class Aura;
 
-// value's for SendSpellLog
-enum SPELL_LOG
-{
-    SPELL_LOG_NONE,
-    SPELL_LOG_MISS,
-    SPELL_LOG_RESIST,
-    SPELL_LOG_DODGE,
-    SPELL_LOG_PARRY,
-    SPELL_LOG_BLOCK,
-    SPELL_LOG_EVADE,
-    SPELL_LOG_IMMUNE,
-    SPELL_LOG_IMMUNE2,
-    SPELL_LOG_DEFLECT,
-    SPELL_LOG_ABSORB,
-    SPELL_LOG_REFLECT
-};
-
 enum SpellCastTargetFlags
 {
     TARGET_FLAG_SELF                = 0x00000, // they are checked in following order

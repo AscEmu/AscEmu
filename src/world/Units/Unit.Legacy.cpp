@@ -33,6 +33,7 @@
 #include "Objects/Faction.h"
 #include "Spell/SpellAuras.h"
 #include "../../scripts/Common/Base.h"
+#include "Spell/Definitions/SpellLog.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
