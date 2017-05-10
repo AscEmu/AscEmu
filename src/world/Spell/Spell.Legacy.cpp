@@ -20,6 +20,7 @@
  */
 
 #include "Spell.Legacy.h"
+#include "Definitions/SpellInFrontStatus.h"
 #ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 #include "StdAfx.h"
 #include "VMapFactory.h"

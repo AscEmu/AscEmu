@@ -43,16 +43,6 @@ class Item;
 class Group;
 class Aura;
 
-enum SPELL_INFRONT_STATUS
-{
-    SPELL_INFRONT_STATUS_REQUIRE_SKIPCHECK  = 0,
-    SPELL_INFRONT_STATUS_REQUIRE_INFRONT    = 1,
-    SPELL_INFRONT_STATUS_REQUIRE_INBACK     = 2,
-};
-
-//bool IsBeneficSpell(SpellEntry *sp);
-//AI_SpellTargetType RecommandAISpellTargetType(SpellEntry *sp);
-
 enum SPELL_DMG_TYPE // SPELL_ENTRY_Spell_Dmg_Type
 {
     SPELL_DMG_TYPE_NONE   = 0,
