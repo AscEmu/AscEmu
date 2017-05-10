@@ -20,6 +20,7 @@
 
 #ifndef _SPELL_H
 #define _SPELL_H
+#include "Definitions/SpellDamageType.h"
 #ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 
 #include "Spell/SpellInfo.hpp"
@@ -42,14 +43,6 @@ class Player;
 class Item;
 class Group;
 class Aura;
-
-enum SPELL_DMG_TYPE // SPELL_ENTRY_Spell_Dmg_Type
-{
-    SPELL_DMG_TYPE_NONE   = 0,
-    SPELL_DMG_TYPE_MAGIC  = 1,
-    SPELL_DMG_TYPE_MELEE  = 2,
-    SPELL_DMG_TYPE_RANGED = 3
-};
 
 // value's for SendSpellLog
 enum SPELL_LOG
