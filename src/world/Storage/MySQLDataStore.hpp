@@ -12,6 +12,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Packets/Handlers/AreaTrigger.h"
 #include "../../scripts/Battlegrounds/IsleOfConquest.h"
 #include "Objects/ObjectMgr.h"
+#include "Spell/Definitions/SpellClickSpell.h"
 
 extern SERVER_DECL std::set<std::string> CreatureSpawnsTables;
 extern SERVER_DECL std::set<std::string> GameObjectSpawnsTables;

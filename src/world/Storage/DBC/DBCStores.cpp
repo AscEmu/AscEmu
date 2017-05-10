@@ -4,6 +4,7 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "WorldConf.h"
+#include "Server/World.h"
 
 #if VERSION_STRING != Cata
 

@@ -42,13 +42,6 @@ class Item;
 class Group;
 class Aura;
 
-
-struct SpellClickSpell
-{
-    uint32 CreatureID;
-    uint32 SpellID;
-};
-
 /* Spell Ranges:(for 1.10.2)
 Range ID|Range|Description
 1       0-0     Self Only

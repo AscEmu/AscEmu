@@ -6,6 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 #include "Player.h"
 #include "Server/Packets/Opcode.h"
+#include "Chat/ChatDefines.hpp"
+#include "Server/World.h"
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -179,12 +181,12 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
             movement_info.writeMovementInfo(data, MSG_MOVE_SET_RUN_SPEED, speed);
         } break;
         case TYPE_RUN_BACK:
-        { 
+        {
             data.Initialize(MSG_MOVE_SET_RUN_BACK_SPEED, 1 + 8 + 4 + 4);
             movement_info.writeMovementInfo(data, MSG_MOVE_SET_RUN_BACK_SPEED, speed);
         } break;
         case TYPE_SWIM:
-        { 
+        {
             data.Initialize(MSG_MOVE_SET_SWIM_SPEED, 1 + 8 + 4 + 4);
             movement_info.writeMovementInfo(data, MSG_MOVE_SET_SWIM_SPEED, speed);
         } break;
@@ -194,7 +196,7 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
             movement_info.writeMovementInfo(data, MSG_MOVE_SET_SWIM_BACK_SPEED, speed);
         } break;
         case TYPE_TURN_RATE:
-        { 
+        {
             data.Initialize(MSG_MOVE_SET_TURN_RATE, 1 + 8 + 4 + 4);
             movement_info.writeMovementInfo(data, MSG_MOVE_SET_TURN_RATE, speed);
         } break;
@@ -204,7 +206,7 @@ void Player::sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed)
             movement_info.writeMovementInfo(data, MSG_MOVE_SET_FLIGHT_SPEED, speed);
         } break;
         case TYPE_FLY_BACK:
-        { 
+        {
             data.Initialize(MSG_MOVE_SET_FLIGHT_BACK_SPEED, 1 + 8 + 4 + 4);
             movement_info.writeMovementInfo(data, MSG_MOVE_SET_FLIGHT_BACK_SPEED, speed);
         } break;

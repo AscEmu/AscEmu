@@ -3,6 +3,7 @@
 set(PATH_PREFIX Spell/Definitions)
 
 set(SRC_SPELL_DEFINITIONS_FILES
+    ${PATH_PREFIX}/SpellClickSpell.h
     ${PATH_PREFIX}/SpellModifierType.h
 )
 

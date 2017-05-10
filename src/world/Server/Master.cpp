@@ -30,6 +30,8 @@
 #include "Storage/DayWatcherThread.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
+#include "Management/AddonMgr.h"
+#include "Management/AuctionMgr.h"
 
 createFileSingleton(Master);
 std::string LogFileName;
@@ -70,14 +72,14 @@ void Master::_OnSignal(int s)
             sWorld.loadWorldConfigValues(true);
             break;
 #endif
-        case SIGINT:
-        case SIGTERM:
-        case SIGABRT:
+    case SIGINT:
+    case SIGTERM:
+    case SIGABRT:
 #ifdef _WIN32
-        case SIGBREAK:
+    case SIGBREAK:
 #endif
-            Master::m_stopEvent = true;
-            break;
+        Master::m_stopEvent = true;
+        break;
     }
 
     signal(s, _OnSignal);
@@ -263,13 +265,13 @@ bool Master::Run(int argc, char** argv)
     ThreadPool.ExecuteTask(console);
 
     StartNetworkSubsystem();
-    
+
     sSocketMgr.SpawnWorkerThreads();
 
     sScriptMgr.LoadScripts();
 
     if (worldConfig.startup.enableSpellIdDump)
-        sScriptMgr.DumpUnimplementedSpells();
+    sScriptMgr.DumpUnimplementedSpells();
 
     LoadingTime = getMSTime() - LoadingTime;
     LogDetail("Server : Ready for connections. Startup time: %ums", LoadingTime);
@@ -337,7 +339,7 @@ bool Master::Run(int argc, char** argv)
     // begin server shutdown
 
     ShutdownLootSystem();
-    
+
     // send a query to wake it up if its inactive
     LogNotice("Database : Clearing all pending queries...");
 
@@ -411,9 +413,9 @@ bool Master::Run(int argc, char** argv)
 
     // remove pid
     if (remove("worldserver.pid") != 0)
-        LOG_ERROR("Error deleting file worldserver.pid");
+    LOG_ERROR("Error deleting file worldserver.pid");
     else
-        LOG_DEBUG("File worldserver.pid successfully deleted");
+    LOG_DEBUG("File worldserver.pid successfully deleted");
 
     LogDetail("Shutdown : Shutdown complete.");
     AscLog.~AscEmuLog();
@@ -456,7 +458,7 @@ bool Master::_CheckDBVersion()
             LogError("Database : You can find the world update queries in the sql/world_updates sub-directory of your AscEmu source directory.");
         }
         else
-            LogError("Database : Your world database is probably too new for this AscEmu version, you need to update your server. Exiting.");
+        LogError("Database : Your world database is probably too new for this AscEmu version, you need to update your server. Exiting.");
 
         delete wqr;
         return false;
@@ -486,7 +488,7 @@ bool Master::_CheckDBVersion()
             LogError("Database : You can find the character update queries in the sql/character_updates sub-directory of your AscEmu source directory.");
         }
         else
-            LogError("Database : Your character database is too new for this AscEmu version, you need to update your server. Exiting.");
+        LogError("Database : Your character database is too new for this AscEmu version, you need to update your server. Exiting.");
 
         delete cqr;
         return false;
@@ -520,7 +522,7 @@ bool Master::_StartDB()
 
     // Initialize it
     if (!WorldDatabase.Initialize(worldConfig.worldDb.host.c_str(), (unsigned int)worldConfig.worldDb.port, worldConfig.worldDb.user.c_str(),
-        worldConfig.worldDb.password.c_str(), worldConfig.worldDb.dbName.c_str(), worldConfig.worldDb.connections, 16384))
+                                             worldConfig.worldDb.password.c_str(), worldConfig.worldDb.dbName.c_str(), worldConfig.worldDb.connections, 16384))
     {
         LogError("Configs : Connection to WorldDatabase failed. Check your database configurations!");
         return false;
@@ -542,7 +544,7 @@ bool Master::_StartDB()
 
     // Initialize it
     if (!CharacterDatabase.Initialize(worldConfig.charDb.host.c_str(), (unsigned int)worldConfig.charDb.port, worldConfig.charDb.user.c_str(),
-        worldConfig.charDb.password.c_str(), worldConfig.charDb.dbName.c_str(), worldConfig.charDb.connections, 16384))
+                                                 worldConfig.charDb.password.c_str(), worldConfig.charDb.dbName.c_str(), worldConfig.charDb.connections, 16384))
     {
         LogError("Configs : Connection to CharacterDatabase failed. Check your database configurations!");
         return false;
@@ -698,7 +700,7 @@ void Master::OpenCheatLogFiles()
             Player_Log->Close();
     }
     else if (worldConfig.log.enablePlayerLog)
-            Player_Log->Open();
+        Player_Log->Open();
 }
 
 void Master::StartRemoteConsole()
@@ -779,10 +781,10 @@ void Master::ShutdownThreadPools(bool listnersockcreate)
                 if (m_ShutdownTimer > 60000.0f)
                 {
                     if (!((int)(m_ShutdownTimer) % 60000))
-                        LogNotice("Server : Shutdown in %i minutes.", (int)(m_ShutdownTimer / 60000.0f));
+                    LogNotice("Server : Shutdown in %i minutes.", (int)(m_ShutdownTimer / 60000.0f));
                 }
                 else
-                    LogNotice("Server : Shutdown in %i seconds.", (int)(m_ShutdownTimer / 1000.0f));
+                LogNotice("Server : Shutdown in %i seconds.", (int)(m_ShutdownTimer / 1000.0f));
 
                 next_printout = getMSTime() + 500;
             }
