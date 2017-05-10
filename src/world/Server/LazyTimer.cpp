@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 long long LazyTimer::getDelta() const
 {
-    return ServerState::instance()->getDelta() - m_startedAt;
+    return ServerState::instance()->getDelta() - (m_startedAt + m_elapsedTime);
 }
 
 void LazyTimer::start()
@@ -77,6 +77,12 @@ void LazyTimer::reset(long long durationMs /*= -1*/)
     m_elapsedTime = 0;
     m_duration = durationMs;
     m_startedAt = 0;
+}
+
+void LazyTimer::resetAndRestart(long long durationMs)
+{
+    reset(durationMs);
+    start();
 }
 
 bool LazyTimer::isExpired() const

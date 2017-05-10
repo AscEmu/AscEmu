@@ -33,6 +33,7 @@ public:
     long long getDuration() const;
     // Reset the timer
     void reset(long long durationMs = -1);
+    void resetAndRestart(long long durationMs = -1);
 
     // Has the timer expired
     bool isExpired() const;
