@@ -44,6 +44,7 @@
 #include "Definitions/SpellDamageType.h"
 #include "Definitions/ProcFlags.h"
 #include "Definitions/CastInterruptFlags.h"
+#include "Definitions/AuraInterruptFlags.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;

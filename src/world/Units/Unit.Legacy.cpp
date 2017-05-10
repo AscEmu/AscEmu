@@ -36,6 +36,7 @@
 #include "Spell/Definitions/SpellLog.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
 #include "Spell/Definitions/ProcFlags.h"
+#include <Spell/Definitions/AuraInterruptFlags.h>
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;

@@ -33,6 +33,7 @@
 #include "Spell/SpellMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/ProcFlags.h"
+#include <Spell/Definitions/AuraInterruptFlags.h>
 
 #define WATER_ELEMENTAL         510
 #define WATER_ELEMENTAL_NEW     37994

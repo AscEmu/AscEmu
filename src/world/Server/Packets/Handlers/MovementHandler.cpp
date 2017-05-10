@@ -25,6 +25,7 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Map/WorldCreatorDefines.hpp"
+#include <Spell/Definitions/AuraInterruptFlags.h>
 
 #define SWIMMING_TOLERANCE_LEVEL -0.08f
 #define MOVEMENT_PACKET_TIME_DELAY 500
@@ -323,7 +324,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
             {
                 GameObject_FishingNode* go_fishing_node = static_cast<GameObject_FishingNode*>(go);
                 go_fishing_node->EndFishing(true);
-                
+
                 auto spell = _player->GetCurrentSpell();
                 if (spell != nullptr)
                 {

@@ -25,6 +25,7 @@
 #include "Definitions/SpellDamageType.h"
 #include "Definitions/ProcFlags.h"
 #include "Definitions/CastInterruptFlags.h"
+#include "Definitions/AuraInterruptFlags.h"
 #ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 #include "StdAfx.h"
 #include "VMapFactory.h"

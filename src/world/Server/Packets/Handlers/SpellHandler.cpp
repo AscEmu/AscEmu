@@ -29,6 +29,7 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
+#include <Spell/Definitions/AuraInterruptFlags.h>
 
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {

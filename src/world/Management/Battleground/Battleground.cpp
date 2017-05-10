@@ -25,6 +25,7 @@
 #include "Management/Arenas.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
+#include <Spell/Definitions/AuraInterruptFlags.h>
 
 uint32 CBattleground::GetId()
 {
@@ -134,7 +135,7 @@ void CBattleground::BuildPvPUpdateDataPacket(WorldPacket* data)
         }
 
         *data << uint8(1);
-        
+
         if (!Rated())
         {
             *data << uint32(0); //uint32(negative rating)
@@ -292,7 +293,7 @@ void CBattleground::OnPlayerPushed(Player* plr)
 
 void CBattleground::SetIsWeekend(bool /*isweekend*/)
 {
-    
+
 }
 
 void CBattleground::PortPlayer(Player* plr, bool skip_teleport /* = false*/)
@@ -459,7 +460,7 @@ void CBattleground::StartBattleground()
 /*!
  * Ends the current battleground
  * \param winningTeam PlayerTeam that won the battleground
- * \sa CBattleground::StartBattleground 
+ * \sa CBattleground::StartBattleground
  * \todo Move reward calculations to seperate functions */
 void CBattleground::EndBattleground(PlayerTeam winningTeam)
 {
@@ -792,7 +793,7 @@ void CBattleground::EventCountdown()
 
 void CBattleground::OnStart()
 {
-    
+
 }
 
 void CBattleground::SetWorldState(uint32 Index, uint32 Value)
@@ -844,7 +845,7 @@ void CBattleground::Close()
 
 void CBattleground::OnClose()
 {
-    
+
 }
 
 Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, uint32 horde)

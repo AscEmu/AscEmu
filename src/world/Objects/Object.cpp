@@ -39,6 +39,7 @@
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellDamageType.h"
+#include <Spell/Definitions/AuraInterruptFlags.h>
 
 Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
 {

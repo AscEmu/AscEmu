@@ -35,6 +35,7 @@
 #include "Map/WorldCreatorDefines.hpp"
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/ProcFlags.h"
+#include <Spell/Definitions/AuraInterruptFlags.h>
 
 Creature::Creature(uint64 guid)
 {
