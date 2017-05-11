@@ -45,6 +45,7 @@
 #include "Definitions/ProcFlags.h"
 #include "Definitions/CastInterruptFlags.h"
 #include "Definitions/AuraInterruptFlags.h"
+#include "Definitions/ChannelInterruptFlags.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;

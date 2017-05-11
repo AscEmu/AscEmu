@@ -393,7 +393,7 @@ public:
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Movement
-    void sendForceMovePaket(UnitSpeedType speed_type, float speed);
+    void sendForceMovePacket(UnitSpeedType speed_type, float speed);
     void sendMoveSetSpeedPaket(UnitSpeedType speed_type, float speed);
 
     void handleFall(MovementInfo const& movement_info);
@@ -440,7 +440,7 @@ private:
     friend class Pet;
 
     public:
-        
+
         bool Teleport(const LocationVector& vec, MapMgr* map) override;
 
         Player(uint32 guid);
@@ -1547,7 +1547,7 @@ private:
         DBC::Structures::ChrRacesEntry const* myRace;
         DBC::Structures::ChrClassesEntry const* myClass;
         Creature* linkTarget;
-        
+
         bool SafeTeleport(uint32 MapID, uint32 InstanceID, float X, float Y, float Z, float O);
         bool SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector & vec);
         void SafeTeleport(MapMgr* mgr, const LocationVector & vec);

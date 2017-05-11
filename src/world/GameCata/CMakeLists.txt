@@ -1,5 +1,6 @@
 # Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
 
+include(GameCata/Units/CMakeLists.txt)
 set(PATH_PREFIX GameCata)
 
 set(SRC_GAMECATA_FILES

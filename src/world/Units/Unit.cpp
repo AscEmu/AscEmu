@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Players/Player.h"
 #include "Spell/SpellAuras.h"
 
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
 
@@ -512,7 +511,7 @@ void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic
         case TYPE_RUN_BACK:
         {
             if (set_basic)
-                m_basicSpeedRunBack = speed; 
+                m_basicSpeedRunBack = speed;
             else
                 m_currentSpeedRunBack = speed;
         } break;
@@ -526,7 +525,7 @@ void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic
         case TYPE_SWIM_BACK:
         {
             if (set_basic)
-                m_basicSpeedSwimBack = speed; 
+                m_basicSpeedSwimBack = speed;
             else
                 m_currentSpeedSwimBack = speed;
         } break;
@@ -570,7 +569,7 @@ void Unit::setSpeedForType(UnitSpeedType speed_type, float speed, bool set_basic
     if (player_mover != nullptr)
     {
 #if VERSION_STRING != Cata
-        player_mover->sendForceMovePaket(speed_type, speed);
+        player_mover->sendForceMovePacket(speed_type, speed);
 #endif
         player_mover->sendMoveSetSpeedPaket(speed_type, speed);
     }

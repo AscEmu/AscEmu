@@ -52,7 +52,10 @@ set(sources
    ${SRC_GAMECLASSIC_FILES}
    ${SRC_GAMEBC_FILES}
    ${SRC_GAMELK_FILES}
+
    ${SRC_GAMECATA_FILES}
+   ${SRC_GAMECATA_UNITS_FILES}
+   ${SRC_GAMECATA_UNITS_PLAYERS_FILES}
 
    ${SRC_CHAT_FILES}
    ${SRC_COMMAND_FILES}
@@ -101,6 +104,7 @@ include_directories(
    ${CMAKE_SOURCE_DIR}/src/collision/Maps
    ${CMAKE_SOURCE_DIR}/src/collision/Models
    ${CMAKE_SOURCE_DIR}/dep/g3dlite/include
+   ${CMAKE_SOURCE_DIR}/dep/lualib/src
    ${CMAKE_SOURCE_DIR}/src/shared
    ${CMAKE_SOURCE_DIR}/src
    ${CMAKE_CURRENT_SOURCE_DIR}
@@ -114,7 +118,7 @@ if(USE_PCH AND PCHSupport_FOUND)
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS TRUE)
-add_dependencies(${PROJECT_NAME} shared g3dlite collision Detour Recast)
+add_dependencies(${PROJECT_NAME} shared g3dlite collision Detour Recast lualib)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/WorldConf.h)
 
 target_link_libraries(${PROJECT_NAME} shared g3dlite collision Detour Recast ${PCRE_LIBRARIES})

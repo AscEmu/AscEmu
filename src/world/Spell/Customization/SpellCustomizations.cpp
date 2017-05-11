@@ -25,6 +25,7 @@
 #include <unordered_map>
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellDamageType.h"
+#include "Spell/Definitions/SpellCustomFlags.h"
 
 initialiseSingleton(SpellCustomizations);
 
@@ -784,10 +785,8 @@ void SpellCustomizations::SetCustomFlags(SpellInfo* spell_entry)
     {
         return;
     }
-    else
-    {
-        spell_entry->CustomFlags = CUSTOM_FLAG_SPELL_REQUIRES_COMBAT;
-    }
+
+    spell_entry->CustomFlags = CUSTOM_FLAG_SPELL_REQUIRES_COMBAT;
 }
 
 void SpellCustomizations::SetOnShapeshiftChange(SpellInfo* spell_entry)
