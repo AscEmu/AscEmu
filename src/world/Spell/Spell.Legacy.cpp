@@ -27,6 +27,8 @@
 #include "Definitions/CastInterruptFlags.h"
 #include "Definitions/AuraInterruptFlags.h"
 #include "Definitions/SpellCustomFlags.h"
+#include "Definitions/SpellGoFlags.h"
+#include "Definitions/SpellTargetType.h"
 #ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 #include "StdAfx.h"
 #include "VMapFactory.h"

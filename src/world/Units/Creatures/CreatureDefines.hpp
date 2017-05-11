@@ -28,6 +28,8 @@
 #endif
 #include "Units/UnitDefines.hpp"
 
+#include "Spell/Definitions/School.h"
+
 #include <ctime>
 
 struct AI_Spell;

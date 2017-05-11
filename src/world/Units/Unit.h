@@ -29,6 +29,7 @@
 #include "Objects/Object.h"
 #include "Units/Summons/SummonHandler.h"
 #include "Movement/UnitMovementManager.hpp"
+#include "Spell/Definitions/School.h"
 
 class AIInterface;
 class Aura;
@@ -164,38 +165,38 @@ struct AuraCheckResponse
 
 typedef std::list<struct ProcTriggerSpellOnSpell> ProcTriggerSpellOnSpellList;
 
-class Unit;		
-class SERVER_DECL CombatStatusHandler		
-{		
-    typedef std::set<uint64> AttackerMap;		
-    typedef std::set<uint32> HealedSet;      // Must Be Players!		
-		
-    HealedSet m_healers;		
-    HealedSet m_healed;		
-		
-    Unit* m_Unit;		
-		
-    bool m_lastStatus;		
-		
-    AttackerMap m_attackTargets;		
-		
-    uint64 m_primaryAttackTarget;		
-		
-    public:		
-		
-        CombatStatusHandler() : m_Unit(nullptr), m_lastStatus(false), m_primaryAttackTarget(0) {}		
-		
-        AttackerMap m_attackers;		
-		
-        void AddAttackTarget(const uint64 & guid);                      // this means we clicked attack, not actually striked yet, so they shouldn't be in combat.		
-        void ClearPrimaryAttackTarget();                                // means we deselected the unit, stopped attacking it.		
-		
-        void OnDamageDealt(Unit* pTarget);                              // this is what puts the other person in combat.	
+class Unit;
+class SERVER_DECL CombatStatusHandler
+{
+    typedef std::set<uint64> AttackerMap;
+    typedef std::set<uint32> HealedSet;      // Must Be Players!
+
+    HealedSet m_healers;
+    HealedSet m_healed;
+
+    Unit* m_Unit;
+
+    bool m_lastStatus;
+
+    AttackerMap m_attackTargets;
+
+    uint64 m_primaryAttackTarget;
+
+    public:
+
+        CombatStatusHandler() : m_Unit(nullptr), m_lastStatus(false), m_primaryAttackTarget(0) {}
+
+        AttackerMap m_attackers;
+
+        void AddAttackTarget(const uint64 & guid);                      // this means we clicked attack, not actually striked yet, so they shouldn't be in combat.
+        void ClearPrimaryAttackTarget();                                // means we deselected the unit, stopped attacking it.
+
+        void OnDamageDealt(Unit* pTarget);                              // this is what puts the other person in combat.
         void WeHealed(Unit* pHealTarget);                               // called when a player heals another player, regardless of combat state.
-		
-        void RemoveAttacker(Unit* pAttacker, const uint64 & guid);      // this means we stopped attacking them totally. could be because of deaggro, etc.		
-        void RemoveAttackTarget(Unit* pTarget);                         // means our DoT expired.		
-		
+
+        void RemoveAttacker(Unit* pAttacker, const uint64 & guid);      // this means we stopped attacking them totally. could be because of deaggro, etc.
+        void RemoveAttackTarget(Unit* pTarget);                         // means our DoT expired.
+
         void UpdateFlag();                                              // detects if we have changed combat state (in/out), and applies the flag.
         bool IsInCombat() const;                                        // checks if we are in combat or not.
         void OnRemoveFromWorld();                                       // called when we are removed from world, kills all references to us.
@@ -205,21 +206,21 @@ class SERVER_DECL CombatStatusHandler
             ClearAttackers();
             ClearHealers();
         }
-		
+
         const uint64 & GetPrimaryAttackTarget() { return m_primaryAttackTarget; }
         void SetUnit(Unit* p) { m_Unit = p; }
-        void TryToClearAttackTargets();                                 // for pvp timeout		
-        void AttackersForgetHate();                                     // used right now for Feign Death so attackers go home		
-		
-    protected:		
-		
-        bool InternalIsInCombat();                                      // called by UpdateFlag, do not call from anything else!		
-        bool IsAttacking(Unit* pTarget);                                // internal function used to determine if we are still attacking target x.		
-        void AddAttacker(const uint64 & guid);                          // internal function to add an attacker		
-        void RemoveHealed(Unit* pHealTarget);                           // usually called only by updateflag		
-        void ClearHealers();                                            // this is called on instance change.		
-        void ClearAttackers();                                          // means we vanished, or died.		
-        void ClearMyHealers();		
+        void TryToClearAttackTargets();                                 // for pvp timeout
+        void AttackersForgetHate();                                     // used right now for Feign Death so attackers go home
+
+    protected:
+
+        bool InternalIsInCombat();                                      // called by UpdateFlag, do not call from anything else!
+        bool IsAttacking(Unit* pTarget);                                // internal function used to determine if we are still attacking target x.
+        void AddAttacker(const uint64 & guid);                          // internal function to add an attacker
+        void RemoveHealed(Unit* pHealTarget);                           // usually called only by updateflag
+        void ClearHealers();                                            // this is called on instance change.
+        void ClearAttackers();                                          // means we vanished, or died.
+        void ClearMyHealers();
 };
 // AGPL End
 
@@ -1257,7 +1258,7 @@ protected:
     uint16 m_H_regenTimer;
     uint16 m_P_regenTimer;
     uint32 m_interruptedRegenTime;  //PowerInterruptedegenTimer.
-    
+
     uint32 m_attackTimer;           // timer for attack
     uint32 m_attackTimer_1;
     bool m_dualWield;

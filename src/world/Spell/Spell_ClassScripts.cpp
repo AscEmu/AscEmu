@@ -25,6 +25,7 @@
 #include "Objects/Faction.h"
 #include "Spell/SpellMgr.h"
 #include "SpellAuras.h"
+#include "Definitions/SpellSchoolConversionTable.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
  // Mage Scripts
