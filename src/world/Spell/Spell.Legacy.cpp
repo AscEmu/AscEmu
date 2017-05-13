@@ -1461,9 +1461,9 @@ void Spell::castMe(bool check)
                     }
                 }
 
-                for (SpellTargetsList::iterator itr = ModeratedTargets.begin(); itr != ModeratedTargets.end(); ++itr)
+                for (auto target: ModeratedTargets)
                 {
-                    HandleModeratedTarget(itr->TargetGuid);
+                    HandleModeratedTarget(target.targetGuid);
                 }
 
                 // spells that proc on spell cast, some talents
@@ -2253,15 +2253,14 @@ void Spell::writeSpellMissedTargets(WorldPacket* data)
      * 6 = Evade
      * 7 = Immune
      */
-    SpellTargetsList::iterator i;
     if (u_caster && u_caster->isAlive())
     {
-        for (i = ModeratedTargets.begin(); i != ModeratedTargets.end(); ++i)
+        for (auto moderatedTarget: ModeratedTargets)
         {
-            *data << (*i).TargetGuid;       // uint64
-            *data << (*i).TargetModType;    // uint8
+            *data << moderatedTarget.targetGuid;
+            *data << moderatedTarget.targetModType;
             ///handle proc on resist spell
-            Unit* target = u_caster->GetMapMgr()->GetUnit((*i).TargetGuid);
+            Unit* target = u_caster->GetMapMgr()->GetUnit(moderatedTarget.targetGuid);
             if (target && target->isAlive())
             {
                 u_caster->HandleProc(PROC_ON_RESIST_VICTIM, target, GetSpellInfo()/*,damage*/);		/** Damage is uninitialized at this point - burlex */
@@ -2271,11 +2270,13 @@ void Spell::writeSpellMissedTargets(WorldPacket* data)
         }
     }
     else
-        for (i = ModeratedTargets.begin(); i != ModeratedTargets.end(); ++i)
+    {
+        for (auto target: ModeratedTargets)
         {
-            *data << (*i).TargetGuid;       // uint64
-            *data << (*i).TargetModType;    // uint8
+            *data << target.targetGuid;
+            *data << target.targetModType;
         }
+    }
 }
 
 void Spell::SendLogExecute(uint32 damage, uint64 & targetGuid)
@@ -4738,6 +4739,25 @@ exit:
     return value;
 }
 
+bool Spell::HasTarget(const uint64& guid, TargetsList* tmpMap)
+{
+    for (TargetsList::iterator itr = tmpMap->begin(); itr != tmpMap->end(); ++itr)
+    {
+        if (*itr == guid)
+            return true;
+    }
+
+    for (auto target: ModeratedTargets)
+    {
+        if (target.targetGuid == guid)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
 {
     //2 switch: the first checking namehash, the second checking spell id. If the spell is still not handled in these 2 blocks of code,
@@ -5539,28 +5559,32 @@ void Spell::SafeAddTarget(TargetsList* tgt, uint64 guid)
 
 void Spell::SafeAddMissedTarget(uint64 guid)
 {
-    for (SpellTargetsList::iterator i = ModeratedTargets.begin(); i != ModeratedTargets.end(); ++i)
-        if ((*i).TargetGuid == guid)
+    for (auto target: ModeratedTargets)
+    {
+        if (target.targetGuid == guid)
         {
             //LOG_DEBUG("[SPELL] Something goes wrong in spell target system");
             // this isn't actually wrong, since we only have one missed target map,
             // whereas hit targets have multiple maps per effect.
             return;
         }
+    }
 
     ModeratedTargets.push_back(SpellTargetMod(guid, 2));
 }
 
 void Spell::SafeAddModeratedTarget(uint64 guid, uint16 type)
 {
-    for (SpellTargetsList::iterator i = ModeratedTargets.begin(); i != ModeratedTargets.end(); ++i)
-        if ((*i).TargetGuid == guid)
+    for (auto target: ModeratedTargets)
+    {
+        if (target.targetGuid == guid)
         {
             //LOG_DEBUG("[SPELL] Something goes wrong in spell target system");
             // this isn't actually wrong, since we only have one missed target map,
             // whereas hit targets have multiple maps per effect.
             return;
         }
+    }
 
     ModeratedTargets.push_back(SpellTargetMod(guid, (uint8)type));
 }

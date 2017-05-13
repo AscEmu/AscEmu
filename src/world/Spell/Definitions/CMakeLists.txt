@@ -27,6 +27,7 @@ set(SRC_SPELL_DEFINITIONS_FILES
     ${PATH_PREFIX}/SpellRanged.h
     ${PATH_PREFIX}/SpellSchoolConversionTable.h
     ${PATH_PREFIX}/SpellState.h
+    ${PATH_PREFIX}/SpellTargetMod.h
     ${PATH_PREFIX}/SpellTargetType.h
     ${PATH_PREFIX}/SpellTypes.h
     ${PATH_PREFIX}/SummonControlTypes.h

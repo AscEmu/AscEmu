@@ -20,9 +20,9 @@
 
 #ifndef _SPELL_H
 #define _SPELL_H
-#include "SpellCastTargets.h"
 #ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
-
+#include "SpellCastTargets.h"
+#include "Definitions/SpellTargetMod.h"
 #include "Spell/SpellInfo.hpp"
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "SpellTarget.h"
@@ -44,19 +44,7 @@ class Item;
 class Group;
 class Aura;
 
-// slow
-struct SpellTargetMod
-{
-    SpellTargetMod(uint64 _TargetGuid, uint8 _TargetModType) : TargetGuid(_TargetGuid), TargetModType(_TargetModType)
-    {
-
-    }
-    uint64 TargetGuid;
-    uint8  TargetModType;
-};
-
 typedef std::vector<uint64> TargetsList;
-typedef std::vector<SpellTargetMod> SpellTargetsList;
 
 typedef void(Spell::*pSpellEffect)(uint32 i);
 typedef void(Spell::*pSpellTarget)(uint32 i, uint32 j);
@@ -441,7 +429,7 @@ class SERVER_DECL Spell : public EventableObject
 
         std::map<uint64, Aura*> m_pendingAuras;
         TargetsList UniqueTargets;
-        SpellTargetsList    ModeratedTargets;
+        std::vector<SpellTargetMod> ModeratedTargets;
 
         inline Item* GetItemTarget() { return itemTarget; }
         inline Unit* GetUnitTarget() { return unitTarget; }
@@ -689,20 +677,7 @@ class SERVER_DECL Spell : public EventableObject
         uint8 m_rune_avail_before;
         //void _DamageRangeUpdate();
 
-        inline bool HasTarget(const uint64 & guid, TargetsList* tmpMap)
-        {
-            for (TargetsList::iterator itr = tmpMap->begin(); itr != tmpMap->end(); ++itr)
-            {
-                if (*itr == guid)
-                    return true;
-            }
-
-            for (SpellTargetsList::iterator itr = ModeratedTargets.begin(); itr != ModeratedTargets.end(); ++itr)
-                if ((*itr).TargetGuid == guid)
-                    return true;
-
-            return false;
-        }
+    bool HasTarget(const uint64& guid, TargetsList* tmpMap);
 
         SpellTargetConstraint* m_target_constraint;
 
