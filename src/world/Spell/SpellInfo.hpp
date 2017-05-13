@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include <string>
 
 class Player;
+class Unit;
 
 class SERVER_DECL SpellInfo
 {
@@ -26,6 +27,8 @@ public:
     bool isDamagingSpell() const;
     bool isHealingSpell() const;
     int firstBeneficialEffect() const;
+
+    uint32_t getSpellDuration(Unit* caster) const;
 
     bool hasTargetType(uint32_t type) const;
     int aiTargetType() const;

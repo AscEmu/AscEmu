@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Config/Config.h"
 #include "Map/MapMgr.h"
 #include "Map/WorldCreator.h"
+#include "Spell/Definitions/PowerType.h"
 
 void WorldSession::CharacterEnumProc(QueryResult* result)
 {

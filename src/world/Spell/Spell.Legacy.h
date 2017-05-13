@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SPELL_H
-#define _SPELL_H
+#pragma once
+
 #ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 #include "SpellCastTargets.h"
 #include "Definitions/SpellTargetMod.h"
@@ -43,33 +43,14 @@ class Player;
 class Item;
 class Group;
 class Aura;
+class DummySpellHandler;
 
 typedef void(Spell::*pSpellEffect)(uint32 i);
 typedef void(Spell::*pSpellTarget)(uint32 i, uint32 j);
 
 #define GO_FISHING_BOBBER 35591
-
 #define SPELL_SPELL_CHANNEL_UPDATE_INTERVAL 1000
-class DummySpellHandler;
 
-enum SpellDidHitResult
-{
-    SPELL_DID_HIT_SUCCESS                   = 0,
-    SPELL_DID_HIT_MISS                      = 1,
-    SPELL_DID_HIT_RESIST                    = 2,
-    SPELL_DID_HIT_DODGE                     = 3,
-    SPELL_DID_HIT_PARRY                     = 4,
-    SPELL_DID_HIT_BLOCK                     = 5,
-    SPELL_DID_HIT_EVADE                     = 6,
-    SPELL_DID_HIT_IMMUNE                    = 7,
-    SPELL_DID_HIT_IMMUNE2                   = 8,
-    SPELL_DID_HIT_DEFLECT                   = 9,  // See - http://www.wowwiki.com/Deflect
-    SPELL_DID_HIT_ABSORB                    = 10, // See - http://www.wowwiki.com/Absorb
-    SPELL_DID_HIT_REFLECT                   = 11, // See - http://www.wowwiki.com/Reflect
-    NUM_SPELL_DID_HIT_RESULTS,
-};
-
-// Spell instance
 class SERVER_DECL Spell : public EventableObject
 {
     public:
@@ -687,17 +668,8 @@ class SERVER_DECL Spell : public EventableObject
 
         SpellInfo* m_spellInfo;
         SpellInfo* m_spellInfo_override;   //used by spells that should have dynamic variables in spellentry.
-
+        static uint32_t getDiminishingGroup(uint32_t nameHash);
+        static SpellInfo* checkAndReturnSpellEntry(uint32_t spellid);
 };
 
-void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellInfo* spell);
-void UnapplyDiminishingReturnTimer(Unit* Target, SpellInfo* spell);
-
-uint32 GetDiminishingGroup(uint32 NameHash);
-uint32 GetSpellDuration(SpellInfo* sp, Unit* caster = NULL);
-
-//Logs if the spell doesn't exist, using Debug loglevel.
-SpellInfo* CheckAndReturnSpellEntry(uint32 spellid);
-
 #endif // USE_EXPERIMENTAL_SPELL_SYSTEM
-#endif // _SPELL_H

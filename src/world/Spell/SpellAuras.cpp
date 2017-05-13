@@ -908,7 +908,7 @@ void Aura::Remove()
         m_target->m_auras[m_auraSlot] = NULL;
 
     // reset diminishing return timer if needed
-    ::UnapplyDiminishingReturnTimer(m_target, m_spellInfo);
+    m_target->removeDiminishingReturnTimer(m_spellInfo);
 
     // remove attacker
     Unit* caster = GetUnitCaster();
@@ -3091,7 +3091,7 @@ void Aura::SpellAuraPeriodicTriggerSpellWithValue(bool apply)
 
         float amptitude = static_cast<float>(GetSpellInfo()->EffectAmplitude[mod->i]);
         Unit* caster = GetUnitCaster();
-        uint32 numticks = GetSpellDuration(m_spellInfo, caster) / m_spellInfo->EffectAmplitude[mod->i];
+        uint32 numticks = m_spellInfo->getSpellDuration(caster) / m_spellInfo->EffectAmplitude[mod->i];
         if (caster != NULL)
         {
             spellModFlatFloatValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->SpellGroupType);
@@ -3169,7 +3169,7 @@ void Aura::SpellAuraPeriodicTriggerSpell(bool apply)
 
         float amptitude = static_cast<float>(GetSpellInfo()->EffectAmplitude[mod->i]);
         Unit* caster = GetUnitCaster();
-        uint32 numticks = GetSpellDuration(m_spellInfo, caster) / m_spellInfo->EffectAmplitude[mod->i];
+        uint32 numticks = m_spellInfo->getSpellDuration(caster) / m_spellInfo->EffectAmplitude[mod->i];
         if (caster != NULL)
         {
             spellModFlatFloatValue(caster->SM_FAmptitude, &amptitude, m_spellInfo->SpellGroupType);

@@ -485,6 +485,27 @@ int SpellInfo::firstBeneficialEffect() const
     return -1;
 }
 
+uint32_t SpellInfo::getSpellDuration(Unit* caster) const
+{
+    auto spell_duration = sSpellDurationStore.LookupEntry(DurationIndex);
+    if (spell_duration == nullptr)
+    {
+        return 0;
+    }
+
+    if (caster == nullptr)
+    {
+        return spell_duration->Duration1;
+    }
+
+    auto ret = spell_duration->Duration1 + (spell_duration->Duration2 * caster->getLevel());
+    if (ret > spell_duration->Duration3)
+    {
+        return spell_duration->Duration3;
+    }
+    return ret;
+}
+
 bool SpellInfo::hasTargetType(uint32_t type) const
 {
     for (auto i = 0; i < 3; ++i)

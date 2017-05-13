@@ -42,6 +42,7 @@
 #include "Spell/Definitions/SpellIsFlags.h"
 #include "Spell/Definitions/SpellMechanics.h"
 #include "Spell/Definitions/PowerType.h"
+#include "Spell/Definitions/SpellDidHitResult.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;

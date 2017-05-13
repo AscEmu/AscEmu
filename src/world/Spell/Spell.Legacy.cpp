@@ -36,6 +36,7 @@
 #include "Definitions/SpellMechanics.h"
 #include "Definitions/SpellEffectTarget.h"
 #include "Definitions/PowerType.h"
+#include "Definitions/SpellDidHitResult.h"
 #ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 #include "StdAfx.h"
 #include "VMapFactory.h"
@@ -5657,98 +5658,15 @@ bool Spell::Reflect(Unit* refunit)
     return true;
 }
 
-void ApplyDiminishingReturnTimer(uint32* Duration, Unit* Target, SpellInfo* spell)
-{
-    uint32 status = spell->custom_DiminishStatus;
-    uint32 Grp = status & 0xFFFF;   // other bytes are if apply to pvp
-    uint32 PvE = (status >> 16) & 0xFFFF;
-
-    // Make sure we have a group
-    if (Grp == 0xFFFF)
-        return;
-
-    // Check if we don't apply to pve
-    if (!PvE && !Target->IsPlayer() && !Target->IsPet())
-        return;
-
-    ///\todo check for spells that should do this
-    uint32 Dur = *Duration;
-    uint32 count = Target->m_diminishCount[Grp];
-
-    if (count > 2)   // Target immune to spell
-    {
-        *Duration = 0;
-        return;
-    }
-    else
-    {
-        Dur >>= count; //100%, 50%, 25% bitwise
-        if ((Target->IsPlayer() || Target->IsPet()) && Dur > uint32(10000 >> count))
-        {
-            Dur = 10000 >> count;
-            if (status == DIMINISHING_GROUP_NOT_DIMINISHED)
-            {
-                *Duration = Dur;
-                return;
-            }
-        }
-    }
-
-    *Duration = Dur;
-
-    // Reset the diminishing return counter, and add to the aura count (we don't decrease the timer till we
-    // have no auras of this type left.
-    //++Target->m_diminishAuraCount[Grp];
-    ++Target->m_diminishCount[Grp];
-}
-
-void UnapplyDiminishingReturnTimer(Unit* Target, SpellInfo* spell)
-{
-    uint32 status = spell->custom_DiminishStatus;
-    uint32 Grp = status & 0xFFFF;   // other bytes are if apply to pvp
-    uint32 PvE = (status >> 16) & 0xFFFF;
-    uint32 aura_grp;
-
-    // Make sure we have a group
-    if (Grp == 0xFFFF) return;
-
-    // Check if we don't apply to pve
-    if (!PvE && !Target->IsPlayer() && !Target->IsPet())
-        return;
-
-    //Target->m_diminishAuraCount[Grp]--;
-
-    /*There are cases in which you just refresh an aura duration instead of the whole aura,
-    causing corruption on the diminishAura counter and locking the entire diminishing group.
-    So it's better to check the active auras one by one*/
-    Target->m_diminishAuraCount[Grp] = 0;
-    for (uint32 x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; x++)
-    {
-        if (Target->m_auras[x])
-        {
-            aura_grp = Target->m_auras[x]->GetSpellInfo()->custom_DiminishStatus;
-            if (aura_grp == status)
-                Target->m_diminishAuraCount[Grp]++;
-        }
-    }
-
-    // start timer decrease
-    if (!Target->m_diminishAuraCount[Grp])
-    {
-        Target->m_diminishActive = true;
-        Target->m_diminishTimer[Grp] = 15000;
-    }
-}
-
 /// Calculate the Diminishing Group. This is based on a name hash.
 /// this off course is very hacky, but as its made done in a proper way
 /// I leave it here.
-uint32 GetDiminishingGroup(uint32 NameHash)
+uint32_t Spell::getDiminishingGroup(uint32_t nameHash)
 {
-    int32 grp = -1;
+    int32_t grp = -1;
     bool pve = false;
 
-    switch (NameHash)
+    switch (nameHash)
     {
         case SPELL_HASH_BASH:
         case SPELL_HASH_IMPACT:
@@ -5765,16 +5683,16 @@ uint32 GetDiminishingGroup(uint32 NameHash)
             grp = DIMINISHING_GROUP_STUN;
             pve = true;
         }
-        break;
+            break;
 
         case SPELL_HASH_STARFIRE_STUN:
         case SPELL_HASH_STONECLAW_STUN:
-        case SPELL_HASH_STUN:					// Generic ones
+        case SPELL_HASH_STUN: // Generic ones
         {
             grp = DIMINISHING_GROUP_STUN_PROC;
             pve = true;
         }
-        break;
+            break;
 
         case SPELL_HASH_ENTANGLING_ROOTS:
         case SPELL_HASH_FROST_NOVA:
@@ -5791,7 +5709,7 @@ uint32 GetDiminishingGroup(uint32 NameHash)
         case SPELL_HASH_HIBERNATE:
         case SPELL_HASH_WYVERN_STING:
         case SPELL_HASH_SLEEP:
-        case SPELL_HASH_RECKLESS_CHARGE:		//Gobling Rocket Helmet
+        case SPELL_HASH_RECKLESS_CHARGE: //Gobling Rocket Helmet
             grp = DIMINISHING_GROUP_SLEEP;
             break;
 
@@ -5801,18 +5719,18 @@ uint32 GetDiminishingGroup(uint32 NameHash)
             grp = DIMINISHING_GROUP_BLIND_CYCLONE;
             pve = true;
         }
-        break;
+            break;
 
         case SPELL_HASH_GOUGE:
-        case SPELL_HASH_REPENTANCE:				// Repentance
+        case SPELL_HASH_REPENTANCE: // Repentance
         case SPELL_HASH_SAP:
-        case SPELL_HASH_POLYMORPH:				// Polymorph
-        case SPELL_HASH_POLYMORPH__CHICKEN:		// Chicken
+        case SPELL_HASH_POLYMORPH: // Polymorph
+        case SPELL_HASH_POLYMORPH__CHICKEN: // Chicken
         case SPELL_HASH_POLYMORPH__CRAFTY_WOBBLESPROCKET: // Errr right?
-        case SPELL_HASH_POLYMORPH__SHEEP:		// Good ol' sheep
-        case SPELL_HASH_POLYMORPH___PENGUIN:	// Penguiiiin!!! :D
-        case SPELL_HASH_MAIM:					// Maybe here?
-        case SPELL_HASH_HEX:					// Should share diminish group with polymorph, but not interruptflags.
+        case SPELL_HASH_POLYMORPH__SHEEP: // Good ol' sheep
+        case SPELL_HASH_POLYMORPH___PENGUIN: // Penguiiiin!!! :D
+        case SPELL_HASH_MAIM: // Maybe here?
+        case SPELL_HASH_HEX: // Should share diminish group with polymorph, but not interruptflags.
             grp = DIMINISHING_GROUP_GOUGE_POLY_SAP;
             break;
 
@@ -5824,10 +5742,10 @@ uint32 GetDiminishingGroup(uint32 NameHash)
             grp = DIMINISHING_GROUP_FEAR;
             break;
 
-        case SPELL_HASH_ENSLAVE_DEMON:			// Enslave Demon
+        case SPELL_HASH_ENSLAVE_DEMON: // Enslave Demon
         case SPELL_HASH_MIND_CONTROL:
         case SPELL_HASH_TURN_EVIL:
-            grp = DIMINISHING_GROUP_CHARM;		//Charm???
+            grp = DIMINISHING_GROUP_CHARM; //Charm???
             break;
 
         case SPELL_HASH_KIDNEY_SHOT:
@@ -5835,31 +5753,31 @@ uint32 GetDiminishingGroup(uint32 NameHash)
             grp = DIMINISHING_GROUP_KIDNEY_SHOT;
             pve = true;
         }
-        break;
+            break;
 
         case SPELL_HASH_DEATH_COIL:
             grp = DIMINISHING_GROUP_HORROR;
             break;
 
-        case SPELL_HASH_BANISH:					// Banish
+        case SPELL_HASH_BANISH: // Banish
             grp = DIMINISHING_GROUP_BANISH;
             break;
 
             // group where only 10s limit in pvp is applied, not DR
-        case SPELL_HASH_FREEZING_TRAP_EFFECT:	// Freezing Trap Effect
-        case SPELL_HASH_HAMSTRING:				// Hamstring
+        case SPELL_HASH_FREEZING_TRAP_EFFECT: // Freezing Trap Effect
+        case SPELL_HASH_HAMSTRING: // Hamstring
         case SPELL_HASH_CURSE_OF_TONGUES:
         {
             grp = DIMINISHING_GROUP_NOT_DIMINISHED;
         }
-        break;
+            break;
 
-        case SPELL_HASH_RIPOSTE:		// Riposte
-        case SPELL_HASH_DISARM:			// Disarm
+        case SPELL_HASH_RIPOSTE: // Riposte
+        case SPELL_HASH_DISARM: // Disarm
         {
             grp = DIMINISHING_GROUP_DISARM;
         }
-        break;
+            break;
 
         case SPELL_HASH_SILENCE:
         case SPELL_HASH_GARROTE___SILENCE:
@@ -5869,7 +5787,7 @@ uint32 GetDiminishingGroup(uint32 NameHash)
         {
             grp = DIMINISHING_GROUP_SILENCE;
         }
-        break;
+            break;
     }
 
     uint32 ret;
@@ -5878,21 +5796,6 @@ uint32 GetDiminishingGroup(uint32 NameHash)
     else
         ret = grp;
 
-    return ret;
-}
-
-uint32 GetSpellDuration(SpellInfo* sp, Unit* caster /*= NULL*/)
-{
-    auto spell_duration = sSpellDurationStore.LookupEntry(sp->DurationIndex);
-    if (spell_duration == nullptr)
-        return 0;
-
-    if (caster == NULL)
-        return spell_duration->Duration1;
-
-    uint32 ret = spell_duration->Duration1 + (spell_duration->Duration2 * caster->getLevel());
-    if (ret > spell_duration->Duration3)
-        return spell_duration->Duration3;
     return ret;
 }
 
@@ -6300,17 +6203,18 @@ void Spell::HandleTargetNoObject()
     m_targets.setDestination(LocationVector(newx, newy, newz));
 }
 
-//Logs if the spell doesn't exist, using Debug loglevel.
-SpellInfo* CheckAndReturnSpellEntry(uint32 spellid)
+SpellInfo* Spell::checkAndReturnSpellEntry(uint32_t spellid)
 {
     //Logging that spellid 0 or -1 don't exist is not needed.
-    if (spellid == 0 || spellid == uint32(-1))
-        return NULL;
+    if (spellid == 0 || spellid == uint32_t(-1))
+        return nullptr;
 
-    SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spellid);
-    if (sp == NULL)
+    auto spell_info = sSpellCustomizations.GetSpellInfo(spellid);
+    if (spell_info == nullptr)
+    {
         LogDebugFlag(LF_SPELL, "Something tried to access nonexistent spell %u", spellid);
+    }
 
-    return sp;
+    return spell_info;
 }
 #endif

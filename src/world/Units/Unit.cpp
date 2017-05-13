@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/WorldSession.h"
 #include "Players/Player.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/Definitions/DiminishingGroup.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Movement
@@ -649,6 +650,96 @@ void Unit::playSpellVisual(uint64_t guid, uint32_t spell_id)
         static_cast<Player*>(this)->SendMessageToSet(&data, true);
     else
         SendMessageToSet(&data, false);
+}
+
+void Unit::applyDiminishingReturnTimer(uint32_t* duration, SpellInfo* spell)
+{
+    uint32_t status = spell->custom_DiminishStatus;
+    uint32_t group  = status & 0xFFFF;
+    uint32_t PvE    = (status >> 16) & 0xFFFF;
+
+    // Make sure we have a group
+    if (group == 0xFFFF)
+    {
+        return;
+    }
+
+    // Check if we don't apply to pve
+    if (!PvE && !IsPlayer() && !IsPet())
+    {
+        return;
+    }
+
+    uint32_t localDuration = *duration;
+    uint32_t count = m_diminishCount[group];
+
+    // Target immune to spell
+    if (count > 2)
+    {
+        *duration = 0;
+        return;
+    }
+
+    //100%, 50%, 25% bitwise
+    localDuration >>= count;
+    if ((IsPlayer() || IsPet()) && localDuration > uint32_t(10000 >> count))
+    {
+        localDuration = 10000 >> count;
+        if (status == DIMINISHING_GROUP_NOT_DIMINISHED)
+        {
+            *duration = localDuration;
+            return;
+        }
+    }
+
+    *duration = localDuration;
+
+    // Reset the diminishing return counter, and add to the aura count (we don't decrease the timer till we
+    // have no auras of this type left.
+    ++m_diminishCount[group];
+}
+
+void Unit::removeDiminishingReturnTimer(SpellInfo* spell)
+{
+    uint32_t status = spell->custom_DiminishStatus;
+    uint32_t group  = status & 0xFFFF;
+    uint32_t pve    = (status >> 16) & 0xFFFF;
+    uint32_t aura_group;
+
+    // Make sure we have a group
+    if (group == 0xFFFF)
+    {
+        return;
+    }
+
+    // Check if we don't apply to pve
+    if (!pve && !IsPlayer() && !IsPet())
+    {
+        return;
+    }
+
+    /*There are cases in which you just refresh an aura duration instead of the whole aura,
+    causing corruption on the diminishAura counter and locking the entire diminishing group.
+    So it's better to check the active auras one by one*/
+    m_diminishAuraCount[group] = 0;
+    for (uint32_t x = MAX_NEGATIVE_AURAS_EXTEDED_START; x < MAX_NEGATIVE_AURAS_EXTEDED_END; ++x)
+    {
+        if (m_auras[x])
+        {
+            aura_group = m_auras[x]->GetSpellInfo()->custom_DiminishStatus;
+            if (aura_group == status)
+            {
+                m_diminishAuraCount[group]++;
+            }
+        }
+    }
+
+    // Start timer decrease
+    if (!m_diminishAuraCount[group])
+    {
+        m_diminishActive = true;
+        m_diminishTimer[group] = 15000;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
