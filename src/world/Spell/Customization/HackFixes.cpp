@@ -33,6 +33,8 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/CastInterruptFlags.h"
 #include <Spell/Definitions/AuraInterruptFlags.h>
+#include "Spell/Definitions/SpellRanged.h"
+#include "Spell/Definitions/SpellCoefficientsFlags.h"
 
 using ascemu::World::Spell::Helpers::decimalToMask;
 

@@ -47,6 +47,10 @@
 #include "Definitions/AuraInterruptFlags.h"
 #include "Definitions/ChannelInterruptFlags.h"
 #include "Definitions/PreventionType.h"
+#include "Definitions/SpellRanged.h"
+#include "Definitions/LockTypes.h"
+#include "Definitions/SpellIsFlags.h"
+#include "Definitions/TeleportEffectCustomFlags.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;

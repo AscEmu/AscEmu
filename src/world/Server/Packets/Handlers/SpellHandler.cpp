@@ -30,6 +30,7 @@
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
 #include <Spell/Definitions/AuraInterruptFlags.h>
+#include "Spell/Definitions/SpellRanged.h"
 
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {

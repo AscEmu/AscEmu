@@ -31,6 +31,7 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
 #include "Map/WorldCreator.h"
+#include "Spell/Definitions/LockTypes.h"
 
 void WorldSession::HandleRepopRequestOpcode(WorldPacket& recv_data)
 {

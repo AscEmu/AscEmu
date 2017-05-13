@@ -26,6 +26,7 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellDamageType.h"
 #include "Spell/Definitions/SpellCustomFlags.h"
+#include "Spell/Definitions/SpellIsFlags.h"
 
 initialiseSingleton(SpellCustomizations);
 
