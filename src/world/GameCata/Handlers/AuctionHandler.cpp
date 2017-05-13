@@ -4,10 +4,18 @@ This file is released under the MIT license. See README-MIT for more information
 */
 
 #include "StdAfx.h"
+#include "Server/WorldSession.h"
 #include "Management/AuctionHouse.h"
 #include "Management/AuctionMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Log.hpp"
+#include "Management/MailMgr.h"
+#include "Server/World.h"
+#include "Server/World.Legacy.h"
+#include "Objects/ObjectMgr.h"
+#include "Management/ItemInterface.h"
+#include "Management/Item.h"
+#include "Map/MapMgr.h"
 
 
 void WorldSession::HandleAuctionListBidderItems(WorldPacket& recv_data)

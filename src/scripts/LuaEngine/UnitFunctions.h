@@ -38,6 +38,8 @@
 #include "Management/Group.h"
 #include "Objects/Faction.h"
 #include "Spell/SpellAuras.h"
+#include "Server/WorldSession.h"
+#include "Objects/Object.h"
 
 class LuaUnit
 {

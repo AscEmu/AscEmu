@@ -7,6 +7,9 @@ This file is released under the MIT license. See README-MIT for more information
 #include "../world/Storage/DBC/DBCGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 #include "WorldConf.h"
+#include "Server/World.h"
+#include "Spell/SpellAuras.h"
+#include "Server/WUtil.h"
 
 #if VERSION_STRING == Cata
 typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*> WMOAreaInfoByTripple;

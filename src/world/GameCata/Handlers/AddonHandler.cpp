@@ -5,6 +5,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 
+#include "Server/WorldSession.h"
+#include "Log.hpp"
+#include "zlib.h"
+
 void WorldSession::readAddonInfoPacket(ByteBuffer &recv_data)
 {
     if (recv_data.rpos() + 4 > recv_data.size())

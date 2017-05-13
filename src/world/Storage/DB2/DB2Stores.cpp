@@ -11,6 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "DB2Structures.h"
 #include "../DBC/DBCGlobals.hpp"
+#include "world/Server/World.h"
 
 #include <map>
 

@@ -102,7 +102,7 @@ typedef struct
 #if VERSION_STRING == Cata
 #include "GameCata/Movement/MovementDefines.h"
 
-class MovementInfo
+class SERVER_DECL MovementInfo
 {
     public:
 

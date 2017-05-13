@@ -31,7 +31,9 @@
 #if VERSION_STRING == Cata
     #include "Management/AddonMgr.h"
     #include "Units/Players/PlayerDefines.hpp"
+    #include "Units/Players/Player.h"
 #endif
+
 #include <stddef.h>
 #include <string>
 
@@ -54,6 +56,7 @@ struct LfgPlayerBoot;
 struct LfgProposal;
 struct LfgReward;
 struct LfgRoleCheck;
+struct AddonEntry;
 
 //#define SESSION_CAP 5
 #define CHECK_INWORLD_RETURN if (_player == NULL || !_player->IsInWorld()) { return; }
