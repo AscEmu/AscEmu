@@ -802,7 +802,7 @@ void GameObject_Trap::Update(unsigned long time_passed)
             if ((m_summoner != NULL) && (o->GetGUID() == m_summoner->GetGUID()))
                 continue;
 
-            dist = GetDistanceSq(o);
+            dist = getDistanceSq(o);
 
             if (dist <= maxdistance)
             {

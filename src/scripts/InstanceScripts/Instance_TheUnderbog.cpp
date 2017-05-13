@@ -2822,7 +2822,7 @@ class SwamplordMuselekAI : public CreatureAIScript
             {
                 Unit* target = NULL;
                 target = _unit->GetAIInterface()->getNextTarget();
-                if (_unit->GetDistance2dSq(target) >= 100.0f && _unit->GetDistanceSq(target) <= 900.0f && RandomUInt(3) != 1)
+                if (_unit->GetDistance2dSq(target) >= 100.0f && _unit->getDistanceSq(target) <= 900.0f && RandomUInt(3) != 1)
                 {
                     _unit->GetAIInterface()->StopMovement(2000);
                     if (_unit->GetCurrentSpell() == NULL)

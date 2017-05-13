@@ -1597,7 +1597,7 @@ class ShadeofAranAI : public CreatureAIScript
                         continue;
 
                     Unit* pTarget = _unit->GetMapMgr()->GetUnit(FlameWreathTarget[i]);
-                    if (pTarget && pTarget->GetDistanceSq(FWTargPosX[i], FWTargPosY[i], _unit->GetPositionZ()) > 3)
+                    if (pTarget && pTarget->getDistanceSq(FWTargPosX[i], FWTargPosY[i], _unit->GetPositionZ()) > 3)
                     {
                         pTarget->CastSpell(pTarget, 20476, true);
                         FlameWreathTarget[i] = 0;

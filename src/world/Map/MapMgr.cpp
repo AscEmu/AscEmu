@@ -1961,7 +1961,7 @@ GameObject* MapMgr::FindNearestGoWithType(Object* o, uint32 type)
         if ((irgo->GetPhase() & o->GetPhase()) == 0)
             continue;
 
-        float range = o->GetDistanceSq(iro);
+        float range = o->getDistanceSq(iro);
 
         if (range < r)
         {

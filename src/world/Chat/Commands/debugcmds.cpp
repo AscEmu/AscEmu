@@ -1037,8 +1037,8 @@ bool ChatHandler::HandleRangeCheckCommand(const char* args, WorldSession* m_sess
         m_session->SystemMessage("Invalid selection.");
         return true;
     }
-    float DistSq = unit->GetDistanceSq(m_session->GetPlayer());
-    m_session->SystemMessage("GetDistanceSq  :   %u", float2int32(DistSq));
+    float DistSq = unit->getDistanceSq(m_session->GetPlayer());
+    m_session->SystemMessage("getDistanceSq  :   %u", float2int32(DistSq));
     LocationVector locvec(m_session->GetPlayer()->GetPositionX(), m_session->GetPlayer()->GetPositionY(), m_session->GetPlayer()->GetPositionZ());
     float DistReal = unit->CalcDistance(locvec);
     m_session->SystemMessage("CalcDistance   :   %u", float2int32(DistReal));

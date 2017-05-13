@@ -1078,7 +1078,7 @@ void Aura::EventUpdateGroupAA(float r)
     {
         if (m_target->GetGUID() != owner->GetGUID())
         {
-            if ((m_target->GetDistanceSq(owner) <= r))
+            if ((m_target->getDistanceSq(owner) <= r))
             {
                 if (!owner->HasAura(m_spellInfo->Id))
                     targets.insert(owner->GetGUID());
@@ -1105,7 +1105,7 @@ void Aura::EventUpdateGroupAA(float r)
             if (op == NULL)
                 continue;
 
-            if (m_target->GetDistanceSq(op) > r)
+            if (m_target->getDistanceSq(op) > r)
                 continue;
 
             if (m_target->GetInstanceID() != op->GetInstanceID())
@@ -1140,7 +1140,7 @@ void Aura::EventUpdateGroupAA(float r)
             continue;
         }
 
-        if (m_target->GetDistanceSq(tp) > r)
+        if (m_target->getDistanceSq(tp) > r)
             removable = true;
 
         if ((m_target->GetPhase() & tp->GetPhase()) == 0)
@@ -1187,7 +1187,7 @@ void Aura::EventUpdateRaidAA(float r)
     {
         if (m_target->GetGUID() != owner->GetGUID())
         {
-            if ((m_target->GetDistanceSq(owner) <= r))
+            if ((m_target->getDistanceSq(owner) <= r))
             {
                 if (!owner->HasAura(m_spellInfo->Id))
                     targets.insert(owner->GetGUID());
@@ -1225,7 +1225,7 @@ void Aura::EventUpdateRaidAA(float r)
                 if (op->GetInstanceID() != m_target->GetInstanceID())
                     continue;
 
-                if (m_target->GetDistanceSq(op) > r)
+                if (m_target->getDistanceSq(op) > r)
                     continue;
 
                 if ((m_target->GetPhase() & op->GetPhase()) == 0)
@@ -1259,7 +1259,7 @@ void Aura::EventUpdateRaidAA(float r)
             continue;
         }
 
-        if (m_target->GetDistanceSq(tp) > r)
+        if (m_target->getDistanceSq(tp) > r)
             removable = true;
 
         if ((m_target->GetPhase() & tp->GetPhase()) == 0)
@@ -1290,7 +1290,7 @@ void Aura::EventUpdatePetAA(float r)
     {
         Pet* pet = *itr;
 
-        if (p->GetDistanceSq(pet) > r)
+        if (p->getDistanceSq(pet) > r)
             continue;
 
         if (!pet->isAlive())
@@ -1314,7 +1314,7 @@ void Aura::EventUpdatePetAA(float r)
         Pet* pet = *itr2;
         ++itr;
 
-        if (p->GetDistanceSq(pet) <= r)
+        if (p->getDistanceSq(pet) <= r)
             continue;
 
         pet->RemoveAura(m_spellInfo->Id);
@@ -1336,7 +1336,7 @@ void Aura::EventUpdateFriendAA(float r)
 
         Unit* ou = static_cast<Unit*>(o);
 
-        if (u->GetDistanceSq(ou) > r)
+        if (u->getDistanceSq(ou) > r)
             continue;
 
         if ((u->GetPhase() & ou->GetPhase()) == 0)
@@ -1371,7 +1371,7 @@ void Aura::EventUpdateFriendAA(float r)
             continue;
         }
 
-        if (u->GetDistanceSq(tu) > r)
+        if (u->getDistanceSq(tu) > r)
             removable = true;
 
         if (isHostile(u, tu))
@@ -1406,7 +1406,7 @@ void Aura::EventUpdateEnemyAA(float r)
 
         Unit* ou = static_cast<Unit*>(o);
 
-        if (u->GetDistanceSq(ou) > r)
+        if (u->getDistanceSq(ou) > r)
             continue;
 
         if ((u->GetPhase() & ou->GetPhase()) == 0)
@@ -1438,7 +1438,7 @@ void Aura::EventUpdateEnemyAA(float r)
             continue;
         }
 
-        if (u->GetDistanceSq(tu) > r)
+        if (u->getDistanceSq(tu) > r)
             removable = true;
 
         if (!isHostile(u, tu))
@@ -1476,7 +1476,7 @@ void Aura::EventUpdateOwnerAA(float r)
 
     if (ou->isAlive() &&
         !ou->HasAura(m_spellInfo->Id) &&
-        (c->GetDistanceSq(ou) <= r))
+        (c->getDistanceSq(ou) <= r))
     {
 
         Aura* a = sSpellFactoryMgr.NewAura(m_spellInfo, GetDuration(), c, ou, true);
@@ -1486,7 +1486,7 @@ void Aura::EventUpdateOwnerAA(float r)
     }
 
 
-    if (!ou->isAlive() || (c->GetDistanceSq(ou) > r))
+    if (!ou->isAlive() || (c->getDistanceSq(ou) > r))
         ou->RemoveAura(m_spellInfo->Id);
 }
 

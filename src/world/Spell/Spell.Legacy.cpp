@@ -466,6 +466,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
 
     for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
+        auto obj = *itr;
         // don't add objects that are not units and that are dead
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
             continue;
@@ -479,7 +480,7 @@ void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float s
                 continue;
         }
 
-        if (IsInrange(srcx, srcy, srcz, (*itr), r))
+        if (obj->isInRange(srcx, srcy, srcz, r))
         {
             if (u_caster != NULL)
             {
@@ -534,6 +535,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
 
     for (itr2 = m_caster->GetInRangeSetBegin(); itr2 != m_caster->GetInRangeSetEnd();)
     {
+        auto obj = *itr;
         itr = itr2;
         //maybe scripts can change list. Should use lock instead of this to prevent multiple changes. This protects to 1 deletion only
         ++itr2;
@@ -554,7 +556,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
             if (!(1 << (inf->Type - 1) & GetSpellInfo()->TargetCreatureType))
                 continue;
         }
-        if (IsInrange(srcx, srcy, srcz, (*itr), r))
+        if (obj->isInRange(srcx, srcy, srcz, r))
         {
             if (worldConfig.terrainCollision.isCollisionEnabled)
             {
@@ -606,6 +608,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
 
     for (itr2 = m_caster->GetInRangeSetBegin(); itr2 != m_caster->GetInRangeSetEnd();)
     {
+        auto obj = *itr;
         itr = itr2;
         ++itr2; //maybe scripts can change list. Should use lock instead of this to prevent multiple changes. This protects to 1 deletion only
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
@@ -620,7 +623,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
                 continue;
         }
 
-        if (IsInrange(srcx, srcy, srcz, (*itr), r))
+        if (obj->isInRange(srcx, srcy, srcz, r))
         {
             if (worldConfig.terrainCollision.isCollisionEnabled)
             {
@@ -680,6 +683,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
 
     for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
+        auto obj = *itr;
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
             continue;
 
@@ -691,7 +695,7 @@ uint64 Spell::GetSinglePossibleEnemy(uint32 i, float prange)
             if (!(1 << (inf->Type - 1) & GetSpellInfo()->TargetCreatureType))
                 continue;
         }
-        if (IsInrange(srcx, srcy, srcz, (*itr), r))
+        if (obj->isInRange(srcx, srcy, srcz, r))
         {
             if (u_caster != NULL)
             {
@@ -734,6 +738,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
 
     for (std::set<Object*>::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
+        auto obj = *itr;
         if (!((*itr)->IsUnit()) || !static_cast<Unit*>(*itr)->isAlive())
             continue;
         if (GetSpellInfo()->TargetCreatureType)
@@ -744,7 +749,7 @@ uint64 Spell::GetSinglePossibleFriend(uint32 i, float prange)
             if (!(1 << (inf->Type - 1) & GetSpellInfo()->TargetCreatureType))
                 continue;
         }
-        if (IsInrange(srcx, srcy, srcz, (*itr), r))
+        if (obj->isInRange(srcx, srcy, srcz, r))
         {
             if (u_caster != NULL)
             {
@@ -3673,6 +3678,7 @@ uint8 Spell::CanCast(bool tolerate)
 
             for (std::set<Object*>::iterator itr = p_caster->GetInRangeSetBegin(); itr != p_caster->GetInRangeSetEnd(); ++itr)
             {
+                auto obj = *itr;
                 if (!(*itr)->IsGameObject())
                     continue;
 
@@ -3696,7 +3702,7 @@ uint8 Spell::CanCast(bool tolerate)
                     focusRange = GetMaxRange(sSpellRangeStore.LookupEntry(GetSpellInfo()->rangeIndex));
 
                 // check if focus object is close enough
-                if (!IsInrange(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ(), (*itr), (focusRange * focusRange)))
+                if (!obj->isInRange(p_caster->GetPositionX(), p_caster->GetPositionY(), p_caster->GetPositionZ(), (focusRange * focusRange)))
                     continue;
 
                 if (gameobject_info->raw.parameter_0 == GetSpellInfo()->RequiresSpellFocus)
@@ -4039,7 +4045,7 @@ uint8 Spell::CanCast(bool tolerate)
     // Targeted Location Checks (AoE spells)
     if (m_targets.m_targetMask == TARGET_FLAG_DEST_LOCATION)
     {
-        if (!IsInrange(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, m_caster, (maxRange * maxRange)))
+        if (!m_caster->isInRange(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, (maxRange * maxRange)))
             return SPELL_FAILED_OUT_OF_RANGE;
     }
 
@@ -4057,13 +4063,13 @@ uint8 Spell::CanCast(bool tolerate)
             if (tolerate)   // add an extra 33% to range on final check (squared = 1.78x)
             {
                 float localrange = maxRange + target->GetBoundingRadius() + 1.5f;
-                if (!IsInrange(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), target, (localrange * localrange * 1.78f)))
+                if (!target->isInRange(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (localrange * localrange * 1.78f)))
                     return SPELL_FAILED_OUT_OF_RANGE;
             }
             else
             {
                 float localrange = maxRange + target->GetBoundingRadius() + 1.5f;
-                if (!IsInrange(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), target, (localrange * localrange)))
+                if (!target->isInRange(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (localrange * localrange)))
                     return SPELL_FAILED_OUT_OF_RANGE;
             }
 
@@ -4202,7 +4208,7 @@ uint8 Spell::CanCast(bool tolerate)
 
                         if (pCreature)
                         {
-                            if (pCreature->GetDistanceSq(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()) <= 15)
+                            if (pCreature->getDistanceSq(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()) <= 15)
                             {
                                 SetTargetConstraintCreature(pCreature);
                                 foundTarget = true;
@@ -4222,7 +4228,7 @@ uint8 Spell::CanCast(bool tolerate)
 
                         if (pGameobject)
                         {
-                            if (pGameobject->GetDistanceSq(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()) <= 15)
+                            if (pGameobject->getDistanceSq(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ()) <= 15)
                             {
                                 SetTargetConstraintGameObject(pGameobject);
                                 foundTarget = true;
@@ -5391,9 +5397,10 @@ void Spell::Heal(int32 amount, bool ForceCrit)
 
                 for (itr2 = u_caster->GetInRangeSetBegin(); itr2 != u_caster->GetInRangeSetEnd();)
                 {
+                    auto obj = *itr;
                     itr = itr2;
                     ++itr2;
-                    if ((*itr)->IsUnit() && static_cast<Unit*>(*itr)->isAlive() && IsInrange(u_caster, (*itr), 8) && (u_caster->GetPhase() & (*itr)->GetPhase()))
+                    if ((*itr)->IsUnit() && static_cast<Unit*>(*itr)->isAlive() && obj->isInRange(u_caster, 8) && (u_caster->GetPhase() & (*itr)->GetPhase()))
                     {
                         did_hit_result = DidHit(sSpellCustomizations.GetSpellInfo(53385)->Effect[0], static_cast<Unit*>(*itr));
                         if (did_hit_result == SPELL_DID_HIT_SUCCESS)

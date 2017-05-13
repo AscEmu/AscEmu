@@ -978,7 +978,7 @@ class LuaUnit
 
         for (std::set< Object* >::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
         {
-            d2 = (*itr)->GetDistanceSq(ptr);
+            d2 = (*itr)->getDistanceSq(ptr);
             if (!ret || d2 < dist)
             {
                 dist = d2;
@@ -5773,7 +5773,7 @@ class LuaUnit
             closest_unit = (*itr);
             if (!closest_unit->IsUnit() || isHostile(closest_unit, ptr))
                 continue;
-            current_dist = closest_unit->GetDistanceSq(ptr);
+            current_dist = closest_unit->getDistanceSq(ptr);
             if (current_dist < closest_dist)
             {
                 closest_dist = current_dist;

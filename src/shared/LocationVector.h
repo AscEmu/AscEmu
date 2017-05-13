@@ -35,24 +35,10 @@ class SERVER_DECL LocationVector
         LocationVector(float X, float Y, float Z, float O) : x(X), y(Y), z(Z), o(O) {}
         LocationVector() : x(0), y(0), z(0), o(0) {}
 
-        // (dx * dx + dy * dy + dz * dz)
-        float DistanceSq(const LocationVector & comp)
-        {
-            float delta_x = comp.x - x;
-            float delta_y = comp.y - y;
-            float delta_z = comp.z - z;
-
-            return (delta_x * delta_x + delta_y * delta_y + delta_z * delta_z);
-        }
-
-        float DistanceSq(const float & X, const float & Y, const float & Z)
-        {
-            float delta_x = X - x;
-            float delta_y = Y - y;
-            float delta_z = Z - z;
-
-            return (delta_x * delta_x + delta_y * delta_y + delta_z * delta_z);
-        }
+    // MIT Start
+    float distanceSquare(const LocationVector& comp) const;
+    float distanceSquare(const float& X, const float& Y, const float& Z) const;
+    // MIT End
 
         // sqrt(dx * dx + dy * dy + dz * dz)
         float Distance(const LocationVector & comp)

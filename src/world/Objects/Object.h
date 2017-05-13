@@ -133,7 +133,7 @@ class SERVER_DECL MovementInfo
         uint32_t fetFallTime() const { return fall_time; }
         float getSplineElevation() const { return spline_elevation; }
         int8_t fetByteParam() const { return byte_parameter; }
-        
+
         struct JumpInfo
         {
             JumpInfo() : velocity(0.f), sinAngle(0.f), cosAngle(0.f), xyspeed(0.f) { }
@@ -340,7 +340,15 @@ struct MovementInfo
 //////////////////////////////////////////////////////////////////////////////////////////
 class SERVER_DECL Object : public EventableObject, public IUpdatable
 {
-    public:
+public:
+
+    // MIT Start
+    bool isInRange(LocationVector location, float square_r) const;
+    bool isInRange(float x, float y, float z, float square_r) const;
+
+    float getDistanceSq(LocationVector target) const;
+    float getDistanceSq(float x, float y, float z) const;
+    // MIT End
 
         typedef std::set<Object*> InRangeSet;
 
@@ -466,7 +474,7 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
 
         ::DBC::Structures::AreaTableEntry const* GetArea();
 
-        const LocationVector & GetPosition() { return m_position; }
+        LocationVector GetPosition() const { return LocationVector(m_position); }
         LocationVector & GetPositionNC() { return m_position; }
         LocationVector* GetPositionV() { return &m_position; }
 
@@ -625,26 +633,16 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
         /// Converts to 360 > x > 0
         float getEasyAngle(float angle);
 
-        const float GetDistanceSq(Object* obj)
+        const float getDistanceSq(Object* obj)
         {
             if (obj->GetMapId() != m_mapId)
                 return 40000.0f;                        /// enough for out of range
-            return m_position.DistanceSq(obj->GetPosition());
-        }
-
-        float GetDistanceSq(LocationVector & comp)
-        {
-            return comp.DistanceSq(m_position);
+            return m_position.distanceSquare(obj->GetPosition());
         }
 
         float CalcDistance(LocationVector & comp)
         {
             return comp.Distance(m_position);
-        }
-
-        const float GetDistanceSq(float x, float y, float z)
-        {
-            return m_position.DistanceSq(x, y, z);
         }
 
         const float GetDistance2dSq(Object* obj)

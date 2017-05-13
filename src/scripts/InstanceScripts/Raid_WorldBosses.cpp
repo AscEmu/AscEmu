@@ -1141,7 +1141,7 @@ class ShadeofLethonAI : public CreatureAIScript
             {
                 if ((*itr)->GetGUID() == CN_LETHON)
                 {
-                    distance = (*itr)->GetDistanceSq((*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ());
+                    distance = (*itr)->getDistanceSq((*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ());
                     if (distance < 5.0)
                     {
                         (*itr)->SetHealth(((*itr)->GetUInt32Value(UNIT_FIELD_MAXHEALTH) / 100)); //Heal him 1%

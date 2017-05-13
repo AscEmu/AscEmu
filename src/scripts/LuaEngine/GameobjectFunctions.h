@@ -239,7 +239,7 @@ class LuaGameObject
 
             for (std::set<Object*>::iterator itr = ptr->GetInRangePlayerSetBegin(); itr != ptr->GetInRangePlayerSetEnd(); ++itr)
             {
-                d2 = (static_cast< Player* >(*itr))->GetDistanceSq(ptr);
+                d2 = (static_cast< Player* >(*itr))->getDistanceSq(ptr);
                 if (!ret || d2 < dist)
                 {
                     dist = d2;

@@ -262,7 +262,7 @@ void AIInterface::Update(unsigned long time_passed)
 
     if (isAiState(AI_STATE_EVADE))
     {
-        tdist = m_Unit->GetDistanceSq(m_returnX, m_returnY, m_returnZ);
+        tdist = m_Unit->getDistanceSq(m_returnX, m_returnY, m_returnZ);
         if (tdist <= 4.0f)
         {
             setAiState(AI_STATE_IDLE);
@@ -389,7 +389,7 @@ void AIInterface::_UpdateTargets()
         {
             AssistTargetSet::iterator i2 = i++;
             if ((*i2) == NULL || (*i2)->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() ||
-                !(*i2)->isAlive() || m_Unit->GetDistanceSq((*i2)) >= 2500.0f || !(*i2)->CombatStatus.IsInCombat() || !((*i2)->m_phase & m_Unit->m_phase))
+                !(*i2)->isAlive() || m_Unit->getDistanceSq((*i2)) >= 2500.0f || !(*i2)->CombatStatus.IsInCombat() || !((*i2)->m_phase & m_Unit->m_phase))
             {
                 m_assistTargets.erase(i2);
             }
@@ -426,7 +426,7 @@ void AIInterface::_UpdateTargets()
                     }
                 }
 
-                if (ai_t->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() || !ai_t->isAlive() || ((!instance && m_Unit->GetDistanceSq(ai_t) >= 6400.0f) || !(ai_t->m_phase & m_Unit->m_phase)))
+                if (ai_t->event_GetCurrentInstanceId() != m_Unit->event_GetCurrentInstanceId() || !ai_t->isAlive() || ((!instance && m_Unit->getDistanceSq(ai_t) >= 6400.0f) || !(ai_t->m_phase & m_Unit->m_phase)))
                 {
                     m_aiTargets.erase(it2);
                 }
@@ -506,7 +506,7 @@ void AIInterface::_UpdateCombat(uint32 p_time)
         && !isAiState(AI_STATE_EVADE)
         && !isAiState(AI_STATE_SCRIPTMOVE)
         && !m_is_in_instance
-        && (m_outOfCombatRange && m_Unit->GetDistanceSq(m_combatResetX, m_combatResetY, m_combatResetZ) > m_outOfCombatRange))
+        && (m_outOfCombatRange && m_Unit->getDistanceSq(m_combatResetX, m_combatResetY, m_combatResetZ) > m_outOfCombatRange))
     {
         HandleEvent(EVENT_LEAVECOMBAT, m_Unit, 0);
     }
@@ -625,13 +625,13 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                 agent = AGENT_MELEE;
                 if (getNextTarget()->IsPlayer())
                 {
-                    float dist = m_Unit->GetDistanceSq(getNextTarget());
+                    float dist = m_Unit->getDistanceSq(getNextTarget());
                     if (static_cast< Player* >(getNextTarget())->HasUnitMovementFlag(MOVEFLAG_ROOTED) || dist >= 64.0f)
                     {
                         agent = AGENT_RANGED;
                     }
                 }
-                else if (getNextTarget()->m_canMove == false || m_Unit->GetDistanceSq(getNextTarget()) >= 64.0f)
+                else if (getNextTarget()->m_canMove == false || m_Unit->getDistanceSq(getNextTarget()) >= 64.0f)
                 {
                     agent = AGENT_RANGED;
                 }
@@ -1194,7 +1194,7 @@ Unit* AIInterface::FindTarget()
             if (!(tmpPlr->m_phase & m_Unit->m_phase))   //Not in the same phase, skip this target
                 continue;
 
-            float dist = m_Unit->GetDistanceSq(tmpPlr);
+            float dist = m_Unit->getDistanceSq(tmpPlr);
             if (dist > 2500.0f)
                 continue;
 
@@ -1407,7 +1407,7 @@ bool AIInterface::FindFriends(float dist)
 
         if (isCombatSupport(m_Unit, pUnit) && (pUnit->GetAIInterface()->isAiState(AI_STATE_IDLE) || pUnit->GetAIInterface()->isAiState(AI_STATE_SCRIPTIDLE)))      //Not sure
         {
-            if (m_Unit->GetDistanceSq(pUnit) < dist)
+            if (m_Unit->getDistanceSq(pUnit) < dist)
             {
                 if (m_assistTargets.count(pUnit) == 0)
                 {
@@ -1684,15 +1684,15 @@ float AIInterface::_CalcDistanceFromHome()
 {
     if (isAiScriptType(AI_SCRIPT_PET))
     {
-        return m_Unit->GetDistanceSq(m_PetOwner);
+        return m_Unit->getDistanceSq(m_PetOwner);
     }
     else if (m_Unit->IsCreature())
     {
         if (m_combatResetX != 0 && m_combatResetY != 0)
-            return m_Unit->GetDistanceSq(m_combatResetX, m_combatResetY, m_combatResetZ);
+            return m_Unit->getDistanceSq(m_combatResetX, m_combatResetY, m_combatResetZ);
 
         if (m_returnX != 0.0f && m_returnY != 0.0f)
-            return m_Unit->GetDistanceSq(m_returnX, m_returnY, m_returnZ);
+            return m_Unit->getDistanceSq(m_returnX, m_returnY, m_returnZ);
     }
 
     return 0.0f;
@@ -2593,7 +2593,7 @@ void AIInterface::_UpdateMovement(uint32 p_time)
         {
             if (isAiState(AI_STATE_IDLE) || isAiState(AI_STATE_FOLLOWING))
             {
-                float dist = m_Unit->GetDistanceSq(unitToFollow);
+                float dist = m_Unit->getDistanceSq(unitToFollow);
 
                 // re-calculate orientation based on target's movement
                 if (m_lastFollowX != unitToFollow->GetPositionX() ||
@@ -3526,7 +3526,7 @@ void AIInterface::_UpdateTotem(uint32 p_time)
         if (nextTarget == NULL ||
             (!m_Unit->GetMapMgr()->GetUnit(nextTarget->GetGUID()) ||
             !nextTarget->isAlive() ||
-            !IsInrange(m_Unit, nextTarget, pSpell->GetSpellInfo()->custom_base_range_or_radius_sqr) ||
+            !(m_Unit->isInRange(nextTarget->GetPosition(), pSpell->GetSpellInfo()->custom_base_range_or_radius_sqr)) ||
             !isAttackable(m_Unit, nextTarget, !(pSpell->GetSpellInfo()->custom_c_is_flags & SPELL_FLAG_IS_TARGETINGSTEALTHED))
            )
            )
@@ -4075,7 +4075,7 @@ void AIInterface::EventEnterCombat(Unit* pUnit, uint32 misc1)
             for (itr = pGroup->GetSubGroup(i)->GetGroupMembersBegin(); itr != pGroup->GetSubGroup(i)->GetGroupMembersEnd(); ++itr)
             {
                 pGroupGuy = (*itr)->m_loggedInPlayer;
-                if (pGroupGuy && pGroupGuy->isAlive() && m_Unit->GetMapMgr() == pGroupGuy->GetMapMgr() && pGroupGuy->GetDistanceSq(pUnit) <= 40 * 40) //50 yards for now. lets see if it works
+                if (pGroupGuy && pGroupGuy->isAlive() && m_Unit->GetMapMgr() == pGroupGuy->GetMapMgr() && pGroupGuy->getDistanceSq(pUnit) <= 40 * 40) //50 yards for now. lets see if it works
                 {
                     m_Unit->GetAIInterface()->AttackReaction(pGroupGuy, 1, 0);
                 }

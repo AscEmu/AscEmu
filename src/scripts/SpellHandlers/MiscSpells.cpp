@@ -530,7 +530,7 @@ bool IOCTeleporterIn(uint32 i, Spell* s)
     uint32 j;
     for (j = 0; j < 6; j++)
     {
-        if (p->GetDistanceSq(IOCTeleOutLocations[j][0], IOCTeleOutLocations[j][1], IOCTeleOutLocations[j][2]) <= 20.0f)
+        if (p->getDistanceSq(IOCTeleOutLocations[j][0], IOCTeleOutLocations[j][1], IOCTeleOutLocations[j][2]) <= 20.0f)
             break;
     }
 
@@ -561,7 +561,7 @@ bool IOCTeleporterOut(uint32 i, Spell* s)
     uint32 j;
     for (j = 0; j < 6; j++)
     {
-        if (p->GetDistanceSq(IOCTeleInLocations[j][0], IOCTeleInLocations[j][1], IOCTeleInLocations[j][2]) <= 20.0f)
+        if (p->getDistanceSq(IOCTeleInLocations[j][0], IOCTeleInLocations[j][1], IOCTeleInLocations[j][2]) <= 20.0f)
             break;
     }
 
@@ -596,7 +596,7 @@ bool SOTATeleporter(uint32 i, Spell* s)
 
     for (uint8 i = 0; i < 5; i++)
     {
-        float distance = plr->GetDistanceSq(sotaTransDest[i][0], sotaTransDest[i][1], sotaTransDest[i][2]);
+        float distance = plr->getDistanceSq(sotaTransDest[i][0], sotaTransDest[i][1], sotaTransDest[i][2]);
 
         if (distance < 75)
         {

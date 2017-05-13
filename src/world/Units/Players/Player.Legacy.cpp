@@ -5003,7 +5003,7 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
             if (pGrave->MapId == mapid && (pGrave->FactionID == GetTeam() || pGrave->FactionID == 3))
             {
                 temp.ChangeCoords(pGrave->X, pGrave->Y, pGrave->Z);
-                dist = src.DistanceSq(temp);
+                dist = src.distanceSquare(temp);
                 if (first || dist < closest_dist)
                 {
                     first = false;
@@ -5787,7 +5787,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
         {
             Player* pObj = static_cast< Player* >(obj);
 
-            if (myCorpseInstanceId == GetInstanceID() && obj->GetDistanceSq(myCorpseLocation) <= CORPSE_VIEW_DISTANCE)
+            if (myCorpseInstanceId == GetInstanceID() && obj->getDistanceSq(myCorpseLocation) <= CORPSE_VIEW_DISTANCE)
                 return !pObj->m_isGmInvisible; // we can see all players within range of our corpse except invisible GMs
 
             if (m_deathVision) // if we have arena death-vision we can see all players except invisible GMs
@@ -5801,7 +5801,7 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
             if (obj->IsCorpse() && static_cast< Corpse* >(obj)->GetOwner() == GetGUID())
                 return true;
 
-            if (obj->GetDistanceSq(myCorpseLocation) <= CORPSE_VIEW_DISTANCE)
+            if (obj->getDistanceSq(myCorpseLocation) <= CORPSE_VIEW_DISTANCE)
                 return true; // we can see everything within range of our corpse
         }
 
@@ -5874,8 +5874,8 @@ bool Player::CanSee(Object* obj) // * Invisibility & Stealth Detection - Partha 
 
                 detectRange += GetBoundingRadius(); // adjust range for size of player
                 detectRange += pObj->GetBoundingRadius(); // adjust range for size of stealthed player
-                //LogDefault("Player::CanSee(%s): detect range = %f yards (%f ingame units), cansee = %s , distance = %f" , pObj->GetName() , detectRange , detectRange * detectRange , (GetDistance2dSq(pObj) > detectRange * detectRange) ? "yes" : "no" , GetDistanceSq(pObj));
-                if (GetDistanceSq(pObj) > detectRange * detectRange)
+                //LogDefault("Player::CanSee(%s): detect range = %f yards (%f ingame units), cansee = %s , distance = %f" , pObj->GetName() , detectRange , detectRange * detectRange , (GetDistance2dSq(pObj) > detectRange * detectRange) ? "yes" : "no" , getDistanceSq(pObj));
+                if (getDistanceSq(pObj) > detectRange * detectRange)
                     return (HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) != 0); // GM can see stealthed players
             }
 

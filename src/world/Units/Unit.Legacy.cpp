@@ -1096,7 +1096,7 @@ bool Unit::canReachWithAttack(Unit* pVictim)
     //	float targetscale = pVictim->m_floatValues[OBJECT_FIELD_SCALE_X];
     //	float selfscale = m_floatValues[OBJECT_FIELD_SCALE_X];
 
-    //float distance = sqrt(GetDistanceSq(pVictim));
+    //float distance = sqrt(getDistanceSq(pVictim));
     float delta_x = pVictim->GetPositionX() - GetPositionX();
     float delta_y = pVictim->GetPositionY() - GetPositionY();
     float distance = sqrt(delta_x * delta_x + delta_y * delta_y);
@@ -1169,7 +1169,7 @@ void Unit::GiveGroupXP(Unit* pVictim, Player* PlayerInGroup)
         {
             pGroupGuy = (*itr)->m_loggedInPlayer;
             if (pGroupGuy && pGroupGuy->isAlive() && /* PlayerInGroup->GetInstanceID()==pGroupGuy->GetInstanceID() &&*/
-                pVictim->GetMapMgr() == pGroupGuy->GetMapMgr() && pGroupGuy->GetDistanceSq(pVictim) < 100 * 100)
+                pVictim->GetMapMgr() == pGroupGuy->GetMapMgr() && pGroupGuy->getDistanceSq(pVictim) < 100 * 100)
             {
                 active_player_list[active_player_count] = pGroupGuy;
                 active_player_count++;
@@ -7846,7 +7846,7 @@ void Unit::RemoveReflect(uint32 spellid, bool apply)
                     if (member == NULL || member == pPlayer || !member->IsInWorld() || !member->isAlive() || member->HasAura(59725))
                         continue;
 
-                    if (!IsInrange(pPlayer, member, 20))
+                    if (!member->isInRange(pPlayer, 20))
                         continue;
                     pPlayer->CastSpell(member, 59725, true);
                     targets -= 1;

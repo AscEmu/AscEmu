@@ -43,37 +43,6 @@ class Item;
 class Group;
 class Aura;
 
-inline bool IsInrange(LocationVector & location, Object* o, float square_r)
-{
-    float r = o->GetDistanceSq(location);
-    return (r <= square_r);
-}
-
-inline bool IsInrange(float x1, float y1, float z1, Object* o, float square_r)
-{
-    float r = o->GetDistanceSq(x1, y1, z1);
-    return (r <= square_r);
-}
-
-inline bool IsInrange(float x1, float y1, float z1, float x2, float y2, float z2, float square_r)
-{
-    float t;
-    float r;
-    t = x1 - x2;
-    r = t * t;
-    t = y1 - y2;
-    r += t * t;
-    t = z1 - z2;
-    r += t * t;
-    return (r <= square_r);
-}
-
-inline bool IsInrange(Object* o1, Object* o2, float square_r)
-{
-    return IsInrange(o1->GetPositionX(), o1->GetPositionY(), o1->GetPositionZ(),
-                     o2->GetPositionX(), o2->GetPositionY(), o2->GetPositionZ(), square_r);
-}
-
 inline bool TargetTypeCheck(Object* obj, uint32 ReqCreatureTypeMask)
 {
     if (!ReqCreatureTypeMask)

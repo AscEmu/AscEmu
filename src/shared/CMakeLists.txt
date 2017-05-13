@@ -4,40 +4,45 @@
 project(shared CXX)
 
 set(sources
-    CThreads.cpp
-    CrashHandler.cpp
-    Log.Legacy.cpp
-    MersenneTwister.cpp
-    printStackTrace.cpp
-    crc32.cpp
-    MapFile.cpp
-    MapFileEntry.cpp
-    TextFile.cpp
-    FindFiles.cpp
-    DynLib.cpp
-    SysInfo.cpp
-    PerformanceCounter.cpp
-    Threading/Mutex.cpp
-    Threading/Threading.h
-    Threading/ThreadPool.cpp
-    Threading/AtomicULong.cpp
-    Threading/AtomicFloat.cpp
-    Threading/AtomicCounter.cpp
-    Threading/AtomicBoolean.cpp
-    Threading/ConditionVariable.cpp
-    ascemu_getopt.cpp
     Auth/BigNumber.cpp
     Auth/MD5.cpp
     Auth/Sha1.cpp
     Auth/WowCrypt.cpp
+
     Config/Config.cpp
+
+    Database/CreateInterface.cpp
     Database/Database.cpp
     Database/MySQLDatabase.cpp
-    Database/CreateInterface.cpp
+
     Network/CircularBuffer.cpp
     Network/Socket.cpp
-    
+
+    Threading/AtomicBoolean.cpp
+    Threading/AtomicCounter.cpp
+    Threading/AtomicFloat.cpp
+    Threading/AtomicULong.cpp
+    Threading/ConditionVariable.cpp
+    Threading/Mutex.cpp
+    Threading/Threading.h
+    Threading/ThreadPool.cpp
+
+    ascemu_getopt.cpp
+    CrashHandler.cpp
+    crc32.cpp
+    CThreads.cpp
+    DynLib.cpp
+    FindFiles.cpp
+	LocationVector.cpp
     Log.cpp
+    Log.Legacy.cpp
+    MapFile.cpp
+    MapFileEntry.cpp
+    MersenneTwister.cpp
+    PerformanceCounter.cpp
+    printStackTrace.cpp
+    SysInfo.cpp
+    TextFile.cpp
     Util.cpp
 )
 

@@ -1430,7 +1430,7 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket& recv_data)
     if (_player->obj_movement_info.getTransportGuid().IsEmpty())
 #endif
     {
-        if (_player->GetDistanceSq(unit) > 100)
+        if (_player->getDistanceSq(unit) > 100)
             return; //avoid talking to anyone by guid hacking. Like sell farmed items anytime ? Low chance hack
     }
 
@@ -1770,7 +1770,7 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
         return;
 
     //this is a blizzlike check
-    if (_player->GetDistanceSq(pCreature) > 100)
+    if (_player->getDistanceSq(pCreature) > 100)
         return; //avoid talking to anyone by guid hacking. Like repair items anytime in raid ? Low chance hack
 
     if (guildmoney)

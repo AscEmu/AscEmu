@@ -266,6 +266,7 @@ void Spell::AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
     ObjectSet::iterator itr;
     for (itr = firstTarget->GetInRangeSetBegin(); itr != firstTarget->GetInRangeSetEnd(); ++itr)
     {
+        auto obj = *itr;
         if (!(*itr)->IsUnit() || !static_cast<Unit*>((*itr))->isAlive())
             continue;
 
@@ -278,7 +279,7 @@ void Spell::AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
 
         size_t oldsize;
 
-        if (IsInrange(firstTarget->GetPositionX(), firstTarget->GetPositionY(), firstTarget->GetPositionZ(), (*itr), range))
+        if (obj->isInRange(firstTarget->GetPositionX(), firstTarget->GetPositionY(), firstTarget->GetPositionZ(), range))
         {
             oldsize = list->size();
             AddTarget(i, TargetType, (*itr));

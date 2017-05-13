@@ -42,6 +42,30 @@
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/SpellSchoolConversionTable.h"
 
+// MIT Start
+
+bool Object::isInRange(LocationVector location, float square_r) const
+{
+    return getDistanceSq(location) <= square_r;
+}
+
+bool Object::isInRange(float x, float y, float z, float square_r) const
+{
+    return getDistanceSq(x, y, z) <= square_r;
+}
+
+float Object::getDistanceSq(LocationVector comp) const
+{
+    return comp.distanceSquare(m_position);
+}
+
+float Object::getDistanceSq(float x, float y, float z) const
+{
+    return m_position.distanceSquare(x, y, z);
+}
+
+// MIT End
+
 Object::Object() : m_position(0, 0, 0, 0), m_spawnLocation(0, 0, 0, 0)
 {
     m_mapId = MAPID_NOT_IN_WORLD;
