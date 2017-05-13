@@ -9,9 +9,11 @@ set(SRC_SPELL_DEFINITIONS_FILES
     ${PATH_PREFIX}/DiminishingGroup.h
     ${PATH_PREFIX}/DispelType.h
     ${PATH_PREFIX}/LockTypes.h
+    ${PATH_PREFIX}/PowerType.h
     ${PATH_PREFIX}/PreventionType.h
     ${PATH_PREFIX}/ProcFlags.h
     ${PATH_PREFIX}/School.h
+    ${PATH_PREFIX}/Spec.h
     ${PATH_PREFIX}/SpellCastTargetFlags.h
     ${PATH_PREFIX}/SpellClickSpell.h
     ${PATH_PREFIX}/SpellCoefficientsFlags.h

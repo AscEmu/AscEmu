@@ -23,6 +23,7 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Objects/Faction.h"
+#include <Spell/Definitions/PowerType.h>
 
 // Partially by Plexor (I used a spell before, but changed to his method)
 class Berthold : public GossipScript

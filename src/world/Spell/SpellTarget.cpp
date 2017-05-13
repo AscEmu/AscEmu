@@ -201,7 +201,7 @@ void Spell::AddScriptedOrSpellFocusTargets(uint32 i, uint32 TargetType, float r,
 
 void Spell::AddConeTargets(uint32 i, uint32 TargetType, float r, uint32 maxtargets)
 {
-    TargetsList* list = &m_targetUnits[i];
+    std::vector<uint64_t>* list = &m_targetUnits[i];
     ObjectSet::iterator itr;
     for (itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
@@ -230,7 +230,7 @@ void Spell::AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
     if (targ == NULL)
         return;
 
-    TargetsList* list = &m_targetUnits[i];
+    std::vector<uint64_t>* list = &m_targetUnits[i];
 
     //if selected target is party member, then jumps on party
     Unit* firstTarget = NULL;
@@ -377,7 +377,7 @@ void Spell::AddAOETargets(uint32 i, uint32 TargetType, float r, uint32 maxtarget
     if (m_caster->CalcDistance(source) <= r)
         AddTarget(i, TargetType, m_caster);
 
-    TargetsList* t = &m_targetUnits[i];
+    std::vector<uint64_t>* t = &m_targetUnits[i];
 
     for (ObjectSet::iterator itr = m_caster->GetInRangeSetBegin(); itr != m_caster->GetInRangeSetEnd(); ++itr)
     {
@@ -392,7 +392,7 @@ void Spell::AddAOETargets(uint32 i, uint32 TargetType, float r, uint32 maxtarget
 
 bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
 {
-    TargetsList* t = &m_targetUnits[i];
+    std::vector<uint64_t>* t = &m_targetUnits[i];
 
     if (obj == NULL || !obj->IsInWorld())
         return false;
@@ -445,7 +445,7 @@ bool Spell::AddTarget(uint32 i, uint32 TargetType, Object* obj)
     else
     {
         //check target isnt already in
-        for (TargetsList::iterator itr = m_targetUnits[i].begin(); itr != m_targetUnits[i].end(); ++itr)
+        for (std::vector<uint64_t>::iterator itr = m_targetUnits[i].begin(); itr != m_targetUnits[i].end(); ++itr)
         {
             if (obj->GetGUID() == *itr)
                 return false;

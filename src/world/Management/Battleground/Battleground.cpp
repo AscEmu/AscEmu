@@ -26,6 +26,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include <Spell/Definitions/AuraInterruptFlags.h>
+#include "Spell/Definitions/PowerType.h"
 
 uint32 CBattleground::GetId()
 {

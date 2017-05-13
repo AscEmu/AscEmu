@@ -41,6 +41,7 @@
 #include "Server/WorldSession.h"
 #include "Objects/Object.h"
 #include "LuaGlobal.h"
+#include <Spell/Definitions/PowerType.h>
 
 class LuaUnit
 {

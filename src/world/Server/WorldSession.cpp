@@ -31,6 +31,7 @@
 #include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
+#include "Spell/Definitions/PowerType.h"
 
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
@@ -458,7 +459,7 @@ Player* WorldSession::GetPlayerOrThrow()
     Player* player = this->GetPlayer();
     if (player == nullptr)
         throw AscEmu::Exception::PlayerNotFoundException();
-    
+
     return player;
 }
 
@@ -821,7 +822,7 @@ void WorldSession::SendAccountDataTimes(uint32 mask)
 
         if (!acct_data->data)
         {
-            data << uint64(0) << uint64(0);	
+            data << uint64(0) << uint64(0);
             continue;
         }
         md5hash.Initialize();
@@ -852,7 +853,7 @@ void WorldSession::SendAccountDataTimes(uint32 mask)
 void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
-    
+
     uint32 talent_id;
     uint32 requested_rank;
     uint32 unk;
@@ -879,7 +880,7 @@ void WorldSession::HandleUnlearnTalents(WorldPacket& recv_data)
 void WorldSession::HandleUnlearnSkillOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
-    
+
     uint32 skill_line_id;
     uint32 points_remaining = _player->GetPrimaryProfessionPoints();
     recv_data >> skill_line_id;

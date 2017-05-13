@@ -24,6 +24,7 @@
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Objects/Faction.h"
 #include "Spell/SpellMgr.h"
+#include <Spell/Definitions/PowerType.h>
 
 enum HyjalEvents
 {

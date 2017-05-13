@@ -35,6 +35,7 @@
 #include "Definitions/SpellState.h"
 #include "Definitions/SpellMechanics.h"
 #include "Definitions/SpellEffectTarget.h"
+#include "Definitions/PowerType.h"
 #ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 #include "StdAfx.h"
 #include "VMapFactory.h"
@@ -319,7 +320,7 @@ void Spell::FillSpecifiedTargetsInArea(float srcx, float srcy, float srcz, uint3
 // for the moment we do invisible targets
 void Spell::FillSpecifiedTargetsInArea(uint32 i, float srcx, float srcy, float srcz, float range, uint32 specification)
 {
-    TargetsList* tmpMap = &m_targetUnits[i];
+    std::vector<uint64_t>* tmpMap = &m_targetUnits[i];
     //IsStealth()
     float r = range * range;
     uint8 did_hit_result;
@@ -388,7 +389,7 @@ void Spell::FillAllTargetsInArea(float srcx, float srcy, float srcz, uint32 ind)
 /// We fill all the targets in the area, including the stealth ed one's
 void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, float range)
 {
-    TargetsList* tmpMap = &m_targetUnits[i];
+    std::vector<uint64_t>* tmpMap = &m_targetUnits[i];
     float r = range * range;
     uint8 did_hit_result;
     std::set<Object*>::iterator itr, itr2;
@@ -461,7 +462,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
 // We fill all the targets in the area, including the stealthed ones
 void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, float range)
 {
-    TargetsList* tmpMap = &m_targetUnits[i];
+    std::vector<uint64_t>* tmpMap = &m_targetUnits[i];
     float r = range * range;
     uint8 did_hit_result;
     std::set<Object*>::iterator itr, itr2;
@@ -1832,7 +1833,7 @@ void Spell::finish(bool successful)
         if (!(hasAttribute(ATTRIBUTES_ON_NEXT_ATTACK) && !m_triggeredSpell) && !isTamingQuestSpell)
         {
             uint32 numTargets = 0;
-            TargetsList::iterator itr = UniqueTargets.begin();
+            std::vector<uint64_t>::iterator itr = UniqueTargets.begin();
             for (; itr != UniqueTargets.end(); ++itr)
             {
                 if (GET_TYPE_FROM_GUID(*itr) == HIGHGUID_TYPE_UNIT)
@@ -2054,7 +2055,7 @@ void Spell::SendSpellStart()
 void Spell::SendSpellGo()
 {
     // Fill UniqueTargets
-    TargetsList::iterator i, j;
+    std::vector<uint64_t>::iterator i, j;
     for (uint8 x = 0; x < 3; x++)
     {
         if (GetSpellInfo()->Effect[x])
@@ -2233,7 +2234,7 @@ void Spell::SendSpellGo()
 
 void Spell::writeSpellGoTargets(WorldPacket* data)
 {
-    TargetsList::iterator i;
+    std::vector<uint64_t>::iterator i;
     for (i = UniqueTargets.begin(); i != UniqueTargets.end(); ++i)
     {
         //		SendCastSuccess(*i);
@@ -4739,9 +4740,9 @@ exit:
     return value;
 }
 
-bool Spell::HasTarget(const uint64& guid, TargetsList* tmpMap)
+bool Spell::HasTarget(const uint64& guid, std::vector<uint64_t>* tmpMap)
 {
-    for (TargetsList::iterator itr = tmpMap->begin(); itr != tmpMap->end(); ++itr)
+    for (std::vector<uint64_t>::iterator itr = tmpMap->begin(); itr != tmpMap->end(); ++itr)
     {
         if (*itr == guid)
             return true;
@@ -5541,12 +5542,12 @@ void Spell::DetermineSkillUp(uint32 skillid)
         p_caster->_AdvanceSkillLine(skillid, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
 }
 
-void Spell::SafeAddTarget(TargetsList* tgt, uint64 guid)
+void Spell::SafeAddTarget(std::vector<uint64_t>* tgt, uint64 guid)
 {
     if (guid == 0)
         return;
 
-    for (TargetsList::iterator i = tgt->begin(); i != tgt->end(); ++i)
+    for (std::vector<uint64_t>::iterator i = tgt->begin(); i != tgt->end(); ++i)
     {
         if (*i == guid)
         {

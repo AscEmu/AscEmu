@@ -56,6 +56,8 @@
 #include "Definitions/SpellState.h"
 #include "Definitions/DispelType.h"
 #include "Definitions/SpellMechanics.h"
+#include "Definitions/PowerType.h"
+#include "Definitions/Spec.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;

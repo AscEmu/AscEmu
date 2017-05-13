@@ -23,6 +23,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
+#include "Spell/Definitions/PowerType.h"
 
 TotemSummon::TotemSummon(uint64 GUID) : Summon(GUID)
 {}

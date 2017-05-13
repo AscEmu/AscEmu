@@ -22,6 +22,7 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/Definitions/PowerType.h"
 
 Vehicle::Vehicle()
 {
@@ -326,7 +327,7 @@ void Vehicle::EjectPassengerFromSeat(uint32 seatid)
     if (owner->HasAuraWithName(SPELL_AURA_ENABLE_FLIGHT) || owner->HasAuraWithName(SPELL_AURA_ENABLE_FLIGHT2))
         passenger->CastSpell(passenger, 45472, false);
 
-    // re-add spellclick flag if needed    
+    // re-add spellclick flag if needed
     // despawn vehicle if it was spawned by spell?
     LocationVector landposition(owner->GetPosition());
 

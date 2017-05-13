@@ -21,6 +21,7 @@
 
 #include "Setup.h"
 #include "Instance_MagistersTerrace.h"
+#include <Spell/Definitions/PowerType.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //Magister's Terrace

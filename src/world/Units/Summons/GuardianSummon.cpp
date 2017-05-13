@@ -21,6 +21,7 @@
 #include "../../StdAfx.h"
 #include "Units/Summons/GuardianSummon.h"
 #include "../../../scripts/Battlegrounds/EyeOfTheStorm.h"
+#include "Spell/Definitions/PowerType.h"
 
 GuardianSummon::GuardianSummon(uint64 GUID) : Summon(GUID)
 {}

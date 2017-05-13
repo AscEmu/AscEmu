@@ -36,6 +36,7 @@
 #include "Spell/Definitions/SpellRanged.h"
 #include "Spell/Definitions/LockTypes.h"
 #include "Spell/Definitions/SpellIsFlags.h"
+#include "Spell/Definitions/PowerType.h"
 
 #ifndef UNIX
 #include <cmath>

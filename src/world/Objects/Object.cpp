@@ -41,6 +41,7 @@
 #include "Spell/Definitions/SpellDamageType.h"
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/SpellSchoolConversionTable.h"
+#include "Spell/Definitions/PowerType.h"
 
 // MIT Start
 

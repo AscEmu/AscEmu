@@ -54,6 +54,8 @@
 #include "Spell/Definitions/SpellRanged.h"
 #include "Spell/Definitions/SpellIsFlags.h"
 #include "Spell/Definitions/SpellMechanics.h"
+#include "Spell/Definitions/PowerType.h"
+#include "Spell/Definitions/Spec.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;

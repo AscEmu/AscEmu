@@ -23,6 +23,7 @@
 #include "Setup.h"
 #include "Raid_SerpentshrineCavern.h"
 #include "Objects/Faction.h"
+#include <Spell/Definitions/PowerType.h>
 
 #define SP_SCALDING_WATER 37284 //This "dot" is supposed to tick whenever you get in the water, it doesnt tick anymore after u kill lurker.
 
@@ -580,7 +581,7 @@ class LurkerAI : public CreatureAIScript
 //    -= Leotheras the Blind =-
 //------------------------------------
 
-/* \todo 
+/* \todo
  - Some phase timers
  - Insidious whispers
 */
@@ -1697,7 +1698,7 @@ class TidewalkerLurkerAI : public CreatureAIScript
 //    -= Lady Vashj =-
 //------------------------------------
 
-/* \todo 
+/* \todo
  - Toxic Sporebats
  - Coilfang Strider spawn points
  - Some vashj spells and cooldowns are wrong

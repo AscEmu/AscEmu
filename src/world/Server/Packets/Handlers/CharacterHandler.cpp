@@ -31,6 +31,7 @@
 #include "Config/Config.h"
 #include "Map/MapMgr.h"
 #include "Map/WorldCreator.h"
+#include "Spell/Definitions/PowerType.h"
 
 LoginErrorCode VerifyName(const char* name, size_t nlen)
 {

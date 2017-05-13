@@ -23,6 +23,7 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
 #include "Spell/SpellAuras.h"
+#include <Spell/Definitions/PowerType.h>
 
 //////////////////////////////////////////////////////////////
 //bool SoulLinkParent( uint32 i, Spell *s )

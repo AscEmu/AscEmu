@@ -36,6 +36,7 @@
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/ProcFlags.h"
 #include <Spell/Definitions/AuraInterruptFlags.h>
+#include "Spell/Definitions/PowerType.h"
 
 Creature::Creature(uint64 guid)
 {

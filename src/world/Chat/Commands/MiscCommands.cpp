@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
+#include "Spell/Definitions/PowerType.h"
 
 //.mount
 bool ChatHandler::HandleMountCommand(const char* args, WorldSession* m_session)
@@ -733,7 +734,7 @@ bool ChatHandler::HandleInvisibleCommand(const char* /*args*/, WorldSession* m_s
     return true;
 }
 
-//.announce 
+//.announce
 bool ChatHandler::HandleAnnounceCommand(const char* args, WorldSession* m_session)
 {
     if (!*args || strlen(args) < 4 || strchr(args, '%'))
@@ -1286,7 +1287,7 @@ bool ChatHandler::HandleBanCharacterCommand(const char* args, WorldSession* m_se
     SystemMessage(m_session, "This ban is due to expire %s%s.", BanTime ? "on " : "", BanTime ? Util::GetDateTimeStringFromTimeStamp(BanTime + (uint32)UNIXTIME).c_str() : "Never");
 
     sGMLog.writefromsession(m_session, "banned %s, reason %s, for %s", pCharacter, (pReason == NULL) ? "No reason" : pReason, BanTime ? Util::GetDateStringFromSeconds(BanTime).c_str() : "ever");
-    
+
     std::stringstream worldAnnounce;
     worldAnnounce << MSG_COLOR_RED << "GM: " << pCharacter << " has been banned by " << m_session->GetPlayer()->GetName() << " for ";
     worldAnnounce << (BanTime ? Util::GetDateStringFromSeconds(BanTime) : "ever") << " Reason: " << ((pReason == NULL) ? "No reason." : pReason);
