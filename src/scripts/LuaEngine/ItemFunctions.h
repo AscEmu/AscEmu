@@ -38,13 +38,13 @@ namespace luaItem
         if (player == nullptr)
             return 0;
 
-        if (Menu != nullptr)
-            delete Menu;
+        if (LuaGlobal::instance()->m_menu != nullptr)
+            delete LuaGlobal::instance()->m_menu;
 
-        Menu = new Arcemu::Gossip::Menu(ptr->GetGUID(), text_id);
+        LuaGlobal::instance()->m_menu = new Arcemu::Gossip::Menu(ptr->GetGUID(), text_id);
 
         if (autosend != 0)
-            Menu->Send(player);
+            LuaGlobal::instance()->m_menu->Send(player);
 
         return 1;
     }
@@ -58,13 +58,13 @@ namespace luaItem
         const char* boxmessage = luaL_optstring(L, 5, "");
         uint32 boxmoney = static_cast<uint32>(luaL_optinteger(L, 6, 0));
 
-        if (Menu == NULL)
+        if (LuaGlobal::instance()->m_menu == NULL)
         {
             LOG_ERROR("There is no menu to add items to!");
             return 0;
         }
 
-        Menu->AddItem(icon, menu_text, IntId, boxmoney, boxmessage, coded);
+        LuaGlobal::instance()->m_menu->AddItem(icon, menu_text, IntId, boxmoney, boxmessage, coded);
 
         return 0;
     }
@@ -73,13 +73,13 @@ namespace luaItem
     {
         Player* plr = CHECK_PLAYER(L, 1);
 
-        if (Menu == NULL)
+        if (LuaGlobal::instance()->m_menu == NULL)
         {
             LOG_ERROR("There is no menu to send!");
             return 0;
         }
 
-        Menu->Send(plr);
+        LuaGlobal::instance()->m_menu->Send(plr);
 
         return 1;
     }
@@ -88,13 +88,13 @@ namespace luaItem
     {
         Player* plr = CHECK_PLAYER(L, 1);
 
-        if (Menu == NULL)
+        if (LuaGlobal::instance()->m_menu == NULL)
         {
             LOG_ERROR("There is no menu to complete!");
             return 0;
         }
 
-        Menu->Complete(plr);
+        LuaGlobal::instance()->m_menu->Complete(plr);
 
         return 1;
     }

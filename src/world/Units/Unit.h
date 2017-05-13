@@ -380,7 +380,7 @@ public:
     uint8 CastSpell(Unit* Target, SpellInfo* Sp, uint32 forced_basepoints, bool triggered);
     uint8 CastSpell(Unit* Target, uint32 SpellID, uint32 forced_basepoints, int32 charges, bool triggered);
     uint8 CastSpell(Unit* Target, SpellInfo* Sp, uint32 forced_basepoints, int32 charges, bool triggered);
-    void CastSpellAoF(float x, float y, float z, SpellInfo* Sp, bool triggered);
+    void CastSpellAoF(LocationVector lv, SpellInfo* Sp, bool triggered);
     void EventCastSpell(Unit* Target, SpellInfo* Sp);
 
     bool IsCasting();

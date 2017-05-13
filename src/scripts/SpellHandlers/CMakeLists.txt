@@ -22,6 +22,7 @@ set(sources
     # Required for linker
     ../../world/Server/LazyTimer.cpp
     ../../world/Server/ServerState.cpp
+    ../../world/Spell/SpellCastTargets.cpp
 )
 
 set(headers

@@ -137,7 +137,7 @@ bool RaiseDead(uint32 i, Spell* s)
         sp = sSpellCustomizations.GetSpellInfo(52150);
     }
 
-    s->p_caster->CastSpellAoF(x, y, z, sp, true);
+    s->p_caster->CastSpellAoF(LocationVector(x, y, z), sp, true);
 
     return true;
 }

@@ -22,3 +22,8 @@ float LocationVector::distanceSquare(const float& X, const float& Y, const float
 
     return (delta_x * delta_x + delta_y * delta_y + delta_z * delta_z);
 }
+
+bool LocationVector::isSet() const
+{
+    return x || y || z || o;
+}

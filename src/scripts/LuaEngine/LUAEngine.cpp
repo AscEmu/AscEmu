@@ -40,9 +40,10 @@
 #include "Management/ArenaTeam.h"
 #include "Map/WorldCreatorDefines.hpp"
 #include "Map/WorldCreator.h"
+#include "LuaMacros.h"
+#include "LuaHelpers.h"
 
 ScriptMgr* m_scriptMgr = NULL;
-LuaEngine g_luaMgr;
 
 extern "C" SCRIPT_DECL void _exp_set_serverstate_singleton(ServerState* state)
 {
@@ -57,7 +58,7 @@ extern "C" SCRIPT_DECL uint32 _exp_get_script_type()
 extern "C" SCRIPT_DECL void _exp_script_register(ScriptMgr* mgr)
 {
     m_scriptMgr = mgr;
-    sLuaMgr.Startup();
+    LuaGlobal::instance()->luaEngine()->Startup();
 }
 
 extern "C" SCRIPT_DECL void _exp_engine_unload()
@@ -67,30 +68,8 @@ extern "C" SCRIPT_DECL void _exp_engine_unload()
 
 extern "C" SCRIPT_DECL void _export_engine_reload()
 {
-    sLuaMgr.Restart();
+    LuaGlobal::instance()->luaEngine()->Restart();
 }
-
-template<typename T> const char* GetTClassName() { return "UNKNOWN"; }
-template<> const char* GetTClassName<Unit>() { return "Unit"; }
-template<> const char* GetTClassName<Item>() { return "Item"; }
-template<> const char* GetTClassName<GameObject>() { return "GameObject"; }
-template<> const char* GetTClassName<WorldPacket>() { return "LuaPacket"; }
-template<> const char* GetTClassName<TaxiPath>() { return "LuaTaxi"; }
-template<> const char* GetTClassName<Spell>() { return "Spell"; }
-template<> const char* GetTClassName<Field>() { return "SQL_Field"; }
-template<> const char* GetTClassName<QueryResult>() { return "SQL_QResult"; }
-template<> const char* GetTClassName<Aura>() { return "LuaAura"; }
-
-template<typename T> RegType<T>* GetMethodTable();
-template<> RegType<Unit>* GetMethodTable<Unit>();
-template<> RegType<Item>* GetMethodTable<Item>();
-template<> RegType<GameObject>* GetMethodTable<GameObject>();
-template<> RegType<WorldPacket>* GetMethodTable<WorldPacket>();
-template<> RegType<TaxiPath>* GetMethodTable<TaxiPath>();
-template<> RegType<Spell>* GetMethodTable<Spell>();
-template<> RegType<Field>* GetMethodTable<Field>();
-template<> RegType<QueryResult>* GetMethodTable<QueryResult>();
-template<> RegType<Aura>* GetMethodTable<Aura>();
 
 void report(lua_State* L)
 {
@@ -507,8 +486,8 @@ void LuaEngine::HyperCallFunction(const char* FuncName, int ref)  //hyper as in 
         {
             free((void*)FuncName);
             luaL_unref(lu, LUA_REGISTRYINDEX, ref);
-            std::unordered_map<int, EventInfoHolder*>::iterator itr = sLuaMgr.m_registeredTimedEvents.find(ref);
-            sLuaMgr.m_registeredTimedEvents.erase(itr);
+            std::unordered_map<int, EventInfoHolder*>::iterator itr = LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.find(ref);
+            LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.erase(itr);
         }
         else
         {
@@ -541,10 +520,10 @@ static int CreateLuaEvent(lua_State* L)
     {
         lua_settop(L, 1);
         int functionRef = luaL_ref(L, LUA_REGISTRYINDEX);
-        TimedEvent* ev = TimedEvent::Allocate(World::getSingletonPtr(), new CallbackP1<LuaEngine, int>(&sLuaMgr, &LuaEngine::CallFunctionByReference, functionRef), 0, delay, repeats);
+        TimedEvent* ev = TimedEvent::Allocate(World::getSingletonPtr(), new CallbackP1<LuaEngine, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::CallFunctionByReference, functionRef), 0, delay, repeats);
         ev->eventType = LUA_EVENTS_END + functionRef; //Create custom reference by adding the ref number to the max lua event type to get a unique reference for every function.
         sWorld.event_AddEvent(ev);
-        sLuaMgr.getFunctionRefs().insert(functionRef);
+        LuaGlobal::instance()->luaEngine()->getFunctionRefs().insert(functionRef);
         lua_pushinteger(L, functionRef);
     }
     else
@@ -578,10 +557,11 @@ void LuaEngine::DestroyAllLuaEvents()
     m_functionRefs.clear();
     RELEASE_LOCK
 }
+
 static int ModifyLuaEventInterval(lua_State* L)
 {
     GET_LOCK
-    int ref = static_cast<int>(luaL_checkinteger(L, 1));
+        int ref = static_cast<int>(luaL_checkinteger(L, 1));
     int newinterval = static_cast<int>(luaL_checkinteger(L, 2));
     ref += LUA_EVENTS_END;
     //Easy interval modification.
@@ -593,75 +573,13 @@ static int DestroyLuaEvent(lua_State* L)
 {
     //Simply remove the reference, CallFunctionByReference will find the reference has been freed and skip any processing.
     GET_LOCK
-    int ref = static_cast<int>(luaL_checkinteger(L, 1));
+        int ref = static_cast<int>(luaL_checkinteger(L, 1));
     luaL_unref(L, LUA_REGISTRYINDEX, ref);
-    sLuaMgr.getFunctionRefs().erase(ref);
+    LuaGlobal::instance()->luaEngine()->getFunctionRefs().erase(ref);
     sEventMgr.RemoveEvents(World::getSingletonPtr(), ref + LUA_EVENTS_END);
     RELEASE_LOCK
         return 0;
 }
-static int ExtractfRefFromCString(lua_State* L, const char* functionName)
-{
-    int functionRef = 0;
-    int top = lua_gettop(L);
-    if (functionName != nullptr)
-    {
-        char* copy = strdup(functionName);
-        char* token = strtok(copy, ".:");
-        if (strpbrk(functionName, ".:") == nullptr)
-        {
-            lua_getglobal(L, functionName);
-            if (lua_isfunction(L, -1) && !lua_iscfunction(L, -1))
-            {
-                functionRef = luaL_ref(L, LUA_REGISTRYINDEX);
-            }
-            else
-            {
-                luaL_error(L, "Reference creation failed! (%s) is not a valid Lua function. \n", functionName);
-            }
-        }
-        else
-        {
-            lua_getglobal(L, "_G");
-            while (token != nullptr)
-            {
-                lua_getfield(L, -1, token);
-                if (lua_isfunction(L, -1) && !lua_iscfunction(L, -1))
-                {
-                    functionRef = luaL_ref(L, LUA_REGISTRYINDEX);
-                    break;
-                }
-                else if (lua_istable(L, -1))
-                {
-                    token = strtok(nullptr, ".:");
-                    continue;
-                }
-                else
-                {
-                    luaL_error(L, "Reference creation failed! (%s) is not a valid Lua function. \n", functionName);
-                    break;
-                }
-            }
-        }
-        free((void*)copy);
-        lua_settop(L, top);
-    }
-    return functionRef;
-}
-
-static int RegisterServerHook(lua_State* L);
-static int RegisterUnitEvent(lua_State* L);
-static int RegisterQuestEvent(lua_State* L);
-static int RegisterGameObjectEvent(lua_State* L);
-static int RegisterUnitGossipEvent(lua_State* L);
-static int RegisterItemGossipEvent(lua_State* L);
-static int RegisterGOGossipEvent(lua_State* L);
-static int SuspendLuaThread(lua_State* L);
-static int RegisterTimedEvent(lua_State* L);
-static int RemoveTimedEvents(lua_State* L);
-static int RegisterDummySpell(lua_State* L);
-static int RegisterInstanceEvent(lua_State* L);
-void RegisterGlobalFunctions(lua_State*);
 
 void LuaEngine::RegisterCoreFunctions()
 {
@@ -726,11 +644,11 @@ static int RegisterServerHook(lua_State* L)
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 2));
+        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 2));
     }
     if (functionRef > 0)
     {
-        sLuaMgr.RegisterEvent(REGTYPE_SERVHOOK, 0, ev, functionRef);
+        LuaGlobal::instance()->luaEngine()->RegisterEvent(REGTYPE_SERVHOOK, 0, ev, functionRef);
     }
 
     lua_pop(L, lua_gettop(L));
@@ -750,7 +668,7 @@ static int RegisterDummySpell(lua_State* L)
         return 0;
     }
 
-    if (m_luaDummySpells.find(entry) != m_luaDummySpells.end())
+    if (LuaGlobal::instance()->m_luaDummySpells.find(entry) != LuaGlobal::instance()->m_luaDummySpells.end())
     {
         luaL_error(L, "LuaEngineMgr : RegisterDummySpell failed! Spell %d already has a registered Lua function!", entry);
     }
@@ -760,11 +678,11 @@ static int RegisterDummySpell(lua_State* L)
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 2));
+        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 2));
     }
     if (functionRef > 0)
     {
-        sLuaMgr.RegisterEvent(REGTYPE_DUMMYSPELL, entry, 0, functionRef);
+        LuaGlobal::instance()->luaEngine()->RegisterEvent(REGTYPE_DUMMYSPELL, entry, 0, functionRef);
     }
 
     lua_pop(L, lua_gettop(L));
@@ -790,11 +708,11 @@ static int RegisterUnitEvent(lua_State* L)
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
+        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3));
     }
     if (functionRef > 0)
     {
-        sLuaMgr.RegisterEvent(REGTYPE_UNIT, entry, ev, functionRef);
+        LuaGlobal::instance()->luaEngine()->RegisterEvent(REGTYPE_UNIT, entry, ev, functionRef);
     }
 
     lua_pop(L, lua_gettop(L));
@@ -820,11 +738,11 @@ static int RegisterInstanceEvent(lua_State* L)
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
+        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3));
     }
     if (functionRef > 0)
     {
-        sLuaMgr.RegisterEvent(REGTYPE_INSTANCE, map, ev, functionRef);
+        LuaGlobal::instance()->luaEngine()->RegisterEvent(REGTYPE_INSTANCE, map, ev, functionRef);
     }
 
     lua_pop(L, lua_gettop(L));
@@ -850,11 +768,11 @@ static int RegisterQuestEvent(lua_State* L)
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
+        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3));
     }
     if (functionRef > 0)
     {
-        sLuaMgr.RegisterEvent(REGTYPE_QUEST, entry, ev, functionRef);
+        LuaGlobal::instance()->luaEngine()->RegisterEvent(REGTYPE_QUEST, entry, ev, functionRef);
     }
 
     lua_pop(L, lua_gettop(L));
@@ -880,11 +798,11 @@ static int RegisterGameObjectEvent(lua_State* L)
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
+        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3));
     }
     if (functionRef > 0)
     {
-        sLuaMgr.RegisterEvent(REGTYPE_GO, entry, ev, functionRef);
+        LuaGlobal::instance()->luaEngine()->RegisterEvent(REGTYPE_GO, entry, ev, functionRef);
     }
 
     lua_pop(L, lua_gettop(L));
@@ -910,11 +828,11 @@ static int RegisterUnitGossipEvent(lua_State* L)
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
+        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3));
     }
     if (functionRef > 0)
     {
-        sLuaMgr.RegisterEvent(REGTYPE_UNIT_GOSSIP, entry, ev, functionRef);
+        LuaGlobal::instance()->luaEngine()->RegisterEvent(REGTYPE_UNIT_GOSSIP, entry, ev, functionRef);
     }
 
     lua_pop(L, lua_gettop(L));
@@ -939,17 +857,18 @@ static int RegisterItemGossipEvent(lua_State* L)
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
+        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3));
     }
     if (functionRef > 0)
     {
-        sLuaMgr.RegisterEvent(REGTYPE_ITEM_GOSSIP, entry, ev, functionRef);
+        LuaGlobal::instance()->luaEngine()->RegisterEvent(REGTYPE_ITEM_GOSSIP, entry, ev, functionRef);
     }
 
     lua_pop(L, lua_gettop(L));
 
     return 0;
 }
+
 static int RegisterGOGossipEvent(lua_State* L)
 {
     lua_settop(L, 3);
@@ -968,11 +887,11 @@ static int RegisterGOGossipEvent(lua_State* L)
     }
     else if (!strcmp(typeName, "string")) //Old way of passing in functions, obsolete but left in for compatability.
     {
-        functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 3));
+        functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 3));
     }
     if (functionRef > 0)
     {
-        sLuaMgr.RegisterEvent(REGTYPE_GO_GOSSIP, entry, ev, functionRef);
+        LuaGlobal::instance()->luaEngine()->RegisterEvent(REGTYPE_GO_GOSSIP, entry, ev, functionRef);
     }
 
     lua_pop(L, lua_gettop(L));
@@ -998,13 +917,13 @@ static int SuspendLuaThread(lua_State* L)
     {
         return luaL_error(L, "Error in SuspendLuaThread! Failed to create a valid reference.");
     }
-    TimedEvent* evt = TimedEvent::Allocate(thread, new CallbackP1<LuaEngine, int>(&g_luaMgr, &LuaEngine::ResumeLuaThread, ref), 0, waitime, 1);
+    TimedEvent* evt = TimedEvent::Allocate(thread, new CallbackP1<LuaEngine, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::ResumeLuaThread, ref), 0, waitime, 1);
     sWorld.event_AddEvent(evt);
     lua_remove(L, 1); // remove thread object
     lua_remove(L, 1); // remove timer.
                       //All that remains now are the extra arguments passed to this function.
     lua_xmove(L, thread, lua_gettop(L));
-    g_luaMgr.getThreadRefs().insert(ref);
+    LuaGlobal::instance()->luaEngine()->getThreadRefs().insert(ref);
     return lua_yield(thread, lua_gettop(L));
 }
 
@@ -1028,11 +947,11 @@ static int RegisterTimedEvent(lua_State* L)  //in this case, L == lu
     {
         return luaL_error(L, "Error in RegisterTimedEvent! Failed to create a valid reference.");
     }
-    TimedEvent* te = TimedEvent::Allocate(&sLuaMgr, new CallbackP2<LuaEngine, const char*, int>(&sLuaMgr, &LuaEngine::HyperCallFunction, funcName, ref), EVENT_LUA_TIMED, delay, repeats);
+    TimedEvent* te = TimedEvent::Allocate(LuaGlobal::instance()->luaEngine().get(), new CallbackP2<LuaEngine, const char*, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::HyperCallFunction, funcName, ref), EVENT_LUA_TIMED, delay, repeats);
     EventInfoHolder* ek = new EventInfoHolder;
     ek->funcName = funcName;
     ek->te = te;
-    sLuaMgr.m_registeredTimedEvents.insert(std::pair<int, EventInfoHolder*>(ref, ek));
+    LuaGlobal::instance()->luaEngine()->m_registeredTimedEvents.insert(std::pair<int, EventInfoHolder*>(ref, ek));
     sLuaEventMgr.event_AddEvent(te);
     lua_settop(L, 0);
     lua_pushnumber(L, ref);
@@ -1053,21 +972,21 @@ bool LuaHookOnNewCharacter(uint32 Race, uint32 Class, WorldSession* /*Session*/,
 {
     GET_LOCK
         bool result = true;
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_NEW_CHARACTER].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_NEW_CHARACTER].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_NEW_CHARACTER].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_NEW_CHARACTER].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_NEW_CHARACTER);
-        sLuaMgr.PUSH_STRING(Name);
-        sLuaMgr.PUSH_UINT(Race);
-        sLuaMgr.PUSH_UINT(Class);
-        if (sLuaMgr.ExecuteCall(4, 1))
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_NEW_CHARACTER);
+        LuaGlobal::instance()->luaEngine()->PUSH_STRING(Name);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(Race);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(Class);
+        if (LuaGlobal::instance()->luaEngine()->ExecuteCall(4, 1))
         {
-            lua_State* L = sLuaMgr.getluState();
+            lua_State* L = LuaGlobal::instance()->luaEngine()->getluState();
             if (!lua_isnoneornil(L, 1) && !lua_toboolean(L, 1))
             {
                 result = false;
             }
-            sLuaMgr.EndCall(1);
+            LuaGlobal::instance()->luaEngine()->EndCall(1);
         }
     }
     RELEASE_LOCK
@@ -1077,13 +996,13 @@ bool LuaHookOnNewCharacter(uint32 Race, uint32 Class, WorldSession* /*Session*/,
 void LuaHookOnKillPlayer(Player* pPlayer, Player* pVictim)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_KILL_PLAYER].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_KILL_PLAYER].end(); ++itr)
+        for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_KILL_PLAYER].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_KILL_PLAYER].end(); ++itr)
         {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_KILL_PLAYER);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PushUnit(pVictim);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_KILL_PLAYER);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pVictim);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
         }
     RELEASE_LOCK
 }
@@ -1091,12 +1010,12 @@ void LuaHookOnKillPlayer(Player* pPlayer, Player* pVictim)
 void LuaHookOnFirstEnterWorld(Player* pPlayer)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_FIRST_ENTER_WORLD].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_FIRST_ENTER_WORLD].end(); ++itr)
+        for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_FIRST_ENTER_WORLD].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_FIRST_ENTER_WORLD].end(); ++itr)
         {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_FIRST_ENTER_WORLD);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.ExecuteCall(2);
+            LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_FIRST_ENTER_WORLD);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
         }
     RELEASE_LOCK
 }
@@ -1104,12 +1023,12 @@ void LuaHookOnFirstEnterWorld(Player* pPlayer)
 void LuaHookOnEnterWorld(Player* pPlayer)
 {
     GET_LOCK
-        for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_ENTER_WORLD].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_ENTER_WORLD].end(); ++itr)
+        for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_ENTER_WORLD].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_ENTER_WORLD].end(); ++itr)
         {
-            sLuaMgr.BeginCall((*itr));
-            sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_ENTER_WORLD);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.ExecuteCall(2);
+            LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_ENTER_WORLD);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
         }
     RELEASE_LOCK
 }
@@ -1117,13 +1036,13 @@ void LuaHookOnEnterWorld(Player* pPlayer)
 void LuaHookOnGuildJoin(Player* pPlayer, Guild* pGuild)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_JOIN].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_JOIN].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_JOIN].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_JOIN].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_GUILD_JOIN);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_STRING(pGuild->GetGuildName());
-        sLuaMgr.ExecuteCall(3);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_GUILD_JOIN);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PUSH_STRING(pGuild->GetGuildName());
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
     }
     RELEASE_LOCK
 }
@@ -1131,12 +1050,12 @@ void LuaHookOnGuildJoin(Player* pPlayer, Guild* pGuild)
 void LuaHookOnDeath(Player* pPlayer)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_DEATH].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_DEATH].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_DEATH].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_DEATH].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_DEATH);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.ExecuteCall(2);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_DEATH);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
     }
     RELEASE_LOCK
 }
@@ -1145,19 +1064,19 @@ bool LuaHookOnRepop(Player* pPlayer)
 {
     GET_LOCK
     bool result = true;
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_REPOP].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_REPOP].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_REPOP].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_REPOP].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_REPOP);
-        sLuaMgr.PushUnit(pPlayer);
-        if (sLuaMgr.ExecuteCall(2, 1))
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_REPOP);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        if (LuaGlobal::instance()->luaEngine()->ExecuteCall(2, 1))
         {
-            lua_State* L = sLuaMgr.getluState();
+            lua_State* L = LuaGlobal::instance()->luaEngine()->getluState();
             if (!lua_isnoneornil(L, 1) && !lua_toboolean(L, 1))
             {
                 result = false;
             }
-            sLuaMgr.EndCall(1);
+            LuaGlobal::instance()->luaEngine()->EndCall(1);
         }
     }
     RELEASE_LOCK
@@ -1167,14 +1086,14 @@ bool LuaHookOnRepop(Player* pPlayer)
 void LuaHookOnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_EMOTE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_EMOTE].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_EMOTE].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_EMOTE].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_EMOTE);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PushUnit(pUnit);
-        sLuaMgr.PUSH_UINT(Emote);
-        sLuaMgr.ExecuteCall(4);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_EMOTE);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pUnit);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(Emote);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
     }
     RELEASE_LOCK
 }
@@ -1182,13 +1101,13 @@ void LuaHookOnEmote(Player* pPlayer, uint32 Emote, Unit* pUnit)
 void LuaHookOnEnterCombat(Player* pPlayer, Unit* pTarget)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_ENTER_COMBAT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_ENTER_COMBAT].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_ENTER_COMBAT].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_ENTER_COMBAT].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_ENTER_COMBAT);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PushUnit(pTarget);
-        sLuaMgr.ExecuteCall(3);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_ENTER_COMBAT);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pTarget);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
     }
     RELEASE_LOCK
 }
@@ -1197,21 +1116,21 @@ bool LuaHookOnCastSpell(Player* pPlayer, SpellInfo* pSpell, Spell* spell)
 {
     GET_LOCK
     bool result = true;
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_CAST_SPELL].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_CAST_SPELL].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_CAST_SPELL].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_CAST_SPELL].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_CAST_SPELL);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_UINT(pSpell->Id);
-        sLuaMgr.PushSpell(spell);
-        if (sLuaMgr.ExecuteCall(4, 1))
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_CAST_SPELL);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(pSpell->Id);
+        LuaGlobal::instance()->luaEngine()->PushSpell(spell);
+        if (LuaGlobal::instance()->luaEngine()->ExecuteCall(4, 1))
         {
-            lua_State* L = sLuaMgr.getluState();
+            lua_State* L = LuaGlobal::instance()->luaEngine()->getluState();
             if (!lua_isnoneornil(L, 1) && !lua_toboolean(L, 1))
             {
                 result = false;
             }
-            sLuaMgr.EndCall(1);
+            LuaGlobal::instance()->luaEngine()->EndCall(1);
         }
     }
     RELEASE_LOCK
@@ -1221,10 +1140,10 @@ bool LuaHookOnCastSpell(Player* pPlayer, SpellInfo* pSpell, Spell* spell)
 void LuaHookOnTick()
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_TICK].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_TICK].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_TICK].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_TICK].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.ExecuteCall();
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->ExecuteCall();
     }
     RELEASE_LOCK
 }
@@ -1233,19 +1152,19 @@ bool LuaHookOnLogoutRequest(Player* pPlayer)
 {
     GET_LOCK
     bool result = true;
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST);
-        sLuaMgr.PushUnit(pPlayer);
-        if (sLuaMgr.ExecuteCall(2, 1))
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_LOGOUT_REQUEST);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        if (LuaGlobal::instance()->luaEngine()->ExecuteCall(2, 1))
         {
-            lua_State* L = sLuaMgr.getluState();
+            lua_State* L = LuaGlobal::instance()->luaEngine()->getluState();
             if (!lua_isnoneornil(L, 1) && !lua_toboolean(L, 1))
             {
                 result = false;
             }
-            sLuaMgr.EndCall(1);
+            LuaGlobal::instance()->luaEngine()->EndCall(1);
         }
     }
     RELEASE_LOCK
@@ -1255,12 +1174,12 @@ bool LuaHookOnLogoutRequest(Player* pPlayer)
 void LuaHookOnLogout(Player* pPlayer)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOGOUT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOGOUT].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOGOUT].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOGOUT].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_LOGOUT);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.ExecuteCall(2);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_LOGOUT);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
     }
     RELEASE_LOCK
 }
@@ -1268,33 +1187,33 @@ void LuaHookOnLogout(Player* pPlayer)
 void LuaHookOnQuestAccept(Player* pPlayer, QuestProperties* pQuest, Object* pQuestGiver)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_ACCEPT].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_ACCEPT);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_UINT(pQuest->id);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_ACCEPT);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(pQuest->id);
         if (!pQuestGiver)
         {
-            sLuaMgr.PUSH_NIL();
+            LuaGlobal::instance()->luaEngine()->PUSH_NIL();
         }
         else if (pQuestGiver->IsUnit())
         {
-            sLuaMgr.PushUnit(pQuestGiver);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pQuestGiver);
         }
         else if (pQuestGiver->IsGameObject())
         {
-            sLuaMgr.PushGo(pQuestGiver);
+            LuaGlobal::instance()->luaEngine()->PushGo(pQuestGiver);
         }
         else if (pQuestGiver->IsItem())
         {
-            sLuaMgr.PushItem(pQuestGiver);
+            LuaGlobal::instance()->luaEngine()->PushItem(pQuestGiver);
         }
         else
         {
-            sLuaMgr.PUSH_NIL();
+            LuaGlobal::instance()->luaEngine()->PUSH_NIL();
         }
-        sLuaMgr.ExecuteCall(4);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
     }
     RELEASE_LOCK
 }
@@ -1302,14 +1221,14 @@ void LuaHookOnQuestAccept(Player* pPlayer, QuestProperties* pQuest, Object* pQue
 void LuaHookOnZone(Player* pPlayer, uint32 Zone, uint32 oldZone)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_ZONE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_ZONE].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_ZONE].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_ZONE].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_ZONE);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_UINT(Zone);
-        sLuaMgr.PUSH_UINT(oldZone);
-        sLuaMgr.ExecuteCall(4);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_ZONE);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(Zone);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(oldZone);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
     }
     RELEASE_LOCK
 }
@@ -1318,23 +1237,23 @@ bool LuaHookOnChat(Player* pPlayer, uint32 Type, uint32 Lang, const char* Messag
 {
     GET_LOCK
     bool result = true;
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_CHAT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_CHAT].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_CHAT].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_CHAT].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_CHAT);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_STRING(Message);
-        sLuaMgr.PUSH_UINT(Type);
-        sLuaMgr.PUSH_UINT(Lang);
-        sLuaMgr.PUSH_STRING(Misc);
-        if (sLuaMgr.ExecuteCall(6, 1))
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_CHAT);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PUSH_STRING(Message);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(Type);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(Lang);
+        LuaGlobal::instance()->luaEngine()->PUSH_STRING(Misc);
+        if (LuaGlobal::instance()->luaEngine()->ExecuteCall(6, 1))
         {
-            lua_State* L = sLuaMgr.getluState();
+            lua_State* L = LuaGlobal::instance()->luaEngine()->getluState();
             if (!lua_isnoneornil(L, 1) && !lua_toboolean(L, 1))
             {
                 result = false;
             }
-            sLuaMgr.EndCall(1);
+            LuaGlobal::instance()->luaEngine()->EndCall(1);
         }
     }
     RELEASE_LOCK
@@ -1344,15 +1263,15 @@ bool LuaHookOnChat(Player* pPlayer, uint32 Type, uint32 Lang, const char* Messag
 void LuaHookOnLoot(Player* pPlayer, Unit* pTarget, uint32 Money, uint32 ItemId)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOOT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOOT].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOOT].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_LOOT].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_LOOT);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PushUnit(pTarget);
-        sLuaMgr.PUSH_UINT(Money);
-        sLuaMgr.PUSH_UINT(ItemId);
-        sLuaMgr.ExecuteCall(5);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_LOOT);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pTarget);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(Money);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(ItemId);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(5);
     }
     RELEASE_LOCK
 }
@@ -1360,13 +1279,13 @@ void LuaHookOnLoot(Player* pPlayer, Unit* pTarget, uint32 Money, uint32 ItemId)
 void LuaHookOnGuildCreate(Player* pLeader, Guild* pGuild)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_CREATE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_CREATE].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_CREATE].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_GUILD_CREATE].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_GUILD_CREATE);
-        sLuaMgr.PushUnit(pLeader);
-        sLuaMgr.PUSH_STRING(pGuild->GetGuildName());
-        sLuaMgr.ExecuteCall(3);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_GUILD_CREATE);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pLeader);
+        LuaGlobal::instance()->luaEngine()->PUSH_STRING(pGuild->GetGuildName());
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
     }
     RELEASE_LOCK
 }
@@ -1374,12 +1293,12 @@ void LuaHookOnGuildCreate(Player* pLeader, Guild* pGuild)
 void LuaHookOnEnterWorld2(Player* pPlayer)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_FULL_LOGIN].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_FULL_LOGIN].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_FULL_LOGIN].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_FULL_LOGIN].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_FULL_LOGIN);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.ExecuteCall(2);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_FULL_LOGIN);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
     }
     RELEASE_LOCK
 }
@@ -1387,12 +1306,12 @@ void LuaHookOnEnterWorld2(Player* pPlayer)
 void LuaHookOnCharacterCreate(Player* pPlayer)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_CHARACTER_CREATE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_CHARACTER_CREATE].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_CHARACTER_CREATE].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_CHARACTER_CREATE].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_CHARACTER_CREATE);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.ExecuteCall(2);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_CHARACTER_CREATE);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
     }
     RELEASE_LOCK
 }
@@ -1400,13 +1319,13 @@ void LuaHookOnCharacterCreate(Player* pPlayer)
 void LuaHookOnQuestCancelled(Player* pPlayer, QuestProperties* pQuest)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_CANCELLED].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_CANCELLED].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_CANCELLED].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_CANCELLED].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_CANCELLED);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_UINT(pQuest->id);
-        sLuaMgr.ExecuteCall(3);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_CANCELLED);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(pQuest->id);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
     }
     RELEASE_LOCK
 }
@@ -1414,33 +1333,33 @@ void LuaHookOnQuestCancelled(Player* pPlayer, QuestProperties* pQuest)
 void LuaHookOnQuestFinished(Player* pPlayer, QuestProperties* pQuest, Object* pQuestGiver)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_FINISHED].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_FINISHED].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_FINISHED].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_QUEST_FINISHED].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_FINISHED);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_UINT(pQuest->id);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_QUEST_FINISHED);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(pQuest->id);
         if (!pQuestGiver)
         {
-            sLuaMgr.PUSH_NIL();
+            LuaGlobal::instance()->luaEngine()->PUSH_NIL();
         }
         else if (pQuestGiver->IsUnit())
         {
-            sLuaMgr.PushUnit(pQuestGiver);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pQuestGiver);
         }
         else if (pQuestGiver->IsGameObject())
         {
-            sLuaMgr.PushGo(pQuestGiver);
+            LuaGlobal::instance()->luaEngine()->PushGo(pQuestGiver);
         }
         else if (pQuestGiver->IsItem())
         {
-            sLuaMgr.PushItem(pQuestGiver);
+            LuaGlobal::instance()->luaEngine()->PushItem(pQuestGiver);
         }
         else
         {
-            sLuaMgr.PUSH_NIL();
+            LuaGlobal::instance()->luaEngine()->PUSH_NIL();
         }
-        sLuaMgr.ExecuteCall(4);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
     }
     RELEASE_LOCK
 }
@@ -1448,13 +1367,13 @@ void LuaHookOnQuestFinished(Player* pPlayer, QuestProperties* pQuest, Object* pQ
 void LuaHookOnHonorableKill(Player* pPlayer, Player* pKilled)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_HONORABLE_KILL].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_HONORABLE_KILL].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_HONORABLE_KILL].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_HONORABLE_KILL].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_HONORABLE_KILL);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PushUnit(pKilled);
-        sLuaMgr.ExecuteCall(3);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_HONORABLE_KILL);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pKilled);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
     }
     RELEASE_LOCK
 }
@@ -1462,15 +1381,15 @@ void LuaHookOnHonorableKill(Player* pPlayer, Player* pKilled)
 void LuaHookOnArenaFinish(Player* pPlayer, ArenaTeam* pTeam, bool victory, bool rated)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_ARENA_FINISH].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_ARENA_FINISH].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_ARENA_FINISH].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_ARENA_FINISH].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_ARENA_FINISH);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_STRING(pTeam->m_name.c_str());
-        sLuaMgr.PUSH_BOOL(victory);
-        sLuaMgr.PUSH_BOOL(rated);
-        sLuaMgr.ExecuteCall(5);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_ARENA_FINISH);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PUSH_STRING(pTeam->m_name.c_str());
+        LuaGlobal::instance()->luaEngine()->PUSH_BOOL(victory);
+        LuaGlobal::instance()->luaEngine()->PUSH_BOOL(rated);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(5);
     }
     RELEASE_LOCK
 }
@@ -1478,15 +1397,15 @@ void LuaHookOnArenaFinish(Player* pPlayer, ArenaTeam* pTeam, bool victory, bool 
 void LuaHookOnObjectLoot(Player* pPlayer, Object* pTarget, uint32 Money, uint32 ItemId)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_OBJECTLOOT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_OBJECTLOOT].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_OBJECTLOOT].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_OBJECTLOOT].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_OBJECTLOOT);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PushUnit(pTarget);
-        sLuaMgr.PUSH_UINT(Money);
-        sLuaMgr.PUSH_UINT(ItemId);
-        sLuaMgr.ExecuteCall(5);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_OBJECTLOOT);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pTarget);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(Money);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(ItemId);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(5);
     }
     RELEASE_LOCK
 }
@@ -1494,13 +1413,13 @@ void LuaHookOnObjectLoot(Player* pPlayer, Object* pTarget, uint32 Money, uint32 
 void LuaHookOnAreaTrigger(Player* pPlayer, uint32 areaTrigger)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_AREATRIGGER].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_AREATRIGGER].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_AREATRIGGER].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_AREATRIGGER].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_AREATRIGGER);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_UINT(areaTrigger);
-        sLuaMgr.ExecuteCall(3);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_AREATRIGGER);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(areaTrigger);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
     }
     RELEASE_LOCK
 }
@@ -1508,12 +1427,12 @@ void LuaHookOnAreaTrigger(Player* pPlayer, uint32 areaTrigger)
 void LuaHookOnPostLevelUp(Player* pPlayer)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_POST_LEVELUP].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_POST_LEVELUP].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_POST_LEVELUP].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_POST_LEVELUP].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_POST_LEVELUP);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.ExecuteCall(2);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_POST_LEVELUP);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
     }
     RELEASE_LOCK
 }
@@ -1522,20 +1441,20 @@ bool LuaHookOnPreUnitDie(Unit* Killer, Unit* Victim)
 {
     GET_LOCK
     bool result = true;
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_PRE_DIE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_PRE_DIE].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_PRE_DIE].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_PRE_DIE].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_PRE_DIE);
-        sLuaMgr.PushUnit(Killer);
-        sLuaMgr.PushUnit(Victim);
-        if (sLuaMgr.ExecuteCall(3, 1))
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_PRE_DIE);
+        LuaGlobal::instance()->luaEngine()->PushUnit(Killer);
+        LuaGlobal::instance()->luaEngine()->PushUnit(Victim);
+        if (LuaGlobal::instance()->luaEngine()->ExecuteCall(3, 1))
         {
-            lua_State* L = sLuaMgr.getluState();
+            lua_State* L = LuaGlobal::instance()->luaEngine()->getluState();
             if (!lua_isnoneornil(L, 1) && !lua_toboolean(L, 1))
             {
                 result = false;
             }
-            sLuaMgr.EndCall(1);
+            LuaGlobal::instance()->luaEngine()->EndCall(1);
         }
     }
     RELEASE_LOCK
@@ -1545,14 +1464,14 @@ bool LuaHookOnPreUnitDie(Unit* Killer, Unit* Victim)
 void LuaHookOnAdvanceSkillLine(Player* pPlayer, uint32 SkillLine, uint32 Current)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE);
-        sLuaMgr.PushUnit(pPlayer);
-        sLuaMgr.PUSH_UINT(SkillLine);
-        sLuaMgr.PUSH_UINT(Current);
-        sLuaMgr.ExecuteCall(4);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_ADVANCE_SKILLLINE);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(SkillLine);
+        LuaGlobal::instance()->luaEngine()->PUSH_UINT(Current);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
     }
     RELEASE_LOCK
 }
@@ -1560,13 +1479,13 @@ void LuaHookOnAdvanceSkillLine(Player* pPlayer, uint32 SkillLine, uint32 Current
 void LuaHookOnDuelFinished(Player* pWinner, Player* pLoser)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_DUEL_FINISHED].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_DUEL_FINISHED].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_DUEL_FINISHED].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_DUEL_FINISHED].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_DUEL_FINISHED);
-        sLuaMgr.PushUnit(pWinner);
-        sLuaMgr.PushUnit(pLoser);
-        sLuaMgr.ExecuteCall(3);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_DUEL_FINISHED);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pWinner);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pLoser);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
     }
     RELEASE_LOCK
 }
@@ -1574,12 +1493,12 @@ void LuaHookOnDuelFinished(Player* pWinner, Player* pLoser)
 void LuaHookOnAuraRemove(Aura* aura)
 {
     GET_LOCK
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_AURA_REMOVE].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_AURA_REMOVE].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_AURA_REMOVE].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_AURA_REMOVE].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_AURA_REMOVE);
-        sLuaMgr.PushAura(aura);
-        sLuaMgr.ExecuteCall(2);
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_AURA_REMOVE);
+        LuaGlobal::instance()->luaEngine()->PushAura(aura);
+        LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
     }
     RELEASE_LOCK
 }
@@ -1588,19 +1507,19 @@ bool LuaHookOnResurrect(Player* pPlayer)
 {
     GET_LOCK
     bool result = true;
-    for (std::vector<uint16>::iterator itr = EventAsToFuncName[SERVER_HOOK_EVENT_ON_RESURRECT].begin(); itr != EventAsToFuncName[SERVER_HOOK_EVENT_ON_RESURRECT].end(); ++itr)
+    for (std::vector<uint16>::iterator itr = LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_RESURRECT].begin(); itr != LuaGlobal::instance()->EventAsToFuncName[SERVER_HOOK_EVENT_ON_RESURRECT].end(); ++itr)
     {
-        sLuaMgr.BeginCall((*itr));
-        sLuaMgr.PUSH_INT(SERVER_HOOK_EVENT_ON_RESURRECT);
-        sLuaMgr.PushUnit(pPlayer);
-        if (sLuaMgr.ExecuteCall(2, 1))
+        LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
+        LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_RESURRECT);
+        LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+        if (LuaGlobal::instance()->luaEngine()->ExecuteCall(2, 1))
         {
-            lua_State* L = sLuaMgr.getluState();
+            lua_State* L = LuaGlobal::instance()->luaEngine()->getluState();
             if (!lua_isnoneornil(L, 1) && !lua_toboolean(L, 1))
             {
                 result = false;
             }
-            sLuaMgr.EndCall(1);
+            LuaGlobal::instance()->luaEngine()->EndCall(1);
         }
     }
     RELEASE_LOCK
@@ -1610,10 +1529,10 @@ bool LuaHookOnResurrect(Player* pPlayer)
 bool LuaOnDummySpell(uint32 effectIndex, Spell* pSpell)
 {
     GET_LOCK
-    sLuaMgr.BeginCall(m_luaDummySpells[pSpell->GetSpellInfo()->Id]);
-    sLuaMgr.PUSH_UINT(effectIndex);
-    sLuaMgr.PushSpell(pSpell);
-    sLuaMgr.ExecuteCall(2);
+    LuaGlobal::instance()->luaEngine()->BeginCall(LuaGlobal::instance()->m_luaDummySpells[pSpell->GetSpellInfo()->Id]);
+    LuaGlobal::instance()->luaEngine()->PUSH_UINT(effectIndex);
+    LuaGlobal::instance()->luaEngine()->PushSpell(pSpell);
+    LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
     RELEASE_LOCK
     return true;
 }
@@ -1633,11 +1552,11 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ENTER_COMBAT]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_ENTER_COMBAT);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ENTER_COMBAT]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_ENTER_COMBAT);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
 
             RELEASE_LOCK
         }
@@ -1646,11 +1565,11 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LEAVE_COMBAT]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_LEAVE_COMBAT);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LEAVE_COMBAT]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_LEAVE_COMBAT);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
 
             RELEASE_LOCK
         }
@@ -1659,11 +1578,11 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_DIED]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_TARGET_DIED);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_DIED]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_DIED);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
 
             RELEASE_LOCK
         }
@@ -1672,11 +1591,11 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DIED]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_DIED);
-            sLuaMgr.PushUnit(mKiller);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DIED]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_DIED);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mKiller);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
 
             RELEASE_LOCK
         }
@@ -1684,11 +1603,11 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_PARRIED]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_TARGET_PARRIED);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_PARRIED]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_PARRIED);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
 
             RELEASE_LOCK
         }
@@ -1696,11 +1615,11 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_DODGED]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_TARGET_DODGED);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_DODGED]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_DODGED);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
 
             RELEASE_LOCK
         }
@@ -1708,12 +1627,12 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_BLOCKED]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_TARGET_BLOCKED);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_INT(iAmount);
-            sLuaMgr.ExecuteCall(4);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_BLOCKED]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_BLOCKED);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(iAmount);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
 
             RELEASE_LOCK
         }
@@ -1721,23 +1640,23 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_CRIT_HIT]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_TARGET_CRIT_HIT);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_INT(fAmount);
-            sLuaMgr.ExecuteCall(4);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_TARGET_CRIT_HIT]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_TARGET_CRIT_HIT);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(fAmount);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
             RELEASE_LOCK
         }
         void OnParried(Unit* mTarget)
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_PARRY]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_PARRY);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_PARRY]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_PARRY);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
 
             RELEASE_LOCK
         }
@@ -1745,47 +1664,47 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DODGED]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_DODGED);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DODGED]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_DODGED);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             RELEASE_LOCK
         }
         void OnBlocked(Unit* mTarget, int32 iAmount)
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_BLOCKED]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_BLOCKED);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_INT(iAmount);
-            sLuaMgr.ExecuteCall(4);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_BLOCKED]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_BLOCKED);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(iAmount);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
             RELEASE_LOCK
         }
         void OnCritHit(Unit* mTarget, int32 fAmount)
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_CRIT_HIT]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_CRIT_HIT);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_INT(fAmount);
-            sLuaMgr.ExecuteCall(4);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_CRIT_HIT]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_CRIT_HIT);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(fAmount);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
             RELEASE_LOCK
         }
         void OnHit(Unit* mTarget, float fAmount)
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_HIT]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_HIT);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_FLOAT(fAmount);
-            sLuaMgr.ExecuteCall(4);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_HIT]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_HIT);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->PUSH_FLOAT(fAmount);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
 
             RELEASE_LOCK
         }
@@ -1794,11 +1713,11 @@ class LuaCreature : public CreatureAIScript
 
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ASSIST_TARGET_DIED]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_ASSIST_TARGET_DIED);
-            sLuaMgr.PushUnit(mAssistTarget);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ASSIST_TARGET_DIED]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_ASSIST_TARGET_DIED);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mAssistTarget);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
 
             RELEASE_LOCK
         }
@@ -1806,12 +1725,12 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FEAR]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_FEAR);
-            sLuaMgr.PushUnit(mFeared);
-            sLuaMgr.PUSH_UINT(iSpellId);
-            sLuaMgr.ExecuteCall(4);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FEAR]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_FEAR);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mFeared);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(iSpellId);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
 
             RELEASE_LOCK
         }
@@ -1819,11 +1738,11 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FLEE]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_FLEE);
-            sLuaMgr.PushUnit(mFlee);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FLEE]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_FLEE);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mFlee);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
 
             RELEASE_LOCK
         }
@@ -1831,10 +1750,10 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_CALL_FOR_HELP]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_CALL_FOR_HELP);
-            sLuaMgr.ExecuteCall(2);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_CALL_FOR_HELP]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_CALL_FOR_HELP);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
 
             RELEASE_LOCK
         }
@@ -1842,10 +1761,10 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LOAD]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_LOAD);
-            sLuaMgr.ExecuteCall(2);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LOAD]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_LOAD);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
 
             RELEASE_LOCK
                 uint32 iid = _unit->GetInstanceID();
@@ -1853,20 +1772,20 @@ class LuaCreature : public CreatureAIScript
             {
                 iid = 0;
             }
-            OnLoadInfo.push_back(_unit->GetMapId());
-            OnLoadInfo.push_back(iid);
-            OnLoadInfo.push_back(GET_LOWGUID_PART(_unit->GetGUID()));
+            LuaGlobal::instance()->m_onLoadInfo.push_back(_unit->GetMapId());
+            LuaGlobal::instance()->m_onLoadInfo.push_back(iid);
+            LuaGlobal::instance()->m_onLoadInfo.push_back(GET_LOWGUID_PART(_unit->GetGUID()));
         }
         void OnReachWP(uint32 iWaypointId, bool bForwards)
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_REACH_WP]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_REACH_WP);
-            sLuaMgr.PUSH_UINT(iWaypointId);
-            sLuaMgr.PUSH_BOOL(bForwards);
-            sLuaMgr.ExecuteCall(4);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_REACH_WP]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_REACH_WP);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(iWaypointId);
+            LuaGlobal::instance()->luaEngine()->PUSH_BOOL(bForwards);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
 
             RELEASE_LOCK
         }
@@ -1874,22 +1793,22 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LOOT_TAKEN]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_LOOT_TAKEN);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PUSH_UINT(pItemPrototype->ItemId);
-            sLuaMgr.ExecuteCall(4);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LOOT_TAKEN]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_LOOT_TAKEN);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(pItemPrototype->ItemId);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
             RELEASE_LOCK
         }
         void AIUpdate()
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_AIUPDATE]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_AIUPDATE);
-            sLuaMgr.ExecuteCall(2);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_AIUPDATE]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_AIUPDATE);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
 
             RELEASE_LOCK
         }
@@ -1897,12 +1816,12 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_EMOTE]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_EMOTE);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PUSH_INT((int32)Emote);
-            sLuaMgr.ExecuteCall(4);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_EMOTE]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_EMOTE);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT((int32)Emote);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
 
             RELEASE_LOCK
         }
@@ -1910,12 +1829,12 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DAMAGE_TAKEN]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PUSH_INT(CREATURE_EVENT_ON_DAMAGE_TAKEN);
-            sLuaMgr.PushUnit(mAttacker);
-            sLuaMgr.PUSH_UINT(fAmount);
-            sLuaMgr.ExecuteCall(4);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_DAMAGE_TAKEN]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PUSH_INT(CREATURE_EVENT_ON_DAMAGE_TAKEN);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mAttacker);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(fAmount);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
             RELEASE_LOCK
         }
 
@@ -1923,9 +1842,9 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK;
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ENTER_VEHICLE]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.ExecuteCall(1);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_ENTER_VEHICLE]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
 
             RELEASE_LOCK;
         }
@@ -1934,9 +1853,9 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK;
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_EXIT_VEHICLE]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.ExecuteCall(1);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_EXIT_VEHICLE]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
 
             RELEASE_LOCK;
         }
@@ -1945,10 +1864,10 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK;
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FIRST_PASSENGER_ENTERED]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PushUnit(passenger);
-            sLuaMgr.ExecuteCall(2);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_FIRST_PASSENGER_ENTERED]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(passenger);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
 
             RELEASE_LOCK;
         }
@@ -1957,9 +1876,9 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK;
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_VEHICLE_FULL]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.ExecuteCall(1);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_VEHICLE_FULL]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
 
             RELEASE_LOCK;
         }
@@ -1968,10 +1887,10 @@ class LuaCreature : public CreatureAIScript
         {
             CHECK_BINDING_ACQUIRELOCK;
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LAST_PASSENGER_LEFT]);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.PushUnit(passenger);
-            sLuaMgr.ExecuteCall(2);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[CREATURE_EVENT_ON_LAST_PASSENGER_LEFT]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->PushUnit(passenger);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
 
             RELEASE_LOCK;
         }
@@ -1980,16 +1899,16 @@ class LuaCreature : public CreatureAIScript
         {
 
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(fRef);
-            sLuaMgr.PushUnit(_unit);
-            sLuaMgr.ExecuteCall(1);
+            LuaGlobal::instance()->luaEngine()->BeginCall(fRef);
+            LuaGlobal::instance()->luaEngine()->PushUnit(_unit);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
             RELEASE_LOCK
         }
         void Destroy()
         {
             {
                 typedef std::multimap<uint32, LuaCreature*> CMAP;
-                CMAP& cMap = sLuaMgr.getLuCreatureMap();
+                CMAP& cMap = LuaGlobal::instance()->luaEngine()->getLuCreatureMap();
                 CMAP::iterator itr = cMap.find(_unit->GetEntry());
                 CMAP::iterator itend = cMap.upper_bound(_unit->GetEntry());
                 CMAP::iterator it;
@@ -2004,14 +1923,14 @@ class LuaCreature : public CreatureAIScript
             }
             {
                 //Function Ref clean up
-                std::map< uint64, std::set<int> >& objRefs = sLuaMgr.getObjectFunctionRefs();
+                std::map< uint64, std::set<int> >& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
                 std::map< uint64, std::set<int> >::iterator itr = objRefs.find(_unit->GetGUID());
                 if (itr != objRefs.end())
                 {
                     std::set<int>& refs = itr->second;
                     for (std::set<int>::iterator it = refs.begin(); it != refs.end(); ++it)
                     {
-                        luaL_unref(sLuaMgr.getluState(), LUA_REGISTRYINDEX, (*it));
+                        luaL_unref(LuaGlobal::instance()->luaEngine()->getluState(), LUA_REGISTRYINDEX, (*it));
                         sEventMgr.RemoveEvents(_unit, (*it) + EVENT_LUA_CREATURE_EVENTS);
                     }
                     refs.clear();
@@ -2036,9 +1955,9 @@ class LuaGameObjectScript : public GameObjectAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_CREATE]);
-            sLuaMgr.PushGo(_gameobject);
-            sLuaMgr.ExecuteCall(1);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_CREATE]);
+            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
 
             RELEASE_LOCK
         }
@@ -2047,9 +1966,9 @@ class LuaGameObjectScript : public GameObjectAIScript
 
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_SPAWN]);
-            sLuaMgr.PushGo(_gameobject);
-            sLuaMgr.ExecuteCall(1);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_SPAWN]);
+            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
 
             RELEASE_LOCK
         }
@@ -2057,9 +1976,9 @@ class LuaGameObjectScript : public GameObjectAIScript
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DESPAWN]);
-            sLuaMgr.PushGo(_gameobject);
-            sLuaMgr.ExecuteCall(1);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DESPAWN]);
+            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
             RELEASE_LOCK
         }
         void OnLootTaken(Player* pLooter, ItemProperties const* pItemInfo)
@@ -2067,58 +1986,58 @@ class LuaGameObjectScript : public GameObjectAIScript
 
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_LOOT_TAKEN]);
-            sLuaMgr.PushGo(_gameobject);
-            sLuaMgr.PUSH_UINT(GAMEOBJECT_EVENT_ON_LOOT_TAKEN);
-            sLuaMgr.PushUnit(pLooter);
-            sLuaMgr.PUSH_UINT(pItemInfo->ItemId);
-            sLuaMgr.ExecuteCall(4);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_LOOT_TAKEN]);
+            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(GAMEOBJECT_EVENT_ON_LOOT_TAKEN);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pLooter);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(pItemInfo->ItemId);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
             RELEASE_LOCK
         }
         void OnActivate(Player* pPlayer)
         {
             CHECK_BINDING_ACQUIRELOCK
 
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_USE]);
-            sLuaMgr.PushGo(_gameobject);
-            sLuaMgr.PUSH_UINT(GAMEOBJECT_EVENT_ON_USE);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_USE]);
+            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(GAMEOBJECT_EVENT_ON_USE);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             RELEASE_LOCK
         }
 
         void AIUpdate()
         {
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_AIUPDATE]);
-            sLuaMgr.PushGo(_gameobject);
-            sLuaMgr.ExecuteCall(1);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_AIUPDATE]);
+            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
             RELEASE_LOCK
         }
 
         void OnDamaged(uint32 damage)
         {
             CHECK_BINDING_ACQUIRELOCK;
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DAMAGED]);
-            sLuaMgr.PushGo(_gameobject);
-            sLuaMgr.PUSH_UINT(damage);
-            sLuaMgr.ExecuteCall(2);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DAMAGED]);
+            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(damage);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
             RELEASE_LOCK;
         }
 
         void OnDestroyed()
         {
             CHECK_BINDING_ACQUIRELOCK;
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DESTROYED]);
-            sLuaMgr.PushGo(_gameobject);
-            sLuaMgr.ExecuteCall(1);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[GAMEOBJECT_EVENT_ON_DESTROYED]);
+            LuaGlobal::instance()->luaEngine()->PushGo(_gameobject);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
             RELEASE_LOCK;
         }
 
         void Destroy()
         {
             typedef std::multimap<uint32, LuaGameObjectScript*> GMAP;
-            GMAP& gMap = sLuaMgr.getLuGameObjectMap();
+            GMAP& gMap = LuaGlobal::instance()->luaEngine()->getLuGameObjectMap();
             GMAP::iterator itr = gMap.find(_gameobject->GetEntry());
             GMAP::iterator itend = gMap.upper_bound(_gameobject->GetEntry());
             GMAP::iterator it;
@@ -2132,7 +2051,7 @@ class LuaGameObjectScript : public GameObjectAIScript
                 }
             }
 
-            std::map< uint64, std::set<int> >& objRefs = sLuaMgr.getObjectFunctionRefs();
+            std::map< uint64, std::set<int> >& objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
             std::map< uint64, std::set<int> >::iterator itr2 = objRefs.find(_gameobject->GetGUID());
             std::set<int>::iterator it2;
             if (itr2 != objRefs.end())
@@ -2140,7 +2059,7 @@ class LuaGameObjectScript : public GameObjectAIScript
                 std::set<int>& refs = itr2->second;
                 for (it2 = refs.begin(); it2 != refs.end(); ++it2)
                 {
-                    luaL_unref(sLuaMgr.getluState(), LUA_REGISTRYINDEX, (*it2));
+                    luaL_unref(LuaGlobal::instance()->luaEngine()->getluState(), LUA_REGISTRYINDEX, (*it2));
                 }
                 refs.clear();
             }
@@ -2160,7 +2079,7 @@ class LuaGossip : public Arcemu::Gossip::Script
             MapType gMap;
             if (this->m_go_gossip_binding != nullptr)
             {
-                gMap = g_luaMgr.getGameObjectGossipInterfaceMap();
+                gMap = LuaGlobal::instance()->luaEngine()->getGameObjectGossipInterfaceMap();
                 for (MapType::iterator itr = gMap.begin(); itr != gMap.end(); ++itr)
                 {
                     if (itr->second == this)
@@ -2172,7 +2091,7 @@ class LuaGossip : public Arcemu::Gossip::Script
             }
             else if (this->m_unit_gossip_binding != nullptr)
             {
-                gMap = g_luaMgr.getUnitGossipInterfaceMap();
+                gMap = LuaGlobal::instance()->luaEngine()->getUnitGossipInterfaceMap();
                 for (MapType::iterator itr = gMap.begin(); itr != gMap.end(); ++itr)
                 {
                     if (itr->second == this)
@@ -2184,7 +2103,7 @@ class LuaGossip : public Arcemu::Gossip::Script
             }
             else if (this->m_item_gossip_binding != nullptr)
             {
-                gMap = g_luaMgr.getItemGossipInterfaceMap();
+                gMap = LuaGlobal::instance()->luaEngine()->getItemGossipInterfaceMap();
                 for (MapType::iterator itr = gMap.begin(); itr != gMap.end(); ++itr)
                 {
                     if (itr->second == this)
@@ -2207,11 +2126,11 @@ class LuaGossip : public Arcemu::Gossip::Script
                     return;
                 }
 
-                sLuaMgr.BeginCall(m_unit_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_TALK]);
-                sLuaMgr.PushUnit(pObject);
-                sLuaMgr.PUSH_UINT(GOSSIP_EVENT_ON_TALK);
-                sLuaMgr.PushUnit(plr);
-                sLuaMgr.ExecuteCall(3);
+                LuaGlobal::instance()->luaEngine()->BeginCall(m_unit_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_TALK]);
+                LuaGlobal::instance()->luaEngine()->PushUnit(pObject);
+                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_TALK);
+                LuaGlobal::instance()->luaEngine()->PushUnit(plr);
+                LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             }
             else if (pObject->IsItem())
             {
@@ -2221,11 +2140,11 @@ class LuaGossip : public Arcemu::Gossip::Script
                     return;
                 }
 
-                sLuaMgr.BeginCall(m_item_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_TALK]);
-                sLuaMgr.PushItem(pObject);
-                sLuaMgr.PUSH_UINT(GOSSIP_EVENT_ON_TALK);
-                sLuaMgr.PushUnit(plr);
-                sLuaMgr.ExecuteCall(3);
+                LuaGlobal::instance()->luaEngine()->BeginCall(m_item_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_TALK]);
+                LuaGlobal::instance()->luaEngine()->PushItem(pObject);
+                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_TALK);
+                LuaGlobal::instance()->luaEngine()->PushUnit(plr);
+                LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             }
             else if (pObject->IsGameObject())
             {
@@ -2235,11 +2154,11 @@ class LuaGossip : public Arcemu::Gossip::Script
                     return;
                 }
 
-                sLuaMgr.BeginCall(m_go_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_TALK]);
-                sLuaMgr.PushGo(pObject);
-                sLuaMgr.PUSH_UINT(GOSSIP_EVENT_ON_TALK);
-                sLuaMgr.PushUnit(plr);
-                sLuaMgr.ExecuteCall(3);
+                LuaGlobal::instance()->luaEngine()->BeginCall(m_go_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_TALK]);
+                LuaGlobal::instance()->luaEngine()->PushGo(pObject);
+                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_TALK);
+                LuaGlobal::instance()->luaEngine()->PushUnit(plr);
+                LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             }
             RELEASE_LOCK
         }
@@ -2255,14 +2174,14 @@ class LuaGossip : public Arcemu::Gossip::Script
                     return;
                 }
 
-                sLuaMgr.BeginCall(m_unit_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_SELECT_OPTION]);
-                sLuaMgr.PushUnit(pObject);
-                sLuaMgr.PUSH_UINT(GOSSIP_EVENT_ON_SELECT_OPTION);
-                sLuaMgr.PushUnit(Plr);
-                sLuaMgr.PUSH_UINT(Id);
-                sLuaMgr.PUSH_UINT(Id); // used to be IntId
-                sLuaMgr.PUSH_STRING(EnteredCode);
-                sLuaMgr.ExecuteCall(6);
+                LuaGlobal::instance()->luaEngine()->BeginCall(m_unit_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_SELECT_OPTION]);
+                LuaGlobal::instance()->luaEngine()->PushUnit(pObject);
+                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_SELECT_OPTION);
+                LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
+                LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id);
+                LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id); // used to be IntId
+                LuaGlobal::instance()->luaEngine()->PUSH_STRING(EnteredCode);
+                LuaGlobal::instance()->luaEngine()->ExecuteCall(6);
             }
             else if (pObject->IsItem())
             {
@@ -2271,14 +2190,14 @@ class LuaGossip : public Arcemu::Gossip::Script
                     RELEASE_LOCK;
                     return;
                 }
-                sLuaMgr.BeginCall(m_item_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_SELECT_OPTION]);
-                sLuaMgr.PushItem(pObject);
-                sLuaMgr.PUSH_UINT(GOSSIP_EVENT_ON_SELECT_OPTION);
-                sLuaMgr.PushUnit(Plr);
-                sLuaMgr.PUSH_UINT(Id);
-                sLuaMgr.PUSH_UINT(Id); // used to be IntId
-                sLuaMgr.PUSH_STRING(EnteredCode);
-                sLuaMgr.ExecuteCall(6);
+                LuaGlobal::instance()->luaEngine()->BeginCall(m_item_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_SELECT_OPTION]);
+                LuaGlobal::instance()->luaEngine()->PushItem(pObject);
+                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_SELECT_OPTION);
+                LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
+                LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id);
+                LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id); // used to be IntId
+                LuaGlobal::instance()->luaEngine()->PUSH_STRING(EnteredCode);
+                LuaGlobal::instance()->luaEngine()->ExecuteCall(6);
             }
             else if (pObject->IsGameObject())
             {
@@ -2287,14 +2206,14 @@ class LuaGossip : public Arcemu::Gossip::Script
                     RELEASE_LOCK;
                     return;
                 }
-                sLuaMgr.BeginCall(m_go_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_SELECT_OPTION]);
-                sLuaMgr.PushGo(pObject);
-                sLuaMgr.PUSH_UINT(GOSSIP_EVENT_ON_SELECT_OPTION);
-                sLuaMgr.PushUnit(Plr);
-                sLuaMgr.PUSH_UINT(Id);
-                sLuaMgr.PUSH_UINT(Id); // used to be IntId
-                sLuaMgr.PUSH_STRING(EnteredCode);
-                sLuaMgr.ExecuteCall(6);
+                LuaGlobal::instance()->luaEngine()->BeginCall(m_go_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_SELECT_OPTION]);
+                LuaGlobal::instance()->luaEngine()->PushGo(pObject);
+                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_SELECT_OPTION);
+                LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
+                LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id);
+                LuaGlobal::instance()->luaEngine()->PUSH_UINT(Id); // used to be IntId
+                LuaGlobal::instance()->luaEngine()->PUSH_STRING(EnteredCode);
+                LuaGlobal::instance()->luaEngine()->ExecuteCall(6);
             }
             RELEASE_LOCK
         }
@@ -2309,11 +2228,11 @@ class LuaGossip : public Arcemu::Gossip::Script
                     RELEASE_LOCK;
                     return;
                 }
-                sLuaMgr.BeginCall(m_unit_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_END]);
-                sLuaMgr.PushUnit(pObject);
-                sLuaMgr.PUSH_UINT(GOSSIP_EVENT_ON_END);
-                sLuaMgr.PushUnit(Plr);
-                sLuaMgr.ExecuteCall(3);
+                LuaGlobal::instance()->luaEngine()->BeginCall(m_unit_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_END]);
+                LuaGlobal::instance()->luaEngine()->PushUnit(pObject);
+                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_END);
+                LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
+                LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             }
             else if (pObject->IsItem())
             {
@@ -2322,11 +2241,11 @@ class LuaGossip : public Arcemu::Gossip::Script
                     RELEASE_LOCK;
                     return;
                 }
-                sLuaMgr.BeginCall(m_item_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_END]);
-                sLuaMgr.PushItem(pObject);
-                sLuaMgr.PUSH_UINT(GOSSIP_EVENT_ON_END);
-                sLuaMgr.PushUnit(Plr);
-                sLuaMgr.ExecuteCall(3);
+                LuaGlobal::instance()->luaEngine()->BeginCall(m_item_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_END]);
+                LuaGlobal::instance()->luaEngine()->PushItem(pObject);
+                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_END);
+                LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
+                LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             }
             else if (pObject->IsGameObject())
             {
@@ -2335,11 +2254,11 @@ class LuaGossip : public Arcemu::Gossip::Script
                     RELEASE_LOCK;
                     return;
                 }
-                sLuaMgr.BeginCall(m_go_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_END]);
-                sLuaMgr.PushGo(pObject);
-                sLuaMgr.PUSH_UINT(GOSSIP_EVENT_ON_END);
-                sLuaMgr.PushUnit(Plr);
-                sLuaMgr.ExecuteCall(3);
+                LuaGlobal::instance()->luaEngine()->BeginCall(m_go_gossip_binding->m_functionReferences[GOSSIP_EVENT_ON_END]);
+                LuaGlobal::instance()->luaEngine()->PushGo(pObject);
+                LuaGlobal::instance()->luaEngine()->PUSH_UINT(GOSSIP_EVENT_ON_END);
+                LuaGlobal::instance()->luaEngine()->PushUnit(Plr);
+                LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             }
             RELEASE_LOCK
         }
@@ -2360,7 +2279,7 @@ class LuaQuest : public QuestScript
         ~LuaQuest()
         {
             typedef std::unordered_map<uint32, LuaQuest*> QuestType;
-            QuestType qMap = g_luaMgr.getLuQuestMap();
+            QuestType qMap = LuaGlobal::instance()->luaEngine()->getLuQuestMap();
             for (QuestType::iterator itr = qMap.begin(); itr != qMap.end(); ++itr)
             {
                 if (itr->second == this)
@@ -2375,10 +2294,10 @@ class LuaQuest : public QuestScript
         {
 
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_ACCEPT]);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
-            sLuaMgr.ExecuteCall(2);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_ACCEPT]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
             RELEASE_LOCK
         }
 
@@ -2386,59 +2305,59 @@ class LuaQuest : public QuestScript
         {
 
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_COMPLETE]);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
-            sLuaMgr.ExecuteCall(2);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_COMPLETE]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
             RELEASE_LOCK
         }
         void OnQuestCancel(Player* mTarget)
         {
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_CANCEL]);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.ExecuteCall(1);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_CANCEL]);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
             RELEASE_LOCK
         }
         void OnGameObjectActivate(uint32 entry, Player* mTarget, QuestLogEntry* qLogEntry)
         {
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_GAMEOBJECT_ACTIVATE]);
-            sLuaMgr.PUSH_UINT(entry);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_GAMEOBJECT_ACTIVATE]);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(entry);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             RELEASE_LOCK
         }
         void OnCreatureKill(uint32 entry, Player* mTarget, QuestLogEntry* qLogEntry)
         {
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_CREATURE_KILL]);
-            sLuaMgr.PUSH_UINT(entry);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_CREATURE_KILL]);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(entry);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             RELEASE_LOCK
         }
         void OnExploreArea(uint32 areaId, Player* mTarget, QuestLogEntry* qLogEntry)
         {
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_EXPLORE_AREA]);
-            sLuaMgr.PUSH_UINT(areaId);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_EXPLORE_AREA]);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(areaId);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             RELEASE_LOCK
         }
         void OnPlayerItemPickup(uint32 itemId, uint32 totalCount, Player* mTarget, QuestLogEntry* qLogEntry)
         {
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_PLAYER_ITEMPICKUP]);
-            sLuaMgr.PUSH_UINT(itemId);
-            sLuaMgr.PUSH_UINT(totalCount);
-            sLuaMgr.PushUnit(mTarget);
-            sLuaMgr.PUSH_UINT(qLogEntry->GetQuest()->id);
-            sLuaMgr.ExecuteCall(4);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[QUEST_EVENT_ON_PLAYER_ITEMPICKUP]);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(itemId);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(totalCount);
+            LuaGlobal::instance()->luaEngine()->PushUnit(mTarget);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(qLogEntry->GetQuest()->id);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
             RELEASE_LOCK
         }
         LuaObjectBinding* m_binding;
@@ -2455,11 +2374,11 @@ class LuaInstance : public InstanceScript
         void OnPlayerDeath(Player* pVictim, Unit* pKiller)
         {
             CHECK_BINDING_ACQUIRELOCK
-                sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_PLAYER_DEATH]);
-            sLuaMgr.PUSH_UINT(m_instanceId);
-            sLuaMgr.PushUnit(pVictim);
-            sLuaMgr.PushUnit(pKiller);
-            sLuaMgr.ExecuteCall(3);
+                LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_PLAYER_DEATH]);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pVictim);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pKiller);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             RELEASE_LOCK
         };
 
@@ -2467,31 +2386,31 @@ class LuaInstance : public InstanceScript
         void OnPlayerEnter(Player* pPlayer)
         {
             CHECK_BINDING_ACQUIRELOCK
-                sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_PLAYER_ENTER]);
-            sLuaMgr.PUSH_UINT(m_instanceId);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.ExecuteCall(2);
+                LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_PLAYER_ENTER]);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
             RELEASE_LOCK
         };
         void OnAreaTrigger(Player* pPlayer, uint32 uAreaId)
         {
             CHECK_BINDING_ACQUIRELOCK
-                sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_AREA_TRIGGER]);
-            sLuaMgr.PUSH_UINT(m_instanceId);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PUSH_UINT(uAreaId);
-            sLuaMgr.ExecuteCall(3);
+                LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_AREA_TRIGGER]);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(uAreaId);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             RELEASE_LOCK
         };
         void OnZoneChange(Player* pPlayer, uint32 uNewZone, uint32 uOldZone)
         {
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_ZONE_CHANGE]);
-            sLuaMgr.PUSH_UINT(m_instanceId);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.PUSH_UINT(uNewZone);
-            sLuaMgr.PUSH_UINT(uOldZone);
-            sLuaMgr.ExecuteCall(4);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_ZONE_CHANGE]);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(uNewZone);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(uOldZone);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(4);
             RELEASE_LOCK
         };
 
@@ -2499,42 +2418,42 @@ class LuaInstance : public InstanceScript
         void OnCreatureDeath(Creature* pVictim, Unit* pKiller)
         {
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_CREATURE_DEATH]);
-            sLuaMgr.PUSH_UINT(m_instanceId);
-            sLuaMgr.PushUnit(pVictim);
-            sLuaMgr.PushUnit(pKiller);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_CREATURE_DEATH]);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pVictim);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pKiller);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             RELEASE_LOCK
         };
 
         void OnCreaturePushToWorld(Creature* pCreature)
         {
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_CREATURE_PUSH]);
-            sLuaMgr.PUSH_UINT(m_instanceId);
-            sLuaMgr.PushUnit(pCreature);
-            sLuaMgr.ExecuteCall(2);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_CREATURE_PUSH]);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pCreature);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
             RELEASE_LOCK
         };
 
         void OnGameObjectActivate(GameObject* pGameObject, Player* pPlayer)
         {
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_GO_ACTIVATE]);
-            sLuaMgr.PUSH_UINT(m_instanceId);
-            sLuaMgr.PushGo(pGameObject);
-            sLuaMgr.PushUnit(pPlayer);
-            sLuaMgr.ExecuteCall(3);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_GO_ACTIVATE]);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+            LuaGlobal::instance()->luaEngine()->PushGo(pGameObject);
+            LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
             RELEASE_LOCK
         };
 
         void OnGameObjectPushToWorld(GameObject* pGameObject)
         {
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_GO_PUSH]);
-            sLuaMgr.PUSH_UINT(m_instanceId);
-            sLuaMgr.PushGo(pGameObject);
-            sLuaMgr.ExecuteCall(2);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ON_GO_PUSH]);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+            LuaGlobal::instance()->luaEngine()->PushGo(pGameObject);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(2);
             RELEASE_LOCK
         };
 
@@ -2542,22 +2461,22 @@ class LuaInstance : public InstanceScript
         void OnLoad()
         {
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ONLOAD]);
-            sLuaMgr.PUSH_UINT(m_instanceId);
-            sLuaMgr.ExecuteCall(1);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_ONLOAD]);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
             RELEASE_LOCK
         };
 
         void Destroy()
         {
             CHECK_BINDING_ACQUIRELOCK
-            sLuaMgr.BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_DESTROY]);
-            sLuaMgr.PUSH_UINT(m_instanceId);
-            sLuaMgr.ExecuteCall(1);
+            LuaGlobal::instance()->luaEngine()->BeginCall(m_binding->m_functionReferences[INSTANCE_EVENT_DESTROY]);
+            LuaGlobal::instance()->luaEngine()->PUSH_UINT(m_instanceId);
+            LuaGlobal::instance()->luaEngine()->ExecuteCall(1);
             RELEASE_LOCK
 
             typedef std::unordered_map<uint32, LuaInstance*> IMAP;
-            IMAP& iMap = sLuaMgr.getLuInstanceMap();
+            IMAP& iMap = LuaGlobal::instance()->luaEngine()->getLuInstanceMap();
             for (IMAP::iterator itr = iMap.begin(); itr != iMap.end(); ++itr)
             {
                 if (itr->second == this)
@@ -2579,11 +2498,11 @@ CreatureAIScript* CreateLuaCreature(Creature* src)
     if (src != nullptr)
     {
         uint32 id = src->GetEntry();
-        LuaObjectBinding* pBinding = sLuaMgr.getUnitBinding(id);
+        LuaObjectBinding* pBinding = LuaGlobal::instance()->luaEngine()->getUnitBinding(id);
         if (pBinding != nullptr)
         {
             typedef std::multimap<uint32, LuaCreature*> CRCMAP;
-            CRCMAP& cMap = sLuaMgr.getLuCreatureMap();
+            CRCMAP& cMap = LuaGlobal::instance()->luaEngine()->getLuCreatureMap();
             script = new LuaCreature(src);
             cMap.insert(std::make_pair(id, script));
             script->m_binding = pBinding;
@@ -2599,11 +2518,11 @@ GameObjectAIScript* CreateLuaGameObjectScript(GameObject* src)
     {
         uint32 id = src->GetGameObjectProperties()->entry;
         LuaObjectBinding* pBinding = nullptr;
-        pBinding = sLuaMgr.getGameObjectBinding(id);
+        pBinding = LuaGlobal::instance()->luaEngine()->getGameObjectBinding(id);
         if (pBinding != nullptr)
         {
             typedef std::multimap<uint32, LuaGameObjectScript*> GMAP;
-            GMAP& gMap = sLuaMgr.getLuGameObjectMap();
+            GMAP& gMap = LuaGlobal::instance()->luaEngine()->getLuGameObjectMap();
             script = new LuaGameObjectScript(src);
             gMap.insert(std::make_pair(id, script));
             script->m_binding = pBinding;
@@ -2615,11 +2534,11 @@ GameObjectAIScript* CreateLuaGameObjectScript(GameObject* src)
 QuestScript* CreateLuaQuestScript(uint32 id)
 {
     LuaQuest* pLua = nullptr;
-    LuaObjectBinding* pBinding = sLuaMgr.getQuestBinding(id);
+    LuaObjectBinding* pBinding = LuaGlobal::instance()->luaEngine()->getQuestBinding(id);
     if (pBinding != nullptr)
     {
         typedef std::unordered_map<uint32, LuaQuest*> QMAP;
-        QMAP& qMap = sLuaMgr.getLuQuestMap();
+        QMAP& qMap = LuaGlobal::instance()->luaEngine()->getLuQuestMap();
         QMAP::iterator itr = qMap.find(id);
         if (itr != qMap.end())
         {
@@ -2646,11 +2565,11 @@ InstanceScript* CreateLuaInstance(MapMgr* pMapMgr)
 {
     LuaInstance* pLua = nullptr;
     uint32 id = pMapMgr->GetMapId();
-    LuaObjectBinding* pBinding = sLuaMgr.getInstanceBinding(id);
+    LuaObjectBinding* pBinding = LuaGlobal::instance()->luaEngine()->getInstanceBinding(id);
     if (pBinding != nullptr)
     {
         typedef std::unordered_map<uint32, LuaInstance*> IMAP;
-        IMAP& iMap = sLuaMgr.getLuInstanceMap();
+        IMAP& iMap = LuaGlobal::instance()->luaEngine()->getLuInstanceMap();
         IMAP::iterator itr = iMap.find(id);
         if (itr != iMap.end())
         {
@@ -2676,11 +2595,11 @@ InstanceScript* CreateLuaInstance(MapMgr* pMapMgr)
 Arcemu::Gossip::Script* CreateLuaUnitGossipScript(uint32 id)
 {
     LuaGossip* pLua = nullptr;
-    LuaObjectBinding* pBinding = sLuaMgr.getLuaUnitGossipBinding(id);
+    LuaObjectBinding* pBinding = LuaGlobal::instance()->luaEngine()->getLuaUnitGossipBinding(id);
     if (pBinding != nullptr)
     {
         typedef std::unordered_map<uint32, LuaGossip*> GMAP;
-        GMAP& gMap = sLuaMgr.getUnitGossipInterfaceMap();
+        GMAP& gMap = LuaGlobal::instance()->luaEngine()->getUnitGossipInterfaceMap();
         GMAP::iterator itr = gMap.find(id);
         if (itr != gMap.end())
         {
@@ -2705,11 +2624,11 @@ Arcemu::Gossip::Script* CreateLuaUnitGossipScript(uint32 id)
 Arcemu::Gossip::Script* CreateLuaItemGossipScript(uint32 id)
 {
     LuaGossip* pLua = nullptr;
-    LuaObjectBinding* pBinding = sLuaMgr.getLuaItemGossipBinding(id);
+    LuaObjectBinding* pBinding = LuaGlobal::instance()->luaEngine()->getLuaItemGossipBinding(id);
     if (pBinding != nullptr)
     {
         typedef std::unordered_map<uint32, LuaGossip*> GMAP;
-        GMAP& gMap = sLuaMgr.getItemGossipInterfaceMap();
+        GMAP& gMap = LuaGlobal::instance()->luaEngine()->getItemGossipInterfaceMap();
         GMAP::iterator itr = gMap.find(id);
         if (itr != gMap.end())
         {
@@ -2735,11 +2654,11 @@ Arcemu::Gossip::Script* CreateLuaItemGossipScript(uint32 id)
 Arcemu::Gossip::Script* CreateLuaGOGossipScript(uint32 id)
 {
     LuaGossip* pLua = nullptr;
-    LuaObjectBinding* pBinding = g_luaMgr.getLuaGOGossipBinding(id);
+    LuaObjectBinding* pBinding = LuaGlobal::instance()->luaEngine()->getLuaGOGossipBinding(id);
     if (pBinding != nullptr)
     {
         typedef std::unordered_map<uint32, LuaGossip*> GMAP;
-        GMAP& gMap = sLuaMgr.getGameObjectGossipInterfaceMap();
+        GMAP& gMap = LuaGlobal::instance()->luaEngine()->getGameObjectGossipInterfaceMap();
         GMAP::iterator itr = gMap.find(id);
         if (itr != gMap.end())
         {
@@ -2774,13 +2693,13 @@ void LuaEngine::Startup()
     for (LuaObjectBindingMap::iterator itr = m_unitBinding.begin(); itr != m_unitBinding.end(); ++itr)
     {
         m_scriptMgr->register_creature_script(itr->first, CreateLuaCreature);
-        sLuaMgr.getLuCreatureMap().insert(std::make_pair(itr->first, (LuaCreature*)nullptr));
+        LuaGlobal::instance()->luaEngine()->getLuCreatureMap().insert(std::make_pair(itr->first, (LuaCreature*)nullptr));
     }
 
     for (LuaObjectBindingMap::iterator itr = m_gameobjectBinding.begin(); itr != m_gameobjectBinding.end(); ++itr)
     {
         m_scriptMgr->register_gameobject_script(itr->first, CreateLuaGameObjectScript);
-        sLuaMgr.getLuGameObjectMap().insert(std::make_pair(itr->first, (LuaGameObjectScript*)nullptr));
+        LuaGlobal::instance()->luaEngine()->getLuGameObjectMap().insert(std::make_pair(itr->first, (LuaGameObjectScript*)nullptr));
     }
 
     for (LuaObjectBindingMap::iterator itr = m_questBinding.begin(); itr != m_questBinding.end(); ++itr)
@@ -2789,14 +2708,14 @@ void LuaEngine::Startup()
         if (qs != nullptr)
         {
             m_scriptMgr->register_quest_script(itr->first, qs);
-            sLuaMgr.getLuQuestMap().insert(std::make_pair(itr->first, (LuaQuest*)nullptr));
+            LuaGlobal::instance()->luaEngine()->getLuQuestMap().insert(std::make_pair(itr->first, (LuaQuest*)nullptr));
         }
     }
 
     for (LuaObjectBindingMap::iterator itr = m_instanceBinding.begin(); itr != m_instanceBinding.end(); ++itr)
     {
         m_scriptMgr->register_instance_script(itr->first, CreateLuaInstance);
-        sLuaMgr.getLuInstanceMap().insert(std::make_pair(itr->first, (LuaInstance*)nullptr));
+        LuaGlobal::instance()->luaEngine()->getLuInstanceMap().insert(std::make_pair(itr->first, (LuaInstance*)nullptr));
     }
 
     for (LuaObjectBindingMap::iterator itr = m_unit_gossipBinding.begin(); itr != m_unit_gossipBinding.end(); ++itr)
@@ -2805,7 +2724,7 @@ void LuaEngine::Startup()
         if (gs != nullptr)
         {
             m_scriptMgr->register_creature_gossip(itr->first, gs);
-            sLuaMgr.getUnitGossipInterfaceMap().insert(std::make_pair(itr->first, (LuaGossip*)nullptr));
+            LuaGlobal::instance()->luaEngine()->getUnitGossipInterfaceMap().insert(std::make_pair(itr->first, (LuaGossip*)nullptr));
         }
     }
 
@@ -2815,7 +2734,7 @@ void LuaEngine::Startup()
         if (gs != nullptr)
         {
             m_scriptMgr->register_item_gossip(itr->first, gs);
-            sLuaMgr.getItemGossipInterfaceMap().insert(std::make_pair(itr->first, (LuaGossip*)nullptr));
+            LuaGlobal::instance()->luaEngine()->getItemGossipInterfaceMap().insert(std::make_pair(itr->first, (LuaGossip*)nullptr));
         }
     }
 
@@ -2825,7 +2744,7 @@ void LuaEngine::Startup()
         if (gs != nullptr)
         {
             m_scriptMgr->register_go_gossip(itr->first, gs);
-            sLuaMgr.getGameObjectGossipInterfaceMap().insert(std::make_pair(itr->first, (LuaGossip*)nullptr));
+            LuaGlobal::instance()->luaEngine()->getGameObjectGossipInterfaceMap().insert(std::make_pair(itr->first, (LuaGossip*)nullptr));
         }
     }
 
@@ -2864,12 +2783,12 @@ void LuaEngine::Startup()
     RegisterHook(SERVER_HOOK_EVENT_ON_AURA_REMOVE, (void*)LuaHookOnAuraRemove)
     RegisterHook(SERVER_HOOK_EVENT_ON_RESURRECT, (void*)LuaHookOnResurrect)
 
-    for (std::map<uint32, uint16>::iterator itr = m_luaDummySpells.begin(); itr != m_luaDummySpells.end(); ++itr)
+    for (std::map<uint32, uint16>::iterator itr = LuaGlobal::instance()->m_luaDummySpells.begin(); itr != LuaGlobal::instance()->m_luaDummySpells.end(); ++itr)
     {
-        if (find(sLuaMgr.HookInfo.dummyHooks.begin(), sLuaMgr.HookInfo.dummyHooks.end(), itr->first) == sLuaMgr.HookInfo.dummyHooks.end())
+        if (std::find(LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.begin(), LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.end(), itr->first) == LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.end())
         {
             m_scriptMgr->register_dummy_spell(itr->first, &LuaOnDummySpell);
-            sLuaMgr.HookInfo.dummyHooks.push_back(itr->first);
+            LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.push_back(itr->first);
         }
     }
 }
@@ -2951,7 +2870,7 @@ void LuaEngine::RegisterEvent(uint8 regtype, uint32 id, uint32 evt, uint16 funct
         {
             if (evt < NUM_SERVER_HOOKS)
             {
-                EventAsToFuncName[evt].push_back(functionRef);
+                LuaGlobal::instance()->EventAsToFuncName[evt].push_back(functionRef);
             }
         }
         break;
@@ -2959,7 +2878,7 @@ void LuaEngine::RegisterEvent(uint8 regtype, uint32 id, uint32 evt, uint16 funct
         {
             if (id)
             {
-                m_luaDummySpells.insert(std::pair<uint32, uint16>(id, functionRef));
+                LuaGlobal::instance()->m_luaDummySpells.insert(std::pair<uint32, uint16>(id, functionRef));
             }
         }
         break;
@@ -3143,18 +3062,18 @@ void LuaEngine::Unload()
     //Serv hooks : had forgotten these.
     for (int i = 0; i < NUM_SERVER_HOOKS; ++i)
     {
-        std::vector<uint16>& next = EventAsToFuncName[i];
+        std::vector<uint16>& next = LuaGlobal::instance()->EventAsToFuncName[i];
         for (std::vector<uint16>::iterator itr = next.begin(); itr != next.end(); ++itr)
         {
             luaL_unref(lu, LUA_REGISTRYINDEX, (*itr));
         }
         next.clear();
     }
-    for (std::map<uint32, uint16>::iterator itr = m_luaDummySpells.begin(); itr != m_luaDummySpells.end(); ++itr)
+    for (std::map<uint32, uint16>::iterator itr = LuaGlobal::instance()->m_luaDummySpells.begin(); itr != LuaGlobal::instance()->m_luaDummySpells.end(); ++itr)
     {
         luaL_unref(lu, LUA_REGISTRYINDEX, itr->second);
     }
-    m_luaDummySpells.clear();
+    LuaGlobal::instance()->m_luaDummySpells.clear();
     for (std::set<int>::iterator itr = m_pendingThreads.begin(); itr != m_pendingThreads.end(); ++itr)
     {
         luaL_unref(lu, LUA_REGISTRYINDEX, (*itr));
@@ -3175,7 +3094,7 @@ void LuaEngine::Restart()
     for (LuaObjectBindingMap::iterator itr = m_unitBinding.begin(); itr != m_unitBinding.end(); ++itr)
     {
         typedef std::multimap<uint32, LuaCreature*> CMAP;
-        CMAP& cMap = sLuaMgr.getLuCreatureMap();
+        CMAP& cMap = LuaGlobal::instance()->luaEngine()->getLuCreatureMap();
         CMAP::iterator it = cMap.find(itr->first);
         CMAP::iterator itend = cMap.upper_bound(itr->first);
         if (it == cMap.end())
@@ -3197,7 +3116,7 @@ void LuaEngine::Restart()
     for (LuaObjectBindingMap::iterator itr = m_gameobjectBinding.begin(); itr != m_gameobjectBinding.end(); ++itr)
     {
         typedef std::multimap<uint32, LuaGameObjectScript*> GMAP;
-        GMAP& gMap = sLuaMgr.getLuGameObjectMap();
+        GMAP& gMap = LuaGlobal::instance()->luaEngine()->getLuGameObjectMap();
         GMAP::iterator it = gMap.find(itr->first);
         GMAP::iterator itend = gMap.upper_bound(itr->first);
         if (it == gMap.end())
@@ -3219,7 +3138,7 @@ void LuaEngine::Restart()
     for (LuaObjectBindingMap::iterator itr = m_questBinding.begin(); itr != m_questBinding.end(); ++itr)
     {
         typedef std::unordered_map<uint32, LuaQuest*> QMAP;
-        QMAP& qMap = sLuaMgr.getLuQuestMap();
+        QMAP& qMap = LuaGlobal::instance()->luaEngine()->getLuQuestMap();
         QMAP::iterator it = qMap.find(itr->first);
         if (it == qMap.end())
         {
@@ -3238,7 +3157,7 @@ void LuaEngine::Restart()
     for (LuaObjectBindingMap::iterator itr = m_instanceBinding.begin(); itr != m_instanceBinding.end(); ++itr)
     {
         typedef std::unordered_map<uint32, LuaInstance*> IMAP;
-        IMAP& iMap = sLuaMgr.getLuInstanceMap();
+        IMAP& iMap = LuaGlobal::instance()->luaEngine()->getLuInstanceMap();
         IMAP::iterator it = iMap.find(itr->first);
         if (it == iMap.end())
         {
@@ -3256,7 +3175,7 @@ void LuaEngine::Restart()
     for (LuaObjectBindingMap::iterator itr = this->m_unit_gossipBinding.begin(); itr != m_unit_gossipBinding.end(); ++itr)
     {
         typedef std::unordered_map<uint32, LuaGossip*> GMAP;
-        GMAP& gMap = sLuaMgr.getUnitGossipInterfaceMap();
+        GMAP& gMap = LuaGlobal::instance()->luaEngine()->getUnitGossipInterfaceMap();
         GMAP::iterator it = gMap.find(itr->first);
         if (it == gMap.end())
         {
@@ -3279,7 +3198,7 @@ void LuaEngine::Restart()
     for (LuaObjectBindingMap::iterator itr = this->m_item_gossipBinding.begin(); itr != m_item_gossipBinding.end(); ++itr)
     {
         typedef std::unordered_map<uint32, LuaGossip*> GMAP;
-        GMAP& gMap = sLuaMgr.getItemGossipInterfaceMap();
+        GMAP& gMap = LuaGlobal::instance()->luaEngine()->getItemGossipInterfaceMap();
         GMAP::iterator it = gMap.find(itr->first);
         if (it == gMap.end())
         {
@@ -3302,7 +3221,7 @@ void LuaEngine::Restart()
     for (LuaObjectBindingMap::iterator itr = this->m_go_gossipBinding.begin(); itr != m_go_gossipBinding.end(); ++itr)
     {
         typedef std::unordered_map<uint32, LuaGossip*> GMAP;
-        GMAP& gMap = sLuaMgr.getGameObjectGossipInterfaceMap();
+        GMAP& gMap = LuaGlobal::instance()->luaEngine()->getGameObjectGossipInterfaceMap();
         GMAP::iterator it = gMap.find(itr->first);
         if (it == gMap.end())
         {
@@ -3358,20 +3277,20 @@ void LuaEngine::Restart()
     RegisterHook(SERVER_HOOK_EVENT_ON_AURA_REMOVE, (void*)LuaHookOnAuraRemove)
     RegisterHook(SERVER_HOOK_EVENT_ON_RESURRECT, (void*)LuaHookOnResurrect)
 
-    for (std::map<uint32, uint16>::iterator itr = m_luaDummySpells.begin(); itr != m_luaDummySpells.end(); ++itr)
+    for (std::map<uint32, uint16>::iterator itr = LuaGlobal::instance()->m_luaDummySpells.begin(); itr != LuaGlobal::instance()->m_luaDummySpells.end(); ++itr)
     {
-        if (find(sLuaMgr.HookInfo.dummyHooks.begin(), sLuaMgr.HookInfo.dummyHooks.end(), itr->first) == sLuaMgr.HookInfo.dummyHooks.end())
+        if (std::find(LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.begin(), LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.end(), itr->first) == LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.end())
         {
             m_scriptMgr->register_dummy_spell(itr->first, &LuaOnDummySpell);
-            sLuaMgr.HookInfo.dummyHooks.push_back(itr->first);
+            LuaGlobal::instance()->luaEngine()->HookInfo.dummyHooks.push_back(itr->first);
         }
     }
     RELEASE_LOCK
     getcoLock().Release();
 
     //hyper: do OnSpawns for spawned creatures.
-    std::vector<uint32> temp = OnLoadInfo;
-    OnLoadInfo.clear();
+    std::vector<uint32> temp = LuaGlobal::instance()->m_onLoadInfo;
+    LuaGlobal::instance()->m_onLoadInfo.clear();
     for (std::vector<uint32>::iterator itr = temp.begin(); itr != temp.end(); itr += 3)
     {
         //*itr = mapid; *(itr+1) = iid; *(itr+2) = lowguid
@@ -3434,61 +3353,6 @@ void LuaEngine::ResumeLuaThread(int ref)
     }
     getcoLock().Release();
 }
-
-
-/************************************************************************/
-/* SCRIPT FUNCTION IMPLEMENTATION                                       */
-/************************************************************************/
-
-#define TEST_UNIT() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsCreature()) { return 0; }
-#define TEST_UNIT_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsCreature()) { lua_pushboolean(L,0); return 1; }
-
-#define TEST_PLAYER() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsPlayer()) { return 0; }
-#define TEST_PLAYER_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsPlayer()) { lua_pushboolean(L,0); return 1; }
-
-#define TEST_UNITPLAYER() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsUnit()) { return 0; }
-#define TEST_UNITPLAYER_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsUnit()) { lua_pushboolean(L,0); return 1; }
-
-#define TEST_GO() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsGameObject()) { return 0; }
-#define TEST_GO_RET() if(ptr == nullptr || !ptr->IsInWorld() || !ptr->IsGameObject()) { lua_pushboolean(L,0); return 1; }
-
-#define RET_NIL( ){ lua_pushnil(L); return 1; }
-#define RET_BOOL(exp) { (exp) ? lua_pushboolean(L,1) : lua_pushboolean(L,0); return 1; }
-#define RET_STRING(str) { lua_pushstring(L,(str)); return 1; }
-#define RET_NUMBER(number) { lua_pushnumber(L,(number)); return 1; }
-#define RET_INT(integer) { lua_pushinteger(L,(integer)); return 1; }
-
-// Simplicity macros.
-#define CHECK_UNIT(L,narg) sLuaMgr.CheckUnit(L,narg)
-#define CHECK_PLAYER(L,narg) static_cast<Player*>(CHECK_UNIT(L,narg))
-#define CHECK_GO(L,narg) sLuaMgr.CheckGo(L,narg)
-#define CHECK_ITEM(L,narg) sLuaMgr.CheckItem(L,narg)
-#define CHECK_PACKET(L,narg) sLuaMgr.CheckPacket(L,narg)
-#define CHECK_GUID(L, narg) sLuaMgr.CheckGuid(L,narg)
-#define CHECK_OBJECT(L, narg) sLuaMgr.CheckObject(L,narg)
-#define CHECK_TAXIPATH(L, narg) sLuaMgr.CheckTaxiPath(L,narg)
-#define CHECK_SPELL(L, narg) sLuaMgr.CheckSpell(L,narg)
-#define CHECK_AURA(L, narg) sLuaMgr.CheckAura(L,narg)
-
-//Its coming soon ^.^
-//#define CHECK_SPELL(L,narg) ArcLuna<Spell>::check(L),(narg))
-//This is used alot when checking for coords but Lua handles only doubles.
-#define CHECK_FLOAT(L,narg) (lua_isnoneornil(L,(narg)) ) ? 0.00f : (float)luaL_checknumber(L,(narg));
-#define CHECK_ULONG(L,narg) (uint32)luaL_checknumber((L),(narg))
-#define CHECK_USHORT(L, narg) (uint16)luaL_checkinteger((L),(narg))
-#define CHECK_BOOL(L,narg) sLuaMgr.CheckBool(L,narg)
-#define CHECK_UINT8( L, narg ) static_cast< uint8 >( luaL_checkinteger( ( L ), ( narg ) ) )
-
-#define PUSH_UNIT(L, unit) sLuaMgr.PushUnit(static_cast<Unit*>(unit),L)
-#define PUSH_GO(L, go) sLuaMgr.PushGo(static_cast<GameObject*>(go),L)
-#define PUSH_PACKET(L,pack) sLuaMgr.PushPacket(pack,L)
-#define PUSH_ITEM(L,item) sLuaMgr.PushItem(static_cast<Item*>(item),L)
-#define PUSH_GUID(L, obj) sLuaMgr.PushGuid(obj,L)
-#define PUSH_TAXIPATH(L, tp) sLuaMgr.PushTaxiPath(tp,L)
-#define PUSH_SPELL(L, sp) sLuaMgr.PushSpell(sp,L)
-#define PUSH_SQLFIELD(L, field) sLuaMgr.PushSqlField(field,L)
-#define PUSH_SQLRESULT(L, res) sLuaMgr.PushSqlResult(res,L)
-#define PUSH_AURA(L, aura) sLuaMgr.PushAura(aura,L)
 
 //I know its not a good idea to do it like that BUT it is the easiest way. I will make it better in steps:
 #include "LUAFunctions.h"

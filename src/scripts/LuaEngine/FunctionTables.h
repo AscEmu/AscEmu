@@ -645,7 +645,7 @@ RegType<GameObject> GOMethods[] =
 	{ "CustomAnimate", &LuaGameObject::CustomAnimate },
 	{ "GetLocation", &LuaGameObject::GetLocation },
 	{ "GetSpawnLocation", &LuaGameObject::GetSpawnLocation },
-	{ "GetObject", &LuaGameObject::GetObject },
+	{ "GetObject", &LuaGameObject::GetWoWObject },
 	{ "GetClosestPlayer", &LuaGameObject::GetClosestPlayer },
 	{ "CreateLuaEvent", &LuaGameObject::RegisterEvent },
 	{ "RemoveEvents", &LuaGameObject::RemoveEvents },

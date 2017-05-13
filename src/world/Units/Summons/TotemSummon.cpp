@@ -142,9 +142,7 @@ void TotemSummon::SetupSpells()
 
         if (!TotemSpell->HasEffect(SPELL_AURA_PERIODIC_TRIGGER_SPELL))
         {
-            targets.m_destX = GetPositionX();
-            targets.m_destY = GetPositionY();
-            targets.m_destZ = GetPositionZ();
+            targets.setDestination(GetPosition());
             targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
         }
         pSpell->prepare(&targets);

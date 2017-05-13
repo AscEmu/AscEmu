@@ -559,7 +559,7 @@ class VHCreatureAI : public MoonScriptCreatureAI
                             _unit->CastSpell(target, m_spells[i].info, m_spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), m_spells[i].info, m_spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), m_spells[i].info, m_spells[i].instant);
                             break;
                         }
 

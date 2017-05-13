@@ -84,149 +84,6 @@ bool CanAttackCreatureType(uint32 TargetTypeMask, uint32 type)
         return true;
 }
 
-void SpellCastTargets::read(WorldPacket & data, uint64 caster)
-{
-    m_unitTarget = m_itemTarget = 0;
-    m_srcX = m_srcY = m_srcZ = m_destX = m_destY = m_destZ = 0;
-    m_strTarget = "";
-
-    data >> m_targetMask;
-    data >> m_targetMaskExtended;
-    WoWGuid guid;
-
-    if (m_targetMask == TARGET_FLAG_SELF)
-    {
-        switch (*(uint32*)((data.contents()) + 1)) // Spell ID
-        {
-            case 14285: // Arcane Shot (Rank 6)
-            case 14286: // Arcane Shot (Rank 7)
-            case 14287: // Arcane Shot (Rank 8)
-            case 27019: // Arcane Shot (Rank 9)
-            case 49044: // Arcane Shot (Rank 10)
-            case 49045: // Arcane Shot (Rank 11)
-            case 15407: // Mind Flay (Rank 1)
-            case 17311: // Mind Flay (Rank 2)
-            case 17312: // Mind Flay (Rank 3)
-            case 17313: // Mind Flay (Rank 4)
-            case 17314: // Mind Flay (Rank 5)
-            case 18807: // Mind Flay (Rank 6)
-            case 25387: // Mind Flay (Rank 7)
-            case 48155: // Mind Flay (Rank 8)
-            case 48156: // Mind Flay (Rank 9)
-            {
-                m_targetMask = TARGET_FLAG_UNIT;
-                Player* plr = objmgr.GetPlayer((uint32)caster);
-                if (plr != NULL)
-                    m_unitTarget = plr->GetTargetGUID();
-            }
-            break;
-            default:
-                m_unitTarget = caster;
-                break;
-        }
-        return;
-    }
-
-    if (m_targetMask & (TARGET_FLAG_OBJECT | TARGET_FLAG_UNIT | TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2))
-    {
-        data >> guid;
-        m_unitTarget = guid.GetOldGuid();
-    }
-
-    if (m_targetMask & (TARGET_FLAG_ITEM | TARGET_FLAG_TRADE_ITEM))
-    {
-        data >> guid;
-        m_itemTarget = guid.GetOldGuid();
-    }
-
-    if (m_targetMask & TARGET_FLAG_SOURCE_LOCATION)
-    {
-        WoWGuid guid;
-
-        data >> guid;
-        unkuint64_1 = guid.GetOldGuid();
-
-        data >> m_srcX;
-        data >> m_srcY;
-        data >> m_srcZ;
-
-        if (!(m_targetMask & TARGET_FLAG_DEST_LOCATION))
-        {
-            m_destX = m_srcX;
-            m_destY = m_srcY;
-            m_destZ = m_srcZ;
-        }
-    }
-
-    if (m_targetMask & TARGET_FLAG_DEST_LOCATION)
-    {
-        WoWGuid guid;
-        data >> guid;
-        unkuint64_2 = guid.GetOldGuid();
-
-        data >> m_destX;
-        data >> m_destY;
-        data >> m_destZ;
-
-        if (!(m_targetMask & TARGET_FLAG_SOURCE_LOCATION))
-        {
-            m_srcX = m_destX;
-            m_srcY = m_destY;
-            m_srcZ = m_destZ;
-        }
-    }
-
-    if (m_targetMask & TARGET_FLAG_STRING)
-    {
-        data >> m_strTarget;
-    }
-}
-
-void SpellCastTargets::write(WorldPacket & data)
-{
-    data << m_targetMask;
-    data << m_targetMaskExtended;
-
-    if (/*m_targetMask == TARGET_FLAG_SELF || */m_targetMask & (TARGET_FLAG_UNIT | TARGET_FLAG_CORPSE | TARGET_FLAG_CORPSE2 | TARGET_FLAG_OBJECT | TARGET_FLAG_GLYPH))
-        FastGUIDPack(data, m_unitTarget);
-
-    if (m_targetMask & (TARGET_FLAG_ITEM | TARGET_FLAG_TRADE_ITEM))
-        FastGUIDPack(data, m_itemTarget);
-
-    if (m_targetMask & TARGET_FLAG_SOURCE_LOCATION)
-    {
-        data << WoWGuid(unkuint64_1);
-        data << m_srcX;
-        data << m_srcY;
-        data << m_srcZ;
-    }
-
-    if (m_targetMask & TARGET_FLAG_DEST_LOCATION)
-    {
-        data << WoWGuid(unkuint64_2);
-        data << m_destX;
-        data << m_destY;
-        data << m_destZ;
-    }
-
-    if (m_targetMask & TARGET_FLAG_STRING)
-        data << m_strTarget.c_str();
-}
-
-bool SpellCastTargets::HasSrc()
-{
-    if (GetTargetMask() & TARGET_FLAG_SOURCE_LOCATION)
-        return true;
-    return false;
-}
-
-bool SpellCastTargets::HasDst()
-{
-    if (GetTargetMask() & TARGET_FLAG_DEST_LOCATION)
-        return true;
-    return false;
-}
-
 Spell::Spell(Object* Caster, SpellInfo* info, bool triggered, Aura* aur)
 {
     ARCEMU_ASSERT(Caster != NULL && info != NULL);
@@ -1310,9 +1167,7 @@ void Spell::castMe(bool check)
                 if (target != NULL)
                 {
                     m_targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
-                    m_targets.m_destX = target->GetPositionX();
-                    m_targets.m_destY = target->GetPositionY();
-                    m_targets.m_destZ = target->GetPositionZ();
+                    m_targets.setDestination(target->GetPosition());
                 }
             }
 
@@ -4045,7 +3900,7 @@ uint8 Spell::CanCast(bool tolerate)
     // Targeted Location Checks (AoE spells)
     if (m_targets.m_targetMask == TARGET_FLAG_DEST_LOCATION)
     {
-        if (!m_caster->isInRange(m_targets.m_destX, m_targets.m_destY, m_targets.m_destZ, (maxRange * maxRange)))
+        if (!m_caster->isInRange(m_targets.destination(), (maxRange * maxRange)))
             return SPELL_FAILED_OUT_OF_RANGE;
     }
 
@@ -6132,9 +5987,10 @@ void Spell::HandleCastEffects(uint64 guid, uint32 i)
 
         if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
         {
-            destx = m_targets.m_destX;
-            desty = m_targets.m_destY;
-            destz = m_targets.m_destZ;
+            auto destination = m_targets.destination();
+            destx = destination.x;
+            desty = destination.y;
+            destz = destination.z;
 
             dist = m_caster->CalcDistance(destx, desty, destz);
         }
@@ -6202,9 +6058,10 @@ void Spell::HandleModeratedTarget(uint64 guid)
 
         if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
         {
-            destx = m_targets.m_destX;
-            desty = m_targets.m_destY;
-            destz = m_targets.m_destZ;
+            auto destination = m_targets.destination();
+            destx = destination.x;
+            desty = destination.y;
+            destz = destination.z;
 
             dist = m_caster->CalcDistance(destx, desty, destz);
         }
@@ -6311,20 +6168,22 @@ void Spell::SpellEffectJumpTarget(uint32 i)
         y = rad * sinf(alpha) + unitTarget->GetPositionY();
         z = unitTarget->GetPositionZ();
     }
-    else if (m_targets.HasDstOrSrc())
+    else
     {
         //this can also jump to a point
-        if (m_targets.HasSrc())
+        if (m_targets.hasSource())
         {
-            x = m_targets.m_srcX;
-            y = m_targets.m_srcY;
-            z = m_targets.m_srcZ;
+            auto source = m_targets.source();
+            x = source.x;
+            y = source.y;
+            z = source.z;
         }
-        if (m_targets.HasDst())
+        if (m_targets.hasDestination())
         {
-            x = m_targets.m_destX;
-            y = m_targets.m_destY;
-            z = m_targets.m_destZ;
+            auto destination = m_targets.destination();
+            x = destination.x;
+            y = destination.y;
+            z = destination.z;
         }
     }
 
@@ -6371,15 +6230,17 @@ void Spell::SpellEffectJumpBehindTarget(uint32 i)
         //this can also jump to a point
         if (m_targets.m_targetMask & TARGET_FLAG_SOURCE_LOCATION)
         {
-            x = m_targets.m_srcX;
-            y = m_targets.m_srcY;
-            z = m_targets.m_srcZ;
+            auto source = m_targets.source();
+            x = source.x;
+            y = source.y;
+            z = source.z;
         }
         if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
         {
-            x = m_targets.m_destX;
-            y = m_targets.m_destY;
-            z = m_targets.m_destZ;
+            auto destination = m_targets.destination();
+            x = destination.x;
+            y = destination.y;
+            z = destination.z;
         }
 
         if (u_caster->GetAIInterface() != NULL)
@@ -6408,9 +6269,7 @@ void Spell::HandleTargetNoObject()
     }
 
     m_targets.m_targetMask |= TARGET_FLAG_DEST_LOCATION;
-    m_targets.m_destX = newx;
-    m_targets.m_destY = newy;
-    m_targets.m_destZ = newz;
+    m_targets.setDestination(LocationVector(newx, newy, newz));
 }
 
 //Logs if the spell doesn't exist, using Debug loglevel.

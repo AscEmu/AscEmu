@@ -20,6 +20,7 @@
 
 #ifndef _SPELL_H
 #define _SPELL_H
+#include "SpellCastTargets.h"
 #ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 
 #include "Spell/SpellInfo.hpp"
@@ -42,89 +43,6 @@ class Player;
 class Item;
 class Group;
 class Aura;
-
-inline bool TargetTypeCheck(Object* obj, uint32 ReqCreatureTypeMask)
-{
-    if (!ReqCreatureTypeMask)
-        return true;
-
-    if (obj->IsCreature())
-    {
-        CreatureProperties const* inf = static_cast< Creature* >(obj)->GetCreatureProperties();
-        if (!(1 << (inf->Type - 1) & ReqCreatureTypeMask))
-            return false;
-    }
-    else if (obj->IsPlayer() && !(UNIT_TYPE_HUMANOID_BIT & ReqCreatureTypeMask))
-        return false;
-    else
-        return false;//mg, how in the hack did we cast it on a GO ? But who cares ?
-
-    return true;
-}
-
-class SpellCastTargets
-{
-    public:
-        void read(WorldPacket & data, uint64 caster);
-        void write(WorldPacket & data);
-
-        SpellCastTargets() : m_targetMask(0), m_targetMaskExtended(0), m_unitTarget(0), m_itemTarget(0), m_srcX(0), m_srcY(0), m_srcZ(0),
-            m_destX(0), m_destY(0), m_destZ(0), unkuint64_1(0), unkuint64_2(0){}
-
-        SpellCastTargets(uint16 TargetMask, uint64 unitTarget, uint64 itemTarget, float srcX, float srcY,
-                         float srcZ, float destX, float destY, float destZ) : m_targetMask(TargetMask), m_targetMaskExtended(0), m_unitTarget(unitTarget),
-            m_itemTarget(itemTarget), m_srcX(srcX), m_srcY(srcY), m_srcZ(srcZ), m_destX(destX), m_destY(destY), m_destZ(destZ), unkuint64_1(0), unkuint64_2(0){}
-
-        SpellCastTargets(uint64 unitTarget) : m_targetMask(0x2), m_targetMaskExtended(0), m_unitTarget(unitTarget), m_itemTarget(0),
-            m_srcX(0), m_srcY(0), m_srcZ(0), m_destX(0), m_destY(0), m_destZ(0), unkuint64_1(0), unkuint64_2(0) {}
-
-        SpellCastTargets(WorldPacket & data, uint64 caster) : m_targetMask(0), m_targetMaskExtended(0), m_unitTarget(0), m_itemTarget(0), m_srcX(0), m_srcY(0), m_srcZ(0),
-            m_destX(0), m_destY(0), m_destZ(0), unkuint64_1(0), unkuint64_2(0)
-        {
-            read(data, caster);
-        }
-
-        SpellCastTargets & operator=(const SpellCastTargets & target)
-        {
-            m_unitTarget = target.m_unitTarget;
-            m_itemTarget = target.m_itemTarget;
-
-            m_srcX = target.m_srcX;
-            m_srcY = target.m_srcY;
-            m_srcZ = target.m_srcZ;
-
-            m_destX = target.m_destX;
-            m_destY = target.m_destY;
-            m_destZ = target.m_destZ;
-
-            m_strTarget = target.m_strTarget;
-
-            m_targetMask = target.m_targetMask;
-            m_targetMaskExtended = target.m_targetMaskExtended;
-
-            unkuint64_1 = target.unkuint64_1;
-            unkuint64_2 = target.unkuint64_2;
-            return *this;
-        }
-
-        ~SpellCastTargets() { m_strTarget.clear(); }
-        uint16 m_targetMask;
-        uint16 m_targetMaskExtended;            // this could be a 32 also
-        uint64 m_unitTarget;
-        uint64 m_itemTarget;
-
-        uint64 unkuint64_1;
-        float m_srcX, m_srcY, m_srcZ;
-        uint64 unkuint64_2;
-        float m_destX, m_destY, m_destZ;
-        std::string m_strTarget;
-
-        uint32 GetTargetMask() { return m_targetMask; }
-    bool HasSrc();
-
-    bool HasDst();
-        bool HasDstOrSrc() { return (HasSrc() || HasDst()); }
-};
 
 enum SpellState
 {

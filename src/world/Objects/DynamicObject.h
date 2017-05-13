@@ -37,10 +37,14 @@ typedef std::set<uint64> DynamicObjectList;
 
 class SERVER_DECL DynamicObject : public Object
 {
-    public:
+public:
+    // MIT Start
+    void Create(Unit* caster, Spell* pSpell, LocationVector lv, uint32 duration, float radius, uint32 type);
+    // MIT End
 
         DynamicObject(uint32 high, uint32 low);
         ~DynamicObject();
+
 
         void Create(Unit* caster, Spell* pSpell, float x, float y, float z, uint32 duration, float radius, uint32 type);
         void UpdateTargets();

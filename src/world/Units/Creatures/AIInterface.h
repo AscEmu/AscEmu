@@ -44,7 +44,7 @@
 #ifdef ENABLE_CREATURE_DAZE
 #define CREATURE_SPELL_TO_DAZE 1604
 
-/// for the beginners this means 45 degrees 
+/// for the beginners this means 45 degrees
 #define CREATURE_DAZE_TRIGGER_ANGLE M_H_PI
 
 /// minimal level of the target player to daze, from 3.3.0
@@ -278,8 +278,8 @@ class SERVER_DECL AIInterface : public IUpdatable
         uint64 getUnitToFearGUID() { return m_UnitToFear; }
         Creature* getFormationLinkTarget();
         void setCreatureState(CreatureState state) { m_creatureState = state; }
-        
-        
+
+
 
         inline uint8 getCurrentAgent() { return static_cast<uint8>(m_aiCurrentAgent); }
         void setCurrentAgent(AI_Agent agent) { m_aiCurrentAgent = agent; }
@@ -314,7 +314,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         // Spell
         void CastSpell(Unit* caster, SpellInfo* spellInfo, SpellCastTargets targets);
         SpellInfo* getSpellEntry(uint32 spellId);
-        SpellCastTargets setSpellTargets(SpellInfo* spellInfo, Unit* target);
+        SpellCastTargets setSpellTargets(SpellInfo* spellInfo, Unit* target) const;
         AI_Spell* getSpell();
         void addSpellToList(AI_Spell* sp);
         ///\todo don't use this until i finish it !!
@@ -403,7 +403,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         inline bool GetAllowedToEnterCombat(void) { return m_AllowedToEnterCombat; }
 
         void CheckTarget(Unit* target);
-        
+
 
         // Movement
         bool m_canMove;
@@ -530,7 +530,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         Mutex m_aiTargetsLock;
         TargetMap m_aiTargets;
         AssistTargetSet m_assistTargets;
-        
+
         AI_Agent m_aiCurrentAgent;
 
         Unit* tauntedBy;        /// This mob will hit only tauntedBy mob.

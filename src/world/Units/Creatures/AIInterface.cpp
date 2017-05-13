@@ -828,12 +828,12 @@ void AIInterface::_UpdateCombat(uint32 p_time)
                         }
                         case TTYPE_SOURCE:
                         {
-                            m_Unit->CastSpellAoF(targets.m_srcX, targets.m_srcY, targets.m_srcZ, spellInfo, true);
+                            m_Unit->CastSpellAoF(targets.source(), spellInfo, true);
                             break;
                         }
                         case TTYPE_DESTINATION:
                         {
-                            m_Unit->CastSpellAoF(targets.m_destX, targets.m_destY, targets.m_destZ, spellInfo, true);
+                            m_Unit->CastSpellAoF(targets.destination(), spellInfo, true);
                             break;
                         }
                         default:
@@ -2675,14 +2675,13 @@ SpellInfo* AIInterface::getSpellEntry(uint32 spellId)
     return spellInfo;
 }
 
-SpellCastTargets AIInterface::setSpellTargets(SpellInfo* spellInfo, Unit* target)
+SpellCastTargets AIInterface::setSpellTargets(SpellInfo* spellInfo, Unit* target) const
 {
     SpellCastTargets targets;
     targets.m_unitTarget = target ? target->GetGUID() : 0;
     targets.m_itemTarget = 0;
-    targets.m_srcX = targets.m_destX = m_Unit->GetPositionX();
-    targets.m_srcY = targets.m_destY = m_Unit->GetPositionY();
-    targets.m_srcZ = targets.m_destZ = m_Unit->GetPositionZ();
+    targets.setSource(m_Unit->GetPosition());
+    targets.setDestination(m_Unit->GetPosition());
 
     if (m_nextSpell && m_nextSpell->spelltargetType == TTYPE_SINGLETARGET)
     {
@@ -2691,24 +2690,13 @@ SpellCastTargets AIInterface::setSpellTargets(SpellInfo* spellInfo, Unit* target
     else if (m_nextSpell && m_nextSpell->spelltargetType == TTYPE_SOURCE)
     {
         targets.m_targetMask = TARGET_FLAG_SOURCE_LOCATION;
-        //        targets.m_srcX = m_Unit->GetPositionX();
-        //        targets.m_srcY = m_Unit->GetPositionY();
-        //        targets.m_srcZ = m_Unit->GetPositionZ();
     }
     else if (m_nextSpell && m_nextSpell->spelltargetType == TTYPE_DESTINATION)
     {
         targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
-        if (target != NULL)
+        if (target)
         {
-            targets.m_destX = target->GetPositionX();
-            targets.m_destY = target->GetPositionY();
-            targets.m_destZ = target->GetPositionZ();
-        }
-        else
-        {
-            targets.m_destX = m_Unit->GetPositionX();
-            targets.m_destY = m_Unit->GetPositionY();
-            targets.m_destZ = m_Unit->GetPositionZ();
+            targets.setDestination(target->GetPosition());
         }
     }
     else if (m_nextSpell && m_nextSpell->spelltargetType == TTYPE_CASTER)

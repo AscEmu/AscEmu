@@ -29,6 +29,13 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellIsFlags.h"
 
+ // MIT Start
+void DynamicObject::Create(Unit* caster, Spell* spell, LocationVector lv, uint32 duration, float radius, uint32 type)
+{
+    Create(caster, spell, lv.x, lv.y, lv.z, duration, radius, type);
+}
+// MIT End
+
 DynamicObject::DynamicObject(uint32 high, uint32 low)
 {
     m_objectType |= TYPE_DYNAMICOBJECT;

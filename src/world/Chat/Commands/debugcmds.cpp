@@ -1156,12 +1156,8 @@ SpellCastTargets SetTargets(SpellInfo* sp, uint32 type, uint32 targettype, Unit*
     SpellCastTargets targets;
     targets.m_unitTarget = 0;
     targets.m_itemTarget = 0;
-    targets.m_srcX = 0;
-    targets.m_srcY = 0;
-    targets.m_srcZ = 0;
-    targets.m_destX = 0;
-    targets.m_destY = 0;
-    targets.m_destZ = 0;
+    targets.setSource(LocationVector(0, 0, 0));
+    targets.setDestination(LocationVector(0, 0, 0));
 
     if (targettype == TTYPE_SINGLETARGET)
     {
@@ -1171,16 +1167,12 @@ SpellCastTargets SetTargets(SpellInfo* sp, uint32 type, uint32 targettype, Unit*
     else if (targettype == TTYPE_SOURCE)
     {
         targets.m_targetMask = TARGET_FLAG_SOURCE_LOCATION;
-        targets.m_srcX = src->GetPositionX();
-        targets.m_srcY = src->GetPositionY();
-        targets.m_srcZ = src->GetPositionZ();
+        targets.setSource(src->GetPosition());
     }
     else if (targettype == TTYPE_DESTINATION)
     {
         targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
-        targets.m_destX = dst->GetPositionX();
-        targets.m_destY = dst->GetPositionY();
-        targets.m_destZ = dst->GetPositionZ();
+        targets.setDestination(dst->GetPosition());
     }
 
     return targets;

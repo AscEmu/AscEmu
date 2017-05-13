@@ -38,6 +38,7 @@ class SERVER_DECL LocationVector
     // MIT Start
     float distanceSquare(const LocationVector& comp) const;
     float distanceSquare(const float& X, const float& Y, const float& Z) const;
+    bool isSet() const;
     // MIT End
 
         // sqrt(dx * dx + dy * dy + dz * dz)

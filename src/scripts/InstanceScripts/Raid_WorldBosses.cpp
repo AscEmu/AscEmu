@@ -120,7 +120,7 @@ class EmerissAI : public CreatureAIScript
             if (_unit->GetHealthPct() > 0)
             {
                 _unit->CastSpell(mTarget, spells[6].info, spells[6].instant);
-                _unit->CastSpellAoF(mTarget->GetPositionX(), mTarget->GetPositionY(), mTarget->GetPositionZ(), spells[5].info, spells[5].instant);
+                _unit->CastSpellAoF(mTarget->GetPosition(), spells[5].info, spells[5].instant);
                 //When a player dies a Putrid Mushroom spawns at their corpse. This deals 600 Nature damage per second to any surrounding player.
             }
         }
@@ -188,7 +188,7 @@ class EmerissAI : public CreatureAIScript
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
                             case TARGET_DESTINATION:
-                                _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                                _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                                 break;
                         }
 
@@ -416,7 +416,7 @@ class TaerarAI : public CreatureAIScript
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
                             case TARGET_DESTINATION:
-                                _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                                _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                                 break;
                         }
 
@@ -547,7 +547,7 @@ class ShadeofTaerarAI : public CreatureAIScript
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
                             case TARGET_DESTINATION:
-                                _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                                _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                                 break;
                         }
 
@@ -695,12 +695,12 @@ class YsondreAI : public CreatureAIScript
             if (_unit->GetHealthPct() == 25 || _unit->GetHealthPct() == 50 || _unit->GetHealthPct() == 75)
             {
                 // Summon 6 druids
-                _unit->CastSpellAoF(_unit->GetAIInterface()->getNextTarget()->GetPositionX(), _unit->GetAIInterface()->getNextTarget()->GetPositionY(), _unit->GetAIInterface()->getNextTarget()->GetPositionZ(), spells[4].info, spells[4].instant);
-                _unit->CastSpellAoF(_unit->GetAIInterface()->getNextTarget()->GetPositionX(), _unit->GetAIInterface()->getNextTarget()->GetPositionY(), _unit->GetAIInterface()->getNextTarget()->GetPositionZ(), spells[4].info, spells[4].instant);
-                _unit->CastSpellAoF(_unit->GetAIInterface()->getNextTarget()->GetPositionX(), _unit->GetAIInterface()->getNextTarget()->GetPositionY(), _unit->GetAIInterface()->getNextTarget()->GetPositionZ(), spells[4].info, spells[4].instant);
-                _unit->CastSpellAoF(_unit->GetAIInterface()->getNextTarget()->GetPositionX(), _unit->GetAIInterface()->getNextTarget()->GetPositionY(), _unit->GetAIInterface()->getNextTarget()->GetPositionZ(), spells[4].info, spells[4].instant);
-                _unit->CastSpellAoF(_unit->GetAIInterface()->getNextTarget()->GetPositionX(), _unit->GetAIInterface()->getNextTarget()->GetPositionY(), _unit->GetAIInterface()->getNextTarget()->GetPositionZ(), spells[4].info, spells[4].instant);
-                _unit->CastSpellAoF(_unit->GetAIInterface()->getNextTarget()->GetPositionX(), _unit->GetAIInterface()->getNextTarget()->GetPositionY(), _unit->GetAIInterface()->getNextTarget()->GetPositionZ(), spells[4].info, spells[4].instant);
+                _unit->CastSpellAoF(_unit->GetAIInterface()->getNextTarget()->GetPosition(), spells[4].info, spells[4].instant);
+                _unit->CastSpellAoF(_unit->GetAIInterface()->getNextTarget()->GetPosition(), spells[4].info, spells[4].instant);
+                _unit->CastSpellAoF(_unit->GetAIInterface()->getNextTarget()->GetPosition(), spells[4].info, spells[4].instant);
+                _unit->CastSpellAoF(_unit->GetAIInterface()->getNextTarget()->GetPosition(), spells[4].info, spells[4].instant);
+                _unit->CastSpellAoF(_unit->GetAIInterface()->getNextTarget()->GetPosition(), spells[4].info, spells[4].instant);
+                _unit->CastSpellAoF(_unit->GetAIInterface()->getNextTarget()->GetPosition(), spells[4].info, spells[4].instant);
 
                 _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[4].speech.c_str());
             }
@@ -735,7 +735,7 @@ class YsondreAI : public CreatureAIScript
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
                             case TARGET_DESTINATION:
-                                _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                                _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                                 break;
                         }
 
@@ -855,7 +855,7 @@ class DementedDruidSpiritAI : public CreatureAIScript
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
                             case TARGET_DESTINATION:
-                                _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                                _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                                 break;
                         }
 
@@ -1028,7 +1028,7 @@ class LethonAI : public CreatureAIScript
             std::list<Player*>::iterator itr = mTargets.begin();
             for (; itr != mTargets.end(); ++itr)
             {
-                _unit->CastSpellAoF((*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ(), spells[4].info, spells[4].instant);
+                _unit->CastSpellAoF((*itr)->GetPosition(), spells[4].info, spells[4].instant);
             }
             _unit->SendChatMessage(CHAT_MSG_MONSTER_YELL, LANG_UNIVERSAL, spells[4].speech.c_str());
 
@@ -1061,7 +1061,7 @@ class LethonAI : public CreatureAIScript
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
                             case TARGET_DESTINATION:
-                                _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                                _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                                 break;
                         }
 
@@ -1391,7 +1391,7 @@ class KruulAI : public CreatureAIScript
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
                             case TARGET_DESTINATION:
-                                _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                                _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                                 break;
                         }
 
@@ -1641,7 +1641,7 @@ class KazzakAI : public CreatureAIScript
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
                             case TARGET_DESTINATION:
-                                _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                                _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                                 break;
                         }
 
@@ -1820,7 +1820,7 @@ class AzuregosAI : public CreatureAIScript
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
                             case TARGET_DESTINATION:
-                                _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                                _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                                 break;
                         }
 
@@ -2012,7 +2012,7 @@ class DoomwalkerAI : public CreatureAIScript
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
                             case TARGET_DESTINATION:
-                                _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                                _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                                 break;
                         }
 
@@ -2172,7 +2172,7 @@ class TeremusAI : public CreatureAIScript
                                 _unit->CastSpell(target, spells[i].info, spells[i].instant);
                                 break;
                             case TARGET_DESTINATION:
-                                _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                                _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                                 break;
                         }
 

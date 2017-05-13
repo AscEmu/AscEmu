@@ -583,8 +583,10 @@ void WorldSession::HandlePetCastSpell(WorldPacket& recvPacket)
         recvPacket >> missilepitch;
         recvPacket >> missilespeed;
 
-        float dx = targets.m_destX - targets.m_srcX;
-        float dy = targets.m_destY - targets.m_srcY;
+        auto destination = targets.destination();
+        auto source = targets.source();
+        auto dx = destination.x - source.x;
+        auto dy = destination.y - source.y;
 
         if ((missilepitch != M_PI / 4) && (missilepitch != -M_PI / 4)) //lets not divide by 0 lul
             traveltime = static_cast<uint32>((sqrtf(dx * dx + dy * dy) / (cosf(missilepitch) * missilespeed)) * 1000);

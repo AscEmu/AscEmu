@@ -10,7 +10,10 @@ project(LuaEngine CXX)
 
 #SRCS - contains the source files that compose this project.
 set(SRCS
-   LUAEngine.cpp 
+    GameobjectFunctions.cpp
+    LUAEngine.cpp
+    LuaGlobal.cpp
+    LuaHelpers.cpp
 )
 
 set(HEADERS
@@ -21,6 +24,9 @@ set(HEADERS
     ItemFunctions.h
     LUAEngine.h
     LUAFunctions.h
+    LuaGlobal.h
+    LuaHelpers.h
+    LuaMacros.h
     LuaSqlApi.h
     PacketFunctions.h
     SpellFunctions.h
@@ -29,6 +35,7 @@ set(HEADERS
     # Required for linker
     ../../world/Server/LazyTimer.cpp
     ../../world/Server/ServerState.cpp
+    ../../world/Spell/SpellCastTargets.cpp
 )
 
 include_directories(

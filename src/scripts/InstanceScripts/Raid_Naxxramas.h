@@ -1307,7 +1307,7 @@ class StickedSpewerAI : public CreatureAIScript
                             _unit->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
                     m_spellcheck[i] = false;
@@ -1410,7 +1410,7 @@ class SurgicalAssistantAI : public CreatureAIScript
                             _unit->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
                     m_spellcheck[i] = false;
@@ -1519,7 +1519,7 @@ class SludgeBelcherAI : public CreatureAIScript
                             _unit->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
                     m_spellcheck[i] = false;
@@ -1635,7 +1635,7 @@ class GrobbulusAI : public CreatureAIScript
                             _unit->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
                     m_spellcheck[i] = false;
@@ -1756,7 +1756,7 @@ class GluthAI : public CreatureAIScript
                             _unit->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
                     m_spellcheck[i] = false;
@@ -1860,7 +1860,7 @@ class BonyConstructAI : public CreatureAIScript
                             _unit->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
                     m_spellcheck[i] = false;
@@ -1963,7 +1963,7 @@ class DeathLordAI : public CreatureAIScript
                             _unit->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
                     m_spellcheck[i] = false;
@@ -2089,7 +2089,7 @@ class RazuviousAI : public CreatureAIScript
                             _unit->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
                     m_spellcheck[i] = false;
@@ -2243,7 +2243,7 @@ class KorthazzAI : public CreatureAIScript
                             _unit->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
                     m_spellcheck[i] = false;
@@ -2286,7 +2286,7 @@ class KorthazzAI : public CreatureAIScript
 */
 
 // Baron Rivendare AI
-#define CN_Baron_Rivendare_4H 30549 //4H not to confuse with Strat UD Side.. 
+#define CN_Baron_Rivendare_4H 30549 //4H not to confuse with Strat UD Side..
 //Gief new Strat boss blizz or you make Stab a sad panda
 
 
@@ -2421,7 +2421,7 @@ class BlaumeuxAI : public CreatureAIScript
                             _unit->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
                     m_spellcheck[i] = false;
@@ -2595,7 +2595,7 @@ class ZeliekAI : public CreatureAIScript
                             _unit->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
                     m_spellcheck[i] = false;
@@ -2790,7 +2790,7 @@ class ChillTriggerAI : public CreatureAIScript
 
     ChillTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->CastSpellAoF(_unit->GetPositionX(), _unit->GetPositionY(), _unit->GetPositionZ(), sSpellCustomizations.GetSpellInfo(28547), true);
+        _unit->CastSpellAoF(_unit->GetPosition(), sSpellCustomizations.GetSpellInfo(28547), true);
         _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_2);
         _unit->GetAIInterface()->disable_melee = true;
         _unit->GetAIInterface()->m_canMove = false;
@@ -3228,7 +3228,7 @@ class SapphironAI : public CreatureAIScript
                             _unit->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_RANDOM_FRIEND:
                         case TARGET_RANDOM_SINGLE:
@@ -3305,7 +3305,7 @@ class SapphironAI : public CreatureAIScript
                         _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                         break;
                     case TARGET_RANDOM_DESTINATION:
-                        _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
+                        _unit->CastSpellAoF(random_target->GetPosition(), spells[i].info, spells[i].instant);
                         break;
                 }
             }
@@ -4015,7 +4015,7 @@ class KelthuzadAI : public CreatureAIScript
                             _unit->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                         case TARGET_RANDOM_FRIEND:
                         case TARGET_RANDOM_SINGLE:
@@ -4090,7 +4090,7 @@ class KelthuzadAI : public CreatureAIScript
                     _unit->CastSpell(random_target, spells[i].info, spells[i].instant);
                     break;
                 case TARGET_RANDOM_DESTINATION:
-                    _unit->CastSpellAoF(random_target->GetPositionX(), random_target->GetPositionY(), random_target->GetPositionZ(), spells[i].info, spells[i].instant);
+                    _unit->CastSpellAoF(random_target->GetPosition(), spells[i].info, spells[i].instant);
                     break;
             }
 
@@ -4398,7 +4398,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
                             _unit->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
                     m_spellcheck[i] = false;
@@ -4570,7 +4570,7 @@ class SoulWeaverAI : public CreatureAIScript
                             _unit->CastSpell(target, spells[i].info, spells[i].instant);
                             break;
                         case TARGET_DESTINATION:
-                            _unit->CastSpellAoF(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), spells[i].info, spells[i].instant);
+                            _unit->CastSpellAoF(target->GetPosition(), spells[i].info, spells[i].instant);
                             break;
                     }
                     m_spellcheck[i] = false;

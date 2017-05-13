@@ -112,7 +112,7 @@ class FireNova : public Spell
     {
         uint32 fireNovaSpells = Spell::GetSpellInfo()->Id;
         //Cast spell. NOTICE All ranks are linked with a extra spell in HackFixes.cpp
-        totem->CastSpellAoF(totem->GetPositionX(), totem->GetPositionY(), totem->GetPositionZ(), sSpellCustomizations.GetSpellInfo(fireNovaSpells), true);
+        totem->CastSpellAoF(totem->GetPosition(), sSpellCustomizations.GetSpellInfo(fireNovaSpells), true);
     }
 };
 

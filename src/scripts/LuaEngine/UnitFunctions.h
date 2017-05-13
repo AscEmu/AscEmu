@@ -40,6 +40,7 @@
 #include "Spell/SpellAuras.h"
 #include "Server/WorldSession.h"
 #include "Objects/Object.h"
+#include "LuaGlobal.h"
 
 class LuaUnit
 {
@@ -73,13 +74,13 @@ class LuaUnit
         if (plr == NULL)
             return 0;
 
-        if (Menu != NULL)
-            delete Menu;
+        if (LuaGlobal::instance()->m_menu != NULL)
+            delete LuaGlobal::instance()->m_menu;
 
-        Menu = new Arcemu::Gossip::Menu(ptr->GetGUID(), text_id);
+        LuaGlobal::instance()->m_menu = new Arcemu::Gossip::Menu(ptr->GetGUID(), text_id);
 
         if (autosend != 0)
-            Menu->Send(plr);
+            LuaGlobal::instance()->m_menu->Send(plr);
 
         return 0;
     }
@@ -93,12 +94,12 @@ class LuaUnit
         const char * boxmessage = luaL_optstring(L, 5, "");
         uint32 boxmoney = static_cast<uint32>(luaL_optinteger(L, 6, 0));
 
-        if (Menu == NULL){
+        if (LuaGlobal::instance()->m_menu == NULL){
             LOG_ERROR("There is no menu to add items to!");
             return 0;
         }
 
-        Menu->AddItem(icon, menu_text, IntId, boxmoney, boxmessage, coded);
+        LuaGlobal::instance()->m_menu->AddItem(icon, menu_text, IntId, boxmoney, boxmessage, coded);
 
         return 0;
     }
@@ -107,13 +108,13 @@ class LuaUnit
     {
         Player* plr = CHECK_PLAYER(L, 1);
 
-        if (Menu == NULL){
+        if (LuaGlobal::instance()->m_menu == NULL){
             LOG_ERROR("There is no menu to send!");
             return 0;
         }
 
         if (plr != NULL)
-            Menu->Send(plr);
+            LuaGlobal::instance()->m_menu->Send(plr);
 
         return 0;
     }
@@ -157,14 +158,14 @@ class LuaUnit
     static int GossipAddQuests(lua_State *L, Unit *ptr){
         TEST_UNIT()
 
-            if (Menu == NULL){
+            if (LuaGlobal::instance()->m_menu == NULL){
                 LOG_ERROR("There's no menu to fill quests into.");
                 return 0;
             }
 
         Player *player = CHECK_PLAYER(L, 1);
 
-        sQuestMgr.FillQuestMenu(static_cast< Creature* >(ptr), player, *Menu);
+        sQuestMgr.FillQuestMenu(static_cast< Creature* >(ptr), player, *LuaGlobal::instance()->m_menu);
 
         return 0;
     }
@@ -175,12 +176,12 @@ class LuaUnit
         TEST_PLAYER()
             Player * plr = static_cast<Player*>(ptr);
 
-        if (Menu == NULL){
+        if (LuaGlobal::instance()->m_menu == NULL){
             LOG_ERROR("There is no menu to complete!");
             return 0;
         }
 
-        Menu->Complete(plr);
+        LuaGlobal::instance()->m_menu->Complete(plr);
 
         return 0;
     }
@@ -640,12 +641,12 @@ class LuaUnit
         if (!strcmp(typeName, "function"))
             functionRef = luaL_ref(L, LUA_REGISTRYINDEX);
         else if (!strcmp(typeName, "string"))
-            functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 1));
+            functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 1));
         if (functionRef)
         {
             Creature* creature = static_cast<Creature*>(ptr);
             sEventMgr.AddEvent(creature, &Creature::TriggerScriptEvent, functionRef, EVENT_LUA_CREATURE_EVENTS, delay, repeats, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
-            std::map< uint64, std::set<int> > & objRefs = sLuaMgr.getObjectFunctionRefs();
+            std::map< uint64, std::set<int> > & objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
             std::map< uint64, std::set<int> >::iterator itr = objRefs.find(ptr->GetGUID());
             if (itr == objRefs.end())
             {
@@ -678,12 +679,12 @@ class LuaUnit
         if (!strcmp(typeName, "function"))
             functionRef = luaL_ref(L, LUA_REGISTRYINDEX);
         else if (!strcmp(typeName, "string"))
-            functionRef = ExtractfRefFromCString(L, luaL_checkstring(L, 1));
+            functionRef = LuaHelpers::ExtractfRefFromCString(L, luaL_checkstring(L, 1));
         if (functionRef)
         {
-            TimedEvent* ev = TimedEvent::Allocate(ptr, new CallbackP1<LuaEngine, int>(&sLuaMgr, &LuaEngine::CallFunctionByReference, functionRef), EVENT_LUA_CREATURE_EVENTS, delay, repeats);
+            TimedEvent* ev = TimedEvent::Allocate(ptr, new CallbackP1<LuaEngine, int>(LuaGlobal::instance()->luaEngine().get(), &LuaEngine::CallFunctionByReference, functionRef), EVENT_LUA_CREATURE_EVENTS, delay, repeats);
             ptr->event_AddEvent(ev);
-            std::map< uint64, std::set<int> > & objRefs = sLuaMgr.getObjectFunctionRefs();
+            std::map< uint64, std::set<int> > & objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
             std::map< uint64, std::set<int> >::iterator itr = objRefs.find(ptr->GetGUID());
             if (itr == objRefs.end())
             {
@@ -704,7 +705,7 @@ class LuaUnit
         TEST_UNITPLAYER();
         sEventMgr.RemoveEvents(ptr, EVENT_LUA_CREATURE_EVENTS);
         //Unref all contained references
-        std::map< uint64, std::set<int> > & objRefs = sLuaMgr.getObjectFunctionRefs();
+        std::map< uint64, std::set<int> > & objRefs = LuaGlobal::instance()->luaEngine()->getObjectFunctionRefs();
         std::map< uint64, std::set<int> >::iterator itr = objRefs.find(ptr->GetGUID());
         if (itr != objRefs.end())
         {
@@ -2053,7 +2054,7 @@ class LuaUnit
             ptr->GetAIInterface()->MoveTo(x, y, z);
             ptr->SetOrientation(o);
         }
-    
+
         return 0;
     }
 
@@ -2268,7 +2269,7 @@ class LuaUnit
         uint32 sp = CHECK_ULONG(L, 4);
         if (!sp || !ptr)
             return 0;
-        ptr->CastSpellAoF(x, y, z, sSpellCustomizations.GetSpellInfo(sp), true);
+        ptr->CastSpellAoF(LocationVector(x, y, z), sSpellCustomizations.GetSpellInfo(sp), true);
         return 0;
     }
 
@@ -2280,7 +2281,7 @@ class LuaUnit
         uint32 sp = CHECK_ULONG(L, 4);
         if (!sp || !ptr)
             return 0;
-        ptr->CastSpellAoF(x, y, z, sSpellCustomizations.GetSpellInfo(sp), false);
+        ptr->CastSpellAoF(LocationVector(x, y, z), sSpellCustomizations.GetSpellInfo(sp), false);
         return 0;
     }
 

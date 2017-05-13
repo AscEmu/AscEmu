@@ -459,9 +459,8 @@ void GameObject::CastSpell(uint64 TargetGUID, SpellInfo* sp)
 
     SpellCastTargets tgt(TargetGUID);
 
-    tgt.m_destX = GetPositionX();
-    tgt.m_destY = GetPositionY();
-    tgt.m_destZ = GetPositionZ();
+    // TODO: Is this meant to be set source?
+    tgt.setDestination(GetPosition());
 
     s->prepare(&tgt);
 }

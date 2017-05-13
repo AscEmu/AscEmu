@@ -1743,9 +1743,7 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                         SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spellId);   //we already modified this spell on server loading so it must exist
                         Spell* spell = sSpellFactoryMgr.NewSpell(new_caster, spellInfo, true, NULL);
                         SpellCastTargets targets;
-                        targets.m_destX = GetPositionX();
-                        targets.m_destY = GetPositionY();
-                        targets.m_destZ = GetPositionZ();
+                        targets.setDestination(GetPosition());
                         spell->prepare(&targets);
                     }
                     spell_proc->mDeleted = true;
@@ -5990,15 +5988,13 @@ uint8 Unit::CastSpell(Unit* Target, SpellInfo* Sp, uint32 forced_basepoints, int
     return newSpell->prepare(&targets);
 }
 
-void Unit::CastSpellAoF(float x, float y, float z, SpellInfo* Sp, bool triggered)
+void Unit::CastSpellAoF(LocationVector lv, SpellInfo* Sp, bool triggered)
 {
-    if (Sp == NULL)
+    if (Sp == nullptr)
         return;
 
     SpellCastTargets targets;
-    targets.m_destX = x;
-    targets.m_destY = y;
-    targets.m_destZ = z;
+    targets.setDestination(lv);
     targets.m_targetMask = TARGET_FLAG_DEST_LOCATION;
     Spell* newSpell = sSpellFactoryMgr.NewSpell(this, Sp, triggered, 0);
     newSpell->prepare(&targets);

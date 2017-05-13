@@ -7,9 +7,11 @@ set(SRC_SPELL_FILES
    ${PATH_PREFIX}/Spell.Legacy.cpp
    ${PATH_PREFIX}/Spell.Legacy.h
    ${PATH_PREFIX}/Spell_ClassScripts.cpp
-   ${PATH_PREFIX}/SpellDefines.hpp
    ${PATH_PREFIX}/SpellAuras.cpp
    ${PATH_PREFIX}/SpellAuras.h
+   ${PATH_PREFIX}/SpellCastTargets.h
+   ${PATH_PREFIX}/SpellCastTargets.cpp
+   ${PATH_PREFIX}/SpellDefines.hpp
    ${PATH_PREFIX}/SpellEffects.cpp
    ${PATH_PREFIX}/SpellEffects.h
    ${PATH_PREFIX}/SpellFailure.h
