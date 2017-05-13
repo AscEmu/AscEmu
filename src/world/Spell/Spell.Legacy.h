@@ -43,13 +43,6 @@ class Item;
 class Group;
 class Aura;
 
-enum PreventionType
-{
-    PREVENTION_TYPE_NONE      = 0,
-    PREVENTION_TYPE_SILENCE   = 1,
-    PREVENTION_TYPE_PACIFY    = 2
-};
-
 /****************SpellExtraFlags*****************/
 /* SpellExtraFlags defines                      */
 /*                                              */

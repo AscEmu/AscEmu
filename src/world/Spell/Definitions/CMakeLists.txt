@@ -6,6 +6,7 @@ set(SRC_SPELL_DEFINITIONS_FILES
     ${PATH_PREFIX}/AuraInterruptFlags.h
     ${PATH_PREFIX}/CastInterruptFlags.h
     ${PATH_PREFIX}/ChannelInterruptFlags.h
+    ${PATH_PREFIX}/PreventionType.h
     ${PATH_PREFIX}/ProcFlags.h
     ${PATH_PREFIX}/School.h
     ${PATH_PREFIX}/SpellCastTargetFlags.h
