@@ -769,9 +769,9 @@ void SpellCustomizations::SetRangedSpellBool(SpellInfo* spell_entry)
 void SpellCustomizations::SetMissingCIsFlags(SpellInfo* spell_entry)
 {
     // Zyres: Special cases, not handled in spell_custom_assign!
-    if (IsDamagingSpell(spell_entry))
+    if (spell_entry->isDamagingSpell())
         spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_DAMAGING;
-    if (IsHealingSpell(spell_entry))
+    if (spell_entry->isHealingSpell())
         spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_HEALING;
     if (IsTargetingStealthed(spell_entry))
         spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_TARGETINGSTEALTHED;

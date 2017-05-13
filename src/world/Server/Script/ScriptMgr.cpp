@@ -260,7 +260,7 @@ void ScriptMgr::DumpUnimplementedSpells()
         if (!sp)
             continue;
 
-        if (!sp->AppliesAreaAura(SPELL_AURA_DUMMY))
+        if (!sp->appliesAreaAura(SPELL_AURA_DUMMY))
             continue;
 
         HandleDummyAuraMap::iterator ditr = _auras.find(sp->Id);
@@ -315,7 +315,7 @@ void ScriptMgr::register_dummy_aura(uint32 entry, exp_handle_dummy_aura callback
         return;
     }
 
-    if (!sp->AppliesAreaAura(SPELL_AURA_DUMMY) && !sp->AppliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_DUMMY))
+    if (!sp->appliesAreaAura(SPELL_AURA_DUMMY) && !sp->appliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_DUMMY))
         LogDebugFlag(LF_SCRIPT_MGR, "ScriptMgr registered a dummy aura handler for Spell ID: %u (%s), but spell has no dummy aura!", entry, sp->Name.c_str());
 
     _auras.insert(HandleDummyAuraMap::value_type(entry, callback));

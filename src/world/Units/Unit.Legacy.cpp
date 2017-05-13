@@ -2333,7 +2333,11 @@ uint32 Unit::HandleProc(uint32 flag, Unit* victim, SpellInfo* CastingSpell, bool
                     if (!(CastingSpell->custom_c_is_flags & SPELL_FLAG_IS_HEALING) || this == victim)
                         continue;
                     //this is not counting the bonus effects on heal
-                    dmg_overwrite[0] = ((CastingSpell->EffectBasePoints[IsHealingSpell(CastingSpell) - 1] + 1) * (ospinfo->EffectBasePoints[0] + 1) / 100);
+                    auto idx = CastingSpell->firstBeneficialEffect();
+                    if (idx != 1)
+                    {
+                        dmg_overwrite[0] = ((CastingSpell->EffectBasePoints[idx] + 1) * (ospinfo->EffectBasePoints[0] + 1) / 100);
+                    }
                 }
                 break;
                 //paladin - Light's Grace
@@ -4548,7 +4552,7 @@ void Unit::AddAura(Aura* aur)
     if (aur == NULL)
         return;
 
-    if (!(isAlive() || (aur->GetSpellInfo()->IsDeathPersistent())))
+    if (!(isAlive() || (aur->GetSpellInfo()->isDeathPersistent())))
     {
         delete aur;
         return;
@@ -5203,7 +5207,7 @@ void Unit::RemoveNegativeAuras()
     {
         if (m_auras[x])
         {
-            if (m_auras[x]->GetSpellInfo()->IsDeathPersistent())
+            if (m_auras[x]->GetSpellInfo()->isDeathPersistent())
                 continue;
             else
                 m_auras[x]->Remove();
@@ -5223,7 +5227,7 @@ void Unit::RemoveAllNonPersistentAuras()
     for (uint32 x = MAX_TOTAL_AURAS_START; x < MAX_TOTAL_AURAS_END; x++)
         if (m_auras[x])
         {
-            if (m_auras[x]->GetSpellInfo()->IsDeathPersistent())
+            if (m_auras[x]->GetSpellInfo()->isDeathPersistent())
                 continue;
             else
                 m_auras[x]->Remove();
@@ -5815,7 +5819,7 @@ void Unit::DropAurasOnDeath()
     for (uint32 x = MAX_REMOVABLE_AURAS_START; x < MAX_REMOVABLE_AURAS_END; x++)
         if (m_auras[x])
         {
-            if (m_auras[x] && m_auras[x]->GetSpellInfo()->IsDeathPersistent())
+            if (m_auras[x] && m_auras[x]->GetSpellInfo()->isDeathPersistent())
                 continue;
             else
                 m_auras[x]->Remove();
@@ -6308,7 +6312,7 @@ bool Unit::HasAuraWithName(uint32 name)
 
     for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {
-        if (m_auras[i] != NULL && m_auras[i]->GetSpellInfo()->AppliesAreaAura(name))
+        if (m_auras[i] != NULL && m_auras[i]->GetSpellInfo()->appliesAreaAura(name))
             return true;
     }
 
@@ -6321,7 +6325,7 @@ uint32 Unit::GetAuraCountWithName(uint32 name)
 
     for (uint32 i = MAX_TOTAL_AURAS_START; i < MAX_TOTAL_AURAS_END; ++i)
     {
-        if (m_auras[i] != NULL && m_auras[i]->GetSpellInfo()->AppliesAreaAura(name))
+        if (m_auras[i] != NULL && m_auras[i]->GetSpellInfo()->appliesAreaAura(name))
             ++count;
     }
 

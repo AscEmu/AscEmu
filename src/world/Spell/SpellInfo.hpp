@@ -20,18 +20,22 @@ class SERVER_DECL SpellInfo
         ~SpellInfo();
 
         // helper functions
-        bool HasEffect(uint32 effect);
+        bool HasEffect(uint32 effect) const;
         bool HasEffectApplyAuraName(uint32_t aura_name);
         bool HasCustomFlagForEffect(uint32 effect, uint32 flag);
+
+        bool isDamagingSpell() const;
+        bool isHealingSpell() const;
+        int firstBeneficialEffect() const;
 
         bool IsPassive();
         bool IsProfession();
         bool IsPrimaryProfession();
         bool IsPrimaryProfessionSkill(uint32 skill_id);
 
-        bool IsDeathPersistent();
+        bool isDeathPersistent() const;
 
-        bool AppliesAreaAura(uint32 aura);
+        bool appliesAreaAura(uint32 aura) const;
         uint32 GetAreaAuraEffectId();
 
 #if VERSION_STRING != Cata
@@ -107,7 +111,7 @@ class SERVER_DECL SpellInfo
         int32 EffectMiscValue[MAX_SPELL_EFFECTS];
         int32 EffectMiscValueB[MAX_SPELL_EFFECTS];
         uint32 EffectTriggerSpell[MAX_SPELL_EFFECTS];
-        float EffectPointsPerComboPoint[MAX_SPELL_EFFECTS]; 
+        float EffectPointsPerComboPoint[MAX_SPELL_EFFECTS];
         uint32 EffectSpellClassMask[3][3];
         uint32 SpellVisual;
         uint32 field114;                                          // (131-132 SpellVisual[2])
@@ -299,7 +303,7 @@ class SERVER_DECL SpellInfo
         // data from SpellTotems.dbc
         uint32 TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];
         uint32 Totem[MAX_SPELL_TOTEMS];
-    
+
         // data from SpellEffect.dbc
         uint32 Effect[MAX_SPELL_EFFECTS];
         float EffectMultipleValue[MAX_SPELL_EFFECTS];

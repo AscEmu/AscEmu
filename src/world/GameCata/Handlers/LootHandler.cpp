@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
 #include "Map/WorldCreator.h"
+#include "Spell/Definitions/LockTypes.h"
 
 Loot* WorldSession::getLootFromHighGuidType(uint32_t highGuid)
 {

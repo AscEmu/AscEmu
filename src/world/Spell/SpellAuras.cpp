@@ -8946,11 +8946,11 @@ bool Aura::IsCombatStateAffecting()
 {
     SpellInfo* sp = m_spellInfo;
 
-    if (sp->AppliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE) ||
-        sp->AppliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE_PERCENT) ||
-        sp->AppliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_SPELL) ||
-        sp->AppliesAreaAura(SPELL_AURA_PERIODIC_LEECH) ||
-        sp->AppliesAreaAura(SPELL_AURA_PERIODIC_MANA_LEECH))
+    if (sp->appliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE) ||
+        sp->appliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE_PERCENT) ||
+        sp->appliesAreaAura(SPELL_AURA_PERIODIC_TRIGGER_SPELL) ||
+        sp->appliesAreaAura(SPELL_AURA_PERIODIC_LEECH) ||
+        sp->appliesAreaAura(SPELL_AURA_PERIODIC_MANA_LEECH))
         return true;
 
     return false;

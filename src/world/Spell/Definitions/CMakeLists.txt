@@ -25,6 +25,8 @@ set(SRC_SPELL_DEFINITIONS_FILES
     ${PATH_PREFIX}/SpellSchoolConversionTable.h
     ${PATH_PREFIX}/SpellTargetType.h
     ${PATH_PREFIX}/SpellTypes.h
+    ${PATH_PREFIX}/SummonControlTypes.h
+    ${PATH_PREFIX}/SummonTypes.h
     ${PATH_PREFIX}/TeleportCoords.h
     ${PATH_PREFIX}/TeleportEffectCustomFlags.h
 )

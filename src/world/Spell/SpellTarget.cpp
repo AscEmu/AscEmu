@@ -273,7 +273,7 @@ void Spell::AddChainTargets(uint32 i, uint32 TargetType, float r, uint32 maxtarg
             continue;
 
         //healing spell, full health target = NONO
-        if (IsHealingSpell(m_spellInfo) && static_cast<Unit*>(*itr)->GetHealthPct() == 100)
+        if (m_spellInfo->isHealingSpell() && static_cast<Unit*>(*itr)->GetHealthPct() == 100)
             continue;
 
         size_t oldsize;

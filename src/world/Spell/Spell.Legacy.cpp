@@ -6419,27 +6419,4 @@ SpellInfo* CheckAndReturnSpellEntry(uint32 spellid)
 
     return sp;
 }
-
-
-bool IsDamagingSpell(SpellInfo* sp)
-{
-
-    if (sp->HasEffect(SPELL_EFFECT_SCHOOL_DAMAGE) ||
-        sp->HasEffect(SPELL_EFFECT_ENVIRONMENTAL_DAMAGE) ||
-        sp->HasEffect(SPELL_EFFECT_HEALTH_LEECH) ||
-        sp->HasEffect(SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL) ||
-        sp->HasEffect(SPELL_EFFECT_ADD_EXTRA_ATTACKS) ||
-        sp->HasEffect(SPELL_EFFECT_WEAPON_PERCENT_DAMAGE) ||
-        sp->HasEffect(SPELL_EFFECT_POWER_BURN) ||
-        sp->HasEffect(SPELL_EFFECT_ATTACK))
-        return true;
-
-    if (sp->AppliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE) ||
-        sp->AppliesAreaAura(SPELL_AURA_PROC_TRIGGER_DAMAGE) ||
-        sp->AppliesAreaAura(SPELL_AURA_PERIODIC_DAMAGE_PERCENT) ||
-        sp->AppliesAreaAura(SPELL_AURA_POWER_BURN))
-        return true;
-
-    return false;
-}
 #endif

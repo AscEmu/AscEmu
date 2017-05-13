@@ -51,6 +51,8 @@
 #include "Definitions/LockTypes.h"
 #include "Definitions/SpellIsFlags.h"
 #include "Definitions/TeleportEffectCustomFlags.h"
+#include "Definitions/SummonControlTypes.h"
+#include "Definitions/SummonTypes.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
