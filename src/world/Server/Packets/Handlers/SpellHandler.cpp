@@ -31,6 +31,7 @@
 #include "Spell/Definitions/SpellCastTargetFlags.h"
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/SpellRanged.h"
+#include "Spell/Definitions/SpellState.h"
 
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {

@@ -14,29 +14,33 @@ class Player;
 
 class SERVER_DECL SpellInfo
 {
-    public:
+public:
+    SpellInfo();
+    ~SpellInfo();
 
-        SpellInfo();
-        ~SpellInfo();
+    // helper functions
+    bool HasEffect(uint32 effect) const;
+    bool HasEffectApplyAuraName(uint32_t aura_name);
+    bool HasCustomFlagForEffect(uint32 effect, uint32 flag);
 
-        // helper functions
-        bool HasEffect(uint32 effect) const;
-        bool HasEffectApplyAuraName(uint32_t aura_name);
-        bool HasCustomFlagForEffect(uint32 effect, uint32 flag);
+    bool isDamagingSpell() const;
+    bool isHealingSpell() const;
+    int firstBeneficialEffect() const;
 
-        bool isDamagingSpell() const;
-        bool isHealingSpell() const;
-        int firstBeneficialEffect() const;
+    bool hasTargetType(uint32_t type) const;
+    int aiTargetType() const;
+    bool isTargetingStealthed() const;
+    bool isRequireCooldownSpell() const;
 
-        bool IsPassive();
-        bool IsProfession();
-        bool IsPrimaryProfession();
-        bool IsPrimaryProfessionSkill(uint32 skill_id);
+    bool IsPassive();
+    bool IsProfession();
+    bool IsPrimaryProfession();
+    bool IsPrimaryProfessionSkill(uint32 skill_id);
 
-        bool isDeathPersistent() const;
+    bool isDeathPersistent() const;
 
-        bool appliesAreaAura(uint32 aura) const;
-        uint32 GetAreaAuraEffectId();
+    bool appliesAreaAura(uint32 aura) const;
+    uint32 GetAreaAuraEffectId();
 
 #if VERSION_STRING != Cata
         //////////////////////////////////////////////////////////////////////////////////////////

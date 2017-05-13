@@ -29,6 +29,7 @@
 #include "SpellAuras.h"
 #include "Definitions/ProcFlags.h"
 #include "Definitions/SpellIsFlags.h"
+#include "Definitions/SpellEffectTarget.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
@@ -423,7 +424,7 @@ class VampiricEmbraceSpellProc : public SpellProc
             return true;
 
         // Only proc for single target spells
-        if (!(HasTargetType(CastingSpell, EFF_TARGET_SINGLE_ENEMY) || HasTargetType(CastingSpell, EFF_TARGET_SELECTED_ENEMY_CHANNELED)))
+        if (!(CastingSpell->hasTargetType(EFF_TARGET_SINGLE_ENEMY) || CastingSpell->hasTargetType(EFF_TARGET_SELECTED_ENEMY_CHANNELED)))
             return true;
 
         dmg_overwrite[0] = dmg;

@@ -3924,7 +3924,7 @@ void ObjectMgr::LoadCreatureAIAgents()
 
                 int32  targettype = fields[8].GetInt32();
                 if (targettype == -1)
-                    sp->spelltargetType = static_cast<uint8>(GetAiTargetType(spe));
+                    sp->spelltargetType = static_cast<uint8>(spe->aiTargetType());
                 else
                     sp->spelltargetType = static_cast<uint8>(targettype);
 

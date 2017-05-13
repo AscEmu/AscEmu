@@ -39,6 +39,8 @@
 #include "Definitions/SpellSchoolConversionTable.h"
 #include "Definitions/SpellTypes.h"
 #include "Definitions/SpellIsFlags.h"
+#include "Definitions/SpellState.h"
+#include "Definitions/SpellMechanics.h"
 
 using ascemu::World::Spell::Helpers::decimalToMask;
 using ascemu::World::Spell::Helpers::spellModFlatFloatValue;

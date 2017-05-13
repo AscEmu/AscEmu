@@ -26,6 +26,7 @@
 #include "Spell/SpellMgr.h"
 #include "SpellAuras.h"
 #include "Definitions/SpellSchoolConversionTable.h"
+#include "Definitions/DispelType.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
  // Mage Scripts

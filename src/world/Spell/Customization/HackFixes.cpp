@@ -35,6 +35,9 @@
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/SpellRanged.h"
 #include "Spell/Definitions/SpellCoefficientsFlags.h"
+#include "Spell/Definitions/DispelType.h"
+#include "Spell/Definitions/SpellMechanics.h"
+#include "Spell/Definitions/SpellEffectTarget.h"
 
 using ascemu::World::Spell::Helpers::decimalToMask;
 
@@ -6492,7 +6495,7 @@ void ApplyNormalFixes()
         radius = std::max(GetMaxRange(sSpellRangeStore.LookupEntry(sp->rangeIndex)), radius);
         sp->custom_base_range_or_radius_sqr = radius * radius;
 
-        sp->ai_target_type = GetAiTargetType(sp);
+        sp->ai_target_type = sp->aiTargetType();
         // NEW SCHOOLS AS OF 2.4.0:
         // (bitwise)
         //SCHOOL_NORMAL = 1,

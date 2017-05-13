@@ -53,6 +53,7 @@
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/SpellRanged.h"
 #include "Spell/Definitions/SpellIsFlags.h"
+#include "Spell/Definitions/SpellMechanics.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;

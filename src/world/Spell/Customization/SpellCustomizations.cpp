@@ -773,9 +773,9 @@ void SpellCustomizations::SetMissingCIsFlags(SpellInfo* spell_entry)
         spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_DAMAGING;
     if (spell_entry->isHealingSpell())
         spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_HEALING;
-    if (IsTargetingStealthed(spell_entry))
+    if (spell_entry->isTargetingStealthed())
         spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_TARGETINGSTEALTHED;
-    if (IsRequireCooldownSpell(spell_entry))
+    if (spell_entry->isRequireCooldownSpell())
         spell_entry->custom_c_is_flags |= SPELL_FLAG_IS_REQUIRECOOLDOWNUPDATE;
 }
 

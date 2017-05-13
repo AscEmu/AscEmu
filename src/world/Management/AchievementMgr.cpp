@@ -27,6 +27,7 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
+#include "Spell/Definitions/SpellMechanics.h"
 
 
 #if VERSION_STRING > TBC
@@ -1814,12 +1815,12 @@ void AchievementMgr::GiveAchievementReward(DBC::Structures::AchievementEntry con
             LOG_ERROR("can not create sender for achievement %u", entry);
             return;
         }
-        
+
         uint32 Sender = Reward->sender;
         uint64 receiver = GetPlayer()->GetGUID();
         std::string messageheader = Reward->subject;
         std::string messagebody = Reward->text;
-        
+
         //Create Item
         Item* pItem = objmgr.CreateItem(Reward->itemId, GetPlayer());
 

@@ -53,6 +53,9 @@
 #include "Definitions/TeleportEffectCustomFlags.h"
 #include "Definitions/SummonControlTypes.h"
 #include "Definitions/SummonTypes.h"
+#include "Definitions/SpellState.h"
+#include "Definitions/DispelType.h"
+#include "Definitions/SpellMechanics.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;

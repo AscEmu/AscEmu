@@ -21,6 +21,7 @@
 #include "Spell/SpellNameHashes.h"
 #include "Spell/SpellAuras.h"
 #include "Server/Script/ScriptMgr.h"
+#include <Spell/Definitions/SpellMechanics.h>
 
 bool Refocus(uint32 i, Spell* pSpell)
 {
@@ -160,7 +161,7 @@ class HasNameHash : public AuraCondition{
 public:
     bool operator()( Aura *aura ){
         uint32 namehash = aura->GetSpellInfo()->custom_NameHash;
-        
+
         if( std::find( hashes.begin(), hashes.end(), namehash ) != hashes.end() )
             return true;
         else

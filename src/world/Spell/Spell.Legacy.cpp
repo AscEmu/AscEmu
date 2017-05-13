@@ -32,6 +32,9 @@
 #include "Definitions/SpellRanged.h"
 #include "Definitions/SpellIsFlags.h"
 #include "Definitions/DiminishingGroup.h"
+#include "Definitions/SpellState.h"
+#include "Definitions/SpellMechanics.h"
+#include "Definitions/SpellEffectTarget.h"
 #ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 #include "StdAfx.h"
 #include "VMapFactory.h"
