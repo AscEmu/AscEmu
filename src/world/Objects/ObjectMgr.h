@@ -450,7 +450,10 @@ class Charter
 typedef std::unordered_map<uint32, Player*> PlayerStorageMap;
 typedef std::list<GM_Ticket*> GmTicketList;
 typedef std::map<uint32, InstanceBossInfo*> InstanceBossInfoMap;
+
+#if VERSION_STRING != TBC
 typedef std::list<DBC::Structures::AchievementCriteriaEntry const*> AchievementCriteriaEntryList;
+#endif
 
 #ifndef WIN32
 typedef std::map<std::string, PlayerInfo*> PlayerNameStringIndexMap;

@@ -1953,6 +1953,7 @@ void Player::ActivateSpec(uint8 spec)
     uint8 OldSpec = m_talentActiveSpec;
     m_talentActiveSpec = spec;
 
+#if VERSION_STRING != TBC
     // remove old glyphs
     for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
     {
@@ -1962,6 +1963,7 @@ void Player::ActivateSpec(uint8 spec)
 
         RemoveAura(glyph_properties->SpellID);
     }
+#endif
 
     // remove old talents
     for (std::map<uint32, uint8>::iterator itr = m_specs[OldSpec].talents.begin(); itr != m_specs[OldSpec].talents.end(); ++itr)
@@ -1973,6 +1975,7 @@ void Player::ActivateSpec(uint8 spec)
         removeSpell(talent_info->RankID[itr->second], true, false, 0);
     }
 
+#if VERSION_STRING != TBC
     // add new glyphs
     for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
     {
@@ -1982,6 +1985,7 @@ void Player::ActivateSpec(uint8 spec)
 
         CastSpell(this, glyph_properties->SpellID, true);
     }
+#endif
 
     //add talents from new spec
     for (std::map<uint32, uint8>::iterator itr = m_specs[m_talentActiveSpec].talents.begin(); itr != m_specs[m_talentActiveSpec].talents.end(); ++itr)
@@ -4347,6 +4351,8 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
             FlatResistanceModifierPos[6] -= proto->ArcaneRes;
         CalcResistance(6);
     }
+
+#if VERSION_STRING != TBC
     /* Heirloom scaling items */
     if (proto->ScalingStatsEntry != 0)
     {
@@ -4451,6 +4457,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         /* Normal items */
     }
     else
+#endif
     {
         // Stats
         for (uint8 i = 0; i < proto->itemstatscount; ++i)
@@ -9298,6 +9305,8 @@ void Player::CompleteLoading()
 
     sInstanceMgr.BuildSavedInstancesForPlayer(this);
     CombatStatus.UpdateFlag();
+
+#if VERSION_STRING != TBC
     // add glyphs
     for (uint8 j = 0; j < GLYPHS_COUNT; ++j)
     {
@@ -9307,6 +9316,8 @@ void Player::CompleteLoading()
 
         CastSpell(this, glyph_properties->SpellID, true);
     }
+#endif
+
     //sEventMgr.AddEvent(this,&Player::SendAllAchievementData,EVENT_SEND_ACHIEVEMNTS_TO_PLAYER,ACHIEVEMENT_SEND_DELAY,1,0);
     sEventMgr.AddEvent(static_cast< Unit* >(this), &Unit::UpdatePowerAmm, EVENT_SEND_PACKET_TO_PLAYER_AFTER_LOGIN, LOGIN_CIENT_SEND_DELAY, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
 }
