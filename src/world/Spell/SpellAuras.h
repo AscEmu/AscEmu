@@ -22,7 +22,7 @@
 #define SPELLAURAS_H
 
 #include "SpellMgr.h"
-#include "Spell/Spell.h"
+#include "Spell.h"
 #include "SpellEffects.h"
 
 /// 4-bit flag

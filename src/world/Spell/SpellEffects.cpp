@@ -59,6 +59,7 @@
 #include "Definitions/PowerType.h"
 #include "Definitions/Spec.h"
 #include "SpellHelpers.h"
+#include "Spell.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
