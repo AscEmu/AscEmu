@@ -21,6 +21,8 @@
 #ifndef SPELLTARGET_H
 #define SPELLTARGET_H
 
+#include <cstdint>
+
 enum SpellImplicitTargetType
 {
     SPELL_TARGET_REQUIRE_GAMEOBJECT         = 0x00000001,
