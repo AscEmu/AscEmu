@@ -7,6 +7,9 @@ set(SRC_GAMEBC_FILES
     ${PATH_PREFIX}/Network/Opcodes.cpp
     ${PATH_PREFIX}/Network/Opcodes.h
     ${PATH_PREFIX}/Network/WorldPacketHandlers.cpp
+    ${PATH_PREFIX}/Storage/DBCStores.cpp
+    ${PATH_PREFIX}/Storage/DBCStores.h
+    ${PATH_PREFIX}/Storage/DBCStructures.h
     ${PATH_PREFIX}/UpdateFields.h
 )
 

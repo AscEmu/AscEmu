@@ -7,9 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "WorldConf.h"
 
-#if VERSION_STRING != Cata
-#if VERSION_STRING != TBC
-#include "DBCGlobals.hpp"
+#if VERSION_STRING == TBC
+#include "../world/Storage/DBC/DBCGlobals.hpp"
 #include "Server/Definitions.h"
 
 inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
@@ -19,7 +18,7 @@ inline float GetRadius(DBC::Structures::SpellRadiusEntry const* radius)
 
     return radius->radius_min;
 }
-inline uint32 GetCastTime(DBC::Structures::SpellCastTimesEntry const* time)
+inline uint32_t GetCastTime(DBC::Structures::SpellCastTimesEntry const* time)
 {
     if (time == nullptr)
         return 0;
@@ -40,7 +39,7 @@ inline float GetMinRange(DBC::Structures::SpellRangeEntry const* range)
 
     return range->minRange;
 }
-inline uint32 GetDuration(DBC::Structures::SpellDurationEntry const* dur)
+inline uint32_t GetDuration(DBC::Structures::SpellDurationEntry const* dur)
 {
     if (dur == nullptr)
         return 0;
@@ -123,16 +122,9 @@ extern SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSe
 
 DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 root_id, int32 adt_id, int32 group_id);
 
-std::string generateName(uint32 type = 0);
+std::string generateName(uint32_t type = 0);
 
-uint32 const* getTalentTabPages(uint8 playerClass);
+uint32_t const* getTalentTabPages(uint8_t playerClass);
 
 bool LoadDBCs();
-#endif
-#endif
-
-#if VERSION_STRING == Cata
-    #include "../world/GameCata/Storage/DBCStores.h"
-#elif VERSION_STRING == TBC
-    #include "../world/GameTBC/Storage/DBCStores.h"
 #endif

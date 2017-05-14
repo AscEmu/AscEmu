@@ -9,6 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #if VERSION_STRING == Cata
     #include "../world/GameCata/Storage/DBCStructures.h"
+#elif VERSION_STRING == TBC
+    #include "../world/GameTBC/Storage/DBCStructures.h"
 #else
 #include "Common.hpp"
 #include "Spell/SpellDefines.hpp"

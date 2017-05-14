@@ -6,11 +6,10 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldConf.h"
 #include "Server/World.h"
 
-#if VERSION_STRING != Cata
-#if VERSION_STRING != TBC
+#if VERSION_STRING == TBC
 
 #include "StdAfx.h"
-#include "DBCGlobals.hpp"
+#include "../world/Storage/DBC/DBCGlobals.hpp"
 #include "Map/Area/AreaStorage.hpp"
 
 typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*> WMOAreaInfoByTripple;
@@ -18,7 +17,7 @@ typedef std::map<WMOAreaTableTripple, DBC::Structures::WMOAreaTableEntry const*>
 struct NameGenData
 {
     std::string name;
-    uint32 type;
+    uint32_t type;
 };
 
 std::vector<NameGenData> _namegenData[3];
@@ -77,7 +76,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRangeEntry> sSpellRangeStore(D
 SERVER_DECL DBC::DBCStorage<DBC::Structures::SpellRuneCostEntry> sSpellRuneCostStore(DBC::Structures::spell_rune_cost_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentEntry> sTalentStore(DBC::Structures::talent_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::TalentTabEntry> sTalentTabStore(DBC::Structures::talent_tab_format);
-static uint32 InspectTalentTabPages[12][3];
+static uint32_t InspectTalentTabPages[12][3];
 SERVER_DECL DBC::DBCStorage<DBC::Structures::WorldMapOverlayEntry> sWorldMapOverlayStore(DBC::Structures::world_map_overlay_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtBarberShopCostBaseEntry> sBarberShopCostBaseStore(DBC::Structures::gt_barber_shop_cost_format);
 SERVER_DECL DBC::DBCStorage<DBC::Structures::GtOCTRegenHPEntry> sGtOCTRegenHPStore(DBC::Structures::gt_oct_regen_hp_format);
@@ -101,7 +100,7 @@ SERVER_DECL DBC::DBCStorage<DBC::Structures::VehicleSeatEntry> sVehicleSeatStore
 
 bool LoadDBCs()
 {
-    uint32 available_dbc_locales = 0xFFFFFFFF;
+    uint32_t available_dbc_locales = 0xFFFFFFFF;
     DBC::StoreProblemList bad_dbc_files;
     std::string dbc_path = sWorld.settings.server.dataDir + "dbc/";
 
@@ -126,15 +125,15 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentStore, dbc_path, "Talent.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sTalentTabStore, dbc_path, "TalentTab.dbc");
     {
-        std::map< uint32, uint32 > InspectTalentTabPos;
-        std::map< uint32, uint32 > InspectTalentTabSize;
-        std::map< uint32, uint32 > InspectTalentTabBit;
+        std::map<uint32_t, uint32_t> InspectTalentTabPos;
+        std::map<uint32_t, uint32_t> InspectTalentTabSize;
+        std::map<uint32_t, uint32_t> InspectTalentTabBit;
 
-        uint32 talent_max_rank;
-        uint32 talent_pos;
-        uint32 talent_class;
+        uint32_t talent_max_rank;
+        uint32_t talent_pos;
+        uint32_t talent_class;
 
-        for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)
+        for (uint32_t i = 0; i < sTalentStore.GetNumRows(); ++i)
         {
             auto talent_info = sTalentStore.LookupEntry(i);
             if (talent_info == nullptr)
@@ -149,7 +148,7 @@ bool LoadDBCs()
                 continue;
 
             talent_max_rank = 0;
-            for (uint32 j = 5; j > 0; --j)
+            for (uint32_t j = 5; j > 0; --j)
             {
                 if (talent_info->RankID[j - 1])
                 {
@@ -162,7 +161,7 @@ bool LoadDBCs()
             InspectTalentTabSize[talent_info->TalentTree] += talent_max_rank;
         }
 
-        for (uint32 i = 0; i < sTalentTabStore.GetNumRows(); ++i)
+        for (uint32_t i = 0; i < sTalentTabStore.GetNumRows(); ++i)
         {
             auto talent_tab = sTalentTabStore.LookupEntry(i);
             if (talent_tab == nullptr)
@@ -184,7 +183,7 @@ bool LoadDBCs()
 
             for (std::map<uint32, uint32>::iterator itr = InspectTalentTabBit.begin(); itr != InspectTalentTabBit.end(); ++itr)
             {
-                uint32 talent_id = itr->first & 0xFFFF;
+                uint32_t talent_id = itr->first & 0xFFFF;
                 auto talent_info = sTalentStore.LookupEntry(talent_id);
                 if (talent_info == nullptr)
                     continue;
@@ -247,7 +246,7 @@ bool LoadDBCs()
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sWMOAreaTableStore, dbc_path, "WMOAreaTable.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sSummonPropertiesStore, dbc_path, "SummonProperties.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sNameGenStore, dbc_path, "NameGen.dbc");
-    for (uint32 i = 0; i < sNameGenStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sNameGenStore.GetNumRows(); ++i)
     {
         auto name_gen_entry = sNameGenStore.LookupEntry(i);
         if (name_gen_entry == nullptr)
@@ -261,21 +260,21 @@ bool LoadDBCs()
 
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sLFGDungeonStore, dbc_path, "LFGDungeons.dbc");
     DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sLiquidTypeStore, dbc_path, "LiquidType.dbc");
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sVehicleStore, dbc_path, "Vehicle.dbc");
-    DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sVehicleSeatStore, dbc_path, "VehicleSeat.dbc");
+    //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sVehicleStore, dbc_path, "Vehicle.dbc");
+    //DBC::LoadDBC(available_dbc_locales, bad_dbc_files, sVehicleSeatStore, dbc_path, "VehicleSeat.dbc");
 
     MapManagement::AreaManagement::AreaStorage::Initialise(&sAreaStore);
     auto area_map_collection = MapManagement::AreaManagement::AreaStorage::GetMapCollection();
-    for (uint32 i = 0; i < sMapStore.GetNumRows(); ++i)
+    for (uint32_t i = 0; i < sMapStore.GetNumRows(); ++i)
     {
         auto map_object = sMapStore.LookupEntry(i);
         if (map_object == nullptr)
             continue;
 
-        area_map_collection->insert(std::pair<uint32, uint32>(map_object->id, map_object->linked_zone));
+        area_map_collection->insert(std::pair<uint32_t, uint32_t>(map_object->id, map_object->linked_zone));
     }
     auto wmo_row_count = sWMOAreaTableStore.GetNumRows();
-    for (uint32 i = 0; i < wmo_row_count; ++i)
+    for (uint32_t i = 0; i < wmo_row_count; ++i)
     {
         if (auto entry = sWMOAreaTableStore.LookupEntry(i))
         {
@@ -294,19 +293,18 @@ DBC::Structures::WMOAreaTableEntry const* GetWMOAreaTableEntryByTriple(int32 roo
     return iter->second;
 }
 
-std::string generateName(uint32 type)
+std::string generateName(uint32_t type)
 {
     if (_namegenData[type].size() == 0)
         return "ERR";
 
-    uint32 ent = RandomUInt((uint32)_namegenData[type].size() - 1);
+    uint32_t ent = RandomUInt((uint32_t)_namegenData[type].size() - 1);
     return _namegenData[type].at(ent).name;
 }
 
-uint32 const* getTalentTabPages(uint8 playerClass)
+uint32_t const* getTalentTabPages(uint8_t playerClass)
 {
     return InspectTalentTabPages[playerClass];
 }
 
-#endif
 #endif
