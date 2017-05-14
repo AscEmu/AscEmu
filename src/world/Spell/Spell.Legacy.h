@@ -164,7 +164,6 @@ class SERVER_DECL Spell : public EventableObject
         void SendCastResult(Player* caster, uint8 castCount, uint8 result, SpellExtraError extraError);
         void WriteCastResult(WorldPacket& data, Player* caster, uint32 spellInfo, uint8 castCount, uint8 result, SpellExtraError extraError);
         void SendCastResult(uint8 result);
-        void SetCustomCastResultMessage(SpellExtraError result);
         void SendSpellStart();
         void SendSpellGo();
         void SendLogExecute(uint32 damage, uint64 & targetGuid);
@@ -324,50 +323,6 @@ class SERVER_DECL Spell : public EventableObject
         void SpellEffectActivateRunes(uint32 i);
         void SpellEffectJumpTarget(uint32 i);
         void SpellEffectJumpBehindTarget(uint32 i);
-
-        // Spell Targets Handlers
-        void SpellTargetNULL(uint32 i, uint32 j);
-        void SpellTargetDefault(uint32 i, uint32 j);
-        void SpellTargetSelf(uint32 i, uint32 j);
-        void SpellTargetInvisibleAOE(uint32 i, uint32 j);
-        void SpellTargetFriendly(uint32 i, uint32 j);
-        void SpellTargetPet(uint32 i, uint32 j);
-        void SpellTargetSingleTargetEnemy(uint32 i, uint32 j);
-        void SpellTargetCustomAreaOfEffect(uint32 i, uint32 j);
-        void SpellTargetAreaOfEffect(uint32 i, uint32 j);
-        void SpellTargetLandUnderCaster(uint32 i, uint32 j);            /// I don't think this is the correct name for this one
-        void SpellTargetAllPartyMembersRangeNR(uint32 i, uint32 j);
-        void SpellTargetSingleTargetFriend(uint32 i, uint32 j);
-        void SpellTargetAoE(uint32 i, uint32 j);                        // something special
-        void SpellTargetSingleGameobjectTarget(uint32 i, uint32 j);
-        void SpellTargetInFrontOfCaster(uint32 i, uint32 j);
-        void SpellTargetSingleFriend(uint32 i, uint32 j);
-        void SpellTargetGameobject_itemTarget(uint32 i, uint32 j);
-        void SpellTargetPetOwner(uint32 i, uint32 j);
-        void SpellTargetEnemysAreaOfEffect(uint32 i, uint32 j);
-        void SpellTargetTypeTAOE(uint32 i, uint32 j);
-        void SpellTargetAllyBasedAreaEffect(uint32 i, uint32 j);
-        void SpellTargetScriptedEffects(uint32 i, uint32 j);
-        void SpellTargetSummon(uint32 i, uint32 j);
-        void SpellTargetNearbyPartyMembers(uint32 i, uint32 j);
-        void SpellTargetSingleTargetPartyMember(uint32 i, uint32 j);
-        void SpellTargetScriptedEffects2(uint32 i, uint32 j);
-        void SpellTargetPartyMember(uint32 i, uint32 j);
-        void SpellTargetDummyTarget(uint32 i, uint32 j);
-        void SpellTargetFishing(uint32 i, uint32 j);
-        void SpellTargetType40(uint32 i, uint32 j);
-        void SpellTargetTotem(uint32 i, uint32 j);
-        void SpellTargetChainTargeting(uint32 i, uint32 j);
-        void SpellTargetSimpleTargetAdd(uint32 i, uint32 j);
-        void SpellTargetAllRaid(uint32 i, uint32 j);
-        void SpellTargetTargetAreaSelectedUnit(uint32 i, uint32 j);
-        void SpellTargetInFrontOfCaster2(uint32 i, uint32 j);
-        void SpellTargetTargetPartyMember(uint32 i, uint32 j);
-        void SpellTargetSameGroupSameClass(uint32 i, uint32 j);
-        //these are custom
-        void SpellTargetSinglePartyInjured(uint32 i, uint32 j);
-        void SpellTargetMultiplePartyInjured(uint32 i, uint32 j);
-        void SpellTargetNonCombatPet(uint32 i, uint32 j);
 
         void Heal(int32 amount, bool ForceCrit = false);
 
