@@ -24,6 +24,7 @@
 #include "vec3d.h"
 #include "modelheaders.h"
 #include <vector>
+#include "vmapexport.h"
 
 class MPQFile;
 
@@ -42,10 +43,12 @@ private:
     std::string filename;
 public:
     ModelHeader header;
+    ModelBoundingVertex* boundingVertices;
     Vec3D* vertices;
     uint16* indices;
+    size_t nIndices;
 
-    bool open();
+    bool open(StringSet& failedPaths);
     bool ConvertToVMAPModel(char const* outfilename);
 
     Model(std::string& filename);

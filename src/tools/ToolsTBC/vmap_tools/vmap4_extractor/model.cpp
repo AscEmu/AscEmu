@@ -25,18 +25,18 @@
 #include <algorithm>
 #include <cstdio>
 
-Model::Model(std::string &filename) : filename(filename), vertices(0), indices(0)
+Model::Model(std::string &filename) : filename(filename), vertices(nullptr), indices(nullptr)
 {
-    memset(&header, 0, sizeof(header));
 }
 
-bool Model::open()
+bool Model::open(StringSet& failed_path_names)
 {
     MPQFile f(filename.c_str());
 
     if (f.isEof())
     {
         f.close();
+        failed_path_names.insert(filename);
         // Do not show this error on console to avoid confusion, the extractor can continue working even if some models fail to load
         //printf("Error loading model %s\n", filename.c_str());
         return false;
@@ -47,16 +47,18 @@ bool Model::open()
     memcpy(&header, f.getBuffer(), sizeof(ModelHeader));
     if (header.nBoundingTriangles > 0)
     {
-        f.seek(0);
-        f.seekRelative(header.ofsBoundingVertices);
+        boundingVertices = (ModelBoundingVertex*)(f.getBuffer() + header.ofsBoundingVertices);
         vertices = new Vec3D[header.nBoundingVertices];
-        f.read(vertices, header.nBoundingVertices * 12);
-        for (uint32 i = 0; i < header.nBoundingVertices; i++)
-            vertices[i] = fixCoordSystem(vertices[i]);
-        f.seek(0);
-        f.seekRelative(header.ofsBoundingTriangles);
-        indices = new uint16[header.nBoundingTriangles];
-        f.read(indices, header.nBoundingTriangles * 2);
+
+        for (size_t i = 0; i < header.nBoundingVertices; i++)
+            vertices[i] = fixCoordSystem(boundingVertices[i].pos);
+
+        uint16* triangles = (uint16*)(f.getBuffer() + header.ofsBoundingTriangles);
+
+        nIndices = header.nBoundingTriangles;
+        indices = new uint16[nIndices];
+        memcpy(indices, triangles, nIndices * 2);
+
         f.close();
     }
     else

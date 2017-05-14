@@ -214,25 +214,27 @@ void ParsMapFiles()
     char fn[512];
     //char id_filename[64];
     char id[10];
-    for (unsigned int i=0; i<map_count; ++i)
+    StringSet failedPathNames;
+    for (unsigned int i = 0; i < map_count; ++i)
     {
-        sprintf(id,"%03u",map_ids[i].id);
+        sprintf(id,"%03u", map_ids[i].id);
         sprintf(fn,"World\\Maps\\%s\\%s.wdt", map_ids[i].name, map_ids[i].name);
-        WDTFile WDT(fn,map_ids[i].name);
+        WDTFile WDT(fn, map_ids[i].name);
         if(WDT.init(id, map_ids[i].id))
         {
             printf("Processing Map %u\n[", map_ids[i].id);
-            for (int x=0; x<64; ++x)
+            for (int x = 0; x < 64; ++x)
             {
-                for (int y=0; y<64; ++y)
+                for (int y = 0; y < 64; ++y)
                 {
-                    if (ADTFile *ADT = WDT.GetMap(x,y))
+                    if (ADTFile* ADT = WDT.GetMap(x, y))
                     {
                         //sprintf(id_filename,"%02u %02u %03u",x,y,map_ids[i].id);//!!!!!!!!!
-                        ADT->init(map_ids[i].id, x, y);
+                        ADT->init(map_ids[i].id, x, y, failedPathNames);
                         delete ADT;
                     }
                 }
+
                 printf("#");
                 fflush(stdout);
             }
@@ -324,14 +326,11 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames)
     {
         pArchiveNames.push_back(in_path + *i + "/locale-" + *i + ".MPQ");
         pArchiveNames.push_back(in_path + *i + "/expansion-locale-" + *i + ".MPQ");
-        pArchiveNames.push_back(in_path + *i + "/lichking-locale-" + *i + ".MPQ");
     }
 
     // open expansion and common files
     pArchiveNames.push_back(input_path + std::string("common.MPQ"));
-    pArchiveNames.push_back(input_path + std::string("common-2.MPQ"));
     pArchiveNames.push_back(input_path + std::string("expansion.MPQ"));
-    pArchiveNames.push_back(input_path + std::string("lichking.MPQ"));
 
     // now, scan for the patch levels in the core dir
     printf("Scanning patch levels from data directory.\n");

@@ -27,11 +27,11 @@
 #define snprintf _snprintf
 #endif
 
-char const* GetPlainName(char const* FileName)
+const char* GetPlainName(const char* FileName)
 {
-    const char * szTemp;
+    const char* szTemp;
 
-    if((szTemp = strrchr(FileName, '\\')) != NULL)
+    if ((szTemp = strrchr(FileName, '\\')) != NULL)
         FileName = szTemp + 1;
     return FileName;
 }
@@ -68,9 +68,10 @@ void fixname2(char* name, size_t len)
     }
 }
 
-char* GetExtension(char* FileName)
+char const* GetExtension(char const* FileName)
 {
-    if (char* szTemp = strrchr(FileName, '.'))
+    char const* szTemp;
+    if ((szTemp = strrchr(FileName, '.')) != NULL)
         return szTemp;
     return NULL;
 }
@@ -80,7 +81,7 @@ ADTFile::ADTFile(char* filename): ADT(filename), nWMO(0), nMDX(0), WmoInstansNam
     Adtfilename.append(filename);
 }
 
-bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
+bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY, StringSet& failedPaths)
 {
     if(ADT.isEof ())
         return false;
@@ -92,10 +93,10 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
 
     Adtfilename.erase(Adtfilename.find(".adt"),4);
     std::string TempMapNumber;
-    TempMapNumber = Adtfilename.substr(Adtfilename.length()-6,6);
-    xMap = TempMapNumber.substr(TempMapNumber.find("_")+1,(TempMapNumber.find_last_of("_")-1) - (TempMapNumber.find("_")));
-    yMap = TempMapNumber.substr(TempMapNumber.find_last_of("_")+1,(TempMapNumber.length()) - (TempMapNumber.find_last_of("_")));
-    Adtfilename.erase((Adtfilename.length()-xMap.length()-yMap.length()-2), (xMap.length()+yMap.length()+2));
+    TempMapNumber = Adtfilename.substr(Adtfilename.length() - 6, 6);
+    xMap = TempMapNumber.substr(TempMapNumber.find("_") + 1, (TempMapNumber.find_last_of("_") - 1) - (TempMapNumber.find("_")));
+    yMap = TempMapNumber.substr(TempMapNumber.find_last_of("_") + 1, (TempMapNumber.length()) - (TempMapNumber.find_last_of("_")));
+    Adtfilename.erase((Adtfilename.length() - xMap.length() - yMap.length() - 2), (xMap.length() + yMap.length() + 2));
 
     std::string dirname = std::string(szWorkDirWmo) + "/dir_bin";
     FILE *dirfile;
@@ -131,18 +132,18 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY)
                 char *p=buf;
                 int t=0;
                 ModelInstansName = new std::string[size];
-                while (p<buf+size)
+                while (p < buf + size)
                 {
                     fixnamen(p,strlen(p));
                     char* s = GetPlainName(p);
                     fixname2(s,strlen(s));
+                    std::string path(p);
 
+                    std::string fixedName;
+                    ExtractSingleModel(path, fixedName, failedPaths);
                     ModelInstansName[t++] = s;
 
-                    std::string path(p);
-                    ExtractSingleModel(path);
-
-                    p = p+strlen(p)+1;
+                    p = p + strlen(p) + 1;
                 }
                 delete[] buf;
             }

@@ -22,6 +22,7 @@
 
 #include "mpq_libmpq04.h"
 #include "wmo.h"
+#include "vmapexport.h"
 #include "model.h"
 
 #define TILESIZE (533.33333f)
@@ -120,12 +121,12 @@ public:
     int nMDX;
     std::string* WmoInstansName;
     std::string* ModelInstansName;
-    bool init(uint32 map_num, uint32 tileX, uint32 tileY);
+    bool init(uint32 map_num, uint32 tileX, uint32 tileY, StringSet& failedPaths);
 };
 
 const char* GetPlainName(const char* FileName);
 char* GetPlainName(char* FileName);
-char* GetExtension(char* FileName);
+char const* GetExtension(char const* FileName);
 void fixnamen(char *name, size_t len);
 void fixname2(char *name, size_t len);
 
