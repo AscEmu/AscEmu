@@ -30,7 +30,7 @@
 #include "Definitions/SpellDidHitResult.h"
 #include "SpellHelpers.h"
 
-uint32 g_spellImplicitTargetFlags[MAX_IMPLICIT_TARGET_VALUE];
+uint32_t g_spellImplicitTargetFlags[MAX_IMPLICIT_TARGET_VALUE];
 
 void InitImplicitTargetFlags()
 {

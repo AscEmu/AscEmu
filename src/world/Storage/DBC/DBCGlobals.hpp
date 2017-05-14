@@ -9,6 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "DBCLoader.hpp"
 #include "DBCStructures.hpp"
 #include "Log.hpp"
+#include <iostream>
 
 namespace DBC
 {

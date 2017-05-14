@@ -49,7 +49,7 @@ enum SpellImplicitTargetType
 
 #define MAX_IMPLICIT_TARGET_VALUE 1337
 
-extern uint32 g_spellImplicitTargetFlags[MAX_IMPLICIT_TARGET_VALUE];
+extern uint32_t g_spellImplicitTargetFlags[MAX_IMPLICIT_TARGET_VALUE];
 
 void InitImplicitTargetFlags();
 
