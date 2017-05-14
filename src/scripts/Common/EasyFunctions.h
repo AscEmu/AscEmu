@@ -37,6 +37,7 @@
 #define CREATE_CREATURESCRIPT(cl) &cl::Create
 #include <Management/QuestLogEntry.hpp>
 #include "Map/MapScriptInterface.h"
+#include <Spell/Customization/SpellCustomizations.hpp>
 
 class SCRIPT_DECL EasyFunctions
 {

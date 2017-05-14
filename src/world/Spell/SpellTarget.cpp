@@ -28,6 +28,7 @@
 #include "Server/World.Legacy.h"
 #include "Definitions/SpellCastTargetFlags.h"
 #include "Definitions/SpellDidHitResult.h"
+#include "SpellHelpers.h"
 
 uint32 g_spellImplicitTargetFlags[MAX_IMPLICIT_TARGET_VALUE];
 

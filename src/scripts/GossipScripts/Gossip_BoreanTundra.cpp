@@ -20,6 +20,7 @@
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Objects/ObjectMgr.h"
+#include <Spell/Customization/SpellCustomizations.hpp>
 
 enum UnorderedEntry
 {

@@ -20,6 +20,7 @@
 
 #include "Setup.h"
 #include "Management/Gossip/GossipMenu.hpp"
+#include <Units/Creatures/Pet.h>
 
 #define SendQuickMenu(textid) objmgr.CreateGossipMenuForPlayer(&Menu, pObject->GetGUID(), textid, plr); \
     Menu->SendTo(plr);

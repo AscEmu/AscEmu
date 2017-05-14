@@ -26,6 +26,7 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include <Spell/Definitions/SpellIsFlags.h>
 #include <Spell/Definitions/SpellMechanics.h>
+#include <Spell/Customization/SpellCustomizations.hpp>
 
 //Alice : Correct formula for Rogue - Preparation
 

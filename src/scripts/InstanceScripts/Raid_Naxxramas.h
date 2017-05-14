@@ -20,6 +20,7 @@
 // \todo Move defines to enums, cleanup this... this... thing o.O
 
 #include "Objects/Faction.h"
+#include <Units/Creatures/Pet.h>
 class GrandWidowFaerlinaAI;
 class AnubRekhanAI;
 class DeathchargerSteedAI;

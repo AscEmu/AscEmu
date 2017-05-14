@@ -24,6 +24,8 @@
 #include "Spell/SpellMgr.h"
 #include "Spell/SpellAuras.h"
 #include <Spell/Definitions/PowerType.h>
+#include <Spell/Customization/SpellCustomizations.hpp>
+#include <Units/Creatures/Pet.h>
 
 //////////////////////////////////////////////////////////////
 //bool SoulLinkParent( uint32 i, Spell *s )

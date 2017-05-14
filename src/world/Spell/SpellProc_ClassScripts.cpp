@@ -30,6 +30,7 @@
 #include "Definitions/ProcFlags.h"
 #include "Definitions/SpellIsFlags.h"
 #include "Definitions/SpellEffectTarget.h"
+#include "SpellHelpers.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;

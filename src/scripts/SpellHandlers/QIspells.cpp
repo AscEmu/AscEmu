@@ -20,6 +20,7 @@
 #include "../Common/EasyFunctions.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Spell/SpellAuras.h"
+#include <Units/Creatures/Pet.h>
 
 bool CleansingVial(uint32 i, Spell* pSpell)
 {

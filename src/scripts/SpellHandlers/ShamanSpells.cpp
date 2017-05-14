@@ -24,6 +24,7 @@
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/Definitions/ProcFlags.h"
 #include <Spell/Definitions/PowerType.h>
+#include <Spell/Customization/SpellCustomizations.hpp>
 
 /************************************************************************/
 /* Spell Defs                                                           */

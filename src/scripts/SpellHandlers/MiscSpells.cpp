@@ -29,6 +29,7 @@
 #include "Map/MapScriptInterface.h"
 #include "Spell/SpellMgr.h"
 #include "Spell/SpellAuras.h"
+#include <Spell/Customization/SpellCustomizations.hpp>
 
 bool FrostWarding(uint32 i, Spell* s)
 {
@@ -492,7 +493,7 @@ bool TeleportToCoordinates(uint32 i, Spell* s)
 }
 
 
-static float IOCTeleInLocations[6][4] = 
+static float IOCTeleInLocations[6][4] =
 {
     { 399.66f, -798.63f, 49.06f, 4.01f },     // Alliance front gate in
     { 313.64f, -775.43f, 49.04f, 4.93f },     // Alliance west gate in
@@ -502,7 +503,7 @@ static float IOCTeleInLocations[6][4] =
     { 1196.06f, -842.70f, 49.13f, 0.30f },    // Horde east gate in
 };
 
-static float IOCTeleOutLocations[6][4] = 
+static float IOCTeleOutLocations[6][4] =
 {
     { 429.79f, -800.825f, 49.03f, 3.23f },    // Alliance front gate out
     { 324.68f, -748.73f, 49.38f, 1.76f },     // Alliance west gate out

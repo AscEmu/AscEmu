@@ -23,6 +23,7 @@
 #include "Setup.h"
 #include "Instance_Deadmines.h"
 #include "Server/LazyTimer.h"
+#include <Units/Creatures/Pet.h>
 
 
 static Movement::Location Doors[] =

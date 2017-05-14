@@ -19,6 +19,8 @@
  *
  */
 
+#include "SpellTarget.h"
+#ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 #include "Spell.Legacy.h"
 #include "Definitions/SpellInFrontStatus.h"
 #include "Definitions/SpellCastTargetFlags.h"
@@ -37,7 +39,7 @@
 #include "Definitions/SpellEffectTarget.h"
 #include "Definitions/PowerType.h"
 #include "Definitions/SpellDidHitResult.h"
-#ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
+#include "SpellHelpers.h"
 #include "StdAfx.h"
 #include "VMapFactory.h"
 #include "Management/Item.h"
@@ -293,6 +295,11 @@ Spell::~Spell()
         if (itr->second != NULL)
             delete itr->second;
     }
+}
+
+int32 Spell::event_GetInstanceID()
+{
+    return m_caster->GetInstanceID();
 }
 
 //i might forget conditions here. Feel free to add them
@@ -3137,6 +3144,141 @@ bool Spell::IsSeal()
         (GetSpellInfo()->Id == 31801) || (GetSpellInfo()->Id == 31892) || (GetSpellInfo()->Id == 53720) || (GetSpellInfo()->Id == 53736));
 }
 
+SpellInfo* Spell::GetSpellInfo()
+{
+    return (m_spellInfo_override == NULL) ? m_spellInfo : m_spellInfo_override;
+}
+
+void Spell::InitProtoOverride()
+{
+    if (m_spellInfo_override != NULL)
+        return;
+    m_spellInfo_override = sSpellCustomizations.GetSpellInfo(m_spellInfo->Id);
+}
+
+uint32 Spell::GetDuration()
+{
+    if (bDurSet)
+        return Dur;
+    bDurSet = true;
+    int32 c_dur = 0;
+
+    if (GetSpellInfo()->DurationIndex)
+    {
+        auto spell_duration = sSpellDurationStore.LookupEntry(GetSpellInfo()->DurationIndex);
+        if (spell_duration)
+        {
+            //check for negative and 0 durations.
+            //duration affected by level
+            if ((int32)spell_duration->Duration1 < 0 && spell_duration->Duration2 && u_caster)
+            {
+                this->Dur = uint32(((int32)spell_duration->Duration1 + (spell_duration->Duration2 * u_caster->getLevel())));
+                if ((int32)this->Dur > 0 && spell_duration->Duration3 > 0 && (int32)this->Dur > (int32)spell_duration->Duration3)
+                {
+                    this->Dur = spell_duration->Duration3;
+                }
+
+                if ((int32)this->Dur < 0)
+                    this->Dur = 0;
+                c_dur = this->Dur;
+            }
+            if (!c_dur)
+            {
+                this->Dur = spell_duration->Duration1;
+            }
+            //combo point lolerCopter? ;P
+            if (p_caster)
+            {
+                uint32 cp = p_caster->m_comboPoints;
+                if (cp)
+                {
+                    uint32 bonus = (cp * (spell_duration->Duration3 - spell_duration->Duration1)) / 5;
+                    if (bonus)
+                    {
+                        this->Dur += bonus;
+                        m_requiresCP = true;
+                    }
+                }
+            }
+
+            if (u_caster != nullptr)
+            {
+                ascemu::World::Spell::Helpers::spellModFlatIntValue(u_caster->SM_FDur, (int32*)&this->Dur, GetSpellInfo()->SpellGroupType);
+                ascemu::World::Spell::Helpers::spellModPercentageIntValue(u_caster->SM_PDur, (int32*)&this->Dur, GetSpellInfo()->SpellGroupType);
+#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
+                        int spell_flat_modifers = 0;
+                        int spell_pct_modifers = 0;
+                        spellModFlatIntValue(u_caster->SM_FDur, &spell_flat_modifers, GetProto()->SpellGroupType);
+                        spellModFlatIntValue(u_caster->SM_PDur, &spell_pct_modifers, GetProto()->SpellGroupType);
+                        if (spell_flat_modifers != 0 || spell_pct_modifers != 0)
+                            LOG_DEBUG("!!!!!spell duration mod flat %d , spell duration mod pct %d , spell duration %d, spell group %u", spell_flat_modifers, spell_pct_modifers, Dur, GetProto()->SpellGroupType);
+#endif
+            }
+        }
+        else
+        {
+            this->Dur = (uint32)-1;
+        }
+    }
+    else
+    {
+        this->Dur = (uint32)-1;
+    }
+
+    return this->Dur;
+}
+
+float Spell::GetRadius(uint32 i)
+{
+    if (bRadSet[i])
+        return Rad[i];
+    bRadSet[i] = true;
+    Rad[i] = ::GetRadius(sSpellRadiusStore.LookupEntry(GetSpellInfo()->EffectRadiusIndex[i]));
+    if (u_caster != nullptr)
+    {
+        ascemu::World::Spell::Helpers::spellModFlatFloatValue(u_caster->SM_FRadius, &Rad[i], GetSpellInfo()->SpellGroupType);
+        ascemu::World::Spell::Helpers::spellModPercentageFloatValue(u_caster->SM_PRadius, &Rad[i], GetSpellInfo()->SpellGroupType);
+#ifdef COLLECTION_OF_UNTESTED_STUFF_AND_TESTERS
+                float spell_flat_modifers = 0;
+                float spell_pct_modifers = 1;
+                spellModFlatFloatValue(u_caster->SM_FRadius, &spell_flat_modifers, GetProto()->SpellGroupType);
+                spellModPercentageFloatValue(u_caster->SM_PRadius, &spell_pct_modifers, GetProto()->SpellGroupType);
+                if (spell_flat_modifers != 0 || spell_pct_modifers != 1)
+                    LOG_DEBUG("!!!!!spell radius mod flat %f , spell radius mod pct %f , spell radius %f, spell group %u", spell_flat_modifers, spell_pct_modifers, Rad[i], GetProto()->SpellGroupType);
+#endif
+    }
+
+    return Rad[i];
+}
+
+uint32 Spell::GetBaseThreat(uint32 dmg)
+{
+    //there should be a formula to determine what spell cause threat and which don't
+    /*        switch(GetProto()->custom_NameHash)
+            {
+            //hunter's mark
+            case 4287212498:
+            {
+            return 0;
+            }break;
+            }*/
+    return dmg;
+}
+
+uint32 Spell::GetMechanic(SpellInfo* sp)
+{
+    if (sp->MechanicsType)
+        return sp->MechanicsType;
+    if (sp->EffectMechanic[2])
+        return sp->EffectMechanic[2];
+    if (sp->EffectMechanic[1])
+        return sp->EffectMechanic[1];
+    if (sp->EffectMechanic[0])
+        return sp->EffectMechanic[0];
+
+    return 0;
+}
+
 uint8 Spell::CanCast(bool tolerate)
 {
     uint32 i;
@@ -4500,6 +4642,54 @@ uint8 Spell::CanCast(bool tolerate)
     return SPELL_CANCAST_OK;
 }
 
+bool Spell::HasCustomFlag(uint32 flag)
+{
+    if ((GetSpellInfo()->CustomFlags & flag) != 0)
+        return true;
+    else
+        return false;
+}
+
+bool Spell::hasAttribute(SpellAttributes attribute)
+{
+    return (GetSpellInfo()->Attributes & attribute) != 0;
+}
+
+bool Spell::hasAttributeEx(SpellAttributesEx attribute)
+{
+    return (GetSpellInfo()->AttributesEx & attribute) != 0;
+}
+
+bool Spell::hasAttributeExB(SpellAttributesExB attribute)
+{
+    return (GetSpellInfo()->AttributesExB & attribute) != 0;
+}
+
+bool Spell::hasAttributeExC(SpellAttributesExC attribute)
+{
+    return (GetSpellInfo()->AttributesExC & attribute) != 0;
+}
+
+bool Spell::hasAttributeExD(SpellAttributesExD attribute)
+{
+    return (GetSpellInfo()->AttributesExD & attribute) != 0;
+}
+
+bool Spell::hasAttributeExE(SpellAttributesExE attribute)
+{
+    return (GetSpellInfo()->AttributesExE & attribute) != 0;
+}
+
+bool Spell::hasAttributeExF(SpellAttributesExF attribute)
+{
+    return (GetSpellInfo()->AttributesExF & attribute) != 0;
+}
+
+bool Spell::hasAttributeExG(SpellAttributesExG attribute)
+{
+    return (GetSpellInfo()->AttributesExG & attribute) != 0;
+}
+
 void Spell::RemoveItems()
 {
     // Item Charges & Used Item Removal
@@ -5090,6 +5280,10 @@ int32 Spell::DoCalculateEffect(uint32 i, Unit* target, int32 value)
     return value;
 }
 
+void Spell::DoAfterHandleEffect(Unit* target, uint32 i)
+{
+}
+
 void Spell::HandleTeleport(float x, float y, float z, uint32 mapid, Unit* Target)
 {
     if (Target->IsPlayer())
@@ -5389,6 +5583,31 @@ void Spell::Heal(int32 amount, bool ForceCrit)
 
 uint32 Spell::GetType() { return (GetSpellInfo()->Spell_Dmg_Type == SPELL_DMG_TYPE_NONE ? SPELL_DMG_TYPE_MAGIC : GetSpellInfo()->Spell_Dmg_Type); }
 
+Item* Spell::GetItemTarget() const
+{
+    return itemTarget;
+}
+
+Unit* Spell::GetUnitTarget() const
+{
+    return unitTarget;
+}
+
+Player* Spell::GetPlayerTarget() const
+{
+    return playerTarget;
+}
+
+GameObject* Spell::GetGameObjectTarget() const
+{
+    return gameObjTarget;
+}
+
+Corpse* Spell::GetCorpseTarget() const
+{
+    return corpseTarget;
+}
+
 void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multiplicator)
 {
     if (p_caster == NULL)
@@ -5658,6 +5877,36 @@ bool Spell::Reflect(Unit* refunit)
     return true;
 }
 
+uint32 Spell::getState() const
+{
+    return m_spellState;
+}
+
+void Spell::SetUnitTarget(Unit* punit)
+{
+    unitTarget = punit;
+}
+
+void Spell::SetTargetConstraintCreature(Creature* pCreature)
+{
+    targetConstraintCreature = pCreature;
+}
+
+void Spell::SetTargetConstraintGameObject(GameObject* pGameobject)
+{
+    targetConstraintGameObject = pGameobject;
+}
+
+Creature* Spell::GetTargetConstraintCreature() const
+{
+    return targetConstraintCreature;
+}
+
+GameObject* Spell::GetTargetConstraintGameObject() const
+{
+    return targetConstraintGameObject;
+}
+
 /// Calculate the Diminishing Group. This is based on a name hash.
 /// this off course is very hacky, but as its made done in a proper way
 /// I leave it here.
@@ -5832,6 +6081,51 @@ void Spell::SendCastSuccess(const uint64 & guid)
 #if VERSION_STRING > TBC
     plr->GetSession()->OutPacket(uint16(SMSG_CLEAR_EXTRA_AURA_INFO_OBSOLETE), static_cast<uint16>(c), buffer);
 #endif
+}
+
+bool Spell::DuelSpellNoMoreValid() const
+{
+    if (duelSpell && (
+        (p_caster != NULL && p_caster->GetDuelState() != DUEL_STATE_STARTED) ||
+        (u_caster != NULL && u_caster->IsPet() && static_cast<Pet*>(u_caster)->GetPetOwner() && static_cast<Pet*>(u_caster)->GetPetOwner()->GetDuelState() != DUEL_STATE_STARTED)))
+        return true;
+    else
+        return false;
+}
+
+void Spell::safe_cancel()
+{
+    m_cancelled = true;
+}
+
+bool Spell::GetSpellFailed() const
+{
+    return m_Spell_Failed;
+}
+
+void Spell::SetSpellFailed(bool failed)
+{
+    m_Spell_Failed = failed;
+}
+
+bool Spell::IsReflected() const
+{
+    return m_IsReflected;
+}
+
+void Spell::SetReflected(bool reflected)
+{
+    m_IsReflected = reflected;
+}
+
+bool Spell::GetCanReflect() const
+{
+    return m_CanRelect;
+}
+
+void Spell::SetCanReflect(bool reflect)
+{
+    m_CanRelect = reflect;
 }
 
 uint8 Spell::GetErrorAtShapeshiftedCast(SpellInfo* spellInfo, uint32 form)

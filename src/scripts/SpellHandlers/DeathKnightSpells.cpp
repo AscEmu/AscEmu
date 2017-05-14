@@ -26,6 +26,7 @@
 #include "Server/Script/ScriptMgr.h"
 #include "Spell/Definitions/ProcFlags.h"
 #include <Spell/Definitions/DispelType.h>
+#include <Spell/Customization/SpellCustomizations.hpp>
 
 #define BLOOD_PLAGUE 55078
 #define FROST_FEVER 55095

@@ -32,6 +32,7 @@
 #include "Management/ChannelMgr.h"
 #include "Management/AddonMgr.h"
 #include "Management/AuctionMgr.h"
+#include "Spell/SpellTarget.h"
 
 createFileSingleton(Master);
 std::string LogFileName;
@@ -72,14 +73,14 @@ void Master::_OnSignal(int s)
             sWorld.loadWorldConfigValues(true);
             break;
 #endif
-    case SIGINT:
-    case SIGTERM:
-    case SIGABRT:
+        case SIGINT:
+        case SIGTERM:
+        case SIGABRT:
 #ifdef _WIN32
-    case SIGBREAK:
+        case SIGBREAK:
 #endif
-        Master::m_stopEvent = true;
-        break;
+            Master::m_stopEvent = true;
+            break;
     }
 
     signal(s, _OnSignal);
