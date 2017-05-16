@@ -10,7 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 //.vehicle ejectpassenger
 bool ChatHandler::HandleVehicleEjectPassengerCommand(const char* args, WorldSession* session)
 {
-    uint32 seat = 0;
+    uint32 seat;
     std::stringstream ss(args);
     ss >> seat;
     if (ss.fail())
