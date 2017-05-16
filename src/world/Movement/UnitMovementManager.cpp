@@ -6,7 +6,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 #include "UnitMovementManager.hpp"
 
-namespace Movement {
+namespace Movement
+{
     void UnitMovementManager::ForceUpdate()
     {
         m_lastUpdateTick = 0;
@@ -40,7 +41,7 @@ namespace Movement {
     {
     }
 
-    UnitMovementManager::UnitMovementManager(Spline::MoveSpline pSpline) : m_spline(pSpline)
+    UnitMovementManager::UnitMovementManager(Spline::MoveSpline pSpline) : m_spline(pSpline), m_lastUpdateTick(0)
     {
     }
 }
