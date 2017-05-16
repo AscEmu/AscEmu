@@ -574,7 +574,14 @@ namespace VMAP
         {
             WMOLiquidHeader hlq;
             READ_OR_RETURN(&blockId, 4);
-            CMP_OR_RETURN(blockId, "LIQU");
+
+            // null terminate string before call print in CMP_OR_RETURN
+            size_t sizet = strlen(blockId) + sizeof(char);
+            char* blockId2 = (char*)malloc(sizet);
+            strncpy(blockId2, blockId, sizet);
+
+            CMP_OR_RETURN(blockId2, "LIQU");
+
             READ_OR_RETURN(&blocksize, sizeof(int));
             READ_OR_RETURN(&hlq, sizeof(WMOLiquidHeader));
             liquid = new WmoLiquid(hlq.xtiles, hlq.ytiles, Vector3(hlq.pos_x, hlq.pos_y, hlq.pos_z), hlq.type);
@@ -607,7 +614,13 @@ namespace VMAP
         int readOperation = 0;
 
         READ_OR_RETURN(&ident, 8);
-        CMP_OR_RETURN(ident, RAW_VMAP_MAGIC);
+
+        // null terminate string before call print in CMP_OR_RETURN
+        size_t size = strlen(ident) + sizeof(char);
+        char* ident2 = (char*)malloc(size);
+        strncpy(ident2, ident, size);
+
+        CMP_OR_RETURN(ident2, RAW_VMAP_MAGIC);
 
         // we have to read one int. This is needed during the export and we have to skip it here
         uint32 tempNVectors;
