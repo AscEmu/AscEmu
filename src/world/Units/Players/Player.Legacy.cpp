@@ -7946,14 +7946,21 @@ void Player::SendGossipMenu(uint32 TitleTextId, uint64 npcGUID)
 bool Player::IsInCity()
 {
     auto at = GetMapMgr()->GetArea(GetPositionX(), GetPositionY(), GetPositionZ());
-    ::DBC::Structures::AreaTableEntry const* zt = NULL;
-    if (at->zone)
-        zt = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
+    if (at != nullptr)
+    {
+        ::DBC::Structures::AreaTableEntry const* zt = nullptr;
+        if (at->zone)
+            zt = MapManagement::AreaManagement::AreaStorage::GetAreaById(at->zone);
 
-    bool areaIsCity = at->flags & AREA_CITY_AREA || at->flags & AREA_CITY;
-    bool zoneIsCity = zt && (zt->flags & AREA_CITY_AREA || zt->flags & AREA_CITY);
+        bool areaIsCity = at->flags & AREA_CITY_AREA || at->flags & AREA_CITY;
+        bool zoneIsCity = zt && (zt->flags & AREA_CITY_AREA || zt->flags & AREA_CITY);
 
-    return (areaIsCity || zoneIsCity);
+        return (areaIsCity || zoneIsCity);
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void Player::ZoneUpdate(uint32 ZoneId)
