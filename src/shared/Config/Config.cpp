@@ -27,7 +27,8 @@ bool ConfigFile::openAndLoadConfigFile(std::string configFileName)
 
         // go to the end of the file
         fseek(configFile, 0, SEEK_END);
-        uint32_t fileLength = ftell(configFile);
+
+        long fileLength = ftell(configFile);
         if (fileLength <= 0)
         {
             fclose(configFile);
