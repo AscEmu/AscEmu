@@ -25,6 +25,7 @@
 #include "Faction.h"
 #include "Spell/SpellMgr.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/Spell.Legacy.h"
 #include "../../scripts/Common/Base.h"
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Definitions/SpellIsFlags.h"
