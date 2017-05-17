@@ -106,7 +106,7 @@ bool ConsoleThread::run()
         // null terminate string before call read
         size_t size = strlen(cmd) + sizeof(char);
         char* cmd2 = (char*)malloc(size);
-        strncpy(cmd2, cmd, sizet);
+        strncpy(cmd2, cmd, size);
 
         ret = read(0, cmd2, sizeof(cmd));
         if (ret <= 0)
