@@ -103,7 +103,12 @@ bool ConsoleThread::run()
                 break;
         }
 
-        ret = read(0, cmd, sizeof(cmd));
+        // null terminate string before call read
+        size_t size = strlen(cmd) + sizeof(char);
+        char* cmd2 = (char*)malloc(size);
+        strncpy(cmd2, cmd, sizet);
+
+        ret = read(0, cmd2, sizeof(cmd));
         if (ret <= 0)
         {
             break;
