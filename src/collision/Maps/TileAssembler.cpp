@@ -265,7 +265,7 @@ namespace VMAP
             return false;
         }
         printf("Read coordinate mapping...\n");
-        uint32 mapID, tileX, tileY, check=0;
+        uint32 mapID, tileX, tileY, check = 0;
         G3D::Vector3 v1, v2;
         ModelSpawn spawn;
         while (!feof(dirf))
@@ -279,7 +279,17 @@ namespace VMAP
             }
 
             check += fread(&tileX, sizeof(uint32), 1, dirf);
+            if (check == 0)
+            {
+                printf("Read tileX ends with an invalid check value of 0..\n");
+            }
+
             check += fread(&tileY, sizeof(uint32), 1, dirf);
+            if (check == 0)
+            {
+                printf("Read tileY ends with an invalid check value of 0..\n");
+            }
+
             if (!ModelSpawn::readFromFile(dirf, spawn))
             {
                 break;
