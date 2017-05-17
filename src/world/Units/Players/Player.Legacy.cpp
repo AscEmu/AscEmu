@@ -4358,7 +4358,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     {
         int i = 0;
         auto scaling_stat_distribution = sScalingStatDistributionStore.LookupEntry(proto->ScalingStatsEntry);
-        DBC::Structures::ScalingStatValuesEntry const* ssvrow = NULL;
+        DBC::Structures::ScalingStatValuesEntry const* ssvrow = nullptr;
         uint32 StatType;
         uint32 StatMod;
         uint32 plrLevel = getLevel();
@@ -4392,6 +4392,10 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
             col = GetStatScalingStatValueColumn(proto, SCALINGSTATSTAT);
             if (col == -1)
                 continue;
+
+            if (ssvrow == nullptr)
+                continue;
+
             StatMultiplier = ssvrow->multiplier[col];
             StatValue = StatMod * StatMultiplier / 10000;
             ModifyBonuses(StatType, StatValue, apply);
@@ -4404,9 +4408,12 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
             col = GetStatScalingStatValueColumn(proto, SCALINGSTATSPELLPOWER);
             if (col != -1)
             {
-                StatMultiplier = ssvrow->multiplier[col];
-                StatValue = StatMod * StatMultiplier / 10000;
-                ModifyBonuses(45, StatValue, apply);
+                if (ssvrow != nullptr)
+                {
+                    StatMultiplier = ssvrow->multiplier[col];
+                    StatValue = StatMod * StatMultiplier / 10000;
+                    ModifyBonuses(45, StatValue, apply);
+                }
             }
         }
 
@@ -4414,22 +4421,40 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         col = GetStatScalingStatValueColumn(proto, SCALINGSTATARMOR);
         if (col != -1)
         {
-            uint32 scaledarmorval = ssvrow->multiplier[col];
-            if (apply)BaseResistance[0] += scaledarmorval;
-            else  BaseResistance[0] -= scaledarmorval;
-            CalcResistance(0);
+            if (ssvrow != nullptr)
+            {
+                uint32 scaledarmorval = ssvrow->multiplier[col];
+
+                if (apply)
+                    BaseResistance[0] += scaledarmorval;
+                else 
+                    BaseResistance[0] -= scaledarmorval;
+
+                CalcResistance(0);
+            }
         }
 
         /* Calculating the damages correct for our level and applying it */
         col = GetStatScalingStatValueColumn(proto, SCALINGSTATDAMAGE);
         if (col != -1)
         {
-            uint32 scaleddps = ssvrow->multiplier[col];
+            uint32 scaleddps;
+
+            if (ssvrow != nullptr)
+            {
+                scaleddps = ssvrow->multiplier[col];
+            }
+            else
+            {
+                scaleddps = 1;
+            }
+
             float dpsmod = 1.0;
 
             if (proto->ScalingStatsFlag & 0x1400)
                 dpsmod = 0.2f;
-            else dpsmod = 0.3f;
+            else
+                dpsmod = 0.3f;
 
             float scaledmindmg = (scaleddps - (scaleddps * dpsmod)) * (proto->Delay / 1000);
             float scaledmaxdmg = (scaleddps * (dpsmod + 1.0f)) * (proto->Delay / 1000);
