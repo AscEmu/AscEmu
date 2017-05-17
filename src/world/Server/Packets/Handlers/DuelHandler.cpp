@@ -24,6 +24,7 @@
 #include "Spell/SpellAuras.h"
 #include "Server/WorldSession.h"
 #include "Objects/GameObject.h"
+#include "Units/Creatures/Pet.h"
 
 #if VERSION_STRING != Cata
 void WorldSession::HandleDuelAccepted(WorldPacket& recv_data)

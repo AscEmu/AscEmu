@@ -38,6 +38,8 @@
 #include "Spell/Definitions/SpellIsFlags.h"
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/SpellHelpers.h"
+#include "Pet.h"
+#include "Spell/SpellEffects.h"
 
 #ifndef UNIX
 #include <cmath>

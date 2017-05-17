@@ -32,6 +32,7 @@
 #include <mutex>
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
 
 initialiseSingleton(ScriptMgr);
 initialiseSingleton(HookInterface);
@@ -113,7 +114,7 @@ void ScriptMgr::LoadScripts()
                 delete dl;
                 continue;
             }
-            
+
             // Make sure we use the same ServerState singleton
             set_serverstate_call(ServerState::instance());
 

@@ -20,6 +20,7 @@
  */
 
 #include "SpellTarget.h"
+#include "Units/Creatures/Pet.h"
 #ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 #include "Spell.Legacy.h"
 #include "Definitions/SpellInFrontStatus.h"

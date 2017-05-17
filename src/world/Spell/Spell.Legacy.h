@@ -113,14 +113,14 @@ class SERVER_DECL Spell : public EventableObject
 
     bool HasCustomFlag(uint32 flag);
 
-    inline bool hasAttribute(SpellAttributes attribute);
-    inline bool hasAttributeEx(SpellAttributesEx attribute);
-    inline bool hasAttributeExB(SpellAttributesExB attribute);
-    inline bool hasAttributeExC(SpellAttributesExC attribute);
-    inline bool hasAttributeExD(SpellAttributesExD attribute);
-    inline bool hasAttributeExE(SpellAttributesExE attribute);
-    inline bool hasAttributeExF(SpellAttributesExF attribute);
-    inline bool hasAttributeExG(SpellAttributesExG attribute);
+    bool hasAttribute(SpellAttributes attribute);
+    bool hasAttributeEx(SpellAttributesEx attribute);
+    bool hasAttributeExB(SpellAttributesExB attribute);
+    bool hasAttributeExC(SpellAttributesExC attribute);
+    bool hasAttributeExD(SpellAttributesExD attribute);
+    bool hasAttributeExE(SpellAttributesExE attribute);
+    bool hasAttributeExF(SpellAttributesExF attribute);
+    bool hasAttributeExG(SpellAttributesExG attribute);
 
         // Removes reagents, ammo, and items/charges
         void RemoveItems();
@@ -140,12 +140,12 @@ class SERVER_DECL Spell : public EventableObject
 
         bool Reflect(Unit* refunit);
 
-    inline uint32 getState() const;
-    inline void SetUnitTarget(Unit* punit);
-    inline void SetTargetConstraintCreature(Creature* pCreature);
-    inline void SetTargetConstraintGameObject(GameObject* pGameobject);
-    inline Creature* GetTargetConstraintCreature() const;
-    inline GameObject* GetTargetConstraintGameObject() const;
+    uint32 getState() const;
+    void SetUnitTarget(Unit* punit);
+    void SetTargetConstraintCreature(Creature* pCreature);
+    void SetTargetConstraintGameObject(GameObject* pGameobject);
+    Creature* GetTargetConstraintCreature() const;
+    GameObject* GetTargetConstraintGameObject() const;
 
         // Send Packet functions
         void SetExtraCastResult(SpellExtraError result);
@@ -328,10 +328,10 @@ class SERVER_DECL Spell : public EventableObject
         std::vector<uint64_t> UniqueTargets;
         std::vector<SpellTargetMod> ModeratedTargets;
 
-    inline Item* GetItemTarget() const;
-    inline Unit* GetUnitTarget() const;
-    inline Player* GetPlayerTarget() const;
-    inline GameObject* GetGameObjectTarget() const;
+    Item* GetItemTarget() const;
+    Unit* GetUnitTarget() const;
+    Player* GetPlayerTarget() const;
+    GameObject* GetGameObjectTarget() const;
     Corpse* GetCorpseTarget() const;
 
         uint32 chaindamage;
@@ -340,17 +340,17 @@ class SERVER_DECL Spell : public EventableObject
         bool IsAspect();
         bool IsSeal();
 
-    inline SpellInfo* GetSpellInfo();
+    SpellInfo* GetSpellInfo();
 
     void InitProtoOverride();
 
     uint32 GetDuration();
 
-    inline float GetRadius(uint32 i);
+    float GetRadius(uint32 i);
 
-    inline static uint32 GetBaseThreat(uint32 dmg);
+    static uint32 GetBaseThreat(uint32 dmg);
 
-    inline static uint32 GetMechanic(SpellInfo* sp);
+    static uint32 GetMechanic(SpellInfo* sp);
 
         bool IsStealthSpell();
         bool IsInvisibilitySpell();
@@ -388,19 +388,19 @@ class SERVER_DECL Spell : public EventableObject
         ///////////////////////////////////////////////////////////////////////////////
     bool DuelSpellNoMoreValid() const;
 
-    inline void safe_cancel();
+    void safe_cancel();
 
         /// Spell state's
         /// Spell failed
-    inline bool GetSpellFailed() const;
-    inline void SetSpellFailed(bool failed = true);
+    bool GetSpellFailed() const;
+    void SetSpellFailed(bool failed = true);
 
-    inline bool IsReflected() const;
-    inline void SetReflected(bool reflected = true);
+    bool IsReflected() const;
+    void SetReflected(bool reflected = true);
 
         /// Spell possibility's
-    inline bool GetCanReflect() const;
-    inline void SetCanReflect(bool reflect = true);
+    bool GetCanReflect() const;
+    void SetCanReflect(bool reflect = true);
 
 
         Spell* m_reflectedParent;

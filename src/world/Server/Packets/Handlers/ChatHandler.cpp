@@ -26,6 +26,7 @@
 #include "Management/Battleground/Battleground.h"
 #include "Map/MapMgr.h"
 #include "../../../../scripts/Common/Base.h"
+#include "Units/Creatures/Pet.h"
 
 extern std::string LogFileName;
 extern bool bLogChat;

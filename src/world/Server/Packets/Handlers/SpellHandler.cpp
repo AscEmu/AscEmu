@@ -32,6 +32,8 @@
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/SpellRanged.h"
 #include "Spell/Definitions/SpellState.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Units/Creatures/Pet.h"
 
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {

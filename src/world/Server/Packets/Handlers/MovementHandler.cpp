@@ -26,6 +26,7 @@
 #include "Map/MapMgr.h"
 #include "Map/WorldCreatorDefines.hpp"
 #include <Spell/Definitions/AuraInterruptFlags.h>
+#include "Units/Creatures/Pet.h"
 
 #define SWIMMING_TOLERANCE_LEVEL -0.08f
 #define MOVEMENT_PACKET_TIME_DELAY 500

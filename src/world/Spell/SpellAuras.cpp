@@ -42,6 +42,8 @@
 #include "Definitions/SpellState.h"
 #include "Definitions/SpellMechanics.h"
 #include "Definitions/PowerType.h"
+#include "Customization/SpellCustomizations.hpp"
+#include "Units/Creatures/Pet.h"
 
 using ascemu::World::Spell::Helpers::decimalToMask;
 using ascemu::World::Spell::Helpers::spellModFlatFloatValue;

@@ -42,6 +42,8 @@
 #include "Objects/Object.h"
 #include "LuaGlobal.h"
 #include <Spell/Definitions/PowerType.h>
+#include <Map/MapScriptInterface.h>
+#include <Units/Creatures/Pet.h>
 
 class LuaUnit
 {

@@ -28,6 +28,7 @@
 #include "Map/MapMgr.h"
 #include "Faction.h"
 #include "Spell/Definitions/ProcFlags.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
 
 GameObject::GameObject(uint64 guid)
 {

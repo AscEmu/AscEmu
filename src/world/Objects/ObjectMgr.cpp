@@ -33,6 +33,9 @@
 #include "Map/MapMgr.h"
 #include "Map/MapScriptInterface.h"
 #include "Map/WorldCreatorDefines.hpp"
+#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Units/Creatures/Pet.h"
+#include "Spell/SpellEffects.h"
 
 initialiseSingleton(ObjectMgr);
 

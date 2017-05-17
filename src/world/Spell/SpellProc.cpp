@@ -23,6 +23,7 @@
 #include "SpellMgr.h"
 #include "../../scripts/Battlegrounds/EyeOfTheStorm.h"
 #include "Definitions/ProcFlags.h"
+#include "Customization/SpellCustomizations.hpp"
 
 initialiseSingleton(SpellProcMgr);
 

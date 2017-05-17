@@ -37,6 +37,8 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/PowerType.h"
+#include "Pet.h"
+#include "Spell/SpellEffects.h"
 
 Creature::Creature(uint64 guid)
 {

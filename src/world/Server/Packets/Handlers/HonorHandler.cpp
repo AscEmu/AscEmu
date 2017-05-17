@@ -30,6 +30,7 @@
 #include "Server/World.h"
 #include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
 
 void WorldSession::HandleSetVisibleRankOpcode(WorldPacket& recv_data)
 {

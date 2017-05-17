@@ -24,6 +24,7 @@
 #include "Spell/SpellAuras.h"
 #include "Map/WorldCreator.h"
 #include "Objects/ObjectMgr.h"
+#include "Units/Creatures/Pet.h"
 
 #if VERSION_STRING != Cata
 //////////////////////////////////////////////////////////////

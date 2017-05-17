@@ -42,6 +42,7 @@
 #include "MapScriptInterface.h"
 #include "WorldCreatorDefines.hpp"
 #include "WorldCreator.h"
+#include "Units/Creatures/Pet.h"
 
 
 Arcemu::Utility::TLSObject<MapMgr*> t_currentMapContext;
@@ -1078,7 +1079,7 @@ const ::DBC::Structures::AreaTableEntry* MapMgr::GetArea(float x, float y, float
     bool have_area_info = _terrain->GetAreaInfo(x, y, z, mogp_flags, adt_id, root_id, group_id);
     auto area_flag_without_adt_id = _terrain->GetAreaFlagWithoutAdtId(x, y);
     auto area_flag = MapManagement::AreaManagement::AreaStorage::GetFlagByPosition(area_flag_without_adt_id, have_area_info, mogp_flags, adt_id, root_id, group_id, _mapId, x, y, z, nullptr);
-    
+
     if (area_flag)
         return MapManagement::AreaManagement::AreaStorage::GetAreaByFlag(area_flag);
     else
@@ -1872,7 +1873,7 @@ GameObject* MapMgr::CreateGameObject(uint32 entry)
     GameObject* gameobject = ObjectFactory.CreateGameObject(entry, GUID);
     if (gameobject == nullptr)
         return nullptr;
-    
+
     return gameobject;
 }
 

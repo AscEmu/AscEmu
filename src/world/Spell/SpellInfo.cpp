@@ -7,6 +7,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/Skill.h"
 #include "../../scripts/Battlegrounds/AlteracValley.h"
 #include "Definitions/SpellEffectTarget.h"
+#include "Spell/SpellEffects.h"
+#include "Spell/SpellAuras.h"
 
 SpellInfo::SpellInfo()
 {

@@ -22,6 +22,7 @@
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Map/MapMgr.h"
+#include "Units/Creatures/Pet.h"
 
 void Player::SendTalentResetConfirm()
 {

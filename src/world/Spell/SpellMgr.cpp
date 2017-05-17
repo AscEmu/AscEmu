@@ -24,6 +24,7 @@
 #include "Server/MainServerDefines.h"
 #include "SpellMgr.h"
 #include "SpellAuras.h"
+#include "Customization/SpellCustomizations.hpp"
 
 initialiseSingleton(SpellFactoryMgr);
 

@@ -44,6 +44,7 @@
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/Definitions/SpellDidHitResult.h"
 #include "Spell/SpellHelpers.h"
+#include "Creatures/Pet.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;

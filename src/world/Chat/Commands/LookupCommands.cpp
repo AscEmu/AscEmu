@@ -6,6 +6,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Management/LocalizationMgr.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
 
 //.lookup achievement
 //////////////////////////////////////////////////////////////////////////////////////////

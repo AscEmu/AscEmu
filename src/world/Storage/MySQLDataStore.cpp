@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
 
 initialiseSingleton(MySQLDataStore);
 
@@ -482,7 +483,7 @@ void MySQLDataStore::LoadCreaturePropertiesTable()
                                                                 "mindamage, maxdamage, can_ranged, rangedattacktime, rangedmindamage, rangedmaxdamage, respawntime, armor, "
         //                                                            36           37           38            39          40           41            42             43
                                                                 "resistance1, resistance2, resistance3, resistance4, resistance5, resistance6, combat_reach, bounding_radius, "
-        //                                                         44    45     46         47                48         49        50          51            52     53      54 
+        //                                                         44    45     46         47                48         49        50          51            52     53      54
                                                                 "auras, boss, money, invisibility_type, walk_speed, run_speed, fly_speed, extra_a9_flags, spell1, spell2, spell3, "
         //                                                          55      56      57      58      59        60           61               62            63         64           65
                                                                 "spell4, spell5, spell6, spell7, spell8, spell_flags, modImmunities, isTrainingDummy, guardtype, summonguard, spelldataid, "
@@ -772,7 +773,7 @@ void MySQLDataStore::LoadGameObjectPropertiesTable()
                                                                     "parameter_12, parameter_13, parameter_14, parameter_15, parameter_16, parameter_17, parameter_18, parameter_19, "
         //                                                                27            28            29            30        31        32          33          34         35
                                                                     "parameter_20, parameter_21, parameter_22, parameter_23, size, QuestItem1, QuestItem2, QuestItem3, QuestItem4, "
-        //                                                                36          37 
+        //                                                                36          37
                                                                     "QuestItem5, QuestItem6 FROM %s", table_name.c_str());
 
         if (gameobject_properties_result == nullptr)
@@ -1223,7 +1224,7 @@ void MySQLDataStore::LoadGameObjectQuestPickupBindingTable()
                 uint32 required_count = fields[2].GetUInt32();
                 const_cast<GameObjectProperties*>(gameobject_properties)->goMap.insert(std::make_pair(quest, required_count));
             }
-                
+
 
             ++gameobject_quest_pickup_count;
         } while (gameobject_quest_pickup_result->NextRow());
@@ -1238,7 +1239,7 @@ void MySQLDataStore::LoadCreatureDifficultyTable()
 {
     uint32 start_time = getMSTime();
 
-    //                                                                         0          1            2             3 
+    //                                                                         0          1            2             3
     QueryResult* creature_difficulty_result = WorldDatabase.Query("SELECT entry, difficulty_1, difficulty_2, difficulty_3 FROM creature_difficulty");
 
     if (creature_difficulty_result == nullptr)
@@ -1333,13 +1334,13 @@ void MySQLDataStore::LoadDisplayBoundingBoxesTable()
         DisplayBounding& displayBounding = _displayBoundingBoxesStore[entry];
 
         displayBounding.displayid = entry;
-        
+
         for (uint8 i = 0; i < 3; i++)
         {
             displayBounding.low[i] = fields[1 + i].GetFloat();
             displayBounding.high[i] = fields[4 + i].GetFloat();
         }
-        
+
         displayBounding.boundradius = fields[7].GetFloat();
 
 
@@ -2282,7 +2283,7 @@ void MySQLDataStore::LoadPlayerCreateInfoTable()
     QueryResult* player_create_info_result = WorldDatabase.Query("SELECT `Index`, race, factiontemplate, class, mapID, zoneID, positionX, positionY, positionZ, orientation, displayID, "
     //                                                                11            12           13           14           15           16         17        18        19
                                                                 "BaseStrength, BaseAgility, BaseStamina, BaseIntellect, BaseSpirit, BaseHealth, BaseMana, BaseRage, BaseFocus, "
-    //                                                                20         21         22      23       24       25   
+    //                                                                20         21         22      23       24       25
                                                                 "BaseEnergy, attackpower, mindmg, maxdmg, introid, taximask FROM playercreateinfo;");
     if (player_create_info_result == nullptr)
     {
@@ -2647,7 +2648,7 @@ void MySQLDataStore::LoadNpcGossipTextIdTable()
     }
 
     LogNotice("MySQLDataLoads : Table `npc_gossip_textid` has %u columns", npc_gossip_textid_result->GetFieldCount());
-    
+
     uint32 npc_gossip_textid_count = 0;
     do
     {
@@ -2669,7 +2670,7 @@ void MySQLDataStore::LoadNpcGossipTextIdTable()
     } while (npc_gossip_textid_result->NextRow());
 
     delete npc_gossip_textid_result;
-    
+
     LogDetail("MySQLDataLoads : Loaded %u rows from `npc_gossip_textid` table in %u ms!", npc_gossip_textid_count, getMSTime() - start_time);
 }
 

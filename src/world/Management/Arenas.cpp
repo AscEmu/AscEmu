@@ -27,6 +27,7 @@
 #include "Spell/SpellAuras.h"
 #include "Objects/GameObject.h"
 #include "Objects/ObjectMgr.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
 
 #define ARENA_PREPARATION 32727
 

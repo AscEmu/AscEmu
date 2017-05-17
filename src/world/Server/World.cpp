@@ -29,6 +29,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/DayWatcherThread.h"
 #include "CommonScheduleThread.h"
 #include "World.Legacy.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
 
 initialiseSingleton(World);
 
@@ -732,7 +733,7 @@ bool World::setInitialWorldSettings()
     if (!loadDbcDb2Stores())
         return false;
 
-    new TaxiMgr; 
+    new TaxiMgr;
     new ChatHandler;
     new SpellProcMgr;
 

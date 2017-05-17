@@ -28,6 +28,7 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
+#include <Spell/Customization/SpellCustomizations.hpp>
 
 #define BASE_RESOURCES_GAIN 10
 #define RESOURCES_WARNING_THRESHOLD 1400

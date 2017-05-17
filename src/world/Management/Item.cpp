@@ -29,6 +29,7 @@
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
 #include "Spell/Definitions/ProcFlags.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
 
 Item::Item()
 {

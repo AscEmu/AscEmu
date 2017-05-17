@@ -29,6 +29,7 @@
 #include "Definitions/SpellCastTargetFlags.h"
 #include "Definitions/SpellDidHitResult.h"
 #include "SpellHelpers.h"
+#include "Units/Creatures/Pet.h"
 
 uint32_t g_spellImplicitTargetFlags[MAX_IMPLICIT_TARGET_VALUE];
 

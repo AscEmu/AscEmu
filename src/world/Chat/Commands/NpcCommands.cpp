@@ -10,6 +10,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellEffects.h"
 
 //.npc addagent
 bool ChatHandler::HandleNpcAddAgentCommand(const char* args, WorldSession* m_session)
@@ -450,7 +452,7 @@ bool ChatHandler::HandleNpcInfoCommand(const char* /*args*/, WorldSession* m_ses
     if (unit_owner != nullptr)
     {
         SystemMessage(m_session, "Owner/Summoner ===================");
-        
+
         if (unit_owner->IsPlayer())
             SystemMessage(m_session, "Owner is Player: %s", static_cast<Player*>(unit_owner)->GetName());
         if (unit_owner->IsPet())
@@ -545,7 +547,7 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
 
             RedSystemMessage(m_session, "ItemID: %u %s", item_proto->ItemId, GetItemLinkByProto(item_proto, m_session->language).c_str());
             SystemMessage(m_session, "-- N10 (%3.2lf) N25 (%3.2lf) H10 (%3.2lf) H25 (%3.2lf) min/max (%u/%u)", field[1].GetFloat(), field[3].GetFloat(), field[2].GetFloat(), field[4].GetFloat(), field[5].GetUInt32(), field[6].GetUInt32());
-        
+
             ++numFound;
         } while (loot_result->NextRow() && (numFound <= 25));
         delete loot_result;

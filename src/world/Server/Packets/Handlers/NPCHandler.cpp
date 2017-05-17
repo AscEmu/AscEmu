@@ -29,6 +29,8 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Units/Creatures/Pet.h"
 
 trainertype trainer_types[TRAINER_TYPE_MAX] =
 {

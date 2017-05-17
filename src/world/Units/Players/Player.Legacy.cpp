@@ -57,6 +57,8 @@
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/Definitions/Spec.h"
 #include "Spell/SpellHelpers.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Units/Creatures/Pet.h"
 
 using ascemu::World::Spell::Helpers::spellModFlatIntValue;
 using ascemu::World::Spell::Helpers::spellModPercentageIntValue;
@@ -4427,7 +4429,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
 
                 if (apply)
                     BaseResistance[0] += scaledarmorval;
-                else 
+                else
                     BaseResistance[0] -= scaledarmorval;
 
                 CalcResistance(0);

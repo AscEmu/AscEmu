@@ -35,6 +35,7 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include <Spell/Definitions/AuraInterruptFlags.h>
 #include "Spell/Definitions/PowerType.h"
+#include "Pet.h"
 
 #define WATER_ELEMENTAL         510
 #define WATER_ELEMENTAL_NEW     37994

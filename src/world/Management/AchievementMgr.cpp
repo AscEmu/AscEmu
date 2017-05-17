@@ -28,6 +28,8 @@
 #include "Map/MapMgr.h"
 #include "Objects/Faction.h"
 #include "Spell/Definitions/SpellMechanics.h"
+#include "Spell/Customization/SpellCustomizations.hpp"
+#include "Spell/SpellEffects.h"
 
 
 #if VERSION_STRING > TBC
