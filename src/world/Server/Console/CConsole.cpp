@@ -109,6 +109,9 @@ bool ConsoleThread::run()
         strncpy(cmd2, cmd, size);
 
         ret = read(0, cmd2, sizeof(cmd));
+
+        free(cmd2);
+
         if (ret <= 0)
         {
             break;
