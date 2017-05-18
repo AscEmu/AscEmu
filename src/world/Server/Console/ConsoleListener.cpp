@@ -197,7 +197,10 @@ ConsoleSocket::~ConsoleSocket()
     }
 }
 
-void TestConsoleLogin(std::string & username, std::string & password, uint32 requestid);
+void TestConsoleLogin(std::string & username, std::string & password, uint32 requestno)
+{
+    sLogonCommHandler.TestConsoleLogon(username, password, requestno);
+}
 
 void ConsoleSocket::OnRead()
 {
@@ -319,7 +322,7 @@ void ConsoleSocket::AuthCallback(bool result)
         m_pConsole->Write("User `%s` authenticated.\r\n\r\n", m_username.c_str());
         LogNotice("RemoteConsole : User `%s` authenticated.", m_username.c_str());
         const char* argv[1];
-        HandleInfoCommand(m_pConsole, 1, argv);
+        handServerleInfoCommand(m_pConsole, 1, "");
         m_pConsole->Write("Type ? to see commands, quit to end session.\r\n");
         m_state = STATE_LOGGED;
     }
@@ -347,220 +350,110 @@ void RemoteConsole::Write(const char* Format, ...)
 
 struct ConsoleCommand
 {
-    bool(*CommandPointer)(BaseConsole*, int, const char*[]);
-    const char* Name;               // 10 chars
-    const char* ArgumentFormat;     // 30 chars
-    const char* Description;        // 40 chars
-    // = 70 chars
+    bool(*CommandPointer)(BaseConsole*, int, std::string);
+    std::string consoleCommand;
+    int argumentCount;
+    std::string argumentFormat;
+    std::string commandDescription;
+};
+
+static ConsoleCommand Commands[] =
+{
+    { &handleSendChatAnnounceCommand,   "a",                1,  "<announce>",                           "Send chat announce." },
+    { &handleSendChatAnnounceCommand,   "announce",         1,  "<announce>",                           "Send chat announce." },
+    { &handleBanAccountCommand,         "ban",              3,  "<account> <time e.g. 3d> [reason]",    "Bans account <account> for time <time> with optional reason [reason]." },
+    { &handleBanAccountCommand,         "banaccount",       3,  "<account> <time e.g. 3d> [reason]",    "Bans account <account> for time <time> with optional reason [reason]." },
+    { &handleCancelShutdownCommand,     "cancel",           0,  "None",                                 "Cancels a pending shutdown." },
+    { &handServerleInfoCommand,         "info",             0,  "None",                                 "Return current Server information." },
+    { &handleOnlineGmsCommand,          "gms",              0,  "None",                                 "Shows online GMs." },
+    { &handleKickPlayerCommand,         "kick",             2,  "<player name> [reason]",               "Kicks player <player name> for optional reason [reason]." },
+    { &handleMotdCommand,               "getmotd",          0,  "None",                                 "View the current MOTD" },
+    { &handleMotdCommand,               "setmotd",          1,  "<motd>",                               "Sets a new MOTD" },
+    { &handleListOnlinePlayersCommand,  "online",           0,  "None",                                 "Shows online players." },
+    { &handlePlayerInfoCommand,         "playerinfo",       1,  "<player name>",                        "Shows information about a player." },
+    { &handleShutDownServerCommand,     "exit",             0,  "[delay]",                              "Server shutdown with optional delay in seconds." },
+    { &handleShutDownServerCommand,     "shutdown",         0,  "[delay]",                              "Server shutdown with optional delay in seconds." },
+    { &handleRehashConfigCommand,       "rehash",           0,  "None",                                 "Reload world-config." },
+    { &handleUnbanAccountCommand,       "unban",            1,  "<account>",                            "Unbans account x." },
+    { &handleUnbanAccountCommand,       "unbanaccount",     1,  "<account>",                            "Unbans account x." },
+    { &handleSendWAnnounceCommand,      "w",                1,  "<wannounce>",                          "Send announce on screen for all." },
+    { &handleSendWAnnounceCommand,      "wannounce",        1,  "<wannounce>",                          "Send announce on screen for all." },
+    { &handleWhisperCommand,            "whisper",          2,  "<player> <message>",                   "Whispers message to someone." },
+    { &handleCreateNameHashCommand,     "getnamehash",      1,  "<text>",                               "Returns the crc32 hash of <text>" },
+    { &handleRevivePlayerCommand,       "reviveplr",        1,  "<player name>",                        "Revives a Player <player name>" },
+    { &handleClearConsoleCommand,       "clear",            0,  "None",                                 "Clears the console." },
+    { &handleReloadScriptEngineCommand, "reloadscripts",    0,  "None",                                 "Reloads all scripting engines currently loaded." },
+    { &handlePrintTimeDateCommand,      "datetime",         0,  "None",                                 "Shows time and date according to localtime()" },
+    { nullptr,                          "",                 0,  "",                                     "" },
 };
 
 void HandleConsoleInput(BaseConsole* pConsole, const char* szInput)
 {
-    static ConsoleCommand Commands[] =
+    ConsoleCommand commandList;
+
+    std::stringstream consoleInput(szInput);
+
+    std::string commandName;
+    std::string commandVars;
+
+    consoleInput >> commandName;
+    std::getline(consoleInput, commandVars);
+
+    bool commandFound = false;
+    bool isHelpCommand = false;
+    for (int i = 0; Commands[i].consoleCommand.empty() == false; ++i)
     {
-        {
-            &HandleAnnounceCommand,
-            "a", "<announce string>",
-            "Shows the message in all client chat boxes."
-        },
-        {
-            &HandleAnnounceCommand,
-            "announce", "<announce string>",
-            "Shows the message in all client chat boxes."
-        },
-        {
-            &HandleBanAccountCommand,
-            "ban", "<account> <timeperiod> [reason]",
-            "Bans account x for time y."
-        },
-        {
-            &HandleBanAccountCommand,
-            "banaccount", "<account> <timeperiod> [reason]",
-            "Bans account x for time y."
-        },
-        {
-            &HandleCancelCommand,
-            "cancel", "None",
-            "Cancels a pending shutdown."
-        },
-        {
-            &HandleInfoCommand,
-            "info", "None",
-            "Gives server runtime information."
-        },
-        {
-            &HandleGMsCommand,
-            "gms", "None",
-            "Shows online GMs."
-        },
-        {
-            &HandleKickCommand,
-            "kick", "<Player Name> <reason>",
-            "Kicks player x for reason y."
-        },
-        {
-            &HandleMOTDCommand,
-            "getmotd", "None",
-            "View the current MOTD"
-        },
-        {
-            &HandleMOTDCommand,
-            "setmotd", "<new motd>",
-            "Sets a new MOTD"
-        },
-        {
-            &HandleOnlinePlayersCommand,
-            "online", "None",
-            "Shows online players."
-        },
-        {
-            &HandlePlayerInfoCommand,
-            "playerinfo", "<Player Name>",
-            "Shows information about a player."
-        },
-        {
-            &HandleShutDownCommand,
-            "exit", "[delay]",
-            "Shuts down server with optional delay in seconds."
-        },
-        {
-            &HandleShutDownCommand,
-            "shutdown", "[delay]",
-            "Shuts down server with optional delay in seconds."
-        },
-        {
-            &HandleRehashCommand,
-            "rehash", "None",
-            "Reloads the config file"
-        },
-        {
-            &HandleUnbanAccountCommand,
-            "unban", "<account>",
-            "Unbans account x."
-        },
-        {
-            &HandleUnbanAccountCommand,
-            "unbanaccount", "<account>",
-            "Unbans account x."
-        },
-        {
-            &HandleWAnnounceCommand,
-            "w", "<wannounce string>",
-            "Shows the message in all client title areas."
-        },
-        {
-            &HandleWAnnounceCommand,
-            "wannounce", "<wannounce string>",
-            "Shows the message in all client title areas."
-        },
-        {
-            &HandleWhisperCommand,
-            "whisper", "<player> <message>",
-            "Whispers a message to someone from the console."
-        },
-        {
-            &HandleNameHashCommand,
-            "getnamehash", "<text>",
-            "Returns the crc32 hash of <text>"
-        },
-        {
-            &HandleRevivePlayer,
-            "reviveplr", "<name>",
-            "Revives a Player"
-        },
-        {
-            &HandleClearConsoleCommand,
-            "clear", "None",
-            "Clears the console screen."
-        },
-        { 
-            &HandleScriptEngineReloadCommand,
-            "reloadscripts", "<NULL>",
-            "Reloads all scripting engines currently loaded."
-        },
-        { 
-            &HandleTimeDateCommand,
-            "datetime", "<NULL>",
-            "Shows time and date according to localtime()"
-        },
-        { 
-            NULL, 
-            NULL, NULL, 
-            NULL
-        },
-    };
+        if (commandName.empty())
+            break;
 
-    uint32 i;
-    char* p, *q = nullptr;
+        if (commandName.compare("help") == 0 || commandName.compare("?") == 0)
+        {
+            isHelpCommand = true;
+            break;
+        }
 
-    // let's tokenize into arguments.
-    std::vector<const char*> tokens;
-
-    q = (char*)szInput;
-    p = strchr(q, ' ');
-
-    while (p != nullptr)
-    {
-        *p = 0;
-        tokens.push_back(q);
-
-        q = p + 1;
-        p = strchr(q, ' ');
+        if (Commands[i].consoleCommand.compare(commandName) == 0)
+        {
+            commandFound = true;
+            commandList = Commands[i];
+            break;
+        }
     }
 
-    if (*q != '\0')
-        tokens.push_back(q);
-
-    if (tokens.empty())
-        return;
-
-    if (!stricmp(tokens[0], "help") || tokens[0][0] == '?')
+    if (isHelpCommand)
     {
-        if (tokens.size() > 1)
-        {
-            for (i = 0; Commands[i].Name != NULL; ++i)
-            {
-                if (!stricmp(Commands[i].Name, tokens[1]))
-                {
-                    pConsole->Write("Command: %s\r\n"
-                                    "Arguments: %s\r\n"
-                                    "Description: %s\r\n",
-                                    Commands[i].Name,
-                                    Commands[i].ArgumentFormat,
-                                    Commands[i].Description);
-                    return;
-                }
-            }
-        }
+        pConsole->Write("Show Command list with ----- :%s\r\n", commandName.c_str());
 
         pConsole->Write("===============================================================================\r\n");
         pConsole->Write("| %15s | %57s |\r\n", "Name", "Arguments");
         pConsole->Write("===============================================================================\r\n");
-        for (i = 0; Commands[i].Name != NULL; ++i)
+
+        for (int j = 0; Commands[j].consoleCommand.empty() == false; ++j)
         {
-            pConsole->Write("| %15s | %57s |\r\n", Commands[i].Name, Commands[i].ArgumentFormat);
+            pConsole->Write("| %15s | %57s |\r\n", Commands[j].consoleCommand.c_str(), Commands[j].argumentFormat.c_str());
         }
+
         pConsole->Write("===============================================================================\r\n");
         pConsole->Write("| type 'quit' to terminate a Remote Console Session                           |\r\n");
         pConsole->Write("===============================================================================\r\n");
     }
     else
     {
-        for (i = 0; Commands[i].Name != NULL; ++i)
+        if (commandFound)
         {
-            if (!stricmp(Commands[i].Name, tokens[0]))
-            {
-                if (!Commands[i].CommandPointer(pConsole, (int)tokens.size(), &tokens[0]))
-                {
-                    pConsole->Write("[!]Error, '%s' used an incorrect syntax, the correct syntax is: '%s'.\r\n\r\n", Commands[i].Name, Commands[i].ArgumentFormat);
-                    return;
-                }
-                else
-                    return;
-            }
-        }
+            pConsole->Write("Received command: %s\r\n", commandName.c_str());
+            if (commandList.argumentCount > 0 && commandVars.empty() == false)
+                pConsole->Write("Received vars: %s\r\n", commandVars.c_str());
 
-        pConsole->Write("[!]Error, Command '%s' doesn't exist. Type '?' or 'help' to get a command overview.\r\n\r\n", tokens[0]);
+            if (!commandList.CommandPointer(pConsole, commandList.argumentCount, commandVars))
+                pConsole->Write("[!]Error, '%s' used an incorrect syntax, the correct syntax is: '%s'.\r\n\r\n",
+                    commandList.consoleCommand.c_str(), commandList.argumentFormat.c_str());
+        }
+        else
+        {
+            pConsole->Write("[!]Error, Command '%s' doesn't exist. Type '?' or 'help' to get a command overview.\r\n\r\n",
+                commandName.c_str());
+        }
     }
 }
 
