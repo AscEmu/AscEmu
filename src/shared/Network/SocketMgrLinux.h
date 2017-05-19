@@ -96,7 +96,7 @@ class SocketWorkerThread : public ThreadBase
         bool running;
     public:
         bool runThread();
-        void OnShutdown()
+        void onShutdown()
         {
             running = false;
         }

@@ -247,7 +247,7 @@ struct insert_playeritem
 
 #define LOAD_THREAD_SLEEP 180
 
-void CharacterLoaderThread::OnShutdown()
+void CharacterLoaderThread::onShutdown()
 {
     running = false;
     cond.Signal();

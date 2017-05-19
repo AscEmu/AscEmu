@@ -193,7 +193,7 @@ public:
 
     CharacterLoaderThread();
     ~CharacterLoaderThread();
-    void OnShutdown();
+    void onShutdown();
     bool runThread();
 };
 

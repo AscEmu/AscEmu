@@ -110,7 +110,7 @@ class LogonCommWatcherThread : public ThreadBase
     ~LogonCommWatcherThread()
     {}
 
-    void OnShutdown()
+    void onShutdown()
     {
         running = false;
         cond.Signal();

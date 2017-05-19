@@ -41,7 +41,7 @@ bool CThread::run()
     return false;
 }
 
-void CThread::OnShutdown()
+void CThread::onShutdown()
 {
     SetThreadState(THREADSTATE_TERMINATE);
 }

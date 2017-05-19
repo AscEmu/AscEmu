@@ -334,7 +334,7 @@ void GameEventMgr::GameEventMgrThread::Update()
     }
 }
 
-void GameEventMgr::GameEventMgrThread::OnShutdown()
+void GameEventMgr::GameEventMgrThread::onShutdown()
 {
     LogNotice("GameEventMgr : Shutdown!");
     ThreadState.SetVal(THREADSTATE_TERMINATE);

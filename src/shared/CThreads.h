@@ -64,7 +64,7 @@ class SERVER_DECL CThread : public ThreadBase
         int GetThreadId() { return ThreadId; }
         time_t GetStartTime() { return start_time; }
         virtual bool run();
-        virtual void OnShutdown();
+        virtual void onShutdown();
 
     protected:
 
