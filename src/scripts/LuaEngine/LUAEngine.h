@@ -214,8 +214,9 @@ class LuaEngine
     LuaObjectBindingMap m_go_gossipBinding;
 
 public:
-        ~LuaEngine()
-        {}
+
+    LuaEngine();
+        ~LuaEngine(){}
         void Startup();
         void LoadScripts();
         void Restart();

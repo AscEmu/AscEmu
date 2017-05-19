@@ -84,6 +84,10 @@ void report(lua_State* L)
     }
 }
 
+LuaEngine::LuaEngine() :
+    lu(nullptr)
+{}
+
 void LuaEngine::ScriptLoadDir(char* Dirname, LUALoadScripts* pak)
 {
 #ifdef WIN32
@@ -2683,7 +2687,7 @@ Arcemu::Gossip::Script* CreateLuaGOGossipScript(uint32 id)
 
 void LuaEngine::Startup()
 {
-    LogNotice("LuaEngineMgr : Ascemu Lua Engine ( ALE ) %s: Loaded", ARCH);
+    LogNotice("LuaEngineMgr : AscEmu Lua Engine ( ALE ) %s: Loaded", ARCH);
     //Create a new global state that will server as the lua universe.
     lu = luaL_newstate();
 
