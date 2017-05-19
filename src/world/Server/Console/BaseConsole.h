@@ -44,6 +44,10 @@ class LocalConsole : public BaseConsole
         void Write(const char* Format, ...);
 };
 
-void HandleConsoleInput(BaseConsole* pConsole, const char* szInput);
+//MIT
+
+void processConsoleInput(BaseConsole* baseConsole, std::string consoleInput);
+
+//MIT end
 
 #endif // BASECONSOLE_H

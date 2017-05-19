@@ -257,7 +257,7 @@ void ConsoleSocket::OnRead()
                         break;
                     }
 
-                    HandleConsoleInput(m_pConsole, m_pBuffer);
+                    processConsoleInput(m_pConsole, m_pBuffer);
                     break;
             }
         }
@@ -387,17 +387,17 @@ static ConsoleCommand Commands[] =
     { nullptr,                          "",                 0,  "",                                     "" },
 };
 
-void HandleConsoleInput(BaseConsole* pConsole, const char* szInput)
+void processConsoleInput(BaseConsole* baseConsole, std::string consoleInput)
 {
     ConsoleCommand commandList;
 
-    std::stringstream consoleInput(szInput);
+    std::stringstream consoleInputStream(consoleInput);
 
     std::string commandName;
     std::string commandVars;
 
-    consoleInput >> commandName;
-    std::getline(consoleInput, commandVars);
+    consoleInputStream >> commandName;
+    std::getline(consoleInputStream, commandVars);
 
     bool commandFound = false;
     bool isHelpCommand = false;
@@ -422,36 +422,36 @@ void HandleConsoleInput(BaseConsole* pConsole, const char* szInput)
 
     if (isHelpCommand)
     {
-        pConsole->Write("Show Command list with ----- :%s\r\n", commandName.c_str());
+        baseConsole->Write("Show Command list with ----- :%s\r\n", commandName.c_str());
 
-        pConsole->Write("===============================================================================\r\n");
-        pConsole->Write("| %15s | %57s |\r\n", "Name", "Arguments");
-        pConsole->Write("===============================================================================\r\n");
+        baseConsole->Write("===============================================================================\r\n");
+        baseConsole->Write("| %15s | %57s |\r\n", "Name", "Arguments");
+        baseConsole->Write("===============================================================================\r\n");
 
         for (int j = 0; Commands[j].consoleCommand.empty() == false; ++j)
         {
-            pConsole->Write("| %15s | %57s |\r\n", Commands[j].consoleCommand.c_str(), Commands[j].argumentFormat.c_str());
+            baseConsole->Write("| %15s | %57s |\r\n", Commands[j].consoleCommand.c_str(), Commands[j].argumentFormat.c_str());
         }
 
-        pConsole->Write("===============================================================================\r\n");
-        pConsole->Write("| type 'quit' to terminate a Remote Console Session                           |\r\n");
-        pConsole->Write("===============================================================================\r\n");
+        baseConsole->Write("===============================================================================\r\n");
+        baseConsole->Write("| type 'quit' to terminate a Remote Console Session                           |\r\n");
+        baseConsole->Write("===============================================================================\r\n");
     }
     else
     {
         if (commandFound)
         {
-            pConsole->Write("Received command: %s\r\n", commandName.c_str());
+            baseConsole->Write("Received command: %s\r\n", commandName.c_str());
             if (commandList.argumentCount > 0 && commandVars.empty() == false)
-                pConsole->Write("Received vars: %s\r\n", commandVars.c_str());
+                baseConsole->Write("Received vars: %s\r\n", commandVars.c_str());
 
-            if (!commandList.CommandPointer(pConsole, commandList.argumentCount, commandVars))
-                pConsole->Write("[!]Error, '%s' used an incorrect syntax, the correct syntax is: '%s'.\r\n\r\n",
+            if (!commandList.CommandPointer(baseConsole, commandList.argumentCount, commandVars))
+                baseConsole->Write("[!]Error, '%s' used an incorrect syntax, the correct syntax is: '%s'.\r\n\r\n",
                     commandList.consoleCommand.c_str(), commandList.argumentFormat.c_str());
         }
         else
         {
-            pConsole->Write("[!]Error, Command '%s' doesn't exist. Type '?' or 'help' to get a command overview.\r\n\r\n",
+            baseConsole->Write("[!]Error, Command '%s' doesn't exist. Type '?' or 'help' to get a command overview.\r\n\r\n",
                 commandName.c_str());
         }
     }

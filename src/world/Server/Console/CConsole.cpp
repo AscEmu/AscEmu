@@ -64,9 +64,7 @@ void ConsoleThread::terminate()
 bool ConsoleThread::run()
 {
     SetThreadName("Console Interpreter");
-    size_t i = 0;
-    size_t len;
-    char cmd[300];
+
 #ifndef WIN32
     struct pollfd input;
 
@@ -77,56 +75,21 @@ bool ConsoleThread::run()
 
     m_killSwitch = false;
     m_isRunning = true;
+
     while (m_killSwitch != true)
     {
-#ifdef WIN32
+        std::string cmdInputText;
+        std::getline(std::cin, cmdInputText);
 
-        // Read in single line from "stdin"
-        memset(cmd, 0, sizeof(cmd));
-        if (fgets(cmd, 300, stdin) == NULL)
+        if (cmdInputText.empty())
             continue;
 
         if (m_killSwitch)
             break;
 
-#else
-        int ret = poll(&input, 1, 1000);
-        if (ret < 0)
-        {
-            break;
-        }
-        else if (ret == 0)
-        {
-            if (!m_killSwitch)    // timeout
-                continue;
-            else
-                break;
-        }
-
-        // null terminate string before call read
-        size_t size = strlen(cmd) + sizeof(char);
-        char* cmd2 = (char*)malloc(size);
-        strncpy(cmd2, cmd, size);
-
-        ret = read(0, cmd2, sizeof(cmd));
-
-        free(cmd2);
-
-        if (ret <= 0)
-        {
-            break;
-        }
-#endif
-
-        len = strlen(cmd);
-        for (i = 0; i < len; ++i)
-        {
-            if (cmd[i] == '\n' || cmd[i] == '\r')
-                cmd[i] = '\0';
-        }
-
-        HandleConsoleInput(&g_localConsole, cmd);
+        processConsoleInput(&g_localConsole, cmdInputText);
     }
+
     m_isRunning = false;
     return false;
 }
