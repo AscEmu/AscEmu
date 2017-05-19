@@ -330,7 +330,7 @@ static void* thread_proc(void* param)
     {
         if(t->ExecutionTarget != NULL)
         {
-            if(t->ExecutionTarget->run())
+            if(t->ExecutionTarget->runThread())
                 delete t->ExecutionTarget;
 
             t->ExecutionTarget = NULL;
