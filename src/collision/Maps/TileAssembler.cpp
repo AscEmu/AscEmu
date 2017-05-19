@@ -583,16 +583,11 @@ namespace VMAP
         if (liquidflags& 1)
         {
             WMOLiquidHeader hlq;
+
+            // Function fread does not terminate string blockId
             READ_OR_RETURN(&blockId, 4);
 
-            // null terminate string before call print in CMP_OR_RETURN
-            size_t sizet = strlen(blockId) + sizeof(char);
-            char* blockId2 = (char*)malloc(sizet);
-            strncpy(blockId2, blockId, sizet);
-
-            CMP_OR_RETURN(blockId2, "LIQU");
-
-            free(blockId2);
+            CMP_OR_RETURN(blockId, "LIQU");
 
             READ_OR_RETURN(&blocksize, sizeof(int));
             READ_OR_RETURN(&hlq, sizeof(WMOLiquidHeader));
@@ -625,16 +620,10 @@ namespace VMAP
         ident[8] = '\0';
         int readOperation = 0;
 
+        // Function fread does not terminate string ident
         READ_OR_RETURN(&ident, 8);
 
-        // null terminate string before call print in CMP_OR_RETURN
-        size_t size = strlen(ident) + sizeof(char);
-        char* ident2 = (char*)malloc(size);
-        strncpy(ident2, ident, size);
-
-        CMP_OR_RETURN(ident2, RAW_VMAP_MAGIC);
-
-        free(ident2);
+        CMP_OR_RETURN(ident, RAW_VMAP_MAGIC);
 
         // we have to read one int. This is needed during the export and we have to skip it here
         uint32 tempNVectors;
