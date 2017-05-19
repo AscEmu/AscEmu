@@ -32,7 +32,7 @@ WorldRunnable::WorldRunnable() : CThread()
 {
 }
 
-bool WorldRunnable::run()
+bool WorldRunnable::runThread()
 {
     SetThreadName("WorldRunnable (non-instance/logon)");
     uint32 LastWorldUpdate = getMSTime();

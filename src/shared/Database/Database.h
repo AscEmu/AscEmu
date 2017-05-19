@@ -83,7 +83,7 @@ class SERVER_DECL Database : public CThread
         //////////////////////////////////////////////////////////////////////////////////////////
         // Thread Stuff
         //////////////////////////////////////////////////////////////////////////////////////////
-        bool run();
+        bool runThread();
 
         //////////////////////////////////////////////////////////////////////////////////////////
         // Virtual Functions
@@ -197,7 +197,7 @@ class SERVER_DECL QueryThread : public CThread
 
         QueryThread(Database* d) : CThread(), db(d) {}
         ~QueryThread();
-        bool run();
+        bool runThread();
 };
 
 #endif      //_DATABASE_H

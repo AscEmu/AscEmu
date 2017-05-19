@@ -23,7 +23,7 @@
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "WorldRunnable.h"
-#include "Server/Console/CConsole.h"
+#include "Server/Console/ConsoleThread.h"
 #include "Server/MainServerDefines.h"
 #include "Server/Master.h"
 #include "CommonScheduleThread.h"
@@ -336,7 +336,7 @@ bool Master::Run(int argc, char** argv)
     wr->SetThreadState(THREADSTATE_TERMINATE);
     ThreadPool.ShowStats();
     /* Shut down console system */
-    console->terminate();
+    console->stopThread();
     delete console;
 
     // begin server shutdown

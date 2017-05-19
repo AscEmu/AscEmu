@@ -116,7 +116,7 @@ class LogonCommWatcherThread : public ThreadBase
         cond.Signal();
     }
 
-    bool run()
+    bool runThread()
     {
         sLogonCommHandler.ConnectAll();
         while (running)

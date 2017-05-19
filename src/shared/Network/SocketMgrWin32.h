@@ -59,7 +59,7 @@ class SocketWorkerThread : public ThreadBase
 {
     public:
 
-        bool run();
+        bool runThread();
 };
 
 void SERVER_DECL HandleReadComplete(Socket* s, uint32 len);

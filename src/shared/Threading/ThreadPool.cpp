@@ -226,7 +226,7 @@ void CThreadPool::Shutdown()
         Thread* t = *itr;
 
         if(t->ExecutionTarget)
-            t->ExecutionTarget->OnShutdown();
+            t->ExecutionTarget->onShutdown();
         else
             t->ControlInterface.Resume();
     }
@@ -276,7 +276,7 @@ static unsigned long WINAPI thread_proc(void* param)
     {
         if(t->ExecutionTarget != NULL)
         {
-            if(t->ExecutionTarget->run())
+            if(t->ExecutionTarget->runThread())
                 delete t->ExecutionTarget;
 
             t->ExecutionTarget = NULL;

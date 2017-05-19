@@ -37,7 +37,7 @@ void SocketMgr::SpawnWorkerThreads()
         ThreadPool.ExecuteTask(new SocketWorkerThread());
 }
 
-bool SocketWorkerThread::run()
+bool SocketWorkerThread::runThread()
 {
     THREAD_TRY_EXECUTION
 

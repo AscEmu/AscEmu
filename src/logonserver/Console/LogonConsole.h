@@ -36,7 +36,7 @@ class LogonConsoleThread : public ThreadBase
     Arcemu::Threading::AtomicBoolean kill;
     LogonConsoleThread();
     ~LogonConsoleThread();
-    bool run();
+    bool runThread();
 };
 
 class LogonConsole : public Singleton < LogonConsole >

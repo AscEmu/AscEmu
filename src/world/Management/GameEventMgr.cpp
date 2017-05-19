@@ -374,7 +374,7 @@ void GameEventMgr::GameEventMgrThread::SpawnActiveEvents()
     }
 }
 
-bool GameEventMgr::GameEventMgrThread::run()
+bool GameEventMgr::GameEventMgrThread::runThread()
 {
     LogNotice("GameEventMgr : Started.");
 

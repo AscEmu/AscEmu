@@ -46,7 +46,7 @@ class PeriodicFunctionCaller : public ThreadBase
             delete cb;
         }
 
-        bool run()
+        bool runThread()
         {
 #ifndef WIN32
             struct timeval now;

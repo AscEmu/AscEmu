@@ -38,7 +38,7 @@ public:
     CommonScheduleThread();
     ~CommonScheduleThread();
 
-    bool run();
+    bool runThread();
     void terminate();
 
     void BroadCastExec();

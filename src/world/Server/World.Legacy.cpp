@@ -194,7 +194,7 @@ void Task::execute()
     _cb->execute();
 }
 
-bool TaskExecutor::run()
+bool TaskExecutor::runThread()
 {
     Task* t;
 
@@ -262,7 +262,7 @@ CharacterLoaderThread::~CharacterLoaderThread()
 {
 }
 
-bool CharacterLoaderThread::run()
+bool CharacterLoaderThread::runThread()
 {
     running = true;
     for (;;)

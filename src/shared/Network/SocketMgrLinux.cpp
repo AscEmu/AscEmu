@@ -115,7 +115,7 @@ void SocketMgr::ShowStatus()
     LogDefault("sockets count = %u", socket_count.GetVal());
 }
 
-bool SocketWorkerThread::run()
+bool SocketWorkerThread::runThread()
 {
     int fd_count;
     Socket* ptr;

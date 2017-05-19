@@ -122,7 +122,7 @@ set(headers
 	Threading/RWLock.h
 	Threading/Threading.h
 	Threading/ThreadPool.h
-	Threading/ThreadStarter.h
+	Threading/ThreadBase.h
 	
 	Common.hpp
 	Log.hpp

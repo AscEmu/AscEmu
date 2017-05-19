@@ -160,7 +160,7 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		Unit* GetUnit(const uint64 & guid);
 		Object* _GetObject(const uint64 & guid);
 
-		bool run();
+		bool runThread();
 		bool Do();
 
 		MapMgr(Map* map, uint32 mapid, uint32 instanceid);

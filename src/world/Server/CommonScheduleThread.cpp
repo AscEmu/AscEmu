@@ -46,7 +46,7 @@ void CommonScheduleThread::terminate()
     cond.Signal();
 }
 
-bool CommonScheduleThread::run()
+bool CommonScheduleThread::runThread()
 {
     LogNotice("CommonScheduleThread : Started.");
     m_busy = false;

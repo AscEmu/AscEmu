@@ -63,7 +63,7 @@ class SERVER_DECL ListenSocket : public ThreadBase
             Close();
         }
 
-        bool run()
+        bool runThread()
         {
             while (m_opened)
             {

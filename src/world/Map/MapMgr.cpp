@@ -1200,7 +1200,7 @@ void MapMgr::ChangeFarsightLocation(Player* plr, DynamicObject* farsight)
     }
 }
 
-bool MapMgr::run()
+bool MapMgr::runThread()
 {
     bool rv = true;
 

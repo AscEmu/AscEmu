@@ -24,5 +24,5 @@ class WorldRunnable : public CThread
 {
 public:
     WorldRunnable();
-    bool run();
+    bool runThread();
 };

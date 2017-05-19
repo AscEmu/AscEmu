@@ -61,7 +61,7 @@ void LogonConsole::Kill()
     LOG_BASIC("Console shut down.");
 }
 
-bool LogonConsoleThread::run()
+bool LogonConsoleThread::runThread()
 {
     new LogonConsole;
 

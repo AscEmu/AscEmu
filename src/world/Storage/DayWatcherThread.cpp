@@ -174,7 +174,7 @@ bool DayWatcherThread::has_timeout_expired(tm* now_time, tm* last_time, uint32 t
     return false;
 }
 
-bool DayWatcherThread::run()
+bool DayWatcherThread::runThread()
 {
     LOG_DETAIL("Started.");
     currenttime = UNIXTIME;

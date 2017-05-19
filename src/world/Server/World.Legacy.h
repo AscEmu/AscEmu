@@ -194,7 +194,7 @@ public:
     CharacterLoaderThread();
     ~CharacterLoaderThread();
     void OnShutdown();
-    bool run();
+    bool runThread();
 };
 
 class TaskList
@@ -246,7 +246,7 @@ public:
         --starter->thread_count;
     }
 
-    bool run();
+    bool runThread();
 };
 
 class WorldSocket;

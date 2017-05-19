@@ -261,7 +261,7 @@ bool Database::WaitExecuteNA(const char* QueryString)
     return Result;
 }
 
-bool Database::run()
+bool Database::runThread()
 {
     SetThreadName("Database Execute Thread");
     SetThreadState(THREADSTATE_BUSY);
@@ -379,7 +379,7 @@ void Database::EndThreads()
     }
 }
 
-bool QueryThread::run()
+bool QueryThread::runThread()
 {
     db->thread_proc_query();
     return true;

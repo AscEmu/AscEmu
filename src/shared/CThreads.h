@@ -22,7 +22,7 @@
 #ifndef _C_THREADS_H
 #define _C_THREADS_H
 
-#include "Threading/ThreadStarter.h"
+#include "Threading/ThreadBase.h"
 #include "Threading/AtomicCounter.h"
 
 class MapMgr;

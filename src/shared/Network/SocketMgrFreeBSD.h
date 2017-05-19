@@ -94,7 +94,7 @@ class SocketWorkerThread : public ThreadBase
         struct kevent events[THREAD_EVENT_SIZE];
         bool running;
     public:
-        bool run();
+        bool runThread();
         void OnShutdown()
         {
             running = false;
