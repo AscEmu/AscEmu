@@ -202,7 +202,11 @@
 #include "Server/Master.h"
 
 #include "Server/Console/BaseConsole.h"
+#include "Server/Console/ConsoleAuthMgr.h"
+#include "Server/Console/ConsoleCommands.h"
+#include "Server/Console/ConsoleSocket.h"
 #include "Server/Console/ConsoleThread.h"
+
 #include "Server/Warden/SpeedDetector.h"
 #include "Management/WorldStates.h"
 #include "Units/Players/PlayerClasses.hpp"

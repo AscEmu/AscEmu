@@ -18,8 +18,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BASECONSOLE_H
-#define BASECONSOLE_H
+
+#pragma once
+
+#include <string>
 
 class ConsoleSocket;
 
@@ -50,4 +52,3 @@ void processConsoleInput(BaseConsole* baseConsole, std::string consoleInput);
 
 //MIT end
 
-#endif // BASECONSOLE_H

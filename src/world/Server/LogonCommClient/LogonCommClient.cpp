@@ -413,7 +413,7 @@ void LogonCommClientSocket::HandleDisconnectAccount(WorldPacket& recvData)
         sess->Disconnect();
 }
 
-void ConsoleAuthCallback(uint32 request, uint32 result);
+void ConsoleAuthCallback(uint32_t request, uint32_t result);
 void LogonCommClientSocket::HandleConsoleAuthResult(WorldPacket& recvData)
 {
     uint32 requestid;

@@ -9,6 +9,8 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Console/ConsoleThread.h"
 #include "Log.hpp"
 
+#include <iostream>
+
 #ifndef WIN32
     #include <poll.h>
 #endif
