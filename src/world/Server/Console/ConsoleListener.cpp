@@ -46,11 +46,11 @@ void ConsoleAuthCallback(uint32_t request, uint32_t result)
 
     if (result)
     {
-        consoleSocket->AuthCallback(true);
+        consoleSocket->getConsoleAuthResult(true);
     }
     else
     {
-        consoleSocket->AuthCallback(false);
+        consoleSocket->getConsoleAuthResult(false);
     }
 }
 

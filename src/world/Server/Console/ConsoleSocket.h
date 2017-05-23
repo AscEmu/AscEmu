@@ -10,15 +10,19 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Network/Network.h"
 #include "BaseConsole.h"
 
-#define LOCAL_BUFFER_SIZE 2048
 
-enum STATES
+namespace ConsoleDefines
 {
-    STATE_USER = 1,
-    STATE_PASSWORD = 2,
-    STATE_LOGGED = 3,
-    STATE_WAITING = 4
-};
+    const uint32_t localBuffer = 2048;
+
+    enum RemoteConsoleState
+    {
+        WaitForUsername = 1,
+        WaitForPassword = 2,
+        UserLoggedIn = 3
+    };
+}
+
 
 class ConsoleSocket : public Socket
 {
@@ -45,7 +49,7 @@ class ConsoleSocket : public Socket
 
         uint32_t mInputBufferLength;
         uint32_t mInputBufferPosition;
-        uint32_t mConsoleSocketState;
+        ConsoleDefines::RemoteConsoleState mConsoleSocketState;
 
         std::string mConsoleAuthName;
         std::string mConsoleAuthPassword;
@@ -59,7 +63,7 @@ class ConsoleSocket : public Socket
         void handleConsoleInput();
         void closeRemoteConnection();
 
-        void AuthCallback(bool result);
+        void getConsoleAuthResult(bool result);
 
-        void TestConsoleLogin(std::string& username, std::string& password, uint32_t requestno);
+        void testConsoleLogin(std::string& username, std::string& password, uint32_t requestno);
 };

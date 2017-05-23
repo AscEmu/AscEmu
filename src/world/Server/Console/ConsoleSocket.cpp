@@ -17,13 +17,13 @@ This file is released under the MIT license. See README-MIT for more information
 
 ConsoleSocket::ConsoleSocket(SOCKET iFd) :
     Socket(iFd, 10000, 1000),
-    mInputBufferLength(LOCAL_BUFFER_SIZE),
+    mInputBufferLength(ConsoleDefines::localBuffer),
     mInputBufferPosition(0),
-    mConsoleSocketState(STATE_USER),
+    mConsoleSocketState(ConsoleDefines::RemoteConsoleState::WaitForUsername),
     mFailedLoginCount(0),
     mRequestId(0)
 {
-    mInputBuffer = new char[LOCAL_BUFFER_SIZE];
+    mInputBuffer = new char[ConsoleDefines::localBuffer];
     mRemoteConsole = new RemoteConsole(this);
     
 }
@@ -104,26 +104,25 @@ void ConsoleSocket::handleConsoleInput()
         {
             switch (mConsoleSocketState)
             {
-                case STATE_USER:
+                case ConsoleDefines::RemoteConsoleState::WaitForUsername:
                 {
                     mConsoleAuthName = std::string(mInputBuffer);
                     mRemoteConsole->Write("password: ");
-                    mConsoleSocketState = STATE_PASSWORD;
+                    mConsoleSocketState = ConsoleDefines::RemoteConsoleState::WaitForPassword;
 
                 } break;
-                case STATE_PASSWORD:
+                case ConsoleDefines::RemoteConsoleState::WaitForPassword:
                 {
                     mConsoleAuthPassword = std::string(mInputBuffer);
                     mRemoteConsole->Write("\r\nAttempting to authenticate. Please wait.\r\n");
-                    mConsoleSocketState = STATE_WAITING;
 
                     mRequestId = sConsoleAuthMgr.getGeneratedId();
                     sConsoleAuthMgr.addRequestIdSocket(mRequestId, this);
 
-                    TestConsoleLogin(mConsoleAuthName, mConsoleAuthPassword, mRequestId);
+                    testConsoleLogin(mConsoleAuthName, mConsoleAuthPassword, mRequestId);
 
                 } break;
-                case STATE_LOGGED:
+                case ConsoleDefines::RemoteConsoleState::UserLoggedIn:
                 {
                     if (!strnicmp(mInputBuffer, "quit", 4))
                     {
@@ -162,13 +161,13 @@ void ConsoleSocket::closeRemoteConnection()
         mRequestId = 0;
     }
 
-    if (mConsoleSocketState == STATE_LOGGED)
+    if (mConsoleSocketState == ConsoleDefines::RemoteConsoleState::UserLoggedIn)
     {
         LogNotice("RemoteConsole : User `%s` disconnected.", mConsoleAuthName.c_str());
     }
 }
 
-void ConsoleSocket::AuthCallback(bool result)
+void ConsoleSocket::getConsoleAuthResult(bool result)
 {
     sConsoleAuthMgr.addRequestIdSocket(mRequestId, nullptr);
     mRequestId = 0;
@@ -180,7 +179,7 @@ void ConsoleSocket::AuthCallback(bool result)
         if (mFailedLoginCount < 3)
         {
             mRemoteConsole->Write("login: ");
-            mConsoleSocketState = STATE_USER;
+            mConsoleSocketState = ConsoleDefines::RemoteConsoleState::WaitForUsername;
         }
         else
         {
@@ -194,11 +193,11 @@ void ConsoleSocket::AuthCallback(bool result)
         const char* argv[1];
         handServerleInfoCommand(mRemoteConsole, 1, "");
         mRemoteConsole->Write("Type ? to see commands, quit to end session.\r\n");
-        mConsoleSocketState = STATE_LOGGED;
+        mConsoleSocketState = ConsoleDefines::RemoteConsoleState::UserLoggedIn;
     }
 }
 
-void ConsoleSocket::TestConsoleLogin(std::string& username, std::string& password, uint32_t requestno)
+void ConsoleSocket::testConsoleLogin(std::string& username, std::string& password, uint32_t requestno)
 {
     sLogonCommHandler.TestConsoleLogon(username, password, requestno);
 }
