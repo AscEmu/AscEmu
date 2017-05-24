@@ -9304,9 +9304,11 @@ void Player::CompleteLoading()
     if (!IsMounted())
         SpawnActivePet();
 
+#if VERSION_STRING != TBC
     // useless logon spell
     Spell* logonspell = sSpellFactoryMgr.NewSpell(this, sSpellCustomizations.GetSpellInfo(836), false, NULL);
     logonspell->prepare(&targets);
+#endif
 
     if (IsBanned())
     {
@@ -9331,7 +9333,7 @@ void Player::CompleteLoading()
     sInstanceMgr.BuildSavedInstancesForPlayer(this);
     CombatStatus.UpdateFlag();
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     // add glyphs
     for (uint8 j = 0; j < GLYPHS_COUNT; ++j)
     {
@@ -9341,10 +9343,10 @@ void Player::CompleteLoading()
 
         CastSpell(this, glyph_properties->SpellID, true);
     }
-#endif
 
     //sEventMgr.AddEvent(this,&Player::SendAllAchievementData,EVENT_SEND_ACHIEVEMNTS_TO_PLAYER,ACHIEVEMENT_SEND_DELAY,1,0);
     sEventMgr.AddEvent(static_cast< Unit* >(this), &Unit::UpdatePowerAmm, EVENT_SEND_PACKET_TO_PLAYER_AFTER_LOGIN, LOGIN_CIENT_SEND_DELAY, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+#endif
 }
 
 void Player::OnWorldPortAck()

@@ -361,7 +361,7 @@ uint32 Object::BuildValuesUpdateBlockForPlayer(ByteBuffer* buf, UpdateMask* mask
 ///\todo rewrite this stuff, document unknown fields and flags
 uint32 TimeStamp();
 
-#if VERSION_STRING != Cata
+#if VERSION_STRING < WotLK
 void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
 {
     uint32 flags2 = 0;
@@ -379,7 +379,245 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
     }
 
     uint16 moveflags2 = 0;      // mostly seem to be used by vehicles to control what kind of movement is allowed
+
+    *data << uint8(flags);
+
+    Player* pThis = NULL;
+    MovementInfo* moveinfo = NULL;
+    if (IsPlayer())
+    {
+        pThis = static_cast< Player* >(this);
+        if (pThis->GetSession())
+            moveinfo = pThis->GetSession()->GetMovementInfo();
+    }
+    Creature* uThis = NULL;
+    if (IsCreature())
+        uThis = static_cast< Creature* >(this);
+
+    if (flags & UPDATEFLAG_LIVING)  //0x20
+    {
+        /*if (pThis && pThis->obj_movement_info.transporter_info.guid != 0)
+        flags2 |= MOVEFLAG_TRANSPORT; //0x200
+        else if (uThis != NULL && obj_movement_info.transporter_info.guid != 0 && uThis->obj_movement_info.transporter_info.guid != 0)
+        flags2 |= MOVEFLAG_TRANSPORT; //0x200*/
+
+        // Zyres: If a unit has this flag, add it to the update packet, otherwise not.
+        if (pThis && pThis->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+            flags2 |= MOVEFLAG_TRANSPORT;
+        else if (uThis && uThis->HasUnitMovementFlag(MOVEFLAG_TRANSPORT))
+            flags2 |= MOVEFLAG_TRANSPORT;
+
+        if ((pThis != NULL) && pThis->isRooted())
+            flags2 |= MOVEFLAG_ROOTED;
+        else if ((uThis != NULL) && uThis->isRooted())
+            flags2 |= MOVEFLAG_ROOTED;
+
+        if (uThis != NULL)
+        {
+            // Don't know what this is, but I've only seen it applied to spirit healers. maybe some sort of invisibility flag? :/
+            switch (GetEntry())
+            {
+                case 6491:      // Spirit Healer
+                case 13116:     // Alliance Spirit Guide
+                case 13117:     // Horde Spirit Guide
+                {
+                    flags2 |= MOVEFLAG_WATER_WALK;      //0x10000000
+                }
+                break;
+            }
+
+            if (uThis->GetAIInterface()->IsFlying())
+                flags2 |= MOVEFLAG_DISABLEGRAVITY;        //0x400 Zack : Teribus the Cursed had flag 400 instead of 800 and he is flying all the time
+            if (uThis->GetAIInterface()->onGameobject)
+                flags2 |= MOVEFLAG_ROOTED;
+            if (uThis->GetCreatureProperties()->extra_a9_flags)
+            {
+                //do not send shit we can't honor
+#define UNKNOWN_FLAGS2 (0x00002000 | 0x04000000 | 0x08000000)
+                uint32 inherit = uThis->GetCreatureProperties()->extra_a9_flags & UNKNOWN_FLAGS2;
+                flags2 |= inherit;
+            }
+        }
+
+        *data << uint32(flags2);
+
+        *data << uint8(moveflags2);
+
+        *data << getMSTime(); // this appears to be time in ms but can be any thing. Maybe packet serializer ?
+
+                              // this stuff:
+                              //   0x01 -> Enable Swimming?
+                              //   0x04 -> ??
+                              //   0x10 -> disables movement compensation and causes players to jump around all the place
+                              //   0x40 -> disables movement compensation and causes players to jump around all the place
+
+                              //Send position data, every living thing has these
+        *data << float(m_position.x);
+        *data << float(m_position.y);
+        *data << float(m_position.z);
+        *data << float(m_position.o);
+
+        if (flags2 & MOVEFLAG_TRANSPORT) //0x0200
+        {
+            *data << WoWGuid(obj_movement_info.transporter_info.guid);
+            *data << float(GetTransPositionX());
+            *data << float(GetTransPositionY());
+            *data << float(GetTransPositionZ());
+            *data << float(GetTransPositionO());
+            *data << uint32(GetTransTime());
+            *data << uint8(GetTransSeat());
+        }
+
+        if ((flags2 & (MOVEFLAG_SWIMMING | MOVEFLAG_FLYING)) || (moveflags2 & MOVEFLAG2_ALLOW_PITCHING))   // 0x2000000+0x0200000 flying/swimming, || sflags & SMOVE_FLAG_ENABLE_PITCH
+        {
+            if (pThis && moveinfo)
+                *data << moveinfo->pitch;
+            else
+                *data << float(0); //pitch
+        }
+
+        if (pThis && moveinfo)
+            *data << moveinfo->fall_time;
+        else
+            *data << uint32(0); //last fall time
+
+        if (flags2 & MOVEFLAG_REDIRECTED)   // 0x00001000
+        {
+            if (moveinfo != NULL)
+            {
+                *data << moveinfo->redirectVelocity;
+                *data << moveinfo->redirectSin;
+                *data << moveinfo->redirectCos;
+                *data << moveinfo->redirect2DSpeed;
+            }
+            else
+            {
+                *data << float(0);
+                *data << float(1.0);
+                *data << float(0);
+                *data << float(0);
+            }
+        }
+
+        if (Unit* unit = static_cast<Unit*>(this))
+        {
+            *data << unit->getSpeedForType(TYPE_WALK);
+            *data << unit->getSpeedForType(TYPE_RUN);
+            *data << unit->getSpeedForType(TYPE_RUN_BACK);
+            *data << unit->getSpeedForType(TYPE_SWIM);
+            *data << unit->getSpeedForType(TYPE_SWIM_BACK);
+            *data << unit->getSpeedForType(TYPE_FLY);
+            *data << unit->getSpeedForType(TYPE_FLY_BACK);
+            *data << unit->getSpeedForType(TYPE_TURN_RATE);
+        }
+        else                                //\todo Zyres: this is ridiculous... only units have these types, but this function is a mess so don't breake anything.
+        {
+            *data << float(2.5f);
+            *data << float(7.0f);
+            *data << float(4.5f);
+            *data << float(4.722222f);
+            *data << float(2.5f);
+            *data << float(7.0f);
+            *data << float(4.5f);
+            *data << float(3.141594f);
+
+        }
+
+        if (flags2 & MOVEFLAG_SPLINE_ENABLED)   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
+        {
+            if (splinebuf != NULL)
+            {
+                data->append(*splinebuf);
+                //delete splinebuf;
+            }
+            else
+                *data << float(0.0f);
+        }
+    }
+    else        // No UPDATEFLAG_LIVING
+    {
+        if (flags & UPDATEFLAG_POSITION)        //0x0100
+        {
+            *data << uint8(0);                  //some say it is like parent guid ?
+            *data << float(m_position.x);
+            *data << float(m_position.y);
+            *data << float(m_position.z);
+            *data << float(m_position.x);
+            *data << float(m_position.y);
+            *data << float(m_position.z);
+            *data << float(m_position.o);
+
+            if (IsCorpse())
+                *data << float(m_position.o);   //VLack: repeat the orientation!
+            else
+                *data << float(0);
+        }
+        else if (flags & UPDATEFLAG_HAS_POSITION)  //0x40
+        {
+
+            if (flags & UPDATEFLAG_TRANSPORT && m_uint32Values[GAMEOBJECT_TYPE_ID] == GAMEOBJECT_TYPE_MO_TRANSPORT)
+            {
+                *data << float(0);
+                *data << float(0);
+                *data << float(0);
+            }
+            else
+            {
+                *data << float(m_position.x);
+                *data << float(m_position.y);
+                *data << float(m_position.z);
+            }
+            *data << float(m_position.o);
+        }
+    }
+
+
+    if (flags & UPDATEFLAG_LOWGUID)     //0x08
+        *data << GetLowGUID();
+
+    if (flags & UPDATEFLAG_HIGHGUID)    //0x10
+        *data << GetHighGUID();
+
+    if (flags & UPDATEFLAG_HAS_TARGET)  //0x04
+    {
+        if (IsUnit())
+            FastGUIDPack(*data, static_cast<Unit*>(this)->GetTargetGUID());	//some compressed GUID
+        else
+            *data << uint64(0);
+    }
+
+    if (flags & UPDATEFLAG_TRANSPORT)   //0x2
+    {
+        *data << getMSTime();
+    }
+
+    if (flags & UPDATEFLAG_ROTATION)   //0x0200
+    {
+        if (IsGameObject())
+            *data << static_cast< GameObject* >(this)->GetRotation();
+    }
+}
+#endif
+
 #if VERSION_STRING == WotLK
+void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target)
+{
+    uint32 flags2 = 0;
+
+    ByteBuffer* splinebuf = (m_objectTypeId == TYPEID_UNIT) ? target->GetAndRemoveSplinePacket(GetGUID()) : 0;
+
+    if (splinebuf != NULL)
+    {
+        flags2 |= MOVEFLAG_SPLINE_ENABLED | MOVEFLAG_MOVE_FORWARD;	   //1=move forward
+        if (IsCreature())
+        {
+            if (static_cast<Unit*>(this)->GetAIInterface()->HasWalkMode(WALKMODE_WALK))
+                flags2 |= MOVEFLAG_WALK;
+        }
+    }
+
+    uint16 moveflags2 = 0;      // mostly seem to be used by vehicles to control what kind of movement is allowed
+
     if (IsVehicle())
     {
         Unit* u = static_cast< Unit* >(this);
@@ -393,13 +631,8 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         }
 
     }
-#endif
 
-#if VERSION_STRING == WotLK
     *data << uint16(flags);
-#elif VERSION_STRING == TBC
-    *data << uint8(flags);
-#endif
 
     Player* pThis = NULL;
     MovementInfo* moveinfo = NULL;
@@ -460,11 +693,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
 
         *data << uint32(flags2);
 
-#if VERSION_STRING == WotLK
         *data << uint16(moveflags2);
-#elif VERSION_STRING== TBC
-        *data << uint8(moveflags2);
-#endif
 
         *data << getMSTime(); // this appears to be time in ms but can be any thing. Maybe packet serializer ?
 
@@ -532,9 +761,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
             *data << unit->getSpeedForType(TYPE_FLY);
             *data << unit->getSpeedForType(TYPE_FLY_BACK);
             *data << unit->getSpeedForType(TYPE_TURN_RATE);
-#if VERSION_STRING == WotLK
             *data << unit->getSpeedForType(TYPE_PITCH_RATE);
-#endif
         }
         else                                //\todo Zyres: this is ridiculous... only units have these types, but this function is a mess so don't breake anything.
         {
@@ -546,9 +773,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
             *data << float(7.0f);
             *data << float(4.5f);
             *data << float(3.141594f);
-#if VERSION_STRING == WotLK
             *data << float(3.14f);
-#endif
         }
 
         if (flags2 & MOVEFLAG_SPLINE_ENABLED)   //VLack: On Mangos this is a nice spline movement code, but we never had such... Also, at this point we haven't got this flag, that's for sure, but fail just in case...
@@ -582,11 +807,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         }
         else if (flags & UPDATEFLAG_HAS_POSITION)  //0x40
         {
-#if VERSION_STRING == WotLK
             if (flags & UPDATEFLAG_TRANSPORT && m_uint32Values[GAMEOBJECT_BYTES_1] == GAMEOBJECT_TYPE_MO_TRANSPORT)
-#else
-            if (flags & UPDATEFLAG_TRANSPORT && m_uint32Values[GAMEOBJECT_TYPE_ID] == GAMEOBJECT_TYPE_MO_TRANSPORT)
-#endif
             {
                 *data << float(0);
                 *data << float(0);
@@ -621,7 +842,7 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
     {
         *data << getMSTime();
     }
-#if VERSION_STRING == WotLK
+
     if (flags & UPDATEFLAG_VEHICLE)
     {
         uint32 vehicleid = 0;
@@ -635,7 +856,6 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
         *data << uint32(vehicleid);
         *data << float(GetOrientation());
     }
-#endif
 
     if (flags & UPDATEFLAG_ROTATION)   //0x0200
     {
@@ -643,8 +863,9 @@ void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 flags, Player* target
             *data << static_cast< GameObject* >(this)->GetRotation();
     }
 }
+#endif
 
-#else
+#if VERSION_STRING == Cata
 void Object::_BuildMovementUpdate(ByteBuffer* data, uint16 updateFlags, Player* target)
 {
     ObjectGuid Guid = GetGUID();
