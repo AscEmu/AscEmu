@@ -20,6 +20,10 @@
  */
 
 #include "StdAfx.h"
+
+#include <iostream>
+#include <sstream>
+
 #include "Management/QuestLogEntry.hpp"
 #include "Management/Gossip/GossipMenu.hpp"
 #include "Management/Item.h"
@@ -3451,40 +3455,27 @@ void Player::LoadFromDBProc(QueryResultVector & results)
         }
     }
 
-    start = (char*)get_next_field.GetString();//buff;
-    do
-    {
-        if (start == nullptr)
-            break;
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Parse saved buffs
+    std::istringstream savedPlayerBuffsStream(get_next_field.GetString());
+    std::string auraId, auraDuration, auraPositivValue, auraCharges;
 
-        end = strchr(start, ',');
-        if (!end)
-            break;
-        *end = 0;
+    while (std::getline(savedPlayerBuffsStream, auraId, ','))
+    {
         LoginAura la;
-        la.id = atol(start);
-        start = end + 1;
-        end = strchr(start, ',');
-        if (!end)
-            break;
-        *end = 0;
-        la.dur = atol(start);
-        start = end + 1;
-        end = strchr(start, ',');
-        if (!end)
-            break;
-        *end = 0;
-        la.positive = (start != NULL);
-        start = end + 1;
-        end = strchr(start, ',');
-        if (!end)
-            break;
-        *end = 0;
-        la.charges = atol(start);
-        start = end + 1;
+        la.id = atol(auraId.c_str());
+
+        std::getline(savedPlayerBuffsStream, auraDuration, ',');
+        la.dur = atol(auraDuration.c_str());
+
+        std::getline(savedPlayerBuffsStream, auraPositivValue, ',');
+        la.positive = (auraPositivValue.c_str());
+
+        std::getline(savedPlayerBuffsStream, auraCharges, ',');
+        la.charges = atol(auraCharges.c_str());
+
         loginauras.push_back(la);
     }
-    while (true);
 
     // Load saved finished quests
 
