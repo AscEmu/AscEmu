@@ -44,29 +44,33 @@ void MySQLDataStore::LoadAdditionalTableConfig()
 
     for (std::vector<std::string>::iterator itr = strs.begin(); itr != strs.end(); ++itr)
     {
-        char additional_table[200];
-        char target_table[200];
+        std::stringstream additionTableStream((*itr));
+        std::string additional_table;
+        std::string target_table;
 
-        if (sscanf((*itr).c_str(), "%s %s", additional_table, target_table) != 2)
+        additionTableStream >> additional_table;
+        additionTableStream >> target_table;
+
+        if (additional_table.empty() || target_table.empty())
             continue;
 
-        if (!stricmp(target_table, "creature_spawns"))
-            CreatureSpawnsTables.insert(std::string(additional_table));
+        if (target_table.compare("creature_spawns") == 0)
+            CreatureSpawnsTables.insert(additional_table);
 
-        if (!stricmp(target_table, "gameobject_spawns"))
-            GameObjectSpawnsTables.insert(std::string(additional_table));
+        if (target_table.compare("gameobject_spawns") == 0)
+            GameObjectSpawnsTables.insert(additional_table);
 
-        if (!stricmp(target_table, "gameobject_properties"))
-            GameObjectPropertiesTables.insert(std::string(additional_table));
+        if (target_table.compare("gameobject_properties") == 0)
+            GameObjectPropertiesTables.insert(additional_table);
 
-        if (!stricmp(target_table, "creature_properties"))
-            CreaturePropertiesTables.insert(std::string(additional_table));
+        if (target_table.compare("creature_properties") == 0)
+            CreaturePropertiesTables.insert(additional_table);
 
-        if (!stricmp(target_table, "item_properties"))
-            ItemPropertiesTables.insert(std::string(additional_table));
+        if (target_table.compare("item_properties") == 0)
+            ItemPropertiesTables.insert(additional_table);
 
-        if (!stricmp(target_table, "quest_properties"))
-            QuestPropertiesTables.insert(std::string(additional_table));
+        if (target_table.compare("quest_properties") == 0)
+            QuestPropertiesTables.insert(additional_table);
     }
 }
 
