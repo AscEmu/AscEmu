@@ -2,6 +2,7 @@
 
 master | development
 :------------: | :------------:
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/842741b177dc4a798487729e110f6d2b)](https://www.codacy.com/app/mr/AscEmu?utm_source=github.com&utm_medium=referral&utm_content=AscEmu/AscEmu&utm_campaign=badger)
 [![Travis Status](https://travis-ci.org/AscEmu/AscEmu.svg?branch=master)](https://travis-ci.org/AscEmu/AscEmu) | [![Travis Status](https://travis-ci.org/AscEmu/AscEmu.svg?branch=develop)](https://travis-ci.org/AscEmu/AscEmu)
 [![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/master?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu) | [![AppYeyor Status](https://ci.appveyor.com/api/projects/status/h70t5a5rd56y8ute/branch/develop?svg=true)](https://ci.appveyor.com/project/Zyres/ascemu)
 
