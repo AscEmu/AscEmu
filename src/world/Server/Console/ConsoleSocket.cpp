@@ -21,7 +21,8 @@ ConsoleSocket::ConsoleSocket(SOCKET iFd) :
     mInputBufferPosition(0),
     mConsoleSocketState(ConsoleDefines::RemoteConsoleState::WaitForUsername),
     mFailedLoginCount(0),
-    mRequestId(0)
+    mRequestId(0),
+    isWebClient(false)
 {
     mInputBuffer = new char[ConsoleDefines::localBuffer];
     mRemoteConsole = new RemoteConsole(this);
@@ -129,10 +130,16 @@ void ConsoleSocket::handleConsoleInput()
                         Disconnect();
                         break;
                     }
+
+                    if (!strnicmp(mInputBuffer, "webclient", 9))
+                    {
+                        isWebClient = true;
+                        break;
+                    }
                 }
                 default:
                 {
-                    processConsoleInput(mRemoteConsole, mInputBuffer);
+                    processConsoleInput(mRemoteConsole, mInputBuffer, isWebClient);
 
                 } break;
             }
@@ -191,7 +198,7 @@ void ConsoleSocket::getConsoleAuthResult(bool result)
         mRemoteConsole->Write("User `%s` authenticated.\r\n\r\n", mConsoleAuthName.c_str());
         LogNotice("RemoteConsole : User `%s` authenticated.", mConsoleAuthName.c_str());
         const char* argv[1];
-        handServerleInfoCommand(mRemoteConsole, 1, "");
+        //handServerleInfoCommand(mRemoteConsole, 1, "");
         mRemoteConsole->Write("Type ? to see commands, quit to end session.\r\n");
         mConsoleSocketState = ConsoleDefines::RemoteConsoleState::UserLoggedIn;
     }

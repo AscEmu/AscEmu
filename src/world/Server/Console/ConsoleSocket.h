@@ -46,6 +46,7 @@ class ConsoleSocket : public Socket
         RemoteConsole* mRemoteConsole;
 
         char* mInputBuffer;
+        bool isWebClient;
 
         uint32_t mInputBufferLength;
         uint32_t mInputBufferPosition;

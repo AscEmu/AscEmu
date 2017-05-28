@@ -17,7 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "../../../scripts/Common/Base.h"
 
 
-bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput)
+bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -31,7 +31,7 @@ bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, 
     return true;
 }
 
-bool handleBanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput)
+bool handleBanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -59,7 +59,7 @@ bool handleBanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::s
     return true;
 }
 
-bool handleCancelShutdownCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/)
+bool handleCancelShutdownCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
 {
     sMaster.m_ShutdownTimer = 5000;
     sMaster.m_ShutdownEvent = false;
@@ -69,7 +69,7 @@ bool handleCancelShutdownCommand(BaseConsole* baseConsole, int /*argumentCount*/
     return true;
 }
 
-bool handServerleInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/)
+bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
 {
     uint32_t clientsNum = (uint32_t)sWorld.getSessionCount();
 
@@ -90,26 +90,34 @@ bool handServerleInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, st
     }
     objmgr._playerslock.ReleaseReadLock();
 
-    baseConsole->Write("======================================================================\r\n");
-    baseConsole->Write("Server Information: \r\n");
-    baseConsole->Write("======================================================================\r\n");
-    baseConsole->Write("Server Revision: AscEmu %s/%s-%s-%s (www.ascemu.org)\r\n", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
-    baseConsole->Write("Server Uptime: %s\r\n", sWorld.getWorldUptimeString().c_str());
-    baseConsole->Write("Current Players: %d (%d GMs, %d queued)\r\n", clientsNum, gmCount, 0);
-    baseConsole->Write("Active Thread Count: %u\r\n", ThreadPool.GetActiveThreadCount());
-    baseConsole->Write("Free Thread Count: %u\r\n", ThreadPool.GetFreeThreadCount());
-    baseConsole->Write("Average Latency: %.3fms\r\n", onlineCount ? ((float)((float)avgLatency / (float)onlineCount)) : 0.0f);
-    baseConsole->Write("CPU Usage: %3.2f %%\r\n", sWorld.getCPUUsage());
-    baseConsole->Write("RAM Usage: %4.2f MB\r\n", sWorld.getRAMUsage());
-    baseConsole->Write("SQL Query Cache Size (World): %u queries delayed\r\n", WorldDatabase.GetQueueSize());
-    baseConsole->Write("SQL Query Cache Size (Character): %u queries delayed\r\n", CharacterDatabase.GetQueueSize());
+    if (isWebClient)
+    {
+        // send pure data to webclient
+        baseConsole->Write("'%d', '%.3f', '%3.2f', '%4.2f'\r\n", clientsNum, onlineCount ? ((float)((float)avgLatency / (float)onlineCount)) : 0.0f, sWorld.getCPUUsage(), sWorld.getRAMUsage());
+    }
+    else
+    {
+        baseConsole->Write("======================================================================\r\n");
+        baseConsole->Write("Server Information: \r\n");
+        baseConsole->Write("======================================================================\r\n");
+        baseConsole->Write("Server Revision: AscEmu %s/%s-%s-%s (www.ascemu.org)\r\n", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
+        baseConsole->Write("Server Uptime: %s\r\n", sWorld.getWorldUptimeString().c_str());
+        baseConsole->Write("Current Players: %d (%d GMs, %d queued)\r\n", clientsNum, gmCount, 0);
+        baseConsole->Write("Active Thread Count: %u\r\n", ThreadPool.GetActiveThreadCount());
+        baseConsole->Write("Free Thread Count: %u\r\n", ThreadPool.GetFreeThreadCount());
+        baseConsole->Write("Average Latency: %.3fms\r\n", onlineCount ? ((float)((float)avgLatency / (float)onlineCount)) : 0.0f);
+        baseConsole->Write("CPU Usage: %3.2f %%\r\n", sWorld.getCPUUsage());
+        baseConsole->Write("RAM Usage: %4.2f MB\r\n", sWorld.getRAMUsage());
+        baseConsole->Write("SQL Query Cache Size (World): %u queries delayed\r\n", WorldDatabase.GetQueueSize());
+        baseConsole->Write("SQL Query Cache Size (Character): %u queries delayed\r\n", CharacterDatabase.GetQueueSize());
+    }
 
     sSocketMgr.ShowStatus();
 
     return true;
 }
 
-bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/)
+bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
 {
     baseConsole->Write("There are the following GM's online on this server: \r\n");
     baseConsole->Write("======================================================\r\n");
@@ -132,7 +140,7 @@ bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std
     return true;
 }
 
-bool handleKickPlayerCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput)
+bool handleKickPlayerCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -165,7 +173,7 @@ bool handleKickPlayerCommand(BaseConsole* baseConsole, int argumentCount, std::s
     return true;
 }
 
-bool handleMotdCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput)
+bool handleMotdCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -183,7 +191,7 @@ bool handleMotdCommand(BaseConsole* baseConsole, int argumentCount, std::string 
     return true;
 }
 
-bool handleListOnlinePlayersCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/)
+bool handleListOnlinePlayersCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
 {
     baseConsole->Write("There following players online on this server: \r\n");
     baseConsole->Write("======================================================\r\n");
@@ -202,7 +210,7 @@ bool handleListOnlinePlayersCommand(BaseConsole* baseConsole, int /*argumentCoun
     return true;
 }
 
-bool handlePlayerInfoCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput)
+bool handlePlayerInfoCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -223,7 +231,7 @@ bool handlePlayerInfoCommand(BaseConsole* baseConsole, int argumentCount, std::s
     return true;
 }
 
-bool handleShutDownServerCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string consoleInput)
+bool handleShutDownServerCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string consoleInput, bool isWebClient)
 {
     uint32_t delay = 5;
 
@@ -251,7 +259,7 @@ bool handleShutDownServerCommand(BaseConsole* baseConsole, int /*argumentCount*/
     return true;
 }
 
-bool handleRehashConfigCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/)
+bool handleRehashConfigCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
 {
     baseConsole->Write("Config file re-parsed.\r\n");
     sWorld.loadWorldConfigValues(true);
@@ -259,7 +267,7 @@ bool handleRehashConfigCommand(BaseConsole* baseConsole, int /*argumentCount*/, 
     return true;
 }
 
-bool handleUnbanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput)
+bool handleUnbanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -270,7 +278,7 @@ bool handleUnbanAccountCommand(BaseConsole* baseConsole, int argumentCount, std:
     return true;
 }
 
-bool handleSendWAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput)
+bool handleSendWAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -284,7 +292,7 @@ bool handleSendWAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std
     return true;
 }
 
-bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput)
+bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -316,7 +324,7 @@ bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::stri
     return true;
 }
 
-bool handleCreateNameHashCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput)
+bool handleCreateNameHashCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -327,7 +335,7 @@ bool handleCreateNameHashCommand(BaseConsole* baseConsole, int argumentCount, st
     return true;
 }
 
-bool handleRevivePlayerCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput)
+bool handleRevivePlayerCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient)
 {
     if (argumentCount > 0 && consoleInput.empty())
         return false;
@@ -352,7 +360,7 @@ bool handleRevivePlayerCommand(BaseConsole* baseConsole, int argumentCount, std:
     return true;
 }
 
-bool handleClearConsoleCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/)
+bool handleClearConsoleCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
 {
     system("cls");
     baseConsole->Write("Out of the ashes, Chuck Norris appears! With a roundhouse kick, your console shall now be cleaned!\r\n");
@@ -360,14 +368,14 @@ bool handleClearConsoleCommand(BaseConsole* baseConsole, int /*argumentCount*/, 
     return true;
 }
 
-bool handleReloadScriptEngineCommand(BaseConsole* /*baseConsole*/, int /*argumentCount*/, std::string /*consoleInput*/)
+bool handleReloadScriptEngineCommand(BaseConsole* /*baseConsole*/, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
 {
     sScriptMgr.ReloadScriptEngines();
 
     return true;
 }
 
-bool handlePrintTimeDateCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/)
+bool handlePrintTimeDateCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
 {
     std::string current_time = Util::GetCurrentDateTimeString();
 

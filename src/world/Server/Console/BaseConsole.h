@@ -48,7 +48,7 @@ class LocalConsole : public BaseConsole
 
 //MIT
 
-void processConsoleInput(BaseConsole* baseConsole, std::string consoleInput);
+void processConsoleInput(BaseConsole* baseConsole, std::string consoleInput, bool isWebClient = false);
 
 //MIT end
 

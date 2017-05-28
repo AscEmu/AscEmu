@@ -119,7 +119,7 @@ void RemoteConsole::Write(const char* Format, ...)
 
 struct ConsoleCommand
 {
-    bool(*CommandPointer)(BaseConsole*, int, std::string);
+    bool(*CommandPointer)(BaseConsole*, int, std::string, bool);
     std::string consoleCommand;
     int argumentCount;
     std::string argumentFormat;
@@ -133,7 +133,7 @@ static ConsoleCommand Commands[] =
     { &handleBanAccountCommand,         "ban",              3,  "<account> <time e.g. 3d> [reason]",    "Bans account <account> for time <time> with optional reason [reason]." },
     { &handleBanAccountCommand,         "banaccount",       3,  "<account> <time e.g. 3d> [reason]",    "Bans account <account> for time <time> with optional reason [reason]." },
     { &handleCancelShutdownCommand,     "cancel",           0,  "None",                                 "Cancels a pending shutdown." },
-    { &handServerleInfoCommand,         "info",             0,  "None",                                 "Return current Server information." },
+    { &handleServerInfoCommand,         "info",             0,  "None",                                 "Return current Server information." },
     { &handleOnlineGmsCommand,          "gms",              0,  "None",                                 "Shows online GMs." },
     { &handleKickPlayerCommand,         "kick",             2,  "<player name> [reason]",               "Kicks player <player name> for optional reason [reason]." },
     { &handleMotdCommand,               "getmotd",          0,  "None",                                 "View the current MOTD" },
@@ -156,7 +156,7 @@ static ConsoleCommand Commands[] =
     { nullptr,                          "",                 0,  "",                                     "" },
 };
 
-void processConsoleInput(BaseConsole* baseConsole, std::string consoleInput)
+void processConsoleInput(BaseConsole* baseConsole, std::string consoleInput, bool isWebClient)
 {
     ConsoleCommand commandList;
 
@@ -191,37 +191,57 @@ void processConsoleInput(BaseConsole* baseConsole, std::string consoleInput)
 
     if (isHelpCommand)
     {
-        baseConsole->Write("Show Command list with ----- :%s\r\n", commandName.c_str());
-
-        baseConsole->Write("===============================================================================\r\n");
-        baseConsole->Write("| %15s | %57s |\r\n", "Name", "Arguments");
-        baseConsole->Write("===============================================================================\r\n");
-
-        for (int j = 0; Commands[j].consoleCommand.empty() == false; ++j)
+        if (isWebClient == false)
         {
-            baseConsole->Write("| %15s | %57s |\r\n", Commands[j].consoleCommand.c_str(), Commands[j].argumentFormat.c_str());
-        }
+            baseConsole->Write("Show Command list with ----- :%s\r\n", commandName.c_str());
 
-        baseConsole->Write("===============================================================================\r\n");
-        baseConsole->Write("| type 'quit' to terminate a Remote Console Session                           |\r\n");
-        baseConsole->Write("===============================================================================\r\n");
+            baseConsole->Write("===============================================================================\r\n");
+            baseConsole->Write("| %15s | %57s |\r\n", "Name", "Arguments");
+            baseConsole->Write("===============================================================================\r\n");
+
+            for (int j = 0; Commands[j].consoleCommand.empty() == false; ++j)
+            {
+                baseConsole->Write("| %15s | %57s |\r\n", Commands[j].consoleCommand.c_str(), Commands[j].argumentFormat.c_str());
+            }
+
+            baseConsole->Write("===============================================================================\r\n");
+            baseConsole->Write("| type 'quit' to terminate a Remote Console Session                           |\r\n");
+            baseConsole->Write("===============================================================================\r\n");
+        }
     }
     else
     {
         if (commandFound)
         {
-            baseConsole->Write("Received command: %s\r\n", commandName.c_str());
-            if (commandList.argumentCount > 0 && commandVars.empty() == false)
-                baseConsole->Write("Received vars: %s\r\n", commandVars.c_str());
+            if (isWebClient == false)
+            {
+                baseConsole->Write("Received command: %s\r\n", commandName.c_str());
+            }
 
-            if (!commandList.CommandPointer(baseConsole, commandList.argumentCount, commandVars))
-                baseConsole->Write("[!]Error, '%s' used an incorrect syntax, the correct syntax is: '%s'.\r\n\r\n",
-                    commandList.consoleCommand.c_str(), commandList.argumentFormat.c_str());
+            if (commandList.argumentCount > 0 && commandVars.empty() == false)
+            {
+                if (isWebClient == false)
+                {
+                    baseConsole->Write("Received vars: %s\r\n", commandVars.c_str());
+                }
+            }
+
+            if (!commandList.CommandPointer(baseConsole, commandList.argumentCount, commandVars, isWebClient))
+            {
+                if (isWebClient == false)
+                {
+                    baseConsole->Write("[!]Error, '%s' used an incorrect syntax, the correct syntax is: '%s'.\r\n\r\n",
+                        commandList.consoleCommand.c_str(), commandList.argumentFormat.c_str());
+                }
+            }
         }
         else
         {
-            baseConsole->Write("[!]Error, Command '%s' doesn't exist. Type '?' or 'help' to get a command overview.\r\n\r\n",
-                commandName.c_str());
+            if (isWebClient == false)
+            {
+                baseConsole->Write("[!]Error, Command '%s' doesn't exist. Type '?' or 'help' to get a command overview.\r\n\r\n",
+                    commandName.c_str());
+            }
         }
     }
 }

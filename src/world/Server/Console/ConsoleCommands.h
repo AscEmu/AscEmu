@@ -8,22 +8,22 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/Console/BaseConsole.h"
 #include <string>
 
-bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput);
-bool handleBanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput);
-bool handleCancelShutdownCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/);
-bool handServerleInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/);
-bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/);
-bool handleKickPlayerCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput);
-bool handleMotdCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput);
-bool handleListOnlinePlayersCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/);
-bool handlePlayerInfoCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput);
-bool handleShutDownServerCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string consoleInput);
-bool handleRehashConfigCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/);
-bool handleUnbanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput);
-bool handleSendWAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput);
-bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput);
-bool handleCreateNameHashCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput);
-bool handleRevivePlayerCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput);
-bool handleClearConsoleCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/);
-bool handleReloadScriptEngineCommand(BaseConsole* /*baseConsole*/, int /*argumentCount*/, std::string /*consoleInput*/);
-bool handlePrintTimeDateCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/);
+bool handleSendChatAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
+bool handleBanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
+bool handleCancelShutdownCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
+bool handleServerInfoCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
+bool handleOnlineGmsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
+bool handleKickPlayerCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
+bool handleMotdCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
+bool handleListOnlinePlayersCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
+bool handlePlayerInfoCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
+bool handleShutDownServerCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string consoleInput, bool isWebClient);
+bool handleRehashConfigCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
+bool handleUnbanAccountCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
+bool handleSendWAnnounceCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
+bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
+bool handleCreateNameHashCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
+bool handleRevivePlayerCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
+bool handleClearConsoleCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
+bool handleReloadScriptEngineCommand(BaseConsole* /*baseConsole*/, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
+bool handlePrintTimeDateCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
