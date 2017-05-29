@@ -368,9 +368,14 @@ bool handleClearConsoleCommand(BaseConsole* baseConsole, int /*argumentCount*/, 
     return true;
 }
 
-bool handleReloadScriptEngineCommand(BaseConsole* /*baseConsole*/, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
+bool handleReloadScriptEngineCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
 {
     sScriptMgr.ReloadScriptEngines();
+
+    if (isWebClient)
+    {
+        baseConsole->Write("All scripts should be reloaded.\r\n");
+    }
 
     return true;
 }

@@ -25,5 +25,5 @@ bool handleWhisperCommand(BaseConsole* baseConsole, int argumentCount, std::stri
 bool handleCreateNameHashCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
 bool handleRevivePlayerCommand(BaseConsole* baseConsole, int argumentCount, std::string consoleInput, bool isWebClient);
 bool handleClearConsoleCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
-bool handleReloadScriptEngineCommand(BaseConsole* /*baseConsole*/, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
+bool handleReloadScriptEngineCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
 bool handlePrintTimeDateCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient);
