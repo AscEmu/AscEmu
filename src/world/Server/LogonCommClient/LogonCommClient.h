@@ -62,6 +62,7 @@ class LogonCommClientSocket : public Socket
         void HandlePopulationRequest(WorldPacket& recvData);
         void HandleModifyDatabaseResult(WorldPacket& recvData);
         void HandleResultCheckAccount(WorldPacket& recvData);
+        void HandleResultAllAccount(WorldPacket& recvData);
 
         void OnDisconnect();
         void CompressAndSend(ByteBuffer& uncompressed);

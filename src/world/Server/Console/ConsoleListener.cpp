@@ -153,6 +153,7 @@ static ConsoleCommand Commands[] =
     { &handleClearConsoleCommand,       "clear",            0,  "None",                                 "Clears the console." },
     { &handleReloadScriptEngineCommand, "reloadscripts",    0,  "None",                                 "Reloads all scripting engines currently loaded." },
     { &handlePrintTimeDateCommand,      "datetime",         0,  "None",                                 "Shows time and date according to localtime()" },
+    { &handleGetAccountsCommand,        "getaccountdata",   0,  "None",                                 "Prints out all account data" },
     { nullptr,                          "",                 0,  "",                                     "" },
 };
 

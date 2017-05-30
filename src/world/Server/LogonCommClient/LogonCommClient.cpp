@@ -130,6 +130,8 @@ void LogonCommClientSocket::HandlePacket(WorldPacket& recvData)
         NULL,                                                   // LRCMSG_REALM_POPULATION_RESULT
         NULL,                                                   // LRCMSG_ACCOUNT_REQUEST
         &LogonCommClientSocket::HandleResultCheckAccount,       // LRSMSG_ACCOUNT_RESULT
+        NULL,                                                   // LRCMSG_ALL_ACCOUNT_REQUEST
+        &LogonCommClientSocket::HandleResultAllAccount,         // LRSMSG_ALL_ACCOUNT_RESULT
     };
 
     if (recvData.GetOpcode() >= LRMSG_MAX_OPCODES || Handlers[recvData.GetOpcode()] == 0)
@@ -573,4 +575,12 @@ void LogonCommClientSocket::HandleResultCheckAccount(WorldPacket& recvData)
         }
         break;
     }
+}
+
+void LogonCommClientSocket::HandleResultAllAccount(WorldPacket& recvData)
+{
+    std::string accountResult;
+    recvData >> accountResult;
+
+    sLogonCommHandler.accountResult = accountResult;
 }

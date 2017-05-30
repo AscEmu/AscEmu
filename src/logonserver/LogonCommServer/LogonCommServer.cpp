@@ -160,6 +160,8 @@ void LogonCommServerSocket::HandlePacket(WorldPacket & recvData)
         &LogonCommServerSocket::HandlePopulationRespond,    // LRCMSG_REALM_POPULATION_RESULT
         &LogonCommServerSocket::HandleRequestCheckAccount,  // LRCMSG_ACCOUNT_REQUEST
         NULL,                                               // LRSMSG_ACCOUNT_RESULT
+        &LogonCommServerSocket::HandleRequestAllAccounts,   // LRCMSG_ALL_ACCOUNT_REQUEST
+        NULL,                                               // LRSMSG_ALL_ACCOUNT_RESULT
     };
 
     if (recvData.GetOpcode() >= LRMSG_MAX_OPCODES || Handlers[recvData.GetOpcode()] == 0)
@@ -721,6 +723,31 @@ void LogonCommServerSocket::HandleRequestCheckAccount(WorldPacket & recvData)
         }
         break;
     }
+}
+
+void LogonCommServerSocket::HandleRequestAllAccounts(WorldPacket& /*recvData*/)
+{
+    std::string accountsArray;
+    auto accountMap = sAccountMgr.getAccountMap();
+
+    for (auto const map_itr :  accountMap)
+    {
+        std::string gm_flags;
+
+        if (map_itr.second->GMFlags)
+            gm_flags = map_itr.second->GMFlags;
+        else
+            gm_flags = "0";
+
+        accountsArray += std::to_string(map_itr.second->AccountId) + "," + map_itr.first + "," + (gm_flags.empty() ? "0" : gm_flags) + ";";
+    }
+
+    // remove last ; from string
+    accountsArray.pop_back();
+
+    WorldPacket data(LRSMSG_ALL_ACCOUNT_RESULT, 3000);
+    data << accountsArray;
+    SendPacket(&data);
 }
 
 void LogonCommServerSocket::HandlePopulationRespond(WorldPacket & recvData)

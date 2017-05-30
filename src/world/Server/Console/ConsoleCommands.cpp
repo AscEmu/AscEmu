@@ -391,3 +391,14 @@ bool handlePrintTimeDateCommand(BaseConsole* baseConsole, int /*argumentCount*/,
 
     return true;
 }
+
+bool handleGetAccountsCommand(BaseConsole* baseConsole, int /*argumentCount*/, std::string /*consoleInput*/, bool isWebClient)
+{
+    sLogonCommHandler.RequestAccountData();
+
+    std::cout << "Command result is: " << sLogonCommHandler.accountResult << std::endl;
+
+    baseConsole->Write("%s\r\n", sLogonCommHandler.accountResult.c_str());
+
+    return true;
+}

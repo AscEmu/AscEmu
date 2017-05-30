@@ -57,6 +57,7 @@ class LogonCommServerSocket : public Socket
         void HandleDatabaseModify(WorldPacket& recvData);
         void HandlePopulationRespond(WorldPacket& recvData);
         void HandleRequestCheckAccount(WorldPacket& recvData);
+        void HandleRequestAllAccounts(WorldPacket& recvData);
 
         void RefreshRealmsPop();
 

@@ -638,3 +638,15 @@ void LogonCommHandler::Account_CheckExist(const char* account, const char* reque
 
     itr->second->SendPacket(&data, false);
 }
+
+void LogonCommHandler::RequestAccountData()
+{
+    std::map<LogonServer*, LogonCommClientSocket*>::iterator itr = logons.begin();
+    if (logons.size() == 0 || itr->second == 0)
+    {
+        return;         // No valid logonserver is connected.
+    }
+
+    WorldPacket data(LRCMSG_ALL_ACCOUNT_REQUEST, 100);
+    itr->second->SendPacket(&data, false);
+}

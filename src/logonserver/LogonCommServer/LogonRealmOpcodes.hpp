@@ -52,6 +52,8 @@ enum LogonRealmOpcodes
     LRCMSG_REALM_POPULATION_RESULT    = 0x014,
     LRCMSG_ACCOUNT_REQUEST            = 0x015,  // request account data
     LRSMSG_ACCOUNT_RESULT             = 0x016,  // send account information to realm
+    LRCMSG_ALL_ACCOUNT_REQUEST        = 0x017,  // request all account data
+    LRSMSG_ALL_ACCOUNT_RESULT         = 0x018,  // send id, name, rank of all accounts to realm
 
     LRMSG_MAX_OPCODES                           // max opcodes
 };

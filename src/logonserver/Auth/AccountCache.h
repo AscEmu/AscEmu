@@ -147,6 +147,11 @@ class AccountMgr : public Singleton < AccountMgr >
 
         inline size_t GetCount() { return AccountDatabase.size(); }
 
+        std::map<std::string, Account*> getAccountMap()
+        {
+            return AccountDatabase;
+        }
+
     private:
 
         Account* __GetAccount(std::string Name)
