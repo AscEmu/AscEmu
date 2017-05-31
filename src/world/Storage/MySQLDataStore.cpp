@@ -2098,52 +2098,6 @@ WorldStringTable const* MySQLDataStore::GetWorldString(uint32 entry)
     return nullptr;
 }
 
-void MySQLDataStore::LoadWorldBroadcastTable()
-{
-    uint32 start_time = getMSTime();
-
-    //                                                                 0      1       2
-    QueryResult* worldbroadcast_result = WorldDatabase.Query("SELECT entry, text, percent FROM worldbroadcast");
-    if (worldbroadcast_result == nullptr)
-    {
-        LogNotice("MySQLDataLoads : Table `worldbroadcast` is empty!");
-        return;
-    }
-
-    LogNotice("MySQLDataLoads : Table `worldbroadcast` has %u columns", worldbroadcast_result->GetFieldCount());
-
-    _worldBroadcastStore.rehash(worldbroadcast_result->GetRowCount());
-
-    uint32 worldbroadcast_count = 0;
-    do
-    {
-        Field* fields = worldbroadcast_result->Fetch();
-
-        uint32 entry = fields[0].GetUInt32();
-
-        WorldBroadCast& worldBroadCast = _worldBroadcastStore[entry];
-
-        worldBroadCast.id = entry;
-        worldBroadCast.text = fields[1].GetString();
-        worldBroadCast.percent = fields[2].GetUInt32();
-
-        ++worldbroadcast_count;
-    } while (worldbroadcast_result->NextRow());
-
-    delete worldbroadcast_result;
-
-    LogDetail("MySQLDataLoads : Loaded %u rows from `worldbroadcast` table in %u ms!", worldbroadcast_count, getMSTime() - start_time);
-}
-
-WorldBroadCast const* MySQLDataStore::GetWorldBroadcast(uint32 entry)
-{
-    WorldBroadCastContainer::const_iterator itr = _worldBroadcastStore.find(entry);
-    if (itr != _worldBroadcastStore.end())
-        return &(itr->second);
-
-    return nullptr;
-}
-
 void MySQLDataStore::LoadPointOfInterestTable()
 {
     uint32 start_time = getMSTime();
@@ -2732,6 +2686,57 @@ PetAbilities const* MySQLDataStore::GetPetLevelAbilities(uint32 level)
 {
     PetAbilitiesContainer::const_iterator itr = _petAbilitiesStore.find(level);
     if (itr != _petAbilitiesStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}
+
+void MySQLDataStore::loadBroadcastTable()
+{
+    uint32_t start_time = getMSTime();
+
+    QueryResult* broadcast_result = WorldDatabase.Query("SELECT * FROM worldbroadcast");
+    if (broadcast_result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `worldbroadcast` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `worldbroadcast` has %u columns", broadcast_result->GetFieldCount());
+
+    _broadcastStore.rehash(broadcast_result->GetRowCount());
+
+    uint32_t broadcast_count = 0;
+    do
+    {
+        Field* fields = broadcast_result->Fetch();
+
+        uint32_t entry = fields[0].GetInt32();
+
+        Broadcast& broadcast = _broadcastStore[entry];
+
+        broadcast.id = entry;
+
+        uint32_t interval = fields[1].GetUInt32();
+        broadcast.interval = interval * 60;
+        uint32_t random_interval = fields[2].GetUInt32();
+        broadcast.random_interval = random_interval * 60;
+        broadcast.next_update = broadcast.interval + (uint32_t)UNIXTIME;
+        broadcast.text = fields[3].GetString();
+
+        ++broadcast_count;
+
+    } while (broadcast_result->NextRow());
+
+    delete broadcast_result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `worldbroadcast` table in %u ms!", broadcast_count, getMSTime() - start_time);
+}
+
+Broadcast const* MySQLDataStore::getBroadcastById(uint32_t id)
+{
+    BroadcastContainer::const_iterator itr = _broadcastStore.find(id);
+    if (itr != _broadcastStore.end())
         return &(itr->second);
 
     return nullptr;

@@ -27,14 +27,15 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellMgr.h"
 #include "Map/WorldCreator.h"
 #include "Storage/DayWatcherThread.h"
-#include "CommonScheduleThread.h"
+#include "BroadcastMgr.h"
 #include "World.Legacy.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 
 initialiseSingleton(World);
 
 DayWatcherThread* dw = nullptr;
-CommonScheduleThread* cs = nullptr;
+
+BroadcastMgr* bcmgr = nullptr;
 
 extern void ApplyNormalFixes();
 extern void LoadGameObjectModelList(std::string const& dataPath);
@@ -787,9 +788,8 @@ bool World::setInitialWorldSettings()
     dw = new DayWatcherThread();
     ThreadPool.ExecuteTask(dw);
 
-    // commonschedule sys
-    cs = new CommonScheduleThread();
-    ThreadPool.ExecuteTask(cs);
+    bcmgr = new BroadcastMgr();
+    ThreadPool.ExecuteTask(bcmgr);
 
     ThreadPool.ExecuteTask(new CharacterLoaderThread());
 
@@ -850,7 +850,6 @@ void World::loadMySQLStores()
     sMySQLStore.LoadSpellClickSpellsTable();
 
     sMySQLStore.LoadWorldStringsTable();
-    sMySQLStore.LoadWorldBroadcastTable();
     sMySQLStore.LoadPointOfInterestTable();
     sMySQLStore.LoadItemSetLinkedSetBonusTable();
     sMySQLStore.LoadCreatureInitialEquipmentTable();
@@ -865,6 +864,7 @@ void World::loadMySQLStores()
 
     sMySQLStore.LoadNpcGossipTextIdTable();
     sMySQLStore.LoadPetLevelAbilitiesTable();
+    sMySQLStore.loadBroadcastTable();
 }
 
 void World::loadMySQLTablesByTask(uint32_t start_time)
@@ -915,7 +915,6 @@ void World::loadMySQLTablesByTask(uint32_t start_time)
     MAKE_TASK(ObjectMgr, LoadCreatureAIAgents);
     MAKE_TASK(ObjectMgr, LoadArenaTeams);
     MAKE_TASK(ObjectMgr, LoadProfessionDiscoveries);
-    MAKE_TASK(ObjectMgr, StoreBroadCastGroupKey);
     MAKE_TASK(ObjectMgr, LoadVehicleAccessories);
     MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
     MAKE_TASK(ObjectMgr, LoadAreaTrigger);

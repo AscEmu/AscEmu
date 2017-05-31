@@ -22,7 +22,16 @@ extern SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 extern SERVER_DECL std::set<std::string> ItemPropertiesTables;
 extern SERVER_DECL std::set<std::string> QuestPropertiesTables;
 
-class SERVER_DECL MySQLDataStore : public Singleton < MySQLDataStore >
+struct Broadcast
+{
+    uint32_t id;
+    uint32_t interval;
+    uint32_t random_interval;
+    uint32_t next_update;
+    std::string text;
+};
+
+class SERVER_DECL MySQLDataStore : public Singleton <MySQLDataStore>
 {
 public:
 
@@ -52,7 +61,6 @@ public:
     typedef std::unordered_map<uint32, TotemDisplayIdEntry> TotemDisplayIdContainer;
     typedef std::unordered_map<uint32, SpellClickSpell> SpellClickSpellContainer;
     typedef std::unordered_map<uint32, WorldStringTable> WorldStringContainer;
-    typedef std::unordered_map<uint32, WorldBroadCast> WorldBroadCastContainer;
     typedef std::unordered_map<uint32, PointOfInterest> PointOfInterestContainer;
 
     typedef std::unordered_map<int32, ItemSetLinkedItemSetBonus> ItemSetDefinedSetBonusContainer;
@@ -65,6 +73,8 @@ public:
     typedef std::map<uint32, uint32> NpcGossipTextIdMap;
 
     typedef std::unordered_map<uint32, PetAbilities> PetAbilitiesContainer;
+
+    typedef std::unordered_map<uint32, Broadcast> BroadcastContainer;
 
     //helper
     ItemPage const* GetItemPage(uint32 entry);
@@ -129,9 +139,6 @@ public:
     WorldStringTable const* GetWorldString(uint32 entry);
     WorldStringContainer const* GetWorldStringsStore() { return &_worldStringsStore; }
 
-    WorldBroadCast const* GetWorldBroadcast(uint32 entry);
-    WorldBroadCastContainer const* GetWorldBroadcastStore() { return &_worldBroadcastStore; }
-
     PointOfInterest const* GetPointOfInterest(uint32 entry);
     PointOfInterestContainer const* GetPointOfInterestStore() { return &_pointOfInterestStore; }
 
@@ -144,6 +151,9 @@ public:
 
     PetAbilities const* GetPetLevelAbilities(uint32 level);
     PetAbilitiesContainer const* GetPetAbilitiesStore() { return &_petAbilitiesStore; }
+
+    Broadcast const* getBroadcastById(uint32_t level);
+    BroadcastContainer* getBroadcastStore() { return &_broadcastStore; }
 
     //Config
     void LoadAdditionalTableConfig();
@@ -177,7 +187,7 @@ public:
     void LoadSpellClickSpellsTable();
 
     void LoadWorldStringsTable();
-    void LoadWorldBroadcastTable();
+
     void LoadPointOfInterestTable();
 
     void LoadItemSetLinkedSetBonusTable();
@@ -195,6 +205,8 @@ public:
 
     void LoadNpcGossipTextIdTable();
     void LoadPetLevelAbilitiesTable();
+
+    void loadBroadcastTable();
 
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
@@ -219,7 +231,7 @@ public:
     SpellClickSpellContainer _spellClickSpellsStore;
 
     WorldStringContainer _worldStringsStore;
-    WorldBroadCastContainer _worldBroadcastStore;
+
     PointOfInterestContainer _pointOfInterestStore;
 
     ItemSetDefinedSetBonusContainer _definedItemSetBonusStore;
@@ -233,6 +245,7 @@ public:
 
     PetAbilitiesContainer _petAbilitiesStore;
 
+    BroadcastContainer _broadcastStore;
 };
 
 #define sMySQLStore MySQLDataStore::getSingleton()

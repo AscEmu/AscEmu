@@ -409,7 +409,7 @@ bool ChatHandler::HandleReloadTeleportCoordsCommand(const char* /*args*/, WorldS
 bool ChatHandler::HandleReloadWorldbroadcastCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadWorldBroadcastTable();
+    sMySQLStore.loadBroadcastTable();
     GreenSystemMessage(m_session, "WorldDB 'worldbroadcast' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

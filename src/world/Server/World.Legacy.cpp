@@ -43,7 +43,7 @@
 #include "Spell/SpellMgr.h"
 #include "Map/WorldCreator.h"
 #include "Storage/DayWatcherThread.h"
-#include "CommonScheduleThread.h"
+#include "Server/BroadcastMgr.h"
 #include "World.Legacy.h"
 
 

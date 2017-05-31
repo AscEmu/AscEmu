@@ -281,6 +281,7 @@ void Transporter::RespawnCreaturePassengers()
 
     m_NPCPassengerSet.clear();
     m_creatureSetMutex.Release();
+    // TODO: Triggered error "vector iterators incompatible" const should solve the problem. Also load data on startup and process later!
     for (auto spawn : this->m_creatureSpawns)
     {
         if (this->AddNPCPassenger(spawn.transport_guid, spawn.entry, spawn.x, spawn.y, spawn.z, spawn.o, spawn.animation) == 0)

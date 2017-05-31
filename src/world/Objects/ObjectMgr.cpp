@@ -232,9 +232,6 @@ ObjectMgr::~ObjectMgr()
     for (; itr != ProfessionDiscoveryTable.end(); ++itr)
         delete(*itr);
 
-    LogNotice("ObjectMgr : Cleaning up BroadCastStorages...");
-    m_BCEntryStorage.clear();
-
     LogNotice("ObjectMgr : Cleaning up spell target constraints...");
     for (SpellTargetConstraintMap::iterator itr = m_spelltargetconstraints.begin(); itr != m_spelltargetconstraints.end(); ++itr)
         delete itr->second;
@@ -4017,56 +4014,6 @@ void ObjectMgr::LoadCreatureAIAgents()
             } while (result->NextRow());
 
             delete result;
-        }
-    }
-}
-
-void ObjectMgr::StoreBroadCastGroupKey()
-{
-    if (!worldConfig.broadcast.isSystemEnabled)
-    {
-        LogNotice("ObjectMgr : BCSystem Disabled.");
-        return;
-    }
-
-    std::vector<std::string> keyGroup;
-    QueryResult* result = WorldDatabase.Query("SELECT DISTINCT percent FROM `worldbroadcast` ORDER BY percent DESC");
-    if (result != nullptr)
-    {
-        do
-        {
-            Field* f = result->Fetch();
-            keyGroup.push_back(std::string(f[0].GetString()));
-        } while (result->NextRow());
-
-        delete result;
-    }
-
-    if (keyGroup.empty())
-    {
-        LogDebugFlag(LF_DB_TABLES, "ObjectMgr : BCSystem error! worldbroadcast empty? fill it first!");
-        worldConfig.broadcast.isSystemEnabled = false;
-        return;
-    }
-    else
-    {
-        LogNotice("ObjectMgr : BCSystem Enabled with %u KeyGroups.", keyGroup.size());
-    }
-
-    for (std::vector<std::string>::iterator itr = keyGroup.begin(); itr != keyGroup.end(); ++itr)
-    {
-        std::string curKey = (*itr);
-        QueryResult* percentResult = WorldDatabase.Query("SELECT entry,percent FROM `worldbroadcast` WHERE percent='%s' ", curKey.c_str());
-        if (percentResult != nullptr)
-        {
-            do
-            {
-                Field* f = percentResult->Fetch();
-                m_BCEntryStorage.insert(std::pair<uint32, uint32>(uint32(atoi(curKey.c_str())), f[0].GetUInt32()));
-
-            } while (percentResult->NextRow());
-
-            delete percentResult;
         }
     }
 }

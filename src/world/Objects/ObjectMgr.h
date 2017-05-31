@@ -161,13 +161,6 @@ struct NpcScriptText
     uint32 broadcast_id;        
 };
 
-struct WorldBroadCast
-{
-    uint32 id;
-    std::string text;
-    uint32 percent;
-};
-
 #pragma pack(pop)
 
 struct SpellReplacement
@@ -703,7 +696,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         void LoadProfessionDiscoveries();
 
-        void StoreBroadCastGroupKey();
 
         void CreateGossipMenuForPlayer(GossipMenu** Location, uint64 Guid, uint32 TextID, Player* Plr);
 
@@ -785,31 +777,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         std::set<ProfessionDiscovery*> ProfessionDiscoveryTable;
 
-        // cebernic: This is a perfect Broadcast system,multi-lang supported also.
-        inline uint32 GetBCGroupCountByKey(uint32 Key) { return (uint32)m_BCEntryStorage.count(Key); }
-        inline bool IsBCEntryStorageEmpty() { return m_BCEntryStorage.empty(); }
-        inline BCEntryStorage::iterator GetBCTotalItemBegin() { return m_BCEntryStorage.begin(); }
-        inline BCEntryStorage::iterator GetBCTotalItemEnd() { return m_BCEntryStorage.end(); }
-        inline int CalcCurrentBCEntry()
-        // func sync at MAKE_TASK(ObjectMgr, StoreBroadCastGroupKey)[world.cpp]
-        {
-            if (m_BCEntryStorage.empty())
-                return -1;
-            uint32 RandomCap = (uint32)worldConfig.broadcast.triggerPercentCap;
-
-            std::vector<uint32> Entries;
-            BCEntryStorage::iterator it = m_BCEntryStorage.upper_bound(RandomUInt(RandomCap) + 1);
-            while (it != m_BCEntryStorage.end())
-            {
-                Entries.push_back(it->second);
-                ++it;
-            }
-            if (Entries.empty())
-                return 0;
-            uint32 n = (Entries.size() > 1 ? RandomUInt(((uint32)Entries.size()) - 1) : 0);
-            return Entries[n];
-        }
-
         AreaTrigger const* GetMapEntranceTrigger(uint32 Map) const;
 
 #if VERSION_STRING > TBC
@@ -835,7 +802,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
     protected:
 
-        BCEntryStorage m_BCEntryStorage;        /// broadcast system.
         RWLock playernamelock;
 
         // highest GUIDs, used for creating new objects

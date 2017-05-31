@@ -703,7 +703,7 @@ const char* WorldSession::LocalizedMapName(uint32 id)
 
 const char* WorldSession::LocalizedBroadCast(uint32 id)
 {
-    WorldBroadCast const* wb = sMySQLStore.GetWorldBroadcast(id);
+    Broadcast const* wb = sMySQLStore.getBroadcastById(id);
     if (!wb)
     {
         memset(szError, 0, 64);
@@ -711,11 +711,15 @@ const char* WorldSession::LocalizedBroadCast(uint32 id)
         return szError;
     }
 
-    LocalizedWorldBroadCast* lpi = (language > 0) ? sLocalizationMgr.GetLocalizedWorldBroadCast(id, language) : NULL;
+    LocalizedWorldBroadCast* lpi = (language > 0) ? sLocalizationMgr.GetLocalizedWorldBroadCast(id, language) : nullptr;
     if (lpi)
+    {
         return lpi->Text;
+    }
     else
+    {
         return wb->text.c_str();
+    }
 }
 
 #if VERSION_STRING == WotLK

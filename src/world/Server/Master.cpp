@@ -26,7 +26,7 @@
 #include "Server/Console/ConsoleThread.h"
 #include "Server/MainServerDefines.h"
 #include "Server/Master.h"
-#include "CommonScheduleThread.h"
+#include "Server/BroadcastMgr.h"
 #include "Storage/DayWatcherThread.h"
 #include "Management/Channel.h"
 #include "Management/ChannelMgr.h"
@@ -51,17 +51,18 @@ SERVER_DECL SessionLogWriter* Player_Log;
 
 // threads
 extern DayWatcherThread* dw;
-extern CommonScheduleThread* cs;
+
+extern BroadcastMgr* bcmgr;
 
 ConfigMgr Config;
 
 // DB version
 #if VERSION_STRING != Cata
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-04-22_01_banned_char_log";
-static const char* REQUIRED_WORLD_DB_VERSION = "2017-05-05_02_areatriggers";
+static const char* REQUIRED_WORLD_DB_VERSION = "2017-05-31_01_worldbroadcast";
 #else
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-04-22_01_banned_char_log";
-static const char* REQUIRED_WORLD_DB_VERSION = "2017-05-05_01_playercreateinfo";
+static const char* REQUIRED_WORLD_DB_VERSION = "2017-05-31_01_worldbroadcast";
 #endif
 
 void Master::_OnSignal(int s)
@@ -354,9 +355,9 @@ bool Master::Run(int argc, char** argv)
     dw->terminate();
     dw = NULL;
 
-    LogNotice("CommonScheduleThread : Exiting...");
-    cs->terminate();
-    cs = NULL;
+    LogNotice("BroadcastMgr : Exiting...");
+    bcmgr->terminate();
+    bcmgr = nullptr;
 
     ls->Close();
 
@@ -429,12 +430,6 @@ bool Master::Run(int argc, char** argv)
 
 #ifdef WIN32
     WSACleanup();
-
-    // Terminate Entire Application
-    //HANDLE pH = OpenProcess(PROCESS_TERMINATE, TRUE, GetCurrentProcessId());
-    //TerminateProcess(pH, 0);
-    //CloseHandle(pH);
-
 #endif
 
     return true;
