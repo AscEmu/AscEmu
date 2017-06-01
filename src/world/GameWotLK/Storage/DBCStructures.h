@@ -29,24 +29,32 @@ namespace DBC
     {
         namespace
         {
-            char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixx";
+            char const achievement_format[] = "niixssssssssssssssssxssssssssssssssssxiixixssssssssssssssssxii";
+            char const achievement_criteria_format[] = "niiiiiiiissssssssssssssssxiiiii";
+            char const area_group_format[] = "niiiiiii";
+            char const area_table_entry_format[] = "iiinixxxxxissssssssssssssssxiiiiixxx";
             char const area_trigger_entry_format[] = "niffffffff";
             char const auction_house_format[] = "niiixxxxxxxxxxxxxxxxx";
             char const bank_bag_slot_prices_format[] = "ni";
+            char const barber_shop_style_entry_format[] = "nixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiii";
             char const char_titles_format[] = "nxssssssssssssssssxssssssssssssssssxi";
             char const chat_channels_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
-            char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxix";
+            char const chr_classes_format[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixii";
             char const chr_races_format[] = "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
-            char const creature_display_info_format[] = "nxxxxxxxxxxxxx";
-            char const creature_family_format[] = "nfifiiiissssssssssssssssxx";
+            char const creature_display_info_format[] = "nxxxxxxxxxxxxxxx";
+            char const creature_family_format[] = "nfifiiiiixssssssssssssssssxx";
             char const creature_spell_data_format[] = "niiiiiiii";
+            char const currency_types_format[] = "xnxi";
             char const durability_costs_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
             char const durability_quality_format[] = "nf";
             char const emotes_text_format[] = "nxiiiixixixxxxxxxxx";
-            char const faction_format[] = "niiiiiiiiiiiiiiiiiissssssssssssssssxxxxxxxxxxxxxxxxxx";
+            char const faction_format[] = "niiiiiiiiiiiiiiiiiiffixssssssssssssssssxxxxxxxxxxxxxxxxxx";
             char const faction_template_format[] = "niiiiiiiiiiiii";
-            char const game_object_display_info_format[] = "nsxxxxxxxxxxffffff";
+            char const game_object_display_info_format[] = "nsxxxxxxxxxxffffffx";
             char const gem_properties_format[] = "nixxi";
+            char const glyph_properties_format[] = "niii";
+            char const glyph_slot_format[] = "nii";
+            char const gt_barber_shop_cost_format[] = "f";
             char const gt_chance_to_melee_crit_format[] = "f";
             char const gt_chance_to_melee_crit_base_format[] = "f";
             char const gt_chance_to_spell_crit_format[] = "f";
@@ -56,30 +64,37 @@ namespace DBC
             char const gt_oct_regen_mp_format[] = "f";
             char const gt_regen_hp_per_spt_format[] = "f";
             char const gt_regen_mp_per_spt_format[] = "f";
-            char const item_entry_format[] = "niii";
-            char const item_extended_cost_format[] = "niiiiiiiiiiiii";
+            char const holidays_format[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixxsiix";
+            char const item_entry_format[] = "niiiiiii";
+            char const item_extended_cost_format[] = "niiiiiiiiiiiiiix";
+            char const item_limit_category_format[] = "nxxxxxxxxxxxxxxxxxii";
             char const item_random_properties_format[] = "nxiiixxssssssssssssssssx";
-            char const item_random_suffix_format[] = "nssssssssssssssssxxiiiiii";
+            char const item_random_suffix_format[] = "nssssssssssssssssxxiiixxiiixx";
             char const item_set_format[] = "nssssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii";
             char const lfg_dungeon_entry_format[] = "nssssssssssssssssxiiiiiiiiixxixixxxxxxxxxxxxxxxxx";
-            char const liquid_type_entry_format[] = "niii";
+            char const liquid_type_entry_format[] = "nxxixixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
             char const lock_format[] = "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx";
             char const mail_template_format[] = "nsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxx";
-            char const map_format[] = "nxixssssssssssssssssxxxxxxxixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxiffiixxi";
+            char const map_format[] = "nxiixssssssssssssssssxixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixiffxiii";
             char const name_gen_format[] = "nsii";
-            char const skill_line_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxxi";
-            char const skill_line_ability_format[] = "niiiixxiiiiixxi";
+            char const quest_xp_format[] = "niiiiiiiiii";
+            char const scaling_stat_distribution_format[] = "niiiiiiiiiiiiiiiiiiiii";
+            char const scaling_stat_values_format[] = "iniiiiiiiiiiiiiiiiiiiiii";
+            char const skill_line_format[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxxixxxxxxxxxxxxxxxxxi";
+            char const skill_line_ability_format[] = "niiiixxiiiiixx";
             char const stable_slot_prices_format[] = "ni";
             char const spell_cast_times_format[] = "nixx";
+            char const spell_difficulty_format[] = "niiii";
             char const spell_duration_format[] = "niii";
             char const spell_entry_format[] = "niiiiiiiiiiiixixiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiifiiiiiiiiiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiiiiiiiiiiifffiiiiiiiiiiiiiiifffiiiiiiiiiiiiiisxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxxsxxxxxxxxxxxxxxxxiiiiiiiiiiiifffiiiiiiiixxxxxxi";
-            char const spell_item_enchantment_format[] = "nxiiiiiiiiiiiissssssssssssssssxiiii";
+            char const spell_item_enchantment_format[] = "nxiiiiiiiiiiiissssssssssssssssxiiiiiii";
             char const spell_radius_format[] = "nfff";
-            char const spell_range_format[] = "nffixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+            char const spell_range_format[] = "nffffixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+            char const spell_rune_cost_format[] = "niiii";
             char const spell_shapeshift_form_format[] = "nxxxxxxxxxxxxxxxxxxiixiiixxiiiiiiii";
             char const summon_properties_format[] = "niiiii";
-            char const talent_format[] = "niiiiiiiixxxxixxixxxi";
-            char const talent_tab_format[] = "nxxxxxxxxxxxxxxxxxxxiix";
+            char const talent_format[] = "niiiiiiiixxxxixxixxxxxx";
+            char const talent_tab_format[] = "nxxxxxxxxxxxxxxxxxxxiiix";
             char const taxi_nodes_format[] = "nifffssssssssssssssssxii";
             char const taxi_path_format[] = "niii";
             char const taxi_path_node_format[] = "niiifffiiii";
@@ -97,6 +112,437 @@ namespace DBC
             const char* name;          // 2-17
             uint32_t name_flags;         // 18
             uint32_t sortOrder;          // 19
+        };
+
+        struct AchievementCriteriaEntry
+        {
+            uint32_t ID;                      // 0
+            uint32_t referredAchievement;     // 1
+            uint32_t requiredType;            // 2
+            union
+            {
+                // ACHIEVEMENT_CRITERIA_TYPE_KILL_CREATURE = 0
+                ///\todo also used for player deaths..
+                struct
+                {
+                    uint32_t creatureID;                             // 3
+                    uint32_t creatureCount;                          // 4
+                } kill_creature;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_WIN_BG = 1
+                ///\todo there are further criterias instead just winning
+                struct
+                {
+                    uint32_t bgMapID;                                // 3
+                    uint32_t winCount;                               // 4
+                } win_bg;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL = 5
+                struct
+                {
+                    uint32_t unused;                                 // 3
+                    uint32_t level;                                  // 4
+                } reach_level;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL = 7
+                struct
+                {
+                    uint32_t skillID;                                // 3
+                    uint32_t skillLevel;                             // 4
+                } reach_skill_level;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_ACHIEVEMENT = 8
+                struct
+                {
+                    uint32_t linkedAchievement;                      // 3
+                } complete_achievement;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST_COUNT = 9
+                struct
+                {
+                    uint32_t unused;                                 // 3
+                    uint32_t totalQuestCount;                        // 4
+                } complete_quest_count;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST_DAILY = 10
+                struct
+                {
+                    uint32_t unused;                                 // 3
+                    uint32_t numberOfDays;                           // 4
+                } complete_daily_quest_daily;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUESTS_IN_ZONE = 11
+                struct
+                {
+                    uint32_t zoneID;                                 // 3
+                    uint32_t questCount;                             // 4
+                } complete_quests_in_zone;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST = 14
+                struct
+                {
+                    uint32_t unused;                                 // 3
+                    uint32_t questCount;                             // 4
+                } complete_daily_quest;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_BATTLEGROUND= 15
+                struct
+                {
+                    uint32_t mapID;                                  // 3
+                } complete_battleground;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_DEATH_AT_MAP= 16
+                struct
+                {
+                    uint32_t mapID;                                  // 3
+                } death_at_map;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_RAID = 19
+                struct
+                {
+                    uint32_t groupSize;                              // 3 can be 5, 10 or 25
+                } complete_raid;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_KILLED_BY_CREATURE = 20
+                struct
+                {
+                    uint32_t creatureEntry;                          // 3
+                } killed_by_creature;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_FALL_WITHOUT_DYING = 24
+                struct
+                {
+                    uint32_t unused;                                 // 3
+                    uint32_t fallHeight;                             // 4
+                } fall_without_dying;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_QUEST = 27
+                struct
+                {
+                    uint32_t questID;                                // 3
+                    uint32_t questCount;                             // 4
+                } complete_quest;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET = 28
+                // ACHIEVEMENT_CRITERIA_TYPE_BE_SPELL_TARGET2= 69
+                struct
+                {
+                    uint32_t spellID;                                // 3
+                    uint32_t spellCount;                             // 4
+                } be_spell_target;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL= 29
+                struct
+                {
+                    uint32_t spellID;                                // 3
+                    uint32_t castCount;                              // 4
+                } cast_spell;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL_AT_AREA = 31
+                struct
+                {
+                    uint32_t areaID;                                 // 3 Reference to AreaTable.dbc
+                    uint32_t killCount;                              // 4
+                } honorable_kill_at_area;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_WIN_ARENA = 32
+                struct
+                {
+                    uint32_t mapID;                                  // 3 Reference to Map.dbc
+                } win_arena;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_PLAY_ARENA = 33
+                struct
+                {
+                    uint32_t mapID;                                  // 3 Reference to Map.dbc
+                } play_arena;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_LEARN_SPELL = 34
+                struct
+                {
+                    uint32_t spellID;                                // 3 Reference to Map.dbc
+                } learn_spell;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_OWN_ITEM = 36
+                struct
+                {
+                    uint32_t itemID;                                 // 3
+                    uint32_t itemCount;                              // 4
+                } own_item;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA = 37
+                struct
+                {
+                    uint32_t unused;                                 // 3
+                    uint32_t count;                                  // 4
+                    uint32_t flag;                                   // 5 4=in a row
+                } win_rated_arena;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_TEAM_RATING = 38
+                struct
+                {
+                    uint32_t teamtype;                               // 3 {2,3,5}
+                } highest_team_rating;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_REACH_TEAM_RATING = 39
+                struct
+                {
+                    uint32_t teamtype;                               // 3 {2,3,5}
+                    uint32_t teamrating;                             // 4
+                } reach_team_rating;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL = 40
+                struct
+                {
+                    uint32_t skillID;                                // 3
+                    uint32_t skillLevel;                             // 4 apprentice=1, journeyman=2, expert=3, artisan=4, master=5, grand master=6
+                } learn_skill_level;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_USE_ITEM = 41
+                struct
+                {
+                    uint32_t itemID;                                 // 3
+                    uint32_t itemCount;                              // 4
+                } use_item;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_LOOT_ITEM = 42
+                struct
+                {
+                    uint32_t itemID;                                 // 3
+                    uint32_t itemCount;                              // 4
+                } loot_item;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_EXPLORE_AREA = 43
+                struct
+                {
+                    uint32_t areaReference;                          // 3 - this is an index to WorldMapOverlay
+                } explore_area;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_OWN_RANK= 44
+                struct
+                {
+                    ///\todo This rank is _NOT_ the index from CharTitles.dbc
+                    uint32_t rank;                                   // 3
+                } own_rank;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_BUY_BANK_SLOT= 45
+                struct
+                {
+                    uint32_t unused;                                 // 3
+                    uint32_t numberOfSlots;                          // 4
+                } buy_bank_slot;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_GAIN_REPUTATION= 46
+                struct
+                {
+                    uint32_t factionID;                              // 3
+                    uint32_t reputationAmount;                       // 4 Total reputation amount, so 42000 = exalted
+                } gain_reputation;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_GAIN_EXALTED_REPUTATION= 47
+                struct
+                {
+                    uint32_t unused;                                 // 3
+                    uint32_t numberOfExaltedFactions;                // 4
+                } gain_exalted_reputation;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM = 49
+                ///\todo where is the required itemlevel stored?
+                struct
+                {
+                    uint32_t itemSlot;                               // 3
+                } equip_epic_item;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_ROLL_NEED_ON_LOOT= 50
+                struct
+                {
+                    uint32_t rollValue;                              // 3
+                    uint32_t count;                                  // 4
+                } roll_need_on_loot;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HK_CLASS = 52
+                struct
+                {
+                    uint32_t classID;                                // 3
+                    uint32_t count;                                  // 4
+                } hk_class;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HK_RACE = 53
+                struct
+                {
+                    uint32_t raceID;                                 // 3
+                    uint32_t count;                                  // 4
+                } hk_race;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE = 54
+                ///\todo where is the information about the target stored?
+                struct
+                {
+                    uint32_t emoteID;                                // 3
+                } do_emote;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HEALING_DONE = 55
+                struct
+                {
+                    uint32_t unused;                                 // 3
+                    uint32_t count;                                  // 4
+                    uint32_t flag;                                   // 5 =3 for battleground healing
+                    uint32_t mapid;                                  // 6
+                } healing_done;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_EQUIP_ITEM = 57
+                struct
+                {
+                    uint32_t itemID;                                 // 3
+                } equip_item;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_QUEST_REWARD_GOLD = 62
+                struct
+                {
+                    uint32_t unknown;                                 // 3
+                    uint32_t goldInCopper;                            // 4
+                } quest_reward_money;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_LOOT_MONEY = 67
+                struct
+                {
+                    uint32_t unused;                                 // 3
+                    uint32_t goldInCopper;                           // 4
+                } loot_money;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_USE_GAMEOBJECT = 68
+                struct
+                {
+                    uint32_t goEntry;                                // 3
+                    uint32_t useCount;                               // 4
+                } use_gameobject;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_SPECIAL_PVP_KILL= 70
+                ///\todo are those special criteria stored in the dbc or do we have to add another sql table?
+                struct
+                {
+                    uint32_t unused;                                 // 3
+                    uint32_t killCount;                              // 4
+                } special_pvp_kill;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_FISH_IN_GAMEOBJECT = 72
+                struct
+                {
+                    uint32_t goEntry;                                // 3
+                    uint32_t lootCount;                              // 4
+                } fish_in_gameobject;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_NUMBER_OF_MOUNTS= 75
+                struct
+                {
+                    uint32_t unknown;                                // 3 777=?
+                    uint32_t mountCount;                             // 4
+                } number_of_mounts;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_WIN_DUEL = 76
+                struct
+                {
+                    uint32_t unused;                                 // 3
+                    uint32_t duelCount;                              // 4
+                } win_duel;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_POWER = 96
+                struct
+                {
+                    uint32_t powerType;                              // 3 mana= 0, 1=rage, 3=energy, 6=runic power
+                } highest_power;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_STAT = 97
+                struct
+                {
+                    uint32_t statType;                               // 3 4=spirit, 3=int, 2=stamina, 1=agi, 0=strength
+                } highest_stat;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_SPELLPOWER = 98
+                struct
+                {
+                    uint32_t spellSchool;                            // 3
+                } highest_spellpower;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_HIGHEST_RATING = 100
+                struct
+                {
+                    uint32_t ratingType;                             // 3
+                } highest_rating;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_LOOT_TYPE = 109
+                struct
+                {
+                    uint32_t lootType;                               // 3 3=fishing, 2=pickpocket, 4=disentchant
+                    uint32_t lootTypeCount;                          // 4
+                } loot_type;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL2 = 110
+                struct
+                {
+                    uint32_t skillLine;                              // 3
+                    uint32_t spellCount;                             // 4
+                } cast_spell2;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LINE= 112
+                struct
+                {
+                    uint32_t skillLine;                              // 3
+                    uint32_t spellCount;                             // 4
+                } learn_skill_line;
+
+                // ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL = 113
+                struct
+                {
+                    uint32_t unused;                                 // 3
+                    uint32_t killCount;                              // 4
+                } honorable_kill;
+
+                struct
+                {
+                    uint32_t field3;                                 // 3 main requirement
+                    uint32_t field4;                                 // 4 main requirement count
+                    uint32_t additionalRequirement1_type;            // 5 additional requirement 1 type
+                    uint32_t additionalRequirement1_value;           // 6 additional requirement 1 value
+                    uint32_t additionalRequirement2_type;            // 7 additional requirement 2 type
+                    uint32_t additionalRequirement2_value;           // 8 additional requirement 1 value
+                } raw;
+            };
+            char* name[16];                 // 9-24
+                                            //uint32_t name_flags;            // 25
+            uint32_t completionFlag;          // 26
+            uint32_t groupFlag;               // 27
+            uint32_t unk1;                    // 28
+            uint32_t timeLimit;               // 29 time limit in seconds
+            uint32_t index;                   // 30
+        };
+
+        struct AchievementEntry
+        {
+            uint32_t ID;                      // 0
+            int32_t factionFlag;              // 1 -1=all, 0=horde, 1=alliance
+            int32_t mapID;                    // 2 -1=none
+            //uint32_t unknown1;              // 3
+            char* name[16];                 // 4-19
+            //uint32_t name_flags;            // 20
+            char* description[16];          // 21-36
+            //uint32_t desc_flags;            // 37
+            uint32_t categoryId;              // 38
+            uint32_t points;                  // 39 reward points
+            //uint32_t orderInCategory;       // 40
+            uint32_t flags;                   // 41
+            //uint32_t unknown2;              // 42
+            char* rewardName[16];           // 43-58 title/item reward name
+            //uint32_t rewardName_flags;      // 59
+            uint32_t count;                   // 60
+            uint32_t refAchievement;          // 61
+        };
+
+        struct AreaGroupEntry
+        {
+            uint32_t AreaGroupId;             // 0
+            uint32_t AreaId[6];               // 1-6
+            uint32_t next_group;              // 7
         };
 
         struct AreaTableEntry
@@ -144,6 +590,21 @@ namespace DBC
             uint32_t Price;           // 1
         };
 
+        struct BarberShopStyleEntry
+        {
+            uint32_t id;              // 0
+            uint32_t type;            // 1 value 0 -> hair, value 2 -> facialhair
+            //char* name;           // 2 string hairstyle name
+            //char* name[15];       // 3-17 name of hair style
+            //uint32_t name_flags;    // 18
+            //uint32_t unk_name[16];  // 19-34, all empty
+            //uint32_t unk_flags;     // 35
+            //float unk3;           // 36 values 1 and 0,75
+            uint32_t race;            // 37 race
+            uint32_t gender;          // 38 0 male, 1 female
+            uint32_t hair_id;         // 39 Hair ID
+        };
+
         struct CharTitlesEntry
         {
             uint32_t ID;                      // 0, title ids
@@ -180,6 +641,8 @@ namespace DBC
             //uint32_t unk3;                  // 55
             uint32_t spellfamily;             // 56
             //uint32_t unk4;                  // 57
+            uint32_t cinematic_sequence;      // 58 CinematicSequences.dbc
+            uint32_t expansion;               // 59
         };
 
         struct ChrRacesEntry
@@ -225,9 +688,11 @@ namespace DBC
             uint32_t skilline;                // 5
             uint32_t tameable;                // 6 second skill line - 270 Generic
             uint32_t petdietflags;            // 7
-            char* name[16];                 // 8-23
-            //uint32_t nameflags;             // 24
-            //uint32_t iconFile;              // 25
+            uint32_t talenttree;              // 8 (-1 = none, 0 = ferocity(410), 1 = tenacity(409), 2 = cunning(411))
+            //uint32_t unk;                   // 9 some index 0 - 63
+            char* name[16];                 // 10-25
+            //uint32_t nameflags;             // 26
+            //uint32_t iconFile;              // 27
         };
 
         struct CreatureSpellDataEntry
@@ -237,6 +702,14 @@ namespace DBC
             uint32_t PHSpell;                 // 4
             uint32_t Cooldowns[3];            // 5-7
             uint32_t PH;                      // 8
+        };
+
+        struct CurrencyTypesEntry
+        {
+            //uint32_t ID;            // 0 not used
+            uint32_t item_id;         // 1 used as index
+            //uint32_t Category;      // 2 may be category
+            uint32_t bit_index;       // 3 bit index in PLAYER_FIELD_KNOWN_CURRENCIES (1 << (index-1))
         };
 
         struct DurabilityCostsEntry
@@ -283,10 +756,14 @@ namespace DBC
             int32_t baseRepValue[4];          // 10-13
             uint32_t repFlags[4];             // 14-17
             uint32_t parentFaction;           // 18
-            char* Name[16];                 // 19-34
-            //uint32_t name_flags;            // 35
-            //uint32_t Description[16];       // 36-51
-            //uint32_t description_flags;     // 52
+            float spillover_rate_in;        // 19
+            float spillover_rate_out;       // 20
+            uint32_t spillover_max_in;        // 21
+            //uint32_t unk1;                  // 22
+            char* Name[16];                 // 23-38
+            //uint32_t name_flags;            // 39
+            //uint32_t Description[16];       // 40-55
+            //uint32_t description_flags;     // 56
         };
 
         struct FactionTemplateEntry
@@ -312,6 +789,7 @@ namespace DBC
             float maxX;                     // 15
             float maxY;                     // 16
             float maxZ;                     // 17
+            //uint32_t transport;             // 18
         };
 
         struct GemPropertiesEntry
@@ -321,6 +799,26 @@ namespace DBC
             //uint32_t unk1;                  // 2 bool
             //uint32_t unk2;                  // 3 bool
             uint32_t SocketMask;              // 4
+        };
+
+        struct GlyphPropertiesEntry
+        {
+            uint32_t Entry;                   // 0
+            uint32_t SpellID;                 // 1
+            uint32_t Type;                    // 2 (0 = Major, 1 = Minor)
+            uint32_t unk;                     // 3 glyph_icon spell.dbc
+        };
+
+        struct GlyphSlotEntry
+        {
+            uint32_t Id;              // 0
+            uint32_t Type;            // 1
+            uint32_t Slot;            // 2
+        };
+
+        struct GtBarberShopCostBaseEntry
+        {
+            float cost;             // 0 cost base
         };
 
         struct GtChanceToMeleeCritEntry
@@ -368,12 +866,36 @@ namespace DBC
             float ratio;            // 0 regen base
         };
 
+#define MAX_HOLIDAY_DURATIONS 10
+#define MAX_HOLIDAY_DATES 26
+#define MAX_HOLIDAY_FLAGS 10
+
+        struct HolidaysEntry
+        {
+            uint32_t Id;                                  // 0
+            uint32_t Duration[MAX_HOLIDAY_DURATIONS];     // 1-10
+            uint32_t Date[MAX_HOLIDAY_DATES];             // 11-36
+            uint32_t Region;                              // 37
+            uint32_t Looping;                             // 38
+            uint32_t CalendarFlags[MAX_HOLIDAY_FLAGS];    // 39-48
+            //uint32_t holidayNameId;                     // 49 HolidayNames.dbc
+            //uint32_t holidayDescriptionId;              // 50 HolidayDescriptions.dbc
+            char* TextureFilename;                      // 51
+            uint32_t Priority;                            // 52
+            uint32_t CalendarFilterType;                  // 53
+            //uint32_t flags;                             // 54
+        };
+
         struct ItemEntry
         {
             uint32_t ID;                      // 0
-            uint32_t DisplayId;               // 1
-            uint32_t InventoryType;           // 2
-            uint32_t Sheath;                  // 3
+            uint32_t Class;                   // 1
+            uint32_t SubClass;                // 2 some items have strange subclasses
+            int32_t SoundOverrideSubclass;    // 3
+            int32_t Material;                 // 4
+            uint32_t DisplayId;               // 5
+            uint32_t InventoryType;           // 6
+            uint32_t Sheath;                  // 7
         };
 
         struct ItemExtendedCostEntry
@@ -381,9 +903,20 @@ namespace DBC
             uint32_t costid;                  // 0
             uint32_t honor_points;            // 1
             uint32_t arena_points;            // 2
+            uint32_t arena_slot;              // 3
             uint32_t item[5];                 // 4-8
             uint32_t count[5];                // 9-13
             uint32_t personalrating;          // 14
+            //uint32_t unk;                   // 15
+        };
+
+        struct ItemLimitCategoryEntry
+        {
+            uint32_t Id;                      // 0
+            //char* name[16];               // 1-16 name langs
+            //uint32_t name_flags             // 17
+            uint32_t maxAmount;               // 18
+            uint32_t equippedFlag;            // 19 - equipped (bool?)
         };
 
         struct ItemRandomPropertiesEntry
@@ -449,9 +982,24 @@ namespace DBC
         struct LiquidTypeEntry
         {
             uint32_t Id;                  // 0
-            uint32_t liquid_id;           // 1
-            uint32_t Type;                // 2
-            uint32_t SpellId;             // 3
+            //char* Name;               // 1
+            //uint32_t Flags;             // 2
+            uint32_t Type;                // 3
+            //uint32_t SoundId;           // 4
+            uint32_t SpellId;             // 5
+            //float MaxDarkenDepth;     // 6
+            //float FogDarkenIntensity; // 7
+            //float AmbDarkenIntensity; // 8
+            //float DirDarkenIntensity; // 9
+            //uint32_t LightID;           // 10
+            //float ParticleScale;      // 11
+            //uint32_t ParticleMovement;  // 12
+            //uint32_t ParticleTexSlots;  // 13
+            //uint32_t LiquidMaterialID;  // 14
+            //char* Texture[6];         // 15-20
+            //uint32_t Color[2];          // 21-22
+            //float Unk1[18];           // 23-40
+            //uint32_t Unk2[4];           // 41-44
         };
 
 #define LOCK_NUM_CASES 8
@@ -481,9 +1029,10 @@ namespace DBC
             uint32_t id;                      // 0
             //char* name_internal;          // 1
             uint32_t map_type;                // 2
-            //uint32_t is_pvp_zone;           // 3 -0 false -1 true
-            char* map_name[16];             // 4-19
-            //uint32_t name_flags;            // 20
+            uint32_t map_flags;               // 3
+            //uint32_t is_pvp_zone;           // 4 -0 false -1 true
+            char* map_name[16];             // 5-20
+            //uint32_t name_flags;            // 21
             uint32_t linked_zone;             // 22 common zone for instance and continent map
             //char* horde_intro[16];        // 23-38 horde text for PvP Zones
             //uint32_t hordeIntro_flags;      // 39
@@ -495,9 +1044,9 @@ namespace DBC
             float start_x;                  // 60 enter x coordinate (if exist single entry)
             float start_y;                  // 61 enter y coordinate (if exist single entry)
             //uint32_t dayTime;               // 62 
-            uint32_t reset_raid_time;
-            uint32_t reset_heroic_tim;
             uint32_t addon;                   // 63 0-original maps, 1-tbc addon, 2-wotlk addon
+            uint32_t unk_time;                // 64
+            uint32_t max_players;             // 65
         };
 
         struct NameGenEntry
@@ -506,6 +1055,29 @@ namespace DBC
             char* Name;             // 1
             uint32_t unk1;            // 2
             uint32_t type;            // 3
+        };
+
+        struct QuestXP
+        {
+            uint32_t questLevel;     // 0
+            uint32_t xpIndex[10];    // 1-10
+        };
+
+        struct ScalingStatDistributionEntry
+        {
+            uint32_t id;                  // 0
+            int32_t stat[10];             // 1-10
+            uint32_t statmodifier[10];    // 11-20
+            uint32_t maxlevel;            // 21
+        };
+
+        struct ScalingStatValuesEntry
+        {
+            uint32_t id;                  // 0
+            uint32_t level;               // 1
+            uint32_t multiplier[16];      // 2-17 ///\todo split this
+            uint32_t unk1;                // 18
+            uint32_t amor_mod[5];         // 19-23
         };
 
         struct SkillLineEntry
@@ -518,6 +1090,9 @@ namespace DBC
             //char* Description[16];    // 20-35
             //uint32_t DescriptionFlags;  // 36
             uint32_t spell_icon;          // 37
+            //char* add_name[16];       // 38-53
+            //uint32_t add_name_flags;    // 54
+            uint32_t linkable;            // 55
         };
 
         struct SkillLineAbilityEntry
@@ -536,7 +1111,6 @@ namespace DBC
             uint32_t green;                   // 11 min
             //uint32_t abandonable;           // 12
             //uint32_t reqTP;                 // 13
-            uint32_t reqtrainpoints;          // 14
         };
 
         struct StableSlotPrices
@@ -551,6 +1125,12 @@ namespace DBC
             uint32_t CastTime;        // 1
             //uint32_t unk1;          // 2
             //uint32_t unk2;          // 3
+        };
+
+        struct SpellDifficultyEntry
+        {
+            uint32_t ID;              // 0
+            int32_t SpellId[4];       // 1-4 (instance modes)
         };
 
         struct SpellDurationEntry
@@ -686,16 +1266,20 @@ namespace DBC
         struct SpellItemEnchantmentEntry
         {
             uint32_t Id;                  // 0
-            uint32_t type[3];             // 1-3
-            uint32_t min[3];              // 4-6 for combat, in practice min==max
-            uint32_t max[3];              // 7-9
-            uint32_t spell[3];            // 10-12
-            char* Name[16];               // 13-28
-            //uint32_t NameFlags;         // 29
-            uint32_t visual;              // 30 aura
-            uint32_t EnchantGroups;       // 31 slot
-            uint32_t GemEntry;            // 32
-            uint32_t ench_condition;      // 33
+            //uint32_t charges;           // 1
+            uint32_t type[3];             // 2-4
+            int32_t min[3];               // 5-7 for combat, in practice min==max
+            int32_t max[3];               // 8-10
+            uint32_t spell[3];            // 11-13
+            char* Name[16];             // 14-29
+            //uint32_t NameFlags;         // 30
+            uint32_t visual;              // 31 aura
+            uint32_t EnchantGroups;       // 32 slot
+            uint32_t GemEntry;            // 33
+            uint32_t ench_condition;      // 34
+            uint32_t req_skill;           // 35
+            uint32_t req_skill_value;     // 36
+            uint32_t req_level;           // 37
         };
 
         struct SpellRadiusEntry
@@ -710,12 +1294,23 @@ namespace DBC
         {
             uint32_t ID;                  // 0
             float minRange;             // 1
+            float minRangeFriendly;     // 2
             float maxRange;             // 3
-            uint32_t range_type;          // 4
+            float maxRangeFriendly;     // 4
+            uint32_t range_type;          // 5
             //char* name1[16]           // 6-21
             //uint32_t name1_falgs;       // 22
             //char* name2[16]           // 23-38
             //uint32_t name2_falgs;       // 39
+        };
+
+        struct SpellRuneCostEntry
+        {
+            uint32_t ID;              // 0
+            uint32_t bloodRuneCost;   // 1
+            uint32_t frostRuneCost;   // 2
+            uint32_t unholyRuneCost;  // 3
+            uint32_t runePowerGain;   // 4
         };
 
         struct SpellShapeshiftFormEntry
@@ -758,7 +1353,8 @@ namespace DBC
             uint32_t DependsOnRank;       // 16
             //uint32_t unk2[2];           // 17-18
             //uint32_t unk3;              // 19
-            uint32_t DependsOnSpell;      // 20
+            //uint32_t unk4;              // 20
+            //uint32_t unk5;              // 21
         };
 
         struct TalentTabEntry
@@ -769,8 +1365,9 @@ namespace DBC
             //uint32_t unk4;              // 18
             //uint32_t unk5;              // 19
             uint32_t ClassMask;           // 20
-            uint32_t TabPage;             // 21
-            //char* InternalName;       // 22
+            uint32_t PetTalentMask;       // 21
+            uint32_t TabPage;             // 22
+            //char* InternalName;       // 23
         };
 
         struct TaxiNodesEntry
