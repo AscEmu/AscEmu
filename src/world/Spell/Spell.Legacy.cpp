@@ -1879,7 +1879,7 @@ void Spell::WriteCastResult(WorldPacket& data, Player* caster, uint32 spellInfo,
             data << uint32(GetSpellInfo()->RequiresSpellFocus);
             break;
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
         case SPELL_FAILED_REQUIRES_AREA:
             if (GetSpellInfo()->RequiresAreaId > 0)
             {
@@ -2481,7 +2481,7 @@ bool Spell::HasPower()
         break;
 #endif
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
         case POWER_TYPE_RUNES:
         {
             if (GetSpellInfo()->RuneCostID && p_caster)
@@ -2632,7 +2632,7 @@ bool Spell::TakePower()
         {	powerField = UNIT_FIELD_POWER7;						}
         break;
 #endif
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
         case POWER_TYPE_RUNES:
         {
             if (GetSpellInfo()->RuneCostID && p_caster)
@@ -3727,7 +3727,7 @@ uint8 Spell::CanCast(bool tolerate)
                 return SPELL_FAILED_REQUIRES_SPELL_FOCUS;
         }
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
         /**
          *	Area requirement
          */
@@ -4012,7 +4012,7 @@ uint8 Spell::CanCast(bool tolerate)
         if (m_caster->IsInWorld())
         {
             Unit* target = m_caster->GetMapMgr()->GetUnit(m_targets.m_unitTarget);
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
             if (target != NULL && isFriendly(m_caster, target))
                 maxRange = spell_range->maxRangeFriendly;
             else

@@ -1959,7 +1959,7 @@ void Player::ActivateSpec(uint8 spec)
     uint8 OldSpec = m_talentActiveSpec;
     m_talentActiveSpec = spec;
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     // remove old glyphs
     for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
     {
@@ -1981,7 +1981,7 @@ void Player::ActivateSpec(uint8 spec)
         removeSpell(talent_info->RankID[itr->second], true, false, 0);
     }
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     // add new glyphs
     for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
     {
@@ -4345,7 +4345,7 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
         CalcResistance(6);
     }
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     /* Heirloom scaling items */
     if (proto->ScalingStatsEntry != 0)
     {

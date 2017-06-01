@@ -2086,7 +2086,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
                         continue;
                     }
                 }
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
                 if (ip->ItemLimitCategory)
                 {
                     auto item_limit_category = sItemLimitCategoryStore.LookupEntry(ip->ItemLimitCategory);

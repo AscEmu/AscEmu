@@ -11,10 +11,14 @@ This file is released under the MIT license. See README-MIT for more information
     #include "../world/GameCata/Storage/DBCStructures.h"
 #endif
 
+#ifdef AE_WOTLK
+#include "../world/GameWotLK/Storage/DBCStructures.h"
+#endif
+
 #ifdef AE_TBC
     #include "../world/GameTBC/Storage/DBCStructures.h"
 #endif
 
-#ifdef AE_WOTLK
-    #include "../world/GameWotLK/Storage/DBCStructures.h"
+#ifdef AE_CLASSIC
+    #include "../world/GameClassic/Storage/DBCStructures.h"
 #endif

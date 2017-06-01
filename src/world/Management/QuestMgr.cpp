@@ -1625,7 +1625,7 @@ uint32 QuestMgr::GenerateQuestXP(Player* plr, QuestProperties const* qst)
             }
         }
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
         if (const auto pXPData = sQuestXPStore.LookupEntry(baseLevel))
         {
             uint32 rawXP = xpMultiplier * pXPData->xpIndex[qst->RewXPId] / 10;

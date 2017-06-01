@@ -213,7 +213,7 @@ bool NorthRendInscriptionResearch(uint32 i, Spell* s)
                         SpellInfo* se2 = sSpellCustomizations.GetSpellInfo(itm->Spells[0].Id);
                         if (se2 && se2->Effect[0] == SPELL_EFFECT_USE_GLYPH)
                         {
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
                             auto glyph_properties = sGlyphPropertiesStore.LookupEntry(se2->EffectMiscValue[0]);
                             if (glyph_properties)
                             {

@@ -11,7 +11,6 @@ set(SRC_STORAGE_DBC_FILES
    ${PATH_PREFIX}/DBCSQL.cpp
    ${PATH_PREFIX}/DBCSQL.hpp
    ${PATH_PREFIX}/DBCStorage.hpp
-   ${PATH_PREFIX}/DBCStores.cpp
    ${PATH_PREFIX}/DBCStores.h
    ${PATH_PREFIX}/DBCStructures.hpp
 )

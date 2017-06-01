@@ -78,7 +78,7 @@ void SpellFactoryMgr::AddAuraByNameHash(uint32 name_hash, aura_factory_function 
 
 SpellInfo* SpellFactoryMgr::GetSpellEntryByDifficulty(uint32 id, uint8 difficulty)
 {
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     auto spell_difficulty = sSpellDifficultyStore.LookupEntry(id);
     if (spell_difficulty == nullptr)
         return NULL;
@@ -376,7 +376,7 @@ bool SpellArea::IsFitToRequirements(Player* player, uint32 newZone, uint32 newAr
 
 bool SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player* player)
 {
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     // normal case
     if (RequiresAreaId > 0)
     {

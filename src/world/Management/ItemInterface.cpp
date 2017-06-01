@@ -1931,7 +1931,7 @@ int8 ItemInterface::CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, 
                         return INV_ERR_CANT_CARRY_MORE_OF_THIS;
                     }
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
                     if (ip->ItemLimitCategory > 0)
                     {
                         uint32 LimitId = ip->ItemLimitCategory;
@@ -2449,7 +2449,7 @@ int8 ItemInterface::CanReceiveItem(ItemProperties const* item, uint32 amount)
         }
     }
 
-#if VERSION_STRING != TBC
+#if VERSION_STRING > TBC
     if (item->ItemLimitCategory > 0)
     {
         auto item_limit_category = sItemLimitCategoryStore.LookupEntry(item->ItemLimitCategory);
