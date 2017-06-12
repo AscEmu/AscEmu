@@ -557,7 +557,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recv_data)
     data << message_id;
     data << uint32(MAIL_RES_MADE_PERMANENT);
 
-    ItemProperties const* proto = sMySQLStore.GetItemProperties(8383);
+    ItemProperties const* proto = sMySQLStore.getItemProperties(8383);
     MailMessage* message = _player->m_mailBox.GetMessage(message_id);
     if (message == 0 || !proto)
     {

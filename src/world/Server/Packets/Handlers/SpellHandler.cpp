@@ -100,7 +100,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     if (itemProto->QuestId)
     {
         // Item Starter
-        QuestProperties const* qst = sMySQLStore.GetQuestProperties(itemProto->QuestId);
+        QuestProperties const* qst = sMySQLStore.getQuestProperties(itemProto->QuestId);
         if (!qst)
             return;
 
@@ -293,7 +293,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
 
     if (!_player->HasAurasWithNameHash(SPELL_HASH_LIGHTWELL_RENEW) && target_unit->RemoveAura(59907))
     {
-        SpellClickSpell const* sp = sMySQLStore.GetSpellClickSpell(creature_id);
+        SpellClickSpell const* sp = sMySQLStore.getSpellClickSpell(creature_id);
         if (sp == nullptr)
         {
             if (target_unit->IsCreature())
@@ -318,7 +318,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
         return;
     }
 
-    SpellClickSpell const* sp = sMySQLStore.GetSpellClickSpell(creature_id);
+    SpellClickSpell const* sp = sMySQLStore.getSpellClickSpell(creature_id);
     if (sp == nullptr)
     {
         if (target_unit->IsCreature())

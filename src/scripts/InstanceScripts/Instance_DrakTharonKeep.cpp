@@ -181,7 +181,7 @@ class TrollgoreAI : public CreatureAIScript
                 //spawn invaders ;)
                 for (uint8 i = 0; i < INVADERS_PER_INVASION; i++)
                 {
-                    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(CN_DRAKKARI_INVADER);
+                    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_DRAKKARI_INVADER);
                     if (cp != nullptr)
                     {
                         Creature* c = _unit->GetMapMgr()->CreateCreature(CN_DRAKKARI_INVADER);
@@ -496,7 +496,7 @@ class NovosTheSummonerAI : public CreatureAIScript
             if (type)
             {
                 mob_entry = 26627;
-                CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(mob_entry);
+                CreatureProperties const* cp = sMySQLStore.getCreatureProperties(mob_entry);
                 if (cp != nullptr)
                 {
                     Creature* c = _unit->GetMapMgr()->CreateCreature(mob_entry);
@@ -528,7 +528,7 @@ class NovosTheSummonerAI : public CreatureAIScript
                         uint32 mobs[2] = { 27598, 27600 };
                         mob_entry = mobs[RandomUInt(1)];
                     }
-                    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(mob_entry);
+                    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(mob_entry);
                     if (cp != nullptr)
                     {
                         Creature* c = _unit->GetMapMgr()->CreateCreature(mob_entry);

@@ -630,7 +630,7 @@ char szError[64];
 // These strings can be found in npc_script_text tables in the database
 const char* WorldSession::LocalizedCreatureTexts(uint32 id)
 {
-    NpcScriptText const* wst = sMySQLStore.GetNpcScriptText(id);
+    NpcScriptText const* wst = sMySQLStore.getNpcScriptText(id);
     if (!wst)
     {
         memset(szError, 0, 64);
@@ -650,7 +650,7 @@ const char* WorldSession::LocalizedCreatureTexts(uint32 id)
 // These strings can be found in gossip_menu_option tables in the database
 const char* WorldSession::LocalizedGossipOption(uint32 id)
 {
-    GossipMenuOption const* wst = sMySQLStore.GetGossipMenuOption(id);
+    GossipMenuOption const* wst = sMySQLStore.getGossipMenuOption(id);
     if (!wst)
     {
         memset(szError, 0, 64);
@@ -669,7 +669,7 @@ const char* WorldSession::LocalizedGossipOption(uint32 id)
 // These strings can be found in the worldstring tables in the database
 const char* WorldSession::LocalizedWorldSrv(uint32 id)
 {
-    WorldStringTable const* wst = sMySQLStore.GetWorldString(id);
+    WorldStringTable const* wst = sMySQLStore.getWorldString(id);
     if (!wst)
     {
         memset(szError, 0, 64);
@@ -686,7 +686,7 @@ const char* WorldSession::LocalizedWorldSrv(uint32 id)
 
 const char* WorldSession::LocalizedMapName(uint32 id)
 {
-    MapInfo const* mi = sMySQLStore.GetWorldMapInfo(id);
+    MapInfo const* mi = sMySQLStore.getWorldMapInfo(id);
     if (!mi)
     {
         memset(szError, 0, 64);

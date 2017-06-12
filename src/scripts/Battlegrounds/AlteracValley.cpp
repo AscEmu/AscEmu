@@ -1015,7 +1015,7 @@ AlteracValley::AVNode::AVNode(AlteracValley* parent, AVNodeTemplate* tmpl, uint3
     {
         // then we are probably a tower.
         const AVSpawnLocation* spi = g_initalGuardLocations[nodeid];
-        CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(m_template->m_initialSpawnId);
+        CreatureProperties const* cp = sMySQLStore.getCreatureProperties(m_template->m_initialSpawnId);
         if (cp == nullptr)
         {
             LogDebug("AlteracValley : Invalid creature entry %u!", m_template->m_initialSpawnId);
@@ -1148,7 +1148,7 @@ void AlteracValley::AVNode::Spawn()
             // change entry, but to do this change guid
             if (m_flag->GetEntry() != g->id[m_state] || !m_flag->IsInWorld())
             {
-                auto gameobject_info = sMySQLStore.GetGameObjectProperties(g->id[m_state]);
+                auto gameobject_info = sMySQLStore.getGameObjectProperties(g->id[m_state]);
                 m_flag->RemoveFromWorld(false);
                 m_flag->SetEntry(g->id[m_state]);
                 m_flag->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
@@ -1194,7 +1194,7 @@ void AlteracValley::AVNode::Spawn()
             // change entry, but to do this change guid
             if (m_aura->GetEntry() != g->id[m_state] || !m_aura->IsInWorld())
             {
-                auto gameobject_info = sMySQLStore.GetGameObjectProperties(g->id[m_state]);
+                auto gameobject_info = sMySQLStore.getGameObjectProperties(g->id[m_state]);
                 m_aura->RemoveFromWorld(false);
                 m_aura->SetEntry(g->id[m_state]);
                 m_aura->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
@@ -1245,7 +1245,7 @@ void AlteracValley::AVNode::Spawn()
             // change entry, but to do this change guid
             if (m_glow->GetEntry() != g->id[m_state] || !m_glow->IsInWorld())
             {
-                auto gameobject_info = sMySQLStore.GetGameObjectProperties(g->id[m_state]);
+                auto gameobject_info = sMySQLStore.getGameObjectProperties(g->id[m_state]);
                 m_glow->RemoveFromWorld(false);
                 m_glow->SetEntry(g->id[m_state]);
                 m_glow->SetNewGuid(m_bg->GetMapMgr()->GenerateGameobjectGuid());
@@ -1843,7 +1843,7 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
             if (Rand(loot_ptr->Chance * worldConfig.getFloatRate(RATE_DROP0)))
             {
                 __LootItem li;
-                ItemProperties const* pProto = sMySQLStore.GetItemProperties(loot_ptr->ItemId);
+                ItemProperties const* pProto = sMySQLStore.getItemProperties(loot_ptr->ItemId);
                 if (pProto != nullptr)
                 {
                     li.ffa_loot = 0;

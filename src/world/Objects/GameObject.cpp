@@ -98,7 +98,7 @@ GameObject::~GameObject()
 
 bool GameObject::CreateFromProto(uint32 entry, uint32 mapid, float x, float y, float z, float ang, float r0, float r1, float r2, float r3, uint32 overrides)
 {
-    gameobject_properties = sMySQLStore.GetGameObjectProperties(entry);
+    gameobject_properties = sMySQLStore.getGameObjectProperties(entry);
     if (gameobject_properties == nullptr)
     {
         LOG_ERROR("Something tried to create a GameObject with invalid entry %u", entry);
@@ -550,7 +550,7 @@ void GameObject_Button::InitAI()
 
     if (gameobject_properties->button.linked_trap_id != 0)
     {
-        GameObjectProperties const* gameobject_info = sMySQLStore.GetGameObjectProperties(gameobject_properties->button.linked_trap_id);
+        GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(gameobject_properties->button.linked_trap_id);
 
         if (gameobject_info != nullptr)
         {
@@ -664,7 +664,7 @@ void GameObject_Chest::InitAI()
 
     if (gameobject_properties->chest.linked_trap_id != 0)
     {
-        GameObjectProperties const* gameobject_info = sMySQLStore.GetGameObjectProperties(gameobject_properties->chest.linked_trap_id);
+        GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(gameobject_properties->chest.linked_trap_id);
 
         if (gameobject_info != nullptr)
         {
@@ -896,7 +896,7 @@ void GameObject_Goober::InitAI()
 
     if (gameobject_properties->goober.linked_trap_id != 0)
     {
-        GameObjectProperties const* gameobject_info = sMySQLStore.GetGameObjectProperties(gameobject_properties->goober.linked_trap_id);
+        GameObjectProperties const* gameobject_info = sMySQLStore.getGameObjectProperties(gameobject_properties->goober.linked_trap_id);
         if (gameobject_info != nullptr)
         {
             if (gameobject_info->trap.spell_id != 0)

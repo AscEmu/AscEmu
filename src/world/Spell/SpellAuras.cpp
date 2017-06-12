@@ -4534,7 +4534,7 @@ void Aura::SpellAuraTransform(bool apply)
         return;
 
     uint32 displayId = 0;
-    CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(mod->m_miscValue);
+    CreatureProperties const* ci = sMySQLStore.getCreatureProperties(mod->m_miscValue);
 
     if (ci)
         displayId = ci->Male_DisplayID;
@@ -5311,7 +5311,7 @@ void Aura::SpellAuraMounted(bool apply)
 
         m_target->RemoveAurasByInterruptFlag(AURA_INTERRUPT_ON_MOUNT);
 
-        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(mod->m_miscValue);
+        CreatureProperties const* ci = sMySQLStore.getCreatureProperties(mod->m_miscValue);
         if (ci == nullptr)
             return;
 
@@ -5693,7 +5693,7 @@ void Aura::SpellAuraChannelDeathItem(bool apply)
                         return;
 
 
-                ItemProperties const* proto = sMySQLStore.GetItemProperties(itemid);
+                ItemProperties const* proto = sMySQLStore.getItemProperties(itemid);
                 if (pCaster->GetItemInterface()->CalculateFreeSlots(proto) > 0)
                 {
                     Item* item = objmgr.CreateItem(itemid, pCaster);

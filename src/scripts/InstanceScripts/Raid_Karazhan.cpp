@@ -2847,7 +2847,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
             // Off hand weapon
             _unit->SetEquippedItem(OFFHAND, 0);
 
-            CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(CN_MALCHEZAAR);
+            CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_MALCHEZAAR);
             if (cp == nullptr)
                 return;
 
@@ -2987,7 +2987,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
                 //Off Hand
                 _unit->SetEquippedItem(OFFHAND, AXE_ITEM_MODEL);
 
-                CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(CN_MALCHEZAAR);
+                CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_MALCHEZAAR);
                 if (cp == nullptr)
                     return;
 
@@ -3031,7 +3031,7 @@ class MalchezaarAI : public MoonScriptCreatureAI
                 //Off Hand
                 _unit->SetEquippedItem(OFFHAND, 0);
 
-                CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(CN_MALCHEZAAR);
+                CreatureProperties const* cp = sMySQLStore.getCreatureProperties(CN_MALCHEZAAR);
                 if (cp == nullptr)
                     return;
 

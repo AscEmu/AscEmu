@@ -197,13 +197,13 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     uint32 modelid = 0;
     if (_player->IsTeamHorde())
     {
-        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
+        CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->horde_mount);
 
         if (ci == nullptr)
-            ci = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
+            ci = sMySQLStore.getCreatureProperties(taxinode->alliance_mount);
 
         if (ci == nullptr)
-            ci = sMySQLStore.GetCreatureProperties(541); // Riding Gryphon, in case neither of the above work
+            ci = sMySQLStore.getCreatureProperties(541); // Riding Gryphon, in case neither of the above work
 
         if (ci != nullptr)
             modelid = ci->Male_DisplayID;
@@ -212,13 +212,13 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     }
     else
     {
-        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
+        CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->alliance_mount);
 
         if (ci == nullptr)
-            ci = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
+            ci = sMySQLStore.getCreatureProperties(taxinode->horde_mount);
 
         if (ci == nullptr)
-            ci = sMySQLStore.GetCreatureProperties(541); // Riding Gryphon, in case neither of the above work
+            ci = sMySQLStore.getCreatureProperties(541); // Riding Gryphon, in case neither of the above work
 
         if (ci != nullptr)
             modelid = ci->Male_DisplayID;
@@ -347,7 +347,7 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     uint32 modelid = 0;
     if (_player->IsTeamHorde())
     {
-        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
+        CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->horde_mount);
         if (!ci)
             return;
         modelid = ci->Male_DisplayID;
@@ -356,7 +356,7 @@ void WorldSession::HandleMultipleActivateTaxiOpcode(WorldPacket& recvPacket)
     }
     else
     {
-        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
+        CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->alliance_mount);
         if (!ci)
             return;
         modelid = ci->Male_DisplayID;

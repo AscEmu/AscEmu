@@ -565,7 +565,7 @@ class LuaUnit
             lua_pushnil(L);
             return 1;
         }
-        CreatureProperties const* p = sMySQLStore.GetCreatureProperties(entry);
+        CreatureProperties const* p = sMySQLStore.getCreatureProperties(entry);
         if (p == nullptr)
         {
             lua_pushnil(L);
@@ -606,7 +606,7 @@ class LuaUnit
         bool save = luaL_optinteger(L, 9, 0) ? true : false;
         if (entry_id)
         {
-            GameObjectProperties const* info = sMySQLStore.GetGameObjectProperties(entry_id);
+            GameObjectProperties const* info = sMySQLStore.getGameObjectProperties(entry_id);
             if (info == nullptr)
             {
                 LOG_ERROR("Lua script tried to spawn a gameobject that doesn't exist ( %u ). Aborting.", entry_id);
@@ -933,7 +933,7 @@ class LuaUnit
         uint32 count = static_cast<uint32>(luaL_checkinteger(L, 2));
 
         auto player = static_cast<Player*>(ptr);
-        ItemProperties const* item_proto = sMySQLStore.GetItemProperties(id);
+        ItemProperties const* item_proto = sMySQLStore.getItemProperties(id);
         if (item_proto == nullptr)
             return 0;
 
@@ -1633,7 +1633,7 @@ class LuaUnit
         uint32 quest_id = static_cast<uint32>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
 
-        QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+        QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
         if (qst)
         {
             if (plr->HasFinishedQuest(quest_id))
@@ -1671,7 +1671,7 @@ class LuaUnit
         uint32 quest_id = static_cast<uint32>(luaL_checkinteger(L, 1));
         Player* plr = static_cast<Player*>(ptr);
 
-        QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+        QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
         if (qst)
         {
             if (plr->HasFinishedQuest(quest_id))
@@ -2186,7 +2186,7 @@ class LuaUnit
         if (!quest_id)
             return 0;
 
-        QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+        QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
         if (!qst)
             return 0;
 
@@ -2229,7 +2229,7 @@ class LuaUnit
         if (!quest_id)
             return 0;
 
-        QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+        QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
         if (!qst)
             return 0;
 
@@ -3070,7 +3070,7 @@ class LuaUnit
         if ((ptr == NULL) || (entry == 0) || (lvl == 0))
             return 0;
 
-        CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(entry);
+        CreatureProperties const* cp = sMySQLStore.getCreatureProperties(entry);
         if (cp == nullptr)
             return 0;
 
@@ -4406,7 +4406,7 @@ class LuaUnit
         TEST_UNIT()
             Creature* ctr = static_cast<Creature*>(ptr);
         uint32 questid = CHECK_ULONG(L, 1);
-        QuestProperties const* qst = sMySQLStore.GetQuestProperties(questid);
+        QuestProperties const* qst = sMySQLStore.getQuestProperties(questid);
         if (ctr->HasQuest(qst->id, qst->type))
             lua_pushboolean(L, 1);
         else
@@ -6099,7 +6099,7 @@ class LuaUnit
         if ((ptr->GetCurrentVehicle() != NULL) && (!ptr->IsPlayer() || !ptr->IsVehicle()))
             return 0;
 
-        CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(creature_entry);
+        CreatureProperties const* cp = sMySQLStore.getCreatureProperties(creature_entry);
         if (cp == nullptr)
             return 0;
 
@@ -6171,7 +6171,7 @@ class LuaUnit
 
         uint32 creature_entry = static_cast<uint32>(luaL_checkinteger(L, 1));
 
-        CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(creature_entry);
+        CreatureProperties const* cp = sMySQLStore.getCreatureProperties(creature_entry);
         if (cp == nullptr)
             return 0;
 

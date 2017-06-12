@@ -99,10 +99,10 @@ class TeleportQ_Gossip : public GossipScript
 
         void GossipHello(Object* pObject, Player* plr)
         {
-            uint32 Text = sMySQLStore.GetGossipTextIdForNpc(static_cast<Creature*>(pObject)->GetEntry());
+            uint32 Text = sMySQLStore.getGossipTextIdForNpc(static_cast<Creature*>(pObject)->GetEntry());
 
             // check if there is a entry in the db
-            if (sMySQLStore.GetNpcText(Text) == nullptr)
+            if (sMySQLStore.getNpcText(Text) == nullptr)
                 Text = DefaultGossipTextId;
 
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, plr->GetSession()->language);

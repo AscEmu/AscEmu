@@ -48,7 +48,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
         {
             case 0:
             {
-                ItemProperties const* proto = sMySQLStore.GetItemProperties(21212);
+                ItemProperties const* proto = sMySQLStore.getItemProperties(21212);
                 if (!proto)
                     return;
 
@@ -58,7 +58,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
             break;
             case 1:
             {
-                ItemProperties const* proto = sMySQLStore.GetItemProperties(21519);
+                ItemProperties const* proto = sMySQLStore.getItemProperties(21519);
                 if (!proto)
                     return;
 
@@ -68,7 +68,7 @@ void WinterReveler(Player* pPlayer, Unit* pUnit)
             break;
             case 2:
             {
-                ItemProperties const* proto = sMySQLStore.GetItemProperties(34191);
+                ItemProperties const* proto = sMySQLStore.getItemProperties(34191);
                 if (!proto)
                     return;
 

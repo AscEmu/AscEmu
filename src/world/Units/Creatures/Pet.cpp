@@ -610,7 +610,7 @@ void Pet::LoadFromDB(Player* owner, PlayerPet* pi)
     m_OwnerGuid = m_Owner->GetGUID();
     m_phase = m_Owner->GetPhase();
     mPi = pi;
-    creature_properties = sMySQLStore.GetCreatureProperties(mPi->entry);
+    creature_properties = sMySQLStore.getCreatureProperties(mPi->entry);
     if (creature_properties == nullptr)
         return;
 
@@ -761,7 +761,7 @@ void Pet::InitializeMe(bool first)
     GetAIInterface()->SetUnitToFollow(m_Owner);
     GetAIInterface()->SetFollowDistance(3.0f);
 
-    creature_properties = sMySQLStore.GetCreatureProperties(GetEntry());
+    creature_properties = sMySQLStore.getCreatureProperties(GetEntry());
     if (creature_properties == nullptr)
         return;
 
@@ -1041,7 +1041,7 @@ uint32 Pet::GetNextLevelXP(uint32 level)
 {
     // Pets need only 5% of xp to level up compared to players
     uint32 nextLvlXP = 0;
-    nextLvlXP = sMySQLStore.GetPlayerXPForLevel(level);
+    nextLvlXP = sMySQLStore.getPlayerXPForLevel(level);
     return nextLvlXP / 20;
 }
 
@@ -1564,11 +1564,11 @@ void Pet::ApplyPetLevelAbilities()
 
     LoadPetAuras(-1);//These too
 
-    PetAbilities const* pet_abilities = sMySQLStore.GetPetLevelAbilities(level);
+    PetAbilities const* pet_abilities = sMySQLStore.getPetLevelAbilities(level);
     if (pet_abilities == nullptr)
     {
         LOG_ERROR("No abilities for level %u in table pet_level_abilities! Auto apply abilities of level 80!", level);
-        pet_abilities = sMySQLStore.GetPetLevelAbilities(DBC_PLAYER_LEVEL_CAP);
+        pet_abilities = sMySQLStore.getPetLevelAbilities(DBC_PLAYER_LEVEL_CAP);
     }
 
     BaseResistance[0] = pet_abilities->armor;

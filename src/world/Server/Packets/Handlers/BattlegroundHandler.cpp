@@ -101,7 +101,7 @@ void WorldSession::SendBattlegroundList(Creature* pCreature, uint32 mapid)
         }
         else
         {
-            BGMaster const* battlemaster = sMySQLStore.GetBattleMaster(pCreature->GetCreatureProperties()->Id);
+            BGMaster const* battlemaster = sMySQLStore.getBattleMaster(pCreature->GetCreatureProperties()->Id);
             if (battlemaster != NULL)
                 t = battlemaster->bg;
         }

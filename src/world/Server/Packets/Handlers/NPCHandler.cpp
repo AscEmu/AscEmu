@@ -524,7 +524,7 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
     recv_data >> targetGuid;
     GetPlayer()->SetTargetGUID(targetGuid);
 
-    NpcText const* pGossip = sMySQLStore.GetNpcText(textID);
+    NpcText const* pGossip = sMySQLStore.getNpcText(textID);
     LocalizedNpcText* lnc = (language > 0) ? sLocalizationMgr.GetLocalizedNpcText(textID, language) : NULL;
 
     data.Initialize(SMSG_NPC_TEXT_UPDATE);

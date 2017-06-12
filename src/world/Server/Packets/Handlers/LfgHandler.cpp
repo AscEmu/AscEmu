@@ -208,12 +208,12 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
         uint8 done = 0;
         if (reward)
         {
-            qRew = sMySQLStore.GetQuestProperties(reward->reward[0].questId);
+            qRew = sMySQLStore.getQuestProperties(reward->reward[0].questId);
             if (qRew)
             {
                 done = GetPlayer()->HasFinishedQuest(qRew->id);
                 if (done)
-                    qRew = sMySQLStore.GetQuestProperties(reward->reward[1].questId);
+                    qRew = sMySQLStore.getQuestProperties(reward->reward[1].questId);
             }
         }
         if (qRew)
@@ -229,7 +229,7 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket& recv_data)
             for (uint8 i = 0; i < 4; ++i)
                 if (qRew->reward_item[i] != 0)
                 {
-                    ItemProperties const* item = sMySQLStore.GetItemProperties(qRew->reward_item[i]);
+                    ItemProperties const* item = sMySQLStore.getItemProperties(qRew->reward_item[i]);
                     data << uint32(qRew->reward_item[i]);
                     data << uint32(item ? item->DisplayInfoID : 0);
                     data << uint32(qRew->reward_itemcount[i]);
@@ -542,7 +542,7 @@ void WorldSession::SendLfgPlayerReward(uint32 RandomDungeonEntry, uint32 Dungeon
             if (!qReward->reward_item[i])
                 continue;
 
-            ItemProperties const* iProto = sMySQLStore.GetItemProperties(qReward->reward_item[i]);
+            ItemProperties const* iProto = sMySQLStore.getItemProperties(qReward->reward_item[i]);
 
             data << uint32(qReward->reward_item[i]);
             data << uint32(iProto ? iProto->DisplayInfoID : 0);

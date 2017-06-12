@@ -188,7 +188,7 @@ void SpellFactoryMgr::LoadSpellAreas()
         }
         */
 
-        if (spellArea.questStart && !sMySQLStore.GetQuestProperties(spellArea.questStart))
+        if (spellArea.questStart && !sMySQLStore.getQuestProperties(spellArea.questStart))
         {
             LOG_ERROR("Spell %u listed in `spell_area` have wrong start quest (%u) requirement.", spell, spellArea.questStart);
             continue;
@@ -196,7 +196,7 @@ void SpellFactoryMgr::LoadSpellAreas()
 
         if (spellArea.questEnd)
         {
-            if (!sMySQLStore.GetQuestProperties(spellArea.questEnd))
+            if (!sMySQLStore.getQuestProperties(spellArea.questEnd))
             {
                 LOG_ERROR("Spell %u listed in `spell_area` have wrong end quest (%u) requirement.", spell, spellArea.questEnd);
                 continue;

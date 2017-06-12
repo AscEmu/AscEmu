@@ -128,7 +128,7 @@ void WorldSession::HandleQuestGiverQueryQuestOpcode(WorldPacket& recv_data)
 
     bool bValid = false;
 
-    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
     if (!qst)
     {
         LOG_DEBUG("WORLD: Invalid quest ID.");
@@ -267,7 +267,7 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
 
     if (qPtr->srcitem && qPtr->srcitem != qPtr->receive_items[0])
     {
-        ItemProperties const* itemProto = sMySQLStore.GetItemProperties(qPtr->srcitem);
+        ItemProperties const* itemProto = sMySQLStore.getItemProperties(qPtr->srcitem);
         if (itemProto != NULL)
             if (itemProto->QuestId != qPtr->id)
                 _player->GetItemInterface()->RemoveItemAmt(qPtr->srcitem, qPtr->srcitemcount ? qPtr->srcitemcount : 1);
@@ -277,7 +277,7 @@ void WorldSession::HandleQuestlogRemoveQuestOpcode(WorldPacket& recvPacket)
     {
         if (qPtr->required_item[i] != 0)
         {
-            ItemProperties const* itemProto = sMySQLStore.GetItemProperties(qPtr->required_item[i]);
+            ItemProperties const* itemProto = sMySQLStore.getItemProperties(qPtr->required_item[i]);
             if (itemProto != NULL && itemProto->Class == ITEM_CLASS_QUEST)
                 GetPlayer()->GetItemInterface()->RemoveItemAmt(qPtr->required_item[i], qPtr->required_itemcount[i]);
         }
@@ -295,7 +295,7 @@ void WorldSession::HandleQuestQueryOpcode(WorldPacket& recv_data)
     uint32 quest_id;
     recv_data >> quest_id;
 
-    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
     if (!qst)
     {
         LOG_DEBUG("WORLD: Invalid quest ID.");
@@ -507,7 +507,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
         if (quest_giver->isQuestGiver())
         {
             bValid = true;
-            qst = sMySQLStore.GetQuestProperties(quest_id);
+            qst = sMySQLStore.getQuestProperties(quest_id);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
@@ -519,7 +519,7 @@ void WorldSession::HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket)
             return;
 
         bValid = true;
-        qst = sMySQLStore.GetQuestProperties(quest_id);
+        qst = sMySQLStore.getQuestProperties(quest_id);
     }
 
     if (!qst_giver)
@@ -582,7 +582,7 @@ void WorldSession::HandlePushQuestToPartyOpcode(WorldPacket& recv_data)
     uint32 questid;
     recv_data >> questid;
 
-    QuestProperties const* pQuest = sMySQLStore.GetQuestProperties(questid);
+    QuestProperties const* pQuest = sMySQLStore.getQuestProperties(questid);
     if (pQuest)
     {
         Group* pGroup = _player->GetGroup();

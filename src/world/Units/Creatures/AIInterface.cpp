@@ -1450,9 +1450,9 @@ bool AIInterface::FindFriends(float dist)
 
         ZoneGuardEntry const* zoneSpawn;
         if (at->zone != 0)
-            zoneSpawn = sMySQLStore.GetZoneGuard(at->zone);
+            zoneSpawn = sMySQLStore.getZoneGuard(at->zone);
         else
-            zoneSpawn = sMySQLStore.GetZoneGuard(at->id);
+            zoneSpawn = sMySQLStore.getZoneGuard(at->id);
 
         if (!zoneSpawn)
             return result;
@@ -1468,7 +1468,7 @@ bool AIInterface::FindFriends(float dist)
         if (!guardid)
             return result;
 
-        CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(guardid);
+        CreatureProperties const* cp = sMySQLStore.getCreatureProperties(guardid);
         if (cp == nullptr)
             return result;
 
@@ -4682,8 +4682,8 @@ void AIInterface::SetCreatureProtoDifficulty(uint32 entry)
 {
     if (GetDifficultyType() != 0)
     {
-        uint32 creature_difficulty_entry = sMySQLStore.GetCreatureDifficulty(entry, GetDifficultyType());
-        auto properties_difficulty = sMySQLStore.GetCreatureProperties(creature_difficulty_entry);
+        uint32 creature_difficulty_entry = sMySQLStore.getCreatureDifficulty(entry, GetDifficultyType());
+        auto properties_difficulty = sMySQLStore.getCreatureProperties(creature_difficulty_entry);
         Creature* creature = static_cast<Creature*>(m_Unit);
         if (properties_difficulty != nullptr)
         {

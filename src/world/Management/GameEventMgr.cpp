@@ -182,7 +182,7 @@ void GameEventMgr::LoadFromDB()
                 dbResult.event_entry = field[0].GetUInt32();
                 dbResult.id = field[1].GetUInt32();
                 dbResult.entry = field[2].GetUInt32();
-                auto creature_properties = sMySQLStore.GetCreatureProperties(dbResult.entry);
+                auto creature_properties = sMySQLStore.getCreatureProperties(dbResult.entry);
                 if (creature_properties == nullptr)
                 {
                     LOG_ERROR("Could not create CreatureSpawn for invalid entry %u (missing in table creature_properties)", dbResult.entry);
@@ -260,7 +260,7 @@ void GameEventMgr::LoadFromDB()
                 dbResult.event_entry = field[0].GetUInt32();
                 dbResult.id = field[1].GetUInt32();
                 dbResult.entry = field[2].GetUInt32();
-                auto gameobject_info = sMySQLStore.GetGameObjectProperties(dbResult.entry);
+                auto gameobject_info = sMySQLStore.getGameObjectProperties(dbResult.entry);
                 if (gameobject_info == nullptr)
                 {
                     LOG_ERROR("Could not create GameobjectSpawn for invalid entry %u (missing in table gameobject_properties)", dbResult.entry);

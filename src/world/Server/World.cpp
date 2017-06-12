@@ -823,47 +823,47 @@ void World::loadMySQLStores()
 {
     new MySQLDataStore;
 
-    sMySQLStore.LoadAdditionalTableConfig();
+    sMySQLStore.loadAdditionalTableConfig();
 
-    sMySQLStore.LoadItemPagesTable();
-    sMySQLStore.LoadItemPropertiesTable();
-    sMySQLStore.LoadCreaturePropertiesTable();
-    sMySQLStore.LoadGameObjectPropertiesTable();
-    sMySQLStore.LoadQuestPropertiesTable();
-    sMySQLStore.LoadGameObjectQuestItemBindingTable();
-    sMySQLStore.LoadGameObjectQuestPickupBindingTable();
+    sMySQLStore.loadItemPagesTable();
+    sMySQLStore.loadItemPropertiesTable();
+    sMySQLStore.loadCreaturePropertiesTable();
+    sMySQLStore.loadGameObjectPropertiesTable();
+    sMySQLStore.loadQuestPropertiesTable();
+    sMySQLStore.loadGameObjectQuestItemBindingTable();
+    sMySQLStore.loadGameObjectQuestPickupBindingTable();
 
-    sMySQLStore.LoadCreatureDifficultyTable();
-    sMySQLStore.LoadDisplayBoundingBoxesTable();
-    sMySQLStore.LoadVendorRestrictionsTable();
+    sMySQLStore.loadCreatureDifficultyTable();
+    sMySQLStore.loadDisplayBoundingBoxesTable();
+    sMySQLStore.loadVendorRestrictionsTable();
 
-    sMySQLStore.LoadNpcTextTable();
-    sMySQLStore.LoadNpcScriptTextTable();
-    sMySQLStore.LoadGossipMenuOptionTable();
-    sMySQLStore.LoadGraveyardsTable();
-    sMySQLStore.LoadTeleportCoordsTable();
-    sMySQLStore.LoadFishingTable();
-    sMySQLStore.LoadWorldMapInfoTable();
-    sMySQLStore.LoadZoneGuardsTable();
-    sMySQLStore.LoadBattleMastersTable();
-    sMySQLStore.LoadTotemDisplayIdsTable();
-    sMySQLStore.LoadSpellClickSpellsTable();
+    sMySQLStore.loadNpcTextTable();
+    sMySQLStore.loadNpcScriptTextTable();
+    sMySQLStore.loadGossipMenuOptionTable();
+    sMySQLStore.loadGraveyardsTable();
+    sMySQLStore.loadTeleportCoordsTable();
+    sMySQLStore.loadFishingTable();
+    sMySQLStore.loadWorldMapInfoTable();
+    sMySQLStore.loadZoneGuardsTable();
+    sMySQLStore.loadBattleMastersTable();
+    sMySQLStore.loadTotemDisplayIdsTable();
+    sMySQLStore.loadSpellClickSpellsTable();
 
-    sMySQLStore.LoadWorldStringsTable();
-    sMySQLStore.LoadPointOfInterestTable();
-    sMySQLStore.LoadItemSetLinkedSetBonusTable();
-    sMySQLStore.LoadCreatureInitialEquipmentTable();
+    sMySQLStore.loadWorldStringsTable();
+    sMySQLStore.loadPointOfInterestTable();
+    sMySQLStore.loadItemSetLinkedSetBonusTable();
+    sMySQLStore.loadCreatureInitialEquipmentTable();
 
-    sMySQLStore.LoadPlayerCreateInfoTable();
-    sMySQLStore.LoadPlayerCreateInfoSkillsTable();
-    sMySQLStore.LoadPlayerCreateInfoSpellsTable();
-    sMySQLStore.LoadPlayerCreateInfoItemsTable();
-    sMySQLStore.LoadPlayerXpToLevelTable();
+    sMySQLStore.loadPlayerCreateInfoTable();
+    sMySQLStore.loadPlayerCreateInfoSkillsTable();
+    sMySQLStore.loadPlayerCreateInfoSpellsTable();
+    sMySQLStore.loadPlayerCreateInfoItemsTable();
+    sMySQLStore.loadPlayerXpToLevelTable();
 
-    sMySQLStore.LoadSpellOverrideTable();
+    sMySQLStore.loadSpellOverrideTable();
 
-    sMySQLStore.LoadNpcGossipTextIdTable();
-    sMySQLStore.LoadPetLevelAbilitiesTable();
+    sMySQLStore.loadNpcGossipTextIdTable();
+    sMySQLStore.loadPetLevelAbilitiesTable();
     sMySQLStore.loadBroadcastTable();
 
     sMySQLStore.loadAreaTriggerTable();

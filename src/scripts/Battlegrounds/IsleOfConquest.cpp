@@ -522,7 +522,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
     if (Id >= IOC_NUM_CONTROL_POINTS)
         return;
 
-    auto gameobject_info = sMySQLStore.GetGameObjectProperties(ControlPointGoIds[Id][Type]);
+    auto gameobject_info = sMySQLStore.getGameObjectProperties(ControlPointGoIds[Id][Type]);
     if (gameobject_info == nullptr)
         return;
 
@@ -531,7 +531,7 @@ void IsleOfConquest::SpawnControlPoint(uint32 Id, uint32 Type)
     if (controlpoint[Id].worldstate != 0)
         SetWorldState(controlpoint[Id].worldstate, 0);
 
-    auto gi_aura = gameobject_info->raw.parameter_3 ? sMySQLStore.GetGameObjectProperties(gameobject_info->raw.parameter_3) : nullptr;
+    auto gi_aura = gameobject_info->raw.parameter_3 ? sMySQLStore.getGameObjectProperties(gameobject_info->raw.parameter_3) : nullptr;
 
     if (controlpoint[Id].banner == nullptr)
     {

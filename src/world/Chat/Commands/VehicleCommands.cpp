@@ -152,7 +152,7 @@ bool ChatHandler::HandleVehicleAddPassengerCommand(const char* args, WorldSessio
         return false;
     }
 
-    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(creature_entry);
+    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(creature_entry);
     if (cp == nullptr)
     {
         RedSystemMessage(session, "Creature %u doesn't exist in the database", creature_entry);

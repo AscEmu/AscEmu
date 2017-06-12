@@ -842,7 +842,7 @@ bool Player::Create(WorldPacket& data)
     data >> facialHair;
     data >> outfitId;
 
-    info = sMySQLStore.GetPlayerCreateInfo(race, class_);
+    info = sMySQLStore.getPlayerCreateInfo(race, class_);
     if (info == nullptr)
     {
         // info not found... disconnect
@@ -1688,7 +1688,7 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
         li = objmgr.GetLevelInfo(getRace(), getClass(), level);
         if (li == NULL) return;
         newxp -= nextlevelxp;
-        nextlevelxp = sMySQLStore.GetPlayerXPForLevel(level);
+        nextlevelxp = sMySQLStore.getPlayerXPForLevel(level);
         levelup = true;
 
         if (level > 9)
@@ -3095,7 +3095,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     SetPowerType(static_cast<uint8>(myClass->power_type));
 
     // obtain player create info
-    info = sMySQLStore.GetPlayerCreateInfo(getRace(), getClass());
+    info = sMySQLStore.getPlayerCreateInfo(getRace(), getClass());
     if (info == nullptr)
     {
         LOG_ERROR("player guid %u has no playerCreateInfo!", (unsigned int)GetLowGUID());
@@ -3759,7 +3759,7 @@ void Player::LoadFromDBProc(QueryResultVector & results)
 
                 if (ei && ei->Enchantment)
                 {
-                    ItemProperties const* ip = sMySQLStore.GetItemProperties(ei->Enchantment->GemEntry);
+                    ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
 
                     if (ip && ip->Flags & ITEM_FLAG_UNIQUE_EQUIP &&
                         itemi->IsEquipped(ip->ItemId))
@@ -3878,7 +3878,7 @@ void Player::_LoadQuestLogEntry(QueryResult* result)
         {
             fields = result->Fetch();
             questid = fields[1].GetUInt32();
-            quest = sMySQLStore.GetQuestProperties(questid);
+            quest = sMySQLStore.getQuestProperties(questid);
             slot = fields[2].GetUInt32();
             ARCEMU_ASSERT(slot != -1);
 
@@ -4210,9 +4210,9 @@ void Player::_ApplyItemMods(Item* item, int16 slot, bool apply, bool justdrokedo
     // you will get the highest sets bonus
     if (proto_setid < 0)
     {
-        if (sMySQLStore.GetItemSetLinkedBonus(proto_setid) != 0)
+        if (sMySQLStore.getItemSetLinkedBonus(proto_setid) != 0)
         {
-            setid = sMySQLStore.GetItemSetLinkedBonus(proto_setid);
+            setid = sMySQLStore.getItemSetLinkedBonus(proto_setid);
         }
     }
     else
@@ -4699,7 +4699,7 @@ void Player::RepopRequestedPlayer()
     // Cebernic: don't do this.
     if (!m_bg || (m_bg && m_bg->HasStarted()))
     {
-        pMapinfo = sMySQLStore.GetWorldMapInfo(GetMapId());
+        pMapinfo = sMySQLStore.getWorldMapInfo(GetMapId());
         if (pMapinfo != NULL)
         {
             if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
@@ -5025,10 +5025,10 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
     else
     {
         GraveyardTeleport const* pGrave = nullptr;
-        MySQLDataStore::GraveyardsContainer const* its = sMySQLStore.GetGraveyardsStore();
+        MySQLDataStore::GraveyardsContainer const* its = sMySQLStore.getGraveyardsStore();
         for (MySQLDataStore::GraveyardsContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
         {
-            pGrave = sMySQLStore.GetGraveyard(itr->second.ID);
+            pGrave = sMySQLStore.getGraveyard(itr->second.ID);
             if (pGrave->MapId == mapid && (pGrave->FactionID == GetTeam() || pGrave->FactionID == 3))
             {
                 temp.ChangeCoords(pGrave->X, pGrave->Y, pGrave->Z);
@@ -6212,7 +6212,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
 
     // Check ammo
     auto item = GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-    auto item_proto = sMySQLStore.GetItemProperties(GetAmmoId());
+    auto item_proto = sMySQLStore.getItemProperties(GetAmmoId());
     if (item == nullptr || disarmed)           //Disarmed means disarmed, we shouldn't be able to cast Auto Shot while disarmed
         return SPELL_FAILED_NO_AMMO;        //In proper language means "Requires Ranged Weapon to be equipped"
 
@@ -6223,7 +6223,7 @@ int32 Player::CanShootRangedWeapon(uint32 spellid, Unit* target, bool autoshot)
             return SPELL_FAILED_LOWLEVEL;
 
         // Check ammo type
-        auto item_proto_ammo = sMySQLStore.GetItemProperties(item->GetEntry());
+        auto item_proto_ammo = sMySQLStore.getItemProperties(item->GetEntry());
         if (item_proto && item_proto_ammo && item_proto->SubClass != item_proto_ammo->AmmoType)
             return SPELL_FAILED_NEED_AMMO;
     }
@@ -6556,7 +6556,7 @@ void Player::AreaExploredOrEventHappens(uint32 questId)
 
 void Player::Reset_Spells()
 {
-    PlayerCreateInfo const* info = sMySQLStore.GetPlayerCreateInfo(getRace(), getClass());
+    PlayerCreateInfo const* info = sMySQLStore.getPlayerCreateInfo(getRace(), getClass());
     ARCEMU_ASSERT(info != NULL);
 
     std::list<uint32> spelllist;
@@ -7907,7 +7907,7 @@ void Player::SaveEntryPoint(uint32 mapId)
     if (IS_INSTANCE(GetMapId()))
         return; // don't save if we're not on the main continent.
     //otherwise we could end up in an endless loop :P
-    MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(mapId);
+    MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(mapId);
 
     if (pMapinfo)
     {
@@ -8100,7 +8100,7 @@ void Player::UpdateChannels(uint16 AreaID)
     //Check for instances?
     if (!AreaID || AreaID == 0xFFFF)
     {
-        MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(GetMapId());
+        MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(GetMapId());
         if (IS_INSTANCE(GetMapId()))
             AreaName = pMapinfo->name;
         else
@@ -8111,7 +8111,7 @@ void Player::UpdateChannels(uint16 AreaID)
         AreaName = at2->area_name[0];
         if (AreaName.length() < 2)
         {
-            MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(GetMapId());
+            MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(GetMapId());
             AreaName = pMapinfo->name;
         }
     }
@@ -8659,7 +8659,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     }
 
     bool instance = false;
-    MapInfo const* mi = sMySQLStore.GetWorldMapInfo(MapID);
+    MapInfo const* mi = sMySQLStore.getWorldMapInfo(MapID);
 
     if (InstanceID && (uint32)m_instanceId != InstanceID)
     {
@@ -9352,7 +9352,7 @@ void Player::CompleteLoading()
 void Player::OnWorldPortAck()
 {
     //only resurrect if player is porting to a instance portal
-    MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(GetMapId());
+    MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(GetMapId());
     if (IsDead())
     {
         if (pMapinfo)
@@ -9949,7 +9949,7 @@ void Player::CalcDamage()
 
             if (GetAmmoId() && !m_requiresNoAmmo)
             {
-                ItemProperties const* xproto = sMySQLStore.GetItemProperties(GetAmmoId());
+                ItemProperties const* xproto = sMySQLStore.getItemProperties(GetAmmoId());
                 if (xproto)
                 {
                     bonus += ((xproto->Damage[0].Min + xproto->Damage[0].Max) * it->GetItemProperties()->Delay) / 2000.0f;
@@ -10935,7 +10935,7 @@ void Player::UpdatePotionCooldown()
     if (m_lastPotionId == 0 || CombatStatus.IsInCombat())
         return;
 
-    ItemProperties const* proto = sMySQLStore.GetItemProperties(m_lastPotionId);
+    ItemProperties const* proto = sMySQLStore.getItemProperties(m_lastPotionId);
     if (proto != nullptr)
     {
         for (uint8 i = 0; i < 5; ++i)
@@ -11813,7 +11813,7 @@ void Player::SendTriggerMovie(uint32 movieID)
 uint32 Player::GetInitialFactionId()
 {
 
-    PlayerCreateInfo const* pci = sMySQLStore.GetPlayerCreateInfo(getRace(), getClass());
+    PlayerCreateInfo const* pci = sMySQLStore.getPlayerCreateInfo(getRace(), getClass());
     if (pci != nullptr)
         return pci->factiontemplate;
     else
@@ -13378,7 +13378,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         if (quest_giver->isQuestGiver())
         {
             bValid = true;
-            qst = sMySQLStore.GetQuestProperties(quest_id);
+            qst = sMySQLStore.getQuestProperties(quest_id);
         }
     }
     else if (guidtype == HIGHGUID_TYPE_GAMEOBJECT)
@@ -13390,7 +13390,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             return;
 
         bValid = true;
-        qst = sMySQLStore.GetQuestProperties(quest_id);
+        qst = sMySQLStore.getQuestProperties(quest_id);
     }
     else if (guidtype == HIGHGUID_TYPE_ITEM)
     {
@@ -13401,7 +13401,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
             return;
         bValid = true;
         bSkipLevelCheck = true;
-        qst = sMySQLStore.GetQuestProperties(quest_id);
+        qst = sMySQLStore.getQuestProperties(quest_id);
     }
     else if (guidtype == HIGHGUID_TYPE_PLAYER)
     {
@@ -13411,7 +13411,7 @@ void Player::AcceptQuest(uint64 guid, uint32 quest_id)
         else
             return;
         bValid = true;
-        qst = sMySQLStore.GetQuestProperties(quest_id);
+        qst = sMySQLStore.getQuestProperties(quest_id);
     }
 
     if (!qst_giver)
@@ -13928,7 +13928,7 @@ void Player::RemoveVehicleComponent()
 
 void Player::Gossip_SendSQLPOI(uint32 id)
 {
-    PointOfInterest const* pPOI = sMySQLStore.GetPointOfInterest(id);
+    PointOfInterest const* pPOI = sMySQLStore.getPointOfInterest(id);
     if (pPOI != NULL)
         Gossip_SendPOI(pPOI->x, pPOI->y, pPOI->icon, pPOI->flags, pPOI->data, pPOI->icon_name.c_str());
 }

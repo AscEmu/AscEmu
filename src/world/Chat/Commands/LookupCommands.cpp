@@ -278,10 +278,10 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
 
     uint32 count = 0;
 
-    MySQLDataStore::CreaturePropertiesContainer const* its = sMySQLStore.GetCreaturePropertiesStore();
+    MySQLDataStore::CreaturePropertiesContainer const* its = sMySQLStore.getCreaturePropertiesStore();
     for (MySQLDataStore::CreaturePropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        CreatureProperties const* it = sMySQLStore.GetCreatureProperties(itr->second.Id);
+        CreatureProperties const* it = sMySQLStore.getCreatureProperties(itr->second.Id);
         if (it != nullptr)
         {
             LocalizedCreatureName* lit = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedCreatureName(it->Id, m_session->language) : NULL;
@@ -384,10 +384,10 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
 
     uint32 count = 0;
 
-    MySQLDataStore::ItemPropertiesContainer const* its = sMySQLStore.GetItemPropertiesStore();
+    MySQLDataStore::ItemPropertiesContainer const* its = sMySQLStore.getItemPropertiesStore();
     for (MySQLDataStore::ItemPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        ItemProperties const* it = sMySQLStore.GetItemProperties(itr->second.ItemId);
+        ItemProperties const* it = sMySQLStore.getItemProperties(itr->second.ItemId);
         if (it == nullptr)
             continue;
 
@@ -437,10 +437,10 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
     std::string y;
     std::string recout;
 
-    MySQLDataStore::GameObjectPropertiesContainer const* its = sMySQLStore.GetGameObjectPropertiesStore();
+    MySQLDataStore::GameObjectPropertiesContainer const* its = sMySQLStore.getGameObjectPropertiesStore();
     for (MySQLDataStore::GameObjectPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        gameobject_info = sMySQLStore.GetGameObjectProperties(itr->second.entry);
+        gameobject_info = sMySQLStore.getGameObjectProperties(itr->second.entry);
         y = std::string(gameobject_info->name);
         Util::StringToLowerCase(y);
         if (FindXinYString(x, y))
@@ -496,10 +496,10 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
     std::string recout;
     uint32 count = 0;
 
-    MySQLDataStore::QuestPropertiesContainer const* its = sMySQLStore.GetQuestPropertiesStore();
+    MySQLDataStore::QuestPropertiesContainer const* its = sMySQLStore.getQuestPropertiesStore();
     for (MySQLDataStore::QuestPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        QuestProperties const* quest = sMySQLStore.GetQuestProperties(itr->second.id);
+        QuestProperties const* quest = sMySQLStore.getQuestProperties(itr->second.id);
         if (quest == nullptr)
             continue;
 

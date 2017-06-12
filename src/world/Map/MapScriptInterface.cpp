@@ -116,7 +116,7 @@ GameObject* MapScriptInterface::SpawnGameObject(GameobjectSpawn* gs, bool AddToW
 
 Creature* MapScriptInterface::SpawnCreature(uint32 Entry, float cX, float cY, float cZ, float cO, bool AddToWorld, bool tmplate, uint32 Misc1, uint32 Misc2, uint32 phase)
 {
-    CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(Entry);
+    CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(Entry);
     if (creature_properties == nullptr)
     {
         return 0;
@@ -168,7 +168,7 @@ Creature* MapScriptInterface::SpawnCreature(CreatureSpawn* sp, bool AddToWorld)
     if (!sp)
         return NULL;
 
-    CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(sp->entry);
+    CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(sp->entry);
     if (creature_properties == nullptr)
     {
         return 0;

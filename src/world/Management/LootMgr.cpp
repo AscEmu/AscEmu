@@ -286,7 +286,7 @@ void LootMgr::LoadLootTables(const char* szTableName, LootStore* LootTable)
             {
                 //Omit items that are not in db to prevent future bugs
                 itemid = itr2->itemid;
-                ItemProperties const* proto = sMySQLStore.GetItemProperties(itemid);
+                ItemProperties const* proto = sMySQLStore.getItemProperties(itemid);
                 if (!proto)
                 {
                     list.items[ind].item.itemproto = NULL;
@@ -431,7 +431,7 @@ void LootMgr::AddLoot(Loot* loot, uint32 itemid, uint32 mincount, uint32 maxcoun
     uint32 i;
     uint32 count;
 
-    ItemProperties const* itemproto = sMySQLStore.GetItemProperties(itemid);
+    ItemProperties const* itemproto = sMySQLStore.getItemProperties(itemid);
     if (itemproto) // this check is needed until loot DB is fixed
     {
         if (mincount == maxcount)
@@ -770,7 +770,7 @@ void LootRoll::Finalize()
     else
         _player->GetSession()->SendPacket(&data);
 
-    ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
+    ItemProperties const* it = sMySQLStore.getItemProperties(itemid);
     int8 error;
     if ((error = _player->GetItemInterface()->CanReceiveItem(it, 1)) != 0)
     {

@@ -19,7 +19,7 @@ bool ChatHandler::HandlePetCreateCommand(const char* args, WorldSession* m_sessi
         return false;
 
     uint32 entry = atol(args);
-    CreatureProperties const* creature_proto = sMySQLStore.GetCreatureProperties(entry);
+    CreatureProperties const* creature_proto = sMySQLStore.getCreatureProperties(entry);
     if (creature_proto == nullptr)
     {
         RedSystemMessage(m_session, "Creature Entry: %u is not a valid endtry!", entry);

@@ -2882,7 +2882,7 @@ bool Unit::IsCasting()
 
 bool Unit::IsInInstance()
 {
-    MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(this->GetMapId());
+    MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(this->GetMapId());
     if (pMapinfo)
         return (pMapinfo->type != INSTANCE_NULL);
 
@@ -4360,7 +4360,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         else
         {
             uint32 entry = weapon->GetEntry();
-            ItemProperties const* pProto = sMySQLStore.GetItemProperties(entry);
+            ItemProperties const* pProto = sMySQLStore.getItemProperties(entry);
             if (pProto != nullptr)
             {
                 s = pProto->Delay / 1000.0f;
@@ -5496,7 +5496,7 @@ void Unit::Emote(EmoteType emote)
 void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, const char* msg)
 {
     size_t UnitNameLength = 0, MessageLength = 0;
-    CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(entry);
+    CreatureProperties const* ci = sMySQLStore.getCreatureProperties(entry);
     if (ci == nullptr)
         return;
 
@@ -7606,7 +7606,7 @@ void Unit::EventUpdateFlag()
 
 void Unit::EventModelChange()
 {
-    DisplayBounding const* entry = sMySQLStore.GetDisplayBounding(GetUInt32Value(UNIT_FIELD_DISPLAYID));
+    DisplayBounding const* entry = sMySQLStore.getDisplayBounding(GetUInt32Value(UNIT_FIELD_DISPLAYID));
 
     ///\todo if has mount, grab mount model and add the z value of attachment 0
     if (entry)
@@ -8019,7 +8019,7 @@ bool Unit::isLootable()
 {
     if (IsTagged() && !IsPet() && !(IsPlayer() && !IsInBg()) && (GetCreatedByGUID() == 0) && !IsVehicle())
     {
-        auto creature_prop = sMySQLStore.GetCreatureProperties(GetEntry());
+        auto creature_prop = sMySQLStore.getCreatureProperties(GetEntry());
         if (IsCreature() && !lootmgr.HasLootForCreature(GetEntry()) && creature_prop != nullptr && (creature_prop->money == 0))  // Since it is inworld we can safely assume there is a proto cached with this Id!
             return false;
 
@@ -8660,7 +8660,7 @@ void Unit::setLevel(uint32 level)
 {
     SetUInt32Value(UNIT_FIELD_LEVEL, level);
     if (IsPlayer())
-        static_cast< Player* >(this)->SetNextLevelXp(sMySQLStore.GetPlayerXPForLevel(level));
+        static_cast< Player* >(this)->SetNextLevelXp(sMySQLStore.getPlayerXPForLevel(level));
 }
 
 void Unit::UpdateAuraForGroup(uint8 slot)

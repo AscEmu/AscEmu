@@ -728,7 +728,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
                     _player->KillPlayer();
                 }
 
-                MapInfo const* pMapinfo = sMySQLStore.GetWorldMapInfo(_player->GetMapId());
+                MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(_player->GetMapId());
                 if (pMapinfo != nullptr)
                 {
                     if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)

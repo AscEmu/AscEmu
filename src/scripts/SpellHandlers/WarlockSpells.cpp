@@ -500,7 +500,7 @@ bool MasterDemonologist5(uint32 i, Spell* s)
 
 bool SummonSuccubusQuest(uint32 i, Spell* s)
 {
-    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(5677);
+    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(5677);
     if (cp == nullptr)
         return false;
 
@@ -518,7 +518,7 @@ bool SummonVoidWalkerQuest(uint32 i, Spell* s)
 {
     Player* p_caster = s->p_caster;
 
-    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(5676);
+    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(5676);
     if (cp == nullptr)
         return false;
 
@@ -536,7 +536,7 @@ bool SummonFelHunterQuest(uint32 i, Spell* s)
 {
     Player* p_caster = s->p_caster;
 
-    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(6268);
+    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(6268);
     if (cp == nullptr)
         return false;
 

@@ -734,7 +734,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recv_data)
     uint32 itemid;
     recv_data >> itemid;
 
-    ItemProperties const* itemProto = sMySQLStore.GetItemProperties(itemid);
+    ItemProperties const* itemProto = sMySQLStore.getItemProperties(itemid);
     if (!itemProto)
     {
         LOG_ERROR("WORLD: Unknown item id 0x%.8X", itemid);
@@ -825,7 +825,7 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recv_data)
     data << itemProto->RandomPropId;
     data << itemProto->RandomSuffixId;
     data << itemProto->Block;
-    data << sMySQLStore.GetItemSetLinkedBonus(itemProto->ItemSet);
+    data << sMySQLStore.getItemSetLinkedBonus(itemProto->ItemSet);
     data << itemProto->MaxDurability;
     data << itemProto->ZoneNameID;
     data << itemProto->MapID;
@@ -1097,7 +1097,7 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recv_data)   // drag &
         return;
     }
 
-    ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
+    ItemProperties const* it = sMySQLStore.getItemProperties(itemid);
     if (it == nullptr)
         return;
 
@@ -1297,7 +1297,7 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)   // right-click 
         return;
     }
 
-    ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
+    ItemProperties const* it = sMySQLStore.getItemProperties(itemid);
     if (!it)
     {
         _player->GetItemInterface()->BuildInventoryChangeError(0, 0, INV_ERR_DONT_OWN_THAT_ITEM);
@@ -1424,7 +1424,7 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket& recv_data)
     if (unit == NULL)
         return;
 
-    VendorRestrictionEntry const* vendor = sMySQLStore.GetVendorRestriction(unit->GetCreatureProperties()->Id);
+    VendorRestrictionEntry const* vendor = sMySQLStore.getVendorRestriction(unit->GetCreatureProperties()->Id);
 
     //this is a blizzlike check
 #if VERSION_STRING != Cata
@@ -1488,7 +1488,7 @@ void WorldSession::SendInventoryList(Creature* unit)
     {
         if (itr->itemid && (itr->max_amount == 0 || (itr->max_amount > 0 && itr->available_amount > 0)))
         {
-            if ((curItem = sMySQLStore.GetItemProperties(itr->itemid)) != 0)
+            if ((curItem = sMySQLStore.getItemProperties(itr->itemid)) != 0)
             {
                 if (!_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) && !worldConfig.player.showAllVendorItems) // looking up everything for active gms
                 {
@@ -2035,7 +2035,7 @@ void WorldSession::HandleInsertGemOpcode(WorldPacket& recvPacket)
         if (EI)
         {
             FilledSlots++;
-            ItemProperties const* ip = sMySQLStore.GetItemProperties(EI->Enchantment->GemEntry);
+            ItemProperties const* ip = sMySQLStore.getItemProperties(EI->Enchantment->GemEntry);
             if (ip == nullptr)
                 gem_properties = nullptr;
             else

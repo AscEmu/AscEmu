@@ -59,8 +59,8 @@ class CaptainGarranVimes_Gossip : public Arcemu::Gossip::Script
         void OnHello(Object* pObject, Player* plr)
         {
             //Send quests and gossip menu.
-            uint32 Text = sMySQLStore.GetGossipTextIdForNpc(pObject->GetEntry());
-            if (sMySQLStore.GetNpcText(Text) == nullptr)
+            uint32 Text = sMySQLStore.getGossipTextIdForNpc(pObject->GetEntry());
+            if (sMySQLStore.getNpcText(Text) == nullptr)
                 Text = DefaultGossipTextId;
 
             Arcemu::Gossip::Menu menu(pObject->GetGUID(), Text, plr->GetSession()->language);

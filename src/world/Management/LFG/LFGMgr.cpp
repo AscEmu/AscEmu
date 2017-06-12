@@ -128,13 +128,13 @@ void LfgMgr::LoadRewards()
             maxLevel = 80;
         }
 
-        if (firstQuestId && !sMySQLStore.GetQuestProperties(firstQuestId))
+        if (firstQuestId && !sMySQLStore.getQuestProperties(firstQuestId))
         {
             LOG_DEBUG("First quest %u specified for dungeon %u in table `lfg_dungeon_rewards` does not exist!", firstQuestId, dungeonId);
             firstQuestId = 0;
         }
 
-        if (otherQuestId && !sMySQLStore.GetQuestProperties(otherQuestId))
+        if (otherQuestId && !sMySQLStore.getQuestProperties(otherQuestId))
         {
             LOG_DEBUG("Other quest %u specified for dungeon %u in table `lfg_dungeon_rewards` does not exist!", otherQuestId, dungeonId);
             otherQuestId = 0;
@@ -1882,7 +1882,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         return;
 
     uint8 index = 0;
-    QuestProperties const* qReward = sMySQLStore.GetQuestProperties(reward->reward[index].questId);
+    QuestProperties const* qReward = sMySQLStore.getQuestProperties(reward->reward[index].questId);
     if (!qReward)
         return;
 
@@ -1916,7 +1916,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         {
             if (qReward->reward_item[i])
             {
-                ItemProperties const* proto = sMySQLStore.GetItemProperties(qReward->reward_item[i]);
+                ItemProperties const* proto = sMySQLStore.getItemProperties(qReward->reward_item[i]);
                 if (!proto)
                 {
                     LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);
@@ -1979,7 +1979,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
     else
     {
         index = 1;
-        qReward = sMySQLStore.GetQuestProperties(reward->reward[index].questId);
+        qReward = sMySQLStore.getQuestProperties(reward->reward[index].questId);
         if (!qReward)
             return;
 
@@ -2010,7 +2010,7 @@ void LfgMgr::RewardDungeonDoneFor(const uint32 dungeonId, Player* player)
         {
             if (qReward->reward_item[i])
             {
-                ItemProperties const* proto = sMySQLStore.GetItemProperties(qReward->reward_item[i]);
+                ItemProperties const* proto = sMySQLStore.getItemProperties(qReward->reward_item[i]);
                 if (!proto)
                 {
                     LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qReward->reward_item[i], qReward->id);

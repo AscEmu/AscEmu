@@ -54,7 +54,7 @@ bool FillTransporterPathVector(uint32 PathID, TransportPath & Path)
 
 Transporter* ObjectMgr::LoadTransportInInstance(MapMgr *instance, uint32 goEntry, uint32 period)
 {
-    auto gameobject_info = sMySQLStore.GetGameObjectProperties(goEntry);
+    auto gameobject_info = sMySQLStore.getGameObjectProperties(goEntry);
     if (gameobject_info == nullptr)
     {
         LOG_ERROR("Transport ID:%u, will not be loaded, gameobject_properties missing", goEntry);
@@ -145,7 +145,7 @@ void ObjectMgr::LoadTransports()
             std::string name = fields[1].GetString();
             uint32 period = fields[2].GetUInt32();
 
-            auto gameobject_info = sMySQLStore.GetGameObjectProperties(entry);
+            auto gameobject_info = sMySQLStore.getGameObjectProperties(entry);
             if (gameobject_info == nullptr)
             {
                 LOG_ERROR("Transport ID:%u, Name: %s, will not be loaded, gameobject_properties missing", entry, name.c_str());
@@ -297,7 +297,7 @@ void Transporter::OnPushToWorld()
 
 bool Transporter::Create(uint32 entry, int32 Time)
 {
-    auto gameobject_info = sMySQLStore.GetGameObjectProperties(entry);
+    auto gameobject_info = sMySQLStore.getGameObjectProperties(entry);
     if (gameobject_info == nullptr)
     {
         LOG_ERROR("Failed to create Transporter with go entry %u. Invalid gameobject!", entry);
@@ -746,7 +746,7 @@ uint32 Transporter::AddNPCPassenger(uint32 tguid, uint32 entry, float x, float y
 {
     MapMgr* map = GetMapMgr();
 
-    CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(entry);
+    CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(entry);
     if (creature_properties == nullptr || map == nullptr)
         return 0;
 
@@ -805,7 +805,7 @@ Creature* Transporter::AddNPCPassengerInInstance(uint32 entry, float x, float y,
 {
     MapMgr* map = GetMapMgr();
 
-    CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(entry);
+    CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(entry);
     if (creature_properties == nullptr || map == nullptr)
         return nullptr;
 

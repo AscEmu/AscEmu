@@ -355,7 +355,7 @@ void ScriptMgr::register_go_gossip_script(uint32 entry, GossipScript* gs)
 
 void ScriptMgr::register_quest_script(uint32 entry, QuestScript* qs)
 {
-    QuestProperties const* q = sMySQLStore.GetQuestProperties(entry);
+    QuestProperties const* q = sMySQLStore.getQuestProperties(entry);
     if (q != nullptr)
     {
         if (q->pQuestScript != NULL)
@@ -669,7 +669,7 @@ bool ScriptMgr::has_hook(ServerHookEvents evt, void* ptr) const
 
 bool ScriptMgr::has_quest_script(uint32 entry) const
 {
-    QuestProperties const* q = sMySQLStore.GetQuestProperties(entry);
+    QuestProperties const* q = sMySQLStore.getQuestProperties(entry);
     return (q == NULL || q->pQuestScript != NULL);
 }
 

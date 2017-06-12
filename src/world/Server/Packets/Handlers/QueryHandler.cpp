@@ -101,7 +101,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
     }
     else
     {
-        ci = sMySQLStore.GetCreatureProperties(entry);
+        ci = sMySQLStore.getCreatureProperties(entry);
         if (ci == NULL)
             return;
 
@@ -179,7 +179,7 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recv_data)
 
     LOG_DETAIL("WORLD: CMSG_GAMEOBJECT_QUERY '%u'", entryID);
 
-    auto gameobject_info = sMySQLStore.GetGameObjectProperties(entryID);
+    auto gameobject_info = sMySQLStore.getGameObjectProperties(entryID);
     if (gameobject_info == nullptr)
         return;
 
@@ -253,7 +253,7 @@ void WorldSession::HandleCorpseQueryOpcode(WorldPacket& recv_data)
     pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
     if (pCorpse)
     {
-        pMapinfo = sMySQLStore.GetWorldMapInfo(pCorpse->GetMapId());
+        pMapinfo = sMySQLStore.getWorldMapInfo(pCorpse->GetMapId());
         if (pMapinfo)
         {
             if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)
@@ -304,7 +304,7 @@ void WorldSession::HandlePageTextQueryOpcode(WorldPacket& recv_data)
 
     while (pageid)
     {
-        ItemPage const* page = sMySQLStore.GetItemPage(pageid);
+        ItemPage const* page = sMySQLStore.getItemPage(pageid);
         if (!page)
             return;
 
@@ -340,7 +340,7 @@ void WorldSession::HandleItemNameQueryOpcode(WorldPacket& recv_data)
 
     std::string Name = ("Unknown Item");
 
-    ItemProperties const* proto = sMySQLStore.GetItemProperties(itemid);
+    ItemProperties const* proto = sMySQLStore.getItemProperties(itemid);
     if (proto != nullptr)
     {
         LocalizedItem* li = (language > 0) ? sLocalizationMgr.GetLocalizedItem(itemid, language) : NULL;

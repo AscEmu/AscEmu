@@ -113,7 +113,7 @@ class SCRIPT_DECL EasyFunctions
             ARCEMU_ASSERT(pThis != NULL);
             ARCEMU_ASSERT(pThis->IsInWorld());
 
-            CreatureProperties const* p = sMySQLStore.GetCreatureProperties(entry);
+            CreatureProperties const* p = sMySQLStore.getCreatureProperties(entry);
             if (p == nullptr)
                 return NULL;
 
@@ -145,7 +145,7 @@ class SCRIPT_DECL EasyFunctions
             if (pThis == NULL)
                 return NULL;
 
-            CreatureProperties const* p = sMySQLStore.GetCreatureProperties(entry);
+            CreatureProperties const* p = sMySQLStore.getCreatureProperties(entry);
             if (p == nullptr)
                 return NULL;
 
@@ -179,7 +179,7 @@ class SCRIPT_DECL EasyFunctions
             if (plr == NULL)
                 return NULL;
 
-            auto gameobject_info = sMySQLStore.GetGameObjectProperties(entry_id);
+            auto gameobject_info = sMySQLStore.getGameObjectProperties(entry_id);
             if (gameobject_info == nullptr)
                 return nullptr;
 
@@ -230,7 +230,7 @@ class SCRIPT_DECL EasyFunctions
             Item* ItemStack = pPlayer->GetItemInterface()->FindItemLessMax(pEntry, pCount, false);
             if (ItemStack == NULL)
             {
-                ItemProperties const* ItemProto = sMySQLStore.GetItemProperties(pEntry);
+                ItemProperties const* ItemProto = sMySQLStore.getItemProperties(pEntry);
                 if (ItemProto == nullptr)
                     return false;
 

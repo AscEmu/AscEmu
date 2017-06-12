@@ -117,7 +117,7 @@ void ItemInterface::m_DestroyForPlayer()        // 100%
 Item* ItemInterface::SafeAddItem(uint32 ItemId, int8 ContainerSlot, int16 slot)
 {
     Item* pItem;
-    ItemProperties const* pProto = sMySQLStore.GetItemProperties(ItemId);
+    ItemProperties const* pProto = sMySQLStore.getItemProperties(ItemId);
     if (!pProto)
         return nullptr;
 
@@ -1922,7 +1922,7 @@ int8 ItemInterface::CanEquipItemInSlot2(int8 DstInvSlot, int8 slot, Item* item, 
             EnchantmentInstance* ei = item->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + count);
             if (ei && ei->Enchantment->GemEntry)       //huh ? Gem without entry ?
             {
-                ItemProperties const* ip = sMySQLStore.GetItemProperties(ei->Enchantment->GemEntry);
+                ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
 
                 if (ip)             //maybe gem got removed from db due to update ?
                 {
@@ -3330,7 +3330,7 @@ void ItemInterface::mLoadItemsFromDatabase(QueryResult* result)
             containerslot = fields[13].GetInt8();
             slot = fields[14].GetInt8();
 
-            ItemProperties const* proto = sMySQLStore.GetItemProperties(fields[2].GetUInt32());
+            ItemProperties const* proto = sMySQLStore.getItemProperties(fields[2].GetUInt32());
             if (proto != nullptr)
             {
                 if (proto->InventoryType == INVTYPE_BAG)
@@ -3697,7 +3697,7 @@ bool ItemInterface::IsEquipped(uint32 itemid)
 
                 if (ei && ei->Enchantment)
                 {
-                    ItemProperties const* ip = sMySQLStore.GetItemProperties(ei->Enchantment->GemEntry);
+                    ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
                     if (ip && ip->ItemId == itemid)
                         return true;
                 }
@@ -3746,7 +3746,7 @@ uint32 ItemInterface::GetEquippedCountByItemLimit(uint32 LimitId)
                 EnchantmentInstance* ei = it->GetEnchantment(SOCK_ENCHANTMENT_SLOT1 + socketcount);
                 if (ei && ei->Enchantment)
                 {
-                    ItemProperties const* ip = sMySQLStore.GetItemProperties(ei->Enchantment->GemEntry);
+                    ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
                     if (ip && ip->ItemLimitCategory == LimitId)
                         count++;
                 }
@@ -3990,7 +3990,7 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
 
     ARCEMU_ASSERT(chr != NULL);
 
-    ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
+    ItemProperties const* it = sMySQLStore.getItemProperties(itemid);
     if (it == nullptr)
         return false;
 

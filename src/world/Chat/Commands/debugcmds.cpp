@@ -822,7 +822,7 @@ bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_s
         return false;
     }
 
-    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(npcid);
+    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(npcid);
     if (cp == nullptr)
     {
         return false;

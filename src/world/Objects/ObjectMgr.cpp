@@ -711,7 +711,7 @@ void ObjectMgr::LoadInstanceBossInfos()
         InstanceBossInfo* bossInfo = new InstanceBossInfo();
         bossInfo->mapid = (uint32)result->Fetch()[0].GetUInt32();
 
-        MapInfo const* mapInfo = sMySQLStore.GetWorldMapInfo(bossInfo->mapid);
+        MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(bossInfo->mapid);
         if (mapInfo == NULL || mapInfo->type == INSTANCE_NULL)
         {
             LogDebugFlag(LF_DB_TABLES, "Not loading boss information for map %u! (continent or unknown map)", bossInfo->mapid);
@@ -878,7 +878,7 @@ void ObjectMgr::LoadAchievementRewards()
         //check mail data before item for report including wrong item case
         if (reward.sender)
         {
-            if (!sMySQLStore.GetCreatureProperties(reward.sender))
+            if (!sMySQLStore.getCreatureProperties(reward.sender))
             {
                 LogDebugFlag(LF_DB_TABLES, "ObjectMgr : achievement_reward %u has invalid creature entry %u as sender, mail reward skipped.", entry, reward.sender);
                 reward.sender = 0;
@@ -1448,7 +1448,7 @@ void ObjectMgr::LoadSpellEffectsOverride()
 
 Item* ObjectMgr::CreateItem(uint32 entry, Player* owner)
 {
-    ItemProperties const* proto = sMySQLStore.GetItemProperties(entry);
+    ItemProperties const* proto = sMySQLStore.getItemProperties(entry);
     if (proto ==nullptr)
         return nullptr;
 
@@ -1485,7 +1485,7 @@ Item* ObjectMgr::LoadItem(uint32 lowguid)
 
     if (result)
     {
-        ItemProperties const* pProto = sMySQLStore.GetItemProperties(result->Fetch()[2].GetUInt32());
+        ItemProperties const* pProto = sMySQLStore.getItemProperties(result->Fetch()[2].GetUInt32());
         if (!pProto)
             return nullptr;
 
@@ -2046,7 +2046,7 @@ void ObjectMgr::GenerateLevelUpInfo()
         // Search for a playercreateinfo.
         for (uint8 Race = RACE_HUMAN; Race <= NUM_RACES - 1; ++Race)
         {
-            PlayerCreateInfo const* PCI = sMySQLStore.GetPlayerCreateInfo(static_cast<uint8>(Race), static_cast<uint8>(Class));
+            PlayerCreateInfo const* PCI = sMySQLStore.getPlayerCreateInfo(static_cast<uint8>(Race), static_cast<uint8>(Class));
 
             if (PCI == nullptr)
                 continue;   // Class not valid for this race.
@@ -3824,7 +3824,7 @@ void ObjectMgr::LoadCreatureAIAgents()
             {
                 Field* fields = result->Fetch();
                 uint32 entry = fields[0].GetUInt32();
-                CreatureProperties const* cn = sMySQLStore.GetCreatureProperties(entry);
+                CreatureProperties const* cn = sMySQLStore.getCreatureProperties(entry);
                 SpellInfo* spe = sSpellCustomizations.GetSpellInfo(fields[6].GetUInt32());
 
                 if (spe == nullptr)

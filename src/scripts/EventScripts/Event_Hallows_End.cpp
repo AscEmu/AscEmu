@@ -221,7 +221,7 @@ class WaterBarrel : public GameObjectAIScript
         void OnActivate(Player* pPlayer)
         {
             SlotResult slotresult;
-            ItemProperties const* proto = sMySQLStore.GetItemProperties(32971);
+            ItemProperties const* proto = sMySQLStore.getItemProperties(32971);
             if (!proto)
                 return;
 

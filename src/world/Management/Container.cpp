@@ -61,7 +61,7 @@ Container::~Container()
 void Container::LoadFromDB(Field* fields)
 {
     uint32 itemid = fields[2].GetUInt32();
-    m_itemProperties = sMySQLStore.GetItemProperties(itemid);
+    m_itemProperties = sMySQLStore.getItemProperties(itemid);
 
     ARCEMU_ASSERT(m_itemProperties != nullptr);
     SetEntry(itemid);
@@ -86,7 +86,7 @@ void Container::LoadFromDB(Field* fields)
 
 void Container::Create(uint32 itemid, Player* owner)
 {
-    m_itemProperties = sMySQLStore.GetItemProperties(itemid);
+    m_itemProperties = sMySQLStore.getItemProperties(itemid);
     ARCEMU_ASSERT(m_itemProperties != nullptr);
 
     SetEntry(itemid);

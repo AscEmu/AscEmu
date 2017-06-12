@@ -101,7 +101,7 @@ uint32 QuestMgr::PlayerMeetsReqs(Player* plr, QuestProperties const* qst, bool s
         std::set<uint32>::iterator iter = qst->quest_list.begin();
         for (; iter != qst->quest_list.end(); ++iter)
         {
-            QuestProperties const* questcheck = sMySQLStore.GetQuestProperties((*iter));
+            QuestProperties const* questcheck = sMySQLStore.getQuestProperties((*iter));
             if (questcheck)
             {
                 if (plr->HasFinishedQuest((*iter)))
@@ -242,7 +242,7 @@ uint32 QuestMgr::CalcStatus(Object* quest_giver, Player* plr)
 
     if (quest_giver->IsItem())
     {
-        QuestProperties const* pQuest = sMySQLStore.GetQuestProperties(static_cast< Item* >(quest_giver)->GetItemProperties()->QuestId);
+        QuestProperties const* pQuest = sMySQLStore.getQuestProperties(static_cast< Item* >(quest_giver)->GetItemProperties()->QuestId);
         if (pQuest)
         {
             QuestRelation qr;
@@ -367,7 +367,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
             {
                 *data << qst->reward_choiceitem[i];
                 *data << qst->reward_choiceitemcount[i];
-                it = sMySQLStore.GetItemProperties(qst->reward_choiceitem[i]);
+                it = sMySQLStore.getItemProperties(qst->reward_choiceitem[i]);
                 *data << (it ? it->DisplayInfoID : uint32(0));
             }
         }
@@ -382,7 +382,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
             {
                 *data << qst->reward_item[i];
                 *data << qst->reward_itemcount[i];
-                it = sMySQLStore.GetItemProperties(qst->reward_item[i]);
+                it = sMySQLStore.getItemProperties(qst->reward_item[i]);
                 *data << (it ? it->DisplayInfoID : uint32(0));
             }
         }
@@ -452,7 +452,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 
         *data << qst->reward_choiceitem[i];
         *data << qst->reward_choiceitemcount[i];
-        ip = sMySQLStore.GetItemProperties(qst->reward_choiceitem[i]);
+        ip = sMySQLStore.getItemProperties(qst->reward_choiceitem[i]);
         *data << (ip ? ip->DisplayInfoID : uint32(0));
 
     }
@@ -465,7 +465,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 
         *data << qst->reward_item[i];
         *data << qst->reward_itemcount[i];
-        ip = sMySQLStore.GetItemProperties(qst->reward_item[i]);
+        ip = sMySQLStore.getItemProperties(qst->reward_item[i]);
         *data << (ip ? ip->DisplayInfoID : uint32(0));
     }
 
@@ -537,7 +537,7 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
         {
             *data << qst->required_item[i];
             *data << qst->required_itemcount[i];
-            it = sMySQLStore.GetItemProperties(qst->required_item[i]);
+            it = sMySQLStore.getItemProperties(qst->required_item[i]);
             *data << (it ? it->DisplayInfoID : uint32(0));
         }
         else
@@ -799,7 +799,7 @@ void QuestMgr::OnPlayerKill(Player* plr, Creature* victim, bool IsGroupKill)
 
         if (extracredit != 0)
         {
-            if (sMySQLStore.GetCreatureProperties(extracredit))
+            if (sMySQLStore.getCreatureProperties(extracredit))
                 _OnPlayerKill(plr, extracredit, IsGroupKill);
         }
     }
@@ -1135,7 +1135,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         {
             if (qst->reward_item[i])
             {
-                ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_item[i]);
+                ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_item[i]);
                 if (!proto)
                 {
                     LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
@@ -1173,7 +1173,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         // Choice Rewards
         if (qst->reward_choiceitem[reward_slot])
         {
-            ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_choiceitem[reward_slot]);
+            ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_choiceitem[reward_slot]);
             if (!proto)
             {
                 LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
@@ -1248,7 +1248,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         {
             if (qst->reward_item[i])
             {
-                ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_item[i]);
+                ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_item[i]);
                 if (!proto)
                 {
                     LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
@@ -1286,7 +1286,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         // Choice Rewards
         if (qst->reward_choiceitem[reward_slot])
         {
-            ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_choiceitem[reward_slot]);
+            ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_choiceitem[reward_slot]);
             if (!proto)
             {
                 LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
@@ -1704,10 +1704,10 @@ uint32 QuestMgr::GetGameObjectLootQuest(uint32 GO_Entry)
 void QuestMgr::SetGameObjectLootQuest(uint32 GO_Entry, uint32 Item_Entry)
 {
     uint32 QuestID = 0;
-    MySQLDataStore::QuestPropertiesContainer const* its = sMySQLStore.GetQuestPropertiesStore();
+    MySQLDataStore::QuestPropertiesContainer const* its = sMySQLStore.getQuestPropertiesStore();
     for (MySQLDataStore::QuestPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        QuestProperties const* qst = sMySQLStore.GetQuestProperties(itr->second.id);
+        QuestProperties const* qst = sMySQLStore.getQuestProperties(itr->second.id);
         if (qst == nullptr)
             continue;
 
@@ -1922,7 +1922,7 @@ bool QuestMgr::CanStoreReward(Player* plyr, QuestProperties const* qst, uint32 r
         if (qst->reward_item[i])
         {
             slotsrequired++;
-            ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_item[i]);
+            ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_item[i]);
             if (!proto)
                 LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
             else if (plyr->GetItemInterface()->CanReceiveItem(proto, qst->reward_itemcount[i]))
@@ -1934,7 +1934,7 @@ bool QuestMgr::CanStoreReward(Player* plyr, QuestProperties const* qst, uint32 r
     if (qst->reward_choiceitem[reward_slot])
     {
         slotsrequired++;
-        ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_choiceitem[reward_slot]);
+        ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_choiceitem[reward_slot]);
         if (!proto)
             LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
         else if (plyr->GetItemInterface()->CanReceiveItem(proto, qst->reward_choiceitemcount[reward_slot]))
@@ -1950,10 +1950,10 @@ bool QuestMgr::CanStoreReward(Player* plyr, QuestProperties const* qst, uint32 r
 
 void QuestMgr::LoadExtraQuestStuff()
 {
-    MySQLDataStore::QuestPropertiesContainer const* its = sMySQLStore.GetQuestPropertiesStore();
+    MySQLDataStore::QuestPropertiesContainer const* its = sMySQLStore.getQuestPropertiesStore();
     for (MySQLDataStore::QuestPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        QuestProperties const* qst = sMySQLStore.GetQuestProperties(itr->second.id);
+        QuestProperties const* qst = sMySQLStore.getQuestProperties(itr->second.id);
         if (qst == nullptr)
             continue;
 
@@ -2003,7 +2003,7 @@ void QuestMgr::LoadExtraQuestStuff()
             {
                 if (qst->required_mob_or_go[i] < 0)
                 {
-                    auto gameobject_info = sMySQLStore.GetGameObjectProperties(qst->required_mob_or_go[i] * -1);
+                    auto gameobject_info = sMySQLStore.getGameObjectProperties(qst->required_mob_or_go[i] * -1);
                     if (gameobject_info)
                     {
                         const_cast<QuestProperties*>(qst)->required_mobtype[i] = QUEST_MOB_TYPE_GAMEOBJECT;
@@ -2017,7 +2017,7 @@ void QuestMgr::LoadExtraQuestStuff()
                 }
                 else
                 {
-                    CreatureProperties const* c_info = sMySQLStore.GetCreatureProperties(qst->required_mob_or_go[i]);
+                    CreatureProperties const* c_info = sMySQLStore.getCreatureProperties(qst->required_mob_or_go[i]);
                     if (c_info)
                         const_cast<QuestProperties*>(qst)->required_mobtype[i] = QUEST_MOB_TYPE_CREATURE;
                     else
@@ -2071,7 +2071,7 @@ void QuestMgr::LoadExtraQuestStuff()
             creature = data[0].GetUInt32();
             quest = data[1].GetUInt32();
 
-            auto qst = sMySQLStore.GetQuestProperties(quest);
+            auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
                 LOG_ERROR("Tried to add starter to npc %d for non-existent quest %d.", creature, quest);
@@ -2096,7 +2096,7 @@ void QuestMgr::LoadExtraQuestStuff()
             creature = data[0].GetUInt32();
             quest = data[1].GetUInt32();
 
-            auto qst = sMySQLStore.GetQuestProperties(quest);
+            auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
                 LOG_ERROR("Tried to add finisher to npc %d for non-existent quest %d.", creature, quest);
@@ -2121,7 +2121,7 @@ void QuestMgr::LoadExtraQuestStuff()
             creature = data[0].GetUInt32();
             quest = data[1].GetUInt32();
 
-            auto qst = sMySQLStore.GetQuestProperties(quest);
+            auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
                 LOG_ERROR("Tried to add starter to go %d for non-existent quest %d.", creature, quest);
@@ -2146,7 +2146,7 @@ void QuestMgr::LoadExtraQuestStuff()
             creature = data[0].GetUInt32();
             quest = data[1].GetUInt32();
 
-            auto qst = sMySQLStore.GetQuestProperties(quest);
+            auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
                 LOG_ERROR("Tried to add finisher to go %d for non-existent quest %d.", creature, quest);
@@ -2177,7 +2177,7 @@ void QuestMgr::LoadExtraQuestStuff()
             quest = data[1].GetUInt32();
             item_count = data[2].GetUInt8();
 
-            auto qst = sMySQLStore.GetQuestProperties(quest);
+            auto qst = sMySQLStore.getQuestProperties(quest);
             if (qst == nullptr)
             {
                 LOG_ERROR("Tried to add association to item %d for non-existent quest %d.", item, quest);
@@ -2391,7 +2391,7 @@ void QuestMgr::OnPlayerEmote(Player* plr, uint32 emoteid, uint64 & victimguid)
 
 void QuestMgr::BuildQuestPOIResponse(WorldPacket& data, uint32 questid)
 {
-    QuestProperties const* q = sMySQLStore.GetQuestProperties(questid);
+    QuestProperties const* q = sMySQLStore.getQuestProperties(questid);
     if (q != nullptr)
     {
         QuestPOIVector const* POI = NULL;

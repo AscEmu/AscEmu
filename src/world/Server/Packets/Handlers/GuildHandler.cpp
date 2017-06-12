@@ -680,7 +680,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
         if (!_player->HasGold(costs[arena_type]))
             return;            // error message needed here
 
-        ItemProperties const* ip = sMySQLStore.GetItemProperties(item_ids[arena_type]);
+        ItemProperties const* ip = sMySQLStore.getItemProperties(item_ids[arena_type]);
         ARCEMU_ASSERT(ip != NULL);
         SlotResult res = _player->GetItemInterface()->FindFreeInventorySlot(ip);
         if (res.Result == 0)
@@ -754,7 +754,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             return;
         }
 
-        ItemProperties const* ip = sMySQLStore.GetItemProperties(ITEM_ENTRY_GUILD_CHARTER);
+        ItemProperties const* ip = sMySQLStore.getItemProperties(ITEM_ENTRY_GUILD_CHARTER);
         if (ip == nullptr)
             return;
 
@@ -765,7 +765,7 @@ void WorldSession::HandleCharterBuy(WorldPacket& recv_data)
             return;
         }
 
-        error = _player->GetItemInterface()->CanReceiveItem(sMySQLStore.GetItemProperties(ITEM_ENTRY_GUILD_CHARTER), 1);
+        error = _player->GetItemInterface()->CanReceiveItem(sMySQLStore.getItemProperties(ITEM_ENTRY_GUILD_CHARTER), 1);
         if (error)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, error);

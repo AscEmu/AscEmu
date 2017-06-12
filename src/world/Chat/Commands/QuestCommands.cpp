@@ -100,7 +100,7 @@ bool ChatHandler::HandleQuestStatusCommand(const char* args, WorldSession* m_ses
     }
     std::string recout = "|cff00ff00";
 
-    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
     if (qst)
     {
         if (plr->HasFinishedQuest(quest_id))
@@ -145,7 +145,7 @@ bool ChatHandler::HandleQuestStartCommand(const char* args, WorldSession* m_sess
     }
     std::string recout = "|cff00ff00";
 
-    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
     if (qst)
     {
         if (plr->HasFinishedQuest(quest_id))
@@ -272,7 +272,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
     }
     std::string recout = "|cff00ff00";
 
-    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
     if (qst)
     {
         if (plr->HasFinishedQuest(quest_id))
@@ -369,7 +369,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             {
                 if (qst->reward_item[i])
                 {
-                    ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_item[i]);
+                    ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_item[i]);
                     if (!proto)
                     {
                         LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_item[i], qst->id);
@@ -408,7 +408,7 @@ bool ChatHandler::HandleQuestFinishCommand(const char* args, WorldSession* m_ses
             // Choice Rewards -- Defaulting to choice 0 for ".quest complete" command
             if (qst->reward_choiceitem[reward_slot])
             {
-                ItemProperties const* proto = sMySQLStore.GetItemProperties(qst->reward_choiceitem[reward_slot]);
+                ItemProperties const* proto = sMySQLStore.getItemProperties(qst->reward_choiceitem[reward_slot]);
                 if (!proto)
                 {
                     LOG_ERROR("Invalid item prototype in quest reward! ID %d, quest %d", qst->reward_choiceitem[reward_slot], qst->id);
@@ -540,7 +540,7 @@ bool ChatHandler::HandleQuestItemCommand(const char* args, WorldSession* m_sessi
             uint32 id = fields[0].GetUInt32();
             std::string itemid = MyConvertIntToString(id);
             std::string itemcnt = MyConvertIntToString(fields[1].GetUInt32());
-            auto tmpItem = sMySQLStore.GetItemProperties(id);
+            auto tmpItem = sMySQLStore.getItemProperties(id);
             if (tmpItem != nullptr)
             {
                 recout = "|cff00ccff";
@@ -590,7 +590,7 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
         delete objectResult1;
 
         std::string creatureName1 = "N/A";
-        CreatureProperties const* creatureResult1 = sMySQLStore.GetCreatureProperties(atol(creatureId1.c_str()));
+        CreatureProperties const* creatureResult1 = sMySQLStore.getCreatureProperties(atol(creatureId1.c_str()));
         if (creatureResult1)
         {
             creatureName1 = creatureResult1->Name;
@@ -645,7 +645,7 @@ bool ChatHandler::HandleQuestGiverCommand(const char* args, WorldSession* m_sess
         delete objectResult2;
 
         std::string itemName2 = "N/A";
-        ItemProperties const* itemResult2 = sMySQLStore.GetItemProperties(atol(itemId2.c_str()));
+        ItemProperties const* itemResult2 = sMySQLStore.getItemProperties(atol(itemId2.c_str()));
         if (itemResult2)
         {
             itemName2 = itemResult2->Name;
@@ -748,7 +748,7 @@ bool ChatHandler::HandleQuestListCommand(const char* args, WorldSession* m_sessi
             fields = creatureResult->Fetch();
             quest_id = fields[0].GetUInt32();
 
-            qst = sMySQLStore.GetQuestProperties(quest_id);
+            qst = sMySQLStore.getQuestProperties(quest_id);
             if (qst == NULL)
                 continue;
 
@@ -818,7 +818,7 @@ bool ChatHandler::HandleQuestAddStartCommand(const char* args, WorldSession* m_s
             return false;
     }
 
-    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
     if (qst == nullptr)
     {
         SystemMessage(m_session, "Invalid quest selected, unable to add quest to the specified NPC.");
@@ -903,7 +903,7 @@ bool ChatHandler::HandleQuestAddFinishCommand(const char* args, WorldSession* m_
             return false;
     }
 
-    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
     if (qst == nullptr)
     {
         SystemMessage(m_session, "Invalid quest selected, unable to add quest to the specified NPC.");
@@ -1001,7 +1001,7 @@ bool ChatHandler::HandleQuestDelStartCommand(const char* args, WorldSession* m_s
             return false;
     }
 
-    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
     if (qst == nullptr)
     {
         SystemMessage(m_session, "Invalid Quest selected.");
@@ -1085,7 +1085,7 @@ bool ChatHandler::HandleQuestDelFinishCommand(const char* args, WorldSession* m_
             return false;
     }
 
-    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
     if (qst == nullptr)
     {
         SystemMessage(m_session, "Invalid Quest selected.");
@@ -1168,7 +1168,7 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
         delete objectResult1;
 
         std::string creatureName1 = "N/A";
-        CreatureProperties const* creatureResult1 = sMySQLStore.GetCreatureProperties(atol(creatureId1.c_str()));
+        CreatureProperties const* creatureResult1 = sMySQLStore.getCreatureProperties(atol(creatureId1.c_str()));
 
         if (creatureResult1)
         {
@@ -1223,7 +1223,7 @@ bool ChatHandler::HandleQuestFinisherCommand(const char* args, WorldSession* m_s
         delete objectResult2;
 
         std::string itemName2 = "N/A";
-        ItemProperties const* itemResult2 = sMySQLStore.GetItemProperties(atol(itemId2.c_str()));
+        ItemProperties const* itemResult2 = sMySQLStore.getItemProperties(atol(itemId2.c_str()));
         if (itemResult2)
         {
             itemName2 = itemResult2->Name;
@@ -1295,7 +1295,7 @@ bool ChatHandler::HandleQuestStarterSpawnCommand(const char* args, WorldSession*
     delete objectResult;
 
     std::string starterName = "N/A";
-    CreatureProperties const* creatureResult = sMySQLStore.GetCreatureProperties(atol(starterId.c_str()));
+    CreatureProperties const* creatureResult = sMySQLStore.getCreatureProperties(atol(starterId.c_str()));
     if (creatureResult)
     {
         starterName = creatureResult->Name;
@@ -1366,7 +1366,7 @@ bool ChatHandler::HandleQuestFinisherSpawnCommand(const char* args, WorldSession
     delete objectResult;
 
     std::string finisherName = "N/A";
-    CreatureProperties const* creatureResult = sMySQLStore.GetCreatureProperties(atol(finisherId.c_str()));
+    CreatureProperties const* creatureResult = sMySQLStore.getCreatureProperties(atol(finisherId.c_str()));
     if (creatureResult)
     {
         finisherName = creatureResult->Name;
@@ -1455,7 +1455,7 @@ bool ChatHandler::HandleQuestRemoveCommand(const char* args, WorldSession* m_ses
             return false;
     }
 
-    QuestProperties const* qst = sMySQLStore.GetQuestProperties(quest_id);
+    QuestProperties const* qst = sMySQLStore.getQuestProperties(quest_id);
     if (qst)
     {
         recout = RemoveQuestFromPlayer(plr, qst);
@@ -1483,13 +1483,13 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
             return false;
     }
 
-    QuestProperties const* q = sMySQLStore.GetQuestProperties(qu_id);
+    QuestProperties const* q = sMySQLStore.getQuestProperties(qu_id);
     if (q)
     {
         for (uint32 r = 0; r < q->count_reward_item; ++r)
         {
             uint32 itemid = q->reward_item[r];
-            ItemProperties const* itemProto = sMySQLStore.GetItemProperties(itemid);
+            ItemProperties const* itemProto = sMySQLStore.getItemProperties(itemid);
             if (!itemProto)
             {
                 recout << "Unknown item id %lu" << itemid;
@@ -1507,7 +1507,7 @@ bool ChatHandler::HandleQuestRewardCommand(const char* args, WorldSession* m_ses
         for (uint32 r = 0; r < q->count_reward_choiceitem; ++r)
         {
             uint32 itemid = q->reward_choiceitem[r];
-            ItemProperties const* itemProto = sMySQLStore.GetItemProperties(itemid);
+            ItemProperties const* itemProto = sMySQLStore.getItemProperties(itemid);
             if (!itemProto)
             {
                 recout << "Unknown item id %lu" << itemid;

@@ -153,7 +153,7 @@ void Map::LoadSpawns(bool reload)
                     cspawn->form = FormationMgr::getSingleton().GetFormation(cspawn->id);
 
                     uint32 creature_entry = fields[1].GetUInt32();
-                    auto creature_properties = sMySQLStore.GetCreatureProperties(creature_entry);
+                    auto creature_properties = sMySQLStore.getCreatureProperties(creature_entry);
                     if (creature_properties == nullptr)
                     {
                         LOG_ERROR("Creature spawn ID: %u has invalid entry: %u which is not in creature_properties table! Skipped loading.", cspawn->id, creature_entry);
@@ -255,7 +255,7 @@ void Map::LoadSpawns(bool reload)
                     go_spawn->id = fields[0].GetUInt32();
 
                     uint32 gameobject_entry = fields[1].GetUInt32();
-                    auto gameobject_info = sMySQLStore.GetGameObjectProperties(gameobject_entry);
+                    auto gameobject_info = sMySQLStore.getGameObjectProperties(gameobject_entry);
                     if (gameobject_info == nullptr)
                     {
                         LOG_ERROR("Gameobject spawn ID: %u has invalid entry: %u which is not in gameobject_properties table! Skipped loading.", go_spawn->id, gameobject_entry);

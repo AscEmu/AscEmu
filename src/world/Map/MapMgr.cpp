@@ -59,7 +59,7 @@ MapMgr::MapMgr(Map* map, uint32 mapId, uint32 instanceid) : CellHandler<MapCell>
     _terrain = new TerrainHolder(mapId);
     _shutdown = false;
     m_instanceID = instanceid;
-    pMapInfo = sMySQLStore.GetWorldMapInfo(mapId);
+    pMapInfo = sMySQLStore.getWorldMapInfo(mapId);
     m_UpdateDistance = pMapInfo->update_distance * pMapInfo->update_distance;
     iInstanceMode = 0;
 
@@ -1685,7 +1685,7 @@ uint64 MapMgr::GenerateCreatureGUID(uint32 entry)
 {
     uint64 newguid = 0;
 
-    CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(entry);
+    CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(entry);
     if ((creature_properties == nullptr) || (creature_properties->vehicleid == 0))
         newguid = static_cast<uint64>(HIGHGUID_TYPE_UNIT) << 32;
     else
@@ -1734,7 +1734,7 @@ Creature* MapMgr::CreateCreature(uint32 entry)
 Creature* MapMgr::CreateAndSpawnCreature(uint32 pEntry, float pX, float pY, float pZ, float pO)
 {
     auto creature = CreateCreature(pEntry);
-    auto cp = sMySQLStore.GetCreatureProperties(pEntry);
+    auto cp = sMySQLStore.getCreatureProperties(pEntry);
     if (cp == nullptr)
         return nullptr;
 
@@ -1785,7 +1785,7 @@ Summon* MapMgr::CreateSummon(uint32 entry, SummonType type)
 // Spawns the object too, without which you can not interact with the object
 GameObject* MapMgr::CreateAndSpawnGameObject(uint32 entryID, float x, float y, float z, float o, float scale)
 {
-    auto gameobject_info = sMySQLStore.GetGameObjectProperties(entryID);
+    auto gameobject_info = sMySQLStore.getGameObjectProperties(entryID);
     if (gameobject_info == nullptr)
     {
         LogDebugFlag(LF_MAP, "Error looking up entry in CreateAndSpawnGameObject");

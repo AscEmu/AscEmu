@@ -1684,7 +1684,7 @@ bool HunterTamingQuest(uint32 i, Aura* a, bool apply)
             return true;
         }
 
-        QuestProperties const* tamequest = sMySQLStore.GetQuestProperties(triggerspell->EffectMiscValue[1]);
+        QuestProperties const* tamequest = sMySQLStore.getQuestProperties(triggerspell->EffectMiscValue[1]);
         if (tamequest == NULL)
         {
             LogError("An Aura with spellid %u is calling HunterTamingQuest() with an invalid tamequest id: %u", a->GetSpellId(), triggerspell->EffectMiscValue[1]);
@@ -1769,7 +1769,7 @@ bool ArcaneDisruption(uint32 i, Aura* pAura, bool apply)
         if (pQuest->GetMobCount(0) == 5)
         {
             //weee, Uther
-            CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(26528);
+            CreatureProperties const* cp = sMySQLStore.getCreatureProperties(26528);
             if (cp != nullptr)
             {
                 Creature* c = plr->GetMapMgr()->CreateCreature(26528);

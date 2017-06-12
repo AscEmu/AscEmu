@@ -146,7 +146,7 @@ void Item::Create(uint32 itemid, Player* owner)
 
     SetStackCount(1);
 
-    m_itemProperties = sMySQLStore.GetItemProperties(itemid);
+    m_itemProperties = sMySQLStore.getItemProperties(itemid);
 
     ARCEMU_ASSERT(m_itemProperties != nullptr);
 
@@ -172,7 +172,7 @@ void Item::LoadFromDB(Field* fields, Player* plr, bool light)
     uint32 random_prop, random_suffix;
     uint32 count;
 
-    m_itemProperties = sMySQLStore.GetItemProperties(itemid);
+    m_itemProperties = sMySQLStore.getItemProperties(itemid);
 
     ARCEMU_ASSERT(m_itemProperties != nullptr);
 
@@ -590,7 +590,7 @@ uint32 GetBuyPriceForItem(ItemProperties const* proto, uint32 count, Player* plr
 
 uint32 GetSellPriceForItem(uint32 itemid, uint32 count)
 {
-    if (ItemProperties const* proto = sMySQLStore.GetItemProperties(itemid))
+    if (ItemProperties const* proto = sMySQLStore.getItemProperties(itemid))
         return GetSellPriceForItem(proto, count);
     else
         return 1;
@@ -598,7 +598,7 @@ uint32 GetSellPriceForItem(uint32 itemid, uint32 count)
 
 uint32 GetBuyPriceForItem(uint32 itemid, uint32 count, Player* plr, Creature* vendor)
 {
-    if (ItemProperties const* proto = sMySQLStore.GetItemProperties(itemid))
+    if (ItemProperties const* proto = sMySQLStore.getItemProperties(itemid))
         return GetBuyPriceForItem(proto, count, plr, vendor);
     else
         return 1;
@@ -1252,7 +1252,7 @@ uint32 Item::CountGemsWithLimitId(uint32 LimitId)
             && ei->Enchantment->GemEntry //huh ? Gem without entry ?
            )
         {
-            ItemProperties const* ip = sMySQLStore.GetItemProperties(ei->Enchantment->GemEntry);
+            ItemProperties const* ip = sMySQLStore.getItemProperties(ei->Enchantment->GemEntry);
             if (ip && ip->ItemLimitCategory == LimitId)
                 result++;
         }

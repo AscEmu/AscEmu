@@ -410,7 +410,7 @@ GameObject* CBattleground::SpawnGameObject(uint32 entry, LocationVector &v, uint
 
 Creature* CBattleground::SpawnCreature(uint32 entry, float x, float y, float z, float o, uint32 faction)
 {
-    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(entry);
+    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(entry);
     if (cp == nullptr)
     {
         LOG_ERROR("tried to push a invalid creature with entry %u!", entry);
@@ -854,7 +854,7 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
     if (horde > 1)
         horde = 1;
 
-    CreatureProperties const* pInfo = sMySQLStore.GetCreatureProperties(13116 + horde);
+    CreatureProperties const* pInfo = sMySQLStore.getCreatureProperties(13116 + horde);
     if (pInfo == nullptr)
     {
         return nullptr;
@@ -905,7 +905,7 @@ Creature* CBattleground::SpawnSpiritGuide(float x, float y, float z, float o, ui
 
     pCreature->DisableAI();
 
-    pCreature->SetCreatureProperties(sMySQLStore.GetCreatureProperties(pInfo->Id));
+    pCreature->SetCreatureProperties(sMySQLStore.getCreatureProperties(pInfo->Id));
 
     pCreature->PushToWorld(m_mapMgr);
     return pCreature;

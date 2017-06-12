@@ -309,8 +309,8 @@ void Creature::generateLoot()
 
     if (GetAIInterface()->GetDifficultyType() != 0)
     {
-        uint32 creature_difficulty_entry = sMySQLStore.GetCreatureDifficulty(GetEntry(), GetAIInterface()->GetDifficultyType());
-        auto properties_difficulty = sMySQLStore.GetCreatureProperties(creature_difficulty_entry);
+        uint32 creature_difficulty_entry = sMySQLStore.getCreatureDifficulty(GetEntry(), GetAIInterface()->GetDifficultyType());
+        auto properties_difficulty = sMySQLStore.getCreatureProperties(creature_difficulty_entry);
         if (properties_difficulty != nullptr)
         {
             if (properties_difficulty->money != creature_properties->money)
@@ -726,7 +726,7 @@ void Creature::AddToWorld()
         _setFaction();
 
     if (creature_properties == nullptr)
-        creature_properties = sMySQLStore.GetCreatureProperties(GetEntry());
+        creature_properties = sMySQLStore.getCreatureProperties(GetEntry());
 
     if (creature_properties == nullptr)
         return;
@@ -744,7 +744,7 @@ void Creature::AddToWorld(MapMgr* pMapMgr)
         _setFaction();
 
     if (creature_properties == nullptr)
-        creature_properties = sMySQLStore.GetCreatureProperties(GetEntry());
+        creature_properties = sMySQLStore.getCreatureProperties(GetEntry());
 
     if (creature_properties == nullptr)
         return;
@@ -1291,7 +1291,7 @@ bool Creature::Teleport(const LocationVector& vec, MapMgr* map)
 bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
 {
     m_spawn = spawn;
-    creature_properties = sMySQLStore.GetCreatureProperties(spawn->entry);
+    creature_properties = sMySQLStore.getCreatureProperties(spawn->entry);
     if (creature_properties == nullptr)
         return false;
 
@@ -1968,7 +1968,7 @@ void Creature::SetGuardWaypoints()
 
 uint32 Creature::GetNpcTextId()
 {
-    return sMySQLStore.GetGossipTextIdForNpc(this->GetEntry());
+    return sMySQLStore.getGossipTextIdForNpc(this->GetEntry());
 }
 
 float Creature::GetBaseParry()
@@ -2500,7 +2500,7 @@ void Creature::SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 
 // 4. Sending localizations if available... puh
 void Creature::SendScriptTextChatMessage(uint32 textid)
 {
-    NpcScriptText const* ct = sMySQLStore.GetNpcScriptText(textid);
+    NpcScriptText const* ct = sMySQLStore.getNpcScriptText(textid);
 
     const char* name = GetCreatureProperties()->Name.c_str();
     size_t CreatureNameLength = strlen((char*)name) + 1;
@@ -2530,7 +2530,7 @@ void Creature::SendScriptTextChatMessage(uint32 textid)
 
 void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
 {
-    NpcScriptText const* ct = sMySQLStore.GetNpcScriptText(textid);
+    NpcScriptText const* ct = sMySQLStore.getNpcScriptText(textid);
     const char* msg = ct->text.c_str();
     if (delay)
     {

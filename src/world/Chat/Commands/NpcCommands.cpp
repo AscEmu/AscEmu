@@ -541,7 +541,7 @@ bool ChatHandler::HandleNpcListLootCommand(const char* args, WorldSession* m_ses
         {
             Field* field = loot_result->Fetch();
 
-            auto item_proto = sMySQLStore.GetItemProperties(field[0].GetUInt32());
+            auto item_proto = sMySQLStore.getItemProperties(field[0].GetUInt32());
             if (item_proto == nullptr || item_proto->Quality < minQuality)
                 continue;
 
@@ -683,7 +683,7 @@ bool ChatHandler::HandleNpcSpawnCommand(const char* args, WorldSession* m_sessio
     if (entry == 0)
         return false;
 
-    auto creature_properties = sMySQLStore.GetCreatureProperties(entry);
+    auto creature_properties = sMySQLStore.getCreatureProperties(entry);
     if (creature_properties == nullptr)
     {
         RedSystemMessage(m_session, "Creature with entry %u is not a valid entry (no properties information in database)", entry);
@@ -841,7 +841,7 @@ bool ChatHandler::HandleNpcVendorAddItemCommand(const char* args, WorldSession* 
         return true;
     }
 
-    ItemProperties const* tmpItem = sMySQLStore.GetItemProperties(item);
+    ItemProperties const* tmpItem = sMySQLStore.getItemProperties(item);
     if (tmpItem)
     {
         WorldDatabase.Execute("INSERT INTO vendors VALUES (%u, %u, %u, 0, 0, %u", selected_creature->GetEntry(), item, amount, costid);
@@ -893,7 +893,7 @@ bool ChatHandler::HandleNpcVendorRemoveItemCommand(const char* args, WorldSessio
         WorldDatabase.Execute("DELETE FROM vendors WHERE entry = %u AND item = %u", creatureId, itemguid);
 
         selected_creature->RemoveVendorItem(itemguid);
-        ItemProperties const* tmpItem = sMySQLStore.GetItemProperties(itemguid);
+        ItemProperties const* tmpItem = sMySQLStore.getItemProperties(itemguid);
         if (tmpItem)
         {
             BlueSystemMessage(m_session, "Item %u (%s) deleted from list.", itemguid, tmpItem->Name.c_str());

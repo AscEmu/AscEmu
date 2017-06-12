@@ -715,7 +715,7 @@ bool ChatHandler::HandleCharAddItemCommand(const char* args, WorldSession* m_ses
     if (player_target == nullptr)
         return true;
 
-    auto item_proto = sMySQLStore.GetItemProperties(itemid);
+    auto item_proto = sMySQLStore.getItemProperties(itemid);
     if (item_proto != nullptr)
     {
         numadded -= player_target->GetItemInterface()->GetItemCount(itemid);
@@ -774,10 +774,10 @@ bool ChatHandler::HandleCharAddItemSetCommand(const char* args, WorldSession* m_
 
     uint32 itemset_items_count = 0;
 
-    MySQLDataStore::ItemPropertiesContainer const* its = sMySQLStore.GetItemPropertiesStore();
+    MySQLDataStore::ItemPropertiesContainer const* its = sMySQLStore.getItemPropertiesStore();
     for (MySQLDataStore::ItemPropertiesContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
     {
-        ItemProperties const* it = sMySQLStore.GetItemProperties(itr->second.ItemId);
+        ItemProperties const* it = sMySQLStore.getItemProperties(itr->second.ItemId);
         if (it == nullptr)
             continue;
 
@@ -1001,7 +1001,7 @@ bool ChatHandler::HandleCharResetSkillsCommand(const char* /*args*/, WorldSessio
 
     selected_player->_RemoveAllSkills();
 
-    PlayerCreateInfo const* player_info = sMySQLStore.GetPlayerCreateInfo(selected_player->getRace(), selected_player->getClass());
+    PlayerCreateInfo const* player_info = sMySQLStore.getPlayerCreateInfo(selected_player->getRace(), selected_player->getClass());
     if (player_info == nullptr)
         return true;
 
@@ -1066,7 +1066,7 @@ bool ChatHandler::HandleCharRemoveItemCommand(const char* args, WorldSession* m_
         ++loop_count;
     }
 
-    ItemProperties const* item_properties = sMySQLStore.GetItemProperties(item_id);
+    ItemProperties const* item_properties = sMySQLStore.getItemProperties(item_id);
     if (item_properties != nullptr)
     {
         if (selected_player != m_session->GetPlayer())
@@ -1991,7 +1991,7 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
         {
             count++;
             ss << " - " << MSG_COLOR_CYAN << (*itr).second << "|r";
-            MapInfo const* mapInfo = sMySQLStore.GetWorldMapInfo((*itr).first);
+            MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo((*itr).first);
             if (mapInfo != NULL)
                 ss << " (" << MSG_COLOR_CYAN << mapInfo->name << "|r)";
             Instance* pInstance = sInstanceMgr.GetInstanceByIds((*itr).first, (*itr).second);

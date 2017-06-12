@@ -2041,7 +2041,7 @@ void Spell::SendSpellStart()
                 }
                 else
                 {
-                    ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
+                    ip = sMySQLStore.getItemProperties(2512);	/*rough arrow*/
                 }
             }
         }
@@ -2049,9 +2049,9 @@ void Spell::SendSpellStart()
         else if (hasAttributeExC(ATTRIBUTESEXC_PLAYER_RANGED_SPELLS))
         {
             if (p_caster != nullptr)
-                ip = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+                ip = sMySQLStore.getItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
             else
-                ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
+                ip = sMySQLStore.getItemProperties(2512);	/*rough arrow*/
         }
 #endif
 
@@ -2178,15 +2178,15 @@ void Spell::SendSpellGo()
                     ip = it->GetItemProperties();
             }
             else
-                ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
+                ip = sMySQLStore.getItemProperties(2512);	/*rough arrow*/
         }
         else
         {
 #if VERSION_STRING != Cata
             if (p_caster != nullptr)
-                ip = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+                ip = sMySQLStore.getItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
             else // HACK FIX
-                ip = sMySQLStore.GetItemProperties(2512);	/*rough arrow*/
+                ip = sMySQLStore.getItemProperties(2512);	/*rough arrow*/
 #endif
         }
         if (ip != nullptr)

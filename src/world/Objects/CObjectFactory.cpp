@@ -25,7 +25,7 @@
 
 GameObject* CObjectFactory::CreateGameObject(uint32 Id, uint32 LowGUID)
 {
-    GameObjectProperties const* gameobject_properties = sMySQLStore.GetGameObjectProperties(Id);
+    GameObjectProperties const* gameobject_properties = sMySQLStore.getGameObjectProperties(Id);
     if (gameobject_properties == nullptr)
         return nullptr;
 

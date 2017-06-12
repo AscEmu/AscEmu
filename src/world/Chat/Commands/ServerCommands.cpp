@@ -263,7 +263,7 @@ bool ChatHandler::HandleServerRestartCommand(const char* args, WorldSession* m_s
 bool ChatHandler::HandleReloadGameobjectsCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadGameObjectPropertiesTable();
+    sMySQLStore.loadGameObjectPropertiesTable();
     GreenSystemMessage(m_session, "WorldDB gameobjects tables reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -272,7 +272,7 @@ bool ChatHandler::HandleReloadGameobjectsCommand(const char* /*args*/, WorldSess
 bool ChatHandler::HandleReloadCreaturesCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadCreaturePropertiesTable();
+    sMySQLStore.loadCreaturePropertiesTable();
     GreenSystemMessage(m_session, "WorldDB creature tables reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -301,7 +301,7 @@ bool ChatHandler::HandleReloadCommandOverridesCommand(const char* /*args*/, Worl
 bool ChatHandler::HandleReloadFishingCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadFishingTable();
+    sMySQLStore.loadFishingTable();
     GreenSystemMessage(m_session, "WorldDB 'fishing' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -310,7 +310,7 @@ bool ChatHandler::HandleReloadFishingCommand(const char* /*args*/, WorldSession*
 bool ChatHandler::HandleReloadGossipMenuOptionCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadGossipMenuOptionTable();
+    sMySQLStore.loadGossipMenuOptionTable();
     GreenSystemMessage(m_session, "WorldDB 'gossip_menu_option' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -319,7 +319,7 @@ bool ChatHandler::HandleReloadGossipMenuOptionCommand(const char* /*args*/, Worl
 bool ChatHandler::HandleReloadGraveyardsCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadGraveyardsTable();
+    sMySQLStore.loadGraveyardsTable();
     GreenSystemMessage(m_session, "WorldDB 'graveyards' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -328,7 +328,7 @@ bool ChatHandler::HandleReloadGraveyardsCommand(const char* /*args*/, WorldSessi
 bool ChatHandler::HandleReloadItemsCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadItemPropertiesTable();
+    sMySQLStore.loadItemPropertiesTable();
     GreenSystemMessage(m_session, "WorldDB table 'items' reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -337,7 +337,7 @@ bool ChatHandler::HandleReloadItemsCommand(const char* /*args*/, WorldSession* m
 bool ChatHandler::HandleReloadItempagesCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadItemPagesTable();
+    sMySQLStore.loadItemPagesTable();
     GreenSystemMessage(m_session, "WorldDB 'itempages' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -346,7 +346,7 @@ bool ChatHandler::HandleReloadItempagesCommand(const char* /*args*/, WorldSessio
 bool ChatHandler::HandleReloadNpcScriptTextCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadNpcScriptTextTable();
+    sMySQLStore.loadNpcScriptTextTable();
     GreenSystemMessage(m_session, "WorldDB 'npc_script_text' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -355,7 +355,7 @@ bool ChatHandler::HandleReloadNpcScriptTextCommand(const char* /*args*/, WorldSe
 bool ChatHandler::HandleReloadNpcTextCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadNpcTextTable();
+    sMySQLStore.loadNpcTextTable();
     GreenSystemMessage(m_session, "WorldDB 'npc_text' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -364,7 +364,7 @@ bool ChatHandler::HandleReloadNpcTextCommand(const char* /*args*/, WorldSession*
 bool ChatHandler::HandleReloadPetLevelAbilitiesCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadPetLevelAbilitiesTable();
+    sMySQLStore.loadPetLevelAbilitiesTable();
     GreenSystemMessage(m_session, "WorldDB 'pet_level_abilities' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -373,7 +373,7 @@ bool ChatHandler::HandleReloadPetLevelAbilitiesCommand(const char* /*args*/, Wor
 bool ChatHandler::HandleReloadPlayerXpForLevelCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadPlayerXpToLevelTable();
+    sMySQLStore.loadPlayerXpToLevelTable();
     GreenSystemMessage(m_session, "WorldDB 'player_xp_for_level' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -382,7 +382,7 @@ bool ChatHandler::HandleReloadPlayerXpForLevelCommand(const char* /*args*/, Worl
 bool ChatHandler::HandleReloadPointsOfInterestCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadPointOfInterestTable();
+    sMySQLStore.loadPointOfInterestTable();
     GreenSystemMessage(m_session, "WorldDB 'points_of_interest' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -391,7 +391,7 @@ bool ChatHandler::HandleReloadPointsOfInterestCommand(const char* /*args*/, Worl
 bool ChatHandler::HandleReloadQuestsCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadQuestPropertiesTable();
+    sMySQLStore.loadQuestPropertiesTable();
     GreenSystemMessage(m_session, "WorldDB 'quest_properties' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -400,7 +400,7 @@ bool ChatHandler::HandleReloadQuestsCommand(const char* /*args*/, WorldSession* 
 bool ChatHandler::HandleReloadTeleportCoordsCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadTeleportCoordsTable();
+    sMySQLStore.loadTeleportCoordsTable();
     GreenSystemMessage(m_session, "WorldDB 'teleport_coords' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -418,7 +418,7 @@ bool ChatHandler::HandleReloadWorldbroadcastCommand(const char* /*args*/, WorldS
 bool ChatHandler::HandleReloadWorldmapInfoCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadWorldMapInfoTable();
+    sMySQLStore.loadWorldMapInfoTable();
     GreenSystemMessage(m_session, "WorldDB 'worldmap_info' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -427,7 +427,7 @@ bool ChatHandler::HandleReloadWorldmapInfoCommand(const char* /*args*/, WorldSes
 bool ChatHandler::HandleReloadWorldstringTablesCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadWorldStringsTable();
+    sMySQLStore.loadWorldStringsTable();
     GreenSystemMessage(m_session, "WorldDB 'worldstring_tables' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }
@@ -436,7 +436,7 @@ bool ChatHandler::HandleReloadWorldstringTablesCommand(const char* /*args*/, Wor
 bool ChatHandler::HandleReloadZoneguardsCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.LoadZoneGuardsTable();
+    sMySQLStore.loadZoneGuardsTable();
     GreenSystemMessage(m_session, "WorldDB 'zoneguards' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

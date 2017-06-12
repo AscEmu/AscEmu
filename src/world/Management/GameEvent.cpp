@@ -19,7 +19,7 @@ void GameEvent::CreateNPCs()
             continue;
 
         Creature* c = mapmgr->CreateCreature(npc.entry);
-        CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(npc.entry);
+        CreatureProperties const* cp = sMySQLStore.getCreatureProperties(npc.entry);
         if (cp == nullptr)
         {
             LOG_ERROR("try to create invalid creature %u!", npc.entry);

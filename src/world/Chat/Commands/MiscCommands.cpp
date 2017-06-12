@@ -191,7 +191,7 @@ bool ChatHandler::HandleGoStartLocationCommand(const char* args, WorldSession* m
     PlayerCreateInfo const* player_info = nullptr;
     for (uint8 i = 1; i <= 11; ++i)
     {
-        player_info = sMySQLStore.GetPlayerCreateInfo((raceid ? raceid : i), (classid ? classid : i));
+        player_info = sMySQLStore.getPlayerCreateInfo((raceid ? raceid : i), (classid ? classid : i));
         if (player_info != nullptr)
             break;
     }

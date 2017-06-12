@@ -970,7 +970,7 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recv_data)
         newflags = lflag - used_loginFlag;
     }
     delete query;
-    if (!sMySQLStore.GetPlayerCreateInfo(race, info->cl))
+    if (!sMySQLStore.getPlayerCreateInfo(race, info->cl))
     {
         WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
         data << uint8(E_CHAR_CREATE_ERROR);

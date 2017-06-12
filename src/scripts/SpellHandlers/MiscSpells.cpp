@@ -207,7 +207,7 @@ bool NorthRendInscriptionResearch(uint32 i, Spell* s)
                 SpellInfo* se1 = sSpellCustomizations.GetSpellInfo(skill_line_ability->spell);
                 if (se1 && se1->Effect[0] == SPELL_EFFECT_CREATE_ITEM)
                 {
-                    ItemProperties const* itm = sMySQLStore.GetItemProperties(se1->EffectItemType[0]);
+                    ItemProperties const* itm = sMySQLStore.getItemProperties(se1->EffectItemType[0]);
                     if (itm && (itm->Spells[0].Id != 0))
                     {
                         SpellInfo* se2 = sSpellCustomizations.GetSpellInfo(itm->Spells[0].Id);
@@ -483,7 +483,7 @@ bool TeleportToCoordinates(uint32 i, Spell* s)
     if (s->p_caster == nullptr)
         return true;
 
-    TeleportCoords const* teleport_coord = sMySQLStore.GetTeleportCoord(s->GetSpellInfo()->Id);
+    TeleportCoords const* teleport_coord = sMySQLStore.getTeleportCoord(s->GetSpellInfo()->Id);
     if (teleport_coord == nullptr)
     {
         LogError("Spell %u ( %s ) has a TeleportToCoordinates scripted effect, but has no coordinates to teleport to. ", s->GetSpellInfo()->Id, s->GetSpellInfo()->Name.c_str());

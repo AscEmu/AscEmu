@@ -1447,7 +1447,7 @@ void WorldSession::HandleAmmoSetOpcode(WorldPacket& recv_data)
     if (!ammoId)
         return;
 
-    ItemProperties const* xproto = sMySQLStore.GetItemProperties(ammoId);
+    ItemProperties const* xproto = sMySQLStore.getItemProperties(ammoId);
     if (!xproto)
         return;
 
@@ -1677,7 +1677,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
                 if (zone == 0)                  // If the player's area ID is 0, use the zone ID instead
                     zone = plyr->GetZoneId();
 
-                entry = sMySQLStore.GetFishingZone(zone);
+                entry = sMySQLStore.getFishingZone(zone);
                 if (entry == nullptr)
                 {
                     LogError("ERROR: Fishing zone information for zone %d not found!", zone);
@@ -2567,7 +2567,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recv_data)
     // gift wrapping handler
     if (pItem->GetGiftCreatorGUID() && pItem->wrapped_item_id)
     {
-        ItemProperties const* it = sMySQLStore.GetItemProperties(pItem->wrapped_item_id);
+        ItemProperties const* it = sMySQLStore.getItemProperties(pItem->wrapped_item_id);
         if (it == nullptr)
             return;
 

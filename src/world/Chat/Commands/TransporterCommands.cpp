@@ -38,7 +38,7 @@ bool ChatHandler::HandleGetTransporterInfo(const char* /*args*/, WorldSession* m
         return true;
     }
 
-    auto gameobject_info = sMySQLStore.GetGameObjectProperties(transporter->GetEntry());
+    auto gameobject_info = sMySQLStore.getGameObjectProperties(transporter->GetEntry());
     if (gameobject_info != nullptr)
     {
         SystemMessage(m_session, "Entry: %u", gameobject_info->entry);

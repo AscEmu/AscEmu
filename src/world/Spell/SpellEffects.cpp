@@ -1078,7 +1078,7 @@ void Spell::SpellEffectSchoolDMG(uint32 i) // dmg school
                 if (p_caster != NULL)
                 {
                     Item* pItem = p_caster->GetItemInterface()->GetInventoryItem(EQUIPMENT_SLOT_RANGED);
-                    ItemProperties const* pItemProto = sMySQLStore.GetItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
+                    ItemProperties const* pItemProto = sMySQLStore.getItemProperties(p_caster->GetUInt32Value(PLAYER_AMMO_ID));
                     uint32 stundmg;
                     float bowdmg;
                     float ammodmg;
@@ -1196,7 +1196,7 @@ void Spell::SpellEffectTeleportUnits(uint32 i)    // Teleport Units
     // Portals
     if (m_spellInfo->HasCustomFlagForEffect(i, TELEPORT_TO_COORDINATES))
     {
-        TeleportCoords const* teleport_coord = sMySQLStore.GetTeleportCoord(spellId);
+        TeleportCoords const* teleport_coord = sMySQLStore.getTeleportCoord(spellId);
         if (teleport_coord == nullptr)
         {
             LOG_ERROR("Spell %u (%s) has a TELEPORT TO COORDINATES effect, but has no coordinates to teleport to. ", spellId, m_spellInfo->Name.c_str());
@@ -1953,7 +1953,7 @@ void Spell::SpellEffectCreateItem(uint32 i)
         return;
     }
 
-    ItemProperties const* m_itemProto = sMySQLStore.GetItemProperties(itemid);
+    ItemProperties const* m_itemProto = sMySQLStore.getItemProperties(itemid);
     if (m_itemProto == nullptr)
     {
         LOG_ERROR("Spell %u (%s) has a create item effect but the itemid is invalid!", spellid, m_spellInfo->Name.c_str());
@@ -2407,7 +2407,7 @@ void Spell::SpellEffectSummon(uint32 i)
 
     uint32 entry = m_spellInfo->EffectMiscValue[i];
 
-    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(entry);
+    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(entry);
 
     if (cp == nullptr)
     {
@@ -2515,7 +2515,7 @@ void Spell::SpellEffectSummonWild(uint32 i)  // Summon Wild
         return;
 
     uint32 cr_entry = GetSpellInfo()->EffectMiscValue[i];
-    CreatureProperties const* properties = sMySQLStore.GetCreatureProperties(cr_entry);
+    CreatureProperties const* properties = sMySQLStore.getCreatureProperties(cr_entry);
     if (properties == nullptr)
     {
         LogError("Warning : Missing summon creature template %u used by spell %u!", cr_entry, GetSpellInfo()->Id);
@@ -2630,7 +2630,7 @@ void Spell::SpellEffectSummonTemporaryPet(uint32 i, DBC::Structures::SummonPrope
         count = damage;
 
     // We know for sure that this will suceed because we checked in Spell::SpellEffectSummon
-    CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(properties_->Id);
+    CreatureProperties const* ci = sMySQLStore.getCreatureProperties(properties_->Id);
 
     float angle_for_each_spawn = -M_PI_FLOAT * 2 / damage;
 
@@ -3644,7 +3644,7 @@ void Spell::SpellEffectSummonObject(uint32 i)
 
     uint32 entry = GetSpellInfo()->EffectMiscValue[i];
 
-    GameObjectProperties const* info = sMySQLStore.GetGameObjectProperties(entry);
+    GameObjectProperties const* info = sMySQLStore.getGameObjectProperties(entry);
     if (info == nullptr)
     {
         LogError("Spell %u ( %s ) Effect %u tried to summon a GameObject with ID %u. GameObject is not in the database.", m_spellInfo->Id, m_spellInfo->Name.c_str(), i, entry);
@@ -3746,7 +3746,7 @@ void Spell::SpellEffectEnchantItem(uint32 i) // Enchant Item Permanent
         itemTarget->GetEntry() == 43145))
     {
         uint32 itemid = GetSpellInfo()->EffectItemType[i];
-        ItemProperties const* it = sMySQLStore.GetItemProperties(itemid);
+        ItemProperties const* it = sMySQLStore.getItemProperties(itemid);
         if (it == nullptr)
         {
             p_caster->GetSession()->SystemMessage("Item is missing, report this to devs. Entry: %u", itemid);
@@ -3892,7 +3892,7 @@ void Spell::SpellEffectSummonPet(uint32 i) //summon - pet
     if (old)
         old->Dismiss();
 
-    CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(GetSpellInfo()->EffectMiscValue[i]);
+    CreatureProperties const* ci = sMySQLStore.getCreatureProperties(GetSpellInfo()->EffectMiscValue[i]);
     if (ci)
     {
         if (p_caster->getClass() == WARLOCK)
@@ -5267,7 +5267,7 @@ void Spell::SpellEffectStartTaxi(uint32 i)
 
     if (playerTarget->IsTeamHorde())
     {
-        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
+        CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->horde_mount);
         if (!ci)
             return;
         modelid = ci->Male_DisplayID;
@@ -5276,7 +5276,7 @@ void Spell::SpellEffectStartTaxi(uint32 i)
     }
     else
     {
-        CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
+        CreatureProperties const* ci = sMySQLStore.getCreatureProperties(taxinode->alliance_mount);
         if (!ci)
             return;
         modelid = ci->Male_DisplayID;
@@ -5500,7 +5500,7 @@ void Spell::SpellEffectForgetSpecialization(uint32 i)
 
 void Spell::SpellEffectKillCredit(uint32 i)
 {
-    CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(GetSpellInfo()->EffectMiscValue[i]);
+    CreatureProperties const* ci = sMySQLStore.getCreatureProperties(GetSpellInfo()->EffectMiscValue[i]);
     if (playerTarget != NULL && ci != nullptr)
         sQuestMgr._OnPlayerKill(playerTarget, GetSpellInfo()->EffectMiscValue[i], false);
 }
@@ -5557,7 +5557,7 @@ void Spell::SpellEffectCreatePet(uint32 i)
     if (playerTarget->GetSummon())
         playerTarget->GetSummon()->Remove(true, true);
 
-    CreatureProperties const* ci = sMySQLStore.GetCreatureProperties(GetSpellInfo()->EffectMiscValue[i]);
+    CreatureProperties const* ci = sMySQLStore.getCreatureProperties(GetSpellInfo()->EffectMiscValue[i]);
     if (ci)
     {
         Pet* pPet = objmgr.CreatePet(GetSpellInfo()->EffectMiscValue[i]);

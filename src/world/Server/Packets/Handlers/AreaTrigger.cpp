@@ -168,7 +168,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                 break;
             if (worldConfig.instance.checkTriggerPrerequisitesOnEnter)
             {
-                uint32 reason = CheckTriggerPrerequisites(pAreaTrigger, this, _player, sMySQLStore.GetWorldMapInfo(pAreaTrigger->mapId));
+                uint32 reason = CheckTriggerPrerequisites(pAreaTrigger, this, _player, sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId));
                 if (reason != AREA_TRIGGER_FAILURE_OK)
                 {
                     const char* pReason = GetPlayer()->GetSession()->LocalizedWorldSrv(AreaTriggerFailureMessages[reason]);
@@ -184,8 +184,8 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                             break;
                         case AREA_TRIGGER_FAILURE_NO_ATTUNE_I:
                         {
-                            MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->mapId);
-                            ItemProperties const* pItem = sMySQLStore.GetItemProperties(pMi->required_item);
+                            MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
+                            ItemProperties const* pItem = sMySQLStore.getItemProperties(pMi->required_item);
                             if (pItem)
                                 snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), pItem->Name.c_str());
                             else
@@ -196,8 +196,8 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                         break;
                         case AREA_TRIGGER_FAILURE_NO_ATTUNE_QA:
                         {
-                            MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->mapId);
-                            QuestProperties const* pQuest = sMySQLStore.GetQuestProperties(pMi->required_quest_A);
+                            MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
+                            QuestProperties const* pQuest = sMySQLStore.getQuestProperties(pMi->required_quest_A);
                             if (pQuest)
                                 snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), pQuest->title.c_str());
                             else
@@ -208,8 +208,8 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                         break;
                         case AREA_TRIGGER_FAILURE_NO_ATTUNE_QH:
                         {
-                            MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->mapId);
-                            QuestProperties const* pQuest = sMySQLStore.GetQuestProperties(pMi->required_quest_H);
+                            MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
+                            QuestProperties const* pQuest = sMySQLStore.getQuestProperties(pMi->required_quest_H);
                             if (pQuest)
                                 snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), pQuest->title.c_str());
                             else
@@ -220,8 +220,8 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                         break;
                         case AREA_TRIGGER_FAILURE_NO_KEY:
                         {
-                            MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->mapId);
-                            ItemProperties const* pItem = sMySQLStore.GetItemProperties(pMi->heroic_key_1);
+                            MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
+                            ItemProperties const* pItem = sMySQLStore.getItemProperties(pMi->heroic_key_1);
                             if (pItem)
                                 snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), pItem->Name.c_str());
                             else
@@ -232,7 +232,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                         break;
                         case AREA_TRIGGER_FAILURE_LEVEL_HEROIC:
                         {
-                            MapInfo const* pMi = sMySQLStore.GetWorldMapInfo(pAreaTrigger->mapId);
+                            MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
                             snprintf(msg, 200, pReason, pMi->minlevel_heroic);
                             data << msg;
                         }

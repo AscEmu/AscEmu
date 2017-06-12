@@ -59,7 +59,7 @@ namespace luaGlobalFunctions
         {
             if (spawntype == 1)  //Unit
             {
-                CreatureProperties const* p = sMySQLStore.GetCreatureProperties(entry);
+                CreatureProperties const* p = sMySQLStore.getCreatureProperties(entry);
                 if (p == nullptr)
                     return 0;
 
@@ -85,7 +85,7 @@ namespace luaGlobalFunctions
             }
             else if (spawntype == 2)  //GO
             {
-                auto gameobject_info = sMySQLStore.GetGameObjectProperties(entry);
+                auto gameobject_info = sMySQLStore.getGameObjectProperties(entry);
                 if (gameobject_info == nullptr)
                     return 0;
 

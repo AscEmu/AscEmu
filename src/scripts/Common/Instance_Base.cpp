@@ -96,7 +96,7 @@ Creature* MoonInstanceScript::SpawnCreature(uint32 pEntry, float pX, float pY, f
 
 Creature* MoonInstanceScript::PushCreature(uint32 pEntry, float pX, float pY, float pZ, float pO, uint32 pFaction)
 {
-    CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(pEntry);
+    CreatureProperties const* cp = sMySQLStore.getCreatureProperties(pEntry);
     if (cp == nullptr)
     {
         LOG_ERROR("PushCreature: tried to push a invalid creature with entry %u!", pEntry);

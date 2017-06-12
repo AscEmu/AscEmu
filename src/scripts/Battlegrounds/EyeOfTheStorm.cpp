@@ -555,7 +555,7 @@ void EyeOfTheStorm::OnCreate()
     // create gameobjects
     for (uint8 i = 0; i < EOTS_TOWER_COUNT; ++i)
     {
-        gameobject_info = sMySQLStore.GetGameObjectProperties(EOTSTowerIds[i]);
+        gameobject_info = sMySQLStore.getGameObjectProperties(EOTSTowerIds[i]);
         if (gameobject_info == nullptr)
         {
             AscLog.ConsoleLogMajorError("EOTS is being created and you are missing gameobjects. Terminating.", "", "", "");
@@ -567,7 +567,7 @@ void EyeOfTheStorm::OnCreate()
         m_CPStatusGO[i]->CreateFromProto(gameobject_info->entry, m_mapMgr->GetMapId(), EOTSTCLocations[i][0], EOTSTCLocations[i][1], EOTSTCLocations[i][2], 0);
         m_CPStatusGO[i]->PushToWorld(m_mapMgr);
 
-        gameobject_info = sMySQLStore.GetGameObjectProperties(EOTS_BANNER_NEUTRAL);
+        gameobject_info = sMySQLStore.getGameObjectProperties(EOTS_BANNER_NEUTRAL);
         if (gameobject_info == nullptr)
         {
             AscLog.ConsoleLogMajorError("EOTS is being created and you are missing gameobjects. Terminating.", "", "", "");
@@ -891,7 +891,7 @@ void EyeOfTheStorm::HookOnHK(Player* plr)
 void EyeOfTheStorm::SpawnBuff(uint32 x)
 {
     uint32 chosen_buffid = EOTSbuffentrys[RandomUInt(2)];
-    GameObjectProperties const* goi = sMySQLStore.GetGameObjectProperties(chosen_buffid);
+    GameObjectProperties const* goi = sMySQLStore.getGameObjectProperties(chosen_buffid);
     if (goi == nullptr)
         return;
 
