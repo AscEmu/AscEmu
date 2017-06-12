@@ -836,7 +836,7 @@ void World::loadMySQLStores()
     sMySQLStore.LoadCreatureDifficultyTable();
     sMySQLStore.LoadDisplayBoundingBoxesTable();
     sMySQLStore.LoadVendorRestrictionsTable();
-    sMySQLStore.LoadAreaTriggersTable();
+
     sMySQLStore.LoadNpcTextTable();
     sMySQLStore.LoadNpcScriptTextTable();
     sMySQLStore.LoadGossipMenuOptionTable();

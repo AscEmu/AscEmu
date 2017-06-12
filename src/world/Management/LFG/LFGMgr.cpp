@@ -1798,19 +1798,19 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
 
             if (!mapid)
             {
-                AreaTrigger const* at = sMySQLStore.getMapEntranceTrigger(dungeon->map);
-                if (at == nullptr)
+                AreaTrigger const* areaTrigger = sMySQLStore.getMapEntranceTrigger(dungeon->map);
+                if (areaTrigger == nullptr)
                 {
                     LOG_DEBUG("Failed to teleport %u: No areatrigger found for map: %u difficulty: %u", player->GetGUID(), dungeon->map, dungeon->difficulty);
                     error = LFG_TELEPORTERROR_INVALID_LOCATION;
                 }
                 else
                 {
-                    mapid = at->Mapid;
-                    x = at->x;
-                    y = at->y;
-                    z = at->z;
-                    orientation = at->o;
+                    mapid = areaTrigger->mapId;
+                    x = areaTrigger->x;
+                    y = areaTrigger->y;
+                    z = areaTrigger->z;
+                    orientation = areaTrigger->o;
                 }
             }
 

@@ -29,22 +29,22 @@ enum AreaTriggerType
     ATTYPE_INN          = 3,
     ATTYPE_TELEPORT     = 4,
     ATTYPE_SPELL        = 5,
-    ATTYPE_BATTLEGROUND = 6,
+    ATTYPE_BATTLEGROUND = 6
 };
 
 #pragma pack(push,1)
-typedef struct AreaTrigger
+struct AreaTrigger
 {
-    uint32_t AreaTriggerID;
-    uint8_t Type;
-    uint32_t Mapid;
-    uint32_t PendingScreen;
-    std::string Name;
+    uint32_t id;
+    uint8_t type;
+    uint32_t mapId;
+    uint32_t pendingScreen;
+    std::string name;
     float x;
     float y;
     float z;
     float o;
-    uint32_t required_honor_rank;
-    uint32_t required_level;
-} AreaTrigger;
+    uint32_t requiredHonorRank;
+    uint32_t requiredLevel;
+};
 #pragma pack(pop)

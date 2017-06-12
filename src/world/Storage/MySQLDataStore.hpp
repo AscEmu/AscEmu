@@ -3,8 +3,7 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef MYSQL_DATA_LOADS_HPP
-#define MYSQL_DATA_LOADS_HPP
+#pragma once
 
 #include "Singleton.h"
 #include "Server/Packets/Handlers/MiscHandler.h"
@@ -48,7 +47,6 @@ public:
     typedef std::unordered_map<uint32, CreatureDifficulty> CreatureDifficultyContainer;
     typedef std::unordered_map<uint32, DisplayBounding> DisplayBoundingBoxesContainer;
     typedef std::unordered_map<uint32, VendorRestrictionEntry> VendorRestrictionContainer;
-    typedef std::unordered_map<uint32, AreaTrigger> AreaTriggerContainer;
     typedef std::unordered_map<uint32, NpcText> NpcTextContainer;
     typedef std::unordered_map<uint32, NpcScriptText> NpcScriptTextContainer;
     typedef std::unordered_map<uint32, GossipMenuOption> GossipMenuOptionContainer;
@@ -102,9 +100,6 @@ public:
     VendorRestrictionEntry const* GetVendorRestriction(uint32 entry);
     VendorRestrictionContainer const* GetVendorRestrictionsStore() { return &_vendorRestrictionsStore; }
 
-    AreaTrigger const* GetAreaTrigger(uint32 entry);
-    AreaTriggerContainer const* GetAreaTriggersStore() { return &_areaTriggersStore; }
-
     NpcText const* GetNpcText(uint32 entry);
     NpcTextContainer const* GetNpcTextStore() { return &_npcTextStore; }
 
@@ -157,6 +152,8 @@ public:
     Broadcast const* getBroadcastById(uint32_t level);
     BroadcastContainer* getBroadcastStore() { return &_broadcastStore; }
 
+    AreaTrigger const* getAreaTrigger(uint32_t entry);
+    AreaTriggerContainer const* getAreaTriggersStore() { return &_areaTriggerStore; }
     AreaTrigger const* getMapEntranceTrigger(uint32_t mapId);
 
     //Config
@@ -177,7 +174,7 @@ public:
     void LoadCreatureDifficultyTable();
     void LoadDisplayBoundingBoxesTable();
     void LoadVendorRestrictionsTable();
-    void LoadAreaTriggersTable();
+
     void LoadNpcTextTable();
     void LoadNpcScriptTextTable();
     void LoadGossipMenuOptionTable();
@@ -223,7 +220,6 @@ public:
     CreatureDifficultyContainer _creatureDifficultyStore;
     DisplayBoundingBoxesContainer _displayBoundingBoxesStore;
     VendorRestrictionContainer _vendorRestrictionsStore;
-    AreaTriggerContainer _areaTriggersStore;
     NpcTextContainer _npcTextStore;
     NpcScriptTextContainer _npcScriptTextStore;
     GossipMenuOptionContainer _gossipMenuOptionStore;
@@ -257,5 +253,3 @@ public:
 };
 
 #define sMySQLStore MySQLDataStore::getSingleton()
-
-#endif MYSQL_DATA_LOADS_HPP
