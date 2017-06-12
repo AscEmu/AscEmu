@@ -865,6 +865,8 @@ void World::loadMySQLStores()
     sMySQLStore.LoadNpcGossipTextIdTable();
     sMySQLStore.LoadPetLevelAbilitiesTable();
     sMySQLStore.loadBroadcastTable();
+
+    sMySQLStore.loadAreaTriggerTable();
 }
 
 void World::loadMySQLTablesByTask(uint32_t start_time)
@@ -917,7 +919,6 @@ void World::loadMySQLTablesByTask(uint32_t start_time)
     MAKE_TASK(ObjectMgr, LoadProfessionDiscoveries);
     MAKE_TASK(ObjectMgr, LoadVehicleAccessories);
     MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
-    MAKE_TASK(ObjectMgr, LoadAreaTrigger);
 
 #if VERSION_STRING > TBC
     MAKE_TASK(ObjectMgr, LoadAchievementRewards);

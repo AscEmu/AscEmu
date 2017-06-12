@@ -1798,7 +1798,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
 
             if (!mapid)
             {
-                AreaTrigger const* at = objmgr.GetMapEntranceTrigger(dungeon->map);
+                AreaTrigger const* at = sMySQLStore.getMapEntranceTrigger(dungeon->map);
                 if (at == nullptr)
                 {
                     LOG_DEBUG("Failed to teleport %u: No areatrigger found for map: %u difficulty: %u", player->GetGUID(), dungeon->map, dungeon->difficulty);

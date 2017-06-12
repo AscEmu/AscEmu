@@ -76,6 +76,8 @@ public:
 
     typedef std::unordered_map<uint32, Broadcast> BroadcastContainer;
 
+    typedef std::unordered_map<uint32, AreaTrigger> AreaTriggerContainer;
+
     //helper
     ItemPage const* GetItemPage(uint32 entry);
     ItemPageContainer const* GetItemPagesStore() { return &_itemPagesStore; }
@@ -155,6 +157,8 @@ public:
     Broadcast const* getBroadcastById(uint32_t level);
     BroadcastContainer* getBroadcastStore() { return &_broadcastStore; }
 
+    AreaTrigger const* getMapEntranceTrigger(uint32_t mapId);
+
     //Config
     void LoadAdditionalTableConfig();
 
@@ -208,6 +212,8 @@ public:
 
     void loadBroadcastTable();
 
+    void loadAreaTriggerTable();
+
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
     CreaturePropertiesContainer _creaturePropertiesStore;
@@ -246,6 +252,8 @@ public:
     PetAbilitiesContainer _petAbilitiesStore;
 
     BroadcastContainer _broadcastStore;
+
+    AreaTriggerContainer _areaTriggerStore;
 };
 
 #define sMySQLStore MySQLDataStore::getSingleton()

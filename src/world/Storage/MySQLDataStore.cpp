@@ -2741,3 +2741,80 @@ Broadcast const* MySQLDataStore::getBroadcastById(uint32_t id)
 
     return nullptr;
 }
+
+void MySQLDataStore::loadAreaTriggerTable()
+{
+    uint32_t start_time = getMSTime();
+    //                                                               0      1    2     3       4       5           6          7             8               9                  10
+    QueryResult* area_trigger_result = WorldDatabase.Query("SELECT entry, type, map, screen, name, position_x, position_y, position_z, orientation, required_honor_rank, required_level FROM areatriggers");
+    if (area_trigger_result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `areatriggers` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `areatriggers` has %u columns", area_trigger_result->GetFieldCount());
+
+    _areaTriggerStore.rehash(area_trigger_result->GetRowCount());
+
+    uint32_t areaTrigger_count = 0;
+    do
+    {
+        Field* fields = area_trigger_result->Fetch();
+
+        AreaTrigger at;
+        at.AreaTriggerID = fields[0].GetUInt32();
+        at.Type = fields[1].GetUInt8();
+        at.Mapid = fields[2].GetUInt16();
+        at.PendingScreen = fields[3].GetUInt32();
+        at.Name = fields[4].GetString();
+        at.x = fields[5].GetFloat();
+        at.y = fields[6].GetFloat();
+        at.z = fields[7].GetFloat();
+        at.o = fields[8].GetFloat();
+        at.required_honor_rank = fields[9].GetUInt32();
+        at.required_level = fields[10].GetUInt32();
+
+        DBC::Structures::AreaTriggerEntry const* area_trigger_entry = sAreaTriggerStore.LookupEntry(at.AreaTriggerID);
+        if (!area_trigger_entry)
+        {
+            LogDebugFlag(LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", at.AreaTriggerID);
+            continue;
+        }
+
+        DBC::Structures::MapEntry const* map_entry = sMapStore.LookupEntry(at.Mapid);
+        if (!map_entry)
+        {
+            LogDebugFlag(LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) target map (ID: %u) does not exist in `Map.dbc`.", at.AreaTriggerID, at.Mapid);
+            continue;
+        }
+
+        if (at.x == 0 && at.y == 0 && at.z == 0 && (at.Type == 1 || at.Type == 4))    // check target coordinates only for teleport triggers
+        {
+            LogDebugFlag(LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) target coordinates not provided.", at.AreaTriggerID);
+            continue;
+        }
+
+        _areaTriggerStore[at.AreaTriggerID] = at;
+        ++areaTrigger_count;
+
+    } while (area_trigger_result->NextRow());
+
+    delete area_trigger_result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `areatriggers` table in %u ms!", areaTrigger_count, getMSTime() - start_time);
+}
+
+AreaTrigger const* MySQLDataStore::getMapEntranceTrigger(uint32_t mapId)
+{
+    for (AreaTriggerContainer::const_iterator itr = _areaTriggerStore.begin(); itr != _areaTriggerStore.end(); ++itr)
+    {
+        if (itr->second.Mapid == mapId)
+        {
+            DBC::Structures::AreaTriggerEntry const* area_trigger_entry = sAreaTriggerStore.LookupEntry(itr->first);
+            if (area_trigger_entry)
+                return &itr->second;
+        }
+    }
+    return nullptr;
+}

@@ -262,8 +262,6 @@ ObjectMgr::~ObjectMgr()
 
     worldstate_templates.clear();
 
-    LogNotice("ObjectMgr : Clearing up areatrigger data");
-    _areaTriggerStore.clear();
 
     LogNotice("ObjectMgr : Clearing up event scripts...");
     mEventScriptMaps.clear();
@@ -3604,81 +3602,6 @@ std::multimap< uint32, WorldState >* ObjectMgr::GetWorldStatesForMap(uint32 map)
         return nullptr;
     else
         return itr->second;
-}
-
-AreaTrigger const* ObjectMgr::GetMapEntranceTrigger(uint32 Map) const
-{
-    for (AreaTriggerContainer::const_iterator itr = _areaTriggerStore.begin(); itr != _areaTriggerStore.end(); ++itr)
-    {
-        if (itr->second.Mapid == Map)
-        {
-            auto const* area_trigger_entry = sAreaTriggerStore.LookupEntry(itr->first);
-            if (area_trigger_entry)
-                return &itr->second;
-        }
-    }
-    return nullptr;
-}
-
-void ObjectMgr::LoadAreaTrigger()
-{
-    // need for reload case
-    _areaTriggerStore.clear();
-
-    //                                                  0      1    2     3       4       5           6          7             8               9                  10
-    QueryResult* result = WorldDatabase.Query("SELECT entry, type, map, screen, name, position_x, position_y, position_z, orientation, required_honor_rank, required_level FROM areatriggers");
-    if (!result)
-    {
-        LogDebugFlag(LF_DB_TABLES, "AreaTrigger : Loaded 0 area trigger teleport definitions. DB table `areatriggers` is empty.");
-        return;
-    }
-
-    uint32_t count = 0;
-    do
-    {
-        Field* fields = result->Fetch();
-
-        AreaTrigger at;
-        at.AreaTriggerID = fields[0].GetUInt32();
-        at.Type = fields[1].GetUInt8();
-        at.Mapid = fields[2].GetUInt16();
-        at.PendingScreen = fields[3].GetUInt32();
-        at.Name = fields[4].GetString();
-        at.x = fields[5].GetFloat();
-        at.y = fields[6].GetFloat();
-        at.z = fields[7].GetFloat();
-        at.o = fields[8].GetFloat();
-        at.required_honor_rank = fields[9].GetUInt32();
-        at.required_level = fields[10].GetUInt32();
-
-        DBC::Structures::AreaTriggerEntry const* area_trigger_entry = sAreaTriggerStore.LookupEntry(at.AreaTriggerID);
-        if (!area_trigger_entry)
-        {
-            LogDebugFlag(LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) does not exist in `AreaTrigger.dbc`.", at.AreaTriggerID);
-            continue;
-        }
-
-        DBC::Structures::MapEntry const* map_entry = sMapStore.LookupEntry(at.Mapid);
-        if (!map_entry)
-        {
-            LogDebugFlag(LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) target map (ID: %u) does not exist in `Map.dbc`.", at.AreaTriggerID, at.Mapid);
-            continue;
-        }
-
-        if (at.x == 0 && at.y == 0 && at.z == 0 && (at.Type == 1 || at.Type == 4))    // check target coordinates only for teleport triggers
-        {
-            LogDebugFlag(LF_DB_TABLES, "AreaTrigger : Area trigger (ID:%u) target coordinates not provided.", at.AreaTriggerID);
-            continue;
-        }
-
-        _areaTriggerStore[at.AreaTriggerID] = at;
-        ++count;
-
-    } while (result->NextRow());
-
-    delete result;
-
-    LogDetail("AreaTrigger : Loaded %u area trigger teleport definitions", count);
 }
 
 void ObjectMgr::LoadEventScripts()
