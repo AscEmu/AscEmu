@@ -156,7 +156,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
                 if (player_pet_db_result)
                 {
                     petLevel = player_pet_db_result->Fetch()[1].GetUInt32();
-                    petInfo = sMySQLStore.GetCreatureProperties(player_pet_db_result->Fetch()[0].GetUInt32());
+                    petInfo = sMySQLStore.getCreatureProperties(player_pet_db_result->Fetch()[0].GetUInt32());
                     delete player_pet_db_result;
                 }
             }
@@ -188,7 +188,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
                     int8_t item_slot = item_db_result->Fetch()[1].GetInt8();
                     if (container_slot == -1 && item_slot < INVENTORY_SLOT_BAG_END && item_slot >= EQUIPMENT_SLOT_START)
                     {
-                        ItemProperties const* itemProperties = sMySQLStore.GetItemProperties(item_db_result->Fetch()[1].GetUInt32());
+                        ItemProperties const* itemProperties = sMySQLStore.getItemProperties(item_db_result->Fetch()[1].GetUInt32());
                         if (itemProperties)
                         {
                             if (!(item_slot == EQUIPMENT_SLOT_HEAD && (charEnum.flags & (uint32_t)PLAYER_FLAG_NOHELM) != 0) &&

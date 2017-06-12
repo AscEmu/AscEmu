@@ -144,7 +144,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
                 if (player_pet_db_result)
                 {
                     petLevel = player_pet_db_result->Fetch()[1].GetUInt32();
-                    petInfo = sMySQLStore.GetCreatureProperties(player_pet_db_result->Fetch()[0].GetUInt32());
+                    petInfo = sMySQLStore.getCreatureProperties(player_pet_db_result->Fetch()[0].GetUInt32());
                     delete player_pet_db_result;
                 }
             }
@@ -172,7 +172,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
                     uint32_t enchantid;
 
                     int8_t item_slot = item_db_result->Fetch()[0].GetInt8();
-                    ItemProperties const* itemProperties = sMySQLStore.GetItemProperties(item_db_result->Fetch()[1].GetUInt32());
+                    ItemProperties const* itemProperties = sMySQLStore.getItemProperties(item_db_result->Fetch()[1].GetUInt32());
                     if (itemProperties)
                     {
                         player_items[item_slot].displayId = itemProperties->DisplayInfoID;

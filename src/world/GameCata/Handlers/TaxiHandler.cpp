@@ -139,13 +139,13 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     uint32_t modelid = 0;
     if (_player->IsTeamHorde())
     {
-        CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
+        CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(taxinode->horde_mount);
 
         if (creature_properties == nullptr)
-            creature_properties = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
+            creature_properties = sMySQLStore.getCreatureProperties(taxinode->alliance_mount);
 
         if (creature_properties == nullptr)
-            creature_properties = sMySQLStore.GetCreatureProperties(541);
+            creature_properties = sMySQLStore.getCreatureProperties(541);
 
         if (creature_properties != nullptr)
             modelid = creature_properties->Male_DisplayID;
@@ -154,13 +154,13 @@ void WorldSession::HandleActivateTaxiOpcode(WorldPacket& recv_data)
     }
     else
     {
-        CreatureProperties const* creature_properties = sMySQLStore.GetCreatureProperties(taxinode->alliance_mount);
+        CreatureProperties const* creature_properties = sMySQLStore.getCreatureProperties(taxinode->alliance_mount);
 
         if (creature_properties == nullptr)
-            creature_properties = sMySQLStore.GetCreatureProperties(taxinode->horde_mount);
+            creature_properties = sMySQLStore.getCreatureProperties(taxinode->horde_mount);
 
         if (creature_properties == nullptr)
-            creature_properties = sMySQLStore.GetCreatureProperties(541);
+            creature_properties = sMySQLStore.getCreatureProperties(541);
 
         if (creature_properties != nullptr)
             modelid = creature_properties->Male_DisplayID;
