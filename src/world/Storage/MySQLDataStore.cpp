@@ -96,11 +96,11 @@ void MySQLDataStore::loadItemPagesTable()
 
         uint32_t entry = fields[0].GetUInt32();
 
-        ItemPage& itemPage = _itemPagesStore[entry];
+        MySQLStructure::ItemPage& itemPage = _itemPagesStore[entry];
 
         itemPage.id = entry;
         itemPage.text = fields[1].GetString();
-        itemPage.next_page = fields[2].GetUInt32();
+        itemPage.nextPage = fields[2].GetUInt32();
 
 
         ++itempages_count;
@@ -111,7 +111,7 @@ void MySQLDataStore::loadItemPagesTable()
     LogDetail("MySQLDataLoads : Loaded %u pages from `item_pages` table in %u ms!", itempages_count, getMSTime() - start_time);
 }
 
-ItemPage const* MySQLDataStore::getItemPage(uint32_t entry)
+MySQLStructure::ItemPage const* MySQLDataStore::getItemPage(uint32_t entry)
 {
     ItemPageContainer::const_iterator itr = _itemPagesStore.find(entry);
     if (itr != _itemPagesStore.end())
@@ -273,7 +273,7 @@ void MySQLDataStore::loadItemPropertiesTable()
             uint32_t page_id = fields[97].GetUInt32();
             if (page_id != 0)
             {
-                ItemPage const* item_page = getItemPage(page_id);
+                MySQLStructure::ItemPage const* item_page = getItemPage(page_id);
                 if (item_page == nullptr)
                 {
                     LOG_ERROR("Table `%s` entry: %u includes invalid pageId %u! pageId is set to 0.", table_name.c_str(), entry, page_id);
@@ -1577,7 +1577,7 @@ void MySQLDataStore::loadGossipMenuOptionTable()
 
         uint32_t entry = fields[0].GetUInt32();
 
-        GossipMenuOption& gossipMenuOptionText = _gossipMenuOptionStore[entry];
+        MySQLStructure::GossipMenuOption& gossipMenuOptionText = _gossipMenuOptionStore[entry];
 
         gossipMenuOptionText.id = entry;
         gossipMenuOptionText.text = fields[1].GetString();
@@ -1590,7 +1590,7 @@ void MySQLDataStore::loadGossipMenuOptionTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `gossip_menu_option` table in %u ms!", gossip_menu_optiont_count, getMSTime() - start_time);
 }
 
-GossipMenuOption const* MySQLDataStore::getGossipMenuOption(uint32_t entry)
+MySQLStructure::GossipMenuOption const* MySQLDataStore::getGossipMenuOption(uint32_t entry)
 {
     GossipMenuOptionContainer::const_iterator itr = _gossipMenuOptionStore.find(entry);
     if (itr != _gossipMenuOptionStore.end())

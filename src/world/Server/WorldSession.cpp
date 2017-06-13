@@ -651,7 +651,7 @@ const char* WorldSession::LocalizedCreatureTexts(uint32 id)
 // These strings can be found in gossip_menu_option tables in the database
 const char* WorldSession::LocalizedGossipOption(uint32 id)
 {
-    GossipMenuOption const* wst = sMySQLStore.getGossipMenuOption(id);
+    MySQLStructure::GossipMenuOption const* wst = sMySQLStore.getGossipMenuOption(id);
     if (!wst)
     {
         memset(szError, 0, 64);

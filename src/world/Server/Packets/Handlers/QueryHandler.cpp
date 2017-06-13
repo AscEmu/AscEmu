@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 #include "Management/LocalizationMgr.h"
 #include "Map/WorldCreatorDefines.hpp"
 
@@ -304,7 +305,7 @@ void WorldSession::HandlePageTextQueryOpcode(WorldPacket& recv_data)
 
     while (pageid)
     {
-        ItemPage const* page = sMySQLStore.getItemPage(pageid);
+        MySQLStructure::ItemPage const* page = sMySQLStore.getItemPage(pageid);
         if (!page)
             return;
 
@@ -316,8 +317,8 @@ void WorldSession::HandlePageTextQueryOpcode(WorldPacket& recv_data)
         else
             data << page->text;
 
-        data << page->next_page;
-        pageid = page->next_page;
+        data << page->nextPage;
+        pageid = page->nextPage;
         SendPacket(&data);
     }
 }

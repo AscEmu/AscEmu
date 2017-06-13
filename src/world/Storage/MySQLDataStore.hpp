@@ -31,7 +31,7 @@ public:
     ~MySQLDataStore();
 
     //maps
-    typedef std::unordered_map<uint32_t, ItemPage> ItemPageContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::ItemPage> ItemPageContainer;
     typedef std::unordered_map<uint32_t, ItemProperties> ItemPropertiesContainer;
     typedef std::unordered_map<uint32_t, CreatureProperties> CreaturePropertiesContainer;
     typedef std::unordered_map<uint32_t, GameObjectProperties> GameObjectPropertiesContainer;
@@ -42,7 +42,7 @@ public:
     typedef std::unordered_map<uint32_t, VendorRestrictionEntry> VendorRestrictionContainer;
     typedef std::unordered_map<uint32_t, NpcText> NpcTextContainer;
     typedef std::unordered_map<uint32_t, NpcScriptText> NpcScriptTextContainer;
-    typedef std::unordered_map<uint32_t, GossipMenuOption> GossipMenuOptionContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::GossipMenuOption> GossipMenuOptionContainer;
     typedef std::unordered_map<uint32_t, GraveyardTeleport> GraveyardsContainer;
     typedef std::unordered_map<uint32_t, TeleportCoords> TeleportCoordsContainer;
     typedef std::unordered_map<uint32_t, FishingZoneEntry> FishingZonesContainer;
@@ -70,7 +70,7 @@ public:
     typedef std::unordered_map<uint32_t, AreaTrigger> AreaTriggerContainer;
 
     //helper
-    ItemPage const* getItemPage(uint32_t entry);
+    MySQLStructure::ItemPage const* getItemPage(uint32_t entry);
     ItemPageContainer const* getItemPagesStore() { return &_itemPagesStore; }
     ItemProperties const* getItemProperties(uint32_t entry);
     ItemPropertiesContainer const* getItemPropertiesStore() { return &_itemPropertiesStore; }
@@ -99,7 +99,7 @@ public:
     NpcScriptText const* getNpcScriptText(uint32_t entry);
     NpcScriptTextContainer const* getNpcScriptTextStore() { return &_npcScriptTextStore; }
 
-    GossipMenuOption const* getGossipMenuOption(uint32_t entry);
+    MySQLStructure::GossipMenuOption const* getGossipMenuOption(uint32_t entry);
     GossipMenuOptionContainer const* getGossipMenuOptionStore() { return &_gossipMenuOptionStore; }
 
     GraveyardTeleport const* getGraveyard(uint32_t entry);

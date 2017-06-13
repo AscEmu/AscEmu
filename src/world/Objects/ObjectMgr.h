@@ -127,19 +127,6 @@ struct ProfessionDiscovery
     float Chance;
 };
 
-struct ItemPage
-{
-    uint32 id;
-    std::string text;
-    uint32 next_page;
-};
-
-struct GossipMenuOption
-{
-    uint32 id;
-    std::string text;
-};
-
 struct WorldStringTable
 {
     uint32 id;
