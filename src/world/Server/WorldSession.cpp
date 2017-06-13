@@ -28,6 +28,7 @@
 #include "Management/Battleground/Battleground.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 #include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
@@ -703,7 +704,7 @@ const char* WorldSession::LocalizedMapName(uint32 id)
 
 const char* WorldSession::LocalizedBroadCast(uint32 id)
 {
-    Broadcast const* wb = sMySQLStore.getBroadcastById(id);
+    MySQLStructure::Broadcast const* wb = sMySQLStore.getBroadcastById(id);
     if (!wb)
     {
         memset(szError, 0, 64);

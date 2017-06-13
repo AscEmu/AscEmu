@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AreaStorage.hpp"
 #include "VMapFactory.h"
 #include "Management/ArenaTeam.h"
+#include "AreaManagementGlobals.hpp"
 
 namespace MapManagement
 {

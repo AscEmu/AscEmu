@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Objects/ObjectMgr.h"
 #include "Spell/Definitions/SpellClickSpell.h"
 #include "Spell/Definitions/TeleportCoords.h"
+#include "MySQLStructures.h"
 
 extern SERVER_DECL std::set<std::string> CreatureSpawnsTables;
 extern SERVER_DECL std::set<std::string> GameObjectSpawnsTables;
@@ -21,14 +22,6 @@ extern SERVER_DECL std::set<std::string> CreaturePropertiesTables;
 extern SERVER_DECL std::set<std::string> ItemPropertiesTables;
 extern SERVER_DECL std::set<std::string> QuestPropertiesTables;
 
-struct Broadcast
-{
-    uint32_t id;
-    uint32_t interval;
-    uint32_t random_interval;
-    uint32_t next_update;
-    std::string text;
-};
 
 class SERVER_DECL MySQLDataStore : public Singleton <MySQLDataStore>
 {
@@ -72,7 +65,7 @@ public:
 
     typedef std::unordered_map<uint32_t, PetAbilities> PetAbilitiesContainer;
 
-    typedef std::unordered_map<uint32_t, Broadcast> BroadcastContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::Broadcast> BroadcastContainer;
 
     typedef std::unordered_map<uint32_t, AreaTrigger> AreaTriggerContainer;
 
@@ -149,7 +142,7 @@ public:
     PetAbilities const* getPetLevelAbilities(uint32_t level);
     PetAbilitiesContainer const* getPetAbilitiesStore() { return &_petAbilitiesStore; }
 
-    Broadcast const* getBroadcastById(uint32_t level);
+    MySQLStructure::Broadcast const* getBroadcastById(uint32_t level);
     BroadcastContainer* getBroadcastStore() { return &_broadcastStore; }
 
     AreaTrigger const* getAreaTrigger(uint32_t entry);

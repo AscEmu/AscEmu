@@ -194,6 +194,7 @@
 #include "Server/MainServerDefines.h"
 #include "Server/WorldRunnable.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 #include "Storage/DatabaseCleaner.h"
 #include "Storage/DayWatcherThread.h"
 #include "Server/BroadcastMgr.h"

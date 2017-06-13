@@ -2656,7 +2656,7 @@ void MySQLDataStore::loadBroadcastTable()
 
         uint32_t entry = fields[0].GetInt32();
 
-        Broadcast& broadcast = _broadcastStore[entry];
+        MySQLStructure::Broadcast& broadcast = _broadcastStore[entry];
 
         broadcast.id = entry;
 
@@ -2676,7 +2676,7 @@ void MySQLDataStore::loadBroadcastTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `worldbroadcast` table in %u ms!", broadcast_count, getMSTime() - start_time);
 }
 
-Broadcast const* MySQLDataStore::getBroadcastById(uint32_t id)
+MySQLStructure::Broadcast const* MySQLDataStore::getBroadcastById(uint32_t id)
 {
     BroadcastContainer::const_iterator itr = _broadcastStore.find(id);
     if (itr != _broadcastStore.end())
