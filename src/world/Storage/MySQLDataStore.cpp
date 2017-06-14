@@ -1836,11 +1836,11 @@ void MySQLDataStore::loadZoneGuardsTable()
 
         uint32_t entry = fields[0].GetUInt32();
 
-        ZoneGuardEntry& zoneGuard = _zoneGuardsStore[entry];
+        MySQLStructure::ZoneGuards& zoneGuard = _zoneGuardsStore[entry];
 
-        zoneGuard.ZoneID = entry;
-        zoneGuard.HordeEntry = fields[1].GetUInt32();
-        zoneGuard.AllianceEntry = fields[2].GetUInt32();
+        zoneGuard.zoneId = entry;
+        zoneGuard.hordeEntry = fields[1].GetUInt32();
+        zoneGuard.allianceEntry = fields[2].GetUInt32();
 
         ++zone_guards_count;
     } while (zone_guards_result->NextRow());
@@ -1850,7 +1850,7 @@ void MySQLDataStore::loadZoneGuardsTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `zoneguards` table in %u ms!", zone_guards_count, getMSTime() - start_time);
 }
 
-ZoneGuardEntry const* MySQLDataStore::getZoneGuard(uint32_t entry)
+MySQLStructure::ZoneGuards const* MySQLDataStore::getZoneGuard(uint32_t entry)
 {
     ZoneGuardsContainer::const_iterator itr = _zoneGuardsStore.find(entry);
     if (itr != _zoneGuardsStore.end())
@@ -2647,7 +2647,7 @@ void MySQLDataStore::loadBroadcastTable()
 
     LogNotice("MySQLDataLoads : Table `worldbroadcast` has %u columns", broadcast_result->GetFieldCount());
 
-    _broadcastStore.rehash(broadcast_result->GetRowCount());
+    _worldBroadcastStore.rehash(broadcast_result->GetRowCount());
 
     uint32_t broadcast_count = 0;
     do
@@ -2656,15 +2656,15 @@ void MySQLDataStore::loadBroadcastTable()
 
         uint32_t entry = fields[0].GetInt32();
 
-        MySQLStructure::Broadcast& broadcast = _broadcastStore[entry];
+        MySQLStructure::WorldBroadCast& broadcast = _worldBroadcastStore[entry];
 
         broadcast.id = entry;
 
         uint32_t interval = fields[1].GetUInt32();
         broadcast.interval = interval * 60;
         uint32_t random_interval = fields[2].GetUInt32();
-        broadcast.random_interval = random_interval * 60;
-        broadcast.next_update = broadcast.interval + (uint32_t)UNIXTIME;
+        broadcast.randomInterval = random_interval * 60;
+        broadcast.nextUpdate = broadcast.interval + (uint32_t)UNIXTIME;
         broadcast.text = fields[3].GetString();
 
         ++broadcast_count;
@@ -2676,10 +2676,10 @@ void MySQLDataStore::loadBroadcastTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `worldbroadcast` table in %u ms!", broadcast_count, getMSTime() - start_time);
 }
 
-MySQLStructure::Broadcast const* MySQLDataStore::getBroadcastById(uint32_t id)
+MySQLStructure::WorldBroadCast const* MySQLDataStore::getWorldBroadcastById(uint32_t id)
 {
-    BroadcastContainer::const_iterator itr = _broadcastStore.find(id);
-    if (itr != _broadcastStore.end())
+    WorldBroadcastContainer::const_iterator itr = _worldBroadcastStore.find(id);
+    if (itr != _worldBroadcastStore.end())
         return &(itr->second);
 
     return nullptr;

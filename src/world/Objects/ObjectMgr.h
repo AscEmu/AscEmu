@@ -112,13 +112,6 @@ struct FishingZoneEntry
     uint32 MaxSkill;
 };
 
-struct ZoneGuardEntry
-{
-    uint32 ZoneID;
-    uint32 HordeEntry;
-    uint32 AllianceEntry;
-};
-
 struct ProfessionDiscovery
 {
     uint32 SpellId;

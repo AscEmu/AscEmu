@@ -186,13 +186,12 @@ namespace MySQLStructure
     //world_instance_entrance
 
     //worldbroadcast
-    //\TODO rename to WorldBroadCast
-    struct Broadcast
+    struct WorldBroadCast
     {
         uint32_t id;
         uint32_t interval;
-        uint32_t random_interval;
-        uint32_t next_update;
+        uint32_t randomInterval;
+        uint32_t nextUpdate;        // serverside not in sql table
         std::string text;
     };
 
@@ -202,9 +201,14 @@ namespace MySQLStructure
 
     //worldstring_tables
 
-    //\brief structure defined in ObjectMgr.h struct ZoneGuardEntry.
-    // Data used in AIInterface.cpp (summoned id in function FindFriends)
+    //\brief Data used in AIInterface.cpp (summoned id in function FindFriends)
     //zoneguards
+    struct ZoneGuards
+    {
+        uint32_t zoneId;
+        uint32_t hordeEntry;
+        uint32_t allianceEntry;
+    };
     
 
     //////////////////////////////////////////////////////////////////////////////////////////

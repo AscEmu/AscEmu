@@ -47,7 +47,7 @@ public:
     typedef std::unordered_map<uint32_t, TeleportCoords> TeleportCoordsContainer;
     typedef std::unordered_map<uint32_t, FishingZoneEntry> FishingZonesContainer;
     typedef std::unordered_map<uint32_t, MapInfo> WorldMapInfoContainer;
-    typedef std::unordered_map<uint32_t, ZoneGuardEntry> ZoneGuardsContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::ZoneGuards> ZoneGuardsContainer;
     typedef std::unordered_map<uint32_t, BGMaster> BattleMastersContainer;
     typedef std::unordered_map<uint32_t, TotemDisplayIdEntry> TotemDisplayIdContainer;
     typedef std::unordered_map<uint32_t, SpellClickSpell> SpellClickSpellContainer;
@@ -65,7 +65,7 @@ public:
 
     typedef std::unordered_map<uint32_t, PetAbilities> PetAbilitiesContainer;
 
-    typedef std::unordered_map<uint32_t, MySQLStructure::Broadcast> BroadcastContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::WorldBroadCast> WorldBroadcastContainer;
 
     typedef std::unordered_map<uint32_t, AreaTrigger> AreaTriggerContainer;
 
@@ -114,7 +114,7 @@ public:
     MapInfo const* getWorldMapInfo(uint32_t entry);
     WorldMapInfoContainer const* getWorldMapInfoStore() { return &_worldMapInfoStore; }
 
-    ZoneGuardEntry const* getZoneGuard(uint32_t entry);
+    MySQLStructure::ZoneGuards const* getZoneGuard(uint32_t entry);
     ZoneGuardsContainer const* getZoneGuardsStore() { return &_zoneGuardsStore; }
 
     BGMaster const* getBattleMaster(uint32_t entry);
@@ -142,8 +142,8 @@ public:
     PetAbilities const* getPetLevelAbilities(uint32_t level);
     PetAbilitiesContainer const* getPetAbilitiesStore() { return &_petAbilitiesStore; }
 
-    MySQLStructure::Broadcast const* getBroadcastById(uint32_t level);
-    BroadcastContainer* getBroadcastStore() { return &_broadcastStore; }
+    MySQLStructure::WorldBroadCast const* getWorldBroadcastById(uint32_t level);
+    WorldBroadcastContainer* getWorldBroadcastStore() { return &_worldBroadcastStore; }
 
     AreaTrigger const* getAreaTrigger(uint32_t entry);
     AreaTriggerContainer const* getAreaTriggersStore() { return &_areaTriggerStore; }
@@ -240,7 +240,7 @@ public:
 
     PetAbilitiesContainer _petAbilitiesStore;
 
-    BroadcastContainer _broadcastStore;
+    WorldBroadcastContainer _worldBroadcastStore;
 
     AreaTriggerContainer _areaTriggerStore;
 };

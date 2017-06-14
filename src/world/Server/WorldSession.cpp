@@ -704,7 +704,7 @@ const char* WorldSession::LocalizedMapName(uint32 id)
 
 const char* WorldSession::LocalizedBroadCast(uint32 id)
 {
-    MySQLStructure::Broadcast const* wb = sMySQLStore.getBroadcastById(id);
+    MySQLStructure::WorldBroadCast const* wb = sMySQLStore.getWorldBroadcastById(id);
     if (!wb)
     {
         memset(szError, 0, 64);
