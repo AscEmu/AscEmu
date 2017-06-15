@@ -26,6 +26,7 @@
 #include "Management/Battleground/Battleground.h"
 #include "Server/WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
 #include "zlib.h"
 #include "Map/MapMgr.h"
@@ -1668,7 +1669,7 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
             bool success = fn->UseNode();
 
             uint32 zone = 0;
-            FishingZoneEntry const* entry = nullptr;
+            MySQLStructure::FishingZones const* entry = nullptr;
 
             if (success)
             {
@@ -1688,8 +1689,8 @@ void WorldSession::HandleGameObjectUse(WorldPacket& recv_data)
 
             if (success)
             {
-                uint32 maxskill = entry->MaxSkill;
-                uint32 minskill = entry->MinSkill;
+                uint32 maxskill = entry->maxSkill;
+                uint32 minskill = entry->minSkill;
 
                 if (plyr->_GetSkillLineCurrent(SKILL_FISHING, false) < maxskill)
                     plyr->_AdvanceSkillLine(SKILL_FISHING, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));

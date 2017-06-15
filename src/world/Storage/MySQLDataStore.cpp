@@ -1722,11 +1722,11 @@ void MySQLDataStore::loadFishingTable()
 
         uint32_t entry = fields[0].GetUInt32();
 
-        FishingZoneEntry& fishingZone = _fishingZonesStore[entry];
+        MySQLStructure::FishingZones& fishingZone = _fishingZonesStore[entry];
 
-        fishingZone.ZoneID = entry;
-        fishingZone.MinSkill = fields[1].GetUInt32();
-        fishingZone.MaxSkill = fields[2].GetUInt32();
+        fishingZone.zoneId = entry;
+        fishingZone.minSkill = fields[1].GetUInt32();
+        fishingZone.maxSkill = fields[2].GetUInt32();
 
         ++fishing_count;
     } while (fishing_result->NextRow());
@@ -1736,7 +1736,7 @@ void MySQLDataStore::loadFishingTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `fishing` table in %u ms!", fishing_count, getMSTime() - start_time);
 }
 
-FishingZoneEntry const* MySQLDataStore::getFishingZone(uint32_t entry)
+MySQLStructure::FishingZones const* MySQLDataStore::getFishingZone(uint32_t entry)
 {
     FishingZonesContainer::const_iterator itr = _fishingZonesStore.find(entry);
     if (itr != _fishingZonesStore.end())
@@ -2019,7 +2019,7 @@ void MySQLDataStore::loadWorldStringsTable()
 
         uint32_t entry = fields[0].GetUInt32();
 
-        WorldStringTable& worldString = _worldStringsStore[entry];
+        MySQLStructure::WorldStringTable& worldString = _worldStringsStore[entry];
 
         worldString.id = entry;
         worldString.text = fields[1].GetString();
@@ -2032,7 +2032,7 @@ void MySQLDataStore::loadWorldStringsTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `worldstring_tables` table in %u ms!", worldstring_tables_count, getMSTime() - start_time);
 }
 
-WorldStringTable const* MySQLDataStore::getWorldString(uint32_t entry)
+MySQLStructure::WorldStringTable const* MySQLDataStore::getWorldString(uint32_t entry)
 {
     WorldStringContainer::const_iterator itr = _worldStringsStore.find(entry);
     if (itr != _worldStringsStore.end())
@@ -2593,7 +2593,7 @@ void MySQLDataStore::loadPetLevelAbilitiesTable()
 
     LogNotice("MySQLDataLoads : Table `pet_level_abilities` has %u columns", pet_level_abilities_result->GetFieldCount());
 
-    _petAbilitiesStore.rehash(pet_level_abilities_result->GetRowCount());
+    _petLevelAbilitiesStore.rehash(pet_level_abilities_result->GetRowCount());
 
     uint32_t pet_level_abilities_count = 0;
     do
@@ -2602,7 +2602,7 @@ void MySQLDataStore::loadPetLevelAbilitiesTable()
 
         uint32_t entry = fields[0].GetInt32();
 
-        PetAbilities& petAbilities = _petAbilitiesStore[entry];
+        MySQLStructure::PetLevelAbilities& petAbilities = _petLevelAbilitiesStore[entry];
 
         petAbilities.level = entry;
         petAbilities.health = fields[1].GetUInt32();
@@ -2625,10 +2625,10 @@ void MySQLDataStore::loadPetLevelAbilitiesTable()
         LOG_ERROR("Table `pet_level_abilities` includes definitions for %u level, but your defined level cap is %u!", pet_level_abilities_count, worldConfig.player.playerLevelCap);
 }
 
-PetAbilities const* MySQLDataStore::getPetLevelAbilities(uint32_t level)
+MySQLStructure::PetLevelAbilities const* MySQLDataStore::getPetLevelAbilities(uint32_t level)
 {
-    PetAbilitiesContainer::const_iterator itr = _petAbilitiesStore.find(level);
-    if (itr != _petAbilitiesStore.end())
+    PetLevelAbilitiesContainer::const_iterator itr = _petLevelAbilitiesStore.find(level);
+    if (itr != _petLevelAbilitiesStore.end())
         return &(itr->second);
 
     return nullptr;

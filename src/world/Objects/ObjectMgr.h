@@ -101,12 +101,12 @@ enum
 };
 
 #pragma pack(push,1)
-struct FishingZoneEntry
-{
-    uint32 ZoneID;
-    uint32 MinSkill;
-    uint32 MaxSkill;
-};
+//struct FishingZoneEntry
+//{
+//    uint32 ZoneID;
+//    uint32 MinSkill;
+//    uint32 MaxSkill;
+//};
 
 struct ProfessionDiscovery
 {
@@ -116,11 +116,6 @@ struct ProfessionDiscovery
     float Chance;
 };
 
-struct WorldStringTable
-{
-    uint32 id;
-    std::string text;
-};
 
 struct NpcScriptText
 {
@@ -147,17 +142,17 @@ struct SpellReplacement
 
 class Group;
 
-struct PetAbilities
-{
-    uint32 level;
-    uint32 health;
-    uint32 armor;
-    uint32 strength;
-    uint32 agility;
-    uint32 stamina;
-    uint32 intellect;
-    uint32 spirit;
-};
+//struct PetAbilities
+//{
+//    uint32 level;
+//    uint32 health;
+//    uint32 armor;
+//    uint32 strength;
+//    uint32 agility;
+//    uint32 stamina;
+//    uint32 intellect;
+//    uint32 spirit;
+//};
 
 class SpellInfo;
 #if VERSION_STRING == Cata

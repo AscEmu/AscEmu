@@ -45,13 +45,13 @@ public:
     typedef std::unordered_map<uint32_t, MySQLStructure::GossipMenuOption> GossipMenuOptionContainer;
     typedef std::unordered_map<uint32_t, GraveyardTeleport> GraveyardsContainer;
     typedef std::unordered_map<uint32_t, TeleportCoords> TeleportCoordsContainer;
-    typedef std::unordered_map<uint32_t, FishingZoneEntry> FishingZonesContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::FishingZones> FishingZonesContainer;
     typedef std::unordered_map<uint32_t, MapInfo> WorldMapInfoContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::ZoneGuards> ZoneGuardsContainer;
     typedef std::unordered_map<uint32_t, BGMaster> BattleMastersContainer;
     typedef std::unordered_map<uint32_t, TotemDisplayIdEntry> TotemDisplayIdContainer;
     typedef std::unordered_map<uint32_t, SpellClickSpell> SpellClickSpellContainer;
-    typedef std::unordered_map<uint32_t, WorldStringTable> WorldStringContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::WorldStringTable> WorldStringContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::PointsOfInterest> PointsOfInterestContainer;
 
     typedef std::unordered_map<int32, ItemSetLinkedItemSetBonus> ItemSetDefinedSetBonusContainer;
@@ -63,7 +63,7 @@ public:
 
     typedef std::map<uint32_t, uint32_t> NpcGossipTextIdMap;
 
-    typedef std::unordered_map<uint32_t, PetAbilities> PetAbilitiesContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::PetLevelAbilities> PetLevelAbilitiesContainer;
 
     typedef std::unordered_map<uint32_t, MySQLStructure::WorldBroadCast> WorldBroadcastContainer;
 
@@ -111,7 +111,7 @@ public:
     TeleportCoords const* getTeleportCoord(uint32_t entry);
     TeleportCoordsContainer const* getTeleportCoordsStore() { return &_teleportCoordsStore; }
 
-    FishingZoneEntry const* getFishingZone(uint32_t entry);
+    MySQLStructure::FishingZones const* getFishingZone(uint32_t entry);
     FishingZonesContainer const* getFischingZonesStore() { return &_fishingZonesStore; }
 
     MapInfo const* getWorldMapInfo(uint32_t entry);
@@ -129,7 +129,7 @@ public:
     SpellClickSpell const* getSpellClickSpell(uint32_t entry);
     SpellClickSpellContainer const* getSpellClickSpellsStore() { return &_spellClickSpellsStore; }
 
-    WorldStringTable const* getWorldString(uint32_t entry);
+    MySQLStructure::WorldStringTable const* getWorldString(uint32_t entry);
     WorldStringContainer const* getWorldStringsStore() { return &_worldStringsStore; }
 
     MySQLStructure::PointsOfInterest const* getPointOfInterest(uint32_t entry);
@@ -142,8 +142,8 @@ public:
 
     uint32_t getGossipTextIdForNpc(uint32_t entry);
 
-    PetAbilities const* getPetLevelAbilities(uint32_t level);
-    PetAbilitiesContainer const* getPetAbilitiesStore() { return &_petAbilitiesStore; }
+    MySQLStructure::PetLevelAbilities const* getPetLevelAbilities(uint32_t level);
+    PetLevelAbilitiesContainer const* getPetAbilitiesStore() { return &_petLevelAbilitiesStore; }
 
     MySQLStructure::WorldBroadCast const* getWorldBroadcastById(uint32_t level);
     WorldBroadcastContainer* getWorldBroadcastStore() { return &_worldBroadcastStore; }
@@ -246,7 +246,7 @@ public:
 
     NpcGossipTextIdMap _npcGossipTextIdStore;
 
-    PetAbilitiesContainer _petAbilitiesStore;
+    PetLevelAbilitiesContainer _petLevelAbilitiesStore;
 
     WorldBroadcastContainer _worldBroadcastStore;
 

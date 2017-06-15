@@ -28,6 +28,7 @@
 #include "Units/Stats.h"
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
@@ -1564,7 +1565,7 @@ void Pet::ApplyPetLevelAbilities()
 
     LoadPetAuras(-1);//These too
 
-    PetAbilities const* pet_abilities = sMySQLStore.getPetLevelAbilities(level);
+    MySQLStructure::PetLevelAbilities const* pet_abilities = sMySQLStore.getPetLevelAbilities(level);
     if (pet_abilities == nullptr)
     {
         LOG_ERROR("No abilities for level %u in table pet_level_abilities! Auto apply abilities of level 80!", level);

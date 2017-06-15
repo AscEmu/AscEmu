@@ -48,7 +48,14 @@ namespace MySQLStructure
 
     //event_scripts
 
+    //\TODO rename table to fishing_zones
     //fishing
+    struct FishingZones
+    {
+        uint32_t zoneId;
+        uint32_t minSkill;
+        uint32_t maxSkill;
+    };
 
     //gameobject_properties
     //gameobject_quest_finisher
@@ -116,6 +123,17 @@ namespace MySQLStructure
     //npc_text
 
     //pet_level_abilities
+    struct PetLevelAbilities
+    {
+        uint32_t level;
+        uint32_t health;
+        uint32_t armor;
+        uint32_t strength;
+        uint32_t agility;
+        uint32_t stamina;
+        uint32_t intellect;
+        uint32_t spirit;
+    };
 
     //petdefaultspells
 
@@ -222,6 +240,11 @@ namespace MySQLStructure
     //worldstate_templates
 
     //worldstring_tables
+    struct WorldStringTable
+    {
+        uint32_t id;
+        std::string text;
+    };
 
     //\brief Data used in AIInterface.cpp (summoned id in function FindFriends)
     //zoneguards

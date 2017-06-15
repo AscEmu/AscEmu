@@ -670,7 +670,7 @@ const char* WorldSession::LocalizedGossipOption(uint32 id)
 // These strings can be found in the worldstring tables in the database
 const char* WorldSession::LocalizedWorldSrv(uint32 id)
 {
-    WorldStringTable const* wst = sMySQLStore.getWorldString(id);
+    MySQLStructure::WorldStringTable const* wst = sMySQLStore.getWorldString(id);
     if (!wst)
     {
         memset(szError, 0, 64);
