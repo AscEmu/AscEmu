@@ -24,9 +24,6 @@ namespace MySQLStructure
 
     //auctionhouse
 
-    //\TODO table banned_phrases not used
-    //banned_phrases
-
     //battlemasters
 
     //creature_difficulty
@@ -113,9 +110,6 @@ namespace MySQLStructure
     //loot_pickpocketing
     //loot_skinning
 
-    //\TODO table map_checkpoint not used
-    //map_checkpoint
-
     //npc_gossip_textid
 
     //npc_monstersay
@@ -200,9 +194,6 @@ namespace MySQLStructure
 
     //weather
 
-    //\TODO table weather_season not used
-    //weather_season
-
     //wordfilter_character_names
     struct WordFilterCharacterNames
     {
@@ -220,9 +211,6 @@ namespace MySQLStructure
 
     //\brief loaded on server startup. Not needed after server startup
     //world_db_version
-
-    //\TODO table world_instance_entrance not used
-    //world_instance_entrance
 
     //worldbroadcast
     struct WorldBroadCast
