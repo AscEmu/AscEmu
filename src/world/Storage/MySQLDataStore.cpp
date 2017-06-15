@@ -2810,6 +2810,21 @@ void MySQLDataStore::loadWordFilterCharacterNames()
     LogDetail("MySQLDataLoads : Loaded %u rows from `wordfilter_character_names` table in %u ms!", filter_character_names_count, getMSTime() - start_time);
 }
 
+bool MySQLDataStore::isCharacterNameAllowed(std::string charName)
+{
+    std::list<MySQLStructure::WordFilterCharacterNames>::const_iterator iterator;
+    for (iterator = _wordFilterCharacterNamesStore.begin(); iterator != _wordFilterCharacterNamesStore.end(); ++iterator)
+    {
+        size_t pos = charName.find(iterator->name);
+        if (pos != std::string::npos)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void MySQLDataStore::loadWordFilterChat()
 {
     uint32_t start_time = getMSTime();

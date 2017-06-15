@@ -15,9 +15,7 @@ class WordFilter
         ~WordFilter();
 
         bool isBlockedOrReplaceWord(std::string& chatMessage);
-        bool isCharacterNameAllowed(std::string charName);
 
 };
 
-extern WordFilter* g_characterNameFilter;
 extern WordFilter* g_chatFilter;

@@ -10,7 +10,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Storage/MySQLStructures.h"
 
 
-WordFilter* g_characterNameFilter;
 WordFilter* g_chatFilter;
 
 WordFilter::WordFilter() {}
@@ -35,21 +34,6 @@ bool WordFilter::isBlockedOrReplaceWord(std::string& chatMessage)
 
             chatMessage.replace(pos, iterator->word.length(), iterator->wordReplace);
             pos += iterator->wordReplace.length();
-        }
-    }
-
-    return false;
-}
-
-bool WordFilter::isCharacterNameAllowed(std::string charName)
-{
-    std::list<MySQLStructure::WordFilterCharacterNames>::const_iterator iterator;
-    for (iterator = sMySQLStore._wordFilterCharacterNamesStore.begin(); iterator != sMySQLStore._wordFilterCharacterNamesStore.end(); ++iterator)
-    {
-        size_t pos = charName.find(iterator->name);
-        if (pos != std::string::npos)
-        {
-            return true;
         }
     }
 

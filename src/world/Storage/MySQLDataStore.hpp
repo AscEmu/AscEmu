@@ -152,6 +152,8 @@ public:
     AreaTriggerContainer const* getAreaTriggersStore() { return &_areaTriggerStore; }
     AreaTrigger const* getMapEntranceTrigger(uint32_t mapId);
 
+    bool isCharacterNameAllowed(std::string charName);
+
     //Config
     void loadAdditionalTableConfig();
 

@@ -114,7 +114,6 @@ World::~World()
 
     LogNotice("WordFilter : ~WordFilter()");
     delete g_chatFilter;
-    delete g_characterNameFilter;
 
     LogNotice("Rnd : ~Rnd()");
     CleanupRandomNumberGenerators();
@@ -945,7 +944,6 @@ void World::loadMySQLTablesByTask(uint32_t start_time)
     CommandTableStorage::getSingleton().Load();
     LogNotice("WordFilter : Loading...");
 
-    g_characterNameFilter = new WordFilter();
     g_chatFilter = new WordFilter();
 
     LogDetail("WordFilter : Done. Database loaded in %ums.", getMSTime() - start_time);
