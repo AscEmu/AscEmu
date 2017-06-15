@@ -199,11 +199,10 @@ namespace MySQLStructure
     //vendors
 
     //weather
+
+    //\TODO table weather_season not used
     //weather_season
 
-    //\brief loaded on server startup. Related Class "WordFilter"
-    //\TODO switch to std::string in class WordFilter.
-    // Rewrite WordFilter, split character name and chat word filter in two seperated functions/classes.
     //wordfilter_character_names
     struct WordFilterCharacterNames
     {

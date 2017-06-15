@@ -101,12 +101,6 @@ enum
 };
 
 #pragma pack(push,1)
-//struct FishingZoneEntry
-//{
-//    uint32 ZoneID;
-//    uint32 MinSkill;
-//    uint32 MaxSkill;
-//};
 
 struct ProfessionDiscovery
 {
@@ -115,7 +109,6 @@ struct ProfessionDiscovery
     uint32 SkillValue;
     float Chance;
 };
-
 
 struct NpcScriptText
 {
@@ -141,19 +134,6 @@ struct SpellReplacement
 };
 
 class Group;
-
-//struct PetAbilities
-//{
-//    uint32 level;
-//    uint32 health;
-//    uint32 armor;
-//    uint32 strength;
-//    uint32 agility;
-//    uint32 stamina;
-//    uint32 intellect;
-//    uint32 spirit;
-//};
-
 class SpellInfo;
 #if VERSION_STRING == Cata
 struct TrainerSpell
@@ -324,7 +304,7 @@ typedef std::multimap<uint32, SimpleEventScript const*> SpellEffectMaps;
 typedef std::pair<EventScriptMaps::const_iterator, EventScriptMaps::const_iterator> EventScriptBounds;
 typedef std::pair<SpellEffectMaps::const_iterator, SpellEffectMaps::const_iterator> SpellEffectMapBounds;
 
-
+//\TODO move it to seperated file!
 class Charter
 {
     public:
@@ -408,6 +388,7 @@ typedef std::map<uint32, InstanceBossInfo*> InstanceBossInfoMap;
 typedef std::list<DBC::Structures::AchievementCriteriaEntry const*> AchievementCriteriaEntryList;
 #endif
 
+//\TODO is this really needed since c++11?
 #ifndef WIN32
 typedef std::map<std::string, PlayerInfo*> PlayerNameStringIndexMap;
 #else
