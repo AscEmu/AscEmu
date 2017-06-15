@@ -13,7 +13,7 @@ namespace Util
 {
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // String manipulation
+    // String functions
 
     void StringToLowerCase(std::string& str)
     {
@@ -48,6 +48,11 @@ namespace Util
             string_vector.push_back(isolated_string);
 
         return string_vector;
+    }
+
+    bool findXinYString(std::string& x, std::string& y)
+    {
+        return y.find(x) != std::string::npos;
     }
 
 

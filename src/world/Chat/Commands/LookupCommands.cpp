@@ -97,7 +97,7 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                     y = std::string(achievement->name);
 #endif
                     Util::StringToLowerCase(y);
-                    foundmatch = FindXinYString(x, y);
+                    foundmatch = Util::findXinYString(x, y);
                 }
                 if (!foundmatch && lookupdesc)
                 {
@@ -107,7 +107,7 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                     y = std::string(achievement->description);
 #endif
                     Util::StringToLowerCase(y);
-                    foundmatch = FindXinYString(x, y);
+                    foundmatch = Util::findXinYString(x, y);
                 }
                 if (!foundmatch && lookupreward)
                 {
@@ -117,7 +117,7 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                     y = std::string(achievement->rewardName);
 #endif
                     Util::StringToLowerCase(y);
-                    foundmatch = FindXinYString(x, y);
+                    foundmatch = Util::findXinYString(x, y);
                 }
                 if (!foundmatch)
                 {
@@ -189,10 +189,11 @@ bool ChatHandler::HandleLookupAchievementCommand(const char* args, WorldSession*
                 y = std::string(criteria->name);
 #endif
                 Util::StringToLowerCase(y);
-                if (!FindXinYString(x, y))
+                if (Util::findXinYString(x, y) == false)
                 {
                     continue;
                 }
+
                 foundList.insert(criteria->ID);
                 std::stringstream strm;
                 strm << criteria->ID;
@@ -291,11 +292,11 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
             Util::StringToLowerCase(litName);
 
             bool localizedFound = false;
-            if (FindXinYString(x, litName))
+            if (Util::findXinYString(x, litName))
                 localizedFound = true;
 
             std::string names_lower = it->lowercase_name;
-            if (FindXinYString(x, names_lower) || localizedFound)
+            if (Util::findXinYString(x, names_lower) || localizedFound)
             {
                 SystemMessage(m_session, "ID: %u |cfffff000%s", it->Id, it->Name.c_str());
                 ++count;
@@ -344,7 +345,7 @@ bool ChatHandler::HandleLookupFactionCommand(const char* args, WorldSession* m_s
             std::string y = std::string(faction->Name);
 #endif
             Util::StringToLowerCase(y);
-            if (FindXinYString(x, y))
+            if (Util::findXinYString(x, y))
             {
 #if VERSION_STRING != Cata
                 SendHighlightedName(m_session, "Faction", faction->Name[0], y, x, faction->ID);
@@ -398,11 +399,11 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
         Util::StringToLowerCase(litName);
 
         bool localizedFound = false;
-        if (FindXinYString(x, litName))
+        if (Util::findXinYString(x, litName))
             localizedFound = true;
 
         std::string proto_lower = it->lowercase_name;
-        if (FindXinYString(x, proto_lower) || localizedFound)
+        if (Util::findXinYString(x, proto_lower) || localizedFound)
         {
             SendItemLinkToPlayer(it, m_session, false, 0, localizedFound ? m_session->language : 0);
             ++count;
@@ -443,7 +444,7 @@ bool ChatHandler::HandleLookupObjectCommand(const char* args, WorldSession* m_se
         gameobject_info = sMySQLStore.getGameObjectProperties(itr->second.entry);
         y = std::string(gameobject_info->name);
         Util::StringToLowerCase(y);
-        if (FindXinYString(x, y))
+        if (Util::findXinYString(x, y))
         {
             std::string Name;
             std::stringstream strm;
@@ -513,10 +514,10 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
         Util::StringToLowerCase(lower_quest_title);
 
         bool localizedFound = false;
-        if (FindXinYString(search_string, liName))
+        if (Util::findXinYString(search_string, liName))
             localizedFound = true;
 
-        if (FindXinYString(search_string, lower_quest_title) || localizedFound)
+        if (Util::findXinYString(search_string, lower_quest_title) || localizedFound)
         {
             std::string questid = MyConvertIntToString(quest->id);
             std::string questtitle = localizedFound ? (li ? li->Title : "") : quest->title;
@@ -575,7 +576,7 @@ bool ChatHandler::HandleLookupSpellCommand(const char* args, WorldSession* m_ses
         SpellInfo* spell = sSpellCustomizations.GetSpellInfo(it->first);
         std::string y = std::string(spell->Name);
         Util::StringToLowerCase(y);
-        if (FindXinYString(x, y))
+        if (Util::findXinYString(x, y))
         {
             sprintf((char*)itoabuf, "%u", spell->Id);
             recout = (const char*)itoabuf;
@@ -635,7 +636,7 @@ bool ChatHandler::HandleLookupSkillCommand(const char* args, WorldSession* m_ses
         std::string y = std::string(skill_line->Name);
 #endif
         Util::StringToLowerCase(y);
-        if (FindXinYString(x, y))
+        if (Util::findXinYString(x, y))
         {
 #if VERSION_STRING != Cata
             SendHighlightedName(m_session, "Skill", skill_line->Name[0], y, x, skill_line->id);

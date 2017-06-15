@@ -14,7 +14,7 @@ namespace Util
 {
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // String manipulation
+    // String functions
 
     /*! \brief Manipulates the string to lowercase */
     void StringToLowerCase(std::string& str);
@@ -27,6 +27,9 @@ namespace Util
 
     /*! \brief Seperates string by seperator (one char) returns string vecotr */
     std::vector<std::string> SplitStringBySeperator(const std::string& str_src, const std::string& str_sep);
+
+    /*! \brief Returns true if string x is in sttrin y */
+    bool findXinYString(std::string& x, std::string& y);
 
 
     //////////////////////////////////////////////////////////////////////////////////////////

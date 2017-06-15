@@ -26,6 +26,7 @@
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Objects/ObjectMgr.h"
+#include "Util.hpp"
 
 #if VERSION_STRING != Cata
 void Auction::DeleteFromDB()
@@ -718,7 +719,7 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
 
         // this is going to hurt. - name
         std::string proto_lower = proto->lowercase_name;
-        if (auctionString.length() > 0 && !FindXinYString(auctionString, proto_lower))
+        if (auctionString.length() > 0 && Util::findXinYString(auctionString, proto_lower) == false)
             continue;
 
         // rarity
@@ -1333,7 +1334,7 @@ void AuctionHouse::SendAuctionList(Player* plr, WorldPacket* packet)
 
         // this is going to hurt. - name
         std::string proto_lower = proto->lowercase_name;
-        if (searchedname.length() > 0 && !FindXinYString(searchedname, proto_lower))
+        if (searchedname.length() > 0 && Util::findXinYString(searchedname, proto_lower) == false)
             continue;
 
         // rarity

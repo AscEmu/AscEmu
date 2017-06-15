@@ -46,10 +46,6 @@
 #include "Server/World.Legacy.h"
 #include "Spell/SpellTargetConstraint.h"
 
-inline bool FindXinYString(std::string & x, std::string & y)
-{
-    return y.find(x) != std::string::npos;
-}
 
 struct WorldState
 {
