@@ -382,7 +382,7 @@ bool ChatHandler::HandleReloadPlayerXpForLevelCommand(const char* /*args*/, Worl
 bool ChatHandler::HandleReloadPointsOfInterestCommand(const char* /*args*/, WorldSession* m_session)
 {
     uint32 start_time = getMSTime();
-    sMySQLStore.loadPointOfInterestTable();
+    sMySQLStore.loadPointsOfInterestTable();
     GreenSystemMessage(m_session, "WorldDB 'points_of_interest' table reloaded in %u ms", getMSTime() - start_time);
     return true;
 }

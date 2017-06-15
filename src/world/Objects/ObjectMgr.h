@@ -159,17 +159,6 @@ struct PetAbilities
     uint32 spirit;
 };
 
-struct PointOfInterest
-{
-    uint32 entry;
-    float x;
-    float y;
-    uint32 icon;
-    uint32 flags;
-    uint32 data;
-    std::string icon_name;
-};
-
 class SpellInfo;
 #if VERSION_STRING == Cata
 struct TrainerSpell

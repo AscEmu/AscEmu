@@ -45,6 +45,7 @@
 #include "Management/ArenaTeam.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 #include "Server/Warden/SpeedDetector.h"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
@@ -13928,9 +13929,9 @@ void Player::RemoveVehicleComponent()
 
 void Player::Gossip_SendSQLPOI(uint32 id)
 {
-    PointOfInterest const* pPOI = sMySQLStore.getPointOfInterest(id);
-    if (pPOI != NULL)
-        Gossip_SendPOI(pPOI->x, pPOI->y, pPOI->icon, pPOI->flags, pPOI->data, pPOI->icon_name.c_str());
+    MySQLStructure::PointsOfInterest const* pPOI = sMySQLStore.getPointOfInterest(id);
+    if (pPOI != nullptr)
+        Gossip_SendPOI(pPOI->x, pPOI->y, pPOI->icon, pPOI->flags, pPOI->data, pPOI->iconName.c_str());
 }
 
 void Player::ResetTimeSync()

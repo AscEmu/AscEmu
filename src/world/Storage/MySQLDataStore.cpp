@@ -2041,7 +2041,7 @@ WorldStringTable const* MySQLDataStore::getWorldString(uint32_t entry)
     return nullptr;
 }
 
-void MySQLDataStore::loadPointOfInterestTable()
+void MySQLDataStore::loadPointsOfInterestTable()
 {
     uint32_t start_time = getMSTime();
 
@@ -2055,7 +2055,7 @@ void MySQLDataStore::loadPointOfInterestTable()
 
     LogNotice("MySQLDataLoads : Table `points_of_interest` has %u columns", points_of_interest_result->GetFieldCount());
 
-    _pointOfInterestStore.rehash(points_of_interest_result->GetRowCount());
+    _pointsOfInterestStore.rehash(points_of_interest_result->GetRowCount());
 
     uint32_t points_of_interest_count = 0;
     do
@@ -2064,15 +2064,15 @@ void MySQLDataStore::loadPointOfInterestTable()
 
         uint32_t entry = fields[0].GetUInt32();
 
-        PointOfInterest& pointOfInterest = _pointOfInterestStore[entry];
+        MySQLStructure::PointsOfInterest& pointOfInterest = _pointsOfInterestStore[entry];
 
-        pointOfInterest.entry = entry;
+        pointOfInterest.id = entry;
         pointOfInterest.x = fields[1].GetFloat();
         pointOfInterest.y = fields[2].GetFloat();
         pointOfInterest.icon = fields[3].GetUInt32();
         pointOfInterest.flags = fields[4].GetUInt32();
         pointOfInterest.data = fields[5].GetUInt32();
-        pointOfInterest.icon_name = fields[6].GetString();
+        pointOfInterest.iconName = fields[6].GetString();
 
         ++points_of_interest_count;
     } while (points_of_interest_result->NextRow());
@@ -2082,10 +2082,10 @@ void MySQLDataStore::loadPointOfInterestTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `points_of_interest` table in %u ms!", points_of_interest_count, getMSTime() - start_time);
 }
 
-PointOfInterest const* MySQLDataStore::getPointOfInterest(uint32_t entry)
+MySQLStructure::PointsOfInterest const* MySQLDataStore::getPointOfInterest(uint32_t entry)
 {
-    PointOfInterestContainer::const_iterator itr = _pointOfInterestStore.find(entry);
-    if (itr != _pointOfInterestStore.end())
+    PointsOfInterestContainer::const_iterator itr = _pointsOfInterestStore.find(entry);
+    if (itr != _pointsOfInterestStore.end())
         return &(itr->second);
 
     return nullptr;

@@ -127,6 +127,16 @@ namespace MySQLStructure
     //playercreateinfo_spells
 
     //points_of_interest
+    struct PointsOfInterest
+    {
+        uint32_t id;
+        float x;
+        float y;
+        uint32_t icon;
+        uint32_t flags;
+        uint32_t data;
+        std::string iconName;
+    };
 
     //professiondiscoveries
 

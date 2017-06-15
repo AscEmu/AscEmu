@@ -849,7 +849,7 @@ void World::loadMySQLStores()
     sMySQLStore.loadSpellClickSpellsTable();
 
     sMySQLStore.loadWorldStringsTable();
-    sMySQLStore.loadPointOfInterestTable();
+    sMySQLStore.loadPointsOfInterestTable();
     sMySQLStore.loadItemSetLinkedSetBonusTable();
     sMySQLStore.loadCreatureInitialEquipmentTable();
 

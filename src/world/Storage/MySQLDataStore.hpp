@@ -52,7 +52,7 @@ public:
     typedef std::unordered_map<uint32_t, TotemDisplayIdEntry> TotemDisplayIdContainer;
     typedef std::unordered_map<uint32_t, SpellClickSpell> SpellClickSpellContainer;
     typedef std::unordered_map<uint32_t, WorldStringTable> WorldStringContainer;
-    typedef std::unordered_map<uint32_t, PointOfInterest> PointOfInterestContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::PointsOfInterest> PointsOfInterestContainer;
 
     typedef std::unordered_map<int32, ItemSetLinkedItemSetBonus> ItemSetDefinedSetBonusContainer;
 
@@ -132,8 +132,8 @@ public:
     WorldStringTable const* getWorldString(uint32_t entry);
     WorldStringContainer const* getWorldStringsStore() { return &_worldStringsStore; }
 
-    PointOfInterest const* getPointOfInterest(uint32_t entry);
-    PointOfInterestContainer const* getPointOfInterestStore() { return &_pointOfInterestStore; }
+    MySQLStructure::PointsOfInterest const* getPointOfInterest(uint32_t entry);
+    PointsOfInterestContainer const* getPointOfInterestStore() { return &_pointsOfInterestStore; }
 
     uint32_t getItemSetLinkedBonus(int32 itemset);
 
@@ -187,7 +187,7 @@ public:
 
     void loadWorldStringsTable();
 
-    void loadPointOfInterestTable();
+    void loadPointsOfInterestTable();
 
     void loadItemSetLinkedSetBonusTable();
     void loadCreatureInitialEquipmentTable();
@@ -235,7 +235,7 @@ public:
 
     WorldStringContainer _worldStringsStore;
 
-    PointOfInterestContainer _pointOfInterestStore;
+    PointsOfInterestContainer _pointsOfInterestStore;
 
     ItemSetDefinedSetBonusContainer _definedItemSetBonusStore;
 
