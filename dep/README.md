@@ -32,10 +32,6 @@
 
 # Everything below this is not updated to a newer version.
 
-## Folder: pcre
-- Web: http://www.pcre.org
-- Version: 7.4 (2007/09/21)
-
 ## Folder: mysql (dev-files)
 - Web: http://www.mysql.com
 

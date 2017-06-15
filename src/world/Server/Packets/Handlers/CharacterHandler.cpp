@@ -211,7 +211,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         return;
     }
 
-    res = g_characterNameFilter->Parse(name, false) ? E_CHAR_NAME_PROFANE : E_CHAR_NAME_SUCCESS;
+    res = g_characterNameFilter->isCharacterNameAllowed(name) ? E_CHAR_NAME_PROFANE : E_CHAR_NAME_SUCCESS;
     if (res != E_CHAR_NAME_SUCCESS)
     {
         OutPacket(SMSG_CHAR_CREATE, 1, &res);

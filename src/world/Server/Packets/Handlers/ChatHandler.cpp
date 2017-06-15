@@ -339,7 +339,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (worldConfig.player.isInterfactionChatEnabled && lang > 0)
                 lang = 0;
 
-            if (g_chatFilter->Parse(msg))
+            if (g_chatFilter->isBlockedOrReplaceWord(msg))
             {
                 SystemMessage("Your chat message was blocked by a server-side filter.");
                 return;
@@ -367,7 +367,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (sChatHandler.ParseCommands(msg.c_str(), this) > 0)
                 break;
 
-            if (g_chatFilter->Parse(msg))
+            if (g_chatFilter->isBlockedOrReplaceWord(msg))
             {
                 SystemMessage("Your chat message was blocked by a server-side filter.");
                 return;
@@ -406,7 +406,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (worldConfig.player.isInterfactionChatEnabled && lang > 0)
                 lang = 0;
 
-            if (g_chatFilter->Parse(msg) == true)
+            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
             {
                 SystemMessage("Your chat message was blocked by a server-side filter.");
                 return;
@@ -469,7 +469,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 break;
             }
 
-            if (g_chatFilter->Parse(msg) == true)
+            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
             {
                 SystemMessage("Your chat message was blocked by a server-side filter.");
                 return;
@@ -487,7 +487,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 break;
             }
 
-            if (g_chatFilter->Parse(msg) == true)
+            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
             {
                 SystemMessage("Your chat message was blocked by a server-side filter.");
                 return;
@@ -512,7 +512,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 break;
             }
 
-            if (g_chatFilter->Parse(msg) == true)
+            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
             {
                 SystemMessage("Your chat message was blocked by a server-side filter.");
                 return;
@@ -544,7 +544,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 lang = LANG_UNIVERSAL; //All whispers are universal
             }
 
-            if (g_chatFilter->Parse(msg) == true)
+            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
             {
                 SystemMessage("Your chat message was blocked by a server-side filter.");
                 return;
@@ -632,7 +632,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         break;
         case CHAT_MSG_CHANNEL:
         {
-            if (g_chatFilter->Parse(msg) == true)
+            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
             {
                 SystemMessage("Your chat message was blocked by a server-side filter.");
                 return;
@@ -658,7 +658,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 
             GetPlayer()->SetAFKReason(reason);
 
-            if (g_chatFilter->Parse(msg) == true)
+            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
             {
                 SystemMessage("Your chat message was blocked by a server-side filter.");
                 return;
@@ -695,7 +695,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             recv_data >> reason;
             GetPlayer()->SetAFKReason(reason);
 
-            if (g_chatFilter->Parse(msg) == true)
+            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
             {
                 SystemMessage("Your chat message was blocked by a server-side filter.");
                 return;
@@ -720,7 +720,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 break;
             }
 
-            if (g_chatFilter->Parse(msg) == true)
+            if (g_chatFilter->isBlockedOrReplaceWord(msg) == true)
             {
                 SystemMessage("Your chat message was blocked by a server-side filter.");
                 return;

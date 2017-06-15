@@ -867,6 +867,8 @@ void World::loadMySQLStores()
     sMySQLStore.loadBroadcastTable();
 
     sMySQLStore.loadAreaTriggerTable();
+    sMySQLStore.loadWordFilterCharacterNames();
+    sMySQLStore.loadWordFilterChat();
 }
 
 void World::loadMySQLTablesByTask(uint32_t start_time)
@@ -945,8 +947,6 @@ void World::loadMySQLTablesByTask(uint32_t start_time)
 
     g_characterNameFilter = new WordFilter();
     g_chatFilter = new WordFilter();
-    g_characterNameFilter->Load("wordfilter_character_names");
-    g_chatFilter->Load("wordfilter_chat");
 
     LogDetail("WordFilter : Done. Database loaded in %ums.", getMSTime() - start_time);
 

@@ -177,7 +177,19 @@ namespace MySQLStructure
     //\TODO switch to std::string in class WordFilter.
     // Rewrite WordFilter, split character name and chat word filter in two seperated functions/classes.
     //wordfilter_character_names
+    struct WordFilterCharacterNames
+    {
+        std::string name;
+        std::string nameReplace;
+    };
+
     //wordfilter_chat
+    struct WordFilterChat
+    {
+        std::string word;
+        std::string wordReplace;
+        bool blockMessage;
+    };
 
     //\brief loaded on server startup. Not needed after server startup
     //world_db_version

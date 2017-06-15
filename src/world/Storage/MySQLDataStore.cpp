@@ -2770,3 +2770,85 @@ AreaTrigger const* MySQLDataStore::getMapEntranceTrigger(uint32_t mapId)
     }
     return nullptr;
 }
+
+void MySQLDataStore::loadWordFilterCharacterNames()
+{
+    uint32_t start_time = getMSTime();
+
+    QueryResult* filter_character_names_result = WorldDatabase.Query("SELECT * FROM wordfilter_character_names");
+    if (filter_character_names_result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `wordfilter_character_names` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `wordfilter_character_names` has %u columns", filter_character_names_result->GetFieldCount());
+
+    _wordFilterCharacterNamesStore.clear();
+
+    uint32_t filter_character_names_count = 0;
+    do
+    {
+        Field* fields = filter_character_names_result->Fetch();
+
+        MySQLStructure::WordFilterCharacterNames wfCharacterNames;
+        wfCharacterNames.name = fields[0].GetString();
+        wfCharacterNames.nameReplace = fields[1].GetString();
+        if (wfCharacterNames.nameReplace.empty())
+        {
+            wfCharacterNames.nameReplace = "?%$?%$";
+        }
+
+        _wordFilterCharacterNamesStore.push_back(wfCharacterNames);
+
+        ++filter_character_names_count;
+
+    } while (filter_character_names_result->NextRow());
+
+    delete filter_character_names_result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `wordfilter_character_names` table in %u ms!", filter_character_names_count, getMSTime() - start_time);
+}
+
+void MySQLDataStore::loadWordFilterChat()
+{
+    uint32_t start_time = getMSTime();
+
+    QueryResult* filter_chat_result = WorldDatabase.Query("SELECT * FROM wordfilter_chat");
+    if (filter_chat_result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `wordfilter_chat` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `wordfilter_chat` has %u columns", filter_chat_result->GetFieldCount());
+
+    _wordFilterChatStore.clear();
+
+    uint32_t filter_chat_count = 0;
+    do
+    {
+        Field* fields = filter_chat_result->Fetch();
+
+        MySQLStructure::WordFilterChat wfChat;
+        wfChat.word = fields[0].GetString();
+        wfChat.wordReplace = fields[1].GetString();
+        if (wfChat.wordReplace.empty())
+        {
+            wfChat.blockMessage = true;
+        }
+        else
+        {
+            wfChat.blockMessage = false;
+        }
+
+        _wordFilterChatStore.push_back(wfChat);
+
+        ++filter_chat_count;
+
+    } while (filter_chat_result->NextRow());
+
+    delete filter_chat_result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `wordfilter_chat` table in %u ms!", filter_chat_count, getMSTime() - start_time);
+}

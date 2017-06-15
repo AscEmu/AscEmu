@@ -11,7 +11,6 @@ endif()
 if(WIN32)
     add_subdirectory(bzip2)
     add_subdirectory(zlib)
-    add_subdirectory(pcre)
 endif()
 
 # add our dependecies

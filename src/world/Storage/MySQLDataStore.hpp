@@ -69,6 +69,9 @@ public:
 
     typedef std::unordered_map<uint32_t, AreaTrigger> AreaTriggerContainer;
 
+    typedef std::list<MySQLStructure::WordFilterCharacterNames> WordFilterCharacterNamesSet;
+    typedef std::list<MySQLStructure::WordFilterChat> WordFilterChatSet;
+
     //helper
     MySQLStructure::ItemPage const* getItemPage(uint32_t entry);
     ItemPageContainer const* getItemPagesStore() { return &_itemPagesStore; }
@@ -204,6 +207,9 @@ public:
 
     void loadAreaTriggerTable();
 
+    void loadWordFilterCharacterNames();
+    void loadWordFilterChat();
+
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
     CreaturePropertiesContainer _creaturePropertiesStore;
@@ -243,6 +249,9 @@ public:
     WorldBroadcastContainer _worldBroadcastStore;
 
     AreaTriggerContainer _areaTriggerStore;
+
+    WordFilterCharacterNamesSet _wordFilterCharacterNamesStore;
+    WordFilterChatSet _wordFilterChatStore;
 };
 
 #define sMySQLStore MySQLDataStore::getSingleton()
