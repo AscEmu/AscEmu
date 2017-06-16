@@ -21,8 +21,6 @@
 #ifndef OBJECTMGR_H
 #define OBJECTMGR_H
 
-#include "Server/Packets/Handlers/AreaTrigger.h"
-
 #include "Chat/ChatHandler.hpp"
 #include "Units/Creatures/Corpse.h"
 #include "Units/Players/Player.h"

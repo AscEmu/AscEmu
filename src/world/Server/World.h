@@ -9,7 +9,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "IUpdatable.h"
 #include "Definitions.h"
 #include "Storage/DBC/DBCStores.h"
-#include "Server/Packets/Handlers/AreaTrigger.h"
 #include "WorldSession.h"
 #include "WorldConfig.h"
 #include "World.Legacy.h"
@@ -175,9 +174,6 @@ class SERVER_DECL World : public Singleton<World>, public EventableObject, publi
     private:
 
         EventableObjectHolder* mEventableObjectHolder;
-
-        typedef std::unordered_map<uint32, AreaTrigger*> AreaTriggerMap;
-        AreaTriggerMap mAreaTriggerMap;
 
     public:
 

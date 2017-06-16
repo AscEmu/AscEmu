@@ -24,7 +24,6 @@
 #include "IUpdatable.h"
 #include "Definitions.h"
 #include "Storage/DBC/DBCStores.h"
-#include "Server/Packets/Handlers/AreaTrigger.h"
 #include "WorldSession.h"
 #include "WorldConfig.h"
 

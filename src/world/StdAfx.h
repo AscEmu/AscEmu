@@ -117,7 +117,6 @@
 #include "Management/AddonMgr.h"
 #include "Units/Creatures/AIEvents.h"
 #include "Units/Creatures/AIInterface.h"
-#include "Server/Packets/Handlers/AreaTrigger.h"
 #include "Management/CalendarMgr.h"
 #include "Management/Battleground/BattlegroundMgr.h"
 #include "Management/Battleground/Battleground.h"

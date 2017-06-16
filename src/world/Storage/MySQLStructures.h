@@ -5,6 +5,17 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+enum AreaTriggerType
+{
+    ATTYPE_NULL = 0,
+    ATTYPE_INSTANCE = 1,
+    ATTYPE_QUESTTRIGGER = 2,
+    ATTYPE_INN = 3,
+    ATTYPE_TELEPORT = 4,
+    ATTYPE_SPELL = 5,
+    ATTYPE_BATTLEGROUND = 6
+};
+
 namespace MySQLStructure
 {
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -21,6 +32,20 @@ namespace MySQLStructure
     //ai_threattospellid
 
     //areatriggers
+    struct AreaTrigger
+    {
+        uint32_t id;
+        uint8_t type;
+        uint32_t mapId;
+        uint32_t pendingScreen;
+        std::string name;
+        float x;
+        float y;
+        float z;
+        float o;
+        uint32_t requiredHonorRank;
+        uint32_t requiredLevel;
+    };
 
     //auctionhouse
 

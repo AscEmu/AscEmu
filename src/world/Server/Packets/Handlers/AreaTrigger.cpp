@@ -22,6 +22,7 @@
 #include "Management/ItemInterface.h"
 #include "Management/Battleground/Battleground.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 #include "Map/MapMgrDefines.hpp"
 #include "Map/MapMgr.h"
 #include "Map/WorldCreatorDefines.hpp"
@@ -72,7 +73,7 @@ uint32 AreaTriggerFailureMessages[] =
     31, // 33="You must be level 70 to enter Heroic mode." 31="You must be at least level %u to pass through here."
 };
 
-uint32 CheckTriggerPrerequisites(AreaTrigger const* pAreaTrigger, WorldSession* pSession, Player* pPlayer, MapInfo const* pMapInfo)
+uint32 CheckTriggerPrerequisites(MySQLStructure::AreaTrigger const* pAreaTrigger, WorldSession* pSession, Player* pPlayer, MapInfo const* pMapInfo)
 {
     if (!pMapInfo || !pMapInfo->HasFlag(WMI_INSTANCE_ENABLED))
         return AREA_TRIGGER_FAILURE_UNAVAILABLE;
@@ -155,7 +156,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
         return;
     }
 
-    AreaTrigger const* pAreaTrigger = sMySQLStore.getAreaTrigger(id);
+    MySQLStructure::AreaTrigger const* pAreaTrigger = sMySQLStore.getAreaTrigger(id);
     if (pAreaTrigger == nullptr)
         return;
 

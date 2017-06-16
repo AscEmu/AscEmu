@@ -18,6 +18,7 @@
 
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 #include "Management/Item.h"
 #include "Management/LFG/LFGMgr.h"
 #include "Management/LFG/LFGGroupData.h"
@@ -1798,7 +1799,7 @@ void LfgMgr::TeleportPlayer(Player* player, bool out, bool fromOpcode /*= false*
 
             if (!mapid)
             {
-                AreaTrigger const* areaTrigger = sMySQLStore.getMapEntranceTrigger(dungeon->map);
+                MySQLStructure::AreaTrigger const* areaTrigger = sMySQLStore.getMapEntranceTrigger(dungeon->map);
                 if (areaTrigger == nullptr)
                 {
                     LOG_DEBUG("Failed to teleport %u: No areatrigger found for map: %u difficulty: %u", player->GetGUID(), dungeon->map, dungeon->difficulty);

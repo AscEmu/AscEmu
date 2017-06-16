@@ -4,7 +4,6 @@ set(PATH_PREFIX Server/Packets/Handlers)
 
 set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/AreaTrigger.cpp
-   ${PATH_PREFIX}/AreaTrigger.h
    ${PATH_PREFIX}/BattlegroundHandler.cpp
    ${PATH_PREFIX}/CalendarHandler.cpp
    ${PATH_PREFIX}/ChannelHandler.cpp

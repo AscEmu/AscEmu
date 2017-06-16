@@ -2705,7 +2705,7 @@ void MySQLDataStore::loadAreaTriggerTable()
     {
         Field* fields = area_trigger_result->Fetch();
 
-        AreaTrigger areaTrigger;
+        MySQLStructure::AreaTrigger areaTrigger;
         areaTrigger.id = fields[0].GetUInt32();
         areaTrigger.type = fields[1].GetUInt8();
         areaTrigger.mapId = fields[2].GetUInt16();
@@ -2748,7 +2748,7 @@ void MySQLDataStore::loadAreaTriggerTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `areatriggers` table in %u ms!", areaTrigger_count, getMSTime() - start_time);
 }
 
-AreaTrigger const* MySQLDataStore::getAreaTrigger(uint32_t entry)
+MySQLStructure::AreaTrigger const* MySQLDataStore::getAreaTrigger(uint32_t entry)
 {
     AreaTriggerContainer::const_iterator itr = _areaTriggerStore.find(entry);
     if (itr != _areaTriggerStore.end())
@@ -2757,7 +2757,7 @@ AreaTrigger const* MySQLDataStore::getAreaTrigger(uint32_t entry)
     return nullptr;
 }
 
-AreaTrigger const* MySQLDataStore::getMapEntranceTrigger(uint32_t mapId)
+MySQLStructure::AreaTrigger const* MySQLDataStore::getMapEntranceTrigger(uint32_t mapId)
 {
     for (AreaTriggerContainer::const_iterator itr = _areaTriggerStore.begin(); itr != _areaTriggerStore.end(); ++itr)
     {

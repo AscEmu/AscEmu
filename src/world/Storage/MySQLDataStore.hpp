@@ -8,7 +8,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Singleton.h"
 #include "Server/Packets/Handlers/MiscHandler.h"
 #include "Server/Packets/Handlers/NPCHandler.h"
-#include "Server/Packets/Handlers/AreaTrigger.h"
 #include "../../scripts/Battlegrounds/IsleOfConquest.h"
 #include "Objects/ObjectMgr.h"
 #include "Spell/Definitions/SpellClickSpell.h"
@@ -67,7 +66,7 @@ public:
 
     typedef std::unordered_map<uint32_t, MySQLStructure::WorldBroadCast> WorldBroadcastContainer;
 
-    typedef std::unordered_map<uint32_t, AreaTrigger> AreaTriggerContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::AreaTrigger> AreaTriggerContainer;
 
     typedef std::list<MySQLStructure::WordFilterCharacterNames> WordFilterCharacterNamesSet;
     typedef std::list<MySQLStructure::WordFilterChat> WordFilterChatSet;
@@ -148,9 +147,9 @@ public:
     MySQLStructure::WorldBroadCast const* getWorldBroadcastById(uint32_t level);
     WorldBroadcastContainer* getWorldBroadcastStore() { return &_worldBroadcastStore; }
 
-    AreaTrigger const* getAreaTrigger(uint32_t entry);
+    MySQLStructure::AreaTrigger const* getAreaTrigger(uint32_t entry);
     AreaTriggerContainer const* getAreaTriggersStore() { return &_areaTriggerStore; }
-    AreaTrigger const* getMapEntranceTrigger(uint32_t mapId);
+    MySQLStructure::AreaTrigger const* getMapEntranceTrigger(uint32_t mapId);
 
     bool isCharacterNameAllowed(std::string charName);
 
