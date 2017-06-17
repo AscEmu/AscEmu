@@ -768,8 +768,10 @@ void Player::SendTotemCreated(uint8 slot, uint64 GUID, uint32 duration, uint32 s
 
 void Player::SendInitialWorldstates()
 {
+#if VERSION_STRING < Cata
     WorldPacket data(SMSG_INIT_WORLD_STATES, 100);
 
     m_mapMgr->GetWorldStatesHandler().BuildInitWorldStatesForZone(m_zoneId, m_AreaID, data);
     m_session->SendPacket(&data);
+#endif
 }

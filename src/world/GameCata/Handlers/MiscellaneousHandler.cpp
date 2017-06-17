@@ -47,7 +47,8 @@ void WorldSession::HandleTimeSyncRespOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleObjectUpdateFailedOpcode(WorldPacket& recv_data)
 {
-    uint8_t guid[8];
+    ObjectGuid guid;
+
     guid[6] = recv_data.readBit();
     guid[7] = recv_data.readBit();
     guid[4] = recv_data.readBit();
@@ -66,10 +67,9 @@ void WorldSession::HandleObjectUpdateFailedOpcode(WorldPacket& recv_data)
     recv_data.ReadByteSeq(guid[0]);
     recv_data.ReadByteSeq(guid[5]);
 
-    uint64_t playerguid = *(uint64_t*)guid;
-    LogError("HandleObjectUpdateFailedOpcode : Object update failed for playerguid %u", Arcemu::Util::GUID_LOPART(playerguid));
+    LogError("HandleObjectUpdateFailedOpcode : Object update failed for playerguid %u", Arcemu::Util::GUID_LOPART(guid));
 
-    if (_player->GetGUID() == playerguid)
+    if (_player->GetGUID() == guid)
     {
         LogoutPlayer(true);
         return;

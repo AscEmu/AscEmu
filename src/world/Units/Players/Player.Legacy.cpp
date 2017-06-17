@@ -1608,7 +1608,7 @@ void Player::_EventExploration()
 #if VERSION_STRING != Cata
     if (!(currFields & val) && !GetTaxiState() && !obj_movement_info.transporter_info.guid) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
 #else
-    if (!(currFields & val) && !GetTaxiState() && !obj_movement_info.getTransportGuid().IsEmpty()) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
+    if (!(currFields & val) && !GetTaxiState() && obj_movement_info.getTransportGuid().IsEmpty()) //Unexplored Area        // bur: we don't want to explore new areas when on taxi
 #endif
     {
         SetUInt32Value(offset, (uint32)(currFields | val));
@@ -3414,7 +3414,15 @@ void Player::LoadFromDBProc(QueryResultVector & results)
     float transportZ = get_next_field.GetFloat();
     float transportO = get_next_field.GetFloat();
 
-    obj_movement_info.setTransportData(transportGuid, transportX, transportY, transportZ, transportO, 0, 0);
+    if (transportGuid != 0)
+    {
+        obj_movement_info.setTransportData(transportGuid, transportX, transportY, transportZ, transportO, 0, 0);
+    }
+    else
+    {
+        obj_movement_info.clearTransportData();
+    }
+
 #endif
 
     LoadSpells(results[13].result);

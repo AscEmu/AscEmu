@@ -186,7 +186,7 @@ class SERVER_DECL MovementInfo
 
         void clearTransportData()
         {
-            transport_guid = ObjectGuid();
+            transport_guid = 0;
             transport_position.x = 0.0f;
             transport_position.y = 0.0f;
             transport_position.z = 0.0f;

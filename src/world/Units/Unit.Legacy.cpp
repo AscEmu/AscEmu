@@ -5484,8 +5484,10 @@ void Unit::DeMorph()
 
 void Unit::Emote(EmoteType emote)
 {
+#if VERSION_STRING < Cata
     if (emote == 0)
         return;
+#endif
 
     WorldPacket data(SMSG_EMOTE, 12);
     data << uint32(emote);
