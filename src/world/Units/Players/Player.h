@@ -30,6 +30,7 @@
 #include "Management/AchievementMgr.h"
 #include "Units/Unit.h"
 #include "Storage/DBC/DBCStructures.hpp"
+#include "Storage/MySQLStructures.h"
 #include "Units/Creatures/AIInterface.h" //?? what?
 #include "WorldConf.h"
 #include "Management/AuctionHouse.h"
@@ -61,7 +62,7 @@ class CBattleground;
 class Instance;
 struct CharRaceEntry;
 struct CharClassEntry;
-struct VendorRestrictionEntry;
+//struct VendorRestrictionEntry;
 struct Trainer;
 class Aura;
 
@@ -2209,7 +2210,7 @@ private:
 
         void SendUpdateDataToSet(ByteBuffer* groupbuf, ByteBuffer* nongroupbuf, bool sendtoself);
 
-        bool CanBuyAt(VendorRestrictionEntry const* vendor);
+        bool CanBuyAt(MySQLStructure::VendorRestrictions const* vendor);
         bool CanTrainAt(Trainer*);
 
         Object* GetPlayerOwner() { return this; };

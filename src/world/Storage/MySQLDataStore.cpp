@@ -1263,13 +1263,13 @@ void MySQLDataStore::loadCreatureDifficultyTable()
 
         uint32_t entry = fields[0].GetUInt32();
 
-        CreatureDifficulty& creatureDifficulty = _creatureDifficultyStore[entry];
+        MySQLStructure::CreatureDifficulty& creatureDifficulty = _creatureDifficultyStore[entry];
 
-        creatureDifficulty.Id = entry;
+        creatureDifficulty.id = entry;
 
-        creatureDifficulty.difficulty_entry_1 = fields[1].GetUInt32();
-        creatureDifficulty.difficulty_entry_2 = fields[2].GetUInt32();
-        creatureDifficulty.difficulty_entry_3 = fields[3].GetUInt32();
+        creatureDifficulty.difficultyEntry1 = fields[1].GetUInt32();
+        creatureDifficulty.difficultyEntry2 = fields[2].GetUInt32();
+        creatureDifficulty.difficultyEntry3 = fields[3].GetUInt32();
 
 
         ++creature_difficulty_count;
@@ -1288,20 +1288,20 @@ uint32_t MySQLDataStore::getCreatureDifficulty(uint32_t entry, uint8_t difficult
         {
             case 1:
             {
-                if (itr->first == entry && itr->second.difficulty_entry_1 != 0)
-                    return itr->second.difficulty_entry_1;
+                if (itr->first == entry && itr->second.difficultyEntry1 != 0)
+                    return itr->second.difficultyEntry1;
             }
             break;
             case 2:
             {
-                if (itr->first == entry && itr->second.difficulty_entry_2 != 0)
-                    return itr->second.difficulty_entry_2;
+                if (itr->first == entry && itr->second.difficultyEntry2 != 0)
+                    return itr->second.difficultyEntry2;
             }
             break;
             case 3:
             {
-                if (itr->first == entry && itr->second.difficulty_entry_3 != 0)
-                    return itr->second.difficulty_entry_3;
+                if (itr->first == entry && itr->second.difficultyEntry3 != 0)
+                    return itr->second.difficultyEntry3;
             }
             break;
             default:
@@ -1391,7 +1391,7 @@ void MySQLDataStore::loadVendorRestrictionsTable()
 
         uint32_t entry = fields[0].GetUInt32();
 
-        VendorRestrictionEntry& vendorRestriction = _vendorRestrictionsStore[entry];
+        MySQLStructure::VendorRestrictions& vendorRestriction = _vendorRestrictionsStore[entry];
 
         vendorRestriction.entry = entry;
         vendorRestriction.racemask = fields[1].GetInt32();
@@ -1410,7 +1410,7 @@ void MySQLDataStore::loadVendorRestrictionsTable()
     LogDetail("MySQLDataLoads : Loaded %u restrictions from `vendor_restrictions` table in %u ms!", vendor_restricitons_count, getMSTime() - start_time);
 }
 
-VendorRestrictionEntry const* MySQLDataStore::getVendorRestriction(uint32_t entry)
+MySQLStructure::VendorRestrictions const* MySQLDataStore::getVendorRestriction(uint32_t entry)
 {
     VendorRestrictionContainer::const_iterator itr = _vendorRestrictionsStore.find(entry);
     if (itr != _vendorRestrictionsStore.end())
@@ -1927,12 +1927,12 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
 
         uint32_t entry = fields[0].GetUInt32();
 
-        TotemDisplayIdEntry& totemDisplayId = _totemDisplayIdsStore[entry];
+        MySQLStructure::TotemDisplayIds& totemDisplayId = _totemDisplayIdsStore[entry];
 
-        totemDisplayId.DisplayId = entry;
-        totemDisplayId.DraeneiId = fields[1].GetUInt32();
-        totemDisplayId.TrollId = fields[2].GetUInt32();
-        totemDisplayId.OrcId = fields[3].GetUInt32();
+        totemDisplayId.displayId = entry;
+        totemDisplayId.draeneiId = fields[1].GetUInt32();
+        totemDisplayId.trollId = fields[2].GetUInt32();
+        totemDisplayId.orcId = fields[3].GetUInt32();
 
         ++totemdisplayids_count;
     } while (totemdisplayids_result->NextRow());
@@ -1942,7 +1942,7 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `totemdisplayids` table in %u ms!", totemdisplayids_count, getMSTime() - start_time);
 }
 
-TotemDisplayIdEntry const* MySQLDataStore::getTotemDisplayId(uint32_t entry)
+MySQLStructure::TotemDisplayIds const* MySQLDataStore::getTotemDisplayId(uint32_t entry)
 {
     TotemDisplayIdContainer::const_iterator itr = _totemDisplayIdsStore.find(entry);
     if (itr != _totemDisplayIdsStore.end())

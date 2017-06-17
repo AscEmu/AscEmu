@@ -52,6 +52,14 @@ namespace MySQLStructure
     //battlemasters
 
     //creature_difficulty
+    struct CreatureDifficulty
+    {
+        uint32_t id;
+        uint32_t difficultyEntry1;
+        uint32_t difficultyEntry2;
+        uint32_t difficultyEntry3;
+    };
+
     //creature_formations
     //creature_initial_equip
     //creature_properties
@@ -204,6 +212,13 @@ namespace MySQLStructure
     //spelloverride
     //spelltargetconstraints
     //totemdisplayids
+    struct TotemDisplayIds
+    {
+        uint32_t displayId;
+        uint32_t draeneiId;
+        uint32_t trollId;
+        uint32_t orcId;
+    };
 
     //trainer_defs
     //trainer_spells
@@ -215,6 +230,18 @@ namespace MySQLStructure
     //vehicle_accessories
 
     //vendor_restrictions
+    struct VendorRestrictions
+    {
+        uint32_t entry;
+        int32_t racemask;
+        int32_t classmask;
+        uint32_t reqrepfaction;
+        uint32_t reqrepvalue;
+        uint32_t canbuyattextid;
+        uint32_t cannotbuyattextid;
+        uint32_t flags;
+    };
+
     //vendors
 
     //weather

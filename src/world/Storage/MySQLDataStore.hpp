@@ -36,9 +36,9 @@ public:
     typedef std::unordered_map<uint32_t, GameObjectProperties> GameObjectPropertiesContainer;
     typedef std::unordered_map<uint32_t, QuestProperties> QuestPropertiesContainer;
 
-    typedef std::unordered_map<uint32_t, CreatureDifficulty> CreatureDifficultyContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::CreatureDifficulty> CreatureDifficultyContainer;
     typedef std::unordered_map<uint32_t, DisplayBounding> DisplayBoundingBoxesContainer;
-    typedef std::unordered_map<uint32_t, VendorRestrictionEntry> VendorRestrictionContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::VendorRestrictions> VendorRestrictionContainer;
     typedef std::unordered_map<uint32_t, NpcText> NpcTextContainer;
     typedef std::unordered_map<uint32_t, NpcScriptText> NpcScriptTextContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::GossipMenuOption> GossipMenuOptionContainer;
@@ -48,7 +48,7 @@ public:
     typedef std::unordered_map<uint32_t, MapInfo> WorldMapInfoContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::ZoneGuards> ZoneGuardsContainer;
     typedef std::unordered_map<uint32_t, BGMaster> BattleMastersContainer;
-    typedef std::unordered_map<uint32_t, TotemDisplayIdEntry> TotemDisplayIdContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::TotemDisplayIds> TotemDisplayIdContainer;
     typedef std::unordered_map<uint32_t, SpellClickSpell> SpellClickSpellContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::WorldStringTable> WorldStringContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::PointsOfInterest> PointsOfInterestContainer;
@@ -92,7 +92,7 @@ public:
     DisplayBounding const* getDisplayBounding(uint32_t entry);
     DisplayBoundingBoxesContainer const* getDisplayBoundingBoxesStore() { return &_displayBoundingBoxesStore; }
 
-    VendorRestrictionEntry const* getVendorRestriction(uint32_t entry);
+    MySQLStructure::VendorRestrictions const* getVendorRestriction(uint32_t entry);
     VendorRestrictionContainer const* getVendorRestrictionsStore() { return &_vendorRestrictionsStore; }
 
     NpcText const* getNpcText(uint32_t entry);
@@ -122,7 +122,7 @@ public:
     BGMaster const* getBattleMaster(uint32_t entry);
     BattleMastersContainer const* getBattleMastersStore() { return &_battleMastersStore; }
 
-    TotemDisplayIdEntry const* getTotemDisplayId(uint32_t entry);
+    MySQLStructure::TotemDisplayIds const* getTotemDisplayId(uint32_t entry);
     TotemDisplayIdContainer const* getTotemDisplayIdsStore() { return &_totemDisplayIdsStore; }
 
     SpellClickSpell const* getSpellClickSpell(uint32_t entry);

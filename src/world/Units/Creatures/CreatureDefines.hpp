@@ -234,28 +234,9 @@ struct CreatureProperties
     std::list<AI_Spell*> spells;
 };
 
-struct VendorRestrictionEntry
-{
-    uint32 entry;
-    int32 racemask;
-    int32 classmask;
-    uint32 reqrepfaction;
-    uint32 reqrepvalue;
-    uint32 canbuyattextid;
-    uint32 cannotbuyattextid;
-    uint32 flags;
-};
-
-struct TotemDisplayIdEntry
-{
-    uint32 DisplayId;       /// male displayid in creature_names
-    uint32 DraeneiId;       /// Totem displayid for Draenei
-    uint32 TrollId;         /// Totem displayid for Troll
-    uint32 OrcId;           /// Totem displayid for Orc
-};
-
 #pragma pack(pop)
 
+//\brief used in class FormationMgr
 struct Formation
 {
     uint32 fol;
@@ -419,19 +400,11 @@ enum CREATURE_TYPE
     CREATURE_TYPE_GUARDIAN  = 1
 };
 
-struct PetSpellCooldown
-{
-    uint32 spellId;
-    int32 cooldown;
-};
-
-struct CreatureDifficulty
-{
-    uint32 Id;
-    uint32 difficulty_entry_1;
-    uint32 difficulty_entry_2;
-    uint32 difficulty_entry_3;
-};
-
+//\Todo not used?
+//struct PetSpellCooldown
+//{
+//    uint32 spellId;
+//    int32 cooldown;
+//};
 
 #endif // _CREATURE_DEFINES_HPP

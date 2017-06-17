@@ -21,6 +21,7 @@
 #include "../../StdAfx.h"
 #include "Units/Summons/TotemSummon.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 #include "Spell/SpellAuras.h"
 #include "Spell/Definitions/SpellCastTargetFlags.h"
 #include "Spell/Definitions/PowerType.h"
@@ -35,30 +36,31 @@ TotemSummon::~TotemSummon()
 void TotemSummon::Load(CreatureProperties const* properties_, Unit* owner, LocationVector & position, uint32 spellid, int32 summonslot)
 {
     Summon::Load(properties_, owner, position, spellid, summonslot);
-
-    TotemDisplayIdEntry const* totemdisplay = sMySQLStore.getTotemDisplayId(creature_properties->Male_DisplayID);
     uint32 displayID = 0;
 
-    if (totemdisplay != NULL)
+    MySQLStructure::TotemDisplayIds const* totemdisplay = sMySQLStore.getTotemDisplayId(creature_properties->Male_DisplayID);
+    if (totemdisplay != nullptr)
     {
         switch (owner->getRace())
         {
             case RACE_DRAENEI:
-                displayID = totemdisplay->DraeneiId;
+                displayID = totemdisplay->draeneiId;
                 break;
-
             case RACE_TROLL:
-                displayID = totemdisplay->TrollId;
+                displayID = totemdisplay->trollId;
                 break;
-
             case RACE_ORC:
-                displayID = totemdisplay->OrcId;
+                displayID = totemdisplay->orcId;
+                break;
+            default:
+                displayID = totemdisplay->displayId;
                 break;
         }
     }
-
-    if (displayID == 0)
+    else
+    {
         displayID = creature_properties->Male_DisplayID;
+    }
 
     // Set up the creature.
     SetMaxPower(POWER_TYPE_FOCUS, owner->getLevel() * 30);

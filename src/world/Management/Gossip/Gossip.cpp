@@ -20,6 +20,7 @@
 
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 #include "Management/Item.h"
 #include "Management/LocalizationMgr.h"
 
@@ -313,7 +314,7 @@ void Arcemu::Gossip::Vendor::OnHello(Object* pObject, Player* Plr)
     if (sMySQLStore.getNpcText(Text) == nullptr)
         Text = DefaultGossipTextId;
 
-    VendorRestrictionEntry const* vendor = sMySQLStore.getVendorRestriction(creature->GetCreatureProperties()->Id);
+    MySQLStructure::VendorRestrictions const* vendor = sMySQLStore.getVendorRestriction(creature->GetCreatureProperties()->Id);
 
     Gossip::Menu menu(creature->GetGUID(), Text, Plr->GetSession()->language);
 
@@ -361,7 +362,7 @@ void Arcemu::Gossip::Trainer::OnHello(Object* pObject, Player* Plr)
 
             if (trainer->isVendor())
             {
-                VendorRestrictionEntry const* vendor = sMySQLStore.getVendorRestriction(trainer->GetCreatureProperties()->Id);
+                MySQLStructure::VendorRestrictions const* vendor = sMySQLStore.getVendorRestriction(trainer->GetCreatureProperties()->Id);
                 if (Plr->CanBuyAt(vendor))
                     menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 2);
             }
@@ -429,7 +430,7 @@ void Arcemu::Gossip::InnKeeper::OnHello(Object* pObject, Player* Plr)
     //inn keepers can sell stuff
     if (innkeeper->isVendor())
     {
-        VendorRestrictionEntry const* vendor = sMySQLStore.getVendorRestriction(innkeeper->GetCreatureProperties()->Id);
+        MySQLStructure::VendorRestrictions const* vendor = sMySQLStore.getVendorRestriction(innkeeper->GetCreatureProperties()->Id);
         if (Plr->CanBuyAt(vendor))
             menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 2);
     }
@@ -509,7 +510,7 @@ void Arcemu::Gossip::TabardDesigner::OnHello(Object* pObject, Player* Plr)
 
     if (chartergiver->isVendor())
     {
-        VendorRestrictionEntry const* vendor = sMySQLStore.getVendorRestriction(chartergiver->GetCreatureProperties()->Id);
+        MySQLStructure::VendorRestrictions const* vendor = sMySQLStore.getVendorRestriction(chartergiver->GetCreatureProperties()->Id);
         if (Plr->CanBuyAt(vendor))
             menu.AddItem(GOSSIP_ICON_VENDOR, Plr->GetSession()->LocalizedGossipOption(VENDOR), 3);
     }

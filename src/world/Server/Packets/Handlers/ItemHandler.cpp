@@ -25,6 +25,7 @@
 #include "Management/Container.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 #include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
@@ -1424,7 +1425,7 @@ void WorldSession::HandleListInventoryOpcode(WorldPacket& recv_data)
     if (unit == NULL)
         return;
 
-    VendorRestrictionEntry const* vendor = sMySQLStore.getVendorRestriction(unit->GetCreatureProperties()->Id);
+    MySQLStructure::VendorRestrictions const* vendor = sMySQLStore.getVendorRestriction(unit->GetCreatureProperties()->Id);
 
     //this is a blizzlike check
 #if VERSION_STRING != Cata
