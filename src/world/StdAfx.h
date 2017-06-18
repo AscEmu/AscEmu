@@ -176,6 +176,8 @@
 #include "Management/TransporterHandler.h"
 #include "Management/WeatherMgr.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
+#include "Server/WorldConfig.h"
 #include "Management/EquipmentSetMgr.h"
 #include "Management/ItemInterface.h"
 #include "Units/Stats.h"

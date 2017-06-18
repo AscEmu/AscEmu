@@ -1269,7 +1269,7 @@ class StickedSpewerAI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -1372,7 +1372,7 @@ class SurgicalAssistantAI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -1481,7 +1481,7 @@ class SludgeBelcherAI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -1597,7 +1597,7 @@ class GrobbulusAI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -1714,7 +1714,7 @@ class GluthAI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -1822,7 +1822,7 @@ class BonyConstructAI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -1925,7 +1925,7 @@ class DeathLordAI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -2035,7 +2035,7 @@ class RazuviousAI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -2168,7 +2168,7 @@ class KorthazzAI : public CreatureAIScript
     {
         m_attackstart = false;
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -2346,7 +2346,7 @@ class BlaumeuxAI : public CreatureAIScript
     {
         m_attackstart = false;
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -2519,7 +2519,7 @@ class ZeliekAI : public CreatureAIScript
     {
         m_attackstart = false;
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         RemoveAIUpdateEvent();
     }
 
@@ -2678,7 +2678,7 @@ class FrostBreathTriggerAI : public CreatureAIScript
 
     FrostBreathTriggerAI(Creature* pCreature) : CreatureAIScript(pCreature)
     {
-        _unit->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + 10.5f, PhaseTwoWP[1].o);
+        _unit->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + 10.5f);
         _unit->SetUInt64Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         _unit->GetAIInterface()->SetFly();
         _unit->m_noRespawn = true;
@@ -2694,7 +2694,7 @@ class FrostBreathTriggerAI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
     }
 
     void OnDied(Unit* mKiller)
@@ -2708,9 +2708,9 @@ class FrostBreathTriggerAI : public CreatureAIScript
 
         AICounter--;
         if (AICounter == 6)
-            _unit->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + AICounter * 1.5f, PhaseTwoWP[1].o);
+            _unit->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + AICounter * 1.5f);
         else
-            _unit->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z, PhaseTwoWP[1].o);
+            _unit->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z);
     }
 
     protected:
@@ -2741,7 +2741,7 @@ class FrostBreathTrigger2AI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
     }
 
     void OnDied(Unit* mKiller)
@@ -2769,7 +2769,7 @@ class FrostBreathTrigger3AI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
     }
 
     void OnDied(Unit* mKiller)
@@ -2801,7 +2801,7 @@ class ChillTriggerAI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
     }
 };
 
@@ -2890,7 +2890,7 @@ class SapphironAI : public CreatureAIScript
         spells[3].cooldown = 900;
         spells[3].attackstoptimer = 1000;
 
-        _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
         _unit->GetAIInterface()->StopFlying();
         _unit->GetAIInterface()->m_canMove = true;
@@ -2912,7 +2912,7 @@ class SapphironAI : public CreatureAIScript
 
         spells[3].casttime = (uint32)time(NULL) + spells[3].cooldown;
 
-        _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
         _unit->GetAIInterface()->StopFlying();
         _unit->GetAIInterface()->m_canMove = true;
@@ -2959,7 +2959,7 @@ class SapphironAI : public CreatureAIScript
             Waterfall->SetState(GO_STATE_OPEN);
         }
 
-        _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
         _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
         _unit->GetAIInterface()->StopFlying();
         _unit->GetAIInterface()->m_canMove = true;
@@ -2967,7 +2967,7 @@ class SapphironAI : public CreatureAIScript
         _unit->setMoveHover(false);
 
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
         RemoveAIUpdateEvent();
     }
@@ -3011,7 +3011,7 @@ class SapphironAI : public CreatureAIScript
     {
         _unit->CastSpell(_unit, FROST_AURA, true);
 
-        if (_unit->GetAIInterface()->GetWaypointScriptType() == Movement::WP_MOVEMENT_SCRIPT_WANTEDWP)
+        if (_unit->GetAIInterface()->getWaypointScriptType() == Movement::WP_MOVEMENT_SCRIPT_WANTEDWP)
             return;
 
         if (_unit->GetHealthPct() > 10)
@@ -3024,8 +3024,8 @@ class SapphironAI : public CreatureAIScript
 
                 _unit->GetAIInterface()->SetAllowedToEnterCombat(false);
                 _unit->GetAIInterface()->StopMovement(0);
-                _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
-                _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+                _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
                 _unit->GetAIInterface()->setWaypointToMove(1);
 
                 return;
@@ -3057,8 +3057,8 @@ class SapphironAI : public CreatureAIScript
             _unit->GetAIInterface()->m_canMove = false;
             _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
             _unit->GetAIInterface()->setCurrentAgent(AGENT_SPELL);
-            _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
-            _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+            _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+            _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
             _unit->GetAIInterface()->setWaypointToMove(0);
         }
 
@@ -3147,7 +3147,7 @@ class SapphironAI : public CreatureAIScript
                 FlyingFrostBreath = _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_FROST_BREATH_TRIGGER, PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z + 18.0f, _unit->GetOrientation(), true, false, 0, 0);
                 if (FlyingFrostBreath != NULL)
                 {
-                    FlyingFrostBreath->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z, PhaseTwoWP[1].o);
+                    FlyingFrostBreath->GetAIInterface()->MoveTo(PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z);
                 }
 
                 _unit->GetMapMgr()->GetInterface()->SpawnCreature(CN_FROST_BREATH_TRIGGER2, PhaseTwoWP[1].x, PhaseTwoWP[1].y, PhaseTwoWP[1].z, _unit->GetOrientation(), true, false, 0, 0);
@@ -3187,8 +3187,8 @@ class SapphironAI : public CreatureAIScript
                 _unit->GetAIInterface()->m_canMove = true;
                 _unit->GetAIInterface()->SetAllowedToEnterCombat(true);
                 _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-                _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
-                _unit->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+                _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
+                _unit->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
                 _unit->GetAIInterface()->setWaypointToMove(0);
 
                 RemoveAIUpdateEvent();
@@ -3685,7 +3685,7 @@ class KelthuzadAI : public CreatureAIScript
         _unit->SetChannelSpellTargetGUID(0);
         _unit->SetChannelSpellId(0);
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
         _unit->GetAIInterface()->disable_melee = false;
         _unit->SetUInt64Value(UNIT_FIELD_FLAGS, 0);
         _unit->GetAIInterface()->m_canMove = true;
@@ -4180,7 +4180,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
         //RemoveAIUpdateEvent();
     }
@@ -4210,7 +4210,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
         }
         if (_unit->GetPositionX() == LastPosX && _unit->GetPositionY() == LastPosY && _unit->GetPositionZ() == LastPosZ)
         {
-            _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f, _unit->GetOrientation());
+            _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
         }
         if (OnStart == false)
         {
@@ -4231,7 +4231,7 @@ class SoldierOfTheFrozenWastesAI : public CreatureAIScript
                     newposx = 3715.845703f + xchange;
                     newposy = -5106.928223f + ychange;
 
-                    _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f, _unit->GetOrientation());
+                    _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
                 }
             }
 
@@ -4309,7 +4309,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
         //RemoveAIUpdateEvent();
     }
@@ -4339,7 +4339,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
         }
         if (_unit->GetPositionX() == LastPosX && _unit->GetPositionY() == LastPosY && _unit->GetPositionZ() == LastPosZ)
         {
-            _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f, _unit->GetOrientation());
+            _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
         }
         if (OnStart == false)
         {
@@ -4360,7 +4360,7 @@ class UnstoppableAbominationAI : public CreatureAIScript
                     newposx = 3715.845703f + xchange;
                     newposy = -5106.928223f + ychange;
 
-                    _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f, _unit->GetOrientation());
+                    _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
                 }
             }
 
@@ -4481,7 +4481,7 @@ class SoulWeaverAI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
         //RemoveAIUpdateEvent();
     }
@@ -4511,7 +4511,7 @@ class SoulWeaverAI : public CreatureAIScript
         }
         if (_unit->GetPositionX() == LastPosX && _unit->GetPositionY() == LastPosY && _unit->GetPositionZ() == LastPosZ)
         {
-            _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f, _unit->GetOrientation());
+            _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
         }
         if (OnStart == false)
         {
@@ -4532,7 +4532,7 @@ class SoulWeaverAI : public CreatureAIScript
                     newposx = 3715.845703f + xchange;
                     newposy = -5106.928223f + ychange;
 
-                    _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f, _unit->GetOrientation());
+                    _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
                 }
             }
 
@@ -4654,7 +4654,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
     void OnCombatStop(Unit* mTarget)
     {
         _unit->GetAIInterface()->setCurrentAgent(AGENT_NULL);
-        _unit->GetAIInterface()->SetAIState(STATE_IDLE);
+        _unit->GetAIInterface()->setAiState(AI_STATE_IDLE);
 
         //RemoveAIUpdateEvent();
     }
@@ -4675,7 +4675,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
         }
         if (_unit->GetPositionX() == LastPosX && _unit->GetPositionY() == LastPosY && _unit->GetPositionZ() == LastPosZ)
         {
-            _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f, _unit->GetOrientation());
+            _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
         }
         if (OnStart == false)
         {
@@ -4696,7 +4696,7 @@ class GuardianOfIcecrownAI : public CreatureAIScript
                     newposx = 3715.845703f + xchange;
                     newposy = -5106.928223f + ychange;
 
-                    _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f, _unit->GetOrientation());
+                    _unit->GetAIInterface()->MoveTo(newposx, newposy, 141.290451f);
                 }
             }
 

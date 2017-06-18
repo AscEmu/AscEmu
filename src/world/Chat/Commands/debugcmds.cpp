@@ -237,11 +237,11 @@ bool ChatHandler::HandleAIMoveCommand(const char* args, WorldSession* m_session)
             y = (static_cast< Creature* >(obj)->GetPositionY() + y * q) / (1 + q);
             z = (static_cast< Creature* >(obj)->GetPositionZ() + z * q) / (1 + q);
         }
-        static_cast< Creature* >(obj)->GetAIInterface()->MoveTo(x, y, z, 0);
+        static_cast< Creature* >(obj)->GetAIInterface()->MoveTo(x, y, z);
     }
     else
     {
-        static_cast<Creature*>(obj)->GetAIInterface()->MoveTo(x, y, z, o);
+        static_cast<Creature*>(obj)->GetAIInterface()->MoveTo(x, y, z);
     }
 
     return true;
@@ -665,11 +665,11 @@ bool ChatHandler::HandleDebugDumpCoordsCommmand(const char* args, WorldSession* 
 //As requested by WaRxHeAd for database development.
 //This should really only be available in special cases and NEVER on real servers... -DGM
 
-//#define _ONLY_FOOLS_TRY_THIS_
+//#define ONLY_FOOLS_TRY_THIS_
 
 bool ChatHandler::HandleSQLQueryCommand(const char* args, WorldSession* m_session)
 {
-#ifdef _ONLY_FOOLS_TRY_THIS_
+#ifdef ONLY_FOOLS_TRY_THIS_
     if (!*args)
     {
         RedSystemMessage(m_session, "No query given.");
@@ -733,7 +733,7 @@ bool ChatHandler::HandleSQLQueryCommand(const char* args, WorldSession* m_sessio
 
 bool ChatHandler::HandleSendpacket(const char* args, WorldSession* m_session)
 {
-#ifdef _ONLY_FOOLS_TRY_THIS_
+#ifdef ONLY_FOOLS_TRY_THIS_
 
     uint32 arg_len = strlen(args);
     char* xstring = new char[arg_len];
@@ -774,7 +774,6 @@ bool ChatHandler::HandleSendpacket(const char* args, WorldSession* m_session)
 
 
     int j = 3;
-    int x = 0;
     do
     {
         if (xstring[j] == '\0')
@@ -790,8 +789,7 @@ bool ChatHandler::HandleSendpacket(const char* args, WorldSession* m_session)
             //j++;
         }
         j++;
-    }
-    while (j < arg_len);
+    } while (j < arg_len);
 
     data.hexlike();
 
@@ -809,22 +807,32 @@ bool ChatHandler::HandleDebugSpawnWarCommand(const char* args, WorldSession* m_s
 
     // takes 2 or 3 arguments: npcid, count, (health)
     if (sscanf(args, "%u %u %u", &npcid, &count, &health) != 3)
+    {
         if (sscanf(args, "%u %u", &count, &npcid) != 2)
+        {
             return false;
+        }
+    }
 
     if (!count || !npcid)
+    {
         return false;
+    }
 
     CreatureProperties const* cp = sMySQLStore.GetCreatureProperties(npcid);
     if (cp == nullptr)
+    {
         return false;
+    }
 
     MapMgr* m = m_session->GetPlayer()->GetMapMgr();
 
     // if we have selected unit, use its position
     Unit* unit = m->GetUnit(m_session->GetPlayer()->GetSelection());
-    if (unit == NULL)
+    if (unit == nullptr)
+    {
         unit = m_session->GetPlayer(); // otherwise ours
+    }
 
     float bx = unit->GetPositionX();
     float by = unit->GetPositionY();
@@ -1039,7 +1047,7 @@ bool ChatHandler::HandleRangeCheckCommand(const char* args, WorldSession* m_sess
 
 bool ChatHandler::HandleCollisionTestIndoor(const char* args, WorldSession* m_session)
 {
-    if (sWorld.Collision)
+    if (worldConfig.terrainCollision.isCollisionEnabled)
     {
         Player* plr = m_session->GetPlayer();
         const LocationVector & loc = plr->GetPosition();
@@ -1056,7 +1064,7 @@ bool ChatHandler::HandleCollisionTestIndoor(const char* args, WorldSession* m_se
 
 bool ChatHandler::HandleCollisionTestLOS(const char* args, WorldSession* m_session)
 {
-    if (sWorld.Collision)
+    if (worldConfig.terrainCollision.isCollisionEnabled)
     {
         Object* pObj = NULL;
         Creature* pCreature = GetSelectedCreature(m_session, false);
@@ -1090,7 +1098,7 @@ bool ChatHandler::HandleCollisionTestLOS(const char* args, WorldSession* m_sessi
 
 bool ChatHandler::HandleCollisionGetHeight(const char* args, WorldSession* m_session)
 {
-    if (sWorld.Collision)
+    if (worldConfig.terrainCollision.isCollisionEnabled)
     {
         Player* plr = m_session->GetPlayer();
         float radius = 5.0f;

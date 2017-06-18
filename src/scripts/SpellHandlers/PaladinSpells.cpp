@@ -29,9 +29,13 @@ bool EyeForAnEye(uint32 i, Aura* pAura, bool apply)
     Unit* target = pAura->GetTarget();
 
     if (apply)
+    {
         target->AddProcTriggerSpell(25997, pAura->GetSpellInfo()->Id, pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_CRIT_HIT_VICTIM | PROC_ON_RANGED_CRIT_ATTACK_VICTIM | PROC_ON_SPELL_CRIT_HIT_VICTIM, 0, NULL, NULL);
+    }
     else
+    {
         target->RemoveProcTriggerSpell(25997, pAura->m_casterGuid);
+    }
 
     return true;
 }
@@ -40,13 +44,13 @@ bool HolyShock(uint32 i, Spell* pSpell)
 {
     ///\todo This function returns true on failures (invalid target, invalid spell). Verify this is the correct return value
     Unit* target = pSpell->GetUnitTarget();
-    if (target == NULL)
+    if (target == nullptr)
     {
         return true;
     }
 
     Player* caster = pSpell->p_caster;
-    if (caster == NULL)
+    if (caster == nullptr)
     {
         return true;
     }
@@ -58,30 +62,32 @@ bool HolyShock(uint32 i, Spell* pSpell)
         // Cast offensive Holy Shock
         switch (pSpell->GetSpellInfo()->Id)
         {
-        case 20473: // Rank 1
-            spell_id = 25912;
-            break;
-        case 20929: // Rank 2
-            spell_id = 25911;
-            break;
-        case 20930: // Rank 3
-            spell_id = 25902;
-            break;
-        case 27174: // Rank 4
-            spell_id = 27176;
-            break;
-        case 33072: // Rank 5
-            spell_id = 33073;
-            break;
-        case 48824: // Rank 6
-            spell_id = 48822;
-            break;
-        case 48825: // Rank 7
-            spell_id = 48823;
-            break;
-        default: // Invalid case, spell handler is assigned to wrong spell
-            LOG_ERROR("(Offensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
-            return true;
+            case 20473: // Rank 1
+                spell_id = 25912;
+                break;
+            case 20929: // Rank 2
+                spell_id = 25911;
+                break;
+            case 20930: // Rank 3
+                spell_id = 25902;
+                break;
+            case 27174: // Rank 4
+                spell_id = 27176;
+                break;
+            case 33072: // Rank 5
+                spell_id = 33073;
+                break;
+            case 48824: // Rank 6
+                spell_id = 48822;
+                break;
+            case 48825: // Rank 7
+                spell_id = 48823;
+                break;
+            default: // Invalid case, spell handler is assigned to wrong spell
+            {
+                LOG_ERROR("(Offensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
+                return true;
+            }
         }
     }
     else
@@ -89,30 +95,32 @@ bool HolyShock(uint32 i, Spell* pSpell)
         // Cast healing Holy Shock
         switch (pSpell->GetSpellInfo()->Id)
         {
-        case 20473: // Rank 1
-            spell_id = 25914;
-            break;
-        case 20929: // Rank 2
-            spell_id = 25913;
-            break;
-        case 20930: // Rank 3
-            spell_id = 25903;
-            break;
-        case 27174: // Rank 4
-            spell_id = 27175;
-            break;
-        case 33072: // Rank 5
-            spell_id = 33074;
-            break;
-        case 48824: // Rank 6
-            spell_id = 48820;
-            break;
-        case 48825: // Rank 7
-            spell_id = 48821;
-            break;
-        default: // Invalid case, spell handler is assigned to wrong spell
-            LOG_ERROR("(Defensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
-            return true;
+            case 20473: // Rank 1
+                spell_id = 25914;
+                break;
+            case 20929: // Rank 2
+                spell_id = 25913;
+                break;
+            case 20930: // Rank 3
+                spell_id = 25903;
+                break;
+            case 27174: // Rank 4
+                spell_id = 27175;
+                break;
+            case 33072: // Rank 5
+                spell_id = 33074;
+                break;
+            case 48824: // Rank 6
+                spell_id = 48820;
+                break;
+            case 48825: // Rank 7
+                spell_id = 48821;
+                break;
+            default: // Invalid case, spell handler is assigned to wrong spell
+            {
+                LOG_ERROR("(Defensive) Holy Shock spell handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
+                return true;
+            }
         }
     }
 
@@ -128,9 +136,13 @@ bool SealOfRighteousness(uint32 i, Aura* pAura, bool apply)
     if (i == 0)
     {
         if (apply)
+        {
             target->AddProcTriggerSpell(25742, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_MELEE_ATTACK, 0, NULL, NULL);
+        }
         else
+        {
             target->RemoveProcTriggerSpell(25742, pAura->m_casterGuid);
+        }
     }
 
     return true;
@@ -181,12 +193,16 @@ bool SealOfVengeance(uint32 i, Aura* pAura, bool apply)
 bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
 {
     Unit* target = pSpell->GetUnitTarget();
-    if (target == NULL)
+    if (target == nullptr)
+    {
         return true;
+    }
 
     Player* caster = pSpell->p_caster;
-    if (caster == NULL)
+    if (caster == nullptr)
+    {
         return true;
+    }
 
     // Search for a previous judgement casted by this caster. He can have only 1 judgement active at a time
     uint32 index = 0;
@@ -198,9 +214,10 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
     if (prev_target)
     {
         Unit* t = caster->GetMapMgr()->GetUnit(prev_target);
-
-        if (t != NULL)
+        if (t != nullptr)
+        {
             t->RemoveAllAuraByNameHash(judgements[index]);
+        }
 
         caster->RemoveCurrentUnitForSingleTargetAura(judgements[index]);
     }
@@ -209,33 +226,40 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
     uint32 seals[] = { 20375, 20165, 20164, 21084, 31801, 53736, 20166, 0 };
 
     Aura* aura = caster->FindAura(seals);
-    if (aura == NULL)
+    if (aura == nullptr)
+    {
         return true;
+    }
 
     uint32 id = 0;
     switch (aura->GetSpellId())
     {
-    case 20375:
-        id = 20467;
-        break;
-    case 20165:
-        id = 54158;
-        break;
-    case 20164:
-        id = 54158;
-        break;
-    case 21084:
-        id = 20187;
-        break;
-    case 31801:
-        id = aura->GetSpellInfo()->EffectBasePoints[2];
-        break;
-    case 53736:
-        id = aura->GetSpellInfo()->EffectBasePoints[2];
-        break;
-    case 20166:
-        id = 54158;
-        break;
+        case 20375:
+            id = 20467;
+            break;
+        case 20165:
+            id = 54158;
+            break;
+        case 20164:
+            id = 54158;
+            break;
+        case 21084:
+            id = 20187;
+            break;
+        case 31801:
+            id = aura->GetSpellInfo()->EffectBasePoints[2];
+            break;
+        case 53736:
+            id = aura->GetSpellInfo()->EffectBasePoints[2];
+            break;
+        case 20166:
+            id = 54158;
+            break;
+        default:
+        {
+            LOG_ERROR("JudgementLightWisdomJustice handler assigned to invalid spell id [%u]", pSpell->GetSpellInfo()->Id);
+            return true;
+        }
     }
 
     caster->CastSpell(target, id, true);
@@ -243,15 +267,20 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
     // Cast judgement spell
     switch (pSpell->GetSpellInfo()->custom_NameHash)
     {
-    case SPELL_HASH_JUDGEMENT_OF_JUSTICE:
-        id = 20184;
-        break;
-    case SPELL_HASH_JUDGEMENT_OF_LIGHT:
-        id = 20185;
-        break;
-    case SPELL_HASH_JUDGEMENT_OF_WISDOM:
-        id = 20186;
-        break;
+        case SPELL_HASH_JUDGEMENT_OF_JUSTICE:
+            id = 20184;
+            break;
+        case SPELL_HASH_JUDGEMENT_OF_LIGHT:
+            id = 20185;
+            break;
+        case SPELL_HASH_JUDGEMENT_OF_WISDOM:
+            id = 20186;
+            break;
+        default:
+        {
+            LOG_ERROR("JudgementLightWisdomJustice cast spell felt to invalid NameHash id [%u]", pSpell->GetSpellInfo()->Id);
+            return true;
+        }
     }
 
     caster->CastSpell(target, id, true);
@@ -264,13 +293,19 @@ bool JudgementLightWisdomJustice(uint32 i, Spell* pSpell)
 bool JudgementOfLight(uint32 i, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
-    if (caster == NULL)
+    if (caster == nullptr)
+    {
         return true;
+    }
 
     if (apply)
+    {
         caster->AddProcTriggerSpell(20267, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_MELEE_ATTACK | PROC_TARGET_SELF, 0, NULL, NULL);
+    }
     else
+    {
         caster->RemoveProcTriggerSpell(20267, pAura->m_casterGuid);
+    }
 
     return true;
 }
@@ -278,13 +313,19 @@ bool JudgementOfLight(uint32 i, Aura* pAura, bool apply)
 bool JudgementOfWisdom(uint32 i, Aura* pAura, bool apply)
 {
     Unit* caster = pAura->GetUnitCaster();
-    if (caster == NULL)
+    if (caster == nullptr)
+    {
         return true;
+    }
 
     if (apply)
+    {
         caster->AddProcTriggerSpell(20268, pAura->GetSpellId(), pAura->m_casterGuid, pAura->GetSpellInfo()->procChance, PROC_ON_MELEE_ATTACK | PROC_TARGET_SELF, 0, NULL, NULL);
+    }
     else
+    {
         caster->RemoveProcTriggerSpell(20268, pAura->m_casterGuid);
+    }
 
     return true;
 }

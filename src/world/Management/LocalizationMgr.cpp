@@ -21,6 +21,8 @@
 #include "StdAfx.h"
 #include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
+#include "Server/World.h"
+#include "Server/World.Legacy.h"
 #include "Config/Config.h"
 #include "Log.hpp"
 #include "Database/Database.h"
@@ -181,11 +183,17 @@ void LocalizationMgr::GetDistinctLanguages(std::set<std::string>& dest, const ch
 uint32 LocalizationMgr::GetLanguageId(uint32 full)
 {
     if (m_disabled)
+    {
         return 0;
+    }
 
     for (std::vector<std::pair<uint32, uint32> >::iterator itr = m_languages.begin(); itr != m_languages.end(); ++itr)
+    {
         if (itr->first == full)
+        {
             return itr->second;
+        }
+    }
 
     return 0;
 }
@@ -194,7 +202,9 @@ uint32 LocalizationMgr::GetLanguageId(uint32 full)
 void LocalizationMgr::Reload(bool first)
 {
     if (first)
+    {
         return;
+    }
 
     QueryResult* result;
     std::set<std::string> languages;
@@ -213,7 +223,7 @@ void LocalizationMgr::Reload(bool first)
     GetDistinctLanguages(languages, "locales_npc_monstersay");
 
     /// Read Language Bindings From Config
-    std::string ls = Config.MainConfig.GetStringDefault("Localization", "LocaleBindings", "");
+    std::string ls = worldConfig.localization.localizedBindings;
     std::vector<std::string> tbindings = Util::SplitStringBySeperator(ls, " ");
     for (std::vector<std::string>::iterator ztr = tbindings.begin(); ztr != tbindings.end(); ++ztr)
     {
@@ -224,7 +234,10 @@ void LocalizationMgr::Reload(bool first)
 
         char* lbp = strchr(lb, '=');
         if (lbp == NULL)
+        {
             continue;
+        }
+
         *lbp = 0;
         lbp++;
 
@@ -265,7 +278,9 @@ void LocalizationMgr::Reload(bool first)
         return;                 // No localizations
     }
     else
+    {
         m_disabled = false;
+    }
 
     m_CreatureNames = new std::unordered_map<uint32, LocalizedCreatureName>[langid];
     m_GameObjectNames = new std::unordered_map<uint32, LocalizedGameObjectName>[langid];
@@ -300,7 +315,9 @@ void LocalizationMgr::Reload(bool first)
 
                 lid = GetLanguageId(str);
                 if (lid == 0)
+                {
                     continue;        // no loading enUS stuff.. lawl
+                }
 
                 cn.Name = strdup(f[2].GetString());
                 cn.SubName = strdup(f[3].GetString());
@@ -331,7 +348,9 @@ void LocalizationMgr::Reload(bool first)
 
                 lid = GetLanguageId(str);
                 if (lid == 0)
+                {
                     continue;        // no loading enUS stuff.. lawl
+                }
 
                 gn.Name = strdup(f[2].GetString());
                 m_GameObjectNames[lid].insert(std::make_pair(entry, gn));
@@ -361,7 +380,9 @@ void LocalizationMgr::Reload(bool first)
 
                 lid = GetLanguageId(str);
                 if (lid == 0)
+                {
                     continue;        // no loading enUS stuff.. lawl
+                }
 
                 if (m_Items[lid].find(entry) != m_Items[lid].end())
                 {
@@ -397,7 +418,9 @@ void LocalizationMgr::Reload(bool first)
 
                 lid = GetLanguageId(str);
                 if (lid == 0)
+                {
                     continue;        // no loading enUS stuff.. lawl
+                }
 
                 q.Title = strdup(f[2].GetString());
                 q.Details = strdup(f[3].GetString());
@@ -438,7 +461,9 @@ void LocalizationMgr::Reload(bool first)
 
                 lid = GetLanguageId(str);
                 if (lid == 0)
+                {
                     continue;        // no loading enUS stuff.. lawl
+                }
 
                 counter = 2;
                 for (uint8 i = 0; i < 8; ++i)
@@ -473,7 +498,9 @@ void LocalizationMgr::Reload(bool first)
 
                 lid = GetLanguageId(str);
                 if (lid == 0)
+                {
                     continue;        // no loading enUS stuff.. lawl
+                }
 
                 nt.Text = strdup(f[2].GetString());
                 m_ItemPages[lid].insert(std::make_pair(entry, nt));
@@ -503,7 +530,9 @@ void LocalizationMgr::Reload(bool first)
 
                 lid = GetLanguageId(str);
                 if (lid == 0)
+                {
                     continue;
+                }
 
                 nt.Text = strdup(f[2].GetString());
                 m_CreatureText[lid].insert(std::make_pair(entry, nt));
@@ -533,7 +562,9 @@ void LocalizationMgr::Reload(bool first)
 
                 lid = GetLanguageId(str);
                 if (lid == 0)
+                {
                     continue;
+                }
 
                 nt.Text = strdup(f[2].GetString());
                 m_GossipMenuOption[lid].insert(std::make_pair(entry, nt));
@@ -563,7 +594,9 @@ void LocalizationMgr::Reload(bool first)
 
                 lid = GetLanguageId(str);
                 if (lid == 0)
+                {
                     continue;
+                }
 
                 nt.Text = strdup(f[2].GetString());
                 m_WorldStrings[lid].insert(std::make_pair(entry, nt));
@@ -593,7 +626,9 @@ void LocalizationMgr::Reload(bool first)
 
                 lid = GetLanguageId(str);
                 if (lid == 0)
+                {
                     continue;
+                }
 
                 nt.Text = strdup(f[2].GetString());
                 m_WorldBroadCast[lid].insert(std::make_pair(entry, nt));
@@ -623,7 +658,9 @@ void LocalizationMgr::Reload(bool first)
 
                 lid = GetLanguageId(str);
                 if (lid == 0)
+                {
                     continue;
+                }
 
                 nt.Text = strdup(f[2].GetString());
                 m_WorldMapInfo[lid].insert(std::make_pair(entry, nt));
@@ -654,7 +691,9 @@ void LocalizationMgr::Reload(bool first)
 
                 lid = GetLanguageId(str);
                 if (lid == 0)
+                {
                     continue;        // no loading enUS stuff.. lawl
+                }
 
                 ms.monstername = strdup(f[2].GetString());
                 ms.text0 = strdup(f[3].GetString());

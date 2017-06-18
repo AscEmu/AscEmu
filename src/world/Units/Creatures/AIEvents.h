@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _AIEVENTS_H
-#define _AIEVENTS_H
+#ifndef AIEVENTS_H
+#define AIEVENTS_H
 
 #include "CommonTypes.hpp"
 #include "Units/Unit.h"

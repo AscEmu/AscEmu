@@ -17,8 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _GROUP_H
-#define _GROUP_H
+#ifndef GROUP_H
+#define GROUP_H
 
 #include "../world/WorldConf.h"
 #include "Units/Players/Player.h"
@@ -303,4 +303,4 @@ class SERVER_DECL Group
         uint8 m_raiddifficulty;
 };
 
-#endif  // _GROUP_H
+#endif  // GROUP_H

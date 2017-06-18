@@ -683,15 +683,23 @@ Player* Aura::GetPlayerCaster()
     if (m_casterGuid == m_target->GetGUID())
     {
         if (m_target->IsPlayer())
+        {
             return static_cast<Player*>(m_target);
-        else//caster is not a player
-            return NULL;
+        }
+        else //caster is not a player
+        {
+            return nullptr;
+        }
     }
 
     if (m_target->GetMapMgr())
+    {
         return m_target->GetMapMgr()->GetPlayer(Arcemu::Util::GUID_LOPART(m_casterGuid));
+    }
     else
-        return NULL;
+    {
+        return nullptr;
+    }
 }
 
 Unit* Aura::GetUnitCaster()
@@ -2045,7 +2053,7 @@ void Aura::SpellAuraModCharm(bool apply)
         m_target->SetCharmTempVal(m_target->GetFaction());
         m_target->SetFaction(caster->GetFaction());
         m_target->UpdateOppFactionSet();
-        m_target->GetAIInterface()->Init(m_target, AITYPE_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, caster);
+        m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, caster);
         m_target->SetCharmedByGUID(caster->GetGUID());
         caster->SetCharmedUnitGUID(target->GetGUID());
         //damn it, the other effects of enslave demon will agro him on us anyway :S
@@ -2081,7 +2089,7 @@ void Aura::SpellAuraModCharm(bool apply)
         m_target->GetAIInterface()->WipeHateList();
         m_target->GetAIInterface()->WipeTargetList();
         m_target->UpdateOppFactionSet();
-        m_target->GetAIInterface()->Init(m_target, AITYPE_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
+        m_target->GetAIInterface()->Init(m_target, AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
         m_target->SetCharmedByGUID(0);
 
         if (caster->GetSession() != NULL)   // crashfix

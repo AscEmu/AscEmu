@@ -95,6 +95,20 @@ CREATE TABLE IF NOT EXISTS `auctions` (
 /*!40000 ALTER TABLE `auctions` ENABLE KEYS */;
 
 
+-- Dumping structure for table banned_char_log
+CREATE TABLE IF NOT EXISTS  `banned_char_log` (
+  `banned_by` varchar(50) NOT NULL,
+  `banned_player` varchar(50) NOT NULL,
+  `timestamp` int(11) NOT NULL,
+  `banned_until` int(11) NOT NULL,
+  `reason` varchar(150) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Dumping data for table banned_char_log: ~0 rows (approximately)
+/*!40000 ALTER TABLE `banned_char_log` DISABLE KEYS */;
+/*!40000 ALTER TABLE `banned_char_log` ENABLE KEYS */;
+
+
 -- Dumping structure for table banned_names
 CREATE TABLE IF NOT EXISTS `banned_names` (
   `name` varchar(30) COLLATE utf8_unicode_ci NOT NULL

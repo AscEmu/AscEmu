@@ -4187,7 +4187,7 @@ void Spell::SpellEffectPickpocket(uint32 i) // pickpocket
     lootmgr.FillPickpocketingLoot(&static_cast< Creature* >(unitTarget)->loot, unitTarget->GetEntry());
 
     uint32 _rank = static_cast< Creature* >(unitTarget)->GetCreatureProperties()->Rank;
-    unitTarget->loot.gold = float2int32((_rank + 1) * unitTarget->getLevel() * (RandomUInt(5) + 1) * sWorld.getRate(RATE_MONEY));
+    unitTarget->loot.gold = float2int32((_rank + 1) * unitTarget->getLevel() * (RandomUInt(5) + 1) * worldConfig.getFloatRate(RATE_MONEY));
 
     p_caster->SendLoot(unitTarget->GetGUID(), LOOT_PICKPOCKETING, unitTarget->GetMapId());
     target->SetPickPocketed(true);
@@ -4654,7 +4654,7 @@ void Spell::SpellEffectDisenchant(uint32 i)
     {
         if (Rand(100.0f - skill * 0.75f))
         {
-            uint32 SkillUp = float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE));
+            uint32 SkillUp = float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE));
             if (skill + SkillUp > 60)
                 SkillUp = 60 - skill;
 

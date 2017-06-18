@@ -28,6 +28,9 @@
 
 #include "BaseConsole.h"
 #include "ConsoleCommands.h"
+#include "Server/World.h"
+#include "Server/World.Legacy.h"
+
 #define LOCAL_BUFFER_SIZE 2048
 #define ENABLE_REMOTE_CONSOLE 1
 
@@ -139,9 +142,9 @@ bool StartConsoleListener()
 #ifndef ENABLE_REMOTE_CONSOLE
     return false;
 #else
-    std::string lhost = Config.MainConfig.GetStringDefault("RemoteConsole", "Host", "0.0.0.0");
-    uint32 lport = Config.MainConfig.GetIntDefault("RemoteConsole", "Port", 8092);
-    bool enabled = Config.MainConfig.GetBoolDefault("RemoteConsole", "Enabled", false);
+    std::string lhost = worldConfig.remoteConsole.host;
+    uint32 lport = worldConfig.remoteConsole.port;
+    bool enabled = worldConfig.remoteConsole.isEnabled;
 
     if (!enabled)
         return false;

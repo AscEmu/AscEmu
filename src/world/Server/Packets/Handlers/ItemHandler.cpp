@@ -1011,9 +1011,9 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recv_data)
     uint32 price = GetSellPriceForItem(it, quantity);
 
     // Check they don't have more than the max gold
-    if (sWorld.GoldCapEnabled)
+    if (worldConfig.player.isGoldCapEnabled)
     {
-        if ((_player->GetGold() + price) > sWorld.GoldLimit)
+        if ((_player->GetGold() + price) > worldConfig.player.limitGoldAmount)
         {
             _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
             return;
@@ -1486,7 +1486,7 @@ void WorldSession::SendInventoryList(Creature* unit)
         {
             if ((curItem = sMySQLStore.GetItemProperties(itr->itemid)) != 0)
             {
-                if (!_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) && !sWorld.show_all_vendor_items) // looking up everything for active gms
+                if (!_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) && !worldConfig.player.showAllVendorItems) // looking up everything for active gms
                 {
                     if (curItem->AllowableClass && !(_player->getClassMask() & curItem->AllowableClass))
                         continue;

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef _BATTLEGROUNDMGR_H
-#define _BATTLEGROUNDMGR_H
+#ifndef BATTLEGROUNDMGR_H
+#define BATTLEGROUNDMGR_H
 
 #include "WorldPacket.h"
 #include "Server/EventableObject.h"
@@ -326,4 +326,4 @@ class SERVER_DECL CBattlegroundManager : public Singleton<CBattlegroundManager>,
 
 #define BattlegroundManager CBattlegroundManager::getSingleton()
 
-#endif // _BATTLEGROUNDMGR_H
+#endif // BATTLEGROUNDMGR_H

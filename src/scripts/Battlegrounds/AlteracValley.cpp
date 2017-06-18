@@ -1840,7 +1840,7 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
     {
         if (loot_ptr->Faction == -1 || loot_ptr->Faction == static_cast<int8>(plr->GetTeam()))
         {
-            if (Rand(loot_ptr->Chance * sWorld.getRate(RATE_DROP0)))
+            if (Rand(loot_ptr->Chance * worldConfig.getFloatRate(RATE_DROP0)))
             {
                 __LootItem li;
                 ItemProperties const* pProto = sMySQLStore.GetItemProperties(loot_ptr->ItemId);
@@ -1870,7 +1870,7 @@ void AlteracValley::HookGenerateLoot(Player* plr, Object* pCorpse)
 
     // add some money
     float gold = ((plr->getLevel() / 2.5f) + 1.0f) * 100.0f;            // fix this later
-    gold *= sWorld.getRate(RATE_MONEY);
+    gold *= worldConfig.getFloatRate(RATE_MONEY);
 
     // set it
     static_cast<Corpse*>(pCorpse)->loot.gold = float2int32(gold);

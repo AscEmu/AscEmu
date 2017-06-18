@@ -3,8 +3,7 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _DBC_STORAGE_HPP
-#define _DBC_STORAGE_HPP
+#pragma once
 
 #include "Common.hpp"
 #include "DBCSQL.hpp"
@@ -148,5 +147,3 @@ namespace DBC
             DBCStorage& operator=(DBCStorage const& right) = delete;
     };
 }
-
-#endif // _DBC_STORAGE_HPP

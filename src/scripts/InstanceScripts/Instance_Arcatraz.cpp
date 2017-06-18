@@ -35,12 +35,16 @@ class InstanceTheArcatrazScript : public MoonInstanceScript
             // Way to select bosses
             BuildEncounterMap();
             if (mEncounters.size() == 0)
+            {
                 return;
+            }
 
             for (auto Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
             {
                 if ((*Iter).second.mState != State_Finished)
+                {
                     continue;
+                }
             }
         }
 
@@ -49,11 +53,15 @@ class InstanceTheArcatrazScript : public MoonInstanceScript
         void SetInstanceData(uint32 pType, uint32 pIndex, uint32 pData)
         {
             if (pType != Data_EncounterState || pIndex == 0)
+            {
                 return;
+            }
 
             EncounterMap::iterator Iter = mEncounters.find(pIndex);
             if (Iter == mEncounters.end())
+            {
                 return;
+            }
 
             (*Iter).second.mState = (EncounterState)pData;
         }
@@ -61,11 +69,15 @@ class InstanceTheArcatrazScript : public MoonInstanceScript
         uint32 GetInstanceData(uint32 pType, uint32 pIndex)
         {
             if (pType != Data_EncounterState || pIndex == 0)
+            {
                 return 0;
+            }
 
             EncounterMap::iterator Iter = mEncounters.find(pIndex);
             if (Iter == mEncounters.end())
+            {
                 return 0;
+            }
 
             return (*Iter).second.mState;
         }
@@ -74,7 +86,9 @@ class InstanceTheArcatrazScript : public MoonInstanceScript
         {
             EncounterMap::iterator Iter = mEncounters.find(pCreature->GetEntry());
             if (Iter == mEncounters.end())
+            {
                 return;
+            }
 
             (*Iter).second.mState = State_Finished;
 

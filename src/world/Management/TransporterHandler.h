@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef __TRANSPORTERHANDLER_H
-#define __TRANSPORTERHANDLER_H
+#ifndef TRANSPORTERHANDLER_H
+#define TRANSPORTERHANDLER_H
 
 #include "Management/TransportSpawn.hpp"
 #include "Objects/GameObject.h"

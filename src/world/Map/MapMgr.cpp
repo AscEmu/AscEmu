@@ -259,7 +259,7 @@ void MapMgr::PushObject(Object* obj)
     }
 
     // Build in-range data
-    uint8 cellNumber = sWorld.map_cell_number;
+    uint8 cellNumber = worldConfig.server.mapCellNumber;
 
     uint32 endX = (x <= _sizeX) ? x + cellNumber : (_sizeX - cellNumber);
     uint32 endY = (y <= _sizeY) ? y + cellNumber : (_sizeY - cellNumber);
@@ -499,7 +499,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
     obj->RemoveSelfFromInrangeSets();
     obj->ClearInRangeSet();             // Clear object's in-range set
 
-    uint8 cellNumber = sWorld.map_cell_number;
+    uint8 cellNumber = worldConfig.server.mapCellNumber;
 
     // If it's a player - update his nearby cells
     if (!_shutdown && obj->IsPlayer())
@@ -527,7 +527,7 @@ void MapMgr::RemoveObject(Object* obj, bool free_guid)
 
         // Add it to the global session set. Don't "re-add" to session if it is being deleted.
         if (!plObj->GetSession()->bDeleted)
-            sWorld.AddGlobalSession(plObj->GetSession());
+            sWorld.addGlobalSession(plObj->GetSession());
     }
 
     if (!HasPlayers())
@@ -622,7 +622,7 @@ void MapMgr::ChangeObjectLocation(Object* obj)
 
     ARCEMU_ASSERT(objCell != nullptr);
 
-    uint8 cellNumber = sWorld.map_cell_number;
+    uint8 cellNumber = worldConfig.server.mapCellNumber;
 
     // If object moved cell
     if (objCell != pOldCell)
@@ -1099,7 +1099,7 @@ uint32 MapMgr::GetMapId()
 
 bool MapMgr::_CellActive(uint32 x, uint32 y)
 {
-    uint8 cellNumber = sWorld.map_cell_number;
+    uint8 cellNumber = worldConfig.server.mapCellNumber;
 
     uint32 endX = ((x + cellNumber) <= _sizeX) ? x + cellNumber : (_sizeX - cellNumber);
     uint32 endY = ((y + cellNumber) <= _sizeY) ? y + cellNumber : (_sizeY - cellNumber);
@@ -1149,7 +1149,7 @@ bool MapMgr::IsCombatInProgress()
 
 void MapMgr::ChangeFarsightLocation(Player* plr, DynamicObject* farsight)
 {
-    uint8 cellNumber = sWorld.map_cell_number;
+    uint8 cellNumber = worldConfig.server.mapCellNumber;
 
     if (farsight == 0)
     {
@@ -1529,7 +1529,7 @@ void MapMgr::_PerformObjectDuties()
                 if (result == 1)
                 {
                     // complete deletion
-                    sWorld.DeleteSession(session);
+                    sWorld.deleteSession(session);
                 }
                 Sessions.erase(it2);
             }
@@ -1910,7 +1910,7 @@ void MapMgr::RemoveCombatInProgress(uint64 guid)
 
 void MapMgr::AddForcedCell(MapCell* c)
 {
-    uint8 cellNumber = sWorld.map_cell_number;
+    uint8 cellNumber = worldConfig.server.mapCellNumber;
 
     m_forcedcells.insert(c);
     UpdateCellActivity(c->GetPositionX(), c->GetPositionY(), cellNumber);
@@ -1918,7 +1918,7 @@ void MapMgr::AddForcedCell(MapCell* c)
 
 void MapMgr::RemoveForcedCell(MapCell* c)
 {
-    uint8 cellNumber = sWorld.map_cell_number;
+    uint8 cellNumber = worldConfig.server.mapCellNumber;
 
     m_forcedcells.erase(c);
     UpdateCellActivity(c->GetPositionX(), c->GetPositionY(), cellNumber);
@@ -1926,7 +1926,7 @@ void MapMgr::RemoveForcedCell(MapCell* c)
 
 float MapMgr::GetFirstZWithCPZ(float x, float y, float z)
 {
-    if (!sWorld.Collision)
+    if (!worldConfig.terrainCollision.isCollisionEnabled)
         return NO_WMO_HEIGHT;
 
     float posZ = NO_WMO_HEIGHT;

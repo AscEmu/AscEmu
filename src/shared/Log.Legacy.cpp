@@ -52,9 +52,14 @@ void SessionLogWriter::write(const char* format, ...)
 WorldLog::WorldLog()
 {
     bEnabled = false;
-    m_file = NULL;
+    m_file = nullptr;
+}
 
-    if(Config.MainConfig.GetBoolDefault("LogLevel", "World", false))
+void WorldLog::InitWorldLog(bool enablePacketLog)
+{
+    bEnabled = enablePacketLog;
+
+    if (bEnabled)
     {
         LogNotice("WorldLog : Enabling packetlog output to \"world.log\"");
         Enable();
@@ -67,30 +72,22 @@ WorldLog::WorldLog()
 
 void WorldLog::Enable()
 {
-    if(bEnabled)
-        return;
-
-    bEnabled = true;
-    if(m_file != NULL)
+    if (m_file != nullptr)
     {
         Disable();
         bEnabled = true;
     }
-    m_file = fopen("world.log", "a");
+    m_file = fopen("world-packet.log", "a");
 }
 
 void WorldLog::Disable()
 {
-    if(!bEnabled)
-        return;
-
-    bEnabled = false;
-    if(!m_file)
+    if (m_file == nullptr)
         return;
 
     fflush(m_file);
     fclose(m_file);
-    m_file = NULL;
+    m_file = nullptr;
 }
 
 WorldLog::~WorldLog()

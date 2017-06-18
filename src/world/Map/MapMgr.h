@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MAPMGR_H
-#define _MAPMGR_H
+#ifndef MAPMGR_H
+#define MAPMGR_H
 
 #include "Map/MapManagementGlobals.hpp"
 #include "MapCell.h"
@@ -330,4 +330,4 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
         WorldStatesHandler worldstateshandler;
 };
 
-#endif // _MAPMGR_H
+#endif // MAPMGR_H

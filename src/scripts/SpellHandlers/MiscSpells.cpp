@@ -161,9 +161,9 @@ bool Give5kGold(uint32 i, Spell* s)
 {
     if (s->GetPlayerTarget() != NULL)
     {
-        if (sWorld.GoldCapEnabled && (s->GetPlayerTarget()->GetGold() + 50000000) > sWorld.GoldLimit)
+        if (worldConfig.player.isGoldCapEnabled && (s->GetPlayerTarget()->GetGold() + 50000000) > worldConfig.player.limitGoldAmount)
         {
-            s->GetPlayerTarget()->SetGold(sWorld.GoldLimit);
+            s->GetPlayerTarget()->SetGold(worldConfig.player.limitGoldAmount);
             s->GetPlayerTarget()->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
         }
         else
@@ -335,7 +335,7 @@ bool EatenRecently(uint32 i, Aura* pAura, bool apply)
     {
         NetherDrake->GetAIInterface()->SetAllowedToEnterCombat(true);
         NetherDrake->GetAIInterface()->SetFly();
-        NetherDrake->GetAIInterface()->MoveTo(NetherDrake->GetSpawnX(), NetherDrake->GetSpawnY(), NetherDrake->GetSpawnZ(), NetherDrake->GetSpawnO());
+        NetherDrake->GetAIInterface()->MoveTo(NetherDrake->GetSpawnX(), NetherDrake->GetSpawnY(), NetherDrake->GetSpawnZ());
     }
     return true;
 }

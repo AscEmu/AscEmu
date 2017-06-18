@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "GameEventMgr.h"
 #include "Log.hpp"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 #include "Server/MainServerDefines.h"
 #include "GameEvent.h"
 #include "Storage/MySQLDataStore.hpp"
@@ -45,7 +46,7 @@ void GameEventMgr::StartArenaEvents()
             continue;
         }
 
-        if (i - 52 == sWorld.Arena_Season && sWorld.Arena_Progress == 1)
+        if (i - 52 == worldConfig.arena.arenaSeason && worldConfig.arena.arenaProgress == 1)
             gameEvent->SetState(GAMEEVENT_ACTIVE_FORCED);
         else
             gameEvent->SetState(GAMEEVENT_INACTIVE_FORCED);

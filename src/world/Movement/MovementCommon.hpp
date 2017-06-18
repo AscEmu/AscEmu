@@ -3,8 +3,7 @@ Copyright (c) 2016 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _MOVEMENT_COMMON_HPP
-#define _MOVEMENT_COMMON_HPP
+#pragma once
 
 #include <vector>
 
@@ -87,5 +86,3 @@ namespace Movement
 
     typedef std::vector<WayPoint*> WayPointMap;
 }
-
-#endif // _MOVEMENT_COMMON_HPP

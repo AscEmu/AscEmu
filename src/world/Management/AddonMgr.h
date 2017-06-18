@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _ADDONMGR_H
-#define _ADDONMGR_H
+#ifndef ADDONMGR_H
+#define ADDONMGR_H
 
 #include "WorldConf.h"
 #include "WorldPacket.h"
@@ -110,4 +110,4 @@ class AddonMgr : public Singleton < AddonMgr >
 
 #define sAddonMgr AddonMgr::getSingleton()
 
-#endif      // _ADDONMGR_H
+#endif      // ADDONMGR_H

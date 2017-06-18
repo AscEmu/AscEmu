@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LOOTMGR_H
-#define _LOOTMGR_H
+#ifndef LOOTMGR_H
+#define LOOTMGR_H
 
 #include "Server/EventableObject.h"
 #include "Singleton.h"
@@ -255,4 +255,4 @@ class SERVER_DECL LootMgr : public Singleton <LootMgr>
 
 #define lootmgr LootMgr::getSingleton()
 
-#endif // _LOOTMGR_H
+#endif // LOOTMGR_H

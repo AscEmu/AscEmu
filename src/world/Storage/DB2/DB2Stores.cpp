@@ -75,7 +75,7 @@ inline void LoadDB2(LocalDB2Data& localeData, StoreProblemList1& errors, DB2Stor
 
 void LoadDB2Stores()
 {
-    std::string db2Path = "./DBC/";
+    std::string db2Path = sWorld.settings.server.dataDir + "dbc/";
 
     DBC::LocaleNameStr const* defaultLocaleNameStr = NULL;
     StoreProblemList1 bad_db2_files;
@@ -88,7 +88,7 @@ void LoadDB2Stores()
 
     if (bad_db2_files.size() >= DB2_Count)
     {
-        LogError("LoadDB2Stores : Incorrect DataDir value in worldserver.conf or ALL required *.db2 files (%d) not found", DB2_Count);
+        LogError("LoadDB2Stores : Incorrect DataDir value in world.conf or ALL required *.db2 files (%d) not found", DB2_Count);
         exit(1);
     }
     else if (!bad_db2_files.empty())

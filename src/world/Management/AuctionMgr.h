@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef _AUCTIONMGR_H
-#define _AUCTIONMGR_H
+#ifndef AUCTIONMGR_H
+#define AUCTIONMGR_H
 
 #include "AuctionHouse.h"
 
@@ -65,4 +65,4 @@ class AuctionMgr : public Singleton <AuctionMgr>
 
 #define sAuctionMgr AuctionMgr::getSingleton()
 
-#endif // _AUCTIONMGR_H
+#endif // AUCTIONMGR_H

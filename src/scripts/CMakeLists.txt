@@ -12,6 +12,7 @@ if(NOT ${BUILD_ASCEMUSCRIPTS})
   message(WARNING, "BUILD_ASCEMUSCRIPTS option is set to false. Script libraries will not be built.")
   return()
 endif()
+
 add_subdirectory(EventScripts)
 add_subdirectory(ExtraScripts)
 add_subdirectory(GossipScripts)

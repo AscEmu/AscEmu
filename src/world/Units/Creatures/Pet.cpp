@@ -120,13 +120,13 @@ void Pet::SetNameForEntry(uint32 entry)
             }
             else // no name found, generate one and save it
             {
-                m_name = sWorld.GenerateName();
+                m_name = generateName();
                 CharacterDatabase.Execute("INSERT INTO playersummons VALUES(%u, %u, '%s')", m_Owner->GetLowGUID(), entry, m_name.data());
             }
         }
         break;
         default:
-            m_name = sWorld.GenerateName();
+            m_name = generateName();
     }
 }
 
@@ -753,7 +753,7 @@ void Pet::OnPushToWorld()
 
 void Pet::InitializeMe(bool first)
 {
-    GetAIInterface()->Init(this, AITYPE_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, m_Owner);
+    GetAIInterface()->Init(this, AI_SCRIPT_PET, Movement::WP_MOVEMENT_SCRIPT_NONE, m_Owner);
     GetAIInterface()->SetUnitToFollow(m_Owner);
     GetAIInterface()->SetFollowDistance(3.0f);
 
@@ -1535,8 +1535,8 @@ void Pet::ApplyPetLevelAbilities()
     uint32 pet_family = GetCreatureProperties()->Family;
     uint32 level = getLevel();
 
-    if (level > sWorld.m_levelCap)
-        level = sWorld.m_levelCap;
+    if (level > worldConfig.player.playerLevelCap)
+        level = worldConfig.player.playerLevelCap;
     else if (level < 1)
         level = 1;
 
@@ -1959,7 +1959,7 @@ void Pet::DealDamage(Unit* pVictim, uint32 damage, uint32 targetEvent, uint32 un
                 team = TEAM_ALLIANCE;
 
             auto area = pVictim->GetArea();
-            sWorld.SendZoneUnderAttackMsg(area ? area->id : GetZoneId(), static_cast<uint8>(team));
+            sWorld.sendZoneUnderAttackMessage(area ? area->id : GetZoneId(), static_cast<uint8>(team));
         }
 
         pVictim->Die(this, damage, spellId);

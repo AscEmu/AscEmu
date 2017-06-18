@@ -18,12 +18,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CHANNEL_H
-#define _CHANNEL_H
+#ifndef CHANNEL_H
+#define CHANNEL_H
 
 #define CHANNEL_TRADE 2
 #define CHANNEL_GUILDREC 25
 #define CHANNEL_LFG 26
+
 #include "Threading/Mutex.h"
 #include <set>
 #include "Server/WUtil.h"
@@ -247,4 +248,4 @@ class ChannelIterator
         inline bool End() { return (m_itr == m_endItr) ? true : false; }
 };
 
-#endif // _CHANNEL_H
+#endif // CHANNEL_H

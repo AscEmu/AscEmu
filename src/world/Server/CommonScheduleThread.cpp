@@ -21,6 +21,7 @@
 
 #include "StdAfx.h"
 #include "World.h"
+#include "World.Legacy.h"
 #include "Objects/ObjectMgr.h"
 #include "CommonScheduleThread.h"
 
@@ -50,13 +51,13 @@ bool CommonScheduleThread::run()
     LogNotice("CommonScheduleThread : Started.");
     m_busy = false;
 
-    if (sWorld.BCSystemEnable && sWorld.BCOrderMode == 1)
+    if (worldConfig.broadcast.isSystemEnabled && worldConfig.broadcast.orderMode == 1)
         itOrderMSGEntry = objmgr.GetBCTotalItemBegin();
 
     if (objmgr.IsBCEntryStorageEmpty())
-    sWorld.BCSystemEnable = 0;
+        worldConfig.broadcast.isSystemEnabled = 0;
 
-    BCTimerCount = getMSTime() + ((uint32)sWorld.BCInterval * 1000);
+    BCTimerCount = getMSTime() + ((uint32)worldConfig.broadcast.interval * 1000);
 
     while (GetThreadState() != THREADSTATE_TERMINATE)
     {
@@ -78,30 +79,26 @@ bool CommonScheduleThread::run()
 
 void CommonScheduleThread::BroadCastExec()
 {
-    if (!sWorld.BCSystemEnable)
+    if (!worldConfig.broadcast.isSystemEnabled)
         return;
 
-    if ((uint32)sWorld.BCInterval > THREAD_LOOP_INTERVAL)
+    if ((uint32)worldConfig.broadcast.interval > THREAD_LOOP_INTERVAL)
     {
         if (getMSTime() <= BCTimerCount)
-        {
             return;
-        }
         else
-        {
-            BCTimerCount = getMSTime() + ((uint32)sWorld.BCInterval * 1000);
-        }
+            BCTimerCount = getMSTime() + ((uint32)worldConfig.broadcast.interval * 1000);
     }
 
-    switch (sWorld.BCOrderMode)
+    switch (worldConfig.broadcast.orderMode)
     {
-    case 0:
+        case 0:
         {
             int entry = objmgr.CalcCurrentBCEntry();
 
             if (entry < 0)
             {
-                sWorld.BCSystemEnable = false;
+                worldConfig.broadcast.isSystemEnabled = false;
                 LogNotice("BCSystem : table worldbroadcast loads failed,so BCSystem disabled already.");
                 return;
             }
@@ -109,21 +106,20 @@ void CommonScheduleThread::BroadCastExec()
             if (entry == 0)
                 return;
             else
-            sWorld.SendBCMessageByID(entry);
+                sWorld.sendBroadcastMessageById(entry);
         }
         break;
-    case 1:
+        case 1:
         {
-            // re-assign
             if (itOrderMSGEntry == objmgr.GetBCTotalItemEnd())
                 itOrderMSGEntry = objmgr.GetBCTotalItemBegin();
 
-            sWorld.SendBCMessageByID((uint32)itOrderMSGEntry->second);
+            sWorld.sendBroadcastMessageById(itOrderMSGEntry->second);
 
             ++itOrderMSGEntry;
         }
         break;
-    default:
-        return;
+        default:
+            return;
     }
 }

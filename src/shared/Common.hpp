@@ -8,4 +8,10 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "Common.Legacy.h"
 
+#ifdef WIN32
+    #define RIGHT_MODE "rb"
+#else
+    #define RIGHT_MODE "r"
+#endif
+
 #endif  // COMMON_HPP

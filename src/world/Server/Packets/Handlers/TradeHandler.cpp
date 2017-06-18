@@ -27,6 +27,7 @@
 #include "Map/MapMgr.h"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
 
 #if VERSION_STRING != Cata
@@ -51,13 +52,21 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recv_data)
 
     // Handle possible error outcomes
     if (pTarget->CalcDistance(_player) > 10.0f)        // This needs to be checked
+    {
         TradeStatus = TRADE_STATUS_TOO_FAR_AWAY;
+    }
     else if (pTarget->IsDead())
+    {
         TradeStatus = TRADE_STATUS_DEAD;
+    }
     else if (pTarget->mTradeTarget != 0)
+    {
         TradeStatus = TRADE_STATUS_ALREADY_TRADING;
-    else if (pTarget->GetTeam() != _player->GetTeam() && GetPermissionCount() == 0 && !sWorld.interfaction_trade)
+    }
+    else if (pTarget->GetTeam() != _player->GetTeam() && GetPermissionCount() == 0 && !worldConfig.player.isInterfactionTradeEnabled)
+    {
         TradeStatus = TRADE_STATUS_WRONG_FACTION;
+    }
 
     data << TradeStatus;
 
@@ -485,7 +494,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
             if (pTarget->mTradeGold)
             {
                 // Check they don't have more than the max gold
-                if (sWorld.GoldCapEnabled && (_player->GetGold() + pTarget->mTradeGold) > sWorld.GoldLimit)
+                if (worldConfig.player.isGoldCapEnabled && (_player->GetGold() + pTarget->mTradeGold) > worldConfig.player.limitGoldAmount)
                 {
                     _player->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
                 }
@@ -499,7 +508,7 @@ void WorldSession::HandleAcceptTrade(WorldPacket& recv_data)
             if (_player->mTradeGold)
             {
                 // Check they don't have more than the max gold
-                if (sWorld.GoldCapEnabled && (pTarget->GetGold() + _player->mTradeGold) > sWorld.GoldLimit)
+                if (worldConfig.player.isGoldCapEnabled && (pTarget->GetGold() + _player->mTradeGold) > worldConfig.player.limitGoldAmount)
                 {
                     pTarget->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
                 }

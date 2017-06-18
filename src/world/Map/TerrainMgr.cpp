@@ -23,6 +23,7 @@
 #include "StdAfx.h"
 #include "TerrainMgr.h"
 #include "Log.hpp"
+#include "Map/MapManagementGlobals.hpp"
 
 TerrainHolder::TerrainHolder(uint32 mapid)
 {

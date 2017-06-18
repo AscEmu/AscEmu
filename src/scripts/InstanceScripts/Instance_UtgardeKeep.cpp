@@ -74,15 +74,21 @@ class UtgardeKeepScript : public MoonInstanceScript
             mIngvarGUID = 0;
 
             for (uint8 i = 0; i < 3; ++i)
+            {
                 m_fmData[i] = ForgeMasterData();
+            }
 
             mDalronnDoorsGUID = 0;
 
             for (uint8 i = 0; i < 2; ++i)
+            {
                 mIngvarDoors[i] = 0;
+            }
 
             for (uint8 i = 0; i < UTGARDE_DATA_END; ++i)
+            {
                 mUtgardeData[i] = 0;
+            }
         };
 
         void OnCreaturePushToWorld(Creature* pCreature)
@@ -152,46 +158,50 @@ class UtgardeKeepScript : public MoonInstanceScript
             switch (pIndex)
             {
                 case UTGARDE_FORGE_MASTER:
-                    {
-                        mUtgardeData[UTGARDE_FORGE_MASTER]++;
-                        HandleForge();
-                    };
-                    break;
+                {
+                    mUtgardeData[UTGARDE_FORGE_MASTER]++;
+                    HandleForge();
+                } break;
                 case UTGARDE_INGVAR:
+                {
+                    mUtgardeData[UTGARDE_INGVAR] = pData;
+
+                    if (pData == State_Finished)
                     {
-                        mUtgardeData[UTGARDE_INGVAR] = pData;
-
-                        if (pData == State_Finished)
+                        GameObject* pGO = nullptr;
+                        for (uint8 i = 0; i < 2; ++i)
                         {
-                            GameObject* pGO = NULL;
-                            for (uint8 i = 0; i < 2; ++i)
+                            pGO = GetGameObjectByGuid(mIngvarDoors[i]);
+                            if (pGO)
                             {
-                                pGO = GetGameObjectByGuid(mIngvarDoors[i]);
-                                if (pGO)
-                                    pGO->SetState(pGO->GetState() == 1 ? 0 : 1);
-                            };
-                        };
+                                pGO->SetState(pGO->GetState() == 1 ? 0 : 1);
+                            }
+                        }
                     }
-                    break;
+                } break;
             }
-
-
         };
 
         void HandleForge()
         {
-            GameObject* pGO = NULL;
+            GameObject* pGO = nullptr;
             pGO = GetGameObjectByGuid(m_fmData[mUtgardeData[UTGARDE_FORGE_MASTER] - 1].mBellow);
             if (pGO)
+            {
                 pGO->SetState(pGO->GetState() == 1 ? 0 : 1);
+            }
 
             pGO = GetGameObjectByGuid(m_fmData[mUtgardeData[UTGARDE_FORGE_MASTER] - 1].mFire);
             if (pGO)
+            {
                 pGO->SetState(pGO->GetState() == 1 ? 0 : 1);
+            }
 
             pGO = GetGameObjectByGuid(m_fmData[mUtgardeData[UTGARDE_FORGE_MASTER] - 1].mAnvil);
             if (pGO)
+            {
                 pGO->SetState(pGO->GetState() == 1 ? 0 : 1);
+            }
         };
 };
 
@@ -724,7 +734,9 @@ class FrostTombAI : public MoonScriptCreatureAI
         void OnDied(Unit* pKilled)
         {
             if (plr != nullptr && plr->HasAura(FROST_TOMB_SPELL))
+            {
                 plr->RemoveAura(FROST_TOMB_SPELL);
+            }
 
             ParentClass::OnDied(pKilled);
 

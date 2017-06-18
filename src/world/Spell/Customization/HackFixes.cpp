@@ -26,6 +26,7 @@
 #include "Server/MainServerDefines.h"
 #include "Spell/SpellAuras.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 
 void CreateDummySpell(uint32 id)
 {
@@ -47,7 +48,7 @@ void CreateDummySpell(uint32 id)
 #if VERSION_STRING != Cata
     sp->StanceBarOrder = -1;
 #endif
-    sWorld.dummyspells.push_back(sp);
+    sWorld.dummySpellList.push_back(sp);
 }
 
 void Modify_EffectBasePoints(SpellInfo* sp)

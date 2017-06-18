@@ -37,7 +37,7 @@ public:
             windwatcher->LoadWaypointGroup(18);
             windwatcher->SwitchToCustomWaypoints();
 
-            windwatcher->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
+            windwatcher->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_QUEST);
         }
         windwatcher->Despawn(15 * 60 * 1000, 0);
 

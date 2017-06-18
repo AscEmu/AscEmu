@@ -67,9 +67,10 @@ namespace Arcemu
         void* address = NULL;
 
         address = GetProcAddress(reinterpret_cast< HMODULE >(lptr), symbol);
-
-        if(address == NULL)
+        if (address == NULL)
+        {
             error = true;
+        }
 
         return address;
     }

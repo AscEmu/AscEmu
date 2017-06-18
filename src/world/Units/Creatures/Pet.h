@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _PET_H
-#define _PET_H
+#ifndef PET_H
+#define PET_H
 
 #include "Creature.h"
 #include "Spell/SpellInfo.hpp"

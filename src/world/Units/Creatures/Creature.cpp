@@ -140,19 +140,19 @@ void Creature::Update(unsigned long time_passed)
         switch (this->creature_properties->Rank)
         {
             case ELITE_ELITE:
-                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, sWorld.m_DecayElite, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.eliteTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 break;
             case ELITE_RAREELITE:
-                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, sWorld.m_DecayRareElite, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.rareEliteTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 break;
             case ELITE_WORLDBOSS:
-                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, sWorld.m_DecayWorldboss, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.worldbossTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 break;
             case ELITE_RARE:
-                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, sWorld.m_DecayRare, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.rareTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 break;
             default:
-                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, sWorld.m_DecayNormal, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
+                sEventMgr.AddEvent(this, &Creature::OnRemoveCorpse, EVENT_CREATURE_REMOVE_CORPSE, worldConfig.corpseDecay.normalTimeInSeconds, 1, EVENT_FLAG_DO_NOT_EXECUTE_IN_WORLD_CONTEXT);
                 break;
         }
 
@@ -314,7 +314,7 @@ void Creature::generateLoot()
     }
 
     // Master Looting Ninja Checker
-    if (sWorld.antiMasterLootNinja)
+    if (worldConfig.player.deactivateMasterLootNinja)
     {
         Player* looter = objmgr.GetPlayer((uint32)this->TaggerGuid);
         if (looter && looter->GetGroup() && looter->GetGroup()->GetMethod() == PARTY_LOOT_MASTER)
@@ -377,7 +377,7 @@ void Creature::generateLoot()
         loot.gold = static_cast<uint32>(0.5 + gold_fp);
     }
 
-    loot.gold = static_cast<uint32>(loot.gold * sWorld.getRate(RATE_MONEY));
+    loot.gold = static_cast<uint32>(loot.gold * worldConfig.getFloatRate(RATE_MONEY));
 }
 
 void Creature::SaveToDB()
@@ -388,7 +388,7 @@ void Creature::SaveToDB()
         m_spawn->entry = GetEntry();
         m_spawn->form = 0;
         m_spawn->id = spawnid = objmgr.GenerateCreatureSpawnID();
-        m_spawn->movetype = (uint8)m_aiInterface->GetWaypointScriptType();
+        m_spawn->movetype = (uint8)m_aiInterface->getWaypointScriptType();
         m_spawn->displayid = m_uint32Values[UNIT_FIELD_DISPLAYID];
         m_spawn->x = m_position.x;
         m_spawn->y = m_position.y;
@@ -442,7 +442,7 @@ void Creature::SaveToDB()
         << m_position.y << ","
         << m_position.z << ","
         << m_position.o << ","
-        << uint32(m_aiInterface->GetWaypointScriptType()) << ","
+        << uint32(m_aiInterface->getWaypointScriptType()) << ","
         << m_uint32Values[UNIT_FIELD_DISPLAYID] << ","
         << GetFaction() << ","
         << m_uint32Values[UNIT_FIELD_FLAGS] << ","
@@ -805,7 +805,7 @@ void Creature::EnslaveExpire()
             break;
     };
 
-    GetAIInterface()->Init(((Unit*)this), AITYPE_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
+    GetAIInterface()->Init(((Unit*)this), AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
 
     UpdateOppFactionSet();
     UpdateSameFactionSet();
@@ -848,7 +848,7 @@ void Creature::OnRemoveInRangeObject(Object* pObj)
         // we lost our escorter, return to the spawn.
         m_aiInterface->StopMovement(10000);
         m_escorter = NULL;
-        GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
+        GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
         //DestroyCustomWaypointMap(); //function not needed at all, crashing on delete(*int)
         //GetAIInterface()->deleteWaypoints();//this can repleace DestroyCustomWaypointMap, but it's crashing on delete too
         Despawn(1000, 1000);
@@ -1019,7 +1019,7 @@ void Creature::RegenerateHealth()
     if (GetCreatureProperties()->Rank == 3)
         amt *= 10000.0f;
     //Apply shit from conf file
-    amt *= sWorld.getRate(RATE_HEALTH);
+    amt *= worldConfig.getFloatRate(RATE_HEALTH);
 
     if (amt <= 1.0f) //this fixes regen like 0.98
         cur++;
@@ -1040,7 +1040,7 @@ void Creature::RegenerateMana()
     amt = (getLevel() + 10) * PctPowerRegenModifier[POWER_TYPE_MANA];
 
 
-    amt *= sWorld.getRate(RATE_POWER1);
+    amt *= worldConfig.getFloatRate(RATE_POWER1);
     if (amt <= 1.0)  //this fixes regen like 0.98
         cur++;
     else
@@ -1099,7 +1099,7 @@ void Creature::RegenerateFocus()
     uint32 cur = GetPower(POWER_TYPE_FOCUS);
     uint32 mm = GetMaxPower(POWER_TYPE_FOCUS);
     if (cur >= mm)return;
-    float regenrate = sWorld.getRate(RATE_POWER3);
+    float regenrate = worldConfig.getFloatRate(RATE_POWER3);
     float amt = 25.0f * PctPowerRegenModifier[POWER_TYPE_FOCUS] * regenrate;
     cur += (uint32)amt;
     SetPower(POWER_TYPE_FOCUS, (cur >= mm) ? mm : cur);
@@ -1358,7 +1358,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
     // set position
     m_position.ChangeCoords(spawn->x, spawn->y, spawn->z, spawn->o);
     m_spawnLocation.ChangeCoords(spawn->x, spawn->y, spawn->z, spawn->o);
-    m_aiInterface->SetWaypointScriptType((Movement::WaypointMovementScript)spawn->movetype);
+    m_aiInterface->setWaypointScriptType((Movement::WaypointMovementScript)spawn->movetype);
     m_aiInterface->LoadWaypointMapFromDB(spawn->id);
 
     m_aiInterface->timed_emotes = objmgr.GetTimedEmoteList(spawn->id);
@@ -1434,7 +1434,7 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
     else
     {
         GetAIInterface()->SetAllowedToEnterCombat(false);
-        GetAIInterface()->SetAIType(AITYPE_PASSIVE);
+        GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
     }
 
     // load formation data
@@ -1535,7 +1535,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     else
     {
         GetAIInterface()->SetAllowedToEnterCombat(false);
-        GetAIInterface()->SetAIType(AITYPE_PASSIVE);
+        GetAIInterface()->setAiScriptType(AI_SCRIPT_PASSIVE);
     }
 
     setSpeedForType(TYPE_WALK, creature_properties->walk_speed, true);
@@ -1649,7 +1649,7 @@ void Creature::Load(CreatureProperties const* properties_, float x, float y, flo
     m_aiInterface->m_FleeHealth = creature_properties->m_fleeHealth;
     m_aiInterface->m_FleeDuration = creature_properties->m_fleeDuration;
 
-    GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
+    GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_NONE);
     GetAIInterface()->SetWalk();
 
     // load formation data
@@ -1927,7 +1927,7 @@ void Creature::SetGuardWaypoints()
     if (!GetMapMgr())
         return;
 
-    GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_RANDOMWP);
+    GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_RANDOMWP);
     for (uint8 i = 1; i <= 4; i++)
     {
         float ang = RandomFloat(100.0f) / 100.0f;

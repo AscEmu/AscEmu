@@ -18,8 +18,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DATABASECLEANER_H
-#define _DATABASECLEANER_H
+#ifndef DATABASECLEANER_H
+#define DATABASECLEANER_H
+
 #include "Singleton.h"
 
 class DatabaseCleaner : public Singleton<DatabaseCleaner>
@@ -33,4 +34,4 @@ class DatabaseCleaner : public Singleton<DatabaseCleaner>
         void CleanCharacters();
 };
 
-#endif // _DATABASECLEANER_H
+#endif // DATABASECLEANER_H

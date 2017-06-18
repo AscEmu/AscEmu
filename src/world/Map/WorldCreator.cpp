@@ -348,7 +348,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
                         {
                             in = sInstanceMgr.GetInstanceByIds(mapid, pGroup->m_instanceIds[mapid][grpdiff]);
                         }
-                        else if (sWorld.instance_TakeGroupLeaderID)
+                        else if (worldConfig.instance.useGroupLeaderInstanceId)
                         {
                             PlayerInfo* pLeaderInfo = pGroup->GetLeader();
                             if (pLeaderInfo)
@@ -464,7 +464,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
     in->m_creatorGuid = pGroup ? 0 : plr->GetLowGUID();        // creator guid is 0 if its owned by a group.
     in->m_creatorGroup = pGroup ? pGroup->GetID() : 0;
 
-    if (sWorld.instance_SlidingExpiration)
+    if (worldConfig.instance.isRelativeExpirationEnabled)
     {
         if (inf->type == INSTANCE_MULTIMODE && in->m_difficulty == MODE_HEROIC)
             in->m_expiration = UNIXTIME + TIME_DAY;
@@ -475,13 +475,13 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
     {
         if (inf->type == INSTANCE_MULTIMODE && in->m_difficulty >= MODE_HEROIC)
         {
-            in->m_expiration = UNIXTIME - (UNIXTIME % TIME_DAY) + ((UNIXTIME % TIME_DAY) > (sWorld.instance_DailyHeroicInstanceResetHour * TIME_HOUR) ? 82800 : -3600) + ((sWorld.instance_DailyHeroicInstanceResetHour - sWorld.GMTTimeZone) * TIME_HOUR);
+            in->m_expiration = UNIXTIME - (UNIXTIME % TIME_DAY) + ((UNIXTIME % TIME_DAY) > (worldConfig.instance.relativeDailyHeroicInstanceResetHour * TIME_HOUR) ? 82800 : -3600) + ((worldConfig.instance.relativeDailyHeroicInstanceResetHour - worldConfig.server.gmtTimeZone) * TIME_HOUR);
         }
         else if (IS_PERSISTENT_INSTANCE(in))
         {
             if (m_nextInstanceReset[in->m_mapId] == 0)
             {
-                m_nextInstanceReset[in->m_mapId] = UNIXTIME - (UNIXTIME % TIME_DAY) - ((sWorld.GMTTimeZone + 1) * TIME_HOUR) + (in->m_mapInfo->cooldown == 0 ? TIME_DAY : in->m_mapInfo->cooldown);
+                m_nextInstanceReset[in->m_mapId] = UNIXTIME - (UNIXTIME % TIME_DAY) - ((worldConfig.server.gmtTimeZone + 1) * TIME_HOUR) + (in->m_mapInfo->cooldown == 0 ? TIME_DAY : in->m_mapInfo->cooldown);
                 CharacterDatabase.Execute("DELETE FROM server_settings WHERE setting_id LIKE 'next_instance_reset_%u';", in->m_mapId);
                 CharacterDatabase.Execute("INSERT INTO server_settings VALUES ('next_instance_reset_%u', '%u')", in->m_mapId, m_nextInstanceReset[in->m_mapId]);
             }

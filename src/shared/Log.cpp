@@ -12,24 +12,22 @@ namespace AELog
 {
     std::string GetFormattedFileName(std::string path_prefix, std::string file_prefix, bool use_date_time)
     {
-        std::string full_name;
-
-        std::string basic_path_name = path_prefix + "/" + file_prefix;
+        std::stringstream path_name;
+        path_name << path_prefix;
 
         if (use_date_time)
         {
             std::string current_date_time = Util::GetCurrentDateTimeString();
             //replace time seperator with valid character for file name
             std::replace(current_date_time.begin(), current_date_time.end(), ':', '-');
+            std::replace(current_date_time.begin(), current_date_time.end(), ' ', '_');
 
-            full_name = basic_path_name + "-" + current_date_time + ".log";
-        }
-        else
-        {
-            full_name = basic_path_name + ".log";
+            path_name << current_date_time << "_";
         }
 
-        return full_name;
+        path_name << file_prefix << ".log";
+
+        return path_name.str();
     }
 
 #ifndef _WIN32

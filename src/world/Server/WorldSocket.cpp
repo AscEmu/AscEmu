@@ -29,6 +29,7 @@
 #include "Server/MainServerDefines.h"
 #include "Auth/Sha1.h"
 #include "World.h"
+#include "World.Legacy.h"
 
 #pragma pack(push, 1)
 struct ClientPktHeader
@@ -67,7 +68,7 @@ struct ServerPktHeader
 
 WorldSocket::WorldSocket(SOCKET fd)
     :
-    Socket(fd, sWorld.SocketSendBufSize, sWorld.SocketRecvBufSize),
+    Socket(fd, WORLDSOCKET_SENDBUF_SIZE, WORLDSOCKET_RECVBUF_SIZE),
     Authed(false),
     mOpcode(0),
     mRemaining(0),
@@ -128,7 +129,7 @@ void WorldSocket::OnDisconnect()
 
     if (mQueued)
     {
-        sWorld.RemoveQueuedSocket(this);    // Remove from queued sockets.
+        sWorld.removeQueuedSocket(this);    // Remove from queued sockets.
         mQueued = false;
     }
 }
@@ -267,7 +268,7 @@ OUTPACKET_RESULT WorldSocket::_OutPacket(uint32 opcode, size_t len, const void* 
 
 void WorldSocket::OnConnect()
 {
-    sWorld.mAcceptedConnections++;
+    sWorld.increaseAcceptedConnections();
     _latency = getMSTime();
 
 #if VERSION_STRING < WotLK
@@ -460,7 +461,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     if (recvData.rpos() != recvData.wpos())
         recvData.read((uint8*)lang.data(), 4);
 
-    WorldSession* session = sWorld.FindSession(AccountID);
+    WorldSession* session = sWorld.getSessionByAccountId(AccountID);
     if (session)
     {
         // AUTH_FAILED = 0x0D
@@ -534,7 +535,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     for (uint8_t i = 0; i < 8; ++i)
         pSession->SetAccountData(i, nullptr, true, 0);
 
-    if (sWorld.m_useAccountData)
+    if (worldConfig.server.useAccountData)
     {
         QueryResult* pResult = CharacterDatabase.Query("SELECT * FROM account_data WHERE acct = %u", AccountID);
         if (pResult == nullptr)
@@ -571,15 +572,15 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 #endif
 
     // Check for queue.
-    uint32 playerLimit = sWorld.GetPlayerLimit();
-    if ((sWorld.GetSessionCount() < playerLimit) || pSession->HasGMPermissions())
+    uint32 playerLimit = worldConfig.getPlayerLimit();
+    if ((sWorld.getSessionCount() < playerLimit) || pSession->HasGMPermissions())
     {
         Authenticate();
     }
     else if (playerLimit > 0)
     {
         // Queued, sucker.
-        uint32 Position = sWorld.AddQueuedSocket(this);
+        uint32 Position = sWorld.addQueuedSocket(this);
         mQueued = true;
         LOG_DEBUG("%s added to queue in position %u", AccountName.c_str(), Position);
 
@@ -626,9 +627,7 @@ void WorldSocket::Authenticate()
     data << uint8_t(0x0C);                        // 0x0C = 12 (AUTH_OK)
     SendPacket(&data);
 
-    WorldPacket cdata(SMSG_CLIENTCACHE_VERSION, 4);
-    cdata << uint32_t(15595);
-    SendPacket(&cdata);
+    mSession->SendClientCacheVersion(15595);
 
     // send addon info here
     mSession->sendAddonInfo();
@@ -640,16 +639,14 @@ void WorldSocket::Authenticate()
     delete pAuthenticationPacket;
     pAuthenticationPacket = NULL;
 
-    sWorld.AddSession(mSession);
-    sWorld.AddGlobalSession(mSession);
+    sWorld.addSession(mSession);
+    sWorld.addGlobalSession(mSession);
 
 #if VERSION_STRING > TBC
 #if VERSION_STRING != Cata
-    mSession->SendClientCacheVersion(sWorld.CacheVersion);
+    mSession->SendClientCacheVersion(12340);
 #endif
 #endif
-    if (mSession->HasGMPermissions())
-        sWorld.gmList.insert(mSession);
 
 }
 
@@ -844,7 +841,7 @@ void WorldLog::LogPacket(uint32 len, uint16 opcode, const uint8* data, uint8 dir
 void WorldLog::LogPacket(uint32 len, uint32 opcode, const uint8* data, uint8 direction, uint32 accountid)
 #endif
 {
-    if (sWorld.debugFlags & LF_OPCODE)
+    if (worldConfig.log.worldDebugFlags & LF_OPCODE)
     {
         switch (opcode)
         {

@@ -19,6 +19,8 @@
 #ifndef _LOGON_SERVER_DEFINES_HPP
 #define _LOGON_SERVER_DEFINES_HPP
 
+#include "Config/Config.h"
+
 enum RealmFlags
 {
     REALM_FLAG_NONE         = 0x00,
@@ -37,5 +39,14 @@ struct AllowedIP
     unsigned int IP;
     unsigned char Bytes;
 };
+
+class SERVER_DECL ConfigMgr
+{
+public:
+
+    ConfigFile MainConfig;
+};
+
+extern SERVER_DECL ConfigMgr Config;
 
 #endif  //_LOGON_SERVER_DEFINES_HPP

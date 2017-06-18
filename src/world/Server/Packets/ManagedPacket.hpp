@@ -1,10 +1,9 @@
 /*
-Copyright (c) 2016 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _MANAGED_PACKET_HPP
-#define _MANAGED_PACKET_HPP
+#pragma once
 
 #include "WorldPacket.h"
 
@@ -23,5 +22,3 @@ namespace Packets
             ManagedPacket(uint32 pOpcode, uint32 pSize) : m_opcode(pOpcode), data(pOpcode, pSize) {}
     };
 }
-
-#endif // _MANAGED_PACKET_HPP

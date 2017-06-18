@@ -22,6 +22,7 @@
 #include "Server/Warden/SpeedDetector.h"
 #include "Server/MainServerDefines.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 #include "Units/Players/Player.h"
 
 SpeedCheatDetector::SpeedCheatDetector()
@@ -96,7 +97,7 @@ void SpeedCheatDetector::AddSample(float x, float y, int stamp, float player_spe
 
 void SpeedCheatDetector::ReportCheater(Player* _player)
 {
-    if ((sWorld.no_antihack_on_gm && _player->GetSession()->HasGMPermissions()))
+    if ((worldConfig.antiHack.isAntiHackCheckDisabledForGm && _player->GetSession()->HasGMPermissions()))
         return; // do not check GMs speed been the config tells us not to.
 
     //toshik is wonderful and i can't understand how he managed to make this happen

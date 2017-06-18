@@ -3,11 +3,12 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _SPELL_INFO_HPP
-#define _SPELL_INFO_HPP
+#pragma once
 
 #include "SpellDefines.hpp"
 #include "WorldConf.h"
+#include "CommonTypes.hpp"
+#include <string>
 
 class Player;
 
@@ -48,9 +49,6 @@ class SERVER_DECL SpellInfo
         uint32 AttributesExE;
         uint32 AttributesExF;
         uint32 AttributesExG;
-        uint32 AttributesExH;
-        uint32 AttributesExI;
-        uint32 AttributesExJ;
         uint32 RequiredShapeShift;          // (12-13 Stances[2])
         uint32 ShapeshiftExclude;           // (14-15 StancesExcluded[2])
         uint32 Targets;
@@ -361,5 +359,3 @@ class SERVER_DECL SpellInfo
         void* (*SpellFactoryFunc);
         void* (*AuraFactoryFunc);
 };
-
-#endif  //_SPELL_INFO_HPP

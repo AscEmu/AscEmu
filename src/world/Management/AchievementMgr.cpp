@@ -363,12 +363,12 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
         data << uint64(GetPlayer()->GetGUID());
         data << uint32(achievement->ID);
         data << uint32(0);
-        sWorld.SendGlobalMessage(&data);
+        sWorld.sendGlobalMessage(&data);
     }
     else
     {
         // allocate enough space
-        guidList = new uint32[sWorld.GetSessionCount() + 256];
+        guidList = new uint32[sWorld.getSessionCount() + 256];
         // Send Achievement message to every guild member currently on the server
         if (GetPlayer()->IsInGuild())
         {
@@ -551,7 +551,7 @@ void AchievementMgr::CheckAllAchievementCriteria()
 /// item ID, faction ID, etc.), and miscvalue2 is the amount to increase the progress.
 void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, int32 miscvalue1, int32 miscvalue2, uint32 time)
 {
-    if (m_player->GetSession()->HasGMPermissions() && sWorld.gamemaster_disableachievements)
+    if (m_player->GetSession()->HasGMPermissions() && worldConfig.gm.disableAchievements)
         return;
 
     uint64 selectedGUID;
@@ -1221,7 +1221,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
 /// \brief This is only called from CheckAllAchievementCriteria(), during player login
 void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type)
 {
-    if (m_player->GetSession()->HasGMPermissions() && sWorld.gamemaster_disableachievements)
+    if (m_player->GetSession()->HasGMPermissions() && worldConfig.gm.disableAchievements)
         return;
 
     AchievementCriteriaEntryList const & achievementCriteriaList = objmgr.GetAchievementCriteriaByType(type);

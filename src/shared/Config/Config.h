@@ -1,52 +1,11 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (C) 2014-2017 AscEmu Team <http://www.ascemu.org>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#pragma once
 
 #include "Common.hpp"
-
-#ifndef EOL
-#ifdef WIN32
-#define EOL "\r\n"
-#else
-#define EOL "\n"
-#endif
-#endif
-
-#ifndef EOL_SIZE
-#ifdef WIN32
-#define EOL_SIZE 2
-#else
-#define EOL_SIZE 1
-#endif
-#endif
-
-struct SERVER_DECL ConfigSetting
-{
-    std::string AsString;
-    bool AsBool;
-    int AsInt;
-    float AsFloat;
-};
-
-typedef std::map<uint32, ConfigSetting> ConfigBlock;
 
 class SERVER_DECL ConfigFile
 {
@@ -55,42 +14,37 @@ class SERVER_DECL ConfigFile
         ConfigFile();
         ~ConfigFile();
 
-        bool SetSource(const char* file, bool ignorecase = true);
-        ConfigSetting* GetSetting(const char* Block, const char* Setting);
+        struct ConfigValueSetting
+        {
+            std::string asString;
+            bool asBool;
+            int asInt;
+            float asFloat;
+        };
 
-        bool GetString(const char* block, const char* name, std::string* value);
-        std::string GetStringDefault(const char* block, const char* name, const char* def);
-        std::string GetStringVA(const char* block, const char* def, const char* name, ...);
-        bool GetString(const char* block, char* buffer, const char* name, const char* def, uint32 len);
+        bool openAndLoadConfigFile(std::string configFileName);
 
-        bool GetBool(const char* block, const char* name, bool* value);
-        bool GetBoolDefault(const char* block, const char* name, const bool def);
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Parser
+        bool parseConfigValues(std::string fileBufferString);
+        void removeSpacesInString(std::string& str);
+        void removeAllSpacesInString(std::string& str);
+        bool isComment(std::string& lineString, bool* isInMultilineComment);
+        void applySettingToStore(std::string& str, ConfigValueSetting& setting);
 
-        bool GetInt(const char* block, const char* name, int* value);
-        int GetIntDefault(const char* block, const char* name, const int def);
-        int GetIntVA(const char* block, int def, const char* name, ...);
+        uint32_t getSettingHash(std::string settingString);
 
-        bool GetFloat(const char* block, const char* name, float* value);
-        float GetFloatDefault(const char* block, const char* name, const float def);
-        float GetFloatVA(const char* block, float def, const char* name, ...);
+        //////////////////////////////////////////////////////////////////////////////////////////
+        // Get functions
+        ConfigValueSetting* getSavedSetting(std::string sectionName, std::string confName);
+
+        std::string getStringDefault(std::string sectionName, std::string confName, std::string defaultString);
+        bool getBoolDefault(std::string sectionName, std::string confName, bool defaultBool);
+        int getIntDefault(std::string sectionName, std::string confName, int defaultInt);
+        float getFloatDefault(std::string sectionName, std::string confName, float defaultFloat);
 
     private:
 
-        std::map<uint32, ConfigBlock> m_settings;
+        typedef std::map<uint32_t, ConfigValueSetting> ConfigSection;
+        std::map<uint32_t, ConfigSection> mSettings;
 };
-
-
-class SERVER_DECL ConfigMgr
-{
-        // Mainly used for WS, others will probably only have one.
-    public:
-
-        ConfigFile MainConfig;
-        ConfigFile RealmConfig;
-        ConfigFile ClusterConfig;
-        ConfigFile OptionalConfig;
-};
-
-extern SERVER_DECL ConfigMgr Config;
-
-#endif      //CONFIG_H

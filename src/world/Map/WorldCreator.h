@@ -19,12 +19,13 @@
  */
 
 
-#ifndef __WORLDCREATOR_H
-#define __WORLDCREATOR_H
+#ifndef WORLDCREATOR_H
+#define WORLDCREATOR_H
 
 #include "WorldCreatorDefines.hpp"
 #include "Management/Group.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 
 extern const char* InstanceAbortMessages[];
 
@@ -211,4 +212,4 @@ class SERVER_DECL InstanceMgr
 
 extern SERVER_DECL InstanceMgr sInstanceMgr;
 
-#endif      //__WORLDCREATOR_H
+#endif      //WORLDCREATOR_H

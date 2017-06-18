@@ -13,6 +13,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "ChatHandler.hpp"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 
 initialiseSingleton(ChatHandler);
 
@@ -151,7 +152,7 @@ int ChatHandler::ParseCommands(const char* text, WorldSession* session)
     if (!*text)
         return 0;
 
-    if (session->GetPermissionCount() == 0 && sWorld.m_reqGmForCommands)
+    if (session->GetPermissionCount() == 0 && worldConfig.server.requireGmForCommands)
         return 0;
 
     if (text[0] != '!' && text[0] != '.') // let's not confuse users

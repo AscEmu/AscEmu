@@ -80,9 +80,6 @@ WorldSession::~WorldSession()
 {
     deleteMutex.Acquire();
 
-    if (HasGMPermissions())
-        sWorld.gmList.erase(this);
-
     if (_player)
     {
         LOG_ERROR("warning: logged out player in worldsession destructor");
@@ -396,7 +393,7 @@ void WorldSession::LogoutPlayer(bool Save)
         // Update any dirty account_data fields.
         bool dirty = false;
 
-        if (sWorld.m_useAccountData)
+        if (worldConfig.server.useAccountData)
         {
             std::stringstream ss;
             ss << "UPDATE account_data SET ";
@@ -952,7 +949,7 @@ void WorldSession::SendMOTD()
     WorldPacket data(SMSG_MOTD, 50);
     data << uint32(0);
     uint32 linecount = 0;
-    std::string str_motd = sWorld.GetMotd();
+    std::string str_motd = worldConfig.getMessageOfTheDay();
     std::string::size_type pos, nextpos;
 
     pos = 0;

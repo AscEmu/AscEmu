@@ -439,9 +439,9 @@ class LuaUnit
             float x = CHECK_FLOAT(L, 1);
         float y = CHECK_FLOAT(L, 2);
         float z = CHECK_FLOAT(L, 3);
-        float o = CHECK_FLOAT(L, 4);
+        //float o = CHECK_FLOAT(L, 4);
 
-        ptr->GetAIInterface()->MoveTo(x, y, z, o);
+        ptr->GetAIInterface()->MoveTo(x, y, z);
         return 0;
     }
 
@@ -454,9 +454,9 @@ class LuaUnit
         float x2 = CHECK_FLOAT(L, 4);
         float y2 = CHECK_FLOAT(L, 5);
         float z2 = CHECK_FLOAT(L, 6);
-        float o2 = CHECK_FLOAT(L, 7);
+        //float o2 = CHECK_FLOAT(L, 7);
 
-        ptr->GetAIInterface()->MoveTo(x1 + (RandomFloat(x2 - x1)), y1 + (RandomFloat(y2 - y1)), z1 + (RandomFloat(z2 - z1)), o2);
+        ptr->GetAIInterface()->MoveTo(x1 + (RandomFloat(x2 - x1)), y1 + (RandomFloat(y2 - y1)), z1 + (RandomFloat(z2 - z1)));
         return 0;
     }
 
@@ -464,7 +464,7 @@ class LuaUnit
     {
         TEST_UNIT()
             uint32 typ = CHECK_ULONG(L, 1);
-        ptr->GetAIInterface()->SetWaypointScriptType((Movement::WaypointMovementScript)typ);
+        ptr->GetAIInterface()->setWaypointScriptType((Movement::WaypointMovementScript)typ);
         return 0;
     }
 
@@ -904,7 +904,7 @@ class LuaUnit
         int id = static_cast<int>(luaL_checkinteger(L, 1));
         if (id)
         {
-            ptr->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+            ptr->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
             ptr->GetAIInterface()->setWaypointToMove(id);
         }
         return 0;
@@ -1319,7 +1319,7 @@ class LuaUnit
             data << uint8(0);
         }
 
-        sWorld.SendZoneMessage(&data, zone_id, 0);
+        sWorld.sendZoneMessage(&data, zone_id);
 
         return 0;
     }
@@ -2035,15 +2035,23 @@ class LuaUnit
 
     static int ReturnToSpawnPoint(lua_State* L, Unit* ptr)
     {
+
         if (ptr == nullptr)
+        {
             return 0;
+        }
 
         float x = ptr->GetSpawnX();
         float y = ptr->GetSpawnY();
         float z = ptr->GetSpawnZ();
         float o = ptr->GetSpawnO();
+
         if (ptr->IsCreature())
-            ptr->GetAIInterface()->MoveTo(x, y, z, o);
+        {
+            ptr->GetAIInterface()->MoveTo(x, y, z);
+            ptr->SetOrientation(o);
+        }
+    
         return 0;
     }
 
@@ -2513,7 +2521,7 @@ class LuaUnit
     static int GetAIState(lua_State* L, Unit* ptr)
     {
         TEST_UNIT()
-            lua_pushnumber(L, ptr->GetAIInterface()->getAIState());
+            lua_pushnumber(L, ptr->GetAIInterface()->getAiState());
         return 1;
     }
 
@@ -3830,7 +3838,7 @@ class LuaUnit
     {
         if (!ptr) return 0;
         uint32 level = CHECK_ULONG(L, 1);
-        if (level <= sWorld.m_levelCap && level > 0)
+        if (level <= worldConfig.player.playerLevelCap && level > 0)
         {
             if (ptr->IsPlayer())
             {
@@ -3939,40 +3947,40 @@ class LuaUnit
             switch (state)
             {
                 case 0:
-                    ptr->GetAIInterface()->SetAIState(STATE_IDLE);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_IDLE);
                     break;
                 case 1:
-                    ptr->GetAIInterface()->SetAIState(STATE_ATTACKING);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_ATTACKING);
                     break;
                 case 2:
-                    ptr->GetAIInterface()->SetAIState(STATE_CASTING);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_CASTING);
                     break;
                 case 3:
-                    ptr->GetAIInterface()->SetAIState(STATE_FLEEING);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_FLEEING);
                     break;
                 case 4:
-                    ptr->GetAIInterface()->SetAIState(STATE_FOLLOWING);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_FOLLOWING);
                     break;
                 case 5:
-                    ptr->GetAIInterface()->SetAIState(STATE_EVADE);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_EVADE);
                     break;
                 case 6:
-                    ptr->GetAIInterface()->SetAIState(STATE_MOVEWP);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_MOVEWP);
                     break;
                 case 7:
-                    ptr->GetAIInterface()->SetAIState(STATE_FEAR);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_FEAR);
                     break;
                 case 8:
-                    ptr->GetAIInterface()->SetAIState(STATE_WANDER);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_WANDER);
                     break;
                 case 9:
-                    ptr->GetAIInterface()->SetAIState(STATE_STOPPED);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_STOPPED);
                     break;
                 case 10:
-                    ptr->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
                     break;
                 case 11:
-                    ptr->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
+                    ptr->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
                     break;
             }
         }
@@ -5049,7 +5057,7 @@ class LuaUnit
         {
             Guild::SendGuildCommandResult(sender->GetSession(), GUILD_INVITE_S, plyr->GetName(), ALREADY_INVITED_TO_GUILD);
         }
-        else if (plyr->GetTeam() != sender->GetTeam() && sender->GetSession()->GetPermissionCount() == 0 && !sWorld.interfaction_guild)
+        else if (plyr->GetTeam() != sender->GetTeam() && sender->GetSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
         {
             Guild::SendGuildCommandResult(sender->GetSession(), GUILD_INVITE_S, "", GUILD_NOT_ALLIED);
         }
@@ -5994,7 +6002,7 @@ class LuaUnit
     static int GetMovementType(lua_State* L, Unit* ptr)
     {
         TEST_UNIT();
-        RET_NUMBER((uint32)ptr->GetAIInterface()->GetWaypointScriptType());
+        RET_NUMBER((uint32)ptr->GetAIInterface()->getWaypointScriptType());
         return 1;
     }
     static int GetQuestLogSlot(lua_State* L, Unit* ptr)

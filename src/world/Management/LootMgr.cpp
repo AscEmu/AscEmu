@@ -25,6 +25,7 @@
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Server/MainServerDefines.h"
+#include "Server/WorldConfig.h"
 #include "Map/MapMgr.h"
 
 initialiseSingleton(LootMgr);
@@ -348,7 +349,7 @@ void LootMgr::PushLoot(StoreLootList* list, Loot* loot, uint32 type)
             if (chance <= 0.0f || chance > 100.0f)
                 continue;
             ItemProperties const* itemproto = list->items[x].item.itemproto;
-            if (Rand(chance * sWorld.getRate(RATE_DROP0 + itemproto->Quality))) //|| itemproto->Class == ITEM_CLASS_QUEST)
+            if (Rand(chance * worldConfig.getFloatRate((WorldConfigRates)(RATE_DROP0 + itemproto->Quality)))) //|| itemproto->Class == ITEM_CLASS_QUEST)
             {
                 if (list->items[x].mincount == list->items[x].maxcount)
                     count = list->items[x].maxcount;

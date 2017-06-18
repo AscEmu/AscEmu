@@ -29,7 +29,7 @@ void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
     channelname = recvPacket.ReadString(channelLength);
     pass = recvPacket.ReadString(passwordLength);
 
-    if (sWorld.GmClientChannel.size() && !stricmp(sWorld.GmClientChannel.c_str(), channelname.c_str()) && !GetPermissionCount())
+    if (sWorld.settings.gm.gmClientChannelName.size() && !stricmp(sWorld.settings.gm.gmClientChannelName.c_str(), channelname.c_str()) && !GetPermissionCount())
         return;
 
     Channel* channel = channelmgr.GetCreateChannel(channelname.c_str(), _player, channel_id);

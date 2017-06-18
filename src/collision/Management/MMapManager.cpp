@@ -22,6 +22,7 @@
 #include "StdAfx.h"
 #include "Errors.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 
 namespace MMAP
 {
@@ -75,10 +76,10 @@ namespace MMAP
         }
 
         // load and init dtNavMesh - read parameters from file
-        std::string dataDir = sWorld.mMapPath;
-        uint32 pathLen = dataDir.length() + strlen("/%03i.mmap") + 1;
+        std::string dataDir = worldConfig.server.dataDir + "mmaps/";
+        uint32 pathLen = dataDir.length() + strlen("%03i.mmap") + 1;
         char *fileName = new char[pathLen];
-        snprintf(fileName, pathLen, (dataDir + "/%03i.mmap").c_str(), mapId);
+        snprintf(fileName, pathLen, (dataDir + "%03i.mmap").c_str(), mapId);
 
         FILE* file = fopen(fileName, "rb");
         if (!file)

@@ -438,7 +438,7 @@ void WorldSession::FullLogin(Player* plr)
     float VY;
     float VZ;
 
-    if (HasGMPermissions() && plr->m_FirstLogin && sWorld.gamemaster_startonGMIsland)
+    if (HasGMPermissions() && plr->m_FirstLogin && sWorld.settings.gm.isStartOnGmIslandEnabled)
     {
         VMapId = 1;
         VO = 0;
@@ -568,16 +568,10 @@ void WorldSession::FullLogin(Player* plr)
 
     sWorld.incrementPlayerCount(plr->GetTeam());
 
-    if (plr->m_FirstLogin && !sWorld.m_SkipCinematics)
+    if (plr->m_FirstLogin && !sWorld.settings.player.skipCinematics)
     {
         uint32 introid = plr->info->introid;
         OutPacket(SMSG_TRIGGER_CINEMATIC, 4, &introid);
-
-        if (sWorld.m_AdditionalFun)
-        {
-            const int classtext[] = { 0, 5, 6, 8, 9, 11, 0, 4, 3, 7, 0, 10 };
-            sWorld.SendLocalizedWorldText(true, "{65}", classtext[(uint32)plr->getClass()], plr->GetName(), (plr->IsTeamHorde() ? "{63}" : "{64}"));
-        }
     }
 
     LOG_DETAIL("Created new player for existing players (%s)", plr->GetName());
@@ -613,7 +607,7 @@ void WorldSession::FullLogin(Player* plr)
     }
 #endif
 
-    if (Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", false))
+    if (Config.MainConfig.getBoolDefault("Server", "SendStatsOnJoin", false))
     {
 #ifdef WIN32
         _player->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
@@ -623,9 +617,9 @@ void WorldSession::FullLogin(Player* plr)
 
         _player->BroadcastMessage("Build hash: %s%s", MSG_COLOR_CYAN, BUILD_HASH_STR);
         _player->BroadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
-                                  MSG_COLOR_SEXGREEN, sWorld.GetSessionCount(), MSG_COLOR_SEXBLUE, sWorld.PeakSessionCount, MSG_COLOR_SEXBLUE, sWorld.mAcceptedConnections);
+                                  MSG_COLOR_SEXGREEN, sWorld.getSessionCount(), MSG_COLOR_SEXBLUE, sWorld.getPeakSessionCount(), MSG_COLOR_SEXBLUE, sWorld.getAcceptedConnections());
 
-        _player->BroadcastMessage("Server Uptime: |r%s", sWorld.GetUptimeString().c_str());
+        _player->BroadcastMessage("Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
     }
 
     SendMOTD();

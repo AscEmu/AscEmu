@@ -40,7 +40,7 @@ LoginErrorCode VerifyName(const char* name, size_t nlen)
     static const char* bannedCharacters = "\t\v\b\f\a\n\r\\\"\'\? <>[](){}_=+-|/!@#$%^&*~`.,0123456789\0";
     static const char* allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    if (sWorld.m_limitedNames)
+    if (worldConfig.server.enableLimitedNames)
     {
         if (nlen == 0)
             return E_CHAR_NAME_NO_NAME;
@@ -161,7 +161,7 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandleCharEnumOpcode(WorldPacket& recv_data)
 {
-    AsyncQuery* q = new AsyncQuery(new SQLClassCallbackP1<World, uint32>(World::getSingletonPtr(), &World::CharacterEnumProc, GetAccountId()));
+    AsyncQuery* q = new AsyncQuery(new SQLClassCallbackP1<World, uint32>(World::getSingletonPtr(), &World::sendCharacterEnumToAccountSession, GetAccountId()));
     q->AddQuery("SELECT guid, level, race, class, gender, bytes, bytes2, name, positionX, positionY, positionZ, mapId, zoneId, banned, restState, deathstate, login_flags, player_flags, guild_data.guildid FROM characters LEFT JOIN guild_data ON characters.guid = guild_data.playerid WHERE acct=%u ORDER BY guid LIMIT 10", GetAccountId());
     CharacterDatabase.QueueAsyncQuery(q);
 }
@@ -247,7 +247,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     }
 
     // Check if player got Death Knight already on this realm.
-    if (Config.OptionalConfig.GetBoolDefault("ClassOptions" , "DeathKnightLimit" , true) && has_dk && (class_ == DEATHKNIGHT))
+    if (worldConfig.player.deathKnightLimit && has_dk && (class_ == DEATHKNIGHT))
     {
         LoginErrorCode login_error = E_CHAR_CREATE_UNIQUE_CLASS_LIMIT;
         OutPacket(SMSG_CHAR_CREATE, 1, &login_error);
@@ -288,7 +288,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
 
     //Same Faction limitation only applies to PVP and RPPVP realms :)
     uint32 realmType = sLogonCommHandler.GetRealmType();
-    if (!HasGMPermissions() && realmType == REALMTYPE_PVP && _side >= 0 && !sWorld.crossover_chars)  // ceberwow fixed bug
+    if (!HasGMPermissions() && realmType == REALMTYPE_PVP && _side >= 0 && !worldConfig.player.isCrossoverCharsCreationEnabled)  // ceberwow fixed bug
     {
         if ((pNewChar->IsTeamAlliance() && (_side == 1)) || (pNewChar->IsTeamHorde() && (_side == 0)))
         {
@@ -302,9 +302,8 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     }
 
     //Check if player has a level 55 or higher character on this realm and allow him to create DK.
-    //This check can be turned off in optional.conf
-    if (Config.OptionalConfig.GetBoolDefault("ClassOptions" , "DeathKnightPreReq" , false) && !has_level_55_char
-            && (class_ == DEATHKNIGHT))
+    //This check can be turned off in world.conf
+    if (worldConfig.player.deathKnightPreReq && !has_level_55_char && (class_ == DEATHKNIGHT))
     {
         pNewChar->ok_to_remove = true;
         delete pNewChar;
@@ -673,7 +672,7 @@ void WorldSession::FullLogin(Player* plr)
     float VZ;
 
     // GMs should start on GM Island and be bound there
-    if (HasGMPermissions() && plr->m_FirstLogin && sWorld.gamemaster_startonGMIsland)
+    if (HasGMPermissions() && plr->m_FirstLogin && worldConfig.gm.isStartOnGmIslandEnabled)
     {
         VMapId = 1;
         VO = 0;
@@ -819,7 +818,7 @@ void WorldSession::FullLogin(Player* plr)
 
     sWorld.incrementPlayerCount(plr->GetTeam());
 
-    if (plr->m_FirstLogin && !sWorld.m_SkipCinematics)
+    if (plr->m_FirstLogin && !worldConfig.player.skipCinematics)
     {
         uint32 introid = plr->info->introid;
 
@@ -867,7 +866,7 @@ void WorldSession::FullLogin(Player* plr)
     }
 #endif
 
-    if (Config.MainConfig.GetBoolDefault("Server", "SendStatsOnJoin", false))
+    if (Config.MainConfig.getBoolDefault("Server", "SendStatsOnJoin", false))
     {
 #ifdef WIN32
         _player->BroadcastMessage("Server: %sAscEmu - %s-Windows-%s", MSG_COLOR_WHITE, CONFIG, ARCH);
@@ -879,10 +878,10 @@ void WorldSession::FullLogin(Player* plr)
         _player->BroadcastMessage("Build hash: %s%s", MSG_COLOR_CYAN, BUILD_HASH_STR);
         // Shows Online players, and connection peak
         _player->BroadcastMessage("Online Players: %s%u |rPeak: %s%u|r Accepted Connections: %s%u",
-            MSG_COLOR_SEXGREEN, sWorld.GetSessionCount(), MSG_COLOR_SEXBLUE, sWorld.PeakSessionCount, MSG_COLOR_SEXBLUE, sWorld.mAcceptedConnections);
+            MSG_COLOR_SEXGREEN, sWorld.getSessionCount(), MSG_COLOR_SEXBLUE, sWorld.getPeakSessionCount(), MSG_COLOR_SEXBLUE, sWorld.getAcceptedConnections());
 
         // Shows Server uptime
-        _player->BroadcastMessage("Server Uptime: |r%s", sWorld.GetUptimeString().c_str());
+        _player->BroadcastMessage("Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
     }
 
     // server Message Of The Day

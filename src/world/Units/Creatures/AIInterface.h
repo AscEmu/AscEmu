@@ -95,15 +95,15 @@ enum SplinePriority
     SPLINE_PRIORITY_REDIRECTION
 };
 
-enum AIType
+enum AiScriptTypes
 {
-    AITYPE_LONER,
-    AITYPE_AGRO,
-    AITYPE_SOCIAL,
-    AITYPE_PET,
-    AITYPE_TOTEM,
-    AITYPE_GUARDIAN, //we got a master but he cannot control us, we follow and battle opposite factions
-    AITYPE_PASSIVE
+    AI_SCRIPT_LONER,
+    AI_SCRIPT_AGRO,
+    AI_SCRIPT_SOCIAL,
+    AI_SCRIPT_PET,
+    AI_SCRIPT_TOTEM,
+    AI_SCRIPT_GUARDIAN, //we got a master but he cannot control us, we follow and battle opposite factions
+    AI_SCRIPT_PASSIVE
 };
 
 enum AI_Agent
@@ -142,21 +142,21 @@ enum AI_SpellTargetType
     TTYPE_OWNER
 };
 
-enum AI_State
+enum AiState
 {
-    STATE_IDLE,
-    STATE_ATTACKING,
-    STATE_CASTING,
-    STATE_FLEEING,
-    STATE_FOLLOWING,
-    STATE_EVADE,
-    STATE_MOVEWP,
-    STATE_FEAR,
-    STATE_UNFEARED,
-    STATE_WANDER,
-    STATE_STOPPED,
-    STATE_SCRIPTMOVE,
-    STATE_SCRIPTIDLE
+    AI_STATE_IDLE,
+    AI_STATE_ATTACKING,
+    AI_STATE_CASTING,
+    AI_STATE_FLEEING,
+    AI_STATE_FOLLOWING,
+    AI_STATE_EVADE,
+    AI_STATE_MOVEWP,
+    AI_STATE_FEAR,
+    AI_STATE_UNFEARED,
+    AI_STATE_WANDER,
+    AI_STATE_STOPPED,
+    AI_STATE_SCRIPTMOVE,
+    AI_STATE_SCRIPTIDLE
 };
 
 enum MovementState
@@ -206,16 +206,54 @@ typedef std::unordered_map<uint64, int32> TargetMap;
 typedef std::set<Unit*> AssistTargetSet;
 typedef std::map<uint32, AI_Spell*> SpellMap;
 
+//MIT start
 class SERVER_DECL AIInterface : public IUpdatable
 {
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Waypoint functions
+    private:
+
+        Movement::WaypointMovementScript mWaypointScriptType;
+
+    public:
+
+        void setWaypointScriptType(Movement::WaypointMovementScript wp_script) { mWaypointScriptType = wp_script; }
+        Movement::WaypointMovementScript getWaypointScriptType() { return mWaypointScriptType; }
+        bool isWaypointScriptType(Movement::WaypointMovementScript wp_script) { return wp_script == mWaypointScriptType; }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // AI Script functions
+    private:
+
+        AiScriptTypes mAiScriptType;
+
+    public:
+
+        void setAiScriptType(AiScriptTypes ai_type) { mAiScriptType = ai_type; }
+        uint32_t getAiScriptType() { return mAiScriptType; }
+        bool isAiScriptType(AiScriptTypes ai_type) { return ai_type == mAiScriptType; }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // AI State functions
+    private:
+
+        AiState mAiState;
+
+    public:
+
+        void setAiState(AiState ai_state) { mAiState = ai_state; }
+        uint32_t getAiState() { return mAiState; }
+        bool isAiState(AiState ai_state) { return ai_state == mAiState; }
+
+// MIT end
     public:
 
         AIInterface();
         virtual ~AIInterface();
 
         // Misc
-        void Init(Unit* un, AIType at, Movement::WaypointMovementScript mt);
-        void Init(Unit* un, AIType at, Movement::WaypointMovementScript mt, Unit* owner);   /// used for pets
+        void Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScript mt);
+        void Init(Unit* un, AiScriptTypes at, Movement::WaypointMovementScript mt, Unit* owner);   /// used for pets
         Unit* GetUnit() const;
         Unit* GetPetOwner() const;
         void DismissPet();
@@ -240,9 +278,9 @@ class SERVER_DECL AIInterface : public IUpdatable
         uint64 getUnitToFearGUID() { return m_UnitToFear; }
         Creature* getFormationLinkTarget();
         void setCreatureState(CreatureState state) { m_creatureState = state; }
-        inline uint8 getAIState() { return static_cast<uint8>(m_AIState); }
-        inline uint8 getAIType() { return static_cast<uint8>(m_AIType); }
-        void SetAIType(AIType at) { m_AIType = at; }
+        
+        
+
         inline uint8 getCurrentAgent() { return static_cast<uint8>(m_aiCurrentAgent); }
         void setCurrentAgent(AI_Agent agent) { m_aiCurrentAgent = agent; }
         uint32 getThreatByGUID(uint64 guid);
@@ -313,7 +351,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         // Movement
         void SendMoveToPacket();
         //void SendMoveToSplinesPacket(std::list<Waypoint> wp, bool run);
-        bool MoveTo(float x, float y, float z, float o);
+        bool MoveTo(float x, float y, float z);
         void UpdateSpeeds();
 
         //Move flag updating
@@ -354,11 +392,6 @@ class SERVER_DECL AIInterface : public IUpdatable
         void setWaypointToMove(uint32 id) { m_currentWaypoint = id; }
         bool IsFlying();
 
-        //Zyres: New functions
-        void SetWaypointScriptType(Movement::WaypointMovementScript wp_script) { m_wpScriptType = wp_script; }
-        Movement::WaypointMovementScript GetWaypointScriptType() { return m_wpScriptType; }
-
-
         // Calculation
         float _CalcAggroRange(Unit* target);
         void _CalcDestinationAndMove(Unit* target, float dist);
@@ -370,7 +403,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         inline bool GetAllowedToEnterCombat(void) { return m_AllowedToEnterCombat; }
 
         void CheckTarget(Unit* target);
-        inline void SetAIState(AI_State newstate) { m_AIState = newstate; }
+        
 
         // Movement
         bool m_canMove;
@@ -381,9 +414,6 @@ class SERVER_DECL AIInterface : public IUpdatable
 
         //visibility
         uint32 faction_visibility;
-
-        //uint32 m_moveType;
-        Movement::WaypointMovementScript m_wpScriptType;
 
         bool onGameobject;
         CreatureState m_creatureState;
@@ -462,7 +492,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         void _UpdateMovement(uint32 p_time);
         void _UpdateTimer(uint32 p_time);
         void AddSpline(float x, float y, float z);
-        bool Move(float & x, float & y, float & z, float o = 0);
+        bool Move(float & x, float & y, float & z);
         void OnMoveCompleted();
 
         void MoveEvadeReturn();
@@ -500,8 +530,7 @@ class SERVER_DECL AIInterface : public IUpdatable
         Mutex m_aiTargetsLock;
         TargetMap m_aiTargets;
         AssistTargetSet m_assistTargets;
-        AIType m_AIType;
-        AI_State m_AIState;
+        
         AI_Agent m_aiCurrentAgent;
 
         Unit* tauntedBy;        /// This mob will hit only tauntedBy mob.

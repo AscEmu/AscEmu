@@ -26,6 +26,7 @@
 #include "Config/Config.h"
 #include "Auth/Sha1.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 
 initialiseSingleton(LogonCommHandler);
 
@@ -33,8 +34,8 @@ LogonCommHandler::LogonCommHandler()
 {
     idhigh = 1;
     next_request = 1;
-    pings = !Config.MainConfig.GetBoolDefault("LogonServer", "DisablePings", false);
-    std::string logon_pass = Config.MainConfig.GetStringDefault("LogonServer", "RemotePassword", "r3m0t3");
+    pings = !worldConfig.logonServer.disablePings;
+    std::string logon_pass = worldConfig.logonServer.remotePassword;
 
     // sha1 hash it
     Sha1Hash hash;
@@ -45,7 +46,7 @@ LogonCommHandler::LogonCommHandler()
     memcpy(sql_passhash, hash.GetDigest(), 20);
 
     // player limit
-    pLimit = Config.MainConfig.GetIntDefault("Server", "PlayerLimit", 500);
+    pLimit = Config.MainConfig.getIntDefault("Server", "PlayerLimit", 500);
     if (pLimit == 0) pLimit = 1;
     server_population = 0;
 
@@ -388,43 +389,49 @@ void LogonCommHandler::LoadRealmConfiguration()
 {
     LogonServer* ls = new LogonServer;
     ls->ID = idhigh++;
-    ls->Name = Config.RealmConfig.GetStringDefault("LogonServer", "Name", "UnkLogon");
-    ls->Address = Config.RealmConfig.GetStringDefault("LogonServer", "Address", "127.0.0.1");
-    ls->Port = Config.RealmConfig.GetIntDefault("LogonServer", "Port", 8093);
+    ls->Name = worldConfig.logonServer.name;
+    ls->Address = worldConfig.logonServer.address;
+    ls->Port = (uint32)worldConfig.logonServer.port;
     servers.insert(ls);
 
-    uint32 realmcount = Config.RealmConfig.GetIntDefault("LogonServer", "RealmCount", 1);
+    uint32 realmcount = (uint32)worldConfig.logonServer.realmCount;
     if (realmcount == 0)
     {
-        LOG_ERROR("   >> no realms found. this server will not be online anywhere!");
+        LOG_ERROR("no realms found. this server will not be online anywhere!");
     }
     else
     {
         for (uint32 i = 1; i < realmcount + 1; ++i)
         {
+            std::stringstream realmString;
+            realmString << "Realm" << i;
+
             Realm* realm = new Realm;
-            realm->Name = Config.RealmConfig.GetStringVA("Name", "SomeRealm", "Realm%u", i);
-            realm->Address = Config.RealmConfig.GetStringVA("Address", "127.0.0.1:8129", "Realm%u", i);
+            realm->Name = Config.MainConfig.getStringDefault(realmString.str(), "Name", "AscEmu");
+            realm->Address = Config.MainConfig.getStringDefault(realmString.str(), "Address", "127.0.0.1:8129");
             realm->flags = 0;
-            realm->TimeZone = Config.RealmConfig.GetIntVA("TimeZone", 1, "Realm%u", i);
-            realm->Population = Config.RealmConfig.GetFloatVA("Population", 0, "Realm%u", i);
-            realm->Lock = static_cast<uint8>(Config.RealmConfig.GetIntVA("Lock", 0, "Realm%u", i));
-            realm->GameBuild = Config.RealmConfig.GetIntVA("GameBuild", 0, "Realm%u", i);
+            realm->TimeZone = Config.MainConfig.getIntDefault(realmString.str(), "TimeZone", 1);
+            realm->Population = Config.MainConfig.getFloatDefault(realmString.str(), "Population", 0.0f);
+            realm->Lock = static_cast<uint8>(Config.MainConfig.getIntDefault(realmString.str(), "Lock", 0));
+            realm->GameBuild = Config.MainConfig.getIntDefault(realmString.str(), "GameBuild", 0);
             if (realm->GameBuild == 0)
             {
-                LOG_ERROR("   >> supported client build not found in realms.config. Update your configs!");
+                LOG_ERROR("Supported client build not found in world.config!");
                 delete realm;
                 return;
             }
-            std::string rt = Config.RealmConfig.GetStringVA("Icon", "Normal", "Realm%u", i);
+
+            std::string rt = Config.MainConfig.getStringDefault(realmString.str(), "Icon", "Normal");
+            Util::StringToLowerCase(rt);
+
             uint32 type;
 
             // process realm type
-            if (stricmp(rt.c_str(), "pvp") == 0)
+            if (rt.compare("pvp") == 0)
                 type = REALMTYPE_PVP;
-            else if (stricmp(rt.c_str(), "rp") == 0)
+            else if (rt.compare("rp") == 0)
                 type = REALMTYPE_RP;
-            else if (stricmp(rt.c_str(), "rppvp") == 0)
+            else if (rt.compare("rppvp") == 0)
                 type = REALMTYPE_RPPVP;
             else
                 type = REALMTYPE_NORMAL;

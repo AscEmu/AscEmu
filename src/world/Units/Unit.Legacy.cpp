@@ -541,7 +541,7 @@ Unit::Unit() : m_currentSpeedWalk(2.5f),
     //		CalculateActualArmor();
 
     m_aiInterface = new AIInterface();
-    m_aiInterface->Init(this, AITYPE_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
+    m_aiInterface->Init(this, AI_SCRIPT_AGRO, Movement::WP_MOVEMENT_SCRIPT_NONE);
 
     m_emoteState = 0;
     m_oldEmote = 0;
@@ -2907,7 +2907,7 @@ void Unit::RegeneratePower(bool isinterrupted)
     if (!IsPlayer() && IsVehicle())
     {
         uint32 powertype = GetPowerType();
-        float wrate = sWorld.getRate(RATE_VEHICLES_POWER_REGEN);
+        float wrate = worldConfig.getFloatRate(RATE_VEHICLES_POWER_REGEN);
         float amount = wrate * 20.0f;
         SetPower(powertype, static_cast<int32>(GetPower(powertype) + amount));
     }
@@ -4094,7 +4094,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
     //special states processing
     if (pVictim->IsCreature())
     {
-        if (pVictim->GetAIInterface() && (pVictim->GetAIInterface()->getAIState() == STATE_EVADE ||
+        if (pVictim->GetAIInterface() && (pVictim->GetAIInterface()->isAiState(AI_STATE_EVADE) ||
             (pVictim->GetAIInterface()->GetIsSoulLinked() && pVictim->GetAIInterface()->getSoullinkedWith() != this)))
         {
             vstate = EVADE;
@@ -4282,9 +4282,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         if (!this->IsPlayer())
         {
             Player* pr = static_cast<Player*>(pVictim);
-            if (Rand(pr->GetSkillUpChance(SKILL_DEFENSE) * sWorld.getRate(RATE_SKILLCHANCE)))
+            if (Rand(pr->GetSkillUpChance(SKILL_DEFENSE) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
             {
-                pr->_AdvanceSkillLine(SKILL_DEFENSE, float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE)));
+                pr->_AdvanceSkillLine(SKILL_DEFENSE, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
                 pr->UpdateChances();
             }
         }
@@ -4299,9 +4299,9 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
         {
             static_cast<Player*>(this)->GetItemInterface()->ReduceItemDurability();
             Player* pr = static_cast<Player*>(this);
-            if (Rand(pr->GetSkillUpChance(SubClassSkill) * sWorld.getRate(RATE_SKILLCHANCE)))
+            if (Rand(pr->GetSkillUpChance(SubClassSkill) * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
             {
-                pr->_AdvanceSkillLine(SubClassSkill, float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE)));
+                pr->_AdvanceSkillLine(SubClassSkill, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
                 //pr->UpdateChances();
             }
         }
@@ -4349,7 +4349,7 @@ void Unit::Strike(Unit* pVictim, uint32 weapon_damage_type, SpellInfo* ability, 
 
         val = conv * dmg.full_damage + f * s / 2.0f;
         val *= (1 + (static_cast<Player*>(this)->rageFromDamageDealt / 100.0f));
-        float ragerate = sWorld.getRate(RATE_POWER2);
+        float ragerate = worldConfig.getFloatRate(RATE_POWER2);
         val *= 10 * ragerate;
 
         //float r = (7.5f * dmg.full_damage / c + f * s) / 2.0f;
@@ -5574,9 +5574,13 @@ void Unit::MoveToWaypoint(uint32 wp_id)
         }
 
         ai->m_currentWaypoint = wp_id;
+
         if (wp->flags != 0)
+        {
             ai->SetRun();
-        ai->MoveTo(wp->x, wp->y, wp->z, 0);
+        }
+        
+        ai->MoveTo(wp->x, wp->y, wp->z);
     }
 }
 
@@ -6434,7 +6438,7 @@ void Unit::SendAuraUpdate(uint32 AuraSlot, bool remove)
         if (caster != NULL)
             data << uint8(caster->getLevel());
         else
-            data << uint8(sWorld.m_levelCap);
+            data << uint8(worldConfig.player.playerLevelCap);
 
         data << uint8(m_auraStackCount[aur->m_visualSlot]);
 

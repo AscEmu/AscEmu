@@ -166,7 +166,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
             //only ports if player is out of pendings
             if (GetPlayer()->GetPlayerStatus() == TRANSFER_PENDING)
                 break;
-            if (sWorld.instance_CheckTriggerPrerequisites)
+            if (worldConfig.instance.checkTriggerPrerequisitesOnEnter)
             {
                 uint32 reason = CheckTriggerPrerequisites(pAreaTrigger, this, _player, sMySQLStore.GetWorldMapInfo(pAreaTrigger->Mapid));
                 if (reason != AREA_TRIGGER_FAILURE_OK)

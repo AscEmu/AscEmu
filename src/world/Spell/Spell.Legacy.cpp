@@ -19,6 +19,8 @@
  *
  */
 
+#include "Spell.Legacy.h"
+#ifndef USE_EXPERIMENTAL_SPELL_SYSTEM
 #include "StdAfx.h"
 #include "VMapFactory.h"
 #include "Management/Item.h"
@@ -520,7 +522,7 @@ void Spell::FillAllTargetsInArea(uint32 i, float srcx, float srcy, float srcz, f
         }
         if (IsInrange(srcx, srcy, srcz, (*itr), r))
         {
-            if (sWorld.Collision)
+            if (worldConfig.terrainCollision.isCollisionEnabled)
             {
                 VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
                 bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ());
@@ -586,7 +588,7 @@ void Spell::FillAllFriendlyInArea(uint32 i, float srcx, float srcy, float srcz, 
 
         if (IsInrange(srcx, srcy, srcz, (*itr), r))
         {
-            if (sWorld.Collision)
+            if (worldConfig.terrainCollision.isCollisionEnabled)
             {
                 VMAP::IVMapManager* mgr = VMAP::VMapFactory::createOrGetVMapManager();
                 bool isInLOS = mgr->isInLineOfSight(m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), (*itr)->GetPositionX(), (*itr)->GetPositionY(), (*itr)->GetPositionZ());
@@ -762,7 +764,7 @@ uint8 Spell::DidHit(uint32 effindex, Unit* target)
     /************************************************************************/
     /* Check if the unit is evading                                         */
     /************************************************************************/
-    if (u_victim->IsCreature() && u_victim->GetAIInterface()->getAIState() == STATE_EVADE)
+    if (u_victim->IsCreature() && u_victim->GetAIInterface()->isAiState(AI_STATE_EVADE))
         return SPELL_DID_HIT_EVADE;
 
     /************************************************************************/
@@ -948,7 +950,7 @@ uint8 Spell::prepare(SpellCastTargets* targets)
     if (!p_caster && u_caster && u_caster->GetAIInterface())
     {
         AIInterface* ai = u_caster->GetAIInterface();
-        if (ai->getAIState() == STATE_FEAR || ai->getAIState() == STATE_WANDER)
+        if (ai->isAiState(AI_STATE_FEAR) || ai->isAiState(AI_STATE_WANDER))
         {
             DecRef();
             return SPELL_FAILED_NOT_READY;
@@ -3213,8 +3215,8 @@ void Spell::DetermineSkillUp()
         else //brown
             chance = 100.0f;
     }
-    if (Rand(chance * sWorld.getRate(RATE_SKILLCHANCE)))
-        p_caster->_AdvanceSkillLine(skill_line_ability->skilline, float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE)));
+    if (Rand(chance * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
+        p_caster->_AdvanceSkillLine(skill_line_ability->skilline, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
 }
 
 bool Spell::IsAspect()
@@ -3355,7 +3357,7 @@ uint8 Spell::CanCast(bool tolerate)
         /**
          *	Indoor/Outdoor check
          */
-        if (sWorld.Collision)
+        if (worldConfig.terrainCollision.isCollisionEnabled)
         {
             if (GetSpellInfo()->MechanicsType == MECHANIC_MOUNTED)
             {
@@ -4042,7 +4044,7 @@ uint8 Spell::CanCast(bool tolerate)
                         return SPELL_FAILED_NO_AMMO;
                 }
 
-                if (sWorld.Collision)
+                if (worldConfig.terrainCollision.isCollisionEnabled)
                 {
                     if (p_caster->GetMapId() == target->GetMapId() && !p_caster->GetMapMgr()->isInLineOfSight(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ() + 2, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ() + 2))
                         return SPELL_FAILED_LINE_OF_SIGHT;
@@ -4141,23 +4143,23 @@ uint8 Spell::CanCast(bool tolerate)
             if (m_target_constraint != NULL)
             {
                 // target is the wrong creature
-                if (target->IsCreature() && !m_target_constraint->HasCreature(target->GetEntry()) && !m_target_constraint->IsFocused(target->GetEntry()))
+                if (target->IsCreature() && !m_target_constraint->hasCreature(target->GetEntry()) && !m_target_constraint->isFocused(target->GetEntry()))
                     return SPELL_FAILED_BAD_TARGETS;
 
                 // target is the wrong GO :/
-                if (target->IsGameObject() && !m_target_constraint->HasGameobject(target->GetEntry()) && !m_target_constraint->IsFocused(target->GetEntry()))
+                if (target->IsGameObject() && !m_target_constraint->hasGameObject(target->GetEntry()) && !m_target_constraint->isFocused(target->GetEntry()))
                     return SPELL_FAILED_BAD_TARGETS;
 
                 bool foundTarget = false;
                 Creature* pCreature = nullptr;
-                size_t creatures = m_target_constraint->GetCreatures().size();
+                size_t creatures = m_target_constraint->getCreatures().size();
 
                 // Spells for Invisibl Creatures and or Gameobjects ( Casting Spells Near them )
                 for (size_t i = 0; i < creatures; ++i)
                 {
-                    if (!m_target_constraint->IsFocused(m_target_constraint->GetCreatures()[i]))
+                    if (!m_target_constraint->isFocused(m_target_constraint->getCreatures()[i]))
                     {
-                        pCreature = m_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->GetCreatures()[i]);
+                        pCreature = m_caster->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->getCreatures()[i]);
 
                         if (pCreature)
                         {
@@ -4171,13 +4173,13 @@ uint8 Spell::CanCast(bool tolerate)
                 }
 
                 GameObject* pGameobject = nullptr;
-                size_t gameobjects = m_target_constraint->GetGameobjects().size();
+                size_t gameobjects = m_target_constraint->getGameObjects().size();
 
                 for (size_t i = 0; i < gameobjects; ++i)
                 {
-                    if (!m_target_constraint->IsFocused(m_target_constraint->GetGameobjects()[i]))
+                    if (!m_target_constraint->isFocused(m_target_constraint->getGameObjects()[i]))
                     {
-                        pGameobject = m_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->GetGameobjects()[i]);
+                        pGameobject = m_caster->GetMapMgr()->GetInterface()->GetGameObjectNearestCoords(m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), m_target_constraint->getGameObjects()[i]);
 
                         if (pGameobject)
                         {
@@ -5481,9 +5483,9 @@ void Spell::DetermineSkillUp(uint32 skillid, uint32 targetlevel, uint32 multipli
     if (multiplicator == 0)
         multiplicator = 1;
 
-    if (Rand((chance * sWorld.getRate(RATE_SKILLCHANCE)) * multiplicator))
+    if (Rand((chance * worldConfig.getFloatRate(RATE_SKILLCHANCE)) * multiplicator))
     {
-        p_caster->_AdvanceSkillLine(skillid, float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE)));
+        p_caster->_AdvanceSkillLine(skillid, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
 
         uint32 value = p_caster->_GetSkillLineCurrent(skillid, true);
         uint32 spellid = 0;
@@ -5605,8 +5607,8 @@ void Spell::DetermineSkillUp(uint32 skillid)
         else //brown
             chance = 100.0f;
     }
-    if (Rand(chance * sWorld.getRate(RATE_SKILLCHANCE)))
-        p_caster->_AdvanceSkillLine(skillid, float2int32(1.0f * sWorld.getRate(RATE_SKILLRATE)));
+    if (Rand(chance * worldConfig.getFloatRate(RATE_SKILLCHANCE)))
+        p_caster->_AdvanceSkillLine(skillid, float2int32(1.0f * worldConfig.getFloatRate(RATE_SKILLRATE)));
 }
 
 void Spell::SafeAddTarget(TargetsList* tgt, uint64 guid)
@@ -6232,10 +6234,10 @@ void Spell::SpellEffectJumpTarget(uint32 i)
     {
         Object* uobj = m_caster->GetMapMgr()->_GetObject(m_targets.m_unitTarget);
 
-        if (uobj == NULL || !uobj->IsUnit())
+        if (uobj == nullptr || !uobj->IsUnit())
+        {
             return;
-
-        Unit* un = static_cast<Unit*>(uobj);
+        }
 
         float rad = unitTarget->GetBoundingRadius() - u_caster->GetBoundingRadius();
 
@@ -6243,11 +6245,15 @@ void Spell::SpellEffectJumpTarget(uint32 i)
         float dy = m_caster->GetPositionY() - unitTarget->GetPositionY();
 
         if (dx == 0.0f || dy == 0.0f)
+        {
             return;
+        }
 
         float alpha = atanf(dy / dx);
         if (dx < 0)
+        {
             alpha += M_PI_FLOAT;
+        }
 
         x = rad * cosf(alpha) + unitTarget->GetPositionX();
         y = rad * sinf(alpha) + unitTarget->GetPositionY();
@@ -6391,3 +6397,4 @@ bool IsDamagingSpell(SpellInfo* sp)
 
     return false;
 }
+#endif

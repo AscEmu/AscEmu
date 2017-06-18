@@ -36,12 +36,16 @@ class InstanceWailingCavernsScript : public MoonInstanceScript
             // Way to select bosses
             BuildEncounterMap();
             if (mEncounters.size() == 0)
+            {
                 return;
+            }
 
             for (auto Iter = mEncounters.begin(); Iter != mEncounters.end(); ++Iter)
             {
                 if ((*Iter).second.mState != State_Finished)
+                {
                     continue;
+                }
             }
         }
 
@@ -341,6 +345,7 @@ static Movement::Location ToNaralex[] =
 class DofNaralexGossip : public GossipScript
 {
     public:
+
         void GossipHello(Object* pObject, Player* plr)
         {
             Unit* Fanglord1 = pObject->GetMapMgr()->GetInterface()->GetCreatureNearestCoords(-151.139008f, 414.367004f, -72.629402f, CN_LORD_COBRAHN);
@@ -366,39 +371,37 @@ class DofNaralexGossip : public GossipScript
         }
         void GossipSelectOption(Object* pObject, Player* Plr, uint32 Id, uint32 IntId, const char* Code)
         {
-            Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : NULL;
-            if (pCreature == NULL)
+            Creature* pCreature = (pObject->IsCreature()) ? static_cast<Creature*>(pObject) : nullptr;
+            if (pCreature == nullptr)
+            {
                 return;
+            }
 
             switch (IntId)
             {
                 case 0: // Return to start
-
+                {
                     GossipHello(pCreature, Plr);
-                    break;
-
+                } break;
                 case 1: // Disciple of Naralex Casts Mark of the Wild on players.
-                    {
-                        pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Take this! It will be useful for you. I'll be waiting here when you have slain the 4 Fanglords to awake Naralex!");
-                        pCreature->CastSpell(Plr, 5232, true);
-                        pCreature->Emote(EMOTE_ONESHOT_CHEER);
-                        Plr->Gossip_Complete();
-                    }
-                    break;
-
+                {
+                    pCreature->SendChatMessage(CHAT_MSG_MONSTER_SAY, LANG_UNIVERSAL, "Take this! It will be useful for you. I'll be waiting here when you have slain the 4 Fanglords to awake Naralex!");
+                    pCreature->CastSpell(Plr, 5232, true);
+                    pCreature->Emote(EMOTE_ONESHOT_CHEER);
+                    Plr->Gossip_Complete();
+                } break;
                 case 2: // Start Event
-                    {
-                        pCreature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
-                        pCreature->GetAIInterface()->StopMovement(0);
-                        pCreature->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
-                        pCreature->GetAIInterface()->SetWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
-                        pCreature->GetAIInterface()->setWaypointToMove(2);
-                    }
+                {
+                    pCreature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+                    pCreature->GetAIInterface()->StopMovement(0);
+                    pCreature->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
+                    pCreature->GetAIInterface()->setWaypointScriptType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
+                    pCreature->GetAIInterface()->setWaypointToMove(2);
+                } break;
+                default:
                     break;
             }
-
         }
-
 };
 
 // Disciple of Naralex AI
@@ -410,8 +413,11 @@ class DofNaralexAI : public MoonScriptBossAI
             // --- Initialization ---
             Mutanus = nullptr;
 
-            for (uint8 i = 1; i < 39; i++)
+            for (uint8 i = 1; i < 39; ++i)
+            {
                 AddWaypoint(CreateWaypoint(i, 0, Movement::WP_MOVE_TYPE_RUN, ToNaralex[i]));
+            }
+
             SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
 
             // Awakening Spell
@@ -439,19 +445,24 @@ class DofNaralexAI : public MoonScriptBossAI
                 switch (GetPhase())
                 {
                     case 2:
+                    {
                         Moccasin();
                         ResetTimer(SpawnTimer, 100000);
                         SetPhase(3);
-                        break;
+                    } break;
                     case 3:
+                    {
                         Ectoplasm();
                         ResetTimer(SpawnTimer, 100000);
                         SetPhase(4);
-                        break;
+                    } break;
                     case 4:
+                    {
                         BMutanus();
                         ResetTimer(SpawnTimer, 100000);
                         SetPhase(5);
+                    } break;
+                    default:
                         break;
                 }
             }

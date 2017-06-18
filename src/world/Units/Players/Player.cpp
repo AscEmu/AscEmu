@@ -274,7 +274,7 @@ bool Player::isPlayerJumping(MovementInfo const& movement_info, uint16_t opcode)
 void Player::handleBreathing(MovementInfo& movement_info, WorldSession* session)
 {
 #if VERSION_STRING == Cata
-    if (!sWorld.BreathingEnabled || FlyCheat || m_bUnlimitedBreath || !isAlive() || GodModeCheat)
+    if (!worldConfig.server.enableBreathing || FlyCheat || m_bUnlimitedBreath || !isAlive() || GodModeCheat)
     {
         if (m_UnderwaterState & UNDERWATERSTATE_SWIMMING)
             m_UnderwaterState &= ~UNDERWATERSTATE_SWIMMING;
@@ -509,3 +509,19 @@ void TradeData::setSpell(uint32_t spell_id, Item* cast_item /*= nullptr*/)
 }
 #endif
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Messages
+void Player::sendReportToGmMessage(std::string playerName, std::string damageLog)
+{
+    std::string gm_ann(MSG_COLOR_GREEN);
+
+    gm_ann += "|HPlayer:";
+    gm_ann += playerName;
+    gm_ann += "|h[";
+    gm_ann += playerName;
+    gm_ann += "]|h: ";
+    gm_ann += MSG_COLOR_YELLOW;
+    gm_ann += damageLog;
+
+    sWorld.sendMessageToOnlineGms(gm_ann.c_str());
+}

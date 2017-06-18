@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _OBJECT_H
-#define _OBJECT_H
+#ifndef OBJECT_H
+#define OBJECT_H
 
 #include "ObjectDefines.h"
 
@@ -954,4 +954,4 @@ class SERVER_DECL Object : public EventableObject, public IUpdatable
 };
 
 
-#endif // _OBJECT_H
+#endif // OBJECT_H

@@ -23,6 +23,7 @@
 #include "WorldRunnable.h"
 #include <CrashHandler.h>
 #include "World.h"
+#include "World.Legacy.h"
 #include "ServerState.h"
 
 #define WORLD_UPDATE_DELAY 50
@@ -77,7 +78,7 @@ bool WorldRunnable::run()
                 diff = now - LastSessionsUpdate;
 
             LastSessionsUpdate = now;
-            sWorld.UpdateSessions(diff);
+            sWorld.updateGlobalSession(diff);
 
             now = getMSTime();
             //we have to wait now

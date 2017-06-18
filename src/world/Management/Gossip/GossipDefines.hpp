@@ -3,11 +3,10 @@
  This file is released under the MIT license. See README-MIT for more information.
  */
 
+#pragma once
+
 #include "CommonTypes.hpp"
 #include <string>
-
-#ifndef _GOSSIP_DEFINES_HPP
-#define _GOSSIP_DEFINES_HPP
 
 struct GossipMenuItem
 {
@@ -50,5 +49,3 @@ enum GossipIcons
 
 const unsigned TrainerTalentResetMinLevel = 10;
 const unsigned DefaultGossipTextId = 2;
-
-#endif  //_GOSSIP_DEFINES_HPP

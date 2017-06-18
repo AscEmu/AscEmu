@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SPELLTARGET_H
-#define _SPELLTARGET_H
+#ifndef SPELLTARGET_H
+#define SPELLTARGET_H
 
 enum SpellImplicitTargetType
 {

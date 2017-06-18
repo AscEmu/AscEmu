@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _BATTLEGROUND_H
-#define _BATTLEGROUND_H
+#ifndef BATTLEGROUND_H
+#define BATTLEGROUND_H
 
 #include "Units/Players/PlayerDefines.hpp"
 #include "Units/Unit.h"
@@ -234,4 +234,4 @@ class SERVER_DECL CBattleground : public EventableObject
 };
 
 
-#endif  // _BATTLEGROUND_H
+#endif  // BATTLEGROUND_H

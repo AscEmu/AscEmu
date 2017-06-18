@@ -138,7 +138,7 @@ void MoonScriptCreatureAI::MoveTo(float pX, float pY, float pZ, bool pRun)
     if (pRun)
         _unit->GetAIInterface()->SetRun();
 
-    _unit->GetAIInterface()->MoveTo(pX, pY, pZ, 0);
+    _unit->GetAIInterface()->MoveTo(pX, pY, pZ);
 };
 
 void MoonScriptCreatureAI::MoveToSpawnOrigin()
@@ -989,7 +989,7 @@ void MoonScriptCreatureAI::ForceWaypointMove(uint32 pWaypointId)
         SetCanMove(true);
 
     StopMovement();
-    _unit->GetAIInterface()->SetAIState(STATE_SCRIPTMOVE);
+    _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTMOVE);
     SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_WANTEDWP);
     SetWaypointToMove(pWaypointId);
 }
@@ -1002,14 +1002,14 @@ void MoonScriptCreatureAI::SetWaypointToMove(uint32 pWaypointId)
 void MoonScriptCreatureAI::StopWaypointMovement()
 {
     SetBehavior(Behavior_Default);
-    _unit->GetAIInterface()->SetAIState(STATE_SCRIPTIDLE);
+    _unit->GetAIInterface()->setAiState(AI_STATE_SCRIPTIDLE);
     SetWaypointMoveType(Movement::WP_MOVEMENT_SCRIPT_DONTMOVEWP);
     SetWaypointToMove(0);
 }
 
 void MoonScriptCreatureAI::SetWaypointMoveType(Movement::WaypointMovementScript wp_move_script_type)
 {
-    _unit->GetAIInterface()->SetWaypointScriptType(wp_move_script_type);
+    _unit->GetAIInterface()->setWaypointScriptType(wp_move_script_type);
 
 }
 

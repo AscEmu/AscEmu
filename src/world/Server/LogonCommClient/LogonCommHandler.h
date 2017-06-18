@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _LOGONCOMMHANDLER_H
-#define _LOGONCOMMHANDLER_H
+#ifndef LOGONCOMMHANDLER_H
+#define LOGONCOMMHANDLER_H
 
 #include "CommonTypes.hpp"
 #include "Server/WorldSocket.h"
@@ -28,7 +28,7 @@
 #include <map>
 #include <set>
 
-typedef struct
+struct LogonServer
 {
     uint32 ID;
     std::string Name;
@@ -37,9 +37,9 @@ typedef struct
     uint32 ServerID;
     uint32 RetryTime;
     bool Registered;
-} LogonServer;
+};
 
-typedef struct
+struct Realm
 {
     std::string Name;
     std::string Address;
@@ -49,7 +49,7 @@ typedef struct
     float Population;
     uint8 Lock;
     uint32 GameBuild;
-} Realm;
+};
 
 enum RealmType
 {
@@ -146,4 +146,4 @@ class LogonCommHandler : public Singleton<LogonCommHandler>
 
 #define sLogonCommHandler LogonCommHandler::getSingleton()
 
-#endif // _LOGONCOMMHANDLER_H
+#endif // LOGONCOMMHANDLER_H

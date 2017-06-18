@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatHandler.hpp"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 
 bool ChatHandler::HandleAccountCreate(const char* args, WorldSession* m_session)
 {
@@ -73,7 +74,7 @@ bool ChatHandler::HandleAccountMuteCommand(const char* args, WorldSession* m_ses
 
     sGMLog.writefromsession(m_session, "mutex account %s until %s", pAccount, Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32)UNIXTIME).c_str());
 
-    WorldSession* pSession = sWorld.FindSessionByName(pAccount);
+    WorldSession* pSession = sWorld.getSessionByAccountName(pAccount);
     if (pSession != NULL)
     {
         pSession->m_muted = banned;
@@ -89,7 +90,7 @@ bool ChatHandler::HandleAccountUnmuteCommand(const char* args, WorldSession* m_s
 
     GreenSystemMessage(m_session, "Account '%s' has been unmuted.", args);
     sGMLog.writefromsession(m_session, "unmuted account %s", args);
-    WorldSession* pSession = sWorld.FindSessionByName(args);
+    WorldSession* pSession = sWorld.getSessionByAccountName(args);
     if (pSession != NULL)
     {
         pSession->m_muted = 0;
@@ -154,7 +155,7 @@ bool ChatHandler::HandleAccountBannedCommand(const char* args, WorldSession* m_s
     GreenSystemMessage(m_session, "Account '%s' has been banned %s%s for reason : %s. The change will be effective immediately.", pAccount,
                        timeperiod ? "until " : "forever", timeperiod ? Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32)UNIXTIME).c_str() : "", pReason);
 
-    sWorld.DisconnectUsersWithAccount(pAccount, m_session);
+    sWorld.disconnectSessionByAccountName(pAccount, m_session);
     sGMLog.writefromsession(m_session, "banned account %s until %s", pAccount, timeperiod ? Util::GetDateTimeStringFromTimeStamp(timeperiod + (uint32)UNIXTIME).c_str() : "permanent");
     return true;
 }

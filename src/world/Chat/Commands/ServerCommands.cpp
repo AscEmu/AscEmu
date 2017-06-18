@@ -25,7 +25,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
             latency_avg += itr->second->GetSession()->GetLatency();
             if (itr->second->GetSession()->GetPermissionCount())
             {
-                if (!sWorld.gamemaster_listOnlyActiveGMs)
+                if (!worldConfig.gm.listOnlyActiveGms)
                 {
                     online_gm++;
                 }
@@ -39,18 +39,18 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
     }
     objmgr._playerslock.ReleaseReadLock();
 
-    uint32 active_sessions = uint32(sWorld.GetSessionCount());
+    uint32 active_sessions = uint32(sWorld.getSessionCount());
 
     GreenSystemMessage(m_session, "Server Revision: |r%sAscEmu %s/%s-%s-%s %s(www.ascemu.org)", MSG_COLOR_WHITE, BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH, MSG_COLOR_LIGHTBLUE);
-    GreenSystemMessage(m_session, "Server Uptime: |r%s", sWorld.GetUptimeString().c_str());
+    GreenSystemMessage(m_session, "Server Uptime: |r%s", sWorld.getWorldUptimeString().c_str());
     GreenSystemMessage(m_session, "Active Sessions: |r%u", active_sessions);
     GreenSystemMessage(m_session, "Current GMs: |r%u GMs", online_gm);
-    GreenSystemMessage(m_session, "Current Players: |r%u (%u Peak)", online_gm > 0 ? (online_count - online_gm) : online_count, sWorld.PeakSessionCount);
+    GreenSystemMessage(m_session, "Current Players: |r%u (%u Peak)", online_gm > 0 ? (online_count - online_gm) : online_count, sWorld.getPeakSessionCount());
     GreenSystemMessage(m_session, "Active Thread Count: |r%u", ThreadPool.GetActiveThreadCount());
     GreenSystemMessage(m_session, "Free Thread Count: |r%u", ThreadPool.GetFreeThreadCount());
     GreenSystemMessage(m_session, "Average Latency: |r%.3fms", online_count > 0 ? (latency_avg / online_count) : latency_avg);
-    GreenSystemMessage(m_session, "CPU Usage: %3.2f %%", sWorld.GetCPUUsage());
-    GreenSystemMessage(m_session, "RAM Usage: %6.2f MB", sWorld.GetRAMUsage());
+    GreenSystemMessage(m_session, "CPU Usage: %3.2f %%", sWorld.getCPUUsage());
+    GreenSystemMessage(m_session, "RAM Usage: %6.2f MB", sWorld.getRAMUsage());
     GreenSystemMessage(m_session, "SQL Query Cache Size (World): |r%u queries delayed", WorldDatabase.GetQueueSize());
     GreenSystemMessage(m_session, "SQL Query Cache Size (Character): |r%u queries delayed", CharacterDatabase.GetQueueSize());
     GreenSystemMessage(m_session, "Socket Count: |r%u", sSocketMgr.GetSocketCount());
@@ -61,11 +61,13 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
 //.server rehash
 bool ChatHandler::HandleServerRehashCommand(const char* /*args*/, WorldSession* m_session)
 {
-    char TeamAnnounce[512];
-    snprintf(TeamAnnounce, 512, MSG_COLOR_RED "[Team]" MSG_COLOR_GREEN " |Hplayer:%s|h[%s]|h:" MSG_COLOR_YELLOW " is rehashing config file.", m_session->GetPlayer()->GetName(), m_session->GetPlayer()->GetName());
-    sWorld.SendGMWorldText(TeamAnnounce);
+    std::stringstream teamAnnounce;
+    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->GetName();
+    teamAnnounce << "|h[" << m_session->GetPlayer()->GetName() << "]|h:" << MSG_COLOR_YELLOW << " is rehashing config file.";
 
-    sWorld.Rehash(true);
+    sWorld.sendMessageToOnlineGms(teamAnnounce.str());
+
+    sWorld.loadWorldConfigValues(true);
 
     return true;
 }
@@ -125,11 +127,16 @@ bool ChatHandler::HandleServerSaveAllCommand(const char* /*args*/, WorldSession*
             online_count++;
         }
     }
+
     objmgr._playerslock.ReleaseReadLock();
 
-    char TeamAnnounce[512];
-    snprintf(TeamAnnounce, 512, MSG_COLOR_RED "[Team]" MSG_COLOR_GREEN " |Hplayer:%s|h[%s]|h:" MSG_COLOR_YELLOW " saved all online players (%u) in %lld msec.", m_session->GetPlayer()->GetName(), m_session->GetPlayer()->GetName(), online_count, Util::GetTimeDifferenceToNow(start_time));
-    sWorld.SendGMWorldText(TeamAnnounce);
+    std::stringstream teamAnnounce;
+    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->GetName() << "|h[";
+    teamAnnounce << m_session->GetPlayer()->GetName() << "]|h:" << MSG_COLOR_YELLOW << " saved all online players (" << online_count;
+    teamAnnounce << ") in " << Util::GetTimeDifferenceToNow(start_time) << " msec.";
+
+    sWorld.sendMessageToOnlineGms(teamAnnounce.str());
+
     sGMLog.writefromsession(m_session, "saved all online players");
 
     return true;
@@ -147,7 +154,7 @@ bool ChatHandler::HandleServerSetMotdCommand(const char* args, WorldSession* m_s
 
     GreenSystemMessage(m_session, "Motd has been set to: %s", args);
     sGMLog.writefromsession(m_session, "Set MOTD to %s", args);
-    sWorld.SetMotd(args);
+    worldConfig.setMessageOfTheDay(args);
 
     return true;
 }
@@ -164,15 +171,19 @@ bool ChatHandler::HandleServerShutdownCommand(const char* args, WorldSession* m_
     if (shutdowntime < 30)
         shutdowntime = 30;
 
-    char TeamAnnounce[512];
-    snprintf(TeamAnnounce, 512, MSG_COLOR_RED "[Team]" MSG_COLOR_GREEN " |Hplayer:%s|h[%s]|h:" MSG_COLOR_YELLOW " initiated server shutdown timer %u sec", m_session->GetPlayer()->GetName(), m_session->GetPlayer()->GetName(), shutdowntime);
-    sWorld.SendGMWorldText(TeamAnnounce);
+    std::stringstream teamAnnounce;
+    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->GetName();
+    teamAnnounce << "|h[" << m_session->GetPlayer()->GetName() << "]|h:" << MSG_COLOR_YELLOW << " initiated server shutdown timer " << shutdowntime << " sec";
+
+    sWorld.sendMessageToOnlineGms(teamAnnounce.str());
+
     sGMLog.writefromsession(m_session, "initiated server shutdown timer %u sec", shutdowntime);
 
-    char msg[500];
-    snprintf(msg, 500, "Server is shutting down in %u seconds.", (unsigned int)shutdowntime);
-    sWorld.SendWorldText(msg);
-    sWorld.SendWorldWideScreenText(msg);
+    std::stringstream worldAnnounce;
+    worldAnnounce << "Server is shutting down in " << shutdowntime << " seconds.";
+
+    sWorld.sendMessageToAll(worldAnnounce.str());
+    sWorld.sendAreaTriggerMessage(worldAnnounce.str());
 
     shutdowntime *= 1000;
     sMaster.m_ShutdownTimer = shutdowntime;
@@ -192,15 +203,18 @@ bool ChatHandler::HandleServerCancelShutdownCommand(const char* /*args*/, WorldS
     }
     else
     {
-        char TeamAnnounce[512];
-        snprintf(TeamAnnounce, 512, MSG_COLOR_RED "[Team]" MSG_COLOR_GREEN " |Hplayer:%s|h[%s]|h:" MSG_COLOR_YELLOW " canceled server shutdown!", m_session->GetPlayer()->GetName(), m_session->GetPlayer()->GetName());
-        sWorld.SendGMWorldText(TeamAnnounce);
+        std::stringstream teamAnnounce;
+        teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->GetName();
+        teamAnnounce << "|h[" << m_session->GetPlayer()->GetName() << "]|h:" << MSG_COLOR_YELLOW << " canceled server shutdown!";
+
+        sWorld.sendMessageToOnlineGms(teamAnnounce.str());
         sGMLog.writefromsession(m_session, "canceled server shutdown");
 
-        char msg[500];
-        snprintf(msg, 500, "Server %s cancelled.", (sMaster.m_restartEvent ? "Restart" : "Shutdown"));
-        sWorld.SendWorldText(msg);
-        sWorld.SendWorldWideScreenText(msg);
+        std::stringstream worldAnnounce;
+        worldAnnounce << "Server " << (sMaster.m_restartEvent ? "Restart" : "Shutdown") << " cancelled.";
+
+        sWorld.sendMessageToAll(worldAnnounce.str());
+        sWorld.sendAreaTriggerMessage(worldAnnounce.str());
 
         sMaster.m_ShutdownTimer = 5000;
         sMaster.m_ShutdownEvent = false;
@@ -222,15 +236,18 @@ bool ChatHandler::HandleServerRestartCommand(const char* args, WorldSession* m_s
     if (shutdowntime < 30)
         shutdowntime = 30;
 
-    char TeamAnnounce[512];
-    snprintf(TeamAnnounce, 512, MSG_COLOR_RED "[Team]" MSG_COLOR_GREEN " |Hplayer:%s|h[%s]|h:" MSG_COLOR_YELLOW " initiated server restart timer %u sec", m_session->GetPlayer()->GetName(), m_session->GetPlayer()->GetName(), shutdowntime);
-    sWorld.SendGMWorldText(TeamAnnounce);
+    std::stringstream teamAnnounce;
+    teamAnnounce << MSG_COLOR_RED << "[Team]" << MSG_COLOR_GREEN << " |Hplayer:" << m_session->GetPlayer()->GetName() << "|h[" << m_session->GetPlayer()->GetName();
+    teamAnnounce << "]|h:" << MSG_COLOR_YELLOW << " initiated server restart timer " << shutdowntime << " sec";
+
+    sWorld.sendMessageToOnlineGms(teamAnnounce.str());
     sGMLog.writefromsession(m_session, "initiated server restart timer %u sec", shutdowntime);
 
-    char msg[500];
-    snprintf(msg, 500, "Server is restarting in %u seconds.", (unsigned int)shutdowntime);
-    sWorld.SendWorldText(msg);
-    sWorld.SendWorldWideScreenText(msg);
+    std::stringstream worldAnnounce;
+    worldAnnounce << "Server is restarting in " << shutdowntime << " seconds.";
+
+    sWorld.sendMessageToAll(worldAnnounce.str());
+    sWorld.sendAreaTriggerMessage(worldAnnounce.str());
 
     shutdowntime *= 1000;
     sMaster.m_ShutdownTimer = shutdowntime;

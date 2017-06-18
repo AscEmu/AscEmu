@@ -11,3 +11,4 @@ configs/logon.conf
 configs/optional.conf
 configs/realms.conf
 configs/world.conf
+/cmake-build-debug/

@@ -24,6 +24,7 @@
 #include "Server/MainServerDefines.h"
 #include "Server/WorldSession.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 #include "WorldPacket.h"
 #include "Units/Players/Player.h"
 
@@ -279,7 +280,7 @@ void WeatherInfo::SendUpdate()
 {
     WorldPacket data(SMSG_WEATHER, 9);
     BuildWeatherPacket(&data, m_currentEffect, m_currentDensity);
-    sWorld.SendZoneMessage(&data, m_zoneId, 0);
+    sWorld.sendZoneMessage(&data, m_zoneId);
 }
 
 void WeatherInfo::SendUpdate(Player* plr) // Updates weather for player's zone-change only if new zone weather differs

@@ -17,8 +17,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MISCHANDLER_H
-#define _MISCHANDLER_H
+#ifndef MISCHANDLER_H
+#define MISCHANDLER_H
 
 #pragma pack(push,1)
 
@@ -37,4 +37,4 @@ struct GraveyardTeleport
 
 #pragma pack(pop)
 
-#endif // _MISCHANDLER_H
+#endif // MISCHANDLER_H

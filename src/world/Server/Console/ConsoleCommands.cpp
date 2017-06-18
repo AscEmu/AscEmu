@@ -28,6 +28,7 @@
 #include "Server/Master.h"
 #include "crc32.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 #include "../../../scripts/Common/Base.h"
 
 bool HandleTimeDateCommand(BaseConsole* console, int argc, const char* argv[])
@@ -43,7 +44,7 @@ bool HandleTimeDateCommand(BaseConsole* console, int argc, const char* argv[])
 
 bool HandleInfoCommand(BaseConsole* pConsole, int argc, const char* argv[])
 {
-    uint32 clientsNum = (uint32)sWorld.GetSessionCount();
+    uint32 clientsNum = (uint32)sWorld.getSessionCount();
     int gm = 0;
     int count = 0;
     int avg = 0;
@@ -65,13 +66,13 @@ bool HandleInfoCommand(BaseConsole* pConsole, int argc, const char* argv[])
     pConsole->Write("Server Information: \r\n");
     pConsole->Write("======================================================================\r\n");
     pConsole->Write("Server Revision: AscEmu %s/%s-%s-%s (www.ascemu.org)\r\n", BUILD_HASH_STR, CONFIG, PLATFORM_TEXT, ARCH);
-    pConsole->Write("Server Uptime: %s\r\n", sWorld.GetUptimeString().c_str());
+    pConsole->Write("Server Uptime: %s\r\n", sWorld.getWorldUptimeString().c_str());
     pConsole->Write("Current Players: %d (%d GMs, %d queued)\r\n", clientsNum, gm, 0);
     pConsole->Write("Active Thread Count: %u\r\n", ThreadPool.GetActiveThreadCount());
     pConsole->Write("Free Thread Count: %u\r\n", ThreadPool.GetFreeThreadCount());
     pConsole->Write("Average Latency: %.3fms\r\n", count ? ((float)((float)avg / (float)count)) : 0.0f);
-    pConsole->Write("CPU Usage: %3.2f %%\r\n", sWorld.GetCPUUsage());
-    pConsole->Write("RAM Usage: %4.2f MB\r\n", sWorld.GetRAMUsage());
+    pConsole->Write("CPU Usage: %3.2f %%\r\n", sWorld.getCPUUsage());
+    pConsole->Write("RAM Usage: %4.2f MB\r\n", sWorld.getRAMUsage());
     pConsole->Write("SQL Query Cache Size (World): %u queries delayed\r\n", WorldDatabase.GetQueueSize());
     pConsole->Write("SQL Query Cache Size (Character): %u queries delayed\r\n", CharacterDatabase.GetQueueSize());
     sSocketMgr.ShowStatus();
@@ -138,14 +139,16 @@ void ConcatArgs(std::string & outstr, int argc, int startoffset, const char* arg
 }
 bool HandleAnnounceCommand(BaseConsole* pConsole, int argc, const char* argv[])
 {
-    char pAnnounce[1024];
     std::string outstr;
     if (argc < 2)
         return false;
 
     ConcatArgs(outstr, argc, 0, argv);
-    snprintf(pAnnounce, 1024, "%sConsole: |r%s", MSG_COLOR_LIGHTBLUE, outstr.c_str());
-    sWorld.SendWorldText(pAnnounce); // send message
+
+    std::stringstream worldAnnounce;
+    worldAnnounce << MSG_COLOR_LIGHTBLUE << "Console: |r" << outstr;
+
+    sWorld.sendMessageToAll(worldAnnounce.str());
     pConsole->Write("Message sent.\r\n");
     return true;
 }
@@ -159,8 +162,11 @@ bool HandleWAnnounceCommand(BaseConsole* pConsole, int argc, const char* argv[])
         return false;
 
     ConcatArgs(outstr, argc, 0, argv);
-    snprintf(pAnnounce, 1024, "%sConsole: |r%s", MSG_COLOR_LIGHTBLUE, outstr.c_str());
-    sWorld.SendWorldWideScreenText(pAnnounce); // send message
+
+    std::stringstream areaMessage;
+    areaMessage << MSG_COLOR_LIGHTBLUE << "Console: |r" << outstr;
+
+    sWorld.sendAreaTriggerMessage(areaMessage.str());
     pConsole->Write("Message sent.\r\n");
     return true;
 }
@@ -194,7 +200,6 @@ bool HandleKickCommand(BaseConsole* pConsole, int argc, const char* argv[])
     if (argc < 3)
         return false;
 
-    char pAnnounce[1024];
     Player* pPlayer;
     std::string outstr;
 
@@ -204,10 +209,15 @@ bool HandleKickCommand(BaseConsole* pConsole, int argc, const char* argv[])
         pConsole->Write("Could not find player, %s.\r\n", argv[1]);
         return true;
     }
+
     ConcatArgs(outstr, argc, 1, argv);
-    snprintf(pAnnounce, 1024, "%sConsole:|r %s was removed from the server. Reason: %s.", MSG_COLOR_LIGHTBLUE, pPlayer->GetName(), outstr.c_str());
+
+    std::stringstream worldAnnounce;
+    worldAnnounce << MSG_COLOR_LIGHTBLUE << "Console:|r " << pPlayer->GetName() << " was removed from the server. Reason: " << outstr;
+
+    sWorld.sendMessageToAll(worldAnnounce.str());
+
     pPlayer->BroadcastMessage("You are now being removed by the game by an administrator via the console. Reason: %s", outstr.c_str());
-    sWorld.SendWorldText(pAnnounce, NULL);
     pPlayer->Kick(5000);
     pConsole->Write("Kicked player %s.\r\n", pPlayer->GetName());
     return true;
@@ -293,7 +303,7 @@ bool HandleMOTDCommand(BaseConsole* pConsole, int argc, const char* argv[])
 {
     if (argc < 2)
     {
-        pConsole->Write("The current message of the day is: '%s'.\r\n", sWorld.GetMotd());
+        pConsole->Write("The current message of the day is: '%s'.\r\n", worldConfig.getMessageOfTheDay().c_str());
     }
     else
     {
@@ -302,8 +312,8 @@ bool HandleMOTDCommand(BaseConsole* pConsole, int argc, const char* argv[])
         ConcatArgs(outstr, argc, 0, argv);
         snprintf(set_motd, 1024, "%s", outstr.c_str());
 
-        sWorld.SetMotd(set_motd);
-        pConsole->Write("The message of the day has been set to: '%s'.\r\n", sWorld.GetMotd());
+        worldConfig.setMessageOfTheDay(set_motd);
+        pConsole->Write("The message of the day has been set to: '%s'.\r\n", worldConfig.getMessageOfTheDay().c_str());
     }
     return true;
 }
@@ -362,7 +372,7 @@ bool HandleRevivePlayer(BaseConsole* pConsole, int argc, const char* argv[])
 bool HandleRehashCommand(BaseConsole* pConsole, int argc, const char* argv[])
 {
     pConsole->Write("Config file re-parsed.");
-    sWorld.Rehash(true);
+    sWorld.loadWorldConfigValues(true);
     return true;
 }
 
@@ -374,7 +384,7 @@ bool HandleNameHashCommand(BaseConsole* pConsole, int argc, const char* argv[])
     std::string spname;
     ConcatArgs(spname, argc, 0, argv);
     pConsole->Write("Name Hash for %s is 0x%X", spname.c_str(), crc32((const unsigned char*)spname.c_str(), (unsigned int)spname.length()));
-    sWorld.Rehash(true);
+    sWorld.loadWorldConfigValues(true);
     return true;
 }
 

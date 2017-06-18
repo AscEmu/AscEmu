@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _GUARDIANSUMMON_H
-#define _GUARDIANSUMMON_H
+#ifndef GUARDIANSUMMON_H
+#define GUARDIANSUMMON_H
 
 #include "Units/Summons/Summon.h"
 #include "Units/Creatures/CreatureDefines.hpp"

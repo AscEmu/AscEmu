@@ -201,7 +201,7 @@ class SCRIPT_DECL EasyFunctions
             if (creat == NULL)
                 return;
 
-            creat->GetAIInterface()->MoveTo(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ(), plr->GetOrientation());
+            creat->GetAIInterface()->MoveTo(plr->GetPositionX(), plr->GetPositionY(), plr->GetPositionZ());
         }
 
         // creates the storage for custom waypoints. If one already exists, it is cleared.

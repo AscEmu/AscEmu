@@ -26,6 +26,7 @@
 #include "Creatures/Creature.h"
 #include "Creatures/Pet.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 #include "../../scripts/Battlegrounds/AlteracValley.h"
 #include "WorldConf.h"
 
@@ -261,7 +262,7 @@ uint32 CalculateXpToGive(Unit* pVictim, Unit* pAttacker)
     if (xp == 0.0f)
         return 0;
 
-    xp *= sWorld.getRate(RATE_XP);
+    xp *= worldConfig.getFloatRate(RATE_XP);
 
     // elite boss multiplier
     if (victimI)

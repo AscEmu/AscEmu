@@ -3,26 +3,26 @@ Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _SPELL_DEFINES_HPP
-#define _SPELL_DEFINES_HPP
+#pragma once
+#include <cstdint>
 
 struct DamageProc
 {
-    uint32 m_spellId;
-    uint32 m_damage;
+    uint32_t m_spellId;
+    uint32_t m_damage;
     //uint64 m_caster;          //log is: some reflects x arcane/nature damage to 'attacker' no matter who casted
-    uint32 m_school;
-    uint32 m_flags;
+    uint32_t m_school;
+    uint32_t m_flags;
     void* owner;                //mark the owner of this proc to know which one to delete
 };
 
 struct SpellCharge
 {
-    uint32 spellId;
-    uint32 count;
-    uint32 ProcFlag;
-    uint32 lastproc;
-    uint32 procdiff;
+    uint32_t spellId;
+    uint32_t count;
+    uint32_t ProcFlag;
+    uint32_t lastproc;
+    uint32_t procdiff;
 };
 
 enum SpellAttributes
@@ -436,5 +436,3 @@ enum SpellAttributesExJ
 #define MAX_SPELL_TOTEM_CATEGORIES 2
 #define MAX_SPELL_REAGENTS 8
 #define MAX_SPELL_ID 121820
-
-#endif // _SPELL_DEFINES_HPP

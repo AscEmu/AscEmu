@@ -4079,7 +4079,14 @@ bool ItemInterface::AddItemById(uint32 itemid, uint32 count, int32 randomprop)
             item->ApplyRandomProperties(false);
         }
 
-        toadd = count > maxStack ? maxStack : count;
+        if (maxStack != 0)
+        {
+            toadd = count > maxStack ? maxStack : count;
+        }
+        else
+        {
+            toadd = count;
+        }
 
         item->SetStackCount(toadd);
 

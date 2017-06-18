@@ -18,8 +18,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _WOWSERVER_CORPSE_H
-#define _WOWSERVER_CORPSE_H
+#ifndef WOWSERVER_CORPSE_H
+#define WOWSERVER_CORPSE_H
 
 #include "Objects/Object.h"
 #include "Management/LootMgr.h"

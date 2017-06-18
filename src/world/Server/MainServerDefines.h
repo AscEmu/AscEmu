@@ -20,6 +20,7 @@
 #pragma once
 
 #include "CommonTypes.hpp"
+#include "Config/Config.h"
 
 class Database;
 
@@ -40,3 +41,13 @@ extern SERVER_DECL SessionLogWriter* Player_Log;
 #define sGMLog (*GMCommand_Log)
 #define sPlrLog (*Player_Log)
 
+
+class SERVER_DECL ConfigMgr
+{
+public:
+
+    ConfigFile MainConfig;
+    ConfigFile ClusterConfig;
+};
+
+extern SERVER_DECL ConfigMgr Config;

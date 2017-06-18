@@ -1,10 +1,9 @@
 /*
-Copyright (c) 2016 AscEmu Team <http://www.ascemu.org/>
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
 This file is released under the MIT license. See README-MIT for more information.
 */
 
-#ifndef _PACKET_SMSG_MONSTER_MOVE_HPP
-#define _PACKET_SMSG_MONSTER_MOVE_HPP
+#pragma once
 
 #include "Server/Packets/Opcode.h"
 #include "Movement/UnitMovementManager.hpp"
@@ -35,5 +34,3 @@ namespace Packets
         };
     }
 }
-
-#endif // _PACKET_SMSG_MONSTER_MOVE_HPP

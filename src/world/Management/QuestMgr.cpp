@@ -390,7 +390,7 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
     uint32 xp = 0;
     if (plr->getLevel() < plr->GetMaxLevel())
     {
-        xp = float2int32(GenerateQuestXP(plr, qst) * sWorld.getRate(RATE_QUESTXP));
+        xp = float2int32(GenerateQuestXP(plr, qst) * worldConfig.getFloatRate(RATE_QUESTXP));
     }
     *data << uint32(xp); //VLack: The quest will give you this amount of XP
 
@@ -574,7 +574,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
     }
     else
     {
-        xp = float2int32(GenerateQuestXP(plr, qst) * sWorld.getRate(RATE_QUESTXP));
+        xp = float2int32(GenerateQuestXP(plr, qst) * worldConfig.getFloatRate(RATE_QUESTXP));
         plr->GiveXP(xp, 0, false);
     }
 
@@ -1066,7 +1066,7 @@ void QuestMgr::GiveQuestRewardReputation(Player* plr, QuestProperties const* qst
             if (plr->GetStanding(fact) >= (int32)qst->reward_replimit)
                 continue;
 
-        amt = float2int32(amt * sWorld.getRate(RATE_QUESTREPUTATION));     // reputation rewards
+        amt = float2int32(amt * worldConfig.getFloatRate(RATE_QUESTREPUTATION));     // reputation rewards
         plr->ModStanding(fact, amt);
     }
 }
@@ -1081,7 +1081,7 @@ void QuestMgr::OnQuestFinished(Player* plr, QuestProperties const* qst, Object* 
         return;
 
     // Check they don't have more than the max gold
-    if (sWorld.GoldCapEnabled && (plr->GetGold() + qst->reward_money) > sWorld.GoldLimit)
+    if (worldConfig.player.isGoldCapEnabled && (plr->GetGold() + qst->reward_money) > worldConfig.player.limitGoldAmount)
     {
         plr->GetItemInterface()->BuildInventoryChangeError(NULL, NULL, INV_ERR_TOO_MUCH_GOLD);
         return;

@@ -21,6 +21,7 @@
 #include "StdAfx.h"
 #include "WorldStatesHandler.h"
 #include "Server/World.h"
+#include "Server/World.Legacy.h"
 #include "Objects/ObjectMgr.h"
 
 void WorldStatesHandler::SetWorldStateForZone(uint32 zone, uint32 area, uint32 field, uint32 value)
@@ -76,9 +77,9 @@ void WorldStatesHandler::BuildInitWorldStatesForZone(uint32 zone, uint32 area, W
 
 #if VERSION_STRING > TBC
     data << uint32(3191);
-    data << uint32(sWorld.Arena_Season);
+    data << uint32(worldConfig.arena.arenaSeason);
     data << uint32(3901);
-    data << uint32(sWorld.Arena_Progress);
+    data << uint32(worldConfig.arena.arenaProgress);
 #endif
 }
 
