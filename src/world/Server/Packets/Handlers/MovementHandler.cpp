@@ -101,11 +101,19 @@ void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& recv_data)
 
         WorldPacket dataw(SMSG_NEW_WORLD, 20);
 
+#if VERSION_STRING != Cata
         dataw << pTrans->GetMapId();
         dataw << c_tposx;
         dataw << c_tposy;
         dataw << c_tposz;
         dataw << _player->GetOrientation();
+#else
+        dataw << c_tposx;
+        dataw << _player->GetOrientation();
+        dataw << c_tposz;
+        dataw << pTrans->GetMapId();
+        dataw << c_tposy;
+#endif
 
         SendPacket(&dataw);
     }

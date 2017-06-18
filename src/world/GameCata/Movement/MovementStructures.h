@@ -3942,6 +3942,88 @@ MovementStatusElements MoveSplineSetRunModeSequence[] =
     MSEEnd,
 };
 
+MovementStatusElements MoveUpdateTeleport[] =
+{
+    MSEPositionZ,
+    MSEPositionY,
+    MSEPositionX,
+    MSEHasOrientation,
+
+    MSEHasSpline,
+    MSEHasMovementFlags,
+    MSEGuidBit2,
+    MSEGuidBit4,
+    MSEGuidBit6,
+    MSEHasFallData,
+    MSEGuidBit0,
+    MSEHasTransportData,
+    MSEGuidBit5,
+
+    MSETransportGuidBit1,
+    MSETransportGuidBit4,
+    MSETransportGuidBit5,
+    MSETransportGuidBit3,
+    MSETransportGuidBit0,
+    MSEHasTransportTime2,
+    MSETransportGuidBit7,
+    MSETransportGuidBit6,
+    MSEHasTransportTime3,
+    MSETransportGuidBit2,
+
+    MSEHasUnknownBit,
+
+    MSEGuidBit7,
+    MSEGuidBit3,
+    MSEHasPitch,
+    MSEHasMovementFlags2,
+    MSEHasTimestamp,
+
+    MSEHasFallDirection,
+    MSEFlags2,
+    MSEHasSplineElevation,
+    MSEFlags,
+    MSEGuidBit1,
+
+    MSEGuidByte7,
+    MSETransportGuidByte3,
+    MSETransportGuidByte4,
+    MSETransportPositionO,
+    MSETransportTime3,
+    MSETransportGuidByte1,
+    MSETransportTime2,
+    MSETransportPositionZ,
+    MSETransportGuidByte7,
+    MSETransportGuidByte0,
+    MSETransportGuidByte6,
+    MSETransportGuidByte5,
+    MSETransportGuidByte2,
+    MSETransportSeat,
+    MSETransportTime,
+    MSETransportPositionY,
+    MSETransportPositionX,
+
+    MSEGuidByte6,
+    MSEPitch,
+    MSESplineElevation,
+    MSEPositionO,
+    MSEGuidByte2,
+    MSEGuidByte3,
+    MSEGuidByte1,
+
+    MSEFallTime,
+    MSEFallHorizontalSpeed,
+    MSEFallCosAngle,
+    MSEFallSinAngle,
+    MSEFallVerticalSpeed,
+
+    MSEGuidByte5,
+    MSEGuidByte4,
+    MSETimestamp,
+    MSEGuidByte0,
+
+    MSEEnd,
+};
+
 MovementStatusElements* GetMovementStatusElementsSequence(uint32 opcode)
 {
     switch (opcode)
@@ -4109,6 +4191,8 @@ MovementStatusElements* GetMovementStatusElementsSequence(uint32 opcode)
             return MoveSplineSetWalkModeSequence;
         case SMSG_SPLINE_MOVE_SET_RUN_MODE:
             return MoveSplineSetRunModeSequence;
+        case SMSG_MOVE_UPDATE_TELEPORT:
+            return MoveUpdateTeleport;
         default:
             return nullptr;
     }

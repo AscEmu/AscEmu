@@ -7301,6 +7301,10 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
     {
         data.SetOpcode(SMSG_TRANSFER_PENDING);
 
+#if VERSION_STRING == Cata
+        data.writeBit(0);
+        data.writeBit(0);
+#endif
         data << mapid;
 
         m_session->SendPacket(&data);
@@ -7335,24 +7339,36 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
 
         data.Initialize(SMSG_NEW_WORLD);
 
+#if VERSION_STRING != Cata
         data << uint32(mapid);
         data << v;
         data << float(v.o);
+#else
+        data << float(v.x);
+        data << float(v.o);
+        data << float(v.z);
+        data << uint32(mapid);
+        data << float(v.y);
+#endif
 
         m_session->SendPacket(&data);
 
         SetMapId(mapid);
 
     }
+#if VERSION_STRING != Cata
     else
         SendTeleportAckPacket(v.x, v.y, v.z, v.o);
+#endif
 
     SetPlayerStatus(TRANSFER_PENDING);
     m_sentTeleportPosition = v;
     SetPosition(v);
     if (sendpacket)
     {
+#if VERSION_STRING != Cata
         SendTeleportPacket(v.x, v.y, v.z, v.o);
+#endif
     }
     SpeedCheatReset();
 
@@ -8621,11 +8637,13 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, float X, float Y, flo
 
 bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector & vec)
 {
+#if VERSION_STRING != Cata
     // Checking if we have a unit whose waypoints are shown
     // If there is such, then we "unlink" it
     // Failing to do so leads to a crash if we try to show some other Unit's wps, after the map was shut down
     if (waypointunit != NULL)
         waypointunit->hideWayPoints(this);
+
     waypointunit = NULL;
 
     SpeedCheatDelay(10000);
@@ -8645,25 +8663,13 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
         setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
     }
 
-#if VERSION_STRING != Cata
     if (obj_movement_info.transporter_info.guid)
-#else
-    if (!obj_movement_info.getTransportGuid().IsEmpty())
-#endif
     {
-#if VERSION_STRING != Cata
         Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.transporter_info.guid));
-#else
-        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.getTransportGuid()));
-#endif
         if (pTrans)
         {
             pTrans->RemovePassenger(this);
-#if VERSION_STRING != Cata
             obj_movement_info.transporter_info.guid = 0;
-#else
-            obj_movement_info.clearTransportData();
-#endif
         }
     }
 
@@ -8722,6 +8728,115 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     _Relocate(MapID, vec, true, instance, InstanceID);
     SpeedCheatReset();
     ForceZoneUpdate();
+#else
+
+    if (waypointunit != NULL)
+        waypointunit->hideWayPoints(this);
+
+    waypointunit = NULL;
+
+    SpeedCheatDelay(10000);
+
+    if (GetTaxiState())
+    {
+        sEventMgr.RemoveEvents(this, EVENT_PLAYER_TELEPORT);
+        sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_DISMOUNT);
+        sEventMgr.RemoveEvents(this, EVENT_PLAYER_TAXI_INTERPOLATE);
+        SetTaxiState(false);
+        SetTaxiPath(NULL);
+        UnSetTaxiPos();
+        m_taxi_ride_time = 0;
+        SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 0);
+        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_MOUNTED_TAXI);
+        RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_LOCK_PLAYER);
+        setSpeedForType(TYPE_RUN, getSpeedForType(TYPE_RUN));
+    }
+
+    if (obj_movement_info.getTransportGuid())
+    {
+        Transporter* pTrans = objmgr.GetTransporter(Arcemu::Util::GUID_LOPART(obj_movement_info.getTransportGuid()));
+        if (pTrans)
+        {
+            pTrans->RemovePassenger(this);
+            obj_movement_info.clearTransportData();
+        }
+    }
+
+    bool instance = false;
+    MapInfo const* mi = sMySQLStore.getWorldMapInfo(MapID);
+
+    if (InstanceID && (uint32)m_instanceId != InstanceID)
+    {
+        instance = true;
+        this->SetInstanceID(InstanceID);
+    }
+    else if (m_mapId != MapID)
+    {
+        instance = true;
+    }
+
+    // make sure player does not drown when teleporting from under water
+    if (m_UnderwaterState & UNDERWATERSTATE_UNDERWATER)
+        m_UnderwaterState &= ~UNDERWATERSTATE_UNDERWATER;
+
+    if (flying_aura && ((m_mapId != 530) && (m_mapId != 571 || !HasSpellwithNameHash(SPELL_HASH_COLD_WEATHER_FLYING) && getDeathState() == ALIVE)))
+        // can only fly in outlands or northrend (northrend requires cold weather flying)
+    {
+        RemoveAura(flying_aura);
+        flying_aura = 0;
+    }
+
+    // Exit vehicle before teleporting
+    if (GetVehicleBase() != NULL)
+        GetVehicleBase()->GetVehicleComponent()->EjectPassenger(this);
+
+    // Lookup map info
+    if (mi && mi->flags & WMI_INSTANCE_XPACK_01 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_01) && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
+    {
+        WorldPacket msg(SMSG_MOTD, 50); // Need to be replaced with correct one !
+        msg << uint32(3) << GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_BC) << uint8(0);
+        m_session->SendPacket(&msg);
+        return false;
+    }
+    if (mi && mi->flags & WMI_INSTANCE_XPACK_02 && !m_session->HasFlag(ACCOUNT_FLAG_XPACK_02))
+    {
+        WorldPacket msg(SMSG_MOTD, 50); // Need to be replaced with correct one !
+        msg << uint32(3) << GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_WOTLK) << uint8(0);
+        m_session->SendPacket(&msg);
+        return false;
+    }
+
+    // cebernic: cleanup before teleport
+    // seems BFleaveOpcode was breakdown,that will be causing big BUG with player leaving from the BG
+    // now this much better:D RemoveAura & BG_DESERTER going to well as you go out from BG.
+    if (m_bg && m_bg->GetMapMgr() && GetMapMgr()->GetMapInfo()->mapid != MapID)
+    {
+        m_bg->RemovePlayer(this, false);
+    }
+
+    if (GetMapId() == MapID)
+    {
+        if (GetSession())
+        {
+            SetPlayerStatus(TRANSFER_PENDING);
+            m_sentTeleportPosition = vec;
+
+            SetPosition(vec);
+            SendTeleportPacket(vec.x, vec.y, vec.z, vec.o);
+        }
+
+        SpeedCheatReset();
+        ForceZoneUpdate();
+    }
+    else
+    {
+        // Do normal stuff here!
+        _Relocate(MapID, vec, true, instance, InstanceID);
+
+        SpeedCheatReset();
+        ForceZoneUpdate();
+    }
+#endif
     return true;
 }
 
@@ -13973,10 +14088,64 @@ void Player::SetBattlegroundEntryPoint()
 
 void Player::SendTeleportPacket(float x, float y, float z, float o)
 {
+#if VERSION_STRING != Cata
     WorldPacket data2(MSG_MOVE_TELEPORT, 38);
     data2.append(GetNewGUID());
     BuildMovementPacket(&data2, x, y, z, o);
     SendMessageToSet(&data2, false);
+#else
+    LocationVector oldPos = LocationVector(GetPositionX(), GetPositionY(), GetPositionZ(), GetOrientation());
+    LocationVector pos = LocationVector(x, y, z, o);
+
+    if (GetTypeId() == TYPEID_UNIT)
+        SetPosition(pos);
+
+    ObjectGuid guid = GetGUID();
+
+    WorldPacket data(SMSG_MOVE_UPDATE_TELEPORT, 38);
+    movement_info.writeMovementInfo(data, SMSG_MOVE_UPDATE_TELEPORT);
+
+    if (GetTypeId() == TYPEID_PLAYER)
+    {
+        WorldPacket data2(MSG_MOVE_TELEPORT, 38);
+        data2.writeBit(guid[6]);
+        data2.writeBit(guid[0]);
+        data2.writeBit(guid[3]);
+        data2.writeBit(guid[2]);
+        data2.writeBit(0); // unk
+        //\TODO add transport
+        data2.writeBit(0); // transport guid
+        data2.writeBit(guid[1]);
+
+        data2.writeBit(guid[4]);
+        data2.writeBit(guid[7]);
+        data2.writeBit(guid[5]);
+        data2.flushBits();
+
+
+        data2 << uint32_t(0); // unk
+        data2.WriteByteSeq(guid[1]);
+        data2.WriteByteSeq(guid[2]);
+        data2.WriteByteSeq(guid[3]);
+        data2.WriteByteSeq(guid[5]);
+        data2 << float(GetPositionX());
+        data2.WriteByteSeq(guid[4]);
+        data2 << float(GetOrientation());
+        data2.WriteByteSeq(guid[7]);
+        data2 << float(GetPositionZ());
+        data2.WriteByteSeq(guid[0]);
+        data2.WriteByteSeq(guid[6]);
+        data2 << float(GetPositionY());
+        SendPacket(&data2);
+    }
+
+    if (GetTypeId() == TYPEID_PLAYER)
+        SetPosition(pos);
+    else
+        SetPosition(oldPos);
+
+    SendMessageToSet(&data, false);
+#endif
 }
 
 void Player::SendTeleportAckPacket(float x, float y, float z, float o)

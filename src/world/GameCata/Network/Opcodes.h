@@ -1356,7 +1356,7 @@ enum Opcodes
     SMSG_GROUP_SET_ROLE= 0x39A6,                        // new
     CMSG_GROUP_REQUEST_JOIN_UPDATES = 0x2583,           // new
     CMSG_LEARN_PREVIEW_TALENTS = 0x2415,                // new
-
+    SMSG_MOVE_UPDATE_TELEPORT = 0x50B2,                 // new
     MSG_WOW_CONNECTION = 0x4F57,
         
     NUM_MSG_TYPES = 0xFFFF
