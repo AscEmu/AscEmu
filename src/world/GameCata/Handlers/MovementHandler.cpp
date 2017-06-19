@@ -840,8 +840,42 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint32_t opcode, float cu
     }
 }
 
-
 void WorldSession::HandleForceSpeedAckOpcodes(WorldPacket& recv_data)
 {
     LOG_DEBUG("WORLD : Received FORCED SPEED ACK package!");
+}
+
+void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& recv_data)
+{
+    GetPlayer()->SetPlayerStatus(NONE);
+    if (_player->IsInWorld())
+    {
+        return;
+    }
+
+    if (_player->GetTransport() && _player->GetMapId() != _player->GetTransport()->GetMapId())
+    {
+        Transporter* pTrans = _player->GetTransport();
+
+        float c_tposx = pTrans->GetPositionX() + _player->GetTransPositionX();
+        float c_tposy = pTrans->GetPositionY() + _player->GetTransPositionY();
+        float c_tposz = pTrans->GetPositionZ() + _player->GetTransPositionZ();
+
+
+        _player->SetMapId(pTrans->GetMapId());
+        _player->SetPosition(c_tposx, c_tposy, c_tposz, _player->GetOrientation());
+
+        WorldPacket data(SMSG_NEW_WORLD, 20);
+        data << c_tposx;
+        data << _player->GetOrientation();
+        data << c_tposz;
+        data << pTrans->GetMapId();
+        data << c_tposy;
+        SendPacket(&data);
+    }
+    else
+    {
+        _player->m_TeleportState = 2;
+        _player->AddToWorld();
+    }
 }
