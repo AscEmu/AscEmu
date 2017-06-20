@@ -218,6 +218,11 @@ namespace MySQLStructure
         uint32_t draeneiId;
         uint32_t trollId;
         uint32_t orcId;
+#if VERSION_STRING == Cata
+        uint32_t taurenId;
+        uint32_t dwarfId;
+        uint32_t goblinId;
+#endif
     };
 
     //trainer_defs

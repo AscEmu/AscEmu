@@ -1908,8 +1908,13 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
 {
     uint32_t start_time = getMSTime();
 
+#if VERSION_STRING != Cata
     //                                                                      0         1        2       3
     QueryResult* totemdisplayids_result = WorldDatabase.Query("SELECT displayid, draeneiid, trollid, orcid FROM totemdisplayids");
+#else
+    //                                                                      0         1        2       3       4         5         6
+    QueryResult* totemdisplayids_result = WorldDatabase.Query("SELECT displayid, draeneiid, trollid, orcid, taurenid, dwarfid, goblinid FROM totemdisplayids");
+#endif
     if (totemdisplayids_result == nullptr)
     {
         LogNotice("MySQLDataLoads : Table `totemdisplayids` is empty!");
@@ -1933,6 +1938,11 @@ void MySQLDataStore::loadTotemDisplayIdsTable()
         totemDisplayId.draeneiId = fields[1].GetUInt32();
         totemDisplayId.trollId = fields[2].GetUInt32();
         totemDisplayId.orcId = fields[3].GetUInt32();
+#if VERSION_STRING == Cata
+        totemDisplayId.taurenId = fields[4].GetUInt32();
+        totemDisplayId.dwarfId = fields[5].GetUInt32();
+        totemDisplayId.goblinId = fields[6].GetUInt32();
+#endif
 
         ++totemdisplayids_count;
     } while (totemdisplayids_result->NextRow());
