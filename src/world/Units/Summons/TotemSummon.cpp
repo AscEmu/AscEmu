@@ -52,6 +52,17 @@ void TotemSummon::Load(CreatureProperties const* properties_, Unit* owner, Locat
             case RACE_ORC:
                 displayID = totemdisplay->orcId;
                 break;
+#if VERSION_STRING == Cata
+            case RACE_TAUREN:
+                displayID = totemdisplay->taurenId;
+                break;
+            case RACE_DWARF:
+                displayID = totemdisplay->dwarfId;
+                break;
+            case RACE_GOBLIN:
+                displayID = totemdisplay->goblinId;
+                break;
+#endif
             default:
                 displayID = totemdisplay->displayId;
                 break;
