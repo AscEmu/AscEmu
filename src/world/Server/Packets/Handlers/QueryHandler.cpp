@@ -362,6 +362,7 @@ void WorldSession::HandleItemNameQueryOpcode(WorldPacket& recv_data)
     SendPacket(&reply);
 }
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN;
@@ -395,6 +396,7 @@ void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
     *(uint32*)(data.contents()) = count;
     SendPacket(&data);
 }
+#endif
 
 void WorldSession::HandleAchievmentQueryOpcode(WorldPacket& recv_data)
 {

@@ -325,6 +325,7 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
     return questCount;
 }
 
+#if VERSION_STRING != Cata
 void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr)
 {
     LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : NULL;
@@ -412,7 +413,9 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
     for (uint8 i = 0; i < 5; ++i)              // reward reputation override?
         *data << uint32(0);
 }
+#endif
 
+#if VERSION_STRING != Cata
 void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr)
 {
     LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : NULL;
@@ -494,7 +497,9 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
         *data << qst->detailemotedelay[i];		// Emote Delay
     }
 }
+#endif
 
+#if VERSION_STRING != Cata
 void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 status, uint32 language)
 {
     LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : NULL;
@@ -562,7 +567,9 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
     *data << uint32(8);
     *data << uint32(10);
 }
+#endif
 
+#if VERSION_STRING != Cata
 void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
 {
     uint32 xp;
@@ -619,6 +626,7 @@ void QuestMgr::BuildQuestComplete(Player* plr, QuestProperties const* qst)
     }
     plr->SendPacket(&data);
 }
+#endif
 
 void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr, uint32 language)
 {
@@ -2403,13 +2411,11 @@ void QuestMgr::BuildQuestPOIResponse(WorldPacket& data, uint32 questid)
 
         if (POI != NULL)
         {
-
             data << uint32(questid);
             data << uint32(POI->size());
 
             for (QuestPOIVector::const_iterator itr = POI->begin(); itr != POI->end(); ++itr)
             {
-
                 data << uint32(itr->PoiId);
                 data << int32(itr->ObjectiveIndex);
                 data << uint32(itr->MapId);
@@ -2421,7 +2427,6 @@ void QuestMgr::BuildQuestPOIResponse(WorldPacket& data, uint32 questid)
 
                 for (std::vector< QuestPOIPoint >::const_iterator itr2 = itr->points.begin(); itr2 != itr->points.end(); ++itr2)
                 {
-
                     data << int32(itr2->x);
                     data << int32(itr2->y);
                 }

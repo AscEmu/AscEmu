@@ -65,3 +65,30 @@ void WorldSession::HandleCorpseQueryOpcode(WorldPacket& recv_data)
         SendPacket(&data);
     }
 }
+
+void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
+{
+    uint32_t count = 0;
+
+    WorldPacket data(SMSG_QUESTGIVER_STATUS_MULTIPLE, 4 + 8 + 4);
+    data << uint32_t(count);
+
+    Object::InRangeSet::iterator itr;
+    for (itr = _player->m_objectsInRange.begin(); itr != _player->m_objectsInRange.end(); ++itr)
+    {
+        if (!(*itr)->IsCreature())
+            continue;
+
+        Creature* pCreature = static_cast<Creature*>(*itr);
+
+        if (pCreature->isQuestGiver())
+        {
+            data << uint64_t(pCreature->GetGUID());
+            data << uint32_t(sQuestMgr.CalcStatus(pCreature, _player));
+            ++count;
+        }
+    }
+
+    data.put<uint32_t>(0, count);
+    SendPacket(&data);
+}

@@ -1129,7 +1129,7 @@ void WorldSession::HandleEquipmentSetDelete(WorldPacket& data)
 }
 #endif
 
-#if VERSION_STRING > TBC
+#if VERSION_STRING == WotLK
 void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN LOG_DEBUG("Received CMSG_QUEST_POI_QUERY");
