@@ -596,10 +596,11 @@ void WorldSession::HandleBinderActivateOpcode(WorldPacket& recv_data)
     uint64 guid;
     recv_data >> guid;
 
-    Creature* pC = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
-    if (!pC) return;
+    Creature* creatureBinder = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    if (!creatureBinder)
+        return;
 
-    SendInnkeeperBind(pC);
+    SendInnkeeperBind(creatureBinder);
 }
 
 #define BIND_SPELL_ID 3286
