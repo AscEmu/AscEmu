@@ -75,7 +75,8 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
             CharEnumData charEnum;
 
-            ObjectGuid guid = MAKE_NEW_GUID(fields[0].GetUInt32(), 0, 0x000);
+            uint32_t dbGuid = fields[0].GetUInt32();
+            ObjectGuid guid = MAKE_NEW_GUID(dbGuid, 0, 0x000);
             charEnum.level = fields[1].GetUInt8();
             charEnum.race = fields[2].GetUInt8();
             charEnum.Class = fields[3].GetUInt8();
@@ -152,7 +153,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
             if (charEnum.Class == WARLOCK || charEnum.Class == HUNTER)
             {
-                QueryResult* player_pet_db_result = CharacterDatabase.Query("SELECT entry, level FROM playerpets WHERE ownerguid = %u AND MOD(active, 10) = 1 AND alive = TRUE;", Arcemu::Util::GUID_LOPART(charEnum.guid));
+                QueryResult* player_pet_db_result = CharacterDatabase.Query("SELECT entry, level FROM playerpets WHERE ownerguid = %u AND MOD(active, 10) = 1 AND alive = TRUE;", dbGuid);
                 if (player_pet_db_result)
                 {
                     petLevel = player_pet_db_result->Fetch()[1].GetUInt32();
@@ -176,7 +177,8 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
 
             buffer << uint8_t(charEnum.Class);
 
-            QueryResult* item_db_result = CharacterDatabase.Query("SELECT containerslot, slot, entry, enchantments FROM playeritems WHERE ownerguid=%u AND containerslot = '-1' AND slot < 23", Arcemu::Util::GUID_LOPART(charEnum.guid));
+            QueryResult* item_db_result = CharacterDatabase.Query("SELECT containerslot, slot, entry, enchantments FROM playeritems WHERE ownerguid=%u AND containerslot = '-1' AND slot < 23", dbGuid);
+
             memset(player_items, 0, sizeof(player_items));
 
             if (item_db_result)
@@ -188,7 +190,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
                     int8_t item_slot = item_db_result->Fetch()[1].GetInt8();
                     if (container_slot == -1 && item_slot < INVENTORY_SLOT_BAG_END && item_slot >= EQUIPMENT_SLOT_START)
                     {
-                        ItemProperties const* itemProperties = sMySQLStore.getItemProperties(item_db_result->Fetch()[1].GetUInt32());
+                        ItemProperties const* itemProperties = sMySQLStore.getItemProperties(item_db_result->Fetch()[2].GetUInt32());
                         if (itemProperties)
                         {
                             if (!(item_slot == EQUIPMENT_SLOT_HEAD && (charEnum.flags & (uint32_t)PLAYER_FLAG_NOHELM) != 0) &&
