@@ -272,3 +272,15 @@ void WorldSession::SendInnkeeperBind(Creature* pCreature)
     uint64_t player_guid = _player->GetGUID();
     pCreature->CastSpell(player_guid, 3286, true);
 }
+
+void WorldSession::HandleBattleMasterHelloOpcode(WorldPacket& recv_data)
+{
+    uint64_t guid;
+    recv_data >> guid;
+
+    Creature* creature = _player->GetMapMgr()->GetCreature(GET_LOWGUID_PART(guid));
+    if (creature == nullptr || creature->isBattleMaster() == false)
+        return;
+
+    SendBattlegroundList(creature, 0);
+}

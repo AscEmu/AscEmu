@@ -112,6 +112,7 @@ void WorldSession::SendBattlegroundList(Creature* pCreature, uint32 mapid)
     BattlegroundManager.HandleBattlegroundListPacket(this, t);
 }
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleBattleMasterHelloOpcode(WorldPacket& recv_data)
 {
     CHECK_PACKET_SIZE(recv_data, 8);
@@ -132,6 +133,7 @@ void WorldSession::HandleBattleMasterHelloOpcode(WorldPacket& recv_data)
 
     SendBattlegroundList(bm, 0);
 }
+#endif
 
 void WorldSession::HandleLeaveBattlefieldOpcode(WorldPacket& recv_data)
 {
