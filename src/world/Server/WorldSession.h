@@ -504,6 +504,10 @@ class SERVER_DECL WorldSession
 
         //LFG
         void HandleLfgSetCommentOpcode(WorldPacket& recv_data);
+#if VERSION_STRING == Cata
+        void HandleLfgLockInfoOpcode(WorldPacket& recv_data);
+#endif
+
 #if VERSION_STRING > TBC
         void HandleLfgJoinOpcode(WorldPacket& recv_data);
         void HandleLfgLeaveOpcode(WorldPacket& recv_data);

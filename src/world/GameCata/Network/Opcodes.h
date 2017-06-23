@@ -1050,7 +1050,7 @@ enum Opcodes
     MSG_GM_CHANGE_ARENA_RATING = 0x40F,
     CMSG_DECLINE_CHANNEL_INVITE = 0x1411,                       // new
     CMSG_GROUPACTION_THROTTLED = 0x411,
-    SMSG_OVERRIDE_LIGHT = 0x412,
+    SMSG_OVERRIDE_LIGHT = 0x0000,
     SMSG_TOTEM_CREATED = 0x413,
     CMSG_TOTEM_DESTROYED = 0x414,
     CMSG_EXPIRE_RAID_INSTANCE = 0x415,
@@ -1357,7 +1357,8 @@ enum Opcodes
     CMSG_GROUP_REQUEST_JOIN_UPDATES = 0x2583,           // new
     CMSG_LEARN_PREVIEW_TALENTS = 0x2415,                // new
     SMSG_MOVE_UPDATE_TELEPORT = 0x50B2,                 // new
-    MSG_WOW_CONNECTION = 0x4F57,
+    MSG_WOW_CONNECTION = 0x4F57,                        // new
+    CMSG_LFG_LOCK_INFO_REQUEST = 0x0412,                // new
         
     NUM_MSG_TYPES = 0xFFFF
 };
