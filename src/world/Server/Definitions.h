@@ -22,7 +22,12 @@
 #define WOWSERVER_DEFINITION_H
 
 
+#if VERSION_STRING < Cata
 const unsigned NUM_MAPS = 800;
+#else
+const unsigned NUM_MAPS = 974; // at least Darkmoon Faire
+#endif
+
 const unsigned NUM_INSTANCE_MODES = 4;
 
 
