@@ -1,23 +1,7 @@
 /*
- * AscEmu Framework based on ArcEmu MMORPG Server
- * Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
- * Copyright (C) 2008-2012 ArcEmu Team <http://www.ArcEmu.org/>
- * Copyright (C) 2005-2007 Ascent Team
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- */
+Copyright (c) 2014-2017 AscEmu Team <http://www.ascemu.org/>
+This file is released under the MIT license. See README-MIT for more information.
+*/
 
 #include "StdAfx.h"
 #include "AddonMgr.h"
@@ -28,6 +12,7 @@ initialiseSingleton(AddonMgr);
 
 //#define DEBUG_PRINT_ADDON_PACKET            // Prints out Received addon packet when char logging in
 
+#if VERSION_STRING != Cata
 AddonMgr::AddonMgr()
 {
     mKnownAddons.clear();
@@ -50,7 +35,6 @@ bool AddonMgr::IsAddonBanned(uint64 crc, std::string name)
 
 bool AddonMgr::IsAddonBanned(std::string name, uint64 crc)
 {
-#if VERSION_STRING != Cata
     KnownAddonsItr itr = mKnownAddons.find(name);
     if (itr != mKnownAddons.end())
     {
@@ -74,13 +58,12 @@ bool AddonMgr::IsAddonBanned(std::string name, uint64 crc)
 
         mKnownAddons[ent->name] = ent;
     }
-#endif
+
     return false;
 }
 
 bool AddonMgr::ShouldShowInList(std::string name)
 {
-#if VERSION_STRING != Cata
     KnownAddonsItr itr = mKnownAddons.find(name);
 
     if (itr != mKnownAddons.end())
@@ -104,13 +87,11 @@ bool AddonMgr::ShouldShowInList(std::string name)
 
         mKnownAddons[ent->name] = ent;
     }
-#endif
     return true;
 }
 
 void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 pos, WorldSession* m_session)
 {
-#if VERSION_STRING != Cata
     WorldPacket returnpacket;
     returnpacket.Initialize(SMSG_ADDON_INFO);    // SMSG_ADDON_INFO
 
@@ -178,7 +159,7 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 pos, WorldSession
         returnpacket << unk1;
         if (unk1)
         {
-            if (crc != 0x4C1C776D)
+            if (crc != STANDARD_ADDON_CRC)
             {
                 returnpacket << uint8(1);
                 returnpacket.append(PublicKey, 264);
@@ -199,12 +180,10 @@ void AddonMgr::SendAddonInfoPacket(WorldPacket* source, uint32 pos, WorldSession
     returnpacket << uint32(0);  //Some additional count for additional records, but we won't send them.
 
     m_session->SendPacket(&returnpacket);
-#endif
 }
 
 bool AddonMgr::AppendPublicKey(WorldPacket & data, std::string & AddonName, uint32 CRC)
 {
-#if VERSION_STRING != Cata
     if (CRC == STANDARD_ADDON_CRC)
     {
         // Open public key file with that addon
@@ -247,13 +226,11 @@ bool AddonMgr::AppendPublicKey(WorldPacket & data, std::string & AddonName, uint
         }
         return true;
     }
-#endif
     return false;
 }
 
 void AddonMgr::LoadFromDB()
 {
-#if VERSION_STRING != Cata
     const char* loadClientAddons = "SELECT id, name, crc, banned, showinlist FROM clientaddons";
     bool success = false;
     QueryResult* result = CharacterDatabase.Query(&success, loadClientAddons);
@@ -291,12 +268,10 @@ void AddonMgr::LoadFromDB()
     while(result->NextRow());
 
     delete result;
-#endif
 }
 
 void AddonMgr::SaveToDB()
 {
-#if VERSION_STRING != Cata
     LOG_DETAIL("AddonMgr: Saving any new addons discovered in this session to database.");
 
     KnownAddonsItr itr;
@@ -316,5 +291,97 @@ void AddonMgr::SaveToDB()
             CharacterDatabase.Execute(ss.str().c_str());
         }
     }
-#endif
 }
+#endif
+
+#if VERSION_STRING == Cata
+
+void AddonMgr::LoadFromDB()
+{
+    auto startTime = Util::TimeNow();
+    uint32_t startMSTime = getMSTime();
+
+    QueryResult* clientAddonsResult = CharacterDatabase.Query("SELECT name, crc FROM clientaddons");
+    if (clientAddonsResult)
+    {
+        uint32_t knownAddonsCount = 0;
+
+        do
+        {
+            Field* fields = clientAddonsResult->Fetch();
+
+            std::string name = fields[0].GetString();
+            uint32_t crc = fields[1].GetUInt32();
+
+            mKnownAddons.push_back(SavedAddon(name, crc));
+
+            ++knownAddonsCount;
+        } while (clientAddonsResult->NextRow());
+
+        delete clientAddonsResult;
+
+        LOG_DEBUG("Loaded %u known addons from table `clientaddons` in %u ms", knownAddonsCount, Util::GetTimeDifferenceToNow(startTime));
+    }
+    else
+    {
+        LOG_DEBUG("Loaded 0 known addons, table `clientaddons` is empty");
+    }
+
+
+    startTime = Util::TimeNow();
+    clientAddonsResult = CharacterDatabase.Query("SELECT id, name, crc, UNIX_TIMESTAMP(timestamp) WHERE banned = 1 FROM clientaddons");
+    if (clientAddonsResult)
+    {
+        uint32_t bannedAddonsCount = 0;
+        uint32_t dbcMaxBannedAddon = sBannedAddOnsStore.GetNumRows();
+
+        do
+        {
+            Field* fields = clientAddonsResult->Fetch();
+
+            BannedAddon addon;
+            addon.id = fields[0].GetUInt32() + dbcMaxBannedAddon;
+            addon.timestamp = uint32_t(fields[3].GetUInt64());
+
+            std::string name = fields[1].GetString();
+            std::string version = fields[2].GetString();
+
+            MD5(reinterpret_cast<uint8_t const*>(name.c_str()), name.length(), addon.nameMD5);
+            MD5(reinterpret_cast<uint8_t const*>(version.c_str()), version.length(), addon.versionMD5);
+
+            mBannedAddons.push_back(addon);
+
+            ++bannedAddonsCount;
+        } while (clientAddonsResult->NextRow());
+
+        delete clientAddonsResult;
+
+        LOG_DEBUG("Loaded %u banned addons from table `clientaddons` in %u ms", bannedAddonsCount, Util::GetTimeDifferenceToNow(startTime));
+    }
+}
+
+void AddonMgr::SaveAddon(AddonEntry const& addon)
+{
+    CharacterDatabase.Execute("REPLACE INTO clientaddons(name, crc) VALUES('\%s\', %u )", addon.name.c_str(), addon.crc);
+
+    mKnownAddons.push_back(SavedAddon(addon.name, addon.crc));
+}
+
+SavedAddon const* AddonMgr::getAddonInfoForAddonName(const std::string& name)
+{
+    for (SavedAddonsList::const_iterator it = mKnownAddons.begin(); it != mKnownAddons.end(); ++it)
+    {
+        SavedAddon const& addon = (*it);
+        if (addon.name == name)
+            return &addon;
+    }
+
+    return nullptr;
+}
+
+BannedAddonList const* AddonMgr::getBannedAddonsList()
+{
+    return &mBannedAddons;
+}
+
+#endif

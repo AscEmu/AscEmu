@@ -380,7 +380,9 @@ bool Master::Run(int argc, char** argv)
     delete LogonCommHandler::getSingletonPtr();
 
     LogNotice("AddonMgr : ~AddonMgr()");
+#if VERSION_STRING != Cata
     sAddonMgr.SaveToDB();
+#endif
     delete AddonMgr::getSingletonPtr();
 
     LogNotice("AuctionMgr : ~AuctionMgr()");

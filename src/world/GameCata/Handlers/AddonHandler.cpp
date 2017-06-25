@@ -54,11 +54,29 @@ void WorldSession::readAddonInfoPacket(ByteBuffer &recv_data)
             unpackedInfo >> crc;
             unpackedInfo >> unknown;
 
-            LOG_DEBUG("Decompression of %s - enabled: 0x%x - unknown: 0x%x", addonName.c_str(), enabledState, unknown);
+            LOG_DEBUG("AddOn: %s (CRC: 0x%x) - enabled: 0x%x - Unknown2: 0x%x", addonName.c_str(), crc, enabledState, unknown);
 
-            AddonEntry addonEntry(addonName, enabledState, crc, 2, true);
+            AddonEntry addon(addonName, enabledState, crc, 2, true);
 
-            m_addonList.push_back(addonEntry);
+            SavedAddon const* savedAddon = sAddonMgr.getAddonInfoForAddonName(addonName);
+            if (savedAddon)
+            {
+                if (addon.crc != savedAddon->crc)
+                {
+                    LOG_DEBUG("Addon: %s: modified (CRC: 0x%x) - accountID %d)", addon.name.c_str(), savedAddon->crc, GetAccountId());
+                }
+                else
+                {
+                    LOG_DEBUG("Addon: %s: validated (CRC: 0x%x) - accountID %d", addon.name.c_str(), savedAddon->crc, GetAccountId());
+                }
+            }
+            else
+            {
+                sAddonMgr.SaveAddon(addon);
+                LOG_DEBUG("Addon: %s: unknown (CRC: 0x%x) - accountId %d (storing addon name and checksum to database)", addon.name.c_str(), addon.crc, GetAccountId());
+            }
+
+            m_addonList.push_back(addon);
         }
 
         uint32_t addonTime;
@@ -75,22 +93,94 @@ void WorldSession::sendAddonInfo()
     WorldPacket data(SMSG_ADDON_INFO, 4);
     for (AddonsList::iterator itr = m_addonList.begin(); itr != m_addonList.end(); ++itr)
     {
-        data << uint8_t(itr->status);
+        data << uint8_t(itr->state);
 
-        uint8_t crcpub = itr->isNew;
+        uint8_t crcpub = itr->usePublicKeyOrCRC;
         data << uint8_t(crcpub);
         if (crcpub)
         {
-            uint8_t packedState = (itr->crc != STANDARD_ADDON_CRC);
-            data << uint8_t(packedState);
-            if (packedState)
+            uint8_t usepk = (itr->crc != STANDARD_ADDON_CRC); // standard addon CRC
+            data << uint8_t(usepk);
+            if (usepk)                                      // add public key if crc is wrong
+            {
+                LOG_DEBUG("AddOn: %s: CRC checksum mismatch: got 0x%x - expected 0x%x - sending pubkey to accountID %d",
+                    itr->name.c_str(), itr->crc, STANDARD_ADDON_CRC, GetAccountId());
+
                 data.append(PublicKey, sizeof(PublicKey));
+            }
 
             data << uint32_t(0);
         }
+
         data << uint8_t(0);
     }
+
     m_addonList.clear();
 
+    BannedAddonList const* bannedAddons = sAddonMgr.getBannedAddonsList();
+    data << uint32_t(bannedAddons->size());
+    for (BannedAddonList::const_iterator itr = bannedAddons->begin(); itr != bannedAddons->end(); ++itr)
+    {
+        data << uint32_t(itr->id);
+        data.append(itr->nameMD5, sizeof(itr->nameMD5));
+        data.append(itr->versionMD5, sizeof(itr->versionMD5));
+        data << uint32_t(itr->timestamp);
+        data << uint32_t(1);  // banned?
+    }
+
     SendPacket(&data);
+}
+
+bool WorldSession::isAddonRegistered(const std::string& addon_name) const
+{
+    if (!isAddonMessageFiltered)
+    {
+        return true;
+    }
+
+    if (mRegisteredAddonPrefixesVector.empty())
+    {
+        return false;
+    }
+
+    std::vector<std::string>::const_iterator itr = std::find(mRegisteredAddonPrefixesVector.begin(), mRegisteredAddonPrefixesVector.end(), addon_name);
+    return itr != mRegisteredAddonPrefixesVector.end();
+}
+
+void WorldSession::HandleUnregisterAddonPrefixesOpcode(WorldPacket& /*recv_data*/)
+{
+    LOG_DEBUG("CMSG_UNREGISTER_ALL_ADDON_PREFIXES received");
+
+    mRegisteredAddonPrefixesVector.clear();
+}
+
+void WorldSession::HandleAddonRegisteredPrefixesOpcode(WorldPacket& recv_data)
+{
+    uint32_t addonCount = recv_data.readBits(25);
+
+    if (addonCount > REGISTERED_ADDON_PREFIX_SOFTCAP)
+    {
+        isAddonMessageFiltered = false;
+        recv_data.rfinish();
+        return;
+    }
+
+    std::vector<uint8_t> nameLengths(addonCount);
+    for (uint32_t i = 0; i < addonCount; ++i)
+    {
+        nameLengths[i] = recv_data.readBits(5);
+    }
+
+    for (uint32_t i = 0; i < addonCount; ++i)
+    {
+        mRegisteredAddonPrefixesVector.push_back(recv_data.ReadString(nameLengths[i]));
+    }
+
+    if (mRegisteredAddonPrefixesVector.size() > REGISTERED_ADDON_PREFIX_SOFTCAP)
+    {
+        isAddonMessageFiltered = false;
+        return;
+    }
+
+    isAddonMessageFiltered = true;
 }

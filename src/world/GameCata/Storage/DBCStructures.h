@@ -212,6 +212,7 @@ namespace DBC
             char const auction_house_format[] = "niiix";
             char const bank_bag_slot_prices_format[] = "ni";
             char const barber_shop_style_entry_format[] = "nixxxiii";
+            char const banned_addons_entry_format[] = "nxxxxxxxxxx";
             //char const battlemaster_list_format[]="niiiiiiiiixsiiiiiiii"; new
             //char const char_start_outfit_format[]="diiiiiiiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; new
             char const char_titles_format[] = "nxsxix";
@@ -846,6 +847,15 @@ namespace DBC
             uint32_t race;                      // 5
             uint32_t gender;                    // 6 0 male, 1 female
             uint32_t hair_id;                   // 7 Hair ID
+        };
+
+        struct BannedAddOnsEntry
+        {
+            uint32_t Id;                        // 0
+            //uint32_t nameMD5[4];              // 1-4
+            //uint32_t versionMD5[4];           // 5-8
+            //uint32_t timestamp;               // 9
+            //uint32_t state;                   // 10
         };
 
         #define OUTFIT_ITEMS 24

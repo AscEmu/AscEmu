@@ -124,6 +124,8 @@ class SERVER_DECL WorldSocket : public Socket
         bool mQueued;
         bool m_nagleEanbled;
         std::string* m_fullAccountName;
+
+        ByteBuffer mAddonInfoBuffer;
 };
 
 

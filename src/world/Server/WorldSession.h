@@ -32,6 +32,7 @@
     #include "Management/AddonMgr.h"
     #include "Units/Players/PlayerDefines.hpp"
     #include "Units/Players/Player.h"
+    struct AddonEntry;
 #endif
 
 #include <stddef.h>
@@ -78,6 +79,8 @@ struct AddonEntry;
 
 #define NOTIFICATION_MESSAGE_NO_PERMISSION "You do not have permission to perform that function."
 //#define CHECK_PACKET_SIZE(x, y) if (y > 0 && x.size() < y) { _socket->Disconnect(); return; }
+
+#define REGISTERED_ADDON_PREFIX_SOFTCAP 64
 
 #if VERSION_STRING != Cata
 enum MovementFlags
@@ -899,6 +902,7 @@ class SERVER_DECL WorldSession
         typedef std::list<AddonEntry> AddonsList;
         AddonsList m_addonList;
 
+
     public:
         void readAddonInfoPacket(ByteBuffer& recv_data);
         void sendAddonInfo();
@@ -1004,6 +1008,15 @@ class SERVER_DECL WorldSession
         uint32 m_muted;
 #if VERSION_STRING > TBC
         void SendClientCacheVersion(uint32 version);
+#endif
+
+#if VERSION_STRING == Cata
+        bool isAddonMessageFiltered;
+        std::vector<std::string> mRegisteredAddonPrefixesVector;
+
+        bool isAddonRegistered(const std::string& addon_name) const;
+        void HandleUnregisterAddonPrefixesOpcode(WorldPacket& /*recv_data*/);
+        void HandleAddonRegisteredPrefixesOpcode(WorldPacket& recv_data);
 #endif
 
 };

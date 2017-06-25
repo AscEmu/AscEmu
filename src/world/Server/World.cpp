@@ -928,7 +928,9 @@ void World::loadMySQLTablesByTask(uint32_t start_time)
     MAKE_TASK(SpellFactoryMgr, LoadSpellAreas);
     MAKE_TASK(ObjectMgr, LoadEventScripts);
     MAKE_TASK(WeatherMgr, LoadFromDB);
+#if VERSION_STRING != Cata
     MAKE_TASK(AddonMgr, LoadFromDB);
+#endif
     MAKE_TASK(GameEventMgr, LoadFromDB);
     MAKE_TASK(CalendarMgr, LoadFromDB);
 

@@ -346,7 +346,11 @@ void WorldSocket::_HandleAuthSession(WorldPacket* recvPacket)
         *recvPacket >> AuthDigest[13];
 
         *recvPacket >> addonSize;
-        recvPacket->read_skip(addonSize);
+        if (addonSize)
+        {
+            mAddonInfoBuffer.resize(addonSize);
+            recvPacket->read((uint8_t*)mAddonInfoBuffer.contents(), addonSize);
+        }
         
         recvPacket->readBit();
         uint32_t accountNameLength = recvPacket->readBits(12);
@@ -524,6 +528,11 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
 
     // Set session properties
     pSession->SetClientBuild(mClientBuild);
+
+#if VERSION_STRING == Cata
+    pSession->readAddonInfoPacket(mAddonInfoBuffer);
+#endif
+
     pSession->LoadSecurity(GMFlags);
     pSession->SetAccountFlags(AccountFlags);
     pSession->m_lastPing = (uint32)UNIXTIME;

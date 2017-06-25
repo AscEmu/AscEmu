@@ -1359,6 +1359,7 @@ enum Opcodes
     SMSG_MOVE_UPDATE_TELEPORT = 0x50B2,                 // new
     MSG_WOW_CONNECTION = 0x4F57,                        // new
     CMSG_LFG_LOCK_INFO_REQUEST = 0x0412,                // new
+    CMSG_ADDON_REGISTERED_PREFIXES = 0x0954,            // new
         
     NUM_MSG_TYPES = 0xFFFF
 };
