@@ -329,7 +329,7 @@ void AddonMgr::LoadFromDB()
 
 
     startTime = Util::TimeNow();
-    clientAddonsResult = CharacterDatabase.Query("SELECT id, name, crc, UNIX_TIMESTAMP(timestamp) WHERE banned = 1 FROM clientaddons");
+    clientAddonsResult = CharacterDatabase.Query("SELECT id, name, banned, UNIX_TIMESTAMP(timestamp), version FROM clientaddons WHERE banned = 1");
     if (clientAddonsResult)
     {
         uint32_t bannedAddonsCount = 0;
@@ -341,10 +341,10 @@ void AddonMgr::LoadFromDB()
 
             BannedAddon addon;
             addon.id = fields[0].GetUInt32() + dbcMaxBannedAddon;
-            addon.timestamp = uint32_t(fields[3].GetUInt64());
+            addon.timestamp = uint32_t(fields[2].GetUInt64());
 
             std::string name = fields[1].GetString();
-            std::string version = fields[2].GetString();
+            std::string version = fields[3].GetString();
 
             MD5(reinterpret_cast<uint8_t const*>(name.c_str()), name.length(), addon.nameMD5);
             MD5(reinterpret_cast<uint8_t const*>(version.c_str()), version.length(), addon.versionMD5);
