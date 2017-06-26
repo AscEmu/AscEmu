@@ -1365,6 +1365,10 @@ enum Opcodes
     CMSG_MAKE_EVERYONE_ASSISTANT = 0x2530,              // new
     CMSG_REPORT_PLAYER = 0x2501,                        // new
     CMSG_REPORT = 0x0427,                               // new
+    CMSG_REQUEST_RATED_BG_INFO = 0x2423,                // new
+    CMSG_REQUEST_RATED_BG_STATS = 0x05B3,               // new
+    CMSG_REQUEST_PVP_REWARDS = 0x780C,                  // new
+    CMSG_REQUEST_PVP_OPTIONS_ENABLED = 0x24A1,          // new
         
     NUM_MSG_TYPES = 0xFFFF
 };
