@@ -469,3 +469,118 @@ void WorldSession::HandleGroupRequestJoinUpdatesOpcode(WorldPacket& recv_data)
         SendPacket(&data);
     }
 }
+
+void WorldSession::HandleGroupRoleCheckBeginOpcode(WorldPacket& recv_data)
+{
+    Group* group = GetPlayer()->GetGroup();
+    if (!group)
+        return;
+
+    if (recv_data.isEmpty())
+    {
+        if (group->GetLeader()->guid != GetPlayer()->GetGUID() && group->GetMainAssist()->guid != GetPlayer()->GetGUID())
+            return;
+
+        ObjectGuid guid = GetPlayer()->GetGUID();
+
+        WorldPacket data(SMSG_ROLE_CHECK_BEGIN, 8);
+        data.writeBit(guid[1]);
+        data.writeBit(guid[5]);
+        data.writeBit(guid[7]);
+        data.writeBit(guid[3]);
+        data.writeBit(guid[2]);
+        data.writeBit(guid[4]);
+        data.writeBit(guid[0]);
+        data.writeBit(guid[6]);
+
+        data.WriteByteSeq(guid[4]);
+        data.WriteByteSeq(guid[7]);
+        data.WriteByteSeq(guid[0]);
+        data.WriteByteSeq(guid[5]);
+        data.WriteByteSeq(guid[1]);
+        data.WriteByteSeq(guid[6]);
+        data.WriteByteSeq(guid[2]);
+        data.WriteByteSeq(guid[3]);
+
+        group->SendPacketToAll(&data);
+    }
+}
+
+void WorldSession::HandleGroupSetLeaderOpcode(WorldPacket& recv_data)
+{
+    uint64_t memberGuid;
+    recv_data >> memberGuid;
+
+    Player* player = objmgr.GetPlayer((uint32)memberGuid);
+
+    if (player == nullptr)
+    {
+        SendPartyCommandResult(_player, 0, _player->GetName(), ERR_PARTY_CANNOT_FIND);
+        return;
+    }
+
+    if (!_player->IsGroupLeader())
+    {
+        SendPartyCommandResult(_player, 0, "", ERR_PARTY_YOU_ARE_NOT_LEADER);
+        return;
+    }
+
+    if (player->GetGroup() != _player->GetGroup())
+    {
+        SendPartyCommandResult(_player, 0, _player->GetName(), ERR_PARTY_IS_NOT_IN_YOUR_PARTY);
+        return;
+    }
+
+    Group* pGroup = _player->GetGroup();
+    if (pGroup)
+    {
+        pGroup->SetLeader(player, false);
+    }
+}
+
+//\TODO handle reason - send it to player.
+void WorldSession::HandleGroupUninviteGuidOpcode(WorldPacket& recv_data)
+{
+    uint64_t memberGuid;
+    std::string reason;
+
+    recv_data >> memberGuid;
+    recv_data >> reason;
+
+    Player* player = objmgr.GetPlayer(Arcemu::Util::GUID_LOPART(memberGuid));
+    PlayerInfo* info = objmgr.GetPlayerInfo(Arcemu::Util::GUID_LOPART(memberGuid));
+    if (player == nullptr && info == nullptr)
+    {
+        SendPartyCommandResult(_player, 0, "", ERR_PARTY_CANNOT_FIND);
+        return;
+    }
+
+    std::string membername = "unknown";
+    membername = player ? player->GetName() : info->name;
+
+    if (!_player->InGroup() || (info != nullptr && info->m_Group != _player->GetGroup()))
+    {
+        SendPartyCommandResult(_player, 0, membername, ERR_PARTY_IS_NOT_IN_YOUR_PARTY);
+        return;
+    }
+
+    if (!_player->IsGroupLeader())
+    {
+        if (player == nullptr)
+        {
+            SendPartyCommandResult(_player, 0, membername, ERR_PARTY_CANNOT_FIND);
+            return;
+        }
+        else if (_player != player)
+        {
+            SendPartyCommandResult(_player, 0, "", ERR_PARTY_YOU_ARE_NOT_LEADER);
+            return;
+        }
+    }
+
+    Group* group = _player->GetGroup();
+    if (group != nullptr)
+    {
+        group->RemovePlayer(info);
+    }
+}

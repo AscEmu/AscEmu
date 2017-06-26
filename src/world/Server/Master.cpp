@@ -58,7 +58,7 @@ ConfigMgr Config;
 
 // DB version
 #if VERSION_STRING != Cata
-static const char* REQUIRED_CHAR_DB_VERSION = "2017-04-22_01_banned_char_log";
+static const char* REQUIRED_CHAR_DB_VERSION = "2017-06-25_01_clienbtaddons";
 static const char* REQUIRED_WORLD_DB_VERSION = "2017-06-15_01_remove_tables";
 #else
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-06-25_01_clienbtaddons";

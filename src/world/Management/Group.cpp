@@ -175,14 +175,15 @@ bool Group::AddMember(PlayerInfo* info, int32 subgroupid/* =-1 */)
     }
 }
 
+//\TODO bool silent is not used - remove it!
 void Group::SetLeader(Player* pPlayer, bool silent)
 {
-    if (pPlayer != NULL)
+    if (pPlayer != nullptr)
     {
         m_Leader = pPlayer->getPlayerInfo();
         m_dirty = true;
 
-        if (!silent)
+        if (silent == false)
         {
             WorldPacket data(SMSG_GROUP_SET_LEADER, pPlayer->GetNameString()->size() + 1);
             data << pPlayer->GetName();

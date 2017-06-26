@@ -473,6 +473,11 @@ class SERVER_DECL ByteBuffer
             return _storage.size();
         };
 
+        bool isEmpty() const
+        {
+            return _storage.empty();
+        }
+
         void resize(size_t newsize)
         {
             _storage.resize(newsize);

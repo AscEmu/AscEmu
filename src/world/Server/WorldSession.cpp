@@ -1262,6 +1262,14 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 void WorldSession::Unhandled(WorldPacket& recv_data)
 {}
 
+void WorldSession::nothingToHandle(WorldPacket& recv_data)
+{
+    if (recv_data.isEmpty() == false)
+    {
+        LogDebugFlag(LF_OPCODE, "Opcode %s (0x%.4X) received. Apply nothingToHandle handler but size is %u!", getOpcodeName(recv_data.GetOpcode()).c_str(), recv_data.GetOpcode(), recv_data.size());
+    }
+}
+
 void WorldSession::HandleDismissCritter(WorldPacket& recv_data)
 {
     uint64 GUID;

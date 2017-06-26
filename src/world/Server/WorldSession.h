@@ -504,6 +504,9 @@ class SERVER_DECL WorldSession
         void HandleRequestRaidInfoOpcode(WorldPacket& recvPacket);
         void HandleReadyCheckOpcode(WorldPacket& recv_data);
         void HandleGroupPromote(WorldPacket& recv_data);
+#if VERSION_STRING == Cata
+        void HandleGroupRoleCheckBeginOpcode(WorldPacket& recv_data);
+#endif
 
         //LFG
         void HandleLfgSetCommentOpcode(WorldPacket& recv_data);
@@ -909,6 +912,7 @@ class SERVER_DECL WorldSession
 #endif
 
         void Unhandled(WorldPacket& recv_data);
+        void nothingToHandle(WorldPacket& recv_data);
 
     public:
 

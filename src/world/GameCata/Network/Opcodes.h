@@ -126,10 +126,10 @@ enum Opcodes
     CMSG_GROUP_DECLINE = 0x073,
     SMSG_GROUP_DECLINE = 0x6835,                    // new
     CMSG_GROUP_UNINVITE = 0x075,
-    CMSG_GROUP_UNINVITE_GUID = 0x076,
+    CMSG_GROUP_UNINVITE_GUID = 0x2E07,              // new
     SMSG_GROUP_UNINVITE = 0x077,
-    CMSG_GROUP_SET_LEADER = 0x078,
-    SMSG_GROUP_SET_LEADER = 0x079,
+    CMSG_GROUP_SET_LEADER = 0x4C17,                 // new
+    SMSG_GROUP_SET_LEADER = 0x0526,                 // new
     CMSG_LOOT_METHOD = 0x2F24,                      // new
     CMSG_GROUP_DISBAND = 0x2804,                    // new
     SMSG_GROUP_DESTROYED = 0x2207,                  // new
@@ -810,7 +810,7 @@ enum Opcodes
     SMSG_INSTANCE_RESET_FAILED = 0x4725,                // new
     SMSG_UPDATE_LAST_INSTANCE = 0x0437,                 // new
     MSG_RAID_TARGET_UPDATE = 0x321,
-    MSG_RAID_READY_CHECK = 0x322,
+    MSG_RAID_READY_CHECK = 0x2304,                      // new
     CMSG_LUA_USAGE = 0x323,
     SMSG_PET_ACTION_SOUND = 0x324,
     SMSG_PET_DISMISS_SOUND = 0x325,
@@ -950,7 +950,7 @@ enum Opcodes
     CMSG_MOVE_SET_RUN_SPEED = 0x3AB,
     SMSG_DISMOUNT = 0x3AC,
     MSG_MOVE_UPDATE_CAN_FLY = 0x3AD,
-    MSG_RAID_READY_CHECK_CONFIRM = 0x3AE,
+    MSG_RAID_READY_CHECK_CONFIRM = 0x4F05,          // new
     CMSG_VOICE_SESSION_ENABLE = 0x2314,             // new
     SMSG_VOICE_SESSION_ENABLE = 0x3B0,
     SMSG_VOICE_PARENTAL_CONTROLS = 0x3B1,
@@ -974,7 +974,7 @@ enum Opcodes
     CMSG_CHEAT_PLAYER_LOOKUP = 0x3C3,
     SMSG_CHEAT_PLAYER_LOOKUP = 0x3C4,
     SMSG_KICK_REASON = 0x3C5,
-    MSG_RAID_READY_CHECK_FINISHED = 0x3C6,
+    MSG_RAID_READY_CHECK_FINISHED = 0x2E15,         // new
     CMSG_COMPLAIN = 0x3C7,
     SMSG_COMPLAIN_RESULT = 0x3C8,
     SMSG_FEATURE_SYSTEM_STATUS = 0x3DB7,            // new
@@ -1080,7 +1080,7 @@ enum Opcodes
     CMSG_CALENDAR_ADD_EVENT = 0x42D,
     CMSG_CALENDAR_UPDATE_EVENT = 0x42E,
     CMSG_CALENDAR_REMOVE_EVENT = 0x42F,
-    CMSG_CALENDAR_COPY_EVENT = 0x430,
+    CMSG_CALENDAR_COPY_EVENT = 0x0000,
     CMSG_CALENDAR_EVENT_INVITE = 0x431,
     CMSG_CALENDAR_EVENT_RSVP = 0x432,
     CMSG_CALENDAR_EVENT_REMOVE_INVITE = 0x433,
@@ -1360,6 +1360,9 @@ enum Opcodes
     MSG_WOW_CONNECTION = 0x4F57,                        // new
     CMSG_LFG_LOCK_INFO_REQUEST = 0x0412,                // new
     CMSG_ADDON_REGISTERED_PREFIXES = 0x0954,            // new
+    CMSG_ROLE_CHECK_BEGIN = 0x0430,                     // new
+    SMSG_ROLE_CHECK_BEGIN = 0x70B0,                     // new
+    CMSG_MAKE_EVERYONE_ASSISTANT = 0x2530,              // new
         
     NUM_MSG_TYPES = 0xFFFF
 };
