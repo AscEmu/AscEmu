@@ -1363,6 +1363,8 @@ enum Opcodes
     CMSG_ROLE_CHECK_BEGIN = 0x0430,                     // new
     SMSG_ROLE_CHECK_BEGIN = 0x70B0,                     // new
     CMSG_MAKE_EVERYONE_ASSISTANT = 0x2530,              // new
+    CMSG_REPORT_PLAYER = 0x2501,                        // new
+    CMSG_REPORT = 0x0427,                               // new
         
     NUM_MSG_TYPES = 0xFFFF
 };
