@@ -7356,20 +7356,20 @@ void Player::_Relocate(uint32 mapid, const LocationVector & v, bool sendpending,
         SetMapId(mapid);
 
     }
-#if VERSION_STRING != Cata
     else
+    {
         SendTeleportAckPacket(v.x, v.y, v.z, v.o);
-#endif
+    }
 
     SetPlayerStatus(TRANSFER_PENDING);
     m_sentTeleportPosition = v;
     SetPosition(v);
+
     if (sendpacket)
     {
-#if VERSION_STRING != Cata
         SendTeleportPacket(v.x, v.y, v.z, v.o);
-#endif
     }
+
     SpeedCheatReset();
 
     z_axisposition = 0.0f;
@@ -14114,7 +14114,7 @@ void Player::SendTeleportPacket(float x, float y, float z, float o)
         data2.writeBit(guid[2]);
         data2.writeBit(0); // unk
         //\TODO add transport
-        data2.writeBit(0); // transport guid
+        data2.writeBit(uint64(0)); // transport guid
         data2.writeBit(guid[1]);
 
         data2.writeBit(guid[4]);

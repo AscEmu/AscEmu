@@ -879,3 +879,65 @@ void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& recv_data)
         _player->AddToWorld();
     }
 }
+
+void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recv_data)
+{
+    uint32_t flags;
+    uint32_t time;
+    recv_data >> flags;
+    recv_data >> time;
+
+    ObjectGuid guid;
+    guid[5] = recv_data.readBit();
+    guid[0] = recv_data.readBit();
+    guid[1] = recv_data.readBit();
+    guid[6] = recv_data.readBit();
+    guid[3] = recv_data.readBit();
+    guid[7] = recv_data.readBit();
+    guid[2] = recv_data.readBit();
+    guid[4] = recv_data.readBit();
+
+    recv_data.ReadByteSeq(guid[4]);
+    recv_data.ReadByteSeq(guid[2]);
+    recv_data.ReadByteSeq(guid[7]);
+    recv_data.ReadByteSeq(guid[6]);
+    recv_data.ReadByteSeq(guid[5]);
+    recv_data.ReadByteSeq(guid[1]);
+    recv_data.ReadByteSeq(guid[3]);
+    recv_data.ReadByteSeq(guid[0]);
+
+    if (guid == _player->GetGUID())
+    {
+        if (worldConfig.antiHack.isTeleportHackCheckEnabled && !(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm) && _player->GetPlayerStatus() != TRANSFER_PENDING)
+        {
+            /* we're obviously cheating */
+            sCheatLog.writefromsession(this, "Used teleport hack, disconnecting.");
+            Disconnect();
+            return;
+        }
+
+        if (worldConfig.antiHack.isTeleportHackCheckEnabled && !(HasGMPermissions() && worldConfig.antiHack.isAntiHackCheckDisabledForGm) && _player->m_position.Distance2DSq(_player->m_sentTeleportPosition) > 625.0f)	/* 25.0f*25.0f */
+        {
+            /* cheating.... :(*/
+            sCheatLog.writefromsession(this, "Used teleport hack {2}, disconnecting.");
+            Disconnect();
+            return;
+        }
+
+        LOG_DEBUG("WORLD: got MSG_MOVE_TELEPORT_ACK.");
+        GetPlayer()->SetPlayerStatus(NONE);
+        _player->SpeedCheatReset();
+
+        std::list<Pet*> summons = _player->GetSummons();
+        for (std::list<Pet*>::iterator itr = summons.begin(); itr != summons.end(); ++itr)
+        {
+            // move pet too
+            (*itr)->SetPosition((GetPlayer()->GetPositionX() + 2), (GetPlayer()->GetPositionY() + 2), GetPlayer()->GetPositionZ(), M_PI_FLOAT);
+        }
+        if (_player->m_sentTeleportPosition.x != 999999.0f)
+        {
+            _player->m_position = _player->m_sentTeleportPosition;
+            _player->m_sentTeleportPosition.ChangeCoords(999999.0f, 999999.0f, 999999.0f);
+        }
+    }
+}

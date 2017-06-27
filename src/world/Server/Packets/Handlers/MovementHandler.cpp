@@ -119,6 +119,7 @@ void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& recv_data)
 }
 #endif
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recv_data)
 {
     WoWGuid guid;
@@ -164,6 +165,7 @@ void WorldSession::HandleMoveTeleportAckOpcode(WorldPacket& recv_data)
         }
     }
 }
+#endif
 
 #if VERSION_STRING != Cata
 void _HandleBreathing(MovementInfo & movement_info, Player* _player, WorldSession* pSession)
