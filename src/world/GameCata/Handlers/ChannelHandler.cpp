@@ -42,15 +42,10 @@ void WorldSession::HandleChannelJoin(WorldPacket& recvPacket)
 
 void WorldSession::HandleChatIgnoredOpcode(WorldPacket & recvPacket)
 {
-    CHECK_INWORLD_RETURN
-
-        CHECK_PACKET_SIZE(recvPacket, 8 + 1);
-
     uint8 unk;
-
     recvPacket >> unk;
 
-    uint8 playerGuid[8];
+    ObjectGuid playerGuid;
 
     playerGuid[5] = recvPacket.readBit();
     playerGuid[2] = recvPacket.readBit();
@@ -70,11 +65,11 @@ void WorldSession::HandleChatIgnoredOpcode(WorldPacket & recvPacket)
     recvPacket.ReadByteSeq(playerGuid[7]);
     recvPacket.ReadByteSeq(playerGuid[2]);
 
-    uint64 iguid = *(uint64*)playerGuid;
-
-    Player* player = objmgr.GetPlayer(uint32(iguid));
-    if (!player || !player->GetSession())
+    Player* player = objmgr.GetPlayer((uint32)playerGuid);
+    if (player == nullptr || player->GetSession() == nullptr)
+    {
         return;
+    }
 
     WorldPacket* data = sChatHandler.FillMessageData(CHAT_MSG_IGNORED, LANG_UNIVERSAL, _player->GetName(), _player->GetGUID());
     player->GetSession()->SendPacket(data);

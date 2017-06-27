@@ -557,7 +557,7 @@ enum Opcodes
     SMSG_SPIRIT_HEALER_CONFIRM = 0x4917,            // new
     CMSG_CHARACTER_POINT_CHEAT = 0x223,
     SMSG_GOSSIP_POI = 0x4316,                       // new
-    CMSG_CHAT_IGNORED = 0x225,
+    CMSG_CHAT_IGNORED = 0x0D54,                     // new
     CMSG_GM_VISION = 0x226,
     CMSG_SERVER_COMMAND = 0x227,
     CMSG_GM_SILENCE = 0x228,

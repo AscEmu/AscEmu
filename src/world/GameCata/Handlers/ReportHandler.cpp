@@ -48,7 +48,7 @@ void WorldSession::HandleReportOpcode(WorldPacket& recv_data)
 
     // Complaint Received message
     WorldPacket data(SMSG_REPORT_RESULT, 1);
-    data << uint8_t(1);     // 1 reset reported player 0 ignore
+    data << uint8_t(0);     // 1 reset reported player 0 ignore
     data << uint8_t(0);
 
     SendPacket(&data);
