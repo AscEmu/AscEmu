@@ -22,6 +22,7 @@ set(SRC_GAMECATA_FILES
     ${PATH_PREFIX}/Handlers/NPCHandler.cpp
     ${PATH_PREFIX}/Handlers/QueryHandler.cpp
     ${PATH_PREFIX}/Handlers/QuestHandler.cpp
+    ${PATH_PREFIX}/Handlers/ReportHandler.cpp
     ${PATH_PREFIX}/Handlers/SkillHandler.cpp
     ${PATH_PREFIX}/Handlers/TaxiHandler.cpp
     ${PATH_PREFIX}/Handlers/TradeHandler.cpp

@@ -868,7 +868,7 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
     }
 }
 
-
+#if VERSION_STRING != Cata
 ///\todo remove these unk unk unk nighrmare!
 void WorldSession::HandleReportSpamOpcode(WorldPacket& recv_data)
 {
@@ -916,6 +916,7 @@ void WorldSession::HandleReportSpamOpcode(WorldPacket& recv_data)
 
     LOG_DEBUG("REPORT SPAM: type %u, guid %u, unk1 %u, unk2 %u, unk3 %u, unk4 %u, message %s", spam_type, Arcemu::Util::GUID_LOPART(spammer_guid), unk1, unk2, unk3, unk4, description.c_str());
 }
+#endif
 
 #if VERSION_STRING != Cata
 void WorldSession::HandleChatIgnoredOpcode(WorldPacket & recvPacket)

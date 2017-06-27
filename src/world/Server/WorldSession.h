@@ -901,6 +901,10 @@ class SERVER_DECL WorldSession
         void HandleRequestCemeteryListOpcode(WorldPacket& recv_data);
         void HandleForceSpeedAckOpcodes(WorldPacket& recv_data);
 
+        // Reports
+        void HandleReportOpcode(WorldPacket& recv_data);
+        void HandleReportPlayerOpcode(WorldPacket& recv_data);
+
     private:
         typedef std::list<AddonEntry> AddonsList;
         AddonsList m_addonList;

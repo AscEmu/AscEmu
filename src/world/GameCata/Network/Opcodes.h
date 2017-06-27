@@ -975,8 +975,6 @@ enum Opcodes
     SMSG_CHEAT_PLAYER_LOOKUP = 0x3C4,
     SMSG_KICK_REASON = 0x3C5,
     MSG_RAID_READY_CHECK_FINISHED = 0x2E15,         // new
-    CMSG_COMPLAIN = 0x3C7,
-    SMSG_COMPLAIN_RESULT = 0x3C8,
     SMSG_FEATURE_SYSTEM_STATUS = 0x3DB7,            // new
     CMSG_GM_SHOW_COMPLAINTS = 0x3CA,
     CMSG_GM_UNSQUELCH = 0x3CB,
@@ -1365,6 +1363,7 @@ enum Opcodes
     CMSG_MAKE_EVERYONE_ASSISTANT = 0x2530,              // new
     CMSG_REPORT_PLAYER = 0x2501,                        // new
     CMSG_REPORT = 0x0427,                               // new
+    SMSG_REPORT_RESULT = 0x6D24,                        // new
     CMSG_REQUEST_RATED_BG_INFO = 0x2423,                // new
     CMSG_REQUEST_RATED_BG_STATS = 0x05B3,               // new
     CMSG_REQUEST_PVP_REWARDS = 0x780C,                  // new
