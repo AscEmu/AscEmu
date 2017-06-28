@@ -2010,6 +2010,9 @@ void Spell::SendSpellStart()
     data << extra_cast_number;
 #endif
     data << cast_flags;
+#if VERSION_STRING == Cata
+    data << uint32(m_timer);
+#endif
     data << (uint32)m_castTime;
 
     m_targets.write(data);
@@ -2056,10 +2059,22 @@ void Spell::SendSpellStart()
 #endif
 
         if (ip != nullptr)
-            data << ip->DisplayInfoID << ip->InventoryType;
+        {
+            data << ip->DisplayInfoID;
+            data << ip->InventoryType;
+        }
+#if VERSION_STRING == Cata
+        else
+        {
+            data << uint32(0);
+            data << uint32(0);
+        }
+#endif
     }
 
+#if VERSION_STRING != Cata
     data << (uint32)139; //3.0.2 seems to be some small value around 250 for shadow bolt.
+#endif
     m_caster->SendMessageToSet(&data, true);
 }
 

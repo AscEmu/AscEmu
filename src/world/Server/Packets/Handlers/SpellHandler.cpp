@@ -344,6 +344,7 @@ void WorldSession::HandleSpellClick(WorldPacket& recvPacket)
     }
 }
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 {
     CHECK_INWORLD_RETURN
@@ -471,6 +472,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
         spell->prepare(&targets);
     }
 }
+#endif
 
 void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
 {

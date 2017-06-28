@@ -444,7 +444,7 @@ enum Opcodes
     SMSG_TRAINER_LIST = 0x4414,                 // new
     CMSG_TRAINER_BUY_SPELL = 0x4415,            // new
     SMSG_TRAINER_BUY_SUCCEEDED = 0x6A05,        // new
-    SMSG_TRAINER_BUY_FAILED = 0x0000,           // new
+    SMSG_TRAINER_BUY_FAILED = 0x0004,           // new
     CMSG_BINDER_ACTIVATE = 0x4006,              // new
     SMSG_PLAYERBINDERROR = 0x6A24,              // new
     CMSG_BANKER_ACTIVATE = 0x0005,              // new
@@ -650,8 +650,8 @@ enum Opcodes
     CMSG_REQUEST_PARTY_MEMBER_STATS = 0x27F,
     CMSG_GROUP_SWAP_SUB_GROUP = 0x280,
     CMSG_RESET_FACTION_CHEAT = 0x281,
-    CMSG_AUTOSTORE_BANK_ITEM = 0x282,
-    CMSG_AUTOBANK_ITEM = 0x283,
+    CMSG_AUTOSTORE_BANK_ITEM = 0x0607,                  // new
+    CMSG_AUTOBANK_ITEM = 0x2537,                        // new
     MSG_QUERY_NEXT_MAIL_TIME = 0x0F04,                  // new
     SMSG_RECEIVED_MAIL = 0x2924,                        // new
     SMSG_RAID_GROUP_ONLY = 0x286,
@@ -1043,12 +1043,12 @@ enum Opcodes
     MSG_QUERY_GUILD_BANK_TEXT = 0x40A,
     CMSG_SET_GUILD_BANK_TEXT = 0x40B,
     CMSG_SET_GRANTABLE_LEVELS = 0x40C,
-    CMSG_GRANT_LEVEL = 0x0000,                                  // new
+    CMSG_GRANT_LEVEL = 0x6D16,                                  // new
     CMSG_REFER_A_FRIEND = 0x40E,
     MSG_GM_CHANGE_ARENA_RATING = 0x40F,
     CMSG_DECLINE_CHANNEL_INVITE = 0x1411,                       // new
     CMSG_GROUPACTION_THROTTLED = 0x411,
-    SMSG_OVERRIDE_LIGHT = 0x0000,
+    SMSG_OVERRIDE_LIGHT = 0x4225,                               // new
     SMSG_TOTEM_CREATED = 0x413,
     CMSG_TOTEM_DESTROYED = 0x414,
     CMSG_EXPIRE_RAID_INSTANCE = 0x415,
@@ -1078,7 +1078,7 @@ enum Opcodes
     CMSG_CALENDAR_ADD_EVENT = 0x42D,
     CMSG_CALENDAR_UPDATE_EVENT = 0x42E,
     CMSG_CALENDAR_REMOVE_EVENT = 0x42F,
-    CMSG_CALENDAR_COPY_EVENT = 0x0000,
+    CMSG_CALENDAR_COPY_EVENT = 0x0207,
     CMSG_CALENDAR_EVENT_INVITE = 0x431,
     CMSG_CALENDAR_EVENT_RSVP = 0x432,
     CMSG_CALENDAR_EVENT_REMOVE_INVITE = 0x433,
