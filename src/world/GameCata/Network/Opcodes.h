@@ -13,7 +13,7 @@ enum Opcodes
     CMSG_DBLOOKUP = 0x002,
     SMSG_DBLOOKUP = 0x003,
     CMSG_QUERY_OBJECT_POSITION = 0x004,
-    SMSG_QUERY_OBJECT_POSITION = 0x005,
+    SMSG_QUERY_OBJECT_POSITION = 0x0000,
     CMSG_QUERY_OBJECT_ROTATION = 0x006,
     SMSG_QUERY_OBJECT_ROTATION = 0x007,
     CMSG_WORLD_TELEPORT = 0x24B2,                       // new
@@ -447,10 +447,10 @@ enum Opcodes
     SMSG_TRAINER_BUY_FAILED = 0x0000,           // new
     CMSG_BINDER_ACTIVATE = 0x4006,              // new
     SMSG_PLAYERBINDERROR = 0x6A24,              // new
-    CMSG_BANKER_ACTIVATE = 0x1B7,
-    SMSG_SHOW_BANK = 0x1B8,
-    CMSG_BUY_BANK_SLOT = 0x1B9,
-    SMSG_BUY_BANK_SLOT_RESULT = 0x1BA,
+    CMSG_BANKER_ACTIVATE = 0x0005,              // new
+    SMSG_SHOW_BANK = 0x2627,                    // new
+    CMSG_BUY_BANK_SLOT = 0x0425,                // new
+    SMSG_BUY_BANK_SLOT_RESULT = 0x4806,         // new
     CMSG_PETITION_SHOWLIST = 0x4617,            // new
     SMSG_PETITION_SHOWLIST = 0x6405,            // new
     CMSG_PETITION_BUY = 0x4E05,                 // new

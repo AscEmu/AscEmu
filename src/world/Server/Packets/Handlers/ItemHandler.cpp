@@ -1269,6 +1269,11 @@ void WorldSession::HandleBuyItemOpcode(WorldPacket& recv_data)   // right-click 
     AddItemResult result;
 
     recv_data >> srcguid;
+
+#if VERSION_STRING == Cata
+    uint8 itemtype;
+    recv_data >> itemtype;
+#endif
     recv_data >> itemid;
     recv_data >> slot;
     recv_data >> amount;
