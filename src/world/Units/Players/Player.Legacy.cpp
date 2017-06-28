@@ -7496,24 +7496,24 @@ void Player::_Kick()
 
 void Player::ClearCooldownForSpell(uint32 spell_id)
 {
-    WorldPacket data(12);
-    data.SetOpcode(SMSG_CLEAR_COOLDOWN);
-    data << spell_id << GetGUID();
+    WorldPacket data(SMSG_CLEAR_COOLDOWN, 12);
+    data << uint32_t(spell_id);
+    data << uint64_t(GetGUID());
     GetSession()->SendPacket(&data);
 
-    // remove cooldown data from Server side lists
-    uint32 i;
-    PlayerCooldownMap::iterator itr, itr2;
-    SpellInfo* spe = sSpellCustomizations.GetSpellInfo(spell_id);
-    if (!spe) return;
-
-    for (i = 0; i < NUM_COOLDOWN_TYPES; ++i)
+    SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spell_id);
+    if (spellInfo == nullptr)
     {
-        for (itr = m_cooldownMap[i].begin(); itr != m_cooldownMap[i].end();)
+        return;
+    }
+
+    for (int i = 0; i < NUM_COOLDOWN_TYPES; ++i)
+    {
+        for (PlayerCooldownMap::iterator itr = m_cooldownMap[i].begin(); itr != m_cooldownMap[i].end();)
         {
-            itr2 = itr++;
-            if ((i == COOLDOWN_TYPE_CATEGORY && itr2->first == spe->Category) ||
-                (i == COOLDOWN_TYPE_SPELL && itr2->first == spe->Id))
+            PlayerCooldownMap::iterator itr2 = itr++;
+            if ((i == COOLDOWN_TYPE_CATEGORY && itr2->first == spellInfo->Category) ||
+                (i == COOLDOWN_TYPE_SPELL && itr2->first == spellInfo->Id))
             {
                 m_cooldownMap[i].erase(itr2);
             }

@@ -642,6 +642,7 @@ void Unit::sendMoveSplinePaket(UnitSpeedType speed_type)
 
 void Unit::playSpellVisual(uint64_t guid, uint32_t spell_id)
 {
+#if VERSION_STRING != Cata
     WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 12);
     data << uint64_t(guid);
     data << uint32_t(spell_id);
@@ -650,6 +651,36 @@ void Unit::playSpellVisual(uint64_t guid, uint32_t spell_id)
         static_cast<Player*>(this)->SendMessageToSet(&data, true);
     else
         SendMessageToSet(&data, false);
+#else
+    WorldPacket data(SMSG_PLAY_SPELL_VISUAL, 8 + 4 + 8);
+    data << uint32_t(0);
+    data << uint32_t(spell_id);
+
+    data << uint32_t(guid == GetGUID() ? 1 : 0);
+
+    ObjectGuid targetGuid = guid;
+    data.writeBit(targetGuid[4]);
+    data.writeBit(targetGuid[7]);
+    data.writeBit(targetGuid[5]);
+    data.writeBit(targetGuid[3]);
+    data.writeBit(targetGuid[1]);
+    data.writeBit(targetGuid[2]);
+    data.writeBit(targetGuid[0]);
+    data.writeBit(targetGuid[6]);
+
+    data.flushBits();
+
+    data.WriteByteSeq(targetGuid[0]);
+    data.WriteByteSeq(targetGuid[4]);
+    data.WriteByteSeq(targetGuid[1]);
+    data.WriteByteSeq(targetGuid[6]);
+    data.WriteByteSeq(targetGuid[7]);
+    data.WriteByteSeq(targetGuid[2]);
+    data.WriteByteSeq(targetGuid[3]);
+    data.WriteByteSeq(targetGuid[5]);
+
+    SendMessageToSet(&data, true);
+#endif
 }
 
 void Unit::applyDiminishingReturnTimer(uint32_t* duration, SpellInfo* spell)
