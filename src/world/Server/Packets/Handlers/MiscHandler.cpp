@@ -1229,6 +1229,7 @@ void WorldSession::HandleResurrectResponseOpcode(WorldPacket& recv_data)
     _player->setMoveRoot(false);
 }
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
 {
     //LOG_DETAIL("WORLD: Received CMSG_UPDATE_ACCOUNT_DATA");
@@ -1325,6 +1326,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
     SendPacket(&rdata);
 #endif
 }
+#endif
 
 void WorldSession::HandleRequestAccountData(WorldPacket& recv_data)
 {

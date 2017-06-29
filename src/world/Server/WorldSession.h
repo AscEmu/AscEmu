@@ -305,13 +305,21 @@ class SERVER_DECL WorldSession
         {
             ARCEMU_ASSERT(index < 8);
             if (sAccountData[index].data)
-                delete [] sAccountData[index].data;
+            {
+                delete[] sAccountData[index].data;
+            }
+
             sAccountData[index].data = data;
             sAccountData[index].sz = sz;
-            if (!initial && !sAccountData[index].bIsDirty)      // Mark as "changed" or "dirty"
+
+            if (initial == false && sAccountData[index].bIsDirty == false)      // Mark as "changed" or "dirty"
+            {
                 sAccountData[index].bIsDirty = true;
+            }
             else if (initial)
+            {
                 sAccountData[index].bIsDirty = false;
+            }
         }
 
         AccountDataEntry* GetAccountData(uint32 index)
