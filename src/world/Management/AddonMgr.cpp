@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "AddonMgr.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Server/MainServerDefines.h"
+#include "Auth/MD5.h"
 
 initialiseSingleton(AddonMgr);
 

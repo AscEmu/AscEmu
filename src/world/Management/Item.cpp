@@ -1354,6 +1354,8 @@ bool Item::RepairItem(Player* pPlayer, bool guildmoney, int32* pCost)   //pCost 
     int32 cost = RepairItemCost();
     if (cost <= 0)
         return false;
+
+#if VERSION_STRING != Cata
     if (guildmoney && pPlayer->IsInGuild())
     {
         if (!pPlayer->GetGuildMember()->RepairItem((uint32)cost))
@@ -1362,6 +1364,7 @@ bool Item::RepairItem(Player* pPlayer, bool guildmoney, int32* pCost)   //pCost 
             *pCost += cost;
     }
     else//we pay with our gold
+#endif
     {
         if (!pPlayer->HasGold(cost))
             return false;

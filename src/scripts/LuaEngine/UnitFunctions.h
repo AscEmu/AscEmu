@@ -4318,7 +4318,7 @@ class LuaUnit
         TEST_PLAYER()
             Guild* pGuild = objmgr.GetGuild(static_cast<Player*>(ptr)->GetGuildId());
         if (pGuild != NULL)
-            lua_pushstring(L, pGuild->GetGuildName());
+            lua_pushstring(L, pGuild->getGuildName());
         else
             lua_pushnil(L);
         return 1;
@@ -4994,7 +4994,7 @@ class LuaUnit
             guild = plr->GetGuild();
         }
         if (data != NULL && guild != NULL)
-            guild->SendPacket(data);
+            guild->sendPacket(data);
         return 0;
     }
 
@@ -5044,75 +5044,90 @@ class LuaUnit
     static int SendGuildInvite(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
-            Player* sender = static_cast<Player*>(ptr);
+        Player* sender = static_cast<Player*>(ptr);
         Player* plyr = CHECK_PLAYER(L, 1);
         std::string inviteeName = plyr->GetName();
-        Guild* pGuild = sender->getPlayerInfo()->guild;
+
+        Guild* pGuild = sender->GetGuild();
         if (!plyr)
         {
-            Guild::SendGuildCommandResult(sender->GetSession(), GUILD_INVITE_S, inviteeName.c_str(), GUILD_PLAYER_NOT_FOUND);
+            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_PLAYER_NOT_FOUND_S, inviteeName.c_str());
         }
         else if (!pGuild)
         {
-            Guild::SendGuildCommandResult(sender->GetSession(), GUILD_CREATE_S, "", GUILD_PLAYER_NOT_IN_GUILD);
+            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_PLAYER_NOT_IN_GUILD, "");
         }
         else if (plyr->GetGuildId())
         {
-            Guild::SendGuildCommandResult(sender->GetSession(), GUILD_INVITE_S, plyr->GetName(), ALREADY_IN_GUILD);
+            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_ALREADY_IN_GUILD, plyr->GetName());
         }
+#if VERSION_STRING != Cata
         else if (plyr->GetGuildInvitersGuid())
+#else
+        else if (plyr->GetGuildIdInvited())
+#endif
         {
-            Guild::SendGuildCommandResult(sender->GetSession(), GUILD_INVITE_S, plyr->GetName(), ALREADY_INVITED_TO_GUILD);
+            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_ALREADY_INVITED_TO_GUILD, plyr->GetName());
         }
         else if (plyr->GetTeam() != sender->GetTeam() && sender->GetSession()->GetPermissionCount() == 0 && !worldConfig.player.isInterfactionGuildEnabled)
         {
-            Guild::SendGuildCommandResult(sender->GetSession(), GUILD_INVITE_S, "", GUILD_NOT_ALLIED);
+            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_NOT_ALLIED, "");
         }
         else
         {
-            Guild::SendGuildCommandResult(sender->GetSession(), GUILD_INVITE_S, inviteeName.c_str(), GUILD_U_HAVE_INVITED);
+            Guild::sendCommandResult(sender->GetSession(), GC_TYPE_INVITE, GC_ERROR_SUCCESS, inviteeName.c_str());
             WorldPacket data(SMSG_GUILD_INVITE, 100);
             data << sender->GetName();
-            data << pGuild->GetGuildName();
+            data << pGuild->getGuildName();
             plyr->GetSession()->SendPacket(&data);
+#if VERSION_STRING != Cata
             plyr->SetGuildInvitersGuid(sender->GetLowGUID());
+#endif
         }
+
         return 0;
     }
 
     static int DemoteGuildMember(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
             Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         if (target && plr->GetGuild())
             plr->GetGuild()->DemoteGuildMember(target->getPlayerInfo(), plr->GetSession());
+#endif
         return 0;
     }
 
     static int PromoteGuildMember(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
             Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         if (target && plr->GetGuild())
             plr->GetGuild()->PromoteGuildMember(target->getPlayerInfo(), plr->GetSession());
+#endif
         return 0;
     }
 
     static int SetGuildMotd(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
             Player* plr = static_cast<Player*>(ptr);
         const char* szNewMotd = luaL_checkstring(L, 1);
         if (plr->GetGuild() && szNewMotd != NULL)
             plr->GetGuild()->SetMOTD(szNewMotd, plr->GetSession());
+#endif
         return 0;
     }
 
     static int GetGuildMotd(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
         Player* plr = static_cast<Player*>(ptr);
         Guild* guild = nullptr;
         if (luaL_optinteger(L, 1, -1) >= 0)
@@ -5120,69 +5135,81 @@ class LuaUnit
         else
             guild = plr->GetGuild();
         if (guild != nullptr)
-            lua_pushstring(L, guild->GetMOTD());
+            lua_pushstring(L, guild->getMOTD());
         else
             lua_pushnil(L);
+#endif
         return 1;
     }
 
     static int SetGuildInformation(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
             Player* plr = static_cast<Player*>(ptr);
         const char* gi = luaL_checkstring(L, 1);
         if (gi && plr->GetGuild())
             plr->GetGuild()->SetGuildInformation(gi, plr->GetSession());
+#endif
         return 0;
     }
 
     static int AddGuildMember(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
         Player* plr = static_cast<Player*>(ptr);
         uint32 g_id = CHECK_ULONG(L, 1);
         int32 rank = static_cast<int32>(luaL_optinteger(L, 2, -1));
         Guild* target = objmgr.GetGuild(g_id);
         if (target)
             target->AddGuildMember(plr->getPlayerInfo(), NULL, rank);
+#endif
         return 0;
     }
 
     static int RemoveGuildMember(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
             Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         if (target && plr->GetGuild())
             plr->GetGuild()->RemoveGuildMember(target->getPlayerInfo(), plr->GetSession());
+#endif
         return 0;
     }
 
     static int SetPublicNote(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
             Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         const char* note = luaL_checkstring(L, 2);
         if (target && note && plr->GetGuild())
             plr->GetGuild()->SetPublicNote(target->getPlayerInfo(), note, plr->GetSession());
+#endif
         return 0;
     }
 
     static int SetOfficerNote(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
             Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         const char* note = luaL_checkstring(L, 2);
         if (target && note && plr->GetGuild())
             plr->GetGuild()->SetOfficerNote(target->getPlayerInfo(), note, plr->GetSession());
+#endif
         return 0;
     }
 
     static int DisbandGuild(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
         Player* plr = static_cast<Player*>(ptr);
         Guild* guild = nullptr;
         if (luaL_optinteger(L, 1, -1) >= 0)
@@ -5190,57 +5217,68 @@ class LuaUnit
         else
             guild = plr->GetGuild();
         if (guild != nullptr)
-            guild->Disband();
+            guild->disband();
+#endif
         return 0;
     }
 
     static int ChangeGuildMaster(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
             Player* plr = static_cast<Player*>(ptr);
         Player* target = CHECK_PLAYER(L, 1);
         if (target)
             plr->GetGuild()->ChangeGuildMaster(target->getPlayerInfo(), plr->GetSession());
+#endif
         return 0;
     }
 
     static int SendGuildChatMessage(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
             Player* plr = static_cast<Player*>(ptr);
         const char* message = luaL_checkstring(L, 1);
         bool officer = CHECK_BOOL(L, 2);
         if (plr->GetGuild() != NULL && message != NULL)
             (officer) ? plr->GetGuild()->OfficerChat(message, plr->GetSession(), 0) : plr->GetGuild()->GuildChat(message, plr->GetSession(), 0);
+#endif
         return 0;
     }
 
     static int SendGuildLog(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
             Player* plr = static_cast<Player*>(ptr);
         if (plr->GetGuild() != NULL)
             plr->GetGuild()->SendGuildLog(plr->GetSession());
+#endif
         return 0;
     }
 
     static int GuildBankDepositMoney(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
         Player* plr = static_cast<Player*>(ptr);
         uint32 amount = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (plr->GetGuild() != NULL)
             plr->GetGuild()->DepositMoney(plr->GetSession(), amount);
+#endif
         return 0;
     }
 
     static int GuildBankWithdrawMoney(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
         Player* plr = static_cast<Player*>(ptr);
         uint32 amount = static_cast<uint32>(luaL_checkinteger(L, 1));
         if (plr->GetGuild() != NULL)
             plr->GetGuild()->WithdrawMoney(plr->GetSession(), amount);
+#endif
         return 0;
     }
 
@@ -5284,6 +5322,7 @@ class LuaUnit
     static int GetGuildLeader(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
             Guild* pGuild = static_cast<Player*>(ptr)->GetGuild();
         if (pGuild != NULL)
         {
@@ -5295,14 +5334,17 @@ class LuaUnit
         }
         else
             lua_pushnil(L);
+#endif
         return 1;
     }
 
     static int GetGuildMemberCount(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
             Guild* pGuild = static_cast<Player*>(ptr)->GetGuild();
         (pGuild != NULL) ? lua_pushinteger(L, pGuild->GetNumMembers()) : lua_pushnil(L);
+#endif
         return 1;
     }
 
@@ -5595,6 +5637,7 @@ class LuaUnit
     static int GetGuildMembers(lua_State* L, Unit* ptr)
     {
         TEST_PLAYER()
+#if VERSION_STRING != Cata
             Player* plr = static_cast<Player*>(ptr);
         Guild* pGuild = plr->GetGuild();
         uint32 count = 0;
@@ -5618,6 +5661,7 @@ class LuaUnit
         }
         else
             lua_pushnil(L);
+#endif
         return 1;
     }
 

@@ -500,9 +500,11 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void DeletePlayerInfo(uint32 guid);
 
         // Guild
+#if VERSION_STRING != Cata
         void AddGuild(Guild* pGuild);
         uint32 GetTotalGuildCount();
         bool RemoveGuild(uint32 guildId);
+#endif
         Guild* GetGuild(uint32 guildId);
         Guild* GetGuildByLeaderGuid(uint64 leaderGuid);
         Guild* GetGuildByGuildName(std::string guildName);
@@ -566,7 +568,9 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 #endif
         void LoadPlayersInfo();
 
+#if VERSION_STRING != Cata
         void LoadGuilds();
+#endif
         Corpse* LoadCorpse(uint32 guid);
         void LoadCorpses(MapMgr* mgr);
         void LoadGMTickets();

@@ -116,6 +116,12 @@ class SERVER_DECL ByteBuffer
                 append(str.c_str(), len);
         }
 
+        void appendPackedTime(time_t time)
+        {
+            tm* lt = localtime(&time);
+            append<uint32>((lt->tm_year - 100) << 24 | lt->tm_mon << 20 | (lt->tm_mday - 1) << 14 | lt->tm_wday << 11 | lt->tm_hour << 6 | lt->tm_min);
+        }
+
         std::string ReadString(uint32_t length)
         {
             if (!length)

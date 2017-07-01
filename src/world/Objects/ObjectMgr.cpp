@@ -36,6 +36,9 @@
 #include "Spell/Customization/SpellCustomizations.hpp"
 #include "Units/Creatures/Pet.h"
 #include "Spell/SpellEffects.h"
+#if VERSION_STRING == Cata
+#include "GameCata/Management/GuildMgr.h"
+#endif
 
 initialiseSingleton(ObjectMgr);
 
@@ -321,17 +324,19 @@ void ObjectMgr::DeletePlayerInfo(uint32 guid)
         pl->m_Group->RemovePlayer(pl);
     }
 
+#if VERSION_STRING != Cata
     if (pl->guild)
     {
         if (pl->guild->GetGuildLeader() == pl->guid)
         {
-            pl->guild->Disband();
+            pl->guild->disband();
         }
         else
         {
             pl->guild->RemoveGuildMember(pl, nullptr);
         }
     }
+#endif
 
     std::string pnam = std::string(pl->name);
     Util::StringToLowerCase(pnam);
@@ -451,9 +456,14 @@ void ObjectMgr::LoadPlayersInfo()
             pn->m_Group = 0;
             pn->subGroup = 0;
             pn->m_loggedInPlayer = NULL;
+#if VERSION_STRING != Cata
             pn->guild = NULL;
             pn->guildRank = NULL;
             pn->guildMember = NULL;
+#else
+            pn->m_guild = 0;
+            pn->guildRank = GUILD_RANK_NONE;
+#endif
 
             // Raid & heroic Instance IDs
             // Must be done before entering world...
@@ -529,7 +539,9 @@ void ObjectMgr::LoadPlayersInfo()
         delete result;
     }
     LogDetail("ObjectMgr : %u players loaded.", m_playersinfo.size());
+#if VERSION_STRING != Cata
     LoadGuilds();
+#endif
 }
 
 PlayerInfo* ObjectMgr::GetPlayerInfoByName(const char* name)
@@ -573,6 +585,7 @@ void ObjectMgr::LoadCompletedAchievements()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // DK:LoadGuilds()
+#if VERSION_STRING != Cata
 void ObjectMgr::LoadGuilds()
 {
     QueryResult* result = CharacterDatabase.Query("SELECT * FROM guilds");
@@ -586,13 +599,14 @@ void ObjectMgr::LoadGuilds()
                 delete pGuild;
             }
             else
-                mGuild.insert(std::make_pair(pGuild->GetGuildId(), pGuild));
+                mGuild.insert(std::make_pair(pGuild->getGuildId(), pGuild));
         }
         while (result->NextRow());
         delete result;
     }
     LogDetail("ObjectMgr : %u guilds loaded.", mGuild.size());
 }
+#endif
 
 Corpse* ObjectMgr::LoadCorpse(uint32 guid)
 {
@@ -967,7 +981,11 @@ void ObjectMgr::SetHighestGuids()
         delete result;
     }
 
+#if VERSION_STRING != Cata
     result = CharacterDatabase.Query("SELECT MAX(guildid) FROM guilds");
+#else
+    result = CharacterDatabase.Query("SELECT MAX(guildid) FROM guild");
+#endif
     if (result)
     {
         m_hiGuildId.SetVal(result->Fetch()[0].GetUInt32());
@@ -1111,10 +1129,11 @@ Player* ObjectMgr::GetPlayer(uint32 guid)
     return rv;
 }
 
+#if VERSION_STRING != Cata
 void ObjectMgr::AddGuild(Guild* pGuild)
 {
     ARCEMU_ASSERT(pGuild != NULL);
-    mGuild[pGuild->GetGuildId()] = pGuild;
+    mGuild[pGuild->getGuildId()] = pGuild;
 }
 
 uint32 ObjectMgr::GetTotalGuildCount()
@@ -1133,17 +1152,23 @@ bool ObjectMgr::RemoveGuild(uint32 guildId)
     mGuild.erase(i);
     return true;
 }
+#endif
 
 Guild* ObjectMgr::GetGuild(uint32 guildId)
 {
+#if VERSION_STRING != Cata
     GuildMap::const_iterator itr = mGuild.find(guildId);
     if (itr == mGuild.end())
         return NULL;
     return itr->second;
+#else
+    return sGuildMgr.getGuildById(guildId);
+#endif
 }
 
 Guild* ObjectMgr::GetGuildByLeaderGuid(uint64 leaderGuid)
 {
+#if VERSION_STRING != Cata
     GuildMap::const_iterator itr;
     for (itr = mGuild.begin(); itr != mGuild.end(); ++itr)
     {
@@ -1151,17 +1176,25 @@ Guild* ObjectMgr::GetGuildByLeaderGuid(uint64 leaderGuid)
             return itr->second;
     }
     return NULL;
+#else
+    return sGuildMgr.getGuildByLeader(leaderGuid);
+#endif
 }
+
 
 Guild* ObjectMgr::GetGuildByGuildName(std::string guildName)
 {
+#if VERSION_STRING != Cata
     GuildMap::const_iterator itr;
     for (itr = mGuild.begin(); itr != mGuild.end(); ++itr)
     {
-        if (itr->second->GetGuildName() == guildName)
+        if (itr->second->getGuildName() == guildName)
             return itr->second;
     }
     return NULL;
+#else
+    return sGuildMgr.getGuildByName(guildName);
+#endif
 }
 
 

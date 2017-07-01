@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
+#include "Units/Creatures/Pet.h"
 
 void WorldSession::HandleLearnTalentOpcode(WorldPacket& recv_data)
 {

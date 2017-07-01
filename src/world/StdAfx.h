@@ -140,6 +140,13 @@
 #include "Management/CRitual.h"
 #include "Management/Group.h"
 #include "Management/Guild.h"
+
+#if VERSION_STRING == Cata
+#include "GameCata/Management/GuildFinderMgr.h"
+#include "GameCata/Management/Guild.h"
+#include "GameCata/Management/GuildMgr.h"
+#endif
+
 #include "Server/Packets/Handlers/HonorHandler.h"
 #include "Management/ItemPrototype.h"
 #include "Management/Item.h"

@@ -79,6 +79,7 @@ enum HIGHGUID_TYPE
     HIGHGUID_TYPE_PET				= 0xF1400000,
     HIGHGUID_TYPE_VEHICLE			= 0xF1500000,
     HIGHGUID_TYPE_GROUP             = 0x1F500000,
+    HIGHGUID_TYPE_GUILD             = 0x1FF70000,
 //===============================================
     HIGHGUID_TYPE_MASK				= 0xFFF00000,
     LOWGUID_ENTRY_MASK				= 0x00FFFFFF,
@@ -584,6 +585,8 @@ public:
         }
 
         void EventSetUInt32Value(uint32 index, uint32 value);
+
+        void SetUInt16Value(uint16 index, uint8 offset, uint16 value);
         void SetUInt32Value(const uint32 index, const uint32 value);
 
         /// Set uint64 property
@@ -600,6 +603,14 @@ public:
         {
             ARCEMU_ASSERT(index < m_valuesCount);
             return m_uint32Values[index] & flag;
+        }
+
+        void ApplyModFlag(uint16 index, uint32 flag, bool apply)
+        {
+            if (apply)
+                SetFlag(index, flag);
+            else
+                RemoveFlag(index, flag);
         }
 
         ////////////////////////////////////////

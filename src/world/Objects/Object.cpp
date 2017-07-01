@@ -1696,6 +1696,30 @@ void Object::RemoveFromWorld(bool free_guid)
     event_Relocate();
 }
 
+void Object::SetUInt16Value(uint16 index, uint8 offset, uint16 value)
+{
+    ASSERT(index < m_valuesCount);
+
+    if (offset > 2)
+    {
+        LogDebug("Object::SetUInt16Value: wrong offset %u", offset);
+        return;
+    }
+
+    if (uint16(m_uint32Values[index] >> (offset * 16)) != value)
+    {
+        m_uint32Values[index] &= ~uint32(uint32(0xFFFF) << (offset * 16));
+        m_uint32Values[index] |= uint32(uint32(value) << (offset * 16));
+        m_updateMask.SetBit(index);
+
+        if (!m_objectUpdated)
+        {
+            m_mapMgr->ObjectUpdated(this);
+            m_objectUpdated = true;
+        }
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Set uint32 property
 //////////////////////////////////////////////////////////////////////////////////////////

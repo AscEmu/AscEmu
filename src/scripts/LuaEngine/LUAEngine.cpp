@@ -31,6 +31,10 @@
 #include "LUAEngine.h"
 #include "Map/MapMgr.h"
 #include "Server/Script/ScriptSetup.h"
+#include "../../world/WorldConf.h"
+#if VERSION_STRING == Cata
+#include "../../world/GameCata/Management/Guild.h"
+#endif
 
 #ifndef _WIN32
 #include <dirent.h>
@@ -1045,7 +1049,7 @@ void LuaHookOnGuildJoin(Player* pPlayer, Guild* pGuild)
         LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
         LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_GUILD_JOIN);
         LuaGlobal::instance()->luaEngine()->PushUnit(pPlayer);
-        LuaGlobal::instance()->luaEngine()->PUSH_STRING(pGuild->GetGuildName());
+        LuaGlobal::instance()->luaEngine()->PUSH_STRING(pGuild->getGuildName());
         LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
     }
     RELEASE_LOCK
@@ -1288,7 +1292,7 @@ void LuaHookOnGuildCreate(Player* pLeader, Guild* pGuild)
         LuaGlobal::instance()->luaEngine()->BeginCall((*itr));
         LuaGlobal::instance()->luaEngine()->PUSH_INT(SERVER_HOOK_EVENT_ON_GUILD_CREATE);
         LuaGlobal::instance()->luaEngine()->PushUnit(pLeader);
-        LuaGlobal::instance()->luaEngine()->PUSH_STRING(pGuild->GetGuildName());
+        LuaGlobal::instance()->luaEngine()->PUSH_STRING(pGuild->getGuildName());
         LuaGlobal::instance()->luaEngine()->ExecuteCall(3);
     }
     RELEASE_LOCK

@@ -220,6 +220,17 @@ WorldConfig::WorldConfig()
     corpseDecay.rareEliteTimeInSeconds = 300000;
     corpseDecay.worldbossTimeInSeconds = 3600000;
 
+    // world.conf - Guild Settings
+    guild.maxLevel = 25;
+    guild.maxMembers = 10;
+    guild.maxXpPerDay = 0;
+    guild.maxRepPerWeek = 0;
+    guild.levlingEnabled = false;
+    guild.undeletabelLevel = 0;
+    guild.eventLogCount = 0;
+    guild.newsLogCount = 0;
+    guild.bankLogCount = 0;
+    guild.saveInterval = 0;
 }
 
 WorldConfig::~WorldConfig() {}
@@ -564,6 +575,18 @@ void WorldConfig::loadWorldConfigValues(bool reload /*false*/)
     corpseDecay.eliteTimeInSeconds = (1000 * (Config.MainConfig.getIntDefault("CorpseDecaySettings", "DecayElite", 300)));
     corpseDecay.rareEliteTimeInSeconds = (1000 * (Config.MainConfig.getIntDefault("CorpseDecaySettings", "DecayRareElite", 300)));
     corpseDecay.worldbossTimeInSeconds = (1000 * (Config.MainConfig.getIntDefault("CorpseDecaySettings", "DecayWorldboss", 3600)));
+
+    // world.conf - Guild Settings
+    guild.maxLevel = Config.MainConfig.getIntDefault("Guild", "MaxLevel", 25);
+    guild.maxMembers = Config.MainConfig.getIntDefault("Guild", "MaxMembers", 80);
+    guild.maxXpPerDay = Config.MainConfig.getIntDefault("Guild", "MaxXpPerDay", 6246000);
+    guild.maxRepPerWeek = Config.MainConfig.getIntDefault("Guild", "MaxRepPerWeek", 4375);
+    guild.levlingEnabled = Config.MainConfig.getIntDefault("Guild", "LevlingEnabled", true);
+    guild.undeletabelLevel = Config.MainConfig.getIntDefault("Guild", "UndeletabelLevel", 4);
+    guild.eventLogCount = Config.MainConfig.getIntDefault("Guild", "EventLogCount", 100);
+    guild.newsLogCount = Config.MainConfig.getIntDefault("Guild", "NewsLogCount", 250);
+    guild.bankLogCount = Config.MainConfig.getIntDefault("Guild", "BankLogCount", 25);
+    guild.saveInterval = Config.MainConfig.getIntDefault("Guild", "SaveInterval", 300);
 }
 
 

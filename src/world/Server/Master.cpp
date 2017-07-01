@@ -61,8 +61,8 @@ ConfigMgr Config;
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-06-25_01_clienbtaddons";
 static const char* REQUIRED_WORLD_DB_VERSION = "2017-06-15_01_remove_tables";
 #else
-static const char* REQUIRED_CHAR_DB_VERSION = "2017-06-25_01_clienbtaddons";
-static const char* REQUIRED_WORLD_DB_VERSION = "2017-06-19_01_totemdisplayids";
+static const char* REQUIRED_CHAR_DB_VERSION = "2017-06-30_01_guild";
+static const char* REQUIRED_WORLD_DB_VERSION = "2017-06-30_01_guild_data";
 #endif
 
 void Master::_OnSignal(int s)

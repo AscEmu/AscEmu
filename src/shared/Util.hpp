@@ -59,6 +59,8 @@ namespace Util
     /*! \brief Returns calculated time based on (second) values e.g. 5h will return 5 * 60 * 60 */
     uint32_t GetTimePeriodFromString(const char* str);
 
+    std::string ByteArrayToHexString(uint8_t const* bytes, uint32_t arrayLength, bool reverseArray = false);
+
 }
 
 #endif  // UTIL_HPP

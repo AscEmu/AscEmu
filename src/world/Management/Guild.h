@@ -18,6 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if VERSION_STRING != Cata
 #ifndef GUILD_H
 #define GUILD_H
 
@@ -69,22 +70,57 @@ enum MONEY
     MONEY_ONE_GOLD          = MONEY_ONE_SILVER * 100
 };
 
-enum CommandErrors
+//enum GuildCommandError
+//{
+//    GC_ERROR_SUCCESS = 0,
+//    GC_ERROR_INTERNAL = 1,
+//    GC_ERROR_ALREADY_IN_GUILD = 2,
+//    GC_ERROR_ALREADY_IN_GUILD_S = 3,
+//    GC_ERROR_INVITED_TO_GUILD = 4,
+//    GC_ERROR_ALREADY_INVITED_TO_GUILD = 5,
+//    GC_ERROR_NAME_INVALID = 6,
+//    GC_ERROR_NAME_EXISTS_S = 7,
+//    GC_ERROR_LEADER_LEAVE = 8,
+//    GC_ERROR_PERMISSIONS = 8,
+//    GC_ERROR_PLAYER_NOT_IN_GUILD = 9,
+//    GC_ERROR_PLAYER_NOT_IN_GUILD_S = 10,
+//    GC_ERROR_PLAYER_NOT_FOUND_S = 11,
+//    GC_ERROR_NOT_ALLIED = 12,
+//    GC_ERROR_RANK_TOO_HIGH_S = 13,
+//    GC_ERROR_RANK_TOO_LOW_S = 14,
+//    GC_ERROR_RANKS_LOCKED = 17,
+//    GC_ERROR_RANK_IN_USE = 18,
+//    GC_ERROR_IGNORING_YOU_S = 19,
+//    GC_ERROR_UNK1 = 20,
+//    GC_ERROR_WITHDRAW_LIMIT = 25,
+//    GC_ERROR_NOT_ENOUGH_MONEY = 26,
+//    GC_ERROR_BANK_FULL = 28,
+//    GC_ERROR_ITEM_NOT_FOUND = 29,
+//    GC_ERROR_TOO_MUCH_MONEY = 31,
+//    GC_ERROR_BANK_WRONG_TAB = 32,
+//    GC_ERROR_REQUIRES_AUTHENTICATOR = 34,
+//    GC_ERROR_BANK_VOUCHER_FAILED = 35,
+//    GC_ERROR_TRIAL_ACCOUNT = 36,
+//    GC_ERROR_UNDELETABLE_DUE_TO_LEVEL = 37,
+//    GC_ERROR_MOVE_STARTING = 38,
+//    GC_ERROR_REP_TOO_LOW = 39
+//};
+enum GuildCommandError
 {
-    GUILD_U_HAVE_INVITED          = 0x00,
-    GUILD_INTERNAL                = 0x01,
-    GUILD_ALREADY_IN_GUILD        = 0x02,
-    ALREADY_IN_GUILD              = 0x03,
-    INVITED_TO_GUILD              = 0x04,
-    ALREADY_INVITED_TO_GUILD      = 0x05,
-    GUILD_NAME_INVALID            = 0x06,
-    GUILD_NAME_EXISTS             = 0x07,
-    GUILD_LEADER_LEAVE            = 0x08,
-    GUILD_PERMISSIONS             = 0x08,
-    GUILD_PLAYER_NOT_IN_GUILD     = 0x09,
-    GUILD_PLAYER_NOT_IN_GUILD_S   = 0x0A,
-    GUILD_PLAYER_NOT_FOUND        = 0x0B,
-    GUILD_NOT_ALLIED              = 0x0C
+    GC_ERROR_SUCCESS          = 0x00,
+    GC_ERROR_INTERNAL                = 0x01,
+    GC_ERROR_ALREADY_IN_GUILD        = 0x02,
+    GC_ERROR_ALREADY_IN_GUILD_S              = 0x03,
+    GC_ERROR_INVITED_TO_GUILD              = 0x04,
+    GC_ERROR_ALREADY_INVITED_TO_GUILD      = 0x05,
+    GC_ERROR_NAME_INVALID            = 0x06,
+    GC_ERROR_NAME_EXISTS_S             = 0x07,
+    GC_ERROR_LEADER_LEAVE            = 0x08,
+    GC_ERROR_PERMISSIONS             = 0x08,
+    GC_ERROR_PLAYER_NOT_IN_GUILD     = 0x09,
+    GC_ERROR_PLAYER_NOT_IN_GUILD_S   = 0x0A,
+    GC_ERROR_PLAYER_NOT_FOUND_S        = 0x0B,
+    GC_ERROR_NOT_ALLIED              = 0x0C
 };
 
 //for uint32(0)<<name<<code
@@ -160,16 +196,35 @@ enum GUILD_COMMAND_RESULTS
     */
 };
 
-enum typecommand
+//enum GuildCommandType
+//{
+//    GC_TYPE_CREATE = 0,
+//    GC_TYPE_INVITE = 1,
+//    GC_TYPE_QUIT = 3,
+//    GC_TYPE_ROSTER = 5,
+//    GC_TYPE_PROMOTE = 6,
+//    GC_TYPE_DEMOTE = 7,
+//    GC_TYPE_REMOVE = 8,
+//    GC_TYPE_CHANGE_LEADER = 10,
+//    GC_TYPE_EDIT_MOTD = 11,
+//    GC_TYPE_GUILD_CHAT = 13,
+//    GC_TYPE_FOUNDER = 14,
+//    GC_TYPE_CHANGE_RANK = 16,
+//    GC_TYPE_PUBLIC_NOTE = 19,
+//    GC_TYPE_VIEW_TAB = 21,
+//    GC_TYPE_MOVE_ITEM = 22,
+//    GC_TYPE_REPAIR = 25
+//};
+enum GuildCommandType
 {
-    GUILD_CREATE_S                  = 0x00,
-    GUILD_INVITE_S                  = 0x01,
-    GUILD_QUIT_S                    = 0x02,
-    GUILD_PROMOTE_S                 = 0x03,
-    GUILD_FOUNDER_S                 = 0x0C,
-    GUILD_MEMBER_S                  = 0x0D,
-    GUILD_PUBLIC_NOTE_CHANGED_S     = 0x13,
-    GUILD_OFFICER_NOTE_CHANGED_S    = 0x14
+    GC_TYPE_CREATE                  = 0x00,
+    GC_TYPE_INVITE                  = 0x01,
+    GC_TYPE_QUIT                    = 0x02,
+    GC_TYPE_PROMOTE                 = 0x03,
+    GC_TYPE_FOUNDER                 = 0x0C,
+    GC_TYPE_GUILD_CHAT                  = 0x0D,
+    GC_TYPE_PUBLIC_NOTE     = 0x13,
+    GC_TYPE_CHANGE_RANK    = 0x14
 
 };
 
@@ -354,7 +409,7 @@ class SERVER_DECL Guild
 
         void SetMOTD(const char* szNewMotd, WorldSession* pClient);
 
-        inline const char* GetMOTD() const { return (m_motd ? m_motd : ""); }
+        inline const char* getMOTD() const { return (m_motd ? m_motd : ""); }
 
         void SetGuildInformation(const char* szGuildInformation, WorldSession* pClient);
 
@@ -377,7 +432,7 @@ class SERVER_DECL Guild
 
         void ChangeGuildMaster(PlayerInfo* pNewMaster, WorldSession* pClient);
 
-        static void SendGuildCommandResult(WorldSession* pClient, uint32 iCmd, const char* szMsg, uint32 iType);
+        static void sendCommandResult(WorldSession* pClient, GuildCommandType iCmd, GuildCommandError iType, const char* szMsg = NULL);
 
         static void SendTurnInPetitionResult(WorldSession* pClient, uint32 result);
 
@@ -387,7 +442,7 @@ class SERVER_DECL Guild
 
         void CreateFromCharter(Charter* pCharter, WorldSession* pTurnIn);
 
-        void SendPacket(WorldPacket* data);
+        void sendPacket(WorldPacket* data);
 
         // Sends a guild chat message.
         void GuildChat(const char* szMessage, WorldSession* pClient, uint32 iType);
@@ -402,7 +457,7 @@ class SERVER_DECL Guild
 
         void SetOfficerNote(PlayerInfo* pMember, const char* szNewNote, WorldSession* pClient);
 
-        void Disband();
+        void disband();
 
         // creation time stuff
         uint32 creationDay;
@@ -410,9 +465,9 @@ class SERVER_DECL Guild
         uint32 creationYear;
 
         // Getters :P
-        inline const char* GetGuildName() const { return m_guildName; }
+        inline const char* getGuildName() const { return m_guildName; }
         inline const uint32 GetGuildLeader() const { return m_guildLeader; }
-        inline const uint32 GetGuildId() const { return m_guildId; }
+        inline const uint32 getGuildId() const { return m_guildId; }
         inline const uint8  GetBankTabCount() const { return (uint8) m_bankTabs.size(); }
         inline const uint64 GetBankBalance() const { return m_bankBalance; }
         inline const size_t GetNumMembers() const { return m_members.size(); }
@@ -530,3 +585,4 @@ class SERVER_DECL Guild
 
 
 #endif // GUILD_H
+#endif

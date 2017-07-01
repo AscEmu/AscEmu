@@ -32,6 +32,9 @@
 #include "Map/MapMgr.h"
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/PowerType.h"
+#if VERSION_STRING == Cata
+#include "GameCata/Management/GuildMgr.h"
+#endif
 
 LoginErrorCode VerifyName(const char* name, size_t nlen)
 {
@@ -163,7 +166,11 @@ void WorldSession::HandleCharCustomizeLooksOpcode(WorldPacket& recv_data)
 void WorldSession::HandleCharEnumOpcode(WorldPacket& recv_data)
 {
     AsyncQuery* q = new AsyncQuery(new SQLClassCallbackP1<World, uint32>(World::getSingletonPtr(), &World::sendCharacterEnumToAccountSession, GetAccountId()));
+#if VERSION_STRING != Cata
     q->AddQuery("SELECT guid, level, race, class, gender, bytes, bytes2, name, positionX, positionY, positionZ, mapId, zoneId, banned, restState, deathstate, login_flags, player_flags, guild_data.guildid FROM characters LEFT JOIN guild_data ON characters.guid = guild_data.playerid WHERE acct=%u ORDER BY guid LIMIT 10", GetAccountId());
+#else
+    q->AddQuery("SELECT guid, level, race, class, gender, bytes, bytes2, name, positionX, positionY, positionZ, mapId, zoneId, banned, restState, deathstate, login_flags, player_flags, guild_member.guildId FROM characters LEFT JOIN guild_member ON characters.guid = guild_member.playerGuid WHERE acct=%u ORDER BY guid LIMIT 10", GetAccountId());
+#endif
     CharacterDatabase.QueueAsyncQuery(q);
 }
 
@@ -338,9 +345,14 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     pn->subGroup = 0;
     pn->m_loggedInPlayer = NULL;
     pn->team = pNewChar->GetTeam();
+#if VERSION_STRING != Cata
     pn->guild = NULL;
     pn->guildRank = NULL;
     pn->guildMember = NULL;
+#else
+    pn->m_guild = 0;
+    pn->guildRank = GUILD_RANK_NONE;
+#endif
     pn->lastOnline = UNIXTIME;
     objmgr.AddPlayerInfo(pn);
 
@@ -385,6 +397,7 @@ uint8 WorldSession::DeleteCharacter(uint32 guid)
         std::string name = result->Fetch()[0].GetString();
         delete result;
 
+#if VERSION_STRING != Cata
         if (inf->guild)
         {
             if (inf->guild->GetGuildLeader() == inf->guid)
@@ -392,6 +405,16 @@ uint8 WorldSession::DeleteCharacter(uint32 guid)
             else
                 inf->guild->RemoveGuildMember(inf, NULL);
         }
+#else
+        if (inf->m_guild)
+        {
+            Guild* guild = sGuildMgr.getGuildById(inf->m_guild);
+            if (guild->getLeaderGUID() == inf->guid)
+                return E_CHAR_DELETE_FAILED_GUILD_LEADER;
+            else
+                guild->handleRemoveMember(this, Arcemu::Util::GUID_HIPART(inf->guid));
+        }
+#endif
 
         for (uint8 i = 0; i < NUM_CHARTER_TYPES; ++i)
         {
@@ -761,7 +784,7 @@ void WorldSession::FullLogin(Player* plr)
     plr->m_playerInfo = info;
     if (plr->m_playerInfo->guild)
     {
-        plr->SetGuildId(plr->m_playerInfo->guild->GetGuildId());
+        plr->SetGuildId(plr->m_playerInfo->guild->getGuildId());
         plr->SetGuildRank(plr->m_playerInfo->guildRank->iId);
     }
 

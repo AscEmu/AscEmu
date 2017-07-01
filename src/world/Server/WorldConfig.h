@@ -387,4 +387,18 @@ class SERVER_DECL WorldConfig
             uint32_t worldbossTimeInSeconds;
         } corpseDecay;
 
+        // world.conf - Guild Settings
+        struct GuildSettings
+        {
+            uint32_t maxLevel;
+            uint32_t maxMembers;
+            uint32_t maxXpPerDay;
+            uint32_t maxRepPerWeek;
+            bool levlingEnabled;
+            uint32_t undeletabelLevel;
+            uint32_t eventLogCount;
+            uint32_t newsLogCount;
+            uint32_t bankLogCount;
+            uint32_t saveInterval;
+        } guild;
 };

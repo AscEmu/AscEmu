@@ -197,5 +197,29 @@ namespace Util
 
         return time_period;
     }
-}
 
+    std::string ByteArrayToHexString(uint8_t const* bytes, uint32_t arrayLength, bool reverseArray)
+    {
+        int32_t initPos = 0;
+        int32_t endPos = arrayLength;
+        int8_t op = 1;
+
+        if (reverseArray)
+        {
+            initPos = arrayLength - 1;
+            endPos = -1;
+            op = -1;
+        }
+
+        std::ostringstream ss;
+        for (int32_t i = initPos; i != endPos; i += op)
+        {
+            char buffer[4];
+            sprintf(buffer, "%02X", bytes[i]);
+            ss << buffer;
+        }
+
+        return ss.str();
+    }
+
+}

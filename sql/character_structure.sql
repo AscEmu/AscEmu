@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `auctions` (
 
 
 -- Dumping structure for table banned_char_log
-CREATE TABLE IF NOT EXISTS  `banned_char_log` (
+CREATE TABLE IF NOT EXISTS `banned_char_log` (
   `banned_by` varchar(50) NOT NULL,
   `banned_player` varchar(50) NOT NULL,
   `timestamp` int(11) NOT NULL,
@@ -300,7 +300,7 @@ CREATE TABLE IF NOT EXISTS `character_db_version` (
 -- Dumping data for table character_db_version: ~1 rows (approximately)
 /*!40000 ALTER TABLE `character_db_version` DISABLE KEYS */;
 INSERT INTO `character_db_version` (`LastUpdate`) VALUES
-	('2017-03-21_01_characters');
+	('2017-06-25_01_clienbtaddons');
 /*!40000 ALTER TABLE `character_db_version` ENABLE KEYS */;
 
 
@@ -336,6 +336,8 @@ CREATE TABLE IF NOT EXISTS `clientaddons` (
   `crc` bigint(50) DEFAULT NULL,
   `banned` int(1) NOT NULL DEFAULT '0',
   `showinlist` int(1) NOT NULL DEFAULT '0',
+  `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  `version` VARCHAR(60) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `index` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

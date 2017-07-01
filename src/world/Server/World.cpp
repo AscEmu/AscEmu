@@ -31,6 +31,11 @@ This file is released under the MIT license. See README-MIT for more information
 #include "World.Legacy.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 
+#if VERSION_STRING == Cata
+#include "GameCata/Management/GuildMgr.h"
+#include "GameCata/Management/GuildFinderMgr.h"
+#endif
+
 initialiseSingleton(World);
 
 DayWatcherThread* dw = nullptr;
@@ -105,6 +110,14 @@ World::~World()
 
     LogNotice("TaxiMgr : ~TaxiMgr()");
     delete TaxiMgr::getSingletonPtr();
+
+#if VERSION_STRING == Cata
+    LogNotice("GuildMgr", "~GuildMgr()");
+    delete GuildMgr::getSingletonPtr();
+    
+    LogNotice("GuildFinderMgr", "~GuildFinderMgr()");
+    delete GuildFinderMgr::getSingletonPtr();
+#endif
 
     LogNotice("BattlegroundMgr : ~BattlegroundMgr()");
     delete CBattlegroundManager::getSingletonPtr();
@@ -731,6 +744,10 @@ bool World::setInitialWorldSettings()
         return false;
 
     new TaxiMgr;
+#if VERSION_STRING == Cata
+    new GuildFinderMgr;
+    new GuildMgr;
+#endif
     new ChatHandler;
     new SpellProcMgr;
 
@@ -769,6 +786,14 @@ bool World::setInitialWorldSettings()
     LogDetail("World : Loading LFG rewards...");
     new LfgMgr;
     sLfgMgr.LoadRewards();
+
+#if VERSION_STRING == Cata
+    sGuildMgr.loadGuildXpForLevelFromDB();
+    sGuildMgr.loadGuildRewardsFromDB();
+    sGuildMgr.loadGuildDataFromDB();
+
+    sGuildFinderMgr.loadGuildFinderDataFromDB();
+#endif
 
     mQueueUpdateTimer = settings.server.queueUpdateInterval;
 
@@ -974,6 +999,10 @@ void World::Update(unsigned long time_passed)
 #ifdef SESSION_CAP
     if (GetSessionCount() >= SESSION_CAP)
         TerminateProcess(GetCurrentProcess(), 0);
+#endif
+
+#if VERSION_STRING == Cata
+    sGuildMgr.update((uint32)time_passed);
 #endif
 }
 

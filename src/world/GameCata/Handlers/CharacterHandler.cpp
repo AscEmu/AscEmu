@@ -17,6 +17,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Map/WorldCreator.h"
 #include "Spell/Definitions/PowerType.h"
+#include "GameCata/Management/GuildMgr.h"
 
 void WorldSession::CharacterEnumProc(QueryResult* result)
 {
@@ -102,7 +103,7 @@ void WorldSession::CharacterEnumProc(QueryResult* result)
             charEnum.loginFlags = fields[16].GetUInt32();
             charEnum.flags = fields[17].GetUInt32();
             charEnum.guildId = fields[18].GetUInt32();
-            ObjectGuid guildGuid = MAKE_NEW_GUID(charEnum.guildId, 0, charEnum.guildId ? uint32_t(0x1FF) : 0);
+            ObjectGuid guildGuid = MAKE_NEW_GUID(charEnum.guildId, 0, HIGHGUID_TYPE_GUILD);
 
             if (_side < 0)
             {
@@ -506,9 +507,7 @@ void WorldSession::FullLogin(Player* plr)
         info->lastZone = plr->GetZoneId();
         info->race = plr->getRace();
         info->team = plr->GetTeam();
-        info->guild = nullptr;
-        info->guildRank = nullptr;
-        info->guildMember = nullptr;
+        info->guildRank = GUILD_RANK_NONE;
         info->m_Group = nullptr;
         info->subGroup = 0;
         objmgr.AddPlayerInfo(info);
@@ -646,6 +645,21 @@ void WorldSession::FullLogin(Player* plr)
         plr->AddToWorld();
 
     sHookInterface.OnFullLogin(_player);
+
+    // Set our Guild Infos   
+    if (plr->getPlayerInfo()->m_guild && sGuildMgr.getGuildById(plr->getPlayerInfo()->m_guild != NULL))
+    {
+        plr->SetInGuild(plr->getPlayerInfo()->m_guild);
+        plr->SetRank(plr->getPlayerInfo()->guildRank);
+        plr->GetGuild()->sendLoginInfo(plr->GetSession());
+        if (Guild* guild = sGuildMgr.getGuildById(plr->GetGuildId()))
+            plr->SetGuildLevel(guild->getLevel());
+    }
+    else
+    {
+        plr->SetInGuild(0);
+        plr->SetRank(GUILD_RANK_NONE);
+    }
 
     objmgr.AddPlayer(_player);
 }

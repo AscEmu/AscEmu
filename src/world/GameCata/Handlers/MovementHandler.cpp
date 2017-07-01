@@ -10,6 +10,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Map/MapMgr.h"
 #include "Map/WorldCreatorDefines.hpp"
 #include "GameCata/Movement/MovementStructures.h"
+#include "Units/Creatures/Pet.h"
 
 #define MOVEMENT_PACKET_TIME_DELAY 500
 

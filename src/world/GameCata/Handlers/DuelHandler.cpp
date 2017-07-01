@@ -8,6 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Spell/SpellAuras.h"
 #include "Server/WorldSession.h"
 #include "Objects/GameObject.h"
+#include "Units/Creatures/Pet.h"
 
 
 void WorldSession::HandleDuelAccepted(WorldPacket& recv_data)

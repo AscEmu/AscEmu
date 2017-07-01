@@ -345,12 +345,14 @@ void WorldSession::LogoutPlayer(bool Save)
 
         // Issue a message telling all guild members that this player signed
         // off
+#if VERSION_STRING != Cata
         if (_player->IsInGuild())
         {
             Guild* pGuild = _player->m_playerInfo->guild;
             if (pGuild != NULL)
                 pGuild->LogGuildEvent(GUILD_EVENT_HASGONEOFFLINE, 1, _player->GetName());
         }
+#endif
 
         _player->GetItemInterface()->EmptyBuyBack();
         _player->GetItemInterface()->removeLootableItems();
@@ -1207,10 +1209,17 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
         data << uint8(pcaster->GetByte(PLAYER_BYTES, 3));	// hair color
         data << uint8(pcaster->GetByte(PLAYER_BYTES_2, 0));	// facial hair
 
+#if VERSION_STRING != Cata
         if (pcaster->IsInGuild())
             data << uint32(pcaster->GetGuildId());
         else
             data << uint32(0);
+#else
+        if (pcaster->GetGuild())
+            data << uint32(pcaster->GetGuildId());
+        else
+            data << uint32(0);
+#endif
 
         static const uint32 imageitemslots[] =
         {

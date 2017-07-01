@@ -378,6 +378,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
     {
         // allocate enough space
         guidList = new uint32[sWorld.getSessionCount() + 256];
+#if VERSION_STRING != Cata
         // Send Achievement message to every guild member currently on the server
         if (GetPlayer()->IsInGuild())
         {
@@ -406,6 +407,7 @@ void AchievementMgr::SendAchievementEarned(DBC::Structures::AchievementEntry con
                 ++guildItr;
             }
         }
+#endif
         // Build generic packet for group members and nearby players
         WorldPacket cdata(SMSG_MESSAGECHAT, 200);
         cdata << uint8(CHAT_MSG_ACHIEVEMENT);

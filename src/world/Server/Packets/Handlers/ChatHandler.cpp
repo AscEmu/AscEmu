@@ -27,6 +27,9 @@
 #include "Map/MapMgr.h"
 #include "../../../../scripts/Common/Base.h"
 #include "Units/Creatures/Pet.h"
+#if VERSION_STRING == Cata
+#include "GameCata/Management/GuildMgr.h"
+#endif
 
 extern std::string LogFileName;
 extern bool bLogChat;
@@ -475,8 +478,13 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 return;
             }
 
+#if VERSION_STRING != Cata
             if (_player->m_playerInfo->guild)
                 _player->m_playerInfo->guild->GuildChat(msg.c_str(), this, lang);
+#else
+            if (_player->m_playerInfo->m_guild)
+                sGuildMgr.getGuildById(_player->m_playerInfo->m_guild)->broadcastToGuild(this, false, msg.c_str(), lang);
+#endif
 
         }
         break;
@@ -493,10 +501,15 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 return;
             }
 
+#if VERSION_STRING != Cata
             if (_player->m_playerInfo->guild)
             {
                 _player->m_playerInfo->guild->OfficerChat(msg.c_str(), this, lang);
             }
+#else
+            if (_player->m_playerInfo->m_guild)
+                sGuildMgr.getGuildById(_player->m_playerInfo->m_guild)->broadcastToGuild(this, true, msg.c_str(), lang);
+#endif
 
         }
         break;
