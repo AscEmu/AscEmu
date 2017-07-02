@@ -1038,7 +1038,7 @@ void Guild::sendNewsUpdate(WorldSession* session)
 
     session->SendPacket(&data);
 
-    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_NEWS_UPDATE %s", session->GetPlayer()->GetNameString());
+    LogDebugFlag(LF_OPCODE, "SMSG_GUILD_NEWS_UPDATE %s", session->GetPlayer()->GetName());
 }
 
 void Guild::sendBankLog(WorldSession* session, uint8_t tabId) const

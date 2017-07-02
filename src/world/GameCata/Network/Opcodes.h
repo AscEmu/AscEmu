@@ -155,7 +155,7 @@ enum Opcodes
     CMSG_GUILD_LEADER = 0x3034,                     // new
     CMSG_GUILD_MOTD = 0x1035,                       // new
     SMSG_GUILD_EVENT = 0x0705,                      // new
-    SMSG_GUILD_COMMAND_RESULT = 0x7DB3,             // new
+    SMSG_GUILD_COMMAND_RESULT = 0x2707,             // new 2. is 0x7DB3 with another structure!
     UMSG_UPDATE_GUILD = 0x0000,
     CMSG_MESSAGECHAT = 0x095,                       // unused
     SMSG_MESSAGECHAT = 0x2026,                      // new

@@ -1652,7 +1652,7 @@ void WorldSession::HandleGuildFinderBrowse(WorldPacket& recv_data)
     if (guildCount == 0)
     {
         WorldPacket packet(SMSG_LF_GUILD_BROWSE_UPDATED, 0);
-        player->SendMessageToSet(&packet, false);
+        player->SendPacket(&packet);
         return;
     }
 
@@ -1665,7 +1665,7 @@ void WorldSession::HandleGuildFinderBrowse(WorldPacket& recv_data)
         LFGuildSettings guildSettings = itr->second;
         Guild* guild = sGuildMgr.getGuildById(itr->first);
 
-        ObjectGuid guildGUID = ObjectGuid(guild->getGUID());
+        ObjectGuid guildGUID = guild->getGUID();
 
         data.writeBit(guildGUID[7]);
         data.writeBit(guildGUID[5]);
@@ -1726,7 +1726,7 @@ void WorldSession::HandleGuildFinderBrowse(WorldPacket& recv_data)
     data.flushBits();
     data.append(bufferData);
 
-    player->SendMessageToSet(&data, true);
+    player->SendPacket(&data);
 }
 
 void WorldSession::HandleGuildFinderDeclineRecruit(WorldPacket& recv_data)
@@ -1821,7 +1821,7 @@ void WorldSession::HandleGuildFinderGetApplications(WorldPacket& /*recv_data*/)
     }
     data << uint32_t(10 - sGuildFinderMgr.countRequestsFromPlayer(GetPlayer()->GetLowGUID()));
 
-    GetPlayer()->SendMessageToSet(&data, true);
+    GetPlayer()->SendPacket(&data);
 }
 
 void WorldSession::HandleGuildFinderGetRecruits(WorldPacket& recv_data)
@@ -1896,7 +1896,7 @@ void WorldSession::HandleGuildFinderGetRecruits(WorldPacket& recv_data)
     data.append(dataBuffer);
     data << uint32_t(time(nullptr));
 
-    player->SendMessageToSet(&data, false);
+    player->SendPacket(&data);
 }
 
 void WorldSession::HandleGuildFinderPostRequest(WorldPacket& /*recv_data*/)
@@ -1923,9 +1923,9 @@ void WorldSession::HandleGuildFinderPostRequest(WorldPacket& /*recv_data*/)
 
     if (isGuildMaster)
     {
-        data.writeBit(settings.isListed());
-
         data.writeBits(settings.getComment().size(), 11);
+
+        data.writeBit(settings.isListed());
 
         data << uint32_t(settings.getLevel());
 
@@ -1942,7 +1942,7 @@ void WorldSession::HandleGuildFinderPostRequest(WorldPacket& /*recv_data*/)
         data.flushBits();
     }
 
-    player->SendMessageToSet(&data, false);
+    player->GetSession()->SendPacket(&data);
 }
 
 void WorldSession::HandleGuildFinderRemoveRecruit(WorldPacket& recv_data)

@@ -250,6 +250,9 @@ Player::Player(uint32 guid)
     m_duelCountdownTimer(0),
     m_duelStatus(0),
     m_duelState(DUEL_STATE_FINISHED),        // finished
+#if VERSION_STRING == Cata
+    m_GuildIdInvited(0),
+#endif
     // Rest
     m_timeLogoff(0),
     m_isResting(0),

@@ -99,7 +99,7 @@ void GuildBankTab::sendText(Guild const* guild, WorldSession* session) const
     if (session)
     {
         LogDebugFlag(LF_OPCODE, "SMSG_GUILD_BANK_QUERY_TEXT_RESULT %s: Tabid: %u, Text: %s",
-            session->GetPlayer()->GetNameString(), (uint32_t)mTabId, mText.c_str());
+            session->GetPlayer()->GetName(), (uint32_t)mTabId, mText.c_str());
         session->SendPacket(&data);
     }
     else

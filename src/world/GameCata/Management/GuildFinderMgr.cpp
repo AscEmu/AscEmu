@@ -33,8 +33,8 @@ void GuildFinderMgr::loadGuildSettingsFromDB()
     //                                                          0                1               2                 3             4           5             6         7
     QueryResult* result = CharacterDatabase.Query("SELECT gfgs.guildId, gfgs.availability, gfgs.classRoles, gfgs.interests, gfgs.level, gfgs.listed, gfgs.comment, c.race "
                                                  "FROM guild_finder_guild_settings gfgs "
-                                                 "LEFT JOIN guild_member gm ON gm.guildid=gfgs.guildId "
-                                                 "LEFT JOIN characters c ON c.guid = gm.playerguid LIMIT 1");
+                                                 "LEFT JOIN guild_member gm ON gm.guildId = gfgs.guildId "
+                                                 "LEFT JOIN characters c ON c.guid = gm.playerGuid LIMIT 1");
 
     if (result == nullptr)
     {
@@ -111,7 +111,7 @@ void GuildFinderMgr::addMembershipRequest(uint32_t guildGuid, MembershipRequest 
 {
     _membershipRequestStore[guildGuid].push_back(request);
 
-    CharacterDatabase.Execute("REPLACE INTO guild_finder_applicant (guildId, playerGuid, availability, classRole, interests, comment, submitTime) VALUES('%u', '%u', '%u', '%u', '%u', '%s', '%u')",
+    CharacterDatabase.Execute("REPLACE INTO guild_finder_applicant VALUES(%u, %u, %u, %u, %u, '%s', %u)",
         request.getGuildId(), request.getPlayerGUID(), request.getAvailability(), request.getClassRoles(),
         request.getInterests(), request.getComment().c_str(),request.getSubmitTime());
   
