@@ -10,6 +10,7 @@ include(Chat/Commands/CMakeLists.txt)
 include(Management/CMakeLists.txt)
 include(Management/Battleground/CMakeLists.txt)
 include(Management/Gossip/CMakeLists.txt)
+include(Management/Guild/CMakeLists.txt)
 include(Management/LFG/CMakeLists.txt)
 include(Map/CMakeLists.txt)
 include(Map/Area/CMakeLists.txt)
@@ -63,6 +64,7 @@ set(sources
    ${SRC_MANAGEMENT_FILES}
    ${SRC_MANAGEMENT_BATTLEGROUND_FILES}
    ${SRC_MANAGEMENT_GOSSIP_FILES}
+   ${SRC_MANAGEMENT_GUILD_FILES}
    ${SRC_MANAGEMENT_LFG_FILES}
    ${SRC_MAP_FILES}
    ${SRC_MAP_AREA_FILES}

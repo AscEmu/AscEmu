@@ -26,6 +26,7 @@
 #include "Server/MainServerDefines.h"
 #include "../../scripts/Common/Base.h"
 #include "WorldConf.h"
+#include "Guild/GuildDefinitions.h"
 
 #if VERSION_STRING != Cata
 
