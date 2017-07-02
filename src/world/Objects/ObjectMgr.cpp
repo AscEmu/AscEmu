@@ -38,6 +38,8 @@
 #include "Spell/SpellEffects.h"
 #if VERSION_STRING == Cata
 #include "GameCata/Management/GuildMgr.h"
+#else
+#include "Management/Guild.h"
 #endif
 
 initialiseSingleton(ObjectMgr);

@@ -11,6 +11,8 @@ This file is released under the MIT license. See README-MIT for more information
 #if VERSION_STRING == Cata
 #include "GameCata/Management/Guild.h"
 #include "GameCata/Management/GuildMgr.h"
+#else
+#include "Management/Guild.h"
 #endif
 
 //.guild create

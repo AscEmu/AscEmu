@@ -21,6 +21,7 @@
 
 #if VERSION_STRING != Cata
 #include "StdAfx.h"
+#include "Management/Guild.h"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"
