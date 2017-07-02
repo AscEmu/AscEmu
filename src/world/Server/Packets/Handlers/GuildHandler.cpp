@@ -28,6 +28,7 @@
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
 #include "Map/MapMgr.h"
+#include "Management/Guild/GuildDefinitions.h"
 
 #if VERSION_STRING != Cata
 void WorldSession::HandleGuildQuery(WorldPacket& recv_data)
@@ -530,7 +531,7 @@ void WorldSession::HandleSaveGuildEmblem(WorldPacket& recv_data)
 
     uint64 guid;
     Guild* pGuild = _player->GetGuild();
-    int32 cost = MONEY_ONE_GOLD * 10;
+    int32 cost = EMBLEM_PRICE;
     uint32 emblemStyle;
     uint32 emblemColor;
     uint32 borderStyle;
@@ -551,26 +552,26 @@ void WorldSession::HandleSaveGuildEmblem(WorldPacket& recv_data)
 
     if (pGuild == NULL)
     {
-        data << uint32(ERR_GUILDEMBLEM_NOGUILD);
+        data << uint32(GEM_ERROR_NOGUILD);
         SendPacket(&data);
         return;
     }
 
     if (pGuild->GetGuildLeader() != _player->GetLowGUID())
     {
-        data << uint32(ERR_GUILDEMBLEM_NOTGUILDMASTER);
+        data << uint32(GEM_ERROR_NOTGUILDMASTER);
         SendPacket(&data);
         return;
     }
 
     if (!_player->HasGold((uint32)cost))
     {
-        data << uint32(ERR_GUILDEMBLEM_NOTENOUGHMONEY);
+        data << uint32(GEM_ERROR_NOTENOUGHMONEY);
         SendPacket(&data);
         return;
     }
 
-    data << uint32(ERR_GUILDEMBLEM_SUCCESS);
+    data << uint32(GEM_ERROR_SUCCESS);
     SendPacket(&data);
 
     // set in memory and database
@@ -1014,7 +1015,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
             return;
         if (gc->SignatureCount < 9 && worldConfig.server.requireAllSignatures)
         {
-            Guild::SendTurnInPetitionResult(this, ERR_PETITION_NOT_ENOUGH_SIGNATURES);
+            Guild::SendTurnInPetitionResult(this, PETITION_ERROR_NEED_MORE_SIGNATURES);
             return;
         }
 
@@ -1076,7 +1077,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
 
         if (pCharter->SignatureCount < pCharter->GetNumberOfSlotsByType() && worldConfig.server.requireAllSignatures)
         {
-            Guild::SendTurnInPetitionResult(this, ERR_PETITION_NOT_ENOUGH_SIGNATURES);
+            Guild::SendTurnInPetitionResult(this, PETITION_ERROR_NEED_MORE_SIGNATURES);
             return;
         }
 
@@ -1110,7 +1111,7 @@ void WorldSession::HandleCharterTurnInCharter(WorldPacket& recv_data)
         pCharter->Destroy();
     }
 
-    Guild::SendTurnInPetitionResult(this, ERR_PETITION_OK);
+    Guild::SendTurnInPetitionResult(this, PETITION_ERROR_OK);
 }
 
 void WorldSession::HandleCharterRename(WorldPacket& recv_data)
@@ -1175,15 +1176,14 @@ void WorldSession::HandleGuildBankBuyTab(WorldPacket& recv_data)
     if (_player->m_playerInfo->guild->GetBankTabCount() < MAX_GUILD_BANK_TABS)
     {
         //                                        tab1, tab2, tab3, tab4, tab5, tab6
-        const static int32 GuildBankPrices[6] = { 100, 250, 500, 1000, 2500, 5000 };
-        int32 cost = MONEY_ONE_GOLD * GuildBankPrices[_player->m_playerInfo->guild->GetBankTabCount()];
+        int32 cost = GOLD * _GetGuildBankTabPrice(_player->m_playerInfo->guild->GetBankTabCount());
 
         if (!_player->HasGold((uint32)cost))
             return;
 
         _player->ModGold(-cost);
         _player->m_playerInfo->guild->BuyBankTab(this);
-        _player->m_playerInfo->guild->LogGuildEvent(GUILD_EVENT_BANKTABBOUGHT, 1, "");
+        _player->m_playerInfo->guild->LogGuildEvent(GE_BANK_TAB_PURCHASED, 1, "");
     }
 }
 
@@ -1628,7 +1628,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
             pSourceItem->SaveToDB(0, 0, true, NULL);
 
             /// log it
-            pGuild->LogGuildBankAction(GUILD_BANK_LOG_EVENT_DEPOSIT_ITEM, _player->GetLowGUID(), pSourceItem->GetEntry(),
+            pGuild->LogGuildBankAction(GB_LOG_DEPOSIT_ITEM, _player->GetLowGUID(), pSourceItem->GetEntry(),
                                        (uint8)pSourceItem->GetStackCount(), pTab);
         }
 
@@ -1657,7 +1657,7 @@ void WorldSession::HandleGuildBankDepositItem(WorldPacket& recv_data)
             else
             {
                 /// log it
-                pGuild->LogGuildBankAction(GUILD_BANK_LOG_EVENT_WITHDRAW_ITEM, _player->GetLowGUID(), pDestItem->GetEntry(),
+                pGuild->LogGuildBankAction(GB_LOG_WITHDRAW_ITEM, _player->GetLowGUID(), pDestItem->GetEntry(),
                                            (uint8)pDestItem->GetStackCount(), pTab);
             }
         }
@@ -1923,7 +1923,7 @@ void WorldSession::HandleSetGuildBankText(WorldPacket& recv_data)
     {
         tab->szTabInfo = strdup(text.c_str());
         WorldPacket data(SMSG_GUILD_EVENT, 4);
-        data << uint8(GUILD_EVENT_TABINFO);
+        data << uint8(GE_BANK_TEXT_CHANGED);
         data << uint8(1);
         data << uint16(0x30 + tabid);
         SendPacket(&data);

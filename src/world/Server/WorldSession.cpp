@@ -354,7 +354,7 @@ void WorldSession::LogoutPlayer(bool Save)
         {
             Guild* pGuild = _player->m_playerInfo->guild;
             if (pGuild != NULL)
-                pGuild->LogGuildEvent(GUILD_EVENT_HASGONEOFFLINE, 1, _player->GetName());
+                pGuild->LogGuildEvent(GE_SIGNED_OFF, 1, _player->GetName());
         }
 #endif
 

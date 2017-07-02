@@ -858,7 +858,7 @@ void WorldSession::FullLogin(Player* plr)
     if (plr->IsInGuild())
     {
         plr->SendGuildMOTD();
-        plr->m_playerInfo->guild->LogGuildEvent(GUILD_EVENT_HASCOMEONLINE, 1, plr->GetName());
+        plr->m_playerInfo->guild->LogGuildEvent(GE_SIGNED_ON, 1, plr->GetName());
     }
 
     // Send online status to people having this char in friendlist

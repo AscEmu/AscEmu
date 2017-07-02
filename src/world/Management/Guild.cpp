@@ -367,8 +367,8 @@ void Guild::PromoteGuildMember(PlayerInfo* pMember, WorldSession* pClient)
     itr->second->pPlayer->guildRank = newRank;
 
     // log it
-    LogGuildEvent(GUILD_EVENT_PROMOTION, 3, pClient->GetPlayer()->GetName(), pMember->name, newRank->szRankName);
-    AddGuildLogEntry(GUILD_LOG_EVENT_PROMOTION, 3, pClient->GetPlayer()->GetLowGUID(), pMember->guid, newRank->iId);
+    LogGuildEvent(GE_PROMOTION, 3, pClient->GetPlayer()->GetName(), pMember->name, newRank->szRankName);
+    AddGuildLogEntry(GE_LOG_PROMOTE_PLAYER, 3, pClient->GetPlayer()->GetLowGUID(), pMember->guid, newRank->iId);
 
     // update in the database
     CharacterDatabase.Execute("UPDATE guild_data SET guildRank = %u WHERE playerid = %u AND guildid = %u", newRank->iId, pMember->guid, m_guildId);
@@ -424,8 +424,8 @@ void Guild::DemoteGuildMember(PlayerInfo* pMember, WorldSession* pClient)
     itr->second->pPlayer->guildRank = newRank;
 
     // log it
-    LogGuildEvent(GUILD_EVENT_DEMOTION, 3, pClient->GetPlayer()->GetName(), pMember->name, newRank->szRankName);
-    AddGuildLogEntry(GUILD_LOG_EVENT_DEMOTION, 3, pClient->GetPlayer()->GetLowGUID(), pMember->guid, newRank->iId);
+    LogGuildEvent(GE_DEMOTION, 3, pClient->GetPlayer()->GetName(), pMember->name, newRank->szRankName);
+    AddGuildLogEntry(GE_LOG_DEMOTE_PLAYER, 3, pClient->GetPlayer()->GetLowGUID(), pMember->guid, newRank->iId);
 
     // update in the database
     CharacterDatabase.Execute("UPDATE guild_data SET guildRank = %u WHERE playerid = %u AND guildid = %u", newRank->iId, pMember->guid, m_guildId);
@@ -703,7 +703,7 @@ void Guild::SetMOTD(const char* szNewMotd, WorldSession* pClient)
         CharacterDatabase.Execute("UPDATE guilds SET motd = \'\' WHERE guildId = %u", m_guildId);
     }
 
-    LogGuildEvent(GUILD_EVENT_MOTD, 1, szNewMotd);
+    LogGuildEvent(GE_MOTD, 1, szNewMotd);
 }
 
 void Guild::SetGuildInformation(const char* szGuildInformation, WorldSession* pClient)
@@ -784,8 +784,8 @@ void Guild::AddGuildMember(PlayerInfo* pMember, WorldSession* pClient, int32 For
     }
 
     CharacterDatabase.Execute("INSERT INTO guild_data VALUES(%u, %u, %u, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)", m_guildId, pMember->guid, r->iId);
-    LogGuildEvent(GUILD_EVENT_JOINED, 1, pMember->name);
-    AddGuildLogEntry(GUILD_LOG_EVENT_JOIN, 1, pMember->guid);
+    LogGuildEvent(GE_JOINED, 1, pMember->name);
+    AddGuildLogEntry(GE_LOG_JOIN_GUILD, 1, pMember->guid);
     m_lock.Release();
 }
 
@@ -837,13 +837,13 @@ void Guild::RemoveGuildMember(PlayerInfo* pMember, WorldSession* pClient)
     {
         if (plr)
             sChatHandler.SystemMessage(plr->GetSession(), "You have been kicked from the guild by %s", pClient->GetPlayer()->GetName());
-        LogGuildEvent(GUILD_EVENT_REMOVED, 2, pMember->name, pClient->GetPlayer()->GetName());
-        AddGuildLogEntry(GUILD_LOG_EVENT_REMOVAL, 2, pClient->GetPlayer()->GetLowGUID(), pMember->guid);
+        LogGuildEvent(GE_REMOVED, 2, pMember->name, pClient->GetPlayer()->GetName());
+        AddGuildLogEntry(GE_LOG_UNINVITE_PLAYER, 2, pClient->GetPlayer()->GetLowGUID(), pMember->guid);
     }
     else
     {
-        LogGuildEvent(GUILD_EVENT_LEFT, 1, pMember->name);
-        AddGuildLogEntry(GUILD_LOG_EVENT_LEFT, 1, pMember->guid);
+        LogGuildEvent(GE_LEFT, 1, pMember->name);
+        AddGuildLogEntry(GE_LOG_LEAVE_GUILD, 1, pMember->guid);
     }
 
     m_lock.Release();
@@ -1042,7 +1042,7 @@ void Guild::ChangeGuildMaster(PlayerInfo* pNewMaster, WorldSession* pClient)
     m_lock.Release();
 
 
-    LogGuildEvent(GUILD_EVENT_LEADER_CHANGED, 2, pClient->GetPlayer()->GetName(), pNewMaster->name);
+    LogGuildEvent(GE_LEADER_CHANGED, 2, pClient->GetPlayer()->GetName(), pNewMaster->name);
     ///\todo Figure out the GUILD_LOG_EVENT_LEADER_CHANGED code
 }
 
@@ -1118,8 +1118,8 @@ void Guild::SendGuildLog(WorldSession* pClient)
         data << uint8((*itr)->iEvent);
         switch ((*itr)->iEvent)
         {
-            case GUILD_LOG_EVENT_DEMOTION:
-            case GUILD_LOG_EVENT_PROMOTION:
+            case GE_LOG_DEMOTE_PLAYER:
+            case GE_LOG_PROMOTE_PLAYER:
             {
                 data << uint64((*itr)->iEventData[0]);
                 data << uint64((*itr)->iEventData[1]);
@@ -1127,16 +1127,16 @@ void Guild::SendGuildLog(WorldSession* pClient)
             }
             break;
 
-            case GUILD_LOG_EVENT_INVITE:
-            case GUILD_LOG_EVENT_REMOVAL:
+            case GE_LOG_INVITE_PLAYER:
+            case GE_LOG_UNINVITE_PLAYER:
             {
                 data << uint64((*itr)->iEventData[0]);
                 data << uint64((*itr)->iEventData[1]);
             }
             break;
 
-            case GUILD_LOG_EVENT_JOIN:
-            case GUILD_LOG_EVENT_LEFT:
+            case GE_LOG_JOIN_GUILD:
+            case GE_LOG_LEAVE_GUILD:
             {
                 data << uint64((*itr)->iEventData[0]);
             }
@@ -1438,10 +1438,10 @@ void Guild::DepositMoney(WorldSession* pClient, uint32 uAmount)
     // broadcast guild event telling everyone the new balance
     char buf[20];
     snprintf(buf, 20, "%llu", m_bankBalance);
-    LogGuildEvent(GUILD_EVENT_SETNEWBALANCE, 1, buf);
+    LogGuildEvent(GE_BANK_TAB_UPDATED, 1, buf);
 
     // log it!
-    LogGuildBankActionMoney(GUILD_BANK_LOG_EVENT_DEPOSIT_MONEY, pClient->GetPlayer()->GetLowGUID(), uAmount);
+    LogGuildBankActionMoney(GB_LOG_DEPOSIT_MONEY, pClient->GetPlayer()->GetLowGUID(), uAmount);
 }
 
 void Guild::WithdrawMoney(WorldSession* pClient, uint32 uAmount)
@@ -1489,7 +1489,7 @@ void Guild::WithdrawMoney(WorldSession* pClient, uint32 uAmount)
     SpendMoney(uAmount);
 
     // log it!
-    LogGuildBankActionMoney(GUILD_BANK_LOG_EVENT_WITHDRAW_MONEY, pClient->GetPlayer()->GetLowGUID(), uAmount);
+    LogGuildBankActionMoney(GB_LOG_WITHDRAW_MONEY, pClient->GetPlayer()->GetLowGUID(), uAmount);
 }
 
 void Guild::SpendMoney(uint32 uAmount)
@@ -1503,7 +1503,7 @@ void Guild::SpendMoney(uint32 uAmount)
     // notify everyone with the new balance
     char buf[20];
     snprintf(buf, 20, "%llu", m_bankBalance);
-    LogGuildEvent(GUILD_EVENT_SETNEWBALANCE, 1, buf);
+    LogGuildEvent(GE_BANK_TAB_UPDATED, 1, buf);
 }
 
 void Guild::SendGuildBankLog(WorldSession* pClient, uint8 iSlot)

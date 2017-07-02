@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "GuildLog.h"
 #include "GuildLogHolder.h"
-#include "GuildDefinitions.h"
+#include "Management/Guild/GuildDefinitions.h"
 
 GuildLogHolder::GuildLogHolder(uint32_t guildId, uint32_t maxRecords) : mGuildId(guildId), mMaxRecords(maxRecords), mNextGUID(uint32_t(UNK_EVENT_LOG_GUID))
 {

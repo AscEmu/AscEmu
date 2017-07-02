@@ -14364,7 +14364,7 @@ void Player::SendGuildMOTD()
 
     WorldPacket data(SMSG_GUILD_EVENT, 50);
 #if VERSION_STRING != Cata
-    data << uint8(GUILD_EVENT_MOTD);
+    data << uint8(GE_MOTD);
 #else
     data << uint8(255);
 #endif

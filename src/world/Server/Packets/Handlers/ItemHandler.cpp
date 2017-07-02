@@ -1829,7 +1829,7 @@ void WorldSession::HandleRepairItemOpcode(WorldPacket& recvPacket)
         }
 #if VERSION_STRING != Cata
         if (totalcost > 0)  //we already checked if it's in guild in RepairItem()
-            _player->GetGuild()->LogGuildBankActionMoney(GUILD_BANK_LOG_EVENT_REPAIR, _player->GetLowGUID(), totalcost);
+            _player->GetGuild()->LogGuildBankActionMoney(GB_LOG_REPAIR_MONEY, _player->GetLowGUID(), totalcost);
 #endif
     }
     else

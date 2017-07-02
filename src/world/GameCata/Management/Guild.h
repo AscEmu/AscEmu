@@ -8,7 +8,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Chat/ChatDefines.hpp"
 #include "Server/WorldSession.h"
 
-#include "GuildDefinitions.h"
+#include "Management/Guild/GuildDefinitions.h"
 #include "GuildEmblemInfo.h"
 #include "GuildBankRightsAndSlots.h"
 #include "GuildLog.h"
