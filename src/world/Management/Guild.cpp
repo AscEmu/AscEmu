@@ -19,13 +19,15 @@
  *
  */
 
-#if VERSION_STRING != Cata
 #include "StdAfx.h"
 #include "Management/Guild.h"
 #include "Management/Item.h"
 #include "Management/ItemInterface.h"
 #include "Server/MainServerDefines.h"
 #include "../../scripts/Common/Base.h"
+#include "WorldConf.h"
+
+#if VERSION_STRING != Cata
 
 Guild::Guild()
 {
