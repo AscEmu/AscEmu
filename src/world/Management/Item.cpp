@@ -31,6 +31,10 @@
 #include "Spell/Definitions/ProcFlags.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 
+#if VERSION_STRING != Cata
+#include "Management/Guild.h"
+#endif
+
 Item::Item()
 {
     m_itemProperties = nullptr;

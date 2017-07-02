@@ -34,6 +34,10 @@
 #include "Map/MapMgr.h"
 #include "Spell/Definitions/PowerType.h"
 
+#if VERSION_STRING != Cata
+#include "Management/Guild.h"
+#endif
+
 OpcodeHandler WorldPacketHandlers[NUM_MSG_TYPES];
 
 WorldSession::WorldSession(uint32 id, std::string Name, WorldSocket* sock) :
