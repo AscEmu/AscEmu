@@ -18,9 +18,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if VERSION_STRING != Cata
+
 #ifndef GUILD_H
 #define GUILD_H
+
+#include "WorldConf.h"
+
+#if VERSION_STRING != Cata
 
 class PlayerInfo;
 
