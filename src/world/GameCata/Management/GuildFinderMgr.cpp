@@ -30,6 +30,9 @@ void GuildFinderMgr::loadGuildFinderDataFromDB()
 void GuildFinderMgr::loadGuildSettingsFromDB()
 {
     LogNotice("Loading guild finder guild-related settings...");
+
+    CharacterDatabase.Execute("DELETE gfgs FROM guild_finder_guild_settings gfgs LEFT JOIN guild g ON gfgs.guildId = g.guildId WHERE g.guildId IS NULL");
+
     //                                                          0                1               2                 3             4           5             6         7
     QueryResult* result = CharacterDatabase.Query("SELECT gfgs.guildId, gfgs.availability, gfgs.classRoles, gfgs.interests, gfgs.level, gfgs.listed, gfgs.comment, c.race "
                                                  "FROM guild_finder_guild_settings gfgs "
@@ -76,6 +79,8 @@ void GuildFinderMgr::loadGuildSettingsFromDB()
 void GuildFinderMgr::loadMembershipRequestsFromDB()
 {
     LogNotice("Loading guild finder membership requests...");
+
+    CharacterDatabase.Execute("DELETE gfa FROM guild_finder_applicant gfa LEFT JOIN guild g ON gfa.guildId = g.guildId WHERE g.guildId IS NULL");
     //                                                       0         1           2            3           4         5         6
     QueryResult* result = CharacterDatabase.Query("SELECT guildId, playerGuid, availability, classRole, interests, comment, submitTime FROM guild_finder_applicant");
     if (result == nullptr)

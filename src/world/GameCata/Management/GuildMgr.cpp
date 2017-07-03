@@ -123,7 +123,6 @@ void GuildMgr::loadGuildDataFromDB()
         if (result == nullptr)
         {
             LogDebug("Loaded 0 guild definitions. DB table `guild` is empty.");
-            return;
         }
         else
         {
@@ -187,6 +186,8 @@ void GuildMgr::loadGuildDataFromDB()
     LogDebug("Loading guild members...");
     {
         uint32_t oldMSTime = getMSTime();
+
+        CharacterDatabase.Execute("DELETE gm FROM guild_member gm LEFT JOIN guild g ON gm.guildId = g.guildId WHERE g.guildId IS NULL");
 
         QueryResult* result = CharacterDatabase.Query("SELECT guildId, playerGuid, rank, pnote, offnote FROM guild_member");
         QueryResult* result2 = CharacterDatabase.Query("SELECT guid, tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, money FROM guild_member_withdraw");
@@ -258,6 +259,7 @@ void GuildMgr::loadGuildDataFromDB()
         uint32_t oldMSTime = getMSTime();
 
         CharacterDatabase.Execute("DELETE FROM guild_eventlog WHERE logGuid > %u", 100);
+        CharacterDatabase.Execute("DELETE ge FROM guild_eventlog ge LEFT JOIN guild g ON ge.guildId = g.guildId WHERE g.guildId IS NULL");
 
         //                                                      0         1        2            3            4          5        6
         QueryResult* result = CharacterDatabase.Query("SELECT guildId, logGuid, eventType, playerGuid1, playerGuid2, newRank, timeStamp FROM guild_eventlog ORDER BY timeStamp DESC, logGuid DESC");
@@ -293,6 +295,7 @@ void GuildMgr::loadGuildDataFromDB()
 
         // Remove log entries that exceed the number of allowed entries per guild
         CharacterDatabase.Execute("DELETE FROM guild_bank_eventlog WHERE logGuid > %u", 25);
+        CharacterDatabase.Execute("DELETE ge FROM guild_bank_eventlog ge LEFT JOIN guild g ON ge.guildId = g.guildId WHERE g.guildId IS NULL");
 
         //                                                       0       1       2         3           4           5             6             7          8
         QueryResult* result = CharacterDatabase.Query("SELECT guildId, tabId, logGuid, eventType, playerGuid, itemOrMoney, itemStackCount, destTabId, timeStamp FROM guild_bank_eventlog ORDER BY timeStamp DESC, logGuid DESC");
@@ -327,6 +330,7 @@ void GuildMgr::loadGuildDataFromDB()
         uint32_t oldMSTime = getMSTime();
 
         CharacterDatabase.Execute("DELETE FROM guild_newslog WHERE logGuid > %u", 250);
+        CharacterDatabase.Execute("DELETE gn FROM guild_newslog gn LEFT JOIN guild g ON gn.guildId = g.guildId WHERE g.guildId IS NULL");
 
         //                                                       0        1         2          3         4      5        6
         QueryResult* result = CharacterDatabase.Query("SELECT guildId, logGuid, eventType, playerGuid, flags, value, timeStamp FROM guild_newslog ORDER BY timeStamp DESC, logGuid DESC");
