@@ -1555,7 +1555,7 @@ bool Guild::addMember(uint64_t guid, uint8_t rankId)
 
     member->saveGuildMembersToDB(false);
 
-    CharacterDatabase.Execute("INSERT INTO guild_member_withdraw VALUES('%u', 0, 0, 0, 0, 0, 0, 0 , 0, 0 )", Arcemu::Util::GUID_LOPART(mId));
+    CharacterDatabase.Execute("INSERT INTO guild_member_withdraw VALUES(%u, 0, 0, 0, 0, 0, 0, 0 , 0, 0 )", Arcemu::Util::GUID_LOPART(mId));
 
     updateAccountsNumber();
 
@@ -2754,7 +2754,7 @@ bool Guild::GuildMember::loadGuildMembersFromDB(Field* fields, Field* fields2)
 
 void Guild::GuildMember::saveGuildMembersToDB(bool _delete) const
 {
-    CharacterDatabase.Execute("INSERT INTO guild_member (guildId, playerGuid, rank, pnote, offnote) VALUES ('%u', '%u', '%u', '%s', '%s')",
+    CharacterDatabase.Execute("REPLACE INTO guild_member VALUES (%u, %u, %u, '%s', '%s')",
         mGuildId, Arcemu::Util::GUID_LOPART(mGuid), (uint32_t)mRankId, mPublicNote.c_str(), mOfficerNote.c_str());
 }
 

@@ -1967,7 +1967,7 @@ void WorldSession::HandleGuildFinderRemoveRecruit(WorldPacket& recv_data)
     recv_data.ReadByteSeq(guildGuid[2]);
     recv_data.ReadByteSeq(guildGuid[7]);
 
-    sGuildFinderMgr.removeMembershipRequest(GetPlayer()->GetLowGUID(), Arcemu::Util::GUID_LOPART(guildGuid));
+    sGuildFinderMgr.removeMembershipRequest(Arcemu::Util::GUID_LOPART(GetPlayer()->GetGUID()), Arcemu::Util::GUID_LOPART(guildGuid));
 }
 
 void WorldSession::HandleGuildFinderSetGuildPost(WorldPacket& recv_data)
