@@ -248,10 +248,10 @@ namespace DBC
             char const gt_combat_ratings_format[] = "xf";
             //char const gt_oct_base_hp_by_class_format[] = "df"; new
             //char const gt_oct_base_mp_by_class_format[] = "df"; new
-            char const gt_oct_class_combat_rating_scalar_format[] = "f";
+            char const gt_oct_class_combat_rating_scalar_format[] = "df";
             //char const gt_oct_hp_per_stamina_format[] = "df"; new
             //char const gt_oct_regen_hp_format[] = "xf";
-            char const gt_oct_regen_mp_format[] = "f";
+            char const gt_oct_regen_mp_format[] = "df";
             char const gt_regen_hp_per_spt_format[] = "xf";
             char const gt_regen_mp_per_spt_format[] = "xf";
             //char const gt_spell_scaling_format[] = "df"; new
