@@ -249,7 +249,7 @@ void WorldSession::HandleCorpseQueryOpcode(WorldPacket& recv_data)
 
     Corpse* pCorpse;
     WorldPacket data(MSG_CORPSE_QUERY, 25);
-    MapInfo const* pMapinfo;
+    MySQLStructure::MapInfo const* pMapinfo;
 
     pCorpse = objmgr.GetCorpseByOwner(GetPlayer()->GetLowGUID());
     if (pCorpse)

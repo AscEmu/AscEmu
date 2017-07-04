@@ -2882,7 +2882,7 @@ bool Unit::IsCasting()
 
 bool Unit::IsInInstance()
 {
-    MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(this->GetMapId());
+    MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(this->GetMapId());
     if (pMapinfo)
         return (pMapinfo->type != INSTANCE_NULL);
 

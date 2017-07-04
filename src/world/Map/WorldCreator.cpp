@@ -162,7 +162,7 @@ void InstanceMgr::Shutdown()
 uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
 {
     // preteleport is where all the magic happens :P instance creation, etc.
-    MapInfo const* inf = sMySQLStore.getWorldMapInfo(mapid);
+    MySQLStructure::MapInfo const* inf = sMySQLStore.getWorldMapInfo(mapid);
     Group* pGroup;
     InstanceMap* instancemap;
     Instance* in;
@@ -533,7 +533,7 @@ MapMgr* InstanceMgr::GetMapMgr(uint32 mapId)
 
 MapMgr* InstanceMgr::GetInstance(Object* obj)
 {
-    MapInfo const* inf = sMySQLStore.getWorldMapInfo(obj->GetMapId());
+    MySQLStructure::MapInfo const* inf = sMySQLStore.getWorldMapInfo(obj->GetMapId());
     if (inf == nullptr || obj->GetMapId() >= NUM_MAPS)
         return nullptr;
 
@@ -637,7 +637,7 @@ MapMgr* InstanceMgr::GetInstance(Object* obj)
 
 MapMgr* InstanceMgr::_CreateInstance(uint32 mapid, uint32 instanceid)
 {
-    MapInfo const* inf = sMySQLStore.getWorldMapInfo(mapid);
+    MySQLStructure::MapInfo const* inf = sMySQLStore.getWorldMapInfo(mapid);
 
     ARCEMU_ASSERT(inf != nullptr && inf->type == INSTANCE_NULL);
     ARCEMU_ASSERT(mapid < NUM_MAPS && m_maps[mapid] != NULL);
@@ -678,7 +678,7 @@ void InstanceMgr::_CreateMap(uint32 mapid)
     if (mapid >= NUM_MAPS)
         return;
 
-    MapInfo const* inf = sMySQLStore.getWorldMapInfo(mapid);
+    MySQLStructure::MapInfo const* inf = sMySQLStore.getWorldMapInfo(mapid);
     if (inf == nullptr)
         return;
 
@@ -704,7 +704,7 @@ uint32 InstanceMgr::GenerateInstanceID()
 
 void InstanceMgr::_LoadInstances()
 {
-    MapInfo const* inf;
+    MySQLStructure::MapInfo const* inf;
     Instance* in;
     QueryResult* result;
 

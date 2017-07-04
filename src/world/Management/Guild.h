@@ -23,7 +23,9 @@
 // AGPL END
 // MIT START
 #include "WorldConf.h"
+#include "CommonTypes.hpp"
 #include "Guild/GuildDefinitions.h"
+#include "Management/Item.h"
 
 // MIT END
 //AGPL START

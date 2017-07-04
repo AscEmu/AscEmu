@@ -45,7 +45,7 @@ public:
     typedef std::unordered_map<uint32_t, GraveyardTeleport> GraveyardsContainer;
     typedef std::unordered_map<uint32_t, TeleportCoords> TeleportCoordsContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::FishingZones> FishingZonesContainer;
-    typedef std::unordered_map<uint32_t, MapInfo> WorldMapInfoContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::MapInfo> WorldMapInfoContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::ZoneGuards> ZoneGuardsContainer;
     typedef std::unordered_map<uint32_t, BGMaster> BattleMastersContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::TotemDisplayIds> TotemDisplayIdContainer;
@@ -113,7 +113,7 @@ public:
     MySQLStructure::FishingZones const* getFishingZone(uint32_t entry);
     FishingZonesContainer const* getFischingZonesStore() { return &_fishingZonesStore; }
 
-    MapInfo const* getWorldMapInfo(uint32_t entry);
+    MySQLStructure::MapInfo const* getWorldMapInfo(uint32_t entry);
     WorldMapInfoContainer const* getWorldMapInfoStore() { return &_worldMapInfoStore; }
 
     MySQLStructure::ZoneGuards const* getZoneGuard(uint32_t entry);

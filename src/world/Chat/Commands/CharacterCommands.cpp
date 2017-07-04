@@ -1991,7 +1991,7 @@ bool ChatHandler::HandleCharListInstanceCommand(const char* /*args*/, WorldSessi
         {
             count++;
             ss << " - " << MSG_COLOR_CYAN << (*itr).second << "|r";
-            MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo((*itr).first);
+            MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo((*itr).first);
             if (mapInfo != NULL)
                 ss << " (" << MSG_COLOR_CYAN << mapInfo->name << "|r)";
             Instance* pInstance = sInstanceMgr.GetInstanceByIds((*itr).first, (*itr).second);

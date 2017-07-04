@@ -27,7 +27,7 @@
 
 // Class Map
 // Holder for all instances of each mapmgr, handles transferring players between, and template holding.
-Map::Map(uint32 mapid, MapInfo const* inf)
+Map::Map(uint32 mapid, MySQLStructure::MapInfo const* inf)
 {
     memset(spawns, 0, sizeof(CellSpawns*) * _sizeX);
 

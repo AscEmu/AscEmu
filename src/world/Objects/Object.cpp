@@ -2878,7 +2878,7 @@ void Object::PlaySoundToSet(uint32 sound_entry)
 
 bool Object::IsInBg()
 {
-    MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(GetMapId());
+    MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(GetMapId());
 
     if (pMapinfo != nullptr)
     {

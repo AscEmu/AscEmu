@@ -727,7 +727,7 @@ void ObjectMgr::LoadInstanceBossInfos()
         InstanceBossInfo* bossInfo = new InstanceBossInfo();
         bossInfo->mapid = (uint32)result->Fetch()[0].GetUInt32();
 
-        MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(bossInfo->mapid);
+        MySQLStructure::MapInfo const* mapInfo = sMySQLStore.getWorldMapInfo(bossInfo->mapid);
         if (mapInfo == NULL || mapInfo->type == INSTANCE_NULL)
         {
             LogDebugFlag(LF_DB_TABLES, "Not loading boss information for map %u! (continent or unknown map)", bossInfo->mapid);

@@ -204,7 +204,7 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 
         uint32 GetInstanceID();
 
-        MapInfo const* GetMapInfo();
+        MySQLStructure::MapInfo const* GetMapInfo();
 
         bool _shutdown;
 
@@ -284,7 +284,7 @@ class SERVER_DECL MapMgr : public CellHandler <MapCell>, public EventableObject,
 		std::set<WorldSession*> Sessions;
 
 		// Map Information
-		MapInfo const* pMapInfo;
+        MySQLStructure::MapInfo const* pMapInfo;
 		uint32 m_instanceID;
 
 		MapScriptInterface* ScriptInterface;

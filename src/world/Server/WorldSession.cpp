@@ -693,7 +693,7 @@ const char* WorldSession::LocalizedWorldSrv(uint32 id)
 
 const char* WorldSession::LocalizedMapName(uint32 id)
 {
-    MapInfo const* mi = sMySQLStore.getWorldMapInfo(id);
+    MySQLStructure::MapInfo const* mi = sMySQLStore.getWorldMapInfo(id);
     if (!mi)
     {
         memset(szError, 0, 64);

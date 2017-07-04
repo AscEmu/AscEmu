@@ -27,7 +27,7 @@ void WorldSession::HandleCorpseQueryOpcode(WorldPacket& recv_data)
         uint32_t repopmap;
         float x, y, z;
 
-        MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(pCorpse->GetMapId());
+        MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(pCorpse->GetMapId());
         if (pMapinfo)
         {
             if (pMapinfo->type == INSTANCE_NULL || pMapinfo->type == INSTANCE_BATTLEGROUND)

@@ -5,6 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+// related to table areatriggers
 enum AreaTriggerType
 {
     ATTYPE_NULL = 0,
@@ -14,6 +15,20 @@ enum AreaTriggerType
     ATTYPE_TELEPORT = 4,
     ATTYPE_SPELL = 5,
     ATTYPE_BATTLEGROUND = 6
+};
+
+// related to table worldmap_info
+enum WorldMapInfoFlag
+{
+    WMI_INSTANCE_ENABLED = 0x001,
+    WMI_INSTANCE_WELCOME = 0x002,
+    WMI_INSTANCE_ARENA = 0x004,
+    WMI_INSTANCE_XPACK_01 = 0x008, // TBC
+    WMI_INSTANCE_XPACK_02 = 0x010, // WotLK
+    WMI_INSTANCE_HAS_NORMAL_10MEN = 0x020,
+    WMI_INSTANCE_HAS_NORMAL_25MEN = 0x040,
+    WMI_INSTANCE_HAS_HEROIC_10MEN = 0x080,
+    WMI_INSTANCE_HAS_HEROIC_25MEN = 0x100
 };
 
 namespace MySQLStructure
@@ -280,6 +295,46 @@ namespace MySQLStructure
     };
 
     //worldmap_info
+    struct MapInfo
+    {
+        uint32_t mapid;
+        uint32_t screenid;
+        uint32_t type;
+        uint32_t playerlimit;
+        uint32_t minlevel;
+        uint32_t minlevel_heroic;
+        float repopx;
+        float repopy;
+        float repopz;
+        uint32_t repopmapid;
+        std::string name;
+        uint32_t flags;
+        uint32_t cooldown;
+        uint32_t lvl_mod_a;
+        uint32_t required_quest_A;
+        uint32_t required_quest_H;
+        uint32_t required_item;
+        uint32_t heroic_key_1;
+        uint32_t heroic_key_2;
+        float update_distance;
+        uint32_t checkpoint_id;
+
+        bool HasFlag(uint32_t flag) const
+        {
+            if ((flags & flag) != 0)
+                return true;
+            else
+                return false;
+        }
+
+        bool HasDifficulty(uint32_t difficulty) const
+        {
+            if (difficulty > uint32_t(TOTAL_RAID_MODES))
+                return false;
+
+            return HasFlag(uint32_t(WMI_INSTANCE_HAS_NORMAL_10MEN) << difficulty);
+        }
+    };
 
     //worldstate_templates
 

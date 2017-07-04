@@ -70,19 +70,6 @@ enum ServerMessageType
     SERVER_MSG_INSTANCE_RESTART = 9
 };
 
-enum WorldMapInfoFlag
-{
-    WMI_INSTANCE_ENABLED = 0x001,
-    WMI_INSTANCE_WELCOME = 0x002,
-    WMI_INSTANCE_ARENA = 0x004,
-    WMI_INSTANCE_XPACK_01 = 0x008, //The Burning Crusade expansion
-    WMI_INSTANCE_XPACK_02 = 0x010, //Wrath of the Lich King expansion
-    WMI_INSTANCE_HAS_NORMAL_10MEN = 0x020,
-    WMI_INSTANCE_HAS_NORMAL_25MEN = 0x040,
-    WMI_INSTANCE_HAS_HEROIC_10MEN = 0x080,
-    WMI_INSTANCE_HAS_HEROIC_25MEN = 0x100
-};
-
 enum AccountFlags
 {
     ACCOUNT_FLAG_VIP = 0x1,
@@ -92,61 +79,6 @@ enum AccountFlags
     ACCOUNT_FLAG_XPACK_02 = 0x10,
     ACCOUNT_FLAG_XPACK_03 = 0x20
 };
-
-#pragma pack(push,1)
-struct MapInfo
-{
-    uint32 mapid;
-    uint32 screenid;
-    uint32 type;
-    uint32 playerlimit;
-    uint32 minlevel;
-    uint32 minlevel_heroic;
-    float repopx;
-    float repopy;
-    float repopz;
-    uint32 repopmapid;
-    std::string name;
-    uint32 flags;
-    uint32 cooldown;
-    uint32 lvl_mod_a;
-    uint32 required_quest_A;
-    uint32 required_quest_H;
-    uint32 required_item;
-    uint32 heroic_key_1;
-    uint32 heroic_key_2;
-    float update_distance;
-    uint32 checkpoint_id;
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Tells if the map has this particular flag
-    /// \param  uint32 flag  -  flag to check
-    /// \return true if the map has the flag, otherwise false if the map doesn't have the flag.
-    //////////////////////////////////////////////////////////////////////////////////////////
-    bool HasFlag(uint32 flag) const
-    {
-        if ((flags & flag) != 0)
-            return true;
-        else
-            return false;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    /// Tells if the map has a particular raid difficulty.
-    /// Valid difficulties are in the RAID_MODE enum.
-    /// \param    uint32 difficulty  -  difficulty to check
-    /// \return   true if the map has this difficulty, otherwise false.
-    //////////////////////////////////////////////////////////////////////////////////////////
-    bool HasDifficulty(uint32 difficulty) const
-    {
-        if (difficulty > uint32(TOTAL_RAID_MODES))
-            return false;
-
-        return HasFlag(uint32(WMI_INSTANCE_HAS_NORMAL_10MEN) << difficulty);
-    }
-};
-
-#pragma pack(pop)
 
 
 class BasicTaskExecutor : public ThreadBase

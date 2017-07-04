@@ -1772,7 +1772,7 @@ void MySQLDataStore::loadWorldMapInfoTable()
 
         uint32_t entry = fields[0].GetUInt32();
 
-        MapInfo& mapInfo = _worldMapInfoStore[entry];
+        MySQLStructure::MapInfo& mapInfo = _worldMapInfoStore[entry];
 
         mapInfo.mapid = entry;
         mapInfo.screenid = fields[1].GetUInt32();
@@ -1804,7 +1804,7 @@ void MySQLDataStore::loadWorldMapInfoTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `worldmap_info` table in %u ms!", world_map_info_count, getMSTime() - start_time);
 }
 
-MapInfo const* MySQLDataStore::getWorldMapInfo(uint32_t entry)
+MySQLStructure::MapInfo const* MySQLDataStore::getWorldMapInfo(uint32_t entry)
 {
     WorldMapInfoContainer::const_iterator itr = _worldMapInfoStore.find(entry);
     if (itr != _worldMapInfoStore.end())

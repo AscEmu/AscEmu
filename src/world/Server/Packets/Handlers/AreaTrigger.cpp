@@ -73,7 +73,7 @@ uint32 AreaTriggerFailureMessages[] =
     31, // 33="You must be level 70 to enter Heroic mode." 31="You must be at least level %u to pass through here."
 };
 
-uint32 CheckTriggerPrerequisites(MySQLStructure::AreaTrigger const* pAreaTrigger, WorldSession* pSession, Player* pPlayer, MapInfo const* pMapInfo)
+uint32 CheckTriggerPrerequisites(MySQLStructure::AreaTrigger const* pAreaTrigger, WorldSession* pSession, Player* pPlayer, MySQLStructure::MapInfo const* pMapInfo)
 {
     if (!pMapInfo || !pMapInfo->HasFlag(WMI_INSTANCE_ENABLED))
         return AREA_TRIGGER_FAILURE_UNAVAILABLE;
@@ -185,7 +185,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                             break;
                         case AREA_TRIGGER_FAILURE_NO_ATTUNE_I:
                         {
-                            MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
+                            MySQLStructure::MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
                             ItemProperties const* pItem = sMySQLStore.getItemProperties(pMi->required_item);
                             if (pItem)
                                 snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), pItem->Name.c_str());
@@ -197,7 +197,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                         break;
                         case AREA_TRIGGER_FAILURE_NO_ATTUNE_QA:
                         {
-                            MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
+                            MySQLStructure::MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
                             QuestProperties const* pQuest = sMySQLStore.getQuestProperties(pMi->required_quest_A);
                             if (pQuest)
                                 snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), pQuest->title.c_str());
@@ -209,7 +209,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                         break;
                         case AREA_TRIGGER_FAILURE_NO_ATTUNE_QH:
                         {
-                            MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
+                            MySQLStructure::MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
                             QuestProperties const* pQuest = sMySQLStore.getQuestProperties(pMi->required_quest_H);
                             if (pQuest)
                                 snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_QUEST), pQuest->title.c_str());
@@ -221,7 +221,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                         break;
                         case AREA_TRIGGER_FAILURE_NO_KEY:
                         {
-                            MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
+                            MySQLStructure::MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
                             ItemProperties const* pItem = sMySQLStore.getItemProperties(pMi->heroic_key_1);
                             if (pItem)
                                 snprintf(msg, 200, GetPlayer()->GetSession()->LocalizedWorldSrv(ServerString::SS_MUST_HAVE_ITEM), pItem->Name.c_str());
@@ -233,7 +233,7 @@ void WorldSession::_HandleAreaTriggerOpcode(uint32 id)
                         break;
                         case AREA_TRIGGER_FAILURE_LEVEL_HEROIC:
                         {
-                            MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
+                            MySQLStructure::MapInfo const* pMi = sMySQLStore.getWorldMapInfo(pAreaTrigger->mapId);
                             snprintf(msg, 200, pReason, pMi->minlevel_heroic);
                             data << msg;
                         }

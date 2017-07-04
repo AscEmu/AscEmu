@@ -68,7 +68,7 @@ class SERVER_DECL Instance
         std::set<uint32> m_killedNpcs;
         time_t m_creation;
         time_t m_expiration;
-        MapInfo const* m_mapInfo;
+        MySQLStructure::MapInfo const* m_mapInfo;
         bool m_isBattleground;
 
         void LoadFromDB(Field* fields);

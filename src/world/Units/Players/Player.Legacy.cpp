@@ -4707,7 +4707,7 @@ void Player::RepopRequestedPlayer()
         return;
     }
 
-    MapInfo const* pMapinfo = NULL;
+    MySQLStructure::MapInfo const* pMapinfo = NULL;
 
     // Set death state to corpse, that way players will lose visibility
     setDeathState(CORPSE);
@@ -7954,7 +7954,7 @@ void Player::SaveEntryPoint(uint32 mapId)
     if (IS_INSTANCE(GetMapId()))
         return; // don't save if we're not on the main continent.
     //otherwise we could end up in an endless loop :P
-    MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(mapId);
+    MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(mapId);
 
     if (pMapinfo)
     {
@@ -8147,7 +8147,7 @@ void Player::UpdateChannels(uint16 AreaID)
     //Check for instances?
     if (!AreaID || AreaID == 0xFFFF)
     {
-        MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(GetMapId());
+        MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(GetMapId());
         if (IS_INSTANCE(GetMapId()))
             AreaName = pMapinfo->name;
         else
@@ -8158,7 +8158,7 @@ void Player::UpdateChannels(uint16 AreaID)
         AreaName = at2->area_name[0];
         if (AreaName.length() < 2)
         {
-            MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(GetMapId());
+            MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(GetMapId());
             AreaName = pMapinfo->name;
         }
     }
@@ -8696,7 +8696,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     }
 
     bool instance = false;
-    MapInfo const* mi = sMySQLStore.getWorldMapInfo(MapID);
+    MySQLStructure::MapInfo const* mi = sMySQLStore.getWorldMapInfo(MapID);
 
     if (InstanceID && (uint32)m_instanceId != InstanceID)
     {
@@ -8785,7 +8785,7 @@ bool Player::SafeTeleport(uint32 MapID, uint32 InstanceID, const LocationVector 
     }
 
     bool instance = false;
-    MapInfo const* mi = sMySQLStore.getWorldMapInfo(MapID);
+    MySQLStructure::MapInfo const* mi = sMySQLStore.getWorldMapInfo(MapID);
 
     if (InstanceID && (uint32)m_instanceId != InstanceID)
     {
@@ -9574,7 +9574,7 @@ void Player::CompleteLoading()
 void Player::OnWorldPortAck()
 {
     //only resurrect if player is porting to a instance portal
-    MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(GetMapId());
+    MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(GetMapId());
     if (IsDead())
     {
         if (pMapinfo)

@@ -1580,7 +1580,7 @@ uint32 MapMgr::GetInstanceID()
     return m_instanceID;
 }
 
-MapInfo const* MapMgr::GetMapInfo()
+MySQLStructure::MapInfo const* MapMgr::GetMapInfo()
 {
     return pMapInfo;
 }

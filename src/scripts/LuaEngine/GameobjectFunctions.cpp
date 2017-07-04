@@ -895,7 +895,7 @@ int LuaGameObject::AddLoot(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::GetInstanceOwner(lua_State* L, GameObject* ptr)
 {
-    MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(ptr->GetMapId());
+    MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(ptr->GetMapId());
     if (pMapinfo) //this block = IsInInstace()
     {
         if (pMapinfo->type != INSTANCE_NULL)
@@ -941,7 +941,7 @@ int LuaGameObject::GetInstanceOwner(lua_State* L, GameObject* ptr)
 
 int LuaGameObject::GetDungeonDifficulty(lua_State* L, GameObject* ptr)
 {
-    MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(ptr->GetMapId());
+    MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(ptr->GetMapId());
     if (pMapinfo) //this block = IsInInstace()
     {
         if (pMapinfo->type != INSTANCE_NULL)
@@ -962,7 +962,7 @@ int LuaGameObject::GetDungeonDifficulty(lua_State* L, GameObject* ptr)
 int LuaGameObject::SetDungeonDifficulty(lua_State* L, GameObject* ptr)
 {
     uint8 difficulty = static_cast<uint8>(luaL_checkinteger(L, 1));
-    MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(ptr->GetMapId());
+    MySQLStructure::MapInfo const* pMapinfo = sMySQLStore.getWorldMapInfo(ptr->GetMapId());
     if (pMapinfo) //this block = IsInInstace()
     {
         if (pMapinfo->type != INSTANCE_NULL)

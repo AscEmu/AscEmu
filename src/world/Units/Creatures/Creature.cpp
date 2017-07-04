@@ -1288,7 +1288,7 @@ bool Creature::Teleport(const LocationVector& vec, MapMgr* map)
     }
 }
 
-bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MapInfo const* info)
+bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MySQLStructure::MapInfo const* info)
 {
     m_spawn = spawn;
     creature_properties = sMySQLStore.getCreatureProperties(spawn->entry);
