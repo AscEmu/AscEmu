@@ -1365,9 +1365,13 @@ enum Opcodes
     CMSG_REPORT = 0x0427,                               // new
     SMSG_REPORT_RESULT = 0x6D24,                        // new
     CMSG_REQUEST_RATED_BG_INFO = 0x2423,                // new
+    SMSG_RATED_BG_INFO = 0x34A1,                        // new
     CMSG_REQUEST_RATED_BG_STATS = 0x05B3,               // new
+    SMSG_RATED_BG_STATS = 0x54A3,                       // new
     CMSG_REQUEST_PVP_REWARDS = 0x780C,                  // new
+    SMSG_REQUEST_PVP_REWARDS_RESPONSE = 0x5DA4,         // new
     CMSG_REQUEST_PVP_OPTIONS_ENABLED = 0x24A1,          // new
+    SMSG_PVP_OPTIONS_ENABLED = 0x50A1,                  // new
     SMSG_GUILD_MAX_DAILY_XP = 0x79B5,                   // new
     SMSG_GUILD_XP = 0x3DB0,                             // new
     SMSG_GUILD_XP_GAIN = 0x14A1,                        // new

@@ -468,6 +468,10 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_SET_ACTIONBAR_TOGGLES].handler = &WorldSession::HandleSetActionBarTogglesOpcode;
     WorldPacketHandlers[CMSG_MOVE_SPLINE_DONE].handler = &WorldSession::HandleMoveSplineCompleteOpcode;
     //WorldPacketHandlers[CMSG_BATTLEFIELD_MGR_ENTRY_INVITE_RESPONSE].handler = &WorldSession::HandleBgInviteResponse;
+    WorldPacketHandlers[CMSG_REQUEST_RATED_BG_INFO].handler = &WorldSession::HandleRequestRatedBgInfoOpcode;
+    WorldPacketHandlers[CMSG_REQUEST_RATED_BG_STATS].handler = &WorldSession::HandleRequestRatedBgStatsOpcode;
+    WorldPacketHandlers[CMSG_REQUEST_PVP_REWARDS].handler = &WorldSession::HandleRequestPvPRewardsOpcode;
+    WorldPacketHandlers[CMSG_REQUEST_PVP_OPTIONS_ENABLED].handler = &WorldSession::HandleRequestPvpOptionsOpcode;
 
     // GM Ticket System
     //WorldPacketHandlers[CMSG_GMTICKET_CREATE].handler = &WorldSession::HandleGMTicketCreateOpcode;

@@ -880,6 +880,12 @@ class SERVER_DECL WorldSession
         void HandleBattlefieldListOpcode(WorldPacket& recv_data);
         ///\todo unknown packet
         void HandleBgInviteResponse(WorldPacket& recv_data);
+#if VERSION_STRING == Cata
+        void HandleRequestRatedBgInfoOpcode(WorldPacket& recv_data);
+        void HandleRequestRatedBgStatsOpcode(WorldPacket& /*recv_data*/);
+        void HandleRequestPvPRewardsOpcode(WorldPacket& /*recv_data*/);
+        void HandleRequestPvpOptionsOpcode(WorldPacket& /*recv_data*/);
+#endif
 
         /// Helper functions
         //void SetNpcFlagsForTalkToQuest(const uint64& guid, const uint64& targetGuid);
