@@ -27,7 +27,6 @@
 #include "Storage/MySQLStructures.h"
 
 class MapMgr;
-struct MySQLStructure::MapInfo;
 class TerrainMgr;
 
 struct Formation;
