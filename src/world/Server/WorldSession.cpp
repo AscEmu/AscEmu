@@ -1320,32 +1320,60 @@ void WorldSession::SendClientCacheVersion(uint32 version)
 }
 #endif
 
-void WorldSession::SendPacket(WorldPacket* packet) {
+void WorldSession::SendPacket(WorldPacket* packet)
+{
+    if (packet->GetOpcode() == 0x0000)
+    {
+        LOG_ERROR("Return, packet 0x0000 is not a valid packet!");
+        return;
+    }
+
     if (_socket && _socket->IsConnected())
+    {
         _socket->SendPacket(packet);
+    }
 }
 
-void WorldSession::SendPacket(StackBufferBase* packet) {
+void WorldSession::SendPacket(StackBufferBase* packet)
+{
+    if (packet->GetOpcode() == 0x0000)
+    {
+        LOG_ERROR("Return, packet 0x0000 is not a valid packet!");
+        return;
+    }
+
     if (_socket && _socket->IsConnected())
+    {
         _socket->SendPacket(packet);
+    }
 }
 
-void WorldSession::OutPacket(uint16 opcode) {
+void WorldSession::OutPacket(uint16 opcode)
+{
     if (_socket && _socket->IsConnected())
+    {
         _socket->OutPacket(opcode, 0, NULL);
+    }
 }
 
-void WorldSession::OutPacket(uint16 opcode, uint16 len, const void* data) {
+void WorldSession::OutPacket(uint16 opcode, uint16 len, const void* data)
+{
     if (_socket && _socket->IsConnected())
+    {
         _socket->OutPacket(opcode, len, data);
+    }
 }
 
-void WorldSession::QueuePacket(WorldPacket* packet) {
+void WorldSession::QueuePacket(WorldPacket* packet)
+{
     m_lastPing = (uint32)UNIXTIME;
     _recvQueue.Push(packet);
 }
 
-void WorldSession::Disconnect() {
+void WorldSession::Disconnect()
+{
     if (_socket && _socket->IsConnected())
+    {
         _socket->Disconnect();
+    }
 }
