@@ -2276,6 +2276,7 @@ void WorldSession::HandleSetActionBarTogglesOpcode(WorldPacket & recvPacket)
     GetPlayer()->SetByte(PLAYER_FIELD_BYTES, 2, cActionBarId);
 }
 
+#if VERSION_STRING != Cata
 // Handlers for acknowledgement opcodes (removes some 'unknown opcode' flood from the logs)
 void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)
 {
@@ -2291,6 +2292,7 @@ void WorldSession::HandleAcknowledgementOpcodes(WorldPacket& recv_data)
             break;*/
     }
 }
+#endif
 
 void WorldSession::HandleSelfResurrectOpcode(WorldPacket& recv_data)
 {

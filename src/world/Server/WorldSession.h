@@ -991,6 +991,7 @@ class SERVER_DECL WorldSession
         void HandleRequestHotfix(WorldPacket& recv_data);
         void HandleRequestCemeteryListOpcode(WorldPacket& recv_data);
         void HandleForceSpeedAckOpcodes(WorldPacket& recv_data);
+        void HandleReturnToGraveyardOpcode(WorldPacket& /*recv_data*/);
 
         // Reports
         void HandleReportOpcode(WorldPacket& recv_data);

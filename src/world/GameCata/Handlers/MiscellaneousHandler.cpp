@@ -249,3 +249,13 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recv_data)
     rdata << uint32_t(0);
     SendPacket(&rdata);
 }
+
+void WorldSession::HandleReturnToGraveyardOpcode(WorldPacket& /*recv_data*/)
+{
+    if (_player->isAlive())
+    {
+        return;
+    }
+
+    _player->RepopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
+}
