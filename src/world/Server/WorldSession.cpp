@@ -1273,7 +1273,9 @@ void WorldSession::HandleMirrorImageOpcode(WorldPacket& recv_data)
 }
 
 void WorldSession::Unhandled(WorldPacket& recv_data)
-{}
+{
+    recv_data.rfinish();
+}
 
 void WorldSession::nothingToHandle(WorldPacket& recv_data)
 {

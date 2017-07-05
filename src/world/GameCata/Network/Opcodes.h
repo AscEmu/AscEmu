@@ -1421,6 +1421,7 @@ enum Opcodes
     CMSG_GUILD_REQUEST_MAX_DAILY_XP = 0x3232,           // new
     CMSG_GUILD_QUERY_NEWS = 0x3020,                     // new
     CMSG_RETURN_TO_GRAVEYARD = 0x301E,                  // new
+    CMSG_UNKNOWN_ON_LOGIN = 0x041D,                     // new unknown.
         
     NUM_MSG_TYPES = 0xFFFF
 };
