@@ -259,3 +259,8 @@ void WorldSession::HandleReturnToGraveyardOpcode(WorldPacket& /*recv_data*/)
 
     _player->RepopAtGraveyard(_player->GetPositionX(), _player->GetPositionY(), _player->GetPositionZ(), _player->GetMapId());
 }
+
+void WorldSession::HandleBugOpcode(WorldPacket& recv_data)
+{
+    LOG_DEBUG("Received CMSG_BUG [Bug Report] but the packet content for the most part unknown!");
+}

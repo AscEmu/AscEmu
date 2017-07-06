@@ -466,7 +466,7 @@ enum Opcodes
     SMSG_PETITION_QUERY_RESPONSE = 0x4B37,      // new
     SMSG_FISH_NOT_HOOKED = 0x1C8,
     SMSG_FISH_ESCAPED = 0x1C9,
-    CMSG_BUG = 0x1CA,
+    CMSG_BUG = 0x2520,                          // new
     SMSG_NOTIFICATION = 0x1CB,
     CMSG_PLAYED_TIME = 0x0804,                      // new
     SMSG_PLAYED_TIME = 0x6037,                      // new

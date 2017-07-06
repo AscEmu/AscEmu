@@ -1125,6 +1125,7 @@ void WorldSession::HandleStandStateChangeOpcode(WorldPacket& recv_data)
     _player->SetStandState(animstate);
 }
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleBugOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -1162,6 +1163,7 @@ void WorldSession::HandleBugOpcode(WorldPacket& recv_data)
 
     CharacterDatabase.ExecuteNA(ss.str().c_str());
 }
+#endif
 
 #if VERSION_STRING != Cata
 void WorldSession::HandleCorpseReclaimOpcode(WorldPacket& recv_data)
