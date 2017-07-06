@@ -479,6 +479,9 @@ void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)
     CHECK_INWORLD_RETURN
 
     uint32 spellId;
+#if VERSION_STRING == Cata
+    recvPacket.read_skip<uint8_t>();
+#endif
     recvPacket >> spellId;
 
     if (GetPlayer()->m_currentSpell)
