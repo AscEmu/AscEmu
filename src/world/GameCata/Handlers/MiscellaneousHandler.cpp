@@ -262,5 +262,68 @@ void WorldSession::HandleReturnToGraveyardOpcode(WorldPacket& /*recv_data*/)
 
 void WorldSession::HandleBugOpcode(WorldPacket& recv_data)
 {
-    LOG_DEBUG("Received CMSG_BUG [Bug Report] but the packet content for the most part unknown!");
+    uint8_t unk1;
+    uint8_t unk2;
+
+    recv_data >> unk1;
+    recv_data >> unk2;
+
+    uint32_t lenght = 0;
+    lenght = unk1 * 16;
+    lenght += unk2 / 16;
+
+    std::string bugMessage;
+    bugMessage = recv_data.ReadString(lenght);   // message
+
+    LOG_DEBUG("Received CMSG_BUG [Bug Report] lenght: %u message: %s", lenght, bugMessage.c_str());
+
+    uint64_t AccountId = GetAccountId();
+    uint32_t TimeStamp = uint32_t(UNIXTIME);
+    uint32_t ReportID = objmgr.GenerateReportID();
+
+    std::stringstream ss;
+
+    ss << "INSERT INTO playerbugreports VALUES('";
+    ss << ReportID << "','";
+    ss << AccountId << "','";
+    ss << TimeStamp << "',";
+    ss << "'0',";               // 0 = bug
+    ss << "'0','";              // 0 = bug
+    ss << CharacterDatabase.EscapeString(bugMessage) << "')";
+
+    CharacterDatabase.ExecuteNA(ss.str().c_str());
+}
+
+void WorldSession::HandleSuggestionOpcode(WorldPacket& recv_data)
+{
+    uint8_t unk1;
+    uint8_t unk2;
+
+    recv_data >> unk1;
+    recv_data >> unk2;
+
+    uint32_t lenght = 0;
+    lenght = unk1 * 16;
+    lenght += unk2 / 16;
+
+    std::string suggestionMessage;
+    suggestionMessage = recv_data.ReadString(lenght);   // message
+
+    LOG_DEBUG("Received CMSG_SUGGESTIONS [Suggestion] lenght: %u message: %s", lenght, suggestionMessage.c_str());
+
+    uint64_t AccountId = GetAccountId();
+    uint32_t TimeStamp = uint32_t(UNIXTIME);
+    uint32_t ReportID = objmgr.GenerateReportID();
+
+    std::stringstream ss;
+
+    ss << "INSERT INTO playerbugreports VALUES('";
+    ss << ReportID << "','";
+    ss << AccountId << "','";
+    ss << TimeStamp << "',";
+    ss << "'1',";               // 1 = suggestion
+    ss << "'1','";              // 1 = suggestion
+    ss << CharacterDatabase.EscapeString(suggestionMessage) << "')";
+
+    CharacterDatabase.ExecuteNA(ss.str().c_str());
 }

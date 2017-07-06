@@ -148,7 +148,6 @@ void WorldSession::loadSpecificHandlers()
     //WorldPacketHandlers[CMSG_DEL_FRIEND].handler = &WorldSession::HandleDelFriendOpcode;
     //WorldPacketHandlers[CMSG_ADD_IGNORE].handler = &WorldSession::HandleAddIgnoreOpcode;
     //WorldPacketHandlers[CMSG_DEL_IGNORE].handler = &WorldSession::HandleDelIgnoreOpcode;
-    WorldPacketHandlers[CMSG_BUG].handler = &WorldSession::HandleBugOpcode;
     // WorldPacketHandlers[CMSG_SET_FRIEND_NOTE].handler = &WorldSession::HandleSetFriendNote;
 
     // Areatrigger
@@ -516,6 +515,8 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_REQUEST_CEMETERY_LIST].handler = &WorldSession::HandleRequestCemeteryListOpcode;
     WorldPacketHandlers[CMSG_REQUEST_HOTFIX].handler = &WorldSession::HandleRequestHotfix;
     WorldPacketHandlers[CMSG_RETURN_TO_GRAVEYARD].handler = &WorldSession::HandleReturnToGraveyardOpcode;
+    WorldPacketHandlers[CMSG_BUG].handler = &WorldSession::HandleBugOpcode;
+    WorldPacketHandlers[CMSG_SUGGESTION].handler = &WorldSession::HandleSuggestionOpcode;
 
     // Chat
     WorldPacketHandlers[CMSG_CHAT_IGNORED].handler = &WorldSession::HandleChatIgnoredOpcode;

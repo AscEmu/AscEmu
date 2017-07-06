@@ -411,6 +411,7 @@ class SERVER_DECL WorldSession
         void HandleLootRollOpcode(WorldPacket& recv_data);
 #if VERSION_STRING == Cata
         Loot* getLootFromHighGuidType(uint32_t highGuid);
+        void HandleSuggestionOpcode(WorldPacket& recv_data);
 #endif
         void HandleWhoOpcode(WorldPacket& recvPacket);
         void HandleWhoIsOpcode(WorldPacket& recvPacket);
@@ -427,7 +428,7 @@ class SERVER_DECL WorldSession
         void HandleDelFriendOpcode(WorldPacket& recvPacket);
         void HandleAddIgnoreOpcode(WorldPacket& recvPacket);
         void HandleDelIgnoreOpcode(WorldPacket& recvPacket);
-        void HandleBugOpcode(WorldPacket& recvPacket);
+        void HandleBugOpcode(WorldPacket& recv_data);
         void HandleAreaTriggerOpcode(WorldPacket& recvPacket);
         void HandleUpdateAccountData(WorldPacket& recvPacket);
         void HandleRequestAccountData(WorldPacket& recvPacket);

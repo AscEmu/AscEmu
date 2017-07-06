@@ -1422,6 +1422,7 @@ enum Opcodes
     CMSG_GUILD_QUERY_NEWS = 0x3020,                     // new
     CMSG_RETURN_TO_GRAVEYARD = 0x301E,                  // new
     CMSG_UNKNOWN_ON_LOGIN = 0x041D,                     // new unknown.
+    CMSG_SUGGESTION = 0x2512,                           // new
         
     NUM_MSG_TYPES = 0xFFFF
 };
