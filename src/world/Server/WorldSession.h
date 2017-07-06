@@ -452,9 +452,9 @@ class SERVER_DECL WorldSession
         /// Gm Ticket System in GMTicket.cpp:
         void HandleGMTicketCreateOpcode(WorldPacket& recvPacket);
         void HandleGMTicketUpdateOpcode(WorldPacket& recvPacket);
-        void HandleGMTicketDeleteOpcode(WorldPacket& recvPacket);
-        void HandleGMTicketGetTicketOpcode(WorldPacket& recvPacket);
-        void HandleGMTicketSystemStatusOpcode(WorldPacket& recvPacket);
+        void HandleGMTicketDeleteOpcode(WorldPacket& /*recv_data*/);
+        void HandleGMTicketGetTicketOpcode(WorldPacket& /*recv_data*/);
+        void HandleGMTicketSystemStatusOpcode(WorldPacket& /*recv_data*/);
         void HandleGMTicketToggleSystemStatusOpcode(WorldPacket& recvPacket);
 
         /// Lag report

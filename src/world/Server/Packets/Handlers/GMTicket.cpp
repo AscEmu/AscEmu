@@ -49,6 +49,7 @@ enum LagReportType
     LAG_REPORT_SPELLS
 };
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -109,7 +110,9 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recv_data)
         chn->Say(_player, ss.str().c_str(), NULL, true);
     }
 }
+#endif
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleGMTicketUpdateOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -151,7 +154,9 @@ void WorldSession::HandleGMTicketUpdateOpcode(WorldPacket& recv_data)
     }
 #endif
 }
+#endif
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleGMTicketDeleteOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -180,8 +185,10 @@ void WorldSession::HandleGMTicketDeleteOpcode(WorldPacket& recv_data)
         chn->Say(_player, ss.str().c_str(), NULL, true);
     }
 }
+#endif
 
-void WorldSession::HandleGMTicketGetTicketOpcode(WorldPacket& recv_data)
+#if VERSION_STRING != Cata
+void WorldSession::HandleGMTicketGetTicketOpcode(WorldPacket& /*recv_data*/)
 {
     CHECK_INWORLD_RETURN
 
@@ -205,9 +212,10 @@ void WorldSession::HandleGMTicketGetTicketOpcode(WorldPacket& recv_data)
 
     SendPacket(&data);
 }
+#endif
 
-
-void WorldSession::HandleGMTicketSystemStatusOpcode(WorldPacket& recv_data)
+#if VERSION_STRING != Cata
+void WorldSession::HandleGMTicketSystemStatusOpcode(WorldPacket& /*recv_data*/)
 {
     WorldPacket data(SMSG_GMTICKET_SYSTEMSTATUS, 4);
 
@@ -221,6 +229,7 @@ void WorldSession::HandleGMTicketSystemStatusOpcode(WorldPacket& recv_data)
 
     SendPacket(&data);
 }
+#endif
 
 void WorldSession::HandleGMTicketToggleSystemStatusOpcode(WorldPacket& recv_data)
 {
