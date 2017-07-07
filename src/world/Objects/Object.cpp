@@ -1720,6 +1720,13 @@ void Object::SetUInt16Value(uint16 index, uint8 offset, uint16 value)
     }
 }
 
+uint16 Object::GetUInt16Value(uint16 index, uint8 offset) const
+{
+    ASSERT(index < m_valuesCount);
+    ASSERT(offset < 2);
+    return *(((uint16*)&m_uint32Values[index]) + offset);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 /// Set uint32 property
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -587,6 +587,7 @@ public:
         void EventSetUInt32Value(uint32 index, uint32 value);
 
         void SetUInt16Value(uint16 index, uint8 offset, uint16 value);
+        uint16 GetUInt16Value(uint16 index, uint8 offset) const;
         void SetUInt32Value(const uint32 index, const uint32 value);
 
         /// Set uint64 property
