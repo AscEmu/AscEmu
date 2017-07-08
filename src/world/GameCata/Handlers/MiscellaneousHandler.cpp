@@ -133,7 +133,7 @@ void WorldSession::HandleRequestCemeteryListOpcode(WorldPacket& recv_data)
     QueryResult* result = WorldDatabase.Query("SELECT id FROM graveyards WHERE faction = %u OR faction = 3;", _player->GetTeam());
     if (result)
     {
-        WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE);
+        WorldPacket data(SMSG_REQUEST_CEMETERY_LIST_RESPONSE, 8 * result->GetRowCount());
         data.writeBit(false);               //unk bit
         data.flushBits();
         data.writeBits(result->GetRowCount(), 24);
