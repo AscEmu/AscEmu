@@ -952,7 +952,10 @@ bool Player::Create(WorldPacket& data)
         setLevel(55);
         SetNextLevelXp(148200);
     }
+
+#if VERSION_STRING > TBC
     UpdateGlyphs();
+#endif
 
     SetPrimaryProfessionPoints(worldConfig.player.maxProfessions);
 
@@ -1748,7 +1751,9 @@ void Player::GiveXP(uint32 xp, const uint64 & guid, bool allowbonus)
         _UpdateMaxSkillCounts();
         UpdateStats();
         //UpdateChances();
+#if VERSION_STRING > TBC
         UpdateGlyphs();
+#endif
 
         // ScriptMgr hook for OnPostLevelUp
         sHookInterface.OnPostLevelUp(this);
@@ -8659,7 +8664,9 @@ void Player::ApplyLevelInfo(LevelInfo* Info, uint32 Level)
     _UpdateMaxSkillCounts();
     UpdateStats();
     //UpdateChances();
+#if VERSION_STRING > TBC
     UpdateGlyphs();
+#endif
     m_playerInfo->lastLevel = Level;
 #if VERSION_STRING > TBC
     GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_LEVEL);

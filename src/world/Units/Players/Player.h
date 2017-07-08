@@ -2218,7 +2218,9 @@ private:
         PlayerInfo* getPlayerInfo() const { return m_playerInfo; }
 
         void LoadFieldsFromString(const char* string, uint32 firstField, uint32 fieldsNum);
+#if VERSION_STRING > TBC
         void UpdateGlyphs();
+#endif
 
         // Avenging Wrath
         bool mAvengingWrath;
