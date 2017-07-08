@@ -318,7 +318,7 @@ enum Opcodes
     SMSG_SPELL_FAILURE = 0x0C34,                    // new
     SMSG_SPELL_COOLDOWN = 0x4B16,                   // new
     SMSG_COOLDOWN_EVENT = 0x4F26,                   // new
-    CMSG_CANCEL_AURA = 0x136,
+    CMSG_CANCEL_AURA = 0x0E26,                      // new
     SMSG_EQUIPMENT_SET_SAVED = 0x2216,              // new
     SMSG_PET_CAST_FAILED = 0x138,
     MSG_CHANNEL_START = 0x0A15,                     // new
@@ -1049,8 +1049,8 @@ enum Opcodes
     CMSG_DECLINE_CHANNEL_INVITE = 0x1411,                       // new
     CMSG_GROUPACTION_THROTTLED = 0x411,
     SMSG_OVERRIDE_LIGHT = 0x4225,                               // new
-    SMSG_TOTEM_CREATED = 0x413,
-    CMSG_TOTEM_DESTROYED = 0x414,
+    SMSG_TOTEM_CREATED = 0x2414,                                // new
+    CMSG_TOTEM_DESTROYED = 0x4207,                              // new
     CMSG_EXPIRE_RAID_INSTANCE = 0x415,
     CMSG_NO_SPELL_VARIANCE = 0x1417,                            // new
     CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY = 0x6305,             // new
@@ -1102,7 +1102,7 @@ enum Opcodes
     SMSG_CALENDAR_EVENT_MODERATOR_STATUS_ALERT = 0x445,
     CMSG_CALENDAR_COMPLAIN = 0x446,
     CMSG_CALENDAR_GET_NUM_PENDING = 0x4D05,                 // new
-    SMSG_CALENDAR_SEND_NUM_PENDING = 0x0000,
+    SMSG_CALENDAR_SEND_NUM_PENDING = 0x0C17,                // new
     CMSG_SAVE_DANCE = 0x449,
     SMSG_NOTIFY_DANCE = 0x44A,
     CMSG_PLAY_DANCE = 0x44B,

@@ -43,6 +43,9 @@ void WorldSession::HandleCalendarGetNumPending(WorldPacket& /*recv_data*/)
     LogDebugFlag(LF_OPCODE, "HandleCalendarGetNumPending Not handled");
 
     WorldPacket data(SMSG_CALENDAR_SEND_NUM_PENDING, 4);
+#if VERSION_STRING == Cata
+    data << uint32(0);  // num pending
+#endif
     SendPacket(&data);
 }
 
