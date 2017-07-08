@@ -1947,26 +1947,72 @@ void Player::smsg_TalentsInfo(bool SendPetTalents)
         data << uint32(GetCurrentTalentPoints());
         data << uint8(m_talentSpecsCount);
         data << uint8(m_talentActiveSpec);
-        for (uint8 s = 0; s < m_talentSpecsCount; ++s)
+
+        if (m_talentSpecsCount)
         {
-            PlayerSpec spec = m_specs[s];
-            data << uint32(m_FirstTalentTreeLock);
-
-            //Send Talent
-            data << uint8(spec.talents.size());
-
-            std::map<uint32, uint8>::iterator itr;
-            for (itr = spec.talents.begin(); itr != spec.talents.end(); ++itr)
+            if (m_talentSpecsCount > MAX_SPEC_COUNT)
             {
-                data << uint32(itr->first);     // TalentId
-                data << uint8(itr->second);     // TalentRank
+                m_talentSpecsCount = MAX_SPEC_COUNT;
             }
 
-            // Send Glyph info
-            data << uint8(GLYPHS_COUNT);
-            for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
+            for (uint8 s = 0; s < m_talentSpecsCount; ++s)
             {
-                data << uint16(spec.glyphs[i]);
+                PlayerSpec spec = m_specs[s];
+                data << uint32(m_FirstTalentTreeLock);
+
+                uint8 talentCount = 0;
+                size_t pos = data.wpos();
+                data << uint8(talentCount);
+
+                uint32 const* talentTabPages = getTalentTabPages(getClass());
+
+                for (uint8 i = 0; i < 3; ++i)
+                {
+                    uint32 talentTabPage = talentTabPages[i];
+
+                    for (uint32 talentId = 0; talentId < sTalentStore.GetNumRows(); ++talentId)
+                    {
+                        DBC::Structures::TalentEntry const* talentInfo = sTalentStore.LookupEntry(talentId);
+                        if (!talentInfo)
+                        {
+                            continue;
+                        }
+
+                        if (talentInfo->TalentTree != talentTabPage)
+                        {
+                            continue;
+                        }
+
+                        int8 currrentTalentMaxRank = -1;
+                        for (int8 rank = 5 - 1; rank >= 0; --rank)
+                        {
+                            if (talentInfo->RankID[rank] && spec.HasTalent(talentInfo->RankID[rank], s))
+                            {
+                                currrentTalentMaxRank = rank;
+                                break;
+                            }
+                        }
+
+                        if (currrentTalentMaxRank < 0)
+                        {
+                            continue;
+                        }
+
+                        data << uint32(talentInfo->TalentID);
+                        data << uint8(currrentTalentMaxRank);
+
+                        ++talentCount;
+                    }
+                }
+
+                data.put<uint8>(pos, talentCount);
+
+                data << uint8(GLYPHS_COUNT);
+
+                for (uint8 i = 0; i < GLYPHS_COUNT; ++i)
+                {
+                    data << uint16(GetGlyph(s, i));
+                }
             }
         }
     }
@@ -11969,7 +12015,7 @@ void Player::UpdatePowerAmm()
 // Initialize Glyphs or update them after level change
 void Player::UpdateGlyphs()
 {
-#if VERSION_STRING > TBC
+#if VERSION_STRING == WotLK
     uint32 level = getLevel();
 
     if (level >= 15)
@@ -11991,6 +12037,29 @@ void Player::UpdateGlyphs()
 
     // Enable number of glyphs depending on level
     SetUInt32Value(PLAYER_GLYPHS_ENABLED, glyphMask[level]);
+#endif
+
+#if VERSION_STRING == Cata
+    uint32 slot = 0;
+    for (uint32 i = 0; i < sGlyphSlotStore.GetNumRows() && slot < 9; ++i)
+    {
+        if (DBC::Structures::GlyphSlotEntry const* gs = sGlyphSlotStore.LookupEntry(i))
+        {
+            SetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + slot++, gs->Id);
+        }
+    }
+
+    uint8 level = getLevel();
+    uint32 slotMask = 0;
+
+    if (level >= 25)
+        slotMask |= 0x01 | 0x02 | 0x40;
+    if (level >= 50)
+        slotMask |= 0x04 | 0x08 | 0x80;
+    if (level >= 75)
+        slotMask |= 0x10 | 0x20 | 0x100;
+
+    SetUInt32Value(PLAYER_GLYPHS_ENABLED, slotMask);
 #endif
 }
 

@@ -327,6 +327,18 @@ class PlayerSpec
         }
 
         void AddTalent(uint32 talentid, uint8 rankid);
+        bool HasTalent(uint32 talentid, uint8 rankid)
+        {
+            std::map<uint32, uint8>::iterator itr = talents.find(talentid);
+            if (itr != talents.end())
+            {
+                return itr->second == rankid;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         std::map<uint32, uint8> talents;
         uint16 glyphs[GLYPHS_COUNT];
@@ -1842,6 +1854,7 @@ private:
 #if VERSION_STRING > TBC
         void SetGlyph(uint32 slot, uint32 id) { SetUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot, id); }
         uint32 GetGlyph(uint32 slot) { return GetUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot); }
+        uint32 GetGlyph(uint32 spec, uint32 slot) const { return m_specs[spec].glyphs[slot]; }
 #endif
 
         /// Do this on /pvp off
