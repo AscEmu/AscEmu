@@ -895,7 +895,7 @@ enum Opcodes
     CMSG_SET_TITLE = 0x2117,                        // new
     CMSG_CANCEL_MOUNT_AURA = 0x375,
     SMSG_ARENA_ERROR = 0x376,
-    MSG_INSPECT_ARENA_TEAMS = 0x377,
+    MSG_INSPECT_ARENA_TEAMS = 0x2704,               // new
     SMSG_DEATH_RELEASE_LOC = 0x2F07,                // new
     CMSG_CANCEL_TEMP_ENCHANTMENT = 0x6C37,          // new
     SMSG_FORCED_DEATH_UPDATE = 0x37A,
@@ -1423,6 +1423,9 @@ enum Opcodes
     CMSG_RETURN_TO_GRAVEYARD = 0x301E,                  // new
     CMSG_UNKNOWN_ON_LOGIN = 0x041D,                     // new unknown.
     CMSG_SUGGESTION = 0x2512,                           // new
-        
+    CMSG_INSPECT_HONOR_STATS = 0x791E,                  // new
+    SMSG_INSPECT_HONOR_STATS = 0x79A5,                  // new
+    CMSG_REQUEST_INSPECT_RATED_BG_STATS = 0x3010,       // new
+
     NUM_MSG_TYPES = 0xFFFF
 };
