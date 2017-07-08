@@ -16,6 +16,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Config/Config.h"
 #include "Map/MapMgr.h"
 #include "Map/WorldCreator.h"
+#include "Util.hpp"
 
 void WorldSession::HandleLoadScreenOpcode(WorldPacket& recv_data)
 {
@@ -326,4 +327,14 @@ void WorldSession::HandleSuggestionOpcode(WorldPacket& recv_data)
     ss << CharacterDatabase.EscapeString(suggestionMessage) << "')";
 
     CharacterDatabase.ExecuteNA(ss.str().c_str());
+}
+
+void WorldSession::HandleLogDisconnectOpcode(WorldPacket& recv_data)
+{
+    uint32 disconnectReason;
+    recv_data >> disconnectReason;
+
+    // 13 = close window
+
+    LOG_DEBUG("Player %s disconnected on %s - Reason %u", _player->GetName(), Util::GetCurrentDateTimeString().c_str(), disconnectReason);
 }

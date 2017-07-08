@@ -517,6 +517,7 @@ void WorldSession::loadSpecificHandlers()
     WorldPacketHandlers[CMSG_RETURN_TO_GRAVEYARD].handler = &WorldSession::HandleReturnToGraveyardOpcode;
     WorldPacketHandlers[CMSG_BUG].handler = &WorldSession::HandleBugOpcode;
     WorldPacketHandlers[CMSG_SUGGESTION].handler = &WorldSession::HandleSuggestionOpcode;
+    WorldPacketHandlers[CMSG_LOG_DISCONNECT].handler = &WorldSession::HandleLogDisconnectOpcode;
 
     // Chat
     WorldPacketHandlers[CMSG_CHAT_IGNORED].handler = &WorldSession::HandleChatIgnoredOpcode;

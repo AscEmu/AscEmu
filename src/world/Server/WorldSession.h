@@ -965,6 +965,9 @@ class SERVER_DECL WorldSession
         void HandleInrangeQuestgiverQuery(WorldPacket& recv_data);
         void HandleRemoveGlyph(WorldPacket& recv_data);
         void HandleSetFactionInactiveOpcode(WorldPacket& recv_data);
+#if VERSION_STRING == Cata
+        void HandleLogDisconnectOpcode(WorldPacket& recv_data);
+#endif
 
         // Calendar \todo handle it
 #if VERSION_STRING > TBC
