@@ -12013,9 +12013,9 @@ void Player::UpdatePowerAmm()
 }
 
 // Initialize Glyphs or update them after level change
+#if VERSION_STRING == WotLK
 void Player::UpdateGlyphs()
 {
-#if VERSION_STRING == WotLK
     uint32 level = getLevel();
 
     if (level >= 15)
@@ -12037,31 +12037,59 @@ void Player::UpdateGlyphs()
 
     // Enable number of glyphs depending on level
     SetUInt32Value(PLAYER_GLYPHS_ENABLED, glyphMask[level]);
+}
 #endif
 
 #if VERSION_STRING == Cata
+enum GlyphSlotMask
+{
+    GS_MASK_1 = 0x001,
+    GS_MASK_2 = 0x002,
+    GS_MASK_3 = 0x040,
+
+    GS_MASK_4 = 0x004,
+    GS_MASK_5 = 0x008,
+    GS_MASK_6 = 0x080,
+
+    GS_MASK_7 = 0x010,
+    GS_MASK_8 = 0x020,
+    GS_MASK_9 = 0x100,
+
+    GS_MASK_LEVEL_25 = GS_MASK_1 | GS_MASK_2 | GS_MASK_3,
+    GS_MASK_LEVEL_50 = GS_MASK_4 | GS_MASK_5 | GS_MASK_6,
+    GS_MASK_LEVEL_75 = GS_MASK_7 | GS_MASK_8 | GS_MASK_9
+};
+
+void Player::UpdateGlyphs()
+{
     uint32 slot = 0;
-    for (uint32 i = 0; i < sGlyphSlotStore.GetNumRows() && slot < 9; ++i)
+    for (uint32 i = 0; i < sGlyphSlotStore.GetNumRows(); ++i)
     {
-        if (DBC::Structures::GlyphSlotEntry const* gs = sGlyphSlotStore.LookupEntry(i))
+        if (DBC::Structures::GlyphSlotEntry const* glyphSlot = sGlyphSlotStore.LookupEntry(i))
         {
-            SetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + slot++, gs->Id);
+            SetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + slot++, glyphSlot->Id);
         }
     }
 
-    uint8 level = getLevel();
+    uint32 level = getLevel();
     uint32 slotMask = 0;
 
     if (level >= 25)
-        slotMask |= 0x01 | 0x02 | 0x40;
+    {
+        slotMask = GS_MASK_LEVEL_25;
+    }
     if (level >= 50)
-        slotMask |= 0x04 | 0x08 | 0x80;
+    {
+        slotMask = GS_MASK_LEVEL_50;
+    }
     if (level >= 75)
-        slotMask |= 0x10 | 0x20 | 0x100;
+    {
+        slotMask = GS_MASK_LEVEL_75;
+    }
 
     SetUInt32Value(PLAYER_GLYPHS_ENABLED, slotMask);
-#endif
 }
+#endif
 
 // Fills fields from firstField to firstField+fieldsNum-1 with integers from the string
 void Player::LoadFieldsFromString(const char* string, uint32 firstField, uint32 fieldsNum)
