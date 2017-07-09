@@ -290,9 +290,10 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 if (lang == 0 && !CanUseCommand('c') && !worldConfig.player.isInterfactionChatEnabled)
                     return;
 
-                data = sChatHandler.FillMessageData(CHAT_MSG_SAY, lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
+                //data = sChatHandler.FillMessageData(CHAT_MSG_SAY, lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
+                GetPlayer()->sendChatPacket(CHAT_MSG_SAY, lang, msg.c_str(), _player->GetGUID(), _player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) ? 4 : 0);
 
-                GetPlayer()->SendMessageToSet(data, true);
+                //GetPlayer()->SendMessageToSet(data, true);
             }
             delete data;
 

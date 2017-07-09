@@ -3512,12 +3512,13 @@ void Spell::SpellEffectLanguage(uint32 i)
 #endif
     };
 
-
+#if VERSION_STRING != Cata
     if (skills[GetSpellInfo()->EffectMiscValue[i]][0])
     {
         playerTarget->_AddSkillLine(skills[GetSpellInfo()->EffectMiscValue[i]][0], 300, 300);
         playerTarget->addSpell(skills[GetSpellInfo()->EffectMiscValue[i]][1]);
     }
+#endif
 }
 
 void Spell::SpellEffectDualWield(uint32 i)

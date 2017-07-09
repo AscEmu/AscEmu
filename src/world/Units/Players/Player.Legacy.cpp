@@ -1059,8 +1059,12 @@ bool Player::Create(WorldPacket& data)
         if (skill_line == nullptr)
             continue;
 
+#if VERSION_STRING != Cata
         if (skill_line->type != SKILL_TYPE_LANGUAGE)
             _AddSkillLine(skill_line->id, ss->currentval, ss->maxval);
+#else
+        _AddSkillLine(skill_line->id, ss->currentval, ss->maxval);
+#endif
     }
     _UpdateMaxSkillCounts();
     //Chances depend on stats must be in this order!
@@ -3739,10 +3743,14 @@ void Player::LoadFromDBProc(QueryResultVector & results)
             break;
     }
 
+#if VERSION_STRING != Cata
     if (m_session->CanUseCommand('c'))
         _AddLanguages(true);
     else
         _AddLanguages(false);
+#else
+    _AddLanguages(false);
+#endif
 
     if (GetGuildId())
         SetUInt32Value(PLAYER_GUILD_TIMESTAMP, (uint32)UNIXTIME);
@@ -10865,7 +10873,6 @@ void Player::_AddLanguages(bool All)
      * Otherwise weird stuff could happen :P
      * - Burlex
      */
-
     PlayerSkill sk;
 
     uint32 spell_id;
@@ -14116,9 +14123,10 @@ bool Player::SaveSkills(bool NewCharacter, QueryBuffer* buf)
 
     for (SkillMap::iterator itr = m_skills.begin(); itr != m_skills.end(); ++itr)
     {
+#if VERSION_STRING != Cata
         if (itr->second.Skill->type == SKILL_TYPE_LANGUAGE)
             continue;
-
+#endif
         uint32 skillid = itr->first;
         uint32 currval = itr->second.CurrentValue;
         uint32 maxval = itr->second.MaximumValue;
