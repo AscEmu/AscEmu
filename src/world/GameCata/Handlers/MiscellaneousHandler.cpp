@@ -70,7 +70,7 @@ void WorldSession::HandleObjectUpdateFailedOpcode(WorldPacket& recv_data)
 
     LogError("HandleObjectUpdateFailedOpcode : Object update failed for playerguid %u", Arcemu::Util::GUID_LOPART(guid));
 
-    if (_player->GetGUID() == guid)
+    if (_player && _player->GetGUID() == guid)
     {
         LogoutPlayer(true);
         return;

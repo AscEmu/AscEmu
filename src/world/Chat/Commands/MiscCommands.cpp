@@ -848,10 +848,14 @@ bool ChatHandler::HandleAppearCommand(const char* args, WorldSession* m_session)
             SystemMessage(chr->GetSession(), "%s is appearing to your location.", m_session->GetPlayer()->GetName());
         }
 
+#if VERSION_STRING != Cata
         if (m_session->GetPlayer()->GetMapId() == chr->GetMapId() && m_session->GetPlayer()->GetInstanceID() == chr->GetInstanceID())
             m_session->GetPlayer()->SafeTeleport(chr->GetMapId(), chr->GetInstanceID(), chr->GetPosition());
         else
             m_session->GetPlayer()->SafeTeleport(chr->GetMapMgr(), chr->GetPosition());
+#else
+        m_session->GetPlayer()->SafeTeleport(chr->GetMapId(), 0, chr->GetPosition());
+#endif
 
     }
     else
