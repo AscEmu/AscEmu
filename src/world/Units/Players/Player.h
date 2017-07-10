@@ -454,10 +454,9 @@ public:
 
     void sendReportToGmMessage(std::string playerName, std::string damageLog);
 
-
+#if VERSION_STRING == Cata
 private:
 
-#if VERSION_STRING == Cata
     //////////////////////////////////////////////////////////////////////////////////////////
     // Chat
 public:
