@@ -200,7 +200,7 @@ bool Player::isPlayerJumping(MovementInfo const& movement_info, uint16_t opcode)
     return false;
 }
 
-void Player::handleBreathing(MovementInfo& movement_info, WorldSession* session)
+void Player::handleBreathing(MovementInfo const& movement_info, WorldSession* session)
 {
     if (!worldConfig.server.enableBreathing || FlyCheat || m_bUnlimitedBreath || !isAlive() || GodModeCheat)
     {
@@ -278,6 +278,32 @@ void Player::handleBreathing(MovementInfo& movement_info, WorldSession* session)
             SendMirrorTimer(MIRROR_TYPE_BREATH, m_UnderwaterTime, m_UnderwaterMaxTime, 10);
         }
     }
+}
+
+void Player::handleAuraInterruptForMovementFlags(MovementInfo const& movement_info)
+{
+    uint32_t auraInterruptFlags = 0;
+    if (movement_info.hasMovementFlag(MOVEFLAG_MOTION_MASK))
+    {
+        auraInterruptFlags |= AURA_INTERRUPT_ON_MOVEMENT;
+    }
+
+    if (!(movement_info.hasMovementFlag(MOVEFLAG_SWIMMING)) || movement_info.hasMovementFlag(MOVEFLAG_FALLING))
+    {
+        auraInterruptFlags |= AURA_INTERRUPT_ON_LEAVE_WATER;
+    }
+
+    if (movement_info.hasMovementFlag(MOVEFLAG_SWIMMING))
+    {
+        auraInterruptFlags |= AURA_INTERRUPT_ON_ENTER_WATER;
+    }
+
+    if ((movement_info.hasMovementFlag(MOVEFLAG_TURNING_MASK)) || isTurning)
+    {
+        auraInterruptFlags |= AURA_INTERRUPT_ON_TURNING;
+    }
+
+    RemoveAurasByInterruptFlag(auraInterruptFlags);
 }
 
 static const uint32_t LanguageSkills[NUM_LANGUAGES] =

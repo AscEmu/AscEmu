@@ -421,7 +421,8 @@ public:
 
     void handleFall(MovementInfo const& movement_info);
     bool isPlayerJumping(MovementInfo const& movement_info, uint16_t opcode);
-    void handleBreathing(MovementInfo& movement_info, WorldSession* session);
+    void handleBreathing(MovementInfo const& movement_info, WorldSession* session);
+    void handleAuraInterruptForMovementFlags(MovementInfo const& movement_info);
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Spells

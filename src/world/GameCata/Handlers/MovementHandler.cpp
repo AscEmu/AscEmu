@@ -331,25 +331,12 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     /************************************************************************/
     /* Breathing System                                                     */
     /************************************************************************/
-    mover->handleBreathing(movement_info, this);
+    mover->handleBreathing(movementInfo, this);
 
-    ///************************************************************************/
-    ///* Remove Spells                                                        */
-    ///************************************************************************/
-    //uint32 flags = 0;
-    //if ((movement_info.flags & MOVEFLAG_MOTION_MASK) != 0)
-    //    flags |= AURA_INTERRUPT_ON_MOVEMENT;
-
-    //if (!(movement_info.flags & MOVEFLAG_SWIMMING || movement_info.flags & MOVEFLAG_FALLING))
-    //    flags |= AURA_INTERRUPT_ON_LEAVE_WATER;
-    //if (movement_info.flags & MOVEFLAG_SWIMMING)
-    //    flags |= AURA_INTERRUPT_ON_ENTER_WATER;
-    //if ((movement_info.flags & MOVEFLAG_TURNING_MASK) || _player->isTurning)
-    //    flags |= AURA_INTERRUPT_ON_TURNING;
-    ///*if (movement_info.flags & MOVEFLAG_REDIRECTED)
-    //    flags |= AURA_INTERRUPT_ON_JUMP;*/
-
-    //_player->RemoveAurasByInterruptFlag(flags);
+    /************************************************************************/
+    /* Remove Auras                                                         */
+    /************************************************************************/
+    mover->handleAuraInterruptForMovementFlags(movementInfo);
 
     ///************************************************************************/
     ///* Update our position in the server.                                   */
