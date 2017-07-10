@@ -66,72 +66,53 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 //        Disconnect();
 //        return;
 //    }
-//    if (recv_data.GetOpcode() == MSG_MOVE_FALL_LAND || movement_info.flags & MOVEFLAG_SWIMMING)
-//        _player->jumping = false;
-//    if (!_player->jumping && (recv_data.GetOpcode() == MSG_MOVE_JUMP || movement_info.flags & MOVEFLAG_FALLING))
-//        _player->jumping = true;
 //
-//    /************************************************************************/
-//    /* Update player movement state                                         */
-//    /************************************************************************/
-//    uint32_t opcode = recv_data.GetOpcode();
-//
-//    switch (opcode)
-//    {
-//        case MSG_MOVE_START_FORWARD:
-//        case MSG_MOVE_START_BACKWARD:
-//            _player->moving = true;
-//            break;
-//        case MSG_MOVE_START_STRAFE_LEFT:
-//        case MSG_MOVE_START_STRAFE_RIGHT:
-//            _player->strafing = true;
-//            break;
-//        case MSG_MOVE_JUMP:
-//            _player->jumping = true;
-//            break;
-//        case MSG_MOVE_STOP:
-//            _player->moving = false;
-//            break;
-//        case MSG_MOVE_STOP_STRAFE:
-//            _player->strafing = false;
-//            break;
-//        case MSG_MOVE_FALL_LAND:
-//            _player->jumping = false;
-//            break;
-//
-//        default:
-//            moved = false;
-//            break;
-//    }
-//
-//#if 0
-//
-//    LOG_DETAIL("Got %s", g_worldOpcodeNames[opcode].name);
-//
-//    LOG_DETAIL("Movement flags");
-//    for (uint32 i = 0; i < nmovementflags; i++)
-//        if ((movement_info.flags & MoveFlagsToNames[i].flag) != 0)
-//            LOG_DETAIL("%s", MoveFlagsToNames[i].name);
-//
-//#endif
-//
-//    if (moved)
-//    {
-//        if (!_player->moving && !_player->strafing && !_player->jumping)
-//        {
-//            _player->m_isMoving = false;
-//        }
-//        else
-//        {
-//            _player->m_isMoving = true;
-//        }
-//    }
-//
-//    // Rotating your character with a hold down right click mouse button
-//    if (_player->GetOrientation() != movement_info.position.o)
-//        _player->isTurning = true;
-//    else
-//        _player->isTurning = false;
+
+    /************************************************************************/
+    /* Update player movement state                                         */
+    /************************************************************************/
+    _player->isPlayerJumping(movementInfo, opcode);
+    if (_player->GetOrientation() == movementInfo.getPosition()->o)
+    {
+        _player->isTurning = false;
+    }
+
+    switch (opcode)
+    {
+        case MSG_MOVE_START_FORWARD:
+        case MSG_MOVE_START_BACKWARD:
+            _player->moving = true;
+            break;
+        case MSG_MOVE_START_STRAFE_LEFT:
+        case MSG_MOVE_START_STRAFE_RIGHT:
+            _player->strafing = true;
+            break;
+        case MSG_MOVE_JUMP:
+            _player->jumping = true;
+            break;
+        case MSG_MOVE_STOP:
+            _player->moving = false;
+            break;
+        case MSG_MOVE_STOP_STRAFE:
+            _player->strafing = false;
+            break;
+        case MSG_MOVE_FALL_LAND:
+            _player->jumping = false;
+            break;
+        case MSG_MOVE_SET_FACING:
+            _player->isTurning = true;
+            break;
+    }
+
+    if (_player->moving == false && _player->strafing == false && _player->jumping == false)
+    {
+        _player->m_isMoving = false;
+    }
+    else
+    {
+        _player->m_isMoving = true;
+    }
+
 //
 //
 //    if (!(HasGMPermissions() && sWorld.no_antihack_on_gm) && !_player->GetCharmedUnitGUID())
@@ -174,32 +155,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
 //        Disconnect();
 //        return;
 //    }
-//
-//    /************************************************************************/
-//    /* Dump movement flags - Wheee!                                         */
-//    /************************************************************************/
-//#if 0
-//    LOG_DEBUG("=========================================================");
-//    LOG_DEBUG("Full movement flags: 0x%.8X", movement_info.flags);
-//    uint32 z, b;
-//    for (z = 1, b = 1; b < 32;)
-//    {
-//        if (movement_info.flags & z)
-//            LOG_DEBUG("   Bit %u (0x%.8X or %u) is set!", b, z, z);
-//
-//        z <<= 1;
-//        b += 1;
-//    }
-//    LOG_DEBUG("=========================================================");
-//#endif
-//
-//    /************************************************************************/
-//    /* Orientation dumping                                                  */
-//    /************************************************************************/
-//#if 0
-//    LOG_DEBUG("Packet: 0x%03X (%s)", recv_data.GetOpcode(), getOpcodeName(recv_data.GetOpcode()).c_str());
-//    LOG_DEBUG("Orientation: %.10f", movement_info.orientation);
-//#endif
+
 
     ///************************************************************************/
     ///* Calculate the timestamp of the packet we have to send out            */
@@ -717,7 +673,7 @@ void MovementInfo::writeMovementInfo(ByteBuffer& data, uint32_t opcode, float cu
                 break;
             case MSETimestamp:
                 if (status_info.hasTimeStamp)
-                    data << uint32_t(update_time);
+                    data << getMSTime();
                 break;
             case MSEHasPitch:
                 data.writeBit(!status_info.hasPitch);
