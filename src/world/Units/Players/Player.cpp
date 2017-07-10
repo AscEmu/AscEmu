@@ -145,3 +145,10 @@ void Player::sendReportToGmMessage(std::string playerName, std::string damageLog
 
     sWorld.sendMessageToOnlineGms(gm_ann.c_str());
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Misc
+bool Player::isGMFlagSet()
+{
+    return HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM);
+}

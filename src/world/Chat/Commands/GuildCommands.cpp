@@ -363,7 +363,7 @@ bool ChatHandler::HandleGuildRemovePlayerCommand(const char* /*args*/, WorldSess
 #endif
 
 #if VERSION_STRING != Cata
-    if (selected_player->GetGuild()->GetGuildLeader() != selected_player->GetLowGUID() || !m_session->GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+    if (selected_player->GetGuild()->GetGuildLeader() != selected_player->GetLowGUID() || !m_session->GetPlayer()->isGMFlagSet())
     {
         RedSystemMessage(m_session, "Only guild leaders and gms can remove players from a guild!");
         return true;
@@ -376,7 +376,7 @@ bool ChatHandler::HandleGuildRemovePlayerCommand(const char* /*args*/, WorldSess
 
     selected_player->GetGuild()->RemoveGuildMember(selected_player->getPlayerInfo(), selected_player->GetSession());
 #else
-    if (selected_player->GetGuild()->getLeaderGUID() != selected_player->GetGUID() || !m_session->GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+    if (selected_player->GetGuild()->getLeaderGUID() != selected_player->GetGUID() || !m_session->GetPlayer()->isGMFlagSet())
     {
         RedSystemMessage(m_session, "Only guild leaders and gms can remove players from a guild!");
         return true;

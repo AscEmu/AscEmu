@@ -1561,7 +1561,7 @@ void Object::AddToWorld()
     if (IsPlayer())
     {
         Player* plr = static_cast< Player* >(this);
-        if (mapMgr->pInstance != NULL && !plr->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+        if (mapMgr->pInstance != NULL && !plr->isGMFlagSet())
         {
             // Player limit?
             if (mapMgr->GetMapInfo()->playerlimit && mapMgr->GetPlayerCount() >= mapMgr->GetMapInfo()->playerlimit)

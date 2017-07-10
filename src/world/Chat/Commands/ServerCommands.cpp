@@ -31,7 +31,7 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/, WorldSession* m_
                 }
                 else
                 {
-                    if (itr->second->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+                    if (itr->second->isGMFlagSet())
                         online_gm++;
                 }
             }

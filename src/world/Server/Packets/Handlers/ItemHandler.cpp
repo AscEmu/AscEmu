@@ -1496,7 +1496,7 @@ void WorldSession::SendInventoryList(Creature* unit)
         {
             if ((curItem = sMySQLStore.getItemProperties(itr->itemid)) != 0)
             {
-                if (!_player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) && !worldConfig.player.showAllVendorItems) // looking up everything for active gms
+                if (!_player->isGMFlagSet() && !worldConfig.player.showAllVendorItems) // looking up everything for active gms
                 {
                     if (curItem->AllowableClass && !(_player->getClassMask() & curItem->AllowableClass))
                         continue;

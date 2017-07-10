@@ -3327,7 +3327,7 @@ uint8 Spell::CanCast(bool tolerate)
         if (target)
         {
             // GM Flagged Players should be immune to other players' casts, but not their own.
-            if ((target != m_caster) && target->IsPlayer() && static_cast<Player*>(target)->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+            if ((target != m_caster) && target->IsPlayer() && static_cast<Player*>(target)->isGMFlagSet())
                 return SPELL_FAILED_BM_OR_INVISGOD;
 
             //you can't mind control someone already mind controlled

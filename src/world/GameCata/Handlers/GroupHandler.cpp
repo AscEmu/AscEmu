@@ -178,7 +178,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recv_data)
         return;
     }
 
-    if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM) && !_player->GetSession()->HasPermissions())
+    if (player->isGMFlagSet() && !_player->GetSession()->HasPermissions())
     {
         SendPartyCommandResult(_player, 0, member_name, ERR_PARTY_CANNOT_FIND);
         return;

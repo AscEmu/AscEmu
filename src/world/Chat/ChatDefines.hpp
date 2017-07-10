@@ -62,6 +62,7 @@ enum ChatMsg
 
 enum Languages
 {
+    LANG_ADDON          = -1,
     LANG_UNIVERSAL      = 0x00,
     LANG_ORCISH         = 0x01,
     LANG_DARNASSIAN     = 0x02,

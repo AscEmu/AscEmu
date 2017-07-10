@@ -14,7 +14,7 @@ bool ChatHandler::HandleGMActiveCommand(const char* args, WorldSession* m_sessio
 {
     auto player = m_session->GetPlayer();
     bool toggle_no_notice = std::string(args) == "no_notice" ? true : false;
-    if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+    if (player->isGMFlagSet())
     {
         if (!toggle_no_notice)
         {
@@ -131,7 +131,7 @@ bool ChatHandler::HandleGMDevTagCommand(const char* args, WorldSession* m_sessio
     }
     else
     {
-        if (player->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+        if (player->isGMFlagSet())
             HandleGMActiveCommand("no_notice", m_session);
 
         SystemMessage(m_session, "DEV Flag set.");
@@ -166,9 +166,9 @@ bool ChatHandler::HandleGMListCommand(const char* /*args*/, WorldSession* m_sess
 
                 print_headline = false;
             }
-            else if (worldConfig.gm.listOnlyActiveGms && itr->second->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+            else if (worldConfig.gm.listOnlyActiveGms && itr->second->isGMFlagSet())
             {
-                if (itr->second->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+                if (itr->second->isGMFlagSet())
                 {
                     if (print_headline)
                         GreenSystemMessage(m_session, "The following GMs are active on this server:");

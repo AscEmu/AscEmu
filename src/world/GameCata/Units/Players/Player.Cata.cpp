@@ -343,8 +343,8 @@ WorldPacket Player::buildChatMessagePacket(Player* targetPlayer, uint32_t type, 
     data << uint8_t(type);
 
     if (targetPlayer->hasLanguage(language)
-        || targetPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM)
-        || (senderPlayer && senderPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAG_GM))
+        || targetPlayer->isGMFlagSet()
+        || (senderPlayer && senderPlayer->isGMFlagSet())
         || worldConfig.player.isInterfactionChatEnabled)
     {
         data << 0;
