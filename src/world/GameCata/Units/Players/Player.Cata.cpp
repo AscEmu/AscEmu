@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.Legacy.h"
 #include "Server/World.h"
 #include "Spell/Definitions/AuraInterruptFlags.h"
+#include "Objects/ObjectMgr.h"
 
 void Player::sendForceMovePacket(UnitSpeedType speed_type, float speed)
 {
