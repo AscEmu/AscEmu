@@ -7,6 +7,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Server/World.Legacy.h"
 #include "Server/World.h"
 #include "Spell/Definitions/AuraInterruptFlags.h"
+#include "Chat/ChatDefines.hpp"
 #include "Objects/ObjectMgr.h"
 
 void Player::sendForceMovePacket(UnitSpeedType speed_type, float speed)
@@ -342,12 +343,9 @@ WorldPacket Player::buildChatMessagePacket(Player* targetPlayer, uint32_t type, 
     WorldPacket data(SMSG_MESSAGECHAT, messageLength + 60);
     data << uint8_t(type);
 
-    if (targetPlayer->hasLanguage(language)
-        || targetPlayer->isGMFlagSet()
-        || (senderPlayer && senderPlayer->isGMFlagSet())
-        || worldConfig.player.isInterfactionChatEnabled)
+    if (targetPlayer->hasLanguage(language) || targetPlayer->isGMFlagSet())
     {
-        data << 0;
+        data << LANG_UNIVERSAL;
     }
     else
     {
