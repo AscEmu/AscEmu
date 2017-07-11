@@ -72,6 +72,7 @@ void WorldSession::HandleQueryTimeOpcode(WorldPacket& recv_data)
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles CMSG_CREATURE_QUERY:
 //////////////////////////////////////////////////////////////////////////////////////////
+#if VERSION_STRING != Cata
 void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -108,7 +109,6 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
 
         LocalizedCreatureName* lcn = (language > 0) ? sLocalizationMgr.GetLocalizedCreatureName(entry, language) : NULL;
 
-#if VERSION_STRING != Cata
         if (lcn == NULL)
         {
             LOG_DETAIL("WORLD: CMSG_CREATURE_QUERY '%s'", ci->Name.c_str());
@@ -129,13 +129,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
             data << uint8(0);
             data << lcn->SubName;
         }
-#else
-        data << entry;
-        data << (lcn ? ci->Name : ci->Name);
-        for (uint8 i = 0; i < 7; ++i)
-            data << uint8(0);
-        data << (lcn ? lcn->SubName : ci->SubName);
-#endif
+
         data << ci->info_str;       // this is a string in 2.3.0 Example: stormwind guard has : "Direction"
         data << ci->Flags1;         // flags like skinnable
         data << ci->Type;           // humanoid, beast, etc
@@ -161,6 +155,7 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
 
     SendPacket(&data);
 }
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 /// This function handles CMSG_GAMEOBJECT_QUERY:

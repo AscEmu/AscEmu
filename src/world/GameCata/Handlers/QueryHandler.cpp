@@ -92,3 +92,60 @@ void WorldSession::HandleInrangeQuestgiverQuery(WorldPacket& recv_data)
     data.put<uint32_t>(0, count);
     SendPacket(&data);
 }
+
+void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
+{
+    uint32_t entry;
+    uint64_t guid;
+
+    recv_data >> entry;
+    recv_data >> guid;
+
+    WorldPacket data(SMSG_CREATURE_QUERY_RESPONSE, 250);
+    CreatureProperties const* ci = sMySQLStore.getCreatureProperties(entry);
+    if (ci != nullptr)
+    {
+
+        LocalizedCreatureName* lcn = (language > 0) ? sLocalizationMgr.GetLocalizedCreatureName(entry, language) : nullptr;
+        data << uint32_t(entry);
+        data << (lcn ? ci->Name : ci->Name);
+
+        for (int i = 0; i < 7; ++i)
+        {
+            data << uint8_t(0);       // unk
+        }
+
+        data << (lcn ? lcn->SubName : ci->SubName);
+        data << ci->info_str;
+        data << uint32_t(ci->Flags1);
+        data << uint32_t(0);                  // unk set 4 times with 1
+        data << uint32_t(ci->Type);
+        data << uint32_t(ci->Family);
+        data << uint32_t(ci->Rank);
+        data << uint32_t(ci->killcredit[0]);
+        data << uint32_t(ci->killcredit[1]);
+        data << uint32_t(ci->Male_DisplayID);
+        data << uint32_t(ci->Female_DisplayID);
+        data << uint32_t(ci->Male_DisplayID2);
+        data << uint32_t(ci->Female_DisplayID2);
+        data << float(ci->unkfloat1);
+        data << float(ci->unkfloat2);
+        data << uint8_t(ci->Leader);
+
+        for (uint8_t i = 0; i < 6; ++i)
+        {
+            data << uint32_t(ci->QuestItems[i]);
+        }
+
+        data << uint32_t(ci->waypointid);
+        data << uint32_t(0);                  // unk
+    }
+    else
+    {
+        WorldPacket data(SMSG_CREATURE_QUERY_RESPONSE, 4);
+        data << uint32_t(entry | 0x80000000);
+    }
+
+
+    SendPacket(&data);
+}
