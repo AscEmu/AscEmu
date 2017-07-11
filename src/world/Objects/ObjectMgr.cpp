@@ -2473,11 +2473,39 @@ TimedEmoteList* ObjectMgr::GetTimedEmoteList(uint32 spawnid)
 void ObjectMgr::LoadCreatureWaypoints()
 {
     QueryResult* result = WorldDatabase.Query("SELECT * FROM creature_waypoints");
-    if (!result)return;
+    if (result == nullptr)
+        return;
 
+    uint32_t waypointCount = 0;
+    uint32_t cachedSpawnId = 0;
+    bool isValidSpawn = true;
     do
     {
         Field* fields = result->Fetch();
+        uint32_t spawnid = fields[0].GetUInt32();
+
+        if (cachedSpawnId != spawnid)
+        {
+            cachedSpawnId = spawnid;
+            isValidSpawn = true;
+        }
+
+        if (isValidSpawn == false)
+        {
+            continue;
+        }
+
+        if (isValidSpawn == true)
+        {
+            QueryResult* spawnResult = WorldDatabase.Query("SELECT * FROM creature_spawns WHERE id = %u", spawnid);
+            if (spawnResult == nullptr)
+            {
+                LogDebugFlag(LF_DB_TABLES, "Table `creature_waypoints` includes waypoints for invalid spawndid %u, Skipped!", spawnid);
+                isValidSpawn = false;
+                continue;
+            }
+        }
+
         Movement::WayPoint* wp = new Movement::WayPoint;
         wp->id = fields[1].GetUInt32();
         wp->x = fields[2].GetFloat();
@@ -2493,7 +2521,6 @@ void ObjectMgr::LoadCreatureWaypoints()
         wp->backwardskinid = fields[12].GetUInt32();
 
         std::unordered_map<uint32, Movement::WayPointMap*>::const_iterator i;
-        uint32 spawnid = fields[0].GetUInt32();
         i = m_waypoints.find(spawnid);
         if (i == m_waypoints.end())
         {
@@ -2510,10 +2537,12 @@ void ObjectMgr::LoadCreatureWaypoints()
 
             (*(i->second))[wp->id] = wp;
         }
+
+        ++waypointCount;
     }
     while (result->NextRow());
 
-    LogNotice("ObjectMgr : %u waypoints cached.", result->GetRowCount());
+    LogNotice("ObjectMgr : %u waypoints cached.", waypointCount);
     delete result;
 }
 
