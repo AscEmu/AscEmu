@@ -27,9 +27,6 @@
 
 SERVER_DECL InstanceMgr sInstanceMgr;
 
-initialiseSingleton(FormationMgr);
-
-
 InstanceMgr::InstanceMgr()
 {
     memset(m_maps, 0, sizeof(Map*)* NUM_MAPS);
@@ -41,8 +38,6 @@ InstanceMgr::InstanceMgr()
 
 void InstanceMgr::Load(TaskList* l)
 {
-    new FormationMgr;
-
     // Create all non-instance type maps.
     QueryResult* result = CharacterDatabase.Query("SELECT MAX(id) FROM instances");
     if (result)
@@ -155,8 +150,6 @@ void InstanceMgr::Shutdown()
             m_maps[i] = NULL;
         }
     }
-
-    delete FormationMgr::getSingletonPtr();
 }
 
 uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
@@ -1244,30 +1237,4 @@ void InstanceMgr::DeleteBattlegroundInstance(uint32 mapid, uint32 instanceid)
 
     _DeleteInstance(itr->second, true);
     m_mapLock.Release();
-}
-
-FormationMgr::FormationMgr()
-{
-    QueryResult* res = WorldDatabase.Query("SELECT * FROM creature_formations");
-    if (res)
-    {
-        Formation* f;
-        do
-        {
-            f = new Formation;
-            f->fol = res->Fetch()[1].GetUInt32();
-            f->ang = res->Fetch()[2].GetFloat();
-            f->dist = res->Fetch()[3].GetFloat();
-            m_formations[res->Fetch()[0].GetUInt32()] = f;
-        }
-        while (res->NextRow());
-        delete res;
-    }
-}
-
-FormationMgr::~FormationMgr()
-{
-    FormationMap::iterator itr;
-    for (itr = m_formations.begin(); itr != m_formations.end(); ++itr)
-        delete itr->second;
 }

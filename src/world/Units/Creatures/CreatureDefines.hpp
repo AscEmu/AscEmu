@@ -236,13 +236,6 @@ struct CreatureProperties
 
 #pragma pack(pop)
 
-//\brief used in class FormationMgr
-struct Formation
-{
-    uint32 fol;
-    float ang;
-    float dist;
-};
 
 enum UNIT_TYPE
 {

@@ -890,6 +890,7 @@ void World::loadMySQLStores()
     sMySQLStore.loadAreaTriggerTable();
     sMySQLStore.loadWordFilterCharacterNames();
     sMySQLStore.loadWordFilterChat();
+    sMySQLStore.loadCreatureFormationsTable();
 }
 
 void World::loadMySQLTablesByTask(uint32_t start_time)

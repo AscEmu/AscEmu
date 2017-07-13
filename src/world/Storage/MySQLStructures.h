@@ -76,6 +76,14 @@ namespace MySQLStructure
     };
 
     //creature_formations
+    struct CreatureFormation
+    {
+        //uint32_t spawnId
+        uint32_t targetSpawnId;
+        float followAngle;
+        float followDistance;
+    };
+
     //creature_initial_equip
     //creature_properties
     //creature_quest_finisher

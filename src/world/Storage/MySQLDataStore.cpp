@@ -2877,3 +2877,55 @@ void MySQLDataStore::loadWordFilterChat()
 
     LogDetail("MySQLDataLoads : Loaded %u rows from `wordfilter_chat` table in %u ms!", filter_chat_count, getMSTime() - start_time);
 }
+
+void MySQLDataStore::loadCreatureFormationsTable()
+{
+    uint32_t start_time = getMSTime();
+    //                                                                       0              1              2            3
+    QueryResult* creature_formations_result = WorldDatabase.Query("SELECT spawn_id, target_spawn_id, follow_angle, follow_dist FROM creature_formations");
+    if (creature_formations_result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `creature_formations` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `creature_formations` has %u columns", creature_formations_result->GetFieldCount());
+
+    _creatureFormationsStore.rehash(creature_formations_result->GetRowCount());
+
+    uint32_t formations_count = 0;
+    do
+    {
+        Field* fields = creature_formations_result->Fetch();
+
+        uint32_t spawnId = fields[0].GetInt32();
+        QueryResult* spawn_result = WorldDatabase.Query("SELECT id FROM creature_spawns WHERE id = %u", spawnId);
+        if (spawn_result == nullptr)
+        {
+            LogError("Table `creature_formations` includes formation data for invalid spawn id %u. Skipped!", spawnId);
+            continue;
+        }
+
+        MySQLStructure::CreatureFormation& creatureFormation = _creatureFormationsStore[spawnId];
+
+        creatureFormation.targetSpawnId = fields[1].GetUInt32();
+        creatureFormation.followAngle = fields[2].GetFloat();
+        creatureFormation.followDistance = fields[3].GetFloat();
+
+        ++formations_count;
+
+    } while (creature_formations_result->NextRow());
+
+    delete creature_formations_result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `creature_formations` table in %u ms!", formations_count, getMSTime() - start_time);
+}
+
+MySQLStructure::CreatureFormation const* MySQLDataStore::getCreatureFormationBySpawnId(uint32_t spawnId)
+{
+    CreatureFormationsMap::const_iterator itr = _creatureFormationsStore.find(spawnId);
+    if (itr != _creatureFormationsStore.end())
+        return &(itr->second);
+
+    return nullptr;
+}

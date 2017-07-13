@@ -37,23 +37,6 @@ class Group;
 class Player;
 class Battleground;
 
-class SERVER_DECL FormationMgr : public Singleton < FormationMgr >
-{
-    std::map<uint32, Formation*> m_formations;
-
-    public:
-
-        typedef std::map<uint32, Formation*> FormationMap;
-        FormationMgr();
-        ~FormationMgr();
-
-        Formation* GetFormation(uint32 sqlid)
-        {
-            FormationMap::iterator itr = m_formations.find(sqlid);
-            return (itr == m_formations.end()) ? 0 : itr->second;
-        }
-};
-
 class SERVER_DECL Instance
 {
     public:

@@ -29,8 +29,6 @@
 class MapMgr;
 class TerrainMgr;
 
-struct Formation;
-
 struct CreatureSpawn
 {
     uint32 id;          /// spawn ID
@@ -39,7 +37,7 @@ struct CreatureSpawn
     float y;
     float z;
     float o;
-    Formation* form;
+    MySQLStructure::CreatureFormation const* form;    // formation
     uint8 movetype;
     uint32 displayid;
     uint32 factionid;

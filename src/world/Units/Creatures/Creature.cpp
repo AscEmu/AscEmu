@@ -39,6 +39,7 @@
 #include "Spell/Definitions/PowerType.h"
 #include "Pet.h"
 #include "Spell/SpellEffects.h"
+#include "Storage/MySQLStructures.h"
 
 Creature::Creature(uint64 guid)
 {
@@ -1450,9 +1451,9 @@ bool Creature::Load(CreatureSpawn* spawn, uint32 mode, MySQLStructure::MapInfo c
     // load formation data
     if (spawn->form != NULL)
     {
-        m_aiInterface->m_formationLinkSqlId = spawn->form->fol;
-        m_aiInterface->m_formationFollowDistance = spawn->form->dist;
-        m_aiInterface->m_formationFollowAngle = spawn->form->ang;
+        m_aiInterface->m_formationLinkSqlId = spawn->form->targetSpawnId;
+        m_aiInterface->m_formationFollowDistance = spawn->form->followDistance;
+        m_aiInterface->m_formationFollowAngle = spawn->form->followAngle;
     }
     else
     {

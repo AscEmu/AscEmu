@@ -150,7 +150,7 @@ void Map::LoadSpawns(bool reload)
                     Field* fields = creature_spawn_result->Fetch();
                     CreatureSpawn* cspawn = new CreatureSpawn;
                     cspawn->id = fields[0].GetUInt32();
-                    cspawn->form = FormationMgr::getSingleton().GetFormation(cspawn->id);
+                    cspawn->form = sMySQLStore.getCreatureFormationBySpawnId(cspawn->id);
 
                     uint32 creature_entry = fields[1].GetUInt32();
                     auto creature_properties = sMySQLStore.getCreatureProperties(creature_entry);

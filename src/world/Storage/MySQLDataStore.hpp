@@ -71,6 +71,8 @@ public:
     typedef std::list<MySQLStructure::WordFilterCharacterNames> WordFilterCharacterNamesSet;
     typedef std::list<MySQLStructure::WordFilterChat> WordFilterChatSet;
 
+    typedef std::unordered_map<uint32_t, MySQLStructure::CreatureFormation> CreatureFormationsMap;
+
     //helper
     MySQLStructure::ItemPage const* getItemPage(uint32_t entry);
     ItemPageContainer const* getItemPagesStore() { return &_itemPagesStore; }
@@ -151,6 +153,9 @@ public:
     AreaTriggerContainer const* getAreaTriggersStore() { return &_areaTriggerStore; }
     MySQLStructure::AreaTrigger const* getMapEntranceTrigger(uint32_t mapId);
 
+    CreatureFormationsMap const* getCreatureFormationsStore() { return &_creatureFormationsStore; }
+    MySQLStructure::CreatureFormation const* getCreatureFormationBySpawnId(uint32_t spawnId);
+
     bool isCharacterNameAllowed(std::string charName);
 
     //Config
@@ -211,6 +216,8 @@ public:
     void loadWordFilterCharacterNames();
     void loadWordFilterChat();
 
+    void loadCreatureFormationsTable();
+
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
     CreaturePropertiesContainer _creaturePropertiesStore;
@@ -253,6 +260,8 @@ public:
 
     WordFilterCharacterNamesSet _wordFilterCharacterNamesStore;
     WordFilterChatSet _wordFilterChatStore;
+
+    CreatureFormationsMap _creatureFormationsStore;
 };
 
 #define sMySQLStore MySQLDataStore::getSingleton()
