@@ -645,7 +645,7 @@ const char* WorldSession::LocalizedCreatureTexts(uint32 id)
         return szError;
     }
 
-    LocalizedCreatureText* lpi = (language > 0) ? sLocalizationMgr.GetLocalizedCreatureText(id, language) : NULL;
+    LocalizedNpcScriptText* lpi = (language > 0) ? sLocalizationMgr.GetLocalizedNpcScriptText(id, language) : nullptr;
     if (lpi)
         return lpi->Text;
     else

@@ -27,7 +27,9 @@ void AccountMgr::ReloadAccounts(bool silent)
 {
     setBusy.Acquire();
     if (!silent)
+    {
         LogDefault("[AccountMgr] Reloading Accounts...");
+    }
 
     // Load *all* accounts.
     QueryResult* result = sLogonSQL->Query("SELECT acct, login, encrypted_password, gm, flags, banned, forceLanguage, muted FROM accounts");
@@ -48,7 +50,7 @@ void AccountMgr::ReloadAccounts(bool silent)
 
             // Use private __GetAccount, for locks
             acct = __GetAccount(AccountName);
-            if (acct == 0)
+            if (acct == nullptr)
             {
                 // New account.
                 AddAccount(field);
@@ -115,18 +117,16 @@ void AccountMgr::AddAccount(Field* field)
         sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE acct=%u", acct->AccountId);
     }
     acct->SetGMFlags(GMFlags.c_str());
-    acct->Locale[0] = 'e';
-    acct->Locale[1] = 'n';
-    acct->Locale[2] = 'U';
-    acct->Locale[3] = 'S';
-    if (strcmp(field[6].GetString(), "enUS"))
+
+    acct->forcedLanguage = field[6].GetString();
+    if (acct->forcedLanguage.compare("enUS") != 0)
     {
-        // non-standard language forced
-        memcpy(acct->Locale, field[6].GetString(), 4);
         acct->forcedLocale = true;
     }
     else
+    {
         acct->forcedLocale = false;
+    }
 
     acct->Muted = field[7].GetUInt32();
     if ((uint32)UNIXTIME > acct->Muted && acct->Muted != 0 && acct->Muted != 1)   //1 = perm ban?
@@ -201,14 +201,15 @@ void AccountMgr::UpdateAccount(Account* acct, Field* field)
         sLogonSQL->Execute("UPDATE accounts SET banned = 0 WHERE acct=%u", acct->AccountId);
     }
     acct->SetGMFlags(GMFlags.c_str());
-    if (strcmp(field[6].GetString(), "enUS"))
+    acct->forcedLanguage = field[6].GetString();
+    if (acct->forcedLanguage.compare("enUS") != 0)
     {
-        // non-standard language forced
-        memcpy(acct->Locale, field[7].GetString(), 4);
         acct->forcedLocale = true;
     }
     else
+    {
         acct->forcedLocale = false;
+    }
 
     acct->Muted = field[7].GetUInt32();
     if ((uint32)UNIXTIME > acct->Muted && acct->Muted != 0 && acct->Muted != 1)  //1 = perm ban?

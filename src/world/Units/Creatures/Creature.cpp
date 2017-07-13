@@ -2501,32 +2501,7 @@ void Creature::SendChatMessage(uint8 type, uint32 lang, const char* msg, uint32 
 // 4. Sending localizations if available... puh
 void Creature::SendScriptTextChatMessage(uint32 textid)
 {
-    NpcScriptText const* ct = sMySQLStore.getNpcScriptText(textid);
-
-    const char* name = GetCreatureProperties()->Name.c_str();
-    size_t CreatureNameLength = strlen((char*)name) + 1;
-    size_t MessageLength = strlen((char*)ct->text.c_str()) + 1;
-
-    if (ct->emote != 0)
-        this->EventAddEmote(ct->emote, ct->duration);
-
-    if (ct->sound != 0)
-        this->PlaySoundToSet(ct->sound);
-
-    // Send chat msg
-    WorldPacket data(SMSG_MESSAGECHAT, 35 + CreatureNameLength + MessageLength);
-    data << uint8(ct->type);            // f.e. CHAT_MSG_MONSTER_SAY enum ChatMsg (perfect name for this enum XD)
-    data << uint32(ct->language);       // f.e. LANG_UNIVERSAL enum Languages
-    data << GetGUID();                  // guid of the npc
-    data << uint32(0);
-    data << uint32(CreatureNameLength); // the length of the npc name (needed to calculate text beginning)
-    data << name;                       // name of the npc
-    data << uint64(0);
-    data << uint32(MessageLength);      // the length of the message (needed to calculate the bubble)
-    data << ct->text;                   // the text
-    data << uint8(0x00);
-
-    SendMessageToSet(&data, true);      // sending this
+    SendCreatureChatMessageInRange(this, textid);
 }
 
 void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
@@ -2588,15 +2563,19 @@ void Creature::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg,
 
 void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
 {
-    NpcMonsterSay* ms = creature_properties->MonsterSay[Event];
-    if (ms == NULL)
+    NpcMonsterSay* npcMonsterSay = creature_properties->MonsterSay[Event];
+    if (npcMonsterSay == nullptr)
+    {
         return;
+    }
 
-    if (Rand(ms->Chance))
+    if (Rand(npcMonsterSay->Chance))
     {
         // chance successful.
-        int choice = (ms->TextCount == 1) ? 0 : RandomUInt(ms->TextCount - 1);
-        const char* text = ms->Texts[choice];
+        int choice = (npcMonsterSay->TextCount == 1) ? 0 : RandomUInt(npcMonsterSay->TextCount - 1);
+        const char* text = npcMonsterSay->Texts[choice];
+
+
         // check for special variables $N=name $C=class $R=race $G=gender
         // $G is followed by male_string:female_string;
         std::string newText = text;
@@ -2674,7 +2653,7 @@ void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
             }
         }
 
-        SendChatMessage(static_cast<uint8>(ms->Type), ms->Language, newText.c_str());
+        SendChatMessage(static_cast<uint8>(npcMonsterSay->Type), npcMonsterSay->Language, newText.c_str());
     }
 }
 

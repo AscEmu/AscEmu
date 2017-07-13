@@ -3010,6 +3010,74 @@ void Object::SendMessageToSet(WorldPacket* data, bool bToSelf, bool myteam_only)
     }
 }
 
+void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
+{
+    uint32 myphase = GetPhase();
+    for (std::set<Object*>::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+    {
+        Object* object = *itr;
+        if ((object->GetPhase() & myphase) != 0)
+        {
+            if (object->IsPlayer())
+            {
+                Player* player = static_cast<Player*>(object);
+                uint32_t sessionLanguage = player->GetSession()->language;
+
+                std::string message;
+                NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(textId);
+
+                LocalizedNpcScriptText* lnpct = (sessionLanguage > 0) ? sLocalizationMgr.GetLocalizedNpcScriptText(textId, sessionLanguage) : nullptr;
+                if (lnpct != nullptr)
+                {
+                    message = lnpct->Text;
+                }
+                else
+                {
+                    message = npcScriptText->text;
+                }
+
+                std::string creatureName;
+
+                LocalizedCreatureName* lcn = (sessionLanguage > 0) ? sLocalizationMgr.GetLocalizedCreatureName(creature->GetEntry(), sessionLanguage) : nullptr;
+                if (lcn != nullptr)
+                {
+                    creatureName = lcn->Name;
+                }
+                else
+                {
+                    creatureName = creature->GetCreatureProperties()->Name;
+                }
+
+                size_t creatureNameLength = creatureName.length() + 1;
+                size_t messageLength = message.length() + 1;
+
+                if (npcScriptText->emote != 0)
+                {
+                    creature->EventAddEmote(npcScriptText->emote, npcScriptText->duration);
+                }
+
+                if (npcScriptText->sound != 0)
+                {
+                    creature->PlaySoundToSet(npcScriptText->sound);
+                }
+
+                WorldPacket data(SMSG_MESSAGECHAT, 35 + creatureNameLength + messageLength);
+                data << uint8_t(npcScriptText->type);
+                data << uint32_t(npcScriptText->language);
+                data << uint64_t(GetGUID());
+                data << uint32_t(0);
+                data << uint32_t(creatureNameLength);
+                data << creatureName;
+                data << uint64_t(0);
+                data << uint32_t(messageLength);
+                data << message;
+                data << uint8_t(0);
+                player->SendPacket(&data);
+            }
+        }
+    }
+}
+
 void Object::RemoveInRangeObject(Object* pObj)
 {
     ARCEMU_ASSERT(pObj != NULL);

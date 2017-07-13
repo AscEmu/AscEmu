@@ -777,6 +777,8 @@ public:
         virtual void SendPacket(WorldPacket* packet) {};
 
 
+        void SendCreatureChatMessageInRange(Creature* creature, uint32_t textId);
+
         virtual void SendMessageToSet(WorldPacket* data, bool self, bool myteam_only = false);
         void SendMessageToSet(StackBufferBase* data, bool self) { OutPacketToSet(data->GetOpcode(), static_cast<uint16>(data->GetSize()), data->GetBufferPointer(), self); }
 #if VERSION_STRING == Cata

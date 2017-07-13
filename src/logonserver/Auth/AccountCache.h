@@ -33,6 +33,7 @@ struct Account
     uint8 SrpHash[20]; // the encrypted password field, reversed
     uint8* SessionKey;
     std::string* UsernamePtr;
+    std::string forcedLanguage;
     uint32 Muted;
 
     Account()
@@ -77,7 +78,6 @@ struct Account
         memcpy(SessionKey, key, 40);
     }
 
-    char Locale[4];
     bool forcedLocale;
 
 };
@@ -129,13 +129,12 @@ class AccountMgr : public Singleton < AccountMgr >
         Account* GetAccount(std::string Name)
         {
             setBusy.Acquire();
-            Account* pAccount = NULL;
+            Account* pAccount = nullptr;
+            
             // this should already be uppercase!
-
             std::map<std::string, Account*>::iterator itr = AccountDatabase.find(Name);
-
-            if (itr == AccountDatabase.end())    pAccount = NULL;
-            else                                pAccount = itr->second;
+            if (itr != AccountDatabase.end())
+                pAccount = itr->second;
 
             setBusy.Release();
             return pAccount;

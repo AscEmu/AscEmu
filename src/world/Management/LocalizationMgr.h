@@ -71,7 +71,7 @@ struct LocalizedGossipMenuOption
     char* Text;
 };
 
-struct LocalizedCreatureText
+struct LocalizedNpcScriptText
 {
     char* Text;
 };
@@ -122,7 +122,7 @@ public:
     LocalizedCreatureName* GetLocalizedCreatureName(uint32_t id, uint32_t language);
     LocalizedGameObjectName* GetLocalizedGameObjectName(uint32_t id, uint32_t language);
     LocalizedItemPage* GetLocalizedItemPage(uint32_t id, uint32_t language);
-    LocalizedCreatureText* GetLocalizedCreatureText(uint32_t id, uint32_t language);
+    LocalizedNpcScriptText* GetLocalizedNpcScriptText(uint32_t id, uint32_t language);
     LocalizedGossipMenuOption* GetLocalizedGossipMenuOption(uint32_t id, uint32_t language);
     LocalizedWorldStringTable* GetLocalizedWorldStringTable(uint32_t id, uint32_t language);
     LocalizedWorldBroadCast* GetLocalizedWorldBroadCast(uint32_t id, uint32_t language);
@@ -144,7 +144,7 @@ private:
     std::unordered_map<uint32_t, LocalizedCreatureName>* m_CreatureNames;
     std::unordered_map<uint32_t, LocalizedGameObjectName>* m_GameObjectNames;
     std::unordered_map<uint32_t, LocalizedItemPage>* m_ItemPages;
-    std::unordered_map<uint32_t, LocalizedCreatureText>* m_CreatureText;
+    std::unordered_map<uint32_t, LocalizedNpcScriptText>* m_NpcScriptTexts;
     std::unordered_map<uint32_t, LocalizedGossipMenuOption>* m_GossipMenuOption;
     std::unordered_map<uint32_t, LocalizedWorldStringTable>* m_WorldStrings;
     std::unordered_map<uint32_t, LocalizedWorldBroadCast>* m_WorldBroadCast;

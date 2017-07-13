@@ -427,7 +427,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     uint32 AccountID;
     std::string GMFlags;
     uint8 AccountFlags;
-    std::string lang = "enUS";
+    std::string lang;
 
     recvData >> AccountID;
     recvData >> AccountName;
@@ -460,11 +460,10 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     _crypt.initWotlkCrypt(K);
 #endif
 
+    recvData >> lang;
+
     //checking if player is already connected
     //disconnect current player and login this one(blizzlike)
-    if (recvData.rpos() != recvData.wpos())
-        recvData.read((uint8*)lang.data(), 4);
-
     WorldSession* session = sWorld.getSessionByAccountId(AccountID);
     if (session)
     {
@@ -538,8 +537,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     pSession->m_lastPing = (uint32)UNIXTIME;
     pSession->language = sLocalizationMgr.GetLanguageId(lang);
 
-    if (recvData.rpos() != recvData.wpos())
-        recvData >> pSession->m_muted;
+    recvData >> pSession->m_muted;
 
     for (uint8_t i = 0; i < 8; ++i)
         pSession->SetAccountData(i, nullptr, true, 0);

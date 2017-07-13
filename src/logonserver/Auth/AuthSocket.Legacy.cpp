@@ -242,7 +242,7 @@ void AuthSocket::HandleChallenge()
         temp[2] = m_challenge.country[1];
         temp[3] = m_challenge.country[0];
 
-        *(uint32*)&m_account->Locale[0] = *(uint32*)temp;
+        //m_account->forcedLanguage = temp;
     }
 
     //////////////////////////////////////////////// SRP6 Challenge ////////////////////////////////////////////////

@@ -97,7 +97,7 @@ void LocalizationMgr::Shutdown()
             SAFE_FREE_PTR(itr->second.Text);
         }
 
-        for (std::unordered_map<uint32, LocalizedCreatureText>::iterator itr = m_CreatureText[i].begin(); itr != m_CreatureText[i].end(); ++itr)
+        for (std::unordered_map<uint32, LocalizedNpcScriptText>::iterator itr = m_NpcScriptTexts[i].begin(); itr != m_NpcScriptTexts[i].end(); ++itr)
         {
             SAFE_FREE_PTR(itr->second.Text);
         }
@@ -142,7 +142,7 @@ void LocalizationMgr::Shutdown()
     delete[] m_Items;
     delete[] m_NpcTexts;
     delete[] m_Quests;
-    delete[] m_CreatureText;
+    delete[] m_NpcScriptTexts;
     delete[] m_GossipMenuOption;
     delete[] m_WorldStrings;
     delete[] m_WorldBroadCast;
@@ -288,7 +288,7 @@ void LocalizationMgr::Reload(bool first)
     m_NpcTexts = new std::unordered_map<uint32, LocalizedNpcText>[langid];
     m_Items = new std::unordered_map<uint32, LocalizedItem>[langid];
     m_ItemPages = new std::unordered_map<uint32, LocalizedItemPage>[langid];
-    m_CreatureText = new std::unordered_map<uint32, LocalizedCreatureText>[langid];
+    m_NpcScriptTexts = new std::unordered_map<uint32, LocalizedNpcScriptText>[langid];
     m_GossipMenuOption = new std::unordered_map<uint32, LocalizedGossipMenuOption>[langid];
     m_WorldStrings = new std::unordered_map<uint32, LocalizedWorldStringTable>[langid];
     m_WorldBroadCast = new std::unordered_map<uint32, LocalizedWorldBroadCast>[langid];
@@ -513,33 +513,33 @@ void LocalizationMgr::Reload(bool first)
     //////////////////////////////////////////////////////////////////////////////////////////
     // Creature Text
     {
-        LocalizedCreatureText nt;
-        std::string str;
-        uint32 entry;
-        Field* f;
-        uint32 lid;
-
-        result = WorldDatabase.Query("SELECT * FROM locales_npc_script_text");
+        uint32_t locales_npc_script_text_count = 0;
+        uint32_t start_loc_npc_script_txt = getMSTime();
+        result = WorldDatabase.Query("SELECT * FROM `locales_npc_script_text`");
         if (result)
         {
             do
             {
-                f = result->Fetch();
-                str = std::string(f[1].GetString());
-                entry = f[0].GetUInt32();
+                Field* field = result->Fetch();
+                uint32_t entry = field[0].GetUInt32();
+                std::string languageString = std::string(field[1].GetString());
 
-                lid = GetLanguageId(str);
-                if (lid == 0)
+                uint32 languageId = GetLanguageId(languageString);
+                if (languageId == 0)
                 {
                     continue;
                 }
 
-                nt.Text = strdup(f[2].GetString());
-                m_CreatureText[lid].insert(std::make_pair(entry, nt));
+                LocalizedNpcScriptText nt;
+                nt.Text = strdup(field[2].GetString());
+                m_NpcScriptTexts[languageId].insert(std::make_pair(entry, nt));
+                ++locales_npc_script_text_count;
             }
             while (result->NextRow());
             delete result;
         }
+
+        LogDetail("LocalizationMgr : Loaded %u rows from table `locales_npc_script_text` in %u ms!", locales_npc_script_text_count, getMSTime() - start_loc_npc_script_txt);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -729,7 +729,7 @@ void LocalizationMgr::Reload(bool first)
         CopyHashMap<LocalizedItemPage>(&m_ItemPages[source_language_id], &m_ItemPages[dest_language_id]);
         CopyHashMap<LocalizedQuest>(&m_Quests[source_language_id], &m_Quests[dest_language_id]);
         CopyHashMap<LocalizedNpcText>(&m_NpcTexts[source_language_id], &m_NpcTexts[dest_language_id]);
-        CopyHashMap<LocalizedCreatureText>(&m_CreatureText[source_language_id], &m_CreatureText[dest_language_id]);
+        CopyHashMap<LocalizedNpcScriptText>(&m_NpcScriptTexts[source_language_id], &m_NpcScriptTexts[dest_language_id]);
         CopyHashMap<LocalizedGossipMenuOption>(&m_GossipMenuOption[source_language_id], &m_GossipMenuOption[dest_language_id]);
         CopyHashMap<LocalizedWorldStringTable>(&m_WorldStrings[source_language_id], &m_WorldStrings[dest_language_id]);
         CopyHashMap<LocalizedWorldBroadCast>(&m_WorldBroadCast[source_language_id], &m_WorldBroadCast[dest_language_id]);
@@ -749,7 +749,7 @@ MAKE_LOOKUP_FUNCTION(LocalizedQuest, m_Quests, GetLocalizedQuest);
 MAKE_LOOKUP_FUNCTION(LocalizedItem, m_Items, GetLocalizedItem);
 MAKE_LOOKUP_FUNCTION(LocalizedNpcText, m_NpcTexts, GetLocalizedNpcText);
 MAKE_LOOKUP_FUNCTION(LocalizedItemPage, m_ItemPages, GetLocalizedItemPage);
-MAKE_LOOKUP_FUNCTION(LocalizedCreatureText, m_CreatureText, GetLocalizedCreatureText);
+MAKE_LOOKUP_FUNCTION(LocalizedNpcScriptText, m_NpcScriptTexts, GetLocalizedNpcScriptText);
 MAKE_LOOKUP_FUNCTION(LocalizedGossipMenuOption, m_GossipMenuOption, GetLocalizedGossipMenuOption);
 MAKE_LOOKUP_FUNCTION(LocalizedWorldStringTable, m_WorldStrings, GetLocalizedWorldStringTable);
 MAKE_LOOKUP_FUNCTION(LocalizedWorldBroadCast, m_WorldBroadCast, GetLocalizedWorldBroadCast);
