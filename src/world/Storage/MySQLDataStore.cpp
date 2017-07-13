@@ -1316,7 +1316,8 @@ void MySQLDataStore::loadDisplayBoundingBoxesTable()
     uint32_t start_time = getMSTime();
 
     //                                                                            0       1    2     3      4      5      6         7
-    QueryResult* display_bounding_boxes_result = WorldDatabase.Query("SELECT displayid, lowx, lowy, lowz, highx, highy, highz, boundradius FROM display_bounding_boxes");
+    //QueryResult* display_bounding_boxes_result = WorldDatabase.Query("SELECT displayid, lowx, lowy, lowz, highx, highy, highz, boundradius FROM display_bounding_boxes");
+    QueryResult* display_bounding_boxes_result = WorldDatabase.Query("SELECT displayid, highz FROM display_bounding_boxes");
 
     if (display_bounding_boxes_result == nullptr)
     {
@@ -1335,17 +1336,20 @@ void MySQLDataStore::loadDisplayBoundingBoxesTable()
 
         uint32_t entry = fields[0].GetUInt32();
 
-        DisplayBounding& displayBounding = _displayBoundingBoxesStore[entry];
+        MySQLStructure::DisplayBoundingBoxes& displayBounding = _displayBoundingBoxesStore[entry];
 
         displayBounding.displayid = entry;
 
-        for (uint8_t i = 0; i < 3; i++)
-        {
-            displayBounding.low[i] = fields[1 + i].GetFloat();
-            displayBounding.high[i] = fields[4 + i].GetFloat();
-        }
+        //for (uint8_t i = 0; i < 3; i++)
+        //{
+        //    displayBounding.low[i] = fields[1 + i].GetFloat();
+        //    displayBounding.high[i] = fields[4 + i].GetFloat();
+        //}
 
-        displayBounding.boundradius = fields[7].GetFloat();
+        //displayBounding.boundradius = fields[7].GetFloat();
+
+        // highz is the only value used in Unit::EventModelChange()
+        displayBounding.high[2] = fields[1].GetFloat();
 
 
         ++display_bounding_boxes_count;
@@ -1356,7 +1360,7 @@ void MySQLDataStore::loadDisplayBoundingBoxesTable()
     LogDetail("MySQLDataLoads : Loaded %u display bounding info from `display_bounding_boxes` table in %u ms!", display_bounding_boxes_count, getMSTime() - start_time);
 }
 
-DisplayBounding const* MySQLDataStore::getDisplayBounding(uint32_t entry)
+MySQLStructure::DisplayBoundingBoxes const* MySQLDataStore::getDisplayBounding(uint32_t entry)
 {
     DisplayBoundingBoxesContainer::const_iterator itr = _displayBoundingBoxesStore.find(entry);
     if (itr != _displayBoundingBoxesStore.end())

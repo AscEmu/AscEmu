@@ -5,6 +5,8 @@ This file is released under the MIT license. See README-MIT for more information
 
 #pragma once
 
+#include "Server/Definitions.h"
+
 // related to table areatriggers
 enum AreaTriggerType
 {
@@ -94,6 +96,13 @@ namespace MySQLStructure
     //creature_waypoints
     //creature_waypoints_manual
     //display_bounding_boxes
+    struct DisplayBoundingBoxes
+    {
+        uint32_t displayid;
+        float low[3];
+        float high[3];
+        float boundradius;
+    };
 
     //event_creature_spawns
     //event_gameobject_spawns

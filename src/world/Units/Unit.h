@@ -30,6 +30,7 @@
 #include "Units/Summons/SummonHandler.h"
 #include "Movement/UnitMovementManager.hpp"
 #include "Spell/Definitions/School.h"
+#include "Storage/MySQLStructures.h"
 
 class AIInterface;
 class Aura;
@@ -114,17 +115,6 @@ public:
 
     virtual void operator()(Aura* aura) {}
 };
-
-
-#pragma pack(push, 1)
-struct DisplayBounding
-{
-    uint32 displayid;
-    float low[3];
-    float high[3];
-    float boundradius;
-};
-#pragma pack(pop)
 
 struct ReflectSpellSchool
 {

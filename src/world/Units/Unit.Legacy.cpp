@@ -7698,13 +7698,17 @@ void Unit::EventUpdateFlag()
 
 void Unit::EventModelChange()
 {
-    DisplayBounding const* entry = sMySQLStore.getDisplayBounding(GetUInt32Value(UNIT_FIELD_DISPLAYID));
+    MySQLStructure::DisplayBoundingBoxes const* displayBoundingBox = sMySQLStore.getDisplayBounding(GetUInt32Value(UNIT_FIELD_DISPLAYID));
 
-    ///\todo if has mount, grab mount model and add the z value of attachment 0
-    if (entry)
-        m_modelhalfsize = entry->high[2] / 2;
+    //\todo if has mount, grab mount model and add the z value of attachment 0
+    if (displayBoundingBox != nullptr)
+    {
+        m_modelhalfsize = displayBoundingBox->high[2] / 2;
+    }
     else
+    {
         m_modelhalfsize = 1.0f;
+    }
 }
 
 void Unit::RemoveFieldSummon()

@@ -37,7 +37,7 @@ public:
     typedef std::unordered_map<uint32_t, QuestProperties> QuestPropertiesContainer;
 
     typedef std::unordered_map<uint32_t, MySQLStructure::CreatureDifficulty> CreatureDifficultyContainer;
-    typedef std::unordered_map<uint32_t, DisplayBounding> DisplayBoundingBoxesContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::DisplayBoundingBoxes> DisplayBoundingBoxesContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::VendorRestrictions> VendorRestrictionContainer;
     typedef std::unordered_map<uint32_t, NpcText> NpcTextContainer;
     typedef std::unordered_map<uint32_t, NpcScriptText> NpcScriptTextContainer;
@@ -91,7 +91,7 @@ public:
     uint32_t getCreatureDifficulty(uint32_t entry, uint8_t difficulty_type);
     CreatureDifficultyContainer const* getCreatureDifficultyStore() { return &_creatureDifficultyStore; }
 
-    DisplayBounding const* getDisplayBounding(uint32_t entry);
+    MySQLStructure::DisplayBoundingBoxes const* getDisplayBounding(uint32_t entry);
     DisplayBoundingBoxesContainer const* getDisplayBoundingBoxesStore() { return &_displayBoundingBoxesStore; }
 
     MySQLStructure::VendorRestrictions const* getVendorRestriction(uint32_t entry);

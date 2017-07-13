@@ -6265,7 +6265,7 @@ void Spell::HandleCastEffects(uint64 guid, uint32 i)
 
                 destx = obj->GetPositionX();
                 desty = obj->GetPositionY();
-                ///\todo this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->GetUInt32Value(OBJECT_FIELD_SCALE_X))
+                //\todo this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->GetUInt32Value(OBJECT_FIELD_SCALE_X))
                 if (obj->IsUnit())
                     destz = obj->GetPositionZ() + static_cast<Unit*>(obj)->GetModelHalfSize();
                 else
@@ -6336,7 +6336,7 @@ void Spell::HandleModeratedTarget(uint64 guid)
 
                 destx = obj->GetPositionX();
                 desty = obj->GetPositionY();
-                //todo: this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->GetUInt32Value(OBJECT_FIELD_SCALE_X))
+                //\todo this should be destz = obj->GetPositionZ() + (obj->GetModelHighBoundZ() / 2 * obj->GetUInt32Value(OBJECT_FIELD_SCALE_X))
                 if (obj->IsUnit())
                     destz = obj->GetPositionZ() + static_cast<Unit*>(obj)->GetModelHalfSize();
                 else
