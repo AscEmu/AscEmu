@@ -6,7 +6,6 @@ This file is released under the MIT license. See README-MIT for more information
 #pragma once
 
 #include "Singleton.h"
-#include "Server/Packets/Handlers/MiscHandler.h"
 #include "Server/Packets/Handlers/NPCHandler.h"
 #include "../../scripts/Battlegrounds/IsleOfConquest.h"
 #include "Objects/ObjectMgr.h"
@@ -42,7 +41,7 @@ public:
     typedef std::unordered_map<uint32_t, NpcText> NpcTextContainer;
     typedef std::unordered_map<uint32_t, NpcScriptText> NpcScriptTextContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::GossipMenuOption> GossipMenuOptionContainer;
-    typedef std::unordered_map<uint32_t, GraveyardTeleport> GraveyardsContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::Graveyards> GraveyardsContainer;
     typedef std::unordered_map<uint32_t, TeleportCoords> TeleportCoordsContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::FishingZones> FishingZonesContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::MapInfo> WorldMapInfoContainer;
@@ -106,7 +105,7 @@ public:
     MySQLStructure::GossipMenuOption const* getGossipMenuOption(uint32_t entry);
     GossipMenuOptionContainer const* getGossipMenuOptionStore() { return &_gossipMenuOptionStore; }
 
-    GraveyardTeleport const* getGraveyard(uint32_t entry);
+    MySQLStructure::Graveyards const* getGraveyard(uint32_t entry);
     GraveyardsContainer const* getGraveyardsStore() { return &_graveyardsStore; }
 
     TeleportCoords const* getTeleportCoord(uint32_t entry);

@@ -5114,14 +5114,14 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
     }
     else
     {
-        GraveyardTeleport const* pGrave = nullptr;
+        MySQLStructure::Graveyards const* pGrave = nullptr;
         MySQLDataStore::GraveyardsContainer const* its = sMySQLStore.getGraveyardsStore();
         for (MySQLDataStore::GraveyardsContainer::const_iterator itr = its->begin(); itr != its->end(); ++itr)
         {
-            pGrave = sMySQLStore.getGraveyard(itr->second.ID);
-            if (pGrave->MapId == mapid && (pGrave->FactionID == GetTeam() || pGrave->FactionID == 3))
+            pGrave = sMySQLStore.getGraveyard(itr->second.id);
+            if (pGrave->mapId == mapid && (pGrave->factionId == GetTeam() || pGrave->factionId == 3))
             {
-                temp.ChangeCoords(pGrave->X, pGrave->Y, pGrave->Z);
+                temp.ChangeCoords(pGrave->position_x, pGrave->position_y, pGrave->position_z);
                 dist = src.distanceSquare(temp);
                 if (first || dist < closest_dist)
                 {
@@ -5135,7 +5135,7 @@ void Player::RepopAtGraveyard(float ox, float oy, float oz, uint32 mapid)
         Keeps the player from hanging out to dry.*/
         if (first && pGrave != nullptr)//crappy Databases with no graveyards.
         {
-            dest.ChangeCoords(pGrave->X, pGrave->Y, pGrave->Z);
+            dest.ChangeCoords(pGrave->position_x, pGrave->position_y, pGrave->position_z);
             first = false;
         }
 

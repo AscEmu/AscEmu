@@ -136,6 +136,19 @@ namespace MySQLStructure
     };
 
     //graveyards
+    struct Graveyards
+    {
+        uint32_t id;
+        float position_x;
+        float position_y;
+        float position_z;
+        float orientation;          //\todo: orientation always 9 in db.
+        uint32_t zoneId;            //\todo: not used.. always 0 in db.
+        uint32_t adjacentZoneId;
+        uint32_t mapId;
+        uint32_t factionId;         //\todo: this is not faction... it is team!
+        //std::string name;         //\todo: not loaded from db!
+    };
 
     //instance_bosses
 

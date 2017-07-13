@@ -1626,17 +1626,17 @@ void MySQLDataStore::loadGraveyardsTable()
 
         uint32_t entry = fields[0].GetUInt32();
 
-        GraveyardTeleport& graveyardTeleport = _graveyardsStore[entry];
+        MySQLStructure::Graveyards& graveyardTeleport = _graveyardsStore[entry];
 
-        graveyardTeleport.ID = entry;
-        graveyardTeleport.X = fields[1].GetFloat();
-        graveyardTeleport.Y = fields[2].GetFloat();
-        graveyardTeleport.Z = fields[3].GetFloat();
-        graveyardTeleport.O = fields[4].GetFloat();
-        graveyardTeleport.ZoneId = fields[5].GetUInt32();
-        graveyardTeleport.AdjacentZoneId = fields[6].GetUInt32();
-        graveyardTeleport.MapId = fields[7].GetUInt32();
-        graveyardTeleport.FactionID = fields[8].GetUInt32();
+        graveyardTeleport.id = entry;
+        graveyardTeleport.position_x = fields[1].GetFloat();
+        graveyardTeleport.position_y = fields[2].GetFloat();
+        graveyardTeleport.position_z = fields[3].GetFloat();
+        graveyardTeleport.orientation = fields[4].GetFloat();
+        graveyardTeleport.zoneId = fields[5].GetUInt32();
+        graveyardTeleport.adjacentZoneId = fields[6].GetUInt32();
+        graveyardTeleport.mapId = fields[7].GetUInt32();
+        graveyardTeleport.factionId = fields[8].GetUInt32();
 
         ++graveyards_count;
     } while (graveyards_result->NextRow());
@@ -1646,7 +1646,7 @@ void MySQLDataStore::loadGraveyardsTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `graveyards` table in %u ms!", graveyards_count, getMSTime() - start_time);
 }
 
-GraveyardTeleport const* MySQLDataStore::getGraveyard(uint32_t entry)
+MySQLStructure::Graveyards const* MySQLDataStore::getGraveyard(uint32_t entry)
 {
     GraveyardsContainer::const_iterator itr = _graveyardsStore.find(entry);
     if (itr != _graveyardsStore.end())

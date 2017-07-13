@@ -162,7 +162,6 @@
 #include "Map/Map.h"
 #include "Map/MapCell.h"
 #include "Map/TerrainMgr.h"
-#include "Server/Packets/Handlers/MiscHandler.h"
 #include "Server/Packets/Handlers/NPCHandler.h"
 #include "Units/Creatures/Pet.h"
 #include "Server/WorldSocket.h"

@@ -20,7 +20,6 @@ set(SRC_PACKET_HANDLER_FILES
    ${PATH_PREFIX}/ItemHandler.cpp
    ${PATH_PREFIX}/MailHandler.cpp
    ${PATH_PREFIX}/MiscHandler.cpp
-   ${PATH_PREFIX}/MiscHandler.h
    ${PATH_PREFIX}/NPCHandler.cpp
    ${PATH_PREFIX}/NPCHandler.h
    ${PATH_PREFIX}/MovementHandler.cpp
