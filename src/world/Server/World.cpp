@@ -891,6 +891,7 @@ void World::loadMySQLStores()
     sMySQLStore.loadWordFilterCharacterNames();
     sMySQLStore.loadWordFilterChat();
     sMySQLStore.loadCreatureFormationsTable();
+    sMySQLStore.loadLocalesNPCMonstersay();
 }
 
 void World::loadMySQLTablesByTask(uint32_t start_time)

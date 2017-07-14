@@ -41,6 +41,7 @@
 #include "../shared/StackBuffer.h"
 #include "../shared/CommonDefines.hpp"
 #include "WorldPacket.h"
+#include "Units/Creatures/CreatureDefines.hpp"
 
 class SpellInfo;
 
@@ -778,6 +779,7 @@ public:
 
 
         void SendCreatureChatMessageInRange(Creature* creature, uint32_t textId);
+        void SendMonsterSayMessageInRange(Creature* creature, NpcMonsterSay* npcMonsterSay, int randChoice, uint32_t event);
 
         virtual void SendMessageToSet(WorldPacket* data, bool self, bool myteam_only = false);
         void SendMessageToSet(StackBufferBase* data, bool self) { OutPacketToSet(data->GetOpcode(), static_cast<uint16>(data->GetSize()), data->GetBufferPointer(), self); }

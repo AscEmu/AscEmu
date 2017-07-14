@@ -71,6 +71,7 @@ public:
     typedef std::list<MySQLStructure::WordFilterChat> WordFilterChatSet;
 
     typedef std::unordered_map<uint32_t, MySQLStructure::CreatureFormation> CreatureFormationsMap;
+    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesNPCMonstersay> LocalesNPCMonstersayContainer;
 
     //helper
     MySQLStructure::ItemPage const* getItemPage(uint32_t entry);
@@ -155,6 +156,8 @@ public:
     CreatureFormationsMap const* getCreatureFormationsStore() { return &_creatureFormationsStore; }
     MySQLStructure::CreatureFormation const* getCreatureFormationBySpawnId(uint32_t spawnId);
 
+    MySQLStructure::LocalesNPCMonstersay const* getLocalizedMonsterSay(uint32_t entry, uint32_t sessionLocale, uint32_t event);
+
     bool isCharacterNameAllowed(std::string charName);
 
     //Config
@@ -216,6 +219,7 @@ public:
     void loadWordFilterChat();
 
     void loadCreatureFormationsTable();
+    void loadLocalesNPCMonstersay();
 
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
@@ -261,6 +265,7 @@ public:
     WordFilterChatSet _wordFilterChatStore;
 
     CreatureFormationsMap _creatureFormationsStore;
+    LocalesNPCMonstersayContainer _localesNPCMonstersayStore;
 };
 
 #define sMySQLStore MySQLDataStore::getSingleton()

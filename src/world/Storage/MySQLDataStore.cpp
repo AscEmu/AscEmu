@@ -2933,3 +2933,66 @@ MySQLStructure::CreatureFormation const* MySQLDataStore::getCreatureFormationByS
 
     return nullptr;
 }
+
+void MySQLDataStore::loadLocalesNPCMonstersay()
+{
+    uint32_t start_time = getMSTime();
+    //                                                                   0      1          2            3         4      5      6      7      8
+    QueryResult* local_monstersay_result = WorldDatabase.Query("SELECT entry, type, language_code, monstername, text0, text1, text2, text3, text4 FROM locales_npc_monstersay");
+    if (local_monstersay_result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `locales_npc_monstersay` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `locales_npc_monstersay` has %u columns", local_monstersay_result->GetFieldCount());
+
+    _localesNPCMonstersayStore.rehash(local_monstersay_result->GetRowCount());
+
+    uint32_t local_monstersay_count = 0;
+    uint32_t i = 0;
+    do
+    {
+        ++i;
+        Field* fields = local_monstersay_result->Fetch();
+
+        MySQLStructure::LocalesNPCMonstersay& localMonstersay = _localesNPCMonstersayStore[i];
+
+        localMonstersay.entry = fields[0].GetInt32();
+        localMonstersay.type = fields[1].GetUInt32();
+        std::string locString = fields[2].GetString();
+        localMonstersay.languageCode = sLocalizationMgr.getLanguagesIdFromString(locString);
+        localMonstersay.monstername = strdup(fields[3].GetString());
+        localMonstersay.text0 = strdup(fields[4].GetString());
+        localMonstersay.text1 = strdup(fields[5].GetString());
+        localMonstersay.text2 = strdup(fields[6].GetString());
+        localMonstersay.text3 = strdup(fields[7].GetString());
+        localMonstersay.text4 = strdup(fields[8].GetString());
+
+        ++local_monstersay_count;
+
+    } while (local_monstersay_result->NextRow());
+
+    delete local_monstersay_result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_npc_monstersay` table in %u ms!", local_monstersay_count, getMSTime() - start_time);
+}
+
+MySQLStructure::LocalesNPCMonstersay const* MySQLDataStore::getLocalizedMonsterSay(uint32_t entry, uint32_t sessionLocale, uint32_t event)
+{
+    for (LocalesNPCMonstersayContainer::const_iterator itr = _localesNPCMonstersayStore.begin(); itr != _localesNPCMonstersayStore.end(); ++itr)
+    {
+        if (itr->second.entry == entry)
+        {
+            if (itr->second.languageCode == sessionLocale)
+            {
+                if (itr->second.type == event)
+                {
+                    return &itr->second;
+                }
+            }
+            
+        }
+    }
+    return nullptr;
+}

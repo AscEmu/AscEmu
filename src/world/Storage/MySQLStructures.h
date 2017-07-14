@@ -174,6 +174,18 @@ namespace MySQLStructure
     //locales_item
     //locales_item_pages
     //locales_npc_monstersay
+    struct LocalesNPCMonstersay
+    {
+        uint32_t entry;
+        uint32_t type;
+        uint32_t languageCode;
+        char* monstername;
+        char* text0;
+        char* text1;
+        char* text2;
+        char* text3;
+        char* text4;
+    };
     //locales_npc_script_text
     //locales_npc_text
     //locales_quest

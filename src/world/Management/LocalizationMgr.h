@@ -86,16 +86,6 @@ struct LocalizedWorldMapInfo
     char* Text;
 };
 
-struct LocalizedMonstersay
-{
-    char* monstername;
-    char* text0;
-    char* text1;
-    char* text2;
-    char* text3;
-    char* text4;
-};
-
 class LocalizationMgr
 {
 public:
@@ -103,15 +93,23 @@ public:
     void Shutdown();
     void Reload(bool first);
     void Lower(std::string& conv);
-    uint32_t GetLanguageId(uint32_t full);
 
-    uint32_t GetLanguageId(std::string langstr)
+    uint32_t getLanguagesIdFromString(std::string langstr)
     {
-        std::string ns = langstr;
-        Lower(ns);
+        if (langstr.compare("enGB") == 0 || langstr.compare("enUS") == 0)
+            return 0;
+        if (langstr.compare("koKR") == 0)
+            return 1;
+        if (langstr.compare("frFR") == 0)
+            return 2;
+        if (langstr.compare("deDE") == 0)
+            return 3;
+        if (langstr.compare("esES") == 0)
+            return 4;
+        if (langstr.compare("ruRU") == 0)
+            return 5;
 
-        uint32_t lid = *(uint32_t*)ns.c_str();
-        return GetLanguageId(lid);
+        return 0;
     }
 
     void GetDistinctLanguages(std::set<std::string>& dest, const char* table);
@@ -127,7 +125,6 @@ public:
     LocalizedWorldStringTable* GetLocalizedWorldStringTable(uint32_t id, uint32_t language);
     LocalizedWorldBroadCast* GetLocalizedWorldBroadCast(uint32_t id, uint32_t language);
     LocalizedWorldMapInfo* GetLocalizedWorldMapInfo(uint32_t id, uint32_t language);
-    LocalizedMonstersay* GetLocalizedMonstersay(uint32_t id, uint32_t language);
 
     template <typename T>
     void CopyHashMap(std::unordered_map<uint32_t, T>* src, std::unordered_map<uint32_t, T>* dest)
@@ -149,7 +146,6 @@ private:
     std::unordered_map<uint32_t, LocalizedWorldStringTable>* m_WorldStrings;
     std::unordered_map<uint32_t, LocalizedWorldBroadCast>* m_WorldBroadCast;
     std::unordered_map<uint32_t, LocalizedWorldMapInfo>* m_WorldMapInfo;
-    std::unordered_map<uint32_t, LocalizedMonstersay>* m_MonsterSay;
 
     std::vector<std::pair<uint32_t, uint32_t>> m_languages;
     bool m_disabled;

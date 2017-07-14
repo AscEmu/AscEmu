@@ -43,6 +43,7 @@
 #include "Spell/Definitions/SpellSchoolConversionTable.h"
 #include "Spell/Definitions/PowerType.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
+#include "Units/Creatures/CreatureDefines.hpp"
 
 // MIT Start
 
@@ -3071,6 +3072,164 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
                 data << uint64_t(0);
                 data << uint32_t(messageLength);
                 data << message;
+                data << uint8_t(0);
+                player->SendPacket(&data);
+            }
+        }
+    }
+}
+
+void Object::SendMonsterSayMessageInRange(Creature* creature, NpcMonsterSay* npcMonsterSay, int randChoice, uint32_t event)
+{
+    uint32 myphase = GetPhase();
+    for (std::set<Object*>::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
+    {
+        Object* object = *itr;
+        if ((object->GetPhase() & myphase) != 0)
+        {
+            if (object->IsPlayer())
+            {
+                Player* player = static_cast<Player*>(object);
+                uint32_t sessionLanguage = player->GetSession()->language;
+
+                //////////////////////////////////////////////////////////////////////////////////////////////
+                // get text (normal or localized)
+                const char* text;
+                MySQLStructure::LocalesNPCMonstersay const* lmsay = (sessionLanguage > 0) ? sMySQLStore.getLocalizedMonsterSay(GetEntry(), sessionLanguage, event) : nullptr;
+                if (lmsay != nullptr)
+                {
+                    switch (randChoice)
+                    {
+                        case 0:
+                            if (lmsay->text0 != NULL)
+                                text = lmsay->text0;
+                            break;
+                        case 1:
+                            if (lmsay->text1 != NULL)
+                                text = lmsay->text1;
+                            break;
+                        case 2:
+                            if (lmsay->text2 != NULL)
+                                text = lmsay->text2;
+                            break;
+                        case 3:
+                            if (lmsay->text3 != NULL)
+                                text = lmsay->text3;
+                            break;
+                        case 4:
+                            if (lmsay->text4 != NULL)
+                                text = lmsay->text4;
+                            break;
+                    }
+                }
+                else
+                {
+                    text = npcMonsterSay->Texts[randChoice];
+                }
+
+                // replace text with content
+                std::string newText = text;
+#if VERSION_STRING != Cata
+                static const char* races[NUM_RACES] = { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "None", "Blood Elf", "Draenei" };
+#else
+                static const char* races[NUM_RACES] = { "None", "Human", "Orc", "Dwarf", "Night Elf", "Undead", "Tauren", "Gnome", "Troll", "Goblin", "Blood Elf", "Draenei", "None", "None", "None", "None", "None", "None", "None", "None", "None", "None", "Worgen" };
+#endif
+                static const char* classes[MAX_PLAYER_CLASSES] = { "None", "Warrior", "Paladin", "Hunter", "Rogue", "Priest", "Death Knight", "Shaman", "Mage", "Warlock", "None", "Druid" };
+                char* test = strstr((char*)text, "$R");
+                if (test == NULL)
+                    test = strstr((char*)text, "$r");
+                if (test != NULL)
+                {
+                    uint64 targetGUID = creature->GetTargetGUID();
+                    Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
+                    if (CurrentTarget)
+                    {
+                        ptrdiff_t testOfs = test - text;
+                        newText.replace(testOfs, 2, races[CurrentTarget->getRace()]);
+                    }
+                }
+                test = strstr((char*)text, "$N");
+                if (test == NULL)
+                    test = strstr((char*)text, "$n");
+                if (test != NULL)
+                {
+                    uint64 targetGUID = creature->GetTargetGUID();
+                    Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
+                    if (CurrentTarget && CurrentTarget->IsPlayer())
+                    {
+                        ptrdiff_t testOfs = test - text;
+                        newText.replace(testOfs, 2, static_cast<Player*>(CurrentTarget)->GetName());
+                    }
+                }
+                test = strstr((char*)text, "$C");
+                if (test == NULL)
+                    test = strstr((char*)text, "$c");
+                if (test != NULL)
+                {
+                    uint64 targetGUID = creature->GetTargetGUID();
+                    Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
+                    if (CurrentTarget)
+                    {
+                        ptrdiff_t testOfs = test - text;
+                        newText.replace(testOfs, 2, classes[CurrentTarget->getClass()]);
+                    }
+                }
+                test = strstr((char*)text, "$G");
+                if (test == NULL)
+                    test = strstr((char*)text, "$g");
+                if (test != NULL)
+                {
+                    uint64 targetGUID = creature->GetTargetGUID();
+                    Unit* CurrentTarget = GetMapMgr()->GetUnit(targetGUID);
+                    if (CurrentTarget)
+                    {
+                        char* g0 = test + 2;
+                        char* g1 = strchr(g0, ':');
+                        if (g1)
+                        {
+                            char* gEnd = strchr(g1, ';');
+                            if (gEnd)
+                            {
+                                *g1 = 0x00;
+                                ++g1;
+                                *gEnd = 0x00;
+                                ++gEnd;
+                                *test = 0x00;
+                                newText = text;
+                                newText += (CurrentTarget->getGender() == 0) ? g0 : g1;
+                                newText += gEnd;
+                            }
+                        }
+                    }
+                }
+
+                ////////////////////////////////////////////////////////////////////////////////////////////
+
+                std::string creatureName;
+
+                LocalizedCreatureName* lcn = (sessionLanguage > 0) ? sLocalizationMgr.GetLocalizedCreatureName(creature->GetEntry(), sessionLanguage) : nullptr;
+                if (lcn != nullptr)
+                {
+                    creatureName = lcn->Name;
+                }
+                else
+                {
+                    creatureName = creature->GetCreatureProperties()->Name;
+                }
+
+                size_t creatureNameLength = creatureName.length() + 1;
+                size_t messageLength = newText.length() + 1;
+
+                WorldPacket data(SMSG_MESSAGECHAT, 35 + creatureNameLength + messageLength);
+                data << uint8_t(npcMonsterSay->Type);
+                data << uint32_t(npcMonsterSay->Language);
+                data << uint64_t(GetGUID());
+                data << uint32_t(0);
+                data << uint32_t(creatureNameLength);
+                data << creatureName;
+                data << uint64_t(0);
+                data << uint32_t(messageLength);
+                data << newText;
                 data << uint8_t(0);
                 player->SendPacket(&data);
             }

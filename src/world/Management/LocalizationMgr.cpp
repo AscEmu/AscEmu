@@ -121,18 +121,6 @@ void LocalizationMgr::Shutdown()
         {
             SAFE_FREE_PTR(itr->second.Text);
         }
-
-        for (std::unordered_map<uint32, LocalizedMonstersay>::iterator itr = m_MonsterSay[i].begin(); itr != m_MonsterSay[i].end(); ++itr)
-        {
-            SAFE_FREE_PTR(itr->second.monstername);
-            SAFE_FREE_PTR(itr->second.text0);
-            SAFE_FREE_PTR(itr->second.text1);
-            SAFE_FREE_PTR(itr->second.text2);
-            SAFE_FREE_PTR(itr->second.text3);
-            SAFE_FREE_PTR(itr->second.text4);
-        }
-
-
     }
 
     deletedPointers.clear();
@@ -147,7 +135,6 @@ void LocalizationMgr::Shutdown()
     delete[] m_WorldStrings;
     delete[] m_WorldBroadCast;
     delete[] m_WorldMapInfo;
-    delete[] m_MonsterSay;
     m_languages.clear();
 
     LogNotice("LocalizationMgr : Pointer cleanup completed in %.4f seconds.", (getMSTime() - t) / 1000.0f);
@@ -180,24 +167,6 @@ void LocalizationMgr::GetDistinctLanguages(std::set<std::string>& dest, const ch
     delete result;
 }
 
-uint32 LocalizationMgr::GetLanguageId(uint32 full)
-{
-    if (m_disabled)
-    {
-        return 0;
-    }
-
-    for (std::vector<std::pair<uint32, uint32> >::iterator itr = m_languages.begin(); itr != m_languages.end(); ++itr)
-    {
-        if (itr->first == full)
-        {
-            return itr->second;
-        }
-    }
-
-    return 0;
-}
-
 #define MAX_LOCALIZED_CHAR 200
 void LocalizationMgr::Reload(bool first)
 {
@@ -208,6 +177,15 @@ void LocalizationMgr::Reload(bool first)
 
     QueryResult* result;
     std::set<std::string> languages;
+    languages.insert("enGB");
+    languages.insert("enUS");
+    languages.insert("koKR");
+    languages.insert("frFR");
+    languages.insert("deDE");
+    languages.insert("esES");
+    languages.insert("ruRU");
+
+
     std::map<std::string, std::string> bound_languages;
     GetDistinctLanguages(languages, "locales_creature");
     GetDistinctLanguages(languages, "locales_gameobject");
@@ -222,78 +200,18 @@ void LocalizationMgr::Reload(bool first)
     GetDistinctLanguages(languages, "locales_worldmap_info");
     GetDistinctLanguages(languages, "locales_npc_monstersay");
 
-    /// Read Language Bindings From Config
-    std::string ls = worldConfig.localization.localizedBindings;
-    std::vector<std::string> tbindings = Util::SplitStringBySeperator(ls, " ");
-    for (std::vector<std::string>::iterator ztr = tbindings.begin(); ztr != tbindings.end(); ++ztr)
-    {
-        char lb[MAX_LOCALIZED_CHAR];
-        std::string ll1, ll2;
-        strncpy(lb, (*ztr).c_str(), MAX_LOCALIZED_CHAR);
-        lb[MAX_LOCALIZED_CHAR - 1] = '\0';
 
-        char* lbp = strchr(lb, '=');
-        if (lbp == NULL)
-        {
-            continue;
-        }
-
-        *lbp = 0;
-        lbp++;
-
-        ll1 = std::string(lb);
-        ll2 = std::string(lbp);
-        Lower(ll1);
-        Lower(ll2);
-
-        if (languages.find(ll1) == languages.end())
-        {
-            bound_languages[ll1] = ll2;
-            languages.insert(ll1);
-        }
-    }
-
-    /// Generate Language IDs
-    uint32 langid = 1;
-    std::pair<uint32, uint32> dpr;
-    for (std::set<std::string>::iterator sitr = languages.begin(); sitr != languages.end(); ++sitr)
-    {
-        if ((*sitr) == "enus")        // Default
-        {
-            dpr.first = *(uint32*)sitr->c_str();
-            dpr.second = 0;
-        }
-        else
-        {
-            dpr.first = *(uint32*)sitr->c_str();
-            dpr.second = langid++;
-        }
-
-        m_languages.push_back(dpr);
-    }
-
-    if (m_languages.size() == 0)
-    {
-        m_disabled = true;
-        return;                 // No localizations
-    }
-    else
-    {
-        m_disabled = false;
-    }
-
-    m_CreatureNames = new std::unordered_map<uint32, LocalizedCreatureName>[langid];
-    m_GameObjectNames = new std::unordered_map<uint32, LocalizedGameObjectName>[langid];
-    m_Quests = new std::unordered_map<uint32, LocalizedQuest>[langid];
-    m_NpcTexts = new std::unordered_map<uint32, LocalizedNpcText>[langid];
-    m_Items = new std::unordered_map<uint32, LocalizedItem>[langid];
-    m_ItemPages = new std::unordered_map<uint32, LocalizedItemPage>[langid];
-    m_NpcScriptTexts = new std::unordered_map<uint32, LocalizedNpcScriptText>[langid];
-    m_GossipMenuOption = new std::unordered_map<uint32, LocalizedGossipMenuOption>[langid];
-    m_WorldStrings = new std::unordered_map<uint32, LocalizedWorldStringTable>[langid];
-    m_WorldBroadCast = new std::unordered_map<uint32, LocalizedWorldBroadCast>[langid];
-    m_WorldMapInfo = new std::unordered_map<uint32, LocalizedWorldMapInfo>[langid];
-    m_MonsterSay = new std::unordered_map<uint32, LocalizedMonstersay>[langid];
+    m_CreatureNames = new std::unordered_map<uint32, LocalizedCreatureName>[languages.size()];
+    m_GameObjectNames = new std::unordered_map<uint32, LocalizedGameObjectName>[languages.size()];
+    m_Quests = new std::unordered_map<uint32, LocalizedQuest>[languages.size()];
+    m_NpcTexts = new std::unordered_map<uint32, LocalizedNpcText>[languages.size()];
+    m_Items = new std::unordered_map<uint32, LocalizedItem>[languages.size()];
+    m_ItemPages = new std::unordered_map<uint32, LocalizedItemPage>[languages.size()];
+    m_NpcScriptTexts = new std::unordered_map<uint32, LocalizedNpcScriptText>[languages.size()];
+    m_GossipMenuOption = new std::unordered_map<uint32, LocalizedGossipMenuOption>[languages.size()];
+    m_WorldStrings = new std::unordered_map<uint32, LocalizedWorldStringTable>[languages.size()];
+    m_WorldBroadCast = new std::unordered_map<uint32, LocalizedWorldBroadCast>[languages.size()];
+    m_WorldMapInfo = new std::unordered_map<uint32, LocalizedWorldMapInfo>[languages.size()];
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Creature Names
@@ -313,10 +231,10 @@ void LocalizationMgr::Reload(bool first)
                 str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
-                lid = GetLanguageId(str);
+                lid = getLanguagesIdFromString(str);
                 if (lid == 0)
                 {
-                    continue;        // no loading enUS stuff.. lawl
+                    continue;        // no loading enUS/enGB stuff.. lawl
                 }
 
                 cn.Name = strdup(f[2].GetString());
@@ -346,7 +264,7 @@ void LocalizationMgr::Reload(bool first)
                 str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
-                lid = GetLanguageId(str);
+                lid = getLanguagesIdFromString(str);
                 if (lid == 0)
                 {
                     continue;        // no loading enUS stuff.. lawl
@@ -378,7 +296,7 @@ void LocalizationMgr::Reload(bool first)
                 str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
-                lid = GetLanguageId(str);
+                lid = getLanguagesIdFromString(str);
                 if (lid == 0)
                 {
                     continue;        // no loading enUS stuff.. lawl
@@ -416,7 +334,7 @@ void LocalizationMgr::Reload(bool first)
                 str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
-                lid = GetLanguageId(str);
+                lid = getLanguagesIdFromString(str);
                 if (lid == 0)
                 {
                     continue;        // no loading enUS stuff.. lawl
@@ -459,7 +377,7 @@ void LocalizationMgr::Reload(bool first)
                 str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
-                lid = GetLanguageId(str);
+                lid = getLanguagesIdFromString(str);
                 if (lid == 0)
                 {
                     continue;        // no loading enUS stuff.. lawl
@@ -496,7 +414,7 @@ void LocalizationMgr::Reload(bool first)
                 str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
-                lid = GetLanguageId(str);
+                lid = getLanguagesIdFromString(str);
                 if (lid == 0)
                 {
                     continue;        // no loading enUS stuff.. lawl
@@ -524,7 +442,7 @@ void LocalizationMgr::Reload(bool first)
                 uint32_t entry = field[0].GetUInt32();
                 std::string languageString = std::string(field[1].GetString());
 
-                uint32 languageId = GetLanguageId(languageString);
+                uint32 languageId = getLanguagesIdFromString(languageString);
                 if (languageId == 0)
                 {
                     continue;
@@ -560,7 +478,7 @@ void LocalizationMgr::Reload(bool first)
                 str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
-                lid = GetLanguageId(str);
+                lid = getLanguagesIdFromString(str);
                 if (lid == 0)
                 {
                     continue;
@@ -592,7 +510,7 @@ void LocalizationMgr::Reload(bool first)
                 str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
-                lid = GetLanguageId(str);
+                lid = getLanguagesIdFromString(str);
                 if (lid == 0)
                 {
                     continue;
@@ -624,7 +542,7 @@ void LocalizationMgr::Reload(bool first)
                 str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
-                lid = GetLanguageId(str);
+                lid = getLanguagesIdFromString(str);
                 if (lid == 0)
                 {
                     continue;
@@ -656,7 +574,7 @@ void LocalizationMgr::Reload(bool first)
                 str = std::string(f[1].GetString());
                 entry = f[0].GetUInt32();
 
-                lid = GetLanguageId(str);
+                lid = getLanguagesIdFromString(str);
                 if (lid == 0)
                 {
                     continue;
@@ -668,73 +586,6 @@ void LocalizationMgr::Reload(bool first)
             while (result->NextRow());
             delete result;
         }
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // NPC Monstersay
-    {
-        LocalizedMonstersay ms;
-        std::string str;
-        uint32 entry;
-        Field* f;
-        uint32 lid;
-
-        LogDefault("Loading locales_npc_monstersay rows...");
-        result = WorldDatabase.Query("SELECT * FROM locales_npc_monstersay");
-        if (result)
-        {
-            do
-            {
-                f = result->Fetch();
-                str = std::string(f[1].GetString());
-                entry = f[0].GetUInt32();
-
-                lid = GetLanguageId(str);
-                if (lid == 0)
-                {
-                    continue;        // no loading enUS stuff.. lawl
-                }
-
-                ms.monstername = strdup(f[2].GetString());
-                ms.text0 = strdup(f[3].GetString());
-                ms.text1 = strdup(f[4].GetString());
-                ms.text2 = strdup(f[5].GetString());
-                ms.text3 = strdup(f[6].GetString());
-                ms.text4 = strdup(f[7].GetString());
-
-                m_MonsterSay[lid].insert(std::make_pair(entry, ms));
-            }
-            while (result->NextRow());
-            delete result;
-        }
-    }
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////
-    // Apply all the language bindings.
-    for (std::map<std::string, std::string>::iterator itr = bound_languages.begin(); itr != bound_languages.end(); ++itr)
-    {
-        uint32 source_language_id = GetLanguageId(itr->second);
-        uint32 dest_language_id = GetLanguageId(itr->first);
-        if (source_language_id == 0 || dest_language_id == 0)
-        {
-            LOG_ERROR("Invalid locale conversion string specified: %u->%u (%s->%s)", source_language_id, dest_language_id, itr->second.c_str(), itr->first.c_str());
-            continue;
-        }
-
-        // duplicate the hashmaps (we can save the pointers here)
-        CopyHashMap<LocalizedItem>(&m_Items[source_language_id], &m_Items[dest_language_id]);
-        CopyHashMap<LocalizedCreatureName>(&m_CreatureNames[source_language_id], &m_CreatureNames[dest_language_id]);
-        CopyHashMap<LocalizedGameObjectName>(&m_GameObjectNames[source_language_id], &m_GameObjectNames[dest_language_id]);
-        CopyHashMap<LocalizedItemPage>(&m_ItemPages[source_language_id], &m_ItemPages[dest_language_id]);
-        CopyHashMap<LocalizedQuest>(&m_Quests[source_language_id], &m_Quests[dest_language_id]);
-        CopyHashMap<LocalizedNpcText>(&m_NpcTexts[source_language_id], &m_NpcTexts[dest_language_id]);
-        CopyHashMap<LocalizedNpcScriptText>(&m_NpcScriptTexts[source_language_id], &m_NpcScriptTexts[dest_language_id]);
-        CopyHashMap<LocalizedGossipMenuOption>(&m_GossipMenuOption[source_language_id], &m_GossipMenuOption[dest_language_id]);
-        CopyHashMap<LocalizedWorldStringTable>(&m_WorldStrings[source_language_id], &m_WorldStrings[dest_language_id]);
-        CopyHashMap<LocalizedWorldBroadCast>(&m_WorldBroadCast[source_language_id], &m_WorldBroadCast[dest_language_id]);
-        CopyHashMap<LocalizedWorldMapInfo>(&m_WorldMapInfo[source_language_id], &m_WorldMapInfo[dest_language_id]);
-        CopyHashMap<LocalizedMonstersay>(&m_MonsterSay[source_language_id], &m_MonsterSay[dest_language_id]);
     }
 }
 
@@ -754,4 +605,3 @@ MAKE_LOOKUP_FUNCTION(LocalizedGossipMenuOption, m_GossipMenuOption, GetLocalized
 MAKE_LOOKUP_FUNCTION(LocalizedWorldStringTable, m_WorldStrings, GetLocalizedWorldStringTable);
 MAKE_LOOKUP_FUNCTION(LocalizedWorldBroadCast, m_WorldBroadCast, GetLocalizedWorldBroadCast);
 MAKE_LOOKUP_FUNCTION(LocalizedWorldMapInfo, m_WorldMapInfo, GetLocalizedWorldMapInfo);
-MAKE_LOOKUP_FUNCTION(LocalizedMonstersay, m_MonsterSay, GetLocalizedMonstersay);

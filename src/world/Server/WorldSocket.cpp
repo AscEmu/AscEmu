@@ -535,7 +535,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     pSession->LoadSecurity(GMFlags);
     pSession->SetAccountFlags(AccountFlags);
     pSession->m_lastPing = (uint32)UNIXTIME;
-    pSession->language = sLocalizationMgr.GetLanguageId(lang);
+    pSession->language = sLocalizationMgr.getLanguagesIdFromString(lang);
 
     recvData >> pSession->m_muted;
 
