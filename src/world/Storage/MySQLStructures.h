@@ -169,10 +169,47 @@ namespace MySQLStructure
     //lfg_dungeon_rewards
 
     //locales_creature
+    struct LocalesCreature
+    {
+        uint32_t entry;
+        uint32_t languageCode;
+        char* name;
+        char* subName;
+    };
+
     //locales_gameobject
+    struct LocalesGameobject
+    {
+        uint32_t entry;
+        uint32_t languageCode;
+        char* name;
+    };
+
     //locales_gossip_menu_option
+    struct LocalesGossipMenuOption
+    {
+        uint32_t entry;
+        uint32_t languageCode;
+        char* name;
+    };
+
     //locales_item
+    struct LocalesItem
+    {
+        uint32_t entry;
+        uint32_t languageCode;
+        char* name;
+        char* description;
+    };
+
     //locales_item_pages
+    struct LocalesItemPages
+    {
+        uint32_t entry;
+        uint32_t languageCode;
+        char* text;
+    };
+
     //locales_npc_monstersay
     struct LocalesNPCMonstersay
     {
@@ -186,12 +223,60 @@ namespace MySQLStructure
         char* text3;
         char* text4;
     };
+
     //locales_npc_script_text
+    struct LocalesNpcScriptText
+    {
+        uint32_t entry;
+        uint32_t languageCode;
+        char* text;
+    };
+
     //locales_npc_text
+    struct LocalesNpcText
+    {
+        uint32_t entry;
+        uint32_t languageCode;
+        char* texts[8][2];
+    };
+
     //locales_quest
+    struct LocalesQuest
+    {
+        uint32_t entry;
+        uint32_t languageCode;
+        char* title;
+        char* details;
+        char* objectives;
+        char* completionText;
+        char* incompleteText;
+        char* endText;
+        char* objectiveText[4];
+    };
+
     //locales_worldbroadcast
+    struct LocalesWorldbroadcast
+    {
+        uint32_t entry;
+        uint32_t languageCode;
+        char* text;
+    };
+
     //locales_worldmap_info
+    struct LocalesWorldmapInfo
+    {
+        uint32_t entry;
+        uint32_t languageCode;
+        char* text;
+    };
+
     //locales_worldstring_table
+    struct LocalesWorldStringTable
+    {
+        uint32_t entry;
+        uint32_t languageCode;
+        char* text;
+    };
 
     //loot_creatures
     //loot_fishing

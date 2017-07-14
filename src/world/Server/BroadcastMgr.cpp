@@ -11,7 +11,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "BroadcastMgr.h"
 #include "World.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Management/LocalizationMgr.h"
+#include "Storage/MySQLStructures.h"
 
 #include "Log.hpp"
 

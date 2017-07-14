@@ -25,7 +25,7 @@
 #include "Management/AuctionMgr.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Management/LocalizationMgr.h"
+#include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
@@ -525,7 +525,7 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
     GetPlayer()->SetTargetGUID(targetGuid);
 
     NpcText const* pGossip = sMySQLStore.getNpcText(textID);
-    LocalizedNpcText* lnc = (language > 0) ? sLocalizationMgr.GetLocalizedNpcText(textID, language) : NULL;
+    MySQLStructure::LocalesNpcText const* lnc = (language > 0) ? sMySQLStore.getLocalizedNpcText(textID, language) : nullptr;
 
     data.Initialize(SMSG_NPC_TEXT_UPDATE);
     data << textID;
@@ -538,27 +538,43 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
 
             if (lnc)
             {
-                if (strlen(lnc->Texts[i][0]) == 0)
-                    data << lnc->Texts[i][1];
+                if (strlen(lnc->texts[i][0]) == 0)
+                {
+                    data << lnc->texts[i][1];
+                }
                 else
-                    data << lnc->Texts[i][0];
+                {
+                    data << lnc->texts[i][0];
+                }
 
-                if (strlen(lnc->Texts[i][1]) == 0)
-                    data << lnc->Texts[i][0];
+                if (strlen(lnc->texts[i][1]) == 0)
+                {
+                    data << lnc->texts[i][0];
+                }
                 else
-                    data << lnc->Texts[i][1];
+                {
+                    data << lnc->texts[i][1];
+                }
             }
             else
             {
                 if (pGossip->Texts[i].Text[0].size() == 0)
+                {
                     data << pGossip->Texts[i].Text[1];
+                }
                 else
+                {
                     data << pGossip->Texts[i].Text[0];
+                }
 
                 if (pGossip->Texts[i].Text[1].size() == 0)
+                {
                     data << pGossip->Texts[i].Text[0];
+                }
                 else
+                {
                     data << pGossip->Texts[i].Text[1];
+                }
             }
             data << pGossip->Texts[i].Lang;
 

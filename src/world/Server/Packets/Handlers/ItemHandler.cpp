@@ -26,7 +26,6 @@
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 
@@ -742,12 +741,20 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recv_data)
         return;
     }
 
-    std::string Name = itemProto->Name;
-    std::string Description = itemProto->Description;
+    std::string Name;
+    std::string Description;
 
-    LocalizedItem* li = (language > 0) ? sLocalizationMgr.GetLocalizedItem(itemid, language) : NULL;
-    if (li)
-        Name = li->Name;
+    MySQLStructure::LocalesItem const* li = (language > 0) ? sMySQLStore.getLocalizedItem(itemid, language) : nullptr;
+    if (li != nullptr)
+    {
+        Name = li->name;
+        Description = li->description;
+    }
+    else
+    {
+        Name = itemProto->Name;
+        Description = itemProto->Description;
+    }
 
     WorldPacket data(SMSG_ITEM_QUERY_SINGLE_RESPONSE, 800);
     data << itemProto->ItemId;

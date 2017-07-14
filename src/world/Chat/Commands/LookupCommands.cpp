@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Management/LocalizationMgr.h"
+#include "Storage/MySQLStructures.h"
 #include "Spell/Customization/SpellCustomizations.hpp"
 
 //.lookup achievement
@@ -285,9 +285,9 @@ bool ChatHandler::HandleLookupCreatureCommand(const char* args, WorldSession* m_
         CreatureProperties const* it = sMySQLStore.getCreatureProperties(itr->second.Id);
         if (it != nullptr)
         {
-            LocalizedCreatureName* lit = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedCreatureName(it->Id, m_session->language) : NULL;
+            MySQLStructure::LocalesCreature const* lit = (m_session->language > 0) ? sMySQLStore.getLocalizedCreature(it->Id, m_session->language) : nullptr;
 
-            std::string litName = std::string(lit ? lit->Name : "");
+            std::string litName = std::string( lit ? lit->name : "");
 
             Util::StringToLowerCase(litName);
 
@@ -392,9 +392,9 @@ bool ChatHandler::HandleLookupItemCommand(const char* args, WorldSession* m_sess
         if (it == nullptr)
             continue;
 
-        LocalizedItem* lit = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedItem(it->ItemId, m_session->language) : NULL;
+        MySQLStructure::LocalesItem const* lit = (m_session->language > 0) ? sMySQLStore.getLocalizedItem(it->ItemId, m_session->language) : nullptr;
 
-        std::string litName = std::string(lit ? lit->Name : "");
+        std::string litName = std::string(lit ? lit->name : "");
 
         Util::StringToLowerCase(litName);
 
@@ -506,9 +506,9 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
 
         std::string lower_quest_title = quest->title;
 
-        LocalizedQuest* li = (m_session->language > 0) ? sLocalizationMgr.GetLocalizedQuest(quest->id, m_session->language) : NULL;
+        MySQLStructure::LocalesQuest const* li = (m_session->language > 0) ? sMySQLStore.getLocalizedQuest(quest->id, m_session->language) : nullptr;
 
-        std::string liName = std::string(li ? li->Title : "");
+        std::string liName = std::string(li ? li->title : "");
 
         Util::StringToLowerCase(liName);
         Util::StringToLowerCase(lower_quest_title);
@@ -520,7 +520,7 @@ bool ChatHandler::HandleLookupQuestCommand(const char* args, WorldSession* m_ses
         if (Util::findXinYString(search_string, lower_quest_title) || localizedFound)
         {
             std::string questid = MyConvertIntToString(quest->id);
-            std::string questtitle = localizedFound ? (li ? li->Title : "") : quest->title;
+            std::string questtitle = localizedFound ? (li ? li->title : "") : quest->title;
             // send quest link
             recout = questid.c_str();
             recout += ": |cff00ccff|Hquest:";

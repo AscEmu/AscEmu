@@ -3027,10 +3027,10 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
                 std::string message;
                 NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(textId);
 
-                LocalizedNpcScriptText* lnpct = (sessionLanguage > 0) ? sLocalizationMgr.GetLocalizedNpcScriptText(textId, sessionLanguage) : nullptr;
+                MySQLStructure::LocalesNpcScriptText const* lnpct = (sessionLanguage > 0) ? sMySQLStore.getLocalizedNpcScriptText(textId, sessionLanguage) : nullptr;
                 if (lnpct != nullptr)
                 {
-                    message = lnpct->Text;
+                    message = lnpct->text;
                 }
                 else
                 {
@@ -3039,10 +3039,10 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
 
                 std::string creatureName;
 
-                LocalizedCreatureName* lcn = (sessionLanguage > 0) ? sLocalizationMgr.GetLocalizedCreatureName(creature->GetEntry(), sessionLanguage) : nullptr;
+                MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->GetEntry(), sessionLanguage) : nullptr;
                 if (lcn != nullptr)
                 {
-                    creatureName = lcn->Name;
+                    creatureName = lcn->name;
                 }
                 else
                 {
@@ -3207,10 +3207,10 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, NpcMonsterSay* npc
 
                 std::string creatureName;
 
-                LocalizedCreatureName* lcn = (sessionLanguage > 0) ? sLocalizationMgr.GetLocalizedCreatureName(creature->GetEntry(), sessionLanguage) : nullptr;
+                MySQLStructure::LocalesCreature const* lcn = (sessionLanguage > 0) ? sMySQLStore.getLocalizedCreature(creature->GetEntry(), sessionLanguage) : nullptr;
                 if (lcn != nullptr)
                 {
-                    creatureName = lcn->Name;
+                    creatureName = lcn->name;
                 }
                 else
                 {

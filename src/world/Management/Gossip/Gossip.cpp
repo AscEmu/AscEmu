@@ -22,7 +22,6 @@
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
 #include "Management/Item.h"
-#include "Management/LocalizationMgr.h"
 
 using namespace Arcemu;
 
@@ -137,11 +136,16 @@ WorldPacket& operator<<(WorldPacket& packet, const Gossip::Menu & menu)
             packet << itr->first->min_level;
             packet << itr->first->quest_flags;
             packet << uint8(0);
-            LocalizedQuest* lq = sLocalizationMgr.GetLocalizedQuest(itr->first->id, menu.language_);
-            if (lq != NULL)
-                packet << lq->Title;
+
+            MySQLStructure::LocalesQuest const* lq = (menu.language_ > 0) ? sMySQLStore.getLocalizedQuest(itr->first->id, menu.language_) : nullptr;
+            if (lq != nullptr)
+            {
+                packet << lq->title;
+            }
             else
+            {
                 packet << itr->first->title;
+            }
         }
     }
     return packet;
@@ -168,11 +172,15 @@ StackBuffer<size>& operator<<(StackBuffer<size> & packet, const Gossip::Menu & m
             packet << itr->first->min_level;
             packet << itr->first->quest_flags;
             packet << uint8(0);
-            LocalizedQuest* lq = sLocalizationMgr.GetLocalizedQuest(itr->first->id, menu.language_);
-            if (lq != NULL)
-                title = lq->Title;
+            MySQLStructure::LocalesQuest const* lq = (menu.language_ > 0) ? sMySQLStore.getLocalizedQuest(itr->first->id, menu.language_) : nullptr;
+            if (lq != nullptr)
+            {
+                title = lq->title;
+            }
             else
+            {
                 title = itr->first->title;
+            }
             packet << title;
         }
     }

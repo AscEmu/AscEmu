@@ -9,7 +9,7 @@ This file is released under the MIT license. See README-MIT for more information
 #include "Management/AuctionMgr.h"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Management/LocalizationMgr.h"
+#include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"

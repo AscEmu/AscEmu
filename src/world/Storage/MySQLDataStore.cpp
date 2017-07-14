@@ -2934,6 +2934,275 @@ MySQLStructure::CreatureFormation const* MySQLDataStore::getCreatureFormationByS
     return nullptr;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// locales
+void MySQLDataStore::loadLocalesCreature()
+{
+    uint32_t start_time = getMSTime();
+    //                                                0         1          2      3
+    QueryResult* result = WorldDatabase.Query("SELECT id, language_code, name, subname FROM locales_creature");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `locales_creature` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `locales_creature` has %u columns", result->GetFieldCount());
+
+    _localesCreatureStore.rehash(result->GetRowCount());
+
+    uint32_t load_count = 0;
+    uint32_t i = 0;
+    do
+    {
+        ++i;
+        Field* fields = result->Fetch();
+
+        MySQLStructure::LocalesCreature& localCreature = _localesCreatureStore[i];
+
+        localCreature.entry = fields[0].GetInt32();
+        std::string locString = fields[1].GetString();
+        localCreature.languageCode = Util::getLanguagesIdFromString(locString);
+        localCreature.name = strdup(fields[2].GetString());
+        localCreature.subName = strdup(fields[3].GetString());
+
+        ++load_count;
+
+    } while (result->NextRow());
+
+    delete result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_creature` table in %u ms!", load_count, getMSTime() - start_time);
+}
+
+MySQLStructure::LocalesCreature const* MySQLDataStore::getLocalizedCreature(uint32_t entry, uint32_t sessionLocale)
+{
+    for (LocalesCreatureContainer::const_iterator itr = _localesCreatureStore.begin(); itr != _localesCreatureStore.end(); ++itr)
+    {
+        if (itr->second.entry == entry)
+        {
+            if (itr->second.languageCode == sessionLocale)
+            {
+                return &itr->second;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void MySQLDataStore::loadLocalesGameobject()
+{
+    uint32_t start_time = getMSTime();
+    //                                                  0         1          2
+    QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, name FROM locales_gameobject");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `locales_gameobject` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `locales_gameobject` has %u columns", result->GetFieldCount());
+
+    _localesGameobjectStore.rehash(result->GetRowCount());
+
+    uint32_t load_count = 0;
+    uint32_t i = 0;
+    do
+    {
+        ++i;
+        Field* fields = result->Fetch();
+
+        MySQLStructure::LocalesGameobject& localGameobject = _localesGameobjectStore[i];
+
+        localGameobject.entry = fields[0].GetInt32();
+        std::string locString = fields[1].GetString();
+        localGameobject.languageCode = Util::getLanguagesIdFromString(locString);
+        localGameobject.name = strdup(fields[2].GetString());
+
+        ++load_count;
+
+    } while (result->NextRow());
+
+    delete result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_gameobject` table in %u ms!", load_count, getMSTime() - start_time);
+}
+
+MySQLStructure::LocalesGameobject const* MySQLDataStore::getLocalizedGameobject(uint32_t entry, uint32_t sessionLocale)
+{
+    for (LocalesGameobjectContainer::const_iterator itr = _localesGameobjectStore.begin(); itr != _localesGameobjectStore.end(); ++itr)
+    {
+        if (itr->second.entry == entry)
+        {
+            if (itr->second.languageCode == sessionLocale)
+            {
+                return &itr->second;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void MySQLDataStore::loadLocalesGossipMenuOption()
+{
+    uint32_t start_time = getMSTime();
+    //                                                   0         1             2
+    QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, option_text FROM locales_gossip_menu_option");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `locales_gossip_menu_option` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `locales_gossip_menu_option` has %u columns", result->GetFieldCount());
+
+    _localesGossipMenuOptionStore.rehash(result->GetRowCount());
+
+    uint32_t load_count = 0;
+    uint32_t i = 0;
+    do
+    {
+        ++i;
+        Field* fields = result->Fetch();
+
+        MySQLStructure::LocalesGossipMenuOption& localGossipMenuOption = _localesGossipMenuOptionStore[1];
+
+        localGossipMenuOption.entry = fields[0].GetInt32();
+        std::string locString = fields[1].GetString();
+        localGossipMenuOption.languageCode = Util::getLanguagesIdFromString(locString);
+        localGossipMenuOption.name = strdup(fields[2].GetString());
+
+        ++load_count;
+
+    } while (result->NextRow());
+
+    delete result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_gossip_menu_option` table in %u ms!", load_count, getMSTime() - start_time);
+}
+
+MySQLStructure::LocalesGossipMenuOption const* MySQLDataStore::getLocalizedGossipMenuOption(uint32_t entry, uint32_t sessionLocale)
+{
+    for (LocalesGossipMenuOptionContainer::const_iterator itr = _localesGossipMenuOptionStore.begin(); itr != _localesGossipMenuOptionStore.end(); ++itr)
+    {
+        if (itr->second.entry == entry)
+        {
+            if (itr->second.languageCode == sessionLocale)
+            {
+                return &itr->second;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void MySQLDataStore::loadLocalesItem()
+{
+    uint32_t start_time = getMSTime();
+    //                                                  0         1          2         3
+    QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, name, description FROM locales_item");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `locales_item` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `locales_item` has %u columns", result->GetFieldCount());
+
+    _localesItemStore.rehash(result->GetRowCount());
+
+    uint32_t load_count = 0;
+    uint32_t i = 0;
+    do
+    {
+        ++i;
+        Field* fields = result->Fetch();
+
+        MySQLStructure::LocalesItem& localItem = _localesItemStore[i];
+
+        localItem.entry = fields[0].GetInt32();
+        std::string locString = fields[1].GetString();
+        localItem.languageCode = Util::getLanguagesIdFromString(locString);
+        localItem.name = strdup(fields[2].GetString());
+        localItem.description = strdup(fields[3].GetString());
+
+        ++load_count;
+
+    } while (result->NextRow());
+
+    delete result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_item` table in %u ms!", load_count, getMSTime() - start_time);
+}
+
+MySQLStructure::LocalesItem const* MySQLDataStore::getLocalizedItem(uint32_t entry, uint32_t sessionLocale)
+{
+    for (LocalesItemContainer::const_iterator itr = _localesItemStore.begin(); itr != _localesItemStore.end(); ++itr)
+    {
+        if (itr->second.entry == entry)
+        {
+            if (itr->second.languageCode == sessionLocale)
+            {
+                return &itr->second;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void MySQLDataStore::loadLocalesItemPages()
+{
+    uint32_t start_time = getMSTime();
+    //                                                 0         1           2
+    QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, text FROM locales_item_pages");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `locales_item_pages` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `locales_item_pages` has %u columns", result->GetFieldCount());
+
+    _localesItemPagesStore.rehash(result->GetRowCount());
+
+    uint32_t load_count = 0;
+    uint32_t i = 0;
+    do
+    {
+        ++i;
+        Field* fields = result->Fetch();
+
+        MySQLStructure::LocalesItemPages& localesItemPages = _localesItemPagesStore[i];
+
+        localesItemPages.entry = fields[0].GetInt32();
+        std::string locString = fields[1].GetString();
+        localesItemPages.languageCode = Util::getLanguagesIdFromString(locString);
+        localesItemPages.text = strdup(fields[2].GetString());
+
+        ++load_count;
+
+    } while (result->NextRow());
+
+    delete result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_item_pages` table in %u ms!", load_count, getMSTime() - start_time);
+}
+
+MySQLStructure::LocalesItemPages const* MySQLDataStore::getLocalizedItemPages(uint32_t entry, uint32_t sessionLocale)
+{
+    for (LocalesItemPagesContainer::const_iterator itr = _localesItemPagesStore.begin(); itr != _localesItemPagesStore.end(); ++itr)
+    {
+        if (itr->second.entry == entry)
+        {
+            if (itr->second.languageCode == sessionLocale)
+            {
+                return &itr->second;
+            }
+        }
+    }
+    return nullptr;
+}
+
 void MySQLDataStore::loadLocalesNPCMonstersay()
 {
     uint32_t start_time = getMSTime();
@@ -2961,7 +3230,7 @@ void MySQLDataStore::loadLocalesNPCMonstersay()
         localMonstersay.entry = fields[0].GetInt32();
         localMonstersay.type = fields[1].GetUInt32();
         std::string locString = fields[2].GetString();
-        localMonstersay.languageCode = sLocalizationMgr.getLanguagesIdFromString(locString);
+        localMonstersay.languageCode = Util::getLanguagesIdFromString(locString);
         localMonstersay.monstername = strdup(fields[3].GetString());
         localMonstersay.text0 = strdup(fields[4].GetString());
         localMonstersay.text1 = strdup(fields[5].GetString());
@@ -2991,7 +3260,338 @@ MySQLStructure::LocalesNPCMonstersay const* MySQLDataStore::getLocalizedMonsterS
                     return &itr->second;
                 }
             }
-            
+        }
+    }
+    return nullptr;
+}
+
+void MySQLDataStore::loadLocalesNpcScriptText()
+{
+    uint32_t start_time = getMSTime();
+    //                                                  0         1          2
+    QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, text FROM locales_npc_script_text");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `locales_npc_script_text` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `locales_npc_script_text` has %u columns", result->GetFieldCount());
+
+    _localesNpcScriptTextStore.rehash(result->GetRowCount());
+
+    uint32_t load_count = 0;
+    uint32_t i = 0;
+    do
+    {
+        ++i;
+        Field* fields = result->Fetch();
+
+        MySQLStructure::LocalesNpcScriptText& localNpcScriptText = _localesNpcScriptTextStore[i];
+
+        localNpcScriptText.entry = fields[0].GetInt32();
+        std::string locString = fields[1].GetString();
+        localNpcScriptText.languageCode = Util::getLanguagesIdFromString(locString);
+        localNpcScriptText.text = strdup(fields[2].GetString());
+
+        ++load_count;
+
+    } while (result->NextRow());
+
+    delete result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_npc_script_text` table in %u ms!", load_count, getMSTime() - start_time);
+}
+
+MySQLStructure::LocalesNpcScriptText const* MySQLDataStore::getLocalizedNpcScriptText(uint32_t entry, uint32_t sessionLocale)
+{
+    for (LocalesNpcScriptTextContainer::const_iterator itr = _localesNpcScriptTextStore.begin(); itr != _localesNpcScriptTextStore.end(); ++itr)
+    {
+        if (itr->second.entry == entry)
+        {
+            if (itr->second.languageCode == sessionLocale)
+            {
+                return &itr->second;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void MySQLDataStore::loadLocalesNpcText()
+{
+    uint32_t start_time = getMSTime();
+    //                                                  0         1           2       3       4       5       6       7       8       9       10      11     12      13      14      15      16      17
+    QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, text0, text0_1, text1, text1_1, text2, text2_1, text3, text3_1, text4, text4_1, text5, text5_1, text6, text6_1, text7, text7_1 FROM locales_npc_text");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `locales_npc_text` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `locales_npc_text` has %u columns", result->GetFieldCount());
+
+    _localesNpcTextStore.rehash(result->GetRowCount());
+
+    uint32_t load_count = 0;
+    uint32_t i = 0;
+    do
+    {
+        ++i;
+        Field* fields = result->Fetch();
+
+        MySQLStructure::LocalesNpcText& localNpcText = _localesNpcTextStore[i];
+
+        localNpcText.entry = fields[0].GetInt32();
+        std::string locString = fields[1].GetString();
+        localNpcText.languageCode = Util::getLanguagesIdFromString(locString);
+
+        for (uint8 i = 0; i < 8; ++i)
+        {
+            localNpcText.texts[i][0] = strdup(fields[2 + (2 * i)].GetString());
+            localNpcText.texts[i][1] = strdup(fields[3 + (2 * i)].GetString());
+        }
+
+        ++load_count;
+
+    } while (result->NextRow());
+
+    delete result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_npc_text` table in %u ms!", load_count, getMSTime() - start_time);
+}
+
+MySQLStructure::LocalesNpcText const* MySQLDataStore::getLocalizedNpcText(uint32_t entry, uint32_t sessionLocale)
+{
+    for (LocalesNpcTextContainer::const_iterator itr = _localesNpcTextStore.begin(); itr != _localesNpcTextStore.end(); ++itr)
+    {
+        if (itr->second.entry == entry)
+        {
+            if (itr->second.languageCode == sessionLocale)
+            {
+                return &itr->second;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void MySQLDataStore::loadLocalesQuest()
+{
+    uint32_t start_time = getMSTime();
+    //                                                  0         1           2       3         4            5                 6           7           8                9              10             11
+    QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, Title, Details, Objectives, CompletionText, IncompleteText, EndText, ObjectiveText1, ObjectiveText2, ObjectiveText3, ObjectiveText4 FROM locales_quest");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `locales_quest` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `locales_quest` has %u columns", result->GetFieldCount());
+
+    _localesQuestStore.rehash(result->GetRowCount());
+
+    uint32_t load_count = 0;
+    uint32_t i = 0;
+    do
+    {
+        ++i;
+        Field* fields = result->Fetch();
+
+        MySQLStructure::LocalesQuest& localQuest = _localesQuestStore[i];
+
+        localQuest.entry = fields[0].GetInt32();
+        std::string locString = fields[1].GetString();
+        localQuest.languageCode = Util::getLanguagesIdFromString(locString);
+        localQuest.title = strdup(fields[2].GetString());
+        localQuest.details = strdup(fields[3].GetString());
+        localQuest.objectives = strdup(fields[4].GetString());
+        localQuest.completionText = strdup(fields[5].GetString());
+        localQuest.incompleteText = strdup(fields[6].GetString());
+        localQuest.endText = strdup(fields[7].GetString());
+        localQuest.objectiveText[0] = strdup(fields[8].GetString());
+        localQuest.objectiveText[1] = strdup(fields[9].GetString());
+        localQuest.objectiveText[2] = strdup(fields[10].GetString());
+        localQuest.objectiveText[3] = strdup(fields[11].GetString());
+
+        ++load_count;
+
+    } while (result->NextRow());
+
+    delete result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_quest` table in %u ms!", load_count, getMSTime() - start_time);
+}
+
+MySQLStructure::LocalesQuest const* MySQLDataStore::getLocalizedQuest(uint32_t entry, uint32_t sessionLocale)
+{
+    for (LocalesQuestContainer::const_iterator itr = _localesQuestStore.begin(); itr != _localesQuestStore.end(); ++itr)
+    {
+        if (itr->second.entry == entry)
+        {
+            if (itr->second.languageCode == sessionLocale)
+            {
+                return &itr->second;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void MySQLDataStore::loadLocalesWorldbroadcast()
+{
+    uint32_t start_time = getMSTime();
+    //                                                  0         1          2
+    QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, text FROM locales_worldbroadcast");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `locales_worldbroadcast` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `locales_worldbroadcast` has %u columns", result->GetFieldCount());
+
+    _localesWorldbroadcastStore.rehash(result->GetRowCount());
+
+    uint32_t load_count = 0;
+    uint32_t i = 0;
+    do
+    {
+        ++i;
+        Field* fields = result->Fetch();
+
+        MySQLStructure::LocalesWorldbroadcast& localWorldbroadcast = _localesWorldbroadcastStore[i];
+
+        localWorldbroadcast.entry = fields[0].GetInt32();
+        std::string locString = fields[1].GetString();
+        localWorldbroadcast.languageCode = Util::getLanguagesIdFromString(locString);
+        localWorldbroadcast.text = strdup(fields[2].GetString());
+
+        ++load_count;
+
+    } while (result->NextRow());
+
+    delete result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_worldbroadcast` table in %u ms!", load_count, getMSTime() - start_time);
+}
+
+MySQLStructure::LocalesWorldbroadcast const* MySQLDataStore::getLocalizedWorldbroadcast(uint32_t entry, uint32_t sessionLocale)
+{
+    for (LocalesWorldbroadcastContainer::const_iterator itr = _localesWorldbroadcastStore.begin(); itr != _localesWorldbroadcastStore.end(); ++itr)
+    {
+        if (itr->second.entry == entry)
+        {
+            if (itr->second.languageCode == sessionLocale)
+            {
+                return &itr->second;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void MySQLDataStore::loadLocalesWorldmapInfo()
+{
+    uint32_t start_time = getMSTime();
+    //                                                  0           1         2
+    QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, text FROM locales_worldmap_info");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `locales_worldmap_info` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `locales_worldmap_info` has %u columns", result->GetFieldCount());
+
+    _localesWorldmapInfoStore.rehash(result->GetRowCount());
+
+    uint32_t load_count = 0;
+    uint32_t i = 0;
+    do
+    {
+        ++i;
+        Field* fields = result->Fetch();
+
+        MySQLStructure::LocalesWorldmapInfo& localWorldmapInfo = _localesWorldmapInfoStore[i];
+
+        localWorldmapInfo.entry = fields[0].GetInt32();
+        std::string locString = fields[1].GetString();
+        localWorldmapInfo.languageCode = Util::getLanguagesIdFromString(locString);
+        localWorldmapInfo.text = strdup(fields[2].GetString());
+
+        ++load_count;
+
+    } while (result->NextRow());
+
+    delete result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_worldmap_info` table in %u ms!", load_count, getMSTime() - start_time);
+}
+
+MySQLStructure::LocalesWorldmapInfo const* MySQLDataStore::getLocalizedWorldmapInfo(uint32_t entry, uint32_t sessionLocale)
+{
+    for (LocalesWorldmapInfoContainer::const_iterator itr = _localesWorldmapInfoStore.begin(); itr != _localesWorldmapInfoStore.end(); ++itr)
+    {
+        if (itr->second.entry == entry)
+        {
+            if (itr->second.languageCode == sessionLocale)
+            {
+                return &itr->second;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void MySQLDataStore::loadLocalesWorldStringTable()
+{
+    uint32_t start_time = getMSTime();
+    //                                                  0           1         2
+    QueryResult* result = WorldDatabase.Query("SELECT entry, language_code, text FROM locales_worldstring_table");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `locales_worldstring_table` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `locales_worldstring_table` has %u columns", result->GetFieldCount());
+
+    _localesWorldStringTableStore.rehash(result->GetRowCount());
+
+    uint32_t load_count = 0;
+    uint32_t i = 0;
+    do
+    {
+        ++i;
+        Field* fields = result->Fetch();
+
+        MySQLStructure::LocalesWorldStringTable& localWorldStringTable = _localesWorldStringTableStore[i];
+
+        localWorldStringTable.entry = fields[0].GetInt32();
+        std::string locString = fields[1].GetString();
+        localWorldStringTable.languageCode = Util::getLanguagesIdFromString(locString);
+        localWorldStringTable.text = strdup(fields[2].GetString());
+
+        ++load_count;
+
+    } while (result->NextRow());
+
+    delete result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `locales_worldstring_table` table in %u ms!", load_count, getMSTime() - start_time);
+}
+
+MySQLStructure::LocalesWorldStringTable const* MySQLDataStore::getLocalizedWorldStringTable(uint32_t entry, uint32_t sessionLocale)
+{
+    for (LocalesWorldStringTableContainer::const_iterator itr = _localesWorldStringTableStore.begin(); itr != _localesWorldStringTableStore.end(); ++itr)
+    {
+        if (itr->second.entry == entry)
+        {
+            if (itr->second.languageCode == sessionLocale)
+            {
+                return &itr->second;
+            }
         }
     }
     return nullptr;

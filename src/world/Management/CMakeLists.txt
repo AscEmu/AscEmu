@@ -39,8 +39,6 @@ set(SRC_MANAGEMENT_FILES
    ${PATH_PREFIX}/ItemInterface.cpp
    ${PATH_PREFIX}/ItemInterface.h
    ${PATH_PREFIX}/ItemPrototype.h
-   ${PATH_PREFIX}/LocalizationMgr.cpp
-   ${PATH_PREFIX}/LocalizationMgr.h
    ${PATH_PREFIX}/LootMgr.cpp
    ${PATH_PREFIX}/LootMgr.h
    ${PATH_PREFIX}/MailMgr.cpp

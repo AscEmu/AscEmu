@@ -71,7 +71,22 @@ public:
     typedef std::list<MySQLStructure::WordFilterChat> WordFilterChatSet;
 
     typedef std::unordered_map<uint32_t, MySQLStructure::CreatureFormation> CreatureFormationsMap;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // locales
+    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesCreature> LocalesCreatureContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesGameobject> LocalesGameobjectContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesGossipMenuOption> LocalesGossipMenuOptionContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesItem> LocalesItemContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesItemPages> LocalesItemPagesContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesNPCMonstersay> LocalesNPCMonstersayContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesNpcScriptText> LocalesNpcScriptTextContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesNpcText> LocalesNpcTextContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesQuest> LocalesQuestContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesWorldbroadcast> LocalesWorldbroadcastContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesWorldmapInfo> LocalesWorldmapInfoContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::LocalesWorldStringTable> LocalesWorldStringTableContainer;
+
 
     //helper
     MySQLStructure::ItemPage const* getItemPage(uint32_t entry);
@@ -156,7 +171,21 @@ public:
     CreatureFormationsMap const* getCreatureFormationsStore() { return &_creatureFormationsStore; }
     MySQLStructure::CreatureFormation const* getCreatureFormationBySpawnId(uint32_t spawnId);
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // locales
+    MySQLStructure::LocalesCreature const* getLocalizedCreature(uint32_t entry, uint32_t sessionLocale);
+    MySQLStructure::LocalesGameobject const* getLocalizedGameobject(uint32_t entry, uint32_t sessionLocale);
+    MySQLStructure::LocalesGossipMenuOption const* getLocalizedGossipMenuOption(uint32_t entry, uint32_t sessionLocale);
+    MySQLStructure::LocalesItem const* getLocalizedItem(uint32_t entry, uint32_t sessionLocale);
+    MySQLStructure::LocalesItemPages const* getLocalizedItemPages(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesNPCMonstersay const* getLocalizedMonsterSay(uint32_t entry, uint32_t sessionLocale, uint32_t event);
+    MySQLStructure::LocalesNpcScriptText const* getLocalizedNpcScriptText(uint32_t entry, uint32_t sessionLocale);
+    MySQLStructure::LocalesNpcText const* getLocalizedNpcText(uint32_t entry, uint32_t sessionLocale);
+    MySQLStructure::LocalesQuest const* getLocalizedQuest(uint32_t entry, uint32_t sessionLocale);
+    MySQLStructure::LocalesWorldbroadcast const* getLocalizedWorldbroadcast(uint32_t entry, uint32_t sessionLocale);
+    MySQLStructure::LocalesWorldmapInfo const* getLocalizedWorldmapInfo(uint32_t entry, uint32_t sessionLocale);
+    MySQLStructure::LocalesWorldStringTable const* getLocalizedWorldStringTable(uint32_t entry, uint32_t sessionLocale);
+    
 
     bool isCharacterNameAllowed(std::string charName);
 
@@ -219,7 +248,21 @@ public:
     void loadWordFilterChat();
 
     void loadCreatureFormationsTable();
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // locales
+    void loadLocalesCreature();
+    void loadLocalesGameobject();
+    void loadLocalesGossipMenuOption();
+    void loadLocalesItem();
+    void loadLocalesItemPages();
     void loadLocalesNPCMonstersay();
+    void loadLocalesNpcScriptText();
+    void loadLocalesNpcText();
+    void loadLocalesQuest();
+    void loadLocalesWorldbroadcast();
+    void loadLocalesWorldmapInfo();
+    void loadLocalesWorldStringTable();
 
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
@@ -265,7 +308,21 @@ public:
     WordFilterChatSet _wordFilterChatStore;
 
     CreatureFormationsMap _creatureFormationsStore;
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // locales
+    LocalesCreatureContainer _localesCreatureStore;
+    LocalesGameobjectContainer _localesGameobjectStore;
+    LocalesGossipMenuOptionContainer _localesGossipMenuOptionStore;
+    LocalesItemContainer _localesItemStore;
+    LocalesItemPagesContainer _localesItemPagesStore;
     LocalesNPCMonstersayContainer _localesNPCMonstersayStore;
+    LocalesNpcScriptTextContainer _localesNpcScriptTextStore;
+    LocalesNpcTextContainer _localesNpcTextStore;
+    LocalesQuestContainer _localesQuestStore;
+    LocalesWorldbroadcastContainer _localesWorldbroadcastStore;
+    LocalesWorldmapInfoContainer _localesWorldmapInfoStore;
+    LocalesWorldStringTableContainer _localesWorldStringTableStore;
 };
 
 #define sMySQLStore MySQLDataStore::getSingleton()

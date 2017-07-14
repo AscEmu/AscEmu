@@ -6,12 +6,12 @@ This file is released under the MIT license. See README-MIT for more information
 #include "StdAfx.h"
 #include "Server/MainServerDefines.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Management/LocalizationMgr.h"
+#include "Storage/MySQLStructures.h"
 #include "Spell/SpellMgr.h"
 
 void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32_t menutype, uint32_t language, Player* plr)
 {
-    LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : nullptr;
+    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
     std::map<uint32_t, uint8_t>::const_iterator itr;
 
     std::string questEndText = "";
@@ -25,9 +25,9 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     *data << uint64_t(0);                      // (questsharer?) guid
     *data << uint32_t(qst->id);
 
-    *data << (lq ? lq->Title : qst->title);
-    *data << (lq ? lq->Details : qst->details);
-    *data << (lq ? lq->Objectives : qst->objectives);
+    *data << (lq ? lq->title : qst->title);
+    *data << (lq ? lq->details : qst->details);
+    *data << (lq ? lq->objectives : qst->objectives);
 
     *data << questGiverTextWindow;           // 4.x
     *data << questGiverTargetName;           // 4.x
@@ -145,7 +145,7 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 
 void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32_t menutype, uint32_t language, Player* plr)
 {
-    LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : NULL;
+    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
 
     std::string questGiverTextWindow = "";
     std::string questGiverTargetName = "";
@@ -156,8 +156,8 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
     *data << uint64_t(qst_giver->GetGUID());
     *data << uint32_t(qst->id);
 
-    *data << (lq ? lq->Title : qst->title);
-    *data << (lq ? lq->CompletionText : qst->completiontext);
+    *data << (lq ? lq->title : qst->title);
+    *data << (lq ? lq->completionText : qst->completiontext);
 
     *data << questGiverTextWindow;
     *data << questGiverTargetName;
@@ -275,14 +275,14 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
 
 void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32_t status, uint32_t language)
 {
-    LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : nullptr;
+    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
 
     data->SetOpcode(SMSG_QUESTGIVER_REQUEST_ITEMS);
     *data << uint64_t(qst_giver->GetGUID());
     *data << uint32_t(qst->id);
 
-    *data << (lq ? lq->Title : qst->title);
-    *data << (lq ? lq->IncompleteText : qst->incompletetext);
+    *data << (lq ? lq->title : qst->title);
+    *data << (lq ? lq->incompleteText : qst->incompletetext);
 
     *data << uint32_t(0);
 

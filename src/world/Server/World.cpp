@@ -20,7 +20,6 @@ This file is released under the MIT license. See README-MIT for more information
 #include "WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
 #include <CrashHandler.h>
-#include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
 #include "Map/MapCell.h"
@@ -84,9 +83,6 @@ World::World()
 
 World::~World()
 {
-    LogNotice("LocalizationMgr : ~LocalizationMgr()");
-    sLocalizationMgr.Shutdown();
-
     LogNotice("WorldLog : ~WorldLog()");
     delete WorldLog::getSingletonPtr();
 
@@ -891,7 +887,19 @@ void World::loadMySQLStores()
     sMySQLStore.loadWordFilterCharacterNames();
     sMySQLStore.loadWordFilterChat();
     sMySQLStore.loadCreatureFormationsTable();
+
+    sMySQLStore.loadLocalesCreature();
+    sMySQLStore.loadLocalesGameobject();
+    sMySQLStore.loadLocalesGossipMenuOption();
+    sMySQLStore.loadLocalesItem();
+    sMySQLStore.loadLocalesItemPages();
     sMySQLStore.loadLocalesNPCMonstersay();
+    sMySQLStore.loadLocalesNpcScriptText();
+    sMySQLStore.loadLocalesNpcText();
+    sMySQLStore.loadLocalesQuest();
+    sMySQLStore.loadLocalesWorldbroadcast();
+    sMySQLStore.loadLocalesWorldmapInfo();
+    sMySQLStore.loadLocalesWorldStringTable();
 }
 
 void World::loadMySQLTablesByTask(uint32_t start_time)
@@ -962,8 +970,6 @@ void World::loadMySQLTablesByTask(uint32_t start_time)
 #undef MAKE_TASK
 
     tl.wait();
-
-    sLocalizationMgr.Reload(false);
 
     CommandTableStorage::getSingleton().Load();
     LogNotice("WordFilter : Loading...");

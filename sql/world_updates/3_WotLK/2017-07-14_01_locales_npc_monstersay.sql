@@ -18,5 +18,5 @@ CREATE TABLE `locales_npc_monstersay` (
 --
 -- Update world_db_version
 --
-UPDATE `world_db_version` SET `LastUpdate` = '2017-07-14_01_locales_npc_monstersay' WHERE `LastUpdate` = '2017-07-11_02_creature_initial_equip';
+UPDATE `world_db_version` SET `LastUpdate` = '2017-07-14_01_locales_npc_monstersay' WHERE `LastUpdate` = '2017-06-15_01_remove_tables';
 

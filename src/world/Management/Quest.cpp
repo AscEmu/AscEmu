@@ -20,7 +20,8 @@
  */
 
 #include "StdAfx.h"
-#include "Management/LocalizationMgr.h"
+#include "Storage/MySQLStructures.h"
+#include "Storage/MySQLDataStore.hpp"
 #include "Quest.h"
 #include "Server/WorldSession.h"
 #include "QuestMgr.h"
@@ -34,7 +35,7 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(QuestProperties const* qst)
     // better to allocate more at startup than have to realloc the buffer later on.
 
     WorldPacket* data = new WorldPacket(SMSG_QUEST_QUERY_RESPONSE, 248);
-    LocalizedQuest* lci = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : NULL;
+    MySQLStructure::LocalesQuest const* lci = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
     uint32 i;
 
     *data << uint32(qst->id);                                       // Quest ID
@@ -43,9 +44,13 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(QuestProperties const* qst)
     *data << uint32(qst->min_level);                                // Quest required level
 
     if (qst->quest_sort > 0)
+    {
         *data << int32(-(int32)qst->quest_sort);                    // Negative if pointing to a sort.
+    }
     else
+    {
         *data << uint32(qst->zone_id);                              // Positive if pointing to a zone.
+    }
 
     *data << uint32(qst->type);                                     // Info ID / Type
     *data << qst->suggestedplayers;                                 // suggested players
@@ -104,12 +109,12 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(QuestProperties const* qst)
     *data << qst->point_y;
     *data << qst->point_opt;
 
-    if (lci)
+    if (lci != nullptr)
     {
-        *data << lci->Title;
-        *data << lci->Objectives;
-        *data << lci->Details;
-        *data << lci->EndText;
+        *data << lci->title;
+        *data << lci->objectives;
+        *data << lci->details;
+        *data << lci->endText;
         *data << uint8(0);
     }
     else
@@ -135,12 +140,12 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(QuestProperties const* qst)
         *data << qst->required_itemcount[i];        // Collect item count [i]
     }
 
-    if (lci)
+    if (lci != nullptr)
     {
-        *data << lci->ObjectiveText[0];
-        *data << lci->ObjectiveText[1];
-        *data << lci->ObjectiveText[2];
-        *data << lci->ObjectiveText[3];
+        *data << lci->objectiveText[0];
+        *data << lci->objectiveText[1];
+        *data << lci->objectiveText[2];
+        *data << lci->objectiveText[3];
     }
     else
     {

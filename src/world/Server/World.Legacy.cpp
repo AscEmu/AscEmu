@@ -35,8 +35,8 @@
 #include "Management/ChannelMgr.h"
 #include "WorldSocket.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 #include <CrashHandler.h>
-#include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
 #include "Map/MapCell.h"

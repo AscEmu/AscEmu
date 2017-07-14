@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Management/LocalizationMgr.h"
+#include "Storage/MySQLStructures.h"
 #include "Map/WorldCreatorDefines.hpp"
 
 
@@ -105,17 +105,16 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recv_data)
     CreatureProperties const* ci = sMySQLStore.getCreatureProperties(entry);
     if (ci != nullptr)
     {
-
-        LocalizedCreatureName* lcn = (language > 0) ? sLocalizationMgr.GetLocalizedCreatureName(entry, language) : nullptr;
+        MySQLStructure::LocalesCreature const* lcn = (language > 0) ? sMySQLStore.getLocalizedCreature(entry, language) : nullptr;
         data << uint32_t(entry);
-        data << (lcn ? ci->Name : ci->Name);
+        data << (lcn ? lcn->name : ci->Name);
 
         for (int i = 0; i < 7; ++i)
         {
             data << uint8_t(0);       // unk
         }
 
-        data << (lcn ? lcn->SubName : ci->SubName);
+        data << (lcn ? lcn->subName : ci->SubName);
         data << ci->info_str;
         data << uint32_t(ci->Flags1);
         data << uint32_t(0);                  // unk set 4 times with 1

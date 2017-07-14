@@ -21,10 +21,10 @@
 
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 #include "Management/Item.h"
 #include "Management/Container.h"
 #include "Management/ItemInterface.h"
-#include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellMgr.h"
@@ -1174,12 +1174,15 @@ std::string GetItemLinkByProto(ItemProperties const* iProto, uint32 language = 0
     }
 
     // try to get localized version
-    LocalizedItem* lit = (language > 0) ? sLocalizationMgr.GetLocalizedItem(iProto->ItemId, language) : 0;
-
+    MySQLStructure::LocalesItem const* lit = (language > 0) ? sMySQLStore.getLocalizedItem(iProto->ItemId, language) : nullptr;
     if (lit)
-        snprintf(buffer, 256, "|%s|Hitem:%u:0:0:0:0:0:0:0|h[%s]|h|r", colour.c_str(), iProto->ItemId, lit->Name);
+    {
+        snprintf(buffer, 256, "|%s|Hitem:%u:0:0:0:0:0:0:0|h[%s]|h|r", colour.c_str(), iProto->ItemId, lit->name);
+    }
     else
+    {
         snprintf(buffer, 256, "|%s|Hitem:%u:0:0:0:0:0:0:0|h[%s]|h|r", colour.c_str(), iProto->ItemId, iProto->Name.c_str());
+    }
 
 
     ItemLink = static_cast<const char*>(buffer);

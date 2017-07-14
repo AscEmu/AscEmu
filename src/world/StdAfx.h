@@ -204,7 +204,6 @@
 #include "Storage/DatabaseCleaner.h"
 #include "Storage/DayWatcherThread.h"
 #include "Server/BroadcastMgr.h"
-#include "Management/LocalizationMgr.h"
 
 #include "Server/Master.h"
 

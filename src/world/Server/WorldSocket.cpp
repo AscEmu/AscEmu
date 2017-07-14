@@ -25,7 +25,6 @@
 #include "AuthCodes.h"
 #include "Management/AddonMgr.h"
 #include "Server/LogonCommClient/LogonCommHandler.h"
-#include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Auth/Sha1.h"
 #include "World.h"
@@ -535,7 +534,7 @@ void WorldSocket::InformationRetreiveCallback(WorldPacket & recvData, uint32 req
     pSession->LoadSecurity(GMFlags);
     pSession->SetAccountFlags(AccountFlags);
     pSession->m_lastPing = (uint32)UNIXTIME;
-    pSession->language = sLocalizationMgr.getLanguagesIdFromString(lang);
+    pSession->language = Util::getLanguagesIdFromString(lang);
 
     recvData >> pSession->m_muted;
 

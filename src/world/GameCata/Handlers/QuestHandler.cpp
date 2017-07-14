@@ -5,7 +5,7 @@ This file is released under the MIT license. See README-MIT for more information
 
 #include "StdAfx.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Management/LocalizationMgr.h"
+#include "Storage/MySQLStructures.h"
 #include "Map/WorldCreatorDefines.hpp"
 
 void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recv_data)
@@ -37,7 +37,7 @@ void WorldSession::HandleQuestPOIQueryOpcode(WorldPacket& recv_data)
 WorldPacket* WorldSession::BuildQuestQueryResponse(QuestProperties const* qst)
 {
     WorldPacket* data = new WorldPacket(SMSG_QUEST_QUERY_RESPONSE, 100);
-    LocalizedQuest* lci = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : nullptr;
+    MySQLStructure::LocalesQuest const* lci = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
 
     *data << uint32_t(qst->id);                                        // Quest ID
     *data << uint32_t(2);                                              // Unknown, always seems to be 2
@@ -134,10 +134,10 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(QuestProperties const* qst)
     *data << qst->point_y;
     *data << qst->point_opt;
 
-    *data << (lci ? lci->Title : qst->title);
-    *data << (lci ? lci->Objectives : qst->objectives);
-    *data << (lci ? lci->Details : qst->details);
-    *data << (lci ? lci->EndText : qst->endtext);
+    *data << (lci ? lci->title : qst->title);
+    *data << (lci ? lci->objectives : qst->objectives);
+    *data << (lci ? lci->details : qst->details);
+    *data << (lci ? lci->endText : qst->endtext);
     *data << "";                                                     // completed text
 
     for (uint8_t i = 0; i < 4; ++i)
@@ -156,7 +156,7 @@ WorldPacket* WorldSession::BuildQuestQueryResponse(QuestProperties const* qst)
 
     for (uint8_t i = 0; i < 4; ++i)
     {
-        *data << (lci ? lci->ObjectiveText[i] : qst->objectivetexts[i]);
+        *data << (lci ? lci->objectiveText[i] : qst->objectivetexts[i]);
     }
 
     for (uint8_t i = 0; i < 4; ++i)

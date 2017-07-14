@@ -2574,7 +2574,6 @@ void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
         if (Rand(npcMonsterSay->Chance))
         {
             choice = (npcMonsterSay->TextCount == 1) ? 0 : RandomUInt(npcMonsterSay->TextCount - 1);
-            const char* text = npcMonsterSay->Texts[choice];
         }
 
         SendMonsterSayMessageInRange(this, npcMonsterSay, choice, Event);

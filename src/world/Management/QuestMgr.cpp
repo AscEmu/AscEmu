@@ -24,7 +24,7 @@
 #include "QuestLogEntry.hpp"
 #include "Management/ItemInterface.h"
 #include "Storage/MySQLDataStore.hpp"
-#include "Management/LocalizationMgr.h"
+#include "Storage/MySQLStructures.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/SpellAuras.h"
@@ -328,17 +328,17 @@ uint32 QuestMgr::ActiveQuestsCount(Object* quest_giver, Player* plr)
 #if VERSION_STRING != Cata
 void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr)
 {
-    LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : NULL;
+    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
     ItemProperties const* it;
 
     data->SetOpcode(SMSG_QUESTGIVER_OFFER_REWARD);
     *data << uint64(qst_giver->GetGUID());
     *data << uint32(qst->id);
 
-    if (lq)
+    if (lq != nullptr)
     {
-        *data << lq->Title;
-        *data << lq->CompletionText;
+        *data << lq->title;
+        *data << lq->completionText;
     }
     else
     {
@@ -406,19 +406,28 @@ void QuestMgr::BuildOfferReward(WorldPacket* data, QuestProperties const* qst, O
     *data << qst->rewardtalents;
     *data << qst->bonusarenapoints;
     *data << uint32(0);
+
     for (uint8 i = 0; i < 5; ++i)              // reward factions ids
+    {
         *data << uint32(0);
+    }
+
     for (uint8 i = 0; i < 5; ++i)              // columnid in QuestFactionReward.dbc (zero based)?
+    {
         *data << uint32(0);
+    }
+
     for (uint8 i = 0; i < 5; ++i)              // reward reputation override?
+    {
         *data << uint32(0);
+    }
 }
 #endif
 
 #if VERSION_STRING != Cata
 void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 menutype, uint32 language, Player* plr)
 {
-    LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : NULL;
+    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
     std::map<uint32, uint8>::const_iterator itr;
 
     data->SetOpcode(SMSG_QUESTGIVER_QUEST_DETAILS);
@@ -427,11 +436,11 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     *data << uint64(qst_giver->IsPlayer() ? qst_giver->GetGUID() : 0);						// (questsharer?) guid
     *data << qst->id;						// quest id
 
-    if (lq)
+    if (lq != nullptr)
     {
-        *data << lq->Title;
-        *data << lq->Details;
-        *data << lq->Objectives;
+        *data << lq->title;
+        *data << lq->details;
+        *data << lq->objectives;
     }
     else
     {
@@ -451,7 +460,9 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     for (uint8 i = 0; i < 6; ++i)
     {
         if (!qst->reward_choiceitem[i])
+        {
             continue;
+        }
 
         *data << qst->reward_choiceitem[i];
         *data << qst->reward_choiceitemcount[i];
@@ -464,7 +475,9 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     for (uint8 i = 0; i < 4; ++i)
     {
         if (!qst->reward_item[i])
+        {
             continue;
+        }
 
         *data << qst->reward_item[i];
         *data << qst->reward_itemcount[i];
@@ -482,15 +495,24 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
     *data << qst->rewardtalents;				// Talent reward
     *data << qst->bonusarenapoints;				// Arena Points reward
     *data << GenerateQuestXP(plr, qst);         // new 3.3.0
-    for (uint8 i = 0; i < 5; ++i)
-        *data << uint32(0);
-    for (uint8 i = 0; i < 5; ++i)
-        *data << uint32(0);
-    for (uint8 i = 0; i < 5; ++i)
-        *data << uint32(0);
 
+    for (uint8 i = 0; i < 5; ++i)
+    {
+        *data << uint32(0);
+    }
+
+    for (uint8 i = 0; i < 5; ++i)
+    {
+        *data << uint32(0);
+    }
+
+    for (uint8 i = 0; i < 5; ++i)
+    {
+        *data << uint32(0);
+    }
 
     *data << qst->detailemotecount;				// Amount of emotes (4?)
+
     for (uint8 i = 0; i < qst->detailemotecount; i++)
     {
         *data << qst->detailemote[i];			// Emote ID
@@ -502,17 +524,18 @@ void QuestMgr::BuildQuestDetails(WorldPacket* data, QuestProperties const* qst, 
 #if VERSION_STRING != Cata
 void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, Object* qst_giver, uint32 status, uint32 language)
 {
-    LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest(qst->id, language) : NULL;
+    MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest(qst->id, language) : nullptr;
+
     ItemProperties const* it;
     data->SetOpcode(SMSG_QUESTGIVER_REQUEST_ITEMS);
 
     *data << qst_giver->GetGUID();
     *data << qst->id;
 
-    if (lq)
+    if (lq != nullptr)
     {
-        *data << lq->Title;
-        *data << ((lq->IncompleteText[0]) ? lq->IncompleteText : lq->Details);
+        *data << lq->title;
+        *data << ((lq->incompleteText[0]) ? lq->incompleteText : lq->details);
     }
     else
     {
@@ -523,9 +546,13 @@ void QuestMgr::BuildRequestItems(WorldPacket* data, QuestProperties const* qst, 
     *data << uint32(0);
 
     if (status == QMGR_QUEST_NOT_FINISHED)
+    {
         *data << qst->incompleteemote;
+    }
     else
+    {
         *data << qst->completeemote;
+    }
 
     *data << uint32(0);
     *data << qst->quest_flags;
@@ -687,7 +714,7 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
             if (tmp_map.find((*it)->qst->id) == tmp_map.end())
             {
                 tmp_map.insert(std::map<uint32, uint8>::value_type((*it)->qst->id, 1));
-                LocalizedQuest* lq = (language > 0) ? sLocalizationMgr.GetLocalizedQuest((*it)->qst->id, language) : NULL;
+                MySQLStructure::LocalesQuest const* lq = (language > 0) ? sMySQLStore.getLocalizedQuest((*it)->qst->id, language) : nullptr;
 
                 *data << (*it)->qst->id;
                 /**data << sQuestMgr.CalcQuestStatus(qst_giver, plr, *it);
@@ -714,10 +741,14 @@ void QuestMgr::BuildQuestList(WorldPacket* data, Object* qst_giver, Player* plr,
                 *data << uint32((*it)->qst->quest_flags);
                 *data << uint8(0);   // According to MANGOS: "changes icon: blue question or yellow exclamation"
 
-                if (lq)
-                    *data << lq->Title;
+                if (lq != nullptr)
+                {
+                    *data << lq->title;
+                }
                 else
+                {
                     *data << (*it)->qst->title;
+                }
             }
         }
     }

@@ -29,7 +29,6 @@
 #include "Server/LogonCommClient/LogonCommHandler.h"
 #include "Storage/MySQLDataStore.hpp"
 #include "Storage/MySQLStructures.h"
-#include "Management/LocalizationMgr.h"
 #include "Server/MainServerDefines.h"
 #include "Map/MapMgr.h"
 #include "Spell/Definitions/PowerType.h"
@@ -633,25 +632,6 @@ void WorldSession::Delete()
 
 char szError[64];
 
-// Returns a npc text indexed by id
-// These strings can be found in npc_script_text tables in the database
-const char* WorldSession::LocalizedCreatureTexts(uint32 id)
-{
-    NpcScriptText const* wst = sMySQLStore.getNpcScriptText(id);
-    if (!wst)
-    {
-        memset(szError, 0, 64);
-        sprintf(szError, "ID:%u is not in npc_script_text", id);
-        return szError;
-    }
-
-    LocalizedNpcScriptText* lpi = (language > 0) ? sLocalizationMgr.GetLocalizedNpcScriptText(id, language) : nullptr;
-    if (lpi)
-        return lpi->Text;
-    else
-        return wst->text.c_str();
-}
-
 
 // Returns a gossip menu option indexed by id
 // These strings can be found in gossip_menu_option tables in the database
@@ -665,11 +645,15 @@ const char* WorldSession::LocalizedGossipOption(uint32 id)
         return szError;
     }
 
-    LocalizedGossipMenuOption* lpi = (language > 0) ? sLocalizationMgr.GetLocalizedGossipMenuOption(id, language) : NULL;
-    if (lpi)
-        return lpi->Text;
+    MySQLStructure::LocalesGossipMenuOption const* lpi = (language > 0) ? sMySQLStore.getLocalizedGossipMenuOption(id, language) : nullptr;
+    if (lpi != nullptr)
+    {
+        return lpi->name;
+    }
     else
+    {
         return wst->text.c_str();
+    }
 }
 
 // Returns a worldstring indexed by id
@@ -684,11 +668,15 @@ const char* WorldSession::LocalizedWorldSrv(uint32 id)
         return szError;
     }
 
-    LocalizedWorldStringTable* lpi = (language > 0) ? sLocalizationMgr.GetLocalizedWorldStringTable(id, language) : NULL;
-    if (lpi)
-        return lpi->Text;
+    MySQLStructure::LocalesWorldStringTable const* lpi = (language > 0) ? sMySQLStore.getLocalizedWorldStringTable(id, language) : nullptr;
+    if (lpi != nullptr)
+    {
+        return lpi->text;
+    }
     else
+    {
         return wst->text.c_str();
+    }
 }
 
 const char* WorldSession::LocalizedMapName(uint32 id)
@@ -701,11 +689,15 @@ const char* WorldSession::LocalizedMapName(uint32 id)
         return szError;
     }
 
-    LocalizedWorldMapInfo* lpi = (language > 0) ? sLocalizationMgr.GetLocalizedWorldMapInfo(id, language) : NULL;
-    if (lpi)
-        return lpi->Text;
+    MySQLStructure::LocalesWorldmapInfo const* lpi = (language > 0) ? sMySQLStore.getLocalizedWorldmapInfo(id, language) : nullptr;
+    if (lpi != nullptr)
+    {
+        return lpi->text;
+    }
     else
+    {
         return mi->name.c_str();
+    }
 }
 
 const char* WorldSession::LocalizedBroadCast(uint32 id)
@@ -718,10 +710,10 @@ const char* WorldSession::LocalizedBroadCast(uint32 id)
         return szError;
     }
 
-    LocalizedWorldBroadCast* lpi = (language > 0) ? sLocalizationMgr.GetLocalizedWorldBroadCast(id, language) : nullptr;
+    MySQLStructure::LocalesWorldbroadcast const* lpi = (language > 0) ? sMySQLStore.getLocalizedWorldbroadcast(id, language) : nullptr;
     if (lpi)
     {
-        return lpi->Text;
+        return lpi->text;
     }
     else
     {

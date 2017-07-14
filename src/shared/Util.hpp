@@ -31,6 +31,9 @@ namespace Util
     /*! \brief Returns true if string x is in sttrin y */
     bool findXinYString(std::string& x, std::string& y);
 
+    /*! \brief Returns wow specific language string to id*/
+    uint32_t getLanguagesIdFromString(std::string langstr);
+
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Time calculation/formatting

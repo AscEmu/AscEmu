@@ -55,6 +55,29 @@ namespace Util
         return y.find(x) != std::string::npos;
     }
 
+    uint32_t getLanguagesIdFromString(std::string langstr)
+    {
+        if (langstr.compare("enGB") == 0 || langstr.compare("enUS") == 0)
+            return 0;
+
+        if (langstr.compare("koKR") == 0)
+            return 1;
+
+        if (langstr.compare("frFR") == 0)
+            return 2;
+
+        if (langstr.compare("deDE") == 0)
+            return 3;
+
+        if (langstr.compare("esES") == 0)
+            return 4;
+
+        if (langstr.compare("ruRU") == 0)
+            return 5;
+
+        return 0;
+    }
+
 
     //////////////////////////////////////////////////////////////////////////////////////////
     // Time calculation
