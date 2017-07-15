@@ -122,8 +122,10 @@ class ChronoLordAI : public CreatureAIScript
 
         void CastTime()
         {
-            for (uint8 i = 0; i < nrspells; i++)
+            for (int i = 0; i < nrspells; ++i)
+            {
                 spells[i].casttime = spells[i].cooldown;
+            }
         }
 
         void OnTargetDied(Unit* mTarget)

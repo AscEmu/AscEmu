@@ -361,8 +361,10 @@ void Item::ApplyRandomProperties(bool apply)
 
 void Item::SaveToDB(int8 containerslot, int8 slot, bool firstsave, QueryBuffer* buf)
 {
-    if (!m_isDirty && !firstsave)
+    if (m_isDirty == false && firstsave == false)
+    {
         return;
+    }
 
     uint64 GiftCreatorGUID = GetGiftCreatorGUID();
     uint64 CreatorGUID = GetCreatorGUID();

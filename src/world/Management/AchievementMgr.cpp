@@ -215,10 +215,14 @@ void AchievementMgr::SaveToDB(QueryBuffer* buf)
         ss << m_player->GetLowGUID();
         ss << ";";
 
-        if (buf == NULL)
+        if (buf == nullptr)
+        {
             CharacterDatabase.ExecuteNA(ss.str().c_str());
+        }
         else
+        {
             buf->AddQueryNA(ss.str().c_str());
+        }
 
         ss.rdbuf()->str("");
 
@@ -596,8 +600,8 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, in
             continue;
         }
 
-        if ((achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_HORDE && !GetPlayer()->IsTeamHorde()) ||
-            (achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_ALLIANCE && !GetPlayer()->IsTeamAlliance()))
+        if ((achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_HORDE && GetPlayer()->IsTeamHorde() == false) ||
+            (achievement->factionFlag == ACHIEVEMENT_FACTION_FLAG_ALLIANCE && GetPlayer()->IsTeamAlliance() == false))
         {
             // achievement requires a faction of which the player is not a member
             continue;

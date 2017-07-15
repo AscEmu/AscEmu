@@ -81,11 +81,17 @@ Guild::~Guild()
     for (GuildBankTabVector::iterator itr = m_bankTabs.begin(); itr != m_bankTabs.end(); ++itr)
     {
         for (uint8 i = 0; i < MAX_GUILD_BANK_SLOTS; ++i)
+        {
             if ((*itr)->pSlots[i] != NULL)
+            {
                 (*itr)->pSlots[i]->DeleteMe();
+            }
+        }
 
         for (std::list<GuildBankEvent*>::iterator it2 = (*itr)->lLog.begin(); it2 != (*itr)->lLog.end(); ++it2)
+        {
             delete(*it2);
+        }
         (*itr)->lLog.clear();
 
         free((*itr)->szTabIcon);
@@ -457,8 +463,10 @@ bool Guild::LoadFromDB(Field* f)
     // load ranks
     uint32 j;
     QueryResult* result = CharacterDatabase.Query("SELECT * FROM guild_ranks WHERE guildId = %u ORDER BY rankId ASC", m_guildId);
-    if (result == NULL)
+    if (result == nullptr)
+    {
         return false;
+    }
 
     uint32 sid = 0;
 
@@ -683,7 +691,7 @@ void Guild::SetMOTD(const char* szNewMotd, WorldSession* pClient)
     if (pClient->GetPlayer()->getPlayerInfo()->guild != this)
         return;
 
-    if (!pClient->GetPlayer()->getPlayerInfo()->guildRank->CanPerformCommand(GR_RIGHT_SETMOTD))
+    if (pClient->GetPlayer()->getPlayerInfo()->guildRank->CanPerformCommand(GR_RIGHT_SETMOTD) == false)
     {
         Guild::sendCommandResult(pClient, GC_TYPE_INVITE, GC_ERROR_PERMISSIONS);
         return;
@@ -1226,18 +1234,28 @@ void Guild::SendGuildRoster(WorldSession* pClient)
         data << uint8(itr->first->gender);
         data << itr->first->lastZone;
 
-        if (!pPlayer)
+        if (pPlayer == nullptr)
+        {
             data << float((UNIXTIME - itr->first->lastOnline) / 86400.0);
+        }
 
         if (itr->second->szPublicNote)
+        {
             data << itr->second->szPublicNote;
+        }
         else
+        {
             data << uint8(0);
+        }
 
         if (ofnote && itr->second->szOfficerNote != NULL)
+        {
             data << itr->second->szOfficerNote;
+        }
         else
+        {
             data << uint8(0);
+        }
     }
 
     m_lock.Release();

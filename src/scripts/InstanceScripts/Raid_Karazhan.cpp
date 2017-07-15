@@ -1621,7 +1621,7 @@ class ShadeofAranAI : public CreatureAIScript
                         explode = false;
                     }
                 }
-                else if (!summoned && _unit->GetHealthPct() <= 40)
+                else if (summoned == false && _unit->GetHealthPct() <= 40)
                 {
                     _unit->CastSpell(_unit, info_summon_elemental_1, true);
                     _unit->CastSpell(_unit, info_summon_elemental_2, true);

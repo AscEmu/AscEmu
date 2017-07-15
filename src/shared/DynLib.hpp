@@ -17,8 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _DYN_LIB_HPP
-#define _DYN_LIB_HPP
+#pragma once
 
 #include <string>
 
@@ -123,5 +122,3 @@ namespace Arcemu
             bool error;            // last error state
     };
 }
-
-#endif      //_DYN_LIB_HPP

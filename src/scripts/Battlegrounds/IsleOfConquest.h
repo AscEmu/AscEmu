@@ -122,53 +122,59 @@ struct IOCGate
 
 struct IOCVehicle
 {
-    Creature* c;
+    Creature* creature;
     LocationVector baselocation;
 
     IOCVehicle()
     {
-        c = NULL;
+        creature = nullptr;
     }
 
     ~IOCVehicle()
     {
-        c = NULL;
+        creature = nullptr;
     }
 
     bool IsCloseToBaseLocation()
     {
-        if (c != NULL)
+        if (creature != nullptr)
         {
-            if (c->CalcDistance(baselocation) <= 10.0f)
+            if (creature->CalcDistance(baselocation) <= 10.0f)
+            {
                 return true;
-            else
-                return false;
+            }
         }
-        else
-            return false;
+
+        return false;
     }
 
 
     bool IsEmpty() const
     {
-        if (c == NULL)
+        if (creature == nullptr)
+        {
             return true;
+        }
 
-        if (c->GetVehicleComponent() == NULL)
+        if (creature->GetVehicleComponent() == nullptr)
+        {
             return true;
+        }
 
-        if (c->GetVehicleComponent()->GetPassengerCount() > 0)
+        if (creature->GetVehicleComponent()->GetPassengerCount() > 0)
+        {
             return false;
+        }
 
         return true;
     }
 
     void Despawn()
     {
-        if (c != NULL)
+        if (creature != nullptr)
         {
-            c->Despawn(0, 0);
-            c = NULL;
+            creature->Despawn(0, 0);
+            creature = nullptr;
         }
     }
 };

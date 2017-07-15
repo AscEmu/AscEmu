@@ -947,12 +947,16 @@ class TheRootofAllEvil : public GameObjectAIScript
         void OnActivate(Player* pPlayer)
         {
             QuestLogEntry* qle = pPlayer->GetQuestLogForEntry(8481);
-            if(qle == NULL)
+            if (qle == nullptr)
+            {
                 return;
+            }
 
             Creature* xandivious = sEAS.SpawnCreature(pPlayer, 15623, pPlayer->GetPositionX() + 5, pPlayer->GetPositionY(), pPlayer->GetPositionZ(), pPlayer->GetOrientation(), 0);
-            if(xandivious != NULL)
+            if (xandivious != nullptr)
+            {
                 xandivious->Despawn(6 * 60 * 1000, 0);
+            }
         }
 };
 

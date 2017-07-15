@@ -19,8 +19,7 @@
  */
 
 
-#ifndef _PERFORMANCECOUNTER_HPP
-#define _PERFORMANCECOUNTER_HPP
+#pragma once
 
 namespace Arcemu
 {
@@ -67,5 +66,3 @@ namespace Arcemu
     };
 
 }
-
-#endif      //_PERFORMANCECOUNTER_HPP

@@ -41,13 +41,16 @@
 /////////////////////////////////////////////////////////////
 bool SoulLinkParent(uint32 i, Spell* s)
 {
-    if(s->p_caster == NULL)
+    if (s->p_caster == nullptr)
+    {
         return true;
+    }
 
     Unit* u = s->GetUnitTarget();
-
-    if(u == NULL)
+    if (u == nullptr)
+    {
         return true;
+    }
 
     u->CastSpell(u, 25228, true);
 
@@ -58,24 +61,26 @@ bool LifeTap(uint32 i, Spell* s)
 {
     Player* playerTarget = s->GetPlayerTarget();
 
-    if(!s->p_caster || !playerTarget)
+    if (!s->p_caster || !playerTarget)
+    {
         return false;
+    }
 
     uint32 mod;    // spirit bonus coefficient multiplied by 2
-    if(s->GetSpellInfo()->Id == 1454) mod = 2;
-    else if(s->GetSpellInfo()->Id == 1455) mod = 3;
-    else if(s->GetSpellInfo()->Id == 1456) mod = 4;
-    else if(s->GetSpellInfo()->Id == 11687) mod = 5;
+    if (s->GetSpellInfo()->Id == 1454) mod = 2;
+    else if (s->GetSpellInfo()->Id == 1455) mod = 3;
+    else if (s->GetSpellInfo()->Id == 1456) mod = 4;
+    else if (s->GetSpellInfo()->Id == 11687) mod = 5;
     else mod = 6;
 
     uint32 damage = s->GetSpellInfo()->EffectBasePoints[i] + 1 + mod * playerTarget->GetStat(STAT_SPIRIT) / 2;
 
-    if(damage >= playerTarget->GetHealth())
+    if (damage >= playerTarget->GetHealth())
         return false;
 
     s->p_caster->DealDamage(playerTarget, damage, 0, 0, s->GetSpellInfo()->Id);
     damage = damage * (100 + playerTarget->m_lifetapbonus) / 100;    // Apply improved life tap
-    if(playerTarget->GetPower(POWER_TYPE_MANA) + damage > playerTarget->GetMaxPower(POWER_TYPE_MANA))
+    if (playerTarget->GetPower(POWER_TYPE_MANA) + damage > playerTarget->GetMaxPower(POWER_TYPE_MANA))
         playerTarget->SetPower(POWER_TYPE_MANA, playerTarget->GetMaxPower(POWER_TYPE_MANA));
     else
         playerTarget->SetPower(POWER_TYPE_MANA, playerTarget->GetPower(POWER_TYPE_MANA) + damage);
@@ -88,7 +93,7 @@ bool SoulShatter(uint32 i, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
-    if(!s->u_caster || !s->u_caster->isAlive() || !unitTarget || !unitTarget->isAlive())
+    if (!s->u_caster || !s->u_caster->isAlive() || !unitTarget || !unitTarget->isAlive())
         return false;
 
     s->u_caster->CastSpell(unitTarget, 32835, false);
@@ -98,12 +103,12 @@ bool SoulShatter(uint32 i, Spell* s)
 
 bool MinorHealthStone(uint32 i, Spell* s)
 {
-    if(s->p_caster == NULL)
+    if (s->p_caster == nullptr)
         return false;
 
-    if(s->p_caster->HasSpell(18692))
+    if (s->p_caster->HasSpell(18692))
         s->CreateItem(19004);
-    else if(s->p_caster->HasSpell(18693))
+    else if (s->p_caster->HasSpell(18693))
         s->CreateItem(19005);
     else
         s->CreateItem(5512);
@@ -113,12 +118,12 @@ bool MinorHealthStone(uint32 i, Spell* s)
 
 bool LesserHealthStone(uint32 i, Spell* s)
 {
-    if(s->p_caster == NULL)
+    if (s->p_caster == nullptr)
         return false;
 
-    if(s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(19007);
-    else if(s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(19006);
     else
         s->p_caster->GetItemInterface()->AddItemById(5511, 1, 0);
@@ -127,12 +132,12 @@ bool LesserHealthStone(uint32 i, Spell* s)
 
 bool HealthStone(uint32 i, Spell* s)
 {
-    if(s->p_caster == NULL)
+    if (s->p_caster == nullptr)
         return false;
 
-    if(s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(19009);
-    else if(s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(19008);
     else
         s->CreateItem(5509);
@@ -142,12 +147,12 @@ bool HealthStone(uint32 i, Spell* s)
 
 bool GreaterHealthStone(uint32 i, Spell* s)
 {
-    if(s->p_caster == NULL)
+    if (s->p_caster == nullptr)
         return false;
 
-    if(s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(19011);
-    else if(s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(19010);
     else
         s->CreateItem(5510);
@@ -157,12 +162,12 @@ bool GreaterHealthStone(uint32 i, Spell* s)
 
 bool MajorHealthStone(uint32 i, Spell* s)
 {
-    if(s->p_caster == NULL)
+    if (s->p_caster == nullptr)
         return false;
 
-    if(s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(19013);
-    else if(s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(19012);
     else
         s->CreateItem(9421);
@@ -172,12 +177,12 @@ bool MajorHealthStone(uint32 i, Spell* s)
 
 bool MasterHealthStone(uint32 i, Spell* s)
 {
-    if(s->p_caster == NULL)
+    if (s->p_caster == nullptr)
         return false;
 
-    if(s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(22105);
-    else if(s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(22104);
     else
         s->CreateItem(22103);
@@ -187,12 +192,12 @@ bool MasterHealthStone(uint32 i, Spell* s)
 
 bool DemonicHealthStone(uint32 i, Spell* s)
 {
-    if(s->p_caster == NULL)
+    if (s->p_caster == nullptr)
         return false;
 
-    if(s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(36891);
-    else if(s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(36890);
     else
         s->CreateItem(36889);
@@ -202,12 +207,12 @@ bool DemonicHealthStone(uint32 i, Spell* s)
 
 bool FelHealthStone(uint32 i, Spell* s)
 {
-    if(s->p_caster == NULL)
+    if (s->p_caster == nullptr)
         return false;
 
-    if(s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
+    if (s->p_caster->HasSpell(18693))    // Improved Healthstone (2)
         s->CreateItem(36894);
-    else if(s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
+    else if (s->p_caster->HasSpell(18692))    // Improved Healthstone (1)
         s->CreateItem(36893);
     else
         s->CreateItem(36892);
@@ -219,32 +224,32 @@ bool MasterDemonologist1(uint32 i, Spell* s)
 {
     Unit* unitTarget = s->GetUnitTarget();
 
-    if(!s->p_caster || !unitTarget)
+    if (!s->p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
 
-    uint32 casted_spell_id = 0 ;
-    uint32 inc_resist_by_level = 0 ;
-    uint32 inc_resist_by_level_spell = 0 ;
+    uint32 casted_spell_id = 0;
+    uint32 inc_resist_by_level = 0;
+    uint32 inc_resist_by_level_spell = 0;
 
-    if(unitTarget->GetEntry()  == 416)    //in case it is imp
-        casted_spell_id = 23759 ;
-    else if(unitTarget->GetEntry()  == 1860)    //VoidWalker
-        casted_spell_id = 23760 ;
-    else if(unitTarget->GetEntry()  == 1863)    //Succubus
-        casted_spell_id = 23761 ;
-    else if(unitTarget->GetEntry()  == 417)    //Felhunter
+    if (unitTarget->GetEntry() == 416)    //in case it is imp
+        casted_spell_id = 23759;
+    else if (unitTarget->GetEntry() == 1860)    //VoidWalker
+        casted_spell_id = 23760;
+    else if (unitTarget->GetEntry() == 1863)    //Succubus
+        casted_spell_id = 23761;
+    else if (unitTarget->GetEntry() == 417)    //Felhunter
     {
-        casted_spell_id = 0 ;
-        inc_resist_by_level_spell = 23762 ;
-        inc_resist_by_level = 20 ;
+        casted_spell_id = 0;
+        inc_resist_by_level_spell = 23762;
+        inc_resist_by_level = 20;
     }
-    else if(unitTarget->GetEntry()  == 17252)     //Felguard
+    else if (unitTarget->GetEntry() == 17252)     //Felguard
     {
-        casted_spell_id = 35702 ;
-        inc_resist_by_level_spell = 23762 ;
-        inc_resist_by_level = 10 ;
+        casted_spell_id = 35702;
+        inc_resist_by_level_spell = 23762;
+        inc_resist_by_level = 10;
     }
-    if(casted_spell_id)
+    if (casted_spell_id)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(s->p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, NULL);
@@ -257,7 +262,7 @@ bool MasterDemonologist1(uint32 i, Spell* s)
         sp->prepare(&tgt1);
     }
 
-    if(inc_resist_by_level_spell)
+    if (inc_resist_by_level_spell)
     {
         //for self
         Spell* sp = sSpellFactoryMgr.NewSpell(s->p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, NULL);
@@ -277,46 +282,46 @@ bool MasterDemonologist2(uint32 i, Spell* s)
     Player* p_caster = s->p_caster;
     Unit* unitTarget = s->GetUnitTarget();
 
-    if(!p_caster  || !unitTarget)
+    if (!p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
 
-    uint32 casted_spell_id = 0 ;
-    uint32 inc_resist_by_level = 0 ;
-    uint32 inc_resist_by_level_spell = 0 ;
+    uint32 casted_spell_id = 0;
+    uint32 inc_resist_by_level = 0;
+    uint32 inc_resist_by_level_spell = 0;
 
-    if(unitTarget->GetEntry()  == 416)    //in case it is imp
-        casted_spell_id = 23826 ;
-    else if(unitTarget->GetEntry()  == 1860)    //VoidWalker
-        casted_spell_id = 23841 ;
-    else if(unitTarget->GetEntry()  == 1863)    //Succubus
-        casted_spell_id = 23833 ;
-    else if(unitTarget->GetEntry()  == 417)    //Felhunter
+    if (unitTarget->GetEntry() == 416)    //in case it is imp
+        casted_spell_id = 23826;
+    else if (unitTarget->GetEntry() == 1860)    //VoidWalker
+        casted_spell_id = 23841;
+    else if (unitTarget->GetEntry() == 1863)    //Succubus
+        casted_spell_id = 23833;
+    else if (unitTarget->GetEntry() == 417)    //Felhunter
     {
-        casted_spell_id = 1 ;
-        inc_resist_by_level_spell = 23837 ;
-        inc_resist_by_level = 40 ;
+        casted_spell_id = 1;
+        inc_resist_by_level_spell = 23837;
+        inc_resist_by_level = 40;
     }
-    else if(unitTarget->GetEntry()  == 17252)    //Felguard
+    else if (unitTarget->GetEntry() == 17252)    //Felguard
     {
-        casted_spell_id = 35703 ;
-        inc_resist_by_level_spell = 23837 ;
-        inc_resist_by_level = 20 ;
+        casted_spell_id = 35703;
+        inc_resist_by_level_spell = 23837;
+        inc_resist_by_level = 20;
     }
-    if(casted_spell_id)
+    if (casted_spell_id)
     {
         //for self
-        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, NULL);
+        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
         SpellCastTargets tgt(p_caster->GetGUID());
         sp->prepare(&tgt);
         //for pet
-        sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, NULL);
+        sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
         SpellCastTargets tgt1(unitTarget->GetGUID());
         sp->prepare(&tgt1);
     }
-    if(inc_resist_by_level_spell)
+    if (inc_resist_by_level_spell)
     {
         //for self
-        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, NULL);
+        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
         SpellCastTargets tgt(p_caster->GetGUID());
         sp->prepare(&tgt);
 
@@ -334,50 +339,50 @@ bool MasterDemonologist3(uint32 i, Spell* s)
     Player* p_caster = s->p_caster;
     Unit* unitTarget = s->GetUnitTarget();
 
-    if(!p_caster || !unitTarget)
+    if (!p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
 
-    uint32 casted_spell_id = 0 ;
-    uint32 inc_resist_by_level = 0 ;
-    uint32 inc_resist_by_level_spell = 0 ;
+    uint32 casted_spell_id = 0;
+    uint32 inc_resist_by_level = 0;
+    uint32 inc_resist_by_level_spell = 0;
 
-    if(unitTarget->GetEntry()  == 416)    //in case it is imp
-        casted_spell_id = 23827 ;
-    else if(unitTarget->GetEntry()  == 1860)    //VoidWalker
-        casted_spell_id = 23842 ;
-    else if(unitTarget->GetEntry()  == 1863)    //Succubus
-        casted_spell_id = 23834 ;
-    else if(unitTarget->GetEntry()  == 417)    //Felhunter
+    if (unitTarget->GetEntry() == 416)    //in case it is imp
+        casted_spell_id = 23827;
+    else if (unitTarget->GetEntry() == 1860)    //VoidWalker
+        casted_spell_id = 23842;
+    else if (unitTarget->GetEntry() == 1863)    //Succubus
+        casted_spell_id = 23834;
+    else if (unitTarget->GetEntry() == 417)    //Felhunter
     {
-        casted_spell_id = 0 ;
-        inc_resist_by_level_spell = 23838 ;
-        inc_resist_by_level = 60 ;
+        casted_spell_id = 0;
+        inc_resist_by_level_spell = 23838;
+        inc_resist_by_level = 60;
     }
-    else if(unitTarget->GetEntry()  == 17252)    //Felguard
+    else if (unitTarget->GetEntry() == 17252)    //Felguard
     {
-        casted_spell_id = 35704 ;
-        inc_resist_by_level_spell = 23838 ;
-        inc_resist_by_level = 30 ;
+        casted_spell_id = 35704;
+        inc_resist_by_level_spell = 23838;
+        inc_resist_by_level = 30;
     }
-    if(casted_spell_id)
+    if (casted_spell_id)
     {
         //for self
-        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, NULL);
+        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
         SpellCastTargets tgt(p_caster->GetGUID());
         sp->prepare(&tgt);
         //for pet
-        sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, NULL);
+        sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
         SpellCastTargets tgt1(unitTarget->GetGUID());
         sp->prepare(&tgt1);
     }
-    if(inc_resist_by_level_spell)
+    if (inc_resist_by_level_spell)
     {
         //for self
-        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, NULL);
+        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
         SpellCastTargets tgt(p_caster->GetGUID());
         sp->prepare(&tgt);
         //for pet
-        sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, NULL);
+        sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
         SpellCastTargets tgt1(unitTarget->GetGUID());
         sp->prepare(&tgt1);
     }
@@ -390,50 +395,50 @@ bool MasterDemonologist4(uint32 i, Spell* s)
     Player* p_caster = s->p_caster;
     Unit* unitTarget = s->GetUnitTarget();
 
-    if(!p_caster || !unitTarget)
+    if (!p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
 
-    uint32 casted_spell_id = 0 ;
-    uint32 inc_resist_by_level = 0 ;
-    uint32 inc_resist_by_level_spell = 0 ;
+    uint32 casted_spell_id = 0;
+    uint32 inc_resist_by_level = 0;
+    uint32 inc_resist_by_level_spell = 0;
 
-    if(unitTarget->GetEntry()  == 416)    //in case it is imp
-        casted_spell_id = 23828 ;
-    else if(unitTarget->GetEntry()  == 1860)    //VoidWalker
-        casted_spell_id = 23843 ;
-    else if(unitTarget->GetEntry()  == 1863)    //Succubus
-        casted_spell_id = 23835 ;
-    else if(unitTarget->GetEntry()  == 417)    //Felhunter
+    if (unitTarget->GetEntry() == 416)    //in case it is imp
+        casted_spell_id = 23828;
+    else if (unitTarget->GetEntry() == 1860)    //VoidWalker
+        casted_spell_id = 23843;
+    else if (unitTarget->GetEntry() == 1863)    //Succubus
+        casted_spell_id = 23835;
+    else if (unitTarget->GetEntry() == 417)    //Felhunter
     {
-        casted_spell_id = 0 ;
-        inc_resist_by_level_spell = 23839 ;
-        inc_resist_by_level = 80 ;
+        casted_spell_id = 0;
+        inc_resist_by_level_spell = 23839;
+        inc_resist_by_level = 80;
     }
-    else if(unitTarget->GetEntry()  == 17252)    //Felguard
+    else if (unitTarget->GetEntry() == 17252)    //Felguard
     {
-        casted_spell_id = 35705 ;
-        inc_resist_by_level_spell = 23839 ;
-        inc_resist_by_level = 40 ;
+        casted_spell_id = 35705;
+        inc_resist_by_level_spell = 23839;
+        inc_resist_by_level = 40;
     }
-    if(casted_spell_id)
+    if (casted_spell_id)
     {
         //for self
-        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, NULL);
+        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
         SpellCastTargets tgt(p_caster->GetGUID());
         sp->prepare(&tgt);
         //for pet
-        sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, NULL);
+        sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
         SpellCastTargets tgt1(unitTarget->GetGUID());
         sp->prepare(&tgt1);
     }
-    if(inc_resist_by_level_spell)
+    if (inc_resist_by_level_spell)
     {
         //for self
-        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, NULL);
+        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
         SpellCastTargets tgt(p_caster->GetGUID());
         sp->prepare(&tgt);
         //for pet
-        sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, NULL);
+        sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
         SpellCastTargets tgt1(unitTarget->GetGUID());
         sp->prepare(&tgt1);
     }
@@ -446,51 +451,51 @@ bool MasterDemonologist5(uint32 i, Spell* s)
     Player* p_caster = s->p_caster;
     Unit* unitTarget = s->GetUnitTarget();
 
-    if(!p_caster || !unitTarget)
+    if (!p_caster || !unitTarget)
         return false; //can't imagine how this talent got to anybody else then a player casting on pet
 
-    uint32 casted_spell_id = 0 ;
-    uint32 inc_resist_by_level = 0 ;
-    uint32 inc_resist_by_level_spell = 0 ;
+    uint32 casted_spell_id = 0;
+    uint32 inc_resist_by_level = 0;
+    uint32 inc_resist_by_level_spell = 0;
 
-    if(unitTarget->GetEntry()  == 416)    //in case it is imp
-        casted_spell_id = 23829 ;
-    else if(unitTarget->GetEntry()  == 1860)    //VoidWalker
-        casted_spell_id = 23844 ;
-    else if(unitTarget->GetEntry()  == 1863)    //Succubus
-        casted_spell_id = 23836 ;
-    else if(unitTarget->GetEntry()  == 417)    //Felhunter
+    if (unitTarget->GetEntry() == 416)    //in case it is imp
+        casted_spell_id = 23829;
+    else if (unitTarget->GetEntry() == 1860)    //VoidWalker
+        casted_spell_id = 23844;
+    else if (unitTarget->GetEntry() == 1863)    //Succubus
+        casted_spell_id = 23836;
+    else if (unitTarget->GetEntry() == 417)    //Felhunter
     {
-        casted_spell_id = 0 ;
-        inc_resist_by_level_spell = 23840 ;
-        inc_resist_by_level = 100 ;
+        casted_spell_id = 0;
+        inc_resist_by_level_spell = 23840;
+        inc_resist_by_level = 100;
     }
-    else if(unitTarget->GetEntry()  == 17252)    //Felguard
+    else if (unitTarget->GetEntry() == 17252)    //Felguard
     {
-        casted_spell_id = 35706 ;
-        inc_resist_by_level_spell = 23840 ;
-        inc_resist_by_level = 50 ;
+        casted_spell_id = 35706;
+        inc_resist_by_level_spell = 23840;
+        inc_resist_by_level = 50;
     }
-    if(casted_spell_id)
+    if (casted_spell_id)
     {
         //for self
-        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, NULL);
+        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
         SpellCastTargets tgt(p_caster->GetGUID());
         sp->prepare(&tgt);
         //for pet
-        sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, NULL);
+        sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(casted_spell_id), true, nullptr);
         SpellCastTargets tgt1(unitTarget->GetGUID());
         sp->prepare(&tgt1);
     }
 
-    if(inc_resist_by_level_spell)
+    if (inc_resist_by_level_spell)
     {
         //for self
-        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, NULL);
+        Spell* sp = sSpellFactoryMgr.NewSpell(p_caster, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
         SpellCastTargets tgt(p_caster->GetGUID());
         sp->prepare(&tgt);
         //for pet
-        sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, NULL);
+        sp = sSpellFactoryMgr.NewSpell(unitTarget, sSpellCustomizations.GetSpellInfo(inc_resist_by_level_spell), true, nullptr);
         SpellCastTargets tgt1(unitTarget->GetGUID());
         sp->prepare(&tgt1);
     }
@@ -554,10 +559,10 @@ bool DemonicKnowledge(uint32 i, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
-    if(m_target->IsPet())
+    if (m_target->IsPet())
     {
-        Player* PetOwner = static_cast< Pet* >(m_target)->GetPetOwner();
-        if(PetOwner != NULL)
+        Player* PetOwner = static_cast<Pet*>(m_target)->GetPetOwner();
+        if (PetOwner != nullptr)
         {
             uint32 val1 = m_target->GetStat(STAT_STAMINA); // stamina
             uint32 val2 = m_target->GetStat(STAT_INTELLECT); // intellect
@@ -566,12 +571,12 @@ bool DemonicKnowledge(uint32 i, Aura* a, bool apply)
 
             int32 val;
 
-            if(apply)
+            if (apply)
                 val = (int32)dmginc;
             else
-                val = (int32) - dmginc;
+                val = (int32)-dmginc;
 
-            for(uint32 x = 0; x < 7; x++)
+            for (uint32 x = 0; x < 7; x++)
                 PetOwner->ModPosDamageDoneMod(x, val);
 
             PetOwner->CalcDamage();
@@ -584,14 +589,14 @@ bool DemonicKnowledge(uint32 i, Aura* a, bool apply)
 bool ImprovedLifeTap(uint32 i, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
-    if(!u_target->IsPlayer())
+    if (!u_target->IsPlayer())
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);
     int32 amount = a->GetModAmount(i);
 
 
-    if(apply)
+    if (apply)
         p_target->m_lifetapbonus = amount;
     else
         p_target->m_lifetapbonus = 0;
@@ -604,9 +609,9 @@ bool SoulSiphon(uint32 i, Aura* a, bool apply)
     Unit* caster = a->GetUnitCaster();
     int32 amount = a->GetModAmount(i);
 
-    if(caster)
+    if (caster)
     {
-        if(apply)
+        if (apply)
             caster->m_soulSiphon.amt += amount;
         else
             caster->m_soulSiphon.amt -= amount;
@@ -618,18 +623,18 @@ bool SoulSiphon(uint32 i, Aura* a, bool apply)
 bool SoulStoneResurrection(uint32 i, Aura* a, bool apply)
 {
     Unit* u_target = a->GetTarget();
-    if(!u_target->IsPlayer())
+    if (!u_target->IsPlayer())
         return true;
 
     Player* p_target = static_cast<Player*>(u_target);
-    uint32 soulstone = a->GetSpellInfo()->EffectMiscValue[ 0 ];
+    uint32 soulstone = a->GetSpellInfo()->EffectMiscValue[0];
 
-    if(apply)
+    if (apply)
     {
         p_target->SetSoulStone(soulstone);
         p_target->SetSoulStoneReceiver((uint32)a->m_casterGuid);
     }
-    else if(p_target->isAlive())
+    else if (p_target->isAlive())
     {
         p_target->SetSoulStone(0);
         p_target->SetSoulStoneReceiver(0);
@@ -641,18 +646,18 @@ bool DemonicCircleSummon(uint32 i, Aura* a, bool apply)
 {
     Unit* m_target = a->GetTarget();
 
-    if(m_target->GetMapMgr() == NULL)
+    if (m_target->GetMapMgr() == nullptr)
         return true;
 
-    if(apply)
+    if (apply)
     {
 
-        GameObject* circle = m_target->GetMapMgr()->GetGameObject(a->GetTarget()->m_ObjectSlots[ 0 ]);
+        GameObject* circle = m_target->GetMapMgr()->GetGameObject(a->GetTarget()->m_ObjectSlots[0]);
         SpellInfo* sp = sSpellCustomizations.GetSpellInfo(48020);
 
-        if(circle != NULL && sp != NULL && m_target->CalcDistance(circle) <= GetMaxRange(sSpellRangeStore.LookupEntry(sp->rangeIndex)))
+        if (circle != NULL && sp != NULL && m_target->CalcDistance(circle) <= GetMaxRange(sSpellRangeStore.LookupEntry(sp->rangeIndex)))
         {
-            if(!m_target->HasAura(62388))
+            if (!m_target->HasAura(62388))
                 m_target->CastSpell(m_target, 62388, true);
         }
         else
