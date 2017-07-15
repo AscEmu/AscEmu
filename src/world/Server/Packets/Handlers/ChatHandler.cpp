@@ -596,6 +596,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 }
 #endif
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleEmoteOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -616,7 +617,9 @@ void WorldSession::HandleEmoteOpcode(WorldPacket& recv_data)
     uint64 guid = _player->GetGUID();
     sQuestMgr.OnPlayerEmote(_player, emote, guid);
 }
+#endif
 
+#if VERSION_STRING != Cata
 void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
 {
     CHECK_INWORLD_RETURN
@@ -726,6 +729,7 @@ void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
         sQuestMgr.OnPlayerEmote(_player, text_emote, guid);
     }
 }
+#endif
 
 #if VERSION_STRING != Cata
 ///\todo remove these unk unk unk nighrmare!

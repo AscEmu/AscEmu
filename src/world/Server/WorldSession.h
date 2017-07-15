@@ -662,7 +662,13 @@ class SERVER_DECL WorldSession
         void HandleSetActionBarTogglesOpcode(WorldPacket& recvPacket);
         void HandleMoveSplineCompleteOpcode(WorldPacket& recvPacket);
 
-        /// Chat opcodes (Chat.cpp)
+        // Chat opcodes (Chat.cpp)
+
+        //MIT
+        bool isSessionMuted();
+        bool isFloodProtectionTriggered();
+        //MIT End
+
         void HandleMessagechatOpcode(WorldPacket& recvPacket);
         void HandleEmoteOpcode(WorldPacket& recvPacket);
         void HandleTextEmoteOpcode(WorldPacket& recvPacket);

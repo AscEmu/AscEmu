@@ -5482,6 +5482,7 @@ void Unit::DeMorph()
     EventModelChange();
 }
 
+#if VERSION_STRING < Cata
 void Unit::Emote(EmoteType emote)
 {
 #if VERSION_STRING < Cata
@@ -5494,6 +5495,15 @@ void Unit::Emote(EmoteType emote)
     data << this->GetGUID();
     SendMessageToSet(&data, true);
 }
+#else
+void Unit::Emote(EmoteType emote)
+{
+    WorldPacket data(SMSG_EMOTE, 12);
+    data << uint32_t(emote);
+    data << uint64_t(GetGUID());
+    SendMessageToSet(&data, true);
+}
+#endif
 
 void Unit::SendChatMessageAlternateEntry(uint32 entry, uint8 type, uint32 lang, const char* msg)
 {

@@ -2589,7 +2589,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                 case 1:
                     {
 
-                        _unit->Emote(EMOTE_STATE_SUBMERGED);
+                        _unit->Emote(EMOTE_STATE_SUBMERGED_NEW);
                         mEoS = GetNearestCreature(CN_ESSENCEOFSUFFERING);
                         if (mEoS && mEoS->GetUnit() && mEoS->IsAlive())
                         {
@@ -2634,7 +2634,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                             }
                             else
                             {
-                                _unit->Emote(EMOTE_STATE_SUBMERGED);
+                                _unit->Emote(EMOTE_STATE_SUBMERGED_NEW);
                             }
                         }
                     }
@@ -2652,7 +2652,7 @@ class ReliquaryOfSoulsAI : public MoonScriptCreatureAI
                     break;
                 case 7:
                     {
-                        _unit->Emote(EMOTE_STATE_SUBMERGED);
+                        _unit->Emote(EMOTE_STATE_SUBMERGED_NEW);
                         mEoA = GetNearestCreature(CN_ESSENCEOFANGER);
                         if (mEoA && mEoA->GetUnit() && !mEoA->GetUnit()->isAlive())
                         {

@@ -98,6 +98,40 @@ uint32_t getMessageTypeForOpcode(uint32_t opcode)
     return 0xFF;
 }
 
+bool WorldSession::isSessionMuted()
+{
+    if (m_muted && m_muted >= (uint32)UNIXTIME)
+    {
+        SystemMessage("Your voice is currently muted by a moderator.");
+        return true;
+    }
+
+    return false;
+}
+
+bool WorldSession::isFloodProtectionTriggered()
+{
+    if (!GetPermissionCount() && worldConfig.chat.linesBeforeProtection)
+    {
+        if (UNIXTIME >= floodTime)
+        {
+            floodLines = 0;
+            floodTime = UNIXTIME + worldConfig.chat.secondsBeforeProtectionReset;
+        }
+
+        if ((++floodLines) > worldConfig.chat.linesBeforeProtection)
+        {
+            if (worldConfig.chat.enableSendFloodProtectionMessage)
+            {
+                _player->BroadcastMessage("Your message has triggered serverside flood protection. You can speak again in %u seconds.", floodTime - UNIXTIME);
+            }
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 {
     WorldPacket* data = nullptr;
@@ -137,23 +171,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
     }
 
     // Flood protection
-    if (lang != LANG_ADDON && !GetPermissionCount() && worldConfig.chat.linesBeforeProtection != 0)
+    if (lang != LANG_ADDON && isFloodProtectionTriggered())
     {
-        if (UNIXTIME >= floodTime)
-        {
-            floodLines = 0;
-            floodTime = UNIXTIME + worldConfig.chat.secondsBeforeProtectionReset;
-        }
-
-        if ((++floodLines) > worldConfig.chat.linesBeforeProtection)
-        {
-            if (worldConfig.chat.enableSendFloodProtectionMessage)
-            {
-                _player->BroadcastMessage("Your message has triggered serverside flood protection. You can speak again in %u seconds.", floodTime - UNIXTIME);
-            }
-
-            return;
-        }
+        return;
     }
 
     switch (type)
@@ -173,9 +193,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         case CHAT_MSG_GUILD:
         case CHAT_MSG_OFFICER:
         {
-            if (m_muted && m_muted >= (uint32)UNIXTIME)
+            if (isSessionMuted())
             {
-                SystemMessage("Your voice is currently muted by a moderator.");
                 return;
             }
         }
@@ -330,8 +349,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (type == CHAT_MSG_PARTY && pGroup->GetGroupType() == GROUP_TYPE_RAID)
             {
                 // only send to that subgroup
-                SubGroup* sgr = _player->GetGroup() ?
-                    _player->GetGroup()->GetSubGroup(_player->GetSubGroup()) : 0;
+                SubGroup* sgr = _player->GetGroup() ? _player->GetGroup()->GetSubGroup(_player->GetSubGroup()) : 0;
 
                 if (sgr)
                 {
@@ -555,4 +573,116 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         }
         break;
     }
+}
+
+void WorldSession::HandleEmoteOpcode(WorldPacket& recv_data)
+{
+    if (_player->isAlive() == false)
+    {
+        return;
+    }
+
+    uint32_t emote;
+    recv_data >> emote;
+
+    _player->Emote((EmoteType)emote);
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, emote, 0, 0);
+
+    uint64_t guid = _player->GetGUID();
+    sQuestMgr.OnPlayerEmote(_player, emote, guid);
+}
+
+void WorldSession::HandleTextEmoteOpcode(WorldPacket& recv_data)
+{
+    if (_player->isAlive() == false)
+    {
+        return;
+    }
+
+    uint64_t guid;
+    uint32_t textEmote;
+    uint32_t emoteNum;
+
+    recv_data >> textEmote;
+    recv_data >> emoteNum;
+    recv_data >> guid;
+
+    if (isSessionMuted() || isFloodProtectionTriggered())
+    {
+        return;
+    }
+
+    const char* name = " ";
+    uint32_t namelen = 1;
+
+    Unit* unit = _player->GetMapMgr()->GetUnit(guid);
+    if (unit)
+    {
+        if (unit->IsPlayer())
+        {
+            name = static_cast<Player*>(unit)->GetName();
+            namelen = (uint32_t)strlen(name) + 1;
+        }
+        else if (unit->IsPet())
+        {
+            name = static_cast<Pet*>(unit)->GetName().c_str();
+            namelen = (uint32_t)strlen(name) + 1;
+        }
+        else
+        {
+            Creature* p = static_cast<Creature*>(unit);
+            name = p->GetCreatureProperties()->Name.c_str();
+            namelen = (uint32_t)strlen(name) + 1;
+        }
+    }
+
+    DBC::Structures::EmotesTextEntry const* emoteTextEntry = sEmotesTextStore.LookupEntry(textEmote);
+    if (emoteTextEntry == nullptr)
+    {
+        return;
+    }
+
+    sHookInterface.OnEmote(_player, (EmoteType)emoteTextEntry->textid, unit);
+    if (unit)
+    {
+        CALL_SCRIPT_EVENT(unit, OnEmote)(_player, (EmoteType)emoteTextEntry->textid);
+    }
+
+    switch (emoteTextEntry->textid)
+    {
+        case EMOTE_STATE_READ:
+        case EMOTE_STATE_DANCE:
+        {
+            _player->SetEmoteState(emoteTextEntry->textid);
+        } break;
+        case EMOTE_STATE_SLEEP:
+        case EMOTE_STATE_SIT:
+        case EMOTE_STATE_KNEEL:
+        case EMOTE_ONESHOT_NONE:
+            break;
+        default:
+        {
+            _player->Emote((EmoteType)emoteTextEntry->textid);
+        } break;
+    }
+
+    WorldPacket data(SMSG_TEXT_EMOTE, 28 + namelen);
+    data << uint64_t(GetPlayer()->GetGUID());
+    data << uint32_t(textEmote);
+    data << uint32_t(emoteNum);
+    data << uint32_t(namelen);
+    if (namelen > 1)
+    {
+        data.append(name, namelen);
+    }
+    else
+    {
+        data << uint8_t(0x00);
+    }
+
+    GetPlayer()->SendMessageToSet(&data, true);
+
+    _player->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_DO_EMOTE, textEmote, 0, 0);
+
+    sQuestMgr.OnPlayerEmote(_player, textEmote, guid);
 }

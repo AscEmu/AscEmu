@@ -1150,7 +1150,7 @@ void StoneskinGargoyleAI::AIUpdate()
     if (!IsCasting() && GetHealthPercent() <= 30)
     {
         CastSpellNowNoScheduling(mStoneskin);
-        _unit->SetEmoteState(EMOTE_STATE_SUBMERGED);
+        _unit->SetEmoteState(EMOTE_STATE_SUBMERGED_NEW);
         SetBehavior(Behavior_Spell);
         SetCanMove(false);
         StopMovement();

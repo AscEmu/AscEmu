@@ -440,7 +440,7 @@ enum EmoteType
     EMOTE_STATE_AT_EASE                 = 313,
     EMOTE_STATE_READY1H                 = 333,
     EMOTE_STATE_SPELLKNEELSTART         = 353,
-    //EMOTE_STATE_SUBMERGED             = 373,
+    EMOTE_STATE_SUBMERGED               = 373,
     EMOTE_ONESHOT_SUBMERGE              = 374,
     EMOTE_STATE_READY2H                 = 375,
     EMOTE_STATE_READYBOW                = 376,
@@ -495,7 +495,7 @@ enum EmoteType
     EMOTE_STATE_SIT_CHAIR_HIGH          = 426,
     EMOTE_STATE_FALL                    = 427,
     EMOTE_STATE_LOOT                    = 428,
-    EMOTE_STATE_SUBMERGED               = 429, // NEW
+    EMOTE_STATE_SUBMERGED_NEW           = 429, // NEW
     EMOTE_ONESHOT_COWER                 = 430, // DNR
     EMOTE_STATE_COWER                   = 431,
     EMOTE_ONESHOT_USESTANDING           = 432,
@@ -505,7 +505,7 @@ enum EmoteType
     EMOTE_ONESHOT_ATTACKRIFLE           = 436,
     EMOTE_STATE_SWIM_IDLE               = 437,
     EMOTE_STATE_ATTACK_UNARMED          = 438,
-    // EMOTE_ONESHOT_SPELLCAST          = 439, // W/SOUND
+    EMOTE_ONESHOT_SPELLCAST_W_SOUND     = 439,
     EMOTE_ONESHOT_DODGE                 = 440,
     EMOTE_ONESHOT_PARRY1H               = 441,
     EMOTE_ONESHOT_PARRY2H               = 442,
@@ -535,8 +535,26 @@ enum EmoteType
     EMOTE_ONESHOT_WORK_MINING           = 467,
     EMOTE_STATE_SPELL_CHANNEL_OMNI      = 468,
     EMOTE_STATE_SPELL_CHANNEL_DIRECTED  = 469,
-    EMOTE_ZZOLD_STATE_KNEEL_NO_INTERRUPT = 470,
+    EMOTE_STAND_STATE_NONE              = 470,
+    EMOTE_STATE_READYJOUST              = 471,
+    EMOTE_STATE_STRANGULATE             = 473,
+    EMOTE_STATE_READY_SPELL_OMNI        = 474,
+    EMOTE_STATE_HOLD_JOUST              = 475,
+    EMOTE_ONESHOT_CRY_JAINA             = 476,
+    EMOTE_ONESHOT_SPECIAL_UNARMED       = 477,
+    EMOTE_STATE_DANCE_NOSHEATHE         = 478,
+    EMOTE_ONESHOT_SNIFF                 = 479,
+    EMOTE_ONESHOT_DRAGONSTOMP           = 480,
+    EMOTE_ONESHOT_KNOCKDOWN             = 482,
+    EMOTE_STATE_READ                    = 483,
+    EMOTE_ONESHOT_FLYEMOTETALK          = 485,
+    EMOTE_STATE_READ_ALLOWMOVEMENT      = 492,
+    EMOTE_STATE_READY1H_ALLOW_MOVEMENT  = 505,
+    EMOTE_STATE_READY2H_ALLOW_MOVEMENT  = 506,
+    EMOTE_ONESHOT_OPEN                  = 517,
+    EMOTE_STATE_READ_CHRISTMAS          = 518
 };
+
 
 enum UnitStates
 {
