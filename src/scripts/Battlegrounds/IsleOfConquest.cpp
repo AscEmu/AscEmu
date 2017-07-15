@@ -817,10 +817,10 @@ void IsleOfConquest::HookOnUnitDied(Unit *victim)
             // Was it a workshop vehicle?
             for (uint8 i = 0; i < MAX_PLAYER_TEAMS; i++)
             {
-                if ((workshopvehicle[i].c != NULL) && (c->GetGUID() == workshopvehicle[i].c->GetGUID()))
+                if ((workshopvehicle[i].creature != NULL) && (c->GetGUID() == workshopvehicle[i].creature->GetGUID()))
                 {
-                    workshopvehicle[i].c->Despawn(1 * 1000, 0);
-                    workshopvehicle[i].c = NULL;
+                    workshopvehicle[i].creature->Despawn(1 * 1000, 0);
+                    workshopvehicle[i].creature = NULL;
                 }
             }
 
@@ -828,10 +828,10 @@ void IsleOfConquest::HookOnUnitDied(Unit *victim)
             {
                 for (uint8 j = 0; j < 4; j++)
                 {
-                    if ((workshopdemolisher[i][j].c != NULL) && (c->GetGUID() == workshopdemolisher[i][j].c->GetGUID()))
+                    if ((workshopdemolisher[i][j].creature != NULL) && (c->GetGUID() == workshopdemolisher[i][j].creature->GetGUID()))
                     {
-                        workshopdemolisher[i][j].c->Despawn(1 * 1000, 0);
-                        workshopdemolisher[i][j].c = NULL;
+                        workshopdemolisher[i][j].creature->Despawn(1 * 1000, 0);
+                        workshopdemolisher[i][j].creature = NULL;
                     }
                 }
             }
@@ -841,18 +841,18 @@ void IsleOfConquest::HookOnUnitDied(Unit *victim)
             {
                 for (uint8 j = 0; j < 4; j++)
                 {
-                    if ((dockvehicle[i][j].c != NULL) && (c->GetGUID() == dockvehicle[i][j].c->GetGUID()))
+                    if ((dockvehicle[i][j].creature != NULL) && (c->GetGUID() == dockvehicle[i][j].creature->GetGUID()))
                     {
-                        dockvehicle[i][j].c->Despawn(1 * 1000, 0);
-                        dockvehicle[i][j].c = NULL;
+                        dockvehicle[i][j].creature->Despawn(1 * 1000, 0);
+                        dockvehicle[i][j].creature = NULL;
                     }
                 }
             }
 
             // If it was a workshop vehicle we need to rebuild it in 3 minutes
             ControlPointTypes state = controlpoint[IOC_CONTROL_POINT_WORKSHOP].state;
-            if (((state == IOC_SPAWN_TYPE_ALLIANCE_CONTROLLED) && (workshopvehicle[TEAM_ALLIANCE].c == NULL)) ||
-                ((state == IOC_SPAWN_TYPE_HORDE_CONTROLLED) && (workshopvehicle[TEAM_HORDE].c == NULL)))
+            if (((state == IOC_SPAWN_TYPE_ALLIANCE_CONTROLLED) && (workshopvehicle[TEAM_ALLIANCE].creature == NULL)) ||
+                ((state == IOC_SPAWN_TYPE_HORDE_CONTROLLED) && (workshopvehicle[TEAM_HORDE].creature == NULL)))
                 BuildWorkshopVehicle(3 * 60 * 1000);
         }
     }
@@ -1048,12 +1048,12 @@ void IsleOfConquest::BuildWorkshopVehicle(uint32 delay)
     {
         case IOC_SPAWN_TYPE_ALLIANCE_CONTROLLED:
             workshopvehicle[TEAM_ALLIANCE].baselocation = LocationVector(773.72f, -884.15f, 16.727f, 1.553f);
-            workshopvehicle[TEAM_ALLIANCE].c = SpawnCreature(34776, workshopvehicle[TEAM_ALLIANCE].baselocation, 1);
+            workshopvehicle[TEAM_ALLIANCE].creature = SpawnCreature(34776, workshopvehicle[TEAM_ALLIANCE].baselocation, 1);
             break;
 
         case IOC_SPAWN_TYPE_HORDE_CONTROLLED:
             workshopvehicle[TEAM_HORDE].baselocation = LocationVector(773.72f, -884.15f, 16.727f, 1.553f);
-            workshopvehicle[TEAM_HORDE].c = SpawnCreature(35069, workshopvehicle[TEAM_HORDE].baselocation, 2);
+            workshopvehicle[TEAM_HORDE].creature = SpawnCreature(35069, workshopvehicle[TEAM_HORDE].baselocation, 2);
             break;
     }
 }
@@ -1116,13 +1116,13 @@ void IsleOfConquest::EventDocksCaptured()
             for (uint8 i = 0; i < 2; i++)
             {
                 dockvehicle[TEAM_ALLIANCE][i].baselocation = DockVehicleLocations[i];
-                dockvehicle[TEAM_ALLIANCE][i].c = SpawnCreature(34802, DockVehicleLocations[i], 1);
+                dockvehicle[TEAM_ALLIANCE][i].creature = SpawnCreature(34802, DockVehicleLocations[i], 1);
             }
 
             for (uint8 i = 2; i < 4; i++)
             {
                 dockvehicle[TEAM_ALLIANCE][i].baselocation = DockVehicleLocations[i];
-                dockvehicle[TEAM_ALLIANCE][i].c = SpawnCreature(34793, DockVehicleLocations[i], 1);
+                dockvehicle[TEAM_ALLIANCE][i].creature = SpawnCreature(34793, DockVehicleLocations[i], 1);
             }
             break;
 
@@ -1134,13 +1134,13 @@ void IsleOfConquest::EventDocksCaptured()
             for (uint8 i = 0; i < 2; i++)
             {
                 dockvehicle[TEAM_HORDE][i].baselocation = DockVehicleLocations[i];
-                dockvehicle[TEAM_HORDE][i].c = SpawnCreature(35273, DockVehicleLocations[i], 2);
+                dockvehicle[TEAM_HORDE][i].creature = SpawnCreature(35273, DockVehicleLocations[i], 2);
             }
 
             for (uint8 i = 2; i < 4; i++)
             {
                 dockvehicle[TEAM_HORDE][i].baselocation = DockVehicleLocations[i];
-                dockvehicle[TEAM_HORDE][i].c = SpawnCreature(34793, DockVehicleLocations[i], 2);
+                dockvehicle[TEAM_HORDE][i].creature = SpawnCreature(34793, DockVehicleLocations[i], 2);
             }
             break;
     }
@@ -1170,7 +1170,7 @@ void IsleOfConquest::EventWorkshopCaptured()
             for (uint8 i = 0; i < 4; i++)
             {
                 workshopdemolisher[TEAM_ALLIANCE][i].baselocation = DemolisherLocations[i];
-                workshopdemolisher[TEAM_ALLIANCE][i].c = SpawnCreature(34775, DemolisherLocations[i], 1);
+                workshopdemolisher[TEAM_ALLIANCE][i].creature = SpawnCreature(34775, DemolisherLocations[i], 1);
             }
             break;
 
@@ -1187,7 +1187,7 @@ void IsleOfConquest::EventWorkshopCaptured()
             for (uint8 i = 0; i < 4; i++)
             {
                 workshopdemolisher[TEAM_HORDE][i].baselocation = DemolisherLocations[i];
-                workshopdemolisher[TEAM_HORDE][i].c = SpawnCreature(34775, DemolisherLocations[i], 2);
+                workshopdemolisher[TEAM_HORDE][i].creature = SpawnCreature(34775, DemolisherLocations[i], 2);
             }
             break;
 
