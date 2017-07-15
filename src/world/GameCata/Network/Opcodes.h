@@ -1426,6 +1426,9 @@ enum Opcodes
     CMSG_INSPECT_HONOR_STATS = 0x791E,                  // new
     SMSG_INSPECT_HONOR_STATS = 0x79A5,                  // new
     CMSG_REQUEST_INSPECT_RATED_BG_STATS = 0x3010,       // new
+    CMSG_UNKNOWN_ON_LOGIN2 = 0xBD84,                    // new unknown.
+    CMSG_UNKNOWN_ON_LOGIN3 = 0x5649,                    // new unknown.
+    CMSG_UNKNOWN_ON_LOGIN4 = 0xF364,                    // new unknown.
 
     NUM_MSG_TYPES = 0xFFFF
 };
