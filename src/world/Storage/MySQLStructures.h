@@ -298,7 +298,7 @@ namespace MySQLStructure
     //loot_pickpocketing
     //loot_skinning
 
-    //\brief No structure!
+    //\brief No structure! Data not used!
     //npc_gossip_textid
 
     //npc_monstersay
@@ -364,7 +364,8 @@ namespace MySQLStructure
         uint32_t spirit;
     };
 
-    //petdefaultspells
+    //\brief No structure!
+    //petdefaultspells      Zyres 2017/07/16 not used
 
     //player_xp_for_level
     //playercreateinfo

@@ -424,7 +424,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         typedef std::map<uint32, LevelInfo*>                            LevelMap;
         typedef std::map<std::pair<uint32, uint32>, LevelMap*>          LevelInfoMap;
         
-        typedef std::map<uint32, std::set<SpellInfo*> >                PetDefaultSpellMap;
         typedef std::map<uint32, uint32>                                PetSpellCooldownMap;
         typedef std::multimap <uint32, uint32>                          BCEntryStorage;
         typedef std::map<uint32, SpellTargetConstraint*>                SpellTargetConstraintMap;
@@ -627,8 +626,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         LevelInfo* GetLevelInfo(uint32 Race, uint32 Class, uint32 Level);
         void GenerateLevelUpInfo();
 
-        void LoadDefaultPetSpells();
-        std::set<SpellInfo*>* GetDefaultPetSpells(uint32 Entry);
         uint32 GetPetSpellCooldown(uint32 SpellId);
         void LoadPetSpellCooldowns();
         Movement::WayPointMap* GetWayPointMap(uint32 spawnid);
@@ -769,7 +766,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         TrainerMap mTrainers;
         LevelInfoMap mLevelInfo;
-        PetDefaultSpellMap mDefaultPetSpells;
         PetSpellCooldownMap mPetSpellCooldowns;
         SpellTargetConstraintMap m_spelltargetconstraints;
 #if VERSION_STRING > TBC

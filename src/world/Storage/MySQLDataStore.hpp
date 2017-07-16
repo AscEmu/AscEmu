@@ -89,6 +89,8 @@ public:
 
     typedef std::unordered_map<uint32_t, MySQLStructure::NpcMonsterSay*> NpcMonstersayContainer;
 
+    //typedef std::map<uint32_t, std::set<SpellInfo*>> PetDefaultSpellsMap;     Zyres 2017/07/16 not used
+
     //helper
     MySQLStructure::ItemPage const* getItemPage(uint32_t entry);
     ItemPageContainer const* getItemPagesStore() { return &_itemPagesStore; }
@@ -187,7 +189,8 @@ public:
     MySQLStructure::LocalesWorldmapInfo const* getLocalizedWorldmapInfo(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesWorldStringTable const* getLocalizedWorldStringTable(uint32_t entry, uint32_t sessionLocale);
 
-    MySQLStructure::NpcMonsterSay* getMonstersayEventForCreature(uint32_t Entry, MONSTER_SAY_EVENTS Event);
+    MySQLStructure::NpcMonsterSay* getMonstersayEventForCreature(uint32_t entry, MONSTER_SAY_EVENTS Event);
+    //std::set<SpellInfo*>* getDefaultPetSpellsByEntry(uint32_t entry);     Zyres 2017/07/16 not used
     
 
     bool isCharacterNameAllowed(std::string charName);
@@ -268,6 +271,7 @@ public:
     void loadLocalesWorldStringTable();
 
     void loadNpcMonstersayTable();
+    //void loadDefaultPetSpellsTable();   Zyres 2017 / 07 / 16 not used
 
 
     ItemPageContainer _itemPagesStore;
@@ -331,6 +335,7 @@ public:
     LocalesWorldStringTableContainer _localesWorldStringTableStore;
 
     NpcMonstersayContainer _npcMonstersayContainer[NUM_MONSTER_SAY_EVENTS];
+    //PetDefaultSpellsMap _defaultPetSpellsStore;   Zyres 2017/07/16 not used
 };
 
 #define sMySQLStore MySQLDataStore::getSingleton()

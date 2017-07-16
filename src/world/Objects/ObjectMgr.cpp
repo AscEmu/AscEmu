@@ -2307,45 +2307,6 @@ LevelInfo* ObjectMgr::GetLevelInfo(uint32 Race, uint32 Class, uint32 Level)
     return nullptr;
 }
 
-void ObjectMgr::LoadDefaultPetSpells()
-{
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM petdefaultspells");
-    if (result)
-    {
-        do
-        {
-            Field* f = result->Fetch();
-            uint32 Entry = f[0].GetUInt32();
-            uint32 spell = f[1].GetUInt32();
-            SpellInfo* sp = sSpellCustomizations.GetSpellInfo(spell);
-
-            if (spell && Entry && sp)
-            {
-                PetDefaultSpellMap::iterator itr = mDefaultPetSpells.find(Entry);
-                if (itr != mDefaultPetSpells.end())
-                    itr->second.insert(sp);
-                else
-                {
-                    std::set<SpellInfo*> s;
-                    s.insert(sp);
-                    mDefaultPetSpells[Entry] = s;
-                }
-            }
-        }
-        while (result->NextRow());
-        delete result;
-    }
-}
-
-std::set<SpellInfo*>* ObjectMgr::GetDefaultPetSpells(uint32 Entry)
-{
-    PetDefaultSpellMap::iterator itr = mDefaultPetSpells.find(Entry);
-    if (itr == mDefaultPetSpells.end())
-        return 0;
-
-    return &(itr->second);
-}
-
 void ObjectMgr::LoadPetSpellCooldowns()
 {
     for (uint32 i = 0; i < sCreatureSpellDataStore.GetNumRows(); ++i)

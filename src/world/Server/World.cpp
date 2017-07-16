@@ -902,6 +902,7 @@ void World::loadMySQLStores()
     sMySQLStore.loadLocalesWorldStringTable();
 
     sMySQLStore.loadNpcMonstersayTable();
+    //sMySQLStore.loadDefaultPetSpellsTable();      Zyres 2017/07/16 not used
 }
 
 void World::loadMySQLTablesByTask(uint32_t start_time)
@@ -941,7 +942,6 @@ void World::loadMySQLTablesByTask(uint32_t start_time)
     MAKE_TASK(ObjectMgr, LoadSpellRequired);
     MAKE_TASK(ObjectMgr, LoadSkillLineAbilityMap);
 #endif
-    MAKE_TASK(ObjectMgr, LoadDefaultPetSpells);
     MAKE_TASK(ObjectMgr, LoadPetSpellCooldowns);
     MAKE_TASK(ObjectMgr, LoadGuildCharters);
     MAKE_TASK(ObjectMgr, LoadGMTickets);

@@ -3703,3 +3703,58 @@ MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uin
 
     return nullptr;
 }
+
+//\brief Data loaded but never used!    Zyres 2017/07/16 not used
+//void MySQLDataStore::loadDefaultPetSpellsTable()
+//{
+//    uint32_t start_time = getMSTime();
+//    //                                                  0      1
+//    QueryResult* result = WorldDatabase.Query("SELECT entry, spell FROM petdefaultspells");
+//    if (result == nullptr)
+//    {
+//        LogNotice("MySQLDataLoads : Table `petdefaultspells` is empty!");
+//        return;
+//    }
+//
+//    LogNotice("MySQLDataLoads : Table `petdefaultspells` has %u columns", result->GetFieldCount());
+//
+//    uint32_t load_count = 0;
+//    do
+//    {
+//        Field* fields = result->Fetch();
+//        uint32 entry = fields[0].GetUInt32();
+//        uint32 spell = fields[1].GetUInt32();
+//        SpellInfo* spellInfo = sSpellCustomizations.GetSpellInfo(spell);
+//
+//        if (spell && entry && spellInfo)
+//        {
+//            PetDefaultSpellsMap::iterator itr = _defaultPetSpellsStore.find(entry);
+//            if (itr != _defaultPetSpellsStore.end())
+//            {
+//                itr->second.insert(spellInfo);
+//            }
+//            else
+//            {
+//                std::set<SpellInfo*> spellInfoSet;
+//                spellInfoSet.insert(spellInfo);
+//                _defaultPetSpellsStore[entry] = spellInfoSet;
+//            }
+//        }
+//    } while (result->NextRow());
+//
+//    delete result;
+//
+//    LogDetail("MySQLDataLoads : Loaded %u rows from `petdefaultspells` table in %u ms!", load_count, getMSTime() - start_time);
+//}
+
+//\brief This function is never called!     Zyres 2017/07/16 not used
+//std::set<SpellInfo*>* MySQLDataStore::getDefaultPetSpellsByEntry(uint32_t entry)
+//{
+//    PetDefaultSpellsMap::iterator itr = _defaultPetSpellsStore.find(entry);
+//    if (itr == _defaultPetSpellsStore.end())
+//    {
+//        return nullptr;
+//    }
+//
+//    return &(itr->second);
+//}
