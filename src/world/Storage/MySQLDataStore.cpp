@@ -1463,24 +1463,24 @@ void MySQLDataStore::loadNpcTextTable()
 
         uint32_t entry = fields[0].GetUInt32();
 
-        NpcText& npcText = _npcTextStore[entry];
+        MySQLStructure::NpcText& npcText = _npcTextStore[entry];
 
-        npcText.ID = entry;
+        npcText.entry = entry;
         for (uint8_t i = 0; i < 8; ++i)
         {
-            npcText.Texts[i].Prob = fields[1].GetFloat();
+            npcText.textHolder[i].probability = fields[1].GetFloat();
 
             for (uint8_t j = 0; j < 2; ++j)
             {
-                npcText.Texts[i].Text[j] = fields[2 + j].GetString();
+                npcText.textHolder[i].texts[j] = fields[2 + j].GetString();
             }
 
-            npcText.Texts[i].Lang = fields[4].GetUInt32();
+            npcText.textHolder[i].language = fields[4].GetUInt32();
 
             for (uint8_t k = 0; k < GOSSIP_EMOTE_COUNT; ++k)
             {
-                npcText.Texts[i].Emotes[k].Delay = fields[5 + k * 2].GetUInt32();
-                npcText.Texts[i].Emotes[k].Emote = fields[6 + k * 2].GetUInt32();
+                npcText.textHolder[i].gossipEmotes[k].delay = fields[5 + k * 2].GetUInt32();
+                npcText.textHolder[i].gossipEmotes[k].emote = fields[6 + k * 2].GetUInt32();
             }
         }
 
@@ -1493,11 +1493,13 @@ void MySQLDataStore::loadNpcTextTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `npc_text` table in %u ms!", npc_text_count, getMSTime() - start_time);
 }
 
-NpcText const* MySQLDataStore::getNpcText(uint32_t entry)
+MySQLStructure::NpcText const* MySQLDataStore::getNpcText(uint32_t entry)
 {
     NpcTextContainer::const_iterator itr = _npcTextStore.find(entry);
     if (itr != _npcTextStore.end())
+    {
         return &(itr->second);
+    }
 
     return nullptr;
 }

@@ -524,7 +524,7 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
     recv_data >> targetGuid;
     GetPlayer()->SetTargetGUID(targetGuid);
 
-    NpcText const* pGossip = sMySQLStore.getNpcText(textID);
+    MySQLStructure::NpcText const* pGossip = sMySQLStore.getNpcText(textID);
     MySQLStructure::LocalesNpcText const* lnc = (language > 0) ? sMySQLStore.getLocalizedNpcText(textID, language) : nullptr;
 
     data.Initialize(SMSG_NPC_TEXT_UPDATE);
@@ -534,7 +534,7 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
     {
         for (uint8 i = 0; i < 8; i++)
         {
-            data << float(pGossip->Texts[i].Prob);
+            data << float(pGossip->textHolder[i].probability);
 
             if (lnc)
             {
@@ -558,30 +558,30 @@ void WorldSession::HandleNpcTextQueryOpcode(WorldPacket& recv_data)
             }
             else
             {
-                if (pGossip->Texts[i].Text[0].size() == 0)
+                if (pGossip->textHolder[i].texts[0].size() == 0)
                 {
-                    data << pGossip->Texts[i].Text[1];
+                    data << pGossip->textHolder[i].texts[1];
                 }
                 else
                 {
-                    data << pGossip->Texts[i].Text[0];
+                    data << pGossip->textHolder[i].texts[0];
                 }
 
-                if (pGossip->Texts[i].Text[1].size() == 0)
+                if (pGossip->textHolder[i].texts[1].size() == 0)
                 {
-                    data << pGossip->Texts[i].Text[0];
+                    data << pGossip->textHolder[i].texts[0];
                 }
                 else
                 {
-                    data << pGossip->Texts[i].Text[1];
+                    data << pGossip->textHolder[i].texts[1];
                 }
             }
-            data << pGossip->Texts[i].Lang;
+            data << pGossip->textHolder[i].language;
 
             for (uint8 e = 0; e < GOSSIP_EMOTE_COUNT; e++)
             {
-                data << uint32(pGossip->Texts[i].Emotes[e].Delay);
-                data << uint32(pGossip->Texts[i].Emotes[e].Emote);
+                data << uint32(pGossip->textHolder[i].gossipEmotes[e].delay);
+                data << uint32(pGossip->textHolder[i].gossipEmotes[e].emote);
             }
         }
     }

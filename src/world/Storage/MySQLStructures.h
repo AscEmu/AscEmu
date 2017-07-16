@@ -330,6 +330,26 @@ namespace MySQLStructure
     };
 
     //npc_text
+    struct NpcText_Emote
+    {
+        uint32_t delay;
+        uint32_t emote;
+    };
+
+    #define GOSSIP_EMOTE_COUNT 3
+    struct NpcText_Texts
+    {
+        float probability;
+        std::string texts[2];
+        uint32_t language;
+        NpcText_Emote gossipEmotes[GOSSIP_EMOTE_COUNT];
+    };
+
+    struct NpcText
+    {
+        uint32_t entry;
+        NpcText_Texts textHolder[8];
+    };
 
     //pet_level_abilities
     struct PetLevelAbilities

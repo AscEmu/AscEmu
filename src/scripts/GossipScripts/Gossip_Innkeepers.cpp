@@ -20,6 +20,7 @@
 
 #include "Setup.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 
 #define SPELL_TRICK_OR_TREATED  24755
 #define SPELL_TREAT             24715
@@ -46,7 +47,7 @@ void InnkeeperGossip::OnHello(Object* pObject, Player* Plr)
     uint32 Text = sMySQLStore.getGossipTextIdForNpc(pCreature->GetEntry());
     if (Text != 0)
     {
-        NpcText const* text = sMySQLStore.getNpcText(Text);
+        MySQLStructure::NpcText const* text = sMySQLStore.getNpcText(Text);
         if (text != nullptr)
         {
             TextID = Text;
