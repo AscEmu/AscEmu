@@ -27,6 +27,7 @@
 #include "Units/Stats.h"
 #include "Management/ArenaTeam.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 #include "Units/Players/PlayerClasses.hpp"
 #include "Server/MainServerDefines.h"
 #include "Config/Config.h"
@@ -128,26 +129,6 @@ ObjectMgr::~ObjectMgr()
             }
 
         delete i->second;
-    }
-
-    LogNotice("ObjectMgr : Deleting NPC Say Texts...");
-    for (uint8 i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
-    {
-        NpcMonsterSay* p;
-        for (MonsterSayMap::iterator itr = mMonsterSays[i].begin(); itr != mMonsterSays[i].end(); ++itr)
-        {
-            p = itr->second;
-            for (uint32 j = 0; j < p->TextCount; ++j)
-            {
-                free((char*)p->Texts[j]);
-            }
-
-            delete[] p->Texts;
-            free((char*)p->MonsterName);
-            delete p;
-        }
-
-        mMonsterSays[i].clear();
     }
 
     LogNotice("ObjectMgr", "Deleting Charters...");
@@ -2966,81 +2947,6 @@ ReputationModifier* ObjectMgr::GetReputationModifier(uint32 entry_id, uint32 fac
 
     // no data. fallback to default -5 value.
     return nullptr;
-}
-
-void ObjectMgr::LoadMonsterSay()
-{
-    QueryResult* result = WorldDatabase.Query("SELECT * FROM npc_monstersay");
-    if (!result)
-        return;
-
-    do
-    {
-        Field* fields = result->Fetch();
-        uint32 Entry = fields[0].GetUInt32();
-        uint32 Event = fields[1].GetUInt32();
-
-        if (Event >= NUM_MONSTER_SAY_EVENTS)
-            continue;
-
-        if (mMonsterSays[Event].find(Entry) != mMonsterSays[Event].end())
-        {
-            LogDebugFlag(LF_DB_TABLES, "LoadMonsterSay : Duplicate monstersay event %u for entry %u, skipping", Event, Entry);
-            continue;
-        }
-
-        NpcMonsterSay* ms = new NpcMonsterSay;
-        ms->Chance = fields[2].GetFloat();
-        ms->Language = fields[3].GetUInt32();
-        ms->Type = fields[4].GetUInt32();
-        ms->MonsterName = fields[5].GetString() ? strdup(fields[5].GetString()) : strdup("None");
-
-        char* texts[5];
-        char* text;
-        uint32 textcount = 0;
-
-        for (uint8 i = 0; i < 5; ++i)
-        {
-            text = (char*)fields[6 + i].GetString();
-            if (!text) continue;
-            if (strlen(fields[6 + i].GetString()) < 5)
-                continue;
-
-            texts[textcount] = strdup(fields[6 + i].GetString());
-
-            // check for ;
-            if (texts[textcount][strlen(texts[textcount]) - 1] == ';')
-                texts[textcount][strlen(texts[textcount]) - 1] = 0;
-
-            ++textcount;
-        }
-
-        if (!textcount)
-        {
-            free(((char*)ms->MonsterName));
-            delete ms;
-            continue;
-        }
-
-        ms->Texts = new const char*[textcount];
-        memcpy(ms->Texts, texts, sizeof(char*) * textcount);
-        ms->TextCount = textcount;
-
-        mMonsterSays[Event].insert(std::make_pair(Entry, ms));
-
-    }
-    while (result->NextRow());
-    LogDetail("ObjectMgr : %u monster say events loaded.", result->GetRowCount());
-    delete result;
-}
-
-NpcMonsterSay* ObjectMgr::HasMonsterSay(uint32 Entry, MONSTER_SAY_EVENTS Event)
-{
-    if (mMonsterSays[Event].empty())
-        return nullptr;
-
-    MonsterSayMap::iterator itr = mMonsterSays[Event].find(Entry);
-    return itr == mMonsterSays[Event].end() ? nullptr : itr->second;
 }
 
 void ObjectMgr::LoadInstanceReputationModifiers()

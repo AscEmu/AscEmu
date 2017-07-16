@@ -3079,7 +3079,7 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
     }
 }
 
-void Object::SendMonsterSayMessageInRange(Creature* creature, NpcMonsterSay* npcMonsterSay, int randChoice, uint32_t event)
+void Object::SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::NpcMonsterSay* npcMonsterSay, int randChoice, uint32_t event)
 {
     uint32 myphase = GetPhase();
     for (std::set<Object*>::iterator itr = m_inRangePlayers.begin(); itr != m_inRangePlayers.end(); ++itr)
@@ -3124,7 +3124,7 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, NpcMonsterSay* npc
                 }
                 else
                 {
-                    text = npcMonsterSay->Texts[randChoice];
+                    text = npcMonsterSay->texts[randChoice];
                 }
 
                 // replace text with content
@@ -3221,8 +3221,8 @@ void Object::SendMonsterSayMessageInRange(Creature* creature, NpcMonsterSay* npc
                 size_t messageLength = newText.length() + 1;
 
                 WorldPacket data(SMSG_MESSAGECHAT, 35 + creatureNameLength + messageLength);
-                data << uint8_t(npcMonsterSay->Type);
-                data << uint32_t(npcMonsterSay->Language);
+                data << uint8_t(npcMonsterSay->type);
+                data << uint32_t(npcMonsterSay->language);
                 data << uint64_t(GetGUID());
                 data << uint32_t(0);
                 data << uint32_t(creatureNameLength);

@@ -736,10 +736,10 @@ void MySQLDataStore::loadCreaturePropertiesTable()
             creatureProperties.itemslot_2 = 0;
             creatureProperties.itemslot_3 = 0;
 
-            for (uint8_t i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
+            /*for (uint8_t i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
             {
                 creatureProperties.MonsterSay[i] = nullptr;
-            }
+            }*/
 
             ++creature_properties_count;
         } while (creature_properties_result->NextRow());
@@ -2126,9 +2126,9 @@ void MySQLDataStore::loadItemSetLinkedSetBonusTable()
     {
         Field* fields = linked_set_bonus_result->Fetch();
 
-        int32 entry = fields[0].GetInt32();
+        int32_t entry = fields[0].GetInt32();
 
-        ItemSetLinkedItemSetBonus& itemSetLinkedItemSetBonus = _definedItemSetBonusStore[entry];
+        MySQLStructure::ItemSetLinkedItemSetBonus& itemSetLinkedItemSetBonus = _definedItemSetBonusStore[entry];
 
         itemSetLinkedItemSetBonus.itemset = entry;
         itemSetLinkedItemSetBonus.itemset_bonus  = fields[1].GetUInt32();
@@ -2142,13 +2142,17 @@ void MySQLDataStore::loadItemSetLinkedSetBonusTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `itemset_linked_itemsetbonus` table in %u ms!", linked_set_bonus_count, getMSTime() - start_time);
 }
 
-uint32_t MySQLDataStore::getItemSetLinkedBonus(int32 itemset)
+uint32_t MySQLDataStore::getItemSetLinkedBonus(int32_t itemset)
 {
     auto itr = _definedItemSetBonusStore.find(itemset);
     if (itr == _definedItemSetBonusStore.end())
+    {
         return 0;
+    }
     else
+    {
         return itr->second.itemset_bonus;
+    }
 }
 
 void MySQLDataStore::loadCreatureInitialEquipmentTable()
@@ -3594,5 +3598,106 @@ MySQLStructure::LocalesWorldStringTable const* MySQLDataStore::getLocalizedWorld
             }
         }
     }
+    return nullptr;
+}
+
+void MySQLDataStore::loadNpcMonstersayTable()
+{
+    uint32_t start_time = getMSTime();
+    //                                                  0      1       2        3       4       5          6      7      8      9     10
+    QueryResult* result = WorldDatabase.Query("SELECT entry, event, chance, language, type, monstername, text0, text1, text2, text3, text4 FROM npc_monstersay");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `npc_monstersay` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `npc_monstersay` has %u columns", result->GetFieldCount());
+
+    uint32_t load_count = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+        uint32_t entry = fields[0].GetUInt32();
+        uint32_t creatureEvent = fields[1].GetUInt32();
+
+        if (creatureEvent >= NUM_MONSTER_SAY_EVENTS)
+        {
+            continue;
+        }
+
+        if (_npcMonstersayContainer[creatureEvent].find(entry) != _npcMonstersayContainer[creatureEvent].end())
+        {
+            LogDebugFlag(LF_DB_TABLES, "Duplicate npc_monstersay event %u for entry %u, skipping", creatureEvent, entry);
+            continue;
+        }
+
+        MySQLStructure::NpcMonsterSay* npcMonsterSay = new MySQLStructure::NpcMonsterSay;
+        npcMonsterSay->chance = fields[2].GetFloat();
+        npcMonsterSay->language = fields[3].GetUInt32();
+        npcMonsterSay->type = fields[4].GetUInt32();
+        npcMonsterSay->monsterName = fields[5].GetString() ? strdup(fields[5].GetString()) : strdup("None");
+
+        char* texts[5];
+        char* text;
+        uint32_t textcount = 0;
+
+        for (int i = 0; i < 5; ++i)
+        {
+            text = (char*)fields[6 + i].GetString();
+            if (!text)
+            {
+                continue;
+            }
+
+            if (strlen(fields[6 + i].GetString()) < 5)
+            {
+                continue;
+            }
+
+            texts[textcount] = strdup(fields[6 + i].GetString());
+
+            if (texts[textcount][strlen(texts[textcount]) - 1] == ';')
+            {
+                texts[textcount][strlen(texts[textcount]) - 1] = 0;
+            }
+
+            ++textcount;
+        }
+
+        if (textcount == 0)
+        {
+            free(((char*)npcMonsterSay->monsterName));
+            delete npcMonsterSay;
+            continue;
+        }
+
+        npcMonsterSay->texts = new const char*[textcount];
+        memcpy(npcMonsterSay->texts, texts, sizeof(char*) * textcount);
+        npcMonsterSay->textCount = textcount;
+
+        _npcMonstersayContainer[creatureEvent].insert(std::make_pair(entry, npcMonsterSay));
+
+        ++load_count;
+    } while (result->NextRow());
+
+    delete result;
+
+    LogDetail("MySQLDataLoads : Loaded %u rows from `npc_monstersay` table in %u ms!", load_count, getMSTime() - start_time);
+}
+
+MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uint32_t entry, MONSTER_SAY_EVENTS _event)
+{
+    if (_npcMonstersayContainer[_event].empty())
+    {
+        return nullptr;
+    }
+
+    NpcMonstersayContainer::iterator itr = _npcMonstersayContainer[_event].find(entry);
+    if (itr != _npcMonstersayContainer[_event].end())
+    {
+        return itr->second;
+    }
+
     return nullptr;
 }

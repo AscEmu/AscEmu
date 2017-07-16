@@ -34,6 +34,7 @@
 
 #include "WoWGuid.h"
 #include "../shared/LocationVector.h"
+#include "Storage/MySQLStructures.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #if VERSION_STRING == Cata
     #include "Storage/DB2/DB2Structures.h"
@@ -779,7 +780,7 @@ public:
 
 
         void SendCreatureChatMessageInRange(Creature* creature, uint32_t textId);
-        void SendMonsterSayMessageInRange(Creature* creature, NpcMonsterSay* npcMonsterSay, int randChoice, uint32_t event);
+        void SendMonsterSayMessageInRange(Creature* creature, MySQLStructure::NpcMonsterSay* npcMonsterSay, int randChoice, uint32_t event);
 
         virtual void SendMessageToSet(WorldPacket* data, bool self, bool myteam_only = false);
         void SendMessageToSet(StackBufferBase* data, bool self) { OutPacketToSet(data->GetOpcode(), static_cast<uint16>(data->GetSize()), data->GetBufferPointer(), self); }

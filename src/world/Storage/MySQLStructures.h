@@ -142,7 +142,7 @@ namespace MySQLStructure
         float position_x;
         float position_y;
         float position_z;
-        float orientation;          //\todo: orientation always 9 in db.
+        float orientation;          //\todo: orientation always 0 in db.
         uint32_t zoneId;            //\todo: not used.. always 0 in db.
         uint32_t adjacentZoneId;
         uint32_t mapId;
@@ -160,11 +160,24 @@ namespace MySQLStructure
         uint32_t nextPage;
     };
 
+    //\TODO structure defined in ItemPrototype.h (legacy file)
     //item_properties
+
+    //\TODO table loaded by QuestMgr.
     //item_quest_association
+
+    //\TODO table loaded by LootMgr.
     //item_randomprop_groups
+
+    //\TODO table loaded by LootMgr.
     //item_randomsuffix_groups
+
     //itemset_linked_itemsetbonus
+    struct ItemSetLinkedItemSetBonus
+    {
+        int32_t itemset;
+        uint32_t itemset_bonus;
+    };
 
     //lfg_dungeon_rewards
 
@@ -285,9 +298,21 @@ namespace MySQLStructure
     //loot_pickpocketing
     //loot_skinning
 
+    //\brief No structure!
     //npc_gossip_textid
 
     //npc_monstersay
+    struct NpcMonsterSay
+    {
+        float chance;
+        uint32_t language;
+        uint32_t type;
+        const char* monsterName;
+
+        uint32_t textCount;
+        const char** texts;
+    };
+
     //npc_script_text
     //npc_text
 

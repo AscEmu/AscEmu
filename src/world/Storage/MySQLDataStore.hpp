@@ -52,7 +52,7 @@ public:
     typedef std::unordered_map<uint32_t, MySQLStructure::WorldStringTable> WorldStringContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::PointsOfInterest> PointsOfInterestContainer;
 
-    typedef std::unordered_map<int32, ItemSetLinkedItemSetBonus> ItemSetDefinedSetBonusContainer;
+    typedef std::unordered_map<int32_t, MySQLStructure::ItemSetLinkedItemSetBonus> ItemSetDefinedSetBonusContainer;
 
     typedef std::unordered_map<uint32_t, PlayerCreateInfo> PlayerCreateInfoContainer;
     typedef std::vector<uint32_t> PlayerXPperLevel;
@@ -87,6 +87,7 @@ public:
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesWorldmapInfo> LocalesWorldmapInfoContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::LocalesWorldStringTable> LocalesWorldStringTableContainer;
 
+    typedef std::unordered_map<uint32_t, MySQLStructure::NpcMonsterSay*> NpcMonstersayContainer;
 
     //helper
     MySQLStructure::ItemPage const* getItemPage(uint32_t entry);
@@ -151,7 +152,7 @@ public:
     MySQLStructure::PointsOfInterest const* getPointOfInterest(uint32_t entry);
     PointsOfInterestContainer const* getPointOfInterestStore() { return &_pointsOfInterestStore; }
 
-    uint32_t getItemSetLinkedBonus(int32 itemset);
+    uint32_t getItemSetLinkedBonus(int32_t itemset);
 
     PlayerCreateInfo const* getPlayerCreateInfo(uint8_t player_race, uint8_t player_class);
     uint32_t getPlayerXPForLevel(uint32_t level);
@@ -185,6 +186,8 @@ public:
     MySQLStructure::LocalesWorldbroadcast const* getLocalizedWorldbroadcast(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesWorldmapInfo const* getLocalizedWorldmapInfo(uint32_t entry, uint32_t sessionLocale);
     MySQLStructure::LocalesWorldStringTable const* getLocalizedWorldStringTable(uint32_t entry, uint32_t sessionLocale);
+
+    MySQLStructure::NpcMonsterSay* getMonstersayEventForCreature(uint32_t Entry, MONSTER_SAY_EVENTS Event);
     
 
     bool isCharacterNameAllowed(std::string charName);
@@ -264,6 +267,9 @@ public:
     void loadLocalesWorldmapInfo();
     void loadLocalesWorldStringTable();
 
+    void loadNpcMonstersayTable();
+
+
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
     CreaturePropertiesContainer _creaturePropertiesStore;
@@ -323,6 +329,8 @@ public:
     LocalesWorldbroadcastContainer _localesWorldbroadcastStore;
     LocalesWorldmapInfoContainer _localesWorldmapInfoStore;
     LocalesWorldStringTableContainer _localesWorldStringTableStore;
+
+    NpcMonstersayContainer _npcMonstersayContainer[NUM_MONSTER_SAY_EVENTS];
 };
 
 #define sMySQLStore MySQLDataStore::getSingleton()

@@ -28,6 +28,7 @@
 #include "Management/Guild.h"
 #include "Storage/DBC/DBCStructures.hpp"
 #include "Storage/DBC/DBCStores.h"
+#include "Storage/MySQLStructures.h"
 #if VERSION_STRING == Cata
     #include "Storage/DB2/DB2Stores.h"
     #include "Storage/DB2/DB2Structures.h"
@@ -679,12 +680,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void RemoveArenaTeam(ArenaTeam* team);
         void AddArenaTeam(ArenaTeam* team);
         Mutex m_arenaTeamLock;
-
-        typedef std::unordered_map<uint32, NpcMonsterSay*> MonsterSayMap;
-        MonsterSayMap mMonsterSays[NUM_MONSTER_SAY_EVENTS];
-
-        NpcMonsterSay* HasMonsterSay(uint32 Entry, MONSTER_SAY_EVENTS Event);
-        void LoadMonsterSay();
 
         bool HandleInstanceReputationModifiers(Player* pPlayer, Unit* pVictim);
         void LoadInstanceReputationModifiers();

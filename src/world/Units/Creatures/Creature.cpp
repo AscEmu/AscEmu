@@ -2563,7 +2563,7 @@ void Creature::SendChatMessageToPlayer(uint8 type, uint32 lang, const char* msg,
 
 void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
 {
-    NpcMonsterSay* npcMonsterSay = objmgr.HasMonsterSay(GetEntry(), Event);
+    MySQLStructure::NpcMonsterSay* npcMonsterSay = sMySQLStore.getMonstersayEventForCreature(GetEntry(), Event);
     if (npcMonsterSay == nullptr)
     {
         return;
@@ -2571,9 +2571,9 @@ void Creature::HandleMonsterSayEvent(MONSTER_SAY_EVENTS Event)
     else
     {
         int choice;
-        if (Rand(npcMonsterSay->Chance))
+        if (Rand(npcMonsterSay->chance))
         {
-            choice = (npcMonsterSay->TextCount == 1) ? 0 : RandomUInt(npcMonsterSay->TextCount - 1);
+            choice = (npcMonsterSay->textCount == 1) ? 0 : RandomUInt(npcMonsterSay->textCount - 1);
         }
 
         SendMonsterSayMessageInRange(this, npcMonsterSay, choice, Event);

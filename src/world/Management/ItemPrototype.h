@@ -700,12 +700,6 @@ struct ItemProperties
     }
 };
 
-struct ItemSetLinkedItemSetBonus
-{
-    int32_t itemset;
-    uint32_t itemset_bonus;
-};
-
 typedef struct
 {
     int32_t setid;

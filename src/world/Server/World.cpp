@@ -900,6 +900,8 @@ void World::loadMySQLStores()
     sMySQLStore.loadLocalesWorldbroadcast();
     sMySQLStore.loadLocalesWorldmapInfo();
     sMySQLStore.loadLocalesWorldStringTable();
+
+    sMySQLStore.loadNpcMonstersayTable();
 }
 
 void World::loadMySQLTablesByTask(uint32_t start_time)
@@ -945,7 +947,6 @@ void World::loadMySQLTablesByTask(uint32_t start_time)
     MAKE_TASK(ObjectMgr, LoadGMTickets);
     MAKE_TASK(ObjectMgr, SetHighestGuids);
     MAKE_TASK(ObjectMgr, LoadReputationModifiers);
-    MAKE_TASK(ObjectMgr, LoadMonsterSay);
     MAKE_TASK(ObjectMgr, LoadGroups);
     MAKE_TASK(ObjectMgr, LoadCreatureAIAgents);
     MAKE_TASK(ObjectMgr, LoadArenaTeams);
