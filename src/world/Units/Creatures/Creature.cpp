@@ -2506,7 +2506,7 @@ void Creature::SendScriptTextChatMessage(uint32 textid)
 
 void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
 {
-    NpcScriptText const* ct = sMySQLStore.getNpcScriptText(textid);
+    MySQLStructure::NpcScriptText const* ct = sMySQLStore.getNpcScriptText(textid);
     const char* msg = ct->text.c_str();
     if (delay)
     {
@@ -2517,7 +2517,7 @@ void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
     }
 
     if (ct->emote != 0)
-        this->EventAddEmote(ct->emote, ct->duration);
+        this->EventAddEmote((EmoteType)ct->emote, ct->duration);
 
     const char* name = GetCreatureProperties()->Name.c_str();
     size_t CreatureNameLength = strlen((char*)name) + 1;
@@ -2526,7 +2526,7 @@ void Creature::SendTimedScriptTextChatMessage(uint32 textid, uint32 delay)
     WorldPacket data(SMSG_MESSAGECHAT, 35 + CreatureNameLength + MessageLength);
     data << uint8(ct->type);            // f.e. CHAT_MSG_MONSTER_SAY enum ChatMsg (perfect name for this enum XD)
     data << uint32(ct->language);       // f.e. LANG_UNIVERSAL enum Languages
-    data << GetGUID();                  // guid of the npc
+    data << uint64(GetGUID());          // guid of the npc
     data << uint32(0);
     data << uint32(CreatureNameLength); // the length of the npc name (needed to calculate text beginning)
     data << name;                       // name of the npc

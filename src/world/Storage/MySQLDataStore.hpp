@@ -39,7 +39,7 @@ public:
     typedef std::unordered_map<uint32_t, MySQLStructure::DisplayBoundingBoxes> DisplayBoundingBoxesContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::VendorRestrictions> VendorRestrictionContainer;
     typedef std::unordered_map<uint32_t, NpcText> NpcTextContainer;
-    typedef std::unordered_map<uint32_t, NpcScriptText> NpcScriptTextContainer;
+    typedef std::unordered_map<uint32_t, MySQLStructure::NpcScriptText> NpcScriptTextContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::GossipMenuOption> GossipMenuOptionContainer;
     typedef std::unordered_map<uint32_t, MySQLStructure::Graveyards> GraveyardsContainer;
     typedef std::unordered_map<uint32_t, TeleportCoords> TeleportCoordsContainer;
@@ -116,7 +116,7 @@ public:
     NpcText const* getNpcText(uint32_t entry);
     NpcTextContainer const* getNpcTextStore() { return &_npcTextStore; }
 
-    NpcScriptText const* getNpcScriptText(uint32_t entry);
+    MySQLStructure::NpcScriptText const* getNpcScriptText(uint32_t entry);
     NpcScriptTextContainer const* getNpcScriptTextStore() { return &_npcScriptTextStore; }
 
     MySQLStructure::GossipMenuOption const* getGossipMenuOption(uint32_t entry);

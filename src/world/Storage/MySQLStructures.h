@@ -314,6 +314,21 @@ namespace MySQLStructure
     };
 
     //npc_script_text
+    struct NpcScriptText
+    {
+        uint32_t id;                // unique id \todo remove this and use creature_entry + text_id as key
+        std::string text;
+        uint32_t creature_entry;    // creature entry ID
+        uint32_t text_id;           // text_id started with 0
+        uint32_t type;
+        uint32_t language;
+        float probability;          // chance/percent
+        uint32_t emote;             // emote id on say
+        uint32_t duration;
+        uint32_t sound;             // the sound on say
+        uint32_t broadcast_id;
+    };
+
     //npc_text
 
     //pet_level_abilities

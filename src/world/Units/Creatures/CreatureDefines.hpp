@@ -88,16 +88,6 @@ struct spawn_timed_emotes
 };
 typedef std::list<spawn_timed_emotes*> TimedEmoteList;
 
-//struct NpcMonsterSay
-//{
-//    float Chance;
-//    uint32 Language;
-//    uint32 Type;
-//    const char* MonsterName;
-//
-//    uint32 TextCount;
-//    const char** Texts;
-//};
 
 enum MONSTER_SAY_EVENTS
 {

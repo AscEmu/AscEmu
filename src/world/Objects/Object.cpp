@@ -3025,7 +3025,7 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
                 uint32_t sessionLanguage = player->GetSession()->language;
 
                 std::string message;
-                NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(textId);
+                MySQLStructure::NpcScriptText const* npcScriptText = sMySQLStore.getNpcScriptText(textId);
 
                 MySQLStructure::LocalesNpcScriptText const* lnpct = (sessionLanguage > 0) ? sMySQLStore.getLocalizedNpcScriptText(textId, sessionLanguage) : nullptr;
                 if (lnpct != nullptr)
@@ -3054,7 +3054,7 @@ void Object::SendCreatureChatMessageInRange(Creature* creature, uint32_t textId)
 
                 if (npcScriptText->emote != 0)
                 {
-                    creature->EventAddEmote(npcScriptText->emote, npcScriptText->duration);
+                    creature->EventAddEmote((EmoteType)npcScriptText->emote, npcScriptText->duration);
                 }
 
                 if (npcScriptText->sound != 0)

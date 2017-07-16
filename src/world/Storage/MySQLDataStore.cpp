@@ -1526,7 +1526,7 @@ void MySQLDataStore::loadNpcScriptTextTable()
 
         uint32_t entry = fields[0].GetUInt32();
 
-        NpcScriptText& npcScriptText = _npcScriptTextStore[entry];
+        MySQLStructure::NpcScriptText& npcScriptText = _npcScriptTextStore[entry];
 
         npcScriptText.id = entry;
         npcScriptText.text = fields[1].GetString();
@@ -1548,7 +1548,7 @@ void MySQLDataStore::loadNpcScriptTextTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `npc_script_text` table in %u ms!", npc_script_text_count, getMSTime() - start_time);
 }
 
-NpcScriptText const* MySQLDataStore::getNpcScriptText(uint32_t entry)
+MySQLStructure::NpcScriptText const* MySQLDataStore::getNpcScriptText(uint32_t entry)
 {
     NpcScriptTextContainer::const_iterator itr = _npcScriptTextStore.find(entry);
     if (itr != _npcScriptTextStore.end())

@@ -676,7 +676,7 @@ EmoteDesc* MoonScriptCreatureAI::AddEmote(EventType pEventType, const char* pTex
 EmoteDesc* MoonScriptCreatureAI::AddEmote(EventType pEventType, uint32_t scripttext)
 {
     EmoteDesc* NewEmote = nullptr;
-    NpcScriptText const* ct = sMySQLStore.getNpcScriptText(scripttext);
+    MySQLStructure::NpcScriptText const* ct = sMySQLStore.getNpcScriptText(scripttext);
     TextType pType = Text_Say;
 
     if (ct != nullptr)
