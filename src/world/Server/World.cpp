@@ -903,6 +903,7 @@ void World::loadMySQLStores()
 
     sMySQLStore.loadNpcMonstersayTable();
     //sMySQLStore.loadDefaultPetSpellsTable();      Zyres 2017/07/16 not used
+    sMySQLStore.loadProfessionDiscoveriesTable();
 }
 
 void World::loadMySQLTablesByTask(uint32_t start_time)
@@ -950,7 +951,6 @@ void World::loadMySQLTablesByTask(uint32_t start_time)
     MAKE_TASK(ObjectMgr, LoadGroups);
     MAKE_TASK(ObjectMgr, LoadCreatureAIAgents);
     MAKE_TASK(ObjectMgr, LoadArenaTeams);
-    MAKE_TASK(ObjectMgr, LoadProfessionDiscoveries);
     MAKE_TASK(ObjectMgr, LoadVehicleAccessories);
     MAKE_TASK(ObjectMgr, LoadWorldStateTemplates);
 

@@ -99,18 +99,6 @@ enum
     GM_TICKET_CHAT_OPCODE_ONLINESTATE   = 11
 };
 
-#pragma pack(push,1)
-
-struct ProfessionDiscovery
-{
-    uint32 SpellId;
-    uint32 SpellToDiscover;
-    uint32 SkillValue;
-    float Chance;
-};
-
-#pragma pack(pop)
-
 struct SpellReplacement
 {
     uint32 count;
@@ -618,9 +606,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
 
         void LoadCreatureAIAgents();
 
-        void LoadProfessionDiscoveries();
-
-
         void CreateGossipMenuForPlayer(GossipMenu** Location, uint64 Guid, uint32 TextID, Player* Plr);
 
         LevelInfo* GetLevelInfo(uint32 Race, uint32 Class, uint32 Level);
@@ -629,7 +614,6 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         uint32 GetPetSpellCooldown(uint32 SpellId);
         void LoadPetSpellCooldowns();
         Movement::WayPointMap* GetWayPointMap(uint32 spawnid);
-
 
         void ResetDailies();
 
@@ -687,11 +671,8 @@ class SERVER_DECL ObjectMgr : public Singleton < ObjectMgr >, public EventableOb
         void EventScriptsUpdate(Player* plr, uint32 next_event);
         ////////////////////////////////////////////
 
-
         inline GuildMap::iterator GetGuildsBegin() { return mGuild.begin(); }
         inline GuildMap::iterator GetGuildsEnd() { return mGuild.end(); }
-
-        std::set<ProfessionDiscovery*> ProfessionDiscoveryTable;
 
 #if VERSION_STRING > TBC
         void LoadAchievementCriteriaList();

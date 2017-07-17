@@ -91,6 +91,8 @@ public:
 
     //typedef std::map<uint32_t, std::set<SpellInfo*>> PetDefaultSpellsMap;     Zyres 2017/07/16 not used
 
+    typedef std::set<MySQLStructure::ProfessionDiscovery*> ProfessionDiscoverySet;
+
     //helper
     MySQLStructure::ItemPage const* getItemPage(uint32_t entry);
     ItemPageContainer const* getItemPagesStore() { return &_itemPagesStore; }
@@ -273,6 +275,8 @@ public:
     void loadNpcMonstersayTable();
     //void loadDefaultPetSpellsTable();   Zyres 2017 / 07 / 16 not used
 
+    void loadProfessionDiscoveriesTable();
+
 
     ItemPageContainer _itemPagesStore;
     ItemPropertiesContainer _itemPropertiesStore;
@@ -336,6 +340,8 @@ public:
 
     NpcMonstersayContainer _npcMonstersayContainer[NUM_MONSTER_SAY_EVENTS];
     //PetDefaultSpellsMap _defaultPetSpellsStore;   Zyres 2017/07/16 not used
+
+    ProfessionDiscoverySet _professionDiscoveryStore;
 };
 
 #define sMySQLStore MySQLDataStore::getSingleton()

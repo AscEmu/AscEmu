@@ -213,11 +213,6 @@ ObjectMgr::~ObjectMgr()
         delete(*itr).second;
     }
 
-    LogNotice("ObjectMgr : Deleting Profession Discoveries...");
-    std::set<ProfessionDiscovery*>::iterator itr = ProfessionDiscoveryTable.begin();
-    for (; itr != ProfessionDiscoveryTable.end(); ++itr)
-        delete(*itr);
-
     LogNotice("ObjectMgr : Cleaning up spell target constraints...");
     for (SpellTargetConstraintMap::iterator itr = m_spelltargetconstraints.begin(); itr != m_spelltargetconstraints.end(); ++itr)
         delete itr->second;
@@ -3724,24 +3719,7 @@ void ObjectMgr::EventScriptsUpdate(Player* plr, uint32 next_event)
     }
 }
 
-void ObjectMgr::LoadProfessionDiscoveries()
-{
-    QueryResult* result = WorldDatabase.Query("SELECT * from professiondiscoveries");
-    if (result != nullptr)
-    {
-        do
-        {
-            Field* f = result->Fetch();
-            ProfessionDiscovery* pf = new ProfessionDiscovery;
-            pf->SpellId = f[0].GetUInt32();
-            pf->SpellToDiscover = f[1].GetUInt32();
-            pf->SkillValue = f[2].GetUInt32();
-            pf->Chance = f[3].GetFloat();
-            ProfessionDiscoveryTable.insert(pf);
-        } while (result->NextRow());
-        delete result;
-    }
-}
+
 
 void ObjectMgr::LoadCreatureAIAgents()
 {

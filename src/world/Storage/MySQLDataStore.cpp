@@ -2504,7 +2504,9 @@ void MySQLDataStore::loadPlayerXpToLevelTable()
 uint32_t MySQLDataStore::getPlayerXPForLevel(uint32_t level)
 {
     if (level < _playerXPperLevelStore.size())
+    {
         return _playerXPperLevelStore[level];
+    }
 
     return 0;
 }
@@ -2524,7 +2526,7 @@ void MySQLDataStore::loadSpellOverrideTable()
         uint32_t distinct_override_id = fields[0].GetUInt32();
 
         QueryResult* spellid_for_overrideid_result = WorldDatabase.Query("SELECT spellId FROM spelloverride WHERE overrideId = %u", distinct_override_id);
-        std::list<SpellInfo*>* list = new std::list < SpellInfo* >;
+        std::list<SpellInfo*>* list = new std::list <SpellInfo*>;
         if (spellid_for_overrideid_result != nullptr)
         {
             do
@@ -2546,9 +2548,13 @@ void MySQLDataStore::loadSpellOverrideTable()
         }
 
         if (list->size() == 0)
+        {
             delete list;
+        }
         else
+        {
             _spellOverrideIdStore.insert(SpellOverrideIdMap::value_type(distinct_override_id, list));
+        }
 
     } while (spelloverride_result->NextRow());
 
@@ -3758,3 +3764,39 @@ MySQLStructure::NpcMonsterSay* MySQLDataStore::getMonstersayEventForCreature(uin
 //
 //    return &(itr->second);
 //}
+
+void MySQLDataStore::loadProfessionDiscoveriesTable()
+{
+    uint32_t start_time = getMSTime();
+    //                                                   0           1              2          3
+    QueryResult* result = WorldDatabase.Query("SELECT SpellId, SpellToDiscover, SkillValue, Chance FROM professiondiscoveries");
+    if (result == nullptr)
+    {
+        LogNotice("MySQLDataLoads : Table `professiondiscoveries` is empty!");
+        return;
+    }
+
+    LogNotice("MySQLDataLoads : Table `professiondiscoveries` has %u columns", result->GetFieldCount());
+
+    if (result != nullptr)
+    {
+        uint32_t load_count = 0;
+        do
+        {
+            Field* fields = result->Fetch();
+            MySQLStructure::ProfessionDiscovery* professionDiscovery = new MySQLStructure::ProfessionDiscovery;
+            professionDiscovery->SpellId = fields[0].GetUInt32();
+            professionDiscovery->SpellToDiscover = fields[1].GetUInt32();
+            professionDiscovery->SkillValue = fields[2].GetUInt32();
+            professionDiscovery->Chance = fields[3].GetFloat();
+            _professionDiscoveryStore.insert(professionDiscovery);
+
+            ++load_count;
+
+        } while (result->NextRow());
+
+        delete result;
+
+        LogDetail("MySQLDataLoads : Loaded %u rows from `professiondiscoveries` table in %u ms!", load_count, getMSTime() - start_time);
+    }
+}

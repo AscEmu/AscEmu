@@ -387,6 +387,13 @@ namespace MySQLStructure
     };
 
     //professiondiscoveries
+    struct ProfessionDiscovery
+    {
+        uint32 SpellId;
+        uint32 SpellToDiscover;
+        uint32 SkillValue;
+        float Chance;
+    };
 
     //quest_poi
     //quest_poi_points
