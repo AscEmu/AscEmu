@@ -133,6 +133,9 @@ World::~World()
     LogNotice("SpellFactoryMgr : ~SpellFactoryMgr()");
     delete SpellFactoryMgr::getSingletonPtr();
 
+    LogNotice("MySQLDataStore : ~MySQLDataStore()");
+    delete MySQLDataStore::getSingletonPtr();
+
     delete mEventableObjectHolder;
 
     for (std::list<SpellInfo*>::iterator itr = dummySpellList.begin(); itr != dummySpellList.end(); ++itr)

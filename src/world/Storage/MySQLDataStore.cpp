@@ -19,7 +19,33 @@ SERVER_DECL std::set<std::string> ItemPropertiesTables;
 SERVER_DECL std::set<std::string> QuestPropertiesTables;
 
 MySQLDataStore::MySQLDataStore() {}
-MySQLDataStore::~MySQLDataStore() {}
+
+MySQLDataStore::~MySQLDataStore()
+{
+    for (int i = 0; i < NUM_MONSTER_SAY_EVENTS; ++i)
+    {
+        for (NpcMonstersayContainer::iterator itr = _npcMonstersayContainer[i].begin(); itr != _npcMonstersayContainer[i].end(); ++itr)
+        {
+            MySQLStructure::NpcMonsterSay* npcMonsterSay = itr->second;
+            for (int j = 0; j < npcMonsterSay->textCount; ++j)
+            {
+                free((char*)npcMonsterSay->texts[j]);
+            }
+
+            delete[] npcMonsterSay->texts;
+            free((char*)npcMonsterSay->monsterName);
+            delete npcMonsterSay;
+        }
+
+        _npcMonstersayContainer[i].clear();
+    }
+
+    for (auto&& professionDiscovery : _professionDiscoveryStore)
+    {
+        delete professionDiscovery;
+    }
+
+}
 
 void MySQLDataStore::loadAdditionalTableConfig()
 {
