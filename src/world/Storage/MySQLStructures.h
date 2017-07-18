@@ -444,7 +444,6 @@ namespace MySQLStructure
 
     //trainer_defs
     //trainer_spells
-    //trainerspelloverride
 
     //transport_creatures
     //transport_data

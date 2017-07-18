@@ -59,10 +59,10 @@ ConfigMgr Config;
 // DB version
 #if VERSION_STRING != Cata
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-06-25_01_clienbtaddons";
-static const char* REQUIRED_WORLD_DB_VERSION = "2017-07-14_01_locales_npc_monstersay";
+static const char* REQUIRED_WORLD_DB_VERSION = "2017-07-18_01_remove_trainerspelloverride";
 #else
 static const char* REQUIRED_CHAR_DB_VERSION = "2017-06-30_01_guild";
-static const char* REQUIRED_WORLD_DB_VERSION = "2017-07-14_01_locales_npc_monstersay";
+static const char* REQUIRED_WORLD_DB_VERSION = "2017-07-18_01_remove_trainerspelloverride";
 #endif
 
 void Master::_OnSignal(int s)
