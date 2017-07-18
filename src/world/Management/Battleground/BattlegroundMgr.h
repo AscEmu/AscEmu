@@ -115,21 +115,6 @@ enum BattleGroundStatus
     BGSTATUS_TIME = 3     /// Ex. Wintergrasp time remaining
 };
 
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// struct BGMaster;
-/// \note   Contains creature -> battleground id association pairs
-///
-/// \param  uint32 entry  -  creature entry of the battlemaster
-/// \param  uint32 bg     -  ID of the battleground the creature is a battlemaster of
-///
-//////////////////////////////////////////////////////////////////////////////////////////
-struct BGMaster
-{
-    uint32 entry;
-    uint32 bg;
-};
-
 struct BGScore
 {
     uint32 KillingBlows;

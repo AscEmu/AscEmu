@@ -211,7 +211,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
     {
         uint32 newtype = 0;
 
-        if (!inf->HasDifficulty(plr->GetRaidDifficulty()))
+        if (!inf->hasDifficulty(plr->GetRaidDifficulty()))
         {
             // no it doesn't so we will downscale it
 
@@ -237,7 +237,7 @@ uint32 InstanceMgr::PreTeleport(uint32 mapid, Player* plr, uint32 instanceid)
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             // check if we have this mode
-            if (!inf->HasDifficulty(newtype))
+            if (!inf->hasDifficulty(newtype))
             {
 
                 //appearantly we don't so we set to 10men normal, which is the default for old raids too

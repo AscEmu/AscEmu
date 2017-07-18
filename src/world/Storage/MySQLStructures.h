@@ -64,9 +64,15 @@ namespace MySQLStructure
         uint32_t requiredLevel;
     };
 
+    //\brief loaded in AuctionHouse.cpp
     //auctionhouse
 
     //battlemasters
+    struct Battlemasters
+    {
+        uint32_t creatureEntry;
+        uint32_t battlegroundId;
+    };
 
     //creature_difficulty
     struct CreatureDifficulty
@@ -298,7 +304,7 @@ namespace MySQLStructure
     //loot_pickpocketing
     //loot_skinning
 
-    //\brief No structure! Data not used!
+    //\brief No structure!
     //npc_gossip_textid
 
     //npc_monstersay
@@ -421,6 +427,7 @@ namespace MySQLStructure
     //spellclickspells
     //spelloverride
     //spelltargetconstraints
+
     //totemdisplayids
     struct TotemDisplayIds
     {
@@ -514,20 +521,19 @@ namespace MySQLStructure
         float update_distance;
         uint32_t checkpoint_id;
 
-        bool HasFlag(uint32_t flag) const
+        bool hasFlag(uint32_t flag) const
         {
-            if ((flags & flag) != 0)
-                return true;
-            else
-                return false;
+            return ((flag & flags) != 0);
         }
 
-        bool HasDifficulty(uint32_t difficulty) const
+        bool hasDifficulty(uint32_t difficulty) const
         {
             if (difficulty > uint32_t(TOTAL_RAID_MODES))
+            {
                 return false;
+            }
 
-            return HasFlag(uint32_t(WMI_INSTANCE_HAS_NORMAL_10MEN) << difficulty);
+            return hasFlag(uint32_t(WMI_INSTANCE_HAS_NORMAL_10MEN) << difficulty);
         }
     };
 

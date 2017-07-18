@@ -1914,10 +1914,10 @@ void MySQLDataStore::loadBattleMastersTable()
 
         uint32_t entry = fields[0].GetUInt32();
 
-        BGMaster& bgMaster = _battleMastersStore[entry];
+        MySQLStructure::Battlemasters& bgMaster = _battleMastersStore[entry];
 
-        bgMaster.entry = entry;
-        bgMaster.bg = fields[1].GetUInt32();
+        bgMaster.creatureEntry = entry;
+        bgMaster.battlegroundId = fields[1].GetUInt32();
 
         ++battlemasters_count;
     } while (battlemasters_result->NextRow());
@@ -1927,11 +1927,13 @@ void MySQLDataStore::loadBattleMastersTable()
     LogDetail("MySQLDataLoads : Loaded %u rows from `battlemasters` table in %u ms!", battlemasters_count, getMSTime() - start_time);
 }
 
-BGMaster const* MySQLDataStore::getBattleMaster(uint32_t entry)
+MySQLStructure::Battlemasters const* MySQLDataStore::getBattleMaster(uint32_t entry)
 {
     BattleMastersContainer::const_iterator itr = _battleMastersStore.find(entry);
     if (itr != _battleMastersStore.end())
+    {
         return &(itr->second);
+    }
 
     return nullptr;
 }

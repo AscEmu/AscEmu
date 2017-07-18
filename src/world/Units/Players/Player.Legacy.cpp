@@ -9650,7 +9650,7 @@ void Player::OnWorldPortAck()
     if (pMapinfo)
     {
         WorldPacket data(4);
-        if (pMapinfo->HasFlag(WMI_INSTANCE_WELCOME) && GetMapMgr())
+        if (pMapinfo->hasFlag(WMI_INSTANCE_WELCOME) && GetMapMgr())
         {
             std::string welcome_msg;
             welcome_msg = std::string(GetSession()->LocalizedWorldSrv(ServerString::SS_INSTANCE_WELCOME)) + " ";

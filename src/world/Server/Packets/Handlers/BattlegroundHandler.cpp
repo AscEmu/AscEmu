@@ -22,6 +22,7 @@
 #include "Management/Battleground/Battleground.h"
 #include "Management/ArenaTeam.h"
 #include "Storage/MySQLDataStore.hpp"
+#include "Storage/MySQLStructures.h"
 #include "Map/MapMgr.h"
 
 void WorldSession::HandleBattlefieldPortOpcode(WorldPacket& recv_data)
@@ -101,13 +102,17 @@ void WorldSession::SendBattlegroundList(Creature* pCreature, uint32 mapid)
         }
         else
         {
-            BGMaster const* battlemaster = sMySQLStore.getBattleMaster(pCreature->GetCreatureProperties()->Id);
+            MySQLStructure::Battlemasters const* battlemaster = sMySQLStore.getBattleMaster(pCreature->GetCreatureProperties()->Id);
             if (battlemaster != NULL)
-                t = battlemaster->bg;
+            {
+                t = battlemaster->battlegroundId;
+            }
         }
     }
     else
+    {
         t = mapid;
+    }
 
     BattlegroundManager.HandleBattlegroundListPacket(this, t);
 }
