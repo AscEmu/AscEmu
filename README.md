@@ -18,6 +18,15 @@ We focus on optimizing the codebase and improving the ingame functionality.
 You can help us by contributing. It is completely open source and can be used by everyone.
 This project is for educational purpose. So, if you're looking for serverfiles to run your server or create some "custom" scripts  this is the wrong place for you. If you want to discuss/develop/work on an open source project and on important stuff for the framework feel free to join our community.
 
+## Multiversion Status
+AscEmu will support the most common versions. This is currently a work in progress. Check out the following table to see the current status of multiversion support:
+
+Description | Classic | TBC | WotLK | Cataclysm
+:------------: | :------------: | :------------: | :------------: | :------------:
+Authentification | OK | OK | OK | OK
+Worldsocket | NO | OK | OK | OK
+Char Enum | NO | OK | OK | OK
+Log into world | NO | NO | OK | OK
 
 ## Contributing
 Feel free to contribute any corrections but make sure it is useful and tested before opening PRs.
