@@ -9,14 +9,14 @@ branches:
 
 environment:
   matrix:
-  - ASC_VERSION: Classic
-    VS_VER: Visual Studio 14 2015
-  - ASC_VERSION: Classic
-    VS_VER: Visual Studio 14 2015 Win64
-  - ASC_VERSION: TBC
-    VS_VER: Visual Studio 14 2015
-  - ASC_VERSION: TBC
-    VS_VER: Visual Studio 14 2015 Win64
+  #- ASC_VERSION: Classic
+  #  VS_VER: Visual Studio 14 2015
+  #- ASC_VERSION: Classic
+  #  VS_VER: Visual Studio 14 2015 Win64
+  #- ASC_VERSION: TBC
+  #  VS_VER: Visual Studio 14 2015
+  #- ASC_VERSION: TBC
+  #  VS_VER: Visual Studio 14 2015 Win64
   - ASC_VERSION: WotLK
     VS_VER: Visual Studio 14 2015
   - ASC_VERSION: WotLK
