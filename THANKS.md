@@ -15,14 +15,17 @@ people are awsome:
 - aaron02
 - Appled
 - AriDEV
+- brotalnia
 - armm77
 - Cronicman
 - DankoDj
+- dhmann
 - Evairfairy
 - Infield (Iny)
 - Lectro
 - master312
 - Nupper
+- Razfury
 - schnek
 - Sdyessdev (Taft)
 - sanctum32
